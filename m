@@ -2,139 +2,269 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F3E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:48:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 864C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:48:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236103AbiCQPtf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 11:49:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45872 "EHLO
+        id S236124AbiCQPtn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 11:49:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236102AbiCQPt3 (ORCPT
+        with ESMTP id S236121AbiCQPt1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 11:49:29 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55FA138B8;
-        Thu, 17 Mar 2022 08:48:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=ThAyvdoG1U35K2Hzsm1O2USOWq/3qlMrhSaUoYHrsOs=; b=F6Vs/65oeZV/y3wN6Bw/M7u1FQ
-        5O+4lQTnS32R0VfdvOK1oVjLmv61tBR4yMMjN/NVDsOnHzoBbLMjP382aAGEyJMaumvolGSgA+m71
-        1Ehmx8UPj/GCllYWg+tBYociITo9JftToXJThRJBZ9nw2p07B62DgVCik4yzpt77Z8S9KNWcKP8vq
-        3tLkrgPZtcMac/dncj65oYGZ4SvtO6CK7F7u84MgNbC6goRbCxod26J//CJV7WZO58VGV5QhSn55l
-        /KYfPXjDju0sdq2JANUCt29NuoEjYNFSGZB5nEbrQ97N+XXeTVv8WhJJ+KmWXn+usTtelySDGt3Ln
-        87L6gQCw==;
-Received: from [54.239.6.186] (helo=freeip.amazon.com)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nUsLq-0075ta-2M; Thu, 17 Mar 2022 15:47:46 +0000
-Message-ID: <f7b858bb438d1979c1f092e105e0db4c7af47758.camel@infradead.org>
-Subject: Re: [PATCH 2/9] virtio_console: eliminate anonymous module_init &
- module_exit
-From:   Amit Shah <amit@infradead.org>
-To:     Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, Amit Shah <amit@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
+        Thu, 17 Mar 2022 11:49:27 -0400
+Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 074D026C2;
+        Thu, 17 Mar 2022 08:48:02 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by comms.puri.sm (Postfix) with ESMTP id 899DBE013D;
+        Thu, 17 Mar 2022 08:48:02 -0700 (PDT)
+Received: from comms.puri.sm ([127.0.0.1])
+        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id FVmjhwqjJUqz; Thu, 17 Mar 2022 08:48:01 -0700 (PDT)
+From:   Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        linux-usb@vger.kernel.org
+Cc:     Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Eli Cohen <eli@mellanox.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Felipe Balbi <felipe.balbi@linux.intel.com>,
-        =?UTF-8?Q?Micha=C5=82_Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Krzysztof Opasiak <k.opasiak@samsung.com>,
-        Igor Kotrasinski <i.kotrasinsk@samsung.com>,
-        Valentina Manea <valentina.manea.m@gmail.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Jussi Kivilinna <jussi.kivilinna@mbnet.fi>,
-        Joachim Fritschi <jfritschi@freenet.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Karol Herbst <karolherbst@gmail.com>,
-        Pekka Paalanen <ppaalanen@gmail.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, netdev@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-usb@vger.kernel.org, nouveau@lists.freedesktop.org,
-        virtualization@lists.linux-foundation.org, x86@kernel.org
-Date:   Thu, 17 Mar 2022 16:47:42 +0100
-In-Reply-To: <20220316192010.19001-3-rdunlap@infradead.org>
-References: <20220316192010.19001-1-rdunlap@infradead.org>
-         <20220316192010.19001-3-rdunlap@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5-0ubuntu1 
+        Sven Peter <sven@svenpeter.dev>,
+        =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>,
+        Angus Ainslie <angus@akkea.ca>,
+        Hector Martin <marcan@marcan.st>,
+        "Bryan O'Donoghue" <bryan.odonoghue@linaro.org>,
+        linux-kernel@vger.kernel.org, kernel@puri.sm
+Subject: [PATCH 3/7] usb: typec: tipd: Add trace event for SINK PD contract
+Date:   Thu, 17 Mar 2022 16:45:14 +0100
+Message-Id: <20220317154518.4082046-4-sebastian.krzyszkowiak@puri.sm>
+In-Reply-To: <20220317154518.4082046-1-sebastian.krzyszkowiak@puri.sm>
+References: <20220317154518.4082046-1-sebastian.krzyszkowiak@puri.sm>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-03-16 at 12:20 -0700, Randy Dunlap wrote:
-> Eliminate anonymous module_init() and module_exit(), which can lead to
-> confusion or ambiguity when reading System.map, crashes/oops/bugs,
-> or an initcall_debug log.
-> 
-> Give each of these init and exit functions unique driver-specific
-> names to eliminate the anonymous names.
-> 
-> Example 1: (System.map)
->  ffffffff832fc78c t init
->  ffffffff832fc79e t init
->  ffffffff832fc8f8 t init
-> 
-> Example 2: (initcall_debug log)
->  calling  init+0x0/0x12 @ 1
->  initcall init+0x0/0x12 returned 0 after 15 usecs
->  calling  init+0x0/0x60 @ 1
->  initcall init+0x0/0x60 returned 0 after 2 usecs
->  calling  init+0x0/0x9a @ 1
->  initcall init+0x0/0x9a returned 0 after 74 usecs
-> 
-> Fixes: 31610434bc35 ("Virtio console driver")
-> Fixes: 7177876fea83 ("virtio: console: Add ability to remove module")
-> Signed-off-by: Randy Dunlap <
-> rdunlap@infradead.org
-> >
-> Cc: Amit Shah <
-> amit@kernel.org
-> >
-> Cc: 
-> virtualization@lists.linux-foundation.org
-> 
-> Cc: Arnd Bergmann <
-> arnd@arndb.de
-> >
-> Cc: Greg Kroah-Hartman <
-> gregkh@linuxfoundation.org
-> >
-> ---
->  drivers/char/virtio_console.c |    8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+From: Angus Ainslie <angus@akkea.ca>
 
-Reviewed-by: Amit Shah <amit@kernel.org>
+This allows to trace the negotiated contract as sink. It's
+only updated when the contract is actually established.
 
-I don't think the Fixes-by really applies here, though - we don't
-really want to push this into stable, nor do we want any automated
-tools to pick this up because of that tag..
+Co-developed-by: Guido Günther <agx@sigxcpu.org>
+Signed-off-by: Guido Günther <agx@sigxcpu.org>
+Signed-off-by: Angus Ainslie <angus@akkea.ca>
+Signed-off-by: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
+---
+ drivers/usb/typec/tipd/core.c     | 63 ++++++++++++++++++++++++++++++-
+ drivers/usb/typec/tipd/tps6598x.h | 30 +++++++++++++++
+ drivers/usb/typec/tipd/trace.h    | 38 +++++++++++++++++++
+ 3 files changed, 129 insertions(+), 2 deletions(-)
 
-		Amit
+diff --git a/drivers/usb/typec/tipd/core.c b/drivers/usb/typec/tipd/core.c
+index f387786ff95e..80b4a9870caf 100644
+--- a/drivers/usb/typec/tipd/core.c
++++ b/drivers/usb/typec/tipd/core.c
+@@ -34,6 +34,7 @@
+ #define TPS_REG_STATUS			0x1a
+ #define TPS_REG_SYSTEM_CONF		0x28
+ #define TPS_REG_CTRL_CONF		0x29
++#define TPS_REG_ACTIVE_CONTRACT		0x34
+ #define TPS_REG_POWER_STATUS		0x3f
+ #define TPS_REG_RX_IDENTITY_SOP		0x48
+ #define TPS_REG_DATA_STATUS		0x5f
+@@ -93,6 +94,7 @@ struct tps6598x {
+ 	struct power_supply *psy;
+ 	struct power_supply_desc psy_desc;
+ 	enum power_supply_usb_type usb_type;
++	struct tps6598x_pdo terms;
+ 
+ 	u32 data_status;
+ 	u16 pwr_status;
+@@ -528,6 +530,47 @@ static irqreturn_t cd321x_interrupt(int irq, void *data)
+ 	return IRQ_NONE;
+ }
+ 
++static int tps6598x_get_active_pd_contract(struct tps6598x *tps)
++{
++	u64 contract;
++	int type;
++	int max_power;
++	int ret = 0;
++
++	ret = tps6598x_block_read(tps, TPS_REG_ACTIVE_CONTRACT, &contract, 6);
++	if (ret)
++		return ret;
++
++	contract &= 0xFFFFFFFFFFFF;
++	type = TPS_PDO_CONTRACT_TYPE(contract);
++	memset(&tps->terms, 0, sizeof(struct tps6598x_pdo));
++
++	/* If there's no PD it decodes to all 0 */
++	switch (type) {
++	case TPS_PDO_CONTRACT_FIXED:
++		tps->terms.max_voltage = TPS_PDO_FIXED_CONTRACT_VOLTAGE(contract);
++		tps->terms.max_current = TPS_PDO_FIXED_CONTRACT_MAX_CURRENT(contract);
++		break;
++	case TPS_PDO_CONTRACT_BATTERY:
++		tps->terms.max_voltage = TPS_PDO_BAT_CONTRACT_MAX_VOLTAGE(contract);
++		max_power = TPS_PDO_BAT_CONTRACT_MAX_POWER(contract);
++		tps->terms.max_current = 1000 * 1000 * max_power / tps->terms.max_voltage;
++		break;
++	case TPS_PDO_CONTRACT_VARIABLE:
++		tps->terms.max_voltage = TPS_PDO_VAR_CONTRACT_MAX_VOLTAGE(contract);
++		tps->terms.max_current = TPS_PDO_VAR_CONTRACT_MAX_CURRENT(contract);
++		break;
++	default:
++		dev_warn(tps->dev, "Unknown contract type: %d\n", type);
++		return -EINVAL;
++	}
++
++	tps->terms.pdo = contract;
++	trace_tps6598x_pdo(&tps->terms);
++
++	return 0;
++}
++
+ static irqreturn_t tps6598x_interrupt(int irq, void *data)
+ {
+ 	struct tps6598x *tps = data;
+@@ -563,6 +606,14 @@ static irqreturn_t tps6598x_interrupt(int irq, void *data)
+ 		tps6598x_update_data_status(tps, status);
+ 	}
+ 
++	if ((event1 | event2) & TPS_REG_INT_NEW_CONTRACT_AS_CONSUMER) {
++		ret = tps6598x_get_active_pd_contract(tps);
++		if (ret) {
++			dev_err(tps->dev, "failed to read pd contract: %d\n", ret);
++			goto err_clear_ints;
++		}
++	}
++
+ 	/* Handle plug insert or removal */
+ 	if ((event1 | event2) & TPS_REG_INT_PLUG_EVENT)
+ 		tps6598x_handle_plug_event(tps, status);
+@@ -751,10 +802,11 @@ static int tps6598x_probe(struct i2c_client *client)
+ 
+ 		irq_handler = cd321x_interrupt;
+ 	} else {
+-		/* Enable power status, data status and plug event interrupts */
++		/* Enable interrupts used by this driver */
+ 		mask1 = TPS_REG_INT_POWER_STATUS_UPDATE |
+ 			TPS_REG_INT_DATA_STATUS_UPDATE |
+-			TPS_REG_INT_PLUG_EVENT;
++			TPS_REG_INT_PLUG_EVENT |
++			TPS_REG_INT_NEW_CONTRACT_AS_CONSUMER;
+ 	}
+ 
+ 	/* Make sure the controller has application firmware running */
+@@ -847,6 +899,13 @@ static int tps6598x_probe(struct i2c_client *client)
+ 		ret = tps6598x_connect(tps, status);
+ 		if (ret)
+ 			dev_err(&client->dev, "failed to register partner\n");
++
++		if ((TPS_POWER_STATUS_PWROPMODE(tps->pwr_status) == TYPEC_PWR_MODE_PD) &&
++		    (!(status & TPS_STATUS_PORTROLE))) {
++			ret = tps6598x_get_active_pd_contract(tps);
++			if (ret)
++				dev_err(tps->dev, "failed to read pd contract: %d\n", ret);
++		}
+ 	}
+ 
+ 	ret = devm_request_threaded_irq(&client->dev, client->irq, NULL,
+diff --git a/drivers/usb/typec/tipd/tps6598x.h b/drivers/usb/typec/tipd/tps6598x.h
+index 527857549d69..546cd4881f1f 100644
+--- a/drivers/usb/typec/tipd/tps6598x.h
++++ b/drivers/usb/typec/tipd/tps6598x.h
+@@ -199,4 +199,34 @@
+ #define TPS_DATA_STATUS_DP_SPEC_PIN_ASSIGNMENT_A    BIT(2)
+ #define TPS_DATA_STATUS_DP_SPEC_PIN_ASSIGNMENT_B    (BIT(2) | BIT(1))
+ 
++
++/* PDO decoding as in https://www.ti.com/lit/an/slva842/slva842.pdf */
++#define TPS_PDO_CONTRACT_TYPE(x)	FIELD_GET(GENMASK(31, 30), x)
++#define TPS_PDO_CONTRACT_FIXED	0
++#define TPS_PDO_CONTRACT_BATTERY	1
++#define TPS_PDO_CONTRACT_VARIABLE	2
++
++#define TPS_PDO_FIXED_CONTRACT_DETAILS		GENMASK(29, 25)
++#define TPS_PDO_FIXED_CONTRACT_DR_POWER		BIT(29)
++#define TPS_PDO_FIXED_CONTRACT_USB_SUSPEND	BIT(28)
++#define TPS_PDO_FIXED_CONTRACT_EXTERNAL_PWR	BIT(27)
++#define TPS_PDO_FIXED_CONTRACT_USB_COMMS	BIT(26)
++#define TPS_PDO_FIXED_CONTRACT_DR_DATA		BIT(25)
++
++#define TPS_PDO_FIXED_CONTRACT_VOLTAGE(x)	(FIELD_GET(GENMASK(19, 10), x) * 50000)
++#define TPS_PDO_FIXED_CONTRACT_MAX_CURRENT(x)	(FIELD_GET(GENMASK(9, 0), x) * 10000)
++#define TPS_PDO_VAR_CONTRACT_MAX_VOLTAGE(x)	(FIELD_GET(GENMASK(29, 20), x) * 50000)
++#define TPS_PDO_VAR_CONTRACT_MIN_VOLTAGE(x)	(FIELD_GET(GENMASK(19, 10), x) * 50000)
++#define TPS_PDO_VAR_CONTRACT_MAX_CURRENT(x)	(FIELD_GET(GENMASK(9, 0), x) * 10000)
++#define TPS_PDO_BAT_CONTRACT_MAX_VOLTAGE(x)	(FIELD_GET(GENMASK(29, 20), x) * 50000)
++#define TPS_PDO_BAT_CONTRACT_MIN_VOLTAGE(x)	(FIELD_GET(GENMASK(19, 10), x) * 50000)
++#define TPS_PDO_BAT_CONTRACT_MAX_POWER(x)	(FIELD_GET(GENMASK(9, 0), x) * 250000)
++
++struct tps6598x_pdo {
++	u32 pdo;
++	int max_voltage; /* uV */
++	int max_current; /* uA */
++	int max_power;   /* uW */
++};
++
+ #endif /* __TPS6598X_H__ */
+diff --git a/drivers/usb/typec/tipd/trace.h b/drivers/usb/typec/tipd/trace.h
+index 12cad1bde7cc..148e2ef3157b 100644
+--- a/drivers/usb/typec/tipd/trace.h
++++ b/drivers/usb/typec/tipd/trace.h
+@@ -194,6 +194,20 @@
+ 	(data_status & TPS_DATA_STATUS_DP_CONNECTION ? \
+ 	 show_data_status_dp_pin_assignment(data_status) : "")
+ 
++#define show_pdo_contract_type(pdo) \
++	__print_symbolic(TPS_PDO_CONTRACT_TYPE(pdo), \
++		{ TPS_PDO_CONTRACT_FIXED, "fixed" }, \
++		{ TPS_PDO_CONTRACT_BATTERY, "battery" }, \
++		{ TPS_PDO_CONTRACT_VARIABLE, "variable" })
++
++#define show_pdo_contract_details(pdo) \
++	__print_flags(pdo & TPS_PDO_FIXED_CONTRACT_DETAILS, "|", \
++		{ TPS_PDO_FIXED_CONTRACT_DR_POWER, "dr-power" }, \
++		{ TPS_PDO_FIXED_CONTRACT_USB_SUSPEND, "usb-suspend" }, \
++		{ TPS_PDO_FIXED_CONTRACT_EXTERNAL_PWR, "ext-power" }, \
++		{ TPS_PDO_FIXED_CONTRACT_USB_COMMS, "usb-comms" }, \
++		{ TPS_PDO_FIXED_CONTRACT_DR_DATA, "dr-data" })
++
+ TRACE_EVENT(tps6598x_irq,
+ 	    TP_PROTO(u64 event1,
+ 		     u64 event2),
+@@ -296,6 +310,30 @@ TRACE_EVENT(tps6598x_data_status,
+ 		    )
+ );
+ 
++TRACE_EVENT(tps6598x_pdo,
++	    TP_PROTO(struct tps6598x_pdo *pdo),
++	    TP_ARGS(pdo),
++
++	    TP_STRUCT__entry(
++			     __field(u32, pdo)
++			     __field(int, max_current)
++			     __field(int, max_voltage)
++			     ),
++
++	    TP_fast_assign(
++			   __entry->pdo = pdo->pdo;
++			   __entry->max_current = pdo->max_current;
++			   __entry->max_voltage = pdo->max_voltage;
++			   ),
++
++	    TP_printk("%s supply, max %duA, %duV, details: %s",
++		      show_pdo_contract_type(__entry->pdo),
++		      __entry->max_current,
++		      __entry->max_voltage,
++		      show_pdo_contract_details(__entry->pdo)
++		    )
++);
++
+ #endif /* _TPS6598X_TRACE_H_ */
+ 
+ /* This part must be outside protection */
+-- 
+2.35.1
 
