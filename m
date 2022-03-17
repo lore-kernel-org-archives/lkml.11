@@ -2,172 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78B5AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 20:42:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C3B5C43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 20:42:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229885AbiCQUnz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 16:43:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34436 "EHLO
+        id S229910AbiCQUoG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 16:44:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229886AbiCQUmz (ORCPT
+        with ESMTP id S229879AbiCQUn7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 16:42:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3C8CF3FA1;
-        Thu, 17 Mar 2022 13:41:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8AF37B8200C;
-        Thu, 17 Mar 2022 20:41:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB6BFC340E9;
-        Thu, 17 Mar 2022 20:41:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647549688;
-        bh=dppT/88vVyC0bQdMfnQJBCBFZtwfaRmALNXImiosTTQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=Zf3Yq1ElOsy81XsXb+1Pjuzc3hlu26tRvg5iiktVjH6+qydmUYRs5qb0acCs54nUY
-         aCFErppAgWbXrD7u/b5WI5REnzTWc911OFTwlc6PhcLyfySjvivqODkXrXWsiBU3nz
-         iRHllCGl60zMBNo6kUGJ44BQ4d55JoyIEg1g3RjPElrglvW/6Nbl3CxdDMjrYO8H3R
-         KyUr2nSyOFK+l/SGhn+tMfk4DJcY1Dpe3/B0bWg+9PQcr11i/+fsSBs2MXoMKNr5JF
-         xv2v3QxbjmApnZtcU45YSmKyHFfT7pu9U20B4xIQ0L+yJBUddhv0i/dekBUCvtv2be
-         TLbCCZrAPoNJQ==
-Date:   Thu, 17 Mar 2022 15:41:26 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org, micklorain@protonmail.com,
-        Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH v1 1/1] PCI: Enable INTx quirk for ATI PCIe-USB adapter
-Message-ID: <20220317204126.GA723808@bhelgaas>
+        Thu, 17 Mar 2022 16:43:59 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1779A133690;
+        Thu, 17 Mar 2022 13:42:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=3Vg3YWtqMNGIO5AWtFE29onUKdIZ8x188s7SviF5pPg=; b=tiAHL3PCQ2t7+lPOxKztKxihGl
+        vd4Y8NiotnXISBxPTEpDpjnfGwN/+2gCzocwX9f1n0YfUlqtTEW8abkTbOXNks1/pe9V0o1aeVqiU
+        mg+cp1CpvBpg/qj5G5LZWflb4aiFP803B14dktG2eQTzUpOmEwNqtoyK5FiuDb0e8dEHA1UwaTcNb
+        TjTsqtIXdQy5uDTkofF/krC+Z1b0PK1+/Sh9yQPukGAwmINpZ+kCjgEBdHe1EVJZaGIr2Nw3tHUkm
+        Ajhuyth6TCxfsRDyg2dioL17ZEbHaHLKorjuGU+sNiNOS0MkF5l5E/OHgiJGeyQY6IVrPFktt2Xla
+        WvlJyMgw==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nUwxB-007IuO-IC; Thu, 17 Mar 2022 20:42:37 +0000
+Message-ID: <15fdafd4-e753-2c0e-4e61-6b168e064e72@infradead.org>
+Date:   Thu, 17 Mar 2022 13:42:23 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YjL4cEBXCQ1eSy48@smile.fi.intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 4/9] netfilter: h323: eliminate anonymous module_init &
+ module_exit
+Content-Language: en-US
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     linux-kernel@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, Amit Shah <amit@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Eli Cohen <eli@mellanox.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Felipe Balbi <felipe.balbi@linux.intel.com>,
+        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Krzysztof Opasiak <k.opasiak@samsung.com>,
+        Igor Kotrasinski <i.kotrasinsk@samsung.com>,
+        Valentina Manea <valentina.manea.m@gmail.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Jussi Kivilinna <jussi.kivilinna@mbnet.fi>,
+        Joachim Fritschi <jfritschi@freenet.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Karol Herbst <karolherbst@gmail.com>,
+        Pekka Paalanen <ppaalanen@gmail.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, netdev@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-usb@vger.kernel.org, nouveau@lists.freedesktop.org,
+        virtualization@lists.linux-foundation.org, x86@kernel.org
+References: <20220316192010.19001-1-rdunlap@infradead.org>
+ <20220316192010.19001-5-rdunlap@infradead.org> <YjNYo2LKM3smgEJM@salvia>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <YjNYo2LKM3smgEJM@salvia>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 10:59:28AM +0200, Andy Shevchenko wrote:
-> On Wed, Mar 16, 2022 at 04:15:48PM -0500, Bjorn Helgaas wrote:
-> > On Wed, Mar 16, 2022 at 06:12:19PM +0200, Andy Shevchenko wrote:
-> > > On Wed, Mar 16, 2022 at 06:52:09AM -0500, Bjorn Helgaas wrote:
-> > > > On Wed, Mar 16, 2022 at 12:27:57PM +0200, Andy Shevchenko wrote:
-> > > > > On Tue, Mar 15, 2022 at 03:22:31PM -0500, Bjorn Helgaas wrote:
-> > > > > > On Tue, Mar 15, 2022 at 12:09:08PM +0200, Andy Shevchenko wrote:
-> > > > > > > On Mon, Mar 14, 2022 at 02:42:53PM -0500, Bjorn Helgaas wrote:
-> > > > > > > > On Mon, Mar 14, 2022 at 12:14:48PM +0200, Andy Shevchenko wrote:
-> > > > > > > > > ATI PCIe-USB adapter advertises MSI, but it doesn't work
-> > > > > > > > > if INTx is disabled.  Enable the respective quirk as
-> > > > > > > > > it's done for other ATI devices on this chipset,
-> > > > > > > > > 
-> > > > > > > > > Fixes: 306c54d0edb6 ("usb: hcd: Try MSI interrupts on
-> > > > > > > > > PCI devices")
-> > 
-> > > > > > Anyway, I applied this to pci/msi for v5.18 with the following
-> > > > > > commit log:
-> > > > > > 
-> > > > > >     PCI: Disable broken MSI on ATI SB600 USB adapters
-> > > > > > 
-> > > > > >     Some ATI SB600 USB adapters advertise MSI, but MSI doesn't
-> > > > > >     work if INTx is disabled.  Disable MSI on these adapters.
-> > > > > 
-> > > > > But IIUC MSI is _not_ disabled. That's why I have issued this
-> > > > > version of the patch with different commit message. Did I
-> > > > > misunderstand something?
-> > > > 
-> > > > Oh, right, of course.  Sorry, I was asleep at the wheel.
-> > > 
-> > > Are you going to fix that?
-> > 
-> > Yes, of course, I'll do something with the commit message after we
-> > figure out how to handle PCI_COMMAND_INTX_DISABLE.
-> > 
-> > > > I guess it's just that for these devices, we don't disable INTx
-> > > > when enabling MSI.  I can't remember why we disable INTx when
-> > > > enabling MSI, but it raises the question of whether it's better to
-> > > > leave INTx enabled or to just disable use of MSI completely.
-> > > 
-> > > It's required by specification to disable INTx if I read 6.1.4.3
-> > > Enabling Operation correctly.
-> > 
-> > Thanks for the reference; I was looking for something like that.  But
-> > I don't think this section requires us to set
-> > PCI_COMMAND_INTX_DISABLE.  For the benefit of folks without the spec,
-> > PCIe r6.0, sec 6.1.4.3 says:
-> > 
-> >   To maintain backward compatibility, the MSI Enable bit in the
-> >   Message Control Register for MSI and the MSI-X Enable bit in the
-> >   Message Control Register for MSI-X are each Clear by default (MSI
-> >   and MSI-X are both disabled). System configuration software Sets one
-> >   of these bits to enable either MSI or MSI-X, but never both
-> >   simultaneously. Behavior is undefined if both MSI and MSI-X are
-> >   enabled simultaneously. Software disabling either mechanism during
-> >   active operation may result in the Function dropping pending
-> >   interrupt conditions or failing to recognize new interrupt
-> >   conditions. While enabled for MSI or MSI-X operation, a Function is
-> >   prohibited from using INTx interrupts (if implemented) to request
-> >   service (MSI, MSI-X, and INTx are mutually exclusive).
-> > 
-> > The only *software* constraints I see are (1) software must never
-> > enable both MSI and MSI-X simultaneously, and (2) if software disables
-> > MSI or MSI-X during active operation, the Function may fail to
-> > generate an interrupt when it should.
-> > 
-> > I read the last sentence as a constraint on the *hardware*: if either
-> > MSI or MSI-X is enabled, the Function is not allowed to use INTx,
-> > regardless of the state of PCI_COMMAND_INTX_DISABLE.
-> > 
-> > I searched the spec for "Interrupt Disable", looking for situations
-> > where software might be *required* to set it, but I didn't see
-> > anything.
-> > 
-> > I suspect "Interrupt Disable" was intended to help the OS stop all
-> > activity from a device during hot-plug or reconfiguration, as hinted
-> > at in sec 6.4, "Device Synchronization":
-> > 
-> >   The ability of the driver and/or system software to block new
-> >   Requests from the device is supported by the Bus Master Enable,
-> >   SERR# Enable, and Interrupt Disable bits in the Command register
-> >   (Section 7.5.1.1.3) of each device Function, and other such control
-> >   bits.
-> > 
-> > So I'm trying to figure out why when enabling MSI we need to set
-> > PCI_COMMAND_INTX_DISABLE for most devices, but it's safe to skip that
-> > for these quirked devices.
+
+
+On 3/17/22 08:49, Pablo Neira Ayuso wrote:
+> On Wed, Mar 16, 2022 at 12:20:05PM -0700, Randy Dunlap wrote:
+>> Eliminate anonymous module_init() and module_exit(), which can lead to
+>> confusion or ambiguity when reading System.map, crashes/oops/bugs,
+>> or an initcall_debug log.
+>>
+>> Give each of these init and exit functions unique driver-specific
+>> names to eliminate the anonymous names.
+>>
+>> Example 1: (System.map)
+>>  ffffffff832fc78c t init
+>>  ffffffff832fc79e t init
+>>  ffffffff832fc8f8 t init
+>>
+>> Example 2: (initcall_debug log)
+>>  calling  init+0x0/0x12 @ 1
+>>  initcall init+0x0/0x12 returned 0 after 15 usecs
+>>  calling  init+0x0/0x60 @ 1
+>>  initcall init+0x0/0x60 returned 0 after 2 usecs
+>>  calling  init+0x0/0x9a @ 1
+>>  initcall init+0x0/0x9a returned 0 after 74 usecs
 > 
-> I guess it's wrong wording in the last paragraph. It's not safe, but it's
-> _required_ since HW doesn't follow PCI specification that clearly says:
-> "MSI, MSI-X, and INTx are mutually exclusive".
+> LGTM.
+> 
+> Should I route this through the netfilter tree?
 
-I agree there's a defect in these SB600 devices.  My guess is that
-PCI_COMMAND_INTX_DISABLE actually disables both INTx and MSI, when
-it's only supposed to disable INTx.
+Yes, please.
+Thanks.
 
-I'm pretty sure the spec doesn't actually require software to set
-Interrupt Disable when enabling MSI, since MSI was added in PCI r2.2,
-which included this text in sec 6.8.2:
+> 
+>> Fixes: f587de0e2feb ("[NETFILTER]: nf_conntrack/nf_nat: add H.323 helper port")
+>> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+>> Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+>> Cc: Jozsef Kadlecsik <kadlec@netfilter.org>
+>> Cc: Florian Westphal <fw@strlen.de>
+>> Cc: netfilter-devel@vger.kernel.org
+>> Cc: coreteam@netfilter.org
+>> Cc: "David S. Miller" <davem@davemloft.net>
+>> Cc: Jakub Kicinski <kuba@kernel.org>
+>> Cc: netdev@vger.kernel.org
+>> ---
+>>  net/ipv4/netfilter/nf_nat_h323.c |    8 ++++----
+>>  1 file changed, 4 insertions(+), 4 deletions(-)
+>>
+>> --- lnx-517-rc8.orig/net/ipv4/netfilter/nf_nat_h323.c
+>> +++ lnx-517-rc8/net/ipv4/netfilter/nf_nat_h323.c
+>> @@ -580,7 +580,7 @@ static struct nf_ct_helper_expectfn call
+>>  };
+>>  
+>>  /****************************************************************************/
+>> -static int __init init(void)
+>> +static int __init nf_nat_h323_init(void)
+>>  {
+>>  	BUG_ON(set_h245_addr_hook != NULL);
+>>  	BUG_ON(set_h225_addr_hook != NULL);
+>> @@ -607,7 +607,7 @@ static int __init init(void)
+>>  }
+>>  
+>>  /****************************************************************************/
+>> -static void __exit fini(void)
+>> +static void __exit nf_nat_h323_fini(void)
+>>  {
+>>  	RCU_INIT_POINTER(set_h245_addr_hook, NULL);
+>>  	RCU_INIT_POINTER(set_h225_addr_hook, NULL);
+>> @@ -624,8 +624,8 @@ static void __exit fini(void)
+>>  }
+>>  
+>>  /****************************************************************************/
+>> -module_init(init);
+>> -module_exit(fini);
+>> +module_init(nf_nat_h323_init);
+>> +module_exit(nf_nat_h323_fini);
+>>  
+>>  MODULE_AUTHOR("Jing Min Zhao <zhaojingmin@users.sourceforge.net>");
+>>  MODULE_DESCRIPTION("H.323 NAT helper");
 
-  System configuration software sets [the MSI Enable] bit to enable
-  MSI. ...  Once enabled, a function is prohibited from using its
-  INTx# pin (if implemented) to request service (MSI and INTx# are
-  mutually exclusive).
-
-and Interrupt Disable was added later, in PCI r2.3, with no mention of
-a connection with MSI.  All the specs from PCI r2.2 to PCIe r6.0
-include the text above about not using INTx# if MSI or MSI-X is
-enabled, but that's not the same as requiring software to set
-Interrupt Disable.  Linux has set Interrupt Disable when enabling MSI
-ever since MSI support was added [1], so I would hesitate to change
-that even though I don't think it's required.
-
-What I don't like about PCI_DEV_FLAGS_MSI_INTX_DISABLE_BUG is that it
-changes the generic code path in a sort of random way, i.e., this
-device becomes yet another special case in how we handle Interrupt
-Disable.
-
-What would you think about just setting pdev->no_msi instead, so we
-don't try to use MSI at all on these devices?  I think that's what we
-did before 306c54d0edb6.
-
-[1] https://lore.kernel.org/all/200310032215.h93MFnjT005788@snoqualmie.dp.intel.com/ (search for PCI_COMMAND_INTX_DISABLE)
+-- 
+~Randy
