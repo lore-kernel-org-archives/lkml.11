@@ -2,163 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30FC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:35:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54A83C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:37:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235926AbiCQPgb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 11:36:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51122 "EHLO
+        id S235948AbiCQPhu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 11:37:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235937AbiCQPgX (ORCPT
+        with ESMTP id S234018AbiCQPhq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 11:36:23 -0400
-Received: from de-smtp-delivery-102.mimecast.com (de-smtp-delivery-102.mimecast.com [194.104.109.102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E2FE1877D4
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 08:35:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
-        t=1647531304;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ak7+Mb4/2OUTc99v/UPWVXrJeIedZsru4FwBXvrIXHY=;
-        b=PLoKT7WinShVmAcYtDWA5e9+31zVnw/rm0bLxkf0/m493AL6CfhGZFIxQw4Q1AYlFMPbK8
-        oLEtW5XNgxZNix9lieGFM+S8N5P7HH5EfiSkla/sajWoyxgdwC74VH+NVgAVxknun3JxSj
-        8Iz71gUtA2CrzF9SI5XoCqB9kiYjlqk=
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com
- (mail-db3eur04lp2050.outbound.protection.outlook.com [104.47.12.50]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- de-mta-31-mAx8KMb6Oxi4L72o6fiShg-1; Thu, 17 Mar 2022 16:35:03 +0100
-X-MC-Unique: mAx8KMb6Oxi4L72o6fiShg-1
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ep9gdM9nrGPK+zftLjqpv6h1q4M5k0Ag8AbVXYAsVvdoY0Lo05/TbJAn532e8y3jwpxJo7nEzt1bjwOwrzRYFJsQh/B+VgO+ORt9VXGlzybNQPCgJU6ksng5J4s4w6gSS37ezTx6kNJREshWr7+qzoWEnE6qMX0tf5vkdBAd+ekPR60apneKETxHb3mrbssL14Lt7qoK6zHc7RxpPgU0WyXMJskbeyAAdbdZDZR2Ak4acw7etky1faxxRQUrpWO5f8B2Ke+MEik6zwdJKSWS5iCwrR1JG0L2EuHcVNTPfMObRBs+HM4wX2g8kabOXBvGGhwFiBtUnOpqWVcsummV0A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ak7+Mb4/2OUTc99v/UPWVXrJeIedZsru4FwBXvrIXHY=;
- b=Lu9+v7oAxvKRZ7ZS/QZ7twLUOm6LdZY67JACW2YhzEq5LHBodMdldTjeEeS6b7/b9VVCwtUdTKj+9UkbFBRa9h1qmmyVb2e4VORPhSWorGzw0epaHl43W7K/A4472u3ygAYCql/Yb/m25wVr59oUXu0Vf9kvGNFfzkYOPhPkv8rN7FQO0HAodVMotlQ5rFjDaWm6XhS/los6TcDeoX7mYL9IWIk2FsmQdIHdxMjugeIdhy9+NpNluI0q7xzEgBCIVJ/Kw373YsZED+6WwKk0oyFXdWumyRHNnnGZyZkxIp7w0c7zG4CAY4TPH2X0SLky8NbGNhSv1lWmg0ebeY+AgQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
- dkim=pass header.d=suse.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=suse.com;
-Received: from AM5PR04MB3089.eurprd04.prod.outlook.com (2603:10a6:206:b::28)
- by AM0PR04MB4836.eurprd04.prod.outlook.com (2603:10a6:208:cd::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.17; Thu, 17 Mar
- 2022 15:35:01 +0000
-Received: from AM5PR04MB3089.eurprd04.prod.outlook.com
- ([fe80::14d7:55aa:6af:72d7]) by AM5PR04MB3089.eurprd04.prod.outlook.com
- ([fe80::14d7:55aa:6af:72d7%6]) with mapi id 15.20.5081.017; Thu, 17 Mar 2022
- 15:35:01 +0000
-Message-ID: <bb6aefcf-92aa-ef41-27de-1e3e0b227761@suse.com>
-Date:   Thu, 17 Mar 2022 08:34:55 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH] scsi:libiscsi: remove unnecessary memset in
- iscsi_conn_setup
-Content-Language: en-US
-To:     Wenchao Hao <haowenchao@huawei.com>,
-        Chris Leech <cleech@redhat.com>,
-        "James E . J . Bottomley" <jejb@linux.ibm.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        open-iscsi@googlegroups.com, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Zhiqiang Liu <liuzhiqiang26@huawei.com>, Wu Bo <wubo40@huawei.com>,
-        linfeilong@huawei.com
-References: <20220317150116.194140-1-haowenchao@huawei.com>
-From:   Lee Duncan <lduncan@suse.com>
-In-Reply-To: <20220317150116.194140-1-haowenchao@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AS8PR04CA0130.eurprd04.prod.outlook.com
- (2603:10a6:20b:127::15) To AM5PR04MB3089.eurprd04.prod.outlook.com
- (2603:10a6:206:b::28)
+        Thu, 17 Mar 2022 11:37:46 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3603020A955;
+        Thu, 17 Mar 2022 08:36:29 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id yy13so11574329ejb.2;
+        Thu, 17 Mar 2022 08:36:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=TVn5dRq4Q2f2mDB25LghomZuVFKBVotFIBV9iK80cMY=;
+        b=g8bOl2TeTGUk2xJWTqymUR4Iy78hgvu3Od0Vte65QgxzOzCqWoTx+oxtxqoILuxUuG
+         N1I4MYcFIh5+JJHLpCIYlJpYQe9E1CXAQc400cY70WvVMX2ltU35JH+PWboJRfCk/vOU
+         555qV0STdAaX04ujNEsdizS7yYjNXOftAJ9uzu+1awFPftTOX4d6QFMy7znFwSav1FwC
+         85z8GhR3JJxttcmifL7BPtFsyOzoSfrZG1wLPC4n5y/TI6R2mYJhEkTyDxlsYvBDlW6c
+         1CKxEuXC5crBqrOJav9hTjoNsJReAVrL0bpC4/oYB4hZp7CLvRy09pFwIYG/hj7pyUhd
+         wXMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TVn5dRq4Q2f2mDB25LghomZuVFKBVotFIBV9iK80cMY=;
+        b=6RHYzt/3T6VP+nmOuvdQslQkRhpi7KE6jXn5vFPfmShYTKVAW+2m1XnMnJ+ovTgzuF
+         f5teY5pCIgos20z7dHACQB1KyGz0f4jEY70rdt0XHAzxEgDqug799yiwsQplLsHLwn5x
+         2CRVvSLNCfrXJ5GO2Y17vhlGre10o2c2qheqCIfjsOKZdP8POegDmc82W0AQPW8iDwzK
+         1lBPQ8yvtYs3QLPa9Xcw5VGh1s7VRiT/pPnQFz6dXrXBQWXQl11MADIMGLDRNZ4fd2zb
+         f8pkdB2Q4WuEQy1lU4q0pdOTo1SiX9K6jd8Wy5l9x6xanYrGR0vnySJJmAFjGfaZNc2n
+         57Bw==
+X-Gm-Message-State: AOAM532qXzP6wIHdbNRm89lOYsomKo94BjkYYbdrU9L1lQY/GBD/2uKH
+        grOXt/UF15T1C7pp10U/LkU=
+X-Google-Smtp-Source: ABdhPJz2Et99ZeBW2NDUki3je6YA4m4DGJwln6jslvIbG+6DKyz3FSjVNWRUaRvC5soY47CBS4QseA==
+X-Received: by 2002:a17:907:9706:b0:6db:566a:4408 with SMTP id jg6-20020a170907970600b006db566a4408mr5005975ejc.374.1647531387471;
+        Thu, 17 Mar 2022 08:36:27 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id t7-20020a1709063e4700b006da6357b1c0sm2521561eji.196.2022.03.17.08.36.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Mar 2022 08:36:26 -0700 (PDT)
+Date:   Thu, 17 Mar 2022 17:36:25 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Hans Schultz <schultz.hans@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB
+ implementation
+Message-ID: <20220317153625.2ld5zgtuhoxbcgvo@skbuf>
+References: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
+ <20220310142320.611738-4-schultz.hans+netdev@gmail.com>
+ <20220310142836.m5onuelv4jej5gvs@skbuf>
+ <86r17495gk.fsf@gmail.com>
+ <20220316233447.kwyirxckgancdqmh@skbuf>
+ <86lex9hsg0.fsf@gmail.com>
+ <YjNDgnrYaYfviNTi@lunn.ch>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5b63c3ef-087e-4c2b-7e64-08da082bb339
-X-MS-TrafficTypeDiagnostic: AM0PR04MB4836:EE_
-X-Microsoft-Antispam-PRVS: <AM0PR04MB4836D5B7A8F435B536473A7ADA129@AM0PR04MB4836.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: iqZ5e91ih7lHZZbYaAfjqW+8LTmiVd1bUg0bKWoucgT5OmnjEDSCnEk4ty3aEsyon5Inr3wSrjUiasSfOnns1vScppVrziXTcOHnVbUE5NEZSuU9/pWVAwPQG7sNSv3aYEpaGwJ8BzGuuHIUVmWCo+9DajFbMZIr7fbeHLpL+je6Poy4dzkpgvYTZFhHn3kFeGs9zjdpPHw2m3Ktzg/uS3i1HWWds4kovBbJjFB/IDdT1fVATxw+er6JoPsI2ZekdLT8jshmgcn3tPIQrH3v7BfO96TYM9ruXEl2ZGOrnzZ1pef2sXMR17F4VpvtI2VD0spirnDteGF/t8NRAfwsjZVZp9k0Ts5VoRCVAie9qcLHyi9uO1emTzFWz2c8ezHv1mP7gNEV9e954R1M+YuBxtzUEzfMUnAQqBArSn6jbsEuC+xFJ70Gjv8KaOBgtqdsZFGmomzxcqfkjBQUk8Yy9wv/9TJy0AjeLUZC5BJSJ04d0Ta1f06ozR5Ae2wti0+OaB7Mv8jAsnFPDrPcXiMmt3Yk5eQKhd0dN01p6eFzpdocYj4FR8o85YIhO6RnrvS1sckdK8fxs48GEBuyb9hio38xTCbs153647CVYb4tXKPgCjZaZJcB7SvTYOuawZQR+zwfTEbF7Ihck9EzMRI/VIRU7SjSdeYE4y5dtQ4X3ULAYGUmR22lxHxpjG8K4YGxIHsQi0sGsGLri/jZJieKnADX4G4mVP9CEDgoG0ARkDc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM5PR04MB3089.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(54906003)(110136005)(2906002)(86362001)(508600001)(83380400001)(6486002)(31696002)(4744005)(31686004)(316002)(2616005)(5660300002)(7416002)(6666004)(6512007)(36756003)(6506007)(53546011)(66946007)(66556008)(66476007)(4326008)(8676002)(186003)(26005)(8936002)(38100700002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MTVJdE9zY2g5b3ZCM05NK2hRRlErWUlaMTJCZTZkdTFZRzMxWk5ydjBOaTRs?=
- =?utf-8?B?a3NXRmc2VjJLVEF3a3BQa0ZrQ2RKdGIzZDBOeGJnVUN5cCtNYVFQL3c0b21R?=
- =?utf-8?B?TWhIMTI3dzVRUW0raVcwVnZ5NUpyQi96UEhuQXZMSW94d25GTUpMZWVVY2s0?=
- =?utf-8?B?S1lEeFZiSW14S2xCU0N5M2pqS21kNFdtbU1qdWNNOVdSK3ZjWG1hU3dFcWUr?=
- =?utf-8?B?ZnZRVUg4L2REenJVbTAvaWZoSE53c1FtN2ROVzNNNXZLeHNCbWJCQnVhVm52?=
- =?utf-8?B?MHpja3pUd2VXQlB1RWwvQmNoaUxHTDAxU1puK3hWSWlLSDY4M1I4K3hvOGp0?=
- =?utf-8?B?UXJZUS9yRzFnOVZ5YW1oQ1dYdHRIY2tWcjk1dkNZSkg4SFBXeTBGTjNrZnlN?=
- =?utf-8?B?ZVZzRmJJcGVScFVwUnl6eTNUek40VUlnbWUwc213NExLRDZ6S1p0azBiMDFB?=
- =?utf-8?B?c25BeFhHeldwcEY5dnErd1U2VkliQnBxRGhESDJ1QVlvYjlDMmdJRnNQVk5a?=
- =?utf-8?B?dzIwYncxNmNhYURLV2NsVmZiQW44OWdnVXEwdm9ia25TSGlNK245ZDNkK29k?=
- =?utf-8?B?Yk1KUTZvRS93TlVBTmMzOURzMWtBMTVLc2NXN0RzNkhzTmNzbStTVkI5L2xR?=
- =?utf-8?B?cjVlTFlCb01oUC9xam12ZStFTEFXYUxmM0hzYVJ0UHBWSzB0RXJraHdjMlBI?=
- =?utf-8?B?R1cxUnVNeVZoVFM4MU4zYXNnc1NpWlVzeDQxSDV4Q05jR0IxeUlwc0J4aEgv?=
- =?utf-8?B?eWVUWGV2dXZDMHl2OG5ydjdFUGRoOE5TMWJ6RElWVnlyVkJITFR6VGJTa3l5?=
- =?utf-8?B?ZUhYeGVGeit0UStkODlCSVNLYnBxRk90SUZtb3RwQVd3RDNIb2N5LzU0Ynhs?=
- =?utf-8?B?OFlCeUVwemNiNjkwVXFVL2ozSmppc3FSN3l6UEhsZ1lQYzhrdm1WZGgyZW04?=
- =?utf-8?B?RWxnajVFOEdNd0VRYWxtbE9HSUs1UGQxTGIwUUdEMi82WlZYT3EySWVHUm1t?=
- =?utf-8?B?TnZyRGN2a21ZcUZDazJsbWp4VFM1QUowR0c5N2lTaWNBVC9iTGxFb2w0ZlRo?=
- =?utf-8?B?THdCbmFlVUJKOHZCOTJyTWd1YitUbkpIYk5zQmtuV1RPdWc0SkZ6WTV0NS81?=
- =?utf-8?B?S1dVS1M3enFjSmE5b2dxV1BHb1lSYTY1MVZaNDVMMXE4dXhvZkhjY1d5MjdQ?=
- =?utf-8?B?WEhJYVFDQjZZUlVvTjNFb0VJbml3Q1JHSTRqTnlKVXdaRXFaZUN3WDN4Z0pT?=
- =?utf-8?B?NDZiVkxqWHZZRnl2UVQvUXluMGkvcDRJbWtVYm5Bdzl4d21MMDhweVZqcHg4?=
- =?utf-8?B?VG1GaGtkdklZOTkrdzFBcUo5ZlJGTGUyS1Axd1hldW02NjM5UEhoa3FlbnJY?=
- =?utf-8?B?c0J3QlpMbGVVU3FmVjQwS0h4NGdrY2ROZVoveEorWklRVVZkV2h1T0UvYTJ5?=
- =?utf-8?B?V3pLWUJhMjFEWDc3L2M0OE1QZFByRWVOYkllNkp4RGk3cFRLTlpOWXJLRVEv?=
- =?utf-8?B?aWY4UlJhRWY3ejdSMG5DV0cvdzZsWnFOcDRkWTFERW9CTEJpd0IrYm56NHkx?=
- =?utf-8?B?SWd1SUZnMDNpK2IwUDBRNSt1bHoxdDVzZnlQRHRtUFFRVExPSWtGa2p1K05t?=
- =?utf-8?B?cEVveko0ZldTWmRKRytKWm5tT01LRkVoaTNDaTdtWWI0ZExSRExWeUhBbVNW?=
- =?utf-8?B?cGFxU3l5d1R5QUxLZmlNNzVIUDFQZEdqWC9Rd2dxWk9takJYZkFuZVk0N0VX?=
- =?utf-8?B?VTNmT0xMa2xuMHg0OGZBa1RqQzlLam9yWUl2VzlWODY2NU55QkZqcGRUQUhr?=
- =?utf-8?B?d0FEbldnUnBxbmtJSU1nL0hLcUVHT2F0bEkzQnJWQTJMa2RlYmR0Q0VvemJI?=
- =?utf-8?B?RENUZk5HZWovSDI2cHI3Tk01UWRNT1J5SDNDZFRUK3Qwc3Nqc202N20rQnY4?=
- =?utf-8?Q?F6NHEDq1+lFCtjEF/3k8fKeF+5YVqS7w?=
-X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5b63c3ef-087e-4c2b-7e64-08da082bb339
-X-MS-Exchange-CrossTenant-AuthSource: AM5PR04MB3089.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2022 15:35:01.1101
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZuCjvS4ayw1MjAbPfVGCV785+dEMml65Q5TRW8h55e2MUOWjf50uq0IYkLV+rhX/zElwGSO0/U/arOiqi1XXMQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4836
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YjNDgnrYaYfviNTi@lunn.ch>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/17/22 08:01, Wenchao Hao wrote:
-> iscsi_cls_conn is alloced by kzalloc(), the whole iscsi_cls_conn is
-> zero filled already including the dd_data. So it is unnecessary to
-> call memset again.
+On Thu, Mar 17, 2022 at 03:19:46PM +0100, Andrew Lunn wrote:
+> On Thu, Mar 17, 2022 at 09:52:15AM +0100, Hans Schultz wrote:
+> > On tor, mar 17, 2022 at 01:34, Vladimir Oltean <olteanv@gmail.com> wrote:
+> > > On Mon, Mar 14, 2022 at 11:46:51AM +0100, Hans Schultz wrote:
+> > >> >> @@ -396,6 +414,13 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
+> > >> >>  				    "ATU miss violation for %pM portvec %x spid %d\n",
+> > >> >>  				    entry.mac, entry.portvec, spid);
+> > >> >>  		chip->ports[spid].atu_miss_violation++;
+> > >> >> +		if (mv88e6xxx_port_is_locked(chip, chip->ports[spid].port))
+> > >> >> +			err = mv88e6xxx_switchdev_handle_atu_miss_violation(chip,
+> > >> >> +									    chip->ports[spid].port,
+> > >> >> +									    &entry,
+> > >> >> +									    fid);
+> > >> >
+> > >> > Do we want to suppress the ATU miss violation warnings if we're going to
+> > >> > notify the bridge, or is it better to keep them for some reason?
+> > >> > My logic is that they're part of normal operation, so suppressing makes
+> > >> > sense.
+> > >> >
+> > >> 
+> > >> I have been seeing many ATU member violations after the miss violation is
+> > >> handled (using ping), and I think it could be considered to suppress the ATU member
+> > >> violations interrupts by setting the IgnoreWrongData bit for the
+> > >> port (sect 4.4.7). This would be something to do whenever a port is set in locked mode?
+> > >
+> > > So the first packet with a given MAC SA triggers an ATU miss violation
+> > > interrupt.
+> > >
+> > > You program that MAC SA into the ATU with a destination port mask of all
+> > > zeroes. This suppresses further ATU miss interrupts for this MAC SA, but
+> > > now generates ATU member violations, because the MAC SA _is_ present in
+> > > the ATU, but not towards the expected port (in fact, towards _no_ port).
+> > >
+> > > Especially if user space decides it doesn't want to authorize this MAC
+> > > SA, it really becomes a problem because this is now a vector for denial
+> > > of service, with every packet triggering an ATU member violation
+> > > interrupt.
+> > >
+> > > So your suggestion is to set the IgnoreWrongData bit on locked ports,
+> > > and this will suppress the actual member violation interrupts for
+> > > traffic coming from these ports.
+> > >
+> > > So if the user decides to unplug a previously authorized printer from
+> > > switch port 1 and move it to port 2, how is this handled? If there isn't
+> > > a mechanism in place to delete the locked FDB entry when the printer
+> > > goes away, then by setting IgnoreWrongData you're effectively also
+> > > suppressing migration notifications.
+> > 
+> > I don't think such a scenario is so realistic, as changing port is not
+> > just something done casually, besides port 2 then must also be a locked
+> > port to have the same policy.
 > 
-> Signed-off-by: Wenchao Hao <haowenchao@huawei.com>
-> Reviewed-by: Wu Bo <wubo40@huawei.com>
-> Reviewed-by: Lee Duncan <lduncan@suse.com>
-> ---
->   drivers/scsi/libiscsi.c | 1 -
->   1 file changed, 1 deletion(-)
+> I think it is very realistic. It is also something which does not work
+> is going to cause a lot of confusion. People will blame the printer,
+> when in fact they should be blaming the switch. They will be rebooting
+> the printer, when in fact, they need to reboot the switch etc.
 > 
-> diff --git a/drivers/scsi/libiscsi.c b/drivers/scsi/libiscsi.c
-> index d09926e6c8a8..cf4211c6500d 100644
-> --- a/drivers/scsi/libiscsi.c
-> +++ b/drivers/scsi/libiscsi.c
-> @@ -3045,7 +3045,6 @@ iscsi_conn_setup(struct iscsi_cls_session *cls_session, int dd_size,
->   	if (!cls_conn)
->   		return NULL;
->   	conn = cls_conn->dd_data;
-> -	memset(conn, 0, sizeof(*conn) + dd_size);
->   
->   	conn->dd_data = cls_conn->dd_data + sizeof(*conn);
->   	conn->session = session;
+> I expect there is a way to cleanly support this, you just need to
+> figure it out.
 
-Reviewed-by: Lee Duncan <lduncan@suse.com>
+Hans, why must port 2 also be a locked port? The FDB entry with no
+destinations is present in the ATU, and static, why would just locked
+ports match it?
 
+> > The other aspect is that the user space daemon that authorizes catches
+> > the fdb add entry events and checks if it is a locked entry. So it will
+> > be up to said daemon to decide the policy, like remove the fdb entry
+> > after a timeout.
+
+When you say 'timeout', what is the moment when the timer starts counting?
+The last reception of the user space daemon of a packet with this MAC SA,
+or the moment when the FDB entry originally became unlocked?
+
+I expect that once a device is authorized, and forwarding towards the
+devices that it wants to talk to is handled in hardware, that the CPU no
+longer receives packets from this device. In other words, are you saying
+that you're going to break networking for the printer every 5 minutes,
+as a keepalive measure?
+
+I still think there should be a functional fast path for authorized
+station migrations.
+
+> > > Oh, btw, my question was: could you consider suppressing the _prints_ on
+> > > an ATU miss violation on a locked port?
+> > 
+> > As there will only be such on the first packet, I think it should be
+> > logged and those prints serve that purpose, so I think it is best to
+> > keep the print.
+> > If in the future some tests or other can argue for suppressing the
+> > prints, it is an easy thing to do.
+> 
+> Please use a traffic generator and try to DOS one of your own
+> switches. Can you?
+> 
+> 	  Andrew
