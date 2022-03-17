@@ -2,71 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 366DFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 11:35:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF56FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 11:40:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233062AbiCQLhE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 07:37:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47506 "EHLO
+        id S233064AbiCQLlW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 07:41:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230054AbiCQLhB (ORCPT
+        with ESMTP id S230266AbiCQLlU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 07:37:01 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34BEC11F7AB
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 04:35:44 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647516942;
+        Thu, 17 Mar 2022 07:41:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7D7061E3E38
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 04:40:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647517202;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Dp8FfPTLGmw/K6M4b2j41g72cLrWRUo3xM+TgpBkEBI=;
-        b=3tUuRBCPOPWFpMsj6hjejl0U+MC+zxSoP4no87AYQEnGya3NmxUKD9Cy+e06EahpXcX/qk
-        lGgoLfa42h8il4bd1ye4Jzz4bNfmDz8/lQlw5VLi2kmWMuR2tPVW2ZWp8nr0B3/7uF8oCM
-        wsTXIyB5K7TwsoHpiqdAkO004TIPh7ZqUyfJbVhMRDN1tSaeVVFxPz5agD/5cZagcAJVwN
-        WCopny/dKeoRS8D/dhbq1PhEsvQlNtoN8OBGIpzdTHEswpoIvqfgegLPs06CDlaeV7aQh8
-        CzlsujUq2CSbnImftI+rMCU2EfEzARKD7YpJAP0aPj9UX5eZ7vuM+0o/f+iC/Q==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647516942;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Dp8FfPTLGmw/K6M4b2j41g72cLrWRUo3xM+TgpBkEBI=;
-        b=EPea7RRIWvmeFK6RMiPGtI28PqqwRMmeoWG6lb8t8SCXrqMEjVzWcyt91NfBvTrDEnLGem
-        YVRzkQ8lpoaqBSDw==
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@intel.com,
-        luto@kernel.org, peterz@infradead.org
-Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: Re: [PATCHv6 11/30] x86/tdx: Handle in-kernel MMIO
-In-Reply-To: <20220316020856.24435-12-kirill.shutemov@linux.intel.com>
-References: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
- <20220316020856.24435-12-kirill.shutemov@linux.intel.com>
-Date:   Thu, 17 Mar 2022 12:35:41 +0100
-Message-ID: <87sfrg24mq.ffs@tglx>
+        bh=S0GPDzZRGu9yOKrwYapaocFp6V53jwtR479N3pP5zYg=;
+        b=OP8+KWPZrCOIacl3z4uPi9Hn9ozS6CbZSTOk19HPcWpbFk33G7jR98o/TFGt+UfOobhnr9
+        bF06Gp0lm38FRZbsVBro3b7EvUfr+yg4ltrjy7W05OoJ6bXXfvWUmD1Gsy006K/Krd3nbw
+        WCSG+5p2wIkoVGS7HqYQOhsZa6F1AEA=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-135-Mtfvk6ZBMcikn4IfGhTu5w-1; Thu, 17 Mar 2022 07:40:00 -0400
+X-MC-Unique: Mtfvk6ZBMcikn4IfGhTu5w-1
+Received: by mail-wm1-f71.google.com with SMTP id q65-20020a1c4344000000b0038c7c65e120so327392wma.7
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 04:40:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=S0GPDzZRGu9yOKrwYapaocFp6V53jwtR479N3pP5zYg=;
+        b=qJoLl5ZWpe2KoKChPP+aHOWjFoTorHDSWtFgk1QvHbzkEllfPlHxu0b5xrVLYynakv
+         4iTkqzWrF8J5zslSoU1e79jR89OL6EQxiLDw6H0iEN1+TuB2HrJQopW2UgIF0YJiZBuv
+         XAAza+sXXes7IZjL2UblkzufRIyATpZJge5MGWqp2ZjqWPpw6hSHOmsxi6vXz7B3uNxq
+         SK6vBneOAg8FY2enks447iMt7oBE78MWWtfObydN6f34Zd0nwTy/mcNwYxCIKZqwD/Cm
+         FrKUkTy0p/BaSNYaspsst7MvFRrl/onlDJJPZDMVAttgVHCTBpTs2oDtosUgpyhdb1zN
+         XiRw==
+X-Gm-Message-State: AOAM532P86gV3e4Dw2UTqb0WdYn3SOoAAk2GulJiuYgxrKZuRc6YzXTF
+        Xgpmq+LG9dlvBxbFgKl1zlVZCQy3D8WXCPCjdPSxkRTAbDEojgeNTa+9/d6cy/FcTnwcJGhcp2l
+        a1wD3PCRkG1v9TvceKvT+Vs/2
+X-Received: by 2002:a5d:4f12:0:b0:203:f0cc:da04 with SMTP id c18-20020a5d4f12000000b00203f0ccda04mr563363wru.248.1647517199314;
+        Thu, 17 Mar 2022 04:39:59 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwJQe+TzlCkwrcKAsgJu9Uxvo9kmJPknXmxL33nxErHnUYSKMO7U0NlsOT7yuGusesX59ASrA==
+X-Received: by 2002:a5d:4f12:0:b0:203:f0cc:da04 with SMTP id c18-20020a5d4f12000000b00203f0ccda04mr563342wru.248.1647517199097;
+        Thu, 17 Mar 2022 04:39:59 -0700 (PDT)
+Received: from [192.168.1.102] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id m185-20020a1ca3c2000000b0038c836a5c13sm224338wme.20.2022.03.17.04.39.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Mar 2022 04:39:58 -0700 (PDT)
+Message-ID: <f94c0f44-36f1-e1a9-5963-5da0bafb8c90@redhat.com>
+Date:   Thu, 17 Mar 2022 12:39:57 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 0/5] drm: Fix monochrome conversion for sdd130x
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+References: <20220317081830.1211400-1-geert@linux-m68k.org>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <20220317081830.1211400-1-geert@linux-m68k.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16 2022 at 05:08, Kirill A. Shutemov wrote:
-> This approach will be adopted in the future, removing the bulk of
-> MMIO #VEs. The #VE-based MMIO will remain serving non-virtio use cases.
->
-> Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> Reviewed-by: Andi Kleen <ak@linux.intel.com>
-> Reviewed-by: Tony Luck <tony.luck@intel.com>
-> Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Hello Geert,
 
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+On 3/17/22 09:18, Geert Uytterhoeven wrote:
+>         Hi all,
+> 
+> This patch series contains fixes and improvements for the XRGB888 to
+> monochrome conversion in the DRM core, and for its users.
+> 
+> This has been tested on an Adafruit FeatherWing 128x32 OLED, connected
+> to an OrangeCrab ECP5 FPGA board running a 64 MHz VexRiscv RISC-V
+> softcore, using a text console with 4x6, 7x14 and 8x8 fonts.
+> 
+> Thanks!
+> 
+> Geert Uytterhoeven (5):
+>   drm/format-helper: Rename drm_fb_xrgb8888_to_mono_reversed()
+>   drm/format-helper: Fix XRGB888 to monochrome conversion
+>   drm/ssd130x: Fix rectangle updates
+>   drm/ssd130x: Reduce temporary buffer sizes
+>   drm/repaper: Reduce temporary buffer size in repaper_fb_dirty()
+>
+
+Thanks for re-spinning this series and again for fixing my bugs!
+
+I pushed patches 1-4 to drm-misc (drm-misc-next) but left patch 5 since
+would like to give Noralf the opportunity to review/test before pushing.
+
+By the way, you should probably request commit access to the drm-misc tree:
+
+https://drm.pages.freedesktop.org/maintainer-tools/commit-access.html
+
+-- 
+Best regards,
+
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
+
