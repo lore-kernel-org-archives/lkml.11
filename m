@@ -2,149 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 769E7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:53:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10E3AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:53:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237712AbiCQSyc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 14:54:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34204 "EHLO
+        id S237696AbiCQSyu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 14:54:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232822AbiCQSyK (ORCPT
+        with ESMTP id S237730AbiCQSyo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 14:54:10 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74E5E223237;
-        Thu, 17 Mar 2022 11:52:53 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id m12so7666677edc.12;
-        Thu, 17 Mar 2022 11:52:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gzPNpJdEUpw3mjUuvvjyqVBEBTyj2FECQV6z8PHyMUo=;
-        b=o8xcG4Q+J5j5DHCk14HT66nrZU0u6AZoeh/Aw+tjG1dcVctOCVXQEOFDdRTJXLRJRR
-         zhPKcAj1o02tj+2vcRXRPR2Q44pFKEIX0pe7g2Ex3Q+cFcg8wfcQnZS6g0YSwH3JmLj7
-         4d9Nii3rvYgFt6yAABgUxDloQQo2XDDOppA9jTFKk3z7I3/fVH5w+h46mFevPqG1NvqG
-         HroOsgPHDweuLvtuhPTZP9QH35NSUL9nniqT31QUIR0al8skfmpm59tzwywtVvN0B++l
-         qkoekCxEe/+IbL7nzeo5BYQras2tEbtT5XUYcwCP/BeEHVIWKly9fFRy3ypfIGmVIrio
-         VJCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gzPNpJdEUpw3mjUuvvjyqVBEBTyj2FECQV6z8PHyMUo=;
-        b=bRNHHp7FV0Y1BBQi2qdPc/sqh+407xVVDCmNET3FHY0NZdccaohp5U3l0g0x0SY9Cd
-         sGgpR5dKXRoU3B3xfot/UnOOap5lU4feMlYCJjXKZEx/U+jBnPkhNJEa9jtj2pZiKRuB
-         9BwcyJPLCX3X2/TPNqnnLr2TizZzkJ+BhVihX2/avSbVNDngsuNIKW5oZmPaAV+5wdfu
-         l1EV35HLu0ibcbOkx8SshrPn7Lze0hBm3WkAuleEd/v3pozc85VARZfn9jOOiL9uufSe
-         m6KnlI8ysTwrbcaOUzs73EJhc2UaDUUGuTMJF1HnascgY4AyQLmUeUfu7tTBkXJV5NpX
-         gAFQ==
-X-Gm-Message-State: AOAM533J9qsTaCj+5ESr66mW2D6E7tWlAGlhle74I1dDaT7l0nH/ZV/p
-        patVwT7aoazIa92esmQtxLo=
-X-Google-Smtp-Source: ABdhPJxGrv4Uv97ZSvQ2Qc4XMAXAd/7yWAQZiZ3RUMtorHOVIudOPLE7TAOqKap7BPA+lba5yVEbBg==
-X-Received: by 2002:a05:6402:3483:b0:418:fb7c:8d23 with SMTP id v3-20020a056402348300b00418fb7c8d23mr4175401edc.249.1647543171871;
-        Thu, 17 Mar 2022 11:52:51 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id f4-20020a170906738400b006df8b6787afsm1811219ejl.13.2022.03.17.11.52.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Mar 2022 11:52:51 -0700 (PDT)
-Date:   Thu, 17 Mar 2022 20:52:49 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Jianbo Liu <jianbol@nvidia.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, rajur@chelsio.com,
-        claudiu.manoil@nxp.com, sgoutham@marvell.com, gakula@marvell.com,
-        sbhatta@marvell.com, hkelam@marvell.com, saeedm@nvidia.com,
-        leon@kernel.org, idosch@nvidia.com, petrm@nvidia.com,
-        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
-        simon.horman@corigine.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        baowen.zheng@corigine.com, louis.peens@netronome.com,
-        peng.zhang@corigine.com, oss-drivers@corigine.com, roid@nvidia.com
-Subject: Re: [PATCH net-next v3 1/2] net: flow_offload: add tc police action
- parameters
-Message-ID: <20220317185249.5mff5u2x624pjewv@skbuf>
-References: <20220224102908.5255-1-jianbol@nvidia.com>
- <20220224102908.5255-2-jianbol@nvidia.com>
- <20220315191358.taujzi2kwxlp6iuf@skbuf>
- <YjM2IhX4k5XHnya0@shredder>
+        Thu, 17 Mar 2022 14:54:44 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A060412D0A5
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 11:53:15 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 3EE5C1F38E;
+        Thu, 17 Mar 2022 18:53:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1647543194; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sg6FmafrPdR1KtYNg/JwS0y/weg8uwWLi0b4wB9DaB8=;
+        b=CW+6aHqwJGO16ayz+hSnPGa0OPbIHWsUKut3I4UlP3B9++g8YafKAZteQjBFUdF6bEJfoH
+        hpy6Ebcd2p94U4iCH9Lc1apwE77b13nAy1ZvtBdnmBxqwOdyTaVCwhE1JXtYPQ4Uq7QOy7
+        s1DPlV+jNFXxC91mvrPiXyLcTnNioUY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1647543194;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sg6FmafrPdR1KtYNg/JwS0y/weg8uwWLi0b4wB9DaB8=;
+        b=o8CjYA0ITGwkIvMJKFrEfzWkeowZgmhKOTbhiqLw0rKG8pL+AQyrQ9lPQ17fvlbiiikol3
+        lPAUcMEz8wfNLADQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0DB7A13BB5;
+        Thu, 17 Mar 2022 18:53:14 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id G5OlApqDM2IkKwAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Thu, 17 Mar 2022 18:53:14 +0000
+Message-ID: <34856139-e2db-4d34-07b5-c0af2bdf44f4@suse.cz>
+Date:   Thu, 17 Mar 2022 19:53:13 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YjM2IhX4k5XHnya0@shredder>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v2 1/4] [PATCH 1/4] mm: refactor of vma_merge()
+Content-Language: en-US
+To:     =?UTF-8?Q?Jakub_Mat=c4=9bna?= <matenajakub@gmail.com>,
+        linux-mm@kvack.org
+Cc:     patches@lists.linux.dev, linux-kernel@vger.kernel.org,
+        mhocko@kernel.org, mgorman@techsingularity.net,
+        willy@infradead.org, liam.howlett@oracle.com, hughd@google.com,
+        kirill@shutemov.name, riel@surriel.com, rostedt@goodmis.org,
+        peterz@infradead.org
+References: <20220311174602.288010-1-matenajakub@gmail.com>
+ <20220311174602.288010-2-matenajakub@gmail.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220311174602.288010-2-matenajakub@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 03:22:42PM +0200, Ido Schimmel wrote:
-> > I don't know why just now, but I observed an apparent regression here
-> > with these commands:
-> > 
-> > root@debian:~# tc qdisc add dev swp3 clsact
-> > root@debian:~# tc filter add dev swp3 ingress protocol ip flower skip_sw ip_proto icmp action police rate 100Mbit burst 10000
-> > [   45.767900] tcf_police_act_to_flow_act: 434: tc_act 1
-> > [   45.773100] tcf_police_offload_act_setup: 475, act_id -95
-> > Error: cls_flower: Failed to setup flow action.
-> > We have an error talking to the kernel, -1
-> > 
-> > The reason why I'm not sure is because I don't know if this should have
-> > worked as intended or not. I am remarking just now in "man tc-police"
-> > that the default conform-exceed action is "reclassify".
-> > 
-> > So if I specify "conform-exceed drop", things are as expected, but with
-> > the default (implicitly "conform-exceed reclassify") things fail with
-> > -EOPNOTSUPP because tcf_police_act_to_flow_act() doesn't handle a
-> > police->tcf_action of TC_ACT_RECLASSIFY.
-> > 
-> > Should it?
+On 3/11/22 18:45, Jakub Matěna wrote:
+> Refactor vma_merge() to make it shorter, more understandable and
+> suitable for tracing of successful merges that are made possible by
+> following patches in the series. Main change is the elimination of code
+> duplicity in the case of merge next check. This is done by first doing
+> checks and caching the results before executing the merge itself. Exit
+> paths are also unified.
 > 
-> Even if tcf_police_act_to_flow_act() handled "reclassify", the
-> configuration would have been rejected later on by the relevant device
-> driver since they all support "drop" for exceed action and nothing else.
+> Signed-off-by: Jakub Matěna <matenajakub@gmail.com>
 
-This is correct, but currently, the error is:
+Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
 
-Error: cls_flower: Failed to setup flow action.
-We have an error talking to the kernel, -1
-
-I'd appreciate if the error was instead:
-
-Error: mscc_ocelot: Offload not supported when exceed action is not drop.
-
-which is basically what Jianbo was trying to achieve when he added the
-policer_validate() functions. At least I'd know what's wrong. No?
-
-> I don't know why iproute2 defaults to "reclassify", but the
-> configuration in the example does something different in the SW and HW
-> data paths. One ugly suggestion to keep this case working it to have
-> tcf_police_act_to_flow_act() default to "drop" and emit a warning via
-> extack so that user space is at least aware of this misconfiguration.
-
-I don't want to force a reinterpretation of "reclassify" just to make
-something that used to work by mistake continue to work. It sucks to
-have to adapt, but not being able to make progress because of such
-things sucks even more.
-
-I'd just like the 'reclassify' action to be propagated in some reasonable
-way to flow offload, considering that at the moment the error is quite cryptic.
-
-> > > +		if (act_id < 0)
-> > > +			return act_id;
-> > > +
-> > > +		entry->police.exceed.act_id = act_id;
-> > > +
-> > > +		act_id = tcf_police_act_to_flow_act(p->tcfp_result,
-> > > +						    &entry->police.notexceed.extval);
-> > > +		if (act_id < 0)
-> > > +			return act_id;
-> > > +
-> > > +		entry->police.notexceed.act_id = act_id;
-> > > +
-> > >  		*index_inc = 1;
-> > >  	} else {
-> > >  		struct flow_offload_action *fl_action = entry_data;
-> > > -- 
-> > > 2.26.2
-> > > 
+It's a nice cleanup on its own. Removed duplication and reduced indentation
+levels helps.
