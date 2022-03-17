@@ -2,138 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECF54C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 22:45:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6BEFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 22:48:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229935AbiCQWqV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 18:46:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37006 "EHLO
+        id S229934AbiCQWtk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 18:49:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229623AbiCQWqT (ORCPT
+        with ESMTP id S229623AbiCQWth (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 18:46:19 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CAD5B29C960;
-        Thu, 17 Mar 2022 15:45:01 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 22HMbwbL028517;
-        Thu, 17 Mar 2022 17:37:58 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 22HMbuFG028514;
-        Thu, 17 Mar 2022 17:37:56 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Thu, 17 Mar 2022 17:37:56 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Bill Wendling <morbo@google.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Juergen Gross <jgross@suse.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>, llvm@lists.linux.dev,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-toolchains <linux-toolchains@vger.kernel.org>
-Subject: Re: [PATCH v5] x86: use builtins to read eflags
-Message-ID: <20220317223756.GM614@gate.crashing.org>
-References: <20220210223134.233757-1-morbo@google.com> <20220301201903.4113977-1-morbo@google.com> <CAGG=3QWh90r5C3gmTj9zxiJb-mwD=PGqGwZZTjAfyi1NCb1_9w@mail.gmail.com> <AC3D873E-A28B-41F1-8BF4-2F6F37BCEEB4@zytor.com> <CAGG=3QVu5QjQK8m2FWiYn-XQuVBjUGXcbznSbK22jVMB5GAutw@mail.gmail.com> <F5296439-4CA3-4F31-BD91-5ED1510BC382@zytor.com> <CAKwvOdkk-C8HMemKs4+yoxvNDgTLmvZG1rmwjVXBqhsQ-cED5g@mail.gmail.com> <CAHk-=whJfKN8Jag=8DS=pbZR3TY90znUOP6Km+TLRJ9dZEgNqw@mail.gmail.com> <CAGG=3QW2ey2w91TxqJ6tzfJOswhTce2e0QTW7kAWyvxeiO+VNg@mail.gmail.com>
-Mime-Version: 1.0
+        Thu, 17 Mar 2022 18:49:37 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A531193DE
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 15:48:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647557299; x=1679093299;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=1hFcDf8anW6AdGeLSuh4hbFU4tK/wR4GsB+WTgpOk1s=;
+  b=RB8HVqc180aUvHzsKvlbL86cy0d8qifsHU4eOKt3BD3UuUnMjlhYeh4F
+   wYh1kOUdM6+mDzJg7XcX+fm6rXEoKRJGr7YgNfKKpTk13p5m9MsBAWCyZ
+   KsW4VBc65klElNn0wIlXf0Tq5Fh6HiJAXfcohnIz8kDIIyNcqS3DWv0FD
+   I6VgRhyAa2CQIKr6Zl1TDXKTFFPEYpdb4yd3nH4loili85q/uSPV3bi63
+   cr1QacPlXCOltFZWz+mf/cKSGZ/hi/277b47i0VBJ01305lHQnw/JRIuY
+   dI4d8bFgcqWnqkgig6ZxpBqjChbc6ULBpFsi90oZPwRZ3mhUihVRrHF+l
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="236945510"
+X-IronPort-AV: E=Sophos;i="5.90,190,1643702400"; 
+   d="scan'208";a="236945510"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 15:48:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,190,1643702400"; 
+   d="scan'208";a="499011864"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga003.jf.intel.com with ESMTP; 17 Mar 2022 15:48:11 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id 5A4E8107; Fri, 18 Mar 2022 00:48:31 +0200 (EET)
+Date:   Fri, 18 Mar 2022 01:48:31 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, mingo@redhat.com,
+        bp@alien8.de, luto@kernel.org, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv6 15/30] x86/boot: Port I/O: allow to hook up alternative
+ helpers
+Message-ID: <20220317224831.ci7tb4lasg3xlgvr@black.fi.intel.com>
+References: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
+ <20220316020856.24435-16-kirill.shutemov@linux.intel.com>
+ <87czik22wk.ffs@tglx>
+ <20220317201054.5wdykfru5hhvukvd@black.fi.intel.com>
+ <c3b640aa-05a1-7706-0c0f-b3f75eee58c6@intel.com>
+ <2b91abe5-88bd-2941-d561-a8b0ad40f62b@intel.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAGG=3QW2ey2w91TxqJ6tzfJOswhTce2e0QTW7kAWyvxeiO+VNg@mail.gmail.com>
-User-Agent: Mutt/1.4.2.3i
+In-Reply-To: <2b91abe5-88bd-2941-d561-a8b0ad40f62b@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi!
-
-On Thu, Mar 17, 2022 at 12:45:30PM -0700, Bill Wendling wrote:
-> On Thu, Mar 17, 2022 at 11:52 AM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
-> > It is perhaps telling that the LLVM discussion I found seems to talk
-> > more about the performance impact, not about the fact that THE
-> > GENERATED CODE WAS WRONG.
-> >
-> I think that's a bit unfair. There seemed to be a general consensus
-> that the code was wrong and needed to be fixed. However, the compiler
-> is also expected to generate the most performant code that it can.
-
-I think Linus' point is that correctness is required, and performance
-is just a nice to have.  I don't think you disagree, I sure don't :-)
-
-> > In fact, gcc pretty much documents that "cc" clobbers doesn't do
-> > anything on x86, and isn't needed. It just assumes that the arithmetic
-> > flags always get clobbered, because on x86 that's pretty much the
-> > case. They have sometimes been added for documentation purposes in the
-> > kernel, but that's all they are.
-
-GCC on x86 clobbers the arithmetic flags in every asm.  Long ago the x86
-port still used CC0 (an internal representation of the condition code
-flags), which acted effectively like clobbering the flags on every
-instruction (CC0 will finally be gone in GCC 12 btw).  The x86 port
-stopped using CC0 (and so started using the automatic "cc" clobber, to
-keep old inline asm working) in 1999 :-)
-
-"cc" is a valid clobber on every port, but it doesn't necessarily do
-anything, and if it does, it does not necessarily correspond to any more
-specific register, neither to a GCC register nor to a hardware register.
-It also is not really useful for generic code, since the asm itself is
-by nature pretty much target-specific :-)
-
-> > But the whole "you can't move _other_ things that you don't even
-> > understand around this either" is equally important. A "disable
-> > interrupts" could easily be protecting a "read and modify a CPU MSR
-> > value" too - no real "memory" access necessarily involved, but
-> > "memory" is the only way we can tell you "don't move this".
-> >
-> And yet that's not guaranteed. From
-> https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html:
+On Thu, Mar 17, 2022 at 01:23:12PM -0700, Dave Hansen wrote:
+> On 3/17/22 13:20, Dave Hansen wrote:
+> > You keep the preprocessor away from things like
+> > 
+> > 	foo.inb = bar;
+> > 
+> > with:
+> > 
+> > 	#define inb(x) pio_ops.inb(x)
 > 
-> ```
-> Note that the compiler can move even volatile asm instructions
-> relative to other code, including across jump instructions. For
-> example, on many targets there is a system register that controls the
-> rounding mode of floating-point operations. Setting it with a volatile
-> asm statement, as in the following PowerPC example, does not work
-> reliably.
+> ... and I spotted my nonsense just as I hit send.
 > 
->   asm volatile("mtfsf 255, %0" : : "f" (fpenv));
->   sum = x + y;
+> You could do that ^^.  But you'd need to rename the 'inb' op  like:
 > 
-> The solution is to reference the "sum" variable in the asm:
+> struct port_io_ops {
+> 	u8 (*f_inb)(u16 port);
+> 	...
+> };
 > 
->   asm volatile ("mtfsf 255,%1" : "=X" (sum) : "f" (fpenv));
-> ```
+> so that you do:
 > 
-> Note that the solution _isn't_ to add a "memory" clobber, because it's
-> not guaranteed to work, as it's explicitly defined to be a read/write
-> _memory_ barrier, despite what kernel writers wish it would do.
+> 	#define inb(x) pio_ops.f_inb(x)
+> 
+> But, remember when I said I hate playing #define tricks? ;)  This is one
+> reason why.
 
-It doesn't work because *other* code can change the fp environment as
-well; adding "memory" clobbers to both asms will keep them in order (if
-they both are not deleted, etc).  This hinders optimisation very
-seriously for code like this btw, another important reason to not do it
-here.
+But the define tricks are unrelated to the linker issue. The issue pops up
+after you get past the preprocessor tricks.
 
-And what is "memory" here anyway?  New memory items can be added very
-late in the pass pipeline, and anything done in an earlier pass will
-not have considered those of course.  The most important case of this
-(but not the only case) is new slots on the stack.
-
-> Your assertion that compilers don't know about control registers isn't
-> exactly true. In the case of "pushf/popf", those instructions know
-> about the eflags registers. All subsequent instructions that read or
-> modify eflags also know about it. In essence, the compiler can
-> determine its own clobber list, which include MSRs.
-
-The compiler only knows about some bits in the flags register.  The
-compiler does not know about most machine resources, including all of
-the model-specific registers.
-
-
-Segher
+-- 
+ Kirill A. Shutemov
