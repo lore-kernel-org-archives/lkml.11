@@ -2,154 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4844BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 06:30:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E42C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 06:30:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229991AbiCQGbn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 02:31:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40912 "EHLO
+        id S229995AbiCQGbq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 02:31:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229948AbiCQGbe (ORCPT
+        with ESMTP id S229965AbiCQGbf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 02:31:34 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2078.outbound.protection.outlook.com [40.107.237.78])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 662929D4EC;
-        Wed, 16 Mar 2022 23:30:14 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PNni8gX0MKSB80kM0NMV8wlT9hdD3ggLftf/HXFfCbMsPqDG8vj5eCbO3/mxz4/TEmXX0ncofwMp4Le5+2ZR5jcOs4jFeoZwzFODfWapE2vHqX4sZyODxkWhScy8yBhc2w0nV3lLoqFTsKRxKtZq2s9jSQH74E0K29VsuVk1xzSriguOvCC3ZIvUX+diRf03K1RGWJe6wEu8y24Eqls/JKd8wyBm9bzV7X/n7AjrLQYlxa26BxN6VQUiBZJFBQoMfUQbdYua5jJoxEtGm8VufQZEKjOJzLrd6ZnNM6Yy8ZFkY0rrJ7PrWumvAuTBVdHk69XcKc0LllV9KWmpE2xzLA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=d1uLYdxN5YomtSEcSWqZblu88g7sXS6hzmZbP9zVsz0=;
- b=B+oWE2Cl02vGLRkAVKWxiSk5opBR8ntf7tRM2vEUCsz967UYUWTF4LRiwYo7Zh3XeMEeo9H6JFJ4M/oqd7PuR5iGvgGS8UvRWK30HQ0tS05v9ipNbXowesb0dnP4LXMOy6feE9eTVJrPSB4tZSnk3ZRL2aZwQqItxDb6fsJWaEBQiNGYDreQcTLu1KscZd3opi7/AK2BEO7ot7VGvYWHdRXFpNNOzbGSq9O+j84ZWQW92RAr9w1HUuCmfrTYgufeeDHSSjfGN43+hEe4qq3Ww4T8Qs8faGuilQ0FXePxScqZWtbcCDLtadhJ7NXfdYUub+LhPAh9uPkYdhFhajIvUQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=d1uLYdxN5YomtSEcSWqZblu88g7sXS6hzmZbP9zVsz0=;
- b=liDY+b+5isIscRFe65zD1QQZAAzw8PZikmiNH1dy/isSZkRzzTlbitATwwwjOyLfF0/QOF4P6txdMxtBA4r+QUCA87DIq4Ae7NKOIBV+9gGg5yKEFhWT+dSh8CRq9cGwTn64DMdgMIRBcSS5ieWm+/NxRW/Irz2iqlscGwlBzts=
-Received: from DM6PR06CA0004.namprd06.prod.outlook.com (2603:10b6:5:120::17)
- by CH2PR12MB4183.namprd12.prod.outlook.com (2603:10b6:610:7a::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.17; Thu, 17 Mar
- 2022 06:30:12 +0000
-Received: from DM6NAM11FT020.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:120:cafe::e4) by DM6PR06CA0004.outlook.office365.com
- (2603:10b6:5:120::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.24 via Frontend
- Transport; Thu, 17 Mar 2022 06:30:12 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT020.mail.protection.outlook.com (10.13.172.224) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5081.14 via Frontend Transport; Thu, 17 Mar 2022 06:30:12 +0000
-Received: from sindhu.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 17 Mar
- 2022 01:30:00 -0500
-From:   Sandipan Das <sandipan.das@amd.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <x86@kernel.org>
-CC:     <peterz@infradead.org>, <bp@alien8.de>,
-        <dave.hansen@linux.intel.com>, <acme@kernel.org>,
-        <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
-        <namhyung@kernel.org>, <jolsa@kernel.org>, <tglx@linutronix.de>,
-        <mingo@redhat.com>, <pbonzini@redhat.com>, <jmattson@google.com>,
-        <like.xu.linux@gmail.com>, <eranian@google.com>,
-        <ananth.narayan@amd.com>, <ravi.bangoria@amd.com>,
-        <santosh.shukla@amd.com>, <sandipan.das@amd.com>
-Subject: [PATCH 4/7] perf/x86/amd/core: Detect available counters
-Date:   Thu, 17 Mar 2022 11:58:33 +0530
-Message-ID: <7393a62ef0489c4b86034c68ff8e11bc97456385.1647498015.git.sandipan.das@amd.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <cover.1647498015.git.sandipan.das@amd.com>
-References: <cover.1647498015.git.sandipan.das@amd.com>
+        Thu, 17 Mar 2022 02:31:35 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCFF99F3BC;
+        Wed, 16 Mar 2022 23:30:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647498616; x=1679034616;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=+EitQhRNu6NXwpeAYT82YbKRTfk60BrW2G0bXEc4/dM=;
+  b=hR6bS457FRlHdvbERexGJO4WsnkoQj/mCtSsnbNWIEd9Nn+U13BBGc8S
+   MOUXf/l0pg15B9zGGSAgcxUqpRkKi7DcoxFYZfq6+ZEnUcvw55G/p9oJN
+   XDeAXnceek9z56HOkPutT4xENHLi4Zbk0Kf8ShgeHxvBjeRYRaEUpKKgN
+   ty3zNqjKQ2BC4fQ7WenhjdYHV9GV4JxR7FRJhIUPmfsS0BTIj5bdsf/QI
+   alVjy6NSoLBduQpFtS6fgVwWHE+e+SzEQe3ZSNwIZdMdZr7QeQm87yqdU
+   GR3QVOzft+BTAifYNfZS3gG5tidEaYuGU3v9szvEWJwOfE2T30FKug/19
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="320005909"
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="320005909"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 23:30:16 -0700
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="714916184"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 23:30:13 -0700
+Received: by lahna (sSMTP sendmail emulation); Thu, 17 Mar 2022 08:30:10 +0200
+Date:   Thu, 17 Mar 2022 08:30:10 +0200
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     "Limonciello, Mario" <Mario.Limonciello@amd.com>
+Cc:     Robin Murphy <robin.murphy@arm.com>,
+        "michael.jamet@intel.com" <michael.jamet@intel.com>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "YehezkelShB@gmail.com" <YehezkelShB@gmail.com>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "andreas.noever@gmail.com" <andreas.noever@gmail.com>,
+        "hch@lst.de" <hch@lst.de>
+Subject: Re: [PATCH] thunderbolt: Stop using iommu_present()
+Message-ID: <YjLVcnl1qfdoDf48@lahna>
+References: <b4356b228db9cb88d12db6559e28714ce26e022e.1647429348.git.robin.murphy@arm.com>
+ <YjHb1xCx4UAmUjrR@lahna>
+ <16852eb2-98bb-6337-741f-8c2f06418b08@arm.com>
+ <YjIb+XOGZbWKpQDa@lahna>
+ <BL1PR12MB515762E68F3A48A97EB2DC89E2119@BL1PR12MB5157.namprd12.prod.outlook.com>
+ <YjIgQfmcw6fydkXd@lahna>
+ <3bb6a2f8-005b-587a-7d7a-7a9a5391ec05@arm.com>
+ <BL1PR12MB5157DA58C3BDAFB5736676F6E2119@BL1PR12MB5157.namprd12.prod.outlook.com>
+ <5ef1c30a-1740-00cc-ad16-4b1c1b02fca4@arm.com>
+ <BL1PR12MB5157380CD6FD9EB83E76CBB0E2119@BL1PR12MB5157.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7a5e7741-ca4d-499a-3400-08da07df9752
-X-MS-TrafficTypeDiagnostic: CH2PR12MB4183:EE_
-X-Microsoft-Antispam-PRVS: <CH2PR12MB4183F0955F99BD3C10FA43508B129@CH2PR12MB4183.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: XYbnG6dZIfQimMouVPBeOvnkPPxTSR2GfLD/8gPQt+fGXVnbC3j7TpZpddK3EFeT8EbvbX5uW/i/C4R+DGXip3yqQvauTswekhHMErR+vfzNtEO3wf5CIrzb0gYJdS+rcJMWjWOMq980XH/gRRKFjHWz5Jcc9x+Bzg6t7va5R7kr+szQcCA7lD0aT6cG2jKVUoKkPDdnfvIQ2mPgC3wYFWPUwG448WLfUTJ3UBGiyJA104xB4R8T2IwmpTPHCxNhBR4TBMOTdBtAqIg3O8BaOVgBhO3uyv6Ldg/zAJLCvD7SOjqWg6dKRZccPz9FkJ/jDzpzbPkFu26fYPejHK0GClvz84pmLGca1zCcRRz4CqftqoYSf5YNr3wIr54JNAI8sw2MNZRK84mfRVUfHYd6Jx88EHGojEV3Gf6rE8tfQLMMNjbSK0Wi6QXukNfaZwkYVbhACuPN3xf+tTDpRb2O2VTpTV52/V8KmH3cFhaQ6y+AZ4D9HEUb533Kvtd6Jbw1Wcj7/4WHOEGlo5loeFprWWLkiOw3ZLk3nSq/R2aDjZsSa7Z16IGkBAOjpph8Nm7q4mgq1Oot6EHdyeSUcGVgVQLDMpg6bHLbOJ0gYmfRF3ewJ6URhyg7Lq8L/rFi7pikzRR0YsJidEmyDlDXoymPmZc7/jOAFbOMjsyh3vzSpVwMYJgTel2zXosDg3cmc+FJWb6Is8ZHm7fmQM6UG3PZpIFYyOcVMGIpDta6lq8LJMDFNrAwukpZDRZ37f3Jz9kO
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(82310400004)(4326008)(16526019)(2616005)(186003)(336012)(26005)(426003)(70586007)(70206006)(508600001)(83380400001)(356005)(81166007)(86362001)(54906003)(8676002)(110136005)(316002)(2906002)(6666004)(7696005)(40460700003)(36756003)(47076005)(7416002)(8936002)(5660300002)(36860700001)(44832011)(131093003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2022 06:30:12.3101
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7a5e7741-ca4d-499a-3400-08da07df9752
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT020.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4183
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BL1PR12MB5157380CD6FD9EB83E76CBB0E2119@BL1PR12MB5157.namprd12.prod.outlook.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If AMD Performance Monitoring Version 2 (PerfMonV2) is
-supported, use CPUID Fn80000022[EBX] to detect the number
-of Core PMCs. This offers more flexibility if the counts
-change across processor families.
+Hi Mario,
 
-Signed-off-by: Sandipan Das <sandipan.das@amd.com>
----
- arch/x86/events/amd/core.c        | 5 +++++
- arch/x86/include/asm/perf_event.h | 8 ++++++++
- 2 files changed, 13 insertions(+)
+On Wed, Mar 16, 2022 at 06:34:51PM +0000, Limonciello, Mario wrote:
+> > Might it be reasonable for the Thunderbolt core to check early on if any
+> > tunnelled ports are not marked as external facing, and if so just tell
+> > the user that iommu_dma_protection is off the table and anything they
+> > authorise is at their own risk?
+> > 
+> > Robin.
+> 
+> How about in iommu_dma_protection_show to just check that all the device
+> links to the NHI are marked as untrusted?
 
-diff --git a/arch/x86/events/amd/core.c b/arch/x86/events/amd/core.c
-index a074af97faa9..05d79afe5173 100644
---- a/arch/x86/events/amd/core.c
-+++ b/arch/x86/events/amd/core.c
-@@ -980,9 +980,14 @@ static int __init amd_core_pmu_init(void)
- 
- 	/* Check for Performance Monitoring v2 support */
- 	if (boot_cpu_has(X86_FEATURE_PERFMON_V2)) {
-+		int ebx = cpuid_ebx(EXT_PERFMON_DEBUG_FEATURES);
-+
- 		/* Update PMU version for later usage */
- 		x86_pmu.version = 2;
- 
-+		/* Find the number of available Core PMCs */
-+		x86_pmu.num_counters = EXT_PERFMON_DEBUG_NUM_CORE_PMC(ebx);
-+
- 		amd_pmu_global_cntr_mask = (1ULL << x86_pmu.num_counters) - 1;
- 	}
- 
-diff --git a/arch/x86/include/asm/perf_event.h b/arch/x86/include/asm/perf_event.h
-index 8fc1b5003713..d7dfef3e998d 100644
---- a/arch/x86/include/asm/perf_event.h
-+++ b/arch/x86/include/asm/perf_event.h
-@@ -365,6 +365,14 @@ struct pebs_xmm {
- 	u64 xmm[16*2];	/* two entries for each register */
- };
- 
-+/*
-+ * AMD Extended Performance Monitoring and Debug cpuid feature detection
-+ */
-+#define EXT_PERFMON_DEBUG_FEATURES		0x80000022
-+
-+/* Extended Performance Monitoring and Debug EBX feature bits */
-+#define EXT_PERFMON_DEBUG_NUM_CORE_PMC(ebx)	((ebx) & GENMASK(3, 0))
-+
- /*
-  * IBS cpuid feature detection
-  */
--- 
-2.32.0
+Actually this does not work either because we have pre-USB4 systems out
+there that are using firmware based connection manager and do not set
+the "device links" (as it is only needed for USB4 software based
+connection manager systems).
 
+So only thing we can use is the ->external_facing (and ->untrusted) as
+those exists in all these systems (well assuming the BIOS provided them
+but this is Microsoft requirement in the same way with the DMAR bit).
+
+[For those who are not familiar with the connection manager, it is the
+ software or firmware that actually creates the tunnels over the
+ Thunderbolt/USB4 fabric. In Intel systems up to Alder Lake it used to be
+ firmware based, and from Alder Lake and beyond it is software based
+ meaning that the Linux Thunderbolt driver creates the tunnels. Apple
+ systems have been software based from the beginnning.]
