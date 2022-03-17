@@ -2,174 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D16C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 10:23:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67202C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 10:24:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232558AbiCQKYo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 06:24:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51864 "EHLO
+        id S232563AbiCQKZW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 06:25:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231407AbiCQKYl (ORCPT
+        with ESMTP id S232528AbiCQKZT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 06:24:41 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D013E0CB;
-        Thu, 17 Mar 2022 03:23:24 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id s29so8148807lfb.13;
-        Thu, 17 Mar 2022 03:23:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=q997/aim32qAN844XtyF1EgVZGYQu0iTF+26V6EakWA=;
-        b=dCYZRbOJJduJbzFTmXHHEDdLPUTx6ttR6pFI89o//ywj4hPEtjACrI+j95gZRrm/UQ
-         nyZ07FdMf0uNwL05rvb/qgTcwvRK71SEP+LCmH1J1NH7n6n4yw1CkF6JDptYFqg2oXIU
-         gQqfoYUIpeMhm2jO2eWRHnV3PIBUq4cYAyqJuZz6HEok/dPZttjRj62Vuuo4W4XkcKZh
-         bf4s5hNRBwWB5/tPBBozYMxxfhE/zx8Uh8ousphxZ9sTaYsMI2BLZy2Q0RTSjFG3uaxQ
-         7WwwLbJvygjQqaej6K7B/v4QAxvJMWiSNKWi5gl7sTt0dy264mY0QaxOfm2FlPQsEl/r
-         9KfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=q997/aim32qAN844XtyF1EgVZGYQu0iTF+26V6EakWA=;
-        b=VlmuMT6tYhvKOTUxJLaEp3ZUstC4+/yxrjmx5gIa/VAAEYTveTN+nRN1Ji3gGIswnF
-         G6g9dSU5F+re5jFBY38JZXoMqAEeEazb3gVZlwkxW8n5+0dGM0vtQRT2riRhhKgkwFWN
-         Rp1QOl3VXcL1qYXc8umbECirgJXvuGiSsVVDcgKATdsg4lwEJsD7vjauxKKkYNBpHRhw
-         rDBd6o5XsOWU5/je28k0+GKJxMXgIqJ6ppQIsuJtx0J/B4DRi+nCcTF8cZavcZiUD9UP
-         n9TVHRgsx+STdGMVqcWOWeiMWuryepJmHad4IdC0+i02/l+LhvbwKgCMkgBbRQLQt7Oj
-         9DYw==
-X-Gm-Message-State: AOAM530azvhtsbkbsa8i1NPBrJV6ZxpIg64dCXMWTe+07HivNLr4ctZS
-        owVnSoB6uEibyX8obU/5/qQe6w7g8eOA2JNpo40=
-X-Google-Smtp-Source: ABdhPJx6Yw5sqc3oHgOC+M1OOphrf/GwfLoaeL01BvrlD7R30s1AwRtOdfgYh4FrjRTymS/KC7T98VTRHMz7/o96Mo4=
-X-Received: by 2002:a05:6512:2256:b0:449:f79a:e762 with SMTP id
- i22-20020a056512225600b00449f79ae762mr1357073lfu.261.1647512602353; Thu, 17
- Mar 2022 03:23:22 -0700 (PDT)
+        Thu, 17 Mar 2022 06:25:19 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C004FEEA5C;
+        Thu, 17 Mar 2022 03:24:03 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22HANbD2114716;
+        Thu, 17 Mar 2022 05:23:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1647512617;
+        bh=Z5rzlj1lD0CCm9QdaRl7k2JWFCxQ4rdNGEUNYarhhig=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=mur5oLicA0PwxxO9xPiyTPOeYo8sJe76AQt1q8zvcHZPHj7uBlBBSwDAPhoFLd/T/
+         fYrlNZm9LZkJN+NyW93Uswv6mm1PsnH1F9ngKive8d/Tkj39Zy1F3FulpNILw2/IWh
+         j0iXvCxaHB3RUW/zeIJgzPPUdyjKbZ417yWsj3sg=
+Received: from DFLE100.ent.ti.com (dfle100.ent.ti.com [10.64.6.21])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22HANb8f055721
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 17 Mar 2022 05:23:37 -0500
+Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE100.ent.ti.com
+ (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 17
+ Mar 2022 05:23:37 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Thu, 17 Mar 2022 05:23:37 -0500
+Received: from [10.250.234.22] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22HANXpt073475;
+        Thu, 17 Mar 2022 05:23:34 -0500
+Message-ID: <c17fe9c6-0757-dbb6-6efb-69d05d7ff589@ti.com>
+Date:   Thu, 17 Mar 2022 15:53:32 +0530
 MIME-Version: 1.0
-References: <1647235924-15572-1-git-send-email-vincent.sunplus@gmail.com>
- <1647235924-15572-3-git-send-email-vincent.sunplus@gmail.com> <7d560277-95e2-070c-e603-30f00dea7f51@canonical.com>
-In-Reply-To: <7d560277-95e2-070c-e603-30f00dea7f51@canonical.com>
-From:   =?UTF-8?B?5pa96YyV6bS7?= <vincent.sunplus@gmail.com>
-Date:   Thu, 17 Mar 2022 18:24:33 +0800
-Message-ID: <CAPvp3RhOs5y2XBYEdY31f5rc9yP5o-x_2KB2=umhL7VdvGXYTw@mail.gmail.com>
-Subject: Re: [PATCH v1 2/2] dt-bindings: usb: Add bindings doc for Sunplus USB
- HOST OHCI driver
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>, stern@rowland.harvard.edu,
-        p.zabel@pengutronix.de, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, wells.lu@sunplus.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 0/6] spi-mem: Allow specifying the byte order in DTR
+ mode
+Content-Language: en-US
+To:     David Laight <David.Laight@ACULAB.COM>,
+        "'Michael Walle'" <michael@walle.cc>
+CC:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        "p.yadav@ti.com" <p.yadav@ti.com>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "miquel.raynal@bootlin.com" <miquel.raynal@bootlin.com>,
+        "richard@nod.at" <richard@nod.at>,
+        "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
+        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>
+References: <20220311080147.453483-1-tudor.ambarus@microchip.com>
+ <76eb13b6-9263-975f-3196-312259634301@ti.com>
+ <b60064231d33581c20279172cf8f765e@walle.cc>
+ <0f271365-354b-82e2-02a2-9d69a6ac85b1@ti.com>
+ <9bc530d1fdaf4490a00fee150f963ac7@AcuMS.aculab.com>
+ <bc2083a8903fdabc65083f7e5232ca2d@walle.cc>
+ <8b765d24cb9a422bb383aad07251b65f@AcuMS.aculab.com>
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+In-Reply-To: <8b765d24cb9a422bb383aad07251b65f@AcuMS.aculab.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Krzysztof
 
-Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> =E6=96=BC 2022=E5=
-=B9=B43=E6=9C=8815=E6=97=A5
-=E9=80=B1=E4=BA=8C =E4=B8=8A=E5=8D=8812:42=E5=AF=AB=E9=81=93=EF=BC=9A
->
-> On 14/03/2022 06:32, Vincent Shih wrote:
-> > Add bindings doc for Sunplus USB HOST OHCI driver
-> >
-> > Signed-off-by: Vincent Shih <vincent.sunplus@gmail.com>
-> > ---
-> >  .../bindings/usb/sunplus,sp7021-usb-ohci.yaml      | 69 ++++++++++++++=
-++++++++
-> >  MAINTAINERS                                        |  1 +
-> >  2 files changed, 70 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/usb/sunplus,sp702=
-1-usb-ohci.yaml
-> >
-> > diff --git a/Documentation/devicetree/bindings/usb/sunplus,sp7021-usb-o=
-hci.yaml b/Documentation/devicetree/bindings/usb/sunplus,sp7021-usb-ohci.ya=
-ml
-> > new file mode 100644
-> > index 0000000..7583b68
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/usb/sunplus,sp7021-usb-ohci.yam=
-l
-> > @@ -0,0 +1,69 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +# Copyright (C) Sunplus Co., Ltd. 2021
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/usb/sunplus,sp7021-usb-ohci.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
->
-> Looks good. Few minor nitpicks:
->
-> > +title: Sunplus SP7021 OHCI Controller Device Tree Bindings
->
-> Remove "Device Tree Bindings" words here. Title is about hardware.
->
 
-Yes, I will remove it.
+On 17/03/22 3:44 pm, David Laight wrote:
+> From: Michael Walle
+>> Sent: 17 March 2022 09:40
+>>
+>> Am 2022-03-16 14:55, schrieb David Laight:
+>>> Thought...
+>>
+>> Thank you for your proposal.
+>>
+>>> Can you read the device in STR mode until you get a suitable
+>>> non-palindromic value, then read it in DTR mode and dynamically
+>>> determine the byte order?
+>>>
+>>> Clearly this won't work if the device is erased to all 0xff.
+>>> But a check could be done on/after the first write.
+>>>
+>>> I suspect write times are actually dominated by the time spent
+>>> waiting for the write to complete?
+>>> (Never mind the earlier block erase time.)
+>>> So always writing in STR mode probably makes little difference?
+>>> Writes really ought to be uncommon as well.
+>>>
+>>> Speeding up reads is a different matter - and probably useful.
+>>>
+>>> Of course, if you've got hardware reading the spi memory in DTR
+>>> mode for config data you might need to byteswap it (compared
+>>> to the STR writes) - but that is probably a 2nd order problem.
+>>>
+>>> I've got some bespoke logic on an PCIe fpga for accessing spi memory.
+>>> Uses address bits for the control signals and converts a 32bit
+>>> read/write into 8 nibble transfers to the chip.
+>>> (uses byte enables - don't an odd number of clocks.)
+>>> mmapp()ed to userspace for updating the 6MB fpga image.
+>>
+>> Our problem is not how to detect that we have to swap it, but
+>> rather what we do when we have to do it.
+>>
+>> If we have a controller which can swap the bytes for us on the
+>> fly, we are lucky and can enable swapping if we need it. We are
+>> also lucky when we don't have to swap the flash contents, obviously.
+>>
+>> But what do we do when we need to swap it and the controller
+>> doesn't support it. We could do it in software which will slow
+>> things down. So depending on the use case this might or might not
+>> work. We can degrade it to a speed which doesn't have this issue;
+>> which might be 1-1-1 in the worst case. We could also do just
+>> nothing special; but this will lead to inconsistencies between
+>> reading in 1-1-1 and 8d-8d-8d.
+> 
+> I really doubt you'll notice the effects of a software byteswap
+> compared to the actual time taken to do an spi read.
+> 
+> What's the maximum clock rate for spi memory?
+> Something like 50MHz ?
 
-> > +
-> > +allOf:
-> > +  - $ref: usb-hcd.yaml#
->
-> Put entire "allOf:" just before "properties:".
+We have Octal SPI flashes running at upwards of 200MHz clock (400MB/s)
+so SW byteswap will add significant overhead.
 
-Yes, I will modify it.
 
->
-> > +
-> > +maintainers:
-> > +  - Vincent Shih <vincent.sunplus@gmail.com>
-> > +
-> > +description:
-> > +  Sunplus SP7021 USB HOST IP is a USB2.0 Host Controller. It supports =
-both
-> > +  Enhanced Host Controller Interface (EHCI) and Open Host Controller I=
-nterface
-> > +  (OHCI).
-> > +
-> > +  It supports 32-bits address bus and 64bit data bus interface, compli=
-ant
-> > +  to AMBA AXI interface for data transfer.
-> > +
-> > +  It supports 32-bits address and data bus interface, compliant to AMB=
-A
-> > +  AHB interface for register configurations.
-> > +
-> > +  It supports 32-bits address and data bus interface, compliant to AMB=
-A
-> > +  AXI interface for register alternative configurations.
-> > +
-> > +  The UTM Interface block generates PHY control signals, compliant to
-> > +  USB2.0 Transceiver Macrocell Interface Specification Revision 1.0.
-> > +
-> > +properties:
-> > +  compatible:
-> > +    const: sunplus,sp7021-usb-ohci
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  clocks:
-> > +    maxItems: 1
-> > +
-> > +  resets:
-> > +    maxItems: 1
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
->
-> You might need here phys. Are you sure you do not need to configure the
-> phy for OHCI? You should not assume it would be configured by other drive=
-r.
->
+> If the spi controller isn't doing dma then the cpu pio reads
+> to get the data are very likely to be even slower than that.
+> (Especially if they are PCIe reads.)
+> 
 
-Yes, OHCI driver does not need to configure phy according to the
-suggestion of our RD.
-The default status of phy after power-on is good enough for OHCI.
+Modern OSPI/QSPI flash controllers provide MMIO interface to read from
+flash where DMA can pull data as if though you are reading from On chip RAM
 
-> Best regards,
-> Krzysztof
-
-Thanks for your review.
+Regards
+Vignesh
