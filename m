@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93D8EC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 09:01:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2BA7C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 09:01:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231578AbiCQJCb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 05:02:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34538 "EHLO
+        id S231663AbiCQJCp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 05:02:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231513AbiCQJCZ (ORCPT
+        with ESMTP id S231600AbiCQJCk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 05:02:25 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 973B01D08D0
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 02:01:09 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id h1so5684176edj.1
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 02:01:09 -0700 (PDT)
+        Thu, 17 Mar 2022 05:02:40 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 837451D08D2
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 02:01:24 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id yy13so9280961ejb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 02:01:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20210112.gappssmtp.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=mqnfH2RwXdarMVwKF+nv5QuaQLBfob4wf1DSy23UJb4=;
-        b=ul+xv5XYmQa87mwY3Pl+CK3Ymdn+nwciL6xvIH8oADHISfZR0NKOusBw8asM5BCN5Q
-         qNFfCEriVVS79FjTiU6SruM/gVMc6CyJFqeesfFHqBHI92P6HgRR0QoT5l/q92Ujog2t
-         5MvsWjoy5X8TmfL9YyRZduQqtJt66dfQV8X0rmXUYWXl34Iaw0NsuqquFf+yJPvlXqqw
-         ftGEAR2D9HfB3RKrtYJIVtwp1i4nC15nfwiI1u3ekuPeFIHBOAZ+BnCRWwGUSdOn7Zwq
-         phVnIBo+kgXQvTImtHkHCRbra3oO3zSP+J8qUBfLMCmxR5gSxvCI8VXQKxGb5cCjUQSj
-         9uLQ==
+        bh=Vhmaa8dvAWAF7hhtVerRMIY5hbJUzuvuMcKyuTSFTwg=;
+        b=78YceMwTeAnCsJX1c/l4aRdsPn2rkY4Ej3QmSbpqhb5TZWTH8ViYLss/o47dggaWBB
+         8Cq3ytvuEIm3eG0HwDRs1eZEPWddjcoQSsiuQ1izCrxzc14/dIVyxYGcBO23FMg961M8
+         5H7Dv2ySLSpgGD0fkCQSc7e9IkkdujC3nrkcFu/UDWdlvDT0QVLM3lhK7NjIyRYqdqmJ
+         b4asp0Vq7xwTU3ge/5S0G/gPuIMxk7pu1sxsNO2eF74epze+2Vrh1MVSX1q0d44mnJ82
+         rPWQMfaUwUu8MHGhxMwvnnCiWq5QfEwA9QFjZ2Vtn+ZhtKxWnlY/r2N3LrGZOjaysGnt
+         BhfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=mqnfH2RwXdarMVwKF+nv5QuaQLBfob4wf1DSy23UJb4=;
-        b=J6MXHO843n0JYusX/NWOD/ejDaqqL2aN9dHQ/D2TdSVYG1kHfhsdMYgkXF5/o0E8UF
-         VaDnNvS2jlEu1KZ/pvZzU79pE0YbfT5FzN2xu2nxkBA7s2im2L8Ffn7ZXDUtWnUXaovm
-         s9zZ6M+Taigb+mUuvZWfF8DhxQedASsTYH+2ynVnfZnqSDrOD9mqnTY4aeEyS3jUo6x0
-         J2qGf6pQJzl+UqoyBBbisiHHxSHorC6DTEtxm7VYr3AMn5mr9oJvMhQkd4tjvIMGo7WD
-         UQFa1x3No42FaglD7yzOpODCcYfx1hoxtOt80kE8Q/jZYU/YE32oJORszZ5nVXjs/Eow
-         /xmA==
-X-Gm-Message-State: AOAM530dR+gJFcq8P/WhyMSEpB/mMOm4MlD1cms+QcFFnbGc/qz6j1ni
-        Pg3um0nIZsaEhpwtqtLVZFjapQ==
-X-Google-Smtp-Source: ABdhPJwA93yiQ1QO4LSQtMVQKkdC8xuzOclHDYnGksSW2Bv3VF1oVflM5cU1QAJkzrUl7wnTlM6Z+g==
-X-Received: by 2002:a05:6402:430c:b0:416:c695:7c23 with SMTP id m12-20020a056402430c00b00416c6957c23mr3179483edc.367.1647507668159;
-        Thu, 17 Mar 2022 02:01:08 -0700 (PDT)
+        bh=Vhmaa8dvAWAF7hhtVerRMIY5hbJUzuvuMcKyuTSFTwg=;
+        b=YgsbuFLWDv1fNEZGCH/flM4VPe6QA5dZpww3Zm69h9c26RtHxHq53p0PiKwa2GBuL3
+         k4xDWmLJh6m5v33eaEOw/S+267Hv1G9wBccsE3X8eIKuL7vQn5habvNDZt67431A1VZ1
+         l+vNWRN+WrvaQROe/9VXVzCL4IHMrq4yHL6hvOHr34rPi34aQGn9lCTZ5xGZIVEUtHDS
+         7u4/47PC6JxpbDcXV3URmWrT1/RuyzYq1kh0hBApq9LctIhDSOd48O69sqtC6xJRbfPw
+         wNFQm7yN9L+watlFrxJ7ySRNQnrK6LHcmwHD4vrRyhShmdTSweA8KXwmqYkMH0S1htj4
+         uOzQ==
+X-Gm-Message-State: AOAM530fkgF3vDcYADRjdLm2JYjCt+A0dy+dEQbqF4fqC69UP7aBbY+P
+        tTiqzVwt4LEOv/x3L7aGlmuBsg==
+X-Google-Smtp-Source: ABdhPJz5wwFFPWZiqC4nPeTrGUb1a5X0B8ku5ObeLhn2reQ2g3kLcviCNUKQ6pdcAOPpsEMmpauk5Q==
+X-Received: by 2002:a17:906:3144:b0:6ce:de5d:5e3b with SMTP id e4-20020a170906314400b006cede5d5e3bmr3366414eje.689.1647507683061;
+        Thu, 17 Mar 2022 02:01:23 -0700 (PDT)
 Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id kw3-20020a170907770300b006b2511ea97dsm2050088ejc.42.2022.03.17.02.01.06
+        by smtp.gmail.com with ESMTPSA id dn4-20020a17090794c400b006dbec4f4acbsm2061440ejc.6.2022.03.17.02.01.21
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Mar 2022 02:01:07 -0700 (PDT)
-Message-ID: <68e92033-1dea-87bd-bc9b-8b2abdaa4a85@blackwall.org>
-Date:   Thu, 17 Mar 2022 11:01:06 +0200
+        Thu, 17 Mar 2022 02:01:22 -0700 (PDT)
+Message-ID: <4e09ab7d-95eb-7114-97cd-1e389c948a9e@blackwall.org>
+Date:   Thu, 17 Mar 2022 11:01:20 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH v5 net-next 07/15] net: bridge: mst: Add helper to map an
- MSTI to a VID set
+Subject: Re: [PATCH v5 net-next 08/15] net: bridge: mst: Add helper to check
+ if MST is enabled
 Content-Language: en-US
 To:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
         kuba@kernel.org
@@ -73,9 +73,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, bridge@lists.linux-foundation.org
 References: <20220316150857.2442916-1-tobias@waldekranz.com>
- <20220316150857.2442916-8-tobias@waldekranz.com>
+ <20220316150857.2442916-9-tobias@waldekranz.com>
 From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20220316150857.2442916-8-tobias@waldekranz.com>
+In-Reply-To: <20220316150857.2442916-9-tobias@waldekranz.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -83,24 +83,15 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On 16/03/2022 17:08, Tobias Waldekranz wrote:
-> br_mst_get_info answers the question: "On this bridge, which VIDs are
-> mapped to the given MSTI?"
-> 
-> This is useful in switchdev drivers, which might have to fan-out
-> operations, relating to an MSTI, per VLAN.
-> 
-> An example: When a port's MST state changes from forwarding to
-> blocking, a driver may choose to flush the dynamic FDB entries on that
-> port to get faster reconvergence of the network, but this should only
-> be done in the VLANs that are managed by the MSTI in question.
+> This is useful for switchdev drivers that might want to refuse to join
+> a bridge where MST is enabled, if the hardware can't support it.
 > 
 > Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 > ---
->  include/linux/if_bridge.h |  7 +++++++
->  net/bridge/br_mst.c       | 26 ++++++++++++++++++++++++++
->  2 files changed, 33 insertions(+)
+>  include/linux/if_bridge.h | 6 ++++++
+>  net/bridge/br_mst.c       | 9 +++++++++
+>  2 files changed, 15 insertions(+)
 > 
 
 Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
-
 
