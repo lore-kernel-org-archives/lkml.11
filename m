@@ -2,148 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFC67C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 10:05:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D8DCC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 10:05:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232343AbiCQKGu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 06:06:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46370 "EHLO
+        id S232348AbiCQKHF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 06:07:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232330AbiCQKGn (ORCPT
+        with ESMTP id S232317AbiCQKHD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 06:06:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A0D351DC99C
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 03:05:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647511526;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bb6fzF3Qj5vS9q9QxC5szf//8NHBymH0UA9G8kii1YQ=;
-        b=FBWVB03uSuo/pp1DDrIUQ+gDl75LVZhT4hvb/5/6BWVHayTpttF8LZnh855kc2ShtxmUr4
-        Shg5lv/A0ReUi7lCID7D035V9nMz7IXDj+gOYYzy6PSGPlE8JThafm1dYyjMWMSZ4DY6Rn
-        /kzriyXr/z2SIDRzoh8rViyKV1WlVUI=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-70-0ZKoQcvXNOS4PFzGv69ggw-1; Thu, 17 Mar 2022 06:05:24 -0400
-X-MC-Unique: 0ZKoQcvXNOS4PFzGv69ggw-1
-Received: by mail-wm1-f72.google.com with SMTP id j42-20020a05600c1c2a00b00381febe402eso4084027wms.0
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 03:05:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=bb6fzF3Qj5vS9q9QxC5szf//8NHBymH0UA9G8kii1YQ=;
-        b=L8BbsLD20OCLaGNbBILS6IiYi55hvlLy2/LhgB9KjOA9G8IxInvhq4osLJ/YlbBjkP
-         x+8HpseZFPMCC/5dzt2Jt+EahQZriIiXlgrIgRgd5uxeKypRjAqAHBEUdGAlu2PqEDpA
-         pk++gegy40JXNReuscICLtPvy6rwXAk40kXrNviFBnphtQTdKZIENMIUP78UfXp44ON9
-         npJ/la3DSVcnSxdW+4dNdrnnVy2A+Kt0NdHbzUWv/A4fLzSvyfoZRx8Up5VnhGMuWPqZ
-         MnQjBiHkzhx01h0IE1nTilSV9AN/kdTmvIAfmI+rglMeN2ElnnRm6ozfzFzb/CTUQJGd
-         jRWQ==
-X-Gm-Message-State: AOAM530aB+LdjGq032Z5zpykedVGfV9pqa3Bnq72nfSXQEMIM68SW3vK
-        /C8qngr0CWhcP6ZBXt3iDAO086miKE6dbN+UFbngbpRzhepa/ocmJd3D6A6RTTKP4KYXzWyRIxc
-        /wGKzgoSLt0zu0Iu5Eh+O6tJD
-X-Received: by 2002:a1c:cc11:0:b0:389:e8aa:ad4b with SMTP id h17-20020a1ccc11000000b00389e8aaad4bmr3110303wmb.79.1647511523238;
-        Thu, 17 Mar 2022 03:05:23 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx/avAgRCojAnT8K2071w35Qb11z9hZsLHSIfHIz2Cj64lNtJEyZ6qkqjioeTO29wi4pAjPUQ==
-X-Received: by 2002:a1c:cc11:0:b0:389:e8aa:ad4b with SMTP id h17-20020a1ccc11000000b00389e8aaad4bmr3110281wmb.79.1647511522995;
-        Thu, 17 Mar 2022 03:05:22 -0700 (PDT)
-Received: from ?IPV6:2a09:80c0:192:0:20af:34be:985b:b6c8? ([2a09:80c0:192:0:20af:34be:985b:b6c8])
-        by smtp.gmail.com with ESMTPSA id n188-20020a1ca4c5000000b00389c692a3b5sm7060814wme.42.2022.03.17.03.05.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Mar 2022 03:05:22 -0700 (PDT)
-Message-ID: <987bd014-c5ab-52cb-627e-2085560cb327@redhat.com>
-Date:   Thu, 17 Mar 2022 11:05:22 +0100
+        Thu, 17 Mar 2022 06:07:03 -0400
+X-Greylist: delayed 371 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Mar 2022 03:05:47 PDT
+Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 520B9C12CE;
+        Thu, 17 Mar 2022 03:05:47 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id DD634580245;
+        Thu, 17 Mar 2022 05:59:32 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Thu, 17 Mar 2022 05:59:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; bh=0MGy6HvebexiCC2YhyoJoldMNm9d/DgjaE5btR
+        Ao9JA=; b=EOLrAJUUzyotS3KHHDV+ihh1yuFc9PbARfH+aTTFPicj1CjJnnxoVl
+        A94s0L2WRtoSveTeJf7cD+0BzjZOMOGa9Jy9F3BgLx/XMJsCvn3yB00ZDoKlDG84
+        0N+wGEysgM54AfFc1gJR+jYt4Ek5UZfQ5qMLRneiUsgXOfVzt2eOtFKTrvp9e/ho
+        XkKoQfycI5UOe82vIEbGaQFwJUsw1Tn3nsBw/uKVHS/t6fb8cmscMVQO24GOfMu1
+        W6LYWO466c+xPcFWp1uSPOesLS0HaVTCzVd3U5eWRdyfd/3xv92zRPh+J+Xhhu8X
+        UrVRrF/OB+ps+Daw3BNVo+cFG+mXzfYA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=0MGy6HvebexiCC2Yh
+        yoJoldMNm9d/DgjaE5btRAo9JA=; b=IdmHbXsFPCgorP+QgDyJ+U4JRWjTFeBv0
+        fcM/UxJuD1njO4W+uqXq7Ho8ccx9FdEwVMJXzhpg8lBKKy803iDeoaMTrvgOwVFs
+        MyX/cjMtGKRLhndlrBJWcY/2GQztVOZD05l0ltf41xLg4mkUrt9unMFtAAY0w6T+
+        cmeVT6RhX/kevcwduh9wQKQMzdw8ln9AnPpS7GbFmFw9duOD0p2BQN+OQOOB/DvO
+        e/dqDvOr7ovJ61SD0ZGqfVYXrmb1rUIuIAFULFsSXPwFX0QE8BAa3HAXhJjG+xT3
+        eZY2nJQ7Pt0ALAH0gWpuBENa1uYym+8Ls4ouMMDOJmv3mKJtiT/Qw==
+X-ME-Sender: <xms:hAYzYtCwoCMGDOxC7QdIq37YR-Hm09c1MA5hEvckZqoiwHOmWhcauw>
+    <xme:hAYzYrhE_DF9BNPvAHO1FwPjQ5ekHDBd6lhTb4J57yYwGaIyMupT99Cp45LEZtmjS
+    10IumvYyipdkg>
+X-ME-Received: <xmr:hAYzYonqJs8kFPretBhZv3kXOvR8BaR1dukXjcVq2M9i4qsXVvARWHO7yCps679SDAXDJn2OIrS_PsTUW2of-g5do0fHBs_g>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudefgedgtdelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdortddttddvnecuhfhrohhmpefirhgvghcu
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeevhefgje
+    eitdfffefhvdegleeigeejgeeiffekieffjeeflefhieegtefhudejueenucevlhhushht
+    vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhh
+    drtghomh
+X-ME-Proxy: <xmx:hAYzYnxeeHNmCg8ezmN-l5lIY8xPlVjSbmwi7NjZ56vQHp4BsGjPww>
+    <xmx:hAYzYiRnty3dyHuvRkK_lCgje6qaEYUKZE401jUBLPjemCOhrEzhpA>
+    <xmx:hAYzYqbe1wudRx339mg046LRHONIquLBrz7UKaDY5w89yZwPGhf_XA>
+    <xmx:hAYzYtksPdP_VEtxd0PizzKDWR_tDCcTQRlz0UjtjUEOjycC9jLJuw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 17 Mar 2022 05:59:31 -0400 (EDT)
+Date:   Thu, 17 Mar 2022 10:59:29 +0100
+From:   Greg KH <greg@kroah.com>
+To:     Steffen Eiden <seiden@linux.ibm.com>
+Cc:     agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+        david@redhat.com, frankja@linux.ibm.com, gor@linux.ibm.com,
+        hca@linux.ibm.com, imbrenda@linux.ibm.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-s390@vger.kernel.org, nrb@linux.ibm.com, shuah@kernel.org
+Subject: Re: [PATCH v3 1/4] drivers/s390/char: Add Ultravisor io device'
+Message-ID: <YjMGgSstSCZAmcVa@kroah.com>
+References: <20220304141141.32767-2-seiden@linux.ibm.com>
+ <20220317094706.4921-1-seiden@linux.ibm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH] delayacct: track delays from ksm cow
-Content-Language: en-US
-To:     CGEL <cgel.zte@gmail.com>
-Cc:     bsingharora@gmail.com, akpm@linux-foundation.org,
-        yang.yang29@zte.com.cn, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-References: <20220316133420.2131707-1-yang.yang29@zte.com.cn>
- <412dc01c-8829-eac2-52c7-3f704dbb5a98@redhat.com>
- <6232970f.1c69fb81.4e365.c9f2@mx.google.com>
- <4e76476b-1da0-09c5-7dc4-0b2db796a549@redhat.com>
- <62330402.1c69fb81.d2ba6.0538@mx.google.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <62330402.1c69fb81.d2ba6.0538@mx.google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220317094706.4921-1-seiden@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17.03.22 10:48, CGEL wrote:
-> On Thu, Mar 17, 2022 at 09:17:13AM +0100, David Hildenbrand wrote:
->> On 17.03.22 03:03, CGEL wrote:
->>> On Wed, Mar 16, 2022 at 03:56:23PM +0100, David Hildenbrand wrote:
->>>> On 16.03.22 14:34, cgel.zte@gmail.com wrote:
->>>>> From: Yang Yang <yang.yang29@zte.com.cn>
->>>>>
->>>>> Delay accounting does not track the delay of ksm cow.  When tasks
->>>>> have many ksm pages, it may spend a amount of time waiting for ksm
->>>>> cow.
->>>>>
->>>>> To get the impact of tasks in ksm cow, measure the delay when ksm
->>>>> cow happens. This could help users to decide whether to user ksm
->>>>> or not.
->>>>>
->>>>> Also update tools/accounting/getdelays.c:
->>>>>
->>>>>     / # ./getdelays -dl -p 231
->>>>>     print delayacct stats ON
->>>>>     listen forever
->>>>>     PID     231
->>>>>
->>>>>     CPU             count     real total  virtual total    delay total  delay average
->>>>>                      6247     1859000000     2154070021     1674255063          0.268ms
->>>>>     IO              count    delay total  delay average
->>>>>                         0              0              0ms
->>>>>     SWAP            count    delay total  delay average
->>>>>                         0              0              0ms
->>>>>     RECLAIM         count    delay total  delay average
->>>>>                         0              0              0ms
->>>>>     THRASHING       count    delay total  delay average
->>>>>                         0              0              0ms
->>>>>     KSM             count    delay total  delay average
->>>>>                      3635      271567604              0ms
->>>>>
->>>>
->>>> TBH I'm not sure how particularly helpful this is and if we want this.
->>>>
->>> Thanks for replying.
->>>
->>> Users may use ksm by calling madvise(, , MADV_MERGEABLE) when they want
->>> save memory, it's a tradeoff by suffering delay on ksm cow. Users can
->>> get to know how much memory ksm saved by reading
->>> /sys/kernel/mm/ksm/pages_sharing, but they don't know what the costs of
->>> ksm cow delay, and this is important of some delay sensitive tasks. If
->>> users know both saved memory and ksm cow delay, they could better use
->>> madvise(, , MADV_MERGEABLE).
->>
->> But that happens after the effects, no?
->>
->> IOW a user already called madvise(, , MADV_MERGEABLE) and then gets the
->> results.
->>
-> Image user are developing or porting their applications on experiment
-> machine, they could takes those benchmark as feedback to adjust whether
-> to use madvise(, , MADV_MERGEABLE) or it's range.
+On Thu, Mar 17, 2022 at 09:47:06AM +0000, Steffen Eiden wrote:
+> This patch adds a new miscdevice to expose some Ultravisor functions
+> to userspace. Userspace can send IOCTLs to the uvdevice that will then
+> emit a corresponding Ultravisor Call and hands the result over to
+> userspace. The uvdevice is available if the Ultravisor Call facility is
+> present.
+> Userspace can call the Retrieve Attestation Measurement
+> Ultravisor Call using IOCTLs on the uvdevice.
+> 
+> The uvdevice will do some sanity checks first.
+> Then, copy the request data to kernel space, build the UVCB,
+> perform the UV call, and copy the result back to userspace.
+> 
+> Signed-off-by: Steffen Eiden <seiden@linux.ibm.com>
+> Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
 
-And why can't they run it with and without and observe performance using
-existing metrics (or even application-specific metrics?)?
+Do you have a pointer to the userspace code that interacts with this
+kernel driver?  That would be good to have to verify that the api here
+is sane.
 
+thanks,
 
--- 
-Thanks,
-
-David / dhildenb
-
+greg k-h
