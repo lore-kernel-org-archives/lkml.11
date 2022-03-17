@@ -2,109 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F9F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 14:39:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C266FC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 14:39:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235162AbiCQOk2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 10:40:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54150 "EHLO
+        id S235193AbiCQOk7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 10:40:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235175AbiCQOk1 (ORCPT
+        with ESMTP id S233023AbiCQOk5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 10:40:27 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B715E9F3BB
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 07:39:10 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647527949;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xwa5B4vbC87faqjFjpMX9eHkgYU0LzWzNDEusWEFXMA=;
-        b=aXAczIdCT5b8wJP+mVoY4R7Jp71iJt3bhoK/69/KoIRyiBa/T/4Pj+y2huc4Woeq/Bvy9y
-        K5KYUWYAeQpJ0dOqohhKdBqKo2y2ahxG0URwLLpgVusUw51sFfPLDe9lponrYBoGIbn+lv
-        pMvGyKXnUIUyFM4urZX6sMOpUVdiRWMzAMeDFybIEOqGqQiHNRvOrapDE6/rji/LUgm+ti
-        WugGYbkFVfPhbBWdzRvJg9zjN2zPjM/bkgpZjK6OLelo2K/FkZvRoDUuhudkmJAfdK9kIy
-        9QVGp1leQkjhk4jxa3wHF2NT78+j3Y2CAYuvTubXD+LJfYgS7vonFLcZzvaanw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647527949;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xwa5B4vbC87faqjFjpMX9eHkgYU0LzWzNDEusWEFXMA=;
-        b=Z1UtT6VeZQ8ZBxrky5MMlNxZgSh5g7/X0sLp/gp7EYSwLoJpG95TC8LaYJGS2w16xM1/1g
-        a3u60SY+mRSeOUBg==
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     mingo@redhat.com, bp@alien8.de, dave.hansen@intel.com,
-        luto@kernel.org, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv6 05/30] x86/tdx: Exclude shared bit from __PHYSICAL_MASK
-In-Reply-To: <20220317135820.frdppktft4flzhha@black.fi.intel.com>
-References: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
- <20220316020856.24435-6-kirill.shutemov@linux.intel.com>
- <87czil303j.ffs@tglx> <20220317135820.frdppktft4flzhha@black.fi.intel.com>
-Date:   Thu, 17 Mar 2022 15:39:08 +0100
-Message-ID: <87r170d4oj.ffs@tglx>
+        Thu, 17 Mar 2022 10:40:57 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23FFDC6EF1;
+        Thu, 17 Mar 2022 07:39:35 -0700 (PDT)
+X-UUID: 4a3bfdb1296545edb3f92f586b2cb699-20220317
+X-UUID: 4a3bfdb1296545edb3f92f586b2cb699-20220317
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <moudy.ho@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1557970165; Thu, 17 Mar 2022 22:39:29 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 17 Mar 2022 22:39:28 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 17 Mar 2022 22:39:28 +0800
+From:   Moudy Ho <moudy.ho@mediatek.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Jernej Skrabec <jernej.skrabec@siol.net>
+CC:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Rob Landley <rob@landley.net>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        <tfiga@chromium.org>, <drinkcat@chromium.org>,
+        <pihsun@chromium.org>, <hsinyi@google.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Maoguang Meng <maoguang.meng@mediatek.com>,
+        daoyuan huang <daoyuan.huang@mediatek.com>,
+        Ping-Hsun Wu <ping-hsun.wu@mediatek.com>,
+        <menghui.lin@mediatek.com>, <sj.huang@mediatek.com>,
+        <allen-kh.cheng@mediatek.com>, <randy.wu@mediatek.com>,
+        <moudy.ho@mediatek.com>, <jason-jh.lin@mediatek.com>,
+        <roy-cw.yeh@mediatek.com>, <river.cheng@mediatek.com>,
+        <srv_heupstream@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v14 2/6] soc: mediatek: mutex: add 8183 MUTEX MOD settings for MDP
+Date:   Thu, 17 Mar 2022 22:39:22 +0800
+Message-ID: <20220317143926.15835-3-moudy.ho@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220317143926.15835-1-moudy.ho@mediatek.com>
+References: <20220317143926.15835-1-moudy.ho@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17 2022 at 16:58, Kirill A. Shutemov wrote:
+For the purpose of module independence, related settings should be moved
+from MDP to the corresponding driver.
+This patch adds 8183 MUTEX MOD settings for MDP.
 
-> On Thu, Mar 17, 2022 at 01:16:00AM +0100, Thomas Gleixner wrote:
->> On Wed, Mar 16 2022 at 05:08, Kirill A. Shutemov wrote:
->> > @@ -82,6 +82,14 @@ void __init tdx_early_init(void)
->> >  
->> >  	cc_set_vendor(CC_VENDOR_INTEL);
->> >  
->> > +	/*
->> > +	 * All bits above GPA width are reserved and kernel treats shared bit
->> > +	 * as flag, not as part of physical address.
->> > +	 *
->> > +	 * Adjust physical mask to only cover valid GPA bits.
->> > +	 */
->> > +	physical_mask &= GENMASK_ULL(gpa_width - 2, 0);
->> > +
->> 
->> Hrm. I forgot about the second use case for gpa_width, but my comment
->> about ordering still stands. OTOH:
->> 
->>          GENMASK_ULL(gpa_width - 2, 0) == BIT_UL(gpa_width - 1) - 1
->> 
->> right? So you really can consolidate on the fact that cc_mask is a
->> single bit which is above the guests physical address space boundary.
->> 
->> I.e. make the code tell the story instead of adding lengthy comments
->> explaining the obfuscation.
->
-> So it will looks something like this:
->
->
-> 	cc_set_vendor(CC_VENDOR_INTEL);
-> 	cc_mask = get_cc_mask();
-> 	cc_set_mask(cc_mask);
->
-> 	/*
-> 	 * All bits above GPA width are reserved and kernel treats shared bit
-> 	 * as flag, not as part of physical address.
-> 	 *
-> 	 * Adjust physical mask to only cover valid GPA bits.
-> 	 */
-> 	physical_mask &= cc_mask - 1;
->
-> I still think these comments are useful. I hided comment for cc_mask
-> calclulation inside get_cc_mask().
->
-> Does it look fine to you?
+Signed-off-by: Moudy Ho <moudy.ho@mediatek.com>
+---
+ drivers/soc/mediatek/mtk-mutex.c | 37 ++++++++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
 
-Yes.
+diff --git a/drivers/soc/mediatek/mtk-mutex.c b/drivers/soc/mediatek/mtk-mutex.c
+index f8c33186685a..c72e9f6ee4cc 100644
+--- a/drivers/soc/mediatek/mtk-mutex.c
++++ b/drivers/soc/mediatek/mtk-mutex.c
+@@ -80,6 +80,15 @@
+ #define MT8183_MUTEX_MOD_DISP_GAMMA0		16
+ #define MT8183_MUTEX_MOD_DISP_DITHER0		17
+ 
++#define MT8183_MUTEX_MOD_MDP_RDMA0		2
++#define MT8183_MUTEX_MOD_MDP_RSZ0		4
++#define MT8183_MUTEX_MOD_MDP_RSZ1		5
++#define MT8183_MUTEX_MOD_MDP_TDSHP0		6
++#define MT8183_MUTEX_MOD_MDP_WROT0		7
++#define MT8183_MUTEX_MOD_MDP_WDMA		8
++#define MT8183_MUTEX_MOD_MDP_AAL0		23
++#define MT8183_MUTEX_MOD_MDP_CCORR0		24
++
+ #define MT8173_MUTEX_MOD_DISP_OVL0		11
+ #define MT8173_MUTEX_MOD_DISP_OVL1		12
+ #define MT8173_MUTEX_MOD_DISP_RDMA0		13
+@@ -249,6 +258,33 @@ static const unsigned int mt8183_mutex_mod[DDP_COMPONENT_ID_MAX] = {
+ 	[DDP_COMPONENT_WDMA0] = MT8183_MUTEX_MOD_DISP_WDMA0,
+ };
+ 
++static const struct mtk_mutex_mod mt8183_mutex_table_mod[MUTEX_TABLE_IDX_MAX] = {
++	[MUTEX_TABLE_IDX_MDP_RDMA0] = {
++		0, MT8183_MUTEX_MOD_MDP_RDMA0
++	},
++	[MUTEX_TABLE_IDX_MDP_RSZ0] = {
++		0, MT8183_MUTEX_MOD_MDP_RSZ0
++	},
++	[MUTEX_TABLE_IDX_MDP_RSZ1] = {
++		0, MT8183_MUTEX_MOD_MDP_RSZ1
++	},
++	[MUTEX_TABLE_IDX_MDP_TDSHP0] = {
++		0, MT8183_MUTEX_MOD_MDP_TDSHP0
++	},
++	[MUTEX_TABLE_IDX_MDP_WROT0] = {
++		0, MT8183_MUTEX_MOD_MDP_WROT0
++	},
++	[MUTEX_TABLE_IDX_MDP_WDMA] = {
++		0, MT8183_MUTEX_MOD_MDP_WDMA
++	},
++	[MUTEX_TABLE_IDX_MDP_AAL0] = {
++		0, MT8183_MUTEX_MOD_MDP_AAL0
++	},
++	[MUTEX_TABLE_IDX_MDP_CCORR0] = {
++		0, MT8183_MUTEX_MOD_MDP_CCORR0
++	},
++};
++
+ static const unsigned int mt8186_mutex_mod[DDP_COMPONENT_ID_MAX] = {
+ 	[DDP_COMPONENT_AAL0] = MT8186_MUTEX_MOD_DISP_AAL0,
+ 	[DDP_COMPONENT_CCORR] = MT8186_MUTEX_MOD_DISP_CCORR0,
+@@ -340,6 +376,7 @@ static const struct mtk_mutex_data mt8183_mutex_driver_data = {
+ 	.mutex_sof = mt8183_mutex_sof,
+ 	.mutex_mod_reg = MT8183_MUTEX0_MOD0,
+ 	.mutex_sof_reg = MT8183_MUTEX0_SOF0,
++	.mutex_table_mod = mt8183_mutex_table_mod,
+ 	.no_clk = true,
+ };
+ 
+-- 
+2.18.0
+
