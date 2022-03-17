@@ -2,151 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26D27C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 08:33:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C27BCC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 08:33:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231351AbiCQIfJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 04:35:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50756 "EHLO
+        id S231364AbiCQIfN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 04:35:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231312AbiCQIfH (ORCPT
+        with ESMTP id S231356AbiCQIfJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 04:35:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1AC85D1CD3
+        Thu, 17 Mar 2022 04:35:09 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF197D1CE6
         for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 01:33:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647506030;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Iu919w2LqaFt1Uy2fudLj6gbHpZoM5jHRrx787A1Nho=;
-        b=iE7uAQdCliPKRTx8TG4UrsXSQtCK5511kIhU+SMgT3vbF9CdOMyC+3W9XNYSOPRnMgBuwY
-        fNRxgbNlKQB4kE2er/uPsHq2unyoBhpMOmpf/IPZ4yQgFtUBEfcWAnzQetlzNARd8TYrvy
-        Cx9jZg5yhyUO24ls+lUzOVzBzolV4Sk=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-206-Kqju4e2JNz-05HQvr644-g-1; Thu, 17 Mar 2022 04:33:48 -0400
-X-MC-Unique: Kqju4e2JNz-05HQvr644-g-1
-Received: by mail-wr1-f69.google.com with SMTP id q4-20020adfc504000000b00203e15159e8so1184019wrf.6
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 01:33:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=Iu919w2LqaFt1Uy2fudLj6gbHpZoM5jHRrx787A1Nho=;
-        b=DOM1QoreNU6uhFFRDWgyQrDwQ6VcLXBIRPyr49SlhrykAtDG2/vb29BS/Qh51ruhV/
-         MuJDn561UiDplcSjbVtKJpFRdkwO9TmaH1hXWRxn81OG/KJO+hmbRj/+YpW1lesNWVfl
-         CjjU9Z+X3ACkC7gBI4RgoL23TPOUMlFJ1GS03RPT2fKUIE3R5chp7eDUGqBnn0z4UBR0
-         Wmg58+86kHo3IiHrxgt+pA3Y5t1+mEaGw4eXcip3wPkTPNNrBFussUDfR/HWj/U0UsLu
-         ZKqsRgQGqLMP8QQJcxphDQFyNTq+ZtrnsoX11jLXyHs29nJL+aUWOHQTGgdkNG95biBh
-         518Q==
-X-Gm-Message-State: AOAM5300IzZDqxxbBXzIj552+dTMyO+2hlNOWrI9ULHqtbH1IA449t+x
-        gUpPxwsvehfW9SfRnmMFpCfYtIi9ibPeE1BwyQVyNP128Z2Sia/VxRWLPlaBW3MobZ+yD7ZLLv/
-        1GcGfYwDKGaUx06JCd6EwyO/D
-X-Received: by 2002:a05:600c:3b89:b0:389:cf43:eafc with SMTP id n9-20020a05600c3b8900b00389cf43eafcmr2810572wms.205.1647506027361;
-        Thu, 17 Mar 2022 01:33:47 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzNxGZ2T7piT9Fpahr104wp7JWegFg/Tc2taqUCIUCLva8ktV6qOSpfQRH5gGoVgKIh6Rad3g==
-X-Received: by 2002:a05:600c:3b89:b0:389:cf43:eafc with SMTP id n9-20020a05600c3b8900b00389cf43eafcmr2810544wms.205.1647506027142;
-        Thu, 17 Mar 2022 01:33:47 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-232-135.dyn.eolo.it. [146.241.232.135])
-        by smtp.gmail.com with ESMTPSA id i10-20020a5d584a000000b00203e8019f2dsm1337201wrf.61.2022.03.17.01.33.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Mar 2022 01:33:46 -0700 (PDT)
-Message-ID: <87764612d480432134b5253f17e3d6fff816e147.camel@redhat.com>
-Subject: Re: [PATCH net-next v3 2/3] net: icmp: introduce
- __ping_queue_rcv_skb() to report drop reasons
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Menglong Dong <menglong8.dong@gmail.com>,
-        David Ahern <dsahern@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, xeb@mail.ru,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Menglong Dong <imagedong@tencent.com>,
-        Eric Dumazet <edumazet@google.com>, Martin Lau <kafai@fb.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Hao Peng <flyingpeng@tencent.com>,
-        Mengen Sun <mengensun@tencent.com>, dongli.zhang@oracle.com,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Biao Jiang <benbjiang@tencent.com>
-Date:   Thu, 17 Mar 2022 09:33:45 +0100
-In-Reply-To: <CADxym3Z_o6P+jSu5sUZDQf4bGUj4f4tGEYi7a9z+wRjYu0o1xw@mail.gmail.com>
-References: <20220316063148.700769-1-imagedong@tencent.com>
-         <20220316063148.700769-3-imagedong@tencent.com>
-         <f6c1dbe5-ba6f-6e68-aa3b-4fe018d5092f@kernel.org>
-         <CADxym3Z_o6P+jSu5sUZDQf4bGUj4f4tGEYi7a9z+wRjYu0o1xw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+Received: from dggeme756-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KK0fV4wpFzcb6T;
+        Thu, 17 Mar 2022 16:28:50 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggeme756-chm.china.huawei.com
+ (10.3.19.102) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.21; Thu, 17
+ Mar 2022 16:33:49 +0800
+From:   Lu Wei <luwei32@huawei.com>
+To:     <thierry.reding@gmail.com>, <sam@ravnborg.org>, <airlied@linux.ie>,
+        <daniel@ffwll.ch>, <marijn.suijten@somainline.org>,
+        <angelogioacchino.delregno@somainline.org>,
+        <dri-devel@lists.freedesktop.org>
+CC:     <linux-kernel@vger.kernel.org>
+Subject: [PATCH,v2] drm/panel: Fix return value check in nt35950_probe()
+Date:   Thu, 17 Mar 2022 16:37:07 +0800
+Message-ID: <20220317083707.237039-1-luwei32@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggeme756-chm.china.huawei.com (10.3.19.102)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-03-17 at 13:25 +0800, Menglong Dong wrote:
-> On Thu, Mar 17, 2022 at 11:56 AM David Ahern <dsahern@kernel.org> wrote:
-> > 
-> > On 3/16/22 12:31 AM, menglong8.dong@gmail.com wrote:
-> > > diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
-> > > index 3ee947557b88..9a1ea6c263f8 100644
-> > > --- a/net/ipv4/ping.c
-> > > +++ b/net/ipv4/ping.c
-> > > @@ -934,16 +934,24 @@ int ping_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
-> > >  }
-> > >  EXPORT_SYMBOL_GPL(ping_recvmsg);
-> > > 
-> > > -int ping_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
-> > > +static enum skb_drop_reason __ping_queue_rcv_skb(struct sock *sk,
-> > > +                                              struct sk_buff *skb)
-> > >  {
-> > > +     enum skb_drop_reason reason;
-> > > +
-> > >       pr_debug("ping_queue_rcv_skb(sk=%p,sk->num=%d,skb=%p)\n",
-> > >                inet_sk(sk), inet_sk(sk)->inet_num, skb);
-> > > -     if (sock_queue_rcv_skb(sk, skb) < 0) {
-> > > -             kfree_skb(skb);
-> > > +     if (sock_queue_rcv_skb_reason(sk, skb, &reason) < 0) {
-> > > +             kfree_skb_reason(skb, reason);
-> > >               pr_debug("ping_queue_rcv_skb -> failed\n");
-> > > -             return -1;
-> > > +             return reason;
-> > >       }
-> > > -     return 0;
-> > > +     return SKB_NOT_DROPPED_YET;
-> > > +}
-> > > +
-> > > +int ping_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
-> > > +{
-> > > +     return __ping_queue_rcv_skb(sk, skb) ?: -1;
-> > >  }
-> > >  EXPORT_SYMBOL_GPL(ping_queue_rcv_skb);
-> > > 
-> > 
-> > This is a generic proto callback and you are now changing its return
-> > code in a way that seems to conflict with existing semantics
-> 
-> The return value of ping_queue_rcv_skb() seems not changed.
-> In the previous code, -1 is returned on failure and 0 for success.
-> This logic isn't changed, giving __ping_queue_rcv_skb() != 0 means
-> failure and -1 is returned. Isn't it?
+In function nt35950_probe(), mipi_dsi_device_register_full() is called
+to create a MIPI DSI device. If it fails, a pointer encoded with an error
+will be returned, so use IS_ERR() to check the return value. Besides, use
+PTR_ERR to return the actual errno.
 
-With this patch, on failure __ping_queue_rcv_skb() returns 'reason' (>
-0) and ping_queue_rcv_skb() returns the same value.
+Fixes: 623a3531e9cf ("drm/panel: Add driver for Novatek NT35950 DSI DriverIC panels")
+Signed-off-by: Lu Wei <luwei32@huawei.com>
+---
+ drivers/gpu/drm/panel/panel-novatek-nt35950.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-On success __ping_queue_rcv_skb() returns SKB_NOT_DROPPED_YET (==0) and
-ping_queue_rcv_skb() return -1.
-
-You need to preserve the old ping_queue_rcv_skb() return values, under
-the same circumstances.
-
-Thanks,
-
-Paolo
+diff --git a/drivers/gpu/drm/panel/panel-novatek-nt35950.c b/drivers/gpu/drm/panel/panel-novatek-nt35950.c
+index 288c7fa83ecc..d252e5e56228 100644
+--- a/drivers/gpu/drm/panel/panel-novatek-nt35950.c
++++ b/drivers/gpu/drm/panel/panel-novatek-nt35950.c
+@@ -579,9 +579,9 @@ static int nt35950_probe(struct mipi_dsi_device *dsi)
+ 		}
+ 
+ 		nt->dsi[1] = mipi_dsi_device_register_full(dsi_r_host, info);
+-		if (!nt->dsi[1]) {
++		if (IS_ERR(nt->dsi[1])) {
+ 			dev_err(dev, "Cannot get secondary DSI node\n");
+-			return -ENODEV;
++			return PTR_ERR(nt->dsi[1]);
+ 		}
+ 		num_dsis++;
+ 	}
+-- 
+2.17.1
 
