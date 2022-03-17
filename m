@@ -2,77 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29FDAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 02:40:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9506DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 02:40:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358510AbiCQCll (ORCPT
+        id S1358516AbiCQCmK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 22:41:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49528 "EHLO
+        Wed, 16 Mar 2022 22:42:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346379AbiCQCl2 (ORCPT
+        with ESMTP id S1358517AbiCQCmE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 22:41:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D341FCEB;
-        Wed, 16 Mar 2022 19:40:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52FA8B81DE8;
-        Thu, 17 Mar 2022 02:40:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D9A1DC340EC;
-        Thu, 17 Mar 2022 02:40:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647484811;
-        bh=fCnyaxuydA1Ee6SXEIWjzXv6AAEPPz7uakrwi2kauaA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=VmZByRrWKoK2KyxEXBgJG/hQJBT9Vx4UZ/RCCeXJTYnGl8tGd4hv6EXhj6o8w0kuD
-         wxd0bRE33dnYMoJ622RTEhK2JbL0svCCJzUd0fd/SasHBFjXoAcYfieteMYuKUpL7O
-         qG/AI623iIbCkX+SaMiCuIdOOu5b24eaaO5Ze6iYyifOBKOtx7qBMXA2QMmIU/n7Ho
-         NAuUAHkidNm9XcbXJmAyiWAqVarN0mwO6ZzjpaaZjRsSPxt+OyCcNu658DTukwWsMg
-         V9rh8xRbWd+D31dbXwskCqHEu6az9QgAZSrDuNhU96U1cU6rtWQFjaYBcmkEt63a19
-         nv3iX56OZKTHQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BCE14E8DD5B;
-        Thu, 17 Mar 2022 02:40:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Wed, 16 Mar 2022 22:42:04 -0400
+Received: from mail.meizu.com (unknown [14.29.68.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F318320F5A
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 19:40:40 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
+ (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 17 Mar
+ 2022 10:40:40 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Thu, 17 Mar
+ 2022 10:40:38 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     <benh@kernel.crashing.org>, <masahiroy@kernel.org>,
+        <adobriyan@gmail.com>
+CC:     <linuxppc-dev@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
+        "Haowen Bai" <baihaowen@meizu.com>
+Subject: [PATCH] macintosh: via-cuda: Fix warning comparing pointer to 0
+Date:   Thu, 17 Mar 2022 10:40:37 +0800
+Message-ID: <1647484837-14352-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH][next] gve: Fix spelling mistake "droping" -> "dropping"
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164748481076.31245.5657352758035872315.git-patchwork-notify@kernel.org>
-Date:   Thu, 17 Mar 2022 02:40:10 +0000
-References: <20220315222615.2960504-1-colin.i.king@gmail.com>
-In-Reply-To: <20220315222615.2960504-1-colin.i.king@gmail.com>
-To:     Colin Ian King <colin.i.king@gmail.com>
-Cc:     jeroendb@google.com, csully@google.com, awogbemila@google.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Avoid pointer type value compared with 0 to make code clear.
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+---
+ drivers/macintosh/via-cuda.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-On Tue, 15 Mar 2022 22:26:15 +0000 you wrote:
-> There is a spelling mistake in a netdev_warn warning. Fix it.
-> 
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-> ---
->  drivers/net/ethernet/google/gve/gve_rx.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-
-Here is the summary with links:
-  - [next] gve: Fix spelling mistake "droping" -> "dropping"
-    https://git.kernel.org/netdev/net-next/c/2fc559c8cba0
-
-You are awesome, thank you!
+diff --git a/drivers/macintosh/via-cuda.c b/drivers/macintosh/via-cuda.c
+index cd267392..05a3cd9 100644
+--- a/drivers/macintosh/via-cuda.c
++++ b/drivers/macintosh/via-cuda.c
+@@ -236,10 +236,10 @@ int __init find_via_cuda(void)
+     const u32 *reg;
+     int err;
+ 
+-    if (vias != 0)
++    if (vias)
+ 	return 1;
+     vias = of_find_node_by_name(NULL, "via-cuda");
+-    if (vias == 0)
++    if (!vias)
+ 	return 0;
+ 
+     reg = of_get_property(vias, "reg", NULL);
+@@ -517,7 +517,7 @@ cuda_write(struct adb_request *req)
+     req->reply_len = 0;
+ 
+     spin_lock_irqsave(&cuda_lock, flags);
+-    if (current_req != 0) {
++    if (current_req) {
+ 	last_req->next = req;
+ 	last_req = req;
+     } else {
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.7.4
 
