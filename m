@@ -2,94 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0177C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:58:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A21A5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 13:04:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234455AbiCQNAJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 09:00:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57014 "EHLO
+        id S232743AbiCQNFd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 09:05:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234473AbiCQM7p (ORCPT
+        with ESMTP id S235337AbiCQNDr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:59:45 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F24814752E
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 05:58:24 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id h126so10094777ybc.1
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 05:58:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=elCXN/aHOy7vPjpH18ylJ1cP6WgAx65RKk7fRU7ojZc=;
-        b=GrXcH3YkxDoDgi9fve1WKPFK7la+x9vkdTRO0op5C6EH2jHfAjBM+56Fd3CvmdBXLR
-         qsLlIug6rIODldHVTUojqYGPpTXNbTAvrzk04RueHmokWCxZigGXfhBQmTz3FpeG0NFy
-         qzgEB+pcquNbq3ZQ4HWPoUnQSr5Ry8KL4l+nz/saBiR4V3kUXOijDay3DgBoKGOw3T/f
-         syzjCZgr9O1rB+Zobo+MEfaNWjUjy7Yh9AzHZ3bruEkhzc2SGiYUdWte0sJUi+J2GpJp
-         tvQsXro/S4gKuAx/Pd967T+4V84Xt/Uhjk3P2EgKZIWm2ba0E48+j45xW2zKUXbuLzIx
-         IyoQ==
+        Thu, 17 Mar 2022 09:03:47 -0400
+Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com [209.85.219.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C91D148674;
+        Thu, 17 Mar 2022 06:02:27 -0700 (PDT)
+Received: by mail-yb1-f175.google.com with SMTP id v130so10007569ybe.13;
+        Thu, 17 Mar 2022 06:02:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=elCXN/aHOy7vPjpH18ylJ1cP6WgAx65RKk7fRU7ojZc=;
-        b=j3/GNyC4ihWWP/IXpvsp/d2Rz7N7uWfCRkTT/Ix8iv+nrvUY30Mzu651X6h4Br21Lz
-         /t2U6hFje2qrIr/XckvJxQQyDG+up72uzg1ylKBegF8pwwcDWraWkqMVrjTh2FjQNsnA
-         ITA+9AwQrbvRPUFBb1olUAv//08JlOXjL1omqXHokjR4h3CLWe2aoruj/ZrV9P7kY13j
-         fQuP5f6pFBC14MOt3k6Ph5JnjANb6aV/jg1RDXDM72qPBYUD8H2k/j7qyU3gzpNMfXje
-         1JD/MM7YWw/b/YmmoXPfh36ZxIvpbu9VOAgO8oexCp7FW1ZPYBvhZl16vCpczTQ8IsR3
-         gHLA==
-X-Gm-Message-State: AOAM532jofI2aIKhxdKkw9QRybUOuGuf+KN9JJN1TgTV+jqvGpqz+XIz
-        sG88Uuiytq4s076MwILn/1tocb43XL38RCdlz9U=
-X-Google-Smtp-Source: ABdhPJz1Ykr9LGD7q5P8uDMtLdaPy1Y+vDOsRPd9uK7+wdlC3B64z9irPK+tLnlndwYC4ruP0bohf1f0eFROT2CQsOs=
-X-Received: by 2002:a25:d512:0:b0:61d:aded:1743 with SMTP id
- r18-20020a25d512000000b0061daded1743mr4517766ybe.526.1647521903702; Thu, 17
- Mar 2022 05:58:23 -0700 (PDT)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=B7qYsNUbGJYHdxCIQHkf/OD/PW64BsHLYhrDQx+Tw6A=;
+        b=l/T/ddD3wQRP2CLVQA8G66Mj6xL8Ss119WlpsqKk2PhPEDBLfTPxUhG+B1yy4RLy9N
+         5xXPorTviJDEjjGBRPDkXKJ+Tv/fHFRB4yoy/Oz5Gjg6wi6Rg2NLqjtq6N2klXq8hR6c
+         Hq6C+uaI/K/BbJGvhnnyZaWHons1hb/iix62jobVnYS3a6ypyiOY5RSRu07Gvl9LeWEx
+         nM5/W6V6hM+24ZdaKDnYeFeg4Cb7gfyMS8ks8HV99HBHLwFc31yMvoE9Z0Y54epG4bMR
+         iCeMSZxo1uB5y9LNrI82/xtHeO6/SVX0UtGDLPd4N67ix4lLH50hmhrQePEnRV1oqvOg
+         QwdA==
+X-Gm-Message-State: AOAM530DSjSd9+GJ2z9wd7EgoJ0anarUUJmpS21KjFAeMgb9WssSHk6L
+        T3H2r/cFl/tXWGYzOJqJEHJQhOcyBSwbX8ho9D3tSJ6ldCc=
+X-Google-Smtp-Source: ABdhPJyOqVbWlCAFoVtJfjG/++NcPW/hSsSa5o6Ghrd0pjN2FM5kxovkHkVhqvNZMaTH468GRkVguvNg9V55mgYPkjA=
+X-Received: by 2002:a25:9d8a:0:b0:633:9668:c48a with SMTP id
+ v10-20020a259d8a000000b006339668c48amr4653467ybp.153.1647522146210; Thu, 17
+ Mar 2022 06:02:26 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220315073949.7541-1-jiangshanlai@gmail.com> <YjH+VdHIiHZM3maD@hirez.programming.kicks-ass.net>
- <YjH+fAaH5yHGrxRu@hirez.programming.kicks-ass.net>
-In-Reply-To: <YjH+fAaH5yHGrxRu@hirez.programming.kicks-ass.net>
-From:   Lai Jiangshan <jiangshanlai@gmail.com>
-Date:   Thu, 17 Mar 2022 20:58:12 +0800
-Message-ID: <CAJhGHyDpa5oR7+cNv-Tj81uPFNmSKOqN2npCxfbo_zLwasVQrg@mail.gmail.com>
-Subject: Re: [PATCH V3 0/7] x86/entry: Clean up entry code
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>, X86 ML <x86@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 17 Mar 2022 14:02:15 +0100
+Message-ID: <CAJZ5v0gcZb9mq4WfHuGC-3zMx215u_cYMzwTkx1jxgZmu_EUbw@mail.gmail.com>
+Subject: [GIT PULL] ACPI fix for final v5.17
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 11:13 PM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> On Wed, Mar 16, 2022 at 04:12:21PM +0100, Peter Zijlstra wrote:
-> > On Tue, Mar 15, 2022 at 03:39:42PM +0800, Lai Jiangshan wrote:
-> >
-> > > Lai Jiangshan (7):
-> > >   x86/entry: Use idtentry macro for entry_INT80_compat
-> > >   x86/traps: Move pt_regs only in fixup_bad_iret()
-> > >   x86/entry: Switch the stack after error_entry() returns
-> > >   x86/entry: move PUSH_AND_CLEAR_REGS out of error_entry
-> > >   x86/entry: Move cld to the start of idtentry
-> > >   x86/entry: Don't call error_entry for XENPV
-> > >   x86/entry: Convert SWAPGS to swapgs and remove the definition of
-> > >     SWAPGS
-> >
-> > So AFAICT these patches are indeed correct.
-> >
-> > I do however worry a little bit about the I$ impact of patch 4, and
-> > there's a few niggles, but otherwise looks good.
-> >
-> > I'd love for some of the other x86 people to also look at this, but a
-> > tentative ACK on this.
-> >
->
-> Also, I forgot to mention; they no longer apply cleanly because I
-> sprinked ENDBR all over the place. Mostly trivial to fixup though.
+Hi Linus,
+
+Please pull from the tag
+
+ git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git \
+ acpi-5.17-rc9
+
+with top-most commit 462ccc35a750f335c8456cde9120b8b593fff60f
+
+ Revert "ACPI: scan: Do not add device IDs from _CID if _HID is not valid"
+
+on top of commit 09688c0166e76ce2fb85e86b9d99be8b0084cdf9
+
+ Linux 5.17-rc8
+
+to receive an ACPI fix for final 5.17.
+
+This reverts recent commit that caused multiple systems to misbehave
+due to firmware issues.
+
+Thanks!
 
 
-They can still be applied to the newest tip/master which already has
-sprinked ENDBR.  Is there a more proper branch for me to rebase the
-patches onto?
+---------------
+
+Rafael J. Wysocki (1):
+      Revert "ACPI: scan: Do not add device IDs from _CID if _HID is not valid"
+
+---------------
+
+ drivers/acpi/scan.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
