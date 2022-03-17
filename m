@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1971EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 23:50:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F9F3C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 23:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230250AbiCQXvf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 19:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59196 "EHLO
+        id S230296AbiCQXvh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 19:51:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230263AbiCQXvb (ORCPT
+        with ESMTP id S230273AbiCQXvb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 17 Mar 2022 19:51:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 024912AD5C2;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 167E12AD5DA;
         Thu, 17 Mar 2022 16:50:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B737611A5;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F28C61336;
         Thu, 17 Mar 2022 23:50:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D3141C340EC;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E0014C340F5;
         Thu, 17 Mar 2022 23:50:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647561012;
-        bh=lBNdt/nO7ZFYgwo/Ygc3BGmzIQC0WVaK+x/djCiU1jU=;
+        s=k20201202; t=1647561013;
+        bh=0ITraNNpynPQoRSsjkBEPpV1O+S+Z0SgVeIiMRBR9xU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=jS3vRB9JS/QIoJwWZem26OC8MH8F/DGw+nzH7FtU00AhB3n8MzBGB3J7RTpsilK1M
-         gK3TyjtG4g0luzSN0Xrnqo76hpEWzCcvBVCgT9O8AcNGOF+EBd1NzjcapuxcsdWb7s
-         mg0ORIH75CE9E6+RLVaG0/oPN+Bk5+IxMTnQms374thqkg36cKCi38GlXhIxmRApSl
-         BIdftxu6LdUNUPumkZwgm3IfC6vySlYTQs5jgG6LigpBvyDiC7MEN25tV4rb42RPHo
-         6RB+i/H2+4dn8hOYe6qe5/8wkXn3mJMZ1Cs4zHA5AWx1D3D/SnD2kg1BRarEVqcsZ7
-         3wL/f4QpzZtSw==
+        b=VFnpf1il5OC/s+QgH54g+alZ4RR9KhpuQvDuuqCMyGZjOmCZpH9BNZImEt7oLMuxM
+         tbwBhupqrgrxd2KhriBFWisqp007hoz0SDu7gfzRhmmHMXHXsqXNyfelx/6WX2bHqq
+         q80bW09a91lti7lKUNJ1kk4L0SaMNzEwo93VSsHBFWHMINTOr8P6HG2lUvKbvsiaCU
+         mkjTBdtOSZZzuFRlDORjQElOl8ddTbs/l3rBXiBktekwXKosNS688aMGpJgbfZPgFa
+         v5LhBBj6Te98yn3TnWLaItmUEv8TYifVQ/g9XHL95fbVrr81DH9PQgkbVWV83v0YTE
+         mFzN390o3cqvw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B560CF03842;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C9282F03845;
         Thu, 17 Mar 2022 23:50:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] vlan: use correct format characters
+Subject: Re: [PATCH] bnx2x: use correct format characters
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164756101273.14093.94529379877808891.git-patchwork-notify@kernel.org>
+Message-Id: <164756101282.14093.261670913592232770.git-patchwork-notify@kernel.org>
 Date:   Thu, 17 Mar 2022 23:50:12 +0000
-References: <20220316213125.2353370-1-morbo@google.com>
-In-Reply-To: <20220316213125.2353370-1-morbo@google.com>
+References: <20220316213104.2351651-1-morbo@google.com>
+In-Reply-To: <20220316213104.2351651-1-morbo@google.com>
 To:     Bill Wendling <morbo@google.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, nathan@kernel.org,
+Cc:     aelior@marvell.com, skalluru@marvell.com, manishc@marvell.com,
+        davem@davemloft.net, kuba@kernel.org, nathan@kernel.org,
         ndesaulniers@google.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, llvm@lists.linux.dev
 Precedence: bulk
@@ -57,19 +58,45 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Wed, 16 Mar 2022 14:31:25 -0700 you wrote:
-> When compiling with -Wformat, clang emits the following warning:
+On Wed, 16 Mar 2022 14:31:04 -0700 you wrote:
+> When compiling with -Wformat, clang emits the following warnings:
 > 
-> net/8021q/vlanproc.c:284:22: warning: format specifies type 'unsigned
-> short' but the argument has type 'int' [-Wformat]
->                                    mp->priority, ((mp->vlan_qos >> 13) & 0x7));
->                                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c:6181:40: warning: format
+> specifies type 'unsigned short' but the argument has type 'u32'
+> (aka 'unsigned int') [-Wformat]
+>         ret = scnprintf(str, *len, "%hx.%hx", num >> 16, num);
+>                                     ~~~       ^~~~~~~~~
+>                                     %x
+> drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c:6181:51: warning: format
+> specifies type 'unsigned short' but the argument has type 'u32'
+> (aka 'unsigned int') [-Wformat]
+>         ret = scnprintf(str, *len, "%hx.%hx", num >> 16, num);
+>                                         ~~~              ^~~
+>                                         %x
+> drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c:6196:47: warning: format
+> specifies type 'unsigned char' but the argument has type 'u32'
+> (aka 'unsigned int') [-Wformat]
+>         ret = scnprintf(str, *len, "%hhx.%hhx.%hhx", num >> 16, num >> 8, num);
+>                                     ~~~~             ^~~~~~~~~
+>                                     %x
+> drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c:6196:58: warning: format
+> specifies type 'unsigned char' but the argument has type 'u32'
+> (aka 'unsigned int') [-Wformat]
+>         ret = scnprintf(str, *len, "%hhx.%hhx.%hhx", num >> 16, num >> 8, num);
+>                                          ~~~~                   ^~~~~~~~
+>                                          %x
+> drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c:6196:68: warning: format
+> specifies type 'unsigned char' but the argument has type 'u32'
+> (aka 'unsigned int') [-Wformat]
+>         ret = scnprintf(str, *len, "%hhx.%hhx.%hhx", num >> 16, num >> 8, num);
+>                                               ~~~~                        ^~~
+>                                               %x
 > 
 > [...]
 
 Here is the summary with links:
-  - vlan: use correct format characters
-    https://git.kernel.org/netdev/net-next/c/8624a95ecdea
+  - bnx2x: use correct format characters
+    https://git.kernel.org/netdev/net-next/c/d65aea8e8298
 
 You are awesome, thank you!
 -- 
