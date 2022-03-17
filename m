@@ -2,109 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A6A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 09:16:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20CA2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 09:17:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231806AbiCQJRW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 05:17:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42604 "EHLO
+        id S231751AbiCQJS2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 05:18:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231799AbiCQJRR (ORCPT
+        with ESMTP id S229621AbiCQJSZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 05:17:17 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C0251D2078;
-        Thu, 17 Mar 2022 02:16:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647508561; x=1679044561;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=AgYkRzO8ksOYyWWAS/gpvfK0lt7Rzm9dkVzVmq0l0/w=;
-  b=VtTiW6qwvMVvGT+q7WlAVJxpMqyb8DjRMDZ5g7wROL6sSCX/r8WbXc/1
-   PHnMlEIyc5lTEcliKyAYq6OvbxLQEokq/bMMo3Vzammac5b9TglYxPVg7
-   mhjfpy3GiDdaPfzsRrKZrVaPUxPXBxh0maAq3PgrzxBgFaqUUFxaBoDY7
-   YHvyp5IHuud28MqKHAv+PdqGqQXkBnoWR64BJIhOyUYVXNjUYVaRb0/9U
-   zRm9h9THmnerguXJ7KbVw+pYUYqE+pM/xVcW3vB0VNrmIiKVrVpVPGwa+
-   ytHiUEjVQiCM2bKELvjfIG/sjjX5ZZ+OO6GMYSViVS3E6wTwPknPVVeer
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="236767996"
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="236767996"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 02:15:58 -0700
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="557852602"
-Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.23])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 02:15:44 -0700
-Date:   Thu, 17 Mar 2022 17:15:41 +0800
-From:   Chao Gao <chao.gao@intel.com>
-To:     seanjc@google.com, maz@kernel.org, kvm@vger.kernel.org,
-        pbonzini@redhat.com, kevin.tian@intel.com, tglx@linutronix.de
-Cc:     Albert Ou <aou@eecs.berkeley.edu>,
-        Aleksandar Markovic <aleksandar.qemu.devel@gmail.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Andrew Jones <drjones@redhat.com>,
-        Anup Patel <anup@brainfault.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Bharata B Rao <bharata@linux.ibm.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        David Hildenbrand <david@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Hector Martin <marcan@marcan.st>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        James Morse <james.morse@arm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Jia He <justin.he@arm.com>, Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        John Garry <john.garry@huawei.com>,
-        Juergen Gross <jgross@suse.com>, kvmarm@lists.cs.columbia.edu,
-        kvm-riscv@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-        "Maciej S. Szmigiero" <maciej.szmigiero@oracle.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Qi Liu <liuqi115@huawei.com>,
-        Shaokun Zhang <zhangshaokun@hisilicon.com>,
-        Sumanth Korikkar <sumanthk@linux.ibm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Tom Zanussi <tom.zanussi@linux.intel.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Will Deacon <will@kernel.org>, x86@kernel.org
-Subject: Re: [PATCH v4 0/6] Improve KVM's interaction with CPU hotplug
-Message-ID: <20220317091539.GA7257@gao-cwp>
-References: <20220216031528.92558-1-chao.gao@intel.com>
+        Thu, 17 Mar 2022 05:18:25 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29215124C32;
+        Thu, 17 Mar 2022 02:17:08 -0700 (PDT)
+Received: from mail-wr1-f42.google.com ([209.85.221.42]) by
+ mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MtfRp-1oONmW22Jz-00v6tb; Thu, 17 Mar 2022 10:17:07 +0100
+Received: by mail-wr1-f42.google.com with SMTP id r10so6444443wrp.3;
+        Thu, 17 Mar 2022 02:17:07 -0700 (PDT)
+X-Gm-Message-State: AOAM533aOR4+cyrobtkfyRj1oDMGMwF63p3OjAuP3F0IbfwWZTM5ZtbY
+        mhZKKjjY94Gsh9lcxdYiegB9PoN8ACf5kJmgXh4=
+X-Google-Smtp-Source: ABdhPJzHxRGEWXDlBot3JUsd9DgwDJ6ivxcLghivZobZjz3wwreUXbJML8BPLrLgeRbd4dSRRrBLY4hc87aaQUXL1EU=
+X-Received: by 2002:a05:6000:1e0d:b0:203:e950:7b74 with SMTP id
+ bj13-20020a0560001e0d00b00203e9507b74mr1946333wrb.219.1647508627012; Thu, 17
+ Mar 2022 02:17:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220216031528.92558-1-chao.gao@intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20220316232600.20419-1-palmer@rivosinc.com>
+In-Reply-To: <20220316232600.20419-1-palmer@rivosinc.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 17 Mar 2022 10:16:50 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a0J3ViDWserQew2wt95Hnu6AHT5gmSxtUz0x5W2fWdxBA@mail.gmail.com>
+Message-ID: <CAK8P3a0J3ViDWserQew2wt95Hnu6AHT5gmSxtUz0x5W2fWdxBA@mail.gmail.com>
+Subject: Re: [PATCH 0/5] Generic Ticket Spinlocks
+To:     Palmer Dabbelt <palmer@rivosinc.com>
+Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Jonas Bonn <jonas@southpole.se>,
+        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+        Stafford Horne <shorne@gmail.com>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jisheng Zhang <jszhang@kernel.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Openrisc <openrisc@lists.librecores.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:A8t+JNQ6hnfKWa5ZvcXXjImC9GHMIrJRw1UUen1iqsyraxUR3B2
+ IoPgjisorvwAoB+Zyb1Vr6LscrQ0ft+lf6/vlyMhxuoK7BmeSDmEfycB7T36OFb1hGh9Qjh
+ cDYXU1F9M9OvcpV6EIrlccH1mqZmjOQiC7DCeLZI7NV+dzj0Buh6H6DhTJ4aBxWvmkWVd5R
+ cHSLUKq3tcy7AUApZ2BUA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:0maHK8ZCjz8=:RcAArPyC15KFEFlLUXqXie
+ +YrGxC300capN6HgP2eEXhvAFuBurqss1Eff1jBdCv0spP460aIftn0ii1An5MWa9l7w0Mp7g
+ mdFQIWlsHiWqAo6Bm4gifactIrEo7L9vkUHNCZJL4kPfpJ2aue+zPQ2/d2e+nnbJASbRNYctP
+ 20INB5uJaIZfSVai1jzWAZs8fpq6NrM1ZC+EY+Fgb8Gh3iMc15lT7UJ5gmblObQgE/g5TMP8t
+ PqHQspg9xo6EizCocgwjAQ6KQ2yEe6BCVWIHdIe8HiTgfidi4a5bcuhrkQ2kQF+z0c301GGjp
+ MYYBse3vxbsWCds2Rt0Pp3gN48ionkcU124WFMRkbvjx64S3CmKkcfQRDr0P69vWeapUzLZPh
+ U/QSE93IHG8Z4ji92VouT8ReNq8GJjuGpwXNFqFBjmaW54JtwZzyJ4HIXxeqfsWXVGxBvQ3ij
+ h34AGJalj9gLMDYiE0K2eV9L8gCjVMds9aD0LrLMeY3zYsO3jU0a16T3LeMh/MrFYbQPYOOEL
+ GIIjxbY/cXk3JorOmN4lYslu7rPDMcylHOR7nj9HPHIHAEJpbt+s8ivcwQpl1887oV7OLx2J+
+ fZpr+EkAjQGdctMA2QHCaxI+ywzVguFc9S9oTqc8otEJclm5kbn5V69QEQvQj7cinoesPwhkV
+ z3FvNv2nQnijBabHLw7YZ9BI1XfAArtDu2crLLA+g1fsWv/+CRSqvl38JViBBcGO+wSfEjG+4
+ DsPJxC3kD9Vbad+TgjE0xaJiAeHLXnVJuPPzDu7XppI6+EVkOzvievc9AFyanPYPesKmJK6B/
+ KXfve/WAFlTd1v/rWUVdhAq4AaM2OIWslIssKe6YgBXEOCjSJM=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ping. Anyone can help to review this series (particularly patch 3-5)?
+On Thu, Mar 17, 2022 at 12:25 AM Palmer Dabbelt <palmer@rivosinc.com> wrote:
+>
+> Peter sent an RFC out about a year ago
+> <https://lore.kernel.org/lkml/YHbBBuVFNnI4kjj3@hirez.programming.kicks-ass.net/>,
+> but after a spirited discussion it looks like we lost track of things.
+> IIRC there was broad consensus on this being the way to go, but there
+> was a lot of discussion so I wasn't sure.  Given that it's been a year,
+> I figured it'd be best to just send this out again formatted a bit more
+> explicitly as a patch.
+>
+> This has had almost no testing (just a build test on RISC-V defconfig),
+> but I wanted to send it out largely as-is because I didn't have a SOB
+> from Peter on the code.  I had sent around something sort of similar in
+> spirit, but this looks completely re-written.  Just to play it safe I
+> wanted to send out almost exactly as it was posted.  I'd probably rename
+> this tspinlock and tspinlock_types, as the mis-match kind of makes my
+> eyes go funny, but I don't really care that much.  I'll also go through
+> the other ports and see if there's any more candidates, I seem to
+> remember there having been more than just OpenRISC but it's been a
+> while.
+>
+> I'm in no big rush for this and given the complex HW dependencies I
+> think it's best to target it for 5.19, that'd give us a full merge
+> window for folks to test/benchmark it on their systems to make sure it's
+> OK.  RISC-V has a forward progress guarantee so we should be safe, but
+> these can always trip things up.
 
-FYI, Sean gave his Reviewed-by to patch 1,2,5 and 6.
+This all looks good to me, feel free to merge the asm-generic
+bits through the riscv tree.
+
+Regarding the naming, my preference would be to just use
+this version in place of the (currently useless) asm-generic/spinlock.h,
+and just naming it arch_spin_lock() etc.
+
+This way, converting an architecture to the generic ticket lock can
+be done simply by removing its custom asm/spinlock.h. Or it
+could stay with the current name, but then have a new
+asm-generic/spinlock.h that just includes both asm/ticket_lock.h
+and asm/qrwlock.h.
+
+      Arnd
