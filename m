@@ -2,142 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F378FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 11:23:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62641C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 11:24:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232989AbiCQLYv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 07:24:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45138 "EHLO
+        id S232959AbiCQL0I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 07:26:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232994AbiCQLYp (ORCPT
+        with ESMTP id S229852AbiCQL0H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 07:24:45 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19CCB3D483;
-        Thu, 17 Mar 2022 04:23:27 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22H9ca0N008079;
-        Thu, 17 Mar 2022 11:23:23 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : from : to : cc : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=MsvfyV47vlMqk+MO9HkKITZ6qtx3F2pqKOadRs8Kylg=;
- b=GPLDobNJ0/mUpQwyezfV+3zMiVHlj2YImWiG4ynzf6qlf9vcc5FmLdzjTQAJTbRQSCPg
- Dlh4W5TjnF3wJSfsKPI4v7fL46iOsrtBasijCkSMunwwVi82tYeab6V/Ob9imc7OHCTc
- BrCPKAKyX9suSnI8/NxtKMEOozw7+gegpaeTj+APjyh23jHuoMhp5l1Z76KmiVZaY74R
- OXRutk11L7h3IOgx4Vb9Ct7sGgI8dnoXtiUneQbxaivNeGaU7HygpmFHXuy7XCl6kAqG
- fEMxe1wLhWAlLYFNZ3ZbOM/WymjReiJX08WlmQkC3xbKzDZyRJQ3eqh+FDTChmNDy3CZ rQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ev0m5uvcb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Mar 2022 11:23:23 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22HBNM4X032298;
-        Thu, 17 Mar 2022 11:23:22 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ev0m5uvbt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Mar 2022 11:23:22 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22HBCeqV004931;
-        Thu, 17 Mar 2022 11:23:20 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma02fra.de.ibm.com with ESMTP id 3erk58sh31-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Mar 2022 11:23:20 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22HBNHUL20447586
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 17 Mar 2022 11:23:17 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 71625A4051;
-        Thu, 17 Mar 2022 11:23:17 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E0D7FA4057;
-        Thu, 17 Mar 2022 11:23:16 +0000 (GMT)
-Received: from [9.145.148.38] (unknown [9.145.148.38])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 17 Mar 2022 11:23:16 +0000 (GMT)
-Message-ID: <859962fd-cb55-42ea-78f0-75677953bb58@linux.ibm.com>
-Date:   Thu, 17 Mar 2022 12:23:16 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v3 1/4] drivers/s390/char: Add Ultravisor io device
-Content-Language: en-US
-From:   Steffen Eiden <seiden@linux.ibm.com>
-To:     Greg KH <greg@kroah.com>
-Cc:     agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
-        david@redhat.com, frankja@linux.ibm.com, gor@linux.ibm.com,
-        hca@linux.ibm.com, imbrenda@linux.ibm.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-s390@vger.kernel.org, nrb@linux.ibm.com, shuah@kernel.org
-References: <20220304141141.32767-2-seiden@linux.ibm.com>
- <20220317094706.4921-1-seiden@linux.ibm.com> <YjMGgSstSCZAmcVa@kroah.com>
- <6175e7fa-070e-8ab2-843a-8019d0dc0c83@linux.ibm.com>
-Organization: IBM
-In-Reply-To: <6175e7fa-070e-8ab2-843a-8019d0dc0c83@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: MHRup0zxH3rFLprwnK-dtrKuzDuS0nec
-X-Proofpoint-ORIG-GUID: bFUNJY7u-T8z1xznRrbnvoZLQEeLWEQi
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Thu, 17 Mar 2022 07:26:07 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7F0C1E3E08;
+        Thu, 17 Mar 2022 04:24:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1647516277;
+        bh=rz/kIL0ebTYiAvUOeOo0SqZ21Y/rMB/+G/lC/CVXaQo=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=Q6sIsGfiyqni72VWRmGARY9030nqerCMxTyZYypf7zOCJ2aoqz9MUCWmcZLLFClnp
+         qWfwv1tuBNtmlrHUNubSsGLrUZMy8U2fhAfev797vI6yRwPfxyJ+Jesig/CBWOMCfS
+         ksTFPWu8IIXBGgX2AUC/3qJ7M3gp9CBIzYDGXG/k=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from longitude ([5.146.194.160]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mk0JM-1nxZTp1uqu-00kNsD; Thu, 17
+ Mar 2022 12:24:37 +0100
+Date:   Thu, 17 Mar 2022 12:24:35 +0100
+From:   Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+To:     Jialin Zhang <zhangjialin11@huawei.com>
+Cc:     j.neuschaefer@gmx.net, linus.walleij@linaro.org,
+        openbmc@lists.ozlabs.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH -next] pinctrl: nuvoton: Fix return value check in
+ wpcm450_gpio_register()
+Message-ID: <YjMac/pwFH5Z+Lxs@latitude>
+References: <20220317065851.495394-1-zhangjialin11@huawei.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-17_04,2022-03-15_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=638 adultscore=0
- bulkscore=0 mlxscore=0 lowpriorityscore=0 malwarescore=0
- priorityscore=1501 spamscore=0 clxscore=1015 impostorscore=0 phishscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203170066
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="gVWGy808rXGFxfpb"
+Content-Disposition: inline
+In-Reply-To: <20220317065851.495394-1-zhangjialin11@huawei.com>
+X-Provags-ID: V03:K1:3F1BaI76xUMu3QZtwU5ZFOFb2sBVwOzw0CAV5Hyo2V7xYEktmBw
+ gZR2rtZY1OnA73RRDWfv6qQI2A0SZj0aJ2Q251Ogm04ZWRWjzd+XgLm9YwuyROraf7JeKbN
+ fiSrUi4XYYc20D3HzXJtlubZ6RgxhjcDyqt1bTDggseLs7dhW+soMvdffLXmqpDLEdxiJ9p
+ kxHyBXB7Yy0z1l5ZBWksg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:NsN/WGv/mSs=:Cnc2bfkzOWHRjCU6R40qYH
+ G2zybI/25E0oeQdE+CKGHePm8GLjf6KLzuIo0hEAaN0to2A/OgqpTx3qlpgz3I9BHYfKC/loh
+ 1cNr86pyKNRTlDIkrLew5rIvK8NNZrj/LhHpMDyIwUfZd/8KhB7puCDozAwRze9dQr7QaRM50
+ 5q9gwdQl/REjRTzc14FrHuCz4co/n1SfW5w0NHCER/ANOkc0SD954x+8zeuC3RtDMdM2FmmR0
+ bj0uPG4OPD0mBICAsZ9ufaFpnUkZa3+MQR9wCXQuPsETzxH9Qlcy9jaUR2L7mSm6o3NL6YHqZ
+ IKTA9qvZSptBKyZX6K1P7aNV1+VI/kRVj72Lg0U0+GPmbpyredNhqctdCX7IdIBTB97eXOkXB
+ kx2QSynGjIP4+lyWYlh+lklHWzhpJ2a85k1knEh58gJemZfgxc6HVQuAPzlNmwTXoC2OG5OoO
+ G+B3waaapTwRQWjl4aRrJoNaz/gLVaXfR1jcdqbTIBpB9/nQUv5B9T1lV7y/qmL4U5tkiBQxT
+ CgxTtivrwchEl4WmBrsYWvhWrHz5cwpqLpB6+IQb5L2vh6F/xaPZx6cEzuFVW969xiyq19B2H
+ Ash+q63zfWAjHJxFJKyjXv4ijFNYHRG0g3Eo4g+cYTCbfd4LJprQ6P9/kv0+LOc9CF3Fzix5R
+ iM64LcsXdiMI/wAmgmhKVkamTpv1YhDtH2bXp5LGt2qHbgsEKJenWnyaUdbfgT+Eay13b37Fg
+ JLpRarf84ML/S6DzwOe8r11LAMDGeSKeNg3FKDPZwAK9gla+WMhf9gWMYEqbmJRsXnmGKAONO
+ fbXE3lvm0WGFhByZP4G30oefC+QRcDy6iyhUohGYT7XKafZlfctH6Ngp1Q6vlpMDSbJrAcSpq
+ caeeiranVbCn6BMAeEfiljKB9NZBtQFagdylmWU5AAg9NfqpW7Z8LuAvvwi9lWPNVYmMC7cfF
+ saoyMkVzsea1X/y4BGiDAz6aKLq9foVhslSCk9tA9VNQ8e8usEZBzQqm+LL8L3wdbmVTYYQiM
+ 4lj7uuKZB1+klbGZ5hotUFyR0P5UdHEL7/dn90po5MbUuKPXm5eekkNwgV0jzcOWYdmIsDOWO
+ Ux23WNuiEzRcig=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi greg,
 
-On 3/17/22 12:07, Steffen Eiden wrote:
-> Hi greg,
-> 
-> On 3/17/22 10:59, Greg KH wrote:
->> On Thu, Mar 17, 2022 at 09:47:06AM +0000, Steffen Eiden wrote:
->>> This patch adds a new miscdevice to expose some Ultravisor functions
->>> to userspace. Userspace can send IOCTLs to the uvdevice that will then
->>> emit a corresponding Ultravisor Call and hands the result over to
->>> userspace. The uvdevice is available if the Ultravisor Call facility is
->>> present.
->>> Userspace can call the Retrieve Attestation Measurement
->>> Ultravisor Call using IOCTLs on the uvdevice.
->>>
->>> The uvdevice will do some sanity checks first.
->>> Then, copy the request data to kernel space, build the UVCB,
->>> perform the UV call, and copy the result back to userspace.
->>>
->>> Signed-off-by: Steffen Eiden <seiden@linux.ibm.com>
->>> Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
->>
->> Do you have a pointer to the userspace code that interacts with this
->> kernel driver?  That would be good to have to verify that the api here
->> is sane.
->>
-> There is a userspace tool currently under development, however, not yet 
-> ready to be published.
-> Currently, I can only point to the Kselftest in this series and the 
-> kvm-unit-tests at 
-> https://lore.kernel.org/linux-s390/20220203091935.2716-1-seiden@linux.ibm.com/ 
-> 
-I forgot to point out that the Attestation userspace tool will be 
-open-source and included in the s390-tool package.
-I can send you the current state of that tool in private if you want.
+--gVWGy808rXGFxfpb
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> 
-> 
->> thanks,
->>
->> greg k-h
->>
-> 
-> steffen
+On Thu, Mar 17, 2022 at 02:58:51PM +0800, Jialin Zhang wrote:
+> In case of error, the function devm_platform_ioremap_resource()
+> returns ERR_PTR() and never returns NULL. The NULL test in the
+> return value check should be replaced with IS_ERR().
 
-steffen
+Right.
+
+>=20
+> Fixes: a1d1e0e3d80a ("pinctrl: nuvoton: Add driver for WPCM450")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Jialin Zhang <zhangjialin11@huawei.com>
+> ---
+>  drivers/pinctrl/nuvoton/pinctrl-wpcm450.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/pinctrl/nuvoton/pinctrl-wpcm450.c b/drivers/pinctrl/=
+nuvoton/pinctrl-wpcm450.c
+> index 661aa963e3fc..a71b684b9b44 100644
+> --- a/drivers/pinctrl/nuvoton/pinctrl-wpcm450.c
+> +++ b/drivers/pinctrl/nuvoton/pinctrl-wpcm450.c
+> @@ -1019,8 +1019,9 @@ static int wpcm450_gpio_register(struct platform_de=
+vice *pdev,
+>  	int ret;
+> =20
+>  	pctrl->gpio_base =3D devm_platform_ioremap_resource(pdev, 0);
+> -	if (!pctrl->gpio_base)
+> -		return dev_err_probe(dev, -ENOMEM, "Resource fail for GPIO controller\=
+n");
+> +	if (IS_ERR(pctrl->gpio_base))
+> +		return dev_err_probe(dev, PTR_ERR(pctrl->gpio_base),
+> +				     "Resource fail for GPIO controller\n");
+> =20
+
+Reviewed-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
+
+
+Thanks!
+Jonathan
+
+--gVWGy808rXGFxfpb
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEvHAHGBBjQPVy+qvDCDBEmo7zX9sFAmIzGjkACgkQCDBEmo7z
+X9uHzg/8CgMmkm5zckLAtMOv/xJMr+xEhsotnEUf87aBvGKvjZhDzhYXXu3hlAIM
+LLwNRfVpKdqupE3Hh3asBW113EiNH/cymS9jbTyxS02b9wn3G0a2svAGdFgYKsmC
+MT/5RWgUpj5eJo2q5PfJMRSQqQW4LP4ZPQyNvBPCqS93IFAJpuBAe4uQKcp589Kk
+0ZrPrOaodBKPv3V0Bdrole4gCuq67mV/erYRWx3/9nl9326jPDr9pzPtO9E63QQP
+uXaX5yyNw8EqVcJXyi4AFKF7C8iELvRwRrZ+xR2oW9mb/LEUohjFx13OPiX9rtaU
+px/EkKMCVvfyVOhSULlsGxGTZE7f2qHFPJkkHNAg59FC8dWP0MxZkVoz7q1UCaOd
+zRXd51IwY3yH2fmdAjDT6/p3xjcPumYtzgy4LikxvSG3kbcbqLDB+5R2p/kXmHMj
+HVNTkyDEYExRUByqIgDX5A6zWy4nZU8OgmGCZuzveRnZP+QSDnft6vRchLhwRE1P
+JF7Gm/Lwzb6kWOus1bYlAv7HvUAjPLdd8KKAtt6Fm9dR6cwyh1HfNDr7tuhuSDLu
+irk7KhP99uYuK0as5kOGy4yQjZ503uoEYgtaGNzMlCilAjHpe8rR5+cf+v5S8EG1
+wgPjX8O+lwINQxwyNrUB2cJ/IdLiZrWCvrLwGuwweiews3uD7jI=
+=2Ou/
+-----END PGP SIGNATURE-----
+
+--gVWGy808rXGFxfpb--
