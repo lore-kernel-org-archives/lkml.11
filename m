@@ -2,185 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08D14C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 17:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34724C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 17:34:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236932AbiCQRfB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 13:35:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45142 "EHLO
+        id S236937AbiCQRgC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 13:36:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236505AbiCQRe7 (ORCPT
+        with ESMTP id S236505AbiCQRgB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 13:34:59 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84C43C6273
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 10:33:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647538422; x=1679074422;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=zNwiwIUY0uAOV3LlaOV63of/vALR0LotvbEFYagaKRU=;
-  b=T5sUuimysjPm7Mbh9IGyroP1gHVygtg0OnBLuydEJkfXCjyDtZPq3s47
-   Nk8axG7OBT1Kldd8MZD2F5CjB2hOz0QnRqN3eZkOi6E25T84OrzWp7xL4
-   uyl3/JFiSJkrPulpZENmX6lX02Xa39nbofqyhwZBhLIuhRphk3isfpOcY
-   3Vp6QBl3C5LBxdQn8MMwo8nfIIRmi3DOMRpIPsaKLx3GkWG8xoqRxmNNz
-   MsALceZhExLcOuYirtWkEFLJ9arkCSiM8M/52wMMpGUmFAtfCohpN1IWr
-   6i3FJUJFSqJKiU1VBuNxUOF41PcQSMJhdaqWuzWB6S/bW7nHf+O/tICL/
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="256657534"
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="256657534"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 10:33:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="513506123"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga002.jf.intel.com with ESMTP; 17 Mar 2022 10:33:35 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id DB654107; Thu, 17 Mar 2022 19:33:54 +0200 (EET)
-Date:   Thu, 17 Mar 2022 20:33:54 +0300
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     mingo@redhat.com, bp@alien8.de, dave.hansen@intel.com,
-        luto@kernel.org, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org,
-        Sean Christopherson <sean.j.christopherson@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>
-Subject: Re: [PATCHv6 07/30] x86/traps: Add #VE support for TDX guest
-Message-ID: <20220317173354.rqymufl37lcrtmjh@black.fi.intel.com>
-References: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
- <20220316020856.24435-8-kirill.shutemov@linux.intel.com>
- <877d8t2ykp.ffs@tglx>
+        Thu, 17 Mar 2022 13:36:01 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70EF2C748B;
+        Thu, 17 Mar 2022 10:34:44 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id k8-20020a05600c1c8800b003899c7ac55dso3775253wms.1;
+        Thu, 17 Mar 2022 10:34:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=IELfzsVU/wZ7ht4rR86rM2gpBonGJDThNUGcKLGVsXM=;
+        b=mS/mF26z2g6jRvaXO3oivJOR6aL0QS0imKt7OV668jL7lKlXy2pyb3R3n1Yd+tpN3M
+         xJt00Lsh8EKat+SNZK5Z+bn7G+NKO3oFxtTPEFf3Uw+6EfDe1X+u9ArEH/6VN6icLWY3
+         7fKqbiNSDNZVPJvo41IRx33V70LSzHAhiIIChZqTseukFZb/vEu3iYb6gv9HWkr6Aa41
+         UXx88aOhL8Yis1PUCDFNTONVKZFRKl8JMEmKFX9YY9Vl264JMS1C6I4zYfqX0cSBHoLg
+         ogeF5zeWlzHmpPY3NmQ68t2j+S+Nqei/fPw3e1/oG6gvKbjrJlJae/It6pWYl0RKNsji
+         A1Qg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=IELfzsVU/wZ7ht4rR86rM2gpBonGJDThNUGcKLGVsXM=;
+        b=3hw7qIJHvnszCVWWF2uUPDJZbDu+ZEyANaLQP7bQA07rV6JIsKW3yZUu6j7pf9Vtmr
+         Powwdlwk/kthjwQ56dplcbPg8EpkIOtV4RHh5fr214rFuXJm6nCP6jIkRvazQ5Khtpl+
+         QpbmN05PmJJXwYLEEkv+OYCvAGtYJHUINGoNlXRAlbS9KRjHj5BPoeaWuhiuQjGFRtoc
+         YNRE2caICBlmrYn8e+FZzVfGQhX5RJRiAPLylkvIwG4JKrVrhIkx1SHwFXX3Qd6GXTaY
+         t+yJ6DjaK4H2E8C8XYGHBrFG0Wvu3wK2vnM8nVw8A2d8qJTw7bGyeXfHHYRyzOeECbZU
+         oRTw==
+X-Gm-Message-State: AOAM5334tD9kiMYip24+gjrzom8MMjqaoLzqozrupgTbPz3bnwydEY28
+        zsTHYvs2zzSfYc+/HSi48meVK1HELKY79enuQNg=
+X-Google-Smtp-Source: ABdhPJzTfpFd8M5Xt44uoKu43Gt3h63iam3/mvcGzOYZWKbsOVzgolMeZrOa6ovX+WlSUY5RUDd0mD691DuXN+RfuvQ=
+X-Received: by 2002:a7b:cc0d:0:b0:381:220e:a3a0 with SMTP id
+ f13-20020a7bcc0d000000b00381220ea3a0mr5003576wmh.59.1647538482957; Thu, 17
+ Mar 2022 10:34:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <877d8t2ykp.ffs@tglx>
+References: <20220310234611.424743-1-robdclark@gmail.com> <20220310234611.424743-3-robdclark@gmail.com>
+ <YjMGac4Hnjmg1wE8@phenom.ffwll.local> <3945551d-47d2-1974-f637-1dbc61e14702@amd.com>
+ <CAF6AEGv36V8bLoDn5O1SW3iTUtzd3O1XeuT5gJxyLMxd1E-o3Q@mail.gmail.com>
+ <865abcff-9f52-dca4-df38-b11189c739ff@amd.com> <CAF6AEGuoBeYoMTR6-KM9xGZ05XSSnSJWMDciawczi7qtiLN9Vw@mail.gmail.com>
+ <915537e2-ac5b-ab0e-3697-2b16a9ec8f91@amd.com>
+In-Reply-To: <915537e2-ac5b-ab0e-3697-2b16a9ec8f91@amd.com>
+From:   Rob Clark <robdclark@gmail.com>
+Date:   Thu, 17 Mar 2022 10:35:24 -0700
+Message-ID: <CAF6AEGsyFAOPmHqT7YX1wsukP4-gYAstCukr89r9w28V0YSCUw@mail.gmail.com>
+Subject: Re: [PATCH 2/3] drm/msm/gpu: Park scheduler threads for system suspend
+To:     =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+Cc:     Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Rob Clark <robdclark@chromium.org>,
+        Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        David Airlie <airlied@linux.ie>,
+        Akhil P Oommen <quic_akhilpo@quicinc.com>,
+        Jonathan Marek <jonathan@marek.ca>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vladimir Lypak <vladimir.lypak@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 01:48:54AM +0100, Thomas Gleixner wrote:
-> On Wed, Mar 16 2022 at 05:08, Kirill A. Shutemov wrote:
-> Hmm?
+On Thu, Mar 17, 2022 at 9:45 AM Christian K=C3=B6nig
+<christian.koenig@amd.com> wrote:
+>
+> Am 17.03.22 um 17:18 schrieb Rob Clark:
+> > On Thu, Mar 17, 2022 at 9:04 AM Christian K=C3=B6nig
+> > <christian.koenig@amd.com> wrote:
+> >> Am 17.03.22 um 16:10 schrieb Rob Clark:
+> >>> [SNIP]
+> >>> userspace frozen !=3D kthread frozen .. that is what this patch is
+> >>> trying to address, so we aren't racing between shutting down the hw
+> >>> and the scheduler shoveling more jobs at us.
+> >> Well exactly that's the problem. The scheduler is supposed to shovelin=
+g
+> >> more jobs at us until it is empty.
+> >>
+> >> Thinking more about it we will then keep some dma_fence instance
+> >> unsignaled and that is and extremely bad idea since it can lead to
+> >> deadlocks during suspend.
+> > Hmm, perhaps that is true if you need to migrate things out of vram?
+> > It is at least not a problem when vram is not involved.
+>
+> No, it's much wider than that.
+>
+> See what can happen is that the memory management shrinkers want to wait
+> for a dma_fence during suspend.
 
-Does the changed version below address your concerns?
+we don't wait on fences in shrinker, only purging or evicting things
+that are already ready.  Actually, waiting on fences in shrinker path
+sounds like a pretty bad idea.
 
-	void tdx_get_ve_info(struct ve_info *ve)
-	{
-		struct tdx_module_output out;
+> And if you stop the scheduler they will just wait forever.
+>
+> What you need to do instead is to drain the scheduler, e.g. call
+> drm_sched_entity_flush() with a proper timeout for each entity you have
+> created.
 
-		/*
-		 * Called during #VE handling to retrieve the #VE info from the
-		 * TDX module.
-		 *
-		 * This has to be called early in #VE handling.  A "nested" #VE which
-		 * occurs before this will raise a #DF and is not recoverable.
-		 *
-		 * The call retrieves the #VE info from the TDX module, which also
-		 * clears the "#VE valid" flag. This must be done before anything else
-		 * because any #VE that occurs while the valid flag is set will lead to
-		 * #DF.
-		 *
-		 * Note, the TDX module treats virtual NMIs as inhibited if the #VE
-		 * valid flag is set. It means that NMI=>#VE will not result in a #DF.
-		 */
-		tdx_module_call(TDX_GET_VEINFO, 0, 0, 0, 0, &out);
+yeah, it would work to drain the scheduler.. I guess that might be the
+more portable approach as far as generic solution for suspend.
 
-		/* Transfer the output parameters */
-		ve->exit_reason = out.rcx;
-		ve->exit_qual   = out.rdx;
-		ve->gla         = out.r8;
-		ve->gpa         = out.r9;
-		ve->instr_len   = lower_32_bits(out.r10);
-		ve->instr_info  = upper_32_bits(out.r10);
-	}
+BR,
+-R
 
-> > +/*
-> > + * Virtualization Exceptions (#VE) are delivered to TDX guests due to
-> > + * specific guest actions which may happen in either user space or the
-> > + * kernel:
-> > + *
-> > + *  * Specific instructions (WBINVD, for example)
-> > + *  * Specific MSR accesses
-> > + *  * Specific CPUID leaf accesses
-> > + *  * Access to specific guest physical addresses
-> > + *
-> > + * In the settings that Linux will run in, virtualization exceptions are
-> > + * never generated on accesses to normal, TD-private memory that has been
-> > + * accepted.
-> > + *
-> > + * Syscall entry code has a critical window where the kernel stack is not
-> > + * yet set up. Any exception in this window leads to hard to debug issues
-> > + * and can be exploited for privilege escalation. Exceptions in the NMI
-> > + * entry code also cause issues. Returning from the exception handler with
-> > + * IRET will re-enable NMIs and nested NMI will corrupt the NMI stack.
-> > + *
-> > + * For these reasons, the kernel avoids #VEs during the syscall gap and
-> > + * the NMI entry code. Entry code paths do not access TD-shared memory,
-> > + * MMIO regions, use #VE triggering MSRs, instructions, or CPUID leaves
-> > + * that might generate #VE.
-> 
-> I asked that before:
-> 
->   "How is that enforced or validated? What checks for a violation of that
->    assumption?"
-> 
-> This is still exactly the same comment which is based on testing which
-> did not yet explode in your face, right?
-
-[ Disclaimer: I have limited understanding of the entry code complexity
-  and may miss some crucial details. But I try my best. ]
-
-Yes, it is the same comment, but it is based on code audit, not only on
-testing.
-
-I claim that kernel does not do anything that can possibly trigger #VE
-where kernel cannot deal with it:
-
- - on syscall entry code before kernel stack is set up (few instructions
-   in the beginning of entry_SYSCALL_64())
-
- - in NMI entry code (asm_exc_nmi()) before NMI nesting is safe:
-   + for NMI from user mode, before switched to thread stack
-   + for NMI from kernel, up to end_repead_nmi
-
-After that points #VE is safe.
-
-> So what's the point of this blurb? Create expectations which are not
-> accountable?
-
-I don't have such intentions.
-
-> The point is that any #VE in such a code path is fatal and you better
-> come up with some reasonable explanation why this is not the case in
-> those code pathes and how a potential violation of that assumption might
-> be detected especially in rarely used corner cases. If such a violation
-> is not detectable by audit, CI, static code analysis or whatever then
-> document the consequences instead of pretending that the problem does
-> not exist and the kernel is perfect today and forever.
-
-It is detectable by audit. The critical windows very limited and located
-in the highly scrutinized entry code. But, yes, I cannot guarantee that
-this code will be perfect forever.
-
-Consequences of #VE in these critical windows are mentioned in the
-comment:
-
-	Any exception in this window leads to hard to debug issues and can
-	be exploited for privilege escalation. 
-
-I have hard time understanding what I has to change here. Do you want
-details of audit to be documented? Make consequences of #VE at the wrong
-point to be more prominent in the comment? 
-
--- 
- Kirill A. Shutemov
+> Regards,
+> Christian.
+>
+> >
+> >> So this patch here is an absolute clear NAK from my side. If amdgpu is
+> >> doing something similar that is a severe bug and needs to be addressed
+> >> somehow.
+> > I think amdgpu's use of kthread_park is not related to suspend, but
+> > didn't look too closely.
+> >
+> > And perhaps the solution for this problem is more complex in the case
+> > of amdgpu, I'm not super familiar with the constraints there.  But I
+> > think it is a fine solution for integrated GPUs.
+> >
+> > BR,
+> > -R
+> >
+> >> Regards,
+> >> Christian.
+> >>
+> >>> BR,
+> >>> -R
+> >>>
+>
