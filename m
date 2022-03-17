@@ -2,150 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF61C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 14:19:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4253FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 14:19:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234735AbiCQOU5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 10:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38934 "EHLO
+        id S235014AbiCQOVG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 10:21:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230443AbiCQOUz (ORCPT
+        with ESMTP id S234774AbiCQOVA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 10:20:55 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44EAB168093
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 07:19:38 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id h16so2637284wmd.0
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 07:19:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=vOnzxJlH628gKK791oOxGy9dmx+tXiUp5rK1D8p/Qyc=;
-        b=kDa19YjHt8tRsYBiCBRfz6pxQ6UQoy4iCEQZlW16D9UkkNnJ5lJWdzG5326YcKXBbe
-         wXqwKuhekffzEpU/DSQxmw8BngtaGdfZqJb+dcnZFsBEvsulNkyI+Ewh6bkGRNbnsNL3
-         iTsuRvUa5JouyV37vWooKUnnwgTmoilWrVXbPZqGYIkHky8DmZ7n4SzCUBsggTqvfvRK
-         5JwbkPO2e5PRQCviaoDuQaaHS8QpAIMPmrOTTm6DFGb55TOkSyDDwA6xan0PlhGk4R26
-         FPZPX7kc3a+Taa39eA1Ls/isLKM7mMxkqlekhijkOVXc2WWIowYHwAPx9xa+rzaDIC3u
-         7YSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=vOnzxJlH628gKK791oOxGy9dmx+tXiUp5rK1D8p/Qyc=;
-        b=U0aar+zJMLfsARqQNv2Q37fluxI7rgdm5LQi4Z5Lpg2HurW+3EWatOk+GbFS00OoGE
-         V6ufruKSs8d2GUU0Eqxdm0SctvEBspcbIWcFYsOfqF/fV3PDhK9/7pTMbWP3BQvNCSmv
-         7EEqvhm5Xg7HQNZK6ULeLBl0wP7r3ghr7aGnuRGZLeysrVUGY3wI0ZIJJhXqqWQJc12Y
-         n2R7MN2ESKAIWUgr3dpvh/5wRWGPDOApoIi5nKgWCBZCxSywigea88qgVzZJzzbSY00c
-         REFjjr86lQxYcdeMNZb1E8uPBZxTkKDP4W0k7khcmL6ZV8MN1TtaZT38ZOVwpWK7DZYY
-         ca9g==
-X-Gm-Message-State: AOAM533DKw7z/2i2gNuUucuWCoz6Mkxilq4+ihry2XjKPHWAFvMMAAPd
-        9FJlpjR0MMhi2Xhem5u2N9BUdIGEzdR+FQ==
-X-Google-Smtp-Source: ABdhPJxHZZo33eVHgCXtOwWiAcwRItKQpqcB0Hn2WCbkLjhRmwjh4xDZTHa0HI9wyEJ/oy2JZF1G3w==
-X-Received: by 2002:a05:600c:3c9f:b0:38c:6dc6:6de2 with SMTP id bg31-20020a05600c3c9f00b0038c6dc66de2mr6739347wmb.132.1647526776607;
-        Thu, 17 Mar 2022 07:19:36 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id v20-20020a7bcb54000000b0037fa63db8aasm7975546wmj.5.2022.03.17.07.19.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Mar 2022 07:19:35 -0700 (PDT)
-Date:   Thu, 17 Mar 2022 14:19:33 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     linux-kernel@vger.kernel.org,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Subject: Re: [PATCH 1/1] drm/amdkfd: Protect the Client whilst it is being
- operated on
-Message-ID: <YjNDdXXOMYNuHJcV@google.com>
-References: <20220317131610.554347-1-lee.jones@linaro.org>
+        Thu, 17 Mar 2022 10:21:00 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94A82169B0A
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 07:19:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647526783; x=1679062783;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=U6rXM0bflcprHQwN2TgyP68VKWMmXe8T0RivNVIeLO4=;
+  b=XhK0/ma0fVMn+oC1IzUwE3L/NdYquly8fiLkmLs3cd3Ng1bfzdlxzk6j
+   QsvH6g399I7I1nGmWRS47af6i4Fmi/Moe7enHxzmn3ocqX+7cbYX8tqeI
+   +VXiXat/Z9iUZJVLQz4RO0iuDzN3rHXL5v7ysx3pIl/PBAsGx5rYbDFou
+   K87dQ2c8QGfooFsnoQ1jVW1wlsbxGizFFTN9S0ETsmb/XEVovuvuKmHiE
+   ChJst1gfoO6FPXW2QZDo+rTsAio5laPKb7qQBeQfH75c/m0g26gFhNYf0
+   6GtYXGGUqTDauQL+gPeX+pBPM/KWJIRetIvA6Cvx5x2TWvyOuIRkAkiWa
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="320089294"
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="320089294"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 07:19:42 -0700
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="541385197"
+Received: from knavalgu-mobl1.gar.corp.intel.com (HELO [10.251.29.221]) ([10.251.29.221])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 07:19:41 -0700
+Message-ID: <1b955086-94d0-d524-4cd4-b177df56f71c@linux.intel.com>
+Date:   Thu, 17 Mar 2022 08:21:11 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220317131610.554347-1-lee.jones@linaro.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.5.0
+Subject: Re: [PATCH] ASoC: SOF: topology: Use kmemdup() to replace kzalloc +
+ memcpy
+Content-Language: en-US
+To:     Yihao Han <hanyihao@vivo.com>, Liam Girdwood <lgirdwood@gmail.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Cc:     kernel@vivo.com
+References: <20220317093841.3414-1-hanyihao@vivo.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <20220317093841.3414-1-hanyihao@vivo.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 17 Mar 2022, Lee Jones wrote:
 
-> Presently the Client can be freed whilst still in use.
+
+On 3/17/22 04:38, Yihao Han wrote:
+> fix memdup.cocci warning:
+> sound/soc/sof/topology.c:876:19-26: WARNING opportunity for kmemdup
 > 
-> Use the already provided lock to prevent this.
+> Generated by: scripts/coccinelle/api/memdup.cocci
 > 
-> Cc: Felix Kuehling <Felix.Kuehling@amd.com>
-> Cc: Alex Deucher <alexander.deucher@amd.com>
-> Cc: "Christian König" <christian.koenig@amd.com>
-> Cc: "Pan, Xinhui" <Xinhui.Pan@amd.com>
-> Cc: David Airlie <airlied@linux.ie>
-> Cc: Daniel Vetter <daniel@ffwll.ch>
-> Cc: amd-gfx@lists.freedesktop.org
-> Cc: dri-devel@lists.freedesktop.org
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> Signed-off-by: Yihao Han <hanyihao@vivo.com>
+
+Thanks for the patch
+
+Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+
 > ---
-
-I should have clarified here, that:
-
-This patch has only been *build* tested.
-
-Since I have no way to run this on real H/W.
-
-Please ensure this is tested on real H/W before it gets applied, since
-it *may* have some undesired side-effects.  For instance, I have no
-idea if client->lock plays nicely with dev->smi_lock or whether this
-may well end up in deadlock.
-
-TIA.
-
->  drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c | 6 ++++++
->  1 file changed, 6 insertions(+)
+>   sound/soc/sof/topology.c | 3 +--
+>   1 file changed, 1 insertion(+), 2 deletions(-)
 > 
-> diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c b/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
-> index e4beebb1c80a2..3b9ac1e87231f 100644
-> --- a/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
-> +++ b/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
-> @@ -145,8 +145,11 @@ static int kfd_smi_ev_release(struct inode *inode, struct file *filep)
->  	spin_unlock(&dev->smi_lock);
->  
->  	synchronize_rcu();
-> +
-> +	spin_lock(&client->lock);
->  	kfifo_free(&client->fifo);
->  	kfree(client);
-> +	spin_unlock(&client->lock);
->  
->  	return 0;
->  }
-> @@ -247,11 +250,13 @@ int kfd_smi_event_open(struct kfd_dev *dev, uint32_t *fd)
->  		return ret;
->  	}
->  
-> +	spin_lock(&client->lock);
->  	ret = anon_inode_getfd(kfd_smi_name, &kfd_smi_ev_fops, (void *)client,
->  			       O_RDWR);
->  	if (ret < 0) {
->  		kfifo_free(&client->fifo);
->  		kfree(client);
-> +		spin_unlock(&client->lock);
->  		return ret;
->  	}
->  	*fd = ret;
-> @@ -264,6 +269,7 @@ int kfd_smi_event_open(struct kfd_dev *dev, uint32_t *fd)
->  	spin_lock(&dev->smi_lock);
->  	list_add_rcu(&client->list, &dev->smi_clients);
->  	spin_unlock(&dev->smi_lock);
-> +	spin_unlock(&client->lock);
->  
->  	return 0;
->  }
-
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+> diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
+> index 367fbe2d5b31..369693cc6d10 100644
+> --- a/sound/soc/sof/topology.c
+> +++ b/sound/soc/sof/topology.c
+> @@ -873,11 +873,10 @@ static int sof_control_load_bytes(struct snd_soc_component *scomp,
+>   
+>   	/* copy the private data */
+>   	if (priv_size > 0) {
+> -		scontrol->priv = kzalloc(priv_size, GFP_KERNEL);
+> +		scontrol->priv = kmemdup(control->priv.data, priv_size, GFP_KERNEL);
+>   		if (!scontrol->priv)
+>   			return -ENOMEM;
+>   
+> -		memcpy(scontrol->priv, control->priv.data, priv_size);
+>   		scontrol->priv_size = priv_size;
+>   	}
+>   
