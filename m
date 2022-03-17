@@ -2,64 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 603B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:47:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B249C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:47:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236083AbiCQPsy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 11:48:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43760 "EHLO
+        id S236085AbiCQPtL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 11:49:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231359AbiCQPsu (ORCPT
+        with ESMTP id S234278AbiCQPtK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 11:48:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E07FC20E962;
-        Thu, 17 Mar 2022 08:47:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8FFEBB81EF7;
-        Thu, 17 Mar 2022 15:47:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78F9DC340E9;
-        Thu, 17 Mar 2022 15:47:28 +0000 (UTC)
-Date:   Thu, 17 Mar 2022 11:47:26 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Wander Lairson Costa <wander@redhat.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Pali =?UTF-8?B?Um9ow6Fy?= <pali@kernel.org>,
-        linux-serial@vger.kernel.org (open list:SERIAL DRIVERS),
-        linux-kernel@vger.kernel.org (open list),
-        senozhatsky@chromium.org, andre.goddard@gmail.com,
-        sudipm.mukherjee@gmail.com, andy.shevchenko@gmail.com,
-        David.Laight@aculab.com, jonathanh@nvidia.com, phil@raspberrypi.com
-Subject: Re: [PATCH v4 0/5] tty/8250: Use fifo in 8250 console driver
-Message-ID: <20220317114726.37aea48b@gandalf.local.home>
-In-Reply-To: <20220316143646.13301-1-wander@redhat.com>
-References: <20220316143646.13301-1-wander@redhat.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Thu, 17 Mar 2022 11:49:10 -0400
+Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85E9713EB7;
+        Thu, 17 Mar 2022 08:47:53 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by comms.puri.sm (Postfix) with ESMTP id DD5ACE0139;
+        Thu, 17 Mar 2022 08:47:52 -0700 (PDT)
+Received: from comms.puri.sm ([127.0.0.1])
+        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id T1hfA1Qg9heb; Thu, 17 Mar 2022 08:47:52 -0700 (PDT)
+From:   Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        linux-usb@vger.kernel.org
+Cc:     Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sven Peter <sven@svenpeter.dev>,
+        =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>,
+        Angus Ainslie <angus@akkea.ca>,
+        Hector Martin <marcan@marcan.st>,
+        "Bryan O'Donoghue" <bryan.odonoghue@linaro.org>,
+        linux-kernel@vger.kernel.org, kernel@puri.sm
+Subject: [PATCH 1/7] usb: typec: tipd: Only update power status on IRQ
+Date:   Thu, 17 Mar 2022 16:45:12 +0100
+Message-Id: <20220317154518.4082046-2-sebastian.krzyszkowiak@puri.sm>
+In-Reply-To: <20220317154518.4082046-1-sebastian.krzyszkowiak@puri.sm>
+References: <20220317154518.4082046-1-sebastian.krzyszkowiak@puri.sm>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 16 Mar 2022 11:36:39 -0300
-Wander Lairson Costa <wander@redhat.com> wrote:
+From: Guido Günther <agx@sigxcpu.org>
 
-> I cc everybody that reported problems with the previous version of this
-> patch so they can retest and confirm their systems work flawlessly.
+Instead of refetching power status cache it and only update it when a
+change is signalled via irq. This simplifies tracing and adding more
+supply properties in follow up patches.
 
-I didn't do an extensive test, but I quickly applied them and did not see
-any issues with the two machines that had problems with your first commits.
+Signed-off-by: Guido Günther <agx@sigxcpu.org>
+Signed-off-by: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
+---
+ drivers/usb/typec/tipd/core.c | 32 ++++++++++++--------------------
+ 1 file changed, 12 insertions(+), 20 deletions(-)
 
-But I'll do a more extensive testing on your v5 before I give a tested-by.
+diff --git a/drivers/usb/typec/tipd/core.c b/drivers/usb/typec/tipd/core.c
+index 16b4560216ba..dfbba5ae9487 100644
+--- a/drivers/usb/typec/tipd/core.c
++++ b/drivers/usb/typec/tipd/core.c
+@@ -93,6 +93,8 @@ struct tps6598x {
+ 	struct power_supply *psy;
+ 	struct power_supply_desc psy_desc;
+ 	enum power_supply_usb_type usb_type;
++
++	u16 pwr_status;
+ };
+ 
+ static enum power_supply_property tps6598x_psy_props[] = {
+@@ -230,17 +232,12 @@ static int tps6598x_connect(struct tps6598x *tps, u32 status)
+ {
+ 	struct typec_partner_desc desc;
+ 	enum typec_pwr_opmode mode;
+-	u16 pwr_status;
+ 	int ret;
+ 
+ 	if (tps->partner)
+ 		return 0;
+ 
+-	ret = tps6598x_read16(tps, TPS_REG_POWER_STATUS, &pwr_status);
+-	if (ret < 0)
+-		return ret;
+-
+-	mode = TPS_POWER_STATUS_PWROPMODE(pwr_status);
++	mode = TPS_POWER_STATUS_PWROPMODE(tps->pwr_status);
+ 
+ 	desc.usb_pd = mode == TYPEC_PWR_MODE_PD;
+ 	desc.accessory = TYPEC_ACCESSORY_NONE; /* XXX: handle accessories */
+@@ -455,6 +452,7 @@ static bool tps6598x_read_power_status(struct tps6598x *tps)
+ 		dev_err(tps->dev, "failed to read power status: %d\n", ret);
+ 		return false;
+ 	}
++	tps->pwr_status = pwr_status;
+ 	trace_tps6598x_power_status(pwr_status);
+ 
+ 	return true;
+@@ -601,15 +599,8 @@ static const struct regmap_config tps6598x_regmap_config = {
+ static int tps6598x_psy_get_online(struct tps6598x *tps,
+ 				   union power_supply_propval *val)
+ {
+-	int ret;
+-	u16 pwr_status;
+-
+-	ret = tps6598x_read16(tps, TPS_REG_POWER_STATUS, &pwr_status);
+-	if (ret < 0)
+-		return ret;
+-
+-	if (TPS_POWER_STATUS_CONNECTION(pwr_status) &&
+-	    TPS_POWER_STATUS_SOURCESINK(pwr_status)) {
++	if (TPS_POWER_STATUS_CONNECTION(tps->pwr_status) &&
++	    TPS_POWER_STATUS_SOURCESINK(tps->pwr_status)) {
+ 		val->intval = 1;
+ 	} else {
+ 		val->intval = 0;
+@@ -622,15 +613,11 @@ static int tps6598x_psy_get_prop(struct power_supply *psy,
+ 				 union power_supply_propval *val)
+ {
+ 	struct tps6598x *tps = power_supply_get_drvdata(psy);
+-	u16 pwr_status;
+ 	int ret = 0;
+ 
+ 	switch (psp) {
+ 	case POWER_SUPPLY_PROP_USB_TYPE:
+-		ret = tps6598x_read16(tps, TPS_REG_POWER_STATUS, &pwr_status);
+-		if (ret < 0)
+-			return ret;
+-		if (TPS_POWER_STATUS_PWROPMODE(pwr_status) == TYPEC_PWR_MODE_PD)
++		if (TPS_POWER_STATUS_PWROPMODE(tps->pwr_status) == TYPEC_PWR_MODE_PD)
+ 			val->intval = POWER_SUPPLY_USB_TYPE_PD;
+ 		else
+ 			val->intval = POWER_SUPPLY_USB_TYPE_C;
+@@ -837,6 +824,11 @@ static int tps6598x_probe(struct i2c_client *client)
+ 	fwnode_handle_put(fwnode);
+ 
+ 	if (status & TPS_STATUS_PLUG_PRESENT) {
++		ret = tps6598x_read16(tps, TPS_REG_POWER_STATUS, &tps->pwr_status);
++		if (ret < 0) {
++			dev_err(tps->dev, "failed to read power status: %d\n", ret);
++			goto err_role_put;
++		}
+ 		ret = tps6598x_connect(tps, status);
+ 		if (ret)
+ 			dev_err(&client->dev, "failed to register partner\n");
+-- 
+2.35.1
 
-Thanks,
-
--- Steve
