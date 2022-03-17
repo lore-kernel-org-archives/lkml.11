@@ -2,160 +2,297 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E489BC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 09:00:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3389AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 09:00:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231628AbiCQJB2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 05:01:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33060 "EHLO
+        id S231641AbiCQJBg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 05:01:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230473AbiCQJB1 (ORCPT
+        with ESMTP id S231650AbiCQJBe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 05:01:27 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 891FFD0AB9;
-        Thu, 17 Mar 2022 02:00:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647507610; x=1679043610;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=2ha6NQ8Ir36VJy9aR+o21fKqfFIdIighF2kdl4D0/UQ=;
-  b=Mktf8san8lgb2DxAIJ9fzxe79JiFu5w1LCDc6GZxItTgc1EI3hkZlWXS
-   anNnlvVCRpSeme+gj/QYDDFz4O6mo07wJ0N8tXA4p+WQCDxLYnWcxdybh
-   9Je4ngd0IDeYMOnTJqAfbFUHwhDAEzROxDXM4GD/+MfG/P1CLkEvFbUQT
-   M/4tNhM3R/9Zm2FZ8YTdCRZVyRNtHfymTg9SGdQSFm9l2FVHI6DZFYJIx
-   wIXaaZJWfmdOEl+tPjKw2T1W+oBbY60MzBevPBZP/rnRTYIkIZaHuIZXk
-   RlG4hBrhTAZw8QtajuWPNjZZ4mbMDFDNH8PwAFABrOc9vtUMkflwsUwGZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="320030315"
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="320030315"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 02:00:10 -0700
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="645022180"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 02:00:08 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nUlyi-001Ppl-Nk;
-        Thu, 17 Mar 2022 10:59:28 +0200
-Date:   Thu, 17 Mar 2022 10:59:28 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org, micklorain@protonmail.com,
-        Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH v1 1/1] PCI: Enable INTx quirk for ATI PCIe-USB adapter
-Message-ID: <YjL4cEBXCQ1eSy48@smile.fi.intel.com>
-References: <YjIMY1/r15xj65pZ@smile.fi.intel.com>
- <20220316211548.GA677098@bhelgaas>
+        Thu, 17 Mar 2022 05:01:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8DDDB1D08DD
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 02:00:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647507615;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CEdqsAQgxWBE6LqF2BTOKci65noXcTnmAaK4eVtIxl8=;
+        b=cqA7eclLj0kE/uEw04ztWUYKLIftR2ouHKcBRhI21BzNiiV1asUDQFp0bEaNtaJ7AuYcn2
+        lkvUP4CqExnYhDclvmXaexRsr5X3mXyPDmTwn+wmNQ5MwLVc4vTnvmnwe6+imoMJIKkqGs
+        P1XZL5b/ZdOBPaEz4tJ3M825BobZYek=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-590--WK8ui2PNHScqRimV-sMCA-1; Thu, 17 Mar 2022 05:00:14 -0400
+X-MC-Unique: -WK8ui2PNHScqRimV-sMCA-1
+Received: by mail-wr1-f69.google.com with SMTP id a5-20020adfc445000000b00203dcb13954so1311369wrg.23
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 02:00:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=CEdqsAQgxWBE6LqF2BTOKci65noXcTnmAaK4eVtIxl8=;
+        b=xAtrSZC+42pUvL/yNKF8MK9nCLbyDzk9b2P3CbzHV4GJq8V12rqxVlFoKFqDEZPsKU
+         DUwDpX7Q/gEraZ61eKDJ9w2xyHCSiItvNIXdmUx0L028nv7CZ6x/DW8g2ceA2RdkMTi9
+         Eu+/oYkDumtPmlD40AI3DLQ+I+WtDuzPL39C9ciJt/SOOWmkTgJqz0D/+i7V70jKT9zW
+         Bb9oWherY5Q5ebzW+DGcohDrWU2fdnXvs4Rjh+WQ/SRTUQRhtuFC2Q1ge3HKiJ6F+vDu
+         Uwi5tTcAf7whSyr2e+f9nHniWejKpciCG4W5Vy4l2jn70f+yz6Ti/cc3Ue5Y+z3z7igA
+         qpvg==
+X-Gm-Message-State: AOAM5323ibrDelikt6KKwobAxYLVY4sg0rUni8NEEtvPp+K353x4RWoG
+        BBpl2d5uWxxS/YFTs4qKuGCDN+7nQdmjCYMCe48Kc21ZOaRIAaSlxlTXzPTYG0UVmRIGVjmU3f+
+        VYGIw5fDPvXlNlA4o2/yaFBpw
+X-Received: by 2002:a05:600c:1e06:b0:389:b587:27fb with SMTP id ay6-20020a05600c1e0600b00389b58727fbmr2929344wmb.18.1647507612916;
+        Thu, 17 Mar 2022 02:00:12 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyd+psZAnDBKHw/YgYAQwONCE2ZhVBDpmP1w9vLJpbcwmWM1vQC6XDuiirz8atwnr4FiSjK3Q==
+X-Received: by 2002:a05:600c:1e06:b0:389:b587:27fb with SMTP id ay6-20020a05600c1e0600b00389b58727fbmr2929308wmb.18.1647507612542;
+        Thu, 17 Mar 2022 02:00:12 -0700 (PDT)
+Received: from ?IPV6:2a09:80c0:192:0:20af:34be:985b:b6c8? ([2a09:80c0:192:0:20af:34be:985b:b6c8])
+        by smtp.gmail.com with ESMTPSA id c11-20020a05600c0a4b00b0037c91e085ddsm8408655wmq.40.2022.03.17.02.00.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Mar 2022 02:00:12 -0700 (PDT)
+Message-ID: <92caaf7b-92a6-8485-d53e-728c3aac30c3@redhat.com>
+Date:   Thu, 17 Mar 2022 10:00:10 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220316211548.GA677098@bhelgaas>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Content-Language: en-US
+To:     Yang Shi <shy828301@gmail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org
+References: <20220315104741.63071-1-david@redhat.com>
+ <20220315104741.63071-5-david@redhat.com>
+ <CAHbLzkqs04Y+2oNP1Tvhk7wOK4LQnD5vuCMVU9o6+-=UAUDwXA@mail.gmail.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH v2 04/15] mm/rmap: split page_dup_rmap() into
+ page_dup_file_rmap() and page_try_dup_anon_rmap()
+In-Reply-To: <CAHbLzkqs04Y+2oNP1Tvhk7wOK4LQnD5vuCMVU9o6+-=UAUDwXA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 04:15:48PM -0500, Bjorn Helgaas wrote:
-> On Wed, Mar 16, 2022 at 06:12:19PM +0200, Andy Shevchenko wrote:
-> > On Wed, Mar 16, 2022 at 06:52:09AM -0500, Bjorn Helgaas wrote:
-> > > On Wed, Mar 16, 2022 at 12:27:57PM +0200, Andy Shevchenko wrote:
-> > > > On Tue, Mar 15, 2022 at 03:22:31PM -0500, Bjorn Helgaas wrote:
-> > > > > On Tue, Mar 15, 2022 at 12:09:08PM +0200, Andy Shevchenko wrote:
-> > > > > > On Mon, Mar 14, 2022 at 02:42:53PM -0500, Bjorn Helgaas wrote:
-> > > > > > > On Mon, Mar 14, 2022 at 12:14:48PM +0200, Andy Shevchenko wrote:
-> > > > > > > > ATI PCIe-USB adapter advertises MSI, but it doesn't work
-> > > > > > > > if INTx is disabled.  Enable the respective quirk as
-> > > > > > > > it's done for other ATI devices on this chipset,
-> > > > > > > > 
-> > > > > > > > Fixes: 306c54d0edb6 ("usb: hcd: Try MSI interrupts on
-> > > > > > > > PCI devices")
+On 16.03.22 21:02, Yang Shi wrote:
+> On Tue, Mar 15, 2022 at 3:50 AM David Hildenbrand <david@redhat.com> wrote:
+>>
+>> ... and move the special check for pinned pages into
+>> page_try_dup_anon_rmap() to prepare for tracking exclusive anonymous
+>> pages via a new pageflag, clearing it only after making sure that there
+>> are no GUP pins on the anonymous page.
+>>
+>> We really only care about pins on anonymous pages, because they are
+>> prone to getting replaced in the COW handler once mapped R/O. For !anon
+>> pages in cow-mappings (!VM_SHARED && VM_MAYWRITE) we shouldn't really
+>> care about that, at least not that I could come up with an example.
+>>
+>> Let's drop the is_cow_mapping() check from page_needs_cow_for_dma(), as we
+>> know we're dealing with anonymous pages. Also, drop the handling of
+>> pinned pages from copy_huge_pud() and add a comment if ever supporting
+>> anonymous pages on the PUD level.
+>>
+>> This is a preparation for tracking exclusivity of anonymous pages in
+>> the rmap code, and disallowing marking a page shared (-> failing to
+>> duplicate) if there are GUP pins on a page.
+>>
+>> RFC notes: if I'm missing something important for !anon pages, we could
+>>            similarly handle it via page_try_dup_file_rmap().
+>>
+>> Signed-off-by: David Hildenbrand <david@redhat.com>
+>> ---
+>>  include/linux/mm.h   |  5 +----
+>>  include/linux/rmap.h | 48 +++++++++++++++++++++++++++++++++++++++++++-
+>>  mm/huge_memory.c     | 27 ++++++++-----------------
+>>  mm/hugetlb.c         | 16 ++++++++-------
+>>  mm/memory.c          | 17 +++++++++++-----
+>>  mm/migrate.c         |  2 +-
+>>  6 files changed, 78 insertions(+), 37 deletions(-)
+>>
+>> diff --git a/include/linux/mm.h b/include/linux/mm.h
+>> index 391b950e919d..63ee06001189 100644
+>> --- a/include/linux/mm.h
+>> +++ b/include/linux/mm.h
+>> @@ -1322,16 +1322,13 @@ static inline bool is_cow_mapping(vm_flags_t flags)
+>>
+>>  /*
+>>   * This should most likely only be called during fork() to see whether we
+>> - * should break the cow immediately for a page on the src mm.
+>> + * should break the cow immediately for an anon page on the src mm.
+>>   *
+>>   * The caller has to hold the PT lock and the vma->vm_mm->->write_protect_seq.
+>>   */
+>>  static inline bool page_needs_cow_for_dma(struct vm_area_struct *vma,
+>>                                           struct page *page)
+>>  {
+>> -       if (!is_cow_mapping(vma->vm_flags))
+>> -               return false;
+>> -
+>>         VM_BUG_ON(!(raw_read_seqcount(&vma->vm_mm->write_protect_seq) & 1));
+>>
+>>         if (!test_bit(MMF_HAS_PINNED, &vma->vm_mm->flags))
+>> diff --git a/include/linux/rmap.h b/include/linux/rmap.h
+>> index e704b1a4c06c..92c3585b8c6a 100644
+>> --- a/include/linux/rmap.h
+>> +++ b/include/linux/rmap.h
+>> @@ -180,11 +180,57 @@ void hugepage_add_anon_rmap(struct page *, struct vm_area_struct *,
+>>  void hugepage_add_new_anon_rmap(struct page *, struct vm_area_struct *,
+>>                                 unsigned long);
+>>
+>> -static inline void page_dup_rmap(struct page *page, bool compound)
+>> +static inline void __page_dup_rmap(struct page *page, bool compound)
+>>  {
+>>         atomic_inc(compound ? compound_mapcount_ptr(page) : &page->_mapcount);
+>>  }
+>>
+>> +static inline void page_dup_file_rmap(struct page *page, bool compound)
+>> +{
+>> +       __page_dup_rmap(page, compound);
+>> +}
+>> +
+>> +/**
+>> + * page_try_dup_anon_rmap - try duplicating a mapping of an already mapped
+>> + *                         anonymous page
+>> + * @page: the page to duplicate the mapping for
+>> + * @compound: the page is mapped as compound or as a small page
+>> + * @vma: the source vma
+>> + *
+>> + * The caller needs to hold the PT lock and the vma->vma_mm->write_protect_seq.
+>> + *
+>> + * Duplicating the mapping can only fail if the page may be pinned; device
+>> + * private pages cannot get pinned and consequently this function cannot fail.
+>> + *
+>> + * If duplicating the mapping succeeds, the page has to be mapped R/O into
+>> + * the parent and the child. It must *not* get mapped writable after this call.
+>> + *
+>> + * Returns 0 if duplicating the mapping succeeded. Returns -EBUSY otherwise.
+>> + */
+>> +static inline int page_try_dup_anon_rmap(struct page *page, bool compound,
+>> +                                        struct vm_area_struct *vma)
+>> +{
+>> +       VM_BUG_ON_PAGE(!PageAnon(page), page);
+>> +
+>> +       /*
+>> +        * If this page may have been pinned by the parent process,
+>> +        * don't allow to duplicate the mapping but instead require to e.g.,
+>> +        * copy the page immediately for the child so that we'll always
+>> +        * guarantee the pinned page won't be randomly replaced in the
+>> +        * future on write faults.
+>> +        */
+>> +       if (likely(!is_device_private_page(page) &&
+>> +           unlikely(page_needs_cow_for_dma(vma, page))))
+>> +               return -EBUSY;
+>> +
+>> +       /*
+>> +        * It's okay to share the anon page between both processes, mapping
+>> +        * the page R/O into both processes.
+>> +        */
+>> +       __page_dup_rmap(page, compound);
+>> +       return 0;
+>> +}
+>> +
+>>  /*
+>>   * Called from mm/vmscan.c to handle paging out
+>>   */
+>> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+>> index cda88d8ac1bd..c126d728b8de 100644
+>> --- a/mm/huge_memory.c
+>> +++ b/mm/huge_memory.c
+>> @@ -1097,23 +1097,16 @@ int copy_huge_pmd(struct mm_struct *dst_mm, struct mm_struct *src_mm,
+>>         src_page = pmd_page(pmd);
+>>         VM_BUG_ON_PAGE(!PageHead(src_page), src_page);
+>>
+>> -       /*
+>> -        * If this page is a potentially pinned page, split and retry the fault
+>> -        * with smaller page size.  Normally this should not happen because the
+>> -        * userspace should use MADV_DONTFORK upon pinned regions.  This is a
+>> -        * best effort that the pinned pages won't be replaced by another
+>> -        * random page during the coming copy-on-write.
+>> -        */
+>> -       if (unlikely(page_needs_cow_for_dma(src_vma, src_page))) {
+>> +       get_page(src_page);
+>> +       if (unlikely(page_try_dup_anon_rmap(src_page, true, src_vma))) {
+>> +               /* Page maybe pinned: split and retry the fault on PTEs. */
+>> +               put_page(src_page);
 > 
-> > > > > Anyway, I applied this to pci/msi for v5.18 with the following
-> > > > > commit log:
-> > > > > 
-> > > > >     PCI: Disable broken MSI on ATI SB600 USB adapters
-> > > > > 
-> > > > >     Some ATI SB600 USB adapters advertise MSI, but MSI doesn't
-> > > > >     work if INTx is disabled.  Disable MSI on these adapters.
-> > > > 
-> > > > But IIUC MSI is _not_ disabled. That's why I have issued this
-> > > > version of the patch with different commit message. Did I
-> > > > misunderstand something?
-> > > 
-> > > Oh, right, of course.  Sorry, I was asleep at the wheel.
-> > 
-> > Are you going to fix that?
+> Do we have to do the get_page()/put_page() sequence? It seems we don't
+> have to get the page before calling page_try_dup_anon_rmap(), right?
+> We just need to bump page refcount when dupping rmap successfully. So
+> we could do:
 > 
-> Yes, of course, I'll do something with the commit message after we
-> figure out how to handle PCI_COMMAND_INTX_DISABLE.
+> if (unlikely(page_try_dup_anon_rmap(src_page, true, src_vma))) {
+>     /* do something */
+> }
 > 
-> > > I guess it's just that for these devices, we don't disable INTx
-> > > when enabling MSI.  I can't remember why we disable INTx when
-> > > enabling MSI, but it raises the question of whether it's better to
-> > > leave INTx enabled or to just disable use of MSI completely.
-> > 
-> > It's required by specification to disable INTx if I read 6.1.4.3
-> > Enabling Operation correctly.
-> 
-> Thanks for the reference; I was looking for something like that.  But
-> I don't think this section requires us to set
-> PCI_COMMAND_INTX_DISABLE.  For the benefit of folks without the spec,
-> PCIe r6.0, sec 6.1.4.3 says:
-> 
->   To maintain backward compatibility, the MSI Enable bit in the
->   Message Control Register for MSI and the MSI-X Enable bit in the
->   Message Control Register for MSI-X are each Clear by default (MSI
->   and MSI-X are both disabled). System configuration software Sets one
->   of these bits to enable either MSI or MSI-X, but never both
->   simultaneously. Behavior is undefined if both MSI and MSI-X are
->   enabled simultaneously. Software disabling either mechanism during
->   active operation may result in the Function dropping pending
->   interrupt conditions or failing to recognize new interrupt
->   conditions. While enabled for MSI or MSI-X operation, a Function is
->   prohibited from using INTx interrupts (if implemented) to request
->   service (MSI, MSI-X, and INTx are mutually exclusive).
-> 
-> The only *software* constraints I see are (1) software must never
-> enable both MSI and MSI-X simultaneously, and (2) if software disables
-> MSI or MSI-X during active operation, the Function may fail to
-> generate an interrupt when it should.
-> 
-> I read the last sentence as a constraint on the *hardware*: if either
-> MSI or MSI-X is enabled, the Function is not allowed to use INTx,
-> regardless of the state of PCI_COMMAND_INTX_DISABLE.
-> 
-> I searched the spec for "Interrupt Disable", looking for situations
-> where software might be *required* to set it, but I didn't see
-> anything.
-> 
-> I suspect "Interrupt Disable" was intended to help the OS stop all
-> activity from a device during hot-plug or reconfiguration, as hinted
-> at in sec 6.4, "Device Synchronization":
-> 
->   The ability of the driver and/or system software to block new
->   Requests from the device is supported by the Bus Master Enable,
->   SERR# Enable, and Interrupt Disable bits in the Command register
->   (Section 7.5.1.1.3) of each device Function, and other such control
->   bits.
-> 
-> So I'm trying to figure out why when enabling MSI we need to set
-> PCI_COMMAND_INTX_DISABLE for most devices, but it's safe to skip that
-> for these quirked devices.
+> get_page(src_page)
 
-I guess it's wrong wording in the last paragraph. It's not safe, but it's
-_required_ since HW doesn't follow PCI specification that clearly says:
-"MSI, MSI-X, and INTx are mutually exclusive".
+I refrained from doing that in this series because I wasn't able to
+convince myself that it is completely sane.
 
-This is also supported by the other devices on the same chipset doing
-that and by the reported of the issue.
+Increasing the refcount before the mapcount here results in an
+interesting property (when unmap is done similarly, in reverse order):
+reading a snapshot of page_count()+mapcount() at a random point in
+time guarantees that page_count() >= mapcount.
+
+Now, the issue I see with changing that is the following: We seem
+to have some code that tries detecting additional references on a
+mapped page. While such checks can deal with false positives ("there
+is an additional reference"), false negatives ("these is no
+additional reference") could be bad.
+
+One example I stumbled over is KSM code:
+
+
+		/*
+		 * Check that no O_DIRECT or similar I/O is in progress on the
+		 * page
+		 */
+		if (page_mapcount(page) + 1 + swapped != page_count(page)) {
+			set_pte_at(mm, pvmw.address, pvmw.pte, entry);
+			goto out_unlock;
+		}
+
+
+Imagine there is an additional reference but another process sharing the
+page did the mapcount++ but not the refcount++ yet. You'd get a false negative.
+
+
+Now, I'm not sure if there is anything else protecting us from this,
+however, it rather made me be very careful about changing the order
+of things here. So in the context of this patch, I won't be messing with
+the order.
+
+Thanks!
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Thanks,
 
+David / dhildenb
 
