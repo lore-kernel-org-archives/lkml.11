@@ -2,70 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E914BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 06:46:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC2ABC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 06:49:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229733AbiCQGrs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 02:47:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34488 "EHLO
+        id S229929AbiCQGuh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 02:50:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229765AbiCQGrn (ORCPT
+        with ESMTP id S229835AbiCQGud (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 02:47:43 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D9C4E1B53
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 23:46:26 -0700 (PDT)
-Received: from dggeme756-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KJyLc0p2yzfYsK;
-        Thu, 17 Mar 2022 14:44:56 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggeme756-chm.china.huawei.com
- (10.3.19.102) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.21; Thu, 17
- Mar 2022 14:46:24 +0800
-From:   Lu Wei <luwei32@huawei.com>
-To:     <thierry.reding@gmail.com>, <sam@ravnborg.org>, <airlied@linux.ie>,
-        <daniel@ffwll.ch>, <dri-devel@lists.freedesktop.org>
-CC:     <linux-kernel@vger.kernel.org>
-Subject: [PATCH] drm/panel: Fix return value check in nt35950_probe()
-Date:   Thu, 17 Mar 2022 14:49:42 +0800
-Message-ID: <20220317064942.156205-1-luwei32@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 17 Mar 2022 02:50:33 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E28E1E2F41;
+        Wed, 16 Mar 2022 23:49:17 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KJyKs1Kgsz1GBxl;
+        Thu, 17 Mar 2022 14:44:17 +0800 (CST)
+Received: from localhost.localdomain (10.175.103.91) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 17 Mar 2022 14:49:15 +0800
+From:   Jialin Zhang <zhangjialin11@huawei.com>
+To:     <j.neuschaefer@gmx.net>, <linus.walleij@linaro.org>
+CC:     <openbmc@lists.ozlabs.org>, <linux-gpio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH -next] pinctrl: nuvoton: Fix return value check in wpcm450_gpio_register()
+Date:   Thu, 17 Mar 2022 14:58:51 +0800
+Message-ID: <20220317065851.495394-1-zhangjialin11@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggeme756-chm.china.huawei.com (10.3.19.102)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500021.china.huawei.com (7.185.36.109)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In function nt35950_probe(), mipi_dsi_device_register_full() is called
-to create a MIPI DSI device. If it fails, a pointer encoded with an error
-will be returned, so use IS_ERR() to check the return value. Besides, use
-PTR_ERR to return the actual errno.
+In case of error, the function devm_platform_ioremap_resource()
+returns ERR_PTR() and never returns NULL. The NULL test in the
+return value check should be replaced with IS_ERR().
 
-Signed-off-by: Lu Wei <luwei32@huawei.com>
+Fixes: a1d1e0e3d80a ("pinctrl: nuvoton: Add driver for WPCM450")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Jialin Zhang <zhangjialin11@huawei.com>
 ---
- drivers/gpu/drm/panel/panel-novatek-nt35950.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/pinctrl/nuvoton/pinctrl-wpcm450.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/panel/panel-novatek-nt35950.c b/drivers/gpu/drm/panel/panel-novatek-nt35950.c
-index 288c7fa83ecc..d252e5e56228 100644
---- a/drivers/gpu/drm/panel/panel-novatek-nt35950.c
-+++ b/drivers/gpu/drm/panel/panel-novatek-nt35950.c
-@@ -579,9 +579,9 @@ static int nt35950_probe(struct mipi_dsi_device *dsi)
- 		}
+diff --git a/drivers/pinctrl/nuvoton/pinctrl-wpcm450.c b/drivers/pinctrl/nuvoton/pinctrl-wpcm450.c
+index 661aa963e3fc..a71b684b9b44 100644
+--- a/drivers/pinctrl/nuvoton/pinctrl-wpcm450.c
++++ b/drivers/pinctrl/nuvoton/pinctrl-wpcm450.c
+@@ -1019,8 +1019,9 @@ static int wpcm450_gpio_register(struct platform_device *pdev,
+ 	int ret;
  
- 		nt->dsi[1] = mipi_dsi_device_register_full(dsi_r_host, info);
--		if (!nt->dsi[1]) {
-+		if (IS_ERR(nt->dsi[1])) {
- 			dev_err(dev, "Cannot get secondary DSI node\n");
--			return -ENODEV;
-+			return PTR_ERR(nt->dsi[1]);
- 		}
- 		num_dsis++;
- 	}
+ 	pctrl->gpio_base = devm_platform_ioremap_resource(pdev, 0);
+-	if (!pctrl->gpio_base)
+-		return dev_err_probe(dev, -ENOMEM, "Resource fail for GPIO controller\n");
++	if (IS_ERR(pctrl->gpio_base))
++		return dev_err_probe(dev, PTR_ERR(pctrl->gpio_base),
++				     "Resource fail for GPIO controller\n");
+ 
+ 	device_for_each_child_node(dev, child)  {
+ 		void __iomem *dat = NULL;
 -- 
-2.17.1
+2.25.1
 
