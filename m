@@ -2,209 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18E28C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64705C433EF
 	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:53:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234194AbiCQMwr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:52:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38068 "EHLO
+        id S234098AbiCQMy6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:54:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234016AbiCQMwX (ORCPT
+        with ESMTP id S234099AbiCQMwe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:52:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 393B11F83F4;
-        Thu, 17 Mar 2022 05:50:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B76AA612AC;
-        Thu, 17 Mar 2022 12:49:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3DA8C340E9;
-        Thu, 17 Mar 2022 12:49:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521399;
-        bh=l5UBkHpHhHs/9/pI/wb4rOxpOmSD8CIB1JIiTa7lovk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1L+bvY1GQ1LrqXA18FWP6z2fSC2Zl4TMiXHjX3jrrjinWjYVcrvxtIJswcYNPhWOB
-         e8YeyKg8ceGxcPE6plqBtBKNspTlI0f8kC8BksAEVgGM/5RxDY5JmZ4vcfN7D24ES/
-         xNc/NMO2BZhcXe2ZdwuRqJORVDv+ycP7p4Qptv7g=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xin Long <lucien.xin@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 5.10 02/23] sctp: fix the processing for INIT chunk
-Date:   Thu, 17 Mar 2022 13:45:43 +0100
-Message-Id: <20220317124526.028103737@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220317124525.955110315@linuxfoundation.org>
-References: <20220317124525.955110315@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 17 Mar 2022 08:52:34 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E36011F1610;
+        Thu, 17 Mar 2022 05:50:03 -0700 (PDT)
+X-UUID: f5aa5bbfc3644e8b9cee734ed2988ae6-20220317
+X-UUID: f5aa5bbfc3644e8b9cee734ed2988ae6-20220317
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1145659024; Thu, 17 Mar 2022 20:49:58 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 17 Mar 2022 20:49:56 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 17 Mar 2022 20:49:56 +0800
+Message-ID: <87120a97d4316b6ea7c6aea9cf0cd7c95c4813cd.camel@mediatek.com>
+Subject: Re: [PATCH v1, 1/1] drm/mediatek: fixup crtc event null pointer
+ issue
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     Yongqiang Niu <yongqiang.niu@mediatek.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>
+CC:     Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "David Airlie" <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Fabien Parent <fparent@baylibre.com>,
+        "Dennis YC Hsieh" <dennis-yc.hsieh@mediatek.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>
+Date:   Thu, 17 Mar 2022 20:49:56 +0800
+In-Reply-To: <20220314074239.28507-2-yongqiang.niu@mediatek.com>
+References: <20220314074239.28507-1-yongqiang.niu@mediatek.com>
+         <20220314074239.28507-2-yongqiang.niu@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+On Mon, 2022-03-14 at 15:42 +0800, Yongqiang Niu wrote:
+> if crtc event is null pointer, do not send vblank event
+> 
+> Signed-off-by: Yongqiang Niu <yongqiang.niu@mediatek.com>
+> ---
+>  drivers/gpu/drm/mediatek/mtk_drm_crtc.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
+> b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
+> index d661edf7e0fe..265fed446628 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
+> @@ -92,6 +92,9 @@ static void mtk_drm_crtc_finish_page_flip(struct
+> mtk_drm_crtc *mtk_crtc)
+>  	struct drm_crtc *crtc = &mtk_crtc->base;
+>  	unsigned long flags;
+>  
+> +	if (!mtk_crtc->event)
+> +		return;
+> +
 
-commit eae5783908042a762c24e1bd11876edb91d314b1 upstream.
+Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 
-This patch fixes the problems below:
-
-1. In non-shutdown_ack_sent states: in sctp_sf_do_5_1B_init() and
-   sctp_sf_do_5_2_2_dupinit():
-
-  chunk length check should be done before any checks that may cause
-  to send abort, as making packet for abort will access the init_tag
-  from init_hdr in sctp_ootb_pkt_new().
-
-2. In shutdown_ack_sent state: in sctp_sf_do_9_2_reshutack():
-
-  The same checks as does in sctp_sf_do_5_2_2_dupinit() is needed
-  for sctp_sf_do_9_2_reshutack().
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/sctp/sm_statefuns.c |   71 +++++++++++++++++++++++++++++++-----------------
- 1 file changed, 46 insertions(+), 25 deletions(-)
-
---- a/net/sctp/sm_statefuns.c
-+++ b/net/sctp/sm_statefuns.c
-@@ -149,6 +149,12 @@ static enum sctp_disposition __sctp_sf_d
- 					void *arg,
- 					struct sctp_cmd_seq *commands);
- 
-+static enum sctp_disposition
-+__sctp_sf_do_9_2_reshutack(struct net *net, const struct sctp_endpoint *ep,
-+			   const struct sctp_association *asoc,
-+			   const union sctp_subtype type, void *arg,
-+			   struct sctp_cmd_seq *commands);
-+
- /* Small helper function that checks if the chunk length
-  * is of the appropriate length.  The 'required_length' argument
-  * is set to be the size of a specific chunk we are testing.
-@@ -330,6 +336,14 @@ enum sctp_disposition sctp_sf_do_5_1B_in
- 	if (!chunk->singleton)
- 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
- 
-+	/* Make sure that the INIT chunk has a valid length.
-+	 * Normally, this would cause an ABORT with a Protocol Violation
-+	 * error, but since we don't have an association, we'll
-+	 * just discard the packet.
-+	 */
-+	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-+
- 	/* If the packet is an OOTB packet which is temporarily on the
- 	 * control endpoint, respond with an ABORT.
- 	 */
-@@ -344,14 +358,6 @@ enum sctp_disposition sctp_sf_do_5_1B_in
- 	if (chunk->sctp_hdr->vtag != 0)
- 		return sctp_sf_tabort_8_4_8(net, ep, asoc, type, arg, commands);
- 
--	/* Make sure that the INIT chunk has a valid length.
--	 * Normally, this would cause an ABORT with a Protocol Violation
--	 * error, but since we don't have an association, we'll
--	 * just discard the packet.
--	 */
--	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
--		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
--
- 	/* If the INIT is coming toward a closing socket, we'll send back
- 	 * and ABORT.  Essentially, this catches the race of INIT being
- 	 * backloged to the socket at the same time as the user isses close().
-@@ -1484,19 +1490,16 @@ static enum sctp_disposition sctp_sf_do_
- 	if (!chunk->singleton)
- 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
- 
-+	/* Make sure that the INIT chunk has a valid length. */
-+	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-+
- 	/* 3.1 A packet containing an INIT chunk MUST have a zero Verification
- 	 * Tag.
- 	 */
- 	if (chunk->sctp_hdr->vtag != 0)
- 		return sctp_sf_tabort_8_4_8(net, ep, asoc, type, arg, commands);
- 
--	/* Make sure that the INIT chunk has a valid length.
--	 * In this case, we generate a protocol violation since we have
--	 * an association established.
--	 */
--	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
--		return sctp_sf_violation_chunklen(net, ep, asoc, type, arg,
--						  commands);
- 	/* Grab the INIT header.  */
- 	chunk->subh.init_hdr = (struct sctp_inithdr *)chunk->skb->data;
- 
-@@ -1814,9 +1817,9 @@ static enum sctp_disposition sctp_sf_do_
- 	 * its peer.
- 	*/
- 	if (sctp_state(asoc, SHUTDOWN_ACK_SENT)) {
--		disposition = sctp_sf_do_9_2_reshutack(net, ep, asoc,
--				SCTP_ST_CHUNK(chunk->chunk_hdr->type),
--				chunk, commands);
-+		disposition = __sctp_sf_do_9_2_reshutack(net, ep, asoc,
-+							 SCTP_ST_CHUNK(chunk->chunk_hdr->type),
-+							 chunk, commands);
- 		if (SCTP_DISPOSITION_NOMEM == disposition)
- 			goto nomem;
- 
-@@ -2915,13 +2918,11 @@ enum sctp_disposition sctp_sf_do_9_2_shu
-  * that belong to this association, it should discard the INIT chunk and
-  * retransmit the SHUTDOWN ACK chunk.
-  */
--enum sctp_disposition sctp_sf_do_9_2_reshutack(
--					struct net *net,
--					const struct sctp_endpoint *ep,
--					const struct sctp_association *asoc,
--					const union sctp_subtype type,
--					void *arg,
--					struct sctp_cmd_seq *commands)
-+static enum sctp_disposition
-+__sctp_sf_do_9_2_reshutack(struct net *net, const struct sctp_endpoint *ep,
-+			   const struct sctp_association *asoc,
-+			   const union sctp_subtype type, void *arg,
-+			   struct sctp_cmd_seq *commands)
- {
- 	struct sctp_chunk *chunk = arg;
- 	struct sctp_chunk *reply;
-@@ -2955,6 +2956,26 @@ nomem:
- 	return SCTP_DISPOSITION_NOMEM;
- }
- 
-+enum sctp_disposition
-+sctp_sf_do_9_2_reshutack(struct net *net, const struct sctp_endpoint *ep,
-+			 const struct sctp_association *asoc,
-+			 const union sctp_subtype type, void *arg,
-+			 struct sctp_cmd_seq *commands)
-+{
-+	struct sctp_chunk *chunk = arg;
-+
-+	if (!chunk->singleton)
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-+
-+	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-+
-+	if (chunk->sctp_hdr->vtag != 0)
-+		return sctp_sf_tabort_8_4_8(net, ep, asoc, type, arg, commands);
-+
-+	return __sctp_sf_do_9_2_reshutack(net, ep, asoc, type, arg, commands);
-+}
-+
- /*
-  * sctp_sf_do_ecn_cwr
-  *
-
+>  	spin_lock_irqsave(&crtc->dev->event_lock, flags);
+>  	drm_crtc_send_vblank_event(crtc, mtk_crtc->event);
+>  	drm_crtc_vblank_put(crtc);
 
