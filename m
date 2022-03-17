@@ -2,127 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF6DFC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 23:26:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74BE6C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 23:28:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229844AbiCQX1w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 19:27:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33164 "EHLO
+        id S229914AbiCQX3u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 19:29:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229588AbiCQX1u (ORCPT
+        with ESMTP id S229588AbiCQX3s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 19:27:50 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0DA8728AC7B;
-        Thu, 17 Mar 2022 16:26:32 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 22HNK0JT030658;
-        Thu, 17 Mar 2022 18:20:00 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 22HNJxhb030657;
-        Thu, 17 Mar 2022 18:19:59 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Thu, 17 Mar 2022 18:19:59 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
+        Thu, 17 Mar 2022 19:29:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFA4D3738
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 16:28:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BFF0CB8204A
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 23:28:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFA96C340E9;
+        Thu, 17 Mar 2022 23:28:25 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="ka04jWG8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1647559704;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=E+PvMxWcS3ApAYnp0Ppxv3cA5ntFGWMLNNnCr55gGEM=;
+        b=ka04jWG8tHwiwpxCLH3hj1y8aKPbUW8Ohp8qh4kcJPa1R8BnTbhpxMDfeLa/uBYiDxhlea
+        jFnTS+qAwOvKshFsuz2emu1oZN3awC2uqJn021c+zfJ8IOhgvoeOjR1V5WZHHm7tGOYsw0
+        QE6BtfC5qMo/ySZ0rw/fx9Ub1UjDv2M=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 57e948a2 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Thu, 17 Mar 2022 23:28:23 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
 To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Bill Wendling <morbo@google.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Juergen Gross <jgross@suse.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>, llvm@lists.linux.dev,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-toolchains <linux-toolchains@vger.kernel.org>
-Subject: Re: [PATCH v5] x86: use builtins to read eflags
-Message-ID: <20220317231959.GN614@gate.crashing.org>
-References: <CAGG=3QVu5QjQK8m2FWiYn-XQuVBjUGXcbznSbK22jVMB5GAutw@mail.gmail.com> <F5296439-4CA3-4F31-BD91-5ED1510BC382@zytor.com> <CAKwvOdkk-C8HMemKs4+yoxvNDgTLmvZG1rmwjVXBqhsQ-cED5g@mail.gmail.com> <CAHk-=whJfKN8Jag=8DS=pbZR3TY90znUOP6Km+TLRJ9dZEgNqw@mail.gmail.com> <CAGG=3QW2ey2w91TxqJ6tzfJOswhTce2e0QTW7kAWyvxeiO+VNg@mail.gmail.com> <CAHk-=whn3iYE7gZM4vHx1kFhWBD2P9Wvmcyj8OOqv=y_7nemGQ@mail.gmail.com> <CAGG=3QWC9VS9RdGFTwY8VGqujDnFYnRTT1dQ6kkVr+0SRk6COg@mail.gmail.com> <CAHk-=wh=x7oCk05JD1=6XNsvvgpsidRWupoqySw1zODmvNy9Ug@mail.gmail.com> <CAGG=3QWcKof_NXrC0kznM2ikwTA00AgUJrcWhKBTitmjCuOxqw@mail.gmail.com> <CAHk-=wj=aK2T+h=rRJL4jDDTgV2U533E_duroCoVSUfkvYd0OQ@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wj=aK2T+h=rRJL4jDDTgV2U533E_duroCoVSUfkvYd0OQ@mail.gmail.com>
-User-Agent: Mutt/1.4.2.3i
+Cc:     linux-kernel@vger.kernel.org
+Subject: [GIT PULL] random number generator updates for 5.18-rc1
+Date:   Thu, 17 Mar 2022 17:28:04 -0600
+Message-Id: <20220317232804.931702-1-Jason@zx2c4.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 03:51:28PM -0700, Linus Torvalds wrote:
-> On Thu, Mar 17, 2022 at 2:45 PM Bill Wendling <morbo@google.com> wrote:
-> > I'm NOT saying that it WILL change or that it SHOULD change. I'm also
-> > not saying that your concern isn't justified. What I am saying is that
-> > unless you're using a compiler feature that's DEFINED as having a
-> > certain effect, then you are not using that feature correctly,
-> > regardless of how it's acted in the past. And it has the potential to
-> > bite you in the ass sooner or later. We've all seen such things happen
-> > before.
-> 
-> So I think most of inline asm constraints are fairly well defined.
-> Certainly "memory" clobbers are.
-> 
-> The unfortunate exception to this is, I think, "volatile".  It has
-> always had somewhat undefined semantics (iirc originally gcc talked
-> about it not being "moved significantly" etc), and it ends up getting
-> mixed reasons for existing.
+Hi Linus,
 
-"asm volatile" has always meant "has some unspecified side effect", in
-parallel with what a volatile object is in C (there, all *accesses* to
-such objects have the side effects).  All such side effects have to
-happen on the real machine in the same order (and exactly as often) as
-on the abstract C machine.  This is all it means, nothing more, nothing
-less.
+Please pull the following updates for 5.18-rc1. Since 5.17, there have been a
+few important changes to the RNG's crypto, but the intent for 5.18 has been to
+shore up the existing design as much as possible with modern cryptographic
+functions and proven constructions, rather than actually changing up anything
+fundamental to the RNG's design. So it's still the same old RNG at its core as
+before: it still counts entropy bits, and collects from the various sources
+with the same heuristics as before, and so forth. However, the cryptographic
+algorithms that transform that entropic data into safe random numbers have
+been modernized.
 
-This is a little hard to understand, certainly for most users, who do
-not often have heard of the abstract machine before (which is a shame,
-because *all* of C semantics are defined wrt that).
+Just as important, if not more, is that the code has been cleaned up and
+re-documented. As one of the first drivers in Linux, going back to 1.3.30, its
+general style and organization was showing its age and becoming both a
+maintenance burden and an auditability impediment. Hopefully this provides a
+more solid foundation to build on for the future. I encourage you to open up
+the file in full, and maybe you'll remark, "oh, that's what it's doing," and
+enjoy reading it. That, at least, is the eventual goal, which this pull
+begins working toward.
 
-> The *natural* semantics would be to literally make it have the same
-> rules as volatile data accesses: something like "'volatile' marks the
-> asm as having visible side effects in the virtual machine".
+Here's a summary of the various patches in this pull:
 
-Not necessarily visible, that is the point even, but yes :-)
+  1) /dev/urandom and /dev/random now do the same thing, per the patch we
+     discussed on the list. I think this is worth trying out. If it does
+     appear problematic, I've made sure to keep it standalone and revertible
+     without any conflicts.
 
-> So I think natural semantics for "asm volatile" - and the ones that
-> would be simple to document - would literally be to compare it to
-> those volatile memory accesses, and say that it can't be optimized
-> away, and it's ordered wrt other volatile operations (whether volatile
-> data accesses or other volatile asm instructions).
+  2) Fixes and cleanups for numerous integer type problems, locking issues,
+     and general code quality concerns.
 
-"Cannot be optimised away" means something else to everyone, and almost
-all of those meanings do not correspond to the truth very well.
+  3) The input pool's LFSR has been replaced with a cryptographically secure
+     hash function, which has security and performance benefits alike, and
+     consequently allows us to count entropy bits linearly.
 
-> And then we in the kernel have then also co-opted 'asm volatile' to
-> just fix some compiler bugs, so we end up using "asm volatile goto"
-> because of
-> 
->       http://gcc.gnu.org/bugzilla/show_bug.cgi?id=58670
-> 
-> although *that* particular issue is probably historical now that we
-> require more modern compiler versions.
+  4) The pre-init injection now uses a real hash function too, instead of an
+     LFSR or vanilla xor.
 
-Thankfully.  The barrier_before_unreachable() thing in compiler-gcc.h
-needs some newer GCC 7 (.3 or .4 I think?), so that is still needed for
-a while more.  The barrier() one in compiler.h is probably not a bug
-anymore since decades, it is from before the kernel started documenting
-what versions of required tools have what known bugs, apparently ;-)
+  5) The interrupt handler's fast_mix() function now uses one round of SipHash,
+     rather than the fake crypto that was there before.
 
-> I still think that from a sanity standpoint, it would be good to
-> actually strengthen the semantics of "asm volatile" to literally act
-> as - and be ordered with - volatile memory accesses.
-> 
-> But I guess that's water under the bridge.
+  6) All additions of RDRAND and RDSEED now go through the input pool's hash
+     function, in part to mitigate ridiculous hypothetical CPU backdoors, but
+     more so to have a consistent interface for ingesting entropy that's easy
+     to analyze, making everything happen one way, instead of a potpourri of
+     different ways.
 
-That is what it has actually done since forever.  See C 5.1.2.3.  For
-GCC, "asm volatile" has a side effect like in /2 there as well, as does
-unspec_volatile (an internal GCC thing used to implement certain
-builtins, among other things).
+  7) The crng now works on per-cpu data, while also being in accordance with
+     the actual "fast key erasure RNG" design. This allows us to fix several
+     boot-time race complications associated with the prior dynamically
+     allocated model, eliminates much locking, and makes our backtrack
+     protection more robust.
 
-"asm volatile" does not mean, and has never meant, anything like "can
-not be deleted" or "can not be cloned".  "Cannot be moved significantly"
-is vague enough that it isn't untrue (but isn't very helpful either).
+  8) Batched entropy now erases doled out values so that it's backtrack
+     resistant.
 
+  9) Working closely with Sebastian, the interrupt handler no longer needs to
+     take any locks at all, as we punt the synchronized/expensive operations
+     to a workqueue. This is especially nice for PREEMPT_RT, where taking
+     spinlocks in irq context is problematic. It also makes the handler faster
+     for the rest of us.
 
-Segher
+  10) Also working with Sebastian, we now do the right thing on CPU hotplug,
+      so that we don't use stale entropy or fail to accumulate new entropy
+      when CPUs come back online.
+
+  11) We handle virtual machines that fork / clone / snapshot, using the
+      "vmgenid" ACPI specification for retrieving a unique new RNG seed, which
+      we can use to also make WireGuard (and in the future, other things) safe
+      across VM forks.
+
+  12) Around boot time, we now try to reseed more often if enough entropy is
+      available, before settling on the usual 5 minute schedule.
+
+  13) Last, but certainly not least, the documentation in the file has been
+      updated considerably.
+
+Please pull!
+
+Thanks,
+Jason
+
+----------------------------------------------------------------
+
+The following changes since commit cfb92440ee71adcc2105b0890bb01ac3cddb8507:
+
+  Linux 5.17-rc5 (2022-02-20 13:07:20 -0800)
+
+are available in the Git repository at:
+
+  ssh://git@gitolite.kernel.org/pub/scm/linux/kernel/git/crng/random.git tags/random-5.18-rc1-for-linus
+
+for you to fetch changes up to 3e504d2026eb6c8762cd6040ae57db166516824a:
+
+  random: check for signal and try earlier when generating entropy (2022-03-12 20:51:39 -0700)
+
+----------------------------------------------------------------
+
+Alexander Graf (1):
+      ACPI: allow longer device IDs
+
+Dominik Brodowski (2):
+      random: fix locking in crng_fast_load()
+      random: fix locking for crng_init in crng_reseed()
+
+Eric Biggers (1):
+      random: remove use_input_pool parameter from crng_reseed()
+
+Jason A. Donenfeld (56):
+      random: use computational hash for entropy extraction
+      random: simplify entropy debiting
+      random: use linear min-entropy accumulation crediting
+      random: always wake up entropy writers after extraction
+      random: make credit_entropy_bits() always safe
+      random: remove batched entropy locking
+      random: use RDSEED instead of RDRAND in entropy extraction
+      random: get rid of secondary crngs
+      random: inline leaves of rand_initialize()
+      random: ensure early RDSEED goes through mixer on init
+      random: do not xor RDRAND when writing into /dev/random
+      random: absorb fast pool into input pool after fast load
+      random: use simpler fast key erasure flow on per-cpu keys
+      random: use hash function for crng_slow_load()
+      random: make more consistent use of integer types
+      random: remove outdated INT_MAX >> 6 check in urandom_read()
+      random: zero buffer after reading entropy from userspace
+      random: tie batched entropy generation to base_crng generation
+      random: remove ifdef'd out interrupt bench
+      random: remove unused tracepoints
+      random: add proper SPDX header
+      random: deobfuscate irq u32/u64 contributions
+      random: introduce drain_entropy() helper to declutter crng_reseed()
+      random: remove useless header comment
+      random: remove whitespace and reorder includes
+      random: group initialization wait functions
+      random: group crng functions
+      random: group entropy extraction functions
+      random: group entropy collection functions
+      random: group userspace read/write functions
+      random: group sysctl functions
+      random: rewrite header introductory comment
+      random: defer fast pool mixing to worker
+      random: do not take pool spinlock at boot
+      random: unify early init crng load accounting
+      random: check for crng_init == 0 in add_device_randomness()
+      random: pull add_hwgenerator_randomness() declaration into random.h
+      random: clear fast pool, crng, and batches in cpuhp bring up
+      random: round-robin registers as ulong, not u32
+      random: only wake up writers after zap if threshold was passed
+      random: cleanup UUID handling
+      random: unify cycles_t and jiffies usage and types
+      random: do crng pre-init loading in worker rather than irq
+      random: block in /dev/urandom
+      random: give sysctl_random_min_urandom_seed a more sensible value
+      random: don't let 644 read-only sysctls be written to
+      random: add mechanism for VM forks to reinitialize crng
+      virt: vmgenid: notify RNG of VM fork and supply generation ID
+      random: do not export add_vmfork_randomness() unless needed
+      random: replace custom notifier chain with standard one
+      random: provide notifier for VM fork
+      wireguard: device: clear keys on VM fork
+      random: use SipHash as interrupt entropy accumulator
+      random: make consistent usage of crng_ready()
+      random: reseed more often immediately after booting
+      random: check for signal and try earlier when generating entropy
+
+ Documentation/admin-guide/sysctl/kernel.rst |   16 +-
+ MAINTAINERS                                 |    1 +
+ drivers/char/hw_random/core.c               |    1 +
+ drivers/char/mem.c                          |    2 +-
+ drivers/char/random.c                       | 2939 +++++++++++----------------
+ drivers/net/wireguard/device.c              |   38 +-
+ drivers/virt/Kconfig                        |   11 +
+ drivers/virt/Makefile                       |    1 +
+ drivers/virt/vmgenid.c                      |  100 +
+ include/linux/cpuhotplug.h                  |    2 +
+ include/linux/hw_random.h                   |    2 -
+ include/linux/mod_devicetable.h             |    2 +-
+ include/linux/random.h                      |   43 +-
+ include/trace/events/random.h               |  233 ---
+ kernel/cpu.c                                |   11 +
+ lib/random32.c                              |   14 +-
+ lib/vsprintf.c                              |   10 +-
+ 17 files changed, 1419 insertions(+), 2007 deletions(-)
+ create mode 100644 drivers/virt/vmgenid.c
+ delete mode 100644 include/trace/events/random.h
