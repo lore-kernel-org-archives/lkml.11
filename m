@@ -2,95 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B92C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 21:19:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03367C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 21:19:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230243AbiCQVUj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 17:20:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40744 "EHLO
+        id S230272AbiCQVUn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 17:20:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230135AbiCQVUe (ORCPT
+        with ESMTP id S230135AbiCQVUl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 17:20:34 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EADBEB2455
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 14:19:16 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id b18-20020a63d812000000b0037e1aa59c0bso2312030pgh.12
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 14:19:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=6mHysSGkjSaV0ili798Q1zLL9ynUJ9JmihmTcdCLIZY=;
-        b=kgTRMhvOjKo0YDi1oWQ8YuJ3ZeMPo74qt+/vjGdCcuqs8dkrP0TRKHe74cxBTHRisY
-         pXpC7Ow+2tv6+LH3Y4J+kRigvMhRBwP34m3TIOywj5vMh3PHyuS2pozWWwFAF+JxmyQI
-         ijSEtzxiCCln73+qzuFQho1qJyA+9K7PlXH2aic3sOO5/pXWtBiwYCpg7UtF2Nc/mZ0y
-         leTXS0J1RZwoak/k4U9aNUICFCK2CU74Zziu/oRs7R4IMrbpMQExf1frRcDqN5tTsem9
-         7Y9xQ2+RG8tgUfvE4x3Xa2sLU0ccGllxOI/YzO8blwRuY/8ZXvt3XFGf8gf/N8V/mUXi
-         VhHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=6mHysSGkjSaV0ili798Q1zLL9ynUJ9JmihmTcdCLIZY=;
-        b=jYknUa3FcELtmKVMWrBpchRhk3ef5gQPddJ2h23jkwmOZ1QlOY8cKttrrPnHiLDM+t
-         8MOFIfq3caoz17MV3oFFmXzWNfH2O+J9uj1kALURlD/HmFakwbOpAhFcTaD/j4Qjrfl7
-         uBMFUT4XLYJGFiS2JaA+fOO8evulV49230ydwKHDh93ALYMgfLDdpZzRypHEulZqTJz0
-         HHdcJiANO8Ad6CBC1rtNWKDgTXOFI3Dkw7qaMUmpghj5uW6eV8K4PI7sNXslX2Q9qRIQ
-         c9Z9QK+y77bMllGyCER0FoaluvZPEr9vu6s79WfKVTT7+byj4NAnoXvCDscYWkN/IbjI
-         7MbA==
-X-Gm-Message-State: AOAM532vxw346IBpTH7AfpRALLRotHNiB4MRMgzYmVtrHaCtPHHsSp4e
-        Zcrg5QEiK7orfn63YjzW7WnEE0mSUHk=
-X-Google-Smtp-Source: ABdhPJzRlMtFf9+BfW4ekzaU3Vlw86V5D1cZQ96eDB6kmJFiiAOOAjp/f1ObJsH6I7e0TQxtVo1VhFUhRlE=
-X-Received: from pgonda1.kir.corp.google.com ([2620:15c:29:203:ef70:31aa:2364:9dda])
- (user=pgonda job=sendgmr) by 2002:a17:902:e74f:b0:151:c20b:5f39 with SMTP id
- p15-20020a170902e74f00b00151c20b5f39mr6866669plf.43.1647551956388; Thu, 17
- Mar 2022 14:19:16 -0700 (PDT)
-Date:   Thu, 17 Mar 2022 14:19:13 -0700
-Message-Id: <20220317211913.1397427-1-pgonda@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.894.gb6a874cedc-goog
-Subject: [PATCH] x86/sev-es: Replace open-coded hlt-loop with sev_es_terminate()
-From:   Peter Gonda <pgonda@google.com>
-To:     x86@kernel.org
-Cc:     Peter Gonda <pgonda@google.com>, Borislav Petkov <bp@alien8.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Joerg Roedel <jroedel@suse.de>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 17 Mar 2022 17:20:41 -0400
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4351CB245D;
+        Thu, 17 Mar 2022 14:19:24 -0700 (PDT)
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 0A5591C0B7F; Thu, 17 Mar 2022 22:19:23 +0100 (CET)
+Date:   Thu, 17 Mar 2022 22:19:22 +0100
+From:   Pavel Machek <pavel@denx.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.10 00/23] 5.10.107-rc1 review
+Message-ID: <20220317211922.GB5328@duo.ucw.cz>
+References: <20220317124525.955110315@linuxfoundation.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="uZ3hkaAS1mZxFaxD"
+Content-Disposition: inline
+In-Reply-To: <20220317124525.955110315@linuxfoundation.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace the hlt loop in handle_vc_boot_ghcb() with an
-sev_es_terminate(). The hlt gives the system no indication the guest is
-unhappy. The termination request will signal there was an error during
-VC handling during boot.
+
+--uZ3hkaAS1mZxFaxD
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hi!
+
+> This is the start of the stable review cycle for the 5.10.107 release.
+> There are 23 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 
 
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: Brijesh Singh <brijesh.singh@amd.com>
-Cc: Joerg Roedel <jroedel@suse.de>
-Cc: x86@kernel.org
-Cc: kvm@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Peter Gonda <pgonda@google.com>
----
- arch/x86/kernel/sev.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+> Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+>     bnx2: Fix an error message
 
-diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
-index e6d316a01fdd..ae87fbf27724 100644
---- a/arch/x86/kernel/sev.c
-+++ b/arch/x86/kernel/sev.c
-@@ -1425,6 +1425,5 @@ bool __init handle_vc_boot_ghcb(struct pt_regs *regs)
- fail:
- 	show_regs(regs);
- 
--	while (true)
--		halt();
-+	sev_es_terminate(GHCB_SEV_ES_GEN_REQ);
- }
--- 
-2.35.1.894.gb6a874cedc-goog
+As commented during the AUTOSEL phase, this patch actually _adds_ an
+error in at least 5.10 and older. Please drop.
 
+Best regards,
+								Pavel
+--=20
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+
+--uZ3hkaAS1mZxFaxD
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYjOl2gAKCRAw5/Bqldv6
+8lmVAKCPUPIcPtLmz1hK4C6zFnR705kpoACff96/m5gIzEso+IFRjiK5YedDn+w=
+=2N4T
+-----END PGP SIGNATURE-----
+
+--uZ3hkaAS1mZxFaxD--
