@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50554C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 601BCC43219
 	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:58:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235564AbiCQM7P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:59:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40272 "EHLO
+        id S234903AbiCQM7T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:59:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234233AbiCQMzf (ORCPT
+        with ESMTP id S234291AbiCQMzu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:55:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A24879F3BD;
-        Thu, 17 Mar 2022 05:53:54 -0700 (PDT)
+        Thu, 17 Mar 2022 08:55:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E690F89CD4;
+        Thu, 17 Mar 2022 05:54:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2ED5C61584;
-        Thu, 17 Mar 2022 12:53:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37187C340F3;
-        Thu, 17 Mar 2022 12:53:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 845536157E;
+        Thu, 17 Mar 2022 12:54:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F616C340E9;
+        Thu, 17 Mar 2022 12:54:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521633;
-        bh=WB/A9z0bllwl5fTK4cuQmxEQkRdoAy5zWdRVr5axPS4=;
+        s=korg; t=1647521641;
+        bh=UqwiPp2qBmb+7tKFdE0+ShqjTMU9taITEwrPGtd63H8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bo1vnoUo3gL405reGq15VEhZ0aDMKERl28d2cA1IxrhG18McIcC0JGpnL8dF1xs5t
-         KJoIKOd1MClB6YQ/vqfJRzBlfZSHw2cxCso4NrXU0GZNTbEGYx7SP6i1Drz3T4CBPQ
-         UwixKnIWbVAHruprvOv0ijUQEyClXLxAZcWi56b0=
+        b=afY+Dh0VsuyHlfu8zLpRaa6buSPry/Vcw2cOpRe/wlx24HicJOv7+L+JjjZz8k16C
+         WQ3hYlrf21CCuCzdrRqPp8NGkTyOdr8E1BLfrFYRv2Od9dpil0aT25RoV8gLjhEc45
+         dRH9VULtzdxcFLKeAyo1aJBw2sNe+jgBvwpNRCFI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Quentin Schulz <foss+kernel@0leil.net>,
-        Quentin Schulz <quentin.schulz@theobroma-systems.com>,
-        Heiko Stuebner <heiko@sntech.de>,
+        stable@vger.kernel.org, Yan Yan <evitayan@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 03/28] arm64: dts: rockchip: fix rk3399-puma-haikou USB OTG mode
-Date:   Thu, 17 Mar 2022 13:45:54 +0100
-Message-Id: <20220317124526.868575839@linuxfoundation.org>
+Subject: [PATCH 5.16 05/28] xfrm: Fix xfrm migrate issues when address family changes
+Date:   Thu, 17 Mar 2022 13:45:56 +0100
+Message-Id: <20220317124526.925337900@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220317124526.768423926@linuxfoundation.org>
 References: <20220317124526.768423926@linuxfoundation.org>
@@ -50,71 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+From: Yan Yan <evitayan@google.com>
 
-[ Upstream commit ed2c66a95c0c5669880aa93d0d34c6e9694b4cbd ]
+[ Upstream commit e03c3bba351f99ad932e8f06baa9da1afc418e02 ]
 
-The micro USB3.0 port available on the Haikou evaluation kit for Puma
-RK3399-Q7 SoM supports dual-role model (aka drd or OTG) but its support
-was broken until now because of missing logic around the ID pin.
+xfrm_migrate cannot handle address family change of an xfrm_state.
+The symptons are the xfrm_state will be migrated to a wrong address,
+and sending as well as receiving packets wil be broken.
 
-This adds proper support for USB OTG on Puma Haikou by "connecting" the
-GPIO used for USB ID to the USB3 controller device.
+This commit fixes it by breaking the original xfrm_state_clone
+method into two steps so as to update the props.family before
+running xfrm_init_state. As the result, xfrm_state's inner mode,
+outer mode, type and IP header length in xfrm_state_migrate can
+be updated with the new address family.
 
-Cc: Quentin Schulz <foss+kernel@0leil.net>
-Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
-Link: https://lore.kernel.org/r/20220120125156.16217-1-quentin.schulz@theobroma-systems.com
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Tested with additions to Android's kernel unit test suite:
+https://android-review.googlesource.com/c/kernel/tests/+/1885354
+
+Signed-off-by: Yan Yan <evitayan@google.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../arm64/boot/dts/rockchip/rk3399-puma-haikou.dts |  1 +
- arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi      | 14 ++++++++++++++
- 2 files changed, 15 insertions(+)
+ net/xfrm/xfrm_state.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-puma-haikou.dts b/arch/arm64/boot/dts/rockchip/rk3399-puma-haikou.dts
-index 292bb7e80cf3..3ae5d727e367 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-puma-haikou.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-puma-haikou.dts
-@@ -232,6 +232,7 @@
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+index 291236d7676f..f7bfa1916968 100644
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -1578,9 +1578,6 @@ static struct xfrm_state *xfrm_state_clone(struct xfrm_state *orig,
+ 	memcpy(&x->mark, &orig->mark, sizeof(x->mark));
+ 	memcpy(&x->props.smark, &orig->props.smark, sizeof(x->props.smark));
  
- &usbdrd_dwc3_0 {
- 	dr_mode = "otg";
-+	extcon = <&extcon_usb3>;
- 	status = "okay";
- };
+-	if (xfrm_init_state(x) < 0)
+-		goto error;
+-
+ 	x->props.flags = orig->props.flags;
+ 	x->props.extra_flags = orig->props.extra_flags;
  
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
-index fb67db4619ea..002ece51c3ba 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
-@@ -25,6 +25,13 @@
- 		};
- 	};
+@@ -1667,6 +1664,11 @@ struct xfrm_state *xfrm_state_migrate(struct xfrm_state *x,
+ 	if (!xc)
+ 		return NULL;
  
-+	extcon_usb3: extcon-usb3 {
-+		compatible = "linux,extcon-usb-gpio";
-+		id-gpio = <&gpio1 RK_PC2 GPIO_ACTIVE_HIGH>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&usb3_id>;
-+	};
++	xc->props.family = m->new_family;
 +
- 	clkin_gmac: external-gmac-clock {
- 		compatible = "fixed-clock";
- 		clock-frequency = <125000000>;
-@@ -422,6 +429,13 @@
- 			  <4 RK_PA3 RK_FUNC_GPIO &pcfg_pull_none>;
- 		};
- 	};
++	if (xfrm_init_state(xc) < 0)
++		goto error;
 +
-+	usb3 {
-+		usb3_id: usb3-id {
-+			rockchip,pins =
-+			  <1 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
-+		};
-+	};
- };
+ 	memcpy(&xc->id.daddr, &m->new_daddr, sizeof(xc->id.daddr));
+ 	memcpy(&xc->props.saddr, &m->new_saddr, sizeof(xc->props.saddr));
  
- &sdhci {
 -- 
 2.34.1
 
