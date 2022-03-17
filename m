@@ -2,112 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D689C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 14:00:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6026FC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 14:02:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234869AbiCQOBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 10:01:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54824 "EHLO
+        id S234896AbiCQODZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 10:03:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234837AbiCQOBe (ORCPT
+        with ESMTP id S234928AbiCQOCq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 10:01:34 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC031E31B6
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 07:00:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647525614; x=1679061614;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=sJRlwBorGmVgUb+Bjz+/sge3lqbo3wi9zXszNB/osmk=;
-  b=YgnEPWZJUI/1T9O/ko0E+N4p3Yym1FFjH/XSD35jXK2Ya/iGAu8Qsyf6
-   ssykuy4rtfYSJ8pt/rD72BHDoZdjdq77QuDX1GVdhS5g4SmabqSQKtvQW
-   VA3uvDEZQ7IUO4ZZdc7FoInaiI0hiRKzaZM9UR4MlXXB+clcKr30mrlOS
-   OSSArtCs9jtIHfV9as1NGIm5tuTP0ljdJdeMRAJQ8L8DSco5ihkX2zRu3
-   RWBOfKhxowZBdRexPqtUY0Mdumlt3aZJitJcOBJqqvWNhGaGKRZ3/38G3
-   EdJhAJKhacESp1JQr5PGj08ZMLAO3l9kZCubWs8mgtNonk+8Ek+9s7nwZ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="254428220"
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="254428220"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 07:00:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="513435502"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 17 Mar 2022 07:00:11 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nUqfj-000Djk-6q; Thu, 17 Mar 2022 14:00:11 +0000
-Date:   Thu, 17 Mar 2022 21:59:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [mingo-tip:master 413/2335] kernel/bpf/core.c:62:6: warning: no
- previous prototype for function 'bpf_jit_dump'
-Message-ID: <202203172148.CqeOGiiE-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Thu, 17 Mar 2022 10:02:46 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2DA11E5A48
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 07:01:22 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id x8-20020a17090a788800b001c662c78b4fso2450275pjk.5
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 07:01:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=AmXJz1T+DxTQ8cL3dWsBE4Euit10u/N4HtWuky6pYRE=;
+        b=V3L1f0OpwlX27SXl8xzlUHsJrCaxgwXpjZ+thrxdmTARlLRSDFFBJ+xnGGLhlQsqqr
+         tbkJyFaGSVmhVw5j9pAG34Rz8abgBSa0naQxCePa/cLUQx3nRMu9coTIGQ4vldyONv2K
+         CMCnM93OSf6m0LNZ8U8XdMEZoOuwaLPvngsPbxN4Uxw/Tb/OW4209S1m0e9ri3orbvU/
+         lAvYKhGN8KXNAv1FpIFUv/VOJSK3nG1Nx19pmWs7x5bECEHXR2C7f822KvYKqD5zP0M3
+         UaNy/efqhy+qXYIxgLxHYB/ZbLn/li1zjGa9muAEbrTmPYtEZKC3/t2JySghT+nFOyXe
+         LU9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=AmXJz1T+DxTQ8cL3dWsBE4Euit10u/N4HtWuky6pYRE=;
+        b=jdU1FCDLmbiHExhsnzLGhuOvowZC9sijmmmhYV9IV03oXIe1+orEwX/YwoCzERHRIF
+         r/shFD/IaOUJch1+nQfLkI4qnk6v8X/5QjxldZBn9yP/MsIwTrt2a73ZF4Ul2ldB9vwg
+         78Js1LuDymUrhWsQ/rk9A1EMPcFlpr5/LCJ0wLd39u1aXbabE39wiiXs5CPUrAnKm2bH
+         foZvhGZRN/Se3Rt3PUclxR1FQcI/0XOGXmZHuvlSi5LeqwYSLrQkQa+Tt13ywSTnnMM/
+         OvHPn98DyP5Wsg68yxNIRYpBZRb+EmC663madPEREKwAADCRNVK8iKaYZLxMIi5Mvozw
+         80mg==
+X-Gm-Message-State: AOAM531mR4RE9Irnu4cOyyaciB9vyW5ZhTLZJPaF4HHPZxqsjIAUDxvg
+        YfK51zoM+ZwlQ2lnAQzg5IVj5jsTs5D2
+X-Google-Smtp-Source: ABdhPJxvoaqHM4SNfI3emat8G4zJ6gXkRPEt1XpB5btefTfHzZkskzhJq8f5SToxX3rJ2wl3pkTrR0UzOIew
+X-Received: from ezekiel.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:108e])
+ (user=shraash job=sendgmr) by 2002:a62:3896:0:b0:4f7:87dc:de5b with SMTP id
+ f144-20020a623896000000b004f787dcde5bmr5201915pfa.49.1647525681892; Thu, 17
+ Mar 2022 07:01:21 -0700 (PDT)
+Date:   Thu, 17 Mar 2022 19:31:15 +0530
+Message-Id: <20220317140115.541007-1-shraash@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
+Subject: [PATCH] drm/amd/display: Fixed the unused-but-set-variable warning
+From:   Aashish Sharma <shraash@google.com>
+To:     Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Pan Xinhui <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        Meenakshikumar Somasundaram <meenakshikumar.somasundaram@amd.com>,
+        Jake Wang <haonan.wang2@amd.com>,
+        Anson Jacob <Anson.Jacob@amd.com>,
+        Guenter Roeck <groeck@chromium.org>
+Cc:     Daniel Vetter <daniel@ffwll.ch>, Anthony Koo <Anthony.Koo@amd.com>,
+        Wayne Lin <wayne.lin@amd.com>, linux-kernel@vger.kernel.org,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        Aashish Sharma <shraash@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git master
-head:   85293bf3fca6d85608cff1447ce3097583f15fab
-commit: 13afaa4b6ebba9ee9365fa7688a8d7f3fff97749 [413/2335] headers/uninline: Uninline multi-use function: bpf_jit_dump()
-config: x86_64-randconfig-a001 (https://download.01.org/0day-ci/archive/20220317/202203172148.CqeOGiiE-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a6ec1e3d798f8eab43fb3a91028c6ab04e115fcb)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=13afaa4b6ebba9ee9365fa7688a8d7f3fff97749
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip master
-        git checkout 13afaa4b6ebba9ee9365fa7688a8d7f3fff97749
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/entry/vdso/ arch/x86/entry/vsyscall/ arch/x86/kernel/cpu/mtrr/ arch/x86/pci/ kernel/bpf/ kernel/trace/ lib/ net/ipv6/
+Fixed this kernel test robot warning:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+drivers/gpu/drm/amd/amdgpu/../display/dmub/inc/dmub_cmd.h:2893:12:
+warning: variable 'temp' set but not used [-Wunused-but-set-variable]
 
-All warnings (new ones prefixed by >>):
+Replaced the assignment to the unused temp variable with READ_ONCE()
+macro to flush the writes.
 
->> kernel/bpf/core.c:62:6: warning: no previous prototype for function 'bpf_jit_dump' [-Wmissing-prototypes]
-   void bpf_jit_dump(unsigned int flen, unsigned int proglen, u32 pass, void *image)
-        ^
-   kernel/bpf/core.c:62:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void bpf_jit_dump(unsigned int flen, unsigned int proglen, u32 pass, void *image)
-   ^
-   static 
-   kernel/bpf/core.c:1378:12: warning: no previous prototype for function 'bpf_probe_read_kernel' [-Wmissing-prototypes]
-   u64 __weak bpf_probe_read_kernel(void *dst, u32 size, const void *unsafe_ptr)
-              ^
-   kernel/bpf/core.c:1378:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   u64 __weak bpf_probe_read_kernel(void *dst, u32 size, const void *unsafe_ptr)
-   ^
-   static 
-   2 warnings generated.
-
-
-vim +/bpf_jit_dump +62 kernel/bpf/core.c
-
-    61	
-  > 62	void bpf_jit_dump(unsigned int flen, unsigned int proglen, u32 pass, void *image)
-    63	{
-    64		pr_err("flen=%u proglen=%u pass=%u image=%pK from=%s pid=%d\n", flen,
-    65		       proglen, pass, image, current->comm, task_pid_nr(current));
-    66	
-    67		if (image)
-    68			print_hex_dump(KERN_ERR, "JIT code: ", DUMP_PREFIX_OFFSET,
-    69				       16, 1, image, proglen, false);
-    70	}
-    71	
-
+Signed-off-by: Aashish Sharma <shraash@google.com>
 ---
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/gpu/drm/amd/display/dmub/inc/dmub_cmd.h | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/display/dmub/inc/dmub_cmd.h b/drivers/gpu/drm/amd/display/dmub/inc/dmub_cmd.h
+index 873ecd04e01d..b7981a781701 100644
+--- a/drivers/gpu/drm/amd/display/dmub/inc/dmub_cmd.h
++++ b/drivers/gpu/drm/amd/display/dmub/inc/dmub_cmd.h
+@@ -2913,13 +2913,12 @@ static inline void dmub_rb_flush_pending(const struct dmub_rb *rb)
+ 	uint32_t wptr = rb->wrpt;
+ 
+ 	while (rptr != wptr) {
+-		uint64_t volatile *data = (uint64_t volatile *)((uint8_t *)(rb->base_address) + rptr);
++		uint64_t *data = (uint64_t volatile *)((uint8_t *)(rb->base_address) + rptr);
+ 		//uint64_t volatile *p = (uint64_t volatile *)data;
+-		uint64_t temp;
+ 		uint8_t i;
+ 
+ 		for (i = 0; i < DMUB_RB_CMD_SIZE / sizeof(uint64_t); i++)
+-			temp = *data++;
++			(void)READ_ONCE(*data++);
+ 
+ 		rptr += DMUB_RB_CMD_SIZE;
+ 		if (rptr >= rb->capacity)
+-- 
+2.35.1.723.g4982287a31-goog
+
