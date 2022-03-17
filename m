@@ -2,85 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE92EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:48:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A942DC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:48:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233835AbiCQMty (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:49:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38068 "EHLO
+        id S233871AbiCQMt5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:49:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233819AbiCQMtV (ORCPT
+        with ESMTP id S233885AbiCQMt1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:49:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55D92125C97;
-        Thu, 17 Mar 2022 05:47:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E04486124B;
-        Thu, 17 Mar 2022 12:47:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE80DC340ED;
-        Thu, 17 Mar 2022 12:47:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521277;
-        bh=e6xzV0vMZzVnqvXtBRCAQHXo8mRMN5iWS2lmKY/9nj0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bwPcCw7io7QSj6Fmp5naOMxIWTB5mnO1vxX0FyaW1lz7tHkr0sobfGTelno8MHGWg
-         LUveebqcch5HyPkNRAeWIqCBI/wnPrb+SQNoj1c7vXmSm3w0q6r90BWUMitlqlNF2g
-         ttpgmRwcg3lbzO+tIvl3jlnrm810X3IUuVpfSYOU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 30/43] ARM: dts: rockchip: reorder rk322x hmdi clocks
-Date:   Thu, 17 Mar 2022 13:45:41 +0100
-Message-Id: <20220317124528.509539683@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220317124527.672236844@linuxfoundation.org>
-References: <20220317124527.672236844@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 17 Mar 2022 08:49:27 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1504124C20
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 05:48:04 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1647521282;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=AkFqp/wks0AeBUh3MjSCJiSE3sFCCm9/cIgptBe41go=;
+        b=geLLgiORCEymvP35+lraR0XBsDosznASTNKNCh9KjtEDO0TU3x4yAo2dRE/1vo/1X3X8Ro
+        05XRaDsFtA6uwf8uQuP5sKG8/mHyAFwHP1FauNiCwnT7BqqNbkaiQUOtaCu/ijJ26fRfRI
+        E6EL4Jrsyz5m0zRhRFBIrMrGTgVqd8S/FRETi8chAE/gSvAMwIFmZR7jnKqQwm6s65FWo/
+        z1Qyjk9c3FkzzPnmO4CXyAK2obvKNC59EMJx73McsHEvswRJc6B5/gB/x6DgcGvpiPIJ45
+        HudXPg3s2iME5VPxgcfsS/2UeSxCdQh5m/+hg+KNP2iALk4WLJj9s/tiNjTf+A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1647521282;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=AkFqp/wks0AeBUh3MjSCJiSE3sFCCm9/cIgptBe41go=;
+        b=1Duf42lbc4Qgplr3OzSXayu1+fDc1SkHYHYhsyiFTiHku6dlsDSNTgj66usMQ+grdVu4oq
+        LCUfrgAQDY4mYGDw==
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@intel.com,
+        luto@kernel.org, peterz@infradead.org
+Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: Re: [PATCHv6 23/30] x86/boot: Avoid #VE during boot for TDX platforms
+In-Reply-To: <20220316020856.24435-24-kirill.shutemov@linux.intel.com>
+References: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
+ <20220316020856.24435-24-kirill.shutemov@linux.intel.com>
+Date:   Thu, 17 Mar 2022 13:48:01 +0100
+Message-ID: <87tubwzqwu.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sascha Hauer <s.hauer@pengutronix.de>
+On Wed, Mar 16 2022 at 05:08, Kirill A. Shutemov wrote:
+> This theoretically makes the guest boot more fragile. If, for instance,
+> EFER was set up incorrectly and a WRMSR was performed, it will trigger
+> early exception panic or a triple fault, if it's before early
+> exceptions are set up. However, this is likely to trip up the guest
+> BIOS long before control reaches the kernel. In any case, these kinds
+> of problems are unlikely to occur in production environments, and
+> developers have good debug tools to fix them quickly.
+>
+> Change the common boot code to work on TDX and non-TDX systems.
+> This should have no functional effect on non-TDX systems.
+>
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> Reviewed-by: Andi Kleen <ak@linux.intel.com>
+> Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+> Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 
-[ Upstream commit be4e65bdffab5f588044325117df77dad7e9c45a ]
-
-The binding specifies the clock order to "iahb", "isfr", "cec". Reorder
-the clocks accordingly.
-
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-Link: https://lore.kernel.org/r/20220210142353.3420859-1-s.hauer@pengutronix.de
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm/boot/dts/rk322x.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/arch/arm/boot/dts/rk322x.dtsi b/arch/arm/boot/dts/rk322x.dtsi
-index 140e22d74dcf..d393bb481e74 100644
---- a/arch/arm/boot/dts/rk322x.dtsi
-+++ b/arch/arm/boot/dts/rk322x.dtsi
-@@ -635,8 +635,8 @@
- 		interrupts = <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;
- 		assigned-clocks = <&cru SCLK_HDMI_PHY>;
- 		assigned-clock-parents = <&hdmi_phy>;
--		clocks = <&cru SCLK_HDMI_HDCP>, <&cru PCLK_HDMI_CTRL>, <&cru SCLK_HDMI_CEC>;
--		clock-names = "isfr", "iahb", "cec";
-+		clocks = <&cru PCLK_HDMI_CTRL>, <&cru SCLK_HDMI_HDCP>, <&cru SCLK_HDMI_CEC>;
-+		clock-names = "iahb", "isfr", "cec";
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&hdmii2c_xfer &hdmi_hpd &hdmi_cec>;
- 		resets = <&cru SRST_HDMI_P>;
--- 
-2.34.1
-
-
-
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
