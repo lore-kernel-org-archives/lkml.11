@@ -2,82 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98FFCC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 13:43:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0151C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 13:44:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236780AbiCRNow (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 09:44:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49732 "EHLO
+        id S236792AbiCRNpa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 09:45:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236771AbiCRNou (ORCPT
+        with ESMTP id S236771AbiCRNp2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 09:44:50 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6769925F3
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 06:43:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647611011; x=1679147011;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=F49qIqOFgRujygUf9hfOLLpLuRLi9JWuENJ0sCiKPX0=;
-  b=FWYQuoFU8LP0laOZyNOclqbA85yK86mjPJw18UY5OKJ7SBQ+RK2jL73Z
-   XKp+lgH3d2Wl4StGyrssWd7UjT0sWTsO2FFCOhdJoh1vYIkwiExmS4cLS
-   qLMCwYblk0/WaknOdlmBXnfch7njjD2U2SRiXI75hweb2RpcPc/Y8LHmk
-   nt7pwCMR4kCN5ENv7xT5Xpeyq4PbaryPCTAQ2IoqyRYjE/kSFBS6xfCsp
-   gzM1CyrLDrxtHYVSDS09GnHrl2BWAioTNyxGPP2hBuA/Wsa9YB32MAfdv
-   UEQkwXGdaf8Hhx7Fzvi/O0Z6uUETeNH95q+hAXFtFTWx1tR7XYqM7PtUy
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="343572559"
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="343572559"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 06:43:31 -0700
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="499252768"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 06:43:28 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nVCsS-002FjN-V1;
-        Fri, 18 Mar 2022 15:42:48 +0200
-Date:   Fri, 18 Mar 2022 15:42:48 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/5] drm: Fix monochrome conversion for sdd130x
-Message-ID: <YjSMWDFxTeJZZ/CB@smile.fi.intel.com>
-References: <20220317081830.1211400-1-geert@linux-m68k.org>
- <f94c0f44-36f1-e1a9-5963-5da0bafb8c90@redhat.com>
+        Fri, 18 Mar 2022 09:45:28 -0400
+Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA57474610;
+        Fri, 18 Mar 2022 06:44:09 -0700 (PDT)
+Received: by mail-lf1-f43.google.com with SMTP id bt26so14184817lfb.3;
+        Fri, 18 Mar 2022 06:44:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=+13Af56+e0RqW04Edcq76EyluIRDM9JaL8dIazHbckc=;
+        b=sHP870PsI5Ncc0fJSlnvanQBunixb5WaRMDKSoCvpCd7ShpwxBJ3hLL/nQHwgTX/6v
+         98bbtamJ2z9WjB5X5pfxoImIXbtgmNYXZYonElZFaGkyR7u7KqZmxTGCE/kpGL7CyAGC
+         RX+tuB+Edt0VmX1uW897ATr5CU+w5pZ5MJtkbVBef869cLnpuDBKiYIckIY+G+W7ADxM
+         GkkGRfiJYB+Kh2wtT/zgjko3X6c4LecZCFtZjQfsS3aE5Fytl+DWvkAfb4BDISbGls2q
+         FAt3Zyz2+fOlyVjRKj2yoP8DaVtK4k6iuy3RazzPkzp2AD4kMJ8e9Z9nOxvSr8WUrEQT
+         ij4w==
+X-Gm-Message-State: AOAM533k+XW0sNliYf27LuwxMdwpfCi44kluLwBapzKMCfPreif61XoV
+        DR7yvOsvRhPofcH+w2h7ygc=
+X-Google-Smtp-Source: ABdhPJxBG0gMB7P6i31hX6URblEoIk15XK26/WiOk2L5XQrQkklk9dI2CS32ZTycPzHM2+9Bp954qg==
+X-Received: by 2002:a05:6512:2613:b0:448:5164:689d with SMTP id bt19-20020a056512261300b004485164689dmr6030983lfb.526.1647611048126;
+        Fri, 18 Mar 2022 06:44:08 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.googlemail.com with ESMTPSA id y23-20020a2e95d7000000b00247e4e386aasm965319ljh.121.2022.03.18.06.44.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Mar 2022 06:44:07 -0700 (PDT)
+Message-ID: <ad56b5bc-a9d4-b584-3c04-7c47995381f1@kernel.org>
+Date:   Fri, 18 Mar 2022 14:44:05 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f94c0f44-36f1-e1a9-5963-5da0bafb8c90@redhat.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 3/3] ARM: dts: aspeed: Remove arch timer clocks
+ property
+Content-Language: en-US
+To:     Kuldeep Singh <singh.kuldeep87k@gmail.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org
+References: <20220317191527.96237-1-singh.kuldeep87k@gmail.com>
+ <20220317191527.96237-4-singh.kuldeep87k@gmail.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220317191527.96237-4-singh.kuldeep87k@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 12:39:57PM +0100, Javier Martinez Canillas wrote:
-> On 3/17/22 09:18, Geert Uytterhoeven wrote:
-
-> By the way, you should probably request commit access to the drm-misc tree:
+On 17/03/2022 20:15, Kuldeep Singh wrote:
 > 
-> https://drm.pages.freedesktop.org/maintainer-tools/commit-access.html
+> Moreover, clocks also matches incorrectly with the regex pattern.
+> Remove this entry altogether to fix it.
+> 'clocks' does not match any of the regexes: 'pinctrl-[0-9]+'
 
-Does it really work? I tried and no one replied to request.
-Keeping silent is a bad service. If people don't want a person
-to have such access it should be well communicated.
-
--- 
-With Best Regards,
-Andy Shevchenko
+Except of ongoing discussion, this paragraph is incorrect.  There is no
+incorrect match of regex pattern. The field is simply not documented in
+the bindings (not allowed by bindings). This paragraph is actually
+confusing and misleading.
 
 
+Best regards,
+Krzysztof
