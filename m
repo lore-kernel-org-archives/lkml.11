@@ -2,120 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17D1DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 13:22:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D80AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 13:22:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236633AbiCRNXR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 09:23:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58680 "EHLO
+        id S236642AbiCRNXd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 09:23:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236671AbiCRNXB (ORCPT
+        with ESMTP id S236668AbiCRNX2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 09:23:01 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B0217C415
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 06:21:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647609702; x=1679145702;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=eqV1QWw9TmNHxfIL5myyHjYQz1fBHsC6X3GwbFchzV8=;
-  b=F0WwRedXe1MJooh6Q//nPOHTS6XHiOBvPKH6kNaVkhQXziYGL9N0WPIO
-   l8H7KUspiK25ouQ1UiFbMgLbKBnbNpzC7764u3wvcXBqrsi6tF57uX3ky
-   K7YsIHJpRheaXVokyeiaQiRSfRLYbRvjD3CjU6oCMwIQLiWhv/BLSbjn5
-   ZSOEf0GAgo4KsI37xCjlMRHZ4xgb7jOHN0TBaZEmg/vrDb8tNYNiOyxN7
-   nHzzk1L9T0vxsENqEqbhGIXhTXvn6Fmuompv/MOswLMCKMQDCUa+MHAEg
-   3YytwcLzomT3dM81k4xAFSpCg3ACMAGxhBnmwS6la9xQjsKQGRucbLbJY
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="343567981"
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="343567981"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 06:21:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="541838601"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 18 Mar 2022 06:21:40 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nVCXz-000EmR-S0; Fri, 18 Mar 2022 13:21:39 +0000
-Date:   Fri, 18 Mar 2022 21:21:25 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Charan Teja Reddy <quic_charante@quicinc.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org,
-        Suren Baghdasaryan <surenb@google.com>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android13-5.15
- 5191/5193] mm/compaction.c:761:15: error: redefinition of
- 'isolate_and_split_free_page'
-Message-ID: <202203182124.wIWFJftW-lkp@intel.com>
+        Fri, 18 Mar 2022 09:23:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89D831C231D;
+        Fri, 18 Mar 2022 06:22:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 14509B82345;
+        Fri, 18 Mar 2022 13:22:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED08CC340E8;
+        Fri, 18 Mar 2022 13:22:00 +0000 (UTC)
+Date:   Fri, 18 Mar 2022 09:21:59 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     David Gow <davidgow@google.com>
+Cc:     Brendan Higgins <brendanhiggins@google.com>,
+        Daniel Latypov <dlatypov@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 0/2] kunit: Support redirecting function calls
+Message-ID: <20220318092159.6f275782@gandalf.local.home>
+In-Reply-To: <20220318021314.3225240-1-davidgow@google.com>
+References: <20220318021314.3225240-1-davidgow@google.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android13-5.15
-head:   f82f0ceba5827c9d5a3c9326c95f591ebf254003
-commit: f47b852faa4afaae0e534b616f2864bb587286e4 [5191/5193] ANDROID: implement wrapper for reverse migration
-config: i386-randconfig-a006 (https://download.01.org/0day-ci/archive/20220318/202203182124.wIWFJftW-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a6e70e4056dff962ec634c5bd4f2f4105a0bef71)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/f47b852faa4afaae0e534b616f2864bb587286e4
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android13-5.15
-        git checkout f47b852faa4afaae0e534b616f2864bb587286e4
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+On Fri, 18 Mar 2022 10:13:12 +0800
+David Gow <davidgow@google.com> wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> Does either (or both) of these features sound useful, and is this
+> sort-of API the right model? (Personally, I think there's a reasonable
+> scope for both.) Is anything obviously missing or wrong? Do the names,
+> descriptions etc. make any sense?
 
-All errors (new ones prefixed by >>):
+Obviously I'm biased toward the ftrace solution ;-)
 
->> mm/compaction.c:761:15: error: redefinition of 'isolate_and_split_free_page'
-   unsigned long isolate_and_split_free_page(struct page *page,
-                 ^
-   include/linux/compaction.h:230:22: note: previous definition is here
-   static unsigned long isolate_and_split_free_page(struct page *page,
-                        ^
-   1 error generated.
-
-
-vim +/isolate_and_split_free_page +761 mm/compaction.c
-
-   760	
- > 761	unsigned long isolate_and_split_free_page(struct page *page,
-   762							struct list_head *list)
-   763	{
-   764		unsigned long isolated;
-   765		unsigned int order;
-   766	
-   767		if (!PageBuddy(page))
-   768			return 0;
-   769	
-   770		order = buddy_order(page);
-   771		isolated = __isolate_free_page(page, order);
-   772		if (!isolated)
-   773			return 0;
-   774	
-   775		set_page_private(page, order);
-   776		list_add(&page->lru, list);
-   777	
-   778		split_map_pages(list);
-   779	
-   780		return isolated;
-   781	}
-   782	EXPORT_SYMBOL_GPL(isolate_and_split_free_page);
-   783	
-
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-- Steve
