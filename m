@@ -2,109 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D65B7C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 11:29:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D3BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 11:29:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235791AbiCRLaw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 07:30:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60176 "EHLO
+        id S235806AbiCRLa4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 07:30:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235782AbiCRLar (ORCPT
+        with ESMTP id S235789AbiCRLaw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 07:30:47 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD1FC1ED054
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 04:29:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647602968; x=1679138968;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=l1GuPZNsutuzZp94mQlMThNJ0vvVjvY7hDbdSgk3DOc=;
-  b=MCtzuUY/X0PymDPU3AJJsJEjUaEiaphXOlnwTkauul7LqffPrwRevT/C
-   ozVTaeZcZYUIIvFv1t2U4Jkbv5DnOcSAYsmc3+RC/gbcId0/almzJD30k
-   72eDgZP/pXKc3YWMOC0BaoZP7QhtXlgL7V+Bh4HSHZSzMGRpQXERXTn0x
-   mk7MnIWk/OMXPyKoMgwy7G7Vk9ycfZhYboAMd/KpSFSHbynUahpm6IoeK
-   XQj34r+4A7mo9LHnrFwbKvvSHrO8FIh+tHU/8vBI1fVCByp8Oa3SSRjvS
-   FEsQZ2kR2RP6nmXZiynJEHfoc/T/58E9+IqLHQid5MFIQo/wl8pWtn2+K
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="244573543"
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="244573543"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 04:29:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="541801519"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 18 Mar 2022 04:29:26 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nVAnO-000EiC-8c; Fri, 18 Mar 2022 11:29:26 +0000
-Date:   Fri, 18 Mar 2022 19:28:46 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [mingo-tip:master 1808/2335]
- arch/x86/entry/vdso/vdso32-setup.c:55:12: warning: no previous prototype for
- function 'sysenter_setup'
-Message-ID: <202203181924.OJ9XUwqG-lkp@intel.com>
+        Fri, 18 Mar 2022 07:30:52 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BC661ED055;
+        Fri, 18 Mar 2022 04:29:32 -0700 (PDT)
+Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id B26241EC0662;
+        Fri, 18 Mar 2022 12:29:26 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1647602966;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=7cHjZTrO3pszQOYs78HUK2TVdaR3zSuUmPa3P4965TQ=;
+        b=VeMn+FV7lsd7524c97/dvErpkObi38LUan9DkmodjZQSeYnUrvs7EaaJuXn0hK/BI/NLtz
+        62womwRZey5rcx+VkO/8LsSXpmzNml/SwXDz2Iadftaplf3xGftTClz54F7KSC9VsZD5lo
+        KwtZsPVedAcImMNQwD6wjo7iSXsPItg=
+Date:   Fri, 18 Mar 2022 12:29:23 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Joerg Roedel <joro@8bytes.org>
+Cc:     x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, hpa@zytor.com,
+        Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] x86/sev: Unroll string mmio with
+ CC_ATTR_GUEST_UNROLL_STRING_IO
+Message-ID: <YjRtE30Usxy8PurP@zn.tnic>
+References: <20220310112615.31133-1-joro@8bytes.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220310112615.31133-1-joro@8bytes.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git master
-head:   85293bf3fca6d85608cff1447ce3097583f15fab
-commit: 9b4a1c67afe98651319ebba46faa74c696c9c79b [1808/2335] headers/deps: x86/cpu, arm64/cpu: Split out <asm/processor_api.h> from <asm/processor.h>
-config: x86_64-randconfig-a001 (https://download.01.org/0day-ci/archive/20220318/202203181924.OJ9XUwqG-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a6ec1e3d798f8eab43fb3a91028c6ab04e115fcb)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=9b4a1c67afe98651319ebba46faa74c696c9c79b
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip master
-        git checkout 9b4a1c67afe98651319ebba46faa74c696c9c79b
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/entry/vdso/ arch/x86/entry/vsyscall/ arch/x86/kernel/cpu/mtrr/ arch/x86/pci/ kernel/trace/ net/ipv6/
+On Thu, Mar 10, 2022 at 12:26:15PM +0100, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel@suse.de>
+> 
+> The io specific memcpy/memset functions use string mmio accesses to do
+> their work. Under SEV the hypervisor can't emulate these instructions,
+> because they read/write directly from/to encrypted memory.
+> 
+> KVM will inject a page fault exception into the guest when it is asked
+> to emulate string mmio instructions for an SEV guest:
+> 
+> 	BUG: unable to handle page fault for address: ffffc90000065068
+> 	#PF: supervisor read access in kernel mode
+> 	#PF: error_code(0x0000) - not-present page
+> 	PGD 8000100000067 P4D 8000100000067 PUD 80001000fb067 PMD 80001000fc067 PTE 80000000fed40173
+> 	Oops: 0000 [#1] PREEMPT SMP NOPTI
+> 	CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.17.0-rc7 #3
+> 
+> As string mmio for an SEV guest can not be supported by the
+> hypervisor, unroll the instructions for CC_ATTR_GUEST_UNROLL_STRING_IO
+> enabled kernels.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+What I'm missing in this description is why wasn't it a problem until now?
 
-All warnings (new ones prefixed by >>):
+You mentioned something about libvirt adding TPMs and that causing this
+but I'm still unclear as to why exactly this is causing the issue. I'm
+guessing SEV guests didn't do string IO but libvirt adding a TPM is
+somehow causing them to use them now...
 
->> arch/x86/entry/vdso/vdso32-setup.c:55:12: warning: no previous prototype for function 'sysenter_setup' [-Wmissing-prototypes]
-   int __init sysenter_setup(void)
-              ^
-   arch/x86/entry/vdso/vdso32-setup.c:55:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int __init sysenter_setup(void)
-   ^
-   static 
-   1 warning generated.
+> @@ -56,9 +55,8 @@ void memcpy_toio(volatile void __iomem *to, const void *from, size_t n)
+>  	}
+>  	rep_movs((void *)to, (const void *) from, n);
+>  }
+> -EXPORT_SYMBOL(memcpy_toio);
+>  
+> -void memset_io(volatile void __iomem *a, int b, size_t c)
+> +static void string_memset_io(volatile void __iomem *a, int b, size_t c)
 
+You can simply remove that wrapper and use memset() at the callsite.
 
-vim +/sysenter_setup +55 arch/x86/entry/vdso/vdso32-setup.c
+Thx.
 
-^1da177e4c3f41 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  54  
-a6c4e076ee4c1e arch/i386/kernel/sysenter.c        Jeremy Fitzhardinge 2007-05-02 @55  int __init sysenter_setup(void)
-^1da177e4c3f41 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  56  {
-0a6d1fa0d2b48f arch/x86/entry/vdso/vdso32-setup.c Andy Lutomirski     2015-10-05  57  	init_vdso_image(&vdso_image_32);
-^1da177e4c3f41 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  58  
-^1da177e4c3f41 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  59  	return 0;
-^1da177e4c3f41 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  60  }
-e6e5494cb23d19 arch/i386/kernel/sysenter.c        Ingo Molnar         2006-06-27  61  
+-- 
+Regards/Gruss,
+    Boris.
 
-:::::: The code at line 55 was first introduced by commit
-:::::: a6c4e076ee4c1ea670e4faa55814e63dd08e3f29 [PATCH] i386: clean up identify_cpu
-
-:::::: TO: Jeremy Fitzhardinge <jeremy@goop.org>
-:::::: CC: Andi Kleen <andi@basil.nowhere.org>
-
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+https://people.kernel.org/tglx/notes-about-netiquette
