@@ -2,216 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 058F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 14:02:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 605F7C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 14:04:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236993AbiCROEP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 10:04:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55884 "EHLO
+        id S237000AbiCROFf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 10:05:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236965AbiCROEN (ORCPT
+        with ESMTP id S233096AbiCROFc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 10:04:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40F232B5EE7;
-        Fri, 18 Mar 2022 07:02:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 785B461A08;
-        Fri, 18 Mar 2022 14:02:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19C27C340E8;
-        Fri, 18 Mar 2022 14:02:50 +0000 (UTC)
-Date:   Fri, 18 Mar 2022 10:02:49 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
-Cc:     Wolfram Sang <wsa@kernel.org>, "Ingo Molnar" <mingo@redhat.com>,
-        Jamie Iles <quic_jiles@quicinc.com>,
-        Graeme Gregory <quic_ggregory@quicinc.com>,
-        <linux-kernel@vger.kernel.org>, <linux-i2c@vger.kernel.org>
-Subject: Re: [PATCH v2] i2c: add tracepoints for I2C slave events
-Message-ID: <20220318100249.3eb97c10@gandalf.local.home>
-In-Reply-To: <20220308163333.3985974-1-quic_jaehyoo@quicinc.com>
-References: <20220308163333.3985974-1-quic_jaehyoo@quicinc.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Fri, 18 Mar 2022 10:05:32 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF03B2B78C6;
+        Fri, 18 Mar 2022 07:04:11 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 9196A1F46079
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1647612250;
+        bh=YOVEdyrfGs6YY8KU6+URoAWfguVsIhXu0otlSBy1Fos=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=kizndKYJmfyPLeA2ieV3Q4kGKXJU2rh4JGfZq6SjPorWANlBeVNlaeLBiWUn93v1P
+         H/MDKh29H0lBtD4YBJjCB0lInZmsLH72ZIwUjSaiXLW2QNmjkXxG6nW4Tppa6YmgYe
+         y7LgQegeL9LkyM+zSTyCsPn/r/vrIkc8nnIdIkoDpT6ky5GtRJK8q83DQLtORJkDst
+         BglkyRU9LgthB+9tV7x1+XqqnEJcmjzVFfqIx8lEARq+VgRXvqbDYzTOfr7lGo7f0O
+         rbwUkydtWo3Ke80nNPnrohlJ1ylLQbzU29DhWmgWYmP1NHTAHIHUy9nEX70gPMqbl0
+         exAXJ7m5Ol42g==
+Message-ID: <aae7c675-6be4-03f1-a8fb-121faae320c2@collabora.com>
+Date:   Fri, 18 Mar 2022 15:04:07 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v3, 00/10] Enable two H264 encoder core on MT8195
+Content-Language: en-US
+To:     Irui Wang <irui.wang@mediatek.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Tzung-Bi Shih <tzungbi@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tomasz Figa <tfiga@google.com>, Yong Wu <yong.wu@mediatek.com>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>
+Cc:     Hsin-Yi Wang <hsinyi@chromium.org>,
+        Maoguang Meng <maoguang.meng@mediatek.com>,
+        Longfei Wang <longfei.wang@mediatek.com>,
+        Yunfei Dong <yunfei.dong@mediatek.com>,
+        Fritz Koenig <frkoenig@chromium.org>,
+        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        srv_heupstream@mediatek.com, linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220317082230.23622-1-irui.wang@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220317082230.23622-1-irui.wang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 8 Mar 2022 08:33:33 -0800
-Jae Hyun Yoo <quic_jaehyoo@quicinc.com> wrote:
+Il 17/03/22 09:22, Irui Wang ha scritto:
+> MT8195 has two H264 encoder cores, they have their own power-domains,
+> clocks, interrupts, register base. The two H264 encoder cores can work
+> together to achieve higher performance, it's a core mode called
+> frame-racing, one core has 4K@30fps performance, two cores can achieve
+> 4K@60fps.
+> The two encoder core encoding process looks like this:
+> 
+>      VENC Core0: frm#0....frm#2....frm#4....
+>      VENC Core1: ..frm#1....frm#3....frm#5....
+> 
+> This series of patches are used to enable the two H264 encoder cores,
+> encoding process will be changed:
+> As-Is: Synchronous
+> V4L2_VIDIOC_QBUF#0 --> device_run(triger encoder) --> wait encoder IRQ -->
+> encoding done with result --> job_finish
+> V4l2_VIDIOC_QBUF#1 --> device_run(triger encoder) --> wait encoder IRQ -->
+> encoding done with result --> job_finish
+> ...
+> 
+> To-Be: Asynchronous
+> V4L2_VIDIOC_QBUF#0 --> device_run(triger encoder) --> job_finish
+> ..V4l2_VIDIOC_QBUF#1 --> device_run(triger encoder) --> job_finish
+> (venc core0 may encode done here, done the encoding result to client)
+> V4L2_VIDIOC_QBUF#2 --> device_run(triger encoder) --> job_finish.
+> 
+> There is no "wait encoder IRQ" synchronous call during frame-racing mode
+> encoding process, it can full use the two encoder cores to achieve higher
+> performance.
+> 
 
-> I2C slave events tracepoints can be enabled by:
-> 
-> 	echo 1 > /sys/kernel/tracing/events/i2c_slave/enable
-> 
-> and logs in /sys/kernel/tracing/trace will look like:
-> 
-> 	... i2c_slave: i2c-0 a=010 WR_REQ []
-> 	... i2c_slave: i2c-0 a=010 WR_RCV [02]
-> 	... i2c_slave: i2c-0 a=010 WR_RCV [0c]
-> 	... i2c_slave: i2c-0 a=010   STOP []
-> 	... i2c_slave: i2c-0 a=010 RD_REQ [04]
-> 	... i2c_slave: i2c-0 a=010 RD_PRO [b4]
-> 	... i2c_slave: i2c-0 a=010   STOP []
-> 
-> formatted as:
-> 
-> 	i2c-<adapter-nr>
-> 	a=<addr>
-> 	<event>
-> 	[<data>]
-> 
-> trace printings can be selected by adding a filter like:
-> 
-> 	echo adapter_nr==1 >/sys/kernel/tracing/events/i2c_slave/filter
-> 
-> Signed-off-by: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
-> ---
-> Changes v1 -> v2:
-> * Fixed trace_2c_slave call condition to optimize conditional compare logic
->   (Steven)
-> * Fixed TP entry order to prevent wasting spaces in the ring buffer (Steven)
-> * Replaced __get_dynamic_array with __array for storing 1-length data value
->   to make it faster and save space (Steven)
-> 
->  drivers/i2c/i2c-core-slave.c     | 15 +++++++++
->  include/linux/i2c.h              |  8 ++---
->  include/trace/events/i2c_slave.h | 57 ++++++++++++++++++++++++++++++++
->  3 files changed, 74 insertions(+), 6 deletions(-)
->  create mode 100644 include/trace/events/i2c_slave.h
-> 
-> diff --git a/drivers/i2c/i2c-core-slave.c b/drivers/i2c/i2c-core-slave.c
-> index 1589179d5eb9..4299de933ac6 100644
-> --- a/drivers/i2c/i2c-core-slave.c
-> +++ b/drivers/i2c/i2c-core-slave.c
-> @@ -14,6 +14,9 @@
->  
->  #include "i2c-core.h"
->  
-> +#define CREATE_TRACE_POINTS
-> +#include <trace/events/i2c_slave.h>
-> +
->  int i2c_slave_register(struct i2c_client *client, i2c_slave_cb_t slave_cb)
->  {
->  	int ret;
-> @@ -79,6 +82,18 @@ int i2c_slave_unregister(struct i2c_client *client)
->  }
->  EXPORT_SYMBOL_GPL(i2c_slave_unregister);
->  
-> +int i2c_slave_event(struct i2c_client *client,
-> +		    enum i2c_slave_event event, u8 *val)
-> +{
-> +	int ret = client->slave_cb(client, event, val);
-> +
-> +	if (trace_i2c_slave_enabled() && !ret)
-> +		trace_i2c_slave(client, event, val);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(i2c_slave_event);
-> +
->  /**
->   * i2c_detect_slave_mode - detect operation mode
->   * @dev: The device owning the bus
-> diff --git a/include/linux/i2c.h b/include/linux/i2c.h
-> index 7d4f52ceb7b5..fbda5ada2afc 100644
-> --- a/include/linux/i2c.h
-> +++ b/include/linux/i2c.h
-> @@ -392,12 +392,8 @@ enum i2c_slave_event {
->  int i2c_slave_register(struct i2c_client *client, i2c_slave_cb_t slave_cb);
->  int i2c_slave_unregister(struct i2c_client *client);
->  bool i2c_detect_slave_mode(struct device *dev);
-> -
-> -static inline int i2c_slave_event(struct i2c_client *client,
-> -				  enum i2c_slave_event event, u8 *val)
-> -{
-> -	return client->slave_cb(client, event, val);
-> -}
-> +int i2c_slave_event(struct i2c_client *client,
-> +		    enum i2c_slave_event event, u8 *val);
->  #else
->  static inline bool i2c_detect_slave_mode(struct device *dev) { return false; }
->  #endif
-> diff --git a/include/trace/events/i2c_slave.h b/include/trace/events/i2c_slave.h
-> new file mode 100644
-> index 000000000000..3aaf5fb76796
-> --- /dev/null
-> +++ b/include/trace/events/i2c_slave.h
-> @@ -0,0 +1,57 @@
-> +/* SPDX-License-Identifier: GPL-2.0-or-later */
-> +/*
-> + * I2C slave tracepoints
-> + *
-> + * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
-> + */
-> +#undef TRACE_SYSTEM
-> +#define TRACE_SYSTEM i2c_slave
-> +
-> +#if !defined(_TRACE_I2C_SLAVE_H) || defined(TRACE_HEADER_MULTI_READ)
-> +#define _TRACE_I2C_SLAVE_H
-> +
-> +#include <linux/i2c.h>
-> +#include <linux/tracepoint.h>
-> +
-> +TRACE_EVENT(i2c_slave,
-> +	TP_PROTO(const struct i2c_client *client, enum i2c_slave_event event,
-> +		 __u8 *val),
-> +	TP_ARGS(client, event, val),
-> +	TP_STRUCT__entry(
-> +		__field(int,				adapter_nr	)
-> +		__field(__u16,				addr		)
-> +		__field(__u16,				len		)
-> +		__field(enum i2c_slave_event,		event		)
-> +		__array(__u8, buf, 1)					),
-> +
-> +	TP_fast_assign(
-> +		__entry->adapter_nr = client->adapter->nr;
-> +		__entry->addr = client->addr;
-> +		__entry->event = event;
-> +		switch (event) {
-> +		case I2C_SLAVE_READ_REQUESTED:
-> +		case I2C_SLAVE_READ_PROCESSED:
-> +		case I2C_SLAVE_WRITE_RECEIVED:
-> +			__entry->len = 1;
-> +			memcpy(__entry->buf, val, __entry->len);
-> +			break;
-> +		default:
-> +			__entry->len = 0;
-> +			break;
-> +		}
-> +		),
-> +	TP_printk("i2c-%d a=%03x %s [%*phD]",
-> +		__entry->adapter_nr, __entry->addr,
-> +		__print_symbolic(__entry->event,
-> +				 { I2C_SLAVE_READ_REQUESTED,	"RD_REQ" },
-> +				 { I2C_SLAVE_WRITE_REQUESTED,	"WR_REQ" },
-> +				 { I2C_SLAVE_READ_PROCESSED,	"RD_PRO" },
-> +				 { I2C_SLAVE_WRITE_RECEIVED,	"WR_RCV" },
-> +				 { I2C_SLAVE_STOP,		"  STOP" }),
+Hello Irui,
+like v1 and v2, also this version of the series will crash the kernel when
+trying to encode.
 
-For the above to be useful for perf and trace-cmd (user space tools) you
-will need to export them with:
-
-TRACE_DEFINE_ENUM(I2C_SLAVE_READ_REQUESTED);
-TRACE_DEFINE_ENUM(I2C_SLAVE_WRITE_REQUESTED);
-TRACE_DEFINE_ENUM(I2C_SLAVE_READ_PROCESSED);
-TRACE_DEFINE_ENUM(I2C_SLAVE_WRITE_PROCESSED);
-TRACE_DEFINE_ENUM(I2C_SLAVE_STOP);
-
-before the TRACE_EVENT()
-
--- Steve
+Before pushing the next series, you shall ensure that it is not crashing
+the entire kernel, hence, please test your code with gstreamer.
 
 
-> +		__entry->len, __entry->buf
-> +		));
-> +
-> +#endif /* _TRACE_I2C_SLAVE_H */
-> +
-> +/* This part must be outside protection */
-> +#include <trace/define_trace.h>
+Please use the following pipeline to test:
 
+gst-launch-1.0 videotestsrc num-buffers=100 ! v4l2h264enc ! queue ! h264parse ! 
+qtmux ! filesink location=test.mov
+
+
+Regards,
+Angelo
