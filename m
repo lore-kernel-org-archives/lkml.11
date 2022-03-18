@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64BF7C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 14:42:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 654DAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 14:42:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235342AbiCQOnh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 10:43:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38408 "EHLO
+        id S235352AbiCQOni (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 10:43:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235403AbiCQOnJ (ORCPT
+        with ESMTP id S235415AbiCQOnL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 10:43:09 -0400
+        Thu, 17 Mar 2022 10:43:11 -0400
 Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D7B3200962
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 07:41:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3297D20095D
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 07:41:54 -0700 (PDT)
 Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KK8rS2d1vz9sW5;
-        Thu, 17 Mar 2022 22:38:00 +0800 (CST)
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KK8rV41Jjz9sh1;
+        Thu, 17 Mar 2022 22:38:02 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 17 Mar
- 2022 22:41:49 +0800
+ 2022 22:41:51 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>
 CC:     <ziy@nvidia.com>, <baolin.wang@linux.alibaba.com>,
         <ying.huang@intel.com>, <songmuchun@bytedance.com>,
         <apopple@nvidia.com>, <linux-mm@kvack.org>,
         <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH v2 04/11] mm/migration: fix the confusing PageTransHuge check
-Date:   Fri, 18 Mar 2022 19:17:02 +0800
-Message-ID: <20220318111709.60311-5-linmiaohe@huawei.com>
+Subject: [PATCH v2 08/11] mm/migration: remove some duplicated codes in migrate_pages
+Date:   Fri, 18 Mar 2022 19:17:06 +0800
+Message-ID: <20220318111709.60311-9-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20220318111709.60311-1-linmiaohe@huawei.com>
 References: <20220318111709.60311-1-linmiaohe@huawei.com>
@@ -45,29 +45,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-prep_transhuge_page should be called when PageTransHuge(page) is true.
-The newly allocated new_page is not yet PageTransHuge though it could
-pass the check as PageTransHuge only checks PageHead now.
+Remove the duplicated codes in migrate_pages to simplify the code. Minor
+readability improvement. No functional change intended.
 
 Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+Reviewed-by: Zi Yan <ziy@nvidia.com>
+Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
 ---
- mm/migrate.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ mm/migrate.c | 36 ++++++++++++------------------------
+ 1 file changed, 12 insertions(+), 24 deletions(-)
 
 diff --git a/mm/migrate.c b/mm/migrate.c
-index 0ea555e4eaae..b16c561a9a4b 100644
+index bb36f6b40f18..63a87ef0996f 100644
 --- a/mm/migrate.c
 +++ b/mm/migrate.c
-@@ -1560,7 +1560,7 @@ struct page *alloc_migration_target(struct page *page, unsigned long private)
+@@ -1414,14 +1414,11 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
+ 						nr_thp_split++;
+ 						goto retry;
+ 					}
+-
+-					nr_failed_pages += nr_subpages;
+-					break;
+-				}
+-
+ 				/* Hugetlb migration is unsupported */
+-				if (!no_subpage_counting)
++				} else if (!no_subpage_counting) {
+ 					nr_failed++;
++				}
++
+ 				nr_failed_pages += nr_subpages;
+ 				break;
+ 			case -ENOMEM:
+@@ -1436,28 +1433,22 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
+ 						nr_thp_split++;
+ 						goto retry;
+ 					}
+-
+-					nr_failed_pages += nr_subpages;
+-					goto out;
++				} else if (!no_subpage_counting) {
++					nr_failed++;
+ 				}
  
- 	new_page = __alloc_pages(gfp_mask, order, nid, mtc->nmask);
- 
--	if (new_page && PageTransHuge(new_page))
-+	if (new_page && PageTransHuge(page))
- 		prep_transhuge_page(new_page);
- 
- 	return new_page;
+-				if (!no_subpage_counting)
+-					nr_failed++;
+ 				nr_failed_pages += nr_subpages;
+ 				goto out;
+ 			case -EAGAIN:
+-				if (is_thp) {
++				if (is_thp)
+ 					thp_retry++;
+-					break;
+-				}
+-				retry++;
++				else
++					retry++;
+ 				break;
+ 			case MIGRATEPAGE_SUCCESS:
+ 				nr_succeeded += nr_subpages;
+-				if (is_thp) {
++				if (is_thp)
+ 					nr_thp_succeeded++;
+-					break;
+-				}
+ 				break;
+ 			default:
+ 				/*
+@@ -1466,14 +1457,11 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
+ 				 * removed from migration page list and not
+ 				 * retried in the next outer loop.
+ 				 */
+-				if (is_thp) {
++				if (is_thp)
+ 					nr_thp_failed++;
+-					nr_failed_pages += nr_subpages;
+-					break;
+-				}
+-
+-				if (!no_subpage_counting)
++				else if (!no_subpage_counting)
+ 					nr_failed++;
++
+ 				nr_failed_pages += nr_subpages;
+ 				break;
+ 			}
 -- 
 2.23.0
 
