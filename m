@@ -2,73 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCDD4C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 09:44:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C6D4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 09:45:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234576AbiCRJp5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 05:45:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40098 "EHLO
+        id S234588AbiCRJql (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 05:46:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232891AbiCRJpy (ORCPT
+        with ESMTP id S232891AbiCRJqi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 05:45:54 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C511286F77
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 02:44:36 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KKfBz5m8jz9sg4;
-        Fri, 18 Mar 2022 17:40:43 +0800 (CST)
-Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 18 Mar 2022 17:44:34 +0800
-Received: from huawei.com (10.175.112.125) by dggpemm500018.china.huawei.com
- (7.185.36.111) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 18 Mar
- 2022 17:44:34 +0800
-From:   Yue Zou <zouyue3@huawei.com>
-To:     <stuyoder@gmail.com>, <laurentiu.tudor@nxp.com>
-CC:     <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next] bus: fsl-mc: simplify DPMCP version check
-Date:   Fri, 18 Mar 2022 10:03:44 +0000
-Message-ID: <20220318100344.4030432-1-zouyue3@huawei.com>
-X-Mailer: git-send-email 2.18.0.huawei.25
+        Fri, 18 Mar 2022 05:46:38 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ED6962C3DFD
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 02:45:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647596719;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2Sklw5vFJoBHTi2JNfxIgqGkvTxQMGfgRs43b1Vh+LU=;
+        b=NY+A8yldC+3G3TtEL5RpcR6rLaHxEeLpElNsf9IOMf9XAJJCWwH6MRTp85e9HFu0YATkLJ
+        Zkd/FaDSBppa1b12c0G8AGJT1ofCLrFaD+p30irGO2j3yJuBFxsdIFP77vIGjvsM61WPe2
+        xp7QgDqS44Mm9oPKUetdgOxZ8hjt5rc=
+Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com
+ [209.85.215.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-645-DpQrFka7N5Sfpm30Zcf5hg-1; Fri, 18 Mar 2022 05:45:18 -0400
+X-MC-Unique: DpQrFka7N5Sfpm30Zcf5hg-1
+Received: by mail-pg1-f199.google.com with SMTP id 196-20020a6307cd000000b0038027886594so3138416pgh.4
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 02:45:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2Sklw5vFJoBHTi2JNfxIgqGkvTxQMGfgRs43b1Vh+LU=;
+        b=sZmCFljOfswdN1IsX4IWbB7D+qryXphxKW/uTDZ28rChlNXK2zptACRfEt/1GmvqEH
+         7ynPDos66oVxomgPD/z8LJ0UTrnJB5OQVeU6TNXmNq6adpDvJJSF0dZBDiZm/F2JoTh1
+         0XFBqhRKnViKo/PLNCYjogsmR4yqJY6cBwEQuUGn8KsTes8TiQeL83+nxMTRT7+wGUxy
+         JN2jN2p9H+x7YrZ0d4r9ctSsLI7n/qrWCyEMV+X89qFqEx9gTdbE9uDkoT3AUfOPp34P
+         grmAl6tu/bw+o6iOJz+53BnfyZuImNKlsWwANez6aih33aJJ6SSktUavHu90hgzz4cGz
+         EjgQ==
+X-Gm-Message-State: AOAM532hAAj/vP0/s1cvb+MROsBeX8kPzuHxCsTuDszcr5EPn52QpOEe
+        aN9UefQMN9NSCfTWPBhB+TiURkc4RyZkduHZt1TvGfJpVCpdkKH7MUDnnJv5UEYRqF6qGfDfSue
+        jIsjyKFqGkegVp1fVMxW81K/T
+X-Received: by 2002:a17:90a:d3d3:b0:1bf:2e8d:3175 with SMTP id d19-20020a17090ad3d300b001bf2e8d3175mr10468693pjw.2.1647596716487;
+        Fri, 18 Mar 2022 02:45:16 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJztty7oXoA2AqzOazKbPPcVcNrIQJpdf62DaK3QMw38C5mcbYXwuTbaZ624qRUjJXw2KPOnKg==
+X-Received: by 2002:a17:90a:d3d3:b0:1bf:2e8d:3175 with SMTP id d19-20020a17090ad3d300b001bf2e8d3175mr10468669pjw.2.1647596716286;
+        Fri, 18 Mar 2022 02:45:16 -0700 (PDT)
+Received: from localhost ([240e:3a1:2e5:800:f995:6136:f760:a3d0])
+        by smtp.gmail.com with ESMTPSA id c7-20020aa78e07000000b004f6e4d8ccc8sm8813364pfr.163.2022.03.18.02.45.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Mar 2022 02:45:15 -0700 (PDT)
+Date:   Fri, 18 Mar 2022 17:43:20 +0800
+From:   Coiby Xu <coxu@redhat.com>
+To:     Baoquan He <bhe@redhat.com>
+Cc:     Coiby Xu <coiby.xu@gmail.com>, kexec@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        Dave Young <dyoung@redhat.com>, Will Deacon <will@kernel.org>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [RESEND PATCH v3 1/3] kexec: clean up
+ arch_kexec_kernel_verify_sig
+Message-ID: <20220318094320.aoia7yahtmy2hksp@Rk>
+References: <20220304020341.85583-1-coiby.xu@gmail.com>
+ <20220304020341.85583-2-coiby.xu@gmail.com>
+ <YjMtb7u3/sAWG0/7@MiWiFi-R3L-srv>
+ <20220318024803.pkkwgknwur2y75mt@Rk>
+ <YjP8DTnAZbq646rF@MiWiFi-R3L-srv>
+ <20220318071824.yq3idr5eoogvtslb@Rk>
+ <YjRIqdAH2nV+DRgW@MiWiFi-R3L-srv>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500018.china.huawei.com (7.185.36.111)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <YjRIqdAH2nV+DRgW@MiWiFi-R3L-srv>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The minimum supported DPMCP version is 3.0, and the second
-half of version check is always false due to the limited range
-of minor version's unsigned data type. Just remove the second
-check to simplify the condition.
+On Fri, Mar 18, 2022 at 04:54:01PM +0800, Baoquan He wrote:
+[...]
+>> Btw, checkpatch.pl seems to requires referring to a specific commit on
+>> the same line,
+>>
+>>     ERROR: Please use git commit description style 'commit <12+ chars of sha1> ("<title line>")' - ie: 'commit 9ec4ecef0af7 ("kexec_file,x86,powerpc: factor out kexec_file_ops functions")'
+>>     #6:     commit 9ec4ecef0af7 ("kexec_file,x86, powerpc: factor out
+>> kexec_file_ops
+>>     functions") allows implementing the arch-specific implementation of kernel
+>>     total: 1 errors, 0 warnings, 61 lines checked
+>>     NOTE: For some of the reported defects, checkpatch may be able to
+>>           mechanically convert to the typical style using --fix or --fix-inplace.
+>>     "[PATCH] kexec: clean up arch_kexec_kernel_verify_sig" has style problems, please review.
+>>     NOTE: If any of the errors are false positives, please report
+>>           them to the maintainer, see CHECKPATCH in MAINTAINERS.
+>>
+>> Is this a false positive?
+>
+>No, it's not. Youp probably copied the commit subject and modified it.
+>Please copy below two lines into your patch to replace and try again.
+>
+>commit 9ec4ecef0af7 ("kexec_file,x86,powerpc: factor out kexec_file_ops
+>functions")
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yue Zou <zouyue3@huawei.com>
----
- drivers/bus/fsl-mc/mc-io.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+Yes, you are right. I unintentionally changed the subject. I've sent 
+v4 to fix this commit reference issue and other checkpatch.pl warnings.
+Thanks!
 
-diff --git a/drivers/bus/fsl-mc/mc-io.c b/drivers/bus/fsl-mc/mc-io.c
-index 95b10a6cf307..f6a8b3b9ba3c 100644
---- a/drivers/bus/fsl-mc/mc-io.c
-+++ b/drivers/bus/fsl-mc/mc-io.c
-@@ -193,9 +193,7 @@ int __must_check fsl_mc_portal_allocate(struct fsl_mc_device *mc_dev,
- 	error = -EINVAL;
- 	dpmcp_dev = resource->data;
- 
--	if (dpmcp_dev->obj_desc.ver_major < DPMCP_MIN_VER_MAJOR ||
--	    (dpmcp_dev->obj_desc.ver_major == DPMCP_MIN_VER_MAJOR &&
--	     dpmcp_dev->obj_desc.ver_minor < DPMCP_MIN_VER_MINOR)) {
-+	if (dpmcp_dev->obj_desc.ver_major < DPMCP_MIN_VER_MAJOR) {
- 		dev_err(&dpmcp_dev->dev,
- 			"ERROR: Version %d.%d of DPMCP not supported.\n",
- 			dpmcp_dev->obj_desc.ver_major,
 -- 
-2.18.0.huawei.25
+Best regards,
+Coiby
 
