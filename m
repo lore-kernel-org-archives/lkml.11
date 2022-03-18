@@ -2,117 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4895FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:22:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0F2BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:22:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239111AbiCRQXa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 12:23:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39268 "EHLO
+        id S238895AbiCRQXm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 12:23:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238956AbiCRQWo (ORCPT
+        with ESMTP id S235610AbiCRQXR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 12:22:44 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06888117991;
-        Fri, 18 Mar 2022 09:19:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647620368; x=1679156368;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=K35+NJn4cb9SB2tUyATnivg4yiRvcwab/IpVO7uv9zs=;
-  b=EvsZu8WP+wbpJBT/YXbXnJK+ct1167XMBjSeA9aJzOnBajSas6WiAvcm
-   InIY71URdKuXzLZux/jS/TTzrVl/vLCdf6uP8WyK1Mkb5iCca9GRIUS53
-   Okb+FeQC9f997R9F+yLsxjTrX1hhgtf1/uzJq8Dr0m8qGQpyTy2ExvB2g
-   LL0HnbtvQcteyQI+eIXLPgD0zxEU91iAsUJkLtk+QQfb6ytWu0AJ6hoU4
-   iuHGR+QiYj4Y6TLV9FlZ6wXQFqF4/ZsCopLArew0DDL9zYUhQu6QPiH9o
-   Y0jwYA3RYwkKcb1uoSlcN+dD+chqgAC0FZKx/PA7Ep3bqTl9svwXZqGAv
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="257114781"
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="257114781"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 09:18:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="784286416"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga006.fm.intel.com with ESMTP; 18 Mar 2022 09:18:25 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22IGIOmC024113;
-        Fri, 18 Mar 2022 16:18:24 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Wojciech Drewek <wojciech.drewek@intel.com>,
-        Marcin Szycik <marcin.szycik@linux.intel.com>,
-        Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 net-next 0/5] ice: switch: debloat packet templates code
-Date:   Fri, 18 Mar 2022 17:17:08 +0100
-Message-Id: <20220318161713.680436-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.35.1
+        Fri, 18 Mar 2022 12:23:17 -0400
+Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 488C95838B
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 09:19:36 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id 2C2463201E3E;
+        Fri, 18 Mar 2022 12:18:50 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Fri, 18 Mar 2022 12:18:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; bh=W0RtaiVVoWuDJFHs12YiGTwXGd5lX99ofXkpvP
+        buN/M=; b=ZGHO3Vd7IFoj1GyK1l6273ryTg0I/eVkqSUzVtrCkje71GM+kcqIkd
+        G8YfOBYH2poC/2y8VKHPqdbw6OWYqgVXR+pZ7/OcKnUsGFnYfqpz9n+NSpLzcxg3
+        Bbt7TDEoHMRwZkk5utXbvLcmGHJyYU1Sir+TiWwrBqcLtQBLdx6oKMqullp42bq3
+        kLlbttwB+yVtSwe8j6goGK8bhp2qir4iTqlMMOmuJPcLL4JjcYMuILxWFsGgAOzz
+        d53KQHekoMPR0NJdMDFObhPnrju0a7CCPWvyU8T4x/H2ObVUZCkkdcxQyjmOlUS9
+        uRuelEAHaD1qZrt2s/g4fl5eija+yf8A==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=W0RtaiVVoWuDJFHs1
+        2YiGTwXGd5lX99ofXkpvPbuN/M=; b=Sg1aNxuhbeKW3dADtgBAJKe9zO6uT+Lhm
+        2QLxdFnWCmakrgRE8iDlBRd50QTnawTBL+FTxsmjRb/xGI3ojjHeq/bMIm5bBpRi
+        wO70npk24n5P/aVhscq4AmbkqS7UrMPgKBhP+R5BjWviAe0rETmF7+NBTXxrrOxz
+        hSHliveO/GXyb9pyMFGOvrkUsBNEap7qwv63p+xEO810lMhx51b7vB6l/hXSyEdj
+        LF3jWZ6Q/4Knhd9ENv3n1SsNL9tthJjuMynrpuR06DDfaDM57plwPKPW2cirEBBG
+        tCQaQuRLev2IBjokWNCKAjE82mbaWo8gpex01FbpaKAgcWdIOcfyQ==
+X-ME-Sender: <xms:6bA0YlhAq0ndjOUBe9dODegdLLP2_WZUpwdF8EHNQyGxyV6BqSETDQ>
+    <xme:6bA0YqCRzyJkn65lATBpfjpN_XK4TjgAQfpSoQ7a_RXODu3Mv8QWRnOthggiQ7fcJ
+    Y19_IDdA0YhWo2Vfbs>
+X-ME-Received: <xmr:6bA0YlEZF0YPAy6qHJeb9KUnj3w1bzBiewHsARksMyLxpAzmHI_NKQPQnWDfdrv9chL-Ae0Q-0DcT2iWq3cb7WNkcFqklY6ZpQksfqc>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudefiedgkeejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucdnkfhovfculdeitddmnecujfgurhepfffhvffukf
+    hfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhmvgcutfhiphgrrhguuceo
+    mhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrthhtvghrnhepleekgeehhf
+    dutdeljefgleejffehfffgieejhffgueefhfdtveetgeehieehgedunecuvehluhhsthgv
+    rhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnh
+    hordhtvggthh
+X-ME-Proxy: <xmx:6bA0YqT5I3Linvec27AhQoNLHvXEPJIAl-M7oAzJI3Rlr12Gt4-JqA>
+    <xmx:6bA0YixnDoN4eWnaX1rxQ24R2CN51-Cg-zCazC3v_qHX_FNh5zIQUQ>
+    <xmx:6bA0Yg4SSoM5k8zSEW0jZlPUKpmalXbOW3rwKE8a1OOruyh6Z9xMBjB1ow>
+    <xmx:6bA0Yhn4cgo-d-CVOT_LU2mrZhwv4VWbYimR4-xdt92W8UJA3HCyIQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 18 Mar 2022 12:18:48 -0400 (EDT)
+Date:   Fri, 18 Mar 2022 17:18:47 +0100
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v2] drm: of: Properly try all possible cases for
+ bridge/panel detection
+Message-ID: <20220318161847.ezi6yat4on7rvfdf@houat>
+References: <20220318160249.126431-1-paul.kocialkowski@bootlin.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="z4cu6dac2674z2wt"
+Content-Disposition: inline
+In-Reply-To: <20220318160249.126431-1-paul.kocialkowski@bootlin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This hunts down several places around packet templates/dummies for
-switch rules which are either repetitive, fragile or just not
-really readable code.
-It's a common need to add new packet templates and to review such
-changes as well, try to simplify both with the help of a pair
-macros and aliases.
 
-bloat-o-meter is happy about that (built w/ LLVM 13):
+--z4cu6dac2674z2wt
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-add/remove: 0/1 grow/shrink: 1/1 up/down: 2/-1045 (-1043)
-Function                                     old     new   delta
-ice_fill_adv_dummy_packet                    289     291      +2
-ice_adv_add_update_vsi_list                  201       -    -201
-ice_add_adv_rule                            2950    2106    -844
-Total: Before=413901, After=412858, chg -0.25%
-add/remove: 53/52 grow/shrink: 0/0 up/down: 4660/-3988 (672)
-RO Data                                      old     new   delta
-ice_dummy_pkt_profiles                         -     672    +672
+On Fri, Mar 18, 2022 at 05:02:49PM +0100, Paul Kocialkowski wrote:
+> While bridge/panel detection was initially relying on the usual
+> port/ports-based of graph detection, it was recently changed to
+> perform the lookup on any child node that is not port/ports
+> instead when such a node is available, with no fallback on the
+> usual way.
+>=20
+> This results in breaking detection when a child node is present
+> but does not contain any panel or bridge node, even when the
+> usual port/ports-based of graph is there.
+>=20
+> In order to support both situations properly, this commit reworks
+> the logic to try both options and not just one of the two: it will
+> only return -EPROBE_DEFER when both have failed.
+>=20
+> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> Fixes: 80253168dbfd ("drm: of: Lookup if child node has panel or bridge")
+> ---
+>=20
+> Changes since v1:
+> - Renamed remote to node;
+> - Renamed helper to find_panel_or_bridge;
+> - Cleared bridge pointer early;
+> - Returned early to make the code more concise;
+>=20
+> ---
+>  drivers/gpu/drm/drm_of.c | 98 ++++++++++++++++++++--------------------
+>  1 file changed, 49 insertions(+), 49 deletions(-)
+>=20
+> diff --git a/drivers/gpu/drm/drm_of.c b/drivers/gpu/drm/drm_of.c
+> index 9d90cd75c457..63137c833b7a 100644
+> --- a/drivers/gpu/drm/drm_of.c
+> +++ b/drivers/gpu/drm/drm_of.c
+> @@ -219,6 +219,28 @@ int drm_of_encoder_active_endpoint(struct device_nod=
+e *node,
+>  }
+>  EXPORT_SYMBOL_GPL(drm_of_encoder_active_endpoint);
+> =20
+> +static int find_panel_or_bridge(struct device_node *node,
+> +				struct drm_panel **panel,
+> +				struct drm_bridge **bridge)
+> +{
+> +	if (panel) {
+> +		*panel =3D of_drm_find_panel(node);
+> +		if (!IS_ERR(*panel))
+> +			return 0;
+> +		else
+> +			*panel =3D NULL;
 
-Diffstat also looks nice, and adding new packet templates now takes
-less lines.
+You don't need the else branch here, we already cleared panel in
+drm_of_find_panel_or_bridge
 
-We'll probably come out with dynamic template crafting in a while,
-but for now let's improve what we have currently.
+Looks good otherwise, thanks!
+Maxime
 
-From v2[0]:
- - rebase on top of the GTP changes;
- - new: convert template search code to a rodata array (-1000 bytes
-   from .text, -400 bytes from ice.ko);
- - collect Reviewed-by and Tested-by (Marcin, Michal).
+--z4cu6dac2674z2wt
+Content-Type: application/pgp-signature; name="signature.asc"
 
-From v1[1]:
- - rebase on top of the latest next-queue (to fix #3 not applying);
- - adjust the kdoc accordingly to the function proto changes in #3;
- - no functional changes.
+-----BEGIN PGP SIGNATURE-----
 
-[0] https://lore.kernel.org/netdev/20220127154009.623304-1-alexandr.lobakin@intel.com
-[1] https://lore.kernel.org/netdev/20220124173116.739083-1-alexandr.lobakin@intel.com
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYjSw5gAKCRDj7w1vZxhR
+xWMYAP9UxgWQ44wOKvarITHty4nCGtH+DXxERccY8JZh+3tr0wD/eIa4rSSsOg12
+DUrsZb8HDRBGNTMwSgMSFnfdBo2+2Qo=
+=mFT4
+-----END PGP SIGNATURE-----
 
-Alexander Lobakin (5):
-  ice: switch: add and use u16[] aliases to ice_adv_lkup_elem::{h,m}_u
-  ice: switch: unobscurify bitops loop in ice_fill_adv_dummy_packet()
-  ice: switch: use a struct to pass packet template params
-  ice: switch: use convenience macros to declare dummy pkt templates
-  ice: switch: convert packet template match code to rodata
-
- drivers/net/ethernet/intel/ice/ice_switch.c | 489 ++++++++------------
- drivers/net/ethernet/intel/ice/ice_switch.h |  12 +-
- 2 files changed, 211 insertions(+), 290 deletions(-)
-
--- 
-2.35.1
-
+--z4cu6dac2674z2wt--
