@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B1D6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 17:50:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18232C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 17:50:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239927AbiCRRvo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 13:51:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38012 "EHLO
+        id S239932AbiCRRvr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 13:51:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239827AbiCRRvE (ORCPT
+        with ESMTP id S239823AbiCRRvI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 13:51:04 -0400
+        Fri, 18 Mar 2022 13:51:08 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E3848173F45;
-        Fri, 18 Mar 2022 10:49:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B88B216E221;
+        Fri, 18 Mar 2022 10:49:48 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A5A5E1570;
-        Fri, 18 Mar 2022 10:49:39 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 862651570;
+        Fri, 18 Mar 2022 10:49:48 -0700 (PDT)
 Received: from eglon.cambridge.arm.com (eglon.cambridge.arm.com [10.1.196.218])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 05AA83F7B4;
-        Fri, 18 Mar 2022 10:49:38 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DA44C3F7B4;
+        Fri, 18 Mar 2022 10:49:47 -0700 (PDT)
 From:   James Morse <james.morse@arm.com>
 To:     stable@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, james.morse@arm.com,
         catalin.marinas@arm.com
-Subject: [stable:PATCH v4.19.235 07/22] arm64: entry: Move the trampoline data page before the text page
-Date:   Fri, 18 Mar 2022 17:48:27 +0000
-Message-Id: <20220318174842.2321061-8-james.morse@arm.com>
+Subject: [stable:PATCH v4.19.235 17/22] arm64: proton-pack: Report Spectre-BHB vulnerabilities as part of Spectre-v2
+Date:   Fri, 18 Mar 2022 17:48:37 +0000
+Message-Id: <20220318174842.2321061-18-james.morse@arm.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220318174842.2321061-1-james.morse@arm.com>
 References: <20220318174842.2321061-1-james.morse@arm.com>
@@ -37,79 +37,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-commit c091fb6ae059cda563b2a4d93fdbc548ef34e1d6 upstream.
+commit dee435be76f4117410bbd90573a881fd33488f37 upstream.
 
-The trampoline code has a data page that holds the address of the vectors,
-which is unmapped when running in user-space. This ensures that with
-CONFIG_RANDOMIZE_BASE, the randomised address of the kernel can't be
-discovered until after the kernel has been mapped.
+Speculation attacks against some high-performance processors can
+make use of branch history to influence future speculation as part of
+a spectre-v2 attack. This is not mitigated by CSV2, meaning CPUs that
+previously reported 'Not affected' are now moderately mitigated by CSV2.
 
-If the trampoline text page is extended to include multiple sets of
-vectors, it will be larger than a single page, making it tricky to
-find the data page without knowing the size of the trampoline text
-pages, which will vary with PAGE_SIZE.
+Update the value in /sys/devices/system/cpu/vulnerabilities/spectre_v2
+to also show the state of the BHB mitigation.
 
-Move the data page to appear before the text page. This allows the
-data page to be found without knowing the size of the trampoline text
-pages. 'tramp_vectors' is used to refer to the beginning of the
-.entry.tramp.text section, do that explicitly.
-
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+[ code move to cpu_errata.c for backport ]
 Signed-off-by: James Morse <james.morse@arm.com>
 ---
- arch/arm64/include/asm/fixmap.h | 2 +-
- arch/arm64/kernel/entry.S       | 9 +++++++--
- 2 files changed, 8 insertions(+), 3 deletions(-)
+ arch/arm64/include/asm/cpufeature.h |  8 ++++++
+ arch/arm64/kernel/cpu_errata.c      | 38 ++++++++++++++++++++++++++---
+ 2 files changed, 43 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/include/asm/fixmap.h b/arch/arm64/include/asm/fixmap.h
-index ec1e6d6fa14c..c0cfc6d3bf9f 100644
---- a/arch/arm64/include/asm/fixmap.h
-+++ b/arch/arm64/include/asm/fixmap.h
-@@ -59,8 +59,8 @@ enum fixed_addresses {
- #endif /* CONFIG_ACPI_APEI_GHES */
+diff --git a/arch/arm64/include/asm/cpufeature.h b/arch/arm64/include/asm/cpufeature.h
+index dda6e5056810..e59b9ee43e4a 100644
+--- a/arch/arm64/include/asm/cpufeature.h
++++ b/arch/arm64/include/asm/cpufeature.h
+@@ -527,6 +527,14 @@ static inline int arm64_get_ssbd_state(void)
  
- #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
--	FIX_ENTRY_TRAMP_DATA,
- 	FIX_ENTRY_TRAMP_TEXT,
-+	FIX_ENTRY_TRAMP_DATA,
- #define TRAMP_VALIAS		(__fix_to_virt(FIX_ENTRY_TRAMP_TEXT))
- #endif /* CONFIG_UNMAP_KERNEL_AT_EL0 */
- 	__end_of_permanent_fixed_addresses,
-diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
-index 16988a9d1d19..1df718f53a1f 100644
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -967,6 +967,11 @@ alternative_else_nop_endif
- 	 */
- 	.endm
+ void arm64_set_ssbd_mitigation(bool state);
  
-+	.macro tramp_data_page	dst
-+	adr	\dst, .entry.tramp.text
-+	sub	\dst, \dst, PAGE_SIZE
-+	.endm
++/* Watch out, ordering is important here. */
++enum mitigation_state {
++	SPECTRE_UNAFFECTED,
++	SPECTRE_MITIGATED,
++	SPECTRE_VULNERABLE,
++};
 +
- 	.macro tramp_ventry, regsize = 64
- 	.align	7
- 1:
-@@ -983,7 +988,7 @@ alternative_else_nop_endif
- 2:
- 	tramp_map_kernel	x30
- #ifdef CONFIG_RANDOMIZE_BASE
--	adr	x30, tramp_vectors + PAGE_SIZE
-+	tramp_data_page		x30
- alternative_insn isb, nop, ARM64_WORKAROUND_QCOM_FALKOR_E1003
- 	ldr	x30, [x30]
- #else
-@@ -1131,7 +1136,7 @@ ENTRY(__sdei_asm_entry_trampoline)
- 1:	str	x4, [x1, #(SDEI_EVENT_INTREGS + S_ORIG_ADDR_LIMIT)]
++enum mitigation_state arm64_get_spectre_bhb_state(void);
+ #endif /* __ASSEMBLY__ */
  
- #ifdef CONFIG_RANDOMIZE_BASE
--	adr	x4, tramp_vectors + PAGE_SIZE
-+	tramp_data_page		x4
- 	add	x4, x4, #:lo12:__sdei_asm_trampoline_next_handler
- 	ldr	x4, [x4]
- #else
+ #endif
+diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
+index d191ce8410db..d055ed21eeeb 100644
+--- a/arch/arm64/kernel/cpu_errata.c
++++ b/arch/arm64/kernel/cpu_errata.c
+@@ -875,14 +875,39 @@ ssize_t cpu_show_spectre_v1(struct device *dev, struct device_attribute *attr,
+ 	return sprintf(buf, "Mitigation: __user pointer sanitization\n");
+ }
+ 
++static const char *get_bhb_affected_string(enum mitigation_state bhb_state)
++{
++	switch (bhb_state) {
++	case SPECTRE_UNAFFECTED:
++		return "";
++	default:
++	case SPECTRE_VULNERABLE:
++		return ", but not BHB";
++	case SPECTRE_MITIGATED:
++		return ", BHB";
++	}
++}
++
+ ssize_t cpu_show_spectre_v2(struct device *dev, struct device_attribute *attr,
+ 		char *buf)
+ {
+-	if (__spectrev2_safe)
+-		return sprintf(buf, "Not affected\n");
++	enum mitigation_state bhb_state = arm64_get_spectre_bhb_state();
++	const char *bhb_str = get_bhb_affected_string(bhb_state);
++	const char *v2_str = "Branch predictor hardening";
++
++	if (__spectrev2_safe) {
++		if (bhb_state == SPECTRE_UNAFFECTED)
++			return sprintf(buf, "Not affected\n");
++
++		/*
++		 * Platforms affected by Spectre-BHB can't report
++		 * "Not affected" for Spectre-v2.
++		 */
++		v2_str = "CSV2";
++	}
+ 
+ 	if (__hardenbp_enab)
+-		return sprintf(buf, "Mitigation: Branch predictor hardening\n");
++		return sprintf(buf, "Mitigation: %s%s\n", v2_str, bhb_str);
+ 
+ 	return sprintf(buf, "Vulnerable\n");
+ }
+@@ -903,3 +928,10 @@ ssize_t cpu_show_spec_store_bypass(struct device *dev,
+ 
+ 	return sprintf(buf, "Vulnerable\n");
+ }
++
++static enum mitigation_state spectre_bhb_state;
++
++enum mitigation_state arm64_get_spectre_bhb_state(void)
++{
++	return spectre_bhb_state;
++}
 -- 
 2.30.2
 
