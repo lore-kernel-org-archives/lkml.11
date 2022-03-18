@@ -2,165 +2,379 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6897C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:19:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5D94C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:19:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238865AbiCRQVK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 12:21:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34048 "EHLO
+        id S238904AbiCRQVN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 12:21:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239168AbiCRQTb (ORCPT
+        with ESMTP id S238867AbiCRQTv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 12:19:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 51BD617DC90
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 09:18:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647620280;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8nJYYlBY7G+EkGr1cCCnY5dDxM56e+iZoTRwhxTl+8k=;
-        b=c3yir5zXJj6d/7VYSSBZV0RSgc+bM87fyYOFPSy9HIGL2uHJS25wpGgQnLOOzhI1MEAFB3
-        a2jk7hN6zyh4EKwp3zAn9+UF/8FvGSvUvusAUfVEjZ652uDz+GeMglqSS6pS/vNiW9EN2a
-        BUql0KWTYbHKjHwvjAFnGKlbVR7QDiE=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-622-qlLdcQmqOwKSVMP1eIqycg-1; Fri, 18 Mar 2022 12:17:55 -0400
-X-MC-Unique: qlLdcQmqOwKSVMP1eIqycg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D534D38035BB;
-        Fri, 18 Mar 2022 16:17:53 +0000 (UTC)
-Received: from plouf.redhat.com (unknown [10.39.192.159])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B208A7AD1;
-        Fri, 18 Mar 2022 16:17:50 +0000 (UTC)
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>
-Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH bpf-next v3 13/17] HID: bpf: implement hid_bpf_get|set_bits
-Date:   Fri, 18 Mar 2022 17:15:24 +0100
-Message-Id: <20220318161528.1531164-14-benjamin.tissoires@redhat.com>
-In-Reply-To: <20220318161528.1531164-1-benjamin.tissoires@redhat.com>
-References: <20220318161528.1531164-1-benjamin.tissoires@redhat.com>
+        Fri, 18 Mar 2022 12:19:51 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AE9A16F06A;
+        Fri, 18 Mar 2022 09:18:03 -0700 (PDT)
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22IE1IR1013812;
+        Fri, 18 Mar 2022 12:17:50 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3evfqqmx5y-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 18 Mar 2022 12:17:49 -0400
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 22IGHmiF009332
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 18 Mar 2022 12:17:48 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Fri, 18 Mar
+ 2022 12:17:47 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Fri, 18 Mar 2022 12:17:47 -0400
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 22IGHWUj024583;
+        Fri, 18 Mar 2022 12:17:41 -0400
+From:   <alexandru.tachici@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 4/8] iio: adc: ad_sigma_delta: Add sequencer support
+Date:   Fri, 18 Mar 2022 18:27:18 +0200
+Message-ID: <20220318162722.51215-5-alexandru.tachici@analog.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220318162722.51215-1-alexandru.tachici@analog.com>
+References: <20220318162722.51215-1-alexandru.tachici@analog.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: 3tK2mfU2pzOv8geleyCMPjU2JrEZieEP
+X-Proofpoint-ORIG-GUID: 3tK2mfU2pzOv8geleyCMPjU2JrEZieEP
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-18_11,2022-03-15_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
+ suspectscore=0 adultscore=0 clxscore=1011 impostorscore=0 bulkscore=0
+ mlxlogscore=999 priorityscore=1501 spamscore=0 lowpriorityscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203180088
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Export implement() outside of hid-core.c and use this and
-hid_field_extract() to implement the helprs for hid-bpf.
+From: Alexandru Tachici <alexandru.tachici@analog.com>
 
-Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Some sigma-delta chips support sampling of multiple
+channels in continuous mode.
 
+When the operating with more than one channel enabled,
+the channel sequencer cycles through the enabled channels
+in sequential order, from first channel to the last one.
+If a channel is disabled, it is skipped by the sequencer.
+
+If more than one channel is used in continuous mode,
+instruct the device to append the status to the SPI transfer
+(1 extra byte) every time we receive a sample.
+All sigma-delta chips possessing a sampling sequencer have
+this ability. Inside the status register there will be
+the number of the converted channel. In this way, even
+if the CPU won't keep up with the sampling rate, it won't
+send to userspace wrong channel samples.
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
 ---
+ drivers/iio/adc/ad_sigma_delta.c       | 134 +++++++++++++++++++++++--
+ include/linux/iio/adc/ad_sigma_delta.h |  33 ++++++
+ 2 files changed, 157 insertions(+), 10 deletions(-)
 
-changes in v3:
-- renamed hid_{get|set}_data into hid_{get|set}_bits
-
-changes in v2:
-- split the series by bpf/libbpf/hid/selftests and samples
-- allow for n > 32, by relying on memcpy
----
- drivers/hid/hid-bpf.c  | 29 +++++++++++++++++++++++++++++
- drivers/hid/hid-core.c |  4 ++--
- include/linux/hid.h    |  2 ++
- 3 files changed, 33 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/hid/hid-bpf.c b/drivers/hid/hid-bpf.c
-index 45c87ff47324..650dd5e54919 100644
---- a/drivers/hid/hid-bpf.c
-+++ b/drivers/hid/hid-bpf.c
-@@ -122,6 +122,33 @@ static void hid_bpf_array_detach(struct hid_device *hdev, enum bpf_hid_attach_ty
+diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
+index ebcd52526cac..5d1932ad2a22 100644
+--- a/drivers/iio/adc/ad_sigma_delta.c
++++ b/drivers/iio/adc/ad_sigma_delta.c
+@@ -342,15 +342,47 @@ EXPORT_SYMBOL_NS_GPL(ad_sigma_delta_single_conversion, IIO_AD_SIGMA_DELTA);
+ static int ad_sd_buffer_postenable(struct iio_dev *indio_dev)
+ {
+ 	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
++	unsigned int i, slot, samples_buf_size;
+ 	unsigned int channel;
++	uint8_t *samples_buf;
+ 	int ret;
+ 
+-	channel = find_first_bit(indio_dev->active_scan_mask,
+-				 indio_dev->masklength);
+-	ret = ad_sigma_delta_set_channel(sigma_delta,
+-		indio_dev->channels[channel].address);
+-	if (ret)
+-		return ret;
++	if (sigma_delta->num_slots == 1) {
++		channel = find_first_bit(indio_dev->active_scan_mask,
++					 indio_dev->masklength);
++		ret = ad_sigma_delta_set_channel(sigma_delta,
++						 indio_dev->channels[channel].address);
++		if (ret)
++			return ret;
++		slot = 1;
++	} else {
++		/*
++		 * At this point update_scan_mode already enabled the required channels.
++		 * For sigma-delta sequencer drivers with multiple slots, an update_scan_mode
++		 * implementation is mandatory.
++		 */
++		slot = 0;
++		for_each_set_bit(i, indio_dev->active_scan_mask, indio_dev->masklength) {
++			sigma_delta->slots[slot] = indio_dev->channels[i].address;
++			slot++;
++		}
++	}
++
++	sigma_delta->active_slots = slot;
++	sigma_delta->current_slot = 0;
++
++	if (sigma_delta->active_slots > 1) {
++		ret = ad_sigma_delta_append_status(sigma_delta, true);
++		if (ret)
++			return ret;
++	}
++
++	samples_buf_size = slot * indio_dev->channels[0].scan_type.storagebits + sizeof(int64_t);
++	samples_buf = krealloc(sigma_delta->samples_buf, samples_buf_size, GFP_KERNEL);
++	if (!samples_buf)
++		return -ENOMEM;
++
++	sigma_delta->samples_buf = samples_buf;
+ 
+ 	spi_bus_lock(sigma_delta->spi->master);
+ 	sigma_delta->bus_locked = true;
+@@ -386,6 +418,10 @@ static int ad_sd_buffer_postdisable(struct iio_dev *indio_dev)
+ 	sigma_delta->keep_cs_asserted = false;
+ 	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
+ 
++	if (sigma_delta->status_appended)
++		ad_sigma_delta_append_status(sigma_delta, false);
++
++	ad_sigma_delta_disable_all(sigma_delta);
+ 	sigma_delta->bus_locked = false;
+ 	return spi_bus_unlock(sigma_delta->spi->master);
+ }
+@@ -396,6 +432,10 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
+ 	uint8_t *data = sigma_delta->rx_buf;
++	unsigned int transfer_size;
++	unsigned int sample_size;
++	unsigned int sample_pos;
++	unsigned int status_pos;
+ 	unsigned int reg_size;
+ 	unsigned int data_reg;
+ 
+@@ -408,21 +448,63 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
+ 	else
+ 		data_reg = AD_SD_REG_DATA;
+ 
++	/* Status word will be appended to the sample during transfer */
++	if (sigma_delta->status_appended)
++		transfer_size = reg_size + 1;
++	else
++		transfer_size = reg_size;
++
+ 	switch (reg_size) {
+ 	case 4:
+ 	case 2:
+ 	case 1:
+-		ad_sd_read_reg_raw(sigma_delta, data_reg, reg_size, &data[0]);
++		status_pos = reg_size;
++		ad_sd_read_reg_raw(sigma_delta, data_reg, transfer_size, &data[0]);
+ 		break;
+ 	case 3:
++		status_pos = reg_size + 1;
+ 		/* We store 24 bit samples in a 32 bit word. Keep the upper
+ 		 * byte set to zero. */
+-		ad_sd_read_reg_raw(sigma_delta, data_reg, reg_size, &data[1]);
++		ad_sd_read_reg_raw(sigma_delta, data_reg, transfer_size, &data[1]);
+ 		break;
  	}
+ 
+-	iio_push_to_buffers_with_timestamp(indio_dev, data, pf->timestamp);
++	/*
++	 * For devices sampling only one channel at
++	 * once, there is no need for sample number tracking.
++	 */
++	if (sigma_delta->active_slots == 1) {
++		iio_push_to_buffers_with_timestamp(indio_dev, data, pf->timestamp);
++		goto irq_handled;
++	}
++
++	if (sigma_delta->status_appended) {
++		u8 converted_channel;
+ 
++		converted_channel = data[status_pos] & sigma_delta->info->status_ch_mask;
++		if (converted_channel != sigma_delta->slots[sigma_delta->current_slot]) {
++			/*
++			 * Desync occurred during continuous sampling of multiple channels.
++			 * Drop this incomplete sample and start from first channel again.
++			 */
++
++			sigma_delta->current_slot = 0;
++			goto irq_handled;
++		}
++	}
++
++	sample_size = indio_dev->channels[0].scan_type.storagebits / 8;
++	sample_pos = sample_size * sigma_delta->current_slot;
++	memcpy(&sigma_delta->samples_buf[sample_pos], data, sample_size);
++	sigma_delta->current_slot++;
++
++	if (sigma_delta->current_slot == sigma_delta->active_slots) {
++		sigma_delta->current_slot = 0;
++		iio_push_to_buffers_with_timestamp(indio_dev, sigma_delta->samples_buf,
++						   pf->timestamp);
++	}
++
++irq_handled:
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 	sigma_delta->irq_dis = false;
+ 	enable_irq(sigma_delta->spi->irq);
+@@ -430,10 +512,17 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
+ 	return IRQ_HANDLED;
  }
  
-+static int hid_bpf_get_bits(struct hid_device *hdev, u8 *buf, size_t buf_size, u64 offset, u32 n,
-+			    u32 *data)
++static bool ad_sd_validate_scan_mask(struct iio_dev *indio_dev, const unsigned long *mask)
 +{
-+	if (n > 32)
-+		return -EINVAL;
++	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
 +
-+	if (((offset + n) >> 3) >= buf_size)
-+		return -E2BIG;
-+
-+	*data = hid_field_extract(hdev, buf, offset, n);
-+	return n;
++	return bitmap_weight(mask, indio_dev->masklength) <= sigma_delta->num_slots;
 +}
 +
-+static int hid_bpf_set_bits(struct hid_device *hdev, u8 *buf, size_t buf_size, u64 offset, u32 n,
-+			    u32 data)
-+{
-+	if (n > 32)
-+		return -EINVAL;
-+
-+	if (((offset + n) >> 3) >= buf_size)
-+		return -E2BIG;
-+
-+	/* data must be a pointer to a u32 */
-+	implement(hdev, buf, offset, n, data);
-+	return n;
-+}
-+
- static int hid_bpf_run_progs(struct hid_device *hdev, struct hid_bpf_ctx_kern *ctx)
- {
- 	enum bpf_hid_attach_type type;
-@@ -223,6 +250,8 @@ int __init hid_bpf_module_init(void)
- 		.pre_link_attach = hid_bpf_pre_link_attach,
- 		.post_link_attach = hid_bpf_post_link_attach,
- 		.array_detach = hid_bpf_array_detach,
-+		.hid_get_bits = hid_bpf_get_bits,
-+		.hid_set_bits = hid_bpf_set_bits,
- 	};
+ static const struct iio_buffer_setup_ops ad_sd_buffer_setup_ops = {
+ 	.postenable = &ad_sd_buffer_postenable,
+ 	.postdisable = &ad_sd_buffer_postdisable,
+-	.validate_scan_mask = &iio_validate_scan_mask_onehot,
++	.validate_scan_mask = &ad_sd_validate_scan_mask,
+ };
  
- 	bpf_hid_set_hooks(&hooks);
-diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
-index 3182c39db006..4f669dcddc08 100644
---- a/drivers/hid/hid-core.c
-+++ b/drivers/hid/hid-core.c
-@@ -1416,8 +1416,8 @@ static void __implement(u8 *report, unsigned offset, int n, u32 value)
- 	}
+ static irqreturn_t ad_sd_data_rdy_trig_poll(int irq, void *private)
+@@ -513,8 +602,14 @@ static int devm_ad_sd_probe_trigger(struct device *dev, struct iio_dev *indio_de
+  */
+ int devm_ad_sd_setup_buffer_and_trigger(struct device *dev, struct iio_dev *indio_dev)
+ {
++	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
+ 	int ret;
+ 
++	sigma_delta->slots = devm_kcalloc(dev, sigma_delta->num_slots,
++					  sizeof(*sigma_delta->slots), GFP_KERNEL);
++	if (!sigma_delta->slots)
++		return -ENOMEM;
++
+ 	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
+ 					      &iio_pollfunc_store_time,
+ 					      &ad_sd_trigger_handler,
+@@ -541,6 +636,25 @@ int ad_sd_init(struct ad_sigma_delta *sigma_delta, struct iio_dev *indio_dev,
+ {
+ 	sigma_delta->spi = spi;
+ 	sigma_delta->info = info;
++
++	/* If the field is unset in ad_sigma_delta_info, asume there can only be 1 slot. */
++	if (!info->num_slots)
++		sigma_delta->num_slots = 1;
++	else
++		sigma_delta->num_slots = info->num_slots;
++
++	if (sigma_delta->num_slots > 1) {
++		if (!indio_dev->info->update_scan_mode) {
++			dev_err(&spi->dev, "iio_dev lacks update_scan_mode().\n");
++			return -EINVAL;
++		}
++
++		if (!info->disable_all) {
++			dev_err(&spi->dev, "ad_sigma_delta_info lacks disable_all().\n");
++			return -EINVAL;
++		}
++	}
++
+ 	iio_device_set_drvdata(indio_dev, sigma_delta);
+ 
+ 	return 0;
+diff --git a/include/linux/iio/adc/ad_sigma_delta.h b/include/linux/iio/adc/ad_sigma_delta.h
+index c525fd51652f..b921ceb8adfd 100644
+--- a/include/linux/iio/adc/ad_sigma_delta.h
++++ b/include/linux/iio/adc/ad_sigma_delta.h
+@@ -32,26 +32,34 @@ struct iio_dev;
+ /**
+  * struct ad_sigma_delta_info - Sigma Delta driver specific callbacks and options
+  * @set_channel: Will be called to select the current channel, may be NULL.
++ * @append_status: Will be called to enable status append at the end of the sample, may be NULL.
+  * @set_mode: Will be called to select the current mode, may be NULL.
++ * @disable_all: Will be called to disable all channels, may be NULL.
+  * @postprocess_sample: Is called for each sampled data word, can be used to
+  *		modify or drop the sample data, it, may be NULL.
+  * @has_registers: true if the device has writable and readable registers, false
+  *		if there is just one read-only sample data shift register.
+  * @addr_shift: Shift of the register address in the communications register.
+  * @read_mask: Mask for the communications register having the read bit set.
++ * @status_ch_mask: Mask for the channel number stored in status register.
+  * @data_reg: Address of the data register, if 0 the default address of 0x3 will
+  *   be used.
+  * @irq_flags: flags for the interrupt used by the triggered buffer
++ * @num_slots: Number of sequencer slots
+  */
+ struct ad_sigma_delta_info {
+ 	int (*set_channel)(struct ad_sigma_delta *, unsigned int channel);
++	int (*append_status)(struct ad_sigma_delta *, bool append);
++	int (*disable_all)(struct ad_sigma_delta *);
+ 	int (*set_mode)(struct ad_sigma_delta *, enum ad_sigma_delta_mode mode);
+ 	int (*postprocess_sample)(struct ad_sigma_delta *, unsigned int raw_sample);
+ 	bool has_registers;
+ 	unsigned int addr_shift;
+ 	unsigned int read_mask;
++	unsigned int status_ch_mask;
+ 	unsigned int data_reg;
+ 	unsigned long irq_flags;
++	unsigned int num_slots;
+ };
+ 
+ /**
+@@ -76,6 +84,13 @@ struct ad_sigma_delta {
+ 	uint8_t			comm;
+ 
+ 	const struct ad_sigma_delta_info *info;
++	unsigned int		active_slots;
++	unsigned int		current_slot;
++	unsigned int		num_slots;
++	bool			status_appended;
++	/* map slots to channels in order to know what to expect from devices */
++	unsigned int		*slots;
++	uint8_t			*samples_buf;
+ 
+ 	/*
+ 	 * DMA (thus cache coherency maintenance) requires the
+@@ -97,6 +112,24 @@ static inline int ad_sigma_delta_set_channel(struct ad_sigma_delta *sd,
+ 	return 0;
  }
  
--static void implement(const struct hid_device *hid, u8 *report,
--		      unsigned offset, unsigned n, u32 value)
-+void implement(const struct hid_device *hid, u8 *report, unsigned int offset, unsigned int n,
-+	       u32 value)
++static inline int ad_sigma_delta_append_status(struct ad_sigma_delta *sd, bool append)
++{
++	if (sd->info->append_status) {
++		sd->status_appended = append;
++		return sd->info->append_status(sd, append);
++	}
++
++	return 0;
++}
++
++static inline int ad_sigma_delta_disable_all(struct ad_sigma_delta *sd)
++{
++	if (sd->info->disable_all)
++		return sd->info->disable_all(sd);
++
++	return 0;
++}
++
+ static inline int ad_sigma_delta_set_mode(struct ad_sigma_delta *sd,
+ 	unsigned int mode)
  {
- 	if (unlikely(n > 32)) {
- 		hid_warn(hid, "%s() called with n (%d) > 32! (%s)\n",
-diff --git a/include/linux/hid.h b/include/linux/hid.h
-index 66d949d10b78..7454e844324c 100644
---- a/include/linux/hid.h
-+++ b/include/linux/hid.h
-@@ -944,6 +944,8 @@ bool hid_compare_device_paths(struct hid_device *hdev_a,
- s32 hid_snto32(__u32 value, unsigned n);
- __u32 hid_field_extract(const struct hid_device *hid, __u8 *report,
- 		     unsigned offset, unsigned n);
-+void implement(const struct hid_device *hid, u8 *report, unsigned int offset, unsigned int n,
-+	       u32 value);
- 
- #ifdef CONFIG_PM
- int hid_driver_suspend(struct hid_device *hdev, pm_message_t state);
 -- 
-2.35.1
+2.25.1
 
