@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31A4CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 15:32:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 492AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 15:33:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238213AbiCRPeK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 11:34:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51586 "EHLO
+        id S235602AbiCRPeR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 11:34:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238142AbiCRPcw (ORCPT
+        with ESMTP id S238149AbiCRPcw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Mar 2022 11:32:52 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABC0B1B6961
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 08:31:06 -0700 (PDT)
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537411C2D9A
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 08:31:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647617466; x=1679153466;
+  t=1647617469; x=1679153469;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=RV/lKPLiao9Xsjjozl2M1KuJME5QF9hTdLZ/K17rfcE=;
-  b=KlsaUx1jrQhE9NOIUYq27E+IZpyWfd4zPZLX55Iqfd+qR/bfPeJwpRcU
-   By/YGz+oKiQQuksFFDb5SHFJlosFX1/90WsbY5imhCFTEsYsNkWeyytBI
-   EQYqvK4/DT0KEW3mHBDZyhfx81UdutpPzgmW8r5mpBxCybmXPf9IKr51k
-   qMUT71wEkVEVqTuQiPfexu8GJJ9+O8diLFKWJarInGFKXEH9/j29Ls/yY
-   Ulyi8338ehuRXhvxzHeneRhpoHzwNPfz7CqgVPBC1jAvYtrpvqY9GxaT+
-   rUYNqrW/0qmDtEJCvF+DdSBxG6YutVgsaXbN9WsoZS//z3RkhgG2Mz+X7
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="254710602"
+  bh=u1cVO6vC+Je5QgVAf5o9RaTjVFNyO8cnFMef5xqiSLA=;
+  b=DrMTCkEZD+WCyJCVtKhfXlUv3cR+y5ZKwiftQ04b+QSMkU2YyESpQHaB
+   sIWY+qezoHtLZJ2T6o1bQEjl92vSq0FHAmbTR7EPHOAxi5JIHtwzVvmDZ
+   Y/5PDHwpBAzs3CN3FHfbQDAj2UUvOE+3HjWeTbFbzPfORvxJ3eTNHeWgs
+   D7vvxUcNDt2qVt+r6m4sSdQZtOOtVnIwq8LChjkaMimwyU7fiUuDD8xLw
+   V231YyjMbzwxCMIQoPhQr6xIVYDL0PzXacYSAMp/78B+6Q18r6Gd9jWt4
+   nfA75hKyJO2+oIckp8sCQ9AcSspr4qEEGzr6aNwRhjugtpQNPuyywbxkc
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="257344063"
 X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="254710602"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 08:30:36 -0700
+   d="scan'208";a="257344063"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 08:30:52 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="784269694"
+   d="scan'208";a="715523785"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga006.fm.intel.com with ESMTP; 18 Mar 2022 08:30:29 -0700
+  by orsmga005.jf.intel.com with ESMTP; 18 Mar 2022 08:30:45 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 9D089107; Fri, 18 Mar 2022 17:30:49 +0200 (EET)
+        id 1D4F8B16; Fri, 18 Mar 2022 17:30:51 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -51,12 +51,12 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
         linux-kernel@vger.kernel.org,
+        Isaku Yamahata <isaku.yamahata@intel.com>,
         "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCHv7 01/30] x86/tdx: Detect running as a TDX guest in early boot
-Date:   Fri, 18 Mar 2022 18:30:19 +0300
-Message-Id: <20220318153048.51177-2-kirill.shutemov@linux.intel.com>
+        Dave Hansen <dave.hansen@linux.intel.com>
+Subject: [PATCHv7 28/30] x86/tdx: ioapic: Add shared bit for IOAPIC base address
+Date:   Fri, 18 Mar 2022 18:30:46 +0300
+Message-Id: <20220318153048.51177-29-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220318153048.51177-1-kirill.shutemov@linux.intel.com>
 References: <20220318153048.51177-1-kirill.shutemov@linux.intel.com>
@@ -66,194 +66,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-In preparation of extending cc_platform_has() API to support TDX guest,
-use CPUID instruction to detect support for TDX guests in the early
-boot code (via tdx_early_init()). Since copy_bootdata() is the first
-user of cc_platform_has() API, detect the TDX guest status before it.
+The kernel interacts with each bare-metal IOAPIC with a special
+MMIO page. When running under KVM, the guest's IOAPICs are
+emulated by KVM.
 
-Define a synthetic feature flag (X86_FEATURE_TDX_GUEST) and set this
-bit in a valid TDX guest platform.
+When running as a TDX guest, the guest needs to mark each IOAPIC
+mapping as "shared" with the host.  This ensures that TDX private
+protections are not applied to the page, which allows the TDX host
+emulation to work.
 
-Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+ioremap()-created mappings such as virtio will be marked as
+shared by default. However, the IOAPIC code does not use ioremap() and
+instead uses the fixmap mechanism.
+
+Introduce a special fixmap helper just for the IOAPIC code.  Ensure
+that it marks IOAPIC pages as "shared".  This replaces
+set_fixmap_nocache() with __set_fixmap() since __set_fixmap()
+allows custom 'prot' values.
+
+AMD SEV gets IOAPIC pages shared because FIXMAP_PAGE_NOCACHE has _ENC
+bit clear. TDX has to set bit to share the page with the host.
+
+Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 Reviewed-by: Andi Kleen <ak@linux.intel.com>
 Reviewed-by: Tony Luck <tony.luck@intel.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reviewed-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/x86/Kconfig                         | 12 ++++++++++++
- arch/x86/coco/Makefile                   |  2 ++
- arch/x86/coco/tdx/Makefile               |  3 +++
- arch/x86/coco/tdx/tdx.c                  | 22 ++++++++++++++++++++++
- arch/x86/include/asm/cpufeatures.h       |  1 +
- arch/x86/include/asm/disabled-features.h |  8 +++++++-
- arch/x86/include/asm/tdx.h               | 21 +++++++++++++++++++++
- arch/x86/kernel/head64.c                 |  4 ++++
- 8 files changed, 72 insertions(+), 1 deletion(-)
- create mode 100644 arch/x86/coco/tdx/Makefile
- create mode 100644 arch/x86/coco/tdx/tdx.c
- create mode 100644 arch/x86/include/asm/tdx.h
+ arch/x86/kernel/apic/io_apic.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 57a4e0285a80..c346d66b51fc 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -880,6 +880,18 @@ config ACRN_GUEST
- 	  IOT with small footprint and real-time features. More details can be
- 	  found in https://projectacrn.org/.
+diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
+index c1bb384935b0..a868b76cd3d4 100644
+--- a/arch/x86/kernel/apic/io_apic.c
++++ b/arch/x86/kernel/apic/io_apic.c
+@@ -65,6 +65,7 @@
+ #include <asm/irq_remapping.h>
+ #include <asm/hw_irq.h>
+ #include <asm/apic.h>
++#include <asm/pgtable.h>
  
-+config INTEL_TDX_GUEST
-+	bool "Intel TDX (Trust Domain Extensions) - Guest Support"
-+	depends on X86_64 && CPU_SUP_INTEL
-+	depends on X86_X2APIC
-+	help
-+	  Support running as a guest under Intel TDX.  Without this support,
-+	  the guest kernel can not boot or run under TDX.
-+	  TDX includes memory encryption and integrity capabilities
-+	  which protect the confidentiality and integrity of guest
-+	  memory contents and CPU state. TDX guests are protected from
-+	  some attacks from the VMM.
-+
- endif #HYPERVISOR_GUEST
+ #define	for_each_ioapic(idx)		\
+ 	for ((idx) = 0; (idx) < nr_ioapics; (idx)++)
+@@ -2677,6 +2678,19 @@ static struct resource * __init ioapic_setup_resources(void)
+ 	return res;
+ }
  
- source "arch/x86/Kconfig.cpu"
-diff --git a/arch/x86/coco/Makefile b/arch/x86/coco/Makefile
-index c1ead00017a7..c816acf78b6a 100644
---- a/arch/x86/coco/Makefile
-+++ b/arch/x86/coco/Makefile
-@@ -4,3 +4,5 @@ KASAN_SANITIZE_core.o	:= n
- CFLAGS_core.o		+= -fno-stack-protector
- 
- obj-y += core.o
-+
-+obj-$(CONFIG_INTEL_TDX_GUEST)	+= tdx/
-diff --git a/arch/x86/coco/tdx/Makefile b/arch/x86/coco/tdx/Makefile
-new file mode 100644
-index 000000000000..c929d53ee059
---- /dev/null
-+++ b/arch/x86/coco/tdx/Makefile
-@@ -0,0 +1,3 @@
-+# SPDX-License-Identifier: GPL-2.0
-+
-+obj-y += tdx.o
-diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
-new file mode 100644
-index 000000000000..97674471fd1e
---- /dev/null
-+++ b/arch/x86/coco/tdx/tdx.c
-@@ -0,0 +1,22 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (C) 2021-2022 Intel Corporation */
-+
-+#undef pr_fmt
-+#define pr_fmt(fmt)     "tdx: " fmt
-+
-+#include <linux/cpufeature.h>
-+#include <asm/tdx.h>
-+
-+void __init tdx_early_init(void)
++static void io_apic_set_fixmap(enum fixed_addresses idx, phys_addr_t phys)
 +{
-+	u32 eax, sig[3];
++	pgprot_t flags = FIXMAP_PAGE_NOCACHE;
 +
-+	cpuid_count(TDX_CPUID_LEAF_ID, 0, &eax, &sig[0], &sig[2],  &sig[1]);
++	/*
++	 * Ensure fixmaps for IOAPIC MMIO respect memory encryption pgprot
++	 * bits, just like normal ioremap():
++	 */
++	flags = pgprot_decrypted(flags);
 +
-+	if (memcmp(TDX_IDENT, sig, sizeof(sig)))
-+		return;
-+
-+	setup_force_cpu_cap(X86_FEATURE_TDX_GUEST);
-+
-+	pr_info("Guest detected\n");
++	__set_fixmap(idx, phys, flags);
 +}
-diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
-index 5cd22090e53d..cacc8dde854b 100644
---- a/arch/x86/include/asm/cpufeatures.h
-+++ b/arch/x86/include/asm/cpufeatures.h
-@@ -238,6 +238,7 @@
- #define X86_FEATURE_VMW_VMMCALL		( 8*32+19) /* "" VMware prefers VMMCALL hypercall instruction */
- #define X86_FEATURE_PVUNLOCK		( 8*32+20) /* "" PV unlock function */
- #define X86_FEATURE_VCPUPREEMPT		( 8*32+21) /* "" PV vcpu_is_preempted function */
-+#define X86_FEATURE_TDX_GUEST		( 8*32+22) /* Intel Trust Domain Extensions Guest */
++
+ void __init io_apic_init_mappings(void)
+ {
+ 	unsigned long ioapic_phys, idx = FIX_IO_APIC_BASE_0;
+@@ -2709,7 +2723,7 @@ void __init io_apic_init_mappings(void)
+ 				      __func__, PAGE_SIZE, PAGE_SIZE);
+ 			ioapic_phys = __pa(ioapic_phys);
+ 		}
+-		set_fixmap_nocache(idx, ioapic_phys);
++		io_apic_set_fixmap(idx, ioapic_phys);
+ 		apic_printk(APIC_VERBOSE, "mapped IOAPIC to %08lx (%08lx)\n",
+ 			__fix_to_virt(idx) + (ioapic_phys & ~PAGE_MASK),
+ 			ioapic_phys);
+@@ -2838,7 +2852,7 @@ int mp_register_ioapic(int id, u32 address, u32 gsi_base,
+ 	ioapics[idx].mp_config.flags = MPC_APIC_USABLE;
+ 	ioapics[idx].mp_config.apicaddr = address;
  
- /* Intel-defined CPU features, CPUID level 0x00000007:0 (EBX), word 9 */
- #define X86_FEATURE_FSGSBASE		( 9*32+ 0) /* RDFSBASE, WRFSBASE, RDGSBASE, WRGSBASE instructions*/
-diff --git a/arch/x86/include/asm/disabled-features.h b/arch/x86/include/asm/disabled-features.h
-index 1231d63f836d..b37de8268c9a 100644
---- a/arch/x86/include/asm/disabled-features.h
-+++ b/arch/x86/include/asm/disabled-features.h
-@@ -68,6 +68,12 @@
- # define DISABLE_SGX	(1 << (X86_FEATURE_SGX & 31))
- #endif
- 
-+#ifdef CONFIG_INTEL_TDX_GUEST
-+# define DISABLE_TDX_GUEST	0
-+#else
-+# define DISABLE_TDX_GUEST	(1 << (X86_FEATURE_TDX_GUEST & 31))
-+#endif
-+
- /*
-  * Make sure to add features to the correct mask
-  */
-@@ -79,7 +85,7 @@
- #define DISABLED_MASK5	0
- #define DISABLED_MASK6	0
- #define DISABLED_MASK7	(DISABLE_PTI)
--#define DISABLED_MASK8	0
-+#define DISABLED_MASK8	(DISABLE_TDX_GUEST)
- #define DISABLED_MASK9	(DISABLE_SMAP|DISABLE_SGX)
- #define DISABLED_MASK10	0
- #define DISABLED_MASK11	0
-diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
-new file mode 100644
-index 000000000000..ba8042ce61c2
---- /dev/null
-+++ b/arch/x86/include/asm/tdx.h
-@@ -0,0 +1,21 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2021-2022 Intel Corporation */
-+#ifndef _ASM_X86_TDX_H
-+#define _ASM_X86_TDX_H
-+
-+#include <linux/init.h>
-+
-+#define TDX_CPUID_LEAF_ID	0x21
-+#define TDX_IDENT		"IntelTDX    "
-+
-+#ifdef CONFIG_INTEL_TDX_GUEST
-+
-+void __init tdx_early_init(void);
-+
-+#else
-+
-+static inline void tdx_early_init(void) { };
-+
-+#endif /* CONFIG_INTEL_TDX_GUEST */
-+
-+#endif /* _ASM_X86_TDX_H */
-diff --git a/arch/x86/kernel/head64.c b/arch/x86/kernel/head64.c
-index 4f5ecbbaae77..6dff50c3edd6 100644
---- a/arch/x86/kernel/head64.c
-+++ b/arch/x86/kernel/head64.c
-@@ -40,6 +40,7 @@
- #include <asm/extable.h>
- #include <asm/trapnr.h>
- #include <asm/sev.h>
-+#include <asm/tdx.h>
- 
- /*
-  * Manage page tables very early on.
-@@ -514,6 +515,9 @@ asmlinkage __visible void __init x86_64_start_kernel(char * real_mode_data)
- 
- 	idt_setup_early_handler();
- 
-+	/* Needed before cc_platform_has() can be used for TDX */
-+	tdx_early_init();
-+
- 	copy_bootdata(__va(real_mode_data));
- 
- 	/*
+-	set_fixmap_nocache(FIX_IO_APIC_BASE_0 + idx, address);
++	io_apic_set_fixmap(FIX_IO_APIC_BASE_0 + idx, address);
+ 	if (bad_ioapic_register(idx)) {
+ 		clear_fixmap(FIX_IO_APIC_BASE_0 + idx);
+ 		return -ENODEV;
 -- 
 2.34.1
 
