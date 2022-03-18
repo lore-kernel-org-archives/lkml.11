@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C461CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 15:31:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19036C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 15:31:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234192AbiCRPcR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 11:32:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48802 "EHLO
+        id S238069AbiCRPcW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 11:32:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238052AbiCRPcG (ORCPT
+        with ESMTP id S238038AbiCRPcG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Mar 2022 11:32:06 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CE0E181B34
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 08:30:45 -0700 (PDT)
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03CFF17E35C
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 08:30:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647617445; x=1679153445;
+  t=1647617443; x=1679153443;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=zUSjuCc2KWi4DDSLQKo+k0BdkoInqcJcDXFHbFwNot4=;
-  b=IFCplKAciQZjqYva61NITffLV/os/4BY6Hpt10WwaE/2xdY31Ir4RWkV
-   VkrIiJ63lQZ5klaGk8aFMqGe+lroELKTexTlOZNTYyasYXf0cLvNhAx5d
-   Lzh113YbtewsJRn6zvPfzydTUAgcYNC+YtcTqB4QwgwuLll+7KHSkAAAU
-   S+Q83iD0q+wmynSVK1YySjKc2RXxD5gChctItPC+xAcZp9pD5oD3SMFiN
-   uHkvqLWVvpfdVQYdWwrZ7yl9ZLQEZNbwZu6vdshANVGVjwz4esG3mRAdz
-   TI1ZcktySCEfPZhJ3D3LuZrVhzt0ehwyngARg2GVnvODdHcVx3HhmP+LL
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="244612585"
+  bh=K0Fgqrr+sASpxrEKEIlYhpHM4RccEPGBYxF+jivwZns=;
+  b=icjpmK2kxgTY7JHXxAUcT/6mj5vCdeCDtCyZwnn3w6h0G8Lv8pJkVL1m
+   4NFgQ235TUUr9lmZz7+CTjExDTNjqkQYKkDKPpU8uZu85NNc1FyPaQBBG
+   OpEoFScfDRl2xRCDfcXTxaZSvWrz3KW8loXJ8jeMKf/MxaoTnIo6OpyvA
+   ZTvL0I5fjwxy61eT6nM7PAvsVg5wQf4s7fZ8X3IAysnr+KJ4Jx9hSoMSj
+   K3lirorSBw6gedsDMGL3I+dyrR2QAaN8TfQchCup7o2T+3C2Ce+UwiwZR
+   2/rGS6WcysUyYGrdpuJb8gFlqeY9ygEap1VyivGvsa8P4XmRdZ0nBXc2c
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="237102039"
 X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="244612585"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 08:30:44 -0700
+   d="scan'208";a="237102039"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 08:30:43 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="645558392"
+   d="scan'208";a="784269757"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 18 Mar 2022 08:30:37 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 18 Mar 2022 08:30:37 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 3D54D527; Fri, 18 Mar 2022 17:30:50 +0200 (EET)
+        id D4BC3150; Fri, 18 Mar 2022 17:30:49 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -51,11 +51,10 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
         linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>
-Subject: [PATCHv7 11/30] x86/tdx: Handle in-kernel MMIO
-Date:   Fri, 18 Mar 2022 18:30:29 +0300
-Message-Id: <20220318153048.51177-12-kirill.shutemov@linux.intel.com>
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv7 05/30] x86/tdx: Exclude shared bit from __PHYSICAL_MASK
+Date:   Fri, 18 Mar 2022 18:30:23 +0300
+Message-Id: <20220318153048.51177-6-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220318153048.51177-1-kirill.shutemov@linux.intel.com>
 References: <20220318153048.51177-1-kirill.shutemov@linux.intel.com>
@@ -65,267 +64,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In non-TDX VMs, MMIO is implemented by providing the guest a mapping
-which will cause a VMEXIT on access and then the VMM emulating the
-instruction that caused the VMEXIT. That's not possible for TDX VM.
+In TDX guests, by default memory is protected from host access. If a
+guest needs to communicate with the VMM (like the I/O use case), it uses
+a single bit in the physical address to communicate the protected/shared
+attribute of the given page.
 
-To emulate an instruction an emulator needs two things:
+In the x86 ARCH code, __PHYSICAL_MASK macro represents the width of the
+physical address in the given architecture. It is used in creating
+physical PAGE_MASK for address bits in the kernel. Since in TDX guest,
+a single bit is used as metadata, it needs to be excluded from valid
+physical address bits to avoid using incorrect addresses bits in the
+kernel.
 
-  - R/W access to the register file to read/modify instruction arguments
-    and see RIP of the faulted instruction.
-
-  - Read access to memory where instruction is placed to see what to
-    emulate. In this case it is guest kernel text.
-
-Both of them are not available to VMM in TDX environment:
-
-  - Register file is never exposed to VMM. When a TD exits to the module,
-    it saves registers into the state-save area allocated for that TD.
-    The module then scrubs these registers before returning execution
-    control to the VMM, to help prevent leakage of TD state.
-
-  - TDX does not allow guests to execute from shared memory. All executed
-    instructions are in TD-private memory. Being private to the TD, VMMs
-    have no way to access TD-private memory and no way to read the
-    instruction to decode and emulate it.
-
-In TDX the MMIO regions are instead configured by VMM to trigger a #VE
-exception in the guest.
-
-Add #VE handling that emulates the MMIO instruction inside the guest and
-converts it into a controlled hypercall to the host.
-
-This approach is bad for performance. But, it has (virtually) no impact
-on the size of the kernel image and will work for a wide variety of
-drivers. This allows TDX deployments to use arbitrary devices and device
-drivers, including virtio. TDX customers have asked for the capability
-to use random devices in their deployments.
-
-In other words, even if all of the work was done to paravirtualize all
-x86 MMIO users and virtio, this approach would still be needed. There
-is essentially no way to get rid of this code.
-
-This approach is functional for all in-kernel MMIO users current and
-future and does so with a minimal amount of code and kernel image bloat.
-
-MMIO addresses can be used with any CPU instruction that accesses
-memory. Address only MMIO accesses done via io.h helpers, such as
-'readl()' or 'writeq()'.
-
-Any CPU instruction that accesses memory can also be used to access
-MMIO.  However, by convention, MMIO access are typically performed via
-io.h helpers such as 'readl()' or 'writeq()'.
-
-The io.h helpers intentionally use a limited set of instructions when
-accessing MMIO.  This known, limited set of instructions makes MMIO
-instruction decoding and emulation feasible in KVM hosts and SEV guests
-today.
-
-MMIO accesses performed without the io.h helpers are at the mercy of the
-compiler.  Compilers can and will generate a much more broad set of
-instructions which can not practically be decoded and emulated.  TDX
-guests will oops if they encounter one of these decoding failures.
-
-This means that TDX guests *must* use the io.h helpers to access MMIO.
-
-This requirement is not new.  Both KVM hosts and AMD SEV guests have the
-same limitations on MMIO access.
-
-=== Potential alternative approaches ===
-
-== Paravirtualizing all MMIO ==
-
-An alternative to letting MMIO induce a #VE exception is to avoid
-the #VE in the first place. Similar to the port I/O case, it is
-theoretically possible to paravirtualize MMIO accesses.
-
-Like the exception-based approach offered here, a fully paravirtualized
-approach would be limited to MMIO users that leverage common
-infrastructure like the io.h macros.
-
-However, any paravirtual approach would be patching approximately 120k
-call sites. Any paravirtual approach would need to replace a bare memory
-access instruction with (at least) a function call. With a conservative
-overhead estimation of 5 bytes per call site (CALL instruction),
-it leads to bloating code by 600k.
-
-Many drivers will never be used in the TDX environment and the bloat
-cannot be justified.
-
-== Patching TDX drivers ==
-
-Rather than touching the entire kernel, it might also be possible to
-just go after drivers that use MMIO in TDX guests *and* are performance
-critical to justify the effrort. Right now, that's limited only to virtio.
-
-All virtio MMIO appears to be done through a single function, which
-makes virtio eminently easy to patch.
-
-This approach will be adopted in the future, removing the bulk of
-MMIO #VEs. The #VE-based MMIO will remain serving non-virtio use cases.
+Enable DYNAMIC_PHYSICAL_MASK to support updating the __PHYSICAL_MASK.
 
 Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Reviewed-by: Andi Kleen <ak@linux.intel.com>
 Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
 Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/x86/coco/tdx/tdx.c | 121 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 121 insertions(+)
+ arch/x86/Kconfig        | 1 +
+ arch/x86/coco/tdx/tdx.c | 8 ++++++++
+ 2 files changed, 9 insertions(+)
 
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 93e67842e369..d2f45e58e846 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -885,6 +885,7 @@ config INTEL_TDX_GUEST
+ 	depends on X86_64 && CPU_SUP_INTEL
+ 	depends on X86_X2APIC
+ 	select ARCH_HAS_CC_PLATFORM
++	select DYNAMIC_PHYSICAL_MASK
+ 	help
+ 	  Support running as a guest under Intel TDX.  Without this support,
+ 	  the guest kernel can not boot or run under TDX.
 diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
-index 50c3b97d6db7..ab10bc73a7c5 100644
+index 96b2611baac5..e84f6dd3ed2a 100644
 --- a/arch/x86/coco/tdx/tdx.c
 +++ b/arch/x86/coco/tdx/tdx.c
-@@ -8,11 +8,17 @@
- #include <asm/coco.h>
- #include <asm/tdx.h>
- #include <asm/vmx.h>
-+#include <asm/insn.h>
-+#include <asm/insn-eval.h>
+@@ -89,5 +89,13 @@ void __init tdx_early_init(void)
+ 	cc_mask = get_cc_mask();
+ 	cc_set_mask(cc_mask);
  
- /* TDX module Call Leaf IDs */
- #define TDX_GET_INFO			1
- #define TDX_GET_VEINFO			3
- 
-+/* MMIO direction */
-+#define EPT_READ	0
-+#define EPT_WRITE	1
++	/*
++	 * All bits above GPA width are reserved and kernel treats shared bit
++	 * as flag, not as part of physical address.
++	 *
++	 * Adjust physical mask to only cover valid GPA bits.
++	 */
++	physical_mask &= cc_mask - 1;
 +
- /*
-  * Wrapper for standard use of __tdx_hypercall with no output aside from
-  * return code.
-@@ -222,6 +228,119 @@ static bool handle_cpuid(struct pt_regs *regs)
- 	return true;
+ 	pr_info("Guest detected\n");
  }
- 
-+static bool mmio_read(int size, unsigned long addr, unsigned long *val)
-+{
-+	struct tdx_hypercall_args args = {
-+		.r10 = TDX_HYPERCALL_STANDARD,
-+		.r11 = hcall_func(EXIT_REASON_EPT_VIOLATION),
-+		.r12 = size,
-+		.r13 = EPT_READ,
-+		.r14 = addr,
-+		.r15 = *val,
-+	};
-+
-+	if (__tdx_hypercall(&args, TDX_HCALL_HAS_OUTPUT))
-+		return false;
-+	*val = args.r11;
-+	return true;
-+}
-+
-+static bool mmio_write(int size, unsigned long addr, unsigned long val)
-+{
-+	return !_tdx_hypercall(hcall_func(EXIT_REASON_EPT_VIOLATION), size,
-+			       EPT_WRITE, addr, val);
-+}
-+
-+static bool handle_mmio(struct pt_regs *regs, struct ve_info *ve)
-+{
-+	char buffer[MAX_INSN_SIZE];
-+	unsigned long *reg, val;
-+	struct insn insn = {};
-+	enum mmio_type mmio;
-+	int size, extend_size;
-+	u8 extend_val = 0;
-+
-+	/* Only in-kernel MMIO is supported */
-+	if (WARN_ON_ONCE(user_mode(regs)))
-+		return false;
-+
-+	if (copy_from_kernel_nofault(buffer, (void *)regs->ip, MAX_INSN_SIZE))
-+		return false;
-+
-+	if (insn_decode(&insn, buffer, MAX_INSN_SIZE, INSN_MODE_64))
-+		return false;
-+
-+	mmio = insn_decode_mmio(&insn, &size);
-+	if (WARN_ON_ONCE(mmio == MMIO_DECODE_FAILED))
-+		return false;
-+
-+	if (mmio != MMIO_WRITE_IMM && mmio != MMIO_MOVS) {
-+		reg = insn_get_modrm_reg_ptr(&insn, regs);
-+		if (!reg)
-+			return false;
-+	}
-+
-+	ve->instr_len = insn.length;
-+
-+	/* Handle writes first */
-+	switch (mmio) {
-+	case MMIO_WRITE:
-+		memcpy(&val, reg, size);
-+		return mmio_write(size, ve->gpa, val);
-+	case MMIO_WRITE_IMM:
-+		val = insn.immediate.value;
-+		return mmio_write(size, ve->gpa, val);
-+	case MMIO_READ:
-+	case MMIO_READ_ZERO_EXTEND:
-+	case MMIO_READ_SIGN_EXTEND:
-+		/* Reads are handled below */
-+		break;
-+	case MMIO_MOVS:
-+	case MMIO_DECODE_FAILED:
-+		/*
-+		 * MMIO was accessed with an instruction that could not be
-+		 * decoded or handled properly. It was likely not using io.h
-+		 * helpers or accessed MMIO accidentally.
-+		 */
-+		return false;
-+	default:
-+		WARN_ONCE(1, "Unknown insn_decode_mmio() decode value?");
-+		return false;
-+	}
-+
-+	/* Handle reads */
-+	if (!mmio_read(size, ve->gpa, &val))
-+		return false;
-+
-+	switch (mmio) {
-+	case MMIO_READ:
-+		/* Zero-extend for 32-bit operation */
-+		extend_size = size == 4 ? sizeof(*reg) : 0;
-+		break;
-+	case MMIO_READ_ZERO_EXTEND:
-+		/* Zero extend based on operand size */
-+		extend_size = insn.opnd_bytes;
-+		break;
-+	case MMIO_READ_SIGN_EXTEND:
-+		/* Sign extend based on operand size */
-+		extend_size = insn.opnd_bytes;
-+		if (size == 1 && val & BIT(7))
-+			extend_val = 0xFF;
-+		else if (size > 1 && val & BIT(15))
-+			extend_val = 0xFF;
-+		break;
-+	default:
-+		/* All other cases has to be covered with the first switch() */
-+		WARN_ON_ONCE(1);
-+		return false;
-+	}
-+
-+	if (extend_size)
-+		memset(reg, extend_val, extend_size);
-+	memcpy(reg, &val, size);
-+	return true;
-+}
-+
- void tdx_get_ve_info(struct ve_info *ve)
- {
- 	struct tdx_module_output out;
-@@ -276,6 +395,8 @@ static bool virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
- 		return write_msr(regs);
- 	case EXIT_REASON_CPUID:
- 		return handle_cpuid(regs);
-+	case EXIT_REASON_EPT_VIOLATION:
-+		return handle_mmio(regs, ve);
- 	default:
- 		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
- 		return false;
 -- 
 2.34.1
 
