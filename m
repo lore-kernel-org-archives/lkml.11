@@ -2,111 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D23AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 06:16:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2F10C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 06:17:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232689AbiCRGRa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 02:17:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58794 "EHLO
+        id S232702AbiCRGSs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 02:18:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231149AbiCRGR0 (ORCPT
+        with ESMTP id S231149AbiCRGSn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 02:17:26 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EC5D2B3D49
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 23:16:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647584168; x=1679120168;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=eqTcK21Pg5YOgEKX8Gi54DOK6hT4tSxuIyCswR9mBog=;
-  b=XdLgOJ2U2k84gpwiR2bc6law4BRHh7r08Zljla+GdBLHuQVa0U7vn4kk
-   Dz8As8eUE7ItHnSNQNloX27q/bB6g8se84hLZ1SORscMm/iXOhfgmWsm0
-   IindX/yMueQqDIxgTQu+52jaThZ0d1b9LXITjY+Z0L5nRUp1kZY8etCJt
-   ekrNY3i4JuUhMMOegOqVJVMAP45QGGnTraTpeQdV5BBfwVAA0jZiRbVG7
-   IfTCvW/5cDddm0MQfTLwyyCsc6WXAExhhU1iBwlYVgvZIOThvqGZYpVyg
-   qREnXHpP6mvpWAYxOkX8UGN52XFvt/FQOv1DKQTOOLcVR5tP1ZEJwfmfV
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="237008025"
-X-IronPort-AV: E=Sophos;i="5.90,191,1643702400"; 
-   d="scan'208";a="237008025"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 23:16:08 -0700
-X-IronPort-AV: E=Sophos;i="5.90,191,1643702400"; 
-   d="scan'208";a="691196747"
-Received: from xsang-optiplex-9020.sh.intel.com (HELO xsang-OptiPlex-9020) ([10.239.159.143])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 23:16:06 -0700
-Date:   Fri, 18 Mar 2022 14:16:03 +0800
-From:   Oliver Sang <oliver.sang@intel.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     lkp@lists.01.org, lkp@intel.com,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [fixup! EXP srcu]  7bf8d644f8:
- WARNING:at_kernel/rcu/srcutree.c:#process_srcu
-Message-ID: <20220318061603.GC12658@xsang-OptiPlex-9020>
-References: <20220312155919.GD1189@xsang-OptiPlex-9020>
- <20220314203814.GZ4285@paulmck-ThinkPad-P17-Gen-1>
- <20220316165342.GA1931135@paulmck-ThinkPad-P17-Gen-1>
- <20220317071608.GB735@xsang-OptiPlex-9020>
- <20220317180129.GR4285@paulmck-ThinkPad-P17-Gen-1>
+        Fri, 18 Mar 2022 02:18:43 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A3522B3D4A;
+        Thu, 17 Mar 2022 23:17:25 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KKYhK2HN1zcbCv;
+        Fri, 18 Mar 2022 14:17:21 +0800 (CST)
+Received: from localhost.localdomain (10.175.104.82) by
+ canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 18 Mar 2022 14:17:22 +0800
+From:   Wang Yufen <wangyufen@huawei.com>
+To:     <paul@paul-moore.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+CC:     <netdev@vger.kernel.org>, <linux-security-module@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next] netlabel: fix out-of-bounds memory accesses
+Date:   Fri, 18 Mar 2022 14:35:08 +0800
+Message-ID: <20220318063508.1348148-1-wangyufen@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220317180129.GR4285@paulmck-ThinkPad-P17-Gen-1>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paul,
+In calipso_map_cat_ntoh(), in the for loop, if the return value of
+netlbl_bitmap_walk() is equal to (net_clen_bits - 1), when 
+netlbl_bitmap_walk() is called next time, out-of-bounds memory accesses
+of bitmap[byte_offset] occurs.
 
-On Thu, Mar 17, 2022 at 11:01:29AM -0700, Paul E. McKenney wrote:
-> On Thu, Mar 17, 2022 at 03:16:08PM +0800, Oliver Sang wrote:
-> > hi, Paul,
-> > 
-> > On Wed, Mar 16, 2022 at 09:53:42AM -0700, Paul E. McKenney wrote:
-> > > > 
-> > > > I had a feeling that the simple fix wasn't going to cut it, so thank you
-> > > > for finding a scenario that proves that to be the case.  Fix in progress,
-> > > > to be folded into the original with attribution.
-> > > 
-> > > OK, the attribution isn't quite there yet, but the squished-together
-> > > commit is here:
-> > > 
-> > > ea0098f19115 ("srcu: Prevent expedited GPs and blocking readers from consuming CPU")
-> > > 
-> > > Does this version behave better for you?
-> > 
-> > we tested this commit, found the issue gone.
-> > please be noted the issue on 7bf8d644f8 is random and ~25% rate.
-> > so I queued to run 100 times for this new commit, which is finally clean
-> > according to tests.
-> > 
-> > =========================================================================================
-> > compiler/kconfig/rootfs/sleep/tbox_group/testcase:
-> >   gcc-9/x86_64-rhel-8.3-func/debian-10.4-x86_64-20200603.cgz/1/vm-snb/boot
-> > 
-> > commit:
-> >   feebd043ec6b ("Revert "srcu: Avoid expedited GPs and blocking readers from consuming CPU"")
-> >   7bf8d644f869 ("fixup! EXP srcu: Check for too many zero-delay srcu_reschedule() calls")
-> >   ea0098f19115 ("srcu: Prevent expedited GPs and blocking readers from consuming CPU")
-> > 
-> > feebd043ec6b9eab 7bf8d644f869260f63eaaedebab ea0098f191152c7fe3db5181a2e
-> > ---------------- --------------------------- ---------------------------
-> >        fail:runs  %reproduction    fail:runs  %reproduction    fail:runs
-> >            |             |             |             |             |
-> >            :16          25%           4:16           0%            :100   dmesg.RIP:process_srcu
-> >            :16          25%           4:16           0%            :100   dmesg.WARNING:at_kernel/rcu/srcutree.c:#process_srcu
-> 
-> Thank you for testing this!  Tested-by?
+The bug was found during fuzzing. The following is the fuzzing report
+ BUG: KASAN: slab-out-of-bounds in netlbl_bitmap_walk+0x3c/0xd0
+ Read of size 1 at addr ffffff8107bf6f70 by task err_OH/252
+ 
+ CPU: 7 PID: 252 Comm: err_OH Not tainted 5.17.0-rc7+ #17
+ Hardware name: linux,dummy-virt (DT)
+ Call trace:
+  dump_backtrace+0x21c/0x230
+  show_stack+0x1c/0x60
+  dump_stack_lvl+0x64/0x7c
+  print_address_description.constprop.0+0x70/0x2d0
+  __kasan_report+0x158/0x16c
+  kasan_report+0x74/0x120
+  __asan_load1+0x80/0xa0
+  netlbl_bitmap_walk+0x3c/0xd0
+  calipso_opt_getattr+0x1a8/0x230
+  calipso_sock_getattr+0x218/0x340
+  calipso_sock_getattr+0x44/0x60
+  netlbl_sock_getattr+0x44/0x80
+  selinux_netlbl_socket_setsockopt+0x138/0x170
+  selinux_socket_setsockopt+0x4c/0x60
+  security_socket_setsockopt+0x4c/0x90
+  __sys_setsockopt+0xbc/0x2b0
+  __arm64_sys_setsockopt+0x6c/0x84
+  invoke_syscall+0x64/0x190
+  el0_svc_common.constprop.0+0x88/0x200
+  do_el0_svc+0x88/0xa0
+  el0_svc+0x128/0x1b0
+  el0t_64_sync_handler+0x9c/0x120
+  el0t_64_sync+0x16c/0x170
 
-sure!
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+---
+ net/netlabel/netlabel_kapi.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Tested-by: kernel test robot <oliver.sang@intel.com>
+diff --git a/net/netlabel/netlabel_kapi.c b/net/netlabel/netlabel_kapi.c
+index beb0e573266d..54c083003947 100644
+--- a/net/netlabel/netlabel_kapi.c
++++ b/net/netlabel/netlabel_kapi.c
+@@ -885,6 +885,8 @@ int netlbl_bitmap_walk(const unsigned char *bitmap, u32 bitmap_len,
+ 	unsigned char bitmask;
+ 	unsigned char byte;
+ 
++	if (offset >= bitmap_len)
++		return -1;
+ 	byte_offset = offset / 8;
+ 	byte = bitmap[byte_offset];
+ 	bit_spot = offset;
+-- 
+2.25.1
 
-(and will add this in early mail about testing if I have enough confidence
-in the future :) Thanks)
-
-
-> 							Thanx, Paul
