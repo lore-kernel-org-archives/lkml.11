@@ -2,219 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3269DC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 10:41:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4CD1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 10:42:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233155AbiCRKnM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 06:43:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39486 "EHLO
+        id S235302AbiCRKnY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 06:43:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235590AbiCRKnB (ORCPT
+        with ESMTP id S235232AbiCRKnT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 06:43:01 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29EB82D7AAF
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 03:41:20 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id u3so10843172ljd.0
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 03:41:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VWOV5BQly7uUTCsTTck4r1RI0yVIrTME1+42FK5fZQQ=;
-        b=SiW7FZZJDFCCmtv/P0k8Mtvt7QXorjlxwA7T0umUyjkegWZzZLlCvF0CnrOejE+Vvr
-         aaeDdNjLs6aIF7gx/lADEa0lxU/kH4CrbGZtc6KBTBbIOE7XPgha7c76W5bh5z/Drtzi
-         pGJxIj5HAvxprPe8MHKu9SyLBeLZ3INLaBb54WUjBUIsUbrokvUk4NaOcvIT2hAqWSPr
-         CHvJCxQi5252wXdMcw9y3iWNL54T/UqG0ZC5Bnvty3SrLwbKBjAJHvLIggbs2p2/mNa7
-         5XnXCvXkBVtXvsaGfY2B6CRwAk4kH3mDe9X1RAFDDKMTzlyusOaG7VB8JMFmCI9cFEkz
-         +WNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VWOV5BQly7uUTCsTTck4r1RI0yVIrTME1+42FK5fZQQ=;
-        b=LyyuTDvB7saBd93sCe6RuSGp4rU8k52v7jPkpqh23olVgGF760icfh+LWhSEWLrCra
-         GIgGr9KbthOiPTR3bNShWT8kNIIQyX6bR+cEOxQSEo6NWAwR+08WmAmuLig8ccXuOttA
-         HnzD1hq9KUVxeytWIJfQIGSUSvElWSMVx3FiaM0b9ryLvynYcnWgql6KLnXTOEaEWlCf
-         Lh/EaN0qJZuemvjpw7w3Ex46sSSjy+DAfnNnettRpfoftK2CnV/AGOd/c8JgDXS/FwSH
-         gFWAho5xWsObhcgnxh8/L1PqPaHMt+2dXjHHWDo2BRn1xwfhSn+AHBXu6dgFbT956BaF
-         soWw==
-X-Gm-Message-State: AOAM532cNiqsvQ7o5Fm+yMgtZa7mljthCDOaPp4BIHn0kk/+p6tYVp9N
-        hhWK7BI4L3ZMkKPIUkroweJ1jN4JqTOfAYGPkLMBPg==
-X-Google-Smtp-Source: ABdhPJxDwbeLUz80HQ2n0RKN6rMdsWCsrNQgSGc5q2vCkMxhKZvT/2ipxlJ/taPnr0E2lKeN+kxT0S5nloOZaPOCaTs=
-X-Received: by 2002:a05:651c:1783:b0:249:43a8:b6f9 with SMTP id
- bn3-20020a05651c178300b0024943a8b6f9mr5374258ljb.273.1647600078120; Fri, 18
- Mar 2022 03:41:18 -0700 (PDT)
+        Fri, 18 Mar 2022 06:43:19 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CD738908F;
+        Fri, 18 Mar 2022 03:42:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647600121; x=1679136121;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=rjzHUXKaMYelhy/grqSbP+fUOQ01mEhxIDBfY5nDm6o=;
+  b=lla4JEy+ax4+u/JJ1Up8yNYW+WXM/6CqCUc/1CD3/HRFftTqG+nxiN0d
+   dhYRBXyqj+iYZ8Goh/p4S667nVp4Ahz+casi/h+5II/b3BZWN/QQHMI09
+   IH5hUhkHZ7fSA3881cT0PdHvpZq+pRsqUZw69H3YkiKcy6H/PJSppsAhV
+   TUpJho1IkI4N+jII3p69h3COQofypPZG6UVLVgfU1DnkQxLOX5v5EPmGe
+   1D49PslfcuFot6u+58yhLZkmJR+N7TIsmKa605VhvbMZKbiqSQZ0YcPz2
+   4A0yLeel/RvXIzJ7SBs3xfFitLtBmcHj2Z2Hi4JUbOxg510kI4hn3p4Ay
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="237057339"
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
+   d="scan'208";a="237057339"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 03:42:00 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
+   d="scan'208";a="558370689"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
+  by orsmga008.jf.intel.com with ESMTP; 18 Mar 2022 03:41:58 -0700
+Date:   Fri, 18 Mar 2022 18:34:57 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     cgel.zte@gmail.com
+Cc:     hao.wu@intel.com, trix@redhat.com, linux-fpga@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH] fpga: dfl: pci: Remove useless DMA-32 fallback
+ configuration
+Message-ID: <20220318103457.GA139589@yilunxu-OptiPlex-7050>
+References: <20220318005938.2142028-1-chi.minghao@zte.com.cn>
 MIME-Version: 1.0
-References: <20220315220549.2749328-1-chris.packham@alliedtelesis.co.nz>
- <20220315220549.2749328-2-chris.packham@alliedtelesis.co.nz>
- <CAPDyKFpMnno1RjnSMhgUAZc=q4erdNGEFYOW=k13MMMPti7aQA@mail.gmail.com>
- <4b27d0bf-cf30-9c96-f519-9df71091671c@alliedtelesis.co.nz> <88ec8037-38ef-2978-89dd-526f443a30ea@alliedtelesis.co.nz>
-In-Reply-To: <88ec8037-38ef-2978-89dd-526f443a30ea@alliedtelesis.co.nz>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Fri, 18 Mar 2022 11:40:41 +0100
-Message-ID: <CAPDyKFoo0GH0XwA3uZ-KF4Vbh2GxwPgia9eJTP+Nfi73COPy-w@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] dt-bindings: mmc: xenon: add AC5 compatible string
-To:     Chris Packham <chris.packham@alliedtelesis.co.nz>
-Cc:     "huziji@marvell.com" <huziji@marvell.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "adrian.hunter@intel.com" <adrian.hunter@intel.com>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220318005938.2142028-1-chi.minghao@zte.com.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 18 Mar 2022 at 04:41, Chris Packham
-<Chris.Packham@alliedtelesis.co.nz> wrote:
->
->
-> On 18/03/22 11:27, Chris Packham wrote:
-> >
-> > On 17/03/22 23:13, Ulf Hansson wrote:
-> >> On Tue, 15 Mar 2022 at 23:05, Chris Packham
-> >> <chris.packham@alliedtelesis.co.nz> wrote:
-> >>> Import binding documentation from the Marvell SDK which adds
-> >>> marvell,ac5-sdhci compatible string and documents the requirements for
-> >>> the for the Xenon SDHCI controller on the 98DX2530.
-> >>>
-> >>> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
-> >>> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> >>> ---
-> >>>
-> >>> Notes:
-> >>>      Changes in v3:
-> >>>      - Split from larger series
-> >>>      - Add review from Andrew
-> >>>      Changes in v2:
-> >>>      - New
-> >>>
-> >>>   .../bindings/mmc/marvell,xenon-sdhci.txt      | 52
-> >>> +++++++++++++++++++
-> >>>   1 file changed, 52 insertions(+)
-> >> Would you mind converting these bindings to the new yaml format, as
-> >> the first step?
-> >>
-> >> Up until this point, I have accepted only very small changes to the
-> >> legacy txt based bindings, but I am starting to think that it's time
-> >> to reject those too. We need all bindings to move to yaml.
-> >>
-> >> Sorry, if this causes additional churns for you.
-> >
-> > If it earns me some good karma it'll probably be worth it. Can I put
-> > you down as the maintainer in the yaml binding?
->
-> I've fired off a patch for converting the binding
->
-> https://lore.kernel.org/linux-devicetree/20220318033521.1432767-1-chris.packham@alliedtelesis.co.nz/T/#u
+On Fri, Mar 18, 2022 at 12:59:38AM +0000, cgel.zte@gmail.com wrote:
+> From: Minghao Chi <chi.minghao@zte.com.cn>
+> 
+> As stated in [1], dma_set_mask() with a 64-bit mask will never fail if
+> dev->dma_mask is non-NULL.
+> So, if it fails, the 32 bits case will also fail for the same reason.
 
-Thanks, I will have a look!
+The code change is good to me, but maybe the commit message could be
+improved. The reference [1] is not the best to make things clear, maybe
+[2] could be better undstood. It is even better if there is a brief
+introduction of the DMA API change in the commit message. It saves a lot
+of time for reviewers.
 
->
-> For this change specifically I might park it. When I looked at the
-> actual changes that were being made in the Marvell SDK they're doing
-> something weird with dma addresses and of_dma_get_range() which won't
-> work . The boards we're making won't have MMC and I don't have the
-> desire to help Marvell bring their code up to scratch (at least not for
-> a driver I don't need).
+I see there are plenty of similar places to change, could you make a
+patchset and change them in a batch?
 
-I see.
+[2]: https://lists.linuxfoundation.org/pipermail/iommu/2019-February/033674.html
 
-Then you deserve a special thanks for helping out with the DT conversion!
+Thanks,
+Yilun
 
-Kind regards
-Uffe
-
->
-> >
-> >>
-> >> Kind regards
-> >> Uffe
-> >>
-> >>> diff --git
-> >>> a/Documentation/devicetree/bindings/mmc/marvell,xenon-sdhci.txt
-> >>> b/Documentation/devicetree/bindings/mmc/marvell,xenon-sdhci.txt
-> >>> index c51a62d751dc..43df466f0cb3 100644
-> >>> --- a/Documentation/devicetree/bindings/mmc/marvell,xenon-sdhci.txt
-> >>> +++ b/Documentation/devicetree/bindings/mmc/marvell,xenon-sdhci.txt
-> >>> @@ -14,6 +14,7 @@ Required Properties:
-> >>>     - "marvell,armada-ap806-sdhci": For controllers on Armada AP806.
-> >>>     - "marvell,armada-ap807-sdhci": For controllers on Armada AP807.
-> >>>     - "marvell,armada-cp110-sdhci": For controllers on Armada CP110.
-> >>> +  - "marvell,ac5-sdhci": For CnM on AC5, AC5X and derived.
-> >>>
-> >>>   - clocks:
-> >>>     Array of clocks required for SDHC.
-> >>> @@ -33,6 +34,13 @@ Required Properties:
-> >>>       in below.
-> >>>       Please also check property marvell,pad-type in below.
-> >>>
-> >>> +  * For "marvell,ac5-sdhci", one or two register areas.
-> >>> +    (reg-names "ctrl" & "decoder").
-> >>> +    The first one is mandatory for the Xenon IP registers.
-> >>> +    The second one is for systems where DMA mapping is required and
-> >>> is the
-> >>> +    related address decoder register (the value to configure is
-> >>> derived from
-> >>> +    the parent "dma-ranges").
-> >>> +
-> >>>     * For other compatible strings, one register area for Xenon IP.
-> >>>
-> >>>   Optional Properties:
-> >>> @@ -171,3 +179,47 @@ Example:
-> >>>
-> >>>                  marvell,pad-type = "sd";
-> >>>          };
-> >>> +
-> >>> +
-> >>> +- For eMMC with compatible "marvell,ac5-sdhci" with one reg range
-> >>> (no dma):
-> >>> +       sdhci0: sdhci@805c0000 {
-> >>> +               compatible = "marvell,ac5-sdhci";
-> >>> +               reg = <0x0 0x805c0000 0x0 0x300>;
-> >>> +               reg-names = "ctrl", "decoder";
-> >>> +               interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_HIGH>;
-> >>> +               clocks = <&core_clock>;
-> >>> +               clock-names = "core";
-> >>> +               status = "okay";
-> >>> +               bus-width = <8>;
-> >>> +               /*marvell,xenon-phy-slow-mode;*/
-> >>> +               non-removable;
-> >>> +               mmc-ddr-1_8v;
-> >>> +               mmc-hs200-1_8v;
-> >>> +               mmc-hs400-1_8v;
-> >>> +       };
-> >>> +
-> >>> +- For eMMC with compatible "marvell,ac5-sdhci" with two reg ranges
-> >>> (with dma):
-> >>> +       mmc_dma: mmc-dma-peripherals@80500000 {
-> >>> +               compatible = "simple-bus";
-> >>> +               #address-cells = <0x2>;
-> >>> +               #size-cells = <0x2>;
-> >>> +               ranges;
-> >>> +               dma-ranges = <0x2 0x0 0x2 0x80000000 0x1 0x0>;
-> >>> +               dma-coherent;
-> >>> +
-> >>> +               sdhci0: sdhci@805c0000 {
-> >>> +                       compatible = "marvell,ac5-sdhci",
-> >>> "marvell,armada-ap806-sdhci";
-> >>> +                       reg = <0x0 0x805c0000 0x0 0x300>, <0x0
-> >>> 0x80440230 0x0 0x4>;
-> >>> +                       reg-names = "ctrl", "decoder";
-> >>> +                       interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_HIGH>;
-> >>> +                       clocks = <&core_clock>;
-> >>> +                       clock-names = "core";
-> >>> +                       status = "okay";
-> >>> +                       bus-width = <8>;
-> >>> +                       /*marvell,xenon-phy-slow-mode;*/
-> >>> +                       non-removable;
-> >>> +                       mmc-ddr-1_8v;
-> >>> +                       mmc-hs200-1_8v;
-> >>> +                       mmc-hs400-1_8v;
-> >>> +               };
-> >>> +       };
-> >>> --
-> >>> 2.35.1
-> >>>
+> 
+> Simplify code and remove some dead code accordingly.
+> 
+> [1]: https://lkml.org/lkml/2021/6/7/398
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+> ---
+>  drivers/fpga/dfl-pci.c | 2 --
+>  1 file changed, 2 deletions(-)
+> 
+> diff --git a/drivers/fpga/dfl-pci.c b/drivers/fpga/dfl-pci.c
+> index 717ac9715970..42fdfa7a28d6 100644
+> --- a/drivers/fpga/dfl-pci.c
+> +++ b/drivers/fpga/dfl-pci.c
+> @@ -356,8 +356,6 @@ int cci_pci_probe(struct pci_dev *pcidev, const struct pci_device_id *pcidevid)
+>  	pci_set_master(pcidev);
+>  
+>  	ret = dma_set_mask_and_coherent(&pcidev->dev, DMA_BIT_MASK(64));
+> -	if (ret)
+> -		ret = dma_set_mask_and_coherent(&pcidev->dev, DMA_BIT_MASK(32));
+>  	if (ret) {
+>  		dev_err(&pcidev->dev, "No suitable DMA support available.\n");
+>  		goto disable_error_report_exit;
+> -- 
+> 2.25.1
