@@ -2,176 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 246D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 03:47:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5475C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 03:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232255AbiCRDtD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 23:49:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51032 "EHLO
+        id S232287AbiCRDvi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 23:51:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232046AbiCRDs7 (ORCPT
+        with ESMTP id S232046AbiCRDvf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 23:48:59 -0400
-X-Greylist: delayed 911 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Mar 2022 20:47:41 PDT
-Received: from sender4-op-o11.zoho.com (sender4-op-o11.zoho.com [136.143.188.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E3019751E
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 20:47:40 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1647574332; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=elggAf41HvUrWWN3scF9gUzAIWcf9dFqq8c+zWxcBCogwFV/Cf8H2I4NmSEeUUgPem6CCqs9yS/3IW83xL+T8qDLBZMbSY1d5F1SVme6n5hkhr/yy7HnE8bMiOVEiXp7H8WUiaOZGlgI9tvLCK38BfGRSo0SZC8bx7QSJuV6t6Y=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1647574332; h=Content-Type:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=0eZ+4T6crTbJHWrS/WB+dfvsVCgffBHeCpqttMifoTA=; 
-        b=UtrXSyZh99gxgNHK2gghEWI+u1GcEWtiTvv14xHpaCo6zj1Al5qHB80Myg5iIiTetE43mRm5MFqzmL7QM4uNFzhLPDBinrjBqbWQWT7cJ+6ju2roShqiJtk99jORnpgTAd/KwFMCneJX44VpjzdiGfLAyLkig/nGYRyuIflIEkA=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=dlrobertson.com;
-        spf=pass  smtp.mailfrom=dan@dlrobertson.com;
-        dmarc=pass header.from=<dan@dlrobertson.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1647574332;
-        s=zoho; d=dlrobertson.com; i=dan@dlrobertson.com;
-        h=Date:From:From:To:To:Cc:Cc:Subject:Subject:Message-ID:References:MIME-Version:Content-Type:In-Reply-To:Message-Id:Reply-To;
-        bh=0eZ+4T6crTbJHWrS/WB+dfvsVCgffBHeCpqttMifoTA=;
-        b=Z6G5KjZY9nSVkyqm+9jjFHk09VxeVqU0/jM2bfTF1xNSFd86QgaZfgC51L59B+yn
-        m4lql1Sjy23nV/7OhanbYS6oMNvX8ZQJptMjnEY9KyZvdETwJP8H5Br+N2TccUWx4+J
-        cZbtcQ6hbMEnhBm/zg6DdaTJycHGNdPiAvZJF1CQ=
-Received: from dlrobertson.com (pool-108-28-30-11.washdc.fios.verizon.net [108.28.30.11]) by mx.zohomail.com
-        with SMTPS id 1647574328046413.1315427305391; Thu, 17 Mar 2022 20:32:08 -0700 (PDT)
-Date:   Thu, 17 Mar 2022 23:32:06 -0400
-From:   Dan Robertson <dan@dlrobertson.com>
-To:     Jagath Jog J <jagathjog1996@gmail.com>
-Cc:     jic23@kernel.org, lars@metafoo.de, andy.shevchenko@gmail.com,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC] iio: accel: bma400: patches for todos
-Message-ID: <YjP9NttLHJpXdrZ1@dlrobertson.com>
-References: <20220317215227.GB1934@jagath-PC>
+        Thu, 17 Mar 2022 23:51:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE8F12A1E86;
+        Thu, 17 Mar 2022 20:50:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F0E1617D0;
+        Fri, 18 Mar 2022 03:50:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DD85BC340EF;
+        Fri, 18 Mar 2022 03:50:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647575417;
+        bh=Uww6/9D2y4nrBnsntLSUJMYy+n/up9CmgOV1aFDe+/Q=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=dOv/Uujl9pEJcAqB+LODtHpJLJ80rxhJeDXwyrL9JTkTVz14Umc0lowWy421cDpAo
+         Hj/dH7hksmsbKo6HaZ10YjT2YXDANizwe57mdiWiZU1jjI/A9CBt4/Vz4cQqQg4Ee3
+         JbxqLcEZFQIw4zO9AtV/S+jAGhUTKMIXJFGdxcsEYrsXxqwsqQp10Cs2ouGoZ8+xdr
+         gZvtbVSYpVMJb+Woczqqmd/DZSiIdCjcoVYTFNN8E/6VO2BM8RwXbCPXR1xe5qh72U
+         +In97hQSh8/xWOGxQmTL1JXfqUwrn0M9kayGy8U6b3NvTDrk8eCh+K+HFX6635V+xp
+         x6kH4Ilo+Ajog==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BA1F9F03841;
+        Fri, 18 Mar 2022 03:50:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220317215227.GB1934@jagath-PC>
-X-ZohoMailClient: External
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v12 bpf-next 00/12] fprobe: Introduce fprobe function
+ entry/exit probe
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164757541675.26179.17727138330733641017.git-patchwork-notify@kernel.org>
+Date:   Fri, 18 Mar 2022 03:50:16 +0000
+References: <164735281449.1084943.12438881786173547153.stgit@devnote2>
+In-Reply-To: <164735281449.1084943.12438881786173547153.stgit@devnote2>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     jolsa@kernel.org, ast@kernel.org, andrii.nakryiko@gmail.com,
+        daniel@iogearbox.net, andrii@kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@chromium.org, rostedt@goodmis.org,
+        naveen.n.rao@linux.ibm.com, anil.s.keshavamurthy@intel.com,
+        davem@davemloft.net
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 03:22:27AM +0530, Jagath Jog J wrote:
-> Hello,
->
-> To continue the contribution I chose the bma400 accelerometer device driver,
-> there are multiple todos, so thought of adding support for the same.
-> Currently, I am able to get the trigger buffer with data ready interrupt,
-> step counter and event for step change with bma400 accelero breakout board.
+Hello:
 
-This is awesome! Thanks so much for checking out the driver. I enjoyed
-writing it. It seems like quite a capable device with lots of features I've
-yet to implement, and I had far less time free for development on the device
-than I had hoped. Any help would be _greatly_ appreciated.
+This series was applied to bpf/bpf-next.git (master)
+by Alexei Starovoitov <ast@kernel.org>:
 
-> Below are the changes I have implemented for the bma400 driver in separate
-> patches
->
-> 1. Conversion to device-managed function and remove the bma400_remove()
-> function.
-> 2. Added trigger buffer support with data ready interrupt.
-> 3. Added a separate channel for the step counter.
-> 4. Added event support for step change.
-> Can I send the above patches for review?
+On Tue, 15 Mar 2022 23:00:14 +0900 you wrote:
+> Hi,
+> 
+> Here is the 12th version of fprobe. This version fixes a possible gcc-11 issue which
+> was reported as kretprobes on arm issue, and also I updated the fprobe document.
+> 
+> The previous version (v11) is here[1];
+> 
+> [...]
 
-I used the driver for this device as a way to learn, so I by no means claim to
-be an expert, but I'll do my best to review and test patches sent. At a bare
-minimum I can be a shoulder to cry on and fellow to commiserate with :-)
+Here is the summary with links:
+  - [v12,bpf-next,01/12] ftrace: Add ftrace_set_filter_ips function
+    https://git.kernel.org/bpf/bpf-next/c/4f554e955614
+  - [v12,bpf-next,02/12] fprobe: Add ftrace based probe APIs
+    https://git.kernel.org/bpf/bpf-next/c/cad9931f64dc
+  - [v12,bpf-next,03/12] rethook: Add a generic return hook
+    https://git.kernel.org/bpf/bpf-next/c/54ecbe6f1ed5
+  - [v12,bpf-next,04/12] rethook: x86: Add rethook x86 implementation
+    https://git.kernel.org/bpf/bpf-next/c/75caf33eda24
+  - [v12,bpf-next,05/12] arm64: rethook: Add arm64 rethook implementation
+    https://git.kernel.org/bpf/bpf-next/c/83acdce68949
+  - [v12,bpf-next,06/12] powerpc: Add rethook support
+    https://git.kernel.org/bpf/bpf-next/c/02752bd99dc2
+  - [v12,bpf-next,07/12] ARM: rethook: Add rethook arm implementation
+    https://git.kernel.org/bpf/bpf-next/c/515a49173b80
+  - [v12,bpf-next,08/12] fprobe: Add exit_handler support
+    https://git.kernel.org/bpf/bpf-next/c/5b0ab78998e3
+  - [v12,bpf-next,09/12] fprobe: Add sample program for fprobe
+    https://git.kernel.org/bpf/bpf-next/c/6ee64cc3020b
+  - [v12,bpf-next,10/12] fprobe: Introduce FPROBE_FL_KPROBE_SHARED flag for fprobe
+    https://git.kernel.org/bpf/bpf-next/c/ab51e15d535e
+  - [v12,bpf-next,11/12] docs: fprobe: Add fprobe description to ftrace-use.rst
+    https://git.kernel.org/bpf/bpf-next/c/aba09b44a985
+  - [v12,bpf-next,12/12] fprobe: Add a selftest for fprobe
+    https://git.kernel.org/bpf/bpf-next/c/f4616fabab39
 
-> Sorry for all the mistakes that I have made in the previous ds1803 patch
-> series and I will make sure to avoid all those mistakes.
->
-> In the bma400 driver, I am stuck on one point and your advice will be very
-> helpful.
->
-> https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-bus-iio
-> From IIO documentation for accelerometer device the calculation for
-> final value from the sysfs attributes of the accelerometer device for
-> the Z-axis will be
-> (in_accel_z_raw + in_accel_z_offset) * in_accel_scale = 9.8 m/s2 approximately.
->
-> In the mainline kernel bma400 device driver, there are multiple-scale
-> values for different acceleration ranges +-2g, +-4g, etc.
->
-> root@raspberrypi:/sys/devices/platform/soc/3f804000.i2c/i2c-1/1-0014/iio:device0#
-> cat in_accel_scale_available
-> 0.038357 0.076714 0.153428 0.306856
->
-> With +-4g range
-> root@raspberrypi:/sys/devices/platform/soc/3f804000.i2c/i2c-1/1-0014/iio:device0#
-> cat in_accel_scale
-> 0.076714
-> root@raspberrypi:/sys/devices/platform/soc/3f804000.i2c/i2c-1/1-0014/iio:device0#
-> cat in_accel_z_raw
-> 519
-> root@raspberrypi:/sys/devices/platform/soc/3f804000.i2c/i2c-1/1-0014/iio:device0#
-> echo "0.076714 * 506" | bc
-> 39.277568
->
-> With +- 2g range
-> root@raspberrypi:/sys/devices/platform/soc/3f804000.i2c/i2c-1/1-0014/iio:device0#
-> echo 0.038357 > in_accel_scale
-> root@raspberrypi:/sys/devices/platform/soc/3f804000.i2c/i2c-1/1-0014/iio:device0#
-> cat in_accel_scale
-> 0.038357
-> root@raspberrypi:/sys/devices/platform/soc/3f804000.i2c/i2c-1/1-0014/iio:device0#
-> cat in_accel_z_raw
-> 1012
-> root@raspberrypi:/sys/devices/platform/soc/3f804000.i2c/i2c-1/1-0014/iio:device0#
-> echo "0.038357 * 1012" | bc
-> 38.817284
->
-> The _raw value from the sensor is as per the datasheet but the final value for the
-> Z axis after applying scale for all ranges is around 38.8 which is not expected.
-> I tried by placing the sensor in a different position where the X-axis value should
-> be approximately 9.8 m/s2 but In this case also the value is around 38.8 m/s2
->
-> Is the above method to calculate the acceleration in the Z-axis correct or
-> am I missing something?
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Based on your tests, a review of the code, and a re-read of the datasheet, I
-definitely calculated the BMA400_SCALE_MIN and BMA400_SCALE_MAX incorrectly.
 
-> For confirmation I also tested the mpu6050 IMU.
->
-> root@raspberrypi:/sys/bus/iio/devices/iio:device1# cat in_accel_scale_available
-> 0.000598 0.001196 0.002392 0.004785
-> root@raspberrypi:/sys/bus/iio/devices/iio:device1# cat in_accel_scale
-> 0.000598
-> root@raspberrypi:/sys/bus/iio/devices/iio:device1# cat in_accel_z_raw
-> 16706
-> root@raspberrypi:/sys/bus/iio/devices/iio:device1# echo "0.000598 * 16706" | bc
-> 9.9801
-> With MPU6050 I am getting 9.9801 m/s2 which is near to earth's acceleration due
-> to gravity 9.8 m/s2
->
-> For BMA400 I recalculated the scale values from sensitivity for different
-> acceleration ranges
-> https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bma400-ds000.pdf
->
-> For +-2g - 1 LSB = 0.0095768 m/s2
-> For +-4g - 1 LSB = 0.0191536 m/s2
-> For +-4g - 1 LSB = 0.0383072 m/s2
-
-Assuming you mean 8g for the last one here.
-
-> Is the above method to calculate the scale values correct or am I missing
-> something?
-
-Yeah, the scale is definitely off currently.
-
-I think we need to change the following, if I'm reading the datasheet correctly.
-
- - BMA400_SCALE_MIN to 9582
- - BMA400_SCALE_MAX to 76659
-
-Great catch and thanks for working on the device!
-
-> Thank you
-> Jagath
-
-Cheers,
-
- - Dan
