@@ -2,132 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A5FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 11:38:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4169C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 11:38:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235911AbiCRLkB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 07:40:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38160 "EHLO
+        id S235930AbiCRLkF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 07:40:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235895AbiCRLj5 (ORCPT
+        with ESMTP id S235909AbiCRLkA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 07:39:57 -0400
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60069.outbound.protection.outlook.com [40.107.6.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A65E94D60A;
-        Fri, 18 Mar 2022 04:38:37 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WcGlC6omj2wngaCqgYS4IKY8MJWpszHpz5I3CjtmFevIEsBHCpqEeae0kAdp7OjzFN+gq1kB7ZW3klm3ECMDZCnEW+0s5eYeDHXpnNI8avEvaN9IDh+v4H5u1gFRePuMPLOjPvD5ZXRMix20ZToiX9bdqnIUf0rrpOcWxCZjaH0owNkPMXujtUE/HiiewISSQw0dS+hj8UQVCZNcCZ/ac6SK4wpIgd0zpSwBYH0DiS4upBiHEozwpUsD7PWdMpDFDpewI8xQ6mYGN1u/Bt3AetQbSkRsj8TPD9QEsSjdOYkH2KXZ/+95LP06bKBVIT+Ny/TFxNTBoxigtvIy+ZptRA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=z7rupZoWa/v0V9YObLFPqvkVKkrDXmmtfL7PG1X4EnI=;
- b=JgldeKw0gOUXjd+QRFvSrFOPWud58c9TD2TBzuDgeBB8J9El7ZsXg3Nl2LEMNSjxNGNqgVZaRJTXeIDUgpA0LYuEBQonVh5YZ+vm2Tz45IMHIvVR2u30fz2dwb7MvRa5YABozOJinuzoZgmhp6E2iAmeqQ8d2/HHTnEp+5+8IkbMuyEXdxuVT/zaLWgOcU0hxlC5OaaXVUARZ9KF1R/LUtccKOyMKX3kEsD6WFvuqVxRWv9HnJ4ZwTp2sOXKke32DsM4Uq0nWknUvrFF0jN+Zg3znFGrESmgFEzxk1KTkGvvlwQfYcsoKGeitROzAaWze9xfex7Hu0rEB4RG6Esgmw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=z7rupZoWa/v0V9YObLFPqvkVKkrDXmmtfL7PG1X4EnI=;
- b=fxvFUs/4T1rXBCizjhs9wdGxTNdd557Ql0o3Ydxqmz4WMlH3EaWQg903NXEeh8fEB5aOd7xek5WYXWAROZZs/JW4NJSQ9rNzbw6KwLHj5vKcbQFZO2tpTtN30ot/MqfkyTQZhueEWupAHDTssj9hFxOOJopNVe2qjOlK2ZxoNaI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
- by AS8PR04MB8483.eurprd04.prod.outlook.com (2603:10a6:20b:34b::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.18; Fri, 18 Mar
- 2022 11:38:35 +0000
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::6972:1f59:5d1c:e557]) by AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::6972:1f59:5d1c:e557%5]) with mapi id 15.20.5081.018; Fri, 18 Mar 2022
- 11:38:35 +0000
-From:   Sherry Sun <sherry.sun@nxp.com>
-To:     robh+dt@kernel.org, krzk+dt@kernel.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-imx@nxp.com
-Subject: [PATCH] arm64: dts: imx8mp: add ddr controller node to support EDAC on imx8mp
-Date:   Fri, 18 Mar 2022 19:35:26 +0800
-Message-Id: <20220318113526.15986-1-sherry.sun@nxp.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: SI2P153CA0028.APCP153.PROD.OUTLOOK.COM (2603:1096:4:190::9)
- To AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
+        Fri, 18 Mar 2022 07:40:00 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0962E49FA9;
+        Fri, 18 Mar 2022 04:38:35 -0700 (PDT)
+X-UUID: bb2d225d082942c08a700be84e0d674c-20220318
+X-UUID: bb2d225d082942c08a700be84e0d674c-20220318
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <tinghan.shen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 354714786; Fri, 18 Mar 2022 19:38:30 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Fri, 18 Mar 2022 19:38:29 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 18 Mar 2022 19:38:29 +0800
+Message-ID: <1848fcaa4be6fba1b8dd821791077ae3b2f647d4.camel@mediatek.com>
+Subject: Re: [PATCH v4] remoteproc: mediatek: Fix side effect of mt8195 sram
+ power on
+From:   Tinghan Shen <tinghan.shen@mediatek.com>
+To:     Mathieu Poirier <mathieu.poirier@linaro.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+CC:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <linux-remoteproc@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Fri, 18 Mar 2022 19:38:29 +0800
+In-Reply-To: <20220317162509.GA2630429@p14s>
+References: <20220316031117.7311-1-tinghan.shen@mediatek.com>
+         <20220316163451.GA2546942@p14s>
+         <8a7be596-531a-52f4-c1b0-ed1d23cfa1bb@collabora.com>
+         <20220317162509.GA2630429@p14s>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b38cc238-7577-4933-3213-08da08d3d648
-X-MS-TrafficTypeDiagnostic: AS8PR04MB8483:EE_
-X-Microsoft-Antispam-PRVS: <AS8PR04MB8483BA7BB2205E5F6228338392139@AS8PR04MB8483.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: NvzdGkFS8W/gh01FqbBeBMvoMmdaWmnlHdpQNx4iAgXrSQm5dxg+89opMvKRCkiLjh5CKz6Y4US+O7xRt3OpGf95qk0KDv7ruF0TWp3CEdThYEcVAILuKgXoJQIZbIC6fHZ7XJTj6tVkGJmymKjY5/gp5AHjPya9wqb51+6QkIPIAhL5mPoJYxQ2YMMWU22Om2z1KeBYYkJYcT94DImXSg2ZGxItQkQF88/I69n+CCqiyuSONUjNjNE8XGp2FdCxTXlifgwa6XsiejWD4NM+MhbWRbmxUfelCZJ01rcCLLxYCktM0QnCqFrDmRGraQE99JDtzhzyT4nU69y/4AECjF4rAq6ydS0BWxNv/mM1EWBg1X6feQdLXn+6aqQozmdO26hPQts/Jf8EmpNZjxWOW1ZMsI4ao+YUvLDQpzutBJS+4ygxw6QEIc+oM4L24dz7tdbthf+8n0tfPqPeewE+ibR+QzaMCFexstObFYzneVfA3Y4vT5fulpnWBh8k49Q+4xwTVY4rru+MUgsOubqiCsNJ3m3WdC/eRyX3Y16FJ533T1mMcDkbxhsQO/khVr9H/PdUuh6ttZ4CwhxMlFJTygL90/mY5HWZ/fyOyaUTQE72qRV0jPI3T4dYYnMhwrO0au1+HKKOtJ4ogVXKOFR+f8xXAPwQ9QnvJYT7SWLt0Q8n/d5oUzye2aeBH+hytUm5FY/NLbeML9+RmUEU/SvOKMfqNjBaHFFgIjDjIXZ2Hk8=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(26005)(186003)(2616005)(1076003)(316002)(2906002)(38350700002)(38100700002)(86362001)(36756003)(6512007)(8936002)(6486002)(4744005)(44832011)(4326008)(8676002)(66946007)(508600001)(66476007)(66556008)(6506007)(52116002)(5660300002)(6666004)(32563001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9ikqoxkEReQvjrAGDG1jcGVhWbqcawkmZ/VpnacPc5pWNMZ+tpukYL1l1/m3?=
- =?us-ascii?Q?gNKFvXWj7OLdJGGANigSCtYMLqqNlPmmZm1yjNdCTCT33bJ7da84+RPtkhJI?=
- =?us-ascii?Q?64tKfrrIcaYFQZvKDPFjAiIEvLqpaYQ3G2P7/nVrTS4JudEaSLdAuN1TeMkZ?=
- =?us-ascii?Q?hg8htAH5AUiV3N26YEdkUpJhf6NUFSCWTiu/mgmELgadBLb+Ix96gNWYL1rs?=
- =?us-ascii?Q?vYbacwdvjFXz9KzT8pJr3Zetmb+5MU0y9xpe2bjsO5ltX05FhxJ/ZNHsRcsd?=
- =?us-ascii?Q?5kmmkAW+y6Pb+qd/suTVIOiapinFHmEG/jMonXoj2IAfiJ5EfkXb8PrjM1XJ?=
- =?us-ascii?Q?iXtX3gViJ0wKGY0zROP2snfHfd8IfrWlkRp9tYOGzFzZGDTeeA0zZP+pofhK?=
- =?us-ascii?Q?IhlsSt318GFuUBSNSF5GZBvDBcNxnoV32hrMDp9vPE6m1pbqYIBNCkFxKuXn?=
- =?us-ascii?Q?wQDeT/xZDIpNVzJXf8HHvKiqxb0eSiIs3v1oBEl7JjcLuuRberD5f2sVXGLp?=
- =?us-ascii?Q?ZqxQSVhxnz+vGNHeOXQOaVVSz6NukmYNXInh2ZDG/N3uHHuRKNSfyWqGHZok?=
- =?us-ascii?Q?ga9g3cxtpFSubAkAmIsdfqDba1Tgx/vz6yH4wnYKzi4t01cMyHna6y42t+7Q?=
- =?us-ascii?Q?MH8lLCfREme/fr4tEyKMbs4b5ohlQs0RVumRnCzGIQItMGiEV06GxKMiL9Ue?=
- =?us-ascii?Q?Xnn7FlFPLpmqxH7iWcNUmtKTrT0wvTHCyV2lKnEbPg1SAF30zxU2wJxMUJF2?=
- =?us-ascii?Q?JZWZifZdIns1FmnIqEqxqPq0loShg2sHgjju3GCYMMT7iqtYLYuKvibLSZpH?=
- =?us-ascii?Q?HXdwr5v/KnWdFZI4XjmA23K/OdBfkqO2xIRXMDs6CMBy2kc83rA7L3LD++cu?=
- =?us-ascii?Q?ebTOOolUxc7tJv2C42vIMkfvk1Q28aFFf0qBmR6dbtJkVJES3YQnW4HUIqu9?=
- =?us-ascii?Q?aOwRehNgeLDzJJMnZjGUPqEUiKFIffsGFUX3srjiLUHg5gJUJiG/HHT2hSEh?=
- =?us-ascii?Q?O1j3ogqFvsaX/DHJAtNYco8kRO6Btx2LIRf+51NEh1JTsFvim2ZfX2m7lgUF?=
- =?us-ascii?Q?z0EB9jgeOl4k+K4Qz7+X/xDDuJodc9DjG1Dkwt3WNPavAGZD0kDdTic7kzFn?=
- =?us-ascii?Q?EtNMEIRtkxt+1msfXGx8vJrsvPI8FGaAtBHSagML8fOZHtPZxcS5EfeG8G4G?=
- =?us-ascii?Q?HFn0rXX4Mz0ADEPzECxhMQP89dvSbxMMnDHk9kPrUA6Eo69ubecQzc2hBHfj?=
- =?us-ascii?Q?X1dog2d8nk7dNrsUlGtuWkdUzoYh8/86Vw/KJ4FZ0hU7+tD+3IsblN6CKXRa?=
- =?us-ascii?Q?L9qyoHQC1fK7pk5PfuE1KEapPfsk8c7nMUBiRQ4H+hf3Wwq3EvD+ZsFN7kSd?=
- =?us-ascii?Q?Yx8QTw1uRbw5dzUJxKyRQSJqDEAue5ZlDPKDFxVtPNp2V8OHs50O3y/43k2S?=
- =?us-ascii?Q?vgHrR30YmVeUQ7aBZdH1rGXqgP32AjU4?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b38cc238-7577-4933-3213-08da08d3d648
-X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2022 11:38:35.5649
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CkkRegA5Ofl9dF+H2GqzxOC27PARz4K409tYVxJOi861eYGfKVu6e4R71txnXtuBJRvyAa2X1hB5o0CaN011bQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8483
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-i.MX8MP use synopsys V3.70a ddr controller IP, so add edac support
-for i.MX8MP based on "snps,ddrc-3.80a" synopsys edac driver.
+Hi Mathieu,
 
-Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
----
- arch/arm64/boot/dts/freescale/imx8mp.dtsi | 6 ++++++
- 1 file changed, 6 insertions(+)
+On Thu, 2022-03-17 at 10:25 -0600, Mathieu Poirier wrote:
+> On Wed, Mar 16, 2022 at 05:44:04PM +0100, AngeloGioacchino Del Regno wrote:
+> > Il 16/03/22 17:34, Mathieu Poirier ha scritto:
+> > > Good morning,
+> > > 
+> > > On Wed, Mar 16, 2022 at 11:11:17AM +0800, Tinghan Shen wrote:
+> > > > The definition of L1TCM_SRAM_PDN bits on mt8195 is different to mt8192.
+> > > > 
+> > > > L1TCM_SRAM_PDN bits[3:0] control the power of mt8195 L1TCM SRAM.
+> > > > 
+> > > > L1TCM_SRAM_PDN bits[7:4] control the access path to EMI for SCP.
+> > > > These bits have to be powered on to allow EMI access for SCP.
+> > > > 
+> > > > Bits[7:4] also affect audio DSP because audio DSP and SCP are
+> > > > placed on the same hardware bus. If SCP cannot access EMI, audio DSP is
+> > > > blocked too.
+> > > > 
+> > > > L1TCM_SRAM_PDN bits[31:8] are not used.
+> > > > 
+> > > > This fix removes modification of bits[7:4] when power on/off mt8195 SCP
+> > > > L1TCM. It's because the modification introduces a short period of time
+> > > > blocking audio DSP to access EMI. This was not a problem until we have
+> > > > to load both SCP module and audio DSP module. audio DSP needs to access
+> > > > EMI because it has source/data on DRAM. Audio DSP will have unexpected
+> > > > behavior when it accesses EMI and the SCP driver blocks the EMI path at
+> > > > the same time.
+> > > > 
+> > > > Fixes: 79111df414fc ("remoteproc: mediatek: Support mt8195 scp")
+> > > > Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+> > > > Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> > > > Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+> > > > ---
+> > > > v4: add Fixes and Reviewed-by tags
+> > > > v3: fix build error
+> > > > v2: apply comments about macro definition and function calls
+> > > > ---
+> > > >   drivers/remoteproc/mtk_common.h |  2 ++
+> > > >   drivers/remoteproc/mtk_scp.c    | 67 +++++++++++++++++++++++++++++++----------
+> > > >   2 files changed, 53 insertions(+), 16 deletions(-)
+> > > > 
+> > > > diff --git a/drivers/remoteproc/mtk_common.h b/drivers/remoteproc/mtk_common.h
+> > > > index 5ff3867c72f3..ff954a06637c 100644
+> > > > --- a/drivers/remoteproc/mtk_common.h
+> > > > +++ b/drivers/remoteproc/mtk_common.h
+> > > > @@ -51,6 +51,8 @@
+> > > >   #define MT8192_CORE0_WDT_IRQ		0x10030
+> > > >   #define MT8192_CORE0_WDT_CFG		0x10034
+> > > > +#define MT8195_L1TCM_SRAM_PDN_RESERVED_RSI_BITS		GENMASK(7, 4)
+> > > > +
+> > > >   #define SCP_FW_VER_LEN			32
+> > > >   #define SCP_SHARE_BUFFER_SIZE		288
+> > > > diff --git a/drivers/remoteproc/mtk_scp.c b/drivers/remoteproc/mtk_scp.c
+> > > > index 36e48cf58ed6..5f686fe09203 100644
+> > > > --- a/drivers/remoteproc/mtk_scp.c
+> > > > +++ b/drivers/remoteproc/mtk_scp.c
+> > > > @@ -365,22 +365,22 @@ static int mt8183_scp_before_load(struct mtk_scp *scp)
+> > > >   	return 0;
+> > > >   }
+> > > > -static void mt8192_power_on_sram(void __iomem *addr)
+> > > > +static void scp_sram_power_on(void __iomem *addr, u32 reserved_mask)
+> > > 
+> > > Why is @reserved_mask needed?  It is not described in the changelong and as far
+> > > as I can see in this patchset the parameter is always set to '0', which has no
+> > > effect on the mask that gets generated.
+> > > 
+> > 
+> > Hello Mathieu,
+> > the @reserved_mask is explained in perhaps not very very clear terms, meaning
+> > that he's not explicitly saying the name of the new param, but that's it:
+> > 
+> > "This fix removes modification of bits[7:4] when power on/off mt8195 SCP
+> > L1TCM."
+> > 
+> > ....and it's actually being used, check below....
+> > 
+> > > Thanks,
+> > > Mathieu
+> > > 
+> > > >   {
+> > > >   	int i;
+> > > >   	for (i = 31; i >= 0; i--)
+> > > > -		writel(GENMASK(i, 0), addr);
+> > > > +		writel(GENMASK(i, 0) & ~reserved_mask, addr);
+> > > >   	writel(0, addr);
+> > > >   }
+> > > > -static void mt8192_power_off_sram(void __iomem *addr)
+> > > > +static void scp_sram_power_off(void __iomem *addr, u32 reserved_mask)
+> > 
+> > ...snip...
+> > 
+> > > > +static int mt8195_scp_before_load(struct mtk_scp *scp)
+> > > > +{
+> > > > +	/* clear SPM interrupt, SCP2SPM_IPC_CLR */
+> > > > +	writel(0xff, scp->reg_base + MT8192_SCP2SPM_IPC_CLR);
+> > > > +
+> > > > +	writel(1, scp->reg_base + MT8192_CORE0_SW_RSTN_SET);
+> > > > +
+> > > > +	/* enable SRAM clock */
+> > > > +	scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_0, 0);
+> > > > +	scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_1, 0);
+> > > > +	scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_2, 0);
+> > 
+> > 
+> > > > +	scp_sram_power_on(scp->reg_base + MT8192_L1TCM_SRAM_PDN,
+> > > > +			  MT8195_L1TCM_SRAM_PDN_RESERVED_RSI_BITS);
+> > 
+> > here	
+> 
+> Yes - it's obvious now that you point it out.  
+> 
+> This patch conflicts with the newly added support for mt8186[1].  I tried to fix
+> it but did not know if mt8185 needed the same kind of bit masking as mt8195.
+> Please have a look and rebase to rproc-next.
+> 
+> Thanks,
+> Mathieu
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mp.dtsi b/arch/arm64/boot/dts/freescale/imx8mp.dtsi
-index 794d75173cf5..a6124a11d6ee 100644
---- a/arch/arm64/boot/dts/freescale/imx8mp.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mp.dtsi
-@@ -902,6 +902,12 @@
- 			interrupt-parent = <&gic>;
- 		};
- 
-+		edacmc: memory-controller@3d400000 {
-+			compatible = "snps,ddrc-3.80a";
-+			reg = <0x3d400000 0x400000>;
-+			interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>;
-+		};
-+
- 		ddr-pmu@3d800000 {
- 			compatible = "fsl,imx8mp-ddr-pmu", "fsl,imx8m-ddr-pmu";
- 			reg = <0x3d800000 0x400000>;
--- 
-2.17.1
+Ok, I'll rebase to rproc-next at next version.
+Thank you!
+
+
+Best regards,
+TingHan
+
+> 
+> [1]. 80d691854ffb remoteproc: mediatek: Support mt8186 scp
+> 
+> > 
+> > > > +	scp_sram_power_on(scp->reg_base + MT8192_CPU0_SRAM_PD, 0);
+> > > >   	/* enable MPU for all memory regions */
+> > > >   	writel(0xff, scp->reg_base + MT8192_CORE0_MEM_ATT_PREDEF);
+> > 
+> > ...snip...
+> > 
+> > > > +
+> > > > +static void mt8195_scp_stop(struct mtk_scp *scp)
+> > > > +{
+> > > > +	/* Disable SRAM clock */
+> > > > +	scp_sram_power_off(scp->reg_base + MT8192_L2TCM_SRAM_PD_0, 0);
+> > > > +	scp_sram_power_off(scp->reg_base + MT8192_L2TCM_SRAM_PD_1, 0);
+> > > > +	scp_sram_power_off(scp->reg_base + MT8192_L2TCM_SRAM_PD_2, 0);
+> > > > +	scp_sram_power_off(scp->reg_base + MT8192_L1TCM_SRAM_PDN,
+> > > > +			   MT8195_L1TCM_SRAM_PDN_RESERVED_RSI_BITS);
+> > 
+> > and here 			^^^^^^^^
+> > 
+> > > > +	scp_sram_power_off(scp->reg_base + MT8192_CPU0_SRAM_PD, 0);
+> > 
+> > Cheers,
+> > Angelo
 
