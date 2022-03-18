@@ -2,66 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 521CBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 12:19:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C4C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 12:21:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232383AbiCRMU1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 08:20:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36074 "EHLO
+        id S236086AbiCRMWr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 08:22:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236224AbiCRMUW (ORCPT
+        with ESMTP id S232354AbiCRMWn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 08:20:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A945193226;
-        Fri, 18 Mar 2022 05:19:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9697161865;
-        Fri, 18 Mar 2022 12:19:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84658C36AF8;
-        Fri, 18 Mar 2022 12:19:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647605943;
-        bh=19AlHIQ/CS5s6rs1YQGBfqvcfZuhfwWiLMpeXi48vmM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JLWHhXiSnLs9MwOta8eww1122sDoebX/txoVWIU12Lm0ENlMBsXIGDzI9ljUoIb9h
-         8bKjDKrJ8DUdiCWwE5OUGVxD+7c3vQedFZsXLiVvGgRTrCEbDgbcgEFCc7qXFo8wvJ
-         IKiWMbMY3dSTPULX3jvkjrt3Zcv236OGN4b0RfKY=
-Date:   Fri, 18 Mar 2022 13:10:53 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PING][PATCH v3 0/2] serial: 8250: Fixes for Oxford
- Semiconductor 950 UARTs
-Message-ID: <YjR2zeyAfeXHVa+0@kroah.com>
-References: <alpine.DEB.2.21.2202100424280.34636@angie.orcam.me.uk>
- <alpine.DEB.2.21.2203011748460.11354@angie.orcam.me.uk>
+        Fri, 18 Mar 2022 08:22:43 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C6841FAA18
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 05:21:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647606084; x=1679142084;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=vVgvop8ogGrUADiEvIVvjtGIkCVphzfkaitXclPagy8=;
+  b=MlJx7bPMyMaxQgqXp8QCwjVHGSglBcsC4ZQskwZa/gdqGnTegrz/bpFP
+   uXs/1Ht74hlISX74MvuvzncQwX7bd749qu7Mu8vk96OsaWiAAWkIGQGte
+   28HUsQOO5mkjl/moXDSgbVem2mwL7UDKYzSaeY1R6fBYpSwMBNazG55Pt
+   QXeOuLC091iaIIvUGggKniP5DL3UZQD3ciTvnVoT1DkYmOaxIaxrsQ82N
+   Zds2tQoJ0h4wYgJnWXesySIAV8Xl+kt8288Eg2ogMK6K9nybjR4sovZJ3
+   Dc68nJgEyn4wdX58SLcAkLyZE1mQA5ZSsXpXzko0Z3mTwVYIE2rAPyhaU
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="256851454"
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
+   d="scan'208";a="256851454"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 05:21:23 -0700
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
+   d="scan'208";a="715457854"
+Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 05:21:23 -0700
+Date:   Fri, 18 Mar 2022 05:21:18 -0700
+From:   Fenghua Yu <fenghua.yu@intel.com>
+To:     "Luck, Tony" <tony.luck@intel.com>
+Cc:     David Laight <David.Laight@ACULAB.COM>,
+        'Thomas Gleixner' <tglx@linutronix.de>,
+        Pavel Machek <pavel@denx.de>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "patches@lists.linux.dev" <patches@lists.linux.dev>
+Subject: Re: [PATCH v2 1/2] x86/split_lock: Make life miserable for split
+ lockers
+Message-ID: <YjR5Pl2uAUPbDZzT@otcwcpicx3.sc.intel.com>
+References: <20220217012721.9694-1-tony.luck@intel.com>
+ <20220310204854.31752-1-tony.luck@intel.com>
+ <20220310204854.31752-2-tony.luck@intel.com>
+ <20220317111305.GB2237@amd>
+ <87fsngcv25.ffs@tglx>
+ <e2baf93885684512b4c7dc5363620a6f@AcuMS.aculab.com>
+ <8ceaa1e7624b46feafb15da0935e161c@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.21.2203011748460.11354@angie.orcam.me.uk>
+In-Reply-To: <8ceaa1e7624b46feafb15da0935e161c@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 08:52:25PM +0000, Maciej W. Rozycki wrote:
-> On Sat, 12 Feb 2022, Maciej W. Rozycki wrote:
+On Thu, Mar 17, 2022 at 03:40:16PM -0700, Luck, Tony wrote:
+> > They are actually more likely to happen in the kernel
+> > when code casts int[] to long[] and then uses the 'BIT' functions to
+> > set/clear bits - which do locked operations.
+> > Quite often then don't need the locks anyway.
+> > And that cast is surprisingly common and completely broken on BE.
 > 
-> >  Here's v3 of the outstanding fixes for Oxford Semiconductor 950 UARTs.  
-> > As the change for the default FIFO rx trigger level has been already 
-> > merged with commit d7aff291d069 ("serial: 8250: Define RX trigger levels 
-> > for OxSemi 950 devices") only one patch of the original series remains.  
-> 
->  Ping for:
-> 
-> <https://lore.kernel.org/lkml/alpine.DEB.2.21.2202100424280.34636@angie.orcam.me.uk/>
+> Default split lock mode is "kernel dies". We had to fix up a dozen or
+> so places (mostly involving set_bit/clr_bit as you describe). But
+> all Ice Lake. Tiger Lake and Alder Lake systems are running in
+> that mode ... and we haven't heard of widespread death (or disabling
+> the boot option).
 
-These aren't in my review queue, can you resend?
+Split lock is designed to report this kind of "hidden" performance issues.
+After initial fix up wave, it has been sparse to find any legacy split lock
+issue in the kernel.
 
-thanks,
+If a new split lock issue is introduced, the developer hopefully will
+capture and fix it before upstream. So others won't see it any more.
 
-greg k-h
+Thanks.
+
+-Fenghua
