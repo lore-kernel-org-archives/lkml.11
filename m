@@ -2,99 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B0F4C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:20:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F7B9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:20:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233490AbiCQMVr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:21:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41400 "EHLO
+        id S233500AbiCQMVx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:21:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229509AbiCQMVo (ORCPT
+        with ESMTP id S230499AbiCQMVv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:21:44 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2092A1AA4B1
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 05:20:23 -0700 (PDT)
-X-UUID: ca9f5fc0992e48a1b96ea7664a771e60-20220317
-X-UUID: ca9f5fc0992e48a1b96ea7664a771e60-20220317
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1558619466; Thu, 17 Mar 2022 20:20:18 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 17 Mar 2022 20:20:17 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 17 Mar
- 2022 20:20:16 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 17 Mar 2022 20:20:16 +0800
-Message-ID: <ebcf547ab6e4481e6c8e60db88eccf58fe7059ed.camel@mediatek.com>
-Subject: Re: [PATCH v3,4/4] drm/mediatek: Add pull-down MIPI operation in
- mtk_dsi_poweroff function
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <xinlei.lee@mediatek.com>, <chunkuang.hu@kernel.org>,
-        <p.zabel@pengutronix.de>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <matthias.bgg@gmail.com>
-CC:     <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <jitao.shi@mediatek.com>
-Date:   Thu, 17 Mar 2022 20:20:16 +0800
-In-Reply-To: <1647503611-13144-5-git-send-email-xinlei.lee@mediatek.com>
-References: <1647503611-13144-1-git-send-email-xinlei.lee@mediatek.com>
-         <1647503611-13144-5-git-send-email-xinlei.lee@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Thu, 17 Mar 2022 08:21:51 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B4E41A94A5;
+        Thu, 17 Mar 2022 05:20:34 -0700 (PDT)
+Received: from kwepemi500016.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KK5h51DdszcZxN;
+        Thu, 17 Mar 2022 20:15:33 +0800 (CST)
+Received: from huawei.com (10.175.104.170) by kwepemi500016.china.huawei.com
+ (7.221.188.220) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 17 Mar
+ 2022 20:20:31 +0800
+From:   Zhipeng Xie <xiezhipeng1@huawei.com>
+To:     <peterz@infradead.org>
+CC:     <acme@kernel.org>, <alexander.shishkin@linux.intel.com>,
+        <fanwentao@huawei.com>, <jolsa@redhat.com>,
+        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
+        <mark.rutland@arm.com>, <mingo@redhat.com>, <namhyung@kernel.org>,
+        <xiezhipeng1@huawei.com>, <xiexiuqi@huawei.com>
+Subject: Re: PING: [PATCH v2] perf/core: Fix perf_mmap fail when CONFIG_PERF_USE_VMALLOC enabled
+Date:   Thu, 17 Mar 2022 21:19:41 -0400
+Message-ID: <20220318011941.19116-1-xiezhipeng1@huawei.com>
+X-Mailer: git-send-email 2.18.1
+In-Reply-To: <20220216165427.18270-1-xiezhipeng1@huawei.com>
+References: <20220216165427.18270-1-xiezhipeng1@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain
+X-Originating-IP: [10.175.104.170]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemi500016.china.huawei.com (7.221.188.220)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Xinlei,
+Ping again, sorry for the noise.
 
-On Thu, 2022-03-17 at 15:53 +0800, xinlei.lee@mediatek.com wrote:
-> From: Xinlei Lee <xinlei.lee@mediatek.com>
+On Thu, February 17, 2022 12:54 AM, Zhipeng Xie wrote:
 > 
-> In the dsi_enable function, mtk_dsi_rxtx_control is to
-> pull up the MIPI signal operation. Before dsi_disable,
-> MIPI should also be pulled down by writing a register instead of
-> disabling dsi.
+> Hi, Peter
 > 
-
-What will happen if you do not pulled down the mipi before disable dsi?
-What's differnet for this two setting?
-
-> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-> Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-> ---
->  drivers/gpu/drm/mediatek/mtk_dsi.c | 2 ++
->  1 file changed, 2 insertions(+)
+> Could you please review the V2 version?
 > 
-> diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c
-> b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> index b509d59235e2..1c6a75a46b67 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-> +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> @@ -676,6 +676,8 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
->  	mtk_dsi_reset_engine(dsi);
->  	mtk_dsi_lane0_ulp_mode_enter(dsi);
->  	mtk_dsi_clk_ulp_mode_enter(dsi);
-> +	/* set the lane number as 0 */
-> +	writel(0, dsi->regs + DSI_TXRX_CTRL);
+> On Wed, February 9, 2022 10:54 PM, Zhipeng Xie wrote:
+> > This problem can be reproduced with CONFIG_PERF_USE_VMALLOC enabled
+> > on both
+> > x86_64 and aarch64 arch when using sysdig -B(using ebpf)[1].
+> > sysdig -B works fine after rebuilding the kernel with
+> > CONFIG_PERF_USE_VMALLOC
+> > disabled.
+> >
+> > I tracked it down to the if condition event->rb->nr_pages != nr_pages in
+> > perf_mmap is true when CONFIG_PERF_USE_VMALLOC is enabled where
+> > event->rb->nr_pages = 1 and nr_pages = 2048 resulting perf_mmap to return
+> > -EINVAL.This is because when CONFIG_PERF_USE_VMALLOC is enabled,
+> > rb->nr_pages
+> > is always equal to 1.
+> >
+> > Arch with CONFIG_PERF_USE_VMALLOC enabled by default:
+> > arc/arm/csky/mips/sh/sparc/xtensa
+> > Arch with CONFIG_PERF_USE_VMALLOC disabled by default:
+> > x86_64/aarch64/...
+> >
+> > Fix this problem by using data_page_nr.
+> >
+> > [1] https://github.com/draios/sysdig
+> >
+> > Signed-off-by: Zhipeng Xie <xiezhipeng1@huawei.com>
+> > ---
+> >  kernel/events/core.c        | 2 +-
+> >  kernel/events/internal.h    | 5 +++++
+> >  kernel/events/ring_buffer.c | 5 -----
+> >  3 files changed, 6 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/kernel/events/core.c b/kernel/events/core.c
+> > index 57c7197838db..370292effd32 100644
+> > --- a/kernel/events/core.c
+> > +++ b/kernel/events/core.c
+> > @@ -6352,7 +6352,7 @@ static int perf_mmap(struct file *file, struct
+> > vm_area_struct *vma)
+> >  again:
+> > mutex_lock(&event->mmap_mutex);
+> > if (event->rb) {
+> > -       if (event->rb->nr_pages != nr_pages) {
+> > +       if (data_page_nr(event->rb) != nr_pages) {
+> >         ret = -EINVAL;
+> >         goto unlock;
+> >     }
+> > diff --git a/kernel/events/internal.h b/kernel/events/internal.h
+> > index 082832738c8f..5816c0719dbf 100644
+> > --- a/kernel/events/internal.h
+> > +++ b/kernel/events/internal.h
+> > @@ -116,6 +116,11 @@ static inline int page_order(struct perf_buffer *rb)
+> >  }
+> >  #endif
+> >
+> > +static int data_page_nr(struct perf_buffer *rb)
+> > +{
+> > +   return rb->nr_pages << page_order(rb);
+> > +}
+> > +
+> >  static inline unsigned long perf_data_size(struct perf_buffer *rb)
+> >  {
+> > return rb->nr_pages << (PAGE_SHIFT + page_order(rb));
+> > diff --git a/kernel/events/ring_buffer.c b/kernel/events/ring_buffer.c
+> > index 52868716ec35..fb35b926024c 100644
+> > --- a/kernel/events/ring_buffer.c
+> > +++ b/kernel/events/ring_buffer.c
+> > @@ -859,11 +859,6 @@ void rb_free(struct perf_buffer *rb)
+> >  }
+> >
+> >  #else
+> > -static int data_page_nr(struct perf_buffer *rb)
+> > -{
+> > -   return rb->nr_pages << page_order(rb);
+> > -}
+> > -
+> >  static struct page *
+> >  __perf_mmap_to_page(struct perf_buffer *rb, unsigned long pgoff)
+> >  {
+> > --
+> > 2.18.1
+> 
+> Best Regards,
+> Zhipeng Xie
 
-So set lane num to 0 means pull down mipi?
-
-BRs,
-Rex
-
->  
->  	mtk_dsi_disable(dsi);
->  
-
+Best Regards,
+Zhipeng Xie
