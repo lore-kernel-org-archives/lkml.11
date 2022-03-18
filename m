@@ -2,79 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55E43C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 01:42:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DA39C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 01:49:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231589AbiCRBn3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 21:43:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56088 "EHLO
+        id S231529AbiCRBsN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 21:48:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230512AbiCRBn2 (ORCPT
+        with ESMTP id S231605AbiCRBsF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 21:43:28 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6C42EE962;
-        Thu, 17 Mar 2022 18:42:11 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KKRZl6dZ2z1GCQ9;
-        Fri, 18 Mar 2022 09:42:07 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 18 Mar 2022 09:42:08 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
-CC:     <edumazet@google.com>, <sakiwit@gmail.com>,
-        <sainath.grandhi@intel.com>, <maheshb@google.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next v2 3/3] net: ipvtap: fix error comments
-Date:   Fri, 18 Mar 2022 09:59:52 +0800
-Message-ID: <4187107e37a18da54369f5fe867ece77e29fc3bb.1647568181.git.william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1647568181.git.william.xuanziyang@huawei.com>
-References: <cover.1647568181.git.william.xuanziyang@huawei.com>
+        Thu, 17 Mar 2022 21:48:05 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06B4D1FDFE1
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 18:46:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Cb1mYMgEq/l616np20E54xs6ulWzv/0BUcsNzaw04KQ=; b=ZlE1sBFXCVUevIjXy9KJv0SqD1
+        vl0FFdYl8O7uR2ZS227nfU9oxHUt3h3xmwVWDMPit/s6huCC/CuS6jOLRmVc6PrbAD9yKyrXLOETO
+        zG2wllFDK0zml7qh17qMRci5Re+9GL3JGjH4+NBP6VeWA8kLaNfuTPFjQDbgM3ikg0boLO1TRYRHS
+        ywGVwgmLviZ+KY/ZECwdcOeSgcjSCv1UmEeUO9HzMYbL45V4L2pXqrebCkXsvv1eseKjkaVQiwTw0
+        jdcAK3drF4wTCF/gyGio5yzz7V6LKNABaG9g7w+Kcgez4Z10xJ8Y8tdvaq8yPZozBvp5+p9rqkrKS
+        LktUOo7Q==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nV1hP-007Vyf-8J; Fri, 18 Mar 2022 01:46:39 +0000
+Date:   Fri, 18 Mar 2022 01:46:39 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     maobibo <maobibo@loongson.cn>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Anshuman Khandual <anshuman.khandual@arm.com>
+Subject: Re: [PATCH v2] mm: add access/dirty bit on numa page fault
+Message-ID: <YjPkf704nT/T9S9i@casper.infradead.org>
+References: <20220317065033.2635123-1-maobibo@loongson.cn>
+ <YjMoMVWXoJH9cmuf@casper.infradead.org>
+ <b373ce7e-d55a-03cf-abca-0863865cbd9c@loongson.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b373ce7e-d55a-03cf-abca-0863865cbd9c@loongson.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use "macvlan" comment inappropriately in ipvtap module.
-Fix them with "ipvlan" comment.
+On Fri, Mar 18, 2022 at 09:01:32AM +0800, maobibo wrote:
+> > Is this a correctness problem, in which case this will need to be
+> > backported, or is this a performance problem, in which case can you
+> > share some numbers?
+> It is only performance issue, and there is no obvious performance
+> improvement for general workloads on my hand, but I do not test
+> it on microbenchmark.
 
-Fixes: 235a9d89da97 ("ipvtap: IP-VLAN based tap driver")
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
----
- drivers/net/ipvlan/ipvtap.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ipvlan/ipvtap.c b/drivers/net/ipvlan/ipvtap.c
-index ef02f2cf5ce1..c130cfb30822 100644
---- a/drivers/net/ipvlan/ipvtap.c
-+++ b/drivers/net/ipvlan/ipvtap.c
-@@ -83,7 +83,7 @@ static int ipvtap_newlink(struct net *src_net, struct net_device *dev,
- 
- 	INIT_LIST_HEAD(&vlantap->tap.queue_list);
- 
--	/* Since macvlan supports all offloads by default, make
-+	/* Since ipvlan supports all offloads by default, make
- 	 * tap support all offloads also.
- 	 */
- 	vlantap->tap.tap_features = TUN_OFFLOADS;
-@@ -95,7 +95,7 @@ static int ipvtap_newlink(struct net *src_net, struct net_device *dev,
- 	if (err)
- 		return err;
- 
--	/* Don't put anything that may fail after macvlan_common_newlink
-+	/* Don't put anything that may fail after ipvlan_link_new
- 	 * because we can't undo what it does.
- 	 */
- 	err =  ipvlan_link_new(src_net, dev, tb, data, extack);
--- 
-2.25.1
-
+... if there's no performance improvement, why should we apply this
+patch?  Confused.
