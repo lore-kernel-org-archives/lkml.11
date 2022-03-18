@@ -2,244 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B450BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:18:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7C15C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:18:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238391AbiCRQT6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 12:19:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58962 "EHLO
+        id S238903AbiCRQUD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 12:20:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238993AbiCRQSh (ORCPT
+        with ESMTP id S239144AbiCRQTF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 12:18:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1ED5D1D788F
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 09:17:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647620236;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MMsWOein3F9RlSJ9iIFQqy8YzC2KAiacG1VeEjo2p8E=;
-        b=VpWtyquCJhZUZZAx51kDj1SSeu5YQFoJZf4KdBM5H8cWJlFqK8hMb9xGD7Z3jdN7XxBtzk
-        EKOJ+DU9l2WiyyRNXnQvXp7o2FZbbn7qHKB5wO97O2HKOIM6Y5oZgL10+EtbJoedJRZjD2
-        HX2CM0iw67C8YOlX1Mp2kX/OQgZtQrI=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-591-O2UuoHtVNNKjpEuy8iLloQ-1; Fri, 18 Mar 2022 12:17:10 -0400
-X-MC-Unique: O2UuoHtVNNKjpEuy8iLloQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E73563C01B91;
-        Fri, 18 Mar 2022 16:17:09 +0000 (UTC)
-Received: from plouf.redhat.com (unknown [10.39.192.159])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id ADD397AD1;
-        Fri, 18 Mar 2022 16:17:05 +0000 (UTC)
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>
-Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH bpf-next v3 09/17] selftests/bpf: Add a test for BPF_F_INSERT_HEAD
-Date:   Fri, 18 Mar 2022 17:15:20 +0100
-Message-Id: <20220318161528.1531164-10-benjamin.tissoires@redhat.com>
-In-Reply-To: <20220318161528.1531164-1-benjamin.tissoires@redhat.com>
-References: <20220318161528.1531164-1-benjamin.tissoires@redhat.com>
+        Fri, 18 Mar 2022 12:19:05 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A8CC139AF4;
+        Fri, 18 Mar 2022 09:17:46 -0700 (PDT)
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22IE3Ipo013804;
+        Fri, 18 Mar 2022 12:17:44 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3evfqqmx5g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 18 Mar 2022 12:17:44 -0400
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 22IGHhlN035519
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 18 Mar 2022 12:17:43 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Fri, 18 Mar
+ 2022 12:17:42 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Fri, 18 Mar 2022 12:17:42 -0400
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 22IGHWUg024583;
+        Fri, 18 Mar 2022 12:17:38 -0400
+From:   <alexandru.tachici@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>,
+        Alexandru Tachici <alexandru.tachici@analog.com>
+Subject: [PATCH v2 1/8] iio: adc: ad7124: Remove shift from scan_type
+Date:   Fri, 18 Mar 2022 18:27:15 +0200
+Message-ID: <20220318162722.51215-2-alexandru.tachici@analog.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220318162722.51215-1-alexandru.tachici@analog.com>
+References: <20220318162722.51215-1-alexandru.tachici@analog.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: xtfyROiXJ5CiYhDPn7xT_EXThwvRDbdE
+X-Proofpoint-ORIG-GUID: xtfyROiXJ5CiYhDPn7xT_EXThwvRDbdE
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-18_11,2022-03-15_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
+ suspectscore=0 adultscore=0 clxscore=1015 impostorscore=0 bulkscore=0
+ mlxlogscore=936 priorityscore=1501 spamscore=0 lowpriorityscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203180088
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Insert 3 programs to check that we are doing the correct thing:
-'2', '1', '3' are inserted, but '1' is supposed to be executed first.
+From: Alexandru Tachici <alexandru.tachici@analog.com>
 
-Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+The 24 bits data is stored in 32 bits in BE. There
+is no need to shift it. This confuses user-space apps.
 
+Fixes: b3af341bbd966 ("iio: adc: Add ad7124 support")
+Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
 ---
+ drivers/iio/adc/ad7124.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-changes in v3:
-- use the new hid_get_data API
-
-new in v2
----
- tools/testing/selftests/bpf/prog_tests/hid.c | 80 ++++++++++++++++++++
- tools/testing/selftests/bpf/progs/hid.c      | 51 +++++++++++++
- 2 files changed, 131 insertions(+)
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/hid.c b/tools/testing/selftests/bpf/prog_tests/hid.c
-index 8c8e17e7385f..b8d4dcf20b05 100644
---- a/tools/testing/selftests/bpf/prog_tests/hid.c
-+++ b/tools/testing/selftests/bpf/prog_tests/hid.c
-@@ -401,6 +401,83 @@ static int test_hid_raw_event(struct hid *hid_skel, int uhid_fd, int sysfs_fd)
- 	return ret;
- }
- 
-+/*
-+ * Attach hid_insert{0,1,2} to the given uhid device,
-+ * retrieve and open the matching hidraw node,
-+ * inject one event in the uhid device,
-+ * check that the programs have been inserted in the correct order.
-+ */
-+static int test_hid_attach_flags(struct hid *hid_skel, int uhid_fd, int sysfs_fd)
-+{
-+	int err, hidraw_ino, hidraw_fd = -1;
-+	char hidraw_path[64] = {0};
-+	u8 buf[10] = {0};
-+	int ret = -1;
-+
-+	/* attach hid_test_insert2 program */
-+	hid_skel->links.hid_test_insert2 =
-+		bpf_program__attach_hid(hid_skel->progs.hid_test_insert2, sysfs_fd, 0);
-+	if (!ASSERT_OK_PTR(hid_skel->links.hid_test_insert2,
-+			   "attach_hid(hid_test_insert2)"))
-+		return PTR_ERR(hid_skel->links.hid_test_insert2);
-+
-+	/* then attach hid_test_insert1 program before the previous*/
-+	hid_skel->links.hid_test_insert1 =
-+		bpf_program__attach_hid(hid_skel->progs.hid_test_insert1,
-+					sysfs_fd,
-+					BPF_F_INSERT_HEAD);
-+	if (!ASSERT_OK_PTR(hid_skel->links.hid_test_insert1,
-+			   "attach_hid(hid_test_insert1)"))
-+		return PTR_ERR(hid_skel->links.hid_test_insert1);
-+
-+	/* finally attach hid_test_insert3 at the end */
-+	hid_skel->links.hid_test_insert3 =
-+		bpf_program__attach_hid(hid_skel->progs.hid_test_insert3, sysfs_fd, 0);
-+	if (!ASSERT_OK_PTR(hid_skel->links.hid_test_insert3,
-+			   "attach_hid(hid_test_insert3)"))
-+		return PTR_ERR(hid_skel->links.hid_test_insert3);
-+
-+	hidraw_ino = get_hidraw(hid_skel->links.hid_test_insert1);
-+	if (!ASSERT_GE(hidraw_ino, 0, "get_hidraw"))
-+		goto cleanup;
-+
-+	/* open hidraw node to check the other side of the pipe */
-+	sprintf(hidraw_path, "/dev/hidraw%d", hidraw_ino);
-+	hidraw_fd = open(hidraw_path, O_RDWR | O_NONBLOCK);
-+
-+	if (!ASSERT_GE(hidraw_fd, 0, "open_hidraw"))
-+		goto cleanup;
-+
-+	/* inject one event */
-+	buf[0] = 1;
-+	send_event(uhid_fd, buf, 6);
-+
-+	/* read the data from hidraw */
-+	memset(buf, 0, sizeof(buf));
-+	err = read(hidraw_fd, buf, sizeof(buf));
-+	if (!ASSERT_EQ(err, 6, "read_hidraw"))
-+		goto cleanup;
-+
-+	if (!ASSERT_EQ(buf[1], 1, "hid_test_insert1"))
-+		goto cleanup;
-+
-+	if (!ASSERT_EQ(buf[2], 2, "hid_test_insert2"))
-+		goto cleanup;
-+
-+	if (!ASSERT_EQ(buf[3], 3, "hid_test_insert3"))
-+		goto cleanup;
-+
-+	ret = 0;
-+
-+cleanup:
-+	if (hidraw_fd >= 0)
-+		close(hidraw_fd);
-+
-+	hid__detach(hid_skel);
-+
-+	return ret;
-+}
-+
- /*
-  * Attach hid_rdesc_fixup to the given uhid device,
-  * retrieve and open the matching hidraw node,
-@@ -505,6 +582,9 @@ void serial_test_hid_bpf(void)
- 	err = test_hid_raw_event(hid_skel, uhid_fd, sysfs_fd);
- 	ASSERT_OK(err, "hid");
- 
-+	err = test_hid_attach_flags(hid_skel, uhid_fd, sysfs_fd);
-+	ASSERT_OK(err, "hid_user_raw_request");
-+
- 	/*
- 	 * this test should be run last because we disconnect/reconnect
- 	 * the device, meaning that it changes the overall uhid device
-diff --git a/tools/testing/selftests/bpf/progs/hid.c b/tools/testing/selftests/bpf/progs/hid.c
-index c9ce0e36e7b9..390c1bb8d850 100644
---- a/tools/testing/selftests/bpf/progs/hid.c
-+++ b/tools/testing/selftests/bpf/progs/hid.c
-@@ -77,3 +77,54 @@ int hid_rdesc_fixup(struct hid_bpf_ctx *ctx)
- 
- 	return 0;
- }
-+
-+SEC("hid/device_event")
-+int hid_test_insert1(struct hid_bpf_ctx *ctx)
-+{
-+	__u8 *data = bpf_hid_get_data(ctx, 0 /* offset */, 4 /* size */);
-+
-+	if (!data)
-+		return 0; /* EPERM check */
-+
-+	/* we need to be run first */
-+	if (data[2] || data[3])
-+		return -1;
-+
-+	data[1] = 1;
-+
-+	return 0;
-+}
-+
-+SEC("hid/device_event")
-+int hid_test_insert2(struct hid_bpf_ctx *ctx)
-+{
-+	__u8 *data = bpf_hid_get_data(ctx, 0 /* offset */, 4 /* size */);
-+
-+	if (!data)
-+		return 0; /* EPERM check */
-+
-+	/* after insert0 and before insert2 */
-+	if (!data[1] || data[3])
-+		return -1;
-+
-+	data[2] = 2;
-+
-+	return 0;
-+}
-+
-+SEC("hid/device_event")
-+int hid_test_insert3(struct hid_bpf_ctx *ctx)
-+{
-+	__u8 *data = bpf_hid_get_data(ctx, 0 /* offset */, 4 /* size */);
-+
-+	if (!data)
-+		return 0; /* EPERM check */
-+
-+	/* at the end */
-+	if (!data[1] || !data[2])
-+		return -1;
-+
-+	data[3] = 3;
-+
-+	return 0;
-+}
+diff --git a/drivers/iio/adc/ad7124.c b/drivers/iio/adc/ad7124.c
+index 998a342d51a6..7249db2c4422 100644
+--- a/drivers/iio/adc/ad7124.c
++++ b/drivers/iio/adc/ad7124.c
+@@ -188,7 +188,6 @@ static const struct iio_chan_spec ad7124_channel_template = {
+ 		.sign = 'u',
+ 		.realbits = 24,
+ 		.storagebits = 32,
+-		.shift = 8,
+ 		.endianness = IIO_BE,
+ 	},
+ };
 -- 
-2.35.1
+2.25.1
 
