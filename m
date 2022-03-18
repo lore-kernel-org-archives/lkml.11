@@ -2,81 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EB7DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 14:48:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8A64C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 14:48:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237686AbiCROt4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 10:49:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33956 "EHLO
+        id S237706AbiCROuD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 10:50:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237635AbiCROry (ORCPT
+        with ESMTP id S237736AbiCROtQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 10:47:54 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ACFC2E8428;
-        Fri, 18 Mar 2022 07:46:16 -0700 (PDT)
-X-UUID: 18cdfa03f7744090b743dcfdd5f1a3cc-20220318
-X-UUID: 18cdfa03f7744090b743dcfdd5f1a3cc-20220318
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <allen-kh.cheng@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1478199738; Fri, 18 Mar 2022 22:45:58 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 18 Mar 2022 22:45:57 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 18 Mar
- 2022 22:45:56 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 18 Mar 2022 22:45:56 +0800
-From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        "Chen-Yu Tsai" <wenst@chromium.org>,
-        Ryder Lee <ryder.lee@kernel.org>,
-        Hui Liu <hui.liu@mediatek.com>,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Subject: [PATCH v4 19/22] arm64: dts: mt8192: Add the mmsys reset bit to reset the dsi0
-Date:   Fri, 18 Mar 2022 22:45:31 +0800
-Message-ID: <20220318144534.17996-20-allen-kh.cheng@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220318144534.17996-1-allen-kh.cheng@mediatek.com>
-References: <20220318144534.17996-1-allen-kh.cheng@mediatek.com>
+        Fri, 18 Mar 2022 10:49:16 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C52A32EAF43
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 07:47:49 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 07B521515;
+        Fri, 18 Mar 2022 07:47:49 -0700 (PDT)
+Received: from [10.1.29.15] (e122027.cambridge.arm.com [10.1.29.15])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 292833F7D7;
+        Fri, 18 Mar 2022 07:47:46 -0700 (PDT)
+Message-ID: <049f8b0c-7c3e-8ee1-5ae0-a4348278ee63@arm.com>
+Date:   Fri, 18 Mar 2022 14:47:44 +0000
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+From:   Steven Price <steven.price@arm.com>
+Subject: Re: [PATCH v2 8/8] drm/panfrost: Switch to generic memory shrinker
+To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Gustavo Padovan <gustavo.padovan@collabora.com>,
+        Daniel Stone <daniel@fooishbar.org>,
+        virtualization@lists.linux-foundation.org,
+        Dmitry Osipenko <digetx@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Daniel Almeida <daniel.almeida@collabora.com>,
+        Gert Wollny <gert.wollny@collabora.com>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Rob Herring <robh@kernel.org>,
+        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
+References: <20220314224253.236359-1-dmitry.osipenko@collabora.com>
+ <20220314224253.236359-9-dmitry.osipenko@collabora.com>
+ <4e6256d0-a3c6-ba01-c31f-a5757b79a9ce@arm.com>
+ <3dda45b8-1f49-eefd-0167-1f3c13b2c73f@collabora.com>
+ <b8d74d79-7d49-658f-5e0b-4a5da4fa2afc@collabora.com>
+Content-Language: en-GB
+In-Reply-To: <b8d74d79-7d49-658f-5e0b-4a5da4fa2afc@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reset the DSI hardware is needed to prevent different settings between
-the bootloader and the kernel.
+On 18/03/2022 14:41, Dmitry Osipenko wrote:
+> 
+> On 3/17/22 02:04, Dmitry Osipenko wrote:
+>>
+>> On 3/16/22 18:04, Steven Price wrote:
+>>> On 14/03/2022 22:42, Dmitry Osipenko wrote:
+>>>> Replace Panfrost's memory shrinker with a generic DRM memory shrinker.
+>>>>
+>>>> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+>>>> ---
+>>> I gave this a spin on my Firefly-RK3288 board and everything seems to
+>>> work. So feel free to add a:
+>>>
+>>> Tested-by: Steven Price <steven.price@arm.com>
+>>>
+>>> As Alyssa has already pointed out you need to remove the
+>>> panfrost_gem_shrinker.c file. But otherwise everything looks fine, and
+>>> I'm very happy to see the shrinker code gone ;)
+>>
+>> Awesome, thank you.
+> 
+> Steven, could you please tell me how exactly you tested the shrinker?
+> 
+> I realized that today's IGT doesn't have any tests for the Panfrost's
+> madvise ioctl.
+> 
+> You may invoke "echo 2 > /proc/sys/vm/drop_caches" manually in order to
+> trigger shrinker while 3d app is running actively (like a game or
+> benchmark). Nothing crashing will be a good enough indicator that it
+> works okay.
+> 
+> I may get an RK board next week and then will be able to test it by
+> myself, so please don't hurry.
 
-Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
----
- include/dt-bindings/reset/mt8192-resets.h | 3 +++
- 1 file changed, 3 insertions(+)
+I have to admit it wasn't a very thorough test. I run glmark on the
+board with the following hack:
 
-diff --git a/include/dt-bindings/reset/mt8192-resets.h b/include/dt-bindings/reset/mt8192-resets.h
-index be9a7ca245b9..764ca9910fa9 100644
---- a/include/dt-bindings/reset/mt8192-resets.h
-+++ b/include/dt-bindings/reset/mt8192-resets.h
-@@ -27,4 +27,7 @@
+diff --git a/drivers/gpu/drm/panfrost/panfrost_drv.c b/drivers/gpu/drm/panfrost/panfrost_drv.c
+index b014dadcf51f..194dec00695a 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_drv.c
++++ b/drivers/gpu/drm/panfrost/panfrost_drv.c
+@@ -279,6 +279,14 @@ static int panfrost_ioctl_submit(struct drm_device *dev, void *data,
+        if (ret)
+                goto out_cleanup_job;
  
- #define MT8192_TOPRGU_SW_RST_NUM				23
- 
-+/* MMSYS resets */
-+#define MT8192_MMSYS_SW0_RST_B_DISP_DSI0			15
++       {
++       struct shrink_control sc = {
++               .nr_to_scan = 1000
++       };
++       dev->shmem_shrinker->base.scan_objects(&dev->shmem_shrinker->base,
++                       &sc);
++       }
 +
- #endif  /* _DT_BINDINGS_RESET_CONTROLLER_MT8192 */
--- 
-2.18.0
+        ret = panfrost_job_push(job);
+        if (ret)
+                goto out_cleanup_job;
 
+That hack was specifically because I had some doubts about the removal
+of the 'gpu_usecount' counter and wanted to ensure that purging as the
+job is submitted wouldn't cause problems.
+
+The drop_caches file should also work AFAIK.
+
+Steve
