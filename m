@@ -2,110 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5ECDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 18:40:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E3BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 18:41:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240238AbiCRSlx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 14:41:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47626 "EHLO
+        id S240248AbiCRSm3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 14:42:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240232AbiCRSlp (ORCPT
+        with ESMTP id S240144AbiCRSm0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 14:41:45 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3765C1C9B4C
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 11:40:26 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id t24so2649730wra.2
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 11:40:26 -0700 (PDT)
+        Fri, 18 Mar 2022 14:42:26 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6C7B2EA0E9
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 11:41:07 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id p14so4127899lfe.4
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 11:41:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fairphone.com; s=fair;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=IsPzUzvYgLroRu4csiaCo2UKzNPvjuzZI8dPfwBHJgI=;
-        b=Bb7G9eAidXa4LtVJHXlV2hdxDrOmusC1eMK5cZl9Dw1C0hBIEEgp9CgMVxa2ho8EH9
-         Iy7Wvie5D5ex39h2yW9Q2Qm+2rfhzPmHV+hzlZ2dg3kkqTUki5LdJIvsugrmihAoep49
-         dnU8et/omSgk0dpcxJyQ0aUlBsqs6GVSlPxvGYiuoA//woteMVcI+GpeALlKT4mZRY9Y
-         R+Agz8iqrxzPEbsdZ9bGSz+n6IsfkXJx0nw0D4rKVzuQLus3hk2vlALuyF+HIszpwtve
-         k9ci5JTZsfn8NvOzj2PidOYW9KILHgvJ10PAHxLnCYmnaNxCGUoiu+RJGlKibcpe+eHN
-         TchA==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=T68So5s+Mvf8Yxsi6hpGLQhvBaydZiJJcf2u3DNH8AQ=;
+        b=ZmBvasPMchpBJ8mkRKb7R3RhkkeHi7XstG7ccVRfInSia4wxmHPc+1XSCMLTTbtwoD
+         iBBZhG8pLYhyN+/NcRaXQ6YvBWpZBO0b6qFsSWL8b/QpLIBN/MEi/ZFczp9fnO89TfiE
+         WjskrGL3deHU2C25PjWZUp+gAg6DG/SMTBWTU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=IsPzUzvYgLroRu4csiaCo2UKzNPvjuzZI8dPfwBHJgI=;
-        b=CLsGNXuwaWIWxTh4E2mJ9yjB6LOTF+DHE/e5rpH5wjgHmyupxrrffWsyYvf2rNzp9z
-         aPzeTucLoCHLU1M6oGFf4wTqujHaHNwhdK+rTra6JIDM+IMYf+2uwqbsvuYU+A3j1Uvm
-         ZlVqrFF7vICktSi2hI71qG/dbsmXuVGafGjlFGnYRjwefBSNYZgch+IpEIgNCSDsbJU+
-         zsWpiClXs5HjEXpeIwkhfjrDYWB/IirpCpYV/WERqSyLf6WCTJsgm1VpAFIdOiBDbEKF
-         pc4nouqj5c6+7sOo5rbER5Ykm97akJdv/jF1znDHxcAHjk85kF+zWCGr238Bn3uxqrW4
-         iGgA==
-X-Gm-Message-State: AOAM530MeN4h6QT0m5yHiMHAnPNJzhmi8jOMikDC3Js00GNR42U5cImc
-        ahZ4hvSaezA/onatGGcjvJST/E5p7600ZA==
-X-Google-Smtp-Source: ABdhPJwCFaAeaJnJiep/ONIqfYgxBm2KzuK6ldKFXPAH+O97PzsAaUVBZLeOF/oW5FVvabze6YOf2Q==
-X-Received: by 2002:a17:906:5597:b0:6ce:f3cc:14e8 with SMTP id y23-20020a170906559700b006cef3cc14e8mr10038931ejp.426.1647628231596;
-        Fri, 18 Mar 2022 11:30:31 -0700 (PDT)
-Received: from otso.arnhem.chello.nl (a246182.upc-a.chello.nl. [62.163.246.182])
-        by smtp.gmail.com with ESMTPSA id y8-20020a50eb08000000b00418b114469csm4567551edp.52.2022.03.18.11.30.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Mar 2022 11:30:31 -0700 (PDT)
-From:   Luca Weiss <luca.weiss@fairphone.com>
-To:     linux-arm-msm@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Luca Weiss <luca.weiss@fairphone.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 6/6] arm64: dts: qcom: sm7225-fairphone-fp4: Enable UFS
-Date:   Fri, 18 Mar 2022 19:30:04 +0100
-Message-Id: <20220318183004.858707-7-luca.weiss@fairphone.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220318183004.858707-1-luca.weiss@fairphone.com>
-References: <20220318183004.858707-1-luca.weiss@fairphone.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=T68So5s+Mvf8Yxsi6hpGLQhvBaydZiJJcf2u3DNH8AQ=;
+        b=gdCrxLzztP9/p/WW/CYLm69woa8uXYw1eXkWGx6YcLLIsHsSmaAHC9b444x9OmGmp9
+         dBE64Sqn8rPb5FSj4Lbsjqb2X+UF9lG0isAibnV8gnKUJhlO1bsWJry07SV6jcYw+W5B
+         48ninoseZ+GY0ciwmkM4MwW1Fzsn9h2E0xU1dPI1oMljd1S6I3EB5mxsst2GKtxJ+8nd
+         UgM/RVk0f7TlHcx7i7WrRSIxxO8z58X/uNAje7lxZ+VxeanIKjufDkuUvvu17NQmBdZF
+         6kEF8owgBv3x0NNxG8+VBdi+2yDl7sBGJXfPBhFr1v3NZLFRRW/kshFaN1YmvWE0EB7h
+         do+w==
+X-Gm-Message-State: AOAM533pR1thrtKTvVhS2NJkZzzkq8nIfFTFrwqQK53uT0o+JMAJdMCd
+        CjaSxQ4Zbp2FcN2gTx6UEKr6FZG4c6pPzGWAclY=
+X-Google-Smtp-Source: ABdhPJzjYyB1xwXMknUnlasyhEts+3DLtVlrBRQoqE4nOriko/ziIpVQ1Pw+K2FOQUVk19m1GgI9Eg==
+X-Received: by 2002:a05:6512:3dab:b0:44a:247:2d8 with SMTP id k43-20020a0565123dab00b0044a024702d8mr4170601lfv.628.1647628865751;
+        Fri, 18 Mar 2022 11:41:05 -0700 (PDT)
+Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com. [209.85.208.172])
+        by smtp.gmail.com with ESMTPSA id v1-20020a2e6101000000b002480c4f33d5sm1116393ljb.132.2022.03.18.11.41.03
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Mar 2022 11:41:03 -0700 (PDT)
+Received: by mail-lj1-f172.google.com with SMTP id o6so12409277ljp.3
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 11:41:03 -0700 (PDT)
+X-Received: by 2002:a2e:804b:0:b0:247:e81f:87e9 with SMTP id
+ p11-20020a2e804b000000b00247e81f87e9mr7192968ljg.176.1647628863338; Fri, 18
+ Mar 2022 11:41:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220316213055.2351342-1-morbo@google.com> <YjL6K49CkH+YC4FQ@smile.fi.intel.com>
+ <CAKwvOdkjb3uR+kqjfdKL5gqA8R+00c5=3E7uGGW+mGZ3QRsjqg@mail.gmail.com>
+ <YjSROmYwwGhpsXMl@smile.fi.intel.com> <CAKwvOdkEjrPUL4HuO3UKaUZAzVw=XV1bEOSj6HR5R1WTUSSZ4w@mail.gmail.com>
+ <CAGG=3QVCkF7RdbQ85MtKgUjm8qP79BESAUiGU3wSQc0+ExO0gA@mail.gmail.com> <CAKwvOd=1+JF6mxpM_K3xCYAr-R8nrj0s7tA9GwUybyiFdLpA2w@mail.gmail.com>
+In-Reply-To: <CAKwvOd=1+JF6mxpM_K3xCYAr-R8nrj0s7tA9GwUybyiFdLpA2w@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 18 Mar 2022 11:40:47 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wis4P8-=-0jmcDzGGuttZ3ESnq0LA5PMOVmKkPRwK1kEA@mail.gmail.com>
+Message-ID: <CAHk-=wis4P8-=-0jmcDzGGuttZ3ESnq0LA5PMOVmKkPRwK1kEA@mail.gmail.com>
+Subject: Re: [PATCH] gpiolib: acpi: use correct format characters
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Bill Wendling <morbo@google.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Nathan Chancellor <nathan@kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev,
+        Joe Perches <joe@perches.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Configure and enable the nodes for UFS that are used for internal
-storage on FP4.
+On Fri, Mar 18, 2022 at 11:29 AM Nick Desaulniers
+<ndesaulniers@google.com> wrote:
+>
+> Should we add a note diagnostic to clang suggesting the explicit cast
+> as one method of silencing the warning?
 
-Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
----
- .../boot/dts/qcom/sm7225-fairphone-fp4.dts     | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+On the compiler side, I would love to see warnings about the ambiguity
+of the sign of 'char' in the general case.
 
-diff --git a/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts b/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts
-index adb6ca2be2a5..533a1c88040f 100644
---- a/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts
-+++ b/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts
-@@ -336,6 +336,24 @@ &uart2 {
- 	status = "okay";
- };
- 
-+&ufs_mem_hc {
-+	status = "okay";
-+
-+	reset-gpios = <&tlmm 156 GPIO_ACTIVE_LOW>;
-+
-+	vcc-supply = <&vreg_l7e>;
-+	vcc-max-microamp = <800000>;
-+	vccq2-supply = <&vreg_l12a>;
-+	vccq2-max-microamp = <800000>;
-+};
-+
-+&ufs_mem_phy {
-+	status = "okay";
-+
-+	vdda-phy-supply = <&vreg_l18a>;
-+	vdda-pll-supply = <&vreg_l22a>;
-+};
-+
- &usb_1 {
- 	status = "okay";
- };
--- 
-2.35.1
+That said, I tried to add that to 'sparse' long long ago, and couldn't
+make it work sanely. All the approaches I tried all get _way_ too many
+false positives.
 
+I tried to come up with some way of figuring out "this code acts
+differently depending on whether 'char' is signed or not" and warning
+about it, and never could.
+
+And I suspect the same is true even for the much moire limited case of
+only format warnings.
+
+Because it's a *bad* idea to use '%d' (or almost any other format
+specifier) together with a 'char' argument, but only if you don't know
+the range of the char argument.
+
+But the other side of the argument is that quite often, people *do*
+know the range of the 'char' argument. If your 'char' type thing comes
+from some array or string that you control, and you used 'char' simply
+because you know you have small values (typical example: use it for an
+array of booleans etc), then it would be very annoying if the compiler
+warned you about using '%d'.
+
+There is no reason to use '%hhd' when you know your data range is [0,1].
+
+So honestly, I don't think you can come up with a sane warning that
+doesn't cause *way* too many false positives and just annoys people.
+
+I'd love to be proven wrong. In fact, I'd _really_ love to be proven
+wrong for that generic case. The "sometimes 'char' is signed,
+sometimes it is unsigned, and it depends on the architecture and the
+compiler flags" can be a real problem.
+
+                Linus
