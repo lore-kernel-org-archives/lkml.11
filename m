@@ -2,77 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0635FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 02:17:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E149C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 02:19:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231755AbiCRCTD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 22:19:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43782 "EHLO
+        id S231779AbiCRCUf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 22:20:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229966AbiCRCTC (ORCPT
+        with ESMTP id S229966AbiCRCUe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 22:19:02 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EA9FC1834EA
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 19:17:43 -0700 (PDT)
-Received: from [10.20.42.25] (unknown [10.20.42.25])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9AxeszA6zNic0cLAA--.9260S3;
-        Fri, 18 Mar 2022 10:17:36 +0800 (CST)
-Subject: Re: [PATCH v2] mm: add access/dirty bit on numa page fault
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Anshuman Khandual <anshuman.khandual@arm.com>
-References: <20220317065033.2635123-1-maobibo@loongson.cn>
- <YjMoMVWXoJH9cmuf@casper.infradead.org>
- <b373ce7e-d55a-03cf-abca-0863865cbd9c@loongson.cn>
- <YjPkf704nT/T9S9i@casper.infradead.org>
-From:   maobibo <maobibo@loongson.cn>
-Message-ID: <2c9ef479-a371-3fec-4d1b-fc833d8bf3d4@loongson.cn>
-Date:   Fri, 18 Mar 2022 10:17:35 +0800
-User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:52.0) Gecko/20100101
- Thunderbird/52.9.1
+        Thu, 17 Mar 2022 22:20:34 -0400
+Received: from gateway24.websitewelcome.com (gateway24.websitewelcome.com [192.185.50.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92EA114A931
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 19:19:16 -0700 (PDT)
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+        by gateway24.websitewelcome.com (Postfix) with ESMTP id 0971648CD
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 21:19:16 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id V2Cxnn1SWb6UBV2Cxn9Gag; Thu, 17 Mar 2022 21:19:16 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
+        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
+        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=9MpjRxXe9+S61YJkY2h2shlv1DK5YYIAl+zYpiTK9J8=; b=NVmWNkaMpaCgFA8RJoFQzvVfHQ
+        9q9JzrieFXPcQdAZjsicer3vS6Xn6hmAhAjb9h3Bx+kOMJRFj8sWKkl9ysDfVg3MeqGlrKBacLPdk
+        n97eisSKPxfD7Sg/tfTTblXUazZSy8ERvaQRi7MjVMNs6Vs7vP4xniF5ajsrEpzss2X7IpFU8QRaX
+        paSbZ0EyJWeiBN0Q4NEA4i7R2TNtgKeVoGax4C0Clr8pni8vc0E+G/ekM4FVjOhhVGoGIPWNE0FZs
+        /3HCRBy/kHOwnFn2du37dVUnW34au1VmX7yn4wqvTKE5vjKWlzr2M3nkWZY8KZfk9Hq+mAKBt4mUj
+        Cu/UQgBA==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57530 helo=localhost)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nV2Cx-003oFA-6P; Fri, 18 Mar 2022 02:19:15 +0000
+Date:   Thu, 17 Mar 2022 19:19:13 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.10 00/23] 5.10.107-rc1 review
+Message-ID: <20220318021913.GB2113234@roeck-us.net>
+References: <20220317124525.955110315@linuxfoundation.org>
 MIME-Version: 1.0
-In-Reply-To: <YjPkf704nT/T9S9i@casper.infradead.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: AQAAf9AxeszA6zNic0cLAA--.9260S3
-X-Coremail-Antispam: 1UD129KBjvdXoWrCryrJr13Cr1rtF17Jr1DKFg_yoWxGFX_uF
-        4kWasFg34xGrZ7KF1vqw1rWw43GrWrGryUJ34agrnFq345Xwn3Jr4DGrZ5u3WxJw1Sgr13
-        Wr1FqFy7W3yIgjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbI8YjsxI4VWkKwAYFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
-        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0
-        cI8IcVCY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I
-        8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
-        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8Jw
-        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lc7I2V7IY0VAS07AlzVAYIcxG8wCY
-        02Avz4vE-syl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4
-        xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1D
-        MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I
-        0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AK
-        xVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvj
-        xUgg_TUUUUU
-X-CM-SenderInfo: xpdruxter6z05rqj20fqof0/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220317124525.955110315@linuxfoundation.org>
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nV2Cx-003oFA-6P
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57530
+X-Source-Auth: guenter@roeck-us.net
+X-Email-Count: 25
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 03/18/2022 09:46 AM, Matthew Wilcox wrote:
-> On Fri, Mar 18, 2022 at 09:01:32AM +0800, maobibo wrote:
->>> Is this a correctness problem, in which case this will need to be
->>> backported, or is this a performance problem, in which case can you
->>> share some numbers?
->> It is only performance issue, and there is no obvious performance
->> improvement for general workloads on my hand, but I do not test
->> it on microbenchmark.
+On Thu, Mar 17, 2022 at 01:45:41PM +0100, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.107 release.
+> There are 23 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> ... if there's no performance improvement, why should we apply this
-> patch?  Confused.
+> Responses should be made by Sat, 19 Mar 2022 12:45:16 +0000.
+> Anything received after that time might be too late.
 > 
-It is not obvious from workload view, it actually reduces one tlb miss
-on platforms without hw page walk.
 
+Build results:
+	total: 161 pass: 161 fail: 0
+Qemu test results:
+	total: 477 pass: 477 fail: 0
+
+Tested-by: Guenter Roeck <linux@roeck-us.net>
+
+Guenter
