@@ -2,133 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9047FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 10:54:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29079C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 10:54:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235470AbiCRKzS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 06:55:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44274 "EHLO
+        id S235484AbiCRKzX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 06:55:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235441AbiCRKzM (ORCPT
+        with ESMTP id S235466AbiCRKzR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 06:55:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FB9617157C;
-        Fri, 18 Mar 2022 03:53:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F5AD614F0;
-        Fri, 18 Mar 2022 10:53:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 680A2C340E8;
-        Fri, 18 Mar 2022 10:53:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647600833;
-        bh=Ka134EcpD/pAKg03HVpWxkVbFlnaUkIgiy7ozVY+d7I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lWxwwL4fmDQkBireSEgwI6RPLJMy2t50xMGZ/rs1uKQwU8kSkzEkpLMA/0ZeoIwcD
-         ccwqFbCXPntjLziwvplJKY/E+0TY1ZS8qlSf0AZevWvqulKZs0Nl9Fhc14pRzqan9f
-         Q1qGt4BWm3LzbM+U03L5j3+HD+fYhGlFhrIQmEcI/XBXd6kurQ0UnkbVbsM1oI01g0
-         BzPFGKyesh9phZFmsOYwIW1VvFbO8NB1i2/8XyLtB5AT/BOpozVaKxfaCjYY00sJtw
-         uo5Q8jrZzNn05EEn4xARAnyj5DTxDEuc0iUpOj4mdcLdFKOPxbXmjN18Is8/zKyRkH
-         9c7svTiMwfcPw==
-Date:   Fri, 18 Mar 2022 11:53:48 +0100
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Jamie Iles <quic_jiles@quicinc.com>,
-        Graeme Gregory <quic_ggregory@quicinc.com>,
-        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org
-Subject: Re: [PATCH v2] i2c: add tracepoints for I2C slave events
-Message-ID: <YjRkvPc9uahbozbQ@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Jae Hyun Yoo <quic_jaehyoo@quicinc.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, Jamie Iles <quic_jiles@quicinc.com>,
-        Graeme Gregory <quic_ggregory@quicinc.com>,
-        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org
-References: <20220308163333.3985974-1-quic_jaehyoo@quicinc.com>
+        Fri, 18 Mar 2022 06:55:17 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A789B173377
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 03:53:56 -0700 (PDT)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22I7G6FI011425;
+        Fri, 18 Mar 2022 10:53:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=1DOyL1esRamQ09XaHORjhYt3CSEvg1N2aBpD4KZxnuY=;
+ b=CGMm5YOdXkiuG10qs2HclE7ytzFjVCc2+lZYB4BQKNmp9x3XW+kTM6Nf/0uYs+RK/Zf3
+ YXUdnSKOQDZlUUtAIX27PYF1kseDmh9gMi8Jw1tZmbLcNild8/YgLIbYoNm1iPFg0QFk
+ +gYVb//yvbAbdPzRC3/ob0KBWGljSCPEvv62UggC3OckWxr+utsuEDPS0QYdzaJYzLa/
+ ol4H32qURkws6v4tHj4j6mH3Z9NAqfuccfF+ybB6uxq/Ts2517Be5XSkDB3Q2kUsbBIk
+ fE5whGa1nbnl38r8ubrbPpjo9fIy1c63a4PbTtce2atqQMnaeOzkR43iN91wb85NepHA cg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3ev2s51p4s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 18 Mar 2022 10:53:27 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22IArQWd018221;
+        Fri, 18 Mar 2022 10:53:26 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3ev2s51p4c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 18 Mar 2022 10:53:26 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22IArOXa024786;
+        Fri, 18 Mar 2022 10:53:24 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma03fra.de.ibm.com with ESMTP id 3erk58ubwg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 18 Mar 2022 10:53:23 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22IArLNW35586324
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 18 Mar 2022 10:53:21 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B687342042;
+        Fri, 18 Mar 2022 10:53:21 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7322F42045;
+        Fri, 18 Mar 2022 10:53:18 +0000 (GMT)
+Received: from li-c3569c4c-1ef8-11b2-a85c-ee139cda3133.ibm.com.com (unknown [9.43.86.72])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 18 Mar 2022 10:53:18 +0000 (GMT)
+From:   Sathvika Vasireddy <sv@linux.ibm.com>
+To:     linuxppc-dev@lists.ozlabs.org
+Cc:     jpoimboe@redhat.com, peterz@infradead.org,
+        linux-kernel@vger.kernel.org, aik@ozlabs.ru, mpe@ellerman.id.au,
+        rostedt@goodmis.org, naveen.n.rao@linux.vnet.ibm.com,
+        sv@linux.ibm.com
+Subject: [RFC PATCH 0/3] objtool: Add mcount sub-command
+Date:   Fri, 18 Mar 2022 16:21:37 +0530
+Message-Id: <20220318105140.43914-1-sv@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="rqHRRJko+wIyNI/C"
-Content-Disposition: inline
-In-Reply-To: <20220308163333.3985974-1-quic_jaehyoo@quicinc.com>
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: AqETGOV8H98pyxLq8bKAOf0dX5GmwU0C
+X-Proofpoint-GUID: e5slvh2lRhBHs3PT7uH9zEe7iJieddNs
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-18_08,2022-03-15_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 spamscore=0
+ lowpriorityscore=0 bulkscore=0 mlxlogscore=776 suspectscore=0
+ malwarescore=0 clxscore=1011 mlxscore=0 adultscore=0 priorityscore=1501
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203180058
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This patchset adds support to implement 'objtool mcount' command.
 
---rqHRRJko+wIyNI/C
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Right now, objtool is built if CONFIG_STACK_VALIDATION is enabled.
+And, '__mcount_loc' section is generated by objtool when --mcount 
+option is passed to check sub-command. 
 
-Hi,
+For architectures to be able to generate '__mcount_loc' section
+without having to do stack validation, introduce 'mcount' as
+a sub-command to objtool. This way, objtool is built for mcount 
+if CONFIG_FTRACE_MCOUNT_USE_OBJTOOL is enabled. Additionally, 
+architectures can select HAVE_NOP_MCOUNT to be able to nop out
+mcount call sites.  
 
-On Tue, Mar 08, 2022 at 08:33:33AM -0800, Jae Hyun Yoo wrote:
-> I2C slave events tracepoints can be enabled by:
->=20
-> 	echo 1 > /sys/kernel/tracing/events/i2c_slave/enable
->=20
-> and logs in /sys/kernel/tracing/trace will look like:
->=20
-> 	... i2c_slave: i2c-0 a=3D010 WR_REQ []
-> 	... i2c_slave: i2c-0 a=3D010 WR_RCV [02]
-> 	... i2c_slave: i2c-0 a=3D010 WR_RCV [0c]
-> 	... i2c_slave: i2c-0 a=3D010   STOP []
-> 	... i2c_slave: i2c-0 a=3D010 RD_REQ [04]
-> 	... i2c_slave: i2c-0 a=3D010 RD_PRO [b4]
-> 	... i2c_slave: i2c-0 a=3D010   STOP []
->=20
-> formatted as:
->=20
-> 	i2c-<adapter-nr>
-> 	a=3D<addr>
-> 	<event>
-> 	[<data>]
->=20
-> trace printings can be selected by adding a filter like:
->=20
-> 	echo adapter_nr=3D=3D1 >/sys/kernel/tracing/events/i2c_slave/filter
->=20
-> Signed-off-by: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
+TODO: Enable "objtool mcount" for clang LTO builds.
 
-Steven, are you happy with the tracepoint parts of this patch?
+Sathvika Vasireddy (3):
+  objtool: Move common code to utils.c
+  objtool: Enable and implement 'mcount' subcommand
+  objtool/mcount: Add powerpc specific functions
 
+ Makefile                                      |   6 +
+ arch/powerpc/Kconfig                          |   1 +
+ arch/x86/Kconfig                              |   3 +-
+ scripts/Makefile.build                        |  12 +
+ tools/objtool/Build                           |   3 +
+ tools/objtool/Makefile                        |   8 +-
+ tools/objtool/arch/powerpc/Build              |   1 +
+ tools/objtool/arch/powerpc/decode.c           |  51 +++++
+ .../arch/powerpc/include/arch/cfi_regs.h      |  37 +++
+ tools/objtool/arch/powerpc/include/arch/elf.h |   8 +
+ tools/objtool/builtin-mcount.c                |  74 ++++++
+ tools/objtool/check.c                         | 178 +--------------
+ tools/objtool/include/objtool/builtin.h       |   4 +-
+ tools/objtool/include/objtool/check.h         |   2 -
+ tools/objtool/include/objtool/objtool.h       |   1 +
+ tools/objtool/include/objtool/utils.h         |  28 +++
+ tools/objtool/mcount.c                        | 138 ++++++++++++
+ tools/objtool/objtool.c                       |   1 +
+ tools/objtool/orc_gen.c                       |   1 +
+ tools/objtool/utils.c                         | 210 ++++++++++++++++++
+ tools/objtool/weak.c                          |   5 +
+ 21 files changed, 590 insertions(+), 182 deletions(-)
+ create mode 100644 tools/objtool/arch/powerpc/Build
+ create mode 100644 tools/objtool/arch/powerpc/decode.c
+ create mode 100644 tools/objtool/arch/powerpc/include/arch/cfi_regs.h
+ create mode 100644 tools/objtool/arch/powerpc/include/arch/elf.h
+ create mode 100644 tools/objtool/builtin-mcount.c
+ create mode 100644 tools/objtool/include/objtool/utils.h
+ create mode 100644 tools/objtool/mcount.c
+ create mode 100644 tools/objtool/utils.c
 
-> +	if (trace_i2c_slave_enabled() && !ret)
-> +		trace_i2c_slave(client, event, val);
+-- 
+2.31.1
 
-Why '!ret'? I think we should always print 'ret' in the trace as well.
-Backends are allowed to send errnos on WRITE_RECEIVED to NACK the
-reception of a byte. This is useful information, too, or?
-
-Rest looks good to me.
-
-Thanks,
-
-   Wolfram
-
-
---rqHRRJko+wIyNI/C
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmI0ZLwACgkQFA3kzBSg
-KbaU0xAAiJLhpuUxibhFyVl14QQR4Qh1XvhM6rcLT6jWqrp0cGOWeIg0aTXm+NPV
-FY20MyoM8Upmgg1gr1R4wh0M2ShDau2IOHhMEQtAvXwvUtkmAUxdtvIOI6difKse
-m8JbV4AfiWHQTvkcwr0zlbJg58tqGUmPiBzvXsTARthrCida24i9uLFQWFHoqBGX
-E9463fdGmdzbuJojfRlQ601LPNTqwNpFNiZpg97J/CY+L8iVKQqvMfYWQ78d3Cze
-g57NqWIMZAyCQSxhgdjBBsW87bbD/Qo5eQAmD/M6E96sClo+ZcYEtFqPiE0cPkMm
-C+x3e4jW9nxS9YHcYbfGb0bXOjJ6VhQMNDd64f3uEvghI12P9NAqjXnQ5VgoXw8Z
-99GD2NlJkoHPK4qvbj+aaf4QEwYctldE9NGtpMFWzgowgUu3vIZyWfcWDUIAXyk7
-4+F9xmjcOqpUAR46o2w8POd5AfhI3WU5DsR/7nSRKqrkapYD2oCYq8k0Lvj1ZskT
-1CwJSNZ1jvS2ipsFLVsvRDFJUrPSN/iu2Xs903v+bOSnCLj3HBMqbkNWY3cXPXpq
-WrnKdVBXFb7/uWb3pysgYutrAIRUpdZgAmzE3SyzbnBudpNzj8QnZkJuh/ozDGhM
-Vq5s+ELhxFx/G1HWeDwkRnucRJJIHuXP7T5XCKVkAggywYbXORk=
-=PJ2T
------END PGP SIGNATURE-----
-
---rqHRRJko+wIyNI/C--
