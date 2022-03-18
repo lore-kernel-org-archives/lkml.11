@@ -2,119 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10B7FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 02:09:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BA4AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 02:11:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231716AbiCRCLB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 22:11:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43530 "EHLO
+        id S231724AbiCRCMZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 22:12:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230202AbiCRCK7 (ORCPT
+        with ESMTP id S230059AbiCRCMW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 22:10:59 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1427625F66B;
-        Thu, 17 Mar 2022 19:09:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647569382; x=1679105382;
-  h=message-id:subject:from:reply-to:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=bcvdTm8vTC17tTtaKL6TbtagXdFa7r13SD1OdJ96w6M=;
-  b=meuZUM6a2CSYrm7VW+WrI585lKBNNW8HcQWtf+aSOp5r8/EPf/fWMw1k
-   5zOYKseYyod3t0SYFwiE18dbufEJPYJALTaN7LhMmdWqtHWLV75usxe6n
-   p8sV2XtX0X/mohvU6sJroXmFkwkRYmtExQwX4WFxr+LU1FK74HkOU9vbA
-   svEe/4kdFpdg2HgsRj0HFwS+WcbJCR3tVUc2Z1+lObdRYKfJjds85XmzT
-   65S88g//vwRo81CAD62e7VN1jCCjNJuBQW0191rmUQSMDiM3cVPvHYZWX
-   yhHAl44dMIVidBBeUTYfzD7tJeF13dPjSdOdPj8PFq9muYZQmXLgVokPi
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="239191312"
-X-IronPort-AV: E=Sophos;i="5.90,190,1643702400"; 
-   d="scan'208";a="239191312"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 19:09:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,190,1643702400"; 
-   d="scan'208";a="691143655"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga001.fm.intel.com with ESMTP; 17 Mar 2022 19:09:41 -0700
-Received: from mzaid-MOBL1.amr.corp.intel.com (mzaid-MOBL1.amr.corp.intel.com [10.255.228.81])
-        by linux.intel.com (Postfix) with ESMTP id F1664580A5D;
-        Thu, 17 Mar 2022 19:09:40 -0700 (PDT)
-Message-ID: <117f781f5bf8d1c3cee5f8580fb0c9bf8d049cc7.camel@linux.intel.com>
-Subject: Re: [PATCH v2 1/2] PCI/PM: refactor pci_pm_suspend_noirq()
-From:   "David E. Box" <david.e.box@linux.intel.com>
-Reply-To: david.e.box@linux.intel.com
-To:     Rajvi Jingar <rajvi.jingar@intel.com>, rafael.j.wysocki@intel.com,
-        bhelgaas@google.com
-Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org
-Date:   Thu, 17 Mar 2022 19:09:40 -0700
-In-Reply-To: <20220317233153.2617938-1-rajvi.jingar@intel.com>
-References: <20220317233153.2617938-1-rajvi.jingar@intel.com>
-Organization: David E. Box
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5-0ubuntu1 
+        Thu, 17 Mar 2022 22:12:22 -0400
+Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C13532B5AFD
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 19:11:03 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
+ (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 18 Mar
+ 2022 10:11:04 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Fri, 18 Mar
+ 2022 10:11:01 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     <giovanni.cabiddu@intel.com>, <herbert@gondor.apana.org.au>,
+        <davem@davemloft.net>, <marco.chiappero@intel.com>,
+        <fiona.trahe@intel.com>, <wojciech.ziemba@intel.com>
+CC:     <qat-linux@intel.com>, <linux-crypto@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Haowen Bai <baihaowen@meizu.com>
+Subject: [PATCH] crypto: qat: Fix unsigned comparison with less than zero
+Date:   Fri, 18 Mar 2022 10:10:59 +0800
+Message-ID: <1647569459-18376-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rajvi,
+drivers/crypto/qat/qat_4xxx/adf_4xxx_hw_data.c:67:5-8: WARNING: Unsigned expression compared with zero: ret < 0
 
-On Thu, 2022-03-17 at 16:31 -0700, Rajvi Jingar wrote:
-> The state of the device is saved during pci_pm_suspend_noirq(), if it
-> has not already been saved, regardless of the skip_bus_pm flag value. So
-> skip_bus_pm check is removed before saving the device state.
-> 
-> v2: add comments to the changes
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+---
+ drivers/crypto/qat/qat_4xxx/adf_4xxx_hw_data.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-...
-
-> 
-> Signed-off-by: Rajvi Jingar <rajvi.jingar@intel.com>
-> Suggested-by: David E. Box <david.e.box@linux.intel.com>
-> ---
-
-Patch changelogs aren't kept in the commit message. Place them here after the
-"---" line. In this location, it won't affect applying the patch.
-
-David
-
->  drivers/pci/pci-driver.c | 18 ++++++------------
->  1 file changed, 6 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-> index 588588cfda48..ffe76f238d7e 100644
-> --- a/drivers/pci/pci-driver.c
-> +++ b/drivers/pci/pci-driver.c
-> @@ -834,20 +834,14 @@ static int pci_pm_suspend_noirq(struct device *dev)
->  		}
->  	}
->  
-> -	if (pci_dev->skip_bus_pm) {
-> +	if (!pci_dev->state_saved) {
-> +		pci_save_state(pci_dev);
->  		/*
-> -		 * Either the device is a bridge with a child in D0 below it, or
-> -		 * the function is running for the second time in a row without
-> -		 * going through full resume, which is possible only during
-> -		 * suspend-to-idle in a spurious wakeup case.  The device should
-> -		 * be in D0 at this point, but if it is a bridge, it may be
-> -		 * necessary to save its state.
-> +		 * If the device is a bridge with a child in D0 below it, it
-> needs to
-> +		 * stay in D0, so check skip_bus_pm to avoid putting it into a
-> +		 * low-power state in that case.
->  		 */
-> -		if (!pci_dev->state_saved)
-> -			pci_save_state(pci_dev);
-> -	} else if (!pci_dev->state_saved) {
-> -		pci_save_state(pci_dev);
-> -		if (pci_power_manageable(pci_dev))
-> +		if (!pci_dev->skip_bus_pm && pci_power_manageable(pci_dev))
->  			pci_prepare_to_sleep(pci_dev);
->  	}
->  
+diff --git a/drivers/crypto/qat/qat_4xxx/adf_4xxx_hw_data.c b/drivers/crypto/qat/qat_4xxx/adf_4xxx_hw_data.c
+index 6d10edc..0143835 100644
+--- a/drivers/crypto/qat/qat_4xxx/adf_4xxx_hw_data.c
++++ b/drivers/crypto/qat/qat_4xxx/adf_4xxx_hw_data.c
+@@ -52,7 +52,7 @@ static const char *const dev_cfg_services[] = {
+ static int get_service_enabled(struct adf_accel_dev *accel_dev)
+ {
+ 	char services[ADF_CFG_MAX_VAL_LEN_IN_BYTES] = {0};
+-	u32 ret;
++	s32 ret;
+ 
+ 	ret = adf_cfg_get_param_value(accel_dev, ADF_GENERAL_SEC,
+ 				      ADF_SERVICES_ENABLED, services);
+-- 
+2.7.4
 
