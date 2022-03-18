@@ -2,99 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82041C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 18:02:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AE24C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 18:03:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239958AbiCRSDx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 14:03:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60114 "EHLO
+        id S239970AbiCRSER (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 14:04:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231842AbiCRSDt (ORCPT
+        with ESMTP id S239961AbiCRSEO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 14:03:49 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F7782E8CFF;
-        Fri, 18 Mar 2022 11:02:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=0Yy9CpCZpGFGgUuEZDwIZX23n2xP8D/MS6pjjuaf+JM=; b=NYskq7i5ZtPpWLlAkMYkR/LoTK
-        zRjWAbokWOXzl+7c1BzPUVaFL0Kh45L4+/WqPH7DtoZGuxLCCXwrfyoVNBCkKWGd6OFg2uSjBLyXx
-        yOdh8T3UdJ8+vnUKJFDPCdIlVzv04ktUVp0xXLXS5GbiaYyvI7DRl2MqBK382YHPb7qtHuDvYZAWO
-        UqlGqvaiR+qnja7Oc2OzN/Pm2IfevxZp/ZV7/i3aB1+GVeUG+zjhWvSonVEyBIuzaHiqhmkP8PQu9
-        obfxjy+UU6kK8TCAJjth+hCpY28s9KscdAENjEoyvQpY3AcukqNVJZe5vs8oQnv4kV3VTVGTQi4HL
-        jux9TOAg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nVGvi-002GhT-1v; Fri, 18 Mar 2022 18:02:26 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id BB20598841D; Fri, 18 Mar 2022 19:02:25 +0100 (CET)
-Date:   Fri, 18 Mar 2022 19:02:25 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Maxim Levitsky <mlevitsk@redhat.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, seanjc@google.com
-Subject: Re: [PATCH v3 6/6] KVM: x86: allow defining return-0 static calls
-Message-ID: <20220318180225.GF14330@worktop.programming.kicks-ass.net>
-References: <20220217180831.288210-1-pbonzini@redhat.com>
- <20220217180831.288210-7-pbonzini@redhat.com>
- <3bbe3f8717cdf122f909a48e117dab6c09d8e0c8.camel@redhat.com>
- <1dc56110-5f1b-6140-937c-bf4a28ddbe87@redhat.com>
- <20220318172837.GQ8939@worktop.programming.kicks-ass.net>
- <20220318174732.GE14330@worktop.programming.kicks-ass.net>
+        Fri, 18 Mar 2022 14:04:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1429E2986CD;
+        Fri, 18 Mar 2022 11:02:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 61C2E61AC4;
+        Fri, 18 Mar 2022 18:02:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53691C340EC;
+        Fri, 18 Mar 2022 18:02:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647626573;
+        bh=wqaDNmfAV73edja4gt4wDALkdE0waPsuWJQeh4kUqTc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LEQfpV0iL0MVeQsG0LWCZBK9MWKHRjSANH7xVzjFnQM/Of+XL97zCzjvn6h3j6jK0
+         M2DJlGPv70ysNWIvpeHcejd91zeBPwPy74cQJxECJPdqc7dzSV/78H9dNxQOqGoUm3
+         H9MUWhCY9qv42OSEhi0UpYr5Yzcq63Ki0B7d2u2XieHELRh3GY8HWHMetYvQQfu9Ii
+         I/VxUgggMoH4SebCCXl1IXwSoTRfO4XaBxbkUm9Vz9os0nM9ef1GXhWlpGy2Zte2wk
+         V9lkVCPwz+flNLcJ+4NlTvL7MAMgkeZu+7dd4hpgC9ehl8RUJLdaDQFcQWPAwycYfv
+         oGTXngjasBSww==
+Date:   Fri, 18 Mar 2022 11:02:46 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Bill Wendling <morbo@google.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH] soc: qcom: smem: use correct format characters
+Message-ID: <YjTJRqlFOsXz7Ss7@dev-arch.thelio-3990X>
+References: <20220316213118.2352683-1-morbo@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220318174732.GE14330@worktop.programming.kicks-ass.net>
+In-Reply-To: <20220316213118.2352683-1-morbo@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 06:47:32PM +0100, Peter Zijlstra wrote:
-> On Fri, Mar 18, 2022 at 06:28:37PM +0100, Peter Zijlstra wrote:
-> > > Related to this, I don't see anything in arch/x86/kernel/static_call.c that
-> > > limits this code to x86-64:
-> > > 
-> > >                 if (func == &__static_call_return0) {
-> > >                         emulate = code;
-> > >                         code = &xor5rax;
-> > >                 }
-> > > 
-> > > 
-> > > On 32-bit, it will be patched as "dec ax; xor eax, eax" or something like
-> > > that.  Fortunately it doesn't corrupt any callee-save register but it is not
-> > > just a bit funky, it's also not a single instruction.
-> > 
-> > Urggghh.. that's fairly yuck. So there's two options I suppose:
-> > 
-> > 	0x66, 0x66, 0x66, 0x31, 0xc0
+On Wed, Mar 16, 2022 at 02:31:18PM -0700, Bill Wendling wrote:
+> When compiling with -Wformat, clang emits the following warnings:
 > 
-> Argh, that turns into: xorw %ax, %ax.
+> drivers/soc/qcom/smem.c:847:41: warning: format specifies type 'unsigned
+> short' but the argument has type 'unsigned int' [-Wformat]
+>                         dev_err(smem->dev, "bad host %hu\n", remote_host);
+>                                                      ~~~     ^~~~~~~~~~~
+>                                                      %u
+> ./include/linux/dev_printk.h:144:65: note: expanded from macro 'dev_err'
+>         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
+>                                                                ~~~     ^~~~~~~~~~~
+> ./include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
+>                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
+>                              ~~~    ^~~~~~~~~~~
+> drivers/soc/qcom/smem.c:852:47: warning: format specifies type 'unsigned
+> short' but the argument has type 'unsigned int' [-Wformat]
+>                         dev_err(smem->dev, "duplicate host %hu\n", remote_host);
+>                                                            ~~~     ^~~~~~~~~~~
+>                                                            %u
+> ./include/linux/dev_printk.h:144:65: note: expanded from macro 'dev_err'
+>         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
+>                                                                ~~~     ^~~~~~~~~~~
+> ./include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
+>                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
+>                              ~~~    ^~~~~~~~~~~
 > 
-> Let me see if there's another option.
+> The types of these arguments are unconditionally defined, so this patch
+> updates the format character to the correct ones for ints and unsigned
+> ints.
 
-Amazingly:
+Right. Alternatively, remote_host could be turned into a u16 to match
+host0 and host1, as those are the only values that will ever be assigned
+to it, which should have been done in commit 13a920ae7898 ("soc: qcom:
+smem: a few last cleanups") to avoid introducing this warning in the
+first place.
 
-  0x2e, 0x2e, 0x2e, 0x31, 0xc0
+Probably does not matter though, unless the maintainers feel that is a
+better fix.
 
-seems to actually work.. I've build and ran and decoded the below on
-32bit and 64bit (arguably on the same 64bit host).
+> Link: ClangBuiltLinux/linux#378
 
+Link: https://github.com/ClangBuiltLinux/linux/issues/378
 
----
-#include <stdio.h>
+as discussed on other patches :)
 
-long zero(void)
-{
-	long z = -1L;
+> Signed-off-by: Bill Wendling <morbo@google.com>
 
-	asm (".byte 0x2e, 0x2e, 0x2e, 0x31, 0xc0" : "=a" (z) );
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
 
-	return z;
-}
-
-void main(void)
-{
-	printf("%ld\n", zero());
-}
+> ---
+>  drivers/soc/qcom/smem.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/soc/qcom/smem.c b/drivers/soc/qcom/smem.c
+> index e2057d8f1eff..a98b5f395d15 100644
+> --- a/drivers/soc/qcom/smem.c
+> +++ b/drivers/soc/qcom/smem.c
+> @@ -844,12 +844,12 @@ qcom_smem_enumerate_partitions(struct qcom_smem *smem, u16 local_host)
+>  			continue;
+>  
+>  		if (remote_host >= SMEM_HOST_COUNT) {
+> -			dev_err(smem->dev, "bad host %hu\n", remote_host);
+> +			dev_err(smem->dev, "bad host %u\n", remote_host);
+>  			return -EINVAL;
+>  		}
+>  
+>  		if (smem->partitions[remote_host]) {
+> -			dev_err(smem->dev, "duplicate host %hu\n", remote_host);
+> +			dev_err(smem->dev, "duplicate host %u\n", remote_host);
+>  			return -EINVAL;
+>  		}
+>  
+> -- 
+> 2.35.1.723.g4982287a31-goog
+> 
+> 
