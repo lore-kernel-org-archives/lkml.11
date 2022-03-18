@@ -2,87 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38680C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 07:46:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A259C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 07:47:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233121AbiCRHrq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 03:47:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36406 "EHLO
+        id S233255AbiCRHsi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 03:48:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229539AbiCRHrl (ORCPT
+        with ESMTP id S232937AbiCRHsh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 03:47:41 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0321A1F83F0;
-        Fri, 18 Mar 2022 00:46:23 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id o6-20020a17090a9f8600b001c6562049d9so7665811pjp.3;
-        Fri, 18 Mar 2022 00:46:22 -0700 (PDT)
+        Fri, 18 Mar 2022 03:48:37 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 043162BAE5C
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 00:47:19 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id u17so8769561pfk.11
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 00:47:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=qoi4QGgxrqjy788HWka9y5Q8veZdkoJr+j/YlxCsH+E=;
-        b=g9SqHeIRuugdjX+4WOujma7JC1opKvGijJAuXQg4tW3kvr2JaRNsfrAFJCg04cUhq0
-         lDF3i/9r93bV7k4vdBBpII39DbhLCJH+m/YA6vaNtvXGfiq45S0mgaG2h98Sb9+TGGBl
-         bVYoJhgliXG+iACkxW8I8kDQsCr2GsEINHMOrzXwPNhB/f+qd4jUyCnsoodE6mnia5Bw
-         UZ++mMjaa2LNh/d9rQX2YdgG/lBPyQjca99jOG9D8TWTRYZV2axIfd/CRDh/gaNKct9E
-         lntLTyXIAUNaK7rMp3sUMmnRj2ECdHL3YjibNhJmZhs+SIvX3JsxO8y8ejxGf7s9sNxj
-         XMoQ==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=i2Kxzfqa17JeX6zvSFdcAC9AxQ0uSV/1LhJKBQM+dBo=;
+        b=UaEE+RkmBrZgxg3Qvjtn9RTTC4YPIXWjUW3Bx10IPJLn++s9nnBXRZniYrNY6COzIK
+         IWkHYHzSzSedHDyCgxfuemUSGpOTx5zN1JmXRIf53whpuiafHr/G2sS4UNAIPiCXouCX
+         f7NU6IrexwNDdBmpVYRxBti1K01eoKRwavqtWnUNoWhKtBI3epsNz0UTwPO8TZNuRlwc
+         rP7AVwj8FBWqc8Z4X6K04uw11sUXFWJGOw0tKuSKZ36JJTwHaE+ZqQywCT0hkJ+t3rCz
+         dzFLUASMTSnQiZLWAimXIDIH94ns8HwpLb+C1q7OsjG3Mg72Y/9acnbkxQYG62WGtgNm
+         i8zQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=qoi4QGgxrqjy788HWka9y5Q8veZdkoJr+j/YlxCsH+E=;
-        b=koA3njMzVR8nQaJ+vr+yVEorOrLZhMqg8RPFOH00zTa8k3YeVJWDZ4CD4Enl3bF1+P
-         X5bM2Y2cBysnt2hpP8iEzqCitBXKJrHD8LqXWsi2yUhoG3nSJlJiQ8oPeOzWhqcC8lmn
-         21lIlLZP9N2o4B2gQtNQPgVpRfZCoCKABSBv95gQD9s52GgcyQxJkxOGL0+XQ3npdMJg
-         th5EWZtztPADUDeJpDz26DerFCdocmMF4KrGbNbNrxqWdPGzKHr7emNB6NarY/9btVAX
-         GfeirmXDLGbNM5IxtnGcyFYSRBVZRij3DlWMYcO2D9Sdi2l8cIIYUl0AwOsMmYGVLrt+
-         GNDw==
-X-Gm-Message-State: AOAM531nVCFI6+gfSjTWH8i69Dr8pqUFQ6x6kDEx+zgKQadNWPpvRrTK
-        qdrtD6/CQb/bmCNSf62RnyM=
-X-Google-Smtp-Source: ABdhPJxZYm549yKrguPyJ2FQkzbsflhZ709jcp46n0H5+PvSUe8+uXf6aci4EwNuy9yt5eCwfqkK8w==
-X-Received: by 2002:a17:90b:3e88:b0:1bf:3a96:54c1 with SMTP id rj8-20020a17090b3e8800b001bf3a9654c1mr9781455pjb.244.1647589582458;
-        Fri, 18 Mar 2022 00:46:22 -0700 (PDT)
-Received: from [192.168.43.80] (subs02-180-214-232-3.three.co.id. [180.214.232.3])
-        by smtp.gmail.com with ESMTPSA id k10-20020a056a00168a00b004f7e2a550ccsm8691490pfc.78.2022.03.18.00.46.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Mar 2022 00:46:21 -0700 (PDT)
-Message-ID: <7a3ac61d-bd82-9a97-7caf-5437f18d7cf2@gmail.com>
-Date:   Fri, 18 Mar 2022 14:46:16 +0700
+        bh=i2Kxzfqa17JeX6zvSFdcAC9AxQ0uSV/1LhJKBQM+dBo=;
+        b=Opf1WZubWuhoB+CUuJ1imxCLMvWBkISgXGpCXxBQvXjVmsCblOvs+8TJ+grv/G6I/w
+         hRlNbDy9+s6NF1NOJEgSzg2gRf8lt/dwo6EihDx8bHxRPLjGgYGfASAqxH5uV3/6bkUh
+         46IaT2XiQas22jbFZqPbT0srFFaSq2j/LA5EOwKVYmyl/pPihBAx2Wq3109358ef1x3r
+         Xox0KXzbp+3ddd7NqDw21WyKguKucErciAM7aEvVvW3TxwEqo5NQSo98R8w/ha1yTHp+
+         Ekwzr3rm2qeiWIbOZaOkO9bPld2PPoVNjIT8LBwVFFjzQ4ts6HMO6gD5TZOVFMZRdBtv
+         wrHg==
+X-Gm-Message-State: AOAM5333gDlP3vmkdBYD5Hq0Iody4hk0oV2XYi8QDVc/cOUxFnbXKmTL
+        iv8BMf4sOSQffmHO+Tg7W5fWmA==
+X-Google-Smtp-Source: ABdhPJzB6PRnA27+IVJTkfrLIjmVsbIVOijMyvlx7Btwx9xnKrLpV9UgKC2XAfpJ48RfsZJJk7x5bQ==
+X-Received: by 2002:a62:684:0:b0:4f7:803:d1b0 with SMTP id 126-20020a620684000000b004f70803d1b0mr8966912pfg.10.1647589638495;
+        Fri, 18 Mar 2022 00:47:18 -0700 (PDT)
+Received: from localhost.localdomain ([139.177.225.233])
+        by smtp.gmail.com with ESMTPSA id a38-20020a056a001d2600b004f72acd4dadsm8770941pfx.81.2022.03.18.00.47.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Mar 2022 00:47:18 -0700 (PDT)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     dan.j.williams@intel.com, willy@infradead.org, jack@suse.cz,
+        viro@zeniv.linux.org.uk, akpm@linux-foundation.org,
+        apopple@nvidia.com, shy828301@gmail.com, rcampbell@nvidia.com,
+        hughd@google.com, xiyuyang19@fudan.edu.cn,
+        kirill.shutemov@linux.intel.com, zwisler@kernel.org,
+        hch@infradead.org
+Cc:     linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        duanxiongchun@bytedance.com, smuchun@gmail.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v5 0/6] Fix some bugs related to ramp and dax
+Date:   Fri, 18 Mar 2022 15:45:23 +0800
+Message-Id: <20220318074529.5261-1-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 5.10 00/23] 5.10.107-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220317124525.955110315@linuxfoundation.org>
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <20220317124525.955110315@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17/03/22 19.45, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.107 release.
-> There are 23 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
+This series is based on next-20220225.
 
-Successfully cross-compiled for arm64 (bcm2711_defconfig, gcc 10.2.0) and
-powerpc (ps3_defconfig, gcc 11.2.0).
+Patch 1-2 fix a cache flush bug, because subsequent patches depend on
+those on those changes, there are placed in this series.  Patch 3-4
+are preparation for fixing a dax bug in patch 5.  Patch 6 is code cleanup
+since the previous patch remove the usage of follow_invalidate_pte().
 
-Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
+v5:
+- Collect Reviewed-by from Dan Williams.
+- Fix panic reported by kernel test robot <oliver.sang@intel.com>.
+- Remove pmdpp parameter from follow_invalidate_pte() and fold it into follow_pte().
+
+v4:
+- Fix compilation error on riscv.
+
+v3:
+- Based on next-20220225.
+
+v2:
+- Avoid the overly long line in lots of places suggested by Christoph.
+- Fix a compiler warning reported by kernel test robot since pmd_pfn()
+  is not defined when !CONFIG_TRANSPARENT_HUGEPAGE on powerpc architecture.
+- Split a new patch 4 for preparation of fixing the dax bug.
+
+Muchun Song (6):
+  mm: rmap: fix cache flush on THP pages
+  dax: fix cache flush on PMD-mapped pages
+  mm: rmap: introduce pfn_mkclean_range() to cleans PTEs
+  mm: pvmw: add support for walking devmap pages
+  dax: fix missing writeprotect the pte entry
+  mm: simplify follow_invalidate_pte()
+
+ fs/dax.c             | 82 +++++-----------------------------------------------
+ include/linux/mm.h   |  3 --
+ include/linux/rmap.h |  3 ++
+ mm/internal.h        | 26 +++++++++++------
+ mm/memory.c          | 81 +++++++++++++++------------------------------------
+ mm/page_vma_mapped.c | 16 +++++-----
+ mm/rmap.c            | 68 +++++++++++++++++++++++++++++++++++--------
+ 7 files changed, 114 insertions(+), 165 deletions(-)
 
 -- 
-An old man doll... just what I always wanted! - Clara
+2.11.0
+
