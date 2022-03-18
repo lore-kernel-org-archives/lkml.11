@@ -2,129 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7317AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 02:11:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A210C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 02:13:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231736AbiCRCM2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 22:12:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49024 "EHLO
+        id S231737AbiCRCOx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 22:14:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230202AbiCRCMX (ORCPT
+        with ESMTP id S230527AbiCRCOv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 22:12:23 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9BEA2B5AFE;
-        Thu, 17 Mar 2022 19:11:04 -0700 (PDT)
+        Thu, 17 Mar 2022 22:14:51 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2C43F2138
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 19:13:33 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id x127-20020a25e085000000b0063372775c9aso5808450ybg.17
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 19:13:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1647569464; x=1679105464;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=oRaStKNDaOu3TSmH3+8cEhhm6JxyDKCuF64VgE2rLZs=;
-  b=swUyz+CPYMrm1jqKjJ9+Vb6s8KvzPqglVYdTNEGVEOZ2zfIXZO/SwVjU
-   1v3fn8AiM5OFw38VS3XW81s7YNNiHVL34wBq+AhMZzHAoCZ4yazHw1WYH
-   x+QowEriSwrvKOTRk4xNOA7mG2tUgkF9H2qMUsqbciM9RK0hYO6jZrbeA
-   k=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 17 Mar 2022 19:11:03 -0700
-X-QCInternal: smtphost
-Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 19:10:57 -0700
-Received: from mingxue-gv.qualcomm.com (10.80.80.8) by
- nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 17 Mar 2022 19:10:55 -0700
-Date:   Fri, 18 Mar 2022 10:10:52 +0800
-From:   Minghao Xue <quic_mingxue@quicinc.com>
-To:     Jean-Philippe Brucker <jean-philippe@linaro.org>
-CC:     <mst@redhat.com>, <jasowang@redhat.com>, <quic_ztu@quicinc.com>,
-        <robh+dt@kernel.org>, <virtualization@lists.linux-foundation.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] dt-bindings: virtio: mmio: add optional virtio,wakeup
- property
-Message-ID: <20220318021052.GA16300@mingxue-gv.qualcomm.com>
-References: <1646733156-19333-1-git-send-email-quic_mingxue@quicinc.com>
- <20220317063515.GA30789@mingxue-gv.qualcomm.com>
- <YjMJ32SFXTLCuaRY@myrica>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <YjMJ32SFXTLCuaRY@myrica>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=lJQh/Exyrm7jkuouuP+OFVuB8hBfkh2Al21bjlOl0AQ=;
+        b=bU5cNjnSbfuOBeInriKiwJ43wTavdmlH3NKiDX7FoCYGJjoGx81eqzj7U/cGMRVN+S
+         DMAklEp0sQd5oNelJoM25F6J37gJQbf0lKfBertZq3LzbXhzrW6tYNWdm6G/1KHXCJ+V
+         otWWGManMbwWjWugM9Jsmq/7mlLH08ZnG4XePmjQ/kBySP/moZ2ySLLga770efdOZH06
+         tVfT6yyWqxj8CGnUX4LQvsZZ6ABJn15pYZgm3xG5aDxm4ejOZMOqAa+058F5aEM+7uml
+         djP9jWDcgSeJp/UhFl8jXTatDsG2tsmri+wPhNrF9xF84EQRYVV1kcJpwiZAYEcJ0DUL
+         mkNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=lJQh/Exyrm7jkuouuP+OFVuB8hBfkh2Al21bjlOl0AQ=;
+        b=ZbSBCBIhuhyBgRmC21frPUJzImNnUpFgiki5kpaXJU0FUqfGcjJsvZjh11giDq+ccS
+         9DWsFv0EqBfHk2DPPa7zLxmShT6UTSd2uwP6PEfwrKXgVdhEhP1n5RkbX08otq8lqSL7
+         ilJGejdXGdxZFWgJm5Pcax/tCE2p1ukrZQWYGycNwoKqJeyLu9OH6W1xHlGCc10/6mCs
+         eqa4oBvmZO2AOoNsuY4BIjwGJDcXBi/OP6Rj+1G9NKY82oIk2P0DwBjZ5Ve2D+UwLoom
+         Vr16Kl76PGgqluO/pbkstratkMZ0v9GeO+554liIWGvfNlCIUfMt2x3dyxEFezm+W9PT
+         Rp4g==
+X-Gm-Message-State: AOAM533bJ6dEAG9I70CO6/aKNunIH+RFeHnVnYoq/Hjpc2/QkCd/NE30
+        ik8wkKetmasRk2aTPdyKDW7+xujn0z57+A==
+X-Google-Smtp-Source: ABdhPJwfzO6Vfvq0NFoAyajCpwKamuadpZgMSHI9lgsqF5mO2tNkiNrQDm5hddG34QkZKXXe+1YreV64q/yv9A==
+X-Received: from slicestar.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:20a1])
+ (user=davidgow job=sendgmr) by 2002:a0d:d756:0:b0:2e5:9b8a:78f6 with SMTP id
+ z83-20020a0dd756000000b002e59b8a78f6mr9179301ywd.216.1647569613119; Thu, 17
+ Mar 2022 19:13:33 -0700 (PDT)
+Date:   Fri, 18 Mar 2022 10:13:12 +0800
+Message-Id: <20220318021314.3225240-1-davidgow@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.894.gb6a874cedc-goog
+Subject: [RFC PATCH 0/2] kunit: Support redirecting function calls
+From:   David Gow <davidgow@google.com>
+To:     Brendan Higgins <brendanhiggins@google.com>,
+        Daniel Latypov <dlatypov@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
+Cc:     David Gow <davidgow@google.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jean and folks,
-This is just an optional flag which could be used on an embedded system.
-For example, if we want to use an virtio-input device as a virtual power
-key to wake up the virtual machine, we can set this flag in the device
-tree.
-Currently, virio-mmio driver does not implement suspend/resume
-callback(maybe no need). So we want to check this flag and call
-enable_irq_wake()  accordingly in vm_find_vqs().
+When writing tests, it'd often be very useful to be able to intercept
+calls to a function in the code being tested and replace it with a
+test-specific stub. This has always been an obviously missing piece of
+KUnit, and the solutions always involve some tradeoffs with cleanliness,
+performance, or impact on non-test code. See the folowing document for
+some of the challenges:
+https://kunit.dev/mocking.html
 
-Regards,
-Minghao
+This series consists of two prototype patches which add support for this
+sort of redirection to KUnit tests:
 
-On Thu, Mar 17, 2022 at 10:13:51AM +0000, Jean-Philippe Brucker wrote:
-> Hi Minghao,
-> 
-> On Thu, Mar 17, 2022 at 02:35:15PM +0800, Minghao Xue wrote:
-> > Hi Jean,
-> > 
-> > Do you have any comment on this change? And do you consider to accpet
-> > this commit? Looking forward to your reply.
-> 
-> Please send device-tree patches to devicetree@vger.kernel.org with the
-> maintainer "Rob Herring <robh+dt@kernel.org>" on Cc. Add the virtio list
-> virtualization@lists.linux-foundation.org for anything related to virtio.
-> (You can find that by running "scripts/get_maintainer.pl <your patch>")
-> 
-> Regarding the patch itself it's outside my expertise, but I feel like
-> there should be more generic mechanism to solve this problem, and firmware
-> might not need to be involved if this is not describing a property of the
-> platform. Plenty of drivers outside virtio deal with IRQ lines as wakeup
-> source and I don't see similar properties in other device tree nodes, how
-> do they do it?  It looks like a lot of drivers call enable_irq_wake() in
-> their suspend() callback, so could we do the same for virtio-mmio?
-> 
-> Thanks,
-> Jean
-> 
-> > 
-> > Regards,
-> > Minghao
-> > 
-> > On Tue, Mar 08, 2022 at 05:52:36PM +0800, Minghao Xue wrote:
-> > > Some systems want to set the interrupt of virtio_mmio device
-> > > as a wakeup source. On such systems, we'll use the existence
-> > > of the "virtio,wakeup" property as a signal of requirement.
-> > > 
-> > > Signed-off-by: Minghao Xue <quic_mingxue@quicinc.com>
-> > > ---
-> > >  Documentation/devicetree/bindings/virtio/mmio.yaml | 4 ++++
-> > >  1 file changed, 4 insertions(+)
-> > > 
-> > > diff --git a/Documentation/devicetree/bindings/virtio/mmio.yaml b/Documentation/devicetree/bindings/virtio/mmio.yaml
-> > > index 4b7a027..a5fe02a 100644
-> > > --- a/Documentation/devicetree/bindings/virtio/mmio.yaml
-> > > +++ b/Documentation/devicetree/bindings/virtio/mmio.yaml
-> > > @@ -31,6 +31,10 @@ properties:
-> > >      description: Required for devices making accesses thru an IOMMU.
-> > >      maxItems: 1
-> > >  
-> > > +  virtio,wakeup:
-> > > +    type: boolean
-> > > +    description: Required for setting irq of a virtio_mmio device as wakeup source.
-> > > +
-> > >  required:
-> > >    - compatible
-> > >    - reg
-> > > -- 
-> > > The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-> > > a Linux Foundation Collaborative Project
-> > > 
+1: static_stub: Any function which might want to be intercepted adds a
+call to a macro which checks if a test has redirected calls to it, and
+calls the corresponding replacement.
+
+2: ftrace_stub: Functions are intercepted using ftrace and livepatch.
+This doesn't require adding a new prologue to each function being
+replaced, but does have more dependencies (which restricts it to a small
+number of architectures, not including UML), and doesn't work well with
+inline functions.
+
+The API for both implementations is very similar, so it should be easy
+to migrate from one to the other if necessary.  Both of these
+implementations restrict the redirection to the test context: it is
+automatically undone after the KUnit test completes, and does not affect
+calls in other threads. If CONFIG_KUNIT is not enabled, there should be
+no overhead in either implementation.
+
+Does either (or both) of these features sound useful, and is this
+sort-of API the right model? (Personally, I think there's a reasonable
+scope for both.) Is anything obviously missing or wrong? Do the names,
+descriptions etc. make any sense?
+
+Note that these patches are definitely still at the "prototype" level,
+and things like error-handling, documentation, and testing are still
+pretty sparse. There is also quite a bit of room for optimisation.
+These'll all be improved for v1 if the concept seems good.
+
+Cheers,
+-- David
+
+Daniel Latypov (1):
+  kunit: expose ftrace-based API for stubbing out functions during tests
+
+David Gow (1):
+  kunit: Expose 'static stub' API to redirect functions
+
+ include/kunit/ftrace_stub.h         |  84 +++++++++++++++++
+ include/kunit/static_stub.h         | 106 +++++++++++++++++++++
+ lib/kunit/Kconfig                   |  11 +++
+ lib/kunit/Makefile                  |   5 +
+ lib/kunit/ftrace_stub.c             | 138 ++++++++++++++++++++++++++++
+ lib/kunit/kunit-example-test.c      |  64 +++++++++++++
+ lib/kunit/static_stub.c             | 125 +++++++++++++++++++++++++
+ lib/kunit/stubs_example.kunitconfig |  11 +++
+ 8 files changed, 544 insertions(+)
+ create mode 100644 include/kunit/ftrace_stub.h
+ create mode 100644 include/kunit/static_stub.h
+ create mode 100644 lib/kunit/ftrace_stub.c
+ create mode 100644 lib/kunit/static_stub.c
+ create mode 100644 lib/kunit/stubs_example.kunitconfig
+
+-- 
+2.35.1.894.gb6a874cedc-goog
+
