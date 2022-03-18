@@ -2,140 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65826C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:24:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D6A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:24:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239106AbiCRQZd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 12:25:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39270 "EHLO
+        id S239065AbiCRQZh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 12:25:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239128AbiCRQZW (ORCPT
+        with ESMTP id S237327AbiCRQZY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 12:25:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4D602F09F0;
-        Fri, 18 Mar 2022 09:21:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 18 Mar 2022 12:25:24 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90A1F30DC65
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 09:21:26 -0700 (PDT)
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com [209.85.167.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A61961774;
-        Fri, 18 Mar 2022 16:21:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E756EC340E8;
-        Fri, 18 Mar 2022 16:21:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647620480;
-        bh=0kbUdPgdG/ygPeHnHoAJ1qXfejq0ixJB5sK4dDeLqeU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=idalnSWuwFfBy0/Dqg7PTorUAnbZ2CowEQ8GHbLco1L4jwkhrQpAasbdFKaD6yauQ
-         8MFIDhfWc+xn8YHxnc/GfbLFol3UxDEqnL5h5CrXuWRfSrWwP9CEe+cJzsAIb3pf+A
-         wwYFZQRsNVJ/WfMeq2XouItBh8GggL/bwZ7DosXQ=
-Date:   Fri, 18 Mar 2022 17:21:16 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     James Morse <james.morse@arm.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: Re: [PATCH 5.4 18/43] arm64: entry: Add macro for reading symbol
- addresses from the trampoline
-Message-ID: <YjSxfK6bmH4P9IQl@kroah.com>
-References: <20220317124527.672236844@linuxfoundation.org>
- <20220317124528.180267687@linuxfoundation.org>
- <113e7675-4263-2a20-81d0-9634f03511d2@gmail.com>
- <bc35996d-ec18-1923-38f4-81d16ed98b7a@arm.com>
- <YjSw3wfvbhtjWRSG@kroah.com>
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id A9E423F1F6
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 16:21:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1647620483;
+        bh=O5YEItFojELUQ2ZVAdFWmd7QnNJFa0nT8LdWFM6nccM=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=c/fOo4zU9mb8jCYfW0YF/+tCrIWepDwaZCTXRnDu6eiyG+GMG/LwSvrSA4coqCzdX
+         mg7q6D75Um+FkhqFAIUY35qd5QhMq9aD6Eb9C3DwF+JxR1Fd8/Xw0mAwo4ZLIvfEZo
+         X6FDhgpw0rf3V0jchz4aEYOliC4+7nXzlN/WoxHxGBWsEyfnMJMLH4Wwlfm/NwPCL4
+         yz1IVWkY98rlMSYgkNvbOPDJxov9ZXke2OSTkMMQ40XlHkG4uzKzTSw6o/3ilQkfMk
+         3hq5AvlqlrRzVSzT3UT+X/0vvs+POxCZPNCSb1mb7Z9/mAmojgnIZ+XOUgBO6BihGz
+         H0IIZ/wiRq0xA==
+Received: by mail-lf1-f72.google.com with SMTP id d14-20020a05651233ce00b004475964142aso2729660lfg.21
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 09:21:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=O5YEItFojELUQ2ZVAdFWmd7QnNJFa0nT8LdWFM6nccM=;
+        b=4eNZJsF8fh1rVxlzzh/V5Y+Csuo4kANqC3f+bvF5qGhpZ+Si0J4uB3/SwVE5Vt9/Zn
+         dUMIHAI8gnjB3nEggWbwIdZlZAggHGLh6jUOaH7UNtR9ClAgWugTx14GLabIp7bepLPr
+         BkHe01N1p6W+f1p/JGNQ8pfKcUPySHzLIEgiF0xdxsi35s7vJ+MTxK0+tfCc5XesZYrX
+         6kNn5SfQzvRrP/XMUZ/+36LKS6H/fcSRK8CoTbB0xE7KUP/+Da04Nek6xrJyWSf169RZ
+         53jAe4vhtfp126P6DzyUPEm+YmydQkSXgGD3bmhrTy5RlmN/tz04TfN5IjrWCXbb2gR3
+         6J8w==
+X-Gm-Message-State: AOAM533lMxgGWFssn2ZmtDoYqJTKu7Br4wGgGGECw+oOBrdqw2nsWAse
+        ls2/U4cn5oLkGhPTudu16UjIFG/x3MT4t46cVEINfHNl/WPMNaYmArDn1jBC0uT14f0lQYXtQ7S
+        HghDmc/0dCUVXWhJnY+k+OZ5wGR/5z3y99v+Lcg8FHA==
+X-Received: by 2002:a05:6512:6c1:b0:448:6291:f135 with SMTP id u1-20020a05651206c100b004486291f135mr6405491lff.451.1647620483035;
+        Fri, 18 Mar 2022 09:21:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz7IhRjpip8ZxqWpdk/rNDzwPEQOlG6V0utFUzBi0pEzxIv6O5tJhNXTUklIfs5QHZNcJq1TQ==
+X-Received: by 2002:a05:6512:6c1:b0:448:6291:f135 with SMTP id u1-20020a05651206c100b004486291f135mr6405475lff.451.1647620482814;
+        Fri, 18 Mar 2022 09:21:22 -0700 (PDT)
+Received: from localhost.localdomain (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id h5-20020a197005000000b00448287d1275sm906913lfc.298.2022.03.18.09.21.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Mar 2022 09:21:22 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Green Wan <green.wan@sifive.com>, Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        Palmer Debbelt <palmer@sifive.com>, dmaengine@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: [PATCH 1/2] dt-bindings: dmaengine: sifive,fu540-c000: include generic schema
+Date:   Fri, 18 Mar 2022 17:20:43 +0100
+Message-Id: <20220318162044.169350-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YjSw3wfvbhtjWRSG@kroah.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 05:18:39PM +0100, Greg Kroah-Hartman wrote:
-> On Fri, Mar 18, 2022 at 12:11:32PM +0000, James Morse wrote:
-> > Hi Florian,
-> > 
-> > On 3/17/22 8:48 PM, Florian Fainelli wrote:
-> > > On 3/17/22 5:45 AM, Greg Kroah-Hartman wrote:
-> > > > From: James Morse <james.morse@arm.com>
-> > > > 
-> > > > commit b28a8eebe81c186fdb1a0078263b30576c8e1f42 upstream.
-> > > > 
-> > > > The trampoline code needs to use the address of symbols in the wider
-> > > > kernel, e.g. vectors. PC-relative addressing wouldn't work as the
-> > > > trampoline code doesn't run at the address the linker expected.
-> > > > 
-> > > > tramp_ventry uses a literal pool, unless CONFIG_RANDOMIZE_BASE is
-> > > > set, in which case it uses the data page as a literal pool because
-> > > > the data page can be unmapped when running in user-space, which is
-> > > > required for CPUs vulnerable to meltdown.
-> > > > 
-> > > > Pull this logic out as a macro, instead of adding a third copy
-> > > > of it.
-> > > > 
-> > > > Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-> > > > Signed-off-by: James Morse <james.morse@arm.com>
-> > > > Signed-off-by: Sasha Levin <sashal@kernel.org>
-> > > 
-> > > This commit causes a linking failure with CONFIG_ARM_SDE_INTERFACE=y
-> > > enabled in the kernel:
-> > > 
-> > >    LD      .tmp_vmlinux.kallsyms1
-> > > /local/users/fainelli/buildroot/output/arm64/host/bin/aarch64-linux-ld:
-> > > arch/arm64/kernel/entry.o: in function `__sdei_asm_exit_trampoline':
-> > > /local/users/fainelli/buildroot/output/arm64/build/linux-custom/arch/arm64/kernel/entry.S:1352:
-> > > undefined reference to `__sdei_asm_trampoline_next_handler'
-> > > make[2]: *** [Makefile:1100: vmlinux] Error 1
-> > > make[1]: *** [package/pkg-generic.mk:295:
-> > > /local/users/fainelli/buildroot/output/arm64/build/linux-custom/.stamp_built]
-> > > Error 2
-> > > make: *** [Makefile:27: _all] Error 2
-> > 
-> > ... and with CONFIG_RANDOMIZE_BASE turned off, which is why allyesconfig didn't catch it.
-> > This is because I kept the next_handler bit of the label when it conflicted, which isn't needed
-> > because the __entry_tramp bit added by the macro serves the same purpose.
-> > 
-> > The below diff fixes it:
-> > ----------%<----------
-> > diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
-> > index e4b5a15c2e2e..cfc0bb6c49f7 100644
-> > --- a/arch/arm64/kernel/entry.S
-> > +++ b/arch/arm64/kernel/entry.S
-> > @@ -1190,7 +1190,7 @@ __entry_tramp_data_start:
-> >  __entry_tramp_data_vectors:
-> >         .quad   vectors
-> >  #ifdef CONFIG_ARM_SDE_INTERFACE
-> > -__entry_tramp_data___sdei_asm_trampoline_next_handler:
-> > +__entry_tramp_data___sdei_asm_handler:
-> >         .quad   __sdei_asm_handler
-> >  #endif /* CONFIG_ARM_SDE_INTERFACE */
-> >         .popsection                             // .rodata
-> > @@ -1319,7 +1319,7 @@ ENTRY(__sdei_asm_entry_trampoline)
-> >          */
-> >  1:     str     x4, [x1, #(SDEI_EVENT_INTREGS + S_ORIG_ADDR_LIMIT)]
-> > -       tramp_data_read_var     x4, __sdei_asm_trampoline_next_handler
-> > +       tramp_data_read_var     x4, __sdei_asm_handler
-> >         br      x4
-> >  ENDPROC(__sdei_asm_entry_trampoline)
-> >  NOKPROBE(__sdei_asm_entry_trampoline)
-> > ----------%<----------
-> > 
-> > Good news - this didn't happen with v5.10.
-> > 
-> > I don't see this in v5.4.185 yet.
-> > 
-> > Greg/Sasha, what is least work for you?:
-> > A new version of this patch,
-> > A fixup on top of the series,
-> > Reposting the series with this fixed.
-> 
-> Let me merge this into this commit.
+Include generic dma-controller.yaml schema, which enforces node naming
+and other generic properties.
 
-Well I would if it would actually apply :(
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+---
+ .../devicetree/bindings/dma/sifive,fu540-c000-pdma.yaml   | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-Can you send a version that isn't whitespace corrupted?
+diff --git a/Documentation/devicetree/bindings/dma/sifive,fu540-c000-pdma.yaml b/Documentation/devicetree/bindings/dma/sifive,fu540-c000-pdma.yaml
+index 75ad898c59bc..47c46af25536 100644
+--- a/Documentation/devicetree/bindings/dma/sifive,fu540-c000-pdma.yaml
++++ b/Documentation/devicetree/bindings/dma/sifive,fu540-c000-pdma.yaml
+@@ -22,6 +22,9 @@ description: |
+ 
+   https://static.dev.sifive.com/FU540-C000-v1.0.pdf
+ 
++allOf:
++  - $ref: "dma-controller.yaml#"
++
+ properties:
+   compatible:
+     items:
+@@ -41,13 +44,12 @@ required:
+   - compatible
+   - reg
+   - interrupts
+-  - '#dma-cells'
+ 
+-additionalProperties: false
++unevaluatedProperties: false
+ 
+ examples:
+   - |
+-    dma@3000000 {
++    dma-controller@3000000 {
+       compatible = "sifive,fu540-c000-pdma";
+       reg = <0x3000000 0x8000>;
+       interrupts = <23>, <24>, <25>, <26>, <27>, <28>, <29>, <30>;
+-- 
+2.32.0
 
-thanks,
-
-greg k-h
