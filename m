@@ -2,101 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1500C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 09:45:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 309DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 09:45:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234617AbiCRJq5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 05:46:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44896 "EHLO
+        id S234632AbiCRJq7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 05:46:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232891AbiCRJqz (ORCPT
+        with ESMTP id S234599AbiCRJq4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 05:46:55 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E63F2C3DFE;
+        Fri, 18 Mar 2022 05:46:56 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C21782E7120;
         Fri, 18 Mar 2022 02:45:37 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id CD3571F38E;
-        Fri, 18 Mar 2022 09:45:35 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id 7E56521106;
+        Fri, 18 Mar 2022 09:45:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1647596735; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=oGA/yvm/gqNdpwaPx6sBtB0hVGICo80CcKhGUxQPfB8=;
-        b=qS/TaOvW+jrEBOjhneobfyyc0+JuCwZ692tU6w6TyswDa7P3Cyc52JAq0jQPjGcw0N/NcI
-        LfinwTiWZgmgko+NPkErtKfq02RmpH0MCS40MiCpqMzwuxdHC8EVY6LCaaMou9rH1YwZMY
-        tWHwv2WYhH2XVi+necqGlv/nChi6+OE=
+        t=1647596736; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=j91Po3nZulBUNLEMmTrcd0Gf5q5qXtcw62oM/y9MtGM=;
+        b=RwOUpvVvs9ls3ETEjNWteR5wQwfZaNS6yPViQJXddBVnM2kbTsb9aol43NQ/nekbHz1VDM
+        sNCWXwBL8E6w7hdkYwuYbWZQcqZIfMMFbeetmrjhuNREz/qzujN00pocoC8bMCcX82TCQd
+        9ogOGNg70ZYoCF6IX+v+nmBkzazxDQw=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1647596735;
+        s=susede2_ed25519; t=1647596736;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=oGA/yvm/gqNdpwaPx6sBtB0hVGICo80CcKhGUxQPfB8=;
-        b=e45uj0E5nYc794ludXFkBpocxN72v8cUw5gNPbWgJevgB6bjbEm+2j8I0wEmehJ0eOnFSD
-        3UUOtgSnU4l/+ZCg==
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=j91Po3nZulBUNLEMmTrcd0Gf5q5qXtcw62oM/y9MtGM=;
+        b=nVfrRN/sFcj/FxvSo62iki3OTGABkLx8HwPBaMqx6va6Lwrv7isqka72kpvR3Tin159dRj
+        uzAa1m9Nr3T8PRBg==
 Received: from vasant-suse.suse.de (unknown [10.163.24.178])
-        by relay2.suse.de (Postfix) with ESMTP id 62131A3B81;
-        Fri, 18 Mar 2022 09:45:35 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTP id 321ECA3B92;
+        Fri, 18 Mar 2022 09:45:36 +0000 (UTC)
 From:   Vasant Karasulli <vkarasulli@suse.de>
 To:     linux-kernel@vger.kernel.org, jroedel@suse.de, kvm@vger.kernel.org
 Cc:     bp@alien8.de, x86@kernel.org, thomas.lendacky@amd.com,
         varad.gautam@suse.com, Vasant Karasulli <vkarasulli@suse.de>
-Subject: [PATCH v6 0/4] x86/tests: Add tests for AMD SEV-ES #VC handling
-Date:   Fri, 18 Mar 2022 10:45:28 +0100
-Message-Id: <20220318094532.7023-1-vkarasulli@suse.de>
+Subject: [PATCH v6 2/4] x86/tests: Add tests for AMD SEV-ES #VC handling Add KUnit based tests to validate Linux's VC handling for instructions cpuid and wbinvd. These tests: 1. install a kretprobe on the #VC handler (sev_es_ghcb_hv_call, to access GHCB before/after the resulting VMGEXIT). 2. trigger an NAE by executing either cpuid or wbinvd. 3. check that the kretprobe was hit with the right exit_code available in GHCB.
+Date:   Fri, 18 Mar 2022 10:45:30 +0100
+Message-Id: <20220318094532.7023-3-vkarasulli@suse.de>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220318094532.7023-1-vkarasulli@suse.de>
+References: <20220318094532.7023-1-vkarasulli@suse.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi All,
-
-   This is the version 6 of the patch written to add tests for
-   AMD SEV-ES #VC handling. This version attempts to
-   address review comments to the previous version of the patch in
-   https://lore.kernel.org/kvm/20220208162623.18368-1-vkarasulli@suse.de/.
-
-   Changes in this version:
-   1. The patch in the previous version is split into 4 parts.
-   2. Constants in function sev_es_nae_mmio are replaced by macros.
-
-Thanks,
-Vasant
-
-Vasant Karasulli (4):
-  x86/tests: Add Kconfig options for testing AMD SEV related features.
-  x86/tests: Add KUnit based tests to validate Linux's VC handling for
-    instructions cpuid and wbinvd. These tests: 1. install a kretprobe
-    on the #VC handler (sev_es_ghcb_hv_call, to    access GHCB
-    before/after the resulting VMGEXIT). 2. trigger an NAE by executing
-    either cpuid or wbinvd. 3. check that the kretprobe was hit with the
-    right exit_code available    in GHCB.
-  x86/tests: Add KUnit based tests to validate Linux's VC handling for
-      instructions accessing registers such as MSR and DR7. These tests:
-        1. install a kretprobe on the #VC handler (sev_es_ghcb_hv_call,
-    to        access GHCB before/after the resulting VMGEXIT).     2.
-    trigger an NAE by accessing either MSR or DR7.     3. check that the
-    kretprobe was hit with the right exit_code available        in GHCB.
-  x86/tests: Add KUnit based tests to validate Linux's VC handling for
-          IO instructions. These tests:         1. install a kretprobe
-    on the #VC handler (sev_es_ghcb_hv_call, to            access GHCB
-    before/after the resulting VMGEXIT).         2. trigger an NAE by
-    issuing an IO instruction.         3. check that the kretprobe was
-    hit with the right exit_code available            in GHCB.
-
- arch/x86/Kbuild              |   2 +
- arch/x86/Kconfig.debug       |  16 ++++
- arch/x86/kernel/Makefile     |   7 ++
- arch/x86/tests/Makefile      |   3 +
- arch/x86/tests/sev-test-vc.c | 155 +++++++++++++++++++++++++++++++++++
- 5 files changed, 183 insertions(+)
- create mode 100644 arch/x86/tests/Makefile
+Signed-off-by: Vasant Karasulli <vkarasulli@suse.de>
+---
+ arch/x86/tests/Makefile      |   2 +
+ arch/x86/tests/sev-test-vc.c | 114 +++++++++++++++++++++++++++++++++++
+ 2 files changed, 116 insertions(+)
  create mode 100644 arch/x86/tests/sev-test-vc.c
 
-
-base-commit: 09688c0166e76ce2fb85e86b9d99be8b0084cdf9
-prerequisite-patch-id: b74bc39d7ca69ad86b5f9090047c44ab039f4622
-prerequisite-patch-id: a53a291b59b4ceaffa25a9a08dfa08b5a78a01b9
+diff --git a/arch/x86/tests/Makefile b/arch/x86/tests/Makefile
+index f66554cd5c45..4beca64bd2aa 100644
+--- a/arch/x86/tests/Makefile
++++ b/arch/x86/tests/Makefile
+@@ -1 +1,3 @@
+ # SPDX-License-Identifier: GPL-2.0
++
++obj-$(CONFIG_AMD_SEV_TEST_VC)	+= sev-test-vc.o
+diff --git a/arch/x86/tests/sev-test-vc.c b/arch/x86/tests/sev-test-vc.c
+new file mode 100644
+index 000000000000..9d415b9708dc
+--- /dev/null
++++ b/arch/x86/tests/sev-test-vc.c
+@@ -0,0 +1,114 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (C) 2021 SUSE
++ *
++ * Author: Varad Gautam <varad.gautam@suse.com>
++ */
++
++#include <asm/cpufeature.h>
++#include <asm/sev-common.h>
++#include <asm/svm.h>
++#include <kunit/test.h>
++#include <linux/kprobes.h>
++
++static struct kretprobe hv_call_krp;
++
++static int hv_call_krp_entry(struct kretprobe_instance *krpi,
++			     struct pt_regs *regs)
++{
++	unsigned long ghcb_vaddr = regs_get_kernel_argument(regs, 0);
++	*((unsigned long *) krpi->data) = ghcb_vaddr;
++
++	return 0;
++}
++
++static int hv_call_krp_ret(struct kretprobe_instance *krpi,
++			   struct pt_regs *regs)
++{
++	unsigned long ghcb_vaddr = *((unsigned long *) krpi->data);
++	struct ghcb *ghcb = (struct ghcb *) ghcb_vaddr;
++	struct kunit *test = current->kunit_test;
++
++	if (test && strstr(test->name, "sev_es_") && test->priv)
++		*((u64 *)test->priv) = ghcb->save.sw_exit_code;
++
++	return 0;
++}
++
++int sev_es_test_vc_init(struct kunit *test)
++{
++	int ret;
++
++	if (!cc_platform_has(CC_ATTR_GUEST_STATE_ENCRYPT)) {
++		kunit_info(test, "Not a SEV-ES guest. Skipping.");
++		ret = -EINVAL;
++		goto out;
++	}
++
++	memset(&hv_call_krp, 0, sizeof(hv_call_krp));
++	hv_call_krp.entry_handler = hv_call_krp_entry;
++	hv_call_krp.handler = hv_call_krp_ret;
++	hv_call_krp.maxactive = 100;
++	hv_call_krp.data_size = sizeof(unsigned long);
++	hv_call_krp.kp.symbol_name = "sev_es_ghcb_hv_call";
++	hv_call_krp.kp.addr = 0;
++
++	ret = register_kretprobe(&hv_call_krp);
++	if (ret) {
++		kunit_info(test, "Could not register kretprobe. Skipping.");
++		goto out;
++	}
++
++	test->priv = kunit_kzalloc(test, sizeof(u64), GFP_KERNEL);
++	if (!test->priv) {
++		ret = -ENOMEM;
++		kunit_info(test, "Could not allocate. Skipping.");
++		goto out;
++	}
++
++out:
++	return ret;
++}
++
++void sev_es_test_vc_exit(struct kunit *test)
++{
++	if (test->priv)
++		kunit_kfree(test, test->priv);
++
++	if (hv_call_krp.kp.addr)
++		unregister_kretprobe(&hv_call_krp);
++}
++
++#define check_op(kt, ec, op)			\
++do {						\
++	struct kunit *t = (struct kunit *) kt;	\
++	op;					\
++	KUNIT_EXPECT_EQ(t, (typeof(ec)) ec,	\
++		*((typeof(ec) *)(t->priv)));		\
++} while (0)
++
++static void sev_es_nae_cpuid(struct kunit *test)
++{
++	unsigned int cpuid_fn = 0x8000001f;
++
++	check_op(test, SVM_EXIT_CPUID, native_cpuid_eax(cpuid_fn));
++}
++
++static void sev_es_nae_wbinvd(struct kunit *test)
++{
++	check_op(test, SVM_EXIT_WBINVD, wbinvd());
++}
++
++static struct kunit_case sev_es_vc_testcases[] = {
++	KUNIT_CASE(sev_es_nae_cpuid),
++	KUNIT_CASE(sev_es_nae_wbinvd),
++	{}
++};
++
++static struct kunit_suite sev_es_vc_test_suite = {
++	.name = "sev_es_test_vc",
++	.init = sev_es_test_vc_init,
++	.exit = sev_es_test_vc_exit,
++	.test_cases = sev_es_vc_testcases,
++};
++kunit_test_suite(sev_es_vc_test_suite);
 --
 2.32.0
 
