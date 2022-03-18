@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54645C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 10:38:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2802FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 10:38:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234219AbiCRKjh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 06:39:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37280 "EHLO
+        id S234697AbiCRKjq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 06:39:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235033AbiCRKjG (ORCPT
+        with ESMTP id S235100AbiCRKjG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Mar 2022 06:39:06 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD83D2D9D50;
-        Fri, 18 Mar 2022 03:37:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37E82DA687;
+        Fri, 18 Mar 2022 03:37:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=HNsH48t+EV6ivnkxLpBDiWmjr5FnEaaFgC7nRyfhpuc=;
-  b=IpJzgAuUN9uVfx1RR8bvWG2Mrx70QeITan9PZ+aDr6QfemGs3XM4JjIl
-   n8cQ9IzeyFF0+yc2WAxsZlYPpREq/8gKsivb0Ks4WmlTidT5ykkko5qUK
-   10vHi38rX8UJeQvXbhhWBzDThuUA3t7//luDOJkhkRXWrYWos+a4fgTrn
-   M=;
+  bh=N/9zY6kwV17gsyVNd3FFvTsp125B/Zcm/47dITBG9R0=;
+  b=vRnlJoKTsI0fv0/a8YiYZwsryOr+uxlcT64hXLZwM2Fhlv6ngntqhWsN
+   03lRZzXsPoeLqb6+xDux3ZT6TtakGSu3obZ7whwEn8olR3avKjzMD3mnw
+   aQajvrLsC5b9PXKHk4/2TXXUVDAD/f/cd33NSgxwSigZww6vSd/PR8xdV
+   8=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.90,192,1643670000"; 
-   d="scan'208";a="8935642"
+   d="scan'208";a="8935644"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 11:37:36 +0100
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 11:37:37 +0100
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     kernel-janitors@vger.kernel.org, Will Deacon <will@kernel.org>,
+To:     Russell King <linux@armlinux.org.uk>
+Cc:     kernel-janitors@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] arm64: fix typos in comments
-Date:   Fri, 18 Mar 2022 11:37:05 +0100
-Message-Id: <20220318103729.157574-10-Julia.Lawall@inria.fr>
+Subject: [PATCH] arch/arm: fix typos in comments
+Date:   Fri, 18 Mar 2022 11:37:07 +0100
+Message-Id: <20220318103729.157574-12-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -49,57 +49,164 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- arch/arm64/kernel/module-plts.c |    2 +-
- arch/arm64/kernel/suspend.c     |    2 +-
- arch/arm64/mm/init.c            |    4 ++--
- 3 files changed, 4 insertions(+), 4 deletions(-)
+ arch/arm/common/scoop.c           |    2 +-
+ arch/arm/kernel/setup.c           |    2 +-
+ arch/arm/kernel/suspend.c         |    2 +-
+ arch/arm/kernel/sys_oabi-compat.c |    2 +-
+ arch/arm/kernel/unwind.c          |    2 +-
+ arch/arm/kernel/vdso.c            |    2 +-
+ arch/arm/mm/cache-l2x0.c          |    4 ++--
+ arch/arm/mm/fault.c               |    2 +-
+ arch/arm/probes/decode.c          |    2 +-
+ arch/arm/probes/kprobes/opt-arm.c |    4 ++--
+ 10 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/arch/arm64/kernel/module-plts.c b/arch/arm64/kernel/module-plts.c
-index e53493d8b208..a3d0494f25a9 100644
---- a/arch/arm64/kernel/module-plts.c
-+++ b/arch/arm64/kernel/module-plts.c
-@@ -220,7 +220,7 @@ static unsigned int count_plts(Elf64_Sym *syms, Elf64_Rela *rela, int num,
- 			 * increasing the section's alignment so that the
- 			 * resulting address of this instruction is guaranteed
- 			 * to equal the offset in that particular bit (as well
--			 * as all less signficant bits). This ensures that the
-+			 * as all less significant bits). This ensures that the
- 			 * address modulo 4 KB != 0xfff8 or 0xfffc (which would
- 			 * have all ones in bits [11:3])
- 			 */
-diff --git a/arch/arm64/kernel/suspend.c b/arch/arm64/kernel/suspend.c
-index 19ee7c33769d..2b0887e58a7c 100644
---- a/arch/arm64/kernel/suspend.c
-+++ b/arch/arm64/kernel/suspend.c
-@@ -140,7 +140,7 @@ int cpu_suspend(unsigned long arg, int (*fn)(unsigned long))
- 	/*
- 	 * Restore pstate flags. OS lock and mdscr have been already
- 	 * restored, so from this point onwards, debugging is fully
--	 * renabled if it was enabled when core started shutdown.
-+	 * reenabled if it was enabled when core started shutdown.
- 	 */
- 	local_daif_restore(flags);
+diff --git a/arch/arm/common/scoop.c b/arch/arm/common/scoop.c
+index e74c5bfdc6d3..f6684947f0ec 100644
+--- a/arch/arm/common/scoop.c
++++ b/arch/arm/common/scoop.c
+@@ -23,7 +23,7 @@
+    is used which is setup by the platform code.
  
-diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-index 8ac25f19084e..1e7b1550e2fc 100644
---- a/arch/arm64/mm/init.c
-+++ b/arch/arm64/mm/init.c
-@@ -73,7 +73,7 @@ EXPORT_SYMBOL(memstart_addr);
-  * In this scheme a comparatively quicker boot is observed.
-  *
-  * If ZONE_DMA configs are defined, crash kernel memory reservation
-- * is delayed until DMA zone memory range size initilazation performed in
-+ * is delayed until DMA zone memory range size initialization performed in
-  * zone_sizes_init().  The defer is necessary to steer clear of DMA zone
-  * memory range to avoid overlap allocation.  So crash kernel memory boundaries
-  * are not known when mapping all bank memory ranges, which otherwise means
-@@ -81,7 +81,7 @@ EXPORT_SYMBOL(memstart_addr);
-  * so page-granularity mappings are created for the entire memory range.
-  * Hence a slightly slower boot is observed.
-  *
-- * Note: Page-granularity mapppings are necessary for crash kernel memory
-+ * Note: Page-granularity mappings are necessary for crash kernel memory
-  * range for shrinking its size via /sys/kernel/kexec_crash_size interface.
+    This file is never modular so this symbol is always
+-   accessile to the board support files.
++   accessible to the board support files.
+ */
+ struct scoop_pcmcia_config *platform_scoop_config;
+ EXPORT_SYMBOL(platform_scoop_config);
+diff --git a/arch/arm/kernel/setup.c b/arch/arm/kernel/setup.c
+index 039feb7cd590..2ab767e49332 100644
+--- a/arch/arm/kernel/setup.c
++++ b/arch/arm/kernel/setup.c
+@@ -861,7 +861,7 @@ static void __init request_standard_resources(const struct machine_desc *mdesc)
+ 
+ 		/*
+ 		 * In memblock, end points to the first byte after the
+-		 * range while in resourses, end points to the last byte in
++		 * range while in resources, end points to the last byte in
+ 		 * the range.
+ 		 */
+ 		res_end = end - 1;
+diff --git a/arch/arm/kernel/suspend.c b/arch/arm/kernel/suspend.c
+index 43f0a3ebf390..d3426266a9cd 100644
+--- a/arch/arm/kernel/suspend.c
++++ b/arch/arm/kernel/suspend.c
+@@ -27,7 +27,7 @@ int cpu_suspend(unsigned long arg, int (*fn)(unsigned long))
+ 		return -EINVAL;
+ 
+ 	/*
+-	 * Function graph tracer state gets incosistent when the kernel
++	 * Function graph tracer state gets inconsistent when the kernel
+ 	 * calls functions that never return (aka suspend finishers) hence
+ 	 * disable graph tracing during their execution.
+ 	 */
+diff --git a/arch/arm/kernel/sys_oabi-compat.c b/arch/arm/kernel/sys_oabi-compat.c
+index 68112c172025..e39389ca0ad2 100644
+--- a/arch/arm/kernel/sys_oabi-compat.c
++++ b/arch/arm/kernel/sys_oabi-compat.c
+@@ -474,7 +474,7 @@ asmlinkage long sys_oabi_sendmsg(int fd, struct user_msghdr __user *msg, unsigne
+ 		 * we should do for what is actually a transitional
+ 		 * compatibility layer.  This already has known flaws with
+ 		 * a few ioctls that we don't intend to fix.  Therefore
+-		 * consider this blatent hack as another one... and take care
++		 * consider this blatant hack as another one... and take care
+ 		 * to run for cover.  In most cases it will "just work fine".
+ 		 * If it doesn't, well, tough.
+ 		 */
+diff --git a/arch/arm/kernel/unwind.c b/arch/arm/kernel/unwind.c
+index 04ccff9d9793..857a94195d96 100644
+--- a/arch/arm/kernel/unwind.c
++++ b/arch/arm/kernel/unwind.c
+@@ -120,7 +120,7 @@ static const struct unwind_idx *search_index(unsigned long addr,
+ 		/* positive offsets: [origin; stop) */
+ 		start = origin;
+ 
+-	/* prel31 for address relavive to start */
++	/* prel31 for address relative to start */
+ 	addr_prel31 = (addr - (unsigned long)start) & 0x7fffffff;
+ 
+ 	while (start < stop - 1) {
+diff --git a/arch/arm/kernel/vdso.c b/arch/arm/kernel/vdso.c
+index 3408269d19c7..890eec79d02f 100644
+--- a/arch/arm/kernel/vdso.c
++++ b/arch/arm/kernel/vdso.c
+@@ -68,7 +68,7 @@ struct elfinfo {
+ };
+ 
+ /* Cached result of boot-time check for whether the arch timer exists,
+- * and if so, whether the virtual counter is useable.
++ * and if so, whether the virtual counter is usable.
   */
- #if IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32)
+ bool cntvct_ok __ro_after_init;
+ 
+diff --git a/arch/arm/mm/cache-l2x0.c b/arch/arm/mm/cache-l2x0.c
+index 43d91bfd2360..4143102af42c 100644
+--- a/arch/arm/mm/cache-l2x0.c
++++ b/arch/arm/mm/cache-l2x0.c
+@@ -932,7 +932,7 @@ static u32 cache_id_part_number_from_dt;
+ /**
+  * l2x0_cache_size_of_parse() - read cache size parameters from DT
+  * @np: the device tree node for the l2 cache
+- * @aux_val: pointer to machine-supplied auxilary register value, to
++ * @aux_val: pointer to machine-supplied auxiliary register value, to
+  * be augmented by the call (bits to be set to 1)
+  * @aux_mask: pointer to machine-supplied auxilary register mask, to
+  * be augmented by the call (bits to be set to 0)
+@@ -1380,7 +1380,7 @@ static void aurora_pa_range(unsigned long start, unsigned long end,
+ 	unsigned long flags;
+ 
+ 	/*
+-	 * round start and end adresses up to cache line size
++	 * round start and end addresses up to cache line size
+ 	 */
+ 	start &= ~(CACHE_LINE_SIZE - 1);
+ 	end = ALIGN(end, CACHE_LINE_SIZE);
+diff --git a/arch/arm/mm/fault.c b/arch/arm/mm/fault.c
+index a062e07516dd..1cf525391d2d 100644
+--- a/arch/arm/mm/fault.c
++++ b/arch/arm/mm/fault.c
+@@ -454,7 +454,7 @@ do_translation_fault(unsigned long addr, unsigned int fsr,
+ 	 * On ARM one Linux PGD entry contains two hardware entries (see page
+ 	 * tables layout in pgtable.h). We normally guarantee that we always
+ 	 * fill both L1 entries. But create_mapping() doesn't follow the rule.
+-	 * It can create inidividual L1 entries, so here we have to call
++	 * It can create individual L1 entries, so here we have to call
+ 	 * pmd_none() check for the entry really corresponded to address, not
+ 	 * for the first of pair.
+ 	 */
+diff --git a/arch/arm/probes/decode.c b/arch/arm/probes/decode.c
+index c84053a81358..8281c409e07c 100644
+--- a/arch/arm/probes/decode.c
++++ b/arch/arm/probes/decode.c
+@@ -426,7 +426,7 @@ probes_decode_insn(probes_opcode_t insn, struct arch_probes_insn *asi,
+ 	 * stack_space is initialized to 0 here. Checker functions
+ 	 * should update is value if they find this is a stack store
+ 	 * instruction: positive value means bytes of stack usage,
+-	 * negitive value means unable to determine stack usage
++	 * negative value means unable to determine stack usage
+ 	 * statically. For instruction doesn't store to stack, checker
+ 	 * do nothing with it.
+ 	 */
+diff --git a/arch/arm/probes/kprobes/opt-arm.c b/arch/arm/probes/kprobes/opt-arm.c
+index dbef34ed933f..4a4350f6ef69 100644
+--- a/arch/arm/probes/kprobes/opt-arm.c
++++ b/arch/arm/probes/kprobes/opt-arm.c
+@@ -216,7 +216,7 @@ int arch_prepare_optimized_kprobe(struct optimized_kprobe *op, struct kprobe *or
+ 	 *   (0xff800000 << 2) = 0xfe000000 = -0x2000000
+ 	 *
+ 	 * We can simply check (rel & 0xfe000003):
+-	 *  if rel is positive, (rel & 0xfe000000) shoule be 0
++	 *  if rel is positive, (rel & 0xfe000000) should be 0
+ 	 *  if rel is negitive, (rel & 0xfe000000) should be 0xfe000000
+ 	 *  the last '3' is used for alignment checking.
+ 	 */
+@@ -309,7 +309,7 @@ void __kprobes arch_optimize_kprobes(struct list_head *oplist)
+ 
+ 		/*
+ 		 * Make it a conditional branch if replaced insn
+-		 * is consitional
++		 * is conditional
+ 		 */
+ 		insn = (__mem_to_opcode_arm(
+ 			  op->optinsn.copied_insn[0]) & 0xf0000000) |
 
