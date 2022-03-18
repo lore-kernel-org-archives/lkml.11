@@ -2,209 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41CC1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:03:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FD50C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:03:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238203AbiCRQEc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 12:04:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59310 "EHLO
+        id S238375AbiCRQEi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 12:04:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231775AbiCRQEY (ORCPT
+        with ESMTP id S231775AbiCRQEe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 12:04:24 -0400
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A9886277
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 09:03:04 -0700 (PDT)
-Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 565E81C0003;
-        Fri, 18 Mar 2022 16:03:01 +0000 (UTC)
+        Fri, 18 Mar 2022 12:04:34 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA096277;
+        Fri, 18 Mar 2022 09:03:11 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id DF8B440014;
+        Fri, 18 Mar 2022 16:03:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1647619383;
+        t=1647619389;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding;
-        bh=9LCyO4ZeV4D1HkpUM5CtcxANfcmtzF+DEYKQhTlGfIU=;
-        b=ocD7OJMqhqSqoXXVWORr9+FjnQVAGBTRQtnrn49FmdWlOtnfx0f8Mg3n9lYPj55My4JAWH
-        DiSImPl/7ba1vNaeKwsx0SIcNDvGN3Pmzzzdv80b1MkFHjqSMVvy4i1t3t/6/csrLdHUqd
-        lzLgeA/FYWACnLCrwrLuzf+QobWPFdKH82u46KI82HJMpiggy1E1ae2NWlPMgkQhHGTA9U
-        WiuagoitmpoeHjTm7+ZZSKo6L0ZMepSzdsvB5TYk8GIoYIqsPTp3Fz8WugjFEdT2hvwGnS
-        PebDndy3PVkgeMfsno3oZjQATzx+1RiswPUNWn64QKPAoTVMnouSWZgBInJDrw==
-From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-To:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jagan Teki <jagan@amarulasolutions.com>,
+        bh=wD9g/HyfpaihMjtAUh4hRheF6myO2JbJgNrI9rB+wpM=;
+        b=niLpGNlg/f7Eb9yWFuuV4URLO5ZVaT47aeZycwYZhe0Lcti8C0jBnboCDyt7W0ER1wlmcL
+        0sqXEsgx8e0aNVz2tVzZrSrIXkOCghV0IG7jd1Zln/K6F+GTt+2q732tJaHJzU8OHOk5gL
+        BwPFmfG9ypg25wNhRzipwPo/JtfWDwCnaCfEsI/Ew8i10K9YXibQ87zgriYFgUR36cAXUI
+        am+VmIzU4nF7tmQwWCSBlPMHB81ihV3Gl78qIMeWVAUS9PL86Syd95Q4gnet+iy6Mzsbu2
+        Zhc8gTb6qpvsAl5Sr7JkJtxiZTuGvRKg+cjQwIUC4U5PKTMoIZnHPGk67fTwqw==
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "'Rafael J . Wysocki '" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Subject: [PATCH v2] drm: of: Properly try all possible cases for bridge/panel detection
-Date:   Fri, 18 Mar 2022 17:02:49 +0100
-Message-Id: <20220318160249.126431-1-paul.kocialkowski@bootlin.com>
-X-Mailer: git-send-email 2.35.1
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
+        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+Subject: [PATCH 0/6] introduce fwnode in the I2C subsystem
+Date:   Fri, 18 Mar 2022 17:00:46 +0100
+Message-Id: <20220318160059.328208-1-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While bridge/panel detection was initially relying on the usual
-port/ports-based of graph detection, it was recently changed to
-perform the lookup on any child node that is not port/ports
-instead when such a node is available, with no fallback on the
-usual way.
+In order to allow the I2C subsystem to be usable with fwnode, add
+some functions to retrieve an i2c_adapter from a fwnode and use
+these functions in both i2c mux and sfp. ACPI and device-tree are
+handled to allow these modifications to work with both descriptions.
 
-This results in breaking detection when a child node is present
-but does not contain any panel or bridge node, even when the
-usual port/ports-based of graph is there.
+This series is a subset of the one that was first submitted as a larger
+series to add swnode support [1]. In this one, it will be focused on
+fwnode support only since it seems to have reach a consensus that
+adding fwnode to subsystems makes sense.
 
-In order to support both situations properly, this commit reworks
-the logic to try both options and not just one of the two: it will
-only return -EPROBE_DEFER when both have failed.
+[1] https://lore.kernel.org/netdev/YhPSkz8+BIcdb72R@smile.fi.intel.com/T/
 
-Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Fixes: 80253168dbfd ("drm: of: Lookup if child node has panel or bridge")
----
+Clément Léger (6):
+  property: add fwnode_property_read_string_index()
+  i2c: fwnode: add fwnode_find_i2c_adapter_by_node()
+  i2c: of: use fwnode_get_i2c_adapter_by_node()
+  i2c: mux: pinctrl: remove CONFIG_OF dependency and use fwnode API
+  i2c: mux: add support for fwnode
+  net: sfp: add support for fwnode
 
-Changes since v1:
-- Renamed remote to node;
-- Renamed helper to find_panel_or_bridge;
-- Cleared bridge pointer early;
-- Returned early to make the code more concise;
+ drivers/base/property.c             | 48 +++++++++++++++++++++++++++++
+ drivers/i2c/Makefile                |  1 +
+ drivers/i2c/i2c-core-fwnode.c       | 41 ++++++++++++++++++++++++
+ drivers/i2c/i2c-core-of.c           | 30 ------------------
+ drivers/i2c/i2c-mux.c               | 39 +++++++++++------------
+ drivers/i2c/muxes/Kconfig           |  1 -
+ drivers/i2c/muxes/i2c-mux-pinctrl.c | 21 +++++++------
+ drivers/net/phy/sfp.c               | 46 +++++++++------------------
+ include/linux/i2c.h                 |  7 ++++-
+ include/linux/property.h            |  3 ++
+ 10 files changed, 142 insertions(+), 95 deletions(-)
+ create mode 100644 drivers/i2c/i2c-core-fwnode.c
 
----
- drivers/gpu/drm/drm_of.c | 98 ++++++++++++++++++++--------------------
- 1 file changed, 49 insertions(+), 49 deletions(-)
-
-diff --git a/drivers/gpu/drm/drm_of.c b/drivers/gpu/drm/drm_of.c
-index 9d90cd75c457..63137c833b7a 100644
---- a/drivers/gpu/drm/drm_of.c
-+++ b/drivers/gpu/drm/drm_of.c
-@@ -219,6 +219,28 @@ int drm_of_encoder_active_endpoint(struct device_node *node,
- }
- EXPORT_SYMBOL_GPL(drm_of_encoder_active_endpoint);
- 
-+static int find_panel_or_bridge(struct device_node *node,
-+				struct drm_panel **panel,
-+				struct drm_bridge **bridge)
-+{
-+	if (panel) {
-+		*panel = of_drm_find_panel(node);
-+		if (!IS_ERR(*panel))
-+			return 0;
-+		else
-+			*panel = NULL;
-+	}
-+
-+	/* No panel found yet, check for a bridge next. */
-+	if (bridge) {
-+		*bridge = of_drm_find_bridge(node);
-+		if (*bridge)
-+			return 0;
-+	}
-+
-+	return -EPROBE_DEFER;
-+}
-+
- /**
-  * drm_of_find_panel_or_bridge - return connected panel or bridge device
-  * @np: device tree node containing encoder output ports
-@@ -241,66 +263,44 @@ int drm_of_find_panel_or_bridge(const struct device_node *np,
- 				struct drm_panel **panel,
- 				struct drm_bridge **bridge)
- {
--	int ret = -EPROBE_DEFER;
--	struct device_node *remote;
-+	struct device_node *node;
-+	int ret;
- 
- 	if (!panel && !bridge)
- 		return -EINVAL;
-+
- 	if (panel)
- 		*panel = NULL;
--
--	/**
--	 * Devices can also be child nodes when we also control that device
--	 * through the upstream device (ie, MIPI-DCS for a MIPI-DSI device).
--	 *
--	 * Lookup for a child node of the given parent that isn't either port
--	 * or ports.
--	 */
--	for_each_available_child_of_node(np, remote) {
--		if (of_node_name_eq(remote, "port") ||
--		    of_node_name_eq(remote, "ports"))
--			continue;
--
--		goto of_find_panel_or_bridge;
-+	if (bridge)
-+		*bridge = NULL;
-+
-+	/* Check for a graph on the device node first. */
-+	if (of_graph_is_present(np)) {
-+		node = of_graph_get_remote_node(np, port, endpoint);
-+		if (node) {
-+			ret = find_panel_or_bridge(node, panel, bridge);
-+			of_node_put(node);
-+
-+			if (!ret)
-+				return 0;
-+		}
- 	}
- 
--	/*
--	 * of_graph_get_remote_node() produces a noisy error message if port
--	 * node isn't found and the absence of the port is a legit case here,
--	 * so at first we silently check whether graph presents in the
--	 * device-tree node.
--	 */
--	if (!of_graph_is_present(np))
--		return -ENODEV;
--
--	remote = of_graph_get_remote_node(np, port, endpoint);
--
--of_find_panel_or_bridge:
--	if (!remote)
--		return -ENODEV;
--
--	if (panel) {
--		*panel = of_drm_find_panel(remote);
--		if (!IS_ERR(*panel))
--			ret = 0;
--		else
--			*panel = NULL;
--	}
-+	/* Otherwise check for any child node other than port/ports. */
-+	for_each_available_child_of_node(np, node) {
-+		if (of_node_name_eq(node, "port") ||
-+		    of_node_name_eq(node, "ports"))
-+			continue;
- 
--	/* No panel found yet, check for a bridge next. */
--	if (bridge) {
--		if (ret) {
--			*bridge = of_drm_find_bridge(remote);
--			if (*bridge)
--				ret = 0;
--		} else {
--			*bridge = NULL;
--		}
-+		ret = find_panel_or_bridge(node, panel, bridge);
-+		of_node_put(node);
- 
-+		/* Stop at the first found occurrence. */
-+		if (!ret)
-+			return 0;
- 	}
- 
--	of_node_put(remote);
--	return ret;
-+	return -EPROBE_DEFER;
- }
- EXPORT_SYMBOL_GPL(drm_of_find_panel_or_bridge);
- 
 -- 
-2.35.1
+2.34.1
 
