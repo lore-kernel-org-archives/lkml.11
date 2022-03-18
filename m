@@ -2,139 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7919AC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 23:11:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7738CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 23:13:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241483AbiCRXMr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 19:12:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45666 "EHLO
+        id S241470AbiCRXOV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 19:14:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241477AbiCRXMo (ORCPT
+        with ESMTP id S238224AbiCRXOS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 19:12:44 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AC5DA111DE3;
-        Fri, 18 Mar 2022 16:11:23 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 22IN4QwF013108;
-        Fri, 18 Mar 2022 18:04:26 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 22IN4P7s013107;
-        Fri, 18 Mar 2022 18:04:25 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Fri, 18 Mar 2022 18:04:25 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Bill Wendling <morbo@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Juergen Gross <jgross@suse.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        "llvm@lists.linux.dev" <llvm@lists.linux.dev>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-toolchains <linux-toolchains@vger.kernel.org>
-Subject: Re: [PATCH v5] x86: use builtins to read eflags
-Message-ID: <20220318230425.GT614@gate.crashing.org>
-References: <20220210223134.233757-1-morbo@google.com> <20220301201903.4113977-1-morbo@google.com> <CAGG=3QWh90r5C3gmTj9zxiJb-mwD=PGqGwZZTjAfyi1NCb1_9w@mail.gmail.com> <AC3D873E-A28B-41F1-8BF4-2F6F37BCEEB4@zytor.com> <CAGG=3QVu5QjQK8m2FWiYn-XQuVBjUGXcbznSbK22jVMB5GAutw@mail.gmail.com> <F5296439-4CA3-4F31-BD91-5ED1510BC382@zytor.com> <CAKwvOdkk-C8HMemKs4+yoxvNDgTLmvZG1rmwjVXBqhsQ-cED5g@mail.gmail.com> <CAHk-=whJfKN8Jag=8DS=pbZR3TY90znUOP6Km+TLRJ9dZEgNqw@mail.gmail.com> <fd89333f-e470-a295-baf6-a736c55caeb5@citrix.com> <CAHk-=wj47CG0Y9GOFmGg4AYFvXhRFDX9x7E2Uxo9k-UX2wgR4g@mail.gmail.com>
-Mime-Version: 1.0
+        Fri, 18 Mar 2022 19:14:18 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8D67112D
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 16:12:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647645173; x=1679181173;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=+37l6VhLvMOfjePs+2KrK6+EHrgl4qSAJMmK1zIg7eg=;
+  b=k417+cg5BBvqnxhPtDijFtS1MZCEHi5vqgUs2BTV5p596+YsIOZnGSLv
+   dfdfhSfT0JB+9bh5I4n4fFpFiZH6ngn1x0lyVJQoKm5oOYfQavOvizsRU
+   yETa/rLBxze/V38Hly+0jp1ax45U03FL5354VqUWrVeD+dmOkzSPL0AJc
+   Szlw88WUa80+Li9SOvy98OnH7y2gY6pET/Nl7b6Bk6nrgd7fC4i83TWxj
+   xypuReQPZ70LrlgwCAtbEroJDsfO3n0km249hyqSBOMObjgOGvdoGxa5n
+   I7FPF0Z4TSNgdl6Fd2oRfqEgOftx0ECmlR3MJQyYyFz4lpg77lRQr3Mcu
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="237854538"
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
+   d="scan'208";a="237854538"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 16:12:53 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
+   d="scan'208";a="558706495"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 18 Mar 2022 16:12:51 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nVLm7-000FGx-9u; Fri, 18 Mar 2022 23:12:51 +0000
+Date:   Sat, 19 Mar 2022 07:12:38 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [asahilinux:asahi 169/174] apple.c:(.text.apple_nvme_suspend+0x40):
+ undefined reference to `apple_rtkit_is_running'
+Message-ID: <202203190706.DQ5sFFlc-lkp@intel.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHk-=wj47CG0Y9GOFmGg4AYFvXhRFDX9x7E2Uxo9k-UX2wgR4g@mail.gmail.com>
-User-Agent: Mutt/1.4.2.3i
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 02:39:34PM -0700, Linus Torvalds wrote:
-> I think compiler people should see inline asm as a really *good*
-> thing, because it allows people to have that "I'm going to do
-> something that nobody normal does, look away now" kind of escape
-> clause, letting the compiler concentrate on the things it does best.
+tree:   https://github.com/AsahiLinux/linux asahi
+head:   c1fcb91bbcc8fd1b1f874e45f55cbba682351f3c
+commit: 287f6be4f50a324ac0b189f6e2f8fad003c4ec2b [169/174] apple-nvme: Add support for suspend/resume
+config: mips-allyesconfig (https://download.01.org/0day-ci/archive/20220319/202203190706.DQ5sFFlc-lkp@intel.com/config)
+compiler: mips-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/AsahiLinux/linux/commit/287f6be4f50a324ac0b189f6e2f8fad003c4ec2b
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux asahi
+        git checkout 287f6be4f50a324ac0b189f6e2f8fad003c4ec2b
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips SHELL=/bin/bash
 
-There is a reason that we have the GCC inline asm extension at all.  It
-is not because the compiler developers think it is useless ;-)
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-It often *is* abused, or used in wrong, dangerous ways.  This often will
-go undetected for a long time, for all the same reasons you want to have
-inline asm in the first place (it is an escape hatch, much of what you
-do with it is outside of what the compiler can (and does) know about)!
+All errors (new ones prefixed by >>):
 
-> Yes, I realize inline asm isn't something compiler people love. And
-> yes, I realize that it might not give optimal code.
+   arch/mips/kernel/head.o: in function `kernel_entry':
+   (.ref.text+0xac): relocation truncated to fit: R_MIPS_26 against `start_kernel'
+   init/main.o: in function `set_reset_devices':
+   main.c:(.init.text+0x20): relocation truncated to fit: R_MIPS_26 against `_mcount'
+   main.c:(.init.text+0x30): relocation truncated to fit: R_MIPS_26 against `__sanitizer_cov_trace_pc'
+   init/main.o: in function `debug_kernel':
+   main.c:(.init.text+0xa4): relocation truncated to fit: R_MIPS_26 against `_mcount'
+   main.c:(.init.text+0xb4): relocation truncated to fit: R_MIPS_26 against `__sanitizer_cov_trace_pc'
+   init/main.o: in function `quiet_kernel':
+   main.c:(.init.text+0x128): relocation truncated to fit: R_MIPS_26 against `_mcount'
+   main.c:(.init.text+0x138): relocation truncated to fit: R_MIPS_26 against `__sanitizer_cov_trace_pc'
+   init/main.o: in function `warn_bootconfig':
+   main.c:(.init.text+0x1ac): relocation truncated to fit: R_MIPS_26 against `_mcount'
+   main.c:(.init.text+0x1bc): relocation truncated to fit: R_MIPS_26 against `__sanitizer_cov_trace_pc'
+   init/main.o: in function `init_setup':
+   main.c:(.init.text+0x238): relocation truncated to fit: R_MIPS_26 against `_mcount'
+   main.c:(.init.text+0x258): additional relocation overflows omitted from the output
+   mips-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_sart_dma_setup':
+   apple.c:(.text.apple_nvme_sart_dma_setup+0x8c): undefined reference to `apple_sart_add_allowed_region'
+   mips-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_sart_dma_destroy':
+   apple.c:(.text.apple_nvme_sart_dma_destroy+0x34): undefined reference to `apple_sart_remove_allowed_region'
+   mips-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_probe':
+   apple.c:(.text.apple_nvme_probe+0x3e8): undefined reference to `apple_sart_get'
+   mips-linux-ld: apple.c:(.text.apple_nvme_probe+0x75c): undefined reference to `devm_apple_rtkit_init'
+   mips-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_disable':
+   apple.c:(.text.apple_nvme_disable+0x6c): undefined reference to `apple_rtkit_is_crashed'
+   mips-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_suspend':
+>> apple.c:(.text.apple_nvme_suspend+0x40): undefined reference to `apple_rtkit_is_running'
+>> mips-linux-ld: apple.c:(.text.apple_nvme_suspend+0x68): undefined reference to `apple_rtkit_shutdown'
+   mips-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_shutdown':
+   apple.c:(.text.apple_nvme_shutdown+0x40): undefined reference to `apple_rtkit_is_running'
+   mips-linux-ld: apple.c:(.text.apple_nvme_shutdown+0x68): undefined reference to `apple_rtkit_shutdown'
+   mips-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_remove':
+   apple.c:(.text.apple_nvme_remove+0x68): undefined reference to `apple_rtkit_is_running'
+   mips-linux-ld: apple.c:(.text.apple_nvme_remove+0x90): undefined reference to `apple_rtkit_shutdown'
+   mips-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_reset_work':
+   apple.c:(.text.apple_nvme_reset_work+0xa4): undefined reference to `apple_rtkit_is_crashed'
+   mips-linux-ld: apple.c:(.text.apple_nvme_reset_work+0x124): undefined reference to `apple_rtkit_is_running'
+   mips-linux-ld: apple.c:(.text.apple_nvme_reset_work+0x1dc): undefined reference to `apple_rtkit_shutdown'
+   mips-linux-ld: apple.c:(.text.apple_nvme_reset_work+0x20c): undefined reference to `apple_rtkit_reinit'
+   mips-linux-ld: apple.c:(.text.apple_nvme_reset_work+0x278): undefined reference to `apple_rtkit_boot'
+   mips-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_timeout':
+   apple.c:(.text.apple_nvme_timeout+0x1a0): undefined reference to `apple_rtkit_is_crashed'
+   mips-linux-ld: drivers/media/platform/amphion/vpu_windsor.o: in function `vpu_windsor_pack_cmd':
+   vpu_windsor.c:(.text.vpu_windsor_pack_cmd+0xfc): undefined reference to `__divdi3'
+   mips-linux-ld: vpu_windsor.c:(.text.vpu_windsor_pack_cmd+0x118): undefined reference to `__moddi3'
+   mips-linux-ld: drivers/media/platform/amphion/vpu_malone.o: in function `vpu_malone_pack_cmd':
+   vpu_malone.c:(.text.vpu_malone_pack_cmd+0x260): undefined reference to `__divdi3'
+   mips-linux-ld: vpu_malone.c:(.text.vpu_malone_pack_cmd+0x27c): undefined reference to `__moddi3'
+   mips-linux-ld: drivers/media/platform/amphion/vdec.o: in function `vdec_get_debug_info':
+   vdec.c:(.text.vdec_get_debug_info+0x2a8): undefined reference to `__moddi3'
+   mips-linux-ld: vdec.c:(.text.vdec_get_debug_info+0x2d8): undefined reference to `__divdi3'
+   mips-linux-ld: vdec.c:(.text.vdec_get_debug_info+0x2f8): undefined reference to `__moddi3'
+   mips-linux-ld: vdec.c:(.text.vdec_get_debug_info+0x318): undefined reference to `__divdi3'
+   mips-linux-ld: vdec.c:(.text.vdec_get_debug_info+0x338): undefined reference to `__moddi3'
+   mips-linux-ld: vdec.c:(.text.vdec_get_debug_info+0x358): undefined reference to `__divdi3'
 
-Some of us do love it.  But it should not be used when you do not need
-it, indeed to get better machine code genereated, but much more
-importantly to get more correct code, and much simpler code, simpler to
-read code.  All these things are connected.
-
-> (And here I separate 'intrinsic' and generic compiler builtins. I love
-> the builtins that allow me to tell the compiler something, or the
-> compiler to tell me something about the code: __builtin_unreachable()
-> and __builtin_constant_p() are both wonderful examples of those kinds
-> of things)
-
-I don't know what you mean when you say "intrinsic".  It is a worse name
-than a "built-in function", which is either not a function or not a
-built-in thing, so that name is rubbish; both "compiler intrinsic" and
-"intrinsic function" are even worse though!
-
-I like to say "builtin", which has no other meaning in the English
-language, so it cannot be easily understood to have properties it
-doesn't, not just from a misleading name anyway.
-
-And yes, __builtin_unreachable() is nicer than having to write "1/0" in
-all those places, it is much clearer.  It is undefined behaviour to
-execute it exactly the same though.
-
-__builtin_constant_p() is a curious one: it returns whether the compiler
-knows its argument to be constant, which is something C does not define
-(*cannot* define).  It is a curse as well as a blessing, moving from
-compiler bversion to compiler version can return false instead of true
-on the same expression, or the other way around, and the same when
-trying out different compilers of course.
-
-> But an intrinsic for some odd target-specific thing that can't even be
-> portably generalized? Give me inline asm any day.
-
-The vast majority of compiler builtins are for simple transformations
-that the machine can do, for example with vector instructions.  Using
-such builtins does *not* instruct the compiler to use those machine
-insns, even if the builtin name would suggest that; instead, it asks to
-have code generated that has such semantics.  So it can be optimised by
-the compiler, much more than what can be done with inline asm.
-
-It also can be optimised better by the compiler than if you would
-open-code the transforms (if you ask to frobnicate something, the
-compiler will know you want to frobnicate that thing, and it will not
-always recognise that is what you want if you just write it out in more
-general code).
-
-Well-chosen builtin names are also much more readable than the best
-inline asm can ever be, and it can express much more in a much smaller
-space, without so much opportunity to make mistakes, either.
-
-Builtins are good!
-
-> We can do things with inline asms that the compiler can't even _dream_
-> of, like the whole instruction rewriting thing we use.
-
-Yes.  Inline asm is good as well!  Both things have their places.
-
-Some builtins are not well-conceived.  And some inline asm has the
-same problem :-(
-
-> I'd much rather have a powerful generic concept (eg "asm goto" is
-> lovely) than a specialized intrinsic that does only one thing, and
-> doesn't even do it well because it's untested and badly defined.
-
-Being generally applicable is a double-edged sword.  The trick is to
-have things more general when reasonable, and not when not.
-
-
-Segher
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
