@@ -2,135 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D533C43219
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:29:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 718C7C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:30:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239222AbiCRQbP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 12:31:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50942 "EHLO
+        id S239215AbiCRQbV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 12:31:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239181AbiCRQa6 (ORCPT
+        with ESMTP id S239226AbiCRQa6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Mar 2022 12:30:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AA766194AAD
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 09:29:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647620964;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zf+D2msIjA8cu3KF+9rp/T6nW3cAB4bRjyxbO7BeSLs=;
-        b=Ai9dVlVWXCTX9V9/xOdFxOJm4XV1F6rzL1pY+fwf8rp93aoU7NJUuAQqPrTKejNruC7If5
-        FHo66m7SBUelEtt5tH4Nh7cFIXhv6wSXrzbFzURz8CR7Tb4K+e/B5t/9VEWekFD2ZgLR60
-        W7NFKduwciA3TTHUD6edeJ0+1dh14NU=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-449-AReaBzJAPbKoTGSzq9txqA-1; Fri, 18 Mar 2022 12:29:23 -0400
-X-MC-Unique: AReaBzJAPbKoTGSzq9txqA-1
-Received: by mail-ej1-f70.google.com with SMTP id 13-20020a170906328d00b006982d0888a4so4747749ejw.9
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 09:29:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=zf+D2msIjA8cu3KF+9rp/T6nW3cAB4bRjyxbO7BeSLs=;
-        b=XllrtuPL91Og5Ntdt0JkuT3IB57LCJGJRNyjCiYPNIR6DUbdwHRHG9lFANyiua7JaW
-         CwNLQ8W9Tt3UoxQ8QHxGn1wZouR/J4E1jmH5wp1STempFebJpUfVpuhORQo3Dg0d+hA4
-         0SuzHcJldkITEYhYltgs8SPstJVNQ6GaUq5wCBXzLQPC3e7PkCR3mjvq3ThIS2k+3biy
-         IS+WfD4z/ZySZuuz+joIu4AyZATRC7NhynIFTKBZMM6x2hvwL1Rl3XZJSDB3CS+9TYAc
-         XCex+R0/aaCKl9v5urQUOZSL1WL0vDWhkHB4bu/E9ODOh8r5M1jOdxqE0nwQ5UumSOvm
-         HX+A==
-X-Gm-Message-State: AOAM533wPqU9sjz1f6p55TvA6mV1Ylr0LQX9j/UMSN+RIC0gLdbMkb73
-        5sMI3dr/aYCcdfFjF6xCOpjmdfeYuWMGGlrX0Du1tpwux8kEgXNqZtEUVaBGLfrWQwGu/Pggab+
-        YdJBcukdMIcOfEtCu4UWO7NhQ
-X-Received: by 2002:a05:6402:1d50:b0:418:5a20:8dd8 with SMTP id dz16-20020a0564021d5000b004185a208dd8mr10196786edb.324.1647620962113;
-        Fri, 18 Mar 2022 09:29:22 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw0QVrcybe8P7ed99Ps8zPs7o/wv3XcFLeW9KRDleYQFKnzIpYSjREjPoKgWHPqRQ7bBS4f+g==
-X-Received: by 2002:a05:6402:1d50:b0:418:5a20:8dd8 with SMTP id dz16-20020a0564021d5000b004185a208dd8mr10196767edb.324.1647620961886;
-        Fri, 18 Mar 2022 09:29:21 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:63a7:c72e:ea0e:6045? ([2001:b07:6468:f312:63a7:c72e:ea0e:6045])
-        by smtp.googlemail.com with ESMTPSA id go40-20020a1709070da800b006dfc3945312sm614245ejc.202.2022.03.18.09.29.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Mar 2022 09:29:21 -0700 (PDT)
-Message-ID: <1dc56110-5f1b-6140-937c-bf4a28ddbe87@redhat.com>
-Date:   Fri, 18 Mar 2022 17:29:20 +0100
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 771D119455D;
+        Fri, 18 Mar 2022 09:29:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647620970; x=1679156970;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=xBTcRJLtKt62fcWPwLWQXbKps2DSAsxac8MlWJab0nU=;
+  b=Url5dC5A1prXyEu4rKVHgUd+PhobBZ2KavK0KqB4z9WjcPGEUIj2YOEb
+   VxLfrIzfPGOiRwBL+KHhBOe/yfKmCI3KhRq+Fc9sh/nmmXXFauX3BSaky
+   WWiwrYA10Llt4db7LRGEcZhf/Ya4VecE/Y5xVRH5Mbb+YP3xrN9fe2Cqu
+   hlMG5WMCCOTvxDdlT/81Yn/nlJ5eU6k6oECAW6yuasfZW+eh2O7DcUYsR
+   P8etR8AUEPvYWkpS0jyruM8K3VGNZQYU/hTebyvgk0W3nTiVcKqXrEty+
+   eG36hVV1cYsX72YVDA+nGKonicrQ9NYV8NwKd1btgPrw5oal5XaHIEhdX
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="257356961"
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
+   d="scan'208";a="257356961"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 09:29:30 -0700
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
+   d="scan'208";a="550798759"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 09:29:25 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nVFT3-002KEd-Qt;
+        Fri, 18 Mar 2022 18:28:45 +0200
+Date:   Fri, 18 Mar 2022 18:28:45 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
+Cc:     Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "'Rafael J . Wysocki '" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-i2c@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 4/6] i2c: mux: pinctrl: remove CONFIG_OF dependency and
+ use fwnode API
+Message-ID: <YjSzPeWpcR/SSX1a@smile.fi.intel.com>
+References: <20220318160059.328208-1-clement.leger@bootlin.com>
+ <20220318160059.328208-5-clement.leger@bootlin.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 6/6] KVM: x86: allow defining return-0 static calls
-Content-Language: en-US
-To:     Maxim Levitsky <mlevitsk@redhat.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>
-Cc:     seanjc@google.com
-References: <20220217180831.288210-1-pbonzini@redhat.com>
- <20220217180831.288210-7-pbonzini@redhat.com>
- <3bbe3f8717cdf122f909a48e117dab6c09d8e0c8.camel@redhat.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <3bbe3f8717cdf122f909a48e117dab6c09d8e0c8.camel@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220318160059.328208-5-clement.leger@bootlin.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/17/22 18:43, Maxim Levitsky wrote:
-> diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
-> index 20f64e07e359..3388072b2e3b 100644
-> --- a/arch/x86/include/asm/kvm-x86-ops.h
-> +++ b/arch/x86/include/asm/kvm-x86-ops.h
-> @@ -88,7 +88,7 @@ KVM_X86_OP(deliver_interrupt)
->   KVM_X86_OP_OPTIONAL(sync_pir_to_irr)
->   KVM_X86_OP_OPTIONAL_RET0(set_tss_addr)
->   KVM_X86_OP_OPTIONAL_RET0(set_identity_map_addr)
-> -KVM_X86_OP_OPTIONAL_RET0(get_mt_mask)
-> +KVM_X86_OP(get_mt_mask)
->   KVM_X86_OP(load_mmu_pgd)
->   KVM_X86_OP(has_wbinvd_exit)
->   KVM_X86_OP(get_l2_tsc_offset)
-> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-> index a09b4f1a18f6..0c09292b0611 100644
-> --- a/arch/x86/kvm/svm/svm.c
-> +++ b/arch/x86/kvm/svm/svm.c
-> @@ -4057,6 +4057,11 @@ static bool svm_has_emulated_msr(struct kvm *kvm, u32 index)
->          return true;
->   }
->   
-> +static u64 svm_get_mt_mask(struct kvm_vcpu *vcpu, gfn_t gfn, bool is_mmio)
-> +{
-> +       return 0;
-> +}
-> +
->   static void svm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
->   {
->          struct vcpu_svm *svm = to_svm(vcpu);
-> @@ -4718,6 +4723,7 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
->          .check_apicv_inhibit_reasons = avic_check_apicv_inhibit_reasons,
->          .apicv_post_state_restore = avic_apicv_post_state_restore,
->   
-> +       .get_mt_mask = svm_get_mt_mask,
->          .get_exit_info = svm_get_exit_info,
->   
->          .vcpu_after_set_cpuid = svm_vcpu_after_set_cpuid,
+On Fri, Mar 18, 2022 at 05:00:50PM +0100, Clément Léger wrote:
+> In order to use i2c muxes with software_node when added with a struct
+> mfd_cell, switch to fwnode API. The fwnode layer will allow to use this
+> with both device_node and software_node.
 
-Thanks, I'll send it as a complete patch.  Please reply there with your 
-Signed-off-by.
+> -	struct device_node *np = dev->of_node;
+> +	struct fwnode_handle *np = dev_fwnode(dev);
 
-Related to this, I don't see anything in arch/x86/kernel/static_call.c 
-that limits this code to x86-64:
+np is now a misleading name. Use fwnode.
 
-                 if (func == &__static_call_return0) {
-                         emulate = code;
-                         code = &xor5rax;
-                 }
+-- 
+With Best Regards,
+Andy Shevchenko
 
-
-On 32-bit, it will be patched as "dec ax; xor eax, eax" or something 
-like that.  Fortunately it doesn't corrupt any callee-save register but 
-it is not just a bit funky, it's also not a single instruction.
-
-Paolo
 
