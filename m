@@ -2,114 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C631C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 23:03:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45331C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 23:08:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241467AbiCRXFP convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 19:05:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47488 "EHLO
+        id S241425AbiCRXKR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 19:10:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241455AbiCRXFN (ORCPT
+        with ESMTP id S232891AbiCRXKP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 19:05:13 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DBE8A76281
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 16:03:53 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-88-aKH-9UiwNei_YRJVTyN66w-1; Fri, 18 Mar 2022 23:03:51 +0000
-X-MC-Unique: aKH-9UiwNei_YRJVTyN66w-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Fri, 18 Mar 2022 23:03:50 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Fri, 18 Mar 2022 23:03:50 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Peter Zijlstra' <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>
-CC:     Maxim Levitsky <mlevitsk@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "seanjc@google.com" <seanjc@google.com>
-Subject: RE: [PATCH v3 6/6] KVM: x86: allow defining return-0 static calls
-Thread-Topic: [PATCH v3 6/6] KVM: x86: allow defining return-0 static calls
-Thread-Index: AQHYOvJSJ6iVxlFZSEKme+GWeigJ56zFwTUA
-Date:   Fri, 18 Mar 2022 23:03:50 +0000
-Message-ID: <04a3d031624d4472aaf4cd20a0d3be47@AcuMS.aculab.com>
-References: <20220217180831.288210-1-pbonzini@redhat.com>
- <20220217180831.288210-7-pbonzini@redhat.com>
- <3bbe3f8717cdf122f909a48e117dab6c09d8e0c8.camel@redhat.com>
- <1dc56110-5f1b-6140-937c-bf4a28ddbe87@redhat.com>
- <20220318172837.GQ8939@worktop.programming.kicks-ass.net>
- <20220318174732.GE14330@worktop.programming.kicks-ass.net>
- <20220318180225.GF14330@worktop.programming.kicks-ass.net>
-In-Reply-To: <20220318180225.GF14330@worktop.programming.kicks-ass.net>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Fri, 18 Mar 2022 19:10:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CBD5F47EA
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 16:08:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA32A61642
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 23:08:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93020C340E8;
+        Fri, 18 Mar 2022 23:08:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647644935;
+        bh=A3Y689zBKJu2EqrYev8FF9G6KLLrbNU5CtFhDlAKkoo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=K4qsOy4oKGHU5z7hHaHsd6/bgIdYpZCLAFxzaTTDq/Z09ALl0lZ9uuxdgJ0hEErOt
+         K2mR/g4LceflzCDAQrtTYTVpUBPfO/3qZ2DZk/JTFDDXRR/cqc4TNvRc2iYi94J/GJ
+         ScAmwIlveiilEFuFeRfGVyC3OL3s9Hg4/cAtaqIcDjD6Sm2+V03qsLGJPr2u3iqoFe
+         xSugWArJvQ6PZFXSXPrYgU4OoM5uzeWeIqyYetfMgYZWnHh+NCfuTq8nLvGPkTIezK
+         NumgA30BPJiK0dtKhO/h4Xbuk/97wgzJ9Rl9qHNbRwYf/nzmW6w4FgD17DAb6DkgFj
+         zQGK8w9fZM5vQ==
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>, x86@kernel.org
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH 0/2] Fix CONFIG_X86_KERNEL_IBT for clang and ld.lld < 14.0.0
+Date:   Fri, 18 Mar 2022 16:07:45 -0700
+Message-Id: <20220318230747.3900772-1-nathan@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra
-> Sent: 18 March 2022 18:02
-> 
-> On Fri, Mar 18, 2022 at 06:47:32PM +0100, Peter Zijlstra wrote:
-> > On Fri, Mar 18, 2022 at 06:28:37PM +0100, Peter Zijlstra wrote:
-> > > > Related to this, I don't see anything in arch/x86/kernel/static_call.c that
-> > > > limits this code to x86-64:
-> > > >
-> > > >                 if (func == &__static_call_return0) {
-> > > >                         emulate = code;
-> > > >                         code = &xor5rax;
-> > > >                 }
-> > > >
-> > > >
-> > > > On 32-bit, it will be patched as "dec ax; xor eax, eax" or something like
-> > > > that.  Fortunately it doesn't corrupt any callee-save register but it is not
-> > > > just a bit funky, it's also not a single instruction.
-> > >
-> > > Urggghh.. that's fairly yuck. So there's two options I suppose:
-> > >
-> > > 	0x66, 0x66, 0x66, 0x31, 0xc0
-> >
-> > Argh, that turns into: xorw %ax, %ax.
-> >
-> > Let me see if there's another option.
-> 
-> Amazingly:
-> 
->   0x2e, 0x2e, 0x2e, 0x31, 0xc0
-> 
-> seems to actually work.. I've build and ran and decoded the below on
-> 32bit and 64bit (arguably on the same 64bit host).
+While testing -tip after the IBT bits were merged, our continuous
+integration noticed a crash with clang-11:
 
-Not really amazing...
-In 64bit mode all accesses to 32bit registers zero the
-high bits.
-So 'xor %eax,%eax' zeros all of %rax in 64bit mode.
-So three segment override prefixes will extend it to 5 bytes.
+https://builds.tuxbuild.com/26ZRIuAPHx1L802ExiYCuLuvMhK/build.log
 
-Think I'd pick the FS or GS override (0x64 or 0x65).
-Just in case someone decides that CS/DS/ES/SS prefix will
-mean something else in 64bit mode.
+This crash is a separate issue from the one that is already being
+checked for with '-fcf-protection=branch -mfentry -pg'. This new crash
+was fixed in clang-12:
 
-	David
+https://github.com/llvm/llvm-project/commit/e0b89df2e0f0130881bf6c39bf31d7f6aac00e0f
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+Unfortunately, I have not been able to tease out a simplified reproducer
+for this crash that always triggers. The reproducer in that commit
+message and the reproducer commented in the LLVM test do not trigger all
+the time (at least with the clang-11 that is in Debian/Ubuntu,
+assertions might make the crash always happen but we cannot count on
+that); even the full preprocessed files straight from the kernel source
+do not always trigger a crash.
+
+As a result, this series proposes just having a hard version check for
+clang 14.0.0 and newer, which will cover this new clang-11 crash and the
+'-fcf-protection=branch -mfentry -pg' crash.
+
+Adding a check for a version of clang that has not been released yet is
+a little riskier than dynamically testing the clang binary for an issue,
+as it is possible that someone is using/testing a version of clang from
+before a particular issue was fixed, while still having the same version
+number. However, our policy for version checks in the kernel has always
+been to use the final version of clang that will have the issue fixed,
+as people should be upgrading their compilers often if they are using
+prereleased versions.
+
+In this particular instance, the '-fcf-protection=branch -mfentry -pg'
+crash has been fixed for over three months, which is plenty of time to
+upgrade:
+
+https://github.com/llvm/llvm-project/commit/dfcf69770bc522b9e411c66454934a37c1f35332
+
+At the moment, I only know of one version of clang that is fairly widely
+used that will show this crash, which is Android's clang 14.0.2. We are
+in the process of getting a newer version (14.0.3) deployed to minimize
+the impact this change will have on various testing groups:
+
+https://android-review.googlesource.com/c/kernel/common/+/2032664
+https://android-review.googlesource.com/c/kernel/common/+/2032665
+https://android-review.googlesource.com/c/kernel/common/+/2032666
+https://gitlab.com/Linaro/tuxmake/-/merge_requests/244
+
+If for some reason there are any reports of issues after this change,
+feel free to direct them to this cover letter and tell them to upgrade
+their compiler :)
+
+The second patch just codifies the result of this discussion and issue:
+
+https://lore.kernel.org/r/202202241627.EEF3D5D2@keescook/
+https://github.com/ClangBuiltLinux/linux/issues/1606
+
+This is based on -tip x86/core and it has survived an allmodconfig build
+with clang-11 through clang-15 (CC=clang and LLVM=1).
+
+Nathan Chancellor (2):
+  x86/Kconfig: Only enable CONFIG_CC_HAS_IBT for clang >= 14.0.0
+  x86/Kconfig: Only allow CONFIG_X86_KERNEL_IBT with ld.lld >= 14.0.0
+
+ arch/x86/Kconfig | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+
+base-commit: 2f35e67f621fffc636cb802a4f93fd168cf38274
+-- 
+2.35.1
 
