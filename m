@@ -2,139 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D40C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 06:47:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79880C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 06:49:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232769AbiCRGs7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 02:48:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50014 "EHLO
+        id S232801AbiCRGul (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 02:50:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232732AbiCRGsz (ORCPT
+        with ESMTP id S230046AbiCRGuh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 02:48:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 492ED196089
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 23:47:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647586056;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=I3lYvZeJcpFfGGlJYFnn0VDJIi283PypPxo2EohREtU=;
-        b=E7vHFeEFosdJ3cEWlgaMewZkbFxA8CoCY52OuTCPfJ8/Xudxp8AHoVRo7ZamSfllZvRXuN
-        oEcEzj8uSytSWpYPaOrr5l0YkJJLb2MqZS9tmYu0WMi7O/hZwJ54yQPMJySf7tGQF+kSxG
-        Cjdsqzn4H1pIlSXu0uL6C1pb5OxMzrY=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-336-ZMU0HdSXOEyAdzVkb_-0-g-1; Fri, 18 Mar 2022 02:47:35 -0400
-X-MC-Unique: ZMU0HdSXOEyAdzVkb_-0-g-1
-Received: by mail-lj1-f200.google.com with SMTP id v2-20020a2e9f42000000b00247e9c3f0e1so3099593ljk.1
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 23:47:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=I3lYvZeJcpFfGGlJYFnn0VDJIi283PypPxo2EohREtU=;
-        b=bh962bZiO45pVzQ9m0YyOAl/NeRT4wHMfTfXC9pNf5TO9W9oVxFFYmYwLuxeth6vIP
-         ioJe4j64nNRphoEZMZBzAhxGC1FdEhdLZbwPh16I5nyzwgF2pqQrMhX8FD96Xc3cZY96
-         Sf02DUhywShS1LZqLVQvC0a7PP5N4uAp8ylHyf9r93LSiJo9dFnecE5Lg99NEUd86atr
-         i0mB6nEffwlVk3t7Mwy0950FHAh2npaTf0vWcBmIaBarMlYES4SeLDzvybdkr7rlyQDV
-         kVvNhFJtYkgr6zDvut0E7Oq2rsmtqEDxPFlB1bL6QNE0QHdTVgJ4zncI2/WkPYZqb7Z8
-         Ygmg==
-X-Gm-Message-State: AOAM530pbw5RdZsLAoJYHGaSOdorVP7UGcrhhnDL/qPXTV2wL7fGiemV
-        m5/PyiFFyjjEOyB+fjdWukQ3RDLuJSWkSlSj1tqXQCHjeMNi2lN0w3VasPX5+cURKTpWAcx2vWm
-        cajMhI/h7wy8TRHJ4+bqerX39TkFWLs0f2kjYM0n1
-X-Received: by 2002:a05:651c:1542:b0:246:36c:8d1f with SMTP id y2-20020a05651c154200b00246036c8d1fmr5344718ljp.311.1647586053354;
-        Thu, 17 Mar 2022 23:47:33 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz0I/xHSd8pqwSVkxR1iXkhf+tY1ZEwHylqHNX4opihknbprFolc447b2KSlP6xQEh9ImWdTxXmczEnwgkljXo=
-X-Received: by 2002:a05:651c:1542:b0:246:36c:8d1f with SMTP id
- y2-20020a05651c154200b00246036c8d1fmr5344701ljp.311.1647586053120; Thu, 17
- Mar 2022 23:47:33 -0700 (PDT)
+        Fri, 18 Mar 2022 02:50:37 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B66D917586B;
+        Thu, 17 Mar 2022 23:49:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647586158; x=1679122158;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=vYf7H+zfZsWDggOzPC1KjFaiFOBNQv1b5Be/sCd1Hl8=;
+  b=emNnLO4Ox0tOJOCCeBN7arfEL/1RgKXC3fxI/ARsW9tfVgqdPz7oeoHY
+   uCIRy3gxgv1KrrMsk/onIl+Ig0e+1MNpg77GI3NOJtbJ/+9SV5PCB9I+/
+   t2uXPMLZHxuzxWVVixkBqxFhJvwMcNwMnC4M3jvEZ3arlT/rLUnyxOSN3
+   AKvoxBUXIYXTJ2DoIxORrCKv20zJbIjaik7BarAVI3uEzehizDHU8TLAB
+   vhFrwjyJaa21Y2TdnAtytP00KcR5l2GyGqGibMeYTt7pfpDRCxDG5dLc2
+   pZr2EFzlaV7zLc975rWzOdmdfakUNCjnNW04fmPUkyWHYIK+4FdtKFhwD
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="239233969"
+X-IronPort-AV: E=Sophos;i="5.90,191,1643702400"; 
+   d="scan'208";a="239233969"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 23:49:18 -0700
+X-IronPort-AV: E=Sophos;i="5.90,191,1643702400"; 
+   d="scan'208";a="499128327"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 23:49:14 -0700
+Received: by lahna (sSMTP sendmail emulation); Fri, 18 Mar 2022 08:44:51 +0200
+Date:   Fri, 18 Mar 2022 08:44:51 +0200
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     andreas.noever@gmail.com, michael.jamet@intel.com,
+        YehezkelShB@gmail.com, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-pci@vger.kernel.org, mario.limonciello@amd.com
+Subject: Re: [PATCH] thunderbolt: Make iommu_dma_protection more accurate
+Message-ID: <YjQqY/Nq0pgpcAaI@lahna>
+References: <2d01fa50c2650c730b0244929097737918e302e7.1647533152.git.robin.murphy@arm.com>
 MIME-Version: 1.0
-References: <20220317075713.10633-1-hpa@redhat.com> <YjLxFuRXKzg3m9HH@paasikivi.fi.intel.com>
- <CAEth8oHqSS7EsPofmERRB=pmtS8YPP+MeM6fMG6tJT2z_qChxA@mail.gmail.com> <YjL6/wOVjSvZjSZ5@paasikivi.fi.intel.com>
-In-Reply-To: <YjL6/wOVjSvZjSZ5@paasikivi.fi.intel.com>
-From:   Kate Hsuan <hpa@redhat.com>
-Date:   Fri, 18 Mar 2022 14:47:22 +0800
-Message-ID: <CAEth8oES8abPO4p7eFv43PwDXuxeOmg1661YtVvykBPrkagzKg@mail.gmail.com>
-Subject: Re: [PATCH v4] staging: media: ipu3: Fix AF x_start position when
- rightmost stripe is used
-To:     Sakari Ailus <sakari.ailus@linux.intel.com>
-Cc:     Bingbu Cao <bingbu.cao@intel.com>,
-        Tianshu Qiu <tian.shu.qiu@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>,
-        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, Hans De Goede <hdegoede@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2d01fa50c2650c730b0244929097737918e302e7.1647533152.git.robin.murphy@arm.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sakari,
+Hi Robin,
 
-On Thu, Mar 17, 2022 at 5:10 PM Sakari Ailus
-<sakari.ailus@linux.intel.com> wrote:
->
-> On Thu, Mar 17, 2022 at 04:53:07PM +0800, Kate Hsuan wrote:
-> > Hi Sakari,
-> >
-> > On Thu, Mar 17, 2022 at 4:28 PM Sakari Ailus
-> > <sakari.ailus@linux.intel.com> wrote:
-> > >
-> > > On Thu, Mar 17, 2022 at 03:57:13PM +0800, Kate Hsuan wrote:
-> > > > For the AF configuration, if the rightmost stripe is used, the AF scene
-> > > > will be at the incorrect location of the sensor.
-> > > >
-> > > > The AF coordinate may be set to the right part of the sensor. This
-> > > > configuration would lead to x_start being greater than the
-> > > > down_scaled_stripes offset and the leftmost stripe would be disabled
-> > > > and only the rightmost stripe is used to control the AF coordinate. If
-> > > > the x_start doesn't perform any adjustments, the AF coordinate will be
-> > > > at the wrong place of the sensor since down_scaled_stripes offset
-> > > > would be the new zero of the coordinate system.
-> > > >
-> > > > In this patch, if only the rightmost stripe is used, x_start should
-> > > > minus down_scaled_stripes offset to maintain its correctness of AF
-> > > > scene coordinate.
-> > > >
-> > > > Changes in v2:
-> > > > 1. Remove the setting of the first stripe.
-> > > >
-> > > > Changes in v4:
-> > > > 1. x_start is estimated based on the method for both stripes are enabled.
-> > > > 2. x_end is estimated based on the width.
-> > >
-> > > Please put the changelog before '---' line. I've removed it from the commit
-> > > message this time.
->
-> I meant to say after. Then it won't be part of the commit message.
+Thanks for working on this!
 
-Thank you. I understand :)
+On Thu, Mar 17, 2022 at 04:17:07PM +0000, Robin Murphy wrote:
+> Between me trying to get rid of iommu_present() and Mario wanting to
+> support the AMD equivalent of DMAR_PLATFORM_OPT_IN, scrutiny has shown
+> that the iommu_dma_protection attribute is being far too optimistic.
+> Even if an IOMMU might be present for some PCI segment in the system,
+> that doesn't necessarily mean it provides translation for the device(s)
+> we care about. Furthermore, all that DMAR_PLATFORM_OPT_IN really does
+> is tell us that memory was protected before the kernel was loaded, and
+> prevent the user from disabling the intel-iommu driver entirely. What
+> actually matters is whether we trust individual devices, based on the
+> "external facing" property that we expect firmware to describe for
+> Thunderbolt ports.
 
->
-> > >
-> > > --
-> > > Sakari Ailus
-> > >
-> >
-> > Okay, I got it.
-> >
-> > Thank you.
-> >
-> > --
-> > BR,
-> > Kate
-> >
->
-> --
-> Sakari Ailus
->
+We still want to know that DMAR_PLATFORM_OPT_IN is set by the firmware
+because that tells us that none of the devices connected before OS got
+control had the ability to perform DMA outside of the RMRR regions. If
+they did then all this is pointless because they could have modified the
+system memory as they wished.
+
+> Avoid false positives by looking as close as possible to the same PCI
+> topology that the IOMMU layer will consider once a Thunderbolt endpoint
+> appears. Crucially, we can't assume that IOMMU translation being enabled
+> for any reason is sufficient on its own; full (expensive) DMA protection
+> will still only be imposed on untrusted devices.
+> 
+> CC: Mario Limonciello <mario.limonciello@amd.com>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+> 
+> This supersedes my previous attempt just trying to replace
+> iommu_present() at [1], further to the original discussion at [2].
+> 
+> [1] https://lore.kernel.org/linux-iommu/BL1PR12MB515799C0BE396377DBBEF055E2119@BL1PR12MB5157.namprd12.prod.outlook.com/T/
+> [2] https://lore.kernel.org/linux-iommu/202203160844.lKviWR1Q-lkp@intel.com/T/
+> 
+>  drivers/thunderbolt/domain.c | 12 +++---------
+>  drivers/thunderbolt/nhi.c    | 35 +++++++++++++++++++++++++++++++++++
+>  include/linux/thunderbolt.h  |  2 ++
+>  3 files changed, 40 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/thunderbolt/domain.c b/drivers/thunderbolt/domain.c
+> index 7018d959f775..d5c825e84ac8 100644
+> --- a/drivers/thunderbolt/domain.c
+> +++ b/drivers/thunderbolt/domain.c
+> @@ -7,9 +7,7 @@
+>   */
+>  
+>  #include <linux/device.h>
+> -#include <linux/dmar.h>
+>  #include <linux/idr.h>
+> -#include <linux/iommu.h>
+>  #include <linux/module.h>
+>  #include <linux/pm_runtime.h>
+>  #include <linux/slab.h>
+> @@ -257,13 +255,9 @@ static ssize_t iommu_dma_protection_show(struct device *dev,
+>  					 struct device_attribute *attr,
+>  					 char *buf)
+>  {
+> -	/*
+> -	 * Kernel DMA protection is a feature where Thunderbolt security is
+> -	 * handled natively using IOMMU. It is enabled when IOMMU is
+> -	 * enabled and ACPI DMAR table has DMAR_PLATFORM_OPT_IN set.
+> -	 */
+> -	return sprintf(buf, "%d\n",
+> -		       iommu_present(&pci_bus_type) && dmar_platform_optin());
+> +	struct tb *tb = container_of(dev, struct tb, dev);
+> +
+> +	return sprintf(buf, "%d\n", tb->nhi->iommu_dma_protection);
+>  }
+>  static DEVICE_ATTR_RO(iommu_dma_protection);
+>  
+> diff --git a/drivers/thunderbolt/nhi.c b/drivers/thunderbolt/nhi.c
+> index c73da0532be4..e12c2e266741 100644
+> --- a/drivers/thunderbolt/nhi.c
+> +++ b/drivers/thunderbolt/nhi.c
+> @@ -14,6 +14,7 @@
+>  #include <linux/errno.h>
+>  #include <linux/pci.h>
+>  #include <linux/interrupt.h>
+> +#include <linux/iommu.h>
+>  #include <linux/module.h>
+>  #include <linux/delay.h>
+>  #include <linux/property.h>
+> @@ -1102,6 +1103,39 @@ static void nhi_check_quirks(struct tb_nhi *nhi)
+>  		nhi->quirks |= QUIRK_AUTO_CLEAR_INT;
+>  }
+>  
+> +static void nhi_check_iommu(struct tb_nhi *nhi)
+> +{
+> +	struct pci_dev *pdev;
+> +	bool port_ok = false;
 
 
--- 
-BR,
-Kate
+So for here somewhere we should call dmar_platform_optin() first. I
+think this is something we want to move inside the IOMMU API (alongside
+with the below checks).
 
+> +
+> +	/*
+> +	 * Check for sibling devices that look like they should be our
+> +	 * tunnelled ports. We can reasonably assume that if an IOMMU is
+> +	 * managing the bridge it will manage any future devices beyond it
+> +	 * too. If firmware has described a port as external-facing as
+> +	 * expected then we can trust the IOMMU layer to enforce isolation;
+> +	 * otherwise even if translation is enabled for existing devices it
+> +	 * may potentially be overridden for a future tunnelled endpoint.
+> +	 */
+> +	for_each_pci_bridge(pdev, nhi->pdev->bus) {
+> +		if (!pci_is_pcie(pdev) ||
+> +		    !(pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT ||
+> +		      pci_pcie_type(pdev) == PCI_EXP_TYPE_DOWNSTREAM))
+> +			continue;
+> +
+> +		if (!device_iommu_mapped(&pdev->dev))
+> +			return;
+> +
+> +		if (!pdev->untrusted) {
+> +			dev_info(&nhi->pdev->dev,
+> +				 "Assuming unreliable Kernel DMA protection\n");
+> +			return;
+> +		}
+> +		port_ok = true;
+> +	}
+> +	nhi->iommu_dma_protection = port_ok;
+> +}
+> +
+>  static int nhi_init_msi(struct tb_nhi *nhi)
+>  {
+>  	struct pci_dev *pdev = nhi->pdev;
+> @@ -1219,6 +1253,7 @@ static int nhi_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>  		return -ENOMEM;
+>  
+>  	nhi_check_quirks(nhi);
+> +	nhi_check_iommu(nhi);
+>  
+>  	res = nhi_init_msi(nhi);
+>  	if (res) {
+> diff --git a/include/linux/thunderbolt.h b/include/linux/thunderbolt.h
+> index 124e13cb1469..7a8ad984e651 100644
+> --- a/include/linux/thunderbolt.h
+> +++ b/include/linux/thunderbolt.h
+> @@ -465,6 +465,7 @@ static inline struct tb_xdomain *tb_service_parent(struct tb_service *svc)
+>   * @msix_ida: Used to allocate MSI-X vectors for rings
+>   * @going_away: The host controller device is about to disappear so when
+>   *		this flag is set, avoid touching the hardware anymore.
+> + * @iommu_dma_protection: An IOMMU will isolate external-facing ports.
+>   * @interrupt_work: Work scheduled to handle ring interrupt when no
+>   *		    MSI-X is used.
+>   * @hop_count: Number of rings (end point hops) supported by NHI.
+> @@ -479,6 +480,7 @@ struct tb_nhi {
+>  	struct tb_ring **rx_rings;
+>  	struct ida msix_ida;
+>  	bool going_away;
+> +	bool iommu_dma_protection;
+>  	struct work_struct interrupt_work;
+>  	u32 hop_count;
+>  	unsigned long quirks;
+> -- 
+> 2.28.0.dirty
