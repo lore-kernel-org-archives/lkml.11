@@ -2,104 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B2A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 09:27:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A29F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 09:27:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234450AbiCRJ2U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 05:28:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35200 "EHLO
+        id S234463AbiCRJ2l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 05:28:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234451AbiCRJ2Q (ORCPT
+        with ESMTP id S234452AbiCRJ2j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 05:28:16 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4732DCBC5
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 02:26:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1647595611; x=1679131611;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=T4z41I87uBSo9ltyIZ0egwxkvn/iVqG79Oo4uvvncYk=;
-  b=EhkLB8KpjFgtoNhQl4j0Qr+TXCcwIzOspi/br3PKxxBuqCpP5KVfjmO7
-   m6Ufpy233bKctH+uJ2Qdgv+DIDbO0Jh433BsA3oJ5H7ol+lv0xdV9SUUQ
-   CA/j7ggVEEq/1a5pqnrezZeQmY98Q7y1DiZvKM/35NzZIpbwazaWRWR2i
-   LfrsY9PCD+vlsLP3xoWMzWnNgt07BxV2F9/2IJ43SC7qShVB0rHf31bR2
-   zQNv6RoADvsbCdRfSFi2/CXfA2bwou+zc3ibz3re/4sQNLxiFlC0nOLGW
-   A/oOII3C1Fpao4/mG9rRzxFlHzQT1VMxg+4Ukm6Xtoo57mCEOuvM217Px
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,191,1643698800"; 
-   d="scan'208";a="89376626"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Mar 2022 02:26:51 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 18 Mar 2022 02:26:50 -0700
-Received: from rob-ult-m19940.amer.actel.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 18 Mar 2022 02:26:49 -0700
-From:   Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-To:     <alsa-devel@alsa-project.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <broonie@kernel.org>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Subject: [PATCH] ASoC: atmel: mchp-pdmc: print the correct property name
-Date:   Fri, 18 Mar 2022 11:26:09 +0200
-Message-ID: <20220318092609.130901-1-codrin.ciubotariu@microchip.com>
-X-Mailer: git-send-email 2.32.0
+        Fri, 18 Mar 2022 05:28:39 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2790F2D9D51
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 02:27:20 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id z8so14823301ybh.7
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 02:27:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=NiloVlsM0fD0ZTL183KlLDNEYD/TNeP0iD1gkzYQxF0=;
+        b=A9LbMhHqQGc9aZQpJxn5H90B16tlLid88+DcaJwP2blODJ/0NaR0U+PyiLqkvfClB7
+         ylHOaMMYAVOm8AyVvaPnz6E8/7CxqP6vkYMrV0lqegDRzJaUaJzq6UQ7D1R9Cdkr0QYQ
+         NYlI2toKqArkdx/rWe8wKAk0TrGiwwe6oK832sQy6YISpEj9DAYP5JLrmphQfiE7oLsd
+         TBVWaCGG3lWbNJCVfS4GfkV8Q+CBGZPOVv7Ot4tImVNvJLSJqGcFecyJFyR6iosc3XAi
+         +Rh9Rien0vtfY3eutAFJlcFJNMSp1zN02atO0VsjwAdg/4meBDCFfLqYNS99JaqExGg2
+         V5tA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=NiloVlsM0fD0ZTL183KlLDNEYD/TNeP0iD1gkzYQxF0=;
+        b=IseLS6qxXavNj02nBdJ/hdK4q6WnPhETfoGs5nee5knoSKLyPNPoHKG7WK2fmVWJib
+         jioCzJUuti7wG7L0JDCtE1sCkuMaEV1unrr0y0efqai5yccdkQh1D4J/dQGE/VTqGl+s
+         WEs4vvn+kX55i54nDyUSZeSBj5KZjxgw+a/U+Awhn4L7p2I5eicEEaCc+fdIYeQNOO+o
+         7jzgwMOumtLt8oNvHVztQF7wGPwS8Q6ZfRZatwiZzVt2AhbgYuH9i/tOYn9Ry6jQsDQH
+         gTSj9SCk+AfwAKNBoUmvosdZIhVjVq2OmdHEdh0vwl1+e7DIbQSSMgbSTR//355rryeq
+         zxnw==
+X-Gm-Message-State: AOAM532anlB2E7l73o47i6GCKOOo/7DHR26miq28+0d4jeEuL1mT6DrQ
+        udUpXFW4pDWNtcVeWAOKZ3j+wBNYCipWglAccZALIg==
+X-Google-Smtp-Source: ABdhPJwgUKcGhbSAMFyZt3qbdsm47q7qW+f6BZ/kJNV9antKRqNCXY92pQ6m+YqTKQys+CuflqoIYPyu8fiPuTvXNQk=
+X-Received: by 2002:a25:be05:0:b0:629:1f49:b782 with SMTP id
+ h5-20020a25be05000000b006291f49b782mr8767994ybk.88.1647595639236; Fri, 18 Mar
+ 2022 02:27:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <20220317124526.308079100@linuxfoundation.org>
+In-Reply-To: <20220317124526.308079100@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Fri, 18 Mar 2022 14:57:07 +0530
+Message-ID: <CA+G9fYs8uFFUuHerDpNpE3Tj_gH9RZry784nLk_j6MS9dPb4nw@mail.gmail.com>
+Subject: Re: [PATCH 5.15 00/25] 5.15.30-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The correct property is 'microchip,mic-pos', not 'mchp,mic-pos', so
-replace all occurences of 'mchp,mic-pos' with 'microchip,mic-pos'.
-Fix a multi-line comment format while we are at it.
+On Thu, 17 Mar 2022 at 18:22, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.15.30 release.
+> There are 25 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Sat, 19 Mar 2022 12:45:16 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.15.30-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.15.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Fixes: 50291652af52 ("ASoC: atmel: mchp-pdmc: add PDMC driver")
-Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
----
- sound/soc/atmel/mchp-pdmc.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-diff --git a/sound/soc/atmel/mchp-pdmc.c b/sound/soc/atmel/mchp-pdmc.c
-index e0aec5fe8a26..1a7802fbf23c 100644
---- a/sound/soc/atmel/mchp-pdmc.c
-+++ b/sound/soc/atmel/mchp-pdmc.c
-@@ -879,13 +879,13 @@ static int mchp_pdmc_dt_init(struct mchp_pdmc *dd)
- 
- 	dd->mic_no = of_property_count_u32_elems(np, "microchip,mic-pos");
- 	if (dd->mic_no < 0) {
--		dev_err(dd->dev, "failed to get mchp,mic-pos: %d",
-+		dev_err(dd->dev, "failed to get microchip,mic-pos: %d",
- 			dd->mic_no);
- 		return dd->mic_no;
- 	}
- 	if (!dd->mic_no || dd->mic_no % 2 ||
- 	    dd->mic_no / 2 > MCHP_PDMC_MAX_CHANNELS) {
--		dev_err(dd->dev, "invalid array length for mchp,mic-pos: %d",
-+		dev_err(dd->dev, "invalid array length for microchip,mic-pos: %d",
- 			dd->mic_no);
- 		return -EINVAL;
- 	}
-@@ -894,9 +894,10 @@ static int mchp_pdmc_dt_init(struct mchp_pdmc *dd)
- 
- 	dev_info(dd->dev, "%d PDM microphones declared\n", dd->mic_no);
- 
--	/* by default, we consider the order of microphones in mchp,mic-pos to
--	 * be the same with the channel mapping; 1st microphone channel 0, 2nd
--	 * microphone channel 1, etc.
-+	/*
-+	 * by default, we consider the order of microphones in
-+	 * microchip,mic-pos to be the same with the channel mapping;
-+	 * 1st microphone channel 0, 2nd microphone channel 1, etc.
- 	 */
- 	for (i = 0; i < dd->mic_no; i++) {
- 		int ds;
--- 
-2.32.0
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
+## Build
+* kernel: 5.15.30-rc1
+* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
+rc.git
+* git branch: linux-5.15.y
+* git commit: 1d4b468d2e8dfe717ff4f4991fa8f8decad564a5
+* git describe: v5.15.29-26-g1d4b468d2e8d
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.15.y/build/v5.15=
+.29-26-g1d4b468d2e8d
+
+## Test Regressions (compared to v5.15.29)
+No test regressions found.
+
+## Metric Regressions (compared to v5.15.29)
+No metric regressions found.
+
+## Test Fixes (compared to v5.15.29)
+No test fixes found.
+
+## Metric Fixes (compared to v5.15.29)
+No metric fixes found.
+
+## Test result summary
+total: 106421, pass: 90242, fail: 1005, skip: 14074, xfail: 1100
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 296 total, 293 passed, 3 failed
+* arm64: 47 total, 47 passed, 0 failed
+* dragonboard-410c: 1 total, 1 passed, 0 failed
+* hi6220-hikey: 1 total, 1 passed, 0 failed
+* i386: 45 total, 41 passed, 4 failed
+* juno-r2: 1 total, 1 passed, 0 failed
+* mips: 41 total, 38 passed, 3 failed
+* parisc: 14 total, 14 passed, 0 failed
+* powerpc: 65 total, 50 passed, 15 failed
+* riscv: 32 total, 27 passed, 5 failed
+* s390: 26 total, 23 passed, 3 failed
+* sh: 26 total, 24 passed, 2 failed
+* sparc: 14 total, 14 passed, 0 failed
+* x15: 1 total, 1 passed, 0 failed
+* x86: 1 total, 1 passed, 0 failed
+* x86_64: 47 total, 47 passed, 0 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kselftest-
+* kselftest-android
+* kselftest-arm64
+* kselftest-bpf
+* kselftest-breakpoints
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kexec
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-membarrier
+* kselftest-memfd
+* kselftest-memory-hotplug
+* kselftest-mincore
+* kselftest-mount
+* kselftest-mqueue
+* kselftest-net
+* kselftest-netfilter
+* kselftest-nsfs
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-tc-testing
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_bind[
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* perf/Zstd-perf.data-compression
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
