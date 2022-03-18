@@ -2,109 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB67DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 22:51:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 269F7C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 22:53:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241410AbiCRWxR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 18:53:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60120 "EHLO
+        id S241412AbiCRWzP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 18:55:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234755AbiCRWxP (ORCPT
+        with ESMTP id S234425AbiCRWzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 18:53:15 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1371E3076EF;
-        Fri, 18 Mar 2022 15:51:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647643916; x=1679179916;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=S4pQrEN8HpDPhir9k2llngd8DTnUCApgq4uXGL8O+Qo=;
-  b=QQuRMRwc9qkNSE4Tegd8T+/p2jW/HYusLBCHckddwYEAA47z/TctDdY5
-   MmLZRyfChm4GD84Je2mXjLQfeFOW1y52KZUYcXt7HV4LuNGxnYuLcS/dz
-   /DaFA2J5L5CBQnlCpCyuYsnt9ArsBKpt2uFN7MiOSLoh6sjWd0QEfY/r5
-   NIpaxgmNCpoTpIaFHKeob1+SkLQrHkVp6vqwmRJlPtBgfFxApR5+Ns8q3
-   fsLVlDmnRSsT5yyb2dCvv90BCIwV6jQI46HsN5MMew/JZ8O30aRJBSA22
-   a+BbPZHKz294yEGgzoIA1rXcaAd2A2RUTTotJfzzB7DLLEd7UTifiWAQb
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="257191875"
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="257191875"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 15:51:55 -0700
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="647669930"
-Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 15:51:55 -0700
-Date:   Fri, 18 Mar 2022 15:51:54 -0700
-From:   Fenghua Yu <fenghua.yu@intel.com>
-To:     Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
-Cc:     Reinette Chatre <reinette.chatre@intel.com>,
-        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v6 3/6] selftests/resctrl: Fix resctrl_tests' return code
- to work with selftest framework
-Message-ID: <YjUNCn6CguwhN6Kd@otcwcpicx3.sc.intel.com>
-References: <20220318075807.2921063-1-tan.shaopeng@jp.fujitsu.com>
- <20220318075807.2921063-4-tan.shaopeng@jp.fujitsu.com>
+        Fri, 18 Mar 2022 18:55:11 -0400
+X-Greylist: delayed 420 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 18 Mar 2022 15:53:52 PDT
+Received: from mail.namei.org (namei.org [65.99.196.166])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 280FB2CB18C;
+        Fri, 18 Mar 2022 15:53:52 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.namei.org (Postfix) with ESMTPS id 2EAFA54E;
+        Fri, 18 Mar 2022 22:31:55 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.namei.org 2EAFA54E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=namei.org; s=2;
+        t=1647642715; bh=BZqDGcl4o9Xdi1tmgY5xW03TbMhpKwFz2zY2lit+duU=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=0TadzwHr15LTwfizUFip6H4pI3PAx0t6kiX1pSKaHZtrSeiTKZ5755Fp9HWxrgvKf
+         4tcy3l8Px/hTrLtlWSPlDj/76pw8p5ovHGT01GTBIurqnG0tBB5aHeOmv4fbMasoMa
+         FEjy5O3FKGFA1pMOWJNUW2KQeAcL7T/rymjP59w0=
+Date:   Sat, 19 Mar 2022 09:31:55 +1100 (AEDT)
+From:   James Morris <jmorris@namei.org>
+To:     linux-security-module@vger.kernel.org
+cc:     linux-kernel@vger.kernel.org, lwn@lwn.net,
+        fedora-selinux-list@redhat.com, linux-crypto@vger.kernel.org,
+        kernel-hardening@lists.openwall.com,
+        linux-integrity@vger.kernel.org, selinux@vger.kernel.org,
+        Audit-ML <linux-audit@redhat.com>, gentoo-hardened@gentoo.org,
+        keyrings@linux-nfs.org, tpmdd-devel@lists.sourceforge.net,
+        Linux Security Summit Program Committee 
+        <lss-pc@lists.linuxfoundation.org>
+Subject: Re: [ANNOUNCE][CFP] Linux Security Summit North America 2022
+In-Reply-To: <3e5acc67-829-fafb-c82-833fc22b35a@namei.org>
+Message-ID: <3f2d2915-b2b9-1646-d0e9-192296327633@namei.org>
+References: <3e5acc67-829-fafb-c82-833fc22b35a@namei.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220318075807.2921063-4-tan.shaopeng@jp.fujitsu.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 04:58:04PM +0900, Shaopeng Tan wrote:
-> In kselftest framework, if a sub test can not run by some reasons,
-                                                   s/by/for/
-> the test result should be marked as SKIP rather than FAIL.
-> Return KSFT_SKIP(4) instead of KSFT_FAIL(1) if resctrl_tests is not run
-							       s/is/does/
-> as root or it is run on a test environment which does not support resctrl.
-               s/is run/runs/
-> 
->  - ksft_exit_fail_msg(): returns KSFT_FAIL(1)
->  - ksft_exit_skip(): returns KSFT_SKIP(4)
-> 
-> Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-> Signed-off-by: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
-> ---
->  tools/testing/selftests/resctrl/resctrl_tests.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/resctrl/resctrl_tests.c b/tools/testing/selftests/resctrl/resctrl_tests.c
-> index 973f09a66e1e..ed7e1a995b01 100644
-> --- a/tools/testing/selftests/resctrl/resctrl_tests.c
-> +++ b/tools/testing/selftests/resctrl/resctrl_tests.c
-> @@ -205,7 +205,7 @@ int main(int argc, char **argv)
->  	 * 2. We execute perf commands
->  	 */
->  	if (geteuid() != 0)
-> -		return ksft_exit_fail_msg("Not running as root, abort testing.\n");
-> +		return ksft_exit_skip("Not running as root. Skipping...\n");
->  
->  	/* Detect AMD vendor */
->  	detect_amd();
-> @@ -235,7 +235,7 @@ int main(int argc, char **argv)
->  	sprintf(bm_type, "fill_buf");
->  
->  	if (!check_resctrlfs_support())
-> -		return ksft_exit_fail_msg("resctrl FS does not exist\n");
-> +		return ksft_exit_skip("resctrl FS does not exist. Enable X86_CPU_RESCTRL config options.\n");
->  
->  	filter_dmesg();
->  
-> -- 
-> 2.27.0
-> 
+On Tue, 8 Feb 2022, James Morris wrote:
 
-Please fix the typos.
+>   * Event:                September 23-24
 
-Reviewed-by: Fenghua Yu <fenghua.yu@intel.com>
+Correction: This should be 23-24 June per the top of the email.
 
-Thanks.
 
--Fenghua
+-- 
+James Morris
+<jmorris@namei.org>
+
