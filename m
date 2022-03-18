@@ -2,121 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC268C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 10:18:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2DC9C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 10:20:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234945AbiCRKTr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 06:19:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53922 "EHLO
+        id S234958AbiCRKVa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 06:21:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234924AbiCRKTp (ORCPT
+        with ESMTP id S234944AbiCRKVY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 06:19:45 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 796001FB518;
-        Fri, 18 Mar 2022 03:18:22 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KKg0f6BlmzfYnH;
-        Fri, 18 Mar 2022 18:16:50 +0800 (CST)
-Received: from huawei.com (10.67.174.197) by kwepemi500013.china.huawei.com
- (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 18 Mar
- 2022 18:18:19 +0800
-From:   Xu Kuohai <xukuohai@huawei.com>
-To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Subject: [PATCH bpf-next] bpf, arm64: sign return address for jited code
-Date:   Fri, 18 Mar 2022 06:29:36 -0400
-Message-ID: <20220318102936.838459-1-xukuohai@huawei.com>
-X-Mailer: git-send-email 2.30.2
+        Fri, 18 Mar 2022 06:21:24 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27F141EFE06
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 03:20:04 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id r190-20020a1c2bc7000000b0038a1013241dso4572900wmr.1
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 03:20:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=YYBm1RX0czLMaWTTQInKeCgdVYhgkLcZ7jFkas/Rfhs=;
+        b=AUl19gddWU+TGkn91rwswKtkRuunsoS1xg6IvUppECEb8oSzjSfXJv2d87cqXYs3Yy
+         95nkaF7kHo7GBGVTNaBNkuO6Rp5JM8YHyT8tVX8NcbKasWURoUqgjvOhVr+6gsjwxf67
+         6VqySP3QaYydQWitA3XNyI6fTecEOPfuXE2b/2PqMFm9CN17Tvi8nhCUC2lm71oY1H+o
+         2GWqd42sqZxKapISXzA8vBpYH53HlV8UMGJz1fKwf0WuqukOHYuMyfohAKbTkm1O00uV
+         wU2oONr93WQy0UguF3b7ebHHu3pc+OUgVdXyQBp284tjYnM5VG8acVPte/GGuH+vp6P+
+         tK6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=YYBm1RX0czLMaWTTQInKeCgdVYhgkLcZ7jFkas/Rfhs=;
+        b=yvFhEM56Moay41IVblcmJx1QXmeJVep81d7ZqlAOiUe4V8KqP9LU1qLcZ8nlhU1nyV
+         QPjqVPH2dwMWiebqSicT+w4NeMndoZOkdo6DJXhy1C/Um6L0SRkBE/87rQsiYrInpjjT
+         QwzRrL3ahaHxuXIHAqRC4FRzpdv81aY+1Pm4KxbRzP8BvoriW7+T/GPPuJERcEKm8M0b
+         SVOn1QgByaWIjZvg59vtpCSTfjzM+4Zn957avS2iy6b7gN6Z0hK8nn/r6QsevITIoDth
+         LZQNrKOuCcuWoUfUFCbGX46rqMuh7gXA3SSorYbPqy+DjSxpnQwp5juCSj/UsNJndoru
+         81eQ==
+X-Gm-Message-State: AOAM532lKImldVBgaLVs8IrRTRNGtsmVUTIy940cpP1O5ZIxAMTT8z4s
+        mbQlheiEoPZ0RMsPaOVj19wLVA==
+X-Google-Smtp-Source: ABdhPJykd7CP6qm5/RS39Zs+vu5rb4PuIDjEBZiEVPnAb1oCr3QXbjSKOIF+Kzx93wjR66zRLBNlTA==
+X-Received: by 2002:a7b:c7c3:0:b0:389:cbf1:fadf with SMTP id z3-20020a7bc7c3000000b00389cbf1fadfmr15021009wmk.147.1647598802494;
+        Fri, 18 Mar 2022 03:20:02 -0700 (PDT)
+Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
+        by smtp.googlemail.com with ESMTPSA id f10-20020adffcca000000b00203e6a34d3esm5889436wrs.99.2022.03.18.03.20.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Mar 2022 03:20:01 -0700 (PDT)
+Date:   Fri, 18 Mar 2022 11:20:00 +0100
+From:   LABBE Corentin <clabbe@baylibre.com>
+To:     Johan Jonker <jbx6244@gmail.com>
+Cc:     heiko@sntech.de, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
+        herbert@gondor.apana.org.au, davem@davemloft.net
+Subject: Re: [PATCH v3] dt-bindings: crypto: convert rockchip-crypto to yaml
+Message-ID: <YjRc0Cf8m/kpcwAQ@Red>
+References: <20220211115925.3382735-1-clabbe@baylibre.com>
+ <f078ac6f-5605-7b86-5734-cbbf7dc52c71@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.197]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <f078ac6f-5605-7b86-5734-cbbf7dc52c71@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sign return address for jited code when the kernel is built with pointer
-authentication enabled.
+Le Tue, Feb 15, 2022 at 03:07:56PM +0100, Johan Jonker a écrit :
+> Hi Heiko,
+> 
+> On 2/11/22 12:59, Corentin Labbe wrote:
+> > Convert rockchip-crypto to yaml
+> > 
+> > Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> > ---
+> > Changes since v1:
+> > - fixed example
+> > - renamed to a new name
+> > - fixed some maxItems
+> > 
+> > Change since v2:
+> > - Fixed maintainers section
+> > 
+> >  .../crypto/rockchip,rk3288-crypto.yaml        | 66 +++++++++++++++++++
+> >  .../bindings/crypto/rockchip-crypto.txt       | 28 --------
+> >  2 files changed, 66 insertions(+), 28 deletions(-)
+> >  create mode 100644 Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml
+> 
+> rockchip,crypto.yaml
+> 
+> >  delete mode 100644 Documentation/devicetree/bindings/crypto/rockchip-crypto.txt
+> > 
+> > diff --git a/Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml b/Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml
+> > new file mode 100644
+> > index 000000000000..2e1e9fa711c4
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml
+> > @@ -0,0 +1,66 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/crypto/rockchip,rk3288-crypto.yaml#
+> 
+> rockchip,crypto.yaml
+> 
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Rockchip Electronics And Security Accelerator
+> > +
+> > +maintainers:
+> > +  - Heiko Stuebner <heiko@sntech.de>
+> > +
+> > +properties:
+> > +  compatible:
+> 
+>     oneOf:
+>       - const: rockchip,rk3288-crypto
+>       - items:
+>           - enum:
+>               - rockchip,rk3228-crypto
+>               - rockchip,rk3328-crypto
+>               - rockchip,rk3368-crypto
+>               - rockchip,rk3399-crypto
+>           - const: rockchip,rk3288-crypto
+> 
+> rk3288 was the first in line that had support, so we use that as fall
+> back string.
+> 
+> > +    const: rockchip,rk3288-crypto
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  interrupts:
+> > +    maxItems: 1
+> > +
+> > +  clocks:
+> > +    items:
+> > +      - description: clock data
+> > +      - description: clock data
+> > +      - description: clock crypto accelerator
+> 
+> > +      - description: clock dma
+> 
+> remove ???
+> 
+> > +
+> > +  clock-names:
+> > +    items:
+> > +      - const: aclk
+> > +      - const: hclk
+> > +      - const: sclk
+> 
+> > +      - const: apb_pclk
+> 
+> remove ???
+> 
+> Similar to the rk3568 pclk_xpcs discussion ACLK_DMAC1 belongs to the
+> dmac_bus_s node and should have been enabled by the DMA driver I think.
+> Could you advise if this is correct or should we remove parsing/enabling
+> ACLK_DMAC1 in rk3288_crypto.c in order to it easier
+> porting/adding/syncing nodes for other SoC types?
+> 
+> Johan
+> 
 
-1. Sign lr with paciasp instruction before lr is pushed to stack. Since
-   paciasp acts like landing pads for function entry, no need to insert
-   bti instruction before paciasp.
+Hello
 
-2. Authenticate lr with autiasp instruction after lr is poped from stack.
+I came back on this as I got access to a rk3288-miqi, and crypto does not work at all.
+This is due to ACLK_DMAC1 not being enabled.
 
-Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
----
- arch/arm64/net/bpf_jit.h      |  3 +++
- arch/arm64/net/bpf_jit_comp.c | 11 +++++++++--
- 2 files changed, 12 insertions(+), 2 deletions(-)
+While not touching it work on rk3399 and rk3328, rk3288 seems to need it.
 
-diff --git a/arch/arm64/net/bpf_jit.h b/arch/arm64/net/bpf_jit.h
-index dd59b5ad8fe4..679c80aa1f2e 100644
---- a/arch/arm64/net/bpf_jit.h
-+++ b/arch/arm64/net/bpf_jit.h
-@@ -249,6 +249,9 @@
- /* HINTs */
- #define A64_HINT(x) aarch64_insn_gen_hint(x)
- 
-+#define A64_PACIASP A64_HINT(AARCH64_INSN_HINT_PACIASP)
-+#define A64_AUTIASP A64_HINT(AARCH64_INSN_HINT_AUTIASP)
-+
- /* BTI */
- #define A64_BTI_C  A64_HINT(AARCH64_INSN_HINT_BTIC)
- #define A64_BTI_J  A64_HINT(AARCH64_INSN_HINT_BTIJ)
-diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
-index e850c69e128c..5dcf45e5944e 100644
---- a/arch/arm64/net/bpf_jit_comp.c
-+++ b/arch/arm64/net/bpf_jit_comp.c
-@@ -192,7 +192,7 @@ static bool is_addsub_imm(u32 imm)
- }
- 
- /* Tail call offset to jump into */
--#if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL)
-+#if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL) || IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL)
- #define PROLOGUE_OFFSET 8
- #else
- #define PROLOGUE_OFFSET 7
-@@ -233,8 +233,11 @@ static int build_prologue(struct jit_ctx *ctx, bool ebpf_from_cbpf)
- 	 *
- 	 */
- 
-+	/* Sign lr */
-+	if (IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL))
-+		emit(A64_PACIASP, ctx);
- 	/* BTI landing pad */
--	if (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL))
-+	else if (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL))
- 		emit(A64_BTI_C, ctx);
- 
- 	/* Save FP and LR registers to stay align with ARM64 AAPCS */
-@@ -529,6 +532,10 @@ static void build_epilogue(struct jit_ctx *ctx)
- 	/* Set return value */
- 	emit(A64_MOV(1, A64_R(0), r0), ctx);
- 
-+	/* Authenticate lr */
-+	if (IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL))
-+		emit(A64_AUTIASP, ctx);
-+
- 	emit(A64_RET(A64_LR), ctx);
- }
- 
--- 
-2.30.2
+Probably the DMA controller goes to sleep under PM.
 
+Any idea on how to create a dependency so dma controller does not sleep ?
