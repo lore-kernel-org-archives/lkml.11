@@ -2,125 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1869CC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 07:45:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90AA5C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 07:45:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233204AbiCRHqY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 03:46:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57400 "EHLO
+        id S233234AbiCRHqv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 03:46:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233185AbiCRHqX (ORCPT
+        with ESMTP id S233222AbiCRHqt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 03:46:23 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA07D1F42E0;
-        Fri, 18 Mar 2022 00:44:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647589498; x=1679125498;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=4qlZT+Fa4OCk7XLn6JGocR/sVD1bjrCN/O9P6N254W4=;
-  b=MpIxMZ+Gd46ydlzFmq6i9kUS1gdAe1AO6jxLXweVgVuMwWEDYPvAU4aw
-   JRg39MCXLYY0cO2PAww4OPrJUbVTNp39VZXsyP1HJx4n1enDUh8kczI6Z
-   jHlqXGHAVcg98oXRACSt8KLyPfZhn1nRui//cy92O7Q7LAKH2oVr8s3Fc
-   xjlhj+vhUCOVVkYzw9LzvYYHrJEtMqnDDH8v0lM4+Ino9nlXFTJOq4+VX
-   2wqLfGJrQbtg8x+BBX7j2X1/Kyy1+HlNly/cVNZAphQMHuoczxNzIq859
-   FV2ENVWvFLZuh275PETE5QLUPtyh4GW0JlhTBab2kenVAb3O5VGwAvoNZ
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="254641687"
-X-IronPort-AV: E=Sophos;i="5.90,191,1643702400"; 
-   d="scan'208";a="254641687"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 00:44:32 -0700
-X-IronPort-AV: E=Sophos;i="5.90,191,1643702400"; 
-   d="scan'208";a="558307329"
-Received: from chenyi-pc.sh.intel.com ([10.239.159.73])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 00:44:29 -0700
-From:   Chenyi Qiang <chenyi.qiang@intel.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Xiaoyao Li <xiaoyao.li@intel.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5 3/3] KVM: Add document for KVM_CAP_X86_NOTIFY_VMEXIT and KVM_EXIT_NOTIFY
-Date:   Fri, 18 Mar 2022 15:49:55 +0800
-Message-Id: <20220318074955.22428-4-chenyi.qiang@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220318074955.22428-1-chenyi.qiang@intel.com>
-References: <20220318074955.22428-1-chenyi.qiang@intel.com>
+        Fri, 18 Mar 2022 03:46:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B6C1F6845;
+        Fri, 18 Mar 2022 00:45:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7DA3BB82180;
+        Fri, 18 Mar 2022 07:45:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56146C340E8;
+        Fri, 18 Mar 2022 07:45:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647589523;
+        bh=mfk69zuIPfhhcTWagGzypXujpE6TuqQQSU1CspPJeKs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=eKc008nJ+OiKWUc2qQSi5Q9LljBP/znyiJF/qhEJ9AvzMmJkDTLksln/tCGe/16Ta
+         y4qUr6Yt8UwKHvsdlN+/UkBgN0JC1Fy21x3U6QR5wC2L5BrEgq7bgOuN0i4690udpD
+         3qq0xKUhqD3T327sOt1FRY5HukK9RYj+cUwfh12c=
+Date:   Fri, 18 Mar 2022 08:45:19 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "WeitaoWang-oc@zhaoxin.com" <WeitaoWang-oc@zhaoxin.com>
+Cc:     mathias.nyman@intel.com, hzpeterchen@gmail.com,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        TonyWWang-oc@zhaoxin.com, weitaowang@zhaoxin.com,
+        CobeChen@zhaoxin.com, TimGuo@zhaoxin.com
+Subject: Re: [PATCH] USB: Fix xhci ERDP update issue
+Message-ID: <YjQ4jzgRmrDJClUZ@kroah.com>
+References: <dedb789b-c1bb-34af-7887-78a3fc627e75@zhaoxin.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <dedb789b-c1bb-34af-7887-78a3fc627e75@zhaoxin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add brief documentation for KVM_CAP_X86_NOTIFY_VMEXIT, as well as the
-new field in kvm_run struct for the exit reason KVM_EXIT_NOTIFY.
+On Fri, Mar 18, 2022 at 03:32:14PM +0800, WeitaoWang-oc@zhaoxin.com wrote:
+> On some situations, software handles TRB events slower than adding TRBs.
+> If the number of TRB events to be processed in a given interrupt is 256.
+> The local variable "event_ring_deq" that records in interrupt handler
+> is equal to software_dequeue. It will cause driver not update ERDP,then
+> software dequeue pointer is out of sync with ERDP on interrupt exit.
+> On the next interrupt, the event ring may full but driver will not
+> update ERDP as software_dequeue is equal to ERDP.
+> 
+> [  536.377115] xhci_hcd 0000:00:12.0: ERROR unknown event type 37
+> [  566.933173] sd 8:0:0:0: [sdb] tag#27 uas_eh_abort_handler 0 uas-tag 7
+> inflight: CMD OUT
+> [  566.933181] sd 8:0:0:0: [sdb] tag#27 CDB: Write(10) 2a 00 17 71 e6 78 00
+> 00 08 00
+> [  572.041186] xhci_hcd On some situataions,the0000:00:12.0: xHCI host not
+> responding to stop endpoint command.
+> [  572.057193] xhci_hcd 0000:00:12.0: Host halt failed, -110
+> [  572.057196] xhci_hcd 0000:00:12.0: xHCI host controller not responding,
+> assume dead
+> [  572.057236] sd 8:0:0:0: [sdb] tag#26 uas_eh_abort_handler 0 uas-tag 6
+> inflight: CMD
+> [  572.057240] sd 8:0:0:0: [sdb] tag#26 CDB: Write(10) 2a 00 38 eb cc d8 00
+> 00 08 00
+> [  572.057244] sd 8:0:0:0: [sdb] tag#25 uas_eh_abort_handler 0 uas-tag 5
+> inflight: CMD
+> 
+> Fixed this issue by update software record local variable when handles 128
+> TRB events.
+> 
+> Signed-off-by: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
+> ---
+>  drivers/usb/host/xhci-ring.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/usb/host/xhci-ring.c b/drivers/usb/host/xhci-ring.c
+> index d0b6806..f970799 100644
+> --- a/drivers/usb/host/xhci-ring.c
+> +++ b/drivers/usb/host/xhci-ring.c
+> @@ -3141,6 +3141,7 @@ irqreturn_t xhci_irq(struct usb_hcd *hcd)
+>  		if (event_loop++ < TRBS_PER_SEGMENT / 2)
+>  			continue;
+>  		xhci_update_erst_dequeue(xhci, event_ring_deq);
+> +		event_ring_deq = xhci->event_ring->dequeue;
+> 
+>  		/* ring is half-full, force isoc trbs to interrupt more often */
+>  		if (xhci->isoc_bei_interval > AVOID_BEI_INTERVAL_MIN)
+> -- 
+> 2.7.4
 
-Signed-off-by: Chenyi Qiang <chenyi.qiang@intel.com>
----
- Documentation/virt/kvm/api.rst | 39 ++++++++++++++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
+What commit id does this change fix?
 
-diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-index 9682b0a438bd..d60b03b5a63e 100644
---- a/Documentation/virt/kvm/api.rst
-+++ b/Documentation/virt/kvm/api.rst
-@@ -6199,6 +6199,26 @@ array field represents return values. The userspace should update the return
- values of SBI call before resuming the VCPU. For more details on RISC-V SBI
- spec refer, https://github.com/riscv/riscv-sbi-doc.
- 
-+::
-+
-+    /* KVM_EXIT_NOTIFY */
-+    struct {
-+  #define KVM_NOTIFY_CONTEXT_INVALID	(1 << 0)
-+      __u32 data;
-+    } notify;
-+
-+Used on x86 systems. When the VM capability KVM_CAP_X86_NOTIFY_VMEXIT is
-+enabled and the parameter is non-negative, a VM exit generated if no event
-+window occurs in VM non-root mode for a specified amount of time. In some
-+special case, e.g. VM context invalid, it should exit to userspace with the
-+exit reason KVM_EXIT_NOTIFY for further handling. The "data" field contains
-+the more detailed info.
-+
-+Valid values for 'data' are:
-+
-+  - KVM_NOTIFY_CONTEXT_INVALID -- the VM context is corrupted and not valid
-+    in VMCS. It would run into unknown result if resume the target VM.
-+
- ::
- 
- 		/* Fix the size of the union. */
-@@ -7085,6 +7105,25 @@ resource that is controlled with the H_SET_MODE hypercall.
- This capability allows a guest kernel to use a better-performance mode for
- handling interrupts and system calls.
- 
-+7.31 KVM_CAP_X86_NOTIFY_VMEXIT
-+------------------------------
-+
-+:Architectures: x86
-+:Target: VM
-+:Parameters: args[0] is the value of notify window
-+:Returns: 0 on success, -EINVAL if hardware doesn't support notify VM exit.
-+
-+This capability allows userspace to configure the notify VM exit on/off
-+in per-VM scope during VM creation. Notify VM exit is disabled by default.
-+When userspace provides a non-negative value in args[0], VMM would enable
-+this feature to trigger VM exit if no event window occurs in VM non-root
-+mode for a specified of time (notify window). The notify window is determined
-+by args[0].
-+
-+This capability is aimed to mitigate the threat that malicious VMs can
-+cause CPU stuck (due to event windows don't open up) and make the CPU
-+unavailable to host or other VMs.
-+
- 8. Other capabilities.
- ======================
- 
--- 
-2.17.1
+thanks,
 
+greg k-h
