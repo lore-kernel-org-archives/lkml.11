@@ -2,250 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CF54C43219
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 21:10:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F932C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 21:12:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241047AbiCRVLh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 17:11:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41602 "EHLO
+        id S241055AbiCRVNb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 17:13:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241034AbiCRVLe (ORCPT
+        with ESMTP id S241048AbiCRVN2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 17:11:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2898D1A8FD4;
-        Fri, 18 Mar 2022 14:10:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B9406B825AE;
-        Fri, 18 Mar 2022 21:10:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 868F7C340F0;
-        Fri, 18 Mar 2022 21:10:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647637812;
-        bh=uRbG0uWM5xu5uaPfqEzJdtDtnU9jnY1GFY9rvCd+m5Y=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=OV+8ZI7Xy7U6DF87KRXD4f8tAfq2DARUsgJ72O0tTxibY7I0VMi8F7RAln2YqybOD
-         N2n9oRrG2Fmp74OqhigcRwWMRVvO2OxG0MtEw3/2INUW01Fp5YmwpqPQbT6iI0jqIR
-         vf9cs0RYyMleU58ulv+8F6D9hytkJa/1RuPyoQNMuIfrxOGGvvVipssaZ2YEr1ngqN
-         sHfxYY/XQwvKukRfPUGuIUQVh/5SlZVYLF9tMPU3sW4HIQvdW5LmZ/gxWNHTW9LaNx
-         tU0mkOTgwhjKwB8SB5qb6bpOChTeXEp8vXmtpJIi9SHo2YcybedbhIQGoDbDGxFRzT
-         GyR7glGKi2HGg==
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-2d07ae0b1c0so103916897b3.2;
-        Fri, 18 Mar 2022 14:10:12 -0700 (PDT)
-X-Gm-Message-State: AOAM533813GwlcZaX/Jl2o8rYXA+9fqNyoFmjq6jyeFFvZd9ZUaSToho
-        QDMfGB79fVf/QMrZbcFyLnjcUSxdq4JfHQuJ3u8=
-X-Google-Smtp-Source: ABdhPJw+OwFyoclcU9oDOLY4n3474A6HHrXGugvC05Pk+De9AOuuW+SfZTYS2Yz32tm6untjnH+0BGIvulK1hB2Nnxg=
-X-Received: by 2002:a81:c405:0:b0:2d0:d09a:576c with SMTP id
- j5-20020a81c405000000b002d0d09a576cmr13537663ywi.447.1647637811581; Fri, 18
- Mar 2022 14:10:11 -0700 (PDT)
+        Fri, 18 Mar 2022 17:13:28 -0400
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A6861A8C24
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 14:12:09 -0700 (PDT)
+Received: by mail-oi1-x22c.google.com with SMTP id z8so10108337oix.3
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 14:12:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=n34Xs2LUJxel1XU83dIKxQOsnVS224E+z08R602YCdU=;
+        b=EvQpHpyMC77rLLEvn9MpsqWL0o8A2T7VFQvNGpeLOEH0VGsDX41YNdLPSvHrSXoRo6
+         8X7HcCJbTswjPPlHmbnBc/e+c/N9LwooWCRKufVh9wwI7lJkss7MWzi9Yb8zmdIuwAsO
+         JCDIrfe5wxbXu5CDc1/0OP4wu/zSOG7Nsc7DY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=n34Xs2LUJxel1XU83dIKxQOsnVS224E+z08R602YCdU=;
+        b=kWylai9jvvRr8MZkmc5IvN1tDBtLLn5GHfCx0ht1JLy956l9EhT4lscO5LrvHamA5Q
+         BRe8nfqLb7owz7dc7N2/h1+wuQ67cDo9uCzZsDFL9V5S+00j343F3LZ4SuMrfLjQbah5
+         Aeq6E0QZ5WG3R907q6b61MIb1RpSPu5hkUi6MotyKND+rOP6osjtaKsBtg4/hJS6HXCX
+         jXQ0cf2M+oCTGpHcT9QG+Bgqiy6zqRqdH02eEFaSEdmToFByzQbZC25Iknd4o74jEFgT
+         qP1TfqVXYFA+kJtw9/raz6u+LnOoIC3/icY8f1GWDsg+fgoHnSN/PyH9lZW0E8eEhOwk
+         Y0YA==
+X-Gm-Message-State: AOAM5322GkyDvzPbkJuBVZpFAarsOqA/8ap3T+zyMx5133LxVxev6w9b
+        uVo88Xcc/Yu6795fkx3eEl0cE05gG28CbxSogha2VqYYi1g=
+X-Google-Smtp-Source: ABdhPJw0zCFmhg5T+KaHMIkI9yocntmnv6XcFAgnwKNk6tLkUngfx+sEnsZubJNjXUqla/UYhwzVdjmiB7FhdH0czNU=
+X-Received: by 2002:aca:bd41:0:b0:2ec:ff42:814f with SMTP id
+ n62-20020acabd41000000b002ecff42814fmr5152331oif.63.1647637928460; Fri, 18
+ Mar 2022 14:12:08 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Fri, 18 Mar 2022 14:12:08 -0700
 MIME-Version: 1.0
-References: <20220318161528.1531164-1-benjamin.tissoires@redhat.com> <20220318161528.1531164-7-benjamin.tissoires@redhat.com>
-In-Reply-To: <20220318161528.1531164-7-benjamin.tissoires@redhat.com>
-From:   Song Liu <song@kernel.org>
-Date:   Fri, 18 Mar 2022 14:10:00 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW64x8_m1pNN9gC8LA8ajAmy+5O3y+iOaC7ixSXU=J624Q@mail.gmail.com>
-Message-ID: <CAPhsuW64x8_m1pNN9gC8LA8ajAmy+5O3y+iOaC7ixSXU=J624Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 06/17] HID: allow to change the report
- descriptor from an eBPF program
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>
+In-Reply-To: <CAD=FV=WV+rssDpUdq0fVuVKf4b7DwTsFgodAX8wi-eLEoxTa3g@mail.gmail.com>
+References: <20220318015451.2869388-1-swboyd@chromium.org> <20220318015451.2869388-2-swboyd@chromium.org>
+ <CAD=FV=WV+rssDpUdq0fVuVKf4b7DwTsFgodAX8wi-eLEoxTa3g@mail.gmail.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Fri, 18 Mar 2022 14:12:08 -0700
+Message-ID: <CAE-0n52Cy3KKUQBuzMUE0+r7DfQKPAFRnYijQHmuA5safhw6mg@mail.gmail.com>
+Subject: Re: [PATCH v3 1/3] dt-bindings: chrome: Add ChromeOS fingerprint binding
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     Benson Leung <bleung@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        chrome-platform@lists.linux.dev, Rob Herring <robh+dt@kernel.org>,
+        devicetree@vger.kernel.org, Guenter Roeck <groeck@chromium.org>,
+        Craig Hesling <hesling@chromium.org>,
+        Tom Hughes <tomhughes@chromium.org>,
+        Alexandru M Stan <amstan@chromium.org>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
+        Matthias Kaehlcke <mka@chromium.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 9:17 AM Benjamin Tissoires
-<benjamin.tissoires@redhat.com> wrote:
+Quoting Doug Anderson (2022-03-18 13:49:05)
+> Hi,
 >
-> Make use of BPF_HID_ATTACH_RDESC_FIXUP so we can trigger an rdesc fixup
-> in the bpf world.
+> On Thu, Mar 17, 2022 at 6:54 PM Stephen Boyd <swboyd@chromium.org> wrote:
+> >
+> > Add a binding to describe the fingerprint processor found on Chromebooks
+> > with a fingerprint sensor.
 >
-> Whenever the program gets attached/detached, the device is reconnected
-> meaning that userspace will see it disappearing and reappearing with
-> the new report descriptor.
->
-> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
->
-> ---
->
-> changes in v3:
-> - ensure the ctx.size is properly bounded by allocated size
-> - s/link_attached/post_link_attach/
-> - removed the switch statement with only one case
->
-> changes in v2:
-> - split the series by bpf/libbpf/hid/selftests and samples
-> ---
->  drivers/hid/hid-bpf.c  | 62 ++++++++++++++++++++++++++++++++++++++++++
->  drivers/hid/hid-core.c |  3 +-
->  include/linux/hid.h    |  6 ++++
->  3 files changed, 70 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/hid/hid-bpf.c b/drivers/hid/hid-bpf.c
-> index 5060ebcb9979..45c87ff47324 100644
-> --- a/drivers/hid/hid-bpf.c
-> +++ b/drivers/hid/hid-bpf.c
-> @@ -50,6 +50,14 @@ static struct hid_device *hid_bpf_fd_to_hdev(int fd)
->         return hdev;
->  }
->
-> +static int hid_reconnect(struct hid_device *hdev)
-> +{
-> +       if (!test_and_set_bit(ffs(HID_STAT_REPROBED), &hdev->status))
-> +               return device_reprobe(&hdev->dev);
-> +
-> +       return 0;
-> +}
-> +
->  static int hid_bpf_pre_link_attach(struct hid_device *hdev, enum bpf_hid_attach_type type)
->  {
->         int err = 0;
-> @@ -92,6 +100,12 @@ static int hid_bpf_pre_link_attach(struct hid_device *hdev, enum bpf_hid_attach_
->         return err;
->  }
->
-> +static void hid_bpf_post_link_attach(struct hid_device *hdev, enum bpf_hid_attach_type type)
-> +{
-> +       if (type == BPF_HID_ATTACH_RDESC_FIXUP)
-> +               hid_reconnect(hdev);
-> +}
-> +
->  static void hid_bpf_array_detach(struct hid_device *hdev, enum bpf_hid_attach_type type)
->  {
->         switch (type) {
-> @@ -99,6 +113,9 @@ static void hid_bpf_array_detach(struct hid_device *hdev, enum bpf_hid_attach_ty
->                 kfree(hdev->bpf.device_data);
->                 hdev->bpf.device_data = NULL;
->                 break;
-> +       case BPF_HID_ATTACH_RDESC_FIXUP:
-> +               hid_reconnect(hdev);
-> +               break;
->         default:
->                 /* do nothing */
->                 break;
-> @@ -116,6 +133,9 @@ static int hid_bpf_run_progs(struct hid_device *hdev, struct hid_bpf_ctx_kern *c
->         case HID_BPF_DEVICE_EVENT:
->                 type = BPF_HID_ATTACH_DEVICE_EVENT;
->                 break;
-> +       case HID_BPF_RDESC_FIXUP:
-> +               type = BPF_HID_ATTACH_RDESC_FIXUP;
-> +               break;
->         default:
->                 return -EINVAL;
->         }
-> @@ -155,11 +175,53 @@ u8 *hid_bpf_raw_event(struct hid_device *hdev, u8 *data, int *size)
->         return ctx.data;
->  }
->
-> +u8 *hid_bpf_report_fixup(struct hid_device *hdev, u8 *rdesc, unsigned int *size)
-> +{
-> +       int ret;
-> +       struct hid_bpf_ctx_kern ctx = {
-> +               .type = HID_BPF_RDESC_FIXUP,
-> +               .hdev = hdev,
-> +               .size = *size,
-> +       };
-> +
-> +       if (bpf_hid_link_empty(&hdev->bpf, BPF_HID_ATTACH_RDESC_FIXUP))
+> It might be worth mentioning that previously these fingerprint devices
+> were described using "google,cros-ec-spi" just to provide context?
 
-Do we need to lock bpf_hid_mutex before calling bpf_hid_link_empty()?
-(or maybe we
-already did?)
+Sure I squashed it in.
 
-
-> +               goto ignore_bpf;
-> +
-> +       ctx.data = kmemdup(rdesc, HID_MAX_DESCRIPTOR_SIZE, GFP_KERNEL);
-> +       if (!ctx.data)
-> +               goto ignore_bpf;
-> +
-> +       ctx.allocated_size = HID_MAX_DESCRIPTOR_SIZE;
-> +
-> +       ret = hid_bpf_run_progs(hdev, &ctx);
-> +       if (ret)
-> +               goto ignore_bpf;
-> +
-> +       if (ctx.size > ctx.allocated_size)
-> +               goto ignore_bpf;
-> +
-> +       *size = ctx.size;
-> +
-> +       if (*size) {
-> +               rdesc = krealloc(ctx.data, *size, GFP_KERNEL);
-> +       } else {
-> +               rdesc = NULL;
-> +               kfree(ctx.data);
-> +       }
-> +
-> +       return rdesc;
-> +
-> + ignore_bpf:
-> +       kfree(ctx.data);
-> +       return kmemdup(rdesc, *size, GFP_KERNEL);
-> +}
-> +
->  int __init hid_bpf_module_init(void)
->  {
->         struct bpf_hid_hooks hooks = {
->                 .hdev_from_fd = hid_bpf_fd_to_hdev,
->                 .pre_link_attach = hid_bpf_pre_link_attach,
-> +               .post_link_attach = hid_bpf_post_link_attach,
->                 .array_detach = hid_bpf_array_detach,
->         };
 >
-> diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
-> index 937fab7eb9c6..3182c39db006 100644
-> --- a/drivers/hid/hid-core.c
-> +++ b/drivers/hid/hid-core.c
-> @@ -1213,7 +1213,8 @@ int hid_open_report(struct hid_device *device)
->                 return -ENODEV;
->         size = device->dev_rsize;
 >
-> -       buf = kmemdup(start, size, GFP_KERNEL);
-> +       /* hid_bpf_report_fixup() ensures we work on a copy of rdesc */
-> +       buf = hid_bpf_report_fixup(device, start, &size);
->         if (buf == NULL)
->                 return -ENOMEM;
+> > Cc: Rob Herring <robh+dt@kernel.org>
+> > Cc: <devicetree@vger.kernel.org>
+> > Cc: Guenter Roeck <groeck@chromium.org>
+> > Cc: Douglas Anderson <dianders@chromium.org>
+> > Cc: Craig Hesling <hesling@chromium.org>
+> > Cc: Tom Hughes <tomhughes@chromium.org>
+> > Cc: Alexandru M Stan <amstan@chromium.org>
+> > Cc: Tzung-Bi Shih <tzungbi@kernel.org>
+> > Cc: Matthias Kaehlcke <mka@chromium.org>
+> > Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+> > ---
+> >  .../bindings/chrome/google,cros-ec-fp.yaml    | 66 +++++++++++++++++++
+> >  1 file changed, 66 insertions(+)
+> >  create mode 100644 Documentation/
 >
-> diff --git a/include/linux/hid.h b/include/linux/hid.h
-> index 8fd79011f461..66d949d10b78 100644
-> --- a/include/linux/hid.h
-> +++ b/include/linux/hid.h
-> @@ -1213,10 +1213,16 @@ do {                                                                    \
->
->  #ifdef CONFIG_BPF
->  u8 *hid_bpf_raw_event(struct hid_device *hdev, u8 *rd, int *size);
-> +u8 *hid_bpf_report_fixup(struct hid_device *hdev, u8 *rdesc, unsigned int *size);
->  int hid_bpf_module_init(void);
->  void hid_bpf_module_exit(void);
->  #else
->  static inline u8 *hid_bpf_raw_event(struct hid_device *hdev, u8 *rd, int *size) { return rd; }
-> +static inline u8 *hid_bpf_report_fixup(struct hid_device *hdev, u8 *rdesc,
-> +                                      unsigned int *size)
-> +{
-> +       return kmemdup(rdesc, *size, GFP_KERNEL);
-> +}
->  static inline int hid_bpf_module_init(void) { return 0; }
->  static inline void hid_bpf_module_exit(void) {}
->  #endif
-> --
-> 2.35.1
->
+> Reviewed-by: Douglas Anderson <dianders@chromium.org>
