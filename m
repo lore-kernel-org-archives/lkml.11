@@ -2,193 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D99BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 02:59:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 383D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 03:00:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232099AbiCRDBF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 23:01:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41776 "EHLO
+        id S232111AbiCRDCG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 23:02:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230253AbiCRDBC (ORCPT
+        with ESMTP id S230253AbiCRDCB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 23:01:02 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 372EFF47E5;
-        Thu, 17 Mar 2022 19:59:44 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KKTGY3CHmzfYvL;
-        Fri, 18 Mar 2022 10:58:13 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 18 Mar 2022 10:59:42 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <borisp@nvidia.com>, <john.fastabend@gmail.com>,
-        <daniel@iogearbox.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <pabeni@redhat.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next 2/2] net/tls: optimize judgement processes in tls_set_device_offload()
-Date:   Fri, 18 Mar 2022 11:17:26 +0800
-Message-ID: <7515ae5d1e5d3f2358e7e5423647ce6cbef4c595.1647572976.git.william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1647572976.git.william.xuanziyang@huawei.com>
-References: <cover.1647572976.git.william.xuanziyang@huawei.com>
+        Thu, 17 Mar 2022 23:02:01 -0400
+Received: from tmailer.gwdg.de (tmailer.gwdg.de [134.76.10.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A81F47E5;
+        Thu, 17 Mar 2022 20:00:40 -0700 (PDT)
+Received: from excmbx-17.um.gwdg.de ([134.76.9.228] helo=email.gwdg.de)
+        by mailer.gwdg.de with esmtp (GWDG Mailer)
+        (envelope-from <alexander.vorwerk@stud.uni-goettingen.de>)
+        id 1nV2r0-000Eop-2n; Fri, 18 Mar 2022 04:00:38 +0100
+Received: from notebook.fritz.box (10.250.9.199) by excmbx-17.um.gwdg.de
+ (134.76.9.228) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P521) id 15.1.2375.24; Fri, 18
+ Mar 2022 04:00:37 +0100
+From:   Alexander Vorwerk <alexander.vorwerk@stud.uni-goettingen.de>
+To:     <kvalo@kernel.org>, <davem@davemloft.net>, <stf_xl@wp.pl>
+CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Alexander Vorwerk <alexander.vorwerk@stud.uni-goettingen.de>
+Subject: [PATCH] iwlegacy: 4965-rs: remove three unused variables
+Date:   Fri, 18 Mar 2022 04:00:25 +0100
+Message-ID: <20220318030025.12890-1-alexander.vorwerk@stud.uni-goettingen.de>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.250.9.199]
+X-ClientProxiedBy: excmbx-11.um.gwdg.de (134.76.9.220) To excmbx-17.um.gwdg.de
+ (134.76.9.228)
+X-Virus-Scanned: (clean) by clamav
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is known that priority setting HW offload when set tls TX/RX offload
-by setsockopt(). Check netdevice whether support NETIF_F_HW_TLS_TX or
-not at the later stages in the whole tls_set_device_offload() process,
-some memory allocations have been done before that. We must release those
-memory and return error if we judge the netdevice not support
-NETIF_F_HW_TLS_TX. It is redundant.
+The following warnings showed up when compiling with W=1.
 
-Move NETIF_F_HW_TLS_TX judgement forward, and move start_marker_record
-and offload_ctx memory allocation back slightly. Thus, we can get
-simpler exception handling process.
+drivers/net/wireless/intel/iwlegacy/4965-rs.c: In function ‘il4965_rs_stay_in_table’:
+drivers/net/wireless/intel/iwlegacy/4965-rs.c:1636:18: warning: variable ‘il’ set but not used [-Wunused-but-set-variable]
+  struct il_priv *il;
+                  ^~
+drivers/net/wireless/intel/iwlegacy/4965-rs.c: In function ‘il4965_rs_alloc_sta’:
+drivers/net/wireless/intel/iwlegacy/4965-rs.c:2257:18: warning: variable ‘il’ set but not used [-Wunused-but-set-variable]
+  struct il_priv *il;
+                  ^~
+drivers/net/wireless/intel/iwlegacy/4965-rs.c: In function ‘il4965_rs_sta_dbgfs_scale_table_write’:
+drivers/net/wireless/intel/iwlegacy/4965-rs.c:2535:18: warning: variable ‘il’ set but not used [-Wunused-but-set-variable]
+  struct il_priv *il;
+                  ^~
 
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+Fixing by removing the variables.
+
+Signed-off-by: Alexander Vorwerk <alexander.vorwerk@stud.uni-goettingen.de>
 ---
- net/tls/tls_device.c | 63 ++++++++++++++++++++++----------------------
- 1 file changed, 32 insertions(+), 31 deletions(-)
+ drivers/net/wireless/intel/iwlegacy/4965-rs.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index b932469ee69c..592199b8dd19 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -1028,20 +1028,21 @@ int tls_set_device_offload(struct sock *sk, struct tls_context *ctx)
- 	if (ctx->priv_ctx_tx)
- 		return -EEXIST;
+diff --git a/drivers/net/wireless/intel/iwlegacy/4965-rs.c b/drivers/net/wireless/intel/iwlegacy/4965-rs.c
+index 9a491e5db75b..5e4110a1e644 100644
+--- a/drivers/net/wireless/intel/iwlegacy/4965-rs.c
++++ b/drivers/net/wireless/intel/iwlegacy/4965-rs.c
+@@ -1633,9 +1633,7 @@ il4965_rs_stay_in_table(struct il_lq_sta *lq_sta, bool force_search)
+ 	int i;
+ 	int active_tbl;
+ 	int flush_interval_passed = 0;
+-	struct il_priv *il;
  
--	start_marker_record = kmalloc(sizeof(*start_marker_record), GFP_KERNEL);
--	if (!start_marker_record)
--		return -ENOMEM;
-+	netdev = get_netdev_for_sock(sk);
-+	if (!netdev) {
-+		pr_err_ratelimited("%s: netdev not found\n", __func__);
-+		return -EINVAL;
-+	}
+-	il = lq_sta->drv;
+ 	active_tbl = lq_sta->active_tbl;
  
--	offload_ctx = kzalloc(TLS_OFFLOAD_CONTEXT_SIZE_TX, GFP_KERNEL);
--	if (!offload_ctx) {
--		rc = -ENOMEM;
--		goto free_marker_record;
-+	if (!(netdev->features & NETIF_F_HW_TLS_TX)) {
-+		rc = -EOPNOTSUPP;
-+		goto release_netdev;
- 	}
+ 	tbl = &(lq_sta->lq_info[active_tbl]);
+@@ -2254,9 +2252,7 @@ il4965_rs_alloc_sta(void *il_rate, struct ieee80211_sta *sta, gfp_t gfp)
+ {
+ 	struct il_station_priv *sta_priv =
+ 	    (struct il_station_priv *)sta->drv_priv;
+-	struct il_priv *il;
  
- 	crypto_info = &ctx->crypto_send.info;
- 	if (crypto_info->version != TLS_1_2_VERSION) {
- 		rc = -EOPNOTSUPP;
--		goto free_offload_ctx;
-+		goto release_netdev;
- 	}
+-	il = (struct il_priv *)il_rate;
+ 	D_RATE("create station rate scale win\n");
  
- 	switch (crypto_info->cipher_type) {
-@@ -1057,13 +1058,13 @@ int tls_set_device_offload(struct sock *sk, struct tls_context *ctx)
- 		break;
- 	default:
- 		rc = -EINVAL;
--		goto free_offload_ctx;
-+		goto release_netdev;
- 	}
+ 	return &sta_priv->lq_sta;
+@@ -2532,12 +2528,10 @@ il4965_rs_sta_dbgfs_scale_table_write(struct file *file,
+ 				      size_t count, loff_t *ppos)
+ {
+ 	struct il_lq_sta *lq_sta = file->private_data;
+-	struct il_priv *il;
+ 	char buf[64];
+ 	size_t buf_size;
+ 	u32 parsed_rate;
  
- 	/* Sanity-check the rec_seq_size for stack allocations */
- 	if (rec_seq_size > TLS_MAX_REC_SEQ_SIZE) {
- 		rc = -EINVAL;
--		goto free_offload_ctx;
-+		goto release_netdev;
- 	}
- 
- 	prot->version = crypto_info->version;
-@@ -1077,7 +1078,7 @@ int tls_set_device_offload(struct sock *sk, struct tls_context *ctx)
- 			     GFP_KERNEL);
- 	if (!ctx->tx.iv) {
- 		rc = -ENOMEM;
--		goto free_offload_ctx;
-+		goto release_netdev;
- 	}
- 
- 	memcpy(ctx->tx.iv + TLS_CIPHER_AES_GCM_128_SALT_SIZE, iv, iv_size);
-@@ -1089,9 +1090,21 @@ int tls_set_device_offload(struct sock *sk, struct tls_context *ctx)
- 		goto free_iv;
- 	}
- 
-+	start_marker_record = kmalloc(sizeof(*start_marker_record), GFP_KERNEL);
-+	if (!start_marker_record) {
-+		rc = -ENOMEM;
-+		goto free_rec_seq;
-+	}
-+
-+	offload_ctx = kzalloc(TLS_OFFLOAD_CONTEXT_SIZE_TX, GFP_KERNEL);
-+	if (!offload_ctx) {
-+		rc = -ENOMEM;
-+		goto free_marker_record;
-+	}
-+
- 	rc = tls_sw_fallback_init(sk, offload_ctx, crypto_info);
- 	if (rc)
--		goto free_rec_seq;
-+		goto free_offload_ctx;
- 
- 	/* start at rec_seq - 1 to account for the start marker record */
- 	memcpy(&rcd_sn, ctx->tx.rec_seq, sizeof(rcd_sn));
-@@ -1118,18 +1131,6 @@ int tls_set_device_offload(struct sock *sk, struct tls_context *ctx)
- 	if (skb)
- 		TCP_SKB_CB(skb)->eor = 1;
- 
--	netdev = get_netdev_for_sock(sk);
--	if (!netdev) {
--		pr_err_ratelimited("%s: netdev not found\n", __func__);
--		rc = -EINVAL;
--		goto disable_cad;
--	}
--
--	if (!(netdev->features & NETIF_F_HW_TLS_TX)) {
--		rc = -EOPNOTSUPP;
--		goto release_netdev;
--	}
--
- 	/* Avoid offloading if the device is down
- 	 * We don't want to offload new flows after
- 	 * the NETDEV_DOWN event
-@@ -1167,20 +1168,20 @@ int tls_set_device_offload(struct sock *sk, struct tls_context *ctx)
- 
- release_lock:
- 	up_read(&device_offload_lock);
--release_netdev:
--	dev_put(netdev);
--disable_cad:
- 	clean_acked_data_disable(inet_csk(sk));
- 	crypto_free_aead(offload_ctx->aead_send);
--free_rec_seq:
--	kfree(ctx->tx.rec_seq);
--free_iv:
--	kfree(ctx->tx.iv);
- free_offload_ctx:
- 	kfree(offload_ctx);
- 	ctx->priv_ctx_tx = NULL;
- free_marker_record:
- 	kfree(start_marker_record);
-+free_rec_seq:
-+	kfree(ctx->tx.rec_seq);
-+free_iv:
-+	kfree(ctx->tx.iv);
-+release_netdev:
-+	dev_put(netdev);
-+
- 	return rc;
- }
- 
+-	il = lq_sta->drv;
+ 	memset(buf, 0, sizeof(buf));
+ 	buf_size = min(count, sizeof(buf) - 1);
+ 	if (copy_from_user(buf, user_buf, buf_size))
 -- 
-2.25.1
+2.17.1
 
