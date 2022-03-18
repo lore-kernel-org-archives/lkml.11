@@ -2,103 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ACFEC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 22:47:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36DBEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 22:48:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241366AbiCRWtI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 18:49:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44074 "EHLO
+        id S234506AbiCRWtp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 18:49:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232802AbiCRWtG (ORCPT
+        with ESMTP id S241382AbiCRWti (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 18:49:06 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1189D2CE06;
-        Fri, 18 Mar 2022 15:47:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647643667; x=1679179667;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=FkHuNgc659yN21L5/D1sn0B4u/W0uIWKS75COKQLGJo=;
-  b=RRZIrE89wr/xrZpfPrxXoRFugaV2DihNKoLxDCvPZKuB6OSiX2XKvrQl
-   /MH7BjZSAXntPi2quO1aW1bbtRpC7ZMdtdewY8Hgf1cuXo0k2azomPnxJ
-   Hi8+WBpQZrwcyVpzOp3+3FX12z8iXOh3UFLtBTDiotO4nx+8G3AL9dEJ1
-   0i8eIw7zjtciJulTvQJ9uHMepEemYkHKhJYAXHUOiF1b4pR+rDAL3khet
-   1ml2fpV80VAdoP975xcvuNr5LB8LMUQMaU+m20PlhlODw6XAt3V0opGyf
-   ncFxROp+QJ11ufgFW+2lyHvVeEyy5sfr6IzTb7OqVWkyjpwwneQpDL6nP
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="256967138"
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="256967138"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 15:47:46 -0700
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="542076895"
-Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 15:47:46 -0700
-Date:   Fri, 18 Mar 2022 15:47:42 -0700
-From:   Fenghua Yu <fenghua.yu@intel.com>
-To:     Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
-Cc:     Reinette Chatre <reinette.chatre@intel.com>,
-        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v6 1/6] selftests/resctrl: Kill child process before
- parent process terminates if SIGTERM is received
-Message-ID: <YjUMDvPd8hMNkUbG@otcwcpicx3.sc.intel.com>
-References: <20220318075807.2921063-1-tan.shaopeng@jp.fujitsu.com>
- <20220318075807.2921063-2-tan.shaopeng@jp.fujitsu.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220318075807.2921063-2-tan.shaopeng@jp.fujitsu.com>
+        Fri, 18 Mar 2022 18:49:38 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A79621777D6
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 15:48:18 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id w4so8182348ply.13
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 15:48:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=udZZwCkDvht+/ZkTVpsoov30eC/vSqk3+YzF/CtgcQo=;
+        b=sK5EqUes8d1oJOXfxUzYGp9+QruHGINR3qWOR7SRTDQu8Fd0WzF8gkI5j8Lh7PNNmu
+         TrE+w1H9yumVErYj1LEY4HqILtkJ5DBxebo9yUvw1u6aO8pKI19uRBS9Z9phinJeUh7V
+         Pb0N7TFf83eDyx29IgXm5P3Z32Kd5kZ4ieG65+IS5c9eA5H+x0zaeRLY23ymQOQnvChX
+         6IB0n2M78pBJAE4jfc9poKP4Z0TbIFiZjRy7dWo9Q8NAyixN277LrHE2bUpla0MA6GsG
+         1O7uzt8ZuwBFP201/weLwvxeDKuZlLiym/B76RKDph/A55LySFhhKJ44FHFAkFp+eYw5
+         t+rw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=udZZwCkDvht+/ZkTVpsoov30eC/vSqk3+YzF/CtgcQo=;
+        b=pu8Uw+h52W4bRHC+MLKEBlA0dj+dezjmyahGFMa0gV8XyMhxFrRCPfSkk70/IwVwq0
+         yMzJBBEaBmzAomI5QacMtlhWYa44k+kvA8SGMi1OYPJ439DPczCYPQJ2sHMBw9pBV09Y
+         2k0HaKB9bjhzGu6l82AJXNPWe6UllY7g5gKeSKxSepRQJb7+kyPmQmz4Bc+o7zcDCRb2
+         4/6ZYd02XpchGjt9tnlIkbq7v/jU8xtkrHn6BxP4DcZP0UVPzyNk8vL2c3/DB9vS91GM
+         NMceAYLDWj9hjwFoLcdGO6BqlWGV6rgYeGdlGVZ/boOUrff+Mru2rCtk804QfH6LRfVR
+         uFWA==
+X-Gm-Message-State: AOAM530ajqzUPbEZGrkq3+IkRTPFm7Pas08HG1nXmhWEmg9sI8saFrF6
+        hqMseFiZBRQNI4BHzLVypl39MOMeLSpYBA==
+X-Google-Smtp-Source: ABdhPJzWPKoQuuwqidSyMnypTwE1jeYVoH5MRZ0FWHGrRq670xsv5stem+CyVLANVs604KAHxC6kZA==
+X-Received: by 2002:a17:902:ce08:b0:153:8d90:a109 with SMTP id k8-20020a170902ce0800b001538d90a109mr1744437plg.157.1647643698169;
+        Fri, 18 Mar 2022 15:48:18 -0700 (PDT)
+Received: from localhost ([12.3.194.138])
+        by smtp.gmail.com with ESMTPSA id w8-20020a63a748000000b0038117e18f02sm8301624pgo.29.2022.03.18.15.48.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Mar 2022 15:48:17 -0700 (PDT)
+Date:   Fri, 18 Mar 2022 15:48:17 -0700 (PDT)
+X-Google-Original-Date: Fri, 18 Mar 2022 15:48:15 PDT (-0700)
+Subject:     Re: [PATCH] csky: Move to generic ticket-spinlock
+In-Reply-To: <20220318083421.2062259-1-guoren@kernel.org>
+CC:     linux-csky@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org, guoren@linux.alibaba.com
+From:   Palmer Dabbelt <palmer@rivosinc.com>
+To:     guoren@kernel.org
+Message-ID: <mhng-88509dbf-71a1-495a-84a7-3dffef8c77a5@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 04:58:02PM +0900, Shaopeng Tan wrote:
-> In kselftest framework, a sub test is run using the timeout utility
-                                   s/is run/runs/
-> and it will send SIGTERM to the test upon timeout.
-> 
-> In resctrl_tests, a child process is created by fork() to
-> run benchmark but SIGTERM is not set in sigaction().
-> If SIGTERM signal is received, the parent process will be killed,
-> but the child process still exists.
-> 
-> kill child process before parent process terminates
+On Fri, 18 Mar 2022 01:34:21 PDT (-0700), guoren@kernel.org wrote:
+> From: Guo Ren <guoren@linux.alibaba.com>
+>
+> There is no benefit from custom implementation for ticket-spinlock,
+> so move to generic ticket-spinlock for easy maintenance.
+>
+> Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+> Cc: Palmer Dabbelt <palmer@rivosinc.com>
 
-s/kill/Kill the/        add "the" before "parent"
+Thanks, one less port to look at ;)
 
-> if SIGTERM signal is received.
-> 
-> Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-> Reviewed-by: Reinette Chatre <reinette.chatre@intel.com>
-> Signed-off-by: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
+Looks like there were a few comments on the v1, and I wasn't going to 
+target this at the upcoming merge window anyway because I wanted to give 
+the various RISC-V vendors time to test stuff.  LMK if you want me to 
+add this to the others, but I was planning on posting a stable tag 
+either way so no big deal on my end.
+
 > ---
->  tools/testing/selftests/resctrl/resctrl_val.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/tools/testing/selftests/resctrl/resctrl_val.c b/tools/testing/selftests/resctrl/resctrl_val.c
-> index 95224345c78e..b32b96356ec7 100644
-> --- a/tools/testing/selftests/resctrl/resctrl_val.c
-> +++ b/tools/testing/selftests/resctrl/resctrl_val.c
-> @@ -678,6 +678,7 @@ int resctrl_val(char **benchmark_cmd, struct resctrl_val_param *param)
->  	sigemptyset(&sigact.sa_mask);
->  	sigact.sa_flags = SA_SIGINFO;
->  	if (sigaction(SIGINT, &sigact, NULL) ||
-> +	    sigaction(SIGTERM, &sigact, NULL) ||
->  	    sigaction(SIGHUP, &sigact, NULL)) {
->  		perror("# sigaction");
->  		ret = errno;
-> -- 
-> 2.27.0
-
-Please fix the typos.
-
-Reviewed-by: Fenghua Yu <fenghua.yu@intel.com>
-
-Thanks.
-
--Fenghua
+>  arch/csky/include/asm/Kbuild           |  2 +
+>  arch/csky/include/asm/spinlock.h       | 82 +-------------------------
+>  arch/csky/include/asm/spinlock_types.h | 20 +------
+>  3 files changed, 4 insertions(+), 100 deletions(-)
+>
+> diff --git a/arch/csky/include/asm/Kbuild b/arch/csky/include/asm/Kbuild
+> index 904a18a818be..d94434288c31 100644
+> --- a/arch/csky/include/asm/Kbuild
+> +++ b/arch/csky/include/asm/Kbuild
+> @@ -3,6 +3,8 @@ generic-y += asm-offsets.h
+>  generic-y += extable.h
+>  generic-y += gpio.h
+>  generic-y += kvm_para.h
+> +generic-y += ticket-lock.h
+> +generic-y += ticket-lock-types.h
+>  generic-y += qrwlock.h
+>  generic-y += user.h
+>  generic-y += vmlinux.lds.h
+> diff --git a/arch/csky/include/asm/spinlock.h b/arch/csky/include/asm/spinlock.h
+> index 69f5aa249c5f..8bc179ba0d8d 100644
+> --- a/arch/csky/include/asm/spinlock.h
+> +++ b/arch/csky/include/asm/spinlock.h
+> @@ -3,87 +3,7 @@
+>  #ifndef __ASM_CSKY_SPINLOCK_H
+>  #define __ASM_CSKY_SPINLOCK_H
+>
+> -#include <linux/spinlock_types.h>
+> -#include <asm/barrier.h>
+> -
+> -/*
+> - * Ticket-based spin-locking.
+> - */
+> -static inline void arch_spin_lock(arch_spinlock_t *lock)
+> -{
+> -	arch_spinlock_t lockval;
+> -	u32 ticket_next = 1 << TICKET_NEXT;
+> -	u32 *p = &lock->lock;
+> -	u32 tmp;
+> -
+> -	asm volatile (
+> -		"1:	ldex.w		%0, (%2) \n"
+> -		"	mov		%1, %0	 \n"
+> -		"	add		%0, %3	 \n"
+> -		"	stex.w		%0, (%2) \n"
+> -		"	bez		%0, 1b   \n"
+> -		: "=&r" (tmp), "=&r" (lockval)
+> -		: "r"(p), "r"(ticket_next)
+> -		: "cc");
+> -
+> -	while (lockval.tickets.next != lockval.tickets.owner)
+> -		lockval.tickets.owner = READ_ONCE(lock->tickets.owner);
+> -
+> -	smp_mb();
+> -}
+> -
+> -static inline int arch_spin_trylock(arch_spinlock_t *lock)
+> -{
+> -	u32 tmp, contended, res;
+> -	u32 ticket_next = 1 << TICKET_NEXT;
+> -	u32 *p = &lock->lock;
+> -
+> -	do {
+> -		asm volatile (
+> -		"	ldex.w		%0, (%3)   \n"
+> -		"	movi		%2, 1	   \n"
+> -		"	rotli		%1, %0, 16 \n"
+> -		"	cmpne		%1, %0     \n"
+> -		"	bt		1f         \n"
+> -		"	movi		%2, 0	   \n"
+> -		"	add		%0, %0, %4 \n"
+> -		"	stex.w		%0, (%3)   \n"
+> -		"1:				   \n"
+> -		: "=&r" (res), "=&r" (tmp), "=&r" (contended)
+> -		: "r"(p), "r"(ticket_next)
+> -		: "cc");
+> -	} while (!res);
+> -
+> -	if (!contended)
+> -		smp_mb();
+> -
+> -	return !contended;
+> -}
+> -
+> -static inline void arch_spin_unlock(arch_spinlock_t *lock)
+> -{
+> -	smp_mb();
+> -	WRITE_ONCE(lock->tickets.owner, lock->tickets.owner + 1);
+> -}
+> -
+> -static inline int arch_spin_value_unlocked(arch_spinlock_t lock)
+> -{
+> -	return lock.tickets.owner == lock.tickets.next;
+> -}
+> -
+> -static inline int arch_spin_is_locked(arch_spinlock_t *lock)
+> -{
+> -	return !arch_spin_value_unlocked(READ_ONCE(*lock));
+> -}
+> -
+> -static inline int arch_spin_is_contended(arch_spinlock_t *lock)
+> -{
+> -	struct __raw_tickets tickets = READ_ONCE(lock->tickets);
+> -
+> -	return (tickets.next - tickets.owner) > 1;
+> -}
+> -#define arch_spin_is_contended	arch_spin_is_contended
+> -
+> +#include <asm/ticket-lock.h>
+>  #include <asm/qrwlock.h>
+>
+>  #endif /* __ASM_CSKY_SPINLOCK_H */
+> diff --git a/arch/csky/include/asm/spinlock_types.h b/arch/csky/include/asm/spinlock_types.h
+> index db87a12c3827..0bb7f6022a3b 100644
+> --- a/arch/csky/include/asm/spinlock_types.h
+> +++ b/arch/csky/include/asm/spinlock_types.h
+> @@ -3,25 +3,7 @@
+>  #ifndef __ASM_CSKY_SPINLOCK_TYPES_H
+>  #define __ASM_CSKY_SPINLOCK_TYPES_H
+>
+> -#ifndef __LINUX_SPINLOCK_TYPES_RAW_H
+> -# error "please don't include this file directly"
+> -#endif
+> -
+> -#define TICKET_NEXT	16
+> -
+> -typedef struct {
+> -	union {
+> -		u32 lock;
+> -		struct __raw_tickets {
+> -			/* little endian */
+> -			u16 owner;
+> -			u16 next;
+> -		} tickets;
+> -	};
+> -} arch_spinlock_t;
+> -
+> -#define __ARCH_SPIN_LOCK_UNLOCKED	{ { 0 } }
+> -
+> +#include <asm/ticket-lock-types.h>
+>  #include <asm-generic/qrwlock_types.h>
+>
+>  #endif /* __ASM_CSKY_SPINLOCK_TYPES_H */
