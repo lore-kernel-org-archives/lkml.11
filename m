@@ -2,36 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38DE7C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 14:42:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9C99C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 14:42:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235020AbiCQOnV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 10:43:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38376 "EHLO
+        id S235290AbiCQOn0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 10:43:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235398AbiCQOnI (ORCPT
+        with ESMTP id S235399AbiCQOnI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 17 Mar 2022 10:43:08 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8307C200947
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 07:41:50 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KK8q43V09z1GCTj;
-        Thu, 17 Mar 2022 22:36:48 +0800 (CST)
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 982F920095D
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 07:41:51 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KK8v84hfZzfZ7k;
+        Thu, 17 Mar 2022 22:40:20 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 17 Mar
- 2022 22:41:47 +0800
+ 2022 22:41:49 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>
 CC:     <ziy@nvidia.com>, <baolin.wang@linux.alibaba.com>,
         <ying.huang@intel.com>, <songmuchun@bytedance.com>,
         <apopple@nvidia.com>, <linux-mm@kvack.org>,
         <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH v2 00/11] A few cleanup and fixup patches for migration
-Date:   Fri, 18 Mar 2022 19:16:58 +0800
-Message-ID: <20220318111709.60311-1-linmiaohe@huawei.com>
+Subject: [PATCH v2 03/11] mm/migration: remove unneeded local variable page_lru
+Date:   Fri, 18 Mar 2022 19:17:01 +0800
+Message-ID: <20220318111709.60311-4-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20220318111709.60311-1-linmiaohe@huawei.com>
+References: <20220318111709.60311-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -43,40 +45,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi everyone,
-This series contains a few patches to remove unneeded variables, jump
-label and use helper to simplify the code. Also we fix some bugs such
-as page refcounts leak , invalid node access and so on. More details
-can be found in the respective changelogs. Thanks!
+We can use page_is_file_lru() directly to help account the isolated
+pages to simplify the code a bit.
 
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
-v1->v2:
-  collect reviewed-by tag
-  fix some commit log
-  remove unneeded nr_failed assignment per Huang Ying
-  getting the types correct to use min() per Andrew
-  delay some patches to make this easier to move forward
-  Thanks Muchun, Baolin, Zi Yan,Huang Ying, Andrew, Alistair for review!
----
-Miaohe Lin (11):
-  mm/migration: remove unneeded local variable mapping_locked
-  mm/migration: remove unneeded out label
-  mm/migration: remove unneeded local variable page_lru
-  mm/migration: fix the confusing PageTransHuge check
-  mm/migration: use helper function vma_lookup() in
-    add_page_for_migration
-  mm/migration: use helper macro min in do_pages_stat
-  mm/migration: avoid unneeded nodemask_t initialization
-  mm/migration: remove some duplicated codes in migrate_pages
-  mm/migration: fix potential page refcounts leak in migrate_pages
-  mm/migration: fix potential invalid node access for reclaim-based
-    migration
-  mm/migration: fix possible do_pages_stat_array racing with memory
-    offline
+ mm/migrate.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
- mm/migrate.c | 94 +++++++++++++++++++++++-----------------------------
- 1 file changed, 42 insertions(+), 52 deletions(-)
-
+diff --git a/mm/migrate.c b/mm/migrate.c
+index bc1867a5706c..0ea555e4eaae 100644
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -2033,7 +2033,6 @@ static struct page *alloc_misplaced_dst_page_thp(struct page *page,
+ 
+ static int numamigrate_isolate_page(pg_data_t *pgdat, struct page *page)
+ {
+-	int page_lru;
+ 	int nr_pages = thp_nr_pages(page);
+ 	int order = compound_order(page);
+ 
+@@ -2060,8 +2059,7 @@ static int numamigrate_isolate_page(pg_data_t *pgdat, struct page *page)
+ 	if (isolate_lru_page(page))
+ 		return 0;
+ 
+-	page_lru = page_is_file_lru(page);
+-	mod_node_page_state(page_pgdat(page), NR_ISOLATED_ANON + page_lru,
++	mod_node_page_state(page_pgdat(page), NR_ISOLATED_ANON + page_is_file_lru(page),
+ 			    nr_pages);
+ 
+ 	/*
 -- 
 2.23.0
 
