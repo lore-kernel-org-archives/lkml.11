@@ -2,95 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BA85C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 02:47:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 207DFC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 02:49:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231934AbiCRCsp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 22:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54784 "EHLO
+        id S231948AbiCRCu7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 22:50:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229921AbiCRCsn (ORCPT
+        with ESMTP id S229921AbiCRCu5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 22:48:43 -0400
-Received: from gateway22.websitewelcome.com (gateway22.websitewelcome.com [192.185.46.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97DB32D5A24
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 19:47:26 -0700 (PDT)
-Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
-        by gateway22.websitewelcome.com (Postfix) with ESMTP id AFAB72532
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 21:18:51 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id V2CZnEM3HRnrrV2CZngmB1; Thu, 17 Mar 2022 21:18:51 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
-        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
-        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=wH8f2l9uFVA2cE0QF+HNxeIDeOUrkEAYqZbBkqKvHEE=; b=dPJvdJ5wvomMbmLlPOCRC7zxuj
-        zhbOuRyQd+ZGq8wIpy8VpndDQMhFvmVakM5K+cmjMqW8tRgx884vU/TZ6kWLCOI66p5reoqy5dpFW
-        8euXSESzmDW6itvvgKRsxrru3IPWuzA5BozZgi7obS500KGocSuqNEjO5ZkhEM4+OMzvqToNJQXIw
-        nSwUEKbtbXC5lLyAXghcBykIIBBprjnApFrOwbU0YDYqIT7tA5DUNzOhKvA/lTbPvHu53JVVtRilE
-        E0PZEldigJ6qgtx879ykO2vl3O/h5OmXUFZJ1UIMH6+kmuu6yrINQ9hBaJk15G+6nLkarpL+8hiah
-        FB6Cth4A==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57528 helo=localhost)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nV2CY-003nfi-Sb; Fri, 18 Mar 2022 02:18:51 +0000
-Date:   Thu, 17 Mar 2022 19:18:49 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.4 00/43] 5.4.186-rc1 review
-Message-ID: <20220318021849.GA2113234@roeck-us.net>
-References: <20220317124527.672236844@linuxfoundation.org>
+        Thu, 17 Mar 2022 22:50:57 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FC37B715F;
+        Thu, 17 Mar 2022 19:49:40 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KKT2x0vHNzfYrQ;
+        Fri, 18 Mar 2022 10:48:09 +0800 (CST)
+Received: from dggpemm500015.china.huawei.com (7.185.36.181) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 18 Mar 2022 10:49:38 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500015.china.huawei.com
+ (7.185.36.181) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.21; Fri, 18 Mar
+ 2022 10:49:38 +0800
+From:   Wang ShaoBo <bobo.shaobowang@huawei.com>
+CC:     <cj.chengjian@huawei.com>, <liwei391@huawei.com>,
+        <bobo.shaobowang@huawei.com>, <antoniu.miclaus@analog.com>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <jic23@kernel.org>, <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 0/2] admv8818 driver fixes
+Date:   Fri, 18 Mar 2022 10:59:12 +0800
+Message-ID: <20220318025914.2614812-1-bobo.shaobowang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220317124527.672236844@linuxfoundation.org>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nV2CY-003nfi-Sb
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57528
-X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 12
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggeme707-chm.china.huawei.com (10.1.199.103) To
+ dggpemm500015.china.huawei.com (7.185.36.181)
+X-CFilter-Loop: Reflected
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 01:45:11PM +0100, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.4.186 release.
-> There are 43 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Sat, 19 Mar 2022 12:45:16 +0000.
-> Anything received after that time might be too late.
-> 
+admv8818 driver fixes
 
-Build results:
-	total: 159 pass: 159 fail: 0
-Qemu test results:
-	total: 449 pass: 449 fail: 0
+Wang ShaoBo (2):
+  iio:filter:admv8818: Add depends on REGMAP
+  iio:filter:admv8818: Fix missing clk_disable_unprepare() in
+    admv8818_clk_setup
 
-Tested-by: Guenter Roeck <linux@roeck-us.net>
+ drivers/iio/filter/Kconfig    |  2 +-
+ drivers/iio/filter/admv8818.c | 14 +++++++++++---
+ 2 files changed, 12 insertions(+), 4 deletions(-)
 
-Guenter
+-- 
+2.25.1
+
