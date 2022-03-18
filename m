@@ -2,107 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85310C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 17:10:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4038C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 17:11:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239521AbiCRRLv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 13:11:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39132 "EHLO
+        id S239523AbiCRRMg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 13:12:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238166AbiCRRLq (ORCPT
+        with ESMTP id S238166AbiCRRMe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 13:11:46 -0400
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABBFF304AE8
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 10:10:26 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:34208)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nVG7N-00HajF-2r; Fri, 18 Mar 2022 11:10:25 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:38554 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nVG7M-007Ebz-5k; Fri, 18 Mar 2022 11:10:24 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Imran Khan <imran.f.khan@oracle.com>
-Cc:     tj@kernel.org, viro@zeniv.linux.org.uk, gregkh@linuxfoundation.org,
-        akpm@linux-foundation.org, linux-kernel@vger.kernel.org
-In-Reply-To: <20220317072612.163143-2-imran.f.khan@oracle.com> (Imran Khan's
-        message of "Thu, 17 Mar 2022 18:26:05 +1100")
-References: <20220317072612.163143-1-imran.f.khan@oracle.com>
-        <20220317072612.163143-2-imran.f.khan@oracle.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
-Date:   Fri, 18 Mar 2022 12:10:14 -0500
-Message-ID: <87r16z191l.fsf@email.froward.int.ebiederm.org>
+        Fri, 18 Mar 2022 13:12:34 -0400
+Received: from gateway33.websitewelcome.com (gateway33.websitewelcome.com [192.185.145.190])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F84530DC70
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 10:11:14 -0700 (PDT)
+Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
+        by gateway33.websitewelcome.com (Postfix) with ESMTP id 018341D6E57
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 12:11:14 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id VG6DnfLb19AGSVG6Dnh93Q; Fri, 18 Mar 2022 12:09:13 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
+        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
+        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=JOcpyRgPLuW6EfkECyLFstXhFqED0WQf0RhR8a/5r0M=; b=VbFz4z9XWaeoZwA7hkoS3lEyeG
+        0VuAi+DDHS9hjsMqSM1wYahjLaOu9qf+wBqZtYKtMCv6kVDK7xtxtMoTJCfPU0mWGSd/69Xp7ERRX
+        08l9MxR88vgBigwbhzIR5E/nZPicENcBZVZCvIxPcQCab1oXUEoxqdEQhtOCjrjU7/7NiuRpQMhua
+        fdKU3b6cyy6/RQiY6eiqasxqoqeox+s3g4R+aw+BiqfVQoDgfJRTOyRNJxD8/2YU2gP0vmJVESRqr
+        qH2TCOHkqKX3VXkgFB1MsbJKkOd3uAfsYnwfzx4rRbbbQNTl1t3CYVCCMw13G7QUkW4cyFzfn1+4n
+        Smf2wlTg==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57546 helo=localhost)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nVG6D-000g8B-1Z; Fri, 18 Mar 2022 17:09:13 +0000
+Date:   Fri, 18 Mar 2022 10:09:12 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     bleung@chromium.org, groeck@chromium.org, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, chrome-platform@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/5] platform/chrome: cros_kbd_led_backlight: sort
+ headers alphabetically
+Message-ID: <20220318170912.GA687608@roeck-us.net>
+References: <20220314090835.3822093-1-tzungbi@kernel.org>
+ <20220314090835.3822093-2-tzungbi@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nVG7M-007Ebz-5k;;;mid=<87r16z191l.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX1+wjzlL/GPqEcbAXTkQu2rdooPY6b912Cc=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [RESEND PATCH v7 1/8] kernfs: Introduce interface to access
- global kernfs_open_file_mutex.
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220314090835.3822093-2-tzungbi@kernel.org>
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nVG6D-000g8B-1Z
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57546
+X-Source-Auth: guenter@roeck-us.net
+X-Email-Count: 15
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Imran Khan <imran.f.khan@oracle.com> writes:
+On Mon, Mar 14, 2022 at 05:08:31PM +0800, Tzung-Bi Shih wrote:
 
-> This allows to change underlying mutex locking, without needing to change
-> the users of the lock. For example next patch modifies this interface to
-> use hashed mutexes in place of a single global kernfs_open_file_mutex.
->
-> Signed-off-by: Imran Khan <imran.f.khan@oracle.com>
+Nit: There should be some text here describing the rationale.
+
+With that added,
+
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+
+> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 > ---
->  fs/kernfs/file.c            | 26 +++++++++++++++-----------
->  fs/kernfs/kernfs-internal.h | 18 ++++++++++++++++++
->  2 files changed, 33 insertions(+), 11 deletions(-)
->
-> diff --git a/fs/kernfs/file.c b/fs/kernfs/file.c
-> index 7aefaca876a0..99793c32abc3 100644
-> --- a/fs/kernfs/file.c
-> +++ b/fs/kernfs/file.c
-> @@ -30,7 +30,7 @@
->   * kernfs_open_node->files, which is protected by kernfs_open_file_mutex.
->   */
->  static DEFINE_SPINLOCK(kernfs_open_node_lock);
-> -static DEFINE_MUTEX(kernfs_open_file_mutex);
-> +DEFINE_MUTEX(kernfs_open_file_mutex);
-^^^^^????
-
-Why when you want things more localized are you making a lock more
-global?
-> diff --git a/fs/kernfs/kernfs-internal.h b/fs/kernfs/kernfs-internal.h
-> index eeaa779b929c..df00a5f5a367 100644
-> --- a/fs/kernfs/kernfs-internal.h
-> +++ b/fs/kernfs/kernfs-internal.h
-> @@ -164,4 +164,22 @@ void kernfs_drain_open_files(struct kernfs_node *kn);
->   */
->  extern const struct inode_operations kernfs_symlink_iops;
+> Changes from v1:
+> - Update email address accordingly.
+> 
+>  drivers/platform/chrome/cros_kbd_led_backlight.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/platform/chrome/cros_kbd_led_backlight.c b/drivers/platform/chrome/cros_kbd_led_backlight.c
+> index aa409f0201fb..f9587a562bb7 100644
+> --- a/drivers/platform/chrome/cros_kbd_led_backlight.c
+> +++ b/drivers/platform/chrome/cros_kbd_led_backlight.c
+> @@ -4,12 +4,12 @@
+>  // Copyright (C) 2012 Google, Inc.
 >  
-> +extern struct mutex kernfs_open_file_mutex;
-> +
-> +static inline struct mutex *kernfs_open_file_mutex_ptr(struct kernfs_node *kn)
-> +{
-> +	return &kernfs_open_file_mutex;
-> +}
-> +
-> +static inline struct mutex *kernfs_open_file_mutex_lock(struct kernfs_node *kn)
-> +{
-> +	struct mutex *lock;
-> +
-> +	lock = kernfs_open_file_mutex_ptr(kn);
-> +
-> +	mutex_lock(lock);
-> +
-> +	return lock;
-> +}
-
-Why don't these functions live in fs/kern/fs/file.c
-
-Eric
-
+>  #include <linux/acpi.h>
+> -#include <linux/leds.h>
+>  #include <linux/delay.h>
+>  #include <linux/err.h>
+> -#include <linux/module.h>
+>  #include <linux/init.h>
+>  #include <linux/kernel.h>
+> +#include <linux/leds.h>
+> +#include <linux/module.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/slab.h>
+>  
