@@ -2,229 +2,304 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAE11C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:15:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C42A0C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:16:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238613AbiCRQRI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 12:17:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52008 "EHLO
+        id S238652AbiCRQR1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 12:17:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238186AbiCRQRH (ORCPT
+        with ESMTP id S238654AbiCRQRY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 12:17:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 57DE3E72BE
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 09:15:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647620147;
+        Fri, 18 Mar 2022 12:17:24 -0400
+Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [IPv6:2001:4b98:dc4:8::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3A641D78BA;
+        Fri, 18 Mar 2022 09:16:00 -0700 (PDT)
+Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 2A464240005;
+        Fri, 18 Mar 2022 16:15:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1647620159;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=g1mbgj0kUt9HOlxHcHj225lXtzgiEcushRQUeJqOcqU=;
-        b=Jni9kXr+uFN+qs/IDYqv1O8jeZaA8SO8eeiJl3vEo8c587xsS5C9ZZHooUkiwITx0kCkZt
-        s0ICoS/8D8LyOpSsTASGjZMuIyO/zZEBM7+JGWOyECO2pB7ARCBdMfYvq1KZuAN+D2ciGR
-        K1z+YI8Bg9S6pjAEXAWxOmUknFyXpHs=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-320-650TfjtuPgKGivDJH0xQBg-1; Fri, 18 Mar 2022 12:15:46 -0400
-X-MC-Unique: 650TfjtuPgKGivDJH0xQBg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C2712800FFB;
-        Fri, 18 Mar 2022 16:15:44 +0000 (UTC)
-Received: from plouf.redhat.com (unknown [10.39.192.159])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7A1407AD1;
-        Fri, 18 Mar 2022 16:15:41 +0000 (UTC)
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>
-Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH bpf-next v3 00/17] Introduce eBPF support for HID devices
-Date:   Fri, 18 Mar 2022 17:15:11 +0100
-Message-Id: <20220318161528.1531164-1-benjamin.tissoires@redhat.com>
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=FXSqpef77HUERWOVCcYwkbaMTy0zpi5sfmvLF2hmexg=;
+        b=bB+RAgxsE7MZ9tw5p9vxxgeLU5/I0+d3Rj41bd4imlfBGvaJhC/p7tJsnAdb9CsNSUalFS
+        pNeJX4baWgIG06ySy6AC/ID+xsE0VcZ0nifK/sJnKxls6dYN3rlcrCIlKCznGu7kEKDlda
+        pF5D/tlaPTdm0SmomEqX6u5qMWZXx35s98F0e8fpqUfaLjCItuDNHZ2jbBHX8KIKI4LnXb
+        3OABMe43K3lHabnpOSN8kkC39XjSL/7rne+U+tbze8VvMsJ6KpDnz2Mew5t8SUeQb3LFgJ
+        jDJKmsGRZi5byIbetl22JFAax1STBMMyavhtmkortyYeyBhsgGxyv8ap0XidrQ==
+Date:   Fri, 18 Mar 2022 17:15:56 +0100
+From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+To:     Jernej =?utf-8?Q?=C5=A0krabec?= <jernej.skrabec@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        Yong Deng <yong.deng@magewell.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Samuel Holland <samuel@sholland.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v3 07/46] media: sun6i-csi: Use runtime pm for clocks and
+ reset
+Message-ID: <YjSwPOUxQ4KwPfUe@aptenodytes>
+References: <20220311143532.265091-1-paul.kocialkowski@bootlin.com>
+ <20220311143532.265091-8-paul.kocialkowski@bootlin.com>
+ <14579642.tv2OnDr8pf@kista>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="UWT2FLc5RubuMPHI"
+Content-Disposition: inline
+In-Reply-To: <14579642.tv2OnDr8pf@kista>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
 
-This is a followup of my v1 at [0] and v2 at [1].
+--UWT2FLc5RubuMPHI
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-The short summary of the previous cover letter and discussions is that
-HID could benefit from BPF for the following use cases:
+Hi Jernej,
 
-- simple fixup of report descriptor:
-  benefits are faster development time and testing, with the produced
-  bpf program being shipped in the kernel directly (the shipping part
-  is *not* addressed here).
+On Tue 15 Mar 22, 20:46, Jernej =C5=A0krabec wrote:
+> Dne petek, 11. marec 2022 ob 15:34:53 CET je Paul Kocialkowski napisal(a):
+> > Wrap the clock and reset preparation into runtime pm functions
+> > for better organization of the code. Also fix the clock and
+> > reset enable order to first deassert reset, as recommended in
+> > Allwinner litterature.
+> >=20
+> > Make the driver depend on PM while at it since runtime pm is
+> > mandatory for the driver to work.
+> >=20
+> > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> > ---
+> >  .../media/platform/sunxi/sun6i-csi/Kconfig    |  2 +-
+> >  .../platform/sunxi/sun6i-csi/sun6i_csi.c      | 94 ++++++++++++++-----
+> >  2 files changed, 70 insertions(+), 26 deletions(-)
+> >=20
+> > diff --git a/drivers/media/platform/sunxi/sun6i-csi/Kconfig b/drivers/m=
+edia/
+> platform/sunxi/sun6i-csi/Kconfig
+> > index 586e3fb3a80d..fd03e48f0c8a 100644
+> > --- a/drivers/media/platform/sunxi/sun6i-csi/Kconfig
+> > +++ b/drivers/media/platform/sunxi/sun6i-csi/Kconfig
+> > @@ -1,7 +1,7 @@
+> >  # SPDX-License-Identifier: GPL-2.0-only
+> >  config VIDEO_SUN6I_CSI
+> >  	tristate "Allwinner V3s Camera Sensor Interface driver"
+> > -	depends on VIDEO_V4L2 && COMMON_CLK  && HAS_DMA
+> > +	depends on PM && VIDEO_V4L2 && COMMON_CLK  && HAS_DMA
+> >  	depends on ARCH_SUNXI || COMPILE_TEST
+> >  	select MEDIA_CONTROLLER
+> >  	select VIDEO_V4L2_SUBDEV_API
+> > diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c b/drive=
+rs/
+> media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> > index 4a0d08e0ac25..7f045a9551a7 100644
+> > --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> > +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> > @@ -152,40 +152,18 @@ int sun6i_csi_set_power(struct sun6i_csi_device=
+=20
+> *csi_dev, bool enable)
+> > =20
+> >  	if (!enable) {
+> >  		regmap_update_bits(regmap, CSI_EN_REG, CSI_EN_CSI_EN,=20
+> 0);
+> > +		pm_runtime_put(dev);
+> > =20
+> > -		clk_disable_unprepare(csi_dev->clk_ram);
+> > -		clk_disable_unprepare(csi_dev->clk_mod);
+> > -		reset_control_assert(csi_dev->reset);
+> >  		return 0;
+> >  	}
+> > =20
+> > -	ret =3D clk_prepare_enable(csi_dev->clk_mod);
+> > -	if (ret) {
+> > -		dev_err(csi_dev->dev, "Enable csi clk err %d\n", ret);
+> > +	ret =3D pm_runtime_resume_and_get(dev);
+> > +	if (ret < 0)
+> >  		return ret;
+> > -	}
+> > -
+> > -	ret =3D clk_prepare_enable(csi_dev->clk_ram);
+> > -	if (ret) {
+> > -		dev_err(csi_dev->dev, "Enable clk_dram_csi clk err=20
+> %d\n", ret);
+> > -		goto clk_mod_disable;
+> > -	}
+> > -
+> > -	ret =3D reset_control_deassert(csi_dev->reset);
+> > -	if (ret) {
+> > -		dev_err(csi_dev->dev, "reset err %d\n", ret);
+> > -		goto clk_ram_disable;
+> > -	}
+> > =20
+> >  	regmap_update_bits(regmap, CSI_EN_REG, CSI_EN_CSI_EN,=20
+> CSI_EN_CSI_EN);
+> > =20
+> >  	return 0;
+> > -
+> > -clk_ram_disable:
+> > -	clk_disable_unprepare(csi_dev->clk_ram);
+> > -clk_mod_disable:
+> > -	clk_disable_unprepare(csi_dev->clk_mod);
+> > -	return ret;
+> >  }
+> > =20
+> >  static enum csi_input_fmt get_csi_input_format(struct sun6i_csi_device=
+=20
+> *csi_dev,
+> > @@ -800,6 +778,65 @@ static irqreturn_t sun6i_csi_isr(int irq, void=20
+> *private)
+> >  	return IRQ_HANDLED;
+> >  }
+> > =20
+> > +static int sun6i_csi_suspend(struct device *dev)
+> > +{
+> > +	struct sun6i_csi_device *csi_dev =3D dev_get_drvdata(dev);
+> > +
+> > +	reset_control_assert(csi_dev->reset);
+> > +	clk_disable_unprepare(csi_dev->clk_ram);
+> > +	clk_disable_unprepare(csi_dev->clk_mod);
+> > +	clk_disable_unprepare(csi_dev->clk_bus);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int sun6i_csi_resume(struct device *dev)
+> > +{
+> > +	struct sun6i_csi_device *csi_dev =3D dev_get_drvdata(dev);
+> > +	int ret;
+> > +
+> > +	ret =3D reset_control_deassert(csi_dev->reset);
+> > +	if (ret) {
+> > +		dev_err(dev, "failed to deassert reset\n");
+> > +		return ret;
+> > +	}
+> > +
+> > +	ret =3D clk_prepare_enable(csi_dev->clk_bus);
+> > +	if (ret) {
+> > +		dev_err(dev, "failed to enable bus clock\n");
+> > +		goto error_reset;
+> > +	}
+> > +
+> > +	ret =3D clk_prepare_enable(csi_dev->clk_mod);
+> > +	if (ret) {
+> > +		dev_err(dev, "failed to enable module clock\n");
+> > +		goto error_clk_bus;
+> > +	}
+> > +
+> > +	ret =3D clk_prepare_enable(csi_dev->clk_ram);
+> > +	if (ret) {
+> > +		dev_err(dev, "failed to enable ram clock\n");
+> > +		goto error_clk_mod;
+> > +	}
+> > +
+> > +	return 0;
+> > +
+> > +error_clk_mod:
+> > +	clk_disable_unprepare(csi_dev->clk_mod);
+> > +
+> > +error_clk_bus:
+> > +	clk_disable_unprepare(csi_dev->clk_bus);
+> > +
+> > +error_reset:
+> > +	reset_control_assert(csi_dev->reset);
+> > +
+> > +	return ret;
+> > +}
+> > +
+> > +static const struct dev_pm_ops sun6i_csi_pm_ops =3D {
+> > +	SET_RUNTIME_PM_OPS(sun6i_csi_suspend, sun6i_csi_resume, NULL)
+>=20
+> Since driver depends on PM, using SET_RUNTIME_PM_OPS macro doesn't make s=
+ense.
 
-- Universal Stylus Interface:
-  allows a user-space program to define its own kernel interface
+Can you ellaborate why? It's really not obvious why the macro should only be
+used when PM is optional. I see that it facilitates that, but I really don't
+see any issue using it with PM required too. Is it a common practice?
 
-- Surface Dial:
-  somehow similar to the previous one except that userspace can decide
-  to change the shape of the exported device
+> > +};
+> > +
+> >  static const struct regmap_config sun6i_csi_regmap_config =3D {
+> >  	.reg_bits       =3D 32,
+> >  	.reg_stride     =3D 4,
+> > @@ -886,6 +923,11 @@ static int sun6i_csi_resources_setup(struct=20
+> sun6i_csi_device *csi_dev,
+> >  		goto error_clk_rate_exclusive;
+> >  	}
+> > =20
+> > +	/* Runtime PM */
+> > +
+> > +	pm_runtime_enable(dev);
+> > +	pm_runtime_set_suspended(dev);
+>=20
+> pm_runtime_set_suspended() description says: "It is not valid to call thi=
+s=20
+> function for devices with runtime PM enabled."
 
-- firewall:
-  still partly missing there, there is not yet interception of hidraw
-  calls, but it's coming in a followup series, I promise
+Okay I need to revisit this, I think I misunderstood a bunch of things here.
 
-- tracing:
-  well, tracing.
+Thanks,
 
+Paul
 
-I think I addressed the comments from the previous version, but there are
-a few things I'd like to note here:
+> Best regards,
+> Jernej
+>=20
+> > +
+> >  	return 0;
+> > =20
+> >  error_clk_rate_exclusive:
+> > @@ -896,6 +938,7 @@ static int sun6i_csi_resources_setup(struct=20
+> sun6i_csi_device *csi_dev,
+> > =20
+> >  static void sun6i_csi_resources_cleanup(struct sun6i_csi_device *csi_d=
+ev)
+> >  {
+> > +	pm_runtime_disable(csi_dev->dev);
+> >  	clk_rate_exclusive_put(csi_dev->clk_mod);
+> >  }
+> > =20
+> > @@ -978,6 +1021,7 @@ static struct platform_driver sun6i_csi_platform_d=
+river=20
+> =3D {
+> >  	.driver	=3D {
+> >  		.name		=3D SUN6I_CSI_NAME,
+> >  		.of_match_table	=3D=20
+> of_match_ptr(sun6i_csi_of_match),
+> > +		.pm		=3D &sun6i_csi_pm_ops,
+> >  	},
+> >  };
+> > =20
+> > --=20
+> > 2.35.1
+> >=20
+> >=20
+>=20
+>=20
 
-- I did not take the various rev-by and tested-by (thanks a lot for those)
-  because the uapi changed significantly in v3, so I am not very confident
-  in taking those rev-by blindly
+--=20
+Paul Kocialkowski, Bootlin
+Embedded Linux and kernel engineering
+https://bootlin.com
 
-- I mentioned in my discussion with Song that I'll put a summary of the uapi
-  in the cover letter, but I ended up adding a (long) file in the Documentation
-  directory. So please maybe start by reading 17/17 to have an overview of
-  what I want to achieve
+--UWT2FLc5RubuMPHI
+Content-Type: application/pgp-signature; name="signature.asc"
 
-- I added in the libbpf and bpf the new type BPF_HID_DRIVER_EVENT, even though
-  I don't have a user of it right now in the kernel. I wanted to have them in
-  the docs, but we might not want to have them ready here.
-  In terms of code, it just means that we can attach such programs types
-  but that they will never get triggered.
+-----BEGIN PGP SIGNATURE-----
 
-Anyway, I have been mulling on this for the past 2 weeks, and I think that
-maybe sharing this now is better than me just starring at the code over and
-over.
+iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmI0sDwACgkQ3cLmz3+f
+v9HpJgf9Gjba+M2/GQt8sesqSzzJJNQ6FvuPQqSztzoKxup0ram3CyaEDHOklnmS
+EOnTH2XMYjQTqN0uyrGYTRLGuRKgtJyjOhoO5ehM/EX0DsT063Ja6WpfQt1pzPTE
+VMG6CadAdPwwVoIr559/tIYnGY4TZRikHfEzLOLczuYZL9yOHzgutZs5Zd1fV63+
+Z07YBrYKHzBsIM/TPaOfjYP24Cr1p/bf7ISTLlfbbLeQexKkrA7G30XwFw/RH2le
+RttJlpU6mnt068MRXncmR42LuoXuLB98A4puT5XLWBBfh/FK23DFxUXy1aiTlrr4
+rUbvi7oqf2QfHca292ZkXfEuLTJvHQ==
+=c9x9
+-----END PGP SIGNATURE-----
 
-
-Short summary of changes:
-
-v3:
-===
-
-- squashed back together most of the libbpf and bpf changes into bigger
-  commits that give a better overview of the whole interactions
-
-- reworked the user API to not expose .data as a directly accessible field
-  from the context, but instead forces everyone to use hid_bpf_get_data (or
-  get/set_bits)
-
-- added BPF_HID_DRIVER_EVENT (see note above)
-
-- addressed the various nitpicks from v2
-
-- added a big Documentation file (and so adding now the doc maintainers to the
-  long list of recipients)
-
-v2:
-===
-
-- split the series by subsystem (bpf, HID, libbpf, selftests and
-  samples)
-
-- Added an extra patch at the beginning to not require CAP_NET_ADMIN for
-  BPF_PROG_TYPE_LIRC_MODE2 (please shout if this is wrong)
-
-- made the bpf context attached to HID program of dynamic size:
-  * the first 1 kB will be able to be addressed directly
-  * the rest can be retrieved through bpf_hid_{set|get}_data
-    (note that I am definitivey not happy with that API, because there
-    is part of it in bits and other in bytes. ouch)
-
-- added an extra patch to prevent non GPL HID bpf programs to be loaded
-  of type BPF_PROG_TYPE_HID
-  * same here, not really happy but I don't know where to put that check
-    in verifier.c
-
-- added a new flag BPF_F_INSERT_HEAD for BPF_LINK_CREATE syscall when in
-  used with HID program types.
-  * this flag is used for tracing, to be able to load a program before
-    any others that might already have been inserted and that might
-    change the data stream.
-
-Cheers,
-Benjamin
-
-
-
-[0] https://lore.kernel.org/linux-input/20220224110828.2168231-1-benjamin.tissoires@redhat.com/T/#t
-[1] https://lore.kernel.org/linux-input/20220304172852.274126-1-benjamin.tissoires@redhat.com/T/#t
-
-
-Benjamin Tissoires (17):
-  bpf: add new is_sys_admin_prog_type() helper
-  bpf: introduce hid program type
-  bpf/verifier: prevent non GPL programs to be loaded against HID
-  libbpf: add HID program type and API
-  HID: hook up with bpf
-  HID: allow to change the report descriptor from an eBPF program
-  selftests/bpf: add tests for the HID-bpf initial implementation
-  selftests/bpf: add report descriptor fixup tests
-  selftests/bpf: Add a test for BPF_F_INSERT_HEAD
-  selftests/bpf: add test for user call of HID bpf programs
-  samples/bpf: add new hid_mouse example
-  bpf/hid: add more HID helpers
-  HID: bpf: implement hid_bpf_get|set_bits
-  HID: add implementation of bpf_hid_raw_request
-  selftests/bpf: add tests for hid_{get|set}_bits helpers
-  selftests/bpf: add tests for bpf_hid_hw_request
-  Documentation: add HID-BPF docs
-
- Documentation/hid/hid-bpf.rst                | 444 +++++++++++
- Documentation/hid/index.rst                  |   1 +
- drivers/hid/Makefile                         |   1 +
- drivers/hid/hid-bpf.c                        | 328 ++++++++
- drivers/hid/hid-core.c                       |  34 +-
- include/linux/bpf-hid.h                      | 127 +++
- include/linux/bpf_types.h                    |   4 +
- include/linux/hid.h                          |  36 +-
- include/uapi/linux/bpf.h                     |  67 ++
- include/uapi/linux/bpf_hid.h                 |  71 ++
- include/uapi/linux/hid.h                     |  10 +
- kernel/bpf/Makefile                          |   3 +
- kernel/bpf/btf.c                             |   1 +
- kernel/bpf/hid.c                             | 728 +++++++++++++++++
- kernel/bpf/syscall.c                         |  27 +-
- kernel/bpf/verifier.c                        |   7 +
- samples/bpf/.gitignore                       |   1 +
- samples/bpf/Makefile                         |   4 +
- samples/bpf/hid_mouse_kern.c                 | 117 +++
- samples/bpf/hid_mouse_user.c                 | 129 +++
- tools/include/uapi/linux/bpf.h               |  67 ++
- tools/lib/bpf/libbpf.c                       |  23 +-
- tools/lib/bpf/libbpf.h                       |   2 +
- tools/lib/bpf/libbpf.map                     |   1 +
- tools/testing/selftests/bpf/config           |   3 +
- tools/testing/selftests/bpf/prog_tests/hid.c | 788 +++++++++++++++++++
- tools/testing/selftests/bpf/progs/hid.c      | 205 +++++
- 27 files changed, 3204 insertions(+), 25 deletions(-)
- create mode 100644 Documentation/hid/hid-bpf.rst
- create mode 100644 drivers/hid/hid-bpf.c
- create mode 100644 include/linux/bpf-hid.h
- create mode 100644 include/uapi/linux/bpf_hid.h
- create mode 100644 kernel/bpf/hid.c
- create mode 100644 samples/bpf/hid_mouse_kern.c
- create mode 100644 samples/bpf/hid_mouse_user.c
- create mode 100644 tools/testing/selftests/bpf/prog_tests/hid.c
- create mode 100644 tools/testing/selftests/bpf/progs/hid.c
-
--- 
-2.35.1
-
+--UWT2FLc5RubuMPHI--
