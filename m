@@ -2,136 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D0E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 02:36:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E6F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 02:43:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231872AbiCRChf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 22:37:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43474 "EHLO
+        id S231899AbiCRCoY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 22:44:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231853AbiCRChc (ORCPT
+        with ESMTP id S231871AbiCRCoV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 22:37:32 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B38692B962A
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 19:36:14 -0700 (PDT)
-Received: from canpemm500005.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KKSkp0dF6zCqhq;
-        Fri, 18 Mar 2022 10:34:10 +0800 (CST)
-Received: from huawei.com (10.175.104.82) by canpemm500005.china.huawei.com
- (7.192.104.229) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 18 Mar
- 2022 10:36:12 +0800
-From:   Baisong Zhong <zhongbaisong@huawei.com>
-To:     <mingo@redhat.com>, <peterz@infradead.org>,
-        <juri.lelli@redhat.com>, <vincent.guittot@linaro.org>,
-        <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
-        <bsegall@google.com>, <mgorman@suse.de>, <bristot@redhat.com>
-CC:     <linux-kernel@vger.kernel.org>, <zhongbaisong@huawei.com>
-Subject: [PATCH -next] sched/rt: fix build error when CONFIG_SYSCTL is disable
-Date:   Fri, 18 Mar 2022 10:54:17 +0800
-Message-ID: <20220318025417.3683430-1-zhongbaisong@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 17 Mar 2022 22:44:21 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E444CD1CC9
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 19:43:00 -0700 (PDT)
+Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com [209.85.215.197])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 9A6B73F1DD
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 02:42:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1647571373;
+        bh=Bt5u+dqRXX5TG4kpL4NYCF0+7EST57EITnb/tm+FvLo=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=h56FVk6aH8OtASMxrhjclBmbs4lUdOEsd2E0+0zqKo4YBgxJlL9+UGeIH95nH6ODK
+         Fj8p7sNtXOxnncs6MaY3rPhJqlDIhs1J+PqxleYSPecKYRBvWd5asRdgP7jP6Wz9rE
+         QGqpGRaAz4HcGDGR2H5RqPleTyEdurBBYly//m+oCPdW+TeyP77SE1jDkUi0wH6KZX
+         7HKFGV/fbmo+rKaTzUKIoOoZvP4rutwZuqd635HH00tSq4ZyqPixwBTlQxwNABdmsY
+         Mwcmi/tvnkG89Hw2wR32r4NuIsTD7nny4WEKxPZv4AQscHlc/wn83UQK1dtaneOTgw
+         C5k8yUh96cutQ==
+Received: by mail-pg1-f197.google.com with SMTP id q13-20020a638c4d000000b003821725ad66so1389769pgn.23
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 19:42:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Bt5u+dqRXX5TG4kpL4NYCF0+7EST57EITnb/tm+FvLo=;
+        b=uJaS09OvVjrKObG8ddJ9KLeR1SKlUYlWdaIKpnpNqYP1WaBRoqcFtHnxkspsaJENHv
+         Iw9wiLL5orlQZ/MZTj38v1ISoUNEo8YgziPE0SpcZwirAkNwcBFL/KRRstcsaH+uVFs2
+         kxISUV8vtrUyxLMzz/RzN428TvHXxIdk3zws3lswH7Wf5LLG+FK5pCkbD9QaDd9LJzUT
+         mj9QOgBfspBemR5cPYmd4jcKI6wzPHwXr03vuca/DxTh95gTzyYda4+hQNDBFzEOOqil
+         6AxAuJK2NC6A6viLy2GNtPo7FQuUjWrbIxipXOGsoxeb2wO2xcFLLPg5+pIqEcQNugOk
+         LAlw==
+X-Gm-Message-State: AOAM531BV8IJAyLBb4IGQmAPWwUvBifPGW+MwaoWdJof+TDq4BaipJK9
+        f2I2AUtuvaWH8fUQgsX1S8qSV3kuUcmwrPzRSSqvIlAhqPlnAt8hhBni8DvvnoNL5SZv5Urq7sB
+        na3+A2nB2MrqWUVYZ+nTTbx+PdqIetwX5jlnI2wZCNA==
+X-Received: by 2002:a17:90b:4c08:b0:1c6:40e4:776c with SMTP id na8-20020a17090b4c0800b001c640e4776cmr8724577pjb.237.1647571372089;
+        Thu, 17 Mar 2022 19:42:52 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyBmgzsy0zKa9NwPy5bZZxUZZGmF1IcYkjfssmssCj9ufj7jR+nQNE2iuZ3iJhBwTgTt3sHOw==
+X-Received: by 2002:a17:90b:4c08:b0:1c6:40e4:776c with SMTP id na8-20020a17090b4c0800b001c640e4776cmr8724556pjb.237.1647571371753;
+        Thu, 17 Mar 2022 19:42:51 -0700 (PDT)
+Received: from localhost.localdomain (2001-b400-e287-a413-5915-32ac-82c3-a966.emome-ip6.hinet.net. [2001:b400:e287:a413:5915:32ac:82c3:a966])
+        by smtp.gmail.com with ESMTPSA id v16-20020a056a00149000b004f7ae2cbd3asm8191232pfu.166.2022.03.17.19.42.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Mar 2022 19:42:51 -0700 (PDT)
+From:   Chris Chiu <chris.chiu@canonical.com>
+To:     kvalo@kernel.org, Jes.Sorensen@gmail.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     code@reto-schneider.ch, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Chris Chiu <chris.chiu@canonical.com>
+Subject: [PATCH v2 0/2] rtl8xxxu: Fill up more TX information
+Date:   Fri, 18 Mar 2022 10:42:14 +0800
+Message-Id: <20220318024216.42204-1-chris.chiu@canonical.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500005.china.huawei.com (7.192.104.229)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Avoid random build errors which do not select
-CONFIG_SYSCTL by depending on it in Kconfig.
+The antenna information is missing in rtl8xxxu and txrate is NULL
+in 8188cu and 8192cu. Fill up the missing information for iw
+commands.
 
-This fixes the following warning:
+Chris Chiu (2):
+  rtl8xxxu: feed antenna information for cfg80211
+  rtl8xxxu: fill up txrate info for gen1 chips
 
-In file included from kernel/sched/build_policy.c:43:
-At top level:
-kernel/sched/rt.c:3017:12: error: ‘sched_rr_handler’ defined but not used [-Werror=unused-function]
- 3017 | static int sched_rr_handler(struct ctl_table *table, int write, void *buffer,
-      |            ^~~~~~~~~~~~~~~~
-kernel/sched/rt.c:2978:12: error: ‘sched_rt_handler’ defined but not used [-Werror=unused-function]
- 2978 | static int sched_rt_handler(struct ctl_table *table, int write, void *buffer,
-      |            ^~~~~~~~~~~~~~~~
-cc1: all warnings being treated as errors
-make[2]: *** [scripts/Makefile.build:310: kernel/sched/build_policy.o] Error 1
-make[1]: *** [scripts/Makefile.build:638: kernel/sched] Error 2
-make[1]: *** Waiting for unfinished jobs....
+ .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 75 +++++++++++++++++++
+ 1 file changed, 75 insertions(+)
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Baisong Zhong <zhongbaisong@huawei.com>
----
- kernel/sched/rt.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
-
-diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
-index 71791be36065..ee319581b1cd 100644
---- a/kernel/sched/rt.c
-+++ b/kernel/sched/rt.c
-@@ -5,7 +5,6 @@
-  */
- 
- int sched_rr_timeslice = RR_TIMESLICE;
--static int sysctl_sched_rr_timeslice = (MSEC_PER_SEC / HZ) * RR_TIMESLICE;
- /* More than 4 hours if BW_SHIFT equals 20. */
- static const u64 max_rt_runtime = MAX_BW;
- 
-@@ -25,11 +24,12 @@ unsigned int sysctl_sched_rt_period = 1000000;
-  */
- int sysctl_sched_rt_runtime = 950000;
- 
-+#ifdef CONFIG_SYSCTL
-+static int sysctl_sched_rr_timeslice = (MSEC_PER_SEC / HZ) * RR_TIMESLICE;
- static int sched_rt_handler(struct ctl_table *table, int write, void *buffer,
- 		size_t *lenp, loff_t *ppos);
- static int sched_rr_handler(struct ctl_table *table, int write, void *buffer,
- 		size_t *lenp, loff_t *ppos);
--#ifdef CONFIG_SYSCTL
- static struct ctl_table sched_rt_sysctls[] = {
- 	{
- 		.procname       = "sched_rt_period_us",
-@@ -2911,6 +2911,7 @@ long sched_group_rt_period(struct task_group *tg)
- 	return rt_period_us;
- }
- 
-+#ifdef CONFIG_SYSCTL
- static int sched_rt_global_constraints(void)
- {
- 	int ret = 0;
-@@ -2930,8 +2931,11 @@ int sched_rt_can_attach(struct task_group *tg, struct task_struct *tsk)
- 
- 	return 1;
- }
-+#endif /* CONFIG_SYSCTL */
- 
- #else /* !CONFIG_RT_GROUP_SCHED */
-+
-+#ifdef CONFIG_SYSCTL
- static int sched_rt_global_constraints(void)
- {
- 	unsigned long flags;
-@@ -2949,8 +2953,10 @@ static int sched_rt_global_constraints(void)
- 
- 	return 0;
- }
-+#endif /* CONFIG_SYSCTL */
- #endif /* CONFIG_RT_GROUP_SCHED */
- 
-+#ifdef CONFIG_SYSCTL
- static int sched_rt_global_validate(void)
- {
- 	if (sysctl_sched_rt_period <= 0)
-@@ -3035,6 +3041,7 @@ static int sched_rr_handler(struct ctl_table *table, int write, void *buffer,
- 
- 	return ret;
- }
-+#endif /* CONFIG_SYSCTL */
- 
- #ifdef CONFIG_SCHED_DEBUG
- void print_rt_stats(struct seq_file *m, int cpu)
 -- 
-2.25.1
+2.20.1
 
