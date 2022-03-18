@@ -2,99 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1674DC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 07:44:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CDF2C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 07:44:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233201AbiCRHpv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 03:45:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53650 "EHLO
+        id S233208AbiCRHpz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 03:45:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233176AbiCRHpo (ORCPT
+        with ESMTP id S233179AbiCRHpp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 03:45:44 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9F731F42D2;
-        Fri, 18 Mar 2022 00:44:25 -0700 (PDT)
-Received: from mail-wr1-f42.google.com ([209.85.221.42]) by
- mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1Mbj3e-1o66GH3f4A-00dDLd; Fri, 18 Mar 2022 08:44:23 +0100
-Received: by mail-wr1-f42.google.com with SMTP id x15so10537017wru.13;
-        Fri, 18 Mar 2022 00:44:23 -0700 (PDT)
-X-Gm-Message-State: AOAM531FTlH57ouvnkxx9jRG6mZfwgsSMPvRmeDZAIjdTb0ixiecWBdO
-        iVRx68m9YlLw62eogSi/YprB71p9jsSQfMaTnRc=
-X-Google-Smtp-Source: ABdhPJzIXhZOJi6NWdZqeu15CdJ5JFHp9oqnOe609rHntiPX/cWxExSEoXOsOalxM26KcvxA30q//5tG2XN3EpRswjE=
-X-Received: by 2002:a5d:6d0f:0:b0:203:9157:1c48 with SMTP id
- e15-20020a5d6d0f000000b0020391571c48mr6942693wrq.192.1647589463306; Fri, 18
- Mar 2022 00:44:23 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220318071130.163942-1-chenjiahao16@huawei.com>
-In-Reply-To: <20220318071130.163942-1-chenjiahao16@huawei.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 18 Mar 2022 08:44:07 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a3==vLKZUOceuMh3X1U5_sN82Vpm8J_3P-H-+q3sKKMxg@mail.gmail.com>
-Message-ID: <CAK8P3a3==vLKZUOceuMh3X1U5_sN82Vpm8J_3P-H-+q3sKKMxg@mail.gmail.com>
-Subject: Re: [PATCH -next] uaccess: fix __access_ok limit setup in compat mode
-To:     Chen Jiahao <chenjiahao16@huawei.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Stafford Horne <shorne@gmail.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:xeXYH6qbgvt7UHc7zDtYFQsBnW61JIFhVjyTjlYhP91VSEkQz49
- 0Z6vAIYbrA2pEGDpoBZ70w5BJm3sRMSx6BUqn2aqTsWfOu4A2JagdEcssWF0FAv7iJrTMFZ
- u7B/I7ALAVCuhwe2BFnLqoT5XIUenK6PcZZwnHu3EzWanFOKEjI0h/VivNNgEB9sJ0GWRws
- eeZ2WRlF8xpSINOS9cK9g==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:0P+KlHjPBMg=:rHJzmBHGlNG+M2D+4oveca
- fkhqpwbBsOG1Am8s1I04Uba7/FMpmGRPd4LQK/mU5giubn919sik/YYf34X2I8ERQY9Hthzyg
- 1Qwckv4Cfaes3aWZruuMEuz+8cpf7ZCuAS9cDZs+N3ZkX34OVhwmHT34qZXz499ODx3AnJbkr
- 9PHykrskRoBzdE3nGz8T70SmxYd9stp0hWi94AkJZm992V0F417q3lt3OPlgzg2c7hLnc+Oca
- eIMVEFmXmrtzDyjRr1kvLy76XjOlCI4PfapxjKvF1t3s5NcBWqD12psaIbwXyhMcD9OWaQlbu
- zci7UdgyE/W4Ia30g7kXNmf/aMEVb5xQrsYGkyj5DZyK3gG9hyW0lQBEqn6RYSkPjS0ZqYJwv
- WXFg4ANP0+c+pLGvh4bK89VxOTfgd0Ij/jg5xj7R5+w5jtQTrbvzFOI6GZKZqKHQAfBGz4IxZ
- i5cRK65bL5jR80H4cegMEC3W3Zn5PucfA/5+2YVclRPaWDl7fOr4T4ir2pMYaPLZmrO2UeSP6
- PEJ13+uPLtWYBQiyKJp8aanVGAjLhXMik6QRkQM/s1X5mQMK14qDU8DDay2yKgsXb/wnkpY+x
- hzhGDTcn4kNw0AOeFIN3qtrq26yTI6L4/QHTgJRw7vm9X5HUUEBouZcFfSmO2f7ltpQSQ3f1r
- JNuaudGZJVXzCAD7SxL/IsQLrxUDxOOdjA/MzJ6UVQKVnlzVL26uNC4jpmcKrntW6lT1XmNUH
- LG+kOU6gkEc2stU35rgDD8KiNascE1WGszQhWkiuZZMQ6SmZMbkZDblhVt7HZlpsUxXlbMecc
- rBprlwCSN5g2bDZbnXegLvS3igBgIddgEWD7uQ02I/Y8QcOBlU=
+        Fri, 18 Mar 2022 03:45:45 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 193531F42D7;
+        Fri, 18 Mar 2022 00:44:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647589467; x=1679125467;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=3QUWsALuGQYp91bXIF09ndc4AvW2iQVHi+0HN3uLFBw=;
+  b=ZqdYPuyQNNwU8fHAKOST6YsOR2eYPjOIO71UAJwEGwrBc1Qre6Hr1Wdb
+   QrZXSnvUguVzIeDw6RK00mdMAgK5hh/QTD60XeZpO6cGCsUE40bs4CXGW
+   qGi2qdSNvxaO/t3aVUBrig1ehg76peK/1ihwjywh/X8TfQPflHv5TYW1t
+   eh9Ihw5ACX2Q2akWhKIYxXvq3oTTfgbx4T97l6zjREqnHEPYai3rnR625
+   ZKHoq3/4gqExKEL+ySyYwK28OCLMZmLwsByqoH3vo6jJmeQezly9JSsE8
+   EKOZ9oqassWUCVCdVtVGiyM9CS5rEMr66QHTao0qyD+pFEqcOMFMpXpPt
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="254641664"
+X-IronPort-AV: E=Sophos;i="5.90,191,1643702400"; 
+   d="scan'208";a="254641664"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 00:44:26 -0700
+X-IronPort-AV: E=Sophos;i="5.90,191,1643702400"; 
+   d="scan'208";a="558307288"
+Received: from chenyi-pc.sh.intel.com ([10.239.159.73])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 00:44:24 -0700
+From:   Chenyi Qiang <chenyi.qiang@intel.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Xiaoyao Li <xiaoyao.li@intel.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v5 1/3] KVM: X86: Save&restore the triple fault request
+Date:   Fri, 18 Mar 2022 15:49:53 +0800
+Message-Id: <20220318074955.22428-2-chenyi.qiang@intel.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220318074955.22428-1-chenyi.qiang@intel.com>
+References: <20220318074955.22428-1-chenyi.qiang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 8:11 AM Chen Jiahao <chenjiahao16@huawei.com> wrote:
->
-> In __access_ok, TASK_SIZE_MAX is used to check if a memory access
-> is in user address space, but some cases may get omitted in compat
-> mode.
->
-> For example, a 32-bit testcase calling pread64(fd, buf, -1, 1)
-> and running in x86-64 kernel, the obviously illegal size "-1" will
-> get ignored by __access_ok. Since from the kernel point of view,
-> 32-bit userspace 0xffffffff is within the limit of 64-bit
-> TASK_SIZE_MAX.
->
-> Replacing the limit TASK_SIZE_MAX with TASK_SIZE in __access_ok
-> will fix the problem above.
+For the triple fault sythesized by KVM, e.g. the RSM path or
+nested_vmx_abort(), if KVM exits to userspace before the request is
+serviced, userspace could migrate the VM and lose the triple fault.
+Fix this issue by adding a new event KVM_VCPUEVENT_TRIPLE_FAULT in
+get/set_vcpu_events() to track the triple fault request.
 
-I don't see what problem this fixes, the choice of TASK_SIZE_MAX in
-__access_ok() is intentional, as this means we can use a compile-time
-constant as the limit, which produces better code.
+Signed-off-by: Chenyi Qiang <chenyi.qiang@intel.com>
+---
+ Documentation/virt/kvm/api.rst  | 6 ++++++
+ arch/x86/include/uapi/asm/kvm.h | 1 +
+ arch/x86/kvm/x86.c              | 9 ++++++++-
+ 3 files changed, 15 insertions(+), 1 deletion(-)
 
-Any user pointer between COMPAT_TASK_SIZE and TASK_SIZE_MAX is
-not accessible by a user process but will not let user space access
-any kernel data either, which is the point of the check.
+diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
+index 691ff84444bd..9682b0a438bd 100644
+--- a/Documentation/virt/kvm/api.rst
++++ b/Documentation/virt/kvm/api.rst
+@@ -1146,6 +1146,9 @@ The following bits are defined in the flags field:
+   fields contain a valid state. This bit will be set whenever
+   KVM_CAP_EXCEPTION_PAYLOAD is enabled.
+ 
++- KVM_VCPUEVENT_TRIPLE_FAULT may be set to signal that there's a
++  triple fault request waiting to be serviced.
++
+ ARM/ARM64:
+ ^^^^^^^^^^
+ 
+@@ -1241,6 +1244,9 @@ can be set in the flags field to signal that the
+ exception_has_payload, exception_payload, and exception.pending fields
+ contain a valid state and shall be written into the VCPU.
+ 
++KVM_VCPUEVENT_TRIPLE_FAULT can be set in flags field to signal that a
++triple fault request should be made.
++
+ ARM/ARM64:
+ ^^^^^^^^^^
+ 
+diff --git a/arch/x86/include/uapi/asm/kvm.h b/arch/x86/include/uapi/asm/kvm.h
+index bf6e96011dfe..d8ef0d993e86 100644
+--- a/arch/x86/include/uapi/asm/kvm.h
++++ b/arch/x86/include/uapi/asm/kvm.h
+@@ -325,6 +325,7 @@ struct kvm_reinject_control {
+ #define KVM_VCPUEVENT_VALID_SHADOW	0x00000004
+ #define KVM_VCPUEVENT_VALID_SMM		0x00000008
+ #define KVM_VCPUEVENT_VALID_PAYLOAD	0x00000010
++#define KVM_VCPUEVENT_TRIPLE_FAULT	0x00000020
+ 
+ /* Interrupt shadow states */
+ #define KVM_X86_SHADOW_INT_MOV_SS	0x01
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 4fa4d8269e5b..fee402a700df 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -4891,6 +4891,9 @@ static void kvm_vcpu_ioctl_x86_get_vcpu_events(struct kvm_vcpu *vcpu,
+ 	if (vcpu->kvm->arch.exception_payload_enabled)
+ 		events->flags |= KVM_VCPUEVENT_VALID_PAYLOAD;
+ 
++	if (kvm_check_request(KVM_REQ_TRIPLE_FAULT, vcpu))
++		events->flags |= KVM_VCPUEVENT_TRIPLE_FAULT;
++
+ 	memset(&events->reserved, 0, sizeof(events->reserved));
+ }
+ 
+@@ -4903,7 +4906,8 @@ static int kvm_vcpu_ioctl_x86_set_vcpu_events(struct kvm_vcpu *vcpu,
+ 			      | KVM_VCPUEVENT_VALID_SIPI_VECTOR
+ 			      | KVM_VCPUEVENT_VALID_SHADOW
+ 			      | KVM_VCPUEVENT_VALID_SMM
+-			      | KVM_VCPUEVENT_VALID_PAYLOAD))
++			      | KVM_VCPUEVENT_VALID_PAYLOAD
++			      | KVM_VCPUEVENT_TRIPLE_FAULT))
+ 		return -EINVAL;
+ 
+ 	if (events->flags & KVM_VCPUEVENT_VALID_PAYLOAD) {
+@@ -4976,6 +4980,9 @@ static int kvm_vcpu_ioctl_x86_set_vcpu_events(struct kvm_vcpu *vcpu,
+ 		}
+ 	}
+ 
++	if (events->flags & KVM_VCPUEVENT_TRIPLE_FAULT)
++		kvm_make_request(KVM_REQ_TRIPLE_FAULT, vcpu);
++
+ 	kvm_make_request(KVM_REQ_EVENT, vcpu);
+ 
+ 	return 0;
+-- 
+2.17.1
 
-In your example of using '-1' as the pointer, access_ok() returns true,
-so the kernel can go on to perform an unchecked __get_user() on
-__put_user() on 0xffffffffull, which causes page fault that is intercepted
-by the ex_table fixup.
-
-This should not result in any user visible difference, in both cases
-user process will see a -EFAULT return code from its system call.
-Are you able to come up with a test case that shows an observable
-difference in behavior?
-
-      Arnd
