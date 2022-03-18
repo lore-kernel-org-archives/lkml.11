@@ -2,105 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 443A0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 03:50:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A10FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 03:50:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232295AbiCRDvu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 23:51:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58500 "EHLO
+        id S231263AbiCRDwF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 23:52:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232289AbiCRDvj (ORCPT
+        with ESMTP id S232321AbiCRDvs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 23:51:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB492A2651;
-        Thu, 17 Mar 2022 20:50:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 50B29B82166;
-        Fri, 18 Mar 2022 03:50:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E7755C340F0;
-        Fri, 18 Mar 2022 03:50:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647575417;
-        bh=LEiMT59/2YFc/7LAvIr3W6UgC5OV1lpHHRpACr2rNjE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=UN47j4RO75dObL4Bn9pBCY0fOsj/ybrQECwC6LiWWGdWNsznrOkqkTal0UEJBEul4
-         Np4qGnl3rSzImmOWlPIiE2jwxqVpzUYys89GwsNNN7kUwANapTDp9XuVXVEwBSuBum
-         ofJ1FXQcwg6kB+o0iiOU1KxEAyUzPYa4AnKhatDxuW3Dy9aROJ0lnxQMx7DAz5WOFq
-         nfULCRZGgZCj1+hvv1UeYVTNjDzTQW9fPq7SO3z+Gef2nKper7hp6N91BSORx1JpV6
-         dewlnwdP9mg39a/VElqqanGmzYaKtiHYMU//AutvfoYUpkR1D2I68oiE90VjedE3Dh
-         /CxhYSbI2ozUA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C34FFE6BBCA;
-        Fri, 18 Mar 2022 03:50:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Thu, 17 Mar 2022 23:51:48 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C9142AD08A
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 20:50:29 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id bg10so14661880ejb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 20:50:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=iq+O3k/FfZ9UjG3SjmgeqRh1gwUPMU+eljMxxt7oEZc=;
+        b=lg/VIzE4D9ivFVJ6/5/ProrD5xm9TSTHCbetBabNFK2ZUxvKluPViuE7YIolFCu+cU
+         53CnC+s5nvqJJY1bqJPMYjP5qwb7mMHqs5CwKWyJFVTjVbLCEOuxuHGpiiG+9y8hAqW+
+         +O+h3D71vvf5RfC0XyuSRrx504uHYHMLJJnwEd0SmYOik8SCTHRSAdsL2/zdhTviZ7GN
+         PzxOZO+jEWRx7pYTOyhWTuIuDIYgi4XbKyzopF5Dj6kqO2Alh3vfqgJzAgZGpZkO37rS
+         67zOWOUgZCjNxBPuzb7dBjwjqCRUEQrFBB6DFLum8EgP47Ox8R3HEujO0wAmAZbH0vt6
+         q+Sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=iq+O3k/FfZ9UjG3SjmgeqRh1gwUPMU+eljMxxt7oEZc=;
+        b=PTW9ek5AIHWV3b6RnG1uRskgRh16BN5BJW8yeo0/DOx49RPX+W/36g6RUB8R6RA5Eu
+         EM7KtmovTrQdBofMRQ9FAxNyiZF3KGfc3Yv1iaHbhQLQsY+r5T/i37E5VsI9aVFSXjm2
+         hrnKT204bCmn+vSVM3jRTdcopJvRBkYw0FPQStpo0T9JgkYoBlY3XxHM0Q4qKst1RRuT
+         ZkVQhQMOu1nufVWrJV5LeJkcc+xkiUuJv2mXBCPfwVh8QO3Kb9xODrPNVLIROLk2+hTn
+         2E2AM54Qh8b1XT+7vOGYXDN4p+RkZiSSbRqizFLl9vPs74+AsjmnpL7xI0hJPBDVwJvq
+         APdg==
+X-Gm-Message-State: AOAM533BgrNiq6zN5SM8ANaqd1VYV/rzrRVy/EMYZOxjdpBsLKBNR6f+
+        0Jmm1LHKnpm8kmSNwFN9FZcRIB0/b+zn34xu7CAh0/ouxgo=
+X-Google-Smtp-Source: ABdhPJyzSsgDLUKXejs58647B/wPIb1icHFEKcguhtQ/C8QSl1mJIvEUuxp4YgtZNOQIEiLWhBuMmf7FAshGWQc9/68=
+X-Received: by 2002:a17:906:3109:b0:6cc:7a1:8db0 with SMTP id
+ 9-20020a170906310900b006cc07a18db0mr7303848ejx.266.1647575427207; Thu, 17 Mar
+ 2022 20:50:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCHv3 bpf-next 00/13] bpf: Add kprobe multi link
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164757541679.26179.4546063131743440246.git-patchwork-notify@kernel.org>
-Date:   Fri, 18 Mar 2022 03:50:16 +0000
-References: <20220316122419.933957-1-jolsa@kernel.org>
-In-Reply-To: <20220316122419.933957-1-jolsa@kernel.org>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        mhiramat@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kafai@fb.com, songliubraving@fb.com,
-        yhs@fb.com, john.fastabend@gmail.com, kpsingh@chromium.org,
-        rostedt@goodmis.org
+From:   Dave Airlie <airlied@gmail.com>
+Date:   Fri, 18 Mar 2022 13:50:16 +1000
+Message-ID: <CAPM=9twzN9ybw1N=n6JWNQgUd9UNXBxis+PguKagt8DSbW=y6Q@mail.gmail.com>
+Subject: [git pull] drm fixes for 5.17-final
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Hi Linus,
 
-This series was applied to bpf/bpf-next.git (master)
-by Alexei Starovoitov <ast@kernel.org>:
+A few minor changes to finish things off, one mgag200 regression, imx
+fix and couple of panel changes.
 
-On Wed, 16 Mar 2022 13:24:06 +0100 you wrote:
-> hi,
-> this patchset adds new link type BPF_TRACE_KPROBE_MULTI that attaches
-> kprobe program through fprobe API [1] instroduced by Masami.
-> 
-> The fprobe API allows to attach probe on multiple functions at once very
-> fast, because it works on top of ftrace. On the other hand this limits
-> the probe point to the function entry or return.
-> 
-> [...]
+Regards,
+Dave.
 
-Here is the summary with links:
-  - [PATCHv3,bpf-next,01/13] lib/sort: Add priv pointer to swap function
-    https://git.kernel.org/bpf/bpf-next/c/a0019cd7d41a
-  - [PATCHv3,bpf-next,02/13] kallsyms: Skip the name search for empty string
-    https://git.kernel.org/bpf/bpf-next/c/aecf489f2ce5
-  - [PATCHv3,bpf-next,03/13] bpf: Add multi kprobe link
-    https://git.kernel.org/bpf/bpf-next/c/0dcac2725406
-  - [PATCHv3,bpf-next,04/13] bpf: Add bpf_get_func_ip kprobe helper for multi kprobe link
-    https://git.kernel.org/bpf/bpf-next/c/42a5712094e8
-  - [PATCHv3,bpf-next,05/13] bpf: Add support to inline bpf_get_func_ip helper on x86
-    https://git.kernel.org/bpf/bpf-next/c/97ee4d20ee67
-  - [PATCHv3,bpf-next,06/13] bpf: Add cookie support to programs attached with kprobe multi link
-    https://git.kernel.org/bpf/bpf-next/c/ca74823c6e16
-  - [PATCHv3,bpf-next,07/13] libbpf: Add libbpf_kallsyms_parse function
-    https://git.kernel.org/bpf/bpf-next/c/85153ac06283
-  - [PATCHv3,bpf-next,08/13] libbpf: Add bpf_link_create support for multi kprobes
-    https://git.kernel.org/bpf/bpf-next/c/5117c26e8773
-  - [PATCHv3,bpf-next,09/13] libbpf: Add bpf_program__attach_kprobe_multi_opts function
-    https://git.kernel.org/bpf/bpf-next/c/ddc6b04989eb
-  - [PATCHv3,bpf-next,10/13] selftests/bpf: Add kprobe_multi attach test
-    https://git.kernel.org/bpf/bpf-next/c/f7a11eeccb11
-  - [PATCHv3,bpf-next,11/13] selftests/bpf: Add kprobe_multi bpf_cookie test
-    https://git.kernel.org/bpf/bpf-next/c/2c6401c966ae
-  - [PATCHv3,bpf-next,12/13] selftests/bpf: Add attach test for bpf_program__attach_kprobe_multi_opts
-    https://git.kernel.org/bpf/bpf-next/c/9271a0c7ae7a
-  - [PATCHv3,bpf-next,13/13] selftests/bpf: Add cookie test for bpf_program__attach_kprobe_multi_opts
-    https://git.kernel.org/bpf/bpf-next/c/318c812cebfc
+drm-fixes-2022-03-18:
+drm fixes for 5.17-rc9/final
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+imx:
+- Don't test bus flags in atomic check
 
+mgag200:
+- Fix PLL setup on some models
 
+panel:
+- Fix bpp settings on Innolux G070Y2-L01
+- Fix DRM_PANEL_EDP Kconfig dependencies
+The following changes since commit 09688c0166e76ce2fb85e86b9d99be8b0084cdf9:
+
+  Linux 5.17-rc8 (2022-03-13 13:23:37 -0700)
+
+are available in the Git repository at:
+
+  git://anongit.freedesktop.org/drm/drm tags/drm-fixes-2022-03-18
+
+for you to fetch changes up to ca5a5761ac542691a6b3520b6c5c047cf63b4b8d:
+
+  Merge tag 'drm-misc-fixes-2022-03-17' of
+git://anongit.freedesktop.org/drm/drm-misc into drm-fixes (2022-03-18
+13:32:54 +1000)
+
+----------------------------------------------------------------
+drm fixes for 5.17-rc9/final
+
+imx:
+- Don't test bus flags in atomic check
+
+mgag200:
+- Fix PLL setup on some models
+
+panel:
+- Fix bpp settings on Innolux G070Y2-L01
+- Fix DRM_PANEL_EDP Kconfig dependencies
+
+----------------------------------------------------------------
+Christoph Niedermaier (1):
+      drm/imx: parallel-display: Remove bus flags check in
+imx_pd_bridge_atomic_check()
+
+Dave Airlie (1):
+      Merge tag 'drm-misc-fixes-2022-03-17' of
+git://anongit.freedesktop.org/drm/drm-misc into drm-fixes
+
+Jocelyn Falempe (1):
+      drm/mgag200: Fix PLL setup for g200wb and g200ew
+
+Marek Vasut (1):
+      drm/panel: simple: Fix Innolux G070Y2-L01 BPP settings
+
+Thomas Zimmermann (2):
+      Merge drm/drm-fixes into drm-misc-fixes
+      drm: Don't make DRM_PANEL_BRIDGE dependent on DRM_KMS_HELPERS
+
+ drivers/gpu/drm/bridge/Kconfig         | 2 +-
+ drivers/gpu/drm/imx/parallel-display.c | 8 --------
+ drivers/gpu/drm/mgag200/mgag200_pll.c  | 6 +++---
+ drivers/gpu/drm/panel/Kconfig          | 1 +
+ drivers/gpu/drm/panel/panel-simple.c   | 2 +-
+ 5 files changed, 6 insertions(+), 13 deletions(-)
