@@ -2,110 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4A05C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 11:57:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6AB0C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 12:01:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236011AbiCRL62 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 07:58:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46614 "EHLO
+        id S236018AbiCRMCd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 08:02:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232427AbiCRL61 (ORCPT
+        with ESMTP id S232957AbiCRMCb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 07:58:27 -0400
-Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5686F12F14F
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 04:57:08 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R771e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0V7W6.JF_1647604625;
-Received: from 30.0.159.17(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0V7W6.JF_1647604625)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 18 Mar 2022 19:57:05 +0800
-Message-ID: <6cb97421-ab4a-2520-2503-10fec548edd0@linux.alibaba.com>
-Date:   Fri, 18 Mar 2022 19:58:07 +0800
+        Fri, 18 Mar 2022 08:02:31 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A982D4D4F
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 05:01:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647604871; x=1679140871;
+  h=message-id:date:mime-version:cc:to:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=pBffoB48lXGmhcQ4bn5CKS0U9vBbO6aigybptR2nzow=;
+  b=TuRdTD+9U1TK32wJgGzkaqBHciLNBmxpEOq7JzqOasM+TZ3VnkCytSvw
+   t/KPKX9SQZhh7IshhzsQiVpOBP0eEqfDav5EoFIokxRtaLE9CoastDzNb
+   QtprtiNprGT3K8d0DC/228kQN9PPCBkZOej37siBbdd2GZKoBx35U3gZ7
+   JzazhzCiD+ZRuBuMKT3rr8bEq85fdnI/SEvAGBpy68J21rNVmTEgv0i3r
+   OdRCuEvK/Iz0ODYSfzbhMjfRiy3d8nUyQ4jfaMnzCI7Rbj0ARXvb8bXzm
+   DnCy0R6fvuniq4jUjSmeNGHwSKn6BSxunpvw+CmwDOejUaQDkmE64L/tT
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="255948136"
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
+   d="scan'208";a="255948136"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 05:01:10 -0700
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
+   d="scan'208";a="558405336"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.215.248]) ([10.254.215.248])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 05:01:06 -0700
+Message-ID: <a10f3fcc-9e31-913d-853e-b6da5fcb36a0@linux.intel.com>
+Date:   Fri, 18 Mar 2022 20:01:04 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH] mm/damon: Make the sampling more accurate
-To:     sj@kernel.org
-Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-References: <20220318104948.26387-1-sj@kernel.org>
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <20220318104948.26387-1-sj@kernel.org>
+ Thunderbird/91.7.0
+Cc:     baolu.lu@linux.intel.com,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
+        "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
+        "Jiang, Dave" <dave.jiang@intel.com>,
+        "Luck, Tony" <tony.luck@intel.com>,
+        "Zanussi, Tom" <tom.zanussi@intel.com>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        "Liu, Yi L" <yi.l.liu@intel.com>
+Content-Language: en-US
+To:     "Tian, Kevin" <kevin.tian@intel.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>
+References: <20220315050713.2000518-1-jacob.jun.pan@linux.intel.com>
+ <20220315050713.2000518-3-jacob.jun.pan@linux.intel.com>
+ <YjB4AyrgsnbUrlLe@myrica>
+ <BN9PR11MB5276D5B88C05B509C2C790A98C109@BN9PR11MB5276.namprd11.prod.outlook.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v2 2/8] iommu: Add attach/detach_dev_pasid domain ops
+In-Reply-To: <BN9PR11MB5276D5B88C05B509C2C790A98C109@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 3/18/2022 6:49 PM, sj@kernel.org wrote:
-> On Fri, 18 Mar 2022 18:01:19 +0800 Baolin Wang <baolin.wang@linux.alibaba.com> wrote:
-> 
+On 2022/3/15 19:49, Tian, Kevin wrote:
+>> From: Jean-Philippe Brucker<jean-philippe@linaro.org>
+>> Sent: Tuesday, March 15, 2022 7:27 PM
 >>
->> On 3/18/2022 5:40 PM, sj@kernel.org wrote:
->>> Hi Baolin,
+>> On Mon, Mar 14, 2022 at 10:07:06PM -0700, Jacob Pan wrote:
+>>> From: Lu Baolu<baolu.lu@linux.intel.com>
 >>>
->>> On Fri, 18 Mar 2022 17:23:13 +0800 Baolin Wang <baolin.wang@linux.alibaba.com> wrote:
+>>> An IOMMU domain represents an address space which can be attached by
+>>> devices that perform DMA within a domain. However, for platforms with
+>>> PASID capability the domain attachment needs be handled at device+PASID
+>>> level. There can be multiple PASIDs within a device and multiple devices
+>>> attached to a given domain.
+>>> This patch introduces a new IOMMU op which support device, PASID, and
+>>> IOMMU domain attachment. The immediate use case is for PASID capable
+>>> devices to perform DMA under DMA APIs.
 >>>
->>>> When I try to sample the physical address with DAMON to migrate pages
->>>> on tiered memory system, I found it will demote some cold regions mistakenly.
->>>> Now we will choose an physical address in the region randomly, but if
->>>> its corresponding page is not an online LRU page, we will ignore the
->>>> accessing status in this cycle of sampling, and actually will be treated
->>>> as a non-accessed region. Suppose a region including some non-LRU pages,
->>>> it will be treated as a cold region with a high probability, and may be
->>>> merged with adjacent cold regions, but there are some pages may be
->>>> accessed we missed.
->>>>
->>>> So instead of ignoring the access status of this region if we did not find
->>>> a valid page according to current sampling address, we can use last valid
->>>> sampling address to help to make the sampling more accurate, then we can do
->>>> a better decision.
+>>> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+>>> Signed-off-by: Jacob Pan<jacob.jun.pan@linux.intel.com>
+>>> ---
+>>>   include/linux/iommu.h | 6 ++++++
+>>>   1 file changed, 6 insertions(+)
 >>>
->>> Well...  Offlined pages are also a valid part of the memory region, so treating
->>> those as not accessed and making the memory region containing the offlined
->>> pages looks colder seems legal to me.  IOW, this approach could make memory
->>> regions containing many non-online-LRU pages as hot.
->>
->> IMO I don't think this is a problem, since if this region containing
->> many non-online-LRU pages is treated as hot, which means threre are aome
->> pages are hot, right? We can find them and promote them to fast memory
->> (or do other schemes). Meanwhile, for non-online-LRU pages, we can
->> filter them and do nothing for them, since we can not get a valid page
->> struct for them.
+>>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>>> index 369f05c2a4e2..fde5b933dbe3 100644
+>>> --- a/include/linux/iommu.h
+>>> +++ b/include/linux/iommu.h
+>>> @@ -227,6 +227,8 @@ struct iommu_iotlb_gather {
+>>>    * @aux_get_pasid: get the pasid given an aux-domain
+>>>    * @sva_bind: Bind process address space to device
+>>>    * @sva_unbind: Unbind process address space from device
+>>> + * @attach_dev_pasid: attach an iommu domain to a pasid of device
+>>> + * @detach_dev_pasid: detach an iommu domain from a pasid of device
+>> Isn't that operation "assign a PASID to a domain" instead?  In patch 5,
+>> the domain is already attached to the device, so set_domain_pasid() might
+>> be clearer and to the point. If the IOMMU driver did the allocation we
+>> could also avoid patch 1.
+> iiuc this API can also work for future SIOV usage where each mdev attached
+> to the domain has its own pasid. "assigning a PASID to a domain" sounds
+> like going back to the previous aux domain approach which has one PASID
+> per domain and that PASID is used on all devices attached to the aux domain...
 > 
-> For some of DAMOS actions that you mentioned, that could make sense.  However,
-> that wouldn't make much sense for some other cases, especially for manual
-> DAMON-based access pattern profiling.
 
-I am not sure about this case, could you elaborate on how this can worse 
-the case you mentioned?
+This also works for SVA as far as I can see. The sva_bind essentially is
+to  attach an SVA domain to the PASID of a device. The sva_bind/unbind
+ops could be removed with these two new callbacks.
 
-Like you said as below, we can split the regions to separate the hot 
-pages out of the hot regions containing some offline or non-lru pages, 
-that is also a benefit to improve the regions adjustment.
-
-> After all, we already have a mechanism for this case: adaptive regions
-> adjustment (or, regions split/merge).  That mechanism will eventually separate
-> out hot oneline-LRU pages in the memory regions.  Before the region is
-> adjusted, reporting the whole region as hot looks like a right result to me.
-> Of course, I admit that it could take too much time to converge to the optimal
-> regions, and there are many rooms for improvement of the regions adjustment
-> mechanism.  I think we should pursue the direction (improving the regions
-> adjustment mechanism).
-
-Yes, agree.
-
-> FYI, I have some rough ideas for improving the mechanism including partitioning
-> regions into more than 2 sub-regions if we belive it is not making a good
-> progress.  Nevertheless, I'd like to first make a methodology for evaluating
-> current accuracy.  For that, I am planning to implement a page-granularity
-> access monitoring.
-
-Great, I think the page-granularity monitoring will be more suitable for 
-tiered memory system, which can reduce redundant demotion and promotion. 
-However, I still concern the overhead if the monitoring is a 
-page-granularity, especially for a large memory size. Anyway, I'd like 
-to help to test or review the new page-granularity monitoring when 
-you're ready to send out. Thanks.
+Best regards,
+baolu
