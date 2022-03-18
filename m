@@ -2,403 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36FC1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:22:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69E48C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:23:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239120AbiCRQYI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 12:24:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33892 "EHLO
+        id S239027AbiCRQY3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 12:24:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239142AbiCRQXk (ORCPT
+        with ESMTP id S239025AbiCRQX4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 12:23:40 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DD599D4C4;
-        Fri, 18 Mar 2022 09:19:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647620390; x=1679156390;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=hsq855aJWaAQp5u675gRwGodFSYs3pfMf1rbcv+1j3s=;
-  b=BshKjy113Z/BuxIkSwnA/GkjLx1r14Yqr2Cq3h/cV6418WJoJFnHDaqQ
-   5f4lI9IfzxZpUCZLAnqFxQyIaLedOevB0kc/SDenLY9FodhiFWJWqilAO
-   cqfXz+6anr72GXcrvCgEgHn103KI2rR1/YAapoAnBl39TGnsW+PuwHgMH
-   XKUALWbbmG2+jBXqcRGBU81RLmPpP6nPiffiJlYuCzXfovgTjs5PfbNSY
-   qbpDA0wrta1mP8T3t8FIv0QQdrYSXrmP3hJr/pfAV2iudAOD7ODpHS339
-   gEFUAB2ixIOgKQmdwS6+IuYn/bjKyP8uWgolyEUfUvqJgSBG5JZsPAFWk
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="257114799"
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="257114799"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 09:18:31 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="784286449"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga006.fm.intel.com with ESMTP; 18 Mar 2022 09:18:29 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22IGIOmH024113;
-        Fri, 18 Mar 2022 16:18:28 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Wojciech Drewek <wojciech.drewek@intel.com>,
-        Marcin Szycik <marcin.szycik@linux.intel.com>,
-        Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 net-next 5/5] ice: switch: convert packet template match code to rodata
-Date:   Fri, 18 Mar 2022 17:17:13 +0100
-Message-Id: <20220318161713.680436-6-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220318161713.680436-1-alexandr.lobakin@intel.com>
-References: <20220318161713.680436-1-alexandr.lobakin@intel.com>
+        Fri, 18 Mar 2022 12:23:56 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7C8C8F9A2;
+        Fri, 18 Mar 2022 09:20:02 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id u10so12377263wra.9;
+        Fri, 18 Mar 2022 09:20:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=u0HCPymtXblIB+cZc09PIw1aKsO6ejAhOpetsA4QzYg=;
+        b=HsS8bf4hFr1h53r1GWW5J7P80c2rigF1ZXd1iqF5XPOsMXq6p4ok6Sn2H3x7cUexPv
+         YABq8nJvMpMu/YHEMd143F6Qp5fA4nP7ubMhCEOPXswql4pg7XkYAMKHiv7rl+pDoZWx
+         H0bO0FDj3TAj6uKTbqplAHlMjsd1f+IEw2ZN38QxEypKSTFEkQEJ53OjC6bu5nL7r56L
+         Q1pPMFjEB8OhRlo6aBuSvQ2ffSBXMm5ZskqqZUxpIbkn/hYc62OjFPO0+xXgPsEu/sf8
+         Jbf18oIGb/IAdnQdYoeDEK01G6VXumHILoRrEZuQIhV6NkpZvGur8FIbJwWyBxMxx94s
+         MNlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=u0HCPymtXblIB+cZc09PIw1aKsO6ejAhOpetsA4QzYg=;
+        b=rYwVa/WYKSJwD3jxLNKPbY+Jf92HjCz7L2VlavW7g3/J6Ts2IRwWJ0VnSTEMV5JSjF
+         KBtYnkHJT1lh69GSqPhjGYF45JEPSB+Np1Sq7LfqclzySRiNqNWwP3a9sGlmxW33KgaW
+         3Ozc7zTapmPoc2Wu/afV/t+bwy4BS1YKIOAXmdq+vLsKeONKlGpS0Fu23dUKtnIhZfzP
+         R0QF7eyKQ3P+kxjK0u+8+qBL2Dr5L8c+KNaxEjdP2bkQVIaYF61lBmU/tCkqxyF68nEB
+         coaDQmi9MaGH5AlBMH0jFATkHW1/sleLwdbK4kIuRktwrE14qYs9B22ywtsHRFEArWCX
+         pT9A==
+X-Gm-Message-State: AOAM533R/E36koBVCIdNymdpmziqQ+HXDLKMjPwwqzFsTuhJgb2IBWvn
+        9v7/9/ke1aHRkjrM+88QzDRWK/ohzQM35zgRpek=
+X-Google-Smtp-Source: ABdhPJxNnjhQkWgGh3BiZCURGeabRTHOG3URIEu48sVr5c+bgDz9d6ZlaTpPV7k9bDjxcXo9LX1ybNqvt19BuaGSvdU=
+X-Received: by 2002:adf:914f:0:b0:1ed:bb92:d0cc with SMTP id
+ j73-20020adf914f000000b001edbb92d0ccmr8615326wrj.297.1647620398559; Fri, 18
+ Mar 2022 09:19:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220310234611.424743-1-robdclark@gmail.com> <20220310234611.424743-3-robdclark@gmail.com>
+ <YjMGac4Hnjmg1wE8@phenom.ffwll.local> <3945551d-47d2-1974-f637-1dbc61e14702@amd.com>
+ <CAF6AEGv36V8bLoDn5O1SW3iTUtzd3O1XeuT5gJxyLMxd1E-o3Q@mail.gmail.com>
+ <865abcff-9f52-dca4-df38-b11189c739ff@amd.com> <CAF6AEGuoBeYoMTR6-KM9xGZ05XSSnSJWMDciawczi7qtiLN9Vw@mail.gmail.com>
+ <915537e2-ac5b-ab0e-3697-2b16a9ec8f91@amd.com> <CAF6AEGsyFAOPmHqT7YX1wsukP4-gYAstCukr89r9w28V0YSCUw@mail.gmail.com>
+ <3a475e5a-1090-e2f4-779c-6915fc8524b1@amd.com> <CAF6AEGtPrSdj=7AP1_puR+OgmL-qro0mWZDNngtaVPxpaCM76A@mail.gmail.com>
+ <1c847474-8ee1-cc7e-3d4d-261a4e92fb2d@amd.com> <CAF6AEGuw45gi4f+mVs7cVyjCHY9O4N1O8OfuGHv-wAkzP3UpMA@mail.gmail.com>
+ <dd7d3f20-8288-3a7c-a368-a08282746ff1@amd.com>
+In-Reply-To: <dd7d3f20-8288-3a7c-a368-a08282746ff1@amd.com>
+From:   Rob Clark <robdclark@gmail.com>
+Date:   Fri, 18 Mar 2022 09:20:37 -0700
+Message-ID: <CAF6AEGvp+f4=EjQ9tWwcEafBEOAy6nCd8bOTqLXopiFhjx_Y_w@mail.gmail.com>
+Subject: Re: [PATCH 2/3] drm/msm/gpu: Park scheduler threads for system suspend
+To:     Andrey Grodzovsky <andrey.grodzovsky@amd.com>
+Cc:     =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Rob Clark <robdclark@chromium.org>,
+        Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        David Airlie <airlied@linux.ie>,
+        Akhil P Oommen <quic_akhilpo@quicinc.com>,
+        Jonathan Marek <jonathan@marek.ca>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vladimir Lypak <vladimir.lypak@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "Alexander.Deucher@amd.com" <Alexander.Deucher@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Trade text size for rodata size and replace tons of nested if-elses
-to the const mask match based structs. The almost entire
-ice_find_dummy_packet() now becomes just one plain while-increment
-loop. The order in ice_dummy_pkt_profiles[] should be same with the
-if-elses order previously, as masks become less and less strict
-through the array to follow the original code flow.
-Apart from removing 80 locs of 4-level if-elses, it brings a solid
-text size optimization:
+On Fri, Mar 18, 2022 at 9:04 AM Andrey Grodzovsky
+<andrey.grodzovsky@amd.com> wrote:
+>
+>
+> On 2022-03-17 16:35, Rob Clark wrote:
+> > On Thu, Mar 17, 2022 at 12:50 PM Andrey Grodzovsky
+> > <andrey.grodzovsky@amd.com> wrote:
+> >>
+> >> On 2022-03-17 14:25, Rob Clark wrote:
+> >>> On Thu, Mar 17, 2022 at 11:10 AM Andrey Grodzovsky
+> >>> <andrey.grodzovsky@amd.com> wrote:
+> >>>> On 2022-03-17 13:35, Rob Clark wrote:
+> >>>>> On Thu, Mar 17, 2022 at 9:45 AM Christian K=C3=B6nig
+> >>>>> <christian.koenig@amd.com> wrote:
+> >>>>>> Am 17.03.22 um 17:18 schrieb Rob Clark:
+> >>>>>>> On Thu, Mar 17, 2022 at 9:04 AM Christian K=C3=B6nig
+> >>>>>>> <christian.koenig@amd.com> wrote:
+> >>>>>>>> Am 17.03.22 um 16:10 schrieb Rob Clark:
+> >>>>>>>>> [SNIP]
+> >>>>>>>>> userspace frozen !=3D kthread frozen .. that is what this patch=
+ is
+> >>>>>>>>> trying to address, so we aren't racing between shutting down th=
+e hw
+> >>>>>>>>> and the scheduler shoveling more jobs at us.
+> >>>>>>>> Well exactly that's the problem. The scheduler is supposed to sh=
+oveling
+> >>>>>>>> more jobs at us until it is empty.
+> >>>>>>>>
+> >>>>>>>> Thinking more about it we will then keep some dma_fence instance
+> >>>>>>>> unsignaled and that is and extremely bad idea since it can lead =
+to
+> >>>>>>>> deadlocks during suspend.
+> >>>>>>> Hmm, perhaps that is true if you need to migrate things out of vr=
+am?
+> >>>>>>> It is at least not a problem when vram is not involved.
+> >>>>>> No, it's much wider than that.
+> >>>>>>
+> >>>>>> See what can happen is that the memory management shrinkers want t=
+o wait
+> >>>>>> for a dma_fence during suspend.
+> >>>>> we don't wait on fences in shrinker, only purging or evicting thing=
+s
+> >>>>> that are already ready.  Actually, waiting on fences in shrinker pa=
+th
+> >>>>> sounds like a pretty bad idea.
+> >>>>>
+> >>>>>> And if you stop the scheduler they will just wait forever.
+> >>>>>>
+> >>>>>> What you need to do instead is to drain the scheduler, e.g. call
+> >>>>>> drm_sched_entity_flush() with a proper timeout for each entity you=
+ have
+> >>>>>> created.
+> >>>>> yeah, it would work to drain the scheduler.. I guess that might be =
+the
+> >>>>> more portable approach as far as generic solution for suspend.
+> >>>>>
+> >>>>> BR,
+> >>>>> -R
+> >>>> I am not sure how this drains the scheduler ? Suppose we done the
+> >>>> waiting in drm_sched_entity_flush,
+> >>>> what prevents someone to push right away another job into the same
+> >>>> entity's queue  right after that ?
+> >>>> Shouldn't we first disable further pushing of jobs into entity befor=
+e we
+> >>>> wait for  sched->job_scheduled ?
+> >>>>
+> >>> In the system suspend path, userspace processes will have already bee=
+n
+> >>> frozen, so there should be no way to push more jobs to the scheduler,
+> >>> unless they are pushed from the kernel itself.
+> >>> amdgpu_device_suspend
+> >>
+> >> It was my suspicion but I wasn't sure about it.
+> >>
+> >>
+> >>> We don't do that in
+> >>> drm/msm, but maybe you need to to move things btwn vram and system
+> >>> memory?
+> >>
+> >> Exactly, that was my main concern - if we use this method we have to u=
+se
+> >> it in a point in
+> >> suspend sequence when all the in kernel job submissions activity alrea=
+dy
+> >> suspended
+> >>
+> >>> But even in that case, if the # of jobs you push is bounded I
+> >>> guess that is ok?
+> >> Submissions to scheduler entities are using unbounded queue, the bound=
+ed
+> >> part is when
+> >> you extract next job from entity to submit to HW ring and it rejects i=
+f
+> >> submission limit reached (drm_sched_ready)
+> >>
+> >> In general - It looks to me at least that what we what we want her is
+> >> more of a drain operation then flush (i.e.
+> >> we first want to disable any further job submission to entity's queue
+> >> and then flush all in flight ones). As example
+> >> for this i was looking at  flush_workqueue vs. drain_workqueue
+> > Would it be possible for amdgpu to, in the system suspend task,
+> >
+> > 1) first queue up all the jobs needed to migrate bos out of vram, and
+> > whatever other housekeeping jobs are needed
+> > 2) then drain gpu scheduler's queues
+> > 3) and then finally wait for jobs executing on GPU to complete
+>
+>
+> We already do most of it in amdgpu_device_suspend,
+> amdgpu_device_ip_suspend_phase1
+> followed by amdgpu_device_evict_resources followed by
+> amdgpu_fence_driver_hw_fini is
+> exactly steps 1 + 3. What we are missing is step 2). For this step I
+> suggest adding a function
+> called drm_sched_entity_drain which basically sets entity->stopped =3D
+> true and then calls drm_sched_entity_flush.
+> This will both reject any new insertions into entity's job queue and
+> will flush all pending job submissions to HW from that entity.
+> One point is we need to make make drm_sched_entity_push_job return value
+> so the caller knows about job enqueue
+> rejection.
 
-$ scripts/bloat-o-meter -c {__,}vmlinux L
-add/remove: 0/1 grow/shrink: 1/1 up/down: 2/-1045 (-1043)
-Function                                     old     new   delta
-ice_fill_adv_dummy_packet                    289     291      +2
-ice_adv_add_update_vsi_list                  201       -    -201
-ice_add_adv_rule                            2950    2106    -844
-Total: Before=413901, After=412858, chg -0.25%
-add/remove: 53/52 grow/shrink: 0/0 up/down: 4660/-3988 (672)
-RO Data                                      old     new   delta
-ice_dummy_pkt_profiles                         -     672    +672
+Hmm, seems like job enqueue that is rejected because we are in the
+process of suspending should be more of a WARN_ON() sort of thing?
+Not sure if there is something sensible to do for the caller at that
+point?
 
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Tested-by: Marcin Szycik <marcin.szycik@linux.intel.com>
----
- drivers/net/ethernet/intel/ice/ice_switch.c | 215 ++++++++++----------
- 1 file changed, 108 insertions(+), 107 deletions(-)
+>
+> What about runtime suspend ? I guess same issue with scheduler racing
+> against HW susppend is relevant there ?
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
-index 8d4e49173dd1..263bc43d679e 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-@@ -30,6 +30,19 @@ static const u8 dummy_eth_header[DUMMY_ETH_HDR_LEN] = { 0x2, 0, 0, 0, 0, 0,
- 							0x2, 0, 0, 0, 0, 0,
- 							0x81, 0, 0, 0};
- 
-+enum {
-+	ICE_PKT_VLAN		= BIT(0),
-+	ICE_PKT_OUTER_IPV6	= BIT(1),
-+	ICE_PKT_TUN_GTPC	= BIT(2),
-+	ICE_PKT_TUN_GTPU	= BIT(3),
-+	ICE_PKT_TUN_NVGRE	= BIT(4),
-+	ICE_PKT_TUN_UDP		= BIT(5),
-+	ICE_PKT_INNER_IPV6	= BIT(6),
-+	ICE_PKT_INNER_TCP	= BIT(7),
-+	ICE_PKT_INNER_UDP	= BIT(8),
-+	ICE_PKT_GTP_NOPAY	= BIT(9),
-+};
-+
- struct ice_dummy_pkt_offsets {
- 	enum ice_protocol_type type;
- 	u16 offset; /* ICE_PROTOCOL_LAST indicates end of list */
-@@ -39,22 +52,22 @@ struct ice_dummy_pkt_profile {
- 	const struct ice_dummy_pkt_offsets *offsets;
- 	const u8 *pkt;
- 	u64 pkt_len:16;
-+	u64 match:48;
- };
- 
--#define ICE_DECLARE_PKT_OFFSETS(type)					\
--	static const struct ice_dummy_pkt_offsets			\
-+#define ICE_DECLARE_PKT_OFFSETS(type)				\
-+	static const struct ice_dummy_pkt_offsets		\
- 	ice_dummy_##type##_packet_offsets[]
- 
--#define ICE_DECLARE_PKT_TEMPLATE(type)					\
-+#define ICE_DECLARE_PKT_TEMPLATE(type)				\
- 	static const u8 ice_dummy_##type##_packet[]
- 
--#define ICE_PKT_PROFILE(type) ({					\
--	(struct ice_dummy_pkt_profile){					\
--		.pkt		= ice_dummy_##type##_packet,		\
--		.pkt_len	= sizeof(ice_dummy_##type##_packet),	\
--		.offsets	= ice_dummy_##type##_packet_offsets,	\
--	};								\
--})
-+#define ICE_PKT_PROFILE(type, m) {				\
-+	.match		= (m),					\
-+	.pkt		= ice_dummy_##type##_packet,		\
-+	.pkt_len	= sizeof(ice_dummy_##type##_packet),	\
-+	.offsets	= ice_dummy_##type##_packet_offsets,	\
-+}
- 
- ICE_DECLARE_PKT_OFFSETS(gre_tcp) = {
- 	{ ICE_MAC_OFOS,		0 },
-@@ -1220,6 +1233,55 @@ ICE_DECLARE_PKT_TEMPLATE(ipv6_gtp) = {
- 	0x00, 0x00,
- };
- 
-+static const struct ice_dummy_pkt_profile ice_dummy_pkt_profiles[] = {
-+	ICE_PKT_PROFILE(ipv6_gtp, ICE_PKT_TUN_GTPU | ICE_PKT_OUTER_IPV6 |
-+				  ICE_PKT_GTP_NOPAY),
-+	ICE_PKT_PROFILE(ipv6_gtpu_ipv6_udp, ICE_PKT_TUN_GTPU |
-+					    ICE_PKT_OUTER_IPV6 |
-+					    ICE_PKT_INNER_IPV6 |
-+					    ICE_PKT_INNER_UDP),
-+	ICE_PKT_PROFILE(ipv6_gtpu_ipv6_tcp, ICE_PKT_TUN_GTPU |
-+					    ICE_PKT_OUTER_IPV6 |
-+					    ICE_PKT_INNER_IPV6),
-+	ICE_PKT_PROFILE(ipv6_gtpu_ipv4_udp, ICE_PKT_TUN_GTPU |
-+					    ICE_PKT_OUTER_IPV6 |
-+					    ICE_PKT_INNER_UDP),
-+	ICE_PKT_PROFILE(ipv6_gtpu_ipv4_tcp, ICE_PKT_TUN_GTPU |
-+					    ICE_PKT_OUTER_IPV6),
-+	ICE_PKT_PROFILE(ipv4_gtpu_ipv4, ICE_PKT_TUN_GTPU | ICE_PKT_GTP_NOPAY),
-+	ICE_PKT_PROFILE(ipv4_gtpu_ipv6_udp, ICE_PKT_TUN_GTPU |
-+					    ICE_PKT_INNER_IPV6 |
-+					    ICE_PKT_INNER_UDP),
-+	ICE_PKT_PROFILE(ipv4_gtpu_ipv6_tcp, ICE_PKT_TUN_GTPU |
-+					    ICE_PKT_INNER_IPV6),
-+	ICE_PKT_PROFILE(ipv4_gtpu_ipv4_udp, ICE_PKT_TUN_GTPU |
-+					    ICE_PKT_INNER_UDP),
-+	ICE_PKT_PROFILE(ipv4_gtpu_ipv4_tcp, ICE_PKT_TUN_GTPU),
-+	ICE_PKT_PROFILE(ipv6_gtp, ICE_PKT_TUN_GTPC | ICE_PKT_OUTER_IPV6),
-+	ICE_PKT_PROFILE(ipv4_gtpu_ipv4, ICE_PKT_TUN_GTPC),
-+	ICE_PKT_PROFILE(gre_ipv6_tcp, ICE_PKT_TUN_NVGRE | ICE_PKT_INNER_IPV6 |
-+				      ICE_PKT_INNER_TCP),
-+	ICE_PKT_PROFILE(gre_tcp, ICE_PKT_TUN_NVGRE | ICE_PKT_INNER_TCP),
-+	ICE_PKT_PROFILE(gre_ipv6_udp, ICE_PKT_TUN_NVGRE | ICE_PKT_INNER_IPV6),
-+	ICE_PKT_PROFILE(gre_udp, ICE_PKT_TUN_NVGRE),
-+	ICE_PKT_PROFILE(udp_tun_ipv6_tcp, ICE_PKT_TUN_UDP |
-+					  ICE_PKT_INNER_IPV6 |
-+					  ICE_PKT_INNER_TCP),
-+	ICE_PKT_PROFILE(udp_tun_tcp, ICE_PKT_TUN_UDP | ICE_PKT_INNER_TCP),
-+	ICE_PKT_PROFILE(udp_tun_ipv6_udp, ICE_PKT_TUN_UDP |
-+					  ICE_PKT_INNER_IPV6),
-+	ICE_PKT_PROFILE(udp_tun_udp, ICE_PKT_TUN_UDP),
-+	ICE_PKT_PROFILE(vlan_udp_ipv6, ICE_PKT_OUTER_IPV6 | ICE_PKT_INNER_UDP |
-+				       ICE_PKT_VLAN),
-+	ICE_PKT_PROFILE(udp_ipv6, ICE_PKT_OUTER_IPV6 | ICE_PKT_INNER_UDP),
-+	ICE_PKT_PROFILE(vlan_udp, ICE_PKT_INNER_UDP | ICE_PKT_VLAN),
-+	ICE_PKT_PROFILE(udp, ICE_PKT_INNER_UDP),
-+	ICE_PKT_PROFILE(vlan_tcp_ipv6, ICE_PKT_INNER_IPV6 | ICE_PKT_VLAN),
-+	ICE_PKT_PROFILE(tcp_ipv6, ICE_PKT_INNER_IPV6),
-+	ICE_PKT_PROFILE(vlan_tcp, ICE_PKT_VLAN),
-+	ICE_PKT_PROFILE(tcp, 0),
-+};
-+
- #define ICE_SW_RULE_RX_TX_ETH_HDR_SIZE \
- 	(offsetof(struct ice_aqc_sw_rules_elem, pdata.lkup_tx_rx.hdr) + \
- 	 (DUMMY_ETH_HDR_LEN * \
-@@ -5509,124 +5571,63 @@ ice_add_adv_recipe(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
-  *
-  * Returns the &ice_dummy_pkt_profile corresponding to these lookup params.
-  */
--static struct ice_dummy_pkt_profile
-+static const struct ice_dummy_pkt_profile *
- ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
- 		      enum ice_sw_tunnel_type tun_type)
- {
--	bool inner_tcp = false, inner_udp = false, outer_ipv6 = false;
--	bool vlan = false, inner_ipv6 = false, gtp_no_pay = false;
-+	const struct ice_dummy_pkt_profile *ret = ice_dummy_pkt_profiles;
-+	u64 match = 0;
- 	u16 i;
- 
-+	switch (tun_type) {
-+	case ICE_SW_TUN_GTPC:
-+		match |= ICE_PKT_TUN_GTPC;
-+		break;
-+	case ICE_SW_TUN_GTPU:
-+		match |= ICE_PKT_TUN_GTPU;
-+		break;
-+	case ICE_SW_TUN_NVGRE:
-+		match |= ICE_PKT_TUN_NVGRE;
-+		break;
-+	case ICE_SW_TUN_GENEVE:
-+	case ICE_SW_TUN_VXLAN:
-+		match |= ICE_PKT_TUN_UDP;
-+		break;
-+	default:
-+		break;
-+	}
-+
- 	for (i = 0; i < lkups_cnt; i++) {
- 		if (lkups[i].type == ICE_UDP_ILOS)
--			inner_udp = true;
-+			match |= ICE_PKT_INNER_UDP;
- 		else if (lkups[i].type == ICE_TCP_IL)
--			inner_tcp = true;
-+			match |= ICE_PKT_INNER_TCP;
- 		else if (lkups[i].type == ICE_IPV6_OFOS)
--			outer_ipv6 = true;
-+			match |= ICE_PKT_OUTER_IPV6;
- 		else if (lkups[i].type == ICE_VLAN_OFOS)
--			vlan = true;
-+			match |= ICE_PKT_VLAN;
- 		else if (lkups[i].type == ICE_ETYPE_OL &&
- 			 lkups[i].h_u.ethertype.ethtype_id ==
- 				cpu_to_be16(ICE_IPV6_ETHER_ID) &&
- 			 lkups[i].m_u.ethertype.ethtype_id ==
- 				cpu_to_be16(0xFFFF))
--			outer_ipv6 = true;
-+			match |= ICE_PKT_OUTER_IPV6;
- 		else if (lkups[i].type == ICE_ETYPE_IL &&
- 			 lkups[i].h_u.ethertype.ethtype_id ==
- 				cpu_to_be16(ICE_IPV6_ETHER_ID) &&
- 			 lkups[i].m_u.ethertype.ethtype_id ==
- 				cpu_to_be16(0xFFFF))
--			inner_ipv6 = true;
-+			match |= ICE_PKT_INNER_IPV6;
- 		else if (lkups[i].type == ICE_IPV6_IL)
--			inner_ipv6 = true;
-+			match |= ICE_PKT_INNER_IPV6;
- 		else if (lkups[i].type == ICE_GTP_NO_PAY)
--			gtp_no_pay = true;
--	}
--
--	if (tun_type == ICE_SW_TUN_GTPU) {
--		if (outer_ipv6) {
--			if (gtp_no_pay) {
--				return ICE_PKT_PROFILE(ipv6_gtp);
--			} else if (inner_ipv6) {
--				if (inner_udp)
--					return ICE_PKT_PROFILE(ipv6_gtpu_ipv6_udp);
--				else
--					return ICE_PKT_PROFILE(ipv6_gtpu_ipv6_tcp);
--			} else {
--				if (inner_udp)
--					return ICE_PKT_PROFILE(ipv6_gtpu_ipv4_udp);
--				else
--					return ICE_PKT_PROFILE(ipv6_gtpu_ipv4_tcp);
--			}
--		} else {
--			if (gtp_no_pay) {
--				return ICE_PKT_PROFILE(ipv4_gtpu_ipv4);
--			} else if (inner_ipv6) {
--				if (inner_udp)
--					return ICE_PKT_PROFILE(ipv4_gtpu_ipv6_udp);
--				else
--					return ICE_PKT_PROFILE(ipv4_gtpu_ipv6_tcp);
--			} else {
--				if (inner_udp)
--					return ICE_PKT_PROFILE(ipv4_gtpu_ipv4_udp);
--				else
--					return ICE_PKT_PROFILE(ipv4_gtpu_ipv4_tcp);
--			}
--		}
-+			match |= ICE_PKT_GTP_NOPAY;
- 	}
- 
--	if (tun_type == ICE_SW_TUN_GTPC) {
--		if (outer_ipv6)
--			return ICE_PKT_PROFILE(ipv6_gtp);
--		else
--			return ICE_PKT_PROFILE(ipv4_gtpu_ipv4);
--	}
--
--	if (tun_type == ICE_SW_TUN_NVGRE) {
--		if (inner_tcp && inner_ipv6)
--			return ICE_PKT_PROFILE(gre_ipv6_tcp);
--		else if (inner_tcp)
--			return ICE_PKT_PROFILE(gre_tcp);
--		else if (inner_ipv6)
--			return ICE_PKT_PROFILE(gre_ipv6_udp);
--		else
--			return ICE_PKT_PROFILE(gre_udp);
--	}
-+	while (ret->match && (match & ret->match) != ret->match)
-+		ret++;
- 
--	if (tun_type == ICE_SW_TUN_VXLAN ||
--	    tun_type == ICE_SW_TUN_GENEVE) {
--		if (inner_tcp && inner_ipv6)
--			return ICE_PKT_PROFILE(udp_tun_ipv6_tcp);
--		else if (inner_tcp)
--			return ICE_PKT_PROFILE(udp_tun_tcp);
--		else if (inner_ipv6)
--			return ICE_PKT_PROFILE(udp_tun_ipv6_udp);
--		else
--			return ICE_PKT_PROFILE(udp_tun_udp);
--	}
--
--	if (inner_udp && !outer_ipv6) {
--		if (vlan)
--			return ICE_PKT_PROFILE(vlan_udp);
--		else
--			return ICE_PKT_PROFILE(udp);
--	} else if (inner_udp && outer_ipv6) {
--		if (vlan)
--			return ICE_PKT_PROFILE(vlan_udp_ipv6);
--		else
--			return ICE_PKT_PROFILE(udp_ipv6);
--	} else if ((inner_tcp && outer_ipv6) || outer_ipv6) {
--		if (vlan)
--			return ICE_PKT_PROFILE(vlan_tcp_ipv6);
--		else
--			return ICE_PKT_PROFILE(tcp_ipv6);
--	}
--
--	if (vlan)
--		return ICE_PKT_PROFILE(vlan_tcp);
--
--	return ICE_PKT_PROFILE(tcp);
-+	return ret;
- }
- 
- /**
-@@ -5963,8 +5964,8 @@ ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
- {
- 	struct ice_adv_fltr_mgmt_list_entry *m_entry, *adv_fltr = NULL;
- 	struct ice_aqc_sw_rules_elem *s_rule = NULL;
-+	const struct ice_dummy_pkt_profile *profile;
- 	u16 rid = 0, i, rule_buf_sz, vsi_handle;
--	struct ice_dummy_pkt_profile profile;
- 	struct list_head *rule_head;
- 	struct ice_switch_info *sw;
- 	u16 word_cnt;
-@@ -6036,7 +6037,7 @@ ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
- 		}
- 		return status;
- 	}
--	rule_buf_sz = ICE_SW_RULE_RX_TX_NO_HDR_SIZE + profile.pkt_len;
-+	rule_buf_sz = ICE_SW_RULE_RX_TX_NO_HDR_SIZE + profile->pkt_len;
- 	s_rule = kzalloc(rule_buf_sz, GFP_KERNEL);
- 	if (!s_rule)
- 		return -ENOMEM;
-@@ -6096,7 +6097,7 @@ ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
- 	s_rule->pdata.lkup_tx_rx.recipe_id = cpu_to_le16(rid);
- 	s_rule->pdata.lkup_tx_rx.act = cpu_to_le32(act);
- 
--	status = ice_fill_adv_dummy_packet(lkups, lkups_cnt, s_rule, &profile);
-+	status = ice_fill_adv_dummy_packet(lkups, lkups_cnt, s_rule, profile);
- 	if (status)
- 		goto err_ice_add_adv_rule;
- 
-@@ -6104,7 +6105,7 @@ ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
- 	    rinfo->tun_type != ICE_SW_TUN_AND_NON_TUN) {
- 		status = ice_fill_adv_packet_tun(hw, rinfo->tun_type,
- 						 s_rule->pdata.lkup_tx_rx.hdr,
--						 profile.offsets);
-+						 profile->offsets);
- 		if (status)
- 			goto err_ice_add_adv_rule;
- 	}
--- 
-2.35.1
+Runtime suspend should be ok, as long as the driver holds a runpm
+reference whenever the hw needs to be awake.  The problem with system
+suspend (at least if you are using pm_runtime_force_suspend() or doing
+something equivalent) is that it bypasses the runpm reference.
+(Which, IMO, seems like a bad design..)
 
+> Also, could you point to a particular buggy scenario where the race
+> between SW shceduler and suspend is causing a problem ?
+
+I wrote a piglit test[1] to try to trigger this scenario.. it isn't
+really that easy to hit
+
+BR,
+-R
+
+[1] https://gitlab.freedesktop.org/mesa/piglit/-/merge_requests/643
+
+> Andrey
+>
+>
+> >
+> > BR,
+> > -R
+> >
+> >> Andrey
+> >>
+> >>
+> >>> BR,
+> >>> -R
