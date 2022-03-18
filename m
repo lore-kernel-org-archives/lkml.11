@@ -2,175 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CFA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 10:42:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27305C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 10:43:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235106AbiCRKnu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 06:43:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39600 "EHLO
+        id S235202AbiCRKoz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 06:44:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235609AbiCRKmt (ORCPT
+        with ESMTP id S233394AbiCRKox (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 06:42:49 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77D7E2E5189;
-        Fri, 18 Mar 2022 03:40:36 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id DE2A11F390;
-        Fri, 18 Mar 2022 10:40:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1647600034; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=eAuiFb+OsFON4yFjKLQAFK1dNFxRsTZb0OnrTTRn9u0=;
-        b=C32sGETYRNnx5Wr8LQxLIcbYrT0DnLCxlclsrJfisEggI2MYD0T8o8/CrHNpZcBjoK1VdT
-        IuD1+udT+EDwEVmHcfnZNIpGNuSCmV63GQW/SnEpa40zWyu7spaviICSz3zugBpPoOCc2r
-        PPqFl/cthhqlzZ1HPJOrpBbQGOKDa8k=
-Received: from suse.cz (unknown [10.100.224.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 46B10A3B8A;
-        Fri, 18 Mar 2022 10:40:34 +0000 (UTC)
-Date:   Fri, 18 Mar 2022 11:40:31 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Lecopzer Chen <lecopzer.chen@mediatek.com>
-Cc:     linux-kernel@vger.kernel.org, acme@kernel.org,
-        akpm@linux-foundation.org, alexander.shishkin@linux.intel.com,
-        catalin.marinas@arm.com, davem@davemloft.net, jolsa@redhat.com,
-        jthierry@redhat.com, keescook@chromium.org, kernelfans@gmail.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        linux-perf-users@vger.kernel.org, mark.rutland@arm.com,
-        masahiroy@kernel.org, matthias.bgg@gmail.com, maz@kernel.org,
-        mcgrof@kernel.org, mingo@redhat.com, namhyung@kernel.org,
-        nixiaoming@huawei.com, peterz@infradead.org,
-        sparclinux@vger.kernel.org, sumit.garg@linaro.org,
-        wangqing@vivo.com, will@kernel.org, yj.chiang@mediatek.com
-Subject: Re: [PATCH v2 4/5] kernel/watchdog: Adapt the watchdog_hld interface
- for async model
-Message-ID: <YjRhnxg3L3cHUU/l@alley>
-References: <20220307154729.13477-1-lecopzer.chen@mediatek.com>
- <20220307154729.13477-5-lecopzer.chen@mediatek.com>
+        Fri, 18 Mar 2022 06:44:53 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 044F39D4F5;
+        Fri, 18 Mar 2022 03:43:33 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id yy13so16229669ejb.2;
+        Fri, 18 Mar 2022 03:43:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+HJIH4AwD9mhOZx7mjtxfMP8PmXBGjgqbEfN/JeaejY=;
+        b=TZUTV/njW04HfdKUw7yc2OkbI6DNz7WXuRwtMDbUtS70fgPJFfvPeqyXM/AKIjKE5F
+         e/+mAatjqeIKdQFBGTk56f7yEF+se+uKKer0lytEW1p8bf14fiMWNOFYa3uOfCPb3uGj
+         q3KtvvqP/shZzOZ+SiQufDqLvYwIVp46X8FCyBYLT1tAi1koVzfmHyyVPt3N+prW+1Wj
+         /kPX/JBpR3WoosTD18t7Xbb19ZuUEQLjgcwu73cEAWZdXVsNxibHpwJTW++OVNvM4qnt
+         riBWRRR3D0EhV9cn+2ZGLSzyk8Apv1JXyH4XwgFaZqFyUmsR4NvDhVgU1rjuuGwVPYg1
+         N2Vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+HJIH4AwD9mhOZx7mjtxfMP8PmXBGjgqbEfN/JeaejY=;
+        b=qsttq3wX/tyEkDAChYgALvjzbxYmAqOoJ094SYOT3Tini5nRUtmMYWKgTWQHDPMm21
+         cbRNJAp5wGR5OhvzurydTpoEiLgr//nV9ChhvGDgy0hmltASga6/iY3fW1aIUOJPX9Rk
+         uC6+qDEk5VHzzOhRpUaKQ4/GMyMxCDpQbc+JmFpLA5tS/CSRBQ1TKTe/cha8GMVsB/MR
+         VoWSlsF0iyohBA+6ctr1t1N2f6QQJVBG2TdfNXN4qFKjJD7wUDDHa3u5j9PwozDXmphg
+         OnkO+3SggQEKvndGmznIgCT2xR4glfaLXIUCq5D6r3SIEwGAaDKwdD1JFVOZ+r+l/Wt7
+         X1SA==
+X-Gm-Message-State: AOAM533iJ9cPzkfKSTLKNLmPJG5vGPF2NDb5c3duqX8dOGcmlIbdJTJG
+        E77coFviGG+VqAQOqJO9lAgAcfJ9cfwboam9f6Q=
+X-Google-Smtp-Source: ABdhPJxZJqxItgMA2zu+j+BAAmm9H1YkRPxFlE9tV3eghTdZ2GMv9Q9AawPTB/6VPWasa8lt1A17VvEgmlAcBrryISs=
+X-Received: by 2002:a17:907:968e:b0:6db:aed5:43c8 with SMTP id
+ hd14-20020a170907968e00b006dbaed543c8mr8188137ejc.636.1647600211292; Fri, 18
+ Mar 2022 03:43:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220307154729.13477-5-lecopzer.chen@mediatek.com>
+References: <YjL4cEBXCQ1eSy48@smile.fi.intel.com> <20220317204126.GA723808@bhelgaas>
+In-Reply-To: <20220317204126.GA723808@bhelgaas>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 18 Mar 2022 12:42:18 +0200
+Message-ID: <CAHp75Veb4BqcGW=sCXEfrJ2ksvnXmjN-XZ5L6ttcQ8SJneg27w@mail.gmail.com>
+Subject: Re: [PATCH v1 1/1] PCI: Enable INTx quirk for ATI PCIe-USB adapter
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        micklorain@protonmail.com,
+        Alex Williamson <alex.williamson@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 2022-03-07 23:47:28, Lecopzer Chen wrote:
-> When lockup_detector_init()->watchdog_nmi_probe(), PMU may be not ready
-> yet. E.g. on arm64, PMU is not ready until
-> device_initcall(armv8_pmu_driver_init).  And it is deeply integrated
-> with the driver model and cpuhp. Hence it is hard to push this
-> initialization before smp_init().
+On Thu, Mar 17, 2022 at 11:12 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> On Thu, Mar 17, 2022 at 10:59:28AM +0200, Andy Shevchenko wrote:
+> > On Wed, Mar 16, 2022 at 04:15:48PM -0500, Bjorn Helgaas wrote:
+> > > On Wed, Mar 16, 2022 at 06:12:19PM +0200, Andy Shevchenko wrote:
+> > > > On Wed, Mar 16, 2022 at 06:52:09AM -0500, Bjorn Helgaas wrote:
+> > > > > On Wed, Mar 16, 2022 at 12:27:57PM +0200, Andy Shevchenko wrote:
+> > > > > > On Tue, Mar 15, 2022 at 03:22:31PM -0500, Bjorn Helgaas wrote:
+> > > > > > > On Tue, Mar 15, 2022 at 12:09:08PM +0200, Andy Shevchenko wrote:
+> > > > > > > > On Mon, Mar 14, 2022 at 02:42:53PM -0500, Bjorn Helgaas wrote:
+> > > > > > > > > On Mon, Mar 14, 2022 at 12:14:48PM +0200, Andy Shevchenko wrote:
+> > > > > > > > > > ATI PCIe-USB adapter advertises MSI, but it doesn't work
+> > > > > > > > > > if INTx is disabled.  Enable the respective quirk as
+> > > > > > > > > > it's done for other ATI devices on this chipset,
+> > > > > > > > > >
+> > > > > > > > > > Fixes: 306c54d0edb6 ("usb: hcd: Try MSI interrupts on
+> > > > > > > > > > PCI devices")
+> > >
+> > > > > > > Anyway, I applied this to pci/msi for v5.18 with the following
+> > > > > > > commit log:
+> > > > > > >
+> > > > > > >     PCI: Disable broken MSI on ATI SB600 USB adapters
+> > > > > > >
+> > > > > > >     Some ATI SB600 USB adapters advertise MSI, but MSI doesn't
+> > > > > > >     work if INTx is disabled.  Disable MSI on these adapters.
+> > > > > >
+> > > > > > But IIUC MSI is _not_ disabled. That's why I have issued this
+> > > > > > version of the patch with different commit message. Did I
+> > > > > > misunderstand something?
+> > > > >
+> > > > > Oh, right, of course.  Sorry, I was asleep at the wheel.
+> > > >
+> > > > Are you going to fix that?
+> > >
+> > > Yes, of course, I'll do something with the commit message after we
+> > > figure out how to handle PCI_COMMAND_INTX_DISABLE.
+> > >
+> > > > > I guess it's just that for these devices, we don't disable INTx
+> > > > > when enabling MSI.  I can't remember why we disable INTx when
+> > > > > enabling MSI, but it raises the question of whether it's better to
+> > > > > leave INTx enabled or to just disable use of MSI completely.
+> > > >
+> > > > It's required by specification to disable INTx if I read 6.1.4.3
+> > > > Enabling Operation correctly.
+> > >
+> > > Thanks for the reference; I was looking for something like that.  But
+> > > I don't think this section requires us to set
+> > > PCI_COMMAND_INTX_DISABLE.  For the benefit of folks without the spec,
+> > > PCIe r6.0, sec 6.1.4.3 says:
+> > >
+> > >   To maintain backward compatibility, the MSI Enable bit in the
+> > >   Message Control Register for MSI and the MSI-X Enable bit in the
+> > >   Message Control Register for MSI-X are each Clear by default (MSI
+> > >   and MSI-X are both disabled). System configuration software Sets one
+> > >   of these bits to enable either MSI or MSI-X, but never both
+> > >   simultaneously. Behavior is undefined if both MSI and MSI-X are
+> > >   enabled simultaneously. Software disabling either mechanism during
+> > >   active operation may result in the Function dropping pending
+> > >   interrupt conditions or failing to recognize new interrupt
+> > >   conditions. While enabled for MSI or MSI-X operation, a Function is
+> > >   prohibited from using INTx interrupts (if implemented) to request
+> > >   service (MSI, MSI-X, and INTx are mutually exclusive).
+> > >
+> > > The only *software* constraints I see are (1) software must never
+> > > enable both MSI and MSI-X simultaneously, and (2) if software disables
+> > > MSI or MSI-X during active operation, the Function may fail to
+> > > generate an interrupt when it should.
+> > >
+> > > I read the last sentence as a constraint on the *hardware*: if either
+> > > MSI or MSI-X is enabled, the Function is not allowed to use INTx,
+> > > regardless of the state of PCI_COMMAND_INTX_DISABLE.
+> > >
+> > > I searched the spec for "Interrupt Disable", looking for situations
+> > > where software might be *required* to set it, but I didn't see
+> > > anything.
+> > >
+> > > I suspect "Interrupt Disable" was intended to help the OS stop all
+> > > activity from a device during hot-plug or reconfiguration, as hinted
+> > > at in sec 6.4, "Device Synchronization":
+> > >
+> > >   The ability of the driver and/or system software to block new
+> > >   Requests from the device is supported by the Bus Master Enable,
+> > >   SERR# Enable, and Interrupt Disable bits in the Command register
+> > >   (Section 7.5.1.1.3) of each device Function, and other such control
+> > >   bits.
+> > >
+> > > So I'm trying to figure out why when enabling MSI we need to set
+> > > PCI_COMMAND_INTX_DISABLE for most devices, but it's safe to skip that
+> > > for these quirked devices.
+> >
+> > I guess it's wrong wording in the last paragraph. It's not safe, but it's
+> > _required_ since HW doesn't follow PCI specification that clearly says:
+> > "MSI, MSI-X, and INTx are mutually exclusive".
+>
+> I agree there's a defect in these SB600 devices.  My guess is that
+> PCI_COMMAND_INTX_DISABLE actually disables both INTx and MSI, when
+> it's only supposed to disable INTx.
+>
+> I'm pretty sure the spec doesn't actually require software to set
+> Interrupt Disable when enabling MSI, since MSI was added in PCI r2.2,
+> which included this text in sec 6.8.2:
+>
+>   System configuration software sets [the MSI Enable] bit to enable
+>   MSI. ...  Once enabled, a function is prohibited from using its
+>   INTx# pin (if implemented) to request service (MSI and INTx# are
+>   mutually exclusive).
+>
+> and Interrupt Disable was added later, in PCI r2.3, with no mention of
+> a connection with MSI.  All the specs from PCI r2.2 to PCIe r6.0
+> include the text above about not using INTx# if MSI or MSI-X is
+> enabled, but that's not the same as requiring software to set
+> Interrupt Disable.  Linux has set Interrupt Disable when enabling MSI
+> ever since MSI support was added [1], so I would hesitate to change
+> that even though I don't think it's required.
 
-The above is clear.
+Thanks for diving into the history of the specification. What I learnt
+about any of the specifications is that it usually has a lot of
+implications that are only understandable (known) to the specification
+author(s). This gives a room of misinterpretation. In any case I
+usually apply my common sense denominator, so I try to go with the
+straight logic. In this case it seems to me that keeping both enabled
+is illogical and Linux does the right thing (means the author of the
+Linux kernel implementation is on the same page with me).
 
-> But it is easy to take an opposite approach by enabling watchdog_hld to
-> get the capability of PMU async.
-> 
-> The async model is achieved by expanding watchdog_nmi_probe() with
-> -EBUSY, and a re-initializing work_struct which waits on a wait_queue_head.
+> What I don't like about PCI_DEV_FLAGS_MSI_INTX_DISABLE_BUG is that it
+> changes the generic code path in a sort of random way, i.e., this
+> device becomes yet another special case in how we handle Interrupt
+> Disable.
+>
+> What would you think about just setting pdev->no_msi instead, so we
+> don't try to use MSI at all on these devices?  I think that's what we
+> did before 306c54d0edb6.
 
-These two paragraphs are a bit confusing to me. It might be just a
-problem with translation. I am not a native speaker. Anyway, I wonder
-if the following is more clear:
+Yes, we did. But why should we go this way if it already established a
+special case disregarding my patch(es)? If you want to do that you
+need to explain why other devices on the same chipset should enable
+MSI and what's wrong with enabling MSI on the USB devices. My
+understanding is that the MSI is a good thing to have due to
+performance benefits and taking into account other devices that have
+already been using it on the other devices of the same chipset tells
+me that's okay. Moreover, the reporter of the bug confirmed that MSI
+works for them after applying this quirk fix.
 
-<proposal>
-But it is easy to take an opposite approach and try to initialize
-the watchdog once again later.
+> [1] https://lore.kernel.org/all/200310032215.h93MFnjT005788@snoqualmie.dp.intel.com/ (search for PCI_COMMAND_INTX_DISABLE)
 
-The delayed probe is called using workqueues. It need to allocate
-memory and must be proceed in a normal context.
-
-The delayed probe is queued only when the early one returns -EBUSY.
-It is the return code returned when PMU is not ready yet.
-</proposal>
-
-> --- a/kernel/watchdog.c
-> +++ b/kernel/watchdog.c
-> @@ -103,7 +103,11 @@ void __weak watchdog_nmi_disable(unsigned int cpu)
->  	hardlockup_detector_perf_disable();
->  }
->  
-> -/* Return 0, if a NMI watchdog is available. Error code otherwise */
-> +/*
-> + * Arch specific API. Return 0, if a NMI watchdog is available. -EBUSY if not
-> + * ready, and arch code should wake up hld_detector_wait when ready. Other
-> + * negative value if not support.
-> + */
-
-I wonder if the following is slightly more clear:
-
- /*
- * Arch specific API.
- *
- * Return 0 when NMI watchdog is available, negative value otherwise.
- * The error code -EBUSY is special. It means that a deferred probe
- * might succeed later.
- */
-
->  int __weak __init watchdog_nmi_probe(void)
->  {
->  	return hardlockup_detector_perf_init();
-> @@ -839,16 +843,70 @@ static void __init watchdog_sysctl_init(void)
->  #define watchdog_sysctl_init() do { } while (0)
->  #endif /* CONFIG_SYSCTL */
->  
-> +static void lockup_detector_delay_init(struct work_struct *work);
-> +bool lockup_detector_pending_init __initdata;
-> +
-> +struct wait_queue_head hld_detector_wait __initdata =
-> +		__WAIT_QUEUE_HEAD_INITIALIZER(hld_detector_wait);
-> +
-> +static struct work_struct detector_work __initdata =
-> +		__WORK_INITIALIZER(detector_work, lockup_detector_delay_init);
-> +
-> +static void __init lockup_detector_delay_init(struct work_struct *work)
-> +{
-> +	int ret;
-> +
-> +	wait_event(hld_detector_wait,
-> +			lockup_detector_pending_init == false);
-> +
-> +	/*
-> +	 * Here, we know the PMU should be ready, so set pending to true to
-> +	 * inform watchdog_nmi_probe() that it shouldn't return -EBUSY again.
-> +	 */
-> +	lockup_detector_pending_init = true;
-
-This does not make sense to me. We are here only when:
-
-   1. lockup_detector_init() queued this work.
-
-   2. Someone cleared @lockup_detector_pending_init and woke the
-      worker via wait_queue. IT might be either PMU init code
-      or the late lockup_detector_check().
-
-watchdog_nmi_probe() might still return -EBUSY when PMU init failed.
-
-If you wanted to try the delayed probe once again (3rd attempt) from
-lockup_detector_check(), you would need to queue the work once again.
-But you need to be sure that lockup_detector_check() was not called
-yet. Otherwise, the 2nd work might wait forewer.
-
-IMHO, it is not worth the complexity.
-
-> +	ret = watchdog_nmi_probe();
-> +	if (ret) {
-> +		pr_info("Delayed init of the lockup detector failed: %d\n", ret);
-> +		pr_info("Perf NMI watchdog permanently disabled\n");
-> +		return;
-> +	}
-> +
-> +	nmi_watchdog_available = true;
-> +	lockup_detector_setup();
-> +	lockup_detector_pending_init = false;
-> +}
-
-Otherwise, it looks good to me.
-
-Best Regards,
-Petr
+-- 
+With Best Regards,
+Andy Shevchenko
