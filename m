@@ -2,188 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DAD6C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 11:38:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A5FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 11:38:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235897AbiCRLj5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 07:39:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38078 "EHLO
+        id S235911AbiCRLkB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 07:40:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231700AbiCRLjx (ORCPT
+        with ESMTP id S235895AbiCRLj5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 07:39:53 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B8F3BA51;
-        Fri, 18 Mar 2022 04:38:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647603513; x=1679139513;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=O5FuuxYpqH/foZrUx6QBGb2sEHLyW+YILMLdMR3/lLY=;
-  b=UdcHY4lFrc6YZ5buTbNuEZJKGDN+g+p2NlYtctdBIg8KU0HsH0MSMGcg
-   CCT/rkcoqqzcgVmn7Pvuz8NoCPv8ujMRFSgfjnxM1bqV/Ca5hNYvoLl7H
-   gBwuU97/rEt2DfMLQq1yl6VCZW+N8W3R9vKNOLBqIC3YIy6bENrG0D8sR
-   KjfxUsIGG1bOJY47fFI5b4J3DewTZbNgtPK9lUWB/iHCYntFPOi5LTYCM
-   fcUavqx8ZNxAxFL+2NpS0AHa6Q+UmiChAxzhCU+vFHzSQKUA0A0YgEeNb
-   kL4dAjJZD30bRqg9DNz1kCe4m/Okg+kztKMRktIG+eeUDIDOeyKlnZNEE
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="237730982"
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="237730982"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 04:38:32 -0700
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="558393589"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 04:38:29 -0700
-Received: by lahna (sSMTP sendmail emulation); Fri, 18 Mar 2022 13:38:26 +0200
-Date:   Fri, 18 Mar 2022 13:38:26 +0200
-From:   "mika.westerberg@linux.intel.com" <mika.westerberg@linux.intel.com>
-To:     "Limonciello, Mario" <Mario.Limonciello@amd.com>
-Cc:     Robin Murphy <robin.murphy@arm.com>,
-        "andreas.noever@gmail.com" <andreas.noever@gmail.com>,
-        "michael.jamet@intel.com" <michael.jamet@intel.com>,
-        "YehezkelShB@gmail.com" <YehezkelShB@gmail.com>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
-Subject: Re: [PATCH] thunderbolt: Make iommu_dma_protection more accurate
-Message-ID: <YjRvMk1kcbMwJvx+@lahna>
-References: <2d01fa50c2650c730b0244929097737918e302e7.1647533152.git.robin.murphy@arm.com>
- <BL1PR12MB515783C0F998169D49D92A55E2129@BL1PR12MB5157.namprd12.prod.outlook.com>
- <BL1PR12MB51573F55B3C2B3922BAAA7F1E2129@BL1PR12MB5157.namprd12.prod.outlook.com>
+        Fri, 18 Mar 2022 07:39:57 -0400
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60069.outbound.protection.outlook.com [40.107.6.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A65E94D60A;
+        Fri, 18 Mar 2022 04:38:37 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WcGlC6omj2wngaCqgYS4IKY8MJWpszHpz5I3CjtmFevIEsBHCpqEeae0kAdp7OjzFN+gq1kB7ZW3klm3ECMDZCnEW+0s5eYeDHXpnNI8avEvaN9IDh+v4H5u1gFRePuMPLOjPvD5ZXRMix20ZToiX9bdqnIUf0rrpOcWxCZjaH0owNkPMXujtUE/HiiewISSQw0dS+hj8UQVCZNcCZ/ac6SK4wpIgd0zpSwBYH0DiS4upBiHEozwpUsD7PWdMpDFDpewI8xQ6mYGN1u/Bt3AetQbSkRsj8TPD9QEsSjdOYkH2KXZ/+95LP06bKBVIT+Ny/TFxNTBoxigtvIy+ZptRA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=z7rupZoWa/v0V9YObLFPqvkVKkrDXmmtfL7PG1X4EnI=;
+ b=JgldeKw0gOUXjd+QRFvSrFOPWud58c9TD2TBzuDgeBB8J9El7ZsXg3Nl2LEMNSjxNGNqgVZaRJTXeIDUgpA0LYuEBQonVh5YZ+vm2Tz45IMHIvVR2u30fz2dwb7MvRa5YABozOJinuzoZgmhp6E2iAmeqQ8d2/HHTnEp+5+8IkbMuyEXdxuVT/zaLWgOcU0hxlC5OaaXVUARZ9KF1R/LUtccKOyMKX3kEsD6WFvuqVxRWv9HnJ4ZwTp2sOXKke32DsM4Uq0nWknUvrFF0jN+Zg3znFGrESmgFEzxk1KTkGvvlwQfYcsoKGeitROzAaWze9xfex7Hu0rEB4RG6Esgmw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=z7rupZoWa/v0V9YObLFPqvkVKkrDXmmtfL7PG1X4EnI=;
+ b=fxvFUs/4T1rXBCizjhs9wdGxTNdd557Ql0o3Ydxqmz4WMlH3EaWQg903NXEeh8fEB5aOd7xek5WYXWAROZZs/JW4NJSQ9rNzbw6KwLHj5vKcbQFZO2tpTtN30ot/MqfkyTQZhueEWupAHDTssj9hFxOOJopNVe2qjOlK2ZxoNaI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
+ by AS8PR04MB8483.eurprd04.prod.outlook.com (2603:10a6:20b:34b::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.18; Fri, 18 Mar
+ 2022 11:38:35 +0000
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::6972:1f59:5d1c:e557]) by AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::6972:1f59:5d1c:e557%5]) with mapi id 15.20.5081.018; Fri, 18 Mar 2022
+ 11:38:35 +0000
+From:   Sherry Sun <sherry.sun@nxp.com>
+To:     robh+dt@kernel.org, krzk+dt@kernel.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-imx@nxp.com
+Subject: [PATCH] arm64: dts: imx8mp: add ddr controller node to support EDAC on imx8mp
+Date:   Fri, 18 Mar 2022 19:35:26 +0800
+Message-Id: <20220318113526.15986-1-sherry.sun@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: SI2P153CA0028.APCP153.PROD.OUTLOOK.COM (2603:1096:4:190::9)
+ To AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BL1PR12MB51573F55B3C2B3922BAAA7F1E2129@BL1PR12MB5157.namprd12.prod.outlook.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b38cc238-7577-4933-3213-08da08d3d648
+X-MS-TrafficTypeDiagnostic: AS8PR04MB8483:EE_
+X-Microsoft-Antispam-PRVS: <AS8PR04MB8483BA7BB2205E5F6228338392139@AS8PR04MB8483.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: NvzdGkFS8W/gh01FqbBeBMvoMmdaWmnlHdpQNx4iAgXrSQm5dxg+89opMvKRCkiLjh5CKz6Y4US+O7xRt3OpGf95qk0KDv7ruF0TWp3CEdThYEcVAILuKgXoJQIZbIC6fHZ7XJTj6tVkGJmymKjY5/gp5AHjPya9wqb51+6QkIPIAhL5mPoJYxQ2YMMWU22Om2z1KeBYYkJYcT94DImXSg2ZGxItQkQF88/I69n+CCqiyuSONUjNjNE8XGp2FdCxTXlifgwa6XsiejWD4NM+MhbWRbmxUfelCZJ01rcCLLxYCktM0QnCqFrDmRGraQE99JDtzhzyT4nU69y/4AECjF4rAq6ydS0BWxNv/mM1EWBg1X6feQdLXn+6aqQozmdO26hPQts/Jf8EmpNZjxWOW1ZMsI4ao+YUvLDQpzutBJS+4ygxw6QEIc+oM4L24dz7tdbthf+8n0tfPqPeewE+ibR+QzaMCFexstObFYzneVfA3Y4vT5fulpnWBh8k49Q+4xwTVY4rru+MUgsOubqiCsNJ3m3WdC/eRyX3Y16FJ533T1mMcDkbxhsQO/khVr9H/PdUuh6ttZ4CwhxMlFJTygL90/mY5HWZ/fyOyaUTQE72qRV0jPI3T4dYYnMhwrO0au1+HKKOtJ4ogVXKOFR+f8xXAPwQ9QnvJYT7SWLt0Q8n/d5oUzye2aeBH+hytUm5FY/NLbeML9+RmUEU/SvOKMfqNjBaHFFgIjDjIXZ2Hk8=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(26005)(186003)(2616005)(1076003)(316002)(2906002)(38350700002)(38100700002)(86362001)(36756003)(6512007)(8936002)(6486002)(4744005)(44832011)(4326008)(8676002)(66946007)(508600001)(66476007)(66556008)(6506007)(52116002)(5660300002)(6666004)(32563001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9ikqoxkEReQvjrAGDG1jcGVhWbqcawkmZ/VpnacPc5pWNMZ+tpukYL1l1/m3?=
+ =?us-ascii?Q?gNKFvXWj7OLdJGGANigSCtYMLqqNlPmmZm1yjNdCTCT33bJ7da84+RPtkhJI?=
+ =?us-ascii?Q?64tKfrrIcaYFQZvKDPFjAiIEvLqpaYQ3G2P7/nVrTS4JudEaSLdAuN1TeMkZ?=
+ =?us-ascii?Q?hg8htAH5AUiV3N26YEdkUpJhf6NUFSCWTiu/mgmELgadBLb+Ix96gNWYL1rs?=
+ =?us-ascii?Q?vYbacwdvjFXz9KzT8pJr3Zetmb+5MU0y9xpe2bjsO5ltX05FhxJ/ZNHsRcsd?=
+ =?us-ascii?Q?5kmmkAW+y6Pb+qd/suTVIOiapinFHmEG/jMonXoj2IAfiJ5EfkXb8PrjM1XJ?=
+ =?us-ascii?Q?iXtX3gViJ0wKGY0zROP2snfHfd8IfrWlkRp9tYOGzFzZGDTeeA0zZP+pofhK?=
+ =?us-ascii?Q?IhlsSt318GFuUBSNSF5GZBvDBcNxnoV32hrMDp9vPE6m1pbqYIBNCkFxKuXn?=
+ =?us-ascii?Q?wQDeT/xZDIpNVzJXf8HHvKiqxb0eSiIs3v1oBEl7JjcLuuRberD5f2sVXGLp?=
+ =?us-ascii?Q?ZqxQSVhxnz+vGNHeOXQOaVVSz6NukmYNXInh2ZDG/N3uHHuRKNSfyWqGHZok?=
+ =?us-ascii?Q?ga9g3cxtpFSubAkAmIsdfqDba1Tgx/vz6yH4wnYKzi4t01cMyHna6y42t+7Q?=
+ =?us-ascii?Q?MH8lLCfREme/fr4tEyKMbs4b5ohlQs0RVumRnCzGIQItMGiEV06GxKMiL9Ue?=
+ =?us-ascii?Q?Xnn7FlFPLpmqxH7iWcNUmtKTrT0wvTHCyV2lKnEbPg1SAF30zxU2wJxMUJF2?=
+ =?us-ascii?Q?JZWZifZdIns1FmnIqEqxqPq0loShg2sHgjju3GCYMMT7iqtYLYuKvibLSZpH?=
+ =?us-ascii?Q?HXdwr5v/KnWdFZI4XjmA23K/OdBfkqO2xIRXMDs6CMBy2kc83rA7L3LD++cu?=
+ =?us-ascii?Q?ebTOOolUxc7tJv2C42vIMkfvk1Q28aFFf0qBmR6dbtJkVJES3YQnW4HUIqu9?=
+ =?us-ascii?Q?aOwRehNgeLDzJJMnZjGUPqEUiKFIffsGFUX3srjiLUHg5gJUJiG/HHT2hSEh?=
+ =?us-ascii?Q?O1j3ogqFvsaX/DHJAtNYco8kRO6Btx2LIRf+51NEh1JTsFvim2ZfX2m7lgUF?=
+ =?us-ascii?Q?z0EB9jgeOl4k+K4Qz7+X/xDDuJodc9DjG1Dkwt3WNPavAGZD0kDdTic7kzFn?=
+ =?us-ascii?Q?EtNMEIRtkxt+1msfXGx8vJrsvPI8FGaAtBHSagML8fOZHtPZxcS5EfeG8G4G?=
+ =?us-ascii?Q?HFn0rXX4Mz0ADEPzECxhMQP89dvSbxMMnDHk9kPrUA6Eo69ubecQzc2hBHfj?=
+ =?us-ascii?Q?X1dog2d8nk7dNrsUlGtuWkdUzoYh8/86Vw/KJ4FZ0hU7+tD+3IsblN6CKXRa?=
+ =?us-ascii?Q?L9qyoHQC1fK7pk5PfuE1KEapPfsk8c7nMUBiRQ4H+hf3Wwq3EvD+ZsFN7kSd?=
+ =?us-ascii?Q?Yx8QTw1uRbw5dzUJxKyRQSJqDEAue5ZlDPKDFxVtPNp2V8OHs50O3y/43k2S?=
+ =?us-ascii?Q?vgHrR30YmVeUQ7aBZdH1rGXqgP32AjU4?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b38cc238-7577-4933-3213-08da08d3d648
+X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2022 11:38:35.5649
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: CkkRegA5Ofl9dF+H2GqzxOC27PARz4K409tYVxJOi861eYGfKVu6e4R71txnXtuBJRvyAa2X1hB5o0CaN011bQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8483
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mario,
+i.MX8MP use synopsys V3.70a ddr controller IP, so add edac support
+for i.MX8MP based on "snps,ddrc-3.80a" synopsys edac driver.
 
-On Thu, Mar 17, 2022 at 08:36:13PM +0000, Limonciello, Mario wrote:
-> Here is a proposal on top of what you did for this.  
-> The idea being check the ports right when the links are made if they exist 
-> (all the new USB4 stuff) and then check all siblings on TBT3 stuff.
-> 
-> diff --git a/drivers/thunderbolt/acpi.c b/drivers/thunderbolt/acpi.c
-> index 79b5abf9d042..89432456dbea 100644
-> --- a/drivers/thunderbolt/acpi.c
-> +++ b/drivers/thunderbolt/acpi.c
-> @@ -14,6 +14,7 @@
->  static acpi_status tb_acpi_add_link(acpi_handle handle, u32 level, void *data,
->                                     void **return_value)
->  {
-> +       enum nhi_iommu_status iommu_status = IOMMU_UNKNOWN;
->         struct fwnode_reference_args args;
->         struct fwnode_handle *fwnode;
->         struct tb_nhi *nhi = data;
-> @@ -91,6 +92,8 @@ static acpi_status tb_acpi_add_link(acpi_handle handle, u32 level, void *data,
->                 if (link) {
->                         dev_dbg(&nhi->pdev->dev, "created link from %s\n",
->                                 dev_name(&pdev->dev));
-> +                       if (iommu_status != IOMMU_DISABLED)
-> +                               iommu_status = nhi_check_iommu_for_port(pdev);
->                 } else {
->                         dev_warn(&nhi->pdev->dev, "device link creation from %s failed\n",
->                                  dev_name(&pdev->dev));
-> @@ -101,6 +104,7 @@ static acpi_status tb_acpi_add_link(acpi_handle handle, u32 level, void *data,
-> 
->  out_put:
->         fwnode_handle_put(args.fwnode);
-> +       nhi->iommu_dma_protection = (iommu_status == IOMMU_ENABLED);
->         return AE_OK;
->  }
-> 
-> diff --git a/drivers/thunderbolt/nhi.c b/drivers/thunderbolt/nhi.c
-> index e12c2e266741..b5eb0cab392f 100644
-> --- a/drivers/thunderbolt/nhi.c
-> +++ b/drivers/thunderbolt/nhi.c
-> @@ -1103,10 +1103,30 @@ static void nhi_check_quirks(struct tb_nhi *nhi)
->                 nhi->quirks |= QUIRK_AUTO_CLEAR_INT;
->  }
-> 
-> +enum nhi_iommu_status nhi_check_iommu_for_port(struct pci_dev *pdev)
-> +{
-> +       if (!pci_is_pcie(pdev) ||
-> +           !(pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT ||
-> +            pci_pcie_type(pdev) == PCI_EXP_TYPE_DOWNSTREAM)) {
-> +               return IOMMU_UNKNOWN;
-> +       }
-> +
-> +       if (!device_iommu_mapped(&pdev->dev)) {
-> +               return IOMMU_DISABLED;
-> +       }
-> +
-> +       if (!pdev->untrusted) {
-> +               dev_info(&pdev->dev,
-> +                       "Assuming unreliable Kernel DMA protection\n");
-> +               return IOMMU_DISABLED;
-> +       }
-> +       return IOMMU_ENABLED;
-> +}
-> +
->  static void nhi_check_iommu(struct tb_nhi *nhi)
->  {
-> -       struct pci_dev *pdev;
-> -       bool port_ok = false;
-> +       enum nhi_iommu_status iommu_status = nhi->iommu_dma_protection ?
-> +                                       IOMMU_ENABLED : IOMMU_UNKNOWN;
-> 
->         /*
->          * Check for sibling devices that look like they should be our
-> @@ -1117,23 +1137,13 @@ static void nhi_check_iommu(struct tb_nhi *nhi)
->          * otherwise even if translation is enabled for existing devices it
->          * may potentially be overridden for a future tunnelled endpoint.
->          */
-> -       for_each_pci_bridge(pdev, nhi->pdev->bus) {
-> -               if (!pci_is_pcie(pdev) ||
-> -                   !(pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT ||
-> -                     pci_pcie_type(pdev) == PCI_EXP_TYPE_DOWNSTREAM))
-> -                       continue;
-> -
-> -               if (!device_iommu_mapped(&pdev->dev))
-> -                       return;
-> -
-> -               if (!pdev->untrusted) {
-> -                       dev_info(&nhi->pdev->dev,
-> -                                "Assuming unreliable Kernel DMA protection\n");
-> -                       return;
-> -               }
-> -               port_ok = true;
-> +       if (iommu_status == IOMMU_UNKNOWN) {
-> +               struct pci_dev *pdev;
-> +               for_each_pci_bridge(pdev, nhi->pdev->bus)
-> +                       if (iommu_status != IOMMU_DISABLED)
-> +                               iommu_status = nhi_check_iommu_for_port(pdev);
->         }
-> -       nhi->iommu_dma_protection = port_ok;
-> +       nhi->iommu_dma_protection = (iommu_status == IOMMU_ENABLED);
->  }
-> 
->  static int nhi_init_msi(struct tb_nhi *nhi)
-> 
-> diff --git a/drivers/thunderbolt/nhi.h b/drivers/thunderbolt/nhi.h
-> index 69083aab2736..1622d49b1763 100644
-> --- a/drivers/thunderbolt/nhi.h
-> +++ b/drivers/thunderbolt/nhi.h
-> @@ -11,6 +11,13 @@
-> 
->  #include <linux/thunderbolt.h>
-> 
-> +enum nhi_iommu_status {
-> +       IOMMU_UNKNOWN,
-> +       IOMMU_DISABLED,
-> +       IOMMU_ENABLED,
-> +};
-> +enum nhi_iommu_status nhi_check_iommu_for_port(struct pci_dev *pdev);
-> +
+Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+---
+ arch/arm64/boot/dts/freescale/imx8mp.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-This adds quite a lot code and complexity, and honestly I would like to
-keep it as simple as possible (and this is not enough because we need to
-make sure the DMAR bit is there so that none of the possible connected
-devices were able to overwrite our memory already).
+diff --git a/arch/arm64/boot/dts/freescale/imx8mp.dtsi b/arch/arm64/boot/dts/freescale/imx8mp.dtsi
+index 794d75173cf5..a6124a11d6ee 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mp.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mp.dtsi
+@@ -902,6 +902,12 @@
+ 			interrupt-parent = <&gic>;
+ 		};
+ 
++		edacmc: memory-controller@3d400000 {
++			compatible = "snps,ddrc-3.80a";
++			reg = <0x3d400000 0x400000>;
++			interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>;
++		};
++
+ 		ddr-pmu@3d800000 {
+ 			compatible = "fsl,imx8mp-ddr-pmu", "fsl,imx8m-ddr-pmu";
+ 			reg = <0x3d800000 0x400000>;
+-- 
+2.17.1
+
