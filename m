@@ -2,174 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9844C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 07:20:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2C99C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 07:21:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233007AbiCRHVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 03:21:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53498 "EHLO
+        id S233018AbiCRHWr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 03:22:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229650AbiCRHVm (ORCPT
+        with ESMTP id S232971AbiCRHWo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 03:21:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 69B502B8827
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 00:20:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647588023;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+24uwlQGfg14hQYJfSh/53X6TSpkqAT/khxrLaLZ2Lc=;
-        b=f3G9R6xA4/jhMTUQYQZoGxCgf/OH0AJQG97D2mm9LvfChSKw/if1vfRmyMXHDWpEM6QY2X
-        D/axEjqGI9rsHgbqOlOWHlPAeUD4jjmFuOrzmQteQQc1Mw1lSnP5buDAHcY5u0DfD1+92I
-        jT2CP6mwW1PrbyYy/DwXKVBOgKVdrro=
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
- [209.85.216.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-53-aVksJ_DKNoCREJZaUGEQFg-1; Fri, 18 Mar 2022 03:20:22 -0400
-X-MC-Unique: aVksJ_DKNoCREJZaUGEQFg-1
-Received: by mail-pj1-f69.google.com with SMTP id d7-20020a17090ad98700b001c6834c71ffso2393386pjv.1
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 00:20:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+24uwlQGfg14hQYJfSh/53X6TSpkqAT/khxrLaLZ2Lc=;
-        b=sDGkbOo6T06PEVGr7Q6yuFXqmvuFbMm4a2oCcahsDkwNc0m20GVj1JD/fW5qDN/9y1
-         RfEMOvvHJvaeprvI0FQguIB8yvLYEW7OkjDy9FWHRi4wRs+QfQ+rEepN0hsjEoeVXxvL
-         4n2KCAoHcmI5wd7dwAScyKRstOwnSY8aNaCXr2S0RAQrjThtKcHfrZ7LJH6RSYy6fP0g
-         re2s2/rRsNunMGECnB9AEKoedEcevFMZvqd/wJj0DkVAqZ/+Qon7H/k0nYdHSXS+rZm/
-         thiZCreUZWb0kaSoCnXRUdgVHHgHHdIFCz4zAZEleMCCOPUQ2XOKyFshccn5KjzpaFh3
-         xjcA==
-X-Gm-Message-State: AOAM5313HhzhnyCUIx03BzZ8qVN272HMHppru7i0cRwt8VWHQFNPFaIt
-        B0PM0abod8xHAmw2o8hGx19XXTWyp4Jql5UOtHvO6SAPjDTpyhbUw6xxvneAR9p0lOJNcU2wbJX
-        3a9iAkKNKaxeYKf3YoHwp0oGV
-X-Received: by 2002:a17:902:9b92:b0:153:99b1:1e94 with SMTP id y18-20020a1709029b9200b0015399b11e94mr8839844plp.2.1647588020967;
-        Fri, 18 Mar 2022 00:20:20 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy9Km9O8/P3mK5wn3uIW+zCeYpBsOqzvKmwY8+qMwFLV2pOroryTl/thhqanK4bFwNobKi/xQ==
-X-Received: by 2002:a17:902:9b92:b0:153:99b1:1e94 with SMTP id y18-20020a1709029b9200b0015399b11e94mr8839819plp.2.1647588020569;
-        Fri, 18 Mar 2022 00:20:20 -0700 (PDT)
-Received: from localhost ([240e:3a1:2e5:800:f995:6136:f760:a3d0])
-        by smtp.gmail.com with ESMTPSA id j11-20020a056a00234b00b004f7463022absm8617617pfj.208.2022.03.18.00.20.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Mar 2022 00:20:19 -0700 (PDT)
-Date:   Fri, 18 Mar 2022 15:18:24 +0800
-From:   Coiby Xu <coxu@redhat.com>
-To:     Baoquan He <bhe@redhat.com>
-Cc:     Coiby Xu <coiby.xu@gmail.com>, kexec@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        Dave Young <dyoung@redhat.com>, Will Deacon <will@kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [RESEND PATCH v3 1/3] kexec: clean up
- arch_kexec_kernel_verify_sig
-Message-ID: <20220318071824.yq3idr5eoogvtslb@Rk>
-References: <20220304020341.85583-1-coiby.xu@gmail.com>
- <20220304020341.85583-2-coiby.xu@gmail.com>
- <YjMtb7u3/sAWG0/7@MiWiFi-R3L-srv>
- <20220318024803.pkkwgknwur2y75mt@Rk>
- <YjP8DTnAZbq646rF@MiWiFi-R3L-srv>
+        Fri, 18 Mar 2022 03:22:44 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C0872B882C;
+        Fri, 18 Mar 2022 00:21:26 -0700 (PDT)
+Received: from kwepemi100009.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KKb1p008Nz9sfJ;
+        Fri, 18 Mar 2022 15:17:33 +0800 (CST)
+Received: from kwepemm600004.china.huawei.com (7.193.23.242) by
+ kwepemi100009.china.huawei.com (7.221.188.242) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 18 Mar 2022 15:21:24 +0800
+Received: from [10.174.177.238] (10.174.177.238) by
+ kwepemm600004.china.huawei.com (7.193.23.242) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 18 Mar 2022 15:21:23 +0800
+Message-ID: <165cff82-6210-9acf-c104-b6cae5d2a92e@huawei.com>
+Date:   Fri, 18 Mar 2022 15:21:23 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <YjP8DTnAZbq646rF@MiWiFi-R3L-srv>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.0.2
+Subject: Re: [PATCH] iomap: fix an infinite loop in iomap_fiemap
+To:     "Darrick J. Wong" <djwong@kernel.org>
+CC:     <willy@infradead.org>, <viro@zeniv.linux.org.uk>,
+        <linux-fsdevel@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <houtao1@huawei.com>, <fangwei1@huawei.com>,
+        <hsiangkao@linux.alibaba.com>
+References: <20220315065745.3441989-1-guoxuenan@huawei.com>
+ <20220317220511.GA8182@magnolia>
+From:   Guo Xuenan <guoxuenan@huawei.com>
+In-Reply-To: <20220317220511.GA8182@magnolia>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.238]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600004.china.huawei.com (7.193.23.242)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 11:27:09AM +0800, Baoquan He wrote:
->On 03/18/22 at 10:48am, Coiby Xu wrote:
->> On Thu, Mar 17, 2022 at 08:45:35PM +0800, Baoquan He wrote:
->> > On 03/04/22 at 10:03am, Coiby Xu wrote:
->> > > From: Coiby Xu <coxu@redhat.com>
->> > >
->> > > commit 9ec4ecef0af7790551109283ca039a7c52de343c ("kexec_file,x86,
->> > > powerpc: factor out kexec_file_ops functions" allows implementing
->> > > the arch-specific implementation of kernel image verification
->> > > in kexec_file_ops->verify_sig. Currently, there is no arch-specific
->> > > implementation of arch_kexec_kernel_verify_sig. So clean it up.
->> >
->> > This is a nice cleanup, while the log may need to be improved. You
->> > should run ./scripts/checkpatch.pl on your patch before sending out.
->> > When we refer to a commit in log, please refer to
->> > Documentation/process/submitting-patches.rst.
+Hi Darrick,
+
+在 2022/3/18 6:05, Darrick J. Wong wrote:
+> On Tue, Mar 15, 2022 at 02:57:45PM +0800, Guo Xuenan wrote:
+>> when get fiemap starting from MAX_LFS_FILESIZE, (maxbytes - *len) < start
+>> will always true , then *len set zero. because of start offset is byhond
+>> file size, for erofs filesystem it will always return iomap.length with
+>> zero,iomap iterate will be infinite loop.
 >>
->> Thanks for the reminder! I've used git pre-commit hook to run
->> scripts/checkpatch.pl automatically but obviously this hook doesn't
->> apply to "git rebase --continue" and currently this no git hook that
->> for this situation. I'll use the following trick [1] to avoid this
->> mistake in the future,
->>  $ git rebase -i HEAD~3 --reschedule-failed-exec --exec "git show | perl ./scripts/checkpatch.pl"
->
->Sorry, Coiby. It could be late yesterday so I was dizzy when writing
->down the comment, I didn't make my concern clear. What I meant is
->the referenced commit in log should be taken in a standard format.
->Abstracted one paragraph of Documentation/process/submitting-patches.rst
->here. We usually take the first 12 characters of the commit SHA-1 ID
->in log, but not the whole of them.
->
->=====
->If you want to refer to a specific commit, don't just refer to the
->SHA-1 ID of the commit. Please also include the oneline summary of
->the commit, to make it easier for reviewers to know what it is about.
->Example::
->
->        Commit e21d2170f36602ae2708 ("video: remove unnecessary
->        platform_set_drvdata()") removed the unnecessary
->        platform_set_drvdata(), but left the variable "dev" unused,
->        delete it.
->=====
->
->And the right parenthesis enclousing the commit subject is missing.
-
-Thanks for the detailed explanation! Your message has got across to me
-successfully:) I have ran scripts/checkpatch.pl manually after seeing your
-first reply and checkpatch.pl reported the exact same issues as explained
-by you today. My approach of avoiding making mistakes on format is to run
-checkpatch.pl automatically in the git precommit hook so I don't need to
-remember the details about format. I had expected the git precommit hook
-could help me find the issues pointed out by you but obviously it failed.
-So I tried to find out what's wrong. I think the format issues were
-introduced when doing rebase to improve the old version and the precommit
-hook wasn't triggered in this case. Another thing I still missed is I used
-"git diff --cached | scripts/checkpatch.pl" in the pre-commit hook which
-obviously won't check the format issue in the commit message (it only
-check the format issue in the code). With the two problems resolved, I
-shall not make format mistakes in the future:)
-
-Btw, checkpatch.pl seems to requires referring to a specific commit on
-the same line, 
-
-     ERROR: Please use git commit description style 'commit <12+ chars of sha1> ("<title line>")' - ie: 'commit 9ec4ecef0af7 ("kexec_file,x86,powerpc: factor out kexec_file_ops functions")'
-     #6: 
-     commit 9ec4ecef0af7 ("kexec_file,x86, powerpc: factor out kexec_file_ops
-     functions") allows implementing the arch-specific implementation of kernel
-     
-     total: 1 errors, 0 warnings, 61 lines checked
-     
-     NOTE: For some of the reported defects, checkpatch may be able to
-           mechanically convert to the typical style using --fix or --fix-inplace.
-     
-     "[PATCH] kexec: clean up arch_kexec_kernel_verify_sig" has style problems, please review.
-     
-     NOTE: If any of the errors are false positives, please report
-           them to the maintainer, see CHECKPATCH in MAINTAINERS.
-
-Is this a false positive?
-
->
+>> In order to avoid this situation, it is better to calculate the actual
+>> mapping length at first. If the len is 0, there is no need to continue
+>> the operation.
 >>
->> [1] https://stackoverflow.com/a/70568833/1203522
+>> ------------[ cut here ]------------
+>> WARNING: CPU: 7 PID: 905 at fs/iomap/iter.c:35 iomap_iter+0x97f/0xc70
+>> Modules linked in: xfs erofs
+>> CPU: 7 PID: 905 Comm: iomap Tainted: G        W         5.17.0-rc8 #27
+>> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
+>> RIP: 0010:iomap_iter+0x97f/0xc70
+>> Code: 85 a1 fc ff ff e8 71 be 9c ff 0f 1f 44 00 00 e9 92 fc ff ff e8 62 be 9c ff 0f 0b b8 fb ff ff ff e9 fc f8 ff ff e8 51 be 9c ff <0f> 0b e9 2b fc ff ff e8 45 be 9c ff 0f 0b e9 e1 fb ff ff e8 39 be
+>> RSP: 0018:ffff888060a37ab0 EFLAGS: 00010293
+>> RAX: 0000000000000000 RBX: ffff888060a37bb0 RCX: 0000000000000000
+>> RDX: ffff88807e19a900 RSI: ffffffff81a7da7f RDI: ffff888060a37be0
+>> RBP: 7fffffffffffffff R08: 0000000000000000 R09: ffff888060a37c20
+>> R10: ffff888060a37c67 R11: ffffed100c146f8c R12: 7fffffffffffffff
+>> R13: 0000000000000000 R14: ffff888060a37bd8 R15: ffff888060a37c20
+>> FS:  00007fd3cca01540(0000) GS:ffff888108780000(0000) knlGS:0000000000000000
+>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>> CR2: 0000000020010820 CR3: 0000000054b92000 CR4: 00000000000006e0
+>> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>> Call Trace:
+>>   <TASK>
+>>   iomap_fiemap+0x1c9/0x2f0
+>>   erofs_fiemap+0x64/0x90 [erofs]
+>>   do_vfs_ioctl+0x40d/0x12e0
+>>   __x64_sys_ioctl+0xaa/0x1c0
+>>   do_syscall_64+0x35/0x80
+>>   entry_SYSCALL_64_after_hwframe+0x44/0xae
+>>   </TASK>
+>> ---[ end trace 0000000000000000 ]---
+>> watchdog: BUG: soft lockup - CPU#7 stuck for 26s! [iomap:905]
 >>
+>> Reported-by: Hulk Robot <hulkci@huawei.com>
+>> Signed-off-by: Guo Xuenan <guoxuenan@huawei.com>
+>> ---
+>>   fs/ioctl.c | 5 +++--
+>>   1 file changed, 3 insertions(+), 2 deletions(-)
 >>
->> --
->> Best regards,
->> Coiby
->>
+>> diff --git a/fs/ioctl.c b/fs/ioctl.c
+>> index 1ed097e94af2..7f70e90766ed 100644
+>> --- a/fs/ioctl.c
+>> +++ b/fs/ioctl.c
+>> @@ -171,8 +171,6 @@ int fiemap_prep(struct inode *inode, struct fiemap_extent_info *fieinfo,
+>>   	u32 incompat_flags;
+>>   	int ret = 0;
+>>   
+>> -	if (*len == 0)
+>> -		return -EINVAL;
+>>   	if (start > maxbytes)
+>>   		return -EFBIG;
+>>   
+>> @@ -182,6 +180,9 @@ int fiemap_prep(struct inode *inode, struct fiemap_extent_info *fieinfo,
+>>   	if (*len > maxbytes || (maxbytes - *len) < start)
+>>   		*len = maxbytes - start;
+>>   
+>> +	if (*len == 0)
+>> +		return -EINVAL;
+> Looks fine to me (and I don't even really mind pulling this in) but this
+> isn't a patch to fs/iomap/ -- doesn't the same issue potentially affect
+> the fiemap implementations that do not use iomap?
 >
+> Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+>
+> --D
 
--- 
-Best regards,
-Coiby
+Thanks Darrick, you're right,there is something wrong with my statement. 
+In a strict sense, this modification here does not belong to fs/iomap, i 
+can change it to fs/vfs in v2 :) I have looked into the code of those 
+filesystem(btrfs,ext4,f2fs,nilfs2,ntfs3..) which don't use iomap, and 
+did some test. when start=0x7fffffffffffffff, and len = 0; btrfs: while 
+len==0, return -EINVAL directly; ext4: 
+ext4_get_es_cache->ext4_fiemap_check_ranges, return -EFBIG; f2fs: return 
+-EFBIG; nilfs2: while len==0, do nothing and return 0; ntfs3: return 
+-EFBIG directly; so, as far as i can see, just return -EINVAL earlyier in fiemap_prep has no side effect.
 
+Thanks.
+
+>> +
+>>   	supported_flags |= FIEMAP_FLAG_SYNC;
+>>   	supported_flags &= FIEMAP_FLAGS_COMPAT;
+>>   	incompat_flags = fieinfo->fi_flags & ~supported_flags;
+>> -- 
+>> 2.22.0
+>>
+> .
