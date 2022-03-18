@@ -2,113 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03629C43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 09:54:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05A63C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 09:54:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234705AbiCRJzx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 05:55:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48240 "EHLO
+        id S234716AbiCRJzz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 05:55:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234616AbiCRJzt (ORCPT
+        with ESMTP id S234685AbiCRJzt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Mar 2022 05:55:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5FB1DEDF36
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 02:54:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647597269;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=B0N2tqLbrUYXG1JSQlScpTqqNArTVktmTNzG3PVVQ64=;
-        b=KSNa1vkL5p7Eq2AnvtKNmWV5edLGovzXZqUAPllatqyY330F6R0rdPpuhhsE0RFJ4HuZyO
-        oVB0xeuiTBwaGt959gxQra9qcUH7PNwjG0y3wnIXdZtaxoXq6Sk+YYxo5KOkLU5oZLXVlD
-        y2WDomVTSQ1BNhOw3ZLco6r8Dk31YUo=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-654-v-DaxZuCPxOHSw91joLO0Q-1; Fri, 18 Mar 2022 05:54:28 -0400
-X-MC-Unique: v-DaxZuCPxOHSw91joLO0Q-1
-Received: by mail-qt1-f199.google.com with SMTP id o15-20020ac8698f000000b002e1db0c88d0so5303661qtq.17
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 02:54:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=B0N2tqLbrUYXG1JSQlScpTqqNArTVktmTNzG3PVVQ64=;
-        b=2vRmsxxDdOexhiOcpngwuoK9rE3wN/fGEI6xMoegQMQ4d01mH4pfYBNfL1PakRlF9e
-         FTefxB0cJyK0WrlX83v6Mf1X0MPR0yh1QNoBPBF/7lNMmIC1LhlLTO+Cgur0/VhCE7Zs
-         U3lWNISF3gn5WuLV3ETSNZRtEyW4LIkxJew5hp+XPQeXYFaNI83ijEk3tvcO2v6D3XSB
-         /cjaXfwGh0oI/LSSDK2ui/BWXKVV1LWyM2GvxhtECuJvWXyStdkv/9KmG7MDfH0UZiiB
-         vzRDAjB1dALvYqBEiwz6ausdYz8o0B/2tR/bwscFC/i74nIjoCgTdLD75XyUtAshS3pk
-         WIpw==
-X-Gm-Message-State: AOAM530eeyaNTqGOZSNhlMF+0DO8P4t0duQ+eWB8gGW0xLevuLf79JIP
-        kBv8Ds6eneLckM/rk9J+XUKIY73QEUc13xWVps40l5duK+ONYXSA0W+Ilt9zWgTtdT8fnBOc4Bu
-        luYYwCEjoH53el6qwecsGHNeo
-X-Received: by 2002:a0c:c404:0:b0:431:31c3:3d15 with SMTP id r4-20020a0cc404000000b0043131c33d15mr6517880qvi.116.1647597267946;
-        Fri, 18 Mar 2022 02:54:27 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJww4OeEttXpHADmj/zwubxQlNCZdF6Q1KI9KtTuFS5WVsX1Yj8sug1rDI4IQP0gxF1xEeAyKQ==
-X-Received: by 2002:a0c:c404:0:b0:431:31c3:3d15 with SMTP id r4-20020a0cc404000000b0043131c33d15mr6517872qvi.116.1647597267762;
-        Fri, 18 Mar 2022 02:54:27 -0700 (PDT)
-Received: from sgarzare-redhat (host-87-12-25-114.business.telecomitalia.it. [87.12.25.114])
-        by smtp.gmail.com with ESMTPSA id de26-20020a05620a371a00b0067dc7923b14sm3642875qkb.132.2022.03.18.02.54.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Mar 2022 02:54:27 -0700 (PDT)
-Date:   Fri, 18 Mar 2022 10:54:22 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Anirudh Rayabharam <mail@anirudhrb.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] vhost: handle error while adding split ranges to iotlb
-Message-ID: <20220318095422.a37g7vxaiwqo5wxx@sgarzare-redhat>
-References: <20220312141121.4981-1-mail@anirudhrb.com>
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E384ECDA8;
+        Fri, 18 Mar 2022 02:54:26 -0700 (PDT)
+X-UUID: 471921f4b8e04d7895ba24036099fbe0-20220318
+X-UUID: 471921f4b8e04d7895ba24036099fbe0-20220318
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <jianjun.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 293313412; Fri, 18 Mar 2022 17:54:21 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Fri, 18 Mar 2022 17:54:20 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 18 Mar
+ 2022 17:54:20 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 18 Mar 2022 17:54:19 +0800
+From:   Jianjun Wang <jianjun.wang@mediatek.com>
+To:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chen-Yu Tsai <wenst@chromium.org>
+CC:     Jianjun Wang <jianjun.wang@mediatek.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-phy@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <rex-bc.chen@mediatek.com>,
+        <randy.wu@mediatek.com>, <jieyy.yang@mediatek.com>,
+        <chuanjia.liu@mediatek.com>, <qizhong.cheng@mediatek.com>,
+        <jian.yang@mediatek.com>
+Subject: [PATCH v2 0/2] phy: mediatek: Add PCIe PHY driver
+Date:   Fri, 18 Mar 2022 17:54:15 +0800
+Message-ID: <20220318095417.2016-1-jianjun.wang@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220312141121.4981-1-mail@anirudhrb.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 12, 2022 at 07:41:21PM +0530, Anirudh Rayabharam wrote:
->vhost_iotlb_add_range_ctx() handles the range [0, ULONG_MAX] by
->splitting it into two ranges and adding them separately. The return
->value of adding the first range to the iotlb is currently ignored.
->Check the return value and bail out in case of an error.
->
+These series patches add support for PCIe PHY driver on MediaTek chipsets.
 
-We could add:
+Changes in v2:
+1. Add specific compatible name;
+2. Read NVMEM data at probe time;
+3. Fix typos.
 
-Fixes: e2ae38cf3d91 ("vhost: fix hung thread due to erroneous iotlb entries")
+Jianjun Wang (2):
+  dt-bindings: phy: mediatek: Add YAML schema for PCIe PHY
+  phy: mediatek: Add PCIe PHY driver
 
->Signed-off-by: Anirudh Rayabharam <mail@anirudhrb.com>
->---
-> drivers/vhost/iotlb.c | 6 +++++-
-> 1 file changed, 5 insertions(+), 1 deletion(-)
->
->diff --git a/drivers/vhost/iotlb.c b/drivers/vhost/iotlb.c
->index 40b098320b2a..5829cf2d0552 100644
->--- a/drivers/vhost/iotlb.c
->+++ b/drivers/vhost/iotlb.c
->@@ -62,8 +62,12 @@ int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
-> 	 */
-> 	if (start == 0 && last == ULONG_MAX) {
-> 		u64 mid = last / 2;
->+		int err = vhost_iotlb_add_range_ctx(iotlb, start, mid, addr,
->+				perm, opaque);
->+
->+		if (err)
->+			return err;
->
->-		vhost_iotlb_add_range_ctx(iotlb, start, mid, addr, perm, opaque);
-> 		addr += mid + 1;
-> 		start = mid + 1;
-> 	}
->-- 
->2.35.1
->
+ .../bindings/phy/mediatek,pcie-phy.yaml       |  75 ++++++
+ drivers/phy/mediatek/Kconfig                  |  11 +
+ drivers/phy/mediatek/Makefile                 |   1 +
+ drivers/phy/mediatek/phy-mtk-pcie.c           | 246 ++++++++++++++++++
+ 4 files changed, 333 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/phy/mediatek,pcie-phy.yaml
+ create mode 100644 drivers/phy/mediatek/phy-mtk-pcie.c
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+-- 
+2.18.0
 
