@@ -2,114 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AE69C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 22:44:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF411C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 22:46:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241390AbiCRWpa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 18:45:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56610 "EHLO
+        id S241373AbiCRWrg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 18:47:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241343AbiCRWpP (ORCPT
+        with ESMTP id S234984AbiCRWrV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 18:45:15 -0400
-Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com [148.163.143.35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80A7819B087;
-        Fri, 18 Mar 2022 15:43:53 -0700 (PDT)
-Received: from pps.filterd (m0148664.ppops.net [127.0.0.1])
-        by mx0b-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22IMbsiP020011;
-        Fri, 18 Mar 2022 22:43:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pps0720;
- bh=BqkAywTgWdlW1+XBiXg5Rfy8g9DvAfqYPHFJLBdTzOk=;
- b=ja2jcvQw1ZuQnneZx5pTsQ7ncsg2jrUi8WGCyRij34aRr4/nw/QSmFQli4ATQfjfdcjm
- xlZmolnOnQiTORyC9vRo7yhile1VX07gsUvqAWNzN0pIa+9LaSEsX2QNmtcBHAcWMzhH
- lbZ9TegffocGLCiz5QJhV0maQYZnp0kVIYERpfR+jTu262FQfeWvSy36XN+LSZYSjVUO
- 9j1Kkl6ccFQ2y4UgbqlK3+5Y+UbKw4ls/87OGrd1BWO8MN8nerQn28OePeXDj53ymAVV
- H0XckecD1aNdO28Ff9VU17Gy4GzMhfxZdDzIpCdkU1mOsL15CIM0t5RrNSHVMMdVg5KT 2A== 
-Received: from g4t3426.houston.hpe.com (g4t3426.houston.hpe.com [15.241.140.75])
-        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3evu2wc1hs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 18 Mar 2022 22:43:14 +0000
-Received: from g4t3433.houston.hpecorp.net (g4t3433.houston.hpecorp.net [16.208.49.245])
-        by g4t3426.houston.hpe.com (Postfix) with ESMTP id D6B904E;
-        Fri, 18 Mar 2022 22:43:13 +0000 (UTC)
-Received: from dog.eag.rdlabs.hpecorp.net (dog.eag.rdlabs.hpecorp.net [128.162.243.181])
-        by g4t3433.houston.hpecorp.net (Postfix) with ESMTP id ED66149;
-        Fri, 18 Mar 2022 22:43:12 +0000 (UTC)
-From:   Mike Travis <mike.travis@hpe.com>
-To:     Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>,
+        Fri, 18 Mar 2022 18:47:21 -0400
+Received: from mail-oo1-xc36.google.com (mail-oo1-xc36.google.com [IPv6:2607:f8b0:4864:20::c36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 808DD22E962
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 15:45:58 -0700 (PDT)
+Received: by mail-oo1-xc36.google.com with SMTP id n5-20020a4a9545000000b0031d45a442feso11902441ooi.3
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 15:45:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ekiD2sX45IwGk6wtsqdwxLttTAGZcGccRjZl1i6g1JA=;
+        b=dMDapo5gWo0mYQwoT0A/aOZqMdPyZSCOVsL5zPGffJvLJZp0AfN2E9xdlck/nSLv/N
+         hEsSe5KNbjsmefIhgIIv1yDVHMP+6YIgd44fW9U2d/c1Akfns382n70WbM/10yIkuHjZ
+         SUNIZp82WOT2MEcG49QwDBCrffF4++Gcu4CkY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ekiD2sX45IwGk6wtsqdwxLttTAGZcGccRjZl1i6g1JA=;
+        b=oq3Y9aqYTkMyVGHf/5wtnpxWSpdPz/rd/LzNbCojODPSnE62BYp9fr/sFORWYDjJgQ
+         CTCFGZIusw7ziFUDIunm7WV5Ug8dNa6RH+fC+G6ohMgNIaAu2wBqMQDRF/7C5hWXTjFj
+         aqiQ7FuRT2aOCBCN1aNerYhW4qFpyRnAhbjXMYEII5gs6oUnd4W5Ru8Qzol4VGsq7pit
+         ZWCsnP2GTw2cpr+fHUhlxcOvYhyM2de2FyMaBSaON+8msk/qtrylgI4xMUc2Tb0NHhtR
+         7i7gX2GBALJT81JEdFklHXH5LCuXoVLbMpdd7hY3I0D4ZVz9/pAKaRC3EzkfpPFOgCon
+         gA7A==
+X-Gm-Message-State: AOAM532OgEc9N4KA6O0idZhUHaCTOg9TaNRjFjKdDjxvAhyHPfy4/BqZ
+        mPXL9tjEBQeJq5tF5qOX6cPOgw==
+X-Google-Smtp-Source: ABdhPJziihDBziDyTkE7iKcLTBW6BUUFUpCgkLWdsk/9MySxxcozoxXb4xoR4U6FbxLxPWes+cEMkA==
+X-Received: by 2002:a05:6820:814:b0:322:b1b2:2456 with SMTP id bg20-20020a056820081400b00322b1b22456mr3591951oob.0.1647643557718;
+        Fri, 18 Mar 2022 15:45:57 -0700 (PDT)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id x12-20020a056830244c00b005ad233e0ba3sm4330223otr.48.2022.03.18.15.45.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Mar 2022 15:45:57 -0700 (PDT)
+Subject: Re: [PATCH 7/9] usb: usbip: eliminate anonymous module_init &
+ module_exit
+To:     Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, Amit Shah <amit@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Eli Cohen <eli@mellanox.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Felipe Balbi <felipe.balbi@linux.intel.com>,
+        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Krzysztof Opasiak <k.opasiak@samsung.com>,
+        Igor Kotrasinski <i.kotrasinsk@samsung.com>,
+        Valentina Manea <valentina.manea.m@gmail.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Jussi Kivilinna <jussi.kivilinna@mbnet.fi>,
+        Joachim Fritschi <jfritschi@freenet.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Steve Wahl <steve.wahl@hpe.com>, x86@kernel.org
-Cc:     Mike Travis <mike.travis@hpe.com>,
-        Dimitri Sivanich <dimitri.sivanich@hpe.com>,
-        Andy Shevchenko <andy@infradead.org>,
-        Darren Hart <dvhart@infradead.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Russ Anderson <russ.anderson@hpe.com>,
-        linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org
-Subject: [PATCH v3 2/3] x86/platform/uv: Update TSC sync state for UV5
-Date:   Fri, 18 Mar 2022 17:43:03 -0500
-Message-Id: <20220318224304.174967-3-mike.travis@hpe.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20220318224304.174967-1-mike.travis@hpe.com>
-References: <20220318224304.174967-1-mike.travis@hpe.com>
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Karol Herbst <karolherbst@gmail.com>,
+        Pekka Paalanen <ppaalanen@gmail.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, netdev@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-usb@vger.kernel.org, nouveau@lists.freedesktop.org,
+        virtualization@lists.linux-foundation.org, x86@kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220316192010.19001-1-rdunlap@infradead.org>
+ <20220316192010.19001-8-rdunlap@infradead.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <282f4857-7b4f-810e-af0e-e9ca8129c7fc@linuxfoundation.org>
+Date:   Fri, 18 Mar 2022 16:45:54 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: HHwULhifDUkZaLVnbF7EARGsKPn2ztiA
-X-Proofpoint-GUID: HHwULhifDUkZaLVnbF7EARGsKPn2ztiA
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-18_14,2022-03-15_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 spamscore=0
- mlxlogscore=999 priorityscore=1501 impostorscore=0 bulkscore=0
- lowpriorityscore=0 suspectscore=0 adultscore=0 clxscore=1015 phishscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203180122
+In-Reply-To: <20220316192010.19001-8-rdunlap@infradead.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update TSC to not check TSC sync state for uv5+ as it is not available.
-It is assumed that TSC will always be in sync for multiple chassis and
-will pass the tests for the kernel to accept it as the clocksource.
-To disable this check use the kernel start options tsc=reliable
-clocksource=tsc.
+On 3/16/22 1:20 PM, Randy Dunlap wrote:
+> Eliminate anonymous module_init() and module_exit(), which can lead to
+> confusion or ambiguity when reading System.map, crashes/oops/bugs,
+> or an initcall_debug log.
+> 
+> Give each of these init and exit functions unique driver-specific
+> names to eliminate the anonymous names.
+> 
+> Example 1: (System.map)
+>   ffffffff832fc78c t init
+>   ffffffff832fc79e t init
+>   ffffffff832fc8f8 t init
+> 
+> Example 2: (initcall_debug log)
+>   calling  init+0x0/0x12 @ 1
+>   initcall init+0x0/0x12 returned 0 after 15 usecs
+>   calling  init+0x0/0x60 @ 1
+>   initcall init+0x0/0x60 returned 0 after 2 usecs
+>   calling  init+0x0/0x9a @ 1
+>   initcall init+0x0/0x9a returned 0 after 74 usecs
+> 
+> Fixes: 80fd9cd52de6 ("usbip: vudc: Add VUDC main file")
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Cc: Krzysztof Opasiak <k.opasiak@samsung.com>
+> Cc: Igor Kotrasinski <i.kotrasinsk@samsung.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Valentina Manea <valentina.manea.m@gmail.com>
+> Cc: Shuah Khan <shuah@kernel.org>
+> Cc: Shuah Khan <skhan@linuxfoundation.org>
+> Cc: linux-usb@vger.kernel.org
+> ---
+>   drivers/usb/usbip/vudc_main.c |    8 ++++----
+>   1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> --- lnx-517-rc8.orig/drivers/usb/usbip/vudc_main.c
+> +++ lnx-517-rc8/drivers/usb/usbip/vudc_main.c
+> @@ -28,7 +28,7 @@ static struct platform_driver vudc_drive
+>   
+>   static struct list_head vudc_devices = LIST_HEAD_INIT(vudc_devices);
+>   
+> -static int __init init(void)
+> +static int __init vudc_init(void)
+>   {
+>   	int retval = -ENOMEM;
+>   	int i;
+> @@ -86,9 +86,9 @@ cleanup:
+>   out:
+>   	return retval;
+>   }
+> -module_init(init);
+> +module_init(vudc_init);
+>   
+> -static void __exit cleanup(void)
+> +static void __exit vudc_cleanup(void)
+>   {
+>   	struct vudc_device *udc_dev = NULL, *udc_dev2 = NULL;
+>   
+> @@ -103,7 +103,7 @@ static void __exit cleanup(void)
+>   	}
+>   	platform_driver_unregister(&vudc_driver);
+>   }
+> -module_exit(cleanup);
+> +module_exit(vudc_cleanup);
+>   
+>   MODULE_DESCRIPTION("USB over IP Device Controller");
+>   MODULE_AUTHOR("Krzysztof Opasiak, Karol Kosik, Igor Kotrasinski");
+> 
 
-Signed-off-by: Mike Travis <mike.travis@hpe.com>
-Reviewed-by: Dimitri Sivanich <dimitri.sivanich@hpe.com>
-Reviewed-by: Steve Wahl <steve.wahl@hpe.com>
----
-v2: Update patch description to be more explanatory.
----
- arch/x86/kernel/apic/x2apic_uv_x.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+Thanks for fixing this.
 
-diff --git a/arch/x86/kernel/apic/x2apic_uv_x.c b/arch/x86/kernel/apic/x2apic_uv_x.c
-index f5a48e66e4f5..387d6533549a 100644
---- a/arch/x86/kernel/apic/x2apic_uv_x.c
-+++ b/arch/x86/kernel/apic/x2apic_uv_x.c
-@@ -199,10 +199,16 @@ static void __init uv_tsc_check_sync(void)
- 	int mmr_shift;
- 	char *state;
- 
--	/* Different returns from different UV BIOS versions */
-+	/* UV5+, sync state from bios not available, assumed valid */
-+	if (!is_uv(UV2|UV3|UV4)) {
-+		pr_debug("UV: TSC sync state for UV5+ assumed valid\n");
-+		mark_tsc_async_resets("UV5+");
-+		return;
-+	}
-+
-+	/* UV2,3,4, UV BIOS TSC sync state available */
- 	mmr = uv_early_read_mmr(UVH_TSC_SYNC_MMR);
--	mmr_shift =
--		is_uv2_hub() ? UVH_TSC_SYNC_SHIFT_UV2K : UVH_TSC_SYNC_SHIFT;
-+	mmr_shift = is_uv2_hub() ? UVH_TSC_SYNC_SHIFT_UV2K : UVH_TSC_SYNC_SHIFT;
- 	sync_state = (mmr >> mmr_shift) & UVH_TSC_SYNC_MASK;
- 
- 	/* Check if TSC is valid for all sockets */
--- 
-2.26.2
+Acked-by: Shuah Khan <skhan@linuxfoundation.org>
 
+thanks,
+-- Shuah
