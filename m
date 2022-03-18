@@ -2,100 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDF64C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 14:04:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55AE2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 14:05:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237012AbiCROGH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 10:06:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33456 "EHLO
+        id S237021AbiCROHO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 10:07:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233096AbiCROGE (ORCPT
+        with ESMTP id S233096AbiCROHK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 10:06:04 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B32FE2BC1F7;
-        Fri, 18 Mar 2022 07:04:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647612284; x=1679148284;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=jcrYNvI61V8kUynPI7hV1XW2k5B5q68nF1eRgoRh4Cw=;
-  b=dDJEJ29HrsHRd+6r/qCdPy516QHGxDqaRq/EUT0n6sbNFbLea75XmbCD
-   wq51msbMP6SYCDpDdeiLmbEq1an4FDMnYF3eOx3XORFnZsSB58t8oQIvS
-   h0eaq22hEdgeQHBGOP5FmUyVfZb9vguSF0Ec+nTFz2KcXnfQU1/m8p1V8
-   FoMbUJ9jItDq1htGWfd1wePRDnhVujtvt1M9UamaV7+9SvD5H99g5YDUG
-   9nQ/XLxCJ+EHy3SRYIdkqLGVgW+7bV76MF5Js/M2L0eRKOYTbx81WxJ8+
-   4Gp166EaeF/SOZxnn2JkVAmhdrZzxjBy4fcCjmBe8JopsjrEYEs+hxHpW
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="257089815"
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="257089815"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 07:04:20 -0700
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="499258563"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 07:04:17 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nVDCc-002GJv-Mm;
-        Fri, 18 Mar 2022 16:03:38 +0200
-Date:   Fri, 18 Mar 2022 16:03:38 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Bill Wendling <morbo@google.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Nathan Chancellor <nathan@kernel.org>,
-        linux-gpio@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Subject: Re: [PATCH] gpiolib: acpi: use correct format characters
-Message-ID: <YjSROmYwwGhpsXMl@smile.fi.intel.com>
-References: <20220316213055.2351342-1-morbo@google.com>
- <YjL6K49CkH+YC4FQ@smile.fi.intel.com>
- <CAKwvOdkjb3uR+kqjfdKL5gqA8R+00c5=3E7uGGW+mGZ3QRsjqg@mail.gmail.com>
+        Fri, 18 Mar 2022 10:07:10 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23DD923456D;
+        Fri, 18 Mar 2022 07:05:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1647612351; x=1679148351;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ffbZZDrcdGMKTpclOYncRs09YC3Awsec51kId4S+aIk=;
+  b=VtE7hRMBPrjhqsAPxrXpW4SOwLgqOoO7wcgeZtMW40f8a5gETDIsH3q1
+   dVeVnMyWZIGW8MpkthsL+d4r1bqmNRVDcz2g61DvwYglC3aqWOidjl8Mz
+   KUCI6XLC1BdeXXFneM64hY/GBION0Zf4BNTkuygvT+ngifGUOwZsrh/Gq
+   s=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 18 Mar 2022 07:05:50 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 07:05:50 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 18 Mar 2022 07:05:49 -0700
+Received: from [10.216.20.137] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 18 Mar
+ 2022 07:05:45 -0700
+Message-ID: <74852e90-003b-84b8-9836-72258e3c5057@quicinc.com>
+Date:   Fri, 18 Mar 2022 19:35:41 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKwvOdkjb3uR+kqjfdKL5gqA8R+00c5=3E7uGGW+mGZ3QRsjqg@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH V2,2/2] mm: madvise: skip unmapped vma holes passed to
+ process_madvise
+Content-Language: en-US
+To:     Nadav Amit <nadav.amit@gmail.com>,
+        Suren Baghdasaryan <surenb@google.com>
+CC:     Minchan Kim <minchan@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        David Rientjes <rientjes@google.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        =?UTF-8?Q?Edgar_Arriaga_Garc=c3=ada?= <edgararriaga@google.com>,
+        Michal Hocko <mhocko@suse.com>, linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "# 5 . 10+" <stable@vger.kernel.org>
+References: <cover.1647008754.git.quic_charante@quicinc.com>
+ <4f091776142f2ebf7b94018146de72318474e686.1647008754.git.quic_charante@quicinc.com>
+ <YjEaFBWterxc3Nzf@google.com>
+ <20220315164807.7a9cf1694ee2db8709a8597c@linux-foundation.org>
+ <YjFAzuLKWw5eadtf@google.com>
+ <5428f192-1537-fa03-8e9c-4a8322772546@quicinc.com>
+ <20220316142906.e41e39d2315e35ef43f4aad6@linux-foundation.org>
+ <YjNhvhb7l2i9WTfF@google.com>
+ <CAJuCfpGBJev_h92S0xLEQXghGQzNPCsqWTunpVPJQX4WWPjGzw@mail.gmail.com>
+ <B49F17E4-8D3D-45FB-97E9-E0F906C88564@gmail.com>
+From:   Charan Teja Kalla <quic_charante@quicinc.com>
+In-Reply-To: <B49F17E4-8D3D-45FB-97E9-E0F906C88564@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 11:11:21AM -0700, Nick Desaulniers wrote:
-> On Thu, Mar 17, 2022 at 2:07 AM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> > On Wed, Mar 16, 2022 at 02:30:55PM -0700, Bill Wendling wrote:
+Thank you for valuable inputs.
 
-> > NAK.
+On 3/18/2022 2:08 AM, Nadav Amit wrote:
+>>>>>> IMO, it's worth to note in man page.
+>>>>>>
+>>>>> Or the current patch for just ENOMEM is sufficient here and we just have
+>>>>> to update the man page?
+>>>> I think the "On success, process_madvise() returns the number of bytes
+>>>> advised" behaviour sounds useful.  But madvise() doesn't do that.
+>>>>
+>>>> RETURN VALUE
+>>>>       On  success, madvise() returns zero.  On error, it returns -1 and errno
+>>>>       is set to indicate the error.
+>>>>
+>>>> So why is it desirable in the case of process_madvise()?
+>>> Since process_madvise deal with multiple ranges and could fail at one of
+>>> them in the middle or pocessing, people could decide where the call
+>>> failed and then make a strategy whether they will abort at the point or
+>>> continue to hint next addresses. Here, problem of the strategy is API
+>>> doesn't return any error vaule if it has processed any bytes so they
+>>> would have limitation to decide a policy. That's the limitation for
+>>> every vector IO syscalls, unfortunately.
+>>>
+>>>>
+>>>>
+>>>> And why was process_madvise() designed this way?   Or was it
+>>>> always simply an error in the manpage?
+>> Taking a closer look, indeed manpage seems to be wrong.
+>> https://elixir.bootlin.com/linux/v5.17-rc8/source/mm/madvise.c#L1154
+>> indicates that in the presence of unmapped holes madvise will skip
+>> them but will return ENOMEM and that's what process_madvise is
+>> ultimately returning in this case. So, the manpage claim of "This
+>> return value may be less than the total number of requested bytes, if
+>> an error occurred after some iovec elements were already processed."
+>> does not reflect the reality in our case because the return value will
+>> be -ENOMEM. After the desired behavior is finalized I'll modify the
+>> manpage accordingly.
+> Since process_madvise() might be used in sort of non-cooperative mode,
+> I think that the caller cannot guarantee that it knows exactly the
+> memory layout of the process whose memory it madvise’s. I know that
+> MADV_DONTNEED for instance is not supported (at least today) by
+> process_madvise(), but if it were, the caller may want which exact
+> memory was madvise'd even if the target process ran some other
+> memory layout changing syscalls (e.g., munmap()).
+> 
+> IOW, skipping holes and just returning the total number of madvise’d
+> bytes might not be enough.
 
-I hope you read my follow up to this.
+Then does the advised bytes range by default including holes is a
+correct design?
+Say the [start, len) range passed in the iovec by the user contains the
+layout like, vma1 -- hole-- vma2 -- hole -- vma3.
 
-> Andy,
-> Our goal is to enable -Wformat for CC=clang.  Please see also:
-> commit cbacb5ab0aa0 ("docs: printk-formats: Stop encouraging use of
-> unnecessary %h[xudi] and %hh[xudi]")
+Under ideal case, where all vma's are eligible for advise, the total
+bytes processed returning should be vma3->end - vma1->start. This is
+success case.
 
-Not that I agree on that commit for %h[h]x
+ Now, say that vma1 is succeeded but vma2(say VM_LOCKED) is failed at
+advise. In such case processed bytes will be
+vma2->start-vma1->start(still consider hole as bytes processed), so that
+user may restart/skip at vma2, then continue. This return type will be
+partially processed bytes.
 
-	signed char ch = -1;
-	printf("%x\n", ch);
-	printf("%hhx\n", ch);
+If the system doesn't found any VMA in the passed range by user, it
+returns ENOMEM as not a single advisable vma is found in the range.
 
-That's why my first reaction on this change was NAK.
-
-> and the lore link it cites.
-> https://lore.kernel.org/lkml/CAHk-=wgoxnmsj8GEVFJSvTwdnWm8wVJthefNk2n6+4TC=20e0Q@mail.gmail.com/
-> (I saw your follow up; this patch is one of the less controversial
-> ones though since the types are not ones that are promoted).
-
-That said, I hope you are very well aware of the case.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+> 
