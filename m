@@ -2,93 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC242C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 12:18:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27F17C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 12:18:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236134AbiCRMTU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 08:19:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59286 "EHLO
+        id S236156AbiCRMUE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 08:20:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236130AbiCRMTR (ORCPT
+        with ESMTP id S236144AbiCRMUB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 08:19:17 -0400
-Received: from ZXSHCAS2.zhaoxin.com (ZXSHCAS2.zhaoxin.com [203.148.12.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B677562E;
-        Fri, 18 Mar 2022 05:17:55 -0700 (PDT)
-Received: from zxbjmbx1.zhaoxin.com (10.29.252.163) by ZXSHCAS2.zhaoxin.com
- (10.28.252.162) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Fri, 18 Mar
- 2022 20:17:52 +0800
-Received: from [10.29.8.49] (10.29.8.49) by zxbjmbx1.zhaoxin.com
- (10.29.252.163) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Fri, 18 Mar
- 2022 20:17:51 +0800
-Message-ID: <0a78380a-89bc-a51a-5cb3-e2f313d2c0a5@zhaoxin.com>
-Date:   Fri, 18 Mar 2022 20:17:50 +0800
+        Fri, 18 Mar 2022 08:20:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 626BF126590;
+        Fri, 18 Mar 2022 05:18:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2020FB8220B;
+        Fri, 18 Mar 2022 12:18:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53D6AC340E8;
+        Fri, 18 Mar 2022 12:18:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647605920;
+        bh=q7Bseac7kpl38Kv3dDfiIH4Nix+AJwi5+kmqhdGmllg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MhYgYLfJnDIB9c7dr/aswJZNHs6IbIx5kRZ7S887Z8zop6s0ZDeoH4KgC4HqkcnZc
+         vAgO9ykDezLJP3ydj7XFSxNf3NHFV3a6PsyEFdeT3KsQnPSCMdJsobPrckNSFQkX4J
+         skkgHuWGCjiuQQFBiaDOqYGWf72emvml8iIPiQtw=
+Date:   Fri, 18 Mar 2022 12:58:31 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Dan Vacura <w36195@motorola.com>
+Cc:     linux-usb@vger.kernel.org, stable@vger.kernel.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Felipe Balbi <balbi@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] usb: gadget: uvc: Fix crash when encoding data for usb
+ request
+Message-ID: <YjRz5z8rrxdmtGo5@kroah.com>
+References: <20220315174146.27155-1-w36195@motorola.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     <mathias.nyman@intel.com>, <gregkh@linuxfoundation.org>,
-        <hzpeterchen@gmail.com>, <linux-usb@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <tonywwang@zhaoxin.com>, <weitaowang@zhaoxin.com>
-From:   "WeitaoWang-oc@zhaoxin.com" <WeitaoWang-oc@zhaoxin.com>
-Subject: [PATCH] USB: Fix xhci ERDP update issue
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.29.8.49]
-X-ClientProxiedBy: ZXSHCAS1.zhaoxin.com (10.28.252.161) To
- zxbjmbx1.zhaoxin.com (10.29.252.163)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220315174146.27155-1-w36195@motorola.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On some situations, software handles TRB events slower than adding TRBs.
-If the number of TRB events to be processed in a given interrupt is 256.
-The local variable "event_ring_deq" that records in interrupt handler
-is equal to software_dequeue. It will cause driver not update ERDP,then
-software dequeue pointer is out of sync with ERDP on interrupt exit.
-On the next interrupt, the event ring may full but driver will not
-update ERDP as software_dequeue is equal to ERDP.
+On Tue, Mar 15, 2022 at 12:41:46PM -0500, Dan Vacura wrote:
+> During the uvcg_video_pump() process, if an error occurs and
+> uvcg_queue_cancel() is called, the buffer queue will be cleared out, but
+> the current marker (queue->buf_used) of the active buffer (no longer
+> active) is not reset. On the next iteration of uvcg_video_pump() the
+> stale buf_used count will be used and the logic of min((unsigned
+> int)len, buf->bytesused - queue->buf_used) may incorrectly calculate a
+> nbytes size, causing an invalid memory access.
+> 
+> [80802.185460][  T315] configfs-gadget gadget: uvc: VS request completed
+> with status -18.
+> [80802.185519][  T315] configfs-gadget gadget: uvc: VS request completed
+> with status -18.
+> ...
+> uvcg_queue_cancel() is called and the queue is cleared out, but the
+> marker queue->buf_used is not reset.
+> ...
+> [80802.262328][ T8682] Unable to handle kernel paging request at virtual
+> address ffffffc03af9f000
+> ...
+> ...
+> [80802.263138][ T8682] Call trace:
+> [80802.263146][ T8682]  __memcpy+0x12c/0x180
+> [80802.263155][ T8682]  uvcg_video_pump+0xcc/0x1e0
+> [80802.263165][ T8682]  process_one_work+0x2cc/0x568
+> [80802.263173][ T8682]  worker_thread+0x28c/0x518
+> [80802.263181][ T8682]  kthread+0x160/0x170
+> [80802.263188][ T8682]  ret_from_fork+0x10/0x18
+> [80802.263198][ T8682] Code: a8c12829 a88130cb a8c130
+> 
+> Signed-off-by: Dan Vacura <w36195@motorola.com>
+> ---
+>  drivers/usb/gadget/function/uvc_queue.c | 2 ++
+>  1 file changed, 2 insertions(+)
 
-[  536.377115] xhci_hcd 0000:00:12.0: ERROR unknown event type 37
-[  566.933173] sd 8:0:0:0: [sdb] tag#27 uas_eh_abort_handler 0 uas-tag 7
-inflight: CMD OUT
-[  566.933181] sd 8:0:0:0: [sdb] tag#27 CDB: Write(10) 2a 00 17 71 e6 78
-00 00 08 00
-[  572.041186] xhci_hcd On some situataions,the0000:00:12.0: xHCI host
-not responding to stop endpoint command.
-[  572.057193] xhci_hcd 0000:00:12.0: Host halt failed, -110
-[  572.057196] xhci_hcd 0000:00:12.0: xHCI host controller not
-responding, assume dead
-[  572.057236] sd 8:0:0:0: [sdb] tag#26 uas_eh_abort_handler 0 uas-tag 6
-inflight: CMD
-[  572.057240] sd 8:0:0:0: [sdb] tag#26 CDB: Write(10) 2a 00 38 eb cc d8
-00 00 08 00
-[  572.057244] sd 8:0:0:0: [sdb] tag#25 uas_eh_abort_handler 0 uas-tag 5
-inflight: CMD
+What commit id does this change fix?  Can you resend this with a proper
+"Fixes:" tag added to it?
 
-To avoid this issue by update software record local variable when
-handles 128 TRB events.
+thanks,
 
-Fixes: dc0ffbea5729 ("usb: host: xhci: update event ring dequeue pointer on purpose")
-Signed-off-by: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
----
-  drivers/usb/host/xhci-ring.c | 1 +
-  1 file changed, 1 insertion(+)
-
-diff --git a/drivers/usb/host/xhci-ring.c b/drivers/usb/host/xhci-ring.c
-index d0b6806275e0..f9707997969d 100644
---- a/drivers/usb/host/xhci-ring.c
-+++ b/drivers/usb/host/xhci-ring.c
-@@ -3141,6 +3141,7 @@ irqreturn_t xhci_irq(struct usb_hcd *hcd)
-  		if (event_loop++ < TRBS_PER_SEGMENT / 2)
-  			continue;
-  		xhci_update_erst_dequeue(xhci, event_ring_deq);
-+		event_ring_deq = xhci->event_ring->dequeue;
-
-  		/* ring is half-full, force isoc trbs to interrupt more often */
-  		if (xhci->isoc_bei_interval > AVOID_BEI_INTERVAL_MIN)
--- 
-2.17.1
+greg k-h
