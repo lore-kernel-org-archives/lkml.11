@@ -2,126 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D3E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 22:15:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8807EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 22:28:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241279AbiCRWRK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 18:17:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45468 "EHLO
+        id S241288AbiCRWaC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 18:30:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233444AbiCRWRH (ORCPT
+        with ESMTP id S241280AbiCRWaC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 18:17:07 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DDEA42DF3FB;
-        Fri, 18 Mar 2022 15:15:46 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 22IM93Hc011038;
-        Fri, 18 Mar 2022 17:09:03 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 22IM91UT011037;
-        Fri, 18 Mar 2022 17:09:01 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Fri, 18 Mar 2022 17:09:01 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Andy Lutomirski <luto@kernel.org>,
-        Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Bill Wendling <morbo@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Juergen Gross <jgross@suse.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "llvm@lists.linux.dev" <llvm@lists.linux.dev>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-toolchains <linux-toolchains@vger.kernel.org>
-Subject: Re: [PATCH v5] x86: use builtins to read eflags
-Message-ID: <20220318220901.GS614@gate.crashing.org>
-References: <CAGG=3QWh90r5C3gmTj9zxiJb-mwD=PGqGwZZTjAfyi1NCb1_9w@mail.gmail.com> <AC3D873E-A28B-41F1-8BF4-2F6F37BCEEB4@zytor.com> <CAGG=3QVu5QjQK8m2FWiYn-XQuVBjUGXcbznSbK22jVMB5GAutw@mail.gmail.com> <F5296439-4CA3-4F31-BD91-5ED1510BC382@zytor.com> <CAKwvOdkk-C8HMemKs4+yoxvNDgTLmvZG1rmwjVXBqhsQ-cED5g@mail.gmail.com> <CAHk-=whJfKN8Jag=8DS=pbZR3TY90znUOP6Km+TLRJ9dZEgNqw@mail.gmail.com> <fd89333f-e470-a295-baf6-a736c55caeb5@citrix.com> <CAHk-=wj47CG0Y9GOFmGg4AYFvXhRFDX9x7E2Uxo9k-UX2wgR4g@mail.gmail.com> <83b33afc-8502-0065-60bc-3a91528632d8@kernel.org> <CAHk-=wj1Z_zzY7ADxaarorK5sh2xkwbcHxJTzW=bsYChWJGBGg@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wj1Z_zzY7ADxaarorK5sh2xkwbcHxJTzW=bsYChWJGBGg@mail.gmail.com>
-User-Agent: Mutt/1.4.2.3i
+        Fri, 18 Mar 2022 18:30:02 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BEBE915DA9E
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 15:28:41 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-308-tJXXIe7QOkm1qFX-LQUFdA-1; Fri, 18 Mar 2022 22:28:38 +0000
+X-MC-Unique: tJXXIe7QOkm1qFX-LQUFdA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.32; Fri, 18 Mar 2022 22:28:38 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.033; Fri, 18 Mar 2022 22:28:37 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Juergen Gross' <jgross@suse.com>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "platform-driver-x86@vger.kernel.org" 
+        <platform-driver-x86@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Dell.Client.Kernel@dell.com" <Dell.Client.Kernel@dell.com>
+CC:     Stuart Hayes <stuart.w.hayes@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: RE: [PATCH] platform/x86/dell: add buffer allocation/free functions
+ for SMI calls
+Thread-Topic: [PATCH] platform/x86/dell: add buffer allocation/free functions
+ for SMI calls
+Thread-Index: AQHYOto/hyLOp/NEJ0S+JLWvPC30KazFQPKggAAbeICAAFvP8A==
+Date:   Fri, 18 Mar 2022 22:28:37 +0000
+Message-ID: <f04348c83155404c8ae4c8e5c3abedf2@AcuMS.aculab.com>
+References: <20220318150950.16843-1-jgross@suse.com>
+ <accf95548a8c4374b17c159b9b2d0098@AcuMS.aculab.com>
+ <2a4573e0-4a8d-52c1-d29b-66b13bfe376f@suse.com>
+In-Reply-To: <2a4573e0-4a8d-52c1-d29b-66b13bfe376f@suse.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 11:19:28AM -0700, Linus Torvalds wrote:
-> Or rather, it's not the redzoning itself, but the fact that the
-> compiler might use the word under the stack for random other things,
-> and the pushf will then corrupt some local variable storage.
-> 
-> I think it would be lovely to solve that in inline asm itself some way
-> - by marking the stack pointer clobbered or something.
+RnJvbTogSnVlcmdlbiBHcm9zcw0KPiBTZW50OiAxOCBNYXJjaCAyMDIyIDE2OjU2DQo+IA0KPiBP
+biAxOC4wMy4yMiAxNjoyMiwgRGF2aWQgTGFpZ2h0IHdyb3RlOg0KPiA+IEZyb206IEp1ZXJnZW4g
+R3Jvc3MNCj4gPj4gU2VudDogMTggTWFyY2ggMjAyMiAxNToxMA0KPiA+Pg0KPiA+PiBUaGUgZGNk
+YmFzIGRyaXZlciBpcyB1c2VkIHRvIGNhbGwgU01JIGhhbmRsZXJzIGZvciBib3RoLCBkY2RiYXMg
+YW5kDQo+ID4+IGRlbGwtc21iaW9zLXNtbS4gQm90aCBkcml2ZXJzIGFsbG9jYXRlIGEgYnVmZmVy
+IGZvciBjb21tdW5pY2F0aW5nDQo+ID4+IHdpdGggdGhlIFNNSSBoYW5kbGVyLiBUaGUgcGh5c2lj
+YWwgYnVmZmVyIGFkZHJlc3MgaXMgdGhlbiBwYXNzZWQgdG8NCj4gPj4gdGhlIGNhbGxlZCBTTUkg
+aGFuZGxlciB2aWEgJWVieC4NCj4gPj4NCj4gPj4gVW5mb3J0dW5hdGVseSB0aGlzIGRvZXNuJ3Qg
+d29yayB3aGVuIHJ1bm5pbmcgaW4gWGVuIGRvbTAsIGFzIHRoZQ0KPiA+PiBwaHlzaWNhbCBhZGRy
+ZXNzIG9idGFpbmVkIHZpYSB2aXJ0X3RvX3BoeXMoKSBpcyBvbmx5IGEgZ3Vlc3QgcGh5c2ljYWwN
+Cj4gPj4gYWRkcmVzcywgYW5kIG5vdCBhIG1hY2hpbmUgcGh5c2ljYWwgYWRkcmVzcyBhcyBuZWVk
+ZWQgYnkgU01JLg0KPiA+DQo+ID4gVGhlIHBoeXNpY2FsIGFkZHJlc3MgZnJvbSB2aXJ0X3RvX3Bo
+eSgpIGlzIGFsd2F5cyB3cm9uZy4NCj4gPiBUaGF0IGlzIHRoZSBwaHlzaWNhbCBhZGRyZXNzIHRo
+ZSBjcHUgaGFzIGZvciB0aGUgbWVtb3J5Lg0KPiA+IFdoYXQgeW91IHdhbnQgaXMgdGhlIGFkZHJl
+c3MgdGhlIGRtYSBtYXN0ZXIgaW50ZXJmYWNlIG5lZWRzIHRvIHVzZS4NCj4gPiBUaGF0IGNhbiBi
+ZSBkaWZmZXJlbnQgZm9yIGEgcGh5c2ljYWwgc3lzdGVtIC0gbm8gbmVlZCBmb3IgdmlydHVhbGlz
+YXRpb24uDQo+ID4NCj4gPiBPbiB4ODYgdGhleSBkbyB1c3VhbGx5IG1hdGNoLCBidXQgYW55dGhp
+bmcgd2l0aCBhIGZ1bGwgaW9tbXUNCj4gPiB3aWxsIG5lZWQgY29tcGxldGVseSBkaWZmZXJlbnQg
+YWRkcmVzc2VzLg0KPiANCj4gWWVzLCB0aGFua3MgZm9yIHJlbWluZGluZyBtZSBvZiB0aGF0Lg0K
+PiANCj4gVGhlIFNNSSBoYW5kbGVyIGlzIHJ1bm5pbmcgb24gdGhlIGNwdSwgcmlnaHQ/IFNvIHVz
+aW5nIHRoZSBETUENCj4gYWRkcmVzcyBpcyB3cm9uZyBpbiBjYXNlIG9mIGFuIElPTU1VLiBJIHJl
+YWxseSBuZWVkIHRoZSBtYWNoaW5lDQo+IHBoeXNpY2FsIGFkZHJlc3MuDQoNClRoYXQgb3VnaHQg
+dG8gYmUgaGFuZGxlZCBieSB0aGUgJ2RldicgcGFyYW1ldGVyIHRvIGRtYV9hbGxvY19jb2hlcmVu
+dCgpLg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5
+IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRp
+b24gTm86IDEzOTczODYgKFdhbGVzKQ0K
 
-Inline assembler does not allow you to change the stack pointer, in
-principle.  You have to return everything to its original state before
-you return control from the asm code, and you have to deal with what
-happens if am interrupt comes in halfway through the asm, and all other
-ABI things that may happen on your platform.
-
-> Because you have the same issue if an inline asm might need to do a
-> function call - think magic calling conventions etc, but also possibly
-> slow-path cases.
-
-Yes.  The compiler itself can deal with all the red zone restrictions --
-precisely *because* it is in full control of the stack frame -- but
-those restrictions are very real.  It generally is a very good idea to
-have a redzone though, without it you pay much more than necessary for
-frame setup and teardown in leaf functions (similar to some of what the
-misnamed "shrink-wrapping" optimisation does, but the two are mostly
-independent, the benefits add up).
-
-> As mentioned, it's not an issue for the kernel proper due to
-> -mno-red-zone which we need for entirely unrelated reasons.
-
-It might help to have some special clobber syntax that says "this asm
-clobbers the red zone", so the compiler can arrange for the red zone to
-contain nothing during the asm (it already does the same for function
-calls, for example).
-
-How bad is it to do the fail-safe general solution here though?  I.e.,
-write actual assembler code:
-
-# u16 getflags(void);
-getflags:
-	pushf
-	pop %ax
-	ret
-
-(or whatever the syntax is, my x86 is rusty).
-
-> Side note and kind of related: we do have this in the kernel:
-> 
->   register unsigned long current_stack_pointer asm(_ASM_SP);
->   #define ASM_CALL_CONSTRAINT "+r" (current_stack_pointer)
-> 
-> which *might* also solve the redzoning issue.
-
-The GCC documentation of inline asm says
-  Another restriction is that the clobber list should not contain the
-  stack pointer register.  This is because the compiler requires the
-  value of the stack pointer to be the same after an 'asm' statement as
-  it was on entry to the statement.  However, previous versions of GCC
-  did not enforce this rule and allowed the stack pointer to appear in
-  the list, with unclear semantics.  This behavior is deprecated and
-  listing the stack pointer may become an error in future versions of
-  GCC.
-
-> In the kernel we need it not because of redzoned stack use, but
-> because we need the stack frame to be set up properly or objtool
-> complains.
-
-If the kernel has special rules for the stack, it had better teach the
-compiler about this special ABI, or there will be tears eventually.  If
-the kernel requires only what the standard ABIs provide, it can trust
-the compiler to do that correctly, this is one of the core jobs of a
-compiler!
-
-
-Segher
