@@ -2,89 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5176C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 14:15:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09070C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 14:19:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237136AbiCROQW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 10:16:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40516 "EHLO
+        id S237128AbiCROVB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 10:21:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237144AbiCROQT (ORCPT
+        with ESMTP id S232201AbiCROU4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 10:16:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC66125718F;
-        Fri, 18 Mar 2022 07:14:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 67730B823E0;
-        Fri, 18 Mar 2022 14:14:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12665C340EC;
-        Fri, 18 Mar 2022 14:14:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647612894;
-        bh=yTCl81Bijd2qcUVd8R+X71hdx9fBecmpYWObswzq7HE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=dfSdF0aZTeZL279RotjOfSOG/aTFeqHy1u72eAPdMTpKDWV2qKOpdHhbraPMk/40I
-         wwpKR2uZ5mp7jhfP8majiRI86ged94Sz+MNl7+XV8YrBa/57Nvdl/gIfeT6oN+4Lzv
-         PccE7JTuL0ipwxa8ZLuUTI8oaFMcdVU4y5LJOX0CBJV+UUvM2AMRcI7wSj2JzDFRJ0
-         KbjxMB3Motj7KXu3ORPqjMvNxPWthzgUnZAX76wEubUFb7HopthhOU4tcH1bfrmsNL
-         vWCkw6EXEvCvWms6tvpOuNv6CwpKXnwz93e3iygpjI4N6l25g4IIY82iWLFV1PnrcG
-         tCZZQXJ0poDTg==
-Received: by pali.im (Postfix)
-        id 1CD9A9CF; Fri, 18 Mar 2022 15:14:51 +0100 (CET)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Hu Ziji <huziji@marvell.com>, Ulf Hansson <ulf.hansson@linaro.org>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Konstantin Porotchkin <kostap@marvell.com>
-Cc:     linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] Revert "mmc: sdhci-xenon: fix annoying 1.8V regulator warning"
-Date:   Fri, 18 Mar 2022 15:14:41 +0100
-Message-Id: <20220318141441.32329-1-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
+        Fri, 18 Mar 2022 10:20:56 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C472CC1CAB
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 07:19:37 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1647613174;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=j/L0jdjbHK9avcbWxeB0aN6EZcZvySQA8oCMsEbJtdE=;
+        b=OxC1QdUwSTRZWLeixHh2c47FDwVfqxThKWECCOKsIEz6fS+d8X4lc0Raqske4zHO4o6rIs
+        ENAvaqxHNMQT8pA6k8ELyrqxxGZ9NhvgvVIW5mjgdbdE4ZV/5ewRkl3YhXyZ0RyzvPEC5P
+        4lKksFPO+rIYuTYLZt04X04AXl+jo3z694RY5hIXWLyPot8iXSJANI90prWyx4HN/7y0Gp
+        OHVgZZH6EQ0E29K0+SZq1By4K//uRmqE8O2K4JzljxY4qHM0Q8VnWwIu0xv8szDJtUb4Qp
+        wyj3SDTFbb/kdOIxIJz8yAW6iilgeE6ZX6zGZet+YJrl3Jdxa/0t431RWnkSIA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1647613174;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=j/L0jdjbHK9avcbWxeB0aN6EZcZvySQA8oCMsEbJtdE=;
+        b=3S1MEAAYsBxJ/e7wtHMxaGmOobog8e62ehgRBXx/b8G9sPREHSksF0ydrERTNlevG9J8dw
+        CCQ2OGfiHxd9v+Cw==
+To:     Peter Zijlstra <peterz@infradead.org>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     mingo@redhat.com, bp@alien8.de, dave.hansen@intel.com,
+        luto@kernel.org, sathyanarayanan.kuppuswamy@linux.intel.com,
+        aarcange@redhat.com, ak@linux.intel.com, dan.j.williams@intel.com,
+        david@redhat.com, hpa@zytor.com, jgross@suse.com,
+        jmattson@google.com, joro@8bytes.org, jpoimboe@redhat.com,
+        knsathya@kernel.org, pbonzini@redhat.com, sdeep@vmware.com,
+        seanjc@google.com, tony.luck@intel.com, vkuznets@redhat.com,
+        wanpengli@tencent.com, thomas.lendacky@amd.com,
+        brijesh.singh@amd.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org,
+        Sean Christopherson <sean.j.christopherson@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>
+Subject: Re: [PATCHv6 07/30] x86/traps: Add #VE support for TDX guest
+In-Reply-To: <20220317202141.GO8939@worktop.programming.kicks-ass.net>
+References: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
+ <20220316020856.24435-8-kirill.shutemov@linux.intel.com>
+ <877d8t2ykp.ffs@tglx> <20220317173354.rqymufl37lcrtmjh@black.fi.intel.com>
+ <20220317202141.GO8939@worktop.programming.kicks-ass.net>
+Date:   Fri, 18 Mar 2022 15:19:34 +0100
+Message-ID: <87a6dncphl.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit bb32e1987bc55ce1db400faf47d85891da3c9b9f.
+On Thu, Mar 17 2022 at 21:21, Peter Zijlstra wrote:
+> On Thu, Mar 17, 2022 at 08:33:54PM +0300, Kirill A. Shutemov wrote:
+>>  - in NMI entry code (asm_exc_nmi()) before NMI nesting is safe:
+>>    + for NMI from user mode, before switched to thread stack
+>>    + for NMI from kernel, up to end_repead_nmi
+>> 
+>> After that points #VE is safe.
+>
+> In what way is it guaranteed that #VE isn't raised in those places? What
+> does an auditor / future coder looking to changes things, need to
+> consider to keep this so.
+>
+> From vague memories #VE can be raised on any memop, loading the stack
+> address in the syscall-gap is a memop. What makes that special? Can we
+> get a comment _there_ to explain how this is safe such that we can keep
+> it so?
+>
+> Same for the NMI path I suppose.
 
-Commit 1a3ed0dc3594 ("mmc: sdhci-xenon: fix 1.8v regulator stabilization")
-contains proper fix for the issue described in commit bb32e1987bc5 ("mmc:
-sdhci-xenon: fix annoying 1.8V regulator warning").
+#VE is raised by HLT, CPUID, I/O-Port access, MSR read/write, EPT violations
 
-Fixes: 8d876bf472db ("mmc: sdhci-xenon: wait 5ms after set 1.8V signal enable")
-Cc: stable@vger.kernel.org # 1a3ed0dc3594 ("mmc: sdhci-xenon: fix 1.8v regulator stabilization")
-Signed-off-by: Pali Rohár <pali@kernel.org>
----
- drivers/mmc/host/sdhci-xenon.c | 10 ----------
- 1 file changed, 10 deletions(-)
+So in the hairy places:
 
-diff --git a/drivers/mmc/host/sdhci-xenon.c b/drivers/mmc/host/sdhci-xenon.c
-index 666cee4c7f7c..08e838400b52 100644
---- a/drivers/mmc/host/sdhci-xenon.c
-+++ b/drivers/mmc/host/sdhci-xenon.c
-@@ -241,16 +241,6 @@ static void xenon_voltage_switch(struct sdhci_host *host)
- {
- 	/* Wait for 5ms after set 1.8V signal enable bit */
- 	usleep_range(5000, 5500);
--
--	/*
--	 * For some reason the controller's Host Control2 register reports
--	 * the bit representing 1.8V signaling as 0 when read after it was
--	 * written as 1. Subsequent read reports 1.
--	 *
--	 * Since this may cause some issues, do an empty read of the Host
--	 * Control2 register here to circumvent this.
--	 */
--	sdhci_readw(host, SDHCI_HOST_CONTROL2);
- }
- 
- static unsigned int xenon_get_max_clock(struct sdhci_host *host)
--- 
-2.20.1
+ - HLT:       No business
+ - I/O Ports: That would be outright stupid to use
 
+ - CPUID:     Should never be used - Emphasis on should :)
+ - MSRs:      Same as CPUID
+
+ - EPT:       Well....
+
+Thanks,
+
+        Thomas
