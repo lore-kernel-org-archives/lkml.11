@@ -2,66 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49F88C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 10:01:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A4B3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 10:02:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234805AbiCRKCh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 06:02:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47628 "EHLO
+        id S234811AbiCRKDi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 06:03:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234079AbiCRKCf (ORCPT
+        with ESMTP id S234079AbiCRKDg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 06:02:35 -0400
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C15100E09;
-        Fri, 18 Mar 2022 03:01:16 -0700 (PDT)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 1DE441A1F2A;
-        Fri, 18 Mar 2022 11:01:15 +0100 (CET)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id D3A261A1F1D;
-        Fri, 18 Mar 2022 11:01:14 +0100 (CET)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 83AEC183AD67;
-        Fri, 18 Mar 2022 18:01:13 +0800 (+08)
-From:   Shengjiu Wang <shengjiu.wang@nxp.com>
-To:     bjorn.andersson@linaro.org, mathieu.poirier@linaro.org
-Cc:     linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        shengjiu.wang@gmail.com
-Subject: [PATCH] remoteproc: core: check rproc->power value before decreasing it
-Date:   Fri, 18 Mar 2022 17:51:36 +0800
-Message-Id: <1647597096-5480-1-git-send-email-shengjiu.wang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Fri, 18 Mar 2022 06:03:36 -0400
+Received: from smtpbgjp3.qq.com (smtpbgjp3.qq.com [54.92.39.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CFA52EA91A
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 03:02:17 -0700 (PDT)
+X-QQ-mid: bizesmtp87t1647597713tmh93ghn
+Received: from localhost.localdomain ( [58.240.82.166])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Fri, 18 Mar 2022 18:01:47 +0800 (CST)
+X-QQ-SSF: 01400000002000D0I000000A0000000
+X-QQ-FEAT: tV/YCL8KvSigEojevuX8Z4ksKFjFwYMDDUbPH/+nVcU7UGmXSmpaGh5Fw2TTJ
+        ijQgE8ge+s9vAMzDJ2oQSggoIqRj1D8rYiQVWISYIsQzywwW2GZY4boK0F509frGzxeSetM
+        /YeeeSwqAc/FIlE/SWOjLFvAM1TXdkVQSWHNw9oGipU0RYnkbheHybma516x3Es1MGb2HGf
+        nZy9DSHMivEJDGBc0sMUVL0+OPHNff0hPUvo4UIyGJj0LcN14XHH2iamuk0Jgf3KQLlDOUF
+        NS4P4pwdT2GhiWXrVT8IjFfyrjWWgd1kT6jFUbR2t56wNPiQVjaSXZO/jLMTWZ5xhExWs1O
+        XTUcae4Sxw1eeuY1t+yFgoFtai4KT4X8Lq+pOiBcM7kQ5XQD2s=
+X-QQ-GoodBg: 1
+From:   Meng Tang <tangmeng@uniontech.com>
+To:     frattaroli.nicolas@gmail.com, lgirdwood@gmail.com,
+        broonie@kernel.org, perex@perex.cz, tiwai@suse.com, heiko@sntech.de
+Cc:     linux-rockchip@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Meng Tang <tangmeng@uniontech.com>
+Subject: [PATCH] ASoC: rockchip: i2s_tdm: Fixup config for SND_SOC_DAIFMT_DSP_A/B
+Date:   Fri, 18 Mar 2022 18:01:46 +0800
+Message-Id: <20220318100146.23991-1-tangmeng@uniontech.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign3
+X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are possibility that two 'stop' operation happen
-in parallel, then the rproc->power may be decreased to
--1, that this reference count will be in wrong state.
-So check rproc->power to make sure it is larger than
-zero before decreasing it.
+SND_SOC_DAIFMT_DSP_A: PCM delay 1 bit mode, L data MSB after FRM LRC
+SND_SOC_DAIFMT_DSP_B: PCM no delay mode, L data MSB during FRM LRC
 
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Fixes: 081068fd64140 (ASoC: rockchip: add support for i2s-tdm controller)
+
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
 ---
- drivers/remoteproc/remoteproc_core.c | 3 +++
- 1 file changed, 3 insertions(+)
+ sound/soc/rockchip/rockchip_i2s_tdm.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
-index c510125769b9..84e065ad8743 100644
---- a/drivers/remoteproc/remoteproc_core.c
-+++ b/drivers/remoteproc/remoteproc_core.c
-@@ -2075,6 +2075,9 @@ int rproc_shutdown(struct rproc *rproc)
- 		return ret;
- 	}
- 
-+	if (atomic_read(&rproc->power) <= 0)
-+		goto out;
-+
- 	/* if the remote proc is still needed, bail out */
- 	if (!atomic_dec_and_test(&rproc->power))
- 		goto out;
+diff --git a/sound/soc/rockchip/rockchip_i2s_tdm.c b/sound/soc/rockchip/rockchip_i2s_tdm.c
+index 5f9cb5c4c7f0..f21296679bff 100644
+--- a/sound/soc/rockchip/rockchip_i2s_tdm.c
++++ b/sound/soc/rockchip/rockchip_i2s_tdm.c
+@@ -469,14 +469,14 @@ static int rockchip_i2s_tdm_set_fmt(struct snd_soc_dai *cpu_dai,
+ 		txcr_val = I2S_TXCR_IBM_NORMAL;
+ 		rxcr_val = I2S_RXCR_IBM_NORMAL;
+ 		break;
+-	case SND_SOC_DAIFMT_DSP_A: /* PCM no delay mode */
+-		txcr_val = I2S_TXCR_TFS_PCM;
+-		rxcr_val = I2S_RXCR_TFS_PCM;
+-		break;
+-	case SND_SOC_DAIFMT_DSP_B: /* PCM delay 1 mode */
++	case SND_SOC_DAIFMT_DSP_A: /* PCM delay 1 mode */
+ 		txcr_val = I2S_TXCR_TFS_PCM | I2S_TXCR_PBM_MODE(1);
+ 		rxcr_val = I2S_RXCR_TFS_PCM | I2S_RXCR_PBM_MODE(1);
+ 		break;
++	case SND_SOC_DAIFMT_DSP_B: /* PCM no delay mode */
++		txcr_val = I2S_TXCR_TFS_PCM;
++		rxcr_val = I2S_RXCR_TFS_PCM;
++		break;
+ 	default:
+ 		ret = -EINVAL;
+ 		goto err_pm_put;
 -- 
-2.17.1
+2.20.1
+
+
 
