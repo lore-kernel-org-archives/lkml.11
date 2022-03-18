@@ -2,89 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0422BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 15:56:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41CC1C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:03:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238348AbiCRP6O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 11:58:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37538 "EHLO
+        id S238203AbiCRQEc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 12:04:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238323AbiCRP6L (ORCPT
+        with ESMTP id S231775AbiCRQEY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 11:58:11 -0400
-Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3004099ED3
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 08:56:48 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=cuibixuan@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V7XBZR6_1647619000;
-Received: from VM20210331-25.tbsite.net(mailfrom:cuibixuan@linux.alibaba.com fp:SMTPD_---0V7XBZR6_1647619000)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 18 Mar 2022 23:56:45 +0800
-From:   Bixuan Cui <cuibixuan@linux.alibaba.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     cuibixuan@linux.alibaba.com, rostedt@goodmis.org, mingo@redhat.com,
-        yi.zhang@huawei.com, jack@suse.cz
-Subject: [PATCH -next] jbd2: use the correct print format
-Date:   Fri, 18 Mar 2022 23:56:40 +0800
-Message-Id: <1647619000-17758-1-git-send-email-cuibixuan@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        Fri, 18 Mar 2022 12:04:24 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A9886277
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 09:03:04 -0700 (PDT)
+Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 565E81C0003;
+        Fri, 18 Mar 2022 16:03:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1647619383;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=9LCyO4ZeV4D1HkpUM5CtcxANfcmtzF+DEYKQhTlGfIU=;
+        b=ocD7OJMqhqSqoXXVWORr9+FjnQVAGBTRQtnrn49FmdWlOtnfx0f8Mg3n9lYPj55My4JAWH
+        DiSImPl/7ba1vNaeKwsx0SIcNDvGN3Pmzzzdv80b1MkFHjqSMVvy4i1t3t/6/csrLdHUqd
+        lzLgeA/FYWACnLCrwrLuzf+QobWPFdKH82u46KI82HJMpiggy1E1ae2NWlPMgkQhHGTA9U
+        WiuagoitmpoeHjTm7+ZZSKo6L0ZMepSzdsvB5TYk8GIoYIqsPTp3Fz8WugjFEdT2hvwGnS
+        PebDndy3PVkgeMfsno3oZjQATzx+1RiswPUNWn64QKPAoTVMnouSWZgBInJDrw==
+From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+To:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Subject: [PATCH v2] drm: of: Properly try all possible cases for bridge/panel detection
+Date:   Fri, 18 Mar 2022 17:02:49 +0100
+Message-Id: <20220318160249.126431-1-paul.kocialkowski@bootlin.com>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The print format error was found when using ftrace event:
-    <...>-1406 [000] .... 23599442.895823: jbd2_end_commit: dev 252,8 transaction -1866216965 sync 0 head -1866217368
-    <...>-1406 [000] .... 23599442.896299: jbd2_start_commit: dev 252,8 transaction -1866216964 sync 0
+While bridge/panel detection was initially relying on the usual
+port/ports-based of graph detection, it was recently changed to
+perform the lookup on any child node that is not port/ports
+instead when such a node is available, with no fallback on the
+usual way.
 
-Print transaction and head with the unsigned format "%u" instead.
+This results in breaking detection when a child node is present
+but does not contain any panel or bridge node, even when the
+usual port/ports-based of graph is there.
 
-Fixes: 879c5e6b7cb4 ('jbd2: convert instrumentation from markers to tracepoints')
-Signed-off-by: Bixuan Cui <cuibixuan@linux.alibaba.com>
+In order to support both situations properly, this commit reworks
+the logic to try both options and not just one of the two: it will
+only return -EPROBE_DEFER when both have failed.
+
+Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Fixes: 80253168dbfd ("drm: of: Lookup if child node has panel or bridge")
 ---
- include/trace/events/jbd2.h | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/include/trace/events/jbd2.h b/include/trace/events/jbd2.h
-index a4dfe005983d..5be1aa1691fb 100644
---- a/include/trace/events/jbd2.h
-+++ b/include/trace/events/jbd2.h
-@@ -40,7 +40,7 @@ DECLARE_EVENT_CLASS(jbd2_commit,
- 	TP_STRUCT__entry(
- 		__field(	dev_t,	dev			)
- 		__field(	char,	sync_commit		  )
--		__field(	int,	transaction		  )
-+		__field(	tid_t,	transaction		  )
- 	),
+Changes since v1:
+- Renamed remote to node;
+- Renamed helper to find_panel_or_bridge;
+- Cleared bridge pointer early;
+- Returned early to make the code more concise;
+
+---
+ drivers/gpu/drm/drm_of.c | 98 ++++++++++++++++++++--------------------
+ 1 file changed, 49 insertions(+), 49 deletions(-)
+
+diff --git a/drivers/gpu/drm/drm_of.c b/drivers/gpu/drm/drm_of.c
+index 9d90cd75c457..63137c833b7a 100644
+--- a/drivers/gpu/drm/drm_of.c
++++ b/drivers/gpu/drm/drm_of.c
+@@ -219,6 +219,28 @@ int drm_of_encoder_active_endpoint(struct device_node *node,
+ }
+ EXPORT_SYMBOL_GPL(drm_of_encoder_active_endpoint);
  
- 	TP_fast_assign(
-@@ -49,7 +49,7 @@ DECLARE_EVENT_CLASS(jbd2_commit,
- 		__entry->transaction	= commit_transaction->t_tid;
- 	),
++static int find_panel_or_bridge(struct device_node *node,
++				struct drm_panel **panel,
++				struct drm_bridge **bridge)
++{
++	if (panel) {
++		*panel = of_drm_find_panel(node);
++		if (!IS_ERR(*panel))
++			return 0;
++		else
++			*panel = NULL;
++	}
++
++	/* No panel found yet, check for a bridge next. */
++	if (bridge) {
++		*bridge = of_drm_find_bridge(node);
++		if (*bridge)
++			return 0;
++	}
++
++	return -EPROBE_DEFER;
++}
++
+ /**
+  * drm_of_find_panel_or_bridge - return connected panel or bridge device
+  * @np: device tree node containing encoder output ports
+@@ -241,66 +263,44 @@ int drm_of_find_panel_or_bridge(const struct device_node *np,
+ 				struct drm_panel **panel,
+ 				struct drm_bridge **bridge)
+ {
+-	int ret = -EPROBE_DEFER;
+-	struct device_node *remote;
++	struct device_node *node;
++	int ret;
  
--	TP_printk("dev %d,%d transaction %d sync %d",
-+	TP_printk("dev %d,%d transaction %u sync %d",
- 		  MAJOR(__entry->dev), MINOR(__entry->dev),
- 		  __entry->transaction, __entry->sync_commit)
- );
-@@ -97,8 +97,8 @@ TRACE_EVENT(jbd2_end_commit,
- 	TP_STRUCT__entry(
- 		__field(	dev_t,	dev			)
- 		__field(	char,	sync_commit		  )
--		__field(	int,	transaction		  )
--		__field(	int,	head		  	  )
-+		__field(	tid_t,	transaction		  )
-+		__field(	tid_t,	head		  	  )
- 	),
+ 	if (!panel && !bridge)
+ 		return -EINVAL;
++
+ 	if (panel)
+ 		*panel = NULL;
+-
+-	/**
+-	 * Devices can also be child nodes when we also control that device
+-	 * through the upstream device (ie, MIPI-DCS for a MIPI-DSI device).
+-	 *
+-	 * Lookup for a child node of the given parent that isn't either port
+-	 * or ports.
+-	 */
+-	for_each_available_child_of_node(np, remote) {
+-		if (of_node_name_eq(remote, "port") ||
+-		    of_node_name_eq(remote, "ports"))
+-			continue;
+-
+-		goto of_find_panel_or_bridge;
++	if (bridge)
++		*bridge = NULL;
++
++	/* Check for a graph on the device node first. */
++	if (of_graph_is_present(np)) {
++		node = of_graph_get_remote_node(np, port, endpoint);
++		if (node) {
++			ret = find_panel_or_bridge(node, panel, bridge);
++			of_node_put(node);
++
++			if (!ret)
++				return 0;
++		}
+ 	}
  
- 	TP_fast_assign(
-@@ -108,7 +108,7 @@ TRACE_EVENT(jbd2_end_commit,
- 		__entry->head		= journal->j_tail_sequence;
- 	),
+-	/*
+-	 * of_graph_get_remote_node() produces a noisy error message if port
+-	 * node isn't found and the absence of the port is a legit case here,
+-	 * so at first we silently check whether graph presents in the
+-	 * device-tree node.
+-	 */
+-	if (!of_graph_is_present(np))
+-		return -ENODEV;
+-
+-	remote = of_graph_get_remote_node(np, port, endpoint);
+-
+-of_find_panel_or_bridge:
+-	if (!remote)
+-		return -ENODEV;
+-
+-	if (panel) {
+-		*panel = of_drm_find_panel(remote);
+-		if (!IS_ERR(*panel))
+-			ret = 0;
+-		else
+-			*panel = NULL;
+-	}
++	/* Otherwise check for any child node other than port/ports. */
++	for_each_available_child_of_node(np, node) {
++		if (of_node_name_eq(node, "port") ||
++		    of_node_name_eq(node, "ports"))
++			continue;
  
--	TP_printk("dev %d,%d transaction %d sync %d head %d",
-+	TP_printk("dev %d,%d transaction %u sync %d head %u",
- 		  MAJOR(__entry->dev), MINOR(__entry->dev),
- 		  __entry->transaction, __entry->sync_commit, __entry->head)
- );
+-	/* No panel found yet, check for a bridge next. */
+-	if (bridge) {
+-		if (ret) {
+-			*bridge = of_drm_find_bridge(remote);
+-			if (*bridge)
+-				ret = 0;
+-		} else {
+-			*bridge = NULL;
+-		}
++		ret = find_panel_or_bridge(node, panel, bridge);
++		of_node_put(node);
+ 
++		/* Stop at the first found occurrence. */
++		if (!ret)
++			return 0;
+ 	}
+ 
+-	of_node_put(remote);
+-	return ret;
++	return -EPROBE_DEFER;
+ }
+ EXPORT_SYMBOL_GPL(drm_of_find_panel_or_bridge);
+ 
 -- 
-2.19.1.6.gb485710b
+2.35.1
 
