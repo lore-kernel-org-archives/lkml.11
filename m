@@ -2,93 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5F36C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:40:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5BE6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:40:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239286AbiCRQlk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 12:41:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38386 "EHLO
+        id S238831AbiCRQmF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 12:42:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234993AbiCRQld (ORCPT
+        with ESMTP id S234993AbiCRQmE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 12:41:33 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FE0016E7FE;
-        Fri, 18 Mar 2022 09:40:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647621614; x=1679157614;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=eaKEzVQMhfgLDl4Dn7Ns+XQwteg23fcUytz1ubC+krQ=;
-  b=VA2VukCQbuGXeXNx5FRAtZaM9NUS+MvxYS4nXL8LQGD9Rl3hr8v6+LY5
-   jHqwz5lcPsGS7oy5lKNv/VC/UgtdJu2dDDJSvNTVVWh/Hn8LyjqZo0VUj
-   WyUSPImxiAqKykp6oU6zOhNPel2LeG2FhmZx9rR2hcKm9r/PEme+P3p0R
-   k2lDHjLPGDeW0yPwoyvaCr9ZUx8mqWRoHymQrSkxvsEvWpa5WfB2EI9IS
-   v0OBbLxntO3uviov63R9CQX7G7PgVXc7BXy/pwFJ8RjZu6pgXRPTqwAnf
-   oBFiUSbEed0MDWYjVY4Vk9fNYtxw8PO1ihNWQonb6pdXlyVW8Zl992cN0
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="254731873"
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="254731873"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 09:30:25 -0700
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="513948960"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 09:30:19 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nVFTw-002KFh-0v;
-        Fri, 18 Mar 2022 18:29:40 +0200
-Date:   Fri, 18 Mar 2022 18:29:39 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "'Rafael J . Wysocki '" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-i2c@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 2/6] i2c: fwnode: add fwnode_find_i2c_adapter_by_node()
-Message-ID: <YjSzc/Eek8NvqEN6@smile.fi.intel.com>
-References: <20220318160059.328208-1-clement.leger@bootlin.com>
- <20220318160059.328208-3-clement.leger@bootlin.com>
+        Fri, 18 Mar 2022 12:42:04 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 703DE1D418D;
+        Fri, 18 Mar 2022 09:40:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=r8zGlravb2AzK2K7gBcn8VO4FQqoRtf4pFqGmaBVArs=; b=2qokbIvjL36AIwDMyafPopbgvt
+        lE10XLrJYrqq817MejuOaAPSZmZ2Mg0CgT3Z4P727hr0d5Y2fwZcSNmHacDmQCIdh3ZwjeeLHA3rl
+        aC9uuWzvY6Yjp4T8pjKTJQ37v6/z4Q55st2IM2RYc+v1yqsWpJ56M3voCv1I/ztwr1/EDDXR5/v9e
+        EbRhBOifwi09xLwDeaCVFdTKVIpVqg2DQFwSMqYILnfOqydu48pOkRfDQIs19IG1sSu4GvnchghL2
+        8bfd013D7INfQnufiz3GK0+4r7JJFVKGjS7I88vEXpx2QcBBUEXKWsaVtnzowSdFjwKLCxPkLZ9dy
+        +YWb+9SA==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nVFeY-002QHy-Q2; Fri, 18 Mar 2022 16:40:38 +0000
+Date:   Fri, 18 Mar 2022 09:40:38 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     corbet@lwn.net, mike.kravetz@oracle.com, akpm@linux-foundation.org,
+        keescook@chromium.org, yzaikin@google.com, osalvador@suse.de,
+        david@redhat.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        duanxiongchun@bytedance.com, smuchun@gmail.com
+Subject: Re: [PATCH v4 1/4] mm: hugetlb_vmemmap: introduce
+ STRUCT_PAGE_SIZE_IS_POWER_OF_2
+Message-ID: <YjS2BiqKlDrPYslc@bombadil.infradead.org>
+References: <20220318100720.14524-1-songmuchun@bytedance.com>
+ <20220318100720.14524-2-songmuchun@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220318160059.328208-3-clement.leger@bootlin.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220318100720.14524-2-songmuchun@bytedance.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 05:00:48PM +0100, Clément Léger wrote:
-> Add fwnode_find_i2c_adapter_by_node() which allows to retrieve a i2c
-> adapter using a fwnode. Since dev_fwnode() uses the fwnode provided by
-> the of_node member of the device, this will also work for devices were
-> the of_node has been set and not the fwnode field.
+On Fri, Mar 18, 2022 at 06:07:17PM +0800, Muchun Song wrote:
 
-> +	/* For ACPI device node, we do not want to match the parent */
+You can add Suggested-by tag here.
 
-Why?
-Neither commit message nor this comment does not answer to this question.
+> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> ---
+>  Kbuild                           | 12 ++++++++++++
+>  fs/Kconfig                       |  2 +-
+>  include/linux/mm_types.h         |  2 ++
+>  mm/Kconfig                       |  3 +++
+>  mm/hugetlb_vmemmap.c             |  6 ------
+>  mm/struct_page_size.c            | 19 +++++++++++++++++++
+>  scripts/check_struct_page_po2.sh | 11 +++++++++++
+>  7 files changed, 48 insertions(+), 7 deletions(-)
+>  create mode 100644 mm/struct_page_size.c
+>  create mode 100755 scripts/check_struct_page_po2.sh
+> 
+> diff --git a/Kbuild b/Kbuild
+> index fa441b98c9f6..6bb97d348d62 100644
+> --- a/Kbuild
+> +++ b/Kbuild
+> @@ -14,6 +14,18 @@ $(bounds-file): kernel/bounds.s FORCE
+>  	$(call filechk,offsets,__LINUX_BOUNDS_H__)
+>  
+>  #####
+> +# Generate struct_page_size.h. Must follows bounds.h.
+> +
+> +struct_page_size-file := include/generated/struct_page_size.h
+> +
+> +always-y := $(struct_page_size-file)
+> +targets := mm/struct_page_size.s
+> +
+> +$(struct_page_size-file): mm/struct_page_size.s FORCE
+> +	$(call filechk,offsets,__LINUX_STRUCT_PAGE_SIZE_H__)
+> +	$(Q)$(MAKE) -f $(srctree)/Makefile syncconfig
+> +
+> +#####
 
--- 
-With Best Regards,
-Andy Shevchenko
+Shouldn't this go into mm/Makefile instead?
 
+> diff --git a/mm/Kconfig b/mm/Kconfig
+> index 034d87953600..9314bd34f49e 100644
+> --- a/mm/Kconfig
+> +++ b/mm/Kconfig
+> @@ -2,6 +2,9 @@
+>  
+>  menu "Memory Management options"
+>  
+> +config STRUCT_PAGE_SIZE_IS_POWER_OF_2
+> +	def_bool $(success,test "$(shell, $(srctree)/scripts/check_struct_page_po2.sh)" = 1)
+> +
+>  config SELECT_MEMORY_MODEL
+>  	def_bool y
+>  	depends on ARCH_SELECT_MEMORY_MODEL
+> new file mode 100755
+> index 000000000000..9547ad3aca05
+> --- /dev/null
+> +++ b/scripts/check_struct_page_po2.sh
+> @@ -0,0 +1,11 @@
+> +#!/bin/sh
+> +# SPDX-License-Identifier: GPL-2.0
+> +#
+> +# Check if the size of "struct page" is power of 2
+> +
+> +file="include/generated/struct_page_size.h"
+> +if [ ! -f "$file" ]; then
 
+Does this really work if one is workig off of a very clean build
+like make mrproper and then make menuconfig or or mrproper followed
+by a defconfig file ? Have you tried it for both cases po2 and npo2?
+
+Because isn't include/generated/struct_page_size.h generated? At
+which point does it get generated and why would the condition hole
+true that the file exists at a new 'make menuconfig' time?
+
+  Luis
