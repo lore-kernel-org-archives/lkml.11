@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E674EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 15:32:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22DB5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 15:32:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238170AbiCRPdg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 11:33:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49346 "EHLO
+        id S238177AbiCRPdj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 11:33:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230257AbiCRPcP (ORCPT
+        with ESMTP id S238060AbiCRPcS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 11:32:15 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1B751903DC
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 08:30:54 -0700 (PDT)
+        Fri, 18 Mar 2022 11:32:18 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D66219058B
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 08:30:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647617454; x=1679153454;
+  t=1647617459; x=1679153459;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=iznNJy8gxVc9yYg7adxEnkSxDrtLakTn+JZ2TNjZC0k=;
-  b=nfzrFXAU153s2EpXVBIQKakAU0EmYkkkdfhMG8yFnmOiAjZrmj9IPnNH
-   MbjKwdB/rs+vx4+XWVbPqjpIJ5wcjF8o0mdPcIYBu6aG+/PWsnGzS6/XS
-   GsxN1moYiinfj4SLxphXTMZAyyQwU1RUrCGM+9MNG6D6vDLmo5qT2c7Ab
-   u9xa1tgdVs1kZkFTrthzfHc20+daqbP6XUf18XtG8R78mYFAs9GCNr97d
-   G+x+GiZ9GQ9LuxfxRTlS0L2/r5/gwpxeKChG/jByCkdJ5KRC9sK+SszPp
-   Yp4jJpkVooqCugyG4kgF3v3WNMfQv5vlIVn8SJO93WruaeQ7XGjsPbGlh
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="256883244"
+  bh=MSvS+9NbYSrsQgy6kndTGjPkboouyc+qZrLBTCDZhBM=;
+  b=JM8hnDy6Nl3bnZZ/uUBZ7vEw8C71Ximy5NK/dz3cTzpychyTomu3ZITY
+   9T9vEGn/7fuvj2OFyoSVVZTBn4XwDKQGAumc/bEHG7No7x3/ie5r4fxUv
+   wW99jAUO91jquuSTPGjF9Lbnq1Dr3Bh5UEdRQAPrVCB8X52rvrpQyufF6
+   UOC/YmXesGyd4ntdoCA9IV38vfBw49I9uiSmgUwyF/m2/FTe9c4bjCtsn
+   cQlLPEOE5E8U7gsB+/UwXYAjL5pw8FiVDnYDgWeitkAJtBmjDmpzf8K3d
+   hEHY5rAwe6hR6/hDzmzu110kd9IuFjAnjOUbHnII99t80bKuHeHs8NcfC
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="255982618"
 X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="256883244"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 08:30:52 -0700
+   d="scan'208";a="255982618"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 08:30:52 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="647504857"
+   d="scan'208";a="581751864"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga004.jf.intel.com with ESMTP; 18 Mar 2022 08:30:45 -0700
+  by orsmga001.jf.intel.com with ESMTP; 18 Mar 2022 08:30:45 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 9DA4C7FE; Fri, 18 Mar 2022 17:30:50 +0200 (EET)
+        id D6A8AA2E; Fri, 18 Mar 2022 17:30:50 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -51,11 +51,10 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
         linux-kernel@vger.kernel.org,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>
-Subject: [PATCHv7 18/30] x86/tdx: Port I/O: add early boot support
-Date:   Fri, 18 Mar 2022 18:30:36 +0300
-Message-Id: <20220318153048.51177-19-kirill.shutemov@linux.intel.com>
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv7 23/30] x86/boot: Avoid #VE during boot for TDX platforms
+Date:   Fri, 18 Mar 2022 18:30:41 +0300
+Message-Id: <20220318153048.51177-24-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220318153048.51177-1-kirill.shutemov@linux.intel.com>
 References: <20220318153048.51177-1-kirill.shutemov@linux.intel.com>
@@ -65,97 +64,186 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andi Kleen <ak@linux.intel.com>
+From: Sean Christopherson <seanjc@google.com>
 
-TDX guests cannot do port I/O directly. The TDX module triggers a #VE
-exception to let the guest kernel emulate port I/O by converting them
-into TDCALLs to call the host.
+There are a few MSRs and control register bits that the kernel
+normally needs to modify during boot. But, TDX disallows
+modification of these registers to help provide consistent security
+guarantees. Fortunately, TDX ensures that these are all in the correct
+state before the kernel loads, which means the kernel does not need to
+modify them.
 
-But before IDT handlers are set up, port I/O cannot be emulated using
-normal kernel #VE handlers. To support the #VE-based emulation during
-this boot window, add a minimal early #VE handler support in early
-exception handlers. This is similar to what AMD SEV does. This is
-mainly to support earlyprintk's serial driver, as well as potentially
-the VGA driver.
+The conditions to avoid are:
 
-The early handler only supports I/O-related #VE exceptions. Unhandled or
-failed exceptions will be handled via early_fixup_exceptions() (like
-normal exception failures). At runtime I/O-related #VE exceptions (along
-with other types) handled by virt_exception_kernel().
+ * Any writes to the EFER MSR
+ * Clearing CR4.MCE
 
-Signed-off-by: Andi Kleen <ak@linux.intel.com>
+This theoretically makes the guest boot more fragile. If, for instance,
+EFER was set up incorrectly and a WRMSR was performed, it will trigger
+early exception panic or a triple fault, if it's before early
+exceptions are set up. However, this is likely to trip up the guest
+BIOS long before control reaches the kernel. In any case, these kinds
+of problems are unlikely to occur in production environments, and
+developers have good debug tools to fix them quickly.
+
+Change the common boot code to work on TDX and non-TDX systems.
+This should have no functional effect on non-TDX systems.
+
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
 Reviewed-by: Dan Williams <dan.j.williams@intel.com>
 Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
 ---
- arch/x86/coco/tdx/tdx.c    | 16 ++++++++++++++++
- arch/x86/include/asm/tdx.h |  4 ++++
- arch/x86/kernel/head64.c   |  3 +++
- 3 files changed, 23 insertions(+)
+ arch/x86/Kconfig                     |  1 +
+ arch/x86/boot/compressed/head_64.S   | 20 ++++++++++++++++++--
+ arch/x86/boot/compressed/pgtable.h   |  2 +-
+ arch/x86/kernel/head_64.S            | 28 ++++++++++++++++++++++++++--
+ arch/x86/realmode/rm/trampoline_64.S | 13 ++++++++++++-
+ 5 files changed, 58 insertions(+), 6 deletions(-)
 
-diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
-index e47e2ed6b03e..cc14b7c0c157 100644
---- a/arch/x86/coco/tdx/tdx.c
-+++ b/arch/x86/coco/tdx/tdx.c
-@@ -418,6 +418,22 @@ static bool handle_io(struct pt_regs *regs, u32 exit_qual)
- 		return handle_out(regs, size, port);
- }
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index d2f45e58e846..98efb35ed7b1 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -886,6 +886,7 @@ config INTEL_TDX_GUEST
+ 	depends on X86_X2APIC
+ 	select ARCH_HAS_CC_PLATFORM
+ 	select DYNAMIC_PHYSICAL_MASK
++	select X86_MCE
+ 	help
+ 	  Support running as a guest under Intel TDX.  Without this support,
+ 	  the guest kernel can not boot or run under TDX.
+diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
+index d0c3d33f3542..6d903b2fc544 100644
+--- a/arch/x86/boot/compressed/head_64.S
++++ b/arch/x86/boot/compressed/head_64.S
+@@ -643,12 +643,28 @@ SYM_CODE_START(trampoline_32bit_src)
+ 	movl	$MSR_EFER, %ecx
+ 	rdmsr
+ 	btsl	$_EFER_LME, %eax
++	/* Avoid writing EFER if no change was made (for TDX guest) */
++	jc	1f
+ 	wrmsr
+-	popl	%edx
++1:	popl	%edx
+ 	popl	%ecx
  
-+/*
-+ * Early #VE exception handler. Only handles a subset of port I/O.
-+ * Intended only for earlyprintk. If failed, return false.
-+ */
-+__init bool tdx_early_handle_ve(struct pt_regs *regs)
-+{
-+	struct ve_info ve;
++#ifdef CONFIG_X86_MCE
++	/*
++	 * Preserve CR4.MCE if the kernel will enable #MC support.
++	 * Clearing MCE may fault in some environments (that also force #MC
++	 * support). Any machine check that occurs before #MC support is fully
++	 * configured will crash the system regardless of the CR4.MCE value set
++	 * here.
++	 */
++	movl	%cr4, %eax
++	andl	$X86_CR4_MCE, %eax
++#else
++	movl	$0, %eax
++#endif
 +
-+	tdx_get_ve_info(&ve);
+ 	/* Enable PAE and LA57 (if required) paging modes */
+-	movl	$X86_CR4_PAE, %eax
++	orl	$X86_CR4_PAE, %eax
+ 	testl	%edx, %edx
+ 	jz	1f
+ 	orl	$X86_CR4_LA57, %eax
+diff --git a/arch/x86/boot/compressed/pgtable.h b/arch/x86/boot/compressed/pgtable.h
+index 6ff7e81b5628..cc9b2529a086 100644
+--- a/arch/x86/boot/compressed/pgtable.h
++++ b/arch/x86/boot/compressed/pgtable.h
+@@ -6,7 +6,7 @@
+ #define TRAMPOLINE_32BIT_PGTABLE_OFFSET	0
+ 
+ #define TRAMPOLINE_32BIT_CODE_OFFSET	PAGE_SIZE
+-#define TRAMPOLINE_32BIT_CODE_SIZE	0x70
++#define TRAMPOLINE_32BIT_CODE_SIZE	0x80
+ 
+ #define TRAMPOLINE_32BIT_STACK_END	TRAMPOLINE_32BIT_SIZE
+ 
+diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
+index 9c63fc5988cd..184b7468ea76 100644
+--- a/arch/x86/kernel/head_64.S
++++ b/arch/x86/kernel/head_64.S
+@@ -140,8 +140,22 @@ SYM_INNER_LABEL(secondary_startup_64_no_verify, SYM_L_GLOBAL)
+ 	addq	$(init_top_pgt - __START_KERNEL_map), %rax
+ 1:
+ 
++#ifdef CONFIG_X86_MCE
++	/*
++	 * Preserve CR4.MCE if the kernel will enable #MC support.
++	 * Clearing MCE may fault in some environments (that also force #MC
++	 * support). Any machine check that occurs before #MC support is fully
++	 * configured will crash the system regardless of the CR4.MCE value set
++	 * here.
++	 */
++	movq	%cr4, %rcx
++	andl	$X86_CR4_MCE, %ecx
++#else
++	movl	$0, %ecx
++#endif
 +
-+	if (ve.exit_reason != EXIT_REASON_IO_INSTRUCTION)
-+		return false;
-+
-+	return handle_io(regs, ve.exit_qual);
-+}
-+
- void tdx_get_ve_info(struct ve_info *ve)
- {
- 	struct tdx_module_output out;
-diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
-index 1093a5e5f446..c70d9bc74b67 100644
---- a/arch/x86/include/asm/tdx.h
-+++ b/arch/x86/include/asm/tdx.h
-@@ -64,11 +64,15 @@ bool tdx_handle_virt_exception(struct pt_regs *regs, struct ve_info *ve);
+ 	/* Enable PAE mode, PGE and LA57 */
+-	movl	$(X86_CR4_PAE | X86_CR4_PGE), %ecx
++	orl	$(X86_CR4_PAE | X86_CR4_PGE), %ecx
+ #ifdef CONFIG_X86_5LEVEL
+ 	testl	$1, __pgtable_l5_enabled(%rip)
+ 	jz	1f
+@@ -246,13 +260,23 @@ SYM_INNER_LABEL(secondary_startup_64_no_verify, SYM_L_GLOBAL)
+ 	/* Setup EFER (Extended Feature Enable Register) */
+ 	movl	$MSR_EFER, %ecx
+ 	rdmsr
++	/*
++	 * Preserve current value of EFER for comparison and to skip
++	 * EFER writes if no change was made (for TDX guest)
++	 */
++	movl    %eax, %edx
+ 	btsl	$_EFER_SCE, %eax	/* Enable System Call */
+ 	btl	$20,%edi		/* No Execute supported? */
+ 	jnc     1f
+ 	btsl	$_EFER_NX, %eax
+ 	btsq	$_PAGE_BIT_NX,early_pmd_flags(%rip)
+-1:	wrmsr				/* Make changes effective */
  
- void tdx_safe_halt(void);
++	/* Avoid writing EFER if no change was made (for TDX guest) */
++1:	cmpl	%edx, %eax
++	je	1f
++	xor	%edx, %edx
++	wrmsr				/* Make changes effective */
++1:
+ 	/* Setup cr0 */
+ 	movl	$CR0_STATE, %eax
+ 	/* Make changes effective */
+diff --git a/arch/x86/realmode/rm/trampoline_64.S b/arch/x86/realmode/rm/trampoline_64.S
+index d380f2d1fd23..e38d61d6562e 100644
+--- a/arch/x86/realmode/rm/trampoline_64.S
++++ b/arch/x86/realmode/rm/trampoline_64.S
+@@ -143,11 +143,22 @@ SYM_CODE_START(startup_32)
+ 	movl	%eax, %cr3
  
-+bool tdx_early_handle_ve(struct pt_regs *regs);
-+
- #else
+ 	# Set up EFER
++	movl	$MSR_EFER, %ecx
++	rdmsr
++	/*
++	 * Skip writing to EFER if the register already has desired
++	 * value (to avoid #VE for the TDX guest).
++	 */
++	cmp	pa_tr_efer, %eax
++	jne	.Lwrite_efer
++	cmp	pa_tr_efer + 4, %edx
++	je	.Ldone_efer
++.Lwrite_efer:
+ 	movl	pa_tr_efer, %eax
+ 	movl	pa_tr_efer + 4, %edx
+-	movl	$MSR_EFER, %ecx
+ 	wrmsr
  
- static inline void tdx_early_init(void) { };
- static inline void tdx_safe_halt(void) { };
- 
-+static inline bool tdx_early_handle_ve(struct pt_regs *regs) { return false; }
-+
- #endif /* CONFIG_INTEL_TDX_GUEST */
- 
- #endif /* !__ASSEMBLY__ */
-diff --git a/arch/x86/kernel/head64.c b/arch/x86/kernel/head64.c
-index 6dff50c3edd6..ecbf50e5b8e0 100644
---- a/arch/x86/kernel/head64.c
-+++ b/arch/x86/kernel/head64.c
-@@ -417,6 +417,9 @@ void __init do_early_exception(struct pt_regs *regs, int trapnr)
- 	    trapnr == X86_TRAP_VC && handle_vc_boot_ghcb(regs))
- 		return;
- 
-+	if (trapnr == X86_TRAP_VE && tdx_early_handle_ve(regs))
-+		return;
-+
- 	early_fixup_exception(regs, trapnr);
- }
- 
++.Ldone_efer:
+ 	# Enable paging and in turn activate Long Mode.
+ 	movl	$CR0_STATE, %eax
+ 	movl	%eax, %cr0
 -- 
 2.34.1
 
