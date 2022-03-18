@@ -2,97 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2C75C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 11:01:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99DE6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 11:04:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235614AbiCRLCi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 07:02:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42444 "EHLO
+        id S235234AbiCRLF1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 07:05:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235617AbiCRLCe (ORCPT
+        with ESMTP id S231623AbiCRLFZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 07:02:34 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77F522D7ABC;
-        Fri, 18 Mar 2022 04:01:08 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id p5so3013363pfo.5;
-        Fri, 18 Mar 2022 04:01:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=+DfTezyTZEEgXa3A9GdADPNqeC5t3FMBzFeEqDv248I=;
-        b=flDJYeJw11Atosup9EVcV2btSWN1r1qbFUvRc2kOuCoL0/LO4gaVVakhSgRWpoD//U
-         +3BPSN29KgOWAa/CGHb3OmDPZPEMcHy5AQ+Ltv6X/d3VLimhfkhjdxJDGDHDz1/UCxr3
-         pUv6sRK2PMX9KUUWMUWoT0zMAoXiacU0Q9jHxPZ9QTtsyyCpEhoiqzucQEa7XnknVVwk
-         qxqwvCszpYntEcIlRrTN9sFzrs8pefU0DzYyESEvm6XflD0hJXDiLTveuCaIHOG9x5AA
-         zj7Gd+/sZA2bZZBIANqHSmq5m6ou7ktXnOhxGvNwEClXJ3cLFoWjmaSE4gfMPsUxB9Hp
-         rXbQ==
+        Fri, 18 Mar 2022 07:05:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AFBEE1A82F
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 04:04:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647601443;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zllBQhArZnpwN+9LcU5/uYXvhQg2SWpOR7mVblQ0ybY=;
+        b=BUkXhdyDOcqYftGLbfbYj/BjSaGvnHlrKwhKlPUehPYXRye65mTEnzz1YjhDOJ/XyJnxsk
+        uQa6u6zvTcibX4B3bDP8KtQorDCozPGdquzB/vSkBUHKy7CcvbFFNGF+2AEQW53+Cffksv
+        yvjyx27sLAnRLSaR0UhL3WzsEHFhZWk=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-350-835hdsSEMSKZPFE8xHqK4A-1; Fri, 18 Mar 2022 07:04:02 -0400
+X-MC-Unique: 835hdsSEMSKZPFE8xHqK4A-1
+Received: by mail-ed1-f69.google.com with SMTP id f2-20020a50d542000000b00418ed3d95d8so4052975edj.11
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 04:04:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=+DfTezyTZEEgXa3A9GdADPNqeC5t3FMBzFeEqDv248I=;
-        b=JtESDvzsO3zU8JwuOAnexfLKpFcPZujY/osiuemtYHkXu/ZDg3UqCdyZaAO2Ftbjw3
-         99o6rp1J4dbMJltIPeAEG1CD0zXUPMclQRRdH3EjDgCoPtdVetiapG+zsO/PCD4A1gYV
-         EeZ9TaOa5abjAySqVzJYWnEixF5+cFhVJEPxrSXmdqJf3CBKX2LSjUPjpCVWXaFXEE7S
-         PCiMdfXIZZvyxY9ZsX0DdBuokbuHIZs+HVuZtqY53KTBJHTlKphbYxg+tGdgh/qtOHY4
-         IArJEzOf0RSrO2zlhvAdRennYyGoPbNFM8Qaea0WNNF9cX6+4RwNUPQH4ddfrGsYJP6b
-         brZQ==
-X-Gm-Message-State: AOAM533bDu5wf582PIrJ24mSFeutCE5Bnuy+Qy1VQWaJW7lSnMaWFDW5
-        YM8D5Xtxf/kq7rvIbEmpMDY=
-X-Google-Smtp-Source: ABdhPJwdkiq3tFwjozVCjtQH0QfyWdY4uO8RrtKPh0PJaTcZeItVID4T4ekwLFEDdgtI6CNR277/2g==
-X-Received: by 2002:a05:6a00:198c:b0:4f7:7e0f:bfc2 with SMTP id d12-20020a056a00198c00b004f77e0fbfc2mr9225986pfl.44.1647601267807;
-        Fri, 18 Mar 2022 04:01:07 -0700 (PDT)
-Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id y3-20020a056a00190300b004fa2411bb92sm9276071pfi.93.2022.03.18.04.01.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Mar 2022 04:01:07 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Kyunmin Park <kyungmin.park@samsung.com>,
-        linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH v2] media: exynos4-is: Change clk_disable to clk_disable_unprepare
-Date:   Fri, 18 Mar 2022 11:01:01 +0000
-Message-Id: <20220318110102.29506-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220316015344.5120-1-linmq006@gmail.com>
-References: <20220316015344.5120-1-linmq006@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=zllBQhArZnpwN+9LcU5/uYXvhQg2SWpOR7mVblQ0ybY=;
+        b=pjIXm/Vg8h8U2IrziUEiPW222TBy3X/g4KyTzLJsIL46OKdKGeh8lGowed6AqEgV4W
+         H/g+FGI4g6XL6OWYpUUSVl78Xfq5nDwccjrEYtBHT4CuM6VClDuXhGIyDJMoVFiDArdr
+         8f5AVntyzJscopY/ISWEz2a6rLo7mKJg1yKOY1vri7Jp8aT7CgcawjlpzxVnA4V49KYk
+         jk+o5DBNqKqTxr6frEeoR1oNBlVqQsYW0j46Rnk9pZ75PHhIwqCCGRrIjy5nLyX/HOnv
+         lKyUWPHQw+1+/st13dVDdFp1TZ01c4odRFZVPnxhx7lnieRpHaHpBaAuVGP3Fo3iAK82
+         F46w==
+X-Gm-Message-State: AOAM531WtowDNdNwgAQ+YtLLrMBE7EFe82dx+hKbWYC834hPJDOlRBgl
+        ezLdj2qxmu3c2ykbjPTjsYZsP1ZEG6tRKAK2fDOWiOeZGy6jM1jhhTvv5Sv1ySwY0pOrTcAy27g
+        lRd7Uxq3wctS7Zs7ujYuoCw6x
+X-Received: by 2002:a17:906:b757:b0:6d6:e990:b0de with SMTP id fx23-20020a170906b75700b006d6e990b0demr8293468ejb.603.1647601440722;
+        Fri, 18 Mar 2022 04:04:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzyjnOw+D0qWUOdtZ+gCVK4486nEGJim91rftoLPhBmY9TUL15x5+KGyZtAaW4a7t0X+qc5tA==
+X-Received: by 2002:a17:906:b757:b0:6d6:e990:b0de with SMTP id fx23-20020a170906b75700b006d6e990b0demr8293451ejb.603.1647601440485;
+        Fri, 18 Mar 2022 04:04:00 -0700 (PDT)
+Received: from ?IPV6:2001:1c00:c1e:bf00:cdb2:2781:c55:5db0? (2001-1c00-0c1e-bf00-cdb2-2781-0c55-5db0.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:cdb2:2781:c55:5db0])
+        by smtp.gmail.com with ESMTPSA id l9-20020a056402254900b00416b0ec98b5sm3996711edb.45.2022.03.18.04.03.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Mar 2022 04:04:00 -0700 (PDT)
+Message-ID: <adf4dbff-6259-5f29-325c-26bd9211cf6f@redhat.com>
+Date:   Fri, 18 Mar 2022 12:03:59 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH] platform/x86: amd-pmc: Only report STB errors when STB
+ enabled
+Content-Language: en-US
+To:     Mario Limonciello <mario.limonciello@amd.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+        Mark Gross <mgross@linux.intel.com>,
+        "open list:AMD PMC DRIVER" <platform-driver-x86@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20220317190301.6818-1-mario.limonciello@amd.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220317190301.6818-1-mario.limonciello@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The corresponding API for clk_prepare_enable is clk_disable_unprepare,
-other than clk_disable.
+Hi,
 
-Fix this by changing clk_disable to clk_disable_unprepare.
+On 3/17/22 20:03, Mario Limonciello wrote:
+> Currently if STB is disabled but an earlier function reported an
+> error an incorrect error will be emitted about failing to write to
+> STB.
+> 
+> Correct this logic error by only showing errors when STB is enabled.
+> 
+> Suggested-by: Hans de Goede <hdegoede@redhat.com>
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
 
-Fixes: b4155d7d5b2c ("[media] exynos4-is: Ensure fimc-is clocks are not enabled until properly configured")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
-changes in v2:
-- fix typo in commit message.
----
- drivers/media/platform/exynos4-is/fimc-is.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thank you for your patch, I've applied this patch to my review-hans 
+branch:
+https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/log/?h=review-hans
 
-diff --git a/drivers/media/platform/exynos4-is/fimc-is.c b/drivers/media/platform/exynos4-is/fimc-is.c
-index e55e411038f4..8e88b0f6662d 100644
---- a/drivers/media/platform/exynos4-is/fimc-is.c
-+++ b/drivers/media/platform/exynos4-is/fimc-is.c
-@@ -140,7 +140,7 @@ static int fimc_is_enable_clocks(struct fimc_is *is)
- 			dev_err(&is->pdev->dev, "clock %s enable failed\n",
- 				fimc_is_clocks[i]);
- 			for (--i; i >= 0; i--)
--				clk_disable(is->clocks[i]);
-+				clk_disable_unprepare(is->clocks[i]);
- 			return ret;
- 		}
- 		pr_debug("enabled clock: %s\n", fimc_is_clocks[i]);
--- 
-2.17.1
+Note it will show up in my review-hans branch once I've pushed my
+local branch there, which might take a while.
+
+Once I've run some tests on this branch the patches there will be
+added to the platform-drivers-x86/for-next branch and eventually
+will be included in the pdx86 pull-request to Linus for the next
+merge-window.
+
+Regards,
+
+Hans
+
+
+> ---
+>  drivers/platform/x86/amd-pmc.c | 14 ++++++++------
+>  1 file changed, 8 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/platform/x86/amd-pmc.c b/drivers/platform/x86/amd-pmc.c
+> index 7317993cd91b..e9d0dbbb2887 100644
+> --- a/drivers/platform/x86/amd-pmc.c
+> +++ b/drivers/platform/x86/amd-pmc.c
+> @@ -655,10 +655,11 @@ static void amd_pmc_s2idle_prepare(void)
+>  		return;
+>  	}
+>  
+> -	if (enable_stb)
+> +	if (enable_stb) {
+>  		rc = amd_pmc_write_stb(pdev, AMD_PMC_STB_PREDEF);
+> -	if (rc)
+> -		dev_err(pdev->dev, "error writing to STB: %d\n", rc);
+> +		if (rc)
+> +			dev_err(pdev->dev, "error writing to STB: %d\n", rc);
+> +	}
+>  }
+>  
+>  static void amd_pmc_s2idle_restore(void)
+> @@ -679,10 +680,11 @@ static void amd_pmc_s2idle_restore(void)
+>  	amd_pmc_idlemask_read(pdev, pdev->dev, NULL);
+>  
+>  	/* Write data incremented by 1 to distinguish in stb_read */
+> -	if (enable_stb)
+> +	if (enable_stb) {
+>  		rc = amd_pmc_write_stb(pdev, AMD_PMC_STB_PREDEF + 1);
+> -	if (rc)
+> -		dev_err(pdev->dev, "error writing to STB: %d\n", rc);
+> +		if (rc)
+> +			dev_err(pdev->dev, "error writing to STB: %d\n", rc);
+> +	}
+>  
+>  	/* Notify on failed entry */
+>  	amd_pmc_validate_deepest(pdev);
 
