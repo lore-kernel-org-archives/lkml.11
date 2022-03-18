@@ -2,99 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 234B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 09:50:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA4B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 09:51:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234612AbiCRJvf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 05:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34164 "EHLO
+        id S234655AbiCRJwa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 05:52:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234552AbiCRJvd (ORCPT
+        with ESMTP id S229941AbiCRJw2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 05:51:33 -0400
-Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4A4F11788C6;
-        Fri, 18 Mar 2022 02:50:14 -0700 (PDT)
-HMM_SOURCE_IP: 172.18.0.218:60254.308099466
+        Fri, 18 Mar 2022 05:52:28 -0400
+Received: from 189.cn (ptr.189.cn [183.61.185.104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5786B178686;
+        Fri, 18 Mar 2022 02:51:09 -0700 (PDT)
+HMM_SOURCE_IP: 10.64.8.31:36022.1773867350
 HMM_ATTACHE_NUM: 0000
 HMM_SOURCE_TYPE: SMTP
-Received: from clientip-10.133.11.244 (unknown [172.18.0.218])
-        by chinatelecom.cn (HERMES) with SMTP id 9A0EE2800A3;
-        Fri, 18 Mar 2022 17:50:06 +0800 (CST)
-X-189-SAVE-TO-SEND: sunshouxin@chinatelecom.cn
-Received: from  ([172.18.0.218])
-        by app0025 with ESMTP id 45b732299e52413c94b77503edb2fa0c for dsahern@kernel.org;
-        Fri, 18 Mar 2022 17:50:13 CST
-X-Transaction-ID: 45b732299e52413c94b77503edb2fa0c
-X-Real-From: sunshouxin@chinatelecom.cn
-X-Receive-IP: 172.18.0.218
+Received: from clientip-123.150.8.43 (unknown [10.64.8.31])
+        by 189.cn (HERMES) with SMTP id 2ABC21001B4;
+        Fri, 18 Mar 2022 17:51:06 +0800 (CST)
+Received: from  ([123.150.8.43])
+        by gateway-153622-dep-749df8664c-cv9r2 with ESMTP id 374a5bf189884f2aa252180a3e8c7832 for johan@kernel.org;
+        Fri, 18 Mar 2022 17:51:08 CST
+X-Transaction-ID: 374a5bf189884f2aa252180a3e8c7832
+X-Real-From: chensong_2000@189.cn
+X-Receive-IP: 123.150.8.43
 X-MEDUSA-Status: 0
-Sender: sunshouxin@chinatelecom.cn
-Message-ID: <eed6ba63-9e49-5351-215c-a70573e4c79a@chinatelecom.cn>
-Date:   Fri, 18 Mar 2022 17:50:06 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v4] net:bonding:Add support for IPV6 RLB to balance-alb
- mode
-To:     David Ahern <dsahern@kernel.org>, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
-        kuba@kernel.org, yoshfuji@linux-ipv6.org, oliver@neukum.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        huyd12@chinatelecom.cn
-References: <20220317061521.23985-1-sunshouxin@chinatelecom.cn>
- <eff0021c-5a9b-5c44-3fb7-24387cf13e16@kernel.org>
-From:   =?UTF-8?B?5a2Z5a6I6ZGr?= <sunshouxin@chinatelecom.cn>
-In-Reply-To: <eff0021c-5a9b-5c44-3fb7-24387cf13e16@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Sender: chensong_2000@189.cn
+From:   Song Chen <chensong_2000@189.cn>
+To:     johan@kernel.org, elder@kernel.org, gregkh@linuxfoundation.org,
+        thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
+        lee.jones@linaro.org, greybus-dev@lists.linaro.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-pwm@vger.kernel.org, elder@ieee.org, elder@linaro.org
+Cc:     Song Chen <chensong_2000@189.cn>
+Subject: [PATCH v6] staging: greybus: introduce pwm_ops::apply
+Date:   Fri, 18 Mar 2022 17:57:12 +0800
+Message-Id: <1647597432-27586-1-git-send-email-chensong_2000@189.cn>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Introduce newer .apply function in pwm_ops to replace legacy operations
+including enable, disable, config and set_polarity.
 
-在 2022/3/18 2:49, David Ahern 写道:
-> On 3/17/22 12:15 AM, Sun Shouxin wrote:
->> This patch is implementing IPV6 RLB for balance-alb mode.
->>
->> Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
->> Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
->> ---
->> changelog:
->> v1-->v2:
->> -Remove ndisc_bond_send_na and refactor ndisc_send_na.
->> -In rlb_nd_xmit, if the lladdr is not local, return curr_active_slave.
->> -Don't send neighbor advertisement message when receiving
->>   neighbor advertisement message in rlb6_update_entry_from_na.
->>
->> v2-->v3:
->> -Don't export ndisc_send_na.
->> -Use ipv6_stub->ndisc_send_na to replace ndisc_send_na
->>   in rlb6_update_client.
->>
->> v3-->v4:
->> -Submit all code at a whole patch.
-> you misunderstood Jakub's comment. The code should evolve with small,
-> focused patches and each patch needs to compile and function correctly
-> (ie., no breakage).
->
-> You need to respond to Jiri's question about why this feature is needed.
-> After that:
->
-> 1. patch 1 adds void *data to ndisc_send_na stub function and
-> ndisc_send_na direct function. Update all places that use both
-> ndisc_send_na to pass NULL as the data parameter.
->
-> 2. patch 2 refactors ndisc_send_na to handle the new data argument
->
-> 3. patch 3 exports any IPv6 functions. explain why each needs to be
-> exported.
->
-> 4. patch 4 .... bonding changes. (bonding folks can respond on how to
-> introduce that change).
+This guarantees atomic changes of the pwm controller configuration.
 
+Signed-off-by: Song Chen <chensong_2000@189.cn>
 
-Thanks your warmly instruction for newbee, I'll resend soon.
-Thanks again.
+---
+v2:
+1, define duty_cycle and period as u64 in gb_pwm_config_operation.
+2, define duty and period as u64 in gb_pwm_config_request.
+3, disable before configuring duty and period if the eventual goal
+   is a disabled state.
 
+v3:
+Regarding duty_cycle and period, I read more discussion in this thread,
+min, warn or -EINVAL, seems no perfect way acceptable for everyone.
+How about we limit their value to INT_MAX and throw a warning at the
+same time when they are wrong?
+
+v4:
+1, explain why legacy operations are replaced.
+2, cap the value of period and duty to U32_MAX.
+
+v5:
+1, revise commit message.
+
+v6:
+1, revise commit message.
+2, explain why capping the value of period and duty to U32_MAX in
+   comment.
+---
+ drivers/staging/greybus/pwm.c | 64 ++++++++++++++++++++++-------------
+ 1 file changed, 40 insertions(+), 24 deletions(-)
+
+diff --git a/drivers/staging/greybus/pwm.c b/drivers/staging/greybus/pwm.c
+index 891a6a672378..ad20ec24031e 100644
+--- a/drivers/staging/greybus/pwm.c
++++ b/drivers/staging/greybus/pwm.c
+@@ -204,43 +204,59 @@ static void gb_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	gb_pwm_deactivate_operation(pwmc, pwm->hwpwm);
+ }
+ 
+-static int gb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+-			 int duty_ns, int period_ns)
++static int gb_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
++			const struct pwm_state *state)
+ {
++	int err;
++	bool enabled = pwm->state.enabled;
++	u64 period = state->period;
++	u64 duty_cycle = state->duty_cycle;
+ 	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
+ 
+-	return gb_pwm_config_operation(pwmc, pwm->hwpwm, duty_ns, period_ns);
+-};
++	/* Set polarity */
++	if (state->polarity != pwm->state.polarity) {
++		if (enabled) {
++			gb_pwm_disable_operation(pwmc, pwm->hwpwm);
++			enabled = false;
++		}
++		err = gb_pwm_set_polarity_operation(pwmc, pwm->hwpwm, state->polarity);
++		if (err)
++			return err;
++	}
+ 
+-static int gb_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
+-			       enum pwm_polarity polarity)
+-{
+-	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
++	if (!state->enabled) {
++		if (enabled)
++			gb_pwm_disable_operation(pwmc, pwm->hwpwm);
++		return 0;
++	}
+ 
+-	return gb_pwm_set_polarity_operation(pwmc, pwm->hwpwm, polarity);
+-};
++	/*
++	 * Set period and duty cycle
++	 *
++	 * PWM privodes 64-bit period and duty_cycle, but greybus only accepts
++	 * 32-bit, so their values have to be limited to U32_MAX.
++	 */
++	if (period > U32_MAX)
++		period = U32_MAX;
+ 
+-static int gb_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+-{
+-	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
++	if (duty_cycle > period)
++		duty_cycle = period;
+ 
+-	return gb_pwm_enable_operation(pwmc, pwm->hwpwm);
+-};
++	err = gb_pwm_config_operation(pwmc, pwm->hwpwm, duty_cycle, period);
++	if (err)
++		return err;
+ 
+-static void gb_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+-{
+-	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
++	/* enable/disable */
++	if (!enabled)
++		return gb_pwm_enable_operation(pwmc, pwm->hwpwm);
+ 
+-	gb_pwm_disable_operation(pwmc, pwm->hwpwm);
+-};
++	return 0;
++}
+ 
+ static const struct pwm_ops gb_pwm_ops = {
+ 	.request = gb_pwm_request,
+ 	.free = gb_pwm_free,
+-	.config = gb_pwm_config,
+-	.set_polarity = gb_pwm_set_polarity,
+-	.enable = gb_pwm_enable,
+-	.disable = gb_pwm_disable,
++	.apply = gb_pwm_apply,
+ 	.owner = THIS_MODULE,
+ };
+ 
+-- 
+2.25.1
 
