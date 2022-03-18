@@ -2,182 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9588C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 22:31:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 319F0C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 22:31:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241313AbiCRWc1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 18:32:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37100 "EHLO
+        id S241316AbiCRWdP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 18:33:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241298AbiCRWcX (ORCPT
+        with ESMTP id S239037AbiCRWdM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 18:32:23 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B73E12EB54E
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 15:30:59 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id v35so18199643ybi.10
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 15:30:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=5fVM9GxpYrKL0vDGShMfVI5LEzMqL6jtRV6TGvb20BM=;
-        b=U2GqGKuzbJHZ37d58mvNR42j7vtzFiu5+ShjP+SnBIBUSTEpoSS+4LPWNJW7gZ0Q8l
-         fUmxc/Los26bhN33axqlj/Eb5KyKZcw3JA32xC459u9s6qiFUzv4h156LaeiOG3gV2+q
-         y+SJOensPKHwrY2YKVQSbR9cm8yqeretLrLPis/lnv+yxT3XXIESat+/6IWVCIJFetJe
-         vh1Zn1Hn9TZIY+fTl3I3hELf0BUZXaszXLNCmpazoFvGdy7r0qv8U00udaLnPa2jNb0F
-         c1J3W+tuy3Q0nVWMxBBZenffBsyUjXRZiwIPI7oPCGSIn+Jz4LXnvPdCLyKNAfp6fKcF
-         A6cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=5fVM9GxpYrKL0vDGShMfVI5LEzMqL6jtRV6TGvb20BM=;
-        b=sgHjIJtIa1svP4Qynve7aoRmc5z05hzzXxxlY5W45jues35tuuhGBwmN/SYR5cbZN8
-         nn3Df2qUGtQ2WAUh76J1/9GCKE5xSjdVeAJcb+/tGa3mGkTV0HDId35JNBbIYYjZhovj
-         aF4QS25eXPUjIP91pVH6PnuegdcUWKkTiRrR0hd0tO3b61Jkqm5DHa9LdUmDeYrzdObY
-         SpMzGw6oymONFVxYGTChOWfxSNYNUqJMub5T2KHnDPZedM0P7QYDQ2XU2xxbZR8RFQd1
-         0CAgOjr08KeBfkjak0r5Mwg6XI2Qq0HrPQcsXcdoZVKbc/zJlx9iEy0FRMBJB/g8a6Es
-         jmPQ==
-X-Gm-Message-State: AOAM530aHmFbYiAV+waeBnBuRwq+i2LKtXAyc4Jxfq6SuzcLltNzSoW5
-        DrZfdxvqknxFrAMTjlMAardr+UsIpAYdSM59q5GbXE5w
-X-Google-Smtp-Source: ABdhPJzMXc24y+UamlsugdiRva9/6oWTheLIuT4vAMJ118qpzKxzU55gAoX2yMAQWxrA7ZRmWkp6dVvlj3vGdEoWyhw=
-X-Received: by 2002:a25:344b:0:b0:633:b905:46ff with SMTP id
- b72-20020a25344b000000b00633b90546ffmr5701314yba.330.1647642656484; Fri, 18
- Mar 2022 15:30:56 -0700 (PDT)
+        Fri, 18 Mar 2022 18:33:12 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07DEC2EAF77
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 15:31:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647642712; x=1679178712;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=zIw54+e45boIaDOdi15UX3ZvBJl8AV/hmlrf8+mVydM=;
+  b=RzdTqDH1B08Q8MxJjix2YifKTFyEcQJDdgH0Pb8CCXFLB3XB1ZmZ308x
+   6FRxa//r0lc/bNuHFoMwCCbqkFT2woez+/n8czt0Rf1MbpX1k3KwBiR4c
+   GKO9lZ9kvR3IX4MV7rmXgnbgWtxTkmHFSULFJsJfWq2X20Qa5nHG7KuXd
+   f9P5DujSpbG1WBmUgeE2n4n87Gd8vlZaza1j5Xgdufs2jLQ+3eCEOR6+e
+   bPyl0md6CYokPpPMi7nU+toMIsNwPOP4ICbQV86xXuzti3Etn6AOmXGK/
+   xSSBsrluI+GOm4ooLlUcdqIlSIhEoNgcTiPRuWMddbGJD4NA69ovVuhKu
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="282054276"
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
+   d="scan'208";a="282054276"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 15:31:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
+   d="scan'208";a="581931749"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 18 Mar 2022 15:31:50 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nVL8Q-000FE6-44; Fri, 18 Mar 2022 22:31:50 +0000
+Date:   Sat, 19 Mar 2022 06:31:41 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jonathan Lassoff <jof@thejof.com>,
+        OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        linux-kernel@vger.kernel.org, Jonathan Lassoff <jof@thejof.com>
+Subject: Re: [PATCH v2] Add FAT messages to printk index
+Message-ID: <202203190644.dlcQDVaN-lkp@intel.com>
+References: <c11c5c259d5e53afe5b20fa761002e7edd48277f.1647624190.git.jof@thejof.com>
 MIME-Version: 1.0
-References: <2d97ae92b9c06214be0e088a72cf303eb591bf01.1646414295.git.christophe.leroy@csgroup.eu>
- <47e09d6010852db928c0de29b89450ea7eee74d8.camel@redhat.com>
- <edb9aabd-09af-ae0c-348d-f0500e3405d7@csgroup.eu> <672043db-5290-293c-fde4-440989c78d09@csgroup.eu>
- <9aebcbbf-aaba-f7e8-7397-18284e74ab0d@csgroup.eu> <b3e5914f649a9cdc35fbbe9f399d3806f13c3a6f.camel@redhat.com>
-In-Reply-To: <b3e5914f649a9cdc35fbbe9f399d3806f13c3a6f.camel@redhat.com>
-From:   Ben Skeggs <skeggsb@gmail.com>
-Date:   Sat, 19 Mar 2022 08:30:45 +1000
-Message-ID: <CACAvsv7iAQN5azzzs820sXHGYv-pKRv0+dBPR60k9Fsw5OYiaA@mail.gmail.com>
-Subject: Re: [PATCH] drm/nouveau/bios: Rename prom_init() and friends functions
-To:     Lyude Paul <lyude@redhat.com>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        ML nouveau <nouveau@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        ML dri-devel <dri-devel@lists.freedesktop.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c11c5c259d5e53afe5b20fa761002e7edd48277f.1647624190.git.jof@thejof.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 19 Mar 2022 at 04:11, Lyude Paul <lyude@redhat.com> wrote:
->
-> Whoops, sorry! I was unsure of the preference in name we should go with s=
-o I
-> poked Ben on the side to ask them, but I can see they haven't yet respond=
-ed.
-> I'll poke thme again and see if I can get a response.
-Yeah, please keep _prom as opposed to _rom.  It's a reference to the
-NV_PROM device.
+Hi Jonathan,
 
-Ben.
+Thank you for the patch! Perhaps something to improve:
 
->
-> On Fri, 2022-03-18 at 10:55 +0100, Christophe Leroy wrote:
-> > Hi Paul,
-> >
-> > Le 05/03/2022 =C3=A0 10:51, Christophe Leroy a =C3=A9crit :
-> > >
-> > >
-> > > Le 05/03/2022 =C3=A0 08:38, Christophe Leroy a =C3=A9crit :
-> > > >
-> > > >
-> > > > Le 04/03/2022 =C3=A0 21:24, Lyude Paul a =C3=A9crit :
-> > > > > This mostly looks good to me. Just one question (and one comment =
-down
-> > > > > below
-> > > > > that needs addressing). Is this with ppc32? (I ask because ppc64l=
-e
-> > > > > doesn't
-> > > > > seem to hit this compilation error).
-> > > >
-> > > > That's with PPC64, see
-> > > > http://kisskb.ellerman.id.au/kisskb/branch/chleroy/head/252ba609bea=
-83234d2e35841c19ae84c67b43ec7/
-> > > >
-> > > >
-> > > >
-> > > > But that's not (yet) with the mainline tree. That's work I'm doing =
-to
-> > > > cleanup our asm/asm-protoypes.h header.
-> > > >
-> > > > Since commit 4efca4ed05cb ("kbuild: modversions for EXPORT_SYMBOL()
-> > > > for asm") that file is dedicated to prototypes of functions defined=
- in
-> > > > assembly. Therefore I'm trying to dispatch C functions prototypes i=
-n
-> > > > other headers. I wanted to move prom_init() prototype into asm/prom=
-.h
-> > > > and then I hit the problem.
-> > > >
-> > > > In the beginning I was thinking about just changing the name of the
-> > > > function in powerpc, but as I see that M68K, MIPS and SPARC also ha=
-ve
-> > > > a prom_init() function, I thought it would be better to change the
-> > > > name in shadowrom.c to avoid any future conflict like the one I got
-> > > > while reworking the headers.
-> > > >
-> > > >
-> > > > > > @@ -57,8 +57,8 @@ prom_init(struct nvkm_bios *bios, const char
-> > > > > > *name)
-> > > > > >   const struct nvbios_source
-> > > > > >   nvbios_rom =3D {
-> > > > > >          .name =3D "PROM",
-> > > > > > -       .init =3D prom_init,
-> > > > > > -       .fini =3D prom_fini,
-> > > > > > -       .read =3D prom_read,
-> > > > > > +       .init =3D nvbios_rom_init,
-> > > > > > +       .fini =3D nvbios_rom_fini,
-> > > > > > +       .read =3D nvbios_rom_read,
-> > > > >
-> > > > > Seeing as the source name is prom, I think using the naming conve=
-ntion
-> > > > > nvbios_prom_* would be better then nvbios_rom_*.
-> > > > >
-> > > >
-> > > > Yes I wasn't sure about the best naming as the file name is
-> > > > shadowrom.c and not shadowprom.c.
-> > > >
-> > > > I will send v2 using nvbios_prom_* as a name.
-> > >
-> > > While preparing v2 I remembered that in fact, I called the functions
-> > > nvbios_rom_* because the name of the nvbios_source struct is nvbios_r=
-om,
-> > > so for me it made sense to use the name of the struct as a prefix for
-> > > the functions.
-> > >
-> > > So I'm OK to change it to nvbios_prom_* but it looks less logical to =
-me.
-> > >
-> > > Please confirm you still prefer nvbios_prom as prefix to the function
-> > > names.
-> > >
-> >
-> > Are you still expecting a v2 for this patch ?
-> >
-> > As the name of the structure is nvbios_rom, do you really prefer the
-> > functions to be called nvbios_prom_* as you mentionned in your comment =
-?
-> >
-> > In that case, do you also expect the structure name to be changed to
-> > nvbios_prom ?
-> >
-> > Thanks
-> > Christophe
-> >
->
-> --
-> Cheers,
->  Lyude Paul (she/her)
->  Software Engineer at Red Hat
->
+[auto build test WARNING on hnaz-mm/master]
+[also build test WARNING on linux/master linus/master v5.17-rc8 next-20220318]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Jonathan-Lassoff/Add-FAT-messages-to-printk-index/20220319-012711
+base:   https://github.com/hnaz/linux-mm master
+config: x86_64-randconfig-a012 (https://download.01.org/0day-ci/archive/20220319/202203190644.dlcQDVaN-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a6e70e4056dff962ec634c5bd4f2f4105a0bef71)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/e3f2c52ef480a29ed0b693801bcd9497c19b89ab
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Jonathan-Lassoff/Add-FAT-messages-to-printk-index/20220319-012711
+        git checkout e3f2c52ef480a29ed0b693801bcd9497c19b89ab
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash fs/fat/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   fs/fat/misc.c:49: warning: Function parameter or member 'sb' not described in '_fat_msg'
+   fs/fat/misc.c:49: warning: Function parameter or member 'level' not described in '_fat_msg'
+   fs/fat/misc.c:49: warning: Function parameter or member 'fmt' not described in '_fat_msg'
+>> fs/fat/misc.c:49: warning: expecting prototype for fat_msg(). Prototype was for _fat_msg() instead
+
+
+vim +49 fs/fat/misc.c
+
+^1da177e4c3f41 Linus Torvalds   2005-04-16  43  
+81ac21d34a91e8 Oleksij Rempel   2011-04-12  44  /**
+81ac21d34a91e8 Oleksij Rempel   2011-04-12  45   * fat_msg() - print preformated FAT specific messages. Every thing what is
+81ac21d34a91e8 Oleksij Rempel   2011-04-12  46   * not fat_fs_error() should be fat_msg().
+81ac21d34a91e8 Oleksij Rempel   2011-04-12  47   */
+e3f2c52ef480a2 Jonathan Lassoff 2022-03-18  48  void _fat_msg(struct super_block *sb, const char *level, const char *fmt, ...)
+81ac21d34a91e8 Oleksij Rempel   2011-04-12 @49  {
+81ac21d34a91e8 Oleksij Rempel   2011-04-12  50  	struct va_format vaf;
+81ac21d34a91e8 Oleksij Rempel   2011-04-12  51  	va_list args;
+81ac21d34a91e8 Oleksij Rempel   2011-04-12  52  
+81ac21d34a91e8 Oleksij Rempel   2011-04-12  53  	va_start(args, fmt);
+81ac21d34a91e8 Oleksij Rempel   2011-04-12  54  	vaf.fmt = fmt;
+81ac21d34a91e8 Oleksij Rempel   2011-04-12  55  	vaf.va = &args;
+e3f2c52ef480a2 Jonathan Lassoff 2022-03-18  56  	_printk(FAT_PRINTK_PREFIX "%pV\n", level, sb->s_id, &vaf);
+81ac21d34a91e8 Oleksij Rempel   2011-04-12  57  	va_end(args);
+81ac21d34a91e8 Oleksij Rempel   2011-04-12  58  }
+81ac21d34a91e8 Oleksij Rempel   2011-04-12  59  
+
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
