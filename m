@@ -2,219 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45632C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 11:49:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0848FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 11:52:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235987AbiCRLuq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 07:50:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48726 "EHLO
+        id S235981AbiCRLx7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 07:53:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235964AbiCRLun (ORCPT
+        with ESMTP id S232427AbiCRLx6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 07:50:43 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C69D3E0F4;
-        Fri, 18 Mar 2022 04:49:21 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 40C5D210FA;
-        Fri, 18 Mar 2022 11:49:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1647604160; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=H2OQ24OsfMwaiN+mK75UNzZhX0XQ5LVCCQJKtfe2W/8=;
-        b=UUPNVyMFr93r9LqLoV52p37b34f6NvDqpC6LqPOamU1ne5XEv7tO7MDBun1AlHw4/QQdWt
-        vshoXcxABKAFtfUHqpef8CrH20TSJMMLBvSlG6bc4f5jbhpZ5wxSMN5Ale6FwOQItlHy0f
-        Yxa4Jy4fb2zWc+o+OICytFhuLoLmxjo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1647604160;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=H2OQ24OsfMwaiN+mK75UNzZhX0XQ5LVCCQJKtfe2W/8=;
-        b=Plk8UN2MVFYExSm1cPVj88gOtxpo9NjEZyGZww1uKnwAjExAQuIcAqcwfa4thscqKjG0Yg
-        Z2dDs2tQzxPVl4Ag==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D94E813B67;
-        Fri, 18 Mar 2022 11:49:19 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id wvMSMr9xNGL9fwAAMHmgww
-        (envelope-from <lhenriques@suse.de>); Fri, 18 Mar 2022 11:49:19 +0000
-Received: from localhost (brahms.olymp [local])
-        by brahms.olymp (OpenSMTPD) with ESMTPA id 7e73c2df;
-        Fri, 18 Mar 2022 11:49:38 +0000 (UTC)
-From:   =?utf-8?Q?Lu=C3=ADs_Henriques?= <lhenriques@suse.de>
-To:     Xiubo Li <xiubli@redhat.com>
-Cc:     Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v3 2/4] ceph: handle encrypted snapshot names in
- subdirectories
-References: <20220317154521.6615-1-lhenriques@suse.de>
-        <20220317154521.6615-3-lhenriques@suse.de>
-        <61d831de-1589-3a19-8f46-a162099e75df@redhat.com>
-        <878rt7h6qs.fsf@brahms.olymp>
-        <15c60a74-73a9-a509-2b0e-2d9c6bfd9398@redhat.com>
-Date:   Fri, 18 Mar 2022 11:49:38 +0000
-In-Reply-To: <15c60a74-73a9-a509-2b0e-2d9c6bfd9398@redhat.com> (Xiubo Li's
-        message of "Fri, 18 Mar 2022 19:28:46 +0800")
-Message-ID: <87y217fpkd.fsf@brahms.olymp>
+        Fri, 18 Mar 2022 07:53:58 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E06112D39C7
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 04:52:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647604359; x=1679140359;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=IlizNx0D23msIMfflP/Hpjfck4g6+/Khnila9FP+qGo=;
+  b=mJqJr/2i1Q3mVAQY7yYv50iWldl+NjFBQuvNVrjmhhjUrhDf3AddjMzs
+   W5pnqCYAVCFCWlDVi+FwE7KWc7PFBInd83KR6fJA7I3ihXoUW9EXWhBRl
+   Kr/LY/GDyADaR4c5bDY5ur5p5r768g21Urb4Frv1Zs+jnQAsjwMD0T1f0
+   pYyjgzDeHxeQwpTqt0abGqP2H0hD/wueK6vCaXU01RORjo85MO5SPApvs
+   enyUl4VucFM/ZwFrpBVaOwQpWBhdfL9G8aun3YEAFOuhfCAZRjfnbIfr9
+   wmrWrzGMPouwR7N0nPGi/HSdbQYbDhP/YO3f1LVwDbprYfU7GcbP8Z/2A
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="256847067"
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
+   d="scan'208";a="256847067"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 04:52:39 -0700
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
+   d="scan'208";a="558400164"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.215.248]) ([10.254.215.248])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 04:52:35 -0700
+Message-ID: <51f6a64a-194b-0aca-bd2b-64737bd2140e@linux.intel.com>
+Date:   Fri, 18 Mar 2022 19:52:33 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Cc:     baolu.lu@linux.intel.com, Jacob Pan <jacob.jun.pan@intel.com>,
+        Raj Ashok <ashok.raj@intel.com>,
+        "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        "Zanussi, Tom" <tom.zanussi@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH v2 2/8] iommu: Add attach/detach_dev_pasid domain ops
+Content-Language: en-US
+To:     Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        iommu@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>
+References: <20220315050713.2000518-1-jacob.jun.pan@linux.intel.com>
+ <20220315050713.2000518-3-jacob.jun.pan@linux.intel.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220315050713.2000518-3-jacob.jun.pan@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Xiubo Li <xiubli@redhat.com> writes:
+On 2022/3/15 13:07, Jacob Pan wrote:
+> From: Lu Baolu <baolu.lu@linux.intel.com>
+> 
+> An IOMMU domain represents an address space which can be attached by
+> devices that perform DMA within a domain. However, for platforms with
+> PASID capability the domain attachment needs be handled at device+PASID
+> level. There can be multiple PASIDs within a device and multiple devices
+> attached to a given domain.
+> This patch introduces a new IOMMU op which support device, PASID, and
+> IOMMU domain attachment. The immediate use case is for PASID capable
+> devices to perform DMA under DMA APIs.
+> 
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>   include/linux/iommu.h | 6 ++++++
+>   1 file changed, 6 insertions(+)
+> 
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 369f05c2a4e2..fde5b933dbe3 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -227,6 +227,8 @@ struct iommu_iotlb_gather {
+>    * @aux_get_pasid: get the pasid given an aux-domain
+>    * @sva_bind: Bind process address space to device
+>    * @sva_unbind: Unbind process address space from device
+> + * @attach_dev_pasid: attach an iommu domain to a pasid of device
+> + * @detach_dev_pasid: detach an iommu domain from a pasid of device
+>    * @sva_get_pasid: Get PASID associated to a SVA handle
+>    * @page_response: handle page request response
+>    * @cache_invalidate: invalidate translation caches
+> @@ -296,6 +298,10 @@ struct iommu_ops {
+>   	struct iommu_sva *(*sva_bind)(struct device *dev, struct mm_struct *mm,
+>   				      void *drvdata);
+>   	void (*sva_unbind)(struct iommu_sva *handle);
+> +	int (*attach_dev_pasid)(struct iommu_domain *domain,
+> +				struct device *dev, ioasid_t id);
+> +	void (*detach_dev_pasid)(struct iommu_domain *domain,
+> +				 struct device *dev, ioasid_t id);
 
-> On 3/18/22 6:53 PM, Lu=C3=ADs Henriques wrote:
->> Xiubo Li <xiubli@redhat.com> writes:
->>
->>> On 3/17/22 11:45 PM, Lu=C3=ADs Henriques wrote:
->>>> When creating a snapshot, the .snap directories for every subdirectory=
- will
->>>> show the snapshot name in the "long format":
->>>>
->>>>     # mkdir .snap/my-snap
->>>>     # ls my-dir/.snap/
->>>>     _my-snap_1099511627782
->>>>
->>>> Encrypted snapshots will need to be able to handle these snapshot name=
-s by
->>>> encrypting/decrypting only the snapshot part of the string ('my-snap').
->>>>
->>>> Also, since the MDS prevents snapshot names to be bigger than 240 char=
-acters
->>>> it is necessary to adapt CEPH_NOHASH_NAME_MAX to accommodate this extra
->>>> limitation.
->>>>
->>>> Signed-off-by: Lu=C3=ADs Henriques <lhenriques@suse.de>
->>>> ---
->>>>    fs/ceph/crypto.c | 189 ++++++++++++++++++++++++++++++++++++++++----=
----
->>>>    fs/ceph/crypto.h |  11 ++-
->>>>    2 files changed, 169 insertions(+), 31 deletions(-)
->>>>
->>>> diff --git a/fs/ceph/crypto.c b/fs/ceph/crypto.c
->>>> index beb73bbdd868..caa9863dee93 100644
->>>> --- a/fs/ceph/crypto.c
->>>> +++ b/fs/ceph/crypto.c
->>>> @@ -128,16 +128,100 @@ void ceph_fscrypt_as_ctx_to_req(struct ceph_mds=
-_request *req, struct ceph_acl_se
->>>>    	swap(req->r_fscrypt_auth, as->fscrypt_auth);
->>>>    }
->>>>    -int ceph_encode_encrypted_dname(const struct inode *parent, struct=
- qstr
->>>> *d_name, char *buf)
->>>> +/*
->>>> + * User-created snapshots can't start with '_'.  Snapshots that start=
- with this
->>>> + * character are special (hint: there aren't real snapshots) and use =
-the
->>>> + * following format:
->>>> + *
->>>> + *   _<SNAPSHOT-NAME>_<INODE-NUMBER>
->>>> + *
->>>> + * where:
->>>> + *  - <SNAPSHOT-NAME> - the real snapshot name that may need to be de=
-crypted,
->>>> + *  - <INODE-NUMBER> - the inode number for the actual snapshot
->>>> + *
->>>> + * This function parses these snapshot names and returns the inode
->>>> + * <INODE-NUMBER>.  'name_len' will also bet set with the <SNAPSHOT-N=
-AME>
->>>> + * length.
->>>> + */
->>>> +static struct inode *parse_longname(const struct inode *parent, const=
- char *name,
->>>> +				    int *name_len)
->>>>    {
->>>> +	struct inode *dir =3D NULL;
->>>> +	struct ceph_vino vino =3D { .snap =3D CEPH_NOSNAP };
->>>> +	char *inode_number;
->>>> +	char *name_end;
->>>> +	int orig_len =3D *name_len;
->>>> +	int ret =3D -EIO;
->>>> +
->>>> +	/* Skip initial '_' */
->>>> +	name++;
->>>> +	name_end =3D strrchr(name, '_');
->>>> +	if (!name_end) {
->>>> +		dout("Failed to parse long snapshot name: %s\n", name);
->>>> +		return ERR_PTR(-EIO);
->>>> +	}
->>>> +	*name_len =3D (name_end - name);
->>>> +	if (*name_len <=3D 0) {
->>>> +		pr_err("Failed to parse long snapshot name\n");
->>>> +		return ERR_PTR(-EIO);
->>>> +	}
->>>> +
->>>> +	/* Get the inode number */
->>>> +	inode_number =3D kmemdup_nul(name_end + 1,
->>>> +				   orig_len - *name_len - 2,
->>>> +				   GFP_KERNEL);
->>>> +	if (!inode_number)
->>>> +		return ERR_PTR(-ENOMEM);
->>>> +	ret =3D kstrtou64(inode_number, 0, &vino.ino);
->>>> +	if (ret) {
->>>> +		dout("Failed to parse inode number: %s\n", name);
->>>> +		dir =3D ERR_PTR(ret);
->>>> +		goto out;
->>>> +	}
->>>> +
->>>> +	/* And finally the inode */
->>>> +	dir =3D ceph_find_inode(parent->i_sb, vino);
->>>> +	if (!dir) {
->>>> +		/* This can happen if we're not mounting cephfs on the root */
->>>> +		dir =3D ceph_get_inode(parent->i_sb, vino, NULL);
->>> In this case IMO you should lookup the inode from MDS instead create it=
- in the
->>> cache, which won't setup the encryption info needed.
->>>
->>> So later when you try to use this to dencrypt the snapshot names, you w=
-ill hit
->>> errors ? And also the case Jeff mentioned in previous thread could happ=
-en.
->> No, I don't see any errors.  The reason is that if we get a I_NEW inode,
->> we do not have the keys to even decrypt the names.  If you mount a
->> filesystem using as root a directory that is inside an encrypted
->> directory, you'll see the encrypted snapshot name:
->>
->>   # mkdir mydir
->>   # fscrypt encrypt mydir
->>   # mkdir -p mydir/a/b/c/d
->>   # mkdir mydir/a/.snap/myspan
->>   # umount ...
->>   # mount <mon>:<port>:/a
->>   # ls .snap
->>
->> And we simply can't decrypt it because for that we'd need to have access
->> to the .fscrypt in the original filesystem mount root.
->
-> Should we resolve this issue ? Something like try to copy the .fscrypt wh=
-en
-> mounting '/a' ?
+As we have introduced iommu_domain_ops, these callbacks should be part
+of the domain ops.
 
-I don't think this is an issue.  If an admin mounts a filesystem this way,
-he must know what he's doing.  Being unable to decrypt a directory because
-he picked the wrong root is a user error.  (Having documentation will
-help, of course.)
+>   	u32 (*sva_get_pasid)(struct iommu_sva *handle);
+>   
+>   	int (*page_response)(struct device *dev,
 
-Also, where would we copy the .fscrypt from?  You can run 'fscrypt setup'
-as many times as you want in a single cephfs, you simply need to use
-different root directories.  So, yeah, my opinion is that we simply need
-to hand this gracefully in the client.
-
-Cheers,
---=20
-Lu=C3=ADs
+Best regards,
+baolu
