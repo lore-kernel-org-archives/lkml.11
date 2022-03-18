@@ -2,120 +2,318 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8A50C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:19:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96880C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:19:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238764AbiCRQUd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 12:20:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33262 "EHLO
+        id S230519AbiCRQUi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 12:20:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238830AbiCRQTO (ORCPT
+        with ESMTP id S238849AbiCRQTU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 12:19:14 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D1CE18616D;
-        Fri, 18 Mar 2022 09:17:55 -0700 (PDT)
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22IE44PH002886;
-        Fri, 18 Mar 2022 12:17:53 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3evfqpcu7c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 18 Mar 2022 12:17:52 -0400
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 22IGHoNK035537
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 18 Mar 2022 12:17:50 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Fri, 18 Mar 2022 12:17:50 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Fri, 18 Mar 2022 12:17:49 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Fri, 18 Mar 2022 12:17:49 -0400
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 22IGHWUl024583;
-        Fri, 18 Mar 2022 12:17:43 -0400
-From:   <alexandru.tachici@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>,
-        Alexandru Tachici <alexandru.tachici@analog.com>
-Subject: [PATCH v2 6/8] iio: adc: ad7192: add sequencer support
-Date:   Fri, 18 Mar 2022 18:27:20 +0200
-Message-ID: <20220318162722.51215-7-alexandru.tachici@analog.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220318162722.51215-1-alexandru.tachici@analog.com>
-References: <20220318162722.51215-1-alexandru.tachici@analog.com>
+        Fri, 18 Mar 2022 12:19:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6142B17F3FF
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 09:17:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647620277;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vwfuaDa4j47STZzMRDPLEShn/FOuirkz9TKMgr+3Hk8=;
+        b=AMD6CbV6CPsMbJR7R2WpYSTIfve+P8RiFuofCThFJe9htOcu7Wqw9q1W1Yw6oUlZQqH0NF
+        Plm7ZDzIK9Mu3xvOWkThxjXmzCVlZymN4OOixpTrswYj3Mzm5IgV5RjS60FYUyhjHa8+Jv
+        WJZCB1+M7qv98OKGPTx1l/3yqKbEi1I=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-614-5tYOD3ijOPeJ_u9ROme-vQ-1; Fri, 18 Mar 2022 12:17:52 -0400
+X-MC-Unique: 5tYOD3ijOPeJ_u9ROme-vQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 758C2811E80;
+        Fri, 18 Mar 2022 16:17:50 +0000 (UTC)
+Received: from plouf.redhat.com (unknown [10.39.192.159])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5883E7AD1;
+        Fri, 18 Mar 2022 16:17:30 +0000 (UTC)
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>
+Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Subject: [PATCH bpf-next v3 12/17] bpf/hid: add more HID helpers
+Date:   Fri, 18 Mar 2022 17:15:23 +0100
+Message-Id: <20220318161528.1531164-13-benjamin.tissoires@redhat.com>
+In-Reply-To: <20220318161528.1531164-1-benjamin.tissoires@redhat.com>
+References: <20220318161528.1531164-1-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: gQKQb3QIkJc_l1QJje8rBazbgYhb9FP_
-X-Proofpoint-ORIG-GUID: gQKQb3QIkJc_l1QJje8rBazbgYhb9FP_
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-18_11,2022-03-15_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
- malwarescore=0 bulkscore=0 lowpriorityscore=0 clxscore=1015
- priorityscore=1501 mlxscore=0 mlxlogscore=999 adultscore=0 impostorscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203180088
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandru Tachici <alexandru.tachici@analog.com>
+When we process an incoming HID report, it is common to have to account
+for fields that are not aligned in the report. HID is using 2 helpers
+hid_field_extract() and implement() to pick up any data at any offset
+within the report.
 
-Add sequencer support for AD7192.
+Export those 2 helpers in BPF programs so users can also rely on them.
+The second net worth advantage of those helpers is that now we can
+fetch data anywhere in the report without knowing at compile time the
+location of it. The boundary checks are done in hid-bpf.c, to prevent
+a memory leak.
 
-Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+The third exported helper allows to communicate with the HID device.
+We give a data buffer, and call either HID_GET_REPORT or HID_SET_REPORT
+on the device.
+
+Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+
 ---
- drivers/iio/adc/ad7192.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/ad7192.c b/drivers/iio/adc/ad7192.c
-index adff6472e075..e59753c61274 100644
---- a/drivers/iio/adc/ad7192.c
-+++ b/drivers/iio/adc/ad7192.c
-@@ -58,7 +58,8 @@
- /* Mode Register Bit Designations (AD7192_REG_MODE) */
- #define AD7192_MODE_SEL(x)	(((x) & 0x7) << 21) /* Operation Mode Select */
- #define AD7192_MODE_SEL_MASK	(0x7 << 21) /* Operation Mode Select Mask */
--#define AD7192_MODE_DAT_STA	BIT(20) /* Status Register transmission */
-+#define AD7192_MODE_STA(x)	(((x) & 0x1) << 20) /* Status Register transmission */
-+#define AD7192_MODE_STA_MASK	BIT(20) /* Status Register transmission Mask */
- #define AD7192_MODE_CLKSRC(x)	(((x) & 0x3) << 18) /* Clock Source Select */
- #define AD7192_MODE_SINC3	BIT(15) /* SINC3 Filter Select */
- #define AD7192_MODE_ACX		BIT(14) /* AC excitation enable(AD7195 only)*/
-@@ -288,12 +289,25 @@ static int ad7192_set_mode(struct ad_sigma_delta *sd,
- 	return ad_sd_write_reg(&st->sd, AD7192_REG_MODE, 3, st->mode);
- }
- 
-+static int ad7192_append_status(struct ad_sigma_delta *sd, bool append)
-+{
-+	struct ad7192_state *st = ad_sigma_delta_to_ad7192(sd);
-+
-+	st->mode &= ~AD7192_MODE_STA_MASK;
-+	st->mode |= AD7192_MODE_STA(append);
-+
-+	return ad_sd_write_reg(&st->sd, AD7192_REG_MODE, 3, st->mode);
-+}
-+
- static const struct ad_sigma_delta_info ad7192_sigma_delta_info = {
- 	.set_channel = ad7192_set_channel,
-+	.append_status = ad7192_append_status,
- 	.set_mode = ad7192_set_mode,
- 	.has_registers = true,
- 	.addr_shift = 3,
- 	.read_mask = BIT(6),
-+	.status_ch_mask = GENMASK(3, 0),
-+	.num_slots = 4,
- 	.irq_flags = IRQF_TRIGGER_FALLING,
+changes in v3:
+- renamed hid_{get|set}_data into hid_{get|set}_bits
+- squashed with bpf/hid: add bpf_hid_raw_request helper function
+
+changes in v2:
+- split the patch with libbpf and HID left outside.
+---
+ include/linux/bpf-hid.h        |  6 +++
+ include/uapi/linux/bpf.h       | 36 +++++++++++++++++
+ kernel/bpf/hid.c               | 73 ++++++++++++++++++++++++++++++++++
+ tools/include/uapi/linux/bpf.h | 36 +++++++++++++++++
+ 4 files changed, 151 insertions(+)
+
+diff --git a/include/linux/bpf-hid.h b/include/linux/bpf-hid.h
+index 7f596554fe8c..82b7466b5008 100644
+--- a/include/linux/bpf-hid.h
++++ b/include/linux/bpf-hid.h
+@@ -102,6 +102,12 @@ struct bpf_hid_hooks {
+ 	int (*pre_link_attach)(struct hid_device *hdev, enum bpf_hid_attach_type type);
+ 	void (*post_link_attach)(struct hid_device *hdev, enum bpf_hid_attach_type type);
+ 	void (*array_detach)(struct hid_device *hdev, enum bpf_hid_attach_type type);
++	int (*hid_get_bits)(struct hid_device *hdev, u8 *buf, size_t buf_size,
++			    u64 offset, u32 n, u32 *data);
++	int (*hid_set_bits)(struct hid_device *hdev, u8 *buf, size_t buf_size,
++			    u64 offset, u32 n, u32 data);
++	int (*hid_raw_request)(struct hid_device *hdev, u8 *buf, size_t size,
++			       u8 rtype, u8 reqtype);
  };
  
+ #ifdef CONFIG_BPF
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 0e8438e93768..41ab1d068369 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -5155,6 +5155,39 @@ union bpf_attr {
+  *		by a call to bpf_hid_discard;
+  *	Return
+  *		The pointer to the data. On error, a null value is returned.
++ *
++ * int bpf_hid_get_bits(void *ctx, u64 offset, u32 n, u32 *data)
++ *	Description
++ *		Get the data of size n (in bits) at the given offset (bits) in the
++ *		ctx->event.data field and store it into data.
++ *
++ *		n must be less or equal than 32, and we can address with bit
++ *		precision the value in the buffer. data must be a pointer
++ *		to a u32.
++ *	Return
++ *		The length of data copied into data. On error, a negative value
++ *		is returned.
++ *
++ * int bpf_hid_set_bits(void *ctx, u64 offset, u32 n, u32 data)
++ *	Description
++ *		Set the data of size n (in bits) at the given offset (bits) in the
++ *		ctx->event.data field.
++ *
++ *		n must be less or equal than 32, and we can address with bit
++ *		precision the value in the buffer.
++ *	Return
++ *		The length of data copied into ctx->event.data. On error, a negative
++ *		value is returned.
++ *
++ * int bpf_hid_raw_request(void *ctx, void *buf, u64 size, u8 report_type, u8 request_type)
++ *	Description
++ *		communicate with the HID device
++ *
++ *		report_type is one of HID_INPUT_REPORT, HID_OUTPUT_REPORT, HID_FEATURE_REPORT
++ *		request_type is one of HID_REQ_SET_REPORT or HID_REQ_GET_REPORT
++ *	Return
++ *		0 on success.
++ *		negative value on error.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -5352,6 +5385,9 @@ union bpf_attr {
+ 	FN(skb_set_tstamp),		\
+ 	FN(ima_file_hash),		\
+ 	FN(hid_get_data),		\
++	FN(hid_get_bits),		\
++	FN(hid_set_bits),		\
++	FN(hid_raw_request),		\
+ 	/* */
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+diff --git a/kernel/bpf/hid.c b/kernel/bpf/hid.c
+index 2dfeaaa8a83f..30a62e8e0f0a 100644
+--- a/kernel/bpf/hid.c
++++ b/kernel/bpf/hid.c
+@@ -66,12 +66,85 @@ static const struct bpf_func_proto bpf_hid_get_data_proto = {
+ 	.arg3_type = ARG_CONST_ALLOC_SIZE_OR_ZERO,
+ };
+ 
++BPF_CALL_4(bpf_hid_get_bits, struct hid_bpf_ctx_kern*, ctx, u64, offset, u32, n, u32*, data)
++{
++	if (!hid_hooks.hid_get_bits)
++		return -EOPNOTSUPP;
++
++	return hid_hooks.hid_get_bits(ctx->hdev,
++				      ctx->data,
++				      ctx->allocated_size,
++				      offset, n,
++				      data);
++}
++
++static const struct bpf_func_proto bpf_hid_get_bits_proto = {
++	.func      = bpf_hid_get_bits,
++	.gpl_only  = true,
++	.ret_type  = RET_INTEGER,
++	.arg1_type = ARG_PTR_TO_CTX,
++	.arg2_type = ARG_ANYTHING,
++	.arg3_type = ARG_ANYTHING,
++	.arg4_type = ARG_PTR_TO_INT,
++};
++
++BPF_CALL_4(bpf_hid_set_bits, struct hid_bpf_ctx_kern*, ctx, u64, offset, u32, n, u32, data)
++{
++	if (!hid_hooks.hid_set_bits)
++		return -EOPNOTSUPP;
++
++	hid_hooks.hid_set_bits(ctx->hdev,
++			       ctx->data,
++			       ctx->allocated_size,
++			       offset, n,
++			       data);
++	return 0;
++}
++
++static const struct bpf_func_proto bpf_hid_set_bits_proto = {
++	.func      = bpf_hid_set_bits,
++	.gpl_only  = true,
++	.ret_type  = RET_INTEGER,
++	.arg1_type = ARG_PTR_TO_CTX,
++	.arg2_type = ARG_ANYTHING,
++	.arg3_type = ARG_ANYTHING,
++	.arg4_type = ARG_ANYTHING,
++};
++
++BPF_CALL_5(bpf_hid_raw_request, struct hid_bpf_ctx_kern*, ctx, void*, buf, u64, size,
++	   u8, report_type, u8, request_type)
++{
++	if (!hid_hooks.hid_raw_request)
++		return -EOPNOTSUPP;
++
++	return hid_hooks.hid_raw_request(ctx->hdev, buf, size, report_type, request_type);
++}
++
++static const struct bpf_func_proto bpf_hid_raw_request_proto = {
++	.func      = bpf_hid_raw_request,
++	.gpl_only  = true, /* hid_raw_request is EXPORT_SYMBOL_GPL */
++	.ret_type  = RET_INTEGER,
++	.arg1_type = ARG_PTR_TO_CTX,
++	.arg2_type = ARG_PTR_TO_MEM,
++	.arg3_type = ARG_CONST_SIZE_OR_ZERO,
++	.arg4_type = ARG_ANYTHING,
++	.arg5_type = ARG_ANYTHING,
++};
++
+ static const struct bpf_func_proto *
+ hid_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ {
+ 	switch (func_id) {
+ 	case BPF_FUNC_hid_get_data:
+ 		return &bpf_hid_get_data_proto;
++	case BPF_FUNC_hid_get_bits:
++		return &bpf_hid_get_bits_proto;
++	case BPF_FUNC_hid_set_bits:
++		return &bpf_hid_set_bits_proto;
++	case BPF_FUNC_hid_raw_request:
++		if (prog->expected_attach_type != BPF_HID_DEVICE_EVENT)
++			return &bpf_hid_raw_request_proto;
++		return NULL;
+ 	default:
+ 		return bpf_base_func_proto(func_id);
+ 	}
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 0e8438e93768..41ab1d068369 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -5155,6 +5155,39 @@ union bpf_attr {
+  *		by a call to bpf_hid_discard;
+  *	Return
+  *		The pointer to the data. On error, a null value is returned.
++ *
++ * int bpf_hid_get_bits(void *ctx, u64 offset, u32 n, u32 *data)
++ *	Description
++ *		Get the data of size n (in bits) at the given offset (bits) in the
++ *		ctx->event.data field and store it into data.
++ *
++ *		n must be less or equal than 32, and we can address with bit
++ *		precision the value in the buffer. data must be a pointer
++ *		to a u32.
++ *	Return
++ *		The length of data copied into data. On error, a negative value
++ *		is returned.
++ *
++ * int bpf_hid_set_bits(void *ctx, u64 offset, u32 n, u32 data)
++ *	Description
++ *		Set the data of size n (in bits) at the given offset (bits) in the
++ *		ctx->event.data field.
++ *
++ *		n must be less or equal than 32, and we can address with bit
++ *		precision the value in the buffer.
++ *	Return
++ *		The length of data copied into ctx->event.data. On error, a negative
++ *		value is returned.
++ *
++ * int bpf_hid_raw_request(void *ctx, void *buf, u64 size, u8 report_type, u8 request_type)
++ *	Description
++ *		communicate with the HID device
++ *
++ *		report_type is one of HID_INPUT_REPORT, HID_OUTPUT_REPORT, HID_FEATURE_REPORT
++ *		request_type is one of HID_REQ_SET_REPORT or HID_REQ_GET_REPORT
++ *	Return
++ *		0 on success.
++ *		negative value on error.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -5352,6 +5385,9 @@ union bpf_attr {
+ 	FN(skb_set_tstamp),		\
+ 	FN(ima_file_hash),		\
+ 	FN(hid_get_data),		\
++	FN(hid_get_bits),		\
++	FN(hid_set_bits),		\
++	FN(hid_raw_request),		\
+ 	/* */
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
 -- 
-2.25.1
+2.35.1
 
