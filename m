@@ -2,127 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE280C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 07:44:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1674DC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 07:44:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233182AbiCRHpq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 03:45:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53514 "EHLO
+        id S233201AbiCRHpv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 03:45:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232183AbiCRHpm (ORCPT
+        with ESMTP id S233176AbiCRHpo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 03:45:42 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C02B61F42CC;
-        Fri, 18 Mar 2022 00:44:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647589464; x=1679125464;
-  h=from:to:cc:subject:date:message-id;
-  bh=WVorLasdOjXeuoPP69sky8MPUXu9hsaobNnBPkjJ6PE=;
-  b=j1bbUUsn0MNuNmpP/NPz0yaUZMNK4xug71cDTn7We/cOXJphGtO/WYeU
-   W7eVH/cgC9d+xXWcFMik6HYBXZcJwq/uqyLln3F3gv9WtklSWjJsJoQLQ
-   5q05WRHj3oH0e4Ahl8igoWs7nR7oHy4XMu+XJFRkde1Ei+T9UtzRIuVBS
-   FWPIhEdjjr+CRddtpvdmgmun44d62H0sUVxWs25PMUfDGU8w4rkF2frua
-   fKYerh3Kk/Cjxuz2wNUp+DCxgSbu1o7YytJKl3jdsxMhxqCOAUvSUcIdf
-   tqar7fPUXAUmmbv6pv5kivP9KbxndPBfEMGlnG+2LL3GhtF2xurN8R5cB
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="254641650"
-X-IronPort-AV: E=Sophos;i="5.90,191,1643702400"; 
-   d="scan'208";a="254641650"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 00:44:24 -0700
-X-IronPort-AV: E=Sophos;i="5.90,191,1643702400"; 
-   d="scan'208";a="558307271"
-Received: from chenyi-pc.sh.intel.com ([10.239.159.73])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 00:44:21 -0700
-From:   Chenyi Qiang <chenyi.qiang@intel.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Xiaoyao Li <xiaoyao.li@intel.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5 0/3] Introduce Notify VM exit
-Date:   Fri, 18 Mar 2022 15:49:52 +0800
-Message-Id: <20220318074955.22428-1-chenyi.qiang@intel.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 18 Mar 2022 03:45:44 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9F731F42D2;
+        Fri, 18 Mar 2022 00:44:25 -0700 (PDT)
+Received: from mail-wr1-f42.google.com ([209.85.221.42]) by
+ mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1Mbj3e-1o66GH3f4A-00dDLd; Fri, 18 Mar 2022 08:44:23 +0100
+Received: by mail-wr1-f42.google.com with SMTP id x15so10537017wru.13;
+        Fri, 18 Mar 2022 00:44:23 -0700 (PDT)
+X-Gm-Message-State: AOAM531FTlH57ouvnkxx9jRG6mZfwgsSMPvRmeDZAIjdTb0ixiecWBdO
+        iVRx68m9YlLw62eogSi/YprB71p9jsSQfMaTnRc=
+X-Google-Smtp-Source: ABdhPJzIXhZOJi6NWdZqeu15CdJ5JFHp9oqnOe609rHntiPX/cWxExSEoXOsOalxM26KcvxA30q//5tG2XN3EpRswjE=
+X-Received: by 2002:a5d:6d0f:0:b0:203:9157:1c48 with SMTP id
+ e15-20020a5d6d0f000000b0020391571c48mr6942693wrq.192.1647589463306; Fri, 18
+ Mar 2022 00:44:23 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220318071130.163942-1-chenjiahao16@huawei.com>
+In-Reply-To: <20220318071130.163942-1-chenjiahao16@huawei.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Fri, 18 Mar 2022 08:44:07 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a3==vLKZUOceuMh3X1U5_sN82Vpm8J_3P-H-+q3sKKMxg@mail.gmail.com>
+Message-ID: <CAK8P3a3==vLKZUOceuMh3X1U5_sN82Vpm8J_3P-H-+q3sKKMxg@mail.gmail.com>
+Subject: Re: [PATCH -next] uaccess: fix __access_ok limit setup in compat mode
+To:     Chen Jiahao <chenjiahao16@huawei.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Stafford Horne <shorne@gmail.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:xeXYH6qbgvt7UHc7zDtYFQsBnW61JIFhVjyTjlYhP91VSEkQz49
+ 0Z6vAIYbrA2pEGDpoBZ70w5BJm3sRMSx6BUqn2aqTsWfOu4A2JagdEcssWF0FAv7iJrTMFZ
+ u7B/I7ALAVCuhwe2BFnLqoT5XIUenK6PcZZwnHu3EzWanFOKEjI0h/VivNNgEB9sJ0GWRws
+ eeZ2WRlF8xpSINOS9cK9g==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:0P+KlHjPBMg=:rHJzmBHGlNG+M2D+4oveca
+ fkhqpwbBsOG1Am8s1I04Uba7/FMpmGRPd4LQK/mU5giubn919sik/YYf34X2I8ERQY9Hthzyg
+ 1Qwckv4Cfaes3aWZruuMEuz+8cpf7ZCuAS9cDZs+N3ZkX34OVhwmHT34qZXz499ODx3AnJbkr
+ 9PHykrskRoBzdE3nGz8T70SmxYd9stp0hWi94AkJZm992V0F417q3lt3OPlgzg2c7hLnc+Oca
+ eIMVEFmXmrtzDyjRr1kvLy76XjOlCI4PfapxjKvF1t3s5NcBWqD12psaIbwXyhMcD9OWaQlbu
+ zci7UdgyE/W4Ia30g7kXNmf/aMEVb5xQrsYGkyj5DZyK3gG9hyW0lQBEqn6RYSkPjS0ZqYJwv
+ WXFg4ANP0+c+pLGvh4bK89VxOTfgd0Ij/jg5xj7R5+w5jtQTrbvzFOI6GZKZqKHQAfBGz4IxZ
+ i5cRK65bL5jR80H4cegMEC3W3Zn5PucfA/5+2YVclRPaWDl7fOr4T4ir2pMYaPLZmrO2UeSP6
+ PEJ13+uPLtWYBQiyKJp8aanVGAjLhXMik6QRkQM/s1X5mQMK14qDU8DDay2yKgsXb/wnkpY+x
+ hzhGDTcn4kNw0AOeFIN3qtrq26yTI6L4/QHTgJRw7vm9X5HUUEBouZcFfSmO2f7ltpQSQ3f1r
+ JNuaudGZJVXzCAD7SxL/IsQLrxUDxOOdjA/MzJ6UVQKVnlzVL26uNC4jpmcKrntW6lT1XmNUH
+ LG+kOU6gkEc2stU35rgDD8KiNascE1WGszQhWkiuZZMQ6SmZMbkZDblhVt7HZlpsUxXlbMecc
+ rBprlwCSN5g2bDZbnXegLvS3igBgIddgEWD7uQ02I/Y8QcOBlU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Virtual machines can exploit Intel ISA characterstics to cause
-functional denial of service to the VMM. This series introduces a new
-feature named Notify VM exit, which can help mitigate such kind of
-attack.
+On Fri, Mar 18, 2022 at 8:11 AM Chen Jiahao <chenjiahao16@huawei.com> wrote:
+>
+> In __access_ok, TASK_SIZE_MAX is used to check if a memory access
+> is in user address space, but some cases may get omitted in compat
+> mode.
+>
+> For example, a 32-bit testcase calling pread64(fd, buf, -1, 1)
+> and running in x86-64 kernel, the obviously illegal size "-1" will
+> get ignored by __access_ok. Since from the kernel point of view,
+> 32-bit userspace 0xffffffff is within the limit of 64-bit
+> TASK_SIZE_MAX.
+>
+> Replacing the limit TASK_SIZE_MAX with TASK_SIZE in __access_ok
+> will fix the problem above.
 
-Patch 1: An extension of KVM_SET_VCPU_EVENTS ioctl to inject a
-synthesized shutdown event from user space. This is also a fix for other
-synthesized triple fault, e.g. the RSM patch or nested_vmx_abort(),
-which could get lost when exit to userspace to do migrate.
+I don't see what problem this fixes, the choice of TASK_SIZE_MAX in
+__access_ok() is intentional, as this means we can use a compile-time
+constant as the limit, which produces better code.
 
-Patch 2: The main patch to enable Notify VM exit.
+Any user pointer between COMPAT_TASK_SIZE and TASK_SIZE_MAX is
+not accessible by a user process but will not let user space access
+any kernel data either, which is the point of the check.
 
-Patch 3: Add document for the new KVM capability and KVM exit reason.
+In your example of using '-1' as the pointer, access_ok() returns true,
+so the kernel can go on to perform an unchecked __get_user() on
+__put_user() on 0xffffffffull, which causes page fault that is intercepted
+by the ex_table fixup.
 
----
-Change logs:
-v4 -> v5
-- rename KVM_VCPUEVENTS_SHUTDOWN to KVM_VCPUEVENTS_TRIPLE_FAULT. Make it
-  bidirection and add it to get_vcpu_events. (Sean)
-- v4: https://lore.kernel.org/all/20220310084001.10235-1-chenyi.qiang@intel.com/
+This should not result in any user visible difference, in both cases
+user process will see a -EFAULT return code from its system call.
+Are you able to come up with a test case that shows an observable
+difference in behavior?
 
-v3 -> v4
-- Change this feature to per-VM scope. (Jim)
-- Once VM_CONTEXT_INVALID set in exit_qualification, exit to user space
-  notify this fatal case, especially the notify VM exit happens in L2.
-  (Jim)
-- extend KVM_SET_VCPU_EVENTS to allow user space to inject a shutdown
-  event. (Jim)
-- A minor code changes.
-- Add document for the new KVM capability.
-- v3: https://lore.kernel.org/lkml/20220223062412.22334-1-chenyi.qiang@intel.com/
-
-v2 -> v3
-- add a vcpu state notify_window_exits to record the number of
-  occurence as well as a pr_warn output. (Sean)
-- Add the handling in nested VM to prevent L1 bypassing the restriction
-  through launching a L2. (Sean)
-- Only kill L2 when L2 VM is context invalid, synthesize a
-  EXIT_REASON_TRIPLE_FAULT to L1 (Sean)
-- To ease the current implementation, make module parameter
-  notify_window read-only. (Sean)
-- Disable notify window exit by default.
-- v2: https://lore.kernel.org/lkml/20210525051204.1480610-1-tao3.xu@intel.com/
-
-v1 -> v2
-- Default set notify window to 0, less than 0 to disable.
-- Add more description in commit message.
----
-
-Chenyi Qiang (2):
-  KVM: X86: Save&restore the triple fault request
-  KVM: Add document for KVM_CAP_X86_NOTIFY_VMEXIT and KVM_EXIT_NOTIFY
-
-Tao Xu (1):
-  KVM: VMX: Enable Notify VM exit
-
- Documentation/virt/kvm/api.rst     | 45 ++++++++++++++++++++++++++++++
- arch/x86/include/asm/kvm_host.h    |  5 ++++
- arch/x86/include/asm/vmx.h         |  7 +++++
- arch/x86/include/asm/vmxfeatures.h |  1 +
- arch/x86/include/uapi/asm/kvm.h    |  1 +
- arch/x86/include/uapi/asm/vmx.h    |  4 ++-
- arch/x86/kvm/vmx/capabilities.h    |  6 ++++
- arch/x86/kvm/vmx/nested.c          | 17 ++++++++++-
- arch/x86/kvm/vmx/vmx.c             | 44 +++++++++++++++++++++++++++--
- arch/x86/kvm/x86.c                 | 28 +++++++++++++++++--
- arch/x86/kvm/x86.h                 |  5 ++++
- include/uapi/linux/kvm.h           |  7 +++++
- 12 files changed, 162 insertions(+), 8 deletions(-)
-
--- 
-2.17.1
-
+      Arnd
