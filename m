@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64C38C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:06:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34CC3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:06:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238528AbiCRQHc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 12:07:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34990 "EHLO
+        id S238532AbiCRQHk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 12:07:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238508AbiCRQHO (ORCPT
+        with ESMTP id S238595AbiCRQHQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 12:07:14 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4AD02DF3FE
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 09:05:03 -0700 (PDT)
+        Fri, 18 Mar 2022 12:07:16 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F05112F5111
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 09:05:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647619503; x=1679155503;
+  t=1647619507; x=1679155507;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Ps8pwtFCbdECf1j0rVuWEIMYt5m7RujZfzB4u4sOQ48=;
-  b=c0+Cbn2oeGF1bkXiKDPYdLFddqLUyEq/RBqFtaKhocXu9XJ573v/QxxC
-   s9mgSYi0iI39bInd8in4B5+bKO1IHRET0wnSi5pMfXRMyK0g5z5LikybS
-   qMjEvuzk+0d1FFT8H4xlkzXtXa5DggfYhdMH4m5lmySoTr2JScQIIxgjS
-   /9TCWgndUd1Gu/GkbnFz42Gr1u+m6wn3cXqeyGY7AKmYiKzLQnNjZ/REj
-   rmPCVeiCnnlA8CCWILbkRoJdAnnpj26og8GzlHXWPKyHbnHKwpicLa3kp
-   e/q7jF636DHIA9OcGqEEfZnjux82VajFTnJ55qeTotWyMM1kyZ2IcYf8n
+  bh=c/soEeVacw7xDSkPekbPEZAHfx0/hzEIFrSSXeEpsDw=;
+  b=kGkknDTLmcfUMMTm/OzfNCJekG5r8FNz4W1Uomq8SFxlyepKbQGbGI/4
+   W8UkezRGkNFZ4Y4Aulex22JOmGq4hkB9l/3rpGj7WrDLOhGMyQdQ33jfb
+   9MQWibSc1Ysf6oWqVf8bwHLn7aB6vBLsKzri1uZVhxp1w/ElNuaq2YZy6
+   F2Xr8XaMM+MP1n/ZzUf2mLgXNKup5qt8PiUYYkbDgKCAzD5KFSvkg+bm0
+   dncmlX3jf0ggQQpOlRQDfnPqahJ/08Gi6HstZuqjeNRg9Rkl1X1k9vxNl
+   jljWVLXvK1LLZWCdJJvSM2rM5UhUXHcBOh/oLha6VUlWd5PUmIRvrcSKp
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="320373221"
+X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="257111498"
 X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="320373221"
+   d="scan'208";a="257111498"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 09:05:02 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 09:04:37 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="645571660"
+   d="scan'208";a="645571491"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 18 Mar 2022 09:04:56 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 18 Mar 2022 09:04:30 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 218C710E; Fri, 18 Mar 2022 18:05:15 +0200 (EET)
+        id 4475610E; Fri, 18 Mar 2022 18:04:50 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     kirill.shutemov@linux.intel.com
 Cc:     aarcange@redhat.com, ak@linux.intel.com, bp@alien8.de,
@@ -53,12 +53,12 @@ Cc:     aarcange@redhat.com, ak@linux.intel.com, bp@alien8.de,
         seanjc@google.com, tglx@linutronix.de, thomas.lendacky@amd.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         x86@kernel.org
-Subject: [PATCHv7.1 16/30] x86/boot: Port I/O: add decompression-time support for TDX
-Date:   Fri, 18 Mar 2022 19:05:14 +0300
-Message-Id: <20220318160514.66270-1-kirill.shutemov@linux.intel.com>
+Subject: [PATCHv7.1 15/30] x86/boot: Port I/O: allow to hook up alternative helpers
+Date:   Fri, 18 Mar 2022 19:04:46 +0300
+Message-Id: <20220318160446.66170-1-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220318153048.51177-17-kirill.shutemov@linux.intel.com>
-References: <20220318153048.51177-17-kirill.shutemov@linux.intel.com>
+In-Reply-To: <20220318153048.51177-16-kirill.shutemov@linux.intel.com>
+References: <20220318153048.51177-16-kirill.shutemov@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -72,224 +72,183 @@ But during early boot, on the decompression stage, it is cumbersome to
 deal with #VE. It is cleaner to go to hypercalls directly, bypassing #VE
 handling.
 
-Hook up TDX-specific port I/O helpers if booting in TDX environment.
+Add a way to hook up alternative port I/O helpers in the boot stub with
+a new pio_ops structure.  For now, set the ops structure to just call
+the normal I/O operation functions.
+
+out*()/in*() macros redefined to use pio_ops callbacks. It eliminates
+need in changing call sites. io_delay() changed to use port I/O helper
+instead of inline assembly.
 
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
 ---
  v7.1:
-   - Explicitly use pio_ops when override port I/O callbacks
+  - Rename fields of struct port_io_ops to avoid conficts with I/O
+    helpers;
 ---
- arch/x86/boot/compressed/Makefile |  2 +-
- arch/x86/boot/compressed/tdcall.S |  3 ++
- arch/x86/boot/compressed/tdx.c    | 61 +++++++++++++++++++++++++++++++
- arch/x86/include/asm/shared/tdx.h | 32 ++++++++++++++++
- arch/x86/include/asm/tdx.h        | 27 --------------
- 5 files changed, 97 insertions(+), 28 deletions(-)
- create mode 100644 arch/x86/boot/compressed/tdcall.S
+ arch/x86/boot/boot.h            |  4 ++--
+ arch/x86/boot/compressed/misc.c |  4 ++++
+ arch/x86/boot/compressed/misc.h |  2 +-
+ arch/x86/boot/io.h              | 41 +++++++++++++++++++++++++++++++++
+ arch/x86/boot/main.c            |  4 ++++
+ arch/x86/realmode/rm/wakemain.c |  4 ++++
+ 6 files changed, 56 insertions(+), 3 deletions(-)
+ create mode 100644 arch/x86/boot/io.h
 
-diff --git a/arch/x86/boot/compressed/Makefile b/arch/x86/boot/compressed/Makefile
-index 732f6b21ecbd..8fd0e6ae2e1f 100644
---- a/arch/x86/boot/compressed/Makefile
-+++ b/arch/x86/boot/compressed/Makefile
-@@ -101,7 +101,7 @@ ifdef CONFIG_X86_64
- endif
+diff --git a/arch/x86/boot/boot.h b/arch/x86/boot/boot.h
+index 22a474c5b3e8..b42b91606ca8 100644
+--- a/arch/x86/boot/boot.h
++++ b/arch/x86/boot/boot.h
+@@ -23,10 +23,10 @@
+ #include <linux/edd.h>
+ #include <asm/setup.h>
+ #include <asm/asm.h>
+-#include <asm/shared/io.h>
+ #include "bitops.h"
+ #include "ctype.h"
+ #include "cpuflags.h"
++#include "io.h"
  
- vmlinux-objs-$(CONFIG_ACPI) += $(obj)/acpi.o
--vmlinux-objs-$(CONFIG_INTEL_TDX_GUEST) += $(obj)/tdx.o
-+vmlinux-objs-$(CONFIG_INTEL_TDX_GUEST) += $(obj)/tdx.o $(obj)/tdcall.o
- 
- vmlinux-objs-$(CONFIG_EFI_MIXED) += $(obj)/efi_thunk_$(BITS).o
- efi-obj-$(CONFIG_EFI_STUB) = $(objtree)/drivers/firmware/efi/libstub/lib.a
-diff --git a/arch/x86/boot/compressed/tdcall.S b/arch/x86/boot/compressed/tdcall.S
-new file mode 100644
-index 000000000000..46d0495e0d3a
---- /dev/null
-+++ b/arch/x86/boot/compressed/tdcall.S
-@@ -0,0 +1,3 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+#include "../../coco/tdx/tdcall.S"
-diff --git a/arch/x86/boot/compressed/tdx.c b/arch/x86/boot/compressed/tdx.c
-index 5f6d01a2f1f4..918a7606f53c 100644
---- a/arch/x86/boot/compressed/tdx.c
-+++ b/arch/x86/boot/compressed/tdx.c
-@@ -2,9 +2,65 @@
- 
- #include "../cpuflags.h"
- #include "../string.h"
-+#include "../io.h"
-+#include "error.h"
-+
-+#include <vdso/limits.h>
-+#include <uapi/asm/vmx.h>
- 
- #include <asm/shared/tdx.h>
- 
-+/* Called from __tdx_hypercall() for unrecoverable failure */
-+void __tdx_hypercall_failed(void)
-+{
-+	error("TDVMCALL failed. TDX module bug?");
-+}
-+
-+static inline unsigned int tdx_io_in(int size, u16 port)
-+{
-+	struct tdx_hypercall_args args = {
-+		.r10 = TDX_HYPERCALL_STANDARD,
-+		.r11 = EXIT_REASON_IO_INSTRUCTION,
-+		.r12 = size,
-+		.r13 = 0,
-+		.r14 = port,
-+	};
-+
-+	if (__tdx_hypercall(&args, TDX_HCALL_HAS_OUTPUT))
-+		return UINT_MAX;
-+
-+	return args.r11;
-+}
-+
-+static inline void tdx_io_out(int size, u16 port, u32 value)
-+{
-+	struct tdx_hypercall_args args = {
-+		.r10 = TDX_HYPERCALL_STANDARD,
-+		.r11 = EXIT_REASON_IO_INSTRUCTION,
-+		.r12 = size,
-+		.r13 = 1,
-+		.r14 = port,
-+		.r15 = value,
-+	};
-+
-+	__tdx_hypercall(&args, 0);
-+}
-+
-+static inline u8 tdx_inb(u16 port)
-+{
-+	return tdx_io_in(1, port);
-+}
-+
-+static inline void tdx_outb(u8 value, u16 port)
-+{
-+	tdx_io_out(1, port, value);
-+}
-+
-+static inline void tdx_outw(u16 value, u16 port)
-+{
-+	tdx_io_out(2, port, value);
-+}
-+
- void early_tdx_detect(void)
+ /* Useful macros */
+ #define ARRAY_SIZE(x) (sizeof(x) / sizeof(*(x)))
+@@ -39,7 +39,7 @@ extern struct boot_params boot_params;
+ static inline void io_delay(void)
  {
- 	u32 eax, sig[3];
-@@ -13,4 +69,9 @@ void early_tdx_detect(void)
- 
- 	if (memcmp(TDX_IDENT, sig, sizeof(sig)))
- 		return;
-+
-+	/* Use hypercalls instead of I/O instructions */
-+	pio_ops.f_inb  = tdx_inb;
-+	pio_ops.f_outb = tdx_outb;
-+	pio_ops.f_outw = tdx_outw;
+ 	const u16 DELAY_PORT = 0x80;
+-	asm volatile("outb %%al,%0" : : "dN" (DELAY_PORT));
++	outb(0, DELAY_PORT);
  }
-diff --git a/arch/x86/include/asm/shared/tdx.h b/arch/x86/include/asm/shared/tdx.h
-index 8209ba9ffe1a..e53f26228fbb 100644
---- a/arch/x86/include/asm/shared/tdx.h
-+++ b/arch/x86/include/asm/shared/tdx.h
-@@ -2,7 +2,39 @@
- #ifndef _ASM_X86_SHARED_TDX_H
- #define _ASM_X86_SHARED_TDX_H
  
-+#include <linux/bits.h>
-+#include <linux/types.h>
-+
-+#define TDX_HYPERCALL_STANDARD  0
-+
-+#define TDX_HCALL_HAS_OUTPUT	BIT(0)
-+#define TDX_HCALL_ISSUE_STI	BIT(1)
-+
- #define TDX_CPUID_LEAF_ID	0x21
- #define TDX_IDENT		"IntelTDX    "
+ /* These functions are used to reference data in other segments. */
+diff --git a/arch/x86/boot/compressed/misc.c b/arch/x86/boot/compressed/misc.c
+index 2b1169869b96..9fdef6af20a1 100644
+--- a/arch/x86/boot/compressed/misc.c
++++ b/arch/x86/boot/compressed/misc.c
+@@ -47,6 +47,8 @@ void *memmove(void *dest, const void *src, size_t n);
+  */
+ struct boot_params *boot_params;
  
-+#ifndef __ASSEMBLY__
++struct port_io_ops pio_ops;
 +
-+/*
-+ * Used in __tdx_hypercall() to pass down and get back registers' values of
-+ * the TDCALL instruction when requesting services from the VMM.
-+ *
-+ * This is a software only structure and not part of the TDX module/VMM ABI.
-+ */
-+struct tdx_hypercall_args {
-+	u64 r10;
-+	u64 r11;
-+	u64 r12;
-+	u64 r13;
-+	u64 r14;
-+	u64 r15;
+ memptr free_mem_ptr;
+ memptr free_mem_end_ptr;
+ 
+@@ -370,6 +372,8 @@ asmlinkage __visible void *extract_kernel(void *rmode, memptr heap,
+ 	lines = boot_params->screen_info.orig_video_lines;
+ 	cols = boot_params->screen_info.orig_video_cols;
+ 
++	init_default_io_ops();
++
+ 	/*
+ 	 * Detect TDX guest environment.
+ 	 *
+diff --git a/arch/x86/boot/compressed/misc.h b/arch/x86/boot/compressed/misc.h
+index 8a253e85f990..ea71cf3d64e1 100644
+--- a/arch/x86/boot/compressed/misc.h
++++ b/arch/x86/boot/compressed/misc.h
+@@ -26,7 +26,6 @@
+ #include <asm/boot.h>
+ #include <asm/bootparam.h>
+ #include <asm/desc_defs.h>
+-#include <asm/shared/io.h>
+ 
+ #include "tdx.h"
+ 
+@@ -35,6 +34,7 @@
+ 
+ #define BOOT_BOOT_H
+ #include "../ctype.h"
++#include "../io.h"
+ 
+ #ifdef CONFIG_X86_64
+ #define memptr long
+diff --git a/arch/x86/boot/io.h b/arch/x86/boot/io.h
+new file mode 100644
+index 000000000000..110880907f87
+--- /dev/null
++++ b/arch/x86/boot/io.h
+@@ -0,0 +1,41 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef BOOT_IO_H
++#define BOOT_IO_H
++
++#include <asm/shared/io.h>
++
++#undef inb
++#undef inw
++#undef inl
++#undef outb
++#undef outw
++#undef outl
++
++struct port_io_ops {
++	u8	(*f_inb)(u16 port);
++	void	(*f_outb)(u8 v, u16 port);
++	void	(*f_outw)(u16 v, u16 port);
 +};
 +
-+/* Used to request services from the VMM */
-+u64 __tdx_hypercall(struct tdx_hypercall_args *args, unsigned long flags);
++extern struct port_io_ops pio_ops;
 +
-+/* Called from __tdx_hypercall() for unrecoverable failure */
-+void __tdx_hypercall_failed(void);
++/*
++ * Use the normal I/O instructions by default.
++ * TDX guests override these to use hypercalls.
++ */
++static inline void init_default_io_ops(void)
++{
++	pio_ops.f_inb  = __inb;
++	pio_ops.f_outb = __outb;
++	pio_ops.f_outw = __outw;
++}
 +
-+#endif /* !__ASSEMBLY__ */
- #endif /* _ASM_X86_SHARED_TDX_H */
-diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
-index ca23adaa6681..1093a5e5f446 100644
---- a/arch/x86/include/asm/tdx.h
-+++ b/arch/x86/include/asm/tdx.h
-@@ -3,16 +3,10 @@
- #ifndef _ASM_X86_TDX_H
- #define _ASM_X86_TDX_H
++/*
++ * Redirect port I/O operations via pio_ops callbacks.
++ * TDX guests override these callbacks with TDX-specific helpers.
++ */
++#define inb  pio_ops.f_inb
++#define outb pio_ops.f_outb
++#define outw pio_ops.f_outw
++
++#endif
+diff --git a/arch/x86/boot/main.c b/arch/x86/boot/main.c
+index e3add857c2c9..1202d4f8a390 100644
+--- a/arch/x86/boot/main.c
++++ b/arch/x86/boot/main.c
+@@ -17,6 +17,8 @@
  
--#include <linux/bits.h>
- #include <linux/init.h>
- #include <asm/ptrace.h>
- #include <asm/shared/tdx.h>
+ struct boot_params boot_params __attribute__((aligned(16)));
  
--#define TDX_HYPERCALL_STANDARD  0
--
--#define TDX_HCALL_HAS_OUTPUT	BIT(0)
--#define TDX_HCALL_ISSUE_STI	BIT(1)
--
- /*
-  * SW-defined error codes.
-  *
-@@ -40,21 +34,6 @@ struct tdx_module_output {
- 	u64 r11;
- };
++struct port_io_ops pio_ops;
++
+ char *HEAP = _end;
+ char *heap_end = _end;		/* Default end of heap = no heap */
  
--/*
-- * Used in __tdx_hypercall() to pass down and get back registers' values of
-- * the TDCALL instruction when requesting services from the VMM.
-- *
-- * This is a software only structure and not part of the TDX module/VMM ABI.
-- */
--struct tdx_hypercall_args {
--	u64 r10;
--	u64 r11;
--	u64 r12;
--	u64 r13;
--	u64 r14;
--	u64 r15;
--};
--
- /*
-  * Used by the #VE exception handler to gather the #VE exception
-  * info from the TDX module. This is a software only structure
-@@ -79,12 +58,6 @@ void __init tdx_early_init(void);
- u64 __tdx_module_call(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
- 		      struct tdx_module_output *out);
+@@ -133,6 +135,8 @@ static void init_heap(void)
  
--/* Used to request services from the VMM */
--u64 __tdx_hypercall(struct tdx_hypercall_args *args, unsigned long flags);
--
--/* Called from __tdx_hypercall() for unrecoverable failure */
--void __tdx_hypercall_failed(void);
--
- void tdx_get_ve_info(struct ve_info *ve);
+ void main(void)
+ {
++	init_default_io_ops();
++
+ 	/* First, copy the boot header into the "zeropage" */
+ 	copy_boot_params();
  
- bool tdx_handle_virt_exception(struct pt_regs *regs, struct ve_info *ve);
+diff --git a/arch/x86/realmode/rm/wakemain.c b/arch/x86/realmode/rm/wakemain.c
+index 1d6437e6d2ba..a6f4d8388ad8 100644
+--- a/arch/x86/realmode/rm/wakemain.c
++++ b/arch/x86/realmode/rm/wakemain.c
+@@ -62,8 +62,12 @@ static void send_morse(const char *pattern)
+ 	}
+ }
+ 
++struct port_io_ops pio_ops;
++
+ void main(void)
+ {
++	init_default_io_ops();
++
+ 	/* Kill machine if structures are wrong */
+ 	if (wakeup_header.real_magic != 0x12345678)
+ 		while (1)
 -- 
 2.34.1
 
