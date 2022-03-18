@@ -2,198 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44567C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 11:28:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EEF4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 11:29:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235763AbiCRLaP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 07:30:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58090 "EHLO
+        id S235770AbiCRLad (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 07:30:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230136AbiCRLaO (ORCPT
+        with ESMTP id S230136AbiCRLaa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 07:30:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB10D196085
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 04:28:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647602935;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jX3XcNdW+Ax9nZGkwRj/4ZIncJ0ly8t/9orHLyMptgc=;
-        b=fbxIwifT9ET7B9zcS9QhJULmzHM3+V9N9UveF4ZSGBZTnzjIscm/l2G1UJhYoppbFlsx2b
-        oBqE1EKBMmB2NHFEsCy+CZN9VAhWMTeiaTBBDXH1ruJRcr/obXZ4jIi/5UeZFuDbFTBjK4
-        Slvw8d5bYawlz2SQKb563XIvR6LcWZc=
-Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com
- [209.85.215.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-636-nmC6w9XLN8qyKIuT47_BWw-1; Fri, 18 Mar 2022 07:28:54 -0400
-X-MC-Unique: nmC6w9XLN8qyKIuT47_BWw-1
-Received: by mail-pg1-f198.google.com with SMTP id l6-20020a637006000000b003811a27370aso3258421pgc.2
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 04:28:53 -0700 (PDT)
+        Fri, 18 Mar 2022 07:30:30 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E45401ED060
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 04:29:10 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id h23so10711304wrb.8
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 04:29:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=zhJ3+Tw2rjs90pVrPjzkbml2R5PoxjaT42AVteHA4F4=;
+        b=q516VCjdwtCe9ExYg5jxTM6l9XB8qwNeX8y5eNR6+HL73cG8FQ9hb2TPLpBKjb1dT6
+         NvGxRCuKvNo8aVN6nJdzSVS2DBx6PxaQkix9oUOtVK/+trc8OuJCTxuwNt1YQoTTiNbA
+         uT2HhDY/6bK2Y/gThrm6BrkhZlLNUeLZBzeJzR/+tth8MSlJIHTa8kN+WZiDy7mX2Bio
+         UFaha/bDEuBJa80fFnGM7DdD7DuBSAK80LBQx62eEGA5wNCcY9F+zaDPC50s3lpm5Z03
+         LGN0oJpO732oUH5xvoxZB2Soz2enqtt8spj171VcViDSTEhijGYFkvk8CgEQO6Bvo5fo
+         qHsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=jX3XcNdW+Ax9nZGkwRj/4ZIncJ0ly8t/9orHLyMptgc=;
-        b=MCfmsO5J1bpsXjDmAw9FtJLYWUap/ZLd+qrEGwV7iPhI+cdvx9HGmgqetv3++f2p2z
-         tU8T20hggbvwo52AfnbdxM7/XUjVi+DDsFhGE0BVZaNe+A+vd8I6U0mXspOX4qjx0RXs
-         Gf30niXdQaFIl2/M3x8vvAh7oZNXG4chnLnpgHU+mT0SWz7EgtDY39nmw6gMwT+2sI6G
-         nAVt/BSkudWbrc1LGP4/wfFtVohIW0O8OtiN6eWvtLlp+ZZhh8N53F81O524F7lDey/Z
-         7QPPvLbAjGz0m0rMI8R+Pu3AkzrsUG3+PteOKhV2qUqdtGtkHo9tk6szvEhMrJdEwwtV
-         aeZw==
-X-Gm-Message-State: AOAM5302wTBy+eeMK/Fnu9RGsNuwd/Jeux9+Od+jp9T2XCIgZ0LhBtWY
-        msjNy74t4PshlCyM+g9WjxCgJDOYoPAaYj+U4XOoB3sQcNEXEVB6bOc7KgQJbhUeHCDKdIEoAdW
-        tsmGy/CHENBuPhTK/maIpTWpIIqWdWPZvyyup2NV5+NmnZ6GVW3q9BDmOhpF6xDRnQ8bG3a37LQ
-        ==
-X-Received: by 2002:a17:902:ec87:b0:153:ddac:a9f2 with SMTP id x7-20020a170902ec8700b00153ddaca9f2mr9486779plg.56.1647602932385;
-        Fri, 18 Mar 2022 04:28:52 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx3meKt4wUJ69S8mlWYgwFLoBQHJRuKlnH3Qa5bj9JyLzKv94L7Ztpcg4Gr2Syw2hJhdYLR1A==
-X-Received: by 2002:a17:902:ec87:b0:153:ddac:a9f2 with SMTP id x7-20020a170902ec8700b00153ddaca9f2mr9486758plg.56.1647602932035;
-        Fri, 18 Mar 2022 04:28:52 -0700 (PDT)
-Received: from [10.72.12.110] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id z11-20020a056a001d8b00b004f74f8268cbsm7967126pfw.85.2022.03.18.04.28.49
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=zhJ3+Tw2rjs90pVrPjzkbml2R5PoxjaT42AVteHA4F4=;
+        b=gQHIYJHuuMel1uZj5ljJUFFYKhKI94tN8n7kATiJ8F302gaaTQR6crtq2eWf+bMHYY
+         WRFt2H5kdj2ekJP8efl89+BacNofhiob6Xt/Xdskm0GwbX5f41ew6kEy+O07YIUyK3gx
+         C3nZ7PXRG+zsTz3/1p79ejiqpUTpGZ3Zw0gDRCQymAb7QSi2+tYgSP05DAHLJs6XMpOh
+         60T0FWdNH7Hsc6GiVpF2x1aEpTIB4Fzm5JWHubu8jAP3aMm0rJ5dHrYl6aZwkVpLKzpj
+         mOBx98kSL/ZioXNqIaQBsCBH9fAMZ6JYDpNU/fwpGBEcYiPtj0zZz4FN4/qlHaItu47m
+         VbSw==
+X-Gm-Message-State: AOAM532D05WzzBSA+JTUtkMBgURt/+kNzuX0gkYWLDpaAsssqatwdZGa
+        r7PH6bIU16tBLwzm026T+ZY=
+X-Google-Smtp-Source: ABdhPJzGJtYQoLClsmP2uoJXyJY8zHKqktfU1oIzutu5ac588ybaTCFux2Y51erMTm6SGuE7h2sCxQ==
+X-Received: by 2002:adf:fb90:0:b0:203:b456:c71e with SMTP id a16-20020adffb90000000b00203b456c71emr7641995wrr.244.1647602949228;
+        Fri, 18 Mar 2022 04:29:09 -0700 (PDT)
+Received: from [192.168.2.27] (85-70-151-113.rcd.o2.cz. [85.70.151.113])
+        by smtp.gmail.com with ESMTPSA id v14-20020a7bcb4e000000b0034492fa24c6sm6423788wmj.34.2022.03.18.04.29.07
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Mar 2022 04:28:51 -0700 (PDT)
-Subject: Re: [RFC PATCH v3 2/4] ceph: handle encrypted snapshot names in
- subdirectories
-To:     =?UTF-8?Q?Lu=c3=ads_Henriques?= <lhenriques@suse.de>
-Cc:     Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220317154521.6615-1-lhenriques@suse.de>
- <20220317154521.6615-3-lhenriques@suse.de>
- <61d831de-1589-3a19-8f46-a162099e75df@redhat.com>
- <878rt7h6qs.fsf@brahms.olymp>
-From:   Xiubo Li <xiubli@redhat.com>
-Message-ID: <15c60a74-73a9-a509-2b0e-2d9c6bfd9398@redhat.com>
-Date:   Fri, 18 Mar 2022 19:28:46 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Fri, 18 Mar 2022 04:29:08 -0700 (PDT)
+Message-ID: <c857dcf8-024e-ab8a-fd26-295ce2e0ae41@gmail.com>
+Date:   Fri, 18 Mar 2022 12:29:06 +0100
 MIME-Version: 1.0
-In-Reply-To: <878rt7h6qs.fsf@brahms.olymp>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC 0/4] Support kdump with LUKS encryption by reusing LUKS
+ master key
 Content-Language: en-US
+To:     Coiby Xu <coxu@redhat.com>, kexec@lists.infradead.org
+Cc:     Thomas Staudt <tstaudt@de.ibm.com>, Kairui Song <ryncsn@gmail.com>,
+        dm-devel@redhat.com, Mike Snitzer <snitzer@redhat.com>,
+        Baoquan He <bhe@redhat.com>, Dave Young <dyoung@redhat.com>,
+        linux-kernel@vger.kernel.org
+References: <20220318103423.286410-1-coxu@redhat.com>
+From:   Milan Broz <gmazyland@gmail.com>
+In-Reply-To: <20220318103423.286410-1-coxu@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 18/03/2022 11:34, Coiby Xu wrote:
+> With kdump enabled, when kernel crashes, the system could boot into the
+> kdump kernel and dump the memory image i.e. /proc/vmcore to a specified
+> target. Currently, when dumping vmcore to a LUKS encrypted device, there
+> are two problems,
+>   - for some machines, the user may don't have a chance enter the password
+>     to decrypt the device after kernel crashes and kdump initrd is loaded
+>   - LUKS2 by default use the memory-hard Argon2 key derivation function
+>     which is quite memory-consuming compared to the limited memory reserved
+>     for kdump. Take Fedora example, by default, only 256M is reserved for
+>     systems having memory between 4G-64G. With LUKS enabled, ~1300M needs
+>     to be reserved for kdump.
+>   
+> Besides the users (at least for Fedora) usually expect kdump to work out
+> of the box i.e. no manual password input is needed. And it doesn't make
+> sense to derivate the master key again in kdump kernel which seems to be
+> redundant work.
+> 
+> Based on Milan's feedback [1] on Kairui's ideas to support kdump with
+> LUKS encryption, this patch set addresses the above issues by
 
-On 3/18/22 6:53 PM, Luís Henriques wrote:
-> Xiubo Li <xiubli@redhat.com> writes:
->
->> On 3/17/22 11:45 PM, Luís Henriques wrote:
->>> When creating a snapshot, the .snap directories for every subdirectory will
->>> show the snapshot name in the "long format":
->>>
->>>     # mkdir .snap/my-snap
->>>     # ls my-dir/.snap/
->>>     _my-snap_1099511627782
->>>
->>> Encrypted snapshots will need to be able to handle these snapshot names by
->>> encrypting/decrypting only the snapshot part of the string ('my-snap').
->>>
->>> Also, since the MDS prevents snapshot names to be bigger than 240 characters
->>> it is necessary to adapt CEPH_NOHASH_NAME_MAX to accommodate this extra
->>> limitation.
->>>
->>> Signed-off-by: Luís Henriques <lhenriques@suse.de>
->>> ---
->>>    fs/ceph/crypto.c | 189 ++++++++++++++++++++++++++++++++++++++++-------
->>>    fs/ceph/crypto.h |  11 ++-
->>>    2 files changed, 169 insertions(+), 31 deletions(-)
->>>
->>> diff --git a/fs/ceph/crypto.c b/fs/ceph/crypto.c
->>> index beb73bbdd868..caa9863dee93 100644
->>> --- a/fs/ceph/crypto.c
->>> +++ b/fs/ceph/crypto.c
->>> @@ -128,16 +128,100 @@ void ceph_fscrypt_as_ctx_to_req(struct ceph_mds_request *req, struct ceph_acl_se
->>>    	swap(req->r_fscrypt_auth, as->fscrypt_auth);
->>>    }
->>>    -int ceph_encode_encrypted_dname(const struct inode *parent, struct qstr
->>> *d_name, char *buf)
->>> +/*
->>> + * User-created snapshots can't start with '_'.  Snapshots that start with this
->>> + * character are special (hint: there aren't real snapshots) and use the
->>> + * following format:
->>> + *
->>> + *   _<SNAPSHOT-NAME>_<INODE-NUMBER>
->>> + *
->>> + * where:
->>> + *  - <SNAPSHOT-NAME> - the real snapshot name that may need to be decrypted,
->>> + *  - <INODE-NUMBER> - the inode number for the actual snapshot
->>> + *
->>> + * This function parses these snapshot names and returns the inode
->>> + * <INODE-NUMBER>.  'name_len' will also bet set with the <SNAPSHOT-NAME>
->>> + * length.
->>> + */
->>> +static struct inode *parse_longname(const struct inode *parent, const char *name,
->>> +				    int *name_len)
->>>    {
->>> +	struct inode *dir = NULL;
->>> +	struct ceph_vino vino = { .snap = CEPH_NOSNAP };
->>> +	char *inode_number;
->>> +	char *name_end;
->>> +	int orig_len = *name_len;
->>> +	int ret = -EIO;
->>> +
->>> +	/* Skip initial '_' */
->>> +	name++;
->>> +	name_end = strrchr(name, '_');
->>> +	if (!name_end) {
->>> +		dout("Failed to parse long snapshot name: %s\n", name);
->>> +		return ERR_PTR(-EIO);
->>> +	}
->>> +	*name_len = (name_end - name);
->>> +	if (*name_len <= 0) {
->>> +		pr_err("Failed to parse long snapshot name\n");
->>> +		return ERR_PTR(-EIO);
->>> +	}
->>> +
->>> +	/* Get the inode number */
->>> +	inode_number = kmemdup_nul(name_end + 1,
->>> +				   orig_len - *name_len - 2,
->>> +				   GFP_KERNEL);
->>> +	if (!inode_number)
->>> +		return ERR_PTR(-ENOMEM);
->>> +	ret = kstrtou64(inode_number, 0, &vino.ino);
->>> +	if (ret) {
->>> +		dout("Failed to parse inode number: %s\n", name);
->>> +		dir = ERR_PTR(ret);
->>> +		goto out;
->>> +	}
->>> +
->>> +	/* And finally the inode */
->>> +	dir = ceph_find_inode(parent->i_sb, vino);
->>> +	if (!dir) {
->>> +		/* This can happen if we're not mounting cephfs on the root */
->>> +		dir = ceph_get_inode(parent->i_sb, vino, NULL);
->> In this case IMO you should lookup the inode from MDS instead create it in the
->> cache, which won't setup the encryption info needed.
->>
->> So later when you try to use this to dencrypt the snapshot names, you will hit
->> errors ? And also the case Jeff mentioned in previous thread could happen.
-> No, I don't see any errors.  The reason is that if we get a I_NEW inode,
-> we do not have the keys to even decrypt the names.  If you mount a
-> filesystem using as root a directory that is inside an encrypted
-> directory, you'll see the encrypted snapshot name:
->
->   # mkdir mydir
->   # fscrypt encrypt mydir
->   # mkdir -p mydir/a/b/c/d
->   # mkdir mydir/a/.snap/myspan
->   # umount ...
->   # mount <mon>:<port>:/a
->   # ls .snap
->
-> And we simply can't decrypt it because for that we'd need to have access
-> to the .fscrypt in the original filesystem mount root.
+Hi,
 
-Should we resolve this issue ? Something like try to copy the .fscrypt 
-when mounting '/a' ?
+I think you are creating another attack vector here, storing the encryption
+key to yet another place... but I already mentioned that in the referenced mail.
 
--- Xiubo
+Why is it not done through keyring and forcing kdump to retain key there
+(under the same keyring key name as dm-crypt used)?
+Kernel dm-crypt supports this already; LUKS2 uses keyring by default too.
+That's all you need, or not? Why do you need to add another "kdump:" thing?
+IOW why kdump cannot copy the key to keyring under the name dm-crypt
+has in the mapping table and let dm-crypt activate the device almost without
+code changes?
 
+Anyway, please fix the naming before this patchset can be read or reviewed!
+
+LUKS is user-space key management only (on-disk metadata); the kernel has
+no idea how the key is derived or what LUKS is - dm-crypt only knows the key
+(either through keyring or directly in the mapping table).
+
+Polluting kernel namespace with "luks" names variables is wrong - dm-crypt
+is used in many other mappings (plain, bitlocker, veracrypt, ...)
+Just use the dm-crypt key, do not reference LUKS at all.
+
+Milan
+
+
+
+>   1) first saving the LUKS master key to kexec when opening the encrypted
+>      device
+>   2) then saving the master key to the reserved memory for kdump when
+>      loading kdump kernel image.
+> 
+> So the LUKS master key never leaves the kernel space and once the key has
+> been saved to the reserved memory for kdump, it would be wiped
+> immediately. If there is no security concern with this approach or any
+> other concern, I will drop the following assumptions made for this RFC
+> version in v1,
+>   - only x86 is supported
+>   - there is only one LUKS device for the system
+> 
+> to extend the support to other architectures including POWER, ARM and
+> s390x and address the case of multiple LUKS devices. Any feedback will be
+> appreciated, thanks!
+> 
+> For a proof of concept, I've patched cryptsetup [2] in a quick-and-dirty
+> way to support a new option "--kdump-kernel-master-key"
+> and hacked systemd [3]. It works for Fedora 34.
+> 
+> [1] https://yhbt.net/lore/all/e5abd089-3398-fdb4-7991-0019be434b79@gmail.com/
+> [2] https://gitlab.com/coxu/cryptsetup/-/commit/ee54bb15445da0bc3f9155a7227a9799da4dac20
+> [3] https://github.com/coiby/systemd/tree/reuse_kdump_master_key
+> 
+> Coiby Xu (4):
+>    kexec, dm-crypt: receive LUKS master key from dm-crypt and pass it to
+>      kdump
+>    kdump, x86: pass the LUKS master key to kdump kernel using a kernel
+>      command line parameter luksmasterkey
+>    crash_dump: retrieve LUKS master key in kdump kernel
+>    dm-crypt: reuse LUKS master key in kdump kernel
+> 
+>   arch/x86/include/asm/crash.h      |  1 +
+>   arch/x86/kernel/crash.c           | 42 ++++++++++++++++++-
+>   arch/x86/kernel/kexec-bzimage64.c |  7 ++++
+>   drivers/md/dm-crypt.c             | 26 +++++++++---
+>   include/linux/crash_dump.h        |  4 ++
+>   include/linux/kexec.h             |  7 ++++
+>   kernel/crash_dump.c               | 69 +++++++++++++++++++++++++++++++
+>   kernel/kexec_core.c               | 66 +++++++++++++++++++++++++++++
+>   8 files changed, 215 insertions(+), 7 deletions(-)
+> 
