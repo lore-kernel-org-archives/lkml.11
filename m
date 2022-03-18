@@ -2,138 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F18C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 12:27:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4388C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 12:30:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236236AbiCRM2x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 08:28:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38482 "EHLO
+        id S236245AbiCRMby (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 08:31:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230274AbiCRM2u (ORCPT
+        with ESMTP id S236105AbiCRMbw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 08:28:50 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F9181CCAC3
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 05:27:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=eD8tHWmaTx8P3KCt4/NT+8IXDEPFOlKb/XA8R7/3lFQ=; b=sD9r9ejmX3ReiEsAx5vVRKxbu7
-        ZA+L7FENoatLkfcIySOgzFLthOn4EYhE9TuB46R/BSsm0S/At7NT7/1nqJnOcylT+hzrfNe5O8Rsy
-        k0e+kMm4INgIpE4o5GGvcfWby/IgVC6zQv/Z7EJL4hEBE2pD+NQX0MqG/Z28jO9aqHWW2m/c3H4Ym
-        2FFQ/ohRAmVgBa6Q/woubnW6GvweG9jdDdn1e2lZAhXpdJko04sMUKqsHty8DsckMkpdQtqi65xuR
-        iQUgy/iJCSWbKDQ58YkoyxRieyZER2PRwW/0wKoVLZmATsn9Xx2zSsyYNorRA3SPD7PJOqUgnZRWv
-        Wg8mH7Vg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nVBh6-007vr7-Kh; Fri, 18 Mar 2022 12:27:00 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 14D003001C7;
-        Fri, 18 Mar 2022 13:26:56 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id A2F9920D9D81E; Fri, 18 Mar 2022 13:26:56 +0100 (CET)
-Date:   Fri, 18 Mar 2022 13:26:56 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Sathvika Vasireddy <sv@linux.ibm.com>
-Cc:     linuxppc-dev@lists.ozlabs.org, jpoimboe@redhat.com,
-        linux-kernel@vger.kernel.org, aik@ozlabs.ru, mpe@ellerman.id.au,
-        rostedt@goodmis.org, naveen.n.rao@linux.vnet.ibm.com
-Subject: Re: [RFC PATCH 3/3] objtool/mcount: Add powerpc specific functions
-Message-ID: <YjR6kHq4c/rjCTpr@hirez.programming.kicks-ass.net>
-References: <20220318105140.43914-1-sv@linux.ibm.com>
- <20220318105140.43914-4-sv@linux.ibm.com>
+        Fri, 18 Mar 2022 08:31:52 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0B9C2D639D;
+        Fri, 18 Mar 2022 05:30:33 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22ICUARY015363;
+        Fri, 18 Mar 2022 07:30:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1647606610;
+        bh=oEruY6iI7bEhSGQ/sFf3kSxfrL7YpzTaQ2o27yAxWOQ=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=p7lazdCUGQzWLkzUMhC2ebKa0Xm/RYxXEW6l+otFA4sd4DcWj7X2Muujxsj06eF6L
+         q1CdGScvxVw3Ys+M9N2riLDI6/deyzW3FQ2wn50O/uALRBYW+NkJxLQdbHz8NkkJ1t
+         eXjP62XBxh7J1/sieOx4dP8SgZMiT7B1cZYXbIu0=
+Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22ICU671009180
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 18 Mar 2022 07:30:10 -0500
+Received: from DFLE102.ent.ti.com (10.64.6.23) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 18
+ Mar 2022 07:30:09 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE102.ent.ti.com
+ (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Fri, 18 Mar 2022 07:30:09 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22ICU9Bh089821;
+        Fri, 18 Mar 2022 07:30:09 -0500
+Date:   Fri, 18 Mar 2022 07:30:09 -0500
+From:   Nishanth Menon <nm@ti.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+CC:     Tero Kristo <kristo@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+Subject: Re: [PATCH] dt-bindings: irqchip: ti,sci: drop Lokesh Vutla
+Message-ID: <20220318123009.nqobrq4upgwwdzls@sterility>
+References: <20220317120845.452813-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20220318105140.43914-4-sv@linux.ibm.com>
+In-Reply-To: <20220317120845.452813-1-krzysztof.kozlowski@canonical.com>
+User-Agent: NeoMutt/20171215
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 04:21:40PM +0530, Sathvika Vasireddy wrote:
-> This patch adds powerpc specific functions required for
-> 'objtool mcount' to work, and enables mcount for ppc.
+On 13:08-20220317, Krzysztof Kozlowski wrote:
+> Emails to Lokesh Vutla bounce ("550 Invalid recipient"), so add Nishanth
+> Menon as maintainer (TI Keystone maintainer).
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-I would love to see more objtool enablement for Power :-)
+Acked-by: Nishanth Menon <nm@ti.com>
 
+Thanks.
 
-> diff --git a/tools/objtool/arch/powerpc/include/arch/elf.h b/tools/objtool/arch/powerpc/include/arch/elf.h
-> new file mode 100644
-> index 000000000000..3c8ebb7d2a6b
-> --- /dev/null
-> +++ b/tools/objtool/arch/powerpc/include/arch/elf.h
-> @@ -0,0 +1,8 @@
-> +/* SPDX-License-Identifier: GPL-2.0-or-later */
-> +
-> +#ifndef _OBJTOOL_ARCH_ELF
-> +#define _OBJTOOL_ARCH_ELF
-> +
-> +#define R_NONE R_PPC_NONE
-> +
-> +#endif /* _OBJTOOL_ARCH_ELF */
-> diff --git a/tools/objtool/utils.c b/tools/objtool/utils.c
-> index d1fc6a123a6e..c9c14fa0dfd7 100644
-> --- a/tools/objtool/utils.c
-> +++ b/tools/objtool/utils.c
-> @@ -179,11 +179,29 @@ int create_mcount_loc_sections(struct objtool_file *file)
->  		loc = (unsigned long *)sec->data->d_buf + idx;
->  		memset(loc, 0, sizeof(unsigned long));
->  
-> -		if (elf_add_reloc_to_insn(file->elf, sec,
-> -					  idx * sizeof(unsigned long),
-> -					  R_X86_64_64,
-> -					  insn->sec, insn->offset))
-> -			return -1;
-> +		if (file->elf->ehdr.e_machine == EM_X86_64) {
-> +			if (elf_add_reloc_to_insn(file->elf, sec,
-> +						  idx * sizeof(unsigned long),
-> +						  R_X86_64_64,
-> +						  insn->sec, insn->offset))
-> +				return -1;
-> +		}
-> +
-> +		if (file->elf->ehdr.e_machine == EM_PPC64) {
-> +			if (elf_add_reloc_to_insn(file->elf, sec,
-> +						  idx * sizeof(unsigned long),
-> +						  R_PPC64_ADDR64,
-> +						  insn->sec, insn->offset))
-> +				return -1;
-> +		}
-> +
-> +		if (file->elf->ehdr.e_machine == EM_PPC) {
-> +			if (elf_add_reloc_to_insn(file->elf, sec,
-> +						  idx * sizeof(unsigned long),
-> +						  R_PPC_ADDR32,
-> +						  insn->sec, insn->offset))
-> +				return -1;
-> +		}
+[...]
 
-It appears to me that repeating this code 3 times doesn't really scale
-well, how about we introduce a helper like:
-
-
-int elf_reloc_type_long(struct elf *elf)
-{
-	switch (elf->ehdr.e_machine) {
-	case EM_X86_64:
-		return R_X86_64_64;
-	case EM_PPC64:
-		return R_PPC64_ADDR64;
-	case EM_PPC:
-		return R_PPC_ADDR32;
-	default:
-		WARN("unknown machine...")
-		exit(-1);
-	}
-}
-
-		if (elf_add_reloc_to_insn(file->elf, sec,
-					  idx * sizeof(unsigned long),
-					  elf_reloc_type_long(file->elf),
-					  insn->sec, insn->offset))
-			return -1;
-
+-- 
+Regards,
+Nishanth Menon
+Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
