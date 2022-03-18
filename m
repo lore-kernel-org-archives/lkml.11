@@ -2,102 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90AA5C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 07:45:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C91ADC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 07:45:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233234AbiCRHqv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 03:46:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59738 "EHLO
+        id S233248AbiCRHqx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 03:46:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233222AbiCRHqt (ORCPT
+        with ESMTP id S233224AbiCRHqt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Mar 2022 03:46:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B6C1F6845;
-        Fri, 18 Mar 2022 00:45:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7DA3BB82180;
-        Fri, 18 Mar 2022 07:45:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56146C340E8;
-        Fri, 18 Mar 2022 07:45:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647589523;
-        bh=mfk69zuIPfhhcTWagGzypXujpE6TuqQQSU1CspPJeKs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=eKc008nJ+OiKWUc2qQSi5Q9LljBP/znyiJF/qhEJ9AvzMmJkDTLksln/tCGe/16Ta
-         y4qUr6Yt8UwKHvsdlN+/UkBgN0JC1Fy21x3U6QR5wC2L5BrEgq7bgOuN0i4690udpD
-         3qq0xKUhqD3T327sOt1FRY5HukK9RYj+cUwfh12c=
-Date:   Fri, 18 Mar 2022 08:45:19 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "WeitaoWang-oc@zhaoxin.com" <WeitaoWang-oc@zhaoxin.com>
-Cc:     mathias.nyman@intel.com, hzpeterchen@gmail.com,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        TonyWWang-oc@zhaoxin.com, weitaowang@zhaoxin.com,
-        CobeChen@zhaoxin.com, TimGuo@zhaoxin.com
-Subject: Re: [PATCH] USB: Fix xhci ERDP update issue
-Message-ID: <YjQ4jzgRmrDJClUZ@kroah.com>
-References: <dedb789b-c1bb-34af-7887-78a3fc627e75@zhaoxin.com>
+X-Greylist: delayed 1121 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 18 Mar 2022 00:45:23 PDT
+Received: from mxout70.expurgate.net (mxout70.expurgate.net [194.37.255.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1810A1F51B3;
+        Fri, 18 Mar 2022 00:45:22 -0700 (PDT)
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <prvs=50901776b7=fe@dev.tdt.de>)
+        id 1nV70J-000Tmn-MA; Fri, 18 Mar 2022 08:26:31 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <fe@dev.tdt.de>)
+        id 1nV70I-000T4V-Ul; Fri, 18 Mar 2022 08:26:30 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 3F9E8240049;
+        Fri, 18 Mar 2022 08:26:30 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id B16B4240040;
+        Fri, 18 Mar 2022 08:26:29 +0100 (CET)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id 3B1FB25F67;
+        Fri, 18 Mar 2022 08:26:29 +0100 (CET)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <dedb789b-c1bb-34af-7887-78a3fc627e75@zhaoxin.com>
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Fri, 18 Mar 2022 08:26:29 +0100
+From:   Florian Eckert <fe@dev.tdt.de>
+To:     Pavel Machek <pavel@ucw.cz>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Eckert.Florian@googlemail.com,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v4 1/2] leds: ktd20xx: Extension of the KTD20xx family of
+ LED drivers from Kinetic
+In-Reply-To: <20220212120857.GJ20866@duo.ucw.cz>
+References: <20220121140150.1729-1-fe@dev.tdt.de>
+ <20220121140150.1729-2-fe@dev.tdt.de>
+ <CAHp75Vd4pwFXoF=xS5cskM2GDNb6c6RXTYo3j3FLP+nuQVoRyg@mail.gmail.com>
+ <20220212120857.GJ20866@duo.ucw.cz>
+Message-ID: <7c973f04b4ecf1cd88d69e388edbb7e7@dev.tdt.de>
+X-Sender: fe@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.17
+X-purgate-ID: 151534::1647588391-000005D6-B4761D2A/0/0
+X-purgate: clean
+X-purgate-type: clean
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 03:32:14PM +0800, WeitaoWang-oc@zhaoxin.com wrote:
-> On some situations, software handles TRB events slower than adding TRBs.
-> If the number of TRB events to be processed in a given interrupt is 256.
-> The local variable "event_ring_deq" that records in interrupt handler
-> is equal to software_dequeue. It will cause driver not update ERDP,then
-> software dequeue pointer is out of sync with ERDP on interrupt exit.
-> On the next interrupt, the event ring may full but driver will not
-> update ERDP as software_dequeue is equal to ERDP.
-> 
-> [  536.377115] xhci_hcd 0000:00:12.0: ERROR unknown event type 37
-> [  566.933173] sd 8:0:0:0: [sdb] tag#27 uas_eh_abort_handler 0 uas-tag 7
-> inflight: CMD OUT
-> [  566.933181] sd 8:0:0:0: [sdb] tag#27 CDB: Write(10) 2a 00 17 71 e6 78 00
-> 00 08 00
-> [  572.041186] xhci_hcd On some situataions,the0000:00:12.0: xHCI host not
-> responding to stop endpoint command.
-> [  572.057193] xhci_hcd 0000:00:12.0: Host halt failed, -110
-> [  572.057196] xhci_hcd 0000:00:12.0: xHCI host controller not responding,
-> assume dead
-> [  572.057236] sd 8:0:0:0: [sdb] tag#26 uas_eh_abort_handler 0 uas-tag 6
-> inflight: CMD
-> [  572.057240] sd 8:0:0:0: [sdb] tag#26 CDB: Write(10) 2a 00 38 eb cc d8 00
-> 00 08 00
-> [  572.057244] sd 8:0:0:0: [sdb] tag#25 uas_eh_abort_handler 0 uas-tag 5
-> inflight: CMD
-> 
-> Fixed this issue by update software record local variable when handles 128
-> TRB events.
-> 
-> Signed-off-by: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
-> ---
->  drivers/usb/host/xhci-ring.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/usb/host/xhci-ring.c b/drivers/usb/host/xhci-ring.c
-> index d0b6806..f970799 100644
-> --- a/drivers/usb/host/xhci-ring.c
-> +++ b/drivers/usb/host/xhci-ring.c
-> @@ -3141,6 +3141,7 @@ irqreturn_t xhci_irq(struct usb_hcd *hcd)
->  		if (event_loop++ < TRBS_PER_SEGMENT / 2)
->  			continue;
->  		xhci_update_erst_dequeue(xhci, event_ring_deq);
-> +		event_ring_deq = xhci->event_ring->dequeue;
-> 
->  		/* ring is half-full, force isoc trbs to interrupt more often */
->  		if (xhci->isoc_bei_interval > AVOID_BEI_INTERVAL_MIN)
-> -- 
-> 2.7.4
+Hello Pavel,
 
-What commit id does this change fix?
+Haven't seen the new ktd20xx for the next [1] kernel release yet.
+Do I still have to do something?
 
-thanks,
+Best regards,
 
-greg k-h
+Florian Eckert
+
+[1] 
+https://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git/log/?h=for-next
