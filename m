@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFFBBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 09:45:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E3D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 09:45:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234342AbiCRJrG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 05:47:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44984 "EHLO
+        id S234663AbiCRJrJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 05:47:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234597AbiCRJq4 (ORCPT
+        with ESMTP id S234607AbiCRJq4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Mar 2022 05:46:56 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 931F42C962E;
-        Fri, 18 Mar 2022 02:45:37 -0700 (PDT)
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89FC92E712A;
+        Fri, 18 Mar 2022 02:45:38 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 2B8D5210EC;
-        Fri, 18 Mar 2022 09:45:36 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTP id 333261F391;
+        Fri, 18 Mar 2022 09:45:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1647596736; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1647596737; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=oKQgMRuo7ok835za3TK4V+jSr9t+hDDNO0dKnygYjCM=;
-        b=NBlkzdMXt28feJicUs+Wloouhu+l1pV+llhBG8O4zHEDKtttVPwCDL9X9b46j89MCzmDTJ
-        oLdkOUBf8S8AA8dwxQpEWfkgC8wbMnuPYtZaHInv9O9kd4rg6xnrXwSMsA1PMuBWvKJKxG
-        Oe+XlNCAx/ELTHTxnYRUHyvDhGYSxQE=
+        bh=cR+ONwp2/+ryeWptl7wJzyb3Z8fYKZlMJQsL90dVKGQ=;
+        b=BC7g7veMclXFvQjeQkqXnAaRMSNVAevRFocGWDD4ad4si+yxAbYxXBrVz1Wdpoxf7h9ED0
+        +oeqqpePl8ZyDq6GZXG260skZcCy4V0ZNVsM3U9Ez7JmW0guANFYU56hw1UR59EgCDfnHK
+        Tdjo+k7V+m75hOOWDyJ5DLmfShW7Udk=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1647596736;
+        s=susede2_ed25519; t=1647596737;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=oKQgMRuo7ok835za3TK4V+jSr9t+hDDNO0dKnygYjCM=;
-        b=30dNNUWyvI4VpyLA6qBqUujDWRZJUQMh5bDfencTOZNNQFruCvUGsxzCAAvcOHgGgvUE72
-        hwExiV0vvSuTSgAg==
+        bh=cR+ONwp2/+ryeWptl7wJzyb3Z8fYKZlMJQsL90dVKGQ=;
+        b=q1UFfysaym+7ZOPejrJs4fVRKhAaM7DBCbrbfZqu4RlH5g39wRteRHkwyQMVrK/jpdzWMw
+        BaxLorALHw1FZgAA==
 Received: from vasant-suse.suse.de (unknown [10.163.24.178])
-        by relay2.suse.de (Postfix) with ESMTP id D4C67A3B8A;
-        Fri, 18 Mar 2022 09:45:35 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTP id E6FF7A3B8A;
+        Fri, 18 Mar 2022 09:45:36 +0000 (UTC)
 From:   Vasant Karasulli <vkarasulli@suse.de>
 To:     linux-kernel@vger.kernel.org, jroedel@suse.de, kvm@vger.kernel.org
 Cc:     bp@alien8.de, x86@kernel.org, thomas.lendacky@amd.com,
         varad.gautam@suse.com, Vasant Karasulli <vkarasulli@suse.de>
-Subject: [PATCH v6 1/4] x86/tests: Add tests for AMD SEV-ES #VC handling Add Kconfig options for testing AMD SEV related features.
-Date:   Fri, 18 Mar 2022 10:45:29 +0100
-Message-Id: <20220318094532.7023-2-vkarasulli@suse.de>
+Subject: [PATCH v6 4/4] x86/tests: Add tests for AMD SEV-ES #VC handling Add KUnit based tests to validate Linux's VC handling for IO instructions. These tests: 1. install a kretprobe on the #VC handler (sev_es_ghcb_hv_call, to access GHCB before/after the resulting VMGEXIT). 2. trigger an NAE by issuing an IO instruction. 3. check that the kretprobe was hit with the right exit_code available in GHCB.
+Date:   Fri, 18 Mar 2022 10:45:32 +0100
+Message-Id: <20220318094532.7023-5-vkarasulli@suse.de>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220318094532.7023-1-vkarasulli@suse.de>
 References: <20220318094532.7023-1-vkarasulli@suse.de>
@@ -57,74 +57,60 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Signed-off-by: Vasant Karasulli <vkarasulli@suse.de>
 ---
- arch/x86/Kbuild          |  2 ++
- arch/x86/Kconfig.debug   | 16 ++++++++++++++++
- arch/x86/kernel/Makefile |  7 +++++++
- arch/x86/tests/Makefile  |  1 +
- 4 files changed, 26 insertions(+)
- create mode 100644 arch/x86/tests/Makefile
+ arch/x86/tests/sev-test-vc.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
-diff --git a/arch/x86/Kbuild b/arch/x86/Kbuild
-index f384cb1a4f7a..90470c76866a 100644
---- a/arch/x86/Kbuild
-+++ b/arch/x86/Kbuild
-@@ -26,5 +26,7 @@ obj-y += net/
+diff --git a/arch/x86/tests/sev-test-vc.c b/arch/x86/tests/sev-test-vc.c
+index b27b9f114a12..d0e742e2bf9f 100644
+--- a/arch/x86/tests/sev-test-vc.c
++++ b/arch/x86/tests/sev-test-vc.c
+@@ -8,7 +8,9 @@
+ #include <asm/cpufeature.h>
+ #include <asm/sev-common.h>
+ #include <asm/debugreg.h>
++#include <asm/io.h>
+ #include <asm/svm.h>
++#include <asm/apicdef.h>
+ #include <kunit/test.h>
+ #include <linux/kprobes.h>
 
- obj-$(CONFIG_KEXEC_FILE) += purgatory/
+@@ -111,11 +113,36 @@ static void sev_es_nae_dr7_rw(struct kunit *test)
+ 		   native_set_debugreg(7, native_get_debugreg(7)));
+ }
 
-+obj-y += tests/
++static void sev_es_nae_ioio(struct kunit *test)
++{
++	unsigned long port = 0x80;
++	char val = 0;
 +
- # for cleaning
- subdir- += boot tools
-diff --git a/arch/x86/Kconfig.debug b/arch/x86/Kconfig.debug
-index d3a6f74a94bd..e4f61af66816 100644
---- a/arch/x86/Kconfig.debug
-+++ b/arch/x86/Kconfig.debug
-@@ -279,3 +279,19 @@ endchoice
- config FRAME_POINTER
- 	depends on !UNWINDER_ORC && !UNWINDER_GUESS
- 	bool
++	check_op(test, SVM_EXIT_IOIO, val = inb(port));
++	check_op(test, SVM_EXIT_IOIO, outb(val, port));
++	check_op(test, SVM_EXIT_IOIO, insb(port, &val, sizeof(val)));
++	check_op(test, SVM_EXIT_IOIO, outsb(port, &val, sizeof(val)));
++}
 +
-+config X86_TESTS
-+	bool "Tests for x86"
-+	help
-+	    This enables building the tests under arch/x86/tests.
++static void sev_es_nae_mmio(struct kunit *test)
++{
++	unsigned long lapic_ver_pa = APIC_DEFAULT_PHYS_BASE + APIC_LVR;
++	unsigned long __iomem *lapic = ioremap(lapic_ver_pa, 0x4);
++	unsigned long lapic_version = 0;
 +
-+if X86_TESTS
-+config AMD_SEV_TEST_VC
-+	bool "Test for AMD SEV VC exception handling"
-+	depends on AMD_MEM_ENCRYPT
-+	select FUNCTION_TRACER
-+	select KPROBES
-+	select KUNIT
-+	help
-+	  Enable KUnit-based testing for AMD SEV #VC exception handling.
-+endif # X86_TESTS
-diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
-index 6aef9ee28a39..69472a576909 100644
---- a/arch/x86/kernel/Makefile
-+++ b/arch/x86/kernel/Makefile
-@@ -24,6 +24,13 @@ CFLAGS_REMOVE_sev.o = -pg
- CFLAGS_REMOVE_cc_platform.o = -pg
- endif
++	check_op(test, SVM_VMGEXIT_MMIO_READ, lapic_version = *lapic);
++	check_op(test, SVM_VMGEXIT_MMIO_WRITE, *lapic = lapic_version);
++
++	iounmap(lapic);
++}
++
+ static struct kunit_case sev_es_vc_testcases[] = {
+ 	KUNIT_CASE(sev_es_nae_cpuid),
+ 	KUNIT_CASE(sev_es_nae_wbinvd),
+ 	KUNIT_CASE(sev_es_nae_msr),
+ 	KUNIT_CASE(sev_es_nae_dr7_rw),
++	KUNIT_CASE(sev_es_nae_ioio),
++	KUNIT_CASE(sev_es_nae_mmio),
+ 	{}
+ };
 
-+# AMD_SEV_TEST_VC registers a kprobe by function name. IPA-SRA creates
-+# function copies and renames them to have an .isra suffix, which breaks kprobes'
-+# lookup. Build with -fno-ipa-sra for the test.
-+ifdef CONFIG_AMD_SEV_TEST_VC
-+CFLAGS_sev.o	+= -fno-ipa-sra
-+endif
-+
- KASAN_SANITIZE_head$(BITS).o				:= n
- KASAN_SANITIZE_dumpstack.o				:= n
- KASAN_SANITIZE_dumpstack_$(BITS).o			:= n
-diff --git a/arch/x86/tests/Makefile b/arch/x86/tests/Makefile
-new file mode 100644
-index 000000000000..f66554cd5c45
---- /dev/null
-+++ b/arch/x86/tests/Makefile
-@@ -0,0 +1 @@
-+# SPDX-License-Identifier: GPL-2.0
 --
 2.32.0
 
