@@ -2,104 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11C20C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 18:24:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3A71C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 18:25:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240140AbiCRSZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 14:25:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55596 "EHLO
+        id S240135AbiCRS07 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 14:26:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238890AbiCRSZg (ORCPT
+        with ESMTP id S237201AbiCRS04 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 14:25:36 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE3CEDF2F;
-        Fri, 18 Mar 2022 11:24:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647627857; x=1679163857;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=wpIS4R443Nce+z/m4Mc2carJ5M+X4U+cG/spU7q0iJU=;
-  b=MBb9M1/vjaNnIKvN8fe/t0g9yLSMQIIQPN9P1ZDa04QpAGJGvLqt6Py1
-   cikhcOfVVFRghA2XRHU4B2rHS4Vl27I+LONmU/hWbE6rPNTfkeBZejJpw
-   wNFWsnvA0uQVcSeGNAD4qMdC3F/oR2IIl5G67CPhyJGqnu1l6SAINfFbl
-   c+JPjC7e/ENy2GJds6OYdGuWPn9NXInB9OWMhUwnfhQUb5LyAH7YzEk6y
-   z6OHoa66psdsHwIXZKuTdKybAoFGs6KzqSiWE6H135jaH6z+h70/PFkeO
-   67hCvIKfenfSIyYGWfzxUX9t+UzsIwHN8TiLnXvAPRaZ4dB8BcY0JUpvJ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="320404134"
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="320404134"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 11:12:14 -0700
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="550837171"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 11:12:08 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nVH4S-002Ns0-Qz;
-        Fri, 18 Mar 2022 20:11:28 +0200
-Date:   Fri, 18 Mar 2022 20:11:28 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "'Rafael J . Wysocki '" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-i2c@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 4/6] i2c: mux: pinctrl: remove CONFIG_OF dependency and
- use fwnode API
-Message-ID: <YjTLUL0umgw+ZVTU@smile.fi.intel.com>
-References: <20220318160059.328208-1-clement.leger@bootlin.com>
- <20220318160059.328208-5-clement.leger@bootlin.com>
- <YjSzPeWpcR/SSX1a@smile.fi.intel.com>
- <20220318175630.0e235f41@fixe.home>
+        Fri, 18 Mar 2022 14:26:56 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694A2EDF23
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 11:25:37 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id z16so10192013pfh.3
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 11:25:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wq1GZ9FmJNaOPsHCf7hIAuuWdRpL9RI2sxkF+hIIcow=;
+        b=L6TJQ4ALkQFTio02kfOl/LvKH8xLaqIUeb5E7TuK0gBuAaxiI14x3yadHrpHm30Nf7
+         Sd+wu1HgsWmgESGl6zn6CseGywI9L5PvMdlkCn/w/VAZqL9gXFpnGAhmjt6YswLqk2iF
+         kBTCYVHwX2ogRTPke3lRoXhCAlqVbULdL0uNPxwj06gcpqxpxAE+ee84OVp3TWU3ej22
+         jIaBPC1sZjYRoSLAVd+8JMKeN1FcPYF0MNVdc+3FNF8tvcvkn/FG8S2dJPsIy7rkBHQ+
+         YWi3SYTsu4wZyPCAsFmyRgtr2XpjNG0oVtEvwF5JeCobnl6RA25lGolPMhzeMfaC9Iyg
+         1NvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wq1GZ9FmJNaOPsHCf7hIAuuWdRpL9RI2sxkF+hIIcow=;
+        b=QcKj2RcTgia6SmCok29kdXEnS09Pkc5X0pd1rpxtKNn6Gpz20V7w6ylnv0XvxDlEUO
+         9qu6cfxo3Awgjj+L+lNdIdRATv3TJWJ7lsHQVoVKok0EWeKvfEKgFQY59VVSTOwSg7p3
+         3sS1r8v0BxyfEyuACFWyVwWHeQ++rR9NvEPmTNyIxh+4wbRqLO53PntHhWtEPmbYg/zU
+         BkL1GMsRy4E5NEhICr/uQqeTTc5zH7/G74e0JFhtDpcn9xnb2P0Q2pZedXuTIKj5s1+g
+         lKmhslI+dlp9TrAty9sBKYQZ3oPPcyfktf4ntkCfGEFbfbPAVxEl+xZsyxsw4a9p0uj0
+         CMTA==
+X-Gm-Message-State: AOAM532zAcSQgwZc2nA68D+SjYn0R5BMGRDJrhCdLfDs5n30Q5g/lSBz
+        mx9NUQYTSQ4tQVl/n/VYiq9ySk44BUDQ3kWM80m4
+X-Google-Smtp-Source: ABdhPJwG95UQYNFuKuFWCvotjqKdxzonqApUV1Y52hrewvuFjuIzo30iBq30MbUPl6pncjAPxlbjjuM5VtbhSokgbnU=
+X-Received: by 2002:a63:17:0:b0:37f:f283:24b with SMTP id 23-20020a630017000000b0037ff283024bmr8823934pga.407.1647627936741;
+ Fri, 18 Mar 2022 11:25:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220318175630.0e235f41@fixe.home>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220316213055.2351342-1-morbo@google.com> <YjL6K49CkH+YC4FQ@smile.fi.intel.com>
+ <CAKwvOdkjb3uR+kqjfdKL5gqA8R+00c5=3E7uGGW+mGZ3QRsjqg@mail.gmail.com>
+ <YjSROmYwwGhpsXMl@smile.fi.intel.com> <CAKwvOdkEjrPUL4HuO3UKaUZAzVw=XV1bEOSj6HR5R1WTUSSZ4w@mail.gmail.com>
+In-Reply-To: <CAKwvOdkEjrPUL4HuO3UKaUZAzVw=XV1bEOSj6HR5R1WTUSSZ4w@mail.gmail.com>
+From:   Bill Wendling <morbo@google.com>
+Date:   Fri, 18 Mar 2022 11:25:25 -0700
+Message-ID: <CAGG=3QVCkF7RdbQ85MtKgUjm8qP79BESAUiGU3wSQc0+ExO0gA@mail.gmail.com>
+Subject: Re: [PATCH] gpiolib: acpi: use correct format characters
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Nathan Chancellor <nathan@kernel.org>,
+        linux-gpio@vger.kernel.org, linux-acpi@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev,
+        Joe Perches <joe@perches.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 05:56:30PM +0100, Clément Léger wrote:
-> Le Fri, 18 Mar 2022 18:28:45 +0200,
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> a écrit :
-> > On Fri, Mar 18, 2022 at 05:00:50PM +0100, Clément Léger wrote:
-> > > In order to use i2c muxes with software_node when added with a struct
-> > > mfd_cell, switch to fwnode API. The fwnode layer will allow to use this
-> > > with both device_node and software_node.  
-> > 
-> > > -	struct device_node *np = dev->of_node;
-> > > +	struct fwnode_handle *np = dev_fwnode(dev);  
-> > 
-> > np is now a misleading name. Use fwnode.
-> 
-> Ok I thought np was meaning "node pointer" and it looked like okay to
-> avoid avoid a diff that is too huge. But agreed, I'll rename that.
+On Fri, Mar 18, 2022 at 11:01 AM Nick Desaulniers
+<ndesaulniers@google.com> wrote:
+>
+> On Fri, Mar 18, 2022 at 7:04 AM Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> wrote:
+> >
+> > On Thu, Mar 17, 2022 at 11:11:21AM -0700, Nick Desaulniers wrote:
+> > > Our goal is to enable -Wformat for CC=clang.  Please see also:
+> > > commit cbacb5ab0aa0 ("docs: printk-formats: Stop encouraging use of
+> > > unnecessary %h[xudi] and %hh[xudi]")
+> >
+> > Not that I agree on that commit for %h[h]x
+> >
+> >         signed char ch = -1;
+> >         printf("%x\n", ch);
+> >         printf("%hhx\n", ch);
+>
+> Will print:
+> ffffffff
+> ff
+>
+I noticed this. My first thought was to do something akin to:
 
-It's rather "in practice", np stands for "OF node pointer", while fwnode
-stands for "firmware node handle".
+  printf("%x\n", (u8)ch);
 
--- 
-With Best Regards,
-Andy Shevchenko
+but went the route of removing the "h" qualifiers to be more in line
+with previous fixes. I will be happy to change this patch if that's
+what you would prefer.
 
-
+-bw
