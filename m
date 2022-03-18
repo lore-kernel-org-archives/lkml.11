@@ -2,165 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CCF7C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 07:44:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE280C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 07:44:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233169AbiCRHpn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 03:45:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53498 "EHLO
+        id S233182AbiCRHpq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 03:45:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231844AbiCRHpm (ORCPT
+        with ESMTP id S232183AbiCRHpm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Mar 2022 03:45:42 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 796A51F42C9;
-        Fri, 18 Mar 2022 00:44:23 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KKbcj5SD7z4xgw;
-        Fri, 18 Mar 2022 18:44:21 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1647589462;
-        bh=dsXOzAUhSDy56QPmWs67ignbc2RjTXOlVjnzLk0t7Mc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Avnjyr2LyFPke8fhYTv460SMTLoPxkUmqrdI6acLrzVmTYWTO+wASx9mmcyunTwAh
-         MpTqEOffMCUe9zgEOGujGs2YqNDLAJwd0Pnzi0T26qh1Hv5ALgGNEvilo1usuE1nOC
-         LKF3p9AisL3VhdI0QN2z1Dt8vmGuWMDRDZGV32UR4eeLXQZ4muMT9kzCdAiJpvc75x
-         Ujdf03AhSYHBuhfUaYb9j/LKbjXPce++l6OwoEZS1ziI++fqyQwPFSqySf0fOm/J9p
-         2uIiwXg4nI1bv3YnvtboHO5TUCSbt9WpYdznJGVAyMx7rBmNg90qet9GD0sQUGjBwq
-         LTCC2sK+GBARA==
-Date:   Fri, 18 Mar 2022 18:44:20 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Andy Gross <agross@kernel.org>, Olof Johansson <olof@lixom.net>,
-        Arnd Bergmann <arnd@arndb.de>
-Cc:     Shawn Guo <shawnguo@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        ARM <linux-arm-kernel@lists.infradead.org>
-Subject: Re: linux-next: manual merge of the qcom tree with the imx-mxs tree
-Message-ID: <20220318184420.74d10227@canb.auug.org.au>
-In-Reply-To: <20220214093432.31152d57@canb.auug.org.au>
-References: <20220214093432.31152d57@canb.auug.org.au>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/KjGyJqwnBjB=FlYRastjKI8";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C02B61F42CC;
+        Fri, 18 Mar 2022 00:44:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647589464; x=1679125464;
+  h=from:to:cc:subject:date:message-id;
+  bh=WVorLasdOjXeuoPP69sky8MPUXu9hsaobNnBPkjJ6PE=;
+  b=j1bbUUsn0MNuNmpP/NPz0yaUZMNK4xug71cDTn7We/cOXJphGtO/WYeU
+   W7eVH/cgC9d+xXWcFMik6HYBXZcJwq/uqyLln3F3gv9WtklSWjJsJoQLQ
+   5q05WRHj3oH0e4Ahl8igoWs7nR7oHy4XMu+XJFRkde1Ei+T9UtzRIuVBS
+   FWPIhEdjjr+CRddtpvdmgmun44d62H0sUVxWs25PMUfDGU8w4rkF2frua
+   fKYerh3Kk/Cjxuz2wNUp+DCxgSbu1o7YytJKl3jdsxMhxqCOAUvSUcIdf
+   tqar7fPUXAUmmbv6pv5kivP9KbxndPBfEMGlnG+2LL3GhtF2xurN8R5cB
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="254641650"
+X-IronPort-AV: E=Sophos;i="5.90,191,1643702400"; 
+   d="scan'208";a="254641650"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 00:44:24 -0700
+X-IronPort-AV: E=Sophos;i="5.90,191,1643702400"; 
+   d="scan'208";a="558307271"
+Received: from chenyi-pc.sh.intel.com ([10.239.159.73])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 00:44:21 -0700
+From:   Chenyi Qiang <chenyi.qiang@intel.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Xiaoyao Li <xiaoyao.li@intel.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v5 0/3] Introduce Notify VM exit
+Date:   Fri, 18 Mar 2022 15:49:52 +0800
+Message-Id: <20220318074955.22428-1-chenyi.qiang@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/KjGyJqwnBjB=FlYRastjKI8
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Virtual machines can exploit Intel ISA characterstics to cause
+functional denial of service to the VMM. This series introduces a new
+feature named Notify VM exit, which can help mitigate such kind of
+attack.
 
-Hi all,
+Patch 1: An extension of KVM_SET_VCPU_EVENTS ioctl to inject a
+synthesized shutdown event from user space. This is also a fix for other
+synthesized triple fault, e.g. the RSM patch or nested_vmx_abort(),
+which could get lost when exit to userspace to do migrate.
 
-On Mon, 14 Feb 2022 09:34:32 +1100 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->
-> Today's linux-next merge of the qcom tree got a conflict in:
->=20
->   arch/arm64/configs/defconfig
->=20
-> between commits:
->=20
->   6e3807935e18 ("arm64: defconfig: re-order default configuration")
->   dde8cd786e37 ("arm64: defconfig: rebuild default configuration")
->=20
-> from the imx-mxs tree and commits:
->=20
->   cd7ce3e18afa ("arm64: defconfig: Enable SM8250 video clock controller")
->   17ef0b4b441f ("arm64: defconfig: enable mcp251xfd driver")
->=20
-> from the qcom tree.
->=20
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
->=20
-> --=20
-> Cheers,
-> Stephen Rothwell
->=20
-> diff --cc arch/arm64/configs/defconfig
-> index 2bb7765e5d82,bbe40f0fd620..000000000000
-> --- a/arch/arm64/configs/defconfig
-> +++ b/arch/arm64/configs/defconfig
-> @@@ -383,9 -383,11 +385,12 @@@ CONFIG_ATH10K=3D
->   CONFIG_ATH10K_PCI=3Dm
->   CONFIG_ATH10K_SNOC=3Dm
->   CONFIG_WCN36XX=3Dm
-> + CONFIG_ATH11K=3Dm
-> + CONFIG_ATH11K_AHB=3Dm
-> + CONFIG_ATH11K_PCI=3Dm
->   CONFIG_BRCMFMAC=3Dm
->   CONFIG_MWIFIEX=3Dm
->  +CONFIG_MWIFIEX_SDIO=3Dm
->   CONFIG_MWIFIEX_PCIE=3Dm
->   CONFIG_WL18XX=3Dm
->   CONFIG_WLCORE_SDIO=3Dm
-> @@@ -602,9 -607,9 +608,10 @@@ CONFIG_IMX_SC_WDT=3D
->   CONFIG_QCOM_WDT=3Dm
->   CONFIG_MESON_GXBB_WATCHDOG=3Dm
->   CONFIG_MESON_WATCHDOG=3Dm
->  +CONFIG_ARM_SMC_WATCHDOG=3Dy
->   CONFIG_RENESAS_WDT=3Dy
->   CONFIG_UNIPHIER_WATCHDOG=3Dy
-> + CONFIG_PM8916_WATCHDOG=3Dm
->   CONFIG_BCM2835_WDT=3Dy
->   CONFIG_MFD_ALTERA_SYSMGR=3Dy
->   CONFIG_MFD_BD9571MWV=3Dy
-> @@@ -1009,6 -1021,10 +1016,7 @@@ CONFIG_SDM_DISPCC_845=3D
->   CONFIG_SM_GCC_8350=3Dy
->   CONFIG_SM_GPUCC_8150=3Dy
->   CONFIG_SM_GPUCC_8250=3Dy
->  -CONFIG_SM_DISPCC_8250=3Dy
-> + CONFIG_SM_VIDEOCC_8250=3Dy
->   CONFIG_QCOM_HFPLL=3Dy
->   CONFIG_CLK_GFM_LPASS_SM8250=3Dm
->   CONFIG_CLK_RCAR_USB2_CLOCK_SEL=3Dy
-> @@@ -1042,11 -1058,10 +1050,12 @@@ CONFIG_RASPBERRYPI_POWER=3D
->   CONFIG_FSL_DPAA=3Dy
->   CONFIG_FSL_MC_DPIO=3Dy
->   CONFIG_FSL_RCPM=3Dy
->  +CONFIG_MTK_DEVAPC=3Dm
->   CONFIG_MTK_PMIC_WRAP=3Dy
-> + CONFIG_MAILBOX=3Dy
->   CONFIG_QCOM_AOSS_QMP=3Dy
->   CONFIG_QCOM_COMMAND_DB=3Dy
->  +CONFIG_QCOM_CPR=3Dy
->   CONFIG_QCOM_GENI_SE=3Dy
->   CONFIG_QCOM_RMTFS_MEM=3Dm
->   CONFIG_QCOM_RPMH=3Dy
+Patch 2: The main patch to enable Notify VM exit.
 
-This is now a conflict between the qcom tree and the arm-soc tree.
+Patch 3: Add document for the new KVM capability and KVM exit reason.
 
---=20
-Cheers,
-Stephen Rothwell
+---
+Change logs:
+v4 -> v5
+- rename KVM_VCPUEVENTS_SHUTDOWN to KVM_VCPUEVENTS_TRIPLE_FAULT. Make it
+  bidirection and add it to get_vcpu_events. (Sean)
+- v4: https://lore.kernel.org/all/20220310084001.10235-1-chenyi.qiang@intel.com/
 
---Sig_/KjGyJqwnBjB=FlYRastjKI8
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+v3 -> v4
+- Change this feature to per-VM scope. (Jim)
+- Once VM_CONTEXT_INVALID set in exit_qualification, exit to user space
+  notify this fatal case, especially the notify VM exit happens in L2.
+  (Jim)
+- extend KVM_SET_VCPU_EVENTS to allow user space to inject a shutdown
+  event. (Jim)
+- A minor code changes.
+- Add document for the new KVM capability.
+- v3: https://lore.kernel.org/lkml/20220223062412.22334-1-chenyi.qiang@intel.com/
 
------BEGIN PGP SIGNATURE-----
+v2 -> v3
+- add a vcpu state notify_window_exits to record the number of
+  occurence as well as a pr_warn output. (Sean)
+- Add the handling in nested VM to prevent L1 bypassing the restriction
+  through launching a L2. (Sean)
+- Only kill L2 when L2 VM is context invalid, synthesize a
+  EXIT_REASON_TRIPLE_FAULT to L1 (Sean)
+- To ease the current implementation, make module parameter
+  notify_window read-only. (Sean)
+- Disable notify window exit by default.
+- v2: https://lore.kernel.org/lkml/20210525051204.1480610-1-tao3.xu@intel.com/
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmI0OFUACgkQAVBC80lX
-0GxdFQf/YBH5t4Ph9WhcCA2CfidDsPZdFp8cFtQB/neuM0CoEDsfiITeXEiukpG/
-l2+66E42sG4VnSeM4s1yRV31dyKAmJot73IaGgNgivHQnW909vJ7XMyG/Ro+zW8o
-2yt31FIJQI/RGJ5SdomwQ7/+KSFbMP6kCFbcWrMzH95XMJ+XJZdSTnT9DuojEQiK
-FI4i9bYkATKxFtyv+OLzGOSwMsEOY9k6Sd9AN2IrnhkTyQqrUKiYerj1cTKEUjXl
-eYWpSW4sH/euwln1Kr1M8T/IZzsU3QiDaBqVxFY1PnPi/UykYeSrOWMk1DkZ5dok
-MGOFdZEwo1U8tIAdaU0gsVZ+bakKPQ==
-=c1qE
------END PGP SIGNATURE-----
+v1 -> v2
+- Default set notify window to 0, less than 0 to disable.
+- Add more description in commit message.
+---
 
---Sig_/KjGyJqwnBjB=FlYRastjKI8--
+Chenyi Qiang (2):
+  KVM: X86: Save&restore the triple fault request
+  KVM: Add document for KVM_CAP_X86_NOTIFY_VMEXIT and KVM_EXIT_NOTIFY
+
+Tao Xu (1):
+  KVM: VMX: Enable Notify VM exit
+
+ Documentation/virt/kvm/api.rst     | 45 ++++++++++++++++++++++++++++++
+ arch/x86/include/asm/kvm_host.h    |  5 ++++
+ arch/x86/include/asm/vmx.h         |  7 +++++
+ arch/x86/include/asm/vmxfeatures.h |  1 +
+ arch/x86/include/uapi/asm/kvm.h    |  1 +
+ arch/x86/include/uapi/asm/vmx.h    |  4 ++-
+ arch/x86/kvm/vmx/capabilities.h    |  6 ++++
+ arch/x86/kvm/vmx/nested.c          | 17 ++++++++++-
+ arch/x86/kvm/vmx/vmx.c             | 44 +++++++++++++++++++++++++++--
+ arch/x86/kvm/x86.c                 | 28 +++++++++++++++++--
+ arch/x86/kvm/x86.h                 |  5 ++++
+ include/uapi/linux/kvm.h           |  7 +++++
+ 12 files changed, 162 insertions(+), 8 deletions(-)
+
+-- 
+2.17.1
+
