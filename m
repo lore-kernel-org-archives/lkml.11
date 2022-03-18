@@ -2,134 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 782A8C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 09:23:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B5ECC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 09:25:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234419AbiCRJYv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 05:24:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48340 "EHLO
+        id S234426AbiCRJ07 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 05:26:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234377AbiCRJYo (ORCPT
+        with ESMTP id S231384AbiCRJ0z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 05:24:44 -0400
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9038DF4F
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 02:23:24 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0V7Vv8yQ_1647595401;
-Received: from localhost(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0V7Vv8yQ_1647595401)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 18 Mar 2022 17:23:22 +0800
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-To:     sj@kernel.org, akpm@linux-foundation.org
-Cc:     baolin.wang@linux.alibaba.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] mm/damon: Make the sampling more accurate
-Date:   Fri, 18 Mar 2022 17:23:13 +0800
-Message-Id: <1647595393-103185-1-git-send-email-baolin.wang@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        Fri, 18 Mar 2022 05:26:55 -0400
+Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50086.outbound.protection.outlook.com [40.107.5.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 797A02AD0A9
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 02:25:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=U3DNUTFmkx6KA+L/6elSUndAcEmfZURRQG3vcAIVI5Ic+oqcIJcxW7cv66+1SGU2nKxV/WT902kWcdo2KoriL9tnh43R3Up5Z2BfUH4sV7QYT2p16Dy1Zn0ErT62JRUi4KaEdCTzbJqiqrG32j9RZxL5ElKmGl4ZYXvTDiiA8+Ld0QdVQYBPBeB32d0SxKDhIxwcK724WxZgCk3RONU40WqcyT3rcmSDO1Clt18AN9Q/WtKrM1HOD26jg0zD4qaPgZyg96E7E5LEMBit6YBvr9WDR5HFpLfEXWovOb0bhfexeA1Al0WNdkkt1iV6JZyF+voaECx/RS0gR4/qSsSO0A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1fVObxlB+VrJpVwemhItO0oMklaa5RLe6ab7u24PocY=;
+ b=GxNhcBhxxsZoRZg+XwXb0tIk7OByR5nnGIMR3lq4kpMNmtN3rU9Opl0IDT8jOxXjzGrokyK9zJmCQsLKaxst2D+GZt9gd4nDQtABmqhLkplNQ50KUQZalnrblfJ6iaB4p01DWAGbCCz1L/36Xui+jh4eFysgnEI1gn+ZEdWL6p3hCJzjAShA2zZ77J5L9jvvTOME/GaWpRojYKwWabdo3M1whUT0bXPSy6Rtrsd1m3wCXH8kAC6jAa95BVMFivwXs9NOZSYrhG9Kw+/TdCv6Obi4sFK7otSExqn6vpSNcyavTB+pzWcn8Du/Mv32i/qMnHuc8KH4aipqEu47nGZnVw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1fVObxlB+VrJpVwemhItO0oMklaa5RLe6ab7u24PocY=;
+ b=JQLH2I0TeXCEgYPJ2/vWaV7X5+Ou3B+THRg1OArkD/9dcY0MbkB6m7nr1EOnzr/xlZ5/+N79MSSh553wdWusbyiiH11WQjS0t1ovL9LsdTNC4WlW1hcRwj8ERtfdyv8vgzcin1lQX4Dr7GZ3aFNPR3Ql/ExAs9pkUozRkDsFD4c=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from AM7PR04MB7046.eurprd04.prod.outlook.com (2603:10a6:20b:113::22)
+ by PA4PR04MB7710.eurprd04.prod.outlook.com (2603:10a6:102:e6::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.18; Fri, 18 Mar
+ 2022 09:25:32 +0000
+Received: from AM7PR04MB7046.eurprd04.prod.outlook.com
+ ([fe80::b09c:8ffe:8e02:7387]) by AM7PR04MB7046.eurprd04.prod.outlook.com
+ ([fe80::b09c:8ffe:8e02:7387%9]) with mapi id 15.20.5081.018; Fri, 18 Mar 2022
+ 09:25:32 +0000
+Message-ID: <4bd97d512e95845d7dd5a44d7713c59832676ada.camel@oss.nxp.com>
+Subject: Re: [PATCH v2] drm/bridge: nwl-dsi: switch to devm_drm_of_get_bridge
+From:   Liu Ying <victor.liu@oss.nxp.com>
+To:     =?ISO-8859-1?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>
+Cc:     andrzej.hajda@intel.com, narmstrong@baylibre.com,
+        robert.foss@linaro.org, Laurent.pinchart@ideasonboard.com,
+        jonas@kwiboo.se, jernej.skrabec@gmail.com, airlied@linux.ie,
+        daniel@ffwll.ch, p.zabel@pengutronix.de,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Date:   Fri, 18 Mar 2022 17:24:45 +0800
+In-Reply-To: <20220317175852.799432-1-jose.exposito89@gmail.com>
+References: <20220317175852.799432-1-jose.exposito89@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: HK0PR01CA0066.apcprd01.prod.exchangelabs.com
+ (2603:1096:203:a6::30) To AM7PR04MB7046.eurprd04.prod.outlook.com
+ (2603:10a6:20b:113::22)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ee3abe2e-5c91-492d-666a-08da08c13fd7
+X-MS-TrafficTypeDiagnostic: PA4PR04MB7710:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-Microsoft-Antispam-PRVS: <PA4PR04MB771096753ABC299D91E13DC0D9139@PA4PR04MB7710.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: EESW8RL4+e3nlgjfSCZCvBPPIEYsyiCTbwU1oVhtPjZWnP3MuIlJXVN+Caigdo603K6Y8+1xN006/i4on++l28OM05GY0vdcnlGjmeaq3HuRj6xdTBp7H21WJ/j+oc2Q8qOLBsEzbH2XUI7s1rEn1YkLMjwgZ8tmJ+2+x9bRclbLaJzio/bYktdEWFdzkt6nhON+OEBve+IbTnSBXFErzRZybjdFQ3wI07YEyA9XZ+pH57KmSylfVwTu3Pda4TA6UHM4dqOvbNoSgHTD39d9F3pjAC5xzHRfCo+qvSQZ7+xCU5iXlrSqr3ly+X/ciIQdg1j/Jmi+UAH8kUjAz+zle1oK76svo03CLJzJjnY1vXHUSMmS5oIuOar88TTgL1qwpWrQ0rxsKFD+6F+nay848htCbJIq+wiPG9fQd/JEvpxuYCMA3P7xovdBzpewLfw2zGKtNbnwBojd1kiGrTWUhMmYAng/uGqlMAEftuhdGqEcgNKrSTDl148JVmZIml2NBUkJjo9NlbjlRSXQtlmU21ajIP99vOBzRtP1YSFFhh/G8FffJVmWafgbnn03/GRGA2CMpIMAjhKKEylErUuXwa74vyl2cVRStjJ6JLmeeovuoH5/V2so4JAVGfCUGmA4u2zcgP9x7s870vNLhV4hxVpTywyM27FwmaX+GGeD4ChJOcS7hqNNiXzGEshUiNSi0o+K1VHqK/HoV0UQgeBVnVmBqJmoPUpw/LhVqkGXqNoqWoG15AUUQkGcEjSBTA+xwVdi3Qm8R0pqCX98sjEy+iTeCih4ha5V7hhcO1UHYCY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR04MB7046.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(7416002)(86362001)(6486002)(508600001)(8936002)(66946007)(83380400001)(316002)(6916009)(66476007)(2906002)(66556008)(8676002)(38350700002)(38100700002)(52116002)(6666004)(4326008)(6512007)(6506007)(186003)(26005)(5660300002)(2616005)(99106002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RVRxdTQxVzY3OTVtM3NoUGZLRWpxaWhFZDBrN2JxNk9IVEJmbzRvbXZXOHhh?=
+ =?utf-8?B?WjM2NG55OVh4SGRnM211U2ZjSTN4SXZ5RlJmdTlDTC9RQmhidzJwOW5xUTJw?=
+ =?utf-8?B?NUxGRVJmSHg5eFN0amsrSXlRU0xOSzQ5VHUxN08yYUxsQzNnTkJRMThkakJh?=
+ =?utf-8?B?R21XUFhFM2lvRThzUncxVGJ3bmc0MU81RXozTWFiM2hNNVJUYkxaUVlLN3B2?=
+ =?utf-8?B?QVVyRmw5ajdRSTR2TEtaWnJuTkhhR1kwL3RWZjlEYkN4Nm1DMTFYTUR6S1pi?=
+ =?utf-8?B?UWFyUm9TUGNoOTUrZW5GRTc5dEZieEJteTZqd3loSmowRjVwdTdOck1xbmQz?=
+ =?utf-8?B?UnlySFkyV1RpWkRiT0RIbWtkajhQZG1qZndmQnI2OHhNVzVoY0dUakVrM0o2?=
+ =?utf-8?B?d2JuT1JXN2k3Zmh4MXNya3dMcHgzWUg1S3hjejc4eTcrUkYwaHFlblNsME1j?=
+ =?utf-8?B?V3FCUEtEcHNtMlRXdmZ4SGR6cWppcWc2RktwY09GWEJNNTBBSndXWmZMSStq?=
+ =?utf-8?B?TFlNaFpiUmxSdWcrT0pra0MzRVZKRUg0MnhPWkVNMk5LY3dQZ25sRHliMEhH?=
+ =?utf-8?B?dERxK2N5TUhOcVhQTTFVL1U5RVhXSVRPTWlYTVR2MVAzTXpiNE5UVXR3c0Q2?=
+ =?utf-8?B?Y3hTa2pwZDhpNS9DZVZBTjQzQU9jaUFDaDJNbzkwKzVYWW9nK0VVNFloR2ho?=
+ =?utf-8?B?b2RiZENKQWF4Sk1Ma1g2QnllRjFzeEEycERMc1NNZXIwb1I5eVVMOEZtanVh?=
+ =?utf-8?B?aGU3bytNRkJ4WVFLUG41dXNYemJudVRwNU10WkVzUmNzdVRxY0VKbHJJdVo5?=
+ =?utf-8?B?Zm5CTW1HUEM0cUoybFRUVzY3QmcrWGcwdGsxakN3ZmhuVHIrZXY0MjEzVmNQ?=
+ =?utf-8?B?cmZBMW1RQnJRQWVESGovRTdNa0loNWtMeUFINThBWFlLMituZkhuS2lzaVFS?=
+ =?utf-8?B?UFpCeGU1ZU5mTTQ3bTNYZkhBc0MxUThYTGNiOERoN282QnNhUEtmQ0pjcVZP?=
+ =?utf-8?B?UkFTUXNxaDJ5SlMyYmlSd0Q1QmRCMTRPaGNTK3VOYS9QT01KQ1NJVnhRZEQr?=
+ =?utf-8?B?aVRqMXhOQ0NqWjNYdFVEMXFBQlZnUjBxZDJnRFFkTW14SXZqeGZadktXV3Fl?=
+ =?utf-8?B?aUZSZ2JIL2h6U0pyU1Zpa2ZNNTlydFM1TURFNkwxM2U5Q0V2QjRNUWRBNDVT?=
+ =?utf-8?B?R2dDeWZia2ZMZXZkVUxrZzlFdVAxblh0ZHBXb3VCZ3FKS0pnVStkU1lDM0c1?=
+ =?utf-8?B?c2ErRjBtRDNKNXlhNXpOK2xuN2R3NVVVak9VOTNBY2hkaVlLMXVCbEZpSVFB?=
+ =?utf-8?B?VEZkazVDUVF3cGNMa2Jqb1hCMlhPZEhsWmRGekt1cDR6ei9IMXVEZ1JvcnJK?=
+ =?utf-8?B?WHBKMWN6LzNlOVNWSnllVEdHQVRDOC9mL3FZNVRYTitPOVIxdnU4ZGd5ZmRp?=
+ =?utf-8?B?eHUyRzlZeTVGY0t3aGE2T3YrNGlzVXlmVmV2b2xrMHlIMk9LdUNxbGVqVzky?=
+ =?utf-8?B?aDF0WGJWY2h2eUFtRUM3aWMxdEpjVE8zZEg0S2VhajJ5OWN3TjUwVGN4RjUv?=
+ =?utf-8?B?bDVIby9hMWd6VWtvek1UU1RTTGJIWUlJWlJ6YTdnVG1YVnE4MVBQa0s5QWNO?=
+ =?utf-8?B?alNKZVVGVVJVLzJnZWtmVXF0QklpWDhkTjhzdmE3QUNUOG10Q0FIVzRjdEFa?=
+ =?utf-8?B?aEV1UlZob3NPZEFaSzRxdDlOZE5HNFU2MkdhdE9xZENTNHNRL2tFWkFOS29m?=
+ =?utf-8?B?WTFqRC9Pait0VDZQN3gwbTlLRG9oQVpQUHdGQzZNZ3RLMkt6d3ZtR1JXS1dD?=
+ =?utf-8?B?WWVWWFhsQ1h2ak96QVdpaE51OEZJamlFUHhLUHRaRnUzRkNiekVzeU5vcmps?=
+ =?utf-8?B?VGZGcit0ZGRtNlFCMUF6WVVCTmtDVVdpVUVValRaR1JMM3V0OFdQcDJ2R0hi?=
+ =?utf-8?B?S0trTkthWG5VUmpmaFloQkF2V3R3dHNoazFUV0JqMW0rSXA4MmVsM2V6VGxk?=
+ =?utf-8?B?MlJ5UEJFanN3PT0=?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ee3abe2e-5c91-492d-666a-08da08c13fd7
+X-MS-Exchange-CrossTenant-AuthSource: AM7PR04MB7046.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2022 09:25:32.5243
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: EtzzuLC90JbI8H4omsWeoat/IrJgSq4SKwg3JiikiyQaQi3Nse6b5tnjQn8Bh3NaXsaiYOZd8MHm+3cz4J0ubA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB7710
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When I try to sample the physical address with DAMON to migrate pages
-on tiered memory system, I found it will demote some cold regions mistakenly.
-Now we will choose an physical address in the region randomly, but if
-its corresponding page is not an online LRU page, we will ignore the
-accessing status in this cycle of sampling, and actually will be treated
-as a non-accessed region. Suppose a region including some non-LRU pages,
-it will be treated as a cold region with a high probability, and may be
-merged with adjacent cold regions, but there are some pages may be
-accessed we missed.
+On Thu, 2022-03-17 at 18:58 +0100, José Expósito wrote:
+> The function "drm_of_find_panel_or_bridge" has been deprecated in
+> favor of "devm_drm_of_get_bridge".
+> 
+> Switch to the new function and reduce boilerplate.
+> 
+> Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+> 
+> ---
+> 
+> v2: (Thanks to Liu Ying)
+> 
+>  - Rebase on top of drm-misc-next
+>  - Remove drm_of_panel_bridge_remove
+> ---
+>  drivers/gpu/drm/bridge/nwl-dsi.c | 23 ++++-------------------
+>  1 file changed, 4 insertions(+), 19 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/bridge/nwl-dsi.c
+> b/drivers/gpu/drm/bridge/nwl-dsi.c
+> index e34fb09b90b9..de62e3fc6a59 100644
+> --- a/drivers/gpu/drm/bridge/nwl-dsi.c
+> +++ b/drivers/gpu/drm/bridge/nwl-dsi.c
+> @@ -912,19 +912,11 @@ static int nwl_dsi_bridge_attach(struct
+> drm_bridge *bridge,
+>  {
+>  	struct nwl_dsi *dsi = bridge_to_dsi(bridge);
+>  	struct drm_bridge *panel_bridge;
+> -	struct drm_panel *panel;
+> -	int ret;
+> -
+> -	ret = drm_of_find_panel_or_bridge(dsi->dev->of_node, 1, 0,
+> &panel,
+> -					  &panel_bridge);
+> -	if (ret)
+> -		return ret;
+>  
+> -	if (panel) {
+> -		panel_bridge = drm_panel_bridge_add(panel);
+> -		if (IS_ERR(panel_bridge))
+> -			return PTR_ERR(panel_bridge);
+> -	}
+> +	panel_bridge = devm_drm_of_get_bridge(dsi->dev, dsi->dev-
+> >of_node,
+> +					      1, 0);
+> +	if (IS_ERR(panel_bridge))
+> +		return PTR_ERR(panel_bridge);
+>  
+>  	if (!panel_bridge)
+>  		return -EPROBE_DEFER;
 
-So instead of ignoring the access status of this region if we did not find
-a valid page according to current sampling address, we can use last valid
-sampling address to help to make the sampling more accurate, then we can do
-a better decision.
+I don't think panel_bridge can be NULL here, so this check can be
+removed.  However, even if this patch is not applied, the check is not
+necessary.  I think it can be removed with a separate patch.
 
-Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
----
- include/linux/damon.h |  2 ++
- mm/damon/core.c       |  2 ++
- mm/damon/paddr.c      | 15 ++++++++++++---
- 3 files changed, 16 insertions(+), 3 deletions(-)
+For this patch:
+Reviewed-by: Liu Ying <victor.liu@oss.nxp.com>
 
-diff --git a/include/linux/damon.h b/include/linux/damon.h
-index f23cbfa..3311e15 100644
---- a/include/linux/damon.h
-+++ b/include/linux/damon.h
-@@ -38,6 +38,7 @@ struct damon_addr_range {
-  * struct damon_region - Represents a monitoring target region.
-  * @ar:			The address range of the region.
-  * @sampling_addr:	Address of the sample for the next access check.
-+ * @last_sampling_addr:	Last valid address of the sampling.
-  * @nr_accesses:	Access frequency of this region.
-  * @list:		List head for siblings.
-  * @age:		Age of this region.
-@@ -50,6 +51,7 @@ struct damon_addr_range {
- struct damon_region {
- 	struct damon_addr_range ar;
- 	unsigned long sampling_addr;
-+	unsigned long last_sampling_addr;
- 	unsigned int nr_accesses;
- 	struct list_head list;
- 
-diff --git a/mm/damon/core.c b/mm/damon/core.c
-index c1e0fed..957704f 100644
---- a/mm/damon/core.c
-+++ b/mm/damon/core.c
-@@ -108,6 +108,7 @@ struct damon_region *damon_new_region(unsigned long start, unsigned long end)
- 	region->ar.start = start;
- 	region->ar.end = end;
- 	region->nr_accesses = 0;
-+	region->last_sampling_addr = 0;
- 	INIT_LIST_HEAD(&region->list);
- 
- 	region->age = 0;
-@@ -848,6 +849,7 @@ static void damon_split_region_at(struct damon_ctx *ctx,
- 		return;
- 
- 	r->ar.end = new->ar.start;
-+	r->last_sampling_addr = 0;
- 
- 	new->age = r->age;
- 	new->last_nr_accesses = r->last_nr_accesses;
-diff --git a/mm/damon/paddr.c b/mm/damon/paddr.c
-index 21474ae..5f15068 100644
---- a/mm/damon/paddr.c
-+++ b/mm/damon/paddr.c
-@@ -31,10 +31,9 @@ static bool __damon_pa_mkold(struct folio *folio, struct vm_area_struct *vma,
- 	return true;
- }
- 
--static void damon_pa_mkold(unsigned long paddr)
-+static void damon_pa_mkold(struct page *page)
- {
- 	struct folio *folio;
--	struct page *page = damon_get_page(PHYS_PFN(paddr));
- 	struct rmap_walk_control rwc = {
- 		.rmap_one = __damon_pa_mkold,
- 		.anon_lock = folio_lock_anon_vma_read,
-@@ -66,9 +65,19 @@ static void damon_pa_mkold(unsigned long paddr)
- static void __damon_pa_prepare_access_check(struct damon_ctx *ctx,
- 					    struct damon_region *r)
- {
-+	struct page *page;
-+
- 	r->sampling_addr = damon_rand(r->ar.start, r->ar.end);
- 
--	damon_pa_mkold(r->sampling_addr);
-+	page = damon_get_page(PHYS_PFN(r->sampling_addr));
-+	if (page) {
-+		r->last_sampling_addr = r->sampling_addr;
-+	} else if (r->last_sampling_addr) {
-+		r->sampling_addr = r->last_sampling_addr;
-+		page = damon_get_page(PHYS_PFN(r->last_sampling_addr));
-+	}
-+
-+	damon_pa_mkold(page);
- }
- 
- static void damon_pa_prepare_access_checks(struct damon_ctx *ctx)
--- 
-1.8.3.1
+> @@ -932,12 +924,6 @@ static int nwl_dsi_bridge_attach(struct
+> drm_bridge *bridge,
+>  	return drm_bridge_attach(bridge->encoder, panel_bridge, bridge,
+> flags);
+>  }
+>  
+> -static void nwl_dsi_bridge_detach(struct drm_bridge *bridge)
+> -{	struct nwl_dsi *dsi = bridge_to_dsi(bridge);
+> -
+> -	drm_of_panel_bridge_remove(dsi->dev->of_node, 1, 0);
+> -}
+> -
+>  static u32 *nwl_bridge_atomic_get_input_bus_fmts(struct drm_bridge
+> *bridge,
+>  						 struct
+> drm_bridge_state *bridge_state,
+>  						 struct drm_crtc_state
+> *crtc_state,
+> @@ -983,7 +969,6 @@ static const struct drm_bridge_funcs
+> nwl_dsi_bridge_funcs = {
+>  	.mode_set		= nwl_dsi_bridge_mode_set,
+>  	.mode_valid		= nwl_dsi_bridge_mode_valid,
+>  	.attach			= nwl_dsi_bridge_attach,
+> -	.detach			= nwl_dsi_bridge_detach,
+>  };
+>  
+>  static int nwl_dsi_parse_dt(struct nwl_dsi *dsi)
 
