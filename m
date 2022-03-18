@@ -2,269 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6635C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 22:01:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21E11C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 22:07:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241240AbiCRWDO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 18:03:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33548 "EHLO
+        id S241243AbiCRWIf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 18:08:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239124AbiCRWDM (ORCPT
+        with ESMTP id S233782AbiCRWIe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 18:03:12 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E60B10DA58;
-        Fri, 18 Mar 2022 15:01:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647640913; x=1679176913;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=SYb/OD8wg6Ueo4+cA8AVOPQns3NV0dsnYyIUMFY3Asg=;
-  b=AzT9HbWtkNCGdfR/bwfC5DlF4XgNjYG9WTkPJNG6360OalJ1UDsQpJ9q
-   CPiOiT6DBV8BfNArYA+ebYAo6b84+0cMNtzD/EOrt4Y8uGhnFn+LlOwGd
-   oJswjWhG3cib9y1ovjPCbVK27tKCrjQPxRNHnmJNTqoEcE5g/NWmTk9a9
-   LihlXS1Dvfc5cWeOYaTwSriGsN8HEzARX0Q7e10N0hjM9od+Nw6mYZprK
-   P3/qH8mj816AirQsxTLv3Mm/BJy0AIRShAZbbW+ASE6OyD1jqPKVoIJLv
-   cdKVA6rpVYNMPl4Uq3NZuaxQbQgxd12T6G3XldstH+MLMahhfRZtswnnN
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="256059345"
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="256059345"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 15:01:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="635911530"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 18 Mar 2022 15:01:50 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nVKfN-000FBn-Hi; Fri, 18 Mar 2022 22:01:49 +0000
-Date:   Sat, 19 Mar 2022 06:01:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Takashi Iwai <tiwai@suse.de>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Takashi Iwai <tiwai@suse.de>,
-        =?iso-8859-1?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>,
-        linux-input@vger.kernel.org,
-        Peter Hutterer <peter.hutterer@who-t.net>,
-        Jiri Kosina <jkosina@suse.cz>, stable@vger.kernel.org,
-        regressions@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] HID: multitouch: fix Dell Precision 7550 and 7750 button
- type
-Message-ID: <202203190553.mMQsoOV3-lkp@intel.com>
-References: <s5hh77v2uov.wl-tiwai@suse.de>
+        Fri, 18 Mar 2022 18:08:34 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14E3D30CA9F
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 15:07:15 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id bg10so19531400ejb.4
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 15:07:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/PgRfIslwsblO9zs4IuflguSgx5ur6/sINxkAa/wJQ8=;
+        b=NBBZs0yX1MpQvQZX+/cGcj9KOegchui9KkSF/Ws9PW8CZgsDN2tKyH2HhNf9Ru7WfX
+         7FjmgPE57eobo/0ULeKp+gMpIc2IniNJt+Yjp/PK63GuSRYZYF9Sn3mnm+O8uYX5dPR0
+         6a+n1vtCLN00OLimQ1bd9iKYygFXWdI7x0pT0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/PgRfIslwsblO9zs4IuflguSgx5ur6/sINxkAa/wJQ8=;
+        b=pFKkbXKmaJEoIn4L8kBlQiDIcEUsa2w3sK1p5gbphsgKUKjBNIEgCgvjuYzaDlQXlF
+         NV3BtGwWwzZ/rWXLmoOE3bxuol/Jzg5vAcLcOLU0qxSFdl6SkNv2L8QvlwzeOarxrc+h
+         1HIQ3hNXzmCeCfvAHfqvw+IuNgHW8UzjafttJ1Yo9kMpjnSp7tqRYdhnPu4LZfLoCiYC
+         /ZnwAD2FDO0bg75unsyrrAa6qsivebowbrz/0G0aEYUJb6vEWQdJGWD66inE+6LSfYpq
+         /x/GcS3wNxgL2vninI1dIbdzr6HdgjIVximUGT/mm9z5GFgD9GIBEA+5bsiaRtsVaRBm
+         0f6w==
+X-Gm-Message-State: AOAM532KIr/GQ8OgXyfYMbZwkbMpVCIhRefyIRw0Xwz+hcdXzEW1CnjT
+        HGhatG9+pVHfbeM5q41T6ffJgL0tDFgMC+mD8Ic=
+X-Google-Smtp-Source: ABdhPJxJmeGW/WUktQ8wbdWFQkQ2Gzj+mJNkjvCsrA2IXfsyrX7H+MYTjr7aBqx9WC/QdBWd3hQuCg==
+X-Received: by 2002:a17:906:3ec9:b0:6bb:2eb9:84f with SMTP id d9-20020a1709063ec900b006bb2eb9084fmr10773908ejj.86.1647641233191;
+        Fri, 18 Mar 2022 15:07:13 -0700 (PDT)
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com. [209.85.128.53])
+        by smtp.gmail.com with ESMTPSA id q16-20020a170906145000b006bdaf981589sm4119288ejc.81.2022.03.18.15.07.12
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Mar 2022 15:07:12 -0700 (PDT)
+Received: by mail-wm1-f53.google.com with SMTP id p184-20020a1c29c1000000b0037f76d8b484so5449020wmp.5
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 15:07:12 -0700 (PDT)
+X-Received: by 2002:a05:600c:4f06:b0:389:eadf:108e with SMTP id
+ l6-20020a05600c4f0600b00389eadf108emr17299036wmq.34.1647641231833; Fri, 18
+ Mar 2022 15:07:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <s5hh77v2uov.wl-tiwai@suse.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220318015451.2869388-1-swboyd@chromium.org> <20220318015451.2869388-4-swboyd@chromium.org>
+ <CAD=FV=VJFoNgfMUHE5mUY6Uq2Jj5cyQVyW0osUm6jyHRE1no=w@mail.gmail.com> <CAE-0n50HcLLUUDgiMc7u4Gx5gb-bcpO22iD9emHrnM8sx8nbOQ@mail.gmail.com>
+In-Reply-To: <CAE-0n50HcLLUUDgiMc7u4Gx5gb-bcpO22iD9emHrnM8sx8nbOQ@mail.gmail.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Fri, 18 Mar 2022 15:06:59 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=V9U-zzpYNLKxqg1xh+W-RXLzV6BxaO4ZVF0GVXBVujUQ@mail.gmail.com>
+Message-ID: <CAD=FV=V9U-zzpYNLKxqg1xh+W-RXLzV6BxaO4ZVF0GVXBVujUQ@mail.gmail.com>
+Subject: Re: [PATCH v3 3/3] platform/chrome: cros_ec_spi: Boot fingerprint
+ processor during probe
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Benson Leung <bleung@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        chrome-platform@lists.linux.dev,
+        Guenter Roeck <groeck@chromium.org>,
+        Craig Hesling <hesling@chromium.org>,
+        Tom Hughes <tomhughes@chromium.org>,
+        Alexandru M Stan <amstan@chromium.org>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
+        Matthias Kaehlcke <mka@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Takashi,
+Hi,
 
-I love your patch! Yet something to improve:
+On Fri, Mar 18, 2022 at 3:01 PM Stephen Boyd <swboyd@chromium.org> wrote:
+>
+> > > @@ -703,6 +706,37 @@ static void cros_ec_spi_dt_probe(struct cros_ec_spi *ec_spi, struct device *dev)
+> > >         ret = of_property_read_u32(np, "google,cros-ec-spi-msg-delay", &val);
+> > >         if (!ret)
+> > >                 ec_spi->end_of_msg_delay = val;
+> > > +
+> > > +       if (!of_device_is_compatible(np, "google,cros-ec-fp"))
+> > > +               return 0;
+> >
+> > I noticed in your previous patch that you not only added a device-tree
+> > match for this device but also a "spi_device_id". ...but won't you
+> > fail to do all this important GPIO work in that case?
+>
+> I don't know when the spi_device_id path will be used. Never? I can
+> simply drop it from the spi_device_id list for now and we can take up
+> this problem later or never.
 
-[auto build test ERROR on hid/for-next]
-[also build test ERROR on v5.17-rc8 next-20220318]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Takashi-Iwai/HID-multitouch-fix-Dell-Precision-7550-and-7750-button-type/20220318-223749
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/hid/hid.git for-next
-config: i386-randconfig-a002 (https://download.01.org/0day-ci/archive/20220319/202203190553.mMQsoOV3-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a6e70e4056dff962ec634c5bd4f2f4105a0bef71)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/34d08d524d0942a3242bf820e364dc3f496dbd6c
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Takashi-Iwai/HID-multitouch-fix-Dell-Precision-7550-and-7750-button-type/20220318-223749
-        git checkout 34d08d524d0942a3242bf820e364dc3f496dbd6c
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/hid/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/hid/hid-multitouch.c:313:31: error: expected expression
-                           MT_QUIRK_WIN8_PTP_BUTTONS |,
-                                                      ^
-   1 error generated.
+That's fine with me. I was guessing it was relevant for x86 but my
+experience with the way x86 does things is pretty minimal.
 
 
-vim +313 drivers/hid/hid-multitouch.c
+> > > +       ec_spi->boot0 = devm_gpiod_get(dev, "boot0", 0);
+> > > +       if (IS_ERR(ec_spi->boot0))
+> > > +               return PTR_ERR(ec_spi->boot0);
+> >
+> > Right now these GPIOs don't actually need to be stored in the "ec_spi"
+> > structure. They could just be local variables. I guess you're trying
+> > to future proof?
+>
+> Sure I will drop them because they're not useful later and I can save on
+> the kernel-doc.
+>
+> >
+> >
+> > > +       ec_spi->reset = devm_gpiod_get(dev, "reset", 0);
+> > > +       if (IS_ERR(ec_spi->reset))
+> > > +               return PTR_ERR(ec_spi->reset);
+> > > +
+> > > +       /*
+> > > +        * Take the FPMCU out of reset and wait for it to boot if it's in
+> > > +        * bootloader mode or held in reset. This isn't the normal flow because
+> > > +        * typically the BIOS has already powered on the device to avoid the
+> > > +        * multi-second delay waiting for the FPMCU to boot and be responsive.
+> > > +        */
+> > > +       if (gpiod_get_value(ec_spi->boot0) || gpiod_get_value(ec_spi->reset)) {
+> > > +               /* Boot0 is sampled on reset deassertion */
+> > > +               gpiod_set_value(ec_spi->boot0, 0);
+> > > +               gpiod_set_value(ec_spi->reset, 1);
+> > > +               usleep_range(1000, 2000);
+> > > +               gpiod_set_value(ec_spi->reset, 0);
+> > > +
+> > > +               /* Wait for boot; there isn't a "boot done" signal */
+> > > +               dev_info(dev, "Waiting for FPMCU to boot\n");
+> > > +               msleep(2000);
+> > > +       }
+> >
+> > You added the regulator to the bindings. On herobrine I know that the
+> > regulator is a bit of a dummy (at least on herobrine), but I wonder if
+> > you should still get/enable it here? In the device tree bindings you
+> > listed it as not-optional so, in theory, you could use this to give an
+> > error if someone didn't provide the regulator.
+>
+> Won't the regulator framework introduce a dummy supply if there isn't a
+> supply in DT but this driver calls regulator_get()? Getting and enabling
+> it here will make this even more independent though so it sounds like a
+> good idea. That way we can make it a real regulator in the DTS as long
+> as the firmware isn't controlling it.
 
-   242	
-   243	static const struct mt_class mt_classes[] = {
-   244		{ .name = MT_CLS_DEFAULT,
-   245			.quirks = MT_QUIRK_ALWAYS_VALID |
-   246				MT_QUIRK_CONTACT_CNT_ACCURATE },
-   247		{ .name = MT_CLS_NSMU,
-   248			.quirks = MT_QUIRK_NOT_SEEN_MEANS_UP },
-   249		{ .name = MT_CLS_SERIAL,
-   250			.quirks = MT_QUIRK_ALWAYS_VALID},
-   251		{ .name = MT_CLS_CONFIDENCE,
-   252			.quirks = MT_QUIRK_VALID_IS_CONFIDENCE },
-   253		{ .name = MT_CLS_CONFIDENCE_CONTACT_ID,
-   254			.quirks = MT_QUIRK_VALID_IS_CONFIDENCE |
-   255				MT_QUIRK_SLOT_IS_CONTACTID },
-   256		{ .name = MT_CLS_CONFIDENCE_MINUS_ONE,
-   257			.quirks = MT_QUIRK_VALID_IS_CONFIDENCE |
-   258				MT_QUIRK_SLOT_IS_CONTACTID_MINUS_ONE },
-   259		{ .name = MT_CLS_DUAL_INRANGE_CONTACTID,
-   260			.quirks = MT_QUIRK_VALID_IS_INRANGE |
-   261				MT_QUIRK_SLOT_IS_CONTACTID,
-   262			.maxcontacts = 2 },
-   263		{ .name = MT_CLS_DUAL_INRANGE_CONTACTNUMBER,
-   264			.quirks = MT_QUIRK_VALID_IS_INRANGE |
-   265				MT_QUIRK_SLOT_IS_CONTACTNUMBER,
-   266			.maxcontacts = 2 },
-   267		{ .name = MT_CLS_INRANGE_CONTACTNUMBER,
-   268			.quirks = MT_QUIRK_VALID_IS_INRANGE |
-   269				MT_QUIRK_SLOT_IS_CONTACTNUMBER },
-   270		{ .name = MT_CLS_WIN_8,
-   271			.quirks = MT_QUIRK_ALWAYS_VALID |
-   272				MT_QUIRK_IGNORE_DUPLICATES |
-   273				MT_QUIRK_HOVERING |
-   274				MT_QUIRK_CONTACT_CNT_ACCURATE |
-   275				MT_QUIRK_STICKY_FINGERS |
-   276				MT_QUIRK_WIN8_PTP_BUTTONS,
-   277			.export_all_inputs = true },
-   278		{ .name = MT_CLS_EXPORT_ALL_INPUTS,
-   279			.quirks = MT_QUIRK_ALWAYS_VALID |
-   280				MT_QUIRK_CONTACT_CNT_ACCURATE,
-   281			.export_all_inputs = true },
-   282		{ .name = MT_CLS_WIN_8_FORCE_MULTI_INPUT,
-   283			.quirks = MT_QUIRK_ALWAYS_VALID |
-   284				MT_QUIRK_IGNORE_DUPLICATES |
-   285				MT_QUIRK_HOVERING |
-   286				MT_QUIRK_CONTACT_CNT_ACCURATE |
-   287				MT_QUIRK_STICKY_FINGERS |
-   288				MT_QUIRK_WIN8_PTP_BUTTONS |
-   289				MT_QUIRK_FORCE_MULTI_INPUT,
-   290			.export_all_inputs = true },
-   291		{ .name = MT_CLS_WIN_8_DISABLE_WAKEUP,
-   292			.quirks = MT_QUIRK_ALWAYS_VALID |
-   293				MT_QUIRK_IGNORE_DUPLICATES |
-   294				MT_QUIRK_HOVERING |
-   295				MT_QUIRK_CONTACT_CNT_ACCURATE |
-   296				MT_QUIRK_STICKY_FINGERS |
-   297				MT_QUIRK_WIN8_PTP_BUTTONS |
-   298				MT_QUIRK_DISABLE_WAKEUP,
-   299			.export_all_inputs = true },
-   300		{ .name = MT_CLS_WIN_8_NO_STICKY_FINGERS,
-   301			.quirks = MT_QUIRK_ALWAYS_VALID |
-   302				MT_QUIRK_IGNORE_DUPLICATES |
-   303				MT_QUIRK_HOVERING |
-   304				MT_QUIRK_CONTACT_CNT_ACCURATE |
-   305				MT_QUIRK_WIN8_PTP_BUTTONS,
-   306			.export_all_inputs = true },
-   307		{ .name = MT_CLS_BUTTONTYPE_TOUCHPAD,
-   308			.quirks = MT_QUIRK_ALWAYS_VALID |
-   309				MT_QUIRK_IGNORE_DUPLICATES |
-   310				MT_QUIRK_HOVERING |
-   311				MT_QUIRK_CONTACT_CNT_ACCURATE |
-   312				MT_QUIRK_STICKY_FINGERS |
- > 313				MT_QUIRK_WIN8_PTP_BUTTONS |,
-   314				MT_QUIRK_BUTTONTYPE_TOUCHPAD,
-   315			.export_all_inputs = true },
-   316	
-   317		/*
-   318		 * vendor specific classes
-   319		 */
-   320		{ .name = MT_CLS_3M,
-   321			.quirks = MT_QUIRK_VALID_IS_CONFIDENCE |
-   322				MT_QUIRK_SLOT_IS_CONTACTID |
-   323				MT_QUIRK_TOUCH_SIZE_SCALING,
-   324			.sn_move = 2048,
-   325			.sn_width = 128,
-   326			.sn_height = 128,
-   327			.maxcontacts = 60,
-   328		},
-   329		{ .name = MT_CLS_EGALAX,
-   330			.quirks =  MT_QUIRK_SLOT_IS_CONTACTID |
-   331				MT_QUIRK_VALID_IS_INRANGE,
-   332			.sn_move = 4096,
-   333			.sn_pressure = 32,
-   334		},
-   335		{ .name = MT_CLS_EGALAX_SERIAL,
-   336			.quirks =  MT_QUIRK_SLOT_IS_CONTACTID |
-   337				MT_QUIRK_ALWAYS_VALID,
-   338			.sn_move = 4096,
-   339			.sn_pressure = 32,
-   340		},
-   341		{ .name = MT_CLS_TOPSEED,
-   342			.quirks = MT_QUIRK_ALWAYS_VALID,
-   343			.is_indirect = true,
-   344			.maxcontacts = 2,
-   345		},
-   346		{ .name = MT_CLS_PANASONIC,
-   347			.quirks = MT_QUIRK_NOT_SEEN_MEANS_UP,
-   348			.maxcontacts = 4 },
-   349		{ .name	= MT_CLS_GENERALTOUCH_TWOFINGERS,
-   350			.quirks	= MT_QUIRK_NOT_SEEN_MEANS_UP |
-   351				MT_QUIRK_VALID_IS_INRANGE |
-   352				MT_QUIRK_SLOT_IS_CONTACTID,
-   353			.maxcontacts = 2
-   354		},
-   355		{ .name	= MT_CLS_GENERALTOUCH_PWT_TENFINGERS,
-   356			.quirks	= MT_QUIRK_NOT_SEEN_MEANS_UP |
-   357				MT_QUIRK_SLOT_IS_CONTACTID
-   358		},
-   359	
-   360		{ .name = MT_CLS_FLATFROG,
-   361			.quirks = MT_QUIRK_NOT_SEEN_MEANS_UP |
-   362				MT_QUIRK_NO_AREA,
-   363			.sn_move = 2048,
-   364			.maxcontacts = 40,
-   365		},
-   366		{ .name = MT_CLS_LG,
-   367			.quirks = MT_QUIRK_ALWAYS_VALID |
-   368				MT_QUIRK_FIX_CONST_CONTACT_ID |
-   369				MT_QUIRK_IGNORE_DUPLICATES |
-   370				MT_QUIRK_HOVERING |
-   371				MT_QUIRK_CONTACT_CNT_ACCURATE },
-   372		{ .name = MT_CLS_ASUS,
-   373			.quirks = MT_QUIRK_ALWAYS_VALID |
-   374				MT_QUIRK_CONTACT_CNT_ACCURATE |
-   375				MT_QUIRK_ASUS_CUSTOM_UP },
-   376		{ .name = MT_CLS_VTL,
-   377			.quirks = MT_QUIRK_ALWAYS_VALID |
-   378				MT_QUIRK_CONTACT_CNT_ACCURATE |
-   379				MT_QUIRK_FORCE_GET_FEATURE,
-   380		},
-   381		{ .name = MT_CLS_GOOGLE,
-   382			.quirks = MT_QUIRK_ALWAYS_VALID |
-   383				MT_QUIRK_CONTACT_CNT_ACCURATE |
-   384				MT_QUIRK_SLOT_IS_CONTACTID |
-   385				MT_QUIRK_HOVERING
-   386		},
-   387		{ .name = MT_CLS_RAZER_BLADE_STEALTH,
-   388			.quirks = MT_QUIRK_ALWAYS_VALID |
-   389				MT_QUIRK_IGNORE_DUPLICATES |
-   390				MT_QUIRK_HOVERING |
-   391				MT_QUIRK_CONTACT_CNT_ACCURATE |
-   392				MT_QUIRK_WIN8_PTP_BUTTONS,
-   393		},
-   394		{ .name = MT_CLS_SMART_TECH,
-   395			.quirks = MT_QUIRK_ALWAYS_VALID |
-   396				MT_QUIRK_IGNORE_DUPLICATES |
-   397				MT_QUIRK_CONTACT_CNT_ACCURATE |
-   398				MT_QUIRK_SEPARATE_APP_REPORT,
-   399		},
-   400		{ }
-   401	};
-   402	
+I was thinking of regulator_get_optional(). You know the call you use
+when your regulator isn't "optional"? (Sorry, it always cracks me up
+that "optional" is exactly opposite the meaning for regulator compared
+to everyone else).
 
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+
+> > BTW: it seems like it wouldn't be a _crazy_ amount of extra work to:
+> >
+> > 1. Add a sysfs hook for turning the regulator on/off
+> >
+> > 2. Change the Chrome OS userspace to actually use the sysfs hook if it's there.
+> >
+> > 3. Actually have the kernel in charge of turning the regulator off/on
+> >
+> > Doing this at the same time as the transition over to the more real
+> > "cros-ec-fp" would be nice so we don't have to figure out how to
+> > transition later. Said another way: If we don't transition now then I
+> > guess later we'd have to find some way to detect that the regulator
+> > specified in the kernel was actually a dummy and didn't really control
+> > the power?
+>
+> I'd rather not expose regulator control to userspace through some other
+> sysfs attribute. Instead I'd prefer the flashing logic that twiddles
+> gpios and power live all in the kernel and have userspace interact with
+> a character device to program the firmware.
+
+Yeah, that would be even better, you're right.
+
+Hmmm, so maybe the answer is to just delay adding the regulator until
+we're actually ready to specify it correctly and have the flashing
+happen in the kernel?
+
+-Doug
