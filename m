@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E149C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 17:50:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 568C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 17:50:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238942AbiCRRvc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 13:51:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38324 "EHLO
+        id S239907AbiCRRvh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 13:51:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239842AbiCRRvH (ORCPT
+        with ESMTP id S239808AbiCRRvH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Mar 2022 13:51:07 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 316A2189A37;
-        Fri, 18 Mar 2022 10:49:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7DA2818BCE4;
+        Fri, 18 Mar 2022 10:49:42 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0E35D1515;
-        Fri, 18 Mar 2022 10:49:44 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4AC9D1515;
+        Fri, 18 Mar 2022 10:49:42 -0700 (PDT)
 Received: from eglon.cambridge.arm.com (eglon.cambridge.arm.com [10.1.196.218])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6292F3F7B4;
-        Fri, 18 Mar 2022 10:49:43 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9F2AA3F7B4;
+        Fri, 18 Mar 2022 10:49:41 -0700 (PDT)
 From:   James Morse <james.morse@arm.com>
 To:     stable@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, james.morse@arm.com,
         catalin.marinas@arm.com
-Subject: [stable:PATCH v4.19.235 12/22] arm64: entry: Allow the trampoline text to occupy multiple pages
-Date:   Fri, 18 Mar 2022 17:48:32 +0000
-Message-Id: <20220318174842.2321061-13-james.morse@arm.com>
+Subject: [stable:PATCH v4.19.235 10/22] arm64: entry: Move trampoline macros out of ifdef'd section
+Date:   Fri, 18 Mar 2022 17:48:30 +0000
+Message-Id: <20220318174842.2321061-11-james.morse@arm.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220318174842.2321061-1-james.morse@arm.com>
 References: <20220318174842.2321061-1-james.morse@arm.com>
@@ -37,115 +37,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-commit a9c406e6462ff14956d690de7bbe5131a5677dc9 upstream.
+commit 13d7a08352a83ef2252aeb464a5e08dfc06b5dfd upstream.
 
-Adding a second set of vectors to .entry.tramp.text will make it
-larger than a single 4K page.
+The macros for building the kpti trampoline are all behind
+CONFIG_UNMAP_KERNEL_AT_EL0, and in a region that outputs to the
+.entry.tramp.text section.
 
-Allow the trampoline text to occupy up to three pages by adding two
-more fixmap slots. Previous changes to tramp_valias allowed it to reach
-beyond a single page.
+Move the macros out so they can be used to generate other kinds of
+trampoline. Only the symbols need to be guarded by
+CONFIG_UNMAP_KERNEL_AT_EL0 and appear in the .entry.tramp.text section.
 
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
 ---
- arch/arm64/include/asm/fixmap.h   |  6 ++++--
- arch/arm64/include/asm/sections.h |  5 +++++
- arch/arm64/kernel/entry.S         |  2 +-
- arch/arm64/kernel/vmlinux.lds.S   |  2 +-
- arch/arm64/mm/mmu.c               | 12 +++++++++---
- 5 files changed, 20 insertions(+), 7 deletions(-)
+ arch/arm64/kernel/entry.S | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm64/include/asm/fixmap.h b/arch/arm64/include/asm/fixmap.h
-index c0cfc6d3bf9f..3c962ef081f8 100644
---- a/arch/arm64/include/asm/fixmap.h
-+++ b/arch/arm64/include/asm/fixmap.h
-@@ -59,9 +59,11 @@ enum fixed_addresses {
- #endif /* CONFIG_ACPI_APEI_GHES */
- 
- #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
--	FIX_ENTRY_TRAMP_TEXT,
-+	FIX_ENTRY_TRAMP_TEXT3,
-+	FIX_ENTRY_TRAMP_TEXT2,
-+	FIX_ENTRY_TRAMP_TEXT1,
- 	FIX_ENTRY_TRAMP_DATA,
--#define TRAMP_VALIAS		(__fix_to_virt(FIX_ENTRY_TRAMP_TEXT))
-+#define TRAMP_VALIAS		(__fix_to_virt(FIX_ENTRY_TRAMP_TEXT1))
- #endif /* CONFIG_UNMAP_KERNEL_AT_EL0 */
- 	__end_of_permanent_fixed_addresses,
- 
-diff --git a/arch/arm64/include/asm/sections.h b/arch/arm64/include/asm/sections.h
-index caab039d6305..8d3f1eab58e0 100644
---- a/arch/arm64/include/asm/sections.h
-+++ b/arch/arm64/include/asm/sections.h
-@@ -30,4 +30,9 @@ extern char __irqentry_text_start[], __irqentry_text_end[];
- extern char __mmuoff_data_start[], __mmuoff_data_end[];
- extern char __entry_tramp_text_start[], __entry_tramp_text_end[];
- 
-+static inline size_t entry_tramp_text_size(void)
-+{
-+	return __entry_tramp_text_end - __entry_tramp_text_start;
-+}
-+
- #endif /* __ASM_SECTIONS_H */
 diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
-index 50843161607e..22d39c941a6d 100644
+index a13f7d30b7fa..03c45538a93f 100644
 --- a/arch/arm64/kernel/entry.S
 +++ b/arch/arm64/kernel/entry.S
-@@ -966,7 +966,7 @@ alternative_else_nop_endif
+@@ -933,12 +933,7 @@ ENDPROC(el0_svc)
+ 
+ 	.popsection				// .entry.text
+ 
+-#ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+-/*
+- * Exception vectors trampoline.
+- */
+-	.pushsection ".entry.tramp.text", "ax"
+-
++	// Move from tramp_pg_dir to swapper_pg_dir
+ 	.macro tramp_map_kernel, tmp
+ 	mrs	\tmp, ttbr1_el1
+ 	add	\tmp, \tmp, #(PAGE_SIZE + RESERVED_TTBR0_SIZE)
+@@ -1029,6 +1024,11 @@ alternative_insn isb, nop, ARM64_WORKAROUND_QCOM_FALKOR_E1003
+ 	.endr
  	.endm
  
- 	.macro tramp_data_page	dst
--	adr	\dst, .entry.tramp.text
-+	adr_l	\dst, .entry.tramp.text
- 	sub	\dst, \dst, PAGE_SIZE
- 	.endm
- 
-diff --git a/arch/arm64/kernel/vmlinux.lds.S b/arch/arm64/kernel/vmlinux.lds.S
-index 69e7c8d4a00f..370089455d38 100644
---- a/arch/arm64/kernel/vmlinux.lds.S
-+++ b/arch/arm64/kernel/vmlinux.lds.S
-@@ -259,7 +259,7 @@ ASSERT(__hibernate_exit_text_end - (__hibernate_exit_text_start & ~(SZ_4K - 1))
- 	<= SZ_4K, "Hibernate exit text too big or misaligned")
- #endif
- #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
--ASSERT((__entry_tramp_text_end - __entry_tramp_text_start) == PAGE_SIZE,
-+ASSERT((__entry_tramp_text_end - __entry_tramp_text_start) <= 3*PAGE_SIZE,
- 	"Entry trampoline text too big")
- #endif
- /*
-diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
-index 0fa558176fb1..b0a83dbed2dc 100644
---- a/arch/arm64/mm/mmu.c
-+++ b/arch/arm64/mm/mmu.c
-@@ -541,6 +541,8 @@ early_param("rodata", parse_rodata);
- #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
- static int __init map_entry_trampoline(void)
- {
-+	int i;
-+
- 	pgprot_t prot = rodata_enabled ? PAGE_KERNEL_ROX : PAGE_KERNEL_EXEC;
- 	phys_addr_t pa_start = __pa_symbol(__entry_tramp_text_start);
- 
-@@ -549,11 +551,15 @@ static int __init map_entry_trampoline(void)
- 
- 	/* Map only the text into the trampoline page table */
- 	memset(tramp_pg_dir, 0, PGD_SIZE);
--	__create_pgd_mapping(tramp_pg_dir, pa_start, TRAMP_VALIAS, PAGE_SIZE,
--			     prot, pgd_pgtable_alloc, 0);
-+	__create_pgd_mapping(tramp_pg_dir, pa_start, TRAMP_VALIAS,
-+			     entry_tramp_text_size(), prot, pgd_pgtable_alloc,
-+			     0);
- 
- 	/* Map both the text and data into the kernel page table */
--	__set_fixmap(FIX_ENTRY_TRAMP_TEXT, pa_start, prot);
-+	for (i = 0; i < DIV_ROUND_UP(entry_tramp_text_size(), PAGE_SIZE); i++)
-+		__set_fixmap(FIX_ENTRY_TRAMP_TEXT1 - i,
-+			     pa_start + i * PAGE_SIZE, prot);
-+
- 	if (IS_ENABLED(CONFIG_RANDOMIZE_BASE)) {
- 		extern char __entry_tramp_data_start[];
- 
++#ifdef CONFIG_UNMAP_KERNEL_AT_EL0
++/*
++ * Exception vectors trampoline.
++ */
++	.pushsection ".entry.tramp.text", "ax"
+ 	.align	11
+ ENTRY(tramp_vectors)
+ 	generate_tramp_vector
 -- 
 2.30.2
 
