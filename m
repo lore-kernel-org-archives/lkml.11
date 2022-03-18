@@ -2,162 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE9F4C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 17:49:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFFA6C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 17:49:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239792AbiCRRug (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 13:50:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34912 "EHLO
+        id S239796AbiCRRu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 13:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239781AbiCRRu3 (ORCPT
+        with ESMTP id S239783AbiCRRuy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 13:50:29 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1303E17AD91;
-        Fri, 18 Mar 2022 10:49:07 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id pv16so18539339ejb.0;
-        Fri, 18 Mar 2022 10:49:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=4hOptq36EIaU+7q/z3r7gSJIR1VIBf62WxlBwqnGeHM=;
-        b=Q9Zp/bmNqbsb5ocpQ4GYdoBy7Ut80KfaLQ7f0GnovInyg/48dKi+BhbPuNvCz/O00p
-         z+T6CdHE9GxTyAawJ0YYONT7DC1pH0ELKIweetFnYE1NzRJ+fWBJps7mNE2x6dy7lqIr
-         kx/bLIFg7HR6SSQgsxVWKcmoAWX40gYxu7qelAp0/C66YEDozKDF4RLsJAjJnxIIwmFq
-         RVcUOUy5c83eK+351qQVy8d5K3cMPDjfBkyFSF3MYY5hrOoHTSQrbrBY6KRka0JYvmFi
-         DUVLqaUtUF/emCQydwgkYET7QODfIfbJCtJbwRxYHIzLmcgOwoBHsW0IgX1Eb1UHesVr
-         aZfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4hOptq36EIaU+7q/z3r7gSJIR1VIBf62WxlBwqnGeHM=;
-        b=JNHXDrSMvljkThj7PknZF+J5Dklp9L2kBYRPjGJesFrWB6Lt6iyuKMmdYZlaaDi1Jt
-         nrwyiKzwIO8Ig+cBgD56yIgIEVuLH11wh5shwhhqRT0WWlFMQW79vKYEvPIrofiE2TdF
-         wFR6ij6PyMcyWbKY8kUYa8ikVwIo5ZtXXc2nEdJWuEyl5xVde7yVpZ0qZrQ7Q3NCvvl7
-         6BB/qn2RSOPAusGM9H9tOb4rv4dUw50bne99rggUrCBAKqC1UcMIk3FtyegIxXybX6I8
-         Z5NLQwJJ5+MpOlHt9AXfT8bPRm7WOIF1unIY+nFd3m6Q+p6uYhnVdZEGR4yA98SQv+/q
-         L9pw==
-X-Gm-Message-State: AOAM533eopgZPJwT2c8SQ1O/dPCgIgPglCcwBIYSROP4LbW33jNxeYq7
-        GmB/Ta9pUrQFpuDiOfAVEL0=
-X-Google-Smtp-Source: ABdhPJx1eh824v53InGX+pX0Ffn435EWSbrG8usub1KO5A2ZNV/rdTimyy5ESNEFnVXGCHPrWuec/A==
-X-Received: by 2002:a17:906:3a15:b0:6cf:ea4e:a1cc with SMTP id z21-20020a1709063a1500b006cfea4ea1ccmr10241365eje.753.1647625745510;
-        Fri, 18 Mar 2022 10:49:05 -0700 (PDT)
-Received: from anparri.mshome.net (host-82-59-4-232.retail.telecomitalia.it. [82.59.4.232])
-        by smtp.gmail.com with ESMTPSA id y15-20020a170906518f00b006df87a2bb16sm3218730ejk.89.2022.03.18.10.49.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Mar 2022 10:49:05 -0700 (PDT)
-From:   "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
-To:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Wei Hu <weh@microsoft.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Wilczynski <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Cc:     linux-pci@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
-Subject: [PATCH 2/2] PCI: hv: Fix synchronization between channel callback and hv_compose_msi_msg()
-Date:   Fri, 18 Mar 2022 18:48:48 +0100
-Message-Id: <20220318174848.290621-3-parri.andrea@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220318174848.290621-1-parri.andrea@gmail.com>
-References: <20220318174848.290621-1-parri.andrea@gmail.com>
+        Fri, 18 Mar 2022 13:50:54 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CAA7B169B0A;
+        Fri, 18 Mar 2022 10:49:35 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 48D721570;
+        Fri, 18 Mar 2022 10:49:35 -0700 (PDT)
+Received: from eglon.cambridge.arm.com (eglon.cambridge.arm.com [10.1.196.218])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9D1763F7B4;
+        Fri, 18 Mar 2022 10:49:34 -0700 (PDT)
+From:   James Morse <james.morse@arm.com>
+To:     stable@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, james.morse@arm.com,
+        catalin.marinas@arm.com
+Subject: [stable:PATCH v4.19.235 02/22] arm64: Add Neoverse-N2, Cortex-A710 CPU part definition
+Date:   Fri, 18 Mar 2022 17:48:22 +0000
+Message-Id: <20220318174842.2321061-3-james.morse@arm.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220318174842.2321061-1-james.morse@arm.com>
+References: <20220318174842.2321061-1-james.morse@arm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dexuan wrote:
+From: Suzuki K Poulose <suzuki.poulose@arm.com>
 
-  "[...]  when we disable AccelNet, the host PCI VSP driver sends a
-   PCI_EJECT message first, and the channel callback may set
-   hpdev->state to hv_pcichild_ejecting on a different CPU.  This can
-   cause hv_compose_msi_msg() to exit from the loop and 'return', and
-   the on-stack variable 'ctxt' is invalid.  Now, if the response
-   message from the host arrives, the channel callback will try to
-   access the invalid 'ctxt' variable, and this may cause a crash."
+commit 2d0d656700d67239a57afaf617439143d8dac9be upstream.
 
-Schematically:
+Add the CPU Partnumbers for the new Arm designs.
 
-  Hyper-V sends PCI_EJECT msg
-    hv_pci_onchannelcallback()
-      state = hv_pcichild_ejecting
-                                       hv_compose_msi_msg()
-                                         alloc and init comp_pkt
-                                         state == hv_pcichild_ejecting
-  Hyper-V sends VM_PKT_COMP msg
-    hv_pci_onchannelcallback()
-      retrieve address of comp_pkt
-                                         'free' comp_pkt and return
-      comp_pkt->completion_func()
-
-Dexuan also showed how the crash can be triggered after introducing
-suitable delays in the driver code, thus validating the 'assumption'
-that the host can still normally respond to the guest's compose_msi
-request after the host has started to eject the PCI device.
-
-Fix the synchronization by leveraging the IDR lock.  Retrieve the
-address of the completion packet *and call the completion function
-within a same critical section: if an address (request ID) is found
-in the channel callback, the critical section precedes the removal
-of the address in hv_compose_msi_msg().
-
-Fixes: de0aa7b2f97d3 ("PCI: hv: Fix 2 hang issues in hv_compose_msi_msg()")
-Reported-by: Wei Hu <weh@microsoft.com>
-Reported-by: Dexuan Cui <decui@microsoft.com>
-Suggested-by: Michael Kelley <mikelley@microsoft.com>
-Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
+Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Link: https://lore.kernel.org/r/20211019163153.3692640-2-suzuki.poulose@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: James Morse <james.morse@arm.com>
 ---
- drivers/pci/controller/pci-hyperv.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ arch/arm64/include/asm/cputype.h | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
-index fbc62aab08fdc..dddd7e4d0352d 100644
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -495,7 +495,8 @@ struct hv_pcibus_device {
- 	spinlock_t device_list_lock;	/* Protect lists below */
- 	void __iomem *cfg_addr;
+diff --git a/arch/arm64/include/asm/cputype.h b/arch/arm64/include/asm/cputype.h
+index b147e40c4110..7315f20c7ba2 100644
+--- a/arch/arm64/include/asm/cputype.h
++++ b/arch/arm64/include/asm/cputype.h
+@@ -82,6 +82,8 @@
+ #define ARM_CPU_PART_CORTEX_A76		0xD0B
+ #define ARM_CPU_PART_NEOVERSE_N1	0xD0C
+ #define ARM_CPU_PART_CORTEX_A77		0xD0D
++#define ARM_CPU_PART_CORTEX_A710	0xD47
++#define ARM_CPU_PART_NEOVERSE_N2	0xD49
  
--	spinlock_t idr_lock; /* Serialize accesses to the IDR */
-+	/* Serialize accesses to the IDR; see also hv_pci_onchannelcallback(). */
-+	spinlock_t idr_lock;
- 	struct idr idr; /* Map guest memory addresses */
+ #define APM_CPU_PART_POTENZA		0x000
  
- 	struct list_head children;
-@@ -2797,16 +2798,24 @@ static void hv_pci_onchannelcallback(void *context)
- 			}
- 			spin_lock_irqsave(&hbus->idr_lock, flags);
- 			comp_packet = (struct pci_packet *)idr_find(&hbus->idr, req_id);
--			spin_unlock_irqrestore(&hbus->idr_lock, flags);
- 			if (!comp_packet) {
-+				spin_unlock_irqrestore(&hbus->idr_lock, flags);
- 				dev_warn_ratelimited(&hbus->hdev->device,
- 						     "Request ID not found\n");
- 				break;
- 			}
- 			response = (struct pci_response *)buffer;
-+			/*
-+			 * Call ->completion_func() within the critical section to make
-+			 * sure that the packet pointer is still valid during the call:
-+			 * here 'valid' means that there's a task still waiting for the
-+			 * completion, and that the packet data is still on the waiting
-+			 * task's stack/has not already been freed by the waiting task.
-+			 */
- 			comp_packet->completion_func(comp_packet->compl_ctxt,
- 						     response,
- 						     bytes_recvd);
-+			spin_unlock_irqrestore(&hbus->idr_lock, flags);
- 			break;
- 
- 		case VM_PKT_DATA_INBAND:
+@@ -111,6 +113,8 @@
+ #define MIDR_CORTEX_A76 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A76)
+ #define MIDR_NEOVERSE_N1 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N1)
+ #define MIDR_CORTEX_A77	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A77)
++#define MIDR_CORTEX_A710 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A710)
++#define MIDR_NEOVERSE_N2 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N2)
+ #define MIDR_THUNDERX	MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX)
+ #define MIDR_THUNDERX_81XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX)
+ #define MIDR_THUNDERX_83XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_83XX)
 -- 
-2.25.1
+2.30.2
 
