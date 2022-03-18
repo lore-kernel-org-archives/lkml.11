@@ -2,171 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43A33C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:05:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDF31C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:05:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235746AbiCRQGs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 12:06:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33388 "EHLO
+        id S237496AbiCRQGy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 12:06:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238530AbiCRQFk (ORCPT
+        with ESMTP id S238574AbiCRQGD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 12:05:40 -0400
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61363F32BC;
-        Fri, 18 Mar 2022 09:03:31 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id D9C8740020;
-        Fri, 18 Mar 2022 16:03:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1647619410;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ocoul7ljnoZTu5D9WXKfAGT93AKe2N6I6+O6VziLVXM=;
-        b=VdOauTWE9GZvhTKTbJYfex6FbUK00DqWz/VOIt/Avk3FPERw2lCdwdez1NwQE6+MBMp1G/
-        kBoZlzzC/QVvfGo/SPT2xOUm4OOf4bBOi4T7+kPeuTaxQMm9hy71ZHql23qdux0hEJo/jh
-        z+b+uATjCaELNR2NZ784iRjvkoX9ipdXxE7ssRuOmVvrLD7ZSfurZRpUrYFEW0JA+Qg+B6
-        Z+zS1JQh75fenN6P1MyoTwyzACzML3E6wvCTnRAIHDGWJdx3Xo2NPbro2Zq66D127h0VYu
-        9FXEyAEjT+IMdhtNytDIFPOnO6wWtzdHsC+WuFunOlVkUtvJbi9aSTltCvw1xQ==
-From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "'Rafael J . Wysocki '" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
-        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-Subject: [PATCH 5/6] i2c: mux: add support for fwnode
-Date:   Fri, 18 Mar 2022 17:00:58 +0100
-Message-Id: <20220318160059.328208-13-clement.leger@bootlin.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220318160059.328208-1-clement.leger@bootlin.com>
-References: <20220318160059.328208-1-clement.leger@bootlin.com>
+        Fri, 18 Mar 2022 12:06:03 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 340A31AA4AB
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 09:04:03 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id p15so4078407lfk.8
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 09:04:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=h9XApkTh3yQbDDhq/6o67U0IGlirspPaXa+h4Gwx90c=;
+        b=Vor22BPyexcx+h6sp1SlZ+tF3gOqx4KPkyueUA1s4+LW7NL1ZhDA4oQHD7/xctnbG+
+         ybJwiISlYTdrlsvreHvZxugizERaCpLfbEM6D+CDGPt4A0IBPy9FkrJlRd+HLvG9gwr6
+         enw1Hc21PozvR4LftkA5Wx8DA7Yj7/rcSq3M09tejc5PPBw+Af3wX1AFVfgxFxmAMEko
+         fbvB1OMSz5HW8MYt39LuhR0D2qRb+9ZTg8s3LmMXTuyivSJgbMfdDrkVOCCM98nK5dWC
+         bxAd+2nvu22ZljSzouMGSiZ2d8xjzi+/57hZ5C0s9PBlZ0Ed3HsiqsG3HMXczfEsOcSx
+         YM7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=h9XApkTh3yQbDDhq/6o67U0IGlirspPaXa+h4Gwx90c=;
+        b=BxBv59L+ppsIGmJurzIpltGMEnBUF7n0ZQSrpAzeoVU8buRjjrxd0Op3wRnVrIIS3a
+         PdvExZApPVYOvwL2VIGVyucAuiwjC/k/Fy9Pe4Sx1X0ox4E9WBpfVyZeOjqXHE0Nx31k
+         MmstyJvT2+hZOTKpId1TWguHOvV8u9ltPyLCjE1xTF/WUhhXJNKj0d27BDSpgsx1x9Lt
+         GkLTh9Iayf+Bkqw+LwZ+ztFW5yizN0sQwfMgWFDIPAHan0IeoVUYA1XXfTRadOCVrTkL
+         X/ZxeAEJ6/mmagIBUtx/qPuSUwRzCsUCcI6MEAYu6Tsp6qYzIo6vRa40f4IQAr9pOy3B
+         tFWQ==
+X-Gm-Message-State: AOAM532vrGFuD9Aj0V3RrAmrnGqZW2E3RHkv1xzzz7ayfYd93g5RMWlR
+        O8g/t/oN1TPU/w4GPqynG1lnocHso0N40ezLvuuO9Q==
+X-Google-Smtp-Source: ABdhPJwxiK2YtfW7+H8OsuaWT5qsZaqMMTiHG2hIzD78hqXDB+ih4mNtdsQeWAtRPQqaL0H8y5tmvEsK28wLNs0jF/s=
+X-Received: by 2002:a05:6512:690:b0:449:fb6b:cf74 with SMTP id
+ t16-20020a056512069000b00449fb6bcf74mr4698589lfe.209.1647619441897; Fri, 18
+ Mar 2022 09:04:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220318141441.32329-1-pali@kernel.org> <20220318161744.5814b7d7@dellmb>
+In-Reply-To: <20220318161744.5814b7d7@dellmb>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Fri, 18 Mar 2022 17:03:50 +0100
+Message-ID: <CAPv3WKcrbDpcLkft2ybhMo336DmvFkoAOOQRa81-htHSZBKOfg@mail.gmail.com>
+Subject: Re: [PATCH] Revert "mmc: sdhci-xenon: fix annoying 1.8V regulator warning"
+To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
+Cc:     Hu Ziji <huziji@marvell.com>, Ulf Hansson <ulf.hansson@linaro.org>,
+        Konstantin Porotchkin <kostap@marvell.com>,
+        linux-mmc@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Modify i2c_mux_add_adapter() to use with fwnode API to allow creating
-mux adapters with fwnode based devices. This allows to have a node
-independent support for i2c muxes.
+Hi,
 
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
----
- drivers/i2c/i2c-mux.c | 39 ++++++++++++++++++---------------------
- 1 file changed, 18 insertions(+), 21 deletions(-)
+pt., 18 mar 2022 o 16:17 Marek Beh=C3=BAn <kabel@kernel.org> napisa=C5=82(a=
+):
+>
+> On Fri, 18 Mar 2022 15:14:41 +0100
+> Pali Roh=C3=A1r <pali@kernel.org> wrote:
+>
+> > This reverts commit bb32e1987bc55ce1db400faf47d85891da3c9b9f.
+> >
+> > Commit 1a3ed0dc3594 ("mmc: sdhci-xenon: fix 1.8v regulator stabilizatio=
+n")
+> > contains proper fix for the issue described in commit bb32e1987bc5 ("mm=
+c:
+> > sdhci-xenon: fix annoying 1.8V regulator warning").
+> >
+> > Fixes: 8d876bf472db ("mmc: sdhci-xenon: wait 5ms after set 1.8V signal =
+enable")
+> > Cc: stable@vger.kernel.org # 1a3ed0dc3594 ("mmc: sdhci-xenon: fix 1.8v =
+regulator stabilization")
+> > Signed-off-by: Pali Roh=C3=A1r <pali@kernel.org>
+>
+> Reviewed-by: Marek Beh=C3=BAn <kabel@kernel.org>
 
-diff --git a/drivers/i2c/i2c-mux.c b/drivers/i2c/i2c-mux.c
-index 774507b54b57..93c916220da5 100644
---- a/drivers/i2c/i2c-mux.c
-+++ b/drivers/i2c/i2c-mux.c
-@@ -24,7 +24,7 @@
- #include <linux/i2c-mux.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
--#include <linux/of.h>
-+#include <linux/property.h>
- #include <linux/slab.h>
- #include <linux/sysfs.h>
- 
-@@ -347,38 +347,35 @@ int i2c_mux_add_adapter(struct i2c_mux_core *muxc,
- 	else
- 		priv->adap.class = class;
- 
--	/*
--	 * Try to populate the mux adapter's of_node, expands to
--	 * nothing if !CONFIG_OF.
--	 */
--	if (muxc->dev->of_node) {
--		struct device_node *dev_node = muxc->dev->of_node;
--		struct device_node *mux_node, *child = NULL;
-+	/* Try to populate the mux adapter's device node */
-+	if (dev_fwnode(muxc->dev) && !has_acpi_companion(muxc->dev)) {
-+		struct fwnode_handle *dev_node = dev_fwnode(muxc->dev);
-+		struct fwnode_handle *mux_node, *child = NULL;
- 		u32 reg;
- 
- 		if (muxc->arbitrator)
--			mux_node = of_get_child_by_name(dev_node, "i2c-arb");
-+			mux_node = fwnode_get_named_child_node(dev_node, "i2c-arb");
- 		else if (muxc->gate)
--			mux_node = of_get_child_by_name(dev_node, "i2c-gate");
-+			mux_node = fwnode_get_named_child_node(dev_node, "i2c-gate");
- 		else
--			mux_node = of_get_child_by_name(dev_node, "i2c-mux");
-+			mux_node = fwnode_get_named_child_node(dev_node, "i2c-mux");
- 
- 		if (mux_node) {
- 			/* A "reg" property indicates an old-style DT entry */
--			if (!of_property_read_u32(mux_node, "reg", &reg)) {
--				of_node_put(mux_node);
-+			if (!fwnode_property_read_u32(mux_node, "reg", &reg)) {
-+				fwnode_handle_put(mux_node);
- 				mux_node = NULL;
- 			}
- 		}
- 
- 		if (!mux_node)
--			mux_node = of_node_get(dev_node);
-+			mux_node = fwnode_handle_get(dev_node);
- 		else if (muxc->arbitrator || muxc->gate)
--			child = of_node_get(mux_node);
-+			child = fwnode_handle_get(mux_node);
- 
- 		if (!child) {
--			for_each_child_of_node(mux_node, child) {
--				ret = of_property_read_u32(child, "reg", &reg);
-+			fwnode_for_each_child_node(mux_node, child) {
-+				ret = fwnode_property_read_u32(child, "reg", &reg);
- 				if (ret)
- 					continue;
- 				if (chan_id == reg)
-@@ -386,8 +383,8 @@ int i2c_mux_add_adapter(struct i2c_mux_core *muxc,
- 			}
- 		}
- 
--		priv->adap.dev.of_node = child;
--		of_node_put(mux_node);
-+		device_set_node(&priv->adap.dev, child);
-+		fwnode_handle_put(mux_node);
- 	}
- 
- 	/*
-@@ -444,7 +441,7 @@ void i2c_mux_del_adapters(struct i2c_mux_core *muxc)
- 	while (muxc->num_adapters) {
- 		struct i2c_adapter *adap = muxc->adapter[--muxc->num_adapters];
- 		struct i2c_mux_priv *priv = adap->algo_data;
--		struct device_node *np = adap->dev.of_node;
-+		struct fwnode_handle *np = dev_fwnode(&adap->dev);
- 
- 		muxc->adapter[muxc->num_adapters] = NULL;
- 
-@@ -454,7 +451,7 @@ void i2c_mux_del_adapters(struct i2c_mux_core *muxc)
- 
- 		sysfs_remove_link(&priv->adap.dev.kobj, "mux_device");
- 		i2c_del_adapter(adap);
--		of_node_put(np);
-+		fwnode_handle_put(np);
- 		kfree(priv);
- 	}
- }
--- 
-2.34.1
+I tested the patch in my setup, so you can add my:
+Reviewed-by: Marcin Wojtas <mw@semihalf.com>
 
+Thanks,
+Marcin
