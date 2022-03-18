@@ -2,90 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1354C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 03:30:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E272AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 03:32:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232180AbiCRDbS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 23:31:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56398 "EHLO
+        id S232187AbiCRDdt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 23:33:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231693AbiCRDbM (ORCPT
+        with ESMTP id S231693AbiCRDdq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 23:31:12 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 671E08F9A2;
-        Thu, 17 Mar 2022 20:29:53 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KKTxK6Vd1zfZ34;
-        Fri, 18 Mar 2022 11:28:21 +0800 (CST)
-Received: from dggpemm500014.china.huawei.com (7.185.36.153) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 18 Mar 2022 11:29:51 +0800
-Received: from dggpemm500015.china.huawei.com (7.185.36.181) by
- dggpemm500014.china.huawei.com (7.185.36.153) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 18 Mar 2022 11:29:51 +0800
-Received: from dggpemm500015.china.huawei.com ([7.185.36.181]) by
- dggpemm500015.china.huawei.com ([7.185.36.181]) with mapi id 15.01.2308.021;
- Fri, 18 Mar 2022 11:29:51 +0800
-From:   "Wangshaobo (bobo)" <bobo.shaobowang@huawei.com>
-CC:     "chengjian (D)" <cj.chengjian@huawei.com>,
-        "liwei (GF)" <liwei391@huawei.com>,
-        "antoniu.miclaus@analog.com" <antoniu.miclaus@analog.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        Jonathan Cameron <jonathan.cameron@huawei.com>,
-        "Wangshaobo (bobo)" <bobo.shaobowang@huawei.com>
-Subject: =?gb2312?B?tPC4tDogW1BBVENIIDIvMl0gaWlvOmZpbHRlcjphZG12ODgxODogRml4IG1p?=
- =?gb2312?B?c3NpbmcgY2xrX2Rpc2FibGVfdW5wcmVwYXJlKCkgaW4gYWRtdjg4MThfY2xr?=
- =?gb2312?Q?=5Fsetup?=
-Thread-Topic: [PATCH 2/2] iio:filter:admv8818: Fix missing
- clk_disable_unprepare() in admv8818_clk_setup
-Thread-Index: AQHYOnLPy2RAllgaYUGUm5x4tyvPl6zEecaQ
-Date:   Fri, 18 Mar 2022 03:29:50 +0000
-Message-ID: <ecbd85c40bce45078658a63bbd8b0a50@huawei.com>
-References: <20220318025914.2614812-1-bobo.shaobowang@huawei.com>
- <20220318025914.2614812-3-bobo.shaobowang@huawei.com>
-In-Reply-To: <20220318025914.2614812-3-bobo.shaobowang@huawei.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.177.133]
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        Thu, 17 Mar 2022 23:33:46 -0400
+Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23359BF95E
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 20:32:27 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
+ (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 18 Mar
+ 2022 11:32:25 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Fri, 18 Mar
+ 2022 11:32:24 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     <arnd@arndb.de>, <gregkh@linuxfoundation.org>,
+        <jirislaby@kernel.org>, <dsterba@suse.com>, <elder@linaro.org>,
+        <jcmvbkbc@gmail.com>
+CC:     <linux-kernel@vger.kernel.org>, Haowen Bai <baihaowen@meizu.com>
+Subject: [PATCH] tty: Use bitwise instead of arithmetic operator for flags
+Date:   Fri, 18 Mar 2022 11:32:22 +0800
+Message-ID: <1647574342-24488-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DQotLS0tLdPKvP7Urbz+LS0tLS0NCreivP7IyzogV2FuZ3NoYW9ibyAoYm9ibykgDQq3osvNyrG8
-5DogMjAyMsTqM9TCMTjI1SAxMDo1OQ0Ks63LzTogY2hlbmdqaWFuIChEKSA8Y2ouY2hlbmdqaWFu
-QGh1YXdlaS5jb20+OyBsaXdlaSAoR0YpIDxsaXdlaTM5MUBodWF3ZWkuY29tPjsgV2FuZ3NoYW9i
-byAoYm9ibykgPGJvYm8uc2hhb2Jvd2FuZ0BodWF3ZWkuY29tPjsgYW50b25pdS5taWNsYXVzQGFu
-YWxvZy5jb207IGxpbnV4LWlpb0B2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtl
-cm5lbC5vcmc7IGppYzIzQGtlcm5lbC5vcmc7IEpvbmF0aGFuIENhbWVyb24gPGpvbmF0aGFuLmNh
-bWVyb25AaHVhd2VpLmNvbT4NCtb3zOI6IFtQQVRDSCAyLzJdIGlpbzpmaWx0ZXI6YWRtdjg4MTg6
-IEZpeCBtaXNzaW5nIGNsa19kaXNhYmxlX3VucHJlcGFyZSgpIGluIGFkbXY4ODE4X2Nsa19zZXR1
-cA0KDQpGaXggbWlzc2luZyBjbGtfZGlzYWJsZV91bnByZXBhcmUoKSBiZWZvcmUgcmV0dXJuIGZy
-b20gYWRtdjg4MThfY2xrX3NldHVwIGluIHRoZSBlcnJvciBoYW5kbGluZyBjYXNlcy4NCg0KRml4
-ZXM6IGYzNGZlODg4YWQwNSAoImlpbzpmaWx0ZXI6YWRtdjg4MTg6IGFkZCBzdXBwb3J0IGZvciBB
-RE1WODgxOCIpDQpTaWduZWQtb2ZmLWJ5OiBXYW5nIFNoYW9CbyA8Ym9iby5zaGFvYm93YW5nQGh1
-YXdlaS5jb20+DQotLS0NCiBkcml2ZXJzL2lpby9maWx0ZXIvYWRtdjg4MTguYyB8IDE0ICsrKysr
-KysrKysrLS0tDQogMSBmaWxlIGNoYW5nZWQsIDExIGluc2VydGlvbnMoKyksIDMgZGVsZXRpb25z
-KC0pDQoNCmRpZmYgLS1naXQgYS9kcml2ZXJzL2lpby9maWx0ZXIvYWRtdjg4MTguYyBiL2RyaXZl
-cnMvaWlvL2ZpbHRlci9hZG12ODgxOC5jIGluZGV4IDY4ZGU0NWZlMjFiNC4uYWNiNDM2ZWZkOGI1
-IDEwMDY0NA0KLS0tIGEvZHJpdmVycy9paW8vZmlsdGVyL2FkbXY4ODE4LmMNCisrKyBiL2RyaXZl
-cnMvaWlvL2ZpbHRlci9hZG12ODgxOC5jDQpAQCAtNTkwLDE0ICs1OTAsMjIgQEAgc3RhdGljIGlu
-dCBhZG12ODgxOF9jbGtfc2V0dXAoc3RydWN0IGFkbXY4ODE4X3N0YXRlICpzdCkNCiANCiAJcmV0
-ID0gZGV2bV9hZGRfYWN0aW9uX29yX3Jlc2V0KCZzcGktPmRldiwgYWRtdjg4MThfY2xrX2Rpc2Fi
-bGUsIHN0KTsNCiAJaWYgKHJldCkNCi0JCXJldHVybiByZXQ7DQorCQlnb3RvIG91dF9jbGtfZGlz
-YWJsZTsNCg0KYWRtdjg4MThfY2xrX2Rpc2FibGUoKSB3b3VsZCBkbyBjbGtfZGlzYWJsZV91bnBy
-ZXBhcmUoKSwgc28gY2xrX2Rpc2FibGVfdW5wcmVwYXJlKCkgaXMgbm90IG5lZWRlZCBhZnRlcg0K
-ZGV2bV9hZGRfYWN0aW9uX29yX3Jlc2V0KCksdGhlcmUgaXMgbm8gcHJvYmxlbSBpbiB0aGlzIGZ1
-bmN0aW9uLg0KDQp0aGlzIHBhdGNoIGlzIG5vdCBuZWVkZWQgYW55bW9yZS4NCg0KLS0gd2FuZ3No
-YW9ibw0K
+to make code clear.
+
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+---
+ drivers/char/pcmcia/synclink_cs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/char/pcmcia/synclink_cs.c b/drivers/char/pcmcia/synclink_cs.c
+index 78baba5..e6f2186 100644
+--- a/drivers/char/pcmcia/synclink_cs.c
++++ b/drivers/char/pcmcia/synclink_cs.c
+@@ -922,7 +922,7 @@ static void rx_ready_async(MGSLPC_INFO *info, int tcd)
+ 		// BIT7:parity error
+ 		// BIT6:framing error
+ 
+-		if (status & (BIT7 + BIT6)) {
++		if (status & (BIT7 | BIT6)) {
+ 			if (status & BIT7)
+ 				icount->parity++;
+ 			else
+-- 
+2.7.4
+
