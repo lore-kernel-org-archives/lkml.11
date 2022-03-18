@@ -2,185 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E9C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 05:59:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8556C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 06:01:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232627AbiCRGAw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 02:00:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56502 "EHLO
+        id S232634AbiCRGCS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 02:02:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229912AbiCRGAu (ORCPT
+        with ESMTP id S229912AbiCRGCN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 02:00:50 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3263D2ED2E1
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 22:59:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647583171; x=1679119171;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=2inKC5XC+8wTQ/dAtlKptncESI8JecL0hchzmp989kc=;
-  b=Emha6e9YPpw5NaRXLonoPnOV5Zv5bSJjeVRmiXRSPqZ/DT0+1FzlPkeH
-   BjcE0GF1LLdP9PEOQUDaHOaCl/QzQxp/PMmq1itTuY4Xaayuqxr1EP82+
-   Ell4/IWAyaS29HFVyDGk9uv00uuZDuhPtfYzGSfAO6xlyh46T/+FkUwFu
-   amRhqYX909StbYWcciVZrTz81qdPVpOtWUGcQHCPSDvnk54BtjWeCt3jZ
-   7T+6iQYOJ0ftHjjWhxjQACI2Em6Tr8Fd9ol1MAFQrSs/LN/U5NIaazGMd
-   UsLoWtn58bAbMcIJgDSepgLp+VIK2WgFnADBeSc+FVdR6ZmYza13XqHd6
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="244514366"
-X-IronPort-AV: E=Sophos;i="5.90,191,1643702400"; 
-   d="scan'208";a="244514366"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 22:59:30 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,191,1643702400"; 
-   d="scan'208";a="499111280"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 17 Mar 2022 22:59:28 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nV5e3-000ESe-EC; Fri, 18 Mar 2022 05:59:27 +0000
-Date:   Fri, 18 Mar 2022 13:58:30 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Fangrui Song <maskray@google.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Subject: [linux-stable-rc:linux-4.19.y 2710/9999] mm/slab_common.c:1438:37:
- warning: unused variable 'proc_slabinfo_operations'
-Message-ID: <202203181306.hfAlK7cq-lkp@intel.com>
+        Fri, 18 Mar 2022 02:02:13 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2074.outbound.protection.outlook.com [40.107.223.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD8682EB57D
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 23:00:54 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Cig6z8qIKgdRBVjXo8xP0OmnoDpBW/PU8S5NVNGMyqormgqQfd9dn10wE34RfOJcvywOCzcOgIi+Co262Xd5KCjIev9E7lwkMhukT7ul1qUDY4uw7bPkbXNTF2ZkyBgFhDCI3Gh4LgvQ/aagd6bQel09gW2Vdu5bXDBK5obXBu8W/qFv4Th28JaxuiheUV9cB8RwS77iikMikwpNK+vYNsgDezSXh8x2hP5KdZFx4TFiYSlwzkWtIgshdlGEzhYyzAYv5vnUDy+l0DC4uUQ/KhOZZ4EpBXUc3/BHGlnW2jgkByrRil4hP6uCJsMYjBeHgKHsulpB8nTFEIqYmQZQog==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FJnfM67b0WZoHM19sGwdCrtCsA9UT9kUPn7jws6pRqk=;
+ b=fr53Ujh73+745Uv5agehK8uarUtml/DGhM5OQNyYIZkNWAKHom4ssGj/L/nEs7JKLkBMpC9uEuRFoOKF3/hNmaSF76NWG4YZoM03OmU3r87b9iOZcrixfc+UdTZIkCcRmkgDZ7Djj7+ytvMHqXNB19QeJPEpd8AAFnuVOiyxSA4rVAGFsquxLldt04/bcGtocJkIeVP+uAMdxEi0f++qFnOV3L8QL+cdOSthjGMP6fjd4HW47DMa6fobmZYG3q0612zrI9dOvkdFlwv1CRxKECwMPdA/Gfj0aidACebUesim+fnvfR1vTaeQA0OCcgbDgduWeZXeZX7BlJpysQFJSA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
+ dkim=pass header.d=vmware.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FJnfM67b0WZoHM19sGwdCrtCsA9UT9kUPn7jws6pRqk=;
+ b=RRfrvuRjTY3UNmYrrDSVbXrEHk+N2qX8/rljnwJ6vH4mKz2X0RccyzxXjvb7uTgT2i63/zrrkzVbX51fvYRINzKOWm5JsS6Zo74g6dQ3F5/CPc2XlKuXpvHCYP+c1w1HJ9OLbGURqaZRsWj/T7kOwJdvfh9WxHu80JzfpU6vE80=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vmware.com;
+Received: from BYAPR05MB3960.namprd05.prod.outlook.com (2603:10b6:a02:88::12)
+ by BL0PR05MB4884.namprd05.prod.outlook.com (2603:10b6:208:57::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.7; Fri, 18 Mar
+ 2022 06:00:52 +0000
+Received: from BYAPR05MB3960.namprd05.prod.outlook.com
+ ([fe80::5d86:5648:18fe:a5ab]) by BYAPR05MB3960.namprd05.prod.outlook.com
+ ([fe80::5d86:5648:18fe:a5ab%3]) with mapi id 15.20.5081.018; Fri, 18 Mar 2022
+ 06:00:52 +0000
+From:   vdasa@vmware.com
+To:     linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+Cc:     gregkh@linuxfoundation.org, pv-drivers@vmware.com,
+        bryantan@vmware.com, rjalisatgi@vmware.com,
+        Vishnu Dasa <vdasa@vmware.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [PATCH RESEND] VMCI: Release notification_bitmap in error path
+Date:   Thu, 17 Mar 2022 23:00:40 -0700
+Message-Id: <20220318060040.31621-1-vdasa@vmware.com>
+X-Mailer: git-send-email 2.35.1
+Reply-To: vdasa@vmware.com
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SJ0PR05CA0118.namprd05.prod.outlook.com
+ (2603:10b6:a03:334::33) To BYAPR05MB3960.namprd05.prod.outlook.com
+ (2603:10b6:a02:88::12)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 50317b5e-6910-4a73-e41e-08da08a4a88f
+X-MS-TrafficTypeDiagnostic: BL0PR05MB4884:EE_
+X-LD-Processed: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0,ExtAddr
+X-MS-Exchange-AtpMessageProperties: SA|SL
+X-Microsoft-Antispam-PRVS: <BL0PR05MB48844F8F839C28A8C02217B3CE139@BL0PR05MB4884.namprd05.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gd/F1dWl4Z3T+5wCETpnRst/kjQeeGO+GG2BA1WcxGkio8bK9TRquejlmyzh9HYyisw8chVDjI38VNEug5SjrhbkC+1IVYmd64pqDC5Kk8s618xgyvywXAKVg2M+jyv4FqqK0ZXIWvEFp5PLoQI3WOkkGjOA1fg7NO5VdzDpGapl3JL+ckRmaAzmu1PES5dOA9AH7EN6BBEFrHwqLePlVtzCudqxz8ejPtLW7/MrMoZc8nbwb/iuuuzHX0Zqn4k/pJSRdiACkcFIzFAQ1ySLHbAtwGrf/mKojVVkKSiICN0WRVNfMnaL10ad1UVFoOMzbZI1JYgBMBLH34rY2ZExaPeyJIPM3gxNfTBxdbUrsXxGBVcuUJ4qmudI9ppkDDt+Gy1HsYizctsXwI3j/oifDuiu4F3HS62yxRbhfnysJQUmErZw6wd2VAZ8p39hqt0SxvmQBZuRRl3H43elSF4+s1TDEN7Kbpfc5MsvWthgrFvoIChLwxl5Vnj/FTEvIzScK98895SpGTqYC6qvAe/NRsvnLX0+YW3703uUf4viF7lA/p4gVGFDKWuh9wEcCWv8VwWWFrU0EYoCWcVNQiW9QnI1F3DuoAljY1vb1dtTj/Bf/AO4rKpqOt3ltl+3VtafyTXe75BlvD+A0KAYUD+YjGRJV7QOPFCI8vsN9bk55l+yRRAWPlof6/iU/iSWMgycsZavCvIRPGiCnrAyYECf4w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR05MB3960.namprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66556008)(8676002)(4326008)(66476007)(66946007)(38350700002)(38100700002)(508600001)(86362001)(36756003)(6512007)(9686003)(6486002)(52116002)(26005)(186003)(6506007)(2616005)(54906003)(6666004)(8936002)(5660300002)(15650500001)(83380400001)(1076003)(2906002)(316002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?y8vTCBk73jKK2WLjsZhOOIB2qhY0bydwEc1/tUMjIFLLwEJl7syZbMnmAUWI?=
+ =?us-ascii?Q?3qnP+ssN9UJrUypfmBaY8s3LbZYmrarrSsrxs1KbFMGPWWpIlaOAmJWjrh82?=
+ =?us-ascii?Q?F1AVQaZd8I0wzNJYfnM/ArApVmHqgLrko2iumzojoiMarzcbQs7l21qNxWpx?=
+ =?us-ascii?Q?I2nzie8GvIZ7bJF/qEHeRyN2JuXIkrmZiCMQ/CdzAzY/reECjvrxKcwRniWT?=
+ =?us-ascii?Q?UBiENy3j59LIX+wNq5y3RkKAt/9PgduSSWfGDiuLypOLq1w87b4vWOjyWZ0T?=
+ =?us-ascii?Q?DVP5bG9+aGi58953XQR6+jYI88y/beaHUfbSlqeeZLNBUZ410fRWKWLuBbeR?=
+ =?us-ascii?Q?eeSmz2BARUNxUwq3Ev/G1NI2c+GSrZIROh99E8cxYaIGLvDwpu9brW/t5+J1?=
+ =?us-ascii?Q?umxjJpBV6+RIW+KfVlxUsTvD5edne+H0lEMuC3IxMuLsvsozl5eXBEvYzwAE?=
+ =?us-ascii?Q?YV4qe39KnGp8uypa2kUspIxJdSEHeaiFodUw5n0xKYYeuXEyGJYOHRBRvIq4?=
+ =?us-ascii?Q?DFyQk62iash+X7FlH9G1vgdIZoqzqfYt031vaLHaqD2kPuuhuLdfoe72RN/Q?=
+ =?us-ascii?Q?WXweflYNSpumpK+qP7I5UDtoyv+i5d96Qea2yL+ro4IzOFTw/w8B7A5sQGjS?=
+ =?us-ascii?Q?xlpiaqSbigqI/+73xtZo0JDXdm644VBe+7p4riEyGrZuT4LTmoBtMzlSoiG0?=
+ =?us-ascii?Q?r1fcucZQkIjRdPKIg51L2wUJXtvj/hvV7fx48xa158G9NlqZFYUJPetMsng9?=
+ =?us-ascii?Q?6y//mivk236orMWIwcpY1JXP0QY0AlDUOpdg6U7jo+t0+1gz1obgQrvR77i+?=
+ =?us-ascii?Q?xbQ/1yl9nFzhwmV/ZsvEMQOl9LZb78htLo2oGfc4R9KQXHqVudunuGVFhEwa?=
+ =?us-ascii?Q?E3QGTC/yIsvIXYrN7+CmVWlHi1RXUy4BAdGLUvV38rkTxWTQgvacRXi3G4+I?=
+ =?us-ascii?Q?b/7mLLOqxnG25G69eb1yehomq8RYU99dRmH2PKC3426ES1F/T1yIR6WzNqHs?=
+ =?us-ascii?Q?ehlV1GC7sHtwh21K51BddZwTFwR5hZCmdQbxhoF1Bj3bzSwp4o/9fk+j6S98?=
+ =?us-ascii?Q?burL9+HgVJDoMjO8SEf17fNfGAk8GBocqu+aMPqJsWpuAkUJBHT2Gr9lCtj1?=
+ =?us-ascii?Q?92Bb3VxAHFC+JqB9bDHkdNazyMA49UPWvlyoHAgqx+j8WkomQ9O50seAE2eP?=
+ =?us-ascii?Q?VnmJjjsOAF2wBzDJLKS0VDL8IkUu3Ktjmu4bRZqkw+aJ6DvK1033kq8snlBM?=
+ =?us-ascii?Q?Vn2p6xcoMFkWRxYeL/LVWSOkItpFO3nwnAvu33FQ/A0uXEu6EdduLefx1MSK?=
+ =?us-ascii?Q?LHZTgtXzBe1dao8JteQ3rmByMd8V0FNcayXTj7bYRWHllfT/D0VCYQkyDPKn?=
+ =?us-ascii?Q?OZ01hoFFNtdLUxPscr9z655kdGcMlJk4UTZ8UQ8RGIesq1zr+cgsnb+KKm2X?=
+ =?us-ascii?Q?xI2EVf/E7Hphq7TlYrMQl/7cwq5hBQQj?=
+X-OriginatorOrg: vmware.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 50317b5e-6910-4a73-e41e-08da08a4a88f
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR05MB3960.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2022 06:00:52.4663
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: TFc/ur6EILSjbZdmTdDAcdy4jWDd4aySPKdutovXWkQ8NpnREjRfoEwxRo56k9s8LBn4cNAEPOCWSkYZG7laNw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR05MB4884
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Fangrui,
+From: Vishnu Dasa <vdasa@vmware.com>
 
-First bad commit (maybe != root cause):
+notification_bitmap may not be released when VMCI_CAPS_DMA_DATAGRAM
+capability is missing from the device.  Add missing
+'err_free_notification_bitmap' label and use it instead of
+'err_free_data_buffers' to avoid this.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
-head:   57e593a4ee92b5fddbab3367340e9cb0300cc241
-commit: 69c122751164c3c343eea205fd5c3e1d5132f967 [2710/9999] Makefile: Fix GCC_TOOLCHAIN_DIR prefix for Clang cross compilation
-config: mips-randconfig-r022-20220317 (https://download.01.org/0day-ci/archive/20220318/202203181306.hfAlK7cq-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a6ec1e3d798f8eab43fb3a91028c6ab04e115fcb)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mips-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=69c122751164c3c343eea205fd5c3e1d5132f967
-        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-        git fetch --no-tags linux-stable-rc linux-4.19.y
-        git checkout 69c122751164c3c343eea205fd5c3e1d5132f967
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> mm/slab_common.c:1438:37: warning: unused variable 'proc_slabinfo_operations' [-Wunused-const-variable]
-   static const struct file_operations proc_slabinfo_operations = {
-                                       ^
-   1 warning generated.
---
->> drivers/hwmon/scmi-hwmon.c:59:24: warning: address of array 'sensor->name' will always evaluate to 'true' [-Wpointer-bool-conversion]
-           if (sensor && sensor->name)
-                      ~~ ~~~~~~~~^~~~
-   1 warning generated.
---
-   drivers/tty/serial/stm32-usart.c:332:15: warning: variable 'cookie' set but not used [-Wunused-but-set-variable]
-           dma_cookie_t cookie;
-                        ^
->> drivers/tty/serial/stm32-usart.c:600:14: warning: no previous prototype for function 'stm32_get_databits' [-Wmissing-prototypes]
-   unsigned int stm32_get_databits(struct ktermios *termios)
-                ^
-   drivers/tty/serial/stm32-usart.c:600:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   unsigned int stm32_get_databits(struct ktermios *termios)
-   ^
-   static 
-   drivers/tty/serial/stm32-usart.c:929:15: warning: variable 'cookie' set but not used [-Wunused-but-set-variable]
-           dma_cookie_t cookie;
-                        ^
-   3 warnings generated.
---
-   In file included from drivers/net/wireless/intersil/hostap/hostap_ap.c:30:
-   In file included from drivers/net/wireless/intersil/hostap/hostap_wlan.h:11:
-   include/net/iw_handler.h:489:9: warning: performing pointer subtraction with a null pointer has undefined behavior [-Wnull-pointer-subtraction]
-           return IW_EV_POINT_LEN;
-                  ^~~~~~~~~~~~~~~
-   include/uapi/linux/wireless.h:1096:5: note: expanded from macro 'IW_EV_POINT_LEN'
-                            IW_EV_POINT_OFF)
-                            ^~~~~~~~~~~~~~~
-   include/uapi/linux/wireless.h:1093:75: note: expanded from macro 'IW_EV_POINT_OFF'
-   #define IW_EV_POINT_OFF (((char *) &(((struct iw_point *) NULL)->length)) - \
-                                                                             ^
-   drivers/net/wireless/intersil/hostap/hostap_ap.c:1507:8: warning: variable 'txt' set but not used [-Wunused-but-set-variable]
-           char *txt = "";
-                 ^
->> drivers/net/wireless/intersil/hostap/hostap_ap.c:372:36: warning: unused variable 'ap_control_proc_seqops' [-Wunused-const-variable]
-   static const struct seq_operations ap_control_proc_seqops = {
-                                      ^
->> drivers/net/wireless/intersil/hostap/hostap_ap.c:574:36: warning: unused variable 'prism2_ap_proc_seqops' [-Wunused-const-variable]
-   static const struct seq_operations prism2_ap_proc_seqops = {
-                                      ^
-   4 warnings generated.
---
-   In file included from drivers/net/wireless/intersil/hostap/hostap_proc.c:9:
-   In file included from drivers/net/wireless/intersil/hostap/hostap_wlan.h:11:
-   include/net/iw_handler.h:489:9: warning: performing pointer subtraction with a null pointer has undefined behavior [-Wnull-pointer-subtraction]
-           return IW_EV_POINT_LEN;
-                  ^~~~~~~~~~~~~~~
-   include/uapi/linux/wireless.h:1096:5: note: expanded from macro 'IW_EV_POINT_LEN'
-                            IW_EV_POINT_OFF)
-                            ^~~~~~~~~~~~~~~
-   include/uapi/linux/wireless.h:1093:75: note: expanded from macro 'IW_EV_POINT_OFF'
-   #define IW_EV_POINT_OFF (((char *) &(((struct iw_point *) NULL)->length)) - \
-                                                                             ^
->> drivers/net/wireless/intersil/hostap/hostap_proc.c:117:36: warning: unused variable 'prism2_wds_proc_seqops' [-Wunused-const-variable]
-   static const struct seq_operations prism2_wds_proc_seqops = {
-                                      ^
->> drivers/net/wireless/intersil/hostap/hostap_proc.c:170:36: warning: unused variable 'prism2_bss_list_proc_seqops' [-Wunused-const-variable]
-   static const struct seq_operations prism2_bss_list_proc_seqops = {
-                                      ^
-   drivers/net/wireless/intersil/hostap/hostap_proc.c:214:37: warning: unused variable 'prism2_pda_proc_fops' [-Wunused-const-variable]
-   static const struct file_operations prism2_pda_proc_fops = {
-                                       ^
-   drivers/net/wireless/intersil/hostap/hostap_proc.c:226:37: warning: unused variable 'prism2_aux_dump_proc_fops' [-Wunused-const-variable]
-   static const struct file_operations prism2_aux_dump_proc_fops = {
-                                       ^
->> drivers/net/wireless/intersil/hostap/hostap_proc.c:348:36: warning: unused variable 'prism2_scan_results_proc_seqops' [-Wunused-const-variable]
-   static const struct seq_operations prism2_scan_results_proc_seqops = {
-                                      ^
-   6 warnings generated.
-
-
-vim +/proc_slabinfo_operations +1438 mm/slab_common.c
-
-b7454ad3cfc304 Glauber Costa 2012-10-19  1437  
-b7454ad3cfc304 Glauber Costa 2012-10-19 @1438  static const struct file_operations proc_slabinfo_operations = {
-b7454ad3cfc304 Glauber Costa 2012-10-19  1439  	.open		= slabinfo_open,
-b7454ad3cfc304 Glauber Costa 2012-10-19  1440  	.read		= seq_read,
-b7454ad3cfc304 Glauber Costa 2012-10-19  1441  	.write          = slabinfo_write,
-b7454ad3cfc304 Glauber Costa 2012-10-19  1442  	.llseek		= seq_lseek,
-b7454ad3cfc304 Glauber Costa 2012-10-19  1443  	.release	= seq_release,
-b7454ad3cfc304 Glauber Costa 2012-10-19  1444  };
-b7454ad3cfc304 Glauber Costa 2012-10-19  1445  
-
-:::::: The code at line 1438 was first introduced by commit
-:::::: b7454ad3cfc3043c5264729a6204f049fe1f34b1 mm/sl[au]b: Move slabinfo processing to slab_common.c
-
-:::::: TO: Glauber Costa <glommer@parallels.com>
-:::::: CC: Pekka Enberg <penberg@kernel.org>
-
+Fixes: eed2298d9360 ("VMCI: dma dg: detect DMA datagram capability")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Bryan Tan <bryantan@vmware.com>
+Reviewed-by: Rajesh Jalisatgi <rjalisatgi@vmware.com>
+Signed-off-by: Vishnu Dasa <vdasa@vmware.com>
 ---
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/misc/vmw_vmci/vmci_guest.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/misc/vmw_vmci/vmci_guest.c b/drivers/misc/vmw_vmci/vmci_guest.c
+index 981b19308e6f..6596a54daa88 100644
+--- a/drivers/misc/vmw_vmci/vmci_guest.c
++++ b/drivers/misc/vmw_vmci/vmci_guest.c
+@@ -720,7 +720,7 @@ static int vmci_guest_probe_device(struct pci_dev *pdev,
+ 			dev_err(&pdev->dev,
+ 				"Missing capability: VMCI_CAPS_DMA_DATAGRAM\n");
+ 			error = -ENXIO;
+-			goto err_free_data_buffers;
++			goto err_free_notification_bitmap;
+ 		}
+ 	}
+ 
+@@ -884,6 +884,7 @@ static int vmci_guest_probe_device(struct pci_dev *pdev,
+ 	vmci_dev_g = NULL;
+ 	spin_unlock_irq(&vmci_dev_spinlock);
+ 
++err_free_notification_bitmap:
+ 	if (vmci_dev->notification_bitmap) {
+ 		vmci_write_reg(vmci_dev, VMCI_CONTROL_RESET, VMCI_CONTROL_ADDR);
+ 		dma_free_coherent(&pdev->dev, PAGE_SIZE,
+-- 
+2.25.1
+
