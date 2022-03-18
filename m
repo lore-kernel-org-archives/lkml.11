@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 312A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 17:50:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EF61C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 17:50:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233128AbiCRRwA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 13:52:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37100 "EHLO
+        id S238720AbiCRRwD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 13:52:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239860AbiCRRvK (ORCPT
+        with ESMTP id S239834AbiCRRvL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 13:51:10 -0400
+        Fri, 18 Mar 2022 13:51:11 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9CA1C173F60;
-        Fri, 18 Mar 2022 10:49:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 433DE18BCDF;
+        Fri, 18 Mar 2022 10:49:52 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6570B1570;
-        Fri, 18 Mar 2022 10:49:50 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 290491515;
+        Fri, 18 Mar 2022 10:49:52 -0700 (PDT)
 Received: from eglon.cambridge.arm.com (eglon.cambridge.arm.com [10.1.196.218])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9EE513F7B4;
-        Fri, 18 Mar 2022 10:49:49 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7D55A3F7B4;
+        Fri, 18 Mar 2022 10:49:51 -0700 (PDT)
 From:   James Morse <james.morse@arm.com>
 To:     stable@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, james.morse@arm.com,
         catalin.marinas@arm.com
-Subject: [stable:PATCH v4.19.235 19/22] arm64: Mitigate spectre style branch history side channels
-Date:   Fri, 18 Mar 2022 17:48:39 +0000
-Message-Id: <20220318174842.2321061-20-james.morse@arm.com>
+Subject: [stable:PATCH v4.19.235 21/22] arm64: add ID_AA64ISAR2_EL1 sys register
+Date:   Fri, 18 Mar 2022 17:48:41 +0000
+Message-Id: <20220318174842.2321061-22-james.morse@arm.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220318174842.2321061-1-james.morse@arm.com>
 References: <20220318174842.2321061-1-james.morse@arm.com>
@@ -37,513 +37,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-commit 558c303c9734af5a813739cd284879227f7297d2 upstream.
+From: Joey Gouly <joey.gouly@arm.com>
 
-Speculation attacks against some high-performance processors can
-make use of branch history to influence future speculation.
-When taking an exception from user-space, a sequence of branches
-or a firmware call overwrites or invalidates the branch history.
+commit 9e45365f1469ef2b934f9d035975dbc9ad352116 upstream.
 
-The sequence of branches is added to the vectors, and should appear
-before the first indirect branch. For systems using KPTI the sequence
-is added to the kpti trampoline where it has a free register as the exit
-from the trampoline is via a 'ret'. For systems not using KPTI, the same
-register tricks are used to free up a register in the vectors.
+This is a new ID register, introduced in 8.7.
 
-For the firmware call, arch-workaround-3 clobbers 4 registers, so
-there is no choice but to save them to the EL1 stack. This only happens
-for entry from EL0, so if we take an exception due to the stack access,
-it will not become re-entrant.
-
-For KVM, the existing branch-predictor-hardening vectors are used.
-When a spectre version of these vectors is in use, the firmware call
-is sufficient to mitigate against Spectre-BHB. For the non-spectre
-versions, the sequence of branches is added to the indirect vector.
-
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Cc: <stable@kernel.org> # <v5.17.x 72bb9dcb6c33c arm64: Add Cortex-X2 CPU part definition
-Cc: <stable@kernel.org> # <v5.16.x 2d0d656700d67 arm64: Add Neoverse-N2, Cortex-A710 CPU part definition
-Cc: <stable@kernel.org> # <v5.10.x 8a6b88e66233f arm64: Add part number for Arm Cortex-A77
-[ modified for stable, moved code to cpu_errata.c removed bitmap of
-  mitigations, use kvm template infrastructure ]
+Signed-off-by: Joey Gouly <joey.gouly@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: James Morse <james.morse@arm.com>
+Cc: Alexandru Elisei <alexandru.elisei@arm.com>
+Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
+Cc: Reiji Watanabe <reijiw@google.com>
+Acked-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20211210165432.8106-3-joey.gouly@arm.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
 ---
- arch/arm64/Kconfig                  |   9 +
- arch/arm64/include/asm/assembler.h  |   4 +-
- arch/arm64/include/asm/cpufeature.h |  18 ++
- arch/arm64/include/asm/cputype.h    |   8 +
- arch/arm64/include/asm/sysreg.h     |   1 +
- arch/arm64/include/asm/vectors.h    |   6 +
- arch/arm64/kernel/cpu_errata.c      | 268 +++++++++++++++++++++++++++-
- arch/arm64/kvm/hyp/hyp-entry.S      |   4 +
- 8 files changed, 315 insertions(+), 3 deletions(-)
+ arch/arm64/include/asm/cpu.h    | 1 +
+ arch/arm64/include/asm/sysreg.h | 1 +
+ arch/arm64/kernel/cpufeature.c  | 9 +++++++++
+ arch/arm64/kernel/cpuinfo.c     | 1 +
+ arch/arm64/kvm/sys_regs.c       | 2 +-
+ 5 files changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 1daefa57e274..a101f5d2fbed 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -979,6 +979,15 @@ config ARM64_SSBD
- 
- 	  If unsure, say Y.
- 
-+config MITIGATE_SPECTRE_BRANCH_HISTORY
-+	bool "Mitigate Spectre style attacks against branch history" if EXPERT
-+	default y
-+	help
-+	  Speculation attacks against some high-performance processors can
-+	  make use of branch history to influence future speculation.
-+	  When taking an exception from user-space, a sequence of branches
-+	  or a firmware call overwrites the branch history.
-+
- menuconfig ARMV8_DEPRECATED
- 	bool "Emulate deprecated/obsolete ARMv8 instructions"
- 	depends on COMPAT
-diff --git a/arch/arm64/include/asm/assembler.h b/arch/arm64/include/asm/assembler.h
-index 5bfc335224e7..3a5336ba745c 100644
---- a/arch/arm64/include/asm/assembler.h
-+++ b/arch/arm64/include/asm/assembler.h
-@@ -713,7 +713,9 @@ USER(\label, ic	ivau, \tmp2)			// invalidate I line PoU
- 
- 	.macro __mitigate_spectre_bhb_loop      tmp
- #ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
--	mov	\tmp, #32
-+alternative_cb  spectre_bhb_patch_loop_iter
-+	mov	\tmp, #32		// Patched to correct the immediate
-+alternative_cb_end
- .Lspectre_bhb_loop\@:
- 	b	. + 4
- 	subs	\tmp, \tmp, #1
-diff --git a/arch/arm64/include/asm/cpufeature.h b/arch/arm64/include/asm/cpufeature.h
-index e59b9ee43e4a..86a7dda74535 100644
---- a/arch/arm64/include/asm/cpufeature.h
-+++ b/arch/arm64/include/asm/cpufeature.h
-@@ -482,6 +482,21 @@ static inline bool cpu_supports_mixed_endian_el0(void)
- 	return id_aa64mmfr0_mixed_endian_el0(read_cpuid(ID_AA64MMFR0_EL1));
- }
- 
-+static inline bool supports_csv2p3(int scope)
-+{
-+	u64 pfr0;
-+	u8 csv2_val;
-+
-+	if (scope == SCOPE_LOCAL_CPU)
-+		pfr0 = read_sysreg_s(SYS_ID_AA64PFR0_EL1);
-+	else
-+		pfr0 = read_sanitised_ftr_reg(SYS_ID_AA64PFR0_EL1);
-+
-+	csv2_val = cpuid_feature_extract_unsigned_field(pfr0,
-+							ID_AA64PFR0_CSV2_SHIFT);
-+	return csv2_val == 3;
-+}
-+
- static inline bool system_supports_32bit_el0(void)
- {
- 	return cpus_have_const_cap(ARM64_HAS_32BIT_EL0);
-@@ -535,6 +550,9 @@ enum mitigation_state {
- };
- 
- enum mitigation_state arm64_get_spectre_bhb_state(void);
-+bool is_spectre_bhb_affected(const struct arm64_cpu_capabilities *entry, int scope);
-+u8 spectre_bhb_loop_affected(int scope);
-+void spectre_bhb_enable_mitigation(const struct arm64_cpu_capabilities *__unused);
- #endif /* __ASSEMBLY__ */
- 
- #endif
-diff --git a/arch/arm64/include/asm/cputype.h b/arch/arm64/include/asm/cputype.h
-index fe011f78ad86..50368f962213 100644
---- a/arch/arm64/include/asm/cputype.h
-+++ b/arch/arm64/include/asm/cputype.h
-@@ -82,9 +82,13 @@
- #define ARM_CPU_PART_CORTEX_A76		0xD0B
- #define ARM_CPU_PART_NEOVERSE_N1	0xD0C
- #define ARM_CPU_PART_CORTEX_A77		0xD0D
-+#define ARM_CPU_PART_NEOVERSE_V1	0xD40
-+#define ARM_CPU_PART_CORTEX_A78		0xD41
-+#define ARM_CPU_PART_CORTEX_X1		0xD44
- #define ARM_CPU_PART_CORTEX_A710	0xD47
- #define ARM_CPU_PART_CORTEX_X2		0xD48
- #define ARM_CPU_PART_NEOVERSE_N2	0xD49
-+#define ARM_CPU_PART_CORTEX_A78C	0xD4B
- 
- #define APM_CPU_PART_POTENZA		0x000
- 
-@@ -114,9 +118,13 @@
- #define MIDR_CORTEX_A76 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A76)
- #define MIDR_NEOVERSE_N1 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N1)
- #define MIDR_CORTEX_A77	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A77)
-+#define MIDR_NEOVERSE_V1	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_V1)
-+#define MIDR_CORTEX_A78	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A78)
-+#define MIDR_CORTEX_X1	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_X1)
- #define MIDR_CORTEX_A710 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A710)
- #define MIDR_CORTEX_X2 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_X2)
- #define MIDR_NEOVERSE_N2 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N2)
-+#define MIDR_CORTEX_A78C	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A78C)
- #define MIDR_THUNDERX	MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX)
- #define MIDR_THUNDERX_81XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX)
- #define MIDR_THUNDERX_83XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_83XX)
+diff --git a/arch/arm64/include/asm/cpu.h b/arch/arm64/include/asm/cpu.h
+index 88392272250e..3a9908a01219 100644
+--- a/arch/arm64/include/asm/cpu.h
++++ b/arch/arm64/include/asm/cpu.h
+@@ -36,6 +36,7 @@ struct cpuinfo_arm64 {
+ 	u64		reg_id_aa64dfr1;
+ 	u64		reg_id_aa64isar0;
+ 	u64		reg_id_aa64isar1;
++	u64		reg_id_aa64isar2;
+ 	u64		reg_id_aa64mmfr0;
+ 	u64		reg_id_aa64mmfr1;
+ 	u64		reg_id_aa64mmfr2;
 diff --git a/arch/arm64/include/asm/sysreg.h b/arch/arm64/include/asm/sysreg.h
-index ed99d941c462..b7b102292498 100644
+index b7b102292498..2afd6f23bef2 100644
 --- a/arch/arm64/include/asm/sysreg.h
 +++ b/arch/arm64/include/asm/sysreg.h
-@@ -583,6 +583,7 @@
- #endif
+@@ -161,6 +161,7 @@
  
- /* id_aa64mmfr1 */
-+#define ID_AA64MMFR1_ECBHB_SHIFT	60
- #define ID_AA64MMFR1_PAN_SHIFT		20
- #define ID_AA64MMFR1_LOR_SHIFT		16
- #define ID_AA64MMFR1_HPD_SHIFT		12
-diff --git a/arch/arm64/include/asm/vectors.h b/arch/arm64/include/asm/vectors.h
-index 3f76dfd9e074..f222d8e033b3 100644
---- a/arch/arm64/include/asm/vectors.h
-+++ b/arch/arm64/include/asm/vectors.h
-@@ -9,6 +9,7 @@
- #include <linux/percpu.h>
+ #define SYS_ID_AA64ISAR0_EL1		sys_reg(3, 0, 0, 6, 0)
+ #define SYS_ID_AA64ISAR1_EL1		sys_reg(3, 0, 0, 6, 1)
++#define SYS_ID_AA64ISAR2_EL1		sys_reg(3, 0, 0, 6, 2)
  
- #include <asm/fixmap.h>
-+#include <asm/mmu.h>
- 
- extern char vectors[];
- extern char tramp_vectors[];
-@@ -40,6 +41,11 @@ enum arm64_bp_harden_el1_vectors {
- 	EL1_VECTOR_KPTI,
+ #define SYS_ID_AA64MMFR0_EL1		sys_reg(3, 0, 0, 7, 0)
+ #define SYS_ID_AA64MMFR1_EL1		sys_reg(3, 0, 0, 7, 1)
+diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+index 0ec57bbea2e0..24ce5f5242c9 100644
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -150,6 +150,10 @@ static const struct arm64_ftr_bits ftr_id_aa64isar1[] = {
+ 	ARM64_FTR_END,
  };
  
-+#ifndef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
-+#define EL1_VECTOR_BHB_LOOP		-1
-+#define EL1_VECTOR_BHB_FW		-1
-+#endif /* !CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY */
++static const struct arm64_ftr_bits ftr_id_aa64isar2[] = {
++	ARM64_FTR_END,
++};
 +
- /* The vectors to use on return from EL0. e.g. to remap the kernel */
- DECLARE_PER_CPU_READ_MOSTLY(const char *, this_cpu_vector);
+ static const struct arm64_ftr_bits ftr_id_aa64pfr0[] = {
+ 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_NONSTRICT, FTR_LOWER_SAFE, ID_AA64PFR0_CSV3_SHIFT, 4, 0),
+ 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_NONSTRICT, FTR_LOWER_SAFE, ID_AA64PFR0_CSV2_SHIFT, 4, 0),
+@@ -396,6 +400,7 @@ static const struct __ftr_reg_entry {
+ 	/* Op1 = 0, CRn = 0, CRm = 6 */
+ 	ARM64_FTR_REG(SYS_ID_AA64ISAR0_EL1, ftr_id_aa64isar0),
+ 	ARM64_FTR_REG(SYS_ID_AA64ISAR1_EL1, ftr_id_aa64isar1),
++	ARM64_FTR_REG(SYS_ID_AA64ISAR2_EL1, ftr_id_aa64isar2),
  
-diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
-index 791dd8dadd9e..f96ab92545d7 100644
---- a/arch/arm64/kernel/cpu_errata.c
-+++ b/arch/arm64/kernel/cpu_errata.c
-@@ -24,6 +24,7 @@
- #include <asm/cputype.h>
- #include <asm/cpufeature.h>
- #include <asm/smp_plat.h>
-+#include <asm/vectors.h>
+ 	/* Op1 = 0, CRn = 0, CRm = 7 */
+ 	ARM64_FTR_REG(SYS_ID_AA64MMFR0_EL1, ftr_id_aa64mmfr0),
+@@ -544,6 +549,7 @@ void __init init_cpu_features(struct cpuinfo_arm64 *info)
+ 	init_cpu_ftr_reg(SYS_ID_AA64DFR1_EL1, info->reg_id_aa64dfr1);
+ 	init_cpu_ftr_reg(SYS_ID_AA64ISAR0_EL1, info->reg_id_aa64isar0);
+ 	init_cpu_ftr_reg(SYS_ID_AA64ISAR1_EL1, info->reg_id_aa64isar1);
++	init_cpu_ftr_reg(SYS_ID_AA64ISAR2_EL1, info->reg_id_aa64isar2);
+ 	init_cpu_ftr_reg(SYS_ID_AA64MMFR0_EL1, info->reg_id_aa64mmfr0);
+ 	init_cpu_ftr_reg(SYS_ID_AA64MMFR1_EL1, info->reg_id_aa64mmfr1);
+ 	init_cpu_ftr_reg(SYS_ID_AA64MMFR2_EL1, info->reg_id_aa64mmfr2);
+@@ -661,6 +667,8 @@ void update_cpu_features(int cpu,
+ 				      info->reg_id_aa64isar0, boot->reg_id_aa64isar0);
+ 	taint |= check_update_ftr_reg(SYS_ID_AA64ISAR1_EL1, cpu,
+ 				      info->reg_id_aa64isar1, boot->reg_id_aa64isar1);
++	taint |= check_update_ftr_reg(SYS_ID_AA64ISAR2_EL1, cpu,
++				      info->reg_id_aa64isar2, boot->reg_id_aa64isar2);
  
- static bool __maybe_unused
- is_affected_midr_range(const struct arm64_cpu_capabilities *entry, int scope)
-@@ -848,6 +849,13 @@ const struct arm64_cpu_capabilities arm64_errata[] = {
- 		.matches = has_ssbd_mitigation,
- 		.midr_range_list = arm64_ssb_cpus,
- 	},
-+	{
-+		.desc = "Spectre-BHB",
-+		.capability = ARM64_SPECTRE_BHB,
-+		.type = ARM64_CPUCAP_LOCAL_CPU_ERRATUM,
-+		.matches = is_spectre_bhb_affected,
-+		.cpu_enable = spectre_bhb_enable_mitigation,
-+	},
- #ifdef CONFIG_ARM64_ERRATUM_1463225
- 	{
- 		.desc = "ARM erratum 1463225",
-@@ -938,6 +946,33 @@ ssize_t cpu_show_spec_store_bypass(struct device *dev,
- 	return sprintf(buf, "Vulnerable\n");
- }
+ 	/*
+ 	 * Differing PARange support is fine as long as all peripherals and
+@@ -794,6 +802,7 @@ static u64 __read_sysreg_by_encoding(u32 sys_id)
+ 	read_sysreg_case(SYS_ID_AA64MMFR2_EL1);
+ 	read_sysreg_case(SYS_ID_AA64ISAR0_EL1);
+ 	read_sysreg_case(SYS_ID_AA64ISAR1_EL1);
++	read_sysreg_case(SYS_ID_AA64ISAR2_EL1);
  
-+/*
-+ * We try to ensure that the mitigation state can never change as the result of
-+ * onlining a late CPU.
-+ */
-+static void update_mitigation_state(enum mitigation_state *oldp,
-+				    enum mitigation_state new)
-+{
-+	enum mitigation_state state;
-+
-+	do {
-+		state = READ_ONCE(*oldp);
-+		if (new <= state)
-+			break;
-+	} while (cmpxchg_relaxed(oldp, state, new) != state);
-+}
-+
-+/*
-+ * Spectre BHB.
-+ *
-+ * A CPU is either:
-+ * - Mitigated by a branchy loop a CPU specific number of times, and listed
-+ *   in our "loop mitigated list".
-+ * - Mitigated in software by the firmware Spectre v2 call.
-+ * - Has the 'Exception Clears Branch History Buffer' (ECBHB) feature, so no
-+ *   software mitigation in the vectors is needed.
-+ * - Has CSV2.3, so is unaffected.
-+ */
- static enum mitigation_state spectre_bhb_state;
- 
- enum mitigation_state arm64_get_spectre_bhb_state(void)
-@@ -945,6 +980,163 @@ enum mitigation_state arm64_get_spectre_bhb_state(void)
- 	return spectre_bhb_state;
- }
- 
-+/*
-+ * This must be called with SCOPE_LOCAL_CPU for each type of CPU, before any
-+ * SCOPE_SYSTEM call will give the right answer.
-+ */
-+u8 spectre_bhb_loop_affected(int scope)
-+{
-+	u8 k = 0;
-+	static u8 max_bhb_k;
-+
-+	if (scope == SCOPE_LOCAL_CPU) {
-+		static const struct midr_range spectre_bhb_k32_list[] = {
-+			MIDR_ALL_VERSIONS(MIDR_CORTEX_A78),
-+			MIDR_ALL_VERSIONS(MIDR_CORTEX_A78C),
-+			MIDR_ALL_VERSIONS(MIDR_CORTEX_X1),
-+			MIDR_ALL_VERSIONS(MIDR_CORTEX_A710),
-+			MIDR_ALL_VERSIONS(MIDR_CORTEX_X2),
-+			MIDR_ALL_VERSIONS(MIDR_NEOVERSE_N2),
-+			MIDR_ALL_VERSIONS(MIDR_NEOVERSE_V1),
-+			{},
-+		};
-+		static const struct midr_range spectre_bhb_k24_list[] = {
-+			MIDR_ALL_VERSIONS(MIDR_CORTEX_A77),
-+			MIDR_ALL_VERSIONS(MIDR_CORTEX_A76),
-+			MIDR_ALL_VERSIONS(MIDR_NEOVERSE_N1),
-+			{},
-+		};
-+		static const struct midr_range spectre_bhb_k8_list[] = {
-+			MIDR_ALL_VERSIONS(MIDR_CORTEX_A72),
-+			MIDR_ALL_VERSIONS(MIDR_CORTEX_A57),
-+			{},
-+		};
-+
-+		if (is_midr_in_range_list(read_cpuid_id(), spectre_bhb_k32_list))
-+			k = 32;
-+		else if (is_midr_in_range_list(read_cpuid_id(), spectre_bhb_k24_list))
-+			k = 24;
-+		else if (is_midr_in_range_list(read_cpuid_id(), spectre_bhb_k8_list))
-+			k =  8;
-+
-+		max_bhb_k = max(max_bhb_k, k);
-+	} else {
-+		k = max_bhb_k;
-+	}
-+
-+	return k;
-+}
-+
-+static enum mitigation_state spectre_bhb_get_cpu_fw_mitigation_state(void)
-+{
-+	int ret;
-+	struct arm_smccc_res res;
-+
-+	if (psci_ops.smccc_version == SMCCC_VERSION_1_0)
-+		return SPECTRE_VULNERABLE;
-+
-+	switch (psci_ops.conduit) {
-+	case PSCI_CONDUIT_HVC:
-+		arm_smccc_1_1_hvc(ARM_SMCCC_ARCH_FEATURES_FUNC_ID,
-+				  ARM_SMCCC_ARCH_WORKAROUND_3, &res);
-+		break;
-+
-+	case PSCI_CONDUIT_SMC:
-+		arm_smccc_1_1_smc(ARM_SMCCC_ARCH_FEATURES_FUNC_ID,
-+				  ARM_SMCCC_ARCH_WORKAROUND_3, &res);
-+		break;
-+
-+	default:
-+		return SPECTRE_VULNERABLE;
-+	}
-+
-+	ret = res.a0;
-+	switch (ret) {
-+	case SMCCC_RET_SUCCESS:
-+		return SPECTRE_MITIGATED;
-+	case SMCCC_ARCH_WORKAROUND_RET_UNAFFECTED:
-+		return SPECTRE_UNAFFECTED;
-+	default:
-+	case SMCCC_RET_NOT_SUPPORTED:
-+		return SPECTRE_VULNERABLE;
-+	}
-+}
-+
-+static bool is_spectre_bhb_fw_affected(int scope)
-+{
-+	static bool system_affected;
-+	enum mitigation_state fw_state;
-+	bool has_smccc = (psci_ops.smccc_version >= SMCCC_VERSION_1_1);
-+	static const struct midr_range spectre_bhb_firmware_mitigated_list[] = {
-+		MIDR_ALL_VERSIONS(MIDR_CORTEX_A73),
-+		MIDR_ALL_VERSIONS(MIDR_CORTEX_A75),
-+		{},
-+	};
-+	bool cpu_in_list = is_midr_in_range_list(read_cpuid_id(),
-+					 spectre_bhb_firmware_mitigated_list);
-+
-+	if (scope != SCOPE_LOCAL_CPU)
-+		return system_affected;
-+
-+	fw_state = spectre_bhb_get_cpu_fw_mitigation_state();
-+	if (cpu_in_list || (has_smccc && fw_state == SPECTRE_MITIGATED)) {
-+		system_affected = true;
-+		return true;
-+	}
-+
-+	return false;
-+}
-+
-+static bool supports_ecbhb(int scope)
-+{
-+	u64 mmfr1;
-+
-+	if (scope == SCOPE_LOCAL_CPU)
-+		mmfr1 = read_sysreg_s(SYS_ID_AA64MMFR1_EL1);
-+	else
-+		mmfr1 = read_sanitised_ftr_reg(SYS_ID_AA64MMFR1_EL1);
-+
-+	return cpuid_feature_extract_unsigned_field(mmfr1,
-+						    ID_AA64MMFR1_ECBHB_SHIFT);
-+}
-+
-+bool is_spectre_bhb_affected(const struct arm64_cpu_capabilities *entry,
-+			     int scope)
-+{
-+	WARN_ON(scope != SCOPE_LOCAL_CPU || preemptible());
-+
-+	if (supports_csv2p3(scope))
-+		return false;
-+
-+	if (spectre_bhb_loop_affected(scope))
-+		return true;
-+
-+	if (is_spectre_bhb_fw_affected(scope))
-+		return true;
-+
-+	return false;
-+}
-+
-+static void this_cpu_set_vectors(enum arm64_bp_harden_el1_vectors slot)
-+{
-+	const char *v = arm64_get_bp_hardening_vector(slot);
-+
-+	if (slot < 0)
-+		return;
-+
-+	__this_cpu_write(this_cpu_vector, v);
-+
-+	/*
-+	 * When KPTI is in use, the vectors are switched when exiting to
-+	 * user-space.
-+	 */
-+	if (arm64_kernel_unmapped_at_el0())
-+		return;
-+
-+	write_sysreg(v, vbar_el1);
-+	isb();
-+}
-+
- #ifdef CONFIG_KVM_INDIRECT_VECTORS
- static const char *kvm_bhb_get_vecs_end(const char *start)
- {
-@@ -960,7 +1152,7 @@ static const char *kvm_bhb_get_vecs_end(const char *start)
- 	return NULL;
- }
- 
--void kvm_setup_bhb_slot(const char *hyp_vecs_start)
-+static void kvm_setup_bhb_slot(const char *hyp_vecs_start)
- {
- 	int cpu, slot = -1;
- 	const char *hyp_vecs_end;
-@@ -996,5 +1188,77 @@ void kvm_setup_bhb_slot(const char *hyp_vecs_start)
- #define __spectre_bhb_loop_k24_start NULL
- #define __spectre_bhb_loop_k32_start NULL
- 
--void kvm_setup_bhb_slot(const char *hyp_vecs_start) { };
-+static void kvm_setup_bhb_slot(const char *hyp_vecs_start) { };
- #endif
-+
-+void spectre_bhb_enable_mitigation(const struct arm64_cpu_capabilities *entry)
-+{
-+	enum mitigation_state fw_state, state = SPECTRE_VULNERABLE;
-+
-+	if (!is_spectre_bhb_affected(entry, SCOPE_LOCAL_CPU))
-+		return;
-+
-+	if (!__spectrev2_safe &&  !__hardenbp_enab) {
-+		/* No point mitigating Spectre-BHB alone. */
-+	} else if (!IS_ENABLED(CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY)) {
-+		pr_info_once("spectre-bhb mitigation disabled by compile time option\n");
-+	} else if (cpu_mitigations_off()) {
-+		pr_info_once("spectre-bhb mitigation disabled by command line option\n");
-+	} else if (supports_ecbhb(SCOPE_LOCAL_CPU)) {
-+		state = SPECTRE_MITIGATED;
-+	} else if (spectre_bhb_loop_affected(SCOPE_LOCAL_CPU)) {
-+		switch (spectre_bhb_loop_affected(SCOPE_SYSTEM)) {
-+		case 8:
-+			kvm_setup_bhb_slot(__spectre_bhb_loop_k8_start);
-+			break;
-+		case 24:
-+			kvm_setup_bhb_slot(__spectre_bhb_loop_k24_start);
-+			break;
-+		case 32:
-+			kvm_setup_bhb_slot(__spectre_bhb_loop_k32_start);
-+			break;
-+		default:
-+			WARN_ON_ONCE(1);
-+		}
-+		this_cpu_set_vectors(EL1_VECTOR_BHB_LOOP);
-+
-+		state = SPECTRE_MITIGATED;
-+	} else if (is_spectre_bhb_fw_affected(SCOPE_LOCAL_CPU)) {
-+		fw_state = spectre_bhb_get_cpu_fw_mitigation_state();
-+		if (fw_state == SPECTRE_MITIGATED) {
-+			kvm_setup_bhb_slot(__smccc_workaround_3_smc_start);
-+			this_cpu_set_vectors(EL1_VECTOR_BHB_FW);
-+
-+			/*
-+			 * With WA3 in the vectors, the WA1 calls can be
-+			 * removed.
-+			 */
-+			__this_cpu_write(bp_hardening_data.fn, NULL);
-+
-+			state = SPECTRE_MITIGATED;
-+		}
-+	}
-+
-+	update_mitigation_state(&spectre_bhb_state, state);
-+}
-+
-+/* Patched to correct the immediate */
-+void __init spectre_bhb_patch_loop_iter(struct alt_instr *alt,
-+					__le32 *origptr, __le32 *updptr, int nr_inst)
-+{
-+	u8 rd;
-+	u32 insn;
-+	u16 loop_count = spectre_bhb_loop_affected(SCOPE_SYSTEM);
-+
-+	BUG_ON(nr_inst != 1); /* MOV -> MOV */
-+
-+	if (!IS_ENABLED(CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY))
-+		return;
-+
-+	insn = le32_to_cpu(*origptr);
-+	rd = aarch64_insn_decode_register(AARCH64_INSN_REGTYPE_RD, insn);
-+	insn = aarch64_insn_gen_movewide(rd, loop_count, 0,
-+					 AARCH64_INSN_VARIANT_64BIT,
-+					 AARCH64_INSN_MOVEWIDE_ZERO);
-+	*updptr++ = cpu_to_le32(insn);
-+}
-diff --git a/arch/arm64/kvm/hyp/hyp-entry.S b/arch/arm64/kvm/hyp/hyp-entry.S
-index 05593f631eca..55ed2cb81dc6 100644
---- a/arch/arm64/kvm/hyp/hyp-entry.S
-+++ b/arch/arm64/kvm/hyp/hyp-entry.S
-@@ -135,6 +135,10 @@ el1_hvc_guest:
- 	/* ARM_SMCCC_ARCH_WORKAROUND_2 handling */
- 	eor	w1, w1, #(ARM_SMCCC_ARCH_WORKAROUND_1 ^ \
- 			  ARM_SMCCC_ARCH_WORKAROUND_2)
-+	cbz	w1, wa_epilogue
-+
-+	eor	w1, w1, #(ARM_SMCCC_ARCH_WORKAROUND_2 ^ \
-+			  ARM_SMCCC_ARCH_WORKAROUND_3)
- 	cbnz	w1, el1_trap
- 
- #ifdef CONFIG_ARM64_SSBD
+ 	read_sysreg_case(SYS_CNTFRQ_EL0);
+ 	read_sysreg_case(SYS_CTR_EL0);
+diff --git a/arch/arm64/kernel/cpuinfo.c b/arch/arm64/kernel/cpuinfo.c
+index dce971f2c167..36bd58d8ca11 100644
+--- a/arch/arm64/kernel/cpuinfo.c
++++ b/arch/arm64/kernel/cpuinfo.c
+@@ -334,6 +334,7 @@ static void __cpuinfo_store_cpu(struct cpuinfo_arm64 *info)
+ 	info->reg_id_aa64dfr1 = read_cpuid(ID_AA64DFR1_EL1);
+ 	info->reg_id_aa64isar0 = read_cpuid(ID_AA64ISAR0_EL1);
+ 	info->reg_id_aa64isar1 = read_cpuid(ID_AA64ISAR1_EL1);
++	info->reg_id_aa64isar2 = read_cpuid(ID_AA64ISAR2_EL1);
+ 	info->reg_id_aa64mmfr0 = read_cpuid(ID_AA64MMFR0_EL1);
+ 	info->reg_id_aa64mmfr1 = read_cpuid(ID_AA64MMFR1_EL1);
+ 	info->reg_id_aa64mmfr2 = read_cpuid(ID_AA64MMFR2_EL1);
+diff --git a/arch/arm64/kvm/sys_regs.c b/arch/arm64/kvm/sys_regs.c
+index 98e8bc919583..f06629bf2be1 100644
+--- a/arch/arm64/kvm/sys_regs.c
++++ b/arch/arm64/kvm/sys_regs.c
+@@ -1289,7 +1289,7 @@ static const struct sys_reg_desc sys_reg_descs[] = {
+ 	/* CRm=6 */
+ 	ID_SANITISED(ID_AA64ISAR0_EL1),
+ 	ID_SANITISED(ID_AA64ISAR1_EL1),
+-	ID_UNALLOCATED(6,2),
++	ID_SANITISED(ID_AA64ISAR2_EL1),
+ 	ID_UNALLOCATED(6,3),
+ 	ID_UNALLOCATED(6,4),
+ 	ID_UNALLOCATED(6,5),
 -- 
 2.30.2
 
