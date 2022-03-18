@@ -2,111 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF459C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 21:12:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC2FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 21:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241069AbiCRVNi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 17:13:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50042 "EHLO
+        id S241060AbiCRVOZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 17:14:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241060AbiCRVNf (ORCPT
+        with ESMTP id S240990AbiCRVOM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 17:13:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77FD32DF3CC;
-        Fri, 18 Mar 2022 14:12:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 08DFEB825AB;
-        Fri, 18 Mar 2022 21:12:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77B8BC340E8;
-        Fri, 18 Mar 2022 21:12:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647637933;
-        bh=63k8XZftRXMguFWX81BTU0yP2mywj2VvPSBftzYpSsg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PTs1UXtc6PhC9dVwQo7CYei9zDB0J902uB5hkjZhnDYdVw81/+hE1chJ+3v4HYVK+
-         IDwLXhAzRB32+0JyqbCb+zUQ4F94oCClztmUZ8Qx/biqQ/z0eDX7WQSixqIUQ3GJFe
-         tZaJEV1L0faQ8fBEgxum9HWXdlkMpEBlYeY+YZcD9NHJ+Xm7WltituECpX4GKoNbPm
-         Tep3wzErh8UUJ/SHZms+oneAFYf/7DWhkQ/kiK/ovh8qyT5BATqbAqSK8TXbP5EZxI
-         kywuFEvtWGn8SZHLheV4b9VK8aB7vdGwY6czvx6ynKoxRSyt10ms7kkLV2DQwMMeuq
-         raiHwmtI7TMTw==
-Date:   Fri, 18 Mar 2022 14:12:07 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     =?UTF-8?B?U3TDqXBoYW5l?= Graber <stgraber@ubuntu.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
-        Keyur Chudgar <keyur@os.amperecomputing.com>,
-        Quan Nguyen <quan@os.amperecomputing.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Toan Le <toan@os.amperecomputing.com>, stable@vger.kernel.org
-Subject: Re: [PATCH] drivers: net: xgene: Fix regression in CRC stripping
-Message-ID: <20220318141207.284972b7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220317144225.4005500-1-stgraber@ubuntu.com>
-References: <20220317144225.4005500-1-stgraber@ubuntu.com>
+        Fri, 18 Mar 2022 17:14:12 -0400
+Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBF3D53A49;
+        Fri, 18 Mar 2022 14:12:52 -0700 (PDT)
+Received: by mail-lf1-f43.google.com with SMTP id p15so5228579lfk.8;
+        Fri, 18 Mar 2022 14:12:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ksuX6MNNVKcpHa2cJxv8Npehy7dLW5BZP8Nd24HsaFA=;
+        b=XSCNq5gPxnqtXW1aGcvA1pn28uVm8lQZLYralUh8/p8/vPtEeeQN2nrW67DCYZEtL4
+         pdxeZ+ZKHgDTzBFmPDkn0xuitRVLqzN/ibCiPrF8uTNYa38e/5VZgY6XZuQCmbDGAT39
+         Ic8V+U0QrzKv9cJYGHdoqKKSZHcDHG+LDon862LyGZFk4WJRBN6Y0oywSB39FHp8KOCW
+         O3yIu9L4edG1p4WuKrdxI8uS9N/kG5IdVhvlqf2AK5B0HWMt1U1Z8GyaL4pjXcQnAqVE
+         v747Cn+ROgiNB4x8KqqUUGRWlU3xO99cphcH/5Fk6L0r3DfG7Z0KXLtzBSKTJzFwll9W
+         94RQ==
+X-Gm-Message-State: AOAM532CjMjuyCqC52iGPwjnAIm+h0vY9MKmlYiT3qsWDYMjJYVHv3Ae
+        bJJV1P48osQKvQ/+6By7N0hmSGyy46xQ9IXi6Kg=
+X-Google-Smtp-Source: ABdhPJwAoZP/Evj9WuqznTWvuq6qRzv5hLg45b2J0BU02fW2LyOukiW0H/T59dTOSxGuzYiY/OINHNMgru0MhYiP1ts=
+X-Received: by 2002:a05:6512:1195:b0:448:4fcc:34f2 with SMTP id
+ g21-20020a056512119500b004484fcc34f2mr6997466lfr.454.1647637971048; Fri, 18
+ Mar 2022 14:12:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20220316224548.500123-1-namhyung@kernel.org> <YjNwq+YrUULI/3QC@ip-172-31-19-208.ap-northeast-1.compute.internal>
+In-Reply-To: <YjNwq+YrUULI/3QC@ip-172-31-19-208.ap-northeast-1.compute.internal>
+From:   Namhyung Kim <namhyung@kernel.org>
+Date:   Fri, 18 Mar 2022 14:12:39 -0700
+Message-ID: <CAM9d7cjgN2BM4Jy9R=18=0eRJkLdi5SB2EbqELLLnbnxOJJ12g@mail.gmail.com>
+Subject: Re: [PATCH 0/2] locking: Add new lock contention tracepoints (v3)
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Byungchul Park <byungchul.park@lge.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Radoslaw Burny <rburny@google.com>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 17 Mar 2022 10:42:25 -0400 St=C3=A9phane Graber wrote:
-> From: Stephane Graber <stgraber@ubuntu.com>
->=20
-> All packets on ingress (except for jumbo) are terminated with a 4-bytes
-> CRC checksum. It's the responsability of the driver to strip those 4
-> bytes. Unfortunately a change dating back to March 2017 re-shuffled some
-> code and made the CRC stripping code effectively dead.
->=20
-> This change re-orders that part a bit such that the datalen is
-> immediately altered if needed.
->=20
-> Fixes: 4902a92270fb ("drivers: net: xgene: Add workaround for errata 10GE=
-_8/ENET_11")
-> Signed-off-by: Stephane Graber <stgraber@ubuntu.com>
-> Tested-by: Stephane Graber <stgraber@ubuntu.com>
-> Cc: stable@vger.kernel.org
-> ---
->  drivers/net/ethernet/apm/xgene/xgene_enet_main.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/apm/xgene/xgene_enet_main.c b/drivers/n=
-et/ethernet/apm/xgene/xgene_enet_main.c
-> index ff2d099aab21..3892790f04e0 100644
-> --- a/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
-> +++ b/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
-> @@ -696,6 +696,12 @@ static int xgene_enet_rx_frame(struct xgene_enet_des=
-c_ring *rx_ring,
->  	buf_pool->rx_skb[skb_index] =3D NULL;
-> =20
->  	datalen =3D xgene_enet_get_data_len(le64_to_cpu(raw_desc->m1));
-> +
-> +	/* strip off CRC as HW isn't doing this */
-> +	nv =3D GET_VAL(NV, le64_to_cpu(raw_desc->m0));
-> +	if (!nv)
-> +		datalen -=3D 4;
+Hello Hyeonggon,
 
-Alternatively we could call skb_trim() below to remove the FCS.
-You call, but..
+On Thu, Mar 17, 2022 at 10:32 AM Hyeonggon Yoo <42.hyeyoo@gmail.com> wrote:
+>
+> On Wed, Mar 16, 2022 at 03:45:46PM -0700, Namhyung Kim wrote:
+> > Hello,
+> >
+> > There have been some requests for low-overhead kernel lock contention
+> > monitoring.  The kernel has CONFIG_LOCK_STAT to provide such an infra
+> > either via /proc/lock_stat or tracepoints directly.
+> >
+> > However it's not light-weight and hard to be used in production.  So
+> > I'm trying to add new tracepoints for lock contention and using them
+> > as a base to build a new monitoring system.
+>
+> Hello Namhyung,
+> I like this series so much.
+> Lock contentions became much more visible without serious overhead.
+>
+> For the series:
+> Tested-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
 
->  	skb_put(skb, datalen);
->  	prefetch(skb->data - NET_IP_ALIGN);
->  	skb->protocol =3D eth_type_trans(skb, ndev);
-> @@ -717,10 +723,7 @@ static int xgene_enet_rx_frame(struct xgene_enet_des=
-c_ring *rx_ring,
->  		}
->  	}
-> =20
-> -	nv =3D GET_VAL(NV, le64_to_cpu(raw_desc->m0));
->  	if (!nv) {
-> -		/* strip off CRC as HW isn't doing this */
-> -		datalen -=3D 4;
->  		goto skip_jumbo;
->  	}
+Thanks!
 
-If you stick to moving the datalen adjustments this if will have a
-single statement so according to the kernel code style it has to lose
-the brackets.
+>
+> How would you use these tracepoints, is there a script you use?
 
+Not yet.  But I'm thinking something similar to your script.
+Probably I'll extend 'perf lock' command to have this kind of output
+but it doesn't have lock name and use avg/min/max time instead of
+histogram.
+
+Thanks,
+Namhyung
+
+
+> For testing, I just wrote a simple bpftrace script:
+>
+> $ sudo bpftrace -e 'BEGIN
+> {
+>         printf("Collecting lockstats... Hit Ctrl-C to end.\n");
+> }
+>
+> tracepoint:lock:contention_begin
+> {
+>         @start_us[tid] = nsecs / 1000;
+> }
+>
+> tracepoint:lock:contention_end
+> {
+>         if (args->ret == 0) {
+>                 @stats[kstack] = hist(nsecs / 1000 - @start_us[tid]);
+>         }
+> }
+>
+> END
+> {
+>         clear(@start_us);
+> }'
+>
+> And it shows its distribution of slowpath wait time like below. Great.
+>
+> @stats[
+>     __traceiter_contention_end+76
+>     __traceiter_contention_end+76
+>     queued_spin_lock_slowpath+556
+>     _raw_spin_lock+108
+>     rmqueue_bulk+80
+>     rmqueue+1060
+>     get_page_from_freelist+372
+>     __alloc_pages+208
+>     alloc_pages_vma+160
+>     alloc_zeroed_user_highpage_movable+72
+>     do_anonymous_page+92
+>     handle_pte_fault+320
+>     __handle_mm_fault+252
+>     handle_mm_fault+244
+>     do_page_fault+340
+>     do_translation_fault+100
+>     do_mem_abort+76
+>     el0_da+60
+>     el0t_64_sync_handler+232
+>     el0t_64_sync+420
+> ]:
+> [2, 4)                 1 |@                                                   |
+> [4, 8)                30 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@     |
+> [8, 16)               25 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@             |
+> [16, 32)              33 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+> [32, 64)              29 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@       |
+> [64, 128)             13 |@@@@@@@@@@@@@@@@@@@@                                |
+> [128, 256)             2 |@@@                                                 |
+>
+>
+> @stats[
+>     __traceiter_contention_end+76
+>     __traceiter_contention_end+76
+>     rwsem_down_write_slowpath+1216
+>     down_write_killable+100
+>     do_mprotect_pkey.constprop.0+176
+>     __arm64_sys_mprotect+40
+>     invoke_syscall+80
+>     el0_svc_common.constprop.0+76
+>     do_el0_svc+52
+>     el0_svc+48
+>     el0t_64_sync_handler+164
+>     el0t_64_sync+420
+> ]:
+> [1]                   13 |@@@@@@@@@@@                                         |
+> [2, 4)                42 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                |
+> [4, 8)                 5 |@@@@                                                |
+> [8, 16)               10 |@@@@@@@@                                            |
+> [16, 32)              60 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+> [32, 64)              41 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                 |
+> [64, 128)             40 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                  |
+> [128, 256)            14 |@@@@@@@@@@@@                                        |
+> [256, 512)             7 |@@@@@@                                              |
+> [512, 1K)              6 |@@@@@                                               |
+> [1K, 2K)               2 |@                                                   |
+> [2K, 4K)               1 |                                                    |
+>
+> @stats[
+>     __traceiter_contention_end+76
+>     __traceiter_contention_end+76
+>     queued_spin_lock_slowpath+556
+>     _raw_spin_lock+108
+>     futex_wake+168
+>     do_futex+200
+>     __arm64_sys_futex+112
+>     invoke_syscall+80
+>     el0_svc_common.constprop.0+76
+>     do_el0_svc+52
+>     el0_svc+48
+>     el0t_64_sync_handler+164
+>     el0t_64_sync+420
+> ]:
+> [0]                    3 |                                                    |
+> [1]                 2515 |@                                                   |
+> [2, 4)              8747 |@@@@@                                               |
+> [4, 8)             17052 |@@@@@@@@@@                                          |
+> [8, 16)            46706 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                       |
+> [16, 32)           82105 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+> [32, 64)           46918 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                       |
+> [64, 128)             99 |                                                    |
+> [128, 256)             1 |                                                    |
+> [256, 512)             8 |                                                    |
+> [512, 1K)              0 |                                                    |
+> [1K, 2K)               0 |                                                    |
+> [2K, 4K)               0 |                                                    |
+> [4K, 8K)               0 |                                                    |
+> [8K, 16K)              0 |                                                    |
+> [16K, 32K)             5 |                                                    |
+> [32K, 64K)            12 |                                                    |
+> [64K, 128K)           34 |                                                    |
+> [128K, 256K)          68 |                                                    |
+> [256K, 512K)           7 |                                                    |
+>
