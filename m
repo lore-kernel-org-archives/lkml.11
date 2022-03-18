@@ -2,130 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A10FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 03:50:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38D95C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 03:53:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231263AbiCRDwF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 23:52:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58884 "EHLO
+        id S232311AbiCRDys (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 23:54:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232321AbiCRDvs (ORCPT
+        with ESMTP id S230156AbiCRDyp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 23:51:48 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C9142AD08A
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 20:50:29 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id bg10so14661880ejb.4
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 20:50:29 -0700 (PDT)
+        Thu, 17 Mar 2022 23:54:45 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8310B1760D8;
+        Thu, 17 Mar 2022 20:53:27 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id n18so6084512plg.5;
+        Thu, 17 Mar 2022 20:53:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=iq+O3k/FfZ9UjG3SjmgeqRh1gwUPMU+eljMxxt7oEZc=;
-        b=lg/VIzE4D9ivFVJ6/5/ProrD5xm9TSTHCbetBabNFK2ZUxvKluPViuE7YIolFCu+cU
-         53CnC+s5nvqJJY1bqJPMYjP5qwb7mMHqs5CwKWyJFVTjVbLCEOuxuHGpiiG+9y8hAqW+
-         +O+h3D71vvf5RfC0XyuSRrx504uHYHMLJJnwEd0SmYOik8SCTHRSAdsL2/zdhTviZ7GN
-         PzxOZO+jEWRx7pYTOyhWTuIuDIYgi4XbKyzopF5Dj6kqO2Alh3vfqgJzAgZGpZkO37rS
-         67zOWOUgZCjNxBPuzb7dBjwjqCRUEQrFBB6DFLum8EgP47Ox8R3HEujO0wAmAZbH0vt6
-         q+Sw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rI0FrmQ3+ceiLgNiqpfsxdYGbjB79Df3AZRI5bRwQ0o=;
+        b=Hn4JBwIy1jFjd69nBo+JFJCVJTNTD+3bEmjId2ADMgJLcte32nRtt93TpmWQRS4c7x
+         rR3dQlzClV0KAYsGDhtSw8cDWKQ2t/uiy5tlnOJIYD3VY9RESUiS6CnLqkdazkns/6pv
+         UAHAKywoeebHtivA1rdf1btn57gw/UFuxxO4ILGRDP6jhPc3W8CRA2pVUs0Y4QvLIuQ9
+         x/i37jh/SlO7Rj/lk0Raz/Wv5GvcU34ithzP8JXKVzYdvCz/gMAuQT76Qps4bLfKGpS9
+         iF44e0+FX8XLrJ9zp8D1QK50IQKSEpT/T09RfNixVI/NIZzXht9u9PY/z2YmhBY4TxEL
+         sTbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=iq+O3k/FfZ9UjG3SjmgeqRh1gwUPMU+eljMxxt7oEZc=;
-        b=PTW9ek5AIHWV3b6RnG1uRskgRh16BN5BJW8yeo0/DOx49RPX+W/36g6RUB8R6RA5Eu
-         EM7KtmovTrQdBofMRQ9FAxNyiZF3KGfc3Yv1iaHbhQLQsY+r5T/i37E5VsI9aVFSXjm2
-         hrnKT204bCmn+vSVM3jRTdcopJvRBkYw0FPQStpo0T9JgkYoBlY3XxHM0Q4qKst1RRuT
-         ZkVQhQMOu1nufVWrJV5LeJkcc+xkiUuJv2mXBCPfwVh8QO3Kb9xODrPNVLIROLk2+hTn
-         2E2AM54Qh8b1XT+7vOGYXDN4p+RkZiSSbRqizFLl9vPs74+AsjmnpL7xI0hJPBDVwJvq
-         APdg==
-X-Gm-Message-State: AOAM533BgrNiq6zN5SM8ANaqd1VYV/rzrRVy/EMYZOxjdpBsLKBNR6f+
-        0Jmm1LHKnpm8kmSNwFN9FZcRIB0/b+zn34xu7CAh0/ouxgo=
-X-Google-Smtp-Source: ABdhPJyzSsgDLUKXejs58647B/wPIb1icHFEKcguhtQ/C8QSl1mJIvEUuxp4YgtZNOQIEiLWhBuMmf7FAshGWQc9/68=
-X-Received: by 2002:a17:906:3109:b0:6cc:7a1:8db0 with SMTP id
- 9-20020a170906310900b006cc07a18db0mr7303848ejx.266.1647575427207; Thu, 17 Mar
- 2022 20:50:27 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rI0FrmQ3+ceiLgNiqpfsxdYGbjB79Df3AZRI5bRwQ0o=;
+        b=myUwgMgfEjOURmVrguPuQL9F8B5CNc1nQiHx/I80q0un7b06zcJaODO6zf8R1fhcl5
+         cfU96kCzCnOQGnXIGOg+GVM5r/HKFTeeTh+6/7FIwaEPxME3ZgD8RQWafCAVPNZ4zsjc
+         XJN1vNvvBT9/ijLM/kMkUgdohg2aGgtf1ixdXlhDYhZtESjoxZVn77NSxVS/zYDC9S9T
+         hmqmQ/L5Lb1wnp9Y866Kitm0NIHrWONju26Kb8WWt+taIKxilD2dC97Jg4TILumxF+EG
+         G/uEKaDPpPhwKzGgZZkfaC4PK5PjKvRqNsgmVs16ccYAO85sG+yL3x+bvPhjiIH8jyUG
+         KJIQ==
+X-Gm-Message-State: AOAM531jsO0adzyj4QqFwvrZIXWHA97+o89aGO3B1ZXeYX/d7CyWG+xH
+        iYnpEKWKB4sKUZ5iEdAGjubpn1kg1ihRN9whnu8=
+X-Google-Smtp-Source: ABdhPJy2ZGzSwNJVYvTAvFyGkHdWwb9m7G9msiWNB29nrOy+gUScs5WGun2fBr8MEIsKK9zmWNETbCkreSoUzE6cdEU=
+X-Received: by 2002:a17:902:ab10:b0:153:b520:dbbe with SMTP id
+ ik16-20020a170902ab1000b00153b520dbbemr7875333plb.55.1647575606916; Thu, 17
+ Mar 2022 20:53:26 -0700 (PDT)
 MIME-Version: 1.0
-From:   Dave Airlie <airlied@gmail.com>
-Date:   Fri, 18 Mar 2022 13:50:16 +1000
-Message-ID: <CAPM=9twzN9ybw1N=n6JWNQgUd9UNXBxis+PguKagt8DSbW=y6Q@mail.gmail.com>
-Subject: [git pull] drm fixes for 5.17-final
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>
+References: <20220316122419.933957-1-jolsa@kernel.org> <20220316122419.933957-10-jolsa@kernel.org>
+In-Reply-To: <20220316122419.933957-10-jolsa@kernel.org>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 17 Mar 2022 20:53:15 -0700
+Message-ID: <CAADnVQ+tNLEtbPY+=sZSoBicdSTx1YLgZJwnNuhnBkUcr5xozQ@mail.gmail.com>
+Subject: Re: [PATCHv3 bpf-next 09/13] libbpf: Add bpf_program__attach_kprobe_multi_opts
+ function
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+On Wed, Mar 16, 2022 at 5:26 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> +
+> +struct bpf_link *
+> +bpf_program__attach_kprobe_multi_opts(const struct bpf_program *prog,
+> +                                     const char *pattern,
+> +                                     const struct bpf_kprobe_multi_opts *opts)
+> +{
+> +       LIBBPF_OPTS(bpf_link_create_opts, lopts);
+> +       struct kprobe_multi_resolve res = {
+> +               .pattern = pattern,
+> +       };
+> +       struct bpf_link *link = NULL;
+> +       char errmsg[STRERR_BUFSIZE];
+> +       const unsigned long *addrs;
+> +       int err, link_fd, prog_fd;
+> +       const __u64 *cookies;
+> +       const char **syms;
+> +       bool retprobe;
+> +       size_t cnt;
+> +
+> +       if (!OPTS_VALID(opts, bpf_kprobe_multi_opts))
+> +               return libbpf_err_ptr(-EINVAL);
+> +
+> +       syms    = OPTS_GET(opts, syms, false);
+> +       addrs   = OPTS_GET(opts, addrs, false);
+> +       cnt     = OPTS_GET(opts, cnt, false);
+> +       cookies = OPTS_GET(opts, cookies, false);
+> +
+> +       if (!pattern && !addrs && !syms)
+> +               return libbpf_err_ptr(-EINVAL);
+> +       if (pattern && (addrs || syms || cookies || cnt))
+> +               return libbpf_err_ptr(-EINVAL);
+> +       if (!pattern && !cnt)
+> +               return libbpf_err_ptr(-EINVAL);
+> +       if (addrs && syms)
+> +               return libbpf_err_ptr(-EINVAL);
+> +
+> +       if (pattern) {
+> +               err = libbpf_kallsyms_parse(resolve_kprobe_multi_cb, &res);
+> +               if (err)
+> +                       goto error;
+> +               if (!res.cnt) {
+> +                       err = -ENOENT;
+> +                       goto error;
+> +               }
+> +               addrs = res.addrs;
+> +               cnt = res.cnt;
+> +       }
 
-A few minor changes to finish things off, one mgag200 regression, imx
-fix and couple of panel changes.
+Thanks Jiri.
+Great stuff and a major milestone!
+I've applied Masami's and your patches to bpf-next.
 
-Regards,
-Dave.
+But the above needs more work.
+Currently test_progs -t kprobe_multi
+takes 4 seconds on lockdep+debug kernel.
+Mainly because of the above loop.
 
-drm-fixes-2022-03-18:
-drm fixes for 5.17-rc9/final
+    18.05%  test_progs       [kernel.kallsyms]   [k]
+kallsyms_expand_symbol.constprop.4
+    12.53%  test_progs       libc-2.28.so        [.] _IO_vfscanf
+     6.31%  test_progs       [kernel.kallsyms]   [k] number
+     4.66%  test_progs       [kernel.kallsyms]   [k] format_decode
+     4.65%  test_progs       [kernel.kallsyms]   [k] string_nocheck
 
-imx:
-- Don't test bus flags in atomic check
+Single test_skel_api() subtest takes almost a second.
 
-mgag200:
-- Fix PLL setup on some models
+A cache inside libbpf probably won't help.
+Maybe introduce a bpf iterator for kallsyms?
 
-panel:
-- Fix bpp settings on Innolux G070Y2-L01
-- Fix DRM_PANEL_EDP Kconfig dependencies
-The following changes since commit 09688c0166e76ce2fb85e86b9d99be8b0084cdf9:
+On the kernel side kprobe_multi_resolve_syms() looks similarly inefficient.
+I'm not sure whether it would be a bottle neck though.
 
-  Linux 5.17-rc8 (2022-03-13 13:23:37 -0700)
-
-are available in the Git repository at:
-
-  git://anongit.freedesktop.org/drm/drm tags/drm-fixes-2022-03-18
-
-for you to fetch changes up to ca5a5761ac542691a6b3520b6c5c047cf63b4b8d:
-
-  Merge tag 'drm-misc-fixes-2022-03-17' of
-git://anongit.freedesktop.org/drm/drm-misc into drm-fixes (2022-03-18
-13:32:54 +1000)
-
-----------------------------------------------------------------
-drm fixes for 5.17-rc9/final
-
-imx:
-- Don't test bus flags in atomic check
-
-mgag200:
-- Fix PLL setup on some models
-
-panel:
-- Fix bpp settings on Innolux G070Y2-L01
-- Fix DRM_PANEL_EDP Kconfig dependencies
-
-----------------------------------------------------------------
-Christoph Niedermaier (1):
-      drm/imx: parallel-display: Remove bus flags check in
-imx_pd_bridge_atomic_check()
-
-Dave Airlie (1):
-      Merge tag 'drm-misc-fixes-2022-03-17' of
-git://anongit.freedesktop.org/drm/drm-misc into drm-fixes
-
-Jocelyn Falempe (1):
-      drm/mgag200: Fix PLL setup for g200wb and g200ew
-
-Marek Vasut (1):
-      drm/panel: simple: Fix Innolux G070Y2-L01 BPP settings
-
-Thomas Zimmermann (2):
-      Merge drm/drm-fixes into drm-misc-fixes
-      drm: Don't make DRM_PANEL_BRIDGE dependent on DRM_KMS_HELPERS
-
- drivers/gpu/drm/bridge/Kconfig         | 2 +-
- drivers/gpu/drm/imx/parallel-display.c | 8 --------
- drivers/gpu/drm/mgag200/mgag200_pll.c  | 6 +++---
- drivers/gpu/drm/panel/Kconfig          | 1 +
- drivers/gpu/drm/panel/panel-simple.c   | 2 +-
- 5 files changed, 6 insertions(+), 13 deletions(-)
+Orthogonal to this issue please add a new stress test
+to selftest/bpf that attaches to a lot of functions.
