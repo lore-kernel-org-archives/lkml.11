@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F6DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 08:56:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37827C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 08:56:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234063AbiCRI5g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 04:57:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33474 "EHLO
+        id S231237AbiCRI5j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 04:57:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234047AbiCRI5Y (ORCPT
+        with ESMTP id S234080AbiCRI5d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 04:57:24 -0400
+        Fri, 18 Mar 2022 04:57:33 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 931F31F6F32;
-        Fri, 18 Mar 2022 01:56:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F7C321FC6B;
+        Fri, 18 Mar 2022 01:56:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1647593761; x=1679129761;
+  t=1647593773; x=1679129773;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=M0gfP5Lho+73K76CJHMgytyB85l30uTjrKHhOak+u5A=;
-  b=OwJccE7n0o9Knp0bYY+3v9ggK1Gb9fVGJKtpY2a8y2xGqHjwXgK27WNB
-   K4MIj2q3MBnA2NvaXaQeF1oiWw6dDzAxyB3xf5uOAE9CgoSlSO+w+a40O
-   TQAUDlVrt1Gl+FK0suEEQLXBMyNvEOlr/2/vKU2XgdM15r6qvCUt4BypR
-   5fdbU+dRSEVqpIq9cGI/xPulnKpp+RAC+hKCVaSwW/QxTcZ6mKyjiNWH7
-   A0cng9PqL2bzxWaLoic7oMDqli3y67ecNWcyYj0vZt1MVVUruA0pYeDw6
-   9hesYgLG7Z98bhu4c0EmsMq0WCwPkQFGWNL1zixnjAdHHrHr2975es9gd
-   A==;
+  bh=THnSHUYnlXrbZReCw00ypKsHfCqW90rRjx+/729ERVU=;
+  b=byeePWlA1OCbgg/kJWqkLVl2OKslD9XhhTqzEKHpx8yQiFwC47gGF3f6
+   2RNCr6BUKCwybz0scNk8Reiw26+3rLH1hIByKZbWodEJ3tz3VdzzUdzaB
+   bln6WttqEkwvVK+sq15gNyekt6yKQ+tUkdBsyZnT36+Y8A6N2aXJqRGxT
+   1Ci1m/vmF0CO0qeh1a02aVumouugtw/FjiHptWIJZ/DwCaBkduAWSOEr7
+   sc15Yyg1mGSW81udSYTAJNxWae3tc0Rka0/EqRT42WicSFqa4BiHTmZQP
+   VhtPBEco7BB3868+VE7ZEpxPdN1oYLq0sXpdnI1lTXi+1yGKVvaOaTfdo
+   g==;
 X-IronPort-AV: E=Sophos;i="5.90,191,1643698800"; 
-   d="scan'208";a="157367479"
+   d="scan'208";a="157367524"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Mar 2022 01:56:00 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Mar 2022 01:56:12 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 18 Mar 2022 01:56:00 -0700
+ 15.1.2375.17; Fri, 18 Mar 2022 01:56:11 -0700
 Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 18 Mar 2022 01:55:54 -0700
+ 15.1.2375.17 via Frontend Transport; Fri, 18 Mar 2022 01:56:06 -0700
 From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
 To:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>,
         <robh+dt@kernel.org>
@@ -47,9 +47,9 @@ CC:     <UNGLinuxDriver@microchip.com>, <woojung.huh@microchip.com>,
         <davem@davemloft.net>, <kuba@kernel.org>,
         <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
         <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
-Subject: [PATCH v9 net-next 02/11] dt-bindings: net: add mdio property
-Date:   Fri, 18 Mar 2022 14:25:31 +0530
-Message-ID: <20220318085540.281721-3-prasanna.vengateshan@microchip.com>
+Subject: [PATCH v9 net-next 04/11] net: dsa: move mib->cnt_ptr reset code to ksz_common.c
+Date:   Fri, 18 Mar 2022 14:25:33 +0530
+Message-ID: <20220318085540.281721-5-prasanna.vengateshan@microchip.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220318085540.281721-1-prasanna.vengateshan@microchip.com>
 References: <20220318085540.281721-1-prasanna.vengateshan@microchip.com>
@@ -60,29 +60,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-mdio bus is applicable to any switch hence it is added as per the below request,
-https://lore.kernel.org/netdev/1300f84832ef1c43ecb9edb311fb817e3aab5420.camel@microchip.com/
+mib->cnt_ptr resetting is handled in multiple places as part of
+port_init_cnt(). Hence moved mib->cnt_ptr code to ksz common layer
+and removed from individual product files.
 
 Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- Documentation/devicetree/bindings/net/dsa/dsa.yaml | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/dsa/microchip/ksz8795.c    | 2 --
+ drivers/net/dsa/microchip/ksz9477.c    | 3 ---
+ drivers/net/dsa/microchip/ksz_common.c | 8 +++++++-
+ 3 files changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/dsa.yaml b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-index b9d48e357e77..0f8426e219eb 100644
---- a/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-+++ b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-@@ -31,6 +31,10 @@ properties:
-       switch 1. <1 0> is cluster 1, switch 0. A switch not part of any cluster
-       (single device hanging off a CPU port) must not specify this property
-     $ref: /schemas/types.yaml#/definitions/uint32-array
-+  
-+  mdio:
-+    $ref: /schemas/net/mdio.yaml#
-+    unevaluatedProperties: false
+diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
+index 5dc9899bc0a6..2de2302b9a50 100644
+--- a/drivers/net/dsa/microchip/ksz8795.c
++++ b/drivers/net/dsa/microchip/ksz8795.c
+@@ -448,8 +448,6 @@ static void ksz8_port_init_cnt(struct ksz_device *dev, int port)
+ 					dropped, &mib->counters[mib->cnt_ptr]);
+ 		++mib->cnt_ptr;
+ 	}
+-	mib->cnt_ptr = 0;
+-	memset(mib->counters, 0, dev->mib_cnt * sizeof(u64));
+ }
  
- patternProperties:
-   "^(ethernet-)?ports$":
+ static void ksz8_r_table(struct ksz_device *dev, int table, u16 addr, u64 *data)
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index a4699481c746..fb239d703d8a 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -410,9 +410,6 @@ static void ksz9477_port_init_cnt(struct ksz_device *dev, int port)
+ 	ksz_write8(dev, REG_SW_MAC_CTRL_6, SW_MIB_COUNTER_FLUSH);
+ 	ksz_pwrite32(dev, port, REG_PORT_MIB_CTRL_STAT__4, 0);
+ 	mutex_unlock(&mib->cnt_mutex);
+-
+-	mib->cnt_ptr = 0;
+-	memset(mib->counters, 0, dev->mib_cnt * sizeof(u64));
+ }
+ 
+ static enum dsa_tag_protocol ksz9477_get_tag_protocol(struct dsa_switch *ds,
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 8014b18d9391..36f8ed03f615 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -146,8 +146,14 @@ void ksz_init_mib_timer(struct ksz_device *dev)
+ 
+ 	INIT_DELAYED_WORK(&dev->mib_read, ksz_mib_read_work);
+ 
+-	for (i = 0; i < dev->port_cnt; i++)
++	for (i = 0; i < dev->port_cnt; i++) {
++		struct ksz_port_mib *mib = &dev->ports[i].mib;
++
+ 		dev->dev_ops->port_init_cnt(dev, i);
++
++		mib->cnt_ptr = 0;
++		memset(mib->counters, 0, dev->mib_cnt * sizeof(u64));
++	}
+ }
+ EXPORT_SYMBOL_GPL(ksz_init_mib_timer);
+ 
 -- 
 2.30.2
 
