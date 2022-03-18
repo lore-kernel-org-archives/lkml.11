@@ -2,217 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9E5DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 07:48:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2BEDC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 07:49:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233332AbiCRHtl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 03:49:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44844 "EHLO
+        id S233240AbiCRHus (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 03:50:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233351AbiCRHte (ORCPT
+        with ESMTP id S231942AbiCRHuo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 03:49:34 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AD77B246D
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 00:48:11 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id kx13-20020a17090b228d00b001c6715c9847so5382521pjb.1
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 00:48:11 -0700 (PDT)
+        Fri, 18 Mar 2022 03:50:44 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE4E8BE39
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 00:49:25 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id mj15-20020a17090b368f00b001c637aa358eso9803414pjb.0
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 00:49:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=CiqL2201i/r2h3p8KI/NBkw6WGqzhDfT//6vVp9Lies=;
-        b=bXFvZFfrI9C/L+NvtlIM0LtbMc9OI6fpHgmIV5gvdFRnQP6DfETLgq8COcZHL9qIFx
-         5bzIBwfZrjgZShT0Nv6dg54gHhhnaS+mQfdF2z26zWuGr24FPRLmgQBRSiE0LFYz4OhI
-         z1C9H8HtntVzRG07BglBrccoNz4ssJmAHMPjGfWDGQ35UoQhAlnZMSDwyGW2Ku/yFday
-         2pQYFWEWfQKrVCP9HKKBqVxFgdWYlk4mjpKHgnJTbiluPaEdXtrU+2B9lJCccSPLEgEG
-         NnoeI7zIaBwYpcQe+ULKS1L4X7Ikmta5Nes7W+xQB3j8evY6Uj7EXtFPq9iaiwoqA4Oh
-         AVnA==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Z45L2cWmZstSCqaxO6Enz5cNR4pE5b0VpLuF4/Ovk4A=;
+        b=OnoKYqCZSM3qBgB2/t9uzFaprydbidI2Y5TKYfAv/JBPsb0Q6JcaqxgP5DV6iM2NOd
+         amLgmw14ailVzPnjszaDMnrwZ8iyuy/LAQ2GWt3PS+4DL8+T99isEwAUl4dbA7/8sAq2
+         I2+5gZYixM1bPsPWK5Jg/gnvCfQdFeFgq9HXNtwIMwoVJpNf7FU+2SpPjGYAZM2f1o1D
+         dB7NXmhFjz1OTWGpz14pI3sBTK+0ImOluhtzkK9BTExqMsVY84qRin3ObqRB5eCAaxzY
+         noEjBHWcfKkVevy3vo45juaepfzA+i42XKrJ8U1uX30TRYazpIVHoeNJTW80OZnwl3tL
+         tupw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=CiqL2201i/r2h3p8KI/NBkw6WGqzhDfT//6vVp9Lies=;
-        b=GzNI/UC0DAm2CWj7bEzkrkx9W3pHhGaqVEyJ1fP63zzeMHPJKHVTjUS7/pYfZsF1j+
-         vIqiijoRMVAV/lVO2Gs7Xio+BELScJoSZ3AccHKXIpn9QpOje4p9b+UV7iP1fbWVdxSU
-         cHgNNLnwGCdMztiAXY7r/Xt4lSXsLrEE/3PW7wOdpAda1cIdOCjx//UOYe7ExsyDdlwl
-         gJsbKnnkyWBbBTeTRDAZHAsjaWXpuaEjrGrGoSRwrTiyqzUFu3uoalTOoCh3bCziPJ07
-         1jiJ6IkXPrwC5+rffmSEFj64y3+VcXIHjo9KF+3rsmEjSOWRIFSN4nN0vykmXWEgqM3z
-         ngLw==
-X-Gm-Message-State: AOAM532C2n2rHSa1wHqfQHf/A1kTt6ncE0YL3//hOnLHwgf7pegl0LJy
-        xVSGAcDSFWrsw82f669UQGuteOMk8Nf04g==
-X-Google-Smtp-Source: ABdhPJx6Gb2cl0kaRKMvmsLEzJyKu4bc+A6kr/eo/U8JztFBvDzyQCyUtAKxuHv1+XJWl0bol5r0fw==
-X-Received: by 2002:a17:902:cf02:b0:14f:e0c2:1514 with SMTP id i2-20020a170902cf0200b0014fe0c21514mr8557186plg.90.1647589690731;
-        Fri, 18 Mar 2022 00:48:10 -0700 (PDT)
-Received: from localhost.localdomain ([139.177.225.233])
-        by smtp.gmail.com with ESMTPSA id a38-20020a056a001d2600b004f72acd4dadsm8770941pfx.81.2022.03.18.00.48.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Mar 2022 00:48:10 -0700 (PDT)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     dan.j.williams@intel.com, willy@infradead.org, jack@suse.cz,
-        viro@zeniv.linux.org.uk, akpm@linux-foundation.org,
-        apopple@nvidia.com, shy828301@gmail.com, rcampbell@nvidia.com,
-        hughd@google.com, xiyuyang19@fudan.edu.cn,
-        kirill.shutemov@linux.intel.com, zwisler@kernel.org,
-        hch@infradead.org
-Cc:     linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        duanxiongchun@bytedance.com, smuchun@gmail.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v5 6/6] mm: simplify follow_invalidate_pte()
-Date:   Fri, 18 Mar 2022 15:45:29 +0800
-Message-Id: <20220318074529.5261-7-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220318074529.5261-1-songmuchun@bytedance.com>
-References: <20220318074529.5261-1-songmuchun@bytedance.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Z45L2cWmZstSCqaxO6Enz5cNR4pE5b0VpLuF4/Ovk4A=;
+        b=5QygXSROS1D9ob+Mr0oVuCluiIW6YHpinTTKnZdUNkwABP/VVBFJEAklUWl2/Hw8gO
+         +bOc3CjFGSTj1Es+V6Jr/C2uhbFew1j5I4aRPHkIvGIrrgY6mv5JkPal09UC6szGQj5i
+         L263zmfzMcBJAE18Y1js6gvkdsaQSu+bZ+59+PFoWerPbpqr1YlbIvtDutfe+vFUIply
+         hAUA4hV/H49kzPW7ZQaXi6A57W9KG2v1uYf5yYNl5IZzaeQlyfDpyWAI3ykBd3OM1De6
+         B1X//U4VInihRsHX/9b6Qlbl3pqhwrzPH8Z9NusdUaSnoMm/oMRLUTJk+XM64R9dDBvK
+         MQGQ==
+X-Gm-Message-State: AOAM531n3rC7QDd9Nn+bLGTNRWxdK9KobWD6CsYakO7yd0ff5WVBqpNF
+        BbWZMT3ay0xyWBOplASE04iTfNVjBu821x3NBCEv+w==
+X-Google-Smtp-Source: ABdhPJx3WYYLzvJjA5PogWFe8QDj0u5TDf6QAU1O3572jNfsT0+gS4sBH6c+iH5HifS/L84rfECWCplZu4K6fGs+Xvw=
+X-Received: by 2002:a17:902:a3cb:b0:151:e52e:fa0c with SMTP id
+ q11-20020a170902a3cb00b00151e52efa0cmr8439526plb.70.1647589764519; Fri, 18
+ Mar 2022 00:49:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220301194830.3557578-1-jens.wiklander@linaro.org>
+ <20220301194830.3557578-3-jens.wiklander@linaro.org> <CAFA6WYNj_onTOtETKTLTGG6=GYHMDvty90KftLkfEz_v7nZx9w@mail.gmail.com>
+ <20220316092705.GB2535470@jade> <CAFA6WYPDxHz45Ev4yqi0rE4W08YnNbrwUg8FMt9y1FnL3f84yw@mail.gmail.com>
+In-Reply-To: <CAFA6WYPDxHz45Ev4yqi0rE4W08YnNbrwUg8FMt9y1FnL3f84yw@mail.gmail.com>
+From:   Jens Wiklander <jens.wiklander@linaro.org>
+Date:   Fri, 18 Mar 2022 08:49:13 +0100
+Message-ID: <CAHUa44EqPprBC_M8vuhxpJE8gVuzbYYitgsvHpRLHWp4-vJnfQ@mail.gmail.com>
+Subject: Re: [PATCH 2/3] optee: add FF-A capability OPTEE_FFA_SEC_CAP_ARG_OFFSET
+To:     Sumit Garg <sumit.garg@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The only user (DAX) of range and pmdpp parameters of follow_invalidate_pte()
-is gone, it is safe to remove them and make it static to simlify the code.
-This is revertant of the following commits:
+On Thu, Mar 17, 2022 at 1:17 PM Sumit Garg <sumit.garg@linaro.org> wrote:
+>
+> On Wed, 16 Mar 2022 at 14:57, Jens Wiklander <jens.wiklander@linaro.org> wrote:
+> >
+> > On Mon, Mar 14, 2022 at 02:33:26PM +0530, Sumit Garg wrote:
+> > > On Wed, 2 Mar 2022 at 01:18, Jens Wiklander <jens.wiklander@linaro.org> wrote:
+> > > >
+> > > > Adds the secure capability OPTEE_FFA_SEC_CAP_ARG_OFFSET to indicate that
+> > > > OP-TEE with FF-A can support an argument struct at a non-zero offset into
+> > > > a passed shared memory object.
+> > > >
+> > >
+> > > It isn't clear to me why FF-A ABI requires this capability.
+> > > shm->offset should be honoured by default, if it isn't then it's a
+> > > bug.
+> >
+> > Yes, there was a bug in secure world when using a non-zero offset. So
+> > far the driver has always used a zero offset that's why it hasn't been
+> > caught earlier.
+> >
+> > It's not a serious bug, but it might be quite hard to track down. This
+> > is of course fixed now, but there is a window where it can be triggered.
+>
+> I am not able to find the fix in this [1] OP-TEE OS commit. Could you
+> help me to point it out?
+>
+> [1] https://github.com/OP-TEE/optee_os/commit/89d991352352b80ae90f82228a014bb8cadfb80b
 
-  097963959594 ("mm: add follow_pte_pmd()")
-  a4d1a8852513 ("dax: update to new mmu_notifier semantic")
+I believe it's this one:
+https://github.com/OP-TEE/optee_os/commit/7267624eef019476f20aee7dba11ff949d005670
 
-There is only one caller of the follow_invalidate_pte().  So just fold it
-into follow_pte() and remove it.
+>
+> >
+> > So in order to spare FF-A developers this problem I'm making a non-zero
+> > offset an extension guarded by a capability bit. Even though this is an
+> > ABI change it's in practice not since it has been unused and not working
+> > as expected.
+> >
+> > The next commit will start using non-zero offsets if supported, so this
+> > will change to become a problem (if left unchecked) in the window
+> > mentioned above.
+> >
+> > > AFAIK, FF-A is currently still in its early stages so it
+> > > shouldn't be that hard to fix bugs in the ABI.
+> >
+> > Starting from the kernel release (v5.16) where FF-A support in this
+> > driver was merged the ABI is supposed to be stable.
+> >
+>
+> From Linux kernel perspective, there are dedicated stable branches for
+> that purpose in case we want to push a fix for OP-TEE FF-A kernel
+> driver.
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
----
- include/linux/mm.h |  3 --
- mm/memory.c        | 81 ++++++++++++++++--------------------------------------
- 2 files changed, 23 insertions(+), 61 deletions(-)
+The problem isn't in the kernel driver. What I'm doing here is to
+formalize the ABI that the kernel defacto was using. Since we
+obviously didn't test the driver with a non-zero offset before, we
+didn't notice that the offset wasn't used in the right way by the
+secure world.
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index c9bada4096ac..be7ec4c37ebe 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -1871,9 +1871,6 @@ void free_pgd_range(struct mmu_gather *tlb, unsigned long addr,
- 		unsigned long end, unsigned long floor, unsigned long ceiling);
- int
- copy_page_range(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma);
--int follow_invalidate_pte(struct mm_struct *mm, unsigned long address,
--			  struct mmu_notifier_range *range, pte_t **ptepp,
--			  pmd_t **pmdpp, spinlock_t **ptlp);
- int follow_pte(struct mm_struct *mm, unsigned long address,
- 	       pte_t **ptepp, spinlock_t **ptlp);
- int follow_pfn(struct vm_area_struct *vma, unsigned long address,
-diff --git a/mm/memory.c b/mm/memory.c
-index cc6968dc8e4e..84f7250e6cd1 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -4964,9 +4964,29 @@ int __pmd_alloc(struct mm_struct *mm, pud_t *pud, unsigned long address)
- }
- #endif /* __PAGETABLE_PMD_FOLDED */
- 
--int follow_invalidate_pte(struct mm_struct *mm, unsigned long address,
--			  struct mmu_notifier_range *range, pte_t **ptepp,
--			  pmd_t **pmdpp, spinlock_t **ptlp)
-+/**
-+ * follow_pte - look up PTE at a user virtual address
-+ * @mm: the mm_struct of the target address space
-+ * @address: user virtual address
-+ * @ptepp: location to store found PTE
-+ * @ptlp: location to store the lock for the PTE
-+ *
-+ * On a successful return, the pointer to the PTE is stored in @ptepp;
-+ * the corresponding lock is taken and its location is stored in @ptlp.
-+ * The contents of the PTE are only stable until @ptlp is released;
-+ * any further use, if any, must be protected against invalidation
-+ * with MMU notifiers.
-+ *
-+ * Only IO mappings and raw PFN mappings are allowed.  The mmap semaphore
-+ * should be taken for read.
-+ *
-+ * KVM uses this function.  While it is arguably less bad than ``follow_pfn``,
-+ * it is not a good general-purpose API.
-+ *
-+ * Return: zero on success, -ve otherwise.
-+ */
-+int follow_pte(struct mm_struct *mm, unsigned long address,
-+	       pte_t **ptepp, spinlock_t **ptlp)
- {
- 	pgd_t *pgd;
- 	p4d_t *p4d;
-@@ -4989,35 +5009,9 @@ int follow_invalidate_pte(struct mm_struct *mm, unsigned long address,
- 	pmd = pmd_offset(pud, address);
- 	VM_BUG_ON(pmd_trans_huge(*pmd));
- 
--	if (pmd_huge(*pmd)) {
--		if (!pmdpp)
--			goto out;
--
--		if (range) {
--			mmu_notifier_range_init(range, MMU_NOTIFY_CLEAR, 0,
--						NULL, mm, address & PMD_MASK,
--						(address & PMD_MASK) + PMD_SIZE);
--			mmu_notifier_invalidate_range_start(range);
--		}
--		*ptlp = pmd_lock(mm, pmd);
--		if (pmd_huge(*pmd)) {
--			*pmdpp = pmd;
--			return 0;
--		}
--		spin_unlock(*ptlp);
--		if (range)
--			mmu_notifier_invalidate_range_end(range);
--	}
--
- 	if (pmd_none(*pmd) || unlikely(pmd_bad(*pmd)))
- 		goto out;
- 
--	if (range) {
--		mmu_notifier_range_init(range, MMU_NOTIFY_CLEAR, 0, NULL, mm,
--					address & PAGE_MASK,
--					(address & PAGE_MASK) + PAGE_SIZE);
--		mmu_notifier_invalidate_range_start(range);
--	}
- 	ptep = pte_offset_map_lock(mm, pmd, address, ptlp);
- 	if (!pte_present(*ptep))
- 		goto unlock;
-@@ -5025,38 +5019,9 @@ int follow_invalidate_pte(struct mm_struct *mm, unsigned long address,
- 	return 0;
- unlock:
- 	pte_unmap_unlock(ptep, *ptlp);
--	if (range)
--		mmu_notifier_invalidate_range_end(range);
- out:
- 	return -EINVAL;
- }
--
--/**
-- * follow_pte - look up PTE at a user virtual address
-- * @mm: the mm_struct of the target address space
-- * @address: user virtual address
-- * @ptepp: location to store found PTE
-- * @ptlp: location to store the lock for the PTE
-- *
-- * On a successful return, the pointer to the PTE is stored in @ptepp;
-- * the corresponding lock is taken and its location is stored in @ptlp.
-- * The contents of the PTE are only stable until @ptlp is released;
-- * any further use, if any, must be protected against invalidation
-- * with MMU notifiers.
-- *
-- * Only IO mappings and raw PFN mappings are allowed.  The mmap semaphore
-- * should be taken for read.
-- *
-- * KVM uses this function.  While it is arguably less bad than ``follow_pfn``,
-- * it is not a good general-purpose API.
-- *
-- * Return: zero on success, -ve otherwise.
-- */
--int follow_pte(struct mm_struct *mm, unsigned long address,
--	       pte_t **ptepp, spinlock_t **ptlp)
--{
--	return follow_invalidate_pte(mm, address, NULL, ptepp, NULL, ptlp);
--}
- EXPORT_SYMBOL_GPL(follow_pte);
- 
- /**
--- 
-2.11.0
+Cheers,
+Jens
 
+>
+> -Sumit
+>
+> > Thanks,
+> > Jens
+> >
+> > >
+> > > -Sumit
+> > >
+> > > > Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
+> > > > ---
+> > > >  drivers/tee/optee/ffa_abi.c   | 17 +++++++++++++++--
+> > > >  drivers/tee/optee/optee_ffa.h | 12 +++++++++++-
+> > > >  2 files changed, 26 insertions(+), 3 deletions(-)
+> > > >
+> > > > diff --git a/drivers/tee/optee/ffa_abi.c b/drivers/tee/optee/ffa_abi.c
+> > > > index 7686f7020616..cc863aaefcd9 100644
+> > > > --- a/drivers/tee/optee/ffa_abi.c
+> > > > +++ b/drivers/tee/optee/ffa_abi.c
+> > > > @@ -615,12 +615,21 @@ static int optee_ffa_do_call_with_arg(struct tee_context *ctx,
+> > > >                 .data0 = OPTEE_FFA_YIELDING_CALL_WITH_ARG,
+> > > >                 .data1 = (u32)shm->sec_world_id,
+> > > >                 .data2 = (u32)(shm->sec_world_id >> 32),
+> > > > -               .data3 = shm->offset,
+> > > > +               .data3 = 0,
+> > > >         };
+> > > >         struct optee_msg_arg *arg;
+> > > >         unsigned int rpc_arg_offs;
+> > > >         struct optee_msg_arg *rpc_arg;
+> > > >
+> > > > +       /*
+> > > > +        * The shared memory object has to start on a page when passed as
+> > > > +        * an argument struct. This is also what the shm pool allocator
+> > > > +        * returns, but check this before calling secure world to catch
+> > > > +        * eventual errors early in case something changes.
+> > > > +        */
+> > > > +       if (shm->offset)
+> > > > +               return -EINVAL;
+> > > > +
+> > > >         arg = tee_shm_get_va(shm, 0);
+> > > >         if (IS_ERR(arg))
+> > > >                 return PTR_ERR(arg);
+> > > > @@ -678,6 +687,7 @@ static bool optee_ffa_api_is_compatbile(struct ffa_device *ffa_dev,
+> > > >
+> > > >  static bool optee_ffa_exchange_caps(struct ffa_device *ffa_dev,
+> > > >                                     const struct ffa_dev_ops *ops,
+> > > > +                                   u32 *sec_caps,
+> > > >                                     unsigned int *rpc_param_count)
+> > > >  {
+> > > >         struct ffa_send_direct_data data = { OPTEE_FFA_EXCHANGE_CAPABILITIES };
+> > > > @@ -694,6 +704,7 @@ static bool optee_ffa_exchange_caps(struct ffa_device *ffa_dev,
+> > > >         }
+> > > >
+> > > >         *rpc_param_count = (u8)data.data1;
+> > > > +       *sec_caps = data.data2;
+> > > >
+> > > >         return true;
+> > > >  }
+> > > > @@ -777,6 +788,7 @@ static int optee_ffa_probe(struct ffa_device *ffa_dev)
+> > > >         struct tee_device *teedev;
+> > > >         struct tee_context *ctx;
+> > > >         struct optee *optee;
+> > > > +       u32 sec_caps;
+> > > >         int rc;
+> > > >
+> > > >         ffa_ops = ffa_dev_ops_get(ffa_dev);
+> > > > @@ -788,7 +800,8 @@ static int optee_ffa_probe(struct ffa_device *ffa_dev)
+> > > >         if (!optee_ffa_api_is_compatbile(ffa_dev, ffa_ops))
+> > > >                 return -EINVAL;
+> > > >
+> > > > -       if (!optee_ffa_exchange_caps(ffa_dev, ffa_ops, &rpc_param_count))
+> > > > +       if (!optee_ffa_exchange_caps(ffa_dev, ffa_ops, &sec_caps,
+> > > > +                                    &rpc_param_count))
+> > > >                 return -EINVAL;
+> > > >
+> > > >         optee = kzalloc(sizeof(*optee), GFP_KERNEL);
+> > > > diff --git a/drivers/tee/optee/optee_ffa.h b/drivers/tee/optee/optee_ffa.h
+> > > > index ee3a03fc392c..97266243deaa 100644
+> > > > --- a/drivers/tee/optee/optee_ffa.h
+> > > > +++ b/drivers/tee/optee/optee_ffa.h
+> > > > @@ -81,8 +81,16 @@
+> > > >   *                   as the second MSG arg struct for
+> > > >   *                   OPTEE_FFA_YIELDING_CALL_WITH_ARG.
+> > > >   *        Bit[31:8]: Reserved (MBZ)
+> > > > - * w5-w7: Note used (MBZ)
+> > > > + * w5:   Bitfield of secure world capabilities OPTEE_FFA_SEC_CAP_* below,
+> > > > + *       unused bits MBZ.
+> > > > + * w6-w7: Not used (MBZ)
+> > > > + */
+> > > > +/*
+> > > > + * Secure world supports giving an offset into the argument shared memory
+> > > > + * object, see also OPTEE_FFA_YIELDING_CALL_WITH_ARG
+> > > >   */
+> > > > +#define OPTEE_FFA_SEC_CAP_ARG_OFFSET   BIT(0)
+> > > > +
+> > > >  #define OPTEE_FFA_EXCHANGE_CAPABILITIES OPTEE_FFA_BLOCKING_CALL(2)
+> > > >
+> > > >  /*
+> > > > @@ -112,6 +120,8 @@
+> > > >   *       OPTEE_MSG_GET_ARG_SIZE(num_params) follows a struct optee_msg_arg
+> > > >   *       for RPC, this struct has reserved space for the number of RPC
+> > > >   *       parameters as returned by OPTEE_FFA_EXCHANGE_CAPABILITIES.
+> > > > + *       MBZ unless the bit OPTEE_FFA_SEC_CAP_ARG_OFFSET is received with
+> > > > + *       OPTEE_FFA_EXCHANGE_CAPABILITIES.
+> > > >   * w7:    Not used (MBZ)
+> > > >   * Resume from RPC. Register usage:
+> > > >   * w3:    Service ID, OPTEE_FFA_YIELDING_CALL_RESUME
+> > > > --
+> > > > 2.31.1
+> > > >
