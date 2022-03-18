@@ -2,233 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0EECC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 18:07:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8B7BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 18:10:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240027AbiCRSIp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 14:08:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50400 "EHLO
+        id S240026AbiCRSLr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 14:11:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239969AbiCRSIm (ORCPT
+        with ESMTP id S233194AbiCRSLn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 14:08:42 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C1542F09E0;
-        Fri, 18 Mar 2022 11:07:20 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="317907845"
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="317907845"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 11:06:56 -0700
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="499341353"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 11:06:54 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andy.shevchenko@gmail.com>)
-        id 1nVGzP-002Nl3-Ro;
-        Fri, 18 Mar 2022 20:06:15 +0200
-Date:   Fri, 18 Mar 2022 20:06:15 +0200
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        micklorain@protonmail.com,
-        Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH v1 1/1] PCI: Enable INTx quirk for ATI PCIe-USB adapter
-Message-ID: <YjTKFym+3+S5sgvV@smile.fi.intel.com>
-References: <CAHp75Veb4BqcGW=sCXEfrJ2ksvnXmjN-XZ5L6ttcQ8SJneg27w@mail.gmail.com>
- <20220318164740.GA816988@bhelgaas>
+        Fri, 18 Mar 2022 14:11:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BA002E842A
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 11:10:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D1C79B81747
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 18:10:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73D4CC340E8;
+        Fri, 18 Mar 2022 18:10:20 +0000 (UTC)
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@kernel.org>
+Cc:     Rich Wiley <rwiley@nvidia.com>, James Morse <james.morse@arm.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        linux-kernel@vger.kernel.org,
+        Suzuki K Poulose <suzuki.poulose@arm.com>
+Subject: Re: [PATCH] arm64: errata: avoid duplicate field initializer
+Date:   Fri, 18 Mar 2022 18:10:18 +0000
+Message-Id: <164762664708.829336.6118267245056806692.b4-ty@arm.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220316183800.1546731-1-arnd@kernel.org>
+References: <20220316183800.1546731-1-arnd@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220318164740.GA816988@bhelgaas>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 11:47:40AM -0500, Bjorn Helgaas wrote:
-> On Fri, Mar 18, 2022 at 12:42:18PM +0200, Andy Shevchenko wrote:
-> > On Thu, Mar 17, 2022 at 11:12 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > > On Thu, Mar 17, 2022 at 10:59:28AM +0200, Andy Shevchenko wrote:
-> > > > On Wed, Mar 16, 2022 at 04:15:48PM -0500, Bjorn Helgaas wrote:
-> > > > > On Wed, Mar 16, 2022 at 06:12:19PM +0200, Andy Shevchenko wrote:
-> > > > > > On Wed, Mar 16, 2022 at 06:52:09AM -0500, Bjorn Helgaas wrote:
-> > > > > > > On Wed, Mar 16, 2022 at 12:27:57PM +0200, Andy Shevchenko wrote:
-> > > > > > > > On Tue, Mar 15, 2022 at 03:22:31PM -0500, Bjorn Helgaas wrote:
-> > > > > > > > > On Tue, Mar 15, 2022 at 12:09:08PM +0200, Andy Shevchenko wrote:
-> > > > > > > > > > On Mon, Mar 14, 2022 at 02:42:53PM -0500, Bjorn Helgaas wrote:
-> > > > > > > > > > > On Mon, Mar 14, 2022 at 12:14:48PM +0200, Andy Shevchenko wrote:
-> > > > > > > > > > > > ATI PCIe-USB adapter advertises MSI, but it doesn't work
-> > > > > > > > > > > > if INTx is disabled.  Enable the respective quirk as
-> > > > > > > > > > > > it's done for other ATI devices on this chipset,
-> > > > > > > > > > > >
-> > > > > > > > > > > > Fixes: 306c54d0edb6 ("usb: hcd: Try MSI interrupts on
-> > > > > > > > > > > > PCI devices")
-> > > > >
-> > > > > > > > > Anyway, I applied this to pci/msi for v5.18 with the following
-> > > > > > > > > commit log:
-> > > > > > > > >
-> > > > > > > > >     PCI: Disable broken MSI on ATI SB600 USB adapters
-> > > > > > > > >
-> > > > > > > > >     Some ATI SB600 USB adapters advertise MSI, but MSI doesn't
-> > > > > > > > >     work if INTx is disabled.  Disable MSI on these adapters.
-> > > > > > > >
-> > > > > > > > But IIUC MSI is _not_ disabled. That's why I have issued this
-> > > > > > > > version of the patch with different commit message. Did I
-> > > > > > > > misunderstand something?
-> > > > > > >
-> > > > > > > Oh, right, of course.  Sorry, I was asleep at the wheel.
-> > > > > >
-> > > > > > Are you going to fix that?
-> > > > >
-> > > > > Yes, of course, I'll do something with the commit message after we
-> > > > > figure out how to handle PCI_COMMAND_INTX_DISABLE.
-> > > > >
-> > > > > > > I guess it's just that for these devices, we don't disable INTx
-> > > > > > > when enabling MSI.  I can't remember why we disable INTx when
-> > > > > > > enabling MSI, but it raises the question of whether it's better to
-> > > > > > > leave INTx enabled or to just disable use of MSI completely.
-> > > > > >
-> > > > > > It's required by specification to disable INTx if I read 6.1.4.3
-> > > > > > Enabling Operation correctly.
-> > > > >
-> > > > > Thanks for the reference; I was looking for something like that.  But
-> > > > > I don't think this section requires us to set
-> > > > > PCI_COMMAND_INTX_DISABLE.  For the benefit of folks without the spec,
-> > > > > PCIe r6.0, sec 6.1.4.3 says:
-> > > > >
-> > > > >   To maintain backward compatibility, the MSI Enable bit in the
-> > > > >   Message Control Register for MSI and the MSI-X Enable bit in the
-> > > > >   Message Control Register for MSI-X are each Clear by default (MSI
-> > > > >   and MSI-X are both disabled). System configuration software Sets one
-> > > > >   of these bits to enable either MSI or MSI-X, but never both
-> > > > >   simultaneously. Behavior is undefined if both MSI and MSI-X are
-> > > > >   enabled simultaneously. Software disabling either mechanism during
-> > > > >   active operation may result in the Function dropping pending
-> > > > >   interrupt conditions or failing to recognize new interrupt
-> > > > >   conditions. While enabled for MSI or MSI-X operation, a Function is
-> > > > >   prohibited from using INTx interrupts (if implemented) to request
-> > > > >   service (MSI, MSI-X, and INTx are mutually exclusive).
-> > > > >
-> > > > > The only *software* constraints I see are (1) software must never
-> > > > > enable both MSI and MSI-X simultaneously, and (2) if software disables
-> > > > > MSI or MSI-X during active operation, the Function may fail to
-> > > > > generate an interrupt when it should.
-> > > > >
-> > > > > I read the last sentence as a constraint on the *hardware*: if either
-> > > > > MSI or MSI-X is enabled, the Function is not allowed to use INTx,
-> > > > > regardless of the state of PCI_COMMAND_INTX_DISABLE.
-> > > > >
-> > > > > I searched the spec for "Interrupt Disable", looking for situations
-> > > > > where software might be *required* to set it, but I didn't see
-> > > > > anything.
-> > > > >
-> > > > > I suspect "Interrupt Disable" was intended to help the OS stop all
-> > > > > activity from a device during hot-plug or reconfiguration, as hinted
-> > > > > at in sec 6.4, "Device Synchronization":
-> > > > >
-> > > > >   The ability of the driver and/or system software to block new
-> > > > >   Requests from the device is supported by the Bus Master Enable,
-> > > > >   SERR# Enable, and Interrupt Disable bits in the Command register
-> > > > >   (Section 7.5.1.1.3) of each device Function, and other such control
-> > > > >   bits.
-> > > > >
-> > > > > So I'm trying to figure out why when enabling MSI we need to set
-> > > > > PCI_COMMAND_INTX_DISABLE for most devices, but it's safe to skip that
-> > > > > for these quirked devices.
-> > > >
-> > > > I guess it's wrong wording in the last paragraph. It's not safe, but it's
-> > > > _required_ since HW doesn't follow PCI specification that clearly says:
-> > > > "MSI, MSI-X, and INTx are mutually exclusive".
-> > >
-> > > I agree there's a defect in these SB600 devices.  My guess is that
-> > > PCI_COMMAND_INTX_DISABLE actually disables both INTx and MSI, when
-> > > it's only supposed to disable INTx.
-> > >
-> > > I'm pretty sure the spec doesn't actually require software to set
-> > > Interrupt Disable when enabling MSI, since MSI was added in PCI r2.2,
-> > > which included this text in sec 6.8.2:
-> > >
-> > >   System configuration software sets [the MSI Enable] bit to enable
-> > >   MSI. ...  Once enabled, a function is prohibited from using its
-> > >   INTx# pin (if implemented) to request service (MSI and INTx# are
-> > >   mutually exclusive).
-> > >
-> > > and Interrupt Disable was added later, in PCI r2.3, with no mention of
-> > > a connection with MSI.  All the specs from PCI r2.2 to PCIe r6.0
-> > > include the text above about not using INTx# if MSI or MSI-X is
-> > > enabled, but that's not the same as requiring software to set
-> > > Interrupt Disable.  Linux has set Interrupt Disable when enabling MSI
-> > > ever since MSI support was added [1], so I would hesitate to change
-> > > that even though I don't think it's required.
-> > 
-> > Thanks for diving into the history of the specification. What I learnt
-> > about any of the specifications is that it usually has a lot of
-> > implications that are only understandable (known) to the specification
-> > author(s). This gives a room of misinterpretation. In any case I
-> > usually apply my common sense denominator, so I try to go with the
-> > straight logic. In this case it seems to me that keeping both enabled
-> > is illogical and Linux does the right thing (means the author of the
-> > Linux kernel implementation is on the same page with me).
-> > 
-> > > What I don't like about PCI_DEV_FLAGS_MSI_INTX_DISABLE_BUG is that it
-> > > changes the generic code path in a sort of random way, i.e., this
-> > > device becomes yet another special case in how we handle Interrupt
-> > > Disable.
-> > >
-> > > What would you think about just setting pdev->no_msi instead, so we
-> > > don't try to use MSI at all on these devices?  I think that's what we
-> > > did before 306c54d0edb6.
-> > 
-> > Yes, we did. But why should we go this way if it already established a
-> > special case disregarding my patch(es)? If you want to do that you
-> > need to explain why other devices on the same chipset should enable
-> > MSI and what's wrong with enabling MSI on the USB devices. My
-> > understanding is that the MSI is a good thing to have due to
-> > performance benefits and taking into account other devices that have
-> > already been using it on the other devices of the same chipset tells
-> > me that's okay. Moreover, the reporter of the bug confirmed that MSI
-> > works for them after applying this quirk fix.
+On Wed, 16 Mar 2022 19:37:45 +0100, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
-> I agree that MSI is generally to be preferred over INTx.  In this
-> case, it's an old USB device and I don't think there's any real
-> performance benefit.
+> The '.type' field is initialized both in place and in the macro
+> as reported by this W=1 warning:
+> 
+> arch/arm64/include/asm/cpufeature.h:281:9: error: initialized field overwritten [-Werror=override-init]
+>   281 |         (ARM64_CPUCAP_SCOPE_LOCAL_CPU | ARM64_CPUCAP_OPTIONAL_FOR_LATE_CPU)
+>       |         ^
+> arch/arm64/kernel/cpu_errata.c:136:17: note: in expansion of macro 'ARM64_CPUCAP_LOCAL_CPU_ERRATUM'
+>   136 |         .type = ARM64_CPUCAP_LOCAL_CPU_ERRATUM,                         \
+>       |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> arch/arm64/kernel/cpu_errata.c:145:9: note: in expansion of macro 'ERRATA_MIDR_RANGE'
+>   145 |         ERRATA_MIDR_RANGE(m, var, r_min, var, r_max)
+>       |         ^~~~~~~~~~~~~~~~~
+> arch/arm64/kernel/cpu_errata.c:613:17: note: in expansion of macro 'ERRATA_MIDR_REV_RANGE'
+>   613 |                 ERRATA_MIDR_REV_RANGE(MIDR_CORTEX_A510, 0, 0, 2),
+>       |                 ^~~~~~~~~~~~~~~~~~~~~
+> arch/arm64/include/asm/cpufeature.h:281:9: note: (near initialization for 'arm64_errata[18].type')
+>   281 |         (ARM64_CPUCAP_SCOPE_LOCAL_CPU | ARM64_CPUCAP_OPTIONAL_FOR_LATE_CPU)
+>       |         ^
+> 
+> [...]
 
-I tend to disagree. There are not only USB devices involved but other
-devices that may share the same INTx line(s). This is the case, for
-example, on EG20T. Dunno if ATI is one of them, but if so, it will
-support the idea of MSI.
+Applied to arm64 (for-next/fixes), thanks!
 
-> The problem with enabling MSI on these USB devices is that the generic
-> MSI code doesn't work correctly.
-
-Can you elaborate this, please? Where is that code that doesn't work correctly?
-
-> Since we've been using them without
-> MSI in the past, and they have some defect that makes MSI not work
-> correctly, it seems like the simplest solution is to avoid using MSI,
-> something like the patch below.
-
-I tend to disagree.
-
-> Would I prefer the same for all the other existing users of
-> PCI_DEV_FLAGS_MSI_INTX_DISABLE_BUG?  Yes.  Enough to change the status
-> quo, which would be a performance regression, and potentially break
-> something?  Probably not.
-
-Why? What is the point of deliberate degrading of performance?
-
-...
-
-Let do it simple: Apply my patch since it fixes the regression and
-move on with whatever solution you may propose latter on. It's really
-not good for the end-user who was so kind to report and test all this.
+[1/1] arm64: errata: avoid duplicate field initializer
+      https://git.kernel.org/arm64/c/316e46f65a54
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+Catalin
 
