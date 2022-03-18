@@ -2,35 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B65DC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 20:13:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D745C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 20:13:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240530AbiCRUO7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 16:14:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39122 "EHLO
+        id S240535AbiCRUPE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 16:15:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235797AbiCRUO5 (ORCPT
+        with ESMTP id S235506AbiCRUO5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Mar 2022 16:14:57 -0400
 Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5BF218A7A9;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4DD7FDE0F;
         Fri, 18 Mar 2022 13:13:37 -0700 (PDT)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id D61AA223EF;
-        Fri, 18 Mar 2022 21:13:35 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id D862A22239;
+        Fri, 18 Mar 2022 21:13:33 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1647634416;
+        t=1647634414;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8eeLDjh6XapUMf/oGuY0biPxASPRa2wiMP2QiDHhD0Y=;
-        b=ju1TVEchIP157lqBA6dKazAzpJnVAQhCe/+uNB34ljJO3oGHPkyg7xtyX/yyYBKuu6h0zT
-        P/vVglkrxbkPmBk6gphjR1Tb91YqeiA1YPhr0hxufciym2wqJQmhAbpnXkyUGko85z2cWX
-        llnDWpF7LCkqv5fM+EsiQaEyFQj7zVw=
+         content-transfer-encoding:content-transfer-encoding;
+        bh=VsJJ80Geau/+THBkr2FUrEd5OjhGMk+B2AZvmiGFJ0I=;
+        b=MF8VwurIrcsDYrJonpoOIhUMGuzcAs8nT101nVQPT6YI5VdZhgvFMcMneTlOe+URWZIGv0
+        s3z9P3NQmZzCn2Tz8VAmBdy8ROnZ3J6wahWRUdlL5IICPtTmENWSNCRLU/WLZjmXzHEOiy
+        86SpMqQ7m4qDqZ7aGUYpyDonGUhnra4=
 From:   Michael Walle <michael@walle.cc>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -43,62 +42,39 @@ Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Horatiu Vultur <horatiu.vultur@microchip.com>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next v3 2/3] net: mdio: mscc-miim: replace magic numbers for the bus reset
-Date:   Fri, 18 Mar 2022 21:13:23 +0100
-Message-Id: <20220318201324.1647416-3-michael@walle.cc>
+Subject: [PATCH net-next v3 0/3] net: mscc-miim: add integrated PHY reset support
+Date:   Fri, 18 Mar 2022 21:13:21 +0100
+Message-Id: <20220318201324.1647416-1-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220318201324.1647416-1-michael@walle.cc>
-References: <20220318201324.1647416-1-michael@walle.cc>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace the magic numbers by macros which are already defined. It seems
-the original commit missed to use them.
+The MDIO driver has support to release the integrated PHYs from reset.
+This was implemented for the SparX-5 for now. Now add support for the
+LAN966x, too.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- drivers/net/mdio/mdio-mscc-miim.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+changes since v2:
+ - fix typo in commit message
+ - use microchip,lan966x instead of mscc,lan966x
+ - rename mask variable to {phy_,}reset_bits
+ - check return code from device_get_match_data() right after
+   the call instead of checking it where it is used
 
-diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
-index 64fb76c1e395..2f77bf75288d 100644
---- a/drivers/net/mdio/mdio-mscc-miim.c
-+++ b/drivers/net/mdio/mdio-mscc-miim.c
-@@ -158,18 +158,18 @@ static int mscc_miim_reset(struct mii_bus *bus)
- {
- 	struct mscc_miim_dev *miim = bus->priv;
- 	int offset = miim->phy_reset_offset;
-+	int reset_bits = PHY_CFG_PHY_ENA | PHY_CFG_PHY_COMMON_RESET |
-+			 PHY_CFG_PHY_RESET;
- 	int ret;
- 
- 	if (miim->phy_regs) {
--		ret = regmap_write(miim->phy_regs,
--				   MSCC_PHY_REG_PHY_CFG + offset, 0);
-+		ret = regmap_write(miim->phy_regs, offset, 0);
- 		if (ret < 0) {
- 			WARN_ONCE(1, "mscc reset set error %d\n", ret);
- 			return ret;
- 		}
- 
--		ret = regmap_write(miim->phy_regs,
--				   MSCC_PHY_REG_PHY_CFG + offset, 0x1ff);
-+		ret = regmap_write(miim->phy_regs, offset, reset_bits);
- 		if (ret < 0) {
- 			WARN_ONCE(1, "mscc reset clear error %d\n", ret);
- 			return ret;
-@@ -272,7 +272,7 @@ static int mscc_miim_probe(struct platform_device *pdev)
- 
- 	miim = bus->priv;
- 	miim->phy_regs = phy_regmap;
--	miim->phy_reset_offset = 0;
-+	miim->phy_reset_offset = MSCC_PHY_REG_PHY_CFG;
- 
- 	ret = of_mdiobus_register(bus, pdev->dev.of_node);
- 	if (ret < 0) {
+changes since v1:
+ - fix typo in the subject in patch 3/3
+
+Michael Walle (3):
+  dt-bindings: net: mscc-miim: add lan966x compatible
+  net: mdio: mscc-miim: replace magic numbers for the bus reset
+  net: mdio: mscc-miim: add lan966x internal phy reset support
+
+ .../devicetree/bindings/net/mscc-miim.txt     |  2 +-
+ drivers/net/mdio/mdio-mscc-miim.c             | 67 ++++++++++++++-----
+ 2 files changed, 50 insertions(+), 19 deletions(-)
+
 -- 
 2.30.2
 
