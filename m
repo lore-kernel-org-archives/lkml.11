@@ -2,86 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BB1DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 14:45:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABEEDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 14:45:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237436AbiCROrG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 10:47:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58362 "EHLO
+        id S237456AbiCROrL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 10:47:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237433AbiCROrE (ORCPT
+        with ESMTP id S237441AbiCROrH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 10:47:04 -0400
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3192B105A9B;
-        Fri, 18 Mar 2022 07:45:45 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:55336)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nVDqJ-00HBmm-SI; Fri, 18 Mar 2022 08:44:39 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:38506 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nVDqI-006Fhl-W2; Fri, 18 Mar 2022 08:44:39 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Alexey Gladkov <legion@kernel.org>,
-        Kyle Huey <me@kylehuey.com>, Oleg Nesterov <oleg@redhat.com>,
-        Al Viro <viro@zeniv.linux.org.uk>, linux-api@vger.kernel.org,
-        Jens Axboe <axboe@kernel.dk>
-References: <87a6ha4zsd.fsf@email.froward.int.ebiederm.org>
-        <87bl1kunjj.fsf@email.froward.int.ebiederm.org>
-        <87r19opkx1.fsf_-_@email.froward.int.ebiederm.org>
-        <87o82gdlu9.fsf_-_@email.froward.int.ebiederm.org>
-        <87tubyx0rg.fsf_-_@email.froward.int.ebiederm.org>
-        <87bky67qfv.fsf_-_@email.froward.int.ebiederm.org>
-        <202203171209.FC87C7B08@keescook>
-Date:   Fri, 18 Mar 2022 09:44:30 -0500
-In-Reply-To: <202203171209.FC87C7B08@keescook> (Kees Cook's message of "Thu,
-        17 Mar 2022 12:10:16 -0700")
-Message-ID: <87fsnf2ucx.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Fri, 18 Mar 2022 10:47:07 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65D27105AB3;
+        Fri, 18 Mar 2022 07:45:48 -0700 (PDT)
+X-UUID: 7c037e9686e041e3a4fde08644c7f6df-20220318
+X-UUID: 7c037e9686e041e3a4fde08644c7f6df-20220318
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <allen-kh.cheng@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1182771399; Fri, 18 Mar 2022 22:45:42 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 18 Mar 2022 22:45:41 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 18 Mar 2022 22:45:41 +0800
+From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Ryder Lee <ryder.lee@kernel.org>,
+        Hui Liu <hui.liu@mediatek.com>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Subject: [PATCH v4 01/22] arm64: dts: mt8192: Add pwrap node
+Date:   Fri, 18 Mar 2022 22:45:13 +0800
+Message-ID: <20220318144534.17996-2-allen-kh.cheng@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220318144534.17996-1-allen-kh.cheng@mediatek.com>
+References: <20220318144534.17996-1-allen-kh.cheng@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nVDqI-006Fhl-W2;;;mid=<87fsnf2ucx.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX18c/C30UgmTCpKstYbDp2Va3pJS8t12OoI=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH 1/2] ptrace: Move setting/clearing ptrace_message into
- ptrace_stop
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Kees Cook <keescook@chromium.org> writes:
+Add pwrap node for mt8192 SoC.
 
-> On Tue, Mar 15, 2022 at 06:21:08PM -0500, Eric W. Biederman wrote:
->> 
->> Today ptrace_message is easy to overlook as it not a core part of
->> ptrace_stop.  It has been overlooked so much that there are places
->> that set ptrace_message and don't clear it, and places that never set
->> it.  So if you get an unlucky sequence of events the ptracer may be
->> able to read a ptrace_message that does not apply to the current
->> ptrace stop.
->> 
->> Move setting of ptrace_message into ptrace_stop so that it always gets
->> set before the stop, and always gets cleared after the stop.  This
->> prevents non-sense from being reported to userspace and makes
->> ptrace_message more visible in the ptrace helper functions so that
->> kernel developers can see it.
->> 
->> Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
->
-> This looks good to me. Did you happen to run the seccomp selftests
-> before/after these changes?
+Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ arch/arm64/boot/dts/mediatek/mt8192.dtsi | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-I did not.  This is a pure ptrace change.  Do you see a way that seccomp
-could be involved?
+diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+index 411feb294613..76428599444e 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+@@ -523,6 +523,18 @@
+ 			clock-names = "clk13m";
+ 		};
+ 
++		pwrap: pwrap@10026000 {
++			compatible = "mediatek,mt6873-pwrap";
++			reg = <0 0x10026000 0 0x1000>;
++			reg-names = "pwrap";
++			interrupts = <GIC_SPI 220 IRQ_TYPE_LEVEL_HIGH 0>;
++			clocks = <&infracfg CLK_INFRA_PMIC_AP>,
++				 <&infracfg CLK_INFRA_PMIC_TMR>;
++			clock-names = "spi", "wrap";
++			assigned-clocks = <&topckgen CLK_TOP_PWRAP_ULPOSC_SEL>;
++			assigned-clock-parents = <&topckgen CLK_TOP_OSC_D10>;
++		};
++
+ 		scp_adsp: clock-controller@10720000 {
+ 			compatible = "mediatek,mt8192-scp_adsp";
+ 			reg = <0 0x10720000 0 0x1000>;
+-- 
+2.18.0
 
-Eric
