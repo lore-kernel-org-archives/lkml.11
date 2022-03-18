@@ -2,108 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A4ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 23:03:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C631C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 23:03:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241454AbiCRXFB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 19:05:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46458 "EHLO
+        id S241467AbiCRXFP convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 19:05:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238197AbiCRXE7 (ORCPT
+        with ESMTP id S241455AbiCRXFN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 19:04:59 -0400
-Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F57E9C93;
-        Fri, 18 Mar 2022 16:03:39 -0700 (PDT)
-Received: from [IPv6:::1] ([IPv6:2601:646:8600:40c1:8f0c:2533:51ff:d719])
-        (authenticated bits=0)
-        by mail.zytor.com (8.17.1/8.15.2) with ESMTPSA id 22IN36PG1022936
-        (version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
-        Fri, 18 Mar 2022 16:03:07 -0700
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 22IN36PG1022936
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
-        s=2022030301; t=1647644587;
-        bh=svb/lgQXEzjEPgFnj7j1DJy4Iq5vz9ytaGKdBRZvYko=;
-        h=Date:From:To:CC:Subject:In-Reply-To:References:From;
-        b=bTlBuu+sxs0JshNvGQ3E+y9m/Xuz8dwiLyY+4q3DXXgPM+fnIbGU+MrR3G+OaRy/f
-         bx0IiUAGeRjEQdVq/J5bCDkEudRK4+mlTQO15QkG+smtmr4QeUpncwoGZ5UPk8D6n0
-         ioY5oZG34neIzvJJgJ+3XC+z8wcnI2N3X9ze6yeUd5MZzM7zkkNS0oOqWKU9aGJ+9a
-         4gqt5VAmjtWwVfFf1Z+SrsJzYDuGPg8t82hbTOijcDGbdTXnMobW1CJvFz2r+pCAzL
-         w0+tk1JlrNSvoxPleYrkG9U+tBYksKJu3vc/Po7R+SLx2Hs1jodCuoPsXgwlz7zDOz
-         GjFceMUiJgd5g==
-Date:   Fri, 18 Mar 2022 16:03:01 -0700
-From:   "H. Peter Anvin" <hpa@zytor.com>
-To:     David Laight <David.Laight@ACULAB.COM>,
-        "'Linus Torvalds'" <torvalds@linux-foundation.org>,
-        Andy Lutomirski <luto@kernel.org>
-CC:     Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Bill Wendling <morbo@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Juergen Gross <jgross@suse.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "llvm@lists.linux.dev" <llvm@lists.linux.dev>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-toolchains <linux-toolchains@vger.kernel.org>
-Subject: RE: [PATCH v5] x86: use builtins to read eflags
-User-Agent: K-9 Mail for Android
-In-Reply-To: <5794cceec50a4f1ebca069d5a31afcdf@AcuMS.aculab.com>
-References: <20220210223134.233757-1-morbo@google.com> <20220301201903.4113977-1-morbo@google.com> <CAGG=3QWh90r5C3gmTj9zxiJb-mwD=PGqGwZZTjAfyi1NCb1_9w@mail.gmail.com> <AC3D873E-A28B-41F1-8BF4-2F6F37BCEEB4@zytor.com> <CAGG=3QVu5QjQK8m2FWiYn-XQuVBjUGXcbznSbK22jVMB5GAutw@mail.gmail.com> <F5296439-4CA3-4F31-BD91-5ED1510BC382@zytor.com> <CAKwvOdkk-C8HMemKs4+yoxvNDgTLmvZG1rmwjVXBqhsQ-cED5g@mail.gmail.com> <CAHk-=whJfKN8Jag=8DS=pbZR3TY90znUOP6Km+TLRJ9dZEgNqw@mail.gmail.com> <fd89333f-e470-a295-baf6-a736c55caeb5@citrix.com> <CAHk-=wj47CG0Y9GOFmGg4AYFvXhRFDX9x7E2Uxo9k-UX2wgR4g@mail.gmail.com> <83b33afc-8502-0065-60bc-3a91528632d8@kernel.org> <CAHk-=wj1Z_zzY7ADxaarorK5sh2xkwbcHxJTzW=bsYChWJGBGg@mail.gmail.com> <5794cceec50a4f1ebca069d5a31afcdf@AcuMS.aculab.com>
-Message-ID: <8B69D1BF-8369-42EC-B0ED-DED038966FC9@zytor.com>
+        Fri, 18 Mar 2022 19:05:13 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DBE8A76281
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 16:03:53 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-88-aKH-9UiwNei_YRJVTyN66w-1; Fri, 18 Mar 2022 23:03:51 +0000
+X-MC-Unique: aKH-9UiwNei_YRJVTyN66w-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.32; Fri, 18 Mar 2022 23:03:50 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.033; Fri, 18 Mar 2022 23:03:50 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Peter Zijlstra' <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>
+CC:     Maxim Levitsky <mlevitsk@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "seanjc@google.com" <seanjc@google.com>
+Subject: RE: [PATCH v3 6/6] KVM: x86: allow defining return-0 static calls
+Thread-Topic: [PATCH v3 6/6] KVM: x86: allow defining return-0 static calls
+Thread-Index: AQHYOvJSJ6iVxlFZSEKme+GWeigJ56zFwTUA
+Date:   Fri, 18 Mar 2022 23:03:50 +0000
+Message-ID: <04a3d031624d4472aaf4cd20a0d3be47@AcuMS.aculab.com>
+References: <20220217180831.288210-1-pbonzini@redhat.com>
+ <20220217180831.288210-7-pbonzini@redhat.com>
+ <3bbe3f8717cdf122f909a48e117dab6c09d8e0c8.camel@redhat.com>
+ <1dc56110-5f1b-6140-937c-bf4a28ddbe87@redhat.com>
+ <20220318172837.GQ8939@worktop.programming.kicks-ass.net>
+ <20220318174732.GE14330@worktop.programming.kicks-ass.net>
+ <20220318180225.GF14330@worktop.programming.kicks-ass.net>
+In-Reply-To: <20220318180225.GF14330@worktop.programming.kicks-ass.net>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On March 18, 2022 3:43:13 PM PDT, David Laight <David=2ELaight@ACULAB=2ECOM=
-> wrote:
->From: Linus Torvalds
->> Sent: 18 March 2022 18:19
->>=20
->> On Fri, Mar 18, 2022 at 10:59 AM Andy Lutomirski <luto@kernel=2Eorg> wr=
-ote:
->> >
->> > I generally agree=2E  In this particular case, though, I will keep us=
-ing
->> > the builtin in tools/testing/selftests/x86/helpers=2Eh unless we actu=
-ally
->> > hit breakage=2E  This is because this is *user* code, it is compiled =
-with
->> > the redzone enabled, and the asm code to do the right thing when the
->> > redzone is enabled is too hairy for me to want to deal with it=2E
->>=20
->> Yeah, redzoning is a problem for "pushf"=2E
->>=20
->> Or rather, it's not the redzoning itself, but the fact that the
->> compiler might use the word under the stack for random other things,
->> and the pushf will then corrupt some local variable storage=2E
->>=20
->> I think it would be lovely to solve that in inline asm itself some way
->> - by marking the stack pointer clobbered or something=2E
->
->Something that generates:
->	mov	%rax,-8(%rsp)
->	pushf
->	xchg	%rax,0(%rsp)
->	add	%rsp,8
->should work with or without a redzone=2E
->Will be a bit slower :-(
->
->	David
->
->-
->Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1=
- 1PT, UK
->Registration No: 1397386 (Wales)
->
+From: Peter Zijlstra
+> Sent: 18 March 2022 18:02
+> 
+> On Fri, Mar 18, 2022 at 06:47:32PM +0100, Peter Zijlstra wrote:
+> > On Fri, Mar 18, 2022 at 06:28:37PM +0100, Peter Zijlstra wrote:
+> > > > Related to this, I don't see anything in arch/x86/kernel/static_call.c that
+> > > > limits this code to x86-64:
+> > > >
+> > > >                 if (func == &__static_call_return0) {
+> > > >                         emulate = code;
+> > > >                         code = &xor5rax;
+> > > >                 }
+> > > >
+> > > >
+> > > > On 32-bit, it will be patched as "dec ax; xor eax, eax" or something like
+> > > > that.  Fortunately it doesn't corrupt any callee-save register but it is not
+> > > > just a bit funky, it's also not a single instruction.
+> > >
+> > > Urggghh.. that's fairly yuck. So there's two options I suppose:
+> > >
+> > > 	0x66, 0x66, 0x66, 0x31, 0xc0
+> >
+> > Argh, that turns into: xorw %ax, %ax.
+> >
+> > Let me see if there's another option.
+> 
+> Amazingly:
+> 
+>   0x2e, 0x2e, 0x2e, 0x31, 0xc0
+> 
+> seems to actually work.. I've build and ran and decoded the below on
+> 32bit and 64bit (arguably on the same 64bit host).
 
-*Much* slower (XCHG is implicitly locked, for hysterical raisins) and you =
-are using the redzone between the mov and the push, so it seems like you ju=
-st made things worse for no reason=2E
+Not really amazing...
+In 64bit mode all accesses to 32bit registers zero the
+high bits.
+So 'xor %eax,%eax' zeros all of %rax in 64bit mode.
+So three segment override prefixes will extend it to 5 bytes.
+
+Think I'd pick the FS or GS override (0x64 or 0x65).
+Just in case someone decides that CS/DS/ES/SS prefix will
+mean something else in 64bit mode.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
