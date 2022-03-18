@@ -2,90 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94677C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:30:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9220C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:31:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239271AbiCRQcE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 12:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52676 "EHLO
+        id S239165AbiCRQcu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 12:32:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239277AbiCRQbx (ORCPT
+        with ESMTP id S239196AbiCRQcl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 12:31:53 -0400
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE63D1B84D8
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 09:30:20 -0700 (PDT)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-2e5a8a8c1cdso87911767b3.3
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 09:30:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kAE3uuJYaI6bZvK1JirdmvyIyu+ZeP4A7IF2vH7oYhI=;
-        b=mOYCnnUxwb1osdLgXKMQa4A9q4QPWM9rhR+WhIZaDXV9nNkbEQeKnyjoT4a99+aSuN
-         eF3SZaDvHbMGMLFbwS5OYwy0MsweHwpZZw5JzmfyW7ivcIWJ6uf0ZgB9B0CW5MC6OAdp
-         W0TeQxoZCujax5Mn72w3oTLaCYhWpd3zCAEZ0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kAE3uuJYaI6bZvK1JirdmvyIyu+ZeP4A7IF2vH7oYhI=;
-        b=4eWGWD9Rj36TmTEvniQcno1apzo0PJHOmgdABT2CfAiak3V0KK90BdlimnLPMOeLbM
-         ZWp5msrAHZA9UjgxTb9U+Cp8IGJP3o5wworT+bR5WgAQvKMOsQgHBRq1ySiqkI6e1vVr
-         G3jEqmgz/6qxphL6D2LVrXstGlWmee4v1bpPFflLKCV+g2uMU+JZSy07RC5j2Qa+IQpY
-         R7zC8ZGCK4vPbX9IM/YRD3oveg0OhzEHiNsUkmU2c72RIs3VUvLbvs2wr5mPLExRl2Ca
-         72vqV85peVT0W21Pj3QyRfhzn8cFypXFJKA83ru7MBMijRUyoTJY67qqY+om11S0X8z2
-         j0xA==
-X-Gm-Message-State: AOAM531y146RaH9PEfTgcOaoAASOnPjDCKpkcewAF+/FRBWuM13hZxrG
-        OFFsrnxdkYRBx3+w6dwedd4WEAYA+xJEHOLQV9KflQ==
-X-Google-Smtp-Source: ABdhPJzl1HaVxL6M7wATA0aA7ue2teOSdQFdYnb3ZCTBjjtSXetDYzZ2exTvmluualwMq/4vLF3w3ZbC725ewFt67Vo=
-X-Received: by 2002:a81:a842:0:b0:2db:562a:3f13 with SMTP id
- f63-20020a81a842000000b002db562a3f13mr11684645ywh.322.1647621020015; Fri, 18
- Mar 2022 09:30:20 -0700 (PDT)
+        Fri, 18 Mar 2022 12:32:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 974451AE625;
+        Fri, 18 Mar 2022 09:31:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9FC09B82475;
+        Fri, 18 Mar 2022 16:31:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58498C340EC;
+        Fri, 18 Mar 2022 16:31:00 +0000 (UTC)
+Date:   Fri, 18 Mar 2022 12:30:58 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Sven Schnelle <svens@linux.ibm.com>
+Cc:     Ritesh Harjani <riteshh@linux.ibm.com>, linux-ext4@vger.kernel.org,
+        Jan Kara <jack@suse.cz>, "Theodore Ts'o" <tytso@mit.edu>,
+        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@kernel.org
+Subject: Re: [PATCHv3 02/10] ext4: Fix ext4_fc_stats trace point
+Message-ID: <20220318123058.348938b1@gandalf.local.home>
+In-Reply-To: <20220317143938.745e1420@gandalf.local.home>
+References: <cover.1647057583.git.riteshh@linux.ibm.com>
+        <b4b9691414c35c62e570b723e661c80674169f9a.1647057583.git.riteshh@linux.ibm.com>
+        <yt9dr1706b4i.fsf@linux.ibm.com>
+        <20220317143938.745e1420@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <CABWYdi2a=Tc3dRfQ+037PG0GHKvZd5SEXJxBBbNspsrHK1zNpQ@mail.gmail.com>
- <CABWYdi1PeNbgnM4qE001+_BzHJxQcaaY9sLOK=Y7gjqfXZO0=g@mail.gmail.com>
- <YjA439FwajtHsahr@google.com> <YjEOiZCLBMgbw8oc@google.com> <CABWYdi0jd_pG_qqAnnGK6otNNXeNoiAWtmC14Jv+tiSadJPw0w@mail.gmail.com>
-In-Reply-To: <CABWYdi0jd_pG_qqAnnGK6otNNXeNoiAWtmC14Jv+tiSadJPw0w@mail.gmail.com>
-From:   Ivan Babrou <ivan@cloudflare.com>
-Date:   Fri, 18 Mar 2022 09:30:09 -0700
-Message-ID: <CABWYdi2gOzAK60gLYKx9gSoSfJRZaAjyAWm+55gLgcSKrDrP9Q@mail.gmail.com>
-Subject: Re: zram corruption due to uninitialized do_swap_page fault
-To:     Minchan Kim <minchan@kernel.org>
-Cc:     Linux MM <linux-mm@kvack.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Nitin Gupta <ngupta@vflare.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Jens Axboe <axboe@kernel.dk>, linux-block@vger.kernel.org,
-        kernel-team <kernel-team@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 11:26 AM Ivan Babrou <ivan@cloudflare.com> wrote:
-> I'm making an internal build and will push it to some location to see
-> how it behaves, but it might take a few days to get any sort of
-> confidence in the results (unless it breaks immediately).
->
-> I've also pushed my patch that disables SWP_SYNCHRONOUS_IO to a few
-> locations yesterday to see how it fares.
+On Thu, 17 Mar 2022 14:39:38 -0400
+Steven Rostedt <rostedt@goodmis.org> wrote:
 
-I have some updates before the weekend. There are two experimental groups:
+> [ here I wanted to add a patch, but I haven't figured out the best way to
+>   fix it yet. ]
 
-* My patch that removes the SWP_SYNCHRONOUS_IO flag. There are 704
-machines in this group across 5 datacenters with cumulative uptime of
-916 days.
-* Minchan's patch to remove swap_slot_free_notify. There are 376
-machines in this group across 3 datacenters with cumulative uptime of
-240 days.
+Care to try this patch?
 
-Our machines take a couple of hours to start swapping anything after
-boot, and I discounted these two hours from the cumulative uptime.
+-- Steve
 
-Neither of these two groups experienced unexpected coredumps or
-rocksdb corruptions.
-
-I think at this point it's reasonable to proceed with Minchan's patch
-(including a backport).
+diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
+index 7b558c72f595..e11e167b7809 100644
+--- a/kernel/trace/trace_events.c
++++ b/kernel/trace/trace_events.c
+@@ -40,6 +40,14 @@ static LIST_HEAD(ftrace_generic_fields);
+ static LIST_HEAD(ftrace_common_fields);
+ static bool eventdir_initialized;
+ 
++static LIST_HEAD(module_strings);
++
++struct module_string {
++	struct list_head	next;
++	struct module		*module;
++	char			*str;
++};
++
+ #define GFP_TRACE (GFP_KERNEL | __GFP_ZERO)
+ 
+ static struct kmem_cache *field_cachep;
+@@ -2643,14 +2651,40 @@ static void update_event_printk(struct trace_event_call *call,
+ 	}
+ }
+ 
++static void add_str_to_module(struct module *module, char *str)
++{
++	struct module_string *modstr;
++
++	modstr = kmalloc(sizeof(*modstr), GFP_KERNEL);
++
++	/*
++	 * If we failed to allocate memory here, then we'll just
++	 * let the str memory leak when the module is removed.
++	 * If this fails to allocate, there's worse problems than
++	 * a leaked string on module removal.
++	 */
++	if (WARN_ON_ONCE(!modstr))
++		return;
++
++	modstr->module = module;
++	modstr->str = str;
++
++	list_add(&modstr->next, &module_strings);
++}
++
+ static void update_event_fields(struct trace_event_call *call,
+ 				struct trace_eval_map *map)
+ {
+ 	struct ftrace_event_field *field;
+ 	struct list_head *head;
+ 	char *ptr;
++	char *str;
+ 	int len = strlen(map->eval_string);
+ 
++	/* Dynamic events should never have field maps */
++	if (WARN_ON_ONCE(call->flags & TRACE_EVENT_FL_DYNAMIC))
++		return;
++
+ 	head = trace_get_fields(call);
+ 	list_for_each_entry(field, head, link) {
+ 		ptr = strchr(field->type, '[');
+@@ -2664,9 +2698,26 @@ static void update_event_fields(struct trace_event_call *call,
+ 		if (strncmp(map->eval_string, ptr, len) != 0)
+ 			continue;
+ 
++		str = kstrdup(field->type, GFP_KERNEL);
++		if (WARN_ON_ONCE(!str))
++			return;
++		ptr = str + (ptr - field->type);
+ 		ptr = eval_replace(ptr, map, len);
+ 		/* enum/sizeof string smaller than value */
+-		WARN_ON_ONCE(!ptr);
++		if (WARN_ON_ONCE(!ptr)) {
++			kfree(str);
++			continue;
++		}
++
++		/*
++		 * If the event is part of a module, then we need to free the string
++		 * when the module is removed. Otherwise, it will stay allocated
++		 * until a reboot.
++		 */
++		if (call->module)
++			add_str_to_module(call->module, str);
++
++		field->type = str;
+ 	}
+ }
+ 
+@@ -2893,6 +2944,7 @@ static void trace_module_add_events(struct module *mod)
+ static void trace_module_remove_events(struct module *mod)
+ {
+ 	struct trace_event_call *call, *p;
++	struct module_string *modstr, *m;
+ 
+ 	down_write(&trace_event_sem);
+ 	list_for_each_entry_safe(call, p, &ftrace_events, list) {
+@@ -2901,6 +2953,14 @@ static void trace_module_remove_events(struct module *mod)
+ 		if (call->module == mod)
+ 			__trace_remove_event_call(call);
+ 	}
++	/* Check for any strings allocade for this module */
++	list_for_each_entry_safe(modstr, m, &module_strings, next) {
++		if (modstr->module != mod)
++			continue;
++		list_del(&modstr->next);
++		kfree(modstr->str);
++		kfree(modstr);
++	}
+ 	up_write(&trace_event_sem);
+ 
+ 	/*
