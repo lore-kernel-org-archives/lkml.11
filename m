@@ -2,34 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21DCAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 14:47:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22F6FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 14:47:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237582AbiCROs4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 10:48:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33412 "EHLO
+        id S237619AbiCROtB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 10:49:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237543AbiCROrl (ORCPT
+        with ESMTP id S237590AbiCROrw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 10:47:41 -0400
+        Fri, 18 Mar 2022 10:47:52 -0400
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B4862E626F;
-        Fri, 18 Mar 2022 07:46:08 -0700 (PDT)
-X-UUID: 1332f2422c5d4a07880b7eedd2f4fbf0-20220318
-X-UUID: 1332f2422c5d4a07880b7eedd2f4fbf0-20220318
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AADFD2E8402;
+        Fri, 18 Mar 2022 07:46:11 -0700 (PDT)
+X-UUID: 7bb114eceb36467d88dfde277c45a704-20220318
+X-UUID: 7bb114eceb36467d88dfde277c45a704-20220318
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
         (envelope-from <allen-kh.cheng@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 291640860; Fri, 18 Mar 2022 22:45:53 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 18 Mar 2022 22:45:52 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 18 Mar
- 2022 22:45:51 +0800
+        with ESMTP id 71824302; Fri, 18 Mar 2022 22:45:56 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Fri, 18 Mar 2022 22:45:55 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 18 Mar
+ 2022 22:45:54 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 18 Mar 2022 22:45:51 +0800
+ Transport; Fri, 18 Mar 2022 22:45:54 +0800
 From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
 To:     Matthias Brugger <matthias.bgg@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -43,9 +44,9 @@ CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         Ryder Lee <ryder.lee@kernel.org>,
         Hui Liu <hui.liu@mediatek.com>,
         Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Subject: [PATCH v4 13/22] arm64: dts: mt8192: Add mipi_tx node
-Date:   Fri, 18 Mar 2022 22:45:25 +0800
-Message-ID: <20220318144534.17996-14-allen-kh.cheng@mediatek.com>
+Subject: [PATCH v4 17/22] arm64: dts: mt8192: Add dpi node
+Date:   Fri, 18 Mar 2022 22:45:29 +0800
+Message-ID: <20220318144534.17996-18-allen-kh.cheng@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220318144534.17996-1-allen-kh.cheng@mediatek.com>
 References: <20220318144534.17996-1-allen-kh.cheng@mediatek.com>
@@ -56,34 +57,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add mipi_tx node for mt8192 SoC.
+Add dpi node for mt8192 SoC.
 
 Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
 ---
- arch/arm64/boot/dts/mediatek/mt8192.dtsi | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ arch/arm64/boot/dts/mediatek/mt8192.dtsi | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-index 2648f2847993..6b769fa5b427 100644
+index 71ad3adeed51..a77d405dd508 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -1110,6 +1110,16 @@
- 			};
+@@ -1236,6 +1236,17 @@
+ 			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
  		};
  
-+		mipi_tx0: dsi-dphy@11e50000 {
-+			compatible = "mediatek,mt8183-mipi-tx";
-+			reg = <0 0x11e50000 0 0x1000>;
-+			clocks = <&apmixedsys CLK_APMIXED_MIPID26M>;
-+			#clock-cells = <0>;
-+			#phy-cells = <0>;
-+			clock-output-names = "mipi_tx0_pll";
++		dpi0: dpi@14016000 {
++			compatible = "mediatek,mt8192-dpi";
++			reg = <0 0x14016000 0 0x1000>;
++			interrupts = <GIC_SPI 270 IRQ_TYPE_LEVEL_HIGH 0>;
++			clocks = <&mmsys CLK_MM_DPI_DPI0>,
++				 <&mmsys CLK_MM_DISP_DPI0>,
++				 <&apmixedsys CLK_APMIXED_TVDPLL>;
++			clock-names = "pixel", "engine", "pll";
 +			status = "disabled";
 +		};
 +
- 		i2c0: i2c@11f00000 {
- 			compatible = "mediatek,mt8192-i2c";
- 			reg = <0 0x11f00000 0 0x1000>,
+ 		iommu0: m4u@1401d000 {
+ 			compatible = "mediatek,mt8192-m4u";
+ 			reg = <0 0x1401d000 0 0x1000>;
 -- 
 2.18.0
 
