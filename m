@@ -2,109 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1202EC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 12:11:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 221FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 12:12:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231424AbiCRMM7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 08:12:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39954 "EHLO
+        id S236052AbiCRMNZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 08:13:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236056AbiCRMMt (ORCPT
+        with ESMTP id S229499AbiCRMNX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 08:12:49 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEEA3238D38
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 05:11:30 -0700 (PDT)
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com [209.85.208.200])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 361E23F17F
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 12:11:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1647605489;
-        bh=lvXN32xWMwqKUxNGexSgeJG3uEGExxJ/K8H5AwYMdqU=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=kqEGMtV6kkAJuSOZvgnINUJSB0RW0XzUn05VlSJ0gufn4qEtavenQbX5VCNuonizK
-         yA3cYqFQ58iV9XCBx8g3G0pWp/HrABQueM5SSih76JvZp8Eg6ZKGCh5KQu1jIvSXAR
-         0f75dN9nhtGlir3yDdNX3kQLJTTqwJEbP9W/t7LKjVomPnq9Gds/itri6Ikne6phkm
-         0Xxd2TQC0tyYSWMHMmsmxstidY5OZ2KOOQCEUFNMlKcadDbbLuCN06x18UtIfZ0/68
-         OqP8hPng3eLv6t9TqFaFOGRE0ec3ELDJLirDpyBo5n1216BTIjlvnXqc64SV7Ty8L0
-         Q5YLXQsrJNB9A==
-Received: by mail-lj1-f200.google.com with SMTP id h18-20020a2e3a12000000b00247e2a0e909so3377110lja.7
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 05:11:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lvXN32xWMwqKUxNGexSgeJG3uEGExxJ/K8H5AwYMdqU=;
-        b=lNWi9Rhio3MRZt4wUvsLXCkHTBXMEKr0Dve4XataHj55Kgh3N4SI/nXxJZ0s0VRTx7
-         kaNTgjvEL8KFzzO0g9IAQJhvrocKtywH2NVPrSFQ++0635/vpHSvFX5tqhm3vXkSmXCQ
-         4GT3yrLjJZFPp0W9O2C0ZDsOh50l7WKZxHtRy/Df77zuZ/HJM6Apg5B8vsyvwZDrzhcP
-         MlfbmZ+7w4CSYDm/shjJz6AZBvvpI84p1o9bIiw6k4RdpyighVx+oWMiDnzZG22/eMi/
-         oHBktE/aPBGea64OLQoeu588zvtvz0THbmSiUrc7m99bTlGrWt1LdbOerac4b1IPeNBJ
-         s1zA==
-X-Gm-Message-State: AOAM532ESju1LHR0+xU75qD4w3G8MvVYT88qBa/TY4VfSyoj2Hb16YdA
-        7/QqunFDeRpw2Mt1QO18j3U0jV4rnjqXDqyQ9iiBEgyoFCBlykuxGeIydl0fEsImiJujsPelw/X
-        LgL6wDPAep6nJYgQJ3sig2XP2wm5D/Ob4pMQQmWSZfw==
-X-Received: by 2002:a05:6512:3b95:b0:44a:1de:54df with SMTP id g21-20020a0565123b9500b0044a01de54dfmr3211546lfv.211.1647605488535;
-        Fri, 18 Mar 2022 05:11:28 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwWnQHUOh4+kIJLXpmMZOz6RYDvKlF9U3Ib9DEoUH8CIfpREXO3SjMF0GS+wtqHKsDbm2a3GQ==
-X-Received: by 2002:a05:6512:3b95:b0:44a:1de:54df with SMTP id g21-20020a0565123b9500b0044a01de54dfmr3211534lfv.211.1647605488317;
-        Fri, 18 Mar 2022 05:11:28 -0700 (PDT)
-Received: from localhost.localdomain (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id z1-20020a0565120c0100b00447a7c10e4dsm827132lfu.31.2022.03.18.05.11.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Mar 2022 05:11:27 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     arm@kernel.org, soc@kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Dinh Nguyen <dinguyen@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: [PATCH] arm64: dts: n5x: drop invalid property and fix edac node name
-Date:   Fri, 18 Mar 2022 13:10:44 +0100
-Message-Id: <20220318121044.108750-1-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.32.0
+        Fri, 18 Mar 2022 08:13:23 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 170521FAA18;
+        Fri, 18 Mar 2022 05:12:05 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C34171424;
+        Fri, 18 Mar 2022 05:12:04 -0700 (PDT)
+Received: from [10.57.88.118] (unknown [10.57.88.118])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B1CC63F7F5;
+        Fri, 18 Mar 2022 05:12:03 -0700 (PDT)
+Subject: Re: [PATCH 5.4 18/43] arm64: entry: Add macro for reading symbol
+ addresses from the trampoline
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+References: <20220317124527.672236844@linuxfoundation.org>
+ <20220317124528.180267687@linuxfoundation.org>
+ <113e7675-4263-2a20-81d0-9634f03511d2@gmail.com>
+From:   James Morse <james.morse@arm.com>
+Message-ID: <bc35996d-ec18-1923-38f4-81d16ed98b7a@arm.com>
+Date:   Fri, 18 Mar 2022 12:11:32 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <113e7675-4263-2a20-81d0-9634f03511d2@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The intel,sysmgr-syscon in EDAC/memory controller node is not a
-recognized and documented property, so drop it to fix error:
+Hi Florian,
 
-  sdr_edac@f87f8000: 'intel,sysmgr-syscon' does not match any of the regexes: 'pinctrl-[0-9]+'
+On 3/17/22 8:48 PM, Florian Fainelli wrote:
+> On 3/17/22 5:45 AM, Greg Kroah-Hartman wrote:
+>> From: James Morse <james.morse@arm.com>
+>>
+>> commit b28a8eebe81c186fdb1a0078263b30576c8e1f42 upstream.
+>>
+>> The trampoline code needs to use the address of symbols in the wider
+>> kernel, e.g. vectors. PC-relative addressing wouldn't work as the
+>> trampoline code doesn't run at the address the linker expected.
+>>
+>> tramp_ventry uses a literal pool, unless CONFIG_RANDOMIZE_BASE is
+>> set, in which case it uses the data page as a literal pool because
+>> the data page can be unmapped when running in user-space, which is
+>> required for CPUs vulnerable to meltdown.
+>>
+>> Pull this logic out as a macro, instead of adding a third copy
+>> of it.
+>>
+>> Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+>> Signed-off-by: James Morse <james.morse@arm.com>
+>> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> 
+> This commit causes a linking failure with CONFIG_ARM_SDE_INTERFACE=y
+> enabled in the kernel:
+> 
+>    LD      .tmp_vmlinux.kallsyms1
+> /local/users/fainelli/buildroot/output/arm64/host/bin/aarch64-linux-ld:
+> arch/arm64/kernel/entry.o: in function `__sdei_asm_exit_trampoline':
+> /local/users/fainelli/buildroot/output/arm64/build/linux-custom/arch/arm64/kernel/entry.S:1352:
+> undefined reference to `__sdei_asm_trampoline_next_handler'
+> make[2]: *** [Makefile:1100: vmlinux] Error 1
+> make[1]: *** [package/pkg-generic.mk:295:
+> /local/users/fainelli/buildroot/output/arm64/build/linux-custom/.stamp_built]
+> Error 2
+> make: *** [Makefile:27: _all] Error 2
 
-Align also the node name with Devicetree specification (generic, not
-specific, and EDAC is purely Linux term).
+... and with CONFIG_RANDOMIZE_BASE turned off, which is why allyesconfig didn't catch it.
+This is because I kept the next_handler bit of the label when it conflicted, which isn't needed
+because the __entry_tramp bit added by the macro serves the same purpose.
 
-Fixes: ef82c9be844f ("arm64: dts: n5x: add sdr edac support")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
----
- arch/arm64/boot/dts/intel/socfpga_n5x_socdk.dts | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+The below diff fixes it:
+----------%<----------
+diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
+index e4b5a15c2e2e..cfc0bb6c49f7 100644
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -1190,7 +1190,7 @@ __entry_tramp_data_start:
+  __entry_tramp_data_vectors:
+         .quad   vectors
+  #ifdef CONFIG_ARM_SDE_INTERFACE
+-__entry_tramp_data___sdei_asm_trampoline_next_handler:
++__entry_tramp_data___sdei_asm_handler:
+         .quad   __sdei_asm_handler
+  #endif /* CONFIG_ARM_SDE_INTERFACE */
+         .popsection                             // .rodata
+@@ -1319,7 +1319,7 @@ ENTRY(__sdei_asm_entry_trampoline)
+          */
+  1:     str     x4, [x1, #(SDEI_EVENT_INTREGS + S_ORIG_ADDR_LIMIT)]
+  
+-       tramp_data_read_var     x4, __sdei_asm_trampoline_next_handler
++       tramp_data_read_var     x4, __sdei_asm_handler
+         br      x4
+  ENDPROC(__sdei_asm_entry_trampoline)
+  NOKPROBE(__sdei_asm_entry_trampoline)
+----------%<----------
 
-diff --git a/arch/arm64/boot/dts/intel/socfpga_n5x_socdk.dts b/arch/arm64/boot/dts/intel/socfpga_n5x_socdk.dts
-index 50b29fa7ee01..62c66e52b656 100644
---- a/arch/arm64/boot/dts/intel/socfpga_n5x_socdk.dts
-+++ b/arch/arm64/boot/dts/intel/socfpga_n5x_socdk.dts
-@@ -26,11 +26,10 @@ memory {
- 	};
- 
- 	soc {
--		sdram_edac: sdr_edac@f87f8000 {
-+		sdram_edac: memory-controller@f87f8000 {
- 			compatible = "snps,ddrc-3.80a";
- 			reg = <0xf87f8000 0x400>;
- 			interrupts = <0 175 4>;
--			intel,sysmgr-syscon = <&sysmgr 0xb8>;
- 			status = "okay";
- 		};
- 	};
--- 
-2.32.0
+Good news - this didn't happen with v5.10.
 
+I don't see this in v5.4.185 yet.
+
+Greg/Sasha, what is least work for you?:
+A new version of this patch,
+A fixup on top of the series,
+Reposting the series with this fixed.
+
+
+Thanks for catching this!
+
+James
