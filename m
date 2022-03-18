@@ -2,81 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15F69C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 15:56:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0422BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 15:56:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238385AbiCRP5v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 11:57:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34860 "EHLO
+        id S238348AbiCRP6O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 11:58:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238323AbiCRP5d (ORCPT
+        with ESMTP id S238323AbiCRP6L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 11:57:33 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD7E391543
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 08:56:14 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22I4MHlZ013781;
-        Fri, 18 Mar 2022 10:55:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=PODMain02222019;
- bh=cmzcuuOB7zcZNMmhHOonmDSCH0EjGkWS73owvHUazrw=;
- b=McrFMSDsaeM1Laj+Cu9VSh8UD81stVpVG87oylaOijvKYbcOX94lOui2oIpoxpJn7vbo
- RUPBzVaqaANnWsRtdNxw5kaAFHTkpN+F6yOWeIlmncQB9dUDzLuQJ1LENyNTdF1CXO/p
- fCW0iuKIdIxjMIzhhYgelqpvYelCAt4INr7r/1nLNd0TgvIX0FX9/vhYp/JJFTFKIvkk
- aS/EsI8a03MSvb4iKn5kPpytrwLVgB+EHQMxbUFsLHEYhu+8SzWSv7p5N39he7rf52Fe
- EION/dZ5pgrhryEWii1QF5aMjuHT0Hw7BpPg6u92US4KdOawljrFS0kpRcEf71SbbKGp WQ== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3et5yp65wt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 18 Mar 2022 10:55:54 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Fri, 18 Mar
- 2022 15:55:52 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Fri, 18 Mar 2022 15:55:52 +0000
-Received: from vitaly-Legion-7-16ACHg6.ad.cirrus.com (unknown [198.90.238.229])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id A0788B16;
-        Fri, 18 Mar 2022 15:55:52 +0000 (UTC)
-From:   Vitaly Rodionov <vitalyr@opensource.cirrus.com>
-To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 0/6] Add new HW variants and fix few minor issues
-Date:   Fri, 18 Mar 2022 15:55:46 +0000
-Message-ID: <20220318155552.24751-1-vitalyr@opensource.cirrus.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: yKRNaiaVsfMRHalU3KpEpTdncN6ULcPp
-X-Proofpoint-GUID: yKRNaiaVsfMRHalU3KpEpTdncN6ULcPp
-X-Proofpoint-Spam-Reason: safe
+        Fri, 18 Mar 2022 11:58:11 -0400
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3004099ED3
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 08:56:48 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=cuibixuan@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V7XBZR6_1647619000;
+Received: from VM20210331-25.tbsite.net(mailfrom:cuibixuan@linux.alibaba.com fp:SMTPD_---0V7XBZR6_1647619000)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 18 Mar 2022 23:56:45 +0800
+From:   Bixuan Cui <cuibixuan@linux.alibaba.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     cuibixuan@linux.alibaba.com, rostedt@goodmis.org, mingo@redhat.com,
+        yi.zhang@huawei.com, jack@suse.cz
+Subject: [PATCH -next] jbd2: use the correct print format
+Date:   Fri, 18 Mar 2022 23:56:40 +0800
+Message-Id: <1647619000-17758-1-git-send-email-cuibixuan@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series adds new HW variants for Dell's Dolphin and Warlock,
-and also fixies few very minor issues.
+The print format error was found when using ftrace event:
+    <...>-1406 [000] .... 23599442.895823: jbd2_end_commit: dev 252,8 transaction -1866216965 sync 0 head -1866217368
+    <...>-1406 [000] .... 23599442.896299: jbd2_start_commit: dev 252,8 transaction -1866216964 sync 0
 
-Stefan Binding (5):
-  ALSA: hda/cs8409: Fix Warlock using dual mic configuration
-  ALSA: hda/cs8409: Re-order quirk table into ascending order
-  ALSA: hda/cs8409: Fix Full Scale Volume setting for all variants
-  ALSA: hda/cs8409: Support new Warlock MLK Variants
-  ALSA: hda/cs8409: Disable HSBIAS_SENSE_EN for Cyborg
+Print transaction and head with the unsigned format "%u" instead.
 
-Vitaly Rodionov (1):
-  ALSA: hda/cs8409: Add new Dolphin HW variants
+Fixes: 879c5e6b7cb4 ('jbd2: convert instrumentation from markers to tracepoints')
+Signed-off-by: Bixuan Cui <cuibixuan@linux.alibaba.com>
+---
+ include/trace/events/jbd2.h | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
- sound/pci/hda/patch_cs8409-tables.c | 68 +++++++++++++++++++++--------
- sound/pci/hda/patch_cs8409.c        | 47 +++++++++++---------
- sound/pci/hda/patch_cs8409.h        |  5 +++
- 3 files changed, 83 insertions(+), 37 deletions(-)
-
+diff --git a/include/trace/events/jbd2.h b/include/trace/events/jbd2.h
+index a4dfe005983d..5be1aa1691fb 100644
+--- a/include/trace/events/jbd2.h
++++ b/include/trace/events/jbd2.h
+@@ -40,7 +40,7 @@ DECLARE_EVENT_CLASS(jbd2_commit,
+ 	TP_STRUCT__entry(
+ 		__field(	dev_t,	dev			)
+ 		__field(	char,	sync_commit		  )
+-		__field(	int,	transaction		  )
++		__field(	tid_t,	transaction		  )
+ 	),
+ 
+ 	TP_fast_assign(
+@@ -49,7 +49,7 @@ DECLARE_EVENT_CLASS(jbd2_commit,
+ 		__entry->transaction	= commit_transaction->t_tid;
+ 	),
+ 
+-	TP_printk("dev %d,%d transaction %d sync %d",
++	TP_printk("dev %d,%d transaction %u sync %d",
+ 		  MAJOR(__entry->dev), MINOR(__entry->dev),
+ 		  __entry->transaction, __entry->sync_commit)
+ );
+@@ -97,8 +97,8 @@ TRACE_EVENT(jbd2_end_commit,
+ 	TP_STRUCT__entry(
+ 		__field(	dev_t,	dev			)
+ 		__field(	char,	sync_commit		  )
+-		__field(	int,	transaction		  )
+-		__field(	int,	head		  	  )
++		__field(	tid_t,	transaction		  )
++		__field(	tid_t,	head		  	  )
+ 	),
+ 
+ 	TP_fast_assign(
+@@ -108,7 +108,7 @@ TRACE_EVENT(jbd2_end_commit,
+ 		__entry->head		= journal->j_tail_sequence;
+ 	),
+ 
+-	TP_printk("dev %d,%d transaction %d sync %d head %d",
++	TP_printk("dev %d,%d transaction %u sync %d head %u",
+ 		  MAJOR(__entry->dev), MINOR(__entry->dev),
+ 		  __entry->transaction, __entry->sync_commit, __entry->head)
+ );
 -- 
-2.25.1
+2.19.1.6.gb485710b
 
