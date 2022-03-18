@@ -2,220 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70E76C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 08:07:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4333BC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 08:09:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233552AbiCRIIU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 04:08:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52770 "EHLO
+        id S233548AbiCRILE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 04:11:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233548AbiCRIIE (ORCPT
+        with ESMTP id S233521AbiCRILC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 04:08:04 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7954A23575B;
-        Fri, 18 Mar 2022 01:06:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647590806; x=1679126806;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=J/A+swafAWcLd7I4r60PvjBlylBDBrndxd23714fhpg=;
-  b=Z5BbommqlzEEG1hDX84IBVJhKtzEyyMzOyDORy5eHPmRNlC9nO//d6tl
-   7PxaGM2bRDdcdUnZBC2S5X6l8+HC3Aidp+WDPbspHBk+yGSwZNxZFIgU+
-   aH7/eAvPqDHfoBPANwAWm5W/csmUv551+gpR6x6JO/X9kH7AxX1zoheUC
-   hz8NwG67kiTDSr0RbHh9J6srWoPCDZiSqeebaFUCsKnTYPKO9vJNxt3lm
-   i6wa52mwnqn+6mDnTcJlOHke7lBAuAjTQn/GTJmQY06c+fWrFcd5wpktB
-   WBjjNoQRr7YN42g6LUWyPtIFetmGOZ7bpONxSZJqph5oG56Glzu6ALFTb
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="255917338"
-X-IronPort-AV: E=Sophos;i="5.90,191,1643702400"; 
-   d="scan'208";a="255917338"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 01:06:45 -0700
-X-IronPort-AV: E=Sophos;i="5.90,191,1643702400"; 
-   d="scan'208";a="541734771"
-Received: from zq-optiplex-7090.bj.intel.com ([10.238.156.125])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 01:06:41 -0700
-From:   Zqiang <qiang1.zhang@intel.com>
-To:     paulmck@kernel.org, frederic@kernel.org
-Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 1/2] rcu: Call rcu_nocb_rdp_deoffload() directly after rcuog/op kthreads spawn failed
-Date:   Fri, 18 Mar 2022 16:07:18 +0800
-Message-Id: <20220318080719.1501471-2-qiang1.zhang@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220318080719.1501471-1-qiang1.zhang@intel.com>
-References: <20220318080719.1501471-1-qiang1.zhang@intel.com>
+        Fri, 18 Mar 2022 04:11:02 -0400
+Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2132.outbound.protection.outlook.com [40.107.255.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D02648C7E4;
+        Fri, 18 Mar 2022 01:09:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=APp85Mg0nBONQApPOWzyiJ2OP53QXEiyCiEbeY8QxaEeBUqZdZoAeg5632bVGAyISesTJ2stW8jSHKLjVUPFhfvMVD82L7/4EBn7eyvJv2apPU4Tu02O0ct7bCfFOKafIVvAPneUfj7Sl+M8EaLo/KQDslJxjZtBUo97D0kZ5B5g/bp54DOfaPbbOLswy7RrquCFHa5/9fVgqg+i8Nz/RLG6CzYhbaLOSDF/EUclZp+YvAJefBVr8hiEwHMHKQbgyNOqo+oKEZlYbYbg23MDCsm1G/LHzSmglfXARqQkcFkkViBbObO2Ii4xhj7eNc46NMKKwxjU8eOBr8yNIAUGFg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=w5Jqp/4gcFrm3UGXbXyrognXL/xFgjXEti9YxUQ6Ot0=;
+ b=B1yJvjzXsTbk07/xscsL7RZ0cN9BBdhDN24tuHqE4Ui6qoNYHDHkxlb2YnBxLN2YPFBmCQ8OgvfGiR3kna4BjUaLMVjaDfrt/WQ0LrDwYW/Pq1njcYqnvQXIoglHONLW7Dv2XbUxIAIJPq1uw0fFoHRBNrLNZp86DseWTMZnSTJ2DoudYk9wmCzOtV8arPiyC8wz2PF+Z1o6hQWKK0IdQUtfsB46lrq6SqVcv+i7ZRuE3265U1580Fze+OB0wCH+8nVqmz9WSewtrMrWORLLWVMPADXqCnEIEJ8OLjCsvLy04yll54/J4pIE+1qy+01Ak0N5Asc2nwqsjJ/aYMHoVA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=aspeedtech.com; dmarc=pass action=none
+ header.from=aspeedtech.com; dkim=pass header.d=aspeedtech.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aspeedtech.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=w5Jqp/4gcFrm3UGXbXyrognXL/xFgjXEti9YxUQ6Ot0=;
+ b=DYuugi8nkD3XQVUn6zRU3XI9LWK8tyxdiT4xL7IKMYPKwRpiBeTwe/fnw+Z8MvqsKvtrCV41MbXLNWcrvhG5h5jFOx0z4JYmmeyNCb83Tq3zzgPjoucKmMY0z94C2mFAa1Ovo3RIz92cFLL1D7zdgzsEsn8HccwnXRTAK2xpECmXUXBfcjBbTBo/hX/fiWZFHaXGEQBciOjiX4sk006YJdiLbAayVin68ls64/3aPXr8XAV+w1q0ScC0stT2ZN+pOeErr7Ni2voeBSBmKgIqRp8qbtul1eg30aZFpjVvHG9MlGviPPBAufQo8+rwbuYDSuH4X7PocggmbxOu1f65EA==
+Received: from SG2PR06MB2315.apcprd06.prod.outlook.com (2603:1096:4:b::19) by
+ SG2PR06MB3823.apcprd06.prod.outlook.com (2603:1096:4:ae::16) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5081.14; Fri, 18 Mar 2022 08:09:35 +0000
+Received: from SG2PR06MB2315.apcprd06.prod.outlook.com
+ ([fe80::ac36:fcaf:45dc:f830]) by SG2PR06MB2315.apcprd06.prod.outlook.com
+ ([fe80::ac36:fcaf:45dc:f830%6]) with mapi id 15.20.5061.026; Fri, 18 Mar 2022
+ 08:09:35 +0000
+From:   Howard Chiu <howard_chiu@aspeedtech.com>
+To:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "joel@jms.id.au" <joel@jms.id.au>,
+        "andrew@aj.id.au" <andrew@aj.id.au>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     Troy Lee <troy_lee@aspeedtech.com>
+Subject: [PATCH v1] ARM: dts: aspeed: ast2600-evb: Enable RX delay for
+ MAC0/MAC1
+Thread-Topic: [PATCH v1] ARM: dts: aspeed: ast2600-evb: Enable RX delay for
+ MAC0/MAC1
+Thread-Index: Adg6mrvEVaC9ZcljR92LSXIT/D+xfQ==
+Date:   Fri, 18 Mar 2022 08:09:35 +0000
+Message-ID: <SG2PR06MB2315A7BAE2F1B384CDADB57FE6139@SG2PR06MB2315.apcprd06.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=aspeedtech.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c959ac70-e38c-4975-7afd-08da08b6a3f2
+x-ms-traffictypediagnostic: SG2PR06MB3823:EE_
+x-microsoft-antispam-prvs: <SG2PR06MB38237FF7F2923AA7D081DA22E6139@SG2PR06MB3823.apcprd06.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: lQamRmCZhxvGDqOdCYOQYcHRs1iI7ko+iEwl8qwFYc2NEZIrTr1/oCfmumScL9aMhc4JMayBgEYKHIHYqW0ocoamOmjM3h3A4JnL4mfKC6Mx1SmV2qGL9Im4fsKUtRjqnCiFGMoGO6i/LJUor8HsQHQ6CiA9a9ZUIPVJWsel0H8lYp+V11nw59+JomFzK79ck1kKYCi2goJmZb2CMNKfyO3aMxD03HP3YaeBOQOg/ayx3aPsNbqQV+shWGc024pYBLm/5g0bK7gBRr0iQBFNLT4kmgPrbNBI7SrDhjQ+4cpNyy1azEKGMv4w44V4l0DqyqMG5uk0APgDPyc1o/NH/HPWP0QEBN9fCXacJBczUXPIKe2D5jUSsVLG6Z9JA0T9pCu/LF8WITCMbuI1jeduMVixGv6OlE6hxrbr+lmjWnDQ/+aRg7NHLOMFyKhc1Yhtpuciro3wfJiPsOPuTumV+Lxy0/hvnCvY+ureqbmav8FeN3C/hH1AsX6HICso4S5eVJ2WFVf8epnVBPsiIPnaEDOxvRcwI7qR2h97DoAHfh4RUzaVz7O59U3mYDjNdPJncQMroAnMt6W8gAkRWqt0/CafD0fRV5p9IJ+xttTg5KrNgi6PmsfvxM9Hz1r+OL/av5LSGvipoe2jdl/UGBeotaoBs0jPspqX1NbZDE5rsqW8TQ7o8VRexZFJ41eTBFceezielBTHBlwavYngloqEqDCURC7DW2bM3yV8OR0QXPY3WXzYQmYUJH4qAZ10bNdhohVPA8FauojmfZY8xtQFfocQJ31QGsMBBBCg7oCyFbk=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB2315.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(396003)(346002)(39840400004)(376002)(366004)(136003)(508600001)(107886003)(76116006)(66446008)(4326008)(64756008)(66476007)(66556008)(38100700002)(66946007)(8676002)(26005)(186003)(71200400001)(966005)(9686003)(7696005)(6506007)(38070700005)(122000001)(55016003)(110136005)(5660300002)(2906002)(316002)(83380400001)(33656002)(86362001)(8936002)(52536014);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?DlYvnwgb2fbAmpS7DF9UYGORFClbZKvIB9hHZDE0WGBDarVSeOt/LY83oFzo?=
+ =?us-ascii?Q?b7vODTTBSA5dopGqtlgrgvR2HCJ0tt1kZUCycz6Zzt016ttqvfCvl86bzKDY?=
+ =?us-ascii?Q?nGiUEIhvop0RuU3tCcwejItFkiQf687/VRqxtddF4P0m7fxQ0lr11gytYPeo?=
+ =?us-ascii?Q?Lc1bhhwa53j/O0DdrQWp0TghzjWmLiFT4r8YqLixwGA6wMdyN6A1dtTSeAEV?=
+ =?us-ascii?Q?BpR2eFiy2z0afevhlWc0GRRxLPDptUHzBjThYcKH96jLyG5BAbq4kG9X8JYY?=
+ =?us-ascii?Q?Pu3i44WWvEAKrhxiq61KYbEBR7QV0XwONkgjt5n77wSLxDBEfcCHt0vtm4e/?=
+ =?us-ascii?Q?rsR32auj5MvNlnvcxX9N8o2aZ97RF916R7ZUHdu7eVe8a4G9NK4NVzg4A211?=
+ =?us-ascii?Q?Fy67UdS1NBMHDz51SA6tXOuC3cQq9J6PfD3T6hg7OWhDvbHTZbc977ljt7pw?=
+ =?us-ascii?Q?9lWCI2EaIu3yUs9uQEKRbU6hp8X7B/yAAsK5Cq5xzZzL56TQBIWw44qJe3tM?=
+ =?us-ascii?Q?PCYt6bYksqlBRwlHkVC+rFO40eAPO+9qAjGD6yTH9ibUWbamXx3hxjXqtt05?=
+ =?us-ascii?Q?fTS01vNILDaKiwSdmiptWeT6wLy/9L0ShwH+FU4oqWUih/hQlhrhOyTTI8Qa?=
+ =?us-ascii?Q?qtQioWU/UZsRZzT2Q7kcsSZlZ/80TGBBTmheIXg/aaEoD0h9swil1zB739yB?=
+ =?us-ascii?Q?xkUHVG7tRQhCyPwyz+oTdXkZEd6p7jAeFHQODI90fdoLrctB6+BfAt34YWE7?=
+ =?us-ascii?Q?O2h8mm7X34RbV499B3VxGLDiMu0pS0O0jlqAizUt4JKqqZl0xrIkdybf9Jds?=
+ =?us-ascii?Q?GzL0u3AcScZ1Fz1dhuaiBAwyjamCJUFefsxJzDsF9IYxmYOOMWEm3nnSGgyu?=
+ =?us-ascii?Q?TZVGf4U7T3SpzUrRh7uTM/seUfzBiuc0/rsG4H9YRmq+HeolbgMU6jXHjOX1?=
+ =?us-ascii?Q?hsgB6LNw4aiGyZRG0127XFYxHSC44/1QYnDQI/CWqOIIrria4AGjJWKaCI87?=
+ =?us-ascii?Q?wAh0sAZ3BayOoYNkelCz8X6xlZSkXm8DCy2vTIO6BBkPm/spfAJm4KKyx6vm?=
+ =?us-ascii?Q?DQegYd55iCzQycL1Bzevh2C2v9xufArOdJOgD8pX8//+dZ9/bKeMDQh1QKyv?=
+ =?us-ascii?Q?oigpFxoqyH/p9uECs7D8Xk9tWt/8Z9LXAmoY8NGt4nIfv3QzdcWDZkK1OC/n?=
+ =?us-ascii?Q?zIECuWqVX5UnB5sRiG8Zn4XjyF5jriXZDanRY3lGrVMHKx6BEps9cY/vmfrT?=
+ =?us-ascii?Q?Ojln3QLyVNosuhpWb22zA/3UU3RIujgZNh+iHLL46RSaLagArjuVNaIB/wbR?=
+ =?us-ascii?Q?mixgJWQpykqoJ5LSiP1dt91FikSQHDmpNgjvP/ABVOQPlhb8tZxgh5d9L0VL?=
+ =?us-ascii?Q?igesNBZAG7wU6SSbhDKpnUDEGHdtXe5i4CIIqrNxh9nyaxv0zlBQa2I3NCAO?=
+ =?us-ascii?Q?avr8z7vb3+EJsoe7v+dmKdYa2jSRkUVF254Y7zSoUHbqMuAy9oPLFA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: aspeedtech.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB2315.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c959ac70-e38c-4975-7afd-08da08b6a3f2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Mar 2022 08:09:35.3681
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43d4aa98-e35b-4575-8939-080e90d5a249
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: NsNaXlU/GOh2uLkxy6wWhLCZERr/y3+n0SNLMJTSG2z3qS+q4ReNOFx6hVbFTQuQ7nOYbmKNbUCEuCH3PieuIlyOnQYeEuROJEskcHZTteQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR06MB3823
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the rcuog/op kthreads spawn failed, the offload rdp need to
-be deoffload, otherwise because target rdp is considered offloaded
-but nothing actually handles the callbacks.
+Since mac0/1 and mac2/3 are physically located on different die,
+they have different properties by nature, which is mac0/1 has smaller delay=
+ step.
 
-Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+The property 'phy-mode' on ast2600 mac0 and mac1 is recommended to set to '=
+rgmii-rxid'
+which enables the RX interface delay from the PHY chip.
+Refer page 45 of SDK User Guide v08.00
+https://github.com/AspeedTech-BMC/openbmc/releases/download/v08.00/SDK_User=
+_Guide_v08.00.pdf
+
+Set mac delay according to the mactest result.
+
+Signed-off-by: Howard Chiu <howard_chiu@aspeedtech.com>
 ---
- kernel/rcu/tree_nocb.h | 75 +++++++++++++++++++++++++++++++++---------
- 1 file changed, 59 insertions(+), 16 deletions(-)
+ arch/arm/boot/dts/aspeed-ast2600-evb.dts | 19 +++++++++++++++++--
+ 1 file changed, 17 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
-index 46694e13398a..e8265e4ec5ee 100644
---- a/kernel/rcu/tree_nocb.h
-+++ b/kernel/rcu/tree_nocb.h
-@@ -972,10 +972,7 @@ static int rdp_offload_toggle(struct rcu_data *rdp,
- 	}
- 	raw_spin_unlock_irqrestore(&rdp_gp->nocb_gp_lock, flags);
- 
--	if (wake_gp)
--		wake_up_process(rdp_gp->nocb_gp_kthread);
--
--	return 0;
-+	return wake_gp;
- }
- 
- static long rcu_nocb_rdp_deoffload(void *arg)
-@@ -983,9 +980,18 @@ static long rcu_nocb_rdp_deoffload(void *arg)
- 	struct rcu_data *rdp = arg;
- 	struct rcu_segcblist *cblist = &rdp->cblist;
- 	unsigned long flags;
--	int ret;
-+	int wake_gp;
-+	struct rcu_data *rdp_gp = rdp->nocb_gp_rdp;
-+	int condition;
- 
--	WARN_ON_ONCE(rdp->cpu != raw_smp_processor_id());
-+	/*
-+	 * The rcu_nocb_rdp_deoffload() will be called directly when
-+	 * rcuog/op spawn failed, because at this time the rdp->cpu
-+	 * is not online(cpu_online(rdp->cpu) return false), the deoffload
-+	 * operation was not performed on rdp->cpu, to avoid warnings
-+	 * add cpu_online(rdp->cpu) condition judgment.
-+	 */
-+	WARN_ON_ONCE((rdp->cpu != raw_smp_processor_id()) && cpu_online(rdp->cpu));
- 
- 	pr_info("De-offloading %d\n", rdp->cpu);
- 
-@@ -1009,10 +1015,33 @@ static long rcu_nocb_rdp_deoffload(void *arg)
- 	 */
- 	rcu_segcblist_set_flags(cblist, SEGCBLIST_RCU_CORE);
- 	invoke_rcu_core();
--	ret = rdp_offload_toggle(rdp, false, flags);
--	swait_event_exclusive(rdp->nocb_state_wq,
--			      !rcu_segcblist_test_flags(cblist, SEGCBLIST_KTHREAD_CB |
--							SEGCBLIST_KTHREAD_GP));
-+	wake_gp = rdp_offload_toggle(rdp, false, flags);
+diff --git a/arch/arm/boot/dts/aspeed-ast2600-evb.dts b/arch/arm/boot/dts/a=
+speed-ast2600-evb.dts
+index b7eb552640cb..db16ba307e97 100644
+--- a/arch/arm/boot/dts/aspeed-ast2600-evb.dts
++++ b/arch/arm/boot/dts/aspeed-ast2600-evb.dts
+@@ -103,7 +103,7 @@ ethphy3: ethernet-phy@0 {
+ &mac0 {
+ 	status =3D "okay";
+=20
+-	phy-mode =3D "rgmii";
++	phy-mode =3D "rgmii-rxid";
+ 	phy-handle =3D <&ethphy0>;
+=20
+ 	pinctrl-names =3D "default";
+@@ -114,7 +114,7 @@ &mac0 {
+ &mac1 {
+ 	status =3D "okay";
+=20
+-	phy-mode =3D "rgmii";
++	phy-mode =3D "rgmii-rxid";
+ 	phy-handle =3D <&ethphy1>;
+=20
+ 	pinctrl-names =3D "default";
+@@ -141,6 +141,21 @@ &mac3 {
+ 	pinctrl-0 =3D <&pinctrl_rgmii4_default>;
+ };
+=20
++&syscon {
++	mac0-clk-delay =3D <0x10 0x0a
++			  0x10 0x10
++			  0x10 0x10>;
++	mac1-clk-delay =3D <0x10 0x0a
++			  0x10 0x10
++			  0x10 0x10>;
++	mac2-clk-delay =3D <0x08 0x04
++			  0x08 0x04
++			  0x08 0x04>;
++	mac3-clk-delay =3D <0x08 0x04
++			  0x08 0x04
++			  0x08 0x04>;
++};
 +
-+	mutex_lock(&rdp_gp->nocb_gp_kthread_mutex);
-+	if (rdp_gp->nocb_gp_kthread) {
-+		if (wake_gp)
-+			wake_up_process(rdp_gp->nocb_gp_kthread);
-+
-+		if (rdp->nocb_cb_kthread) {
-+			condition = SEGCBLIST_KTHREAD_CB | SEGCBLIST_KTHREAD_GP;
-+		} else {
-+			/*
-+			 *If rcuop kthread spawn failed, direct remove SEGCBLIST_KTHREAD_CB
-+			 *just wait SEGCBLIST_KTHREAD_GP to be cleared.
-+			 */
-+			condition = SEGCBLIST_KTHREAD_GP;
-+			rcu_segcblist_clear_flags(&rdp->cblist, SEGCBLIST_KTHREAD_CB);
-+		}
-+		swait_event_exclusive(rdp->nocb_state_wq,
-+					!rcu_segcblist_test_flags(cblist, condition));
-+	} else {
-+		rcu_nocb_lock_irqsave(rdp, flags);
-+		rcu_segcblist_clear_flags(&rdp->cblist,
-+				SEGCBLIST_KTHREAD_CB | SEGCBLIST_KTHREAD_GP);
-+		rcu_nocb_unlock_irqrestore(rdp, flags);
-+	}
-+	mutex_unlock(&rdp_gp->nocb_gp_kthread_mutex);
-+
- 	/* Stop nocb_gp_wait() from iterating over this structure. */
- 	list_del_rcu(&rdp->nocb_entry_rdp);
- 	/*
-@@ -1035,7 +1064,7 @@ static long rcu_nocb_rdp_deoffload(void *arg)
- 	WARN_ON_ONCE(rcu_cblist_n_cbs(&rdp->nocb_bypass));
- 
- 
--	return ret;
-+	return 0;
- }
- 
- int rcu_nocb_cpu_deoffload(int cpu)
-@@ -1067,7 +1096,8 @@ static long rcu_nocb_rdp_offload(void *arg)
- 	struct rcu_data *rdp = arg;
- 	struct rcu_segcblist *cblist = &rdp->cblist;
- 	unsigned long flags;
--	int ret;
-+	int wake_gp;
-+	struct rcu_data *rdp_gp = rdp->nocb_gp_rdp;
- 
- 	WARN_ON_ONCE(rdp->cpu != raw_smp_processor_id());
- 	/*
-@@ -1077,6 +1107,9 @@ static long rcu_nocb_rdp_offload(void *arg)
- 	if (!rdp->nocb_gp_rdp)
- 		return -EINVAL;
- 
-+	if (WARN_ON_ONCE(!rdp_gp->nocb_gp_kthread))
-+		return -EINVAL;
-+
- 	pr_info("Offloading %d\n", rdp->cpu);
- 
- 	/*
-@@ -1111,7 +1144,9 @@ static long rcu_nocb_rdp_offload(void *arg)
- 	 *      WRITE flags               READ callbacks
- 	 *      rcu_nocb_unlock()         rcu_nocb_unlock()
- 	 */
--	ret = rdp_offload_toggle(rdp, true, flags);
-+	wake_gp = rdp_offload_toggle(rdp, true, flags);
-+	if (wake_gp)
-+		wake_up_process(rdp_gp->nocb_gp_kthread);
- 	swait_event_exclusive(rdp->nocb_state_wq,
- 			      rcu_segcblist_test_flags(cblist, SEGCBLIST_KTHREAD_CB) &&
- 			      rcu_segcblist_test_flags(cblist, SEGCBLIST_KTHREAD_GP));
-@@ -1124,7 +1159,7 @@ static long rcu_nocb_rdp_offload(void *arg)
- 	rcu_segcblist_clear_flags(cblist, SEGCBLIST_RCU_CORE);
- 	rcu_nocb_unlock_irqrestore(rdp, flags);
- 
--	return ret;
-+	return 0;
- }
- 
- int rcu_nocb_cpu_offload(int cpu)
-@@ -1246,7 +1281,7 @@ static void rcu_spawn_cpu_nocb_kthread(int cpu)
- 				"rcuog/%d", rdp_gp->cpu);
- 		if (WARN_ONCE(IS_ERR(t), "%s: Could not start rcuo GP kthread, OOM is now expected behavior\n", __func__)) {
- 			mutex_unlock(&rdp_gp->nocb_gp_kthread_mutex);
--			return;
-+			goto end;
- 		}
- 		WRITE_ONCE(rdp_gp->nocb_gp_kthread, t);
- 		if (kthread_prio)
-@@ -1258,12 +1293,20 @@ static void rcu_spawn_cpu_nocb_kthread(int cpu)
- 	t = kthread_run(rcu_nocb_cb_kthread, rdp,
- 			"rcuo%c/%d", rcu_state.abbr, cpu);
- 	if (WARN_ONCE(IS_ERR(t), "%s: Could not start rcuo CB kthread, OOM is now expected behavior\n", __func__))
--		return;
-+		goto end;
- 
- 	if (kthread_prio)
- 		sched_setscheduler_nocheck(t, SCHED_FIFO, &sp);
- 	WRITE_ONCE(rdp->nocb_cb_kthread, t);
- 	WRITE_ONCE(rdp->nocb_gp_kthread, rdp_gp->nocb_gp_kthread);
-+	return;
-+end:
-+	mutex_lock(&rcu_state.barrier_mutex);
-+	if (rcu_rdp_is_offloaded(rdp)) {
-+		rcu_nocb_rdp_deoffload(rdp);
-+		cpumask_clear_cpu(cpu, rcu_nocb_mask);
-+	}
-+	mutex_unlock(&rcu_state.barrier_mutex);
- }
- 
- /* How many CB CPU IDs per GP kthread?  Default of -1 for sqrt(nr_cpu_ids). */
--- 
+ &emmc_controller {
+ 	status =3D "okay";
+ };
+--=20
 2.25.1
 
