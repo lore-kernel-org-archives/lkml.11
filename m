@@ -2,134 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF330C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 00:12:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 077E0C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 00:12:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230484AbiCRANi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 20:13:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49876 "EHLO
+        id S230490AbiCRAOA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 20:14:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230470AbiCRANd (ORCPT
+        with ESMTP id S230470AbiCRAN7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 20:13:33 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 86E87141D9E;
-        Thu, 17 Mar 2022 17:12:13 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 22I05gcE000704;
-        Thu, 17 Mar 2022 19:05:42 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 22I05eqi000699;
-        Thu, 17 Mar 2022 19:05:40 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Thu, 17 Mar 2022 19:05:40 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Bill Wendling <morbo@google.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Juergen Gross <jgross@suse.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>, llvm@lists.linux.dev,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-toolchains <linux-toolchains@vger.kernel.org>
-Subject: Re: [PATCH v5] x86: use builtins to read eflags
-Message-ID: <20220318000540.GO614@gate.crashing.org>
-References: <CAKwvOdkk-C8HMemKs4+yoxvNDgTLmvZG1rmwjVXBqhsQ-cED5g@mail.gmail.com> <CAHk-=whJfKN8Jag=8DS=pbZR3TY90znUOP6Km+TLRJ9dZEgNqw@mail.gmail.com> <CAGG=3QW2ey2w91TxqJ6tzfJOswhTce2e0QTW7kAWyvxeiO+VNg@mail.gmail.com> <CAHk-=whn3iYE7gZM4vHx1kFhWBD2P9Wvmcyj8OOqv=y_7nemGQ@mail.gmail.com> <CAGG=3QWC9VS9RdGFTwY8VGqujDnFYnRTT1dQ6kkVr+0SRk6COg@mail.gmail.com> <CAHk-=wh=x7oCk05JD1=6XNsvvgpsidRWupoqySw1zODmvNy9Ug@mail.gmail.com> <CAGG=3QWcKof_NXrC0kznM2ikwTA00AgUJrcWhKBTitmjCuOxqw@mail.gmail.com> <CAHk-=wj=aK2T+h=rRJL4jDDTgV2U533E_duroCoVSUfkvYd0OQ@mail.gmail.com> <20220317231959.GN614@gate.crashing.org> <CAHk-=wgHgSJ-suTT6V6_2USPDrdmQweLR_M_YHjb8OsQvYWn-w@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHk-=wgHgSJ-suTT6V6_2USPDrdmQweLR_M_YHjb8OsQvYWn-w@mail.gmail.com>
-User-Agent: Mutt/1.4.2.3i
+        Thu, 17 Mar 2022 20:13:59 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4886F19752B
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 17:12:42 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id dr20so13680600ejc.6
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 17:12:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2Zw9lPFduJ2icojxhfJ3aRjvx7VBmO2urvyYDaLJ4d0=;
+        b=QMhgbox8xCb6ZSHg6qb0nNgah3j0TTlKYxHwcoQrl/cBMnwf4ZupJHJTrgJFw1csLO
+         g1QvwAy3Ivjs5kB+3lKnBlk25Xek9CCmKA1EGxMrbFc4YNYz+bwCOl0GB+vbKkHq5OuM
+         64BLXfm8aEmJXYfZZ7n6OAY4gaM6+1LKmPmSU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2Zw9lPFduJ2icojxhfJ3aRjvx7VBmO2urvyYDaLJ4d0=;
+        b=D348+fV6XVgSiw2rFcyZsWSsHpu69r6YGCmxPSx/HuZM/D1B9/kR06lo9NE1K2sFG3
+         Jb32R35k7VciQlRHPs9d3gVavm/e6b/qtJqbjRvnwaDTPSsxmeJRLb7l0kvppq1uttMd
+         ENHrQkyYMuPbrGITYCZG/4+NWtLpIt4KrMbfKdSX76n7qG6S+/8JLhyD9BwL7yvO580e
+         N4Xdev1CA2b/gynEh0tU8mxH9DhqqiRDTF7u3gybdMOfH4LRxG0lznm69mv3zsyIEwh+
+         PPBAYF2nqVNVkYualDFSKV3B7tTlXSJQAoaasAzPXfCsm9MKJ4BCQqV2ENKRN5B9/RZ2
+         wb5A==
+X-Gm-Message-State: AOAM5309+wzrSIo289V9tj8BlPqHB/RJAZ/3C5n/ZxbefJRAYhvDGTT5
+        MagG/xMWSLzI9OaR3nIGWkh16VoDrO8WH0i7dIE=
+X-Google-Smtp-Source: ABdhPJyJuL3JkABOMFmG5b3tOd1oGshpgHlfkv9E7odNJVWj8kejOkf/4GVTVoKW5G2VeFOugxd+8A==
+X-Received: by 2002:a17:906:848f:b0:6cf:7234:8ae with SMTP id m15-20020a170906848f00b006cf723408aemr6915159ejx.620.1647562360407;
+        Thu, 17 Mar 2022 17:12:40 -0700 (PDT)
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com. [209.85.221.41])
+        by smtp.gmail.com with ESMTPSA id m28-20020a17090672dc00b006df88565a2dsm2217390ejl.121.2022.03.17.17.12.38
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Mar 2022 17:12:39 -0700 (PDT)
+Received: by mail-wr1-f41.google.com with SMTP id u10so9631120wra.9
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 17:12:38 -0700 (PDT)
+X-Received: by 2002:a5d:6f04:0:b0:203:ed96:8212 with SMTP id
+ ay4-20020a5d6f04000000b00203ed968212mr3631950wrb.679.1647562358403; Thu, 17
+ Mar 2022 17:12:38 -0700 (PDT)
+MIME-Version: 1.0
+References: <1647269217-14064-1-git-send-email-quic_vpolimer@quicinc.com> <1647269217-14064-3-git-send-email-quic_vpolimer@quicinc.com>
+In-Reply-To: <1647269217-14064-3-git-send-email-quic_vpolimer@quicinc.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 17 Mar 2022 17:12:25 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=U5O8aZqQxtx2MGz791SiQtSwMBx2ww3J5qFaG=W9skjA@mail.gmail.com>
+Message-ID: <CAD=FV=U5O8aZqQxtx2MGz791SiQtSwMBx2ww3J5qFaG=W9skjA@mail.gmail.com>
+Subject: Re: [PATCH v6 2/5] arm64: dts: qcom: sm7280: remove
+ assigned-clock-rate property for mdp clk
+To:     Vinod Polimera <quic_vpolimer@quicinc.com>
+Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        quic_kalyant <quic_kalyant@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 04:31:19PM -0700, Linus Torvalds wrote:
-> On Thu, Mar 17, 2022 at 4:25 PM Segher Boessenkool
-> <segher@kernel.crashing.org> wrote:
-> >
-> > > I still think that from a sanity standpoint, it would be good to
-> > > actually strengthen the semantics of "asm volatile" to literally act
-> > > as - and be ordered with - volatile memory accesses.
-> > >
-> > > But I guess that's water under the bridge.
-> >
-> > That is what it has actually done since forever.  See C 5.1.2.3.  For
-> > GCC, "asm volatile" has a side effect like in /2 there as well, as does
-> > unspec_volatile (an internal GCC thing used to implement certain
-> > builtins, among other things).
-> 
-> Oh, so two "asm volatile" statements _are_ in fact defined to be
-> ordered wrt each other?
+Hi,
 
-Colloquially you could say that.  But that statement can be understood
-to mean more than the actual guarantee (and it is also much less than
-it, oin the positive side).
+On Mon, Mar 14, 2022 at 7:47 AM Vinod Polimera
+<quic_vpolimer@quicinc.com> wrote:
+>
+> Drop the assigned clock rate property and vote on the mdp clock as per
+> calculated value during the usecase.
+>
+> This patch is dependent on below patch
+> https://patchwork.kernel.org/patch/12774067/
 
-> Because the gcc docs certainly don't say that ;(
+Some nits on how you're referring to the dependent patch:
 
-Older GCC docs said
-  You will also want to add the volatile keyword if the memory affected
-  is not listed in the inputs or outputs of the asm, as the `memory'
-  clobber does not count as a side-effect of the asm.
+1. In the commit message it's really nice to also include the subject
+line of the patch so someone looking at the commit after it lands can
+more easily identify the patch you depend on.
 
-and
-  The volatile keyword indicates that the instruction has important
-  side-effects. GCC will not delete a volatile asm if it is reachable.
-  (The instruction can still be deleted if GCC can prove that
-  control-flow will never reach the location of the instruction.) Note
-  that even a volatile asm instruction can be moved relative to other
-  code, including across jump instructions.
+2. It's better to use links that have the message ID in them. In the
+past patchwork's magic IDs have been list.
 
-and
-  Similarly, you can't expect a sequence of volatile asm instructions to
-  remain perfectly consecutive. If you want consecutive output, use a
-  single asm. Also, GCC will perform some optimizations across a
-  volatile asm instruction; GCC does not “forget everything” when it
-  encounters a volatile asm instruction the way some other compilers do.
+So I'd write:
 
-The internal assembler docs were rewritten later, because they were
-considered too terse, too hard for users to understand.  But they may
-have lost some clarity in the process.
+This patch is dependent on the patch ("drm/msm/disp/dpu1: set mdp clk
+to the maximum frequency in opp table during probe") [1].
 
-> Yeah, yeah, dead code can be removed, whether volatile or not. That's
-> true of "*(volatile int *)x" too. It's not the dead code that is the
-> interesting case, though..
-
-Internally to GCC this is the same in most ways, too; it's no accident
-this things correspond so well :-)
-
-> Is this also well-defined ordering-wise:
-> 
->     asm volatile("do_something");
->     WRITE_ONCE(x, 1);
-> 
-> (where "WRITE_ONCE()" is that kernel macro that just uses a volatile
-> pointer assignment to force the access)?
-
-The macro in asm-generic is
-
-#define __WRITE_ONCE(x, val)                                            \
-do {                                                                    \
-        *(volatile typeof(x) *)&(x) = (val);                            \
-} while (0)
-
-which will work fine given the undocumented C extension I mentioned in
-https://gcc.gnu.org/PR33053 (this will be part of C2x as well btw).
-
-I don't know if all arch-specific versions are fine.
-
-> And could we get that documented?
-
-Could you open a GCC PR for it?  I can do it, but you know better what
-you want, and I might forget, etc.
+[1] https://lore.kernel.org/r/1647269217-14064-2-git-send-email-quic_vpolimer@quicinc.com/
 
 
-Segher
+> Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
+> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+> ---
+>  arch/arm64/boot/dts/qcom/sc7280.dtsi | 9 ++-------
+>  1 file changed, 2 insertions(+), 7 deletions(-)
+
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
