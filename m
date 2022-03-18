@@ -2,148 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CB9EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 10:14:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC268C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 10:18:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234930AbiCRKQJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 06:16:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40258 "EHLO
+        id S234945AbiCRKTr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 06:19:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234972AbiCRKPv (ORCPT
+        with ESMTP id S234924AbiCRKTp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 06:15:51 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64F9D122996
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 03:14:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=C36zEMNSdev/DAu0BCtj7AW7JfU0
-        pw9J2U3bRNfcxa0=; b=xAm+A5eMID7H7nDHXTCWlD3uMBiSd/9+beKehSe9u6Lj
-        ty8yB+DR8HWCUtEV2PD9RM/FWaQXKmQmv2osR1SbwLfReNUwOj1cyMyOsgn7wPi8
-        xsXFSyU7gSuw/c1TgQyX+JY6xVrLo8fpxH6HVpFwu60mVw54lhvoDK3a5d+dIhQ=
-Received: (qmail 3854432 invoked from network); 18 Mar 2022 11:14:06 +0100
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 18 Mar 2022 11:14:06 +0100
-X-UD-Smtp-Session: l3s3148p1@FwEaaHvahhBZD+8H
-Date:   Fri, 18 Mar 2022 11:14:05 +0100
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Dung Nguyen <dung.nguyen.zy@renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
-        Mark Brown <broonie@kernel.org>,
-        linux-renesas-soc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] memory: renesas-rpc-if: Fix HF/OSPI data transfer in
- Manual mode
-Message-ID: <YjRbbbn9U9bff48m@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Dung Nguyen <dung.nguyen.zy@renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
-        Mark Brown <broonie@kernel.org>, linux-renesas-soc@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <b409ea3fae4a6778fd6b44815ad17c9e8e10df87.1647512831.git.geert+renesas@glider.be>
+        Fri, 18 Mar 2022 06:19:45 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 796001FB518;
+        Fri, 18 Mar 2022 03:18:22 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KKg0f6BlmzfYnH;
+        Fri, 18 Mar 2022 18:16:50 +0800 (CST)
+Received: from huawei.com (10.67.174.197) by kwepemi500013.china.huawei.com
+ (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 18 Mar
+ 2022 18:18:19 +0800
+From:   Xu Kuohai <xukuohai@huawei.com>
+To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>
+Subject: [PATCH bpf-next] bpf, arm64: sign return address for jited code
+Date:   Fri, 18 Mar 2022 06:29:36 -0400
+Message-ID: <20220318102936.838459-1-xukuohai@huawei.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="OtcT9K0vzTCh0l+F"
-Content-Disposition: inline
-In-Reply-To: <b409ea3fae4a6778fd6b44815ad17c9e8e10df87.1647512831.git.geert+renesas@glider.be>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.197]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemi500013.china.huawei.com (7.221.188.120)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Sign return address for jited code when the kernel is built with pointer
+authentication enabled.
 
---OtcT9K0vzTCh0l+F
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+1. Sign lr with paciasp instruction before lr is pushed to stack. Since
+   paciasp acts like landing pads for function entry, no need to insert
+   bti instruction before paciasp.
 
-Hi Geert,
+2. Authenticate lr with autiasp instruction after lr is poped from stack.
 
-thank you for the patch!
+Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
+---
+ arch/arm64/net/bpf_jit.h      |  3 +++
+ arch/arm64/net/bpf_jit_comp.c | 11 +++++++++--
+ 2 files changed, 12 insertions(+), 2 deletions(-)
 
-> Lightly (read-only) tested on:
->   - Salvator-XS with R-Car M3-W ES1.0 with HyperFLASH,
->   - Falcon with R-Car V3U ES1.0 with QSPI.
+diff --git a/arch/arm64/net/bpf_jit.h b/arch/arm64/net/bpf_jit.h
+index dd59b5ad8fe4..679c80aa1f2e 100644
+--- a/arch/arm64/net/bpf_jit.h
++++ b/arch/arm64/net/bpf_jit.h
+@@ -249,6 +249,9 @@
+ /* HINTs */
+ #define A64_HINT(x) aarch64_insn_gen_hint(x)
+ 
++#define A64_PACIASP A64_HINT(AARCH64_INSN_HINT_PACIASP)
++#define A64_AUTIASP A64_HINT(AARCH64_INSN_HINT_AUTIASP)
++
+ /* BTI */
+ #define A64_BTI_C  A64_HINT(AARCH64_INSN_HINT_BTIC)
+ #define A64_BTI_J  A64_HINT(AARCH64_INSN_HINT_BTIJ)
+diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+index e850c69e128c..5dcf45e5944e 100644
+--- a/arch/arm64/net/bpf_jit_comp.c
++++ b/arch/arm64/net/bpf_jit_comp.c
+@@ -192,7 +192,7 @@ static bool is_addsub_imm(u32 imm)
+ }
+ 
+ /* Tail call offset to jump into */
+-#if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL)
++#if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL) || IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL)
+ #define PROLOGUE_OFFSET 8
+ #else
+ #define PROLOGUE_OFFSET 7
+@@ -233,8 +233,11 @@ static int build_prologue(struct jit_ctx *ctx, bool ebpf_from_cbpf)
+ 	 *
+ 	 */
+ 
++	/* Sign lr */
++	if (IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL))
++		emit(A64_PACIASP, ctx);
+ 	/* BTI landing pad */
+-	if (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL))
++	else if (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL))
+ 		emit(A64_BTI_C, ctx);
+ 
+ 	/* Save FP and LR registers to stay align with ARM64 AAPCS */
+@@ -529,6 +532,10 @@ static void build_epilogue(struct jit_ctx *ctx)
+ 	/* Set return value */
+ 	emit(A64_MOV(1, A64_R(0), r0), ctx);
+ 
++	/* Authenticate lr */
++	if (IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL))
++		emit(A64_AUTIASP, ctx);
++
+ 	emit(A64_RET(A64_LR), ctx);
+ }
+ 
+-- 
+2.30.2
 
-I (also lightly) tested writing on the V3U and it seems to still work,
-even with the problematic cases we needed to fix earlier.
-
->       Note: Alternatively, rpcif_manual_xfer() could bypass regmap and
->       use {read,write}[bwl]() directly, cfr. commit 0d37f69cacb33435
->       ("memory: renesas-rpc-if: Correct QSPI data transfer in Manual
->       mode") in the BSP.
-
-As discuseed via IRC, I don't like bypassing regmap. I prefer your
-solution here.
-
-> @@ -171,18 +171,32 @@ static int rpcif_reg_read(void *context, unsigned int reg, unsigned int *val)
-
-Before this function is a comment which needs to be updated (away from
-SMENR_SPIDE to xfer_size).
-
-> +		switch (rpc->xfer_size) {
-> +		case 1:
->  			*val = readb(rpc->base + reg);
->  			return 0;
-> -		} else if (spide == 0xC) {
-> +
-> +		case 2:
->  			*val = readw(rpc->base + reg);
->  			return 0;
-> -		} else if (spide != 0xF) {
-> +
-> +		case 4:
-> +		case 8:
-
-I think it is more readable to add here:
-
-  			*val = readl(rpc->base + reg);
-  			return 0;
-
-> +			break;
-
-... and remove this break ...
-
-
-> +
-> +		default:
->  			return -EILSEQ;
->  		}
-> +		break;
-
-... and this one. Same for the write function. I am not strict on this
-one, but I think this make following the logic easier.
-
-Rest looks good. I like the additional checks!
-
-All the best,
-
-   Wolfram
-
-
---OtcT9K0vzTCh0l+F
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmI0W2kACgkQFA3kzBSg
-KbYjPBAAnH/w2JDoX3xlZOOeiOYsVAWlR7R19tb/2I8echT/IqHjega4sm1hq5bj
-KWyrKP5f9aPR/GpFTSDIA1OByx/xQtqkjdCQYH2uMA3Svpc4j2tPb99m2irc6N35
-PO1XXiHoszB7t7WQlVbgovRo1eqkMCGaPOuNjHS2mtQe40HTEG4/i9j5MSjPmD7H
-vhXOth7tqgy30UTyTUkTvUAdaeRY5NBwN0IMqLmDPLs53YSbmiBD2NXYntBfJtNw
-la7yyHCF2YU9cuvcES21D1nFLZx6BQrkqTXtkz0UYYz/RDAlX8P7IOE31Mxr6ChW
-v4ni0aqD4NunTnHAZvft2noaXQ9uq74kYiFVpEbpKYox5ZfF1gpY1yXZOOKkxYZu
-ISAMdLE9CPZJapvvqEsOADIcM81YPCwsUqa0Ui6gKN/mfo/aJ6B/zOXiLf2K10Gr
-V2MLlLcPrA3AiHFc1KTJa/ANRITAlOuNxVhZF09enaTSr5FED+Yu7thW8s1WiMSu
-QMH+NIxfKpY8aIAnOeMVQ62PefIeyk+wWX/mRA/1WzxTmMdNk6QP9uEsQPgRs1yC
-vD9HxE8zEqwnpbdUeGlpzC51CGuTwctTGot/nfiA97oeQSAVxLi3JAWAApZRZ/mn
-Zj30/lWOeAH8vBGhBeMmLfCX1B8bKX+2W683pyr4cHDKFo7TXT4=
-=7DDp
------END PGP SIGNATURE-----
-
---OtcT9K0vzTCh0l+F--
