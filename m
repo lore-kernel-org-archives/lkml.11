@@ -2,197 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CF54C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:47:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B61BC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:47:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239323AbiCRQsV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 12:48:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37388 "EHLO
+        id S239350AbiCRQtJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 12:49:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238167AbiCRQsT (ORCPT
+        with ESMTP id S230195AbiCRQtE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 12:48:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3B9872B04D8
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 09:47:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647622019;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=zJxxfiqWeV928wIFzDvUgwTHej56l1Ux3PCeiMRY0A4=;
-        b=A6WPR9HpUj3p0weJNzOmAaYh/BvwQDAEZ6QwS1anc3yvAhRVNw7i4znrndjvhmuUvIJawx
-        u/YufbzvSHWQ+M19wB3VxyuENXC4KVjW8+JpAluRlQGTKGum1QScKYAFlqurvbTajRZSSV
-        klU/X3IP/MlkBAtySxgceVzRHKf9Vx8=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-511-f2MXQznNPpaAp2Uiry8KxA-1; Fri, 18 Mar 2022 12:46:58 -0400
-X-MC-Unique: f2MXQznNPpaAp2Uiry8KxA-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Fri, 18 Mar 2022 12:49:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64EFE2F09F6;
+        Fri, 18 Mar 2022 09:47:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C090985A5BC;
-        Fri, 18 Mar 2022 16:46:57 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A3E354292CB;
-        Fri, 18 Mar 2022 16:46:57 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>
-Subject: [PATCH] Revert "KVM: x86/mmu: Zap only TDP MMU leafs in kvm_zap_gfn_range()"
-Date:   Fri, 18 Mar 2022 12:46:57 -0400
-Message-Id: <20220318164657.2743860-1-pbonzini@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id C8A05B821BD;
+        Fri, 18 Mar 2022 16:47:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EA48C340E8;
+        Fri, 18 Mar 2022 16:47:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647622062;
+        bh=YUFT5u1FeXv5hXDLhIL7XgE3OYqFqFNIcMaARLccIIw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=kYoO3qh0w0xWRjXusTea/pKrQf6FkPqFdhEFSanFDKg9rkB0G/ItfKJKgiuGpZWCC
+         k7cQ/epocZq1Su/kIG76o4pTnnjTBlLi/ITyDiqWs76SfKEwaVrtcHGCoFAsmWTk+c
+         t1bJvr7bQIhEf130sbSZB48FtsdMR77+c8F4FPw/ygcXqws/XTrWK7d0mrIdDF2Bdm
+         JR2fygLxGtI1frXubU7ciOzdSGyhUKBY09WBW7kGyQELLJLFFkvPbjSFZSDLkNyTKT
+         MKuWNjBvALXkjsg9kp/qSNplTRjcE+10k50uZqEgSJRUSXrY7QPQPf6GqyqKR5rfVK
+         3yBD/vnkpPh3Q==
+Date:   Fri, 18 Mar 2022 11:47:40 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        micklorain@protonmail.com,
+        Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH v1 1/1] PCI: Enable INTx quirk for ATI PCIe-USB adapter
+Message-ID: <20220318164740.GA816988@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHp75Veb4BqcGW=sCXEfrJ2ksvnXmjN-XZ5L6ttcQ8SJneg27w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit cf3e26427c08ad9015956293ab389004ac6a338e.
+On Fri, Mar 18, 2022 at 12:42:18PM +0200, Andy Shevchenko wrote:
+> On Thu, Mar 17, 2022 at 11:12 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > On Thu, Mar 17, 2022 at 10:59:28AM +0200, Andy Shevchenko wrote:
+> > > On Wed, Mar 16, 2022 at 04:15:48PM -0500, Bjorn Helgaas wrote:
+> > > > On Wed, Mar 16, 2022 at 06:12:19PM +0200, Andy Shevchenko wrote:
+> > > > > On Wed, Mar 16, 2022 at 06:52:09AM -0500, Bjorn Helgaas wrote:
+> > > > > > On Wed, Mar 16, 2022 at 12:27:57PM +0200, Andy Shevchenko wrote:
+> > > > > > > On Tue, Mar 15, 2022 at 03:22:31PM -0500, Bjorn Helgaas wrote:
+> > > > > > > > On Tue, Mar 15, 2022 at 12:09:08PM +0200, Andy Shevchenko wrote:
+> > > > > > > > > On Mon, Mar 14, 2022 at 02:42:53PM -0500, Bjorn Helgaas wrote:
+> > > > > > > > > > On Mon, Mar 14, 2022 at 12:14:48PM +0200, Andy Shevchenko wrote:
+> > > > > > > > > > > ATI PCIe-USB adapter advertises MSI, but it doesn't work
+> > > > > > > > > > > if INTx is disabled.  Enable the respective quirk as
+> > > > > > > > > > > it's done for other ATI devices on this chipset,
+> > > > > > > > > > >
+> > > > > > > > > > > Fixes: 306c54d0edb6 ("usb: hcd: Try MSI interrupts on
+> > > > > > > > > > > PCI devices")
+> > > >
+> > > > > > > > Anyway, I applied this to pci/msi for v5.18 with the following
+> > > > > > > > commit log:
+> > > > > > > >
+> > > > > > > >     PCI: Disable broken MSI on ATI SB600 USB adapters
+> > > > > > > >
+> > > > > > > >     Some ATI SB600 USB adapters advertise MSI, but MSI doesn't
+> > > > > > > >     work if INTx is disabled.  Disable MSI on these adapters.
+> > > > > > >
+> > > > > > > But IIUC MSI is _not_ disabled. That's why I have issued this
+> > > > > > > version of the patch with different commit message. Did I
+> > > > > > > misunderstand something?
+> > > > > >
+> > > > > > Oh, right, of course.  Sorry, I was asleep at the wheel.
+> > > > >
+> > > > > Are you going to fix that?
+> > > >
+> > > > Yes, of course, I'll do something with the commit message after we
+> > > > figure out how to handle PCI_COMMAND_INTX_DISABLE.
+> > > >
+> > > > > > I guess it's just that for these devices, we don't disable INTx
+> > > > > > when enabling MSI.  I can't remember why we disable INTx when
+> > > > > > enabling MSI, but it raises the question of whether it's better to
+> > > > > > leave INTx enabled or to just disable use of MSI completely.
+> > > > >
+> > > > > It's required by specification to disable INTx if I read 6.1.4.3
+> > > > > Enabling Operation correctly.
+> > > >
+> > > > Thanks for the reference; I was looking for something like that.  But
+> > > > I don't think this section requires us to set
+> > > > PCI_COMMAND_INTX_DISABLE.  For the benefit of folks without the spec,
+> > > > PCIe r6.0, sec 6.1.4.3 says:
+> > > >
+> > > >   To maintain backward compatibility, the MSI Enable bit in the
+> > > >   Message Control Register for MSI and the MSI-X Enable bit in the
+> > > >   Message Control Register for MSI-X are each Clear by default (MSI
+> > > >   and MSI-X are both disabled). System configuration software Sets one
+> > > >   of these bits to enable either MSI or MSI-X, but never both
+> > > >   simultaneously. Behavior is undefined if both MSI and MSI-X are
+> > > >   enabled simultaneously. Software disabling either mechanism during
+> > > >   active operation may result in the Function dropping pending
+> > > >   interrupt conditions or failing to recognize new interrupt
+> > > >   conditions. While enabled for MSI or MSI-X operation, a Function is
+> > > >   prohibited from using INTx interrupts (if implemented) to request
+> > > >   service (MSI, MSI-X, and INTx are mutually exclusive).
+> > > >
+> > > > The only *software* constraints I see are (1) software must never
+> > > > enable both MSI and MSI-X simultaneously, and (2) if software disables
+> > > > MSI or MSI-X during active operation, the Function may fail to
+> > > > generate an interrupt when it should.
+> > > >
+> > > > I read the last sentence as a constraint on the *hardware*: if either
+> > > > MSI or MSI-X is enabled, the Function is not allowed to use INTx,
+> > > > regardless of the state of PCI_COMMAND_INTX_DISABLE.
+> > > >
+> > > > I searched the spec for "Interrupt Disable", looking for situations
+> > > > where software might be *required* to set it, but I didn't see
+> > > > anything.
+> > > >
+> > > > I suspect "Interrupt Disable" was intended to help the OS stop all
+> > > > activity from a device during hot-plug or reconfiguration, as hinted
+> > > > at in sec 6.4, "Device Synchronization":
+> > > >
+> > > >   The ability of the driver and/or system software to block new
+> > > >   Requests from the device is supported by the Bus Master Enable,
+> > > >   SERR# Enable, and Interrupt Disable bits in the Command register
+> > > >   (Section 7.5.1.1.3) of each device Function, and other such control
+> > > >   bits.
+> > > >
+> > > > So I'm trying to figure out why when enabling MSI we need to set
+> > > > PCI_COMMAND_INTX_DISABLE for most devices, but it's safe to skip that
+> > > > for these quirked devices.
+> > >
+> > > I guess it's wrong wording in the last paragraph. It's not safe, but it's
+> > > _required_ since HW doesn't follow PCI specification that clearly says:
+> > > "MSI, MSI-X, and INTx are mutually exclusive".
+> >
+> > I agree there's a defect in these SB600 devices.  My guess is that
+> > PCI_COMMAND_INTX_DISABLE actually disables both INTx and MSI, when
+> > it's only supposed to disable INTx.
+> >
+> > I'm pretty sure the spec doesn't actually require software to set
+> > Interrupt Disable when enabling MSI, since MSI was added in PCI r2.2,
+> > which included this text in sec 6.8.2:
+> >
+> >   System configuration software sets [the MSI Enable] bit to enable
+> >   MSI. ...  Once enabled, a function is prohibited from using its
+> >   INTx# pin (if implemented) to request service (MSI and INTx# are
+> >   mutually exclusive).
+> >
+> > and Interrupt Disable was added later, in PCI r2.3, with no mention of
+> > a connection with MSI.  All the specs from PCI r2.2 to PCIe r6.0
+> > include the text above about not using INTx# if MSI or MSI-X is
+> > enabled, but that's not the same as requiring software to set
+> > Interrupt Disable.  Linux has set Interrupt Disable when enabling MSI
+> > ever since MSI support was added [1], so I would hesitate to change
+> > that even though I don't think it's required.
+> 
+> Thanks for diving into the history of the specification. What I learnt
+> about any of the specifications is that it usually has a lot of
+> implications that are only understandable (known) to the specification
+> author(s). This gives a room of misinterpretation. In any case I
+> usually apply my common sense denominator, so I try to go with the
+> straight logic. In this case it seems to me that keeping both enabled
+> is illogical and Linux does the right thing (means the author of the
+> Linux kernel implementation is on the same page with me).
+> 
+> > What I don't like about PCI_DEV_FLAGS_MSI_INTX_DISABLE_BUG is that it
+> > changes the generic code path in a sort of random way, i.e., this
+> > device becomes yet another special case in how we handle Interrupt
+> > Disable.
+> >
+> > What would you think about just setting pdev->no_msi instead, so we
+> > don't try to use MSI at all on these devices?  I think that's what we
+> > did before 306c54d0edb6.
+> 
+> Yes, we did. But why should we go this way if it already established a
+> special case disregarding my patch(es)? If you want to do that you
+> need to explain why other devices on the same chipset should enable
+> MSI and what's wrong with enabling MSI on the USB devices. My
+> understanding is that the MSI is a good thing to have due to
+> performance benefits and taking into account other devices that have
+> already been using it on the other devices of the same chipset tells
+> me that's okay. Moreover, the reporter of the bug confirmed that MSI
+> works for them after applying this quirk fix.
 
-Multi-vCPU Hyper-V guests started crashing randomly on boot with the
-latest kvm/queue and the problem can be bisected the problem to this
-particular patch. Basically, I'm not able to boot e.g. 16-vCPU guest
-successfully anymore. Both Intel and AMD seem to be affected. Reverting
-the commit saves the day.
+I agree that MSI is generally to be preferred over INTx.  In this
+case, it's an old USB device and I don't think there's any real
+performance benefit.
 
-Reported-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
----
- arch/x86/kvm/mmu/mmu.c     |  4 ++--
- arch/x86/kvm/mmu/tdp_mmu.c | 41 ++++++++++++++++++++++++++++----------
- arch/x86/kvm/mmu/tdp_mmu.h |  8 +++++++-
- 3 files changed, 39 insertions(+), 14 deletions(-)
+The problem with enabling MSI on these USB devices is that the generic
+MSI code doesn't work correctly.  Since we've been using them without
+MSI in the past, and they have some defect that makes MSI not work
+correctly, it seems like the simplest solution is to avoid using MSI,
+something like the patch below.
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 3b8da8b0745e..51671cb34fb6 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -5842,8 +5842,8 @@ void kvm_zap_gfn_range(struct kvm *kvm, gfn_t gfn_start, gfn_t gfn_end)
+Would I prefer the same for all the other existing users of
+PCI_DEV_FLAGS_MSI_INTX_DISABLE_BUG?  Yes.  Enough to change the status
+quo, which would be a performance regression, and potentially break
+something?  Probably not.
+
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index d2dd6a6cda60..c0e6b031bb5d 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -2675,6 +2675,18 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_SERVERWORKS,
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_8132_BRIDGE,
+ 			 ht_enable_msi_mapping);
  
- 	if (is_tdp_mmu_enabled(kvm)) {
- 		for (i = 0; i < KVM_ADDRESS_SPACE_NUM; i++)
--			flush = kvm_tdp_mmu_zap_leafs(kvm, i, gfn_start,
--						      gfn_end, true, flush);
-+			flush = kvm_tdp_mmu_zap_gfn_range(kvm, i, gfn_start,
-+							  gfn_end, flush);
- 	}
- 
- 	if (flush)
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index af60922906ef..87d8910c9ac2 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -906,8 +906,10 @@ bool kvm_tdp_mmu_zap_sp(struct kvm *kvm, struct kvm_mmu_page *sp)
- }
- 
- /*
-- * Zap leafs SPTEs for the range of gfns, [start, end). Returns true if SPTEs
-- * have been cleared and a TLB flush is needed before releasing the MMU lock.
-+ * Tears down the mappings for the range of gfns, [start, end), and frees the
-+ * non-root pages mapping GFNs strictly within that range. Returns true if
-+ * SPTEs have been cleared and a TLB flush is needed before releasing the
-+ * MMU lock.
-  *
-  * If can_yield is true, will release the MMU lock and reschedule if the
-  * scheduler needs the CPU or there is contention on the MMU lock. If this
-@@ -915,25 +917,42 @@ bool kvm_tdp_mmu_zap_sp(struct kvm *kvm, struct kvm_mmu_page *sp)
-  * the caller must ensure it does not supply too large a GFN range, or the
-  * operation can cause a soft lockup.
-  */
--static bool tdp_mmu_zap_leafs(struct kvm *kvm, struct kvm_mmu_page *root,
--			      gfn_t start, gfn_t end, bool can_yield, bool flush)
-+static bool zap_gfn_range(struct kvm *kvm, struct kvm_mmu_page *root,
-+			  gfn_t start, gfn_t end, bool can_yield, bool flush)
- {
-+	bool zap_all = (start == 0 && end >= tdp_mmu_max_gfn_host());
- 	struct tdp_iter iter;
- 
-+	/*
-+	 * No need to try to step down in the iterator when zapping all SPTEs,
-+	 * zapping the top-level non-leaf SPTEs will recurse on their children.
-+	 */
-+	int min_level = zap_all ? root->role.level : PG_LEVEL_4K;
-+
- 	end = min(end, tdp_mmu_max_gfn_host());
- 
- 	lockdep_assert_held_write(&kvm->mmu_lock);
- 
- 	rcu_read_lock();
- 
--	for_each_tdp_pte_min_level(iter, root, PG_LEVEL_4K, start, end) {
-+	for_each_tdp_pte_min_level(iter, root, min_level, start, end) {
- 		if (can_yield &&
- 		    tdp_mmu_iter_cond_resched(kvm, &iter, flush, false)) {
- 			flush = false;
- 			continue;
- 		}
- 
--		if (!is_shadow_present_pte(iter.old_spte) ||
-+		if (!is_shadow_present_pte(iter.old_spte))
-+			continue;
-+
-+		/*
-+		 * If this is a non-last-level SPTE that covers a larger range
-+		 * than should be zapped, continue, and zap the mappings at a
-+		 * lower level, except when zapping all SPTEs.
-+		 */
-+		if (!zap_all &&
-+		    (iter.gfn < start ||
-+		     iter.gfn + KVM_PAGES_PER_HPAGE(iter.level) > end) &&
- 		    !is_last_spte(iter.old_spte, iter.level))
- 			continue;
- 
-@@ -956,13 +975,13 @@ static bool tdp_mmu_zap_leafs(struct kvm *kvm, struct kvm_mmu_page *root,
-  * SPTEs have been cleared and a TLB flush is needed before releasing the
-  * MMU lock.
-  */
--bool kvm_tdp_mmu_zap_leafs(struct kvm *kvm, int as_id, gfn_t start, gfn_t end,
--			   bool can_yield, bool flush)
-+bool __kvm_tdp_mmu_zap_gfn_range(struct kvm *kvm, int as_id, gfn_t start,
-+				 gfn_t end, bool can_yield, bool flush)
- {
- 	struct kvm_mmu_page *root;
- 
- 	for_each_tdp_mmu_root_yield_safe(kvm, root, as_id)
--		flush = tdp_mmu_zap_leafs(kvm, root, start, end, can_yield, false);
-+		flush = zap_gfn_range(kvm, root, start, end, can_yield, flush);
- 
- 	return flush;
- }
-@@ -1210,8 +1229,8 @@ int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
- bool kvm_tdp_mmu_unmap_gfn_range(struct kvm *kvm, struct kvm_gfn_range *range,
- 				 bool flush)
- {
--	return kvm_tdp_mmu_zap_leafs(kvm, range->slot->as_id, range->start,
--				     range->end, range->may_block, flush);
-+	return __kvm_tdp_mmu_zap_gfn_range(kvm, range->slot->as_id, range->start,
-+					   range->end, range->may_block, flush);
- }
- 
- typedef bool (*tdp_handler_t)(struct kvm *kvm, struct tdp_iter *iter,
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.h b/arch/x86/kvm/mmu/tdp_mmu.h
-index 54bc8118c40a..5e5ef2576c81 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.h
-+++ b/arch/x86/kvm/mmu/tdp_mmu.h
-@@ -15,8 +15,14 @@ __must_check static inline bool kvm_tdp_mmu_get_root(struct kvm_mmu_page *root)
- void kvm_tdp_mmu_put_root(struct kvm *kvm, struct kvm_mmu_page *root,
- 			  bool shared);
- 
--bool kvm_tdp_mmu_zap_leafs(struct kvm *kvm, int as_id, gfn_t start,
-+bool __kvm_tdp_mmu_zap_gfn_range(struct kvm *kvm, int as_id, gfn_t start,
- 				 gfn_t end, bool can_yield, bool flush);
-+static inline bool kvm_tdp_mmu_zap_gfn_range(struct kvm *kvm, int as_id,
-+					     gfn_t start, gfn_t end, bool flush)
++static void quirk_no_msi(struct pci_dev *dev)
 +{
-+	return __kvm_tdp_mmu_zap_gfn_range(kvm, as_id, start, end, true, flush);
++	pci_info(dev, "Disabling MSI to avoid hardware defect\n");
++	dev->no_msi = 1;
 +}
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4386, quirk_no_msi);
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4387, quirk_no_msi);
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4388, quirk_no_msi);
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4389, quirk_no_msi);
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x438a, quirk_no_msi);
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x438b, quirk_no_msi);
 +
- bool kvm_tdp_mmu_zap_sp(struct kvm *kvm, struct kvm_mmu_page *sp);
- void kvm_tdp_mmu_zap_all(struct kvm *kvm);
- void kvm_tdp_mmu_invalidate_all_roots(struct kvm *kvm);
--- 
-2.31.1
-
+ /*
+  * The P5N32-SLI motherboards from Asus have a problem with MSI
+  * for the MCP55 NIC. It is not yet determined whether the MSI problem
