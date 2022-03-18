@@ -2,138 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87FB2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 10:35:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECB48C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 10:36:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235092AbiCRKgW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 06:36:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54498 "EHLO
+        id S235026AbiCRKiH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 06:38:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235041AbiCRKgF (ORCPT
+        with ESMTP id S235074AbiCRKiE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 06:36:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BE3A325278A
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 03:34:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647599685;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=e6SFRMKes32y2Epjb9bRfBHy+sHjP48gM2WVhKsacmY=;
-        b=MZtl9cnYEuydwSh1G3DkaGCt7GDKSAdJ+3CaXJeRLI69K7TfF9TSUuLVEaBuNgYSIX+4dB
-        yjAbMtACeQRaUjYD2FnVaa/M8aekW5kMOHzs1pKbUy/nPGgOcVRbUkSjnC50hwOZdkp8jR
-        CALtG+nJn1YrBtil98lGS35V3j807mg=
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com
- [209.85.216.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-624-q8hOKRhAOai4pS1PjarNVg-1; Fri, 18 Mar 2022 06:34:44 -0400
-X-MC-Unique: q8hOKRhAOai4pS1PjarNVg-1
-Received: by mail-pj1-f70.google.com with SMTP id bv2-20020a17090af18200b001c63c69a774so4850251pjb.0
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 03:34:44 -0700 (PDT)
+        Fri, 18 Mar 2022 06:38:04 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5CF92D88A0
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 03:36:43 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id w27so13434655lfa.5
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 03:36:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uezAxvrMiMWp05gtOXieDCRlPfIaBrEY9L+wFxAHD0I=;
+        b=bNnyZSbzTBSvQFszb6I/F12rQ8T6cQ/10ECH/5aamuFpcWLXuGwqmi2qlA6OiaUIr+
+         V8TqpsR+t0/DyCMoEh0CzqowEErBChoYXYtogqepO3/rN15qn5ixhtqXSUnXgP8ImKUd
+         dquYpFAmazrx70ftgNlsqJnMu8VXtOfn5Fycx5s4naSptE35kQcC2TBiqr3KKFo+LcV1
+         5c8WxdJ3UMCLZsIfegAevCopkngxCuOIeY3nBuQeeddmK2uDHM1mtQLI5y+HsBtwRACr
+         XdDNr/3qHzJL/P06ND/wPSbT5RUHQjnOnE3omFv2FjybosKBFQxhzuagXroaERc3iONq
+         RREw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=e6SFRMKes32y2Epjb9bRfBHy+sHjP48gM2WVhKsacmY=;
-        b=L3QTjApdqEP/KofCX/omuxNySnGPqKal7jUfq6kEliMK60lKMEuuqoXn7xnxFup0D1
-         rKY5dWvapx7v2qJti+sS0ZPtTiN6eQY5/301nfO6500tP+R0F964ngz17WNFmYhQJN5c
-         4I1lRYcJ9lXjZvUcSJ3TF6KIsj5TfMcJ5W0crygRHE74vo2agACLwqRhktxYozO7CwKc
-         OyzwazT9DWipWjnzFjl2gfB2/xoWvvCy6gXDl9xnT3oH8MQxU/N0/UxkUo3eYp1i0jcG
-         tEBZv8V8fwcyZ91AO0YzrPJ4aPIj05iItlGeFzXzdPkElhZeaL70sY/D1F2xmky2HtjT
-         NPSw==
-X-Gm-Message-State: AOAM5339nbostwd40kIcdmX+nlco6geuUFej9yRjWrddWgfAhSUgIWmh
-        HMjeZ+lZj+i/N+jVW8QHpCrYXcdZwZUP9XuaQyvl3qk7QkkklsbtG9wn4andj+De9Fyo2pZ9J1V
-        oVT4QRWXzTDISNwme7Y8ZqF2t
-X-Received: by 2002:a17:902:a5c7:b0:14f:e424:3579 with SMTP id t7-20020a170902a5c700b0014fe4243579mr9761883plq.74.1647599683229;
-        Fri, 18 Mar 2022 03:34:43 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwydLGW4oyMokHqUNqgiEVlQJ73WsUZSlWeUuNnFSrLoT8M8+9OxbPejRrRKRSgMpl8ZFsEyw==
-X-Received: by 2002:a17:902:a5c7:b0:14f:e424:3579 with SMTP id t7-20020a170902a5c700b0014fe4243579mr9761859plq.74.1647599682974;
-        Fri, 18 Mar 2022 03:34:42 -0700 (PDT)
-Received: from localhost ([240e:3a1:2e5:800:f995:6136:f760:a3d0])
-        by smtp.gmail.com with ESMTPSA id o24-20020a17090a5b1800b001c6aaafa5fbsm1575423pji.24.2022.03.18.03.34.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Mar 2022 03:34:42 -0700 (PDT)
-From:   Coiby Xu <coxu@redhat.com>
-To:     kexec@lists.infradead.org
-Cc:     Milan Broz <gmazyland@gmail.com>,
-        Thomas Staudt <tstaudt@de.ibm.com>,
-        Kairui Song <ryncsn@gmail.com>, dm-devel@redhat.com,
-        Mike Snitzer <snitzer@redhat.com>, Baoquan He <bhe@redhat.com>,
-        Dave Young <dyoung@redhat.com>, linux-kernel@vger.kernel.org,
-        Alasdair Kergon <agk@redhat.com>
-Subject: [RFC 4/4] dm-crypt: reuse LUKS master key in kdump kernel
-Date:   Fri, 18 Mar 2022 18:34:23 +0800
-Message-Id: <20220318103423.286410-5-coxu@redhat.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220318103423.286410-1-coxu@redhat.com>
-References: <20220318103423.286410-1-coxu@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uezAxvrMiMWp05gtOXieDCRlPfIaBrEY9L+wFxAHD0I=;
+        b=ZjP1wW784+uklrznIdCEKTOnqP85qhZA3tAMgCJzPWBJkguNnwUQvdMASICO5zcYbb
+         hBG2ymSvvKTSht+We8MAO5PTn7QArrbXmxepN/7Tpfwhvhy9RD2tLV2AG0i6D9qEJ4UZ
+         cvp7xVnLZpUnxDyBELbbnGKV1H2dk8jmtTI6i124XzF3ncd9J6BeellW1Tw5wxUc9LTc
+         ctowH6OZjKkRW/llhWJWo1QvT+Ut1Rw7xVFn9qCL/guplQw7ykQmFc3x2PSbe8JhGWmf
+         4sGTRuuchBbxOgdcyJONxCgi+PQ/zm7ANz43ax/NLs979pEhJyUXQazTcEGgQ7YmZK/d
+         LPEw==
+X-Gm-Message-State: AOAM532W7MYF+iFwcPUkHfnL7OYg2MTvpipapsqt0fOlh3UnWMJkCN2K
+        MEkZUp4zd6YwMJmBg9VHPhO1bQOtHtSriKPXc1x3WPGJsOjTig==
+X-Google-Smtp-Source: ABdhPJzLDlZkIjkcjiJPHs6VSkUvvCx84qJ6fCSn3Un08tTkfHEJ5Nvoc5uZ9+oYemtT0HKnjD8/dVaewJpYQqnDfQA=
+X-Received: by 2002:ac2:4e98:0:b0:448:3039:d170 with SMTP id
+ o24-20020ac24e98000000b004483039d170mr5958247lfr.233.1647599801563; Fri, 18
+ Mar 2022 03:36:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220316093740.GA7714@lst.de> <20220316093855.GC7714@lst.de>
+ <CAPDyKFrH4L2Y2TOFyWPJ+_rrgvJPixR05XX_HWUU99h0MZhLuA@mail.gmail.com> <20220318091152.GB31758@lst.de>
+In-Reply-To: <20220318091152.GB31758@lst.de>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Fri, 18 Mar 2022 11:36:04 +0100
+Message-ID: <CAPDyKFohNVnrwcZSCGnv7X++FfQ0a3rdeMx3tvJ0eW-Afr9Tyg@mail.gmail.com>
+Subject: Re: [PATCH alternative 2] block: fix the REQ_OP_SECURE_ERASE handling
+ to not leak erased data
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     axboe@kernel.dk, jaegeuk@kernel.org, chao@kernel.org,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Daeho Jeong <daehojeong@google.com>,
+        Eric Biggers <ebiggers@google.com>,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When libcryptsetup passes key string starting with ":kdump", dm-crypt
-will interpret it as reusing the LUKS master key in kdump kernel.
+On Fri, 18 Mar 2022 at 10:11, Christoph Hellwig <hch@lst.de> wrote:
+>
+> On Thu, Mar 17, 2022 at 10:44:01AM +0100, Ulf Hansson wrote:
+> > Stating that it can't work is probably not a correct statement.
+> > Certainly it can, but it depends on how "secure" (or clever) the
+> > implementation of the FTL is in the flash media. I mean, nothing
+> > prevents the FTL from doing a real erase on erase block level and
+> > simply let the "secure erase" request wait on that operation to be
+> > completed.
+>
+> Well, that assumes it can find all the previous copied of the data.
+> Having worked with various higher end SSDs FTLs I know they can't,
+> so if an eMMC device could that would very much surpise me given
+> the overhead.
 
-Signed-off-by: Coiby Xu <coxu@redhat.com>
----
- drivers/md/dm-crypt.c | 21 ++++++++++++++++-----
- 1 file changed, 16 insertions(+), 5 deletions(-)
+An eMMC is no different from an SSD in this regard, so you are most
+definitely correct. BTW, I was one of those guys working with FTLs
+myself, but it was a long time ago, when NAND/NOR flashes were less
+complicated to manage.
 
-diff --git a/drivers/md/dm-crypt.c b/drivers/md/dm-crypt.c
-index 41f9ca377312..f3986036ec40 100644
---- a/drivers/md/dm-crypt.c
-+++ b/drivers/md/dm-crypt.c
-@@ -42,6 +42,7 @@
- 
- #include <linux/device-mapper.h>
- #include <linux/kexec.h>
-+#include <linux/crash_dump.h>
- 
- #include "dm-audit.h"
- 
-@@ -2602,13 +2603,17 @@ static int crypt_set_key(struct crypt_config *cc, char *key)
- {
- 	int r = -EINVAL;
- 	int key_string_len = strlen(key);
-+	bool retrieve_kdump_key = false;
-+
-+	if (is_kdump_kernel() && !strncmp(key, ":kdump", 5))
-+		retrieve_kdump_key = true;
- 
- 	/* Hyphen (which gives a key_size of zero) means there is no key. */
--	if (!cc->key_size && strcmp(key, "-"))
-+	if (!retrieve_kdump_key && !cc->key_size && strcmp(key, "-"))
- 		goto out;
- 
- 	/* ':' means the key is in kernel keyring, short-circuit normal key processing */
--	if (key[0] == ':') {
-+	if (!retrieve_kdump_key && key[0] == ':') {
- 		r = crypt_set_keyring_key(cc, key + 1);
- 		goto out;
- 	}
-@@ -2620,9 +2625,15 @@ static int crypt_set_key(struct crypt_config *cc, char *key)
- 	kfree_sensitive(cc->key_string);
- 	cc->key_string = NULL;
- 
--	/* Decode key from its hex representation. */
--	if (cc->key_size && hex2bin(cc->key, key, cc->key_size) < 0)
--		goto out;
-+	if (retrieve_kdump_key) {
-+		r = retrive_kdump_luks_master_key(cc->key, &cc->key_size);
-+		if (r < 0)
-+			goto out;
-+	} else {
-+		/* Decode key from its hex representation. */
-+		if (cc->key_size && hex2bin(cc->key, key, cc->key_size) < 0)
-+			goto out;
-+	}
- 
- 	r = crypt_setkey(cc);
- 	if (!r)
--- 
-2.34.1
+Anyway, to really make things work, one would need some additional low
+level partitioning  - or commands to tag the data for special
+purposes. eMMCs do have some support for things like this, but whether
+it actually works to serve this particular use case (secure erase), I
+really can't tell.
 
+Kind regards
+Uffe
