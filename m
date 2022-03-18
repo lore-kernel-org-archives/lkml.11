@@ -2,92 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 222E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 02:49:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 014CDC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 02:50:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231966AbiCRCvD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 22:51:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34672 "EHLO
+        id S231975AbiCRCvn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 22:51:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231941AbiCRCu6 (ORCPT
+        with ESMTP id S231260AbiCRCvm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 22:50:58 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18AC0B919A;
-        Thu, 17 Mar 2022 19:49:41 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KKT2J5rH4z921w;
-        Fri, 18 Mar 2022 10:47:36 +0800 (CST)
-Received: from dggpemm500015.china.huawei.com (7.185.36.181) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 18 Mar 2022 10:49:39 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500015.china.huawei.com
- (7.185.36.181) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.21; Fri, 18 Mar
- 2022 10:49:38 +0800
-From:   Wang ShaoBo <bobo.shaobowang@huawei.com>
-CC:     <cj.chengjian@huawei.com>, <liwei391@huawei.com>,
-        <bobo.shaobowang@huawei.com>, <antoniu.miclaus@analog.com>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <jic23@kernel.org>, <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 2/2] iio:filter:admv8818: Fix missing clk_disable_unprepare() in admv8818_clk_setup
-Date:   Fri, 18 Mar 2022 10:59:14 +0800
-Message-ID: <20220318025914.2614812-3-bobo.shaobowang@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220318025914.2614812-1-bobo.shaobowang@huawei.com>
-References: <20220318025914.2614812-1-bobo.shaobowang@huawei.com>
+        Thu, 17 Mar 2022 22:51:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3D5D71AAA56
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 19:50:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647571823;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=TtfpIMh0hjxedFN+Tl6gjaJX+areyDNcJNycJbTZTWE=;
+        b=Z7xCSzf97oUHK59B0YZk0oCrZiH2bfs49itWkjBsm2HszzY7En01vA3EATyuMu8MxDhusR
+        B5QcvWySXyJ1+riV2Jj2AIFJsuE8k9XFAuhiHs/QiBgtfNvR5XDt+8oUhqoRzWIHJb2KXB
+        OH6cWonkeWfpzkArGUdRBVTwCFXPEm0=
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
+ [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-606-LxCYtU_iNqWYcsOnvtM2Yw-1; Thu, 17 Mar 2022 22:50:21 -0400
+X-MC-Unique: LxCYtU_iNqWYcsOnvtM2Yw-1
+Received: by mail-pj1-f71.google.com with SMTP id iq24-20020a17090afb5800b001c685a314d6so1853180pjb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 19:50:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TtfpIMh0hjxedFN+Tl6gjaJX+areyDNcJNycJbTZTWE=;
+        b=bYbfO8xyD6MjNUdN19J7NMJexPhgMraf5xKykrxRhGG1xYpErSYFbkQJJCrwIczZI2
+         h3NzZVU0q3/xM3a2KiXwL7UxISjVjfGhCuzCvancwKPgWi3LEcASIhGJi2oD5IBaJ33m
+         PbQFa9mo80aRwWIQQKHYAVso1g2ZW7wPEcf+kX6BAtnxds9R2LR9jHHyk1DQB4j7hqO3
+         RZPp+KIMTfM5O0omGtXQkKlj8ZuW1StjdKZ96g3oG5/HoK1/78EQ4m25M1Ai+P94olg7
+         SjcVJm9hZUOjjiZRvSFllv77oyuyBKhfF61DSYAbdSrawEeDctdH+jHjXS23Tznw2eMB
+         5jaQ==
+X-Gm-Message-State: AOAM532CD8Kltn2djJyi4yatEd6QqDMKKwCkjy/MtZFrESj+0xx3223j
+        HRCpnDBvEI5bJL8FzZ9y601OGPLqL57NJLmAF4XZLgpiegaqQiYH8z9DXR6lNd+fhaX8XTc+SKo
+        9bu6EBivjsqDHkbctD2uU94ph
+X-Received: by 2002:a17:90b:33c4:b0:1c6:8598:d4bf with SMTP id lk4-20020a17090b33c400b001c68598d4bfmr6424467pjb.81.1647571820766;
+        Thu, 17 Mar 2022 19:50:20 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzLt3zIH+QYFTliBGLEDR7sfnoegdpTP4CMfMVwJSbXOQs/6+T0WT6xwVyNg/L20iUDcgdmXg==
+X-Received: by 2002:a17:90b:33c4:b0:1c6:8598:d4bf with SMTP id lk4-20020a17090b33c400b001c68598d4bfmr6424436pjb.81.1647571820410;
+        Thu, 17 Mar 2022 19:50:20 -0700 (PDT)
+Received: from localhost ([240e:3a1:2e5:800:f995:6136:f760:a3d0])
+        by smtp.gmail.com with ESMTPSA id b13-20020a056a00114d00b004c122b90703sm8097199pfm.27.2022.03.17.19.50.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Mar 2022 19:50:19 -0700 (PDT)
+Date:   Fri, 18 Mar 2022 10:48:03 +0800
+From:   Coiby Xu <coxu@redhat.com>
+To:     Baoquan He <bhe@redhat.com>
+Cc:     Coiby Xu <coiby.xu@gmail.com>, kexec@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        Dave Young <dyoung@redhat.com>, Will Deacon <will@kernel.org>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [RESEND PATCH v3 1/3] kexec: clean up
+ arch_kexec_kernel_verify_sig
+Message-ID: <20220318024803.pkkwgknwur2y75mt@Rk>
+References: <20220304020341.85583-1-coiby.xu@gmail.com>
+ <20220304020341.85583-2-coiby.xu@gmail.com>
+ <YjMtb7u3/sAWG0/7@MiWiFi-R3L-srv>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggeme707-chm.china.huawei.com (10.1.199.103) To
- dggpemm500015.china.huawei.com (7.185.36.181)
-X-CFilter-Loop: Reflected
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <YjMtb7u3/sAWG0/7@MiWiFi-R3L-srv>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix missing clk_disable_unprepare() before return from admv8818_clk_setup
-in the error handling cases.
+On Thu, Mar 17, 2022 at 08:45:35PM +0800, Baoquan He wrote:
+>On 03/04/22 at 10:03am, Coiby Xu wrote:
+>> From: Coiby Xu <coxu@redhat.com>
+>>
+>> commit 9ec4ecef0af7790551109283ca039a7c52de343c ("kexec_file,x86,
+>> powerpc: factor out kexec_file_ops functions" allows implementing
+>> the arch-specific implementation of kernel image verification
+>> in kexec_file_ops->verify_sig. Currently, there is no arch-specific
+>> implementation of arch_kexec_kernel_verify_sig. So clean it up.
+>
+>This is a nice cleanup, while the log may need to be improved. You
+>should run ./scripts/checkpatch.pl on your patch before sending out.
+>When we refer to a commit in log, please refer to
+>Documentation/process/submitting-patches.rst.
 
-Fixes: f34fe888ad05 ("iio:filter:admv8818: add support for ADMV8818")
-Signed-off-by: Wang ShaoBo <bobo.shaobowang@huawei.com>
----
- drivers/iio/filter/admv8818.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+Thanks for the reminder! I've used git pre-commit hook to run 
+scripts/checkpatch.pl automatically but obviously this hook doesn't
+apply to "git rebase --continue" and currently this no git hook that
+for this situation. I'll use the following trick [1] to avoid this
+mistake in the future,
+  $ git rebase -i HEAD~3 --reschedule-failed-exec --exec "git show | perl ./scripts/checkpatch.pl"
 
-diff --git a/drivers/iio/filter/admv8818.c b/drivers/iio/filter/admv8818.c
-index 68de45fe21b4..acb436efd8b5 100644
---- a/drivers/iio/filter/admv8818.c
-+++ b/drivers/iio/filter/admv8818.c
-@@ -590,14 +590,22 @@ static int admv8818_clk_setup(struct admv8818_state *st)
- 
- 	ret = devm_add_action_or_reset(&spi->dev, admv8818_clk_disable, st);
- 	if (ret)
--		return ret;
-+		goto out_clk_disable;
- 
- 	st->nb.notifier_call = admv8818_freq_change;
- 	ret = clk_notifier_register(st->clkin, &st->nb);
- 	if (ret < 0)
--		return ret;
-+		goto out_clk_disable;
-+
-+	ret = devm_add_action_or_reset(&spi->dev, admv8818_clk_notifier_unreg, st);
-+	if (ret)
-+		goto out_clk_disable;
-+
-+	return 0;
- 
--	return devm_add_action_or_reset(&spi->dev, admv8818_clk_notifier_unreg, st);
-+out_clk_disable:
-+	clk_disable_unprepare(st->clkin);
-+	return ret;
- }
- 
- static int admv8818_probe(struct spi_device *spi)
+[1] https://stackoverflow.com/a/70568833/1203522
+
+
 -- 
-2.25.1
+Best regards,
+Coiby
 
