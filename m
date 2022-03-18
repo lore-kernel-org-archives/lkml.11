@@ -2,104 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4CD1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 10:42:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B008C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 10:42:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235302AbiCRKnY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 06:43:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56080 "EHLO
+        id S235347AbiCRKna (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 06:43:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235232AbiCRKnT (ORCPT
+        with ESMTP id S235106AbiCRKmf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 06:43:19 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CD738908F;
-        Fri, 18 Mar 2022 03:42:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647600121; x=1679136121;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=rjzHUXKaMYelhy/grqSbP+fUOQ01mEhxIDBfY5nDm6o=;
-  b=lla4JEy+ax4+u/JJ1Up8yNYW+WXM/6CqCUc/1CD3/HRFftTqG+nxiN0d
-   dhYRBXyqj+iYZ8Goh/p4S667nVp4Ahz+casi/h+5II/b3BZWN/QQHMI09
-   IH5hUhkHZ7fSA3881cT0PdHvpZq+pRsqUZw69H3YkiKcy6H/PJSppsAhV
-   TUpJho1IkI4N+jII3p69h3COQofypPZG6UVLVgfU1DnkQxLOX5v5EPmGe
-   1D49PslfcuFot6u+58yhLZkmJR+N7TIsmKa605VhvbMZKbiqSQZ0YcPz2
-   4A0yLeel/RvXIzJ7SBs3xfFitLtBmcHj2Z2Hi4JUbOxg510kI4hn3p4Ay
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="237057339"
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="237057339"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 03:42:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="558370689"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
-  by orsmga008.jf.intel.com with ESMTP; 18 Mar 2022 03:41:58 -0700
-Date:   Fri, 18 Mar 2022 18:34:57 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     cgel.zte@gmail.com
-Cc:     hao.wu@intel.com, trix@redhat.com, linux-fpga@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] fpga: dfl: pci: Remove useless DMA-32 fallback
- configuration
-Message-ID: <20220318103457.GA139589@yilunxu-OptiPlex-7050>
-References: <20220318005938.2142028-1-chi.minghao@zte.com.cn>
+        Fri, 18 Mar 2022 06:42:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 486A92D1055;
+        Fri, 18 Mar 2022 03:40:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6BA960C72;
+        Fri, 18 Mar 2022 10:40:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A79C9C340E8;
+        Fri, 18 Mar 2022 10:40:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647600023;
+        bh=9EigRmgfboGp4xvX7jkm2Ur4+GANDeuu2vr6378NbcY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bJIdFtHx13okaJZuZEMmaAX5PPGVklMzIjBxf7+lyvQvU2hOgKDHAsOVvwMpB4w8G
+         /YxGkj9VQwigKkJ743CuSw+zJ8HsNuzu6nGjkghJyQHgnPSFDFQoIU8qPn6odOUx6l
+         uYMvmsschSqIL4XN5LF66JhujhiPLB6Ma4aiMqIPlAR7DpmQxD6zF5ALxXlpGT6x3p
+         ilRHYydm88ktR7IKw6GSMC8qQ4qkliUtMdYa4hjUf/gqqM+e1UdW0M416PZX3NJN90
+         mpKPzrCSrxvqgehXhBuRcSrmCv3Vgmd6JI3Jq9LQ+cyYNJgP9fLyBgiTIobxexgK/k
+         ZsW69m3goCtBA==
+Date:   Fri, 18 Mar 2022 11:40:19 +0100
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Jan Dabros <jsd@semihalf.com>
+Cc:     linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
+        jarkko.nikula@linux.intel.com, andriy.shevchenko@linux.intel.com,
+        upstream@semihalf.com
+Subject: Re: [PATCH v3 -next] i2c: designware: Remove code duplication
+Message-ID: <YjRhk652VUTziesf@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Jan Dabros <jsd@semihalf.com>, linux-kernel@vger.kernel.org,
+        linux-i2c@vger.kernel.org, jarkko.nikula@linux.intel.com,
+        andriy.shevchenko@linux.intel.com, upstream@semihalf.com
+References: <20220314090323.272071-1-jsd@semihalf.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="LBTn3Zyl7uO9TW9q"
 Content-Disposition: inline
-In-Reply-To: <20220318005938.2142028-1-chi.minghao@zte.com.cn>
+In-Reply-To: <20220314090323.272071-1-jsd@semihalf.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 12:59:38AM +0000, cgel.zte@gmail.com wrote:
-> From: Minghao Chi <chi.minghao@zte.com.cn>
-> 
-> As stated in [1], dma_set_mask() with a 64-bit mask will never fail if
-> dev->dma_mask is non-NULL.
-> So, if it fails, the 32 bits case will also fail for the same reason.
 
-The code change is good to me, but maybe the commit message could be
-improved. The reference [1] is not the best to make things clear, maybe
-[2] could be better undstood. It is even better if there is a brief
-introduction of the DMA API change in the commit message. It saves a lot
-of time for reviewers.
+--LBTn3Zyl7uO9TW9q
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I see there are plenty of similar places to change, could you make a
-patchset and change them in a batch?
+On Mon, Mar 14, 2022 at 10:03:23AM +0100, Jan Dabros wrote:
+> Simplify code by moving common part to one function.
+>=20
+> Signed-off-by: Jan Dabros <jsd@semihalf.com>
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Acked-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
 
-[2]: https://lists.linuxfoundation.org/pipermail/iommu/2019-February/033674.html
+Applied to for-next, thanks!
 
-Thanks,
-Yilun
 
-> 
-> Simplify code and remove some dead code accordingly.
-> 
-> [1]: https://lkml.org/lkml/2021/6/7/398
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-> ---
->  drivers/fpga/dfl-pci.c | 2 --
->  1 file changed, 2 deletions(-)
-> 
-> diff --git a/drivers/fpga/dfl-pci.c b/drivers/fpga/dfl-pci.c
-> index 717ac9715970..42fdfa7a28d6 100644
-> --- a/drivers/fpga/dfl-pci.c
-> +++ b/drivers/fpga/dfl-pci.c
-> @@ -356,8 +356,6 @@ int cci_pci_probe(struct pci_dev *pcidev, const struct pci_device_id *pcidevid)
->  	pci_set_master(pcidev);
->  
->  	ret = dma_set_mask_and_coherent(&pcidev->dev, DMA_BIT_MASK(64));
-> -	if (ret)
-> -		ret = dma_set_mask_and_coherent(&pcidev->dev, DMA_BIT_MASK(32));
->  	if (ret) {
->  		dev_err(&pcidev->dev, "No suitable DMA support available.\n");
->  		goto disable_error_report_exit;
-> -- 
-> 2.25.1
+--LBTn3Zyl7uO9TW9q
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmI0YY8ACgkQFA3kzBSg
+Kbb3Qw/9EVSCFZyWpjwt32l/cvjSESmE+rottfwYM8ANHVEx2fAG+u6n0nrqoItD
+GGIcHCcWYIbbpd/cn2xFJN9KCHCpy1UQPf9hEgh6E8YwiomPBnQ5XZ1dT9GB0Lsr
+3+cG4m8j5qQbCINVnnhjTG/h4gj9t5O5LOABSjyoD8MAIahkUgF0QF9nSxvxPyYR
+Xqj4Gln8p5p9ovJxNR8AAz4q31Jz3skcXwx9VlzDsavz/BBXgk9+r6y8SmBd2weF
+Rc8T+aA6Xl2uQmyVQxcROnDVXOnkzbpzmnrF2DIxr+bclYx0V5vwOqsh0eRLiQt7
+m4+XLm6IQ2za/+9LuEhPfPdan5EVllT9/DHEfn8rsXJQGfKcgmr5A+YjKLwi/iYG
+w9TGz+UkLK3TqeIDWxMDQ+iSvKKAtxcDcWg11Fi75RBG/TXQwNDHEt2fd8ZG+s3W
+dNSel/bfINv+/2mseqDZqhEWzpmw6xEo9p7JdgS11e5N+rVZE8PFhV9VnVxjHjE6
+ScsF1LSfrK+abLuJU5kWYFdfPBxrvBNXPVSQuzFvKtxpxR10cShcRt1PWLQZSOsQ
+tCmxAmnnymh3saKM1Gwld9fII9DvgW5SJb/glkUjeuyVJjk/Mv0eGUFF547QmlAb
+f2iD+nvjGpnlcXweBCE6Ko0NMsGnKOi5NoStkjlU9ilzJdf4spY=
+=Pqpr
+-----END PGP SIGNATURE-----
+
+--LBTn3Zyl7uO9TW9q--
