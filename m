@@ -2,221 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79880C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 06:49:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FFE7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 06:50:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232801AbiCRGul (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 02:50:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55424 "EHLO
+        id S232814AbiCRGvZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 02:51:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230046AbiCRGuh (ORCPT
+        with ESMTP id S231588AbiCRGvW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 02:50:37 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B66D917586B;
-        Thu, 17 Mar 2022 23:49:18 -0700 (PDT)
+        Fri, 18 Mar 2022 02:51:22 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D862217584A
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 23:50:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647586158; x=1679122158;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=vYf7H+zfZsWDggOzPC1KjFaiFOBNQv1b5Be/sCd1Hl8=;
-  b=emNnLO4Ox0tOJOCCeBN7arfEL/1RgKXC3fxI/ARsW9tfVgqdPz7oeoHY
-   uCIRy3gxgv1KrrMsk/onIl+Ig0e+1MNpg77GI3NOJtbJ/+9SV5PCB9I+/
-   t2uXPMLZHxuzxWVVixkBqxFhJvwMcNwMnC4M3jvEZ3arlT/rLUnyxOSN3
-   AKvoxBUXIYXTJ2DoIxORrCKv20zJbIjaik7BarAVI3uEzehizDHU8TLAB
-   vhFrwjyJaa21Y2TdnAtytP00KcR5l2GyGqGibMeYTt7pfpDRCxDG5dLc2
-   pZr2EFzlaV7zLc975rWzOdmdfakUNCjnNW04fmPUkyWHYIK+4FdtKFhwD
+  t=1647586202; x=1679122202;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=zew9kCyUCa+y6nwOuAeL3Q1B6zPPFWtdmSxcGJ6ON4c=;
+  b=ltptRBtuxJEIhMqC+qzvHAR3x1iya0kXJKe+Koxyc4fVWE4DsxXsv1nk
+   Iqs0QHlnV52Rn+3MTwmMyylHfasICcMNNA5zvYc5u1yUEozvZPxWalKbb
+   64sr9aoZO6E7qPXy4qGFEjngkS3vjQu7DDELXhb2B0GvdG7MeG+0SO3G+
+   kYja2C2swiK3f6locQjJUnPhsdVjRfJF5SljeG5GFEZtuRams9B3fAj1z
+   IABkvcGI5Sky0pE3UZ8rHeU5JcW93rgf87NAM2KntCQ29obLGbsn+EcCQ
+   /a1Z8qY94sq8iFCZuG9YsRg0zMruD48gXDvfLXvIQYctONFMNfHoESTyF
    w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="239233969"
+X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="256799051"
 X-IronPort-AV: E=Sophos;i="5.90,191,1643702400"; 
-   d="scan'208";a="239233969"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 23:49:18 -0700
+   d="scan'208";a="256799051"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 23:50:02 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,191,1643702400"; 
-   d="scan'208";a="499128327"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 23:49:14 -0700
-Received: by lahna (sSMTP sendmail emulation); Fri, 18 Mar 2022 08:44:51 +0200
-Date:   Fri, 18 Mar 2022 08:44:51 +0200
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     andreas.noever@gmail.com, michael.jamet@intel.com,
-        YehezkelShB@gmail.com, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-pci@vger.kernel.org, mario.limonciello@amd.com
-Subject: Re: [PATCH] thunderbolt: Make iommu_dma_protection more accurate
-Message-ID: <YjQqY/Nq0pgpcAaI@lahna>
-References: <2d01fa50c2650c730b0244929097737918e302e7.1647533152.git.robin.murphy@arm.com>
+   d="scan'208";a="517076875"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 17 Mar 2022 23:50:00 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nV6Qy-000EUQ-4N; Fri, 18 Mar 2022 06:50:00 +0000
+Date:   Fri, 18 Mar 2022 14:49:24 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Dave Wysochanski <dwysocha@redhat.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [trondmy-nfs-2.6:testing 52/72] fs/nfs/fscache.c:231:71: error:
+ 'nfsi' undeclared
+Message-ID: <202203181425.lKRZyrao-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2d01fa50c2650c730b0244929097737918e302e7.1647533152.git.robin.murphy@arm.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Robin,
+tree:   git://git.linux-nfs.org/projects/trondmy/nfs-2.6.git testing
+head:   2fd93b6b58106aa3bc5a70739ba0f86cfee8fda9
+commit: 45f3a70ba68e1fc7fe0edde731b08d85435da30d [52/72] NFS: Cleanup usage of nfs_inode in fscache interface
+config: arm-allmodconfig (https://download.01.org/0day-ci/archive/20220318/202203181425.lKRZyrao-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        git remote add trondmy-nfs-2.6 git://git.linux-nfs.org/projects/trondmy/nfs-2.6.git
+        git fetch --no-tags trondmy-nfs-2.6 testing
+        git checkout 45f3a70ba68e1fc7fe0edde731b08d85435da30d
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash fs/nfs/
 
-Thanks for working on this!
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-On Thu, Mar 17, 2022 at 04:17:07PM +0000, Robin Murphy wrote:
-> Between me trying to get rid of iommu_present() and Mario wanting to
-> support the AMD equivalent of DMAR_PLATFORM_OPT_IN, scrutiny has shown
-> that the iommu_dma_protection attribute is being far too optimistic.
-> Even if an IOMMU might be present for some PCI segment in the system,
-> that doesn't necessarily mean it provides translation for the device(s)
-> we care about. Furthermore, all that DMAR_PLATFORM_OPT_IN really does
-> is tell us that memory was protected before the kernel was loaded, and
-> prevent the user from disabling the intel-iommu driver entirely. What
-> actually matters is whether we trust individual devices, based on the
-> "external facing" property that we expect firmware to describe for
-> Thunderbolt ports.
+Note: the trondmy-nfs-2.6/testing HEAD 2fd93b6b58106aa3bc5a70739ba0f86cfee8fda9 builds fine.
+      It only hurts bisectability.
 
-We still want to know that DMAR_PLATFORM_OPT_IN is set by the firmware
-because that tells us that none of the devices connected before OS got
-control had the ability to perform DMA outside of the RMRR regions. If
-they did then all this is pointless because they could have modified the
-system memory as they wished.
+All errors (new ones prefixed by >>):
 
-> Avoid false positives by looking as close as possible to the same PCI
-> topology that the IOMMU layer will consider once a Thunderbolt endpoint
-> appears. Crucially, we can't assume that IOMMU translation being enabled
-> for any reason is sufficient on its own; full (expensive) DMA protection
-> will still only be imposed on untrusted devices.
-> 
-> CC: Mario Limonciello <mario.limonciello@amd.com>
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
-> 
-> This supersedes my previous attempt just trying to replace
-> iommu_present() at [1], further to the original discussion at [2].
-> 
-> [1] https://lore.kernel.org/linux-iommu/BL1PR12MB515799C0BE396377DBBEF055E2119@BL1PR12MB5157.namprd12.prod.outlook.com/T/
-> [2] https://lore.kernel.org/linux-iommu/202203160844.lKviWR1Q-lkp@intel.com/T/
-> 
->  drivers/thunderbolt/domain.c | 12 +++---------
->  drivers/thunderbolt/nhi.c    | 35 +++++++++++++++++++++++++++++++++++
->  include/linux/thunderbolt.h  |  2 ++
->  3 files changed, 40 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/thunderbolt/domain.c b/drivers/thunderbolt/domain.c
-> index 7018d959f775..d5c825e84ac8 100644
-> --- a/drivers/thunderbolt/domain.c
-> +++ b/drivers/thunderbolt/domain.c
-> @@ -7,9 +7,7 @@
->   */
->  
->  #include <linux/device.h>
-> -#include <linux/dmar.h>
->  #include <linux/idr.h>
-> -#include <linux/iommu.h>
->  #include <linux/module.h>
->  #include <linux/pm_runtime.h>
->  #include <linux/slab.h>
-> @@ -257,13 +255,9 @@ static ssize_t iommu_dma_protection_show(struct device *dev,
->  					 struct device_attribute *attr,
->  					 char *buf)
->  {
-> -	/*
-> -	 * Kernel DMA protection is a feature where Thunderbolt security is
-> -	 * handled natively using IOMMU. It is enabled when IOMMU is
-> -	 * enabled and ACPI DMAR table has DMAR_PLATFORM_OPT_IN set.
-> -	 */
-> -	return sprintf(buf, "%d\n",
-> -		       iommu_present(&pci_bus_type) && dmar_platform_optin());
-> +	struct tb *tb = container_of(dev, struct tb, dev);
-> +
-> +	return sprintf(buf, "%d\n", tb->nhi->iommu_dma_protection);
->  }
->  static DEVICE_ATTR_RO(iommu_dma_protection);
->  
-> diff --git a/drivers/thunderbolt/nhi.c b/drivers/thunderbolt/nhi.c
-> index c73da0532be4..e12c2e266741 100644
-> --- a/drivers/thunderbolt/nhi.c
-> +++ b/drivers/thunderbolt/nhi.c
-> @@ -14,6 +14,7 @@
->  #include <linux/errno.h>
->  #include <linux/pci.h>
->  #include <linux/interrupt.h>
-> +#include <linux/iommu.h>
->  #include <linux/module.h>
->  #include <linux/delay.h>
->  #include <linux/property.h>
-> @@ -1102,6 +1103,39 @@ static void nhi_check_quirks(struct tb_nhi *nhi)
->  		nhi->quirks |= QUIRK_AUTO_CLEAR_INT;
->  }
->  
-> +static void nhi_check_iommu(struct tb_nhi *nhi)
-> +{
-> +	struct pci_dev *pdev;
-> +	bool port_ok = false;
+   In file included from include/linux/kernel.h:29,
+                    from fs/nfs/fscache.c:9:
+   fs/nfs/fscache.c: In function 'nfs_fscache_open_file':
+>> fs/nfs/fscache.c:231:71: error: 'nfsi' undeclared (first use in this function)
+     231 |                 dfprintk(FSCACHE, "NFS: nfsi 0x%p disabling cache\n", nfsi);
+         |                                                                       ^~~~
+   include/linux/printk.h:418:33: note: in definition of macro 'printk_index_wrap'
+     418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+         |                                 ^~~~~~~~~~~
+   include/linux/sunrpc/debug.h:40:17: note: in expansion of macro 'printk'
+      40 |                 printk(KERN_DEFAULT fmt, ##__VA_ARGS__);                \
+         |                 ^~~~~~
+   fs/nfs/fscache.c:231:17: note: in expansion of macro 'dfprintk'
+     231 |                 dfprintk(FSCACHE, "NFS: nfsi 0x%p disabling cache\n", nfsi);
+         |                 ^~~~~~~~
+   fs/nfs/fscache.c:231:71: note: each undeclared identifier is reported only once for each function it appears in
+     231 |                 dfprintk(FSCACHE, "NFS: nfsi 0x%p disabling cache\n", nfsi);
+         |                                                                       ^~~~
+   include/linux/printk.h:418:33: note: in definition of macro 'printk_index_wrap'
+     418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+         |                                 ^~~~~~~~~~~
+   include/linux/sunrpc/debug.h:40:17: note: in expansion of macro 'printk'
+      40 |                 printk(KERN_DEFAULT fmt, ##__VA_ARGS__);                \
+         |                 ^~~~~~
+   fs/nfs/fscache.c:231:17: note: in expansion of macro 'dfprintk'
+     231 |                 dfprintk(FSCACHE, "NFS: nfsi 0x%p disabling cache\n", nfsi);
+         |                 ^~~~~~~~
 
 
-So for here somewhere we should call dmar_platform_optin() first. I
-think this is something we want to move inside the IOMMU API (alongside
-with the below checks).
+vim +/nfsi +231 fs/nfs/fscache.c
 
-> +
-> +	/*
-> +	 * Check for sibling devices that look like they should be our
-> +	 * tunnelled ports. We can reasonably assume that if an IOMMU is
-> +	 * managing the bridge it will manage any future devices beyond it
-> +	 * too. If firmware has described a port as external-facing as
-> +	 * expected then we can trust the IOMMU layer to enforce isolation;
-> +	 * otherwise even if translation is enabled for existing devices it
-> +	 * may potentially be overridden for a future tunnelled endpoint.
-> +	 */
-> +	for_each_pci_bridge(pdev, nhi->pdev->bus) {
-> +		if (!pci_is_pcie(pdev) ||
-> +		    !(pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT ||
-> +		      pci_pcie_type(pdev) == PCI_EXP_TYPE_DOWNSTREAM))
-> +			continue;
-> +
-> +		if (!device_iommu_mapped(&pdev->dev))
-> +			return;
-> +
-> +		if (!pdev->untrusted) {
-> +			dev_info(&nhi->pdev->dev,
-> +				 "Assuming unreliable Kernel DMA protection\n");
-> +			return;
-> +		}
-> +		port_ok = true;
-> +	}
-> +	nhi->iommu_dma_protection = port_ok;
-> +}
-> +
->  static int nhi_init_msi(struct tb_nhi *nhi)
->  {
->  	struct pci_dev *pdev = nhi->pdev;
-> @@ -1219,6 +1253,7 @@ static int nhi_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->  		return -ENOMEM;
->  
->  	nhi_check_quirks(nhi);
-> +	nhi_check_iommu(nhi);
->  
->  	res = nhi_init_msi(nhi);
->  	if (res) {
-> diff --git a/include/linux/thunderbolt.h b/include/linux/thunderbolt.h
-> index 124e13cb1469..7a8ad984e651 100644
-> --- a/include/linux/thunderbolt.h
-> +++ b/include/linux/thunderbolt.h
-> @@ -465,6 +465,7 @@ static inline struct tb_xdomain *tb_service_parent(struct tb_service *svc)
->   * @msix_ida: Used to allocate MSI-X vectors for rings
->   * @going_away: The host controller device is about to disappear so when
->   *		this flag is set, avoid touching the hardware anymore.
-> + * @iommu_dma_protection: An IOMMU will isolate external-facing ports.
->   * @interrupt_work: Work scheduled to handle ring interrupt when no
->   *		    MSI-X is used.
->   * @hop_count: Number of rings (end point hops) supported by NHI.
-> @@ -479,6 +480,7 @@ struct tb_nhi {
->  	struct tb_ring **rx_rings;
->  	struct ida msix_ida;
->  	bool going_away;
-> +	bool iommu_dma_protection;
->  	struct work_struct interrupt_work;
->  	u32 hop_count;
->  	unsigned long quirks;
-> -- 
-> 2.28.0.dirty
+ef79c097bbe9724 David Howells    2009-04-03  200  
+ef79c097bbe9724 David Howells    2009-04-03  201  /*
+f1fe29b4a02d080 David Howells    2013-09-27  202   * Enable or disable caching for a file that is being opened as appropriate.
+f1fe29b4a02d080 David Howells    2013-09-27  203   * The cookie is allocated when the inode is initialised, but is not enabled at
+f1fe29b4a02d080 David Howells    2013-09-27  204   * that time.  Enablement is deferred to file-open time to avoid stat() and
+f1fe29b4a02d080 David Howells    2013-09-27  205   * access() thrashing the cache.
+f1fe29b4a02d080 David Howells    2013-09-27  206   *
+f1fe29b4a02d080 David Howells    2013-09-27  207   * For now, with NFS, only regular files that are open read-only will be able
+ef79c097bbe9724 David Howells    2009-04-03  208   * to use the cache.
+f1fe29b4a02d080 David Howells    2013-09-27  209   *
+f1fe29b4a02d080 David Howells    2013-09-27  210   * We enable the cache for an inode if we open it read-only and it isn't
+f1fe29b4a02d080 David Howells    2013-09-27  211   * currently open for writing.  We disable the cache if the inode is open
+f1fe29b4a02d080 David Howells    2013-09-27  212   * write-only.
+f1fe29b4a02d080 David Howells    2013-09-27  213   *
+f1fe29b4a02d080 David Howells    2013-09-27  214   * The caller uses the file struct to pin i_writecount on the inode before
+f1fe29b4a02d080 David Howells    2013-09-27  215   * calling us when a file is opened for writing, so we can make use of that.
+f1fe29b4a02d080 David Howells    2013-09-27  216   *
+f1fe29b4a02d080 David Howells    2013-09-27  217   * Note that this may be invoked multiple times in parallel by parallel
+f1fe29b4a02d080 David Howells    2013-09-27  218   * nfs_open() functions.
+ef79c097bbe9724 David Howells    2009-04-03  219   */
+f1fe29b4a02d080 David Howells    2013-09-27  220  void nfs_fscache_open_file(struct inode *inode, struct file *filp)
+ef79c097bbe9724 David Howells    2009-04-03  221  {
+402cb8dda949d9b David Howells    2018-04-04  222  	struct nfs_fscache_inode_auxdata auxdata;
+f1fe29b4a02d080 David Howells    2013-09-27  223  	struct fscache_cookie *cookie = nfs_i_fscache(inode);
+a6b5a28eb56c3f4 Dave Wysochanski 2020-11-14  224  	bool open_for_write = inode_is_open_for_write(inode);
+ef79c097bbe9724 David Howells    2009-04-03  225  
+f1fe29b4a02d080 David Howells    2013-09-27  226  	if (!fscache_cookie_valid(cookie))
+f1fe29b4a02d080 David Howells    2013-09-27  227  		return;
+ef79c097bbe9724 David Howells    2009-04-03  228  
+a6b5a28eb56c3f4 Dave Wysochanski 2020-11-14  229  	fscache_use_cookie(cookie, open_for_write);
+a6b5a28eb56c3f4 Dave Wysochanski 2020-11-14  230  	if (open_for_write) {
+f1fe29b4a02d080 David Howells    2013-09-27 @231  		dfprintk(FSCACHE, "NFS: nfsi 0x%p disabling cache\n", nfsi);
+45f3a70ba68e1fc Dave Wysochanski 2022-03-01  232  		nfs_fscache_update_auxdata(&auxdata, inode);
+a6b5a28eb56c3f4 Dave Wysochanski 2020-11-14  233  		fscache_invalidate(cookie, &auxdata, i_size_read(inode),
+a6b5a28eb56c3f4 Dave Wysochanski 2020-11-14  234  				   FSCACHE_INVAL_DIO_WRITE);
+ef79c097bbe9724 David Howells    2009-04-03  235  	}
+ef79c097bbe9724 David Howells    2009-04-03  236  }
+f1fe29b4a02d080 David Howells    2013-09-27  237  EXPORT_SYMBOL_GPL(nfs_fscache_open_file);
+545db45f0fc0d42 David Howells    2009-04-03  238  
+
+:::::: The code at line 231 was first introduced by commit
+:::::: f1fe29b4a02d0805aa7d0ff6b73410a9f9316d69 NFS: Use i_writecount to control whether to get an fscache cookie in nfs_open()
+
+:::::: TO: David Howells <dhowells@redhat.com>
+:::::: CC: David Howells <dhowells@redhat.com>
+
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
