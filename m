@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37943C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 10:38:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54645C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 10:38:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235164AbiCRKj3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 06:39:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37086 "EHLO
+        id S234219AbiCRKjh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 06:39:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235071AbiCRKi7 (ORCPT
+        with ESMTP id S235033AbiCRKjG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 06:38:59 -0400
+        Fri, 18 Mar 2022 06:39:06 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 669D92D88A0;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD83D2D9D50;
         Fri, 18 Mar 2022 03:37:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=AFcuMPAoZaB+CVanO7VceCwI9IK81XJZLPVFmZZXE/0=;
-  b=N2XY89svB28mcxJnbsqMaDr65Hi8QP+uW5L+0y6Pr3BNMzMvHHhnpj66
-   JMuzPHn9KG+u/Z/VDJJaQbrWPY5oWnnynDxFHUE6uCEkW/HY0cIwKLa05
-   RpZtYkBR6NwJfb9jHxDSCuPJnaenY+Kg4L9rGtjZMgfZoaszlfsifgfRJ
-   k=;
+  bh=HNsH48t+EV6ivnkxLpBDiWmjr5FnEaaFgC7nRyfhpuc=;
+  b=IpJzgAuUN9uVfx1RR8bvWG2Mrx70QeITan9PZ+aDr6QfemGs3XM4JjIl
+   n8cQ9IzeyFF0+yc2WAxsZlYPpREq/8gKsivb0Ks4WmlTidT5ykkko5qUK
+   10vHi38rX8UJeQvXbhhWBzDThuUA3t7//luDOJkhkRXWrYWos+a4fgTrn
+   M=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.90,192,1643670000"; 
-   d="scan'208";a="8935639"
+   d="scan'208";a="8935642"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
   by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 11:37:36 +0100
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Russell King <linux@armlinux.org.uk>
-Cc:     kernel-janitors@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ARM: tegra: fix typos in comments
-Date:   Fri, 18 Mar 2022 11:37:03 +0100
-Message-Id: <20220318103729.157574-8-Julia.Lawall@inria.fr>
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     kernel-janitors@vger.kernel.org, Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] arm64: fix typos in comments
+Date:   Fri, 18 Mar 2022 11:37:05 +0100
+Message-Id: <20220318103729.157574-10-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -52,20 +49,57 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- arch/arm/mach-tegra/platsmp.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/kernel/module-plts.c |    2 +-
+ arch/arm64/kernel/suspend.c     |    2 +-
+ arch/arm64/mm/init.c            |    4 ++--
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/mach-tegra/platsmp.c b/arch/arm/mach-tegra/platsmp.c
-index e6911a14c096..1f57e7c0feae 100644
---- a/arch/arm/mach-tegra/platsmp.c
-+++ b/arch/arm/mach-tegra/platsmp.c
-@@ -83,7 +83,7 @@ static int tegra30_boot_secondary(unsigned int cpu, struct task_struct *idle)
- 	 * For warm boot CPU that was resumed from CPU hotplug, the
- 	 * power will be resumed automatically after un-halting the
- 	 * flow controller of the warm boot CPU. We need to wait for
--	 * the confirmaiton that the CPU is powered then removing
-+	 * the confirmation that the CPU is powered then removing
- 	 * the IO clamps.
- 	 * For cold boot CPU, do not wait. After the cold boot CPU be
- 	 * booted, it will run to tegra_secondary_init() and set
+diff --git a/arch/arm64/kernel/module-plts.c b/arch/arm64/kernel/module-plts.c
+index e53493d8b208..a3d0494f25a9 100644
+--- a/arch/arm64/kernel/module-plts.c
++++ b/arch/arm64/kernel/module-plts.c
+@@ -220,7 +220,7 @@ static unsigned int count_plts(Elf64_Sym *syms, Elf64_Rela *rela, int num,
+ 			 * increasing the section's alignment so that the
+ 			 * resulting address of this instruction is guaranteed
+ 			 * to equal the offset in that particular bit (as well
+-			 * as all less signficant bits). This ensures that the
++			 * as all less significant bits). This ensures that the
+ 			 * address modulo 4 KB != 0xfff8 or 0xfffc (which would
+ 			 * have all ones in bits [11:3])
+ 			 */
+diff --git a/arch/arm64/kernel/suspend.c b/arch/arm64/kernel/suspend.c
+index 19ee7c33769d..2b0887e58a7c 100644
+--- a/arch/arm64/kernel/suspend.c
++++ b/arch/arm64/kernel/suspend.c
+@@ -140,7 +140,7 @@ int cpu_suspend(unsigned long arg, int (*fn)(unsigned long))
+ 	/*
+ 	 * Restore pstate flags. OS lock and mdscr have been already
+ 	 * restored, so from this point onwards, debugging is fully
+-	 * renabled if it was enabled when core started shutdown.
++	 * reenabled if it was enabled when core started shutdown.
+ 	 */
+ 	local_daif_restore(flags);
+ 
+diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+index 8ac25f19084e..1e7b1550e2fc 100644
+--- a/arch/arm64/mm/init.c
++++ b/arch/arm64/mm/init.c
+@@ -73,7 +73,7 @@ EXPORT_SYMBOL(memstart_addr);
+  * In this scheme a comparatively quicker boot is observed.
+  *
+  * If ZONE_DMA configs are defined, crash kernel memory reservation
+- * is delayed until DMA zone memory range size initilazation performed in
++ * is delayed until DMA zone memory range size initialization performed in
+  * zone_sizes_init().  The defer is necessary to steer clear of DMA zone
+  * memory range to avoid overlap allocation.  So crash kernel memory boundaries
+  * are not known when mapping all bank memory ranges, which otherwise means
+@@ -81,7 +81,7 @@ EXPORT_SYMBOL(memstart_addr);
+  * so page-granularity mappings are created for the entire memory range.
+  * Hence a slightly slower boot is observed.
+  *
+- * Note: Page-granularity mapppings are necessary for crash kernel memory
++ * Note: Page-granularity mappings are necessary for crash kernel memory
+  * range for shrinking its size via /sys/kernel/kexec_crash_size interface.
+  */
+ #if IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32)
 
