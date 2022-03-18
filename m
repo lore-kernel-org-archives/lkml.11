@@ -2,126 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B86EAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 05:32:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A767C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 05:33:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232543AbiCRFdP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 01:33:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49374 "EHLO
+        id S232552AbiCRFfL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 01:35:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230100AbiCRFdK (ORCPT
+        with ESMTP id S229838AbiCRFfJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 01:33:10 -0400
-Received: from gateway24.websitewelcome.com (gateway24.websitewelcome.com [192.185.51.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D72D3AF0
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 22:31:52 -0700 (PDT)
-Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
-        by gateway24.websitewelcome.com (Postfix) with ESMTP id 8DA081F84
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 00:31:51 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id V5DLnWMTp22u3V5DLn2ZTp; Fri, 18 Mar 2022 00:31:51 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
-        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
-        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=nHjdoFFbTloWbSbcTB9Xd34hQqBVAfoUskKY6xI1CyI=; b=2bqIbxx7e306+T8LJxWfDkxoYc
-        w3cumUWMA3SAP46t8b0qOMPbYPHfC4hBJ7EDHLxF/OmFeL17WTO9yqB1exvoVb6wvFaFjiQHbduz4
-        PTpbxVn3q+XvcH9OaK0tWBFSHIOKuz6lV7UD6N3Hkky0sErv/l8EuEOBxiKBV6kK7b9SdVViHovuN
-        qnJo2FF8NWNEDbCBMdtaWcFDShg6mHpHtRyH8zhGyBSO+a6o6SH5Y83NcJyDtTg+AEQAWwLxi+V6P
-        HNUJ76elTgs03NEPvqMrdHdkYFHi4MbSEafi7Oa2Yrj22ymSYT5EDMZjWEbRyR4xq+NCqS8NDDd1M
-        EciZt6Ag==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57536 helo=localhost)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nV5DK-001Put-W5; Fri, 18 Mar 2022 05:31:51 +0000
-Date:   Thu, 17 Mar 2022 22:31:49 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Brandon Wyman <bjwyman@gmail.com>
-Cc:     Joel Stanley <joel@jms.id.au>, openbmc@lists.ozlabs.org,
-        Eddie James <eajames@linux.ibm.com>,
-        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
+        Fri, 18 Mar 2022 01:35:09 -0400
+Received: from mail.parknet.co.jp (mail.parknet.co.jp [210.171.160.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 35E7B16F059
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 22:33:49 -0700 (PDT)
+Received: from ibmpc.myhome.or.jp (server.parknet.ne.jp [210.171.168.39])
+        by mail.parknet.co.jp (Postfix) with ESMTPSA id 4DD4A15F93A;
+        Fri, 18 Mar 2022 14:33:47 +0900 (JST)
+Received: from devron.myhome.or.jp (foobar@devron.myhome.or.jp [192.168.0.3])
+        by ibmpc.myhome.or.jp (8.16.1/8.16.1/Debian-2) with ESMTPS id 22I5XktY065595
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Fri, 18 Mar 2022 14:33:47 +0900
+Received: from devron.myhome.or.jp (foobar@localhost [127.0.0.1])
+        by devron.myhome.or.jp (8.16.1/8.16.1/Debian-2) with ESMTPS id 22I5XkSq137369
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Fri, 18 Mar 2022 14:33:46 +0900
+Received: (from hirofumi@localhost)
+        by devron.myhome.or.jp (8.16.1/8.16.1/Submit) id 22I5Xjht137368;
+        Fri, 18 Mar 2022 14:33:45 +0900
+From:   OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+To:     Jonathan Lassoff <jof@thejof.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] hwmon: (pmbus) Add Vin unit off handling
-Message-ID: <20220318053149.GA3333429@roeck-us.net>
-References: <20220317232123.2103592-1-bjwyman@gmail.com>
+Subject: Re: [PATCH v1 1/2] Add FAT messages to printk index
+References: <d9aee29aaf11f4a26356e9f1c844b40cb4a7a63d.1647537330.git.jof@thejof.com>
+Date:   Fri, 18 Mar 2022 14:33:45 +0900
+In-Reply-To: <d9aee29aaf11f4a26356e9f1c844b40cb4a7a63d.1647537330.git.jof@thejof.com>
+        (Jonathan Lassoff's message of "Thu, 17 Mar 2022 10:17:47 -0700")
+Message-ID: <87r16zn7t2.fsf@mail.parknet.co.jp>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/29.0.50 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220317232123.2103592-1-bjwyman@gmail.com>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nV5DK-001Put-W5
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57536
-X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 1
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 11:21:23PM +0000, Brandon Wyman wrote:
-> If there is an input undervoltage fault, reported in STATUS_INPUT
-> command response, there is quite likely a "Unit Off For Insufficient
-> Input Voltage" condition as well.
-> 
-> Add a constant for bit 3 of STATUS_INPUT. Update the Vin limit
-> attributes to include both bits in the mask for clearing faults.
-> 
-> If an input undervoltage fault occurs, causing a unit off for
-> insufficient input voltage, but the unit is off bit is not cleared, the
-> STATUS_WORD will not be updated to clear the input fault condition.
-> Including the unit is off bit (bit 3) allows for the input fault
-> condition to completely clear.
-> 
-> Signed-off-by: Brandon Wyman <bjwyman@gmail.com>
+Jonathan Lassoff <jof@thejof.com> writes:
 
-Applied.
+> In order for end users to quickly react to new issues that come up in
+> production, it is proving useful to leverage the printk indexing system. This
+> printk index enables kernel developers to use calls to printk() with changable
+> ad-hoc format strings, while still enabling end users to detect changes and
+> develop a semi-stable interface for detecting and parsing these messages.
+>
+> So that detailed FAT messages are captured by this printk index, this patch
+> wraps fat_msg with a macro.
+>
+> PATCH v1 -- Fix indentation with tabs in fat_msg macro
+>
+> Signed-off-by: Jonathan Lassoff <jof@thejof.com>
 
-Thanks,
-Guenter
+Looks good. I prefer removing duplication of message prefix though, not
+strong opinion.
+
+e.g.
+	#define FAT_MSG_PFX		"%sFAT-fs (%s): "
+	printk_index_subsys_emit(FAT_MSG_PFX, level, fmt, ##args);\
+	_printk(FAT_MSG_PFX "%pV\n", level, sb->s_id, &vaf);
+
+Anyway, if this is same style with others, it is ok.
+
+Acked-by: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
 
 > ---
->  drivers/hwmon/pmbus/pmbus.h      | 1 +
->  drivers/hwmon/pmbus/pmbus_core.c | 2 +-
->  2 files changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/hwmon/pmbus/pmbus.h b/drivers/hwmon/pmbus/pmbus.h
-> index e0aa8aa46d8c..ef3a8ecde4df 100644
-> --- a/drivers/hwmon/pmbus/pmbus.h
-> +++ b/drivers/hwmon/pmbus/pmbus.h
-> @@ -319,6 +319,7 @@ enum pmbus_fan_mode { percent = 0, rpm };
->  /*
->   * STATUS_VOUT, STATUS_INPUT
+>  fs/fat/fat.h  | 8 +++++++-
+>  fs/fat/misc.c | 4 ++--
+>  2 files changed, 9 insertions(+), 3 deletions(-)
+>
+> diff --git a/fs/fat/fat.h b/fs/fat/fat.h
+> index 02d4d4234956..9b7f917dfe68 100644
+> --- a/fs/fat/fat.h
+> +++ b/fs/fat/fat.h
+> @@ -433,8 +433,14 @@ void __fat_fs_error(struct super_block *sb, int report, const char *fmt, ...);
+>  	__fat_fs_error(sb, 1, fmt , ## args)
+>  #define fat_fs_error_ratelimit(sb, fmt, args...) \
+>  	__fat_fs_error(sb, __ratelimit(&MSDOS_SB(sb)->ratelimit), fmt , ## args)
+> +
+> +#define fat_msg(sb, level, fmt, args...)				\
+> +do {									\
+> +	printk_index_subsys_emit("%sFAT-fs (%s): ", level, fmt, ##args);\
+> +	_fat_msg(sb, level, fmt, ##args);				\
+> +} while(0)
+>  __printf(3, 4) __cold
+> -void fat_msg(struct super_block *sb, const char *level, const char *fmt, ...);
+> +void _fat_msg(struct super_block *sb, const char *level, const char *fmt, ...);
+>  #define fat_msg_ratelimit(sb, level, fmt, args...)	\
+>  	do {	\
+>  			if (__ratelimit(&MSDOS_SB(sb)->ratelimit))	\
+> diff --git a/fs/fat/misc.c b/fs/fat/misc.c
+> index 91ca3c304211..b0808bb0c75f 100644
+> --- a/fs/fat/misc.c
+> +++ b/fs/fat/misc.c
+> @@ -45,7 +45,7 @@ EXPORT_SYMBOL_GPL(__fat_fs_error);
+>   * fat_msg() - print preformated FAT specific messages. Every thing what is
+>   * not fat_fs_error() should be fat_msg().
 >   */
-> +#define PB_VOLTAGE_VIN_OFF		BIT(3)
->  #define PB_VOLTAGE_UV_FAULT		BIT(4)
->  #define PB_VOLTAGE_UV_WARNING		BIT(5)
->  #define PB_VOLTAGE_OV_WARNING		BIT(6)
-> diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
-> index ac2fbee1ba9c..a0d899dc81f0 100644
-> --- a/drivers/hwmon/pmbus/pmbus_core.c
-> +++ b/drivers/hwmon/pmbus/pmbus_core.c
-> @@ -1373,7 +1373,7 @@ static const struct pmbus_limit_attr vin_limit_attrs[] = {
->  		.reg = PMBUS_VIN_UV_FAULT_LIMIT,
->  		.attr = "lcrit",
->  		.alarm = "lcrit_alarm",
-> -		.sbit = PB_VOLTAGE_UV_FAULT,
-> +		.sbit = (PB_VOLTAGE_UV_FAULT | PB_VOLTAGE_VIN_OFF),
->  	}, {
->  		.reg = PMBUS_VIN_OV_WARN_LIMIT,
->  		.attr = "max",
+> -void fat_msg(struct super_block *sb, const char *level, const char *fmt, ...)
+> +void _fat_msg(struct super_block *sb, const char *level, const char *fmt, ...)
+>  {
+>  	struct va_format vaf;
+>  	va_list args;
+> @@ -53,7 +53,7 @@ void fat_msg(struct super_block *sb, const char *level, const char *fmt, ...)
+>  	va_start(args, fmt);
+>  	vaf.fmt = fmt;
+>  	vaf.va = &args;
+> -	printk("%sFAT-fs (%s): %pV\n", level, sb->s_id, &vaf);
+> +	_printk("%sFAT-fs (%s): %pV\n", level, sb->s_id, &vaf);
+>  	va_end(args);
+>  }
+
+-- 
+OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
