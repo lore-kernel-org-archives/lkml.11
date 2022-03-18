@@ -2,157 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F18DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 14:35:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 760D5C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 14:37:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237350AbiCROgd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 10:36:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53836 "EHLO
+        id S237361AbiCROir (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 10:38:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237329AbiCROgb (ORCPT
+        with ESMTP id S237329AbiCROip (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 10:36:31 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6DEA2D41F8
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 07:35:11 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id n11so6962086qtk.4
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 07:35:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=V7P4GZK3e6fyTq1pakb6Rzu6ZJgSaONaWTDE6DcGFrE=;
-        b=Z8bs2DWUWGLhWdOjyWlnn9HNRwNSjCyVUcQwAOiEKwFsEEBGPZoaf84h5nMF6qt5zR
-         7kb0mvD3zpe4gHTDcRv2+uUbN05ibi1sBC9y1YzAtE2cvQZ/kpD1DCjsBJlPwgXRJGxm
-         DnBROXIz5vhznVTym7m9zNChFlxun94xZI1j6sOEMN9AUFGd5JVe8mBYpCyvu7uEpCpc
-         fFCUPZjO4cPBKgqXGFY7pW7CVObso2wbO9F7yS5IPtSINUkqlDFHj6H/IxVTFzzFqyI8
-         bnCxb4XelWAKG8/zXQElVRTxW2/5b8bwZPkqUpuEbFfH4286/0fiRHe+p0lJ70yg0Ta9
-         L2Yw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=V7P4GZK3e6fyTq1pakb6Rzu6ZJgSaONaWTDE6DcGFrE=;
-        b=Y4/cxSeCRwqsGMvUOufmi+Ol9sKkPajHdVIZvp/iZcQS+ulAPZg4kCNxgur/5wu98t
-         06XWxsBO8rh5S/+S6AIwWv3yp9uzsgXJ4UClpi3GxCpUP2pZ1wQZlcH4RpKdHdRllERZ
-         +E3LTLB/V89P4dqOIKYYKWWjWnrQ6T+UuRZWOv+aDp/3pUyRk+sniCisU/auzoWcZZE5
-         CQNYaK5Ulu0UyTMChrnV1WK0wrxJPsfHndzVO13opbY/Uzk7349YXkFL+tv8MkokOpoK
-         yNkcR/OWhUTKETpjOV/VDpVCMjA77JY+o3KGpVHQDicxRUfIg/7DEpIPyKeE4g2TpB4S
-         97Vw==
-X-Gm-Message-State: AOAM53211Zw6xWVSPpa+TnQO/cL72EQhhd0D1N9MHzcxgXNHHcycN10F
-        81WxKBpVusxikWfhOYHiDhvr9H6YwUoa0QY67c3nTw==
-X-Google-Smtp-Source: ABdhPJwf+MEW47SH6CFA80X1s0ccNAZNyAoYqKtZ7oSbtZn2ydv7N6dD6IDjj6RCMmalJ+GCbbbNLtvE1RbOEg+mDqk=
-X-Received: by 2002:a05:622a:15c5:b0:2e1:cdc9:dd1c with SMTP id
- d5-20020a05622a15c500b002e1cdc9dd1cmr7596184qty.79.1647614110831; Fri, 18 Mar
- 2022 07:35:10 -0700 (PDT)
+        Fri, 18 Mar 2022 10:38:45 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7DB2E5757;
+        Fri, 18 Mar 2022 07:37:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647614246; x=1679150246;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=/yZ/P03h5rF3YtpbYM9N0CmHsvjo/p2i9Cd9LXIPX8s=;
+  b=iNJ+RRMtj9RQJg0Ojuc1ceMQSv+CfwaCxIZEWAhzz5Sekwy861RFaZ7z
+   r2qg7KsNDOGEK6FRcBquXiVspv/Ycrgs90QEE2lfo3F0uWdVgG4xFB02z
+   ZMBR+NtCMA4EFpePXxvxmbcE3TutozqAJw4bJMepokQ2thRtzFy5X6Yhf
+   Aq0q29sy8p8Dg3OoxD/8C0/Nh/vcqlGylrsF58ZiYdWtCJcGbXaTxEuAl
+   rDg4n0rrtK1pt962ANhgXj7+Fsqy1xSpybq7iz3mszFpO/kFphgN2kAsN
+   /3ZaifbQIANQDJcFkl3TsdqAf4gK+QpGmenTEhy0F0VN2fP1zd3jeLONH
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="281956835"
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
+   d="scan'208,223";a="281956835"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 07:37:24 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
+   d="scan'208,223";a="691338172"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 18 Mar 2022 07:37:21 -0700
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Fri, 18 Mar 2022 16:37:21 +0200
+Date:   Fri, 18 Mar 2022 16:37:21 +0200
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     linux-usb@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Dell.Client.Kernel@dell.com
+Subject: Re: ucsi_acpi: probe of USBC000:00 fails with ioremap error
+Message-ID: <YjSZIT6p/QL5T1QJ@kuha.fi.intel.com>
+References: <b9b00e0e-9182-783d-ae30-d67d778ae060@molgen.mpg.de>
 MIME-Version: 1.0
-References: <20211214162050.660953-1-glider@google.com> <20211214162050.660953-13-glider@google.com>
- <Ybnuup0eMnhrwp8e@FVFF77S0Q05N> <CANpmjNNLG0F9WzNnQkJX+QEqdxnhWstuag_9jrid7zdJgivHyw@mail.gmail.com>
- <Ybn/DZb32ujokTnJ@FVFF77S0Q05N>
-In-Reply-To: <Ybn/DZb32ujokTnJ@FVFF77S0Q05N>
-From:   Alexander Potapenko <glider@google.com>
-Date:   Fri, 18 Mar 2022 15:34:34 +0100
-Message-ID: <CAG_fn=U96hVmJxk17z+N8yFxxGABy4vE-FHJUGYNMZYbHG_hyg@mail.gmail.com>
-Subject: Re: [PATCH 12/43] kcsan: clang: retire CONFIG_KCSAN_KCOV_BROKEN
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     Marco Elver <elver@google.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/mixed; boundary="H9PO/VHIdYJy1kEU"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b9b00e0e-9182-783d-ae30-d67d778ae060@molgen.mpg.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Dec 15, 2021 at 3:43 PM Mark Rutland <mark.rutland@arm.com> wrote:
->
-> On Wed, Dec 15, 2021 at 02:39:43PM +0100, Marco Elver wrote:
-> > On Wed, 15 Dec 2021 at 14:33, Mark Rutland <mark.rutland@arm.com> wrote=
-:
-> > >
-> > > On Tue, Dec 14, 2021 at 05:20:19PM +0100, Alexander Potapenko wrote:
-> > > > kcov used to be broken prior to Clang 11, but right now that versio=
-n is
-> > > > already the minimum required to build with KCSAN, that is why we do=
-n't
-> > > > need KCSAN_KCOV_BROKEN anymore.
-> > >
-> > > Just to check, how is that requirement enforced?
-> >
-> > HAVE_KCSAN_COMPILER will only be true with Clang 11 or later, due to
-> > no prior compiler having "-tsan-distinguish-volatile=3D1".
->
-> I see -- could we add wording to that effect into the commit messge?
 
-Will be done.
+--H9PO/VHIdYJy1kEU
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
-> > > I see the core Makefiles enforce 10.0.1+, but I couldn't spot an expl=
-icit
-> > > version dependency in Kconfig.kcsan.
-> > >
-> > > Otherwise, this looks good to me!
-> >
-> > I think 5.17 will be Clang 11 only, so we could actually revert
-> > ea91a1d45d19469001a4955583187b0d75915759:
-> > https://lkml.kernel.org/r/Yao86FeC2ybOobLO@archlinux-ax161
-> >
-> > I should resend that to be added to the -kbuild tree.
->
-> FWIW, that also works for me.
->
-> Thanks,
-> Mark.
+Hi Paul,
+
+On Fri, Mar 18, 2022 at 01:36:37PM +0100, Paul Menzel wrote:
+> Dear Linux folks,
+> 
+> 
+> On a Dell Precision 3540, Linux 5.16.12 reports an ioremap error:
+> 
+>     [    0.000000] Linux version 5.16.0-4-amd64
+> (debian-kernel@lists.debian.org) (gcc-11 (Debian 11.2.0-18) 11.2.0, GNU ld
+> (GNU Binutils for Debian) 2.38) #1 SMP PREEMPT Debian 5.16.12-1 (2022-03-08)
+>     [    0.000000] Command line: BOOT_IMAGE=/vmlinuz-5.16.0-4-amd64
+> root=UUID=c9342a55-b747-4442-b2f4-bc03eb7a51cf ro quiet noisapnp
+> log_buf_len=2M cryptomgr.notests btusb.enable_autosuspend=y
+> random.trust_cpu=on
+>     […]
+>     [    0.000000] DMI: Dell Inc. Precision 3540/0M14W7, BIOS 1.15.0
+> 12/08/2021
+>     […]
+>     [   24.230968] videodev: Linux video capture interface: v2.00
+>     [   24.237747] ioremap error for 0x78e31000-0x78e32000, requested 0x2,
+> got 0x0
+>     [   24.238100] ucsi_acpi: probe of USBC000:00 failed with error -12
+>     […]
+>     $ sudo more /proc/iomem
+>     […]
+>     78a04000-78ea2fff : ACPI Non-volatile Storage
+>       78e31000-78e31fff : USBC000:00
+>     […]
+> 
+> This seems to happen on a lot of Dell devices, cf. bug 199741 (ioremap error
+> on Dell XPS 9370) [1].
+
+I'm not sure if this helps, but I'm going to change the ioremap() call
+to memremap() soon in any case in this driver. Can you test the
+attached patch?
+
+thanks,
+
+-- 
+heikki
+
+--H9PO/VHIdYJy1kEU
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment;
+	filename="0001-usb-typec-ucsi-acpi-Map-the-mailbox-with-memremap.patch"
+
+From be67ec57a68e28877e4d379d7624d30141e324ab Mon Sep 17 00:00:00 2001
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Date: Fri, 18 Mar 2022 17:23:09 +0300
+Subject: [PATCH] usb: typec: ucsi: acpi: Map the mailbox with memremap()
+
+Interim.
+
+Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+---
+ drivers/usb/typec/ucsi/ucsi_acpi.c | 19 ++++---------------
+ 1 file changed, 4 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/usb/typec/ucsi/ucsi_acpi.c b/drivers/usb/typec/ucsi/ucsi_acpi.c
+index 6771f05e32c29..7455e3aff2be0 100644
+--- a/drivers/usb/typec/ucsi/ucsi_acpi.c
++++ b/drivers/usb/typec/ucsi/ucsi_acpi.c
+@@ -19,7 +19,7 @@
+ struct ucsi_acpi {
+ 	struct device *dev;
+ 	struct ucsi *ucsi;
+-	void __iomem *base;
++	void *base;
+ 	struct completion complete;
+ 	unsigned long flags;
+ 	guid_t guid;
+@@ -51,7 +51,7 @@ static int ucsi_acpi_read(struct ucsi *ucsi, unsigned int offset,
+ 	if (ret)
+ 		return ret;
+ 
+-	memcpy(val, (const void __force *)(ua->base + offset), val_len);
++	memcpy(val, ua->base + offset, val_len);
+ 
+ 	return 0;
+ }
+@@ -61,7 +61,7 @@ static int ucsi_acpi_async_write(struct ucsi *ucsi, unsigned int offset,
+ {
+ 	struct ucsi_acpi *ua = ucsi_get_drvdata(ucsi);
+ 
+-	memcpy((void __force *)(ua->base + offset), val, val_len);
++	memcpy(ua->base + offset, val, val_len);
+ 
+ 	return ucsi_acpi_dsm(ua, UCSI_DSM_FUNC_WRITE);
+ }
+@@ -132,18 +132,7 @@ static int ucsi_acpi_probe(struct platform_device *pdev)
+ 		return -ENODEV;
+ 	}
+ 
+-	/* This will make sure we can use ioremap() */
+-	status = acpi_release_memory(ACPI_HANDLE(&pdev->dev), res, 1);
+-	if (ACPI_FAILURE(status))
+-		return -ENOMEM;
+-
+-	/*
+-	 * NOTE: The memory region for the data structures is used also in an
+-	 * operation region, which means ACPI has already reserved it. Therefore
+-	 * it can not be requested here, and we can not use
+-	 * devm_ioremap_resource().
+-	 */
+-	ua->base = devm_ioremap(&pdev->dev, res->start, resource_size(res));
++	ua->base = devm_memremap(&pdev->dev, res->start, resource_size(res), MEMREMAP_WB);
+ 	if (!ua->base)
+ 		return -ENOMEM;
+ 
+-- 
+2.35.1
 
 
-
---=20
-Alexander Potapenko
-Software Engineer
-
-Google Germany GmbH
-Erika-Mann-Stra=C3=9Fe, 33
-80636 M=C3=BCnchen
-
-Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
-Registergericht und -nummer: Hamburg, HRB 86891
-Sitz der Gesellschaft: Hamburg
-
-Diese E-Mail ist vertraulich. Falls Sie diese f=C3=A4lschlicherweise
-erhalten haben sollten, leiten Sie diese bitte nicht an jemand anderes
-weiter, l=C3=B6schen Sie alle Kopien und Anh=C3=A4nge davon und lassen Sie =
-mich
-bitte wissen, dass die E-Mail an die falsche Person gesendet wurde.
-
-
-This e-mail is confidential. If you received this communication by
-mistake, please don't forward it to anyone else, please erase all
-copies and attachments, and please let me know that it has gone to the
-wrong person.
+--H9PO/VHIdYJy1kEU--
