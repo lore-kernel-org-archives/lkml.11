@@ -2,158 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56122C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 07:50:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2EAEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 07:51:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233329AbiCRHvv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 03:51:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53750 "EHLO
+        id S233336AbiCRHwT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 03:52:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233215AbiCRHvq (ORCPT
+        with ESMTP id S231795AbiCRHwR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 03:51:46 -0400
-Received: from lgeamrelo11.lge.com (lgeamrelo12.lge.com [156.147.23.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8DE902BB7E1
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 00:50:25 -0700 (PDT)
-Received: from unknown (HELO lgeamrelo04.lge.com) (156.147.1.127)
-        by 156.147.23.52 with ESMTP; 18 Mar 2022 16:50:23 +0900
-X-Original-SENDERIP: 156.147.1.127
-X-Original-MAILFROM: byungchul.park@lge.com
-Received: from unknown (HELO X58A-UD3R) (10.177.244.38)
-        by 156.147.1.127 with ESMTP; 18 Mar 2022 16:50:23 +0900
-X-Original-SENDERIP: 10.177.244.38
-X-Original-MAILFROM: byungchul.park@lge.com
-Date:   Fri, 18 Mar 2022 16:49:45 +0900
-From:   Byungchul Park <byungchul.park@lge.com>
-To:     Theodore Ts'o <tytso@mit.edu>
-Cc:     torvalds@linux-foundation.org, damien.lemoal@opensource.wdc.com,
-        linux-ide@vger.kernel.org, adilger.kernel@dilger.ca,
-        linux-ext4@vger.kernel.org, mingo@redhat.com,
-        linux-kernel@vger.kernel.org, peterz@infradead.org,
-        will@kernel.org, tglx@linutronix.de, rostedt@goodmis.org,
-        joel@joelfernandes.org, sashal@kernel.org, daniel.vetter@ffwll.ch,
-        chris@chris-wilson.co.uk, duyuyang@gmail.com,
-        johannes.berg@intel.com, tj@kernel.org, willy@infradead.org,
-        david@fromorbit.com, amir73il@gmail.com, bfields@fieldses.org,
-        gregkh@linuxfoundation.org, kernel-team@lge.com,
-        linux-mm@kvack.org, akpm@linux-foundation.org, mhocko@kernel.org,
-        minchan@kernel.org, hannes@cmpxchg.org, vdavydov.dev@gmail.com,
-        sj@kernel.org, jglisse@redhat.com, dennis@kernel.org, cl@linux.com,
-        penberg@kernel.org, rientjes@google.com, vbabka@suse.cz,
-        ngupta@vflare.org, linux-block@vger.kernel.org,
-        paolo.valente@linaro.org, josef@toxicpanda.com,
-        linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk,
-        jack@suse.cz, jack@suse.com, jlayton@kernel.org,
-        dan.j.williams@intel.com, hch@infradead.org, djwong@kernel.org,
-        dri-devel@lists.freedesktop.org, airlied@linux.ie,
-        rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
-        hamohammed.sa@gmail.com
-Subject: Re: [PATCH RFC v5 00/21] DEPT(Dependency Tracker)
-Message-ID: <20220318074945.GA17484@X58A-UD3R>
-References: <1647397593-16747-1-git-send-email-byungchul.park@lge.com>
- <YjKtZxjIKDJqsSrP@mit.edu>
+        Fri, 18 Mar 2022 03:52:17 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E9402BD972
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 00:50:59 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id qx21so15331242ejb.13
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 00:50:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=iwJkdlGDgTBfPWHYj1lVE7XeHbdSiLQJxb98ydgODVg=;
+        b=Dvq6B7ml8d6AdKUocAFAnhYwjZ9/skOIxpdFYEtqOiyiE9FxzcYkgZEp8Wp/OgGGyy
+         YZ3ZSf07mO4Rwbz6xfbZjASm+AL5bLJN036KDENL1O36dxRq0GGJkkdXY5UPn3+VxphB
+         qwe1sgsCNCx9cuGLlZorOBZfRDV0G2ynAyLPM91aWNZ+nugBLTxTh2iCDwLozcLiBZNI
+         f5wwVYebboS4G4p/ZchkxEDl1btPdxi0VWeS7tVL5xmJTn27MXY9hiSXoZ40c0iizOsM
+         Gie4fcsDJXDGZuXsH3aGJFi3cDXAI0+IO/Lneate3cnlP/vvY2im7Sd0vu4oYDIi807o
+         /9ZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to;
+        bh=iwJkdlGDgTBfPWHYj1lVE7XeHbdSiLQJxb98ydgODVg=;
+        b=SLPB38mt3mNYudLtIPtf00HctjcsI7mpCOtbltEOKbCS9WmO12pRiO3kLOV8zdsCo2
+         lVlNqsPtPcfL+WqBsXsndyO5jk79DUY3d3nxqBrBlhRF7BJOSG5IqkdRS92C432ts70O
+         1+YGnTEVA/BnBIPW5F05M1SVTl34rTm6p5iH46os8/9Ad46STBRyMjIIT9MAoW5yBFDR
+         1tSAPCw/pGR6/9nZl2mh5wMv6lnUCjp58gbwjK5625LdA3Pha/Oc2DMHH7MpqlYkRHVl
+         8XILi3xsJbW5X2Al5t6SqKdyGJjFly48I9bkqr/VY4ibQc9kDKKqms4JX3Pa6xzp9Cq2
+         LpeQ==
+X-Gm-Message-State: AOAM531pdLdVObTi4tUenEE7pAhCE1E1zfarqyPEIfTybpGC4iAtL5od
+        d1PxKz5Yf1xzJ2ebH8WRAEU=
+X-Google-Smtp-Source: ABdhPJx6/3+zxn6zs/LjuJRFTQcVUee2qhGAV5UCHmS988oebzM38Efr0iuXKr5mPMoUQ0CNoUeXVQ==
+X-Received: by 2002:a17:906:b095:b0:6cf:752c:fb88 with SMTP id x21-20020a170906b09500b006cf752cfb88mr7823795ejy.128.1647589858013;
+        Fri, 18 Mar 2022 00:50:58 -0700 (PDT)
+Received: from gmail.com ([5.38.236.208])
+        by smtp.gmail.com with ESMTPSA id b5-20020a170906728500b006db8b630ebdsm3310387ejl.209.2022.03.18.00.50.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Mar 2022 00:50:57 -0700 (PDT)
+Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
+Date:   Fri, 18 Mar 2022 08:50:50 +0100
+From:   Ingo Molnar <mingo@kernel.org>
+To:     Baisong Zhong <zhongbaisong@huawei.com>,
+        Zhen Ni <nizhen@uniontech.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH -next] sched/rt: fix build error when CONFIG_SYSCTL is
+ disable
+Message-ID: <YjQ52q5voQRBRgKw@gmail.com>
+References: <20220318025417.3683430-1-zhongbaisong@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YjKtZxjIKDJqsSrP@mit.edu>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220318025417.3683430-1-zhongbaisong@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 11:39:19PM -0400, Theodore Ts'o wrote:
-> On Wed, Mar 16, 2022 at 11:26:12AM +0900, Byungchul Park wrote:
-> > I'm gonna re-add RFC for a while at Ted's request. But hard testing is
-> > needed to find false alarms for now that there's no false alarm with my
-> > system. I'm gonna look for other systems that might produce false
-> > alarms. And it'd be appreciated if you share it when you see any alarms
-> > with yours.
+
+I believe these build errors are caused by new commits in the sysctl-next 
+tree that change scheduler code:
+
+  4925401d06dc sched: Move rr_timeslice sysctls to rt.c
+  5f6e55c2485c sched: Move rt_period/runtime sysctls to rt.c
+
+In particular I don't see any Cc: to scheduler folks in these two commits - 
+and I'd have preferred to pick these up into the scheduler tree, to avoid 
+the merge conflicts and the build failure regressions...
+
+Thanks,
+
+	Ingo
+
+
+* Baisong Zhong <zhongbaisong@huawei.com> wrote:
+
+> Avoid random build errors which do not select
+> CONFIG_SYSCTL by depending on it in Kconfig.
 > 
-> Is dept1.18_on_v5.17-rc7 roughly equivalent to the v5 version sent to
-
-Yes.
-
-> the list.  The commit date is March 16th, so I assume it was.  I tried
-> merging it with the ext4 dev branch, and tried enabling CONFIG_DEPT
-> and running xfstests.  The result was nearly test failing, because a 
-> DEPT warning.
+> This fixes the following warning:
 > 
-> I assume that this is due to some misconfiguration of DEPT on my part?
-
-I guess it was becasue of the commit b1fca27d384e8("kernel debug:
-support resetting WARN*_ONCE"). Your script seems to reset WARN*_ONCE
-repeatedly.
-
-But, yeah. It's *too much* that Dept warns it on the lack of pools. I
-will switch it to just pr_warn_once().
-
-Plus, I will implement a new functionality to expand pools to prevent
-facing the situation in advance.
-
-> And I'm curious why DEPT_WARN_ONCE is apparently getting many, many
-> times?
+> In file included from kernel/sched/build_policy.c:43:
+> At top level:
+> kernel/sched/rt.c:3017:12: error: ‘sched_rr_handler’ defined but not used [-Werror=unused-function]
+>  3017 | static int sched_rr_handler(struct ctl_table *table, int write, void *buffer,
+>       |            ^~~~~~~~~~~~~~~~
+> kernel/sched/rt.c:2978:12: error: ‘sched_rt_handler’ defined but not used [-Werror=unused-function]
+>  2978 | static int sched_rt_handler(struct ctl_table *table, int write, void *buffer,
+>       |            ^~~~~~~~~~~~~~~~
+> cc1: all warnings being treated as errors
+> make[2]: *** [scripts/Makefile.build:310: kernel/sched/build_policy.o] Error 1
+> make[1]: *** [scripts/Makefile.build:638: kernel/sched] Error 2
+> make[1]: *** Waiting for unfinished jobs....
 > 
-> [  760.990409] DEPT_WARN_ONCE: Pool(ecxt) is empty.
-> [  770.319656] DEPT_WARN_ONCE: Pool(ecxt) is empty.
-> [  772.460360] DEPT_WARN_ONCE: Pool(ecxt) is empty.
-> [  784.039676] DEPT_WARN_ONCE: Pool(ecxt) is empty.
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Baisong Zhong <zhongbaisong@huawei.com>
+> ---
+>  kernel/sched/rt.c | 11 +++++++++--
+>  1 file changed, 9 insertions(+), 2 deletions(-)
 > 
-> (and this goes on over and over...)
+> diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+> index 71791be36065..ee319581b1cd 100644
+> --- a/kernel/sched/rt.c
+> +++ b/kernel/sched/rt.c
+> @@ -5,7 +5,6 @@
+>   */
+>  
+>  int sched_rr_timeslice = RR_TIMESLICE;
+> -static int sysctl_sched_rr_timeslice = (MSEC_PER_SEC / HZ) * RR_TIMESLICE;
+>  /* More than 4 hours if BW_SHIFT equals 20. */
+>  static const u64 max_rt_runtime = MAX_BW;
+>  
+> @@ -25,11 +24,12 @@ unsigned int sysctl_sched_rt_period = 1000000;
+>   */
+>  int sysctl_sched_rt_runtime = 950000;
+>  
+> +#ifdef CONFIG_SYSCTL
+> +static int sysctl_sched_rr_timeslice = (MSEC_PER_SEC / HZ) * RR_TIMESLICE;
+>  static int sched_rt_handler(struct ctl_table *table, int write, void *buffer,
+>  		size_t *lenp, loff_t *ppos);
+>  static int sched_rr_handler(struct ctl_table *table, int write, void *buffer,
+>  		size_t *lenp, loff_t *ppos);
+> -#ifdef CONFIG_SYSCTL
+>  static struct ctl_table sched_rt_sysctls[] = {
+>  	{
+>  		.procname       = "sched_rt_period_us",
+> @@ -2911,6 +2911,7 @@ long sched_group_rt_period(struct task_group *tg)
+>  	return rt_period_us;
+>  }
+>  
+> +#ifdef CONFIG_SYSCTL
+>  static int sched_rt_global_constraints(void)
+>  {
+>  	int ret = 0;
+> @@ -2930,8 +2931,11 @@ int sched_rt_can_attach(struct task_group *tg, struct task_struct *tsk)
+>  
+>  	return 1;
+>  }
+> +#endif /* CONFIG_SYSCTL */
+>  
+>  #else /* !CONFIG_RT_GROUP_SCHED */
+> +
+> +#ifdef CONFIG_SYSCTL
+>  static int sched_rt_global_constraints(void)
+>  {
+>  	unsigned long flags;
+> @@ -2949,8 +2953,10 @@ static int sched_rt_global_constraints(void)
+>  
+>  	return 0;
+>  }
+> +#endif /* CONFIG_SYSCTL */
+>  #endif /* CONFIG_RT_GROUP_SCHED */
+>  
+> +#ifdef CONFIG_SYSCTL
+>  static int sched_rt_global_validate(void)
+>  {
+>  	if (sysctl_sched_rt_period <= 0)
+> @@ -3035,6 +3041,7 @@ static int sched_rr_handler(struct ctl_table *table, int write, void *buffer,
+>  
+>  	return ret;
+>  }
+> +#endif /* CONFIG_SYSCTL */
+>  
+>  #ifdef CONFIG_SCHED_DEBUG
+>  void print_rt_stats(struct seq_file *m, int cpu)
+> -- 
+> 2.25.1
 > 
-> Here's the full output of the DEPT warning from trying to run
-> generic/001.  There is a similar warning for generic/002, generic/003,
-> etc., for a total of 468 failures out of 495 tests run.
-
-Sorry for the noise. I will prevent this as described above.
-
-> [  760.945068] run fstests generic/001 at 2022-03-16 08:16:53
-> [  760.985440] ------------[ cut here ]------------
-> [  760.990409] DEPT_WARN_ONCE: Pool(ecxt) is empty.
-> [  760.995166] WARNING: CPU: 1 PID: 73369 at kernel/dependency/dept.c:297 from_pool+0xc2/0x110
-> [  761.003915] CPU: 1 PID: 73369 Comm: bash Tainted: G        W         5.17.0-rc7-xfstests-00649-g5456f2312272 #520
-> [  761.014389] Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> [  761.024363] RIP: 0010:from_pool+0xc2/0x110
-> [  761.028598] Code: 3d 32 62 96 01 00 75 c2 48 6b db 38 48 c7 c7 00 94 f1 ad 48 89 04 24 c6 05 1a 62 96 01 01 48 8b b3 20 9a 2f ae e8 2f dd bf 00 <0f> 0b 48 8b 04 24 eb 98 48 63 c2 48 0f af 86 28 9a 2f ae 48 03 86
-> [  761.048189] RSP: 0018:ffffa7ce4425fd48 EFLAGS: 00010086
-> [  761.053617] RAX: 0000000000000000 RBX: 00000000000000a8 RCX: 0000000000000000
-> [  761.060965] RDX: 0000000000000001 RSI: ffffffffadfb95e0 RDI: 00000000ffffffff
-> [  761.068322] RBP: 00000000001dc598 R08: 0000000000000000 R09: ffffa7ce4425fb90
-> [  761.075789] R10: fffffffffffe0aa0 R11: fffffffffffe0ae8 R12: ffff9768e07f0600
-> [  761.083063] R13: 0000000000000000 R14: 0000000000000246 R15: 0000000000000000
-> [  761.090312] FS:  00007fd4ecc4c740(0000) GS:ffff976999400000(0000) knlGS:0000000000000000
-> [  761.098623] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  761.104580] CR2: 0000563c61657eb0 CR3: 00000001328fa001 CR4: 00000000003706e0
-> [  761.111921] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [  761.119171] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> [  761.126617] Call Trace:
-> [  761.129175]  <TASK>
-> [  761.131385]  add_ecxt+0x54/0x1c0
-> [  761.134736]  ? simple_attr_write+0x87/0x100
-> [  761.139063]  dept_event+0xaa/0x1d0
-> [  761.142687]  ? simple_attr_write+0x87/0x100
-> [  761.147089]  __mutex_unlock_slowpath+0x60/0x2d0
-> [  761.151866]  simple_attr_write+0x87/0x100
-> [  761.155997]  debugfs_attr_write+0x40/0x60
-> [  761.160124]  vfs_write+0xec/0x390
-> [  761.163557]  ksys_write+0x68/0xe0
-> [  761.167004]  do_syscall_64+0x43/0x90
-> [  761.170782]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> [  761.176204] RIP: 0033:0x7fd4ecd3df33
-> [  761.180010] Code: 8b 15 61 ef 0c 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f 1f 00 64 8b 04 25 18 00 00 00 85 c0 75 14 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 55 c3 0f 1f 40 00 48 83 ec 28 48 89 54 24 18
-> [  761.199551] RSP: 002b:00007ffe772d4808 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-> [  761.207240] RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007fd4ecd3df33
-> [  761.214583] RDX: 0000000000000002 RSI: 0000563c61657eb0 RDI: 0000000000000001
-> [  761.221835] RBP: 0000563c61657eb0 R08: 000000000000000a R09: 0000000000000001
-> [  761.229537] R10: 0000563c61902240 R11: 0000000000000246 R12: 0000000000000002
-> [  761.237239] R13: 00007fd4ece0e6a0 R14: 0000000000000002 R15: 00007fd4ece0e8a0
-> [  761.245283]  </TASK>
-> [  761.247586] ---[ end trace 0000000000000000 ]---
-> [  761.761829] EXT4-fs (dm-0): mounted filesystem with ordered data mode. Quota mode: none.
-> [  769.903489] EXT4-fs (dm-0): mounted filesystem with ordered data mode. Quota mode: none.
-> 
-> Let me know what I should do in order to fix this DEPT_WARN_ONCE?
-
-I will let you know on all works done.
-
-Thank you very much for all your feedback,
-Byungchul
