@@ -2,102 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F62CC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 17:30:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 253DBC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 17:32:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239223AbiCRRbr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 13:31:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53738 "EHLO
+        id S239651AbiCRRd3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 13:33:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233290AbiCRRbp (ORCPT
+        with ESMTP id S233290AbiCRRd0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 13:31:45 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFB7A37BE3;
-        Fri, 18 Mar 2022 10:30:25 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id q1-20020a17090a4f8100b001c6575ae105so5980879pjh.0;
-        Fri, 18 Mar 2022 10:30:25 -0700 (PDT)
+        Fri, 18 Mar 2022 13:33:26 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE27CF488;
+        Fri, 18 Mar 2022 10:32:07 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id l4-20020a17090a49c400b001c6840df4a3so5106776pjm.0;
+        Fri, 18 Mar 2022 10:32:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1wKylVeXOlh5a/xJZmfHNeqpE/OOU4LWHviEMispbow=;
-        b=P7nIf6UKiM4fPEnynbxsjHAS81Z785zj3unC6tm/0AIdEzo2iqXmIxKvDUN4qN1MlO
-         2B8BLdVBKoTlPUQaagv2upR2GiuihkW91yTU1SSurPeoSjxGKOoMyNX6cJbCoU/oLRlC
-         2SPZNVFO/rGoBfHy8o/zKCyXVmmk+lv8dZ95gmq4Dou/oMsk8W94xifeOuv4RPiaOffO
-         cpwas7YgFlUe15Wks32njZ4PWyBA5uT/nXcqX7uWbUVKPUml+YOVQPE5Ur3IyM2TG1qs
-         sU0g4Xzc7t9bEH5YN+mBalXGlOL+qjIR+uA9v7q0XB76t5+QGqWcIcOVgqfsNmiQSTai
-         k+ag==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=v2+7TjxCz/iJePRyFbqQRLmhTrxcszamkFrqGEeq6RE=;
+        b=j6rdW0vl3K3sGSkYu5w7VUoJZJZvYdcycVs5qyXdXGtGv/mX1pV1rkvC+ckVdBL/Ts
+         wvoc0z+Ja9EpA3+aKl1DVOsCRjgJKx36A8CareMJUtbIejvnh7zRR1RHLrb6JRUsAhRx
+         y0XUYRpUFdMt12mg3Z5uz8Lg5USvnTqhJt5vEWr6o+HZ9irOkyy/DovkNM2SbrQ1JX8M
+         Lna+vYwAd0Rq7IOpPk7i0MgBEJKL+nnQ3bg5tkxA+RaNMuaObzgsjcFqQ5RukRiVwvzQ
+         sgIGO2lunB2ZEKsPV6TA44T15jtdf435vfQTo3DmA/yN/XVMy6OnkbkfkFbbTdP8O2J1
+         lxKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=1wKylVeXOlh5a/xJZmfHNeqpE/OOU4LWHviEMispbow=;
-        b=blsX4Nk3SpbPmyjasuLFL7oIDrXnTB3Hz2sDI7MDeDwirLqygsyrLCX6eOXaXApl/H
-         BjOjbJ5Thoc5Pyf/eSSefgtNc0CO3lC1HKrNmHfxVK2FxPc0VuPcJ+EId+EBap9KPoDb
-         CMV73RjtZJNMI22G0huWfkzwszj50JmlTCy55MhiDan/A3Q9l7zrluPWa/Lz4xBqF0lu
-         1ktAKZYX2nWVN5G9sg5LixQLtdzoM5FiA7BT7HMRuVgdmPT/UvTRneOvk/viqMycLkSs
-         PG7qDctdnF1/OBkNv9WHUb/obExoW6X3z9Bj4HyvAgjIksLe0lttvc92Rry64RJqrW8+
-         epRA==
-X-Gm-Message-State: AOAM530gSof/05LPRLicbiRn0wUTlgqqrQigUIjnunVpfHxrh4kcI7J7
-        pGBO5pHZaLMIJ/s6CQvguoM=
-X-Google-Smtp-Source: ABdhPJxD78C0n16ixwFCcF6HT6dXoMQUwcecD6VhKWgf3/RHBUjz/buDYder3UAVjtffqmkbxj3KwQ==
-X-Received: by 2002:a17:90b:3a91:b0:1bf:261e:7773 with SMTP id om17-20020a17090b3a9100b001bf261e7773mr22740003pjb.155.1647624625297;
-        Fri, 18 Mar 2022 10:30:25 -0700 (PDT)
-Received: from google.com ([2620:15c:211:201:20b4:90a0:8e2e:6022])
-        by smtp.gmail.com with ESMTPSA id h6-20020a056a00218600b004f65315bb37sm10665223pfi.13.2022.03.18.10.30.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Mar 2022 10:30:24 -0700 (PDT)
-Sender: Minchan Kim <minchan.kim@gmail.com>
-Date:   Fri, 18 Mar 2022 10:30:23 -0700
-From:   Minchan Kim <minchan@kernel.org>
-To:     Brian Geffon <bgeffon@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Nitin Gupta <ngupta@vflare.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>, linux-doc@vger.kernel.org,
-        linux-block@vger.kernel.org
-Subject: Re: [PATCH] zram: Add a huge_idle writeback mode
-Message-ID: <YjTBryFvhCZXXJ5/@google.com>
-References: <20220315172221.9522-1-bgeffon@google.com>
- <YjS2SJU7VE1bGb/F@google.com>
- <CADyq12wQ=vGaGoqt5RXJ5aYM1tQJ2BCT8cav-ONpPrCc85q-5Q@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=v2+7TjxCz/iJePRyFbqQRLmhTrxcszamkFrqGEeq6RE=;
+        b=rAqSx1OpdliI+/3Ggpnvvu+8EBfz/QJles4EcDHQIwfl7xpPsyZkYSXY5B+SHY/6Kx
+         UbVuwFFXqcy2fmuAhUYMwAKGuDeZrvVFE4ZTm3HILzfqmprI4glPh6UItql8DzHU5zFR
+         v1gXmCXGSdChCMhvIHm3s3kqhRrxs8giNwAOptOwbIVmA3u0WfyMhNA20cbWDp8+eGM4
+         pK/jkY/VRHiTqwmf9Wq39vv7fw8ut49GR0ScRdkPTArBLjlRA8WI677irim+7+qX+a5+
+         t9SsC8MEuDVheFSTxLf2tsApBiSJnXFAN2wazMQLqbmhBib+W1q0l8uL0gsyURdQjYqJ
+         MqPQ==
+X-Gm-Message-State: AOAM530RLxARBvL1j5k/uhnP28aM+XhH7tvhDbm1Od0HaKE8I+qTKnMj
+        9jXBv+ulDC47BkF5tVxhyTiGAeY2MsLHc7S10nk=
+X-Google-Smtp-Source: ABdhPJyh5sar5ek5GT9YTEP77ixsCcilYxYkIste3RuLag/BYsrgSRi1slJnriJ+u/pf99Z+trolDxeILv7BgoSjLmA=
+X-Received: by 2002:a17:90a:3906:b0:1bf:a0a6:d208 with SMTP id
+ y6-20020a17090a390600b001bfa0a6d208mr22604556pjb.21.1647624726981; Fri, 18
+ Mar 2022 10:32:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CADyq12wQ=vGaGoqt5RXJ5aYM1tQJ2BCT8cav-ONpPrCc85q-5Q@mail.gmail.com>
+References: <20220317234827.447799-1-shy828301@gmail.com> <20220318012948.GE1544202@dread.disaster.area>
+In-Reply-To: <20220318012948.GE1544202@dread.disaster.area>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Fri, 18 Mar 2022 10:31:55 -0700
+Message-ID: <CAHbLzkpFch0+=XorZXpaqvFb=_OXdn4ZsjOLhWg1EJpMZNaM0A@mail.gmail.com>
+Subject: Re: [v2 PATCH 0/8] Make khugepaged collapse readonly FS THP more consistent
+To:     Dave Chinner <david@fromorbit.com>
+Cc:     vbabka@suse.cz, kirill.shutemov@linux.intel.com,
+        linmiaohe@huawei.com, songliubraving@fb.com, riel@surriel.com,
+        willy@infradead.org, ziy@nvidia.com, akpm@linux-foundation.org,
+        tytso@mit.edu, adilger.kernel@dilger.ca, darrick.wong@oracle.com,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-ext4@vger.kernel.org, linux-xfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 12:51:14PM -0400, Brian Geffon wrote:
-> On Fri, Mar 18, 2022 at 12:41 PM Minchan Kim <minchan@kernel.org> wrote:
+On Thu, Mar 17, 2022 at 6:29 PM Dave Chinner <david@fromorbit.com> wrote:
+>
+> On Thu, Mar 17, 2022 at 04:48:19PM -0700, Yang Shi wrote:
 > >
-> > On Tue, Mar 15, 2022 at 10:22:21AM -0700, Brian Geffon wrote:
-> > > Today it's only possible to write back as a page, idle, or huge.
-> > > A user might want to writeback pages which are huge and idle first
-> > > as these idle pages do not require decompression and make a good
-> > > first pass for writeback.
+> > Changelog
+> > v2: * Collected reviewed-by tags from Miaohe Lin.
+> >     * Fixed build error for patch 4/8.
 > >
-> > Hi Brian,
+> > The readonly FS THP relies on khugepaged to collapse THP for suitable
+> > vmas.  But it is kind of "random luck" for khugepaged to see the
+> > readonly FS vmas (see report: https://lore.kernel.org/linux-mm/00f195d4-d039-3cf2-d3a1-a2c88de397a0@suse.cz/) since currently the vmas are registered to khugepaged when:
+> >   - Anon huge pmd page fault
+> >   - VMA merge
+> >   - MADV_HUGEPAGE
+> >   - Shmem mmap
 > >
-> > I am not sure how much the decompression overhead matter for idle pages
-> > writeback since it's already *very slow* path in zram but I agree that
-> > it would be a good first pass since the memory saving for huge writing
-> > would be cost efficient.
+> > If the above conditions are not met, even though khugepaged is enabled
+> > it won't see readonly FS vmas at all.  MADV_HUGEPAGE could be specified
+> > explicitly to tell khugepaged to collapse this area, but when khugepaged
+> > mode is "always" it should scan suitable vmas as long as VM_NOHUGEPAGE
+> > is not set.
 > >
-> > Just out of curiosity. Do you have real usecase?
-> 
-> Hi Minchan,
-> Thank you for taking a look. When we are thinking about writeback
-> we're trying to be very sensitive to our devices storage endurance,
-> for this reason we will have a fairly conservative writeback limit.
-> Given that, we want to make sure we're maximizing what lands on disk
-> while still minimizing the refault time. We could take the approach
-> where we always writeback huge pages but then we may result in very
-> quick refaults which would be a huge waste of time. So idle writeback
-> is a must for us and being able to writeback the pages which have
-> maximum value (huge) would be very useful.
+> > So make sure readonly FS vmas are registered to khugepaged to make the
+> > behavior more consistent.
+> >
+> > Registering the vmas in mmap path seems more preferred from performance
+> > point of view since page fault path is definitely hot path.
+> >
+> >
+> > The patch 1 ~ 7 are minor bug fixes, clean up and preparation patches.
+> > The patch 8 converts ext4 and xfs.  We may need convert more filesystems,
+> > but I'd like to hear some comments before doing that.
+>
+> After reading through the patchset, I have no idea what this is even
+> doing or enabling. I can't comment on the last patch and it's effect
+> on XFS because there's no high level explanation of the
+> functionality or feature to provide me with the context in which I
+> should be reviewing this patchset.
+>
+> I understand this has something to do with hugepages, but there's no
+> explaination of exactly where huge pages are going to be used in the
+> filesystem, what the problems with khugepaged and filesystems are
+> that this apparently solves, what constraints it places on
+> filesystems to enable huge pages to be used, etc.
+>
+> I'm guessing that the result is that we'll suddenly see huge pages
+> in the page cache for some undefined set of files in some undefined
+> set of workloads. But that doesn't help me understand any of the
+> impacts it may have. e.g:
 
-Thanks for sharing the thought. It really make sense to me and
-would be great if it goes on the description.
+Song introduced READ_ONLY_THP_FOR_FS back in 2019. It collapses huge
+pages for readonly executable file mappings to speed up the programs
+with huge text section. The huge page is allocated/collapsed by
+khugepaged instead of in page fault path.
+
+Vlastimil reported the huge pages are not collapsed consistently since
+the suitable MMs were not registered by khugepaged consistently as the
+commit log elaborated. So this patchset makes the behavior of
+khugepaged (for collapsing readonly file THP) more consistent.
+
+>
+> - how does this relate to the folio conversion and use of large
+>   pages in the page cache?
+> - why do we want two completely separate large page mechanisms in
+>   the page cache?
+
+It has nothing to do with the folio conversion. But once the file
+THP/huge page is fully supported, the READ_ONLY_THP_FOR_FS may be
+deprecated. However, making khugepaged collapse file THP more
+consistently is applicable to full file huge page support as well as
+long as we still use khugepaged to collapse THP.
+
+> - why is this limited to "read only VMAs" and how does the
+>   filesystem actually ensure that the VMAs are read only?
+
+It uses the below check:
+
+(IS_ENABLED(CONFIG_READ_ONLY_THP_FOR_FS)) &&
+               (vma->vm_flags & VM_EXEC) &&
+               !inode_is_open_for_write(inode) && S_ISREG(inode->i_mode);
+
+This condition was introduced by READ_ONLY_THP_FOR_FS in the first
+place, not this patchset.
+
+> - what happens if we have a file that huge pages mapped into the
+>   page cache via read only VMAs then has write() called on it via a
+>   different file descriptor and so we need to dirty the page cache
+>   that has huge pages in it?
+
+Once someone else opens the fd in write mode, the THP will be
+truncated and khugepaged will backoff IIUC.
+
+>
+> I've got a lot more questions, but to save me having to ask them,
+> how about you explain what this new functionality actually does, why
+> we need to support it, and why it is better than the fully writeable
+> huge page support via folios that we already have in the works...
+>
+> Cheers,
+>
+> Dave.
+>
+> --
+> Dave Chinner
+> david@fromorbit.com
