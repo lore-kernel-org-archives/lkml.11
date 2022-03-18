@@ -2,130 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8022C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:19:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6897C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 16:19:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238902AbiCRQVH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 12:21:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56042 "EHLO
+        id S238865AbiCRQVK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 12:21:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238839AbiCRQSM (ORCPT
+        with ESMTP id S239168AbiCRQTb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 12:18:12 -0400
+        Fri, 18 Mar 2022 12:19:31 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7056A1D78A8
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 09:16:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 51BD617DC90
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 09:18:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647620199;
+        s=mimecast20190719; t=1647620280;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=zxtKlJkyIEZXPkBD4bNBzWUwa71AXxO/hu9B1huGD20=;
-        b=fbstevU9gA/Aqe0HqT0pKW2h3LqcD69rO+O1WdQ2a90C3kzGh1FwgZIFe5X6PyyNL6kzmM
-        7dhZrShducMxc+1Yieukz0QHOFNQ52G9z24iSnX9VwPUy9Bs6zhQUplCjPZd6Vdv+Vlqui
-        d6SOOcwihfhtbZJ17oZfEo5lbjy1Pk4=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=8nJYYlBY7G+EkGr1cCCnY5dDxM56e+iZoTRwhxTl+8k=;
+        b=c3yir5zXJj6d/7VYSSBZV0RSgc+bM87fyYOFPSy9HIGL2uHJS25wpGgQnLOOzhI1MEAFB3
+        a2jk7hN6zyh4EKwp3zAn9+UF/8FvGSvUvusAUfVEjZ652uDz+GeMglqSS6pS/vNiW9EN2a
+        BUql0KWTYbHKjHwvjAFnGKlbVR7QDiE=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-70-Wbp0rir3Ota5OBaIJneRkA-1; Fri, 18 Mar 2022 12:16:35 -0400
-X-MC-Unique: Wbp0rir3Ota5OBaIJneRkA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+ us-mta-622-qlLdcQmqOwKSVMP1eIqycg-1; Fri, 18 Mar 2022 12:17:55 -0400
+X-MC-Unique: qlLdcQmqOwKSVMP1eIqycg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8F12580231F;
-        Fri, 18 Mar 2022 16:16:35 +0000 (UTC)
-Received: from llong.com (unknown [10.22.19.48])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4F7D5112D182;
-        Fri, 18 Mar 2022 16:16:35 +0000 (UTC)
-From:   Waiman Long <longman@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, Waiman Long <longman@redhat.com>
-Subject: [PATCH 2/2] locking/rwsem: Wake readers in a reader-owned rwsem if first waiter is a reader
-Date:   Fri, 18 Mar 2022 12:16:09 -0400
-Message-Id: <20220318161609.1939957-3-longman@redhat.com>
-In-Reply-To: <20220318161609.1939957-1-longman@redhat.com>
-References: <20220318161609.1939957-1-longman@redhat.com>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D534D38035BB;
+        Fri, 18 Mar 2022 16:17:53 +0000 (UTC)
+Received: from plouf.redhat.com (unknown [10.39.192.159])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B208A7AD1;
+        Fri, 18 Mar 2022 16:17:50 +0000 (UTC)
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>
+Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Subject: [PATCH bpf-next v3 13/17] HID: bpf: implement hid_bpf_get|set_bits
+Date:   Fri, 18 Mar 2022 17:15:24 +0100
+Message-Id: <20220318161528.1531164-14-benjamin.tissoires@redhat.com>
+In-Reply-To: <20220318161528.1531164-1-benjamin.tissoires@redhat.com>
+References: <20220318161528.1531164-1-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In an analysis of a recent vmcore, a reader-owned rwsem was found with
-385 readers but no writer in the wait queue. That is kind of unusual
-but it may be caused by some race conditions that we have not fully
-understood yet. In such a case, all the readers in the wait queue should
-join the other reader-owners and acquire the read lock.
+Export implement() outside of hid-core.c and use this and
+hid_field_extract() to implement the helprs for hid-bpf.
 
-In rwsem_down_write_slowpath(), an incoming writer will try to wake
-up the front readers under such circumstance. That is not the case for
-rwsem_down_read_slowpath(), modify the code to do this. This includes the
-original supported case where the wait queue is empty and the incoming
-reader is going to wake up itself.
+Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
-With CONFIG_LOCK_EVENT_COUNTS enabled, the newly added rwsem_rlock_rwake
-event counter had 13 hits right after the bootup of a 2-socket system. So
-the condition that a reader-owned rwsem has readers at the front of
-the wait queue does happen pretty frequently. This patch will help to
-speed thing up in such cases.
-
-Signed-off-by: Waiman Long <longman@redhat.com>
 ---
- kernel/locking/lock_events_list.h |  1 +
- kernel/locking/rwsem.c            | 19 +++++++++++++------
- 2 files changed, 14 insertions(+), 6 deletions(-)
 
-diff --git a/kernel/locking/lock_events_list.h b/kernel/locking/lock_events_list.h
-index 97fb6f3f840a..9bb9f048848b 100644
---- a/kernel/locking/lock_events_list.h
-+++ b/kernel/locking/lock_events_list.h
-@@ -64,6 +64,7 @@ LOCK_EVENT(rwsem_rlock_steal)	/* # of read locks by lock stealing	*/
- LOCK_EVENT(rwsem_rlock_fast)	/* # of fast read locks acquired	*/
- LOCK_EVENT(rwsem_rlock_fail)	/* # of failed read lock acquisitions	*/
- LOCK_EVENT(rwsem_rlock_handoff)	/* # of read lock handoffs		*/
-+LOCK_EVENT(rwsem_rlock_rwake)	/* # of readers wakeup in slow path	*/
- LOCK_EVENT(rwsem_wlock)		/* # of write locks acquired		*/
- LOCK_EVENT(rwsem_wlock_fail)	/* # of failed write lock acquisitions	*/
- LOCK_EVENT(rwsem_wlock_handoff)	/* # of write lock handoffs		*/
-diff --git a/kernel/locking/rwsem.c b/kernel/locking/rwsem.c
-index f71a9693d05a..53f7f0b4724a 100644
---- a/kernel/locking/rwsem.c
-+++ b/kernel/locking/rwsem.c
-@@ -997,17 +997,24 @@ rwsem_down_read_slowpath(struct rw_semaphore *sem, long count, unsigned int stat
- 	count = atomic_long_add_return(adjustment, &sem->count);
- 
- 	/*
--	 * If there are no active locks, wake the front queued process(es).
--	 *
--	 * If there are no writers and we are first in the queue,
--	 * wake our own waiter to join the existing active readers !
-+	 * Do a rwsem_mark_wake() under one of the following conditions:
-+	 * 1) there is no active read or write lock.
-+	 * 2) there is no writer-owner (can be reader-owned) and the first
-+	 *    waiter is a reader.
- 	 */
- 	if (!(count & RWSEM_LOCK_MASK)) {
- 		clear_nonspinnable(sem);
- 		wake = true;
-+	} else if (!(count & RWSEM_WRITER_MASK)) {
-+		wake = rwsem_first_waiter(sem)->type == RWSEM_WAITING_FOR_READ;
-+		/*
-+		 * Check the number of cases where readers at the front
-+		 * of the previously non-empty wait list are to be woken.
-+		 */
-+		lockevent_cond_inc(rwsem_rlock_rwake,
-+				   wake && !(adjustment & RWSEM_FLAG_WAITERS));
+changes in v3:
+- renamed hid_{get|set}_data into hid_{get|set}_bits
+
+changes in v2:
+- split the series by bpf/libbpf/hid/selftests and samples
+- allow for n > 32, by relying on memcpy
+---
+ drivers/hid/hid-bpf.c  | 29 +++++++++++++++++++++++++++++
+ drivers/hid/hid-core.c |  4 ++--
+ include/linux/hid.h    |  2 ++
+ 3 files changed, 33 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/hid/hid-bpf.c b/drivers/hid/hid-bpf.c
+index 45c87ff47324..650dd5e54919 100644
+--- a/drivers/hid/hid-bpf.c
++++ b/drivers/hid/hid-bpf.c
+@@ -122,6 +122,33 @@ static void hid_bpf_array_detach(struct hid_device *hdev, enum bpf_hid_attach_ty
  	}
--	if (wake || (!(count & RWSEM_WRITER_MASK) &&
--		    (adjustment & RWSEM_FLAG_WAITERS)))
-+	if (wake)
- 		rwsem_mark_wake(sem, RWSEM_WAKE_ANY, &wake_q);
+ }
  
- 	raw_spin_unlock_irq(&sem->wait_lock);
++static int hid_bpf_get_bits(struct hid_device *hdev, u8 *buf, size_t buf_size, u64 offset, u32 n,
++			    u32 *data)
++{
++	if (n > 32)
++		return -EINVAL;
++
++	if (((offset + n) >> 3) >= buf_size)
++		return -E2BIG;
++
++	*data = hid_field_extract(hdev, buf, offset, n);
++	return n;
++}
++
++static int hid_bpf_set_bits(struct hid_device *hdev, u8 *buf, size_t buf_size, u64 offset, u32 n,
++			    u32 data)
++{
++	if (n > 32)
++		return -EINVAL;
++
++	if (((offset + n) >> 3) >= buf_size)
++		return -E2BIG;
++
++	/* data must be a pointer to a u32 */
++	implement(hdev, buf, offset, n, data);
++	return n;
++}
++
+ static int hid_bpf_run_progs(struct hid_device *hdev, struct hid_bpf_ctx_kern *ctx)
+ {
+ 	enum bpf_hid_attach_type type;
+@@ -223,6 +250,8 @@ int __init hid_bpf_module_init(void)
+ 		.pre_link_attach = hid_bpf_pre_link_attach,
+ 		.post_link_attach = hid_bpf_post_link_attach,
+ 		.array_detach = hid_bpf_array_detach,
++		.hid_get_bits = hid_bpf_get_bits,
++		.hid_set_bits = hid_bpf_set_bits,
+ 	};
+ 
+ 	bpf_hid_set_hooks(&hooks);
+diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
+index 3182c39db006..4f669dcddc08 100644
+--- a/drivers/hid/hid-core.c
++++ b/drivers/hid/hid-core.c
+@@ -1416,8 +1416,8 @@ static void __implement(u8 *report, unsigned offset, int n, u32 value)
+ 	}
+ }
+ 
+-static void implement(const struct hid_device *hid, u8 *report,
+-		      unsigned offset, unsigned n, u32 value)
++void implement(const struct hid_device *hid, u8 *report, unsigned int offset, unsigned int n,
++	       u32 value)
+ {
+ 	if (unlikely(n > 32)) {
+ 		hid_warn(hid, "%s() called with n (%d) > 32! (%s)\n",
+diff --git a/include/linux/hid.h b/include/linux/hid.h
+index 66d949d10b78..7454e844324c 100644
+--- a/include/linux/hid.h
++++ b/include/linux/hid.h
+@@ -944,6 +944,8 @@ bool hid_compare_device_paths(struct hid_device *hdev_a,
+ s32 hid_snto32(__u32 value, unsigned n);
+ __u32 hid_field_extract(const struct hid_device *hid, __u8 *report,
+ 		     unsigned offset, unsigned n);
++void implement(const struct hid_device *hid, u8 *report, unsigned int offset, unsigned int n,
++	       u32 value);
+ 
+ #ifdef CONFIG_PM
+ int hid_driver_suspend(struct hid_device *hdev, pm_message_t state);
 -- 
-2.27.0
+2.35.1
 
