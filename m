@@ -2,91 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16840C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 15:22:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1629C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 15:24:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237920AbiCRPXp convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 11:23:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43832 "EHLO
+        id S237933AbiCRPZx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 11:25:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237139AbiCRPXm (ORCPT
+        with ESMTP id S234149AbiCRPZw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 11:23:42 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8D39B262411
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 08:22:23 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-150-J-EB7TRUPCa955UakG2Ikg-1; Fri, 18 Mar 2022 15:22:20 +0000
-X-MC-Unique: J-EB7TRUPCa955UakG2Ikg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Fri, 18 Mar 2022 15:22:20 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Fri, 18 Mar 2022 15:22:20 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Juergen Gross' <jgross@suse.com>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "platform-driver-x86@vger.kernel.org" 
-        <platform-driver-x86@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Dell.Client.Kernel@dell.com" <Dell.Client.Kernel@dell.com>
-CC:     Stuart Hayes <stuart.w.hayes@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: RE: [PATCH] platform/x86/dell: add buffer allocation/free functions
- for SMI calls
-Thread-Topic: [PATCH] platform/x86/dell: add buffer allocation/free functions
- for SMI calls
-Thread-Index: AQHYOto/hyLOp/NEJ0S+JLWvPC30KazFQPKg
-Date:   Fri, 18 Mar 2022 15:22:19 +0000
-Message-ID: <accf95548a8c4374b17c159b9b2d0098@AcuMS.aculab.com>
-References: <20220318150950.16843-1-jgross@suse.com>
-In-Reply-To: <20220318150950.16843-1-jgross@suse.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Fri, 18 Mar 2022 11:25:52 -0400
+Received: from imap3.hz.codethink.co.uk (imap3.hz.codethink.co.uk [176.9.8.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67848A996D;
+        Fri, 18 Mar 2022 08:24:33 -0700 (PDT)
+Received: from cpc152649-stkp13-2-0-cust121.10-2.cable.virginm.net ([86.15.83.122] helo=rainbowdash)
+        by imap3.hz.codethink.co.uk with esmtpsa  (Exim 4.92 #3 (Debian))
+        id 1nVESt-0005AT-HY; Fri, 18 Mar 2022 15:24:31 +0000
+Received: from ben by rainbowdash with local (Exim 4.95)
+        (envelope-from <ben@rainbowdash>)
+        id 1nVESt-002CvF-2s;
+        Fri, 18 Mar 2022 15:24:31 +0000
+From:   Ben Dooks <ben.dooks@codethink.co.uk>
+To:     linux-pci@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Rob Herring <robh@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Greentime Hu <greentime.hu@sifive.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Ben Dooks <ben.dooks@codethink.co.uk>
+Subject: [V3] PCI: fu740: Drop to 2.5GT/s to fix initial device probing on some boards
+Date:   Fri, 18 Mar 2022 15:24:30 +0000
+Message-Id: <20220318152430.526320-1-ben.dooks@codethink.co.uk>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross
-> Sent: 18 March 2022 15:10
-> 
-> The dcdbas driver is used to call SMI handlers for both, dcdbas and
-> dell-smbios-smm. Both drivers allocate a buffer for communicating
-> with the SMI handler. The physical buffer address is then passed to
-> the called SMI handler via %ebx.
-> 
-> Unfortunately this doesn't work when running in Xen dom0, as the
-> physical address obtained via virt_to_phys() is only a guest physical
-> address, and not a machine physical address as needed by SMI.
+The fu740 PCIe core does not probe any devices on the SiFive Unmatched
+board without this fix (or having U-Boot explicitly start the PCIe via
+either boot-script or user command). The fix is to start the link at
+2.5GT/s speeds and once the link is up then change the maximum speed back
+to the default.
 
-The physical address from virt_to_phy() is always wrong.
-That is the physical address the cpu has for the memory.
-What you want is the address the dma master interface needs to use.
-That can be different for a physical system - no need for virtualisation.
+The U-Boot driver claims to set the link-speed to 2.5GT/s to get the probe
+to work (and U-Boot does print link up at 2.5GT/s) in the following code:
+https://source.denx.de/u-boot/u-boot/-/blob/master/drivers/pci/pcie_dw_sifive.c?id=v2022.01#L271
 
-On x86 they do usually match, but anything with a full iommu
-will need completely different addresses.
+Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
+--
+Note, this patch has had significant re-work since the previous 4
+sets, including trying to fix style, message, reliance on the U-Boot
+fix and the comments about usage of LINK_CAP and reserved fields.
 
-	David
+v2:
+- fix issues with Gen1/2.5GTs
+- updated comment on the initial probe
+- run tests with both uninitialised and initialsed pcie from uboot
+---
+ drivers/pci/controller/dwc/pcie-fu740.c | 52 ++++++++++++++++++++++++-
+ 1 file changed, 51 insertions(+), 1 deletion(-)
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+diff --git a/drivers/pci/controller/dwc/pcie-fu740.c b/drivers/pci/controller/dwc/pcie-fu740.c
+index 842b7202b96e..ecac0364178a 100644
+--- a/drivers/pci/controller/dwc/pcie-fu740.c
++++ b/drivers/pci/controller/dwc/pcie-fu740.c
+@@ -181,10 +181,60 @@ static int fu740_pcie_start_link(struct dw_pcie *pci)
+ {
+ 	struct device *dev = pci->dev;
+ 	struct fu740_pcie *afp = dev_get_drvdata(dev);
++	u8 cap_exp = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
++	int ret;
++	u32 orig, tmp;
++
++	/*
++	 * Force 2.5GT/s when starting the link, due to some devices not
++	 * probing at higher speeds. This happens with the PCIe switch
++	 * on the Unmatched board when U-Boot has not initialised the PCIe.
++	 * The fix in U-Boot is to force 2.5GT/s, which then gets cleared
++	 * by the soft reset does by this driver.
++	 */
++
++	dev_dbg(dev, "cap_exp at %x\n", cap_exp);
++	dw_pcie_dbi_ro_wr_en(pci);
++
++	tmp = dw_pcie_readl_dbi(pci, cap_exp + PCI_EXP_LNKCAP);
++	orig = tmp & PCI_EXP_LNKCAP_SLS;
++	tmp &= ~PCI_EXP_LNKCAP_SLS;
++	tmp |= PCI_EXP_LNKCAP_SLS_2_5GB;
++	dw_pcie_writel_dbi(pci, cap_exp + PCI_EXP_LNKCAP, tmp);
+ 
+ 	/* Enable LTSSM */
+ 	writel_relaxed(0x1, afp->mgmt_base + PCIEX8MGMT_APP_LTSSM_ENABLE);
+-	return 0;
++
++	ret = dw_pcie_wait_for_link(pci);
++	if (ret) {
++		dev_err(dev, "error: link did not start\n");
++		goto err;
++	}
++
++	tmp = dw_pcie_readl_dbi(pci, cap_exp + PCI_EXP_LNKCAP);
++	if ((tmp & PCI_EXP_LNKCAP_SLS) != orig) {
++		dev_dbg(dev, "changing speed back to original\n");
++
++		tmp &= ~PCI_EXP_LNKCAP_SLS;
++		tmp |= orig;
++		dw_pcie_writel_dbi(pci, cap_exp + PCI_EXP_LNKCAP, tmp);
++
++		tmp = dw_pcie_readl_dbi(pci, PCIE_LINK_WIDTH_SPEED_CONTROL);
++		tmp |= PORT_LOGIC_SPEED_CHANGE;
++		dw_pcie_writel_dbi(pci, PCIE_LINK_WIDTH_SPEED_CONTROL, tmp);
++
++		ret = dw_pcie_wait_for_link(pci);
++		if (ret) {
++			dev_err(dev, "error: link did not start at new speed\n");
++			goto err;
++		}
++	}
++
++	ret = 0;
++err:
++	WARN_ON(ret);	/* we assume that errors will be very rare */
++	dw_pcie_dbi_ro_wr_dis(pci);
++	return ret;
+ }
+ 
+ static int fu740_pcie_host_init(struct pcie_port *pp)
+-- 
+2.35.1
 
