@@ -2,213 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 913C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 16:01:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 985D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 16:01:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243569AbiCSQC4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Mar 2022 12:02:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38568 "EHLO
+        id S243579AbiCSQDE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Mar 2022 12:03:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243567AbiCSQCt (ORCPT
+        with ESMTP id S239355AbiCSQDB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Mar 2022 12:02:49 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 377102986F2
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 09:01:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647705688; x=1679241688;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=/g53adEZmY5zvK1Z/UMrw6ZvrI8Ylr0AvgyWU3T0Dls=;
-  b=XqpNnv/nXpV2iS58P4bdiLoB1JDDySwNpGGZnp7fa4NhznsNEuJqwapM
-   +Gt5GhYJEjI73wKBvWfrtjfE4ZO2kYCWt5CADD52ZEAZk2fM03u8DSY+i
-   px4ZmnYuPkBX4dz4ZpD9q+wd38OjuhI7GNDe2o41yYco74fs8n+PyYvxT
-   qxrwTKiouUuPMqCClCCteaZX32GXqqbs+r4EQnie0+/bM09BwvWiAe/+G
-   I+7H+8x8BolbLOgNpCs6aNxryMBExU1NyBpW8ucMXiOOSupQSYdNXTcdT
-   jshr3eI8dUXKAUMlKyUiiPTCOqb0J1ia38vwhZXgF5Vr37fIplhEkwpBP
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10291"; a="257257962"
-X-IronPort-AV: E=Sophos;i="5.90,194,1643702400"; 
-   d="scan'208";a="257257962"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2022 09:01:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,194,1643702400"; 
-   d="scan'208";a="551215193"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by fmsmga007.fm.intel.com with ESMTP; 19 Mar 2022 09:01:23 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nVbW7-000G6K-47; Sat, 19 Mar 2022 16:01:23 +0000
-Date:   Sun, 20 Mar 2022 00:00:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Karsten Graul <kgraul@linux.ibm.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: net/smc/smc_llc.c:40:1: warning: alignment 1 of 'struct smc_llc_hdr'
- is less than 4
-Message-ID: <202203192301.sqf7Lfs7-lkp@intel.com>
+        Sat, 19 Mar 2022 12:03:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95902A33BA;
+        Sat, 19 Mar 2022 09:01:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D98BB80D77;
+        Sat, 19 Mar 2022 16:01:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 017BEC340EC;
+        Sat, 19 Mar 2022 16:01:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647705698;
+        bh=5lM2GQN21/6eZ4pzyteYnuHBID1NME4gq7qznrZWAYQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=CZupouA5i5yfaOxV3sIKVcSXuYopvOJNM1nv2kQfUA68GhWKpu+jPTDuGmHiT4wox
+         nDxQozQB65YBldzh1cwKGYbWQUbcS9lsC2Ed7n4ORE9H481YvjM7fTvltNg1F1l5PL
+         NweJXUmfleiiby8s3MeWinZsvveAGeyxpyHdKLgSBTVIq0ZWg6w42EPjNCATg908qb
+         ebaK9nowN2CHL/85IrB5q8cU2Z+/TtR3b22jxaZgAJnu3Rvaf7ov4T3Z1bU8LxWQSv
+         uaOuSap13dLlPAeJNDPSX42s+HNMy6o7LFZd3aaUUQgd+2+9t734wujPq9JMRRTl1L
+         SvUXtL6JgTBoQ==
+Date:   Sat, 19 Mar 2022 16:09:01 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     <alexandru.tachici@analog.com>
+Cc:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 5/8] iio: adc: ad7124: add sequencer support
+Message-ID: <20220319160901.61b13399@jic23-huawei>
+In-Reply-To: <20220318162722.51215-6-alexandru.tachici@analog.com>
+References: <20220318162722.51215-1-alexandru.tachici@analog.com>
+        <20220318162722.51215-6-alexandru.tachici@analog.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Karsten,
+On Fri, 18 Mar 2022 18:27:19 +0200
+<alexandru.tachici@analog.com> wrote:
 
-FYI, the error/warning still remains.
+> From: Alexandru Tachici <alexandru.tachici@analog.com>
+> 
+> Add sequencer support for AD7124.
+> 
+> Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+Hi Alexandru,
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   34e047aa16c0123bbae8e2f6df33e5ecc1f56601
-commit: b4ba4652b3f8b7c9bbb5786f8acf4724bdab2196 net/smc: extend LLC layer for SMC-Rv2
-date:   5 months ago
-config: arm-randconfig-r032-20220319 (https://download.01.org/0day-ci/archive/20220319/202203192301.sqf7Lfs7-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b4ba4652b3f8b7c9bbb5786f8acf4724bdab2196
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout b4ba4652b3f8b7c9bbb5786f8acf4724bdab2196
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash net/smc/
+A few comments inline.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Thanks,
 
-All warnings (new ones prefixed by >>):
+Jonathan
 
->> net/smc/smc_llc.c:40:1: warning: alignment 1 of 'struct smc_llc_hdr' is less than 4 [-Wpacked-not-aligned]
-      40 | } __packed;             /* format defined in
-         | ^
-   In file included from <command-line>:
-   In function 'smc_llc_add_pending_send',
-       inlined from 'smc_llc_send_test_link' at net/smc/smc_llc.c:736:7,
-       inlined from 'smc_llc_testlink_work' at net/smc/smc_llc.c:2094:2:
-   include/linux/compiler_types.h:322:45: error: call to '__compiletime_assert_555' declared with attribute error: must increase SMC_WR_BUF_SIZE to at least sizeof(struct smc_llc_msg)
-     322 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |                                             ^
-   include/linux/compiler_types.h:303:25: note: in definition of macro '__compiletime_assert'
-     303 |                         prefix ## suffix();                             \
-         |                         ^~~~~~
-   include/linux/compiler_types.h:322:9: note: in expansion of macro '_compiletime_assert'
-     322 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   net/smc/smc_llc.c:409:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-     409 |         BUILD_BUG_ON_MSG(
-         |         ^~~~~~~~~~~~~~~~
-   include/linux/compiler_types.h:322:45: error: call to '__compiletime_assert_556' declared with attribute error: must adapt SMC_WR_TX_SIZE to sizeof(struct smc_llc_msg); if not all smc_wr upper layer protocols use the same message size any more, must start to set link->wr_tx_sges[i].length on each individual smc_wr_tx_send()
-     322 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |                                             ^
-   include/linux/compiler_types.h:303:25: note: in definition of macro '__compiletime_assert'
-     303 |                         prefix ## suffix();                             \
-         |                         ^~~~~~
-   include/linux/compiler_types.h:322:9: note: in expansion of macro '_compiletime_assert'
-     322 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   net/smc/smc_llc.c:412:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-     412 |         BUILD_BUG_ON_MSG(
-         |         ^~~~~~~~~~~~~~~~
-   In function 'smc_llc_add_pending_send',
-       inlined from 'smc_llc_send_message' at net/smc/smc_llc.c:760:7:
-   include/linux/compiler_types.h:322:45: error: call to '__compiletime_assert_555' declared with attribute error: must increase SMC_WR_BUF_SIZE to at least sizeof(struct smc_llc_msg)
-     322 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |                                             ^
-   include/linux/compiler_types.h:303:25: note: in definition of macro '__compiletime_assert'
-     303 |                         prefix ## suffix();                             \
-         |                         ^~~~~~
-   include/linux/compiler_types.h:322:9: note: in expansion of macro '_compiletime_assert'
-     322 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   net/smc/smc_llc.c:409:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-     409 |         BUILD_BUG_ON_MSG(
-         |         ^~~~~~~~~~~~~~~~
-   include/linux/compiler_types.h:322:45: error: call to '__compiletime_assert_556' declared with attribute error: must adapt SMC_WR_TX_SIZE to sizeof(struct smc_llc_msg); if not all smc_wr upper layer protocols use the same message size any more, must start to set link->wr_tx_sges[i].length on each individual smc_wr_tx_send()
-     322 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |                                             ^
-   include/linux/compiler_types.h:303:25: note: in definition of macro '__compiletime_assert'
-     303 |                         prefix ## suffix();                             \
-         |                         ^~~~~~
-   include/linux/compiler_types.h:322:9: note: in expansion of macro '_compiletime_assert'
-     322 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   net/smc/smc_llc.c:412:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-     412 |         BUILD_BUG_ON_MSG(
-         |         ^~~~~~~~~~~~~~~~
-   In function 'smc_llc_add_pending_send',
-       inlined from 'smc_llc_send_confirm_rkey' at net/smc/smc_llc.c:492:7:
-   include/linux/compiler_types.h:322:45: error: call to '__compiletime_assert_555' declared with attribute error: must increase SMC_WR_BUF_SIZE to at least sizeof(struct smc_llc_msg)
-     322 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |                                             ^
-   include/linux/compiler_types.h:303:25: note: in definition of macro '__compiletime_assert'
-     303 |                         prefix ## suffix();                             \
-         |                         ^~~~~~
-   include/linux/compiler_types.h:322:9: note: in expansion of macro '_compiletime_assert'
-     322 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   net/smc/smc_llc.c:409:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-     409 |         BUILD_BUG_ON_MSG(
-         |         ^~~~~~~~~~~~~~~~
-   include/linux/compiler_types.h:322:45: error: call to '__compiletime_assert_556' declared with attribute error: must adapt SMC_WR_TX_SIZE to sizeof(struct smc_llc_msg); if not all smc_wr upper layer protocols use the same message size any more, must start to set link->wr_tx_sges[i].length on each individual smc_wr_tx_send()
-     322 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |                                             ^
-   include/linux/compiler_types.h:303:25: note: in definition of macro '__compiletime_assert'
-     303 |                         prefix ## suffix();                             \
-         |                         ^~~~~~
-   include/linux/compiler_types.h:322:9: note: in expansion of macro '_compiletime_assert'
-     322 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   net/smc/smc_llc.c:412:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-     412 |         BUILD_BUG_ON_MSG(
-         |         ^~~~~~~~~~~~~~~~
+> ---
+>  drivers/iio/adc/ad7124.c | 32 +++++++++++++++++++++++++-------
+>  1 file changed, 25 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ad7124.c b/drivers/iio/adc/ad7124.c
+> index 428ec3e257d7..782b7cdd8ebe 100644
+> --- a/drivers/iio/adc/ad7124.c
+> +++ b/drivers/iio/adc/ad7124.c
+> @@ -43,6 +43,8 @@
+>  #define AD7124_STATUS_POR_FLAG_MSK	BIT(4)
+>  
+>  /* AD7124_ADC_CONTROL */
+> +#define AD7124_ADC_STATUS_EN_MSK	BIT(10)
+> +#define AD7124_ADC_STATUS_EN(x)		FIELD_PREP(AD7124_ADC_STATUS_EN_MSK, x)
+>  #define AD7124_ADC_CTRL_REF_EN_MSK	BIT(8)
+>  #define AD7124_ADC_CTRL_REF_EN(x)	FIELD_PREP(AD7124_ADC_CTRL_REF_EN_MSK, x)
+>  #define AD7124_ADC_CTRL_PWR_MSK	GENMASK(7, 6)
+> @@ -512,14 +514,27 @@ static int ad7124_set_channel(struct ad_sigma_delta *sd, unsigned int channel)
+>  	return ret;
+>  }
+>  
+> +static int ad7124_append_status(struct ad_sigma_delta *sd, bool append)
+> +{
+> +	struct ad7124_state *st = container_of(sd, struct ad7124_state, sd);
+> +
+> +	st->adc_control &= ~AD7124_ADC_STATUS_EN_MSK;
+> +	st->adc_control |= AD7124_ADC_STATUS_EN(append);
 
+Generally avoid updating cached state until you know the write succeeded.
+So I would operate on a local variable and if ad_sd_write_reg() succeeds
+copy that back into st->adc_control.
 
-vim +40 net/smc/smc_llc.c
+Obviously on error it 'might' have been updated successfully and something failed
+after the write, but it is probably more likely the write failed.
 
-    23	
-    24	struct smc_llc_hdr {
-    25		struct smc_wr_rx_hdr common;
-    26		union {
-    27			struct {
-    28				u8 length;	/* 44 */
-    29		#if defined(__BIG_ENDIAN_BITFIELD)
-    30				u8 reserved:4,
-    31				   add_link_rej_rsn:4;
-    32	#elif defined(__LITTLE_ENDIAN_BITFIELD)
-    33				u8 add_link_rej_rsn:4,
-    34				   reserved:4;
-    35	#endif
-    36			};
-    37			u16 length_v2;	/* 44 - 8192*/
-    38		};
-    39		u8 flags;
-  > 40	} __packed;		/* format defined in
-    41				 * IBM Shared Memory Communications Version 2
-    42				 * (https://www.ibm.com/support/pages/node/6326337)
-    43				 */
-    44	
+> +
+> +	return ad_sd_write_reg(&st->sd, AD7124_ADC_CONTROL, 2, st->adc_control);
+> +}
+> +
+>  static const struct ad_sigma_delta_info ad7124_sigma_delta_info = {
+>  	.set_channel = ad7124_set_channel,
+> +	.append_status = ad7124_append_status,
+>  	.set_mode = ad7124_set_mode,
+>  	.has_registers = true,
+>  	.addr_shift = 0,
+>  	.read_mask = BIT(6),
+> +	.status_ch_mask = GENMASK(3, 0),
+>  	.data_reg = AD7124_DATA,
+> -	.irq_flags = IRQF_TRIGGER_FALLING
+> +	.num_slots = 8,
+> +	.irq_flags = IRQF_TRIGGER_FALLING,
+>  };
+>  
+>  static int ad7124_read_raw(struct iio_dev *indio_dev,
+> @@ -679,10 +694,11 @@ static int ad7124_update_scan_mode(struct iio_dev *indio_dev,
+>  
+>  	for (i = 0; i < st->num_channels; i++) {
+>  		bit_set = test_bit(i, scan_mask);
+> -		ret = ad7124_spi_write_mask(st, AD7124_CHANNEL(i),
+> -					    AD7124_CHANNEL_EN_MSK,
+> -					    AD7124_CHANNEL_EN(bit_set),
+> -					    2);
+> +		if (bit_set)
+> +			ret = ad7124_set_channel(&st->sd, i);
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+This is going to repeatedly take an release the cfg mutex. Perhaps it's worth
+introducing a __ad7124_set_channel() that doesn't take the lock then take it around
+this loop instead?
+
+> +		else
+> +			ret = ad7124_spi_write_mask(st, AD7124_CHANNEL(i), AD7124_CHANNEL_EN_MSK,
+> +						    0, 2);
+>  		if (ret < 0)
+>  			return ret;
+>  	}
+> @@ -906,12 +922,14 @@ static int ad7124_probe(struct spi_device *spi)
+>  
+>  	st->chip_info = info;
+>  
+> -	ad_sd_init(&st->sd, indio_dev, spi, &ad7124_sigma_delta_info);
+> -
+>  	indio_dev->name = st->chip_info->name;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  	indio_dev->info = &ad7124_info;
+>  
+> +	ret = ad_sd_init(&st->sd, indio_dev, spi, &ad7124_sigma_delta_info);
+> +	if (ret < 0)
+> +		return ret;
+> +
+>  	ret = ad7124_of_parse_channel_config(indio_dev, spi->dev.of_node);
+>  	if (ret < 0)
+>  		return ret;
+
