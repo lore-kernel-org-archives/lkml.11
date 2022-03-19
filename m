@@ -2,193 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54BF8C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 03:59:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7ACEC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 03:59:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238502AbiCSEAk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Mar 2022 00:00:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58434 "EHLO
+        id S234892AbiCSEA4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Mar 2022 00:00:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242192AbiCSEAG (ORCPT
+        with ESMTP id S242143AbiCSEAj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Mar 2022 00:00:06 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D578C7EB
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 20:58:11 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id z8so19065415ybh.7
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 20:58:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0gA2qXzSRl9qE4e/yYCKLgAXKN8MMVbC49krdg3yp3I=;
-        b=t6/7N1sZ0ZkI6hW5qc6ora09i0y+N1UhwsfsFLFL74GSygv+Glm57pstuNI/fDtPTR
-         /fzfKTU47bUXAyFve35zGys6ry7fp6P0n3+dEej8JfBkQdDoQAVOkSyEZckc23r1+dyJ
-         QUoVnunu1WTQClkMrK66Hmm1eBAJ9zjuNNTYKYEZi2dBucihutg0niDaBEEG7K+Eiuvt
-         PFgHrBK0esrxgY3edNfwPqWYoy00o+SVWwFtQpGqvDv5L06QOJ+VwgWAkDqZOMpEKYHE
-         lhEiVpiVcZ8O6SQEdGLZjdqUMdL8QlXAIk5aBozC8b5DWbPVHxfc7xuf612ezBUZnwkY
-         Ki7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0gA2qXzSRl9qE4e/yYCKLgAXKN8MMVbC49krdg3yp3I=;
-        b=2nniIT+xMDd9PVEl91h/erfSFekfVMOUSxVFMqtBuGRWbnKFnSbGTY7D3bf09XjG/E
-         pF8SKAJhAbT0z4Tsk7t529MLcFurpMssu/gXC45us4yKM5VbNTLJ/IT/DymYCcnH7tBU
-         0X/zL2CZalkECbbgREM3Qr6QGiNKRhuWMQ1qh7vOJcNsconHWBeCZBZlQ/P2FIZIMsoW
-         ds6cdxP9lOrIRSi5PIkM+1Yly31p2Bw10Fomr/OkSuEX1P7aa3EJxFL4e1MxjNKDZJpz
-         kx2ZU6KTjWoAkUiRayXHb9dgeFOvJy+CRWrLExhBRmzOXOhAJJBpo98AdKaVSXmmf/bj
-         YRBA==
-X-Gm-Message-State: AOAM530KM2v4vBEIwofAFTffRhUVYrzQOa/EVd+Fsh6BejVrG8Xy5Q1b
-        aZHYnRqXG46Nm+TbZ6CLPtxqwEqopgSMAc7OwnNHEQ==
-X-Google-Smtp-Source: ABdhPJynV8+lYCBUqF2tFn5s5qKnLh+GnL5M2HPtr94nl6OYf+yVbOOsr28Uz1gniP+AOeBXRZQC3YG3haZrbPFqT6w=
-X-Received: by 2002:a25:33d7:0:b0:633:134a:6e7c with SMTP id
- z206-20020a2533d7000000b00633134a6e7cmr12855599ybz.89.1647662290616; Fri, 18
- Mar 2022 20:58:10 -0700 (PDT)
+        Sat, 19 Mar 2022 00:00:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B731AFD1F;
+        Fri, 18 Mar 2022 20:59:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E872B82601;
+        Sat, 19 Mar 2022 03:59:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 217DAC340F3;
+        Sat, 19 Mar 2022 03:59:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647662344;
+        bh=NCmSYpBpPOqdOKkO2yTy5z2+vGdb8Ya42Eaja7z7Ydo=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=cy9DNDH8kpFKUG0D8MCkuejTPlgI/3pjlWVoRY7y7BN7QewMSIn9+eCbeVjme0WeS
+         YGab4sFB0XxjPwlmiDBOUQLPGcvaTlDRMMY/YpahYaMcVZqs1dhj+fznUaCZRz0JYH
+         PeSyiLvyw5io6cUho8+MWOE63voDans1QeL+gxXPZKkPkLYSLIaTHm8AaPpOVZKTfk
+         0uvFeEdx14/h6Jf855UACHR8LvznmfGPeMqJQ3oko0dgVRtBbt1f3gZ3Ph9mNyuV8n
+         5XPh439oennaLYRCDYcthQPWrO0orKGEWSR/3lXk5SRfQQ5unV2g/cPNMfU6byAAMk
+         efqhtvpgz8lyg==
+Received: by mail-vs1-f48.google.com with SMTP id 185so958397vsq.8;
+        Fri, 18 Mar 2022 20:59:04 -0700 (PDT)
+X-Gm-Message-State: AOAM531/nZpsrYwbVv8nah+pD2z1suoqEXskhiWGC7CUZ3gQp+Wpwlnv
+        i7pDsFaImuLzsVJyc4UeRcs9kBg37ZDgYKM+d9Y=
+X-Google-Smtp-Source: ABdhPJyT2/M7uJmIdHKQUIA0qbp1v0uU+ddahjBl3cmFDN5cF5//qn59rYZQkwQ0ym7E8abdzkfttLhe2OYuc6nxFy0=
+X-Received: by 2002:a05:6102:dce:b0:322:b950:4728 with SMTP id
+ e14-20020a0561020dce00b00322b9504728mr4363733vst.51.1647662342936; Fri, 18
+ Mar 2022 20:59:02 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220318100720.14524-1-songmuchun@bytedance.com>
- <20220318100720.14524-2-songmuchun@bytedance.com> <YjS2BiqKlDrPYslc@bombadil.infradead.org>
-In-Reply-To: <YjS2BiqKlDrPYslc@bombadil.infradead.org>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Sat, 19 Mar 2022 11:56:18 +0800
-Message-ID: <CAMZfGtXPJ=0Xm_rm6AVGdL9hupkXyw7EtykY-B315LCkzdaZNg@mail.gmail.com>
-Subject: Re: [PATCH v4 1/4] mm: hugetlb_vmemmap: introduce STRUCT_PAGE_SIZE_IS_POWER_OF_2
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        David Hildenbrand <david@redhat.com>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Xiongchun duan <duanxiongchun@bytedance.com>,
-        Muchun Song <smuchun@gmail.com>
+References: <20220318083421.2062259-1-guoren@kernel.org> <CAK8P3a0NMPVGVw7===uEOtNnu1hr1GqimMbZT+Kea1CUxRvPmw@mail.gmail.com>
+In-Reply-To: <CAK8P3a0NMPVGVw7===uEOtNnu1hr1GqimMbZT+Kea1CUxRvPmw@mail.gmail.com>
+From:   Guo Ren <guoren@kernel.org>
+Date:   Sat, 19 Mar 2022 11:58:52 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTR=wTi6G7wFzOyUpQn72b3iKtAjzvBSFHNDgpPFboJs0w@mail.gmail.com>
+Message-ID: <CAJF2gTR=wTi6G7wFzOyUpQn72b3iKtAjzvBSFHNDgpPFboJs0w@mail.gmail.com>
+Subject: Re: [PATCH] csky: Move to generic ticket-spinlock
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Palmer Dabbelt <palmer@rivosinc.com>, linux-csky@vger.kernel.org,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Guo Ren <guoren@linux.alibaba.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 19, 2022 at 12:40 AM Luis Chamberlain <mcgrof@kernel.org> wrote:
->
-> On Fri, Mar 18, 2022 at 06:07:17PM +0800, Muchun Song wrote:
->
-> You can add Suggested-by tag here.
+Hi Arnd,
 
-Will do. Sorry for forgetting it.
-
+On Fri, Mar 18, 2022 at 6:58 PM Arnd Bergmann <arnd@arndb.de> wrote:
 >
-> > Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-> > ---
-> >  Kbuild                           | 12 ++++++++++++
-> >  fs/Kconfig                       |  2 +-
-> >  include/linux/mm_types.h         |  2 ++
-> >  mm/Kconfig                       |  3 +++
-> >  mm/hugetlb_vmemmap.c             |  6 ------
-> >  mm/struct_page_size.c            | 19 +++++++++++++++++++
-> >  scripts/check_struct_page_po2.sh | 11 +++++++++++
-> >  7 files changed, 48 insertions(+), 7 deletions(-)
-> >  create mode 100644 mm/struct_page_size.c
-> >  create mode 100755 scripts/check_struct_page_po2.sh
+> On Fri, Mar 18, 2022 at 9:34 AM <guoren@kernel.org> wrote:
+> > @@ -3,6 +3,8 @@ generic-y += asm-offsets.h
+> >  generic-y += extable.h
+> >  generic-y += gpio.h
+> >  generic-y += kvm_para.h
+> > +generic-y += ticket-lock.h
+> > +generic-y += ticket-lock-types.h
+> >  generic-y += qrwlock.h
+> >  generic-y += user.h
+> >  generic-y += vmlinux.lds.h
+>
+> If these headers are not included from architecture-independent code,
+> they should
+> not be marked as generic-y, same as for the qrwlock.h header
+>
+> > +#include <asm/ticket-lock.h>
+> >  #include <asm/qrwlock.h>
 > >
-> > diff --git a/Kbuild b/Kbuild
-> > index fa441b98c9f6..6bb97d348d62 100644
-> > --- a/Kbuild
-> > +++ b/Kbuild
-> > @@ -14,6 +14,18 @@ $(bounds-file): kernel/bounds.s FORCE
-> >       $(call filechk,offsets,__LINUX_BOUNDS_H__)
+> > ...
+> > +#include <asm/ticket-lock-types.h>
+> >  #include <asm-generic/qrwlock_types.h>
 > >
-> >  #####
-> > +# Generate struct_page_size.h. Must follows bounds.h.
-> > +
-> > +struct_page_size-file := include/generated/struct_page_size.h
-> > +
-> > +always-y := $(struct_page_size-file)
-> > +targets := mm/struct_page_size.s
-> > +
-> > +$(struct_page_size-file): mm/struct_page_size.s FORCE
-> > +     $(call filechk,offsets,__LINUX_STRUCT_PAGE_SIZE_H__)
-> > +     $(Q)$(MAKE) -f $(srctree)/Makefile syncconfig
-> > +
-> > +#####
 >
-> Shouldn't this go into mm/Makefile instead?
+> So these should all become
 >
-
-We should guarantee that the include/generated/struct_page_size.h
-which Kconfig depends on is created before processing Makefile
-since processing Kconfig is before Makefile. Right?
-
-> > diff --git a/mm/Kconfig b/mm/Kconfig
-> > index 034d87953600..9314bd34f49e 100644
-> > --- a/mm/Kconfig
-> > +++ b/mm/Kconfig
-> > @@ -2,6 +2,9 @@
-> >
-> >  menu "Memory Management options"
-> >
-> > +config STRUCT_PAGE_SIZE_IS_POWER_OF_2
-> > +     def_bool $(success,test "$(shell, $(srctree)/scripts/check_struct_page_po2.sh)" = 1)
-> > +
-> >  config SELECT_MEMORY_MODEL
-> >       def_bool y
-> >       depends on ARCH_SELECT_MEMORY_MODEL
-> > new file mode 100755
-> > index 000000000000..9547ad3aca05
-> > --- /dev/null
-> > +++ b/scripts/check_struct_page_po2.sh
-> > @@ -0,0 +1,11 @@
-> > +#!/bin/sh
-> > +# SPDX-License-Identifier: GPL-2.0
-> > +#
-> > +# Check if the size of "struct page" is power of 2
-> > +
-> > +file="include/generated/struct_page_size.h"
-> > +if [ ! -f "$file" ]; then
+> #include <asm-generic/...h>
 >
-> Does this really work if one is workig off of a very clean build
-> like make mrproper and then make menuconfig or or mrproper followed
-> by a defconfig file ? Have you tried it for both cases po2 and npo2?
+> It would however make sense to have the trivial two-line version
+> of the two header files and put them into asm-generic/spinlock.h
+> and asm-generic/spinlock-types.h, replacing the current version.
 >
-> Because isn't include/generated/struct_page_size.h generated? At
-> which point does it get generated and why would the condition hole
-> true that the file exists at a new 'make menuconfig' time?
+> If you do that, then you need a 'generic-y' line for spinlock.h,
+> but not for the other ones.
+Thx for the suggestion, I've sent V2 based on Palmer's series to make
+the ticket spinlock more generic.
+Please have a look:
+https://lore.kernel.org/linux-arch/20220319035457.2214979-1-guoren@kernel.org/T/#t
+
 >
+>        Arnd
 
-You are right. include/generated/struct_page_size.h does not exist
-in this case, CONFIG_STRUCT_PAGE_SIZE_IS_POWER_OF_2
-will be default off in .config. Then it will be switched on/off accordingly
-when you build the kernel, for instance make bzImage, which is done via
-"make syncconfig" which follows the generation of struct_page_size.h.
 
-While testing this case, I found some bugs. The following patch
-could fix this.  Thanks.
 
---- a/Kbuild
-+++ b/Kbuild
-@@ -21,6 +21,8 @@ struct_page_size-file := include/generated/struct_page_size.h
- always-y := $(struct_page_size-file)
- targets := mm/struct_page_size.s
 
-+mm/struct_page_size.s: $(timeconst-file) $(bounds-file)
-+
- $(struct_page_size-file): mm/struct_page_size.s FORCE
-        $(call filechk,offsets,__LINUX_STRUCT_PAGE_SIZE_H__)
-        $(Q)$(MAKE) -f $(srctree)/Makefile syncconfig
-diff --git a/scripts/check_struct_page_po2.sh b/scripts/check_struct_page_po2.sh
-index 9547ad3aca05..1764ef9a4f1d 100755
---- a/scripts/check_struct_page_po2.sh
-+++ b/scripts/check_struct_page_po2.sh
-@@ -4,8 +4,6 @@
- # Check if the size of "struct page" is power of 2
+--
+Best Regards
+ Guo Ren
 
- file="include/generated/struct_page_size.h"
--if [ ! -f "$file" ]; then
--       exit 1
-+if [ -f "$file" ]; then
-+       grep STRUCT_PAGE_SIZE_IS_POWER_OF_2 "$file" | cut -d' ' -f3
- fi
--
--grep STRUCT_PAGE_SIZE_IS_POWER_OF_2 "$file" | cut -d' ' -f3
+ML: https://lore.kernel.org/linux-csky/
