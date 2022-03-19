@@ -2,101 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 491A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 15:31:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5DEEC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 15:31:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243475AbiCSPcp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Mar 2022 11:32:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54694 "EHLO
+        id S243486AbiCSPdA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Mar 2022 11:33:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243461AbiCSPco (ORCPT
+        with ESMTP id S243461AbiCSPc6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Mar 2022 11:32:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FEBA25278F;
-        Sat, 19 Mar 2022 08:31:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 31412B801BD;
-        Sat, 19 Mar 2022 15:31:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED363C340EC;
-        Sat, 19 Mar 2022 15:31:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647703876;
-        bh=HsKRicTJPFvzoDCAO0YqkVB0YHJYjH6+NNPct+/DRyA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=S3Xc8i8MkvENmKsIi+24Ph154zItXKI7v5vpRqYA3t2K317NJVXnCBhVp5VcHngdi
-         xKhH0ddcBN4xpFcsJUaGC/BIA4NpTcS6JLXy4fuvIeW2EEfvJU1UCNrjwHi9WnbMwc
-         DPLi9Gre3IwGzgKrLij22Z38IJP+wcFvteqhM/03JT/XaoE2Q4v4dbFgxKJKuLrNo1
-         9bom5KO3SyzzMkRQlSeABX8avRETTAiA+SpzlI4vwWRb01rMXzqrwIBwAOdWPSwpvz
-         mqNgbQdIPUFEFDExZc3QNWZXVPaGmMoaehw4mikxgJMSYAAdvvsEV/YCPA6hDLWCxc
-         q6irFrWwiLB+w==
-Date:   Sat, 19 Mar 2022 15:38:41 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     <alexandru.tachici@analog.com>
-Cc:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/8] iio: adc: ad7124: Remove shift from scan_type
-Message-ID: <20220319153841.2483194a@jic23-huawei>
-In-Reply-To: <20220318162722.51215-2-alexandru.tachici@analog.com>
-References: <20220318162722.51215-1-alexandru.tachici@analog.com>
-        <20220318162722.51215-2-alexandru.tachici@analog.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sat, 19 Mar 2022 11:32:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 93DD72571A4
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 08:31:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647703896;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=RDYbzlAeYYOLKs0jJASD2ePoaygRETdsPOHhL2YcgAw=;
+        b=Wv/7y0Atoy9y5Nh2ECQJzKYas2/V27pmOd8H/s0FPY6iE8faoQjCmoqgOCe0Zn9lRIGhda
+        JimTwYoi9OFb5vexub+eb5GTFFwP9neo//oSatItlzmI4s6py3zht7n8KJPuCbIkQqfnkp
+        Boxf/Lv8L+SUJUecCK98jWDw41r+e3c=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-669-dnK5vpV5OxyRhn32zkszRQ-1; Sat, 19 Mar 2022 11:31:34 -0400
+X-MC-Unique: dnK5vpV5OxyRhn32zkszRQ-1
+Received: by mail-qt1-f200.google.com with SMTP id f22-20020ac840d6000000b002dd4d87de21so7365257qtm.23
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 08:31:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RDYbzlAeYYOLKs0jJASD2ePoaygRETdsPOHhL2YcgAw=;
+        b=6bTYRizFyGLHoL/4d17xKAOIWpxWHjV1msaR/9dkxJBJrjQQdDZVFdh+Qpxsm2p/AB
+         vwFD8J3njE04db5A85fYB4VWit7b5/49WkM4/sOOMDjB9oxGeOywBpYkty3hXr44+Jss
+         2S3AsFozTpH1XIqz4ucK2vCxqO5asU7UrzlI4f/VpFmgS7cpCTS1aoD4BdHSMQT594cw
+         c+thMvxdvjxOhZCkY0lgSXZhv67rZV0Pn9WfY51P2lxUG1gjzcx6OfaCVFbZkq8XA8TO
+         ViCH2tWtQ5pGjeHvD0ay/p6wv1vH7wOVtMZpmx3B1X0Dw499uUzB6LTxZxfC5Hzjhslk
+         43Zg==
+X-Gm-Message-State: AOAM531uURxYfrpSNrnXsvCjM3K9KT/6wtfXwuFezF3LLWtZa19WHpjA
+        AsHxmIcb8VzTN5Iet1YvwKZmWKoONVdyvSrJaLxoGkmkSpkchNYK5Z/No74qmaIpm3E3WoMuKOw
+        5rgREXnPqPhH0KvGpeoZ76zXc
+X-Received: by 2002:a05:620a:430b:b0:67e:85d1:f53f with SMTP id u11-20020a05620a430b00b0067e85d1f53fmr376984qko.43.1647703894468;
+        Sat, 19 Mar 2022 08:31:34 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJylEZz+szJS3qXk/iEXTdbF/WnpVfwDLcvLyw6fK6qEuP1X7aGSWen2MjQL9ePfNbUbvv7PgQ==
+X-Received: by 2002:a05:620a:430b:b0:67e:85d1:f53f with SMTP id u11-20020a05620a430b00b0067e85d1f53fmr376962qko.43.1647703894215;
+        Sat, 19 Mar 2022 08:31:34 -0700 (PDT)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id b2-20020ac87fc2000000b002e1b9ddb629sm7850596qtk.47.2022.03.19.08.31.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 19 Mar 2022 08:31:33 -0700 (PDT)
+From:   trix@redhat.com
+To:     mkl@pengutronix.de, mani@kernel.org, thomas.kopp@microchip.com,
+        wg@grandegger.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, nathan@kernel.org, ndesaulniers@google.com
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] can: mcp251xfd: return errors from mcp251xfd_register_get_dev_id
+Date:   Sat, 19 Mar 2022 08:31:28 -0700
+Message-Id: <20220319153128.2164120-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 18 Mar 2022 18:27:15 +0200
-<alexandru.tachici@analog.com> wrote:
+From: Tom Rix <trix@redhat.com>
 
-> From: Alexandru Tachici <alexandru.tachici@analog.com>
-> 
-> The 24 bits data is stored in 32 bits in BE. There
-> is no need to shift it. This confuses user-space apps.
-> 
-> Fixes: b3af341bbd966 ("iio: adc: Add ad7124 support")
-> Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
-Hi Alexandru,
+Clang static analysis reports this issue
+mcp251xfd-core.c:1813:7: warning: The left operand
+  of '&' is a garbage value
+  FIELD_GET(MCP251XFD_REG_DEVID_ID_MASK, dev_id),
+  ^                                      ~~~~~~
 
-Just to confirm my understanding (which gets a bit messy when endian
-conversions are involved - and it occurs to me that our docs
-are not great on how to handle endian conversions with shifts).
+dev_id is set in a successful call to
+mcp251xfd_register_get_dev_id().  Though the status
+of calls made by mcp251xfd_register_get_dev_id()
+are checked and handled, their status' are not
+returned.  So return err.
 
-With a little endian cpu:
-After userspace performs the 32bit big endian to little endian conversion
-the value the shift would have previously dropped the bottom 8 bits
-of the channel reading?
+Fixes: 55e5b97f003e ("can: mcp25xxfd: add driver for Microchip MCP25xxFD SPI CAN")
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Looking at what ad_sigma_delta is doing it's documented as
-leaving the upper 8 bits as 0 so this would make sense.
-
-Have I understood the issue correctly?
-
-I'll need to hold this one for now as I'll need to rebase the
-fixes-togreg branch of iio.git after rc1 is available.
-
-Thanks,
-
-Jonathan
-
-
-> ---
->  drivers/iio/adc/ad7124.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/ad7124.c b/drivers/iio/adc/ad7124.c
-> index 998a342d51a6..7249db2c4422 100644
-> --- a/drivers/iio/adc/ad7124.c
-> +++ b/drivers/iio/adc/ad7124.c
-> @@ -188,7 +188,6 @@ static const struct iio_chan_spec ad7124_channel_template = {
->  		.sign = 'u',
->  		.realbits = 24,
->  		.storagebits = 32,
-> -		.shift = 8,
->  		.endianness = IIO_BE,
->  	},
->  };
+diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
+index 325024be7b045..f9dd8fdba12bc 100644
+--- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
++++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
+@@ -1786,7 +1786,7 @@ mcp251xfd_register_get_dev_id(const struct mcp251xfd_priv *priv, u32 *dev_id,
+  out_kfree_buf_rx:
+ 	kfree(buf_rx);
+ 
+-	return 0;
++	return err;
+ }
+ 
+ #define MCP251XFD_QUIRK_ACTIVE(quirk) \
+-- 
+2.26.3
 
