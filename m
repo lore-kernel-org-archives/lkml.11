@@ -2,172 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB0CFC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA876C4167B
 	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 01:49:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241746AbiCSBqt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 21:46:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60376 "EHLO
+        id S241758AbiCSBvQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 21:51:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229580AbiCSBqq (ORCPT
+        with ESMTP id S229580AbiCSBvO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 21:46:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A56282DE78F
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 18:45:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647654325;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ieSlFoCeto0AVAtI6K8jKTyxvQGGjjQJE1a9Rco3C2E=;
-        b=hxc+gfE8xP2NhRESCeD7lfxGV0+KPnFs9/ffu6DB7H2YngvmwABSq14tcJHeF5PyuBOwhX
-        Gdm3lGNwrKP3FnXSzdS6y3v+F3tQW7J0lw94N2UK4UGV4ZivnZlFyFUQ1zAlhZRRbDBPuo
-        TBVByoYjoMikAbkNXgc8rFixrYsx0sI=
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
- [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-168-OWImw656N1ivL0daZLvi2g-1; Fri, 18 Mar 2022 21:45:23 -0400
-X-MC-Unique: OWImw656N1ivL0daZLvi2g-1
-Received: by mail-pj1-f71.google.com with SMTP id o12-20020a17090a420c00b001c65aec76c0so5256520pjg.8
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 18:45:23 -0700 (PDT)
+        Fri, 18 Mar 2022 21:51:14 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8A2220D50F;
+        Fri, 18 Mar 2022 18:49:54 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id n2so8444457plf.4;
+        Fri, 18 Mar 2022 18:49:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=Q02eiM3XJSRXNKlCMmRjIwRa2jlfkAb9LyshPAOVqOQ=;
+        b=NQk0sloTCeVMjv6qT4ZA1yJLqMWXvZgWPUVOuFiedFkXGt1CKRcCymZTadxu2NTHkd
+         cwGYZjyhxtYBa4qwDpEtWVWkoXKWcufWKn5jtQaZqZqLqtEnxndOn9ykQgVv4WZt4GwZ
+         BW4Sgdq0UpLzTZYDreAZ1VdIph2SqUPbNjIOpe8U97OXSHdgzGZLA4ts8Sx3+/Hr1b51
+         ToDeOSEkKRovPMn+kTEGsrgyhKooNOIPdVXK4yI9r3SScxz5bDU9kM1tBERhZEz6pUd3
+         P/zzMaKAklHdAcZNu5OtRpqmmrgMIEnTlw/je5RaAiOBg1h5nkqi8yQePXmUj4A9TWnz
+         1GLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ieSlFoCeto0AVAtI6K8jKTyxvQGGjjQJE1a9Rco3C2E=;
-        b=6868MXd6nTFmNK3nxX5d7/RI9f1H+F9XCcOoUDWCXYb0fcxrF4xbsyrDFjlXxySHoT
-         YB01XhmBOed/S1rbqALrc9s1wiHHaBkMeFeUdM6bD+yRySLb8gCTWAsvX4atb9Vr/IJE
-         BbfrlUAbuYcPn68l/ry9xto/7KTm0KxHMaQsoUMpt/3d9y91foCZUa4jtH+AaZIDogRJ
-         +XRjo7zQQTLsyvLlEeSem8Ljo3Azf3ufCDFrjMfB25haB5d5Y11xTpJnlIxh2ie3ck8p
-         P5wetjTO4OpbSOpUkAjIVogvl2My0wYIv477V5A9BxiL1D9zueCojiQmcHB4IBKTrXpu
-         6t0g==
-X-Gm-Message-State: AOAM533fWSQfExhMzOxnMbkoEGwGQaByeIx9iJKGlz5rBhD1gEM2mR6Q
-        DTkn0xJKe5m7oFPf1PGZiIUkxa2PaTSxcLyhlwAkUAPr3loO+I7Kodc5ZyulJAg4dRWLVhWzf0H
-        /ZkuE1kNlt0IhnqkXvw+veKnl
-X-Received: by 2002:a17:902:f60f:b0:151:4f66:55b4 with SMTP id n15-20020a170902f60f00b001514f6655b4mr2309251plg.127.1647654322695;
-        Fri, 18 Mar 2022 18:45:22 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz6kv1/v7LKf9RNEE8Smtok7Dg/0kGtE36CEGe6Q1XOCvrObPFLCmAnA8TsLXh6chusfsFb9A==
-X-Received: by 2002:a17:902:f60f:b0:151:4f66:55b4 with SMTP id n15-20020a170902f60f00b001514f6655b4mr2309227plg.127.1647654322331;
-        Fri, 18 Mar 2022 18:45:22 -0700 (PDT)
-Received: from localhost ([240e:3a1:2e5:800:f995:6136:f760:a3d0])
-        by smtp.gmail.com with ESMTPSA id u5-20020a056a00158500b004f745148736sm11647956pfk.179.2022.03.18.18.45.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Mar 2022 18:45:21 -0700 (PDT)
-Date:   Sat, 19 Mar 2022 09:41:23 +0800
-From:   Coiby Xu <coxu@redhat.com>
-To:     Milan Broz <gmazyland@gmail.com>
-Cc:     kexec@lists.infradead.org, Thomas Staudt <tstaudt@de.ibm.com>,
-        Kairui Song <ryncsn@gmail.com>, dm-devel@redhat.com,
-        Mike Snitzer <snitzer@redhat.com>, Baoquan He <bhe@redhat.com>,
-        Dave Young <dyoung@redhat.com>, linux-kernel@vger.kernel.org
-Subject: Re: [RFC 0/4] Support kdump with LUKS encryption by reusing LUKS
- master key
-Message-ID: <20220319014123.v26w2snihbuyd4fz@Rk>
-References: <20220318103423.286410-1-coxu@redhat.com>
- <c857dcf8-024e-ab8a-fd26-295ce2e0ae41@gmail.com>
- <20220318122110.7qjrnrduwytjle3w@Rk>
- <a5b9e66c-235b-51dd-234c-b543dbacc464@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <a5b9e66c-235b-51dd-234c-b543dbacc464@gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Q02eiM3XJSRXNKlCMmRjIwRa2jlfkAb9LyshPAOVqOQ=;
+        b=bnKhhsq2gRJKRWSerOViWoQfdm9n6ni5XA5L+PvCkFsNQAvYFWF3EQepN444XpCFfj
+         wFGlywT7BoWmI/nx/JdGDopz5HnePY2J7fAKMRESI7/oYCQ1zBIPNm8QXDQkV0vVfE9O
+         L1g4rZHeGD9DKrDHYR0G45dwQ6kdAwRwpr9gsCzq1VcdiS1NZVo8lfaQ1R4/KKSmiNcf
+         OR3oyiGe/ypRUKCcLqeacJnOLN1GsQmXc6Q4UmVSNjuNt1skwqlfqllx2H1cxkLjfbr9
+         L4aBjZ4jWmE2f7pq0y6c/698OBg6Y/UbZB1wcuLIRhQSeiWO7Pm+ChVWQw/qxczC3u4t
+         HgEg==
+X-Gm-Message-State: AOAM530tOJFXqD7zkraGMxJBF/MKQxQGKws4pfR9km6etJaqu7/yY8+s
+        sKVdV0fRfgQF2/m8+e2SpytaulpXHSs=
+X-Google-Smtp-Source: ABdhPJw0jscNMSfB7pOIIQFN1e3+hXBhAY11gDdy3cDRTQGXy5G3Bkxu9SEz+zb3rEAG6R0DIrAMBg==
+X-Received: by 2002:a17:902:b097:b0:154:2bda:bd38 with SMTP id p23-20020a170902b09700b001542bdabd38mr1126028plr.155.1647654594199;
+        Fri, 18 Mar 2022 18:49:54 -0700 (PDT)
+Received: from scdiu3.sunplus.com ([113.196.136.192])
+        by smtp.googlemail.com with ESMTPSA id h13-20020a056a00230d00b004f427ffd485sm11738659pfh.143.2022.03.18.18.49.51
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 18 Mar 2022 18:49:53 -0700 (PDT)
+From:   Tony Huang <tonyhuang.sunplus@gmail.com>
+To:     ulf.hansson@linaro.org, robh+dt@kernel.org, lhjeff911@gmail.com,
+        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, p.zabel@pengutronix.de
+Cc:     wells.lu@sunplus.com, tony.huang@sunplus.com,
+        Tony Huang <tonyhuang.sunplus@gmail.com>
+Subject: [PATCH v4 0/2] Add mmc driver for Sunplus SP7021 SOC
+Date:   Sat, 19 Mar 2022 09:50:10 +0800
+Message-Id: <cover.1647652688.git.tonyhuang.sunplus@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 02:53:37PM +0100, Milan Broz wrote:
->On 18/03/2022 13:21, Coiby Xu wrote:
->...
->>>Why is it not done through keyring and forcing kdump to retain key there
->>>(under the same keyring key name as dm-crypt used)?
->>>Kernel dm-crypt supports this already; LUKS2 uses keyring by default too.
->>>That's all you need, or not? Why do you need to add another "kdump:" thing?
->>>IOW why kdump cannot copy the key to keyring under the name dm-crypt
->>>has in the mapping table and let dm-crypt activate the device almost without
->>>code changes?
->>
->>Sorry, I haven't explained how kdump works. Once the 1st kernel crashes and
->>the system boots into the kdump kernel, the kdump kernel only have direct
->>access to the memory exclusively reserved for it i.e. the kdump kernel
->>loses the direct access to the keyring constructed in the 1st kernel. In
->>theory, the kdump kernel could do some "hacking" to find out the key
->>stored in the memory directly managed by the 1st kernel but I imagine
->>this would be difficult task (imagine I present the memory dump of my
->>computer to you and ask you to rebuild all the relevant kernel data
->>structures and find the key). Besides, it's not reliable to read the
->>memory directly managed by the first kernel for example the memory could
->>be corrupt. So we have to pass the master key from the 1st kernel to the kdump
->>kernel.
->
->OK, then why you cannot store it to the (2nd) kdump kernel keyring?
->(From the kdump area copy, then you do not need to patch anything else
->in dm-crypt than that one line storing the key to the kdump area.)
+This is a patch series for mmc driver for Sunplus SP7021 SOC.
 
-cryptsetup stores the master key in the thread keyring
-(KEY_SPEC_THREAD_KEYRING). I couldn't come up with a easy way to store
-the key to the (2nd) kdump kernel keyring. For example, one problem is
-how can I know in adance the thread ID of cryptsetup? I imagine
-drivers/md/dm-crypt.c needs to support a new type of message in
-crypt_message so cryptsetup can tell dm-crypt to store the master key
-in the thread keyring as a preparation for opening the device. So one
-line change of code isn't sufficient. What's more important is I don't see 
-any benefit by doing so I regards storing the key to the kdump kernel
-keyring first as an unnecessary step.
+Sunplus SP7021 is an ARM Cortex A7 (4 cores) based SoC. It integrates
+many peripherals (ex: UART, I2C, SPI, SDIO, eMMC, USB, SD card and
+etc.) into a single chip. It is designed for industrial control.
 
->
->A clear approach would be to store the key in the 2nd kernel kdump keyring
->and allow userspace to read it.
->Then cryptsetup can just validate the key (LUKS key digest does not use Argon)
->and activates it without asking for a passphrase.
+Refer to:
+https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
+https://tibbo.com/store/plus1.html
 
-Thanks for bringing my attention to validating the key! Currently I
-simply skip key validation in cryptsetup when implementing the
-"--kdump-master-key" option because it requires pass the master key to
-the user space. I have a side question, if somehow the master key is
-changed and the wrong key is used to get the expanded key, will it lead
-to a devastating effect say corrupting the user data on the disk?
+Tony Huang (2):
+  dt-binding: mmc: Add mmc yaml file for Sunplus SP7021
+  mmc: Add mmc driver for Sunplus SP7021
 
->Perhaps this will need some new cryptsetup option (or API call), but I think
->it can be done.
->
->Or, you can actually simulate it with
->  cryptsetup open ... --master-key-file <file>
->where this keyfile contains directly the volume key, not a passphrase.
->The key digest is verified in this case only; no costly PBKDF is needed.
->
->If you have a way to retrieve the kdump stored key to kdump userspace, this
->is perhaps a much simpler solution.
->
->All this is against all countermeasures to not expose encryption key
->directly - but if kdump is debugging environment, just saying...
-
-I respect and appreciate all the efforts done by you and other community
-members to increase security margin so the last thing I want to do is to
-reverse the security measures. Besides, I believe some users choose to
-dump vmcore to an encrypted disk exactly out of security concern. The
-only thing this patch set does about master key is to store it in the
-memory exclusively reserved for kdump. To be precise, storing the master
-key in the memory exclusively reserved for kdump may be different from
-what you mean by "exposing encryption key directly". This reserved memory
-won't be used by the 1st kernel (which means if we reserve 1GB more for
-the kdump kernel, the 1st kernel would have 1GB less kernel to use. And I
-would expect strong objection from the user due to a loss of 1GB memory).
-Only kexec knows how to store the master key in this exclusively reserved
-memory area and but kexec itself doesn't know to retrieve the master key in
-the 1st kernel. So the situation is similar to how expanded key is stored.
-struct crypto_aes_ctx has the expanded key, but there is no API to retrieve
-it. If you still think this line of reasoning doesn't convince you, how
-about encrypting the master key before storing the key to the kdump memory?
-kexec could calculate the SHA256 digest of loaded kdump kernel and initrd.
-We can use this SHA256 digest to get an encryption key and then encrypt
-the master key.
-
->
->Milan
->
+ .../devicetree/bindings/mmc/sunplus,mmc.yaml       |   79 +
+ MAINTAINERS                                        |    7 +
+ drivers/mmc/host/Kconfig                           |    9 +
+ drivers/mmc/host/Makefile                          |    1 +
+ drivers/mmc/host/sunplus_mmc.c                     | 2195 ++++++++++++++++++++
+ 5 files changed, 2291 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mmc/sunplus,mmc.yaml
+ create mode 100644 drivers/mmc/host/sunplus_mmc.c
 
 -- 
-Best regards,
-Coiby
+2.7.4
 
