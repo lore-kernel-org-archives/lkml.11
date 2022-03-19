@@ -2,96 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A2ADC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 11:23:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01743C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 11:35:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242795AbiCSLY1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Mar 2022 07:24:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53998 "EHLO
+        id S242798AbiCSLgQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Mar 2022 07:36:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238827AbiCSLYY (ORCPT
+        with ESMTP id S231818AbiCSLgO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Mar 2022 07:24:24 -0400
-X-Greylist: delayed 415 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 19 Mar 2022 04:23:02 PDT
-Received: from meesny.iki.fi (meesny.iki.fi [IPv6:2001:67c:2b0:1c1::201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D510C1C7F17;
-        Sat, 19 Mar 2022 04:23:02 -0700 (PDT)
-Received: from darkstar.musicnaut.iki.fi (85-76-3-17-nat.elisa-mobile.fi [85.76.3.17])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: aaro.koskinen)
-        by meesny.iki.fi (Postfix) with ESMTPSA id 2421220AF5;
-        Sat, 19 Mar 2022 13:16:02 +0200 (EET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi; s=meesny;
-        t=1647688562;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=O3HSI3kgBP9o10gxLuhqQNqLjuiIJtyoXFee1GnFDww=;
-        b=TkMLjdYlVQkEsd/BWSVLtjFp8B67Ez3eL4BSXr0RA+K4/KZVTk70jqOF5kFaavGKqP4Wfs
-        WYOewSwRGkUoEgAwaWmDcMX28ae3IeJ+SSqOqm4n2hrDrPTSnbrczkXggvrdW8AS+OuG4A
-        MW28lQgDLjhMZNtGh6ow+BIuAiXHdz4=
-Date:   Sat, 19 Mar 2022 13:16:00 +0200
-From:   Aaro Koskinen <aaro.koskinen@iki.fi>
-To:     Julia Lawall <Julia.Lawall@inria.fr>
-Cc:     kernel-janitors@vger.kernel.org, Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] omap1: htc_herald: fix typos in comments
-Message-ID: <20220319111600.GC1986@darkstar.musicnaut.iki.fi>
-References: <20220318103729.157574-27-Julia.Lawall@inria.fr>
+        Sat, 19 Mar 2022 07:36:14 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FFAB72E14;
+        Sat, 19 Mar 2022 04:34:53 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id pv16so21561382ejb.0;
+        Sat, 19 Mar 2022 04:34:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GCyaiIyulYiRPJG+U5bAE+q2EiKyg/uq87Et1zSg2oo=;
+        b=D+MFHTtd3CLfZT3gaQCA1Ik84PwHfTLjH+DEEh3+LR37AJPFLRePBpxXLIBHMKMzmQ
+         fhVzTYWvsiytl+7b69QcI+ybs8X+Gm+IXADVMOa0CS4Y1MKG8+eHSPb8Hvu6kLYIlcqs
+         gSHEH7FCeF7DBLgkcp3TjXWyFjiyPqfvBFNWVrJ231+5ss5SWsGxrfWXPTwH8N36KWIT
+         yN8TaxgZSo8WfnnAIjhq8OM2ZrHBEd3cQkLKIk60YheBGNkh0WHuxJ/qUP+Exia292VI
+         Fxef3OVeIUc0NyAouHmgjrtZ8GyCc4b9Z1blMq2LtgYYiD4MPhL8B3AdcEM/1R61v264
+         nXFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GCyaiIyulYiRPJG+U5bAE+q2EiKyg/uq87Et1zSg2oo=;
+        b=Nt070wBZ1zh/uR5uaHzxla3QcVARjdqw1oKA1KKUrL3I9QV7jGMwoXSD9gz+jngBWR
+         TUQoyaFj2c4QO9O5SVVXQVFOq0TWpHmFLw0YPLMAhk3FAnNjyPqnftPvF8yof/X/pNLC
+         F5tENLhCrt1hFT3aSwE125quh9vIS8FPdJPBpYAT9wzKQ+HXHqdydtZuTYvwp5Scc8YV
+         JSEcp1egR6zI07ER4np38dFdLrYz1M7981RmPaO7JoO6/wIMJssexRoXpCmi5QE/tIF2
+         HfW3I58MNi8CGmwmRLaem9tqX5OkcJGArFbhzyhm9rboc0FkamhrcX62o6mJ+AN25Onl
+         XS2w==
+X-Gm-Message-State: AOAM532bGJ7TWCP35ZeYkCW9vt9z5IqcMsPi/XFfU0bfLu3TxfqoHVTp
+        nY2j4DOW4K+Peck7nYQuIuTRkzAtDaiPSI+S0ug=
+X-Google-Smtp-Source: ABdhPJzXHFIlROCe94BV4qIIXSdsS6KIF3dG8ckx335jJjq3Cujb0IaJG33CpeVulvbDYSjwn1rvUYDbiz/LmHHwN2s=
+X-Received: by 2002:a17:907:3e82:b0:6da:6f15:ff38 with SMTP id
+ hs2-20020a1709073e8200b006da6f15ff38mr12827813ejc.324.1647689691792; Sat, 19
+ Mar 2022 04:34:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220318103729.157574-27-Julia.Lawall@inria.fr>
-ARC-Authentication-Results: i=1;
-        ORIGINATING;
-        auth=pass smtp.auth=aaro.koskinen smtp.mailfrom=aaro.koskinen@iki.fi
-ARC-Seal: i=1; s=meesny; d=iki.fi; t=1647688562; a=rsa-sha256; cv=none;
-        b=M8vH3FQS7nMt/sEnmefQnt/ZQdwIv5ZXxQuReK8V8VxC0tmsowmna3DAczgS7a4prjQyje
-        U/tFgcWy+ZTYOtitNqo4vUzu503yFxL341nLhd97ZEMLAMCMwZiQLuAiNPEsPRLE1JLIND
-        ilIr0artOjDu2hbfuGT4+BMBuv08+S8=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi;
-        s=meesny; t=1647688562;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=O3HSI3kgBP9o10gxLuhqQNqLjuiIJtyoXFee1GnFDww=;
-        b=cVhaRE9aKxgRXpjNeSDtn7BCgdquclIasP3INrQmN9teRDa4wFerlEolusuFKmx3cWp3Bf
-        H6x5kJVi+J7k5GGNsMIHEPLvFxXsDNbzYvXC61kmuVoLFARt3w+hsZdhGEKUyvWGNEWDPd
-        t0/gF0fIlBo52HVdV9PyMe7ZE/m7ut0=
+References: <20220319110422.8261-1-zhouzhouyi@gmail.com> <CANn89iK46rw910CUJV3Kgf=M=HA32_ctd0xragwcRnHCV_VhmQ@mail.gmail.com>
+In-Reply-To: <CANn89iK46rw910CUJV3Kgf=M=HA32_ctd0xragwcRnHCV_VhmQ@mail.gmail.com>
+From:   Zhouyi Zhou <zhouzhouyi@gmail.com>
+Date:   Sat, 19 Mar 2022 19:34:40 +0800
+Message-ID: <CAABZP2yK2vCJcReJ_VvcqbkuEekvBpBJCyZ2geG=f83fv_RC=Q@mail.gmail.com>
+Subject: Re: [PATCH v2] net:ipv4: send an ack when seg.ack > snd.nxt
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Florian Westphal <fw@strlen.de>,
+        David Miller <davem@davemloft.net>, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Wei Xu <xuweihf@ustc.edu.cn>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 11:37:22AM +0100, Julia Lawall wrote:
-> Various spelling mistakes in comments.
-> Detected with the help of Coccinelle.
-> 
-> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
+Thanks for reviewing my patch
 
-Reviewed-by: Aaro Koskinen <aaro.koskinen@iki.fi>
+On Sat, Mar 19, 2022 at 7:14 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Sat, Mar 19, 2022 at 4:04 AM <zhouzhouyi@gmail.com> wrote:
+> >
+> > From: Zhouyi Zhou <zhouzhouyi@gmail.com>
+> >
+> > In RFC 793, page 72: "If the ACK acks something not yet sent
+> > (SEG.ACK > SND.NXT) then send an ACK, drop the segment,
+> > and return."
+> >
+> > Fix Linux's behavior according to RFC 793.
+> >
+> > Reported-by: Wei Xu <xuweihf@ustc.edu.cn>
+> > Signed-off-by: Wei Xu <xuweihf@ustc.edu.cn>
+> > Signed-off-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
+> > ---
+> > Thank Florian Westphal for pointing out
+> > the potential duplicated ack bug in patch version 1.
+>
+> I am travelling this week, but I think your patch is not necessary and
+> might actually be bad.
+>
+> Please provide more details of why nobody complained of this until today.
+>
+> Also I doubt you actually fully tested this patch, sending a V2 30
+> minutes after V1.
+>
+> If yes, please provide a packetdrill test.
+I am a beginner to TCP, although I have submitted once a patch to
+netdev in 2013 (aaa0c23cb90141309f5076ba5e3bfbd39544b985), this is
+first time I learned packetdrill test.
+I think I should do the packetdrill test in the coming days, and
+provide more details of how this (RFC793 related) can happen.
 
-A.
+Apologize sincerely in advance if I have made noise.
 
-> 
-> ---
->  arch/arm/mach-omap1/board-htcherald.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/arm/mach-omap1/board-htcherald.c b/arch/arm/mach-omap1/board-htcherald.c
-> index 258304edf23e..d528b8497061 100644
-> --- a/arch/arm/mach-omap1/board-htcherald.c
-> +++ b/arch/arm/mach-omap1/board-htcherald.c
-> @@ -170,7 +170,7 @@ static const unsigned int htc_herald_keymap[] = {
->  	KEY(3, 0, KEY_VOLUMEUP), /* Volume up */
->  	KEY(4, 0, KEY_F2),  /* Right bar (landscape) */
->  	KEY(5, 0, KEY_MAIL), /* Win key (portrait) */
-> -	KEY(6, 0, KEY_DIRECTORY), /* Right bar (protrait) */
-> +	KEY(6, 0, KEY_DIRECTORY), /* Right bar (portrait) */
->  	KEY(0, 1, KEY_LEFTCTRL), /* Windows key */
->  	KEY(1, 1, KEY_COMMA),
->  	KEY(2, 1, KEY_M),
-> 
+Thank you for your time
+
+Sincerely
+Zhouyi
+>
+> Thank you.
+>
+> > --
+> >  net/ipv4/tcp_input.c | 21 +++++++++++++--------
+> >  1 file changed, 13 insertions(+), 8 deletions(-)
+> >
+> > diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> > index bfe4112e000c..4bbf85d7ea8c 100644
+> > --- a/net/ipv4/tcp_input.c
+> > +++ b/net/ipv4/tcp_input.c
+> > @@ -3771,11 +3771,13 @@ static int tcp_ack(struct sock *sk, const struct sk_buff *skb, int flag)
+> >                 goto old_ack;
+> >         }
+> >
+> > -       /* If the ack includes data we haven't sent yet, discard
+> > -        * this segment (RFC793 Section 3.9).
+> > +       /* If the ack includes data we haven't sent yet, then send
+> > +        * an ack, drop this segment, and return (RFC793 Section 3.9 page 72).
+> >          */
+> > -       if (after(ack, tp->snd_nxt))
+> > -               return -1;
+> > +       if (after(ack, tp->snd_nxt)) {
+> > +               tcp_send_ack(sk);
+> > +               return -2;
+> > +       }
+> >
+> >         if (after(ack, prior_snd_una)) {
+> >                 flag |= FLAG_SND_UNA_ADVANCED;
+> > @@ -6385,6 +6387,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+> >         struct request_sock *req;
+> >         int queued = 0;
+> >         bool acceptable;
+> > +       int ret;
+> >
+> >         switch (sk->sk_state) {
+> >         case TCP_CLOSE:
+> > @@ -6451,14 +6454,16 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+> >                 return 0;
+> >
+> >         /* step 5: check the ACK field */
+> > -       acceptable = tcp_ack(sk, skb, FLAG_SLOWPATH |
+> > -                                     FLAG_UPDATE_TS_RECENT |
+> > -                                     FLAG_NO_CHALLENGE_ACK) > 0;
+> > +       ret = tcp_ack(sk, skb, FLAG_SLOWPATH |
+> > +                               FLAG_UPDATE_TS_RECENT |
+> > +                               FLAG_NO_CHALLENGE_ACK);
+> > +       acceptable = ret > 0;
+> >
+> >         if (!acceptable) {
+> >                 if (sk->sk_state == TCP_SYN_RECV)
+> >                         return 1;       /* send one RST */
+> > -               tcp_send_challenge_ack(sk);
+> > +               if (ret > -2)
+> > +                       tcp_send_challenge_ack(sk);
+> >                 goto discard;
+> >         }
+> >         switch (sk->sk_state) {
+> > --
+> > 2.25.1
+> >
