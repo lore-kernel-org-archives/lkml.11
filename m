@@ -2,107 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F070EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 02:03:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9566C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 02:18:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241806AbiCSCFA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 22:05:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53612 "EHLO
+        id S241810AbiCSCTV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 22:19:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235982AbiCSCE5 (ORCPT
+        with ESMTP id S234956AbiCSCTT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 22:04:57 -0400
-Received: from mail-4327.protonmail.ch (mail-4327.protonmail.ch [185.70.43.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA18D1207D9
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 19:03:37 -0700 (PDT)
-Received: from mail-0301.mail-europe.com (mail-0301.mail-europe.com [188.165.51.139])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        by mail-4321.protonmail.ch (Postfix) with ESMTPS id 4KL3pT4Zh1z4xx3L
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 01:54:25 +0000 (UTC)
-Authentication-Results: mail-4321.protonmail.ch;
-        dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b="UYhvRppa"
-Date:   Sat, 19 Mar 2022 01:54:09 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
-        s=protonmail2; t=1647654861;
-        bh=+zmtPIV9tSSZgwxIVl/xkVQsn7YJY/XahHOFfrwoDrY=;
-        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
-         References:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-         Message-ID;
-        b=UYhvRppalZ8CuCT5vsLMgYUHwuFNe4KtGhTdp3GOAqBDJZcKiLrikt1BHvmDMCuvC
-         uqxEqG5IRxm0OI4sSQFrwrAqZVNXAhS8FTB8NsUAuZUnf0a6sNg7puKpgDBm/Om2V7
-         U+0ZLY59dOc6SvQ39rotoZKevG+jxYVpkWEHhtJNqgIp6PW9L+iTOfY0Rbo+F6ma/U
-         8OPcPJ/4XQTvKw2Ky6dPMQqU8YY84mdNtkxroJI1jjKs/eg85iflFy7U62IU3tBL4D
-         LTemHkpa5aKvCXp8+OMGLWGPpreDLOyLh+BZjf14eerPklEIKi19I5gML2c7s81fjO
-         kdmFRKnAbmhwQ==
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-From:   David Cohen <dacohen@pm.me>
-Cc:     Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Reply-To: David Cohen <dacohen@pm.me>
-Subject: Re: [PATCH v2] PM: fix dynamic debug within pm_pr_debug()
-Message-ID: <YjU3sfYLcEqK1Usd@jiban.lan>
-In-Reply-To: <CAJZ5v0gqpQTuNN0WpnEd4dAQmnR=BXSoH_w7kkAxOG7xkftW6Q@mail.gmail.com>
-References: <20220312043624.40732-1-dacohen@pm.me> <CAJZ5v0gqpQTuNN0WpnEd4dAQmnR=BXSoH_w7kkAxOG7xkftW6Q@mail.gmail.com>
+        Fri, 18 Mar 2022 22:19:19 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC39E21BC43
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 19:17:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647656279; x=1679192279;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=z4Cs0ow1M4JthoY8HqDsc9XZW1awCZDbzJDMivL0Mh4=;
+  b=Wykcp+uNKZ22VajUtEBHjyARuJy+XXrRw2VSqyuE3mABegyY/cym8zGy
+   tbtox7yTiLV0rNBjPxX7yVeIElmxq9K6/K6bZnIxNMy5Dip85cgetlVmC
+   U2S0wwWy4KQ0icHNADyqIKm6HstrYYqvYri/6DV0lhetFxFpYvqVP47Lv
+   SeZAzsUfr3eG7B/gmdRIWLFrNQ4tiMX4VxD5BsL9TQtmyjlXjN7Uxqg0q
+   r0XR8mpSWCPbzQpdNA+hGkqbTOm08nEnsHyTaWaKEP4cvS2EFIQW388YP
+   W4segB+JD6VDid5d60TFuF8knigez9aIxYstavJV5ABKAsCtqFJ8UeAMf
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="254836180"
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
+   d="scan'208";a="254836180"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 19:17:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
+   d="scan'208";a="499458160"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 18 Mar 2022 19:17:57 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nVOfE-000FR5-Tr; Sat, 19 Mar 2022 02:17:56 +0000
+Date:   Sat, 19 Mar 2022 10:17:30 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [ammarfaizi2-block:rostedt/linux-trace/ftrace/core 53/57]
+ arch/arm64/kernel/probes/rethook.c:11:22: warning: no previous prototype for
+ function 'arch_rethook_trampoline_callback'
+Message-ID: <202203191007.YShhz8AJ-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 02:45:11PM +0100, Rafael J. Wysocki wrote:
-> On Sat, Mar 12, 2022 at 5:37 AM David Cohen <dacohen@pm.me> wrote:
-> >
-> > Currently, pm_pr_debug() and pm_deferred_pr_debug() use __pm_pr_debug()
-> > to filter pm debug messages based on pm_debug_messages_on flag.
-> > According to __pm_pr_debug() implementation, pm_deferred_pr_debug()
-> > indirectly calls printk_deferred() within __pm_pr_debug() which doesn't
-> > support dynamic debug, but pm_pr_debug() indirectly calls pr_debug()
->
-> I'm not sure what you mean by pm_pr_debug().  There's no such thing in
-> the kernel tree.
->
-> Assuming that it means pm_pr_dbg(), it doesn't call pr_debug():
+tree:   https://github.com/ammarfaizi2/linux-block rostedt/linux-trace/ftrace/core
+head:   03cd03b5c3f9836e625a99fa603b4683dc1ebb47
+commit: 6b142311f91040c847702773bdf441afdc658984 [53/57] fprobe: Add exit_handler support
+config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220319/202203191007.YShhz8AJ-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a6e70e4056dff962ec634c5bd4f2f4105a0bef71)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/ammarfaizi2/linux-block/commit/6b142311f91040c847702773bdf441afdc658984
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block rostedt/linux-trace/ftrace/core
+        git checkout 6b142311f91040c847702773bdf441afdc658984
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/kernel/probes/
 
-Yeah, I apologize for the typo. I meant pm_pr_dbg(). I can fix that if
-you're ok with the patch as per comments below.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
->
-> #define pm_pr_dbg(fmt, ...) __pm_pr_dbg(false, fmt, ##__VA_ARGS__)
->
-> and
->
-> void __pm_pr_dbg(bool defer, const char *fmt, ...)
-> {
-> ...
->         if (defer)
->                printk_deferred(KERN_DEBUG "PM: %pV", &vaf);
->         else
->                printk(KERN_DEBUG "PM: %pV", &vaf);
->
-> And as I said printk(KERN_DEBUG ...) is not equivalent to
-> pr_debug(...), because it is not dynamic printk().
+All warnings (new ones prefixed by >>):
 
-The problem is not about __pm_pr_dbg() calling printk(). The problem is
-the pm files that used to call pr_debug() were modified to call
-pm_pr_dbg() in order to be behing the pm_debug_messages_on flag, as per
-this commit:
-8d8b2441db96 PM / sleep: Do not print debug messages by default
+>> arch/arm64/kernel/probes/rethook.c:11:22: warning: no previous prototype for function 'arch_rethook_trampoline_callback' [-Wmissing-prototypes]
+   unsigned long __used arch_rethook_trampoline_callback(struct pt_regs *regs)
+                        ^
+   arch/arm64/kernel/probes/rethook.c:11:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   unsigned long __used arch_rethook_trampoline_callback(struct pt_regs *regs)
+   ^
+   static 
+   1 warning generated.
 
-That's the moment dynamic debug was no longer available for kernel pm files=
-.
 
->
-> pm_pr_dbg() is not dynamic printk() on purpose, so they both can be
-> controlled independently.
+vim +/arch_rethook_trampoline_callback +11 arch/arm64/kernel/probes/rethook.c
 
-The current solution is all or nothing (using pm_debug_messages_on). The
-patch I'm sending is making dynamic debug available on the kernel pm
-files, while still allowing the pm_debug_messages_on flag to work
-independently.
+371ce29069762d9 Masami Hiramatsu 2022-03-15   9  
+371ce29069762d9 Masami Hiramatsu 2022-03-15  10  /* This is called from arch_rethook_trampoline() */
+371ce29069762d9 Masami Hiramatsu 2022-03-15 @11  unsigned long __used arch_rethook_trampoline_callback(struct pt_regs *regs)
+371ce29069762d9 Masami Hiramatsu 2022-03-15  12  {
+371ce29069762d9 Masami Hiramatsu 2022-03-15  13  	return rethook_trampoline_handler(regs, regs->regs[29]);
+371ce29069762d9 Masami Hiramatsu 2022-03-15  14  }
+371ce29069762d9 Masami Hiramatsu 2022-03-15  15  NOKPROBE_SYMBOL(arch_rethook_trampoline_callback);
+371ce29069762d9 Masami Hiramatsu 2022-03-15  16  
 
-Regards, David
+:::::: The code at line 11 was first introduced by commit
+:::::: 371ce29069762d992f8dcaa9ecabb6ff78a73f22 arm64: rethook: Add arm64 rethook implementation
 
+:::::: TO: Masami Hiramatsu <mhiramat@kernel.org>
+:::::: CC: Steven Rostedt (Google) <rostedt@goodmis.org>
+
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
