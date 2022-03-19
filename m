@@ -2,115 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7314FC4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 08:24:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60AF1C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 08:25:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242495AbiCSI0B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Mar 2022 04:26:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39510 "EHLO
+        id S241890AbiCSI0d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Mar 2022 04:26:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233088AbiCSIZ6 (ORCPT
+        with ESMTP id S230237AbiCSI03 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Mar 2022 04:25:58 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39B5427CE26;
-        Sat, 19 Mar 2022 01:24:36 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id s25so13941406lji.5;
-        Sat, 19 Mar 2022 01:24:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=/ZpwHLQU+wmeCbu/+G/e1bt058wLloUaoM6rRJWzX2w=;
-        b=DJNAfZI9glvof+R+9AsDOymBUSQGXACtnv7dvlJQQEgvbUSWDUOgX5XISdPn+rIR58
-         OiT8eG4zSIxaHrZi+XcXJKUFQakRoCNNVtsUFMIIyN1D51u/cneuivhimssLvvLDS+BX
-         Kl4Ok1kPRWmAfIledIpwp/6rhssj1Nd/+TRYm7ZqQYj20dAsIQ/xjL5QTThus236/Q3W
-         pPXOtpkPay8UpZmcvERp9POaAD7x4ib+wxEhnzwJb1xlMTSd6gYwWNrM6xm0fDUmGzfd
-         YiKvurcwKGK5ypt22E1W5MlFk1M3VOh8CCQlKa8QNb3a1/gI0GPTRDbR5Alskwet5Ubk
-         6A5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=/ZpwHLQU+wmeCbu/+G/e1bt058wLloUaoM6rRJWzX2w=;
-        b=8KzvjUa1CCZ5qNJxt8KyuBpbBQ94X7T4PMEYawaK4aGM80k25mWu4zMqm0R7oflOe+
-         PCl/XfNXULw5v92zNWPui+idCTT59VFPgfm1d0Rag7gYZT5kWoEO6BIfxSFwJPKyRmD2
-         dRzdKshmgLpeOyhL6x7UXDyoX4lCZkhVadi7RvW5XjMHyP5xcRNy5mh71v/8DwJsajLm
-         7UCrhscfojUtCoIzKHv6Gb0tEr+V7zsBL+rBqdgpUbseTOPuR8Pd6caaoKnKv6PMMC6o
-         gc8N6oSpMT5+eRuLl1MaH37l5jtE209UtymSHWpOUnVT0swG+EyJkkawQzy/ILRQSesA
-         6lKA==
-X-Gm-Message-State: AOAM530YdtDzkxIy3KSlc0+pkQn4GmP5t3mXCBDJUI/o3LqHFw2X/vr0
-        9MmXdc6HwjxGE0YcrmsZUZbJQmXb4N8=
-X-Google-Smtp-Source: ABdhPJyZ2UsDbC5F5eTFm1ubxR/1o29YAZM4C0C4KHStzRN8blY/0Q/TrWEVjWw+WlnXPv8mueqrbw==
-X-Received: by 2002:a05:651c:17a3:b0:245:f39e:f2d2 with SMTP id bn35-20020a05651c17a300b00245f39ef2d2mr8861978ljb.490.1647678274018;
-        Sat, 19 Mar 2022 01:24:34 -0700 (PDT)
-Received: from [192.168.1.103] ([178.176.72.203])
-        by smtp.gmail.com with ESMTPSA id bi2-20020a0565120e8200b004484aaaf818sm1232576lfb.13.2022.03.19.01.24.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 19 Mar 2022 01:24:33 -0700 (PDT)
-Subject: Re: [PATCH v2 7/8] ARM: dts: lan9662-pcb8291: fix pinctrl node name
-To:     Michael Walle <michael@walle.cc>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Paul Burton <paulburton@kernel.org>,
-        Quentin Schulz <quentin.schulz@bootlin.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        UNGLinuxDriver@microchip.com, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org
-References: <20220318202547.1650687-1-michael@walle.cc>
- <20220318202547.1650687-8-michael@walle.cc>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Message-ID: <cf2a6d1a-bf98-e382-2623-e44e5979ca29@gmail.com>
-Date:   Sat, 19 Mar 2022 11:24:31 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Sat, 19 Mar 2022 04:26:29 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13E8227CE2B;
+        Sat, 19 Mar 2022 01:25:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647678309; x=1679214309;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=i+1zm1x8DRcSoIN75++M5iWMiGIew0eux02TG+zKjXU=;
+  b=lCAyfGQKb1EYRJ3s0T/pZv/U4CH9c9HCROuuzrfGGH8x9LTX3hJ0buU9
+   cxRW/tzUmhpY6j2+/FKl4kKhoydkLDXkY0a5iYbm8RMQCVrCexAdu53Nb
+   mYSRd5JwQZodfZAL59IRSgOaqDU3QxIn08gpaS1xPQfkeulGzOFAUq02t
+   DhVVQCtOp50IVZsUHK9Yt+TBw1xMIlHLq1GHi5JlI72vUblP2orjK6MjG
+   KgCmy9T/b4kC5u4yhLTgQqgEIRUKBwwRnvIw75P86ogX+5u+/QhqjCNg8
+   tL3Ha9kQ8mY+cOey9vdbCE4J8F0LVgM/Ceq1Wu71mv695dSbPvx5L3m6n
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="254855227"
+X-IronPort-AV: E=Sophos;i="5.90,194,1643702400"; 
+   d="scan'208";a="254855227"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2022 01:25:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,194,1643702400"; 
+   d="scan'208";a="647829406"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 19 Mar 2022 01:25:04 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nVUOV-000FjS-DO; Sat, 19 Mar 2022 08:25:03 +0000
+Date:   Sat, 19 Mar 2022 16:24:04 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jane Chu <jane.chu@oracle.com>, david@fromorbit.com,
+        djwong@kernel.org, dan.j.williams@intel.com, hch@infradead.org,
+        vishal.l.verma@intel.com, dave.jiang@intel.com, agk@redhat.com,
+        snitzer@redhat.com, dm-devel@redhat.com, ira.weiny@intel.com,
+        willy@infradead.org, vgoyal@redhat.com,
+        linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org
+Cc:     kbuild-all@lists.01.org
+Subject: Re: [PATCH v6 4/6] dax: add DAX_RECOVERY flag and .recovery_write
+ dev_pgmap_ops
+Message-ID: <202203191610.umg0CGkh-lkp@intel.com>
+References: <20220319062833.3136528-5-jane.chu@oracle.com>
 MIME-Version: 1.0
-In-Reply-To: <20220318202547.1650687-8-michael@walle.cc>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220319062833.3136528-5-jane.chu@oracle.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello!
+Hi Jane,
 
-On 3/18/22 11:25 PM, Michael Walle wrote:
+Thank you for the patch! Perhaps something to improve:
 
-> The pinctrl device tree binding will be converted to YAML format. All
-> the pin nodes should end with "-pins". Fix them.
+[auto build test WARNING on nvdimm/libnvdimm-for-next]
+[also build test WARNING on device-mapper-dm/for-next linus/master v5.17-rc8 next-20220318]
+[cannot apply to tip/x86/mm]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-   It does end with "pins" already, right?
+url:    https://github.com/0day-ci/linux/commits/Jane-Chu/DAX-poison-recovery/20220319-143144
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/nvdimm/nvdimm.git libnvdimm-for-next
+config: s390-randconfig-r044-20220317 (https://download.01.org/0day-ci/archive/20220319/202203191610.umg0CGkh-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/203570f765a6ad07eb5809850478a25a5257f7e2
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Jane-Chu/DAX-poison-recovery/20220319-143144
+        git checkout 203570f765a6ad07eb5809850478a25a5257f7e2
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=s390 SHELL=/bin/bash fs/fuse/
 
-> Fixes: 290deaa10c50 ("ARM: dts: add DT for lan966 SoC and 2-port board pcb8291")
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
->  arch/arm/boot/dts/lan966x-pcb8291.dts | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/arm/boot/dts/lan966x-pcb8291.dts b/arch/arm/boot/dts/lan966x-pcb8291.dts
-> index 3281af90ac6d..3c7e3a7d6f14 100644
-> --- a/arch/arm/boot/dts/lan966x-pcb8291.dts
-> +++ b/arch/arm/boot/dts/lan966x-pcb8291.dts
-> @@ -35,7 +35,7 @@ fc3_b_pins: fcb3-spi-pins {
->  		function = "fc3_b";
->  	};
->  
-> -	can0_b_pins:  can0_b_pins {
-> +	can0_b_pins:  can0-b-pins {
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-   Mhm, I can't even see what is changed here... :-/
+All warnings (new ones prefixed by >>):
 
-[...]
+   fs/fuse/virtio_fs.c: In function 'virtio_fs_zero_page_range':
+>> fs/fuse/virtio_fs.c:774:58: warning: passing argument 4 of 'dax_direct_access' makes integer from pointer without a cast [-Wint-conversion]
+     774 |         rc = dax_direct_access(dax_dev, pgoff, nr_pages, &kaddr, NULL);
+         |                                                          ^~~~~~
+         |                                                          |
+         |                                                          void **
+   In file included from fs/fuse/virtio_fs.c:8:
+   include/linux/dax.h:187:21: note: expected 'int' but argument is of type 'void **'
+     187 |                 int flags, void **kaddr, pfn_t *pfn);
+         |                 ~~~~^~~~~
+   fs/fuse/virtio_fs.c:774:14: error: too few arguments to function 'dax_direct_access'
+     774 |         rc = dax_direct_access(dax_dev, pgoff, nr_pages, &kaddr, NULL);
+         |              ^~~~~~~~~~~~~~~~~
+   In file included from fs/fuse/virtio_fs.c:8:
+   include/linux/dax.h:186:6: note: declared here
+     186 | long dax_direct_access(struct dax_device *dax_dev, pgoff_t pgoff, long nr_pages,
+         |      ^~~~~~~~~~~~~~~~~
+   fs/fuse/virtio_fs.c: At top level:
+   fs/fuse/virtio_fs.c:783:26: error: initialization of 'long int (*)(struct dax_device *, long unsigned int,  long int,  int,  void **, pfn_t *)' from incompatible pointer type 'long int (*)(struct dax_device *, long unsigned int,  long int,  void **, pfn_t *)' [-Werror=incompatible-pointer-types]
+     783 |         .direct_access = virtio_fs_direct_access,
+         |                          ^~~~~~~~~~~~~~~~~~~~~~~
+   fs/fuse/virtio_fs.c:783:26: note: (near initialization for 'virtio_fs_dax_ops.direct_access')
+   cc1: some warnings being treated as errors
 
-MBR, Sergey
+
+vim +/dax_direct_access +774 fs/fuse/virtio_fs.c
+
+22f3787e9d95e7 Stefan Hajnoczi 2020-08-19  767  
+22f3787e9d95e7 Stefan Hajnoczi 2020-08-19  768  static int virtio_fs_zero_page_range(struct dax_device *dax_dev,
+22f3787e9d95e7 Stefan Hajnoczi 2020-08-19  769  				     pgoff_t pgoff, size_t nr_pages)
+22f3787e9d95e7 Stefan Hajnoczi 2020-08-19  770  {
+22f3787e9d95e7 Stefan Hajnoczi 2020-08-19  771  	long rc;
+22f3787e9d95e7 Stefan Hajnoczi 2020-08-19  772  	void *kaddr;
+22f3787e9d95e7 Stefan Hajnoczi 2020-08-19  773  
+22f3787e9d95e7 Stefan Hajnoczi 2020-08-19 @774  	rc = dax_direct_access(dax_dev, pgoff, nr_pages, &kaddr, NULL);
+22f3787e9d95e7 Stefan Hajnoczi 2020-08-19  775  	if (rc < 0)
+22f3787e9d95e7 Stefan Hajnoczi 2020-08-19  776  		return rc;
+22f3787e9d95e7 Stefan Hajnoczi 2020-08-19  777  	memset(kaddr, 0, nr_pages << PAGE_SHIFT);
+22f3787e9d95e7 Stefan Hajnoczi 2020-08-19  778  	dax_flush(dax_dev, kaddr, nr_pages << PAGE_SHIFT);
+22f3787e9d95e7 Stefan Hajnoczi 2020-08-19  779  	return 0;
+22f3787e9d95e7 Stefan Hajnoczi 2020-08-19  780  }
+22f3787e9d95e7 Stefan Hajnoczi 2020-08-19  781  
+
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
