@@ -2,244 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F14C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 20:47:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD3BCC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 20:47:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244267AbiCSUsm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Mar 2022 16:48:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49752 "EHLO
+        id S244281AbiCSUsq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Mar 2022 16:48:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244205AbiCSUsY (ORCPT
+        with ESMTP id S244246AbiCSUsa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Mar 2022 16:48:24 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F199C264F54;
-        Sat, 19 Mar 2022 13:47:01 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 8D2E422450;
-        Sat, 19 Mar 2022 21:46:59 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1647722819;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xEf5Qdy2CZeKPC3PR1yIdltyKRL+/rUuvVCQ5taspNg=;
-        b=EC8mOIwEdpG6mVzMc3/1mn5D5CdVRIZ1Ze3UZVxGWgMNVJK67buWy9yGT17eWNxZYKiS2l
-        7I5/7LwSjZXNmHhR2jGwqwiO3tBG4hL3BtovkBlHMELZnv5zS2OaCLz9XbrEfPMxSfS2FJ
-        pdU8ajepRCBPPpwRpmSlrKC5yt5xUSo=
-From:   Michael Walle <michael@walle.cc>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Paul Burton <paulburton@kernel.org>,
-        Quentin Schulz <quentin.schulz@bootlin.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        UNGLinuxDriver@microchip.com, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH v3 6/6] dt-bindings: pinctrl: convert ocelot-pinctrl to YAML format
-Date:   Sat, 19 Mar 2022 21:46:28 +0100
-Message-Id: <20220319204628.1759635-7-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220319204628.1759635-1-michael@walle.cc>
-References: <20220319204628.1759635-1-michael@walle.cc>
+        Sat, 19 Mar 2022 16:48:30 -0400
+X-Greylist: delayed 1975 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 19 Mar 2022 13:47:04 PDT
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF05F264828
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 13:47:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=6ajcZfSkznJBpCyliSlqPagKhVWKG3TW6xOBEMsIzac=; b=pT0Adt9XqRLNv15aAKGfOgaJCl
+        /3v88gNHwz7bu8M5E4XjoGp4rSJB1TZQtaJHr9PG0USx7pP7sLgB+sUIS25zRG7tiuhRA5UUmjUoF
+        IMqS4CEPG4quEhWvjt4ZbwMMKOgRS6AuM1URLv3qg/1SvW/02xoV3NFD5DioprD1h9lXyCSGJmSU3
+        1rTWSsop99nDq6rNMDLzs79l4JRnmatvtgYCSvPVYjMH5NnijoMmthsw3bFZEYfm6bH5CwW+kvk6T
+        v0hUXsbluftG2VSsi3uObTPXsfw6qWwTgQbXCgCjT4FLWtsRDV8hfxzsd1yLKaZx1ZIr4LYyypl16
+        B2EiUx/A==;
+Received: from [187.39.124.208] (helo=[192.168.0.110])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1nVfSE-00047T-NZ; Sat, 19 Mar 2022 21:13:39 +0100
+Message-ID: <c06a21cc-e1c1-e627-f908-ebc2a041e29a@igalia.com>
+Date:   Sat, 19 Mar 2022 17:13:21 -0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC 0/4] Support kdump with LUKS encryption by reusing LUKS
+ master key
+Content-Language: en-US
+To:     Coiby Xu <coxu@redhat.com>, kexec@lists.infradead.org
+Cc:     Milan Broz <gmazyland@gmail.com>,
+        Thomas Staudt <tstaudt@de.ibm.com>,
+        Kairui Song <ryncsn@gmail.com>, dm-devel@redhat.com,
+        Mike Snitzer <snitzer@redhat.com>, Baoquan He <bhe@redhat.com>,
+        Dave Young <dyoung@redhat.com>, linux-kernel@vger.kernel.org
+References: <20220318103423.286410-1-coxu@redhat.com>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <20220318103423.286410-1-coxu@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the ocelot-pinctrl device tree binding to the new YAML format.
+On 18/03/2022 07:34, Coiby Xu wrote:
+> [...]
+> Based on Milan's feedback [1] on Kairui's ideas to support kdump with
+> LUKS encryption, this patch set addresses the above issues by
+>  1) first saving the LUKS master key to kexec when opening the encrypted
+>     device 
+>  2) then saving the master key to the reserved memory for kdump when 
+>     loading kdump kernel image.
+> 
+> So the LUKS master key never leaves the kernel space and once the key has
+> been saved to the reserved memory for kdump, it would be wiped 
+> immediately. If there is no security concern with this approach or any
+> other concern, I will drop the following assumptions made for this RFC
+> version in v1,
+>  - only x86 is supported
+>  - there is only one LUKS device for the system
+> 
+> to extend the support to other architectures including POWER, ARM and
+> s390x and address the case of multiple LUKS devices. Any feedback will be 
+> appreciated, thanks!
+> 
 
-Additionally to the original binding documentation, add interrupt
-properties which are optional and already used on several SoCs like
-SparX-5, Luton, Ocelot and LAN966x but were not documented before.
+Hi Coiby, thanks for the very interesting work!
+I confess I didn't review the code as I have not much experience in
+dm-crypt/key management, but I have a generic question related with the
+motivation of the patch set.
 
-Also, on the sparx5 and the lan966x SoCs there are two items for the
-reg property.
+My understanding is that one (the main?) motivation of this series would
+be to protect the saved memory (vmcore) from being read by some
+"unauthorized" entity - in order to achieve this goal, it is hereby
+proposed to allow kdump kernel to access a memory-saved key and with
+that, mount an encrypted volume, saving the vmcore over there correct?
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- .../bindings/pinctrl/mscc,ocelot-pinctrl.txt  |  42 -------
- .../bindings/pinctrl/mscc,ocelot-pinctrl.yaml | 108 ++++++++++++++++++
- 2 files changed, 108 insertions(+), 42 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/pinctrl/mscc,ocelot-pinctrl.txt
- create mode 100644 Documentation/devicetree/bindings/pinctrl/mscc,ocelot-pinctrl.yaml
+So, what if instead of playing with the volume key, users with this
+concern address that by reserving some *unencrypted partition* for
+saving the vmcore, but then *encrypt the vmcore* itself! So, instead of
+requiring saving a full-volume key, mount everything, risk data
+corruption if something goes bad...we just have makedumpfile encrypting
+the vmcore with some preloaded key (which might be saved inside the
+kdump minimal intird, for example), and saving the encrypted file into a
+clear/unencrypted volume? This way we also prevent excessive memory
+consumption during kdump due to the lvm/dm-userspace paraphernalia usage.
 
-diff --git a/Documentation/devicetree/bindings/pinctrl/mscc,ocelot-pinctrl.txt b/Documentation/devicetree/bindings/pinctrl/mscc,ocelot-pinctrl.txt
-deleted file mode 100644
-index 5d84fd299ccf..000000000000
---- a/Documentation/devicetree/bindings/pinctrl/mscc,ocelot-pinctrl.txt
-+++ /dev/null
-@@ -1,42 +0,0 @@
--Microsemi Ocelot pin controller Device Tree Bindings
------------------------------------------------------
--
--Required properties:
-- - compatible		: Should be "mscc,ocelot-pinctrl",
--			  "mscc,jaguar2-pinctrl", "microchip,sparx5-pinctrl",
--			  "mscc,luton-pinctrl", "mscc,serval-pinctrl",
--			  "microchip,lan966x-pinctrl" or "mscc,servalt-pinctrl"
-- - reg			: Address and length of the register set for the device
-- - gpio-controller	: Indicates this device is a GPIO controller
-- - #gpio-cells		: Must be 2.
--			  The first cell is the pin number and the
--			  second cell specifies GPIO flags, as defined in
--			  <dt-bindings/gpio/gpio.h>.
-- - gpio-ranges		: Range of pins managed by the GPIO controller.
--
--
--The ocelot-pinctrl driver uses the generic pin multiplexing and generic pin
--configuration documented in pinctrl-bindings.txt.
--
--The following generic properties are supported:
-- - function
-- - pins
--
--Example:
--	gpio: pinctrl@71070034 {
--		compatible = "mscc,ocelot-pinctrl";
--		reg = <0x71070034 0x28>;
--		gpio-controller;
--		#gpio-cells = <2>;
--		gpio-ranges = <&gpio 0 0 22>;
--
--		uart_pins: uart-pins {
--				pins = "GPIO_6", "GPIO_7";
--				function = "uart";
--		};
--
--		uart2_pins: uart2-pins {
--				pins = "GPIO_12", "GPIO_13";
--				function = "uart2";
--		};
--	};
-diff --git a/Documentation/devicetree/bindings/pinctrl/mscc,ocelot-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/mscc,ocelot-pinctrl.yaml
-new file mode 100644
-index 000000000000..7149a6655623
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pinctrl/mscc,ocelot-pinctrl.yaml
-@@ -0,0 +1,108 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pinctrl/mscc,ocelot-pinctrl.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Microsemi Ocelot pin controller
-+
-+maintainers:
-+  - Alexandre Belloni <alexandre.belloni@bootlin.com>
-+  - Lars Povlsen <lars.povlsen@microchip.com>
-+
-+properties:
-+  compatible:
-+    enum:
-+      - microchip,lan966x-pinctrl
-+      - microchip,sparx5-pinctrl
-+      - mscc,jaguar2-pinctrl
-+      - mscc,luton-pinctrl
-+      - mscc,ocelot-pinctrl
-+      - mscc,serval-pinctrl
-+      - mscc,servalt-pinctrl
-+
-+  reg:
-+    items:
-+      - description: Base address
-+      - description: Extended pin configuration registers
-+    minItems: 1
-+
-+  gpio-controller: true
-+
-+  '#gpio-cells':
-+    const: 2
-+
-+  gpio-ranges: true
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  interrupt-controller: true
-+
-+  "#interrupt-cells":
-+    const: 2
-+
-+patternProperties:
-+  '-pins$':
-+    type: object
-+    allOf:
-+      - $ref: "pinmux-node.yaml"
-+      - $ref: "pincfg-node.yaml"
-+
-+    properties:
-+      function: true
-+      pins: true
-+      output-high: true
-+      output-low: true
-+      drive-strength: true
-+
-+    required:
-+      - function
-+      - pins
-+
-+    additionalProperties: false
-+
-+required:
-+  - compatible
-+  - reg
-+  - gpio-controller
-+  - '#gpio-cells'
-+  - gpio-ranges
-+
-+allOf:
-+  - $ref: "pinctrl.yaml#"
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - microchip,lan966x-pinctrl
-+              - microchip,sparx5-pinctrl
-+    then:
-+      properties:
-+        reg:
-+          minItems: 2
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    gpio: pinctrl@71070034 {
-+        compatible = "mscc,ocelot-pinctrl";
-+        reg = <0x71070034 0x28>;
-+        gpio-controller;
-+        #gpio-cells = <2>;
-+        gpio-ranges = <&gpio 0 0 22>;
-+
-+        uart_pins: uart-pins {
-+            pins = "GPIO_6", "GPIO_7";
-+            function = "uart";
-+        };
-+
-+        uart2_pins: uart2-pins {
-+            pins = "GPIO_12", "GPIO_13";
-+            function = "uart2";
-+        };
-+    };
-+
-+...
--- 
-2.30.2
+Does it make sense or am I being silly or missing something?
+Cheers,
 
+
+Guilherme
