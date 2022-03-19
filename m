@@ -2,135 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38B55C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 491A1C433EF
 	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 15:31:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243466AbiCSPcN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Mar 2022 11:32:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52262 "EHLO
+        id S243475AbiCSPcp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Mar 2022 11:32:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243461AbiCSPcL (ORCPT
+        with ESMTP id S243461AbiCSPco (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Mar 2022 11:32:11 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3F88762B8
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 08:30:49 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id o10so3407768ejd.1
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 08:30:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pqrs.dk; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Dc08fHOeIpp/zqKHKPZcsQKX+E5+zliKb0EU1qA1Tx0=;
-        b=a0XVexLezO0KguYm2Gfx89Md+UTJ5XcGyrHziGo50UtYBe1RMkXoom7mQVaGQ4AnIh
-         xmqbMIDW8dukxw9SqzZxiSLnGrHDBluesCZARoLd2EWtdgwfueJtF+hMz/K7topgPAaW
-         y2ukizh4bt/CmR39I4daF0gw7R++8CZhrJaXo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Dc08fHOeIpp/zqKHKPZcsQKX+E5+zliKb0EU1qA1Tx0=;
-        b=09cgtuZyAis50GkVS++MT+BFiX4vmFnxyDFbJoiJQ0natItmg9WaTIY9FOTvz4Qyez
-         aNqGPsFDl8IFUvuT/zH8CXzQbFvH2QvEXuSvE1RJ62AqTl8zKAMjJXdQhih0DH9/+xcW
-         1FKKeV5Yrl8zGSGH4VWrFzyaxI+RF6271AaxX4uxivphUoHGBDesSXVwg1/vA5FGGb/Z
-         +iZEcQca7EHUprunrsSDGcw3gUPirBaqqLUMk8is2p/EA3f4wn7PQEnB1nBq7VdifAwT
-         2X6gVO1BaKqoU7N3Bw9mYjBbWAHKqoqvblXk7gWpBlYUq8+vedzq4fsjOf3kIYUiHSwX
-         3p0w==
-X-Gm-Message-State: AOAM533eCtL1gO+uH+1gFRXosoC8t9OHRB6qEJFSRSJlqy6oT0v2IZ++
-        rvlRl5YAgs12BR86SUmsflP16A==
-X-Google-Smtp-Source: ABdhPJwOOO28ceZ/7wvRQA8Bm1LXeVE0UYFb7TsMzDUTb49VdJSJjlFg29DiZdhnqkwMa/NR6GasSQ==
-X-Received: by 2002:a17:907:1690:b0:6db:325:3088 with SMTP id hc16-20020a170907169000b006db03253088mr13776392ejc.718.1647703847743;
-        Sat, 19 Mar 2022 08:30:47 -0700 (PDT)
-Received: from capella.. (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
-        by smtp.gmail.com with ESMTPSA id f15-20020a50e08f000000b004134a121ed2sm5956000edl.82.2022.03.19.08.30.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Mar 2022 08:30:47 -0700 (PDT)
-From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
-To:     Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     hans.verkuil@cisco.com,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [RFC PATCH] drm: bridge: adv7511: get edid in hpd_work to update CEC phys address
-Date:   Sat, 19 Mar 2022 16:29:32 +0100
-Message-Id: <20220319152932.995904-1-alvin@pqrs.dk>
-X-Mailer: git-send-email 2.35.1
+        Sat, 19 Mar 2022 11:32:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FEBA25278F;
+        Sat, 19 Mar 2022 08:31:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 31412B801BD;
+        Sat, 19 Mar 2022 15:31:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED363C340EC;
+        Sat, 19 Mar 2022 15:31:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647703876;
+        bh=HsKRicTJPFvzoDCAO0YqkVB0YHJYjH6+NNPct+/DRyA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=S3Xc8i8MkvENmKsIi+24Ph154zItXKI7v5vpRqYA3t2K317NJVXnCBhVp5VcHngdi
+         xKhH0ddcBN4xpFcsJUaGC/BIA4NpTcS6JLXy4fuvIeW2EEfvJU1UCNrjwHi9WnbMwc
+         DPLi9Gre3IwGzgKrLij22Z38IJP+wcFvteqhM/03JT/XaoE2Q4v4dbFgxKJKuLrNo1
+         9bom5KO3SyzzMkRQlSeABX8avRETTAiA+SpzlI4vwWRb01rMXzqrwIBwAOdWPSwpvz
+         mqNgbQdIPUFEFDExZc3QNWZXVPaGmMoaehw4mikxgJMSYAAdvvsEV/YCPA6hDLWCxc
+         q6irFrWwiLB+w==
+Date:   Sat, 19 Mar 2022 15:38:41 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     <alexandru.tachici@analog.com>
+Cc:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 1/8] iio: adc: ad7124: Remove shift from scan_type
+Message-ID: <20220319153841.2483194a@jic23-huawei>
+In-Reply-To: <20220318162722.51215-2-alexandru.tachici@analog.com>
+References: <20220318162722.51215-1-alexandru.tachici@analog.com>
+        <20220318162722.51215-2-alexandru.tachici@analog.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alvin Šipraga <alsi@bang-olufsen.dk>
+On Fri, 18 Mar 2022 18:27:15 +0200
+<alexandru.tachici@analog.com> wrote:
 
-The adv7511 driver is solely responsible for setting the physical
-address of its CEC adapter. To do this, it must read the EDID. However,
-EDID is only read when either the drm_bridge_funcs :: get_edid or
-drm_connector_helper_funcs :: get_modes ops are called. Without loss of
-generality, it cannot be assumed that these ops are called when a sink
-gets attached. Therefore there exist scenarios in which the CEC physical
-address will be invalid (f.f.f.f), rendering the CEC adapter inoperable.
+> From: Alexandru Tachici <alexandru.tachici@analog.com>
+> 
+> The 24 bits data is stored in 32 bits in BE. There
+> is no need to shift it. This confuses user-space apps.
+> 
+> Fixes: b3af341bbd966 ("iio: adc: Add ad7124 support")
+> Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+Hi Alexandru,
 
-Address this problem by always fetching the EDID in the HPD work when we
-detect a connection. The CEC physical address is set in the process.
+Just to confirm my understanding (which gets a bit messy when endian
+conversions are involved - and it occurs to me that our docs
+are not great on how to handle endian conversions with shifts).
 
-Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
----
+With a little endian cpu:
+After userspace performs the 32bit big endian to little endian conversion
+the value the shift would have previously dropped the bottom 8 bits
+of the channel reading?
 
-Hi, I'm sending this as an RFC patch because:
+Looking at what ad_sigma_delta is doing it's documented as
+leaving the upper 8 bits as 0 so this would make sense.
 
-- The added prototype is a bit crude, but I want feedback on the idea
-  first before moving around a bunch of functions to avoid said
-  prototype
-- I'm not sure if the rationale stated above is correct. I am not very
-  familiar with the drm subsystem so perhaps there is something obvious
-  that I am missing. At any rate, this solved the issue of an inoperable
-  CEC adapter when the downstream MIPI-DSI was not used.
+Have I understood the issue correctly?
 
-I'm also wondering if this is robust enough to work when a sink just
-pulses HPD to signal that its EDID has changed. Currently the hotplug
-notifier is only invoked when the connected state changes (e.g. from
-disconnected to connected), and so I only check the EDID in such
-scenarios too. But is that always the case? Might we get an HPD
-interrupt and the connectivity state remains the same?
+I'll need to hold this one for now as I'll need to rebase the
+fixes-togreg branch of iio.git after rc1 is available.
 
-Thanks in advance for any feedback.
+Thanks,
 
----
- drivers/gpu/drm/bridge/adv7511/adv7511_drv.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+Jonathan
 
-diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-index 005bf18682ff..fb4ca277e4be 100644
---- a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-+++ b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-@@ -424,6 +424,9 @@ static bool adv7511_hpd(struct adv7511 *adv7511)
- 	return false;
- }
- 
-+static struct edid *adv7511_get_edid(struct adv7511 *adv7511,
-+				     struct drm_connector *connector);
-+
- static void adv7511_hpd_work(struct work_struct *work)
- {
- 	struct adv7511 *adv7511 = container_of(work, struct adv7511, hpd_work);
-@@ -457,6 +460,9 @@ static void adv7511_hpd_work(struct work_struct *work)
- 		if (adv7511->connector.dev) {
- 			if (status == connector_status_disconnected)
- 				cec_phys_addr_invalidate(adv7511->cec_adap);
-+			else
-+				adv7511_get_edid(adv7511, &adv7511->connector);
-+
- 			drm_kms_helper_hotplug_event(adv7511->connector.dev);
- 		} else {
- 			drm_bridge_hpd_notify(&adv7511->bridge, status);
--- 
-2.35.1
+
+> ---
+>  drivers/iio/adc/ad7124.c | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/drivers/iio/adc/ad7124.c b/drivers/iio/adc/ad7124.c
+> index 998a342d51a6..7249db2c4422 100644
+> --- a/drivers/iio/adc/ad7124.c
+> +++ b/drivers/iio/adc/ad7124.c
+> @@ -188,7 +188,6 @@ static const struct iio_chan_spec ad7124_channel_template = {
+>  		.sign = 'u',
+>  		.realbits = 24,
+>  		.storagebits = 32,
+> -		.shift = 8,
+>  		.endianness = IIO_BE,
+>  	},
+>  };
 
