@@ -2,103 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9631C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 02:59:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96DFBC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 03:01:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241869AbiCSDAV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 23:00:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53910 "EHLO
+        id S241880AbiCSDCx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 23:02:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241856AbiCSDAT (ORCPT
+        with ESMTP id S241856AbiCSDCo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 23:00:19 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD9EE19F226
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 19:58:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647658739; x=1679194739;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=l1b0sC5LyV2Lf4aW+ACBo//XGZHe+g5y0gLml3l8wcI=;
-  b=EZRWqtsd1OsSvW3F9t5oDdtbTf0vxiSjnT1EMIKJwHC24E0KOCNO2nS1
-   4C4ac5zdVHr/04UeI8VavI6N1MWtfdcrmocuOrKqPOJsC+h8DWYIe/XgR
-   OkCe4EonOE6Z7sGPpACeAZ6Zvyxuu7DIA/CFf7NhFTUMVcMYGvOQG0F0Z
-   kOQ4Keh1sg68BEFaJGowKpcd0gvIjrhM6ir9jEo9BspEKAdov3gasesin
-   d2mhBxcpIfMZElZFwCraUUUfxuCVr2bjaYOf0pEkpqaF3Hsvx67lOYqWW
-   P+9OtvKhYMsOSsiDQ8dkzB8MAidKUdzpVdKupSzHEOTBbzIVmWiEuYINC
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="257216010"
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="257216010"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 19:58:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="558787005"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 18 Mar 2022 19:58:58 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nVPIv-000FSl-Mn; Sat, 19 Mar 2022 02:58:57 +0000
-Date:   Sat, 19 Mar 2022 10:58:02 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jeff Layton <jlayton@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [jlayton:ceph-fscrypt-sparse 62/69] fs/ceph/crypto.h:233:1: error:
- expected identifier or '(' before '{' token
-Message-ID: <202203191032.JfjdgbaE-lkp@intel.com>
+        Fri, 18 Mar 2022 23:02:44 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D0F71107ED;
+        Fri, 18 Mar 2022 20:01:24 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id f38so18985328ybi.3;
+        Fri, 18 Mar 2022 20:01:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=reWmP4Yyv0Mmo6tNnGsk6in1wc+xPjfMEBmvAdgMoDc=;
+        b=QUlxX+ZAOMShNBy+QnsJ90r1OQ2VOtNFYnHa00oELbHAs+M54BOXEIoxDVlOVm/s8+
+         avht463rTX2aoWPIV+BF3uceUVZhaAzjTpjizML6oKG8iMMqogbfibpNdUf98CWNccr4
+         C+fxRZgXq2MlqUAHZxYCiVIfvISSh3lQLoo40Q4yzat43Ymskbt10DuKHxzG5udvK0od
+         qL6a0umXrn4MC3BVDm/TzRjtG4++Mld7fHrAEWnXA+4pxW5VBLG7HLO5pfqIxcyR3WLd
+         bxsuv20v9YTz/bGw93sfTvaPzQRSLLFu3tGQENkL00hciLjvIN/mZKLB9RuoDtYCfAig
+         1O4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=reWmP4Yyv0Mmo6tNnGsk6in1wc+xPjfMEBmvAdgMoDc=;
+        b=rCxymcfEV8osH1DyP8GWdecImFS6YYQYOeLbEQgvqQAEkPp4R3EdR/9h3h1kArc/yc
+         +Gxe/u9d5poVQe+Yty7Z+KW7fEl+R2LPoCXL0zbTS3zT+vXajbGI/oCjoNMuYg52aw7k
+         dSbXkf7R1jNiLfDRwEbWbtyz9Z2BCs8uoXpZ9WdfAoBIIaCNRU1VX7IFGLbV32ierTBw
+         3hg3Grz5MfVfievkbSSM+nVQnml3Fea0n1Jf4fbs6RZbp3YbtaNx3Gbv/t68ZmZkkW2e
+         ExoRzhbxFYOcW7YsHPu/B4sqbUn9WnV6bm9BXoGcHLvGcZ/SM9z+8mIX487rHfe9Xj9p
+         0qgw==
+X-Gm-Message-State: AOAM532f6h5/U8lv8UBcxCB7ugANVO5BcXnQ1KYgYRI8/rmJaP4yJ7YS
+        rnNrR8YK0rEpygnsZd1yGLn03YRpWyZwj6JkLV8=
+X-Google-Smtp-Source: ABdhPJy0KTsGLEMJSC7xXZIBl4jfjABsDmKySWeDy3fUv2e8cUQp/c8hnHRCm9bEJfcTFciPSvLiI0NwgGoMEQ7JcNk=
+X-Received: by 2002:a25:fe04:0:b0:628:af01:f734 with SMTP id
+ k4-20020a25fe04000000b00628af01f734mr13139432ybe.441.1647658883838; Fri, 18
+ Mar 2022 20:01:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220309021230.721028-1-yuzhao@google.com> <20220309021230.721028-7-yuzhao@google.com>
+In-Reply-To: <20220309021230.721028-7-yuzhao@google.com>
+From:   Barry Song <21cnbao@gmail.com>
+Date:   Sat, 19 Mar 2022 16:01:13 +1300
+Message-ID: <CAGsJ_4xfL7h6M92WGusxbTxQzHOJDj4X4AuC=0HgrEyAYJaJFg@mail.gmail.com>
+Subject: Re: [PATCH v9 06/14] mm: multi-gen LRU: minimal implementation
+To:     Yu Zhao <yuzhao@google.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        LAK <linux-arm-kernel@lists.infradead.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Kernel Page Reclaim v2 <page-reclaim@google.com>,
+        x86 <x86@kernel.org>, Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jlayton/linux.git ceph-fscrypt-sparse
-head:   a6125c2dec56f1f523f5009ce8b25932ba4be812
-commit: 8e0977c7c0cb145079b881a6035a98bb0ce71b1b [62/69] ceph: new helper: ceph_fscrypt_decrypt_extents
-config: microblaze-randconfig-s031-20220317 (https://download.01.org/0day-ci/archive/20220319/202203191032.JfjdgbaE-lkp@intel.com/config)
-compiler: microblaze-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jlayton/linux.git/commit/?id=8e0977c7c0cb145079b881a6035a98bb0ce71b1b
-        git remote add jlayton https://git.kernel.org/pub/scm/linux/kernel/git/jlayton/linux.git
-        git fetch --no-tags jlayton ceph-fscrypt-sparse
-        git checkout 8e0977c7c0cb145079b881a6035a98bb0ce71b1b
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=microblaze SHELL=/bin/bash fs/
+> +static int folio_inc_gen(struct lruvec *lruvec, struct folio *folio, bool reclaiming)
+> +{
+> +       unsigned long old_flags, new_flags;
+> +       int type = folio_is_file_lru(folio);
+> +       struct lru_gen_struct *lrugen = &lruvec->lrugen;
+> +       int new_gen, old_gen = lru_gen_from_seq(lrugen->min_seq[type]);
+> +
+> +       do {
+> +               new_flags = old_flags = READ_ONCE(folio->flags);
+> +               VM_BUG_ON_FOLIO(!(new_flags & LRU_GEN_MASK), folio);
+> +
+> +               new_gen = ((new_flags & LRU_GEN_MASK) >> LRU_GEN_PGOFF) - 1;
+> +               new_gen = (old_gen + 1) % MAX_NR_GENS;
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+new_gen is assigned twice, i assume you mean
+               old_gen = ((new_flags & LRU_GEN_MASK) >> LRU_GEN_PGOFF) - 1;
+               new_gen = (old_gen + 1) % MAX_NR_GENS;
 
-All errors (new ones prefixed by >>):
+or do you always mean new_gen =  lru_gen_from_seq(min_seq) + 1?
 
-   In file included from fs/ceph/super.h:28,
-                    from fs/ceph/super.c:20:
->> fs/ceph/crypto.h:233:1: error: expected identifier or '(' before '{' token
-     233 | {
-         | ^
-   fs/ceph/crypto.h:230:19: warning: 'ceph_fscrypt_decrypt_extents' declared 'static' but never defined [-Wunused-function]
-     230 | static inline int ceph_fscrypt_decrypt_extents(struct inode *inode, struct page **page,
-         |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> +
+> +               new_flags &= ~LRU_GEN_MASK;
+> +               new_flags |= (new_gen + 1UL) << LRU_GEN_PGOFF;
+> +               new_flags &= ~(LRU_REFS_MASK | LRU_REFS_FLAGS);
+> +               /* for folio_end_writeback() */
+> +               if (reclaiming)
+> +                       new_flags |= BIT(PG_reclaim);
+> +       } while (cmpxchg(&folio->flags, old_flags, new_flags) != old_flags);
+> +
+> +       lru_gen_update_size(lruvec, folio, old_gen, new_gen);
+> +
+> +       return new_gen;
+> +}
+> +
 
-
-vim +233 fs/ceph/crypto.h
-
-   229	
-   230	static inline int ceph_fscrypt_decrypt_extents(struct inode *inode, struct page **page,
-   231						u64 off, struct ceph_sparse_extent *map,
-   232						u32 ext_cnt);
- > 233	{
-   234		return 0;
-   235	}
-   236	
-
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Thanks
+Barry
