@@ -2,90 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE156C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 03:57:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B91E6C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 03:57:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242078AbiCSD7C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 23:59:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57728 "EHLO
+        id S242089AbiCSD7L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 23:59:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241995AbiCSD6p (ORCPT
+        with ESMTP id S242015AbiCSD6s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 23:58:45 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F8F0103BB6;
-        Fri, 18 Mar 2022 20:57:23 -0700 (PDT)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22J3BgIT000642;
-        Sat, 19 Mar 2022 03:57:06 GMT
+        Fri, 18 Mar 2022 23:58:48 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3A0710BBFE;
+        Fri, 18 Mar 2022 20:57:27 -0700 (PDT)
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22J2t7Kc014720;
+        Sat, 19 Mar 2022 03:57:21 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=2LSpElg9eqep1ve6R13MKajEKCL9ymkAaD7aT2pb0OY=;
- b=qpO+z8cZ23KL3H4d33WAKM7H1Oyf3IEC1cuJRaaBFgHlsxKFcLLkpEtSwJPRVanr4cgF
- 295qGX5dT2Vgn8Rp41UiHMEraWWtIJlfu8exR5x7wMgCSOjis0QNpONaoBqjTRCjmbuS
- Q3ptbs7Xg1IvCA3gxq793qU9BjLTrX/t8CAQMBOuscKH7l9UUXINjooDGMP/k7XMmus/
- BPAG6tcKsFW7cpM5sWXc3sa/fCARiduevQciR8Kl4K40Ll46CICkmZ6nHq2rjrW4ilqP
- PNpOg1VaqEzdA8a+s4dxopxz/dweVNOluA0De5Qv49f8hkVG6OfmN5arFdoxC48HUmMh Dg== 
+ bh=ENMKUrHCZOudvRHtAehTfcBN0mWzmRD42cEDUwxZdLg=;
+ b=kdxZab/XQ2yhdFvwYR3e3g78cDh9jCTGOKJx2PXIZFnsQTB0onjwmRN2e5bbyywKD7wr
+ /adTQzJi3/QI4XABQYkWlB+FXZewiaWRVRksqRfYzpSVOgQcsBdqaLKlmrVaZtwRBzBX
+ NDY3w8UPpJRwxJpYfwGkIQuvt9nob7NS3DkJGtnbTmiO3Z6vYJVo/IDx+BvEXodqBOhu
+ 0KIgoiIrigFLFHPJKHEGFxrmUpnOOG+9eJ4WF9p47CNI2a66v4jAq5tzIHRzUPDdSBMN
+ wdKzoh+8nOcDK7zfLVHvI/XKwfDRbFEwZunIhf29d5nx6D1ACu1f+w9O1DmVLtbDsNv/ vw== 
 Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3ew72a80yu-1
+        by mx0b-00069f02.pphosted.com with ESMTP id 3ew6ss0176-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 19 Mar 2022 03:57:06 +0000
+        Sat, 19 Mar 2022 03:57:20 +0000
 Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 22J3v5Rw007140;
-        Sat, 19 Mar 2022 03:57:05 GMT
+        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 22J3vKAV007347;
+        Sat, 19 Mar 2022 03:57:20 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3ew5kyshmv-1
+        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3ew5kyshpy-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 19 Mar 2022 03:57:05 +0000
+        Sat, 19 Mar 2022 03:57:20 +0000
 Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 22J3v5Qc007126;
-        Sat, 19 Mar 2022 03:57:05 GMT
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 22J3v5R0007126;
+        Sat, 19 Mar 2022 03:57:19 GMT
 Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3ew5kyshmn-1;
-        Sat, 19 Mar 2022 03:57:05 +0000
+        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3ew5kyshmn-12;
+        Sat, 19 Mar 2022 03:57:19 +0000
 From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     open-iscsi@googlegroups.com, linux-kernel@vger.kernel.org,
-        Wenchao Hao <haowenchao@huawei.com>,
-        linux-scsi@vger.kernel.org, Chris Leech <cleech@redhat.com>,
-        Lee Duncan <lduncan@suse.com>,
-        "James E . J . Bottomley" <jejb@linux.ibm.com>,
-        Mike Christie <michael.christie@oracle.com>
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>
-Subject: Re: [PATCH v3 0/3] scsi:iscsi: handle iscsi_cls_conn device with sysfs correctly
-Date:   Fri, 18 Mar 2022 23:56:51 -0400
-Message-Id: <164766213031.31329.2067042035707430877.b4-ty@oracle.com>
+To:     jejb@linux.ibm.com, Yang Li <yang.lee@linux.alibaba.com>
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH -next] scsi: Remove ignoring unreachable code warning
+Date:   Fri, 18 Mar 2022 23:57:02 -0400
+Message-Id: <164766213031.31329.18166732732178921996.b4-ty@oracle.com>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220310015759.3296841-1-haowenchao@huawei.com>
-References: <20220310015759.3296841-1-haowenchao@huawei.com>
+In-Reply-To: <20220301080448.112813-1-yang.lee@linux.alibaba.com>
+References: <20220301080448.112813-1-yang.lee@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: jR7Z0HAp5jikhT8qzqGlTQTXinLUS8Jf
-X-Proofpoint-ORIG-GUID: jR7Z0HAp5jikhT8qzqGlTQTXinLUS8Jf
+X-Proofpoint-ORIG-GUID: wYmM5p4msxaHkJOR8g4Tj3ruIKrHTtOM
+X-Proofpoint-GUID: wYmM5p4msxaHkJOR8g4Tj3ruIKrHTtOM
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 9 Mar 2022 20:57:56 -0500, Wenchao Hao wrote:
+On Tue, 1 Mar 2022 16:04:48 +0800, Yang Li wrote:
 
-> We found a NULL pointer dereference in iscsi_sw_tcp_conn_get_param(),
-> the root reason is we did sysfs addition wrong.
+> The smatch tool reported the following warning:
+> drivers/scsi/scsi_error.c:1988 scsi_decide_disposition() warn: ignoring
+> unreachable code.
 > 
-> The origin implement do device setup in iscsi_create_conn() which
-> bind the alloc/init and add in one function; do device teardown in
-> iscsi_destroy_conn() which bind remove and free in one function.
+> Remove the "default:return FAILED;" instead of "return FAILED;" reported
+> by smatch, because compilers can provide more useful diagnostics about
+> switch/case statements that do not have a default statement, especially
+> if the "switch" applies to a value with enumeration type.
 > 
 > [...]
 
 Applied to 5.18/scsi-queue, thanks!
 
-[1/3] scsi: iscsi: Add helper functions to manage iscsi_cls_conn
-      https://git.kernel.org/mkp/scsi/c/ad515cada7da
-[2/3] scsi:libiscsi: Add iscsi_cls_conn to sysfs after been initialized
-      https://git.kernel.org/mkp/scsi/c/7dae459f5e56
-[3/3] scsi:libiscsi: teradown iscsi_cls_conn gracefully
-      https://git.kernel.org/mkp/scsi/c/8709c323091b
+[1/1] scsi: Remove ignoring unreachable code warning
+      https://git.kernel.org/mkp/scsi/c/e1b353e7a31d
 
 -- 
 Martin K. Petersen	Oracle Linux Engineering
