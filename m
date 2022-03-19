@@ -2,732 +2,363 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9ACCC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 14:40:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9DB0C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 14:41:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243249AbiCSOmP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Mar 2022 10:42:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46506 "EHLO
+        id S243269AbiCSOme (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Mar 2022 10:42:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243259AbiCSOmK (ORCPT
+        with ESMTP id S243259AbiCSOma (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Mar 2022 10:42:10 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B882415D381;
-        Sat, 19 Mar 2022 07:40:43 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id s42so12006174pfg.0;
-        Sat, 19 Mar 2022 07:40:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=NI4PXMzHC/Jp/9wvgeZCOge7f0IBlR6bX8G+W40JXJc=;
-        b=Px80yiB6asf5+d6toxUChCXj7tCm/w99hlYzQ3IXRCMAPbREdHeOjh362skqu4hNqK
-         AUk2QYQhrycXfxu+8XkXb+UTUpKl9FvU8P1hVhQNoPX/XXj1IvApgNKwP2y3Mno/1Ibj
-         6xrWdM4dO+Y8caij0XRJHsKEjyqHAuMtSCR9bGEFH4udYQYUq16oLTo/2LR7WPT9uq3u
-         xc/lH4lvFiTdL4OB8usHkjjENSexk0wJSKtUTBeNJai+uog1TZqrZx5c4btgxVvAKCJ0
-         wkdlYk+Wogf4U2b3ob8B7HSUEeKDPuQIvC5qmvYD/0hcHkIp3pkXZAlCk4BkXK0jiowY
-         JMpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=NI4PXMzHC/Jp/9wvgeZCOge7f0IBlR6bX8G+W40JXJc=;
-        b=XFbCx16He7/j31gHVwMdmeJWmot2V6qq8EYmhXxf1vE1hEuI43OUw25NdKmb/TvLkL
-         JfZuVu0WOL6gQXJe9vzRRvcfJkM80gkton94G6EFZJKZ5ZzvZQ+J+70b4GCLttYiP/bP
-         jeKJOAK4moVswnwQJyKGtZKP5Ui2oS7ECeirjdZKyjwiCtfE+mz6LMgYHKxTv+855vO7
-         d9VRkNkd0Nax5kN97kuG9iyUcANsdmWtK87xNfpKD2yT/9JjChClCH9XoNINgNSpeoU4
-         vBA0N0ZgeFcy5u5/AI3bdx7WjsVtAKkv60w5XL52mxAwTob6bAwkpzNUkE+2BhmpSxHr
-         4wOg==
-X-Gm-Message-State: AOAM530mhbWJI20Q9uVHv96gasDgXBDDhYVtphfZetQ8aTPuGLX2SJCK
-        3BGqs4n8Jp1zJrTnc5fwS48=
-X-Google-Smtp-Source: ABdhPJx0Kh0s2RRDNMxbG1H4B3n+cnaNSjWEkoomxWjCkdGtZ703UI/Smpo2BrjpWAyXJkO9hkKSJw==
-X-Received: by 2002:a65:63d8:0:b0:380:2be6:806a with SMTP id n24-20020a6563d8000000b003802be6806amr11620932pgv.20.1647700843004;
-        Sat, 19 Mar 2022 07:40:43 -0700 (PDT)
-Received: from localhost.localdomain ([50.7.60.25])
-        by smtp.gmail.com with ESMTPSA id q12-20020a17090aa00c00b001bc6f1baaaesm14546829pjp.39.2022.03.19.07.40.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Mar 2022 07:40:42 -0700 (PDT)
-Sender: Huacai Chen <chenhuacai@gmail.com>
-From:   Huacai Chen <chenhuacai@kernel.org>
-X-Google-Original-From: Huacai Chen <chenhuacai@loongson.cn>
-To:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Subject: [PATCH V8 13/22] LoongArch: Add system call support
-Date:   Sat, 19 Mar 2022 22:38:08 +0800
-Message-Id: <20220319143817.1026708-6-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220319143817.1026708-1-chenhuacai@loongson.cn>
-References: <20220319142759.1026237-1-chenhuacai@loongson.cn>
- <20220319143817.1026708-1-chenhuacai@loongson.cn>
+        Sat, 19 Mar 2022 10:42:30 -0400
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130093.outbound.protection.outlook.com [40.107.13.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC53174B9E;
+        Sat, 19 Mar 2022 07:41:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mOT/TEJ0B+y8xjcm5/sWLYNkGUIeOoeJ8iIEoFHOfZmKu1v8DAfK5a1h4ck2mUxv+hvsRrrX5v9eUAREOVu3PxdS4oyeRPo8kL2y0VGu1gwi9QqBN6zxRAHL1yX4BkJFugjiISMw4Hk+HMUY5EhUYMeL+UHpCtcAauHtZ6s/HMvCASGw6VqU++dxcrsj6lVKgbOAlpLsRIGvDIwQlD5IAUsa4ouRPl5xOyGJAhUmtvOhMZ93N4qMhaQUDD1gdbgXC+bIDEQFH/jf3WX1drOPbjPfvuJ4QnEXxuOiPdZPtfo+Q48NAktfyqwFdc94dt2sw5yq0Z78nZVCB+g65PJNzg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=sBaLXzJ1scfdcWGelZeNm1a4+68szt0bHh+y9TYAbmA=;
+ b=jxlRyrDIitHX9u9rLf/jmjEnTmjVlq4Axku4oLCBIOKUr5PGmG1/t3DtKhL/VzNfs+z9kEY7VKLmjkBLpl0B/6mpmuNoDx7Wyrr0W6OIi4oIuANsqZTqF2HBzMn+xmx0d6y2N86WoqPFwy35r5X3KMctxhIjj2vxgLaQ9frBh2iR9K+mj+6EsV5KljOV4No2KWx3CEnD9qxkLQywpnq/ddBHWvAbHiufmS68r1WgxP5lCUEFwHp9YXXrDRnj3mNxcvl6wx+8b77swedkyWgBbaVHgTGolH8Yyc7m4VyBD5qEGhehNaSUna9jfIGDdQCtmIOur6svQ833al5V851Cgg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=axentia.se; dmarc=pass action=none header.from=axentia.se;
+ dkim=pass header.d=axentia.se; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axentia.se;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sBaLXzJ1scfdcWGelZeNm1a4+68szt0bHh+y9TYAbmA=;
+ b=LPq1zo5hr3qPDn+GLvjFafgU4h44sS6Y0vq4+7eKqErQv8llZoys0WcVocSXqfVcnHYLJPePclWGSxcFe0Pgswf3BopQKnY6LMRHYa2x0xhEFrBbOnT5fuMNVvB8YGgh1whGSdrhBwY08nZJ0lvZWtr+Bgl7thoJFFkp/ZBo2Jc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=axentia.se;
+Received: from AM0PR02MB4436.eurprd02.prod.outlook.com (20.178.17.143) by
+ DBAPR02MB6102.eurprd02.prod.outlook.com (20.181.41.213) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5081.21; Sat, 19 Mar 2022 14:41:05 +0000
+Received: from AM0PR02MB4436.eurprd02.prod.outlook.com
+ ([fe80::cc:370f:ef33:4de3]) by AM0PR02MB4436.eurprd02.prod.outlook.com
+ ([fe80::cc:370f:ef33:4de3%3]) with mapi id 15.20.5081.019; Sat, 19 Mar 2022
+ 14:41:04 +0000
+Message-ID: <5658941a-bf81-4ecf-3317-82d2a8244021@axentia.se>
+Date:   Sat, 19 Mar 2022 15:41:02 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [v6 2/3] i2c: muxes: pca954x: Add MAX735x/MAX736x support
+Content-Language: en-US
+To:     Patrick Rudolph <patrick.rudolph@9elements.com>
+Cc:     linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220216074613.235725-1-patrick.rudolph@9elements.com>
+ <20220216074613.235725-3-patrick.rudolph@9elements.com>
+From:   Peter Rosin <peda@axentia.se>
+Organization: Axentia Technologies AB
+In-Reply-To: <20220216074613.235725-3-patrick.rudolph@9elements.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AS9PR0301CA0042.eurprd03.prod.outlook.com
+ (2603:10a6:20b:469::10) To AM0PR02MB4436.eurprd02.prod.outlook.com
+ (2603:10a6:208:ed::15)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6a27b65c-5b29-4b2c-9c81-08da09b67ec0
+X-MS-TrafficTypeDiagnostic: DBAPR02MB6102:EE_
+X-Microsoft-Antispam-PRVS: <DBAPR02MB6102C5825461DD4C88D7DDDDBC149@DBAPR02MB6102.eurprd02.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 91m6yzEM6r5G2uPj99wnBjYThcJrjV/DluLN/PZ7QjA8AZtuzvEpRhpA4jU3FjDIgsJLw55TGwGaoQTUnZC5+pY3+uCH1PZVBIMJtgXL0XEGdMeMVyCHjWk/d8QDHlBw+01jxgtxCcp36JwTpTmTQu/P8zrJm3y7E1ShFSHnMTwtmOTvTjWFvAWDI8aTUFHV2iMKbg/38y7mbpfLVJ8lJnir21y4cX1MlEv2j8UjPeb5FD0YvfMG4RbfqztSICKCx4vxbXLSwfZ5Y6ERfN5Ur59t4nBD5pekOZ6eoapxjLVUNrGwbSfq4UEXn9ILnBB95do6PyYoMWw0ASUBX4pbNsT3JjJ+NnXy7k0ojdhJYTf57ktVtWu5jrvvy2j3xmkaE+xdnQMVXokEX40glL9n0Mz5exvxD5oBrBGkv6aaodOYHRCrQGw8uoM+qYyZYaalYDdLd9K9p4ksco1Khbzs7E/+CFI/1gTeSLrG6emPH6oR/yHYWdA0vML8+4zjTig6P0nfCbnyccEfcSpI333jdAEd3+cJDAX4dDrnkIRxcsw9gkezNnv/lePw4hunCsLizwIxFmC8rlllNi4YQToak7SyvCz5h9a9ZwX9x83joGGMZMKVGKvE9RWbmBMZpdxGlPfPOaQMxw46dG1t051kjhiTdugh2UtbrWhDlyttckbw2wfK2u/vMx9H9Abxu3Ajg/AXDY2jOomDvvzgOUFA30orGV+altyMe/mnqDHWWTU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR02MB4436.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(396003)(136003)(376002)(346002)(39830400003)(4326008)(2616005)(66476007)(6512007)(316002)(8676002)(66556008)(66946007)(6916009)(8936002)(36916002)(36756003)(5660300002)(31696002)(86362001)(6506007)(38100700002)(186003)(6486002)(83380400001)(53546011)(508600001)(2906002)(31686004)(26005)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Qko4SFlucms4WGFoNWV1SXpZZ1hhdjdVS20xUTFxQi9iVFRycEtiRi90eVVD?=
+ =?utf-8?B?MzFFZ1ZWYXZGS01UcDg4WGJjV0ZCRExrNDlXWlNjbGduNEtRZU9UVlpKUHFO?=
+ =?utf-8?B?ZjNBR1MyZklnblo4RTQ4RW1qYnZwOFZ4RmpVUUc0L0tvdXFBSTV5bWRnc1F5?=
+ =?utf-8?B?ekdYYnhHaFhKQ1ZsbTN0cjFRRkIya0hDNlRXMkErMllMMHZtdUg2RHV2MlJt?=
+ =?utf-8?B?V0F0Y29qeU8yTHE3TTFXa20wSGdKQWZLZWdNWGpXQmlGNy9hNHVUOUJlc3Zx?=
+ =?utf-8?B?OWJ3Mm8vczc1WTBHNmdoNWhyUHJ2V2NjTjROWnF0bW9HRHd0RkxEa3JyaXpP?=
+ =?utf-8?B?WFgxR1Z0V3R4TXhMNkExTVpWRFFvNGI0QzBMcW80SkdqZ2xNUW1RNHl2Ulgv?=
+ =?utf-8?B?M2tmUlU5S0w4enFCRW1sWWZMQ1JtSTY5VWs2Zys2NGNLdzI5NHRuUFZYc2xI?=
+ =?utf-8?B?Ny9POVI3NUQzV05wSCt4Y0dCQUxpSEZIUlZUckhuZ1RWd2Y1cUIxUUlaa1ZB?=
+ =?utf-8?B?Yk4wMlZ6U3R5ZGtqbnRTRlVra2RHMitNMTZNSVFZbGtlREo3b3VXcm1ZNEd1?=
+ =?utf-8?B?L0NyZk1ycUpTRUlCb3JSd1NsN0xzTVNuWkE4WDFaWElwbHYrZWpSVytVMFhq?=
+ =?utf-8?B?YnUwbCtBTTlSclVqL1QvTlBib0Y5ckdIQjJrMUNsRUNjZXNKSEk1d3QrUjBw?=
+ =?utf-8?B?NVlRY1JoLzFSeTdLdVRHTitLdTNCN0NBeWJGU09RK3NqaEQ4TlV5bmc3Z0tq?=
+ =?utf-8?B?YlFtc3lQK01MQ3NTdWozc2taMk1QVzV2UEFRNlpMY1NMUWRiY2JoVHIvaDdj?=
+ =?utf-8?B?N0V2ekNKYlF5R0hSMlh4c1NpRHhCRXhpclVhS0JxYzhGWGtPUnRNcU1LaWtH?=
+ =?utf-8?B?N0hKelBrdDAxMW9yRW9HcXdtM0tMbmppd1ZlbzFFUTdPV2JrdHhBcG1kejBV?=
+ =?utf-8?B?RkRSMkZHUHVBYllkcXhFU3g3Y3RQaGJYbzJyeWVFdlpwYTg3enRyYzlLZnlp?=
+ =?utf-8?B?dGFiWmhDUEtZOFA1Y09vL1k5bkZBdVhlS2oxZDdTaGR1WE1rVGxORGZjRWtY?=
+ =?utf-8?B?aC9RN0ZNYmlCNm41TktENlgzK0RDL2kwVFlHZjVPVVJuMHI4VWFGdHZUMi9s?=
+ =?utf-8?B?WlYxd05Nb3ZWWFVEbmN5QWhHUTR2N0I3OWxDdGhxb2UxYjZHOWdHTXRlZitx?=
+ =?utf-8?B?Vi95aXhkek1wYitXWEQ0YVQwV2UyNFV1ejRhcldxYjZ6WTFRNlV4Z0dWUFJF?=
+ =?utf-8?B?b1RGWmduamVKVUVtWWQ1QUtCWjJTQU4xR082cGtFZFpwMDNsRlNkb1p0WDVx?=
+ =?utf-8?B?TzE3dlM0RlM2cTFMdlU1UmhYTFRqVk9tWVlxR0JXcmtPS0wvZUE5QXFIU1ZJ?=
+ =?utf-8?B?M0tyR2RwNGVjdlVzajh4L016S05BOHdyYi81MUhGNGdUZ2J2cmVIaUxrNGRO?=
+ =?utf-8?B?YkFiejZTRlhHTWEyL0NoaDNISnM3UWRmVUxmR0dKOENlQlErZjRRMDJhZ1hU?=
+ =?utf-8?B?SDBVWjRES2E3QjVOeEhjYzhPUFhOMHVGOWlXYnY0bWdyb0g3Tk5lcWhvZkVP?=
+ =?utf-8?B?aHcybFAxdEJ6Q21PaXAxS1d0b3hpVmhRSWc4Zi8wdzRtY0ozTTh3eGtFZDJn?=
+ =?utf-8?B?YURJZ2NwdUNBbkZzdGhORm5RMERZYXFqS1lNbnVMVTIxWFU3dW5Tbm0xQ2Jn?=
+ =?utf-8?B?Rm9aN1p3SzBLVkVyVkIzdjNYQWpQZ3A4ZlRzajM1K2hXbGhZcW45QXpkbG0v?=
+ =?utf-8?B?NGJRdUJ4VnJ6YU5BUjZQNjI1VGtFS0FZWnJMTjMwcG1IUEJiR0NVVUFnQy9n?=
+ =?utf-8?B?YmhLaHMvanYvemROc1pRL1BMSzRDOEkvY2tENXU5NkdmZGRmdWszdldncnls?=
+ =?utf-8?B?d2dlbnRISVRmZWFWOGR1bzhHaEwyL3Q4a0k5dnlhZC9hbzBEQTJ6K2dLblRk?=
+ =?utf-8?Q?ZcZqk2DzpBioNWaQQwWzf01wcSPngJVE?=
+X-OriginatorOrg: axentia.se
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6a27b65c-5b29-4b2c-9c81-08da09b67ec0
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR02MB4436.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Mar 2022 14:41:04.4252
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4ee68585-03e1-4785-942a-df9c1871a234
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qNluTou8pqpcsju4UuRDxJp9k6w1UpFsA1dj32kJItGV6DIl67ePPFbtGprHZaCP
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR02MB6102
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds system call support and related uaccess.h for LoongArch.
+Hi!
 
-Q: Why keep __ARCH_WANT_NEW_STAT definition while there is statx:
-A: Until the latest glibc release (2.34), statx is only used for 32-bit
-   platforms, or 64-bit platforms with 32-bit timestamp. I.e., Most 64-
-   bit platforms still use newstat now.
+Sorry for the slow review and thanks for your patience...
 
-Q: Why keep _ARCH_WANT_SYS_CLONE definition while there is clone3:
-A: The latest glibc release (2.34) has some basic support for clone3 but
-   it isn't complete. E.g., pthread_create() and spawni() have converted
-   to use clone3 but fork() will still use clone. Moreover, some seccomp
-   related applications can still not work perfectly with clone3.
+On 2022-02-16 08:46, Patrick Rudolph wrote:
+> Add support for the following Maxim chips using the existing PCA954x
+> driver:
+> - MAX7356
+> - MAX7357
+> - MAX7358
+> - MAX7367
+> - MAX7368
+> - MAX7369
+> 
+> All added Maxim chips behave like the PCA954x, where a single SMBUS byte
+> write selects up to 8 channels to be bridged to the primary bus.
+> 
+> The MAX7357 exposes 6 additional registers at Power-On-Reset and is
 
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
----
- arch/loongarch/include/asm/seccomp.h     |  20 ++
- arch/loongarch/include/asm/syscall.h     |  74 ++++++
- arch/loongarch/include/asm/uaccess.h     | 315 +++++++++++++++++++++++
- arch/loongarch/include/asm/unistd.h      |  11 +
- arch/loongarch/include/uapi/asm/unistd.h |   6 +
- arch/loongarch/kernel/entry.S            |  89 +++++++
- arch/loongarch/kernel/syscall.c          |  63 +++++
- 7 files changed, 578 insertions(+)
- create mode 100644 arch/loongarch/include/asm/seccomp.h
- create mode 100644 arch/loongarch/include/asm/syscall.h
- create mode 100644 arch/loongarch/include/asm/uaccess.h
- create mode 100644 arch/loongarch/include/asm/unistd.h
- create mode 100644 arch/loongarch/include/uapi/asm/unistd.h
- create mode 100644 arch/loongarch/kernel/entry.S
- create mode 100644 arch/loongarch/kernel/syscall.c
+MAX7358 also has the same enhanced mode as the 7357, no?
 
-diff --git a/arch/loongarch/include/asm/seccomp.h b/arch/loongarch/include/asm/seccomp.h
-new file mode 100644
-index 000000000000..31d6ab42e43e
---- /dev/null
-+++ b/arch/loongarch/include/asm/seccomp.h
-@@ -0,0 +1,20 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+#ifndef _ASM_SECCOMP_H
-+#define _ASM_SECCOMP_H
-+
-+#include <asm/unistd.h>
-+
-+#include <asm-generic/seccomp.h>
-+
-+#ifdef CONFIG_32BIT
-+# define SECCOMP_ARCH_NATIVE		AUDIT_ARCH_LOONGARCH32
-+# define SECCOMP_ARCH_NATIVE_NR		NR_syscalls
-+# define SECCOMP_ARCH_NATIVE_NAME	"loongarch32"
-+#else
-+# define SECCOMP_ARCH_NATIVE		AUDIT_ARCH_LOONGARCH64
-+# define SECCOMP_ARCH_NATIVE_NR		NR_syscalls
-+# define SECCOMP_ARCH_NATIVE_NAME	"loongarch64"
-+#endif
-+
-+#endif /* _ASM_SECCOMP_H */
-diff --git a/arch/loongarch/include/asm/syscall.h b/arch/loongarch/include/asm/syscall.h
-new file mode 100644
-index 000000000000..e286dc58476e
---- /dev/null
-+++ b/arch/loongarch/include/asm/syscall.h
-@@ -0,0 +1,74 @@
-+/* SPDX-License-Identifier: GPL-2.0+ */
-+/*
-+ * Author: Hanlu Li <lihanlu@loongson.cn>
-+ *         Huacai Chen <chenhuacai@loongson.cn>
-+ *
-+ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-+ */
-+
-+#ifndef __ASM_LOONGARCH_SYSCALL_H
-+#define __ASM_LOONGARCH_SYSCALL_H
-+
-+#include <linux/compiler.h>
-+#include <uapi/linux/audit.h>
-+#include <linux/elf-em.h>
-+#include <linux/kernel.h>
-+#include <linux/sched.h>
-+#include <linux/uaccess.h>
-+#include <asm/ptrace.h>
-+#include <asm/unistd.h>
-+
-+extern void *sys_call_table[];
-+
-+static inline long syscall_get_nr(struct task_struct *task,
-+				  struct pt_regs *regs)
-+{
-+	return regs->regs[11];
-+}
-+
-+static inline void syscall_rollback(struct task_struct *task,
-+				    struct pt_regs *regs)
-+{
-+        regs->regs[4] = regs->orig_a0;
-+}
-+
-+static inline long syscall_get_error(struct task_struct *task,
-+				     struct pt_regs *regs)
-+{
-+	unsigned long error = regs->regs[4];
-+
-+	return IS_ERR_VALUE(error) ? error : 0;
-+}
-+
-+static inline long syscall_get_return_value(struct task_struct *task,
-+					    struct pt_regs *regs)
-+{
-+	return regs->regs[4];
-+}
-+
-+static inline void syscall_set_return_value(struct task_struct *task,
-+					    struct pt_regs *regs,
-+					    int error, long val)
-+{
-+	regs->regs[4] = (long) error ? error : val;
-+}
-+
-+static inline void syscall_get_arguments(struct task_struct *task,
-+					 struct pt_regs *regs,
-+					 unsigned long *args)
-+{
-+	args[0] = regs->orig_a0;
-+	memcpy(&args[1], &regs->regs[5], 5 * sizeof(long));
-+}
-+
-+static inline int syscall_get_arch(struct task_struct *task)
-+{
-+	return AUDIT_ARCH_LOONGARCH64;
-+}
-+
-+static inline bool arch_syscall_is_vdso_sigreturn(struct pt_regs *regs)
-+{
-+	return false;
-+}
-+
-+#endif	/* __ASM_LOONGARCH_SYSCALL_H */
-diff --git a/arch/loongarch/include/asm/uaccess.h b/arch/loongarch/include/asm/uaccess.h
-new file mode 100644
-index 000000000000..5cbfa5be996f
---- /dev/null
-+++ b/arch/loongarch/include/asm/uaccess.h
-@@ -0,0 +1,315 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-+ *
-+ * Derived from MIPS:
-+ * Copyright (C) 1996, 1997, 1998, 1999, 2000, 03, 04 by Ralf Baechle
-+ * Copyright (C) 1999, 2000 Silicon Graphics, Inc.
-+ * Copyright (C) 2007  Maciej W. Rozycki
-+ * Copyright (C) 2014, Imagination Technologies Ltd.
-+ */
-+#ifndef _ASM_UACCESS_H
-+#define _ASM_UACCESS_H
-+
-+#include <linux/kernel.h>
-+#include <linux/string.h>
-+#include <linux/extable.h>
-+#include <asm-generic/extable.h>
-+
-+extern u64 __ua_limit;
-+
-+#define __UA_LIMIT	__ua_limit
-+
-+#define __UA_ADDR	".dword"
-+#define __UA_ADDU	"add.d"
-+#define __UA_LA		"la.abs"
-+
-+/*
-+ * Is a address valid? This does a straightforward calculation rather
-+ * than tests.
-+ *
-+ * Address valid if:
-+ *  - "addr" doesn't have any high-bits set
-+ *  - AND "size" doesn't have any high-bits set
-+ *  - AND "addr+size" doesn't have any high-bits set
-+ *  - OR we are in kernel mode.
-+ *
-+ * __ua_size() is a trick to avoid runtime checking of positive constant
-+ * sizes; for those we already know at compile time that the size is ok.
-+ */
-+#define __ua_size(size)							\
-+	((__builtin_constant_p(size) && (signed long) (size) > 0) ? 0 : (size))
-+
-+/*
-+ * access_ok: - Checks if a user space pointer is valid
-+ * @addr: User space pointer to start of block to check
-+ * @size: Size of block to check
-+ *
-+ * Context: User context only. This function may sleep if pagefaults are
-+ *          enabled.
-+ *
-+ * Checks if a pointer to a block of memory in user space is valid.
-+ *
-+ * Returns true (nonzero) if the memory block may be valid, false (zero)
-+ * if it is definitely invalid.
-+ *
-+ * Note that, depending on architecture, this function probably just
-+ * checks that the pointer is in the user space range - after calling
-+ * this function, memory access functions may still return -EFAULT.
-+ */
-+static inline int __access_ok(const void __user *p, unsigned long size)
-+{
-+	unsigned long addr = (unsigned long)p;
-+	unsigned long end = addr + size - !!size;
-+
-+	return (__UA_LIMIT & (addr | end | __ua_size(size))) == 0;
-+}
-+
-+#define access_ok(addr, size)					\
-+	likely(__access_ok((addr), (size)))
-+
-+/*
-+ * get_user: - Get a simple variable from user space.
-+ * @x:	 Variable to store result.
-+ * @ptr: Source address, in user space.
-+ *
-+ * Context: User context only. This function may sleep if pagefaults are
-+ *          enabled.
-+ *
-+ * This macro copies a single simple variable from user space to kernel
-+ * space.  It supports simple types like char and int, but not larger
-+ * data types like structures or arrays.
-+ *
-+ * @ptr must have pointer-to-simple-variable type, and the result of
-+ * dereferencing @ptr must be assignable to @x without a cast.
-+ *
-+ * Returns zero on success, or -EFAULT on error.
-+ * On error, the variable @x is set to zero.
-+ */
-+#define get_user(x, ptr) \
-+({									\
-+	const __typeof__(*(ptr)) __user *__p = (ptr);			\
-+									\
-+	might_fault();							\
-+	access_ok(__p, sizeof(*__p)) ? __get_user((x), __p) :		\
-+				       ((x) = 0, -EFAULT);		\
-+})
-+
-+/*
-+ * put_user: - Write a simple value into user space.
-+ * @x:	 Value to copy to user space.
-+ * @ptr: Destination address, in user space.
-+ *
-+ * Context: User context only. This function may sleep if pagefaults are
-+ *          enabled.
-+ *
-+ * This macro copies a single simple value from kernel space to user
-+ * space.  It supports simple types like char and int, but not larger
-+ * data types like structures or arrays.
-+ *
-+ * @ptr must have pointer-to-simple-variable type, and @x must be assignable
-+ * to the result of dereferencing @ptr.
-+ *
-+ * Returns zero on success, or -EFAULT on error.
-+ */
-+#define put_user(x, ptr) \
-+({									\
-+	__typeof__(*(ptr)) __user *__p = (ptr);				\
-+									\
-+	might_fault();							\
-+	access_ok(__p, sizeof(*__p)) ? __put_user((x), __p) : -EFAULT;	\
-+})
-+
-+/*
-+ * __get_user: - Get a simple variable from user space, with less checking.
-+ * @x:	 Variable to store result.
-+ * @ptr: Source address, in user space.
-+ *
-+ * Context: User context only. This function may sleep if pagefaults are
-+ *          enabled.
-+ *
-+ * This macro copies a single simple variable from user space to kernel
-+ * space.  It supports simple types like char and int, but not larger
-+ * data types like structures or arrays.
-+ *
-+ * @ptr must have pointer-to-simple-variable type, and the result of
-+ * dereferencing @ptr must be assignable to @x without a cast.
-+ *
-+ * Caller must check the pointer with access_ok() before calling this
-+ * function.
-+ *
-+ * Returns zero on success, or -EFAULT on error.
-+ * On error, the variable @x is set to zero.
-+ */
-+#define __get_user(x, ptr) \
-+({									\
-+	int __gu_err = 0;						\
-+									\
-+	__chk_user_ptr(ptr);						\
-+	__get_user_common((x), sizeof(*(ptr)), ptr);			\
-+	__gu_err;							\
-+})
-+
-+/*
-+ * __put_user: - Write a simple value into user space, with less checking.
-+ * @x:	 Value to copy to user space.
-+ * @ptr: Destination address, in user space.
-+ *
-+ * Context: User context only. This function may sleep if pagefaults are
-+ *          enabled.
-+ *
-+ * This macro copies a single simple value from kernel space to user
-+ * space.  It supports simple types like char and int, but not larger
-+ * data types like structures or arrays.
-+ *
-+ * @ptr must have pointer-to-simple-variable type, and @x must be assignable
-+ * to the result of dereferencing @ptr.
-+ *
-+ * Caller must check the pointer with access_ok() before calling this
-+ * function.
-+ *
-+ * Returns zero on success, or -EFAULT on error.
-+ */
-+#define __put_user(x, ptr) \
-+({									\
-+	int __pu_err = 0;						\
-+	__typeof__(*(ptr)) __pu_val;					\
-+									\
-+	__pu_val = (x);							\
-+	__chk_user_ptr(ptr);						\
-+	__put_user_common(ptr, sizeof(*(ptr)));				\
-+	__pu_err;							\
-+})
-+
-+struct __large_struct { unsigned long buf[100]; };
-+#define __m(x) (*(struct __large_struct __user *)(x))
-+
-+#define __get_user_common(val, size, ptr)				\
-+do {									\
-+	switch (size) {							\
-+	case 1: __get_data_asm(val, "ld.b", ptr); break;		\
-+	case 2: __get_data_asm(val, "ld.h", ptr); break;		\
-+	case 4: __get_data_asm(val, "ld.w", ptr); break;		\
-+	case 8: __get_data_asm(val, "ld.d", ptr); break;		\
-+	default: BUILD_BUG(); break;					\
-+	}								\
-+} while (0)
-+
-+#define __get_kernel_common(val, size, ptr) __get_user_common(val, size, ptr)
-+
-+#define __get_data_asm(val, insn, ptr)					\
-+{									\
-+	long __gu_tmp;							\
-+									\
-+	__asm__ __volatile__(						\
-+	"1:	" insn "	%1, %2				\n"	\
-+	"2:							\n"	\
-+	"	.section .fixup,\"ax\"				\n"	\
-+	"3:	li.w	%0, %3					\n"	\
-+	"	or	%1, $r0, $r0				\n"	\
-+	"	b	2b					\n"	\
-+	"	.previous					\n"	\
-+	"	.section __ex_table,\"a\"			\n"	\
-+	"	"__UA_ADDR "\t1b, 3b				\n"	\
-+	"	.previous					\n"	\
-+	: "+r" (__gu_err), "=r" (__gu_tmp)				\
-+	: "m" (__m(ptr)), "i" (-EFAULT));				\
-+									\
-+	(val) = (__typeof__(*(ptr))) __gu_tmp;				\
-+}
-+
-+#define __put_user_common(ptr, size)					\
-+do {									\
-+	switch (size) {							\
-+	case 1: __put_data_asm("st.b", ptr); break;			\
-+	case 2: __put_data_asm("st.h", ptr); break;			\
-+	case 4: __put_data_asm("st.w", ptr); break;			\
-+	case 8: __put_data_asm("st.d", ptr); break;			\
-+	default: BUILD_BUG(); break;					\
-+	}								\
-+} while (0)
-+
-+#define __put_kernel_common(ptr, size) __put_user_common(ptr, size)
-+
-+#define __put_data_asm(insn, ptr)					\
-+{									\
-+	__asm__ __volatile__(						\
-+	"1:	" insn "	%z2, %1		# __put_user_asm\n"	\
-+	"2:							\n"	\
-+	"	.section	.fixup,\"ax\"			\n"	\
-+	"3:	li.w	%0, %3					\n"	\
-+	"	b	2b					\n"	\
-+	"	.previous					\n"	\
-+	"	.section	__ex_table,\"a\"		\n"	\
-+	"	" __UA_ADDR "	1b, 3b				\n"	\
-+	"	.previous					\n"	\
-+	: "+r" (__pu_err), "=m" (__m(ptr))				\
-+	: "Jr" (__pu_val), "i" (-EFAULT));				\
-+}
-+
-+#define HAVE_GET_KERNEL_NOFAULT
-+
-+#define __get_kernel_nofault(dst, src, type, err_label)			\
-+do {									\
-+	int __gu_err = 0;						\
-+									\
-+	__get_kernel_common(*((type *)(dst)), sizeof(type),		\
-+			    (__force type *)(src));			\
-+	if (unlikely(__gu_err))						\
-+		goto err_label;						\
-+} while (0)
-+
-+#define __put_kernel_nofault(dst, src, type, err_label)			\
-+do {									\
-+	type __pu_val;							\
-+	int __pu_err = 0;						\
-+									\
-+	__pu_val = *(__force type *)(src);				\
-+	__put_kernel_common(((type *)(dst)), sizeof(type));		\
-+	if (unlikely(__pu_err))						\
-+		goto err_label;						\
-+} while (0)
-+
-+extern unsigned long __copy_user(void *to, const void *from, __kernel_size_t n);
-+
-+static inline unsigned long __must_check
-+raw_copy_from_user(void *to, const void __user *from, unsigned long n)
-+{
-+	return __copy_user(to, from, n);
-+}
-+
-+static inline unsigned long __must_check
-+raw_copy_to_user(void __user *to, const void *from, unsigned long n)
-+{
-+	return __copy_user(to, from, n);
-+}
-+
-+#define INLINE_COPY_FROM_USER
-+#define INLINE_COPY_TO_USER
-+
-+/*
-+ * __clear_user: - Zero a block of memory in user space, with less checking.
-+ * @addr: Destination address, in user space.
-+ * @size: Number of bytes to zero.
-+ *
-+ * Zero a block of memory in user space.  Caller must check
-+ * the specified block with access_ok() before calling this function.
-+ *
-+ * Returns number of bytes that could not be cleared.
-+ * On success, this will be zero.
-+ */
-+extern unsigned long __clear_user(void __user *addr, __kernel_size_t size);
-+
-+#define clear_user(addr, n)						\
-+({									\
-+	void __user *__cl_addr = (addr);				\
-+	unsigned long __cl_size = (n);					\
-+	if (__cl_size && access_ok(__cl_addr, __cl_size))		\
-+		__cl_size = __clear_user(__cl_addr, __cl_size);		\
-+	__cl_size;							\
-+})
-+
-+extern long strncpy_from_user(char *to, const char __user *from, long n);
-+extern long strnlen_user(const char __user *str, long n);
-+
-+#endif /* _ASM_UACCESS_H */
-diff --git a/arch/loongarch/include/asm/unistd.h b/arch/loongarch/include/asm/unistd.h
-new file mode 100644
-index 000000000000..cfddb0116a8c
---- /dev/null
-+++ b/arch/loongarch/include/asm/unistd.h
-@@ -0,0 +1,11 @@
-+/* SPDX-License-Identifier: GPL-2.0+ */
-+/*
-+ * Author: Hanlu Li <lihanlu@loongson.cn>
-+ *         Huacai Chen <chenhuacai@loongson.cn>
-+ *
-+ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-+ */
-+
-+#include <uapi/asm/unistd.h>
-+
-+#define NR_syscalls (__NR_syscalls)
-diff --git a/arch/loongarch/include/uapi/asm/unistd.h b/arch/loongarch/include/uapi/asm/unistd.h
-new file mode 100644
-index 000000000000..b344b1f91715
---- /dev/null
-+++ b/arch/loongarch/include/uapi/asm/unistd.h
-@@ -0,0 +1,6 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+#define __ARCH_WANT_NEW_STAT
-+#define __ARCH_WANT_SYS_CLONE
-+#define __ARCH_WANT_SYS_CLONE3
-+
-+#include <asm-generic/unistd.h>
-diff --git a/arch/loongarch/kernel/entry.S b/arch/loongarch/kernel/entry.S
-new file mode 100644
-index 000000000000..d5b3dbcf5425
---- /dev/null
-+++ b/arch/loongarch/kernel/entry.S
-@@ -0,0 +1,89 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-+ *
-+ * Derived from MIPS:
-+ * Copyright (C) 1994 - 2000, 2001, 2003 Ralf Baechle
-+ * Copyright (C) 1999, 2000 Silicon Graphics, Inc.
-+ * Copyright (C) 2001 MIPS Technologies, Inc.
-+ */
-+
-+#include <asm/asm.h>
-+#include <asm/asmmacro.h>
-+#include <asm/loongarch.h>
-+#include <asm/regdef.h>
-+#include <asm/stackframe.h>
-+#include <asm/thread_info.h>
-+
-+	.text
-+	.cfi_sections	.debug_frame
-+	.align	5
-+SYM_FUNC_START(handle_syscall)
-+	csrrd	t0, PERCPU_BASE_KS
-+	la.abs	t1, kernelsp
-+	add.d	t1, t1, t0
-+	move	t2, sp
-+	ld.d	sp, t1, 0
-+
-+	addi.d	sp, sp, -PT_SIZE
-+	cfi_st	t2, PT_R3
-+	cfi_rel_offset  sp, PT_R3
-+	st.d	zero, sp, PT_R0
-+	csrrd	t2, LOONGARCH_CSR_PRMD
-+	st.d	t2, sp, PT_PRMD
-+	csrrd	t2, LOONGARCH_CSR_CRMD
-+	st.d	t2, sp, PT_CRMD
-+	csrrd	t2, LOONGARCH_CSR_EUEN
-+	st.d	t2, sp, PT_EUEN
-+	csrrd	t2, LOONGARCH_CSR_ECFG
-+	st.d	t2, sp, PT_ECFG
-+	csrrd	t2, LOONGARCH_CSR_ESTAT
-+	st.d	t2, sp, PT_ESTAT
-+	cfi_st	ra, PT_R1
-+	cfi_st	a0, PT_R4
-+	cfi_st	a1, PT_R5
-+	cfi_st	a2, PT_R6
-+	cfi_st	a3, PT_R7
-+	cfi_st	a4, PT_R8
-+	cfi_st	a5, PT_R9
-+	cfi_st	a6, PT_R10
-+	cfi_st	a7, PT_R11
-+	csrrd	ra, LOONGARCH_CSR_ERA
-+	st.d	ra, sp, PT_ERA
-+	cfi_rel_offset ra, PT_ERA
-+
-+	cfi_st	tp, PT_R2
-+	cfi_st	u0, PT_R21
-+	cfi_st	fp, PT_R22
-+
-+	SAVE_STATIC
-+
-+	move	u0, t0
-+	li.d	tp, ~_THREAD_MASK
-+	and	tp, tp, sp
-+
-+	move	a0, sp
-+	bl	do_syscall
-+
-+	RESTORE_ALL_AND_RET
-+SYM_FUNC_END(handle_syscall)
-+
-+SYM_CODE_START(ret_from_fork)
-+	bl	schedule_tail		# a0 = struct task_struct *prev
-+	move	a0, sp
-+	bl 	syscall_exit_to_user_mode
-+	RESTORE_STATIC
-+	RESTORE_SOME
-+	RESTORE_SP_AND_RET
-+SYM_CODE_END(ret_from_fork)
-+
-+SYM_CODE_START(ret_from_kernel_thread)
-+	bl	schedule_tail		# a0 = struct task_struct *prev
-+	move	a0, s1
-+	jirl	ra, s0, 0
-+	move	a0, sp
-+	bl	syscall_exit_to_user_mode
-+	RESTORE_STATIC
-+	RESTORE_SOME
-+	RESTORE_SP_AND_RET
-+SYM_CODE_END(ret_from_kernel_thread)
-diff --git a/arch/loongarch/kernel/syscall.c b/arch/loongarch/kernel/syscall.c
-new file mode 100644
-index 000000000000..3fc4211db989
---- /dev/null
-+++ b/arch/loongarch/kernel/syscall.c
-@@ -0,0 +1,63 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Author: Hanlu Li <lihanlu@loongson.cn>
-+ *         Huacai Chen <chenhuacai@loongson.cn>
-+ *
-+ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-+ */
-+#include <linux/capability.h>
-+#include <linux/entry-common.h>
-+#include <linux/errno.h>
-+#include <linux/linkage.h>
-+#include <linux/syscalls.h>
-+#include <linux/unistd.h>
-+
-+#include <asm/asm.h>
-+#include <asm/signal.h>
-+#include <asm/switch_to.h>
-+#include <asm-generic/syscalls.h>
-+
-+#undef __SYSCALL
-+#define __SYSCALL(nr, call)	[nr] = (call),
-+
-+SYSCALL_DEFINE6(mmap, unsigned long, addr, unsigned long, len, unsigned long,
-+		prot, unsigned long, flags, unsigned long, fd, off_t, offset)
-+{
-+	if (offset & ~PAGE_MASK)
-+		return -EINVAL;
-+
-+	return ksys_mmap_pgoff(addr, len, prot, flags, fd, offset >> PAGE_SHIFT);
-+}
-+
-+void *sys_call_table[__NR_syscalls] = {
-+	[0 ... __NR_syscalls - 1] = sys_ni_syscall,
-+#include <asm/unistd.h>
-+};
-+
-+typedef long (*sys_call_fn)(unsigned long, unsigned long,
-+	unsigned long, unsigned long, unsigned long, unsigned long);
-+
-+void noinstr do_syscall(struct pt_regs *regs)
-+{
-+	unsigned long nr;
-+	sys_call_fn syscall_fn;
-+
-+	nr = regs->regs[11];
-+	/* Set for syscall restarting */
-+	if (nr < NR_syscalls)
-+		regs->regs[0] = nr + 1;
-+
-+	regs->csr_era += 4;
-+	regs->orig_a0 = regs->regs[4];
-+	regs->regs[4] = -ENOSYS;
-+
-+	nr = syscall_enter_from_user_mode(regs, nr);
-+
-+	if (nr < NR_syscalls) {
-+		syscall_fn = sys_call_table[nr];
-+		regs->regs[4] = syscall_fn(regs->orig_a0, regs->regs[5], regs->regs[6],
-+					   regs->regs[7], regs->regs[8], regs->regs[9]);
-+	}
-+
-+	syscall_exit_to_user_mode(regs);
-+}
--- 
-2.27.0
+And what do you mean that they are exposed at POR? I can see why they
+are not exposed /before/ POR, but are they ever /not/ exposed? If they
+are always exposed when the chip is "alive", then I suggest that the
+POR wording is dropped, otherwise that the above is reworded to
+describe when the register are no longer exposed.
 
+> configured to:
+>  - Disabled interrupts on bus locked up detection
+>  - Enable bus locked-up clearing
+>  - Disconnect only locked bus instead of all channels
+> 
+> While the MAX7357/MAX7358 have interrupt support, they don't act as
+> interrupt controller like the PCA9545 does. Thus don't enable IRQ support
+> and handle them like the PCA9548.
+> 
+> Tested using the MAX7357 and verified that the stalled bus is disconnected
+> while the other channels remain operational.
+> 
+> Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
+> ---
+>  drivers/i2c/muxes/Kconfig           |  4 +-
+>  drivers/i2c/muxes/i2c-mux-pca954x.c | 92 +++++++++++++++++++++++++++--
+>  2 files changed, 90 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/i2c/muxes/Kconfig b/drivers/i2c/muxes/Kconfig
+> index 1708b1a82da2..2ac99d044199 100644
+> --- a/drivers/i2c/muxes/Kconfig
+> +++ b/drivers/i2c/muxes/Kconfig
+> @@ -65,11 +65,11 @@ config I2C_MUX_PCA9541
+>  	  will be called i2c-mux-pca9541.
+>  
+>  config I2C_MUX_PCA954x
+> -	tristate "NXP PCA954x and PCA984x I2C Mux/switches"
+> +	tristate "NXP PCA954x/PCA984x and Maxim MAX735x/MAX736x I2C Mux/switches"
+>  	depends on GPIOLIB || COMPILE_TEST
+>  	help
+>  	  If you say yes here you get support for the NXP PCA954x
+> -	  and PCA984x I2C mux/switch devices.
+> +	  and PCA984x and Maxim MAX735x/MAX736x I2C mux/switch devices.
+
+and and and... :-) Maybe like this?
+
+	  If you say yes here you get support for NXP PCA954x/PCA984x
+	  and Maxim MAX735x/MAX736x I2C mux/switch devices.
+
+>  	  This driver can also be built as a module.  If so, the module
+>  	  will be called i2c-mux-pca954x.
+> diff --git a/drivers/i2c/muxes/i2c-mux-pca954x.c b/drivers/i2c/muxes/i2c-mux-pca954x.c
+> index 4ad665757dd8..33b9a6a1fffa 100644
+> --- a/drivers/i2c/muxes/i2c-mux-pca954x.c
+> +++ b/drivers/i2c/muxes/i2c-mux-pca954x.c
+> @@ -4,6 +4,7 @@
+>   *
+>   * Copyright (c) 2008-2009 Rodolfo Giometti <giometti@linux.it>
+>   * Copyright (c) 2008-2009 Eurotech S.p.A. <info@eurotech.it>
+> + * Copyright (c) 2022 Patrick Rudolph <patrick.rudolph@9elements.com>
+>   *
+>   * This module supports the PCA954x and PCA984x series of I2C multiplexer/switch
+>   * chips made by NXP Semiconductors.
+> @@ -11,6 +12,12 @@
+>   *	 PCA9540, PCA9542, PCA9543, PCA9544, PCA9545, PCA9546, PCA9547,
+>   *	 PCA9548, PCA9846, PCA9847, PCA9848 and PCA9849.
+>   *
+> + * It's also compatible to Maxims MAX735x I2C switch chips, which are controlled
+> + * as the NXP PCA9548 and the MAX736x chips that act like the PCA9544.
+> + *
+> + * This includes the:
+> + *	 MAX7356, MAX7357, MAX7358, MAX7367, MAX7368 and MAX7369
+> + *
+>   * These chips are all controlled via the I2C bus itself, and all have a
+>   * single 8-bit register. The upstream "parent" bus fans out to two,
+>   * four, or eight downstream busses or channels; which of these
+> @@ -50,7 +57,30 @@
+>  
+>  #define PCA954X_IRQ_OFFSET 4
+>  
+> +/*
+> + * MAX7357 exposes 7 registers on POR which allow to configure additional
+> + * features. Disable interrupts, enable bus locked-up clearing,
+> + * isolate only the locked channel instead of all channels.
+
+Same MAX7358 and POR comments as above.
+
+The way I understands things are:
+
+ * MAX7357/MAX7358 exposes 7 registers which allow setup of
+ * enhanced mode features. The first of these registers is the
+ * switch control register that is present in some form on all
+ * chips supported by this driver.
+ * The second register is the configuration register, which allows
+ * to configure additional features. E.g. disable interrupts,
+ * enable bus locked-up clearing and isolate only the locked
+ * channel instead of all channels.
+ * The remaining 5 registers are left as is by this driver.
+
+> + */
+> +#define MAX7357_CONF_INT_ENABLE			BIT(0)
+> +#define MAX7357_CONF_FLUSH_OUT			BIT(1)
+> +#define MAX7357_CONF_RELEASE_INT		BIT(2)
+> +#define MAX7357_CONF_LOCK_UP_CLEAR		BIT(3)
+> +#define MAX7357_CONF_DISCON_SINGLE_CHAN		BIT(4)
+> +#define MAX7357_CONF_BUS_LOCKUP_DETECTION	BIT(5)
+> +#define MAX7357_CONF_ENABLE_BASIC_MODE		BIT(6)
+> +#define MAX7357_CONF_PRECONNECT_TEST		BIT(7)
+> +
+> +#define MAX7357_CONF_DEFAULTS (MAX7357_CONF_FLUSH_OUT | \
+> +	 MAX7357_CONF_DISCON_SINGLE_CHAN)
+> +
+>  enum pca_type {
+> +	max_7367,
+> +	max_7368,
+> +	max_7369,
+> +	max_7356,
+> +	max_7357,
+> +	max_7358,
+>  	pca_9540,
+>  	pca_9542,
+>  	pca_9543,
+> @@ -69,6 +99,7 @@ struct chip_desc {
+>  	u8 nchans;
+>  	u8 enable;	/* used for muxes only */
+>  	u8 has_irq;
+> +	u8 max7357;
+
+Perhaps maxim_enhanced_mode is a better name?
+
+>  	enum muxtype {
+>  		pca954x_ismux = 0,
+>  		pca954x_isswi
+> @@ -90,8 +121,42 @@ struct pca954x {
+>  	raw_spinlock_t lock;
+>  };
+>  
+> -/* Provide specs for the PCA954x types we know about */
+> +/* Provide specs for the PCA954x and MAX735x types we know about */
+>  static const struct chip_desc chips[] = {
+> +	[max_7356] = {
+> +		.nchans = 8,
+> +		.muxtype = pca954x_isswi,
+> +		.id = { .manufacturer_id = I2C_DEVICE_ID_NONE },
+> +	},
+> +	[max_7357] = {
+> +		.nchans = 8,
+> +		.muxtype = pca954x_isswi,
+> +		.max7357 = 1,
+> +		.id = { .manufacturer_id = I2C_DEVICE_ID_NONE },
+> +	},
+> +	[max_7358] = {
+> +		.nchans = 8,
+> +		.muxtype = pca954x_isswi,
+> +		.id = { .manufacturer_id = I2C_DEVICE_ID_NONE },
+> +	},
+> +	[max_7367] = {
+> +		.nchans = 4,
+> +		.muxtype = pca954x_isswi,
+> +		.has_irq = 1,
+> +		.id = { .manufacturer_id = I2C_DEVICE_ID_NONE },
+> +	},
+> +	[max_7368] = {
+> +		.nchans = 4,
+> +		.muxtype = pca954x_isswi,
+> +		.id = { .manufacturer_id = I2C_DEVICE_ID_NONE },
+> +	},
+> +	[max_7369] = {
+> +		.nchans = 4,
+> +		.enable = 0x4,
+> +		.muxtype = pca954x_ismux,
+> +		.has_irq = 1,
+> +		.id = { .manufacturer_id = I2C_DEVICE_ID_NONE },
+> +	},
+>  	[pca_9540] = {
+>  		.nchans = 2,
+>  		.enable = 0x4,
+> @@ -177,6 +242,12 @@ static const struct chip_desc chips[] = {
+>  };
+>  
+>  static const struct i2c_device_id pca954x_id[] = {
+> +	{ "max7356", max_7356 },
+> +	{ "max7357", max_7357 },
+> +	{ "max7358", max_7358 },
+> +	{ "max7367", max_7367 },
+> +	{ "max7368", max_7368 },
+> +	{ "max7369", max_7369 },
+>  	{ "pca9540", pca_9540 },
+>  	{ "pca9542", pca_9542 },
+>  	{ "pca9543", pca_9543 },
+> @@ -194,6 +265,12 @@ static const struct i2c_device_id pca954x_id[] = {
+>  MODULE_DEVICE_TABLE(i2c, pca954x_id);
+>  
+>  static const struct of_device_id pca954x_of_match[] = {
+> +	{ .compatible = "maxim,max7356", .data = &chips[max_7356] },
+> +	{ .compatible = "maxim,max7357", .data = &chips[max_7357] },
+> +	{ .compatible = "maxim,max7358", .data = &chips[max_7358] },
+> +	{ .compatible = "maxim,max7367", .data = &chips[max_7367] },
+> +	{ .compatible = "maxim,max7368", .data = &chips[max_7368] },
+> +	{ .compatible = "maxim,max7369", .data = &chips[max_7369] },
+>  	{ .compatible = "nxp,pca9540", .data = &chips[pca_9540] },
+>  	{ .compatible = "nxp,pca9542", .data = &chips[pca_9542] },
+>  	{ .compatible = "nxp,pca9543", .data = &chips[pca_9543] },
+> @@ -401,9 +478,16 @@ static int pca954x_init(struct i2c_client *client, struct pca954x *data)
+>  	else
+>  		data->last_chan = 0; /* Disconnect multiplexer */
+>  
+> -	ret = i2c_smbus_write_byte(client, data->last_chan);
+> -	if (ret < 0)
+> -		data->last_chan = 0;
+> +	if (data->chip->max7357) {
+> +		ret = i2c_smbus_write_byte_data(client, data->last_chan,
+> +						MAX7357_CONF_DEFAULTS);
+> +		if (ret < 0)
+> +			data->last_chan = 0;
+> +	} else {
+> +		ret = i2c_smbus_write_byte(client, data->last_chan);
+> +		if (ret < 0)
+> +			data->last_chan = 0;
+> +	}
+>  
+>  	return ret;
+>  }
+
+The actual code is simple enough, and looks good.
+
+Cheers,
+Peter
