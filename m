@@ -2,97 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B596BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Mar 2022 23:53:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52ACBC4332F
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 00:02:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241586AbiCRXyp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 19:54:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40642 "EHLO
+        id S241599AbiCSADe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 20:03:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235699AbiCRXyn (ORCPT
+        with ESMTP id S241573AbiCSADa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 19:54:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A489BB83;
-        Fri, 18 Mar 2022 16:53:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 18 Mar 2022 20:03:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2D5BC2BAE48
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 17:02:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647648130;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=D0MtVS7HpAhECjf4TaM6P0isnx273sQNVdJ4DkQ+qeg=;
+        b=VOnYah/ayFhjesD9GABhh/el/qXQnkJotp6+YbEMjpu/ZYBqgK+4MWviSJlPrnzJ/p8zAz
+        QHMD4ogNTy0Gcnlpvg/LJOmMeihORpLdEvYUmXzLnVfPaIAwLwUZCJed0HUeyvFtrY6+YB
+        DxcwitdXkNs58roB+0LiWXCwlfYooI4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-527-60I5wtiLNlGtzAK08sE7Eg-1; Fri, 18 Mar 2022 20:02:08 -0400
+X-MC-Unique: 60I5wtiLNlGtzAK08sE7Eg-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4FCC2B825D5;
-        Fri, 18 Mar 2022 23:53:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B264EC340ED;
-        Fri, 18 Mar 2022 23:53:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647647601;
-        bh=PJtyWgUUfrcov7AhZrLulWQ04KpL7a5ZTQ614qq1zv4=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=m1XavzsEkL2EeQH/3WCdrdFfIy641+Z9JT9FrMUTQz5TJq4ImE17B4cwoOR5tfyPe
-         9mmI0p28hFj4HFRs/C5LlS7WNxZShkfyqVb/BpasAkbC8tbaWclDVqFNEeaIAXkPW/
-         shbz+pEisFuokPpNv6Tl4Kcn3iuS5sGTGypx6F+6svlSl1gWZx6CCsZ7BxtFi0tK/P
-         isvr7IZ2+AZYBtpUmiZHa90TqWtFla7pEW4iet8CXsvSNpfyqO6wKFC7OgppYeV1uP
-         57Zy42z+/5/Qk2ItPmM/6Kjy9MMT9CzVLL2c6yQCvOs9JWsMV1lhP9DVeSaCDsGj01
-         feiJMq4vH1xAA==
-Date:   Fri, 18 Mar 2022 16:53:20 -0700 (PDT)
-From:   Stefano Stabellini <sstabellini@kernel.org>
-X-X-Sender: sstabellini@ubuntu-linux-20-04-desktop
-To:     Sudeep Holla <sudeep.holla@arm.com>
-cc:     Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 2/2] dt-bindings: xen: Add xen,scmi-devid property
- description for SCMI
-In-Reply-To: <YjIzeyNoWhVAY5HK@bogus>
-Message-ID: <alpine.DEB.2.22.394.2203181644560.2910984@ubuntu-linux-20-04-desktop>
-References: <cover.1646639462.git.oleksii_moisieiev@epam.com> <5859bb58c8caf87985deb84d7f6bfc8182bd6a59.1646639462.git.oleksii_moisieiev@epam.com> <Yie47a4lqXjVzgxI@robh.at.kernel.org> <20220316164619.GA3489934@EPUAKYIW015D> <YjIzeyNoWhVAY5HK@bogus>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2BC5180005D;
+        Sat, 19 Mar 2022 00:02:08 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8076F413721;
+        Sat, 19 Mar 2022 00:02:06 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+To:     Ilya Dryomov <idryomov@gmail.com>
+cc:     dhowells@redhat.com, Jeff Layton <jlayton@kernel.org>,
+        Xiubo Li <xiubli@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        ceph-devel@vger.kernel.org, linux-cachefs@redhat.com,
+        linux-afs@lists.infradead.org, linux-nfs@vger.kernel.org,
+        linux-cifs@vger.kernel.org, v9fs-developer@lists.sourceforge.net,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Coordinating netfslib pull request with the ceph pull request
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <751828.1647648125.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date:   Sat, 19 Mar 2022 00:02:05 +0000
+Message-ID: <751829.1647648125@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 16 Mar 2022, Sudeep Holla wrote:
-> On Wed, Mar 16, 2022 at 04:46:20PM +0000, Oleksii Moisieiev wrote:
-> > 
-> > > + The reason I want to keep it xen specific at the moment as we had some
-> > > plan to extended the device-id usage in the spec which hasn't progressed
-> > > a bit(I must admit that before you ask), and this addition should not be
-> > > obstruct that future development. If we align with what we define xen
-> > > specific as part of $subject work, we can always define generic binding
-> > > in the future and slowly make the other obsolete over the time.
-> > 
-> > IIUC you have some plans to provide device_id support to the device-tree
-> > bindings from your side. Maybe we can discuss some of your plans here
-> > and we can come up with the generic device-id binding?
-> > So I will have something to base on in Xen.
-> > 
-> 
-> Sorry if I wasn't clear in earlier emails. What I mentioned was that I would
-> like to reserve the generic namespace(i.e. just device-id) for generic SCMI
-> usage. Since we haven't defined it clearly in the spec, I don't want to
-> introduce the generic definition and binding now.
-> 
-> As mentioned earlier, though Xen definition and generic once may be exactly
-> same, but we won't know until then. So keep the xen usage and namespace
-> separate for now to avoid any future conflicts.
+Hi Ilya,
 
+Since my fscache-next branch[1] is dependent on patches in the ceph/master
+branch, I think I need to coordinate my netfslib pull request with your ce=
+ph
+pull request for the upcoming merge window.
 
-Hi Sudeep,
+David
 
-I thought the specification already covered this device id, it simply
-delegated the description of it to Device Tree or ACPI, which is common
-behavior in ARM specs. What is missing in the SCMI spec from your point
-of view?
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/=
+log/?h=3Dfscache-next
 
-
-
-Or would you like this scmi-devid Device Tree property (or similar) to
-be described in the SCMI specification itself?
-
-Typically Device Tree and ACPI descriptions are delegated to Device Tree
-and ACPI respectively. Also specification updates are typically slow
-(for good reason.) We might be waiting for a long time. It is usually
-not a matter of days.
