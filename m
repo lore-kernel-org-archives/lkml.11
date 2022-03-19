@@ -2,88 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4068BC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 11:41:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CF98C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 11:41:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242832AbiCSLmp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Mar 2022 07:42:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60582 "EHLO
+        id S242860AbiCSLm4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Mar 2022 07:42:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237574AbiCSLmn (ORCPT
+        with ESMTP id S242844AbiCSLmv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Mar 2022 07:42:43 -0400
-X-Greylist: delayed 175 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 19 Mar 2022 04:41:22 PDT
-Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [85.215.255.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8466F1E97;
-        Sat, 19 Mar 2022 04:41:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1647689900;
-    s=strato-dkim-0002; d=gerhold.net;
-    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=LUPpJL4caDcGsF8P6jMOa7sqd6B01qkMcy8m39HchoM=;
-    b=R3+VUoApr3oMqq0AxbpYRFI7eO1jxfQwWeLuM+IDpdSb6h+mYkKdjAmRd/6r6d+Y2o
-    F/Pvrw7SYMRxabzCeW1DL+tRAVO3UO71wbOEzIbghQF3hlgSajNM9k2pg0zOLbVXslEb
-    itnMzqI4RZchzddHtYlb2Gk/uPYJsqJt5lxqwSkcz70TP+avZS+GViHr4I6dzalIky+S
-    tEjBPxNUJB6VbLJdZ3tGcO5X3LKlmGqOWMElYcNzFNIBAXg8A3B6qzoUlzgQKjpNQxpT
-    brDdy/k6DwM2vtaQbDujf/4lQ38QSheu3cJSfJpXtv1cXPDrRbYTfjYWJZFeXzkdtQZy
-    +N+Q==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u267FZF9PwpcNKLUrK85/aY="
-X-RZG-CLASS-ID: mo00
-Received: from gerhold.net
-    by smtp.strato.de (RZmta 47.41.1 AUTH)
-    with ESMTPSA id 0aea5dy2JBcJDO7
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Sat, 19 Mar 2022 12:38:19 +0100 (CET)
-Date:   Sat, 19 Mar 2022 12:38:13 +0100
-From:   Stephan Gerhold <stephan@gerhold.net>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, davem@davemloft.net
-Subject: Re: [PATCH -next] net: wwan: qcom_bam_dmux: fix wrong pointer passed
- to IS_ERR()
-Message-ID: <YjXApWvAnGUeTpPt@gerhold.net>
-References: <20220319032450.3288224-1-yangyingliang@huawei.com>
+        Sat, 19 Mar 2022 07:42:51 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1410911BE6F;
+        Sat, 19 Mar 2022 04:41:26 -0700 (PDT)
+X-UUID: 4f25938e9bc94dfbae8904fc58aa7ef8-20220319
+X-UUID: 4f25938e9bc94dfbae8904fc58aa7ef8-20220319
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <jiaxin.yu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 44584759; Sat, 19 Mar 2022 19:41:21 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Sat, 19 Mar 2022 19:41:20 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sat, 19 Mar 2022 19:41:19 +0800
+From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
+To:     <broonie@kernel.org>, <robh+dt@kernel.org>, <tzungbi@google.com>
+CC:     <angelogioacchino.delregno@collabora.com>, <aaronyu@google.com>,
+        <matthias.bgg@gmail.com>, <trevor.wu@mediatek.com>,
+        <linmq006@gmail.com>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Jiaxin Yu <jiaxin.yu@mediatek.com>
+Subject: [v5 3/4] ASoC: mediatek: mt8192: refactor for I2S8/I2S9 DAI links of headset
+Date:   Sat, 19 Mar 2022 19:41:10 +0800
+Message-ID: <20220319114111.11496-4-jiaxin.yu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220319114111.11496-1-jiaxin.yu@mediatek.com>
+References: <20220319114111.11496-1-jiaxin.yu@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220319032450.3288224-1-yangyingliang@huawei.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 19, 2022 at 11:24:50AM +0800, Yang Yingliang wrote:
-> It should check dmux->tx after calling dma_request_chan().
-> 
-> Fixes: 21a0ffd9b38c ("net: wwan: Add Qualcomm BAM-DMUX WWAN network driver")
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+MT8192 platform use rt5682 codec, so through the snd_soc_of_get_dai_link_codes()
+to complete the configuration of I2S8/I2S9 dai_link's codecs.
 
-Good catch, thanks!
+Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
+---
+ .../mt8192/mt8192-mt6359-rt1015-rt5682.c      | 34 ++++++++++++++-----
+ 1 file changed, 26 insertions(+), 8 deletions(-)
 
-Reviewed-by: Stephan Gerhold <stephan@gerhold.net>
+diff --git a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
+index e42bbb5d7c35..d77f7c701513 100644
+--- a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
++++ b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
+@@ -28,9 +28,6 @@
+ #define RT1015_DEV0_NAME	"rt1015.1-0028"
+ #define RT1015_DEV1_NAME	"rt1015.1-0029"
+ 
+-#define RT5682_CODEC_DAI	"rt5682-aif1"
+-#define RT5682_DEV0_NAME	"rt5682.1-001a"
+-
+ struct mt8192_mt6359_priv {
+ 	struct snd_soc_jack headset_jack;
+ 	struct snd_soc_jack hdmi_jack;
+@@ -626,14 +623,12 @@ SND_SOC_DAILINK_DEFS(i2s7,
+ 
+ SND_SOC_DAILINK_DEFS(i2s8,
+ 		     DAILINK_COMP_ARRAY(COMP_CPU("I2S8")),
+-		     DAILINK_COMP_ARRAY(COMP_CODEC(RT5682_DEV0_NAME,
+-						   RT5682_CODEC_DAI)),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()),
+ 		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
+ 
+ SND_SOC_DAILINK_DEFS(i2s9,
+ 		     DAILINK_COMP_ARRAY(COMP_CPU("I2S9")),
+-		     DAILINK_COMP_ARRAY(COMP_CODEC(RT5682_DEV0_NAME,
+-						   RT5682_CODEC_DAI)),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()),
+ 		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
+ 
+ SND_SOC_DAILINK_DEFS(connsys_i2s,
+@@ -1114,7 +1109,7 @@ static int mt8192_mt6359_card_set_be_link(struct snd_soc_card *card,
+ static int mt8192_mt6359_dev_probe(struct platform_device *pdev)
+ {
+ 	struct snd_soc_card *card;
+-	struct device_node *platform_node, *hdmi_codec, *speaker_codec;
++	struct device_node *platform_node, *hdmi_codec, *headset_codec, *speaker_codec;
+ 	int ret, i;
+ 	struct snd_soc_dai_link *dai_link;
+ 	struct mt8192_mt6359_priv *priv;
+@@ -1145,6 +1140,13 @@ static int mt8192_mt6359_dev_probe(struct platform_device *pdev)
+ 		goto err_speaker_codec;
+ 	}
+ 
++	headset_codec = of_get_child_by_name(pdev->dev.of_node, "mediatek,headset-codec");
++	if (!headset_codec) {
++		ret = -EINVAL;
++		dev_err_probe(&pdev->dev, ret, "Property 'headset_codec' missing or invalid\n");
++		goto err_headset_codec;
++	}
++
+ 	for_each_card_prelinks(card, i, dai_link) {
+ 		ret = mt8192_mt6359_card_set_be_link(card, dai_link, speaker_codec, "I2S3");
+ 		if (ret) {
+@@ -1153,6 +1155,20 @@ static int mt8192_mt6359_dev_probe(struct platform_device *pdev)
+ 			goto err_probe;
+ 		}
+ 
++		ret = mt8192_mt6359_card_set_be_link(card, dai_link, headset_codec, "I2S8");
++		if (ret) {
++			dev_err_probe(&pdev->dev, ret, "%s set headset_codec fail\n",
++				      dai_link->name);
++			goto err_probe;
++		}
++
++		ret = mt8192_mt6359_card_set_be_link(card, dai_link, headset_codec, "I2S9");
++		if (ret) {
++			dev_err_probe(&pdev->dev, ret, "%s set headset_codec fail\n",
++				      dai_link->name);
++			goto err_probe;
++		}
++
+ 		if (hdmi_codec && strcmp(dai_link->name, "TDM") == 0) {
+ 			dai_link->codecs->of_node = hdmi_codec;
+ 			dai_link->ignore = 0;
+@@ -1183,6 +1199,8 @@ static int mt8192_mt6359_dev_probe(struct platform_device *pdev)
+ 		dev_err_probe(&pdev->dev, ret, "%s snd_soc_register_card fail\n", __func__);
+ 
+ err_probe:
++	of_node_put(headset_codec);
++err_headset_codec:
+ 	of_node_put(speaker_codec);
+ err_speaker_codec:
+ 	of_node_put(hdmi_codec);
+-- 
+2.18.0
 
-I'm a bit confused by the -next suffix in the subject though,
-this should probably go into "net" (not "net-next") since it is a fix.
-
-> ---
->  drivers/net/wwan/qcom_bam_dmux.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/wwan/qcom_bam_dmux.c b/drivers/net/wwan/qcom_bam_dmux.c
-> index 5dfa2eba6014..17d46f4d2913 100644
-> --- a/drivers/net/wwan/qcom_bam_dmux.c
-> +++ b/drivers/net/wwan/qcom_bam_dmux.c
-> @@ -755,7 +755,7 @@ static int __maybe_unused bam_dmux_runtime_resume(struct device *dev)
->  		return 0;
->  
->  	dmux->tx = dma_request_chan(dev, "tx");
-> -	if (IS_ERR(dmux->rx)) {
-> +	if (IS_ERR(dmux->tx)) {
->  		dev_err(dev, "Failed to request TX DMA channel: %pe\n", dmux->tx);
->  		dmux->tx = NULL;
->  		bam_dmux_runtime_suspend(dev);
-> -- 
-> 2.25.1
-> 
