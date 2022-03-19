@@ -2,155 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FFB9C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 11:15:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4130C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 11:17:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242757AbiCSLQe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Mar 2022 07:16:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52060 "EHLO
+        id S242768AbiCSLST (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Mar 2022 07:18:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236984AbiCSLQc (ORCPT
+        with ESMTP id S236984AbiCSLSQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Mar 2022 07:16:32 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD1502C3DD4;
-        Sat, 19 Mar 2022 04:15:11 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id o5so20107691ybe.2;
-        Sat, 19 Mar 2022 04:15:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JmpfHS1P+qpaVI9DLkTFbIW8LYRa15RLKPALOZCQDKk=;
-        b=U2lczM+Kei/H8pl07DdkRF/zKfwtoBL7jGf/hZk6ujcHWCiCiUIOg+g+eqUv5YMNQU
-         sE3SJxo82a1CAdrGtGIK1WNfH3hgGzJqW8l95OP68GFDbkjIdaflEC3/VyslJacg938Y
-         fw7vv4WJg2Ze898KPgW406xg16quHSMDJJjeLfZ+AGBs3P6EMcHWK5J2cUq2lp9TMVdq
-         rISsYg+8UBpFBVKu7YUjca2eIgncLRWlnFqpjku7saZ8H1MFWO9yRbvTUSfKMwCLDwQC
-         5qwjcxH6Wup0k1IrYotTOjMWuMAltNeGrnfEp6KI8jacb1kxnjx89ji/U5KmkKDbe7oJ
-         5rxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JmpfHS1P+qpaVI9DLkTFbIW8LYRa15RLKPALOZCQDKk=;
-        b=YStwtHM6GqeZMizK+g8B05dzfKEKo+n0Bx1RS4hkHlr9R0t0I0e7/uR1KketpZkkZV
-         CP2oEXo6yvpNF6wMHH8v5fOMfxEO+NjvfqIHLcQc058VEiEVO79USGVmyuO3H1DpCPxA
-         MemqiX1/Nm7iJVXewuSfY6BbMLMk6/mv5lZWfT9sKTLbEgsH31XtVW1vCy8udOSC07hz
-         LPHJTVWfYsGx+rZDLa87XYG99RPrP14niaEdCxHBdn/TQTeks7WiUjM+AupYRY1KOzHj
-         fA2T09s4mTGAMxpcZdBTRBtfUDyiqcGt5Fv9EkSd58R4azmBdQl8CCTXbx2YR/lB4Oe0
-         xM0w==
-X-Gm-Message-State: AOAM533kD5/7v+7HG9B1H585KLPmKTHoH7jalNOPDobTukG9ozFHmR/4
-        0IzwUSJU+mkf0R6zoOSh7b6Jpw3ZNlijYQSYOVs=
-X-Google-Smtp-Source: ABdhPJxlHmYPruUoNqz/mzX0ofnX1IhGKWK+gllmONTx2BCLV1p3PSGIbJQ6vwLyx55cqi63NW1jMmc+uZUxWKWHiII=
-X-Received: by 2002:a25:fe04:0:b0:628:af01:f734 with SMTP id
- k4-20020a25fe04000000b00628af01f734mr14210131ybe.441.1647688510994; Sat, 19
- Mar 2022 04:15:10 -0700 (PDT)
+        Sat, 19 Mar 2022 07:18:16 -0400
+Received: from lahtoruutu.iki.fi (lahtoruutu.iki.fi [IPv6:2a0b:5c81:1c1::37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2332E2C3DD8;
+        Sat, 19 Mar 2022 04:16:55 -0700 (PDT)
+Received: from darkstar.musicnaut.iki.fi (85-76-3-17-nat.elisa-mobile.fi [85.76.3.17])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: aaro.koskinen)
+        by lahtoruutu.iki.fi (Postfix) with ESMTPSA id 5311A1B005E7;
+        Sat, 19 Mar 2022 13:16:50 +0200 (EET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi; s=lahtoruutu;
+        t=1647688610;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=LtNthnYK/2RafUQShjpikkAGPGYQA3FW9B2cxMSy73k=;
+        b=RR2PqifMXA+DY1ljIC2dkKNovLXtB+EK/A4uUub169rxOkKgpOMZTcXw17egBUoNCbqhNc
+        Wj567aPXirL15p77CnkoT3Mir9vsQ3xxf8zHTDe3gjPea7AcMpTNaMp58MTn1gfzxcMdzA
+        mwWvFW9HGFpu7lkzh633SlBCYnGabIzJ9RgCir96BkdJqlo+m9y07XN/1vlnO0TGCaXQvy
+        d8o6FZGLTIlVDIXpRLeYMiuYaQ2g54TVvlxSWZRUrz/sqbk97mMAEMLa/QPto20uX5rFnD
+        +HzQl/7XIGy7/Sp8LS22KeA/aYgpDTEexdpm5td87+zYuZb12KAfKVpQnp6hJQ==
+Date:   Sat, 19 Mar 2022 13:16:48 +0200
+From:   Aaro Koskinen <aaro.koskinen@iki.fi>
+To:     Julia Lawall <Julia.Lawall@inria.fr>
+Cc:     Paul Walmsley <paul@pwsan.com>, kernel-janitors@vger.kernel.org,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ARM: OMAP1: fix typos in comments
+Message-ID: <20220319111648.GD1986@darkstar.musicnaut.iki.fi>
+References: <20220318103729.157574-33-Julia.Lawall@inria.fr>
 MIME-Version: 1.0
-References: <20220309021230.721028-1-yuzhao@google.com> <20220309021230.721028-7-yuzhao@google.com>
-In-Reply-To: <20220309021230.721028-7-yuzhao@google.com>
-From:   Barry Song <21cnbao@gmail.com>
-Date:   Sun, 20 Mar 2022 00:15:00 +1300
-Message-ID: <CAGsJ_4zw0gX0+OPE3MPaSRH53LdVR0TNv1RN5DK9dtNPvgd8iQ@mail.gmail.com>
-Subject: Re: [PATCH v9 06/14] mm: multi-gen LRU: minimal implementation
-To:     Yu Zhao <yuzhao@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        LAK <linux-arm-kernel@lists.infradead.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Kernel Page Reclaim v2 <page-reclaim@google.com>,
-        x86 <x86@kernel.org>, Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220318103729.157574-33-Julia.Lawall@inria.fr>
+ARC-Authentication-Results: i=1;
+        ORIGINATING;
+        auth=pass smtp.auth=aaro.koskinen smtp.mailfrom=aaro.koskinen@iki.fi
+ARC-Seal: i=1; s=lahtoruutu; d=iki.fi; t=1647688610; a=rsa-sha256;
+        cv=none;
+        b=lA+W8taBKSTwr16a/oezH/zLCzbdc2OmKMJKF/mDWPTRA9pbccAxyi3cSEiuDB8G1TJJeu
+        lqOXO/TjQVo7mNO0w7LuFwwSw4NS7IiI5lYXkyBUZRxEdZKS8guQy1NoF1QG6Ux9P9nHq6
+        zC3OlXbCMLaQIigdlTrCPOBmyhhTPtQ4/9lQ0oRoqOP0zDtVLI6p1cWjUU6KX/TyOYB6nn
+        v/K9p2rEAFmTsOVlM9OmbiYentzoRF9x7anwWGXRJdR4xxrfVecpLB5akNSO4smbwA9AQh
+        OFwDf17S6S+IR8W9CfRfh8Mpqn2rxM03jfJkRiVCJrWmYQWLLXdAbWwJjsadBA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi;
+        s=lahtoruutu; t=1647688610;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=LtNthnYK/2RafUQShjpikkAGPGYQA3FW9B2cxMSy73k=;
+        b=E6y98qRVObu5fsrif+T7yAkDCUzEbR5CZlsNnAdB7ZJsHB7wuXOT4gW2bAx88qA9wxK9XP
+        Ch2uXSg+4yZssuTR32PAgEduUIYLkOj7MoeMCwbc+yWasxq1fLQ8IeifPknIlC64M4/bco
+        wy8aZl1rSU1323chFUNZlTaNwhY1+9lZAadz5biK4Tg+7K9oVqj8trV5B5vTOGDoVs2eIv
+        qnz5688Y2gjLc0zKUnYjlxKDpHBBZXy/vra+59nUyEvSamazQWP7yNimiEOpc8o3NsxpAd
+        VnjtLXVjkUi20FJ0BlMjiKrgizaRJ8oyRFYX+uSVMCGrJ6NS4OAyjUobEvgzyQ==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> +                            unsigned long *min_seq, bool can_swap, bool *need_aging)
-> +{
-> +       int gen, type, zone;
-> +       long old = 0;
-> +       long young = 0;
-> +       long total = 0;
-> +       struct lru_gen_struct *lrugen = &lruvec->lrugen;
-> +
-> +       for (type = !can_swap; type < ANON_AND_FILE; type++) {
-> +               unsigned long seq;
-> +
-> +               for (seq = min_seq[type]; seq <= max_seq; seq++) {
-> +                       long size = 0;
-> +
-> +                       gen = lru_gen_from_seq(seq);
-> +
-> +                       for (zone = 0; zone < MAX_NR_ZONES; zone++)
-> +                               size += READ_ONCE(lrugen->nr_pages[gen][type][zone]);
-> +
-> +                       total += size;
-> +                       if (seq == max_seq)
-> +                               young += size;
-> +                       if (seq + MIN_NR_GENS == max_seq)
-> +                               old += size;
-> +               }
-> +       }
-> +
-> +       /* try to spread pages out across MIN_NR_GENS+1 generations */
-> +       if (min_seq[LRU_GEN_FILE] + MIN_NR_GENS > max_seq)
-> +               *need_aging = true;
-> +       else if (min_seq[LRU_GEN_FILE] + MIN_NR_GENS < max_seq)
-> +               *need_aging = false;
-> +       else if (young * MIN_NR_GENS > total)
-> +               *need_aging = true;
+On Fri, Mar 18, 2022 at 11:37:28AM +0100, Julia Lawall wrote:
+> Various spelling mistakes in comments.
+> Detected with the help of Coccinelle.
+> 
+> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
-Could we have some doc here? Given MIN_NR_GENS=2 and MAX_NR_GENS=4,
-it seems you mean if we have three generations and the youngest pages are more
-than 1/2 of the total pages, we need aging?
+Reviewed-by: Aaro Koskinen <aaro.koskinen@iki.fi>
 
+A.
 
-> +       else if (old * (MIN_NR_GENS + 2) < total)
-> +               *need_aging = true;
-
-it seems you mean if the oldest pages are less than 1/4 of the total pages,
-we need aging? Can we have comments to explain why here?
-
-your commit message only says " The aging produces young generations.
-Given an lruvec, it increments max_seq when max_seq-min_seq+1
-approaches MIN_NR_GENS." it can't explain what the code is doing
-here.
-
-
-> +       else
-> +               *need_aging = false;
-> +
-> +       return total > 0 ? total : 0;
-> +}
-
-Thanks
-Barry
+> ---
+>  arch/arm/mach-omap1/clock_data.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm/mach-omap1/clock_data.c b/arch/arm/mach-omap1/clock_data.c
+> index 3ebcd96efbff..c761e72563c1 100644
+> --- a/arch/arm/mach-omap1/clock_data.c
+> +++ b/arch/arm/mach-omap1/clock_data.c
+> @@ -818,7 +818,7 @@ int __init omap1_clk_init(void)
+>  		omap_readw(ARM_SYSST), omap_readw(DPLL_CTL),
+>  		omap_readw(ARM_CKCTL));
+>  
+> -	/* We want to be in syncronous scalable mode */
+> +	/* We want to be in synchronous scalable mode */
+>  	omap_writew(0x1000, ARM_SYSST);
+>  
+>  
+> 
