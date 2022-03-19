@@ -2,73 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BFFCC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 06:20:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1627C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 06:25:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242262AbiCSGVi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Mar 2022 02:21:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37160 "EHLO
+        id S242272AbiCSG02 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Mar 2022 02:26:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242252AbiCSGVf (ORCPT
+        with ESMTP id S242264AbiCSG0Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Mar 2022 02:21:35 -0400
-X-Greylist: delayed 570 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 18 Mar 2022 23:20:14 PDT
-Received: from mail-m17671.qiye.163.com (mail-m17671.qiye.163.com [59.111.176.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 914BE97298
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 23:20:14 -0700 (PDT)
-Received: from localhost.localdomain (unknown [183.6.116.60])
-        by mail-m17671.qiye.163.com (Hmail) with ESMTPA id 42C0F2E0023;
-        Sat, 19 Mar 2022 14:10:41 +0800 (CST)
-From:   Yi Li <yili@winhong.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     yilikernel@gmail.com, joseph.qi@linux.alibaba.com,
-        jlbec@evilplan.org, mark@fasheh.com, ocfs2-devel@oss.oracle.com,
-        Yi Li <yili@winhong.com>
-Subject: [PATCH] ocfs2: refactor the noqueue_attempted
-Date:   Sat, 19 Mar 2022 14:10:28 +0800
-Message-Id: <20220319061028.3152-1-yili@winhong.com>
-X-Mailer: git-send-email 2.25.3
+        Sat, 19 Mar 2022 02:26:25 -0400
+Received: from smtp.smtpout.orange.fr (smtp05.smtpout.orange.fr [80.12.242.127])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7755AE0DE
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 23:25:03 -0700 (PDT)
+Received: from [192.168.1.18] ([90.126.236.122])
+        by smtp.orange.fr with ESMTPA
+        id VSWInb6MLvjW4VSWJnTyuB; Sat, 19 Mar 2022 07:25:01 +0100
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sat, 19 Mar 2022 07:25:01 +0100
+X-ME-IP: 90.126.236.122
+Message-ID: <08b7604d-f528-ecb7-a8b2-7c9c36518143@wanadoo.fr>
+Date:   Sat, 19 Mar 2022 07:24:58 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2] dmaengine: qcom_hidma: Remove useless DMA-32 fallback
+ configuration
+Content-Language: en-US
+To:     Sinan Kaya <okaya@kernel.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, dmaengine@vger.kernel.org
+References: <4deb32b0c7838da66608022c584326eb01d0da03.1642232106.git.christophe.jaillet@wanadoo.fr>
+ <ee43d68f-000c-6513-38f2-877b9018ab22@kernel.org>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <ee43d68f-000c-6513-38f2-877b9018ab22@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
-        kWDxoPAgseWUFZKDYvK1lXWShZQUhPN1dZLVlBSVdZDwkaFQgSH1lBWUMYGRhWH05IGhofQkpDTE
-        NLVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWU9LSFVKSktISkNVS1kG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PDo6Iio5Fj4CDRoKTyo2FRcI
-        NxwaCUNVSlVKTU9MTUxLSU9KTUNDVTMWGhIXVQISFxI7DBIVExQVHFUYFBZFWVdZEgtZQVlKQ0hV
-        TVVKSk1VTUtZV1kIAVlBSk1CTzcG
-X-HM-Tid: 0a7fa0cca8aeda56kuws42c0f2e0023
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The variable noqueue_attempted just set when DLM_LKF_NOQUEUE.
-refactor the code.
+Le 22/01/2022 à 19:05, Sinan Kaya a écrit :
+> On 1/15/2022 2:35 AM, Christophe JAILLET wrote:
+>> As stated in [1], dma_set_mask() with a 64-bit mask never fails if
+>> dev->dma_mask is non-NULL.
+>> So, if it fails, the 32 bits case will also fail for the same reason.
+>>
+>> Simplify code and remove some dead code accordingly.
+>>
+>> [1]: 
+>> https://lore.kernel.org/linux-kernel/YL3vSPK5DXTNvgdx@infradead.org/#t
+>>
+> 
+> Can we please document this?
 
-Signed-off-by: Yi Li <yili@winhong.com>
----
- fs/ocfs2/dlmglue.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+Hi, the patch has been applied, but [1] is sometimes given as an 
+explanation link.
 
-diff --git a/fs/ocfs2/dlmglue.c b/fs/ocfs2/dlmglue.c
-index 801e60bab955..6315757c164d 100644
---- a/fs/ocfs2/dlmglue.c
-+++ b/fs/ocfs2/dlmglue.c
-@@ -1547,12 +1547,11 @@ static int __ocfs2_cluster_lock(struct ocfs2_super *osb,
- 	}
- 
- 	if (level > lockres->l_level) {
--		if (noqueue_attempted > 0) {
-+		if (noqueue_attempted) {
- 			ret = -EAGAIN;
- 			goto unlock;
- 		}
--		if (lkm_flags & DLM_LKF_NOQUEUE)
--			noqueue_attempted = 1;
-+		noqueue_attempted = lkm_flags & DLM_LKF_NOQUEUE;
- 
- 		if (lockres->l_action != OCFS2_AST_INVALID)
- 			mlog(ML_ERROR, "lockres %s has action %u pending\n",
--- 
-2.25.3
+CJ
+
+
+[1]: 
+https://lists.linuxfoundation.org/pipermail/iommu/2019-February/033674.html
+
+> 
+> Usual practice was to try allocating 64 bit DMA if possible and fallback
+> to 32 bits.
+> 
+>> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+>> ---
+>> v2: have the subject and updated driver match
+>> ---
+>>   drivers/dma/qcom/hidma.c | 4 +---
+>>   1 file changed, 1 insertion(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/dma/qcom/hidma.c b/drivers/dma/qcom/hidma.c
+>> index 65d054bb11aa..51587cf8196b 100644
+>> --- a/drivers/dma/qcom/hidma.c
+>> +++ b/drivers/dma/qcom/hidma.c
+>> @@ -838,9 +838,7 @@ static int hidma_probe(struct platform_device *pdev)
+>>       rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+>>       if (rc) {
+>>           dev_warn(&pdev->dev, "unable to set coherent mask to 64");
+>> -        rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+>> -        if (rc)
+>> -            goto dmafree;
+>> +        goto dmafree;
+>>       }
+>>       dmadev->lldev = hidma_ll_init(dmadev->ddev.dev,
+> 
+> 
 
