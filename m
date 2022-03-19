@@ -2,46 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0356C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B71EC433EF
 	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 15:09:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243407AbiCSPGf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Mar 2022 11:06:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49262 "EHLO
+        id S243394AbiCSPBN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Mar 2022 11:01:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243388AbiCSPGe (ORCPT
+        with ESMTP id S235541AbiCSPBI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Mar 2022 11:06:34 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2124.outbound.protection.outlook.com [40.107.22.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD7BEE4E
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 08:05:12 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WiBZtblGvWQIErhQq7D7Uk+J0EvKMPNDKDe6j0tCbv/Gbg1UUXKy28CLCT38dlK0qCLwIBKigdQXQu9UD+JdxI76DXDkOWySx6OoBvTzSRJv3YZwAh4CxbcX5WmBLzHL9Y7hxW6d7Oxf4h52KIQZCBHJTjKC/SKssOZdIPvW+ZcWKeFHWaS5isb6MkiLJngDnnTx9w2ki8XVdfZFGHSM7lIZpnGV3UaBtCRgRmx9AMoZm3RxF4by8m5ZNcTTRnkZQBpaLTVfUaSCnqAifXzxog81f6CpV0c+T6IWcgibzwapcpMlaWiskfLQAnuSZTMz88RW+byFU32KtnGRGbniWw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tAF1ExWvkrhPOhMDmE6NdFF2rNWmZF/I3TWoUiA154U=;
- b=QCV78gBhfdxCh0S87sM3SIRuo3g3g4dLvdaQss+XP10fJA0wrBgBFm8vt+pwoK6HNyqrrfEN6pSZbhn2Y2lgULyp2oE2OalGMo6KSmUAHEGNJzDip9IPB463VyN7z76WAKHfQMpzHngeZSw5ruh3gLJ8b2nSGGltKPZIWNkXZ30f5oaHcmFxGcHi0q+yU7HuZQHHwPM1kWRNrY1SBEf3AuBqRON9l2Q9IqSYRe4axhVmEPnKmSabqHNWma+OX7xRQDRTj3wgBgiMktvLYdEHtcvBhNOYubp8hUAerLj8akJzzjeefOt2q5W/B2f+QZH0jUZQPPnKmFZofSrDEF5r/Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bang-olufsen.dk; dmarc=pass action=none
- header.from=bang-olufsen.dk; dkim=pass header.d=bang-olufsen.dk; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bang-olufsen.dk;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tAF1ExWvkrhPOhMDmE6NdFF2rNWmZF/I3TWoUiA154U=;
- b=XzqIfczTheJDfff1VD03T0qlde6pnHhOWAOOWj4XpSqvs7WMpdQOC72iw8Fx0WLHdyEcNxF9X6eV6akVZrjCH9pRyZq7ns2pjnb86cM/zfpHN2xV1Q+RqXMnJzv6XxJ7vee385Apd6+ERw3f/t4/Va0LhMTDavDS7nKTTp2ggvk=
-Received: from AM6PR03MB3943.eurprd03.prod.outlook.com (2603:10a6:20b:26::24)
- by PA4PR03MB6895.eurprd03.prod.outlook.com (2603:10a6:102:e7::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.19; Sat, 19 Mar
- 2022 15:05:09 +0000
-Received: from AM6PR03MB3943.eurprd03.prod.outlook.com
- ([fe80::6123:22f6:a2a7:5c1e]) by AM6PR03MB3943.eurprd03.prod.outlook.com
- ([fe80::6123:22f6:a2a7:5c1e%5]) with mapi id 15.20.5081.019; Sat, 19 Mar 2022
- 15:05:09 +0000
-From:   =?utf-8?B?QWx2aW4gxaBpcHJhZ2E=?= <ALSI@bang-olufsen.dk>
-To:     =?utf-8?B?QWx2aW4gxaBpcHJhZ2E=?= <alvin@pqrs.dk>
-CC:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Sat, 19 Mar 2022 11:01:08 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C3263F899
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 07:59:47 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id pv16so22172375ejb.0
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 07:59:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pqrs.dk; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=WEyYaX3ss9r/kr8FOOJcJqvmK49fnSer+w8wsSytnGc=;
+        b=PH5S2GGLYXu8h65gw2tBfffBCVYm+EawPOnQKKB7cfw6gbdSnGBzcw0pBegBMS2jH8
+         pcTVrj15bEBoiDGLHOFeYNSv/qpvtBWx3Fo75MGP2yHVL++9QrhvPcCkpkD7tZgPdLJH
+         BVulMoBVp1n4k5DfEu4eZiyoJStVTE5ghlhE0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=WEyYaX3ss9r/kr8FOOJcJqvmK49fnSer+w8wsSytnGc=;
+        b=O6KSXf2BvEO4YI+cXlULC/SDnMYWchFwp5VdbazLq1hYWuatrMAw88gp3KhmPMzB2a
+         Iu8sxi/X4EBrfpQbmisMx9ChfNO2/oyXv5pkJ8daf6OIGbxFeMOIcjMqfEwKvlYhi6pA
+         fsm7bZ1zQj65C8iKxxcWXtqmyW7764bl5fokEcx6m/2oHSBE1g9fJgwQ0X+LR0PT8xYB
+         FsGHxIrxn/a0Bu45mwsURwfM4/6lxtBwUvdrG2Q8vPcodctwQSXJ/b2ejbYSIe8EfO2V
+         9uKjVadiY3nErYanfpPSF2NpdPGvgz90w/NskPCL7xwSyV1tsfWQQCPLW+aILJT3AUrY
+         8PfQ==
+X-Gm-Message-State: AOAM533pkGoHuBH1yYzkDV4UevB1ntbE0SrIE+8GJ1LBXfgAEiyp5xCO
+        fRXp3Eshqcp5bAn2gniQV/UXMg==
+X-Google-Smtp-Source: ABdhPJyAIRg+IHtOqAPn/Pvh3MaMvaYOEtrnwfOy+2azy5QQsr5c3FRifBkBizPn4h+pBjijahzpzA==
+X-Received: by 2002:a17:906:2991:b0:6cf:1fd4:39a3 with SMTP id x17-20020a170906299100b006cf1fd439a3mr13474185eje.21.1647701985578;
+        Sat, 19 Mar 2022 07:59:45 -0700 (PDT)
+Received: from capella.. (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
+        by smtp.gmail.com with ESMTPSA id m25-20020a170906161900b006d43be5b95fsm4923329ejd.118.2022.03.19.07.59.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 19 Mar 2022 07:59:45 -0700 (PDT)
+From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
+To:     Andrzej Hajda <andrzej.hajda@intel.com>,
         Neil Armstrong <narmstrong@baylibre.com>,
         Robert Foss <robert.foss@linaro.org>,
         Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
@@ -50,95 +55,74 @@ CC:     Andrzej Hajda <andrzej.hajda@intel.com>,
         David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>,
         Archit Taneja <architt@codeaurora.org>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 0/2] drm: bridge: adv7511: two fixes for CEC
-Thread-Topic: [PATCH 0/2] drm: bridge: adv7511: two fixes for CEC
-Thread-Index: AQHYO6H5g+mOB3NTQEipoMml5TIbJw==
-Date:   Sat, 19 Mar 2022 15:05:09 +0000
-Message-ID: <87r16y56fu.fsf@bang-olufsen.dk>
+        Hans Verkuil <hans.verkuil@cisco.com>
+Cc:     =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] drm: bridge: adv7511: fix CEC power down control register offset
+Date:   Sat, 19 Mar 2022 15:59:38 +0100
+Message-Id: <20220319145939.978087-2-alvin@pqrs.dk>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220319145939.978087-1-alvin@pqrs.dk>
 References: <20220319145939.978087-1-alvin@pqrs.dk>
-In-Reply-To: <20220319145939.978087-1-alvin@pqrs.dk> ("Alvin
- =?utf-8?Q?=C5=A0ipraga=22's?=  message of "Sat, 19 Mar 2022 15:59:37 +0100")
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bang-olufsen.dk;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: fab82d32-a299-4f19-b28e-08da09b9dc5e
-x-ms-traffictypediagnostic: PA4PR03MB6895:EE_
-x-microsoft-antispam-prvs: <PA4PR03MB68955B4D9F85F19DFBE9E4F983149@PA4PR03MB6895.eurprd03.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 4Jn+vvffqCl84a+71MOQi3QQKzROD1bZr7KRyDY8/JpwcTUa12zmq6yEhpVdx+UAd7SeuTocJtvjd4oDIoUsr7aib7vXYOZx1dJLMEeWJRzgO/u+f+OvjnvK/7RD6V2Zd+C3GujhQkx5wq1qjSuEiMTzOnvjO4ieBrlwE4VVsDMKZcLQz5PNZ0HwbIH1dnCKQTKnl8MSEpIzxt8PX61qL/o4H507A0inXFcHe7kFrD+4uGlYBe6iXfQopJczdDrv6VK/DDzixOWtQ0fo5S6zMN4f+2u5QDUQC9ynilHKMhAgLr/5o55Dv3XUoOJlHdrP3Nabjw5+XdV1yJck4s8zLfB3QnQADnV7x/OpQasajyGs0B3838b8h32zAFpr/K1k6Rt+XT6fveY6KD96SQg2OSdoOzOEhFnWsjrmOVyQ7b964W/MhPYLNUDXGNeWQnvE1noE7Kc5GGY4aFDM2mtBvEzfq2F28eV7nSh29oPSqqF6B4tFf7/yLGPCyLWVKld3AWTtp6VYXLmjuVllE+/v0ZDm4bXaU7axofUXWE0xi/Wr+igbIlggN6RoI0NYj+c2Pgk5w76CpPWRTzS8Bjtwh5mZYWXlh0Ipmo0SLViCYxiCInJmLM8WmIL7s3R75YYnIxOE6X0Br7HxsCbAhhgRlGCStmvGCoCw0eUHKKhV/lTMuj+Njhya/VsCdEFgHSf6E+vAW5/zh4dYRXo3t8vhAw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR03MB3943.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38070700005)(186003)(122000001)(38100700002)(83380400001)(26005)(86362001)(4326008)(54906003)(2906002)(91956017)(76116006)(316002)(8676002)(66946007)(66476007)(66446008)(64756008)(66556008)(85202003)(7416002)(8936002)(8976002)(36756003)(5660300002)(85182001)(4744005)(508600001)(6506007)(2616005)(6512007)(71200400001)(6916009)(6486002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?TERidlpob1dTSFVMWDg1di9ZZ1lxS09PYlN6RzV5MXBLc2pWZGhJQjVxd254?=
- =?utf-8?B?R1RySDdTM1pXUW5CclZqUHBHTnlRMFp0cnFDNUhVajlmc1RrU2pBa0tIOFVt?=
- =?utf-8?B?QTlWelNxaTZwdDFWL0hVUU1tQ0YvQ3RVcW0zTzQ2eVkvYzRMTUZVQ2c4SFgx?=
- =?utf-8?B?R1RSaHl6L3kreU1rYVhZYWNQQkxyWmZScEpZcDJsVXJlOXJ2K00rR0RpWld3?=
- =?utf-8?B?NWptWEVXT1NSR0E4dFh2aUtWTHM5cElpa201V2xNZllMT1N2VHp4L1U0Ynpz?=
- =?utf-8?B?YlU4ZFV0dFBPdzZrNFJHOUpxeEpiU1E2bFpGSHU1TVdkQ3A4elJxUzRRN1B5?=
- =?utf-8?B?dkV3ZnBUUWp4UGMzdUE2bWdCODZIc3FIaW83R3FhaWJUTVNSRjB0M3lXeXh0?=
- =?utf-8?B?L2dYd2ExdkRxc1VvQmg2cWdLVzE5VGNFU3lnRzBrK1Y0anRHZjZxcStzS2V0?=
- =?utf-8?B?ejB5b0xvbU5hMURNWG1odkRGMUh4NlZKdldFd2JPby9MZi9rQ24rSmlxSXgx?=
- =?utf-8?B?VkNDMkNCYTZIK3lBa0lpM1VCa3VmVDExVUY5ZjZ4cXB2U0RIdXhUNytDSmRC?=
- =?utf-8?B?TGdBd0tJSlJYQXNsRkJtcENUT1lVZGhEQnNaTTZOeVRLdG1LY2RHc29haUc2?=
- =?utf-8?B?R3JnMmVaeFczWXhIelZENzVCWTZHT2xlWHI2Z1hkaDN0THFvMjl2STRVeEJq?=
- =?utf-8?B?RCtjamFCbkV5ekw0dVZQMks1TjRqRzZ1emJiNm92MzBSeHY5S1krZWdGMU5l?=
- =?utf-8?B?TDVUNGF6QTJrUks4VFdPVXlzay8ycDJra3hRVlRTS3JrVzk0dWoxTzEwakla?=
- =?utf-8?B?Um5nRmVDNzVnSm50clZaRVBSTGRXc0RDdXQvaTl4dHcxYndOMHY4azNYeWRJ?=
- =?utf-8?B?UTdQaVFNWE1kay9IK3h5aTRhMmRUeDh3WkdFbm1KdTNQL0J2MzZTc2NFb05F?=
- =?utf-8?B?SGNHS2dJU3UwZjh6QTg2VDY2Z3c0RlFzQjBMTHl4aXVabUdVbkh0VUV0VGZ2?=
- =?utf-8?B?U2tWMTJNUHpCekNPU3pnVUh2eDZTY2NVaWEzWklrS2FEclA4VzBMZzMybmox?=
- =?utf-8?B?emFmSXZlZTFReHd6NWNkRWk4ODlwY0hnMHN1ckVvbW14NVdjV2ZWV0c3SWww?=
- =?utf-8?B?dHBub2lsRjZ2a0xUZzNZQWFvVERiUzNLVEp3bWs3WjVIbWtlNGtyU1NFL1p1?=
- =?utf-8?B?TSt5ZHhvQm9VNEFmVHRvSXQ1OC9HS3VLd3RDTW9jbmErN2Y2QWdtV2FQT09T?=
- =?utf-8?B?LzNubzQrN3NGOCtCNlIrdExlMXVDMkszV2I4YU1ZTDdYbm5IVXZQbXV1a0d4?=
- =?utf-8?B?S1F3QWJsckg5WWFDMmdxTDNzOHFIV1p6T2ZZbUtycWsvUWZZYTBYNG9tS1lp?=
- =?utf-8?B?a3h6OFJxeGNmQmh1UGVRUE1TOGRtTHJnc241SWxVZ2lwT1c1UUhRdktNeDB0?=
- =?utf-8?B?WVB6TGs3MFNlNktQYkY1WTdvZm5sVVFXRnVMdjV2eWtzNU41dDU4MWROSmhR?=
- =?utf-8?B?OWg0N3dzZWV3cXVYdVBPZW1YbGhuMU1ESWNGTERnVmNISEJ3OXFNdVRJRkdQ?=
- =?utf-8?B?WDNuU29QMHNvazRsSGpwN2lBQm5zY3pnZkUxeWNVc2hrMi9SbHNlaDhlT1pD?=
- =?utf-8?B?RkI2c0VQY04xK3F3QUtQOWFkd3cyZG93SzlaeVA0b0cxdmtWaDIxYjQxV3hx?=
- =?utf-8?B?c0RGcSs5WHNMbDdid0dKbE1WOUVKUk40Zm13cGthSVJBOXkydndkNGhIajEz?=
- =?utf-8?B?QzVFSkoxUDY0bHdOc2pCTnY4Uk14VVFucmxndVJxb3ZxWGMrNk5hMW1hbm1T?=
- =?utf-8?B?b0xXZzV1ZGEyUk9paGluTGVaSVQ1TFBkd1B5Rk10N1dxK3ZiTjlWeU0rQ0tS?=
- =?utf-8?B?VWczRHRCQTN5Rkc4MWI5RHdNblhWSWlvRDkrR2MwSUw0bU9weHpoL3lrVFor?=
- =?utf-8?Q?JOBrCwTvxYjdWFivqklmLchOsfmiG+Tw?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <82FA79C35FA5224F8446E344E53459DC@eurprd03.prod.outlook.com>
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-OriginatorOrg: bang-olufsen.dk
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR03MB3943.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fab82d32-a299-4f19-b28e-08da09b9dc5e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Mar 2022 15:05:09.6202
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 210d08b8-83f7-470a-bc96-381193ca14a1
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: xCDtFG0v1AfAXDsO1OdoRepOG+PPBueHQIXulwUlYlNHg50IHtQKxivDaUno3oiOtF5O8HEB1Fd6ZGPoP9p16Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR03MB6895
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-QWx2aW4gxaBpcHJhZ2EgPGFsdmluQHBxcnMuZGs+IHdyaXRlczoNCg0KPiBGcm9tOiBBbHZpbiDF
-oGlwcmFnYSA8YWxzaUBiYW5nLW9sdWZzZW4uZGs+DQo+DQo+IFRoZSBwYXRjaGVzIGFyZSBzZW50
-IGFnYWluc3QgZHJtLW1pc2MtbmV4dC4gVGhhbmtzIQ0KDQpXaG9vcHMsIEkgbWVhbnQgZHJtLW1p
-c2MtZml4ZXMsIHNpbmNlIHRoZXNlIGFyZSBmaXhlcy4gOi0pDQoNClNlcGFyYXRlIHBhdGNoZXMg
-YWltZWQgYXQgZHJtLW1pc2MtbmV4dCBpbmNvbWluZy4NCg0KPg0KPiBBbHZpbiDFoGlwcmFnYSAo
-Mik6DQo+ICAgZHJtOiBicmlkZ2U6IGFkdjc1MTE6IGZpeCBDRUMgcG93ZXIgZG93biBjb250cm9s
-IHJlZ2lzdGVyIG9mZnNldA0KPiAgIGRybTogYnJpZGdlOiBhZHY3NTExOiB1bnJlZ2lzdGVyIGNl
-YyBpMmMgZGV2aWNlIGFmdGVyIGNlYyBhZGFwdGVyDQo+DQo+ICBkcml2ZXJzL2dwdS9kcm0vYnJp
-ZGdlL2Fkdjc1MTEvYWR2NzUxMS5oICAgICB8IDUgKy0tLS0NCj4gIGRyaXZlcnMvZ3B1L2RybS9i
-cmlkZ2UvYWR2NzUxMS9hZHY3NTExX2NlYy5jIHwgNCArKy0tDQo+ICBkcml2ZXJzL2dwdS9kcm0v
-YnJpZGdlL2Fkdjc1MTEvYWR2NzUxMV9kcnYuYyB8IDUgKystLS0NCj4gIDMgZmlsZXMgY2hhbmdl
-ZCwgNSBpbnNlcnRpb25zKCspLCA5IGRlbGV0aW9ucygtKQ==
+From: Alvin Šipraga <alsi@bang-olufsen.dk>
+
+The ADV7511_REG_CEC_CTRL = 0xE2 register is part of the main register
+map - not the CEC register map. As such, we shouldn't apply an offset to
+the register address. Doing so will cause us to address a bogus register
+for chips with a CEC register map offset (e.g. ADV7533).
+
+Fixes: 3b1b975003e4 ("drm: adv7511/33: add HDMI CEC support")
+Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+---
+ drivers/gpu/drm/bridge/adv7511/adv7511.h     | 5 +----
+ drivers/gpu/drm/bridge/adv7511/adv7511_cec.c | 4 ++--
+ 2 files changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511.h b/drivers/gpu/drm/bridge/adv7511/adv7511.h
+index 592ecfcf00ca..4e7cbaa9204f 100644
+--- a/drivers/gpu/drm/bridge/adv7511/adv7511.h
++++ b/drivers/gpu/drm/bridge/adv7511/adv7511.h
+@@ -386,10 +386,7 @@ void adv7511_cec_irq_process(struct adv7511 *adv7511, unsigned int irq1);
+ #else
+ static inline int adv7511_cec_init(struct device *dev, struct adv7511 *adv7511)
+ {
+-	unsigned int offset = adv7511->type == ADV7533 ?
+-						ADV7533_REG_CEC_OFFSET : 0;
+-
+-	regmap_write(adv7511->regmap, ADV7511_REG_CEC_CTRL + offset,
++	regmap_write(adv7511->regmap, ADV7511_REG_CEC_CTRL,
+ 		     ADV7511_CEC_CTRL_POWER_DOWN);
+ 	return 0;
+ }
+diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_cec.c b/drivers/gpu/drm/bridge/adv7511/adv7511_cec.c
+index 28d9becc939c..4ee7f2e911e3 100644
+--- a/drivers/gpu/drm/bridge/adv7511/adv7511_cec.c
++++ b/drivers/gpu/drm/bridge/adv7511/adv7511_cec.c
+@@ -303,7 +303,7 @@ int adv7511_cec_init(struct device *dev, struct adv7511 *adv7511)
+ 		goto err_cec_alloc;
+ 	}
+ 
+-	regmap_write(adv7511->regmap, ADV7511_REG_CEC_CTRL + offset, 0);
++	regmap_write(adv7511->regmap, ADV7511_REG_CEC_CTRL, 0);
+ 	/* cec soft reset */
+ 	regmap_write(adv7511->regmap_cec,
+ 		     ADV7511_REG_CEC_SOFT_RESET + offset, 0x01);
+@@ -330,7 +330,7 @@ int adv7511_cec_init(struct device *dev, struct adv7511 *adv7511)
+ 	dev_info(dev, "Initializing CEC failed with error %d, disabling CEC\n",
+ 		 ret);
+ err_cec_parse_dt:
+-	regmap_write(adv7511->regmap, ADV7511_REG_CEC_CTRL + offset,
++	regmap_write(adv7511->regmap, ADV7511_REG_CEC_CTRL,
+ 		     ADV7511_CEC_CTRL_POWER_DOWN);
+ 	return ret == -EPROBE_DEFER ? ret : 0;
+ }
+-- 
+2.35.1
+
