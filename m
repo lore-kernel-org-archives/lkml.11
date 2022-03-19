@@ -2,116 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09D62C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 09:31:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24B14C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 09:34:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242586AbiCSJdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Mar 2022 05:33:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43374 "EHLO
+        id S242593AbiCSJfo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Mar 2022 05:35:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234179AbiCSJdF (ORCPT
+        with ESMTP id S234179AbiCSJfl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Mar 2022 05:33:05 -0400
-Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C650726367D;
-        Sat, 19 Mar 2022 02:31:45 -0700 (PDT)
-Received: by mail-qk1-f181.google.com with SMTP id g8so8460043qke.2;
-        Sat, 19 Mar 2022 02:31:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KeQ7yX2kKuYHHbbbBJLbr6R2DhCE63F4Wa3rnEOCJlg=;
-        b=j3b7ESQXfAwpy9DEoH1UD0vsE2mSrLSFS0QXi37jHC8RE3FT3FTiwlgLMEIT23cdK5
-         ZTrzH2JSZvdWIDaP9oTEIn4+awAiYkjJqcLwyg1V2wzkU12cWxYh4NBe+BThqAq0tCKk
-         3t873GUhoGIpOP5KGxeXdaksG4spvkwrdeL7Xv8IaoW4C0zqKv422pYpTkc7lhsjakER
-         S2gWKBX/yTqysoMAvAegWTDRwSo49a8/p+1e2xJok6A/wE0T2Jmq773KZA6Avg3Lv086
-         vwC3Yx/USwbyrCwyo2XrbJlfNTnDcvesyUCAbeHjGo59V1AI6Q2yYTnQVnNp5XHMC174
-         SYMQ==
-X-Gm-Message-State: AOAM533Y73NTMIpc4Dm283t79ojj8Mpbdlw5ILhlCKKf4nWET5nzLlE/
-        vQ7yzovIFHLCB6a3DgmgLdpcM7bndyrtgQ==
-X-Google-Smtp-Source: ABdhPJyQmP2/SXwka8vQTI+lrtMD6jR6nWHvS/VEpo2i49x/180A36XSCYwLCsPGSRSpQ09EuALnOg==
-X-Received: by 2002:a05:620a:4309:b0:67b:3fc1:86eb with SMTP id u9-20020a05620a430900b0067b3fc186ebmr7855300qko.495.1647682304439;
-        Sat, 19 Mar 2022 02:31:44 -0700 (PDT)
-Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com. [209.85.219.180])
-        by smtp.gmail.com with ESMTPSA id b17-20020a05622a021100b002e1f86db385sm4402948qtx.68.2022.03.19.02.31.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 19 Mar 2022 02:31:43 -0700 (PDT)
-Received: by mail-yb1-f180.google.com with SMTP id z8so19794201ybh.7;
-        Sat, 19 Mar 2022 02:31:43 -0700 (PDT)
-X-Received: by 2002:a25:45:0:b0:633:96e2:2179 with SMTP id 66-20020a250045000000b0063396e22179mr14151314yba.393.1647682303385;
- Sat, 19 Mar 2022 02:31:43 -0700 (PDT)
+        Sat, 19 Mar 2022 05:35:41 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B31ED270861;
+        Sat, 19 Mar 2022 02:34:20 -0700 (PDT)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KLFzN3GGqzfYmp;
+        Sat, 19 Mar 2022 17:32:48 +0800 (CST)
+Received: from localhost.localdomain (10.175.104.82) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Sat, 19 Mar 2022 17:34:18 +0800
+From:   Ziyang Xuan <william.xuanziyang@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>
+CC:     <edumazet@google.com>, <brianvv@google.com>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next v3 0/3] net: ipvlan: fix potential UAF problem for phy_dev
+Date:   Sat, 19 Mar 2022 17:52:00 +0800
+Message-ID: <cover.1647664114.git.william.xuanziyang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220124121009.108649-1-alistair@alistair23.me> <20220124121009.108649-4-alistair@alistair23.me>
-In-Reply-To: <20220124121009.108649-4-alistair@alistair23.me>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Sat, 19 Mar 2022 10:31:32 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUp3ze1muL2kRDWF+msuEqNFx1ueuZ0hNXm59HiU=5vaw@mail.gmail.com>
-Message-ID: <CAMuHMdUp3ze1muL2kRDWF+msuEqNFx1ueuZ0hNXm59HiU=5vaw@mail.gmail.com>
-Subject: Re: [PATCH v18 3/8] mfd: simple-mfd-i2c: Enable support for the
- silergy, sy7636a
-To:     Alistair Francis <alistair@alistair23.me>
-Cc:     Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        linux-hwmon@vger.kernel.org,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, NXP Linux Team <linux-imx@nxp.com>,
-        Zhang Rui <rui.zhang@intel.com>, alistair23@gmail.com,
-        Amit Kucheria <amitk@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Andreas Kemnade <andreas@kemnade.info>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alistair,
+There is a known scenario can trigger UAF problem for lower
+netdevice as following:
 
-On Mon, Jan 24, 2022 at 1:24 PM Alistair Francis <alistair@alistair23.me> wrote:
-> Signed-off-by: Alistair Francis <alistair@alistair23.me>
-> Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+Someone module puts the NETDEV_UNREGISTER event handler to a
+work, and lower netdevice is accessed in the work handler. But
+when the work is excuted, lower netdevice has been destroyed
+because upper netdevice did not get reference to lower netdevice
+correctly.
 
-> --- a/drivers/mfd/simple-mfd-i2c.c
-> +++ b/drivers/mfd/simple-mfd-i2c.c
-> @@ -62,8 +62,19 @@ static int simple_mfd_i2c_probe(struct i2c_client *i2c)
->         return ret;
->  }
->
-> +static const struct mfd_cell sy7636a_cells[] = {
-> +       { .name = "sy7636a-regulator", },
-> +       { .name = "sy7636a-temperature", },
-> +};
-> +
-> +static const struct simple_mfd_data silergy_sy7636a = {
-> +       .mfd_cell = sy7636a_cells,
-> +       .mfd_cell_size = ARRAY_SIZE(sy7636a_cells),
-> +};
-> +
->  static const struct of_device_id simple_mfd_i2c_of_match[] = {
->         { .compatible = "kontron,sl28cpld" },
-> +       { .compatible = "silergy,sy7636a", .data = &silergy_sy7636a},
->         {}
->  };
+Although it can not happen for ipvlan now because there is no
+way to access phy_dev outside ipvlan. But it is necessary to
+add the reference operation to phy_dev to avoid the potential
+UAF problem in the future.
 
-This is slowly turning into a "board file" for an ever-growing random
-bunch of devices, none of which is described in the help text?
+In addition, add net device refcount tracker to ipvlan and
+fix some error comments for ipvtap module.
 
-See also my reply to patch 2/8
-https://lore.kernel.org/all/CAMuHMdVy4E1pX+VLLq_05FX4pM+BPZycQgn68ArGh2s8qL24=w@mail.gmail.com/
+---
+v2->v3:
+  - Make it clear that the problem can not happen now but for future.
+  - Delete "Fixes: tag" to avoid backporting to stable.
+v1->v2:
+  - Add "Fixes: tag" for fix patches.
 
-Gr{oetje,eeting}s,
+Ziyang Xuan (3):
+  net: ipvlan: fix potential UAF problem for phy_dev
+  net: ipvlan: add net device refcount tracker
+  net: ipvtap: fix error comments
 
-                        Geert
+ drivers/net/ipvlan/ipvlan.h      |  1 +
+ drivers/net/ipvlan/ipvlan_main.c | 13 +++++++++++++
+ drivers/net/ipvlan/ipvtap.c      |  4 ++--
+ 3 files changed, 16 insertions(+), 2 deletions(-)
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+-- 
+2.25.1
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
