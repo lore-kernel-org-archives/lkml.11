@@ -2,83 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3C57C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 03:57:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE156C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 03:57:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242070AbiCSD66 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 23:58:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57558 "EHLO
+        id S242078AbiCSD7C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 23:59:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241978AbiCSD6m (ORCPT
+        with ESMTP id S241995AbiCSD6p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 23:58:42 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 179F7103B81;
-        Fri, 18 Mar 2022 20:57:21 -0700 (PDT)
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22J1VWwc017377;
-        Sat, 19 Mar 2022 03:57:18 GMT
+        Fri, 18 Mar 2022 23:58:45 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F8F0103BB6;
+        Fri, 18 Mar 2022 20:57:23 -0700 (PDT)
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22J3BgIT000642;
+        Sat, 19 Mar 2022 03:57:06 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=UbUn62tq/Iut1ObrszGLQAMYQYwL5SE5SVUJLY86U00=;
- b=d8Sj1Ikn0IAlWtwfE/mj5pqvYadR9dZDaxkWWu/VWmaLd6W5R0ABTRzVo5ouJuy/N901
- lpyMousM/Ezsd50jz4N++Yzna79Z4zwsfRIOVyDJNArS8vt4vVgzeVySlh3+Gc/pWnhi
- yqxEfL77mdgay8w4MVTW26C9yAFIdGSK4hYI7+AKISQYrSFWhIZNALx99DYCirYeQPKf
- PnbSFAAa53aQ/GDgTcrVJDMxFfQKaZqtunjbaf1fEhZ9rns9Z6qj1ufNNx+H0os2roY4
- JPX88OQdHhArZhx9Q2lu+vqv9F8xCcy/PB+QW6WnIfsFVLca5wCIRDvE/x6+dhHyEI4O 4Q== 
+ bh=2LSpElg9eqep1ve6R13MKajEKCL9ymkAaD7aT2pb0OY=;
+ b=qpO+z8cZ23KL3H4d33WAKM7H1Oyf3IEC1cuJRaaBFgHlsxKFcLLkpEtSwJPRVanr4cgF
+ 295qGX5dT2Vgn8Rp41UiHMEraWWtIJlfu8exR5x7wMgCSOjis0QNpONaoBqjTRCjmbuS
+ Q3ptbs7Xg1IvCA3gxq793qU9BjLTrX/t8CAQMBOuscKH7l9UUXINjooDGMP/k7XMmus/
+ BPAG6tcKsFW7cpM5sWXc3sa/fCARiduevQciR8Kl4K40Ll46CICkmZ6nHq2rjrW4ilqP
+ PNpOg1VaqEzdA8a+s4dxopxz/dweVNOluA0De5Qv49f8hkVG6OfmN5arFdoxC48HUmMh Dg== 
 Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3ew5kcg2m0-1
+        by mx0b-00069f02.pphosted.com with ESMTP id 3ew72a80yu-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 19 Mar 2022 03:57:18 +0000
+        Sat, 19 Mar 2022 03:57:06 +0000
 Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 22J3v9RT007209;
-        Sat, 19 Mar 2022 03:57:17 GMT
+        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 22J3v5Rw007140;
+        Sat, 19 Mar 2022 03:57:05 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3ew5kyshpc-1
+        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3ew5kyshmv-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 19 Mar 2022 03:57:17 +0000
+        Sat, 19 Mar 2022 03:57:05 +0000
 Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 22J3v5Qs007126;
-        Sat, 19 Mar 2022 03:57:17 GMT
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 22J3v5Qc007126;
+        Sat, 19 Mar 2022 03:57:05 GMT
 Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3ew5kyshmn-9;
-        Sat, 19 Mar 2022 03:57:16 +0000
+        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3ew5kyshmn-1;
+        Sat, 19 Mar 2022 03:57:05 +0000
 From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     Christoph Hellwig <hch@lst.de>, linux-scsi@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] scsi: scsi_ioctl:drop needless assignment in sg_io()
-Date:   Fri, 18 Mar 2022 23:56:59 -0400
-Message-Id: <164766213032.31329.16003266228300460404.b4-ty@oracle.com>
+To:     open-iscsi@googlegroups.com, linux-kernel@vger.kernel.org,
+        Wenchao Hao <haowenchao@huawei.com>,
+        linux-scsi@vger.kernel.org, Chris Leech <cleech@redhat.com>,
+        Lee Duncan <lduncan@suse.com>,
+        "James E . J . Bottomley" <jejb@linux.ibm.com>,
+        Mike Christie <michael.christie@oracle.com>
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>
+Subject: Re: [PATCH v3 0/3] scsi:iscsi: handle iscsi_cls_conn device with sysfs correctly
+Date:   Fri, 18 Mar 2022 23:56:51 -0400
+Message-Id: <164766213031.31329.2067042035707430877.b4-ty@oracle.com>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220315061520.30745-1-lukas.bulwahn@gmail.com>
-References: <20220315061520.30745-1-lukas.bulwahn@gmail.com>
+In-Reply-To: <20220310015759.3296841-1-haowenchao@huawei.com>
+References: <20220310015759.3296841-1-haowenchao@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: 4ohGNjZjhqOEO8sF--M4NmcGx3J8t6es
-X-Proofpoint-ORIG-GUID: 4ohGNjZjhqOEO8sF--M4NmcGx3J8t6es
+X-Proofpoint-GUID: jR7Z0HAp5jikhT8qzqGlTQTXinLUS8Jf
+X-Proofpoint-ORIG-GUID: jR7Z0HAp5jikhT8qzqGlTQTXinLUS8Jf
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 15 Mar 2022 07:15:20 +0100, Lukas Bulwahn wrote:
+On Wed, 9 Mar 2022 20:57:56 -0500, Wenchao Hao wrote:
 
-> Commit ce70fd9a551a ("scsi: core: Remove the cmd field from struct
-> scsi_request") refactored sg_io(), so that it does not allocate directly
-> and hence does not return -ENOMEM in its error case. That makes a
-> remaining assignment of -ENOMEM to the return variable needless.
+> We found a NULL pointer dereference in iscsi_sw_tcp_conn_get_param(),
+> the root reason is we did sysfs addition wrong.
 > 
-> Drop this needless assignment in sg_io().
+> The origin implement do device setup in iscsi_create_conn() which
+> bind the alloc/init and add in one function; do device teardown in
+> iscsi_destroy_conn() which bind remove and free in one function.
 > 
 > [...]
 
 Applied to 5.18/scsi-queue, thanks!
 
-[1/1] scsi: scsi_ioctl:drop needless assignment in sg_io()
-      https://git.kernel.org/mkp/scsi/c/66daf3e6b993
+[1/3] scsi: iscsi: Add helper functions to manage iscsi_cls_conn
+      https://git.kernel.org/mkp/scsi/c/ad515cada7da
+[2/3] scsi:libiscsi: Add iscsi_cls_conn to sysfs after been initialized
+      https://git.kernel.org/mkp/scsi/c/7dae459f5e56
+[3/3] scsi:libiscsi: teradown iscsi_cls_conn gracefully
+      https://git.kernel.org/mkp/scsi/c/8709c323091b
 
 -- 
 Martin K. Petersen	Oracle Linux Engineering
