@@ -2,1251 +2,508 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CECCFC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 14:45:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62685C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 14:45:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243355AbiCSOqY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Mar 2022 10:46:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60000 "EHLO
+        id S243362AbiCSOqh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Mar 2022 10:46:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235573AbiCSOqW (ORCPT
+        with ESMTP id S243361AbiCSOqf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Mar 2022 10:46:22 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D89C51B4E80;
-        Sat, 19 Mar 2022 07:44:59 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id mp6-20020a17090b190600b001c6841b8a52so6813559pjb.5;
-        Sat, 19 Mar 2022 07:44:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Z4rMFpoUPT8VaniNDbll+Na0F4m51UDiTfeYdXjy12E=;
-        b=oFbJrDPZnooUqGdCgPCRmKhyH9JrZDmccY0xC4OzCMM524T8e8kkam5d6Ij/5tgoNA
-         acSENJQNUqZbB+JKwJzF6xDykbkSIm3ihSghhT+29RDBSF5W2ftZgjM4AG5pgwI7ijSR
-         E6I1eHmAR0K4idqsoOB1TwNcSoU44PNksXQbQ4o+ZIBwfD+Uo7fe3Bem8v5yHXR2vg9f
-         GBbvK1iKywhw8Ct1uGahbYEEommJz8rk1PJfEbevxg/ym0+LIy+ckByUhYyg37wqXtyq
-         U1uAHvWjcd59BmVwBpscc9XlZETsBwE+8R6DIl5pI2ZF5Rd2Q+HPEhCQ6SNbtvHs51Or
-         8Mvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=Z4rMFpoUPT8VaniNDbll+Na0F4m51UDiTfeYdXjy12E=;
-        b=dFiqWqsYq41j4O6GE7+bW+VyzJ9/Ae651YftoMB6mlnSix9k5420LAMOAA1Je29aFQ
-         hf/AyvCrcVeWSN/LaQ6MQ7lYNdaj4PSftHB+jmG5gtUOYCdCcP/kme3AVlF09nXw5RYB
-         8n0RmjBELN9MQbl4PeuYB54qn7dxSuFJRCGJ/8X4VMWOsaWanjOlhprEqLzQ9bQj9qoa
-         lreR217crxheA8r00DRwhOhVxbogw6k345XB7lm713m5eLWFWPGPVwvxFRkF7suLjOUI
-         omB2+oj9gyJ6xbOghlvPzvcotVv5VZmXlwBhihXT5RG+EpI5OfoYcuw8RH5+qrro9KRG
-         IuFA==
-X-Gm-Message-State: AOAM533cv+fnLWV7B5jmOg0wjuVP7tDfdga10xaGE87j6iEiwLd26dgU
-        lhDh8AfceJqfVDI+oy5lZFA=
-X-Google-Smtp-Source: ABdhPJy0NR68mmJU39kfsChYAEpnLjxeasYaca7MJH+eEvZry6BNBUDc4lwlYVWjvWNq3WBQXV3DqQ==
-X-Received: by 2002:a17:90a:d195:b0:1bf:a0a8:6c3a with SMTP id fu21-20020a17090ad19500b001bfa0a86c3amr27467503pjb.162.1647701099133;
-        Sat, 19 Mar 2022 07:44:59 -0700 (PDT)
-Received: from localhost.localdomain ([50.7.60.25])
-        by smtp.gmail.com with ESMTPSA id q12-20020a17090aa00c00b001bc6f1baaaesm14546829pjp.39.2022.03.19.07.44.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Mar 2022 07:44:58 -0700 (PDT)
-Sender: Huacai Chen <chenhuacai@gmail.com>
-From:   Huacai Chen <chenhuacai@kernel.org>
-X-Google-Original-From: Huacai Chen <chenhuacai@loongson.cn>
-To:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
+        Sat, 19 Mar 2022 10:46:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CA111B4EA0;
+        Sat, 19 Mar 2022 07:45:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3B3260F6D;
+        Sat, 19 Mar 2022 14:45:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 902ACC340EC;
+        Sat, 19 Mar 2022 14:45:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647701106;
+        bh=DV4XuqrktiT4lpsW5MSV60iUcTYwKirBZ5v/qBTRl9U=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ncnGG+wssqrvDxBOnm2PXpfzEhptQEqJjNwddnui7R2ritSF9HRS/8cMOsbexUxJY
+         PWAFvVKelvAYNTt1zIcq4wfRvld20flAUK3p4N/B02kJmcz1V1YFNkgfrF09jk97Ls
+         EA9tyJa5uSpFtsJhLrKU4MwcSsRn6z6RHw1fz8GD7Z4RY723upB62VIFWCMW7tclsU
+         0RXGNe7cLV5X5+eghFrooxVCx7d4AuvH7859RmXGfK4kjaoyzX5MqPXptPAT2g6s7p
+         zy9YMDpfY62bb1DrhIi1PmcVyq8dhIe86vHg74RarA5ofV35ll4rIRJRtJKlkQg469
+         kkGkyiscRZ4jA==
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Subject: [PATCH V8 21/22] LoongArch: Add Non-Uniform Memory Access (NUMA) support
-Date:   Sat, 19 Mar 2022 22:38:16 +0800
-Message-Id: <20220319143817.1026708-14-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220319143817.1026708-1-chenhuacai@loongson.cn>
-References: <20220319142759.1026237-1-chenhuacai@loongson.cn>
- <20220319143817.1026708-1-chenhuacai@loongson.cn>
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Clark Williams <williams@redhat.com>,
+        Kate Carcia <kcarcia@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Caleb Biggers <caleb.biggers@intel.com>,
+        Ian Rogers <irogers@google.com>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Weiguo Li <liwg06@foxmail.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [GIT PULL] perf tools fixes for v5.17: 5th batch
+Date:   Sat, 19 Mar 2022 11:44:46 -0300
+Message-Id: <20220319144446.93618-1-acme@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds Non-Uniform Memory Access (NUMA) support for LoongArch.
-LoongArch has 48-bit physical address, but the HT I/O bus only support
-40-bit address, so we need a custom phys_to_dma() and dma_to_phys() to
-extract the 4-bit node id (bit 44~47) from Loongson-3's 48-bit physical
-address space and embed it into 40-bit. In the 40-bit dma address, node
-id offset can be read from the LS7A_DMA_CFG register.
+Hi Linus,
 
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
----
- arch/loongarch/Kconfig                  |  22 ++
- arch/loongarch/include/asm/bootinfo.h   |   1 +
- arch/loongarch/include/asm/dma-direct.h |  11 +
- arch/loongarch/include/asm/mmzone.h     |  18 +
- arch/loongarch/include/asm/numa.h       |  69 ++++
- arch/loongarch/include/asm/pgtable.h    |  12 +
- arch/loongarch/include/asm/topology.h   |  21 ++
- arch/loongarch/kernel/Makefile          |   2 +
- arch/loongarch/kernel/acpi.c            |  95 +++++
- arch/loongarch/kernel/dma.c             |  40 ++
- arch/loongarch/kernel/module.c          |   1 +
- arch/loongarch/kernel/numa.c            | 461 ++++++++++++++++++++++++
- arch/loongarch/kernel/setup.c           |   6 +-
- arch/loongarch/kernel/smp.c             |  52 ++-
- arch/loongarch/kernel/topology.c        |   5 +
- arch/loongarch/mm/init.c                |  13 +
- arch/loongarch/pci/acpi.c               |   3 +
- 17 files changed, 813 insertions(+), 19 deletions(-)
- create mode 100644 arch/loongarch/include/asm/dma-direct.h
- create mode 100644 arch/loongarch/include/asm/mmzone.h
- create mode 100644 arch/loongarch/include/asm/numa.h
- create mode 100644 arch/loongarch/kernel/dma.c
- create mode 100644 arch/loongarch/kernel/numa.c
+	Please consider pulling,
 
-diff --git a/arch/loongarch/Kconfig b/arch/loongarch/Kconfig
-index a4f50f6c128a..f2e56de2b8c7 100644
---- a/arch/loongarch/Kconfig
-+++ b/arch/loongarch/Kconfig
-@@ -8,6 +8,7 @@ config LOONGARCH
- 	select ARCH_ENABLE_MEMORY_HOTPLUG
- 	select ARCH_ENABLE_MEMORY_HOTREMOVE
- 	select ARCH_HAS_ACPI_TABLE_UPGRADE	if ACPI
-+	select ARCH_HAS_PHYS_TO_DMA
- 	select ARCH_HAS_PTE_SPECIAL
- 	select ARCH_HAS_TICK_BROADCAST if GENERIC_CLOCKEVENTS_BROADCAST
- 	select ARCH_INLINE_READ_LOCK if !PREEMPTION
-@@ -42,6 +43,7 @@ config LOONGARCH
- 	select ARCH_SUPPORTS_ACPI
- 	select ARCH_SUPPORTS_ATOMIC_RMW
- 	select ARCH_SUPPORTS_HUGETLBFS
-+	select ARCH_SUPPORTS_NUMA_BALANCING
- 	select ARCH_USE_BUILTIN_BSWAP
- 	select ARCH_USE_CMPXCHG_LOCKREF
- 	select ARCH_USE_QUEUED_RWLOCKS
-@@ -96,6 +98,7 @@ config LOONGARCH
- 	select HAVE_PERF_EVENTS
- 	select HAVE_REGS_AND_STACK_ACCESS_API
- 	select HAVE_RSEQ
-+	select HAVE_SETUP_PER_CPU_AREA if NUMA
- 	select HAVE_SYSCALL_TRACEPOINTS
- 	select HAVE_TIF_NOHZ
- 	select HAVE_VIRT_CPU_ACCOUNTING_GEN if !SMP
-@@ -103,6 +106,8 @@ config LOONGARCH
- 	select IRQ_LOONGARCH_CPU
- 	select MODULES_USE_ELF_REL if MODULES
- 	select MODULES_USE_ELF_RELA if MODULES
-+	select NEED_PER_CPU_EMBED_FIRST_CHUNK
-+	select NEED_PER_CPU_PAGE_FIRST_CHUNK
- 	select PCI
- 	select PCI_DOMAINS_GENERIC
- 	select PCI_ECAM if ACPI
-@@ -113,6 +118,7 @@ config LOONGARCH
- 	select SYSCTL_EXCEPTION_TRACE
- 	select SWIOTLB
- 	select TRACE_IRQFLAGS_SUPPORT
-+	select USE_PERCPU_NUMA_NODE_ID
- 	select ZONE_DMA32
- 
- config 32BIT
-@@ -309,6 +315,21 @@ config NR_CPUS
- 	  This allows you to specify the maximum number of CPUs which this
- 	  kernel will support.
- 
-+config NUMA
-+	bool "NUMA Support"
-+	select ACPI_NUMA if ACPI
-+	help
-+	  Say Y to compile the kernel to support NUMA (Non-Uniform Memory
-+	  Access).  This option improves performance on systems with more
-+	  than two nodes; on two node systems it is generally better to
-+	  leave it disabled; on single node systems disable this option
-+	  disabled.
-+
-+config NODES_SHIFT
-+	int
-+	default "6"
-+	depends on NUMA
-+
- config FORCE_MAX_ZONEORDER
- 	int "Maximum zone order"
- 	range 14 64 if PAGE_SIZE_64KB
-@@ -355,6 +376,7 @@ config ARCH_SELECT_MEMORY_MODEL
- 
- config ARCH_FLATMEM_ENABLE
- 	def_bool y
-+	depends on !NUMA
- 
- config ARCH_SPARSEMEM_ENABLE
- 	def_bool y
-diff --git a/arch/loongarch/include/asm/bootinfo.h b/arch/loongarch/include/asm/bootinfo.h
-index 74fbba536568..f95db548f8fa 100644
---- a/arch/loongarch/include/asm/bootinfo.h
-+++ b/arch/loongarch/include/asm/bootinfo.h
-@@ -13,6 +13,7 @@ const char *get_system_type(void);
- extern void early_init(void);
- extern void early_memblock_init(void);
- extern void platform_init(void);
-+extern void plat_swiotlb_setup(void);
- 
- /*
-  * Initial kernel command line, usually setup by fw_init_cmdline()
-diff --git a/arch/loongarch/include/asm/dma-direct.h b/arch/loongarch/include/asm/dma-direct.h
-new file mode 100644
-index 000000000000..75ccd808a2af
---- /dev/null
-+++ b/arch/loongarch/include/asm/dma-direct.h
-@@ -0,0 +1,11 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-+ */
-+#ifndef _LOONGARCH_DMA_DIRECT_H
-+#define _LOONGARCH_DMA_DIRECT_H
-+
-+dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr);
-+phys_addr_t dma_to_phys(struct device *dev, dma_addr_t daddr);
-+
-+#endif /* _LOONGARCH_DMA_DIRECT_H */
-diff --git a/arch/loongarch/include/asm/mmzone.h b/arch/loongarch/include/asm/mmzone.h
-new file mode 100644
-index 000000000000..fe67d0b4b33d
---- /dev/null
-+++ b/arch/loongarch/include/asm/mmzone.h
-@@ -0,0 +1,18 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Author: Huacai Chen (chenhuacai@loongson.cn)
-+ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-+ */
-+#ifndef _ASM_MMZONE_H_
-+#define _ASM_MMZONE_H_
-+
-+#include <asm/page.h>
-+#include <asm/numa.h>
-+
-+extern struct pglist_data *node_data[];
-+
-+#define NODE_DATA(nid)	(node_data[(nid)])
-+
-+extern void setup_zero_pages(void);
-+
-+#endif /* _ASM_MMZONE_H_ */
-diff --git a/arch/loongarch/include/asm/numa.h b/arch/loongarch/include/asm/numa.h
-new file mode 100644
-index 000000000000..8f9c81af7930
---- /dev/null
-+++ b/arch/loongarch/include/asm/numa.h
-@@ -0,0 +1,69 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * LoongArch specific ACPICA environments and implementation
-+ *
-+ * Author: Jianmin Lv <lvjianmin@loongson.cn>
-+ *         Huacai Chen <chenhuacai@loongson.cn>
-+ *
-+ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-+ */
-+
-+#ifndef _ASM_LOONGARCH_NUMA_H
-+#define _ASM_LOONGARCH_NUMA_H
-+
-+#include <linux/nodemask.h>
-+
-+#define NODE_ADDRSPACE_SHIFT 44
-+
-+#define pa_to_nid(addr)		(((addr) & 0xf00000000000) >> NODE_ADDRSPACE_SHIFT)
-+#define nid_to_addrbase(nid)	(_ULCAST_(nid) << NODE_ADDRSPACE_SHIFT)
-+
-+#ifdef CONFIG_NUMA
-+
-+extern int numa_off;
-+extern s16 __cpuid_to_node[CONFIG_NR_CPUS];
-+extern nodemask_t numa_nodes_parsed __initdata;
-+
-+struct numa_memblk {
-+	u64			start;
-+	u64			end;
-+	int			nid;
-+};
-+
-+#define NR_NODE_MEMBLKS		(MAX_NUMNODES*2)
-+struct numa_meminfo {
-+	int			nr_blks;
-+	struct numa_memblk	blk[NR_NODE_MEMBLKS];
-+};
-+
-+extern int __init numa_add_memblk(int nodeid, u64 start, u64 end);
-+
-+extern void __init early_numa_add_cpu(int cpuid, s16 node);
-+extern void numa_add_cpu(unsigned int cpu);
-+extern void numa_remove_cpu(unsigned int cpu);
-+
-+static inline void numa_clear_node(int cpu)
-+{
-+}
-+
-+static inline void set_cpuid_to_node(int cpuid, s16 node)
-+{
-+	__cpuid_to_node[cpuid] = node;
-+}
-+
-+extern int early_cpu_to_node(int cpu);
-+
-+#else
-+
-+static inline void early_numa_add_cpu(int cpuid, s16 node)	{ }
-+static inline void numa_add_cpu(unsigned int cpu)		{ }
-+static inline void numa_remove_cpu(unsigned int cpu)		{ }
-+
-+static inline int early_cpu_to_node(int cpu)
-+{
-+	return 0;
-+}
-+
-+#endif	/* CONFIG_NUMA */
-+
-+#endif	/* _ASM_LOONGARCH_NUMA_H */
-diff --git a/arch/loongarch/include/asm/pgtable.h b/arch/loongarch/include/asm/pgtable.h
-index f19a274870c0..601a96b8deec 100644
---- a/arch/loongarch/include/asm/pgtable.h
-+++ b/arch/loongarch/include/asm/pgtable.h
-@@ -582,6 +582,18 @@ static inline pmd_t pmdp_huge_get_and_clear(struct mm_struct *mm,
- 
- #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
- 
-+#ifdef CONFIG_NUMA_BALANCING
-+static inline long pte_protnone(pte_t pte)
-+{
-+	return (pte_val(pte) & _PAGE_PROTNONE);
-+}
-+
-+static inline long pmd_protnone(pmd_t pmd)
-+{
-+	return (pmd_val(pmd) & _PAGE_PROTNONE);
-+}
-+#endif /* CONFIG_NUMA_BALANCING */
-+
- /*
-  * We provide our own get_unmapped area to cope with the virtual aliasing
-  * constraints placed on us by the cache architecture.
-diff --git a/arch/loongarch/include/asm/topology.h b/arch/loongarch/include/asm/topology.h
-index 9314d7a3998c..6ceff034d522 100644
---- a/arch/loongarch/include/asm/topology.h
-+++ b/arch/loongarch/include/asm/topology.h
-@@ -7,6 +7,27 @@
- 
- #include <linux/smp.h>
- 
-+#ifdef CONFIG_NUMA
-+
-+extern cpumask_t cpus_on_node[];
-+
-+#define cpumask_of_node(node)  (&cpus_on_node[node])
-+
-+struct pci_bus;
-+extern int pcibus_to_node(struct pci_bus *);
-+
-+#define cpumask_of_pcibus(bus)	(cpu_online_mask)
-+
-+extern unsigned char node_distances[MAX_NUMNODES][MAX_NUMNODES];
-+
-+void numa_set_distance(int from, int to, int distance);
-+
-+#define node_distance(from, to)	(node_distances[(from)][(to)])
-+
-+#else
-+#define pcibus_to_node(bus)	0
-+#endif
-+
- #ifdef CONFIG_SMP
- #define topology_physical_package_id(cpu)	(cpu_data[cpu].package)
- #define topology_core_id(cpu)			(cpu_core(&cpu_data[cpu]))
-diff --git a/arch/loongarch/kernel/Makefile b/arch/loongarch/kernel/Makefile
-index 9d5cb652bfc0..66f5cd49fb03 100644
---- a/arch/loongarch/kernel/Makefile
-+++ b/arch/loongarch/kernel/Makefile
-@@ -21,4 +21,6 @@ obj-$(CONFIG_PROC_FS)		+= proc.o
- 
- obj-$(CONFIG_SMP)		+= smp.o
- 
-+obj-$(CONFIG_NUMA)		+= numa.o
-+
- CPPFLAGS_vmlinux.lds		:= $(KBUILD_CFLAGS)
-diff --git a/arch/loongarch/kernel/acpi.c b/arch/loongarch/kernel/acpi.c
-index 0c7f2d1077a1..df1af8847a72 100644
---- a/arch/loongarch/kernel/acpi.c
-+++ b/arch/loongarch/kernel/acpi.c
-@@ -14,6 +14,7 @@
- #include <linux/memblock.h>
- #include <linux/serial_core.h>
- #include <asm/io.h>
-+#include <asm/numa.h>
- #include <asm/loongson.h>
- 
- int acpi_disabled;
-@@ -367,6 +368,79 @@ int __init acpi_boot_init(void)
- 	return 0;
- }
- 
-+#ifdef CONFIG_ACPI_NUMA
-+
-+static __init int setup_node(int pxm)
-+{
-+	return acpi_map_pxm_to_node(pxm);
-+}
-+
-+/*
-+ * Callback for SLIT parsing.  pxm_to_node() returns NUMA_NO_NODE for
-+ * I/O localities since SRAT does not list them.  I/O localities are
-+ * not supported at this point.
-+ */
-+unsigned int numa_distance_cnt;
-+
-+static inline unsigned int get_numa_distances_cnt(struct acpi_table_slit *slit)
-+{
-+	return slit->locality_count;
-+}
-+
-+void __init numa_set_distance(int from, int to, int distance)
-+{
-+	if ((u8)distance != distance || (from == to && distance != LOCAL_DISTANCE)) {
-+		pr_warn_once("Warning: invalid distance parameter, from=%d to=%d distance=%d\n",
-+				from, to, distance);
-+		return;
-+	}
-+
-+	node_distances[from][to] = distance;
-+}
-+
-+/* Callback for Proximity Domain -> CPUID mapping */
-+void __init
-+acpi_numa_processor_affinity_init(struct acpi_srat_cpu_affinity *pa)
-+{
-+	int pxm, node;
-+
-+	if (srat_disabled())
-+		return;
-+	if (pa->header.length != sizeof(struct acpi_srat_cpu_affinity)) {
-+		bad_srat();
-+		return;
-+	}
-+	if ((pa->flags & ACPI_SRAT_CPU_ENABLED) == 0)
-+		return;
-+	pxm = pa->proximity_domain_lo;
-+	if (acpi_srat_revision >= 2) {
-+		pxm |= (pa->proximity_domain_hi[0] << 8);
-+		pxm |= (pa->proximity_domain_hi[1] << 16);
-+		pxm |= (pa->proximity_domain_hi[2] << 24);
-+	}
-+	node = setup_node(pxm);
-+	if (node < 0) {
-+		pr_err("SRAT: Too many proximity domains %x\n", pxm);
-+		bad_srat();
-+		return;
-+	}
-+
-+	if (pa->apic_id >= CONFIG_NR_CPUS) {
-+		pr_info("SRAT: PXM %u -> CPU 0x%02x -> Node %u skipped apicid that is too big\n",
-+				pxm, pa->apic_id, node);
-+		return;
-+	}
-+
-+	early_numa_add_cpu(pa->apic_id, node);
-+
-+	set_cpuid_to_node(pa->apic_id, node);
-+	node_set(node, numa_nodes_parsed);
-+	pr_info("SRAT: PXM %u -> CPU 0x%02x -> Node %u\n", pxm, pa->apic_id, node);
-+}
-+
-+void __init acpi_numa_arch_fixup(void) {}
-+#endif
-+
- void __init arch_reserve_mem_area(acpi_physical_address addr, size_t size)
- {
- 	memblock_reserve(addr, size);
-@@ -376,6 +450,22 @@ void __init arch_reserve_mem_area(acpi_physical_address addr, size_t size)
- 
- #include <acpi/processor.h>
- 
-+static int __ref acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
-+{
-+#ifdef CONFIG_ACPI_NUMA
-+	int nid;
-+
-+	nid = acpi_get_node(handle);
-+	if (nid != NUMA_NO_NODE) {
-+		set_cpuid_to_node(physid, nid);
-+		node_set(nid, numa_nodes_parsed);
-+		set_cpu_numa_node(cpu, nid);
-+		cpumask_set_cpu(cpu, cpumask_of_node(nid));
-+	}
-+#endif
-+	return 0;
-+}
-+
- int acpi_map_cpu(acpi_handle handle, phys_cpuid_t physid, u32 acpi_id, int *pcpu)
- {
- 	int cpu;
-@@ -386,6 +476,8 @@ int acpi_map_cpu(acpi_handle handle, phys_cpuid_t physid, u32 acpi_id, int *pcpu
- 		return cpu;
- 	}
- 
-+	acpi_map_cpu2node(handle, cpu, physid);
-+
- 	*pcpu = cpu;
- 
- 	return 0;
-@@ -394,6 +486,9 @@ EXPORT_SYMBOL(acpi_map_cpu);
- 
- int acpi_unmap_cpu(int cpu)
- {
-+#ifdef CONFIG_ACPI_NUMA
-+	set_cpuid_to_node(cpu_logical_map(cpu), NUMA_NO_NODE);
-+#endif
- 	set_cpu_present(cpu, false);
- 	num_processors--;
- 
-diff --git a/arch/loongarch/kernel/dma.c b/arch/loongarch/kernel/dma.c
-new file mode 100644
-index 000000000000..659b8faccaee
---- /dev/null
-+++ b/arch/loongarch/kernel/dma.c
-@@ -0,0 +1,40 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-+ */
-+#include <linux/init.h>
-+#include <linux/dma-direct.h>
-+#include <linux/dma-mapping.h>
-+#include <linux/dma-map-ops.h>
-+#include <linux/swiotlb.h>
-+
-+#include <asm/bootinfo.h>
-+#include <asm/dma.h>
-+#include <asm/loongson.h>
-+
-+/*
-+ * We extract 4bit node id (bit 44~47) from Loongson-3's
-+ * 48bit physical address space and embed it into 40bit.
-+ */
-+
-+static int node_id_offset;
-+
-+dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
-+{
-+	long nid = (paddr >> 44) & 0xf;
-+
-+	return ((nid << 44) ^ paddr) | (nid << node_id_offset);
-+}
-+
-+phys_addr_t dma_to_phys(struct device *dev, dma_addr_t daddr)
-+{
-+	long nid = (daddr >> node_id_offset) & 0xf;
-+
-+	return ((nid << node_id_offset) ^ daddr) | (nid << 44);
-+}
-+
-+void __init plat_swiotlb_setup(void)
-+{
-+	swiotlb_init(1);
-+	node_id_offset = ((readl(LS7A_DMA_CFG) & LS7A_DMA_NODE_MASK) >> LS7A_DMA_NODE_SHF) + 36;
-+}
-diff --git a/arch/loongarch/kernel/module.c b/arch/loongarch/kernel/module.c
-index 63b5c8f1b13a..d0c263989103 100644
---- a/arch/loongarch/kernel/module.c
-+++ b/arch/loongarch/kernel/module.c
-@@ -11,6 +11,7 @@
- #include <linux/moduleloader.h>
- #include <linux/elf.h>
- #include <linux/mm.h>
-+#include <linux/numa.h>
- #include <linux/vmalloc.h>
- #include <linux/slab.h>
- #include <linux/fs.h>
-diff --git a/arch/loongarch/kernel/numa.c b/arch/loongarch/kernel/numa.c
-new file mode 100644
-index 000000000000..228449edb8b9
---- /dev/null
-+++ b/arch/loongarch/kernel/numa.c
-@@ -0,0 +1,461 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Author:  Xiang Gao <gaoxiang@loongson.cn>
-+ *          Huacai Chen <chenhuacai@loongson.cn>
-+ *
-+ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-+ */
-+#include <linux/init.h>
-+#include <linux/kernel.h>
-+#include <linux/mm.h>
-+#include <linux/mmzone.h>
-+#include <linux/export.h>
-+#include <linux/nodemask.h>
-+#include <linux/swap.h>
-+#include <linux/memblock.h>
-+#include <linux/pfn.h>
-+#include <linux/acpi.h>
-+#include <linux/highmem.h>
-+#include <linux/irq.h>
-+#include <linux/pci.h>
-+#include <asm/bootinfo.h>
-+#include <asm/loongson.h>
-+#include <asm/numa.h>
-+#include <asm/page.h>
-+#include <asm/pgalloc.h>
-+#include <asm/sections.h>
-+#include <asm/time.h>
-+
-+int numa_off;
-+struct pglist_data *node_data[MAX_NUMNODES];
-+unsigned char node_distances[MAX_NUMNODES][MAX_NUMNODES];
-+
-+EXPORT_SYMBOL(node_data);
-+EXPORT_SYMBOL(node_distances);
-+
-+static struct numa_meminfo numa_meminfo;
-+cpumask_t cpus_on_node[MAX_NUMNODES];
-+cpumask_t phys_cpus_on_node[MAX_NUMNODES];
-+EXPORT_SYMBOL(cpus_on_node);
-+
-+/*
-+ * apicid, cpu, node mappings
-+ */
-+s16 __cpuid_to_node[CONFIG_NR_CPUS] = {
-+	[0 ... CONFIG_NR_CPUS - 1] = NUMA_NO_NODE
-+};
-+EXPORT_SYMBOL(__cpuid_to_node);
-+
-+nodemask_t numa_nodes_parsed __initdata;
-+
-+#ifdef CONFIG_HAVE_SETUP_PER_CPU_AREA
-+unsigned long __per_cpu_offset[NR_CPUS] __read_mostly;
-+EXPORT_SYMBOL(__per_cpu_offset);
-+
-+static int __init pcpu_cpu_to_node(int cpu)
-+{
-+	return early_cpu_to_node(cpu);
-+}
-+
-+static int __init pcpu_cpu_distance(unsigned int from, unsigned int to)
-+{
-+	if (early_cpu_to_node(from) == early_cpu_to_node(to))
-+		return LOCAL_DISTANCE;
-+	else
-+		return REMOTE_DISTANCE;
-+}
-+
-+void __init pcpu_populate_pte(unsigned long addr)
-+{
-+	pgd_t *pgd = pgd_offset_k(addr);
-+	p4d_t *p4d = p4d_offset(pgd, addr);
-+	pud_t *pud;
-+	pmd_t *pmd;
-+
-+	if (p4d_none(*p4d)) {
-+		pud_t *new;
-+
-+		new = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
-+		pgd_populate(&init_mm, pgd, new);
-+#ifndef __PAGETABLE_PUD_FOLDED
-+		pud_init((unsigned long)new, (unsigned long)invalid_pmd_table);
-+#endif
-+	}
-+
-+	pud = pud_offset(p4d, addr);
-+	if (pud_none(*pud)) {
-+		pmd_t *new;
-+
-+		new = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
-+		pud_populate(&init_mm, pud, new);
-+#ifndef __PAGETABLE_PMD_FOLDED
-+		pmd_init((unsigned long)new, (unsigned long)invalid_pte_table);
-+#endif
-+	}
-+
-+	pmd = pmd_offset(pud, addr);
-+	if (!pmd_present(*pmd)) {
-+		pte_t *new;
-+
-+		new = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
-+		pmd_populate_kernel(&init_mm, pmd, new);
-+	}
-+}
-+
-+void __init setup_per_cpu_areas(void)
-+{
-+	unsigned long delta;
-+	unsigned int cpu;
-+	int rc = -EINVAL;
-+
-+	if (pcpu_chosen_fc == PCPU_FC_AUTO) {
-+		if (nr_node_ids >= 8)
-+			pcpu_chosen_fc = PCPU_FC_PAGE;
-+		else
-+			pcpu_chosen_fc = PCPU_FC_EMBED;
-+	}
-+
-+	/*
-+	 * Always reserve area for module percpu variables.  That's
-+	 * what the legacy allocator did.
-+	 */
-+	if (pcpu_chosen_fc != PCPU_FC_PAGE) {
-+		rc = pcpu_embed_first_chunk(PERCPU_MODULE_RESERVE,
-+					    PERCPU_DYNAMIC_RESERVE, PMD_SIZE,
-+					    pcpu_cpu_distance, pcpu_cpu_to_node);
-+		if (rc < 0)
-+			pr_warn("%s allocator failed (%d), falling back to page size\n",
-+				pcpu_fc_names[pcpu_chosen_fc], rc);
-+	}
-+	if (rc < 0)
-+		rc = pcpu_page_first_chunk(PERCPU_MODULE_RESERVE, pcpu_cpu_to_node);
-+	if (rc < 0)
-+		panic("cannot initialize percpu area (err=%d)", rc);
-+
-+	delta = (unsigned long)pcpu_base_addr - (unsigned long)__per_cpu_start;
-+	for_each_possible_cpu(cpu)
-+		__per_cpu_offset[cpu] = delta + pcpu_unit_offsets[cpu];
-+}
-+#endif
-+
-+/*
-+ * Get nodeid by logical cpu number.
-+ * __cpuid_to_node maps phyical cpu id to node, so we
-+ * should use cpu_logical_map(cpu) to index it.
-+ *
-+ * This routine is only used in early phase during
-+ * booting, after setup_per_cpu_areas calling and numa_node
-+ * initialization, cpu_to_node will be used instead.
-+ */
-+int early_cpu_to_node(int cpu)
-+{
-+	int physid = cpu_logical_map(cpu);
-+
-+	if (physid < 0)
-+		return NUMA_NO_NODE;
-+
-+	return __cpuid_to_node[physid];
-+}
-+
-+void __init early_numa_add_cpu(int cpuid, s16 node)
-+{
-+	int cpu = __cpu_number_map[cpuid];
-+
-+	if (cpu < 0)
-+		return;
-+
-+	cpumask_set_cpu(cpu, &cpus_on_node[node]);
-+	cpumask_set_cpu(cpuid, &phys_cpus_on_node[node]);
-+}
-+
-+void numa_add_cpu(unsigned int cpu)
-+{
-+	int nid = cpu_to_node(cpu);
-+	cpumask_set_cpu(cpu, &cpus_on_node[nid]);
-+}
-+
-+void numa_remove_cpu(unsigned int cpu)
-+{
-+	int nid = cpu_to_node(cpu);
-+	cpumask_clear_cpu(cpu, &cpus_on_node[nid]);
-+}
-+
-+static int __init numa_add_memblk_to(int nid, u64 start, u64 end,
-+				     struct numa_meminfo *mi)
-+{
-+	/* ignore zero length blks */
-+	if (start == end)
-+		return 0;
-+
-+	/* whine about and ignore invalid blks */
-+	if (start > end || nid < 0 || nid >= MAX_NUMNODES) {
-+		pr_warn("NUMA: Warning: invalid memblk node %d [mem %#010Lx-%#010Lx]\n",
-+			   nid, start, end - 1);
-+		return 0;
-+	}
-+
-+	if (mi->nr_blks >= NR_NODE_MEMBLKS) {
-+		pr_err("NUMA: too many memblk ranges\n");
-+		return -EINVAL;
-+	}
-+
-+	mi->blk[mi->nr_blks].start = PFN_ALIGN(start);
-+	mi->blk[mi->nr_blks].end = PFN_ALIGN(end - PAGE_SIZE + 1);
-+	mi->blk[mi->nr_blks].nid = nid;
-+	mi->nr_blks++;
-+	return 0;
-+}
-+
-+/**
-+ * numa_add_memblk - Add one numa_memblk to numa_meminfo
-+ * @nid: NUMA node ID of the new memblk
-+ * @start: Start address of the new memblk
-+ * @end: End address of the new memblk
-+ *
-+ * Add a new memblk to the default numa_meminfo.
-+ *
-+ * RETURNS:
-+ * 0 on success, -errno on failure.
-+ */
-+int __init numa_add_memblk(int nid, u64 start, u64 end)
-+{
-+	return numa_add_memblk_to(nid, start, end, &numa_meminfo);
-+}
-+
-+static void __init alloc_node_data(int nid)
-+{
-+	void *nd;
-+	unsigned long nd_pa;
-+	size_t nd_sz = roundup(sizeof(pg_data_t), PAGE_SIZE);
-+
-+	nd_pa = memblock_phys_alloc_try_nid(nd_sz, SMP_CACHE_BYTES, nid);
-+	if (!nd_pa) {
-+		pr_err("Cannot find %zu Byte for node_data (initial node: %d)\n", nd_sz, nid);
-+		return;
-+	}
-+
-+	nd = __va(nd_pa);
-+
-+	node_data[nid] = nd;
-+	memset(nd, 0, sizeof(pg_data_t));
-+}
-+
-+static void __init node_mem_init(unsigned int node)
-+{
-+	unsigned long start_pfn, end_pfn;
-+	unsigned long node_addrspace_offset;
-+
-+	node_addrspace_offset = nid_to_addrbase(node);
-+	pr_info("Node%d's addrspace_offset is 0x%lx\n",
-+			node, node_addrspace_offset);
-+
-+	get_pfn_range_for_nid(node, &start_pfn, &end_pfn);
-+	pr_info("Node%d: start_pfn=0x%lx, end_pfn=0x%lx\n",
-+		node, start_pfn, end_pfn);
-+
-+	alloc_node_data(node);
-+}
-+
-+#ifdef CONFIG_ACPI_NUMA
-+
-+/*
-+ * Sanity check to catch more bad NUMA configurations (they are amazingly
-+ * common).  Make sure the nodes cover all memory.
-+ */
-+static bool __init numa_meminfo_cover_memory(const struct numa_meminfo *mi)
-+{
-+	int i;
-+	u64 numaram, biosram;
-+
-+	numaram = 0;
-+	for (i = 0; i < mi->nr_blks; i++) {
-+		u64 s = mi->blk[i].start >> PAGE_SHIFT;
-+		u64 e = mi->blk[i].end >> PAGE_SHIFT;
-+
-+		numaram += e - s;
-+		numaram -= __absent_pages_in_range(mi->blk[i].nid, s, e);
-+		if ((s64)numaram < 0)
-+			numaram = 0;
-+	}
-+	max_pfn = max_low_pfn;
-+	biosram = max_pfn - absent_pages_in_range(0, max_pfn);
-+
-+	BUG_ON((s64)(biosram - numaram) >= (1 << (20 - PAGE_SHIFT)));
-+	return true;
-+}
-+
-+static void __init add_node_intersection(u32 node, u64 start, u64 size)
-+{
-+	static unsigned long num_physpages;
-+
-+	num_physpages += (size >> PAGE_SHIFT);
-+	pr_info("Node%d: mem_type:%d, mem_start:0x%llx, mem_size:0x%llx Bytes\n",
-+		node, ADDRESS_TYPE_SYSRAM, start, size);
-+	pr_info("       start_pfn:0x%llx, end_pfn:0x%llx, num_physpages:0x%lx\n",
-+		start >> PAGE_SHIFT, (start + size) >> PAGE_SHIFT, num_physpages);
-+	memblock_set_node(start, size, &memblock.memory, node);
-+}
-+
-+/*
-+ * add_numamem_region
-+ *
-+ * Add a uasable memory region described by BIOS. The
-+ * routine gets each intersection between BIOS's region
-+ * and node's region, and adds them into node's memblock
-+ * pool.
-+ *
-+ */
-+static void __init add_numamem_region(u64 start, u64 end)
-+{
-+	u32 i;
-+	u64 ofs = start;
-+
-+	if (start >= end) {
-+		pr_debug("Invalid region: %016llx-%016llx\n", start, end);
-+		return;
-+	}
-+
-+	for (i = 0; i < numa_meminfo.nr_blks; i++) {
-+		struct numa_memblk *mb = &numa_meminfo.blk[i];
-+
-+		if (ofs > mb->end)
-+			continue;
-+
-+		if (end > mb->end) {
-+			add_node_intersection(mb->nid, ofs, mb->end - ofs);
-+			ofs = mb->end;
-+		} else {
-+			add_node_intersection(mb->nid, ofs, end - ofs);
-+			break;
-+		}
-+	}
-+}
-+
-+static void __init init_node_memblock(void)
-+{
-+	u32 i, mem_type;
-+	u64 mem_end, mem_start, mem_size;
-+
-+	/* Parse memory information and activate */
-+	for (i = 0; i < loongson_mem_map->map_count; i++) {
-+		mem_type = loongson_mem_map->map[i].mem_type;
-+		mem_start = loongson_mem_map->map[i].mem_start;
-+		mem_size = loongson_mem_map->map[i].mem_size;
-+		mem_end = loongson_mem_map->map[i].mem_start + mem_size;
-+		switch (mem_type) {
-+		case ADDRESS_TYPE_SYSRAM:
-+			mem_start = PFN_ALIGN(mem_start);
-+			mem_end = PFN_ALIGN(mem_end - PAGE_SIZE + 1);
-+			add_numamem_region(mem_start, mem_end);
-+			break;
-+		case ADDRESS_TYPE_ACPI:
-+			mem_start = PFN_ALIGN(mem_start);
-+			mem_end = PFN_ALIGN(mem_end - PAGE_SIZE + 1);
-+			memblock_add(mem_start, mem_size);
-+			add_numamem_region(mem_start, mem_end);
-+			fallthrough;
-+		case ADDRESS_TYPE_RESERVED:
-+			pr_info("Resvd: mem_type:%d, mem_start:0x%llx, mem_size:0x%llx Bytes\n",
-+					mem_type, mem_start, mem_size);
-+			memblock_reserve(mem_start, mem_size);
-+			break;
-+		}
-+	}
-+}
-+
-+static void __init numa_default_distance(void)
-+{
-+	int row, col;
-+
-+	for (row = 0; row < MAX_NUMNODES; row++)
-+		for (col = 0; col < MAX_NUMNODES; col++) {
-+			if (col == row)
-+				node_distances[row][col] = LOCAL_DISTANCE;
-+			else
-+				/* We assume that one node per package here!
-+				 *
-+				 * A SLIT should be used for multiple nodes
-+				 * per package to override default setting.
-+				 */
-+				node_distances[row][col] = REMOTE_DISTANCE;
-+	}
-+}
-+
-+static int __init numa_mem_init(int (*init_func)(void))
-+{
-+	int i;
-+	int ret;
-+	int node;
-+
-+	for (i = 0; i < NR_CPUS; i++)
-+		set_cpuid_to_node(i, NUMA_NO_NODE);
-+
-+	numa_default_distance();
-+	nodes_clear(numa_nodes_parsed);
-+	nodes_clear(node_possible_map);
-+	nodes_clear(node_online_map);
-+	memset(&numa_meminfo, 0, sizeof(numa_meminfo));
-+
-+	/* Parse SRAT and SLIT if provided by firmware. */
-+	ret = init_func();
-+	if (ret < 0)
-+		return ret;
-+
-+	node_possible_map = numa_nodes_parsed;
-+	if (WARN_ON(nodes_empty(node_possible_map)))
-+		return -EINVAL;
-+
-+	init_node_memblock();
-+	if (numa_meminfo_cover_memory(&numa_meminfo) == false)
-+		return -EINVAL;
-+
-+	for_each_node_mask(node, node_possible_map) {
-+		node_mem_init(node);
-+		node_set_online(node);
-+	}
-+	max_low_pfn = PHYS_PFN(memblock_end_of_DRAM());
-+
-+	return 0;
-+}
-+#endif
-+void __init paging_init(void)
-+{
-+	unsigned int node;
-+	unsigned long zones_size[MAX_NR_ZONES] = {0, };
-+
-+	for_each_online_node(node) {
-+		unsigned long start_pfn, end_pfn;
-+
-+		get_pfn_range_for_nid(node, &start_pfn, &end_pfn);
-+
-+		if (end_pfn > max_low_pfn)
-+			max_low_pfn = end_pfn;
-+	}
-+#ifdef CONFIG_ZONE_DMA32
-+	zones_size[ZONE_DMA32] = MAX_DMA32_PFN;
-+#endif
-+	zones_size[ZONE_NORMAL] = max_low_pfn;
-+	free_area_init(zones_size);
-+}
-+
-+void __init mem_init(void)
-+{
-+	high_memory = (void *) __va(get_num_physpages() << PAGE_SHIFT);
-+	memblock_free_all();
-+	setup_zero_pages();	/* This comes from node 0 */
-+}
-+
-+int pcibus_to_node(struct pci_bus *bus)
-+{
-+	return dev_to_node(&bus->dev);
-+}
-+EXPORT_SYMBOL(pcibus_to_node);
-+
-+void __init fw_init_numa_memory(void)
-+{
-+	numa_mem_init(acpi_numa_init);
-+	setup_nr_node_ids();
-+	loongson_sysconf.nr_nodes = nr_node_ids;
-+	loongson_sysconf.cores_per_node = cpumask_weight(&phys_cpus_on_node[0]);
-+}
-+EXPORT_SYMBOL(fw_init_numa_memory);
-diff --git a/arch/loongarch/kernel/setup.c b/arch/loongarch/kernel/setup.c
-index 7bf9c255d036..ea4299134232 100644
---- a/arch/loongarch/kernel/setup.c
-+++ b/arch/loongarch/kernel/setup.c
-@@ -281,7 +281,11 @@ void __init platform_init(void)
- 	acpi_boot_init();
- #endif
- 
-+#ifndef CONFIG_NUMA
- 	fw_init_memory();
-+#else
-+	fw_init_numa_memory();
-+#endif
- 	dmi_setup();
- 	smbios_parse();
- 	pr_info("The BIOS Version: %s\n", b_info.bios_version);
-@@ -320,7 +324,7 @@ static void __init arch_mem_init(char **cmdline_p)
- 	sparse_init();
- 	memblock_set_bottom_up(true);
- 
--	swiotlb_init(1);
-+	plat_swiotlb_setup();
- 
- 	dma_contiguous_reserve(PFN_PHYS(max_low_pfn));
- 
-diff --git a/arch/loongarch/kernel/smp.c b/arch/loongarch/kernel/smp.c
-index c0f1aca1eb7e..02bccfabfe84 100644
---- a/arch/loongarch/kernel/smp.c
-+++ b/arch/loongarch/kernel/smp.c
-@@ -25,6 +25,7 @@
- #include <asm/idle.h>
- #include <asm/loongson.h>
- #include <asm/mmu_context.h>
-+#include <asm/numa.h>
- #include <asm/processor.h>
- #include <asm/setup.h>
- #include <asm/time.h>
-@@ -225,6 +226,9 @@ void loongson3_init_secondary(void)
- 
- 	iocsr_writel(0xffffffff, LOONGARCH_IOCSR_IPI_EN);
- 
-+#ifdef CONFIG_NUMA
-+	numa_add_cpu(cpu);
-+#endif
- 	per_cpu(cpu_state, cpu) = CPU_ONLINE;
- 	cpu_set_core(&cpu_data[cpu],
- 		     cpu_logical_map(cpu) % loongson_sysconf.cores_per_package);
-@@ -268,6 +272,9 @@ int loongson3_cpu_disable(void)
- 	if (io_master(cpu))
- 		return -EBUSY;
- 
-+#ifdef CONFIG_NUMA
-+	numa_remove_cpu(cpu);
-+#endif
- 	set_cpu_online(cpu, false);
- 	calculate_cpu_foreign_map();
- 	local_irq_save(flags);
-@@ -491,14 +498,36 @@ void calculate_cpu_foreign_map(void)
- /* Preload SMP state for boot cpu */
- void smp_prepare_boot_cpu(void)
- {
--	unsigned int cpu;
-+	unsigned int cpu, node, rr_node;
- 
- 	set_cpu_possible(0, true);
- 	set_cpu_online(0, true);
- 	set_my_cpu_offset(per_cpu_offset(0));
- 
--	for_each_possible_cpu(cpu)
--		set_cpu_numa_node(cpu, 0);
-+	rr_node = first_node(node_online_map);
-+	for_each_possible_cpu(cpu) {
-+		node = early_cpu_to_node(cpu);
-+
-+		/*
-+		 * The mapping between present cpus and nodes has been
-+		 * built during MADT and SRAT parsing.
-+		 *
-+		 * If possible cpus = present cpus here, early_cpu_to_node
-+		 * will return valid node.
-+		 *
-+		 * If possible cpus > present cpus here (e.g. some possible
-+		 * cpus will be added by cpu-hotplug later), for possible but
-+		 * not present cpus, early_cpu_to_node will return NUMA_NO_NODE,
-+		 * and we just map them to online nodes in round-robin way.
-+		 * Once hotplugged, new correct mapping will be built for them.
-+		 */
-+		if (node != NUMA_NO_NODE)
-+			set_cpu_numa_node(cpu, node);
-+		else {
-+			set_cpu_numa_node(cpu, rr_node);
-+			rr_node = next_node_in(rr_node, node_online_map);
-+		}
-+	}
- }
- 
- /* called from main before smp_init() */
-@@ -661,17 +690,10 @@ void flush_tlb_range(struct vm_area_struct *vma, unsigned long start, unsigned l
- 		on_each_cpu_mask(mm_cpumask(mm), flush_tlb_range_ipi, &fd, 1);
- 	} else {
- 		unsigned int cpu;
--		int exec = vma->vm_flags & VM_EXEC;
- 
- 		for_each_online_cpu(cpu) {
--			/*
--			 * flush_cache_range() will only fully flush icache if
--			 * the VMA is executable, otherwise we must invalidate
--			 * ASID without it appearing to has_valid_asid() as if
--			 * mm has been completely unused by that CPU.
--			 */
- 			if (cpu != smp_processor_id() && cpu_context(cpu, mm))
--				cpu_context(cpu, mm) = !exec;
-+				cpu_context(cpu, mm) = 0;
- 		}
- 		local_flush_tlb_range(vma, start, end);
- 	}
-@@ -716,14 +738,8 @@ void flush_tlb_page(struct vm_area_struct *vma, unsigned long page)
- 		unsigned int cpu;
- 
- 		for_each_online_cpu(cpu) {
--			/*
--			 * flush_cache_page() only does partial flushes, so
--			 * invalidate ASID without it appearing to
--			 * has_valid_asid() as if mm has been completely unused
--			 * by that CPU.
--			 */
- 			if (cpu != smp_processor_id() && cpu_context(cpu, vma->vm_mm))
--				cpu_context(cpu, vma->vm_mm) = 1;
-+				cpu_context(cpu, vma->vm_mm) = 0;
- 		}
- 		local_flush_tlb_page(vma, page);
- 	}
-diff --git a/arch/loongarch/kernel/topology.c b/arch/loongarch/kernel/topology.c
-index ab1a75c0b5a6..ae5f0e5414a3 100644
---- a/arch/loongarch/kernel/topology.c
-+++ b/arch/loongarch/kernel/topology.c
-@@ -37,6 +37,11 @@ static int __init topology_init(void)
- {
- 	int i, ret;
- 
-+#ifdef CONFIG_NUMA
-+	for_each_online_node(i)
-+		register_one_node(i);
-+#endif /* CONFIG_NUMA */
-+
- 	for_each_present_cpu(i) {
- 		struct cpu *c = &per_cpu(cpu_devices, i);
- 
-diff --git a/arch/loongarch/mm/init.c b/arch/loongarch/mm/init.c
-index 1b2e3674dd82..f5b9b64efec8 100644
---- a/arch/loongarch/mm/init.c
-+++ b/arch/loongarch/mm/init.c
-@@ -78,6 +78,7 @@ void copy_user_highpage(struct page *to, struct page *from,
- 	smp_wmb();
- }
- 
-+#ifndef CONFIG_NUMA
- void __init paging_init(void)
- {
- 	unsigned long max_zone_pfns[MAX_NR_ZONES];
-@@ -101,6 +102,7 @@ void __init mem_init(void)
- 	memblock_free_all();
- 	setup_zero_pages();	/* Setup zeroed pages.  */
- }
-+#endif /* !CONFIG_NUMA */
- 
- void __ref free_initmem(void)
- {
-@@ -123,6 +125,17 @@ int arch_add_memory(int nid, u64 start, u64 size, struct mhp_params *params)
- 	return ret;
- }
- 
-+#ifdef CONFIG_NUMA
-+int memory_add_physaddr_to_nid(u64 start)
-+{
-+	int nid;
-+
-+	nid = pa_to_nid(start);
-+	return nid;
-+}
-+EXPORT_SYMBOL_GPL(memory_add_physaddr_to_nid);
-+#endif
-+
- #ifdef CONFIG_MEMORY_HOTREMOVE
- void arch_remove_memory(u64 start, u64 size, struct vmem_altmap *altmap)
- {
-diff --git a/arch/loongarch/pci/acpi.c b/arch/loongarch/pci/acpi.c
-index 7cabb8f37218..bf921487333c 100644
---- a/arch/loongarch/pci/acpi.c
-+++ b/arch/loongarch/pci/acpi.c
-@@ -11,6 +11,7 @@
- #include <linux/pci-ecam.h>
- 
- #include <asm/pci.h>
-+#include <asm/numa.h>
- #include <asm/loongson.h>
- 
- struct pci_root_info {
-@@ -27,8 +28,10 @@ int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
- {
- 	struct pci_config_window *cfg = bridge->bus->sysdata;
- 	struct acpi_device *adev = to_acpi_device(cfg->parent);
-+	struct device *bus_dev = &bridge->bus->dev;
- 
- 	ACPI_COMPANION_SET(&bridge->dev, adev);
-+	set_dev_node(bus_dev, pa_to_nid(cfg->res.start));
- 
- 	return 0;
- }
--- 
-2.27.0
+Best regards,
 
+- Arnaldo
+
+Test results at the end of this message.
+
+The following changes since commit 34e047aa16c0123bbae8e2f6df33e5ecc1f56601:
+
+  Merge tag 'arm64-fixes' of git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux (2022-03-18 12:32:59 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git tags/perf-tools-fixes-for-v5.17-2022-03-19
+
+for you to fetch changes up to 7bd1da15d211d439d96eb7cc8a35ce694b71d120:
+
+  perf parse-events: Ignore case in topdown.slots check (2022-03-18 18:39:09 -0300)
+
+----------------------------------------------------------------
+perf tools fixes for v5.17: 5th batch
+
+- Avoid iteration for empty evlist, fixing a segfault with 'perf stat --null'
+
+- Ignore case in topdown.slots check, fixing issue with Intel Icelake JSON metrics.
+
+- Fix symbol size calculation condition for fixing up corner case symbol end address
+  obtained from Kallsyms.
+
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+
+----------------------------------------------------------------
+Ian Rogers (2):
+      perf evlist: Avoid iteration for empty evlist.
+      perf parse-events: Ignore case in topdown.slots check
+
+Michael Petlan (1):
+      perf symbols: Fix symbol size calculation condition
+
+ tools/perf/arch/x86/util/evlist.c |  2 +-
+ tools/perf/util/evlist.c          | 28 +++++++++++++++++-----------
+ tools/perf/util/symbol.c          |  2 +-
+ 3 files changed, 19 insertions(+), 13 deletions(-)
+
+Test results:
+
+The first ones are container based builds of tools/perf with and without libelf
+support.  Where clang is available, it is also used to build perf with/without
+libelf, and building with LIBCLANGLLVM=1 (built-in clang) with gcc and clang
+when clang and its devel libraries are installed.
+
+Several are cross builds, the ones with -x-ARCH and the android one, and those
+may not have all the features built, due to lack of multi-arch devel packages,
+available and being used so far on just a few, like
+debian:experimental-x-{arm64,mipsel}.
+
+The 'perf test' one will perform a variety of tests exercising
+tools/perf/util/, tools/lib/{bpf,traceevent,etc}, as well as run perf commands
+with a variety of command line event specifications to then intercept the
+sys_perf_event syscall to check that the perf_event_attr fields are set up as
+expected, among a variety of other unit tests.
+
+Then there is the 'make -C tools/perf build-test' ones, that build tools/perf/
+with a variety of feature sets, exercising the build with an incomplete set of
+features as well as with a complete one.
+
+There is still the mageia:7 distro + clang 8 failure, seemingly unrelated to
+the patches in this series, it'll be investigated. It builds just fine with gcc
+8.4.
+
+There is also a strange one with openmandriva:4.2 and openmandriva:cooker,
+where on the feature build test it doesn't manage to find libpthread, because
+the pthread functions (and the ones in librt, IIRC) are on the main libc, so a
+test for that is needed to avoid adding '-lpthread and -lrt' in distros where
+this is the case. It's in the TODO list.
+
+Ubuntu 20.04 is failing on a corner case where perf links with libllvm and libclang,
+which isn't the default perf build.
+
+Ubuntu 22.04 now also has some LLVM/clang library problem to be investigated, again
+this isn't in the default set of libraries built into perf.
+
+Fedora rawhide seems to have a new standalone libtraceevent that is
+failing to build with perf, have to try the build on a container to see
+the details.
+
+  $ grep -m1 'model name' /proc/cpuinfo
+  model name	: AMD Ryzen 9 5950X 16-Core Processor
+  $ export BUILD_TARBALL=http://192.168.100.2/perf/perf-5.17.0-rc8.tar.xz
+  $ time dm
+     1   174.48 almalinux:8                   : Ok   gcc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-4) , clang version 12.0.1 (Red Hat 12.0.1-4.module_el8.5.0+1025+93159d6c)
+     2    95.39 alpine:3.4                    : Ok   gcc (Alpine 5.3.0) 5.3.0 , clang version 3.8.0 (tags/RELEASE_380/final)
+     3    59.12 alpine:3.5                    : Ok   gcc (Alpine 6.2.1) 6.2.1 20160822 , clang version 3.8.1 (tags/RELEASE_381/final)
+     4    60.82 alpine:3.6                    : Ok   gcc (Alpine 6.3.0) 6.3.0 , clang version 4.0.0 (tags/RELEASE_400/final)
+     5    65.53 alpine:3.7                    : Ok   gcc (Alpine 6.4.0) 6.4.0 , Alpine clang version 5.0.0 (tags/RELEASE_500/final) (based on LLVM 5.0.0)
+     6    71.25 alpine:3.8                    : Ok   gcc (Alpine 6.4.0) 6.4.0 , Alpine clang version 5.0.1 (tags/RELEASE_501/final) (based on LLVM 5.0.1)
+     7    67.94 alpine:3.9                    : Ok   gcc (Alpine 8.3.0) 8.3.0 , Alpine clang version 5.0.1 (tags/RELEASE_502/final) (based on LLVM 5.0.1)
+     8    93.41 alpine:3.10                   : Ok   gcc (Alpine 8.3.0) 8.3.0 , Alpine clang version 8.0.0 (tags/RELEASE_800/final) (based on LLVM 8.0.0)
+     9   105.15 alpine:3.11                   : Ok   gcc (Alpine 9.3.0) 9.3.0 , Alpine clang version 9.0.0 (https://git.alpinelinux.org/aports f7f0d2c2b8bcd6a5843401a9a702029556492689) (based on LLVM 9.0.0)
+    10   113.58 alpine:3.12                   : Ok   gcc (Alpine 9.3.0) 9.3.0 , Alpine clang version 10.0.0 (https://gitlab.alpinelinux.org/alpine/aports.git 7445adce501f8473efdb93b17b5eaf2f1445ed4c)
+    11   123.64 alpine:3.13                   : Ok   gcc (Alpine 10.2.1_pre1) 10.2.1 20201203 , Alpine clang version 10.0.1 
+    12   110.16 alpine:3.14                   : Ok   gcc (Alpine 10.3.1_git20210424) 10.3.1 20210424 , Alpine clang version 11.1.0
+    13   113.01 alpine:3.15                   : Ok   gcc (Alpine 10.3.1_git20211027) 10.3.1 20211027 , Alpine clang version 12.0.1
+    14   113.08 alpine:edge                   : Ok   gcc (Alpine 11.2.1_git20211128) 11.2.1 20211128 , Alpine clang version 12.0.1
+    15    55.50 alt:p8                        : Ok   x86_64-alt-linux-gcc (GCC) 5.3.1 20151207 (ALT p8 5.3.1-alt3.M80P.1) , clang version 3.8.0 (tags/RELEASE_380/final)
+    16    84.19 alt:p9                        : Ok   x86_64-alt-linux-gcc (GCC) 8.4.1 20200305 (ALT p9 8.4.1-alt0.p9.1) , clang version 10.0.0 
+    17    85.00 alt:p10                       : Ok   x86_64-alt-linux-gcc (GCC) 10.3.1 20210703 (ALT Sisyphus 10.3.1-alt2) , clang version 11.0.1
+    18    86.41 alt:sisyphus                  : Ok   x86_64-alt-linux-gcc (GCC) 11.2.1 20211202 (ALT Sisyphus 11.2.1-alt2) , ALT Linux Team clang version 12.0.1
+    19    55.40 amazonlinux:1                 : Ok   gcc (GCC) 7.2.1 20170915 (Red Hat 7.2.1-2) , clang version 3.6.2 (tags/RELEASE_362/final)
+    20    91.21 amazonlinux:2                 : Ok   gcc (GCC) 7.3.1 20180712 (Red Hat 7.3.1-13) , clang version 11.1.0 (Amazon Linux 2 11.1.0-1.amzn2.0.2)
+    21   102.23 amazonlinux:devel             : Ok   gcc (GCC) 11.2.1 20210728 (Red Hat 11.2.1-2) , clang version 12.0.1 (Fedora 12.0.1-1.amzn2022)
+    22    84.98 archlinux:base                : Ok   gcc (GCC) 11.1.0 , clang version 13.0.0
+    23    86.28 centos:8                      : Ok   gcc (GCC) 8.4.1 20200928 (Red Hat 8.4.1-1) , clang version 11.0.1 (Red Hat 11.0.1-1.module_el8.4.0+966+2995ef20)
+    24    93.71 centos:stream                 : Ok   gcc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-10) , clang version 13.0.0 (Red Hat 13.0.0-3.module_el8.6.0+1074+380cef3f)
+    25    51.92 clearlinux:latest             : Ok   gcc (Clear Linux OS for Intel Architecture) 11.2.1 20220310 releases/gcc-11.2.0-844-g2d2705e96d , clang version 13.0.0
+    26    70.94 debian:9                      : Ok   gcc (Debian 6.3.0-18+deb9u1) 6.3.0 20170516 , clang version 3.8.1-24 (tags/RELEASE_381/final)
+    27    65.63 debian:10                     : Ok   gcc (Debian 8.3.0-6) 8.3.0 , clang version 7.0.1-8+deb10u2 (tags/RELEASE_701/final)
+    28    91.10 debian:11                     : Ok   gcc (Debian 10.2.1-6) 10.2.1 20210110 , Debian clang version 11.0.1-2
+    29   103.95 debian:experimental           : Ok   gcc (Debian 11.2.0-18) 11.2.0 , Debian clang version 13.0.1-3
+    30    25.16 debian:experimental-x-arm64   : Ok   aarch64-linux-gnu-gcc (Debian 11.2.0-18) 11.2.0 
+    31    20.66 debian:experimental-x-mips    : Ok   mips-linux-gnu-gcc (Debian 10.2.1-6) 10.2.1 20210110 
+    32    23.27 debian:experimental-x-mips64  : Ok   mips64-linux-gnuabi64-gcc (Debian 10.2.1-6) 10.2.1 20210110 
+    33    23.67 debian:experimental-x-mipsel  : Ok   mipsel-linux-gnu-gcc (Debian 11.2.0-9) 11.2.0 
+    34    46.40 fedora:22                     : Ok   gcc (GCC) 5.3.1 20160406 (Red Hat 5.3.1-6) , clang version 3.5.0 (tags/RELEASE_350/final)
+    35    60.11 fedora:23                     : Ok   gcc (GCC) 5.3.1 20160406 (Red Hat 5.3.1-6) , clang version 3.7.0 (tags/RELEASE_370/final)
+    36    70.83 fedora:24                     : Ok   gcc (GCC) 6.3.1 20161221 (Red Hat 6.3.1-1) , clang version 3.8.1 (tags/RELEASE_381/final)
+    37    18.94 fedora:24-x-ARC-uClibc        : Ok   arc-linux-gcc (ARCompact ISA Linux uClibc toolchain 2017.09-rc2) 7.1.1 20170710 
+    38    76.84 fedora:25                     : Ok   gcc (GCC) 6.4.1 20170727 (Red Hat 6.4.1-1) , clang version 3.9.1 (tags/RELEASE_391/final)
+    39    82.37 fedora:26                     : Ok   gcc (GCC) 7.3.1 20180130 (Red Hat 7.3.1-2) , clang version 4.0.1 (tags/RELEASE_401/final)
+    40    84.97 fedora:27                     : Ok   gcc (GCC) 7.3.1 20180712 (Red Hat 7.3.1-6) , clang version 5.0.2 (tags/RELEASE_502/final)
+    41    96.70 fedora:28                     : Ok   gcc (GCC) 8.3.1 20190223 (Red Hat 8.3.1-2) , clang version 6.0.1 (tags/RELEASE_601/final)
+    42   101.87 fedora:29                     : Ok   gcc (GCC) 8.3.1 20190223 (Red Hat 8.3.1-2) , clang version 7.0.1 (Fedora 7.0.1-6.fc29)
+    43   111.64 fedora:30                     : Ok   gcc (GCC) 9.3.1 20200408 (Red Hat 9.3.1-2) , clang version 8.0.0 (Fedora 8.0.0-3.fc30)
+    44    98.32 fedora:31                     : Ok   gcc (GCC) 9.3.1 20200408 (Red Hat 9.3.1-2) , clang version 9.0.1 (Fedora 9.0.1-4.fc31)
+    45    92.51 fedora:32                     : Ok   gcc (GCC) 10.3.1 20210422 (Red Hat 10.3.1-1) , clang version 10.0.1 (Fedora 10.0.1-3.fc32)
+    46    91.82 fedora:33                     : Ok   gcc (GCC) 10.3.1 20210422 (Red Hat 10.3.1-1) , clang version 11.0.0 (Fedora 11.0.0-3.fc33)
+    47    96.84 fedora:34                     : Ok   gcc (GCC) 11.2.1 20220127 (Red Hat 11.2.1-9) , clang version 12.0.1 (Fedora 12.0.1-1.fc34)
+    48    20.45 fedora:34-x-ARC-glibc         : Ok   arc-linux-gcc (ARC HS GNU/Linux glibc toolchain 2019.03-rc1) 8.3.1 20190225 
+    49    18.54 fedora:34-x-ARC-uClibc        : Ok   arc-linux-gcc (ARCv2 ISA Linux uClibc toolchain 2019.03-rc1) 8.3.1 20190225 
+    50    98.44 fedora:35                     : Ok   gcc (GCC) 11.2.1 20220127 (Red Hat 11.2.1-9) , clang version 13.0.0 (Fedora 13.0.0-3.fc35)
+    51    31.29 fedora:rawhide                : FAIL gcc version 12.0.1 20220308 (Red Hat 12.0.1-0) (GCC) 
+  
+  + '[' -d /usr/include/traceevent/ ']'
+  + make PYTHON=python3 ARCH= CROSS_COMPILE= EXTRA_CFLAGS= LIBTRACEEVENT_DYNAMIC=1 -C tools/perf O=/tmp/build/perf
+  make: Entering directory '/git/perf-5.17.0-rc8/tools/perf'
+    BUILD:   Doing 'make -j32' parallel build
+  Makefile.config:725: No libcrypto.h found, disables jitted code injection, please install openssl-devel or libssl-dev
+  Makefile.config:1005: No libbabeltrace found, disables 'perf data' CTF format support, please install libbabeltrace-dev[el]/libbabeltrace-ctf-dev
+  Makefile.config:1112: *** Error: No libtraceevent devel library found, please install libtraceevent-devel.  Stop.
+  make[1]: *** [Makefile.perf:240: sub-make] Error 2
+  make: *** [Makefile:70: all] Error 2
+  make: Leaving directory '/git/perf-5.17.0-rc8/tools/perf'
+  + exit 1
+  [perfbuilder@five ~]$
+  
+    52    84.80 gentoo-stage3:latest          : Ok   gcc (Gentoo 11.2.0 p1) 11.2.0 , clang version 13.0.0
+    53    72.83 mageia:6                      : Ok   gcc (Mageia 5.5.0-1.mga6) 5.5.0 , clang version 3.9.1 (tags/RELEASE_391/final)
+    54    40.21 mageia:7                      : FAIL clang version 8.0.0 (Mageia 8.0.0-1.mga7)
+            yychar = yylex (&yylval, &yylloc, scanner);
+                     ^
+      #define yylex           parse_events_lex
+                              ^
+      1 error generated.
+      make[3]: *** [/git/perf-5.17.0-rc8/tools/build/Makefile.build:139: util] Error 2
+    55    93.92 manjaro:base                  : Ok   gcc (GCC) 11.1.0 , clang version 13.0.0
+    56     6.58 openmandriva:4.2              : FAIL gcc version 11.2.0 20210728 (OpenMandriva) (GCC) 
+      In file included from builtin-bench.c:22:
+      bench/bench.h:66:19: error: conflicting types for 'pthread_attr_setaffinity_np'; have 'int(pthread_attr_t *, size_t,  cpu_set_t *)' {aka 'int(pthread_attr_t *, long unsigned int,  cpu_set_t *)'}
+         66 | static inline int pthread_attr_setaffinity_np(pthread_attr_t *attr __maybe_unused,
+            |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+      In file included from bench/bench.h:64,
+                       from builtin-bench.c:22:
+      /usr/include/pthread.h:394:12: note: previous declaration of 'pthread_attr_setaffinity_np' with type 'int(pthread_attr_t *, size_t,  const cpu_set_t *)' {aka 'int(pthread_attr_t *, long unsigned int,  const cpu_set_t *)'}
+        394 | extern int pthread_attr_setaffinity_np (pthread_attr_t *__attr,
+            |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ld: warning: -r and --gc-sections may not be used together, disabling --gc-sections
+      ld: warning: -r and --icf may not be used together, disabling --icf
+      ld: warning: -r and --gc-sections may not be used together, disabling --gc-sections
+      ld: warning: -r and --icf may not be used together, disabling --icf
+    57     6.48 openmandriva:cooker           : FAIL gcc version 11.2.0 20210728 (OpenMandriva) (GCC) 
+      In file included from builtin-bench.c:22:
+      bench/bench.h:66:19: error: conflicting types for 'pthread_attr_setaffinity_np'; have 'int(pthread_attr_t *, size_t,  cpu_set_t *)' {aka 'int(pthread_attr_t *, long unsigned int,  cpu_set_t *)'}
+         66 | static inline int pthread_attr_setaffinity_np(pthread_attr_t *attr __maybe_unused,
+            |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+      In file included from bench/bench.h:64,
+                       from builtin-bench.c:22:
+      /usr/include/pthread.h:394:12: note: previous declaration of 'pthread_attr_setaffinity_np' with type 'int(pthread_attr_t *, size_t,  const cpu_set_t *)' {aka 'int(pthread_attr_t *, long unsigned int,  const cpu_set_t *)'}
+        394 | extern int pthread_attr_setaffinity_np (pthread_attr_t *__attr,
+            |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ld: warning: -r and --gc-sections may not be used together, disabling --gc-sections
+      ld: warning: -r and --icf may not be used together, disabling --icf
+      ld: warning: -r and --gc-sections may not be used together, disabling --gc-sections
+      ld: warning: -r and --icf may not be used together, disabling --icf
+      ld: warning: -r and --gc-sections may not be used together, disabling --gc-sections
+      ld: warning: -r and --icf may not be used together, disabling --icf
+    58   104.89 opensuse:15.0                 : Ok   gcc (SUSE Linux) 7.4.1 20190905 [gcc-7-branch revision 275407] , clang version 5.0.1 (tags/RELEASE_501/final 312548)
+    59   114.24 opensuse:15.1                 : Ok   gcc (SUSE Linux) 7.5.0 , clang version 7.0.1 (tags/RELEASE_701/final 349238)
+    60   109.23 opensuse:15.2                 : Ok   gcc (SUSE Linux) 7.5.0 , clang version 9.0.1 
+    61   123.56 opensuse:15.3                 : Ok   gcc (SUSE Linux) 7.5.0 , clang version 11.0.1
+    62   121.87 opensuse:15.4                 : Ok   gcc (SUSE Linux) 7.5.0 , clang version 11.0.1
+    63   144.05 opensuse:tumbleweed           : Ok   gcc (SUSE Linux) 11.2.1 20211124 [revision 7510c23c1ec53aa4a62705f0384079661342ff7b] , clang version 13.0.0
+    64   103.27 oraclelinux:8                 : Ok   gcc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-4.0.1) , clang version 12.0.1 (Red Hat 12.0.1-4.0.1.module+el8.5.0+20428+2b4ecd47)
+    65   101.44 rockylinux:8                  : Ok   gcc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-4) , clang version 12.0.1 (Red Hat 12.0.1-4.module+el8.5.0+715+58f51d49)
+    66    74.65 ubuntu:16.04                  : Ok   gcc (Ubuntu 5.4.0-6ubuntu1~16.04.12) 5.4.0 20160609 , clang version 3.8.0-2ubuntu4 (tags/RELEASE_380/final)
+    67    19.95 ubuntu:16.04-x-arm            : Ok   arm-linux-gnueabihf-gcc (Ubuntu/Linaro 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609 
+    68    20.35 ubuntu:16.04-x-arm64          : Ok   aarch64-linux-gnu-gcc (Ubuntu/Linaro 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609 
+    69    19.25 ubuntu:16.04-x-powerpc        : Ok   powerpc-linux-gnu-gcc (Ubuntu 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609 
+    70    19.85 ubuntu:16.04-x-powerpc64      : Ok   powerpc64-linux-gnu-gcc (Ubuntu/IBM 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609 
+    71    20.15 ubuntu:16.04-x-powerpc64el    : Ok   powerpc64le-linux-gnu-gcc (Ubuntu/IBM 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609 
+    72    20.05 ubuntu:16.04-x-s390           : Ok   s390x-linux-gnu-gcc (Ubuntu 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609 
+    73    79.45 ubuntu:18.04                  : Ok   gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 , clang version 6.0.0-1ubuntu2 (tags/RELEASE_600/final)
+    74    21.55 ubuntu:18.04-x-arm            : Ok   arm-linux-gnueabihf-gcc (Ubuntu/Linaro 7.5.0-3ubuntu1~18.04) 7.5.0 
+    75    24.86 ubuntu:18.04-x-arm64          : Ok   aarch64-linux-gnu-gcc (Ubuntu/Linaro 7.5.0-3ubuntu1~18.04) 7.5.0 
+    76    17.55 ubuntu:18.04-x-m68k           : Ok   m68k-linux-gnu-gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 
+    77    20.95 ubuntu:18.04-x-powerpc        : Ok   powerpc-linux-gnu-gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 
+    78    22.36 ubuntu:18.04-x-powerpc64      : Ok   powerpc64-linux-gnu-gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 
+    79    22.56 ubuntu:18.04-x-powerpc64el    : Ok   powerpc64le-linux-gnu-gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 
+    80   106.71 ubuntu:18.04-x-riscv64        : Ok   riscv64-linux-gnu-gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 
+    81    21.65 ubuntu:18.04-x-s390           : Ok   s390x-linux-gnu-gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 
+    82    20.55 ubuntu:18.04-x-sh4            : Ok   sh4-linux-gnu-gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 
+    83    19.34 ubuntu:18.04-x-sparc64        : Ok   sparc64-linux-gnu-gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0 
+    84    82.66 ubuntu:20.04                  : FAIL clang version 10.0.0-4ubuntu1 
+  
+    85    22.57 ubuntu:20.04-x-powerpc64el    : Ok   powerpc64le-linux-gnu-gcc (Ubuntu 10.3.0-1ubuntu1~20.04) 10.3.0 
+    86    77.14 ubuntu:20.10                  : Ok   gcc (Ubuntu 10.3.0-1ubuntu1~20.10) 10.3.0 , Ubuntu clang version 11.0.0-2
+    87    89.80 ubuntu:21.04                  : Ok   gcc (Ubuntu 10.3.0-1ubuntu1) 10.3.0 , Ubuntu clang version 12.0.0-3ubuntu1~21.04.2
+    88    92.82 ubuntu:21.10                  : Ok   gcc (Ubuntu 11.2.0-7ubuntu2) 11.2.0 , Ubuntu clang version 13.0.0-2
+    89    85.29 ubuntu:22.04                  : FAIL gcc version 11.2.0 (Ubuntu 11.2.0-18ubuntu1) 
+      util/c++/clang.cpp:23:10: fatal error: llvm/Support/TargetRegistry.h: No such file or directory
+         23 | #include "llvm/Support/TargetRegistry.h"
+            |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      compilation terminated.
+      make[4]: *** [/git/perf-5.17.0-rc8/tools/build/Makefile.build:139: c++] Error 2
+      make[3]: *** [/git/perf-5.17.0-rc8/tools/build/Makefile.build:139: util] Error 2
+  BUILD_TARBALL_HEAD=7bd1da15d211d439d96eb7cc8a35ce694b71d120
+  90 6216.11
+  
+  real	105m37.023s
+  user	1m42.893s
+  sys	1m11.568s
+  $ 
+  
+  
+  $ uname -a
+  Linux quaco 5.16.13-200.fc35.x86_64 #1 SMP PREEMPT Tue Mar 8 22:50:58 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
+  $ git log --oneline -1
+  7bd1da15d211d439 (HEAD -> perf/urgent, seventh/perf/urgent, five/perf/urgent) perf parse-events: Ignore case in topdown.slots check
+  $ perf -v
+  perf version 5.17.rc8.g7bd1da15d211
+  $ sudo su -
+  # perf -vv
+  perf version 5.17.rc8.g7bd1da15d211
+                   dwarf: [ on  ]  # HAVE_DWARF_SUPPORT
+      dwarf_getlocations: [ on  ]  # HAVE_DWARF_GETLOCATIONS_SUPPORT
+                   glibc: [ on  ]  # HAVE_GLIBC_SUPPORT
+           syscall_table: [ on  ]  # HAVE_SYSCALL_TABLE_SUPPORT
+                  libbfd: [ on  ]  # HAVE_LIBBFD_SUPPORT
+                  libelf: [ on  ]  # HAVE_LIBELF_SUPPORT
+                 libnuma: [ on  ]  # HAVE_LIBNUMA_SUPPORT
+  numa_num_possible_cpus: [ on  ]  # HAVE_LIBNUMA_SUPPORT
+                 libperl: [ on  ]  # HAVE_LIBPERL_SUPPORT
+               libpython: [ on  ]  # HAVE_LIBPYTHON_SUPPORT
+                libslang: [ on  ]  # HAVE_SLANG_SUPPORT
+               libcrypto: [ on  ]  # HAVE_LIBCRYPTO_SUPPORT
+               libunwind: [ on  ]  # HAVE_LIBUNWIND_SUPPORT
+      libdw-dwarf-unwind: [ on  ]  # HAVE_DWARF_SUPPORT
+                    zlib: [ on  ]  # HAVE_ZLIB_SUPPORT
+                    lzma: [ on  ]  # HAVE_LZMA_SUPPORT
+               get_cpuid: [ on  ]  # HAVE_AUXTRACE_SUPPORT
+                     bpf: [ on  ]  # HAVE_LIBBPF_SUPPORT
+                     aio: [ on  ]  # HAVE_AIO_SUPPORT
+                    zstd: [ on  ]  # HAVE_ZSTD_SUPPORT
+                 libpfm4: [ OFF ]  # HAVE_LIBPFM
+  # perf test
+    1: vmlinux symtab matches kallsyms                                 : Ok
+    2: Detect openat syscall event                                     : Ok
+    3: Detect openat syscall event on all cpus                         : Ok
+    4: Read samples using the mmap interface                           : Ok
+    5: Test data source output                                         : Ok
+    6: Parse event definition strings                                  : Ok
+    7: Simple expression parser                                        : Ok
+    8: PERF_RECORD_* events & perf_sample fields                       : Ok
+    9: Parse perf pmu format                                           : Ok
+   10: PMU events                                                      :
+   10.1: PMU event table sanity                                        : Ok
+   10.2: PMU event map aliases                                         : Ok
+   10.3: Parsing of PMU event table metrics                            : Ok
+   10.4: Parsing of PMU event table metrics with fake PMUs             : Ok
+   11: DSO data read                                                   : Ok
+   12: DSO data cache                                                  : Ok
+   13: DSO data reopen                                                 : Ok
+   14: Roundtrip evsel->name                                           : Ok
+   15: Parse sched tracepoints fields                                  : Ok
+   16: syscalls:sys_enter_openat event fields                          : Ok
+   17: Setup struct perf_event_attr                                    : Ok
+   18: Match and link multiple hists                                   : Ok
+   19: 'import perf' in python                                         : Ok
+   20: Breakpoint overflow signal handler                              : Ok
+   21: Breakpoint overflow sampling                                    : Ok
+   22: Breakpoint accounting                                           : Ok
+   23: Watchpoint                                                      :
+   23.1: Read Only Watchpoint                                          : Skip (missing hardware support)
+   23.2: Write Only Watchpoint                                         : Ok
+   23.3: Read / Write Watchpoint                                       : Ok
+   23.4: Modify Watchpoint                                             : Ok
+   24: Number of exit events of a simple workload                      : Ok
+   25: Software clock events period values                             : Ok
+   26: Object code reading                                             : Ok
+   27: Sample parsing                                                  : Ok
+   28: Use a dummy software event to keep tracking                     : Ok
+   29: Parse with no sample_id_all bit set                             : Ok
+   30: Filter hist entries                                             : Ok
+   31: Lookup mmap thread                                              : Ok
+   32: Share thread maps                                               : Ok
+   33: Sort output of hist entries                                     : Ok
+   34: Cumulate child hist entries                                     : Ok
+   35: Track with sched_switch                                         : Ok
+   36: Filter fds with revents mask in a fdarray                       : Ok
+   37: Add fd to a fdarray, making it autogrow                         : Ok
+   38: kmod_path__parse                                                : Ok
+   39: Thread map                                                      : Ok
+   40: LLVM search and compile                                         :
+   40.1: Basic BPF llvm compile                                        : Ok
+   40.2: kbuild searching                                              : Ok
+   40.3: Compile source for BPF prologue generation                    : Ok
+   40.4: Compile source for BPF relocation                             : Ok
+   41: Session topology                                                : Ok
+   42: BPF filter                                                      :
+   42.1: Basic BPF filtering                                           : Ok
+   42.2: BPF pinning                                                   : Ok
+   42.3: BPF prologue generation                                       : Ok
+   43: Synthesize thread map                                           : Ok
+   44: Remove thread map                                               : Ok
+   45: Synthesize cpu map                                              : Ok
+   46: Synthesize stat config                                          : Ok
+   47: Synthesize stat                                                 : Ok
+   48: Synthesize stat round                                           : Ok
+   49: Synthesize attr update                                          : Ok
+   50: Event times                                                     : Ok
+   51: Read backward ring buffer                                       : Ok
+   52: Print cpu map                                                   : Ok
+   53: Merge cpu map                                                   : Ok
+   54: Probe SDT events                                                : Ok
+   55: is_printable_array                                              : Ok
+   56: Print bitmap                                                    : Ok
+   57: perf hooks                                                      : Ok
+   58: builtin clang support                                           :
+   58.1: builtin clang compile C source to IR                          : Skip (not compiled in)
+   58.2: builtin clang compile C source to ELF object                  : Skip (not compiled in)
+   59: unit_number__scnprintf                                          : Ok
+   60: mem2node                                                        : Ok
+   61: time utils                                                      : Ok
+   62: Test jit_write_elf                                              : Ok
+   63: Test libpfm4 support                                            :
+   63.1: test of individual --pfm-events                               : Skip (not compiled in)
+   63.2: test groups of --pfm-events                                   : Skip (not compiled in)
+   64: Test api io                                                     : Ok
+   65: maps__merge_in                                                  : Ok
+   66: Demangle Java                                                   : Ok
+   67: Demangle OCaml                                                  : Ok
+   68: Parse and process metrics                                       : Ok
+   69: PE file support                                                 : Ok
+   70: Event expansion for cgroups                                     : Ok
+   71: Convert perf time to TSC                                        : Ok
+   72: dlfilter C API                                                  : Ok
+   73: Sigtrap                                                         : Ok
+   74: x86 rdpmc                                                       : Ok
+   75: Test dwarf unwind                                               : Ok
+   76: x86 instruction decoder - new instructions                      : Ok
+   77: Intel PT packet decoder                                         : Ok
+   78: x86 bp modify                                                   : Ok
+   79: x86 Sample parsing                                              : Ok
+   80: build id cache operations                                       : Ok
+   81: daemon operations                                               : Ok
+   82: perf pipe recording and injection test                          : Ok
+   83: Add vfs_getname probe to get syscall args filenames             : Ok
+   84: probe libc's inet_pton & backtrace it with ping                 : Ok
+   85: Use vfs_getname probe to get syscall args filenames             : Ok
+   86: Zstd perf.data compression/decompression                        : Ok
+   87: perf stat csv summary test                                      : Ok
+   88: perf stat metrics (shadow stat) test                            : Ok
+   89: perf all metricgroups test                                      : Ok
+   90: perf all metrics test                                           : Ok
+   91: perf all PMU test                                               : Ok
+   92: perf stat --bpf-counters test                                   : Ok
+   93: Check Arm CoreSight trace data recording and synthesized samples: Skip
+   94: Check Arm SPE trace data recording and synthesized samples      : Skip
+   95: Check open filename arg using perf trace + vfs_getname          : Ok
+  #
+  
+  $ grep -m1 'model name' /proc/cpuinfo
+  model name	: AMD Ryzen 9 5950X 16-Core Processor
+  $ git log --oneline -1 ; time make -C tools/perf build-test
+  7bd1da15d211d439 (HEAD -> perf/urgent) perf parse-events: Ignore case in topdown.slots check
+  make: Entering directory '/var/home/acme/git/perf/tools/perf'
+  - tarpkg: ./tests/perf-targz-src-pkg .
+                   make_static: make LDFLAGS=-static NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 NO_JVMTI=1 -j32  DESTDIR=/tmp/tmp.rtYIjV0OoF
+                make_with_gtk2: make GTK2=1 -j32  DESTDIR=/tmp/tmp.VlIMTDIcCs
+                 make_no_sdt_O: make NO_SDT=1
+           make_no_libunwind_O: make NO_LIBUNWIND=1
+         make_with_clangllvm_O: make LIBCLANGLLVM=1
+           make_with_libpfm4_O: make LIBPFM4=1
+         make_install_prefix_O: make install prefix=/tmp/krava
+                make_no_newt_O: make NO_NEWT=1
+        make_no_libbpf_DEBUG_O: make NO_LIBBPF=1 DEBUG=1
+           make_no_libbionic_O: make NO_LIBBIONIC=1
+              make_clean_all_O: make clean all
+            make_no_libaudit_O: make NO_LIBAUDIT=1
+                  make_debug_O: make DEBUG=1
+                   make_tags_O: make tags
+                make_no_gtk2_O: make NO_GTK2=1
+               make_no_slang_O: make NO_SLANG=1
+            make_no_auxtrace_O: make NO_AUXTRACE=1
+             make_no_libperl_O: make NO_LIBPERL=1
+         make_libbpf_dynamic_O: make LIBBPF_DYNAMIC=1
+         make_with_coresight_O: make CORESIGHT=1
+             make_util_map_o_O: make util/map.o
+            make_install_bin_O: make install-bin
+                    make_doc_O: make doc
+             make_no_scripts_O: make NO_LIBPYTHON=1 NO_LIBPERL=1
+              make_no_libelf_O: make NO_LIBELF=1
+             make_no_libnuma_O: make NO_LIBNUMA=1
+   make_install_prefix_slash_O: make install prefix=/tmp/krava/
+                make_minimal_O: make NO_LIBPERL=1 NO_LIBPYTHON=1 NO_NEWT=1 NO_GTK2=1 NO_DEMANGLE=1 NO_LIBELF=1 NO_LIBUNWIND=1 NO_BACKTRACE=1 NO_LIBNUMA=1 NO_LIBAUDIT=1 NO_LIBBIONIC=1 NO_LIBDW_DWARF_UNWIND=1 NO_AUXTRACE=1 NO_LIBBPF=1 NO_LIBCRYPTO=1 NO_SDT=1 NO_JVMTI=1 NO_LIBZSTD=1 NO_LIBCAP=1 NO_SYSCALL_TABLE=1
+              make_no_libbpf_O: make NO_LIBBPF=1
+         make_no_syscall_tbl_O: make NO_SYSCALL_TABLE=1
+           make_no_libcrypto_O: make NO_LIBCRYPTO=1
+                   make_pure_O: make
+       make_util_pmu_bison_o_O: make util/pmu-bison.o
+                  make_no_ui_O: make NO_NEWT=1 NO_SLANG=1 NO_GTK2=1
+                 make_perf_o_O: make perf.o
+           make_no_libpython_O: make NO_LIBPYTHON=1
+                   make_help_O: make help
+            make_no_demangle_O: make NO_DEMANGLE=1
+        make_with_babeltrace_O: make LIBBABELTRACE=1
+           make_no_backtrace_O: make NO_BACKTRACE=1
+  make_no_libdw_dwarf_unwind_O: make NO_LIBDW_DWARF_UNWIND=1
+                make_install_O: make install
+  OK
+  make: Leaving directory '/var/home/acme/git/perf/tools/perf'
+  
+  real	5m45.607s
+  user	61m55.996s
+  sys	17m11.191s
+  $
