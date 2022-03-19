@@ -2,90 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89D07C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 11:38:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E142C43217
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 11:38:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242806AbiCSLjF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Mar 2022 07:39:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45466 "EHLO
+        id S242817AbiCSLjl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Mar 2022 07:39:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231818AbiCSLjE (ORCPT
+        with ESMTP id S231818AbiCSLjj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Mar 2022 07:39:04 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1899E72E15
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 04:37:43 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id d10so21422875eje.10
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 04:37:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=c9BRdTXptPn9nAkqk8VJH8CbSa79VcrhNAZrsTgKEeY=;
-        b=FqjoPvj27E+ko4rKADi6ZlHlM49M4sHIiLFaU3IxZkil52Ht+3ayk72E+zaAIt314q
-         ggfqm7yzmGfL1Sa/syHrwX/AxeHkxd7VkHSUtfXt521idDme/jjR32ZoqziokyfXndnQ
-         gjj2p8LiGEYjpNKBHQTLVmx+cB+/hb5h6ZRv40+2WbiLR0POQUTVoi9CvqnqzaoV1Am4
-         SVNA2r2IsShba/IKx6rP8QlJtwJetbszJKwwfdtHXXRRToMsv+2vv4wUHOkxGZ8n46fk
-         npSB8C16MMuwV/zgdMQ3J8237NxKfyfYaJ/x/23y8zsmWiyHuUTFtspPByXJ+FBkRvYc
-         EyNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=c9BRdTXptPn9nAkqk8VJH8CbSa79VcrhNAZrsTgKEeY=;
-        b=202GXkx3FzcOF55zBBC0RTRQpatE1JmhR4XWLoDzsMMHX+Ycz/btD+k6UqHYMR9CE8
-         ThmgzZFrGyP6bcavjbGxHDpcbjmak/fBjJj23KrOcx4jjLutBgV5xsRGk+SerXD9pwme
-         kWS7FD6NxxUTgm01IX4gGAlns+GVUD6Zo54Fju1EziPQa5kJaQEZVzuGk3ARgAbiiYA8
-         G1gHEbD2rOmfep047jZv2ZtC4pHNVF/smtqx8DAmpMSSONxbhMDzDlJWUapiur0/Z9Ou
-         kmcCRsikD6d0S5cqZB0IjyxSktc5fzUFT3qwhYvMcm0cCrJ2FnH6baYAitokGgW2fOG2
-         4f5w==
-X-Gm-Message-State: AOAM530xpRibhSSZEKAkcBjNSEN3p+OwOvthD4OdWmqgS7irhzabx5RD
-        zPsWsxlusUEbwKHFWNpommP8TW3yLPGddyqA6Lc=
-X-Google-Smtp-Source: ABdhPJzIqn+r1GhTb2EP6E7uj2RA39/apGSu0U/R63O4hzfdexCWcoeQqcj+LPr7SRvoreJXWECKPXj/ZkqWTaZ0uRQ=
-X-Received: by 2002:a17:906:4cc7:b0:6d0:7efb:49f with SMTP id
- q7-20020a1709064cc700b006d07efb049fmr12721701ejt.639.1647689861322; Sat, 19
- Mar 2022 04:37:41 -0700 (PDT)
+        Sat, 19 Mar 2022 07:39:39 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71AE586E16;
+        Sat, 19 Mar 2022 04:38:17 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 094082223B;
+        Sat, 19 Mar 2022 12:38:14 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1647689895;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zmfB9xFrYldmqq1FLPQ4/Iztnp51kdC7eGjZLGK9R9I=;
+        b=nK72s+a+CriFy2uCBz7cVC/oV2dJ7STsg5K6+FvOMXhbU9OHAvyFezhKJEonlNukjIE/At
+        iOXENIVw/Ky8/ukxJLQk4qnF9236PXkZDjyKrMEr+u4yWjrEg/Q+8XVa+s9iLb4n4DtONH
+        11Plc7zM79jDmEgGlak5dmfX2BOKI3A=
 MIME-Version: 1.0
-References: <20220308151119.48412-1-andriy.shevchenko@linux.intel.com>
- <20220308151119.48412-4-andriy.shevchenko@linux.intel.com> <CANiq72mVnHWi-tZmT4g+2Y96eYu=Hm=oMKn6RkwpXWh7ARATAA@mail.gmail.com>
-In-Reply-To: <CANiq72mVnHWi-tZmT4g+2Y96eYu=Hm=oMKn6RkwpXWh7ARATAA@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sat, 19 Mar 2022 13:37:05 +0200
-Message-ID: <CAHp75VfMHWObRFs=-fOQnkV=KkAKWuqRF=JLUfzqruTa2U9XjQ@mail.gmail.com>
-Subject: Re: [PATCH v1 4/4] auxdisplay: lcd2s: Use array size explicitly in lcd2s_gotoxy()
-To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Sat, 19 Mar 2022 12:38:14 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Paul Burton <paulburton@kernel.org>,
+        Quentin Schulz <quentin.schulz@bootlin.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        UNGLinuxDriver@microchip.com, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org
+Subject: Re: [PATCH v2 7/8] ARM: dts: lan9662-pcb8291: fix pinctrl node name
+In-Reply-To: <cf2a6d1a-bf98-e382-2623-e44e5979ca29@gmail.com>
+References: <20220318202547.1650687-1-michael@walle.cc>
+ <20220318202547.1650687-8-michael@walle.cc>
+ <cf2a6d1a-bf98-e382-2623-e44e5979ca29@gmail.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <e7467fe3a8dae5f5af84d595a0c4ab16@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 19, 2022 at 6:46 AM Miguel Ojeda
-<miguel.ojeda.sandonis@gmail.com> wrote:
-> On Tue, Mar 8, 2022 at 4:11 PM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> >
-> > Currently the reading of the onstack array is confusing since two
-> > out of three members are of different types. Let it be more clear
-> > by explicitly set the array size, so everybody will understand that
-> > parameters are cast to the type of the array.
->
-> I am not sure what you mean by this, could you please elaborate why is
-> it more clear if the size is given?
+Hi,
 
-With [] and parameters not being bytes by type one needs an additional
-processing step to figure that out. When I see u8 ...[3] I immediately
-understand that there are 3 _bytes_. Moreover, [] is error prone when
-one may add something to the buffer with the expectation that it will
-work somehow (for example, with an old device you need 3, with new
-device revision you need 4 bytes and passing 4 bytes breaks the old
-device). Of course most of that quite likely won't happen.
+Am 2022-03-19 09:24, schrieb Sergei Shtylyov:
+> Hello!
+> 
+> On 3/18/22 11:25 PM, Michael Walle wrote:
+> 
+>> The pinctrl device tree binding will be converted to YAML format. All
+>> the pin nodes should end with "-pins". Fix them.
+> 
+>    It does end with "pins" already, right?
 
-If you think this change is not worth it, please, drop.
+It ends with "_pins". Please note the underscore.
 
+>> Fixes: 290deaa10c50 ("ARM: dts: add DT for lan966 SoC and 2-port board 
+>> pcb8291")
+>> Signed-off-by: Michael Walle <michael@walle.cc>
+>> ---
+>>  arch/arm/boot/dts/lan966x-pcb8291.dts | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>> 
+>> diff --git a/arch/arm/boot/dts/lan966x-pcb8291.dts 
+>> b/arch/arm/boot/dts/lan966x-pcb8291.dts
+>> index 3281af90ac6d..3c7e3a7d6f14 100644
+>> --- a/arch/arm/boot/dts/lan966x-pcb8291.dts
+>> +++ b/arch/arm/boot/dts/lan966x-pcb8291.dts
+>> @@ -35,7 +35,7 @@ fc3_b_pins: fcb3-spi-pins {
+>>  		function = "fc3_b";
+>>  	};
+>> 
+>> -	can0_b_pins:  can0_b_pins {
+>> +	can0_b_pins:  can0-b-pins {
+> 
+>    Mhm, I can't even see what is changed here... :-/
 
---
-With Best Regards,
-Andy Shevchenko
+The name of the node, s/_/-/
+
+-michael
