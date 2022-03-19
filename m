@@ -2,176 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58910C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 13:05:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57A7FC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 13:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243046AbiCSNGj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Mar 2022 09:06:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59846 "EHLO
+        id S243031AbiCSNZh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Mar 2022 09:25:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243031AbiCSNG1 (ORCPT
+        with ESMTP id S239627AbiCSNZe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Mar 2022 09:06:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9EF725F659;
-        Sat, 19 Mar 2022 06:04:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2118860C69;
-        Sat, 19 Mar 2022 13:04:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FAB4C340EC;
-        Sat, 19 Mar 2022 13:04:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647695095;
-        bh=XLwieuXtimno3a6w/8/ef/UNCG9/Dkz3Zq1nJZ1Qkk0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=IPCgIhZPMvMqPPBIYBdZ9DxzYP46Iq2ZxeteZMiJmMKlTpxJA44Y41IpZ0X57+JwH
-         OtYhD3HjbqN/bY+8PkfI6uWKI2uC/zT0IDgZsmycz3wTx81/lYXQHg8aRb3VpY/qpF
-         iw1t8AIbpN4GZ7iWL/IGLYDzhvyd45a7KMM0kfQQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        torvalds@linux-foundation.org, stable@vger.kernel.org
-Cc:     lwn@lwn.net, jslaby@suse.cz,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Linux 5.16.16
-Date:   Sat, 19 Mar 2022 14:04:39 +0100
-Message-Id: <16476950798220@kroah.com>
-X-Mailer: git-send-email 2.35.1
+        Sat, 19 Mar 2022 09:25:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 094A763B9
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 06:24:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647696252;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=LAhEbRZv23sg+3l9XeDBt2uA5yTFBx5ccqYfvZx5ss0=;
+        b=a97JRUxzg4CE/rQdpZVSkOdC77qOwAwoB7fRaJ27EMkBWl+3ZHKQ1HcugfZL+YYd7UI6Pf
+        G30eOgp20DeLLnVWNhoL4+LN0GPZW7I6W+DPgR6YRRhliNh7mCjbkubxMJln48Bnl25vlg
+        cKiwazaNyYW0uG8TFd3CN7y0dzVsJ/4=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-445-OuqtuUDNOUKI-A-HMvErJw-1; Sat, 19 Mar 2022 09:24:10 -0400
+X-MC-Unique: OuqtuUDNOUKI-A-HMvErJw-1
+Received: by mail-ed1-f72.google.com with SMTP id l24-20020a056402231800b00410f19a3103so6521257eda.5
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 06:24:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LAhEbRZv23sg+3l9XeDBt2uA5yTFBx5ccqYfvZx5ss0=;
+        b=kyk2DuiRceiQWuai0Q2C5O1cvm6dNE/q/Vm9FQumpEgz9/s+/+T+qdZUZ9Cm6YrmzI
+         zToXUgQ9DWJy+nDRC0HUZ1N4qvUzPr6Izuu0wcPRF9P+itKZ09n/F3OSj0fpiLMEuGi6
+         1cszu15Q1hYKBLpoV4q/FJgT21f+t172dD+6yI5fDSsp303laLvoHrLgfoInqz8KKBzz
+         YS3EJVmcnW2kVgD8efbMicZ5BL/tmAu5dKeGG/O1V5vk+DiTA/jDbh8de1FmWvi/j6PT
+         5aZ3CMEOIk/haenu/mjDcpFFNU5DhDPOJ3ECZW+j+1NjcUDOmokygsP87dBG9DH7ClUd
+         kpLA==
+X-Gm-Message-State: AOAM532E7CvGJgjorqjGeVyc5hvgabiwI9zTA8M5EWsO6dF6IDHWii5v
+        RReLpAXcbDH8Ov8716zsrIzvtlB2v0oVdBnlwQjWnHEN+Jq1QgyIUdKYYD0Ij463WEPN773MUNu
+        nWJzC2NgSB8u6cFMoGLjufoSG
+X-Received: by 2002:a17:907:7704:b0:6cf:48ac:b4a8 with SMTP id kw4-20020a170907770400b006cf48acb4a8mr13161273ejc.305.1647696249796;
+        Sat, 19 Mar 2022 06:24:09 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx8NFkT0ysq1q8SRtiCqUI2HWoJCMvPL0kr0rqzwobrsp24Q4Cv2FXmntZ0YbvOSbdqUcjf6A==
+X-Received: by 2002:a17:907:7704:b0:6cf:48ac:b4a8 with SMTP id kw4-20020a170907770400b006cf48acb4a8mr13161251ejc.305.1647696249538;
+        Sat, 19 Mar 2022 06:24:09 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:63a7:c72e:ea0e:6045? ([2001:b07:6468:f312:63a7:c72e:ea0e:6045])
+        by smtp.googlemail.com with ESMTPSA id q2-20020a170906144200b006ceb8723de9sm4781578ejc.120.2022.03.19.06.24.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 19 Mar 2022 06:24:08 -0700 (PDT)
+Message-ID: <94df38ce-6bd7-a993-7d9f-0a1418a1c8df@redhat.com>
+Date:   Sat, 19 Mar 2022 14:24:06 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH -v1.2] kvm/emulate: Fix SETcc emulation function offsets
+ with SLS
+Content-Language: en-US
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Borislav Petkov <bp@alien8.de>
+Cc:     Jamie Heilman <jamie@audible.transient.net>,
+        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        Sean Christopherson <seanjc@google.com>, kvm@vger.kernel.org
+References: <YjGzJwjrvxg5YZ0Z@audible.transient.net>
+ <YjHYh3XRbHwrlLbR@zn.tnic> <YjIwRR5UsTd3W4Bj@audible.transient.net>
+ <YjI69aUseN/IuzTj@zn.tnic> <YjJFb02Fc0jeoIW4@audible.transient.net>
+ <YjJVWYzHQDbI6nZM@zn.tnic>
+ <20220316220201.GM8939@worktop.programming.kicks-ass.net>
+ <YjMBdMlhVMGLG5ws@zn.tnic> <YjMS8eTOhXBOPFOe@zn.tnic>
+ <YjMVpfe/9ldmWX8W@hirez.programming.kicks-ass.net>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <YjMVpfe/9ldmWX8W@hirez.programming.kicks-ass.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm announcing the release of the 5.16.16 kernel.
+On 3/17/22 12:04, Peter Zijlstra wrote:
+> Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> 
+> Depending on what Paolo wants, it might make sense to merge this into
+> tip/x86/urgent such that we can then resolve the merge conflict vs
+> tip/x86/core with something like the below:
 
-All users of the 5.16 kernel series must upgrade.
+Sorry for responding late, I was sick the past few days.  Go ahead and 
+apply it to tip/x86/core with the rest of the SLS and IBT patches.  If 
+you place it in front of the actual insertion of the INT3 it will even 
+be bisectable, but I'm not sure if your commit hashes are already frozen.
 
-The updated 5.16.y git tree can be found at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.16.y
-and can be browsed at the normal kernel.org git web browser:
-	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
+Just one thing:
 
-thanks,
+> -#define SETCC_ALIGN	(4 * (1 + IS_ENABLED(CONFIG_SLS)))
+> +/*
+> + * Depending on .config the SETcc functions look like:
+> + *
+> + * setcc:
+> + * +0	ENDBR		[CONFIG_X86_KERNEL_IBT]
+> + * +4	SETcc	%al
+> + * +7	RET
+> + * +8	INT3		[CONFIG_SLS]
+> + *
+> + * Which gives possible sizes: 4, 5, 8, 9 which when rounded up to the
+> + * next power-of-two alignment become: 4, 8, 16.
+> + */
+> +#define SETCC_ALIGN	(4 * (1 + IS_ENABLED(CONFIG_SLS)) * (1 + HAS_KERNEL_IBT))
 
-greg k-h
+This might be slightly nicer as (4 << IS_ENABLED(CONFIG_SLS) << 
+HAS_KERNEL_IBT.  Or maybe not, depends on your taste.
 
-------------
+It might also be worth doing:
 
- Makefile                                            |    2 -
- arch/arm/boot/dts/rk322x.dtsi                       |    4 +-
- arch/arm/boot/dts/rk3288.dtsi                       |    2 -
- arch/arm64/boot/dts/intel/socfpga_agilex.dtsi       |    4 +-
- arch/arm64/boot/dts/rockchip/px30.dtsi              |    2 -
- arch/arm64/boot/dts/rockchip/rk3328.dtsi            |    2 -
- arch/arm64/boot/dts/rockchip/rk3399-puma-haikou.dts |    1 
- arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi       |   20 +++++++++++
- arch/arm64/boot/dts/rockchip/rk3399.dtsi            |    6 +--
- arch/arm64/boot/dts/rockchip/rk356x.dtsi            |    4 +-
- arch/mips/kernel/smp.c                              |    6 +--
- drivers/atm/firestream.c                            |    2 +
- drivers/gpu/drm/drm_connector.c                     |    3 +
- drivers/input/touchscreen/goodix.c                  |   34 ++++++++++----------
- drivers/net/can/rcar/rcar_canfd.c                   |    6 +--
- drivers/net/ethernet/broadcom/bnx2.c                |    2 -
- drivers/net/ethernet/intel/ice/ice.h                |   11 +++++-
- drivers/net/ethernet/intel/ice/ice_main.c           |   12 ++++++-
- drivers/net/ethernet/sfc/mcdi.c                     |    2 -
- drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c  |    3 -
- drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c   |    1 
- include/linux/netfilter_netdev.h                    |    4 ++
- include/net/xfrm.h                                  |    5 +-
- lib/Kconfig                                         |    1 
- net/bluetooth/hci_core.c                            |    1 
- net/ipv4/tcp.c                                      |   10 +++--
- net/key/af_key.c                                    |    2 -
- net/mac80211/agg-tx.c                               |   10 +++++
- net/wireless/nl80211.c                              |    3 +
- net/xfrm/xfrm_policy.c                              |   14 ++++----
- net/xfrm/xfrm_state.c                               |   15 ++++++--
- net/xfrm/xfrm_user.c                                |   27 ++++-----------
- tools/testing/selftests/vm/userfaultfd.c            |    1 
- 33 files changed, 140 insertions(+), 82 deletions(-)
+#define SETCC_LENGTH (4 + IS_ENABLED(CONFIG_SLS) + 4 * HAS_KERNEL_IBT)
+#define SETCC_ALIGN  (4 << IS_ENABLED(CONFIG_SLS) << HAS_KERNEL_IBT)
+BUILD_BUG_ON(SETCC_LENGTH <= SETCC_ALIGN);
 
-Alexander Lobakin (1):
-      MIPS: smp: fill in sibling and core maps earlier
+Thanks,
 
-Chengming Zhou (1):
-      kselftest/vm: fix tests build with old libc
-
-Christophe JAILLET (1):
-      bnx2: Fix an error message
-
-Corentin Labbe (1):
-      ARM: dts: rockchip: fix a typo on rk3288 crypto-controller
-
-Dinh Nguyen (1):
-      arm64: dts: agilex: use the compatible "intel,socfpga-agilex-hsotg"
-
-Eric Dumazet (1):
-      tcp: make tcp_read_sock() more robust
-
-Florian Westphal (1):
-      netfilter: egress: silence egress hook lockdep splats
-
-Frank Wunderlich (1):
-      arm64: dts: rockchip: fix dma-controller node names on rk356x
-
-Golan Ben Ami (1):
-      iwlwifi: don't advertise TWT support
-
-Greg Kroah-Hartman (1):
-      Linux 5.16.16
-
-Hans de Goede (2):
-      Input: goodix - use the new soc_intel_is_byt() helper
-      Input: goodix - workaround Cherry Trail devices with a bogus ACPI Interrupt() resource
-
-Ivan Vecera (1):
-      ice: Fix race condition during interface enslave
-
-Jakob Unterwurzacher (1):
-      arm64: dts: rockchip: fix rk3399-puma eMMC HS400 signal integrity
-
-Jia-Ju Bai (1):
-      atm: firestream: check the return value of ioremap() in fs_init()
-
-Johannes Berg (1):
-      mac80211: refuse aggregations sessions before authorized
-
-Julian Braha (1):
-      ARM: 9178/1: fix unmet dependency on BITREVERSE for HAVE_ARCH_BITREVERSE
-
-Kai Lueke (1):
-      Revert "xfrm: state and policy should fail if XFRMA_IF_ID 0"
-
-Krzysztof Kozlowski (1):
-      arm64: dts: rockchip: align pl330 node name with dtschema
-
-Lad Prabhakar (1):
-      can: rcar_canfd: rcar_canfd_channel_probe(): register the CAN device when fully ready
-
-Luiz Augusto von Dentz (1):
-      Bluetooth: hci_core: Fix leaking sent_cmd skb
-
-Manasi Navare (1):
-      drm/vrr: Set VRR capable prop only if it is attached to connector
-
-Niels Dossche (1):
-      sfc: extend the locking on mcdi->seqno
-
-Quentin Schulz (1):
-      arm64: dts: rockchip: fix rk3399-puma-haikou USB OTG mode
-
-Sascha Hauer (2):
-      arm64: dts: rockchip: reorder rk3399 hdmi clocks
-      ARM: dts: rockchip: reorder rk322x hmdi clocks
-
-Sreeramya Soratkal (1):
-      nl80211: Update bss channel on channel switch for P2P_CLIENT
-
-Yan Yan (2):
-      xfrm: Check if_id in xfrm_migrate
-      xfrm: Fix xfrm migrate issues when address family changes
+Paolo
 
