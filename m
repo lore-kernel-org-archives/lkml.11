@@ -2,22 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AD81C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 17:47:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DC46C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 17:48:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243776AbiCSRtQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Mar 2022 13:49:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37896 "EHLO
+        id S243892AbiCSRtT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Mar 2022 13:49:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243832AbiCSRsy (ORCPT
+        with ESMTP id S243812AbiCSRsu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Mar 2022 13:48:54 -0400
-Received: from relay08.th.seeweb.it (relay08.th.seeweb.it [5.144.164.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F12BA247C30;
-        Sat, 19 Mar 2022 10:47:24 -0700 (PDT)
+        Sat, 19 Mar 2022 13:48:50 -0400
+Received: from relay06.th.seeweb.it (relay06.th.seeweb.it [5.144.164.167])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FF92247810;
+        Sat, 19 Mar 2022 10:47:23 -0700 (PDT)
 Received: from localhost.localdomain (abxi119.neoplus.adsl.tpnet.pl [83.9.2.119])
-        by m-r2.th.seeweb.it (Postfix) with ESMTPA id 3A3343F3EF;
-        Sat, 19 Mar 2022 18:47:22 +0100 (CET)
+        by m-r2.th.seeweb.it (Postfix) with ESMTPA id AC3B53ED8B;
+        Sat, 19 Mar 2022 18:47:20 +0100 (CET)
 From:   Konrad Dybcio <konrad.dybcio@somainline.org>
 To:     ~postmarketos/upstreaming@lists.sr.ht
 Cc:     martin.botka@somainline.org,
@@ -29,9 +29,9 @@ Cc:     martin.botka@somainline.org,
         Rob Herring <robh+dt@kernel.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 15/15] arm64: dts: qcom: msm8994: Add mmc aliases
-Date:   Sat, 19 Mar 2022 18:46:45 +0100
-Message-Id: <20220319174645.340379-16-konrad.dybcio@somainline.org>
+Subject: [PATCH 14/15] arm64: dts: qcom: msm8994: Add watchdog timer node
+Date:   Sat, 19 Mar 2022 18:46:44 +0100
+Message-Id: <20220319174645.340379-15-konrad.dybcio@somainline.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220319174645.340379-1-konrad.dybcio@somainline.org>
 References: <20220319174645.340379-1-konrad.dybcio@somainline.org>
@@ -41,29 +41,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Set the aliases for both SDHCI controllers.
+Add and configure the watchdog node.
 
 Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
 ---
- arch/arm64/boot/dts/qcom/msm8994.dtsi | 5 +++++
- 1 file changed, 5 insertions(+)
+ arch/arm64/boot/dts/qcom/msm8994.dtsi | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/qcom/msm8994.dtsi b/arch/arm64/boot/dts/qcom/msm8994.dtsi
-index 7aab835fa2fe..8eb1f1996e01 100644
+index b72be374bca3..7aab835fa2fe 100644
 --- a/arch/arm64/boot/dts/qcom/msm8994.dtsi
 +++ b/arch/arm64/boot/dts/qcom/msm8994.dtsi
-@@ -14,6 +14,11 @@ / {
- 	#address-cells = <2>;
- 	#size-cells = <2>;
+@@ -356,6 +356,15 @@ apcs: mailbox@f900d000 {
+ 			#mbox-cells = <1>;
+ 		};
  
-+	aliases {
-+		mmc1 = &sdhc1;
-+		mmc2 = &sdhc2;
-+	};
++		watchdog@f9017000 {
++			compatible = "qcom,apss-wdt-msm8994", "qcom,kpss-wdt";
++			reg = <0xf9017000 0x1000>;
++			interrupts = <GIC_SPI 3 IRQ_TYPE_EDGE_RISING>,
++				     <GIC_SPI 4 IRQ_TYPE_EDGE_RISING>;
++			clocks = <&sleep_clk>;
++			timeout-sec = <10>;
++		};
 +
- 	chosen { };
- 
- 	clocks {
+ 		timer@f9020000 {
+ 			#address-cells = <1>;
+ 			#size-cells = <1>;
 -- 
 2.35.1
 
