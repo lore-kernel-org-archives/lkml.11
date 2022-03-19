@@ -2,136 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65746C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 19:16:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B79EC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 19:29:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243996AbiCSTPy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Mar 2022 15:15:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48474 "EHLO
+        id S244025AbiCSTa1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Mar 2022 15:30:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235662AbiCSTPx (ORCPT
+        with ESMTP id S244010AbiCSTaW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Mar 2022 15:15:53 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C6A1140F5
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 12:14:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647717271; x=1679253271;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=0aNKoHJk0OTXs/iJ9Pr2oK1Cxpkxgv3z6D0r3IB1vjQ=;
-  b=fxrzGXXPgD/c0Ct6TN6oj9Sxk/LUXww6RflLI5Pkok+YjfvrPCARONPr
-   leYmwEMGNdyyVn7T2li+IFOUM1Y5o+xCJvPKBOl2VSRolBdMHWsYo43+X
-   4iy053Ucu/HDMspFp1z2oyeNP/REOR8tmhfXe5kTrtMq1H3e79muAhZVW
-   6UWLTXvmHXYCe8lQqf/n+BMszvYa5cvNWBZKGFYaXEK3UGuq1aFppHbr4
-   ztg2AhpmXy2tk6RQ3Fw4xXBV9d3lpT1ZqUrCXRpm0IB3j2jPXaicZYNcF
-   LNwNRUH+BftkRU3qaz2pOozP49v01trLAQTEoHVUW5GQeC2YXQJ6nKINS
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10291"; a="257042930"
-X-IronPort-AV: E=Sophos;i="5.90,195,1643702400"; 
-   d="scan'208";a="257042930"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2022 12:14:31 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,195,1643702400"; 
-   d="scan'208";a="582386627"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 19 Mar 2022 12:14:29 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nVeWy-000GEV-Dz; Sat, 19 Mar 2022 19:14:28 +0000
-Date:   Sun, 20 Mar 2022 03:13:35 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nicholas Piggin <npiggin@gmail.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        =?iso-8859-1?Q?C=E9dric?= Le Goater <clg@kaod.org>,
-        Alexey Kardashevskiy <aik@ozlabs.ru>
-Subject: arch/powerpc/kvm/book3s_xive.c:151:41: sparse: sparse: incorrect
- type in assignment (different base types)
-Message-ID: <202203200331.5PTTCUcx-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Sat, 19 Mar 2022 15:30:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3D9A1959C3;
+        Sat, 19 Mar 2022 12:29:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ED91260C2B;
+        Sat, 19 Mar 2022 19:29:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 58645C340EF;
+        Sat, 19 Mar 2022 19:29:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647718140;
+        bh=Rfzy1Lut8EkX7L3KZjJ5kzMvOCltkpLJ0C61l0aZACE=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=em/gImJWbl3SltNus2/K+8HqONC7MrhjP5/o76jACjn31QJ6zyelmVrjMRK7hhL19
+         bRhDcnBZGg6xWtf+NaLFi0h1lEICQl2vr3t+AiLQ08gFO27NmBKnBxg60V4fjGOQ9A
+         PMO/C87D1+X8X31zO/cHhPl2T2D8suyI9a8BE7uwJZ+W+6AIjUgqT2uhbs+XjZ8KRe
+         D90pdJx5+ruHkgGpNQR37Zu4/t+GroBRGrMFnydj2DoqBczyCj2qccRdJk+jCeAS3q
+         0Fj823cN5hea9mlDDl945Y98jeS+2JiHhgtKF73toVfurEEPMtwkc+e/xB9NTFBC6Y
+         kcxG6szzy7cgw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 42B42F03846;
+        Sat, 19 Mar 2022 19:29:00 +0000 (UTC)
+Subject: Re: [GIT PULL] USB fixes for 5.17-final
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <YjWS3CaN65nJNHEj@kroah.com>
+References: <YjWS3CaN65nJNHEj@kroah.com>
+X-PR-Tracked-List-Id: <linux-usb.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YjWS3CaN65nJNHEj@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git tags/usb-5.17-final
+X-PR-Tracked-Commit-Id: 16b1941eac2bd499f065a6739a40ce0011a3d740
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 6aa61c12a43bb365296e72251e7346b661030b52
+Message-Id: <164771814026.23927.6644446405642889764.pr-tracker-bot@kernel.org>
+Date:   Sat, 19 Mar 2022 19:29:00 +0000
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   34e047aa16c0123bbae8e2f6df33e5ecc1f56601
-commit: 023c3c96ca4d196c09d554d5a98900406e4d7ecb KVM: PPC: Book3S HV P9: implement kvmppc_xive_pull_vcpu in C
-date:   9 months ago
-config: powerpc64-randconfig-s031-20220319 (https://download.01.org/0day-ci/archive/20220320/202203200331.5PTTCUcx-lkp@intel.com/config)
-compiler: powerpc64-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=023c3c96ca4d196c09d554d5a98900406e4d7ecb
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 023c3c96ca4d196c09d554d5a98900406e4d7ecb
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=powerpc SHELL=/bin/bash arch/powerpc/kvm/
+The pull request you sent on Sat, 19 Mar 2022 09:22:52 +0100:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git tags/usb-5.17-final
 
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/6aa61c12a43bb365296e72251e7346b661030b52
 
-sparse warnings: (new ones prefixed by >>)
-   arch/powerpc/kvm/book3s_xive.c: note: in included file:
-   arch/powerpc/kvm/book3s_xive_template.c:26:15: sparse: sparse: cast to restricted __be16
-   arch/powerpc/kvm/book3s_xive_template.c:339:39: sparse: sparse: incorrect type in initializer (different base types) @@     expected restricted __be64 [usertype] qw1 @@     got unsigned long @@
-   arch/powerpc/kvm/book3s_xive_template.c:339:39: sparse:     expected restricted __be64 [usertype] qw1
-   arch/powerpc/kvm/book3s_xive_template.c:339:39: sparse:     got unsigned long
-   arch/powerpc/kvm/book3s_xive.c:79:49: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned long v @@     got restricted __be64 [usertype] w01 @@
-   arch/powerpc/kvm/book3s_xive.c:79:49: sparse:     expected unsigned long v
-   arch/powerpc/kvm/book3s_xive.c:79:49: sparse:     got restricted __be64 [usertype] w01
-   arch/powerpc/kvm/book3s_xive.c:80:32: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned int v @@     got restricted __be32 [usertype] xive_cam_word @@
-   arch/powerpc/kvm/book3s_xive.c:80:32: sparse:     expected unsigned int v
-   arch/powerpc/kvm/book3s_xive.c:80:32: sparse:     got restricted __be32 [usertype] xive_cam_word
->> arch/powerpc/kvm/book3s_xive.c:151:41: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __be64 [usertype] w01 @@     got unsigned long @@
-   arch/powerpc/kvm/book3s_xive.c:151:41: sparse:     expected restricted __be64 [usertype] w01
-   arch/powerpc/kvm/book3s_xive.c:151:41: sparse:     got unsigned long
-
-vim +151 arch/powerpc/kvm/book3s_xive.c
-
-   129	
-   130	/*
-   131	 * Pull a vcpu's context from the XIVE on guest exit.
-   132	 * This assumes we are in virtual mode (MMU on)
-   133	 */
-   134	void kvmppc_xive_pull_vcpu(struct kvm_vcpu *vcpu)
-   135	{
-   136		void __iomem *tima = local_paca->kvm_hstate.xive_tima_virt;
-   137	
-   138		if (!vcpu->arch.xive_pushed)
-   139			return;
-   140	
-   141		/*
-   142		 * Should not have been pushed if there is no tima
-   143		 */
-   144		if (WARN_ON(!tima))
-   145			return;
-   146	
-   147		eieio();
-   148		/* First load to pull the context, we ignore the value */
-   149		__raw_readl(tima + TM_SPC_PULL_OS_CTX);
-   150		/* Second load to recover the context state (Words 0 and 1) */
- > 151		vcpu->arch.xive_saved_state.w01 = __raw_readq(tima + TM_QW1_OS);
-   152	
-   153		/* Fixup some of the state for the next load */
-   154		vcpu->arch.xive_saved_state.lsmfb = 0;
-   155		vcpu->arch.xive_saved_state.ack = 0xff;
-   156		vcpu->arch.xive_pushed = 0;
-   157		eieio();
-   158	}
-   159	EXPORT_SYMBOL_GPL(kvmppc_xive_pull_vcpu);
-   160	
+Thank you!
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
