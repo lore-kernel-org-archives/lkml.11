@@ -2,82 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 680D6C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 19:29:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EB12C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 19:30:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244032AbiCSTab (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Mar 2022 15:30:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40562 "EHLO
+        id S244039AbiCSTbd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Mar 2022 15:31:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244017AbiCSTaY (ORCPT
+        with ESMTP id S243484AbiCSTba (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Mar 2022 15:30:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408C819A54E;
-        Sat, 19 Mar 2022 12:29:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A6477B80DC3;
-        Sat, 19 Mar 2022 19:29:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 35EA5C340EC;
-        Sat, 19 Mar 2022 19:29:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647718140;
-        bh=iyImoKTScHJlBt06lG5E/IjfT5jttlXE1YkmwUr/2ak=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=Fd6r+soROehQ8MKXpcc38eR2SqZwnANijSDMw+U9+9mdZdZVoXHtRJNIYWMaRHCDe
-         K08PlxvGL7hzBmuLxN0MpblP3RWDWjyfPqJvc08zCuTH9+2sdQaIGOfTcm40oLZ0lH
-         7YxvTrQFAkRnKUYOKpJPgyRZ20OvLeIQuW4URdok8KKpTdM44mU6kyI6ZKOtzKQT+J
-         SpHYsNqmttvtTlgT4inJXgK0IyKksY9lbov38/sdp6dkvc2wbzV5BXN19e4FAzrd19
-         bod3ba9N2hr3yGoI35SUG5WUL0GS5mvGFLRehjq5LcpJA7rd943HC8dOzKZJjvxqUC
-         YtPsyv13ElHBA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 21583EAC09C;
-        Sat, 19 Mar 2022 19:29:00 +0000 (UTC)
-Subject: Re: [GIT PULL] perf tools fixes for v5.17: 5th batch
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220319144446.93618-1-acme@kernel.org>
-References: <20220319144446.93618-1-acme@kernel.org>
-X-PR-Tracked-List-Id: <linux-perf-users.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220319144446.93618-1-acme@kernel.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git tags/perf-tools-fixes-for-v5.17-2022-03-19
-X-PR-Tracked-Commit-Id: 7bd1da15d211d439d96eb7cc8a35ce694b71d120
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 97e9c8eb4bb1dc57859acb1338dfddbd967d7484
-Message-Id: <164771814012.23927.9326460661515913850.pr-tracker-bot@kernel.org>
-Date:   Sat, 19 Mar 2022 19:29:00 +0000
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Clark Williams <williams@redhat.com>,
-        Kate Carcia <kcarcia@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Caleb Biggers <caleb.biggers@intel.com>,
-        Ian Rogers <irogers@google.com>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Weiguo Li <liwg06@foxmail.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
+        Sat, 19 Mar 2022 15:31:30 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEE0A248787
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 12:30:08 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id w27so18937417lfa.5
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 12:30:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=BD8eTbQPnsTfoe1mvwiTLzdxnue2WjbCfWcDnLGgtf4=;
+        b=cjhwin7fvJu2x0gqeLQmRRL7aDSPnbUro6yyudk8a+1GQFXivQqj5eOThiGfCqs6ze
+         hl9hpuLe5n2VUvoc+TTvWXkmp6SQTrM6yXCx8svk3ILuPTITm8/9NdpqZTD2FLQpjtcM
+         LxdU664w4R7fLPQk9vPA6YBbVMz1eLGnfBlCFLaNCGqNDAYT6mEiXVHbRJlQCfsI3pSb
+         PaexKD0rvIWUmk5wzYyowZR/TskrkZoWCKwhxuDkYaau0SSd34eJO+/nojer547mbT1F
+         SPfHnMjlagXdRMySbB8+kUWWIz7eHSStRPVrhBdSUivdH+81zR8qcED+gO2Hbm9MvQQL
+         +BMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=BD8eTbQPnsTfoe1mvwiTLzdxnue2WjbCfWcDnLGgtf4=;
+        b=MkTKvPhYMxzNQYjSUTGSZjyIDyCC2sbdmP9L5trS8a5pVs0L8VthNLYTf1eoVy6DUY
+         V5Ps5+HNkZt3rZLslTR4dY+uWTqGWrpx6Q8UMKTHtoHYIBJyjGZhnNSXhcDfS+SGeJHX
+         7mtzHPC82J4xfq4awv1gu+wNrY7cowx3Ec0W9X3r1Z4T50X+zjr1cn378sM3y6xisZco
+         vVD13x62HRN5SUEifPujWTx8yyuNvqLviQjwjSZgs+Mk4CErDlEyJXVun/fhKOCOtL3u
+         WnYWz7T6Gml32Yrzkt1TfUaTXX6KSr4EURNCUD88OPXn2gMTNvQLfVubnZR9GcEV1eHU
+         HlSg==
+X-Gm-Message-State: AOAM532uks/+9Rj8ojSLy07WkLXYY6yygFtCZnk6FNoIwBr48Mnn2HRv
+        egq9m+ZKOfVkEHtZCH6Y/DQ=
+X-Google-Smtp-Source: ABdhPJxjs9QSMiCTPtew4hwu4tpOKIPVKjE84UiX5vDayMirhgKFvZl/sGkcQi07Htu6+IRWRm0u0A==
+X-Received: by 2002:a05:6512:1382:b0:445:9536:903 with SMTP id p2-20020a056512138200b0044595360903mr9996748lfa.89.1647718207006;
+        Sat, 19 Mar 2022 12:30:07 -0700 (PDT)
+Received: from localhost.localdomain ([46.235.67.145])
+        by smtp.gmail.com with ESMTPSA id h2-20020a05651c124200b002492835aa87sm1616379ljh.118.2022.03.19.12.30.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 19 Mar 2022 12:30:06 -0700 (PDT)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     shaggy@kernel.org
+Cc:     jfs-discussion@lists.sourceforge.net, linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+46f5c25af73eb8330eb6@syzkaller.appspotmail.com
+Subject: [PATCH v2] jfs: fix divide error in dbNextAG
+Date:   Sat, 19 Mar 2022 22:30:00 +0300
+Message-Id: <20220319193000.6449-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220319191620.32372-1-paskripkin@gmail.com>
+References: <20220319191620.32372-1-paskripkin@gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sat, 19 Mar 2022 11:44:46 -0300:
+Syzbot reported divide error in dbNextAG(). The problem was in missing
+validation check for malicious image.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git tags/perf-tools-fixes-for-v5.17-2022-03-19
+Syzbot crafted an image with bmp->db_numag equal to 0. There wasn't any
+validation checks, but dbNextAG() blindly use bmp->db_numag in divide
+expression
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/97e9c8eb4bb1dc57859acb1338dfddbd967d7484
+Fix it by validating bmp->db_numag in dbMount() and return an error if
+image is malicious
 
-Thank you!
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-and-tested-by: syzbot+46f5c25af73eb8330eb6@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
 
+Changes since v1:
+	- Add missing clean up in case of error
+
+---
+ fs/jfs/jfs_dmap.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
+index 91f4ec93dab1..d8502f4989d9 100644
+--- a/fs/jfs/jfs_dmap.c
++++ b/fs/jfs/jfs_dmap.c
+@@ -148,6 +148,7 @@ static const s8 budtab[256] = {
+  *	0	- success
+  *	-ENOMEM	- insufficient memory
+  *	-EIO	- i/o error
++ *	-EINVAL - wrong bmap data
+  */
+ int dbMount(struct inode *ipbmap)
+ {
+@@ -179,6 +180,12 @@ int dbMount(struct inode *ipbmap)
+ 	bmp->db_nfree = le64_to_cpu(dbmp_le->dn_nfree);
+ 	bmp->db_l2nbperpage = le32_to_cpu(dbmp_le->dn_l2nbperpage);
+ 	bmp->db_numag = le32_to_cpu(dbmp_le->dn_numag);
++	if (!bmp->db_numag) {
++		release_metapage(mp);
++		kfree(bmp);
++		return -EINVAL;
++	}
++
+ 	bmp->db_maxlevel = le32_to_cpu(dbmp_le->dn_maxlevel);
+ 	bmp->db_maxag = le32_to_cpu(dbmp_le->dn_maxag);
+ 	bmp->db_agpref = le32_to_cpu(dbmp_le->dn_agpref);
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.35.1
+
