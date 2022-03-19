@@ -2,22 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF859C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 17:47:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AD81C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 17:47:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238886AbiCSRtK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Mar 2022 13:49:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37244 "EHLO
+        id S243776AbiCSRtQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Mar 2022 13:49:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243787AbiCSRsp (ORCPT
+        with ESMTP id S243832AbiCSRsy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Mar 2022 13:48:45 -0400
+        Sat, 19 Mar 2022 13:48:54 -0400
 Received: from relay08.th.seeweb.it (relay08.th.seeweb.it [5.144.164.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D775F2467D2
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 10:47:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F12BA247C30;
+        Sat, 19 Mar 2022 10:47:24 -0700 (PDT)
 Received: from localhost.localdomain (abxi119.neoplus.adsl.tpnet.pl [83.9.2.119])
-        by m-r2.th.seeweb.it (Postfix) with ESMTPA id B808E3F659;
-        Sat, 19 Mar 2022 18:47:17 +0100 (CET)
+        by m-r2.th.seeweb.it (Postfix) with ESMTPA id 3A3343F3EF;
+        Sat, 19 Mar 2022 18:47:22 +0100 (CET)
 From:   Konrad Dybcio <konrad.dybcio@somainline.org>
 To:     ~postmarketos/upstreaming@lists.sr.ht
 Cc:     martin.botka@somainline.org,
@@ -29,9 +29,9 @@ Cc:     martin.botka@somainline.org,
         Rob Herring <robh+dt@kernel.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 13/15] arm64: dts: qcom: msm8994: Fix BLSP[12]_DMA channels count
-Date:   Sat, 19 Mar 2022 18:46:43 +0100
-Message-Id: <20220319174645.340379-14-konrad.dybcio@somainline.org>
+Subject: [PATCH 15/15] arm64: dts: qcom: msm8994: Add mmc aliases
+Date:   Sat, 19 Mar 2022 18:46:45 +0100
+Message-Id: <20220319174645.340379-16-konrad.dybcio@somainline.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220319174645.340379-1-konrad.dybcio@somainline.org>
 References: <20220319174645.340379-1-konrad.dybcio@somainline.org>
@@ -41,36 +41,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-MSM8994 actually features 24 DMA channels for each BLSP,
-fix it!
+Set the aliases for both SDHCI controllers.
 
 Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
 ---
- arch/arm64/boot/dts/qcom/msm8994.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/qcom/msm8994.dtsi | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/qcom/msm8994.dtsi b/arch/arm64/boot/dts/qcom/msm8994.dtsi
-index 2f531e93f3c6..b72be374bca3 100644
+index 7aab835fa2fe..8eb1f1996e01 100644
 --- a/arch/arm64/boot/dts/qcom/msm8994.dtsi
 +++ b/arch/arm64/boot/dts/qcom/msm8994.dtsi
-@@ -500,7 +500,7 @@ blsp1_dma: dma-controller@f9904000 {
- 			#dma-cells = <1>;
- 			qcom,ee = <0>;
- 			qcom,controlled-remotely;
--			num-channels = <18>;
-+			num-channels = <24>;
- 			qcom,num-ees = <4>;
- 		};
+@@ -14,6 +14,11 @@ / {
+ 	#address-cells = <2>;
+ 	#size-cells = <2>;
  
-@@ -636,7 +636,7 @@ blsp2_dma: dma-controller@f9944000 {
- 			#dma-cells = <1>;
- 			qcom,ee = <0>;
- 			qcom,controlled-remotely;
--			num-channels = <18>;
-+			num-channels = <24>;
- 			qcom,num-ees = <4>;
- 		};
++	aliases {
++		mmc1 = &sdhc1;
++		mmc2 = &sdhc2;
++	};
++
+ 	chosen { };
  
+ 	clocks {
 -- 
 2.35.1
 
