@@ -2,141 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98FA5C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 03:19:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD02FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 03:39:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232333AbiCSDUZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 23:20:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51742 "EHLO
+        id S239167AbiCSDdk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 23:33:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231569AbiCSDUV (ORCPT
+        with ESMTP id S239260AbiCSDdf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 23:20:21 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3EEA326D5
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 20:19:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647659940; x=1679195940;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ijC+RvfLXuTSiKQ2ed5zSGoSdIy/RoQ7r8TmJ1x81rk=;
-  b=AOdDA92/15Qy9ul9Roy8pCHRsgjUo1euO5ifDrTHMYClk1oYOxtJJk8y
-   zPczBLlF+r07PL0xFZMFbTo+mQ9hJYTpqW3WEUacRGx47MmxEzUVtj9BL
-   I13WlknRmBkxJ8OvEwlZpdUK4F8fM7F7LZ71DpttRe1bsXdzyThfv+wVz
-   Jf5JZv+mBDXVc2ADlcyYgYXENQ8VmW3uo1Nb4dKq5KvRBKhBeud/9jpAS
-   pP4N8+JbINH2Ks6YW05E672C1bccVyYjWgg1YtUEoxjt/HoSk+fsa2/nr
-   m0j/RbFm5h8ODeII2RdAUQU3g0M+GVlAQcHZor969HlL9Xk0emV2v1CSq
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="343704994"
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="343704994"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 20:18:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="715755627"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 18 Mar 2022 20:18:58 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nVPcH-000FTF-RC; Sat, 19 Mar 2022 03:18:57 +0000
-Date:   Sat, 19 Mar 2022 11:18:29 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [kees:for-next/execve 12/15] fs/binfmt_elf_test.c:52:1: warning: the
- frame size of 1056 bytes is larger than 1024 bytes
-Message-ID: <202203191122.mbOGJL7c-lkp@intel.com>
+        Fri, 18 Mar 2022 23:33:35 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77A4E269345;
+        Fri, 18 Mar 2022 20:32:13 -0700 (PDT)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KL5xY2ZyMzfYls;
+        Sat, 19 Mar 2022 11:30:41 +0800 (CST)
+Received: from [10.174.179.200] (10.174.179.200) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Sat, 19 Mar 2022 11:32:10 +0800
+Subject: Re: [PATCH net-next v2 1/3] net: ipvlan: fix potential UAF problem
+ for phy_dev
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <edumazet@google.com>, <sakiwit@gmail.com>,
+        <sainath.grandhi@intel.com>, <maheshb@google.com>,
+        <linux-kernel@vger.kernel.org>
+References: <cover.1647568181.git.william.xuanziyang@huawei.com>
+ <83116bde1ddf39420e24466684c9488bff46f43c.1647568181.git.william.xuanziyang@huawei.com>
+ <20220318105311.21ca32bd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
+Message-ID: <0561bc6a-00f5-8fb1-80ae-fcbba3af0d1a@huawei.com>
+Date:   Sat, 19 Mar 2022 11:32:10 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220318105311.21ca32bd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="gbk"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.179.200]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/execve
-head:   dd664099002db909912a23215f8775c97f7f4f10
-commit: 9e1a3ce0a952450a1163cc93ab1df6d4fa8c8155 [12/15] binfmt_elf: Introduce KUnit test
-config: powerpc-randconfig-r031-20220318 (https://download.01.org/0day-ci/archive/20220319/202203191122.mbOGJL7c-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git/commit/?id=9e1a3ce0a952450a1163cc93ab1df6d4fa8c8155
-        git remote add kees https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git
-        git fetch --no-tags kees for-next/execve
-        git checkout 9e1a3ce0a952450a1163cc93ab1df6d4fa8c8155
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc SHELL=/bin/bash
+> On Fri, 18 Mar 2022 09:57:47 +0800 Ziyang Xuan wrote:
+>> Add the reference operation to phy_dev of ipvlan to avoid
+>> the potential UAF problem under the following known scenario:
+>>
+>> Someone module puts the NETDEV_UNREGISTER event handler to a
+>> work, and phy_dev is accessed in the work handler. But when
+>> the work is excuted, phy_dev has been destroyed because upper
+>> ipvlan did not get reference to phy_dev correctly.
+>>
+>> That likes as the scenario occurred by
+>> commit 563bcbae3ba2 ("net: vlan: fix a UAF in vlan_dev_real_dev()").
+> 
+> There is no equivalent of vlan_dev_real_dev() for ipvlan, AFAICT.
+> The definition of struct ipvl_dev is private to the driver. I don't 
+> see how a UAF can happen here.
+> 
+> You should either clearly explain how the bug could happen or clearly
+> state that there is no possibility of the bug for this driver, and the
+> patch is just future proofing.
+> 
+> If the latter is the case we should drop the Fixes tag and prevent this
+> patch from getting backported into stable.
+> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+It is to prevent ipvlan from occurring the similar problem in the future.
+For now, there is not way to access phy_dev outside ipvlan module as vlan
+real_dev using vlan_dev_real_dev(). I will make this clear.
 
-All warnings (new ones prefixed by >>):
+I think it is necessary to protect lower netdevice using the feature of
+netdevice refcnt. So I do it.
 
-   In file included from fs/binfmt_elf.c:2351:
-   fs/binfmt_elf_test.c: In function 'total_mapping_size_test':
->> fs/binfmt_elf_test.c:52:1: warning: the frame size of 1056 bytes is larger than 1024 bytes [-Wframe-larger-than=]
-      52 | }
-         | ^
+Thank you for your valuable opinions! I believe I can do more and more better
+with your help.
 
-
-vim +52 fs/binfmt_elf_test.c
-
-     3	
-     4	static void total_mapping_size_test(struct kunit *test)
-     5	{
-     6		struct elf_phdr empty[] = {
-     7			{ .p_type = PT_LOAD, .p_vaddr = 0, .p_memsz = 0, },
-     8			{ .p_type = PT_INTERP, .p_vaddr = 10, .p_memsz = 999999, },
-     9		};
-    10		/*
-    11		 * readelf -lW /bin/mount | grep '^  .*0x0' | awk '{print "\t\t{ .p_type = PT_" \
-    12		 *				$1 ", .p_vaddr = " $3 ", .p_memsz = " $6 ", },"}'
-    13		 */
-    14		struct elf_phdr mount[] = {
-    15			{ .p_type = PT_PHDR, .p_vaddr = 0x00000040, .p_memsz = 0x0002d8, },
-    16			{ .p_type = PT_INTERP, .p_vaddr = 0x00000318, .p_memsz = 0x00001c, },
-    17			{ .p_type = PT_LOAD, .p_vaddr = 0x00000000, .p_memsz = 0x0033a8, },
-    18			{ .p_type = PT_LOAD, .p_vaddr = 0x00004000, .p_memsz = 0x005c91, },
-    19			{ .p_type = PT_LOAD, .p_vaddr = 0x0000a000, .p_memsz = 0x0022f8, },
-    20			{ .p_type = PT_LOAD, .p_vaddr = 0x0000d330, .p_memsz = 0x000d40, },
-    21			{ .p_type = PT_DYNAMIC, .p_vaddr = 0x0000d928, .p_memsz = 0x000200, },
-    22			{ .p_type = PT_NOTE, .p_vaddr = 0x00000338, .p_memsz = 0x000030, },
-    23			{ .p_type = PT_NOTE, .p_vaddr = 0x00000368, .p_memsz = 0x000044, },
-    24			{ .p_type = PT_GNU_PROPERTY, .p_vaddr = 0x00000338, .p_memsz = 0x000030, },
-    25			{ .p_type = PT_GNU_EH_FRAME, .p_vaddr = 0x0000b490, .p_memsz = 0x0001ec, },
-    26			{ .p_type = PT_GNU_STACK, .p_vaddr = 0x00000000, .p_memsz = 0x000000, },
-    27			{ .p_type = PT_GNU_RELRO, .p_vaddr = 0x0000d330, .p_memsz = 0x000cd0, },
-    28		};
-    29		size_t mount_size = 0xE070;
-    30		/* https://lore.kernel.org/linux-fsdevel/YfF18Dy85mCntXrx@fractal.localdomain */
-    31		struct elf_phdr unordered[] = {
-    32			{ .p_type = PT_LOAD, .p_vaddr = 0x00000000, .p_memsz = 0x0033a8, },
-    33			{ .p_type = PT_LOAD, .p_vaddr = 0x0000d330, .p_memsz = 0x000d40, },
-    34			{ .p_type = PT_LOAD, .p_vaddr = 0x00004000, .p_memsz = 0x005c91, },
-    35			{ .p_type = PT_LOAD, .p_vaddr = 0x0000a000, .p_memsz = 0x0022f8, },
-    36		};
-    37	
-    38		/* No headers, no size. */
-    39		KUNIT_EXPECT_EQ(test, total_mapping_size(NULL, 0), 0);
-    40		KUNIT_EXPECT_EQ(test, total_mapping_size(empty, 0), 0);
-    41		/* Empty headers, no size. */
-    42		KUNIT_EXPECT_EQ(test, total_mapping_size(empty, 1), 0);
-    43		/* No PT_LOAD headers, no size. */
-    44		KUNIT_EXPECT_EQ(test, total_mapping_size(&empty[1], 1), 0);
-    45		/* Empty PT_LOAD and non-PT_LOAD headers, no size. */
-    46		KUNIT_EXPECT_EQ(test, total_mapping_size(empty, 2), 0);
-    47	
-    48		/* Normal set of PT_LOADS, and expected size. */
-    49		KUNIT_EXPECT_EQ(test, total_mapping_size(mount, ARRAY_SIZE(mount)), mount_size);
-    50		/* Unordered PT_LOADs result in same size. */
-    51		KUNIT_EXPECT_EQ(test, total_mapping_size(unordered, ARRAY_SIZE(unordered)), mount_size);
-  > 52	}
-    53	
-
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+>> Fixes: 2ad7bf363841 ("ipvlan: Initial check-in of the IPVLAN driver.")
+>> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+> .
+> 
