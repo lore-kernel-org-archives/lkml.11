@@ -2,182 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3CABC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 08:45:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7293CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 09:01:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242544AbiCSIqm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Mar 2022 04:46:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52020 "EHLO
+        id S242531AbiCSJDQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Mar 2022 05:03:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234507AbiCSIqi (ORCPT
+        with ESMTP id S229801AbiCSJDP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Mar 2022 04:46:38 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D6A160D5;
-        Sat, 19 Mar 2022 01:45:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647679516; x=1679215516;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=k5pfSFVTly+M3cSKghoKNsmKVoZp5T4ZrPis3GmwE5I=;
-  b=Szk1moaNW4nERKKnxbL4qvo3fkk0vr1MsAI6XWzfLWwBvERl6bqa3qYs
-   AyecNVWdeaCnAj66fkZ8tQSDYgJnC6anyO5C56fHksOMsYgab8vL/l/yE
-   n4nC21DEA19a7ptbNFpuI/RVSHOM8SLyIgu0bK/7J1Rh4HIHFeZn0qEX/
-   56JsJAccBJOh86CTkJVHK1J/qkkRZjMChbCSmUKnhMCyzRxElSfmn0oF2
-   CvuLoH6Q+dazhiUQGjX5+0Ec6DfQsuVWUVin9Yc5EZEKm9v+EX3BPhQAc
-   5ffnBdWus9ikq/b07628QiKomjpB/+Ssxpo99z2j9ZY5/YyX8B1deWWzY
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="237230279"
-X-IronPort-AV: E=Sophos;i="5.90,194,1643702400"; 
-   d="scan'208";a="237230279"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2022 01:45:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,194,1643702400"; 
-   d="scan'208";a="542300135"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 19 Mar 2022 01:45:10 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nVUhw-000FmU-IK; Sat, 19 Mar 2022 08:45:08 +0000
-Date:   Sat, 19 Mar 2022 16:44:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jane Chu <jane.chu@oracle.com>, david@fromorbit.com,
-        djwong@kernel.org, dan.j.williams@intel.com, hch@infradead.org,
-        vishal.l.verma@intel.com, dave.jiang@intel.com, agk@redhat.com,
-        snitzer@redhat.com, dm-devel@redhat.com, ira.weiny@intel.com,
-        willy@infradead.org, vgoyal@redhat.com,
-        linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org
-Subject: Re: [PATCH v6 4/6] dax: add DAX_RECOVERY flag and .recovery_write
- dev_pgmap_ops
-Message-ID: <202203191635.vyoiL17f-lkp@intel.com>
-References: <20220319062833.3136528-5-jane.chu@oracle.com>
+        Sat, 19 Mar 2022 05:03:15 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06B482E8CDA;
+        Sat, 19 Mar 2022 02:01:55 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id w21so3023988pgm.7;
+        Sat, 19 Mar 2022 02:01:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e/dFcz4P6IgKHiXznx7AmwYwJykX2xkD2n01/GT01yE=;
+        b=jLZibxbrUBZUjT+x7UEYWA2ErB8y74n498/mD1uLg9vgr0g1tnVUzsOWKHzcMW5i0d
+         vD/E2CFFWDrtasnmXK6Axj30L1YSPQgVbyBY7FrPFLWZzkW6umzF0jWEusrIGcnP6P4N
+         BdJbp3LQGNZTgu0y5LkZrkrdgmoy/KUwaARQMNbr1jfKP3B3iEqeVOy6Y7I2lRdoKgSM
+         u4C7JahBtQ9U/2/2cYuYcSs78Ye53aPklDm3zlcd0txnI6bjhcTVyg2V8dMGJJL6q1a5
+         tWJ2FU5CWG5MCnkUBEwmpyrova0DYxbuVceeBQc6dEfoWiifwp2HWGyZB5S+a0rJiLve
+         eI8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e/dFcz4P6IgKHiXznx7AmwYwJykX2xkD2n01/GT01yE=;
+        b=0pnMbMlX3t8rXjakWHzqAU41/fcKKhJr3vmN7UonLqHMzw/wQtnCzE5a8ShqjN2qxl
+         98YwzVxYiZP8ElNxCMbSi998hiALRrLeQTXiQIgD48d4zyy//aHtBsoD3RQMi5njL5kB
+         kRYJTBvbNgLTRdYCtrihbX24EbkrT0k0UVfNMHOPHmO0XRYLv0wMTLxeqTwM0IGJVkhb
+         99KOfcO3MomHxIuOXAzTSv6q/rueAw2Jr4PWXW9+9MNv73ltFpA2Utxtb+FUkmGvFJBD
+         mKOPWXHvLqzt/uVmKqwlxfoBO0HLKHRocIJqwkwGzMBKarpwuAMqOx5sVD/x6jX6L5xj
+         Q8LA==
+X-Gm-Message-State: AOAM532bsy2TDLlIGvsz8c3Y4drPY6NRbLZY4pUAy2/BITgCTX/gV0KA
+        4qPQAOYbAt9t/rFV+vz8TmM=
+X-Google-Smtp-Source: ABdhPJxuF4a6T+R9xwNesLAP3GfNtOXVM2KzrB7mC0CW+ECy9rMWUUlvHpakDwILz5jleVVbB94UPQ==
+X-Received: by 2002:a62:840b:0:b0:4fa:31ae:7739 with SMTP id k11-20020a62840b000000b004fa31ae7739mr14288202pfd.6.1647680514448;
+        Sat, 19 Mar 2022 02:01:54 -0700 (PDT)
+Received: from localhost.localdomain ([85.203.23.81])
+        by smtp.gmail.com with ESMTPSA id h13-20020a056a00170d00b004f757a795fesm12179415pfc.219.2022.03.19.02.01.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 19 Mar 2022 02:01:53 -0700 (PDT)
+From:   zhouzhouyi@gmail.com
+To:     edumazet@google.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Zhouyi Zhou <zhouzhouyi@gmail.com>, Wei Xu <xuweihf@ustc.edu.cn>
+Subject: [PATCH] net:ipv4: send an ack when seg.ack > snd.nxt
+Date:   Sat, 19 Mar 2022 17:01:42 +0800
+Message-Id: <20220319090142.137998-1-zhouzhouyi@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220319062833.3136528-5-jane.chu@oracle.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jane,
+From: Zhouyi Zhou <zhouzhouyi@gmail.com>
 
-Thank you for the patch! Yet something to improve:
+In RFC 793, page 72: If the ACK acks something not yet sent
+(SEG.ACK > SND.NXT) then send an ACK, drop the segment,
+and return. Fix Linux's behavior according to RFC 793.
 
-[auto build test ERROR on nvdimm/libnvdimm-for-next]
-[also build test ERROR on device-mapper-dm/for-next linus/master v5.17-rc8 next-20220318]
-[cannot apply to tip/x86/mm]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Jane-Chu/DAX-poison-recovery/20220319-143144
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/nvdimm/nvdimm.git libnvdimm-for-next
-config: s390-randconfig-r044-20220318 (https://download.01.org/0day-ci/archive/20220319/202203191635.vyoiL17f-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a6e70e4056dff962ec634c5bd4f2f4105a0bef71)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install s390 cross compiling tool for clang build
-        # apt-get install binutils-s390x-linux-gnu
-        # https://github.com/0day-ci/linux/commit/203570f765a6ad07eb5809850478a25a5257f7e2
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Jane-Chu/DAX-poison-recovery/20220319-143144
-        git checkout 203570f765a6ad07eb5809850478a25a5257f7e2
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash drivers/s390/block/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from drivers/s390/block/dcssblk.c:24:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __raw_readb(PCI_IOBASE + addr);
-                             ~~~~~~~~~~ ^
-   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
-   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
-                                                             ^
-   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
-   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
-                                                        ^
-   In file included from drivers/s390/block/dcssblk.c:24:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
-                                                             ^
-   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
-   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
-                                                        ^
-   In file included from drivers/s390/block/dcssblk.c:24:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writeb(value, PCI_IOBASE + addr);
-                               ~~~~~~~~~~ ^
-   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:609:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsb(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:617:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsw(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:625:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsl(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:634:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesb(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:643:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesw(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:652:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesl(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
->> drivers/s390/block/dcssblk.c:53:63: error: too few arguments to function call, expected 6, have 5
-           rc = dax_direct_access(dax_dev, pgoff, nr_pages, &kaddr, NULL);
-                ~~~~~~~~~~~~~~~~~                                       ^
-   include/linux/dax.h:186:6: note: 'dax_direct_access' declared here
-   long dax_direct_access(struct dax_device *dax_dev, pgoff_t pgoff, long nr_pages,
-        ^
-   12 warnings and 1 error generated.
-
-
-vim +53 drivers/s390/block/dcssblk.c
-
-7a2765f6e82063f Dan Williams 2017-01-26  46  
-79fa974ff6bc3f7 Vivek Goyal  2020-02-28  47  static int dcssblk_dax_zero_page_range(struct dax_device *dax_dev,
-79fa974ff6bc3f7 Vivek Goyal  2020-02-28  48  				       pgoff_t pgoff, size_t nr_pages)
-79fa974ff6bc3f7 Vivek Goyal  2020-02-28  49  {
-79fa974ff6bc3f7 Vivek Goyal  2020-02-28  50  	long rc;
-79fa974ff6bc3f7 Vivek Goyal  2020-02-28  51  	void *kaddr;
-79fa974ff6bc3f7 Vivek Goyal  2020-02-28  52  
-79fa974ff6bc3f7 Vivek Goyal  2020-02-28 @53  	rc = dax_direct_access(dax_dev, pgoff, nr_pages, &kaddr, NULL);
-79fa974ff6bc3f7 Vivek Goyal  2020-02-28  54  	if (rc < 0)
-79fa974ff6bc3f7 Vivek Goyal  2020-02-28  55  		return rc;
-79fa974ff6bc3f7 Vivek Goyal  2020-02-28  56  	memset(kaddr, 0, nr_pages << PAGE_SHIFT);
-79fa974ff6bc3f7 Vivek Goyal  2020-02-28  57  	dax_flush(dax_dev, kaddr, nr_pages << PAGE_SHIFT);
-79fa974ff6bc3f7 Vivek Goyal  2020-02-28  58  	return 0;
-79fa974ff6bc3f7 Vivek Goyal  2020-02-28  59  }
-79fa974ff6bc3f7 Vivek Goyal  2020-02-28  60  
-
+Reported-by: Wei Xu <xuweihf@ustc.edu.cn>
+Signed-off-by: Wei Xu <xuweihf@ustc.edu.cn>
+Signed-off-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
 ---
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ net/ipv4/tcp_input.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index bfe4112e000c..c10f84599655 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -3771,11 +3771,13 @@ static int tcp_ack(struct sock *sk, const struct sk_buff *skb, int flag)
+ 		goto old_ack;
+ 	}
+ 
+-	/* If the ack includes data we haven't sent yet, discard
+-	 * this segment (RFC793 Section 3.9).
++	/* If the ack includes data we haven't sent yet, then send
++	 * an ack, drop this segment, and return (RFC793 Section 3.9).
+ 	 */
+-	if (after(ack, tp->snd_nxt))
++	if (after(ack, tp->snd_nxt)) {
++		tcp_send_ack(sk);
+ 		return -1;
++	}
+ 
+ 	if (after(ack, prior_snd_una)) {
+ 		flag |= FLAG_SND_UNA_ADVANCED;
+-- 
+2.25.1
+
