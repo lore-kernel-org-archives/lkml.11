@@ -2,352 +2,230 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25D2CC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 19:02:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D80DEC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 19:03:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243969AbiCSTDc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Mar 2022 15:03:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36938 "EHLO
+        id S243979AbiCSTE4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Mar 2022 15:04:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241126AbiCSTDa (ORCPT
+        with ESMTP id S243972AbiCSTEy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Mar 2022 15:03:30 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A15C070063;
-        Sat, 19 Mar 2022 12:02:08 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id w7so12799040ioj.5;
-        Sat, 19 Mar 2022 12:02:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EgxPyz02VhvEbwBcREHgGKzI50ANf/xCGZd/HKHUs/U=;
-        b=fbIlwx9Wz3PhT8kuan+pRkTjPTn+2Wv2YnM5gRb5+qPWVIgGsqi1KUd3X1vhBo8Hxn
-         lqpRxHQWzRESIdo/ioHjABw1bg5tR7f7BuN/Jyt2lHniP1VpgOyb74aEjFhbLx1uOr/S
-         /kQwPRxppq5MJXNDCn2fAq5UZeime5ybFwFqAcvH+kbQ8W+0Yq9zXH1IOR8cWwOEn9h1
-         0oYNphnJuOfeFPBoMNPWZSS1QHmuRK06VluGw9LU2f/8CYT9u+OtnSe4BGLQAfqQPsbS
-         1qfG6ml2p9xzFp/GRW+22mnmf9uw8206ypULXzgUTCQXgw8kJvDNOChU92xWISsve8mG
-         Afcg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EgxPyz02VhvEbwBcREHgGKzI50ANf/xCGZd/HKHUs/U=;
-        b=uYGMIsd5i0mj5eTIQvinYDdMciOFkKkFbR1FYat0FC5Wo+JxWiPprZ80JD1jCVY4NO
-         ADTQVvHxqeU16awLMonS4vCHU7LEEIcoI1bnMEObMUeQO/ABWcU76c41b2y//3Egsu5B
-         dZcH6V21lJVtKKyUy/mkrEq1pmXjx91YNVNaW3wIMprQL2eTWxYp0iO/TlHhrzHf6JmJ
-         0Q2evsC/yXBHXhKfqUsIU0G3HpFPmOGuCPKUq6uLqqLKlUO3HdoWOuW2+OsM5UySeRAF
-         pfKHj0OosivJWbrnZDPrDxbYYxRDyAYzBhMb0iDYMcWaTAh+KE4kKJIySlAn9zwMDSbF
-         Pbow==
-X-Gm-Message-State: AOAM533+j0eRy0cNWsV1yT1dHFRTRQVrOW/B6e3xbM3+kw34yXdgTYb8
-        fGKJuvGM0afjfAxXdf68VJbUyTQt4mb3lKeEy4c=
-X-Google-Smtp-Source: ABdhPJzTG0dvatvE1XWwUoi3i2vnFdIswlXghgZ/Q8yt7zR1jWI6pQob//zSNC5LOrnds5FBiCbwF0aXI64vpmrpPtQ=
-X-Received: by 2002:a05:6638:772:b0:319:e4eb:adb with SMTP id
- y18-20020a056638077200b00319e4eb0adbmr7452433jad.237.1647716527801; Sat, 19
- Mar 2022 12:02:07 -0700 (PDT)
+        Sat, 19 Mar 2022 15:04:54 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15F5713D68
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 12:03:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647716612; x=1679252612;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=MVOwVbmbHPN6GDl799mE/hFNyK635h6rErdS/6yWJgk=;
+  b=g+hkOIJ83aJ6Tw9GjvUMWHZDeQB05fE80hf5vRGAOeE1yye4D0/HPdUl
+   +HpbXJvBoDYYnq3pKnBmOc8j8J8BPWDBSNkHu2l3sLCsLIHipID3oSjZA
+   zTjAm2POi/6G7ju2jaOUvmMvGQcB0dpHbYfL4i8SJjtWBnz2bOgrLrT8W
+   E5YBNwqukpbaoN7Gkz2g23YO8PqNA29G8zK+zEbWSQu1cBr6X0ci8Vgo/
+   XleCVceioNEcBwNtPoNgQ2W3Ks+ipgPrAMti9CqjN204vD/UwkzuiYOLU
+   vkad98t4uIT7KQIVzRCbRGbI3y5nUhJDgQakpy6BwDrfeAFMYfVvsDPI7
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10291"; a="237265205"
+X-IronPort-AV: E=Sophos;i="5.90,195,1643702400"; 
+   d="scan'208";a="237265205"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2022 12:03:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,195,1643702400"; 
+   d="scan'208";a="715958318"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 19 Mar 2022 12:03:28 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nVeMK-000GDr-68; Sat, 19 Mar 2022 19:03:28 +0000
+Date:   Sun, 20 Mar 2022 03:03:06 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sven Peter <sven@svenpeter.dev>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Hector Martin <marcan@marcan.st>
+Subject: [asahilinux:nvme-rfc 4/12] drivers/soc/apple/sart.c:70:18: error:
+ implicit declaration of function 'FIELD_GET'
+Message-ID: <202203200221.1Ai955oJ-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220316122419.933957-1-jolsa@kernel.org> <CAEf4BzbpjN6ca7D9KOTiFPOoBYkciYvTz0UJNp5c-_3ptm=Mrg@mail.gmail.com>
- <YjXMSg+BSSOv0xd1@krava> <YjXpTZUI10RVCGPD@krava> <CAEf4BzYbL0=ExUQOy3xZ-C2O6nQN3BVudBWESFNkgs0fr=uRmg@mail.gmail.com>
-In-Reply-To: <CAEf4BzYbL0=ExUQOy3xZ-C2O6nQN3BVudBWESFNkgs0fr=uRmg@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sat, 19 Mar 2022 12:01:56 -0700
-Message-ID: <CAEf4BzZDDqK24rSKwXNp7XL3ErGD4bZa1M6c_c4EvDSt3jrZcg@mail.gmail.com>
-Subject: Re: [PATCHv3 bpf-next 00/13] bpf: Add kprobe multi link
-To:     Jiri Olsa <olsajiri@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 19, 2022 at 11:26 AM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Sat, Mar 19, 2022 at 7:31 AM Jiri Olsa <olsajiri@gmail.com> wrote:
-> >
-> > On Sat, Mar 19, 2022 at 01:27:56PM +0100, Jiri Olsa wrote:
-> > > On Fri, Mar 18, 2022 at 10:50:46PM -0700, Andrii Nakryiko wrote:
-> > > > On Wed, Mar 16, 2022 at 5:24 AM Jiri Olsa <jolsa@kernel.org> wrote:
-> > > > >
-> > > > > hi,
-> > > > > this patchset adds new link type BPF_TRACE_KPROBE_MULTI that attaches
-> > > > > kprobe program through fprobe API [1] instroduced by Masami.
-> > > > >
-> > > > > The fprobe API allows to attach probe on multiple functions at once very
-> > > > > fast, because it works on top of ftrace. On the other hand this limits
-> > > > > the probe point to the function entry or return.
-> > > > >
-> > > > >
-> > > > > With bpftrace support I see following attach speed:
-> > > > >
-> > > > >   # perf stat --null -r 5 ./src/bpftrace -e 'kprobe:x* { } i:ms:1 { exit(); } '
-> > > > >   Attaching 2 probes...
-> > > > >   Attaching 3342 functions
-> > > > >   ...
-> > > > >
-> > > > >   1.4960 +- 0.0285 seconds time elapsed  ( +-  1.91% )
-> > > > >
-> > > > > v3 changes:
-> > > > >   - based on latest fprobe post from Masami [2]
-> > > > >   - add acks
-> > > > >   - add extra comment to kprobe_multi_link_handler wrt entry ip setup [Masami]
-> > > > >   - keep swap_words_64 static and swap values directly in
-> > > > >     bpf_kprobe_multi_cookie_swap [Andrii]
-> > > > >   - rearrange locking/migrate setup in kprobe_multi_link_prog_run [Andrii]
-> > > > >   - move uapi fields [Andrii]
-> > > > >   - add bpf_program__attach_kprobe_multi_opts function [Andrii]
-> > > > >   - many small test changes [Andrii]
-> > > > >   - added tests for bpf_program__attach_kprobe_multi_opts
-> > > > >   - make kallsyms_lookup_name check for empty string [Andrii]
-> > > > >
-> > > > > v2 changes:
-> > > > >   - based on latest fprobe changes [1]
-> > > > >   - renaming the uapi interface to kprobe multi
-> > > > >   - adding support for sort_r to pass user pointer for swap functions
-> > > > >     and using that in cookie support to keep just single functions array
-> > > > >   - moving new link to kernel/trace/bpf_trace.c file
-> > > > >   - using single fprobe callback function for entry and exit
-> > > > >   - using kvzalloc, libbpf_ensure_mem functions
-> > > > >   - adding new k[ret]probe.multi sections instead of using current kprobe
-> > > > >   - used glob_match from test_progs.c, added '?' matching
-> > > > >   - move bpf_get_func_ip verifier inline change to seprate change
-> > > > >   - couple of other minor fixes
-> > > > >
-> > > > >
-> > > > > Also available at:
-> > > > >   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
-> > > > >   bpf/kprobe_multi
-> > > > >
-> > > > > thanks,
-> > > > > jirka
-> > > > >
-> > > > >
-> > > > > [1] https://lore.kernel.org/bpf/164458044634.586276.3261555265565111183.stgit@devnote2/
-> > > > > [2] https://lore.kernel.org/bpf/164735281449.1084943.12438881786173547153.stgit@devnote2/
-> > > > > ---
-> > > > > Jiri Olsa (13):
-> > > > >       lib/sort: Add priv pointer to swap function
-> > > > >       kallsyms: Skip the name search for empty string
-> > > > >       bpf: Add multi kprobe link
-> > > > >       bpf: Add bpf_get_func_ip kprobe helper for multi kprobe link
-> > > > >       bpf: Add support to inline bpf_get_func_ip helper on x86
-> > > > >       bpf: Add cookie support to programs attached with kprobe multi link
-> > > > >       libbpf: Add libbpf_kallsyms_parse function
-> > > > >       libbpf: Add bpf_link_create support for multi kprobes
-> > > > >       libbpf: Add bpf_program__attach_kprobe_multi_opts function
-> > > > >       selftests/bpf: Add kprobe_multi attach test
-> > > > >       selftests/bpf: Add kprobe_multi bpf_cookie test
-> > > > >       selftests/bpf: Add attach test for bpf_program__attach_kprobe_multi_opts
-> > > > >       selftests/bpf: Add cookie test for bpf_program__attach_kprobe_multi_opts
-> > > > >
-> > > >
-> > > > Ok, so I've integrated multi-attach kprobes into retsnoop. It was
-> > > > pretty straightforward. Here are some numbers for the speed of
-> > > > attaching and, even more importantly, detaching for a set of almost
-> > > > 400 functions. It's a bit less functions for fentry-based mode due to
-> > > > more limited BTF information for static functions. Note that retsnoop
-> > > > attaches two BPF programs for each kernel function, so it's actually
-> > > > two multi-attach kprobes, each attaching to 397 functions. For
-> > > > single-attach kprobe, we perform 397 * 2 = 794 attachments.
-> > > >
-> > > > I've been invoking retsnoop with the following specified set of
-> > > > functions: -e '*sys_bpf*' -a ':kernel/bpf/syscall.c' -a
-> > > > ':kernel/bpf/verifier.c' -a ':kernel/bpf/btf.c' -a
-> > > > ':kernel/bpf/core.c'. So basically bpf syscall entry functions and all
-> > > > the discoverable functions from syscall.c, verifier.c, core.c and
-> > > > btf.c from kernel/bpf subdirectory.
-> > > >
-> > > > Results:
-> > > >
-> > > > fentry attach/detach (263 kfuncs): 2133 ms / 31671  ms (33 seconds)
-> > > > kprobe attach/detach (397 kfuncs): 3121 ms / 13195 ms (16 seconds)
-> > > > multi-kprobe attach/detach (397 kfuncs): 9 ms / 248 ms (0.25 seconds)
-> > > >
-> > > > So as you can see, the speed up is tremendous! API is also very
-> > > > convenient, I didn't have to modify retsnoop internals much to
-> > > > accommodate multi-attach API. Great job!
-> > >
-> > > nice! thanks for doing that so quickly
-> > >
-> > > >
-> > > > Now for the bad news. :(
-> > > >
-> > > > Stack traces from multi-attach kretprobe are broken, which makes all
-> > > > this way less useful.
-> > > >
-> > > > Below, see stack traces captured with multi- and single- kretprobes
-> > > > for two different use cases. Single kprobe stack traces make much more
-> > > > sense. Ignore that last function doesn't have actual address
-> > > > associated with it (i.e. for __sys_bpf and bpf_tracing_prog_attach,
-> > > > respectively). That's just how retsnoop is doing things, I think. We
-> > > > actually were capturing stack traces from inside __sys_bpf (first
-> > > > case) and bpf_tracing_prog_attach (second case).
-> > > >
-> > > > MULTI KPROBE:
-> > > > ffffffff81185a80 __sys_bpf+0x0
-> > > > (kernel/bpf/syscall.c:4622:1)
-> > > >
-> > > > SINGLE KPROBE:
-> > > > ffffffff81e0007c entry_SYSCALL_64_after_hwframe+0x44
-> > > > (arch/x86/entry/entry_64.S:113:0)
-> > > > ffffffff81cd2b15 do_syscall_64+0x35
-> > > > (arch/x86/entry/common.c:80:7)
-> > > >                  . do_syscall_x64
-> > > > (arch/x86/entry/common.c:50:12)
-> > > > ffffffff811881aa __x64_sys_bpf+0x1a
-> > > > (kernel/bpf/syscall.c:4765:1)
-> > > >                  __sys_bpf
-> > > >
-> > > >
-> > > > MULTI KPROBE:
-> > > > ffffffff811851b0 bpf_tracing_prog_attach+0x0
-> > > > (kernel/bpf/syscall.c:2708:1)
-> > > >
-> > > > SINGLE KPROBE:
-> > > > ffffffff81e0007c entry_SYSCALL_64_after_hwframe+0x44
-> > > > (arch/x86/entry/entry_64.S:113:0)
-> > > > ffffffff81cd2b15 do_syscall_64+0x35
-> > > > (arch/x86/entry/common.c:80:7)
-> > > >                  . do_syscall_x64
-> > > > (arch/x86/entry/common.c:50:12)
-> > > > ffffffff811881aa __x64_sys_bpf+0x1a
-> > > > (kernel/bpf/syscall.c:4765:1)
-> > > > ffffffff81185e79 __sys_bpf+0x3f9
-> > > > (kernel/bpf/syscall.c:4705:9)
-> > > > ffffffff8118583a bpf_raw_tracepoint_open+0x19a
-> > > > (kernel/bpf/syscall.c:3069:6)
-> > > >                  bpf_tracing_prog_attach
-> > > >
-> > > > You can see that in multi-attach kprobe we only get one entry, which
-> > > > is the very last function in the stack trace. We have no parent
-> > > > function captured whatsoever. Jiri, Masami, any ideas what's wrong and
-> > > > how to fix this? Let's try to figure this out and fix it before the
-> > > > feature makes it into the kernel release. Thanks in advance!
-> > >
-> > > oops, I should have tried kstack with the bpftrace's kretprobe, I see the same:
-> > >
-> > >       # ./src/bpftrace -e 'kretprobe:x* { @[kstack] = count(); }'
-> > >       Attaching 1 probe...
-> > >       Attaching 3340probes
-> > >       ^C
-> > >
-> > >       @[
-> > >           xfs_trans_apply_dquot_deltas+0
-> > >       ]: 22
-> > >       @[
-> > >           xlog_cil_commit+0
-> > >       ]: 22
-> > >       @[
-> > >           xlog_grant_push_threshold+0
-> > >       ]: 22
-> > >       @[
-> > >           xfs_trans_add_item+0
-> > >       ]: 22
-> > >       @[
-> > >           xfs_log_reserve+0
-> > >       ]: 22
-> > >       @[
-> > >           xlog_space_left+0
-> > >       ]: 22
-> > >       @[
-> > >           xfs_buf_offset+0
-> > >       ]: 22
-> > >       @[
-> > >           xfs_trans_free_dqinfo+0
-> > >       ]: 22
-> > >       @[
-> > >           xlog_ticket_alloc+0
-> > >           xfs_log_reserve+5
-> > >       ]: 22
-> > >       @[
-> > >           xfs_cil_prepare_item+0
-> > >
-> > >
-> > > I think it's because we set original ip for return probe to have
-> > > bpf_get_func_ip working properly, but it breaks backtrace of course
-> > >
-> > > I'm not sure we could bring along the original regs for return probe,
-> > > but I have an idea how to workaround the bpf_get_func_ip issue and
-> > > keep the registers intact for other helpers
-> >
-> > change below is using bpf_run_ctx to store link and entry ip on stack,
-> > where helpers can find it.. it fixed the retprobe backtrace for me
-> >
-> > I had to revert the get_func_ip inline.. it's squashed in the change
-> > below for quick testing.. I'll send revert in separate patch with the
-> > formal change
-> >
-> > could you please test?
-> >
->
-> Yep, tried locally and now stack traces work as expected. Thanks!
+tree:   https://github.com/AsahiLinux/linux nvme-rfc
+head:   668a74289aa4cdde7d55e4f602043ece670ea71c
+commit: 75717c92a144d9fd0f94ddeed76f158ef14b83d7 [4/12] soc: apple: Add SART driver
+config: parisc-randconfig-r011-20220320 (https://download.01.org/0day-ci/archive/20220320/202203200221.1Ai955oJ-lkp@intel.com/config)
+compiler: hppa-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/AsahiLinux/linux/commit/75717c92a144d9fd0f94ddeed76f158ef14b83d7
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux nvme-rfc
+        git checkout 75717c92a144d9fd0f94ddeed76f158ef14b83d7
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=parisc SHELL=/bin/bash drivers/soc/apple/
 
-BTW, there is a separate and unrelated problem, forgot to mention it yesterday.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-It is possible to attach to some functions through using .syms
-(resolve by name), but it is rejected when specifying .addrs (which
-retsnoop derives directly from kallsyms). One such example is
-"__bpf_tramp_exit". What's interesting, this function is marked
-notrace, but is still attachable by name (including using
-single-attach kprobe), while I'd assume it shouldn't.
+All errors (new ones prefixed by >>):
 
-It is all kind of broken, tbh, this notrace function is present in
-/sys/kernel/debug/tracing/available_filter_functions, it's not in
-/sys/kernel/debug/kprobes/blacklist, so the whole notrace and
-blacklisting doesn't seem to work well.
-
-So anyways, worth looking into this as well and figuring out why this
-is inconsistent between .syms and .addrs approaches. Please take a
-look when you get a chance. And I'll try to figure out if there is any
-way to determine notrace functions from outside the kernel.
+   drivers/soc/apple/sart.c: In function 'sart2_get_entry':
+>> drivers/soc/apple/sart.c:70:18: error: implicit declaration of function 'FIELD_GET' [-Werror=implicit-function-declaration]
+      70 |         *flags = FIELD_GET(APPLE_SART2_CONFIG_FLAGS, cfg);
+         |                  ^~~~~~~~~
+   drivers/soc/apple/sart.c: In function 'sart2_set_entry':
+>> drivers/soc/apple/sart.c:94:15: error: implicit declaration of function 'FIELD_PREP' [-Werror=implicit-function-declaration]
+      94 |         cfg = FIELD_PREP(APPLE_SART2_CONFIG_FLAGS, flags);
+         |               ^~~~~~~~~~
+   In file included from include/linux/device.h:15,
+                    from include/linux/soc/apple/sart.h:15,
+                    from drivers/soc/apple/sart.c:14:
+   drivers/soc/apple/sart.c: In function 'apple_sart_probe':
+   drivers/soc/apple/sart.c:173:25: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 6 has type 'phys_addr_t' {aka 'unsigned int'} [-Wformat=]
+     173 |                         "SART bootloader entry: index %02d; flags: 0x%02x; paddr: 0x%llx; size: 0x%zx\n",
+         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:129:41: note: in definition of macro 'dev_printk'
+     129 |                 _dev_printk(level, dev, fmt, ##__VA_ARGS__);            \
+         |                                         ^~~
+   include/linux/dev_printk.h:163:45: note: in expansion of macro 'dev_fmt'
+     163 |                 dev_printk(KERN_DEBUG, dev, dev_fmt(fmt), ##__VA_ARGS__); \
+         |                                             ^~~~~~~
+   drivers/soc/apple/sart.c:172:17: note: in expansion of macro 'dev_dbg'
+     172 |                 dev_dbg(sart->dev,
+         |                 ^~~~~~~
+   drivers/soc/apple/sart.c:173:88: note: format string is defined here
+     173 |                         "SART bootloader entry: index %02d; flags: 0x%02x; paddr: 0x%llx; size: 0x%zx\n",
+         |                                                                                     ~~~^
+         |                                                                                        |
+         |                                                                                        long long unsigned int
+         |                                                                                     %x
+   In file included from include/linux/device.h:15,
+                    from include/linux/soc/apple/sart.h:15,
+                    from drivers/soc/apple/sart.c:14:
+   drivers/soc/apple/sart.c: In function 'apple_sart_add_allowed_region':
+   drivers/soc/apple/sart.c:224:33: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 5 has type 'phys_addr_t' {aka 'unsigned int'} [-Wformat=]
+     224 |                                 "unable to set entry %d to [0x%llx, 0x%zx]\n",
+         |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:129:41: note: in definition of macro 'dev_printk'
+     129 |                 _dev_printk(level, dev, fmt, ##__VA_ARGS__);            \
+         |                                         ^~~
+   include/linux/dev_printk.h:163:45: note: in expansion of macro 'dev_fmt'
+     163 |                 dev_printk(KERN_DEBUG, dev, dev_fmt(fmt), ##__VA_ARGS__); \
+         |                                             ^~~~~~~
+   drivers/soc/apple/sart.c:223:25: note: in expansion of macro 'dev_dbg'
+     223 |                         dev_dbg(sart->dev,
+         |                         ^~~~~~~
+   drivers/soc/apple/sart.c:224:66: note: format string is defined here
+     224 |                                 "unable to set entry %d to [0x%llx, 0x%zx]\n",
+         |                                                               ~~~^
+         |                                                                  |
+         |                                                                  long long unsigned int
+         |                                                               %x
+   In file included from include/linux/device.h:15,
+                    from include/linux/soc/apple/sart.h:15,
+                    from drivers/soc/apple/sart.c:14:
+   drivers/soc/apple/sart.c:230:36: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 4 has type 'phys_addr_t' {aka 'unsigned int'} [-Wformat=]
+     230 |                 dev_dbg(sart->dev, "wrote [0x%llx, 0x%zx] to %d\n", paddr, size,
+         |                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:129:41: note: in definition of macro 'dev_printk'
+     129 |                 _dev_printk(level, dev, fmt, ##__VA_ARGS__);            \
+         |                                         ^~~
+   include/linux/dev_printk.h:163:45: note: in expansion of macro 'dev_fmt'
+     163 |                 dev_printk(KERN_DEBUG, dev, dev_fmt(fmt), ##__VA_ARGS__); \
+         |                                             ^~~~~~~
+   drivers/soc/apple/sart.c:230:17: note: in expansion of macro 'dev_dbg'
+     230 |                 dev_dbg(sart->dev, "wrote [0x%llx, 0x%zx] to %d\n", paddr, size,
+         |                 ^~~~~~~
+   drivers/soc/apple/sart.c:230:49: note: format string is defined here
+     230 |                 dev_dbg(sart->dev, "wrote [0x%llx, 0x%zx] to %d\n", paddr, size,
+         |                                              ~~~^
+         |                                                 |
+         |                                                 long long unsigned int
+         |                                              %x
+   In file included from include/linux/device.h:15,
+                    from include/linux/soc/apple/sart.h:15,
+                    from drivers/soc/apple/sart.c:14:
+   drivers/soc/apple/sart.c:236:18: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 3 has type 'phys_addr_t' {aka 'unsigned int'} [-Wformat=]
+     236 |                  "no free entries left to add [paddr: 0x%llx, size: 0x%zx]\n",
+         |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
+     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
+         |                              ^~~
+   include/linux/dev_printk.h:146:61: note: in expansion of macro 'dev_fmt'
+     146 |         dev_printk_index_wrap(_dev_warn, KERN_WARNING, dev, dev_fmt(fmt), ##__VA_ARGS__)
+         |                                                             ^~~~~~~
+   drivers/soc/apple/sart.c:235:9: note: in expansion of macro 'dev_warn'
+     235 |         dev_warn(sart->dev,
+         |         ^~~~~~~~
+   drivers/soc/apple/sart.c:236:60: note: format string is defined here
+     236 |                  "no free entries left to add [paddr: 0x%llx, size: 0x%zx]\n",
+         |                                                         ~~~^
+         |                                                            |
+         |                                                            long long unsigned int
+         |                                                         %x
+   In file included from include/linux/device.h:15,
+                    from include/linux/soc/apple/sart.h:15,
+                    from drivers/soc/apple/sart.c:14:
+   drivers/soc/apple/sart.c: In function 'apple_sart_remove_allowed_region':
+   drivers/soc/apple/sart.c:249:17: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 4 has type 'phys_addr_t' {aka 'unsigned int'} [-Wformat=]
+     249 |                 "will remove [paddr: 0x%llx, size: 0x%zx] from allowed regions\n",
+         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:129:41: note: in definition of macro 'dev_printk'
+     129 |                 _dev_printk(level, dev, fmt, ##__VA_ARGS__);            \
+         |                                         ^~~
+   include/linux/dev_printk.h:163:45: note: in expansion of macro 'dev_fmt'
+     163 |                 dev_printk(KERN_DEBUG, dev, dev_fmt(fmt), ##__VA_ARGS__); \
 
 
-> Please resubmit as a proper patch and add my ack:
->
-> Acked-by: Andrii Nakryiko <andrii@kernel.org>
->
-> > thanks,
-> > jirka
-> >
-> >
-> > ---
->
-> [...]
->
-> > -static u64 bpf_kprobe_multi_cookie(struct bpf_run_ctx *ctx, u64 ip)
-> > +static u64 bpf_kprobe_multi_cookie(struct bpf_run_ctx *ctx)
-> >  {
-> > +       struct bpf_kprobe_multi_run_ctx *run_ctx;
-> >         struct bpf_kprobe_multi_link *link;
-> > +       u64 *cookie, entry_ip;
-> >         unsigned long *addr;
-> > -       u64 *cookie;
-> >
-> >         if (WARN_ON_ONCE(!ctx))
-> >                 return 0;
-> > -       link = container_of(ctx, struct bpf_kprobe_multi_link, run_ctx);
-> > +       run_ctx = container_of(current->bpf_ctx, struct bpf_kprobe_multi_run_ctx, run_ctx);
-> > +       link = run_ctx->link;
-> > +       entry_ip = run_ctx->entry_ip;
->
-> nit: this can be assigned after we checked that we have link->cookies
->
-> >         if (!link->cookies)
-> >                 return 0;
-> > -       addr = bsearch(&ip, link->addrs, link->cnt, sizeof(ip),
-> > +       addr = bsearch(&entry_ip, link->addrs, link->cnt, sizeof(entry_ip),
-> >                        __bpf_kprobe_multi_cookie_cmp);
-> >         if (!addr)
-> >                 return 0;
->
-> [...]
+vim +/FIELD_GET +70 drivers/soc/apple/sart.c
+
+    65	
+    66	static void sart2_get_entry(struct apple_sart *sart, int index, u8 *flags,
+    67				    phys_addr_t *paddr, size_t *size)
+    68	{
+    69		u32 cfg = readl_relaxed(sart->regs + APPLE_SART2_CONFIG(index));
+  > 70		*flags = FIELD_GET(APPLE_SART2_CONFIG_FLAGS, cfg);
+    71		*size = (size_t)FIELD_GET(APPLE_SART2_CONFIG_SIZE, cfg)
+    72			<< APPLE_SART2_CONFIG_SIZE_SHIFT;
+    73		*paddr = (phys_addr_t)readl_relaxed(sart->regs +
+    74						    APPLE_SART2_PADDR(index))
+    75			 << APPLE_SART2_PADDR_SHIFT;
+    76	}
+    77	
+    78	static int sart2_set_entry(struct apple_sart *sart, int index, u8 flags,
+    79				   phys_addr_t paddr, size_t size)
+    80	{
+    81		u32 cfg;
+    82	
+    83		if (size & ((1 << APPLE_SART2_CONFIG_SIZE_SHIFT) - 1))
+    84			return -EINVAL;
+    85		if (paddr & ((1 << APPLE_SART2_PADDR_SHIFT) - 1))
+    86			return -EINVAL;
+    87	
+    88		size >>= APPLE_SART2_CONFIG_SIZE_SHIFT;
+    89		paddr >>= APPLE_SART2_PADDR_SHIFT;
+    90	
+    91		if (size > APPLE_SART2_CONFIG_SIZE_MAX)
+    92			return -EINVAL;
+    93	
+  > 94		cfg = FIELD_PREP(APPLE_SART2_CONFIG_FLAGS, flags);
+    95		cfg |= FIELD_PREP(APPLE_SART2_CONFIG_SIZE, size);
+    96	
+    97		writel_relaxed(paddr, sart->regs + APPLE_SART2_PADDR(index));
+    98		writel_relaxed(cfg, sart->regs + APPLE_SART2_CONFIG(index));
+    99	
+   100		return 0;
+   101	}
+   102	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
