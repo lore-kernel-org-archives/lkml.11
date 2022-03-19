@@ -2,98 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51F9AC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 03:46:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F183C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Mar 2022 03:48:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241928AbiCSDrf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Mar 2022 23:47:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52558 "EHLO
+        id S241943AbiCSDuG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Mar 2022 23:50:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234154AbiCSDr3 (ORCPT
+        with ESMTP id S234154AbiCSDuD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Mar 2022 23:47:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 364F42B9631
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Mar 2022 20:46:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D56C617B7
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 03:46:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0AA0C340E8;
-        Sat, 19 Mar 2022 03:46:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647661566;
-        bh=G+NuDXG6v+YZYRYM7T7C+PGBCWMAjEc/P2kRROv+lq0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lMpLZWX4oi1Q1NT3X640UADThSxz6H7jK+ycrRA1WPcTO+/hMpGS5yjnVzDcY93Kc
-         /1wOYTJa4/UTduuHA2qiDM4NOBSYkBbVRVdfx/0EyaigMqw3IMIw49Nfq/lNbO39lt
-         slcRDM/uzUknfMVDag7ugGhtl0MZqnC4x8AVXbBXibmjpcpNj1CF6kms5gzTnZZc0h
-         V00Y/PLL4nP9K04vUGnmUsGDEvKVi0SkpCVmalVdDJTISv7mC/BxLbOr+itzB5h4J3
-         474oG2EdNH1tCpoLGLUDcsf0nCEQBA9keHI+VG/o2UyVbVAmHatsaQgRzV2VBBHOij
-         mVLBneZq4I6JQ==
-Date:   Sat, 19 Mar 2022 11:45:12 +0800
-From:   Gao Xiang <xiang@kernel.org>
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     syzbot <syzbot+f05ba4652c0471416eaf@syzkaller.appspotmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>, chao@kernel.org,
-        linux-erofs@lists.ozlabs.org, LKML <linux-kernel@vger.kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        syzkaller-bugs@googlegroups.com, xiang@kernel.org
-Subject: Re: [syzbot] WARNING: kobject bug in erofs_unregister_sysfs
-Message-ID: <YjVRyIpIUN1jB8iK@debian>
-Mail-Followup-To: Muchun Song <songmuchun@bytedance.com>,
-        syzbot <syzbot+f05ba4652c0471416eaf@syzkaller.appspotmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>, chao@kernel.org,
-        linux-erofs@lists.ozlabs.org, LKML <linux-kernel@vger.kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        syzkaller-bugs@googlegroups.com, xiang@kernel.org
-References: <000000000000dda2f905da80c934@google.com>
- <00000000000009cf1e05da85bb31@google.com>
- <CAMZfGtWL-2+en7=FKBoPUwq1FMGYYqZCvB1jmJ7fhiQc1XX4oQ@mail.gmail.com>
+        Fri, 18 Mar 2022 23:50:03 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 376F137BD2;
+        Fri, 18 Mar 2022 20:48:40 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KL6JX5cxWzfZ5w;
+        Sat, 19 Mar 2022 11:47:08 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Sat, 19 Mar 2022 11:48:39 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Sat, 19 Mar
+ 2022 11:48:38 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>
+CC:     <paul.kocialkowski@bootlin.com>, <mchehab@kernel.org>
+Subject: [PATCH resend] media: i2c: ov5648: fix wrong pointer passed to IS_ERR() and PTR_ERR()
+Date:   Sat, 19 Mar 2022 11:58:06 +0800
+Message-ID: <20220319035806.3299264-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAMZfGtWL-2+en7=FKBoPUwq1FMGYYqZCvB1jmJ7fhiQc1XX4oQ@mail.gmail.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 19, 2022 at 10:19:12AM +0800, Muchun Song wrote:
-> On Sat, Mar 19, 2022 at 6:33 AM syzbot
-> <syzbot+f05ba4652c0471416eaf@syzkaller.appspotmail.com> wrote:
-> >
-> > syzbot has bisected this issue to:
-> >
-> > commit 2768c206f2c3e95c0e5cf2e7f846103fda7cd429
-> > Author: Muchun Song <songmuchun@bytedance.com>
-> > Date:   Thu Mar 3 01:15:36 2022 +0000
-> >
-> >     mm: list_lru: allocate list_lru_one only when needed
-> >
-> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1495694d700000
-> > start commit:   91265a6da44d Add linux-next specific files for 20220303
-> > git tree:       linux-next
-> > final oops:     https://syzkaller.appspot.com/x/report.txt?x=1695694d700000
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=1295694d700000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=617f79440a35673a
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=f05ba4652c0471416eaf
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=137f17d9700000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=114ebabd700000
-> >
-> > Reported-by: syzbot+f05ba4652c0471416eaf@syzkaller.appspotmail.com
-> > Fixes: 2768c206f2c3 ("mm: list_lru: allocate list_lru_one only when needed")
-> 
-> Does this patch [1] fix the issue? If yes, I am confused why the Fixes tag
-> should be the commit 2768c206f2c3?  What am I missing here?
-> 
-> [1] https://lore.kernel.org/r/20220315132814.12332-1-dzm91@hust.edu.cn
+IS_ERR() and PTR_ERR() use wrong pointer, it should be
+sensor->dovdd, fix it.
 
-I think it was an incorrect bisect so we could just ignore it.
-The fix is already pending for the next merge window.
+Fixes: e43ccb0a045f ("media: i2c: Add support for the OV5648 image sensor")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/media/i2c/ov5648.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Thanks,
-Gao Xiang
+diff --git a/drivers/media/i2c/ov5648.c b/drivers/media/i2c/ov5648.c
+index 930ff6897044..dfcd33e9ee13 100644
+--- a/drivers/media/i2c/ov5648.c
++++ b/drivers/media/i2c/ov5648.c
+@@ -2498,9 +2498,9 @@ static int ov5648_probe(struct i2c_client *client)
+ 
+ 	/* DOVDD: digital I/O */
+ 	sensor->dovdd = devm_regulator_get(dev, "dovdd");
+-	if (IS_ERR(sensor->dvdd)) {
++	if (IS_ERR(sensor->dovdd)) {
+ 		dev_err(dev, "cannot get DOVDD (digital I/O) regulator\n");
+-		ret = PTR_ERR(sensor->dvdd);
++		ret = PTR_ERR(sensor->dovdd);
+ 		goto error_endpoint;
+ 	}
+ 
+-- 
+2.25.1
 
-> 
-> Thanks.
