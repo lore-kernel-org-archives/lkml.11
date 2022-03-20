@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDD27C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEE4BC433EF
 	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 06:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244841AbiCTGoK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Mar 2022 02:44:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49448 "EHLO
+        id S244824AbiCTGoC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Mar 2022 02:44:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233610AbiCTGoH (ORCPT
+        with ESMTP id S233610AbiCTGoA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Mar 2022 02:44:07 -0400
+        Sun, 20 Mar 2022 02:44:00 -0400
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107622102A9
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 23:42:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E312102A7
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 23:42:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647758565; x=1679294565;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=bqc+qN2B2/Vja5qf7Vjqf51YeUhWC0UzAro/jfN5yK4=;
-  b=X3fdMKhudHmP/wlEPKPsaYjGPszdIjMlj+4O2Ey/9pDiHPzhbmHkmO8l
-   a3bBy8WlMZ2nGPy5u8JDuoqdkauYdXmcjpTp8E4RInHSg7iCJj5pVEGh6
-   5EIXgehATP5SFUyFfeQLUduszjrFlNqgzvxMmPfb+up6DvXa5rX9KYYtJ
-   APcrkwwhBVdi76tThqjkvpswKan4hxGSYIKr8lnD6ufhc7ppRVkCxEdKW
-   8l5hMEgbUXN+JnVDIwVi02Xtw5JNjOT3f7ZFeLZiJHB/5IbsHSrR2YryP
-   BhOYNpOaq1U4T9egObAfXM8fsviWAkggtwrcbG7kC7SQobOEtfN3iBalE
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10291"; a="254924011"
+  t=1647758558; x=1679294558;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=gbEDJc7UjnYqXMs/lN72CbHb0WPgXfSbE7JnkNcwm3E=;
+  b=b8jFe7F/fa9zsRQMHevFjyQHzkRWASeQ/8F7FXDLZgxS3mWDZ0ncmGjk
+   AHlmdG5Y5fPBEgkbNumPH6ASed/piIr3atalT1trbqbMGPZEkg82072Ug
+   OFx1hzWCMNLPJ0D1U9/sXayY7v8aCoSIsSXMrYuloFg07aoguns+oB96Z
+   O07T8kHyTRoCdcXsCiVgJwvefiagKP4ug/EpGYHyU89XKBgE/8+W+QIwE
+   zCzzgAejtHeg/ASquxmhpxz7Xq+IEKErPzorJAFtB/iHy9U+AZGgyjCFk
+   ZS0hjlOQMS/kNy1qesOkFB1ko1MyQb9/1i3bNFl0IlZNAPOkT21qvNMg/
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10291"; a="254924005"
 X-IronPort-AV: E=Sophos;i="5.90,195,1643702400"; 
-   d="scan'208";a="254924011"
+   d="scan'208";a="254924005"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2022 23:42:44 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2022 23:42:38 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,195,1643702400"; 
-   d="scan'208";a="691839880"
+   d="scan'208";a="691839857"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga001.fm.intel.com with ESMTP; 19 Mar 2022 23:42:41 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 19 Mar 2022 23:42:34 -0700
 From:   Lu Baolu <baolu.lu@linux.intel.com>
 To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
         Christoph Hellwig <hch@infradead.org>,
@@ -49,59 +49,72 @@ Cc:     Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
         Jacob jun Pan <jacob.jun.pan@intel.com>,
         iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
         Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH RFC 02/11] iommu: Add iommu_domain type for SVA
-Date:   Sun, 20 Mar 2022 14:40:21 +0800
-Message-Id: <20220320064030.2936936-3-baolu.lu@linux.intel.com>
+Subject: [PATCH RFC 00/11] iommu: SVA and IOPF refactoring
+Date:   Sun, 20 Mar 2022 14:40:19 +0800
+Message-Id: <20220320064030.2936936-1-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220320064030.2936936-1-baolu.lu@linux.intel.com>
-References: <20220320064030.2936936-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a new iommu domain type IOMMU_DOMAIN_SVA to represent an I/O page
-table which is shared from CPU host VA. Add a sva_cookie field in the
-iommu_domain structure to save the mm_struct which represent the CPU
-memory page table.
+Hi,
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- include/linux/iommu.h | 6 ++++++
- 1 file changed, 6 insertions(+)
+The former part of this series refactors the IOMMU SVA code by assigning
+an SVA type of iommu_domain to a shared virtual address and replacing
+sva_bind/unbind iommu ops with attach/detach_dev_pasid domain ops.
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 36f43af0af53..3e179b853380 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -64,6 +64,9 @@ struct iommu_domain_geometry {
- #define __IOMMU_DOMAIN_PT	(1U << 2)  /* Domain is identity mapped   */
- #define __IOMMU_DOMAIN_DMA_FQ	(1U << 3)  /* DMA-API uses flush queue    */
- 
-+#define __IOMMU_DOMAIN_SHARED	(1U << 4)  /* Page table shared from CPU  */
-+#define __IOMMU_DOMAIN_HOST_VA	(1U << 5)  /* Host CPU virtual address */
-+
- /*
-  * This are the possible domain-types
-  *
-@@ -86,6 +89,8 @@ struct iommu_domain_geometry {
- #define IOMMU_DOMAIN_DMA_FQ	(__IOMMU_DOMAIN_PAGING |	\
- 				 __IOMMU_DOMAIN_DMA_API |	\
- 				 __IOMMU_DOMAIN_DMA_FQ)
-+#define IOMMU_DOMAIN_SVA	(__IOMMU_DOMAIN_SHARED |	\
-+				 __IOMMU_DOMAIN_HOST_VA)
- 
- struct iommu_domain {
- 	unsigned type;
-@@ -95,6 +100,7 @@ struct iommu_domain {
- 	void *handler_token;
- 	struct iommu_domain_geometry geometry;
- 	struct iommu_dma_cookie *iova_cookie;
-+	struct mm_struct *sva_cookie;
- };
- 
- static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
+The latter part changes the existing I/O page fault handling framework
+from only serving SVA to a generic one. Any driver or component could
+handle the I/O page faults for its domain in its own way by installing
+an I/O page fault handler.
+
+This series overlaps with another series posted here [1]. For the
+convenience of review, I included all relevant patches in this series.
+We will solve the overlap problem later.
+
+This series is also available on github here [2].
+
+[1] https://lore.kernel.org/lkml/20220315050713.2000518-1-jacob.jun.pan@linux.intel.com/
+[2] https://github.com/LuBaolu/intel-iommu/commits/iommu-sva-refactoring-v1
+
+Please help review and suggest.
+
+Best regards,
+baolu
+
+Lu Baolu (11):
+  iommu: Add pasid_bits field in struct dev_iommu
+  iommu: Add iommu_domain type for SVA
+  iommu: Add attach/detach_dev_pasid domain ops
+  iommu/vt-d: Add SVA domain support
+  arm-smmu-v3/sva: Add SVA domain support
+  iommu/sva: Use attach/detach_pasid_dev in SVA interfaces
+  iommu: Remove SVA related callbacks from iommu ops
+  iommu: Handle IO page faults directly
+  iommu: Add iommu_get_domain_for_dev_pasid()
+  iommu: Make IOPF handling framework generic
+  iommu: Rename iommu-sva-lib.{c,h}
+
+ include/linux/intel-iommu.h                   |   5 +-
+ include/linux/iommu.h                         |  95 +++++---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  25 +-
+ .../iommu/{iommu-sva-lib.h => iommu-sva.h}    |   0
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  96 ++++----
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  19 +-
+ drivers/iommu/intel/iommu.c                   |  36 +--
+ drivers/iommu/intel/svm.c                     |  85 +++----
+ drivers/iommu/io-pgfault.c                    |  69 +-----
+ drivers/iommu/iommu-sva-lib.c                 |  71 ------
+ drivers/iommu/iommu-sva.c                     | 230 ++++++++++++++++++
+ drivers/iommu/iommu.c                         | 175 ++++++-------
+ drivers/iommu/Makefile                        |   2 +-
+ 13 files changed, 515 insertions(+), 393 deletions(-)
+ rename drivers/iommu/{iommu-sva-lib.h => iommu-sva.h} (100%)
+ delete mode 100644 drivers/iommu/iommu-sva-lib.c
+ create mode 100644 drivers/iommu/iommu-sva.c
+
 -- 
 2.25.1
 
