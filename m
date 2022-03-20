@@ -2,120 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EAC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 16:37:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3DD7C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 16:37:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239020AbiCTQiQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Mar 2022 12:38:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47666 "EHLO
+        id S241225AbiCTQi1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Mar 2022 12:38:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245554AbiCTQiF (ORCPT
+        with ESMTP id S239159AbiCTQiZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Mar 2022 12:38:05 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58E3C3EAB5;
-        Sun, 20 Mar 2022 09:36:42 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id mp6-20020a17090b190600b001c6841b8a52so8556635pjb.5;
-        Sun, 20 Mar 2022 09:36:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=bI1aV/T6nFEhtOyenRyACVUUEM6b85bDSzIe2Z/lFU0=;
-        b=on7cPFya9d/dSBZogWdWGjtvVx/Y5BKpiUOVTU7H3yZPALEFJi/MNI8YIJJucJ02RN
-         wLwU2cAsGyyJsVR79j/1mp4TQnI4bA/0X4T2JXMBd+4v1ete+6oJGEcscws6OuWyAONK
-         MP+mF94W6cI974MtMJ/AXBJ6+njJK6c4oaQMAY7E96H16SWq5iC5RvyIHXEO90JOav2l
-         rJe1FLfoqmSgS1kAoN3EZg28fdzWT3151GASm+w8uxlHS+wF/EivtHNnJe2I8s2hRYqd
-         htWpb+crIW5uCMIQg0bJxjifC75xwleEHDXFav/LLaGYMLEadxADpaJfNURl7uh0nBI+
-         XYTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=bI1aV/T6nFEhtOyenRyACVUUEM6b85bDSzIe2Z/lFU0=;
-        b=HY9MXj2I+zv4Gs2GOsS85U3d3/ESoJ2pL6k1zwZL/+jrt/mjpRHXvkLc+2CdwDnOO1
-         3c31vWL2wCvYDUO+b6UWFTX2tVj3vrSAoMc/kZmFsnv/5L3UKCLyzmH7Pb0wu+0UMHOO
-         jmx4aTVW/UVb+LgSl7r6xDGfaz7YGfA8wQpNKyuXBd7auCqn9gmSNub+t2WXwl9JJMS3
-         ty9epjpcBPwUnMZ4bvoi3SQMVnYO8myueiabY2rbWSBVXtJ36nMWZUsZpv7cd9LYF6Z4
-         CQPfWPz/T4BjrP7oT3zd5jkhplpMKbL13Ob7UvUDXVNkF/uXadNUDt+UK2wFaJ9rlQsl
-         tcWA==
-X-Gm-Message-State: AOAM530sFMmIhhjANn0vkb5tc+vSM/YZcvWZAGzpK5EpAj6fYaVsx+M0
-        rLLVGV9TLKiXv+c9saKNcSMaNLIseap5b5Lz
-X-Google-Smtp-Source: ABdhPJx6YTBQ44jFi3LMdVzy6vwsfZ1cZntwOQ0JbybZ3erDBU54Y0Gzukw6zOpOrm8tOv0A9+w4NQ==
-X-Received: by 2002:a17:90b:4f43:b0:1bf:5a2a:598d with SMTP id pj3-20020a17090b4f4300b001bf5a2a598dmr32261971pjb.160.1647794201326;
-        Sun, 20 Mar 2022 09:36:41 -0700 (PDT)
-Received: from localhost.localdomain ([2402:4000:2381:95dc:514b:b97f:b05c:6ff1])
-        by smtp.gmail.com with ESMTPSA id z6-20020a17090a8b8600b001c70c8e4040sm1485535pjn.27.2022.03.20.09.36.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Mar 2022 09:36:40 -0700 (PDT)
-From:   Husni Faiz <ahamedhusni73@gmail.com>
-To:     mchehab@kernel.org, gregkh@linuxfoundation.org
-Cc:     Husni Faiz <ahamedhusni73@gmail.com>, linux-media@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/2] media: av7110: fix switch indentation
-Date:   Sun, 20 Mar 2022 22:06:17 +0530
-Message-Id: <20220320163618.41054-1-ahamedhusni73@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220225155622.585621-1-ahamedhusni73@gmail.com>
-References: <20220225155622.585621-1-ahamedhusni73@gmail.com>
+        Sun, 20 Mar 2022 12:38:25 -0400
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 103803EAB5
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 09:37:02 -0700 (PDT)
+Received: from [192.168.12.80] (unknown [182.2.69.4])
+        by gnuweeb.org (Postfix) with ESMTPSA id 7A33B7E2DA;
+        Sun, 20 Mar 2022 16:36:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1647794221;
+        bh=7HDpyaqJ3Esg6x9zu/669IsMjA3/gjhXtFUxFcLvI2g=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=t/OJzLcPJ6palU0G8VBm8GL7mgyhaL4txMim5jjNoSSqxL+IHDtr9KTKTCFY3pajw
+         boHc4Vs/H+D0WddZYUyGN98VqfBFrtB8eeKi/9oBKsu6Wgz0HgoQUW5/xqgXLHVhJg
+         sangfkhey3/s3f7qGLgt5vdq83QQiB3222pw5lZpM1AYT1Y2rtroMdFY+YnQlzU6fo
+         nJ1BTvZdtVKaz1x0n8tj9izDxMa4lasTqKhcgHU/I++Ss/FKyrylGxEZ2j9hQwrD1k
+         erV9fk3ubqkvgPIORXHXwhI8eOY0Ub7x2OHrkPBzjVRUj747PFguEuvtO6X5xCg08H
+         o/NV20RDq6loQ==
+Message-ID: <c7129520-5e9a-f9d1-cc12-5af9456c917f@gnuweeb.org>
+Date:   Sun, 20 Mar 2022 23:36:55 +0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Willy Tarreau <w@1wt.eu>
+Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
+        Nugraha <richiisei@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>
+References: <20220320093750.159991-1-ammarfaizi2@gnuweeb.org>
+ <20220320093750.159991-6-ammarfaizi2@gnuweeb.org>
+ <20220320161644.GF8067@1wt.eu>
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Subject: Re: [RFC PATCH v1 5/6] tools/nolibc/stdlib: Implement `malloc()`,
+ `calloc()`, `realloc()` and `free()`
+In-Reply-To: <20220320161644.GF8067@1wt.eu>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch fixes "switch and case should be at the same indent"
-checkpatch error.
+On 3/20/22 11:16 PM, Willy Tarreau wrote:
+> Ammar,
+> 
+> a few points below:
+> 
+> On Sun, Mar 20, 2022 at 04:37:49PM +0700, Ammar Faizi wrote:
+>> +struct nolibc_heap {
+>> +	size_t	len;
+>> +	char	user_p[] __attribute__((__aligned__));
+>> +};
+> 
+> Note that many programs assume that malloc() returns a field aligned
+> to 2*sizeof(pointer) and unless I'm mistaken, above the user pointer
+> will only be aligned by one pointer. This may have an impact when the
+> compiler decides to use SIMD instructions.
 
-Signed-off-by: Husni Faiz <ahamedhusni73@gmail.com>
----
-V1->V2: Add a clear subject line to the patch.
+Section 7.20.3 of C99 states this about `malloc()`:
+"""
+   The pointer returned if the allocation succeeds is suitably aligned
+   so that it may be assigned to a pointer to any type of object.
+"""
 
- drivers/staging/media/av7110/av7110_av.c | 30 ++++++++++++------------
- 1 file changed, 15 insertions(+), 15 deletions(-)
+And this is what GCC doc says about __attribute__((__aligned__)):
+"""
+   The aligned attribute specifies a minimum alignment for the variable
+   or structure field, measured in bytes. When specified, alignment must
+   be an integer constant power of 2. Specifying no alignment argument
+   implies the maximum alignment for the target, which is often, but by
+   no means always, 8 or 16 bytes.
+"""
 
-diff --git a/drivers/staging/media/av7110/av7110_av.c b/drivers/staging/media/av7110/av7110_av.c
-index 91f4866c7e59..1d42862e9669 100644
---- a/drivers/staging/media/av7110/av7110_av.c
-+++ b/drivers/staging/media/av7110/av7110_av.c
-@@ -770,22 +770,22 @@ static void p_to_t(u8 const *buf, long int length, u16 pid, u8 *counter,
- 	if (length > 3 &&
- 	     buf[0] == 0x00 && buf[1] == 0x00 && buf[2] == 0x01)
- 		switch (buf[3]) {
--			case PROG_STREAM_MAP:
--			case PRIVATE_STREAM2:
--			case PROG_STREAM_DIR:
--			case ECM_STREAM     :
--			case EMM_STREAM     :
--			case PADDING_STREAM :
--			case DSM_CC_STREAM  :
--			case ISO13522_STREAM:
--			case PRIVATE_STREAM1:
--			case AUDIO_STREAM_S ... AUDIO_STREAM_E:
--			case VIDEO_STREAM_S ... VIDEO_STREAM_E:
--				pes_start = 1;
--				break;
-+		case PROG_STREAM_MAP:
-+		case PRIVATE_STREAM2:
-+		case PROG_STREAM_DIR:
-+		case ECM_STREAM     :
-+		case EMM_STREAM     :
-+		case PADDING_STREAM :
-+		case DSM_CC_STREAM  :
-+		case ISO13522_STREAM:
-+		case PRIVATE_STREAM1:
-+		case AUDIO_STREAM_S ... AUDIO_STREAM_E:
-+		case VIDEO_STREAM_S ... VIDEO_STREAM_E:
-+			pes_start = 1;
-+			break;
- 
--			default:
--				break;
-+		default:
-+			break;
- 		}
- 
- 	while (c < length) {
+Link: https://gcc.gnu.org/onlinedocs/gcc-11.2.0/gcc/Common-Variable-Attributes.html#Common-Variable-Attributes
+
+Simple experiment on Linux x86-64...
+
+```
+ammarfaizi2@integral2:/tmp$ cat > test.c
+#include <stdio.h>
+int main(void)
+{
+	printf("alignof = %zu\n", __alignof__(long double));
+	return 0;
+}
+ammarfaizi2@integral2:/tmp$ gcc -o test test.c
+ammarfaizi2@integral2:/tmp$ ./test
+alignof = 16
+ammarfaizi2@integral2:/tmp$
+```
+
+We have `long double` which requires 16 byte alignment. So
+__attribute__((__aligned__)) should cover this. And yes, it's true that
+it's 2*sizeof(void*), but importantly for the above reason.
+
+>> +#ifndef offsetof
+>> +#define offsetof(TYPE, FIELD) ((size_t) &((TYPE *)0)->FIELD)
+>> +#endif
+>> +
+>> +#ifndef container_of
+>> +#define container_of(PTR, TYPE, FIELD) ({			\
+>> +	__typeof__(((TYPE *)0)->FIELD) *__FIELD_PTR = (PTR);	\
+>> +	(TYPE *)((char *) __FIELD_PTR - offsetof(TYPE, FIELD));	\
+>> +})
+>> +#endif
+> 
+> These ones are independent on the malloc code and should move to a
+> different patch and likely to a different file. I'm seeing we already
+> have a few macros in types.h and since it's shared by almost everything
+> it might be more suitable there.
+
+OK, will do it in the v2. Thanks!
+
 -- 
-2.25.1
-
+Ammar Faizi
