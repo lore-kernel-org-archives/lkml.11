@@ -2,99 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC36DC4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 12:53:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00ACCC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 13:10:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245107AbiCTMyu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Mar 2022 08:54:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38340 "EHLO
+        id S245122AbiCTNMD convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Mar 2022 09:12:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235848AbiCTMyr (ORCPT
+        with ESMTP id S235848AbiCTNL7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Mar 2022 08:54:47 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A704A1D321;
-        Sun, 20 Mar 2022 05:53:24 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id q5so16707585ljb.11;
-        Sun, 20 Mar 2022 05:53:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=NPj9f04sMJ3VkX20TlDwOIssZGRIWkPsk5pfadmGsnk=;
-        b=O8l8/fSJLECcqMdp6c8EoQHjLWPP4Jqo+Mn2mvGzLRadeGboXLsiVGVd8lcemhSizW
-         HrtiJ9Y0Jhyze/mkGbTLNz8V9zgcqWTEFhywWXbpr/qfucCRiZuH+WmaKTQ6xYkW276U
-         wvSBI7BGwcBS4zozwRChvkA4eeVlSSSW11+Ik/8n4ULx+EYSOdVJyGDpE2qwiqLfumwW
-         YY7iek4w7+Gm9c1MCOBdEIKnm7s514hute7EYudLAaWgoi+mbZitn3wruC72jcbxiBvp
-         ZkdTOQ2aKcug1RyRT/zCYgo2R4n3gMNx51W0sJ9K1q9gHfnH3RVwiYzg72/gEetsEWME
-         OL5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=NPj9f04sMJ3VkX20TlDwOIssZGRIWkPsk5pfadmGsnk=;
-        b=uYsSYuuwLVVA7yufYciuKbpILOP8ipKLKETrnPkPVbWjTbH6q7Z4vjBZkJiRe19QNB
-         6QJoffI2hj+sn8pt/trX0eVWyOOtMLOQooBfV/K5Ut6CeAxzXpFmukME5QhAP7Skd/Gy
-         LKqvkASQ3AiWc77GUviwVaYXh38eXhBCkMyQs6OoQxN6LIEGff54yW6MyXtOI8GpYCyL
-         huQg+Q4XixokaX8+3nKImUj/jBXoG8WJQYKexOXfcrYlKAHXzOtt9szeeZCrwSufS3dN
-         pVLoNFeJ9MYe4GEQGNagBGtYh8DhO/Sspdc4DiNNIDdp5M9DaOM8Qe5z/L04oEsz6l2z
-         hPAg==
-X-Gm-Message-State: AOAM5325uH/7dV6iEImFAPjNLoj5jtYXpLphENPm5+1883JVCWZndHmh
-        2jCOcpVlLtVfJXlFj/hzHew=
-X-Google-Smtp-Source: ABdhPJzvwSNPy6xtXY65ySuLrJ0+ws9oS3Q9dOVUXrq6EoQf69hU+0kXjD346is8XpVjM4HwFS/HWg==
-X-Received: by 2002:a2e:96d9:0:b0:249:8257:74ca with SMTP id d25-20020a2e96d9000000b00249825774camr1618118ljj.105.1647780802595;
-        Sun, 20 Mar 2022 05:53:22 -0700 (PDT)
-Received: from [192.168.2.145] (109-252-136-171.dynamic.spd-mgts.ru. [109.252.136.171])
-        by smtp.googlemail.com with ESMTPSA id z11-20020a05651c11cb00b00247dee7faeasm1832219ljo.12.2022.03.20.05.53.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 20 Mar 2022 05:53:21 -0700 (PDT)
-Message-ID: <55ae43f0-a22f-b532-2476-c3afa1e2cb73@gmail.com>
-Date:   Sun, 20 Mar 2022 15:53:21 +0300
+        Sun, 20 Mar 2022 09:11:59 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 756F51F614
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 06:10:36 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-319-oFCxxHf5MgGGf8WvpDCCEg-1; Sun, 20 Mar 2022 13:10:33 +0000
+X-MC-Unique: oFCxxHf5MgGGf8WvpDCCEg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.32; Sun, 20 Mar 2022 13:10:33 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.033; Sun, 20 Mar 2022 13:10:33 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Ammar Faizi' <ammarfaizi2@gnuweeb.org>, Willy Tarreau <w@1wt.eu>
+CC:     "Paul E. McKenney" <paulmck@kernel.org>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
+        Nugraha <richiisei@gmail.com>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "llvm@lists.linux.dev" <llvm@lists.linux.dev>
+Subject: RE: [RFC PATCH v1 3/6] tools/nolibc: i386: Implement syscall with 6
+ arguments
+Thread-Topic: [RFC PATCH v1 3/6] tools/nolibc: i386: Implement syscall with 6
+ arguments
+Thread-Index: AQHYPD5aHmXDAqFOcUemVcZ8MoFj5azIOuNw
+Date:   Sun, 20 Mar 2022 13:10:33 +0000
+Message-ID: <2e335ac54db44f1d8496583d97f9dab0@AcuMS.aculab.com>
+References: <20220320093750.159991-1-ammarfaizi2@gnuweeb.org>
+ <20220320093750.159991-4-ammarfaizi2@gnuweeb.org>
+In-Reply-To: <20220320093750.159991-4-ammarfaizi2@gnuweeb.org>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [Patch v5 2/4] memory: tegra: Add MC error logging on tegra186
- onward
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
 Content-Language: en-US
-To:     Ashish Mhetre <amhetre@nvidia.com>,
-        krzysztof.kozlowski@canonical.com, robh+dt@kernel.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-Cc:     vdumpa@nvidia.com, Snikam@nvidia.com
-References: <20220316092525.4554-1-amhetre@nvidia.com>
- <20220316092525.4554-3-amhetre@nvidia.com>
-From:   Dmitry Osipenko <digetx@gmail.com>
-In-Reply-To: <20220316092525.4554-3-amhetre@nvidia.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-16.03.2022 12:25, Ashish Mhetre пишет:
-> +static int tegra186_mc_get_channel(const struct tegra_mc *mc, int *mc_channel)
-> +{
-> +	u32 status;
-> +
-> +	status = mc_ch_readl(mc, MC_BROADCAST_CHANNEL, MC_GLOBAL_INTSTATUS);
-> +
-> +	switch (status & mc->soc->int_channel_mask) {
-> +	case BIT(0):
-> +		*mc_channel = 0;
-> +		break;
-> +
-> +	case BIT(1):
-> +		*mc_channel = 1;
-> +		break;
-> +
-> +	case BIT(2):
-> +		*mc_channel = 2;
-> +		break;
-> +
-> +	case BIT(3):
-> +		*mc_channel = 3;
-> +		break;
+From: Ammar Faizi
+> Sent: 20 March 2022 09:38
+> 
+> In i386, the 6th argument of syscall goes in %ebp. However, both Clang
+> and GCC cannot use %ebp in the clobber list and in the "r" constraint
+> without using -fomit-frame-pointer. To make it always available for any
+> kind of compilation, the below workaround is implemented.
+> 
+> For clang (the Assembly statement can't clobber %ebp):
+>   1) Save the %ebp value to the redzone area -4(%esp).
 
-This won't work if multiple bits are set at once.
+i386 doesn't have a redzone.
+If you get a signal it will trash -4(%sp)
+
+>   2) Load the 6-th argument from memory to %ebp.
+>   3) Subtract the %esp by 4.
+>   4) Do the syscall (int $0x80).
+>   5) Pop %ebp.
+> 
+> For GCC, fortunately it has a #pragma that can force a specific function
+> to be compiled with -fomit-frame-pointer, so it can always use "r"(var)
+> where `var` is a variable bound to %ebp.
+
+How is that going to work for an inlined functon?
+
+And using xchg is slow - it is always locked.
+
+One possibility might be to do:
+	push arg6
+	push %ebp
+	mov  %ebp, 4(%sp)
+	int  0x80
+	pop  %ebp
+	add  %esp,4
+
+Although I'm not sure you really want to allocate 4k pages
+for every malloc() call.
+
+Probably better to write a mini 'libc' that uses sbrk()
+and a best fit scan of a linear free list.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
