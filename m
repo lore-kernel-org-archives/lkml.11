@@ -2,108 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1AB8C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 15:48:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4A19C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 15:50:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245404AbiCTPtg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Mar 2022 11:49:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51896 "EHLO
+        id S245408AbiCTPwK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Mar 2022 11:52:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233295AbiCTPte (ORCPT
+        with ESMTP id S233295AbiCTPwH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Mar 2022 11:49:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF71240902;
-        Sun, 20 Mar 2022 08:48:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63D6EB80B95;
-        Sun, 20 Mar 2022 15:48:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CFBAC340E9;
-        Sun, 20 Mar 2022 15:48:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647791288;
-        bh=gF1b2RX+zCM5oK/wIC5CVU46M+hHdRSc8f+Jo5E+QXs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jOTc3Ka7YW3qC4S9fMrs+dNMGWeuTnjTNOuVqCMwIcZkwGwQ8jHm09WY/P2cTMstr
-         MjDl9MffxLSmYPvV9dso9orb79Z0FrxPm/SSM7Pc//j+UNFW5lRPU/Xc8+WVyUt/XJ
-         no2dn2HTT/0AIl1DdFP3B8FK56lS543ulIUSRltKYDhregPxT/lHFzk65FLmOEg9fa
-         GAQZJc4q8u8F8BkVhuez6OQbJgAm4n9ExJJ9zjpxVxQm0mZZu7MaJOy0n4XR+aJMNH
-         0vwL1dcz7cf4wFurwK1psZgpc6tsOSPyEA2UJ/bRiyposKsnqo0cayEn3qPZYqj7eR
-         u30aGmkuh2+Cg==
-Date:   Sun, 20 Mar 2022 15:55:31 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v5 1/3] iio: temperature: ltc2983: Don't hard code
- defined constants in messages
-Message-ID: <20220320155531.19e13a5c@jic23-huawei>
-In-Reply-To: <20220307203606.87258-1-andriy.shevchenko@linux.intel.com>
-References: <20220307203606.87258-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sun, 20 Mar 2022 11:52:07 -0400
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3703A4B428
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 08:50:43 -0700 (PDT)
+Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
+        by gnuweeb.org (Postfix) with ESMTPSA id 960437E324
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 15:50:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1647791443;
+        bh=DrWgZ38PquuHSGxjZUS3cpQF4U4/ehYfTH8o3ux34qI=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=BS61PPnLUTTd6D5sqKoO0MxLinu4DP6IXwzoox1fSTuSaZgCp9r4HCJoxAZ71prDz
+         sLojXHFpE3xWba+b4ELIC1v3KDeflTumEEgoitQ8mHV13Z16oXLD4UfDvYPl3gDFwk
+         VSXP/PoctDiVsV1j6nBCq7a05+vFFIGUzUE0QP9ZQY1Ly9XLFN0djOWMLq0aWlSGzJ
+         kuRbzRhiE41YqqHLx6p9a4CZIh3lTbMlFR0f6eldYGIlCVeXlZcMPAzybRv7xjoIQv
+         G4j5TQMlVLb/QxNP8AuS+9P4ugU3tJWRx9BQqI6OFHWNrojz8/egAU9IBOU3b2Vg4G
+         4bdii8ggDCQcw==
+Received: by mail-lf1-f48.google.com with SMTP id w7so21207007lfd.6
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 08:50:43 -0700 (PDT)
+X-Gm-Message-State: AOAM532gUOA4Ftqn66ATd6r810DGrpC0mviUxzhrcbDPxFtqPmT31k67
+        pjByOXCujFFm+1lNXqlG5AcmXggVfjZrc+1hAEY=
+X-Google-Smtp-Source: ABdhPJx4soqBEdPe9BsBWRodarFmFvffwnL8gJNGNWxLdPiwvnRyf9uPClxnIIPxrfeO5I1WrJjrhE+gwbDK5jDzzi0=
+X-Received: by 2002:a05:6512:32c8:b0:44a:27fd:cd06 with SMTP id
+ f8-20020a05651232c800b0044a27fdcd06mr1979767lfg.239.1647791441629; Sun, 20
+ Mar 2022 08:50:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20220320093750.159991-1-ammarfaizi2@gnuweeb.org> <20220320093750.159991-6-ammarfaizi2@gnuweeb.org>
+In-Reply-To: <20220320093750.159991-6-ammarfaizi2@gnuweeb.org>
+From:   Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
+Date:   Sun, 20 Mar 2022 22:50:30 +0700
+X-Gmail-Original-Message-ID: <CAOG64qMoDjLer_OgRn2edGLMLMVfA5Lv3CZSU2VeOkgzPWNVUA@mail.gmail.com>
+Message-ID: <CAOG64qMoDjLer_OgRn2edGLMLMVfA5Lv3CZSU2VeOkgzPWNVUA@mail.gmail.com>
+Subject: Re: [RFC PATCH v1 5/6] tools/nolibc/stdlib: Implement `malloc()`,
+ `calloc()`, `realloc()` and `free()`
+To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Cc:     Willy Tarreau <w@1wt.eu>, "Paul E. McKenney" <paulmck@kernel.org>,
+        Nugraha <richiisei@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "GNU/Weeb Mailing List" <gwml@vger.gnuweeb.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon,  7 Mar 2022 22:36:04 +0200
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Sun, Mar 20, 2022 at 4:37 PM Ammar Faizi wrote:
+> +void *realloc(void *old_ptr, size_t new_size)
+> +{
+> +       struct nolibc_heap *heap;
+> +       void *ret;
+> +
+> +       if (!old_ptr)
+> +               return malloc(new_size);
+> +
+> +       ret = malloc(new_size);
+> +       if (__builtin_expect(!ret, 0))
+> +               return NULL;
+> +
+> +       heap = container_of(old_ptr, struct nolibc_heap, user_p);
+> +       memcpy(ret, heap->user_p, heap->len);
+> +       munmap(heap, heap->len);
+> +       return ret;
+> +}
 
-> In a couple of messages the constants, which have their definitions,
-> are hard coded into the message text. Unhardcode them.
->=20
-> While at it, add a trailing \n where it's currently missing.
->=20
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
-Series applied to the togreg branch of iio.git, but that will be rebased
-so for now this will only be visible in the testing branch intended to
-let 0-day poke at it.
+This better be simplified like this, so only have 1 malloc() call that
+applies to both branches.
 
-Thanks,
+  void *realloc(void *old_ptr, size_t new_size)
+  {
+         struct nolibc_heap *heap;
+         void *ret;
 
-Jonathan
+         ret = malloc(new_size);
+         if (__builtin_expect(!ret, 0))
+                 return NULL;
 
-> ---
-> v5: no changes
-> v4: no changes
-> v3: added \n, used %u (Joe)
->  drivers/iio/temperature/ltc2983.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
->=20
-> diff --git a/drivers/iio/temperature/ltc2983.c b/drivers/iio/temperature/=
-ltc2983.c
-> index 301c3f13fb26..94d6dd4db47a 100644
-> --- a/drivers/iio/temperature/ltc2983.c
-> +++ b/drivers/iio/temperature/ltc2983.c
-> @@ -409,8 +409,8 @@ static struct ltc2983_custom_sensor *__ltc2983_custom=
-_sensor_new(
->  	new_custom->size =3D n_entries * n_size;
->  	/* check Steinhart size */
->  	if (is_steinhart && new_custom->size !=3D LTC2983_CUSTOM_STEINHART_SIZE=
-) {
-> -		dev_err(dev, "Steinhart sensors size(%zu) must be 24",
-> -							new_custom->size);
-> +		dev_err(dev, "Steinhart sensors size(%zu) must be %u\n", new_custom->s=
-ize,
-> +			LTC2983_CUSTOM_STEINHART_SIZE);
->  		return ERR_PTR(-EINVAL);
->  	}
->  	/* Check space on the table. */
-> @@ -1299,8 +1299,8 @@ static int ltc2983_parse_dt(struct ltc2983_data *st)
->  		if (sensor.chan < LTC2983_MIN_CHANNELS_NR ||
->  		    sensor.chan > LTC2983_MAX_CHANNELS_NR) {
->  			ret =3D -EINVAL;
-> -			dev_err(dev,
-> -				"chan:%d must be from 1 to 20\n", sensor.chan);
-> +			dev_err(dev, "chan:%d must be from %u to %u\n", sensor.chan,
-> +				LTC2983_MIN_CHANNELS_NR, LTC2983_MAX_CHANNELS_NR);
->  			goto put_child;
->  		} else if (channel_avail_mask & BIT(sensor.chan)) {
->  			ret =3D -EINVAL;
+         if (!old_ptr)
+                 return ret;
 
+         heap = container_of(old_ptr, struct nolibc_heap, user_p);
+         memcpy(ret, heap->user_p, heap->len);
+         munmap(heap, heap->len);
+         return ret;
+  }
+
+-- Viro
