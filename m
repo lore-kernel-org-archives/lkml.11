@@ -2,71 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7D79C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 21:09:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47BA8C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 21:09:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343680AbiCTVKe (ORCPT
+        id S1343689AbiCTVKj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Mar 2022 17:10:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41914 "EHLO
+        Sun, 20 Mar 2022 17:10:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233463AbiCTVKb (ORCPT
+        with ESMTP id S1343682AbiCTVKg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Mar 2022 17:10:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 063DB3EF15;
-        Sun, 20 Mar 2022 14:09:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98643B80EED;
-        Sun, 20 Mar 2022 21:09:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C868C340E9;
-        Sun, 20 Mar 2022 21:09:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647810545;
-        bh=XyeGPawj4pSFo66sD7y74tNiedJnvbmAaQlFgBKJgnc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sL9K3LHIlBU+oB4kwxGG+Bs3TZtNlwntgtDJ3+/W1J3kOxToW9eyprwnTho40361B
-         Y9m8UUySoD3s5ycgcOMDvjmaMZayLNmx2vVpZqvz4UQR3dcxnAe8kR3fTrTqCr7QKu
-         xWIlnNzWTSsvdURB/b2y+1HDsc40HMWlO0cOD2KpJCBdjpwnoD5p5fAwA6iv8nusIE
-         xoMjcNEaMqLX5LXQ6eLs+jpQDyEzp6SH7mIA7qcRBeso3hvWQe51/03YZozq7uKmKR
-         S+M1xKeNWzdb5kBFXtECYiqBGiaIQ8R2KR+8KEZOQk72JGEm7ZdaFgCQk9oqogja2V
-         YCLySbpovbMJg==
-Date:   Sun, 20 Mar 2022 23:10:05 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Nayna Jain <nayna@linux.ibm.com>
-Cc:     linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
-        dhowells@redhat.com, zohar@linux.ibm.com,
-        linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dimitri.ledkov@canonical.com,
-        seth@forshee.me, rnsastry@linux.ibm.com, masahiroy@kernel.org
-Subject: Re: [PATCH v12 1/4] certs: export load_certificate_list() to be used
- outside certs/
-Message-ID: <YjeYLQgTul3HUtwZ@iki.fi>
-References: <20220311210344.102396-1-nayna@linux.ibm.com>
- <20220311210344.102396-2-nayna@linux.ibm.com>
+        Sun, 20 Mar 2022 17:10:36 -0400
+Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [IPv6:2001:4b98:dc4:8::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 084973FBE3;
+        Sun, 20 Mar 2022 14:09:11 -0700 (PDT)
+Received: (Authenticated sender: alexandre.belloni@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id CB401240005;
+        Sun, 20 Mar 2022 21:09:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1647810549;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=eoUvjXcWxsCS2k8VppywzQry5S7nHcH0mW8C42GzOcs=;
+        b=Kv7mnn6+qhPoe4nYAA3HU8KH96O+5yNpew8NlJqW72ofsz2ognKKCzpo6Ro6Qmuh0o6/Aj
+        H4MDHrQTsDpJkXRpoVCIk2lp8hdLr9hgtulZKUNXmaZSGN69vlAfQNW1YX3dp4XAcHNNDa
+        RxiykDC3B/+fAfxAf2cA3R3rB8nJDSKPFHKjlVaX80wJOW9I6LPmhdiWYncCdRD9bLhw67
+        nnnWmK0oE9guT/rcqjPVCAA8uH0k9ULd+eYSJkTPPKOUFcY0eSQnRwAFDNPtwvm0wJrl4n
+        axkoZzjlqM+jistlPqfPumFuC+R63Dc1qnYE6ztCeP6BqNFYwqqFl53dFD2xYA==
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        kernel test robot <lkp@intel.com>, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] clk: sunxi-ng: sun6i-rtc: include clk/sunxi-ng.h
+Date:   Sun, 20 Mar 2022 22:09:04 +0100
+Message-Id: <20220320210905.6606-1-alexandre.belloni@bootlin.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220311210344.102396-2-nayna@linux.ibm.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 11, 2022 at 04:03:41PM -0500, Nayna Jain wrote:
-> load_certificate_list() parses certificates embedded in the kernel
-> image to load them onto the keyring.
-> 
-> Commit "2565ca7f5ec1 (certs: Move load_system_certificate_list to a common
-> function)" made load_certificate_list() a common function in the certs/
-> directory. Export load_certificate_list() outside certs/ to be used by
-> load_platform_certificate_list() for loading compiled in platform keys
-> onto the .platform keyring at boot time.
-> 
-> Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
-> Signed-off-by: Nayna Jain <nayna@linux.ibm.com>
+This solves:
+>> drivers/clk/sunxi-ng/ccu-sun6i-rtc.c:334:5: warning: no previous prototype for 'sun6i_rtc_ccu_probe' [-Wmissing-prototypes]
+     334 | int sun6i_rtc_ccu_probe(struct device *dev, void __iomem *reg)
+         |     ^~~~~~~~~~~~~~~~~~~
 
-Why all tested-by tags are still missing?
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+---
+ drivers/clk/sunxi-ng/ccu-sun6i-rtc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-BR, Jarkko
+diff --git a/drivers/clk/sunxi-ng/ccu-sun6i-rtc.c b/drivers/clk/sunxi-ng/ccu-sun6i-rtc.c
+index 712fda22efd5..8a10bade7e0d 100644
+--- a/drivers/clk/sunxi-ng/ccu-sun6i-rtc.c
++++ b/drivers/clk/sunxi-ng/ccu-sun6i-rtc.c
+@@ -9,6 +9,8 @@
+ #include <linux/module.h>
+ #include <linux/of_device.h>
+ 
++#include <linux/clk/sunxi-ng.h>
++
+ #include "ccu_common.h"
+ 
+ #include "ccu_div.h"
+-- 
+2.35.1
+
