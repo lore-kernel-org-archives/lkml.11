@@ -2,101 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E621C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 17:37:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33561C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 17:38:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245735AbiCTRh4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Mar 2022 13:37:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49290 "EHLO
+        id S245739AbiCTRjP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Mar 2022 13:39:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229713AbiCTRhv (ORCPT
+        with ESMTP id S229713AbiCTRjO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Mar 2022 13:37:51 -0400
-Received: from relay.hostedemail.com (relay.hostedemail.com [64.99.140.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60644187B8D
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 10:36:26 -0700 (PDT)
-Received: from omf01.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay11.hostedemail.com (Postfix) with ESMTP id C6B39808CD;
-        Sun, 20 Mar 2022 17:36:24 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf01.hostedemail.com (Postfix) with ESMTPA id 06E7A6000F;
-        Sun, 20 Mar 2022 17:36:22 +0000 (UTC)
-Message-ID: <7a12fd4599758b8cd5fd376db6c9a950d2ed2094.camel@perches.com>
-Subject: Re: [PATCH] ath9k: initialize arrays at compile time
-From:   Joe Perches <joe@perches.com>
-To:     Sebastian Gottschall <s.gottschall@newmedia-net.de>,
-        John Crispin <john@phrozen.org>, trix@redhat.com, toke@toke.dk,
-        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Sun, 20 Mar 2022 10:36:22 -0700
-In-Reply-To: <233074c3-03dc-cf8b-a597-da0fb5d98be0@newmedia-net.de>
-References: <20220320152028.2263518-1-trix@redhat.com>
-         <af6042d0-952f-f497-57e7-37fef45a1f76@phrozen.org>
-         <233074c3-03dc-cf8b-a597-da0fb5d98be0@newmedia-net.de>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Sun, 20 Mar 2022 13:39:14 -0400
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCD3518C0FA
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 10:37:50 -0700 (PDT)
+Received: by mail-qv1-xf2f.google.com with SMTP id kc20so6238551qvb.3
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 10:37:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:reply-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UpAsH3HNGYUb6pJqoGNbhy4ESgXn7LYmalYBo847NcU=;
+        b=JGkyMerAd2g6F8muIKP6vKHK0v40lHv193s/7K77f/6/3RSE90D42rwWgO9T9yN08/
+         IEGiL+f+vNycabezRrx40IBJIx1xq8R54iLvVMqzlKFpsY8GlAbvrRSOUofIx1zradjb
+         Gw4nCwaxwZvwZeTXmQSoqf4odwfcLQGJWTL7OG1D4zejn+ChGrXQn0dmkyrKGrg/8qjv
+         4dNDH3S48w2AzRA0w9PznJM7yBFyVbWLbig9q7xomTEp8XQBUfN4lcB8n8SIHhYPBcwt
+         8ENRpNGp7OQsVot7pDepfZvt96m1Jx64kOrW1ISj2fTkTuOArAwwQvkYlTy9NZQoXy7Q
+         p7kg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :reply-to:references:mime-version:content-disposition:in-reply-to;
+        bh=UpAsH3HNGYUb6pJqoGNbhy4ESgXn7LYmalYBo847NcU=;
+        b=IWDSy1h9muoD+e2q8L4U5dzkbVIGwFxjbsI9D0Xrr52PR0xF7HBgOyxtC/1kSbSrJU
+         bRe0C+EmzE9IgOw0qnCoRl7786oGXvfoLyEBzzoAUnOdhmTXw4XILsdbu8HvcVdcxRuw
+         du+cRKrj6EqVLtSEFojXzbgAuyhdrFraee/L10M1eyIpQ7mlbHWQVoJJ5aU4+M8r4488
+         icfd3X9b6iR+wd1fbjN8oZTk/d94e0Y0Qruk95uiiFIDBGsLl1CNu9juKTM+zek7H1JX
+         aoaJWHIj8dfK/Rlp35Ji6CNdLDF0x4LazoNZPxYc3lQH4wlPeShlxeiSqeezo16lfKma
+         2vDQ==
+X-Gm-Message-State: AOAM531TMlmCImgwvUTJbWhDxE3T5/TJpTa0k8Osoeypiw2LTCz6okPB
+        2GC7Rg2mh8Jtq+Yr1g1fLRrev0wCKw==
+X-Google-Smtp-Source: ABdhPJwh8QvADQKYx6DPR/dSdi1tzGg9wqeQVW1DOYXcHRPN0dHNgQHiyPZiuCqDYB1s0/59ZXi2HQ==
+X-Received: by 2002:a05:6214:c2a:b0:440:f702:2195 with SMTP id a10-20020a0562140c2a00b00440f7022195mr10715396qvd.37.1647797869914;
+        Sun, 20 Mar 2022 10:37:49 -0700 (PDT)
+Received: from serve.minyard.net ([47.184.144.75])
+        by smtp.gmail.com with ESMTPSA id n8-20020ac85a08000000b002e06aa02021sm10151220qta.49.2022.03.20.10.37.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 20 Mar 2022 10:37:49 -0700 (PDT)
+Sender: Corey Minyard <tcminyard@gmail.com>
+Received: from minyard.net (unknown [IPv6:2001:470:b8f6:1b:299c:3142:517:f2da])
+        by serve.minyard.net (Postfix) with ESMTPSA id 58F3F180004;
+        Sun, 20 Mar 2022 17:37:48 +0000 (UTC)
+Date:   Sun, 20 Mar 2022 12:37:47 -0500
+From:   Corey Minyard <minyard@acm.org>
+To:     trix@redhat.com
+Cc:     nathan@kernel.org, ndesaulniers@google.com,
+        openipmi-developer@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Subject: Re: [PATCH] ipmi: initialize len variable
+Message-ID: <20220320173747.GH3457@minyard.net>
+Reply-To: minyard@acm.org
+References: <20220320135954.2258545-1-trix@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Server: rspamout05
-X-Rspamd-Queue-Id: 06E7A6000F
-X-Stat-Signature: kyhb7gnh49rf5g8afdop8akper1tfctj
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1+MWWQV3UpfM7ndNnHlITLS7MbzcF0w6oI=
-X-HE-Tag: 1647797782-48345
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220320135954.2258545-1-trix@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 2022-03-20 at 18:17 +0100, Sebastian Gottschall wrote:
-> Am 20.03.2022 um 17:48 schrieb John Crispin:
-> > 
-> > 
-> > On 20.03.22 16:20, trix@redhat.com wrote:
-> > > array[size] = { 0 };
-> > 
-> > should this not be array[size] = { }; ?!
-> > 
-> > If I recall correctly { 0 } will only set the first element of the 
-> > struct/array to 0 and leave random data in all others elements
-> > 
-> >     John
+On Sun, Mar 20, 2022 at 06:59:54AM -0700, trix@redhat.com wrote:
+> From: Tom Rix <trix@redhat.com>
 > 
-> You are right, john
+> Clang static analysis reports this issue
+> ipmi_ssif.c:1731:3: warning: 4th function call
+>   argument is an uninitialized value
+>   dev_info(&ssif_info->client->dev,
+>   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> 
+> The 4th parameter is the 'len' variable.
+> len is only set by a successful call to do_cmd().
+> Initialize to len 0.
 
-No.  The patch is fine.
+Thanks, it's queued for next release..
 
-Though generally the newer code in the kernel uses
+-corey
 
-	type dec[size] = {};
-
-to initialize stack arrays.
-
-array stack declarations not using 0
-
-$ git grep -P '^\t(?:\w++\s*){1,2}\[\s*\w+\s*\]\s*=\s*\{\s*\};' -- '*.c' | wc -l
-213
-
-array stack declarations using 0
-
-$ git grep -P '^\t(?:\w++\s*){1,2}\[\s*\w+\s*\]\s*=\s*\{\s*0\s*\};' -- '*.c' | wc -l
-776
-
-Refer to the c standard section on initialization 6.7.8 subsections 19 and 21
-
-19
-
-The initialization shall occur in initializer list order, each initializer provided for a
-particular subobject overriding any previously listed initializer for the same subobject
-all subobjects that are not initialized explicitly shall be initialized implicitly the same as
-objects that have static storage duration.
-
-...
-
-21
-
-If there are fewer initializers in a brace-enclosed list than there are elements or members
-of an aggregate, or fewer characters in a string literal used to initialize an array of known
-size than there are elements in the array, the remainder of the aggregate shall be
-initialized implicitly the same as objects that have static storage duration.
-
+> 
+> Signed-off-by: Tom Rix <trix@redhat.com>
+> ---
+>  drivers/char/ipmi/ipmi_ssif.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/char/ipmi/ipmi_ssif.c b/drivers/char/ipmi/ipmi_ssif.c
+> index ba779f1abb5b2..f199cc1948446 100644
+> --- a/drivers/char/ipmi/ipmi_ssif.c
+> +++ b/drivers/char/ipmi/ipmi_ssif.c
+> @@ -1625,7 +1625,7 @@ static int ssif_probe(struct i2c_client *client, const struct i2c_device_id *id)
+>  	unsigned char     *resp;
+>  	struct ssif_info   *ssif_info;
+>  	int               rv = 0;
+> -	int               len;
+> +	int               len = 0;
+>  	int               i;
+>  	u8		  slave_addr = 0;
+>  	struct ssif_addr_info *addr_info = NULL;
+> -- 
+> 2.26.3
+> 
