@@ -2,120 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF3D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 09:42:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FC2CC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 10:01:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243772AbiCTJni (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Mar 2022 05:43:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43170 "EHLO
+        id S243930AbiCTKCW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Mar 2022 06:02:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239506AbiCTJng (ORCPT
+        with ESMTP id S243865AbiCTKCL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Mar 2022 05:43:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F7749F84;
-        Sun, 20 Mar 2022 02:42:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5762B80DB3;
-        Sun, 20 Mar 2022 09:42:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BA43C340E9;
-        Sun, 20 Mar 2022 09:42:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647769331;
-        bh=m+CrXHcs1IMz031io+qrVwSLHQcIkDc2WgYRBJMoU5I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SJCZbu5FTyVw0taTsBz0vOAiE+XN0VdhH5f9jqSD6hhSETTg2crd9GcDC3tMqcq9O
-         crMsDdveov+dpqa5KsNJLxCkdzYtdp7u/knUnkWSQB5/SH5br4ZXr6A8qXBPIzV+tO
-         KWUXxmCuYOH1l1sRamcEmt9hNAeKvyKJxwDVxNN6NsUuJA0L8eBaJbsn7La85DMoyO
-         0Db5sSXyhbZImY+adn7DqnDhUscYF7vfYJpaJHXaM5juFox+JK+HtfpxPNJnv0x6HD
-         Z4VxOnPUYP3u3qSTQjlmiMBVwAk8ELMWyGsHzaTSSLDQx4PDHN9T2t17D9qLCdUYr4
-         2HSZAlJoKtZGw==
-Date:   Sun, 20 Mar 2022 10:42:05 +0100
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Tyrone Ting <warp5tw@gmail.com>
-Cc:     avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
-        yangyicong@hisilicon.com, semen.protsenko@linaro.org,
-        jie.deng@intel.com, sven@svenpeter.dev, bence98@sch.bme.hu,
-        lukas.bulwahn@gmail.com, arnd@arndb.de, olof@lixom.net,
-        andriy.shevchenko@linux.intel.com, tali.perry@nuvoton.com,
-        Avi.Fishman@nuvoton.com, tomer.maimon@nuvoton.com,
-        KWLIU@nuvoton.com, JJLIU0@nuvoton.com, kfting@nuvoton.com,
-        openbmc@lists.ozlabs.org, linux-i2c@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 01/11] arm: dts: add new property for NPCM i2c module
-Message-ID: <Yjb27Qbl8VRFZTkm@ninjato>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Tyrone Ting <warp5tw@gmail.com>, avifishman70@gmail.com,
-        tmaimon77@gmail.com, tali.perry1@gmail.com, venture@google.com,
-        yuenn@google.com, benjaminfair@google.com, robh+dt@kernel.org,
-        krzysztof.kozlowski@canonical.com, yangyicong@hisilicon.com,
-        semen.protsenko@linaro.org, jie.deng@intel.com, sven@svenpeter.dev,
-        bence98@sch.bme.hu, lukas.bulwahn@gmail.com, arnd@arndb.de,
-        olof@lixom.net, andriy.shevchenko@linux.intel.com,
-        tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
-        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
-        kfting@nuvoton.com, openbmc@lists.ozlabs.org,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220303083141.8742-1-warp5tw@gmail.com>
- <20220303083141.8742-2-warp5tw@gmail.com>
- <YjTrgia/VX6rBT1r@shikoro>
- <CACD3sJarf9jBny8ru0YihehT4C6k1pqw9Ln+5a+Rs6_F_o6=AQ@mail.gmail.com>
+        Sun, 20 Mar 2022 06:02:11 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A17B15C859
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 03:00:46 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id s72so5591086pgc.5
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 03:00:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=LTwzTKEFt9r8jP7uT4ZdrIfdQ5eoJtObC+eOqWqA/5k=;
+        b=pGYJdZ9JGUHqACE7Wo1kH1/4SWHusyLqh7vOs88kB/ANKRJiPeQWbuUhjbD/y+lnVS
+         tzzBzXC4gjRl2oNblmq4QK9ok+bnI36pHkw46g5IVLLdSJk8ccfuYLZCiJTs46ipMqiq
+         whF44sC6A5eYsxKBn3lv6fIAHXIVA6l5zpUqfYAhmydoKYeXij4Wy18gxdapmqF5cJEC
+         zqn0c3VP+A1csESD6B7Hll3y5atjP9mDBh2gtWUPpaEVVUiCU5+YvA6nahYNcPCxT9EB
+         hb+2In+w+wgu8SOjngBRLW8trCgmdyJUZuBaANabmmHtk9/hFB4RnxxJHTKcoMHR2obv
+         2Kbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=LTwzTKEFt9r8jP7uT4ZdrIfdQ5eoJtObC+eOqWqA/5k=;
+        b=tdFevm4BTrE3HjdDAn8s8dkX1eVMm5AJJMAkiZ/pfmLhEAxuHXQGovSaZcOVUOFDG2
+         l2EgbPDirjoXnv5GyUHZK+WLmXC1QcKIF97tpgXi5/snY56nRmLcgyhcKoS92gpdnjdi
+         Mti05RDHGChGRCEcASkcyRbRW+4/PZ8p7nuBB6ZfhS32/iTLi0RWHHLsN6fR47zXH3x0
+         OsMyccVAMDHabJAxzuJkmh+CH81/CbLba5nPeyqdC/6tskocmlB+6K3H/tqUBXHFpl/P
+         WzmJZZtJGC2sZgZaQCEIbiluVuHpkfC0pLbZVFDS2jvypGKQZFfasyb28FpAK66ZEKwW
+         N1aw==
+X-Gm-Message-State: AOAM531Nle1I901swhSrbwr9Dydnb8V0I/Tz8uWYcBHnJ10dimrcGbUT
+        M6yEeJIIb4ZSrKpUKLmu7Yk=
+X-Google-Smtp-Source: ABdhPJzzhsB8eVdLU3zpBDUoZRQHw/S92XAe2joj9yAUpwvC832u0plQ2lx9rIoKi1jxE6IL1aJNkA==
+X-Received: by 2002:a05:6a00:3316:b0:4fa:80fd:f3f6 with SMTP id cq22-20020a056a00331600b004fa80fdf3f6mr6014005pfb.65.1647770446175;
+        Sun, 20 Mar 2022 03:00:46 -0700 (PDT)
+Received: from guoguo-omen.lan ([2001:250:3000:7000:7978:d40d:86ff:591d])
+        by smtp.gmail.com with ESMTPSA id m11-20020a056a00080b00b004f791d0115esm16597810pfk.171.2022.03.20.03.00.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 20 Mar 2022 03:00:45 -0700 (PDT)
+From:   Chuanhong Guo <gch981213@gmail.com>
+To:     linux-mtd@lists.infradead.org
+Cc:     Chuanhong Guo <gch981213@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Reto Schneider <reto.schneider@husqvarnagroup.com>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>,
+        Stefan Roese <sr@denx.de>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH 2/5] mtd: spinand: gigadevice: add support for GD5FxGQ4xExxG
+Date:   Sun, 20 Mar 2022 17:59:58 +0800
+Message-Id: <20220320100001.247905-3-gch981213@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220320100001.247905-1-gch981213@gmail.com>
+References: <20220320100001.247905-1-gch981213@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="zy3zYHWxJ9cmIO3t"
-Content-Disposition: inline
-In-Reply-To: <CACD3sJarf9jBny8ru0YihehT4C6k1pqw9Ln+5a+Rs6_F_o6=AQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add support for:
+ GD5F1GQ4RExxG
+ GD5F2GQ4{U,R}ExxG
 
---zy3zYHWxJ9cmIO3t
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+These chips differ from GD5F1GQ4UExxG only in chip ID, voltage
+and capacity.
 
-Hi Tyrone,
+Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
+---
+ drivers/mtd/nand/spi/gigadevice.c | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-> There are still some discussions for the patch V4 and it might take
-> some time though.
+diff --git a/drivers/mtd/nand/spi/gigadevice.c b/drivers/mtd/nand/spi/gigadevice.c
+index da77ab20296e..85a61d3d8467 100644
+--- a/drivers/mtd/nand/spi/gigadevice.c
++++ b/drivers/mtd/nand/spi/gigadevice.c
+@@ -333,6 +333,36 @@ static const struct spinand_info gigadevice_spinand_table[] = {
+ 		     SPINAND_HAS_QE_BIT,
+ 		     SPINAND_ECCINFO(&gd5fxgqx_variant2_ooblayout,
+ 				     gd5fxgq4uexxg_ecc_get_status)),
++	SPINAND_INFO("GD5F1GQ4RExxG",
++		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_ADDR, 0xc1),
++		     NAND_MEMORG(1, 2048, 128, 64, 1024, 20, 1, 1, 1),
++		     NAND_ECCREQ(8, 512),
++		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
++					      &write_cache_variants,
++					      &update_cache_variants),
++		     SPINAND_HAS_QE_BIT,
++		     SPINAND_ECCINFO(&gd5fxgqx_variant2_ooblayout,
++				     gd5fxgq4uexxg_ecc_get_status)),
++	SPINAND_INFO("GD5F2GQ4UExxG",
++		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_ADDR, 0xd2),
++		     NAND_MEMORG(1, 2048, 128, 64, 2048, 40, 1, 1, 1),
++		     NAND_ECCREQ(8, 512),
++		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
++					      &write_cache_variants,
++					      &update_cache_variants),
++		     SPINAND_HAS_QE_BIT,
++		     SPINAND_ECCINFO(&gd5fxgqx_variant2_ooblayout,
++				     gd5fxgq4uexxg_ecc_get_status)),
++	SPINAND_INFO("GD5F2GQ4RExxG",
++		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_ADDR, 0xc2),
++		     NAND_MEMORG(1, 2048, 128, 64, 2048, 40, 1, 1, 1),
++		     NAND_ECCREQ(8, 512),
++		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
++					      &write_cache_variants,
++					      &update_cache_variants),
++		     SPINAND_HAS_QE_BIT,
++		     SPINAND_ECCINFO(&gd5fxgqx_variant2_ooblayout,
++				     gd5fxgq4uexxg_ecc_get_status)),
+ 	SPINAND_INFO("GD5F1GQ4UFxxG",
+ 		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE, 0xb1, 0x48),
+ 		     NAND_MEMORG(1, 2048, 128, 64, 1024, 20, 1, 1, 1),
+-- 
+2.35.1
 
-Take your time, I am not in a hurry. Just wanted to outline the best
-process so it will be easier to apply the new version.
-
-> Yes, the dts patch could be submitted via arm-soc.
-
-Great.
-
-> I really appreciate your comments.
-
-Thank you and happy hacking,
-
-   Wolfram
-
-
---zy3zYHWxJ9cmIO3t
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmI29u0ACgkQFA3kzBSg
-KbYWaQ/+OmWLzRVx0uITX7+yRTH8JlxcvGXr/kxT3kHYYKURJbJQLUDXrLgAasbq
-Yaf+7x9LECjsNF2zpr6ndF/pxvClrDmVdH7MMjjXrpMVgcFFQiJFufMkDDURtT+w
-ed7maEfDwwk1gjnrgZfmIKONhnrw0PwOxu+W+5N+gT7cX/i6/cmm4k9OMV18VJLs
-hMhz/DXuYFwqj/NKrDbQSqeRp9hPmNWXMWHWBaJARZOL6rB7/uLwM2JvJOJl/1gS
-X5upnQGJIBQs9LQ8TKFZqBHLb6HUBi4YE/EKGfVsAmJh48TdaIe4ava7X1ec41wc
-MBKW64Q5Hqmh85pSZLwTqkbhS/4xFIDUClPuV3ED8RzOdVWD9EMc3ubXrxYppEU1
-dTsp76kgMJjVoa17zizzMx2dvvceuonI0QPZvltb/qoWWeGrPt6HS5Lr+GzMtQ+e
-6tuIcmCxQnbIPVNvsXAO+ISzw4g07AEJTHD7azy3PMVRoo6YBajHiwWbRC9Q6+Iw
-H1BYlsOIvrVrYyydfN1gnxycbnwGDVu3ZVy+CCwIAeU4QLzHW+HobLHQg+U76wOr
-sz/KN/t+7XzP3bHUiLI9DjBP/PLxs5A2fJqNMZi8MiOH6WGAFPOJ+cP4GRN5F4Hk
-1xyPmSk+WQHr33vieTjYoG3hIAuMvJQPvbyyVAsl8rT0o/3/Ic4=
-=7k8X
------END PGP SIGNATURE-----
-
---zy3zYHWxJ9cmIO3t--
