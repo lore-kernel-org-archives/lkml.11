@@ -2,110 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 064E6C4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 21:30:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91801C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 21:48:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343748AbiCTVbr (ORCPT
+        id S1343750AbiCTVt5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Mar 2022 17:31:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57194 "EHLO
+        Sun, 20 Mar 2022 17:49:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236574AbiCTVbp (ORCPT
+        with ESMTP id S235433AbiCTVtv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Mar 2022 17:31:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30B233819D;
-        Sun, 20 Mar 2022 14:30:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Sun, 20 Mar 2022 17:49:51 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E904344E4;
+        Sun, 20 Mar 2022 14:48:25 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CEF69B80EFA;
-        Sun, 20 Mar 2022 21:30:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 996A3C340E9;
-        Sun, 20 Mar 2022 21:30:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647811818;
-        bh=tTXsRvXcOgBE9bkryBEz2qKjZqFOG8apagVn9U/uti0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=p3XF6opLAITbuzC6qPWYfipEKm/uQr/7rBFwWLFBwnrqPVlc4t1suLbbQU3nDKoQz
-         Vt/UhFCvJs8KCgIq+j9X68rMLv48PO5LS8XUDHxEPCRFoK/q3pqFpKnCmRdzv1TwSY
-         rgFf3mCujGbriNThhNRY/4yE8Obdxg4MBzEEQHbzFJ366yxzohQnnQqbhFzxziYfFN
-         5jle4eIxmZtag+2HXRCLHQ7D/4b9u1p8Jck87YEYb+cunlYAn1R2HCKkCUN/ftVyLL
-         k/gAnAma91++7ccEszyF0PvfCuinT1joWPi7wpyoJf+7xQHOUWeBucleeQyAfhlW7F
-         W178jPJ4zAWRg==
-Date:   Sun, 20 Mar 2022 23:31:19 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Nayna <nayna@linux.vnet.ibm.com>
-Cc:     Nageswara Sastry <rnsastry@linux.ibm.com>,
-        Nayna Jain <nayna@linux.ibm.com>,
-        linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
-        dhowells@redhat.com, zohar@linux.ibm.com,
-        linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dimitri.ledkov@canonical.com,
-        seth@forshee.me, Masahiro Yamada <masahiroy@kernel.org>
-Subject: Re: [PATCH v11 0/4] integrity: support including firmware
- ".platform" keys at build time
-Message-ID: <YjedJxNNv8KifAKd@kernel.org>
-References: <20220310214450.676505-1-nayna@linux.ibm.com>
- <4afae87c-2986-6b0e-07be-954dd4937afd@linux.ibm.com>
- <f78d11fefd13bd17748e36621acee9c2f27a77f6.camel@kernel.org>
- <f92ec4d8-47c0-ece5-3c52-caeb8265881c@linux.vnet.ibm.com>
- <YjLlYTs+2ep80zoK@iki.fi>
- <57d7034a-fb5c-444e-a709-4f993459688e@linux.vnet.ibm.com>
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KMBFg5dwzz4xNq;
+        Mon, 21 Mar 2022 08:48:23 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1647812903;
+        bh=HoPeXE78L27hjnpG3H5ey77XtOD5evIdjLZRv91A+1c=;
+        h=Date:From:To:Subject:From;
+        b=gFgJ7ms2DGk8ueVlsyOTypXAdJvujq94KHPbWMIY0hHtVUSkMNUHr0a95qc/q5OeA
+         L7R2RjP0RAsu2cZbjNhLQchBjICzTbARx9CDiICFRzAXWI82H20/7Vk7Ctr1w2kKOM
+         UocYgxNew38H02S1w4w7hajKhpoGsiuI7rokweI8b+g9FzdWvEadbvmNV0qmjxhGUu
+         kYZhJrTCpaMn2bUR/eDHuQ1ViK8XMcwGU5Q+D/5EZTeZ/nl/q9cl/H16vWskaMJSPT
+         r7/E3BK0KZ79qFfw3AIBPmYKmEJzSsehaoosJbKqDH4eXrc5/mAslPwyUFZDOLewYB
+         ks/gWfg87HRyQ==
+Date:   Mon, 21 Mar 2022 08:48:23 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: the merge window is open
+Message-ID: <20220321084823.6911700b@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <57d7034a-fb5c-444e-a709-4f993459688e@linux.vnet.ibm.com>
+Content-Type: multipart/signed; boundary="Sig_/Q2YO=GGGLlaNaZ6EN3k3Wk/";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 05:25:07PM -0400, Nayna wrote:
-> 
-> On 3/17/22 03:38, Jarkko Sakkinen wrote:
-> > On Fri, Mar 11, 2022 at 04:03:12PM -0500, Nayna wrote:
-> > > On 3/11/22 11:42, Jarkko Sakkinen wrote:
-> > > > ".platform" keyring.
-> > > > > > Changelog:
-> > > > > > v11:
-> > > > > > * Added a new patch to conditionally build extract-cert if
-> > > > > > PLATFORM_KEYRING is enabled.
-> > > > > > 
-> > > > > Tested the following four patches with and with out setting
-> > > > > CONFIG_INTEGRITY_PLATFORM_KEYS
-> > > > > 
-> > > > > Tested-by: Nageswara R Sastry <rnsastry@linux.ibm.com>
-> > > > OK, I added it:
-> > > > 
-> > > > git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git
-> > > Thanks Jarkko. Masahiro Yamada would prefer to revert the original commit
-> > > 340a02535ee785c64c62a9c45706597a0139e972 i.e. move extract-cert back to the
-> > > scripts/ directory.
-> > > 
-> > > I am just posting v12 which includes Masahiro feedback. Nageswara has
-> > > already tested v12 version as well.
-> > > 
-> > > I am fine either way 1.) Adding v11 and then separately handling of
-> > > reverting of the commit or 2.) Adding v12 version which includes the revert.
-> > > I leave the decision on you as to which one to upstream.
-> > > 
-> > > Thanks & Regards,
-> > > 
-> > >      - Nayna
-> > > 
-> > I already sent PR for v5.18. Too many late changes to include this, which
-> > means that v12 is the way to go.
-> 
-> Assuming v12 looks good, could you please queue it now ?
-> 
-> Thanks & Regards,
-> 
->     - Nayna
-> 
+--Sig_/Q2YO=GGGLlaNaZ6EN3k3Wk/
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Unfortunately, I've already sent my v5.18 PR over a week ago. I can put it
-to my queue but I think it is lacking some of the tested by tags, doesn't
-it?
+Hi all,
 
-BR, Jarkko
+Please do not add any v5.19 material to your linux-next included trees
+until after the merge window closes i.e. after v5.18-rc1 has been
+released.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/Q2YO=GGGLlaNaZ6EN3k3Wk/
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmI3oScACgkQAVBC80lX
+0GwXfQf+JMYj7z3e41/HMwUpf3xuCDgEhhKJ25uX0ePXQNZ1DLyOKcJFZ65XPYcE
+7hRH7pu8xp875fXrMcfruSjin/hCqApcdVkQMBN8dNzlqSxQboYY7WK3n8psE79l
+TDTuUm9dqS6ppZLIOuV5jD+eFCKe6ZHgSaK3mSUhNYS2M/f+kXjnWcSPhLJfat8z
+Gk9olm9udDBGgOnzUsXw0Lf3YmVLuZoevoEV3g3DzjSImRnzJNEFDyF3v7KoPD/o
+gGv7MKofGtKGuSnJyo65xccECmmIleYQ4HidpDKJxGfx1KA7RLVMeYN3ywAA24xs
+N76oM8o6Rki0OzprHR7oJACNpobQMg==
+=Z0/p
+-----END PGP SIGNATURE-----
+
+--Sig_/Q2YO=GGGLlaNaZ6EN3k3Wk/--
