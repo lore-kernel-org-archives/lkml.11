@@ -2,69 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D03B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 17:03:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AB34C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 17:03:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245658AbiCTREj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Mar 2022 13:04:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53558 "EHLO
+        id S245667AbiCTRE5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Mar 2022 13:04:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232243AbiCTREc (ORCPT
+        with ESMTP id S245663AbiCTRE4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Mar 2022 13:04:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B873F1FA7E;
-        Sun, 20 Mar 2022 10:03:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 692EDB80EE2;
-        Sun, 20 Mar 2022 17:03:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0F9EDC340E9;
-        Sun, 20 Mar 2022 17:03:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647795786;
-        bh=9AmvE5hEiIBpp8GNVJY9fDhWzUV+6Y8RvMvAHJqsbqI=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=uLn9g4MGqxLoewENTjUeFf597KmTgJy+khs60CNc4OsYGVXiWlrPY74EP0S5BSZ8W
-         LJWN6JP+Lf+EBIPjB1L0ztYEGqh1on/akye3h7xkzuxx75y59486IySLBuhEHJnom6
-         wjt+cb82CYmeoxrfjGpUNFSM/Lkht4H1cTvix0j/ZAX2Hbx9yFBRyVPy1aVyj/GS4P
-         z6a3aCd3WHaUcQiO0AfUyaN+AyxkFKAFQCMfTV0Xcc0vpSpyTr+PEEpXvB0I1MSVoH
-         gQ1U3/ek7/GomHUJ+/oUt3furl+vbwSxU56WyfSKauDOaLqUtzopS1qZyld/oH8MFE
-         IBN3Srt1NyJCw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EEAFEE73C2D;
-        Sun, 20 Mar 2022 17:03:05 +0000 (UTC)
-Subject: Re: [GIT PULL] KVM/SLS change for 5.17 final
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220320140731.95666-1-pbonzini@redhat.com>
-References: <20220320140731.95666-1-pbonzini@redhat.com>
-X-PR-Tracked-List-Id: <kvm.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220320140731.95666-1-pbonzini@redhat.com>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/virt/kvm/kvm.git tags/for-linus-5.17
-X-PR-Tracked-Commit-Id: fe83f5eae432ccc8e90082d6ed506d5233547473
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 7445b2dcd77ae8385bd08bb6c2db20ea0cfa6230
-Message-Id: <164779578596.15217.13004200325030149710.pr-tracker-bot@kernel.org>
-Date:   Sun, 20 Mar 2022 17:03:05 +0000
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     torvalds@linux-foundation.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>
+        Sun, 20 Mar 2022 13:04:56 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BFB64C40F
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 10:03:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647795812; x=1679331812;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=4KLxCogkaJgL1I4Qp9As2MeVvJ0l1Sntjslo9WZHLMA=;
+  b=WBlHF88RwBg87Mqb7n9J5gyZARSTRgVPUj/+1JR02XKQAYh1Nnl7kZco
+   5BXoEVF5bM3ywl2HA2EdoXVMQcW0BAhp1UkCCA8ZxUsJpDIUn4q3z4fZj
+   ZaD0Y0FkOzVtc65u+77n5FchjbuGjTgTsxjcDAMuLpg7UZOvTc8RO7F1n
+   LMFZmwUgCDe7c5OrNOGumDQieT912GmDbeFycCqGoN1+QC1mGHkrsMxe0
+   jQ6IN89C21Thd5m9qWt9abj3h70ZjNurcCHSmLLznMLZZm7WC9gxKbws/
+   SG38+6TGGp5pZ2ZS41oomkoNWxXkdiQ4hWXterF8bb0a7n3dWoQL8KihZ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10292"; a="343844027"
+X-IronPort-AV: E=Sophos;i="5.90,195,1643702400"; 
+   d="scan'208";a="343844027"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2022 10:03:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,195,1643702400"; 
+   d="scan'208";a="823848173"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by fmsmga005.fm.intel.com with ESMTP; 20 Mar 2022 10:03:31 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nVyxm-000H6P-FY; Sun, 20 Mar 2022 17:03:30 +0000
+Date:   Mon, 21 Mar 2022 01:03:24 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [ardb:efi-psci 2/2] drivers/firmware/psci/psci.c:152:2: warning:
+ unannotated fall-through between switch labels
+Message-ID: <202203210042.UJZ5llHd-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sun, 20 Mar 2022 15:07:31 +0100:
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git efi-psci
+head:   4b8d4b95fbd43459a4b0ae3f9020a912f7621884
+commit: 4b8d4b95fbd43459a4b0ae3f9020a912f7621884 [2/2] efi: arm: implement PSCI method backed by EFI runtime code
+config: arm64-randconfig-r022-20220320 (https://download.01.org/0day-ci/archive/20220321/202203210042.UJZ5llHd-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 85e9b2687a13d1908aa86d1b89c5ce398a06cd39)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/commit/?id=4b8d4b95fbd43459a4b0ae3f9020a912f7621884
+        git remote add ardb git://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git
+        git fetch --no-tags ardb efi-psci
+        git checkout 4b8d4b95fbd43459a4b0ae3f9020a912f7621884
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/firmware/psci/
 
-> https://git.kernel.org/pub/scm/virt/kvm/kvm.git tags/for-linus-5.17
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/7445b2dcd77ae8385bd08bb6c2db20ea0cfa6230
+All warnings (new ones prefixed by >>):
 
-Thank you!
+>> drivers/firmware/psci/psci.c:152:2: warning: unannotated fall-through between switch labels [-Wimplicit-fallthrough]
+           default:
+           ^
+   drivers/firmware/psci/psci.c:152:2: note: insert '__attribute__((fallthrough));' to silence this warning
+           default:
+           ^
+           __attribute__((fallthrough)); 
+   drivers/firmware/psci/psci.c:152:2: note: insert 'break;' to avoid fall-through
+           default:
+           ^
+           break; 
+   drivers/firmware/psci/psci.c:94:20: warning: unused function 'psci_power_state_loses_context' [-Wunused-function]
+   static inline bool psci_power_state_loses_context(u32 state)
+                      ^
+   2 warnings generated.
+
+
+vim +152 drivers/firmware/psci/psci.c
+
+   131	
+   132	static unsigned long __invoke_psci_fn_efi(unsigned long function_id,
+   133				unsigned long arg0, unsigned long arg1,
+   134				unsigned long arg2)
+   135	{
+   136		unsigned long flags, ret;
+   137	
+   138		switch (function_id) {
+   139		case PSCI_0_2_FN_PSCI_VERSION:
+   140			return PSCI_VERSION(0, 2);
+   141		case PSCI_0_2_FN_MIGRATE_INFO_TYPE:
+   142			return PSCI_0_2_TOS_MP;
+   143		case PSCI_0_2_FN_CPU_SUSPEND:
+   144		case PSCI_0_2_FN_CPU_OFF:
+   145		case PSCI_0_2_FN_CPU_ON:
+   146		case PSCI_0_2_FN_AFFINITY_INFO:
+   147		case PSCI_0_2_FN64_CPU_SUSPEND:
+   148		case PSCI_0_2_FN64_CPU_ON:
+   149		case PSCI_0_2_FN64_AFFINITY_INFO:
+   150			if (WARN_ON_ONCE(!efi_psci.psci_handler ||
+   151					 !efi_enabled(EFI_RUNTIME_SERVICES)))
+ > 152		default:
+   153				return PSCI_RET_NOT_SUPPORTED;
+   154			break;
+   155		}
+   156	
+   157		raw_local_irq_save(flags);
+   158		efi_set_pgd(&efi_mm);
+   159	
+   160		ret = efi_psci.psci_handler(function_id, arg0, arg1, arg2);
+   161	
+   162		efi_set_pgd(current->active_mm);
+   163		raw_local_irq_restore(flags);
+   164	
+   165		return ret;
+   166	}
+   167	
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+0-DAY CI Kernel Test Service
+https://01.org/lkp
