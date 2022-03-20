@@ -2,74 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00457C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 15:33:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B06EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 15:34:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245329AbiCTPee (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Mar 2022 11:34:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34622 "EHLO
+        id S245381AbiCTPfj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Mar 2022 11:35:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235517AbiCTPeb (ORCPT
+        with ESMTP id S233295AbiCTPfi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Mar 2022 11:34:31 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C86181CB1E
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 08:33:07 -0700 (PDT)
-Received: by mail-il1-f197.google.com with SMTP id s14-20020a056e021a0e00b002c7c03a5d81so6416212ild.9
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 08:33:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=MIhvRryijrTzJR8twQ1HqBta+GyTfRS9hVvbodg7+Pw=;
-        b=TuvOPLA/CDOHRcmZhHP5u2ARVIn5gwmqJjYREqjQq6rdK6zXH5aMc0w/hqoP0Z3YUQ
-         BItb3JyiVyhFEht/OGkPMhsUrs1xzoUFQCGIXKQmsghzaKVo70QsPJKWB3YKNoTPIB/B
-         eEDVpiAsKiGRupnR4Jihb/VUJ64ESmC5nK8f4INyjG6cj6JnKXbFrduVtlJc20NvyeaP
-         BwDN3KFpO0HOAo0z7urwQB1NXg/0+HJqaloHSbhQ6tk+0/KucdlBO0mAgbAdDGYp4bgc
-         tuAmCU6yc0wZwuZdtNTPiwn+oaXX5T/1gK6QJjoie/mqBplZQ+vD6skaDGYoYYjGGKUD
-         z3vQ==
-X-Gm-Message-State: AOAM530z8E1KpCqNVs1xNI9yR5oCfHFg6oRl2VIn9rZYYwK2F9I3+U88
-        0uXSyulwNdFBrTvfhJCqZZjuhEt9zDAVZ1DJxRYEnmLfmREi
-X-Google-Smtp-Source: ABdhPJzqSo43we9ySOJWMo+7EZIm5ZoV9Z81zrjpsC0WvsLPo7j5HPGjquoRJXHc1QVgGqyFHExy7nvak8ozzrAL+QCt4GTIMkhR
+        Sun, 20 Mar 2022 11:35:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB49D3207E;
+        Sun, 20 Mar 2022 08:34:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E92461171;
+        Sun, 20 Mar 2022 15:34:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F209C340EE;
+        Sun, 20 Mar 2022 15:34:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647790453;
+        bh=clyv+Cf8jIhp2zt7N+bu2NWuiZjPaJMzWpNWJYGHg9s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Zs/t4WHY6YYQiktm3bIPZ+6alFrHOgBWbNOeDat/vTrCzJ8WkKDTcTY9jz8eyU9nm
+         xG65YHyNCgk6ZBjtr/aYWLOpydl0BSIWndO0NB64XMR5klzghpfcNlsOMJiRSqLi9Y
+         /OCnyb5uLQx243r3dSzJPMujluyUEgctpZOvjToBBe+ewy8DzTSHmpTo4IW8DvNaP9
+         8eYC1dRyIGLr5J+hSir/ecGSXALmbiKDl8TAy1O4SpuYtO5lrORmSh7uBmFQRWG/FN
+         GuHtkWO75xG+Uh0em3s1r+/pTp5Fw+zbE3YSLyOBayjETNx+Ps0VDCLJ0SxVCFYIY0
+         kFtRUUUq5l+AA==
+Date:   Sun, 20 Mar 2022 15:41:39 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     "Sa, Nuno" <Nuno.Sa@analog.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v1 1/1] iio: dac: ltc2688: Use temporary variable for
+ struct device
+Message-ID: <20220320154139.104b07f2@jic23-huawei>
+In-Reply-To: <PH0PR03MB678602F6E1B491B2A882BC7C99049@PH0PR03MB6786.namprd03.prod.outlook.com>
+References: <20220302153142.52743-1-andriy.shevchenko@linux.intel.com>
+        <PH0PR03MB678602F6E1B491B2A882BC7C99049@PH0PR03MB6786.namprd03.prod.outlook.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1a69:b0:2c8:115b:c614 with SMTP id
- w9-20020a056e021a6900b002c8115bc614mr3010781ilv.61.1647790387202; Sun, 20 Mar
- 2022 08:33:07 -0700 (PDT)
-Date:   Sun, 20 Mar 2022 08:33:07 -0700
-In-Reply-To: <20220320152154.2662-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b1939b05daa81821@google.com>
-Subject: Re: [syzbot] INFO: rcu detected stall in gc_worker (3)
-From:   syzbot <syzbot+eec403943a2a2455adaa@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Thu, 3 Mar 2022 13:34:00 +0000
+"Sa, Nuno" <Nuno.Sa@analog.com> wrote:
 
-syzbot has tested the proposed patch but the reproducer is still triggering an issue:
-INFO: rcu detected stall in corrupted
+> > From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > Sent: Wednesday, March 2, 2022 4:32 PM
+> > To: Sa, Nuno <Nuno.Sa@analog.com>; Andy Shevchenko
+> > <andriy.shevchenko@linux.intel.com>; linux-iio@vger.kernel.org;
+> > linux-kernel@vger.kernel.org
+> > Cc: Jonathan Cameron <jic23@kernel.org>; Lars-Peter Clausen
+> > <lars@metafoo.de>
+> > Subject: [PATCH v1 1/1] iio: dac: ltc2688: Use temporary variable for
+> > struct device
+> >=20
+> > [External]
+> >=20
+> > Use temporary variable for struct device to make code neater.
+> >=20
+> > Signed-off-by: Andy Shevchenko
+> > <andriy.shevchenko@linux.intel.com>
+> > --- =20
+>=20
+> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+Applied to the togreg branch of iio.git but I'll be rebaseing that
+on rc1 so for now just pushed out as testing so 0-day can take
+a look at it.
 
-rcu: INFO: rcu_preempt detected expedited stalls on CPUs/tasks: { 1-... } 2642 jiffies s: 2057 root: 0x2/.
-rcu: blocking rcu_node structures (internal RCU debug):
-Task dump for CPU 1:
-task:syz-executor212 state:R  running task     stack:26424 pid: 4080 ppid:  4063 flags:0x0000000e
-Call Trace:
- <TASK>
- </TASK>
+Thanks,
 
+Jonathan
 
-Tested on:
-
-commit:         91265a6d Add linux-next specific files for 20220303
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/
-console output: https://syzkaller.appspot.com/x/log.txt?x=13f1becb700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=617f79440a35673a
-dashboard link: https://syzkaller.appspot.com/bug?extid=eec403943a2a2455adaa
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=11d0caeb700000
+>=20
+> >  drivers/iio/dac/ltc2688.c | 19 +++++++++----------
+> >  1 file changed, 9 insertions(+), 10 deletions(-)
+> >=20
+> > diff --git a/drivers/iio/dac/ltc2688.c b/drivers/iio/dac/ltc2688.c
+> > index e41861d29767..d249fa28202c 100644
+> > --- a/drivers/iio/dac/ltc2688.c
+> > +++ b/drivers/iio/dac/ltc2688.c
+> > @@ -703,21 +703,20 @@ static int ltc2688_tgp_clk_setup(struct
+> > ltc2688_state *st,
+> >  				 struct ltc2688_chan *chan,
+> >  				 struct fwnode_handle *node, int tgp)
+> >  {
+> > +	struct device *dev =3D &st->spi->dev;
+> >  	unsigned long rate;
+> >  	struct clk *clk;
+> >  	int ret, f;
+> >=20
+> > -	clk =3D devm_get_clk_from_child(&st->spi->dev,
+> > to_of_node(node), NULL);
+> > +	clk =3D devm_get_clk_from_child(dev, to_of_node(node),
+> > NULL);
+> >  	if (IS_ERR(clk))
+> > -		return dev_err_probe(&st->spi->dev, PTR_ERR(clk),
+> > -				     "failed to get tgp clk.\n");
+> > +		return dev_err_probe(dev, PTR_ERR(clk), "failed to get
+> > tgp clk.\n");
+> >=20
+> >  	ret =3D clk_prepare_enable(clk);
+> >  	if (ret)
+> > -		return dev_err_probe(&st->spi->dev, ret,
+> > -				     "failed to enable tgp clk.\n");
+> > +		return dev_err_probe(dev, ret, "failed to enable tgp
+> > clk.\n");
+> >=20
+> > -	ret =3D devm_add_action_or_reset(&st->spi->dev,
+> > ltc2688_clk_disable, clk);
+> > +	ret =3D devm_add_action_or_reset(dev, ltc2688_clk_disable,
+> > clk);
+> >  	if (ret)
+> >  		return ret;
+> >=20
+> > @@ -858,6 +857,7 @@ static int ltc2688_channel_config(struct
+> > ltc2688_state *st)
+> >=20
+> >  static int ltc2688_setup(struct ltc2688_state *st, struct regulator *v=
+ref)
+> >  {
+> > +	struct device *dev =3D &st->spi->dev;
+> >  	struct gpio_desc *gpio;
+> >  	int ret;
+> >=20
+> > @@ -865,10 +865,9 @@ static int ltc2688_setup(struct ltc2688_state
+> > *st, struct regulator *vref)
+> >  	 * If we have a reset pin, use that to reset the board, If not, use
+> >  	 * the reset bit.
+> >  	 */
+> > -	gpio =3D devm_gpiod_get_optional(&st->spi->dev, "clr",
+> > GPIOD_OUT_HIGH);
+> > +	gpio =3D devm_gpiod_get_optional(dev, "clr",
+> > GPIOD_OUT_HIGH);
+> >  	if (IS_ERR(gpio))
+> > -		return dev_err_probe(&st->spi->dev, PTR_ERR(gpio),
+> > -				     "Failed to get reset gpio");
+> > +		return dev_err_probe(dev, PTR_ERR(gpio), "Failed to
+> > get reset gpio");
+> >  	if (gpio) {
+> >  		usleep_range(1000, 1200);
+> >  		/* bring device out of reset */
+> > @@ -887,7 +886,7 @@ static int ltc2688_setup(struct ltc2688_state *st,
+> > struct regulator *vref)
+> >  	 * Duplicate the default channel configuration as it can change
+> > during
+> >  	 * @ltc2688_channel_config()
+> >  	 */
+> > -	st->iio_chan =3D devm_kmemdup(&st->spi->dev,
+> > ltc2688_channels,
+> > +	st->iio_chan =3D devm_kmemdup(dev, ltc2688_channels,
+> >  				    sizeof(ltc2688_channels),
+> > GFP_KERNEL);
+> >  	if (!st->iio_chan)
+> >  		return -ENOMEM;
+> > --
+> > 2.34.1 =20
+>=20
 
