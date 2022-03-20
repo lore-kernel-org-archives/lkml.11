@@ -2,97 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 479C2C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 13:25:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88F08C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 13:28:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245164AbiCTN0d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Mar 2022 09:26:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52930 "EHLO
+        id S245170AbiCTN3d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Mar 2022 09:29:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235524AbiCTN0b (ORCPT
+        with ESMTP id S232852AbiCTN33 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Mar 2022 09:26:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DE823FDB5;
-        Sun, 20 Mar 2022 06:25:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EEF3D610A3;
-        Sun, 20 Mar 2022 13:25:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9258AC340F2;
-        Sun, 20 Mar 2022 13:25:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647782707;
-        bh=HrB34Tu2zfRgzLPUpdgGO6lDIFScGxCJvI1REvQYs+4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=I/Fyb/B+R04dTO+VFmPdHgppdiy1mudWW0VcOBHgH/52uLcW2sVg4fS4y1G3EzN+w
-         6kzYb5ENxh4e2aYbzyAgy5ZiX14dFr4BA52lhmSA4CDBcMrKS/zIpxSrZIhgLC6Ggr
-         G3+DfXfuD2CzlTF8B7raXVv0ve8hQBDpxAbHGNHMVb/M2YccPKFiwTRs6W8IlKqXnK
-         ORfFR2VlykbHGA8MoVjsFdXbunKzUNmpZDNyOnHXtIk9JTvqzHRSE8mEzz+hhNNZyM
-         OiJevBrm6roj7JqSfZeOCl4dKKELbSJ7oZprc6a5v4jr5urPTrImQLLp943rk7M00C
-         4USHYp2VfpqAw==
-Date:   Sun, 20 Mar 2022 13:32:29 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Cixi Geng <gengcixi@gmail.com>
-Cc:     lars@metafoo.de, robh+dt@kernel.org, orsonzhai@gmail.com,
-        baolin.wang7@gmail.com, zhang.lyra@gmail.com, lgirdwood@gmail.com,
-        broonie@kernel.org, yuming.zhu1@unisoc.com,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V2 2/7] iio: adc: sc27xx: fix read big scale voltage not
- right
-Message-ID: <20220320133229.6026f51a@jic23-huawei>
-In-Reply-To: <20220311164628.378849-3-gengcixi@gmail.com>
-References: <20220311164628.378849-1-gengcixi@gmail.com>
-        <20220311164628.378849-3-gengcixi@gmail.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sun, 20 Mar 2022 09:29:29 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD2723616E;
+        Sun, 20 Mar 2022 06:28:05 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id bg10so25215272ejb.4;
+        Sun, 20 Mar 2022 06:28:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uiBW7PV/e0GMuTNf+xkw95IZotR/0iKHdVHb0o8XkmA=;
+        b=kKVxjroK3JDqnoUjmvhKFWRth7Fh8vLmM1kvG9dkEKBWJuaBEvSefvupl7IzEpG+BO
+         +e9gLlbNmAk/FtnbcEC70KxQvgTi5MUcf0QbsJXW8e85mgjpIVu9GJ8LQBDmSi5jn4Bp
+         OU7xuEqMNhQT7kbmlWdnDPlNaXuUFm44JZ64zd0fPPoLpQ4VNqXvCo1Doaq7kkUqCaEr
+         lNJrRULOPgI7Q3NJ7NrSgg7MzO1lnzV01e5v8A2+HC5N+dWYWFiyBQKiOyVzYZr4fHSv
+         xi9zc7fM796zTPsfd2G7loXUGPr0kgU2TMBpkeRIK+l/uwrzOSK5op5CmOm3p+v0veBA
+         ca0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uiBW7PV/e0GMuTNf+xkw95IZotR/0iKHdVHb0o8XkmA=;
+        b=CuX1BankhI14M2KQWAaozlBxMMOuP9KVsN676zhwvZe5YEM9sevkzg0QUFg5YUBd1M
+         R3rOQYUGqmjkz4vfvbLOB1oNtYebq7BZNaOfgOPgeO7eLiVtytN8UeZW8c8mWzwgmwBd
+         elchat35eJ6eWiRDNREY2ks6rU5GUdIgxX4UJZeVqTX7Owan2h/bfn43y629gK0sIuCk
+         gcL+kF7r3xIDQnxdlnX75LwsDZlI/yZwzSxFBBTtNTFenPirGDU2BSvwotBzVnc4y41C
+         5q5XC+5oJsdjYVoxwOvrOXqv6ywxxDFun4PvLnzHOsQuNBQcN98/Cl6PFfvC97MfP8Aa
+         8RuQ==
+X-Gm-Message-State: AOAM5317s8B/LpHhJA6Y+YfOap0q6hy7tTqSBYENUCKQ2Zqd/Aq8EDcF
+        dr+cH5zkOQxATqjWMWKXxCAgwoPzskhYRfRx3H8=
+X-Google-Smtp-Source: ABdhPJzRx2NHqcntJ0YMCadTXJqTHTeHPyzN3XiUyK8h2Iws9qkBf49h+jncHtTvXrlKOi07jdqydYsgFR/dnVijaPk=
+X-Received: by 2002:a17:907:3f8f:b0:6df:c340:f91 with SMTP id
+ hr15-20020a1709073f8f00b006dfc3400f91mr9150629ejc.765.1647782884230; Sun, 20
+ Mar 2022 06:28:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220316063148.700769-1-imagedong@tencent.com>
+ <20220316063148.700769-4-imagedong@tencent.com> <20220316201853.0734280f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <4315b50e-9077-cc4b-010b-b38a2fbb7168@kernel.org> <20220316210534.06b6cfe0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <f787c35b-0984-ecaf-ad97-c7580fcdbbad@kernel.org> <CADxym3YM9FMFrTirxWQF7aDOpoEGq5bC4-xm2p0mF8shP+Q0Hw@mail.gmail.com>
+ <a4032cff-0d48-2690-3c1f-a2ec6c54ffb4@kernel.org> <CADxym3bGVebdCTCXxg3xEcPwdfSQADLyPbLTJnPnwn+phqGp3A@mail.gmail.com>
+ <98450e8a-b3e1-22d7-86fb-3c8456a36018@kernel.org>
+In-Reply-To: <98450e8a-b3e1-22d7-86fb-3c8456a36018@kernel.org>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Sun, 20 Mar 2022 21:27:52 +0800
+Message-ID: <CADxym3b3T0V0zHkN36vusvSNL=Tk+b_Ahy9Tj8=kKm_gmuRS3A@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 3/3] net: icmp: add reasons of the skb drops
+ to icmp protocol
+To:     David Ahern <dsahern@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, xeb@mail.ru,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Menglong Dong <imagedong@tencent.com>,
+        Eric Dumazet <edumazet@google.com>, Martin Lau <kafai@fb.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Hao Peng <flyingpeng@tencent.com>,
+        Mengen Sun <mengensun@tencent.com>, dongli.zhang@oracle.com,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Biao Jiang <benbjiang@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 12 Mar 2022 00:46:23 +0800
-Cixi Geng <gengcixi@gmail.com> wrote:
+On Sat, Mar 19, 2022 at 6:33 AM David Ahern <dsahern@kernel.org> wrote:
+>
+> On 3/18/22 1:26 AM, Menglong Dong wrote:
+> > Yeah, PTYPE seems not suitable. I mean that replace SKB_DROP_REASON_PTYPE_ABSENT
+> > that is used in __netif_receive_skb_core() with L3_PROTO, which means no L3
+> > protocol handler (or other device handler) is not found for the
+> > packet. This seems more
+> > friendly and not code based.
+> >
+> >>> And use SKB_DROP_REASON_L4_PROTO for the L4 protocol problem,
+> >>> such as GRE version not supported, ICMP type not supported, etc.
+> > Is this L4_PROTO followed by anyone?
+>
+> how about just a generic
+>         SKB_DROP_REASON_UNHANDLED_PROTO  /* protocol not implemented
+>                                           * or not supported
+>                                           */
+>
+> in place of current PTYPE_ABSENT (so a rename to remove a Linux code
+> reference), and then use it for no L3 protocol handler, no L4 protocol
+> handler, version extensions etc. The instruction pointer to symbol gives
+> the context of the unsupported protocol.
 
-> From: Cixi Geng <cixi.geng1@unisoc.com>
-> 
-> Fix wrong configuration value of SC27XX_ADC_SCALE_MASK and
-> SC27XX_ADC_SCALE_SHIFT by spec documetation.
-> 
-> Signed-off-by: Yuming Zhu <yuming.zhu1@unisoc.com>
-> Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
-> 
-No blank lines in a tag block (they break people's scripts)
-Also, if this is a fix, I'd expect a fixes tag.
+Yeah, I think it's a good idea :)
 
-> Reviewed-by: Baolin Wang <baolin.wang7@gmail.com>
-> ---
->  drivers/iio/adc/sc27xx_adc.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
-> index 00098caf6d9e..aee076c8e2b1 100644
-> --- a/drivers/iio/adc/sc27xx_adc.c
-> +++ b/drivers/iio/adc/sc27xx_adc.c
-> @@ -36,8 +36,8 @@
->  
->  /* Bits and mask definition for SC27XX_ADC_CH_CFG register */
->  #define SC27XX_ADC_CHN_ID_MASK		GENMASK(4, 0)
-> -#define SC27XX_ADC_SCALE_MASK		GENMASK(10, 8)
-> -#define SC27XX_ADC_SCALE_SHIFT		8
-> +#define SC27XX_ADC_SCALE_MASK		GENMASK(10, 9)
-> +#define SC27XX_ADC_SCALE_SHIFT		9
-
-This driver would benefit from use of FIELD_GET() / FIELD_PREP()
-but that is obviously unrelated to this particular series.
-
-
-Jonathan
-
->  
->  /* Bits definitions for SC27XX_ADC_INT_EN registers */
->  #define SC27XX_ADC_IRQ_EN		BIT(0)
-
+Thanks!
+Menglong Dong
