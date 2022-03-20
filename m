@@ -2,206 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CADA0C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 16:29:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83ADCC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 16:32:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245652AbiCTQbH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Mar 2022 12:31:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41952 "EHLO
+        id S235828AbiCTQd1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Mar 2022 12:33:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245585AbiCTQaD (ORCPT
+        with ESMTP id S229801AbiCTQcx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Mar 2022 12:30:03 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4B0134656;
-        Sun, 20 Mar 2022 09:28:32 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id bg31-20020a05600c3c9f00b00381590dbb33so7222886wmb.3;
-        Sun, 20 Mar 2022 09:28:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=bUbi/jkzYIKSOu8T7OV/skgoIWQk4BHawXnXdm1xB5I=;
-        b=QBfsjPV1XhoP5TR9nsbodr4/tWA62M6TCQ+D/v4Rrlnr0Opm3EEHHihqX0tPW+Jfqm
-         OQs6vgTDFJcfW0rEm9mDlhIkg1MMLfwW9WjuwoUSLi4pGhYBdaWXOzMTAsoZ+aTKg3zZ
-         kpQKsf01ab1ZKflLaRWZEgC8sAPL4V4YHziilfXjgo/wkzqUqGy1QJHvMMMwrRXJ6vj5
-         MbWwBLmaqX5PLtdjzafeVHC07m2GBxQ/Ahl+1v7rOzufYaGxk7EArv+r/XsoDtKEoEIh
-         x2GnJ6zvHJuqXIXWNt135+62fZT/11VboelJWlqmPt6ndE6HD02HnsWX/wq3GAdu85Gn
-         JFGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=bUbi/jkzYIKSOu8T7OV/skgoIWQk4BHawXnXdm1xB5I=;
-        b=ZZXxs/nCM8pCByfwOc+Dp2a18PLc1yZZVq1kKrWkg+mboiCwjTYPrnGOhEeW1ikdEx
-         bm6qItVZ/QCa6XNuo3RqGjqKR/azKIInXhX2KXQ948FAnUnuTLnhbiTsEmCBk+SD8A7g
-         FNf0BRQ/rIsH0LK9pU1msQMmBHWpKBjOEFVx3/xGY4BhHThVoOM7Mv4bjpn9T8zFN0Qb
-         LABDvJ1YMGEqZ1IJrFISSUtjja9onL80WPUVJYjFtICxOGVrFAKriJgPHk05bn34MVZe
-         76X8S2te7tTwI1EcLToR1t/yzIIr/viiPecT49SaNytTaiOqQGwJ2vDYsywYk5ZNA2ge
-         RvrA==
-X-Gm-Message-State: AOAM531oXSJqeZd6p4WHe+mK+GMh+sbaxGle7NQOwbIz5StWhKLEpS4P
-        m3u+04FWVARnxVVRS2P85mo=
-X-Google-Smtp-Source: ABdhPJxQEeFWTDjt9U0eUu1Y+jsiC77yc6QUch/tNSKtkN/tpZTxvIGkyhsnawpJHsgdcwmo9KYENA==
-X-Received: by 2002:a05:600c:4142:b0:38c:9dc6:c87a with SMTP id h2-20020a05600c414200b0038c9dc6c87amr3628753wmm.114.1647793710898;
-        Sun, 20 Mar 2022 09:28:30 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
-        by smtp.googlemail.com with ESMTPSA id y6-20020a05600015c600b00203fa70b4ebsm6760085wry.53.2022.03.20.09.28.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Mar 2022 09:28:30 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
-Subject: [PATCH v3 18/18] dt-bindings: arm: msm: Convert kpss-gcc driver Documentation to yaml
-Date:   Sun, 20 Mar 2022 12:34:30 +0100
-Message-Id: <20220320113430.26076-19-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220320113430.26076-1-ansuelsmth@gmail.com>
-References: <20220320113430.26076-1-ansuelsmth@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Sun, 20 Mar 2022 12:32:53 -0400
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC7C39817;
+        Sun, 20 Mar 2022 09:31:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1647793705;
+    s=strato-dkim-0002; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=xAqIIk59P2ITsK5sfRVvGAwbAfO5UIo5jxPV7DrGofg=;
+    b=qZr9CEalXGEGY6CluVtbvvaTPte9Hv0yQWLfialiAI2PEL28kzRJiwvCcAzYcvCRwO
+    WVIDBTAnt3vUzs04KXYXk/ukG0oDWWMhpmsc9VVM1NX0HL90OlZyuWOkuASqWsXXi4M1
+    GNvuwKYFAZM9q/hEBFx6AaCgLLA3sryWNnOCRrJhsCVfNeCFLLgYQLYRELhXGRXRVhaR
+    c2U7/nVO0y7dUedxUOSlHUPE30mX+Z/nnIbcnFHqfAQvcUyCy1RhC/VLrRA+11hf3lYG
+    vRwfa8bIxChuEepxQXahQ53RMm/eqAlm03kU1asqLQp1oCpDJznauxdZPKlsjCTglQqC
+    w4zg==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj7gpw91N5y2S3iM4RaQ=="
+X-RZG-CLASS-ID: mo00
+Received: from imac.fritz.box
+    by smtp.strato.de (RZmta 47.41.1 DYNA|AUTH)
+    with ESMTPSA id L6b887y2KGSMH7x
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+        (Client did not present a certificate);
+    Sun, 20 Mar 2022 17:28:22 +0100 (CET)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
+Subject: Re: [PATCH] iio: palmas: shut up warning about calibration mismatch
+ (due to noise)
+From:   "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <20220320155259.0fc79dd3@jic23-huawei>
+Date:   Sun, 20 Mar 2022 17:28:21 +0100
+Cc:     Colin Ian King <colin.king@intel.com>,
+        Sergiu Cuciurean <sergiu.cuciurean@analog.com>,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        letux-kernel@openphoenux.org, kernel@pyra-handheld.com,
+        linux-omap@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <18533164-C17A-4CA1-A882-5A160D370498@goldelico.com>
+References: <1cee45bfc3fa2ab59dcc17242fb52468035360a1.1646743982.git.hns@goldelico.com>
+ <20220320155259.0fc79dd3@jic23-huawei>
+To:     Jonathan Cameron <jic23@kernel.org>
+X-Mailer: Apple Mail (2.3445.104.21)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert kpss-gcc driver Documentation to yaml.
+Hi Jonathan,
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- .../bindings/arm/msm/qcom,kpss-gcc.txt        | 44 ------------
- .../bindings/arm/msm/qcom,kpss-gcc.yaml       | 68 +++++++++++++++++++
- 2 files changed, 68 insertions(+), 44 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
- create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
+> Am 20.03.2022 um 16:52 schrieb Jonathan Cameron <jic23@kernel.org>:
+>=20
+> On Tue,  8 Mar 2022 13:53:03 +0100
+> "H. Nikolaus Schaller" <hns@goldelico.com> wrote:
+>=20
+>> Although technically checking for ADC values below 0 is correct,
+>> because they are outside of the calibration values, there is usually
+>> noise which spuriously fills the console log with error messages if
+>> calculated input voltage gets close to 0V.
+>>=20
+>> Ignore small negative calculated values, but clamp them to 0.
+>>=20
+>> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+> Hi.
+>=20
+> Should we treat this as a fix or a cleanup?
+>=20
+> I don't mind either way.
 
-diff --git a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
-deleted file mode 100644
-index e628758950e1..000000000000
---- a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
-+++ /dev/null
-@@ -1,44 +0,0 @@
--Krait Processor Sub-system (KPSS) Global Clock Controller (GCC)
--
--PROPERTIES
--
--- compatible:
--	Usage: required
--	Value type: <string>
--	Definition: should be one of the following. The generic compatible
--			"qcom,kpss-gcc" should also be included.
--			"qcom,kpss-gcc-ipq8064", "qcom,kpss-gcc"
--			"qcom,kpss-gcc-apq8064", "qcom,kpss-gcc"
--			"qcom,kpss-gcc-msm8974", "qcom,kpss-gcc"
--			"qcom,kpss-gcc-msm8960", "qcom,kpss-gcc"
--
--- reg:
--	Usage: required
--	Value type: <prop-encoded-array>
--	Definition: base address and size of the register region
--
--- clocks:
--	Usage: required
--	Value type: <prop-encoded-array>
--	Definition: reference to the pll parents.
--
--- clock-names:
--	Usage: required
--	Value type: <stringlist>
--	Definition: must be "pll8_vote", "pxo".
--
--- clock-output-names:
--	Usage: required
--	Value type: <string>
--	Definition: Name of the output clock. Typically acpu_l2_aux indicating
--		    an L2 cache auxiliary clock.
--
--Example:
--
--	l2cc: clock-controller@2011000 {
--		compatible = "qcom,kpss-gcc-ipq8064", "qcom,kpss-gcc";
--		reg = <0x2011000 0x1000>;
--		clocks = <&gcc PLL8_VOTE>, <&gcc PXO_SRC>;
--		clock-names = "pll8_vote", "pxo";
--		clock-output-names = "acpu_l2_aux";
--	};
-diff --git a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
-new file mode 100644
-index 000000000000..351a88407f4b
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
-@@ -0,0 +1,68 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/arm/msm/qcom,kpss-gcc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Krait Processor Sub-system (KPSS) Global Clock Controller (GCC)
-+
-+maintainers:
-+  - Ansuel Smith <ansuelsmth@gmail.com>
-+
-+description: |
-+  Krait Processor Sub-system (KPSS) Global Clock Controller (GCC). Used
-+  to control L2 mux (in the current implementation).
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+        - qcom,kpss-gcc-ipq8064
-+        - qcom,kpss-gcc-apq8064
-+        - qcom,kpss-gcc-msm8974
-+        - qcom,kpss-gcc-msm8960
-+      - const: qcom,kpss-gcc
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    items:
-+      - description: phandle to pll8_vote
-+      - description: phandle to pxo_board
-+
-+  clock-names:
-+    items:
-+      - const: pll8_vote
-+      - const: pxo
-+
-+  clock-output-names:
-+    const: acpu_l2_aux
-+
-+  '#clock-cells':
-+    const: 0
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - clock-names
-+  - clock-output-names
-+  - '#clock-cells'
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/qcom,gcc-ipq806x.h>
-+
-+    clock-controller@2011000 {
-+      compatible = "qcom,kpss-gcc-ipq8064", "qcom,kpss-gcc";
-+      reg = <0x2011000 0x1000>;
-+      clocks = <&gcc PLL8_VOTE>, <&pxo_board>;
-+      clock-names = "pll8_vote", "pxo";
-+      clock-output-names = "acpu_l2_aux";
-+      #clock-cells = <0>;
-+    };
-+...
-+
--- 
-2.34.1
+I don't mind either since we have it for long time in our distribution =
+kernel.
+
+BR and thanks,
+Nikolaus
+
+>=20
+> Jonathan
+>=20
+>=20
+>> ---
+>> drivers/iio/adc/palmas_gpadc.c | 3 ++-
+>> 1 file changed, 2 insertions(+), 1 deletion(-)
+>>=20
+>> diff --git a/drivers/iio/adc/palmas_gpadc.c =
+b/drivers/iio/adc/palmas_gpadc.c
+>> index f9c8385c72d3..bcfa6a7f6cb2 100644
+>> --- a/drivers/iio/adc/palmas_gpadc.c
+>> +++ b/drivers/iio/adc/palmas_gpadc.c
+>> @@ -376,7 +376,8 @@ static int =
+palmas_gpadc_get_calibrated_code(struct palmas_gpadc *adc,
+>> 					=
+adc->adc_info[adc_chan].gain_error;
+>>=20
+>> 	if (val < 0) {
+>> -		dev_err(adc->dev, "Mismatch with calibration\n");
+>> +		if (val < -10)
+>> +			dev_err(adc->dev, "Mismatch with calibration var =
+=3D %d\n", val);
+>> 		return 0;
+>> 	}
+>>=20
+>=20
 
