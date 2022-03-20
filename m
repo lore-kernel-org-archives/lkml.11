@@ -2,217 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5765BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 15:11:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23D8BC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 15:13:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245347AbiCTPNE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Mar 2022 11:13:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40230 "EHLO
+        id S245356AbiCTPO4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Mar 2022 11:14:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245337AbiCTPM6 (ORCPT
+        with ESMTP id S233331AbiCTPOv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Mar 2022 11:12:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73DF719A570
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 08:11:35 -0700 (PDT)
+        Sun, 20 Mar 2022 11:14:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BB412CE3A;
+        Sun, 20 Mar 2022 08:13:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D08E61164
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 15:11:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40F7FC340F0;
-        Sun, 20 Mar 2022 15:11:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E335FB80E47;
+        Sun, 20 Mar 2022 15:13:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 717A3C340E9;
+        Sun, 20 Mar 2022 15:13:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647789094;
-        bh=OGIR071Y0nLBUXvDFQftBvvXHEEgWc0ChPdtkIhsxP4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=StwmJyUjjHSSJgWmfbb5r/m5tA4lnYXYYAR+T9PrZVdAbf+vqacRr/PlZbkCU7//1
-         dlKqVZnhmJbquf/OTzb4d20x4wcj7PXLyH4TvZE9122hITcBtjrtUnRtT5FwWGA/b3
-         XFk9+Au4cEeznI/L2lBUnH/uMmHxLaQrKMhP3lJZhFgfUypFuJ7DUE/r6YscviKfc0
-         0M2ETvt+F2XhpcP5USrY6zIbnrtcMaGBlQXkQm5Va4bSxluR7Yh6kwitgzsoXFKhU3
-         +xtFX36NnWX+6O3PUY4aTJFpkHlK5i1leIFP0UvihUKj7vKanNK2EYAK93y/u3nh0u
-         Wdx37vfZ7o0KQ==
-From:   Chao Yu <chao@kernel.org>
-To:     jaegeuk@kernel.org
-Cc:     linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Chao Yu <chao@kernel.org>,
-        Chao Yu <chao.yu@oppo.com>
-Subject: [PATCH 3/3] f2fs: give priority to select unpinned section for foreground GC
-Date:   Sun, 20 Mar 2022 23:11:19 +0800
-Message-Id: <20220320151119.837552-3-chao@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220320151119.837552-1-chao@kernel.org>
-References: <20220320151119.837552-1-chao@kernel.org>
+        s=k20201202; t=1647789203;
+        bh=dIrdSkDayyt2W+Bbvgmfrz/vkuTTAijlyK1oC0ZZ4KQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=H5EfJW0KkFZALD5ehFwPwYaY1q+QqYvkTcL1M3ondAK7pwGfQ2PuQRPuS+ICtBiF5
+         JfRHcMNdy6MkZRHMN/AEiI3vXw++cjrbklKZGb4Yr/qoAiP1VezeWzLznLtOKO2LKS
+         zvYEPOw0E7gr2pzwQoeUjrd0gJtOlcAzzkz04ZnHn+6CPKFUGItQwo74sy4uzTZ93u
+         BNX2sKnKkX3gdggyjJ3z+QJJ20GdGXntcX5Jg3p9f2myhv1t8YjanLnuCISGdWKDqT
+         3ajkjvMs4wfyFLIW0AVbkZRERg455Btm4ywthBRxg0L63RlP10xzjU99+NwFrPX73I
+         X7U4rZBEGcjqg==
+Date:   Sun, 20 Mar 2022 15:20:47 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Zizhuang Deng <sunsetdzz@gmail.com>
+Cc:     Jonathan.Cameron@huawei.com, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org,
+        Paul Cercueil <paul.cercueil@analog.com>,
+        Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH] iio: dac: ad5592r: Fix the missing return value.
+Message-ID: <20220320152047.2a04a62e@jic23-huawei>
+In-Reply-To: <20220310125450.4164164-1-sunsetdzz@gmail.com>
+References: <20220310125450.4164164-1-sunsetdzz@gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Previously, during foreground GC, if victims contain data of pinned file,
-it will fail migration of the data, and meanwhile i_gc_failures of that
-pinned file may increase, and when it exceeds threshold, GC will unpin
-the file, result in breaking pinfile's semantics.
+On Thu, 10 Mar 2022 20:54:50 +0800
+Zizhuang Deng <sunsetdzz@gmail.com> wrote:
 
-In order to mitigate such condition, let's record and skip section which
-has pinned file's data and give priority to select unpinned one.
+> The third call to `fwnode_property_read_u32` did not record
+> the return value, resulting in `channel_offstate` possibly
+> being assigned the wrong value.
+> 
+> Signed-off-by: Zizhuang Deng <sunsetdzz@gmail.com>
+Hi,
 
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
----
- fs/f2fs/gc.c      | 53 ++++++++++++++++++++++++++++++++++++++++++++---
- fs/f2fs/segment.c |  8 +++++++
- fs/f2fs/segment.h |  2 ++
- 3 files changed, 60 insertions(+), 3 deletions(-)
+Definitely rather odd looking and I think your conclusion is correct.
++CC Paul for confirmation that this isn't doing something clever..
 
-diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
-index 6a7e4148ff9d..b4e559030d99 100644
---- a/fs/f2fs/gc.c
-+++ b/fs/f2fs/gc.c
-@@ -646,6 +646,34 @@ static void release_victim_entry(struct f2fs_sb_info *sbi)
- 	f2fs_bug_on(sbi, !list_empty(&am->victim_list));
- }
- 
-+static void pin_section(struct f2fs_sb_info *sbi, unsigned int segno)
-+{
-+	struct dirty_seglist_info *dirty_i = DIRTY_I(sbi);
-+
-+	set_bit(GET_SEC_FROM_SEG(sbi, segno), dirty_i->pinned_secmap);
-+	dirty_i->pinned_secmap_cnt++;
-+}
-+
-+static bool pinned_section_exists(struct dirty_seglist_info *dirty_i)
-+{
-+	return dirty_i->pinned_secmap_cnt;
-+}
-+
-+static bool section_is_pinned(struct dirty_seglist_info *dirty_i,
-+						unsigned int secno)
-+{
-+	return pinned_section_exists(dirty_i) &&
-+			test_bit(secno, dirty_i->pinned_secmap);
-+}
-+
-+static void unpin_all_sections(struct f2fs_sb_info *sbi)
-+{
-+	unsigned int bitmap_size = f2fs_bitmap_size(MAIN_SECS(sbi));
-+
-+	memset(DIRTY_I(sbi)->pinned_secmap, 0, bitmap_size);
-+	DIRTY_I(sbi)->pinned_secmap_cnt = 0;
-+}
-+
- /*
-  * This function is called from two paths.
-  * One is garbage collection and the other is SSR segment selection.
-@@ -787,6 +815,9 @@ static int get_victim_by_default(struct f2fs_sb_info *sbi,
- 		if (gc_type == BG_GC && test_bit(secno, dirty_i->victim_secmap))
- 			goto next;
- 
-+		if (gc_type == FG_GC && section_is_pinned(dirty_i, secno))
-+			goto next;
-+
- 		if (is_atgc) {
- 			add_victim_entry(sbi, &p, segno);
- 			goto next;
-@@ -1202,8 +1233,10 @@ static int move_data_block(struct inode *inode, block_t bidx,
- 	}
- 
- 	if (f2fs_is_pinned_file(inode)) {
--		if (gc_type == FG_GC)
-+		if (gc_type == FG_GC) {
- 			f2fs_pin_file_control(inode, true);
-+			pin_section(F2FS_I_SB(inode), segno);
-+		}
- 		err = -EAGAIN;
- 		goto out;
- 	}
-@@ -1352,8 +1385,10 @@ static int move_data_page(struct inode *inode, block_t bidx, int gc_type,
- 		goto out;
- 	}
- 	if (f2fs_is_pinned_file(inode)) {
--		if (gc_type == FG_GC)
-+		if (gc_type == FG_GC) {
- 			f2fs_pin_file_control(inode, true);
-+			pin_section(F2FS_I_SB(inode), segno);
-+		}
- 		err = -EAGAIN;
- 		goto out;
- 	}
-@@ -1485,6 +1520,7 @@ static int gc_data_segment(struct f2fs_sb_info *sbi, struct f2fs_summary *sum,
- 							gc_type == FG_GC) {
- 				f2fs_pin_file_control(inode, true);
- 				iput(inode);
-+				pin_section(sbi, segno);
- 				return submitted;
- 			}
- 
-@@ -1766,9 +1802,17 @@ int f2fs_gc(struct f2fs_sb_info *sbi, bool sync,
- 		ret = -EINVAL;
- 		goto stop;
- 	}
-+retry:
- 	ret = __get_victim(sbi, &segno, gc_type);
--	if (ret)
-+	if (ret) {
-+		/* allow to search victim from sections has pinned data */
-+		if (ret == -ENODATA && gc_type == FG_GC &&
-+				pinned_section_exists(DIRTY_I(sbi))) {
-+			unpin_all_sections(sbi);
-+			goto retry;
-+		}
- 		goto stop;
-+	}
- 
- 	seg_freed = do_garbage_collect(sbi, segno, &gc_list, gc_type, force);
- 	if (gc_type == FG_GC &&
-@@ -1811,6 +1855,9 @@ int f2fs_gc(struct f2fs_sb_info *sbi, bool sync,
- 	SIT_I(sbi)->last_victim[ALLOC_NEXT] = 0;
- 	SIT_I(sbi)->last_victim[FLUSH_DEVICE] = init_segno;
- 
-+	if (gc_type == FG_GC && pinned_section_exists(DIRTY_I(sbi)))
-+		unpin_all_sections(sbi);
-+
- 	trace_f2fs_gc_end(sbi->sb, ret, total_freed, sec_freed,
- 				get_pages(sbi, F2FS_DIRTY_NODES),
- 				get_pages(sbi, F2FS_DIRTY_DENTS),
-diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
-index 012524db7437..a5aa7a102105 100644
---- a/fs/f2fs/segment.c
-+++ b/fs/f2fs/segment.c
-@@ -4736,6 +4736,13 @@ static int init_victim_secmap(struct f2fs_sb_info *sbi)
- 	dirty_i->victim_secmap = f2fs_kvzalloc(sbi, bitmap_size, GFP_KERNEL);
- 	if (!dirty_i->victim_secmap)
- 		return -ENOMEM;
-+
-+	dirty_i->pinned_secmap = f2fs_kvzalloc(sbi, bitmap_size, GFP_KERNEL);
-+	if (!dirty_i->pinned_secmap) {
-+		kvfree(dirty_i->victim_secmap);
-+		return -ENOMEM;
-+	}
-+	dirty_i->pinned_secmap_cnt = 0;
- 	return 0;
- }
- 
-@@ -5324,6 +5331,7 @@ static void destroy_victim_secmap(struct f2fs_sb_info *sbi)
- {
- 	struct dirty_seglist_info *dirty_i = DIRTY_I(sbi);
- 
-+	kvfree(dirty_i->pinned_secmap);
- 	kvfree(dirty_i->victim_secmap);
- }
- 
-diff --git a/fs/f2fs/segment.h b/fs/f2fs/segment.h
-index 5c94caf0c0a1..fd6f246e649c 100644
---- a/fs/f2fs/segment.h
-+++ b/fs/f2fs/segment.h
-@@ -294,6 +294,8 @@ struct dirty_seglist_info {
- 	struct mutex seglist_lock;		/* lock for segment bitmaps */
- 	int nr_dirty[NR_DIRTY_TYPE];		/* # of dirty segments */
- 	unsigned long *victim_secmap;		/* background GC victims */
-+	unsigned long *pinned_secmap;		/* pinned victims from foreground GC */
-+	unsigned int pinned_secmap_cnt;		/* count of victims which has pinned data */
- };
- 
- /* victim selection function for cleaning and SSR */
--- 
-2.32.0
+> ---
+>  drivers/iio/dac/ad5592r-base.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/dac/ad5592r-base.c b/drivers/iio/dac/ad5592r-base.c
+> index a424b7220b61..4434c1b2a322 100644
+> --- a/drivers/iio/dac/ad5592r-base.c
+> +++ b/drivers/iio/dac/ad5592r-base.c
+> @@ -522,7 +522,7 @@ static int ad5592r_alloc_channels(struct iio_dev *iio_dev)
+>  		if (!ret)
+>  			st->channel_modes[reg] = tmp;
+>  
+> -		fwnode_property_read_u32(child, "adi,off-state", &tmp);
+> +		ret = fwnode_property_read_u32(child, "adi,off-state", &tmp);
+>  		if (!ret)
+>  			st->channel_offstate[reg] = tmp;
+>  	}
 
