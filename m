@@ -2,89 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E734C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 21:09:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4385EC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 21:10:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343701AbiCTVLO (ORCPT
+        id S1343709AbiCTVMA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Mar 2022 17:11:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45018 "EHLO
+        Sun, 20 Mar 2022 17:12:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343693AbiCTVLL (ORCPT
+        with ESMTP id S244387AbiCTVLz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Mar 2022 17:11:11 -0400
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F1C9473BB
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 14:09:48 -0700 (PDT)
-Received: by mail-il1-x12f.google.com with SMTP id h21so9243299ila.7
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 14:09:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3yhe1yZzGEpebfSEI4NmtuOUmADVwotj/x5O7U8D/9Y=;
-        b=pUR9BPsXnC/s1tR3UVEal3RV8LChzsf1b1v9T9WywlfOCsYkMrsSY+8c44AWBGWRLf
-         j2q+DKY+2f3NmkcWerih3TRQlbTxsqu4iaIKNjWDiuIcJBjXlwZUyWwHuxc7wpmItisT
-         FO/6cEVsAZAs1oJbhpq/tBeSWy7DcQk9CXx3IOsxGziPWQrI7Uqgxtq1o1pNUgQBxPuV
-         hLW4+sBJIL+uzsGplKp2LvwhegquH9PlD81VtV/boIomK/1LFEoBOTVy3upOOC4JrG64
-         j+B6amMkJ/FjVm1mMMy4DxE32hMURAJo9Y8ObXkQDKpfgW3yLP1II5YTMFhLkbGycQEb
-         fmWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3yhe1yZzGEpebfSEI4NmtuOUmADVwotj/x5O7U8D/9Y=;
-        b=wB5/ZZFIAWqFpm7pBx8wXIX/CS/jdlZJ1hICs7/vM9z2/QMOLLCZbnSnXCuHxzeNZF
-         yTeDRFckLhPDektfiv386LduZ9ObWwZnYAzyuJwfizlUdHAlq6yYS+ZmlLbRC6h44TYl
-         LIPDWhM98D9hPnZKceZzLcJNl0K0j6BvH9qBAHBZ7+MA0BcLuWy8MkCUDtpmV4y2NFRU
-         ku75IpqoVpxy9tGqMKzMMPCRwhofij+EfgU6pL7YX/2mkFNBrjok82oyPFaWDFnpejuT
-         f3F4lS/hahjsdrH3FFtqB7JoXyc+4FGg1/TnPlVqFlbYl08MnLGtFDhsam515i+FwbAo
-         q5KQ==
-X-Gm-Message-State: AOAM531DVemRWT3W9fonXwV1Y3EhdvvE/6ykxOY5ZiliPeHtgFvjO03I
-        5AYyT5HQ2O7FB62+D7l+GE1pAxId+nYc9gTmEUo=
-X-Google-Smtp-Source: ABdhPJwIoODScvpi9PY+6LRF4Xwic1LYWBkU/8s3NZ0lS1WTTcxw7GTnajy3EaHxusV+xoc1fpOVQ/rAbY8fISKENvM=
-X-Received: by 2002:a05:6e02:1a4c:b0:2c7:c6fc:79f4 with SMTP id
- u12-20020a056e021a4c00b002c7c6fc79f4mr8215769ilv.235.1647810587864; Sun, 20
- Mar 2022 14:09:47 -0700 (PDT)
+        Sun, 20 Mar 2022 17:11:55 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B46F2160C12;
+        Sun, 20 Mar 2022 14:10:30 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KM9Ps17K5z4xPv;
+        Mon, 21 Mar 2022 08:10:24 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1647810626;
+        bh=gHQtle1L42oxMgdPyJfIo2OZZHlUIp6gKrUv9V2v/1k=;
+        h=Date:From:To:Cc:Subject:From;
+        b=ohEP3OV5AOFrFH7kTQlzbQIB1k3uoY9TscYraB0YlT+qH9gWOES/T+mXQoOoYdJoE
+         SPSv8w5A7xF1v9r5zHUbEeohiT5jm8JfDo9k9eL/4oYhNOdvLNvtHuaYHVUyq7zaIY
+         3aUWTUj9vbat7MwX4yoFFGtkjij4ZIbGldnh2kURwngxnVPm3SBXULjLcB6pd6v1OY
+         AZZWPC15wp3PCjKBIUzbO8bahbiJfKf656LiZ+FsxxddhlKY8etYzOBEeVBvCeUpEO
+         sgrIM/EEsNJQ1nzOA0rd0EJcvdIw3c3ufM/yxPCdnE+n+SksrBTNHDgdsy8oGb0xJU
+         MfikjfxctTR8A==
+Date:   Mon, 21 Mar 2022 08:10:23 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Wim Van Sebroeck <wim@iguana.be>
+Cc:     Miaoqian Lin <linmq006@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Fixes tag needs some work in the watchdog tree
+Message-ID: <20220321081023.72569774@canb.auug.org.au>
 MIME-Version: 1.0
-References: <57133fafc4d74377a4a08d98e276d58fe4a127dc.1647115974.git.andreyknvl@google.com>
- <CACT4Y+ZtahUje36PKfGYLVkb2SawMXOC9aPNwgfNgZ1ujCAVBA@mail.gmail.com>
-In-Reply-To: <CACT4Y+ZtahUje36PKfGYLVkb2SawMXOC9aPNwgfNgZ1ujCAVBA@mail.gmail.com>
-From:   Andrey Konovalov <andreyknvl@gmail.com>
-Date:   Sun, 20 Mar 2022 22:09:37 +0100
-Message-ID: <CA+fCnZekEu705yAX85wsCQeN21rk0tgS8ib6V8jrH_AscubbBA@mail.gmail.com>
-Subject: Re: [PATCH] kasan, scs: collect stack traces from shadow stack
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     andrey.konovalov@linux.dev, Marco Elver <elver@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andrey Konovalov <andreyknvl@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/43MW_JTXoFbS67SI2kiKu.S";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 8:17 AM Dmitry Vyukov <dvyukov@google.com> wrote:
->
-> > +static unsigned int save_shadow_stack(unsigned long *entries,
-> > +                                     unsigned int nr_entries)
-> > +{
-> > +       unsigned long *scs_sp = task_scs_sp(current);
-> > +       unsigned long *scs_base = task_scs(current);
->
-> Just to double-check: interrupt frames are also appended to the the
-> current task buffer, right?
+--Sig_/43MW_JTXoFbS67SI2kiKu.S
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Looked into this and found a few issues, will fix in v2. Interrupt
-frames will be collected then.
+Hi all,
+
+In commit
+
+  1f7590ac16e7 ("watchdog: rti-wdt: Add missing pm_runtime_disable() in pro=
+be function")
+
+Fixes tag
+
+  Fixes: 2d63908 ("watchdog: Add K3 RTI watchdog support")
+
+has these problem(s):
+
+  - SHA1 should be at least 12 digits long
+    This an be fixed for the future by setting core.abbrev to 12 (or
+    more) or (for git v2.11 or later) just making sure it is not set
+    (or set to "auto").
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/43MW_JTXoFbS67SI2kiKu.S
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmI3mD8ACgkQAVBC80lX
+0GxPFggAmKwILfcxW6X1LwqrD6vKehh6FmXGFkOKs+9HPxEpq3WtHCADAAbJSzST
+bJ7Dq1oZniv65FPXXG9ea3ENIpj/nl5duDk3aPowLUkHzhOiWpU3d3tESFCiIIuC
+o0gAb5Tn+iAWYdz4JHxhnRB6U/insL1UNMzKbPqfvrmTjIsewT2cETYkoBhuffVl
+cpR2c3iExYVvnlJ9xyz/aEdDers2xTxfE91X5HfahhA4XvTtjOi7Ib2g2ll0OP9n
+p2X/ivuOIouh3yceSRWyinFB17m55McXSTbFQD4oxVic4HbBpvBoxRbe3gS8heUY
+aV/GpbEATDy6Qxt3cFxLAT8rChbvVg==
+=U1lm
+-----END PGP SIGNATURE-----
+
+--Sig_/43MW_JTXoFbS67SI2kiKu.S--
