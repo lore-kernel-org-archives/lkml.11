@@ -2,68 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9203BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 17:20:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DEB6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 17:23:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245697AbiCTRV2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Mar 2022 13:21:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53382 "EHLO
+        id S245700AbiCTRYb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Mar 2022 13:24:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242321AbiCTRV0 (ORCPT
+        with ESMTP id S245698AbiCTRY2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Mar 2022 13:21:26 -0400
-X-Greylist: delayed 169 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 20 Mar 2022 10:20:01 PDT
-Received: from mail.as201155.net (mail.as201155.net [185.84.6.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D80D4D9EA0
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 10:20:01 -0700 (PDT)
-Received: from smtps.newmedia-net.de ([2a05:a1c0:0:de::167]:44818 helo=webmail.newmedia-net.de)
-        by mail.as201155.net with esmtps  (TLS1) tls TLS_DHE_RSA_WITH_AES_256_CBC_SHA
-        (Exim 4.94.2)
-        (envelope-from <s.gottschall@newmedia-net.de>)
-        id 1nVzAs-0002wx-2w; Sun, 20 Mar 2022 18:17:02 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=newmedia-net.de; s=mikd;
-        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID; bh=R3xvPyH2LO2SeAjGMqviHKQ0YssFVFGDLalsy+a32Pc=;
-        b=kDB5vFIRFcO7i37wsDvKCkiJyqObUP5nPcTw0GVON66/JXSOUrL0ehd80CczxceYFi3y7rSMxitanR3VrD21zhptzBwaxfUHv1L5GuAHAZFEA8UhiRP/2C/WxzICmHQB9hiXnlAq2A/96bMs2T5kz4ZtiNGebiotv6dOy+J++Ag=;
-Message-ID: <233074c3-03dc-cf8b-a597-da0fb5d98be0@newmedia-net.de>
-Date:   Sun, 20 Mar 2022 18:17:01 +0100
+        Sun, 20 Mar 2022 13:24:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 857D426E2;
+        Sun, 20 Mar 2022 10:22:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 34F77B80EE5;
+        Sun, 20 Mar 2022 17:22:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A896C340E9;
+        Sun, 20 Mar 2022 17:22:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647796976;
+        bh=JQECpMcoOI6HhlrXeGL0n9bXm/PyRPOysYHPy2+o1mM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=NMpwFlA3KwuTp7IV3o+MUowc+aMaqP6AVMPex2wGz/oY4aTG7qidcYEcuV2GzLzxt
+         9KImuDFfYJfnTFXnGdTuIkc/PxC79ceY6xdwyLLNEb98QqP52zTD9ClBpUK4UX9nit
+         DAkn2k/WVRap/ggaq/7D+5Fl1C/b7JOxqIs7YEaft1J5ewwdvmIxMh8BNFwenbUdnB
+         ypau4CpDrWCzQYHm4Mz3FILM75HCwOJsdZbSmMxFABdoc0Ms75C28RYY2ehhGOCek6
+         MM6qK0FslkSoqYlQFgUuvLNvUPdBjpBHlgEoIZwHpAda5+KtC78kfsdVk6sG0ZTPHN
+         bpfSA/7Fm1nqw==
+Date:   Sun, 20 Mar 2022 17:30:21 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Jagath Jog J <jagathjog1996@gmail.com>
+Cc:     dan@dlrobertson.com, andy.shevchenko@gmail.com,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 4/5] iio: accel: bma400: Add separate channel for
+ step counter
+Message-ID: <20220320173021.220ee3c6@jic23-huawei>
+In-Reply-To: <20220319181023.8090-5-jagathjog1996@gmail.com>
+References: <20220319181023.8090-1-jagathjog1996@gmail.com>
+        <20220319181023.8090-5-jagathjog1996@gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101
- Thunderbird/99.0
-Subject: Re: [PATCH] ath9k: initialize arrays at compile time
-To:     John Crispin <john@phrozen.org>, trix@redhat.com, toke@toke.dk,
-        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220320152028.2263518-1-trix@redhat.com>
- <af6042d0-952f-f497-57e7-37fef45a1f76@phrozen.org>
-From:   Sebastian Gottschall <s.gottschall@newmedia-net.de>
-In-Reply-To: <af6042d0-952f-f497-57e7-37fef45a1f76@phrozen.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Received:  from [81.201.155.134] (helo=[172.21.254.4])
-        by webmail.newmedia-net.de with esmtpsa (TLSv1:AES128-SHA:128)
-        (Exim 4.72)
-        (envelope-from <s.gottschall@newmedia-net.de>)
-        id 1nVzAs-0005Nq-NN; Sun, 20 Mar 2022 18:17:02 +0100
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 20.03.2022 um 17:48 schrieb John Crispin:
->
->
-> On 20.03.22 16:20, trix@redhat.com wrote:
->> array[size] = { 0 };
->
-> should this not be array[size] = { }; ?!
->
-> If I recall correctly { 0 } will only set the first element of the 
-> struct/array to 0 and leave random data in all others elements
->
->     John
+On Sat, 19 Mar 2022 23:40:22 +0530
+Jagath Jog J <jagathjog1996@gmail.com> wrote:
 
-You are right, john
+> Added channel for step counter which can be enable or disable
+> through the sysfs interface.
+> 
+> Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
+hi Jagath,
 
-Sebastian
+Been a long time since we had a steps counter. Good to have 
+support on another device.
+
+One minor thing inline, but otherwise looks good to me.
+
+Jonathan
+
+> ---
+>  drivers/iio/accel/bma400.h      |  1 +
+>  drivers/iio/accel/bma400_core.c | 47 ++++++++++++++++++++++++++++++---
+>  2 files changed, 44 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/bma400.h b/drivers/iio/accel/bma400.h
+> index b306a5ad513a..65bbc80cbb7f 100644
+> --- a/drivers/iio/accel/bma400.h
+> +++ b/drivers/iio/accel/bma400.h
+> @@ -53,6 +53,7 @@
+>  #define BMA400_STEP_CNT1_REG        0x16
+>  #define BMA400_STEP_CNT3_REG        0x17
+>  #define BMA400_STEP_STAT_REG        0x18
+> +#define BMA400_STEP_INT_MSK         BIT(0)
+>  
+>  /*
+>   * Read-write configuration registers
+> diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400_core.c
+> index 797403c7dd85..305643e99eb5 100644
+> --- a/drivers/iio/accel/bma400_core.c
+> +++ b/drivers/iio/accel/bma400_core.c
+> @@ -68,6 +68,7 @@ struct bma400_data {
+>  	int oversampling_ratio;
+>  	int scale;
+>  	struct iio_trigger *trig;
+> +	int steps_enabled;
+>  	/* Correct time stamp alignment */
+>  	struct {
+>  		__be16 buff[3];
+> @@ -202,6 +203,13 @@ static const struct iio_chan_spec bma400_channels[] = {
+>  			.endianness = IIO_LE,
+>  		},
+>  	},
+> +	{
+> +		.type = IIO_STEPS,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+> +				      BIT(IIO_CHAN_INFO_ENABLE),
+> +		.scan_index = -1, /* No buffer support */
+> +	},
+> +
+>  	IIO_CHAN_SOFT_TIMESTAMP(4),
+>  };
+>  
+> @@ -686,13 +694,28 @@ static int bma400_read_raw(struct iio_dev *indio_dev,
+>  {
+>  	struct bma400_data *data = iio_priv(indio_dev);
+>  	int ret;
+> +	u32 steps_raw;
+>  
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_PROCESSED:
+> -		mutex_lock(&data->mutex);
+> -		ret = bma400_get_temp_reg(data, val, val2);
+> -		mutex_unlock(&data->mutex);
+> -		return ret;
+> +		switch (chan->type) {
+> +		case IIO_STEPS:
+> +			mutex_lock(&data->mutex);
+> +			ret = regmap_bulk_read(data->regmap, BMA400_STEP_CNT0_REG,
+> +					       &steps_raw, 3 * sizeof(u8));
+> +			mutex_unlock(&data->mutex);
+> +			if (ret)
+> +				return ret;
+> +			*val = steps_raw & 0x00FFFFFF;
+
+No need for an endian conversion in here?  I'd also intialize steps_raw = 0 before
+the bulk read then you shouldn't need to mask as you only read 3 bytes in.
+
+> +			return IIO_VAL_INT;
+> +		case IIO_TEMP:
+> +			mutex_lock(&data->mutex);
+> +			ret = bma400_get_temp_reg(data, val, val2);
+> +			mutex_unlock(&data->mutex);
+> +			return ret;
+> +		default:
+> +			return -EINVAL;
+> +		}
+>  	case IIO_CHAN_INFO_RAW:
+>  		mutex_lock(&data->mutex);
+>  		ret = bma400_get_accel_reg(data, chan, val);
+> @@ -733,6 +756,9 @@ static int bma400_read_raw(struct iio_dev *indio_dev,
+>  
+>  		*val = data->oversampling_ratio;
+>  		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_ENABLE:
+> +		*val = data->steps_enabled;
+> +		return IIO_VAL_INT;
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -798,6 +824,17 @@ static int bma400_write_raw(struct iio_dev *indio_dev,
+>  		ret = bma400_set_accel_oversampling_ratio(data, val);
+>  		mutex_unlock(&data->mutex);
+>  		return ret;
+> +	case IIO_CHAN_INFO_ENABLE:
+> +		if (data->steps_enabled == val)
+> +			return 0;
+> +
+> +		mutex_lock(&data->mutex);
+> +		ret = regmap_update_bits(data->regmap, BMA400_INT_CONFIG1_REG,
+> +					 BMA400_STEP_INT_MSK,
+> +					 FIELD_PREP(BMA400_STEP_INT_MSK, !!val));
+> +		mutex_unlock(&data->mutex);
+> +		data->steps_enabled = val;
+> +		return ret;
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -814,6 +851,8 @@ static int bma400_write_raw_get_fmt(struct iio_dev *indio_dev,
+>  		return IIO_VAL_INT_PLUS_MICRO;
+>  	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+>  		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_ENABLE:
+> +		return IIO_VAL_INT;
+>  	default:
+>  		return -EINVAL;
+>  	}
 
