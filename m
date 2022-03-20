@@ -2,410 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E334C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 16:27:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1C98C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 16:28:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245384AbiCTQ2X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Mar 2022 12:28:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37776 "EHLO
+        id S245484AbiCTQ3n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Mar 2022 12:29:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239460AbiCTQ2W (ORCPT
+        with ESMTP id S235658AbiCTQ3h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Mar 2022 12:28:22 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3B0B19BFE4
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 09:26:53 -0700 (PDT)
-Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=regzbot.fritz.box); authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        id 1nVyOH-0003lr-Fy; Sun, 20 Mar 2022 17:26:49 +0100
-From:   "Regzbot (on behalf of Thorsten Leemhuis)" 
-        <regressions@leemhuis.info>
-To:     LKML <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux regressions mailing list <regressions@lists.linux.dev>
-Subject: Linux regressions report  for mainline [2022-03-20]
-Date:   Sun, 20 Mar 2022 16:26:48 +0000
-Message-Id: <164779309771.379023.10823585483674878438@leemhuis.info>
+        Sun, 20 Mar 2022 12:29:37 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7151B344DC;
+        Sun, 20 Mar 2022 09:28:12 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id v130-20020a1cac88000000b00389d0a5c511so9112998wme.5;
+        Sun, 20 Mar 2022 09:28:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KcOijGi5og4ld2tvnsTePSNTR92XBpj3TQ2NlwE7kBU=;
+        b=mGTn9mZmezpJmG0UBF31vGiOajqAuzDPLPA6zisTAVAbeaCnW0aqhG0R091L5HURZv
+         5UXkCxK34eZ+5P66lbJBuX/yzfD2nHD+rujXEUidmknXPryaFp0INVsOjVN5ztNaxESD
+         Rz81RsrG/UlJ5qTFats5GtgTwVS/oJgwUB4xrKWla47FH4f7dzeCwSiv27BGTxVQfpXa
+         GMfahz2fC2SwmYe51ILTheLQ1NUfkemAG+zXDGULO3hZRSKgkSQBbPjO1fKkJ1Fe8CR+
+         4dvtVmfOT25aasIjFVQ1/H+pI8eYlS935zBOcfD1VL1UyzeH7Bt6IjdPvA+or3TSfbfB
+         UicQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KcOijGi5og4ld2tvnsTePSNTR92XBpj3TQ2NlwE7kBU=;
+        b=NiySuYzkHBmTTs9rUykBfzP+59OmutW9/wh0v1NB6vHehu42SQQJ8/dvLOx3X287kU
+         BTzAjeUD80PPHRNL16kWIdpIW8TyPOYGrWtSd6HZ3DE9MP9XhVzVFE5pI93SzQUqx0zd
+         zLTDRbP8tq8zrcLALQI7jYeQZ7H3XUZ44Z/zTQxZeHWgc9vj0iEtn+VtAgk+uaXlsqB5
+         Ptd+c3hKsEmvkeT9tHORhj2sgExqiOprw1gZrWi+c0X1GHQVvAr2p0KeQGjRc78Ntw3g
+         1iwtymYw+YyyXU0Ve84f6TXLnVbJUwe+lRcynNlHankObLSa1hRzZEH+tTMnMKIDaoSc
+         O7vA==
+X-Gm-Message-State: AOAM532ZbaAF5h1b60+EB32vp/apcD2jDtF99tdGtu7rMcAyOC7JPutV
+        IHBLmd3osfOQvt2snU7dTC0=
+X-Google-Smtp-Source: ABdhPJz3tifzxDAWJ1uNsnjFJEcL933i0CUw51N/qATmVkMutDHoNGHno7FLG2vHZ13hcfwNgDjkAg==
+X-Received: by 2002:a7b:c381:0:b0:37b:e01f:c1c0 with SMTP id s1-20020a7bc381000000b0037be01fc1c0mr24568393wmj.98.1647793690646;
+        Sun, 20 Mar 2022 09:28:10 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
+        by smtp.googlemail.com with ESMTPSA id y6-20020a05600015c600b00203fa70b4ebsm6760085wry.53.2022.03.20.09.28.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 20 Mar 2022 09:28:10 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
+Subject: [PATCH v3 00/18] Modernize rest of the krait drivers
+Date:   Sun, 20 Mar 2022 12:34:12 +0100
+Message-Id: <20220320113430.26076-1-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.34.1
-Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1647793615;95ef4dc5;
-X-HE-SMSGID: 1nVyOH-0003lr-Fy
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus, Thorsten here, with a quick preface before the latest report
-from regzbot.
+This is a follow-up to the ipq806x gcc modernize series. Manu cleanup
+changes and also some discoveries of wrong definition notice only with
+all these conversions.
+
+The first patch is an improvement of the clk_hw_get_parent_index. The
+original idea of clk_hw_get_parent_index was to give a way to access the
+parent index but for some reason the final version limited it to the
+current index. We change it to give the current parent if is not
+provided and to give the requested parent if provided. Any user of this
+function is updated to follow the new implementation.
+
+The patch 2 and 3 are some additional fixes for gcc.
+The first one is a fix that register the pxo and cxo fixed clock only if
+they are not defined in DTS.
+The patch 3 require some explaination. In short is a big HACK to prevent
+kernel panic with this series.
+
+The kpss-xcc driver is a mess.
+The Documentation declare that the clocks should be provided but for some
+reason it was never followed.
+In fact in the ipq8064 DTSI only the clocks for l2cc are declared but
+for cpu0 and cpu1 the clocks are not defined.
+The kpss-xcc driver use parent_names so the clks are ignored and never
+used so till now it wasn't a problem (ignoring the fact that they
+doesn't follow documentation at all)
+On top of that, the l2cc node declare the pxo clock in a really strange
+way. It's declared using the PXO_SRC gcc clock that is never defined in
+the gcc ipq8064 clock table. (the correct way was to declare a fixed
+clock in dts and reference that)
+To prevent any kind of problem we use the patch 3 and provide the clk
+for PXO_SRC in the gcc clock table. We manually provide the clk after
+gcc probe.
+
+Patch 4 is just a minor cleanup where we use the poll macro
+
+Patch 5 is the actually kpss-xcc conversion to parent data
+
+Patch 6-7 should be a fixup of a real conver case
+
+Patch 8 converts the krait-cc to parent_data
+Patch 9 give some love to the code with some minor fixup
+Patch 10 drop the hardcoded safe sel and use the new
+clk_hw_get_parent_index to get the safe parent index.
+(also I discovered that the parent order was wrong)
+
+Patch 11 is an additional fixup to force the reset of the muxes even
+more.
+
+Patch 12-13 are some additiona taken from the qsdk that were missing in
+the upstream driver
+
+Patch 14 converts krait-cc to yaml
+
+Patch 15 add to krait-cc Documentation the L2 clocks
+
+Patch 16 finally adds all this stuff to the ipq8064 dtsi (and fix the
+stupid PXO_SRC phandle)
+
+Patch 17 converts the kpss-acc driver to yaml and fix some Documentation
+error
+
+Patch 18 convets the kpss-gcc driver to yaml
+
+I tested this series on a ipq8064 SoC by running a cache benchmark test
+to make sure the changes are correct and we don't silently cause
+regressions. Also I compared the output of the clk_summary every time
+and we finally have a sane output where the mux are correctly placed in
+the correct parent. (till now we had the cpu aux clock all over the
+place, probably never cause problems but who knows.)
+
+v3:
+- Split Documentation files for kpss and krait-cc
+v2:
+- introduce new API instead of fixing the existing one
+- do not reorganize variables in krait-cc
+- fix some comments error and improve it
+- return better error for patch 7
+- fix missing new line on patch 16
+
+Ansuel Smith (18):
+  clk: introduce clk_hw_get_index_of_parent new API
+  clk: qcom: gcc-ipq806x: skip pxo/cxo fixed clk if already present
+  clk: qcom: gcc-ipq806x: add PXO_SRC in clk table
+  clk: qcom: clk-hfpll: use poll_timeout macro
+  clk: qcom: kpss-xcc: convert to parent data API
+  clk: qcom: clk-krait: unlock spin after mux completion
+  clk: qcom: clk-krait: add hw_parent check for div2_round_rate
+  clk: qcom: krait-cc: convert to parent_data API
+  clk: qcom: krait-cc: drop pr_info and register qsb only if needed
+  clk: qcom: krait-cc: drop hardcoded safe_sel
+  clk: qcom: krait-cc: force sec_mux to QSB
+  clk: qcom: clk-krait: add apq/ipq8064 errata workaround
+  clk: qcom: clk-krait: add enable disable ops
+  dt-bindings: clock: Convert qcom,krait-cc to yaml
+  dt-bindings: clock: Add L2 clocks to qcom,krait-cc Documentation
+  ARM: dts: qcom: qcom-ipq8064: add missing krait-cc compatible and
+    clocks
+  dt-bindings: arm: msm: Convert kpss-acc driver Documentation to yaml
+  dt-bindings: arm: msm: Convert kpss-gcc driver Documentation to yaml
+
+ .../bindings/arm/msm/qcom,kpss-acc.txt        |  49 -----
+ .../bindings/arm/msm/qcom,kpss-acc.yaml       |  88 +++++++++
+ .../bindings/arm/msm/qcom,kpss-gcc.txt        |  44 -----
+ .../bindings/arm/msm/qcom,kpss-gcc.yaml       |  68 +++++++
+ .../bindings/clock/qcom,krait-cc.txt          |  34 ----
+ .../bindings/clock/qcom,krait-cc.yaml         |  63 ++++++
+ arch/arm/boot/dts/qcom-ipq8064.dtsi           |  20 +-
+ drivers/clk/clk.c                             |  14 ++
+ drivers/clk/qcom/clk-hfpll.c                  |  13 +-
+ drivers/clk/qcom/clk-krait.c                  |  44 ++++-
+ drivers/clk/qcom/clk-krait.h                  |   1 +
+ drivers/clk/qcom/gcc-ipq806x.c                |  27 ++-
+ drivers/clk/qcom/kpss-xcc.c                   |  25 +--
+ drivers/clk/qcom/krait-cc.c                   | 186 ++++++++++--------
+ include/linux/clk-provider.h                  |   1 +
+ 15 files changed, 441 insertions(+), 236 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.txt
+ create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.yaml
+ delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
+ create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
+ delete mode 100644 Documentation/devicetree/bindings/clock/qcom,krait-cc.txt
+ create mode 100644 Documentation/devicetree/bindings/clock/qcom,krait-cc.yaml
+
+-- 
+2.34.1
 
-From my side things look normal right now. Regzbot is aware of three
-(maybe just two) regressions in mainline:
-
-* one in cifs that needs further tests
-* one in hid/input where a patch exists, but needs polishing; and the
-issue seems to affect only two Laptop models anyway
-* one in DRM that might in fact be a problem already introduced in 5.11
-(the report is not clear on this); the fix is in Linux-next
-(27599aacbaef) for a few weeks already; for details see
-https://bugzilla.kernel.org/show_bug.cgi?id!5678
-
-Nothing else from my side.
-
-Ciao, Thorsten
-
----
-
-Hi, this is regzbot, the Linux kernel regression tracking bot.
-
-Currently I'm aware of 17 regressions in linux-mainline. Find the
-current status below and the latest on the web:
-
-https://linux-regtracking.leemhuis.info/regzbot/mainline/
-
-Bye bye, hope to see you soon for the next report.
-   Regzbot (on behalf of Thorsten Leemhuis)
-
-
-========================================================
-current cycle (v5.16.. aka v5.17-rc), culprit identified
-========================================================
-
-
-[ *NEW* ] HID: multitouch: right touchpad button is disabled on recent kernels
-------------------------------------------------------------------------------
-https://linux-regtracking.leemhuis.info/regzbot/regression/s5htubv32s8.wl-tiwai@suse.de/
-https://lore.kernel.org/stable/s5htubv32s8.wl-tiwai@suse.de/
-
-By Takashi Iwai, 2 days ago; 10 activities, latest 1 days ago.
-Introduced in 37ef4c19b4c6 (v5.17-rc5)
-
-Recent activities from: Takashi Iwai (4), José Expósito (3), kernel test
-  robot (1), Thorsten Leemhuis (1), Benjamin Tissoires (1)
-
-One patch associated with this regression:
-* Re: [REGRESSION] Right touchpad button disabled on Dell 7750
-  https://lore.kernel.org/stable/s5hh77v2uov.wl-tiwai@suse.de/
-  2 days ago, by Takashi Iwai
-
-Noteworthy links:
-* https://gitlab.freedesktop.org/libinput/libinput/-/merge_requests/726#note_1303623
-
-
-====================================================
-current cycle (v5.16.. aka v5.17-rc), unkown culprit
-====================================================
-
-
-[ *NEW* ] "vmwgfx: probe of 0000:00:0f.0 failed with error -16" in guest
-------------------------------------------------------------------------
-https://linux-regtracking.leemhuis.info/regzbot/regression/08e3a9b1-5ed3-be89-1d48-5d1061253789@leemhuis.info/
-https://lore.kernel.org/dri-devel/08e3a9b1-5ed3-be89-1d48-5d1061253789@leemhuis.info/
-
-By sander44, 2 days ago; 2 activities, latest 1 days ago.
-Introduced in v5.16..v5.17-rc7
-
-Recent activities from: Thorsten Leemhuis (2)
-
-Noteworthy links:
-* https://bugzilla.kernel.org/show_bug.cgi?id=215678
-
-
-cifs: Failure to access cifs mount of samba share after resume from sleep
--------------------------------------------------------------------------
-https://linux-regtracking.leemhuis.info/regzbot/regression/CAFrh3J9soC36+BVuwHB=g9z_KB5Og2+p2_W+BBoBOZveErz14w@mail.gmail.com/
-https://lore.kernel.org/linux-cifs/CAFrh3J9soC36%2BBVuwHB=g9z_KB5Og2%2Bp2_W%2BBBoBOZveErz14w@mail.gmail.com/
-
-By Satadru Pramanik, 21 days ago; 19 activities, latest 2 days ago.
-Introduced in v5.16..v5.17-rc5
-
-Recent activities from: Satadru Pramanik (3), Shyam Prasad N (2), ronnie
-  sahlberg (2), Steve French (1), Thorsten Leemhuis (1)
-
-
-=========================================================================================
-previous cycle (v5.15..v5.16), culprit identified, with activity in the past three months
-=========================================================================================
-
-
-[ *NEW* ] nvme: NVMe/writeback wb_workfn/blocked for more than 30 seconds
--------------------------------------------------------------------------
-https://linux-regtracking.leemhuis.info/regzbot/regression/0a0b0127-8e5d-d6ca-52db-bf9937d6d887@leemhuis.info/
-https://lore.kernel.org/regressions/0a0b0127-8e5d-d6ca-52db-bf9937d6d887@leemhuis.info/
-
-By Imre Deak, 2 days ago; 1 activities, latest 2 days ago.
-Introduced in 4f5022453acd (v5.16-rc1)
-
-Recent activities from: Thorsten Leemhuis (1)
-
-Noteworthy links:
-* https://bugzilla.kernel.org/show_bug.cgi?id=215679
-
-
-bluetooth: HSP/HFP mSBC profile broken with QCA6174
----------------------------------------------------
-https://linux-regtracking.leemhuis.info/regzbot/regression/bug-215576-62941@https.bugzilla.kernel.org//
-https://lore.kernel.org/linux-bluetooth/bug-215576-62941@https.bugzilla.kernel.org%2F/
-
-By bugzilla-daemon@kernel.org, 40 days ago; 18 activities, latest 11 days ago.
-Introduced in b2af264ad3af (v5.16-rc1)
-
-2 patch postings are associated with this regression, the latest is this:
-* [Bug 215576] HSP/HFP mSBC profile broken with QCA6174
-  https://lore.kernel.org/linux-bluetooth/bug-215576-62941-2nprEl3omz@https.bugzilla.kernel.org%2F/
-  29 days ago, by bugzilla-daemon@kernel.org
-
-Noteworthy links:
-* https://bugzilla.kernel.org/show_bug.cgi?id=215576
-* [RFC] Bluetooth: don't use ESCO setup for BT_VOICE
-  https://lore.kernel.org/linux-bluetooth/20220227163430.24694-1-pav@iki.fi/
-  20 days ago, by Pauli Virtanen; thread monitored.
-* [RFC] Bluetooth: HCI: Add HCI_QUIRK_ENHANCED_SETUP_SYNC_CONN quirk
-  https://lore.kernel.org/linux-bluetooth/20220302225049.432025-1-luiz.dentz@gmail.com/
-  17 days ago, by Luiz Augusto von Dentz; thread monitored.
-
-
-==================================================================================
-older cycles (..v5.15), culprit identified, with activity in the past three months
-==================================================================================
-
-
-gpio: some GPIO lines have stopped working
-------------------------------------------
-https://linux-regtracking.leemhuis.info/regzbot/regression/20211217153555.9413-1-marcelo.jimenez@gmail.com/
-https://lore.kernel.org/stable/20211217153555.9413-1-marcelo.jimenez@gmail.com/
-
-By Marcelo Roberto Jimenez, 93 days ago; 40 activities, latest 2 days ago.
-Introduced in 2ab73c6d8323 (v5.7-rc1)
-
-Fix incoming:
-* Revert "gpio: Revert regression in sysfs-gpio (gpiolib.c)"
-  https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?h=master&id=56e337f2cf1326323844927a04e9dbce9a244835
-
-
-mtd: cfi_cmdset_0002: flash write accesses on the hardware fail on a PowerPC MPC8313 to a 8-bit-parallel S29GL064N flash
-------------------------------------------------------------------------------------------------------------------------
-https://linux-regtracking.leemhuis.info/regzbot/regression/b687c259-6413-26c9-d4c9-b3afa69ea124@pengutronix.de/
-https://lore.kernel.org/lkml/b687c259-6413-26c9-d4c9-b3afa69ea124@pengutronix.de/
-
-By Ahmad Fatoum, 97 days ago; 29 activities, latest 4 days ago.
-Introduced in dfeae1073583 (v4.18-rc1)
-
-Recent activities from: Tokunori Ikegami (5), Miquel Raynal (1), Vignesh
-  Raghavendra (1)
-
-2 patch postings are associated with this regression, the latest is this:
-* [PATCH v2] mtd: cfi_cmdset_0002: Use chip_ready() for write on S29GL064N
-  https://lore.kernel.org/stable/20220306153213.411425-1-ikegami.t@gmail.com/
-  14 days ago, by Tokunori Ikegami; thread monitored.
-
-Noteworthy links:
-* [PATCH] mtd: cfi_cmdset_0002: Use chip_ready() for write on S29GL064N
-  https://lore.kernel.org/stable/20220214182011.8493-1-ikegami.t@gmail.com/
-  33 days ago, by Tokunori Ikegami; thread monitored.
-
-
-memory corruption on Atmel SAMA5D31
------------------------------------
-https://linux-regtracking.leemhuis.info/regzbot/regression/13c6c9a2-6db5-c3bf-349b-4c127ad3496a@axentia.se/
-https://lore.kernel.org/lkml/13c6c9a2-6db5-c3bf-349b-4c127ad3496a@axentia.se/
-
-By Peter Rosin, 17 days ago; 17 activities, latest 10 days ago.
-Introduced in f9aa460672c9 (v5.11-rc1)
-
-One patch associated with this regression:
-* Re: Regression: memory corruption on Atmel SAMA5D31
-  https://lore.kernel.org/lkml/6ad73fa2-0ebb-1e96-a45a-b70faca623dd@axentia.se/
-  10 days ago, by Peter Rosin
-
-
-====================================================================================
-previous cycle (v5.15..v5.16), unkown culprit, with activity in the past three weeks
-====================================================================================
-
-
-md: Raid6 check performance regression
---------------------------------------
-https://linux-regtracking.leemhuis.info/regzbot/regression/0eb91a43-a153-6e29-14b6-65f97b9f3d99@nuclearwinter.com/
-https://lore.kernel.org/linux-raid/0eb91a43-a153-6e29-14b6-65f97b9f3d99@nuclearwinter.com/
-
-By Larkin Lowrey, 12 days ago; 14 activities, latest 3 days ago.
-Introduced in v5.15..v5.16
-
-Fix incoming:
-* block: flush plug based on hardware and software queue order
-  https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?h=master&id=26fed4ac4eab09c27fbae1859696cc38f0536407
-
-
-[ *NEW* ] wireless: iwlwifi: Firmware crash frequently with firmware 36.ca7b901d.0 (8265-36.ucode)
---------------------------------------------------------------------------------------------------
-https://linux-regtracking.leemhuis.info/regzbot/regression/915d6d66-4e42-8cbf-76bc-0f2f72d5e7d6@leemhuis.info/
-https://lore.kernel.org/linux-wireless/915d6d66-4e42-8cbf-76bc-0f2f72d5e7d6@leemhuis.info/
-
-By Udo Steinberg, 6 days ago; 1 activities, latest 6 days ago.
-Introduced in v5.15..v5.16
-
-Recent activities from: Thorsten Leemhuis (1)
-
-Noteworthy links:
-* https://bugzilla.kernel.org/show_bug.cgi?id=215635
-
-
-=============================================================================
-older cycles (..v5.15), unkown culprit, with activity in the past three weeks
-=============================================================================
-
-
-md: unable to handle page fault while running badblocks (fsck.ext4 -c) on a raid5 md array
-------------------------------------------------------------------------------------------
-https://linux-regtracking.leemhuis.info/regzbot/regression/53e7de78-4d27-5089-f159-0d443b354666@leemhuis.info/
-https://lore.kernel.org/lkml/53e7de78-4d27-5089-f159-0d443b354666@leemhuis.info/
-
-By Dominik Mierzejewski, 26 days ago; 5 activities, latest 2 days ago.
-Introduced in v5.13..v5.14.10
-
-Recent activities from: Song Liu (1)
-
-Noteworthy links:
-* https://bugzilla.kernel.org/show_bug.cgi?id=215605
-
-
-[ *NEW* ] net: netfilter: Intermittent performance regression related to ipset
-------------------------------------------------------------------------------
-https://linux-regtracking.leemhuis.info/regzbot/regression/BY5PR13MB3604D24C813A042A114B639DEE109@BY5PR13MB3604.namprd13.prod.outlook.com/
-https://lore.kernel.org/lkml/BY5PR13MB3604D24C813A042A114B639DEE109@BY5PR13MB3604.namprd13.prod.outlook.com/
-
-By McLean, Patrick, 4 days ago; 2 activities, latest 3 days ago.
-Introduced in v5.10..v5.15
-
-Recent activities from: Jakub Kicinski (1), McLean, Patrick (1)
-
-
-Regression in workingset_refault latency on 5.15
-------------------------------------------------
-https://linux-regtracking.leemhuis.info/regzbot/regression/CA+wXwBSyO87ZX5PVwdHm-=dBjZYECGmfnydUicUyrQqndgX2MQ@mail.gmail.com/
-https://lore.kernel.org/linux-mm/CA%2BwXwBSyO87ZX5PVwdHm-=dBjZYECGmfnydUicUyrQqndgX2MQ@mail.gmail.com/
-
-By Daniel Dao, 25 days ago; 60 activities, latest 3 days ago.
-Introduced in v3.0..v5.15.19
-
-Recent activities from: Michal Koutný (2), Shakeel Butt (1)
-
-12 patch postings are associated with this regression, the latest is this:
-* Re: [PATCH] memcg: sync flush only if periodic flush is delayed
-  https://lore.kernel.org/lkml/20220313025050.1463-1-hdanton@sina.com/
-  7 days ago, by Hillf Danton
-
-Noteworthy links:
-* [PATCH] memcg: async flush memcg stats from perf sensitive codepaths
-  https://lore.kernel.org/stable/20220226002412.113819-1-shakeelb@google.com/
-  22 days ago, by Shakeel Butt; thread monitored.
-* [PATCH] memcg: sync flush only if periodic flush is delayed
-  https://lore.kernel.org/stable/20220304184040.1304781-1-shakeelb@google.com/
-  15 days ago, by Shakeel Butt; thread monitored.
-* + memcg-sync-flush-only-if-periodic-flush-is-delayed.patch added to -mm tree
-  https://lore.kernel.org/stable/20220304235350.5043FC340E9@smtp.kernel.org/
-  15 days ago, by Andrew Morton; thread monitored.
-* [failures] memcg-sync-flush-only-if-periodic-flush-is-delayed.patch removed from -mm tree
-  https://lore.kernel.org/stable/20220307024504.5EA2AC340EC@smtp.kernel.org/
-  13 days ago, by Andrew Morton; thread monitored.
-* + memcg-sync-flush-only-if-periodic-flush-is-delayed.patch added to -mm tree
-  https://lore.kernel.org/stable/20220307034042.A64CEC340F3@smtp.kernel.org/
-  13 days ago, by Andrew Morton; thread monitored.
-* + memcg-sync-flush-only-if-periodic-flush-is-delayed.patch added to -mm tree
-  https://lore.kernel.org/stable/20220307034236.DC2D6C340F3@smtp.kernel.org/
-  13 days ago, by Andrew Morton; thread monitored.
-
-
-====================================================================
-all others with unkown culprit and activity in the past three months
-====================================================================
-
-
-backlight: Intel_backlight does not work after updating from 5.10.89 to latest 5.15.17
---------------------------------------------------------------------------------------
-https://linux-regtracking.leemhuis.info/regzbot/regression/74ee2216-a295-c2b6-328b-3e6d0cc1847e@leemhuis.info/
-https://lore.kernel.org/regressions/74ee2216-a295-c2b6-328b-3e6d0cc1847e@leemhuis.info/
-
-By Filippo Falezza, 48 days ago; 1 activities, latest 48 days ago.
-Introduced in v5.10.89..v5.15.17
-
-Noteworthy links:
-* https://bugzilla.kernel.org/show_bug.cgi?id=215553
-
-
-=======================================================
-on back burner, but with activity since the last report
-=======================================================
-
-
-c7a75d07827a fixed 6dce5aa59e0b for XGene2, but that *further* broke XGene1
----------------------------------------------------------------------------
-https://linux-regtracking.leemhuis.info/regzbot/regression/Yf2wTLjmcRj+AbDv@xps13.dannf/
-https://lore.kernel.org/stable/Yf2wTLjmcRj%2BAbDv@xps13.dannf/
-
-By dann frazier, 43 days ago; 8 activities, latest 3 days ago.
-Introduced in 6dce5aa59e0b (v5.5-rc1)
-
-Recent activities from: Lorenzo Pieralisi (1)
-
-One patch associated with this regression:
-* Re: [PATCH] PCI: xgene: Fix IB window setup
-  https://lore.kernel.org/stable/YgHFFIRT6E0j9TlX@xps13.dannf/
-  40 days ago, by dann frazier
-
-
-net: wireless: rtw_8822ce: Wifi connection doesn't really work anymore
-----------------------------------------------------------------------
-https://linux-regtracking.leemhuis.info/regzbot/regression/CAO_iuKEL8tHnovpGiQGUxg7JUpZFxHpxhOHbqAMgbt5R4Eftgg@mail.gmail.com/
-https://lore.kernel.org/linux-wireless/CAO_iuKEL8tHnovpGiQGUxg7JUpZFxHpxhOHbqAMgbt5R4Eftgg@mail.gmail.com/
-
-By Nico Sneck, 33 days ago; 6 activities, latest 3 days ago.
-Introduced in v5.15..v5.16
-
-Recent activities from: Nico Sneck (1)
-
-
-net: wireless: ath10k: 5GHz channels are marked as No-IR
---------------------------------------------------------
-https://linux-regtracking.leemhuis.info/regzbot/regression/1c160dfb-6ccc-b4d6-76f6-4364e0adb6dd@reox.at/
-https://lore.kernel.org/ath10k/1c160dfb-6ccc-b4d6-76f6-4364e0adb6dd@reox.at/
-
-By Sebastian Bachmann, 113 days ago; 26 activities, latest 5 days ago.
-Introduced in 2dc016599cfa (v5.6-rc1)
-
-Fix incoming:
-* Revert "ath: add support for special 0x0 regulatory domain"
-  https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?h=master&id=1ec7ed5163c70a0d040150d2279f932c7e7c143f
-
-
-=============
-End of report
-=============
-
-All regressions marked '[ *NEW* ]' were added since the previous report,
-which can be found here:
-https://lore.kernel.org/r/164719604221.161559.15456635663646196218@leemhuis.info
-
-Thanks for your attention, have a nice day!
-
-  Regzbot, your hard working Linux kernel regression tracking robot
-
-
-P.S.: Wanna know more about regzbot or how to use it to track regressions
-for your subsystem? Then check out the getting started guide or the
-reference documentation:
-
-https://gitlab.com/knurd42/regzbot/-/blob/main/docs/getting_started.md
-https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md
-
-The short version: if you see a regression report you want to see
-tracked, just send a reply to the report where you Cc
-regressions@lists.linux.dev with a line like this:
-
-#regzbot introduced: v5.13..v5.14-rc1
-
-If you want to fix a tracked regression, just do what is expected
-anyway: add a 'Link:' tag with the url to the report, e.g.:
-
-Link: https://lore.kernel.org/all/30th.anniversary.repost@klaava.Helsinki.FI/
