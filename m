@@ -2,111 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00ACCC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 13:10:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ADDBC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 13:12:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245122AbiCTNMD convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Mar 2022 09:12:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38764 "EHLO
+        id S245126AbiCTNNb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Mar 2022 09:13:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235848AbiCTNL7 (ORCPT
+        with ESMTP id S245124AbiCTNN0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Mar 2022 09:11:59 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 756F51F614
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 06:10:36 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-319-oFCxxHf5MgGGf8WvpDCCEg-1; Sun, 20 Mar 2022 13:10:33 +0000
-X-MC-Unique: oFCxxHf5MgGGf8WvpDCCEg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Sun, 20 Mar 2022 13:10:33 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Sun, 20 Mar 2022 13:10:33 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Ammar Faizi' <ammarfaizi2@gnuweeb.org>, Willy Tarreau <w@1wt.eu>
-CC:     "Paul E. McKenney" <paulmck@kernel.org>,
-        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
-        Nugraha <richiisei@gmail.com>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "llvm@lists.linux.dev" <llvm@lists.linux.dev>
-Subject: RE: [RFC PATCH v1 3/6] tools/nolibc: i386: Implement syscall with 6
- arguments
-Thread-Topic: [RFC PATCH v1 3/6] tools/nolibc: i386: Implement syscall with 6
- arguments
-Thread-Index: AQHYPD5aHmXDAqFOcUemVcZ8MoFj5azIOuNw
-Date:   Sun, 20 Mar 2022 13:10:33 +0000
-Message-ID: <2e335ac54db44f1d8496583d97f9dab0@AcuMS.aculab.com>
-References: <20220320093750.159991-1-ammarfaizi2@gnuweeb.org>
- <20220320093750.159991-4-ammarfaizi2@gnuweeb.org>
-In-Reply-To: <20220320093750.159991-4-ammarfaizi2@gnuweeb.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Sun, 20 Mar 2022 09:13:26 -0400
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1108A1F630;
+        Sun, 20 Mar 2022 06:12:02 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R741e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=xueshuai@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0V7f.E1k_1647781918;
+Received: from 30.240.112.73(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0V7f.E1k_1647781918)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Sun, 20 Mar 2022 21:12:00 +0800
+Message-ID: <78cefd4c-f735-2ec4-0c09-35c8191280c5@linux.alibaba.com>
+Date:   Sun, 20 Mar 2022 21:11:58 +0800
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.7.0
+Subject: Re: [BUG] kernel side can NOT trigger memory error with einj
 Content-Language: en-US
+To:     "Luck, Tony" <tony.luck@intel.com>
+Cc:     "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
+        "lenb@kernel.org" <lenb@kernel.org>,
+        "james.morse@arm.com" <james.morse@arm.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "graeme.gregory@linaro.org" <graeme.gregory@linaro.org>,
+        "will.deacon@arm.com" <will.deacon@arm.com>,
+        "myron.stowe@redhat.com" <myron.stowe@redhat.com>,
+        "Brown, Len" <len.brown@intel.com>,
+        "Huang, Ying" <ying.huang@intel.com>
+References: <8c40a492-9461-2b43-6ec9-06bfc7a0e77f@linux.alibaba.com>
+ <YjIeff7ESJB/amYA@agluck-desk3.sc.intel.com>
+ <f93a5532-3e07-edf4-38ca-142a0f1d78d7@linux.alibaba.com>
+ <1421c3ac3d3c4438a6ff18f193f8a41c@intel.com>
+From:   Shuai Xue <xueshuai@linux.alibaba.com>
+In-Reply-To: <1421c3ac3d3c4438a6ff18f193f8a41c@intel.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ammar Faizi
-> Sent: 20 March 2022 09:38
+在 2022/3/18 AM12:57, Luck, Tony 写道:
+>> -       rc = apei_exec_run(&trigger_ctx, ACPI_EINJ_TRIGGER_ERROR);
+>> +       ptr = kmap(pfn_to_page(pfn));
+>> +       tmp = *(ptr + (param1 & ~ PAGE_MASK));
 > 
-> In i386, the 6th argument of syscall goes in %ebp. However, both Clang
-> and GCC cannot use %ebp in the clobber list and in the "r" constraint
-> without using -fomit-frame-pointer. To make it always available for any
-> kind of compilation, the below workaround is implemented.
+> That hack works when the trigger action is just trying to access the injected
+> location. But on Intel platforms the trigger "kicks" the patrol scrubber in the
+> memory controller to access the address. So the error is triggered not by
+> an access from the core, but by internal memory controller access.
 > 
-> For clang (the Assembly statement can't clobber %ebp):
->   1) Save the %ebp value to the redzone area -4(%esp).
+> This results in a different error signature (for an uncorrected error injection
+> it will be a UCNA or SRAO in Intel acronym-speak).
 
-i386 doesn't have a redzone.
-If you get a signal it will trash -4(%sp)
+As far as I know, APEI only defines five injection instructions, ACPI_EINJ_READ_REGISTER,
+ACPI_EINJ_READ_REGISTER_VALUE, ACPI_EINJ_WRITE_REGISTER, ACPI_EINJ_WRITE_REGISTER_VALUE and
+ACPI_EINJ_NOOP. ACPI_EINJ_TRIGGER_ERROR action should run one of them, I don't see
+any of them will kick the patrol scrubber. For example, trigger with ACPI_EINJ_READ_REGISTER:
 
->   2) Load the 6-th argument from memory to %ebp.
->   3) Subtract the %esp by 4.
->   4) Do the syscall (int $0x80).
->   5) Pop %ebp.
-> 
-> For GCC, fortunately it has a #pragma that can force a specific function
-> to be compiled with -fomit-frame-pointer, so it can always use "r"(var)
-> where `var` is a variable bound to %ebp.
+apei_exec_run(&trigger_ctx, ACPI_EINJ_TRIGGER_ERROR)
+    __apei_exec_run	// ins=0
+        => apei_exec_read_register
+            => apei_read
+                => acpi_os_read_memory
+                    => acpi_map_vaddr_lookup    /* lookup VA of PA from acpi_ioremap */
+                    => acpi_os_ioremap
+		    => acpi_os_read_iomem
+			=> *(u32 *) value = readl(virt_addr);
 
-How is that going to work for an inlined functon?
+As we can see, the error is triggered by access from the core. However, the physical
+address can NOT be mapped by acpi_os_ioremap.
 
-And using xchg is slow - it is always locked.
+If I missed anything, please let me know. Thank you very much.
 
-One possibility might be to do:
-	push arg6
-	push %ebp
-	mov  %ebp, 4(%sp)
-	int  0x80
-	pop  %ebp
-	add  %esp,4
+Best Regards,
+Shuai
 
-Although I'm not sure you really want to allocate 4k pages
-for every malloc() call.
-
-Probably better to write a mini 'libc' that uses sbrk()
-and a best fit scan of a linear free list.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
 
