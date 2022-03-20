@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD503C4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 16:28:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B25CC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 16:28:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245545AbiCTQaA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Mar 2022 12:30:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39924 "EHLO
+        id S245576AbiCTQaC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Mar 2022 12:30:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245469AbiCTQ3i (ORCPT
+        with ESMTP id S245480AbiCTQ3m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Mar 2022 12:29:38 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77EA034641;
-        Sun, 20 Mar 2022 09:28:14 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id o30-20020a05600c511e00b0038c9cfb79cbso459452wms.1;
-        Sun, 20 Mar 2022 09:28:14 -0700 (PDT)
+        Sun, 20 Mar 2022 12:29:42 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 376BA344FD;
+        Sun, 20 Mar 2022 09:28:19 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id u16so16850530wru.4;
+        Sun, 20 Mar 2022 09:28:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=8P3wAYvgFlPve71dG0z5aPiI1G8WoaU4vYr3l4vmoOE=;
-        b=SFtzoD64TaQzPSLPWXnXCW7cW+np83Bf6OQnuSus43XleVePiClweVC3y4JFv+jT9a
-         bb7q9P/mkk0hjCT+w/RiFK/W4p29/Dq0+U0xLc3Qed9pU1O69bmIS4y4S8z08SmT20v7
-         c9uB9aEUZDlrteDwrhXJDyEbGcZ4sl0YhF4hXhK1QNOFTYiESAZzc1bgqcevu/ywnKYJ
-         oQENVuC6L8Wo6p/++tNda2hoDQsDtOSMD+ItG3mgkLsh5qYHG46WAI4GN7kMe6ypybLv
-         PYnZEpTWlBivOmnjsEO15ZIWXi6M6LOagKQI4iV98H8zK6qGZkd3bP9V1gEj89bQtCix
-         TZIA==
+        bh=fDLuIDyRCuRCH3Dc/gWWNAl91bj4g20Fwm4jwXMbE5A=;
+        b=SjSggtGy7HEDnlnd7IWkNUi0E5N14R9aw4lHDSeYP6vaLkfUXqnYDswHK3Gj+ek+A7
+         mu3576fyQmbfhD7ks7apDJ/G77BxXAoHyMiS2/iI2Wmw+YeYH1H6k8vj/ML+cMwhn22r
+         iU6Lhq4tS5YVynV+sh1CdWtiXWGSz/ynklBNOL7PliJ0EvnXuZokTjdEDfcBGjlI1XzH
+         ha4APHmGXFrJodZ4lD/9z64I8AhDNXwN5mx29ZT9PS6Qp61DGljmsEhlUhjrs4jYlEYE
+         FNPuclw6eADpcGO4d1klnVFLDE1c/rQ7m+7bcvKAdCWsn30oSIh8ic55iG6Po09ZOoN8
+         N+Wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=8P3wAYvgFlPve71dG0z5aPiI1G8WoaU4vYr3l4vmoOE=;
-        b=qis2QJZJbzq/xr79XdpaJRRNfum7C1dM93majSw/tsI3YQQG74O2WdapnWfhJxUyZ/
-         90z2+DfXa90za1std4AXmdFohWAy57HVbReMTiBMiQdW0jagaRqVkSfrN7ePW0mkGiad
-         aPvITdTft99fRjXRA8JY+zxwFxDiYxrvizVNb3GVEXglngDWvudUsDCCt0VT+JqifeGt
-         pi8hKCrtMHuI3lVb33xI2VdqObpv6EAcE8gC7ivba7DfeUG8nu8TcOGHIyTPWSpvlJQU
-         Jkcu91AjeehQT4cUzoB+gsr6VPoophZPytSY+DUsMtzbql35HWu9Ab9stP710+uPChW+
-         Ntig==
-X-Gm-Message-State: AOAM532R+8yY0wKbJVWSnyM/W7FeDbseY+I7gY+WOA19E3ro5NaKrxkd
-        bpToMLLaVKGOV76VM6iwjRjvppaHdeI=
-X-Google-Smtp-Source: ABdhPJz1GOmXaYQZUAA0skYDcx6omh1lEo3AeWkKPBF6mOQaprrVroYAY0T2KtU2owtV9IlwtGbYQg==
-X-Received: by 2002:a05:600c:a06:b0:37b:fdd8:4f8 with SMTP id z6-20020a05600c0a0600b0037bfdd804f8mr24304139wmp.41.1647793692871;
-        Sun, 20 Mar 2022 09:28:12 -0700 (PDT)
+        bh=fDLuIDyRCuRCH3Dc/gWWNAl91bj4g20Fwm4jwXMbE5A=;
+        b=DpyZILraqlleTzOBSmvWs8291yCFFQmjLB4nhCxg6PIsLfJXb/TZIRP3hoSpCSNE3P
+         vQKNyrGNn1L7IPHeiRfLo0jd5zcXhhRqtx2+an7jDaR42yC8SW59SWUWp5cgKShaC0Jm
+         6PqsfSikKLwI+z6ALhtYF9Nj4qmZj3RzciTMmdFSlL4eKBYMAm9TfoZ+ZxP6om6Irf2Q
+         5+0VwGWayb+0ax3U6AVJsCf4+rnvgc17sY6ImQsZQq/eE8RoK1EkdtLDel48kVE8DYnm
+         KTxev1P81mE1sJtpSP3F7rEXzbe19p5nyzCpVIOD+YA4Asmc8IjTJZMiO3KkoS3exSzi
+         SDjw==
+X-Gm-Message-State: AOAM530E0Veo5GBBwbe5fWw4vELoe1TzpbAlpq1TbIoe2VqY9oLiJn/r
+        KiouqmtRHiiFMFhXx+X08iM=
+X-Google-Smtp-Source: ABdhPJy7vFcZe2XKWBUt0rtJ1+TXrD5KrcZwd0ZFlwZuzU9ATFYWmW1iscTu2Qyt9o7fEsXSJDwkrQ==
+X-Received: by 2002:adf:e2cb:0:b0:203:7564:1076 with SMTP id d11-20020adfe2cb000000b0020375641076mr15418628wrj.199.1647793697658;
+        Sun, 20 Mar 2022 09:28:17 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
-        by smtp.googlemail.com with ESMTPSA id y6-20020a05600015c600b00203fa70b4ebsm6760085wry.53.2022.03.20.09.28.11
+        by smtp.googlemail.com with ESMTPSA id y6-20020a05600015c600b00203fa70b4ebsm6760085wry.53.2022.03.20.09.28.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Mar 2022 09:28:12 -0700 (PDT)
+        Sun, 20 Mar 2022 09:28:17 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Rob Herring <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -56,9 +56,9 @@ To:     Rob Herring <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
-Subject: [PATCH v3 02/18] clk: qcom: gcc-ipq806x: skip pxo/cxo fixed clk if already present
-Date:   Sun, 20 Mar 2022 12:34:14 +0100
-Message-Id: <20220320113430.26076-3-ansuelsmth@gmail.com>
+Subject: [PATCH v3 06/18] clk: qcom: clk-krait: unlock spin after mux completion
+Date:   Sun, 20 Mar 2022 12:34:18 +0100
+Message-Id: <20220320113430.26076-7-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220320113430.26076-1-ansuelsmth@gmail.com>
 References: <20220320113430.26076-1-ansuelsmth@gmail.com>
@@ -68,55 +68,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Skip pxo/cxo clock registration if they are already defined in DTS as fixed
-clock.
+Unlock spinlock after the mux switch is completed to prevent any corner
+case of mux request while the switch still needs to be done.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/clk/qcom/gcc-ipq806x.c | 20 ++++++++++++++------
- 1 file changed, 14 insertions(+), 6 deletions(-)
+ drivers/clk/qcom/clk-krait.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/qcom/gcc-ipq806x.c b/drivers/clk/qcom/gcc-ipq806x.c
-index d6b7adb4be38..27f6d7626abb 100644
---- a/drivers/clk/qcom/gcc-ipq806x.c
-+++ b/drivers/clk/qcom/gcc-ipq806x.c
-@@ -10,6 +10,7 @@
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-+#include <linux/clk.h>
- #include <linux/clk-provider.h>
- #include <linux/regmap.h>
- #include <linux/reset-controller.h>
-@@ -3061,15 +3062,22 @@ static int gcc_ipq806x_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
- 	struct regmap *regmap;
-+	struct clk *clk;
- 	int ret;
+diff --git a/drivers/clk/qcom/clk-krait.c b/drivers/clk/qcom/clk-krait.c
+index 59f1af415b58..e447fcc3806d 100644
+--- a/drivers/clk/qcom/clk-krait.c
++++ b/drivers/clk/qcom/clk-krait.c
+@@ -32,11 +32,12 @@ static void __krait_mux_set_sel(struct krait_mux_clk *mux, int sel)
+ 		regval |= (sel & mux->mask) << (mux->shift + LPL_SHIFT);
+ 	}
+ 	krait_set_l2_indirect_reg(mux->offset, regval);
+-	spin_unlock_irqrestore(&krait_clock_reg_lock, flags);
  
--	ret = qcom_cc_register_board_clk(dev, "cxo_board", "cxo", 25000000);
--	if (ret)
--		return ret;
-+	clk = clk_get(dev, "cxo");
-+	if (IS_ERR(clk)) {
-+		ret = qcom_cc_register_board_clk(dev, "cxo_board", "cxo", 25000000);
-+		if (ret)
-+			return ret;
-+	}
+ 	/* Wait for switch to complete. */
+ 	mb();
+ 	udelay(1);
++
++	spin_unlock_irqrestore(&krait_clock_reg_lock, flags);
+ }
  
--	ret = qcom_cc_register_board_clk(dev, "pxo_board", "pxo", 25000000);
--	if (ret)
--		return ret;
-+	clk = clk_get(dev, "pxo");
-+	if (IS_ERR(clk)) {
-+		ret = qcom_cc_register_board_clk(dev, "pxo_board", "pxo", 25000000);
-+		if (ret)
-+			return ret;
-+	}
- 
- 	ret = qcom_cc_probe(pdev, &gcc_ipq806x_desc);
- 	if (ret)
+ static int krait_mux_set_parent(struct clk_hw *hw, u8 index)
 -- 
 2.34.1
 
