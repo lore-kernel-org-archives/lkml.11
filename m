@@ -2,109 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2D38C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 01:53:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68E27C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 02:13:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244632AbiCTByg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Mar 2022 21:54:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48686 "EHLO
+        id S244641AbiCTCPC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Mar 2022 22:15:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234519AbiCTByc (ORCPT
+        with ESMTP id S234519AbiCTCO7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Mar 2022 21:54:32 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76E103F892;
-        Sat, 19 Mar 2022 18:53:10 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id o3-20020a17090a3d4300b001c6bc749227so4188889pjf.1;
-        Sat, 19 Mar 2022 18:53:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=0kdePg8fbLCsR4bHxRYPcJiT3QmeXnSHIseCWuQOMGQ=;
-        b=Dsl1Ny7AWCR1AbBZ9wnOmmdIF2tkZHbNYOdX1Ie+rKA/Bj66PCpyWfPS5WYJlsYneY
-         8Fh7ty67qjYn4lqlJsdpMgMG1LIqD9goD5vv1MF5B4aJS3c47qyerYMw1LkmhvuXkGVn
-         fXA4p6jfXo5mpvgcQPe/fMXTXDFMuxRs2qu7JK8ksK3uQUezkLv14aV7glnqRUkANaaE
-         eu96e9F7bq6uJ90o1jrHH75DWxLPNOHhOnlN/M8K2zT15p0gHzJZnhVx/+Vign4Asq8R
-         dfy9BYURR8SoZcJUKHDWkqvq9ybe3t0hgzO0c8r7WDB6ZE/ej4sXYpA+1oCaWktrds0Y
-         OtOQ==
+        Sat, 19 Mar 2022 22:14:59 -0400
+Received: from mail-io1-f45.google.com (mail-io1-f45.google.com [209.85.166.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A77B813D07;
+        Sat, 19 Mar 2022 19:13:37 -0700 (PDT)
+Received: by mail-io1-f45.google.com with SMTP id b16so13398723ioz.3;
+        Sat, 19 Mar 2022 19:13:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=0kdePg8fbLCsR4bHxRYPcJiT3QmeXnSHIseCWuQOMGQ=;
-        b=LZsp6IBBLNocpFrkwl3Llzst2HhheUzWIxjJejBSDSA8BmmFDs1WCF/Qj4Nd23JCJ7
-         aTHyyYUfTDw6knbhkCNSIRAKx+khw4rXIuQe4d3DhMFPo6u+HrfF5D0r+4kRyMrNDV1L
-         aD8NDC8Nmj+iMTFdkZvYOPeWKGvgnRSssqGMQNrXcddMJcbBLvcwqBJGFQsgjeQdeZPS
-         64xH3J4s8wAnW5VLgZZ9k82LzE2A8+tN65e6cOzau7iEn7NWbu7tiViKsuFKDhH06bGR
-         xaZNpUCxCSaC8GvUgApFaFZn7X3B1Y/jq2H6+fPcEDnO2UE5Sn/srOLxnUsSEGlI8JP4
-         zglQ==
-X-Gm-Message-State: AOAM5300ot3/HPTjSea6q2Pz1AVUFq9jfQCKXf5Rqv2cm5DeSSopJG/Y
-        wXDz0+//Wr4bq0NVVb2wY4Y=
-X-Google-Smtp-Source: ABdhPJwDKvZ2+4zEnJ2D+50OQLagrRDm9AMJl2zg0HXmdjwvAQc9GdWpGAlRfpUaKhv0QKLYaW61GQ==
-X-Received: by 2002:a17:902:a415:b0:153:a1b6:729f with SMTP id p21-20020a170902a41500b00153a1b6729fmr6542471plq.52.1647741189915;
-        Sat, 19 Mar 2022 18:53:09 -0700 (PDT)
-Received: from localhost.localdomain ([183.157.215.81])
-        by smtp.googlemail.com with ESMTPSA id oo16-20020a17090b1c9000b001b89e05e2b2sm12859101pjb.34.2022.03.19.18.53.06
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=UF0SVjvxkvLMkbZAod4g1NcoKI8o6ZW/ztSqINDD0q4=;
+        b=ZKMlN2GU3jJR1H89yyTJ6sqQrzN53DDvgY3CPDh5WdjV0pb8RepkZMrlVmLTm8Yp+T
+         Q/yvTL064+4oyP/rR5TyJWn1DiRpykJaS7tl4TaTYCxvqzQdDRAnwhscXX+3cV+5B4Do
+         QtfrI4qNFYAVR613PcdXUkwnuQHv44bgDMXz6Pb5a3ytx5Eas7sxzc9NNLcRX1NRsn+f
+         d3swGX729eB09tKw4cyNgXEPwWneainm6n1v37tZ42dukJ7XA9RuvyPJadSSHlP/5FE3
+         AjmTFQ8J+RIliswKmt+XhOeOqhATndcyEkMg9suYO5cXglZ8Il4nG7+v28s9xMTYQ4N7
+         vqGQ==
+X-Gm-Message-State: AOAM531+bPMiqXF9VyWxes34FyJwxO1B6q7RYnTmCZ9k0FYwGYOIdjBp
+        vK+O/3S7a/NYGHOdudq1/Q==
+X-Google-Smtp-Source: ABdhPJwU2UMo2D/EvMgpqw90b/mGuw0WecnJreqQYWqeR/rv2y/4GyVZvigkx7FKlaHcaQn9Q9IgfA==
+X-Received: by 2002:a05:6638:1249:b0:321:2e10:c276 with SMTP id o9-20020a056638124900b003212e10c276mr1754149jas.304.1647742416902;
+        Sat, 19 Mar 2022 19:13:36 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.253])
+        by smtp.gmail.com with ESMTPSA id a3-20020a5ec303000000b006496b4dd21csm2735762iok.5.2022.03.19.19.13.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Mar 2022 18:53:09 -0700 (PDT)
-From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
-To:     jakobkoschel@gmail.com
-Cc:     davem@davemloft.net, kuba@kernel.org, kvalo@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, pizza@shaftnet.org, xiam0nd.tong@gmail.com
-Subject: Re: [PATCH] cw1200: remove an unneeded NULL check on list iterator
-Date:   Sun, 20 Mar 2022 09:53:02 +0800
-Message-Id: <20220320015302.6883-1-xiam0nd.tong@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <EFA8A102-59B2-4FC6-AB2E-CA8311E11635@gmail.com>
-References: <EFA8A102-59B2-4FC6-AB2E-CA8311E11635@gmail.com>
+        Sat, 19 Mar 2022 19:13:35 -0700 (PDT)
+Received: (nullmailer pid 2990514 invoked by uid 1000);
+        Sun, 20 Mar 2022 02:13:33 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Ashish Mhetre <amhetre@nvidia.com>
+Cc:     thierry.reding@gmail.com, jonathanh@nvidia.com,
+        linux-tegra@vger.kernel.org, robh+dt@kernel.org, digetx@gmail.com,
+        linux-kernel@vger.kernel.org, krzysztof.kozlowski@canonical.com,
+        vdumpa@nvidia.com, Snikam@nvidia.com, devicetree@vger.kernel.org
+In-Reply-To: <20220316092525.4554-4-amhetre@nvidia.com>
+References: <20220316092525.4554-1-amhetre@nvidia.com> <20220316092525.4554-4-amhetre@nvidia.com>
+Subject: Re: [Patch v5 3/4] dt-bindings: memory: Update reg maxitems for tegra186
+Date:   Sat, 19 Mar 2022 20:13:33 -0600
+Message-Id: <1647742413.932927.2990513.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 20 Mar 2022 01:47:26 +0100, Jakob Koschel
-<jakobkoschel@gmail.com> wrote:  
-> I don't think this is fixing anything here. You are basically just removing
-> a check that was always true.
-
-Yes.
-
+On Wed, 16 Mar 2022 14:55:24 +0530, Ashish Mhetre wrote:
 > 
-> I'm pretty sure that this check is here to check if either the list is empty or no
-> element was found. If I'm not wrong, some time ago, lists where not circular but
-> actually pointed to NULL (or the head was NULL) so this check made sense but doesn't
-> anymore.
-> 
-> The appropriate fix would be only setting 'item' when a break is hit and keep
-> the original check.
 
-You are right if that is the author's original intention. I will fix it in PATCH v2.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-> 
-> > 			unsigned long tmo = item->queue_timestamp + queue->ttl;
-> > 			mod_timer(&queue->gc, tmo);
-> > 			cw1200_pm_stay_awake(&stats->priv->pm_state,
-> > -- 
-> > 2.17.1
-> > 
-> > 
-> 
-> I've made those changes already and I'm in the process of upstreaming them in an organized
-> way, so maybe it would make sense to synchronize, so we don't post duplicate patches.
+yamllint warnings/errors:
 
-Ok, I will cc you when sending related patches to avoid duplication.
-I hope you can do the same, thank you.
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.example.dt.yaml: memory-controller@2c00000: reg: [[0, 46137344, 0, 720896]] is too short
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.example.dt.yaml: memory-controller@2c00000: external-memory-controller@2c60000:reg: [[0, 46137344, 0, 65536], [0, 46202880, 0, 65536], [0, 46268416, 0, 65536], [0, 46333952, 0, 65536], [0, 46399488, 0, 65536], [0, 46465024, 0, 65536]] is too long
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.example.dt.yaml: memory-controller@2c00000: external-memory-controller@2c60000:reg: [[0, 46137344, 0, 65536], [0, 46202880, 0, 65536], [0, 46268416, 0, 65536], [0, 46333952, 0, 65536], [0, 46399488, 0, 65536], [0, 46465024, 0, 65536]] is too long
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.example.dt.yaml: memory-controller@2c00000: reg: [[0, 46137344, 0, 720896]] is too short
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml
 
-Here are the 9 patches I have sent, so you don't have to reinvent th wheel:
-https://lore.kernel.org/all/20220319102222.3079-1-xiam0nd.tong@gmail.com/
-https://lore.kernel.org/all/20220319073143.30184-1-xiam0nd.tong@gmail.com/
-https://lore.kernel.org/all/20220319063800.28791-1-xiam0nd.tong@gmail.com/
-https://lore.kernel.org/all/20220319053742.27443-1-xiam0nd.tong@gmail.com/
-https://lore.kernel.org/all/20220319052350.26535-1-xiam0nd.tong@gmail.com/
-https://lore.kernel.org/all/20220319044416.24242-1-xiam0nd.tong@gmail.com/
-https://lore.kernel.org/all/20220319043606.23292-1-xiam0nd.tong@gmail.com/
-https://lore.kernel.org/all/20220319042657.21835-1-xiam0nd.tong@gmail.com/
-https://lore.kernel.org/all/20220316075153.3708-1-xiam0nd.tong@gmail.com/
+doc reference errors (make refcheckdocs):
 
---
-Xiaomeng Tong
+See https://patchwork.ozlabs.org/patch/1606062
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
