@@ -2,92 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0656C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 13:22:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A69EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 13:22:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239999AbiCTNXY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Mar 2022 09:23:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43506 "EHLO
+        id S245156AbiCTNYU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Mar 2022 09:24:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237391AbiCTNXW (ORCPT
+        with ESMTP id S237391AbiCTNYQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Mar 2022 09:23:22 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF6343D1CB
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 06:21:58 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id bg31-20020a05600c3c9f00b00381590dbb33so7086608wmb.3
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 06:21:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=CiwhGRNrXz4QNizMa/oAhqtF2xiNgjqkYli9zHg8NMo=;
-        b=ooINi4qmadEwMMSSbUh9xuE2GUMZdFzpXR1++zh7EgKuDr1/NmJNrR7aEgX9YEYnqR
-         j/C7WHJwAEaroHujPrPBwHaVKiGIbu1nwhw6Bvq+dEbjefo+cmS41dhKhkQ7W2enDIcn
-         FwsFB9BzT3mLwMM+/x6ZL3laea9/DI7YnSRRxUERp8zMouKs6KjyFAF0jRCtuQjp1GFb
-         NzO6gACyZQm+mAnPo/n3gilRevnFb/8ycSHL5qutcWmYhYgL/Hn1gcm7GD7dGf2KMLkg
-         14giC/KDFp/is73wLuzsjr6B2mi5ks2+ehWaq7GJRiCaKi+k83jrzVLsf4GEDI/JshXs
-         kKcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=CiwhGRNrXz4QNizMa/oAhqtF2xiNgjqkYli9zHg8NMo=;
-        b=CzveUV+hUqFKT5i1dNOvSp8bJa+nzLao/67MYI85tffDyIwaDoy0VztmqbXuJ4iAWn
-         C5Gr111omkLnmerzu7si5WbNw67kQI7dizonPXWwXRLdRShnMzBOX+Ou0SseBj8nmoku
-         99ogKlegdx+GZIpilCkm40bsc+uiV4p4gO+uX7S1SP/L0QPrN7M11HjH8A8ETRxHQU8/
-         54S/8Y0eITgI58DCN1MB5pzTZJnvAMV8s0dVscIV62MektRtZsg6XgTzifPYLvETbQyZ
-         wiO5FKgyEHkVW9Npu9WByoct9Gyx57c6uJfIwfT9u4Sc8vyW6LpvZ15Td9QQjGPTY4UT
-         aC5w==
-X-Gm-Message-State: AOAM532bTfMpdtu9dz4GgK86/tEvAEh/i1sUxmphNBnzVBt0b4/Hpnx3
-        kuA6yfSav8tuOD4HfMSV8pWRsw==
-X-Google-Smtp-Source: ABdhPJwpvkdAY6cBXr3dOsU2mQlSFPo8+WDyEP4JRfxs73L2obnJJNJLtCZo6KY0b0mYyHj82adJdg==
-X-Received: by 2002:a7b:c2aa:0:b0:389:891f:1fd1 with SMTP id c10-20020a7bc2aa000000b00389891f1fd1mr23391259wmk.138.1647782517417;
-        Sun, 20 Mar 2022 06:21:57 -0700 (PDT)
-Received: from [192.168.0.69] (188-141-3-169.dynamic.upc.ie. [188.141.3.169])
-        by smtp.gmail.com with ESMTPSA id l9-20020a5d6d89000000b00203d62072c4sm11795831wrs.43.2022.03.20.06.21.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 20 Mar 2022 06:21:56 -0700 (PDT)
-Message-ID: <c8f31312-5356-704e-1f55-89c9f5888238@linaro.org>
-Date:   Sun, 20 Mar 2022 13:21:55 +0000
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v2 2/2] wcn36xx: Implement tx_rate reporting
-Content-Language: en-US
-To:     Edmond Gagnon <egagnon@squareup.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     Benjamin Li <benl@squareup.com>, Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Sun, 20 Mar 2022 09:24:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19F54C4D;
+        Sun, 20 Mar 2022 06:22:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A42C96111A;
+        Sun, 20 Mar 2022 13:22:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9B33C340ED;
+        Sun, 20 Mar 2022 13:22:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647782572;
+        bh=zrk7xunDQEgKK4bMZN7k+PEFnf6KxwypnsecQUf+/7U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nezu0mRQRK6HUEQqgAKr3YTh8NS9o4SumGwjxuuVoLuyyAEBxAS2fSlAdZui2FtTW
+         xDEJZQDzrqsIhvyVcyK8u1vfiW9E6jEyLYLTepNOQHWxIaWiayZeLw941IvE0nA7xy
+         ZXk+GUcJ4u+VTuz27RjDUByjKBBmEu/g3Aps8/wwVaBqqxD7aJK+8KyKShtyi/vx/n
+         z8A/gxfK5MdljvqYuargSt7UEj3dSTHufdsrz5z6+58IibGEqpRF9vZlVIhF6X/Isv
+         pdAlIpxDn1W2xVy+H/y+Fopo467dCdz0EmX5iBfjiH53TcgZDUTGXCHoTMD/v3gsR7
+         Eky8/RT7O2QCw==
+Date:   Sun, 20 Mar 2022 13:30:14 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Cixi Geng <gengcixi@gmail.com>
+Cc:     lars@metafoo.de, robh+dt@kernel.org, orsonzhai@gmail.com,
+        baolin.wang7@gmail.com, zhang.lyra@gmail.com, lgirdwood@gmail.com,
+        broonie@kernel.org, yuming.zhu1@unisoc.com,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <20220318195804.4169686-1-egagnon@squareup.com>
- <20220318195804.4169686-3-egagnon@squareup.com>
-From:   Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-In-Reply-To: <20220318195804.4169686-3-egagnon@squareup.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: Re: [PATCH V2 1/7] dt-bindings:iio:adc: add sprd,ump9620-adc
+ dtbindings
+Message-ID: <20220320133014.7f5cb5b9@jic23-huawei>
+In-Reply-To: <20220311164628.378849-2-gengcixi@gmail.com>
+References: <20220311164628.378849-1-gengcixi@gmail.com>
+        <20220311164628.378849-2-gengcixi@gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18/03/2022 19:58, Edmond Gagnon wrote:
-> +	INIT_DELAYED_WORK(&wcn->get_stats_work, wcn36xx_get_stats_work);
+On Sat, 12 Mar 2022 00:46:22 +0800
+Cixi Geng <gengcixi@gmail.com> wrote:
 
-Instead of forking a worker and polling we could add the relevant SMD 
-command to
+> From: Cixi Geng <cixi.geng1@unisoc.com>
 
-static int wcn36xx_smd_tx_compl_ind(struct wcn36xx *wcn, void *buf, 
-size_t len)
-{
-     wcn36xx_smd_get_stats(wcn, 0xSomeMask);
-}
+In title, use dt-binding instead of dtbindings at the end.
 
-That way we only ever ask for and report a new TX data rate when we know 
-a TX event - and hence a potential TX data-rate update - has taken place.
+> 
+> sprd,ump9620-adc is one variant of sc27xx series, add ump9620 in
+> dtbindings.
 
----
-bod
+dt-bindings.
+
+> 
+> Signed-off-by: Chunyan Zhang <zhang.lyra@gmail.com>
+> Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
+
+If the patch was authored by Chunyan Zhang, it should be From: Chunyan Zhang,
+if it is more complex than you simply passing the patch on then we should
+see a co-developed to indicate that.
+
+Patch looks good to me
+
+Jonathan
+
+> ---
+>  .../bindings/iio/adc/sprd,sc2720-adc.yaml     | 30 +++++++++++++++++--
+>  1 file changed, 27 insertions(+), 3 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml b/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
+> index caa3ee0b4b8c..331b08fb1761 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
+> @@ -20,6 +20,7 @@ properties:
+>        - sprd,sc2723-adc
+>        - sprd,sc2730-adc
+>        - sprd,sc2731-adc
+> +      - sprd,ump9620-adc
+>  
+>    reg:
+>      maxItems: 1
+> @@ -37,9 +38,32 @@ properties:
+>      maxItems: 2
+>  
+>    nvmem-cell-names:
+> -    items:
+> -      - const: big_scale_calib
+> -      - const: small_scale_calib
+> +    description: Names for each nvmem-cells specified.
+> +
+> +if:
+> +  not:
+> +    properties:
+> +      compatible:
+> +        contains:
+> +          enum:
+> +            - sprd,ump9620-adc
+> +then:
+> +  properties:
+> +    nvmem-cell-names:
+> +      items:
+> +        - const: big_scale_calib
+> +        - const: small_scale_calib
+> +
+> +else:
+> +  properties:
+> +    nvmem-cell-names:
+> +      items:
+> +        - const: big_scale_calib1
+> +        - const: big_scale_calib2
+> +        - const: small_scale_calib1
+> +        - const: small_scale_calib2
+> +        - const: vbat_det_cal1
+> +        - const: vbat_det_cal2
+>  
+>  required:
+>    - compatible
 
