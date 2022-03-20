@@ -2,150 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CB96C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 06:29:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDD27C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 06:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244817AbiCTGap (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Mar 2022 02:30:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54918 "EHLO
+        id S244841AbiCTGoK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Mar 2022 02:44:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244813AbiCTGaj (ORCPT
+        with ESMTP id S233610AbiCTGoH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Mar 2022 02:30:39 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7D3F1EAC
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 23:29:17 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id b11-20020a5b008b000000b00624ea481d55so9954663ybp.19
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 23:29:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=ASJzKtjYfW3z8f/kiOdf3O3IhYj+R3xbLBVIICLaL3k=;
-        b=dPFkW/Ck2UL5AoOdA6Cz0rPjNvn8yK05uE0Xm2HL/viXm1ySX1TLtgDnqRKai9VyMl
-         KLy4K5nYOqrleAfGBOFi14Jz8snJOM/Ma3lE5CQaWYaq9GNDs8Tbwqgb9al+0Frlcho0
-         cXAEGoW8VtU11wcxOJOnzwgXAgwWe6avL9HI6MybXN92SKK6Mn2o330K1OzbD3AE5f4c
-         AX0t6SUjhSdCulmD3jO0nRMVEwMLRkEAja9VO8AX8kQnJDyncnJdrdCeFcDee0PM4inx
-         5bq5duGStWNWRNbLTMkjtH5WgvXivj37aFUbhbREceZOmLwQ2PCavmihJR2SuBIsN2yH
-         CivA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=ASJzKtjYfW3z8f/kiOdf3O3IhYj+R3xbLBVIICLaL3k=;
-        b=YF7l4cih7B1/lcRI1Hk513rH5XRohnI1OZvMIVcNz8MfvojHCp5DYUPGQDKlhi5c0P
-         4ijPw1s5EhVRcGzjOiG9iGjbNxNiSZDvSokfJILv7ug+L96vyv0A9zt5FXmJXFRBfEhP
-         efxHgpeuMK+/LSHpqQslyM9YffJ7C0eJVeOcXMCB+UFzKhunbb+bIQUHEeWeyDbNgZoL
-         Ydo0/H7bheFs8mh/LiOqUhPkflcc2zE/eX0YR4pL9lw3ZuH9vxsG57dvtfoMtG3n94S6
-         a3OJJt2XWQh3crEnTOlPMKRXH4ErpCngVeFLjnaJnkGIbBfgwLDTowUHKiCjIO70HzSN
-         MW1Q==
-X-Gm-Message-State: AOAM5337oCap77FB4GOen3G9JdAohWbprC5HyN96fIYEDfxeDcVfXAVJ
-        6hVcIE8NfevKPc+BGIbo4jnBY0IxU/vb
-X-Google-Smtp-Source: ABdhPJyA1/PLVkOcQRO7zP5IrnCWC5GLuOxnX8km0260X51BYH8R29UtxaOINOdqUREPgrXHVEXZVZqiVanY
-X-Received: from rajat2.mtv.corp.google.com ([2620:15c:202:201:5445:bc31:4f4a:d610])
- (user=rajatja job=sendgmr) by 2002:a25:c884:0:b0:633:7961:8a06 with SMTP id
- y126-20020a25c884000000b0063379618a06mr17596271ybf.38.1647757756226; Sat, 19
- Mar 2022 23:29:16 -0700 (PDT)
-Date:   Sat, 19 Mar 2022 23:29:06 -0700
-In-Reply-To: <20220320062907.3272903-1-rajatja@google.com>
-Message-Id: <20220320062907.3272903-2-rajatja@google.com>
-Mime-Version: 1.0
-References: <20220320062907.3272903-1-rajatja@google.com>
-X-Mailer: git-send-email 2.35.1.894.gb6a874cedc-goog
-Subject: [PATCH v4 2/2] PCI: ACPI: Support Microsoft's "DmaProperty"
-From:   Rajat Jain <rajatja@google.com>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, linux-pci@vger.kernel.org,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rajat Jain <rajatxjain@gmail.com>,
-        Dmitry Torokhov <dtor@google.com>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Pavel Machek <pavel@denx.de>,
-        "Oliver O'Halloran" <oohall@gmail.com>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        iommu@lists.linux-foundation.org
-Cc:     Rajat Jain <rajatja@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Sun, 20 Mar 2022 02:44:07 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107622102A9
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Mar 2022 23:42:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647758565; x=1679294565;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=bqc+qN2B2/Vja5qf7Vjqf51YeUhWC0UzAro/jfN5yK4=;
+  b=X3fdMKhudHmP/wlEPKPsaYjGPszdIjMlj+4O2Ey/9pDiHPzhbmHkmO8l
+   a3bBy8WlMZ2nGPy5u8JDuoqdkauYdXmcjpTp8E4RInHSg7iCJj5pVEGh6
+   5EIXgehATP5SFUyFfeQLUduszjrFlNqgzvxMmPfb+up6DvXa5rX9KYYtJ
+   APcrkwwhBVdi76tThqjkvpswKan4hxGSYIKr8lnD6ufhc7ppRVkCxEdKW
+   8l5hMEgbUXN+JnVDIwVi02Xtw5JNjOT3f7ZFeLZiJHB/5IbsHSrR2YryP
+   BhOYNpOaq1U4T9egObAfXM8fsviWAkggtwrcbG7kC7SQobOEtfN3iBalE
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10291"; a="254924011"
+X-IronPort-AV: E=Sophos;i="5.90,195,1643702400"; 
+   d="scan'208";a="254924011"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2022 23:42:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,195,1643702400"; 
+   d="scan'208";a="691839880"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by fmsmga001.fm.intel.com with ESMTP; 19 Mar 2022 23:42:41 -0700
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>
+Cc:     Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH RFC 02/11] iommu: Add iommu_domain type for SVA
+Date:   Sun, 20 Mar 2022 14:40:21 +0800
+Message-Id: <20220320064030.2936936-3-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220320064030.2936936-1-baolu.lu@linux.intel.com>
+References: <20220320064030.2936936-1-baolu.lu@linux.intel.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The "DmaProperty" is supported and documented by Microsoft here:
-https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports
-They use this property for DMA protection:
-https://docs.microsoft.com/en-us/windows/security/information-protection/kernel-dma-protection-for-thunderbolt
+Add a new iommu domain type IOMMU_DOMAIN_SVA to represent an I/O page
+table which is shared from CPU host VA. Add a sva_cookie field in the
+iommu_domain structure to save the mm_struct which represent the CPU
+memory page table.
 
-Support the "DmaProperty" with the same semantics. This is useful for
-internal PCI devices that do not hang off a PCIe rootport, but offer
-an attack surface for DMA attacks (e.g. internal network devices).
-
-Signed-off-by: Rajat Jain <rajatja@google.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
-v4: * Add the GUID. 
-    * Use the (now) renamed property - pci_dev->poses_dma_risk)
-    * Update the comment and commitlog.
-v3: * Use Microsoft's documented property "DmaProperty"
-    * Resctrict to ACPI only
+ include/linux/iommu.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
- drivers/acpi/property.c |  3 +++
- drivers/pci/pci-acpi.c  | 16 ++++++++++++++++
- 2 files changed, 19 insertions(+)
-
-diff --git a/drivers/acpi/property.c b/drivers/acpi/property.c
-index d0986bda2964..20603cacc28d 100644
---- a/drivers/acpi/property.c
-+++ b/drivers/acpi/property.c
-@@ -48,6 +48,9 @@ static const guid_t prp_guids[] = {
- 	/* Storage device needs D3 GUID: 5025030f-842f-4ab4-a561-99a5189762d0 */
- 	GUID_INIT(0x5025030f, 0x842f, 0x4ab4,
- 		  0xa5, 0x61, 0x99, 0xa5, 0x18, 0x97, 0x62, 0xd0),
-+	/* DmaProperty for PCI devices GUID: 70d24161-6dd5-4c9e-8070-705531292865 */
-+	GUID_INIT(0x70d24161, 0x6dd5, 0x4c9e,
-+		  0x80, 0x70, 0x70, 0x55, 0x31, 0x29, 0x28, 0x65),
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 36f43af0af53..3e179b853380 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -64,6 +64,9 @@ struct iommu_domain_geometry {
+ #define __IOMMU_DOMAIN_PT	(1U << 2)  /* Domain is identity mapped   */
+ #define __IOMMU_DOMAIN_DMA_FQ	(1U << 3)  /* DMA-API uses flush queue    */
+ 
++#define __IOMMU_DOMAIN_SHARED	(1U << 4)  /* Page table shared from CPU  */
++#define __IOMMU_DOMAIN_HOST_VA	(1U << 5)  /* Host CPU virtual address */
++
+ /*
+  * This are the possible domain-types
+  *
+@@ -86,6 +89,8 @@ struct iommu_domain_geometry {
+ #define IOMMU_DOMAIN_DMA_FQ	(__IOMMU_DOMAIN_PAGING |	\
+ 				 __IOMMU_DOMAIN_DMA_API |	\
+ 				 __IOMMU_DOMAIN_DMA_FQ)
++#define IOMMU_DOMAIN_SVA	(__IOMMU_DOMAIN_SHARED |	\
++				 __IOMMU_DOMAIN_HOST_VA)
+ 
+ struct iommu_domain {
+ 	unsigned type;
+@@ -95,6 +100,7 @@ struct iommu_domain {
+ 	void *handler_token;
+ 	struct iommu_domain_geometry geometry;
+ 	struct iommu_dma_cookie *iova_cookie;
++	struct mm_struct *sva_cookie;
  };
  
- /* ACPI _DSD data subnodes GUID: dbb8e3e6-5886-4ba6-8795-1319f52a966b */
-diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
-index 1f15ab7eabf8..5360f1af2ed3 100644
---- a/drivers/pci/pci-acpi.c
-+++ b/drivers/pci/pci-acpi.c
-@@ -1350,12 +1350,28 @@ static void pci_acpi_set_external_facing(struct pci_dev *dev)
- 		dev->external_facing = 1;
- }
- 
-+static void pci_acpi_check_for_dma_protection(struct pci_dev *dev)
-+{
-+	u8 val;
-+
-+	/*
-+	 * Property also used by Microsoft Windows for same purpose,
-+	 * (to implement DMA protection from a device, using the IOMMU).
-+	 */
-+	if (device_property_read_u8(&dev->dev, "DmaProperty", &val))
-+		return;
-+
-+	if (val)
-+		dev->poses_dma_risk = 1;
-+}
-+
- void pci_acpi_setup(struct device *dev, struct acpi_device *adev)
- {
- 	struct pci_dev *pci_dev = to_pci_dev(dev);
- 
- 	pci_acpi_optimize_delay(pci_dev, adev->handle);
- 	pci_acpi_set_external_facing(pci_dev);
-+	pci_acpi_check_for_dma_protection(pci_dev);
- 	pci_acpi_add_edr_notifier(pci_dev);
- 
- 	pci_acpi_add_pm_notifier(adev, pci_dev);
+ static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
 -- 
-2.35.1.894.gb6a874cedc-goog
+2.25.1
 
