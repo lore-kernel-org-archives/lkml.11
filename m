@@ -2,212 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49531C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 14:58:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1B39C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Mar 2022 15:05:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245304AbiCTPAK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Mar 2022 11:00:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51148 "EHLO
+        id S245310AbiCTPF7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Mar 2022 11:05:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234277AbiCTPAH (ORCPT
+        with ESMTP id S234277AbiCTPF5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Mar 2022 11:00:07 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA277252A7;
-        Sun, 20 Mar 2022 07:58:42 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id h13so15317967ede.5;
-        Sun, 20 Mar 2022 07:58:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=6CWKYqtc6RNurgp1Shg9+uzBqze9ab4UhblI0+K5cmI=;
-        b=PGK/WAiBLLLv1ANzctUPJNhTeChLRPH2mcx474dFIyf1wx2B8stuR5QqcZEQXSLDwR
-         KNTM4ry7OcNw2kw8PzF42T6fV7U/fV4rji78zUg6qU96Y/sXtkMYvPeBkQMA39kLOxbp
-         dUkDomsawh1vzNFC8eIUcbMXfv3EBky41qugGgJBpX0CJkGTE3OMrGv7MFY/cWF37Lei
-         dsK7VC8UjIN3bfIjzBGQK3+dJe9tjgDYGIe1RY+ikUJDnmkimleBl3IayqxR7k+Xq+Rr
-         YItqBLDFCLdxEtpzoSZxx7vZzZ07pJx1NVArgDSWElQ1o28pQocK0f3h2geYSspU2vBO
-         Tedw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=6CWKYqtc6RNurgp1Shg9+uzBqze9ab4UhblI0+K5cmI=;
-        b=iC8Qdyu3IYCkjZjFTv7LqxAz/7NE5OHvEkYfnFkpsIS9swG0LWaqXlpqqFjRyK+rm1
-         Eqf2AmlvKuvnVrp5SQLnsFNZs5AtGqUooXEui25UXub7QeNxV8Avg1SmAOso8bZUQbt1
-         q2RXta7YZ95y43FEpYGAh5Z+a8BkVL8eku9KuiS7+TOZn1+92kPe3i7EhlV24gjpeDew
-         bt6RcAwjNC4gyayuPFpZC3OBu75QQw8hm+fid3ubdm9cWn4J1xYF+koL1xw6CJxX83uv
-         2HfaQRxwBmBww9VjdqEXGIzuGyq79YIS0BTQXL/EywxNMIdiPChCBg0/UCtTEoXYODoi
-         0+WQ==
-X-Gm-Message-State: AOAM531OmT2rQ6PsEmDgE9/KhbiTZwNRN8gJy4ejBr1mwOzvsIrK9cuy
-        Y73N49LRwGI0wnmilbNEklI=
-X-Google-Smtp-Source: ABdhPJwGPSVhIpLvxJg/c2edQLm4kUKv1BOGx7QLgyAAd7cNW2pLWB5MBPiQAAFD3IVIrqOPbr4qPQ==
-X-Received: by 2002:a05:6402:4248:b0:416:9c69:4f80 with SMTP id g8-20020a056402424800b004169c694f80mr18798105edb.83.1647788320960;
-        Sun, 20 Mar 2022 07:58:40 -0700 (PDT)
-Received: from anparri (host-82-59-4-232.retail.telecomitalia.it. [82.59.4.232])
-        by smtp.gmail.com with ESMTPSA id g11-20020a170906538b00b006ae38eb0561sm5970408ejo.195.2022.03.20.07.58.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Mar 2022 07:58:40 -0700 (PDT)
-Date:   Sun, 20 Mar 2022 15:58:33 +0100
-From:   Andrea Parri <parri.andrea@gmail.com>
-To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Wei Hu <weh@microsoft.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Wilczynski <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/2] PCI: hv: Use IDR to generate transaction IDs for
- VMBus hardening
-Message-ID: <20220320145833.GA1393@anparri>
-References: <20220318174848.290621-1-parri.andrea@gmail.com>
- <20220318174848.290621-2-parri.andrea@gmail.com>
- <PH0PR21MB3025016203AAB9AB6ECB6A3ED7149@PH0PR21MB3025.namprd21.prod.outlook.com>
+        Sun, 20 Mar 2022 11:05:57 -0400
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA23810EB
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 08:04:22 -0700 (PDT)
+Received: from [192.168.12.80] (unknown [182.2.69.4])
+        by gnuweeb.org (Postfix) with ESMTPSA id 4EBE17E2DA;
+        Sun, 20 Mar 2022 15:04:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1647788661;
+        bh=KLLyJlTg8Kh9KZF5IRbm0662lOq7PeTUPfZKT4sNVEg=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=FqO1IW11GAyvJsc83NNz14DVFfn3i26xV3PuQu6wC+UcTxx+TZQ5g06TYEpAhdm9J
+         P5panWybU2h05ExCNvlVmIeptNpiAb+aX1ewutJ7mK6eNgbcMp/LVrXnonvl8Y9J97
+         pWszC7Sriu4zBvCqCp8lqE9VKfPVsuRPqaF/sQVtgg1fJJEVi/qKxWtjT3NQpYdapH
+         O75op3eIMBVaZvaGVcsmlb1iBmNhVyjn4CUJ+r63ILXpzmITch0U6F65cLrlQOWqls
+         oXC9kG4NHw50qAfQvhvRqRFFJ5CMEhWazh/HIxzmCOH1nDY6HCWQdIpcI0om3R5d1r
+         LS2ewanUAJovA==
+Message-ID: <263c1f21-c0d6-deb1-d45e-66fd35715447@gnuweeb.org>
+Date:   Sun, 20 Mar 2022 22:04:14 +0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH0PR21MB3025016203AAB9AB6ECB6A3ED7149@PH0PR21MB3025.namprd21.prod.outlook.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     David Laight <David.Laight@ACULAB.COM>, Willy Tarreau <w@1wt.eu>
+Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
+        Nugraha <richiisei@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "llvm@lists.linux.dev" <llvm@lists.linux.dev>
+References: <20220320093750.159991-1-ammarfaizi2@gnuweeb.org>
+ <20220320093750.159991-4-ammarfaizi2@gnuweeb.org>
+ <2e335ac54db44f1d8496583d97f9dab0@AcuMS.aculab.com>
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Subject: Re: [RFC PATCH v1 3/6] tools/nolibc: i386: Implement syscall with 6
+ arguments
+In-Reply-To: <2e335ac54db44f1d8496583d97f9dab0@AcuMS.aculab.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 19, 2022 at 04:20:13PM +0000, Michael Kelley (LINUX) wrote:
-> From: Andrea Parri (Microsoft) <parri.andrea@gmail.com> Sent: Friday, March 18, 2022 10:49 AM
-> > 
-> > Currently, pointers to guest memory are passed to Hyper-V as transaction
-> > IDs in hv_pci.  In the face of errors or malicious behavior in Hyper-V,
-> > hv_pci should not expose or trust the transaction IDs returned by
-> > Hyper-V to be valid guest memory addresses.  Instead, use small integers
-> > generated by IDR as request (transaction) IDs.
+On 3/20/22 8:10 PM, David Laight wrote:
+> From: Ammar Faizi
+>> Sent: 20 March 2022 09:38
+>>
+>> In i386, the 6th argument of syscall goes in %ebp. However, both Clang
+>> and GCC cannot use %ebp in the clobber list and in the "r" constraint
+>> without using -fomit-frame-pointer. To make it always available for any
+>> kind of compilation, the below workaround is implemented.
+>>
+>> For clang (the Assembly statement can't clobber %ebp):
+>>    1) Save the %ebp value to the redzone area -4(%esp).
 > 
-> I had expected that this code would use the next_request_id_callback
-> mechanism because of the race conditions that mechanism solves.  And
-> to protect against a malicious Hyper-V sending a bogus second message
-> with the same requestID, the requestID needs to be freed in the
-> onchannelcallback function as is done with vmbus_request_addr().
+> i386 doesn't have a redzone.
+> If you get a signal it will trash -4(%sp)
 
-I think I should elaborate on the design underlying this submission;
-roughly, the present solution diverges from the 'generic' requestor
-mechanism you mentioned above in two main aspects:
+OK, I missed that one. Thanks for reviewing this.
 
-  A) it 'moves' the ID removal into hv_compose_msi_msg() and other
-     functions,
+>> For GCC, fortunately it has a #pragma that can force a specific function
+>> to be compiled with -fomit-frame-pointer, so it can always use "r"(var)
+>> where `var` is a variable bound to %ebp.
+> 
+> How is that going to work for an inlined functon?
 
-  B) it adopts some ad-hoc locking scheme in the channel callback.
+It works, but obviously the inline modifier here is just a hint for the
+compiler, not a requirement. I just took a look at the GCC generated code.
+It doesn't inline the ____do_syscall6() despite it's marked as inline.
 
-AFAICT, such changes preserve the 'confidentiality' and correctness
-guarantees of the generic approach (modulo the issue discussed here
-with Saurabh).
+I think this one shouldn't be marked as inline. I will remove the inline
+in the next version.
 
-These changes are justified by the bug/fix discussed in 2/2.  For
-concreteness, consider a solution based on the VMbus requestor as
-reported at the end of this email.
+> And using xchg is slow - it is always locked.
+> 
+> One possibility might be to do:
+> 	push arg6
+> 	push %ebp
+> 	mov  %ebp, 4(%sp)
 
-AFAICT, this solution can't fix the bug discussed in 2/2.  Moreover
-(and looking back at (A-B)), we observe that:
+Did you mean `mov 4(%esp), %ebp`?
 
-  1) locking in the channel callback is not quite as desired: we'd
-     want a request_addr_callback_nolock() say and 'protected' it
-     together with ->completion_func();
+> 	int  0x80
+> 	pop  %ebp
+> 	add  %esp,4
 
-  2) hv_compose_msi_msg() doesn't know the value of the request ID
-     it has allocated (hv_compose_msi_msg() -> vmbus_sendpacket();
-     cf. also remove_request_id() in the current submission).
+I think your solution is better than the xchg approach (with the 3rd line
+fixed). Will take this in for the next version.
 
-Hope this helps clarify the problems at stake, and move fortward to a
-'final' solution...
+> Although I'm not sure you really want to allocate 4k pages
+> for every malloc() call.
+> 
+> Probably better to write a mini 'libc' that uses sbrk()
+> and a best fit scan of a linear free list.
 
-Thanks,
-  Andrea
+^ This part is addressed by Willy's response. I will still go with mmap()
+in the next version.
 
+And yes, we do waste space for small allocations here, but we don't hit
+the scale that the waste space will cause problem.
 
-diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
-index ae0bc2fee4ca8..bd99dd12d367b 100644
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -91,6 +91,9 @@ static enum pci_protocol_version_t pci_protocol_versions[] = {
- /* space for 32bit serial number as string */
- #define SLOT_NAME_SIZE 11
- 
-+/* Size of requestor for VMbus */
-+#define HV_PCI_RQSTOR_SIZE 64
-+
- /*
-  * Message Types
-  */
-@@ -1407,7 +1410,7 @@ static void hv_int_desc_free(struct hv_pci_dev *hpdev,
- 	int_pkt->wslot.slot = hpdev->desc.win_slot.slot;
- 	int_pkt->int_desc = *int_desc;
- 	vmbus_sendpacket(hpdev->hbus->hdev->channel, int_pkt, sizeof(*int_pkt),
--			 (unsigned long)&ctxt.pkt, VM_PKT_DATA_INBAND, 0);
-+			 0, VM_PKT_DATA_INBAND, 0);
- 	kfree(int_desc);
- }
- 
-@@ -2649,7 +2652,7 @@ static void hv_eject_device_work(struct work_struct *work)
- 	ejct_pkt->message_type.type = PCI_EJECTION_COMPLETE;
- 	ejct_pkt->wslot.slot = hpdev->desc.win_slot.slot;
- 	vmbus_sendpacket(hbus->hdev->channel, ejct_pkt,
--			 sizeof(*ejct_pkt), (unsigned long)&ctxt.pkt,
-+			 sizeof(*ejct_pkt), 0,
- 			 VM_PKT_DATA_INBAND, 0);
- 
- 	/* For the get_pcichild() in hv_pci_eject_device() */
-@@ -2696,8 +2699,9 @@ static void hv_pci_onchannelcallback(void *context)
- 	const int packet_size = 0x100;
- 	int ret;
- 	struct hv_pcibus_device *hbus = context;
-+	struct vmbus_channel *chan = hbus->hdev->channel;
- 	u32 bytes_recvd;
--	u64 req_id;
-+	u64 req_id, req_addr;
- 	struct vmpacket_descriptor *desc;
- 	unsigned char *buffer;
- 	int bufferlen = packet_size;
-@@ -2743,11 +2747,13 @@ static void hv_pci_onchannelcallback(void *context)
- 		switch (desc->type) {
- 		case VM_PKT_COMP:
- 
--			/*
--			 * The host is trusted, and thus it's safe to interpret
--			 * this transaction ID as a pointer.
--			 */
--			comp_packet = (struct pci_packet *)req_id;
-+			req_addr = chan->request_addr_callback(chan, req_id);
-+			if (!req_addr || req_addr == VMBUS_RQST_ERROR) {
-+				dev_warn_ratelimited(&hbus->hdev->device,
-+						     "Invalid request ID\n");
-+				break;
-+			}
-+			comp_packet = (struct pci_packet *)req_addr;
- 			response = (struct pci_response *)buffer;
- 			comp_packet->completion_func(comp_packet->compl_ctxt,
- 						     response,
-@@ -3419,6 +3425,10 @@ static int hv_pci_probe(struct hv_device *hdev,
- 		goto free_dom;
- 	}
- 
-+	hdev->channel->next_request_id_callback = vmbus_next_request_id;
-+	hdev->channel->request_addr_callback = vmbus_request_addr;
-+	hdev->channel->rqstor_size = HV_PCI_RQSTOR_SIZE;
-+
- 	ret = vmbus_open(hdev->channel, pci_ring_size, pci_ring_size, NULL, 0,
- 			 hv_pci_onchannelcallback, hbus);
- 	if (ret)
-@@ -3749,6 +3759,10 @@ static int hv_pci_resume(struct hv_device *hdev)
- 
- 	hbus->state = hv_pcibus_init;
- 
-+	hdev->channel->next_request_id_callback = vmbus_next_request_id;
-+	hdev->channel->request_addr_callback = vmbus_request_addr;
-+	hdev->channel->rqstor_size = HV_PCI_RQSTOR_SIZE;
-+
- 	ret = vmbus_open(hdev->channel, pci_ring_size, pci_ring_size, NULL, 0,
- 			 hv_pci_onchannelcallback, hbus);
- 	if (ret)
+-- 
+Ammar Faizi
