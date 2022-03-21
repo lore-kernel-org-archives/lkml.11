@@ -2,111 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8EB7C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:33:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2482EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:33:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349279AbiCUOeY (ORCPT
+        id S1349265AbiCUOe2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:34:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37426 "EHLO
+        Mon, 21 Mar 2022 10:34:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350098AbiCUOd6 (ORCPT
+        with ESMTP id S1349927AbiCUOdQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:33:58 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4240A5D1A9
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 07:32:32 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id b19so20939658wrh.11
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 07:32:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Rz2kPyhob/Zn4b4eynOw/6UOyfstxjJm01L/htyIYCc=;
-        b=J9iqLc21143U4IqrHGZbl43PU2GcDIexyXwwfNg978gKFJ++vuXmJOnT4lv/HRd0dA
-         KhTJ0wFqyMYnKGSo+Arx6XL89qwnqi9YDs2QkCF+5rUz9Zcj2NNdqny+c19uCLiJ12S/
-         BBYe8FQDOdmnbZHKvEmOoX2I+hnhW61pr2jZ4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Rz2kPyhob/Zn4b4eynOw/6UOyfstxjJm01L/htyIYCc=;
-        b=6hXIrUFOft9A2PZwIgNuz/ZPGr5hjsBUNFoC8nk1DGRU3Ap0A+Gpz2tdb7G6n8MNKM
-         4OYxBo9KV+PWpT3iNRlgpHSLrTQb2Q0lkKNwWCWXjS14JWtphiM3PBXWKQk7OV+nDTNC
-         w9QVpDL3Mvlj/cziuXXrPDyZZ8W9I/Es6Pz78vpU+YYGaVVfb2avTTdtu20KLPzsbZoA
-         obcaRW8IasqYY8G6Mbcv6pQcuu+ago1gDM7I20acdPag7sxzClwdI83RXJ1xBtSZJ+yX
-         FeqYthAP/B/3eXNDKj5pb8JdeX0KiSXAURXc5ea0joKodIOYDYAgkksTZZCsEaHS6kIC
-         QTOA==
-X-Gm-Message-State: AOAM532nPcoI81bsWnzhvtdDrs06+SZ0oWqlWT0lcps3mvsMOTjE7F+J
-        GJSXPhvz2azHmURG+xoWZSRmYw==
-X-Google-Smtp-Source: ABdhPJwlF27a1NJ6xMacbGdjU1rd5N8lVS4V0IPQ+1pI4C3wPK4QyQWn/uHzsmotIgUqlAj4AnT7RQ==
-X-Received: by 2002:adf:f281:0:b0:203:e3a2:de5d with SMTP id k1-20020adff281000000b00203e3a2de5dmr18548830wro.598.1647873150811;
-        Mon, 21 Mar 2022 07:32:30 -0700 (PDT)
-Received: from fabiobaltieri-linux.lan ([37.228.205.1])
-        by smtp.gmail.com with ESMTPSA id u11-20020a05600c19cb00b00389efe9c512sm19092793wmq.23.2022.03.21.07.32.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 07:32:30 -0700 (PDT)
-From:   Fabio Baltieri <fabiobaltieri@chromium.org>
-To:     Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        chrome-platform@lists.linux.dev, linux-pwm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Fabio Baltieri <fabiobaltieri@chromium.org>
-Subject: [PATCH 0/4] Add channel type support to pwm-cros-ec
-Date:   Mon, 21 Mar 2022 14:32:18 +0000
-Message-Id: <20220321143222.2523373-1-fabiobaltieri@chromium.org>
-X-Mailer: git-send-email 2.35.1.894.gb6a874cedc-goog
+        Mon, 21 Mar 2022 10:33:16 -0400
+Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEE13255A1;
+        Mon, 21 Mar 2022 07:31:12 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R451e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0V7r0AMW_1647873068;
+Received: from 192.168.31.65(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V7r0AMW_1647873068)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 21 Mar 2022 22:31:10 +0800
+Message-ID: <774ac783-98f8-eedb-af55-ff99eef5369c@linux.alibaba.com>
+Date:   Mon, 21 Mar 2022 22:31:08 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [PATCH v5 05/22] cachefiles: notify user daemon when withdrawing
+ cookie
+Content-Language: en-US
+To:     David Howells <dhowells@redhat.com>
+Cc:     linux-cachefs@redhat.com, xiang@kernel.org, chao@kernel.org,
+        linux-erofs@lists.ozlabs.org, torvalds@linux-foundation.org,
+        gregkh@linuxfoundation.org, willy@infradead.org,
+        linux-fsdevel@vger.kernel.org, joseph.qi@linux.alibaba.com,
+        bo.liu@linux.alibaba.com, tao.peng@linux.alibaba.com,
+        gerry@linux.alibaba.com, eguan@linux.alibaba.com,
+        linux-kernel@vger.kernel.org, luodaowen.backend@bytedance.com
+References: <20220316131723.111553-6-jefflexu@linux.alibaba.com>
+ <20220316131723.111553-1-jefflexu@linux.alibaba.com>
+ <1030364.1647872428@warthog.procyon.org.uk>
+From:   JeffleXu <jefflexu@linux.alibaba.com>
+In-Reply-To: <1030364.1647872428@warthog.procyon.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
 
-The ChromiumOS EC PWM host command protocol supports specifying the
-requested PWM by type rather than channel. [1]
 
-This series adds support for specifying PWM by type rather than channel
-number in the pwm-cros-ec driver, which abstracts the node definitions
-from the actual hardware configuration from the kernel perspective,
-aligns the API with the one used by the bootloader, and allows removing
-some dtsi overrides.
+On 3/21/22 10:20 PM, David Howells wrote:
+> Jeffle Xu <jefflexu@linux.alibaba.com> wrote:
+> 
+>> Notify user daemon that cookie is going to be withdrawed, providing a
+> 
+> "withdrawn".
 
-Tested on a sc7180-trogdor board, but on a version based on an older
-kernel, so this exact series is build only tested.
+Thanks.
 
-[1] https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/ec/common/pwm.c;l=24
-[2] https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/depthcharge/src/drivers/ec/cros/ec.c;l=1271-1273
+> 
+>> +	/* CLOSE request doesn't look forward a reply */
+> 
+> I'm not sure what you mean.
 
-Fabio Baltieri (4):
-  dt-bindings: add mfd/cros_ec definitions
-  drivers: pwm: pwm-cros-ec: add channel type support
-  dt-bindings: update google,cros-ec-pwm documentation
-  arm64: dts: address cros-ec-pwm channels by type
+When cookie gets withdrawn, Cachefiles will send a CLOSE request to user
+daemon, telling that the associated anon_fd could be closed. But it's
+just a hint. User daemon could keep the anon_fd open when it receives
+the CLOSE request. After sending the CLOSE request, Cachefiles will go
+on the process of withdrawing cookie and won't wait for a reply
+synchronously. So CLOSE request is just a hint to user daemon, and it
+doesn't need to be replied.
 
- .../bindings/pwm/google,cros-ec-pwm.yaml      |  6 ++
- .../mt8183-kukui-jacuzzi-fennel-sku1.dts      |  4 +-
- .../dts/mediatek/mt8183-kukui-jacuzzi.dtsi    |  3 +-
- .../arm64/boot/dts/mediatek/mt8183-kukui.dtsi |  1 +
- .../boot/dts/qcom/sc7180-trogdor-coachz.dtsi  |  4 -
- arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi  |  8 +-
- .../arm64/boot/dts/qcom/sc7280-herobrine.dtsi |  6 +-
- .../arm64/boot/dts/qcom/sc7280-idp-ec-h1.dtsi |  3 +-
- arch/arm64/boot/dts/qcom/sdm845-cheza.dtsi    |  6 +-
- .../boot/dts/rockchip/rk3399-gru-bob.dts      |  4 -
- .../dts/rockchip/rk3399-gru-chromebook.dtsi   |  4 +-
- .../boot/dts/rockchip/rk3399-gru-kevin.dts    |  4 -
- arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi  |  1 +
- drivers/pwm/pwm-cros-ec.c                     | 80 +++++++++++++++----
- include/dt-bindings/mfd/cros_ec.h             | 18 +++++
- 15 files changed, 113 insertions(+), 39 deletions(-)
- create mode 100644 include/dt-bindings/mfd/cros_ec.h
 
 -- 
-2.35.1.894.gb6a874cedc-goog
-
+Thanks,
+Jeffle
