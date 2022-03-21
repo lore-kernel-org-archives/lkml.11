@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 231DFC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13D71C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349602AbiCUOId (ORCPT
+        id S1349493AbiCUOI0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:08:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35554 "EHLO
+        Mon, 21 Mar 2022 10:08:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348649AbiCUOBT (ORCPT
+        with ESMTP id S1348692AbiCUOBD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:01:19 -0400
+        Mon, 21 Mar 2022 10:01:03 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18375427F9;
-        Mon, 21 Mar 2022 06:59:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2725D40E79;
+        Mon, 21 Mar 2022 06:59:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2C821B816DC;
-        Mon, 21 Mar 2022 13:59:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70A2DC340F3;
-        Mon, 21 Mar 2022 13:59:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A591B816D8;
+        Mon, 21 Mar 2022 13:59:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF7A1C36AE7;
+        Mon, 21 Mar 2022 13:58:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871148;
-        bh=lAMHPulqEqOiND2NpHdKTHaqCKB/UsOgnSZbqLaRA10=;
+        s=korg; t=1647871140;
+        bh=gBv0ktP47tMp4zSS382fSjACWfsSnLnoTOPO5fvY1FI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PF3VcwpqUMeoA5HqVffvfMHhXGSeOEGahxzfkfn+h9r2moU73NgQqbeZ/G94fku8l
-         h4q8hi26YZKr0nWDNtf45TqagUutS4iQyh/n+/edmddKPAcNliXYa73P3AIwgc8Z7y
-         kKqHurOAztc8jzvXAwZn6929VB3utcgcAeiCYMKI=
+        b=V1ZbVR9vJ7Wg3HL+nob/EO1vYbtVvDnSMkpheDtpWdGgDR9yMk9XB30NFOIfAkZS+
+         KRv18D+0ITToajbNW63rjJkHDsAKGm8T6oBJDW3hilCIHiabywAmxbOdp2MSXPzAzw
+         eFqHxyFdQzeS33R5E2r84awuFpduPNRpUW15jyuk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jiyong Park <jiyong@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 05/30] vsock: each transport cycles only on its own sockets
-Date:   Mon, 21 Mar 2022 14:52:35 +0100
-Message-Id: <20220321133219.802271799@linuxfoundation.org>
+        stable@vger.kernel.org, Joseph Qi <joseph.qi@linux.alibaba.com>,
+        Mark Fasheh <mark@fasheh.com>,
+        Joel Becker <jlbec@evilplan.org>,
+        Junxiao Bi <junxiao.bi@oracle.com>,
+        Changwei Ge <gechangwei@live.cn>, Gang He <ghe@suse.com>,
+        Jun Piao <piaojun@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.10 02/30] ocfs2: fix crash when initialize filecheck kobj fails
+Date:   Mon, 21 Mar 2022 14:52:32 +0100
+Message-Id: <20220321133219.717685948@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133219.643490199@linuxfoundation.org>
 References: <20220321133219.643490199@linuxfoundation.org>
@@ -52,156 +55,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiyong Park <jiyong@google.com>
+From: Joseph Qi <joseph.qi@linux.alibaba.com>
 
-[ Upstream commit 8e6ed963763fe21429eabfc76c69ce2b0163a3dd ]
+commit 7b0b1332cfdb94489836b67d088a779699f8e47e upstream.
 
-When iterating over sockets using vsock_for_each_connected_socket, make
-sure that a transport filters out sockets that don't belong to the
-transport.
+Once s_root is set, genric_shutdown_super() will be called if
+fill_super() fails.  That means, we will call ocfs2_dismount_volume()
+twice in such case, which can lead to kernel crash.
 
-There actually was an issue caused by this; in a nested VM
-configuration, destroying the nested VM (which often involves the
-closing of /dev/vhost-vsock if there was h2g connections to the nested
-VM) kills not only the h2g connections, but also all existing g2h
-connections to the (outmost) host which are totally unrelated.
+Fix this issue by initializing filecheck kobj before setting s_root.
 
-Tested: Executed the following steps on Cuttlefish (Android running on a
-VM) [1]: (1) Enter into an `adb shell` session - to have a g2h
-connection inside the VM, (2) open and then close /dev/vhost-vsock by
-`exec 3< /dev/vhost-vsock && exec 3<&-`, (3) observe that the adb
-session is not reset.
-
-[1] https://android.googlesource.com/device/google/cuttlefish/
-
-Fixes: c0cfa2d8a788 ("vsock: add multi-transports support")
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Jiyong Park <jiyong@google.com>
-Link: https://lore.kernel.org/r/20220311020017.1509316-1-jiyong@google.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lkml.kernel.org/r/20220310081930.86305-1-joseph.qi@linux.alibaba.com
+Fixes: 5f483c4abb50 ("ocfs2: add kobject for online file check")
+Signed-off-by: Joseph Qi <joseph.qi@linux.alibaba.com>
+Cc: Mark Fasheh <mark@fasheh.com>
+Cc: Joel Becker <jlbec@evilplan.org>
+Cc: Junxiao Bi <junxiao.bi@oracle.com>
+Cc: Changwei Ge <gechangwei@live.cn>
+Cc: Gang He <ghe@suse.com>
+Cc: Jun Piao <piaojun@huawei.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/vhost/vsock.c            | 3 ++-
- include/net/af_vsock.h           | 3 ++-
- net/vmw_vsock/af_vsock.c         | 9 +++++++--
- net/vmw_vsock/virtio_transport.c | 7 +++++--
- net/vmw_vsock/vmci_transport.c   | 5 ++++-
- 5 files changed, 20 insertions(+), 7 deletions(-)
+ fs/ocfs2/super.c |   22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-index c282fc0d04bd..5d2d6ce7ff41 100644
---- a/drivers/vhost/vsock.c
-+++ b/drivers/vhost/vsock.c
-@@ -697,7 +697,8 @@ static int vhost_vsock_dev_release(struct inode *inode, struct file *file)
- 
- 	/* Iterating over all connections for all CIDs to find orphans is
- 	 * inefficient.  Room for improvement here. */
--	vsock_for_each_connected_socket(vhost_vsock_reset_orphans);
-+	vsock_for_each_connected_socket(&vhost_transport.transport,
-+					vhost_vsock_reset_orphans);
- 
- 	/* Don't check the owner, because we are in the release path, so we
- 	 * need to stop the vsock device in any case.
-diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
-index b1c717286993..4d8589244dc7 100644
---- a/include/net/af_vsock.h
-+++ b/include/net/af_vsock.h
-@@ -197,7 +197,8 @@ struct sock *vsock_find_bound_socket(struct sockaddr_vm *addr);
- struct sock *vsock_find_connected_socket(struct sockaddr_vm *src,
- 					 struct sockaddr_vm *dst);
- void vsock_remove_sock(struct vsock_sock *vsk);
--void vsock_for_each_connected_socket(void (*fn)(struct sock *sk));
-+void vsock_for_each_connected_socket(struct vsock_transport *transport,
-+				     void (*fn)(struct sock *sk));
- int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk);
- bool vsock_find_cid(unsigned int cid);
- 
-diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 005aa701f4d5..c59806253a65 100644
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -333,7 +333,8 @@ void vsock_remove_sock(struct vsock_sock *vsk)
- }
- EXPORT_SYMBOL_GPL(vsock_remove_sock);
- 
--void vsock_for_each_connected_socket(void (*fn)(struct sock *sk))
-+void vsock_for_each_connected_socket(struct vsock_transport *transport,
-+				     void (*fn)(struct sock *sk))
- {
- 	int i;
- 
-@@ -342,8 +343,12 @@ void vsock_for_each_connected_socket(void (*fn)(struct sock *sk))
- 	for (i = 0; i < ARRAY_SIZE(vsock_connected_table); i++) {
- 		struct vsock_sock *vsk;
- 		list_for_each_entry(vsk, &vsock_connected_table[i],
--				    connected_table)
-+				    connected_table) {
-+			if (vsk->transport != transport)
-+				continue;
-+
- 			fn(sk_vsock(vsk));
-+		}
+--- a/fs/ocfs2/super.c
++++ b/fs/ocfs2/super.c
+@@ -1110,17 +1110,6 @@ static int ocfs2_fill_super(struct super
+ 		goto read_super_error;
  	}
  
- 	spin_unlock_bh(&vsock_table_lock);
-diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-index 3a056f8affd1..e131121533ad 100644
---- a/net/vmw_vsock/virtio_transport.c
-+++ b/net/vmw_vsock/virtio_transport.c
-@@ -24,6 +24,7 @@
- static struct workqueue_struct *virtio_vsock_workqueue;
- static struct virtio_vsock __rcu *the_virtio_vsock;
- static DEFINE_MUTEX(the_virtio_vsock_mutex); /* protects the_virtio_vsock */
-+static struct virtio_transport virtio_transport; /* forward declaration */
- 
- struct virtio_vsock {
- 	struct virtio_device *vdev;
-@@ -383,7 +384,8 @@ static void virtio_vsock_event_handle(struct virtio_vsock *vsock,
- 	switch (le32_to_cpu(event->id)) {
- 	case VIRTIO_VSOCK_EVENT_TRANSPORT_RESET:
- 		virtio_vsock_update_guest_cid(vsock);
--		vsock_for_each_connected_socket(virtio_vsock_reset_sock);
-+		vsock_for_each_connected_socket(&virtio_transport.transport,
-+						virtio_vsock_reset_sock);
- 		break;
+-	root = d_make_root(inode);
+-	if (!root) {
+-		status = -ENOMEM;
+-		mlog_errno(status);
+-		goto read_super_error;
+-	}
+-
+-	sb->s_root = root;
+-
+-	ocfs2_complete_mount_recovery(osb);
+-
+ 	osb->osb_dev_kset = kset_create_and_add(sb->s_id, NULL,
+ 						&ocfs2_kset->kobj);
+ 	if (!osb->osb_dev_kset) {
+@@ -1138,6 +1127,17 @@ static int ocfs2_fill_super(struct super
+ 		goto read_super_error;
  	}
- }
-@@ -635,7 +637,8 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
- 	synchronize_rcu();
  
- 	/* Reset all connected sockets when the device disappear */
--	vsock_for_each_connected_socket(virtio_vsock_reset_sock);
-+	vsock_for_each_connected_socket(&virtio_transport.transport,
-+					virtio_vsock_reset_sock);
- 
- 	/* Stop all work handlers to make sure no one is accessing the device,
- 	 * so we can safely call vdev->config->reset().
-diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
-index 1c9ecb18b8e6..a9ca95a0fcdd 100644
---- a/net/vmw_vsock/vmci_transport.c
-+++ b/net/vmw_vsock/vmci_transport.c
-@@ -75,6 +75,8 @@ static u32 vmci_transport_qp_resumed_sub_id = VMCI_INVALID_ID;
- 
- static int PROTOCOL_OVERRIDE = -1;
- 
-+static struct vsock_transport vmci_transport; /* forward declaration */
++	root = d_make_root(inode);
++	if (!root) {
++		status = -ENOMEM;
++		mlog_errno(status);
++		goto read_super_error;
++	}
 +
- /* Helper function to convert from a VMCI error code to a VSock error code. */
- 
- static s32 vmci_transport_error_to_vsock_error(s32 vmci_error)
-@@ -882,7 +884,8 @@ static void vmci_transport_qp_resumed_cb(u32 sub_id,
- 					 const struct vmci_event_data *e_data,
- 					 void *client_data)
- {
--	vsock_for_each_connected_socket(vmci_transport_handle_detach);
-+	vsock_for_each_connected_socket(&vmci_transport,
-+					vmci_transport_handle_detach);
- }
- 
- static void vmci_transport_recv_pkt_work(struct work_struct *work)
--- 
-2.34.1
-
++	sb->s_root = root;
++
++	ocfs2_complete_mount_recovery(osb);
++
+ 	if (ocfs2_mount_local(osb))
+ 		snprintf(nodestr, sizeof(nodestr), "local");
+ 	else
 
 
