@@ -2,65 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB23CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:24:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93804C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:24:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233165AbiCUXZc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:25:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41680 "EHLO
+        id S233087AbiCUXZl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:25:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233005AbiCUXZU (ORCPT
+        with ESMTP id S233015AbiCUXZU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 19:25:20 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD2C73EE953
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 16:19:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7373134B531;
+        Mon, 21 Mar 2022 16:19:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E3AE614DD
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 23:18:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CBD75C340E8;
-        Mon, 21 Mar 2022 23:18:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D23A614D2;
+        Mon, 21 Mar 2022 23:18:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0348DC340F0;
+        Mon, 21 Mar 2022 23:18:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647904724;
-        bh=m6KXw5cu77fFqjUg3xueUjK3R+aggc9DbsO4Dz7YKb0=;
+        s=k20201202; t=1647904725;
+        bh=ge9/KE0MvPV2x4BOJKi7lxKFuT0TDOkEUBeJ1gTLFTI=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=q4wV+FLcxwwhxknK0UYjreaH6ViQl1NTjnslX3GCck+FSVyWbSQae/J9/GcH1ac0/
-         jvoJFI0dVEN0IGxNv9N/1rKatv3PXFKLn1TWa5MVkbsegy6TeBpwX2nmWkwS4c4hkM
-         DtlYz5xDGeXBHf8pNZn1dhW6NaB5cLx7E+5n9GHYyDsw0BEQyTcDakQye+vlidRXx2
-         4wvVlSeYUXkZZRtdo2DK3ctQirjbj7JH8WBfHri8NLab3VpyBuX6nYwaO9b+KfQShm
-         uvvVG1WYFRZMW8oYMdMXcnxRprB/XzX9ihwK9LgIDHXHXOF6FlEh0Q28XBliYHdPMx
-         LmbhokFNP56cA==
+        b=jESsbixbCw4x2xf/+Da8jgRr+MXdwWKADpN2Kw6DRC7G7dH0na+anH9Yr3YCjc9gy
+         mxqX/9uCa81UrhkgjL6dTYbwgP9AbVP8ZW59L2ijm2Sgc9uNLn2+PvndGhrmIs7HRB
+         jMX0W5LxTimtj0J+Sbkh47kAEbehjtsYH6+/0SlucU2qn7OqV5LT2rMGaWBzd4l/nZ
+         W/54NuBNZVgq+Y9/9JjeGsWbU28bivfvNgYk+PmNCSAoKqEzTpF0zSM9C74EnRz8Kq
+         yU1zDPnJYAoJ3/VucG07Q9D1SPJucgJDf895KjGd98AiME7xIR0Z+JAS4O8jAk7J6G
+         uX+An6v/2cdQw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B9BABE7BB0B;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E60A1E6D44B;
         Mon, 21 Mar 2022 23:18:44 +0000 (UTC)
-Subject: Re: [GIT PULL] random number generator updates for 5.18-rc1
+Subject: Re: [GIT PULL] Crypto Update for 5.18
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220317232804.931702-1-Jason@zx2c4.com>
-References: <20220317232804.931702-1-Jason@zx2c4.com>
+In-Reply-To: <Yje766s7fIqYg1Tk@gondor.apana.org.au>
+References: <20200803044024.GA6429@gondor.apana.org.au>
+ <20201012033249.GA25179@gondor.apana.org.au>
+ <20201214055515.GA14196@gondor.apana.org.au>
+ <20210215024721.GA20593@gondor.apana.org.au>
+ <20210426123200.kgbyk6ayey4l4lrw@gondor.apana.org.au>
+ <20210628110050.GA12162@gondor.apana.org.au>
+ <20210830082818.GA30921@gondor.apana.org.au>
+ <20211102035201.GA23331@gondor.apana.org.au>
+ <Ydzlo+UmL5bbDgUZ@gondor.apana.org.au> <Yje766s7fIqYg1Tk@gondor.apana.org.au>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220317232804.931702-1-Jason@zx2c4.com>
-X-PR-Tracked-Remote: ssh://git@gitolite.kernel.org/pub/scm/linux/kernel/git/crng/random.git tags/random-5.18-rc1-for-linus
-X-PR-Tracked-Commit-Id: 3e504d2026eb6c8762cd6040ae57db166516824a
+X-PR-Tracked-Message-Id: <Yje766s7fIqYg1Tk@gondor.apana.org.au>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/herbert/crypto-2.6.git linus
+X-PR-Tracked-Commit-Id: 0e03b8fd29363f2df44e2a7a176d486de550757a
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 5628b8de1228436d47491c662dc521bc138a3d43
-Message-Id: <164790472475.24500.3192057522006290577.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: 93e220a62da36f766b3188e76e234607e41488f9
+Message-Id: <164790472493.24500.15386999744557853585.pr-tracker-bot@kernel.org>
 Date:   Mon, 21 Mar 2022 23:18:44 +0000
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Thu, 17 Mar 2022 17:28:04 -0600:
+The pull request you sent on Mon, 21 Mar 2022 11:42:35 +1200:
 
-> ssh://git@gitolite.kernel.org/pub/scm/linux/kernel/git/crng/random.git tags/random-5.18-rc1-for-linus
+> git://git.kernel.org/pub/scm/linux/kernel/git/herbert/crypto-2.6.git linus
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/5628b8de1228436d47491c662dc521bc138a3d43
+https://git.kernel.org/torvalds/c/93e220a62da36f766b3188e76e234607e41488f9
 
 Thank you!
 
