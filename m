@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91E0FC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83412C3525B
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351052AbiCUOKg (ORCPT
+        id S1350938AbiCUOK2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:10:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37898 "EHLO
+        Mon, 21 Mar 2022 10:10:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349241AbiCUODd (ORCPT
+        with ESMTP id S1349257AbiCUODe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:03:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 277FF42494;
-        Mon, 21 Mar 2022 07:00:38 -0700 (PDT)
+        Mon, 21 Mar 2022 10:03:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 393FE17A5B6;
+        Mon, 21 Mar 2022 07:00:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 850ECB81598;
-        Mon, 21 Mar 2022 14:00:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED9D3C340E8;
-        Mon, 21 Mar 2022 14:00:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A3C1611D5;
+        Mon, 21 Mar 2022 14:00:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C0CDC340E8;
+        Mon, 21 Mar 2022 14:00:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871234;
-        bh=9Axcd9R2DCSzFvbqYoUi2FJA67IbY09Sa34n5of3Uzg=;
+        s=korg; t=1647871242;
+        bh=id3rTSXc9qVDduvaUhiySlvx9cuHzqqhqRBvxy7JmoY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E9sAhxGDSyOzq99YfG/I3rnFpfLF8odzRLqd9jo1625jhqn3UW35fvztU1KsBs4Ef
-         kKNwZac/DGp7GytfsIM8YkoOI12p8EyFJcKOoHiaBQw8AHvFkyg0vYlQ+ALKPeVtqf
-         q0L6Y9Cpf6K9BP6uDaWEcC8/eacXB8PKIP6BkOos=
+        b=bv7hxqn35PbnkQN2lO+LK0oi1LwYwznxTJQ8Zlewd5TwzxQExyL1Gh5KKC1jHNw8w
+         qE7tezwuFssrrzUJPzs/IrMNmqMI6PV8fDMCr0j/tTY8sQnr6RyqxrWSoWND6M6Wqt
+         jqSDuId+JcbRA1/8zZlKGuQ+nHoVZ/yyWnG+ZAPo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>,
-        Manish Chopra <manishc@marvell.com>,
-        Ariel Elior <aelior@marvell.com>,
+        stable@vger.kernel.org, Ivan Vecera <ivecera@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 21/32] bnx2x: fix built-in kernel driver load failure
-Date:   Mon, 21 Mar 2022 14:52:57 +0100
-Message-Id: <20220321133221.177205614@linuxfoundation.org>
+Subject: [PATCH 5.15 24/32] iavf: Fix hang during reboot/shutdown
+Date:   Mon, 21 Mar 2022 14:53:00 +0100
+Message-Id: <20220321133221.262713778@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133220.559554263@linuxfoundation.org>
 References: <20220321133220.559554263@linuxfoundation.org>
@@ -52,158 +50,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manish Chopra <manishc@marvell.com>
+From: Ivan Vecera <ivecera@redhat.com>
 
-[ Upstream commit 424e7834e293936a54fcf05173f2884171adc5a3 ]
+[ Upstream commit b04683ff8f0823b869c219c78ba0d974bddea0b5 ]
 
-Commit b7a49f73059f ("bnx2x: Utilize firmware 7.13.21.0")
-added request_firmware() logic in probe() which caused
-load failure when firmware file is not present in initrd (below),
-as access to firmware file is not feasible during probe.
+Recent commit 974578017fc1 ("iavf: Add waiting so the port is
+initialized in remove") adds a wait-loop at the beginning of
+iavf_remove() to ensure that port initialization is finished
+prior unregistering net device. This causes a regression
+in reboot/shutdown scenario because in this case callback
+iavf_shutdown() is called and this callback detaches the device,
+makes it down if it is running and sets its state to __IAVF_REMOVE.
+Later shutdown callback of associated PF driver (e.g. ice_shutdown)
+is called. That callback calls among other things sriov_disable()
+that calls indirectly iavf_remove() (see stack trace below).
+As the adapter state is already __IAVF_REMOVE then the mentioned
+loop is end-less and shutdown process hangs.
 
-  Direct firmware load for bnx2x/bnx2x-e2-7.13.15.0.fw failed with error -2
-  Direct firmware load for bnx2x/bnx2x-e2-7.13.21.0.fw failed with error -2
+The patch fixes this by checking adapter's state at the beginning
+of iavf_remove() and skips the rest of the function if the adapter
+is already in remove state (shutdown is in progress).
 
-This patch fixes this issue by -
+Reproducer:
+1. Create VF on PF driven by ice or i40e driver
+2. Ensure that the VF is bound to iavf driver
+3. Reboot
 
-1. Removing request_firmware() logic from the probe()
-   such that .ndo_open() handle it as it used to handle
-   it earlier
+[52625.981294] sysrq: SysRq : Show Blocked State
+[52625.988377] task:reboot          state:D stack:    0 pid:17359 ppid:     1 f2
+[52625.996732] Call Trace:
+[52625.999187]  __schedule+0x2d1/0x830
+[52626.007400]  schedule+0x35/0xa0
+[52626.010545]  schedule_hrtimeout_range_clock+0x83/0x100
+[52626.020046]  usleep_range+0x5b/0x80
+[52626.023540]  iavf_remove+0x63/0x5b0 [iavf]
+[52626.027645]  pci_device_remove+0x3b/0xc0
+[52626.031572]  device_release_driver_internal+0x103/0x1f0
+[52626.036805]  pci_stop_bus_device+0x72/0xa0
+[52626.040904]  pci_stop_and_remove_bus_device+0xe/0x20
+[52626.045870]  pci_iov_remove_virtfn+0xba/0x120
+[52626.050232]  sriov_disable+0x2f/0xe0
+[52626.053813]  ice_free_vfs+0x7c/0x340 [ice]
+[52626.057946]  ice_remove+0x220/0x240 [ice]
+[52626.061967]  ice_shutdown+0x16/0x50 [ice]
+[52626.065987]  pci_device_shutdown+0x34/0x60
+[52626.070086]  device_shutdown+0x165/0x1c5
+[52626.074011]  kernel_restart+0xe/0x30
+[52626.077593]  __do_sys_reboot+0x1d2/0x210
+[52626.093815]  do_syscall_64+0x5b/0x1a0
+[52626.097483]  entry_SYSCALL_64_after_hwframe+0x65/0xca
 
-2. Given request_firmware() is removed from probe(), so
-   driver has to relax FW version comparisons a bit against
-   the already loaded FW version (by some other PFs of same
-   adapter) to allow different compatible/close enough FWs with which
-   multiple PFs may run with (in different environments), as the
-   given PF who is in probe flow has no idea now with which firmware
-   file version it is going to initialize the device in ndo_open()
-
-Link: https://lore.kernel.org/all/46f2d9d9-ae7f-b332-ddeb-b59802be2bab@molgen.mpg.de/
-Reported-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Tested-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Fixes: b7a49f73059f ("bnx2x: Utilize firmware 7.13.21.0")
-Signed-off-by: Manish Chopra <manishc@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Link: https://lore.kernel.org/r/20220316214613.6884-1-manishc@marvell.com
+Fixes: 974578017fc1 ("iavf: Add waiting so the port is initialized in remove")
+Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+Link: https://lore.kernel.org/r/20220317104524.2802848-1-ivecera@redhat.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnx2x/bnx2x.h   |  2 --
- .../net/ethernet/broadcom/bnx2x/bnx2x_cmn.c   | 28 +++++++++++--------
- .../net/ethernet/broadcom/bnx2x/bnx2x_main.c  | 15 ++--------
- 3 files changed, 19 insertions(+), 26 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
-index 72bdbebf25ce..9e79bcfb365f 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
-@@ -2533,6 +2533,4 @@ void bnx2x_register_phc(struct bnx2x *bp);
-  * Meant for implicit re-load flows.
-  */
- int bnx2x_vlan_reconfigure_vid(struct bnx2x *bp);
--int bnx2x_init_firmware(struct bnx2x *bp);
--void bnx2x_release_firmware(struct bnx2x *bp);
- #endif /* bnx2x.h */
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-index 41ebbb2c7d3a..198e041d8410 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-@@ -2363,24 +2363,30 @@ int bnx2x_compare_fw_ver(struct bnx2x *bp, u32 load_code, bool print_err)
- 	/* is another pf loaded on this engine? */
- 	if (load_code != FW_MSG_CODE_DRV_LOAD_COMMON_CHIP &&
- 	    load_code != FW_MSG_CODE_DRV_LOAD_COMMON) {
--		/* build my FW version dword */
--		u32 my_fw = (bp->fw_major) + (bp->fw_minor << 8) +
--				(bp->fw_rev << 16) + (bp->fw_eng << 24);
-+		u8 loaded_fw_major, loaded_fw_minor, loaded_fw_rev, loaded_fw_eng;
-+		u32 loaded_fw;
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index 7fca9dd8dcf6..ca74824d40b8 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -4025,6 +4025,13 @@ static void iavf_remove(struct pci_dev *pdev)
+ 	struct iavf_hw *hw = &adapter->hw;
+ 	int err;
  
- 		/* read loaded FW from chip */
--		u32 loaded_fw = REG_RD(bp, XSEM_REG_PRAM);
-+		loaded_fw = REG_RD(bp, XSEM_REG_PRAM);
- 
--		DP(BNX2X_MSG_SP, "loaded fw %x, my fw %x\n",
--		   loaded_fw, my_fw);
-+		loaded_fw_major = loaded_fw & 0xff;
-+		loaded_fw_minor = (loaded_fw >> 8) & 0xff;
-+		loaded_fw_rev = (loaded_fw >> 16) & 0xff;
-+		loaded_fw_eng = (loaded_fw >> 24) & 0xff;
++	/* When reboot/shutdown is in progress no need to do anything
++	 * as the adapter is already REMOVE state that was set during
++	 * iavf_shutdown() callback.
++	 */
++	if (adapter->state == __IAVF_REMOVE)
++		return;
 +
-+		DP(BNX2X_MSG_SP, "loaded fw 0x%x major 0x%x minor 0x%x rev 0x%x eng 0x%x\n",
-+		   loaded_fw, loaded_fw_major, loaded_fw_minor, loaded_fw_rev, loaded_fw_eng);
- 
- 		/* abort nic load if version mismatch */
--		if (my_fw != loaded_fw) {
-+		if (loaded_fw_major != BCM_5710_FW_MAJOR_VERSION ||
-+		    loaded_fw_minor != BCM_5710_FW_MINOR_VERSION ||
-+		    loaded_fw_eng != BCM_5710_FW_ENGINEERING_VERSION ||
-+		    loaded_fw_rev < BCM_5710_FW_REVISION_VERSION_V15) {
- 			if (print_err)
--				BNX2X_ERR("bnx2x with FW %x was already loaded which mismatches my %x FW. Aborting\n",
--					  loaded_fw, my_fw);
-+				BNX2X_ERR("loaded FW incompatible. Aborting\n");
- 			else
--				BNX2X_DEV_INFO("bnx2x with FW %x was already loaded which mismatches my %x FW, possibly due to MF UNDI\n",
--					       loaded_fw, my_fw);
-+				BNX2X_DEV_INFO("loaded FW incompatible, possibly due to MF UNDI\n");
-+
- 			return -EBUSY;
- 		}
- 	}
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-index dc70f6f96d02..bdd4e420f869 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-@@ -12313,15 +12313,6 @@ static int bnx2x_init_bp(struct bnx2x *bp)
- 
- 	bnx2x_read_fwinfo(bp);
- 
--	if (IS_PF(bp)) {
--		rc = bnx2x_init_firmware(bp);
--
--		if (rc) {
--			bnx2x_free_mem_bp(bp);
--			return rc;
--		}
--	}
--
- 	func = BP_FUNC(bp);
- 
- 	/* need to reset chip if undi was active */
-@@ -12334,7 +12325,6 @@ static int bnx2x_init_bp(struct bnx2x *bp)
- 
- 		rc = bnx2x_prev_unload(bp);
- 		if (rc) {
--			bnx2x_release_firmware(bp);
- 			bnx2x_free_mem_bp(bp);
- 			return rc;
- 		}
-@@ -13414,7 +13404,7 @@ do {									\
- 	     (u8 *)bp->arr, len);					\
- } while (0)
- 
--int bnx2x_init_firmware(struct bnx2x *bp)
-+static int bnx2x_init_firmware(struct bnx2x *bp)
- {
- 	const char *fw_file_name, *fw_file_name_v15;
- 	struct bnx2x_fw_file_hdr *fw_hdr;
-@@ -13514,7 +13504,7 @@ int bnx2x_init_firmware(struct bnx2x *bp)
- 	return rc;
- }
- 
--void bnx2x_release_firmware(struct bnx2x *bp)
-+static void bnx2x_release_firmware(struct bnx2x *bp)
- {
- 	kfree(bp->init_ops_offsets);
- 	kfree(bp->init_ops);
-@@ -14031,7 +14021,6 @@ static int bnx2x_init_one(struct pci_dev *pdev,
- 	return 0;
- 
- init_one_freemem:
--	bnx2x_release_firmware(bp);
- 	bnx2x_free_mem_bp(bp);
- 
- init_one_exit:
+ 	set_bit(__IAVF_IN_REMOVE_TASK, &adapter->crit_section);
+ 	/* Wait until port initialization is complete.
+ 	 * There are flows where register/unregister netdev may race.
 -- 
 2.34.1
 
