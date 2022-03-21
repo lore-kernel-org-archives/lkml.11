@@ -2,80 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9408DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:03:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94949C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:03:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346595AbiCULEd (ORCPT
+        id S1346666AbiCULEl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 07:04:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49606 "EHLO
+        Mon, 21 Mar 2022 07:04:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346597AbiCULDz (ORCPT
+        with ESMTP id S1346615AbiCULD6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 07:03:55 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E931914DFEA
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 04:02:27 -0700 (PDT)
+        Mon, 21 Mar 2022 07:03:58 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 412ED14B85C
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 04:02:31 -0700 (PDT)
 From:   Thomas Gleixner <tglx@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647860546;
+        s=2020; t=1647860549;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=RhYPZxFc16XcJVa5C1sOmlr6nw9J2jPvm4r0gjQ+Roo=;
-        b=Jnlczzz+/EIfzmhBgU2kqiPv4OaG7j6Zoa0BomWh9o4AT5dL8vErIhAPmTIjAhLnaFkxg4
-        Q+GRbf1EHp2H6dSFwqUHOGT+MWvA9KIhrgdR27X6A73FumbPEQxG2KZDVxczox69iIbHGD
-        grnWvH0wL8aG2WIUc3e7da4QsrmCDhcj/vvyLnBN4hNpWi1eI0+J9GVzqkpK3bqUjpLysE
-        aAZPyb0sAk3DiwECLuqGffioQOKEID+ymZVdnN+cbpxPs9xIVa1tDPXka1TzwBTUbT/xuf
-        oppPginRPWyPQEy29HTiZsIFQGE3a8ROwjbpgQeFZOI7R8LlCkjlz9yBUCfsyg==
+        bh=G4TekWzzwQgRg/dcb8odDFRMS0m7UxzUUoz5DOrcUuI=;
+        b=Z+qrIVMyjZvmSEq67nLBvdR1Ti7FrXn7UV9+3pZRfm2IW6Dq4CC9l10VtDRM3m+Ky/65uC
+        ieePwWnr2xoYrtZf/Pt2DOVzj1c/2qtmyDJnmh3P4p701E5vF+IQUEYNtuC6AXEwnBQPmC
+        YvbhDiorf29bsK+89JA9fGN2E9TBzUzyXvJRwnnQUrVOrQbbh47dEhhrlYQZJhc1E68Jqp
+        0f+Aq2PRtjDBinBnX2fN/iHXTbcyAHeRfA3hjgAnn53zbc/oets7wCW0zxTf3u2kx6yZAw
+        vkZ8D09+C78Q17UviZo+sePKCJmu3JodtDanQ9aIf7wVBKMXwB8JAd1i4Dhtzg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647860546;
+        s=2020e; t=1647860549;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=RhYPZxFc16XcJVa5C1sOmlr6nw9J2jPvm4r0gjQ+Roo=;
-        b=TYbZKnWgNXUa8qf4VMCBNwKp1HTcf0BuyEa3S0tVygwM1Y06tKRafJ+4HDtBtnCUOkdsI4
-        qGnqjr7JCuYUozAQ==
+        bh=G4TekWzzwQgRg/dcb8odDFRMS0m7UxzUUoz5DOrcUuI=;
+        b=IzxHxfQHXqJULkFrFRLhw71ffxxgyLL/vj6/rjy5ZmW0kYWzwT8dPkbIR/znmeAfz+U8g/
+        GA2RI2jZMimzk6AA==
 To:     Linus Torvalds <torvalds@linux-foundation.org>
 Cc:     linux-kernel@vger.kernel.org, x86@kernel.org
-Subject: [GIT pull] timers/core for v5.18-rc1
+Subject: [GIT pull] x86/pasid for v5.18-rc1
 References: <164786042536.122591.4459156564791679956.tglx@xen13>
-Message-ID: <164786042893.122591.10484394565817935694.tglx@xen13>
+Message-ID: <164786043190.122591.9314646033947786445.tglx@xen13>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Date:   Mon, 21 Mar 2022 12:02:25 +0100 (CET)
+Date:   Mon, 21 Mar 2022 12:02:29 +0100 (CET)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Linus,
 
-please pull the latest timers/core branch from:
+please pull the latest x86/pasid branch from:
 
-   git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git timers-core-2022=
--03-21
+   git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86-pasid-2022-0=
+3-21
 
-up to:  b166e52541f2: Merge tag 'timers-v5.18-rc1' of https://git.linaro.org/=
-people/daniel.lezcano/linux into timers/core
+up to:  83aa52ffed5d: Documentation/x86: Update documentation for SVA (Shared=
+ Virtual Addressing)
 
 
-Timers and timekeeping updates:
+Reenable ENQCMD/PASID support:
 
- Core code:
+ - Simplify the PASID handling to allocate the PASID once, associate it to
+   the mm of a process and free it on mm_exit(). The previous attempt of
+   refcounted PASIDs and dynamic alloc()/free() turned out to be error
+   prone and too complex. The PASID space is 20bits, so the case of
+   resource exhaustion is a pure academic concern.
 
-    - Make the NOHZ handling of the timekeeping/tick core more robust to
-      prevent a rare jiffies update stall.
+ - Populate the PASID MSR on demand via #GP to avoid racy updates via IPIs.
 
-    - Handle softirqs in the NOHZ/idle case correctly
+ - Reenable ENQCMD and let objtool check for the forbidden usage of ENQCMD
+   in the kernel.
 
- Drivers:
-
-    - Add support for event stream scaling of the 1GHz counter on ARM(64)
-
-    - Correct an error code check in the timer-of layer
-
-    - The usual cleanups and improvements all over the place
+ - Update the documentation for Shared Virtual Addressing accordingly.
 
 
 Thanks,
@@ -83,985 +81,806 @@ Thanks,
 	tglx
 
 ------------------>
-Alim Akhtar (3):
-      clocksource/drivers/exynos_mct: Remove mct interrupt index enum
-      clocksource/drivers/exynos_mct: Bump up mct max irq number
-      clocksource/drivers/exynos_mct: Increase the size of name array
+Fenghua Yu (10):
+      iommu/sva: Rename CONFIG_IOMMU_SVA_LIB to CONFIG_IOMMU_SVA
+      mm: Change CONFIG option for mm->pasid field
+      iommu/ioasid: Introduce a helper to check for valid PASIDs
+      kernel/fork: Initialize mm's PASID
+      iommu/sva: Assign a PASID to mm on PASID allocation and free it on mm e=
+xit
+      x86/fpu: Clear PASID when copying fpstate
+      x86/traps: Demand-populate PASID MSR via #GP
+      x86/cpufeatures: Re-enable ENQCMD
+      tools/objtool: Check for use of the ENQCMD instruction in the kernel
+      Documentation/x86: Update documentation for SVA (Shared Virtual Address=
+ing)
 
-Claudiu Beznea (3):
-      clocksource/drivers/timer-microchip-pit64b: Remove mmio selection
-      clocksource/drivers/timer-microchip-pit64b: Use notrace
-      clocksource/drivers/timer-microchip-pit64b: Use 5MHz for clockevent
-
-David Heidelberg (1):
-      dt-bindings: timer: Tegra: Convert text bindings to yaml
-
-Drew Fustini (1):
-      clocksource/drivers/timer-ti-dm: Fix regression from errata i940 fix
-
-Frederic Weisbecker (4):
-      tick: Detect and fix jiffies update stall
-      tick/rcu: Remove obsolete rcu_needs_cpu() parameters
-      tick/rcu: Stop allowing RCU_SOFTIRQ in idle
-      lib/irq_poll: Declare IRQ_POLL softirq vector as ksoftirqd-parking safe
-
-Guillaume Ranquet (1):
-      clocksource/drivers/timer-of: Check return value of of_iomap in timer_o=
-f_base_init()
-
-Krzysztof Kozlowski (1):
-      clocksource/drivers/exynos_mct: Handle DTS with higher number of interr=
-upts
-
-Marc Zyngier (1):
-      clocksource/drivers/arm_arch_timer: Use event stream scaling when avail=
-able
-
-Nathan Chancellor (1):
-      clocksource/drivers/imx-tpm: Move tpm_read_sched_clock() under CONFIG_A=
-RM
-
-Peng Fan (6):
-      clocksource/drivers/imx-sysctr: Drop IRQF_IRQPOLL
-      clocksource/drivers/imx-tpm: Drop IRQF_IRQPOLL
-      clocksource/drivers/imx-tpm: Mark two variable with __ro_after_init
-      clocksource/drivers/imx-tpm: Add CLOCK_EVT_FEAT_DYNIRQ
-      clocksource/drivers/imx-tpm: Update name of clkevt
-      clocksource/drivers/imx-tpm: Exclude sched clock for ARM64
-
-Waiman Long (1):
-      clocksource: Add a Kconfig option for WATCHDOG_MAX_SKEW
+Peter Zijlstra (1):
+      sched: Define and initialize a flag to identify valid PASID in the task
 
 
- .../bindings/timer/nvidia,tegra-timer.yaml         | 150 +++++++++++++++++++=
+ Documentation/x86/sva.rst                       | 53 ++++++++++++++++++------
+ arch/x86/include/asm/disabled-features.h        |  7 +++-
+ arch/x86/kernel/fpu/core.c                      |  7 ++++
+ arch/x86/kernel/traps.c                         | 55 +++++++++++++++++++++++=
 ++
- .../bindings/timer/nvidia,tegra20-timer.txt        |  24 ----
- .../bindings/timer/nvidia,tegra210-timer.txt       |  36 -----
- .../bindings/timer/nvidia,tegra30-timer.txt        |  28 ----
- arch/arm/boot/dts/dra7-l4.dtsi                     |   5 +-
- arch/arm/boot/dts/dra7.dtsi                        |   8 +-
- drivers/clocksource/Kconfig                        |   1 -
- drivers/clocksource/arm_arch_timer.c               |  13 +-
- drivers/clocksource/exynos_mct.c                   |  39 +++---
- drivers/clocksource/timer-imx-sysctr.c             |   2 +-
- drivers/clocksource/timer-imx-tpm.c                |  14 +-
- drivers/clocksource/timer-microchip-pit64b.c       |   8 +-
- drivers/clocksource/timer-of.c                     |   6 +-
- drivers/clocksource/timer-ti-dm-systimer.c         |   4 +-
- include/clocksource/arm_arch_timer.h               |   1 +
- include/linux/interrupt.h                          |  11 +-
- include/linux/rcutiny.h                            |   3 +-
- include/linux/rcutree.h                            |   2 +-
- kernel/rcu/tree.c                                  |   3 +-
- kernel/time/Kconfig                                |   9 ++
- kernel/time/clocksource.c                          |   8 +-
- kernel/time/tick-sched.c                           |  77 ++++++++---
- kernel/time/tick-sched.h                           |   4 +
- 23 files changed, 299 insertions(+), 157 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/timer/nvidia,tegra-time=
-r.yaml
- delete mode 100644 Documentation/devicetree/bindings/timer/nvidia,tegra20-ti=
-mer.txt
- delete mode 100644 Documentation/devicetree/bindings/timer/nvidia,tegra210-t=
-imer.txt
- delete mode 100644 Documentation/devicetree/bindings/timer/nvidia,tegra30-ti=
-mer.txt
+ drivers/iommu/Kconfig                           |  6 +--
+ drivers/iommu/Makefile                          |  2 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c |  5 +--
+ drivers/iommu/intel/Kconfig                     |  2 +-
+ drivers/iommu/intel/iommu.c                     |  4 +-
+ drivers/iommu/intel/svm.c                       |  9 ----
+ drivers/iommu/ioasid.c                          | 39 ++----------------
+ drivers/iommu/iommu-sva-lib.c                   | 39 ++++++------------
+ drivers/iommu/iommu-sva-lib.h                   |  7 ++--
+ include/linux/ioasid.h                          | 21 +++++-----
+ include/linux/mm_types.h                        |  2 +-
+ include/linux/sched.h                           |  3 ++
+ include/linux/sched/mm.h                        | 26 ++++++++++++
+ kernel/fork.c                                   | 15 ++++---
+ mm/init-mm.c                                    |  4 ++
+ tools/objtool/arch/x86/decode.c                 | 11 ++++-
+ 20 files changed, 197 insertions(+), 120 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/timer/nvidia,tegra-timer.yaml =
-b/Documentation/devicetree/bindings/timer/nvidia,tegra-timer.yaml
-new file mode 100644
-index 000000000000..b78209cd0f28
---- /dev/null
-+++ b/Documentation/devicetree/bindings/timer/nvidia,tegra-timer.yaml
-@@ -0,0 +1,150 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/timer/nvidia,tegra-timer.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: NVIDIA Tegra timer
-+
-+maintainers:
-+  - Stephen Warren <swarren@nvidia.com>
-+
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: nvidia,tegra210-timer
-+    then:
-+      properties:
-+        interrupts:
-+          # Either a single combined interrupt or up to 14 individual interr=
-upts
-+          minItems: 1
-+          maxItems: 14
-+          description: >
-+            A list of 14 interrupts; one per each timer channels 0 through 13
-+
-+  - if:
-+      properties:
-+        compatible:
-+          oneOf:
-+            - items:
-+                - enum:
-+                    - nvidia,tegra114-timer
-+                    - nvidia,tegra124-timer
-+                    - nvidia,tegra132-timer
-+                - const: nvidia,tegra30-timer
-+            - items:
-+                - const: nvidia,tegra30-timer
-+                - const: nvidia,tegra20-timer
-+    then:
-+      properties:
-+        interrupts:
-+          # Either a single combined interrupt or up to 6 individual interru=
-pts
-+          minItems: 1
-+          maxItems: 6
-+          description: >
-+            A list of 6 interrupts; one per each of timer channels 1 through=
- 5,
-+            and one for the shared interrupt for the remaining channels.
-+
-+  - if:
-+      properties:
-+        compatible:
-+          const: nvidia,tegra20-timer
-+    then:
-+      properties:
-+        interrupts:
-+          # Either a single combined interrupt or up to 4 individual interru=
-pts
-+          minItems: 1
-+          maxItems: 4
-+          description: |
-+            A list of 4 interrupts; one per timer channel.
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - const: nvidia,tegra210-timer
-+        description: >
-+          The Tegra210 timer provides fourteen 29-bit timer counters and one=
- 32-bit
-+          timestamp counter. The TMRs run at either a fixed 1 MHz clock rate=
- derived
-+          from the oscillator clock (TMR0-TMR9) or directly at the oscillato=
-r clock
-+          (TMR10-TMR13). Each TMR can be programmed to generate one-shot, pe=
-riodic,
-+          or watchdog interrupts.
-+      - items:
-+          - enum:
-+              - nvidia,tegra114-timer
-+              - nvidia,tegra124-timer
-+              - nvidia,tegra132-timer
-+          - const: nvidia,tegra30-timer
-+      - items:
-+          - const: nvidia,tegra30-timer
-+          - const: nvidia,tegra20-timer
-+        description: >
-+          The Tegra30 timer provides ten 29-bit timer channels, a single 32-=
-bit free
-+          running counter, and 5 watchdog modules. The first two channels ma=
-y also
-+          trigger a legacy watchdog reset.
-+      - const: nvidia,tegra20-timer
-+        description: >
-+          The Tegra20 timer provides four 29-bit timer channels and a single=
- 32-bit free
-+          running counter. The first two channels may also trigger a watchdo=
-g reset.
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts: true
-+
-+  clocks:
-+    maxItems: 1
-+
-+  clock-names:
-+    items:
-+      - const: timer
-+
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    timer@60005000 {
-+        compatible =3D "nvidia,tegra30-timer", "nvidia,tegra20-timer";
-+        reg =3D <0x60005000 0x400>;
-+        interrupts =3D <0 0 IRQ_TYPE_LEVEL_HIGH>,
-+                     <0 1 IRQ_TYPE_LEVEL_HIGH>,
-+                     <0 41 IRQ_TYPE_LEVEL_HIGH>,
-+                     <0 42 IRQ_TYPE_LEVEL_HIGH>,
-+                     <0 121 IRQ_TYPE_LEVEL_HIGH>,
-+                     <0 122 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks =3D <&tegra_car 214>;
-+    };
-+  - |
-+    #include <dt-bindings/clock/tegra210-car.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    timer@60005000 {
-+        compatible =3D "nvidia,tegra210-timer";
-+        reg =3D <0x60005000 0x400>;
-+        interrupts =3D <GIC_SPI 156 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 41 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 121 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 152 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 153 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 155 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 177 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 178 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 179 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks =3D <&tegra_car TEGRA210_CLK_TIMER>;
-+        clock-names =3D "timer";
-+    };
-diff --git a/Documentation/devicetree/bindings/timer/nvidia,tegra20-timer.txt=
- b/Documentation/devicetree/bindings/timer/nvidia,tegra20-timer.txt
-deleted file mode 100644
-index 4a864bd10d3d..000000000000
---- a/Documentation/devicetree/bindings/timer/nvidia,tegra20-timer.txt
-+++ /dev/null
-@@ -1,24 +0,0 @@
--NVIDIA Tegra20 timer
--
--The Tegra20 timer provides four 29-bit timer channels and a single 32-bit fr=
-ee
--running counter. The first two channels may also trigger a watchdog reset.
--
--Required properties:
--
--- compatible : should be "nvidia,tegra20-timer".
--- reg : Specifies base physical address and size of the registers.
--- interrupts : A list of 4 interrupts; one per timer channel.
--- clocks : Must contain one entry, for the module clock.
--  See ../clocks/clock-bindings.txt for details.
--
--Example:
--
--timer {
--	compatible =3D "nvidia,tegra20-timer";
--	reg =3D <0x60005000 0x60>;
--	interrupts =3D <0 0 0x04
--			0 1 0x04
--			0 41 0x04
--			0 42 0x04>;
--	clocks =3D <&tegra_car 132>;
--};
-diff --git a/Documentation/devicetree/bindings/timer/nvidia,tegra210-timer.tx=
-t b/Documentation/devicetree/bindings/timer/nvidia,tegra210-timer.txt
-deleted file mode 100644
-index 032cda96fe0d..000000000000
---- a/Documentation/devicetree/bindings/timer/nvidia,tegra210-timer.txt
-+++ /dev/null
-@@ -1,36 +0,0 @@
--NVIDIA Tegra210 timer
--
--The Tegra210 timer provides fourteen 29-bit timer counters and one 32-bit
--timestamp counter. The TMRs run at either a fixed 1 MHz clock rate derived
--from the oscillator clock (TMR0-TMR9) or directly at the oscillator clock
--(TMR10-TMR13). Each TMR can be programmed to generate one-shot, periodic,
--or watchdog interrupts.
--
--Required properties:
--- compatible : "nvidia,tegra210-timer".
--- reg : Specifies base physical address and size of the registers.
--- interrupts : A list of 14 interrupts; one per each timer channels 0 through
--  13.
--- clocks : Must contain one entry, for the module clock.
--  See ../clocks/clock-bindings.txt for details.
--
--timer@60005000 {
--	compatible =3D "nvidia,tegra210-timer";
--	reg =3D <0x0 0x60005000 0x0 0x400>;
--	interrupts =3D <GIC_SPI 156 IRQ_TYPE_LEVEL_HIGH>,
--		     <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
--		     <GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>,
--		     <GIC_SPI 41 IRQ_TYPE_LEVEL_HIGH>,
--		     <GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH>,
--		     <GIC_SPI 121 IRQ_TYPE_LEVEL_HIGH>,
--		     <GIC_SPI 152 IRQ_TYPE_LEVEL_HIGH>,
--		     <GIC_SPI 153 IRQ_TYPE_LEVEL_HIGH>,
--		     <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>,
--		     <GIC_SPI 155 IRQ_TYPE_LEVEL_HIGH>,
--		     <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>,
--		     <GIC_SPI 177 IRQ_TYPE_LEVEL_HIGH>,
--		     <GIC_SPI 178 IRQ_TYPE_LEVEL_HIGH>,
--		     <GIC_SPI 179 IRQ_TYPE_LEVEL_HIGH>;
--	clocks =3D <&tegra_car TEGRA210_CLK_TIMER>;
--	clock-names =3D "timer";
--};
-diff --git a/Documentation/devicetree/bindings/timer/nvidia,tegra30-timer.txt=
- b/Documentation/devicetree/bindings/timer/nvidia,tegra30-timer.txt
-deleted file mode 100644
-index 1761f53ee36f..000000000000
---- a/Documentation/devicetree/bindings/timer/nvidia,tegra30-timer.txt
-+++ /dev/null
-@@ -1,28 +0,0 @@
--NVIDIA Tegra30 timer
--
--The Tegra30 timer provides ten 29-bit timer channels, a single 32-bit free
--running counter, and 5 watchdog modules. The first two channels may also
--trigger a legacy watchdog reset.
--
--Required properties:
--
--- compatible : For Tegra30, must contain "nvidia,tegra30-timer".  Otherwise,
--  must contain '"nvidia,<chip>-timer", "nvidia,tegra30-timer"' where
--  <chip> is tegra124 or tegra132.
--- reg : Specifies base physical address and size of the registers.
--- interrupts : A list of 6 interrupts; one per each of timer channels 1
--    through 5, and one for the shared interrupt for the remaining channels.
--- clocks : Must contain one entry, for the module clock.
--  See ../clocks/clock-bindings.txt for details.
--
--timer {
--	compatible =3D "nvidia,tegra30-timer", "nvidia,tegra20-timer";
--	reg =3D <0x60005000 0x400>;
--	interrupts =3D <0 0 0x04
--		      0 1 0x04
--		      0 41 0x04
--		      0 42 0x04
--		      0 121 0x04
--		      0 122 0x04>;
--	clocks =3D <&tegra_car 214>;
--};
-diff --git a/arch/arm/boot/dts/dra7-l4.dtsi b/arch/arm/boot/dts/dra7-l4.dtsi
-index 956a26d52a4c..0a11bacffc1f 100644
---- a/arch/arm/boot/dts/dra7-l4.dtsi
-+++ b/arch/arm/boot/dts/dra7-l4.dtsi
-@@ -3482,8 +3482,7 @@ timer14: timer@0 {
- 				ti,timer-pwm;
- 			};
- 		};
--
--		target-module@2c000 {			/* 0x4882c000, ap 17 02.0 */
-+		timer15_target: target-module@2c000 {	/* 0x4882c000, ap 17 02.0 */
- 			compatible =3D "ti,sysc-omap4-timer", "ti,sysc";
- 			reg =3D <0x2c000 0x4>,
- 			      <0x2c010 0x4>;
-@@ -3511,7 +3510,7 @@ timer15: timer@0 {
- 			};
- 		};
+diff --git a/Documentation/x86/sva.rst b/Documentation/x86/sva.rst
+index 076efd51ef1f..2e9b8b0f9a0f 100644
+--- a/Documentation/x86/sva.rst
++++ b/Documentation/x86/sva.rst
+@@ -104,18 +104,47 @@ The MSR must be configured on each logical CPU before a=
+ny application
+ thread can interact with a device. Threads that belong to the same
+ process share the same page tables, thus the same MSR value.
 =20
--		target-module@2e000 {			/* 0x4882e000, ap 19 14.0 */
-+		timer16_target: target-module@2e000 {	/* 0x4882e000, ap 19 14.0 */
- 			compatible =3D "ti,sysc-omap4-timer", "ti,sysc";
- 			reg =3D <0x2e000 0x4>,
- 			      <0x2e010 0x4>;
-diff --git a/arch/arm/boot/dts/dra7.dtsi b/arch/arm/boot/dts/dra7.dtsi
-index 42bff117656c..97ce0c4f1df7 100644
---- a/arch/arm/boot/dts/dra7.dtsi
-+++ b/arch/arm/boot/dts/dra7.dtsi
-@@ -1339,20 +1339,20 @@ timer@0 {
- };
-=20
- /* Local timers, see ARM architected timer wrap erratum i940 */
--&timer3_target {
-+&timer15_target {
- 	ti,no-reset-on-init;
- 	ti,no-idle;
- 	timer@0 {
--		assigned-clocks =3D <&l4per_clkctrl DRA7_L4PER_TIMER3_CLKCTRL 24>;
-+		assigned-clocks =3D <&l4per3_clkctrl DRA7_L4PER3_TIMER15_CLKCTRL 24>;
- 		assigned-clock-parents =3D <&timer_sys_clk_div>;
- 	};
- };
-=20
--&timer4_target {
-+&timer16_target {
- 	ti,no-reset-on-init;
- 	ti,no-idle;
- 	timer@0 {
--		assigned-clocks =3D <&l4per_clkctrl DRA7_L4PER_TIMER4_CLKCTRL 24>;
-+		assigned-clocks =3D <&l4per3_clkctrl DRA7_L4PER3_TIMER16_CLKCTRL 24>;
- 		assigned-clock-parents =3D <&timer_sys_clk_div>;
- 	};
- };
-diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
-index cfb8ea0df3b1..1ea556e75494 100644
---- a/drivers/clocksource/Kconfig
-+++ b/drivers/clocksource/Kconfig
-@@ -713,7 +713,6 @@ config INGENIC_OST
- config MICROCHIP_PIT64B
- 	bool "Microchip PIT64B support"
- 	depends on OF || COMPILE_TEST
--	select CLKSRC_MMIO
- 	select TIMER_OF
- 	help
- 	  This option enables Microchip PIT64B timer for Atmel
-diff --git a/drivers/clocksource/arm_arch_timer.c b/drivers/clocksource/arm_a=
-rch_timer.c
-index 1ecd52f903b8..9ab8221ee3c6 100644
---- a/drivers/clocksource/arm_arch_timer.c
-+++ b/drivers/clocksource/arm_arch_timer.c
-@@ -880,10 +880,19 @@ static void __arch_timer_setup(unsigned type,
- 	clockevents_config_and_register(clk, arch_timer_rate, 0xf, max_delta);
- }
-=20
--static void arch_timer_evtstrm_enable(int divider)
-+static void arch_timer_evtstrm_enable(unsigned int divider)
- {
- 	u32 cntkctl =3D arch_timer_get_cntkctl();
-=20
-+#ifdef CONFIG_ARM64
-+	/* ECV is likely to require a large divider. Use the EVNTIS flag. */
-+	if (cpus_have_const_cap(ARM64_HAS_ECV) && divider > 15) {
-+		cntkctl |=3D ARCH_TIMER_EVT_INTERVAL_SCALE;
-+		divider -=3D 8;
-+	}
-+#endif
+-PASID is cleared when a process is created. The PASID allocation and MSR
+-programming may occur long after a process and its threads have been created.
+-One thread must call iommu_sva_bind_device() to allocate the PASID for the
+-process. If a thread uses ENQCMD without the MSR first being populated, a #GP
+-will be raised. The kernel will update the PASID MSR with the PASID for all
+-threads in the process. A single process PASID can be used simultaneously
+-with multiple devices since they all share the same address space.
+-
+-One thread can call iommu_sva_unbind_device() to free the allocated PASID.
+-The kernel will clear the PASID MSR for all threads belonging to the process.
+-
+-New threads inherit the MSR value from the parent.
++PASID Life Cycle Management
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D
 +
-+	divider =3D min(divider, 15U);
- 	cntkctl &=3D ~ARCH_TIMER_EVT_TRIGGER_MASK;
- 	/* Set the divider and enable virtual event stream */
- 	cntkctl |=3D (divider << ARCH_TIMER_EVT_TRIGGER_SHIFT)
-@@ -912,7 +921,7 @@ static void arch_timer_configure_evtstream(void)
- 		lsb++;
++PASID is initialized as INVALID_IOASID (-1) when a process is created.
++
++Only processes that access SVA-capable devices need to have a PASID
++allocated. This allocation happens when a process opens/binds an SVA-capable
++device but finds no PASID for this process. Subsequent binds of the same, or
++other devices will share the same PASID.
++
++Although the PASID is allocated to the process by opening a device,
++it is not active in any of the threads of that process. It's loaded to the
++IA32_PASID MSR lazily when a thread tries to submit a work descriptor
++to a device using the ENQCMD.
++
++That first access will trigger a #GP fault because the IA32_PASID MSR
++has not been initialized with the PASID value assigned to the process
++when the device was opened. The Linux #GP handler notes that a PASID has
++been allocated for the process, and so initializes the IA32_PASID MSR
++and returns so that the ENQCMD instruction is re-executed.
++
++On fork(2) or exec(2) the PASID is removed from the process as it no
++longer has the same address space that it had when the device was opened.
++
++On clone(2) the new task shares the same address space, so will be
++able to use the PASID allocated to the process. The IA32_PASID is not
++preemptively initialized as the PASID value might not be allocated yet or
++the kernel does not know whether this thread is going to access the device
++and the cleared IA32_PASID MSR reduces context switch overhead by xstate
++init optimization. Since #GP faults have to be handled on any threads that
++were created before the PASID was assigned to the mm of the process, newly
++created threads might as well be treated in a consistent way.
++
++Due to complexity of freeing the PASID and clearing all IA32_PASID MSRs in
++all threads in unbind, free the PASID lazily only on mm exit.
++
++If a process does a close(2) of the device file descriptor and munmap(2)
++of the device MMIO portal, then the driver will unbind the device. The
++PASID is still marked VALID in the PASID_MSR for any threads in the
++process that accessed the device. But this is harmless as without the
++MMIO portal they cannot submit new work to the device.
 =20
- 	/* enable event stream */
--	arch_timer_evtstrm_enable(max(0, min(lsb, 15)));
-+	arch_timer_evtstrm_enable(max(0, lsb));
- }
-=20
- static void arch_counter_set_user_access(void)
-diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mc=
-t.c
-index 6db3d5511b0f..f29c812b70c9 100644
---- a/drivers/clocksource/exynos_mct.c
-+++ b/drivers/clocksource/exynos_mct.c
-@@ -60,27 +60,18 @@
- #define MCT_CLKEVENTS_RATING		350
+ Relationships
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+diff --git a/arch/x86/include/asm/disabled-features.h b/arch/x86/include/asm/=
+disabled-features.h
+index 8f28fafa98b3..1231d63f836d 100644
+--- a/arch/x86/include/asm/disabled-features.h
++++ b/arch/x86/include/asm/disabled-features.h
+@@ -56,8 +56,11 @@
+ # define DISABLE_PTI		(1 << (X86_FEATURE_PTI & 31))
  #endif
 =20
-+/* There are four Global timers starting with 0 offset */
-+#define MCT_G0_IRQ	0
-+/* Local timers count starts after global timer count */
-+#define MCT_L0_IRQ	4
-+/* Max number of IRQ as per DT binding document */
-+#define MCT_NR_IRQS	20
-+
- enum {
- 	MCT_INT_SPI,
- 	MCT_INT_PPI
- };
-=20
--enum {
--	MCT_G0_IRQ,
--	MCT_G1_IRQ,
--	MCT_G2_IRQ,
--	MCT_G3_IRQ,
--	MCT_L0_IRQ,
--	MCT_L1_IRQ,
--	MCT_L2_IRQ,
--	MCT_L3_IRQ,
--	MCT_L4_IRQ,
--	MCT_L5_IRQ,
--	MCT_L6_IRQ,
--	MCT_L7_IRQ,
--	MCT_NR_IRQS,
--};
--
- static void __iomem *reg_base;
- static unsigned long clk_rate;
- static unsigned int mct_int_type;
-@@ -89,7 +80,11 @@ static int mct_irqs[MCT_NR_IRQS];
- struct mct_clock_event_device {
- 	struct clock_event_device evt;
- 	unsigned long base;
--	char name[10];
-+	/**
-+	 *  The length of the name must be adjusted if number of
-+	 *  local timer interrupts grow over two digits
-+	 */
-+	char name[11];
- };
-=20
- static void exynos4_mct_write(unsigned int value, unsigned long offset)
-@@ -541,6 +536,11 @@ static int __init exynos4_timer_interrupts(struct device=
-_node *np,
- 	 * irqs are specified.
- 	 */
- 	nr_irqs =3D of_irq_count(np);
-+	if (nr_irqs > ARRAY_SIZE(mct_irqs)) {
-+		pr_err("exynos-mct: too many (%d) interrupts configured in DT\n",
-+			nr_irqs);
-+		nr_irqs =3D ARRAY_SIZE(mct_irqs);
-+	}
- 	for (i =3D MCT_L0_IRQ; i < nr_irqs; i++)
- 		mct_irqs[i] =3D irq_of_parse_and_map(np, i);
-=20
-@@ -553,11 +553,14 @@ static int __init exynos4_timer_interrupts(struct devic=
-e_node *np,
- 		     mct_irqs[MCT_L0_IRQ], err);
- 	} else {
- 		for_each_possible_cpu(cpu) {
--			int mct_irq =3D mct_irqs[MCT_L0_IRQ + cpu];
-+			int mct_irq;
- 			struct mct_clock_event_device *pcpu_mevt =3D
- 				per_cpu_ptr(&percpu_mct_tick, cpu);
-=20
- 			pcpu_mevt->evt.irq =3D -1;
-+			if (MCT_L0_IRQ + cpu >=3D ARRAY_SIZE(mct_irqs))
-+				break;
-+			mct_irq =3D mct_irqs[MCT_L0_IRQ + cpu];
-=20
- 			irq_set_status_flags(mct_irq, IRQ_NOAUTOEN);
- 			if (request_irq(mct_irq,
-diff --git a/drivers/clocksource/timer-imx-sysctr.c b/drivers/clocksource/tim=
-er-imx-sysctr.c
-index 55a8e198d2a1..523e37662a6e 100644
---- a/drivers/clocksource/timer-imx-sysctr.c
-+++ b/drivers/clocksource/timer-imx-sysctr.c
-@@ -110,7 +110,7 @@ static struct timer_of to_sysctr =3D {
- 	},
- 	.of_irq =3D {
- 		.handler		=3D sysctr_timer_interrupt,
--		.flags			=3D IRQF_TIMER | IRQF_IRQPOLL,
-+		.flags			=3D IRQF_TIMER,
- 	},
- 	.of_clk =3D {
- 		.name =3D "per",
-diff --git a/drivers/clocksource/timer-imx-tpm.c b/drivers/clocksource/timer-=
-imx-tpm.c
-index 2cdc077a39f5..bd64a8a8427f 100644
---- a/drivers/clocksource/timer-imx-tpm.c
-+++ b/drivers/clocksource/timer-imx-tpm.c
-@@ -32,8 +32,8 @@
- #define TPM_C0SC_CHF_MASK		(0x1 << 7)
- #define TPM_C0V				0x24
-=20
--static int counter_width;
--static void __iomem *timer_base;
-+static int counter_width __ro_after_init;
-+static void __iomem *timer_base __ro_after_init;
-=20
- static inline void tpm_timer_disable(void)
- {
-@@ -73,12 +73,12 @@ static unsigned long tpm_read_current_timer(void)
- {
- 	return tpm_read_counter();
- }
--#endif
-=20
- static u64 notrace tpm_read_sched_clock(void)
- {
- 	return tpm_read_counter();
- }
-+#endif
-=20
- static int tpm_set_next_event(unsigned long delta,
- 				struct clock_event_device *evt)
-@@ -127,9 +127,9 @@ static irqreturn_t tpm_timer_interrupt(int irq, void *dev=
-_id)
- static struct timer_of to_tpm =3D {
- 	.flags =3D TIMER_OF_IRQ | TIMER_OF_BASE | TIMER_OF_CLOCK,
- 	.clkevt =3D {
--		.name			=3D "i.MX7ULP TPM Timer",
-+		.name			=3D "i.MX TPM Timer",
- 		.rating			=3D 200,
--		.features		=3D CLOCK_EVT_FEAT_ONESHOT,
-+		.features		=3D CLOCK_EVT_FEAT_ONESHOT | CLOCK_EVT_FEAT_DYNIRQ,
- 		.set_state_shutdown	=3D tpm_set_state_shutdown,
- 		.set_state_oneshot	=3D tpm_set_state_oneshot,
- 		.set_next_event		=3D tpm_set_next_event,
-@@ -137,7 +137,7 @@ static struct timer_of to_tpm =3D {
- 	},
- 	.of_irq =3D {
- 		.handler		=3D tpm_timer_interrupt,
--		.flags			=3D IRQF_TIMER | IRQF_IRQPOLL,
-+		.flags			=3D IRQF_TIMER,
- 	},
- 	.of_clk =3D {
- 		.name =3D "per",
-@@ -150,10 +150,10 @@ static int __init tpm_clocksource_init(void)
- 	tpm_delay_timer.read_current_timer =3D &tpm_read_current_timer;
- 	tpm_delay_timer.freq =3D timer_of_rate(&to_tpm) >> 3;
- 	register_current_timer_delay(&tpm_delay_timer);
--#endif
-=20
- 	sched_clock_register(tpm_read_sched_clock, counter_width,
- 			     timer_of_rate(&to_tpm) >> 3);
-+#endif
-=20
- 	return clocksource_mmio_init(timer_base + TPM_CNT,
- 				     "imx-tpm",
-diff --git a/drivers/clocksource/timer-microchip-pit64b.c b/drivers/clocksour=
-ce/timer-microchip-pit64b.c
-index cfa4ec7ef396..abce83d2f00b 100644
---- a/drivers/clocksource/timer-microchip-pit64b.c
-+++ b/drivers/clocksource/timer-microchip-pit64b.c
-@@ -42,8 +42,7 @@
- #define MCHP_PIT64B_LSBMASK		GENMASK_ULL(31, 0)
- #define MCHP_PIT64B_PRES_TO_MODE(p)	(MCHP_PIT64B_MR_PRES & ((p) << 8))
- #define MCHP_PIT64B_MODE_TO_PRES(m)	((MCHP_PIT64B_MR_PRES & (m)) >> 8)
--#define MCHP_PIT64B_DEF_CS_FREQ		5000000UL	/* 5 MHz */
--#define MCHP_PIT64B_DEF_CE_FREQ		32768		/* 32 KHz */
-+#define MCHP_PIT64B_DEF_FREQ		5000000UL	/* 5 MHz */
-=20
- #define MCHP_PIT64B_NAME		"pit64b"
-=20
-@@ -165,7 +164,7 @@ static u64 mchp_pit64b_clksrc_read(struct clocksource *cs)
- 	return mchp_pit64b_cnt_read(mchp_pit64b_cs_base);
- }
-=20
--static u64 mchp_pit64b_sched_read_clk(void)
-+static u64 notrace mchp_pit64b_sched_read_clk(void)
- {
- 	return mchp_pit64b_cnt_read(mchp_pit64b_cs_base);
- }
-@@ -418,7 +417,6 @@ static int __init mchp_pit64b_init_clkevt(struct mchp_pit=
-64b_timer *timer,
- static int __init mchp_pit64b_dt_init_timer(struct device_node *node,
- 					    bool clkevt)
- {
--	u32 freq =3D clkevt ? MCHP_PIT64B_DEF_CE_FREQ : MCHP_PIT64B_DEF_CS_FREQ;
- 	struct mchp_pit64b_timer timer;
- 	unsigned long clk_rate;
- 	u32 irq =3D 0;
-@@ -446,7 +444,7 @@ static int __init mchp_pit64b_dt_init_timer(struct device=
-_node *node,
- 	}
-=20
- 	/* Initialize mode (prescaler + SGCK bit). To be used at runtime. */
--	ret =3D mchp_pit64b_init_mode(&timer, freq);
-+	ret =3D mchp_pit64b_init_mode(&timer, MCHP_PIT64B_DEF_FREQ);
- 	if (ret)
- 		goto irq_unmap;
-=20
-diff --git a/drivers/clocksource/timer-of.c b/drivers/clocksource/timer-of.c
-index 529cc6a51cdb..c3f54d9912be 100644
---- a/drivers/clocksource/timer-of.c
-+++ b/drivers/clocksource/timer-of.c
-@@ -157,9 +157,9 @@ static __init int timer_of_base_init(struct device_node *=
-np,
- 	of_base->base =3D of_base->name ?
- 		of_io_request_and_map(np, of_base->index, of_base->name) :
- 		of_iomap(np, of_base->index);
--	if (IS_ERR(of_base->base)) {
--		pr_err("Failed to iomap (%s)\n", of_base->name);
--		return PTR_ERR(of_base->base);
-+	if (IS_ERR_OR_NULL(of_base->base)) {
-+		pr_err("Failed to iomap (%s:%s)\n", np->name, of_base->name);
-+		return of_base->base ? PTR_ERR(of_base->base) : -ENOMEM;
- 	}
-=20
- 	return 0;
-diff --git a/drivers/clocksource/timer-ti-dm-systimer.c b/drivers/clocksource=
-/timer-ti-dm-systimer.c
-index 5c40ca1d4740..f19a1f0bb432 100644
---- a/drivers/clocksource/timer-ti-dm-systimer.c
-+++ b/drivers/clocksource/timer-ti-dm-systimer.c
-@@ -695,9 +695,9 @@ static int __init dmtimer_percpu_quirk_init(struct device=
-_node *np, u32 pa)
- 		return 0;
- 	}
-=20
--	if (pa =3D=3D 0x48034000)		/* dra7 dmtimer3 */
-+	if (pa =3D=3D 0x4882c000)           /* dra7 dmtimer15 */
- 		return dmtimer_percpu_timer_init(np, 0);
--	else if (pa =3D=3D 0x48036000)	/* dra7 dmtimer4 */
-+	else if (pa =3D=3D 0x4882e000)      /* dra7 dmtimer16 */
- 		return dmtimer_percpu_timer_init(np, 1);
-=20
- 	return 0;
-diff --git a/include/clocksource/arm_arch_timer.h b/include/clocksource/arm_a=
-rch_timer.h
-index e715bdb720d5..057c8964aefb 100644
---- a/include/clocksource/arm_arch_timer.h
-+++ b/include/clocksource/arm_arch_timer.h
-@@ -56,6 +56,7 @@ enum arch_timer_spi_nr {
- #define ARCH_TIMER_EVT_TRIGGER_MASK	(0xF << ARCH_TIMER_EVT_TRIGGER_SHIFT)
- #define ARCH_TIMER_USR_VT_ACCESS_EN	(1 << 8) /* virtual timer registers */
- #define ARCH_TIMER_USR_PT_ACCESS_EN	(1 << 9) /* physical timer registers */
-+#define ARCH_TIMER_EVT_INTERVAL_SCALE	(1 << 17) /* EVNTIS in the ARMv8 ARM */
-=20
- #define ARCH_TIMER_EVT_STREAM_PERIOD_US	100
- #define ARCH_TIMER_EVT_STREAM_FREQ				\
-diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
-index 9367f1cb2e3c..f40754caaefa 100644
---- a/include/linux/interrupt.h
-+++ b/include/linux/interrupt.h
-@@ -579,7 +579,16 @@ enum
- 	NR_SOFTIRQS
- };
-=20
--#define SOFTIRQ_STOP_IDLE_MASK (~(1 << RCU_SOFTIRQ))
-+/*
-+ * The following vectors can be safely ignored after ksoftirqd is parked:
-+ *
-+ * _ RCU:
-+ * 	1) rcutree_migrate_callbacks() migrates the queue.
-+ * 	2) rcu_report_dead() reports the final quiescent states.
-+ *
-+ * _ IRQ_POLL: irq_poll_cpu_dead() migrates the queue
-+ */
-+#define SOFTIRQ_HOTPLUG_SAFE_MASK (BIT(RCU_SOFTIRQ) | BIT(IRQ_POLL_SOFTIRQ))
-=20
- /* map softirq index to softirq name. update 'softirq_to_name' in
-  * kernel/softirq.c when adding a new softirq.
-diff --git a/include/linux/rcutiny.h b/include/linux/rcutiny.h
-index 858f4d429946..5fed476f977f 100644
---- a/include/linux/rcutiny.h
-+++ b/include/linux/rcutiny.h
-@@ -64,9 +64,8 @@ static inline void rcu_softirq_qs(void)
- 		rcu_tasks_qs(current, (preempt)); \
- 	} while (0)
-=20
--static inline int rcu_needs_cpu(u64 basemono, u64 *nextevt)
-+static inline int rcu_needs_cpu(void)
- {
--	*nextevt =3D KTIME_MAX;
- 	return 0;
- }
-=20
-diff --git a/include/linux/rcutree.h b/include/linux/rcutree.h
-index 53209d669400..6cc91291d078 100644
---- a/include/linux/rcutree.h
-+++ b/include/linux/rcutree.h
-@@ -19,7 +19,7 @@
-=20
- void rcu_softirq_qs(void);
- void rcu_note_context_switch(bool preempt);
--int rcu_needs_cpu(u64 basem, u64 *nextevt);
-+int rcu_needs_cpu(void);
- void rcu_cpu_stall_reset(void);
-=20
- /*
-diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-index a4c25a6283b0..80faf2273ce9 100644
---- a/kernel/rcu/tree.c
-+++ b/kernel/rcu/tree.c
-@@ -1086,9 +1086,8 @@ void rcu_irq_enter_irqson(void)
-  * Just check whether or not this CPU has non-offloaded RCU callbacks
-  * queued.
-  */
--int rcu_needs_cpu(u64 basemono, u64 *nextevt)
-+int rcu_needs_cpu(void)
- {
--	*nextevt =3D KTIME_MAX;
- 	return !rcu_segcblist_empty(&this_cpu_ptr(&rcu_data)->cblist) &&
- 		!rcu_rdp_is_offloaded(this_cpu_ptr(&rcu_data));
- }
-diff --git a/kernel/time/Kconfig b/kernel/time/Kconfig
-index 04bfd62f5e5c..27b7868b5c30 100644
---- a/kernel/time/Kconfig
-+++ b/kernel/time/Kconfig
-@@ -181,5 +181,14 @@ config HIGH_RES_TIMERS
- 	  hardware is not capable then this option only increases
- 	  the size of the kernel image.
-=20
-+config CLOCKSOURCE_WATCHDOG_MAX_SKEW_US
-+	int "Clocksource watchdog maximum allowable skew (in =CE=BCs)"
-+	depends on CLOCKSOURCE_WATCHDOG
-+	range 50 1000
-+	default 100
-+	help
-+	  Specify the maximum amount of allowable watchdog skew in
-+	  microseconds before reporting the clocksource to be unstable.
-+
- endmenu
- endif
-diff --git a/kernel/time/clocksource.c b/kernel/time/clocksource.c
-index 1cf73807b450..95d7ca35bdf2 100644
---- a/kernel/time/clocksource.c
-+++ b/kernel/time/clocksource.c
-@@ -107,7 +107,13 @@ static u64 suspend_start;
-  * This delay could be due to SMIs, NMIs, or to VCPU preemptions.  Used as
-  * a lower bound for cs->uncertainty_margin values when registering clocks.
-  */
--#define WATCHDOG_MAX_SKEW (100 * NSEC_PER_USEC)
-+#ifdef CONFIG_CLOCKSOURCE_WATCHDOG_MAX_SKEW_US
-+#define MAX_SKEW_USEC	CONFIG_CLOCKSOURCE_WATCHDOG_MAX_SKEW_US
+-/* Force disable because it's broken beyond repair */
+-#define DISABLE_ENQCMD		(1 << (X86_FEATURE_ENQCMD & 31))
++#ifdef CONFIG_INTEL_IOMMU_SVM
++# define DISABLE_ENQCMD		0
 +#else
-+#define MAX_SKEW_USEC	100
++# define DISABLE_ENQCMD		(1 << (X86_FEATURE_ENQCMD & 31))
 +#endif
-+
-+#define WATCHDOG_MAX_SKEW (MAX_SKEW_USEC * NSEC_PER_USEC)
 =20
- #ifdef CONFIG_CLOCKSOURCE_WATCHDOG
- static void clocksource_watchdog_work(struct work_struct *work);
-diff --git a/kernel/time/tick-sched.c b/kernel/time/tick-sched.c
-index 17a283ce2b20..2d76c91b85de 100644
---- a/kernel/time/tick-sched.c
-+++ b/kernel/time/tick-sched.c
-@@ -169,6 +169,8 @@ static ktime_t tick_init_jiffy_update(void)
- 	return period;
- }
-=20
-+#define MAX_STALLED_JIFFIES 5
-+
- static void tick_sched_do_timer(struct tick_sched *ts, ktime_t now)
- {
- 	int cpu =3D smp_processor_id();
-@@ -196,6 +198,21 @@ static void tick_sched_do_timer(struct tick_sched *ts, k=
-time_t now)
- 	if (tick_do_timer_cpu =3D=3D cpu)
- 		tick_do_update_jiffies64(now);
+ #ifdef CONFIG_X86_SGX
+ # define DISABLE_SGX	0
+diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
+index 8dea01ffc5c1..19821f027cb3 100644
+--- a/arch/x86/kernel/fpu/core.c
++++ b/arch/x86/kernel/fpu/core.c
+@@ -612,6 +612,13 @@ int fpu_clone(struct task_struct *dst, unsigned long clo=
+ne_flags)
+ 		fpu_inherit_perms(dst_fpu);
+ 	fpregs_unlock();
 =20
 +	/*
-+	 * If jiffies update stalled for too long (timekeeper in stop_machine()
-+	 * or VMEXIT'ed for several msecs), force an update.
++	 * Children never inherit PASID state.
++	 * Force it to have its init value:
 +	 */
-+	if (ts->last_tick_jiffies !=3D jiffies) {
-+		ts->stalled_jiffies =3D 0;
-+		ts->last_tick_jiffies =3D READ_ONCE(jiffies);
-+	} else {
-+		if (++ts->stalled_jiffies =3D=3D MAX_STALLED_JIFFIES) {
-+			tick_do_update_jiffies64(now);
-+			ts->stalled_jiffies =3D 0;
-+			ts->last_tick_jiffies =3D READ_ONCE(jiffies);
-+		}
-+	}
++	if (use_xsave())
++		dst_fpu->fpstate->regs.xsave.header.xfeatures &=3D ~XFEATURE_MASK_PASID;
 +
- 	if (ts->inidle)
- 		ts->got_idle_tick =3D 1;
- }
-@@ -768,7 +785,7 @@ static inline bool local_timer_softirq_pending(void)
+ 	trace_x86_fpu_copy_src(src_fpu);
+ 	trace_x86_fpu_copy_dst(dst_fpu);
 =20
- static ktime_t tick_nohz_next_event(struct tick_sched *ts, int cpu)
- {
--	u64 basemono, next_tick, next_tmr, next_rcu, delta, expires;
-+	u64 basemono, next_tick, delta, expires;
- 	unsigned long basejiff;
- 	unsigned int seq;
+diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
+index c9d566dcf89a..7ef00dee35be 100644
+--- a/arch/x86/kernel/traps.c
++++ b/arch/x86/kernel/traps.c
+@@ -39,6 +39,7 @@
+ #include <linux/io.h>
+ #include <linux/hardirq.h>
+ #include <linux/atomic.h>
++#include <linux/ioasid.h>
 =20
-@@ -791,7 +808,7 @@ static ktime_t tick_nohz_next_event(struct tick_sched *ts=
-, int cpu)
- 	 * minimal delta which brings us back to this place
- 	 * immediately. Lather, rinse and repeat...
- 	 */
--	if (rcu_needs_cpu(basemono, &next_rcu) || arch_needs_cpu() ||
-+	if (rcu_needs_cpu() || arch_needs_cpu() ||
- 	    irq_work_needs_cpu() || local_timer_softirq_pending()) {
- 		next_tick =3D basemono + TICK_NSEC;
- 	} else {
-@@ -802,10 +819,8 @@ static ktime_t tick_nohz_next_event(struct tick_sched *t=
-s, int cpu)
- 		 * disabled this also looks at the next expiring
- 		 * hrtimer.
- 		 */
--		next_tmr =3D get_next_timer_interrupt(basejiff, basemono);
--		ts->next_timer =3D next_tmr;
--		/* Take the next rcu event into account */
--		next_tick =3D next_rcu < next_tmr ? next_rcu : next_tmr;
-+		next_tick =3D get_next_timer_interrupt(basejiff, basemono);
-+		ts->next_timer =3D next_tick;
- 	}
-=20
- 	/*
-@@ -984,6 +999,45 @@ static void tick_nohz_full_update_tick(struct tick_sched=
- *ts)
- 	__tick_nohz_full_update_tick(ts, ktime_get());
+ #include <asm/stacktrace.h>
+ #include <asm/processor.h>
+@@ -559,6 +560,57 @@ static bool fixup_iopl_exception(struct pt_regs *regs)
+ 	return true;
  }
 =20
 +/*
-+ * A pending softirq outside an IRQ (or softirq disabled section) context
-+ * should be waiting for ksoftirqd to handle it. Therefore we shouldn't
-+ * reach here due to the need_resched() early check in can_stop_idle_tick().
-+ *
-+ * However if we are between CPUHP_AP_SMPBOOT_THREADS and CPU_TEARDOWN_CPU o=
-n the
-+ * cpu_down() process, softirqs can still be raised while ksoftirqd is parke=
-d,
-+ * triggering the below since wakep_softirqd() is ignored.
-+ *
++ * The unprivileged ENQCMD instruction generates #GPs if the
++ * IA32_PASID MSR has not been populated.  If possible, populate
++ * the MSR from a PASID previously allocated to the mm.
 + */
-+static bool report_idle_softirq(void)
++static bool try_fixup_enqcmd_gp(void)
 +{
-+	static int ratelimit;
-+	unsigned int pending =3D local_softirq_pending();
++#ifdef CONFIG_IOMMU_SVA
++	u32 pasid;
 +
-+	if (likely(!pending))
++	/*
++	 * MSR_IA32_PASID is managed using XSAVE.  Directly
++	 * writing to the MSR is only possible when fpregs
++	 * are valid and the fpstate is not.  This is
++	 * guaranteed when handling a userspace exception
++	 * in *before* interrupts are re-enabled.
++	 */
++	lockdep_assert_irqs_disabled();
++
++	/*
++	 * Hardware without ENQCMD will not generate
++	 * #GPs that can be fixed up here.
++	 */
++	if (!cpu_feature_enabled(X86_FEATURE_ENQCMD))
 +		return false;
 +
-+	/* Some softirqs claim to be safe against hotplug and ksoftirqd parking */
-+	if (!cpu_active(smp_processor_id())) {
-+		pending &=3D ~SOFTIRQ_HOTPLUG_SAFE_MASK;
-+		if (!pending)
-+			return false;
-+	}
++	pasid =3D current->mm->pasid;
 +
-+	if (ratelimit < 10)
++	/*
++	 * If the mm has not been allocated a
++	 * PASID, the #GP can not be fixed up.
++	 */
++	if (!pasid_valid(pasid))
 +		return false;
 +
-+	/* On RT, softirqs handling may be waiting on some lock */
-+	if (!local_bh_blocked())
++	/*
++	 * Did this thread already have its PASID activated?
++	 * If so, the #GP must be from something else.
++	 */
++	if (current->pasid_activated)
 +		return false;
 +
-+	pr_warn("NOHZ tick-stop error: local softirq work is pending, handler #%02x=
-!!!\n",
-+		pending);
-+	ratelimit++;
++	wrmsrl(MSR_IA32_PASID, pasid | MSR_IA32_PASID_VALID);
++	current->pasid_activated =3D 1;
 +
 +	return true;
++#else
++	return false;
++#endif
 +}
 +
- static bool can_stop_idle_tick(int cpu, struct tick_sched *ts)
+ DEFINE_IDTENTRY_ERRORCODE(exc_general_protection)
  {
- 	/*
-@@ -1010,17 +1064,8 @@ static bool can_stop_idle_tick(int cpu, struct tick_sc=
-hed *ts)
- 	if (need_resched())
- 		return false;
+ 	char desc[sizeof(GPFSTR) + 50 + 2*sizeof(unsigned long) + 1] =3D GPFSTR;
+@@ -567,6 +619,9 @@ DEFINE_IDTENTRY_ERRORCODE(exc_general_protection)
+ 	unsigned long gp_addr;
+ 	int ret;
 =20
--	if (unlikely(local_softirq_pending())) {
--		static int ratelimit;
++	if (user_mode(regs) && try_fixup_enqcmd_gp())
++		return;
++
+ 	cond_local_irq_enable(regs);
+=20
+ 	if (static_cpu_has(X86_FEATURE_UMIP)) {
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 3eb68fa1b8cc..c79a0df090c0 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -144,8 +144,8 @@ config IOMMU_DMA
+ 	select IRQ_MSI_IOMMU
+ 	select NEED_SG_DMA_LENGTH
+=20
+-# Shared Virtual Addressing library
+-config IOMMU_SVA_LIB
++# Shared Virtual Addressing
++config IOMMU_SVA
+ 	bool
+ 	select IOASID
+=20
+@@ -379,7 +379,7 @@ config ARM_SMMU_V3
+ config ARM_SMMU_V3_SVA
+ 	bool "Shared Virtual Addressing support for the ARM SMMUv3"
+ 	depends on ARM_SMMU_V3
+-	select IOMMU_SVA_LIB
++	select IOMMU_SVA
+ 	select MMU_NOTIFIER
+ 	help
+ 	  Support for sharing process address spaces with devices using the
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index bc7f730edbb0..44475a9b3eea 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -27,6 +27,6 @@ obj-$(CONFIG_FSL_PAMU) +=3D fsl_pamu.o fsl_pamu_domain.o
+ obj-$(CONFIG_S390_IOMMU) +=3D s390-iommu.o
+ obj-$(CONFIG_HYPERV_IOMMU) +=3D hyperv-iommu.o
+ obj-$(CONFIG_VIRTIO_IOMMU) +=3D virtio-iommu.o
+-obj-$(CONFIG_IOMMU_SVA_LIB) +=3D iommu-sva-lib.o io-pgfault.o
++obj-$(CONFIG_IOMMU_SVA) +=3D iommu-sva-lib.o io-pgfault.o
+ obj-$(CONFIG_SPRD_IOMMU) +=3D sprd-iommu.o
+ obj-$(CONFIG_APPLE_DART) +=3D apple-dart.o
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/=
+arm/arm-smmu-v3/arm-smmu-v3-sva.c
+index a737ba5f727e..22ddd05bbdcd 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+@@ -340,14 +340,12 @@ __arm_smmu_sva_bind(struct device *dev, struct mm_struc=
+t *mm)
+ 	bond->smmu_mn =3D arm_smmu_mmu_notifier_get(smmu_domain, mm);
+ 	if (IS_ERR(bond->smmu_mn)) {
+ 		ret =3D PTR_ERR(bond->smmu_mn);
+-		goto err_free_pasid;
++		goto err_free_bond;
+ 	}
+=20
+ 	list_add(&bond->list, &master->bonds);
+ 	return &bond->sva;
+=20
+-err_free_pasid:
+-	iommu_sva_free_pasid(mm);
+ err_free_bond:
+ 	kfree(bond);
+ 	return ERR_PTR(ret);
+@@ -377,7 +375,6 @@ void arm_smmu_sva_unbind(struct iommu_sva *handle)
+ 	if (refcount_dec_and_test(&bond->refs)) {
+ 		list_del(&bond->list);
+ 		arm_smmu_mmu_notifier_put(bond->smmu_mn);
+-		iommu_sva_free_pasid(bond->mm);
+ 		kfree(bond);
+ 	}
+ 	mutex_unlock(&sva_lock);
+diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+index 247d0f2d5fdf..39a06d245f12 100644
+--- a/drivers/iommu/intel/Kconfig
++++ b/drivers/iommu/intel/Kconfig
+@@ -52,7 +52,7 @@ config INTEL_IOMMU_SVM
+ 	select PCI_PRI
+ 	select MMU_NOTIFIER
+ 	select IOASID
+-	select IOMMU_SVA_LIB
++	select IOMMU_SVA
+ 	help
+ 	  Shared Virtual Memory (SVM) provides a facility for devices
+ 	  to access DMA resources through process address space by
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 92fea3fbbb11..ef03b2176bbd 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4781,7 +4781,7 @@ static int aux_domain_add_dev(struct dmar_domain *domai=
+n,
+ link_failed:
+ 	spin_unlock_irqrestore(&device_domain_lock, flags);
+ 	if (list_empty(&domain->subdevices) && domain->default_pasid > 0)
+-		ioasid_put(domain->default_pasid);
++		ioasid_free(domain->default_pasid);
+=20
+ 	return ret;
+ }
+@@ -4811,7 +4811,7 @@ static void aux_domain_remove_dev(struct dmar_domain *d=
+omain,
+ 	spin_unlock_irqrestore(&device_domain_lock, flags);
+=20
+ 	if (list_empty(&domain->subdevices) && domain->default_pasid > 0)
+-		ioasid_put(domain->default_pasid);
++		ioasid_free(domain->default_pasid);
+ }
+=20
+ static int prepare_domain_attach_device(struct iommu_domain *domain,
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index 5b5d69b04fcc..51ac2096b3da 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -514,11 +514,6 @@ static int intel_svm_alloc_pasid(struct device *dev, str=
+uct mm_struct *mm,
+ 	return iommu_sva_alloc_pasid(mm, PASID_MIN, max_pasid - 1);
+ }
+=20
+-static void intel_svm_free_pasid(struct mm_struct *mm)
+-{
+-	iommu_sva_free_pasid(mm);
+-}
 -
--		if (ratelimit < 10 && !local_bh_blocked() &&
--		    (local_softirq_pending() & SOFTIRQ_STOP_IDLE_MASK)) {
--			pr_warn("NOHZ tick-stop error: Non-RCU local softirq work is pending, han=
-dler #%02x!!!\n",
--				(unsigned int) local_softirq_pending());
--			ratelimit++;
--		}
-+	if (unlikely(report_idle_softirq()))
- 		return false;
--	}
+ static struct iommu_sva *intel_svm_bind_mm(struct intel_iommu *iommu,
+ 					   struct device *dev,
+ 					   struct mm_struct *mm,
+@@ -662,8 +657,6 @@ static int intel_svm_unbind_mm(struct device *dev, u32 pa=
+sid)
+ 				kfree(svm);
+ 			}
+ 		}
+-		/* Drop a PASID reference and free it if no reference. */
+-		intel_svm_free_pasid(mm);
+ 	}
+ out:
+ 	return ret;
+@@ -1047,8 +1040,6 @@ struct iommu_sva *intel_svm_bind(struct device *dev, st=
+ruct mm_struct *mm, void
+ 	}
 =20
- 	if (tick_nohz_full_enabled()) {
- 		/*
-diff --git a/kernel/time/tick-sched.h b/kernel/time/tick-sched.h
-index d952ae393423..504649513399 100644
---- a/kernel/time/tick-sched.h
-+++ b/kernel/time/tick-sched.h
-@@ -49,6 +49,8 @@ enum tick_nohz_mode {
-  * @timer_expires_base:	Base time clock monotonic for @timer_expires
-  * @next_timer:		Expiry time of next expiring timer for debugging purpose on=
-ly
-  * @tick_dep_mask:	Tick dependency mask - is set, if someone needs the tick
-+ * @last_tick_jiffies:	Value of jiffies seen on last tick
-+ * @stalled_jiffies:	Number of stalled jiffies detected across ticks
+ 	sva =3D intel_svm_bind_mm(iommu, dev, mm, flags);
+-	if (IS_ERR_OR_NULL(sva))
+-		intel_svm_free_pasid(mm);
+ 	mutex_unlock(&pasid_mutex);
+=20
+ 	return sva;
+diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
+index 06fee7416816..a786c034907c 100644
+--- a/drivers/iommu/ioasid.c
++++ b/drivers/iommu/ioasid.c
+@@ -2,7 +2,7 @@
+ /*
+  * I/O Address Space ID allocator. There is one global IOASID space, split i=
+nto
+  * subsets. Users create a subset with DECLARE_IOASID_SET, then allocate and
+- * free IOASIDs with ioasid_alloc and ioasid_put.
++ * free IOASIDs with ioasid_alloc() and ioasid_free().
   */
- struct tick_sched {
- 	struct hrtimer			sched_timer;
-@@ -77,6 +79,8 @@ struct tick_sched {
- 	u64				next_timer;
- 	ktime_t				idle_expires;
- 	atomic_t			tick_dep_mask;
-+	unsigned long			last_tick_jiffies;
-+	unsigned int			stalled_jiffies;
+ #include <linux/ioasid.h>
+ #include <linux/module.h>
+@@ -15,7 +15,6 @@ struct ioasid_data {
+ 	struct ioasid_set *set;
+ 	void *private;
+ 	struct rcu_head rcu;
+-	refcount_t refs;
  };
 =20
- extern struct tick_sched *tick_get_tick_sched(int cpu);
+ /*
+@@ -315,7 +314,6 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t mi=
+n, ioasid_t max,
+=20
+ 	data->set =3D set;
+ 	data->private =3D private;
+-	refcount_set(&data->refs, 1);
+=20
+ 	/*
+ 	 * Custom allocator needs allocator data to perform platform specific
+@@ -348,35 +346,11 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t =
+min, ioasid_t max,
+ EXPORT_SYMBOL_GPL(ioasid_alloc);
+=20
+ /**
+- * ioasid_get - obtain a reference to the IOASID
+- * @ioasid: the ID to get
+- */
+-void ioasid_get(ioasid_t ioasid)
+-{
+-	struct ioasid_data *ioasid_data;
+-
+-	spin_lock(&ioasid_allocator_lock);
+-	ioasid_data =3D xa_load(&active_allocator->xa, ioasid);
+-	if (ioasid_data)
+-		refcount_inc(&ioasid_data->refs);
+-	else
+-		WARN_ON(1);
+-	spin_unlock(&ioasid_allocator_lock);
+-}
+-EXPORT_SYMBOL_GPL(ioasid_get);
+-
+-/**
+- * ioasid_put - Release a reference to an ioasid
++ * ioasid_free - Free an ioasid
+  * @ioasid: the ID to remove
+- *
+- * Put a reference to the IOASID, free it when the number of references drop=
+s to
+- * zero.
+- *
+- * Return: %true if the IOASID was freed, %false otherwise.
+  */
+-bool ioasid_put(ioasid_t ioasid)
++void ioasid_free(ioasid_t ioasid)
+ {
+-	bool free =3D false;
+ 	struct ioasid_data *ioasid_data;
+=20
+ 	spin_lock(&ioasid_allocator_lock);
+@@ -386,10 +360,6 @@ bool ioasid_put(ioasid_t ioasid)
+ 		goto exit_unlock;
+ 	}
+=20
+-	free =3D refcount_dec_and_test(&ioasid_data->refs);
+-	if (!free)
+-		goto exit_unlock;
+-
+ 	active_allocator->ops->free(ioasid, active_allocator->ops->pdata);
+ 	/* Custom allocator needs additional steps to free the xa element */
+ 	if (active_allocator->flags & IOASID_ALLOCATOR_CUSTOM) {
+@@ -399,9 +369,8 @@ bool ioasid_put(ioasid_t ioasid)
+=20
+ exit_unlock:
+ 	spin_unlock(&ioasid_allocator_lock);
+-	return free;
+ }
+-EXPORT_SYMBOL_GPL(ioasid_put);
++EXPORT_SYMBOL_GPL(ioasid_free);
+=20
+ /**
+  * ioasid_find - Find IOASID data
+diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva-lib.c
+index bd41405d34e9..106506143896 100644
+--- a/drivers/iommu/iommu-sva-lib.c
++++ b/drivers/iommu/iommu-sva-lib.c
+@@ -18,8 +18,7 @@ static DECLARE_IOASID_SET(iommu_sva_pasid);
+  *
+  * Try to allocate a PASID for this mm, or take a reference to the existing =
+one
+  * provided it fits within the [@min, @max] range. On success the PASID is
+- * available in mm->pasid, and must be released with iommu_sva_free_pasid().
+- * @min must be greater than 0, because 0 indicates an unused mm->pasid.
++ * available in mm->pasid and will be available for the lifetime of the mm.
+  *
+  * Returns 0 on success and < 0 on error.
+  */
+@@ -33,38 +32,24 @@ int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t =
+min, ioasid_t max)
+ 		return -EINVAL;
+=20
+ 	mutex_lock(&iommu_sva_lock);
+-	if (mm->pasid) {
+-		if (mm->pasid >=3D min && mm->pasid <=3D max)
+-			ioasid_get(mm->pasid);
+-		else
++	/* Is a PASID already associated with this mm? */
++	if (pasid_valid(mm->pasid)) {
++		if (mm->pasid < min || mm->pasid >=3D max)
+ 			ret =3D -EOVERFLOW;
+-	} else {
+-		pasid =3D ioasid_alloc(&iommu_sva_pasid, min, max, mm);
+-		if (pasid =3D=3D INVALID_IOASID)
+-			ret =3D -ENOMEM;
+-		else
+-			mm->pasid =3D pasid;
++		goto out;
+ 	}
++
++	pasid =3D ioasid_alloc(&iommu_sva_pasid, min, max, mm);
++	if (!pasid_valid(pasid))
++		ret =3D -ENOMEM;
++	else
++		mm_pasid_set(mm, pasid);
++out:
+ 	mutex_unlock(&iommu_sva_lock);
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(iommu_sva_alloc_pasid);
+=20
+-/**
+- * iommu_sva_free_pasid - Release the mm's PASID
+- * @mm: the mm
+- *
+- * Drop one reference to a PASID allocated with iommu_sva_alloc_pasid()
+- */
+-void iommu_sva_free_pasid(struct mm_struct *mm)
+-{
+-	mutex_lock(&iommu_sva_lock);
+-	if (ioasid_put(mm->pasid))
+-		mm->pasid =3D 0;
+-	mutex_unlock(&iommu_sva_lock);
+-}
+-EXPORT_SYMBOL_GPL(iommu_sva_free_pasid);
+-
+ /* ioasid_find getter() requires a void * argument */
+ static bool __mmget_not_zero(void *mm)
+ {
+diff --git a/drivers/iommu/iommu-sva-lib.h b/drivers/iommu/iommu-sva-lib.h
+index 031155010ca8..8909ea1094e3 100644
+--- a/drivers/iommu/iommu-sva-lib.h
++++ b/drivers/iommu/iommu-sva-lib.h
+@@ -9,7 +9,6 @@
+ #include <linux/mm_types.h>
+=20
+ int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max);
+-void iommu_sva_free_pasid(struct mm_struct *mm);
+ struct mm_struct *iommu_sva_find(ioasid_t pasid);
+=20
+ /* I/O Page fault */
+@@ -17,7 +16,7 @@ struct device;
+ struct iommu_fault;
+ struct iopf_queue;
+=20
+-#ifdef CONFIG_IOMMU_SVA_LIB
++#ifdef CONFIG_IOMMU_SVA
+ int iommu_queue_iopf(struct iommu_fault *fault, void *cookie);
+=20
+ int iopf_queue_add_device(struct iopf_queue *queue, struct device *dev);
+@@ -28,7 +27,7 @@ struct iopf_queue *iopf_queue_alloc(const char *name);
+ void iopf_queue_free(struct iopf_queue *queue);
+ int iopf_queue_discard_partial(struct iopf_queue *queue);
+=20
+-#else /* CONFIG_IOMMU_SVA_LIB */
++#else /* CONFIG_IOMMU_SVA */
+ static inline int iommu_queue_iopf(struct iommu_fault *fault, void *cookie)
+ {
+ 	return -ENODEV;
+@@ -64,5 +63,5 @@ static inline int iopf_queue_discard_partial(struct iopf_qu=
+eue *queue)
+ {
+ 	return -ENODEV;
+ }
+-#endif /* CONFIG_IOMMU_SVA_LIB */
++#endif /* CONFIG_IOMMU_SVA */
+ #endif /* _IOMMU_SVA_LIB_H */
+diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
+index e9dacd4b9f6b..af1c9d62e642 100644
+--- a/include/linux/ioasid.h
++++ b/include/linux/ioasid.h
+@@ -34,13 +34,16 @@ struct ioasid_allocator_ops {
+ #if IS_ENABLED(CONFIG_IOASID)
+ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
+ 		      void *private);
+-void ioasid_get(ioasid_t ioasid);
+-bool ioasid_put(ioasid_t ioasid);
++void ioasid_free(ioasid_t ioasid);
+ void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
+ 		  bool (*getter)(void *));
+ int ioasid_register_allocator(struct ioasid_allocator_ops *allocator);
+ void ioasid_unregister_allocator(struct ioasid_allocator_ops *allocator);
+ int ioasid_set_data(ioasid_t ioasid, void *data);
++static inline bool pasid_valid(ioasid_t ioasid)
++{
++	return ioasid !=3D INVALID_IOASID;
++}
+=20
+ #else /* !CONFIG_IOASID */
+ static inline ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
+@@ -49,14 +52,7 @@ static inline ioasid_t ioasid_alloc(struct ioasid_set *set=
+, ioasid_t min,
+ 	return INVALID_IOASID;
+ }
+=20
+-static inline void ioasid_get(ioasid_t ioasid)
+-{
+-}
+-
+-static inline bool ioasid_put(ioasid_t ioasid)
+-{
+-	return false;
+-}
++static inline void ioasid_free(ioasid_t ioasid) { }
+=20
+ static inline void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
+ 				bool (*getter)(void *))
+@@ -78,5 +74,10 @@ static inline int ioasid_set_data(ioasid_t ioasid, void *d=
+ata)
+ 	return -ENOTSUPP;
+ }
+=20
++static inline bool pasid_valid(ioasid_t ioasid)
++{
++	return false;
++}
++
+ #endif /* CONFIG_IOASID */
+ #endif /* __LINUX_IOASID_H */
+diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+index 5140e5feb486..c5cbfd7915ad 100644
+--- a/include/linux/mm_types.h
++++ b/include/linux/mm_types.h
+@@ -631,7 +631,7 @@ struct mm_struct {
+ #endif
+ 		struct work_struct async_put_work;
+=20
+-#ifdef CONFIG_IOMMU_SUPPORT
++#ifdef CONFIG_IOMMU_SVA
+ 		u32 pasid;
+ #endif
+ 	} __randomize_layout;
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 75ba8aa60248..4e5de3aed410 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -938,6 +938,9 @@ struct task_struct {
+ 	/* Recursion prevention for eventfd_signal() */
+ 	unsigned			in_eventfd_signal:1;
+ #endif
++#ifdef CONFIG_IOMMU_SVA
++	unsigned			pasid_activated:1;
++#endif
+=20
+ 	unsigned long			atomic_flags; /* Flags requiring atomic access. */
+=20
+diff --git a/include/linux/sched/mm.h b/include/linux/sched/mm.h
+index aa5f09ca5bcf..a80356e9dc69 100644
+--- a/include/linux/sched/mm.h
++++ b/include/linux/sched/mm.h
+@@ -8,6 +8,7 @@
+ #include <linux/mm_types.h>
+ #include <linux/gfp.h>
+ #include <linux/sync_core.h>
++#include <linux/ioasid.h>
+=20
+ /*
+  * Routines for handling mm_structs
+@@ -433,4 +434,29 @@ static inline void membarrier_update_current_mm(struct m=
+m_struct *next_mm)
+ }
+ #endif
+=20
++#ifdef CONFIG_IOMMU_SVA
++static inline void mm_pasid_init(struct mm_struct *mm)
++{
++	mm->pasid =3D INVALID_IOASID;
++}
++
++/* Associate a PASID with an mm_struct: */
++static inline void mm_pasid_set(struct mm_struct *mm, u32 pasid)
++{
++	mm->pasid =3D pasid;
++}
++
++static inline void mm_pasid_drop(struct mm_struct *mm)
++{
++	if (pasid_valid(mm->pasid)) {
++		ioasid_free(mm->pasid);
++		mm->pasid =3D INVALID_IOASID;
++	}
++}
++#else
++static inline void mm_pasid_init(struct mm_struct *mm) {}
++static inline void mm_pasid_set(struct mm_struct *mm, u32 pasid) {}
++static inline void mm_pasid_drop(struct mm_struct *mm) {}
++#endif
++
+ #endif /* _LINUX_SCHED_MM_H */
+diff --git a/kernel/fork.c b/kernel/fork.c
+index d75a528f7b21..51fd1df994b7 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -97,6 +97,7 @@
+ #include <linux/scs.h>
+ #include <linux/io_uring.h>
+ #include <linux/bpf.h>
++#include <linux/sched/mm.h>
+=20
+ #include <asm/pgalloc.h>
+ #include <linux/uaccess.h>
+@@ -967,6 +968,10 @@ static struct task_struct *dup_task_struct(struct task_s=
+truct *orig, int node)
+ 	tsk->use_memdelay =3D 0;
+ #endif
+=20
++#ifdef CONFIG_IOMMU_SVA
++	tsk->pasid_activated =3D 0;
++#endif
++
+ #ifdef CONFIG_MEMCG
+ 	tsk->active_memcg =3D NULL;
+ #endif
+@@ -1019,13 +1024,6 @@ static void mm_init_owner(struct mm_struct *mm, struct=
+ task_struct *p)
+ #endif
+ }
+=20
+-static void mm_init_pasid(struct mm_struct *mm)
+-{
+-#ifdef CONFIG_IOMMU_SUPPORT
+-	mm->pasid =3D INIT_PASID;
+-#endif
+-}
+-
+ static void mm_init_uprobes_state(struct mm_struct *mm)
+ {
+ #ifdef CONFIG_UPROBES
+@@ -1054,7 +1052,7 @@ static struct mm_struct *mm_init(struct mm_struct *mm, =
+struct task_struct *p,
+ 	mm_init_cpumask(mm);
+ 	mm_init_aio(mm);
+ 	mm_init_owner(mm, p);
+-	mm_init_pasid(mm);
++	mm_pasid_init(mm);
+ 	RCU_INIT_POINTER(mm->exe_file, NULL);
+ 	mmu_notifier_subscriptions_init(mm);
+ 	init_tlb_flush_pending(mm);
+@@ -1121,6 +1119,7 @@ static inline void __mmput(struct mm_struct *mm)
+ 	}
+ 	if (mm->binfmt)
+ 		module_put(mm->binfmt->module);
++	mm_pasid_drop(mm);
+ 	mmdrop(mm);
+ }
+=20
+diff --git a/mm/init-mm.c b/mm/init-mm.c
+index b4a6f38fb51d..fbe7844d0912 100644
+--- a/mm/init-mm.c
++++ b/mm/init-mm.c
+@@ -10,6 +10,7 @@
+=20
+ #include <linux/atomic.h>
+ #include <linux/user_namespace.h>
++#include <linux/ioasid.h>
+ #include <asm/mmu.h>
+=20
+ #ifndef INIT_MM_CONTEXT
+@@ -38,6 +39,9 @@ struct mm_struct init_mm =3D {
+ 	.mmlist		=3D LIST_HEAD_INIT(init_mm.mmlist),
+ 	.user_ns	=3D &init_user_ns,
+ 	.cpu_bitmap	=3D CPU_BITS_NONE,
++#ifdef CONFIG_IOMMU_SVA
++	.pasid		=3D INVALID_IOASID,
++#endif
+ 	INIT_MM_CONTEXT(init_mm)
+ };
+=20
+diff --git a/tools/objtool/arch/x86/decode.c b/tools/objtool/arch/x86/decode.c
+index c10ef78df050..479e769ca324 100644
+--- a/tools/objtool/arch/x86/decode.c
++++ b/tools/objtool/arch/x86/decode.c
+@@ -112,7 +112,7 @@ int arch_decode_instruction(struct objtool_file *file, co=
+nst struct section *sec
+ 	const struct elf *elf =3D file->elf;
+ 	struct insn insn;
+ 	int x86_64, ret;
+-	unsigned char op1, op2,
++	unsigned char op1, op2, op3,
+ 		      rex =3D 0, rex_b =3D 0, rex_r =3D 0, rex_w =3D 0, rex_x =3D 0,
+ 		      modrm =3D 0, modrm_mod =3D 0, modrm_rm =3D 0, modrm_reg =3D 0,
+ 		      sib =3D 0, /* sib_scale =3D 0, */ sib_index =3D 0, sib_base =3D 0;
+@@ -139,6 +139,7 @@ int arch_decode_instruction(struct objtool_file *file, co=
+nst struct section *sec
+=20
+ 	op1 =3D insn.opcode.bytes[0];
+ 	op2 =3D insn.opcode.bytes[1];
++	op3 =3D insn.opcode.bytes[2];
+=20
+ 	if (insn.rex_prefix.nbytes) {
+ 		rex =3D insn.rex_prefix.bytes[0];
+@@ -491,6 +492,14 @@ int arch_decode_instruction(struct objtool_file *file, c=
+onst struct section *sec
+ 			/* nopl/nopw */
+ 			*type =3D INSN_NOP;
+=20
++		} else if (op2 =3D=3D 0x38 && op3 =3D=3D 0xf8) {
++			if (insn.prefixes.nbytes =3D=3D 1 &&
++			    insn.prefixes.bytes[0] =3D=3D 0xf2) {
++				/* ENQCMD cannot be used in the kernel. */
++				WARN("ENQCMD instruction at %s:%lx", sec->name,
++				     offset);
++			}
++
+ 		} else if (op2 =3D=3D 0xa0 || op2 =3D=3D 0xa8) {
+=20
+ 			/* push fs/gs */
 
