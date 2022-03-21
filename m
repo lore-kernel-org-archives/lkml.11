@@ -2,167 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8EBDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:53:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20D92C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:53:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230282AbiCUWzI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:55:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56386 "EHLO
+        id S230300AbiCUWzN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:55:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230395AbiCUWys (ORCPT
+        with ESMTP id S230054AbiCUWyt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:54:48 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CED7D37806A
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:38:08 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id v130so30621919ybe.13
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:38:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zYTd46XXMIR/EBFVjL4wkBggwgjqAKgJIG8foIWgEVU=;
-        b=qFwNYGnX+e22tchIGIjV+ocVkIfa8G9W7pb7GhR3piqlo1M6aJsZoF80AetZeF33t+
-         qbJcMOfLLkvkiJWn1u+R0LhkbJ2d1jVaLpiv1qETysL+Lpa7AA+Ie/WzQHZgN8abrohh
-         lCG5aB5mh5J3MjGse5g2KRTGwV/RX6g31qlMk2decWxmy61hJRWdF2fVUSOv6OhhP90k
-         LZWBGL474isIc5KzWCCj0i0KP+hqPOsclgI8XG9smN9dTq9QkoW4Wz4YqxLn0IeaJXgT
-         I9iqtEBurdtBHJHpJnTzA8P0N8CqvPoTKrZNXA8v8YJiPAIhlVTdFeYsSV4+78j+yprF
-         txog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zYTd46XXMIR/EBFVjL4wkBggwgjqAKgJIG8foIWgEVU=;
-        b=0UNCqFCy18vjlYP/RzFc2jqAERVnnyH/BPF7JzmqKYg7+L+JHtHC82E272gaJekqvG
-         P8qvYkREm6/ta5Nr/G0Fgbt62wUNQ5/TPwSDLZHqMFFoC/WmDZm4pJ4GpVvjhmFMr3WG
-         2ARqPprkSctXfHkP9frbZyn8dLJ54Sh0tLvcELR49T27Aa8nQch7U1FIs42hSDPT2BAB
-         ZPvNOYT2NVTj7QIOuuvP2Iy6mMKUO2TqVKXLs+s6AaGhwmfvdUyLPCmh/7OC9MujvzWX
-         tzGDFfwXwpB5Re87D5XlCJFudQwq3heZUJDs93wYMta6XMgQC+g9TYcz52gu0ttug/Tg
-         ZHfg==
-X-Gm-Message-State: AOAM530nOYX3kYrjTkA9TCFTLVWJEsXOzT+8bC25q3I1WzSkyvu8xzlL
-        qLQwUkB8IbAMX3UmUoYPAZxq7/KKvCoG97BhS6yn4AGC5kC5Wg==
-X-Google-Smtp-Source: ABdhPJz83L5u7fcF/6pdKAPYZlCmmDwyFkbR0yvukYMy/bmnO8xACe84WQdxXh8v47Ko37hEaoSD67qkhnDw6a2llBc=
-X-Received: by 2002:a9d:6e04:0:b0:5af:6426:6d39 with SMTP id
- e4-20020a9d6e04000000b005af64266d39mr8523074otr.75.1647900004351; Mon, 21 Mar
- 2022 15:00:04 -0700 (PDT)
+        Mon, 21 Mar 2022 18:54:49 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A03F82323
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:38:10 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 6F11322175;
+        Mon, 21 Mar 2022 23:38:08 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1647902288;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TEMN5oOp8pSsz/f4qOvx8LZ7Vw8/HeFkF2XWTUYxriQ=;
+        b=BtjgrziDWJyVywDlXY3kCqPTQGKAeoqqVoErY5czyswMRNwE6++zFd01lSfoevNWfORAU5
+        i/34WLLul0p9ATWtQxhvb+Vn0AFDBI1eMsTVPpa1dO6fTGKbgAz1/OXp5tg8JVT2C9ybC8
+        g52amaC2MzGEQUgacAV4Gb8MPSeEsVk=
 MIME-Version: 1.0
-References: <20220301143650.143749-1-mlevitsk@redhat.com> <20220301143650.143749-5-mlevitsk@redhat.com>
- <CALMp9eRjY6sX0OEBeYw4RsQKSjKvXKWOqRe=GVoQnmjy6D8deg@mail.gmail.com>
- <6a7f13d1-ed00-b4a6-c39b-dd8ba189d639@redhat.com> <CALMp9eRRT6pi6tjZvsFbEhrgS+zsNg827iLD4Hvzsa4PeB6W-Q@mail.gmail.com>
- <abe8584fa3691de1d6ae6c6617b8ea750b30fd1c.camel@redhat.com>
-In-Reply-To: <abe8584fa3691de1d6ae6c6617b8ea750b30fd1c.camel@redhat.com>
-From:   Jim Mattson <jmattson@google.com>
-Date:   Mon, 21 Mar 2022 14:59:53 -0700
-Message-ID: <CALMp9eSUSexhPWMWXE1HpSD+movaYcdge_J95LiLCnJyMEp3WA@mail.gmail.com>
-Subject: Re: [PATCH v3 4/7] KVM: x86: nSVM: support PAUSE filter threshold and
- count when cpu_pm=on
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
-        Wanpeng Li <wanpengli@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 21 Mar 2022 23:38:08 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Pratyush Yadav <p.yadav@ti.com>
+Cc:     Tudor.Ambarus@microchip.com, miquel.raynal@bootlin.com,
+        richard@nod.at, vigneshr@ti.com, linux-mtd@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Nicolas.Ferre@microchip.com
+Subject: Re: [PATCH v2 3/8] mtd: spi-nor: core: Use auto-detection only once
+In-Reply-To: <20220321174251.ehhobu26tgoxrbps@ti.com>
+References: <20220228111712.111737-1-tudor.ambarus@microchip.com>
+ <20220228111712.111737-4-tudor.ambarus@microchip.com>
+ <20220321121455.bpql7x4ebhq7s36l@ti.com>
+ <b4e8c044-f16a-a72d-6047-c42cdcc253f1@microchip.com>
+ <20220321174251.ehhobu26tgoxrbps@ti.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <148e6c16421e6a94a2ee41fa251130df@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 2:36 PM Maxim Levitsky <mlevitsk@redhat.com> wrote:
->
-> On Wed, 2022-03-09 at 11:07 -0800, Jim Mattson wrote:
-> > On Wed, Mar 9, 2022 at 10:47 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
-> > > On 3/9/22 19:35, Jim Mattson wrote:
-> > > > I didn't think pause filtering was virtualizable, since the value of
-> > > > the internal counter isn't exposed on VM-exit.
-> > > >
-> > > > On bare metal, for instance, assuming the hypervisor doesn't intercept
-> > > > CPUID, the following code would quickly trigger a PAUSE #VMEXIT with
-> > > > the filter count set to 2.
-> > > >
-> > > > 1:
-> > > > pause
-> > > > cpuid
-> > > > jmp 1
-> > > >
-> > > > Since L0 intercepts CPUID, however, L2 will exit to L0 on each loop
-> > > > iteration, and when L0 resumes L2, the internal counter will be set to
-> > > > 2 again. L1 will never see a PAUSE #VMEXIT.
-> > > >
-> > > > How do you handle this?
-> > > >
-> > >
-> > > I would expect that the same would happen on an SMI or a host interrupt.
-> > >
-> > >         1:
-> > >         pause
-> > >         outl al, 0xb2
-> > >         jmp 1
-> > >
-> > > In general a PAUSE vmexit will mostly benefit the VM that is pausing, so
-> > > having a partial implementation would be better than disabling it
-> > > altogether.
-> >
-> > Indeed, the APM does say, "Certain events, including SMI, can cause
-> > the internal count to be reloaded from the VMCB." However, expanding
-> > that set of events so much that some pause loops will *never* trigger
-> > a #VMEXIT seems problematic. If the hypervisor knew that the PAUSE
-> > filter may not be triggered, it could always choose to exit on every
-> > PAUSE.
-> >
-> > Having a partial implementation is only better than disabling it
-> > altogether if the L2 pause loop doesn't contain a hidden #VMEXIT to
-> > L0.
-> >
->
-> Hi!
->
-> You bring up a very valid point, which I didn't think about.
->
-> However after thinking about this, I think that in practice,
-> this isn't a show stopper problem for exposing this feature to the guest.
->
->
-> This is what I am thinking:
->
-> First lets assume that the L2 is malicious. In this case no doubt
-> it can craft such a loop which will not VMexit on PAUSE.
-> But that isn't a problem - instead of this guest could have just used NOP
-> which is not possible to intercept anyway - no harm is done.
->
-> Now lets assume a non malicious L2:
->
->
-> First of all the problem can only happen when a VM exit is intercepted by L0,
-> and not by L1. Both above cases usually don't pass this criteria since L1 is highly
-> likely to intercept both CPUID and IO port access. It is also highly unlikely
-> to allow L2 direct access to L1's mmio ranges.
->
-> Overall there are very few cases of deterministic vm exit which is intercepted
-> by L0 but not L1. If that happens then L1 will not catch the PAUSE loop,
-> which is not different much from not catching it because of not suitable
-> thresholds.
->
-> Also note that this is an optimization only - due to count and threshold,
-> it is not guaranteed to catch all pause loops - in fact hypervisor has
-> to guess these values, and update them in attempt to catch as many such
-> loops as it can.
->
-> I think overall it is OK to expose that feature to the guest
-> and it should even improve performance in some cases - currently
-> at least nested KVM intercepts every PAUSE otherwise.
+Am 2022-03-21 18:42, schrieb Pratyush Yadav:
+> On 21/03/22 12:50PM, Tudor.Ambarus@microchip.com wrote:
+>> On 3/21/22 14:14, Pratyush Yadav wrote:
+>> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>> >
+>> > On 28/02/22 01:17PM, Tudor Ambarus wrote:
+>> >> In case spi_nor_match_name() returned NULL, the auto detection was
+>> >> issued twice. There's no reason to try to detect the same chip twice,
+>> >> do the auto detection only once.
+>> >>
+>> >> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+>> >> ---
+>> >>  drivers/mtd/spi-nor/core.c | 10 ++++++----
+>> >>  1 file changed, 6 insertions(+), 4 deletions(-)
+>> >>
+>> >> diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
+>> >> index f87cb7d3daab..b1d6fa65417d 100644
+>> >> --- a/drivers/mtd/spi-nor/core.c
+>> >> +++ b/drivers/mtd/spi-nor/core.c
+>> >> @@ -2894,13 +2894,15 @@ static const struct flash_info *spi_nor_match_name(struct spi_nor *nor,
+>> >>  static const struct flash_info *spi_nor_get_flash_info(struct spi_nor *nor,
+>> >>                                                      const char *name)
+>> >>  {
+>> >> -     const struct flash_info *info = NULL;
+>> >> +     const struct flash_info *info = NULL, *detected_info = NULL;
+>> >>
+>> >>       if (name)
+>> >>               info = spi_nor_match_name(nor, name);
+>> >>       /* Try to auto-detect if chip name wasn't specified or not found */
+>> >> -     if (!info)
+>> >> -             info = spi_nor_read_id(nor);
+>> >> +     if (!info) {
+>> >> +             detected_info = spi_nor_read_id(nor);
+>> >> +             info = detected_info;
+>> >> +     }
+>> >>       if (IS_ERR_OR_NULL(info))
+>> >>               return ERR_PTR(-ENOENT);
+>> >>
+>> >> @@ -2908,7 +2910,7 @@ static const struct flash_info *spi_nor_get_flash_info(struct spi_nor *nor,
+>> >>        * If caller has specified name of flash model that can normally be
+>> >>        * detected using JEDEC, let's verify it.
+>> >>        */
+>> >> -     if (name && info->id_len) {
+>> >> +     if (name && !detected_info && info->id_len) {
+>> >>               const struct flash_info *jinfo;
+>> >>
+>> >>               jinfo = spi_nor_read_id(nor);
+>> >
+>> > I think the flow can be a little bit better. How about:
+>> >
+>> >         if (name)
+>> >                 info = spi_nor_match_name();
+>> >
+>> >         if (!info) {
+>> >                 info = spi_nor_read_id();
+>> >                 if (IS_ERR_OR_NULL(info))
+>> >                         return ERR_PTR(-ENOENT);
+>> >
+>> >                 return info;
+>> >         }
 
-Can I at least request that this behavior be documented as a KVM
-virtual CPU erratum?
++1 for the flow. But is it correct that we just ignore any former
+error and just replace it with ENOENT? Should we return NULL here
+and let the caller handle the translation from NULL to ENOENT (and
+keeping any other errors)
 
->
-> Best regards,
->         Maxim Levitsky
->
->
->
->
+>> 
+>> Here we miss the IS_ERR check in case info is retrieved with 
+>> spi_nor_match_name().
+>> Do you expect spi_nor_match_name() to ever return an error? As it is 
+>> now it doesn't.
+>> I'm fine either way. In case you want me to follow your suggestion, 
+>> give me a sign
+>> and I'll make a dedicated patch to move the IS_ERR_OR_NULL check. Will 
+>> add your
+>> Suggested-by tag.
+> 
+> I think it should be safe to assume it won't ever return an error since
+> all it does is iterate over an array that is always present. I don't 
+> see
+> that changing in the foreseeable future either. So I think not having
+> the IS_ERR check is fine.
+
+But what does it cost to just add the error check now so it won't
+be forgotten in the future?
+
+          if (name) {
+                  info = spi_nor_match_name();
+                  if (IS_ERR(info))
+                          return info;
+          }
+          if (!info)
+                   return spi_nor_read_id();
+
+          <flash model check code follows here>
+
+And then let the caller handle NULL and translate it to ENOENT.
+
+-michael
