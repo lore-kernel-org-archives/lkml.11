@@ -2,201 +2,364 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 078DFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:15:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F69FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:15:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348579AbiCUOQu (ORCPT
+        id S1349195AbiCUOQx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:16:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57692 "EHLO
+        Mon, 21 Mar 2022 10:16:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351814AbiCUOLu (ORCPT
+        with ESMTP id S1349511AbiCUOI1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:11:50 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA3C9DFDC1;
-        Mon, 21 Mar 2022 07:10:24 -0700 (PDT)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22LCwA0S009877;
-        Mon, 21 Mar 2022 14:09:29 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=jJvjaD9nDPINy+yDER4EzUWY4D2RflHCie4NZqkBL5M=;
- b=yzinJ2+Z10kVBOUVRRRflvhCizRqfLTxhzITyZk68qsGj8SJ6WCJm1ORyZSMTLLZU857
- FxXycx6ws5J1DfPnShaBppZI9REk/AIzJPbqfSjKwemo/+2jInNtNrftOdhr/u7cUrFt
- glL5A5rl8LJ6Y80zXyOWqkbZjgHeQzUo5UxYs85Y71ewT2tWQuoJGb1qhSoXrvLql9lQ
- wQW17ppoTMDC6zL1vhB+Kbbne9WKYzHaDRxxsS8xerZc/wzNq1l3uBoLBTVrscpJMq42
- /9ug7bMr/4K872OGlnHmBAo6Uew8Rtf3lA+7Shlve8ZbJdnP2bvxbVUIT9LpAx3fNf2b LA== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80] (may be forged))
-        by mx0b-00069f02.pphosted.com with ESMTP id 3ew72abb8f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 21 Mar 2022 14:09:28 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 22LE85vv038153;
-        Mon, 21 Mar 2022 14:09:27 GMT
-Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2173.outbound.protection.outlook.com [104.47.55.173])
-        by userp3030.oracle.com with ESMTP id 3ew49r3k8h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 21 Mar 2022 14:09:26 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Fi3vHHOQmg/8+J8BUfKOs5SO+Obgu09/6kMplfMFQic6+XgyFsaVGW78q4ewpvx/0W0DBnz0AGSW+OFq7RxRXhsPkUy7zcf2HIXvDNLi4GWf5oDnjLrB/R3O+7h0nir3tXy2JyUouoOxBN2ZnvUmqoyVq1csuvTHUPXcybvXb0gNlM2w8Dxvtrnlw0Z+0S+QMSnXG9zGNAh6oj0xnqTAycluLL3SJHMWnAZqULDANwMfkRLn3mb9dJ5gW5Eg/0h/OCVwwyQUIhmWMldOyd72SQsV2k1Yk5LPrxDTjWoSB4DLFqLAffAiEg5G8ASgn/xqm5WA14od13Wh4hceQ+o/lQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jJvjaD9nDPINy+yDER4EzUWY4D2RflHCie4NZqkBL5M=;
- b=kRDGgPJ7u2eUqLjUlKziDP/QrFhs2FHmJMO3ZABM4eOMcOc26alBWIkYcidx0dvtS1LMiPvikLqHtPV/U+EgLMF1YQvuAPR1yJGoYgXgueVA46hXE4wNf2FYfOkv01eqvyWmpmaUskjB7r2FzNIbRS2AMR+XXC7TV+RA4uCF9/nnEQ87n5wF+sa30qr4QDrcVtp7qXgTRvj07VMGQpbImTRa6zBdeaWkPuY/ChyOkksTvNZh0YMW/RzIJ2NzL5IuC19huqy1x/n6Uk1/7AgG0TcelyG5p8Tp3pPv1GsP/4B5kDhEcGfiQzVbetWG3KcebtIf30nI6KjG/kBZPVQpXw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jJvjaD9nDPINy+yDER4EzUWY4D2RflHCie4NZqkBL5M=;
- b=QKVz2fJRGHsmQhQCAJm+/ClYQRFhl7TLanghabE8JGvznKUIPqLYmv1u7V++pUXNsR6/j5n3SDddF1Ne0r3s3VqoMN9WZBQASW1NyFQSJu37cwnI6uXajsm99bUMM4N+Z3yjxiAYmg2+lHmOnBt6kk0vBDQ+LfYZYHn4Q049Yy4=
-Received: from SJ0PR10MB5742.namprd10.prod.outlook.com (2603:10b6:a03:3ed::20)
- by SA2PR10MB4714.namprd10.prod.outlook.com (2603:10b6:806:111::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.17; Mon, 21 Mar
- 2022 14:09:24 +0000
-Received: from SJ0PR10MB5742.namprd10.prod.outlook.com
- ([fe80::2400:c9fb:a176:3502]) by SJ0PR10MB5742.namprd10.prod.outlook.com
- ([fe80::2400:c9fb:a176:3502%2]) with mapi id 15.20.5081.022; Mon, 21 Mar 2022
- 14:09:23 +0000
-Message-ID: <d938a7e8-6b4f-f24d-41d3-8058ca2b2ac8@oracle.com>
-Date:   Mon, 21 Mar 2022 09:09:19 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v21 3/5] arm64: kdump: reimplement crashkernel=X
-Content-Language: en-US
-To:     John Donnelly <John.p.donnelly@oracle.com>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        linux-kernel@vger.kernel.org, Dave Young <dyoung@redhat.com>,
-        Baoquan He <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        kexec@lists.infradead.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        devicetree@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Chen Zhou <dingguo.cz@antgroup.com>
-References: <20220227030717.1464-1-thunder.leizhen@huawei.com>
- <20220227030717.1464-4-thunder.leizhen@huawei.com>
- <cc0186d9-29a3-8eff-e38a-95fd4dd9c46f@oracle.com>
-From:   Dave Kleikamp <dave.kleikamp@oracle.com>
-In-Reply-To: <cc0186d9-29a3-8eff-e38a-95fd4dd9c46f@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SN7PR04CA0176.namprd04.prod.outlook.com
- (2603:10b6:806:125::31) To SJ0PR10MB5742.namprd10.prod.outlook.com
- (2603:10b6:a03:3ed::20)
+        Mon, 21 Mar 2022 10:08:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F8E846177;
+        Mon, 21 Mar 2022 07:02:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A52061331;
+        Mon, 21 Mar 2022 14:02:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E4F6C340E8;
+        Mon, 21 Mar 2022 14:02:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647871372;
+        bh=8M6kiTSMPh/VzwSpxOjYvSueTuAehvkBzzj388tLFUM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=TI37EXYLYKeVCe4asbXHm0llCLe2PPtD00CvCK2zR/irBRO1/G5Fl2PHOHCmwIIYJ
+         WUZAz1Tw98r5INmKgYwszTXVY3ueRVZDmJZaXahZkzEIxRlPG9yzskPscRcF0lrS6s
+         ktF8tsC3haenLZN8zf4kG1cxnbDDETkexngMWDtI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>,
+        Anand Jain <anand.jain@oracle.com>
+Subject: [PATCH 5.16 37/37] btrfs: skip reserved bytes warning on unmount after log cleanup failure
+Date:   Mon, 21 Mar 2022 14:53:19 +0100
+Message-Id: <20220321133222.362968532@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220321133221.290173884@linuxfoundation.org>
+References: <20220321133221.290173884@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: acde4f42-0a05-482f-c5ce-08da0b4466ae
-X-MS-TrafficTypeDiagnostic: SA2PR10MB4714:EE_
-X-Microsoft-Antispam-PRVS: <SA2PR10MB4714316445B7D14C213E503087169@SA2PR10MB4714.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LUg/c+pnbFntsIAIdpaRfkDVRaSEmJno+d1iGmyXkROQUhOs8O5or1T7f2vHF+MOv9iZfCjc3FUvBelR0BEW4Sz2t0a3Y3tt2wUs8hXo2K14wysKC8FmlRjffrwLefvJWoRgn8FLJ/Wt6IJ7OGcpV5JOQLK/xTtPR5PSbs0dPrJervG9zi93EnoRlr3qJE+qgR3nffIAeLo3zmtFej4B2Bes162ddEk+nMbW1fe4O5TrryTn0imSR0now4+RUB2HGWoQgwOV5jNPUcJSS+lpiVzcMF4Puh9Sgd/L3654E9NNsiMjcWBTyQeuZLRbjwpZRpOrNRi6tlZy5Do44M3/5+TSvmclKrPeOERJWPXuxw3aDHVUmgoiVhf0boNe6t4wxvvzFLMOHkmngqCyIDZoXIk89ArliIMpfI9M//UgvI83Cc1Sr5ICLfgG64bqUPJfUNlez23lXpVxj7gjS9hb1kiPYxTJgbR3KQob8gNJ4q6P2jxuYm9+3SqzUFqvxSGqo0pL56jiMEPzI3bxnOUfqPk52gt3fAqmCMSmTmQCTAFV+uCBXUvSOfSwlRh5TejJhrzHIjQ/QRBx5Y0mhm+TAMBWWukiRq92TgrXd6WveGT6F2leU6VFaGyVu8L/FB1W105ytHeD6oFJ0a3uWsfcfdt4Rqf4DqCGAk/RoO8p91uOWglQnBBRPeKfqaQSov28BBjKu/uytJyg5yduZgtQrg8mG0JuhoHWkHocpsVY842W0gyz/YpF9sMmbxSjixl33TSgiG/qIzIy9prTsEPi4Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR10MB5742.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(54906003)(31686004)(316002)(38100700002)(6512007)(44832011)(110136005)(6666004)(8936002)(4326008)(8676002)(6506007)(83380400001)(86362001)(31696002)(36756003)(26005)(921005)(66556008)(66946007)(186003)(53546011)(5660300002)(7416002)(508600001)(2906002)(6486002)(2616005)(66476007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bWRydVFLNndoaUlaS2pnS1hjSG5PV3d5aUliYU9HZzZhc216NlFUcndXcFNa?=
- =?utf-8?B?YjBVNm1vYkpwQzhCRjJqTTY1WWtHSUFsMmZoemdQNkhPcHh1cnJYRVpJTEs3?=
- =?utf-8?B?dnZYMWpoWlVSVDlnWkVZYzM3bnpLT0loc3k2MVowWi9JQ2ZZNWVlOXRWUW1K?=
- =?utf-8?B?Y0hhVlZwODFDS0NldlVDNVh6V3JtRmhLS1NGVXVmNzUyeXF1UlBuQzV2NSti?=
- =?utf-8?B?bWozNGlnMTU2OVFyWTBUWlFZZ0txRGxmU3RRNWtyVlBjUDNhZEJWUTVaYjlF?=
- =?utf-8?B?ZHk3NXpReDJRdXlPN2tDdG9rYlFTNDEzaFBSUTFVOUpRNGthSzdRemEyTFVq?=
- =?utf-8?B?aVBLcEp6Smt5aWRQNVJmNkpIVkhLOE5XRFdhZXBlT2gxanhiQU5pRDFOYjcz?=
- =?utf-8?B?aGRFMCtMTkNJemNvTXoxdGY4Zi9jZWtmazUvSjJkK3VxL2xVVW8xL3VBbGhR?=
- =?utf-8?B?MmJFc0pBU1IrSTd3WGIwR2pSbHNWa3BDaU5TUm9TQ0IxMy9JZ1puY21PZi9N?=
- =?utf-8?B?R3g4UUlVZ0IvUEFYbHY1R1pWaHUwYVZZTE9ncE1PZ2dvNThaQnNzL3JHRlh6?=
- =?utf-8?B?akVqMEdTVlMwL2xpOFhPcHo3V1BBby9RN0NUaXMxVmxvYTdCUUIxaWlyUHUw?=
- =?utf-8?B?bmJmKzR2N3BTaW9kalVSMWRuK1pMU2x3N2U4enVmeXFLL05FVDcxc2NpRFJu?=
- =?utf-8?B?aDdlTVU1KzVDdkovYjNTRXp3bGZacXZvQjF6SFhmUkRCd0dDdTU3dUFRMFlx?=
- =?utf-8?B?TGhXcTBpem90dzRBeDA2dUZYakgzVWZ3YURKbThreDE5WEZEaWY2VER0dGVx?=
- =?utf-8?B?VHdwalJTYldYOU5pazAyK0dFaHZ4RVZmd3REQlZzeXc2YUxPajhJalBLYnFZ?=
- =?utf-8?B?Vmx4REhQRzFnZWplU3hZZ0xWMTJ6MkorOStIVmExcnBOVzBuckNlajYvRUdw?=
- =?utf-8?B?Q1NnYUExc2s3bCs2L0NUMVpRL1UzdDJYQUtrS0V2akFlb0pBK29zTUhCemtI?=
- =?utf-8?B?WGVJNXdKQlNLYTZEUWorQ3ZmVzhtYjFIMWVnc3RTZkR3aUtPYStIb3g5TDlG?=
- =?utf-8?B?dE9haGZaSTZnaEpQNkJpR3l0QzNTcHhCb2IwQUdDV015WisyWWhtcWVmY2F4?=
- =?utf-8?B?YW9abHYrdFlmckEwd2tHc0V3TlVNOFJ0M2NBamxzVUhhOWQ4Z3NOdUZwbEVT?=
- =?utf-8?B?c0RXVVA3YXU3emV5Y0VMVi9hQUcxYkhuMUdkSEoxcm5qZXBIS21ZN0VLWk50?=
- =?utf-8?B?eVowNXVON2E3UmhCdk01bGY0ZncvZFR1cElINFRKLzc0RURaWHB6WUZNZWxV?=
- =?utf-8?B?b3NvRU5wcVQzRkZ4VzFQL0tXMzhhRFhNc013TXJGUllBeTJ6aU1wSGRHaVoy?=
- =?utf-8?B?bkZORi9rTXRIak44NVdTZGh0aUdtNHhyT2RtS2ZBWlB1aUhTVzF6Z25SZ3NF?=
- =?utf-8?B?VHJ2eERZeTdXR044NFhhR0VzNDJiOVlZczhlZ1loSFAzOXlITGVIWVJaRFda?=
- =?utf-8?B?RkhHUndsMlJuRWNVTTJYeC9kT0VJRDU0dldodDRBUzcwMVJ6c3JEdHNLYURJ?=
- =?utf-8?B?N0Q4QmhlcnprTUNSbUZBZUFjWDhnQVVnTGNQY1p1NUc0aGhvZlFBMkptcVIr?=
- =?utf-8?B?UUg1N2lYNVNMaTllTzkvbmFJb1RUM2VRWURXYUdVcG1UNGlGUGtOMFBsWm9a?=
- =?utf-8?B?ZDJ3TzgzcUptbEhlTXJxZWlGMFU1KzRGV1FJZkFtMG1GTi9tbEVrUzBIczdJ?=
- =?utf-8?B?TkduaHl1Vmh6Sk9tVVJOUXZkam1KVXhMbmxwdnB2Y1FkV2ZuUmpvejZ1SG1h?=
- =?utf-8?B?ZDNPc2NHQ0lZYXE4SnNFSnBJbTdoVVNSNDUyUmY2MEpiVkZxWjNRaWNjckQ5?=
- =?utf-8?B?K3ptWXQrODI4eTlnalNXdmVyemVyMU1xQXdpdFBCSWs1Y3VQTjJKOFoyZFBZ?=
- =?utf-8?B?QkNmbUp1K2NzN0tCYjd1Ri93MVpNZWNteEVLSDhJL3hUa1NGMGNNR2hhekk2?=
- =?utf-8?B?UnkralFKWTRBPT0=?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: acde4f42-0a05-482f-c5ce-08da0b4466ae
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR10MB5742.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2022 14:09:23.6164
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nzWL1sSv5bw9oP+u6Tn5kKBT03trK8lspgBr3sLXLXLTfVujtgcwmaUyOkhbGK7MPBcP/oti6AhYO23yVLww9D2xiLR86rlvVEWDl/UB2dk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR10MB4714
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10292 signatures=694221
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0 mlxscore=0
- bulkscore=0 phishscore=0 spamscore=0 mlxlogscore=999 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2203210091
-X-Proofpoint-GUID: IRD0u_w1U8uV-9o6ukynIRVo8EFQqtM2
-X-Proofpoint-ORIG-GUID: IRD0u_w1U8uV-9o6ukynIRVo8EFQqtM2
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/21/22 8:29AM, John Donnelly wrote:
-> On 2/26/22 9:07 PM, Zhen Lei wrote:
->> From: Chen Zhou <chenzhou10@huawei.com>
->>
->> There are following issues in arm64 kdump:
->> 1. We use crashkernel=X to reserve crashkernel below 4G, which
->> will fail when there is no enough low memory.
-> 
->                          " Not enough "
->> 2. If reserving crashkernel above 4G, in this case, crash dump
->> kernel will boot failure because there is no low memory available
->> for allocation.
-> 
->   We can't have a "boot failure". If the requested reservation
->   can not be met,  the kdump  configuration is not setup.
+From: Filipe Manana <fdmanana@suse.com>
 
-I think you misread this. Without these patches, if only high memory is 
-reserved for the crash kernel, then the crash kernel will fail to boot.
+commit 40cdc509877bacb438213b83c7541c5e24a1d9ec upstream.
 
->>
->> To solve these issues, change the behavior of crashkernel=X and
->> introduce crashkernel=X,[high,low]. crashkernel=X tries low allocation
->> in DMA zone, and fall back to high allocation if it fails.
->> We can also use "crashkernel=X,high" to select a region above DMA zone,
->> which also tries to allocate at least 256M in DMA zone automatically.
->> "crashkernel=Y,low" can be used to allocate specified size low memory.
-> 
-> Is there going to be documentation on what values certain Arm platforms 
-> are going to use this on ?
-> 
->>
->> Signed-off-by: Chen Zhou <chenzhou10@huawei.com>
->> Co-developed-by: Zhen Lei <thunder.leizhen@huawei.com>
->> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+After the recent changes made by commit c2e39305299f01 ("btrfs: clear
+extent buffer uptodate when we fail to write it") and its followup fix,
+commit 651740a5024117 ("btrfs: check WRITE_ERR when trying to read an
+extent buffer"), we can now end up not cleaning up space reservations of
+log tree extent buffers after a transaction abort happens, as well as not
+cleaning up still dirty extent buffers.
+
+This happens because if writeback for a log tree extent buffer failed,
+then we have cleared the bit EXTENT_BUFFER_UPTODATE from the extent buffer
+and we have also set the bit EXTENT_BUFFER_WRITE_ERR on it. Later on,
+when trying to free the log tree with free_log_tree(), which iterates
+over the tree, we can end up getting an -EIO error when trying to read
+a node or a leaf, since read_extent_buffer_pages() returns -EIO if an
+extent buffer does not have EXTENT_BUFFER_UPTODATE set and has the
+EXTENT_BUFFER_WRITE_ERR bit set. Getting that -EIO means that we return
+immediately as we can not iterate over the entire tree.
+
+In that case we never update the reserved space for an extent buffer in
+the respective block group and space_info object.
+
+When this happens we get the following traces when unmounting the fs:
+
+[174957.284509] BTRFS: error (device dm-0) in cleanup_transaction:1913: errno=-5 IO failure
+[174957.286497] BTRFS: error (device dm-0) in free_log_tree:3420: errno=-5 IO failure
+[174957.399379] ------------[ cut here ]------------
+[174957.402497] WARNING: CPU: 2 PID: 3206883 at fs/btrfs/block-group.c:127 btrfs_put_block_group+0x77/0xb0 [btrfs]
+[174957.407523] Modules linked in: btrfs overlay dm_zero (...)
+[174957.424917] CPU: 2 PID: 3206883 Comm: umount Tainted: G        W         5.16.0-rc5-btrfs-next-109 #1
+[174957.426689] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+[174957.428716] RIP: 0010:btrfs_put_block_group+0x77/0xb0 [btrfs]
+[174957.429717] Code: 21 48 8b bd (...)
+[174957.432867] RSP: 0018:ffffb70d41cffdd0 EFLAGS: 00010206
+[174957.433632] RAX: 0000000000000001 RBX: ffff8b09c3848000 RCX: ffff8b0758edd1c8
+[174957.434689] RDX: 0000000000000001 RSI: ffffffffc0b467e7 RDI: ffff8b0758edd000
+[174957.436068] RBP: ffff8b0758edd000 R08: 0000000000000000 R09: 0000000000000000
+[174957.437114] R10: 0000000000000246 R11: 0000000000000000 R12: ffff8b09c3848148
+[174957.438140] R13: ffff8b09c3848198 R14: ffff8b0758edd188 R15: dead000000000100
+[174957.439317] FS:  00007f328fb82800(0000) GS:ffff8b0a2d200000(0000) knlGS:0000000000000000
+[174957.440402] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[174957.441164] CR2: 00007fff13563e98 CR3: 0000000404f4e005 CR4: 0000000000370ee0
+[174957.442117] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[174957.443076] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[174957.443948] Call Trace:
+[174957.444264]  <TASK>
+[174957.444538]  btrfs_free_block_groups+0x255/0x3c0 [btrfs]
+[174957.445238]  close_ctree+0x301/0x357 [btrfs]
+[174957.445803]  ? call_rcu+0x16c/0x290
+[174957.446250]  generic_shutdown_super+0x74/0x120
+[174957.446832]  kill_anon_super+0x14/0x30
+[174957.447305]  btrfs_kill_super+0x12/0x20 [btrfs]
+[174957.447890]  deactivate_locked_super+0x31/0xa0
+[174957.448440]  cleanup_mnt+0x147/0x1c0
+[174957.448888]  task_work_run+0x5c/0xa0
+[174957.449336]  exit_to_user_mode_prepare+0x1e5/0x1f0
+[174957.449934]  syscall_exit_to_user_mode+0x16/0x40
+[174957.450512]  do_syscall_64+0x48/0xc0
+[174957.450980]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[174957.451605] RIP: 0033:0x7f328fdc4a97
+[174957.452059] Code: 03 0c 00 f7 (...)
+[174957.454320] RSP: 002b:00007fff13564ec8 EFLAGS: 00000246 ORIG_RAX: 00000000000000a6
+[174957.455262] RAX: 0000000000000000 RBX: 00007f328feea264 RCX: 00007f328fdc4a97
+[174957.456131] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000560b8ae51dd0
+[174957.457118] RBP: 0000560b8ae51ba0 R08: 0000000000000000 R09: 00007fff13563c40
+[174957.458005] R10: 00007f328fe49fc0 R11: 0000000000000246 R12: 0000000000000000
+[174957.459113] R13: 0000560b8ae51dd0 R14: 0000560b8ae51cb0 R15: 0000000000000000
+[174957.460193]  </TASK>
+[174957.460534] irq event stamp: 0
+[174957.461003] hardirqs last  enabled at (0): [<0000000000000000>] 0x0
+[174957.461947] hardirqs last disabled at (0): [<ffffffffb0e94214>] copy_process+0x934/0x2040
+[174957.463147] softirqs last  enabled at (0): [<ffffffffb0e94214>] copy_process+0x934/0x2040
+[174957.465116] softirqs last disabled at (0): [<0000000000000000>] 0x0
+[174957.466323] ---[ end trace bc7ee0c490bce3af ]---
+[174957.467282] ------------[ cut here ]------------
+[174957.468184] WARNING: CPU: 2 PID: 3206883 at fs/btrfs/block-group.c:3976 btrfs_free_block_groups+0x330/0x3c0 [btrfs]
+[174957.470066] Modules linked in: btrfs overlay dm_zero (...)
+[174957.483137] CPU: 2 PID: 3206883 Comm: umount Tainted: G        W         5.16.0-rc5-btrfs-next-109 #1
+[174957.484691] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+[174957.486853] RIP: 0010:btrfs_free_block_groups+0x330/0x3c0 [btrfs]
+[174957.488050] Code: 00 00 00 ad de (...)
+[174957.491479] RSP: 0018:ffffb70d41cffde0 EFLAGS: 00010206
+[174957.492520] RAX: ffff8b08d79310b0 RBX: ffff8b09c3848000 RCX: 0000000000000000
+[174957.493868] RDX: 0000000000000001 RSI: fffff443055ee600 RDI: ffffffffb1131846
+[174957.495183] RBP: ffff8b08d79310b0 R08: 0000000000000000 R09: 0000000000000000
+[174957.496580] R10: 0000000000000001 R11: 0000000000000000 R12: ffff8b08d7931000
+[174957.498027] R13: ffff8b09c38492b0 R14: dead000000000122 R15: dead000000000100
+[174957.499438] FS:  00007f328fb82800(0000) GS:ffff8b0a2d200000(0000) knlGS:0000000000000000
+[174957.500990] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[174957.502117] CR2: 00007fff13563e98 CR3: 0000000404f4e005 CR4: 0000000000370ee0
+[174957.503513] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[174957.504864] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[174957.506167] Call Trace:
+[174957.506654]  <TASK>
+[174957.507047]  close_ctree+0x301/0x357 [btrfs]
+[174957.507867]  ? call_rcu+0x16c/0x290
+[174957.508567]  generic_shutdown_super+0x74/0x120
+[174957.509447]  kill_anon_super+0x14/0x30
+[174957.510194]  btrfs_kill_super+0x12/0x20 [btrfs]
+[174957.511123]  deactivate_locked_super+0x31/0xa0
+[174957.511976]  cleanup_mnt+0x147/0x1c0
+[174957.512610]  task_work_run+0x5c/0xa0
+[174957.513309]  exit_to_user_mode_prepare+0x1e5/0x1f0
+[174957.514231]  syscall_exit_to_user_mode+0x16/0x40
+[174957.515069]  do_syscall_64+0x48/0xc0
+[174957.515718]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[174957.516688] RIP: 0033:0x7f328fdc4a97
+[174957.517413] Code: 03 0c 00 f7 d8 (...)
+[174957.521052] RSP: 002b:00007fff13564ec8 EFLAGS: 00000246 ORIG_RAX: 00000000000000a6
+[174957.522514] RAX: 0000000000000000 RBX: 00007f328feea264 RCX: 00007f328fdc4a97
+[174957.523950] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000560b8ae51dd0
+[174957.525375] RBP: 0000560b8ae51ba0 R08: 0000000000000000 R09: 00007fff13563c40
+[174957.526763] R10: 00007f328fe49fc0 R11: 0000000000000246 R12: 0000000000000000
+[174957.528058] R13: 0000560b8ae51dd0 R14: 0000560b8ae51cb0 R15: 0000000000000000
+[174957.529404]  </TASK>
+[174957.529843] irq event stamp: 0
+[174957.530256] hardirqs last  enabled at (0): [<0000000000000000>] 0x0
+[174957.531061] hardirqs last disabled at (0): [<ffffffffb0e94214>] copy_process+0x934/0x2040
+[174957.532075] softirqs last  enabled at (0): [<ffffffffb0e94214>] copy_process+0x934/0x2040
+[174957.533083] softirqs last disabled at (0): [<0000000000000000>] 0x0
+[174957.533865] ---[ end trace bc7ee0c490bce3b0 ]---
+[174957.534452] BTRFS info (device dm-0): space_info 4 has 1070841856 free, is not full
+[174957.535404] BTRFS info (device dm-0): space_info total=1073741824, used=2785280, pinned=0, reserved=49152, may_use=0, readonly=65536 zone_unusable=0
+[174957.537029] BTRFS info (device dm-0): global_block_rsv: size 0 reserved 0
+[174957.537859] BTRFS info (device dm-0): trans_block_rsv: size 0 reserved 0
+[174957.538697] BTRFS info (device dm-0): chunk_block_rsv: size 0 reserved 0
+[174957.539552] BTRFS info (device dm-0): delayed_block_rsv: size 0 reserved 0
+[174957.540403] BTRFS info (device dm-0): delayed_refs_rsv: size 0 reserved 0
+
+This also means that in case we have log tree extent buffers that are
+still dirty, we can end up not cleaning them up in case we find an
+extent buffer with EXTENT_BUFFER_WRITE_ERR set on it, as in that case
+we have no way for iterating over the rest of the tree.
+
+This issue is very often triggered with test cases generic/475 and
+generic/648 from fstests.
+
+The issue could almost be fixed by iterating over the io tree attached to
+each log root which keeps tracks of the range of allocated extent buffers,
+log_root->dirty_log_pages, however that does not work and has some
+inconveniences:
+
+1) After we sync the log, we clear the range of the extent buffers from
+   the io tree, so we can't find them after writeback. We could keep the
+   ranges in the io tree, with a separate bit to signal they represent
+   extent buffers already written, but that means we need to hold into
+   more memory until the transaction commits.
+
+   How much more memory is used depends a lot on whether we are able to
+   allocate contiguous extent buffers on disk (and how often) for a log
+   tree - if we are able to, then a single extent state record can
+   represent multiple extent buffers, otherwise we need multiple extent
+   state record structures to track each extent buffer.
+   In fact, my earlier approach did that:
+
+   https://lore.kernel.org/linux-btrfs/3aae7c6728257c7ce2279d6660ee2797e5e34bbd.1641300250.git.fdmanana@suse.com/
+
+   However that can cause a very significant negative impact on
+   performance, not only due to the extra memory usage but also because
+   we get a larger and deeper dirty_log_pages io tree.
+   We got a report that, on beefy machines at least, we can get such
+   performance drop with fsmark for example:
+
+   https://lore.kernel.org/linux-btrfs/20220117082426.GE32491@xsang-OptiPlex-9020/
+
+2) We would be doing it only to deal with an unexpected and exceptional
+   case, which is basically failure to read an extent buffer from disk
+   due to IO failures. On a healthy system we don't expect transaction
+   aborts to happen after all;
+
+3) Instead of relying on iterating the log tree or tracking the ranges
+   of extent buffers in the dirty_log_pages io tree, using the radix
+   tree that tracks extent buffers (fs_info->buffer_radix) to find all
+   log tree extent buffers is not reliable either, because after writeback
+   of an extent buffer it can be evicted from memory by the release page
+   callback of the btree inode (btree_releasepage()).
+
+Since there's no way to be able to properly cleanup a log tree without
+being able to read its extent buffers from disk and without using more
+memory to track the logical ranges of the allocated extent buffers do
+the following:
+
+1) When we fail to cleanup a log tree, setup a flag that indicates that
+   failure;
+
+2) Trigger writeback of all log tree extent buffers that are still dirty,
+   and wait for the writeback to complete. This is just to cleanup their
+   state, page states, page leaks, etc;
+
+3) When unmounting the fs, ignore if the number of bytes reserved in a
+   block group and in a space_info is not 0 if, and only if, we failed to
+   cleanup a log tree. Also ignore only for metadata block groups and the
+   metadata space_info object.
+
+This is far from a perfect solution, but it serves to silence test
+failures such as those from generic/475 and generic/648. However having
+a non-zero value for the reserved bytes counters on unmount after a
+transaction abort, is not such a terrible thing and it's completely
+harmless, it does not affect the filesystem integrity in any way.
+
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Anand Jain <anand.jain@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/btrfs/block-group.c |   26 ++++++++++++++++++++++++--
+ fs/btrfs/ctree.h       |    7 +++++++
+ fs/btrfs/tree-log.c    |   23 +++++++++++++++++++++++
+ 3 files changed, 54 insertions(+), 2 deletions(-)
+
+--- a/fs/btrfs/block-group.c
++++ b/fs/btrfs/block-group.c
+@@ -124,7 +124,16 @@ void btrfs_put_block_group(struct btrfs_
+ {
+ 	if (refcount_dec_and_test(&cache->refs)) {
+ 		WARN_ON(cache->pinned > 0);
+-		WARN_ON(cache->reserved > 0);
++		/*
++		 * If there was a failure to cleanup a log tree, very likely due
++		 * to an IO failure on a writeback attempt of one or more of its
++		 * extent buffers, we could not do proper (and cheap) unaccounting
++		 * of their reserved space, so don't warn on reserved > 0 in that
++		 * case.
++		 */
++		if (!(cache->flags & BTRFS_BLOCK_GROUP_METADATA) ||
++		    !BTRFS_FS_LOG_CLEANUP_ERROR(cache->fs_info))
++			WARN_ON(cache->reserved > 0);
+ 
+ 		/*
+ 		 * A block_group shouldn't be on the discard_list anymore.
+@@ -3987,9 +3996,22 @@ int btrfs_free_block_groups(struct btrfs
+ 		 * important and indicates a real bug if this happens.
+ 		 */
+ 		if (WARN_ON(space_info->bytes_pinned > 0 ||
+-			    space_info->bytes_reserved > 0 ||
+ 			    space_info->bytes_may_use > 0))
+ 			btrfs_dump_space_info(info, space_info, 0, 0);
++
++		/*
++		 * If there was a failure to cleanup a log tree, very likely due
++		 * to an IO failure on a writeback attempt of one or more of its
++		 * extent buffers, we could not do proper (and cheap) unaccounting
++		 * of their reserved space, so don't warn on bytes_reserved > 0 in
++		 * that case.
++		 */
++		if (!(space_info->flags & BTRFS_BLOCK_GROUP_METADATA) ||
++		    !BTRFS_FS_LOG_CLEANUP_ERROR(info)) {
++			if (WARN_ON(space_info->bytes_reserved > 0))
++				btrfs_dump_space_info(info, space_info, 0, 0);
++		}
++
+ 		WARN_ON(space_info->reclaim_size > 0);
+ 		list_del(&space_info->list);
+ 		btrfs_sysfs_remove_space_info(space_info);
+--- a/fs/btrfs/ctree.h
++++ b/fs/btrfs/ctree.h
+@@ -143,6 +143,9 @@ enum {
+ 	BTRFS_FS_STATE_DEV_REPLACING,
+ 	/* The btrfs_fs_info created for self-tests */
+ 	BTRFS_FS_STATE_DUMMY_FS_INFO,
++
++	/* Indicates there was an error cleaning up a log tree. */
++	BTRFS_FS_STATE_LOG_CLEANUP_ERROR,
+ };
+ 
+ #define BTRFS_BACKREF_REV_MAX		256
+@@ -3585,6 +3588,10 @@ static inline void btrfs_print_v0_err(st
+ "Unsupported V0 extent filesystem detected. Aborting. Please re-create your filesystem with a newer kernel");
+ }
+ 
++#define BTRFS_FS_LOG_CLEANUP_ERROR(fs_info)				\
++	(unlikely(test_bit(BTRFS_FS_STATE_LOG_CLEANUP_ERROR,		\
++			   &(fs_info)->fs_state)))
++
+ __printf(5, 6)
+ __cold
+ void __btrfs_handle_fs_error(struct btrfs_fs_info *fs_info, const char *function,
+--- a/fs/btrfs/tree-log.c
++++ b/fs/btrfs/tree-log.c
+@@ -3449,6 +3449,29 @@ static void free_log_tree(struct btrfs_t
+ 	if (log->node) {
+ 		ret = walk_log_tree(trans, log, &wc);
+ 		if (ret) {
++			/*
++			 * We weren't able to traverse the entire log tree, the
++			 * typical scenario is getting an -EIO when reading an
++			 * extent buffer of the tree, due to a previous writeback
++			 * failure of it.
++			 */
++			set_bit(BTRFS_FS_STATE_LOG_CLEANUP_ERROR,
++				&log->fs_info->fs_state);
++
++			/*
++			 * Some extent buffers of the log tree may still be dirty
++			 * and not yet written back to storage, because we may
++			 * have updates to a log tree without syncing a log tree,
++			 * such as during rename and link operations. So flush
++			 * them out and wait for their writeback to complete, so
++			 * that we properly cleanup their state and pages.
++			 */
++			btrfs_write_marked_extents(log->fs_info,
++						   &log->dirty_log_pages,
++						   EXTENT_DIRTY | EXTENT_NEW);
++			btrfs_wait_tree_log_extents(log,
++						    EXTENT_DIRTY | EXTENT_NEW);
++
+ 			if (trans)
+ 				btrfs_abort_transaction(trans, ret);
+ 			else
+
+
