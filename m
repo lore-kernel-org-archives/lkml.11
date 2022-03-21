@@ -2,126 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE505C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:23:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84688C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:23:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232842AbiCUOZB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:25:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40078 "EHLO
+        id S1347400AbiCUOZL (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 10:25:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352011AbiCUOWG (ORCPT
+        with ESMTP id S1352856AbiCUOXI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:22:06 -0400
-Received: from mail-oo1-xc29.google.com (mail-oo1-xc29.google.com [IPv6:2607:f8b0:4864:20::c29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE81518382E
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 07:15:19 -0700 (PDT)
-Received: by mail-oo1-xc29.google.com with SMTP id q1-20020a4a7d41000000b003211b63eb7bso19232346ooe.6
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 07:15:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=46puAl5qyMfNEvffHuQs4+W1rB2fRN97vtq4kHR41Uk=;
-        b=SmwG+razLK9p905oAy6zpQYaPAD2BucmHC65BaOcMrcAsd0ewBaGYDh4iQm7qY1V4m
-         xS9xA3VF18bq2VjWSisAkttaqMMMUC0oXM23iBGEJ3dihdpZlqYVzuY+KUvbyVAhRbRC
-         KXDwIq48221J/PnyKG52urGNjuKgTkLmFEVkl5lHO1U/9GHzeUB9Kmfrfkq/s77tiLfy
-         0TjbDt66d/PANvj98iOa4063lS1ey5Ln6TCeTFzLqizm0fxUECw/rsxR9v3janY0qrjv
-         iNw+5H/0G+JHs5mG6MCMTAB4YyTmfvNO1wwnLrMo5xTfXofEspY7TYoOrvWAOq0lcsGV
-         qZiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=46puAl5qyMfNEvffHuQs4+W1rB2fRN97vtq4kHR41Uk=;
-        b=ON8FaZh8g+YcvveBdGNUvOE9Dse0zrCFLn2NbEFuQH2twd31Ihojoef+Mdt9juRQWO
-         DCguhgksAP/ZRjJ/ieICekR2ODeJKYdiSzerA79u1KWz7YgDzG0nyZEaFSGJsdhXn8Gt
-         CQyvCiq6zm2IotkZd+GDOTcp8OQVChOQ6dP+08BXFUVZxNATHkNjZ+ozH+AIst7qzyl1
-         MVUCpV1NnjQZDw7oiQN4mw1CNq4enLLY3b47tO4KwiDocHdOiq6hXImgoJqUN2M437e5
-         Mc7anCx2MLpWMudgnozvEh/o3TBZrxLDU4VXW4Su+lW/DZ1PgZ4+mRHkEMf3Gzg55xHb
-         Io/Q==
-X-Gm-Message-State: AOAM532TaEc14q0daN6pkdwQ7yqPIxJ1XGn4hfgKWoRuiOFGH7vN1Asy
-        STv5N6ERdmFwkR7Lh1zCuYR9mw==
-X-Google-Smtp-Source: ABdhPJxaYZdj/xG+CL5lGzuWNzLxLTa+TXMS2nsMW4MzKuFZrrCTWcMMJEAJ0qSOgkfjCzpbGiqsyw==
-X-Received: by 2002:a05:6870:e2c9:b0:dd:b78a:82cd with SMTP id w9-20020a056870e2c900b000ddb78a82cdmr7964695oad.50.1647872105167;
-        Mon, 21 Mar 2022 07:15:05 -0700 (PDT)
-Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
-        by smtp.gmail.com with ESMTPSA id c12-20020a9d75cc000000b005b24b061940sm7349297otl.33.2022.03.21.07.15.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 07:15:03 -0700 (PDT)
-Date:   Mon, 21 Mar 2022 09:15:00 -0500
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Luca Weiss <luca.weiss@fairphone.com>
-Cc:     linux-arm-msm@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Andy Gross <agross@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 4/6] pinctrl: qcom: sm6350: fix order of UFS & SDC pins
-Message-ID: <YjiIZBbPN7pAUl1q@builder.lan>
-References: <20220321133318.99406-1-luca.weiss@fairphone.com>
- <20220321133318.99406-5-luca.weiss@fairphone.com>
+        Mon, 21 Mar 2022 10:23:08 -0400
+Received: from out199-4.us.a.mail.aliyun.com (out199-4.us.a.mail.aliyun.com [47.90.199.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A88201AF51C;
+        Mon, 21 Mar 2022 07:17:23 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R431e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0V7rRN9d_1647872182;
+Received: from 192.168.31.65(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V7rRN9d_1647872182)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 21 Mar 2022 22:16:23 +0800
+Message-ID: <eb558006-e5f2-59fe-9c58-844c6deff4dd@linux.alibaba.com>
+Date:   Mon, 21 Mar 2022 22:16:22 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220321133318.99406-5-luca.weiss@fairphone.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [PATCH v5 03/22] cachefiles: introduce on-demand read mode
+Content-Language: en-US
+To:     David Howells <dhowells@redhat.com>
+Cc:     linux-cachefs@redhat.com, xiang@kernel.org, chao@kernel.org,
+        linux-erofs@lists.ozlabs.org, torvalds@linux-foundation.org,
+        gregkh@linuxfoundation.org, willy@infradead.org,
+        linux-fsdevel@vger.kernel.org, joseph.qi@linux.alibaba.com,
+        bo.liu@linux.alibaba.com, tao.peng@linux.alibaba.com,
+        gerry@linux.alibaba.com, eguan@linux.alibaba.com,
+        linux-kernel@vger.kernel.org, luodaowen.backend@bytedance.com
+References: <20220316131723.111553-4-jefflexu@linux.alibaba.com>
+ <20220316131723.111553-1-jefflexu@linux.alibaba.com>
+ <1027872.1647869684@warthog.procyon.org.uk>
+From:   JeffleXu <jefflexu@linux.alibaba.com>
+In-Reply-To: <1027872.1647869684@warthog.procyon.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 21 Mar 08:33 CDT 2022, Luca Weiss wrote:
+Hi,
 
-> In other places the SDC and UFS pins have been swapped but this was
-> missed in the PINCTRL_PIN definitions. Fix that.
+Thanks for reviewing.
+
+
+On 3/21/22 9:34 PM, David Howells wrote:
+> Jeffle Xu <jefflexu@linux.alibaba.com> wrote:
 > 
-> Fixes: 7d74b55afd27 ("pinctrl: qcom: Add SM6350 pinctrl driver")
-> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
-
-Your proposed change looks good, but when I look at 7d74b55afd27 it
-already has these entries in the correct order.
-
-Can you please confirm that this is still applicable. Or help me see
-what I am missing.
-
-Regards,
-Bjorn
-
-> ---
-> Changes in v2:
-> - nothing
+>> Fscache/cachefiles used to serve as a local cache for remote fs. This
+>> patch, along with the following patches, introduces a new on-demand read
+>> mode for cachefiles, which can boost the scenario where on-demand read
+>> semantics is needed, e.g. container image distribution.
+>>
+>> The essential difference between the original mode and on-demand read
+>> mode is that, in the original mode, when cache miss, netfs itself will
+>> fetch data from remote, and then write the fetched data into cache file.
+>> While in on-demand read mode, a user daemon is responsible for fetching
+>> data and then writing to the cache file.
+>>
+>> This patch only adds the command to enable on-demand read mode. An optional
+>> parameter to "bind" command is added. On-demand mode will be turned on when
+>> this optional argument matches "ondemand" exactly, i.e.  "bind
+>> ondemand". Otherwise cachefiles will keep working in the original mode.
 > 
->  drivers/pinctrl/qcom/pinctrl-sm6350.c | 16 ++++++++--------
->  1 file changed, 8 insertions(+), 8 deletions(-)
+> You're not really adding a command, per se.  Also, I would recommend
+> starting the paragraph with a verb.  How about:
 > 
-> diff --git a/drivers/pinctrl/qcom/pinctrl-sm6350.c b/drivers/pinctrl/qcom/pinctrl-sm6350.c
-> index 4d37b817b232..a91a86628f2f 100644
-> --- a/drivers/pinctrl/qcom/pinctrl-sm6350.c
-> +++ b/drivers/pinctrl/qcom/pinctrl-sm6350.c
-> @@ -264,14 +264,14 @@ static const struct pinctrl_pin_desc sm6350_pins[] = {
->  	PINCTRL_PIN(153, "GPIO_153"),
->  	PINCTRL_PIN(154, "GPIO_154"),
->  	PINCTRL_PIN(155, "GPIO_155"),
-> -	PINCTRL_PIN(156, "SDC1_RCLK"),
-> -	PINCTRL_PIN(157, "SDC1_CLK"),
-> -	PINCTRL_PIN(158, "SDC1_CMD"),
-> -	PINCTRL_PIN(159, "SDC1_DATA"),
-> -	PINCTRL_PIN(160, "SDC2_CLK"),
-> -	PINCTRL_PIN(161, "SDC2_CMD"),
-> -	PINCTRL_PIN(162, "SDC2_DATA"),
-> -	PINCTRL_PIN(163, "UFS_RESET"),
-> +	PINCTRL_PIN(156, "UFS_RESET"),
-> +	PINCTRL_PIN(157, "SDC1_RCLK"),
-> +	PINCTRL_PIN(158, "SDC1_CLK"),
-> +	PINCTRL_PIN(159, "SDC1_CMD"),
-> +	PINCTRL_PIN(160, "SDC1_DATA"),
-> +	PINCTRL_PIN(161, "SDC2_CLK"),
-> +	PINCTRL_PIN(162, "SDC2_CMD"),
-> +	PINCTRL_PIN(163, "SDC2_DATA"),
->  };
->  
->  #define DECLARE_MSM_GPIO_PINS(pin) \
-> -- 
-> 2.35.1
+> 	Make it possible to enable on-demand read mode by adding an
+> 	optional parameter to the "bind" command.  On-demand mode will be
+> 	turned on when this parameter is "ondemand", i.e. "bind ondemand".
+> 	Otherwise cachefiles will work in the original mode.
 > 
+> Also, I'd add a note something like the following:
+> 
+> 	This is implemented as a variation on the bind command so that it
+> 	can't be turned on accidentally in /etc/cachefilesd.conf when
+> 	cachefilesd isn't expecting it.	
+
+Alright, looks much better :)
+
+> 
+>> The following patches will implement the data plane of on-demand read
+>> mode.
+> 
+> I would remove this line.  If ondemand mode is not fully implemented in
+> cachefiles at this point, I would be tempted to move this to the end of the
+> cachefiles subset of the patchset.  That said, I'm not sure it can be made
+> to do anything much before that point.
+
+
+Alright.
+
+> 
+>> +#ifdef CONFIG_CACHEFILES_ONDEMAND
+>> +static inline void cachefiles_ondemand_open(struct cachefiles_cache *cache)
+>> +{
+>> +	xa_init_flags(&cache->reqs, XA_FLAGS_ALLOC);
+>> +	rwlock_init(&cache->reqs_lock);
+>> +}
+> 
+> Just merge that into the caller.
+> 
+>> +static inline void cachefiles_ondemand_release(struct cachefiles_cache *cache)
+>> +{
+>> +	xa_destroy(&cache->reqs);
+>> +}
+> 
+> Ditto.
+> 
+>> +static inline
+>> +bool cachefiles_ondemand_daemon_bind(struct cachefiles_cache *cache, char *args)
+>> +{
+>> +	if (!strcmp(args, "ondemand")) {
+>> +		set_bit(CACHEFILES_ONDEMAND_MODE, &cache->flags);
+>> +		return true;
+>> +	}
+>> +
+>> +	return false;
+>> +}
+>> ...
+>> +	if (!cachefiles_ondemand_daemon_bind(cache, args) && *args) {
+>> +		pr_err("'bind' command doesn't take an argument\n");
+>> +		return -EINVAL;
+>> +	}
+>> +
+> 
+> I would merge these together, I think, and say something like "Ondemand
+> mode not enabled in kernel" if CONFIG_CACHEFILES_ONDEMAND=n.
+> 
+
+The reason why I extract all these logic into small sized function is
+that, the **callers** can call cachefiles_ondemand_daemon_bind()
+directly without any clause like:
+
+```
+#ifdef CONFIG_CACHEFILES_ONDEMAND
+	...
+#else
+	...
+```
+
+
+
+Another choice is like
+
+```
+if (IS_ENABLED(CONFIG_CACHEFILES_ONDEMAND))
+	...
+else
+	...
+```
+
+
+-- 
+Thanks,
+Jeffle
