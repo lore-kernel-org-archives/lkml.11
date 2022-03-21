@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64F83C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91E0FC46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350837AbiCUOKR (ORCPT
+        id S1351052AbiCUOKg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:10:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35546 "EHLO
+        Mon, 21 Mar 2022 10:10:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349328AbiCUODh (ORCPT
+        with ESMTP id S1349241AbiCUODd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:03:37 -0400
+        Mon, 21 Mar 2022 10:03:33 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C59617DC9C;
-        Mon, 21 Mar 2022 07:00:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 277FF42494;
+        Mon, 21 Mar 2022 07:00:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9BC47B816DC;
-        Mon, 21 Mar 2022 14:00:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3CD6C36AF4;
-        Mon, 21 Mar 2022 14:00:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 850ECB81598;
+        Mon, 21 Mar 2022 14:00:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED9D3C340E8;
+        Mon, 21 Mar 2022 14:00:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871251;
-        bh=YI0Pj/MCWWLmrZ5PxLl4YpU7F5x0b+D5WDsBjbU/jyE=;
+        s=korg; t=1647871234;
+        bh=9Axcd9R2DCSzFvbqYoUi2FJA67IbY09Sa34n5of3Uzg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hhn+AAAXV6O0Mg82PErqZbtgrn1ukfADrE/Mvtg2kS0p/kI6fs3LnJESexCoP1T9v
-         WxfvVvY11jAqfXcjGWkvIfID4QkYduUbmMX6T1bhZFEK6pg2FQTI5vfkZne/gllEXm
-         B6nOL+REsInY52jfVSI0EOmDu1mpWLC7O+I2k8KU=
+        b=E9sAhxGDSyOzq99YfG/I3rnFpfLF8odzRLqd9jo1625jhqn3UW35fvztU1KsBs4Ef
+         kKNwZac/DGp7GytfsIM8YkoOI12p8EyFJcKOoHiaBQw8AHvFkyg0vYlQ+ALKPeVtqf
+         q0L6Y9Cpf6K9BP6uDaWEcC8/eacXB8PKIP6BkOos=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        syzbot+348b571beb5eeb70a582@syzkaller.appspotmail.com
-Subject: [PATCH 5.15 27/32] usb: gadget: Fix use-after-free bug by not setting udc->dev.driver
-Date:   Mon, 21 Mar 2022 14:53:03 +0100
-Message-Id: <20220321133221.347515228@linuxfoundation.org>
+        stable@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>,
+        Manish Chopra <manishc@marvell.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 21/32] bnx2x: fix built-in kernel driver load failure
+Date:   Mon, 21 Mar 2022 14:52:57 +0100
+Message-Id: <20220321133221.177205614@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133220.559554263@linuxfoundation.org>
 References: <20220321133220.559554263@linuxfoundation.org>
@@ -49,86 +52,160 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alan Stern <stern@rowland.harvard.edu>
+From: Manish Chopra <manishc@marvell.com>
 
-commit 16b1941eac2bd499f065a6739a40ce0011a3d740 upstream.
+[ Upstream commit 424e7834e293936a54fcf05173f2884171adc5a3 ]
 
-The syzbot fuzzer found a use-after-free bug:
+Commit b7a49f73059f ("bnx2x: Utilize firmware 7.13.21.0")
+added request_firmware() logic in probe() which caused
+load failure when firmware file is not present in initrd (below),
+as access to firmware file is not feasible during probe.
 
-BUG: KASAN: use-after-free in dev_uevent+0x712/0x780 drivers/base/core.c:2320
-Read of size 8 at addr ffff88802b934098 by task udevd/3689
+  Direct firmware load for bnx2x/bnx2x-e2-7.13.15.0.fw failed with error -2
+  Direct firmware load for bnx2x/bnx2x-e2-7.13.21.0.fw failed with error -2
 
-CPU: 2 PID: 3689 Comm: udevd Not tainted 5.17.0-rc4-syzkaller-00229-g4f12b742eb2b #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0x8d/0x303 mm/kasan/report.c:255
- __kasan_report mm/kasan/report.c:442 [inline]
- kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
- dev_uevent+0x712/0x780 drivers/base/core.c:2320
- uevent_show+0x1b8/0x380 drivers/base/core.c:2391
- dev_attr_show+0x4b/0x90 drivers/base/core.c:2094
+This patch fixes this issue by -
 
-Although the bug manifested in the driver core, the real cause was a
-race with the gadget core.  dev_uevent() does:
+1. Removing request_firmware() logic from the probe()
+   such that .ndo_open() handle it as it used to handle
+   it earlier
 
-	if (dev->driver)
-		add_uevent_var(env, "DRIVER=%s", dev->driver->name);
+2. Given request_firmware() is removed from probe(), so
+   driver has to relax FW version comparisons a bit against
+   the already loaded FW version (by some other PFs of same
+   adapter) to allow different compatible/close enough FWs with which
+   multiple PFs may run with (in different environments), as the
+   given PF who is in probe flow has no idea now with which firmware
+   file version it is going to initialize the device in ndo_open()
 
-and between the test and the dereference of dev->driver, the gadget
-core sets dev->driver to NULL.
-
-The race wouldn't occur if the gadget core registered its devices on
-a real bus, using the standard synchronization techniques of the
-driver core.  However, it's not necessary to make such a large change
-in order to fix this bug; all we need to do is make sure that
-udc->dev.driver is always NULL.
-
-In fact, there is no reason for udc->dev.driver ever to be set to
-anything, let alone to the value it currently gets: the address of the
-gadget's driver.  After all, a gadget driver only knows how to manage
-a gadget, not how to manage a UDC.
-
-This patch simply removes the statements in the gadget core that touch
-udc->dev.driver.
-
-Fixes: 2ccea03a8f7e ("usb: gadget: introduce UDC Class")
-CC: <stable@vger.kernel.org>
-Reported-and-tested-by: syzbot+348b571beb5eeb70a582@syzkaller.appspotmail.com
-Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-Link: https://lore.kernel.org/r/YiQgukfFFbBnwJ/9@rowland.harvard.edu
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/all/46f2d9d9-ae7f-b332-ddeb-b59802be2bab@molgen.mpg.de/
+Reported-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Tested-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Fixes: b7a49f73059f ("bnx2x: Utilize firmware 7.13.21.0")
+Signed-off-by: Manish Chopra <manishc@marvell.com>
+Signed-off-by: Ariel Elior <aelior@marvell.com>
+Link: https://lore.kernel.org/r/20220316214613.6884-1-manishc@marvell.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/udc/core.c |    3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x.h   |  2 --
+ .../net/ethernet/broadcom/bnx2x/bnx2x_cmn.c   | 28 +++++++++++--------
+ .../net/ethernet/broadcom/bnx2x/bnx2x_main.c  | 15 ++--------
+ 3 files changed, 19 insertions(+), 26 deletions(-)
 
---- a/drivers/usb/gadget/udc/core.c
-+++ b/drivers/usb/gadget/udc/core.c
-@@ -1434,7 +1434,6 @@ static void usb_gadget_remove_driver(str
- 	usb_gadget_udc_stop(udc);
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
+index 72bdbebf25ce..9e79bcfb365f 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
+@@ -2533,6 +2533,4 @@ void bnx2x_register_phc(struct bnx2x *bp);
+  * Meant for implicit re-load flows.
+  */
+ int bnx2x_vlan_reconfigure_vid(struct bnx2x *bp);
+-int bnx2x_init_firmware(struct bnx2x *bp);
+-void bnx2x_release_firmware(struct bnx2x *bp);
+ #endif /* bnx2x.h */
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+index 41ebbb2c7d3a..198e041d8410 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+@@ -2363,24 +2363,30 @@ int bnx2x_compare_fw_ver(struct bnx2x *bp, u32 load_code, bool print_err)
+ 	/* is another pf loaded on this engine? */
+ 	if (load_code != FW_MSG_CODE_DRV_LOAD_COMMON_CHIP &&
+ 	    load_code != FW_MSG_CODE_DRV_LOAD_COMMON) {
+-		/* build my FW version dword */
+-		u32 my_fw = (bp->fw_major) + (bp->fw_minor << 8) +
+-				(bp->fw_rev << 16) + (bp->fw_eng << 24);
++		u8 loaded_fw_major, loaded_fw_minor, loaded_fw_rev, loaded_fw_eng;
++		u32 loaded_fw;
  
- 	udc->driver = NULL;
--	udc->dev.driver = NULL;
- 	udc->gadget->dev.driver = NULL;
+ 		/* read loaded FW from chip */
+-		u32 loaded_fw = REG_RD(bp, XSEM_REG_PRAM);
++		loaded_fw = REG_RD(bp, XSEM_REG_PRAM);
+ 
+-		DP(BNX2X_MSG_SP, "loaded fw %x, my fw %x\n",
+-		   loaded_fw, my_fw);
++		loaded_fw_major = loaded_fw & 0xff;
++		loaded_fw_minor = (loaded_fw >> 8) & 0xff;
++		loaded_fw_rev = (loaded_fw >> 16) & 0xff;
++		loaded_fw_eng = (loaded_fw >> 24) & 0xff;
++
++		DP(BNX2X_MSG_SP, "loaded fw 0x%x major 0x%x minor 0x%x rev 0x%x eng 0x%x\n",
++		   loaded_fw, loaded_fw_major, loaded_fw_minor, loaded_fw_rev, loaded_fw_eng);
+ 
+ 		/* abort nic load if version mismatch */
+-		if (my_fw != loaded_fw) {
++		if (loaded_fw_major != BCM_5710_FW_MAJOR_VERSION ||
++		    loaded_fw_minor != BCM_5710_FW_MINOR_VERSION ||
++		    loaded_fw_eng != BCM_5710_FW_ENGINEERING_VERSION ||
++		    loaded_fw_rev < BCM_5710_FW_REVISION_VERSION_V15) {
+ 			if (print_err)
+-				BNX2X_ERR("bnx2x with FW %x was already loaded which mismatches my %x FW. Aborting\n",
+-					  loaded_fw, my_fw);
++				BNX2X_ERR("loaded FW incompatible. Aborting\n");
+ 			else
+-				BNX2X_DEV_INFO("bnx2x with FW %x was already loaded which mismatches my %x FW, possibly due to MF UNDI\n",
+-					       loaded_fw, my_fw);
++				BNX2X_DEV_INFO("loaded FW incompatible, possibly due to MF UNDI\n");
++
+ 			return -EBUSY;
+ 		}
+ 	}
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+index dc70f6f96d02..bdd4e420f869 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+@@ -12313,15 +12313,6 @@ static int bnx2x_init_bp(struct bnx2x *bp)
+ 
+ 	bnx2x_read_fwinfo(bp);
+ 
+-	if (IS_PF(bp)) {
+-		rc = bnx2x_init_firmware(bp);
+-
+-		if (rc) {
+-			bnx2x_free_mem_bp(bp);
+-			return rc;
+-		}
+-	}
+-
+ 	func = BP_FUNC(bp);
+ 
+ 	/* need to reset chip if undi was active */
+@@ -12334,7 +12325,6 @@ static int bnx2x_init_bp(struct bnx2x *bp)
+ 
+ 		rc = bnx2x_prev_unload(bp);
+ 		if (rc) {
+-			bnx2x_release_firmware(bp);
+ 			bnx2x_free_mem_bp(bp);
+ 			return rc;
+ 		}
+@@ -13414,7 +13404,7 @@ do {									\
+ 	     (u8 *)bp->arr, len);					\
+ } while (0)
+ 
+-int bnx2x_init_firmware(struct bnx2x *bp)
++static int bnx2x_init_firmware(struct bnx2x *bp)
+ {
+ 	const char *fw_file_name, *fw_file_name_v15;
+ 	struct bnx2x_fw_file_hdr *fw_hdr;
+@@ -13514,7 +13504,7 @@ int bnx2x_init_firmware(struct bnx2x *bp)
+ 	return rc;
  }
  
-@@ -1496,7 +1495,6 @@ static int udc_bind_to_driver(struct usb
- 			driver->function);
+-void bnx2x_release_firmware(struct bnx2x *bp)
++static void bnx2x_release_firmware(struct bnx2x *bp)
+ {
+ 	kfree(bp->init_ops_offsets);
+ 	kfree(bp->init_ops);
+@@ -14031,7 +14021,6 @@ static int bnx2x_init_one(struct pci_dev *pdev,
+ 	return 0;
  
- 	udc->driver = driver;
--	udc->dev.driver = &driver->driver;
- 	udc->gadget->dev.driver = &driver->driver;
+ init_one_freemem:
+-	bnx2x_release_firmware(bp);
+ 	bnx2x_free_mem_bp(bp);
  
- 	usb_gadget_udc_set_speed(udc, driver->max_speed);
-@@ -1519,7 +1517,6 @@ err1:
- 		dev_err(&udc->dev, "failed to start %s: %d\n",
- 			udc->driver->function, ret);
- 	udc->driver = NULL;
--	udc->dev.driver = NULL;
- 	udc->gadget->dev.driver = NULL;
- 	return ret;
- }
+ init_one_exit:
+-- 
+2.34.1
+
 
 
