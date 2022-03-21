@@ -2,173 +2,275 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79A57C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:53:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A818C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:53:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230101AbiCUWyq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:54:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35534 "EHLO
+        id S230192AbiCUWyy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:54:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230395AbiCUWya (ORCPT
+        with ESMTP id S230408AbiCUWym (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:54:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D06793CE860
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:33:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647901990;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RMdmC49b3ZJ1Mqx/y/k2hlufZoUHk8hDl93lzACB4nw=;
-        b=duDBEAAIWH6DO6efTN6IN/rCF1nvX88i0LyghSWyywNvUsqdr3SUovfWJkHBBpE9i2eY5f
-        YfXcUbc1swf6ggMSO1g67e0pBHDZxllfk8dz/CRaEjsUsynLUGxLHmHKa+8h3iCQwkPDmh
-        hQGCnMFp/YrDiu5lsotk9+staset3Ps=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-671-wz3tO8UnOc2-hffHDtKRqg-1; Mon, 21 Mar 2022 18:11:28 -0400
-X-MC-Unique: wz3tO8UnOc2-hffHDtKRqg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Mon, 21 Mar 2022 18:54:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82F12445711
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:33:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 900543C14845;
-        Mon, 21 Mar 2022 22:11:27 +0000 (UTC)
-Received: from starship (unknown [10.40.194.231])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7F9902026D2D;
-        Mon, 21 Mar 2022 22:11:24 +0000 (UTC)
-Message-ID: <8071f0f0a857b0775f1fb2d1ebd86ffc4fd9096b.camel@redhat.com>
-Subject: Re: [PATCH v3 4/7] KVM: x86: nSVM: support PAUSE filter threshold
- and count when cpu_pm=on
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Jim Mattson <jmattson@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
-        Wanpeng Li <wanpengli@tencent.com>
-Date:   Tue, 22 Mar 2022 00:11:23 +0200
-In-Reply-To: <CALMp9eSUSexhPWMWXE1HpSD+movaYcdge_J95LiLCnJyMEp3WA@mail.gmail.com>
-References: <20220301143650.143749-1-mlevitsk@redhat.com>
-         <20220301143650.143749-5-mlevitsk@redhat.com>
-         <CALMp9eRjY6sX0OEBeYw4RsQKSjKvXKWOqRe=GVoQnmjy6D8deg@mail.gmail.com>
-         <6a7f13d1-ed00-b4a6-c39b-dd8ba189d639@redhat.com>
-         <CALMp9eRRT6pi6tjZvsFbEhrgS+zsNg827iLD4Hvzsa4PeB6W-Q@mail.gmail.com>
-         <abe8584fa3691de1d6ae6c6617b8ea750b30fd1c.camel@redhat.com>
-         <CALMp9eSUSexhPWMWXE1HpSD+movaYcdge_J95LiLCnJyMEp3WA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1829E611FC
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 22:33:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74C76C340E8;
+        Mon, 21 Mar 2022 22:33:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647901997;
+        bh=ZfsJa7KwB3etBDc/tSAcSW1LlMyxyzZu1Ck9qqHzboc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=LgJWbODpxmSVsetElElfC/COlJBgeTo7bxwaViVtkvnY/BwCIctf0l/aPBfz3I8kf
+         5/1Z/YkdPpEyfnE8am3xhYnTN7Fm6FhzU+76JOs6+DMU2BTGqmf4PNN7WNmmeJX1Mp
+         FxsqcfhYnzRPEqI9yIXLI9egH6NzufNRZzXBytJy4GwBNcof4E9mp4l+ZW3HaStmY1
+         yqxX7NhNGleknK7FbhCFZ5IX6gvIojmO1h+5RJEMxNKsZvhFdJ1tTVy9cJAA8mQxDP
+         eWkjmvWxlQJpv8+gvSd7t0J/Ye2KUZvhL/OdOmAEPWRpCrwKtt7/0nowQTL0QOw0V1
+         Cj1xzY+48+QZQ==
+From:   Jaegeuk Kim <jaegeuk@kernel.org>
+To:     linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net
+Cc:     Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH] f2fs: introduce data read/write showing path info
+Date:   Mon, 21 Mar 2022 15:33:15 -0700
+Message-Id: <20220321223315.3228326-1-jaegeuk@kernel.org>
+X-Mailer: git-send-email 2.35.1.894.gb6a874cedc-goog
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-03-21 at 14:59 -0700, Jim Mattson wrote:
-> On Mon, Mar 21, 2022 at 2:36 PM Maxim Levitsky <mlevitsk@redhat.com> wrote:
-> > On Wed, 2022-03-09 at 11:07 -0800, Jim Mattson wrote:
-> > > On Wed, Mar 9, 2022 at 10:47 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
-> > > > On 3/9/22 19:35, Jim Mattson wrote:
-> > > > > I didn't think pause filtering was virtualizable, since the value of
-> > > > > the internal counter isn't exposed on VM-exit.
-> > > > > 
-> > > > > On bare metal, for instance, assuming the hypervisor doesn't intercept
-> > > > > CPUID, the following code would quickly trigger a PAUSE #VMEXIT with
-> > > > > the filter count set to 2.
-> > > > > 
-> > > > > 1:
-> > > > > pause
-> > > > > cpuid
-> > > > > jmp 1
-> > > > > 
-> > > > > Since L0 intercepts CPUID, however, L2 will exit to L0 on each loop
-> > > > > iteration, and when L0 resumes L2, the internal counter will be set to
-> > > > > 2 again. L1 will never see a PAUSE #VMEXIT.
-> > > > > 
-> > > > > How do you handle this?
-> > > > > 
-> > > > 
-> > > > I would expect that the same would happen on an SMI or a host interrupt.
-> > > > 
-> > > >         1:
-> > > >         pause
-> > > >         outl al, 0xb2
-> > > >         jmp 1
-> > > > 
-> > > > In general a PAUSE vmexit will mostly benefit the VM that is pausing, so
-> > > > having a partial implementation would be better than disabling it
-> > > > altogether.
-> > > 
-> > > Indeed, the APM does say, "Certain events, including SMI, can cause
-> > > the internal count to be reloaded from the VMCB." However, expanding
-> > > that set of events so much that some pause loops will *never* trigger
-> > > a #VMEXIT seems problematic. If the hypervisor knew that the PAUSE
-> > > filter may not be triggered, it could always choose to exit on every
-> > > PAUSE.
-> > > 
-> > > Having a partial implementation is only better than disabling it
-> > > altogether if the L2 pause loop doesn't contain a hidden #VMEXIT to
-> > > L0.
-> > > 
-> > 
-> > Hi!
-> > 
-> > You bring up a very valid point, which I didn't think about.
-> > 
-> > However after thinking about this, I think that in practice,
-> > this isn't a show stopper problem for exposing this feature to the guest.
-> > 
-> > 
-> > This is what I am thinking:
-> > 
-> > First lets assume that the L2 is malicious. In this case no doubt
-> > it can craft such a loop which will not VMexit on PAUSE.
-> > But that isn't a problem - instead of this guest could have just used NOP
-> > which is not possible to intercept anyway - no harm is done.
-> > 
-> > Now lets assume a non malicious L2:
-> > 
-> > 
-> > First of all the problem can only happen when a VM exit is intercepted by L0,
-> > and not by L1. Both above cases usually don't pass this criteria since L1 is highly
-> > likely to intercept both CPUID and IO port access. It is also highly unlikely
-> > to allow L2 direct access to L1's mmio ranges.
-> > 
-> > Overall there are very few cases of deterministic vm exit which is intercepted
-> > by L0 but not L1. If that happens then L1 will not catch the PAUSE loop,
-> > which is not different much from not catching it because of not suitable
-> > thresholds.
-> > 
-> > Also note that this is an optimization only - due to count and threshold,
-> > it is not guaranteed to catch all pause loops - in fact hypervisor has
-> > to guess these values, and update them in attempt to catch as many such
-> > loops as it can.
-> > 
-> > I think overall it is OK to expose that feature to the guest
-> > and it should even improve performance in some cases - currently
-> > at least nested KVM intercepts every PAUSE otherwise.
-> 
-> Can I at least request that this behavior be documented as a KVM
-> virtual CPU erratum?
+This was used in Android for a long time. Let's upstream it.
 
-100%. Do you have a pointer where to document it?
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+---
+ fs/f2fs/f2fs.h              | 29 ++++++++++++
+ fs/f2fs/file.c              | 43 ++++++++++++++---
+ include/trace/events/f2fs.h | 94 +++++++++++++++++++++++++++++++++++++
+ 3 files changed, 159 insertions(+), 7 deletions(-)
 
-Best regards,
-	Maxim Levitsky
-
-> 
-> > Best regards,
-> >         Maxim Levitsky
-> > 
-> > 
-> > 
-> > 
-
+diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+index 3016b6354a68..95de749c9637 100644
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -4537,4 +4537,33 @@ static inline bool f2fs_block_unit_discard(struct f2fs_sb_info *sbi)
+ #define EFSBADCRC	EBADMSG		/* Bad CRC detected */
+ #define EFSCORRUPTED	EUCLEAN		/* Filesystem is corrupted */
+ 
++/* Sizes an on-stack array, so careful if sizing this up ! */
++#define MAX_TRACE_PATHBUF_LEN	256
++
++static inline char *f2fs_get_pathname(char *buf, int len, struct inode *inode)
++{
++	char *path;
++	struct dentry *d;
++
++	/*
++	 * d_obtain_alias() will either iput() if it locates an existing
++	 * dentry or transfer the reference to the new dentry created.
++	 * So get an extra reference here.
++	 */
++	ihold(inode);
++	d = d_obtain_alias(inode);
++	if (likely(!IS_ERR(d))) {
++		path = dentry_path_raw(d, buf, len);
++		if (unlikely(IS_ERR(path))) {
++			strcpy(buf, "ERROR");
++			path = buf;
++		}
++		dput(d);
++	} else {
++		strcpy(buf, "ERROR");
++		path = buf;
++	}
++	return path;
++}
++
+ #endif /* _LINUX_F2FS_H */
+diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+index 68ddf4c7ca64..a6a952b7ff91 100644
+--- a/fs/f2fs/file.c
++++ b/fs/f2fs/file.c
+@@ -4329,17 +4329,32 @@ static ssize_t f2fs_dio_read_iter(struct kiocb *iocb, struct iov_iter *to)
+ static ssize_t f2fs_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
+ {
+ 	struct inode *inode = file_inode(iocb->ki_filp);
++	const loff_t pos = iocb->ki_pos;
++	const size_t count = iov_iter_count(to);
+ 	ssize_t ret;
+ 
+ 	if (!f2fs_is_compress_backend_ready(inode))
+ 		return -EOPNOTSUPP;
+ 
+-	if (f2fs_should_use_dio(inode, iocb, to))
+-		return f2fs_dio_read_iter(iocb, to);
++	if (trace_f2fs_dataread_start_enabled()) {
++		char *path, pathbuf[MAX_TRACE_PATHBUF_LEN];
++
++		path = f2fs_get_pathname(pathbuf,
++				MAX_TRACE_PATHBUF_LEN,
++				inode);
++		trace_f2fs_dataread_start(inode, pos, count,
++				current->pid, path,
++				current->comm);
++	}
+ 
+-	ret = filemap_read(iocb, to, 0);
+-	if (ret > 0)
+-		f2fs_update_iostat(F2FS_I_SB(inode), APP_BUFFERED_READ_IO, ret);
++	if (f2fs_should_use_dio(inode, iocb, to)) {
++		ret = f2fs_dio_read_iter(iocb, to);
++	} else {
++		ret = filemap_read(iocb, to, 0);
++		if (ret > 0)
++			f2fs_update_iostat(F2FS_I_SB(inode), APP_BUFFERED_READ_IO, ret);
++	}
++	trace_f2fs_dataread_end(inode, pos, ret);
+ 	return ret;
+ }
+ 
+@@ -4637,14 +4652,28 @@ static ssize_t f2fs_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
+ 	/* Possibly preallocate the blocks for the write. */
+ 	target_size = iocb->ki_pos + iov_iter_count(from);
+ 	preallocated = f2fs_preallocate_blocks(iocb, from, dio);
+-	if (preallocated < 0)
++	if (preallocated < 0) {
+ 		ret = preallocated;
+-	else
++	} else {
++		if (trace_f2fs_datawrite_start_enabled()) {
++			char *path, pathbuf[MAX_TRACE_PATHBUF_LEN];
++
++			path = f2fs_get_pathname(pathbuf,
++					MAX_TRACE_PATHBUF_LEN,
++					inode);
++			trace_f2fs_datawrite_start(inode, orig_pos, orig_count,
++					current->pid, path,
++					current->comm);
++		}
+ 		/* Do the actual write. */
+ 		ret = dio ?
+ 			f2fs_dio_write_iter(iocb, from, &may_need_sync):
+ 			f2fs_buffered_write_iter(iocb, from);
+ 
++		if (trace_f2fs_datawrite_end_enabled())
++			trace_f2fs_datawrite_end(inode, orig_pos, ret);
++	}
++
+ 	/* Don't leave any preallocated blocks around past i_size. */
+ 	if (preallocated && i_size_read(inode) < target_size) {
+ 		f2fs_down_write(&F2FS_I(inode)->i_gc_rwsem[WRITE]);
+diff --git a/include/trace/events/f2fs.h b/include/trace/events/f2fs.h
+index f701bb23f83c..11f6b7147be2 100644
+--- a/include/trace/events/f2fs.h
++++ b/include/trace/events/f2fs.h
+@@ -2068,6 +2068,100 @@ TRACE_EVENT(f2fs_fiemap,
+ 		__entry->ret)
+ );
+ 
++DECLARE_EVENT_CLASS(f2fs__rw_start,
++
++	TP_PROTO(struct inode *inode, loff_t offset, int bytes,
++			pid_t pid, char *pathname, char *command),
++
++	TP_ARGS(inode, offset, bytes, pid, pathname, command),
++
++	TP_STRUCT__entry(
++		__string(pathbuf, pathname)
++		__field(loff_t, offset)
++		__field(int, bytes)
++		__field(loff_t, i_size)
++		__string(cmdline, command)
++		__field(pid_t, pid)
++		__field(ino_t, ino)
++	),
++
++	TP_fast_assign(
++		/*
++		 * Replace the spaces in filenames and cmdlines
++		 * because this screws up the tooling that parses
++		 * the traces.
++		 */
++		__assign_str(pathbuf, pathname);
++		(void)strreplace(__get_str(pathbuf), ' ', '_');
++		__entry->offset = offset;
++		__entry->bytes = bytes;
++		__entry->i_size = i_size_read(inode);
++		__assign_str(cmdline, command);
++		(void)strreplace(__get_str(cmdline), ' ', '_');
++		__entry->pid = pid;
++		__entry->ino = inode->i_ino;
++	),
++
++	TP_printk("entry_name %s, offset %llu, bytes %d, cmdline %s,"
++		" pid %d, i_size %llu, ino %lu",
++		__get_str(pathbuf), __entry->offset, __entry->bytes,
++		__get_str(cmdline), __entry->pid, __entry->i_size,
++		(unsigned long) __entry->ino)
++);
++
++DECLARE_EVENT_CLASS(f2fs__rw_end,
++
++	TP_PROTO(struct inode *inode, loff_t offset, int bytes),
++
++	TP_ARGS(inode, offset, bytes),
++
++	TP_STRUCT__entry(
++		__field(ino_t,	ino)
++		__field(loff_t,	offset)
++		__field(int,	bytes)
++	),
++
++	TP_fast_assign(
++		__entry->ino		= inode->i_ino;
++		__entry->offset		= offset;
++		__entry->bytes		= bytes;
++	),
++
++	TP_printk("ino %lu, offset %llu, bytes %d",
++		(unsigned long) __entry->ino,
++		__entry->offset, __entry->bytes)
++);
++
++DEFINE_EVENT(f2fs__rw_start, f2fs_dataread_start,
++
++	TP_PROTO(struct inode *inode, loff_t offset, int bytes,
++		pid_t pid, char *pathname, char *command),
++
++	TP_ARGS(inode, offset, bytes, pid, pathname, command)
++);
++
++DEFINE_EVENT(f2fs__rw_end, f2fs_dataread_end,
++
++	TP_PROTO(struct inode *inode, loff_t offset, int bytes),
++
++	TP_ARGS(inode, offset, bytes)
++);
++
++DEFINE_EVENT(f2fs__rw_start, f2fs_datawrite_start,
++
++	TP_PROTO(struct inode *inode, loff_t offset, int bytes,
++		pid_t pid, char *pathname, char *command),
++
++	TP_ARGS(inode, offset, bytes, pid, pathname, command)
++);
++
++DEFINE_EVENT(f2fs__rw_end, f2fs_datawrite_end,
++
++	TP_PROTO(struct inode *inode, loff_t offset, int bytes),
++
++	TP_ARGS(inode, offset, bytes)
++);
++
+ #endif /* _TRACE_F2FS_H */
+ 
+  /* This part must be outside protection */
+-- 
+2.35.1.894.gb6a874cedc-goog
 
