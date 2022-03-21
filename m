@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7C3FC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:12:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38879C35296
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351140AbiCUOKn (ORCPT
+        id S1351819AbiCUOLx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:10:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38212 "EHLO
+        Mon, 21 Mar 2022 10:11:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349405AbiCUODm (ORCPT
+        with ESMTP id S1349007AbiCUOFE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:03:42 -0400
+        Mon, 21 Mar 2022 10:05:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E06D17C404;
-        Mon, 21 Mar 2022 07:01:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9384181782;
+        Mon, 21 Mar 2022 07:01:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F3497611D5;
-        Mon, 21 Mar 2022 14:01:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FA2AC340E8;
-        Mon, 21 Mar 2022 14:01:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8898F6125C;
+        Mon, 21 Mar 2022 14:01:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91DD5C340F3;
+        Mon, 21 Mar 2022 14:01:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871262;
-        bh=ZaI+z8jCsQjDVirhHnBpi8JKgIL/KUzOPVBzH8tgTL4=;
+        s=korg; t=1647871282;
+        bh=LYoHZLfGQnmKPkyL86wFW1JoFMdVkzCm90Z12tqcynQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YRV8wkcLg+d9V8eYwvuk2RIB1V0NeFyH/KOq4lZX9spEwf8EcjVnsAJPVlsOkHzDI
-         xU7mmp6znbGIBC9rwgPKpwBMEupguios8TGAwaAFZJSJCFj++/nZC9/2QBTfG3JGbu
-         w2pfbtRjMvenDXFsteTPuBl9RP6pem4iOpNS309A=
+        b=YXHbFfiWM9pckpPm5CVrwN1NvQKjAcJ2Nn9IzL7xGZ+cqoAzGeb9cwWAL9Gz72zQ+
+         kO+hJyzUKwSP5FJ8m8ZCJ1ocUxQ8xNxS7OK81+GTnt+aJD9GItPNhI2uHsMXTWS4Ew
+         DM+CUkYlBLK/sG5WqlO0xm/dKZbRYFBy0tNEzwos=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        syzbot+75cccf2b7da87fb6f84b@syzkaller.appspotmail.com
-Subject: [PATCH 5.15 30/32] Input: aiptek - properly check endpoint type
-Date:   Mon, 21 Mar 2022 14:53:06 +0100
-Message-Id: <20220321133221.432170158@linuxfoundation.org>
+        stable@vger.kernel.org, Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jiyong Park <jiyong@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 08/32] vsock: each transport cycles only on its own sockets
+Date:   Mon, 21 Mar 2022 14:52:44 +0100
+Message-Id: <20220321133220.805205008@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133220.559554263@linuxfoundation.org>
 References: <20220321133220.559554263@linuxfoundation.org>
@@ -50,63 +52,156 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Jiyong Park <jiyong@google.com>
 
-commit 5600f6986628dde8881734090588474f54a540a8 upstream.
+[ Upstream commit 8e6ed963763fe21429eabfc76c69ce2b0163a3dd ]
 
-Syzbot reported warning in usb_submit_urb() which is caused by wrong
-endpoint type. There was a check for the number of endpoints, but not
-for the type of endpoint.
+When iterating over sockets using vsock_for_each_connected_socket, make
+sure that a transport filters out sockets that don't belong to the
+transport.
 
-Fix it by replacing old desc.bNumEndpoints check with
-usb_find_common_endpoints() helper for finding endpoints
+There actually was an issue caused by this; in a nested VM
+configuration, destroying the nested VM (which often involves the
+closing of /dev/vhost-vsock if there was h2g connections to the nested
+VM) kills not only the h2g connections, but also all existing g2h
+connections to the (outmost) host which are totally unrelated.
 
-Fail log:
+Tested: Executed the following steps on Cuttlefish (Android running on a
+VM) [1]: (1) Enter into an `adb shell` session - to have a g2h
+connection inside the VM, (2) open and then close /dev/vhost-vsock by
+`exec 3< /dev/vhost-vsock && exec 3<&-`, (3) observe that the adb
+session is not reset.
 
-usb 5-1: BOGUS urb xfer, pipe 1 != type 3
-WARNING: CPU: 2 PID: 48 at drivers/usb/core/urb.c:502 usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
-Modules linked in:
-CPU: 2 PID: 48 Comm: kworker/2:2 Not tainted 5.17.0-rc6-syzkaller-00226-g07ebd38a0da2 #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-Workqueue: usb_hub_wq hub_event
-...
-Call Trace:
- <TASK>
- aiptek_open+0xd5/0x130 drivers/input/tablet/aiptek.c:830
- input_open_device+0x1bb/0x320 drivers/input/input.c:629
- kbd_connect+0xfe/0x160 drivers/tty/vt/keyboard.c:1593
+[1] https://android.googlesource.com/device/google/cuttlefish/
 
-Fixes: 8e20cf2bce12 ("Input: aiptek - fix crash on detecting device without endpoints")
-Reported-and-tested-by: syzbot+75cccf2b7da87fb6f84b@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Link: https://lore.kernel.org/r/20220308194328.26220-1-paskripkin@gmail.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: c0cfa2d8a788 ("vsock: add multi-transports support")
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Jiyong Park <jiyong@google.com>
+Link: https://lore.kernel.org/r/20220311020017.1509316-1-jiyong@google.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/tablet/aiptek.c |   10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/vhost/vsock.c            | 3 ++-
+ include/net/af_vsock.h           | 3 ++-
+ net/vmw_vsock/af_vsock.c         | 9 +++++++--
+ net/vmw_vsock/virtio_transport.c | 7 +++++--
+ net/vmw_vsock/vmci_transport.c   | 5 ++++-
+ 5 files changed, 20 insertions(+), 7 deletions(-)
 
---- a/drivers/input/tablet/aiptek.c
-+++ b/drivers/input/tablet/aiptek.c
-@@ -1787,15 +1787,13 @@ aiptek_probe(struct usb_interface *intf,
- 	input_set_abs_params(inputdev, ABS_TILT_Y, AIPTEK_TILT_MIN, AIPTEK_TILT_MAX, 0, 0);
- 	input_set_abs_params(inputdev, ABS_WHEEL, AIPTEK_WHEEL_MIN, AIPTEK_WHEEL_MAX - 1, 0, 0);
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index d07a20bbc07b..dcb1585819a1 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -757,7 +757,8 @@ static int vhost_vsock_dev_release(struct inode *inode, struct file *file)
  
--	/* Verify that a device really has an endpoint */
--	if (intf->cur_altsetting->desc.bNumEndpoints < 1) {
-+	err = usb_find_common_endpoints(intf->cur_altsetting,
-+					NULL, NULL, &endpoint, NULL);
-+	if (err) {
- 		dev_err(&intf->dev,
--			"interface has %d endpoints, but must have minimum 1\n",
--			intf->cur_altsetting->desc.bNumEndpoints);
--		err = -EINVAL;
-+			"interface has no int in endpoints, but must have minimum 1\n");
- 		goto fail3;
+ 	/* Iterating over all connections for all CIDs to find orphans is
+ 	 * inefficient.  Room for improvement here. */
+-	vsock_for_each_connected_socket(vhost_vsock_reset_orphans);
++	vsock_for_each_connected_socket(&vhost_transport.transport,
++					vhost_vsock_reset_orphans);
+ 
+ 	/* Don't check the owner, because we are in the release path, so we
+ 	 * need to stop the vsock device in any case.
+diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
+index ab207677e0a8..f742e50207fb 100644
+--- a/include/net/af_vsock.h
++++ b/include/net/af_vsock.h
+@@ -205,7 +205,8 @@ struct sock *vsock_find_bound_socket(struct sockaddr_vm *addr);
+ struct sock *vsock_find_connected_socket(struct sockaddr_vm *src,
+ 					 struct sockaddr_vm *dst);
+ void vsock_remove_sock(struct vsock_sock *vsk);
+-void vsock_for_each_connected_socket(void (*fn)(struct sock *sk));
++void vsock_for_each_connected_socket(struct vsock_transport *transport,
++				     void (*fn)(struct sock *sk));
+ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk);
+ bool vsock_find_cid(unsigned int cid);
+ 
+diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+index 91a5c65707ba..5df530e89e5a 100644
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -333,7 +333,8 @@ void vsock_remove_sock(struct vsock_sock *vsk)
+ }
+ EXPORT_SYMBOL_GPL(vsock_remove_sock);
+ 
+-void vsock_for_each_connected_socket(void (*fn)(struct sock *sk))
++void vsock_for_each_connected_socket(struct vsock_transport *transport,
++				     void (*fn)(struct sock *sk))
+ {
+ 	int i;
+ 
+@@ -342,8 +343,12 @@ void vsock_for_each_connected_socket(void (*fn)(struct sock *sk))
+ 	for (i = 0; i < ARRAY_SIZE(vsock_connected_table); i++) {
+ 		struct vsock_sock *vsk;
+ 		list_for_each_entry(vsk, &vsock_connected_table[i],
+-				    connected_table)
++				    connected_table) {
++			if (vsk->transport != transport)
++				continue;
++
+ 			fn(sk_vsock(vsk));
++		}
  	}
--	endpoint = &intf->cur_altsetting->endpoint[0].desc;
  
- 	/* Go set up our URB, which is called when the tablet receives
- 	 * input.
+ 	spin_unlock_bh(&vsock_table_lock);
+diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+index 4f7c99dfd16c..dad9ca65f4f9 100644
+--- a/net/vmw_vsock/virtio_transport.c
++++ b/net/vmw_vsock/virtio_transport.c
+@@ -24,6 +24,7 @@
+ static struct workqueue_struct *virtio_vsock_workqueue;
+ static struct virtio_vsock __rcu *the_virtio_vsock;
+ static DEFINE_MUTEX(the_virtio_vsock_mutex); /* protects the_virtio_vsock */
++static struct virtio_transport virtio_transport; /* forward declaration */
+ 
+ struct virtio_vsock {
+ 	struct virtio_device *vdev;
+@@ -384,7 +385,8 @@ static void virtio_vsock_event_handle(struct virtio_vsock *vsock,
+ 	switch (le32_to_cpu(event->id)) {
+ 	case VIRTIO_VSOCK_EVENT_TRANSPORT_RESET:
+ 		virtio_vsock_update_guest_cid(vsock);
+-		vsock_for_each_connected_socket(virtio_vsock_reset_sock);
++		vsock_for_each_connected_socket(&virtio_transport.transport,
++						virtio_vsock_reset_sock);
+ 		break;
+ 	}
+ }
+@@ -662,7 +664,8 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
+ 	synchronize_rcu();
+ 
+ 	/* Reset all connected sockets when the device disappear */
+-	vsock_for_each_connected_socket(virtio_vsock_reset_sock);
++	vsock_for_each_connected_socket(&virtio_transport.transport,
++					virtio_vsock_reset_sock);
+ 
+ 	/* Stop all work handlers to make sure no one is accessing the device,
+ 	 * so we can safely call vdev->config->reset().
+diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
+index 7aef34e32bdf..b17dc9745188 100644
+--- a/net/vmw_vsock/vmci_transport.c
++++ b/net/vmw_vsock/vmci_transport.c
+@@ -75,6 +75,8 @@ static u32 vmci_transport_qp_resumed_sub_id = VMCI_INVALID_ID;
+ 
+ static int PROTOCOL_OVERRIDE = -1;
+ 
++static struct vsock_transport vmci_transport; /* forward declaration */
++
+ /* Helper function to convert from a VMCI error code to a VSock error code. */
+ 
+ static s32 vmci_transport_error_to_vsock_error(s32 vmci_error)
+@@ -882,7 +884,8 @@ static void vmci_transport_qp_resumed_cb(u32 sub_id,
+ 					 const struct vmci_event_data *e_data,
+ 					 void *client_data)
+ {
+-	vsock_for_each_connected_socket(vmci_transport_handle_detach);
++	vsock_for_each_connected_socket(&vmci_transport,
++					vmci_transport_handle_detach);
+ }
+ 
+ static void vmci_transport_recv_pkt_work(struct work_struct *work)
+-- 
+2.34.1
+
 
 
