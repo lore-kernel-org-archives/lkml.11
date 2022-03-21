@@ -2,78 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E94EC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 21:56:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9198C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:06:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229464AbiCUV5t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 17:57:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47068 "EHLO
+        id S229539AbiCUWHX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:07:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbiCUV5q (ORCPT
+        with ESMTP id S229445AbiCUWHW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 17:57:46 -0400
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 571783DBBE0;
-        Mon, 21 Mar 2022 14:52:37 -0700 (PDT)
-Received: by mail-oi1-x22c.google.com with SMTP id o64so17696888oib.7;
-        Mon, 21 Mar 2022 14:52:37 -0700 (PDT)
+        Mon, 21 Mar 2022 18:07:22 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB6E53F9D68
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 14:58:29 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id t2so16614255pfj.10
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 14:58:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tirotech-co-nz.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=qgGWcNzqf70V0zDA4Yv68hUMtmMVuVXrVYT6D0ldnSA=;
+        b=NqQMU+RlRXEyvXplZj/GcJHynyho2mNoYHvXPnMq5jPk+by0W9euAldjHQVyZpeOxR
+         8OuwENpf1xs5DP9cRhz2QKcl5TmsbW0oHOxfKZNtr2LBI79sCYwq8Q8RbXhucxhUEzBh
+         XHZQPekoPQ1JcsZXwiUxWg3yjdmfz58Rt6VoWPlDMlRL8Asia7nQ8Gn7p0e/pF4nD0PR
+         e6W/BR+vtNeKG9CXEai7G5HnxaJ5uFlPncO7lkxg15oIYFJ2OR/AbXkL73RFOF0Nllzh
+         meFXWN4o6gH+CdjR6qirvzzo8W6aylJcQcalbbCup4XclXbK1QnxknAhV3q4qWzbB1Lc
+         KGnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=d+9QdUNzXb5pmLvt2FMBpD/un8EwCgivlwcq3BPgDKo=;
-        b=RnEoMjswvMf7No6ztoAqjQIP5DHSXZFPMv4uQpSTy1HaragPfyrJ+hLyhRiyFJ7HZO
-         jlwFjqMWv1oGS8HJPrnZKYHAxAJUn/6nCZaGt9Jpogk8T6vsvZZA6tRRS8VQ9N1hx3jP
-         8ncHa7XpPl30No304N6PT1cUFoNWqHsHm1GsCNHx7jMeOOVllK3TRtUnKSl6FR5gexGa
-         3r2+GciQhKW7OfgPDjk+XBrTHnnN1HaWHWwbcWuV7j2wTvYCu9fccZibitpEsYEl1Tel
-         jy/ULD5BPAuntxUL+bodz5Jl/TsWEmU9htY6IIE/j5ZrDhZ36qgleE3MHaMNklAGQ14Y
-         Vmsw==
-X-Gm-Message-State: AOAM533qcPuEQ2+PiaSr69ZlG7ZVBVHLP47b/lhyBV9Ob4D09rVirux0
-        AkMVeRzKGH0D895lff+U6A==
-X-Google-Smtp-Source: ABdhPJwwkIJLLXC6SDoKJ/5qk6FVBsTjioiC2WdygGpaGTYJC+hAJyGx9eyECCh80HYH74LiKhdVbw==
-X-Received: by 2002:aca:2b0d:0:b0:2d9:dc99:38a2 with SMTP id i13-20020aca2b0d000000b002d9dc9938a2mr587534oik.198.1647899205635;
-        Mon, 21 Mar 2022 14:46:45 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id a30-20020a4ad1de000000b00320fccd02cfsm7405810oos.5.2022.03.21.14.46.44
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=qgGWcNzqf70V0zDA4Yv68hUMtmMVuVXrVYT6D0ldnSA=;
+        b=27vt6Gv7K1Mdgygk1CDkAJdooJJqKrwt2ai/7NqBYwQJ4rkqHysdUdbojoqDESq6f6
+         4Kys0JeWyPSM8XS1wfkrlx0/hEsqxBTioPGc2NeeCQrqPeexkTV2ITrdjp9LT2hn3eCL
+         6lzw0rnPHa3lRmtJTxMnPe/Q1XynGcR/ACy8r8kO4XUB9Twr/PFB09fYm8DT3jI5aq33
+         5yQ1d9XvKEhjX5XSxbBHU+ph0Lva5MOuRNt1oDCl34j8KugA96EWN6rOBnWvSiiiApHL
+         ilalwu0RITIeOGygpddqyatPcCmrKZxS4Wnd45yK+vBYOrnxfOI82+mtwnTxJxCbNeMu
+         ZT5w==
+X-Gm-Message-State: AOAM530+Nt+hvMlYBvnjYvfy4EnvP/pdlHZX9VAm+JfSvLNV8f5hBO8Y
+        uRuQ/eNiyH1iNA8SiS5xnlnNfw==
+X-Google-Smtp-Source: ABdhPJx2x+qXILIuvhr2vGrCamrFMyqXjFh4dqr8xaKUcPYjivCIvhoyXz3FtzK6/pd07AQHZeSj/Q==
+X-Received: by 2002:a05:6a00:2402:b0:4e1:3df2:5373 with SMTP id z2-20020a056a00240200b004e13df25373mr26150714pfh.40.1647899620364;
+        Mon, 21 Mar 2022 14:53:40 -0700 (PDT)
+Received: from localhost ([121.99.145.49])
+        by smtp.gmail.com with ESMTPSA id i9-20020a17090a2a0900b001c6e540fb6asm380469pjd.13.2022.03.21.14.53.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 14:46:44 -0700 (PDT)
-Received: (nullmailer pid 594751 invoked by uid 1000);
-        Mon, 21 Mar 2022 21:46:43 -0000
-Date:   Mon, 21 Mar 2022 16:46:43 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Luca Weiss <luca.weiss@fairphone.com>
-Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        linux-phy@lists.infradead.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, devicetree@vger.kernel.org,
-        Andy Gross <agross@kernel.org>, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-msm@vger.kernel.org,
-        Kishon Vijay Abraham I <kishon@ti.com>
-Subject: Re: [PATCH v2 2/6] dt-bindings: phy: qcom,qmp: Add SM6350 UFS PHY
- bindings
-Message-ID: <YjjyQzGGPEgsKDwJ@robh.at.kernel.org>
-References: <20220321133318.99406-1-luca.weiss@fairphone.com>
- <20220321133318.99406-3-luca.weiss@fairphone.com>
+        Mon, 21 Mar 2022 14:53:39 -0700 (PDT)
+Date:   Tue, 22 Mar 2022 10:53:36 +1300
+From:   Daniel Beer <daniel.beer@tirotech.co.nz>
+To:     =?utf-8?Q?Barnab=C3=A1s_P=C5=91cze?= <pobrn@protonmail.com>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] winmate-fm07-keys: Winmate FM07/FM07P buttons
+Message-ID: <20220321215336.GA1005@nyquist.nev>
+References: <6237f057.1c69fb81.1689.fec7@mx.google.com>
+ <XgTKv1bHGoFONS2zlwhJAM-CvIm8ZgwA0Nf2UTl0_P38ubTg9hPzJOEP14Kddal_Lxk91kvQuHhi4P0gOAht_c_P847QCqMPeN81xv6mEhY=@protonmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220321133318.99406-3-luca.weiss@fairphone.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <XgTKv1bHGoFONS2zlwhJAM-CvIm8ZgwA0Nf2UTl0_P38ubTg9hPzJOEP14Kddal_Lxk91kvQuHhi4P0gOAht_c_P847QCqMPeN81xv6mEhY=@protonmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 21 Mar 2022 14:33:14 +0100, Luca Weiss wrote:
-> Document the compatible string for the UFS PHY found in SM6350.
+On Mon, Mar 21, 2022 at 08:13:15PM +0000, Barnabás Pőcze wrote:
+> > +#define PORT_CMD	0x6c
+> > +#define PORT_DATA	0x68
+> > +
+> > +#define EC_ADDR_KEYS	0x3b
+> > +#define EC_CMD_READ	0x80
 > 
-> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
-> ---
-> Changes in v2:
-> - add second hunk for clock validation
-> 
->  Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml | 2 ++
->  1 file changed, 2 insertions(+)
-> 
+> It seems you are reading from the embedded controller, have you checked if the
+> ACPI EC driver works? Then you could probably just use the `ec_{read,write}()` functions.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Hi Barnabás,
+
+There is already an ACPI EC driver working on this system, but it's
+using ports 0x66 and 0x62. I guess this one is something unrelated,
+although it does appear to use the same protocol.
+
+I might be missing something, but it doesn't look like I can use the ec_
+functions in this case as they will direct everything towards the EC at
+0x66/0x62. Is there anything else you'd suggest?
+
+If it helps to know, the hardware vendor shipped an Ubuntu distribution
+with a kernel module that just exposed the ability to read/write ports
+0x6c/0x68 via chardev ioctls, and then a proprietary userspace program
+polled for button states.
+
+I'll address your other comments in v2.
+
+Cheers,
+Daniel
+
+-- 
+Daniel Beer
+Software Development Manager
+Tirotech Ltd
