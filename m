@@ -2,146 +2,261 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64B47C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:34:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A45B8C3527A
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:34:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232922AbiCUXfX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:35:23 -0400
+        id S232949AbiCUXfa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:35:30 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232864AbiCUXfM (ORCPT
+        with ESMTP id S233000AbiCUXfY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 19:35:12 -0400
-Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 477086E34C;
-        Mon, 21 Mar 2022 16:33:46 -0700 (PDT)
-Received: by mail-ot1-f44.google.com with SMTP id a17-20020a9d3e11000000b005cb483c500dso7104669otd.6;
-        Mon, 21 Mar 2022 16:33:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=iqlGJqAp9J3mBYn2W544lt1cPtvAWKBsX1sKB8vjaFQ=;
-        b=8RR2NtTyRvA8kVRw1oOtA6dceP1ZDrEpEkVuOIPpCypgdP7XtvReLFuc0utca5auPp
-         DmRS/yWxq2K6ESJrS3bmCb7wuZQcs/ntXt1yTKBjldE4NLIVFz3H8cmsQOXgbDAzytyK
-         WGss64E10ZpcKjU5JZCZs1feOC2vvDptmD9N/EX3+R+MBxXHfJCQHMmCfJrh3D+sQ9ta
-         gdOKRZOtHhco8AXGmgKI0qY51RipMEqUcWD/4q3IXNrHqfHLMHtDC1zAeTTdwtiO6kZf
-         GIjkT4f19JDPNM4kHbT3FY/lUwOqWg5Ytivwk8kss4S2GQRZW8a+m37lewnC4h11+pDs
-         t85Q==
-X-Gm-Message-State: AOAM533V97s+JieCsanUOd0M0r4mrLjlNM9h2nOX7mq9+kh3xVPGey1z
-        RgUV61czvtO/67rHH8y7KA==
-X-Google-Smtp-Source: ABdhPJzxxO+k7l8znxP0vjnY2lEafBroFgaKOlvFVHd8JKFt8pjObiL7SWOFKakst91i39pW6Q1Hgw==
-X-Received: by 2002:a9d:5f16:0:b0:5cb:51de:6761 with SMTP id f22-20020a9d5f16000000b005cb51de6761mr6071903oti.139.1647905625156;
-        Mon, 21 Mar 2022 16:33:45 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id p14-20020a9d744e000000b005b235f5cf92sm8228647otk.65.2022.03.21.16.33.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 16:33:44 -0700 (PDT)
-Received: (nullmailer pid 751258 invoked by uid 1000);
-        Mon, 21 Mar 2022 23:33:43 -0000
-Date:   Mon, 21 Mar 2022 18:33:43 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Jiaxin Yu <jiaxin.yu@mediatek.com>
-Cc:     broonie@kernel.org, tzungbi@google.com,
-        angelogioacchino.delregno@collabora.com, aaronyu@google.com,
-        matthias.bgg@gmail.com, trevor.wu@mediatek.com, linmq006@gmail.com,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-Subject: Re: [v5 1/4] ASoC: dt-bindings: mt8192-mt6359: add new compatible
- and new properties
-Message-ID: <YjkLVwvxvOKr30qL@robh.at.kernel.org>
-References: <20220319114111.11496-1-jiaxin.yu@mediatek.com>
- <20220319114111.11496-2-jiaxin.yu@mediatek.com>
+        Mon, 21 Mar 2022 19:35:24 -0400
+Received: from mailgw.felk.cvut.cz (mailgw.felk.cvut.cz [147.32.82.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE02D114FD5;
+        Mon, 21 Mar 2022 16:33:56 -0700 (PDT)
+Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id 83BB630AE00D;
+        Tue, 22 Mar 2022 00:33:54 +0100 (CET)
+Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id 4F37330AE009;
+        Tue, 22 Mar 2022 00:33:52 +0100 (CET)
+Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
+        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 22LNXps9014348;
+        Tue, 22 Mar 2022 00:33:51 +0100
+Received: (from pisa@localhost)
+        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 22LNXpvP014347;
+        Tue, 22 Mar 2022 00:33:51 +0100
+From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
+To:     linux-can@vger.kernel.org, devicetree@vger.kernel.org,
+        "Marc Kleine-Budde" <mkl@pengutronix.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        David Miller <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>, mark.rutland@arm.com,
+        Carsten Emde <c.emde@osadl.org>, armbru@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Marin Jerabek <martin.jerabek01@gmail.com>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        Jiri Novak <jnovak@fel.cvut.cz>,
+        Jaroslav Beran <jara.beran@gmail.com>,
+        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
+        Drew Fustini <pdp7pdp7@gmail.com>,
+        Pavel Pisa <pisa@cmp.felk.cvut.cz>
+Subject: [PATCH v8 5/7] can: ctucanfd: CTU CAN FD open-source IP core - platform/SoC support.
+Date:   Tue, 22 Mar 2022 00:32:32 +0100
+Message-Id: <4d5c53499bafe7717815f948801bd5aedaa05c12.1647904780.git.pisa@cmp.felk.cvut.cz>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <cover.1647904780.git.pisa@cmp.felk.cvut.cz>
+References: <cover.1647904780.git.pisa@cmp.felk.cvut.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220319114111.11496-2-jiaxin.yu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 19, 2022 at 07:41:08PM +0800, Jiaxin Yu wrote:
-> 1. Adds new compatible string "mt8192_mt6359_rt1015p_rt5682s" for machines
-> with rt1015p and rt5682s.
-> 2. Adds new property "mediatek,headset-codec" for getting headset codecs.
-> 3. Adds new property "mediatek,speaker-codec" for getting speaker codecs.
-> 
-> Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
-> ---
->  .../sound/mt8192-mt6359-rt1015-rt5682.yaml    | 29 +++++++++++++++++++
->  1 file changed, 29 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/sound/mt8192-mt6359-rt1015-rt5682.yaml b/Documentation/devicetree/bindings/sound/mt8192-mt6359-rt1015-rt5682.yaml
-> index a781e7aaaa38..aa0476eedd38 100644
-> --- a/Documentation/devicetree/bindings/sound/mt8192-mt6359-rt1015-rt5682.yaml
-> +++ b/Documentation/devicetree/bindings/sound/mt8192-mt6359-rt1015-rt5682.yaml
-> @@ -18,6 +18,7 @@ properties:
->      enum:
->        - mediatek,mt8192_mt6359_rt1015_rt5682
->        - mediatek,mt8192_mt6359_rt1015p_rt5682
-> +      - mediatek,mt8192_mt6359_rt1015p_rt5682s
->  
->    mediatek,platform:
->      $ref: "/schemas/types.yaml#/definitions/phandle"
-> @@ -27,6 +28,25 @@ properties:
->      $ref: "/schemas/types.yaml#/definitions/phandle"
->      description: The phandle of HDMI codec.
->  
-> +patternProperties:
-> +  "^mediatek,headset-codec$":
+Platform bus adaptation for CTU CAN FD open-source IP core.
 
-Fixed string, not a pattern. Move to 'properties'. Drop the vendor 
-prefix too.
+The core has been tested together with OpenCores SJA1000
+modified to be CAN FD frames tolerant on MicroZed Zynq based
+MZ_APO education kits designed by Petr Porazil from PiKRON.com
+company. FPGA design
 
-> +    description: Holds subnode which indicates headset dai.
-> +    type: object
-> +    properties:
-> +      sound-dai:
-> +        $ref: /schemas/types.yaml#/definitions/phandle-array
+  https://gitlab.fel.cvut.cz/canbus/zynq/zynq-can-sja1000-top.
 
-Standard property, don't need a type or description. Just how many and 
-what each one is if more than 1.
+The kit description at the Computer Architectures course pages
 
-> +        description: List of phandles to the headset codec nodes.
+  https://cw.fel.cvut.cz/wiki/courses/b35apo/documentation/mz_apo/start .
 
-More than 1?
+Kit carrier board and mechanics design source files
 
-> +    additionalProperties: false
-> +
-> +  "^mediatek,speaker-codec$":
-> +    description: Holds subnode which indicates speaker dai.
-> +    type: object
-> +    properties:
-> +      sound-dai:
-> +        $ref: /schemas/types.yaml#/definitions/phandle-array
-> +        description: List of phandles to the speaker codec nodes.
+  https://gitlab.com/pikron/projects/mz_apo/microzed_apo
 
-Same here.
+The work is documented in Martin Jeřábek's diploma theses
+Open-source and Open-hardware CAN FD Protocol Support
 
-> +    additionalProperties: false
-> +
->  additionalProperties: false
->  
->  required:
-> @@ -44,6 +64,15 @@ examples:
->                          "aud_clk_mosi_on";
->          pinctrl-0 = <&aud_clk_mosi_off>;
->          pinctrl-1 = <&aud_clk_mosi_on>;
-> +
-> +        mediatek,headset-codec {
-> +            sound-dai = <&rt5682>;
-> +        };
-> +
-> +        mediatek,speaker-codec {
-> +            sound-dai = <&rt1015_l>,
-> +                        <&rt1015_r>;
-> +        };
->      };
->  
->  ...
-> -- 
-> 2.18.0
-> 
-> 
+  https://dspace.cvut.cz/handle/10467/80366
+.
+
+Signed-off-by: Pavel Pisa <pisa@cmp.felk.cvut.cz>
+Signed-off-by: Martin Jerabek <martin.jerabek01@gmail.com>
+Signed-off-by: Ondrej Ille <ondrej.ille@gmail.com>
+---
+ drivers/net/can/ctucanfd/Kconfig             |  12 ++
+ drivers/net/can/ctucanfd/Makefile            |   1 +
+ drivers/net/can/ctucanfd/ctucanfd_platform.c | 132 +++++++++++++++++++
+ 3 files changed, 145 insertions(+)
+ create mode 100644 drivers/net/can/ctucanfd/ctucanfd_platform.c
+
+diff --git a/drivers/net/can/ctucanfd/Kconfig b/drivers/net/can/ctucanfd/Kconfig
+index d6e59522f4cf0..48963efc7f199 100644
+--- a/drivers/net/can/ctucanfd/Kconfig
++++ b/drivers/net/can/ctucanfd/Kconfig
+@@ -20,3 +20,15 @@ config CAN_CTUCANFD_PCI
+ 	  The project providing FPGA design for Intel EP4CGX15 based DB4CGX15
+ 	  PCIe board with PiKRON.com designed transceiver riser shield is available
+ 	  at https://gitlab.fel.cvut.cz/canbus/pcie-ctucanfd .
++
++config CAN_CTUCANFD_PLATFORM
++	tristate "CTU CAN-FD IP core platform (FPGA, SoC) driver"
++	depends on CAN_CTUCANFD
++	depends on OF || COMPILE_TEST
++	help
++	  The core has been tested together with OpenCores SJA1000
++	  modified to be CAN FD frames tolerant on MicroZed Zynq based
++	  MZ_APO education kits designed by Petr Porazil from PiKRON.com
++	  company. FPGA design https://gitlab.fel.cvut.cz/canbus/zynq/zynq-can-sja1000-top.
++	  The kit description at the Computer Architectures course pages
++	  https://cw.fel.cvut.cz/wiki/courses/b35apo/documentation/mz_apo/start .
+diff --git a/drivers/net/can/ctucanfd/Makefile b/drivers/net/can/ctucanfd/Makefile
+index 48555c3511e7c..8078f1f2c30fc 100644
+--- a/drivers/net/can/ctucanfd/Makefile
++++ b/drivers/net/can/ctucanfd/Makefile
+@@ -7,3 +7,4 @@ obj-$(CONFIG_CAN_CTUCANFD) := ctucanfd.o
+ ctucanfd-y := ctucanfd_base.o
+ 
+ obj-$(CONFIG_CAN_CTUCANFD_PCI) += ctucanfd_pci.o
++obj-$(CONFIG_CAN_CTUCANFD_PLATFORM) += ctucanfd_platform.o
+diff --git a/drivers/net/can/ctucanfd/ctucanfd_platform.c b/drivers/net/can/ctucanfd/ctucanfd_platform.c
+new file mode 100644
+index 0000000000000..5e48060686622
+--- /dev/null
++++ b/drivers/net/can/ctucanfd/ctucanfd_platform.c
+@@ -0,0 +1,132 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*******************************************************************************
++ *
++ * CTU CAN FD IP Core
++ *
++ * Copyright (C) 2015-2018 Ondrej Ille <ondrej.ille@gmail.com> FEE CTU
++ * Copyright (C) 2018-2021 Ondrej Ille <ondrej.ille@gmail.com> self-funded
++ * Copyright (C) 2018-2019 Martin Jerabek <martin.jerabek01@gmail.com> FEE CTU
++ * Copyright (C) 2018-2022 Pavel Pisa <pisa@cmp.felk.cvut.cz> FEE CTU/self-funded
++ *
++ * Project advisors:
++ *     Jiri Novak <jnovak@fel.cvut.cz>
++ *     Pavel Pisa <pisa@cmp.felk.cvut.cz>
++ *
++ * Department of Measurement         (http://meas.fel.cvut.cz/)
++ * Faculty of Electrical Engineering (http://www.fel.cvut.cz)
++ * Czech Technical University        (http://www.cvut.cz/)
++ ******************************************************************************/
++
++#include <linux/module.h>
++#include <linux/netdevice.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++#include <linux/pm_runtime.h>
++
++#include "ctucanfd.h"
++
++#define DRV_NAME	"ctucanfd"
++
++static void ctucan_platform_set_drvdata(struct device *dev,
++					struct net_device *ndev)
++{
++	struct platform_device *pdev = container_of(dev, struct platform_device,
++						    dev);
++
++	platform_set_drvdata(pdev, ndev);
++}
++
++/**
++ * ctucan_platform_probe - Platform registration call
++ * @pdev:	Handle to the platform device structure
++ *
++ * This function does all the memory allocation and registration for the CAN
++ * device.
++ *
++ * Return: 0 on success and failure value on error
++ */
++static int ctucan_platform_probe(struct platform_device *pdev)
++{
++	struct resource *res; /* IO mem resources */
++	struct device	*dev = &pdev->dev;
++	void __iomem *addr;
++	int ret;
++	unsigned int ntxbufs;
++	int irq;
++
++	/* Get the virtual base address for the device */
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	addr = devm_ioremap_resource(dev, res);
++	if (IS_ERR(addr)) {
++		dev_err(dev, "Cannot remap address.\n");
++		ret = PTR_ERR(addr);
++		goto err;
++	}
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0) {
++		dev_err(dev, "Cannot find interrupt.\n");
++		ret = irq;
++		goto err;
++	}
++
++	/* Number of tx bufs might be change in HW for future. If so,
++	 * it will be passed as property via device tree
++	 */
++	ntxbufs = 4;
++	ret = ctucan_probe_common(dev, addr, irq, ntxbufs, 0,
++				  1, ctucan_platform_set_drvdata);
++
++	if (ret < 0)
++		platform_set_drvdata(pdev, NULL);
++
++err:
++	return ret;
++}
++
++/**
++ * ctucan_platform_remove - Unregister the device after releasing the resources
++ * @pdev:	Handle to the platform device structure
++ *
++ * This function frees all the resources allocated to the device.
++ * Return: 0 always
++ */
++static int ctucan_platform_remove(struct platform_device *pdev)
++{
++	struct net_device *ndev = platform_get_drvdata(pdev);
++	struct ctucan_priv *priv = netdev_priv(ndev);
++
++	netdev_dbg(ndev, "ctucan_remove");
++
++	unregister_candev(ndev);
++	pm_runtime_disable(&pdev->dev);
++	netif_napi_del(&priv->napi);
++	free_candev(ndev);
++
++	return 0;
++}
++
++static SIMPLE_DEV_PM_OPS(ctucan_platform_pm_ops, ctucan_suspend, ctucan_resume);
++
++/* Match table for OF platform binding */
++static const struct of_device_id ctucan_of_match[] = {
++	{ .compatible = "ctu,ctucanfd-2", },
++	{ .compatible = "ctu,ctucanfd", },
++	{ /* end of list */ },
++};
++MODULE_DEVICE_TABLE(of, ctucan_of_match);
++
++static struct platform_driver ctucanfd_driver = {
++	.probe	= ctucan_platform_probe,
++	.remove	= ctucan_platform_remove,
++	.driver	= {
++		.name = DRV_NAME,
++		.pm = &ctucan_platform_pm_ops,
++		.of_match_table	= ctucan_of_match,
++	},
++};
++
++module_platform_driver(ctucanfd_driver);
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Martin Jerabek");
++MODULE_DESCRIPTION("CTU CAN FD for platform");
+-- 
+2.20.1
+
+
