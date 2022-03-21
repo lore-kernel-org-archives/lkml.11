@@ -2,191 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B499FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:42:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDD92C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:43:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350439AbiCUPn1 (ORCPT
+        id S1350464AbiCUPoa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 11:43:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41794 "EHLO
+        Mon, 21 Mar 2022 11:44:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350496AbiCUPnG (ORCPT
+        with ESMTP id S1350444AbiCUPoY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 11:43:06 -0400
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E4BC174BA9;
-        Mon, 21 Mar 2022 08:41:40 -0700 (PDT)
-Received: by mail-wr1-f50.google.com with SMTP id u16so20256885wru.4;
-        Mon, 21 Mar 2022 08:41:40 -0700 (PDT)
+        Mon, 21 Mar 2022 11:44:24 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D252DCFE
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 08:42:55 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id b5so1815769ljf.13
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 08:42:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HD4yrGJ09wTomQwPFW+U4jZvquDPNjiXAIbLn3DIW0c=;
+        b=pDFK/K/WFaLSiapiN8ZpMU4Ikivm5cYZnu5jBoc7ITv6o8borkSRWT2IqzphTEKHmH
+         u/Yd/CUgtuQa/sEA2UGrNQvIo7dEdEb3d7B/ct7w+zsnZXyfuf3mDgMxIMd0JMMmbuTK
+         RtdMwJ6niMZyUutU0JNLwLSHFOj7fAQDxHkS/P+gFQzPzKR+12IxFcqxwumAfMO46tdB
+         qf9qCT+kU2GVTjnX7QtTHwJxyzKFSakpYSWf9Fg+A7NBHqcLBji6/ItJrW3wgBx9/DP4
+         k1R6mJ8jMZrbFads4NEasgiTSi23poKx5x671st0l0O/FV4KIF8j1nSBHs/rcvR6OW4P
+         xCSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=WML5+iO99XG8Cnb/y7ZTclpuOwKzuJZAVQdLXyKLfiY=;
-        b=2uOKEVaozGuCB/X3I7v+OUGNpMd6JQPmfKvnxTlIcAaFEczHc6hn3FqEDVScye1N6q
-         88cRBu5wJ3nZjuI/ouHqlITQK0+G227Hr+i1/1GN2aqstVXWFGty/kwvJIn7ijuncZrS
-         qS9xP4YYhK+Ov4jZbtXwH6f+YI5dhrtyra/d77GDZ5sMg2MkNAMVZjMNMfOyo7g/oqrH
-         k2zZguKt0vTVHdQn8pUrMVWSZPXwqq+6rslcaKR3j//79CcSNtU6Psd3Gfvc+FNUH5SM
-         oqFf+CGnnrRvJYLU27qFd3xV62eoLmE9AuX+QrLrQtCEiEbOAmgjEPVBe3lnbHi8wD6W
-         gRkA==
-X-Gm-Message-State: AOAM533QLjyeD6sM105oytLbK/541p3LoTqSKYPwBYEnJFXNmgy8u1tj
-        qSz1dTAhu4F+Ofqlza3d1/zKAvockco=
-X-Google-Smtp-Source: ABdhPJwswOpeYAUSbv2gZd+sF9HdVox9ltx0wl2XRAWQjiodyAcp5T05tpxfrZ5d6BEO3ueGw112Sw==
-X-Received: by 2002:a5d:66ca:0:b0:203:fb72:a223 with SMTP id k10-20020a5d66ca000000b00203fb72a223mr11487484wrw.12.1647877298918;
-        Mon, 21 Mar 2022 08:41:38 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.googlemail.com with ESMTPSA id z18-20020adfec92000000b00203f04ed4a8sm10085010wrn.13.2022.03.21.08.41.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Mar 2022 08:41:38 -0700 (PDT)
-Message-ID: <a7837388-e36f-9e55-4107-9f7f85571f3b@kernel.org>
-Date:   Mon, 21 Mar 2022 16:41:37 +0100
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HD4yrGJ09wTomQwPFW+U4jZvquDPNjiXAIbLn3DIW0c=;
+        b=RuwLY4PYsE/Hq/hpzcfS9QbH9p8epehlYs1Dc9rgmewnkeVyQyLX60j47JxxKAVXI3
+         MOwzMK7lAEsfubBN9HPdd0dSg3gdmMkae6KElNxyudS6MgvHzl+nSl1yTyIlx2qGYDcP
+         lrRs2tVJLFxNC8Eb4KkCZW2EmgMXfz8m5C6KzOiJgHj2WerIQC6ghjKJJ5DRtJhruBYZ
+         e/++tJ57yuXNgM3d1Rbft/AwcPfnezZike2A57F/8F9P4BIxiuZNVduXtKcEm8gHHW/O
+         8601BoohFcOoJivu9RSAQ84gkgmvicsfP+ff18Qp5ZRaFwIBUbqqYZSkgBcC7hUmChTb
+         cI6w==
+X-Gm-Message-State: AOAM531ymxjk/Hzaovh6M8s9wwinSkVk4VWuZ4QyhlQsCHv+TR8aayQI
+        6DiPIkNzJKFfQqGOsKPm1y8jvBaLfyW9MWKMLlJzWQ==
+X-Google-Smtp-Source: ABdhPJw6yfhfXFLvwTSE3Iq+nqo2RW6hRoNSCj5GYyKqSAMa6D02GARGqafQuHuHuwvGzj1lN95xtWue7aoBAMwTTZE=
+X-Received: by 2002:a2e:9654:0:b0:244:bb3f:6555 with SMTP id
+ z20-20020a2e9654000000b00244bb3f6555mr15455039ljh.282.1647877370721; Mon, 21
+ Mar 2022 08:42:50 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4 18/18] dt-bindings: arm: msm: Convert kpss-gcc driver
- Documentation to yaml
-Content-Language: en-US
-To:     Ansuel Smith <ansuelsmth@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-clk@vger.kernel.org
-References: <20220321144825.11736-1-ansuelsmth@gmail.com>
- <20220321144825.11736-19-ansuelsmth@gmail.com>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <20220321144825.11736-19-ansuelsmth@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220321150214.1895231-1-pgonda@google.com> <f8500809-610e-ce44-9906-785b7ddc0911@redhat.com>
+In-Reply-To: <f8500809-610e-ce44-9906-785b7ddc0911@redhat.com>
+From:   Peter Gonda <pgonda@google.com>
+Date:   Mon, 21 Mar 2022 09:42:39 -0600
+Message-ID: <CAMkAt6pNE9MC7U_qQDwTrFG5e8qaiWZ6f0HzR+mk4dCNC2Ue8A@mail.gmail.com>
+Subject: Re: [PATCH] Add KVM_EXIT_SHUTDOWN metadata for SEV-ES
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     kvm list <kvm@vger.kernel.org>, Borislav Petkov <bp@alien8.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Joerg Roedel <jroedel@suse.de>, Marc Orr <marcorr@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21/03/2022 15:48, Ansuel Smith wrote:
-> Convert kpss-gcc driver Documentation to yaml.
-> 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> ---
->  .../bindings/arm/msm/qcom,kpss-gcc.txt        | 44 ------------
->  .../bindings/arm/msm/qcom,kpss-gcc.yaml       | 68 +++++++++++++++++++
->  2 files changed, 68 insertions(+), 44 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
->  create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
-> deleted file mode 100644
-> index e628758950e1..000000000000
-> --- a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
-> +++ /dev/null
-> @@ -1,44 +0,0 @@
-> -Krait Processor Sub-system (KPSS) Global Clock Controller (GCC)
-> -
-> -PROPERTIES
-> -
-> -- compatible:
-> -	Usage: required
-> -	Value type: <string>
-> -	Definition: should be one of the following. The generic compatible
-> -			"qcom,kpss-gcc" should also be included.
-> -			"qcom,kpss-gcc-ipq8064", "qcom,kpss-gcc"
-> -			"qcom,kpss-gcc-apq8064", "qcom,kpss-gcc"
-> -			"qcom,kpss-gcc-msm8974", "qcom,kpss-gcc"
-> -			"qcom,kpss-gcc-msm8960", "qcom,kpss-gcc"
-> -
-> -- reg:
-> -	Usage: required
-> -	Value type: <prop-encoded-array>
-> -	Definition: base address and size of the register region
-> -
-> -- clocks:
-> -	Usage: required
-> -	Value type: <prop-encoded-array>
-> -	Definition: reference to the pll parents.
-> -
-> -- clock-names:
-> -	Usage: required
-> -	Value type: <stringlist>
-> -	Definition: must be "pll8_vote", "pxo".
-> -
-> -- clock-output-names:
-> -	Usage: required
-> -	Value type: <string>
-> -	Definition: Name of the output clock. Typically acpu_l2_aux indicating
-> -		    an L2 cache auxiliary clock.
-> -
-> -Example:
-> -
-> -	l2cc: clock-controller@2011000 {
-> -		compatible = "qcom,kpss-gcc-ipq8064", "qcom,kpss-gcc";
-> -		reg = <0x2011000 0x1000>;
-> -		clocks = <&gcc PLL8_VOTE>, <&gcc PXO_SRC>;
-> -		clock-names = "pll8_vote", "pxo";
-> -		clock-output-names = "acpu_l2_aux";
-> -	};
-> diff --git a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
-> new file mode 100644
-> index 000000000000..20ee182eb16f
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
-> @@ -0,0 +1,68 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/arm/msm/qcom,kpss-gcc.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Krait Processor Sub-system (KPSS) Global Clock Controller (GCC)
-> +
-> +maintainers:
-> +  - Ansuel Smith <ansuelsmth@gmail.com>
-> +
-> +description: |
-> +  Krait Processor Sub-system (KPSS) Global Clock Controller (GCC). Used
-> +  to control L2 mux (in the current implementation).
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - enum:
-> +          - qcom,kpss-gcc-ipq8064
-> +          - qcom,kpss-gcc-apq8064
-> +          - qcom,kpss-gcc-msm8974
-> +          - qcom,kpss-gcc-msm8960
-> +      - const: qcom,kpss-gcc
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    items:
-> +      - description: phandle to pll8_vote
-> +      - description: phandle to pxo_board
-> +
-> +  clock-names:
-> +    items:
-> +      - const: pll8_vote
-> +      - const: pxo
-> +
-> +  clock-output-names:
-> +    const: acpu_l2_aux
-> +
-> +  '#clock-cells':
-> +    const: 0
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - clocks
-> +  - clock-names
-> +  - clock-output-names
-> +  - '#clock-cells'
+On Mon, Mar 21, 2022 at 9:27 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
+>
+> On 3/21/22 16:02, Peter Gonda wrote:
+> > SEV-ES guests can request termination using the GHCB's MSR protocol. See
+> > AMD's GHCB spec section '4.1.13 Termination Request'. Currently when a
+> > guest does this the userspace VMM sees an KVM_EXIT_UNKNOWN (-EVINAL)
+> > return code from KVM_RUN. By adding a KVM_EXIT_SHUTDOWN_ENTRY to kvm_run
+> > struct the userspace VMM can clearly see the guest has requested a SEV-ES
+> > termination including the termination reason code set and reason code.
+> >
+> > Signed-off-by: Peter Gonda <pgonda@google.com>
+> > Cc: Borislav Petkov <bp@alien8.de>
+> > Cc: Tom Lendacky <thomas.lendacky@amd.com>
+> > Cc: Brijesh Singh <brijesh.singh@amd.com>
+> > Cc: Joerg Roedel <jroedel@suse.de>
+> > Cc: Marc Orr <marcorr@google.com>
+> > Cc: Sean Christopherson <seanjc@google.com>
+> > Cc: kvm@vger.kernel.org
+> > Cc: linux-kernel@vger.kernel.org
+>
+> Looks good, but it has to also add a capability.
 
-You add here a new required property, so this is not a pure conversion.
-Please explain in the commit msg why are you doing this. I asked about
-this in your previous patchset.
+Thanks for the quick review! Just so I understand. I should add
+KVM_CAP_SEV_TERM or something, then if that has been enabled do the
+new functionality, else keep the old functionality?
 
-Best regards,
-Krzysztof
+>
+> > +             /* KVM_EXIT_SHUTDOWN_ENTRY */
+>
+> Just KVM_EXIT_SHUTDOWN.
+>
+
+Will do.
