@@ -2,99 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C1F9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 17:26:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9C7CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 17:27:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351847AbiCUR11 (ORCPT
+        id S1351851AbiCUR2q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 13:27:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34164 "EHLO
+        Mon, 21 Mar 2022 13:28:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351739AbiCUR1Z (ORCPT
+        with ESMTP id S237671AbiCUR2o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 13:27:25 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 642E8183832;
-        Mon, 21 Mar 2022 10:26:00 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id n15so13369007plh.2;
-        Mon, 21 Mar 2022 10:26:00 -0700 (PDT)
+        Mon, 21 Mar 2022 13:28:44 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E54B918463C
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 10:27:17 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id d5so6552988lfj.9
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 10:27:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=lcBucpc3ZUGCjvl3pj650bWNhpmxqULXqAxJwZYyxwI=;
-        b=OaJnjzOrvKRUuxEsiML2uftTT4NiDdMzGPjL2qIJEg+p7JXn+u+lPkKkH14eCBPEiJ
-         lyrwoZVMsF3zjEqYgRBTj52aLmVTgkTYW7p2UKLSgBA8Zm4n7/xMmBa7omEz9ucrJxPs
-         dKGjagfJwBSiSaA1AApmWHfiKHx+W+IOqVZ7Mhs5boVdLHW9cC6ZVZOrGiD8wjHI4h/V
-         WinjVmLPEEsxbYLpbrjBlL7+QL3liT4J7LONGuft1WGm0xUVvNwt+cYMFlgvvcQVxjsZ
-         6TCvPHkjFE0XaI1MT2lXQju1GUB6aOgs2F3xm1EzYwnB9vxRrh1lu/SQN0KwmQLMoAH8
-         2uyw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gjlWSgDYCbI3M0HlDfM+vRBeQFnG0r9FgmdbuPnrgqQ=;
+        b=aVvx3FDfpN2WfwpjlyxpAb5Fwswxlfi/0LDhMZdxBX1bJ4kqbt7F9JwUIf4M2YGi+A
+         +Wnc0mnQTa5PhVU9lA/PnyGKLEnXuH89p3UwUuSoj5zvNzipTCWhi8oYbyzjlZ+P7/bf
+         WHY1ioGhcshdkuE1zdzW3HsrHW2LidtQE0aXvGDbh9W0ZBivvNYFkFRbyEaLU1p/PkrR
+         YqnjBZe9cWSaE1WsqyzmpquwIAyvR0Y5piDM1O9Gs37X6CSORvAEy7NhCpZsbLwgAXl1
+         a9vy260QEtWazFypwCq7q+O33a7nkhm4ra1V5zP6OaPHpRUvrjGs7Xj0WY6U0JMggzFP
+         kVVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=lcBucpc3ZUGCjvl3pj650bWNhpmxqULXqAxJwZYyxwI=;
-        b=xpXjDprVE+1bFlMeWCRZ9i0v1AN8V/Z/Sg83tgWfIXg+GUm4o+1t+kUfLGSUlm+iFf
-         Wk/9xf/0p9zqVstmHs7OU1yHB1ZYoi4Zq5mPEfIMVz5kCTbPD9WlpbhCJQFwgCapD1RU
-         aGmn9iXPqO7UkrouX8ufoQWJHf3q/Fdo7Q3PzTVixUoSIu7Kgr6BNTnFae0B7fi4n9Mx
-         r5N8B4fPm8RfnxtajY6C0EDCg2qnQ4rFJQj4A057DuN+GJupiFA/bTjfjFvbgdJ5GRtC
-         PqjiydtI1SLnlVz3W13VswSo2pNX24is0NiqjpY1aXP+YGB8lGYIDpKPdVS5BI1/QJOL
-         4+4A==
-X-Gm-Message-State: AOAM533gBTLK/ZoXjKO4sWiskQJgo1S29he6Fr/7fnt+ecWTbdcRmTY4
-        rVlEUibD2ExqXqXP/zqZ0vI=
-X-Google-Smtp-Source: ABdhPJxDQDem21pyBzTcZ0MmRX7MdRC6hkW3xkuui0BdaI+DOIJKAeaIn0oxCz/ykh8zAHnsWnwfrQ==
-X-Received: by 2002:a17:902:ab01:b0:153:2dec:6761 with SMTP id ik1-20020a170902ab0100b001532dec6761mr13985632plb.71.1647883559827;
-        Mon, 21 Mar 2022 10:25:59 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id g15-20020a056a000b8f00b004fa9dbf27desm5470775pfj.55.2022.03.21.10.25.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Mar 2022 10:25:59 -0700 (PDT)
-Message-ID: <b2223192-cd6f-a75a-5ba0-ee15f7bedf40@gmail.com>
-Date:   Mon, 21 Mar 2022 10:25:56 -0700
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gjlWSgDYCbI3M0HlDfM+vRBeQFnG0r9FgmdbuPnrgqQ=;
+        b=O5CgBVkV7DnMser6+gsg5TYRmNtuiXmlqgD1RtG9EPtcUWRO3MNUg2zTxpkH2GjlX8
+         ztbQ4pVd+oCi7b1mCGdjIKx/1V1Xm5OmmBJXO5hQGqJVXlVz4oq4jM5Ep6QMG+w2TOSk
+         tppfWuEN9DaBM/BvBxbj0NE7jj39M+I17ZP3P1J1gThg9dEnk+hyjCWDI/LieZZhvJE3
+         JbKjlPmzImOIoovyJQ2TEujIynvKUWvjddc4OD+7gPTdpuE60+NtnVfWR11VfzaRwm21
+         65PfQUMeFJdx3Ms6B1r6HaY//Vh6aKJCO1El/22u3qAHnIwFrghXpl7i4MacKkEO4MRV
+         nYzg==
+X-Gm-Message-State: AOAM530BEFZeSADYuZA1PzUuMlZKR+1SZOjig2reTed213IhQ5NO/gbz
+        rM1/CjSdIcB1hxJbRTgjWprLHPQPwcYhhdwQSM2S5Q==
+X-Google-Smtp-Source: ABdhPJy4rZuO7vtP7+8b/Mnd+Mllf2Xr2hwf83Dz2QNhS8sDUM8I/x5BFB4QCsYPBIVI5J7rSfIgJWZP/6BJmllE6vs=
+X-Received: by 2002:a05:6512:3341:b0:433:b033:bd22 with SMTP id
+ y1-20020a056512334100b00433b033bd22mr15309077lfd.190.1647883634694; Mon, 21
+ Mar 2022 10:27:14 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 5.4 00/17] 5.4.187-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220321133217.148831184@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220321133217.148831184@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220320093750.159991-1-ammarfaizi2@gnuweeb.org>
+ <20220320093750.159991-3-ammarfaizi2@gnuweeb.org> <20220320191619.GA27312@1wt.eu>
+ <9e69af8e-74c1-f35b-98dd-e2a77153ea09@gnuweeb.org>
+In-Reply-To: <9e69af8e-74c1-f35b-98dd-e2a77153ea09@gnuweeb.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 21 Mar 2022 10:27:03 -0700
+Message-ID: <CAKwvOdmfscdQQvmDmVqX3RvH55_EnqHokC+G9jSjckYqLG-psw@mail.gmail.com>
+Subject: Re: [RFC PATCH v1 2/6] tools/nolibc: Make the entry point not weak
+ for clang
+To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Cc:     Willy Tarreau <w@1wt.eu>, "Paul E. McKenney" <paulmck@kernel.org>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
+        Nugraha <richiisei@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "GNU/Weeb Mailing List" <gwml@vger.gnuweeb.org>,
+        llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/21/22 06:52, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.4.187 release.
-> There are 17 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 23 Mar 2022 13:32:09 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.187-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+On Mon, Mar 21, 2022 at 4:38 AM Ammar Faizi <ammarfaizi2@gnuweeb.org> wrote:
+>
+> On 3/21/22 2:16 AM, Willy Tarreau wrote:
+> > Hi Ammar,
+> >
+> > I've had a look at this one.
+> >
+> > On Sun, Mar 20, 2022 at 04:37:46PM +0700, Ammar Faizi wrote:
+> >> Budilig with clang yields the following error:
+> >    ^^^^^^^
+> > BTW please fix the typo in the final commit message.
+> >
+> >> @@ -183,7 +183,9 @@ struct sys_stat_struct {
+> >>
+> >>   /* startup code */
+> >>   asm(".section .text\n"
+> >> +#if !defined(__clang__)
+> >>       ".weak _start\n"
+> >> +#endif
+> >>       ".global _start\n"
+> >>       "_start:\n"
+> >
+> > So it seems that I was wrong and that .weak is an alternate for .global
+> > and not a complement. As such, instead of adding all these #if, please
+> > simply remove all .global.
+
+See also:
+commit 4d6ffa27b8e5 ("x86/lib: Change .weak to SYM_FUNC_START_WEAK for
+arch/x86/lib/mem*_64.S")
+commit ec9d78070de9 ("arm64: Change .weak to SYM_FUNC_START_WEAK_PI
+for arch/arm64/lib/mem*.S")
+
+Also, please note in the commit message that this diagnostic comes
+from using clang as the assembler (which is clang's default behavior
+unless -fno-integrated-as is passed).
+
+>
+> Will fix this in the next version.
+>
+> --
+> Ammar Faizi
+>
 
 
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
-
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-Florian
+Thanks,
+~Nick Desaulniers
