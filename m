@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D18FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:14:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF894C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:14:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348944AbiCUOPZ (ORCPT
+        id S1349122AbiCUOPa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:15:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32970 "EHLO
+        Mon, 21 Mar 2022 10:15:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349452AbiCUOIZ (ORCPT
+        with ESMTP id S1349604AbiCUOId (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:08:25 -0400
+        Mon, 21 Mar 2022 10:08:33 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6FDC17A598;
-        Mon, 21 Mar 2022 07:02:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 558291B7B5;
+        Mon, 21 Mar 2022 07:03:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 77F9B6132C;
-        Mon, 21 Mar 2022 14:02:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B96AC340E8;
-        Mon, 21 Mar 2022 14:02:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F6B661350;
+        Mon, 21 Mar 2022 14:02:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACC41C340E8;
+        Mon, 21 Mar 2022 14:02:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871366;
-        bh=qf/4IqoCH15v/gP5BPbKxETcCxWbZ+FrQYit2rRSzY0=;
+        s=korg; t=1647871378;
+        bh=2nO093whqQ/sqbYqWbv0LaogH00/S1O/HY0QpO+NfNU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T8BkqavWrskOaPUh5+adm55CKpvVIjQLw87q6k3z4Oy0+92iB2gd88fSVLTk7lWMc
-         nHbBiHiHm4Ir7P3dpw8rdTVLP6GBSCVt1SI0G6Xf8QIqOHb4gn+QXsLqLbt9x5b/2L
-         c5x8Xjii30k8x8jnoRPnA+hxyfeE5MeNSdnm/5v8=
+        b=uqwUb/iCbeAiGiH6bOubamMb0i0uW3ZAg+C8v54TG9rDDjbseI5zc3tvU32XFWxJ8
+         jwKryWbIpPNP3K3PwOd/+kLeyVK/uYBK4XM1IO2XHFvt6pxYXC1ZUJFqrh1bYhsYTl
+         OzZi9PNmaleALC0ulor5HDKmBUnlktbunm++uz+k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Marc Zyngier <maz@kernel.org>, Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.16 35/37] Revert "arm64: dts: freescale: Fix interrupt-map parent address cells"
-Date:   Mon, 21 Mar 2022 14:53:17 +0100
-Message-Id: <20220321133222.305922095@linuxfoundation.org>
+        stable@vger.kernel.org, Xiumei Mu <xmu@redhat.com>,
+        Sabrina Dubroca <sd@queasysnail.net>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 09/37] esp6: fix check on ipv6_skip_exthdrs return value
+Date:   Mon, 21 Mar 2022 14:52:51 +0100
+Message-Id: <20220321133221.564244907@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133221.290173884@linuxfoundation.org>
 References: <20220321133221.290173884@linuxfoundation.org>
@@ -49,162 +51,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Sabrina Dubroca <sd@queasysnail.net>
 
-commit 1447c635802fd0f5e213ad5277753108d56a4db3 upstream.
+[ Upstream commit 4db4075f92af2b28f415fc979ab626e6b37d67b6 ]
 
-This reverts commit 869f0ec048dc8fd88c0b2003373bd985795179fb. That
-updated the expected device tree binding format for the ls-extirq
-driver, without also updating the parsing code (ls_extirq_parse_map)
-to the new format.
+Commit 5f9c55c8066b ("ipv6: check return value of ipv6_skip_exthdr")
+introduced an incorrect check, which leads to all ESP packets over
+either TCPv6 or UDPv6 encapsulation being dropped. In this particular
+case, offset is negative, since skb->data points to the ESP header in
+the following chain of headers, while skb->network_header points to
+the IPv6 header:
 
-The context is that the ls-extirq driver uses the standard
-"interrupt-map" OF property in a non-standard way, as suggested by
-Rob Herring during review:
-https://lore.kernel.org/lkml/20190927161118.GA19333@bogus/
+    IPv6 | ext | ... | ext | UDP | ESP | ...
 
-This has turned out to be problematic, as Marc Zyngier discovered
-through commit 041284181226 ("of/irq: Allow matching of an interrupt-map
-local to an interrupt controller"), later fixed through commit
-de4adddcbcc2 ("of/irq: Add a quirk for controllers with their own
-definition of interrupt-map"). Marc's position, expressed on multiple
-opportunities, is that:
+That doesn't seem to be a problem, especially considering that if we
+reach esp6_input_done2, we're guaranteed to have a full set of headers
+available (otherwise the packet would have been dropped earlier in the
+stack). However, it means that the return value will (intentionally)
+be negative. We can make the test more specific, as the expected
+return value of ipv6_skip_exthdr will be the (negated) size of either
+a UDP header, or a TCP header with possible options.
 
-(a) [ making private use of the reserved "interrupt-map" name in a
-    driver ] "is wrong, by the very letter of what an interrupt-map
-    means. If the interrupt map points to an interrupt controller,
-    that's the target for the interrupt."
-https://lore.kernel.org/lkml/87k0g8jlmg.wl-maz@kernel.org/
+In the future, we should probably either make ipv6_skip_exthdr
+explicitly accept negative offsets (and adjust its return value for
+error cases), or make ipv6_skip_exthdr only take non-negative
+offsets (and audit all callers).
 
-(b) [ updating the driver's bindings to accept a non-reserved name for
-    this property, as an alternative, is ] "is totally pointless. These
-    machines have been in the wild for years, and existing DTs will be
-    there *forever*."
-https://lore.kernel.org/lkml/87ilvrk1r0.wl-maz@kernel.org/
-
-Considering the above, the Linux kernel has quirks in place to deal with
-the ls-extirq's non-standard use of the "interrupt-map". These quirks
-may be needed in other operating systems that consume this device tree,
-yet this is seen as the only viable solution.
-
-Therefore, the premise of the patch being reverted here is invalid.
-It doesn't matter whether the driver, in its non-standard use of the
-property, complies to the standard format or not, since this property
-isn't expected to be used for interrupt translation by the core.
-
-This change restores LS1088A, LS2088A/LS2085A and LX2160A to their
-previous bindings, which allows these systems to continue to use
-external interrupt lines with the correct polarity.
-
-Fixes: 869f0ec048dc ("arm64: dts: freescale: Fix 'interrupt-map' parent address cells")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Acked-by: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 5f9c55c8066b ("ipv6: check return value of ipv6_skip_exthdr")
+Reported-by: Xiumei Mu <xmu@redhat.com>
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/freescale/fsl-ls1088a.dtsi |   24 ++++++++++++------------
- arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi |   24 ++++++++++++------------
- arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi |   24 ++++++++++++------------
- 3 files changed, 36 insertions(+), 36 deletions(-)
+ net/ipv6/esp6.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/arch/arm64/boot/dts/freescale/fsl-ls1088a.dtsi
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1088a.dtsi
-@@ -241,18 +241,18 @@
- 				interrupt-controller;
- 				reg = <0x14 4>;
- 				interrupt-map =
--					<0 0 &gic 0 0 GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
--					<1 0 &gic 0 0 GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>,
--					<2 0 &gic 0 0 GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>,
--					<3 0 &gic 0 0 GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
--					<4 0 &gic 0 0 GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
--					<5 0 &gic 0 0 GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>,
--					<6 0 &gic 0 0 GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
--					<7 0 &gic 0 0 GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>,
--					<8 0 &gic 0 0 GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
--					<9 0 &gic 0 0 GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>,
--					<10 0 &gic 0 0 GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>,
--					<11 0 &gic 0 0 GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
-+					<0 0 &gic GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
-+					<1 0 &gic GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>,
-+					<2 0 &gic GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>,
-+					<3 0 &gic GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
-+					<4 0 &gic GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
-+					<5 0 &gic GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>,
-+					<6 0 &gic GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
-+					<7 0 &gic GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>,
-+					<8 0 &gic GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
-+					<9 0 &gic GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>,
-+					<10 0 &gic GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>,
-+					<11 0 &gic GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
- 				interrupt-map-mask = <0xffffffff 0x0>;
- 			};
- 		};
---- a/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
-@@ -293,18 +293,18 @@
- 				interrupt-controller;
- 				reg = <0x14 4>;
- 				interrupt-map =
--					<0 0 &gic 0 0 GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
--					<1 0 &gic 0 0 GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>,
--					<2 0 &gic 0 0 GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>,
--					<3 0 &gic 0 0 GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
--					<4 0 &gic 0 0 GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
--					<5 0 &gic 0 0 GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>,
--					<6 0 &gic 0 0 GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
--					<7 0 &gic 0 0 GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>,
--					<8 0 &gic 0 0 GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
--					<9 0 &gic 0 0 GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>,
--					<10 0 &gic 0 0 GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>,
--					<11 0 &gic 0 0 GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
-+					<0 0 &gic GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
-+					<1 0 &gic GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>,
-+					<2 0 &gic GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>,
-+					<3 0 &gic GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
-+					<4 0 &gic GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
-+					<5 0 &gic GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>,
-+					<6 0 &gic GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
-+					<7 0 &gic GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>,
-+					<8 0 &gic GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
-+					<9 0 &gic GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>,
-+					<10 0 &gic GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>,
-+					<11 0 &gic GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
- 				interrupt-map-mask = <0xffffffff 0x0>;
- 			};
- 		};
---- a/arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi
-+++ b/arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi
-@@ -680,18 +680,18 @@
- 				interrupt-controller;
- 				reg = <0x14 4>;
- 				interrupt-map =
--					<0 0 &gic 0 0 GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
--					<1 0 &gic 0 0 GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>,
--					<2 0 &gic 0 0 GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>,
--					<3 0 &gic 0 0 GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
--					<4 0 &gic 0 0 GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
--					<5 0 &gic 0 0 GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>,
--					<6 0 &gic 0 0 GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
--					<7 0 &gic 0 0 GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>,
--					<8 0 &gic 0 0 GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
--					<9 0 &gic 0 0 GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>,
--					<10 0 &gic 0 0 GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>,
--					<11 0 &gic 0 0 GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
-+					<0 0 &gic GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
-+					<1 0 &gic GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>,
-+					<2 0 &gic GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>,
-+					<3 0 &gic GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
-+					<4 0 &gic GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
-+					<5 0 &gic GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>,
-+					<6 0 &gic GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
-+					<7 0 &gic GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>,
-+					<8 0 &gic GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
-+					<9 0 &gic GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>,
-+					<10 0 &gic GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>,
-+					<11 0 &gic GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
- 				interrupt-map-mask = <0xffffffff 0x0>;
- 			};
- 		};
+diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
+index b7b573085bd5..5023f59a5b96 100644
+--- a/net/ipv6/esp6.c
++++ b/net/ipv6/esp6.c
+@@ -813,8 +813,7 @@ int esp6_input_done2(struct sk_buff *skb, int err)
+ 		struct tcphdr *th;
+ 
+ 		offset = ipv6_skip_exthdr(skb, offset, &nexthdr, &frag_off);
+-
+-		if (offset < 0) {
++		if (offset == -1) {
+ 			err = -EINVAL;
+ 			goto out;
+ 		}
+-- 
+2.34.1
+
 
 
