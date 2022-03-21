@@ -2,239 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33BA3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:40:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2276C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:40:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351311AbiCUQlX (ORCPT
+        id S1351320AbiCUQlk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 12:41:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36960 "EHLO
+        Mon, 21 Mar 2022 12:41:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243578AbiCUQlV (ORCPT
+        with ESMTP id S237331AbiCUQlj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 12:41:21 -0400
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BA3D17E18;
-        Mon, 21 Mar 2022 09:39:55 -0700 (PDT)
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-2e5757b57caso162188437b3.4;
-        Mon, 21 Mar 2022 09:39:55 -0700 (PDT)
+        Mon, 21 Mar 2022 12:41:39 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8136A5F259;
+        Mon, 21 Mar 2022 09:40:12 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id d10so30974435eje.10;
+        Mon, 21 Mar 2022 09:40:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EJtLOy1z9qbTwrw3Odhnv9M+mtBkKVnNxZm6T651y2Q=;
+        b=JVDIFxZhuOHeEVexVd7T/hSG4JJGfSXpKlQR/ylBx3yWAjVJYEfPItWO8ljpF3SXyK
+         kxElOTx1KaFQuoERVOWLkF4AIAGfY2CqpmWMz82BdUET9PVmL2RlKqkCv+zRIe2EryPA
+         tjnTmY9UUibI1pF/rlunvzkCvkgRbAVnnRb13kguTQnkdlT4i7F9G0ND9/kYYbyeqz/L
+         vXctdMmUYxXFocGHomYINVhoQEUcNt7WvGjR1lhEnXabSL2ct4ttKaBXiSbP/1KhqEmd
+         F0lJTOmz1BZeJuRd/MHvUxJfkkxt8nKXEtPXNLJxrcd34Yyj/tCqf0qgPcxYzgqz0Vqo
+         kS7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=q2bbu0FlI0bjoAu2DyU2tLEct1K2WT3Nwkj0AnRIr48=;
-        b=GUhwGqwI7E1/9Coni0FmKD7WWeVcXGHm4+T2KqIv/qs9ODbfHmh7iWTv6pID7znr3e
-         hs7lINy2y5G+78pNeEKmnNbKC2juML9SruScmyqZu90PdLJWF7Bzl3IfoBR4S4a29rha
-         YcLPEMOPQuJ2UU4PkVo1v6SSJNuYPYFxSd+1Xob6rNLpGm5iO1K9pOf/D4z3yL59jbom
-         QsvGTZPI7b2UY1hhM69kofdU9NLv+cuV7FIVi1bjbQIYve7zhgxVVWfaeCdiza6TGf/6
-         CDlGIivgaGQFGxgLoBXs9Va1Z6ojZeml0KyYQqhqPJR/IrqaTtAS/3A8W9awDmgtUGbs
-         X59w==
-X-Gm-Message-State: AOAM5300YjMv85Jsmd8CjRerHEe1JrQB2uIvljAmhTSZTrJdZO5jAlbI
-        fsauNgktTHaLny1ni04GmQQrn1WHDNa2MSZ0V5k=
-X-Google-Smtp-Source: ABdhPJz2BdoNoNPYGxapeQ55Ogncfc3A7a6RAv/xKxM8OfgNimI4flRGmVJ1RWxaw2GT5+2UHqr6A+gf/94/yzomQS0=
-X-Received: by 2002:a81:5cf:0:b0:2e5:7477:168e with SMTP id
- 198-20020a8105cf000000b002e57477168emr24630650ywf.149.1647880794783; Mon, 21
- Mar 2022 09:39:54 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EJtLOy1z9qbTwrw3Odhnv9M+mtBkKVnNxZm6T651y2Q=;
+        b=LjldzHyIthHOCwxyMHwb83wD/uCCkifxkUYd5Fxv8QneLLP12HtOs2V97NPA7kBBmZ
+         kkukIoMwgPAntXf3TfUHrlQo3Pw2AVsShSQXMnzBvTP/kQy5ZaHnPbI28H/IXvpRGbay
+         EAeVM/3JXK6HOKsNdTz2G/UMmyMTgg/tUkPAmJTKI8hxZZ+/3SfH/CdxvoKqoJVnKP3p
+         4mF8bgFkSuHag/JWGBWK7StTJ5WGZ5ODf9w3r3Cz7bFB1x6mr6a2vAfIUuaaJNS6hDi6
+         H/0SWF5AZjhOf0bRlueGXG4z+aCMcGmOmTOdxXiXSaU1/W5xFti3XYn36aA/3t0nBZIv
+         cdPg==
+X-Gm-Message-State: AOAM533i4638Lp1opecOyKXqYOfjHVYNOMn11EWfNxtA1bGR6IM436LA
+        Op7etaNevAwKfH2WURgWkL2WMKpXjXZZVN6bSD8=
+X-Google-Smtp-Source: ABdhPJx0/vREgiXqKTqUQ4+7St5r1LVPAwbRsGJP8mIxaSQcjKrEYSltuiOJGLsg2j99Lus5dg+jzHabi5US69p6aVg=
+X-Received: by 2002:a17:906:4cc7:b0:6d0:7efb:49f with SMTP id
+ q7-20020a1709064cc700b006d07efb049fmr21578550ejt.639.1647880811015; Mon, 21
+ Mar 2022 09:40:11 -0700 (PDT)
 MIME-Version: 1.0
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 21 Mar 2022 17:39:44 +0100
-Message-ID: <CAJZ5v0gzkr8k3u6ZdKnsAOgk569Gf-HF5u2AShXdznEE4+UYGw@mail.gmail.com>
-Subject: [GIT PULL] Thermal control updates for v5.18-rc1
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Linux PM <linux-pm@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+References: <20220321042142.69239-1-frank@zago.net> <20220321042142.69239-2-frank@zago.net>
+In-Reply-To: <20220321042142.69239-2-frank@zago.net>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 21 Mar 2022 18:39:00 +0200
+Message-ID: <CAHp75VcyNDNfYyUvSk4kToLiLCVDWo5-Rz_1_fRtR7i8ZjGr7g@mail.gmail.com>
+Subject: Re: [PATCH v4 1/3] mfd: ch341: add core driver for the WCH CH341 in
+ I2C/GPIO mode
+To:     frank zago <frank@zago.net>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Wolfram Sang <wsa@kernel.org>, Johan Hovold <johan@kernel.org>,
+        USB <linux-usb@vger.kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-i2c <linux-i2c@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+On Mon, Mar 21, 2022 at 11:17 AM frank zago <frank@zago.net> wrote:
+>
+> The CH341 is a multifunction chip, presenting 3 different USB PID. One
+> of these functions is for I2C/SPI/GPIO. This new set of drivers will
+> manage I2C and GPIO.
 
-Please pull from the tag
+...
 
- git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git \
- thermal-5.18-rc1
+> +The driver doesn't support detection of I2C device present on the
 
-with top-most commit 31035f3e20af4ede5f1c8162068327ea0b35a96e
+devices
 
- Merge branch 'thermal-hfi'
+> +bus. Apparently when a device is not present at a given address, the
+> +CH341 will return an extra byte of data, but the driver doesn't
+> +support that. This may be addressed in the future.
 
-on top of commit 7e57714cd0ad2d5bb90e50b5096a0e671dec1ef3
+...
 
- Linux 5.17-rc6
+>     spear-pcie-gadget
+>     uacce
+>     xilinx_sdfec
+> +   ch341
 
-to receive thermal control updates for 5.18-rc1.
+Seems you broke the order.
 
-As far as new functionality is concerned, there is a new thermal
-driver for the Intel Hardware Feedback Interface (HFI) along with
-some intel-speed-select utility changes to support it.  There are
-also new DT compatible strings for a couple of platforms and
-thermal zones on some platforms will be registered as HWmon
-sensors now.
+...
 
-Apart from the above, some drivers are updated (fixes mostly) and
-there is a new piece of documentation for the Intel DPTF (Dynamic
-Power and Thermal Framework) sysfs interface.
+> +config MFD_CH341
 
-Specifics:
+> +       tristate "WinChipHead CH341 in I2C/SPI/GPIO mode"
 
- - Add a new thermal driver for the Intel Hardware Feedback Interface
-   (HFI) including the HFI initialization, HFI notification interrupt
-   handling and sending CPU capabilities change messages to user
-   space via the thermal netlink interface (Ricardo Neri, Srinivas
-   Pandruvada, Nathan Chancellor, Randy Dunlap).
+(1)
 
- - Extend the intel-speed-select utility to handle out-of-band CPU
-   configuration changes and add support for the CPU capabilities
-   change messages sent over the thermal netlink interface by the new
-   HFI thermal driver to it (Srinivas Pandruvada).
+> +       depends on USB
+> +       help
+> +         If you say yes to this option, support for the CH341 series
+> +         of chips, running in I2C/SPI/GPIO mode will be included.
 
- - Convert the DT bindings to yaml format for the Exynos platform
-   and fix and update the MAINTAINERS file for this driver (Krzysztof
-   Kozlowski).
+"chips running" (no comma needed)
 
- - Register the thermal zones as HWmon sensors for the QCom's
-   Tsens driver and TI thermal platforms (Dmitry Baryshkov, Romain
-   Naour).
+> +         The chip's SPI mode is not supported.
 
- - Add the msm8953 compatible documentation in the bindings (Luca
-   Weiss).
+Maybe no need to include SPI in the (1) along with dropping this line?
 
- - Add the sm8150 platform support to the QCom LMh driver's DT
-   binding (Thara Gopinath).
+> +         This driver can also be built as a module.  If so, the
+> +         module will be called ch341-core.
 
- - Check the command result from the IPC command to the BPMP in the
-   Tegra driver (Mikko Perttunen).
+...
 
- - Silence the error for normal configuration where the interrupt
-   is optional in the Broadcom thermal driver (Florian Fainelli).
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/slab.h>
 
- - Remove remaining dead code from the TI thermal driver (Yue
-   Haibing).
+(2)
 
- - Don't use bitmap_weight() in end_power_clamp() in the powerclamp
-   driver (Yury Norov).
+> +#include <linux/mfd/core.h>
 
- - Update the OS policy capabilities handshake in the int340x thermal
-   driver (Srinivas Pandruvada).
+> +
+> +#include <linux/mfd/ch341.h>
 
- - Increase the policies bitmap size in int340x (Srinivas Pandruvada).
+Moving these two to (2) ?
 
- - Replace acpi_bus_get_device() with acpi_fetch_acpi_dev() in the
-   int340x thermal driver (Rafael Wysocki).
+...
 
- - Check for NULL after calling kmemdup() in int340x (Jiasheng Jiang).
+> +       dev = kzalloc(sizeof(*dev), GFP_KERNEL);
 
- - Add Intel Dynamic Power and Thermal Framework (DPTF) kernel interface
-   documentation (Srinivas Pandruvada).
+devm_kzalloc() ?
 
- - Fix bullet list warning in the thermal documentation (Randy Dunlap).
+> +       if (!dev)
+> +               return -ENOMEM;
 
-Thanks!
+...
+
+> +       rc = mfd_add_hotplug_devices(&iface->dev, ch341_devs,
+> +                                    ARRAY_SIZE(ch341_devs));
+
+> +       if (rc) {
+
+> +               dev_err(&iface->dev, "Failed to add mfd devices to core.");
+> +               goto free_dev;
+
+return dev_err_probe(...); ?
+
+> +       }
+
+...
+
+> +       usb_set_intfdata(dev->iface, NULL);
+
+This has been done by device driver core  for the past 10+ years.
+
+...
+
+> +static const struct usb_device_id ch341_usb_table[] = {
+> +       { USB_DEVICE(0x1a86, 0x5512) },
+> +       { }
+> +};
+
+> +
+
+Redundant blank line.
+
+> +MODULE_DEVICE_TABLE(usb, ch341_usb_table);
+> +
+> +static struct usb_driver ch341_usb_driver = {
+> +       .name       = "ch341-mfd",
+> +       .id_table   = ch341_usb_table,
+> +       .probe      = ch341_usb_probe,
+
+> +       .disconnect = ch341_usb_disconnect
+
+Keep a comma to avoid unneeded churn in the future.
+
+> +};
+
+> +
+
+Redundant blank line.
+
+> +module_usb_driver(ch341_usb_driver);
 
 
----------------
+> +/*
+> + * Definitions for CH341 MFD driver
+> + */
 
-Dmitry Baryshkov (1):
-      thermal/drivers/tsens: register thermal zones as hwmon sensors
+One line?
 
-Florian Fainelli (1):
-      thermal/drivers/brcmstb_thermal: Interrupt is optional
+...
 
-Jiasheng Jiang (1):
-      thermal: int340x: Check for NULL after calling kmemdup()
+> +#include <linux/usb.h>
 
-Krzysztof Kozlowski (3):
-      dt-bindings: thermal: samsung: Convert to dtschema
-      MAINTAINERS: thermal: samsung: Drop obsolete properties
-      MAINTAINERS: thermal: samsung: update Krzysztof Kozlowski's email
+No users of this header. Use forward declarations.
 
-Luca Weiss (1):
-      dt-bindings: thermal: tsens: Add msm8953 compatible
+> +#include <linux/mutex.h>
 
-Mikko Perttunen (1):
-      thermal: tegra-bpmp: Handle errors in BPMP response
+Missed types.h.
 
-Nathan Chancellor (1):
-      thermal: netlink: Fix parameter type of
-thermal_genl_cpu_capability_event() stub
+...
 
-Nicolas Cavallari (1):
-      thermal: core: Fix TZ_GET_TRIP NULL pointer dereference
+> +#define DEFAULT_TIMEOUT 1000   /* 1s USB requests timeout */
 
-Rafael J. Wysocki (1):
-      thermal: Replace acpi_bus_get_device()
+Use proper suffix, i.e. _MS.
 
-Randy Dunlap (2):
-      thermal: fix Documentation bullet list warning
-      thermal: intel: hfi: INTEL_HFI_THERMAL depends on NET
-
-Ricardo Neri (5):
-      x86/Documentation: Describe the Intel Hardware Feedback Interface
-      x86/cpu: Add definitions for the Intel Hardware Feedback Interface
-      thermal: intel: hfi: Minimally initialize the Hardware Feedback Interface
-      thermal: intel: hfi: Handle CPU hotplug events
-      thermal: intel: hfi: Enable notification interrupt
-
-Romain Naour (1):
-      drivers/thermal/ti-soc-thermal: Add hwmon support
-
-Srinivas Pandruvada (8):
-      thermal: netlink: Add a new event to notify CPU capabilities change
-      thermal: intel: hfi: Notify user space for HFI events
-      tools/power/x86/intel-speed-select: OOB daemon mode
-      tools/power/x86/intel-speed-select: HFI support
-      tools/power/x86/intel-speed-select: v1.12 release
-      Documentation: thermal: DPTF Documentation
-      thermal: int340x: Increase bitmap size
-      thermal: int340x: Update OS policy capability handshake
-
-Thara Gopinath (2):
-      thermal/drivers/qcom/lmh: Add support for sm8150
-      dt-bindings: thermal: Add sm8150 compatible string for LMh
-
-YueHaibing (1):
-      thermal/drivers/ti-soc-thermal: Remove unused function
-ti_thermal_get_temp()
-
-Yury Norov (1):
-      thermal: intel_powerclamp: don't use bitmap_weight() in end_power_clamp()
-
----------------
-
- Documentation/ABI/testing/sysfs-class-thermal      |   2 +-
- .../devicetree/bindings/thermal/exynos-thermal.txt | 106 ----
- .../devicetree/bindings/thermal/qcom-lmh.yaml      |   1 +
- .../devicetree/bindings/thermal/qcom-tsens.yaml    |   1 +
- .../bindings/thermal/samsung,exynos-thermal.yaml   | 184 +++++++
- Documentation/driver-api/thermal/index.rst         |   1 +
- Documentation/driver-api/thermal/intel_dptf.rst    | 272 ++++++++++
- Documentation/x86/index.rst                        |   1 +
- Documentation/x86/intel-hfi.rst                    |  72 +++
- MAINTAINERS                                        |   7 +-
- arch/x86/include/asm/cpufeatures.h                 |   1 +
- arch/x86/include/asm/msr-index.h                   |   6 +
- drivers/thermal/broadcom/brcmstb_thermal.c         |   2 +-
- drivers/thermal/intel/Kconfig                      |  14 +
- drivers/thermal/intel/Makefile                     |   1 +
- .../intel/int340x_thermal/acpi_thermal_rel.c       |  23 +-
- .../intel/int340x_thermal/int3400_thermal.c        | 153 ++++--
- drivers/thermal/intel/intel_hfi.c                  | 569 +++++++++++++++++++++
- drivers/thermal/intel/intel_hfi.h                  |  17 +
- drivers/thermal/intel/intel_powerclamp.c           |   9 +-
- drivers/thermal/intel/therm_throt.c                |  22 +
- drivers/thermal/qcom/lmh.c                         |  62 ++-
- drivers/thermal/qcom/tsens.c                       |   5 +
- drivers/thermal/tegra/tegra-bpmp-thermal.c         |  13 +-
- drivers/thermal/thermal_netlink.c                  |  58 ++-
- drivers/thermal/thermal_netlink.h                  |  14 +
- drivers/thermal/ti-soc-thermal/ti-thermal-common.c |  12 +-
- include/uapi/linux/thermal.h                       |   6 +-
- tools/power/x86/intel-speed-select/Build           |   2 +-
- tools/power/x86/intel-speed-select/Makefile        |  10 +-
- tools/power/x86/intel-speed-select/hfi-events.c    | 309 +++++++++++
- tools/power/x86/intel-speed-select/isst-config.c   |  54 +-
- tools/power/x86/intel-speed-select/isst-daemon.c   | 244 +++++++++
- tools/power/x86/intel-speed-select/isst.h          |  13 +
- 34 files changed, 2029 insertions(+), 237 deletions(-)
+-- 
+With Best Regards,
+Andy Shevchenko
