@@ -2,120 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DCBFC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 07:50:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4509DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 07:53:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345043AbiCUHwR (ORCPT
+        id S1345046AbiCUHyy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 03:52:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40880 "EHLO
+        Mon, 21 Mar 2022 03:54:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236143AbiCUHwO (ORCPT
+        with ESMTP id S236143AbiCUHyt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 03:52:14 -0400
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78235286E2;
-        Mon, 21 Mar 2022 00:50:47 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id B2A3A1BF20E;
-        Mon, 21 Mar 2022 07:50:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1647849044;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oyewfmDrMNw+w6+feNe7eI+y5/zMvOy/2DQM7Bmk60I=;
-        b=ncVvFFrRh9wP2PFth4q+uYSwK+8q26M1t++LZ7geib9/toPxbqT3NzW+FNLv4W+YRPiq/C
-        i2xyQFIeyW7jDZPFPfGbLGyrdi4WXgveVFAD7tYOLdn/fNMhSUMnGEjMCvaQI88PZbxqlr
-        GMpSMwIBfwWopJsAW1l452eWa+JNmx9GBIXsksq5fZWxpBxUqQlPgZOTRpTAP4HXiPrbIH
-        VHGX9CyV+Mfg+qfHxduN0BAX5jR8S5byV6rM1uCUEJbracEhv3F852UUNYUzOc+NQwSCDV
-        PeNcafchnRU5Oe6znE6OIgTRi1ojJqu8HX3CVg1R7/ed0GUIFLSevp0tUKUnoA==
-Date:   Mon, 21 Mar 2022 08:49:21 +0100
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "'Rafael J . Wysocki '" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-i2c@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 1/6] property: add fwnode_property_read_string_index()
-Message-ID: <20220321084921.069c688e@fixe.home>
-In-Reply-To: <YjTK4UW7DwZ0S3QY@smile.fi.intel.com>
-References: <20220318160059.328208-1-clement.leger@bootlin.com>
-        <20220318160059.328208-2-clement.leger@bootlin.com>
-        <YjSymEpNH8vnkQ+L@smile.fi.intel.com>
-        <20220318174912.5759095f@fixe.home>
-        <YjTK4UW7DwZ0S3QY@smile.fi.intel.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Mon, 21 Mar 2022 03:54:49 -0400
+Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EE4E7140B0
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 00:53:21 -0700 (PDT)
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 22L7r8hC005539;
+        Mon, 21 Mar 2022 08:53:08 +0100
+Date:   Mon, 21 Mar 2022 08:53:08 +0100
+From:   Willy Tarreau <w@1wt.eu>
+To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
+        Nugraha <richiisei@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>
+Subject: Re: [RFC PATCH v1 6/6] tools/include/string: Implement `strdup()`
+ and `strndup()`
+Message-ID: <20220321075308.GD29580@1wt.eu>
+References: <20220320093750.159991-1-ammarfaizi2@gnuweeb.org>
+ <20220320093750.159991-7-ammarfaizi2@gnuweeb.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220320093750.159991-7-ammarfaizi2@gnuweeb.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Fri, 18 Mar 2022 20:09:37 +0200,
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> a =C3=A9crit :
+Hi Ammar,
 
-> On Fri, Mar 18, 2022 at 05:49:12PM +0100, Cl=C3=A9ment L=C3=A9ger wrote:
-> > Le Fri, 18 Mar 2022 18:26:00 +0200,
-> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> a =C3=A9crit : =20
-> > > On Fri, Mar 18, 2022 at 05:00:47PM +0100, Cl=C3=A9ment L=C3=A9ger wro=
-te: =20
-> > > > Add fwnode_property_read_string_index() function which allows to
-> > > > retrieve a string from an array by its index. This function is the
-> > > > equivalent of of_property_read_string_index() but for fwnode suppor=
-t.   =20
->=20
-> ...
->=20
-> > > > +	values =3D kcalloc(nval, sizeof(*values), GFP_KERNEL);
-> > > > +	if (!values)
-> > > > +		return -ENOMEM;
-> > > > +
-> > > > +	ret =3D fwnode_property_read_string_array(fwnode, propname, value=
-s, nval);
-> > > > +	if (ret < 0)
-> > > > +		goto out;
-> > > > +
-> > > > +	*string =3D values[index];
-> > > > +out:
-> > > > +	kfree(values);   =20
-> > >=20
-> > > Here is UAF (use after free). How is it supposed to work? =20
-> >=20
-> > values is an array of pointers. I'm only retrieving a pointer out of
-> > it. =20
->=20
-> I see, thanks for pointing out.
->=20
-> Nevertheless, I don't like the idea of allocating memory in this case.
-> Can we rather add a new callback that will provide us the necessary
-> property directly?
->=20
+On Sun, Mar 20, 2022 at 04:37:50PM +0700, Ammar Faizi wrote:
+> Add strdup and strndup support. These functions are only available on
+> architectures that have my_syscall6() macro from nolibc.
+> 
+> Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+> ---
+>  tools/include/nolibc/string.h | 68 +++++++++++++++++++++++++++++++++++
+>  1 file changed, 68 insertions(+)
+> 
+> diff --git a/tools/include/nolibc/string.h b/tools/include/nolibc/string.h
+> index 4554b6fcb400..413c65f7c853 100644
+> --- a/tools/include/nolibc/string.h
+> +++ b/tools/include/nolibc/string.h
+> @@ -9,6 +9,10 @@
+>  
+>  #include "std.h"
+>  
+> +static void free(void *ptr);
+> +static void *malloc(size_t len);
+> +static void *realloc(void *old_ptr, size_t new_size);
 
-IMHO, it would indeed be better. However,
-fwnode_property_match_string() also allocates memory to do the same
-kind of operation. Would you also like a callback for this one ?
+Better include the required h files here.
+
+>  /*
+>   * As much as possible, please keep functions alphabetically sorted.
+>   */
+> @@ -127,6 +131,70 @@ size_t nolibc_strlen(const char *str)
+>  		nolibc_strlen((str));           \
+>  })
+>  
+> +static __attribute__((unused))
+> +char *strdup(const char *str)
+> +{
+> +	size_t allocated = 2048;
+> +	size_t i;
+> +	char *ret;
+> +	char *tmp;
+> +
+> +	ret = malloc(allocated);
+> +	if (__builtin_expect(!ret, 0))
+> +		return NULL;
+> +
+> +	i = 0;
+> +	for (;;) {
+> +		char c = *str;
+> +		if (!c)
+> +			break;
+> +
+> +		if (i == allocated) {
+> +			allocated += 2048;
+> +			tmp = realloc(ret, allocated);
+> +			if (__builtin_expect(!tmp, 0)) {
+> +				free(ret);
+> +				return NULL;
+> +			}
+> +			ret = tmp;
+> +		}
+> +
+> +		ret[i++] = c;
+> +		str++;
+> +	}
+> +
+> +	ret[i] = '\0';
+> +	return ret;
+> +}
+
+This version is suboptimal in terms of code size, CPU usage and memory
+usage. And it even seems it contains a buffer overflow: if the string
+is exactly a multiple of 2048, it seems to me that you'll write the
+trailing zero past the end. Please instead use the more intuitive form
+below (not tested but you get the idea):
+
+	size_t len = strlen(str);
+	char *ret = malloc(len + 1);
+	if (ret)
+		memcpy(ret, str, len);
+	return ret;
+
+> +static __attribute__((unused))
+> +char *strndup(const char *str, size_t maxlen)
+> +{
+> +	size_t i;
+> +	char *ret;
+> +
+> +	ret = malloc(maxlen + 1);
+> +	if (__builtin_expect(!ret, 0))
+> +		return NULL;
+> +
+> +	i = 0;
+> +	for (;;) {
+> +		char c = *str;
+> +		if (!c)
+> +			break;
+> +
+> +		if (i == maxlen)
+> +			break;
+> +
+> +		ret[i++] = c;
+> +		str++;
+> +	}
+> +
+> +	ret[i] = '\0';
+> +	return ret;
+> +}
+
+Here it can cost quite a lot for large values of maxlen. Please just use
+a variant of the proposal above like this one:
+
+	size_t len;
+	char *ret;
+
+	len = strlen(str);
+	if (len > maxlen)
+		len = maxlen;
+	ret = malloc(len + 1);
+	if (ret)
+		memcpy(ret, str, len);
+	return ret;
 
 Thanks,
-
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+Willy
