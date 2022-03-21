@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCD83C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:05:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD3E8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:05:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346451AbiCUOGc (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:06:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46588 "EHLO
+        id S237391AbiCUOGh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 10:06:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348763AbiCUN6R (ORCPT
+        with ESMTP id S1348924AbiCUN6k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:58:17 -0400
+        Mon, 21 Mar 2022 09:58:40 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 748CB17A2F2;
-        Mon, 21 Mar 2022 06:56:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6384160149;
+        Mon, 21 Mar 2022 06:56:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0715B816D9;
-        Mon, 21 Mar 2022 13:55:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1886DC340ED;
-        Mon, 21 Mar 2022 13:55:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6F65FB81675;
+        Mon, 21 Mar 2022 13:56:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C19C5C340E8;
+        Mon, 21 Mar 2022 13:56:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647870957;
-        bh=kK/F+vYxZ+uksPmumGW61gK5DR/BLBFZmWV0K6jQ9VM=;
+        s=korg; t=1647870992;
+        bh=P4ItllVK1Q99xOMEu8UZUZ1sPP00zrEDI+e/7a0d0jM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fhABuBVL4azGmTl/Vj39wq5D9+Yu5Q1kqwC7GMepjemqWaJd5MKEaMjjFD5XYgfg2
-         AnRk+50oW3WGzDkG+pK1qyOiP3QK9wChQgMJHffVLIwx5mL4OR2YSleYM98UsaKFtm
-         0CBh3kQZi3CeFuT66HNymd5F0osXr62cWdf1DrbU=
+        b=rrsLlycvX/83IosmDWalpTCccMwKV6vhf3wnOyAJb7Me9ok85/f9eFZ4b59ctsMD3
+         edrP8RhpB2y4zrC46/mr3Xmu1rKjVYJ6T00TexvG8mVmxdRARlzZZqgBTyJv7N5H1K
+         idkxcq4Lm0VbyugJOjr9BdpMW0MI9habMULav/I4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xin Long <lucien.xin@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 4.19 03/57] sctp: fix the processing for INIT_ACK chunk
-Date:   Mon, 21 Mar 2022 14:51:44 +0100
-Message-Id: <20220321133222.085585303@linuxfoundation.org>
+        Joey Gouly <joey.gouly@arm.com>, Will Deacon <will@kernel.org>,
+        Marc Zyngier <maz@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Reiji Watanabe <reijiw@google.com>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Subject: [PATCH 4.19 43/57] arm64: add ID_AA64ISAR2_EL1 sys register
+Date:   Mon, 21 Mar 2022 14:52:24 +0100
+Message-Id: <20220321133223.241904559@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133221.984120927@linuxfoundation.org>
 References: <20220321133221.984120927@linuxfoundation.org>
@@ -51,131 +53,118 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+From: Joey Gouly <joey.gouly@arm.com>
 
-commit 438b95a7c98f77d51cbf4db021f41b602d750a3f upstream.
+commit 9e45365f1469ef2b934f9d035975dbc9ad352116 upstream.
 
-Currently INIT_ACK chunk in non-cookie_echoed state is processed in
-sctp_sf_discard_chunk() to send an abort with the existent asoc's
-vtag if the chunk length is not valid. But the vtag in the chunk's
-sctphdr is not verified, which may be exploited by one to cook a
-malicious chunk to terminal a SCTP asoc.
+This is a new ID register, introduced in 8.7.
 
-sctp_sf_discard_chunk() also is called in many other places to send
-an abort, and most of those have this problem. This patch is to fix
-it by sending abort with the existent asoc's vtag only if the vtag
-from the chunk's sctphdr is verified in sctp_sf_discard_chunk().
-
-Note on sctp_sf_do_9_1_abort() and sctp_sf_shutdown_pending_abort(),
-the chunk length has been verified before sctp_sf_discard_chunk(),
-so replace it with sctp_sf_discard(). On sctp_sf_do_asconf_ack() and
-sctp_sf_do_asconf(), move the sctp_chunk_length_valid check ahead of
-sctp_sf_discard_chunk(), then replace it with sctp_sf_discard().
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Signed-off-by: Joey Gouly <joey.gouly@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: James Morse <james.morse@arm.com>
+Cc: Alexandru Elisei <alexandru.elisei@arm.com>
+Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
+Cc: Reiji Watanabe <reijiw@google.com>
+Acked-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20211210165432.8106-3-joey.gouly@arm.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sctp/sm_statefuns.c |   37 +++++++++++++++++++------------------
- 1 file changed, 19 insertions(+), 18 deletions(-)
+ arch/arm64/include/asm/cpu.h    |    1 +
+ arch/arm64/include/asm/sysreg.h |    1 +
+ arch/arm64/kernel/cpufeature.c  |    9 +++++++++
+ arch/arm64/kernel/cpuinfo.c     |    1 +
+ arch/arm64/kvm/sys_regs.c       |    2 +-
+ 5 files changed, 13 insertions(+), 1 deletion(-)
 
---- a/net/sctp/sm_statefuns.c
-+++ b/net/sctp/sm_statefuns.c
-@@ -2304,7 +2304,7 @@ enum sctp_disposition sctp_sf_shutdown_p
- 	 */
- 	if (SCTP_ADDR_DEL ==
- 		    sctp_bind_addr_state(&asoc->base.bind_addr, &chunk->dest))
--		return sctp_sf_discard_chunk(net, ep, asoc, type, arg, commands);
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+--- a/arch/arm64/include/asm/cpu.h
++++ b/arch/arm64/include/asm/cpu.h
+@@ -36,6 +36,7 @@ struct cpuinfo_arm64 {
+ 	u64		reg_id_aa64dfr1;
+ 	u64		reg_id_aa64isar0;
+ 	u64		reg_id_aa64isar1;
++	u64		reg_id_aa64isar2;
+ 	u64		reg_id_aa64mmfr0;
+ 	u64		reg_id_aa64mmfr1;
+ 	u64		reg_id_aa64mmfr2;
+--- a/arch/arm64/include/asm/sysreg.h
++++ b/arch/arm64/include/asm/sysreg.h
+@@ -161,6 +161,7 @@
  
- 	if (!sctp_err_chunk_valid(chunk))
- 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-@@ -2350,7 +2350,7 @@ enum sctp_disposition sctp_sf_shutdown_s
- 	 */
- 	if (SCTP_ADDR_DEL ==
- 		    sctp_bind_addr_state(&asoc->base.bind_addr, &chunk->dest))
--		return sctp_sf_discard_chunk(net, ep, asoc, type, arg, commands);
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+ #define SYS_ID_AA64ISAR0_EL1		sys_reg(3, 0, 0, 6, 0)
+ #define SYS_ID_AA64ISAR1_EL1		sys_reg(3, 0, 0, 6, 1)
++#define SYS_ID_AA64ISAR2_EL1		sys_reg(3, 0, 0, 6, 2)
  
- 	if (!sctp_err_chunk_valid(chunk))
- 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-@@ -2620,7 +2620,7 @@ enum sctp_disposition sctp_sf_do_9_1_abo
- 	 */
- 	if (SCTP_ADDR_DEL ==
- 		    sctp_bind_addr_state(&asoc->base.bind_addr, &chunk->dest))
--		return sctp_sf_discard_chunk(net, ep, asoc, type, arg, commands);
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+ #define SYS_ID_AA64MMFR0_EL1		sys_reg(3, 0, 0, 7, 0)
+ #define SYS_ID_AA64MMFR1_EL1		sys_reg(3, 0, 0, 7, 1)
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -150,6 +150,10 @@ static const struct arm64_ftr_bits ftr_i
+ 	ARM64_FTR_END,
+ };
  
- 	if (!sctp_err_chunk_valid(chunk))
- 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-@@ -3787,6 +3787,11 @@ enum sctp_disposition sctp_sf_do_asconf(
- 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
- 	}
- 
-+	/* Make sure that the ASCONF ADDIP chunk has a valid length.  */
-+	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_addip_chunk)))
-+		return sctp_sf_violation_chunklen(net, ep, asoc, type, arg,
-+						  commands);
++static const struct arm64_ftr_bits ftr_id_aa64isar2[] = {
++	ARM64_FTR_END,
++};
 +
- 	/* ADD-IP: Section 4.1.1
- 	 * This chunk MUST be sent in an authenticated way by using
- 	 * the mechanism defined in [I-D.ietf-tsvwg-sctp-auth]. If this chunk
-@@ -3794,13 +3799,7 @@ enum sctp_disposition sctp_sf_do_asconf(
- 	 * described in [I-D.ietf-tsvwg-sctp-auth].
- 	 */
- 	if (!net->sctp.addip_noauth && !chunk->auth)
--		return sctp_sf_discard_chunk(net, ep, asoc, type, arg,
--					     commands);
--
--	/* Make sure that the ASCONF ADDIP chunk has a valid length.  */
--	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_addip_chunk)))
--		return sctp_sf_violation_chunklen(net, ep, asoc, type, arg,
--						  commands);
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+ static const struct arm64_ftr_bits ftr_id_aa64pfr0[] = {
+ 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_NONSTRICT, FTR_LOWER_SAFE, ID_AA64PFR0_CSV3_SHIFT, 4, 0),
+ 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_NONSTRICT, FTR_LOWER_SAFE, ID_AA64PFR0_CSV2_SHIFT, 4, 0),
+@@ -396,6 +400,7 @@ static const struct __ftr_reg_entry {
+ 	/* Op1 = 0, CRn = 0, CRm = 6 */
+ 	ARM64_FTR_REG(SYS_ID_AA64ISAR0_EL1, ftr_id_aa64isar0),
+ 	ARM64_FTR_REG(SYS_ID_AA64ISAR1_EL1, ftr_id_aa64isar1),
++	ARM64_FTR_REG(SYS_ID_AA64ISAR2_EL1, ftr_id_aa64isar2),
  
- 	hdr = (struct sctp_addiphdr *)chunk->skb->data;
- 	serial = ntohl(hdr->serial);
-@@ -3929,6 +3928,12 @@ enum sctp_disposition sctp_sf_do_asconf_
- 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
- 	}
+ 	/* Op1 = 0, CRn = 0, CRm = 7 */
+ 	ARM64_FTR_REG(SYS_ID_AA64MMFR0_EL1, ftr_id_aa64mmfr0),
+@@ -544,6 +549,7 @@ void __init init_cpu_features(struct cpu
+ 	init_cpu_ftr_reg(SYS_ID_AA64DFR1_EL1, info->reg_id_aa64dfr1);
+ 	init_cpu_ftr_reg(SYS_ID_AA64ISAR0_EL1, info->reg_id_aa64isar0);
+ 	init_cpu_ftr_reg(SYS_ID_AA64ISAR1_EL1, info->reg_id_aa64isar1);
++	init_cpu_ftr_reg(SYS_ID_AA64ISAR2_EL1, info->reg_id_aa64isar2);
+ 	init_cpu_ftr_reg(SYS_ID_AA64MMFR0_EL1, info->reg_id_aa64mmfr0);
+ 	init_cpu_ftr_reg(SYS_ID_AA64MMFR1_EL1, info->reg_id_aa64mmfr1);
+ 	init_cpu_ftr_reg(SYS_ID_AA64MMFR2_EL1, info->reg_id_aa64mmfr2);
+@@ -661,6 +667,8 @@ void update_cpu_features(int cpu,
+ 				      info->reg_id_aa64isar0, boot->reg_id_aa64isar0);
+ 	taint |= check_update_ftr_reg(SYS_ID_AA64ISAR1_EL1, cpu,
+ 				      info->reg_id_aa64isar1, boot->reg_id_aa64isar1);
++	taint |= check_update_ftr_reg(SYS_ID_AA64ISAR2_EL1, cpu,
++				      info->reg_id_aa64isar2, boot->reg_id_aa64isar2);
  
-+	/* Make sure that the ADDIP chunk has a valid length.  */
-+	if (!sctp_chunk_length_valid(asconf_ack,
-+				     sizeof(struct sctp_addip_chunk)))
-+		return sctp_sf_violation_chunklen(net, ep, asoc, type, arg,
-+						  commands);
-+
- 	/* ADD-IP, Section 4.1.2:
- 	 * This chunk MUST be sent in an authenticated way by using
- 	 * the mechanism defined in [I-D.ietf-tsvwg-sctp-auth]. If this chunk
-@@ -3936,14 +3941,7 @@ enum sctp_disposition sctp_sf_do_asconf_
- 	 * described in [I-D.ietf-tsvwg-sctp-auth].
- 	 */
- 	if (!net->sctp.addip_noauth && !asconf_ack->auth)
--		return sctp_sf_discard_chunk(net, ep, asoc, type, arg,
--					     commands);
--
--	/* Make sure that the ADDIP chunk has a valid length.  */
--	if (!sctp_chunk_length_valid(asconf_ack,
--				     sizeof(struct sctp_addip_chunk)))
--		return sctp_sf_violation_chunklen(net, ep, asoc, type, arg,
--						  commands);
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+ 	/*
+ 	 * Differing PARange support is fine as long as all peripherals and
+@@ -794,6 +802,7 @@ static u64 __read_sysreg_by_encoding(u32
+ 	read_sysreg_case(SYS_ID_AA64MMFR2_EL1);
+ 	read_sysreg_case(SYS_ID_AA64ISAR0_EL1);
+ 	read_sysreg_case(SYS_ID_AA64ISAR1_EL1);
++	read_sysreg_case(SYS_ID_AA64ISAR2_EL1);
  
- 	addip_hdr = (struct sctp_addiphdr *)asconf_ack->skb->data;
- 	rcvd_serial = ntohl(addip_hdr->serial);
-@@ -4515,6 +4513,9 @@ enum sctp_disposition sctp_sf_discard_ch
- {
- 	struct sctp_chunk *chunk = arg;
- 
-+	if (asoc && !sctp_vtag_verify(chunk, asoc))
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-+
- 	/* Make sure that the chunk has a valid length.
- 	 * Since we don't know the chunk type, we use a general
- 	 * chunkhdr structure to make a comparison.
+ 	read_sysreg_case(SYS_CNTFRQ_EL0);
+ 	read_sysreg_case(SYS_CTR_EL0);
+--- a/arch/arm64/kernel/cpuinfo.c
++++ b/arch/arm64/kernel/cpuinfo.c
+@@ -334,6 +334,7 @@ static void __cpuinfo_store_cpu(struct c
+ 	info->reg_id_aa64dfr1 = read_cpuid(ID_AA64DFR1_EL1);
+ 	info->reg_id_aa64isar0 = read_cpuid(ID_AA64ISAR0_EL1);
+ 	info->reg_id_aa64isar1 = read_cpuid(ID_AA64ISAR1_EL1);
++	info->reg_id_aa64isar2 = read_cpuid(ID_AA64ISAR2_EL1);
+ 	info->reg_id_aa64mmfr0 = read_cpuid(ID_AA64MMFR0_EL1);
+ 	info->reg_id_aa64mmfr1 = read_cpuid(ID_AA64MMFR1_EL1);
+ 	info->reg_id_aa64mmfr2 = read_cpuid(ID_AA64MMFR2_EL1);
+--- a/arch/arm64/kvm/sys_regs.c
++++ b/arch/arm64/kvm/sys_regs.c
+@@ -1289,7 +1289,7 @@ static const struct sys_reg_desc sys_reg
+ 	/* CRm=6 */
+ 	ID_SANITISED(ID_AA64ISAR0_EL1),
+ 	ID_SANITISED(ID_AA64ISAR1_EL1),
+-	ID_UNALLOCATED(6,2),
++	ID_SANITISED(ID_AA64ISAR2_EL1),
+ 	ID_UNALLOCATED(6,3),
+ 	ID_UNALLOCATED(6,4),
+ 	ID_UNALLOCATED(6,5),
 
 
