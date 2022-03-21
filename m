@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33E51C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:55:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7C4EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:55:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344007AbiCUN4r (ORCPT
+        id S1347292AbiCUN4w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 09:56:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43594 "EHLO
+        Mon, 21 Mar 2022 09:56:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348288AbiCUNzt (ORCPT
+        with ESMTP id S1348234AbiCUN4B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:55:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E2DE1AD87;
-        Mon, 21 Mar 2022 06:54:23 -0700 (PDT)
+        Mon, 21 Mar 2022 09:56:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 308A810FE4;
+        Mon, 21 Mar 2022 06:54:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EF3856125C;
-        Mon, 21 Mar 2022 13:54:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0938AC340ED;
-        Mon, 21 Mar 2022 13:54:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B03F56125C;
+        Mon, 21 Mar 2022 13:54:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0F92C340F3;
+        Mon, 21 Mar 2022 13:54:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647870862;
-        bh=2R5EdeFliltwruAyLjLbDPZfvDIF2S8mV0+QpoUR9Jk=;
+        s=korg; t=1647870865;
+        bh=9vMNZb62DYdqoeF4bjRFvp+m4QYksmbaQVFf/bdLHdY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vxq/ZkvOrbgfgdwdZG+kPsVbMdy2epY9NA6Z3lVmCZ1HJx+zKxKgR5k+o2XcXveu7
-         RkNdFeSPrZDIjAe9GvtKXeNJf1zaVQw0+NHKEiwMMr36n+NIbm23ncBL4Q3HfCVdJd
-         73USDoF/mYnz3+bIUmBzbHTFxV4E2t2fYlVIqLoo=
+        b=cOJ9dH2I6W1S70aYbeHTxlM44qbipHTbWfGv3icGd66hcTlSpUwQ2iwBnyWUxxAqC
+         tT1IzWhprOQzvs1U9C4RQrcXMyrleVSba2iEr5NrJesz7GWhHUvMKJiQYiwI124C6F
+         981v5mrflGqobD6fjbcsy6JDgvdwYV7zunb7pHZU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xin Long <lucien.xin@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 4.14 02/22] sctp: fix the processing for INIT_ACK chunk
-Date:   Mon, 21 Mar 2022 14:51:33 +0100
-Message-Id: <20220321133217.676409404@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        syzbot+348b571beb5eeb70a582@syzkaller.appspotmail.com
+Subject: [PATCH 4.14 20/22] usb: gadget: Fix use-after-free bug by not setting udc->dev.driver
+Date:   Mon, 21 Mar 2022 14:51:51 +0100
+Message-Id: <20220321133218.201616182@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133217.602054917@linuxfoundation.org>
 References: <20220321133217.602054917@linuxfoundation.org>
@@ -51,131 +49,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+From: Alan Stern <stern@rowland.harvard.edu>
 
-commit 438b95a7c98f77d51cbf4db021f41b602d750a3f upstream.
+commit 16b1941eac2bd499f065a6739a40ce0011a3d740 upstream.
 
-Currently INIT_ACK chunk in non-cookie_echoed state is processed in
-sctp_sf_discard_chunk() to send an abort with the existent asoc's
-vtag if the chunk length is not valid. But the vtag in the chunk's
-sctphdr is not verified, which may be exploited by one to cook a
-malicious chunk to terminal a SCTP asoc.
+The syzbot fuzzer found a use-after-free bug:
 
-sctp_sf_discard_chunk() also is called in many other places to send
-an abort, and most of those have this problem. This patch is to fix
-it by sending abort with the existent asoc's vtag only if the vtag
-from the chunk's sctphdr is verified in sctp_sf_discard_chunk().
+BUG: KASAN: use-after-free in dev_uevent+0x712/0x780 drivers/base/core.c:2320
+Read of size 8 at addr ffff88802b934098 by task udevd/3689
 
-Note on sctp_sf_do_9_1_abort() and sctp_sf_shutdown_pending_abort(),
-the chunk length has been verified before sctp_sf_discard_chunk(),
-so replace it with sctp_sf_discard(). On sctp_sf_do_asconf_ack() and
-sctp_sf_do_asconf(), move the sctp_chunk_length_valid check ahead of
-sctp_sf_discard_chunk(), then replace it with sctp_sf_discard().
+CPU: 2 PID: 3689 Comm: udevd Not tainted 5.17.0-rc4-syzkaller-00229-g4f12b742eb2b #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0x8d/0x303 mm/kasan/report.c:255
+ __kasan_report mm/kasan/report.c:442 [inline]
+ kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
+ dev_uevent+0x712/0x780 drivers/base/core.c:2320
+ uevent_show+0x1b8/0x380 drivers/base/core.c:2391
+ dev_attr_show+0x4b/0x90 drivers/base/core.c:2094
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Although the bug manifested in the driver core, the real cause was a
+race with the gadget core.  dev_uevent() does:
+
+	if (dev->driver)
+		add_uevent_var(env, "DRIVER=%s", dev->driver->name);
+
+and between the test and the dereference of dev->driver, the gadget
+core sets dev->driver to NULL.
+
+The race wouldn't occur if the gadget core registered its devices on
+a real bus, using the standard synchronization techniques of the
+driver core.  However, it's not necessary to make such a large change
+in order to fix this bug; all we need to do is make sure that
+udc->dev.driver is always NULL.
+
+In fact, there is no reason for udc->dev.driver ever to be set to
+anything, let alone to the value it currently gets: the address of the
+gadget's driver.  After all, a gadget driver only knows how to manage
+a gadget, not how to manage a UDC.
+
+This patch simply removes the statements in the gadget core that touch
+udc->dev.driver.
+
+Fixes: 2ccea03a8f7e ("usb: gadget: introduce UDC Class")
+CC: <stable@vger.kernel.org>
+Reported-and-tested-by: syzbot+348b571beb5eeb70a582@syzkaller.appspotmail.com
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+Link: https://lore.kernel.org/r/YiQgukfFFbBnwJ/9@rowland.harvard.edu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sctp/sm_statefuns.c |   37 +++++++++++++++++++------------------
- 1 file changed, 19 insertions(+), 18 deletions(-)
+ drivers/usb/gadget/udc/core.c |    3 ---
+ 1 file changed, 3 deletions(-)
 
---- a/net/sctp/sm_statefuns.c
-+++ b/net/sctp/sm_statefuns.c
-@@ -2221,7 +2221,7 @@ enum sctp_disposition sctp_sf_shutdown_p
- 	 */
- 	if (SCTP_ADDR_DEL ==
- 		    sctp_bind_addr_state(&asoc->base.bind_addr, &chunk->dest))
--		return sctp_sf_discard_chunk(net, ep, asoc, type, arg, commands);
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+--- a/drivers/usb/gadget/udc/core.c
++++ b/drivers/usb/gadget/udc/core.c
+@@ -1284,7 +1284,6 @@ static void usb_gadget_remove_driver(str
+ 	usb_gadget_udc_stop(udc);
  
- 	if (!sctp_err_chunk_valid(chunk))
- 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-@@ -2267,7 +2267,7 @@ enum sctp_disposition sctp_sf_shutdown_s
- 	 */
- 	if (SCTP_ADDR_DEL ==
- 		    sctp_bind_addr_state(&asoc->base.bind_addr, &chunk->dest))
--		return sctp_sf_discard_chunk(net, ep, asoc, type, arg, commands);
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+ 	udc->driver = NULL;
+-	udc->dev.driver = NULL;
+ 	udc->gadget->dev.driver = NULL;
+ }
  
- 	if (!sctp_err_chunk_valid(chunk))
- 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-@@ -2537,7 +2537,7 @@ enum sctp_disposition sctp_sf_do_9_1_abo
- 	 */
- 	if (SCTP_ADDR_DEL ==
- 		    sctp_bind_addr_state(&asoc->base.bind_addr, &chunk->dest))
--		return sctp_sf_discard_chunk(net, ep, asoc, type, arg, commands);
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+@@ -1333,7 +1332,6 @@ static int udc_bind_to_driver(struct usb
+ 			driver->function);
  
- 	if (!sctp_err_chunk_valid(chunk))
- 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-@@ -3702,6 +3702,11 @@ enum sctp_disposition sctp_sf_do_asconf(
- 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
- 	}
+ 	udc->driver = driver;
+-	udc->dev.driver = &driver->driver;
+ 	udc->gadget->dev.driver = &driver->driver;
  
-+	/* Make sure that the ASCONF ADDIP chunk has a valid length.  */
-+	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_addip_chunk)))
-+		return sctp_sf_violation_chunklen(net, ep, asoc, type, arg,
-+						  commands);
-+
- 	/* ADD-IP: Section 4.1.1
- 	 * This chunk MUST be sent in an authenticated way by using
- 	 * the mechanism defined in [I-D.ietf-tsvwg-sctp-auth]. If this chunk
-@@ -3709,13 +3714,7 @@ enum sctp_disposition sctp_sf_do_asconf(
- 	 * described in [I-D.ietf-tsvwg-sctp-auth].
- 	 */
- 	if (!net->sctp.addip_noauth && !chunk->auth)
--		return sctp_sf_discard_chunk(net, ep, asoc, type, arg,
--					     commands);
--
--	/* Make sure that the ASCONF ADDIP chunk has a valid length.  */
--	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_addip_chunk)))
--		return sctp_sf_violation_chunklen(net, ep, asoc, type, arg,
--						  commands);
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
- 
- 	hdr = (struct sctp_addiphdr *)chunk->skb->data;
- 	serial = ntohl(hdr->serial);
-@@ -3844,6 +3843,12 @@ enum sctp_disposition sctp_sf_do_asconf_
- 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
- 	}
- 
-+	/* Make sure that the ADDIP chunk has a valid length.  */
-+	if (!sctp_chunk_length_valid(asconf_ack,
-+				     sizeof(struct sctp_addip_chunk)))
-+		return sctp_sf_violation_chunklen(net, ep, asoc, type, arg,
-+						  commands);
-+
- 	/* ADD-IP, Section 4.1.2:
- 	 * This chunk MUST be sent in an authenticated way by using
- 	 * the mechanism defined in [I-D.ietf-tsvwg-sctp-auth]. If this chunk
-@@ -3851,14 +3856,7 @@ enum sctp_disposition sctp_sf_do_asconf_
- 	 * described in [I-D.ietf-tsvwg-sctp-auth].
- 	 */
- 	if (!net->sctp.addip_noauth && !asconf_ack->auth)
--		return sctp_sf_discard_chunk(net, ep, asoc, type, arg,
--					     commands);
--
--	/* Make sure that the ADDIP chunk has a valid length.  */
--	if (!sctp_chunk_length_valid(asconf_ack,
--				     sizeof(struct sctp_addip_chunk)))
--		return sctp_sf_violation_chunklen(net, ep, asoc, type, arg,
--						  commands);
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
- 
- 	addip_hdr = (struct sctp_addiphdr *)asconf_ack->skb->data;
- 	rcvd_serial = ntohl(addip_hdr->serial);
-@@ -4435,6 +4433,9 @@ enum sctp_disposition sctp_sf_discard_ch
- {
- 	struct sctp_chunk *chunk = arg;
- 
-+	if (asoc && !sctp_vtag_verify(chunk, asoc))
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-+
- 	/* Make sure that the chunk has a valid length.
- 	 * Since we don't know the chunk type, we use a general
- 	 * chunkhdr structure to make a comparison.
+ 	usb_gadget_udc_set_speed(udc, driver->max_speed);
+@@ -1355,7 +1353,6 @@ err1:
+ 		dev_err(&udc->dev, "failed to start %s: %d\n",
+ 			udc->driver->function, ret);
+ 	udc->driver = NULL;
+-	udc->dev.driver = NULL;
+ 	udc->gadget->dev.driver = NULL;
+ 	return ret;
+ }
 
 
