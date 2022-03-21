@@ -2,108 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8376C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 21:21:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4BB2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 21:25:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230380AbiCUVWb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 17:22:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53488 "EHLO
+        id S229890AbiCUV1G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 17:27:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbiCUVWZ (ORCPT
+        with ESMTP id S229506AbiCUV1D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 17:22:25 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41BAA1AAFCC;
-        Mon, 21 Mar 2022 14:20:18 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id mj15-20020a17090b368f00b001c637aa358eso592115pjb.0;
-        Mon, 21 Mar 2022 14:20:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=mUKC2d+rgbadrMqKVzRP63ji1CbU8Dtk3LjZqErXfOE=;
-        b=M1cz0oNp0VZNd+EWrU5eo3Q9CNpBY6GlvjuOPjo7UNwwLLiok+jLmS1d/4hoTj9MHm
-         ql25H9sfRQ0n6q2e7wgqPMNlcr8T4Ra3okSeFY8ezPCqAcLO+9sSkslmQDRDAggYzRhj
-         gdsu45gccbRrFNc6/4mGVBGNKlWK0vdVbANxZpbEqQKfSAtkmB9cKHQpuMJQ4uERAWs/
-         sH480/8jecHqQX5ikXdo+NC/BEQ4z1k3OrFpTLCXMMaDyc1V59TnkXgHfJ9eELnUmxUn
-         7PQ73ETbMrhi0IM9DiyeDi8UdpRwEYehpaywLb6kFSWGLqWk3YW2+LWpS3zP+bc+93yL
-         eFeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=mUKC2d+rgbadrMqKVzRP63ji1CbU8Dtk3LjZqErXfOE=;
-        b=2NNpSFN54I3nJnzmaPWgzFLiFM68e+nvwcGeGl0TWc4YeP1nn6OHmLXDGh+A+AMDvA
-         TyiN0BEWVUQpPHeo1QLAnro7o+97X6sUFUEdbduPV1ZC+bnnSc3MkSnDX9BqpKBkSgk+
-         bUCmC01MkhhxDZrLMbz4apaCVP/7xrx/aQzyFb/mwiuS2JzW5FUELchfGLV7yaH1jxVw
-         OJGXv0D1Ng1IxsIgM40GArbAfX+pzLIEeyPmN2l19p5mrtbrNXq81l7eAz9PtZUOWTOc
-         OC08o7rkCsdZ915S1Fdo+g4Jm7/Y1jFZtN9BvWms9Q8OnVVYi4gVZaxlkZ7812q9PWy5
-         eqfA==
-X-Gm-Message-State: AOAM5305Ej4WVyBsB/FRau3uxemW/+X4OgQubHvZuSMy1uGvXoSsIZ/W
-        AeD+u7H8GxIIjJWTHKbNj+ovomAQww8PvxoB
-X-Google-Smtp-Source: ABdhPJzT7QSBE6LBEo1dSHapxVA/gwhWkgapC+sufWqb95WRdgxHj6lqgoAB825AlBFUQ7PBiGViig==
-X-Received: by 2002:a17:902:d48a:b0:154:7a1b:5f2b with SMTP id c10-20020a170902d48a00b001547a1b5f2bmr2327169plg.52.1647897617648;
-        Mon, 21 Mar 2022 14:20:17 -0700 (PDT)
-Received: from jagath-PC ([115.99.184.169])
-        by smtp.gmail.com with ESMTPSA id m11-20020a056a00080b00b004f791d0115esm22307990pfk.171.2022.03.21.14.20.15
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 21 Mar 2022 14:20:17 -0700 (PDT)
-Date:   Tue, 22 Mar 2022 02:50:13 +0530
-From:   Jagath Jog J <jagathjog1996@gmail.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Dan Robertson <dan@dlrobertson.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 1/5] iio: accel: bma400: conversion to device-managed
- function
-Message-ID: <20220321212012.GB10058@jagath-PC>
-References: <20220319181023.8090-1-jagathjog1996@gmail.com>
- <20220319181023.8090-2-jagathjog1996@gmail.com>
- <CAHp75Vem7DS1oXRt=d78pKe4WEWVOJ7uR8p9r33H5Ws9Rz4Qmg@mail.gmail.com>
+        Mon, 21 Mar 2022 17:27:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E64E73476DC;
+        Mon, 21 Mar 2022 14:25:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 728526123B;
+        Mon, 21 Mar 2022 21:25:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAE72C340EE;
+        Mon, 21 Mar 2022 21:25:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647897909;
+        bh=AKwmwLhwJETomCoi21Fza1mV0uLKeQfDm9gRO+vTHvI=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=MPxIKdPtpK4j7VKUCmDV+2tDsGY9qCuYZpT+uubn/K/7ZK4NFb15xCb7hlq9Udn/H
+         MyPl1Bk+q6LddZD/d1AuanZomshNMckC1t6J89dbe9aPrfrj2jV4VFMJ3LFFxatinG
+         8nGAUkv7JdOv+NClrOsXYg45DTg1HkU6jx8Tah4NtiEPqFXEyrdreKugKQTkRyWKrc
+         kbzZnCeF2Un5lZJqo4jqCFdILkwrWDyU06wV1wmVZsTgJcdUOiSAOHWV7SefJETDcd
+         d0N8EVw6gxjuXcIzFplBRj+SKCagjPJi8dToTNjOutjni0pgTncZZ2AW7rlyvnpKQx
+         iX6oJ6aiNI/GQ==
+Received: by mail-ej1-f53.google.com with SMTP id a8so32466468ejc.8;
+        Mon, 21 Mar 2022 14:25:09 -0700 (PDT)
+X-Gm-Message-State: AOAM530UiAgnZOXXy/T2Qgqek3nLWgM81QfN7gURhHXNic1iW4KlyRmM
+        mZkSd3BqKY2JkMoOqSZuzLMkbWejpS7r2+fJFQ==
+X-Google-Smtp-Source: ABdhPJzcUrtfN5C6Cp1DYIuKWWPjCKj++GrqTdBuxiMIr8dvQj2FvXNQlVmjtpr5ucAsK90IFEeDROYXBp42Lkqhk70=
+X-Received: by 2002:a17:906:5418:b0:6df:a07f:764b with SMTP id
+ q24-20020a170906541800b006dfa07f764bmr19268057ejo.27.1647897908076; Mon, 21
+ Mar 2022 14:25:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAHp75Vem7DS1oXRt=d78pKe4WEWVOJ7uR8p9r33H5Ws9Rz4Qmg@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <1647237097-29172-1-git-send-email-hammerh0314@gmail.com> <1647237097-29172-3-git-send-email-hammerh0314@gmail.com>
+In-Reply-To: <1647237097-29172-3-git-send-email-hammerh0314@gmail.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Mon, 21 Mar 2022 16:24:56 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqJzbWejb0=XY+xi17n3P1QHWgHYhY1vM3cBBHOqRQ+4xA@mail.gmail.com>
+Message-ID: <CAL_JsqJzbWejb0=XY+xi17n3P1QHWgHYhY1vM3cBBHOqRQ+4xA@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] pwm: sunplus-pwm: Add Sunplus SoC SP7021 PWM Driver
+To:     Hammer Hsieh <hammerh0314@gmail.com>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        =?UTF-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>,
+        "hammer.hsieh" <hammer.hsieh@sunplus.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Andy,
+On Mon, Mar 14, 2022 at 12:51 AM Hammer Hsieh <hammerh0314@gmail.com> wrote:
+>
+> Add Sunplus SoC SP7021 PWM Driver
+>
+> Signed-off-by: Hammer Hsieh <hammerh0314@gmail.com>
 
-On Mon, Mar 21, 2022 at 10:30:26AM +0200, Andy Shevchenko wrote:
-> On Sat, Mar 19, 2022 at 8:10 PM Jagath Jog J <jagathjog1996@gmail.com> wrote:
-> >
-> > This is a conversion to device-managed by using devm_iio_device_register
-> > inside probe function, now disabling the regulator and putting bma400 to
-> > power down via a devm_add_action_or_reset() hook.
-> >
-> > The dev_set_drvdata() call, bma400_remove() function and hooks in the I2C
-> > and SPI driver struct is removed as devm_iio_device_register function is
-> > used to automatically unregister on driver detach.
-> 
-> ...
-> 
-> > +static void bma400_disable(void *data_ptr)
-> > +{
-> > +       struct bma400_data *data = data_ptr;
-> > +       int ret;
-> 
-> > +       ret = bma400_set_power_mode(data, POWER_MODE_SLEEP);
-> > +       if (ret)
-> > +               dev_warn(data->dev, "Failed to put device into sleep mode (%pe)\n",
-> > +                        ERR_PTR(ret));
-> 
-> By what reason did you remove mutex around this call?
-> 
-> > +       regulator_bulk_disable(ARRAY_SIZE(data->regulators), data->regulators);
-> > +}
-Sorry my mistake, I missed this.
-I will include the mutex calls in next patch version.
-> 
-> 
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
+Your message is corrupted because charset is set to 'y' which is not valid:
+
+Content-Type: text/plain; charset=y
+Content-Transfer-Encoding: 8bit
+
+This is due to git-send-email asking you what encoding to use and you
+entered 'y' instead of <enter> to accept the default of UTF-8.
+
+Rob
