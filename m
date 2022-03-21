@@ -2,178 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEBBFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 20:01:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59FCFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 20:04:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352879AbiCUUDF (ORCPT
+        id S1352884AbiCUUGG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 16:03:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49076 "EHLO
+        Mon, 21 Mar 2022 16:06:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349140AbiCUUDB (ORCPT
+        with ESMTP id S240609AbiCUUGE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 16:03:01 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A08BE50B39
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 13:01:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647892895; x=1679428895;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=iNelwzpwtuttr7MOXX06oG+BXc/mNSezZr36ZwGZAjA=;
-  b=MF4/hcZIDoWHIBs6ppAQv8Bb7Pwt1GZLyZl/hVChpxbpdkGbqhHB3kxn
-   x08Qxjqi6B3hYw9lcaOG5rtBw8VSpG9jgnNUxqTzl2WhRMAp88Gqe8HpP
-   Mmy/OnjM1CfOdMuOhYPTgQ5YNs7Z16NQ4AyVockqgNJ11biI9cnfCQ4W9
-   7ettjo6Oa7yo7id+LzoretFAZFKKnOnQkhjbUKE9l7cqtZUlGrTpG7i2C
-   j+yH0HVcT6ZJuZvVZxEXDsbxBmsoFN17ni1+khK1WCbTiFQqgF64lpwK/
-   3BV4rrnhpWFX1E/ciP/WukKrAKSsl0plu2wW0nwH8KNWZjrV5vKFiC0gu
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="239796760"
-X-IronPort-AV: E=Sophos;i="5.90,199,1643702400"; 
-   d="scan'208";a="239796760"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 13:01:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,199,1643702400"; 
-   d="scan'208";a="600596303"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by fmsmga008.fm.intel.com with ESMTP; 21 Mar 2022 13:01:32 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nWODc-000I6r-0o; Mon, 21 Mar 2022 20:01:32 +0000
-Date:   Tue, 22 Mar 2022 04:01:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org,
-        mhocko@suse.com
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        kosaki.motohiro@jp.fujitsu.com, mgorman@suse.de,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        linmiaohe@huawei.com
-Subject: Re: [PATCH v2] mm/mempolicy: fix mpol_new leak in
- shared_policy_replace
-Message-ID: <202203220336.VpfVL4ng-lkp@intel.com>
-References: <20220322083456.16563-1-linmiaohe@huawei.com>
+        Mon, 21 Mar 2022 16:06:04 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2BB35DC0
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 13:04:37 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id pv16so32185087ejb.0
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 13:04:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EphSPWlAG/seg8/XxUJ+C6+QPSj46eTtMcd7G1mgPek=;
+        b=GJiGVlHHVxpjdeq+5wwQIz8f5/ZJWDeVpfFx00K5d5coCxSF4lf0U5NM44hce0/8dS
+         cDFuTSLXY1Tt08BWUK1bQeUbHtbjiOlkx/fMqd5T3EQHiTBKDRUWj5duxUWAnfoZwX6n
+         MJ+uELUJaR+tdQCDhu96nQH9BWXME35LCBwrg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EphSPWlAG/seg8/XxUJ+C6+QPSj46eTtMcd7G1mgPek=;
+        b=slrocj2x7I8ZBlzKcKlixcEiJ2IM8l8KXnJ06ZW+JWDS0IChPQ2fxxEk47EgKtIPoN
+         yZLIHZ138b2t0M4GTMqFmiLf0qV1eSu2zxkQ27uxvnSpwMDB0qwi6LDaYrvowxZkmHIR
+         Mv3cuWc/QnxvAl/s7i9dG5P+PoGqw1YXI6dd6w8iO5IR+0tOZoY6mxEHCVafCYAAUcKE
+         2Ack3erYF3Je3HAnq4PqarFZesO8dRk2VJKccmdtGfnO772kiWIibZbrS637w0AeuN8y
+         7UJq8INYeRFlvNyP6MokIgQt1dHMotio+swOmBhXsIkWoCNz+fcnZWTgLUuS51i554vR
+         tLOg==
+X-Gm-Message-State: AOAM531MRfY/erobjw/lr+KZtsWaS970ubJlP6FvJQAVcrd5WD1CZ97i
+        MPyv8LwbKAczl5juf+bCxefOBnFBkz6IQw==
+X-Google-Smtp-Source: ABdhPJzDeEtDozrCXdtZ1856Y1j+QHoE16KQNvgkH6LTmUGudVj4mz9M3gKo6ffp4E2kyhg0zyFInA==
+X-Received: by 2002:a17:907:3d89:b0:6df:802d:df43 with SMTP id he9-20020a1709073d8900b006df802ddf43mr22570543ejc.76.1647893075971;
+        Mon, 21 Mar 2022 13:04:35 -0700 (PDT)
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com. [209.85.221.48])
+        by smtp.gmail.com with ESMTPSA id dn4-20020a17090794c400b006dbec4f4acbsm7320759ejc.6.2022.03.21.13.04.34
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Mar 2022 13:04:35 -0700 (PDT)
+Received: by mail-wr1-f48.google.com with SMTP id p9so22174883wra.12
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 13:04:34 -0700 (PDT)
+X-Received: by 2002:a5d:5551:0:b0:203:f916:e319 with SMTP id
+ g17-20020a5d5551000000b00203f916e319mr13385092wrw.422.1647893074416; Mon, 21
+ Mar 2022 13:04:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220322083456.16563-1-linmiaohe@huawei.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220321191100.1993-1-swboyd@chromium.org> <20220321191100.1993-4-swboyd@chromium.org>
+In-Reply-To: <20220321191100.1993-4-swboyd@chromium.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Mon, 21 Mar 2022 13:04:20 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=UXeJVVbJhdcoCc8iUESZ-Vz07iY-yt1OY3EM9m7T-axw@mail.gmail.com>
+Message-ID: <CAD=FV=UXeJVVbJhdcoCc8iUESZ-Vz07iY-yt1OY3EM9m7T-axw@mail.gmail.com>
+Subject: Re: [PATCH v4 3/3] platform/chrome: cros_ec_spi: Boot fingerprint
+ processor during probe
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Benson Leung <bleung@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        chrome-platform@lists.linux.dev,
+        Guenter Roeck <groeck@chromium.org>,
+        Craig Hesling <hesling@chromium.org>,
+        Tom Hughes <tomhughes@chromium.org>,
+        Alexandru M Stan <amstan@chromium.org>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
+        Matthias Kaehlcke <mka@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Miaohe,
+Hi,
 
-Thank you for the patch! Yet something to improve:
+On Mon, Mar 21, 2022 at 12:11 PM Stephen Boyd <swboyd@chromium.org> wrote:
+>
+> Add gpio control to this driver so that the fingerprint device can be
+> booted if the BIOS isn't doing it already. This eases bringup of new
+> hardware as we don't have to wait for the BIOS to be ready, supports
+> kexec where the GPIOs may not be configured by the previous boot stage,
+> and is all around good hygiene because we control GPIOs for this device
+> from the device driver.
+>
+> Cc: Guenter Roeck <groeck@chromium.org>
+> Cc: Douglas Anderson <dianders@chromium.org>
+> Cc: Craig Hesling <hesling@chromium.org>
+> Cc: Tom Hughes <tomhughes@chromium.org>
+> Cc: Alexandru M Stan <amstan@chromium.org>
+> Cc: Tzung-Bi Shih <tzungbi@kernel.org>
+> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+> ---
+>  drivers/platform/chrome/cros_ec_spi.c | 42 +++++++++++++++++++++++++--
+>  1 file changed, 39 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/platform/chrome/cros_ec_spi.c b/drivers/platform/chrome/cros_ec_spi.c
+> index 51b64b392c51..92518f90f86e 100644
+> --- a/drivers/platform/chrome/cros_ec_spi.c
+> +++ b/drivers/platform/chrome/cros_ec_spi.c
+> @@ -4,6 +4,7 @@
+>  // Copyright (C) 2012 Google, Inc
+>
+>  #include <linux/delay.h>
+> +#include <linux/gpio/consumer.h>
+>  #include <linux/kernel.h>
+>  #include <linux/module.h>
+>  #include <linux/of.h>
+> @@ -690,11 +691,13 @@ static int cros_ec_cmd_xfer_spi(struct cros_ec_device *ec_dev,
+>         return cros_ec_xfer_high_pri(ec_dev, ec_msg, do_cros_ec_cmd_xfer_spi);
+>  }
+>
+> -static void cros_ec_spi_dt_probe(struct cros_ec_spi *ec_spi, struct device *dev)
+> +static int cros_ec_spi_dt_probe(struct cros_ec_spi *ec_spi, struct device *dev)
+>  {
+>         struct device_node *np = dev->of_node;
+>         u32 val;
+>         int ret;
+> +       struct gpio_desc *boot0;
+> +       struct gpio_desc *reset;
+>
+>         ret = of_property_read_u32(np, "google,cros-ec-spi-pre-delay", &val);
+>         if (!ret)
+> @@ -703,6 +706,37 @@ static void cros_ec_spi_dt_probe(struct cros_ec_spi *ec_spi, struct device *dev)
+>         ret = of_property_read_u32(np, "google,cros-ec-spi-msg-delay", &val);
+>         if (!ret)
+>                 ec_spi->end_of_msg_delay = val;
+> +
+> +       if (!of_device_is_compatible(np, "google,cros-ec-fp"))
+> +               return 0;
+> +
+> +       boot0 = devm_gpiod_get(dev, "boot0", 0);
 
-[auto build test ERROR on linux/master]
-[also build test ERROR on linus/master v5.17]
-[cannot apply to hnaz-mm/master next-20220321]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Miaohe-Lin/mm-mempolicy-fix-mpol_new-leak-in-shared_policy_replace/20220321-200100
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 2c271fe77d52a0555161926c232cd5bc07178b39
-config: x86_64-randconfig-a002-20220321 (https://download.01.org/0day-ci/archive/20220322/202203220336.VpfVL4ng-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 85e9b2687a13d1908aa86d1b89c5ce398a06cd39)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/9a91a8a7964a3af0b60f08dc38b7815e5118206a
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Miaohe-Lin/mm-mempolicy-fix-mpol_new-leak-in-shared_policy_replace/20220321-200100
-        git checkout 9a91a8a7964a3af0b60f08dc38b7815e5118206a
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> mm/mempolicy.c:2745:15: error: incompatible pointer types passing 'atomic_t *' to parameter of type 'refcount_t *' (aka 'struct refcount_struct *') [-Werror,-Wincompatible-pointer-types]
-           refcount_set(&mpol_new->refcnt, 1);
-                        ^~~~~~~~~~~~~~~~~
-   include/linux/refcount.h:134:45: note: passing argument to parameter 'r' here
-   static inline void refcount_set(refcount_t *r, int n)
-                                               ^
-   1 error generated.
+I think that the last parameter to devm_gpiod_get() is better
+described by "GPIOD_ASIS", right? Same for the other one below.
 
 
-vim +2745 mm/mempolicy.c
+> +       if (IS_ERR(boot0))
+> +               return PTR_ERR(boot0);
+> +
+> +       reset = devm_gpiod_get(dev, "reset", 0);
+> +       if (IS_ERR(reset))
+> +               return PTR_ERR(reset);
+> +
+> +       /*
+> +        * Take the FPMCU out of reset and wait for it to boot if it's in
+> +        * bootloader mode or held in reset. This isn't the normal flow because
+> +        * typically the BIOS has already powered on the device to avoid the
+> +        * multi-second delay waiting for the FPMCU to boot and be responsive.
+> +        */
+> +       if (gpiod_get_value(boot0) || gpiod_get_value(reset)) {
 
-  2681	
-  2682	/* Replace a policy range. */
-  2683	static int shared_policy_replace(struct shared_policy *sp, unsigned long start,
-  2684					 unsigned long end, struct sp_node *new)
-  2685	{
-  2686		struct sp_node *n;
-  2687		struct sp_node *n_new = NULL;
-  2688		struct mempolicy *mpol_new = NULL;
-  2689		int ret = 0;
-  2690	
-  2691	restart:
-  2692		write_lock(&sp->lock);
-  2693		n = sp_lookup(sp, start, end);
-  2694		/* Take care of old policies in the same range. */
-  2695		while (n && n->start < end) {
-  2696			struct rb_node *next = rb_next(&n->nd);
-  2697			if (n->start >= start) {
-  2698				if (n->end <= end)
-  2699					sp_delete(sp, n);
-  2700				else
-  2701					n->start = end;
-  2702			} else {
-  2703				/* Old policy spanning whole new range. */
-  2704				if (n->end > end) {
-  2705					if (!n_new)
-  2706						goto alloc_new;
-  2707	
-  2708					*mpol_new = *n->policy;
-  2709					atomic_set(&mpol_new->refcnt, 1);
-  2710					sp_node_init(n_new, end, n->end, mpol_new);
-  2711					n->end = start;
-  2712					sp_insert(sp, n_new);
-  2713					n_new = NULL;
-  2714					mpol_new = NULL;
-  2715					break;
-  2716				} else
-  2717					n->end = start;
-  2718			}
-  2719			if (!next)
-  2720				break;
-  2721			n = rb_entry(next, struct sp_node, nd);
-  2722		}
-  2723		if (new)
-  2724			sp_insert(sp, new);
-  2725		write_unlock(&sp->lock);
-  2726		ret = 0;
-  2727	
-  2728	err_out:
-  2729		if (mpol_new)
-  2730			mpol_put(mpol_new);
-  2731		if (n_new)
-  2732			kmem_cache_free(sn_cache, n_new);
-  2733	
-  2734		return ret;
-  2735	
-  2736	alloc_new:
-  2737		write_unlock(&sp->lock);
-  2738		ret = -ENOMEM;
-  2739		n_new = kmem_cache_alloc(sn_cache, GFP_KERNEL);
-  2740		if (!n_new)
-  2741			goto err_out;
-  2742		mpol_new = kmem_cache_alloc(policy_cache, GFP_KERNEL);
-  2743		if (!mpol_new)
-  2744			goto err_out;
-> 2745		refcount_set(&mpol_new->refcnt, 1);
-  2746		goto restart;
-  2747	}
-  2748	
+I believe that the above two calls are illegal as documented. The file
+`Documentation/driver-api/gpio/consumer.rst` says that if you use
+`GPIOD_ASIS` to get the GPIO that "The direction must be set later
+with one of the dedicated functions.". The "must" there is important.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Oh, and further down it appears to be even more explicit and says "Be
+aware that there is no default direction for GPIOs. Therefore, **using
+a GPIO without setting its direction first is illegal and will result
+in undefined behavior!**".
+
+I assume that "get" counts as using?
+
+I think this sorta gets into some of the limitations of the GPIO APIs
+in Linux that try to make sure that they work on a "lowest common
+denominator" GPIO controller. I don't think they promise that
+"get_value" while in output mode is legal across all GPIO controllers.
+
+Maybe a solution is to at least add a comment saying that the code
+will only work on GPIO controllers that will let you get the value
+back if it's an output?
+
+
+> +               /* Boot0 is sampled on reset deassertion */
+> +               gpiod_set_value(boot0, 0);
+> +               gpiod_set_value(reset, 1);
+
+Those two calls are almost certainly illegal / not guaranteed to work
+without setting a direction, at least in the general case. Luckily I
+think it's easy to just change both of them to
+"gpiod_direction_output", which takes a value.
+
+Actually, even on Qualcomm hardware I don't think those will work if
+the boot direction was input, will they? They'll set the value that
+_will_ be driven but won't cause it to actually be driven, right?
+
+
+-Doug
