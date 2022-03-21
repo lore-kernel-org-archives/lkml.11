@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EF53C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF35AC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:58:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348532AbiCUN57 (ORCPT
+        id S1348727AbiCUN6M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 09:57:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46384 "EHLO
+        Mon, 21 Mar 2022 09:58:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348404AbiCUN4p (ORCPT
+        with ESMTP id S1348307AbiCUN4T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:56:45 -0400
+        Mon, 21 Mar 2022 09:56:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94CEE1728A0;
-        Mon, 21 Mar 2022 06:55:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A5810FE4;
+        Mon, 21 Mar 2022 06:54:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48EED611F4;
-        Mon, 21 Mar 2022 13:55:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C70DC340E8;
-        Mon, 21 Mar 2022 13:55:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 11B036126A;
+        Mon, 21 Mar 2022 13:54:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26379C340E8;
+        Mon, 21 Mar 2022 13:54:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647870901;
+        s=korg; t=1647870887;
         bh=nJtRHfaLe5NTL07RaKpu2Xj7ndP+2DVwsE9w+qaCDaI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Tdr9XGqmt/xit/lJIkGy3b+lRHSF5ig/kgWXsJTnvVqDOuNJelrsLxWY6WjLvHHa2
-         0MG+uy+xAGW9uMgIbYG4Q4pJkKV6GdKWhdCn0aPoEZxc/cunzv2/UVcb5roow/qv1d
-         0Uku1Kc5dp6Xbxup6Cz8Yv7iEIVTcXwy6sQ2gjoY=
+        b=BmZrkjGVFIUAlDeKWeQiTGkKcZwZPYP8g6rUWaCx95gO3OrrfdleMRN5czMFzG5dZ
+         RhyeBYRXGYmTf8OHr/k4cSMCoybCbTmr00vEsMd9Lgwa2zbZ1ycuYjondA890S3g83
+         mwdGx+ai0Lja5Dp7XwjtDlgeWFqsodS/LFSi2FGI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -38,12 +38,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Ulrich Hecht <uli+renesas@fpond.eu>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 11/57] can: rcar_canfd: rcar_canfd_channel_probe(): register the CAN device when fully ready
-Date:   Mon, 21 Mar 2022 14:51:52 +0100
-Message-Id: <20220321133222.313434020@linuxfoundation.org>
+Subject: [PATCH 4.14 08/22] can: rcar_canfd: rcar_canfd_channel_probe(): register the CAN device when fully ready
+Date:   Mon, 21 Mar 2022 14:51:39 +0100
+Message-Id: <20220321133217.853178761@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220321133221.984120927@linuxfoundation.org>
-References: <20220321133221.984120927@linuxfoundation.org>
+In-Reply-To: <20220321133217.602054917@linuxfoundation.org>
+References: <20220321133217.602054917@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
