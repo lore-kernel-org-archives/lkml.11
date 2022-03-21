@@ -2,88 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 025F9C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:33:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12DCEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:34:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345588AbiCUPej (ORCPT
+        id S1350316AbiCUPfj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 11:34:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39082 "EHLO
+        Mon, 21 Mar 2022 11:35:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344805AbiCUPed (ORCPT
+        with ESMTP id S244949AbiCUPfg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 11:34:33 -0400
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EB31634E;
-        Mon, 21 Mar 2022 08:33:05 -0700 (PDT)
-Received: by mail-wr1-f52.google.com with SMTP id h23so20609133wrb.8;
-        Mon, 21 Mar 2022 08:33:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=3LRliTmfLlH3oKVFP57IUFaZfYEaxuZudtlO6I7qIIs=;
-        b=tSshbf46XCiFT/cS9MYxBW/VSFzYcnshB9vln1gUGNJfBlshI4ppzJn8Xvz8HbeMwt
-         V+qpZkDApL9k0rkF5tcXVOmBwU5y1Ks5pFbJn8do2OcvRfKW1mQDlI+lt7YdiHR3y5VJ
-         i8M8n1LW2xZ2J2tnilFWudYUd+x3mm81k4B46uUQdXypOo51XWT6SoJHrukUdwRLKWBi
-         mSfapkagaeuSBT2Cut134wju1SwaPS5gi74Xjw+RtNh4CZf++nakTINu5Y8UvburOELu
-         Ufu+YnectCsuMgeqJBj99UcwWL/GxckTk78WSe55Jgqh5FD1eQa5LvBZkbEy83p5vfJE
-         KJ1g==
-X-Gm-Message-State: AOAM531P9rt5TLOMMpNC/VMjrrfRjMxvaIlO370DGk4rHCidN3JidjE3
-        kkx8Lg0hW5FgA6mkUmnsgNA=
-X-Google-Smtp-Source: ABdhPJyoMJgUZCvV0Y0flDAyJ4coI02yk9wt3cl8Asvux4XUXpEuGTL0bFFEZcGPxGZh3Sj1ux4c7g==
-X-Received: by 2002:adf:e18d:0:b0:204:981:9f73 with SMTP id az13-20020adfe18d000000b0020409819f73mr6510342wrb.99.1647876783791;
-        Mon, 21 Mar 2022 08:33:03 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.googlemail.com with ESMTPSA id d14-20020a056000186e00b0020405198faasm6736607wri.52.2022.03.21.08.33.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Mar 2022 08:33:03 -0700 (PDT)
-Message-ID: <3ee94d1d-4e16-a744-c217-c4bc69ad96b4@kernel.org>
-Date:   Mon, 21 Mar 2022 16:33:02 +0100
+        Mon, 21 Mar 2022 11:35:36 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7203313FAB;
+        Mon, 21 Mar 2022 08:34:11 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 2F847210EE;
+        Mon, 21 Mar 2022 15:34:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1647876850; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=VNyX+fb8O+Otr4c7FYr7v/jIn4CB8StYw4c40MavmeE=;
+        b=Ru+P1yK2Jw1QXzAyhjr0RARsHnQE7zJV28GEnbEs4xJuTY3Xf5qtvm/QzeTKVVyypizHIj
+        uwJd/qnMAsrfNC1aXFENGw4LABp31GnpyUUfUQDpMqoJdGXPRstyzHVslVCOrBll2SAkmo
+        0BfBq2jRMc1eqVe0T+AsJsJOXmz90QY=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 76B2CA3B87;
+        Mon, 21 Mar 2022 15:34:09 +0000 (UTC)
+Date:   Mon, 21 Mar 2022 16:34:08 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Charan Teja Kalla <quic_charante@quicinc.com>
+Cc:     akpm@linux-foundation.org, surenb@google.com, vbabka@suse.cz,
+        rientjes@google.com, sfr@canb.auug.org.au, edgararriaga@google.com,
+        minchan@kernel.org, nadav.amit@gmail.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, "# 5 . 10+" <stable@vger.kernel.org>
+Subject: Re: [PATCH V2,2/2] mm: madvise: skip unmapped vma holes passed to
+ process_madvise
+Message-ID: <Yjia8AzhgWh4KPbp@dhcp22.suse.cz>
+References: <cover.1647008754.git.quic_charante@quicinc.com>
+ <4f091776142f2ebf7b94018146de72318474e686.1647008754.git.quic_charante@quicinc.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4 15/18] dt-bindings: clock: Add L2 clocks to
- qcom,krait-cc Documentation
-Content-Language: en-US
-To:     Ansuel Smith <ansuelsmth@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-clk@vger.kernel.org
-References: <20220321144825.11736-1-ansuelsmth@gmail.com>
- <20220321144825.11736-16-ansuelsmth@gmail.com>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <20220321144825.11736-16-ansuelsmth@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4f091776142f2ebf7b94018146de72318474e686.1647008754.git.quic_charante@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21/03/2022 15:48, Ansuel Smith wrote:
-> Krait-cc qcom driver provide also L2 clocks and require the acpu_l2_aux
-> and the hfpll_l2 clock to be provided. Add these missing clocks to the
-> Documentation.
+On Fri 11-03-22 20:59:06, Charan Teja Kalla wrote:
+> The process_madvise() system call is expected to skip holes in vma
+> passed through 'struct iovec' vector list.
+
+Where is this assumption coming from? From the man page I can see:
+: The advice might be applied to only a part of iovec if one of its
+: elements points to an invalid memory region in the remote
+: process.  No further elements will be processed beyond that
+: point.  
+
+> But do_madvise, which
+> process_madvise() calls for each vma, returns ENOMEM in case of unmapped
+> holes, despite the VMA is processed.
+> Thus process_madvise() should treat ENOMEM as expected and consider the
+> VMA passed to as processed and continue processing other vma's in the
+> vector list. Returning -ENOMEM to user, despite the VMA is processed,
+> will be unable to figure out where to start the next madvise.
+
+I am not sure I follow. With your previous patch and -ENOMEM from
+do_madvise you get the the answer you are looking for, no?
+With this applied you are loosing the information that some of the iters
+are not mapped or has a hole. Which might be a useful information
+especially when processing on remote tasks which are free to manipulate
+their address spaces.
+
+> Fixes: ecb8ac8b1f14("mm/madvise: introduce process_madvise() syscall: an external memory hinting API")
+> Cc: <stable@vger.kernel.org> # 5.10+
+> Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
+> ---
+> Changes in V2:
+>   -- Fixed handling of ENOMEM by process_madvise().
+>   -- Patch doesn't exist in V1.
 > 
+>  mm/madvise.c | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
+> 
+> diff --git a/mm/madvise.c b/mm/madvise.c
+> index e97e6a9..14fb76d 100644
+> --- a/mm/madvise.c
+> +++ b/mm/madvise.c
+> @@ -1426,9 +1426,16 @@ SYSCALL_DEFINE5(process_madvise, int, pidfd, const struct iovec __user *, vec,
+>  
+>  	while (iov_iter_count(&iter)) {
+>  		iovec = iov_iter_iovec(&iter);
+> +		/*
+> +		 * do_madvise returns ENOMEM if unmapped holes are present
+> +		 * in the passed VMA. process_madvise() is expected to skip
+> +		 * unmapped holes passed to it in the 'struct iovec' list
+> +		 * and not fail because of them. Thus treat -ENOMEM return
+> +		 * from do_madvise as valid and continue processing.
+> +		 */
+>  		ret = do_madvise(mm, (unsigned long)iovec.iov_base,
+>  					iovec.iov_len, behavior);
+> -		if (ret < 0)
+> +		if (ret < 0 && ret != -ENOMEM)
+>  			break;
+>  		iov_iter_advance(&iter, iovec.iov_len);
+>  	}
+> -- 
+> 2.7.4
 
-Thanks. It would be also nice to see here short sentence about expected
-impact, e.g. there are no in-tree DTSes which would be affected, no out
-of tree known users etc.
-
-Because basically with this requirement you change the ABI, so you might
-break some users.
-
-I will leave it to platform maintainers to decide whether it is accepted
-or not.
-
-
-Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
-
-
-Best regards,
-Krzysztof
+-- 
+Michal Hocko
+SUSE Labs
