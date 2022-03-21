@@ -2,275 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A818C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:53:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E1B5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:53:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230192AbiCUWyy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:54:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49062 "EHLO
+        id S229948AbiCUWy6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:54:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230408AbiCUWym (ORCPT
+        with ESMTP id S230282AbiCUWyg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:54:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82F12445711
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:33:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1829E611FC
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 22:33:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74C76C340E8;
-        Mon, 21 Mar 2022 22:33:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647901997;
-        bh=ZfsJa7KwB3etBDc/tSAcSW1LlMyxyzZu1Ck9qqHzboc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=LgJWbODpxmSVsetElElfC/COlJBgeTo7bxwaViVtkvnY/BwCIctf0l/aPBfz3I8kf
-         5/1Z/YkdPpEyfnE8am3xhYnTN7Fm6FhzU+76JOs6+DMU2BTGqmf4PNN7WNmmeJX1Mp
-         FxsqcfhYnzRPEqI9yIXLI9egH6NzufNRZzXBytJy4GwBNcof4E9mp4l+ZW3HaStmY1
-         yqxX7NhNGleknK7FbhCFZ5IX6gvIojmO1h+5RJEMxNKsZvhFdJ1tTVy9cJAA8mQxDP
-         eWkjmvWxlQJpv8+gvSd7t0J/Ye2KUZvhL/OdOmAEPWRpCrwKtt7/0nowQTL0QOw0V1
-         Cj1xzY+48+QZQ==
-From:   Jaegeuk Kim <jaegeuk@kernel.org>
-To:     linux-kernel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net
-Cc:     Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH] f2fs: introduce data read/write showing path info
-Date:   Mon, 21 Mar 2022 15:33:15 -0700
-Message-Id: <20220321223315.3228326-1-jaegeuk@kernel.org>
-X-Mailer: git-send-email 2.35.1.894.gb6a874cedc-goog
+        Mon, 21 Mar 2022 18:54:36 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D13A13CE87B
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:33:13 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id q14so8509954ljc.12
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:33:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BH/ZvdHwavygsraND3jZ9umdlqtC3J2xs3HpZjL2mwo=;
+        b=c9f3Pm5IXTpo39kOd0g++gJvtwaFhoqGjkoHxlqOe7Xi1L7cCP3CuQXXRVkJjdLjuo
+         IE79P2+w5wFiYpdJmX0ofyWAZYycl34hnsS8D4ynzd82H5n4Ly8vXdsyUlivtGQuBnmL
+         b9SF9v0advLxASxQduWy0nkNPxJMmDIwkXSzI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BH/ZvdHwavygsraND3jZ9umdlqtC3J2xs3HpZjL2mwo=;
+        b=IwIAJOGIV70rZTKxpLsooUJ+Hks/A+wEcJhTguXFE4VMcQy51e+XYocWiCctZ7x6nA
+         Gs4wfS1ze5eRuiLB1TSIlb3q7tbSe3bqzo2x9qB3rmk4oZiBw/od3vSeTR6OPFm41uEU
+         YgywSGkZRk6AYi0onyLou6Qj1sggY13cmN10nEQxv1JSUM5QqwHbRbzu7u0wGTBGcN1c
+         36Ql7m3HYBKektoDWSRIUJYjXOVCCxjDZFOSq+MOnFYFz5fBINjrB9TlPKsHeBIwIC5a
+         gfHZjFpR2h/fcUnN2TGU2UjywASsCQAiR16BQe3hFxccy97JdIqbpMAJFmlQbyGe1bua
+         cRMA==
+X-Gm-Message-State: AOAM530VW7f9ngiAsGNEQWKI+sf5tq/lNYXJWjSe+RzkBXj8xxymKcPv
+        3wS3iR/OgvHVr/jYbDHt8N9r0S//2l60jGwBFC0=
+X-Google-Smtp-Source: ABdhPJwBc6EONckhenm5IaiH/Z4Mv128h+5O6h1QUc8m/y9R/nrrSdEhUdQRLLmZHauk5Ll4VPNIYg==
+X-Received: by 2002:ac2:5fa8:0:b0:448:7e92:3be0 with SMTP id s8-20020ac25fa8000000b004487e923be0mr16036386lfe.148.1647900217819;
+        Mon, 21 Mar 2022 15:03:37 -0700 (PDT)
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com. [209.85.167.53])
+        by smtp.gmail.com with ESMTPSA id l24-20020a2e99d8000000b002497e14723esm720642ljj.86.2022.03.21.15.03.35
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Mar 2022 15:03:36 -0700 (PDT)
+Received: by mail-lf1-f53.google.com with SMTP id e16so12638110lfc.13
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:03:35 -0700 (PDT)
+X-Received: by 2002:a05:6512:2294:b0:448:6c86:3c78 with SMTP id
+ f20-20020a056512229400b004486c863c78mr15507615lfu.531.1647900215381; Mon, 21
+ Mar 2022 15:03:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220319142759.1026237-1-chenhuacai@loongson.cn>
+ <CAK8P3a12dY57+ZPEREAUrsNf45S0_4-yYHen6p0-PjJEivjczg@mail.gmail.com>
+ <CAHk-=wj81Cgjb5xj=ghB0oEA4ronnc=WKZLTPGpJYPUn=QcQ5g@mail.gmail.com> <CAK8P3a33TZm2NZg28KbCCeLzLvf759_5r8hr-rcWftci9qinog@mail.gmail.com>
+In-Reply-To: <CAK8P3a33TZm2NZg28KbCCeLzLvf759_5r8hr-rcWftci9qinog@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 21 Mar 2022 15:03:18 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wiHLUK8oew17oD=4v-7DXUEDAbrup+7oZ8Stq0m9S2EGQ@mail.gmail.com>
+Message-ID: <CAHk-=wiHLUK8oew17oD=4v-7DXUEDAbrup+7oZ8Stq0m9S2EGQ@mail.gmail.com>
+Subject: Re: [PATCH V8 00/22] arch: Add basic LoongArch support
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Huacai Chen <chenhuacai@kernel.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Huacai Chen <chenhuacai@gmail.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This was used in Android for a long time. Let's upstream it.
+On Mon, Mar 21, 2022 at 2:55 PM Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> I can prepare a pull request when it gets to that, but I think the boot protocol
+> should be fixed first, and that makes it 5.19 material.
 
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
----
- fs/f2fs/f2fs.h              | 29 ++++++++++++
- fs/f2fs/file.c              | 43 ++++++++++++++---
- include/trace/events/f2fs.h | 94 +++++++++++++++++++++++++++++++++++++
- 3 files changed, 159 insertions(+), 7 deletions(-)
+Thanks. No problem on 5.19, it's not like I don't have enough pending
+for this merge window already..
 
-diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
-index 3016b6354a68..95de749c9637 100644
---- a/fs/f2fs/f2fs.h
-+++ b/fs/f2fs/f2fs.h
-@@ -4537,4 +4537,33 @@ static inline bool f2fs_block_unit_discard(struct f2fs_sb_info *sbi)
- #define EFSBADCRC	EBADMSG		/* Bad CRC detected */
- #define EFSCORRUPTED	EUCLEAN		/* Filesystem is corrupted */
- 
-+/* Sizes an on-stack array, so careful if sizing this up ! */
-+#define MAX_TRACE_PATHBUF_LEN	256
-+
-+static inline char *f2fs_get_pathname(char *buf, int len, struct inode *inode)
-+{
-+	char *path;
-+	struct dentry *d;
-+
-+	/*
-+	 * d_obtain_alias() will either iput() if it locates an existing
-+	 * dentry or transfer the reference to the new dentry created.
-+	 * So get an extra reference here.
-+	 */
-+	ihold(inode);
-+	d = d_obtain_alias(inode);
-+	if (likely(!IS_ERR(d))) {
-+		path = dentry_path_raw(d, buf, len);
-+		if (unlikely(IS_ERR(path))) {
-+			strcpy(buf, "ERROR");
-+			path = buf;
-+		}
-+		dput(d);
-+	} else {
-+		strcpy(buf, "ERROR");
-+		path = buf;
-+	}
-+	return path;
-+}
-+
- #endif /* _LINUX_F2FS_H */
-diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-index 68ddf4c7ca64..a6a952b7ff91 100644
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -4329,17 +4329,32 @@ static ssize_t f2fs_dio_read_iter(struct kiocb *iocb, struct iov_iter *to)
- static ssize_t f2fs_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
- {
- 	struct inode *inode = file_inode(iocb->ki_filp);
-+	const loff_t pos = iocb->ki_pos;
-+	const size_t count = iov_iter_count(to);
- 	ssize_t ret;
- 
- 	if (!f2fs_is_compress_backend_ready(inode))
- 		return -EOPNOTSUPP;
- 
--	if (f2fs_should_use_dio(inode, iocb, to))
--		return f2fs_dio_read_iter(iocb, to);
-+	if (trace_f2fs_dataread_start_enabled()) {
-+		char *path, pathbuf[MAX_TRACE_PATHBUF_LEN];
-+
-+		path = f2fs_get_pathname(pathbuf,
-+				MAX_TRACE_PATHBUF_LEN,
-+				inode);
-+		trace_f2fs_dataread_start(inode, pos, count,
-+				current->pid, path,
-+				current->comm);
-+	}
- 
--	ret = filemap_read(iocb, to, 0);
--	if (ret > 0)
--		f2fs_update_iostat(F2FS_I_SB(inode), APP_BUFFERED_READ_IO, ret);
-+	if (f2fs_should_use_dio(inode, iocb, to)) {
-+		ret = f2fs_dio_read_iter(iocb, to);
-+	} else {
-+		ret = filemap_read(iocb, to, 0);
-+		if (ret > 0)
-+			f2fs_update_iostat(F2FS_I_SB(inode), APP_BUFFERED_READ_IO, ret);
-+	}
-+	trace_f2fs_dataread_end(inode, pos, ret);
- 	return ret;
- }
- 
-@@ -4637,14 +4652,28 @@ static ssize_t f2fs_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
- 	/* Possibly preallocate the blocks for the write. */
- 	target_size = iocb->ki_pos + iov_iter_count(from);
- 	preallocated = f2fs_preallocate_blocks(iocb, from, dio);
--	if (preallocated < 0)
-+	if (preallocated < 0) {
- 		ret = preallocated;
--	else
-+	} else {
-+		if (trace_f2fs_datawrite_start_enabled()) {
-+			char *path, pathbuf[MAX_TRACE_PATHBUF_LEN];
-+
-+			path = f2fs_get_pathname(pathbuf,
-+					MAX_TRACE_PATHBUF_LEN,
-+					inode);
-+			trace_f2fs_datawrite_start(inode, orig_pos, orig_count,
-+					current->pid, path,
-+					current->comm);
-+		}
- 		/* Do the actual write. */
- 		ret = dio ?
- 			f2fs_dio_write_iter(iocb, from, &may_need_sync):
- 			f2fs_buffered_write_iter(iocb, from);
- 
-+		if (trace_f2fs_datawrite_end_enabled())
-+			trace_f2fs_datawrite_end(inode, orig_pos, ret);
-+	}
-+
- 	/* Don't leave any preallocated blocks around past i_size. */
- 	if (preallocated && i_size_read(inode) < target_size) {
- 		f2fs_down_write(&F2FS_I(inode)->i_gc_rwsem[WRITE]);
-diff --git a/include/trace/events/f2fs.h b/include/trace/events/f2fs.h
-index f701bb23f83c..11f6b7147be2 100644
---- a/include/trace/events/f2fs.h
-+++ b/include/trace/events/f2fs.h
-@@ -2068,6 +2068,100 @@ TRACE_EVENT(f2fs_fiemap,
- 		__entry->ret)
- );
- 
-+DECLARE_EVENT_CLASS(f2fs__rw_start,
-+
-+	TP_PROTO(struct inode *inode, loff_t offset, int bytes,
-+			pid_t pid, char *pathname, char *command),
-+
-+	TP_ARGS(inode, offset, bytes, pid, pathname, command),
-+
-+	TP_STRUCT__entry(
-+		__string(pathbuf, pathname)
-+		__field(loff_t, offset)
-+		__field(int, bytes)
-+		__field(loff_t, i_size)
-+		__string(cmdline, command)
-+		__field(pid_t, pid)
-+		__field(ino_t, ino)
-+	),
-+
-+	TP_fast_assign(
-+		/*
-+		 * Replace the spaces in filenames and cmdlines
-+		 * because this screws up the tooling that parses
-+		 * the traces.
-+		 */
-+		__assign_str(pathbuf, pathname);
-+		(void)strreplace(__get_str(pathbuf), ' ', '_');
-+		__entry->offset = offset;
-+		__entry->bytes = bytes;
-+		__entry->i_size = i_size_read(inode);
-+		__assign_str(cmdline, command);
-+		(void)strreplace(__get_str(cmdline), ' ', '_');
-+		__entry->pid = pid;
-+		__entry->ino = inode->i_ino;
-+	),
-+
-+	TP_printk("entry_name %s, offset %llu, bytes %d, cmdline %s,"
-+		" pid %d, i_size %llu, ino %lu",
-+		__get_str(pathbuf), __entry->offset, __entry->bytes,
-+		__get_str(cmdline), __entry->pid, __entry->i_size,
-+		(unsigned long) __entry->ino)
-+);
-+
-+DECLARE_EVENT_CLASS(f2fs__rw_end,
-+
-+	TP_PROTO(struct inode *inode, loff_t offset, int bytes),
-+
-+	TP_ARGS(inode, offset, bytes),
-+
-+	TP_STRUCT__entry(
-+		__field(ino_t,	ino)
-+		__field(loff_t,	offset)
-+		__field(int,	bytes)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->ino		= inode->i_ino;
-+		__entry->offset		= offset;
-+		__entry->bytes		= bytes;
-+	),
-+
-+	TP_printk("ino %lu, offset %llu, bytes %d",
-+		(unsigned long) __entry->ino,
-+		__entry->offset, __entry->bytes)
-+);
-+
-+DEFINE_EVENT(f2fs__rw_start, f2fs_dataread_start,
-+
-+	TP_PROTO(struct inode *inode, loff_t offset, int bytes,
-+		pid_t pid, char *pathname, char *command),
-+
-+	TP_ARGS(inode, offset, bytes, pid, pathname, command)
-+);
-+
-+DEFINE_EVENT(f2fs__rw_end, f2fs_dataread_end,
-+
-+	TP_PROTO(struct inode *inode, loff_t offset, int bytes),
-+
-+	TP_ARGS(inode, offset, bytes)
-+);
-+
-+DEFINE_EVENT(f2fs__rw_start, f2fs_datawrite_start,
-+
-+	TP_PROTO(struct inode *inode, loff_t offset, int bytes,
-+		pid_t pid, char *pathname, char *command),
-+
-+	TP_ARGS(inode, offset, bytes, pid, pathname, command)
-+);
-+
-+DEFINE_EVENT(f2fs__rw_end, f2fs_datawrite_end,
-+
-+	TP_PROTO(struct inode *inode, loff_t offset, int bytes),
-+
-+	TP_ARGS(inode, offset, bytes)
-+);
-+
- #endif /* _TRACE_F2FS_H */
- 
-  /* This part must be outside protection */
--- 
-2.35.1.894.gb6a874cedc-goog
-
+                 Linus
