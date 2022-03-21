@@ -2,79 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7626C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 21:25:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04B08C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 21:44:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230252AbiCUV1K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 17:27:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51044 "EHLO
+        id S229549AbiCUVqH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 17:46:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbiCUV1G (ORCPT
+        with ESMTP id S229453AbiCUVqG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 17:27:06 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2913E3458FA;
-        Mon, 21 Mar 2022 14:25:27 -0700 (PDT)
-Received: from handsomejack.molgen.mpg.de (handsomejack.molgen.mpg.de [141.14.17.248])
-        by mx.molgen.mpg.de (Postfix) with ESMTP id 869DC61E6478B;
-        Mon, 21 Mar 2022 22:25:21 +0100 (CET)
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/3] ata: ahci: Add new board low_power_no_debounce_delay
-Date:   Mon, 21 Mar 2022 22:24:30 +0100
-Message-Id: <20220321212431.13717-1-pmenzel@molgen.mpg.de>
-X-Mailer: git-send-email 2.30.2
+        Mon, 21 Mar 2022 17:46:06 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C59E264561
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 14:41:22 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id q11so13839639pln.11
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 14:41:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=hzlxuoVcUtFNyYhd7IaP3vW/n/31iVrjVI0cYpxyVIg=;
+        b=AJJS8AlLvE3dh4Iw3f148oDobBs8GBjNK4HQR4fd1ld62s0aCs+22XINlkoJDU3AoS
+         8uOi8t84billfQr0/CqrEHKAzh01irX6vV3+g/0cziRJHBRIamVkeOpo/BnaIatO7PZV
+         Eh43oCbXlnRIdtB69OTh5c/BRYxUtttvmXan5DnrMyeb/hsvFapXSvlvx+JuWcvRFGHt
+         Ntke3y/TTx6l6EOaJqInsPSOd9mVsFU0WbP2/5lR+aO70ZuS7ys8aNRkV3i6D/Lf0evC
+         r6BJwCreN/NdOKs2SjJv0+1od6GQSOKpx1d5z0hh7EF2eui/EcuQxfMSPoOkBKCZ7FWC
+         /+Ew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=hzlxuoVcUtFNyYhd7IaP3vW/n/31iVrjVI0cYpxyVIg=;
+        b=UbRXTHrsbs6r0S2xJn6wkWkjLM0sXBCuSClQGXF3b9YN1d7gUCaFKioapaKrzp61J/
+         E9n7l3nG4HC1IAZayHLTDvgXK+I9JlvEwUWUJ3kOFpzMcLyKFJ4XB6Nbd128LwbAnlmj
+         z7SHiKaXmgbbU2PnO3X7jNPgP0uaX6YpCN+2f8uSsUKXJlKgc8PYeACy5/qPq56NqJa8
+         DxXKjqomHcW+SJPzEfqZMeNA6YDlSRxsPgQQUGR/jdwYoEfNBX2eGURhDimjP6Z9uTog
+         OqWq0wUTvJgY33rOXnqzq/sSpEXUy/QqU6vyof2KMEgdyYr5rGmDSoe/zq67OmGly1i8
+         GyDA==
+X-Gm-Message-State: AOAM5331arWquAjePhmXc/F4LWOf3rOR4vRYwoiekQ99g7POnKsxphy9
+        cQ9VIolu8MYM979p/tlV0qxCTuXwPdI9sQebPhnRBg==
+X-Google-Smtp-Source: ABdhPJyzdofKTKHoiJ4iGCBbHSPi4Xc1wlwYjpgmL6SpWKAD7UioDwd+ubLQF8zj102JpbsH9iOBSWpSmWQXM5a6nHg=
+X-Received: by 2002:a17:903:32c7:b0:154:4156:f384 with SMTP id
+ i7-20020a17090332c700b001544156f384mr10917932plr.34.1647898771195; Mon, 21
+ Mar 2022 14:39:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220318114133.113627-1-kjain@linux.ibm.com> <20220318114133.113627-2-kjain@linux.ibm.com>
+In-Reply-To: <20220318114133.113627-2-kjain@linux.ibm.com>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Mon, 21 Mar 2022 14:39:23 -0700
+Message-ID: <CAPcyv4iqpTn89WLOW1XjFXGZEYG_MmPg+VQbcDJ9ygJ4Jaybtw@mail.gmail.com>
+Subject: Re: [PATCH 2/2] powerpc/papr_scm: Fix build failure when
+ CONFIG_PERF_EVENTS is not set
+To:     Kajol Jain <kjain@linux.ibm.com>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Linux NVDIMM <nvdimm@lists.linux.dev>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Weiny, Ira" <ira.weiny@intel.com>,
+        Vishal L Verma <vishal.l.verma@intel.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Santosh Sivaraj <santosh@fossix.org>, maddy@linux.ibm.com,
+        rnsastry@linux.ibm.com,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        atrajeev@linux.vnet.ibm.com, Vaibhav Jain <vaibhav@linux.ibm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Linux MM <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some adapters do not require the default 200 ms debounce delay in
-`sata_link_resume()`. So, create the new board
-`board_ahci_low_power_no_debounce_delay` with the link flag
-`ATA_LFLAG_NO_DEBOUNCE_DELAY`.
+On Fri, Mar 18, 2022 at 4:42 AM Kajol Jain <kjain@linux.ibm.com> wrote:
+>
+> The following build failure occures when CONFIG_PERF_EVENTS is not set
+> as generic pmu functions are not visible in that scenario.
+>
+> arch/powerpc/platforms/pseries/papr_scm.c:372:35: error: =E2=80=98struct =
+perf_event=E2=80=99 has no member named =E2=80=98attr=E2=80=99
+>          p->nvdimm_events_map[event->attr.config],
+>                                    ^~
+> In file included from ./include/linux/list.h:5,
+>                  from ./include/linux/kobject.h:19,
+>                  from ./include/linux/of.h:17,
+>                  from arch/powerpc/platforms/pseries/papr_scm.c:5:
+> arch/powerpc/platforms/pseries/papr_scm.c: In function =E2=80=98papr_scm_=
+pmu_event_init=E2=80=99:
+> arch/powerpc/platforms/pseries/papr_scm.c:389:49: error: =E2=80=98struct =
+perf_event=E2=80=99 has no member named =E2=80=98pmu=E2=80=99
+>   struct nvdimm_pmu *nd_pmu =3D to_nvdimm_pmu(event->pmu);
+>                                                  ^~
+> ./include/linux/container_of.h:18:26: note: in definition of macro =E2=80=
+=98container_of=E2=80=99
+>   void *__mptr =3D (void *)(ptr);     \
+>                           ^~~
+> arch/powerpc/platforms/pseries/papr_scm.c:389:30: note: in expansion of m=
+acro =E2=80=98to_nvdimm_pmu=E2=80=99
+>   struct nvdimm_pmu *nd_pmu =3D to_nvdimm_pmu(event->pmu);
+>                               ^~~~~~~~~~~~~
+> In file included from ./include/linux/bits.h:22,
+>                  from ./include/linux/bitops.h:6,
+>                  from ./include/linux/of.h:15,
+>                  from arch/powerpc/platforms/pseries/papr_scm.c:5:
+>
+> Fix the build issue by adding check for CONFIG_PERF_EVENTS config option
+> and disabling the papr_scm perf interface support incase this config
+> is not set
+>
+> Fixes: 4c08d4bbc089 ("powerpc/papr_scm: Add perf interface support") (Com=
+mit id
+> based on linux-next tree)
+> Signed-off-by: Kajol Jain <kjain@linux.ibm.com>
+> ---
+>  arch/powerpc/platforms/pseries/papr_scm.c | 15 +++++++++++++++
 
-Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Cc: Hans de Goede <hdegoede@redhat.com>
-Cc: Mario Limonciello <mario.limonciello@amd.com>
----
-v2: Resend
+This is a bit messier than I would have liked mainly because it dumps
+a bunch of ifdefery into a C file contrary to coding style, "Wherever
+possible, don't use preprocessor conditionals (#if, #ifdef) in .c
+files". I would expect this all to move to an organization like:
 
- drivers/ata/ahci.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+arch/powerpc/platforms/pseries/papr_scm/main.c
+arch/powerpc/platforms/pseries/papr_scm/perf.c
 
-diff --git a/drivers/ata/ahci.c b/drivers/ata/ahci.c
-index 84456c05e8452..0fc09b86a5590 100644
---- a/drivers/ata/ahci.c
-+++ b/drivers/ata/ahci.c
-@@ -51,6 +51,7 @@ enum board_ids {
- 	board_ahci,
- 	board_ahci_ign_iferr,
- 	board_ahci_low_power,
-+	board_ahci_low_power_no_debounce_delay,
- 	board_ahci_no_debounce_delay,
- 	board_ahci_nomsi,
- 	board_ahci_noncq,
-@@ -142,6 +143,14 @@ static const struct ata_port_info ahci_port_info[] = {
- 		.udma_mask	= ATA_UDMA6,
- 		.port_ops	= &ahci_ops,
- 	},
-+	[board_ahci_low_power_no_debounce_delay] = {
-+		AHCI_HFLAGS	(AHCI_HFLAG_USE_LPM_POLICY),
-+		.flags		= AHCI_FLAG_COMMON,
-+		.link_flags	= ATA_LFLAG_NO_DEBOUNCE_DELAY,
-+		.pio_mask	= ATA_PIO4,
-+		.udma_mask	= ATA_UDMA6,
-+		.port_ops	= &ahci_ops,
-+	},
- 	[board_ahci_no_debounce_delay] = {
- 		.flags		= AHCI_FLAG_COMMON,
- 		.link_flags	= ATA_LFLAG_NO_DEBOUNCE_DELAY,
--- 
-2.30.2
+...and a new config symbol like:
 
+config PAPR_SCM_PERF
+       depends on PAPR_SCM && PERF_EVENTS
+       def_bool y
+
+...with wrappers in header files to make everything compile away
+without any need for main.c to carry an ifdef.
+
+Can you turn a patch like that in the next couple days? Otherwise, I
+think if Linus saw me sending a late breaking compile fix that threw
+coding style out the window he'd have cause to just drop the pull
+request entirely.
