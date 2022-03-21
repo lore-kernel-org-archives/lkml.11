@@ -2,58 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80D80C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:48:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3459C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:48:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230114AbiCUWtk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:49:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52434 "EHLO
+        id S229873AbiCUWtp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:49:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230008AbiCUWtW (ORCPT
+        with ESMTP id S229853AbiCUWtY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:49:22 -0400
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6FEC3F88C0
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:44:06 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id s68-20020a625e47000000b004fa6520b540so7067845pfb.17
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:44:06 -0700 (PDT)
+        Mon, 21 Mar 2022 18:49:24 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56A20541A2
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:44:01 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id lr15-20020a17090b4b8f00b001c646e432baso343790pjb.3
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:44:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=u4JgM+75AZti27lWXqtslukLZQOfvOSzkXisiK6DciE=;
-        b=O3iLZaJFpBD2w8/KBPwwtdSPS3VW/mW+S1HIPBHLXcwgAJ4BjjapYoLUcZEAthI5CM
-         8pg6yLMvfbQfStqh4mPuZwedjV4YTYq5XoMkdOgLw3CW9MvcGCEK2TFcZT3csUGPf6GV
-         4Ffa1CQEmHjLFXFLB+W15T2iQBD9TnMIYYMGyQcAxVhffbp2lf9atPSu3uuUkW+HjxcU
-         U41z6fnybdcxtkbHs0+h3m28ei5FXR8FoVvb4T7lu/3rssBKeMct+czWbQK1qIW59mP3
-         n9RF3DR+RUFh4gAbrQXcMXDZBIZvnLvAfmk9RC/grvCY7vmD52esqOFUZo3eAP4m+omR
-         z0Ng==
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=duWOk9J5Rn3bjagoFq9i2kDyIyZnSP5TRc8u4qHhNfc=;
+        b=Pbm8QX/YyzkKPwPzsQYphCPvViUlrGZ4HzV1Z42L6Cf/bmYgIou7g0C9QUdXKWoy+7
+         DjYM69lY6J38IsyXQke7TIIR5Lr1K5waEfqw8b2N1GXPLRd4TiDMI41YBW4iAv1F1dLI
+         CyHmC9cUT5wQhKKT/iHDgPjDVqpr/U0PL1+4RkVl+HNbk45Wc5pp2AGcDP96NbVSdSTo
+         ps9qYmkf9aTdutmz15SjIpucdkZjOl05F+Nj+c6meZGiY/oxe8o/R65JNC01KiGnsiUi
+         wpJgG0LIISGTBMU0aFmwqmk2Q8yvJcUM0mv/VSxoTVzsnXGDxuu1MKLg8+9jEUZs2bhW
+         UUmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=u4JgM+75AZti27lWXqtslukLZQOfvOSzkXisiK6DciE=;
-        b=1m9byHzm2o7KN1kwoB53nxpIR+7554USb47NQe6sGazt+p5Qe4j2eVJjc9LtNehPPk
-         1wkGb/hs0/Yyr0CYzkiljEJiziZMwJOFtD7W3fNUCzN6cIMURyEqh8XsCWd+xpbRpGf0
-         BWJ6tL1KoCO+jm+k8YPXzGut/8YFhgMbPL5qSN6YrXrpfq5LiujpMvNBxZEgAikyFPnn
-         YWZAYOjWO+hZDLihw+I9vyEfIVAjE1sUsxtdlpqi85fTP1diItiNIjFO23jOnz/9rN7d
-         iB3GW27wfKD4IdewdXxKyMHYqibbTT38YoPVB6S/hwsQZPQvB3+M1nsGLOJZNKOk/Oax
-         kYEA==
-X-Gm-Message-State: AOAM532UsTIOVPQkqUmr9iuH64q90a2vNkMVIpRsxebE+2p2EuCN3lRE
-        kVA7CHssBtr6YPbTchiDG1G2G6Goq4HPnnOBEMR1j2BfV2u6oIUkOTGCZ4MO6jPTu3N+Wy9kWDK
-        2p91252l/wriU9jChYv+qLWOyAysqmu60w2+84E7QCQQC7693nJBBaAnQlJH6BQ1HhWqRflZZ
-X-Google-Smtp-Source: ABdhPJzjrjlRXuCSKs/r2vXduiSUY2+WMaIe9AiFUfDVX2HOaPToQVhD+JfsRG79K2Fz+le1NG7UYlGRPRjA
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=duWOk9J5Rn3bjagoFq9i2kDyIyZnSP5TRc8u4qHhNfc=;
+        b=kffWf211qH/GKRbFvRsX9MzDr/xiwvZiJXHZgQpUYf9cE2hbm7XGDD+o7B+aljEqIs
+         Y5KEBtWVshgPBf/4reJxxQKJWNPfmn0uwnsiYnHwEFqkp45stxH/Empp3OY1RJet2rqm
+         eG/4TuKodhGPboSq+7rXt83o8+ENL86k/r0UcHW/T6yTH3eqCLckQwyKM8r2Qnv5+Jrq
+         l6g3XGPWl0KcwlqQMTVWOYJAwyF9vNcbVdS25fEJi6pPW2n6HROrNhyxEs+yNL4cxELd
+         u7PjenHCzn6OvZpyV+Sf2h8wdmEnvzsBhCjH2DaNDBbFTHTx9OpS/0AfLdXr91941h5F
+         zhQg==
+X-Gm-Message-State: AOAM530dM9HvSUk9qMGaNj4JbS71lCGfhoAXs9YY0IXR+q1s0uQdT75w
+        ccHdtPrzDfUzlR/+uERmcdfp+TwqAv/lqwVDt6y58Sr1shgBAdYaaXAaqBpNG/qPjhAZm8QN1RU
+        kwUH+xWPjGByd8CO8I6eMiVh5Bj3RQGHlxZy+ciD/3zEfKyxlO7TG6wHevEoWuSpN7BK8Wvep
+X-Google-Smtp-Source: ABdhPJytHGDouKoHJ9pRLVFB3Z6mEk4NzNC1Z7XTnWfFcOGBMjMjihWhYrp1JPCBQ/kOlhRedUpIllb6zEum
 X-Received: from bgardon.sea.corp.google.com ([2620:15c:100:202:b76a:f152:cb5e:5cd2])
- (user=bgardon job=sendgmr) by 2002:a05:6a00:1596:b0:4f9:f992:9f69 with SMTP
- id u22-20020a056a00159600b004f9f9929f69mr25497286pfk.7.1647902646189; Mon, 21
- Mar 2022 15:44:06 -0700 (PDT)
-Date:   Mon, 21 Mar 2022 15:43:51 -0700
-In-Reply-To: <20220321224358.1305530-1-bgardon@google.com>
-Message-Id: <20220321224358.1305530-3-bgardon@google.com>
+ (user=bgardon job=sendgmr) by 2002:a17:902:ea09:b0:154:4af3:bb77 with SMTP id
+ s9-20020a170902ea0900b001544af3bb77mr9669730plg.4.1647902640776; Mon, 21 Mar
+ 2022 15:44:00 -0700 (PDT)
+Date:   Mon, 21 Mar 2022 15:43:49 -0700
+Message-Id: <20220321224358.1305530-1-bgardon@google.com>
 Mime-Version: 1.0
-References: <20220321224358.1305530-1-bgardon@google.com>
 X-Mailer: git-send-email 2.35.1.894.gb6a874cedc-goog
-Subject: [PATCH v2 2/9] KVM: x86/mmu: Factor mt_mask out of __make_spte
+Subject: [PATCH v2 0/9] KVM: x86/MMU: Optimize disabling dirty logging
 From:   Ben Gardon <bgardon@google.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     Paolo Bonzini <pbonzini@redhat.com>, Peter Xu <peterx@redhat.com>,
@@ -69,67 +65,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In service of removing the vCPU pointer from __make_spte, factor the memory
-type mask calculation out of __make_spte.
+Currently disabling dirty logging with the TDP MMU is extremely slow.
+On a 96 vCPU / 96G VM it takes ~256 seconds to disable dirty logging
+with the TDP MMU, as opposed to ~4 seconds with the legacy MMU. This
+series optimizes TLB flushes and introduces in-place large page
+promotion, to bring the disable dirty log time down to ~3 seconds.
 
-Signed-off-by: Ben Gardon <bgardon@google.com>
----
- arch/x86/kvm/mmu/spte.c | 12 ++++++++----
- arch/x86/kvm/mmu/spte.h |  3 ++-
- 2 files changed, 10 insertions(+), 5 deletions(-)
+Testing:
+Ran KVM selftests and kvm-unit-tests on an Intel Haswell. This
+series introduced no new failures.
 
-diff --git a/arch/x86/kvm/mmu/spte.c b/arch/x86/kvm/mmu/spte.c
-index d3da0d3d41cb..931cf93c3b7e 100644
---- a/arch/x86/kvm/mmu/spte.c
-+++ b/arch/x86/kvm/mmu/spte.c
-@@ -93,7 +93,8 @@ static bool kvm_is_mmio_pfn(kvm_pfn_t pfn)
- bool __make_spte(struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp,
- 		 const struct kvm_memory_slot *slot, unsigned int pte_access,
- 		 gfn_t gfn, kvm_pfn_t pfn, u64 old_spte, bool prefetch,
--		 bool can_unsync, bool host_writable, u64 *new_spte)
-+		 bool can_unsync, bool host_writable, u64 mt_mask,
-+		 u64 *new_spte)
- {
- 	int level = sp->role.level;
- 	u64 spte = SPTE_MMU_PRESENT_MASK;
-@@ -130,8 +131,7 @@ bool __make_spte(struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp,
- 	if (level > PG_LEVEL_4K)
- 		spte |= PT_PAGE_SIZE_MASK;
- 	if (tdp_enabled)
--		spte |= static_call(kvm_x86_get_mt_mask)(vcpu, gfn,
--			kvm_is_mmio_pfn(pfn));
-+		spte |= mt_mask;
- 
- 	if (host_writable)
- 		spte |= shadow_host_writable_mask;
-@@ -197,8 +197,12 @@ bool make_spte(struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp,
- 	       u64 old_spte, bool prefetch, bool can_unsync,
- 	       bool host_writable, u64 *new_spte)
- {
-+	u64 mt_mask = static_call(kvm_x86_get_mt_mask)(vcpu, gfn,
-+						       kvm_is_mmio_pfn(pfn));
-+
- 	return __make_spte(vcpu, sp, slot, pte_access, gfn, pfn, old_spte,
--			   prefetch, can_unsync, host_writable, new_spte);
-+			   prefetch, can_unsync, host_writable, mt_mask,
-+			   new_spte);
- 
- }
- 
-diff --git a/arch/x86/kvm/mmu/spte.h b/arch/x86/kvm/mmu/spte.h
-index 3fae3c3124f7..d051f955699e 100644
---- a/arch/x86/kvm/mmu/spte.h
-+++ b/arch/x86/kvm/mmu/spte.h
-@@ -413,7 +413,8 @@ static inline u64 get_mmio_spte_generation(u64 spte)
- bool __make_spte(struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp,
- 		 const struct kvm_memory_slot *slot, unsigned int pte_access,
- 		 gfn_t gfn, kvm_pfn_t pfn, u64 old_spte, bool prefetch,
--		 bool can_unsync, bool host_writable, u64 *new_spte);
-+		 bool can_unsync, bool host_writable, u64 mt_mask,
-+		 u64 *new_spte);
- bool make_spte(struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp,
- 	       const struct kvm_memory_slot *slot,
- 	       unsigned int pte_access, gfn_t gfn, kvm_pfn_t pfn,
+Performance:
+
+Without this series, TDP MMU:
+> ./dirty_log_perf_test -v 96 -s anonymous_hugetlb_1gb
+Test iterations: 2
+Testing guest mode: PA-bits:ANY, VA-bits:48,  4K pages
+guest physical test memory offset: 0x3fe7c0000000
+Populate memory time: 4.972184425s
+Enabling dirty logging time: 0.001943807s
+
+Iteration 1 dirty memory time: 0.061862112s
+Iteration 1 get dirty log time: 0.001416413s
+Iteration 1 clear dirty log time: 1.417428057s
+Iteration 2 dirty memory time: 0.664103656s
+Iteration 2 get dirty log time: 0.000676724s
+Iteration 2 clear dirty log time: 1.149387201s
+Disabling dirty logging time: 256.682188868s
+Get dirty log over 2 iterations took 0.002093137s. (Avg 0.001046568s/iteration)
+Clear dirty log over 2 iterations took 2.566815258s. (Avg 1.283407629s/iteration)
+
+Without this series, Legacy MMU:
+> ./dirty_log_perf_test -v 96 -s anonymous_hugetlb_1gb
+Test iterations: 2
+Testing guest mode: PA-bits:ANY, VA-bits:48,  4K pages
+guest physical test memory offset: 0x3fe7c0000000
+Populate memory time: 4.892940915s
+Enabling dirty logging time: 0.001864603s
+
+Iteration 1 dirty memory time: 0.060490391s
+Iteration 1 get dirty log time: 0.001416277s
+Iteration 1 clear dirty log time: 0.323548614s
+Iteration 2 dirty memory time: 29.217064826s
+Iteration 2 get dirty log time: 0.000696202s
+Iteration 2 clear dirty log time: 0.907089084s
+Disabling dirty logging time: 4.246216551s
+Get dirty log over 2 iterations took 0.002112479s. (Avg 0.001056239s/iteration)
+Clear dirty log over 2 iterations took 1.230637698s. (Avg 0.615318849s/iteration)
+
+With this series, TDP MMU:
+(Updated since RFC. Pulling out patches 1-4 could have a performance impact.)
+> ./dirty_log_perf_test -v 96 -s anonymous_hugetlb_1gb
+Test iterations: 2
+Testing guest mode: PA-bits:ANY, VA-bits:48,  4K pages
+guest physical test memory offset: 0x3fe7c0000000
+Populate memory time: 4.878083336s
+Enabling dirty logging time: 0.001874340s
+
+Iteration 1 dirty memory time: 0.054867383s
+Iteration 1 get dirty log time: 0.001368377s
+Iteration 1 clear dirty log time: 1.406960856s
+Iteration 2 dirty memory time: 0.679301083s
+Iteration 2 get dirty log time: 0.000662905s
+Iteration 2 clear dirty log time: 1.138263359s
+Disabling dirty logging time: 3.169381810s
+Get dirty log over 2 iterations took 0.002031282s. (Avg 0.001015641s/iteration)
+Clear dirty log over 2 iterations took 2.545224215s. (Avg 1.272612107s/iteration)
+
+Patch breakdown:
+Patches 1-4 remove the need for a vCPU pointer to make_spte
+Patches 5-8 are small refactors in preparation for in-place lpage promotion
+Patch 9 implements in-place largepage promotion when disabling dirty logging
+
+Changelog:
+RFC -> v1:
+	Dropped the first 4 patches from the series. Patch 1 was sent
+	separately, patches 2-4 will be taken over by Sean Christopherson.
+	Incorporated David Matlack's Reviewed-by.
+v1 -> v2:
+	Several patches were queued and dropped from this revision.
+	Incorporated feedback from Peter Xu on the last patch in the series.
+	Refreshed performance data
+		Between versions 1 and 2 of this series, disable time without
+		the TDP MMU went from 45s to 256, a major regression. I was
+		testing on a skylake before and haswell this time, but that
+		does not explain the huge performance loss.
+
+Ben Gardon (9):
+  KVM: x86/mmu: Move implementation of make_spte to a helper
+  KVM: x86/mmu: Factor mt_mask out of __make_spte
+  KVM: x86/mmu: Factor shadow_zero_check out of __make_spte
+  KVM: x86/mmu: Replace vcpu argument with kvm pointer in make_spte
+  KVM: x86/mmu: Factor out the meat of reset_tdp_shadow_zero_bits_mask
+  KVM: x86/mmu: Factor out part of vmx_get_mt_mask which does not depend
+    on vcpu
+  KVM: x86/mmu: Add try_get_mt_mask to x86_ops
+  KVM: x86/mmu: Make kvm_is_mmio_pfn usable outside of spte.c
+  KVM: x86/mmu: Promote pages in-place when disabling dirty logging
+
+ arch/x86/include/asm/kvm-x86-ops.h |  1 +
+ arch/x86/include/asm/kvm_host.h    |  2 +
+ arch/x86/kvm/mmu/mmu.c             | 21 +++++----
+ arch/x86/kvm/mmu/mmu_internal.h    |  6 +++
+ arch/x86/kvm/mmu/spte.c            | 39 +++++++++++-----
+ arch/x86/kvm/mmu/spte.h            |  6 +++
+ arch/x86/kvm/mmu/tdp_mmu.c         | 73 +++++++++++++++++++++++++++++-
+ arch/x86/kvm/svm/svm.c             |  9 ++++
+ arch/x86/kvm/vmx/vmx.c             | 25 ++++++++--
+ 9 files changed, 155 insertions(+), 27 deletions(-)
+
 -- 
 2.35.1.894.gb6a874cedc-goog
 
