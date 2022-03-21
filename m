@@ -2,152 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E6B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 01:45:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 909E8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 01:47:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344059AbiCUBqs (ORCPT
+        id S1344052AbiCUBtG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Mar 2022 21:46:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56968 "EHLO
+        Sun, 20 Mar 2022 21:49:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234768AbiCUBqp (ORCPT
+        with ESMTP id S1343763AbiCUBtB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Mar 2022 21:46:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 387CF5F45
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 18:45:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647827120;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mrGOJLeYO4kxv1PcAb4WwM1yZJ2NAcruFxRY/Piqipk=;
-        b=ZrJ6IF+muhmAN6fKnVMSWlwzJz+zm9Ha985R9oNw93rUnWcxXXQZsBeiUU/lHqXy0mRkeB
-        C0xOZBcpAFXSgnIXbD27T+LiC8Ehp1RN7mKTjTEd6FUcJ9NkGeoZPJKL0QGLgehnA56Jqz
-        4CIL0ONyADLJ3bmulvE1JZn23ZgCwAE=
-Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com
- [209.85.214.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-425-EKdlQwU1PSWgwAApJ67MaA-1; Sun, 20 Mar 2022 21:45:18 -0400
-X-MC-Unique: EKdlQwU1PSWgwAApJ67MaA-1
-Received: by mail-pl1-f199.google.com with SMTP id n17-20020a170902f61100b001538c882549so4963087plg.18
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 18:45:18 -0700 (PDT)
+        Sun, 20 Mar 2022 21:49:01 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D214717E368;
+        Sun, 20 Mar 2022 18:47:37 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id c11so9277578pgu.11;
+        Sun, 20 Mar 2022 18:47:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=SOfMbm5RJKvVdhj3M5lguM9j4PPbRfpyMx1l0V2G0sM=;
+        b=YD/sFWwZJgwFHupdzTKj19DesWJPVhibD5xUNFAr41Iqcb6q/n0EE5JL2i88wqugvJ
+         4P7CEEMqcrkZn+e2GwMvW939nl+0L9xEqXL6v66kx4bnHGgsGuxfKBFA6ry8pUpLBjYN
+         8Q3qT/gTYFKbTpr5ULNEEk6WYj1/ki32mjXXf7zXMQBRjcmGvSES4dXo52rP8lyw0S2h
+         LbPbzP51hsLEGsEuA2T147IXbc7vPpnuZIxEue6vbPa4VYqlapiC02AOyEU12FvZal3U
+         eR5PjYfw7wdGi4rQ/EZrWq0/KkiBeyfYD6tCJ7RC67oPXtLAf60dkH0rFM6UCK71gql1
+         HDRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mrGOJLeYO4kxv1PcAb4WwM1yZJ2NAcruFxRY/Piqipk=;
-        b=zxKVfb3Huuuzx9LoMNGf93nPmyCgj5BL3hfyptuv2N7zBi8fb6Wad2EdaBuAAhX9FE
-         9SG6VtAggZvTEjQvBfmw+TKZuF8e3R5JN4tEgVvnCP4E6DWXIS+JafbcO6r29S2b980N
-         cK85fzRufDdCgkCco+381v+d8hjdn+r+wQ9JdwT5v4nFnF+PuwWVE3Bm6zRor7yhT9BW
-         hLyNL8TAPFxtZ66qRbB+Hvj9fxdZ9/4coxjLQguO95PMhgh/F1BFp9hjMdvQ8bE6zP2O
-         9p+kiwajuPxdAhKuGdup1/jc8qJ5Jc08YLnDDCeBVCQC0idfn9Gz3puy9B1qBmMSvPLy
-         oAGg==
-X-Gm-Message-State: AOAM531isX0Uqvl0jNBr/8SkQpRxnQklpcBT6v3ntUtJ2JuGyyk1UWau
-        +Ki+4M3kEZHveVG/cV6xr6TGGMVl/o/6nKVmpN0bGYd2tIUlL57yX+MUxQBOT9Enl5lkmLE1SML
-        V4k3s2AyaesxlNv2GU2vK/y8w
-X-Received: by 2002:a17:903:404b:b0:154:297b:7125 with SMTP id n11-20020a170903404b00b00154297b7125mr9676478pla.11.1647827117632;
-        Sun, 20 Mar 2022 18:45:17 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJysQCPDHeU47c8jpQLkfUpZf+9xpLC0+nNHh3e0J3hAwhF8jvdr0t58bH/P0+tdQeNlmTwPDw==
-X-Received: by 2002:a17:903:404b:b0:154:297b:7125 with SMTP id n11-20020a170903404b00b00154297b7125mr9676460pla.11.1647827117312;
-        Sun, 20 Mar 2022 18:45:17 -0700 (PDT)
-Received: from localhost ([240e:3a1:2e5:800:f995:6136:f760:a3d0])
-        by smtp.gmail.com with ESMTPSA id o65-20020a17090a0a4700b001bef5cffea7sm18971387pjo.0.2022.03.20.18.45.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Mar 2022 18:45:16 -0700 (PDT)
-Date:   Mon, 21 Mar 2022 09:41:50 +0800
-From:   Coiby Xu <coxu@redhat.com>
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc:     kexec@lists.infradead.org, Milan Broz <gmazyland@gmail.com>,
-        Thomas Staudt <tstaudt@de.ibm.com>,
-        Kairui Song <ryncsn@gmail.com>, dm-devel@redhat.com,
-        Mike Snitzer <snitzer@redhat.com>, Baoquan He <bhe@redhat.com>,
-        Dave Young <dyoung@redhat.com>, linux-kernel@vger.kernel.org
-Subject: Re: [RFC 0/4] Support kdump with LUKS encryption by reusing LUKS
- master key
-Message-ID: <20220321014150.w6wux5azabweu7dr@Rk>
-References: <20220318103423.286410-1-coxu@redhat.com>
- <c06a21cc-e1c1-e627-f908-ebc2a041e29a@igalia.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SOfMbm5RJKvVdhj3M5lguM9j4PPbRfpyMx1l0V2G0sM=;
+        b=UCqYm7nQXJrUQxWGrkSRZNQovqspnb0KB3N6sA3JRAI/4KRLru9xNKUGTz+pLrjdev
+         JKzLnQCAUNvxhctqGyZeY0Gfk/jABRhmZpdtVp/gvzfnF4ioIx1sE1oLL/i0W/vGtmyT
+         bbRGlQI5Z3rbQHXHdGbHgvy7Sm4Er8dX9eOT0rSRwavSs/3XTLHO35pwhk2sazh52muE
+         WNGKN9RcpeD10k400uLztwdwZy2161XrNREXJrmTfgvcgr5/mbi+IbLTKke5MQcstKx+
+         z1yO0btSGDrFV9yBTt1y0HRChrEHX4Aij1Ekai/H/kCiW4lEaNK1QtxSIuJS6+kryoBY
+         +AGw==
+X-Gm-Message-State: AOAM53033oKnmSLw0dC5GslGfI2tCKSxy6UvJoGEwZEmRxrgeXFScLTZ
+        qGKhorkpuUPbRqiTwBxRWSw=
+X-Google-Smtp-Source: ABdhPJy9vF2yPyOMLUrz5Shpq535MiBZLAqZb32nSc0lGiBI8aK2dWSqx66kmayAta6/+ktf1Ye3MQ==
+X-Received: by 2002:a05:6a00:889:b0:4e0:dcc3:5e06 with SMTP id q9-20020a056a00088900b004e0dcc35e06mr21497904pfj.29.1647827257386;
+        Sun, 20 Mar 2022 18:47:37 -0700 (PDT)
+Received: from [10.11.37.162] ([103.84.139.53])
+        by smtp.gmail.com with ESMTPSA id q12-20020a17090a178c00b001bd036e11fdsm18080673pja.42.2022.03.20.18.47.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 20 Mar 2022 18:47:36 -0700 (PDT)
+Message-ID: <0d2f9980-fb1d-4068-7868-effc77892a97@gmail.com>
+Date:   Mon, 21 Mar 2022 09:47:30 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <c06a21cc-e1c1-e627-f908-ebc2a041e29a@igalia.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] can: mcba_usb: fix possible double dev_kfree_skb in
+ mcba_usb_start_xmit
+Content-Language: en-US
+To:     yashi@spacecubics.com, wg@grandegger.com, mkl@pengutronix.de,
+        davem@davemloft.net, kuba@kernel.org, mailhol.vincent@wanadoo.fr,
+        stefan.maetje@esd.eu, paskripkin@gmail.com,
+        remigiusz.kollataj@mobica.com
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220311080208.45047-1-hbh25y@gmail.com>
+From:   Hangyu Hua <hbh25y@gmail.com>
+In-Reply-To: <20220311080208.45047-1-hbh25y@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 19, 2022 at 05:13:21PM -0300, Guilherme G. Piccoli wrote:
->On 18/03/2022 07:34, Coiby Xu wrote:
->> [...]
->> Based on Milan's feedback [1] on Kairui's ideas to support kdump with
->> LUKS encryption, this patch set addresses the above issues by
->>  1) first saving the LUKS master key to kexec when opening the encrypted
->>     device
->>  2) then saving the master key to the reserved memory for kdump when
->>     loading kdump kernel image.
->>
->> So the LUKS master key never leaves the kernel space and once the key has
->> been saved to the reserved memory for kdump, it would be wiped
->> immediately. If there is no security concern with this approach or any
->> other concern, I will drop the following assumptions made for this RFC
->> version in v1,
->>  - only x86 is supported
->>  - there is only one LUKS device for the system
->>
->> to extend the support to other architectures including POWER, ARM and
->> s390x and address the case of multiple LUKS devices. Any feedback will be
->> appreciated, thanks!
->>
->
->Hi Coiby, thanks for the very interesting work!
+Gentle ping.
 
-Hi Guilherme,
-
-I'm glad this work interests you and thanks for sharing your thoughts!
-
->I confess I didn't review the code as I have not much experience in
->dm-crypt/key management, but I have a generic question related with the
->motivation of the patch set.
->
->My understanding is that one (the main?) motivation of this series would
->be to protect the saved memory (vmcore) from being read by some
->"unauthorized" entity - in order to achieve this goal, it is hereby
->proposed to allow kdump kernel to access a memory-saved key and with
->that, mount an encrypted volume, saving the vmcore over there correct?
-
->
->So, what if instead of playing with the volume key, users with this
->concern address that by reserving some *unencrypted partition* for
->saving the vmcore, but then *encrypt the vmcore* itself! So, instead of
->requiring saving a full-volume key, mount everything, risk data
->corruption if something goes bad...we just have makedumpfile encrypting
->the vmcore with some preloaded key (which might be saved inside the
->kdump minimal intird, for example), and saving the encrypted file into a
->clear/unencrypted volume? This way we also prevent excessive memory
->consumption during kdump due to the lvm/dm-userspace paraphernalia usage.
-
-I believe some users have security concern for where to save vmcore.
-This use case exactly fits your description and your proposed solution
-shall be good for this type of users. But I think many more users may
-just choose to encrypt the hard drive when installing the system and
-they would naturally expect kdump to work for the case of full disk
-encryption. So your proposed solution may not address the latter case 
-where there is a much large user base.
-
->
->Does it make sense or am I being silly or missing something?
->Cheers,
->
->
->Guilherme
->
->_______________________________________________
->kexec mailing list
->kexec@lists.infradead.org
->http://lists.infradead.org/mailman/listinfo/kexec
->
-
--- 
-Best regards,
-Coiby
-
+On 2022/3/11 16:02, Hangyu Hua wrote:
+> There is no need to call dev_kfree_skb when usb_submit_urb fails beacause
+> can_put_echo_skb deletes original skb and can_free_echo_skb deletes the cloned
+> skb.
+> 
+> Fixes: 51f3baad7de9 ("can: mcba_usb: Add support for Microchip CAN BUS Analyzer")
+> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+> ---
+>   drivers/net/can/usb/mcba_usb.c | 1 -
+>   1 file changed, 1 deletion(-)
+> 
+> diff --git a/drivers/net/can/usb/mcba_usb.c b/drivers/net/can/usb/mcba_usb.c
+> index 77bddff86252..7c198eb5bc9c 100644
+> --- a/drivers/net/can/usb/mcba_usb.c
+> +++ b/drivers/net/can/usb/mcba_usb.c
+> @@ -364,7 +364,6 @@ static netdev_tx_t mcba_usb_start_xmit(struct sk_buff *skb,
+>   xmit_failed:
+>   	can_free_echo_skb(priv->netdev, ctx->ndx, NULL);
+>   	mcba_usb_free_ctx(ctx);
+> -	dev_kfree_skb(skb);
+>   	stats->tx_dropped++;
+>   
+>   	return NETDEV_TX_OK;
