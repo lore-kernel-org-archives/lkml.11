@@ -2,78 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A50FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:56:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBE1FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:56:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233743AbiCUJ6K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 05:58:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39978 "EHLO
+        id S1346069AbiCUJ6Q (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 05:58:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346064AbiCUJ5o (ORCPT
+        with ESMTP id S1346109AbiCUJ6A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 05:57:44 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B600D137F5D
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 02:56:19 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id r22so8627773ejs.11
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 02:56:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=eI81Cj2MzQaMOBuzQ4GEFQs/9QyzMW3B2HHtrtblKg8=;
-        b=YJPfZoOkdyk0Tw+7qRPh58EnUzvFx/fTdWHKqFyZmi3tjW/JAmH3VGGB6hObEkNF0f
-         X0RBZ4rFRZjCkceuK4AvtYTZ0Uf/x6DyBNOVb41hXmyMNV+utHkwvIHDTIgqgqbftgdd
-         5tfiuGzD/H+vzXqPKSHeWCUgJyX0iF+wfruDFv3yDaTNPficgmjOQwYiJ2mzRqvMBanK
-         Sc12hG92iiqKORIdhiqE/vH6cKhFY81FHUJGNeEmPi/hKJjFCZRsmi1FmX8Awapf2jl+
-         A/8jlPesJR25JMWH2giDPCUb73DyLoEa2UqWyTzzRdAhzUQQyQDJmJg62cUHcy5Zfw4T
-         HndA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=eI81Cj2MzQaMOBuzQ4GEFQs/9QyzMW3B2HHtrtblKg8=;
-        b=4BulkFeoRgaURTy5ffgv3PR73bKWs9b+yJP7z5LdH0dHHH9mnzy1ILOldMV/3RZwW/
-         ZJHwBPdozpdBk5GjhXWJUTLeDls+HFypryhwh6eqGRTOL//rZa1taLtmUcorj3OMDukr
-         zqDnCOkzNAT4EZqG1n7Rn3QSSsDcxe+s4DG0XXLsK6jmKGFwmXPJuNJHn9bidn+hDUAB
-         /FeLl3xE/OsSJFpHpXDF27cNWAWsaOEnOb1vGF1cVTQfSe5nR3vJe48JPpOQ5TzVofYa
-         Ixhpedm/X59mSkokiF8EwDdUnpo/ZQhkSuofyrcJdTuF7yrAWHNXbLsinYIddF6LVxYH
-         6uQQ==
-X-Gm-Message-State: AOAM533+jqXE4q723HigE7GFBRf3oZkITSSRgVWXdG71zLeHpNePNx77
-        iuEcXpS2H2eCt3vUP6LjXKlE6g==
-X-Google-Smtp-Source: ABdhPJy0UT1aElj4+q/uZ+QoYpSKFRtuFmYPQhlHb8WqNQdNafN1f0TRcyUfBcsRmw4yj14/DLBiFw==
-X-Received: by 2002:a17:907:971f:b0:6df:a42d:7b00 with SMTP id jg31-20020a170907971f00b006dfa42d7b00mr17609349ejc.159.1647856577608;
-        Mon, 21 Mar 2022 02:56:17 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id z13-20020a17090674cd00b006df78d85eabsm1898054ejl.111.2022.03.21.02.56.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 02:56:17 -0700 (PDT)
-Date:   Mon, 21 Mar 2022 10:56:16 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Sun Shouxin <sunshouxin@chinatelecom.cn>
-Cc:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, oliver@neukum.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        huyd12@chinatelecom.cn
-Subject: Re: [PATCH v5 4/4] net:bonding:Add support for IPV6 RLB to
- balance-alb mode
-Message-ID: <YjhLwNoTbg1UU2qH@nanopsycho>
-References: <20220321084704.36370-1-sunshouxin@chinatelecom.cn>
- <20220321084704.36370-5-sunshouxin@chinatelecom.cn>
+        Mon, 21 Mar 2022 05:58:00 -0400
+Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35576137F41
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 02:56:34 -0700 (PDT)
+Received: from mail.aspeedtech.com ([192.168.0.24])
+        by twspam01.aspeedtech.com with ESMTP id 22L9jwJu079099;
+        Mon, 21 Mar 2022 17:45:58 +0800 (GMT-8)
+        (envelope-from dylan_hung@aspeedtech.com)
+Received: from DylanHung-PC.aspeed.com (192.168.2.216) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 21 Mar
+ 2022 17:56:23 +0800
+From:   Dylan Hung <dylan_hung@aspeedtech.com>
+To:     <robh+dt@kernel.org>, <joel@jms.id.au>, <andrew@aj.id.au>,
+        <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <p.zabel@pengutronix.de>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+CC:     <BMC-SW@aspeedtech.com>, <stable@vger.kernel.org>
+Subject: [PATCH v2 2/3] net: mdio: add reset control for Aspeed MDIO
+Date:   Mon, 21 Mar 2022 17:56:47 +0800
+Message-ID: <20220321095648.4760-3-dylan_hung@aspeedtech.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220321095648.4760-1-dylan_hung@aspeedtech.com>
+References: <20220321095648.4760-1-dylan_hung@aspeedtech.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220321084704.36370-5-sunshouxin@chinatelecom.cn>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.2.216]
+X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
+ (192.168.0.24)
+X-DNSRBL: 
+X-MAIL: twspam01.aspeedtech.com 22L9jwJu079099
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Mon, Mar 21, 2022 at 09:47:04AM CET, sunshouxin@chinatelecom.cn wrote:
->This patch is implementing IPV6 RLB for balance-alb mode.
+Add reset assertion/deassertion for Aspeed MDIO.  There are 4 MDIO
+controllers embedded in Aspeed AST2600 SOC and share one reset control
+register SCU50[3]. So devm_reset_control_get_shared is used in this
+change.
 
-As I stated in the other thread, I strongly believe it is bad idea to
-add this code. It is not needed. User should use LACP and not obscure
-ALB/RLB mode. It should not be extented. On contrary, I would like to
-see this going opposite direction and eventually remove ALB/RLB mode
-from bonding.
+Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
+Cc: stable@vger.kernel.org
+---
+ drivers/net/mdio/mdio-aspeed.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/mdio/mdio-aspeed.c b/drivers/net/mdio/mdio-aspeed.c
+index e2273588c75b..5bda48d7071d 100644
+--- a/drivers/net/mdio/mdio-aspeed.c
++++ b/drivers/net/mdio/mdio-aspeed.c
+@@ -3,6 +3,7 @@
+ 
+ #include <linux/bitfield.h>
+ #include <linux/delay.h>
++#include <linux/reset.h>
+ #include <linux/iopoll.h>
+ #include <linux/mdio.h>
+ #include <linux/module.h>
+@@ -37,6 +38,7 @@
+ 
+ struct aspeed_mdio {
+ 	void __iomem *base;
++	struct reset_control *reset;
+ };
+ 
+ static int aspeed_mdio_read(struct mii_bus *bus, int addr, int regnum)
+@@ -120,6 +122,12 @@ static int aspeed_mdio_probe(struct platform_device *pdev)
+ 	if (IS_ERR(ctx->base))
+ 		return PTR_ERR(ctx->base);
+ 
++	ctx->reset = devm_reset_control_get_shared(&pdev->dev, NULL);
++	if (IS_ERR(ctx->reset))
++		return PTR_ERR(ctx->reset);
++
++	reset_control_deassert(ctx->reset);
++
+ 	bus->name = DRV_NAME;
+ 	snprintf(bus->id, MII_BUS_ID_SIZE, "%s%d", pdev->name, pdev->id);
+ 	bus->parent = &pdev->dev;
+@@ -129,6 +137,7 @@ static int aspeed_mdio_probe(struct platform_device *pdev)
+ 	rc = of_mdiobus_register(bus, pdev->dev.of_node);
+ 	if (rc) {
+ 		dev_err(&pdev->dev, "Cannot register MDIO bus!\n");
++		reset_control_assert(ctx->reset);
+ 		return rc;
+ 	}
+ 
+@@ -139,7 +148,11 @@ static int aspeed_mdio_probe(struct platform_device *pdev)
+ 
+ static int aspeed_mdio_remove(struct platform_device *pdev)
+ {
+-	mdiobus_unregister(platform_get_drvdata(pdev));
++	struct mii_bus *bus = (struct mii_bus *)platform_get_drvdata(pdev);
++	struct aspeed_mdio *ctx = bus->priv;
++
++	reset_control_assert(ctx->reset);
++	mdiobus_unregister(bus);
+ 
+ 	return 0;
+ }
+-- 
+2.25.1
+
