@@ -2,94 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3389AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:54:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF707C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:54:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230265AbiCUW4J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:56:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45384 "EHLO
+        id S231233AbiCUW4O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:56:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230303AbiCUWzx (ORCPT
+        with ESMTP id S231383AbiCUWz5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:55:53 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60DB43B2059
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:37:35 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        Mon, 21 Mar 2022 18:55:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E97563B2076;
+        Mon, 21 Mar 2022 15:37:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 2FFE4223F6;
-        Mon, 21 Mar 2022 23:14:08 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1647900848;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=AxBe0AcSzdEDFixOtEFUcP9GEYOEHXL7qMX0u+vesV0=;
-        b=e7Z50GM3rWGlajH1EKMYYY5zGQLcICLEOif796Mgja1Xyc241LO0vYEL5mCnsxs10uORnW
-        iRp4VSuN+QOI2MQT29S4ltdMgZkLBr0USHLVFG0ZYkIAaSalGdcTwn8Wds11jk8Is+cWLF
-        +MZN+ZAcgUmGiwfKb2vziUpi0EYl40U=
+        by ams.source.kernel.org (Postfix) with ESMTPS id BABC0B81A5E;
+        Mon, 21 Mar 2022 21:52:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B07B4C340F0;
+        Mon, 21 Mar 2022 21:52:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647899569;
+        bh=jmP3FPdm1hh5kPbcapZm2SdByBPDlY4fxfWaKWpCmCE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=r1V3JgMXsulEUhPXSYUr05+H2bBJ5VThKT0WH8uAqspWWuMY4IWh9h9R3iJVTLgnl
+         Ur5F1i4QEYmR0W5FdoOr4emkEDsf7SEXdreVYGaWbMKrHe/3qLyvegrhjFZhSmD4G4
+         83qvtgldY00BheXdsJS1+pKDOcHqCYtrhWQUoU8wqy4SNn/6DCYQvuGExUy/v6a3tE
+         FtibWn9+CYAOW47730m4VGjLYaVE41IKSRgcAWIOqusWSSGEfNBZgo2PRW6+h09SIx
+         +Ym0N7rqw4pgX0/L4nmYXwQOOCWGNz+lUlx3GL13mJXWpaI5WsSyF5LMnVaFZ6H8sJ
+         tnbKF0lcABtug==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Claudiu Beznea <claudiu.beznea@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, woojung.huh@microchip.com,
+        UNGLinuxDriver@microchip.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 4/6] net: dsa: microchip: add spi_device_id tables
+Date:   Mon, 21 Mar 2022 17:52:35 -0400
+Message-Id: <20220321215240.490132-4-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220321215240.490132-1-sashal@kernel.org>
+References: <20220321215240.490132-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 21 Mar 2022 23:14:07 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>
-Cc:     p.yadav@ti.com, miquel.raynal@bootlin.com, richard@nod.at,
-        vigneshr@ti.com, linux-mtd@lists.infradead.org,
-        linux-kernel@vger.kernel.org, nicolas.ferre@microchip.com
-Subject: Re: [PATCH v2 1/8] mtd: spi-nor: Rename method,
- s/spi_nor_match_id/spi_nor_match_name
-In-Reply-To: <20220228111712.111737-2-tudor.ambarus@microchip.com>
-References: <20220228111712.111737-1-tudor.ambarus@microchip.com>
- <20220228111712.111737-2-tudor.ambarus@microchip.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <1836a22dbff076d4f49095c9d59cb05f@walle.cc>
-X-Sender: michael@walle.cc
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-02-28 12:17, schrieb Tudor Ambarus:
-> The method is matching a flash_info entry by searching by name. Rename
-> the method for better clarity.
-> 
-> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+From: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-Reviewed-by: Michael Walle <michael@walle.cc>
+[ Upstream commit e981bc74aefc6a177b50c16cfa7023599799cf74 ]
 
-> ---
->  drivers/mtd/spi-nor/core.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-> index 9014008e60b3..f3c359d03163 100644
-> --- a/drivers/mtd/spi-nor/core.c
-> +++ b/drivers/mtd/spi-nor/core.c
-> @@ -2876,8 +2876,8 @@ void spi_nor_restore(struct spi_nor *nor)
->  }
->  EXPORT_SYMBOL_GPL(spi_nor_restore);
-> 
-> -static const struct flash_info *spi_nor_match_id(struct spi_nor *nor,
-> -						 const char *name)
-> +static const struct flash_info *spi_nor_match_name(struct spi_nor 
-> *nor,
-> +						   const char *name)
->  {
->  	unsigned int i, j;
-> 
-> @@ -2899,7 +2899,7 @@ static const struct flash_info
-> *spi_nor_get_flash_info(struct spi_nor *nor,
->  	const struct flash_info *info = NULL;
-> 
->  	if (name)
-> -		info = spi_nor_match_id(nor, name);
-> +		info = spi_nor_match_name(nor, name);
->  	/* Try to auto-detect if chip name wasn't specified or not found */
->  	if (!info)
->  		info = spi_nor_read_id(nor);
+Add spi_device_id tables to avoid logs like "SPI driver ksz9477-switch
+has no spi_device_id".
 
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/dsa/microchip/ksz8795_spi.c | 11 +++++++++++
+ drivers/net/dsa/microchip/ksz9477_spi.c | 12 ++++++++++++
+ 2 files changed, 23 insertions(+)
+
+diff --git a/drivers/net/dsa/microchip/ksz8795_spi.c b/drivers/net/dsa/microchip/ksz8795_spi.c
+index 866767b70d65..b0a7dee27ffc 100644
+--- a/drivers/net/dsa/microchip/ksz8795_spi.c
++++ b/drivers/net/dsa/microchip/ksz8795_spi.c
+@@ -124,12 +124,23 @@ static const struct of_device_id ksz8795_dt_ids[] = {
+ };
+ MODULE_DEVICE_TABLE(of, ksz8795_dt_ids);
+ 
++static const struct spi_device_id ksz8795_spi_ids[] = {
++	{ "ksz8765" },
++	{ "ksz8794" },
++	{ "ksz8795" },
++	{ "ksz8863" },
++	{ "ksz8873" },
++	{ },
++};
++MODULE_DEVICE_TABLE(spi, ksz8795_spi_ids);
++
+ static struct spi_driver ksz8795_spi_driver = {
+ 	.driver = {
+ 		.name	= "ksz8795-switch",
+ 		.owner	= THIS_MODULE,
+ 		.of_match_table = of_match_ptr(ksz8795_dt_ids),
+ 	},
++	.id_table = ksz8795_spi_ids,
+ 	.probe	= ksz8795_spi_probe,
+ 	.remove	= ksz8795_spi_remove,
+ 	.shutdown = ksz8795_spi_shutdown,
+diff --git a/drivers/net/dsa/microchip/ksz9477_spi.c b/drivers/net/dsa/microchip/ksz9477_spi.c
+index e3cb0e6c9f6f..43addeabfc25 100644
+--- a/drivers/net/dsa/microchip/ksz9477_spi.c
++++ b/drivers/net/dsa/microchip/ksz9477_spi.c
+@@ -98,12 +98,24 @@ static const struct of_device_id ksz9477_dt_ids[] = {
+ };
+ MODULE_DEVICE_TABLE(of, ksz9477_dt_ids);
+ 
++static const struct spi_device_id ksz9477_spi_ids[] = {
++	{ "ksz9477" },
++	{ "ksz9897" },
++	{ "ksz9893" },
++	{ "ksz9563" },
++	{ "ksz8563" },
++	{ "ksz9567" },
++	{ },
++};
++MODULE_DEVICE_TABLE(spi, ksz9477_spi_ids);
++
+ static struct spi_driver ksz9477_spi_driver = {
+ 	.driver = {
+ 		.name	= "ksz9477-switch",
+ 		.owner	= THIS_MODULE,
+ 		.of_match_table = of_match_ptr(ksz9477_dt_ids),
+ 	},
++	.id_table = ksz9477_spi_ids,
+ 	.probe	= ksz9477_spi_probe,
+ 	.remove	= ksz9477_spi_remove,
+ 	.shutdown = ksz9477_spi_shutdown,
 -- 
--michael
+2.34.1
+
