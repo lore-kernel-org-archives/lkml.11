@@ -2,97 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A596FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:51:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22942C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:52:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230261AbiCUWwZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:52:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52300 "EHLO
+        id S230404AbiCUWx0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:53:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230003AbiCUWvr (ORCPT
+        with ESMTP id S230330AbiCUWxQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:51:47 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D760A92303
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:31:22 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id r22so21805295ljd.4
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:31:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=A3Kz4KZvaRiOgJe1t3ngqZtIUVbdUovCXw60tFV+lMU=;
-        b=LX5a+s2Ci3x6sDDdQDgxWrS4aTCQiHwx3XKUMhGYaygGZTc6FFrXYHHycZQIJN+jFB
-         IYOJWfv2K60k29Sq3Qf0fSPO+HdT6Gca0EZAjBxhcSkLjXIRfz4GXlJv+3VUJJ3iNE/9
-         lHUTmSazMXruZaWs5xiYHIBaMuVmSMK8ojDeUS/B/cNW9MP2HS3fjSdqzVsKg+EFp1hv
-         UxLExZEyMDV2We/71tmX9ADtvK0gBhJjDnlzOG9YLtdd0FOQju0TZc4XZxAWiX840UUm
-         k+Y5XhScZWo/BY45nhf4rzGR9LQA4Hp5E4q0eLneDrFkC0v9XfLWSbv75cv8Mmyr7Q4G
-         yX2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=A3Kz4KZvaRiOgJe1t3ngqZtIUVbdUovCXw60tFV+lMU=;
-        b=RPTpOmtjSzptYeeimJa2pSJzXqBdBkOrsnl3q0r9ubdgg+ZwH77Y+NGCCCmgFf4eUE
-         ECyEF5akftGXiMd8ZDG6X3g2AqXhqm0k3mLLDGEMzulwlnYEQ4twW9C+koiWEcr0uyYw
-         2BFQBCD0sOHaQHc33IeqOE8cDCHO48fGBdBvq6IQ4S1vMteeUPCicjd2pPvLT2OW9gRU
-         86nl/a2RNRM8aaZQA5+ifrida9bLE00K2lmt5gVKCE/T534LqL1G5ynK4EjpgYqJ4hln
-         B2Dfav6/nkitkT5cLdre6FR8NAJs3BaxZPbIB2JCiPnzoC0HKViDRpEXvbLoeLOWk8o0
-         VwBg==
-X-Gm-Message-State: AOAM5302DaeIVxtNrnJrJy3Z5YZKdlGjfBDERo2a+c7IBvRr2OkxaSzW
-        LJA3R6aOuCiTuBjgz4rG+LaFcxGdK+vY/blSR/5ZQ5cQFAyZ
-X-Google-Smtp-Source: ABdhPJz3965Uy4d5QHoOKDMXyHIaR5GqBM6BApFEjEp9cDL7gyzHFIaTOQTamwyHJi5TOyg0hs97x6yCL9tuI57kw0M=
-X-Received: by 2002:a05:6402:35c5:b0:419:2c72:66c3 with SMTP id
- z5-20020a05640235c500b004192c7266c3mr10970074edc.343.1647901279404; Mon, 21
- Mar 2022 15:21:19 -0700 (PDT)
+        Mon, 21 Mar 2022 18:53:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6808F3C8AFF;
+        Mon, 21 Mar 2022 15:32:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4CD2CB819FE;
+        Mon, 21 Mar 2022 21:26:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35EB8C340E8;
+        Mon, 21 Mar 2022 21:26:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647898008;
+        bh=MdFVdpU9BRlhC7Gxb+jB5c2HWKX2X/KfKn/uOM/qpiE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SLjoLzMsOepdgVQIUkD155E5Lv55uy4SxBqRQjREUvxi64ef+SR6i/X6QLx0XX3hq
+         u/Abo0XBjstS3FnpI+jMs1dIVs1Jb3qIIvYYbOL24vW8qsK7iKtuEjDvHbBAo+JY28
+         4hKPJWksHKgboXCrZJz+lJjb06PDnEA9LpEJTJ5XWrWBv6kL4+jv4N8aM6fqGVb+Pb
+         H4xNx9ptFyCNwuKTg7hyJi/A6VbawiG5/Rqi5fkc69HnVTfO9rDC3VPNo9fDaXQ+K1
+         UKki2tLUjqoju+7pLD84rTGAAQTZHnOsssm7A8IGfgNQLg4Wir3Fp52qsjpKr0V22v
+         GaBbEUjG9NWug==
+Date:   Mon, 21 Mar 2022 14:26:45 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Jeremy Linton <jeremy.linton@arm.com>, netdev@vger.kernel.org,
+        opendmb@gmail.com, davem@davemloft.net,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org, Peter Robinson <pbrobinson@gmail.com>
+Subject: Re: [PATCH] net: bcmgenet: Use stronger register read/writes to
+ assure ordering
+Message-ID: <20220321142645.38b8a087@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <0465ecd0-0cd7-1376-51bf-38aa385c128a@gmail.com>
+References: <20220310045358.224350-1-jeremy.linton@arm.com>
+        <0465ecd0-0cd7-1376-51bf-38aa385c128a@gmail.com>
 MIME-Version: 1.0
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Mon, 21 Mar 2022 18:21:08 -0400
-Message-ID: <CAHC9VhTdj=86GwGpv5bgwVrQp0v1o-a=YKKDw-vC_Er8uKBizA@mail.gmail.com>
-Subject: [GIT PULL] Audit patches for v5.18
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-audit@redhat.com, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Linus,
+On Fri, 18 Mar 2022 12:04:34 -0700 Florian Fainelli wrote:
+> On 3/9/22 8:53 PM, Jeremy Linton wrote:
+> > GCC12 appears to be much smarter about its dependency tracking and is
+> > aware that the relaxed variants are just normal loads and stores and
+> > this is causing problems like:
 
-Just one audit patch queued for v5.18:
+> > Fixes: 69d2ea9c79898 ("net: bcmgenet: Use correct I/O accessors")
+> > Reported-by: Peter Robinson <pbrobinson@gmail.com>
+> > Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>  
+> 
+> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 
-- Change the AUDIT_TIME_* record generation so that they are generated
-at syscall exit time and subject to all of the normal syscall exit
-filtering.  This should help reduce noise and ensure those records
-which are most relevant to the admin's audit configuration are
-recorded in the audit log.
-
-Please merge,
--Paul
-
---
-The following changes since commit e783362eb54cd99b2cac8b3a9aeac942e6f6ac07:
-
- Linux 5.17-rc1 (2022-01-23 10:12:53 +0200)
-
-are available in the Git repository at:
-
- https://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/audit.git
-   tags/audit-pr-20220321
-
-for you to fetch changes up to 272ceeaea355214b301530e262a0df8600bfca95:
-
- audit: log AUDIT_TIME_* records only from rules
-   (2022-02-22 13:51:40 -0500)
-
-----------------------------------------------------------------
-audit/stable-5.18 PR 20220321
-
-----------------------------------------------------------------
-Richard Guy Briggs (1):
-     audit: log AUDIT_TIME_* records only from rules
-
-kernel/audit.h   |  4 +++
-kernel/auditsc.c | 87 +++++++++++++++++++++++++++++++++++++++-----------
-2 files changed, 71 insertions(+), 20 deletions(-)
-
--- 
-paul-moore.com
+Commit 8d3ea3d402db ("net: bcmgenet: Use stronger register read/writes
+to assure ordering") in net now, thanks!
