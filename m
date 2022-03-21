@@ -2,157 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 286A2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 12:14:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DBB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 12:15:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347241AbiCUMP4 (ORCPT
+        id S1347239AbiCUMQb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 08:15:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56548 "EHLO
+        Mon, 21 Mar 2022 08:16:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240603AbiCUMPt (ORCPT
+        with ESMTP id S240603AbiCUMQa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 08:15:49 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B61A6E25
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 05:14:23 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id bn33so19532263ljb.6
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 05:14:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LdqYxoutc6DsO1XYUa/CbHh15uqU3qu1/fReXRM+8bM=;
-        b=Bws30VSjpwUf8+/rHfoUjxJuuojumekDO6vnEVaGexwkugcY6BvWDP7xIVX3t3M+Ua
-         kOcQIlMpv9HA9gZmy92w31MiElYYs7t/LiQMv2X97gRIJv9BcL3bHPSmQHI6lmw9Bhi9
-         WH4bzkHI1dyYlkdn5S8BBxNdPYKJlOFK0PyJY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LdqYxoutc6DsO1XYUa/CbHh15uqU3qu1/fReXRM+8bM=;
-        b=jeytlb7bAD3inXdM4qOkgdQt85ni4O7keb2wUJ6NTlnEDG6jwDN/z1UJML40gQxBM+
-         cu43twbjWJmyz0nY3DndBLhmGOE7b+hp7llcS1ux/K6JmYnl3bpzuZfz4oAlFs69AoZW
-         JCOYeShe3VEqBO05FAGuTVnXx8mXeLnluvb42Gnv8/OxyOHibV5ycU2mj8i0L7Bu2RrB
-         erqI68aNYMKA92J/cbxCXzPGKTcW4JHuOJOvsvrCfOBraHePGevqpqNfeZz0Ox8OyZfV
-         ZB9XNxtYIX63RDIU+AfRUuUVWAgGh2xSoB3fG83rh+ueHP/0JyDCYQneKcTS51LmRXlz
-         xppA==
-X-Gm-Message-State: AOAM530wmyj9A/FfstRxOkELamMAsTsyDsOSoGdOWj+s+g/N5qead+IA
-        zhCHGKc8TRs0gpsxZWeNYorbBw==
-X-Google-Smtp-Source: ABdhPJxSECgSKE+FFm1j6vX16456ZsPRFygIBmhFFVdLV7Gnjqy4ySnLbRGANhmCzgDKIB0xQcbwFQ==
-X-Received: by 2002:a05:651c:a05:b0:249:8586:3f42 with SMTP id k5-20020a05651c0a0500b0024985863f42mr3275360ljq.349.1647864862098;
-        Mon, 21 Mar 2022 05:14:22 -0700 (PDT)
-Received: from prevas-ravi.prevas.se ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id h16-20020ac25d70000000b00445c231e814sm1796747lft.144.2022.03.21.05.14.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 05:14:21 -0700 (PDT)
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] lib/Kconfig.debug: remove more CONFIG_..._VALUE indirections
-Date:   Mon, 21 Mar 2022 13:13:00 +0100
-Message-Id: <20220321121301.1389693-1-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.31.1
+        Mon, 21 Mar 2022 08:16:30 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE7C3A6E09
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 05:15:04 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22LCEupe043704;
+        Mon, 21 Mar 2022 07:14:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1647864896;
+        bh=BNk4Jc1KDk892pR+9LlcEhmjDAUnom/cqNmHxG2VCrA=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=bhQLiQ9ifonNed+S6fsAAAETZ14ItgsxW/zx2mzOcNFeGepLFEF/t3ei1UJE6GhKP
+         Fg8F7Lpn3QmEiPq0fD2eSK1PFY8okikyk1xguNGSiGZywz2TYDzqL6DnkZNaTIX4Jk
+         T5dghXXn+WXa/PtVs03CSvTzNfU94ZQ8Do8jts1M=
+Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22LCEuQ6108888
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 21 Mar 2022 07:14:56 -0500
+Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 21
+ Mar 2022 07:14:56 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE106.ent.ti.com
+ (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 21 Mar 2022 07:14:56 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22LCEt9s028012;
+        Mon, 21 Mar 2022 07:14:56 -0500
+Date:   Mon, 21 Mar 2022 17:44:55 +0530
+From:   Pratyush Yadav <p.yadav@ti.com>
+To:     Tudor Ambarus <tudor.ambarus@microchip.com>
+CC:     <michael@walle.cc>, <miquel.raynal@bootlin.com>, <richard@nod.at>,
+        <vigneshr@ti.com>, <linux-mtd@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <nicolas.ferre@microchip.com>
+Subject: Re: [PATCH v2 3/8] mtd: spi-nor: core: Use auto-detection only once
+Message-ID: <20220321121455.bpql7x4ebhq7s36l@ti.com>
+References: <20220228111712.111737-1-tudor.ambarus@microchip.com>
+ <20220228111712.111737-4-tudor.ambarus@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220228111712.111737-4-tudor.ambarus@microchip.com>
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As in "kernel/panic.c: remove CONFIG_PANIC_ON_OOPS_VALUE indirection",
-use the IS_ENABLED() helper rather than having a hidden config option.
+On 28/02/22 01:17PM, Tudor Ambarus wrote:
+> In case spi_nor_match_name() returned NULL, the auto detection was
+> issued twice. There's no reason to try to detect the same chip twice,
+> do the auto detection only once.
+> 
+> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+> ---
+>  drivers/mtd/spi-nor/core.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
+> index f87cb7d3daab..b1d6fa65417d 100644
+> --- a/drivers/mtd/spi-nor/core.c
+> +++ b/drivers/mtd/spi-nor/core.c
+> @@ -2894,13 +2894,15 @@ static const struct flash_info *spi_nor_match_name(struct spi_nor *nor,
+>  static const struct flash_info *spi_nor_get_flash_info(struct spi_nor *nor,
+>  						       const char *name)
+>  {
+> -	const struct flash_info *info = NULL;
+> +	const struct flash_info *info = NULL, *detected_info = NULL;
+>  
+>  	if (name)
+>  		info = spi_nor_match_name(nor, name);
+>  	/* Try to auto-detect if chip name wasn't specified or not found */
+> -	if (!info)
+> -		info = spi_nor_read_id(nor);
+> +	if (!info) {
+> +		detected_info = spi_nor_read_id(nor);
+> +		info = detected_info;
+> +	}
+>  	if (IS_ERR_OR_NULL(info))
+>  		return ERR_PTR(-ENOENT);
+>  
+> @@ -2908,7 +2910,7 @@ static const struct flash_info *spi_nor_get_flash_info(struct spi_nor *nor,
+>  	 * If caller has specified name of flash model that can normally be
+>  	 * detected using JEDEC, let's verify it.
+>  	 */
+> -	if (name && info->id_len) {
+> +	if (name && !detected_info && info->id_len) {
+>  		const struct flash_info *jinfo;
+>  
+>  		jinfo = spi_nor_read_id(nor);
 
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
- kernel/hung_task.c |  2 +-
- kernel/watchdog.c  |  4 ++--
- lib/Kconfig.debug  | 21 ---------------------
- 3 files changed, 3 insertions(+), 24 deletions(-)
+I think the flow can be a little bit better. How about:
 
-diff --git a/kernel/hung_task.c b/kernel/hung_task.c
-index 52501e5f7655..cff3ae8c818f 100644
---- a/kernel/hung_task.c
-+++ b/kernel/hung_task.c
-@@ -73,7 +73,7 @@ static unsigned int __read_mostly sysctl_hung_task_all_cpu_backtrace;
-  * hung task is detected:
-  */
- unsigned int __read_mostly sysctl_hung_task_panic =
--				CONFIG_BOOTPARAM_HUNG_TASK_PANIC_VALUE;
-+				IS_ENABLED(CONFIG_BOOTPARAM_HUNG_TASK_PANIC);
- 
- static int
- hung_task_panic(struct notifier_block *this, unsigned long event, void *ptr)
-diff --git a/kernel/watchdog.c b/kernel/watchdog.c
-index 99afb88d2e85..50a1b8a95127 100644
---- a/kernel/watchdog.c
-+++ b/kernel/watchdog.c
-@@ -57,7 +57,7 @@ int __read_mostly sysctl_hardlockup_all_cpu_backtrace;
-  * Should we panic when a soft-lockup or hard-lockup occurs:
-  */
- unsigned int __read_mostly hardlockup_panic =
--			CONFIG_BOOTPARAM_HARDLOCKUP_PANIC_VALUE;
-+			IS_ENABLED(CONFIG_BOOTPARAM_HARDLOCKUP_PANIC);
- /*
-  * We may not want to enable hard lockup detection by default in all cases,
-  * for example when running the kernel as a guest on a hypervisor. In these
-@@ -168,7 +168,7 @@ static struct cpumask watchdog_allowed_mask __read_mostly;
- 
- /* Global variables, exported for sysctl */
- unsigned int __read_mostly softlockup_panic =
--			CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC_VALUE;
-+			IS_ENABLED(CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC);
- 
- static bool softlockup_initialized __read_mostly;
- static u64 __read_mostly sample_period;
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 14b89aa37c5c..522231f4a501 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -1043,13 +1043,6 @@ config BOOTPARAM_SOFTLOCKUP_PANIC
- 
- 	  Say N if unsure.
- 
--config BOOTPARAM_SOFTLOCKUP_PANIC_VALUE
--	int
--	depends on SOFTLOCKUP_DETECTOR
--	range 0 1
--	default 0 if !BOOTPARAM_SOFTLOCKUP_PANIC
--	default 1 if BOOTPARAM_SOFTLOCKUP_PANIC
--
- config HARDLOCKUP_DETECTOR_PERF
- 	bool
- 	select SOFTLOCKUP_DETECTOR
-@@ -1091,13 +1084,6 @@ config BOOTPARAM_HARDLOCKUP_PANIC
- 
- 	  Say N if unsure.
- 
--config BOOTPARAM_HARDLOCKUP_PANIC_VALUE
--	int
--	depends on HARDLOCKUP_DETECTOR
--	range 0 1
--	default 0 if !BOOTPARAM_HARDLOCKUP_PANIC
--	default 1 if BOOTPARAM_HARDLOCKUP_PANIC
--
- config DETECT_HUNG_TASK
- 	bool "Detect Hung Tasks"
- 	depends on DEBUG_KERNEL
-@@ -1145,13 +1131,6 @@ config BOOTPARAM_HUNG_TASK_PANIC
- 
- 	  Say N if unsure.
- 
--config BOOTPARAM_HUNG_TASK_PANIC_VALUE
--	int
--	depends on DETECT_HUNG_TASK
--	range 0 1
--	default 0 if !BOOTPARAM_HUNG_TASK_PANIC
--	default 1 if BOOTPARAM_HUNG_TASK_PANIC
--
- config WQ_WATCHDOG
- 	bool "Detect Workqueue Stalls"
- 	depends on DEBUG_KERNEL
+	if (name)
+		info = spi_nor_match_name();
+	
+	if (!info) {
+		info = spi_nor_read_id();
+		if (IS_ERR_OR_NULL(info))
+			return ERR_PTR(-ENOENT);
+
+		return info;
+	}
+
+	if (name && info->id_len) {
+		...
+	}
+
 -- 
-2.31.1
-
+Regards,
+Pratyush Yadav
+Texas Instruments Inc.
