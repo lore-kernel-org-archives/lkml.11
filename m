@@ -2,155 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1C5DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:28:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 164B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:28:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232935AbiCUX3o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:29:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59204 "EHLO
+        id S232732AbiCUXaI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:30:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232840AbiCUX3V (ORCPT
+        with ESMTP id S232822AbiCUXaA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 19:29:21 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C05824D9B2;
-        Mon, 21 Mar 2022 16:27:04 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: nfraprado)
-        with ESMTPSA id B251C1F43C95
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1647905222;
-        bh=YfOseyYYNtgwVpfTGjA3bqGA2K2nb9b7uI+RBSwgmUI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=T6L1pRqk5jtI5BIq/oxERd8AafUJBe/N5RQOSJzTFuRAa1le7WyF/rxgeEDoQVivH
-         +ijVN5/jLghtNAvDjanbWKkAaH5AqsqCMlIWTnQmzPRBvobCD42H2j5n5C4WXKgMi0
-         NbPlYLAmlV+hFcLcG2uvVpI8r4Djc2k6RChlsO/l4vNomPU6V4IxvHLfaXpXwtKMv9
-         fPBTBCGX0TunfrfBGfDzAgUgff22eXG/OgNORVC7a0nWSofWhHNFv4QyP97+lwl6He
-         6loJfvaOAE0Cy718tMUsHOW6OzSKokCariFJgk8HgHAP7evsBB+PPHylM9nF4tkvnZ
-         dll6miS7BBR3Q==
-Date:   Mon, 21 Mar 2022 19:26:57 -0400
-From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
-        <nfraprado@collabora.com>
-To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Ryder Lee <ryder.lee@kernel.org>,
-        Hui Liu <hui.liu@mediatek.com>
-Subject: Re: [PATCH v4 18/22] arm64: dts: mt8192: Add display nodes
-Message-ID: <20220321232657.6z2g3p2aflixzamp@notapiano>
-References: <20220318144534.17996-1-allen-kh.cheng@mediatek.com>
- <20220318144534.17996-19-allen-kh.cheng@mediatek.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220318144534.17996-19-allen-kh.cheng@mediatek.com>
+        Mon, 21 Mar 2022 19:30:00 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 693DE54F92;
+        Mon, 21 Mar 2022 16:28:33 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id d76so2071056pga.8;
+        Mon, 21 Mar 2022 16:28:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:in-reply-to:subject:to:cc
+         :content-transfer-encoding;
+        bh=kcgU7Ygr4hDo5WFjwKdbti0JsL3etMpL87nJF1yX9Fk=;
+        b=jBWzIVQbYv/gZClrGlj1CqaZZmtHw9V3gcUREV8rmsIuZvamHvkhVgte4mFL5Uh+NN
+         99+3BXh+vtv5+2aPMao2Xn3+TxahjdK8iYMcSJos98P64RUBL/Naay3Rku9vL1URj0Pu
+         LyVQnhOf7+/3PKSk7h2oPYTLpxCtZfO3yqXkDOvlufh9+7ZwdxEaY/xEyCdjgWJfZVK3
+         rXaQt62DvY+SgMG/Vvv70oIOSTr9e/efLfw8lwq0ePKdTdAWTixieEM6b2yiwKLygEal
+         jW71bozhUmWa1s8mCOyQ/EO8ZVCA//D9V7ODMTkfKlfJFjiWEL5Rp2D5bFirp68e6qPo
+         rQQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:in-reply-to:subject:to:cc
+         :content-transfer-encoding;
+        bh=kcgU7Ygr4hDo5WFjwKdbti0JsL3etMpL87nJF1yX9Fk=;
+        b=hx/g8itipTyXSE7lGAFuTdSZ7cEtYv182z9KqJfJ8IdjCfGFW4runx693WjlcXRY6f
+         7maaOfOOZvih4qmSvi45lwkd9C2yJv+DSvxTfn/d8HU8TxcEfty9jWkSnvufDjoXX8FO
+         ntymY0xKShWatcedFmSz14Wof3Hhg8snFW4vgJfTK0nHt/qfWppRb8xwnCHsrKxyC/z2
+         PzxnDGR9uLfKbBvIMe5a1/T9qowWxXZtIkeescDZpKpCFhz6+GGWDupAiIzLXbCI7dBF
+         FcEBTvrB3BhdfclX4b0Em1Z7gBZBtqcrbOWMjZXhVz0E8F9ZKYdSiSQ/g9mHRAcxcwGH
+         N7nQ==
+X-Gm-Message-State: AOAM530vKpaclwaqE7/7PT+V7Sz1eIm1ljNqlP9nrG2X2f7ZDtzpKCYS
+        awHxahrY9SubpwuYHUlwabzy1kUuHuPWa/1TkzWnNQ==
+X-Google-Smtp-Source: ABdhPJwGIMcmoy8YE6aqOrBHI2doApncoaTodpkHbT6rbeciJiDrZVLFnoKTczgXd5Z8wUFvEGWYwg==
+X-Received: by 2002:a65:6d8f:0:b0:380:8b0c:a5b0 with SMTP id bc15-20020a656d8f000000b003808b0ca5b0mr20249219pgb.558.1647905312403;
+        Mon, 21 Mar 2022 16:28:32 -0700 (PDT)
+Received: from cl-arch-kdev (cl-arch-kdev.xen.prgmr.com. [71.19.144.195])
+        by smtp.gmail.com with ESMTPSA id c4-20020a056a00248400b004faad8c81bcsm3094531pfv.127.2022.03.21.16.28.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 16:28:31 -0700 (PDT)
+Message-ID: <62390a1f.1c69fb81.9e54b.855a@mx.google.com>
+Date:   Mon, 21 Mar 2022 16:28:31 -0700 (PDT)
+X-Google-Original-Date: Mon, 21 Mar 2022 23:28:25 GMT
+From:   Fox Chen <foxhlchen@gmail.com>
+In-Reply-To: <20220321133221.290173884@linuxfoundation.org>
+Subject: RE: [PATCH 5.16 00/37] 5.16.17-rc1 review
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Fox Chen <foxhlchen@gmail.com>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Allen,
-
-please see my comment below.
-
-On Fri, Mar 18, 2022 at 10:45:30PM +0800, Allen-KH Cheng wrote:
-> Add display nodes for mt8192 SoC.
+On Mon, 21 Mar 2022 14:52:42 +0100, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+> This is the start of the stable review cycle for the 5.16.17 release.
+> There are 37 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> ---
->  arch/arm64/boot/dts/mediatek/mt8192.dtsi | 111 +++++++++++++++++++++++
->  1 file changed, 111 insertions(+)
+> Responses should be made by Wed, 23 Mar 2022 13:32:09 +0000.
+> Anything received after that time might be too late.
 > 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> index a77d405dd508..59183fb6c80b 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> @@ -1205,6 +1205,13 @@
->  			#clock-cells = <1>;
->  		};
->  
-> +		mutex: mutex@14001000 {
-> +			compatible = "mediatek,mt8192-disp-mutex";
-> +			reg = <0 0x14001000 0 0x1000>;
-> +			interrupts = <GIC_SPI 252 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			clocks = <&mmsys CLK_MM_DISP_MUTEX0>;
-> +		};
-> +
->  		smi_common: smi@14002000 {
->  			compatible = "mediatek,mt8192-smi-common";
->  			reg = <0 0x14002000 0 0x1000>;
-> @@ -1236,6 +1243,110 @@
->  			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
->  		};
->  
-> +		ovl0: ovl@14005000 {
-> +			compatible = "mediatek,mt8192-disp-ovl";
-> +			reg = <0 0x14005000 0 0x1000>;
-> +			interrupts = <GIC_SPI 254 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			clocks = <&mmsys CLK_MM_DISP_OVL0>;
-> +			iommus = <&iommu0 M4U_PORT_L0_OVL_RDMA0>,
-> +				 <&iommu0 M4U_PORT_L0_OVL_RDMA0_HDR>;
-> +			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
-> +		};
-> +
-> +		ovl_2l0: ovl@14006000 {
-> +			compatible = "mediatek,mt8192-disp-ovl-2l";
-> +			reg = <0 0x14006000 0 0x1000>;
-> +			interrupts = <GIC_SPI 255 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
-> +			clocks = <&mmsys CLK_MM_DISP_OVL0_2L>;
-> +			iommus = <&iommu0 M4U_PORT_L1_OVL_2L_RDMA0>,
-> +				 <&iommu0 M4U_PORT_L1_OVL_2L_RDMA0_HDR>;
-> +		};
-> +
-> +		rdma0: rdma@14007000 {
-> +			compatible = "mediatek,mt8192-disp-rdma";
-> +			reg = <0 0x14007000 0 0x1000>;
-> +			interrupts = <GIC_SPI 256 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			clocks = <&mmsys CLK_MM_DISP_RDMA0>;
-> +			iommus = <&iommu0 M4U_PORT_L0_DISP_RDMA0>;
-> +			mediatek,larb = <&larb0>;
-> +			mediatek,rdma-fifo-size = <5120>;
-> +			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
-> +		};
-> +
-> +		color0: color@14009000 {
-> +			compatible = "mediatek,mt8192-disp-color",
-> +				     "mediatek,mt8173-disp-color";
-> +			reg = <0 0x14009000 0 0x1000>;
-> +			interrupts = <GIC_SPI 258 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
-> +			clocks = <&mmsys CLK_MM_DISP_COLOR0>;
-> +		};
-> +
-> +		ccorr0: ccorr@1400a000 {
-> +			compatible = "mediatek,mt8192-disp-ccorr";
-> +			reg = <0 0x1400a000 0 0x1000>;
-> +			interrupts = <GIC_SPI 259 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
-> +			clocks = <&mmsys CLK_MM_DISP_CCORR0>;
-> +		};
-> +
-> +		aal0: aal@1400b000 {
-> +			compatible = "mediatek,mt8192-disp-aal",
-> +				     "mediatek,mt8193-disp-aal";
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.17-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-Typo: "mediatek,mt8193-disp-aal" should be "mediatek,mt8173-disp-aal", otherwise 
-the drm driver doesn't even probe. Typos happen, just please make sure you're
-testing before sending to the list so these kind of issues can be caught
-earlier.
+5.16.17-rc1 Successfully Compiled and booted on my Raspberry PI 4b (8g) (bcm2711)
+                
+Tested-by: Fox Chen <foxhlchen@gmail.com>
 
-Thanks,
-Nícolas
-
-> +			reg = <0 0x1400b000 0 0x1000>;
-> +			interrupts = <GIC_SPI 260 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
-> +			clocks = <&mmsys CLK_MM_DISP_AAL0>;
-> +		};
