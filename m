@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5423FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:00:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49D0BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:00:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348616AbiCUOBq (ORCPT
+        id S1348512AbiCUOBw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:01:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46142 "EHLO
+        Mon, 21 Mar 2022 10:01:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348778AbiCUN6R (ORCPT
+        with ESMTP id S1348697AbiCUN6L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:58:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5FE317A594;
-        Mon, 21 Mar 2022 06:56:30 -0700 (PDT)
+        Mon, 21 Mar 2022 09:58:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36E1B174B95;
+        Mon, 21 Mar 2022 06:56:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 811A7B816DD;
-        Mon, 21 Mar 2022 13:56:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5995C340ED;
-        Mon, 21 Mar 2022 13:55:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 34558B816DA;
+        Mon, 21 Mar 2022 13:56:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66DF6C340E8;
+        Mon, 21 Mar 2022 13:56:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647870960;
-        bh=vACVCzk77C9AxEkQB5NVVBVP/DprcViXPn2JpwnA3Uk=;
+        s=korg; t=1647870968;
+        bh=i0Qo3fX/ApQqEBwCQ21tsIoIkznHhRd0w9qXkrP3dvg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A7D+rVnWAfYjNi3EWSqzx2rPgtnxnzo9GXlYH+S29YMowDUunwqYaeVrdE6J2bvMD
-         Vqsr/Rc7ILLI5pv23+P2u/YgE9xzpg9FiYojqm8wfNSPgEQN/RXc1PVUBKEzwL6vJ0
-         3qaJIjLrxJe7p2ymtgxMCq6/WlVxAZqGpylo7ywE=
+        b=xRwxjBIgz1DZMSohBg+H6dUqC6DUUeR1428WXwpZ/m1qIoqTOGx0OPXEJkL39Gdql
+         bHR0tstl6DNhd8KKaXPj4Jieqw0pxDQADFsSohxXeK/Y8ZarwApYSlOYgH+Jg0kEUE
+         +1P/o/5VlyLp/RloznbAuCaRaPtt61mvSgLcLJ68=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 4.19 30/57] arm64: entry: Allow tramp_alias to access symbols after the 4K boundary
-Date:   Mon, 21 Mar 2022 14:52:11 +0100
-Message-Id: <20220321133222.866193712@linuxfoundation.org>
+        stable@vger.kernel.org, Quentin Schulz <foss+kernel@0leil.net>,
+        Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>,
+        Quentin Schulz <quentin.schulz@theobroma-systems.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 06/57] arm64: dts: rockchip: fix rk3399-puma eMMC HS400 signal integrity
+Date:   Mon, 21 Mar 2022 14:51:47 +0100
+Message-Id: <20220321133222.172580326@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133221.984120927@linuxfoundation.org>
 References: <20220321133221.984120927@linuxfoundation.org>
@@ -50,68 +52,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+From: Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>
 
-commit 6c5bf79b69f911560fbf82214c0971af6e58e682 upstream.
+[ Upstream commit 62966cbdda8a92f82d966a45aa671e788b2006f7 ]
 
-Systems using kpti enter and exit the kernel through a trampoline mapping
-that is always mapped, even when the kernel is not. tramp_valias is a macro
-to find the address of a symbol in the trampoline mapping.
+There are signal integrity issues running the eMMC at 200MHz on Puma
+RK3399-Q7.
 
-Adding extra sets of vectors will expand the size of the entry.tramp.text
-section to beyond 4K. tramp_valias will be unable to generate addresses
-for symbols beyond 4K as it uses the 12 bit immediate of the add
-instruction.
+Similar to the work-around found for RK3399 Gru boards, lowering the
+frequency to 100MHz made the eMMC much more stable, so let's lower the
+frequency to 100MHz.
 
-As there are now two registers available when tramp_alias is called,
-use the extra register to avoid the 4K limit of the 12 bit immediate.
+It might be possible to run at 150MHz as on RK3399 Gru boards but only
+100MHz was extensively tested.
 
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Quentin Schulz <foss+kernel@0leil.net>
+Signed-off-by: Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>
+Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+Link: https://lore.kernel.org/r/20220119134948.1444965-1-quentin.schulz@theobroma-systems.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/entry.S |   13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -135,9 +135,12 @@
- .org .Lventry_start\@ + 128	// Did we overflow the ventry slot?
- 	.endm
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
+index b155f657292b..ce1320e4c106 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
+@@ -468,6 +468,12 @@
+ };
  
--	.macro tramp_alias, dst, sym
-+	.macro tramp_alias, dst, sym, tmp
- 	mov_q	\dst, TRAMP_VALIAS
--	add	\dst, \dst, #(\sym - .entry.tramp.text)
-+	adr_l	\tmp, \sym
-+	add	\dst, \dst, \tmp
-+	adr_l	\tmp, .entry.tramp.text
-+	sub	\dst, \dst, \tmp
- 	.endm
- 
- 	// This macro corrupts x0-x3. It is the caller's duty
-@@ -362,10 +365,10 @@ alternative_else_nop_endif
- #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
- 	bne	4f
- 	msr	far_el1, x29
--	tramp_alias	x30, tramp_exit_native
-+	tramp_alias	x30, tramp_exit_native, x29
- 	br	x30
- 4:
--	tramp_alias	x30, tramp_exit_compat
-+	tramp_alias	x30, tramp_exit_compat, x29
- 	br	x30
- #endif
- 	.else
-@@ -1265,7 +1268,7 @@ alternative_if_not ARM64_UNMAP_KERNEL_AT
- alternative_else_nop_endif
- 
- #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
--	tramp_alias	dst=x5, sym=__sdei_asm_exit_trampoline
-+	tramp_alias	dst=x5, sym=__sdei_asm_exit_trampoline, tmp=x3
- 	br	x5
- #endif
- ENDPROC(__sdei_asm_handler)
+ &sdhci {
++	/*
++	 * Signal integrity isn't great at 200MHz but 100MHz has proven stable
++	 * enough.
++	 */
++	max-frequency = <100000000>;
++
+ 	bus-width = <8>;
+ 	mmc-hs400-1_8v;
+ 	mmc-hs400-enhanced-strobe;
+-- 
+2.34.1
+
 
 
