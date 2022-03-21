@@ -2,97 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 753CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 17:33:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A6B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 17:33:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349040AbiCURfA (ORCPT
+        id S1349121AbiCURfE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 13:35:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34852 "EHLO
+        Mon, 21 Mar 2022 13:35:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348477AbiCURe5 (ORCPT
+        with ESMTP id S1348397AbiCURe5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 13:34:57 -0400
 Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C1F9566628
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C1A936660A
         for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 10:33:30 -0700 (PDT)
 Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 22LHXOSO007576;
-        Mon, 21 Mar 2022 18:33:24 +0100
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 22LHXMMQ007569;
+        Mon, 21 Mar 2022 18:33:22 +0100
 From:   Willy Tarreau <w@1wt.eu>
 To:     "Paul E . McKenney" <paulmck@kernel.org>
 Cc:     linux-kernel@vger.kernel.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Subject: [PATCH 7/8] tools/nolibc: add a makefile to install headers
-Date:   Mon, 21 Mar 2022 18:33:13 +0100
-Message-Id: <20220321173314.7519-8-w@1wt.eu>
+Subject: [PATCH 0/8] nolibc: small updates required for the self-tests
+Date:   Mon, 21 Mar 2022 18:33:06 +0100
+Message-Id: <20220321173314.7519-1-w@1wt.eu>
 X-Mailer: git-send-email 2.17.5
-In-Reply-To: <20220321173314.7519-1-w@1wt.eu>
-References: <20220321173314.7519-1-w@1wt.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This provides a target "headers_standalone" which installs the nolibc's
-arch-specific headers with "arch.h" taken from the current arch (or a
-concatenation of both i386 and x86_64 for arch=x86), then installs
-kernel headers. This creates a convenient sysroot which is directly
-usable by a bare-metal compiler to create any executable.
+Hello Paul,
 
-Signed-off-by: Willy Tarreau <w@1wt.eu>
+while developing the nolibc self-tests, I naturally faced a few
+limitations ranging from missing POLL* flags to missing strcmp() or
+getenv(), as well as the ability for printf() to print "(null)" on
+"%s" instead of crashing.
+
+This series adds a makefile and a headers installation target that
+creates a sysroot made of kernel headers and nolibc headers, which
+significantly ease building programs.
+
+I already have some test code with roughly 75 tests, but I find it
+misplaced in the nolibc dir, I need to move it to testing/selftests/
+before sending it to you.
+
+This series is intended to be an add-on to what you already have in your
+dev branch. I don't intend to send you much more stuff on top of this,
+but I expect to see an update from Ammar's patch set (CCed). With all
+this I think we'll have a good basis to easily add new tests.
+
+Thanks!
+Willy
+
 ---
+Willy Tarreau (8):
+  tools/nolibc/stdio: make printf(%s) accept NULL
+  tools/nolibc/stdlib: add a simple getenv() implementation
+  tools/nolibc/stdio: add support for '%p' to vfprintf()
+  tools/nolibc/string: add strcmp() and strncmp()
+  tools/nolibc/sys: add syscall definition for getppid()
+  tools/nolibc/types: add poll() and waitpid() flag definitions
+  tools/nolibc: add a makefile to install headers
+  tools/nolibc: add the nolibc subdir to the common Makefile
+
+ tools/Makefile                |  4 ++++
  tools/include/nolibc/Makefile | 43 +++++++++++++++++++++++++++++++++++
- 1 file changed, 43 insertions(+)
+ tools/include/nolibc/stdio.h  | 32 +++++++++++++++++---------
+ tools/include/nolibc/stdlib.h | 23 +++++++++++++++++++
+ tools/include/nolibc/string.h | 23 +++++++++++++++++++
+ tools/include/nolibc/sys.h    | 17 ++++++++++++++
+ tools/include/nolibc/types.h  | 10 ++++++++
+ 7 files changed, 141 insertions(+), 11 deletions(-)
  create mode 100644 tools/include/nolibc/Makefile
 
-diff --git a/tools/include/nolibc/Makefile b/tools/include/nolibc/Makefile
-new file mode 100644
-index 000000000000..7d4d61b08637
---- /dev/null
-+++ b/tools/include/nolibc/Makefile
-@@ -0,0 +1,43 @@
-+# SPDX-License-Identifier: GPL-2.0
-+# Makefile for nolibc installation and tests
-+include ../../scripts/Makefile.include
-+
-+# we're in ".../tools/include/nolibc"
-+ifeq ($(srctree),)
-+srctree := $(patsubst %/tools/include/,%,$(dir $(CURDIR)))
-+endif
-+
-+nolibc_arch := $(patsubst arm64,aarch64,$(ARCH))
-+arch_file := arch-$(nolibc_arch).h
-+all_files := ctype.h errno.h nolibc.h signal.h std.h stdio.h stdlib.h string.h \
-+             sys.h time.h types.h unistd.h
-+
-+# install all headers needed to support a bare-metal compiler
-+all:
-+
-+# Note: when ARCH is "x86" we concatenate both x86_64 and i386
-+headers:
-+	$(Q)mkdir -p $(OUTPUT)sysroot
-+	$(Q)mkdir -p $(OUTPUT)sysroot/include
-+	$(Q)cp $(all_files) $(OUTPUT)sysroot/include/
-+	$(Q)if [ "$(ARCH)" = "x86" ]; then      \
-+		sed -e                          \
-+		  's,^#ifndef _NOLIBC_ARCH_X86_64_H,#if !defined(_NOLIBC_ARCH_X86_64_H) \&\& defined(__x86_64__),' \
-+		  arch-x86_64.h;                \
-+		sed -e                          \
-+		  's,^#ifndef _NOLIBC_ARCH_I386_H,#if !defined(_NOLIBC_ARCH_I386_H) \&\& !defined(__x86_64__),' \
-+		  arch-i386.h;                  \
-+	elif [ -e "$(arch_file)" ]; then        \
-+		cat $(arch_file);               \
-+	else                                    \
-+		echo "Fatal: architecture $(ARCH) not yet supported by nolibc." >&2; \
-+		exit 1;                         \
-+	fi > $(OUTPUT)sysroot/include/arch.h
-+
-+headers_standalone: headers
-+	$(Q)$(MAKE) -C $(srctree) headers
-+	$(Q)$(MAKE) -C $(srctree) headers_install INSTALL_HDR_PATH=$(OUTPUT)/sysroot
-+
-+clean:
-+	$(call QUIET_CLEAN, nolibc) rm -rf "$(OUTPUT)sysroot"
-+
 -- 
 2.35.1
 
