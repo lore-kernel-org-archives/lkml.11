@@ -2,371 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 723ACC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:45:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 162A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:45:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229526AbiCUWrK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:47:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52118 "EHLO
+        id S229867AbiCUWrV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:47:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbiCUWqy (ORCPT
+        with ESMTP id S229729AbiCUWrA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:46:54 -0400
-X-Greylist: delayed 12509 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 21 Mar 2022 15:25:49 PDT
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF4A73997D2;
-        Mon, 21 Mar 2022 15:25:49 -0700 (PDT)
-Date:   Mon, 21 Mar 2022 15:18:00 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1647901086;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kU2x6mfxHzd6oubiXMPH3ZgCSjbnudyOXlm9XSlrpLM=;
-        b=q9fAZ1jelJXKmSIUHYreNIYyOIgRUWEHYCOoJks6gKZ/rK6ys/DA1Z3pIsq0JybH2/qWEl
-        Hd+fLeYrj5aD28WaSFkNAKcb/IY1B/KhjN+wK+uOy5DpsJIDyKXyxzX2qmnF92mvp1dUs/
-        5LSgYePfnBr066kks/l/Oimb4uVMhy8=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Zi Yan <ziy@nvidia.com>
-Cc:     Matthew Wilcox <willy@infradead.org>, linux-mm@kvack.org,
-        Shuah Khan <shuah@kernel.org>, Yang Shi <shy828301@gmail.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Hugh Dickins <hughd@google.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [RFC PATCH 3/5] mm: thp: split huge page to any lower order
- pages.
-Message-ID: <Yjj5mADYABiZSxGB@carbon.dhcp.thefacebook.com>
-References: <20220321142128.2471199-1-zi.yan@sent.com>
- <20220321142128.2471199-4-zi.yan@sent.com>
+        Mon, 21 Mar 2022 18:47:00 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ECB136627B;
+        Mon, 21 Mar 2022 15:26:20 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nfraprado)
+        with ESMTPSA id 77B891F43C7A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1647901578;
+        bh=B8Pb07hkCfW+xPaMdiwdl2p2fFiGYRzPCnnydlob/vg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Tr6qLx7D1I+cpf7Bg25M1DfpHYW3LmJzrS546wmKykxyPgOQv1Df3Rntju+oWv201
+         1Ra/PeOakKqLV/N3BEUPbzEaYb0wn1biZgAZA65z7cMHgQsuxjTGm3bpqjzW59xCGk
+         5jhd37GA0/JDDEMVWyMozFZN9JK48X3vUMl+o8x/BB1h00W5ATPRwwTdYFbXNLc9ep
+         RF5R5bwIIjsOsc+qU22Boj5yX79cEyZo4KS94s1yRpcME8W8RJ4VU7JDonUHzP2zr3
+         LGR7UELzrHvuqenyN4atQ0SwuxsVfoD3SIGKIZANQ2uKd+Tscr4Miw5sZXKZ/l+G1Q
+         n99LtvS7z+gkw==
+Date:   Mon, 21 Mar 2022 18:26:13 -0400
+From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
+        <nfraprado@collabora.com>
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Ryder Lee <ryder.lee@kernel.org>,
+        Hui Liu <hui.liu@mediatek.com>
+Subject: Re: [PATCH v4 06/22] arm64: dts: mt8192: Add xhci node
+Message-ID: <20220321222613.aro6m72hoyubsggg@notapiano>
+References: <20220318144534.17996-1-allen-kh.cheng@mediatek.com>
+ <20220318144534.17996-7-allen-kh.cheng@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220321142128.2471199-4-zi.yan@sent.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220318144534.17996-7-allen-kh.cheng@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 10:21:26AM -0400, Zi Yan wrote:
-> From: Zi Yan <ziy@nvidia.com>
+On Fri, Mar 18, 2022 at 10:45:18PM +0800, Allen-KH Cheng wrote:
+> Add xhci node for mt8192 SoC.
 > 
-> To split a THP to any lower order pages, we need to reform THPs on
-> subpages at given order and add page refcount based on the new page
-> order. Also we need to reinitialize page_deferred_list after removing
-> the page from the split_queue, otherwise a subsequent split will see
-> list corruption when checking the page_deferred_list again.
-> 
-> It has many uses, like minimizing the number of pages after
-> truncating a pagecache THP. For anonymous THPs, we can only split them
-> to order-0 like before until we add support for any size anonymous THPs.
-> 
-> Signed-off-by: Zi Yan <ziy@nvidia.com>
+> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-Overall the patch looks good to me, please, feel free to add
-Reviewed-by: Roman Gushchin <roman.gushchin@linux.dev>
-to the next version.
-
-Couple of small nits below:
+Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
 > ---
->  include/linux/huge_mm.h |   8 +++
->  mm/huge_memory.c        | 111 ++++++++++++++++++++++++++++++----------
->  2 files changed, 91 insertions(+), 28 deletions(-)
+>  arch/arm64/boot/dts/mediatek/mt8192.dtsi | 24 ++++++++++++++++++++++++
+>  1 file changed, 24 insertions(+)
 > 
-> diff --git a/include/linux/huge_mm.h b/include/linux/huge_mm.h
-> index 2999190adc22..c7153cd7e9e4 100644
-> --- a/include/linux/huge_mm.h
-> +++ b/include/linux/huge_mm.h
-> @@ -186,6 +186,8 @@ void free_transhuge_page(struct page *page);
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> index 28b93b76fe17..6bc36a4076f4 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> @@ -10,6 +10,7 @@
+>  #include <dt-bindings/interrupt-controller/arm-gic.h>
+>  #include <dt-bindings/interrupt-controller/irq.h>
+>  #include <dt-bindings/pinctrl/mt8192-pinfunc.h>
+> +#include <dt-bindings/phy/phy.h>
+>  #include <dt-bindings/power/mt8192-power.h>
 >  
->  bool can_split_folio(struct folio *folio, int *pextra_pins);
->  int split_huge_page_to_list(struct page *page, struct list_head *list);
-> +int split_huge_page_to_list_to_order(struct page *page, struct list_head *list,
-> +		unsigned int new_order);
-
-Do we really need both? Maybe add the new_order argument to the existing function?
-It seems like there are not so many call sites.
-
->  static inline int split_huge_page(struct page *page)
->  {
->  	return split_huge_page_to_list(page, NULL);
-> @@ -355,6 +357,12 @@ split_huge_page_to_list(struct page *page, struct list_head *list)
->  {
->  	return 0;
->  }
-> +static inline int
-> +split_huge_page_to_list_to_order(struct page *page, struct list_head *list,
-> +		unsigned int new_order)
-> +{
-> +	return 0;
-> +}
->  static inline int split_huge_page(struct page *page)
->  {
->  	return 0;
-> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-> index fcfa46af6c4c..3617aa3ad0b1 100644
-> --- a/mm/huge_memory.c
-> +++ b/mm/huge_memory.c
-> @@ -2236,11 +2236,13 @@ void vma_adjust_trans_huge(struct vm_area_struct *vma,
->  static void unmap_page(struct page *page)
->  {
->  	struct folio *folio = page_folio(page);
-> -	enum ttu_flags ttu_flags = TTU_RMAP_LOCKED | TTU_SPLIT_HUGE_PMD |
-> -		TTU_SYNC;
-> +	enum ttu_flags ttu_flags = TTU_RMAP_LOCKED | TTU_SYNC;
+>  / {
+> @@ -718,6 +719,29 @@
+>  			status = "disabled";
+>  		};
 >  
->  	VM_BUG_ON_PAGE(!PageHead(page), page);
->  
-> +	if (folio_order(folio) >= HPAGE_PMD_ORDER)
-> +		ttu_flags |= TTU_SPLIT_HUGE_PMD;
+> +		xhci: usb@11200000 {
+> +			compatible = "mediatek,mt8192-xhci",
+> +				     "mediatek,mtk-xhci";
+> +			reg = <0 0x11200000 0 0x1000>,
+> +			      <0 0x11203e00 0 0x0100>;
+> +			reg-names = "mac", "ippc";
+> +			interrupts-extended = <&gic GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH 0>;
+> +			interrupt-names = "host";
+> +			phys = <&u2port0 PHY_TYPE_USB2>,
+> +			       <&u3port0 PHY_TYPE_USB3>;
+> +			assigned-clocks = <&topckgen CLK_TOP_USB_TOP_SEL>,
+> +					  <&topckgen CLK_TOP_SSUSB_XHCI_SEL>;
+> +			assigned-clock-parents = <&topckgen CLK_TOP_UNIVPLL_D5_D4>,
+> +						 <&topckgen CLK_TOP_UNIVPLL_D5_D4>;
+> +			clocks = <&infracfg CLK_INFRA_SSUSB>,
+> +				 <&infracfg CLK_INFRA_SSUSB_XHCI>,
+> +				 <&apmixedsys CLK_APMIXED_USBPLL>;
+> +			clock-names = "sys_ck", "xhci_ck", "ref_ck";
+> +			wakeup-source;
+> +			mediatek,syscon-wakeup = <&pericfg 0x420 102>;
+> +			status = "disabled";
+> +		};
 > +
->  	/*
->  	 * Anon pages need migration entries to preserve them, but file
->  	 * pages can simply be left unmapped, then faulted back on demand.
-> @@ -2254,9 +2256,9 @@ static void unmap_page(struct page *page)
->  	VM_WARN_ON_ONCE_PAGE(page_mapped(page), page);
->  }
->  
-> -static void remap_page(struct folio *folio, unsigned long nr)
-> +static void remap_page(struct folio *folio, unsigned short nr)
->  {
-> -	int i = 0;
-> +	unsigned int i;
->  
->  	/* If unmap_page() uses try_to_migrate() on file, remove this check */
->  	if (!folio_test_anon(folio))
-> @@ -2274,7 +2276,6 @@ static void lru_add_page_tail(struct page *head, struct page *tail,
->  		struct lruvec *lruvec, struct list_head *list)
->  {
->  	VM_BUG_ON_PAGE(!PageHead(head), head);
-> -	VM_BUG_ON_PAGE(PageCompound(tail), head);
->  	VM_BUG_ON_PAGE(PageLRU(tail), head);
->  	lockdep_assert_held(&lruvec->lru_lock);
->  
-> @@ -2295,9 +2296,10 @@ static void lru_add_page_tail(struct page *head, struct page *tail,
->  }
->  
->  static void __split_huge_page_tail(struct page *head, int tail,
-> -		struct lruvec *lruvec, struct list_head *list)
-> +		struct lruvec *lruvec, struct list_head *list, unsigned int new_order)
->  {
->  	struct page *page_tail = head + tail;
-> +	unsigned long compound_head_flag = new_order ? (1L << PG_head) : 0;
->  
->  	VM_BUG_ON_PAGE(atomic_read(&page_tail->_mapcount) != -1, page_tail);
->  
-> @@ -2321,6 +2323,7 @@ static void __split_huge_page_tail(struct page *head, int tail,
->  #ifdef CONFIG_64BIT
->  			 (1L << PG_arch_2) |
->  #endif
-> +			 compound_head_flag |
->  			 (1L << PG_dirty)));
->  
->  	/* ->mapping in first tail page is compound_mapcount */
-> @@ -2329,7 +2332,10 @@ static void __split_huge_page_tail(struct page *head, int tail,
->  	page_tail->mapping = head->mapping;
->  	page_tail->index = head->index + tail;
->  
-> -	/* Page flags must be visible before we make the page non-compound. */
-> +	/*
-> +	 * Page flags must be visible before we make the page non-compound or
-> +	 * a compound page in new_order.
-> +	 */
->  	smp_wmb();
->  
->  	/*
-> @@ -2339,10 +2345,15 @@ static void __split_huge_page_tail(struct page *head, int tail,
->  	 * which needs correct compound_head().
->  	 */
->  	clear_compound_head(page_tail);
-> +	if (new_order) {
-> +		prep_compound_page(page_tail, new_order);
-> +		prep_transhuge_page(page_tail);
-> +	}
->  
->  	/* Finally unfreeze refcount. Additional reference from page cache. */
-> -	page_ref_unfreeze(page_tail, 1 + (!PageAnon(head) ||
-> -					  PageSwapCache(head)));
-> +	page_ref_unfreeze(page_tail, 1 + ((!PageAnon(head) ||
-> +					   PageSwapCache(head)) ?
-> +						thp_nr_pages(page_tail) : 0));
->  
->  	if (page_is_young(head))
->  		set_page_young(page_tail);
-> @@ -2360,7 +2371,7 @@ static void __split_huge_page_tail(struct page *head, int tail,
->  }
->  
->  static void __split_huge_page(struct page *page, struct list_head *list,
-> -		pgoff_t end)
-> +		pgoff_t end, unsigned int new_order)
->  {
->  	struct folio *folio = page_folio(page);
->  	struct page *head = &folio->page;
-> @@ -2369,10 +2380,11 @@ static void __split_huge_page(struct page *page, struct list_head *list,
->  	unsigned long offset = 0;
->  	unsigned int order = thp_order(head);
->  	unsigned int nr = thp_nr_pages(head);
-> +	unsigned int new_nr = 1 << new_order;
->  	int i;
->  
->  	/* complete memcg works before add pages to LRU */
-> -	split_page_memcg(head, nr, 0);
-> +	split_page_memcg(head, nr, new_order);
->  
->  	if (PageAnon(head) && PageSwapCache(head)) {
->  		swp_entry_t entry = { .val = page_private(head) };
-> @@ -2387,42 +2399,50 @@ static void __split_huge_page(struct page *page, struct list_head *list,
->  
->  	ClearPageHasHWPoisoned(head);
->  
-> -	for (i = nr - 1; i >= 1; i--) {
-> -		__split_huge_page_tail(head, i, lruvec, list);
-> +	for (i = nr - new_nr; i >= new_nr; i -= new_nr) {
-> +		__split_huge_page_tail(head, i, lruvec, list, new_order);
->  		/* Some pages can be beyond EOF: drop them from page cache */
->  		if (head[i].index >= end) {
->  			ClearPageDirty(head + i);
->  			__delete_from_page_cache(head + i, NULL);
->  			if (shmem_mapping(head->mapping))
-> -				shmem_uncharge(head->mapping->host, 1);
-> +				shmem_uncharge(head->mapping->host, new_nr);
->  			put_page(head + i);
->  		} else if (!PageAnon(page)) {
->  			__xa_store(&head->mapping->i_pages, head[i].index,
->  					head + i, 0);
->  		} else if (swap_cache) {
-> +			/*
-> +			 * split anonymous THPs (including swapped out ones) to
-> +			 * non-zero order not supported
-> +			 */
-> +			VM_BUG_ON(new_order);
->  			__xa_store(&swap_cache->i_pages, offset + i,
->  					head + i, 0);
->  		}
->  	}
->  
-> -	ClearPageCompound(head);
-> +	if (!new_order)
-> +		ClearPageCompound(head);
-> +	else
-> +		set_compound_order(head, new_order);
->  	unlock_page_lruvec(lruvec);
->  	/* Caller disabled irqs, so they are still disabled here */
->  
-> -	split_page_owner(head, order, 0);
-> +	split_page_owner(head, order, new_order);
->  
->  	/* See comment in __split_huge_page_tail() */
->  	if (PageAnon(head)) {
->  		/* Additional pin to swap cache */
->  		if (PageSwapCache(head)) {
-> -			page_ref_add(head, 2);
-> +			page_ref_add(head, 1 + new_nr);
->  			xa_unlock(&swap_cache->i_pages);
->  		} else {
->  			page_ref_inc(head);
->  		}
->  	} else {
->  		/* Additional pin to page cache */
-> -		page_ref_add(head, 2);
-> +		page_ref_add(head, 1 + new_nr);
->  		xa_unlock(&head->mapping->i_pages);
->  	}
->  	local_irq_enable();
-> @@ -2435,7 +2455,14 @@ static void __split_huge_page(struct page *page, struct list_head *list,
->  		split_swap_cluster(entry);
->  	}
->  
-> -	for (i = 0; i < nr; i++) {
-> +	/*
-> +	 * set page to its compound_head when split to THPs, so that GUP pin and
-> +	 * PG_locked are transferred to the right after-split page
-> +	 */
-> +	if (new_order)
-> +		page = compound_head(page);
-> +
-> +	for (i = 0; i < nr; i += new_nr) {
->  		struct page *subpage = head + i;
->  		if (subpage == page)
->  			continue;
-> @@ -2472,36 +2499,60 @@ bool can_split_folio(struct folio *folio, int *pextra_pins)
->   * This function splits huge page into normal pages. @page can point to any
->   * subpage of huge page to split. Split doesn't change the position of @page.
->   *
-> + * See split_huge_page_to_list_to_order() for more details.
-> + *
-> + * Returns 0 if the hugepage is split successfully.
-> + * Returns -EBUSY if the page is pinned or if anon_vma disappeared from under
-> + * us.
-> + */
-> +int split_huge_page_to_list(struct page *page, struct list_head *list)
-> +{
-> +	return split_huge_page_to_list_to_order(page, list, 0);
-> +}
-> +
-> +/*
-> + * This function splits huge page into pages in @new_order. @page can point to
-> + * any subpage of huge page to split. Split doesn't change the position of
-> + * @page.
-> + *
->   * Only caller must hold pin on the @page, otherwise split fails with -EBUSY.
->   * The huge page must be locked.
->   *
->   * If @list is null, tail pages will be added to LRU list, otherwise, to @list.
->   *
-> - * Both head page and tail pages will inherit mapping, flags, and so on from
-> - * the hugepage.
-> + * Pages in new_order will inherit mapping, flags, and so on from the hugepage.
->   *
-> - * GUP pin and PG_locked transferred to @page. Rest subpages can be freed if
-> - * they are not mapped.
-> + * GUP pin and PG_locked transferred to @page or the compound page @page belongs
-> + * to. Rest subpages can be freed if they are not mapped.
->   *
->   * Returns 0 if the hugepage is split successfully.
->   * Returns -EBUSY if the page is pinned or if anon_vma disappeared from under
->   * us.
->   */
-> -int split_huge_page_to_list(struct page *page, struct list_head *list)
-> +int split_huge_page_to_list_to_order(struct page *page, struct list_head *list,
-> +				     unsigned int new_order)
->  {
->  	struct folio *folio = page_folio(page);
->  	struct page *head = &folio->page;
->  	struct deferred_split *ds_queue = get_deferred_split_queue(head);
-> -	XA_STATE(xas, &head->mapping->i_pages, head->index);
-> +	/* reset xarray order to new order after split */
-> +	XA_STATE_ORDER(xas, &head->mapping->i_pages, head->index, new_order);
->  	struct anon_vma *anon_vma = NULL;
->  	struct address_space *mapping = NULL;
->  	int extra_pins, ret;
->  	pgoff_t end;
->  
-> +	VM_BUG_ON(thp_order(head) <= new_order);
->  	VM_BUG_ON_PAGE(is_huge_zero_page(head), head);
->  	VM_BUG_ON_PAGE(!PageLocked(head), head);
->  	VM_BUG_ON_PAGE(!PageCompound(head), head);
->  
-> +	/* Cannot split THP to order-1 (no order-1 THPs) */
-> +	VM_BUG_ON(new_order == 1);
-> +
-> +	/* Split anonymous THP to non-zero order not support */
-> +	VM_BUG_ON(PageAnon(head) && new_order);
-> +
->  	if (PageWriteback(head))
->  		return -EBUSY;
->  
-> @@ -2582,7 +2633,7 @@ int split_huge_page_to_list(struct page *page, struct list_head *list)
->  	if (page_ref_freeze(head, 1 + extra_pins)) {
->  		if (!list_empty(page_deferred_list(head))) {
->  			ds_queue->split_queue_len--;
-> -			list_del(page_deferred_list(head));
-> +			list_del_init(page_deferred_list(head));
-
-Can you, please, add the comment from the changelog here as well?
-
-Thanks!
+>  		nor_flash: spi@11234000 {
+>  			compatible = "mediatek,mt8192-nor";
+>  			reg = <0 0x11234000 0 0xe0>;
+> -- 
+> 2.18.0
+> 
+> 
