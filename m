@@ -2,133 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACAEAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 08:47:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1D37C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 08:47:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345424AbiCUIsc (ORCPT
+        id S1345401AbiCUIso convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 04:48:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40692 "EHLO
+        Mon, 21 Mar 2022 04:48:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345402AbiCUIsU (ORCPT
+        with ESMTP id S1345388AbiCUIsk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 04:48:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F0271A6E00
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 01:46:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647852415;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lOTtoGOaj/bLg++xwN8hAlAI+e0GqN0W18n+jyMNEsI=;
-        b=E85ZRcCY64pz8urV+XAlhRkuZwFRmV2nJPnh1EYV6iagsafJQY6RV0noLd9bvY9fPGmyz/
-        bQv4UL1ok+b5YFCxjsNbUbrcB8+hZl5ElZI4j+0WGu/AvldmctHgOpqiahDU5Ba7UPcQd2
-        +E4oKcnv1rCzMGLeJ2NSvSPrL1lVC9o=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-593-Q_cVDoIdMC2yMzDVUvMfSQ-1; Mon, 21 Mar 2022 04:46:53 -0400
-X-MC-Unique: Q_cVDoIdMC2yMzDVUvMfSQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1DABA1C06910;
-        Mon, 21 Mar 2022 08:46:53 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 65577C15D40;
-        Mon, 21 Mar 2022 08:46:52 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <1821968.CQOukoFCf9@leap>
-References: <1821968.CQOukoFCf9@leap> <000000000000b1807c05daad8f98@google.com>
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Cc:     dhowells@redhat.com, christophe.jaillet@wanadoo.fr,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] KASAN: null-ptr-deref Read in __free_pages
+        Mon, 21 Mar 2022 04:48:40 -0400
+Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED8E4A5E9B
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 01:47:15 -0700 (PDT)
+Received: by mail-qv1-f44.google.com with SMTP id gi14so109265qvb.0
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 01:47:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=5gk+/j84Xzw+Bz6trp5c4rDqGZSiryYy0T6cty9/gyU=;
+        b=eVOKFBYvvNM82R8WVxlJlTrA4s9qUny1EPeKeZ72wuyPvdzCW3OySSr6i5ilOhgrEM
+         yMQhd7xJxGHZHhEfaLZxUAL+Q7HRFXQNGmtLiGHPmdrL1kuROZOPqx0o4VDA9/l0+lyP
+         O+IwmCjkA6R25Yd3+PzodnVJq3oTqIQ9EQjxChibEhCUy12YOFd69fNJ4zQfIBcXAWbW
+         Mh24tdLCS8b8Z869KdfiLLwVLyCb63ZIED4aQyPviZRfAI+cj+itrjI19tSKzLVYI2vM
+         eKycYm1aABOs0M/UuhC88eG/1j/KeiHIdtBiF+ZngmbQE9y/dbGJfth+PQt67NU2avew
+         TOLQ==
+X-Gm-Message-State: AOAM532j6EEIaPDx1ZFM4/MK5leMFGoes6hl7z/sRfnk/FqzYfkf96pM
+        O6/zzlX6QSv/EfNlectKClnJQEGJ0/+XEQ==
+X-Google-Smtp-Source: ABdhPJxw9BGEWqaPgRewXLUAF0H5FHzPsUK4Np/DvBlNdUfM0zZeb7uPXEBteOEr99M9b1EYZH3Pxw==
+X-Received: by 2002:ad4:5965:0:b0:440:fee0:bef2 with SMTP id eq5-20020ad45965000000b00440fee0bef2mr10310422qvb.68.1647852434169;
+        Mon, 21 Mar 2022 01:47:14 -0700 (PDT)
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com. [209.85.128.175])
+        by smtp.gmail.com with ESMTPSA id 64-20020a370343000000b0067b31f32693sm7594975qkd.109.2022.03.21.01.47.13
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Mar 2022 01:47:13 -0700 (PDT)
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-2e64a6b20eeso7768907b3.3
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 01:47:13 -0700 (PDT)
+X-Received: by 2002:a81:618b:0:b0:2db:d952:8a39 with SMTP id
+ v133-20020a81618b000000b002dbd9528a39mr23075844ywb.132.1647852433271; Mon, 21
+ Mar 2022 01:47:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <977072.1647852411.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date:   Mon, 21 Mar 2022 08:46:51 +0000
-Message-ID: <977073.1647852411@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+References: <d987663bbed18d7dbf106db6066a759040b4e57a.1647837028.git.fthain@linux-m68k.org>
+ <5291a177-9a67-b23a-515f-7faa3cc887e8@csgroup.eu> <e8398356-8ba3-e9de-8da0-3591907340b5@linux-m68k.org>
+In-Reply-To: <e8398356-8ba3-e9de-8da0-3591907340b5@linux-m68k.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 21 Mar 2022 09:47:01 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXqzWo1+gAfEjOQEZHeprbPEzWyCaUqLKx0_4nrDG+5Uw@mail.gmail.com>
+Message-ID: <CAMuHMdXqzWo1+gAfEjOQEZHeprbPEzWyCaUqLKx0_4nrDG+5Uw@mail.gmail.com>
+Subject: Re: [PATCH] macintosh/via-pmu: Fix build failure when CONFIG_INPUT is disabled
+To:     Finn Thain <fthain@linux-m68k.org>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Fabio,
+Hi Finn,
 
-How about using my patch instead?  I wonder if __free_pages() should check=
- for
-a NULL pages pointer...
+On Mon, Mar 21, 2022 at 9:29 AM Finn Thain <fthain@linux-m68k.org> wrote:
+> On Mon, 21 Mar 2022, Christophe Leroy wrote:
+> > Le 21/03/2022 à 05:30, Finn Thain a écrit :
+> > > drivers/macintosh/via-pmu-event.o: In function `via_pmu_event':
+> > > via-pmu-event.c:(.text+0x44): undefined reference to `input_event'
+> > > via-pmu-event.c:(.text+0x68): undefined reference to `input_event'
+> > > via-pmu-event.c:(.text+0x94): undefined reference to `input_event'
+> > > via-pmu-event.c:(.text+0xb8): undefined reference to `input_event'
+> > > drivers/macintosh/via-pmu-event.o: In function `via_pmu_event_init':
+> > > via-pmu-event.c:(.init.text+0x20): undefined reference to `input_allocate_device'
+> > > via-pmu-event.c:(.init.text+0xc4): undefined reference to `input_register_device'
+> > > via-pmu-event.c:(.init.text+0xd4): undefined reference to `input_free_device'
+> > > make[1]: *** [Makefile:1155: vmlinux] Error 1
+> > > make: *** [Makefile:350: __build_one_by_one] Error 2
+> > >
+> > > Don't call into the input subsystem unless CONFIG_INPUT is built-in.
+> > >
+> > > Reported-by: kernel test robot <lkp@intel.com>
+> > > Cc: Michael Ellerman <mpe@ellerman.id.au>
+> > > Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+> > > Cc: Randy Dunlap <rdunlap@infradead.org>
+> > > Signed-off-by: Finn Thain <fthain@linux-m68k.org>
+> > > ---
+> > > This is equivalent to the patch I sent a couple of days ago. This one
+> > > is slightly longer and adds a new symbol so that Kconfig logic can been
+> > > used instead of Makefile logic in case reviewers prefer that.
+> > > ---
+> > >   drivers/macintosh/Kconfig   | 5 +++++
+> > >   drivers/macintosh/Makefile  | 3 ++-
+> > >   drivers/macintosh/via-pmu.c | 2 ++
+> > >   3 files changed, 9 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/macintosh/Kconfig b/drivers/macintosh/Kconfig
+> > > index 5cdc361da37c..b9102f051bbb 100644
+> > > --- a/drivers/macintosh/Kconfig
+> > > +++ b/drivers/macintosh/Kconfig
+> > > @@ -67,6 +67,11 @@ config ADB_PMU
+> > >       this device; you should do so if your machine is one of those
+> > >       mentioned above.
+> > >
+> > > +config ADB_PMU_EVENT
+> > > +   bool
+> > > +   depends on ADB_PMU && INPUT=y
+> > > +   default y
+> >
+> > Could be reduced to
+> >
+> > config ADB_PMU_EVENT
+> >       def_bool y if ADB_PMU && INPUT=y
+>
+> That's great but my question remains unanswered: why the aversion to
+> conditionals in Makefiles, when that would be simpler (no new symbol)?
 
-David
----
-watch_queue: Fix NULL dereference in error cleanup
+While conditionals in Makefiles do exist, they are far less common, and
+can be confusing.  They're also harder to grep for.
+E.g. "git grep via-pmu-event.o" after your alternative patch would
+give:
 
-In watch_queue_set_size(), the error cleanup code doesn't take account of
-the fact that __free_page() can't handle a NULL pointer when trying to fre=
-e
-up buffer pages that did get allocated.
+    obj-$(CONFIG_ADB_PMU)          += via-pmu-event.o
 
-Fix this by only calling __free_page() on non-NULL pointers extracted from
-the list (the list was allocated by kcalloc() so was pre-cleared).
+but would miss the important surrounding part:
 
-Without the fix, this can lead to something like the following:
+    ifeq ($(CONFIG_INPUT), y)
+    obj-$(CONFIG_ADB_PMU)          += via-pmu-event.o
+    endif
 
-BUG: KASAN: null-ptr-deref in __free_pages+0x1f/0x1b0 mm/page_alloc.c:5473
-Read of size 4 at addr 0000000000000034 by task syz-executor168/3599
-...
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- __kasan_report mm/kasan/report.c:446 [inline]
- kasan_report.cold+0x66/0xdf mm/kasan/report.c:459
- check_region_inline mm/kasan/generic.c:183 [inline]
- kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
- instrument_atomic_read include/linux/instrumented.h:71 [inline]
- atomic_read include/linux/atomic/atomic-instrumented.h:27 [inline]
- page_ref_count include/linux/page_ref.h:67 [inline]
- put_page_testzero include/linux/mm.h:717 [inline]
- __free_pages+0x1f/0x1b0 mm/page_alloc.c:5473
- watch_queue_set_size+0x499/0x630 kernel/watch_queue.c:275
- pipe_ioctl+0xac/0x2b0 fs/pipe.c:632
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:874 [inline]
- __se_sys_ioctl fs/ioctl.c:860 [inline]
- __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:860
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+Keeping configuration logic in a single place (the Kconfig file)
+avoids that.  The extra symbol is invisible, so it doesn't hurt much.
 
-Fixes: c73be61cede5 ("pipe: Add general notification queue support")
-Reported-and-tested-by: syzbot+d55757faa9b80590767b@syzkaller.appspotmail.=
-com
-Signed-off-by: David Howells <dhowells@redhat.com>
----
- kernel/watch_queue.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Gr{oetje,eeting}s,
 
-diff --git a/kernel/watch_queue.c b/kernel/watch_queue.c
-index 00703444a219..09f35bab496e 100644
---- a/kernel/watch_queue.c
-+++ b/kernel/watch_queue.c
-@@ -272,7 +272,8 @@ long watch_queue_set_size(struct pipe_inode_info *pipe=
-, unsigned int nr_notes)
- =
+                        Geert
 
- error_p:
- 	for (i =3D 0; i < nr_pages; i++)
--		__free_page(pages[i]);
-+		if (pages[i])
-+			__free_page(pages[i]);
- 	kfree(pages);
- error:
- 	(void) account_pipe_buffers(pipe->user, nr_pages, pipe->nr_accounted);
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
