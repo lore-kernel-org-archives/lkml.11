@@ -2,191 +2,307 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD0EFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 01:11:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D63DC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 01:13:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234561AbiCVBND (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 21:13:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59670 "EHLO
+        id S234574AbiCVBPA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 21:15:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234503AbiCVBNB (ORCPT
+        with ESMTP id S234503AbiCVBO6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 21:13:01 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD5C1AF23;
-        Mon, 21 Mar 2022 18:11:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647911495; x=1679447495;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=ZZGsa21JbejQvStZlT4IhRGFK0npIzVahgaH4HG7IF4=;
-  b=maVcqDNVlcqWEuVcbwUTjanCO+NkzCNzRuB6U+OWznOHxykVzfeZ214j
-   Lk98Nb0oZC+BOv/d9/hQOKlnD4G5bF7CMeMo6ZAoKT3QezYAI4PmyMFrq
-   ybYPDtlZ/HPaqz7Eepy5uwsRuN7JVgPnlzxjCx84V7wpkqtECspUi+NOJ
-   oGUmtelGVyVjYb/Cbz81TxagH9H6UtjiOft67GgttZPUkw0IPnB9FGp/J
-   OOYGAebmNcHCQzy35ZROIoDmE3J+1PNG8wW1U9ZXT1sYOU4+5rJ1KH6hM
-   eltGYkWvToHg327HxAHJXEFb1Ne+JwUKRKOiRsVG8hNTZ0QF6ol5D8bqD
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="255252392"
-X-IronPort-AV: E=Sophos;i="5.90,200,1643702400"; 
-   d="scan'208";a="255252392"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 18:11:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,200,1643702400"; 
-   d="scan'208";a="785192032"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by fmsmga006.fm.intel.com with ESMTP; 21 Mar 2022 18:11:35 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Mon, 21 Mar 2022 18:11:35 -0700
-Received: from shsmsx601.ccr.corp.intel.com (10.109.6.141) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 21 Mar 2022 18:11:33 -0700
-Received: from shsmsx601.ccr.corp.intel.com ([10.109.6.141]) by
- SHSMSX601.ccr.corp.intel.com ([10.109.6.141]) with mapi id 15.01.2308.021;
- Tue, 22 Mar 2022 09:11:31 +0800
-From:   "Zhang, Cathy" <cathy.zhang@intel.com>
-To:     "Chatre, Reinette" <reinette.chatre@intel.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-CC:     "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Hansen, Dave" <dave.hansen@intel.com>,
-        "Raj, Ashok" <ashok.raj@intel.com>
-Subject: RE: [RFC PATCH v2 01/10] x86/sgx: Introduce mechanism to prevent new
- initializations of EPC pages
-Thread-Topic: [RFC PATCH v2 01/10] x86/sgx: Introduce mechanism to prevent new
- initializations of EPC pages
-Thread-Index: AQHYOAhd7zSiVFgIJk6OBix1KI5N6azCdFYAgAEpncD//8xLAIAA9HmggAB0MICABcq4sA==
-Date:   Tue, 22 Mar 2022 01:11:31 +0000
-Message-ID: <d4af4dab69ab422f9b1d0f102fe1dd14@intel.com>
-References: <20220315010300.10199-1-cathy.zhang@intel.com>
- <20220315010300.10199-2-cathy.zhang@intel.com> <YjK1PtnutmiSgE6f@kernel.org>
- <86c945969e674be18abfb6c2a5f16701@intel.com> <YjODhqZZjAkXuScd@iki.fi>
- <f773ff19583b42e79c83dc9570313b03@intel.com>
- <a68d6089-8d86-8c85-3bf4-6e3bf0791dc1@intel.com>
-In-Reply-To: <a68d6089-8d86-8c85-3bf4-6e3bf0791dc1@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.6.401.20
-dlp-reaction: no-action
-dlp-product: dlpe-windows
-x-originating-ip: [10.239.127.36]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Mon, 21 Mar 2022 21:14:58 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B4313CC4;
+        Mon, 21 Mar 2022 18:13:31 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 7A874210F0;
+        Mon, 21 Mar 2022 21:37:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1647898630; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=JKHx/9SwDe6T3GQCr95qMN28gaKErxUDbVaf8UGzMsw=;
+        b=BW0E9LCuwRXo4Ds1QoIFeRmhaMdmZJUs/LcGm12IBqAKuSdS+OpjxwZuuMR2OfkwZ1/278
+        nk5VW4qrG5d3OV7doEr3nB76QF+PEoAcX54cDSHux2+5tGrmdKattYdQcc2eDW6N8oBIlS
+        i+nyAabqTCU9amREdOjVdz8HwvLXWnE=
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 6EF26A3B81;
+        Mon, 21 Mar 2022 21:37:10 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id 508D9DA818; Mon, 21 Mar 2022 22:33:08 +0100 (CET)
+From:   David Sterba <dsterba@suse.com>
+To:     torvalds@linux-foundation.org
+Cc:     David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT PULL] Btrfs updates for 5.18
+Date:   Mon, 21 Mar 2022 22:33:04 +0100
+Message-Id: <cover.1647894991.git.dsterba@suse.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGkgUmVpbmV0dGUsDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogQ2hh
-dHJlLCBSZWluZXR0ZSA8cmVpbmV0dGUuY2hhdHJlQGludGVsLmNvbT4NCj4gU2VudDogU2F0dXJk
-YXksIE1hcmNoIDE5LCAyMDIyIDEyOjI0IEFNDQo+IFRvOiBaaGFuZywgQ2F0aHkgPGNhdGh5Lnpo
-YW5nQGludGVsLmNvbT47IEphcmtrbyBTYWtraW5lbg0KPiA8amFya2tvQGtlcm5lbC5vcmc+DQo+
-IENjOiBsaW51eC1zZ3hAdmdlci5rZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwu
-b3JnOyBIYW5zZW4sIERhdmUNCj4gPGRhdmUuaGFuc2VuQGludGVsLmNvbT47IFJhaiwgQXNob2sg
-PGFzaG9rLnJhakBpbnRlbC5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUkZDIFBBVENIIHYyIDAxLzEw
-XSB4ODYvc2d4OiBJbnRyb2R1Y2UgbWVjaGFuaXNtIHRvIHByZXZlbnQNCj4gbmV3IGluaXRpYWxp
-emF0aW9ucyBvZiBFUEMgcGFnZXMNCj4gDQo+IEhpIENhdGh5LA0KPiANCj4gT24gMy8xNy8yMDIy
-IDc6MzMgUE0sIFpoYW5nLCBDYXRoeSB3cm90ZToNCj4gPiBIaSBKYXJra28sDQo+ID4NCj4gPj4g
-LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPj4gRnJvbTogSmFya2tvIFNha2tpbmVuIDxq
-YXJra29Aa2VybmVsLm9yZz4NCj4gPj4gU2VudDogRnJpZGF5LCBNYXJjaCAxOCwgMjAyMiAyOjUz
-IEFNDQo+ID4+IFRvOiBaaGFuZywgQ2F0aHkgPGNhdGh5LnpoYW5nQGludGVsLmNvbT4NCj4gPj4g
-Q2M6IGxpbnV4LXNneEB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5v
-cmc7IEhhbnNlbiwNCj4gPj4gRGF2ZSA8ZGF2ZS5oYW5zZW5AaW50ZWwuY29tPjsgUmFqLCBBc2hv
-ayA8YXNob2sucmFqQGludGVsLmNvbT4NCj4gPj4gU3ViamVjdDogUmU6IFtSRkMgUEFUQ0ggdjIg
-MDEvMTBdIHg4Ni9zZ3g6IEludHJvZHVjZSBtZWNoYW5pc20gdG8NCj4gPj4gcHJldmVudCBuZXcg
-aW5pdGlhbGl6YXRpb25zIG9mIEVQQyBwYWdlcw0KPiA+Pg0KPiA+PiBPbiBUaHUsIE1hciAxNywg
-MjAyMiBhdCAwMjowODoyMVBNICswMDAwLCBaaGFuZywgQ2F0aHkgd3JvdGU6DQo+ID4+PiBIaSBK
-YXJra28sDQo+ID4+Pg0KPiA+Pj4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4+Pj4g
-RnJvbTogSmFya2tvIFNha2tpbmVuIDxqYXJra29Aa2VybmVsLm9yZz4NCj4gPj4+PiBTZW50OiBU
-aHVyc2RheSwgTWFyY2ggMTcsIDIwMjIgMTI6MTMgUE0NCj4gPj4+PiBUbzogWmhhbmcsIENhdGh5
-IDxjYXRoeS56aGFuZ0BpbnRlbC5jb20+DQo+ID4+Pj4gQ2M6IGxpbnV4LXNneEB2Z2VyLmtlcm5l
-bC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7DQo+ID4+Pj4gSGFuc2VuLCBEYXZl
-IDxkYXZlLmhhbnNlbkBpbnRlbC5jb20+OyBSYWosIEFzaG9rDQo+ID4+Pj4gPGFzaG9rLnJhakBp
-bnRlbC5jb20+DQo+ID4+Pj4gU3ViamVjdDogUmU6IFtSRkMgUEFUQ0ggdjIgMDEvMTBdIHg4Ni9z
-Z3g6IEludHJvZHVjZSBtZWNoYW5pc20gdG8NCj4gPj4+PiBwcmV2ZW50IG5ldyBpbml0aWFsaXph
-dGlvbnMgb2YgRVBDIHBhZ2VzDQo+ID4+Pj4NCj4gPj4+PiBPbiBUdWUsIE1hciAxNSwgMjAyMiBh
-dCAwOTowMjo1MUFNICswODAwLCBDYXRoeSBaaGFuZyB3cm90ZToNCj4gDQo+IC4uLg0KPiANCj4g
-Pj4+IFllcywgaXQgcmVxdWlyZXMgdG8gYXBwbHkgdGhlIGZvbGxvd2luZyBTR1gyIHYyIHBhdGNo
-ZXMgdG8NCj4gPj4+IHRpcC94ODYvc2d4LCBwcmlvciB0byB0aGlzIHNlcmllcy4gQXMgSSBtZW50
-aW9uZWQgaW4gY292ZXIgbGV0dGVyLA0KPiA+Pj4gU0dYMiBpbnRyb2R1Y2VzIG5ldyBTR1ggaW5z
-dHJ1Y3Rpb25zIGFuZCBmbG93cywgd2hpY2ggc2hvdWxkIGJlDQo+ID4+PiBoYW5kbGVkDQo+ID4+
-IGR1cmluZyBTVk4gdXBkYXRlLg0KPiA+Pj4NCj4gPj4+IFRoZSB2MiBvZiBTR1gyIHN1cHBvcnQg
-cGF0Y2ggc2V0LCB3aXRoIDMyIHBhdGNoZXMgaW4gdG90YWwsIHJlZmVyIHRvDQo+ID4+PiB0aGUN
-Cj4gPj4gY292ZXIgbGV0dGVyOg0KPiA+Pj4gaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGttbC9j
-b3Zlci4xNjQ0Mjc0NjgzLmdpdC5yZWluZXR0ZS5jaGF0cmVAaW4NCj4gPj4+IHRlIGwuY29tLyBU
-aGUgdHdvIGFkZGl0aW9uYWwgcGF0Y2hlcyBTR1gyIHN1cHBvcnQgcmVxdWlyZXM6DQo+ID4+PiAi
-eDg2L3NneDogQWRkIHBvaXNvbiBoYW5kbGluZyB0byByZWNsYWltZXIiDQo+ID4+Pg0KPiA+Pj4g
-aHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGludXgtDQo+ID4+IHNneC9kY2M5NWViMmFhZWZiMDQy
-NTI3YWM1MGQwYTUwNzM4YzdjMTYNCj4gPj4+IDBkYWMuMTY0MzgzMDM1My5naXQucmVpbmV0dGUu
-Y2hhdHJlQGludGVsLmNvbS8NCj4gPj4+ICJ4ODYvc2d4OiBTaWxlbmNlIHNvZnRsb2NrdXAgZGV0
-ZWN0aW9uIHdoZW4gcmVsZWFzaW5nIGxhcmdlIGVuY2xhdmVzIg0KPiA+Pj4NCj4gPj4+IGh0dHBz
-Oi8vbG9yZS5rZXJuZWwub3JnL2xpbnV4LQ0KPiA+PiBzZ3gvYjVlOWYyMTgwNjRhYTc2ZTMwMjZm
-Nzc4ZTFhZDBhMWQ4MjNlDQo+ID4+PiAzZGI4LjE2NDMxMzMyMjQuZ2l0LnJlaW5ldHRlLmNoYXRy
-ZUBpbnRlbC5jb20vDQo+ID4+DQo+ID4+IFdoeSBkb24ndCB5b3UgcGljayB0aGUgZGVwZW5kZW50
-IHBhdGNoZXMgZnJvbSB0aGF0IHBhdGNoIHNldCBhbmQgcHV0DQo+ID4+IHRoZW0gdG8gdGhpcyBv
-bmU/IEl0IGRvZXMgbm90IG1hdHRlciBpZiB0d28gcGF0Y2ggc2V0cyBjb250YWluIHNhbWUNCj4g
-Pj4gcGF0Y2hlcy4gSWYgdGhpcyBnZXRzIG1lcmdlZCBmaXJzdCwgdGhlbiBSZWluZXR0ZSdzIGpv
-YiB3aWxsIGJlIGVhc2llciwgYW5kDQo+IHZpY2UgdmVyc2EuDQo+ID4+IFRhZ3MgbWFrZSBzdXJl
-IHRoYXQgZXZlcnlvbmUgZ2V0cyB3aGF0IHRoZXkgZGVzZXJ2ZSBmcm9tIHRoZWlyDQo+IGNvbnRy
-aWJ1dGlvbi4NCj4gPg0KPiA+IEZvciBlYXN5IHRvIGRpc2N1c3MsIEkgc3BsaXQgdGhlIFNHWDIg
-c3VwcG9ydCBwYXRjaGVzIGludG8gdGhlIGZvbGxvd2luZyB0d28NCj4gcGFydHM6DQo+ID4NCj4g
-PiAxLiBhdXhpbGlhcnkgY2hhbmdlczoNCj4gPiBbVjIsMDkvMzJdIHg4Ni9zZ3g6IEV4cG9ydCBz
-Z3hfZW5jbF9ld2JfY3B1bWFzaygpDQo+ID4gaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGttbC9j
-b3Zlci4xNjQ0Mjc0NjgzLmdpdC5yZWluZXR0ZS5jaGF0cmVAaW50ZQ0KPiA+IGwuY29tL1QvI200
-NGUyYjkzMWU4MmE4N2E4YjJjODAwNTgxMzAxODJlYjc0N2ZiY2YwDQo+ID4gW1YyLDEwLzMyXSB4
-ODYvc2d4OiBSZW5hbWUgc2d4X2VuY2xfZXdiX2NwdW1hc2soKSBhcw0KPiA+IHNneF9lbmNsX2Nw
-dW1hc2soKQ0KPiA+IGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xrbWwvY292ZXIuMTY0NDI3NDY4
-My5naXQucmVpbmV0dGUuY2hhdHJlQGludGUNCj4gPiBsLmNvbS9ULyNtZjYyNjhhNjZiNWM0OGNh
-OWExOGE3NzJiNmVhZWEwOTdjMzE1ZGMxZA0KPiA+IFtWMiwxMi8zMl0geDg2L3NneDogTWFrZSBz
-Z3hfaXBpX2NiKCkgYXZhaWxhYmxlIGludGVybmFsbHkNCj4gPiBodHRwczovL2xvcmUua2VybmVs
-Lm9yZy9sa21sL2NvdmVyLjE2NDQyNzQ2ODMuZ2l0LnJlaW5ldHRlLmNoYXRyZUBpbnRlDQo+ID4g
-bC5jb20vVC8jbWEzMzMwZjhlZTgxMzZhYTA4NGQwYTJiNWYxMTAzMzFlMzdmNDRjNTINCj4gPiBb
-VjIsMTQvMzJdIHg4Ni9zZ3g6IEtlZXAgcmVjb3JkIG9mIFNHWCBwYWdlIHR5cGUNCj4gPiBodHRw
-czovL2xvcmUua2VybmVsLm9yZy9sa21sL2NvdmVyLjE2NDQyNzQ2ODMuZ2l0LnJlaW5ldHRlLmNo
-YXRyZUBpbnRlDQo+ID4gbC5jb20vVC8jbTRhZTgwZmRmNjdhZDMzMDExOWJmYzJhYmFlYTg0NWJh
-YTI0ZWQxNGMNCj4gPg0KPiA+IDIuIFRoZSBvdGhlciBTR1gyIHN1cHBvcnQgcGF0Y2hlcy4NCj4g
-Pg0KPiA+IEZvciAjMSwgd2UgY2FuIHB1dCB0aGVtIGludG8gdGhpcyBzZXJpZXMuIEJ1dCByZWdh
-cmRpbmcgIzIsIGl0IGludHJvZHVjZXMNCj4gRUFVRy9FTU9EUFIvRU1PRFQgYW5kIHRoZSByZWxh
-dGVkIGZsb3dzLCBpdCBzZWVtcyBub3Qgc2Vuc2libGUgdG8gcGljaw0KPiB1cCBvbmx5IHNvbWUg
-b2YgdGhlIHBhdGNoZXMsIGl0IHdpbGwgYmUgbm90IGNvbnZlbmllbnQgdG8gcnVuIHRoZSByZWxh
-dGVkIHRlc3QNCj4gd2hpbGUgZG9pbmcgU1ZOIHVwZGF0ZS4NCj4gPg0KPiA+Pg0KPiA+PiBPdGhl
-cndpc2UgZm9yIGluc3RhbmNlIGdpdmluZyBhIHRlc3RlZC1ieSBpcyBpbXBvc3NpYmxlLiBZb3Ug
-aGF2ZSB0bw0KPiA+PiByb290IHRoaXMgdG8gdGhlIG1haW5saW5lLCBvciBhdCBsZWFzdCB0byB4
-ODYgdGlwLmdpdC4NCj4gPg0KPiA+IFB1dCB0aGlzIHNlcmllcyBvbiB0b3Agb2YgU0dYMiBzdXBw
-b3J0IGlzIGJhc2VkIG9uIHRoZSBhc3N1bXB0aW9uIHRoYXQNCj4gU0dYMiB3aWxsIGdldCBtZXJn
-ZWQgZmlyc3QuIElmIGl0J3MgcmVxdWlyZWQgdG8gbWFrZSB0aGlzIHNlcmllcyBpbmRlcGVuZGVu
-dCBvZg0KPiBTR1gyLCB3ZSBuZWVkIHRvIHBpY2sgdXAgdGhlIGFib3ZlICMxLCBhbmQgbWFrZSBj
-aGFuZ2UgaW4gcGF0Y2ggIiB4ODYvc2d4Og0KPiBJbnRyb2R1Y2UgbWVjaGFuaXNtIHRvIHByZXZl
-bnQgbmV3IGluaXRpYWxpemF0aW9ucyBvZiBFUEMgcGFnZXMiIHRvIHJlbW92ZQ0KPiB0aGUgaGFu
-ZGxpbmcgb24gU0dYMiBmbG93cy4gT25jZSBTR1gyIGdldHMgbWVyZ2VkLCBwcm92aWRlIHRoZSBj
-aGFuZ2VzIGluDQo+IGZvbGxvd2luZyBwYXRjaGVzLg0KPiA+DQo+ID4gSG93IGRvIHlvdSB0aGlu
-aywgSmFya2tvPyBBbmQgSSBhbHNvIHdvdWxkIGxpa2UgdG8gZ2V0IHN1Z2dlc3Rpb24gZnJvbQ0K
-PiBAQ2hhdHJlLCBSZWluZXR0ZSBmb3IgdGhpcy4NCj4gDQo+IElzIGl0IHBvc3NpYmxlIHRvIGZh
-Y3RvciBvdXQgdGhlIGNoYW5nZXMgdG8gdGhlIFNHWDIgZmxvd3MgaW50byBzZXBhcmF0ZQ0KPiBw
-YXRjaGVzPw0KDQpZZXMsIHRoZSBjaGFuZ2VzIGNhbiBiZSBpbnRvIHNlcGFyYXRlIHBhdGNoZXMu
-IEFuZCB0aGUgc2VwYXJhdGUgcGF0Y2hlcw0Kc2hvdWxkIGJlIG1vdmVkIG91dCBmcm9tIHRoaXMg
-c2VyaWVzLCB0byBtYWtlIHN1cmUgdGhpcyBzZXJpZXMgaXMgYXBwbGllZA0KdG8gdGlwIGJyYW5j
-aCBpbmRlcGVuZGVudCBvZiBTR1gyIHNlcmllcy4NCg0KPiANCj4gVGhpcyBzaG91bGQgY29udGlu
-dWUgdG8gc3VwcG9ydCB0aGUgdGVzdGluZyB5b3UgbWVudGlvbmVkIGFuZCB0aGUgcGF0Y2hlcw0K
-PiBjb3VsZCB0aGVuIGJlIGRyb3BwZWQgZnJvbSB5b3VyIHNlcmllcyBhbmQgbW92ZWQgdG8gdGhl
-IFNHWDIgc2VyaWVzIGlmIHRoZQ0KPiBFVVBEQVRFU1ZOIHdvcmsgaXMgbWVyZ2VkIGZpcnN0LiBJ
-IGFtIG5vdCBzdXJlIGFib3V0IHRoZSB0ZXN0aW5nIHRob3VnaA0KPiBiZWNhdXNlIEkgZGlkIG5v
-dCBub3RpY2UgYSBzZWxmdGVzdCBhcyBwYXJ0IG9mIHRoZSBzZXJpZXMuIEhvdyBjYW4gSSB0ZXN0
-IHRoaXMNCj4gd29yayBpZi93aGVuIGl0IG1vdmVzIHRvIHRoZSBTR1gyIHNlcmllcz8NCg0KVG8g
-dGVzdCBpdCwgeW91IHdpbGwgdGhlIGZvbGxvd2luZyBjb21tYW5kIHdoaWxlIHlvdSBydW4gU0dY
-MiBzdHJlc3MgdGVzdC4NCg0KaXVjb2RlLXRvb2wgLUsgeHh4eHh4LlBEQiAtLW92ZXJ3cml0ZSA7
-IGVjaG8gMSA+IC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L21pY3JvY29kZS9yZWxvYWQNCg0KSGVy
-ZSB4eHh4eHguUERCIGlzIGFuIHVjb2RlIHBhdGNoLg0KDQpJJ20gbm90IHN1cmUgaWYgaXQncyBw
-b3NzaWJsZSB0byB3cml0ZSBhIHNlbGZ0ZXN0IGZvciBpdCBmb3Igc2VsZnRlc3Qgc2hvdWxkIGNy
-ZWF0ZSBhDQp1Y29kZSBwYXRjaC4NCg0KQWRkaXRpb25hbGx5LCByZWdhcmRpbmcgdGhlICJhdXhp
-bGlhcnkgY2hhbmdlcyIgSSBsaXN0IGFib3ZlLCB3b3VsZCB5b3UgbGlrZSB0byBtb3ZlDQp0aGVt
-IGludG8gdGhpcyBTVk4gdXBkYXRlIHNlcmllcywgb3IganVzdCBsZXQgbWUgcmViYXNlIG9uIHRo
-ZW0sIGxpa2UgeW91IHJlYmFzZWQNCndpdGggc29tZSBvdGhlciBwYXRjaGVzPw0KDQo+IA0KPiBS
-ZWluZXR0ZSANCg==
+Hi,
+
+this update contains feature updates, performance improvements,
+preparatory and core work and some related VFS updates.  Please pull,
+thanks.
+
+Features:
+
+- encoded read/write ioctls, allows user space to read or write raw data
+  directly to extents (now compressed, encrypted in the future), will be
+  used by send/receive v2 where it saves processing time
+
+- zoned mode now works with metadata DUP (the mkfs.btrfs default)
+
+- error message header updates:
+  - print error state: transaction abort, other error, log tree errors
+  - print transient filesystem state: remount, device replace, ignored
+    checksum verifications
+
+- tree-checker: verify the transaction id of the to-be-written dirty
+  extent buffer
+
+Performance improvements:
+
+- fsync speedups
+  - directory logging speedups (up to -90% run time)
+  - avoid logging all directory changes during renames (up to -60% run
+    time)
+  - avoid inode logging during rename and link when possible (up to -60%
+    run time)
+  - prepare extents to be logged before locking a log tree path
+    (throughput +7%)
+  - stop copying old file extents when doing a full fsync ()
+  - improved logging of old extents after truncate
+
+Core, fixes:
+
+- improved stale device identification by dev_t and not just path (for
+  devices that are behind other layers like device mapper)
+
+- continued extent tree v2 preparatory work
+  - disable features that won't work yet
+  - add wrappers and abstractions for new tree roots
+
+- improved error handling
+
+- add super block write annotations around background block group
+  reclaim
+
+- fix device scanning messages potentially accessing stale pointer
+
+- cleanups and refactoring
+
+VFS:
+
+- allow reflinks/deduplication from two different mounts of the same
+  filesystem
+
+- export and add helpers for read/write range verification, for the
+  encoded ioctls
+
+----------------------------------------------------------------
+The following changes since commit 09688c0166e76ce2fb85e86b9d99be8b0084cdf9:
+
+  Linux 5.17-rc8 (2022-03-13 13:23:37 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-5.18-tag
+
+for you to fetch changes up to d3e29967079c522ce1c5cab0e9fab2c280b977eb:
+
+  btrfs: zoned: put block group after final usage (2022-03-14 13:13:54 +0100)
+
+----------------------------------------------------------------
+Anand Jain (6):
+      btrfs: simplify fs_devices member access in btrfs_init_dev_replace_tgtdev
+      btrfs: harden identification of a stale device
+      btrfs: match stale devices by dev_t
+      btrfs: add device major-minor info in the struct btrfs_device
+      btrfs: use dev_t to match device in device_matched
+      btrfs: cleanup temporary variables when finding rotational device status
+
+David Sterba (1):
+      btrfs: replace BUILD_BUG_ON by static_assert
+
+Dongliang Mu (1):
+      btrfs: don't access possibly stale fs_info data in device_list_add
+
+Dāvis Mosāns (1):
+      btrfs: add lzo workspace buffer length constants
+
+Filipe Manana (28):
+      btrfs: remove write and wait of struct walk_control
+      btrfs: don't log unnecessary boundary keys when logging directory
+      btrfs: put initial index value of a directory in a constant
+      btrfs: stop copying old dir items when logging a directory
+      btrfs: stop trying to log subdirectories created in past transactions
+      btrfs: add helper to delete a dir entry from a log tree
+      btrfs: pass the dentry to btrfs_log_new_name() instead of the inode
+      btrfs: avoid logging all directory changes during renames
+      btrfs: stop doing unnecessary log updates during a rename
+      btrfs: avoid inode logging during rename and link when possible
+      btrfs: use single variable to track return value at btrfs_log_inode()
+      btrfs: remove unnecessary leaf free space checks when pushing items
+      btrfs: avoid unnecessary COW of leaves when deleting items from a leaf
+      btrfs: avoid unnecessary computation when deleting items from a leaf
+      btrfs: remove constraint on number of visited leaves when replacing extents
+      btrfs: remove useless path release in the fast fsync path
+      btrfs: prepare extents to be logged before locking a log tree path
+      btrfs: stop checking for NULL return from btrfs_get_extent()
+      btrfs: fix lost error return value when reading a data page
+      btrfs: remove no longer used counter when reading data page
+      btrfs: assert we have a write lock when removing and replacing extent maps
+      btrfs: stop copying old file extents when doing a full fsync
+      btrfs: hold on to less memory when logging checksums during full fsync
+      btrfs: voluntarily relinquish cpu when doing a full fsync
+      btrfs: reset last_reflink_trans after fsyncing inode
+      btrfs: fix unexpected error path when reflinking an inline extent
+      btrfs: deal with unexpected extent type during reflinking
+      btrfs: add and use helper for unlinking inode during log replay
+
+Jiapeng Chong (2):
+      btrfs: zoned: remove redundant initialization of to_add
+      btrfs: scrub: remove redundant initialization of increment
+
+Johannes Thumshirn (5):
+      btrfs: zoned: make zone activation multi stripe capable
+      btrfs: zoned: make zone finishing multi stripe capable
+      btrfs: zoned: prepare for allowing DUP on zoned
+      btrfs: zoned: allow DUP on meta-data block groups
+      btrfs: stop checking for NULL return from btrfs_get_extent_fiemap()
+
+Josef Bacik (27):
+      btrfs: add definition for EXTENT_TREE_V2
+      btrfs: disable balance for extent tree v2 for now
+      btrfs: disable device manipulation ioctl's EXTENT_TREE_V2
+      btrfs: disable qgroups in extent tree v2
+      btrfs: disable scrub for extent-tree-v2
+      btrfs: disable snapshot creation/deletion for extent tree v2
+      btrfs: disable space cache related mount options for extent tree v2
+      btrfs: tree-checker: don't fail on empty extent roots for extent tree v2
+      btrfs: abstract out loading the tree root
+      btrfs: add code to support the block group root
+      btrfs: add support for multiple global roots
+      btrfs: make search_csum_tree return 0 if we get -EFBIG
+      btrfs: handle csum lookup errors properly on reads
+      btrfs: check correct bio in finish_compressed_bio_read
+      btrfs: remove the bio argument from finish_compressed_bio_read
+      btrfs: track compressed bio errors as blk_status_t
+      btrfs: do not double complete bio on errors during compressed reads
+      btrfs: do not try to repair bio that has no mirror set
+      btrfs: do not clean up repair bio if submit fails
+      btrfs: pass btrfs_fs_info for deleting snapshots and cleaner
+      btrfs: pass btrfs_fs_info to btrfs_recover_relocation
+      btrfs: remove the cross file system checks from remap
+      fs: allow cross-vfsmount reflink/dedupe
+      btrfs: remove BUG_ON(ret) in alloc_reserved_tree_block
+      btrfs: add a alloc_reserved_extent helper
+      btrfs: remove last_ref from the extent freeing code
+      btrfs: factor out do_free_extent_accounting helper
+
+Minghao Chi (1):
+      btrfs: send: remove redundant ret variable in fs_path_copy
+
+Naohiro Aota (1):
+      btrfs: zoned: mark relocation as writing
+
+Niels Dossche (2):
+      btrfs: extend locking to all space_info members accesses
+      btrfs: add lockdep_assert_held to need_preemptive_reclaim
+
+Nikolay Borisov (3):
+      btrfs: move missing device handling in a dedicate function
+      btrfs: move QUOTA_ENABLED check to rescan_should_stop from btrfs_qgroup_rescan_worker
+      btrfs: zoned: put block group after final usage
+
+Omar Sandoval (10):
+      fs: export rw_verify_area()
+      fs: export variant of generic_write_checks without iov_iter
+      btrfs: don't advance offset for compressed bios in btrfs_csum_one_bio()
+      btrfs: add ram_bytes and offset to btrfs_ordered_extent
+      btrfs: support different disk extent size for delalloc
+      btrfs: clean up cow_file_range_inline()
+      btrfs: optionally extend i_size in cow_file_range_inline()
+      btrfs: add definitions and documentation for encoded I/O ioctls
+      btrfs: add BTRFS_IOC_ENCODED_READ ioctl
+      btrfs: add BTRFS_IOC_ENCODED_WRITE
+
+Pankaj Raghav (1):
+      btrfs: zoned: remove redundant assignment in btrfs_check_zoned_mode
+
+Qu Wenruo (4):
+      btrfs: populate extent_map::generation when reading from disk
+      btrfs: unify the error handling pattern for read_tree_block()
+      btrfs: unify the error handling of btrfs_read_buffer()
+      btrfs: verify the tranisd of the to-be-written dirty extent buffer
+
+Sahil Kang (2):
+      btrfs: reuse existing pointers from btrfs_ioctl
+      btrfs: reuse existing inode from btrfs_ioctl
+
+Sidong Yang (2):
+      btrfs: qgroup: remove duplicated check in adding qgroup relations
+      btrfs: qgroup: remove outdated TODO comments
+
+Sweet Tea Dorminy (1):
+      btrfs: add filesystems state details to error messages
+
+ fs/btrfs/backref.c                |    7 +-
+ fs/btrfs/block-group.c            |   36 +-
+ fs/btrfs/block-group.h            |    1 +
+ fs/btrfs/btrfs_inode.h            |   42 +-
+ fs/btrfs/compression.c            |   63 +-
+ fs/btrfs/compression.h            |   10 +-
+ fs/btrfs/ctree.c                  |  108 ++--
+ fs/btrfs/ctree.h                  |   83 ++-
+ fs/btrfs/delalloc-space.c         |   18 +-
+ fs/btrfs/dev-replace.c            |   18 +-
+ fs/btrfs/disk-io.c                |  219 +++++--
+ fs/btrfs/disk-io.h                |    2 +
+ fs/btrfs/extent-tree.c            |  148 +++--
+ fs/btrfs/extent_io.c              |   45 +-
+ fs/btrfs/extent_map.c             |    4 +
+ fs/btrfs/file-item.c              |   76 +--
+ fs/btrfs/file.c                   |   79 ++-
+ fs/btrfs/free-space-tree.c        |    2 +
+ fs/btrfs/inode.c                  | 1183 +++++++++++++++++++++++++++++--------
+ fs/btrfs/ioctl.c                  |  309 ++++++++--
+ fs/btrfs/lzo.c                    |   11 +-
+ fs/btrfs/ordered-data.c           |  132 ++---
+ fs/btrfs/ordered-data.h           |   25 +-
+ fs/btrfs/print-tree.c             |    5 +-
+ fs/btrfs/qgroup.c                 |   72 ++-
+ fs/btrfs/reflink.c                |   43 +-
+ fs/btrfs/relocation.c             |   11 +-
+ fs/btrfs/scrub.c                  |    2 +-
+ fs/btrfs/send.c                   |   11 +-
+ fs/btrfs/send.h                   |    2 +-
+ fs/btrfs/space-info.c             |    5 +-
+ fs/btrfs/super.c                  |   96 ++-
+ fs/btrfs/sysfs.c                  |   15 +-
+ fs/btrfs/tests/extent-map-tests.c |    2 +
+ fs/btrfs/transaction.c            |   19 +-
+ fs/btrfs/transaction.h            |    2 +-
+ fs/btrfs/tree-checker.c           |   35 +-
+ fs/btrfs/tree-log.c               |  982 ++++++++++++++++++------------
+ fs/btrfs/tree-log.h               |    7 +-
+ fs/btrfs/volumes.c                |  147 ++---
+ fs/btrfs/volumes.h                |    7 +-
+ fs/btrfs/zoned.c                  |  167 ++++--
+ fs/internal.h                     |    5 -
+ fs/ioctl.c                        |    4 -
+ fs/read_write.c                   |   34 +-
+ fs/remap_range.c                  |    7 +-
+ include/linux/fs.h                |    2 +
+ include/trace/events/btrfs.h      |    1 +
+ include/uapi/linux/btrfs.h        |  133 +++++
+ include/uapi/linux/btrfs_tree.h   |    3 +
+ 50 files changed, 3109 insertions(+), 1331 deletions(-)
