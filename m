@@ -2,97 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68ACFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:53:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 761B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:54:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348327AbiCUPyy (ORCPT
+        id S1348562AbiCUPzZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 11:54:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57074 "EHLO
+        Mon, 21 Mar 2022 11:55:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348370AbiCUPyq (ORCPT
+        with ESMTP id S244429AbiCUPzW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 11:54:46 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94F8B3D1CC;
-        Mon, 21 Mar 2022 08:53:20 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id t33so21241472ybt.12;
-        Mon, 21 Mar 2022 08:53:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nTotdTusIeK32o/JzomDhnbhzpNSp4di8YaC3w/q0B8=;
-        b=J8hEpEQ0iO1EMe+hQsp/lSlwSPJPF9TEUePxBNLZ8YrYvF34xcl7jpvmYq0vgbxffa
-         6eeK2Hc+yXmCCG0CCc+AW03vhLmLfwjxI0Tpk05ANqUtkwgWDR5saRzxExTroweRDdLd
-         qAHdiOldrVZzi2PnzvWSZtIieR8Jc05tBaZMW9KNwtN4JMg+622Suj4Sskr0dAjcZcKd
-         enuucFhOkjOzZ6xcyMD0oXGTtp2J8u89zU2ypbAAm8oK+fsWd0OKxEspjPnjyWPNvXE/
-         vOIiZ7w7JWQCqWN7t0lntpxkPMJQq9ObKAlAssJybhreBLN45zZvmydMfJ31wpG0qqHL
-         6vmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nTotdTusIeK32o/JzomDhnbhzpNSp4di8YaC3w/q0B8=;
-        b=wPhZFNCiVNVWWpnPFWMnHxoxWDmjkxzEw12MbplludyGuhaiLEaOoJSl4/Kl1KaZn5
-         HGRWvSW3Q63LY+sJHEYBb9EakdMLBg5D0I7vurl5NgNs+yvHmvxsHarKIsObVCuanBXe
-         j9OGN6UBn2NRtNbaJCgkdpzQTIQtsgswZ3A42sHp4qp2kjS75W63kZaBgDoGlkV/DFCB
-         2E1iYptTSIo1p5wZ9a7CYsfeNqI/e68jui3Wx/zeHD3ABGEhQf8Joj5eC0oJ7EnQnNp8
-         YN/x1JaHgNeJfd4AAmNGb91mSae9sRbyOTR7ItiiOhcg0xnWGLx5pGfHlJ7a84q3g2Q2
-         NRGw==
-X-Gm-Message-State: AOAM533imOpNk3ih3ywgD5YxPtSIuBt/3OndsodM7WFOb/hDeHnaqLNt
-        +9yBLCV5beIDxXV2m9UONFw+l4FWhJCQOpMy9A8=
-X-Google-Smtp-Source: ABdhPJx+Njv3z8UirguWrc2qa1JLVuf9bn3+0GyVzpaP/JwN9vI5ad2kyb1fbIR6I/iiO9AnFrthYoDCTlM/ZGe0+ks=
-X-Received: by 2002:a25:d2c1:0:b0:633:c33e:8df2 with SMTP id
- j184-20020a25d2c1000000b00633c33e8df2mr13826276ybg.597.1647877999660; Mon, 21
- Mar 2022 08:53:19 -0700 (PDT)
+        Mon, 21 Mar 2022 11:55:22 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 993B43E5D3;
+        Mon, 21 Mar 2022 08:53:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1647878035; x=1679414035;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=I9RX3C0tTmX7DGBFBhnhQZzb22Lth00ZXRJB+AVXio0=;
+  b=uz+16ItnVO7YKdWjH4gMa1azmPczozIFc7yxxRtorFx4j1mwk4zsh31d
+   DnJd090W793SHEYOCJu8wVYNV6K9EX8VSnpbkbc/9hM38UM+Lp6fciqb0
+   OVjpJOMzX01Z9OK9lQ3G/QN2OITzOCMGZ/ChdJsIrMby+ufGC1wWoCmti
+   9moJCxCA60rZtoXmMg9taOJY9TxCOLfkP+XBGIXRplNpFTXFmvOG42wSF
+   CKS2NdMFoOaVvFXCtLYzcgoNK21eOx/GCqjDqf8aSl2jz7N9TtpUJwy8R
+   /GmXdulbFbJSesO0No/eVVkPEUPL8f5Yx3RwaksqTdL8TJs5+w3fTZZur
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,199,1643698800"; 
+   d="scan'208";a="166536552"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Mar 2022 08:53:54 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 21 Mar 2022 08:53:54 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 21 Mar 2022 08:53:49 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, <UNGLinuxDriver@microchip.com>
+Subject: [RFC Patch net-next 0/3] add ethtool SQI support for LAN87xx T1 Phy
+Date:   Mon, 21 Mar 2022 21:23:34 +0530
+Message-ID: <20220321155337.16260-1-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-References: <20220319162006.13c60c1f@jic23-huawei> <20220319193459.2628876-1-ztong0001@gmail.com>
- <CAHp75Vfk+CQZoz+s5PuSTBb0Nb4KLB+yoNiTCJQ4NktxV1nycQ@mail.gmail.com>
-In-Reply-To: <CAHp75Vfk+CQZoz+s5PuSTBb0Nb4KLB+yoNiTCJQ4NktxV1nycQ@mail.gmail.com>
-From:   Tong Zhang <ztong0001@gmail.com>
-Date:   Mon, 21 Mar 2022 08:53:09 -0700
-Message-ID: <CAA5qM4DE7Qehn2G3bOJfJ7wNfOBA01tzAFOuGZa_O4=6Ocb61g@mail.gmail.com>
-Subject: Re: [PATCH v2] iio:imu:bmi160: disable regulator in error path
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Sean Nyekjaer <sean@geanix.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jonathan Albrieux <jonathan.albrieux@gmail.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 1:28 AM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> On Sun, Mar 20, 2022 at 8:44 AM Tong Zhang <ztong0001@gmail.com> wrote:
-> >
-> > Regulator should be disabled in error path as mentioned in _regulator_put().
-> > Also disable accel if gyro cannot be enabled.
-> >
-> > [   16.233604] WARNING: CPU: 0 PID: 2177 at drivers/regulator/core.c:2257 _regulator_put
-> > [   16.240453] Call Trace:
-> > [   16.240572]  <TASK>
-> > [   16.240676]  regulator_put+0x26/0x40
-> > [   16.240853]  regulator_bulk_free+0x26/0x50
-> > [   16.241050]  release_nodes+0x3f/0x70
-> > [   16.241225]  devres_release_group+0x147/0x1c0
-> > [   16.241441]  ? bmi160_core_probe+0x175/0x3a0 [bmi160_core]
->
-> Haven't I given you a tag?
->
-> --
-> With Best Regards,
-> Andy Shevchenko
-Hi Any, Thank you for reviewing the patch. I appreciate it.
-I thought I would need another tag since this patch is a v2.
-Sorry for this back and forth. Have a great one.
-Thanks,
-- Tong
+This patch series add the Signal Quality Index measurement for the LAN87xx and
+LAN937x T1 phy.
+
+Arun Ramadoss (3):
+  net: phy: lan87xx: added lan87xx_update_link routine
+  net: phy: lan937x: added PHY_POLL_CABLE_TEST flag
+  net: phy: lan87xx: added ethtool SQI support
+
+ drivers/net/phy/microchip_t1.c | 146 ++++++++++++++++++++++++++++++++-
+ 1 file changed, 145 insertions(+), 1 deletion(-)
+
+
+base-commit: 092d992b76ed9d06389af0bc5efd5279d7b1ed9f
+-- 
+2.33.0
+
