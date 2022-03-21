@@ -2,41 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC51AC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:59:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37389C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:59:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348563AbiCUOAw (ORCPT
+        id S1348564AbiCUOA5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:00:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46654 "EHLO
+        Mon, 21 Mar 2022 10:00:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348584AbiCUN6E (ORCPT
+        with ESMTP id S1348597AbiCUN6F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:58:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 212C215DABC;
-        Mon, 21 Mar 2022 06:55:49 -0700 (PDT)
+        Mon, 21 Mar 2022 09:58:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF9001728A0;
+        Mon, 21 Mar 2022 06:55:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A51DF612E7;
-        Mon, 21 Mar 2022 13:55:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0619C340E8;
-        Mon, 21 Mar 2022 13:55:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B38CB816CC;
+        Mon, 21 Mar 2022 13:55:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E1D5C340E8;
+        Mon, 21 Mar 2022 13:55:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647870935;
-        bh=YxizQVir2MiOV58U+ZMYBGDDtJL9oDimqsdgBqpeyys=;
+        s=korg; t=1647870940;
+        bh=PzmYSgWZkELd99M65RtOTO6/E7gWCRnyDqQwdqjWnb8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZBCkKnDtRtQALYVwLc4FRorWqpOjRLK73DeSokKHkNRcS5ZxJLDmXtTdRFGPz92er
-         WaaeaaLdN7YByk7M1ZBLmBYmJmfM6xm5EHurVqXFrMYCbgwSoh2vgvcGqzxoQZwF0Q
-         b42E9HqslZx5SFmG1WgjegJ8ruCTsBa+oaheDjXY=
+        b=hmsKa6G8twaFppVuhyOMb60INqY3H1RHIFEHRBLsaIp9adBtE198VMl3STtWr4t5k
+         RYWyrpE7pNVh3GiogW1MHurmmKN6QKmH/DUyxanBJW7vdEtRAGmlsm3vgGt5+Ac1yU
+         kjYK9OtC2StqsR4PAfQapinE6PLAu0sgei41hpQg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lucas Wei <lucaswei@google.com>
-Subject: [PATCH 4.19 22/57] fs: sysfs_emit: Remove PAGE_SIZE alignment check
-Date:   Mon, 21 Mar 2022 14:52:03 +0100
-Message-Id: <20220321133222.632387689@linuxfoundation.org>
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 4.19 24/57] arm64: Add Neoverse-N2, Cortex-A710 CPU part definition
+Date:   Mon, 21 Mar 2022 14:52:05 +0100
+Message-Id: <20220321133222.691732418@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133221.984120927@linuxfoundation.org>
 References: <20220321133221.984120927@linuxfoundation.org>
@@ -48,32 +53,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Wei <lucaswei@google.com>
+From: Suzuki K Poulose <suzuki.poulose@arm.com>
 
-For kernel releases older than 4.20, using the SLUB alloctor will cause
-this alignment check to fail as that allocator did NOT align kmalloc
-allocations on a PAGE_SIZE boundry.
+commit 2d0d656700d67239a57afaf617439143d8dac9be upstream.
 
-Remove the check for these older kernels as it is a false-positive and
-causes problems on many devices.
+Add the CPU Partnumbers for the new Arm designs.
 
-Signed-off-by: Lucas Wei <lucaswei@google.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
+Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Link: https://lore.kernel.org/r/20211019163153.3692640-2-suzuki.poulose@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/sysfs/file.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/arm64/include/asm/cputype.h |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/fs/sysfs/file.c
-+++ b/fs/sysfs/file.c
-@@ -572,8 +572,7 @@ int sysfs_emit(char *buf, const char *fm
- 	va_list args;
- 	int len;
+--- a/arch/arm64/include/asm/cputype.h
++++ b/arch/arm64/include/asm/cputype.h
+@@ -82,6 +82,8 @@
+ #define ARM_CPU_PART_CORTEX_A76		0xD0B
+ #define ARM_CPU_PART_NEOVERSE_N1	0xD0C
+ #define ARM_CPU_PART_CORTEX_A77		0xD0D
++#define ARM_CPU_PART_CORTEX_A710	0xD47
++#define ARM_CPU_PART_NEOVERSE_N2	0xD49
  
--	if (WARN(!buf || offset_in_page(buf),
--		 "invalid sysfs_emit: buf:%p\n", buf))
-+	if (WARN(!buf, "invalid sysfs_emit: buf:%p\n", buf))
- 		return 0;
+ #define APM_CPU_PART_POTENZA		0x000
  
- 	va_start(args, fmt);
+@@ -111,6 +113,8 @@
+ #define MIDR_CORTEX_A76 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A76)
+ #define MIDR_NEOVERSE_N1 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N1)
+ #define MIDR_CORTEX_A77	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A77)
++#define MIDR_CORTEX_A710 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A710)
++#define MIDR_NEOVERSE_N2 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N2)
+ #define MIDR_THUNDERX	MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX)
+ #define MIDR_THUNDERX_81XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX)
+ #define MIDR_THUNDERX_83XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_83XX)
 
 
