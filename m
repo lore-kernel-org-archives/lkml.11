@@ -2,54 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3B35C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BEE6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351715AbiCUOLe (ORCPT
+        id S1349553AbiCUOIa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:11:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38088 "EHLO
+        Mon, 21 Mar 2022 10:08:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348803AbiCUODx (ORCPT
+        with ESMTP id S1348580AbiCUOBS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:03:53 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4401543480;
-        Mon, 21 Mar 2022 07:01:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647871274; x=1679407274;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=hIen9Z7wLd+Ry77Vwb3icZYihUovoSxjvkDO2KRoaVY=;
-  b=mT7UgVxIlxCv7wvTC6TyeGM7hNjy3+m2JwODO1nIv1EkFqMatyJCCPUN
-   REIpMwrvUjxlPgT7aKGvlyBYBiR20az+kCHb8K3ZbAyYYkHFGagx6FW6J
-   xtw9jyQLN/EXw7AaQ7pegfZMR/I4N9aOu50yV2F1SV1bg74AOrh5GaWDo
-   gcS341QLjJKgIRWH63NrYVBCCQeykhAubHxtmbsqpgLlTdeIedBY6To8a
-   HoLx6ZFsLQNdP5RGyYSN1OlgPwnpMAcUaiwzDf2+aSoMhhFpBtle2xBDP
-   Xji2HX+sjlSDmQAQCHmDchnBArzUiImc4X5OgRld93EIhO4j1lb+o0vAg
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10292"; a="255121571"
-X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
-   d="scan'208";a="255121571"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 07:01:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
-   d="scan'208";a="716506931"
-Received: from otc-lr-04.jf.intel.com ([10.54.39.41])
-  by orsmga005.jf.intel.com with ESMTP; 21 Mar 2022 07:01:08 -0700
-From:   kan.liang@linux.intel.com
-To:     acme@kernel.org, mingo@redhat.com, peterz@infradead.org,
-        jolsa@redhat.com, namhyung@kernel.org,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
-Cc:     ak@linux.intel.com, ahmad.yasin@intel.com,
-        zhengjun.xing@linux.intel.com,
-        Kan Liang <kan.liang@linux.intel.com>
-Subject: [PATCH] perf script: Add 'brstackinsnlen' for branch stacks
-Date:   Mon, 21 Mar 2022 07:00:12 -0700
-Message-Id: <1647871212-184070-1-git-send-email-kan.liang@linux.intel.com>
-X-Mailer: git-send-email 2.7.4
+        Mon, 21 Mar 2022 10:01:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95CFB41FA3;
+        Mon, 21 Mar 2022 06:59:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39718B816E1;
+        Mon, 21 Mar 2022 13:59:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47F59C340ED;
+        Mon, 21 Mar 2022 13:59:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647871145;
+        bh=WXRZNREbEysgY3ucIvbUH+IXo9ESUOMduBe4vKaz5f0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fpb7unY5pqUTqIAEdKKtMBP0BdcMYeLMEBpmO+PCyaobHZSQj1zblEqRRvUdMVq/c
+         3Iff73EeetcadfezHcfWsuq+55XvlUX3YM9C7hJUxB9L6hHu4juAymoNWib0UPDu5G
+         gVCZ5uzDLDWNTrOPZSOGOe43wCxsty0Lo22+g8x0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Ard Biesheuvel <ardb@kernel.org>, linux-efi@vger.kernel.org,
+        Lukas Wunner <lukas@wunner.de>,
+        Octavian Purdila <octavian.purdila@intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Matt Fleming <matt@codeblueprint.co.uk>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 04/30] efi: fix return value of __setup handlers
+Date:   Mon, 21 Mar 2022 14:52:34 +0100
+Message-Id: <20220321133219.774098049@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220321133219.643490199@linuxfoundation.org>
+References: <20220321133219.643490199@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -57,160 +55,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kan Liang <kan.liang@linux.intel.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-When analyzing with the perf script, it's useful to understand the
-captured instruction and the next sequential instruction. To calculate
-the address of the next sequential instruction, the length of the
-captured instruction is required. For example, you can’t know the next
-sequential instruction after an unconditional branch unless you
-calculate that based on its length.
+[ Upstream commit 9feaf8b387ee0ece9c1d7add308776b502a35d0c ]
 
-For branch stacks, the current perf script only prints the instruction
-bytes with 'brstackinsn', but lack of instruction length.
+When "dump_apple_properties" is used on the kernel boot command line,
+it causes an Unknown parameter message and the string is added to init's
+argument strings:
 
-Add 'brstackinsnlen' to print the instruction length.
+  Unknown kernel command line parameters "dump_apple_properties
+    BOOT_IMAGE=/boot/bzImage-517rc6 efivar_ssdt=newcpu_ssdt", will be
+    passed to user space.
 
-$perf script -F ip,brstackinsn,brstackinsnlen --xed
-     7fa555be8f75
-        _start:
-        00007fa555be8090        mov %rsp, %rdi          ilen: 3
-        00007fa555be8093        callq  0x7fa555be8ea0   ilen: 5 # PRED
-102 cycles [102] 0.02 IPC
-        _dl_start+38:
-        00007fa555be8ec6        movq  %rdx,0x227853(%rip)       ilen: 7
-        00007fa555be8ecd        leaq  0x227f94(%rip),%rdx       ilen: 7
+ Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+     dump_apple_properties
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc6
+     efivar_ssdt=newcpu_ssdt
 
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Similarly when "efivar_ssdt=somestring" is used, it is added to the
+Unknown parameter message and to init's environment strings, polluting
+them (see examples above).
+
+Change the return value of the __setup functions to 1 to indicate
+that the __setup options have been handled.
+
+Fixes: 58c5475aba67 ("x86/efi: Retrieve and assign Apple device properties")
+Fixes: 475fb4e8b2f4 ("efi / ACPI: load SSTDs from EFI variables")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Cc: linux-efi@vger.kernel.org
+Cc: Lukas Wunner <lukas@wunner.de>
+Cc: Octavian Purdila <octavian.purdila@intel.com>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Matt Fleming <matt@codeblueprint.co.uk>
+Link: https://lore.kernel.org/r/20220301041851.12459-1-rdunlap@infradead.org
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/builtin-script.c | 44 ++++++++++++++++++++++++++++++++------------
- 1 file changed, 32 insertions(+), 12 deletions(-)
+ drivers/firmware/efi/apple-properties.c | 2 +-
+ drivers/firmware/efi/efi.c              | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/perf/builtin-script.c b/tools/perf/builtin-script.c
-index fa478dd..5a7b2b0 100644
---- a/tools/perf/builtin-script.c
-+++ b/tools/perf/builtin-script.c
-@@ -124,6 +124,7 @@ enum perf_output_field {
- 	PERF_OUTPUT_DATA_PAGE_SIZE  = 1ULL << 33,
- 	PERF_OUTPUT_CODE_PAGE_SIZE  = 1ULL << 34,
- 	PERF_OUTPUT_INS_LAT         = 1ULL << 35,
-+	PERF_OUTPUT_BRSTACKINSNLEN  = 1ULL << 36,
- };
- 
- struct perf_script {
-@@ -191,6 +192,7 @@ struct output_option {
- 	{.str = "data_page_size", .field = PERF_OUTPUT_DATA_PAGE_SIZE},
- 	{.str = "code_page_size", .field = PERF_OUTPUT_CODE_PAGE_SIZE},
- 	{.str = "ins_lat", .field = PERF_OUTPUT_INS_LAT},
-+	{.str = "brstackinsnlen", .field = PERF_OUTPUT_BRSTACKINSNLEN},
- };
- 
- enum {
-@@ -488,7 +490,7 @@ static int evsel__check_attr(struct evsel *evsel, struct perf_session *session)
- 		       "selected. Hence, no address to lookup the source line number.\n");
- 		return -EINVAL;
- 	}
--	if (PRINT_FIELD(BRSTACKINSN) && !allow_user_set &&
-+	if ((PRINT_FIELD(BRSTACKINSN) || PRINT_FIELD(BRSTACKINSNLEN)) && !allow_user_set &&
- 	    !(evlist__combined_branch_type(session->evlist) & PERF_SAMPLE_BRANCH_ANY)) {
- 		pr_err("Display of branch stack assembler requested, but non all-branch filter set\n"
- 		       "Hint: run 'perf record -b ...'\n");
-@@ -1122,10 +1124,17 @@ static int print_srccode(struct thread *thread, u8 cpumode, uint64_t addr)
- 
- static int ip__fprintf_jump(uint64_t ip, struct branch_entry *en,
- 			    struct perf_insn *x, u8 *inbuf, int len,
--			    int insn, FILE *fp, int *total_cycles)
-+			    int insn, FILE *fp, int *total_cycles,
-+			    struct perf_event_attr *attr)
+diff --git a/drivers/firmware/efi/apple-properties.c b/drivers/firmware/efi/apple-properties.c
+index e1926483ae2f..e51838d749e2 100644
+--- a/drivers/firmware/efi/apple-properties.c
++++ b/drivers/firmware/efi/apple-properties.c
+@@ -24,7 +24,7 @@ static bool dump_properties __initdata;
+ static int __init dump_properties_enable(char *arg)
  {
--	int printed = fprintf(fp, "\t%016" PRIx64 "\t%-30s\t#%s%s%s%s", ip,
--			      dump_insn(x, ip, inbuf, len, NULL),
-+	int ilen = 0;
-+	int printed = fprintf(fp, "\t%016" PRIx64 "\t%-30s\t", ip,
-+			      dump_insn(x, ip, inbuf, len, &ilen));
-+
-+	if (PRINT_FIELD(BRSTACKINSNLEN))
-+		printed += fprintf(fp, "ilen: %d\t", ilen);
-+
-+	printed += fprintf(fp, "#%s%s%s%s",
- 			      en->flags.predicted ? " PRED" : "",
- 			      en->flags.mispred ? " MISPRED" : "",
- 			      en->flags.in_tx ? " INTX" : "",
-@@ -1211,7 +1220,8 @@ static int perf_sample__fprintf_brstackinsn(struct perf_sample *sample,
- 		printed += ip__fprintf_sym(entries[nr - 1].from, thread,
- 					   x.cpumode, x.cpu, &lastsym, attr, fp);
- 		printed += ip__fprintf_jump(entries[nr - 1].from, &entries[nr - 1],
--					    &x, buffer, len, 0, fp, &total_cycles);
-+					    &x, buffer, len, 0, fp, &total_cycles,
-+					    attr);
- 		if (PRINT_FIELD(SRCCODE))
- 			printed += print_srccode(thread, x.cpumode, entries[nr - 1].from);
- 	}
-@@ -1242,14 +1252,17 @@ static int perf_sample__fprintf_brstackinsn(struct perf_sample *sample,
- 			printed += ip__fprintf_sym(ip, thread, x.cpumode, x.cpu, &lastsym, attr, fp);
- 			if (ip == end) {
- 				printed += ip__fprintf_jump(ip, &entries[i], &x, buffer + off, len - off, ++insn, fp,
--							    &total_cycles);
-+							    &total_cycles, attr);
- 				if (PRINT_FIELD(SRCCODE))
- 					printed += print_srccode(thread, x.cpumode, ip);
- 				break;
- 			} else {
- 				ilen = 0;
--				printed += fprintf(fp, "\t%016" PRIx64 "\t%s\n", ip,
-+				printed += fprintf(fp, "\t%016" PRIx64 "\t%s", ip,
- 						   dump_insn(&x, ip, buffer + off, len - off, &ilen));
-+				if (PRINT_FIELD(BRSTACKINSNLEN))
-+					printed += fprintf(fp, "\tilen: %d", ilen);
-+				printed += fprintf(fp, "\n");
- 				if (ilen == 0)
- 					break;
- 				if (PRINT_FIELD(SRCCODE))
-@@ -1292,16 +1305,23 @@ static int perf_sample__fprintf_brstackinsn(struct perf_sample *sample,
- 			      machine, thread, &x.is64bit, &x.cpumode, false);
- 		if (len <= 0)
- 			goto out;
--		printed += fprintf(fp, "\t%016" PRIx64 "\t%s\n", sample->ip,
--			dump_insn(&x, sample->ip, buffer, len, NULL));
-+		ilen = 0;
-+		printed += fprintf(fp, "\t%016" PRIx64 "\t%s", sample->ip,
-+			dump_insn(&x, sample->ip, buffer, len, &ilen));
-+		if (PRINT_FIELD(BRSTACKINSNLEN))
-+			printed += fprintf(fp, "\tilen: %d", ilen);
-+		printed += fprintf(fp, "\n");
- 		if (PRINT_FIELD(SRCCODE))
- 			print_srccode(thread, x.cpumode, sample->ip);
- 		goto out;
- 	}
- 	for (off = 0; off <= end - start; off += ilen) {
- 		ilen = 0;
--		printed += fprintf(fp, "\t%016" PRIx64 "\t%s\n", start + off,
-+		printed += fprintf(fp, "\t%016" PRIx64 "\t%s", start + off,
- 				   dump_insn(&x, start + off, buffer + off, len - off, &ilen));
-+		if (PRINT_FIELD(BRSTACKINSNLEN))
-+			printed += fprintf(fp, "\tilen: %d", ilen);
-+		printed += fprintf(fp, "\n");
- 		if (ilen == 0)
- 			break;
- 		if (arch_is_branch(buffer + off, len - off, x.is64bit) && start + off != sample->ip) {
-@@ -1459,7 +1479,7 @@ static int perf_sample__fprintf_insn(struct perf_sample *sample,
- 		for (i = 0; i < sample->insn_len; i++)
- 			printed += fprintf(fp, " %02x", (unsigned char)sample->insn[i]);
- 	}
--	if (PRINT_FIELD(BRSTACKINSN))
-+	if (PRINT_FIELD(BRSTACKINSN) || PRINT_FIELD(BRSTACKINSNLEN))
- 		printed += perf_sample__fprintf_brstackinsn(sample, thread, attr, machine, fp);
+ 	dump_properties = true;
+-	return 0;
++	return 1;
+ }
  
- 	return printed;
-@@ -3716,7 +3736,7 @@ int cmd_script(int argc, const char **argv)
- 		     "Valid types: hw,sw,trace,raw,synth. "
- 		     "Fields: comm,tid,pid,time,cpu,event,trace,ip,sym,dso,"
- 		     "addr,symoff,srcline,period,iregs,uregs,brstack,"
--		     "brstacksym,flags,bpf-output,brstackinsn,brstackoff,"
-+		     "brstacksym,flags,bpf-output,brstackinsn,brstackinsnlen,brstackoff,"
- 		     "callindent,insn,insnlen,synth,phys_addr,metric,misc,ipc,tod,"
- 		     "data_page_size,code_page_size,ins_lat",
- 		     parse_output_fields),
+ __setup("dump_apple_properties", dump_properties_enable);
+diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
+index 9fa86288b78a..e3df82d5d37a 100644
+--- a/drivers/firmware/efi/efi.c
++++ b/drivers/firmware/efi/efi.c
+@@ -209,7 +209,7 @@ static int __init efivar_ssdt_setup(char *str)
+ 		memcpy(efivar_ssdt, str, strlen(str));
+ 	else
+ 		pr_warn("efivar_ssdt: name too long: %s\n", str);
+-	return 0;
++	return 1;
+ }
+ __setup("efivar_ssdt=", efivar_ssdt_setup);
+ 
 -- 
-2.7.4
+2.34.1
+
+
 
