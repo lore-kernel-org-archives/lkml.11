@@ -2,345 +2,329 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C209C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:36:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23C78C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:37:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351272AbiCUQhs (ORCPT
+        id S1351275AbiCUQit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 12:37:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51474 "EHLO
+        Mon, 21 Mar 2022 12:38:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351258AbiCUQhn (ORCPT
+        with ESMTP id S241534AbiCUQin (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 12:37:43 -0400
-Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A5FE51E7D;
-        Mon, 21 Mar 2022 09:36:17 -0700 (PDT)
-Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-2e5757b57caso162063357b3.4;
-        Mon, 21 Mar 2022 09:36:17 -0700 (PDT)
+        Mon, 21 Mar 2022 12:38:43 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EBCAED9DF;
+        Mon, 21 Mar 2022 09:37:17 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id bg31-20020a05600c3c9f00b00381590dbb33so8705757wmb.3;
+        Mon, 21 Mar 2022 09:37:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=CR5MhstiautQ+fKo0102plnWfdRHnkKf/5yTqnlcE0Y=;
+        b=Ygw7anaet6FzKMcreNetMcmSvYsQ2nE3AES8PzqVWlfid4Fn3IlD7aSbMq7k14XCwm
+         jt7B73SYmymXM738S4I7e9xM86Ed8GLrAAgl0Vo76f4eZ2x+B+hovBAWNjRXmG0qKcEw
+         2sRUuesnrrvO1u6K/fiKe9ytSq0ljYh2VcFvWYN23/TEiNUGck6Ols8Mh060+EVneig3
+         q0oK4gUmWOSLJxEhllVIbbSZ2CUy0Wh7vahJxhu/kLH3oJ/GERSosq+nYQJ8IxrZGwrZ
+         4XsEv951FBlOXVNkaDJNenl5bIZz+jwAqZBK66lGl958FGoXTs/JPJVwgpBv/3REfkLG
+         byxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=gcEWXZl7oxXy4I/zptsRAcc5tMs/kQWqSSJ68DwK/L0=;
-        b=GJMYErHCKbtSaQDZnzz5EhUicjvezeRwe1YNAIYOURjIH68xgJxN12ec4couxKA7YV
-         HMdwBXK/GshUliRBsdHiZWPcGsnqDyOqJj2sdro5X6og1q+Vg1+gaUW5R7hrLOyk9LrY
-         5/pAXNYa+6bVXNcTIKG21wMyXvbJ6nWn3jD8RMlCuqrrF2QTeWZr0ajWTfe1OBWFx3I/
-         C8kgonn0SM4nAbcqjABVdH18ROnkP2FwsLVClBlPzi78MkXAwS3DJYQfPzbdH4Y9Gp8u
-         L8FjzHPQAIvsi4fPkED8TP9DoQx7vSPnmr2ab7a5TW036j19J0sBS9eIQtzYD4H2PN5+
-         Ng0g==
-X-Gm-Message-State: AOAM532V3tCXiJ73FM5KaQWOuaS+cDUeLEUJBUVTZ+0Mjm/ZVAagEDsX
-        f7zInpnZdZSEFkWNsJa6sp2AJvOXB6TzlQ38BKiwZmv+Hf4=
-X-Google-Smtp-Source: ABdhPJw8F1NAELLxNZMiF6TcZXL6m9vymaM4dVoZ09EJxVoOYQwrFxScZV5iWWpOtqIdrRvhfIWfhu1bWH2yoqpdCn0=
-X-Received: by 2002:a81:f20e:0:b0:2dc:56e1:918e with SMTP id
- i14-20020a81f20e000000b002dc56e1918emr25608873ywm.19.1647880576362; Mon, 21
- Mar 2022 09:36:16 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=CR5MhstiautQ+fKo0102plnWfdRHnkKf/5yTqnlcE0Y=;
+        b=sME/2rO3cPxA6eESTcmTfBWo5L6JGfbflpri1MQ6QYqZmENzJRP47m4ySpFmTqOrzD
+         kjGw3xRkC9lYKtW+2vp/EFQAGVGHVEgbdcr4DYrVnD3p716Rla+EpJRr/4/b7cGRP/4w
+         ge0nmI4JMDuhD/VCb0ZEkhdhdvvfvD4tilZWehlv9NQOF/lS5lNscl65FmSZiyyxNJIp
+         PM4hTpedCCJua32hmCQawvFILS6q0xltfPOZ1NTM3SXglctfwuFhGEulSRmsjtrFk/Xc
+         ZVf8CMHzWzvGDvhXww7yMM/IH/ddkZUAXz2+7H6w+h5cL3j6fYyLQJ9P22yBV5A5OkwO
+         RD1A==
+X-Gm-Message-State: AOAM531O8glLHL/wP22UqpLV4sO//J7TPPCB46ebfZrbNLpZwF9ArJQW
+        ZdC9+33aAowPYOj89ZB5HQE=
+X-Google-Smtp-Source: ABdhPJws43+PByf1nFz9BFFhtx17Jjxiu/klSS58SjNzfZPynJArDoCJb6L9T+lAc4m8l+8q5bSa/A==
+X-Received: by 2002:a05:600c:1548:b0:389:cde3:35cc with SMTP id f8-20020a05600c154800b00389cde335ccmr27858632wmg.133.1647880635504;
+        Mon, 21 Mar 2022 09:37:15 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
+        by smtp.gmail.com with ESMTPSA id m23-20020a05600c3b1700b0038bbd24f401sm311178wms.2.2022.03.21.09.37.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 09:37:15 -0700 (PDT)
+Date:   Mon, 21 Mar 2022 17:07:55 +0100
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [net-next PATCH v2] net: dsa: qca8k: pack driver struct and
+ improve cache use
+Message-ID: <Yjii20KryAsEQp1k@Ansuel-xps.localdomain>
+References: <20220228110408.4903-1-ansuelsmth@gmail.com>
+ <20220303015327.k3fqkkxunm6kihjl@skbuf>
 MIME-Version: 1.0
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 21 Mar 2022 17:36:05 +0100
-Message-ID: <CAJZ5v0i+dDvX2J7CHfawmFXynifkNZ-0ZHYnraYv-HYJN5bdbA@mail.gmail.com>
-Subject: [GIT PULL] Power management updates for v5.18-rc1
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Linux PM <linux-pm@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220303015327.k3fqkkxunm6kihjl@skbuf>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
-
-Please pull from the tag
-
- git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git \
- pm-5.18-rc1
-
-with top-most commit ec3d8b8365e9865b43099e943ec5f0bc12f28f96
-
- Merge branch 'pm-tools'
-
-on top of commit 7e57714cd0ad2d5bb90e50b5096a0e671dec1ef3
-
- Linux 5.17-rc6
-
-to receive power management updates for 5.18-rc1.
-
-These are mostly fixes and cleanups all over the code and a new
-piece of documentation for Intel uncore frequency scaling.
-
-Functionality-wise, the intel_idle driver will support Sapphire
-Rapids Xeons natively now (with some extra facilities for controlling
-C-states more precisely on those systems), virtual guests will take
-the ACPI S4 hardware signature into account by default, the
-intel_pstate driver will take the defualt EPP value from the
-firmware, cpupower utility will support the AMD P-state driver added
-in the previous cycle and there is a new tracer utility for that
-driver.
-
-Specifics:
-
- - Allow device_pm_check_callbacks() to be called from interrupt
-   context without issues (Dmitry Baryshkov).
-
- - Modify devm_pm_runtime_enable() to automatically handle
-   pm_runtime_dont_use_autosuspend() at driver exit time (Douglas
-   Anderson).
-
- - Make the schedutil cpufreq governor use to_gov_attr_set() instead
-   of open coding it (Kevin Hao).
-
- - Replace acpi_bus_get_device() with acpi_fetch_acpi_dev() in the
-   cpufreq longhaul driver (Rafael Wysocki).
-
- - Unify show() and store() naming in cpufreq and make it use
-   __ATTR_XX (Lianjie Zhang).
-
- - Make the intel_pstate driver use the EPP value set by the firmware
-   by default (Srinivas Pandruvada).
-
- - Re-order the init checks in the powernow-k8 cpufreq driver (Mario
-   Limonciello).
-
- - Make the ACPI processor idle driver check for architectural
-   support for LPI to avoid using it on x86 by mistake (Mario
-   Limonciello).
-
- - Add Sapphire Rapids Xeon support to the intel_idle driver (Artem
-   Bityutskiy).
-
- - Add 'preferred_cstates' module argument to the intel_idle driver
-   to work around C1 and C1E handling issue on Sapphire Rapids (Artem
-   Bityutskiy).
-
- - Add core C6 optimization on Sapphire Rapids to the intel_idle
-   driver (Artem Bityutskiy).
-
- - Optimize the haltpoll cpuidle driver a bit (Li RongQing).
-
- - Remove leftover text from intel_idle() kerneldoc comment and fix
-   up white space in intel_idle (Rafael Wysocki).
-
- - Fix load_image_and_restore() error path (Ye Bin).
-
- - Fix typos in comments in the system wakeup hadling code (Tom Rix).
-
- - Clean up non-kernel-doc comments in hibernation code (Jiapeng
-   Chong).
-
- - Fix __setup handler error handling in system-wide suspend and
-   hibernation core code (Randy Dunlap).
-
- - Add device name to suspend_report_result() (Youngjin Jang).
-
- - Make virtual guests honour ACPI S4 hardware signature by
-   default (David Woodhouse).
-
- - Block power off of a parent PM domain unless child is in deepest
-   state (Ulf Hansson).
-
- - Use dev_err_probe() to simplify error handling for generic PM
-   domains (Ahmad Fatoum).
-
- - Fix sleep-in-atomic bug caused by genpd_debug_remove() (Shawn Guo).
-
- - Document Intel uncore frequency scaling (Srinivas Pandruvada).
-
- - Add DTPM hierarchy description (Daniel Lezcano).
-
- - Change the locking scheme in DTPM (Daniel Lezcano).
-
- - Fix dtpm_cpu cleanup at exit time and missing virtual DTPM pointer
-   release (Daniel Lezcano).
-
- - Make dtpm_node_callback[] static (kernel test robot).
-
- - Fix spelling mistake "initialze" -> "initialize" in
-   dtpm_create_hierarchy() (Colin Ian King).
-
- - Add tracer tool for the amd-pstate driver (Jinzhou Su).
-
- - Fix PC6 displaying in turbostat on some systems (Artem Bityutskiy).
-
- - Add AMD P-State support to the cpupower utility (Huang Rui).
-
-Thanks!
-
-
----------------
-
-Ahmad Fatoum (1):
-      PM: domains: use dev_err_probe() to simplify error handling
-
-Andreas Rammhold (1):
-      tools: cpupower: fix typo in cpupower-idle-set(1) manpage
-
-Artem Bityutskiy (4):
-      intel_idle: add SPR support
-      intel_idle: add 'preferred_cstates' module argument
-      intel_idle: add core C6 optimization for SPR
-      turbostat: fix PC6 displaying on some systems
-
-Colin Ian King (1):
-      powercap: DTPM: Fix spelling mistake "initialze" -> "initialize"
-
-Daniel Lezcano (12):
-      powercap/drivers/dtpm: Convert the init table section to a simple array
-      powercap/drivers/dtpm: Add hierarchy creation
-      powercap/drivers/dtpm: Add CPU DT initialization support
-      powercap/drivers/dtpm: Add dtpm devfreq with energy model support
-      rockchip/soc/drivers: Add DTPM description for rk3399
-      powercap/dtpm: Change locking scheme
-      powercap/dtpm_cpu: Reset per_cpu variable in the release function
-      powercap/dtpm: Fixup kfree for virtual node
-      powercap/dtpm: Destroy hierarchy function
-      powercap/dtpm: Move the 'root' reset place
-      powercap/dtpm_cpu: Add exit function
-      dtpm/soc/rk3399: Add the ability to unload the module
-
-David Woodhouse (1):
-      PM: hibernate: Honour ACPI hardware signature by default for
-virtual guests
-
-Dmitry Baryshkov (1):
-      PM: core: keep irq flags in device_pm_check_callbacks()
-
-Douglas Anderson (1):
-      PM: runtime: Have devm_pm_runtime_enable() handle
-pm_runtime_dont_use_autosuspend()
-
-Huang Rui (10):
-      cpupower: Add AMD P-State capability flag
-      cpupower: Add the function to check AMD P-State enabled
-      cpupower: Initial AMD P-State capability
-      cpupower: Add the function to get the sysfs value from specific table
-      cpupower: Introduce ACPI CPPC library
-      cpupower: Add AMD P-State sysfs definition and access helper
-      cpupower: Enable boost state support for AMD P-State module
-      cpupower: Move print_speed function into misc helper
-      cpupower: Add function to print AMD P-State performance capabilities
-      cpupower: Add "perf" option to print AMD P-State information
-
-Jiapeng Chong (1):
-      PM: hibernate: Clean up non-kernel-doc comments
-
-Jinzhou Su (4):
-      cpufreq: amd-pstate: Add more tracepoint for AMD P-State module
-      tools/power/x86/intel_pstate_tracer: make tracer as a module
-      tools/power/x86/amd_pstate_tracer: Add tracer tool for AMD P-state
-      Documentation: amd-pstate: add tracer tool introduction
-
-Kevin Hao (2):
-      cpufreq: Move to_gov_attr_set() to cpufreq.h
-      cpufreq: schedutil: Use to_gov_attr_set() to get the gov_attr_set
-
-Li RongQing (1):
-      cpuidle: haltpoll: Call cpuidle_poll_state_init() later
-
-Lianjie Zhang (1):
-      cpufreq: unify show() and store() naming and use __ATTR_XX
-
-Mario Limonciello (3):
-      cpuidle: PSCI: Move the `has_lpi` check to the beginning of the function
-      ACPI: processor idle: Check for architectural support for LPI
-      cpufreq: powernow-k8: Re-order the init checks
-
-Rafael J. Wysocki (3):
-      cpufreq: longhaul: Replace acpi_bus_get_device()
-      cpuidle: intel_idle: Update intel_idle() kerneldoc comment
-      cpuidle: intel_idle: Drop redundant backslash at line end
-
-Randy Dunlap (2):
-      PM: hibernate: fix __setup handler error handling
-      PM: suspend: fix return value of __setup handler
-
-Shawn Guo (1):
-      PM: domains: Fix sleep-in-atomic bug caused by genpd_debug_remove()
-
-Srinivas Pandruvada (2):
-      Documentation: admin-guide: pm: Document uncore frequency scaling
-      cpufreq: intel_pstate: Use firmware default EPP
-
-Tom Rix (1):
-      PM: sleep: wakeup: Fix typos in comments
-
-Ulf Hansson (1):
-      PM: domains: Prevent power off for parent unless child is in deepest state
-
-Ye Bin (1):
-      PM: hibernate: fix load_image_and_restore() error path
-
-Youngjin Jang (1):
-      PM: sleep: Add device name to suspend_report_result()
-
-kernel test robot (1):
-      powercap: DTPM: dtpm_node_callback[] can be static
-
-ozkanonur (1):
-      tools/power/cpupower/{ToDo => TODO}: Rename the todo file
-
----------------
-
- Documentation/admin-guide/pm/amd-pstate.rst        |  26 ++
- .../pm/intel_uncore_frequency_scaling.rst          |  60 ++++
- Documentation/admin-guide/pm/working-state.rst     |   1 +
- MAINTAINERS                                        |   1 +
- arch/arm64/kernel/cpuidle.c                        |   6 +-
- arch/x86/kernel/acpi/sleep.c                       |  23 +-
- drivers/acpi/processor_idle.c                      |  15 +-
- drivers/acpi/sleep.c                               |  11 +-
- drivers/base/power/domain.c                        |  42 ++-
- drivers/base/power/main.c                          |  16 +-
- drivers/base/power/runtime.c                       |   5 +
- drivers/base/power/wakeirq.c                       |   2 +-
- drivers/base/power/wakeup.c                        |   4 +-
- drivers/cpufreq/amd-pstate-trace.h                 |  22 +-
- drivers/cpufreq/amd-pstate.c                       |  59 +++-
- drivers/cpufreq/cpufreq_conservative.c             |  10 +-
- drivers/cpufreq/cpufreq_governor.c                 |   6 +-
- drivers/cpufreq/cpufreq_governor.h                 |  12 +-
- drivers/cpufreq/cpufreq_governor_attr_set.c        |   5 -
- drivers/cpufreq/cpufreq_ondemand.c                 |  10 +-
- drivers/cpufreq/intel_pstate.c                     |  38 ++-
- drivers/cpufreq/longhaul.c                         |   4 +-
- drivers/cpufreq/powernow-k8.c                      |   6 +-
- drivers/cpuidle/cpuidle-haltpoll.c                 |   4 +-
- drivers/idle/intel_idle.c                          | 111 ++++++-
- drivers/pci/pci-driver.c                           |  14 +-
- drivers/pnp/driver.c                               |   2 +-
- drivers/powercap/Kconfig                           |   8 +
- drivers/powercap/Makefile                          |   1 +
- drivers/powercap/dtpm.c                            | 333 ++++++++++++++-----
- drivers/powercap/dtpm_cpu.c                        |  55 +++-
- drivers/powercap/dtpm_devfreq.c                    | 203 ++++++++++++
- drivers/powercap/dtpm_subsys.h                     |  22 ++
- drivers/soc/rockchip/Kconfig                       |   8 +
- drivers/soc/rockchip/Makefile                      |   1 +
- drivers/soc/rockchip/dtpm.c                        |  65 ++++
- drivers/usb/core/hcd-pci.c                         |   4 +-
- include/asm-generic/vmlinux.lds.h                  |  11 -
- include/linux/acpi.h                               |   2 +-
- include/linux/cpufreq.h                            |   5 +
- include/linux/dtpm.h                               |  36 +--
- include/linux/pm.h                                 |   8 +-
- include/linux/pm_runtime.h                         |   4 +
- kernel/power/hibernate.c                           |   6 +-
- kernel/power/suspend_test.c                        |   8 +-
- kernel/power/swap.c                                |   8 +-
- kernel/sched/cpufreq_schedutil.c                   |   2 +-
- tools/power/cpupower/Makefile                      |   6 +-
- tools/power/cpupower/{ToDo => TODO}                |   0
- tools/power/cpupower/lib/acpi_cppc.c               |  59 ++++
- tools/power/cpupower/lib/acpi_cppc.h               |  21 ++
- tools/power/cpupower/lib/cpufreq.c                 |  23 +-
- tools/power/cpupower/lib/cpufreq.h                 |  12 +
- tools/power/cpupower/man/cpupower-frequency-info.1 |   3 +
- tools/power/cpupower/man/cpupower-idle-set.1       |   2 +-
- tools/power/cpupower/utils/cpufreq-info.c          |  87 ++---
- tools/power/cpupower/utils/helpers/amd.c           |  77 +++++
- tools/power/cpupower/utils/helpers/cpuid.c         |  13 +
- tools/power/cpupower/utils/helpers/helpers.h       |  22 ++
- tools/power/cpupower/utils/helpers/misc.c          |  60 ++++
- .../x86/amd_pstate_tracer/amd_pstate_trace.py      | 354 +++++++++++++++++++++
- .../x86/intel_pstate_tracer/intel_pstate_tracer.py | 260 ++++++++-------
- tools/power/x86/turbostat/turbostat.c              |   2 +-
- 63 files changed, 1888 insertions(+), 418 deletions(-)
+On Thu, Mar 03, 2022 at 03:53:27AM +0200, Vladimir Oltean wrote:
+> On Mon, Feb 28, 2022 at 12:04:08PM +0100, Ansuel Smith wrote:
+> > Pack qca8k priv and other struct using pahole and set the first priv
+> > struct entry to mgmt_master and mgmt_eth_data to speedup access.
+> > While at it also rework pcs struct and move it qca8k_ports_config
+> > following other configuration set for the cpu ports.
+> > 
+> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > ---
+> 
+> How did you "pack" struct qca8k_priv exactly?
+>
+
+I'm trying to understand it too... also this was done basend on what
+target? 
+
+> Before:
+> 
+> struct qca8k_priv {
+>         u8                         switch_id;            /*     0     1 */
+>         u8                         switch_revision;      /*     1     1 */
+>         u8                         mirror_rx;            /*     2     1 */
+>         u8                         mirror_tx;            /*     3     1 */
+>         u8                         lag_hash_mode;        /*     4     1 */
+>         bool                       legacy_phy_port_mapping; /*     5     1 */
+>         struct qca8k_ports_config  ports_config;         /*     6     7 */
+> 
+>         /* XXX 3 bytes hole, try to pack */
+> 
+>         struct regmap *            regmap;               /*    16     8 */
+>         struct mii_bus *           bus;                  /*    24     8 */
+>         struct ar8xxx_port_status  port_sts[7];          /*    32    28 */
+> 
+>         /* XXX 4 bytes hole, try to pack */
+> 
+>         /* --- cacheline 1 boundary (64 bytes) --- */
+>         struct dsa_switch *        ds;                   /*    64     8 */
+>         struct mutex               reg_mutex;            /*    72   160 */
+>         /* --- cacheline 3 boundary (192 bytes) was 40 bytes ago --- */
+>         struct device *            dev;                  /*   232     8 */
+>         struct dsa_switch_ops      ops;                  /*   240   864 */
+>         /* --- cacheline 17 boundary (1088 bytes) was 16 bytes ago --- */
+>         struct gpio_desc *         reset_gpio;           /*  1104     8 */
+>         unsigned int               port_mtu[7];          /*  1112    28 */
+> 
+>         /* XXX 4 bytes hole, try to pack */
+> 
+>         struct net_device *        mgmt_master;          /*  1144     8 */
+>         /* --- cacheline 18 boundary (1152 bytes) --- */
+>         struct qca8k_mgmt_eth_data mgmt_eth_data;        /*  1152   280 */
+>         /* --- cacheline 22 boundary (1408 bytes) was 24 bytes ago --- */
+>         struct qca8k_mib_eth_data  mib_eth_data;         /*  1432   272 */
+>         /* --- cacheline 26 boundary (1664 bytes) was 40 bytes ago --- */
+>         struct qca8k_mdio_cache    mdio_cache;           /*  1704     6 */
+> 
+>         /* XXX 2 bytes hole, try to pack */
+> 
+>         struct qca8k_pcs           pcs_port_0;           /*  1712    32 */
+> 
+>         /* XXX last struct has 4 bytes of padding */
+> 
+>         /* --- cacheline 27 boundary (1728 bytes) was 16 bytes ago --- */
+>         struct qca8k_pcs           pcs_port_6;           /*  1744    32 */
+> 
+>         /* XXX last struct has 4 bytes of padding */
+> 
+>         /* size: 1776, cachelines: 28, members: 22 */
+>         /* sum members: 1763, holes: 4, sum holes: 13 */
+>         /* paddings: 2, sum paddings: 8 */
+>         /* last cacheline: 48 bytes */
+> };
+> 
+> After:
+> 
+> struct qca8k_priv {
+>         struct net_device *        mgmt_master;          /*     0     8 */
+>         struct qca8k_mgmt_eth_data mgmt_eth_data;        /*     8   280 */
+>         /* --- cacheline 4 boundary (256 bytes) was 32 bytes ago --- */
+>         struct qca8k_mdio_cache    mdio_cache;           /*   288     6 */
+>         u8                         switch_id;            /*   294     1 */
+>         u8                         switch_revision;      /*   295     1 */
+>         u8                         mirror_rx;            /*   296     1 */
+>         u8                         mirror_tx;            /*   297     1 */
+>         u8                         lag_hash_mode;        /*   298     1 */
+>         bool                       legacy_phy_port_mapping; /*   299     1 */
+> 
+>         /* XXX 4 bytes hole, try to pack */
+> 
+>         struct qca8k_ports_config  ports_config;         /*   304    72 */
+>         /* --- cacheline 5 boundary (320 bytes) was 56 bytes ago --- */
+>         struct regmap *            regmap;               /*   376     8 */
+>         /* --- cacheline 6 boundary (384 bytes) --- */
+>         struct mii_bus *           bus;                  /*   384     8 */
+>         struct ar8xxx_port_status  port_sts[7];          /*   392    28 */
+> 
+>         /* XXX 4 bytes hole, try to pack */
+> 
+>         struct dsa_switch *        ds;                   /*   424     8 */
+>         struct mutex               reg_mutex;            /*   432   160 */
+>         /* --- cacheline 9 boundary (576 bytes) was 16 bytes ago --- */
+>         struct device *            dev;                  /*   592     8 */
+>         struct gpio_desc *         reset_gpio;           /*   600     8 */
+>         struct dsa_switch_ops      ops;                  /*   608   864 */
+>         /* --- cacheline 23 boundary (1472 bytes) --- */
+>         struct qca8k_mib_eth_data  mib_eth_data;         /*  1472   280 */
+> 
+>         /* XXX last struct has 4 bytes of padding */
+> 
+>         /* --- cacheline 27 boundary (1728 bytes) was 24 bytes ago --- */
+>         unsigned int               port_mtu[7];          /*  1752    28 */
+> 
+>         /* size: 1784, cachelines: 28, members: 20 */
+>         /* sum members: 1772, holes: 2, sum holes: 8 */
+>         /* padding: 4 */
+>         /* paddings: 1, sum paddings: 4 */
+>         /* last cacheline: 56 bytes */
+> };
+> 
+> 1776 vs 1784. That's... larger?!
+> 
+> Also, struct qca8k_priv is so large because the "ops" member is a full
+> copy of qca8k_switch_ops. I understand why commit db460c54b67f ("net:
+> dsa: qca8k: extend slave-bus implementations") did this, but I wonder,
+> is there no better way?
+> 
+
+Actually from what I can see the struct can be improved in 2 way...
+The ancient struct
+ar8xxx_port_status port_sts[QCA8K_NUM_PORTS];
+can be totally dropped as I can't see why we still need it.
+
+The duplicated ops is funny. I could be very confused but why it's done
+like that? Can't we modify directly the already defined one and drop
+struct dsa_switch_ops ops; from qca8k_priv?
+
+I mean is all of that to use priv->ops.phy_read instead of
+priv->ds->ops.phy_read or even qca8k_switch_ops directly? o.o
+
+Am I missing something?
+
+> >  drivers/net/dsa/qca8k.c |  8 ++++----
+> >  drivers/net/dsa/qca8k.h | 33 ++++++++++++++++-----------------
+> >  2 files changed, 20 insertions(+), 21 deletions(-)
+> > 
+> > diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+> > index ee0dbf324268..8d059da5f0ca 100644
+> > --- a/drivers/net/dsa/qca8k.c
+> > +++ b/drivers/net/dsa/qca8k.c
+> > @@ -1685,11 +1685,11 @@ qca8k_phylink_mac_select_pcs(struct dsa_switch *ds, int port,
+> >  	case PHY_INTERFACE_MODE_1000BASEX:
+> >  		switch (port) {
+> >  		case 0:
+> > -			pcs = &priv->pcs_port_0.pcs;
+> > +			pcs = &priv->ports_config.qpcs[QCA8K_CPU_PORT0].pcs;
+> >  			break;
+> >  
+> >  		case 6:
+> > -			pcs = &priv->pcs_port_6.pcs;
+> > +			pcs = &priv->ports_config.qpcs[QCA8K_CPU_PORT6].pcs;
+> >  			break;
+> >  		}
+> >  		break;
+> > @@ -2889,8 +2889,8 @@ qca8k_setup(struct dsa_switch *ds)
+> >  	if (ret)
+> >  		return ret;
+> >  
+> > -	qca8k_setup_pcs(priv, &priv->pcs_port_0, 0);
+> > -	qca8k_setup_pcs(priv, &priv->pcs_port_6, 6);
+> > +	qca8k_setup_pcs(priv, &priv->ports_config.qpcs[QCA8K_CPU_PORT0], 0);
+> > +	qca8k_setup_pcs(priv, &priv->ports_config.qpcs[QCA8K_CPU_PORT6], 6);
+> >  
+> >  	/* Make sure MAC06 is disabled */
+> >  	ret = regmap_clear_bits(priv->regmap, QCA8K_REG_PORT0_PAD_CTRL,
+> > diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+> > index f375627174c8..611dc2335dbe 100644
+> > --- a/drivers/net/dsa/qca8k.h
+> > +++ b/drivers/net/dsa/qca8k.h
+> > @@ -341,18 +341,24 @@ enum {
+> >  
+> >  struct qca8k_mgmt_eth_data {
+> >  	struct completion rw_done;
+> > -	struct mutex mutex; /* Enforce one mdio read/write at time */
+> > +	u32 data[4];
+> >  	bool ack;
+> >  	u32 seq;
+> > -	u32 data[4];
+> > +	struct mutex mutex; /* Enforce one mdio read/write at time */
+> >  };
+> >  
+> >  struct qca8k_mib_eth_data {
+> >  	struct completion rw_done;
+> > +	u64 *data; /* pointer to ethtool data */
+> > +	u8 req_port;
+> >  	struct mutex mutex; /* Process one command at time */
+> >  	refcount_t port_parsed; /* Counter to track parsed port */
+> > -	u8 req_port;
+> > -	u64 *data; /* pointer to ethtool data */
+> > +};
+> > +
+> > +struct qca8k_pcs {
+> > +	struct phylink_pcs pcs;
+> > +	struct qca8k_priv *priv;
+> > +	int port;
+> >  };
+> >  
+> >  struct qca8k_ports_config {
+> > @@ -361,6 +367,7 @@ struct qca8k_ports_config {
+> >  	bool sgmii_enable_pll;
+> >  	u8 rgmii_rx_delay[QCA8K_NUM_CPU_PORTS]; /* 0: CPU port0, 1: CPU port6 */
+> >  	u8 rgmii_tx_delay[QCA8K_NUM_CPU_PORTS]; /* 0: CPU port0, 1: CPU port6 */
+> > +	struct qca8k_pcs qpcs[QCA8K_NUM_CPU_PORTS];
+> >  };
+> >  
+> >  struct qca8k_mdio_cache {
+> > @@ -376,13 +383,10 @@ struct qca8k_mdio_cache {
+> >  	u16 hi;
+> >  };
+> >  
+> > -struct qca8k_pcs {
+> > -	struct phylink_pcs pcs;
+> > -	struct qca8k_priv *priv;
+> > -	int port;
+> > -};
+> > -
+> >  struct qca8k_priv {
+> > +	struct net_device *mgmt_master; /* Track if mdio/mib Ethernet is available */
+> > +	struct qca8k_mgmt_eth_data mgmt_eth_data;
+> > +	struct qca8k_mdio_cache mdio_cache;
+> >  	u8 switch_id;
+> >  	u8 switch_revision;
+> >  	u8 mirror_rx;
+> > @@ -396,15 +400,10 @@ struct qca8k_priv {
+> >  	struct dsa_switch *ds;
+> >  	struct mutex reg_mutex;
+> >  	struct device *dev;
+> > -	struct dsa_switch_ops ops;
+> >  	struct gpio_desc *reset_gpio;
+> > -	unsigned int port_mtu[QCA8K_NUM_PORTS];
+> > -	struct net_device *mgmt_master; /* Track if mdio/mib Ethernet is available */
+> > -	struct qca8k_mgmt_eth_data mgmt_eth_data;
+> > +	struct dsa_switch_ops ops;
+> >  	struct qca8k_mib_eth_data mib_eth_data;
+> > -	struct qca8k_mdio_cache mdio_cache;
+> > -	struct qca8k_pcs pcs_port_0;
+> > -	struct qca8k_pcs pcs_port_6;
+> > +	unsigned int port_mtu[QCA8K_NUM_PORTS];
+> >  };
+> >  
+> >  struct qca8k_mib_desc {
+> > -- 
+> > 2.34.1
+> > 
+> 
+
+-- 
+	Ansuel
