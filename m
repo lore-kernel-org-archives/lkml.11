@@ -2,211 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE8D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:25:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFDE2C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:25:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346727AbiCUL01 (ORCPT
+        id S1346763AbiCUL1I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 07:26:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44492 "EHLO
+        Mon, 21 Mar 2022 07:27:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238787AbiCUL0X (ORCPT
+        with ESMTP id S238787AbiCUL1F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 07:26:23 -0400
-Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50049.outbound.protection.outlook.com [40.107.5.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69CA62D1C8;
-        Mon, 21 Mar 2022 04:24:58 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hn0XP0UhfcgNMbb5nGVYD4vxzVr9fCMgDqtRWeIRZ6HiARG02wNdMhzT8+VCssMnVCdsSqNU35uQeN3OR+apSUzhvJ4l2ceC9AyoDyK+PYNMeXLpojK7r2b9Zf+x10UsgQmwsHSLzKQNJhVUzle6r+HvxzNfbCpzJKavd0coHKM3sONKNLdGTGR7SXvflNQPJ1geEPdFtaHwflZs9LDGQ+0Z8kzo7bAikUrEu7Mqm/hz7QjTXv0//nfosclaC8h/Ocv9zvxl71b5JFXqcTCfZYxa888do48h8BJRuAyVt0S1NEviPdGljK5BjqsJ3HXZBLijHRRcxAz46+24yFQ5ig==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MsDCulQpcD9m/DjdIMrWLb4wVyFFnpMan6I3dPox3VE=;
- b=NcCeyJBKKJgk9KGwy4JkZsn/palIjWA95Wif7KUmupynnXSb+pknOxuYkxdpHiXwaikKFHoArSi3I6MX8SmN5s3zXeP4Cedcx2YJiIxvQgTMp2cmDq/JsYqWBdmMPhneEZjsKfJAqzKrcULWCAsNrtSPBR3STj49zJhFA6e3wbRp5HY8SX7lJNv8wDY7kuc50SkyZZQjmzhEe5cX1a/D10bzuO8LLOjnX/GtyjBJj4JZ6XkGFAPzPLsKYM+gFi7IJeZ/09Lp2Bj4fJRRWnFMs0lyhhu5XEOqrxssxtg5n9bSGfppIQR7DcLZDBbCO38esVyIt2MKbGBF2FuRjEjDTA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MsDCulQpcD9m/DjdIMrWLb4wVyFFnpMan6I3dPox3VE=;
- b=LrF4lwrsSlRf1ngbjabLlqtjzgu5rTO/7vemow2YYZNgU8l7hxeyU39PTIEEDsGUyTHUMRB6Wmtyp5UbxivvZQbkWRq4lgKV+HHOdfhhIkMnlCENE5+VzstEAeQVTKOq1MT+Ydfo7C0F9hIs9tJLamOTJcCSlPcBNny4zpIhV4c=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
- by AS8PR04MB8514.eurprd04.prod.outlook.com (2603:10a6:20b:341::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.22; Mon, 21 Mar
- 2022 11:24:56 +0000
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::6972:1f59:5d1c:e557]) by AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::6972:1f59:5d1c:e557%5]) with mapi id 15.20.5081.022; Mon, 21 Mar 2022
- 11:24:56 +0000
-From:   Sherry Sun <sherry.sun@nxp.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        vabhav.sharma@nxp.com
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com
-Subject: [PATCH] tty: serial: fsl_lpuart: fix potential bug when using both of_alias_get_id and ida_simple_get
-Date:   Mon, 21 Mar 2022 19:22:11 +0800
-Message-Id: <20220321112211.8895-1-sherry.sun@nxp.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: SI2PR01CA0043.apcprd01.prod.exchangelabs.com
- (2603:1096:4:193::12) To AS8PR04MB8404.eurprd04.prod.outlook.com
- (2603:10a6:20b:3f8::7)
+        Mon, 21 Mar 2022 07:27:05 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EB728CDAE
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 04:25:40 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id w4so17402032edc.7
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 04:25:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=szeredi.hu; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TYElWt28OV4l4Pg/zIOMJ8LQZ2S7IKGmpM9ISCKQBDE=;
+        b=npwWzu5N48vknY6NHB2C7E6/+OFdUg3W1HDsAdrkUfdP158PeCwhT1Ozq/9abPseT3
+         NRFKApmGvHtfi5YlKBfRytE2oBE43iCM4HGC/Obj1VCn5pqBqehkBzu7VoKVUwqoHKEq
+         nO9zBB6+7qgYt9XWHTA3t1JMBddciGsvhW0jA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TYElWt28OV4l4Pg/zIOMJ8LQZ2S7IKGmpM9ISCKQBDE=;
+        b=ggkVlKjVSqLiEFuBcCsTec2LKQ4/1FEWpUbELxOyKlVzuzqeHNFbyShYWDDsp7UmM/
+         7ONy8dMGXplOw1YOAdyS8Cz17tfQAo6f99uIJS98Mzdqh850t0LqwlyKyulbD64PP5wM
+         dOo9TX1pj4scsDeme2xvA4fCXD15xaZwUH3dWAwF/ervnn5u197SKsX7tn7EHEIxLmsu
+         bUbANVHlsC6/mbiFFK8Q5DwRHwsS/bv1sXzBnvBVFCmE99ECeryZiVaaW6eVfL/aC03n
+         wdwfFrVS9znqE4oDeTtOlhfvemJGlOvePxA8QBEuPrpqmpA+JKli5EJemmXkzi/8tDoq
+         sDqg==
+X-Gm-Message-State: AOAM531wbsuAyGZnoKC7tP7JRWjv0XFrqM51UH5EG1G1BwY+CIh5sq66
+        rn1jlhH7NPIHa5A63TfW0TRLCpvXOs35tIHCRAWk9w==
+X-Google-Smtp-Source: ABdhPJy98AU0wSJYSzNqjv1GKD7tN1dJ/RH/tWyYV5gZdnzm8wsXgjUEsCGQqsx9x0p0oF9rfPo156RJglU6pDqfwrY=
+X-Received: by 2002:aa7:df99:0:b0:419:2823:4c23 with SMTP id
+ b25-20020aa7df99000000b0041928234c23mr9210600edy.341.1647861939043; Mon, 21
+ Mar 2022 04:25:39 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5f5c4db7-29fc-465a-d8dd-08da0b2d6d2d
-X-MS-TrafficTypeDiagnostic: AS8PR04MB8514:EE_
-X-Microsoft-Antispam-PRVS: <AS8PR04MB8514E51279F0984FE0B2EFF492169@AS8PR04MB8514.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EpDwiyD2wnvNpBrCk0eK6V3HiEo16lu5jk/TXeXDqwluFEcWLEt/uTNBmmm/O16xgZKPJUABTjoJJ9m2GyEgVX7grpIhzXisfPBYwvIO+CgI9VShb5odwY1T8XjbCgEfyo7L8jk9MAmD6V/AS5u6M+7FLtMbCOwNnhTH0CIoe0Aj/bhi2QBNbsfk2uom3puY3r9ZjOYdAPVr22/vXzvgzYbsvBfelOBaJFtpmZnt5uqUBMnrTkBUSN8tqmJap/j1WVnOvcBrvSL3zFYBLztLBSYchlErzQMNJktZS+1hYWu7voanUxHbFUi0aIR0yX6NhRxOQPicy+0OJGWf/zLMHezJzHfmp+BlYbmZJOsblXc6dZjRjDVUEXYqicNlsgOFkIYQKD1WpsXXI4YAEhDkKGyi2j9nvV0XQBZeOD8wRUXLk/Obr/SzsMzOb98VQKbKPIcprtHKhDp0Jm5qlAtI8+Ytws6j3XD7Zs/KxNo5t3VqhT0WarD5M0ea8kj7cGAybEhu+/tp3YhrIxDenpSp8Kd48i5bf3eGYwWi0Z7l+c9dqI6bQSxvrZKvxZoulU/pRlDIP0YLoroK72A8krKZRJXftNzC/PU02ORZRNQf8w1vfI5r8BRERmlTutDwg600H+ag6IDqN4Dq3F27okPdJ5qjBIt/YUOzsISDLvLRs8ARVii08r4P9Bc2h6okZMeo0hv7k4ZNvQqQj/aqwxZkqA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(86362001)(186003)(26005)(44832011)(83380400001)(52116002)(316002)(6506007)(6636002)(5660300002)(38350700002)(6512007)(2906002)(36756003)(66946007)(2616005)(4326008)(8676002)(66476007)(66556008)(38100700002)(6666004)(8936002)(508600001)(1076003)(6486002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?WD4H9/whvbA304O0M9lUAJ6m9CEibETWvJGPdWSAIoDkVmXQyjg6OJkIDvAH?=
- =?us-ascii?Q?Xz7Z3q+cJ3C5tkfFJ7F1IoAxsksyxPNmDs+yw6vu2uyvZlCGyXWSnM+p5n/4?=
- =?us-ascii?Q?HNaztMu7selc8/YF5YL+bUmQAsfk5jpeLugRJeqFdlyLWDQdA944/VHEFT8O?=
- =?us-ascii?Q?g84nkFJ+N1Ud9DluJsPK9IvWGpjcCmnLXCkbYMw25CMqJXfoJt3FfrgUUvDB?=
- =?us-ascii?Q?UW9+nQf1lyj7TqrX/OS272YAjg6ca0Z4V9yD/W8nNnjbeS8M5ApcR3oA6MYX?=
- =?us-ascii?Q?gImzBrHG10qGCTnhiqRsGrKJrYJHlgHXMI3q24/B0gWByLk7tozrB59PXWy7?=
- =?us-ascii?Q?O/V8SWZf2K2Ieg1Pd+nYQrY39HfuVH78HLV3+oygvvMrg9wprnR6BK/XD2/s?=
- =?us-ascii?Q?dPbhCWh47lq7bn5eAgEfoJr7158aKxAlMJyKP7FY6FK86bVQvElYNaLETCls?=
- =?us-ascii?Q?rQIaqVoROs9rNBOwumsH2wpGskDoABPpdqqkkvxKVCw2y0En5o5EmE/A/nTH?=
- =?us-ascii?Q?KK01kWQq5AoSJtZBoTFnc1wsjV4KbCvM4rVOMEfxrnA2N6ygv36UHQMapjdF?=
- =?us-ascii?Q?m91eBXKKnescdjEM7QNi1j2ZKGcXO5o1MVJCafOR7EOCeTY38+SuMBCVcnWs?=
- =?us-ascii?Q?jI6xTjMNBDo1ZuQcVMHJmrrkoijGQU7/xWBX50npfx2fyy8O3MhIcP4kUsHg?=
- =?us-ascii?Q?9dWpZrYN7yQJ59fAliOgow8HblbjHRizCpfXVMm8s/AQWsLMMMlNN6pugN03?=
- =?us-ascii?Q?Zk7KOgRwNlb1IZy83pFDgFA+lQ1y61yd56imNWJIZE706H16dlhFKf6nItI/?=
- =?us-ascii?Q?VKcKRBxOBtqe5Kv1ICD0R3gRUFNae7U6KXx2lm2Njk+vXyl+58r3JRs3MMCX?=
- =?us-ascii?Q?0Z8oTecSsVnpIv0ZHUWKmDFW7zFbELC6LtIYtwf7JzQcKkeQfeM90HvP82TB?=
- =?us-ascii?Q?TC6JH/bS2KbdJ3Z4NEikaDFxz/OthO3W02dy1hZxqr6JXEuhvjiMAPiunbDk?=
- =?us-ascii?Q?WCIn30uakBRJ69lXAdwrAfdLDcpWCaL6bXBt5OJisr2vWLDdR53+jVIhp8ga?=
- =?us-ascii?Q?U91hlNdHVh2xQqPFWAHVtO1XZLnxBkPLaeeXQcyaeyl+9RfgypZ0hO4t5PG3?=
- =?us-ascii?Q?AAXVovmKdxGzf8LY32j3Evs500QzmF5lXtQ3a0ohSkqjC026V5wkyW8yPGsR?=
- =?us-ascii?Q?32o6vFMnaY9r3teZ4Ogmt7Ioc98nG7VBbrljU/SAc2KWXugsQ7sRPaIxxgMk?=
- =?us-ascii?Q?bVgGFKpmwh9WhLZwDDKheBgtyOhcuvmxaKDlx77zCYfCZ67Qu4m7vSyTEiUm?=
- =?us-ascii?Q?u92NYV6FkMQXkx+120c+vluTnltdX8oXqeUL4I6HRihtaNQ1moJ+7uu83w77?=
- =?us-ascii?Q?rOvN9lduV1Cg86bUPGqcB0eA1Ig4B8zVIt7lT70wBJ8fcqlQeVlIfhr09VFF?=
- =?us-ascii?Q?Jaim4rG7XKW0NZJ8NFrjhwxqwRA6zTRJ?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5f5c4db7-29fc-465a-d8dd-08da0b2d6d2d
-X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2022 11:24:56.1689
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: kXmxxXNPbd4R4zeZbbhCnhAEcL+QMxQRHqeVdBH6sgczG+n2KDr2mFYR7FVwHClgtAIvUuHy3I/LgHuCZkSoiw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8514
+References: <20220318171405.2728855-1-cmllamas@google.com> <CAJfpegsT6BO5P122wrKbni3qFkyHuq_0Qq4ibr05_SOa7gfvcw@mail.gmail.com>
+ <Yjfd1+k83U+meSbi@google.com> <CAJfpeguoFHgG9Jm3hVqWnta3DB6toPRp_vD3EK74y90Aj3w+8Q@mail.gmail.com>
+ <Yjg8TVQZ6TeTSQxj@kroah.com> <CAJfpegsj94__xdBe8aH+VFdY5fJg515vG0XY-Qu0RXwEAUhM3A@mail.gmail.com>
+ <YjhM9UMKs+1H8eIe@kroah.com>
+In-Reply-To: <YjhM9UMKs+1H8eIe@kroah.com>
+From:   Miklos Szeredi <miklos@szeredi.hu>
+Date:   Mon, 21 Mar 2022 12:25:27 +0100
+Message-ID: <CAJfpegtpHLjL3fEu+CciBdkOptk23jV2qKCMc4AwEjgmASgbBA@mail.gmail.com>
+Subject: Re: [PATCH] fuse: fix integer type usage in uapi header
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Carlos Llamas <cmllamas@google.com>,
+        Alessio Balsini <balsini@android.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        kernel-team <kernel-team@android.com>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now fsl_lpuart driver use both of_alias_get_id() and ida_simple_get() in
-.probe(), which has the potential bug. For example, when remove the
-lpuart7 alias in dts, of_alias_get_id() will return error, then call
-ida_simple_get() to allocate the id 0 for lpuart7, this may confilct
-with the lpuart4 which has alias 0.
+On Mon, 21 Mar 2022 at 11:01, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Mon, Mar 21, 2022 at 10:36:20AM +0100, Miklos Szeredi wrote:
+> > On Mon, 21 Mar 2022 at 09:50, Greg Kroah-Hartman
+> > <gregkh@linuxfoundation.org> wrote:
+> > >
+> > > On Mon, Mar 21, 2022 at 09:40:56AM +0100, Miklos Szeredi wrote:
+> > > > On Mon, 21 Mar 2022 at 03:07, Carlos Llamas <cmllamas@google.com> wrote:
+> > > > >
+> > > > > On Fri, Mar 18, 2022 at 08:24:55PM +0100, Miklos Szeredi wrote:
+> > > > > > On Fri, 18 Mar 2022 at 18:14, Carlos Llamas <cmllamas@google.com> wrote:
+> > > > > > >
+> > > > > > > Kernel uapi headers are supposed to use __[us]{8,16,32,64} defined by
+> > > > > > > <linux/types.h> instead of 'uint32_t' and similar. This patch changes
+> > > > > > > all the definitions in this header to use the correct type. Previous
+> > > > > > > discussion of this topic can be found here:
+> > > > > > >
+> > > > > > >   https://lkml.org/lkml/2019/6/5/18
+> > > > > >
+> > > > > > This is effectively a revert of these two commits:
+> > > > > >
+> > > > > > 4c82456eeb4d ("fuse: fix type definitions in uapi header")
+> > > > > > 7e98d53086d1 ("Synchronize fuse header with one used in library")
+> > > > > >
+> > > > > > And so we've gone full circle and back to having to modify the header
+> > > > > > to be usable in the cross platform library...
+> > > > > >
+> > > > > > And also made lots of churn for what reason exactly?
+> > > > >
+> > > > > There are currently only two uapi headers making use of C99 types and
+> > > > > one is <linux/fuse.h>. This approach results in different typedefs being
+> > > > > selected when compiling for userspace vs the kernel.
+> > > >
+> > > > Why is this a problem if the size of the resulting types is the same?
+> > >
+> > > uint* are not "valid" variable types to cross the user/kernel boundary.
+> > > They are part of the userspace variable type namespace, not the kernel
+> > > variable type namespace.  Linus wrong a long post about this somewhere
+> > > in the past, I'm sure someone can dig it up...
+> >
+> > Looking forward to the details.  I cannot imagine why this would matter...
+>
+> Here's the huge thread on the issue:
+>         https://lore.kernel.org/all/19865.1101395592@redhat.com/
+> and specifically here's Linus's answer:
+>         https://lore.kernel.org/all/Pine.LNX.4.58.0411281710490.22796@ppc970.osdl.org/
+>
+> The whole thread is actually relevant for this .h file as well.  Some
+> things never change :)
 
-    aliases {
-	...
-        serial0 = &lpuart4;
-        serial1 = &lpuart5;
-        serial2 = &lpuart6;
-        serial3 = &lpuart7;
-    }
+"- the kernel should not depend on, or pollute user-space naming.
+  YOU MUST NOT USE "uint32_t" when that may not be defined, and
+  user-space rules for when it is defined are arcane and totally
+  arbitrary."
 
-So remove the ida_simple_get() in .probe(), return an error directly
-when calling of_alias_get_id() fails, which is consistent with other
-uart drivers behavior.
+The "pollutes user space naming" argument is bogus for fuse, since
+application are using the library interface, which doesn't pull in the
+kernel headers but redefines everything that needs to be shared.   BTW
+this seems to be the pattern for libc interfaces as well, though I
+haven't looked closely.
 
-Fixes: 3bc3206e1c0f ("serial: fsl_lpuart: Remove the alias node dependence")
-Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
----
- drivers/tty/serial/fsl_lpuart.c | 24 ++++--------------------
- 1 file changed, 4 insertions(+), 20 deletions(-)
+On the other hand, if we change the types back to __u32 etc, then that
+will mess with the history.  I think the disadvantages outweigh the
+advantages, so unless some stronger argument comes up  it's NACK from
+me.
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 452a015825ba..40465d23d7ad 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -239,8 +239,6 @@
- /* IMX lpuart has four extra unused regs located at the beginning */
- #define IMX_REG_OFF	0x10
- 
--static DEFINE_IDA(fsl_lpuart_ida);
--
- enum lpuart_type {
- 	VF610_LPUART,
- 	LS1021A_LPUART,
-@@ -276,7 +274,6 @@ struct lpuart_port {
- 	int			rx_dma_rng_buf_len;
- 	unsigned int		dma_tx_nents;
- 	wait_queue_head_t	dma_wait;
--	bool			id_allocated;
- };
- 
- struct lpuart_soc_data {
-@@ -2716,23 +2713,18 @@ static int lpuart_probe(struct platform_device *pdev)
- 
- 	ret = of_alias_get_id(np, "serial");
- 	if (ret < 0) {
--		ret = ida_simple_get(&fsl_lpuart_ida, 0, UART_NR, GFP_KERNEL);
--		if (ret < 0) {
--			dev_err(&pdev->dev, "port line is full, add device failed\n");
--			return ret;
--		}
--		sport->id_allocated = true;
-+		dev_err(&pdev->dev, "failed to get alias id, errno %d\n", ret);
-+		return ret;
- 	}
- 	if (ret >= ARRAY_SIZE(lpuart_ports)) {
- 		dev_err(&pdev->dev, "serial%d out of range\n", ret);
--		ret = -EINVAL;
--		goto failed_out_of_range;
-+		return -EINVAL;
- 	}
- 	sport->port.line = ret;
- 
- 	ret = lpuart_enable_clks(sport);
- 	if (ret)
--		goto failed_clock_enable;
-+		return ret;
- 	sport->port.uartclk = lpuart_get_baud_clk_rate(sport);
- 
- 	lpuart_ports[sport->port.line] = sport;
-@@ -2781,10 +2773,6 @@ static int lpuart_probe(struct platform_device *pdev)
- failed_attach_port:
- failed_irq_request:
- 	lpuart_disable_clks(sport);
--failed_clock_enable:
--failed_out_of_range:
--	if (sport->id_allocated)
--		ida_simple_remove(&fsl_lpuart_ida, sport->port.line);
- 	return ret;
- }
- 
-@@ -2794,9 +2782,6 @@ static int lpuart_remove(struct platform_device *pdev)
- 
- 	uart_remove_one_port(&lpuart_reg, &sport->port);
- 
--	if (sport->id_allocated)
--		ida_simple_remove(&fsl_lpuart_ida, sport->port.line);
--
- 	lpuart_disable_clks(sport);
- 
- 	if (sport->dma_tx_chan)
-@@ -2926,7 +2911,6 @@ static int __init lpuart_serial_init(void)
- 
- static void __exit lpuart_serial_exit(void)
- {
--	ida_destroy(&fsl_lpuart_ida);
- 	platform_driver_unregister(&lpuart_driver);
- 	uart_unregister_driver(&lpuart_reg);
- }
--- 
-2.17.1
-
+Thanks,
+Miklos
