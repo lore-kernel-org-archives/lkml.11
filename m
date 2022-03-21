@@ -2,90 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67B32C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 08:46:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55196C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 08:46:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345384AbiCUIsK (ORCPT
+        id S1345397AbiCUIsO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 04:48:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40392 "EHLO
+        Mon, 21 Mar 2022 04:48:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345416AbiCUIr7 (ORCPT
+        with ESMTP id S1345420AbiCUIr7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 04:47:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FA67A27CC;
-        Mon, 21 Mar 2022 01:46:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3BD21B81135;
-        Mon, 21 Mar 2022 08:46:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8188C340F4;
-        Mon, 21 Mar 2022 08:46:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647852391;
-        bh=ncJjFwIzoe32DkMd8J7TFkIPBIC3KWEZV3tVyByKr5M=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=RUYdzG6ttLqBh4mmoUuNFXtZiovyf8EL32Ifja5eb85KFi2+qcosC6Av44kg4SDTu
-         ng4BF86lFaVajvu1E+/2JBQLCq1MTutjnoX3BblicXFtDFc72Mm+bgZ7fxMJIi5JBF
-         vJWwu5sqNqTfEn1ELvoHGUGXvR7wc++jA2PmrlGTB/+FRTTWu4gAmjckJDMahkkv2H
-         qfBjgHQlPyi2iTnBQ4c1KtMdwntNAZfLDLFVTYLa0stRTY1Xt51DbldbqOCzOnPicO
-         2aCNAry1vKI/CNSHm15m9izd4HhpYzQ/zCt0bSc1P2GW/p8rRUEuprYVKi203TMErn
-         NC1S3iG5kPCDQ==
-Received: by mail-ua1-f45.google.com with SMTP id 34so5491859uao.13;
-        Mon, 21 Mar 2022 01:46:31 -0700 (PDT)
-X-Gm-Message-State: AOAM531YyDZ+FC1HgqxMEU1jHQeNiHnZaWOfOBYVbLMyXcVOSb1iLsmQ
-        VGhjBmz0+iM7/r62aEtWzBMZPDyTFj9/W4kN3YI=
-X-Google-Smtp-Source: ABdhPJy+xM/H9L9cr/krgDDPRDpEPe6mjR2ZF9aZeSj5hKVvobzISzwUAVg+tEIVTg2bgvk3wxDh1jfMbEeIMbiIQhc=
-X-Received: by 2002:ab0:6544:0:b0:352:ec5d:b570 with SMTP id
- x4-20020ab06544000000b00352ec5db570mr6082359uap.96.1647852390724; Mon, 21 Mar
- 2022 01:46:30 -0700 (PDT)
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC37A5E98;
+        Mon, 21 Mar 2022 01:46:35 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id b24so16904183edu.10;
+        Mon, 21 Mar 2022 01:46:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MIXaXRe6fXniSeUMQJNT+Y5fVee3c9bLU6mP2FbFMEI=;
+        b=HPEi+s6WHuEIucuNESN+56exbAgTPW/IyPFiMDR2Nw8O9wqz9unVp50uQEeTWtZuhw
+         s0C8zfIUrdD+qRqYGEB/VT/kINCHD4Gsxnq70tFlohTshaid8zE3/0JI28LcE+FhwJai
+         Tjt+7PP7Rk1OBL5T/4J4Wk9WJN5X5mNJmMAROYxbm6Ryl5uog5EaiHgWi2CU/clspExU
+         NPeLJZ3lrPI7mpdmyDxTDW3vl2NBu6AgKbDDRM1f2GUOQsHt2hwd7CKmyx1M6ysI1Vhd
+         4AVhxqAEnlIDKMP8A+RSO7iNDm95sM9AIpdBSTAeolrhsl6uH0fUQyv+DvMBhJEqBefY
+         CzPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MIXaXRe6fXniSeUMQJNT+Y5fVee3c9bLU6mP2FbFMEI=;
+        b=5D29EnHZS+K/SRcxR+o0Znlaj/aDhsRHDH3TYV9wQioB/rlkjNMHC5gUCnODmLvLiE
+         0OIIUwHJPMjoG1CJdgUAyYCYF03W8GJ91q/2gEgUxTPf/HJuctGT9SBUKEIMLafyUYZo
+         x2cLS5icD1Swt42FM92exAkrUeAeMY202YTLNIyvS4FjZBhhzftKQHbDST97OoU1SodI
+         PUW4h5twjltFiQz8BWcD45nb4/iz7pnUKh+Q+xXro+jG6IdTeM4URlBGJ1iyRFlLCKyY
+         d3BrvuR4xtAT2M3j5S7jhYk+oXzCHRUoKzIw7lMYRzGEWWE7PdKLJQgfwklkNmns26wA
+         Wrkw==
+X-Gm-Message-State: AOAM531Dh6WcVGxvQCwWDpB7Is2peR8kIGseE9mpXBUR8khbbPX8/VD4
+        hlEjY/FaNY7XCjfyeWzpL8EyCaGOSRQbTWyg8Yc=
+X-Google-Smtp-Source: ABdhPJzGrrpF8+dvvOula2t4S/9UqiIemKjG4DATGdQN7z4LgmbXUHAt4N/jlvzNXegmK/U6INqdrAcQX5VkfvYc4cQ=
+X-Received: by 2002:aa7:d1ce:0:b0:419:19ed:725a with SMTP id
+ g14-20020aa7d1ce000000b0041919ed725amr12734450edp.270.1647852393881; Mon, 21
+ Mar 2022 01:46:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220319142759.1026237-1-chenhuacai@loongson.cn>
- <20220319143817.1026708-1-chenhuacai@loongson.cn> <20220319143817.1026708-3-chenhuacai@loongson.cn>
- <CAK8P3a2gKGuMTLawFSf1hd3LY7rCVUquTPVHMcxBTok6+y-Rag@mail.gmail.com>
-In-Reply-To: <CAK8P3a2gKGuMTLawFSf1hd3LY7rCVUquTPVHMcxBTok6+y-Rag@mail.gmail.com>
-From:   Huacai Chen <chenhuacai@kernel.org>
-Date:   Mon, 21 Mar 2022 16:46:22 +0800
-X-Gmail-Original-Message-ID: <CAAhV-H6eDSU20gjLgEKM318i1ksk23thv9cLJKmAo_cBzjtEkw@mail.gmail.com>
-Message-ID: <CAAhV-H6eDSU20gjLgEKM318i1ksk23thv9cLJKmAo_cBzjtEkw@mail.gmail.com>
-Subject: Re: [PATCH V8 10/22] LoongArch: Add exception/interrupt handling
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>
+References: <20220319181023.8090-1-jagathjog1996@gmail.com> <20220319181023.8090-6-jagathjog1996@gmail.com>
+In-Reply-To: <20220319181023.8090-6-jagathjog1996@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 21 Mar 2022 10:45:23 +0200
+Message-ID: <CAHp75VeKDpiLo9eJ+578XSqsoRx3YyKuJ4AJJJ3jTQLaENo=Lw@mail.gmail.com>
+Subject: Re: [PATCH v1 5/5] iio: accel: bma400: Add step change event
+To:     Jagath Jog J <jagathjog1996@gmail.com>
+Cc:     Dan Robertson <dan@dlrobertson.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Arnd,
+On Sat, Mar 19, 2022 at 8:10 PM Jagath Jog J <jagathjog1996@gmail.com> wrote:
+>
+> Added support for event when there is a detection of single step
+> or double step change. INT1 pin is used to interrupt and event
+> is pushed to userspace.
 
-On Mon, Mar 21, 2022 at 4:38 PM Arnd Bergmann <arnd@arndb.de> wrote:
->
-> On Sat, Mar 19, 2022 at 3:38 PM Huacai Chen <chenhuacai@kernel.org> wrote:
->
-> > +unsigned long eentry;
-> > +EXPORT_SYMBOL_GPL(eentry);
-> > +unsigned long tlbrentry;
-> > +EXPORT_SYMBOL_GPL(tlbrentry);
->
-> Why are these exported to modules? Maybe add a comment here, or remove
-> the export if it's not actually needed.
-They are used by the kvm module in our internal repo.
+...
 
-Huacai
->
->        Arnd
+>  #include <linux/iio/trigger.h>
+>  #include <linux/iio/triggered_buffer.h>
+>  #include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/events.h>
+
+Keep this block ordered,
+
+...
+
+> +       switch (chan->type) {
+> +       case IIO_STEPS:
+> +               switch (type) {
+> +               case IIO_EV_TYPE_CHANGE:
+> +                       return data->steps_enabled;
+> +               default:
+> +                       return -EINVAL;
+> +               }
+> +       default:
+> +               return -EINVAL;
+> +       }
+
+> +       return 0;
+
+Dead code.
+
+...
+
+> +       case IIO_STEPS:
+> +               switch (type) {
+> +               case IIO_EV_TYPE_CHANGE:
+> +                       mutex_lock(&data->mutex);
+> +                       ret = regmap_update_bits(data->regmap,
+> +                                                BMA400_INT12_MAP_REG,
+> +                                                BMA400_STEP_INT_MSK,
+> +                                                FIELD_PREP(BMA400_STEP_INT_MSK,
+> +                                                           state));
+> +                       mutex_unlock(&data->mutex);
+> +                       if (ret)
+> +                               return ret;
+> +                       data->steps_enabled = state;
+> +                       return 0;
+> +               default:
+> +                       return -EINVAL;
+> +               }
+> +       default:
+> +               return -EINVAL;
+> +       }
+
+> +       return 0;
+
+Ditto.
+
+-- 
+With Best Regards,
+Andy Shevchenko
