@@ -2,233 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6EFCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 01:39:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF283C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 01:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344071AbiCUBlH (ORCPT
+        id S1343998AbiCUBoT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Mar 2022 21:41:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40122 "EHLO
+        Sun, 20 Mar 2022 21:44:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344048AbiCUBlA (ORCPT
+        with ESMTP id S234768AbiCUBoQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Mar 2022 21:41:00 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75663B540;
-        Sun, 20 Mar 2022 18:39:34 -0700 (PDT)
-X-UUID: d03bf63df1a945b4abd172d97eef40ff-20220321
-X-UUID: d03bf63df1a945b4abd172d97eef40ff-20220321
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <leilk.liu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 90882289; Mon, 21 Mar 2022 09:39:28 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 21 Mar 2022 09:39:26 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 21 Mar 2022 09:39:26 +0800
-From:   Leilk Liu <leilk.liu@mediatek.com>
-To:     Mark Brown <broonie@kernel.org>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-spi@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
-        Leilk Liu <leilk.liu@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH V6 3/3] spi: mediatek: support hclk
-Date:   Mon, 21 Mar 2022 09:39:22 +0800
-Message-ID: <20220321013922.24067-4-leilk.liu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220321013922.24067-1-leilk.liu@mediatek.com>
-References: <20220321013922.24067-1-leilk.liu@mediatek.com>
+        Sun, 20 Mar 2022 21:44:16 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAEDF17DCA8
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 18:42:51 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id d10so27024331eje.10
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 18:42:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aHacubWzDiviNCpvcWTMtixCEncOdpS21OotHIjf+Dg=;
+        b=YDppa3f0inukPgu9KdWgyRLBMeRuhoGRKI2PbdhprUhL/Xls4FWt+sf55iJnvNNN4T
+         slaQxzj7giHRtUOl84xe77V1cu3OcLAVj8awoAbrbp6ditM1HFZXu2zRhAogzAvosJUK
+         CA+FBsqRkE4hB3g3ymXdk/Jxyx+qZ6PM4eJjHYTsMVadG6fWuk6m+824bWT5JCJAtTEZ
+         usHT7SVntfueDnMx8lwZp9jkHpNj5xoK+OM+EChCMtW+v/gkrf6bsrsgWSSAxt2harPF
+         8EnEmMbOplRV0NBvt+ePbjqbLs0pSUkuPwxCHiLrWjvsxXu6bNyEls7LDCfjinYkmg2Z
+         glXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aHacubWzDiviNCpvcWTMtixCEncOdpS21OotHIjf+Dg=;
+        b=pNd6L58xRrC8TojVQUB/fZB6UP4QMbPbubqmG7O8cj5YrTzu5wi3iBc1s2iqO20IFC
+         Ukaf6jmyFZFkXVqJIRa2N/HZiAa5Uh3KC86eaUMhlu2GceQMzr7Y3WOJdPg+CRx0t9eC
+         d0Nm1PESeqssuZAuVMm/iyK11AJZBPTOGfxFVnipOMNWbXE85di2iCFCN2eviuVCkdr1
+         GIX81ZHgw/GFi2PuotUeYvAmsK/vhpaPm/DxUe6W/vgkhP/PgV3MOR2mtsLNMczFMvnx
+         nhK1uzMiklAueIououjHvJN0k5TrhlSx3PUxcycSmUmmoq8qTXcCn2q+CI875gI5Xyic
+         AcGA==
+X-Gm-Message-State: AOAM531n0bZ60rYAxtj6IPLHnTzZroaznBQMtNZFMck7eWGbpG+EMsJ8
+        77k8Qy/m7er97RoD5q13ysU=
+X-Google-Smtp-Source: ABdhPJxXWAkG5BANLeNjWnAYJ9UBgxFcGCMdCGOpr45Mx5CylS2H44mTpU0RZME6/CEdjhBH7pDB4g==
+X-Received: by 2002:a17:906:30d1:b0:6cf:c116:c9d3 with SMTP id b17-20020a17090630d100b006cfc116c9d3mr17707760ejb.245.1647826970345;
+        Sun, 20 Mar 2022 18:42:50 -0700 (PDT)
+Received: from localhost.localdomain (host-87-20-105-171.retail.telecomitalia.it. [87.20.105.171])
+        by smtp.gmail.com with ESMTPSA id lb10-20020a170907784a00b006db0aadcbd1sm6289126ejc.219.2022.03.20.18.42.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 20 Mar 2022 18:42:49 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     David Howells <dhowells@redhat.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-kernel@vger.kernel.org
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        syzbot+d55757faa9b80590767b@syzkaller.appspotmail.com
+Subject: [PATCH] watch_queue: Free the real number of allocated pages
+Date:   Mon, 21 Mar 2022 02:42:46 +0100
+Message-Id: <20220321014246.19941-1-fmdefrancesco@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-this patch adds hclk support.
+In the "error_p" label, the code calls __free_page() in a loop from
+pages[0] to pages[nr_pages -1].
 
-Signed-off-by: Leilk Liu <leilk.liu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+When pages[i] are allocated in a loop with calls to alloc_page() and one
+of these allocations fails, the code jumps to the "error_p" label without
+saving the real number of successful allocations and without using this
+as the limit of the free cycle.
+
+For the above-mentioned reasons, Syzbot reports a bug:
+"[syzbot] KASAN: null-ptr-deref Read in __free_pages".[1]
+
+Fix this bug by saving the real number of allocated pages and, in those
+cases where the inth iteration of alloc_page() fails and the code jumps
+to the "error_p" label, use that number as the upper limit for the index
+of the 'for' loop that calls __free_pages(pages[i]).
+
+[1] https://lore.kernel.org/lkml/00000000000084e0cf05daafb25f@google.com/T/#m143407dade7ed9126253175728d6f38505d2393c
+
+Reported-and-tested-by: syzbot+d55757faa9b80590767b@syzkaller.appspotmail.com
+Fixes: c73be61cede5 ("pipe: Add general notification queue support")
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
 ---
- drivers/spi/spi-mt65xx.c | 85 ++++++++++++++++++++++++++++++++--------
- 1 file changed, 69 insertions(+), 16 deletions(-)
+ kernel/watch_queue.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/spi/spi-mt65xx.c b/drivers/spi/spi-mt65xx.c
-index 0f91c176b878..99ce570a88a7 100644
---- a/drivers/spi/spi-mt65xx.c
-+++ b/drivers/spi/spi-mt65xx.c
-@@ -129,7 +129,7 @@ struct mtk_spi {
- 	u32 state;
- 	int pad_num;
- 	u32 *pad_sel;
--	struct clk *parent_clk, *sel_clk, *spi_clk;
-+	struct clk *parent_clk, *sel_clk, *spi_clk, *spi_hclk;
- 	struct spi_transfer *cur_transfer;
- 	u32 xfer_len;
- 	u32 num_xfered;
-@@ -1204,25 +1204,40 @@ static int mtk_spi_probe(struct platform_device *pdev)
- 		goto err_put_master;
- 	}
+diff --git a/kernel/watch_queue.c b/kernel/watch_queue.c
+index 00703444a219..5b0531020cf8 100644
+--- a/kernel/watch_queue.c
++++ b/kernel/watch_queue.c
+@@ -220,7 +220,7 @@ long watch_queue_set_size(struct pipe_inode_info *pipe, unsigned int nr_notes)
+ 	struct page **pages;
+ 	unsigned long *bitmap;
+ 	unsigned long user_bufs;
+-	int ret, i, nr_pages;
++	int ret, i, nr_pages, allocated_pages;
  
-+	mdata->spi_hclk = devm_clk_get_optional(&pdev->dev, "hclk");
-+	if (IS_ERR(mdata->spi_hclk)) {
-+		ret = PTR_ERR(mdata->spi_hclk);
-+		dev_err(&pdev->dev, "failed to get hclk: %d\n", ret);
-+		goto err_put_master;
-+	}
-+
-+	ret = clk_prepare_enable(mdata->spi_hclk);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "failed to enable hclk (%d)\n", ret);
-+		goto err_put_master;
-+	}
-+
- 	ret = clk_prepare_enable(mdata->spi_clk);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to enable spi_clk (%d)\n", ret);
--		goto err_put_master;
-+		goto err_disable_spi_hclk;
- 	}
+ 	if (!wqueue)
+ 		return -ENODEV;
+@@ -254,6 +254,7 @@ long watch_queue_set_size(struct pipe_inode_info *pipe, unsigned int nr_notes)
  
- 	ret = clk_set_parent(mdata->sel_clk, mdata->parent_clk);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to clk_set_parent (%d)\n", ret);
--		clk_disable_unprepare(mdata->spi_clk);
--		goto err_put_master;
-+		goto err_disable_spi_clk;
- 	}
- 
- 	mdata->spi_clk_hz = clk_get_rate(mdata->spi_clk);
- 
--	if (mdata->dev_comp->no_need_unprepare)
-+	if (mdata->dev_comp->no_need_unprepare) {
- 		clk_disable(mdata->spi_clk);
--	else
-+		clk_disable(mdata->spi_hclk);
-+	} else {
- 		clk_disable_unprepare(mdata->spi_clk);
-+		clk_disable_unprepare(mdata->spi_hclk);
-+	}
- 
- 	pm_runtime_enable(&pdev->dev);
- 
-@@ -1262,6 +1277,10 @@ static int mtk_spi_probe(struct platform_device *pdev)
- 
- err_disable_runtime_pm:
- 	pm_runtime_disable(&pdev->dev);
-+err_disable_spi_clk:
-+	clk_disable_unprepare(mdata->spi_clk);
-+err_disable_spi_hclk:
-+	clk_disable_unprepare(mdata->spi_hclk);
- err_put_master:
- 	spi_master_put(master);
- 
-@@ -1277,8 +1296,10 @@ static int mtk_spi_remove(struct platform_device *pdev)
- 
- 	mtk_spi_reset(mdata);
- 
--	if (mdata->dev_comp->no_need_unprepare)
-+	if (mdata->dev_comp->no_need_unprepare) {
- 		clk_unprepare(mdata->spi_clk);
-+		clk_unprepare(mdata->spi_hclk);
-+	}
- 
+ 	for (i = 0; i < nr_pages; i++) {
+ 		pages[i] = alloc_page(GFP_KERNEL);
++		allocated_pages = i;
+ 		if (!pages[i])
+ 			goto error_p;
+ 		pages[i]->index = i * WATCH_QUEUE_NOTES_PER_PAGE;
+@@ -271,7 +272,7 @@ long watch_queue_set_size(struct pipe_inode_info *pipe, unsigned int nr_notes)
  	return 0;
- }
-@@ -1294,8 +1315,10 @@ static int mtk_spi_suspend(struct device *dev)
- 	if (ret)
- 		return ret;
  
--	if (!pm_runtime_suspended(dev))
-+	if (!pm_runtime_suspended(dev)) {
- 		clk_disable_unprepare(mdata->spi_clk);
-+		clk_disable_unprepare(mdata->spi_hclk);
-+	}
- 
- 	return ret;
- }
-@@ -1312,11 +1335,20 @@ static int mtk_spi_resume(struct device *dev)
- 			dev_err(dev, "failed to enable spi_clk (%d)\n", ret);
- 			return ret;
- 		}
-+
-+		ret = clk_prepare_enable(mdata->spi_hclk);
-+		if (ret < 0) {
-+			dev_err(dev, "failed to enable spi_hclk (%d)\n", ret);
-+			clk_disable_unprepare(mdata->spi_clk);
-+			return ret;
-+		}
- 	}
- 
- 	ret = spi_master_resume(master);
--	if (ret < 0)
-+	if (ret < 0) {
- 		clk_disable_unprepare(mdata->spi_clk);
-+		clk_disable_unprepare(mdata->spi_hclk);
-+	}
- 
- 	return ret;
- }
-@@ -1328,10 +1360,13 @@ static int mtk_spi_runtime_suspend(struct device *dev)
- 	struct spi_master *master = dev_get_drvdata(dev);
- 	struct mtk_spi *mdata = spi_master_get_devdata(master);
- 
--	if (mdata->dev_comp->no_need_unprepare)
-+	if (mdata->dev_comp->no_need_unprepare) {
- 		clk_disable(mdata->spi_clk);
--	else
-+		clk_disable(mdata->spi_hclk);
-+	} else {
- 		clk_disable_unprepare(mdata->spi_clk);
-+		clk_disable_unprepare(mdata->spi_hclk);
-+	}
- 
- 	return 0;
- }
-@@ -1342,13 +1377,31 @@ static int mtk_spi_runtime_resume(struct device *dev)
- 	struct mtk_spi *mdata = spi_master_get_devdata(master);
- 	int ret;
- 
--	if (mdata->dev_comp->no_need_unprepare)
-+	if (mdata->dev_comp->no_need_unprepare) {
- 		ret = clk_enable(mdata->spi_clk);
--	else
-+		if (ret < 0) {
-+			dev_err(dev, "failed to enable spi_clk (%d)\n", ret);
-+			return ret;
-+		}
-+		ret = clk_enable(mdata->spi_hclk);
-+		if (ret < 0) {
-+			dev_err(dev, "failed to enable spi_hclk (%d)\n", ret);
-+			clk_disable(mdata->spi_clk);
-+			return ret;
-+		}
-+	} else {
- 		ret = clk_prepare_enable(mdata->spi_clk);
--	if (ret < 0) {
--		dev_err(dev, "failed to enable spi_clk (%d)\n", ret);
--		return ret;
-+		if (ret < 0) {
-+			dev_err(dev, "failed to prepare_enable spi_clk (%d)\n", ret);
-+			return ret;
-+		}
-+
-+		ret = clk_prepare_enable(mdata->spi_hclk);
-+		if (ret < 0) {
-+			dev_err(dev, "failed to prepare_enable spi_hclk (%d)\n", ret);
-+			clk_disable_unprepare(mdata->spi_clk);
-+			return ret;
-+		}
- 	}
- 
- 	return 0;
+ error_p:
+-	for (i = 0; i < nr_pages; i++)
++	for (i = 0; i < allocated_pages; i++)
+ 		__free_page(pages[i]);
+ 	kfree(pages);
+ error:
 -- 
-2.25.1
+2.34.1
 
