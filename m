@@ -2,90 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 256E3C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 10:09:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0966C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 10:13:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346220AbiCUKKi (ORCPT
+        id S1346102AbiCUKPN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 06:10:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57364 "EHLO
+        Mon, 21 Mar 2022 06:15:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233527AbiCUKKg (ORCPT
+        with ESMTP id S233527AbiCUKPL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 06:10:36 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EABE12638;
-        Mon, 21 Mar 2022 03:09:11 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id u26so1613588eda.12;
-        Mon, 21 Mar 2022 03:09:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SkmT2FABHkpew7E/cN4TVjK7zuvf5Ns9Fgh4qceQpwU=;
-        b=g4lAMpd74Jf9YpklzhPxjUQUv6yx2iLEHHrQvVOpWo0P6cDCLzRZeaI8Ih5pJWPbGJ
-         7n9oX0SwQOmCtFvFMO+G0Rd7mU2awVCk3z91ghHm05HGrCDAvQZ0f2zaZnGvMZ4hlKEX
-         5eiCaY073OpARgfDga9fO5BfL+P8wcEuBgQ7JDSbqKpY27/QvKbKHHjqQETF9em1iDlL
-         rqtc0HINi+FpQRfRa1B6wy1sZD6SqeNwJSePP5ZpNj131PXVDScJBe/hZka2doRISQWL
-         rYX3PVx1wQ8RL3d9Oiu/hooyx/FRX/yCufrU//hVvfe66KcR66FATEP8nwhUWSd2EzEX
-         apNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SkmT2FABHkpew7E/cN4TVjK7zuvf5Ns9Fgh4qceQpwU=;
-        b=1/gz+brS8E1xU45CqwbZbes10r/2OlyU8wnrELDVF/8DwOVVKgVxGLS3RA2TEm78wy
-         uJR+cH5amxghPGbziW1DrAoHLAfKXwgVzttN7cEPunyt/zl+KK8iT30FrOwhkwp7/9PX
-         6f/qx246XEGO1Ar29rPTn3dkAOVuwuOUpGb1Ui8qqq2+Hsl4oITXov68pe6UuiSSzF36
-         eIMFuB3xrOEuHkgdYEc6VwKki9gl+Y5wpz6kCoZen5uvqxzJyZG7D41wPXqrqCRszd9I
-         vzYrm2H+ioeVzB4UQ7JhbcqPV0tMnRi6fIo5Ti0ePveuP9mOy+yZJQd9+CD5U37uRbeB
-         uRFQ==
-X-Gm-Message-State: AOAM532SnYNXxCv7LkhcvTOiA/gcnaG/FNnM/Y8VzwtinaIj1Ly4UlRl
-        SM+l+JtfkhSZNYp9yu3qUMbvhKYuz4QsbJ0cRyw=
-X-Google-Smtp-Source: ABdhPJwjMzeDiM1jhIZC9vO3K6bKkPd1fvqJ2Pl9h9z60Lq9e+0K81GLeFaZGDHFPc4KxsZDKtn8yaYZu4f7CiF1fUc=
-X-Received: by 2002:aa7:c30f:0:b0:419:2af:4845 with SMTP id
- l15-20020aa7c30f000000b0041902af4845mr18184178edq.296.1647857349742; Mon, 21
- Mar 2022 03:09:09 -0700 (PDT)
+        Mon, 21 Mar 2022 06:15:11 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F5B217A8D;
+        Mon, 21 Mar 2022 03:13:46 -0700 (PDT)
+Date:   Mon, 21 Mar 2022 10:13:42 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1647857623;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=maEO6qQpAi7u5heqqrjNmtA5uDSrr7pnMEyE5j18Q1I=;
+        b=ta4fTHJbGfu2KH3h0VJO5R+E3DfsTDG9amu097FAvS8CLGJlZi/NJG6pbv4F2FphNOVb7T
+        w/ILKvsZwBfUacPHva1Tj41caOduIdC54ZitoRo9HJx7Tl9EYlc/F+I7DFmg0RDC6Dmzhn
+        z1118pRLWET8kBGG27+QGeKh7ywYiXklSwFb0gdS7BwN+V4C5gzulazqSgkBz+1e7Ejaj7
+        KAAxWHv2eQVomhHzueB9jAz3Si06r35y7C4cJw7czqBYnS2nSpOhk8dGP2uPqvWjpxO2L5
+        eTgNFH4eSPPBFnfEAN2Lu1o9ta5eH0nVnPadMMfEtMNXyeHA9wSb2aaSN92fkQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1647857623;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=maEO6qQpAi7u5heqqrjNmtA5uDSrr7pnMEyE5j18Q1I=;
+        b=UtRcN/jYOpZiM6xj7U5iEv8s5PYp/A/SBbAuUn7DrK/y+WtSUmewPd7APdILaTY46o4Luh
+        vcGSH4KBE3GyPwDg==
+From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/core] kvm/emulate: Fix SETcc emulation for ENDBR
+Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <YjMVpfe%2f9ldmWX8W@hirez.programming.kicks-ass.net>
+References: <YjMVpfe%2f9ldmWX8W@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-References: <20220316213055.2351342-1-morbo@google.com> <20220319222228.4160598-1-morbo@google.com>
- <CAHk-=wh4B42bYZmGoY8=UsqHDuq_th2KN7TmXuTnhwyYWzQ5pg@mail.gmail.com> <CAHk-=wgH3kbKcNwBO7os3BuU523Gd2aqdu0dVvf50bJbLKrLJg@mail.gmail.com>
-In-Reply-To: <CAHk-=wgH3kbKcNwBO7os3BuU523Gd2aqdu0dVvf50bJbLKrLJg@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 21 Mar 2022 12:07:58 +0200
-Message-ID: <CAHp75Vc+T3eM9=yu9XccXKmf1ZnR6dz1ZP_eL4faPnM8ZNbbnQ@mail.gmail.com>
-Subject: Re: [PATCH v2] gpiolib: acpi: use correct format characters
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Bill Wendling <morbo@google.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <164785762246.389.15725885705619137355.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 20, 2022 at 1:06 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
-> On Sat, Mar 19, 2022 at 3:54 PM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
+The following commit has been merged into the x86/core branch of tip:
 
-...
+Commit-ID:     44aba1d9e26641728f33f5834f436dd9ef486b96
+Gitweb:        https://git.kernel.org/tip/44aba1d9e26641728f33f5834f436dd9ef486b96
+Author:        Peter Zijlstra <peterz@infradead.org>
+AuthorDate:    Mon, 21 Mar 2022 10:13:12 +01:00
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Mon, 21 Mar 2022 10:57:52 +01:00
 
-> End result: I think the simplest and cleanest option is simply this:
+kvm/emulate: Fix SETcc emulation for ENDBR
 
-Would you sign off on this? I will then replace the original patch
-with your version.
+Companion patch for commit fe83f5eae432 ("kvm/emulate: Fix SETcc
+emulation function offsets with SLS"), now extending it to cover the
+additional ENDBR instruction.
 
-And for the record I have a follow up patch to clearly show that pin
-is always unsigned, induced by this discussion.
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/YjMVpfe%2f9ldmWX8W@hirez.programming.kicks-ass.net
+---
+ arch/x86/kvm/emulate.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
--- 
-With Best Regards,
-Andy Shevchenko
+diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
+index d98fb36..df5e6c0 100644
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -24,6 +24,7 @@
+ #include <linux/stringify.h>
+ #include <asm/debugreg.h>
+ #include <asm/nospec-branch.h>
++#include <asm/ibt.h>
+ 
+ #include "x86.h"
+ #include "tss.h"
+@@ -434,15 +435,16 @@ static int fastop(struct x86_emulate_ctxt *ctxt, fastop_t fop);
+ /*
+  * Depending on .config the SETcc functions look like:
+  *
++ * ENDBR       [4 bytes; CONFIG_X86_KERNEL_IBT]
+  * SETcc %al   [3 bytes]
+  * RET         [1 byte]
+  * INT3        [1 byte; CONFIG_SLS]
+  *
+- * Which gives possible sizes 4 or 5.  When rounded up to the
+- * next power-of-two alignment they become 4 or 8.
++ * Which gives possible sizes 4, 5, 8 or 9.  When rounded up to the
++ * next power-of-two alignment they become 4, 8 or 16 resp.
+  */
+-#define SETCC_LENGTH	(4 + IS_ENABLED(CONFIG_SLS))
+-#define SETCC_ALIGN	(4 << IS_ENABLED(CONFIG_SLS))
++#define SETCC_LENGTH	(ENDBR_INSN_SIZE + 4 + IS_ENABLED(CONFIG_SLS))
++#define SETCC_ALIGN	(4 << IS_ENABLED(CONFIG_SLS) << HAS_KERNEL_IBT)
+ static_assert(SETCC_LENGTH <= SETCC_ALIGN);
+ 
+ #define FOP_SETCC(op) \
