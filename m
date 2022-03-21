@@ -2,104 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E1B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 08:32:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 561FCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 08:33:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345312AbiCUIdl (ORCPT
+        id S1345301AbiCUIe4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 04:33:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48114 "EHLO
+        Mon, 21 Mar 2022 04:34:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345291AbiCUIda (ORCPT
+        with ESMTP id S243898AbiCUIev (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 04:33:30 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5EE35DA5A;
-        Mon, 21 Mar 2022 01:32:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding:
-         in-reply-to:references;
-        bh=cW97tF9dygiHq7o/+gILOv2WKq3Hft3IjKo4B2OX804=;
-        b=JV4GfG3Ls56mjG1rjrAeVKb6Ul6Le17KVN1r/6ZVjRH+WtDbvw50fzs3DA2WhYabTQvav68QGTpxZ
-         fX4NTPek3N+g1x3AJtqk8RHEqi+edX9PYmSm9n9uToLfsPi6e+sJUCpn4eG7E0n3kzVRQ1ekyJ5E1S
-         ddUfSDuAKJQaCmHhRHi+U6/B/mb2iEOoGxKJ83ZYPta4Vw/klvbUUTm9Ltq2ymXf1vPTRYUvlLhbDW
-         B/DP10kxZ3hzi6onbm4lbrmDLc4tjgzdi11xZ1Fdz8AXHWbvsqQg/tNzoeCl+iyBvlAHiH8zKpe+39
-         STNnJTqNItOYYrwaoasfYVF3IQ+6oGA==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.2.1410, Stamp: 3], Multi: [Enabled, t: (0.000008,0.006739)], BW: [Enabled, t: (0.000022,0.000001)], RTDA: [Enabled, t: (0.127934), Hit: No, Details: v2.28.0; Id: 15.52k34r.1fulpl8fr.30o2; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from localhost.localdomain ([85.143.252.66])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Mon, 21 Mar 2022 11:31:51 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>, mdf@kernel.org,
-        hao.wu@intel.com, yilun.xu@intel.com, trix@redhat.com,
-        conor.dooley@microchip.com, robh+dt@kernel.org, system@metrotek.ru,
-        linux-kernel@vger.kernel.org, linux-fpga@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH v5 2/2] dt-bindings: fpga: add binding doc for microchip-spi fpga mgr
-Date:   Mon, 21 Mar 2022 11:12:00 +0300
-Message-Id: <20220321081200.6912-3-i.bornyakov@metrotek.ru>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220321081200.6912-1-i.bornyakov@metrotek.ru>
-References: <20220321081200.6912-1-i.bornyakov@metrotek.ru>
+        Mon, 21 Mar 2022 04:34:51 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE52019C3D;
+        Mon, 21 Mar 2022 01:33:26 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id h196so11111689qke.12;
+        Mon, 21 Mar 2022 01:33:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=lgbn95GaqkaWrHL6lRh7q4XgqWtuDli+cU2zPOFKkFA=;
+        b=mHtUj+RrDRqWSpPHCVZONVGDK9NAKmdn+SAbQqbfdIdge9jNVa8UeQOFOZo/oJhkzt
+         fG2fFt3THlSS/xWroxDQURGWy7uOpdsQW/q0RI48TPjMIUb6dr/z8/74ApHC9CGH1lWy
+         vzK9GBP8kFBqxq+3FrGrsGu+uadB5+U8XO+N2sgn/jtiEPm0wL9OQ4A/kDVFuL6bUVtg
+         7bTJyvfkwErsoQnq9ndq9wjzUCBjKtP/hKVQzFxBmkeLQbX18JU+EWzM4uMISeeuPqpY
+         Jm1IAdPqeRlA2WcQHpWEJMgAK8ubT3UIRF83/qG6PtBriOWr+PMtWNBRTey0Akdf8N/Q
+         gyLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=lgbn95GaqkaWrHL6lRh7q4XgqWtuDli+cU2zPOFKkFA=;
+        b=5ribDpbBK8yBbE9BMl+HRE2G/UHLveFT+9lrfPRGw/Cgpyk8qnyuFkApLEif064WG9
+         6OGWK9B8plozIXiu3b2tmY2rHh2mSZbMO1aGM/zQhSnPEP4kONZo/8qcnytSZdUFdpp3
+         EpDQW2jf6v3YiIo13WWpbTdceI7XqYUDe4hQBuDegxDxs1rv4pethUryObjE/ta0nrpx
+         p/BeYmJ6gCqJlCptHJTfF+jyzpzlwT1ia3aPhkBAN01e5sBK5EwI74ZiCyQkkQiV+DSB
+         DDy8yiplEmI3bnxs64VY1oeHMys6UpDhBzL/5nlCvfw1+c1UnvrT4BAav/twes8E8ojK
+         +qxA==
+X-Gm-Message-State: AOAM531G7DKWjsC2T8nBV4Y2GJmMdBb/QvCTaNnHWi5+SxNSAC6sUu+9
+        75DMDexzahvITIno7+Sl8GGg0oMecDc=
+X-Google-Smtp-Source: ABdhPJw+GWk50gV9/1wgOLhU3z6N7p7AIvpMX3uvTLLQPU0opKrzG2JSX3NF5WhObtLrF+72/ZwfIg==
+X-Received: by 2002:a37:65d3:0:b0:67e:9cbf:b1ec with SMTP id z202-20020a3765d3000000b0067e9cbfb1ecmr2132269qkb.138.1647851605607;
+        Mon, 21 Mar 2022 01:33:25 -0700 (PDT)
+Received: from vps.qemfd.net (vps.qemfd.net. [173.230.130.29])
+        by smtp.gmail.com with ESMTPSA id g21-20020ac85815000000b002e06e2623a7sm11397415qtg.0.2022.03.21.01.33.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 01:33:25 -0700 (PDT)
+Received: from schwarzgerat.orthanc (schwarzgerat.danknet [192.168.128.2])
+        by vps.qemfd.net (Postfix) with ESMTP id 97B012B6E2;
+        Mon, 21 Mar 2022 04:33:24 -0400 (EDT)
+Received: by schwarzgerat.orthanc (Postfix, from userid 1000)
+        id 80F45600415; Mon, 21 Mar 2022 04:33:24 -0400 (EDT)
+Date:   Mon, 21 Mar 2022 04:33:24 -0400
+From:   nick black <dankamongmen@gmail.com>
+To:     "G. Branden Robinson" <g.branden.robinson@gmail.com>
+Cc:     linux-man@vger.kernel.org,
+        Alejandro Colomar <alx.manpages@gmail.com>,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [patch] console_codes.4: ffix
+Message-ID: <Yjg4VHMhrabggl88@schwarzgerat.orthanc>
+References: <YeEc2pYvKEckcAmv@schwarzgerat.orthanc>
+ <CAN4uE+p-uKzHNYry2YhCMfEFBQ2jUqpDAGx=+eha01w-L4fAjg@mail.gmail.com>
+ <20220320160217.gws42lklp6ishzub@localhost.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="+z8w45qClGzS9KLx"
+Content-Disposition: inline
+In-Reply-To: <20220320160217.gws42lklp6ishzub@localhost.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add Device Tree Binding doc for Microchip Polarfire FPGA Manager using
-slave SPI to load .dat formatted bitstream image.
 
-Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
----
- .../fpga/microchip,mpf-spi-fpga-mgr.yaml      | 32 +++++++++++++++++++
- 1 file changed, 32 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
+--+z8w45qClGzS9KLx
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
-new file mode 100644
-index 000000000000..6955fc527ed2
---- /dev/null
-+++ b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
-@@ -0,0 +1,32 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/fpga/microchip,mpf-spi-fpga-mgr.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Microchip Polarfire FPGA manager.
-+
-+description: |
-+  Device Tree Bindings for Microchip Polarfire FPGA Manager using slave SPI to
-+  load the bitstream in .dat format.
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+        - microchip,mpf-spi-fpga-mgr
-+
-+  reg:
-+    items:
-+      - description: spi chip select
-+
-+examples:
-+  - |
-+    spi@2008000 {
-+            ...
-+            fpga_mgr: fpga_mgr@0 {
-+                    compatible = "microchip,mpf-spi-fpga-mgr";
-+                    spi-max-frequency = <20000000>;
-+                    reg = <0>;
-+            };
-+    };
--- 
-2.34.1
+G. Branden Robinson left as an exercise for the reader:
+> I have some suggestions for further improvement, but please don't gate
+> the patch application on these.
 
+always good to hear from you, GBR. i replied to alejandro's
+request with the original, not wanting to mess with (and then
+test) groff right at the moment, but i've saved your
+animadversions. i've got a patch outstanding for the linux
+console right now, and once it lands, i'll need come back and
+modify this page again (indeed, that's why i was looking at it
+in the first place). i'll effect your suggestions then, thanks!
 
+--=20
+nick black -=3D- https://www.nick-black.com
+to make an apple pie from scratch,
+you need first invent a universe.
+
+--+z8w45qClGzS9KLx
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEmi//dHmU4oe+xCLxX0NADCHL+swFAmI4OFQACgkQX0NADCHL
++szYCg//Xj9aJBwd6LjC2AWfEgrdq8ZuZWR84HuO57e2ZCO9UH9QGY3fETq6eCWk
+/xtrPvwjHK/NDa9LO4b1vyyGhovg9rjwNsYS/ct2jfJICDk7FKrOUk5Z9kJVWRXB
+/YQprfF4G7qd3IR0qszxviVv5V4wI3TzUhiQwR6IEmOeF9N+phXCc7EZqQigWoas
+cq2pkMSqXWgqC/tr+K8FAv75E09955Ghpo5olqDWSRsS8wyVeDmSkw3kXORZO8ZQ
+9JFGfIZFTsVUsWMpi9EGiGNbPSbprG+rN5eODDkorB2LPTOHhhVIB6QcHo1s/bsP
+A8hhR0SvmyTFV2uTNEFqm+WiuWd9n3nbAdW7QPLW+0encYqzioo1wQNzGEaIUZiJ
+gXw2NBrXCEoMaeIYqqa59A9X/7ia+nzd1K8NywroHUzhftzV4IFio7gQTGtyTwCm
+w8NUmBQuJDZrrelE8nL9iiSb4e+rYRj89gQRx2WkKbSqIaQ1Tfdz2AtxJsSHFx6N
+zQYzw8r7YDOBsEk53dO8LbCwj6ICjvgvG+LbyQFWD/eH8YeVSiAPa2Dd2XkSzsGk
+SERjmUeIXLO+uiUiqw7GagNze3q0nzICsZNAcmMWKLysuflXnsCQEvYxLuKVuZ7l
+qMVJGKTN9APyWDJV3WDMP/6VD5LajvwiyOTBG57C3bfVrjd5awo=
+=9Cjm
+-----END PGP SIGNATURE-----
+
+--+z8w45qClGzS9KLx--
