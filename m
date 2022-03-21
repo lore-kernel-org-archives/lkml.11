@@ -2,49 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D2FC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33AB3C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:22:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349501AbiCUOSE (ORCPT
+        id S1349442AbiCUOR4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:18:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59588 "EHLO
+        Mon, 21 Mar 2022 10:17:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349024AbiCUOGx (ORCPT
+        with ESMTP id S1349022AbiCUOGx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 10:06:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EC523D4AC;
-        Mon, 21 Mar 2022 07:01:55 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7028D3D1F8;
+        Mon, 21 Mar 2022 07:01:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 079E96134B;
-        Mon, 21 Mar 2022 14:01:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E01BBC340E8;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 089DAB816DC;
         Mon, 21 Mar 2022 14:01:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 469D4C340F3;
+        Mon, 21 Mar 2022 14:01:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871314;
-        bh=dOngte7wDYXuEx59lkF/6L4j2HvH4Rsn+39KIAog/z8=;
+        s=korg; t=1647871311;
+        bh=ZLNrGtC/1yYtaIEPvn2dN37TDlIhPm1AaMyY5zLM+o8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ynonakilRfAX2Jh3K9bsSKHAt94pvj8/YNjxVun0zTCmeOuAG1XN2vXe2aryB9eil
-         vhwwmN25/jh5D3D/To01+fQ1uBRPDra3WU2NXVPE0RECMkfNv0MAmMPIKngyLAZJib
-         mxg92xijfAgdAgKT5rTRPaCJPM4yLWO4BQrBkPsI=
+        b=w8gY10Zv3XvQyqm2Nt5OAfbKkFgLHV2J5YO3Iotiy2u/isKlm7tgLPqy9zeWe47+z
+         MAyMKDwDDXiU1yKDNENy1+mwsmOd6SgN/UtVjolaUGeNEDO5v/2lA/jQP4qMjXb6Fo
+         X4VsgHpCIBQrBnQoEUgKO35jyy4OSQfjQPcYBEqg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Christoph Fritz <chf.fritz@googlemail.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        stable@vger.kernel.org,
+        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
+        Marek Vasut <marex@denx.de>,
+        Boris Brezillon <boris.brezillon@collabora.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Max Krummenacher <max.krummenacher@toradex.com>,
         Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 18/37] drm/panel: simple: Fix Innolux G070Y2-L01 BPP settings
-Date:   Mon, 21 Mar 2022 14:53:00 +0100
-Message-Id: <20220321133221.824234485@linuxfoundation.org>
+Subject: [PATCH 5.16 17/37] drm/imx: parallel-display: Remove bus flags check in imx_pd_bridge_atomic_check()
+Date:   Mon, 21 Mar 2022 14:52:59 +0100
+Message-Id: <20220321133221.794975962@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133221.290173884@linuxfoundation.org>
 References: <20220321133221.290173884@linuxfoundation.org>
@@ -56,47 +63,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Christoph Niedermaier <cniedermaier@dh-electronics.com>
 
-[ Upstream commit fc1b6ef7bfb3d1d4df868b1c3e0480cacda6cd81 ]
+[ Upstream commit 6061806a863e8b65b109eb06a280041cc7525442 ]
 
-The Innolux G070Y2-L01 supports two modes of operation:
-1) FRC=Low/NC ... MEDIA_BUS_FMT_RGB666_1X7X3_SPWG ... BPP=6
-2) FRC=High ..... MEDIA_BUS_FMT_RGB888_1X7X4_SPWG ... BPP=8
+If display timings were read from the devicetree using
+of_get_display_timing() and pixelclk-active is defined
+there, the flag DISPLAY_FLAGS_SYNC_POSEDGE/NEGEDGE is
+automatically generated. Through the function
+drm_bus_flags_from_videomode() e.g. called in the
+panel-simple driver this flag got into the bus flags,
+but then in imx_pd_bridge_atomic_check() the bus flag
+check failed and will not initialize the display. The
+original commit fe141cedc433 does not explain why this
+check was introduced. So remove the bus flags check,
+because it stops the initialization of the display with
+valid bus flags.
 
-Currently the panel description mixes both, BPP from 1) and bus
-format from 2), which triggers a warning at panel-simple.c:615.
-
-Pick the later, set bpp=8, fix the warning.
-
-Fixes: a5d2ade627dca ("drm/panel: simple: Add support for Innolux G070Y2-L01")
+Fixes: fe141cedc433 ("drm/imx: pd: Use bus format/flags provided by the bridge when available")
+Signed-off-by: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+Cc: Marek Vasut <marex@denx.de>
+Cc: Boris Brezillon <boris.brezillon@collabora.com>
+Cc: Philipp Zabel <p.zabel@pengutronix.de>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+Cc: linux-arm-kernel@lists.infradead.org
+To: dri-devel@lists.freedesktop.org
+Tested-by: Max Krummenacher <max.krummenacher@toradex.com>
+Acked-by: Boris Brezillon <boris.brezillon@collabora.com>
 Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Christoph Fritz <chf.fritz@googlemail.com>
-Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
-Cc: Maxime Ripard <maxime@cerno.tech>
-Cc: Sam Ravnborg <sam@ravnborg.org>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220220040718.532866-1-marex@denx.de
+Link: https://patchwork.freedesktop.org/patch/msgid/20220201113643.4638-1-cniedermaier@dh-electronics.com
 Signed-off-by: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/panel/panel-simple.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/imx/parallel-display.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
-index 87f30bced7b7..6a820b698f5a 100644
---- a/drivers/gpu/drm/panel/panel-simple.c
-+++ b/drivers/gpu/drm/panel/panel-simple.c
-@@ -2017,7 +2017,7 @@ static const struct display_timing innolux_g070y2_l01_timing = {
- static const struct panel_desc innolux_g070y2_l01 = {
- 	.timings = &innolux_g070y2_l01_timing,
- 	.num_timings = 1,
--	.bpc = 6,
-+	.bpc = 8,
- 	.size = {
- 		.width = 152,
- 		.height = 91,
+diff --git a/drivers/gpu/drm/imx/parallel-display.c b/drivers/gpu/drm/imx/parallel-display.c
+index a8aba0141ce7..06cb1a59b9bc 100644
+--- a/drivers/gpu/drm/imx/parallel-display.c
++++ b/drivers/gpu/drm/imx/parallel-display.c
+@@ -217,14 +217,6 @@ static int imx_pd_bridge_atomic_check(struct drm_bridge *bridge,
+ 	if (!imx_pd_format_supported(bus_fmt))
+ 		return -EINVAL;
+ 
+-	if (bus_flags &
+-	    ~(DRM_BUS_FLAG_DE_LOW | DRM_BUS_FLAG_DE_HIGH |
+-	      DRM_BUS_FLAG_PIXDATA_DRIVE_POSEDGE |
+-	      DRM_BUS_FLAG_PIXDATA_DRIVE_NEGEDGE)) {
+-		dev_warn(imxpd->dev, "invalid bus_flags (%x)\n", bus_flags);
+-		return -EINVAL;
+-	}
+-
+ 	bridge_state->output_bus_cfg.flags = bus_flags;
+ 	bridge_state->input_bus_cfg.flags = bus_flags;
+ 	imx_crtc_state->bus_flags = bus_flags;
 -- 
 2.34.1
 
