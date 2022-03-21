@@ -2,329 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23C78C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:37:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3955C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:38:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351275AbiCUQit (ORCPT
+        id S1351286AbiCUQji (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 12:38:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55704 "EHLO
+        Mon, 21 Mar 2022 12:39:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241534AbiCUQin (ORCPT
+        with ESMTP id S1351276AbiCUQjd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 12:38:43 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EBCAED9DF;
-        Mon, 21 Mar 2022 09:37:17 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id bg31-20020a05600c3c9f00b00381590dbb33so8705757wmb.3;
-        Mon, 21 Mar 2022 09:37:17 -0700 (PDT)
+        Mon, 21 Mar 2022 12:39:33 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A68CF131
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:38:04 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id 17so5705242ljw.8
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:38:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=CR5MhstiautQ+fKo0102plnWfdRHnkKf/5yTqnlcE0Y=;
-        b=Ygw7anaet6FzKMcreNetMcmSvYsQ2nE3AES8PzqVWlfid4Fn3IlD7aSbMq7k14XCwm
-         jt7B73SYmymXM738S4I7e9xM86Ed8GLrAAgl0Vo76f4eZ2x+B+hovBAWNjRXmG0qKcEw
-         2sRUuesnrrvO1u6K/fiKe9ytSq0ljYh2VcFvWYN23/TEiNUGck6Ols8Mh060+EVneig3
-         q0oK4gUmWOSLJxEhllVIbbSZ2CUy0Wh7vahJxhu/kLH3oJ/GERSosq+nYQJ8IxrZGwrZ
-         4XsEv951FBlOXVNkaDJNenl5bIZz+jwAqZBK66lGl958FGoXTs/JPJVwgpBv/3REfkLG
-         byxg==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vLuZZpUnsm9KBxk/6Ba1/rk7zP3V19U4V2RRUcKnlUU=;
+        b=CxLg6iI6FqAS0PFMX63IExeZr6f76g1o7l9nUfGVicC1LNk5HV1MqsTRRe9CQdmMOd
+         L12XNcMd0u/oWXZrvuZ12lN0gUP/uSoxbpWa8i3E3VOJ+CG/6Swp/FYN4Mz3gKef+Fr2
+         md03VSCIy+BFM1RkCswovuJY4FekLTyETX3P8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CR5MhstiautQ+fKo0102plnWfdRHnkKf/5yTqnlcE0Y=;
-        b=sME/2rO3cPxA6eESTcmTfBWo5L6JGfbflpri1MQ6QYqZmENzJRP47m4ySpFmTqOrzD
-         kjGw3xRkC9lYKtW+2vp/EFQAGVGHVEgbdcr4DYrVnD3p716Rla+EpJRr/4/b7cGRP/4w
-         ge0nmI4JMDuhD/VCb0ZEkhdhdvvfvD4tilZWehlv9NQOF/lS5lNscl65FmSZiyyxNJIp
-         PM4hTpedCCJua32hmCQawvFILS6q0xltfPOZ1NTM3SXglctfwuFhGEulSRmsjtrFk/Xc
-         ZVf8CMHzWzvGDvhXww7yMM/IH/ddkZUAXz2+7H6w+h5cL3j6fYyLQJ9P22yBV5A5OkwO
-         RD1A==
-X-Gm-Message-State: AOAM531O8glLHL/wP22UqpLV4sO//J7TPPCB46ebfZrbNLpZwF9ArJQW
-        ZdC9+33aAowPYOj89ZB5HQE=
-X-Google-Smtp-Source: ABdhPJws43+PByf1nFz9BFFhtx17Jjxiu/klSS58SjNzfZPynJArDoCJb6L9T+lAc4m8l+8q5bSa/A==
-X-Received: by 2002:a05:600c:1548:b0:389:cde3:35cc with SMTP id f8-20020a05600c154800b00389cde335ccmr27858632wmg.133.1647880635504;
-        Mon, 21 Mar 2022 09:37:15 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
-        by smtp.gmail.com with ESMTPSA id m23-20020a05600c3b1700b0038bbd24f401sm311178wms.2.2022.03.21.09.37.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 09:37:15 -0700 (PDT)
-Date:   Mon, 21 Mar 2022 17:07:55 +0100
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH v2] net: dsa: qca8k: pack driver struct and
- improve cache use
-Message-ID: <Yjii20KryAsEQp1k@Ansuel-xps.localdomain>
-References: <20220228110408.4903-1-ansuelsmth@gmail.com>
- <20220303015327.k3fqkkxunm6kihjl@skbuf>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vLuZZpUnsm9KBxk/6Ba1/rk7zP3V19U4V2RRUcKnlUU=;
+        b=aqUs8jylTWHKpCWPfmIQp+3jC8psRM6WSAszTe/+D9zvXmyPdZiBireaCYdjeYWY25
+         5wdWtdkvJlMlFPio2/Zt6XBvzdg1VY4ziglewtYunnv1ViKLXjZK9CXtZuXm3HcVL47N
+         ZJ3bryB5jqK27H56aMALfLs7vojn7sNIurfH9xoDFdXKtiVguIdrtW+XFy3fsDuJBTYY
+         1lcxZBC9C4CIhBojNg2nCmDcDAEDW0UK4Efjw+f0UyHC0PPX2fGw3F5Mx6stG4Sd22o9
+         hSX7lNgcaLt+/jg4ia/vKONgSH9TFXXkBeUbSCZ64ChHFllibhyWnYOnxss4CwxUdWGy
+         4DGw==
+X-Gm-Message-State: AOAM531CoQpglG5tPn6jYsWgN8MQ8RqxISIQ/RUg+xblrPUYIMN3HG8O
+        B/5MMyS10usXrbQ6C+N/M/4aSzhQVju1FPw+
+X-Google-Smtp-Source: ABdhPJy1P0wMXbA8DlMRZNr8b5AO+JCKI4ddTJhroqQYWDWGh4yJRQMROV+bkWWprCy6OiBfLvJ09A==
+X-Received: by 2002:a05:651c:1501:b0:249:8d28:5659 with SMTP id e1-20020a05651c150100b002498d285659mr884101ljf.138.1647880678606;
+        Mon, 21 Mar 2022 09:37:58 -0700 (PDT)
+Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com. [209.85.167.44])
+        by smtp.gmail.com with ESMTPSA id q21-20020a194315000000b0044a1e36fda4sm775823lfa.25.2022.03.21.09.37.52
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Mar 2022 09:37:55 -0700 (PDT)
+Received: by mail-lf1-f44.google.com with SMTP id h7so8053069lfl.2
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:37:52 -0700 (PDT)
+X-Received: by 2002:a05:6512:2294:b0:448:6c86:3c78 with SMTP id
+ f20-20020a056512229400b004486c863c78mr14728551lfu.531.1647880671749; Mon, 21
+ Mar 2022 09:37:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220303015327.k3fqkkxunm6kihjl@skbuf>
+References: <20220321140327.777f9554@canb.auug.org.au> <Yjh11UjDZogc3foM@hirez.programming.kicks-ass.net>
+ <Yjh3xZuuY3QcZ1Bn@hirez.programming.kicks-ass.net> <Yjh4xzSWtvR+vqst@hirez.programming.kicks-ass.net>
+ <YjiBbF+K4FKZyn6T@hirez.programming.kicks-ass.net> <YjiZhRelDJeX4dfR@hirez.programming.kicks-ass.net>
+ <YjidpOZZJkF6aBTG@hirez.programming.kicks-ass.net>
+In-Reply-To: <YjidpOZZJkF6aBTG@hirez.programming.kicks-ass.net>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 21 Mar 2022 09:37:35 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wigO=68WA8aMZnH9o8qRUJQbNJPERosvW82YuScrUTo7Q@mail.gmail.com>
+Message-ID: <CAHk-=wigO=68WA8aMZnH9o8qRUJQbNJPERosvW82YuScrUTo7Q@mail.gmail.com>
+Subject: Re: linux-next: build warnings after merge of the tip tree
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "H.J. Lu" <hjl.tools@gmail.com>,
+        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        linux-toolchains <linux-toolchains@vger.kernel.org>,
+        Andrew Cooper <Andrew.Cooper3@citrix.com>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 03:53:27AM +0200, Vladimir Oltean wrote:
-> On Mon, Feb 28, 2022 at 12:04:08PM +0100, Ansuel Smith wrote:
-> > Pack qca8k priv and other struct using pahole and set the first priv
-> > struct entry to mgmt_master and mgmt_eth_data to speedup access.
-> > While at it also rework pcs struct and move it qca8k_ports_config
-> > following other configuration set for the cpu ports.
-> > 
-> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> > ---
-> 
-> How did you "pack" struct qca8k_priv exactly?
+On Mon, Mar 21, 2022 at 8:46 AM Peter Zijlstra <peterz@infradead.org> wrote:
 >
+> This landing in -next only today (after having been committed last
+> friday night) is another clue it should probably go next round.
 
-I'm trying to understand it too... also this was done basend on what
-target? 
+I went and looked at lore to get the context that I didn't get in this
+email that I was added to the participants for.
 
-> Before:
-> 
-> struct qca8k_priv {
->         u8                         switch_id;            /*     0     1 */
->         u8                         switch_revision;      /*     1     1 */
->         u8                         mirror_rx;            /*     2     1 */
->         u8                         mirror_tx;            /*     3     1 */
->         u8                         lag_hash_mode;        /*     4     1 */
->         bool                       legacy_phy_port_mapping; /*     5     1 */
->         struct qca8k_ports_config  ports_config;         /*     6     7 */
-> 
->         /* XXX 3 bytes hole, try to pack */
-> 
->         struct regmap *            regmap;               /*    16     8 */
->         struct mii_bus *           bus;                  /*    24     8 */
->         struct ar8xxx_port_status  port_sts[7];          /*    32    28 */
-> 
->         /* XXX 4 bytes hole, try to pack */
-> 
->         /* --- cacheline 1 boundary (64 bytes) --- */
->         struct dsa_switch *        ds;                   /*    64     8 */
->         struct mutex               reg_mutex;            /*    72   160 */
->         /* --- cacheline 3 boundary (192 bytes) was 40 bytes ago --- */
->         struct device *            dev;                  /*   232     8 */
->         struct dsa_switch_ops      ops;                  /*   240   864 */
->         /* --- cacheline 17 boundary (1088 bytes) was 16 bytes ago --- */
->         struct gpio_desc *         reset_gpio;           /*  1104     8 */
->         unsigned int               port_mtu[7];          /*  1112    28 */
-> 
->         /* XXX 4 bytes hole, try to pack */
-> 
->         struct net_device *        mgmt_master;          /*  1144     8 */
->         /* --- cacheline 18 boundary (1152 bytes) --- */
->         struct qca8k_mgmt_eth_data mgmt_eth_data;        /*  1152   280 */
->         /* --- cacheline 22 boundary (1408 bytes) was 24 bytes ago --- */
->         struct qca8k_mib_eth_data  mib_eth_data;         /*  1432   272 */
->         /* --- cacheline 26 boundary (1664 bytes) was 40 bytes ago --- */
->         struct qca8k_mdio_cache    mdio_cache;           /*  1704     6 */
-> 
->         /* XXX 2 bytes hole, try to pack */
-> 
->         struct qca8k_pcs           pcs_port_0;           /*  1712    32 */
-> 
->         /* XXX last struct has 4 bytes of padding */
-> 
->         /* --- cacheline 27 boundary (1728 bytes) was 16 bytes ago --- */
->         struct qca8k_pcs           pcs_port_6;           /*  1744    32 */
-> 
->         /* XXX last struct has 4 bytes of padding */
-> 
->         /* size: 1776, cachelines: 28, members: 22 */
->         /* sum members: 1763, holes: 4, sum holes: 13 */
->         /* paddings: 2, sum paddings: 8 */
->         /* last cacheline: 48 bytes */
-> };
-> 
-> After:
-> 
-> struct qca8k_priv {
->         struct net_device *        mgmt_master;          /*     0     8 */
->         struct qca8k_mgmt_eth_data mgmt_eth_data;        /*     8   280 */
->         /* --- cacheline 4 boundary (256 bytes) was 32 bytes ago --- */
->         struct qca8k_mdio_cache    mdio_cache;           /*   288     6 */
->         u8                         switch_id;            /*   294     1 */
->         u8                         switch_revision;      /*   295     1 */
->         u8                         mirror_rx;            /*   296     1 */
->         u8                         mirror_tx;            /*   297     1 */
->         u8                         lag_hash_mode;        /*   298     1 */
->         bool                       legacy_phy_port_mapping; /*   299     1 */
-> 
->         /* XXX 4 bytes hole, try to pack */
-> 
->         struct qca8k_ports_config  ports_config;         /*   304    72 */
->         /* --- cacheline 5 boundary (320 bytes) was 56 bytes ago --- */
->         struct regmap *            regmap;               /*   376     8 */
->         /* --- cacheline 6 boundary (384 bytes) --- */
->         struct mii_bus *           bus;                  /*   384     8 */
->         struct ar8xxx_port_status  port_sts[7];          /*   392    28 */
-> 
->         /* XXX 4 bytes hole, try to pack */
-> 
->         struct dsa_switch *        ds;                   /*   424     8 */
->         struct mutex               reg_mutex;            /*   432   160 */
->         /* --- cacheline 9 boundary (576 bytes) was 16 bytes ago --- */
->         struct device *            dev;                  /*   592     8 */
->         struct gpio_desc *         reset_gpio;           /*   600     8 */
->         struct dsa_switch_ops      ops;                  /*   608   864 */
->         /* --- cacheline 23 boundary (1472 bytes) --- */
->         struct qca8k_mib_eth_data  mib_eth_data;         /*  1472   280 */
-> 
->         /* XXX last struct has 4 bytes of padding */
-> 
->         /* --- cacheline 27 boundary (1728 bytes) was 24 bytes ago --- */
->         unsigned int               port_mtu[7];          /*  1752    28 */
-> 
->         /* size: 1784, cachelines: 28, members: 20 */
->         /* sum members: 1772, holes: 2, sum holes: 8 */
->         /* padding: 4 */
->         /* paddings: 1, sum paddings: 4 */
->         /* last cacheline: 56 bytes */
-> };
-> 
-> 1776 vs 1784. That's... larger?!
-> 
-> Also, struct qca8k_priv is so large because the "ops" member is a full
-> copy of qca8k_switch_ops. I understand why commit db460c54b67f ("net:
-> dsa: qca8k: extend slave-bus implementations") did this, but I wonder,
-> is there no better way?
-> 
+I didn't find the context there either.
 
-Actually from what I can see the struct can be improved in 2 way...
-The ancient struct
-ar8xxx_port_status port_sts[QCA8K_NUM_PORTS];
-can be totally dropped as I can't see why we still need it.
+Sure, I found the thread, but the whole "that x86 patch" that you
+refer to was never actually specified even in the full thread as far
+as I can tell. I see that there is an arm64 equivalent too of what you
+are complaining about, and I have no idea about that one either..
 
-The duplicated ops is funny. I could be very confused but why it's done
-like that? Can't we modify directly the already defined one and drop
-struct dsa_switch_ops ops; from qca8k_priv?
+Mind actually giving the full details so that we don't have to go
+re-do the work you already did?
 
-I mean is all of that to use priv->ops.phy_read instead of
-priv->ds->ops.phy_read or even qca8k_switch_ops directly? o.o
+Because right now I know something is wrong, I know the warnings, but
+I don't actually have any handle on the actual patches to look out
+for.
 
-Am I missing something?
+It's presumably not in any of the pull requests I already have
+pending, but it would be nice if I saw some details of _what_ you are
+complaining about, and not just the complaint itself ;)
 
-> >  drivers/net/dsa/qca8k.c |  8 ++++----
-> >  drivers/net/dsa/qca8k.h | 33 ++++++++++++++++-----------------
-> >  2 files changed, 20 insertions(+), 21 deletions(-)
-> > 
-> > diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-> > index ee0dbf324268..8d059da5f0ca 100644
-> > --- a/drivers/net/dsa/qca8k.c
-> > +++ b/drivers/net/dsa/qca8k.c
-> > @@ -1685,11 +1685,11 @@ qca8k_phylink_mac_select_pcs(struct dsa_switch *ds, int port,
-> >  	case PHY_INTERFACE_MODE_1000BASEX:
-> >  		switch (port) {
-> >  		case 0:
-> > -			pcs = &priv->pcs_port_0.pcs;
-> > +			pcs = &priv->ports_config.qpcs[QCA8K_CPU_PORT0].pcs;
-> >  			break;
-> >  
-> >  		case 6:
-> > -			pcs = &priv->pcs_port_6.pcs;
-> > +			pcs = &priv->ports_config.qpcs[QCA8K_CPU_PORT6].pcs;
-> >  			break;
-> >  		}
-> >  		break;
-> > @@ -2889,8 +2889,8 @@ qca8k_setup(struct dsa_switch *ds)
-> >  	if (ret)
-> >  		return ret;
-> >  
-> > -	qca8k_setup_pcs(priv, &priv->pcs_port_0, 0);
-> > -	qca8k_setup_pcs(priv, &priv->pcs_port_6, 6);
-> > +	qca8k_setup_pcs(priv, &priv->ports_config.qpcs[QCA8K_CPU_PORT0], 0);
-> > +	qca8k_setup_pcs(priv, &priv->ports_config.qpcs[QCA8K_CPU_PORT6], 6);
-> >  
-> >  	/* Make sure MAC06 is disabled */
-> >  	ret = regmap_clear_bits(priv->regmap, QCA8K_REG_PORT0_PAD_CTRL,
-> > diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-> > index f375627174c8..611dc2335dbe 100644
-> > --- a/drivers/net/dsa/qca8k.h
-> > +++ b/drivers/net/dsa/qca8k.h
-> > @@ -341,18 +341,24 @@ enum {
-> >  
-> >  struct qca8k_mgmt_eth_data {
-> >  	struct completion rw_done;
-> > -	struct mutex mutex; /* Enforce one mdio read/write at time */
-> > +	u32 data[4];
-> >  	bool ack;
-> >  	u32 seq;
-> > -	u32 data[4];
-> > +	struct mutex mutex; /* Enforce one mdio read/write at time */
-> >  };
-> >  
-> >  struct qca8k_mib_eth_data {
-> >  	struct completion rw_done;
-> > +	u64 *data; /* pointer to ethtool data */
-> > +	u8 req_port;
-> >  	struct mutex mutex; /* Process one command at time */
-> >  	refcount_t port_parsed; /* Counter to track parsed port */
-> > -	u8 req_port;
-> > -	u64 *data; /* pointer to ethtool data */
-> > +};
-> > +
-> > +struct qca8k_pcs {
-> > +	struct phylink_pcs pcs;
-> > +	struct qca8k_priv *priv;
-> > +	int port;
-> >  };
-> >  
-> >  struct qca8k_ports_config {
-> > @@ -361,6 +367,7 @@ struct qca8k_ports_config {
-> >  	bool sgmii_enable_pll;
-> >  	u8 rgmii_rx_delay[QCA8K_NUM_CPU_PORTS]; /* 0: CPU port0, 1: CPU port6 */
-> >  	u8 rgmii_tx_delay[QCA8K_NUM_CPU_PORTS]; /* 0: CPU port0, 1: CPU port6 */
-> > +	struct qca8k_pcs qpcs[QCA8K_NUM_CPU_PORTS];
-> >  };
-> >  
-> >  struct qca8k_mdio_cache {
-> > @@ -376,13 +383,10 @@ struct qca8k_mdio_cache {
-> >  	u16 hi;
-> >  };
-> >  
-> > -struct qca8k_pcs {
-> > -	struct phylink_pcs pcs;
-> > -	struct qca8k_priv *priv;
-> > -	int port;
-> > -};
-> > -
-> >  struct qca8k_priv {
-> > +	struct net_device *mgmt_master; /* Track if mdio/mib Ethernet is available */
-> > +	struct qca8k_mgmt_eth_data mgmt_eth_data;
-> > +	struct qca8k_mdio_cache mdio_cache;
-> >  	u8 switch_id;
-> >  	u8 switch_revision;
-> >  	u8 mirror_rx;
-> > @@ -396,15 +400,10 @@ struct qca8k_priv {
-> >  	struct dsa_switch *ds;
-> >  	struct mutex reg_mutex;
-> >  	struct device *dev;
-> > -	struct dsa_switch_ops ops;
-> >  	struct gpio_desc *reset_gpio;
-> > -	unsigned int port_mtu[QCA8K_NUM_PORTS];
-> > -	struct net_device *mgmt_master; /* Track if mdio/mib Ethernet is available */
-> > -	struct qca8k_mgmt_eth_data mgmt_eth_data;
-> > +	struct dsa_switch_ops ops;
-> >  	struct qca8k_mib_eth_data mib_eth_data;
-> > -	struct qca8k_mdio_cache mdio_cache;
-> > -	struct qca8k_pcs pcs_port_0;
-> > -	struct qca8k_pcs pcs_port_6;
-> > +	unsigned int port_mtu[QCA8K_NUM_PORTS];
-> >  };
-> >  
-> >  struct qca8k_mib_desc {
-> > -- 
-> > 2.34.1
-> > 
-> 
-
--- 
-	Ansuel
+                     Linus
