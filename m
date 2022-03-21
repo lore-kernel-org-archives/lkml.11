@@ -2,178 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED045C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:51:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B74A4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:51:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349639AbiCUOwi (ORCPT
+        id S1349666AbiCUOwl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:52:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55402 "EHLO
+        Mon, 21 Mar 2022 10:52:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241954AbiCUOwg (ORCPT
+        with ESMTP id S1345489AbiCUOwg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 10:52:36 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCCFC13CE1;
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28D5C12AD7;
         Mon, 21 Mar 2022 07:51:09 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id qa43so30254756ejc.12;
-        Mon, 21 Mar 2022 07:51:09 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id p15so14267531lfk.8;
+        Mon, 21 Mar 2022 07:51:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jqRjch6tyjBRaSVUUFlp08VNF6RPYjibRnCDu58F8vA=;
-        b=di3CoWBOCbwf869QXrOfgLORMD8gxsbotvsj4hTYNWGdvQmAtbk65lFUkZgykBkeLl
-         99ivTEOuTH07ip0ylXumguCG1bT4NRrduINA2LBku3wfEb9qUcpmeAhh5nbWQbmL0O4N
-         L0zSMPFI8/Nxx+SugpxFRqPQw3Xx3jqU7QcwVKjof2/qRnLGWpdGnrtVIGqYj1HWxaBK
-         uhTOMZ4AUIaVaOtiMvUsX/ZgEVkodJhR2RZROujoIATqiaE9jhJVofphJgDJ64uAjQbL
-         x/4WuI6bMWfVQ2gwBYurEQO9/DVfCvr5+Sz/DSI6nAh26AEOklXphjeAOksh5Rrl9hRL
-         UqqQ==
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=V9QJhItuGj131X5U24BIjE6xMJa7ckWXlhf3pX2Qb7w=;
+        b=hVNxEkMPFhWNhQ6oKe5bcnNri0UMhznsBewxDmrB8a18rPDQXU3w3+ibFl3giYgcO7
+         3LN7H+LGrRc8+f9qHNriFO15Z1jKztavMZK70q4eTDKCHkuQR88FoUssKCzIGjwdOSxe
+         qZQNNLp0xRmS6obHoFrpMzCT/FYV73BTqJY31XKRw/zPyPF46kovinfnipbgxvR9QuDc
+         pCCb4FMiYS40owPPP25hJu0RaJq/CIQ/NEaJUnQ8HV0t3Gdljf2j0pYGjvYfr9ShOHnL
+         wlnXEPW8WEFbrLzBP3BqMFI2Pi0JtDjaVvcDx0NVEP6+oQB2HcrzMxIoxsLTWr+2qdeR
+         U5Jg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jqRjch6tyjBRaSVUUFlp08VNF6RPYjibRnCDu58F8vA=;
-        b=4Yl3LhPQ++6fvIWvUffES5diqM/3BnxO2/CHLFY8YgmjGCOpwddKA4M3ZT7bnliC+J
-         SsIidE3lY8Fdfc+COiKpwT6KEucl5sFD6FRKUlKtubv7WGrGpkkOc4gD0XdIOB+92BQQ
-         k9munxKHaK0JamOcTF3m8IXGHAMeuugD/RmjynDXILePPBNEj6NlEt7FpzZfPcCNwvcb
-         LxvReKKYmcYli/+soV166zfui5E3tMj3DtuQ+eD3dN8GrF/3Jo4LImZuK/+lxb6+GKVF
-         ArlXt7oiiKM0yrRPLZvzjYd2pfdxID772I7RCnSWs3XeAjTd8B2SsMnCtZbTznIEnqfd
-         MkbA==
-X-Gm-Message-State: AOAM530BanlXrgmqyzDvYEa0hA5uKLnIMYHfQRg0mVsoipBPmwvuP9EL
-        ciwQ6bIdKzQVBOixmY2gUGYFT+HHMUrnKUeVqOoh7PPATxk=
-X-Google-Smtp-Source: ABdhPJxiV2O0fqsz7GdPU3QAtvtcGIAvFWYk4TrrlrPLsVCxvY2GJb40FjXssPrwPxryJsTV3VfwAaLxzxH7K9Dd/cI=
-X-Received: by 2002:a17:907:968e:b0:6db:aed5:43c8 with SMTP id
- hd14-20020a170907968e00b006dbaed543c8mr20870537ejc.636.1647874267193; Mon, 21
- Mar 2022 07:51:07 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=V9QJhItuGj131X5U24BIjE6xMJa7ckWXlhf3pX2Qb7w=;
+        b=O2ejeiXANLA0uIv9NVON1IqjAv11xLOjfuU6qgEBxL6BDuYYaRcYNs0ZsC4urA8axo
+         CAIMjtadbAfIMWMO6az6mQC3z5x+xsTXSBxabSaZkFgVA1Ebn0PEvh8aRxb39x/0oUO9
+         VzvcF1HeQ5cfsOSSFt4y0GNDrCumu6ffXk8Yr4UcEfGqHeNRyUMVH9s+w5PXNd/iMq6g
+         92PYGGbAjvUGspcaQ6LZF9VnT/OFjPG6ZWjMGK3mdUB0Yvrd8VZDKoNXwA4RTKZ5cgnv
+         boVSLosuPpWtK//5DiSA5exGSMwuJKxiC8wp5MtkP4Mzx0lnhqxBo55SWD8naWCG0f+Q
+         vlqw==
+X-Gm-Message-State: AOAM532CNZ672kG46dbTsoKULSUBUXxiVCC7EuNggPYyMC5uzVj/H+7k
+        OXoESFLHURjhQNavgkC+UZpKiVodmq8=
+X-Google-Smtp-Source: ABdhPJy/zkuOFRI5NSGnx6DSDrPaX00+ZIvAAggAOHT0Nhrt9aFLL0ndDJXWs/3Gt43hJTyUnWwrbQ==
+X-Received: by 2002:ac2:4ed4:0:b0:44a:212e:fa1a with SMTP id p20-20020ac24ed4000000b0044a212efa1amr7065503lfr.372.1647874265558;
+        Mon, 21 Mar 2022 07:51:05 -0700 (PDT)
+Received: from wse-c0127 ([208.127.141.29])
+        by smtp.gmail.com with ESMTPSA id bu1-20020a056512168100b004437db5e773sm1829487lfb.94.2022.03.21.07.51.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 07:51:05 -0700 (PDT)
+From:   Hans Schultz <schultz.hans@gmail.com>
+X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>, Hans Schultz <schultz.hans@gmail.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB
+ implementation
+In-Reply-To: <YjNDgnrYaYfviNTi@lunn.ch>
+References: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
+ <20220310142320.611738-4-schultz.hans+netdev@gmail.com>
+ <20220310142836.m5onuelv4jej5gvs@skbuf> <86r17495gk.fsf@gmail.com>
+ <20220316233447.kwyirxckgancdqmh@skbuf> <86lex9hsg0.fsf@gmail.com>
+ <YjNDgnrYaYfviNTi@lunn.ch>
+Date:   Mon, 21 Mar 2022 15:51:02 +0100
+Message-ID: <86czifxstl.fsf@gmail.com>
 MIME-Version: 1.0
-References: <20220321133241.121367-1-shreeya.patel@collabora.com>
-In-Reply-To: <20220321133241.121367-1-shreeya.patel@collabora.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 21 Mar 2022 16:49:56 +0200
-Message-ID: <CAHp75VeoOakph=cz8Ly-mf-j4qLoeNXjr-64BeDjoKbgwiuJyg@mail.gmail.com>
-Subject: Re: [PATCH v3] gpio: Restrict usage of GPIO chip irq members before initialization
-To:     Shreeya Patel <shreeya.patel@collabora.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>, krisman@collabora.com,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Collabora Kernel ML <kernel@collabora.com>,
-        alvaro.soliverez@collabora.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 3:33 PM Shreeya Patel
-<shreeya.patel@collabora.com> wrote:
+On tor, mar 17, 2022 at 15:19, Andrew Lunn <andrew@lunn.ch> wrote:
+> On Thu, Mar 17, 2022 at 09:52:15AM +0100, Hans Schultz wrote:
+>> On tor, mar 17, 2022 at 01:34, Vladimir Oltean <olteanv@gmail.com> wrote:
+>> > On Mon, Mar 14, 2022 at 11:46:51AM +0100, Hans Schultz wrote:
+>> >> >> @@ -396,6 +414,13 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
+>> >> >>  				    "ATU miss violation for %pM portvec %x spid %d\n",
+>> >> >>  				    entry.mac, entry.portvec, spid);
+>> >> >>  		chip->ports[spid].atu_miss_violation++;
+>> >> >> +		if (mv88e6xxx_port_is_locked(chip, chip->ports[spid].port))
+>> >> >> +			err = mv88e6xxx_switchdev_handle_atu_miss_violation(chip,
+>> >> >> +									    chip->ports[spid].port,
+>> >> >> +									    &entry,
+>> >> >> +									    fid);
+>> >> >
+>> >> > Do we want to suppress the ATU miss violation warnings if we're going to
+>> >> > notify the bridge, or is it better to keep them for some reason?
+>> >> > My logic is that they're part of normal operation, so suppressing makes
+>> >> > sense.
+>> >> >
+>> >> 
+>> >> I have been seeing many ATU member violations after the miss violation is
+>> >> handled (using ping), and I think it could be considered to suppress the ATU member
+>> >> violations interrupts by setting the IgnoreWrongData bit for the
+>> >> port (sect 4.4.7). This would be something to do whenever a port is set in locked mode?
+>> >
+>> > So the first packet with a given MAC SA triggers an ATU miss violation
+>> > interrupt.
+>> >
+>> > You program that MAC SA into the ATU with a destination port mask of all
+>> > zeroes. This suppresses further ATU miss interrupts for this MAC SA, but
+>> > now generates ATU member violations, because the MAC SA _is_ present in
+>> > the ATU, but not towards the expected port (in fact, towards _no_ port).
+>> >
+>> > Especially if user space decides it doesn't want to authorize this MAC
+>> > SA, it really becomes a problem because this is now a vector for denial
+>> > of service, with every packet triggering an ATU member violation
+>> > interrupt.
+>> >
+>> > So your suggestion is to set the IgnoreWrongData bit on locked ports,
+>> > and this will suppress the actual member violation interrupts for
+>> > traffic coming from these ports.
+>> >
+>> > So if the user decides to unplug a previously authorized printer from
+>> > switch port 1 and move it to port 2, how is this handled? If there isn't
+>> > a mechanism in place to delete the locked FDB entry when the printer
+>> > goes away, then by setting IgnoreWrongData you're effectively also
+>> > suppressing migration notifications.
+>> 
+>> I don't think such a scenario is so realistic, as changing port is not
+>> just something done casually, besides port 2 then must also be a locked
+>> port to have the same policy.
 >
-> GPIO chip irq members are exposed before they could be completely
-> initialized and this leads to race conditions.
+> I think it is very realistic. It is also something which does not work
+> is going to cause a lot of confusion. People will blame the printer,
+> when in fact they should be blaming the switch. They will be rebooting
+> the printer, when in fact, they need to reboot the switch etc.
 >
-> One such issue was observed for the gc->irq.domain variable which
-> was accessed through the I2C interface in gpiochip_to_irq() before
-> it could be initialized by gpiochip_add_irqchip(). This resulted in
-> Kernel NULL pointer dereference.
+> I expect there is a way to cleanly support this, you just need to
+> figure it out.
 >
-> Following are the logs for reference :-
+>> The other aspect is that the user space daemon that authorizes catches
+>> the fdb add entry events and checks if it is a locked entry. So it will
+>> be up to said daemon to decide the policy, like remove the fdb entry
+>> after a timeout.
+>> 
+>> >
+>> > Oh, btw, my question was: could you consider suppressing the _prints_ on
+>> > an ATU miss violation on a locked port?
+>> 
+>> As there will only be such on the first packet, I think it should be
+>> logged and those prints serve that purpose, so I think it is best to
+>> keep the print.
+>> If in the future some tests or other can argue for suppressing the
+>> prints, it is an easy thing to do.
 >
-> kernel: Call Trace:
-> kernel:  gpiod_to_irq+0x53/0x70
-> kernel:  acpi_dev_gpio_irq_get_by+0x113/0x1f0
-> kernel:  i2c_acpi_get_irq+0xc0/0xd0
-> kernel:  i2c_device_probe+0x28a/0x2a0
-> kernel:  really_probe+0xf2/0x460
-> kernel: RIP: 0010:gpiochip_to_irq+0x47/0xc0
+> Please use a traffic generator and try to DOS one of your own
+> switches. Can you?
 >
-> To avoid such scenarios, restrict usage of GPIO chip irq members before
-> they are completely initialized.
+> 	  Andrew
 
+Here is a trafgen report, where I sent packets to a locked port with random SAs:
 
-LGTM, thanks.
+    42527020 packets outgoing
+  3104472460 bytes outgoing
+         329 sec, 989345 usec on CPU0 (5835746 packets)
+         329 sec, 985243 usec on CPU1 (2119061 packets)
+         329 sec, 997323 usec on CPU2 (5656546 packets)
+         329 sec, 989475 usec on CPU3 (5617322 packets)
+         330 sec, 5228 usec on CPU4 (6034671 packets)
+         330 sec, 1603 usec on CPU5 (5833505 packets)
+         329 sec, 989319 usec on CPU6 (5709841 packets)
+         329 sec, 989294 usec on CPU7 (5720328 packets)
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+I could do 'bridge fdb show' after stopping the traffic, printing out a
+very long list (minutes to print). The ATU was normal, so there is an
+issue of the soft FDB locked entries not ageing out.
 
-> Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
-> ---
->
-> Changes in v3
->   - Move the gc->irq.initialized check inside gpiochip_to_irq().
->   - Rename gc to GPIO chip.
->   - Add barrier() to avoid compiler reordering.
->
-> Changes in v2
->   - Make gc_irq_initialized flag a member of gpio_irq_chip structure.
->   - Make use of barrier() to avoid reordering of flag initialization
-> before other gc irq members are initialized.
->
->
->  drivers/gpio/gpiolib.c      | 19 +++++++++++++++++++
->  include/linux/gpio/driver.h |  9 +++++++++
->  2 files changed, 28 insertions(+)
->
-> diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
-> index defb7c464b87..4ff68f48b87f 100644
-> --- a/drivers/gpio/gpiolib.c
-> +++ b/drivers/gpio/gpiolib.c
-> @@ -1404,6 +1404,16 @@ static int gpiochip_to_irq(struct gpio_chip *gc, unsigned int offset)
->  {
->         struct irq_domain *domain = gc->irq.domain;
->
-> +#ifdef CONFIG_GPIOLIB_IRQCHIP
-> +       /*
-> +        * Avoid race condition with other code, which tries to lookup
-> +        * an IRQ before the irqchip has been properly registered,
-> +        * i.e. while gpiochip is still being brought up.
-> +        */
-> +       if (!gc->irq.initialized)
-> +               return -EPROBE_DEFER;
-> +#endif
-> +
->         if (!gpiochip_irqchip_irq_valid(gc, offset))
->                 return -ENXIO;
->
-> @@ -1593,6 +1603,15 @@ static int gpiochip_add_irqchip(struct gpio_chip *gc,
->
->         acpi_gpiochip_request_interrupts(gc);
->
-> +       /*
-> +        * Using barrier() here to prevent compiler from reordering
-> +        * gc->irq.initialized before initialization of above
-> +        * GPIO chip irq members.
-> +        */
-> +       barrier();
-> +
-> +       gc->irq.initialized = true;
-> +
->         return 0;
->  }
->
-> diff --git a/include/linux/gpio/driver.h b/include/linux/gpio/driver.h
-> index b0728c8ad90c..f8996b46f430 100644
-> --- a/include/linux/gpio/driver.h
-> +++ b/include/linux/gpio/driver.h
-> @@ -218,6 +218,15 @@ struct gpio_irq_chip {
->          */
->         bool per_parent_data;
->
-> +       /**
-> +        * @initialized:
-> +        *
-> +        * Flag to track GPIO chip irq member's initialization.
-> +        * This flag will make sure GPIO chip irq members are not used
-> +        * before they are initialized.
-> +        */
-> +       bool initialized;
-> +
->         /**
->          * @init_hw: optional routine to initialize hardware before
->          * an IRQ chip will be added. This is quite useful when
-> --
-> 2.30.2
->
-
-
--- 
-With Best Regards,
-Andy Shevchenko
+I saw many reports of suppressed IRQs in the kernel log.
