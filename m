@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 503BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:54:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C84CAC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:54:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348245AbiCUNzg (ORCPT
+        id S1348254AbiCUNzj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 09:55:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38474 "EHLO
+        Mon, 21 Mar 2022 09:55:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347775AbiCUNzO (ORCPT
+        with ESMTP id S1348368AbiCUNzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:55:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE5905F64;
-        Mon, 21 Mar 2022 06:53:48 -0700 (PDT)
+        Mon, 21 Mar 2022 09:55:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B7F5B69;
+        Mon, 21 Mar 2022 06:53:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A9116129D;
-        Mon, 21 Mar 2022 13:53:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CD96C340F2;
-        Mon, 21 Mar 2022 13:53:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A473FB81598;
+        Mon, 21 Mar 2022 13:53:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13CDBC340E8;
+        Mon, 21 Mar 2022 13:53:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647870827;
-        bh=ORgOXrbErGzG4bsiU02n8K34kQWixB1gzAnSuiyDSKY=;
+        s=korg; t=1647870819;
+        bh=IAO/tvgrD7m/QtcNZol25+fTlHitELFYA+SELj892+A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DQwgQAqYwBh+T99J1ZjMnbjfltY38PIIMDojZegJVhA4+f4+rUotsSXU0GVs93idf
-         wu4x7vkHZ3wej3MPx6M2wpqPPAszPIA/vZgpcgv+KsCTWRwcKVFh7ba1E/dma5HZGK
-         H69jBm/F6tR2PwSZf7uSwEOBQgmVEBiaD5PPufXU=
+        b=IYyi/qF7eB3jCkx93s30EUjzZPcuIfLqrW0t0NM11wjoJf2wbo/7/qDZuGMaXnUMg
+         1R4GefRgxF3ANVyQ/MFRC6O+X//AVd3yLoVQsiMhFTHOKCyuFsVD555tLkzjFUECWO
+         PkULfi+xwE5G333zvsMjrdop2sJa1lzdBwVHooZ8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 09/16] sfc: extend the locking on mcdi->seqno
-Date:   Mon, 21 Mar 2022 14:51:39 +0100
-Message-Id: <20220321133216.925997549@linuxfoundation.org>
+Subject: [PATCH 4.9 06/16] atm: firestream: check the return value of ioremap() in fs_init()
+Date:   Mon, 21 Mar 2022 14:51:36 +0100
+Message-Id: <20220321133216.837289788@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133216.648316863@linuxfoundation.org>
 References: <20220321133216.648316863@linuxfoundation.org>
@@ -51,38 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-[ Upstream commit f1fb205efb0ccca55626fd4ef38570dd16b44719 ]
+[ Upstream commit d4e26aaea7f82ba884dcb4acfe689406bc092dc3 ]
 
-seqno could be read as a stale value outside of the lock. The lock is
-already acquired to protect the modification of seqno against a possible
-race condition. Place the reading of this value also inside this locking
-to protect it against a possible race condition.
+The function ioremap() in fs_init() can fail, so its return value should
+be checked.
 
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/sfc/mcdi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/atm/firestream.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/sfc/mcdi.c b/drivers/net/ethernet/sfc/mcdi.c
-index 241520943ada..221798499e24 100644
---- a/drivers/net/ethernet/sfc/mcdi.c
-+++ b/drivers/net/ethernet/sfc/mcdi.c
-@@ -162,9 +162,9 @@ static void efx_mcdi_send_request(struct efx_nic *efx, unsigned cmd,
- 	/* Serialise with efx_mcdi_ev_cpl() and efx_mcdi_ev_death() */
- 	spin_lock_bh(&mcdi->iface_lock);
- 	++mcdi->seqno;
-+	seqno = mcdi->seqno & SEQ_MASK;
- 	spin_unlock_bh(&mcdi->iface_lock);
+diff --git a/drivers/atm/firestream.c b/drivers/atm/firestream.c
+index 7cb2b863e653..7d74b7e1a837 100644
+--- a/drivers/atm/firestream.c
++++ b/drivers/atm/firestream.c
+@@ -1692,6 +1692,8 @@ static int fs_init(struct fs_dev *dev)
+ 	dev->hw_base = pci_resource_start(pci_dev, 0);
  
--	seqno = mcdi->seqno & SEQ_MASK;
- 	xflags = 0;
- 	if (mcdi->mode == MCDI_MODE_EVENTS)
- 		xflags |= MCDI_HEADER_XFLAGS_EVREQ;
+ 	dev->base = ioremap(dev->hw_base, 0x1000);
++	if (!dev->base)
++		return 1;
+ 
+ 	reset_chip (dev);
+   
 -- 
 2.34.1
 
