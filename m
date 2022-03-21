@@ -2,176 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AE74C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:18:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B079C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:19:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346706AbiCULUP (ORCPT
+        id S1346719AbiCULUf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 07:20:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48156 "EHLO
+        Mon, 21 Mar 2022 07:20:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346400AbiCULUM (ORCPT
+        with ESMTP id S1346400AbiCULUb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 07:20:12 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1FAA6449
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 04:18:45 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 22LBIVq94007304, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 22LBIVq94007304
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 21 Mar 2022 19:18:31 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 21 Mar 2022 19:18:31 +0800
-Received: from RTEXMBS01.realtek.com.tw (172.21.6.94) by
- RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 21 Mar 2022 19:18:30 +0800
-Received: from RTEXMBS01.realtek.com.tw ([fe80::754e:2219:bbef:d0cd]) by
- RTEXMBS01.realtek.com.tw ([fe80::754e:2219:bbef:d0cd%5]) with mapi id
- 15.01.2308.027; Mon, 21 Mar 2022 19:18:30 +0800
-From:   Ricky WU <ricky_wu@realtek.com>
-To:     "arnd@arndb.de" <arnd@arndb.de>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Ricky WU <ricky_wu@realtek.com>,
-        "kai.heng.feng@canonical.com" <kai.heng.feng@canonical.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH] misc: rtsx: add rts5261 efuse function
-Thread-Topic: [PATCH] misc: rtsx: add rts5261 efuse function
-Thread-Index: AQHYPRUEc3n2wQC1r0irttmGyRm8FA==
-Date:   Mon, 21 Mar 2022 11:18:30 +0000
-Message-ID: <18101ecb0f0749ccb9f564eda171ba40@realtek.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.22.81.102]
-x-kse-serverinfo: RTEXMBS04.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzMvMjEgpFekyCAwOTozMTowMA==?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="big5"
-Content-Transfer-Encoding: base64
+        Mon, 21 Mar 2022 07:20:31 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35A7D2B246;
+        Mon, 21 Mar 2022 04:19:07 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KMXCL034dzfYvD;
+        Mon, 21 Mar 2022 19:17:34 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
+ (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 21 Mar
+ 2022 19:19:05 +0800
+From:   Ye Bin <yebin10@huawei.com>
+To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
+        <linux-ext4@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
+        <lczerner@redhat.com>, Ye Bin <yebin10@huawei.com>
+Subject: [PATCH -next] ext4: Fix symlink file size not match to file content
+Date:   Mon, 21 Mar 2022 19:34:08 +0800
+Message-ID: <20220321113408.4112428-1-yebin10@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-bW92ZSBydHM1MjYxX2ZldGNoX3ZlbmRvcl9zZXR0aW5ncygpIHRvIHJ0czUyNjFfaW5pdF9mcm9t
-X2h3KCkNCm1ha2Ugc3VyZSBpdCBiZSBjYWxsZWQgZnJvbSBTMyBvciBEMw0KDQphZGQgbW9yZSBy
-ZWdpc3RlciBzZXR0aW5nIHdoZW4gZWZ1c2UgaXMgc2V0DQpyZWFkIGVmdXNlIHNldHRpbmcgdG8g
-cmVnaXN0ZXIgb24gaW5pdCBmbG93DQoNClNpZ25lZC1vZmYtYnk6IFJpY2t5IFd1IDxSaWNreV93
-dUByZWFsdGVrLmNvbT4NCi0tLQ0KIGRyaXZlcnMvbWlzYy9jYXJkcmVhZGVyL3J0czUyNjEuYyB8
-IDExNSArKysrKysrKysrKysrKysrLS0tLS0tLS0tLS0tLS0NCiBpbmNsdWRlL2xpbnV4L3J0c3hf
-cGNpLmggICAgICAgICAgfCAgIDMgKw0KIDIgZmlsZXMgY2hhbmdlZCwgNjUgaW5zZXJ0aW9ucygr
-KSwgNTMgZGVsZXRpb25zKC0pDQoNCmRpZmYgLS1naXQgYS9kcml2ZXJzL21pc2MvY2FyZHJlYWRl
-ci9ydHM1MjYxLmMgYi9kcml2ZXJzL21pc2MvY2FyZHJlYWRlci9ydHM1MjYxLmMNCmluZGV4IGE3
-NzU4NWFiMGYzMC4uNzQ5Y2M1YTQ2ZDEzIDEwMDY0NA0KLS0tIGEvZHJpdmVycy9taXNjL2NhcmRy
-ZWFkZXIvcnRzNTI2MS5jDQorKysgYi9kcml2ZXJzL21pc2MvY2FyZHJlYWRlci9ydHM1MjYxLmMN
-CkBAIC01Nyw0MCArNTcsNiBAQCBzdGF0aWMgdm9pZCBydHM1MjYxX2ZpbGxfZHJpdmluZyhzdHJ1
-Y3QgcnRzeF9wY3IgKnBjciwgdTggdm9sdGFnZSkNCiAJCQkgMHhGRiwgZHJpdmluZ1tkcml2ZV9z
-ZWxdWzJdKTsNCiB9DQogDQotc3RhdGljIHZvaWQgcnRzeDUyNjFfZmV0Y2hfdmVuZG9yX3NldHRp
-bmdzKHN0cnVjdCBydHN4X3BjciAqcGNyKQ0KLXsNCi0Jc3RydWN0IHBjaV9kZXYgKnBkZXYgPSBw
-Y3ItPnBjaTsNCi0JdTMyIHJlZzsNCi0NCi0JLyogMHg4MTR+MHg4MTcgKi8NCi0JcGNpX3JlYWRf
-Y29uZmlnX2R3b3JkKHBkZXYsIFBDUl9TRVRUSU5HX1JFRzIsICZyZWcpOw0KLQlwY3JfZGJnKHBj
-ciwgIkNmZyAweCV4OiAweCV4XG4iLCBQQ1JfU0VUVElOR19SRUcyLCByZWcpOw0KLQ0KLQlpZiAo
-IXJ0czUyNjFfdmVuZG9yX3NldHRpbmdfdmFsaWQocmVnKSkgew0KLQkJLyogTm90IHN1cHBvcnQg
-TU1DIGRlZmF1bHQgKi8NCi0JCXBjci0+ZXh0cmFfY2FwcyB8PSBFWFRSQV9DQVBTX05PX01NQzsN
-Ci0JCXBjcl9kYmcocGNyLCAic2tpcCBmZXRjaCB2ZW5kb3Igc2V0dGluZ1xuIik7DQotCQlyZXR1
-cm47DQotCX0NCi0NCi0JaWYgKCFydHM1MjYxX3JlZ19jaGVja19tbWNfc3VwcG9ydChyZWcpKQ0K
-LQkJcGNyLT5leHRyYV9jYXBzIHw9IEVYVFJBX0NBUFNfTk9fTU1DOw0KLQ0KLQkvKiBUTyBkbzog
-bmVlZCB0byBhZGQgcnRkMyBmdW5jdGlvbiAqLw0KLQlwY3ItPnJ0ZDNfZW4gPSBydHM1MjYxX3Jl
-Z190b19ydGQzKHJlZyk7DQotDQotCWlmIChydHM1MjYxX3JlZ19jaGVja19yZXZlcnNlX3NvY2tl
-dChyZWcpKQ0KLQkJcGNyLT5mbGFncyB8PSBQQ1JfUkVWRVJTRV9TT0NLRVQ7DQotDQotCS8qIDB4
-NzI0fjB4NzI3ICovDQotCXBjaV9yZWFkX2NvbmZpZ19kd29yZChwZGV2LCBQQ1JfU0VUVElOR19S
-RUcxLCAmcmVnKTsNCi0JcGNyX2RiZyhwY3IsICJDZmcgMHgleDogMHgleFxuIiwgUENSX1NFVFRJ
-TkdfUkVHMSwgcmVnKTsNCi0NCi0JcGNyLT5hc3BtX2VuID0gcnRzNTI2MV9yZWdfdG9fYXNwbShy
-ZWcpOw0KLQlwY3ItPnNkMzBfZHJpdmVfc2VsXzF2OCA9IHJ0czUyNjFfcmVnX3RvX3NkMzBfZHJp
-dmVfc2VsXzF2OChyZWcpOw0KLQlwY3ItPnNkMzBfZHJpdmVfc2VsXzN2MyA9IHJ0czUyNjFfcmVn
-X3RvX3NkMzBfZHJpdmVfc2VsXzN2MyhyZWcpOw0KLX0NCi0NCiBzdGF0aWMgdm9pZCBydHM1MjYx
-X2ZvcmNlX3Bvd2VyX2Rvd24oc3RydWN0IHJ0c3hfcGNyICpwY3IsIHU4IHBtX3N0YXRlLCBib29s
-IHJ1bnRpbWUpDQogew0KIAkvKiBTZXQgcmVsaW5rX3RpbWUgdG8gMCAqLw0KQEAgLTM5MSwxMSAr
-MzU3LDExIEBAIHN0YXRpYyB2b2lkIHJ0czUyNjFfcHJvY2Vzc19vY3Aoc3RydWN0IHJ0c3hfcGNy
-ICpwY3IpDQogDQogfQ0KIA0KLXN0YXRpYyBpbnQgcnRzNTI2MV9pbml0X2Zyb21faHcoc3RydWN0
-IHJ0c3hfcGNyICpwY3IpDQorc3RhdGljIHZvaWQgcnRzNTI2MV9pbml0X2Zyb21faHcoc3RydWN0
-IHJ0c3hfcGNyICpwY3IpDQogew0KIAlzdHJ1Y3QgcGNpX2RldiAqcGRldiA9IHBjci0+cGNpOw0K
-LQlpbnQgcmV0dmFsOw0KLQl1MzIgbHZhbCwgaTsNCisJdTMyIGx2YWwxLCBsdmFsMiwgaTsNCisJ
-dTE2IHNldHRpbmdfcmVnMSwgc2V0dGluZ19yZWcyOw0KIAl1OCB2YWxpZCwgZWZ1c2VfdmFsaWQs
-IHRtcDsNCiANCiAJcnRzeF9wY2lfd3JpdGVfcmVnaXN0ZXIocGNyLCBSVFM1MjYxX1JFR19QTUVf
-Rk9SQ0VfQ1RMLA0KQEAgLTQxOCwyNiArMzg0LDcwIEBAIHN0YXRpYyBpbnQgcnRzNTI2MV9pbml0
-X2Zyb21faHcoc3RydWN0IHJ0c3hfcGNyICpwY3IpDQogCWVmdXNlX3ZhbGlkID0gKCh0bXAgJiAw
-eDBDKSA+PiAyKTsNCiAJcGNyX2RiZyhwY3IsICJMb2FkIGVmdXNlIHZhbGlkOiAweCV4XG4iLCBl
-ZnVzZV92YWxpZCk7DQogDQotCWlmIChlZnVzZV92YWxpZCA9PSAwKSB7DQotCQlyZXR2YWwgPSBw
-Y2lfcmVhZF9jb25maWdfZHdvcmQocGRldiwgUENSX1NFVFRJTkdfUkVHMiwgJmx2YWwpOw0KLQkJ
-aWYgKHJldHZhbCAhPSAwKQ0KLQkJCXBjcl9kYmcocGNyLCAicmVhZCAweDgxNCBEVyBmYWlsXG4i
-KTsNCi0JCXBjcl9kYmcocGNyLCAiRFcgZnJvbSAweDgxNDogMHgleFxuIiwgbHZhbCk7DQotCQkv
-KiAweDgxNiAqLw0KLQkJdmFsaWQgPSAodTgpKChsdmFsID4+IDE2KSAmIDB4MDMpOw0KLQkJcGNy
-X2RiZyhwY3IsICIweDgxNjogJWRcbiIsIHZhbGlkKTsNCi0JfQ0KKwlwY2lfcmVhZF9jb25maWdf
-ZHdvcmQocGRldiwgUENSX1NFVFRJTkdfUkVHMiwgJmx2YWwyKTsNCisJcGNyX2RiZyhwY3IsICJD
-ZmcgMHgleDogMHgleFxuIiwgUENSX1NFVFRJTkdfUkVHMiwgbHZhbDIpOw0KKwkvKiAweDgxNiAq
-Lw0KKwl2YWxpZCA9ICh1OCkoKGx2YWwyID4+IDE2KSAmIDB4MDMpOw0KKw0KIAlydHN4X3BjaV93
-cml0ZV9yZWdpc3RlcihwY3IsIFJUUzUyNjFfUkVHX1BNRV9GT1JDRV9DVEwsDQogCQlSRUdfRUZV
-U0VfUE9SLCAwKTsNCiAJcGNyX2RiZyhwY3IsICJEaXNhYmxlIGVmdXNlIHBvciFcbiIpOw0KIA0K
-LQlwY2lfcmVhZF9jb25maWdfZHdvcmQocGRldiwgUENSX1NFVFRJTkdfUkVHMiwgJmx2YWwpOw0K
-LQlsdmFsID0gbHZhbCAmIDB4MDBGRkZGRkY7DQotCXJldHZhbCA9IHBjaV93cml0ZV9jb25maWdf
-ZHdvcmQocGRldiwgUENSX1NFVFRJTkdfUkVHMiwgbHZhbCk7DQotCWlmIChyZXR2YWwgIT0gMCkN
-Ci0JCXBjcl9kYmcocGNyLCAid3JpdGUgY29uZmlnIGZhaWxcbiIpOw0KKwlpZiAoZWZ1c2VfdmFs
-aWQgPT0gMiB8fCBlZnVzZV92YWxpZCA9PSAzKSB7DQorCQlpZiAodmFsaWQgPT0gMykgew0KKwkJ
-CS8qIEJ5cGFzcyBlZnVzZSAqLw0KKwkJCXNldHRpbmdfcmVnMSA9IFBDUl9TRVRUSU5HX1JFRzE7
-DQorCQkJc2V0dGluZ19yZWcyID0gUENSX1NFVFRJTkdfUkVHMjsNCisJCX0gZWxzZSB7DQorCQkJ
-LyogVXNlIGVmdXNlIGRhdGEgKi8NCisJCQlzZXR0aW5nX3JlZzEgPSBQQ1JfU0VUVElOR19SRUc0
-Ow0KKwkJCXNldHRpbmdfcmVnMiA9IFBDUl9TRVRUSU5HX1JFRzU7DQorCQl9DQorCX0gZWxzZSBp
-ZiAoZWZ1c2VfdmFsaWQgPT0gMCkgew0KKwkJLy8gZGVmYXVsdA0KKwkJc2V0dGluZ19yZWcxID0g
-UENSX1NFVFRJTkdfUkVHMTsNCisJCXNldHRpbmdfcmVnMiA9IFBDUl9TRVRUSU5HX1JFRzI7DQor
-CX0NCisNCisJcGNpX3JlYWRfY29uZmlnX2R3b3JkKHBkZXYsIHNldHRpbmdfcmVnMiwgJmx2YWwy
-KTsNCisJcGNyX2RiZyhwY3IsICJDZmcgMHgleDogMHgleFxuIiwgc2V0dGluZ19yZWcyLCBsdmFs
-Mik7DQorDQorCWlmICghcnRzNTI2MV92ZW5kb3Jfc2V0dGluZ192YWxpZChsdmFsMikpIHsNCisJ
-CS8qIE5vdCBzdXBwb3J0IE1NQyBkZWZhdWx0ICovDQorCQlwY3ItPmV4dHJhX2NhcHMgfD0gRVhU
-UkFfQ0FQU19OT19NTUM7DQorCQlwY3JfZGJnKHBjciwgInNraXAgZmV0Y2ggdmVuZG9yIHNldHRp
-bmdcbiIpOw0KKwkJcmV0dXJuOw0KKwl9DQorDQorCWlmICghcnRzNTI2MV9yZWdfY2hlY2tfbW1j
-X3N1cHBvcnQobHZhbDIpKQ0KKwkJcGNyLT5leHRyYV9jYXBzIHw9IEVYVFJBX0NBUFNfTk9fTU1D
-Ow0KIA0KLQlyZXR1cm4gcmV0dmFsOw0KKwlwY3ItPnJ0ZDNfZW4gPSBydHM1MjYxX3JlZ190b19y
-dGQzKGx2YWwyKTsNCisNCisJaWYgKHJ0czUyNjFfcmVnX2NoZWNrX3JldmVyc2Vfc29ja2V0KGx2
-YWwyKSkNCisJCXBjci0+ZmxhZ3MgfD0gUENSX1JFVkVSU0VfU09DS0VUOw0KKw0KKwlwY2lfcmVh
-ZF9jb25maWdfZHdvcmQocGRldiwgc2V0dGluZ19yZWcxLCAmbHZhbDEpOw0KKwlwY3JfZGJnKHBj
-ciwgIkNmZyAweCV4OiAweCV4XG4iLCBzZXR0aW5nX3JlZzEsIGx2YWwxKTsNCisNCisJcGNyLT5h
-c3BtX2VuID0gcnRzNTI2MV9yZWdfdG9fYXNwbShsdmFsMSk7DQorCXBjci0+c2QzMF9kcml2ZV9z
-ZWxfMXY4ID0gcnRzNTI2MV9yZWdfdG9fc2QzMF9kcml2ZV9zZWxfMXY4KGx2YWwxKTsNCisJcGNy
-LT5zZDMwX2RyaXZlX3NlbF8zdjMgPSBydHM1MjYxX3JlZ190b19zZDMwX2RyaXZlX3NlbF8zdjMo
-bHZhbDEpOw0KKw0KKwlpZiAoc2V0dGluZ19yZWcxID09IFBDUl9TRVRUSU5HX1JFRzEpIHsNCisJ
-CS8qIHN0b3JlIHNldHRpbmcgKi8NCisJCXJ0c3hfcGNpX3dyaXRlX3JlZ2lzdGVyKHBjciwgMHhG
-RjBDLCAweEZGLCAodTgpKGx2YWwxICYgMHhGRikpOw0KKwkJcnRzeF9wY2lfd3JpdGVfcmVnaXN0
-ZXIocGNyLCAweEZGMEQsIDB4RkYsICh1OCkoKGx2YWwxID4+IDgpICYgMHhGRikpOw0KKwkJcnRz
-eF9wY2lfd3JpdGVfcmVnaXN0ZXIocGNyLCAweEZGMEUsIDB4RkYsICh1OCkoKGx2YWwxID4+IDE2
-KSAmIDB4RkYpKTsNCisJCXJ0c3hfcGNpX3dyaXRlX3JlZ2lzdGVyKHBjciwgMHhGRjBGLCAweEZG
-LCAodTgpKChsdmFsMSA+PiAyNCkgJiAweEZGKSk7DQorCQlydHN4X3BjaV93cml0ZV9yZWdpc3Rl
-cihwY3IsIDB4RkYxMCwgMHhGRiwgKHU4KShsdmFsMiAmIDB4RkYpKTsNCisJCXJ0c3hfcGNpX3dy
-aXRlX3JlZ2lzdGVyKHBjciwgMHhGRjExLCAweEZGLCAodTgpKChsdmFsMiA+PiA4KSAmIDB4RkYp
-KTsNCisJCXJ0c3hfcGNpX3dyaXRlX3JlZ2lzdGVyKHBjciwgMHhGRjEyLCAweEZGLCAodTgpKChs
-dmFsMiA+PiAxNikgJiAweEZGKSk7DQorDQorCQlwY2lfd3JpdGVfY29uZmlnX2R3b3JkKHBkZXYs
-IFBDUl9TRVRUSU5HX1JFRzQsIGx2YWwxKTsNCisJCWx2YWwyID0gbHZhbDIgJiAweDAwRkZGRkZG
-Ow0KKwkJcGNpX3dyaXRlX2NvbmZpZ19kd29yZChwZGV2LCBQQ1JfU0VUVElOR19SRUc1LCBsdmFs
-Mik7DQorCX0NCiB9DQogDQogc3RhdGljIHZvaWQgcnRzNTI2MV9pbml0X2Zyb21fY2ZnKHN0cnVj
-dCBydHN4X3BjciAqcGNyKQ0KQEAgLTYzNiw3ICs2NDYsNiBAQCBzdGF0aWMgdm9pZCBydHM1MjYx
-X3NldF9sMW9mZl9jZmdfc3ViX2QwKHN0cnVjdCBydHN4X3BjciAqcGNyLCBpbnQgYWN0aXZlKQ0K
-IH0NCiANCiBzdGF0aWMgY29uc3Qgc3RydWN0IHBjcl9vcHMgcnRzNTI2MV9wY3Jfb3BzID0gew0K
-LQkuZmV0Y2hfdmVuZG9yX3NldHRpbmdzID0gcnRzeDUyNjFfZmV0Y2hfdmVuZG9yX3NldHRpbmdz
-LA0KIAkudHVybl9vbl9sZWQgPSBydHM1MjYxX3R1cm5fb25fbGVkLA0KIAkudHVybl9vZmZfbGVk
-ID0gcnRzNTI2MV90dXJuX29mZl9sZWQsDQogCS5leHRyYV9pbml0X2h3ID0gcnRzNTI2MV9leHRy
-YV9pbml0X2h3LA0KZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvcnRzeF9wY2kuaCBiL2luY2x1
-ZGUvbGludXgvcnRzeF9wY2kuaA0KaW5kZXggM2Q3ODBiNDRlNjc4Li41MzQwMzhkOTYyZTQgMTAw
-NjQ0DQotLS0gYS9pbmNsdWRlL2xpbnV4L3J0c3hfcGNpLmgNCisrKyBiL2luY2x1ZGUvbGludXgv
-cnRzeF9wY2kuaA0KQEAgLTEwNjcsNiArMTA2Nyw5IEBADQogI2RlZmluZSBQQ1JfU0VUVElOR19S
-RUcxCQkweDcyNA0KICNkZWZpbmUgUENSX1NFVFRJTkdfUkVHMgkJMHg4MTQNCiAjZGVmaW5lIFBD
-Ul9TRVRUSU5HX1JFRzMJCTB4NzQ3DQorI2RlZmluZSBQQ1JfU0VUVElOR19SRUc0CQkweDgxOA0K
-KyNkZWZpbmUgUENSX1NFVFRJTkdfUkVHNQkJMHg4MUMNCisNCiANCiAjZGVmaW5lIHJ0c3hfcGNp
-X2luaXRfY21kKHBjcikJCSgocGNyKS0+Y2kgPSAwKQ0KIA0KLS0gDQoyLjI1LjENCg==
+We got issue as follows:
+[home]# fsck.ext4  -fn  ram0yb
+e2fsck 1.45.6 (20-Mar-2020)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Symlink /p3/d14/d1a/l3d (inode #3494) is invalid.
+Clear? no
+Entry 'l3d' in /p3/d14/d1a (3383) has an incorrect filetype (was 7, should be 0).
+Fix? no
+
+As symlink file size not match to file content. If symlink data block writback
+failed, will call ext4_finish_bio to end io. In this path don't mark buffer
+error. When umount do checkpoint can't detect buffer error, then will cleanup
+jounral. Actually, correct data maybe in journal area.
+To solve this issue, mark buffer error when detect bio error in ext4_finish_bio.
+
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+---
+ fs/ext4/page-io.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/fs/ext4/page-io.c b/fs/ext4/page-io.c
+index 495ce59fb4ad..14695e2b5042 100644
+--- a/fs/ext4/page-io.c
++++ b/fs/ext4/page-io.c
+@@ -134,8 +134,10 @@ static void ext4_finish_bio(struct bio *bio)
+ 				continue;
+ 			}
+ 			clear_buffer_async_write(bh);
+-			if (bio->bi_status)
++			if (bio->bi_status) {
++				set_buffer_write_io_error(bh);
+ 				buffer_io_error(bh);
++			}
+ 		} while ((bh = bh->b_this_page) != head);
+ 		spin_unlock_irqrestore(&head->b_uptodate_lock, flags);
+ 		if (!under_io) {
+-- 
+2.31.1
+
