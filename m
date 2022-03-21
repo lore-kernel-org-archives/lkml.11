@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BA72C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:09:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FFF9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:09:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349292AbiCUQKl (ORCPT
+        id S1350929AbiCUQKq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 12:10:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59036 "EHLO
+        Mon, 21 Mar 2022 12:10:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350735AbiCUQJ4 (ORCPT
+        with ESMTP id S1350743AbiCUQKB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 12:09:56 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 315F92983C;
-        Mon, 21 Mar 2022 09:08:29 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id d7so21372658wrb.7;
-        Mon, 21 Mar 2022 09:08:29 -0700 (PDT)
+        Mon, 21 Mar 2022 12:10:01 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A38C626545;
+        Mon, 21 Mar 2022 09:08:31 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id q8so10014255wrc.0;
+        Mon, 21 Mar 2022 09:08:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=/RImxULSEIcXltj7eh82B63gODFmYdSpUPrpbmj5VVA=;
-        b=D1EyxBoNy9rnwvliXwI3sDoqfwUV2eqJrguiEC4wDRzt+p1KxhQxnWErSwJ9ef1TFL
-         xateIY4De7ZDOzmC/U/nBTMMrt3gW8cBGbmmXXJ+5K66yz63l1jgS/7RogvBE71/o8uJ
-         R/WNTcinisWarPaQgEtZPaMGc4n8Cll6hFN05tNTTDm0oPU2ckNgldJClIeoCUOcYR6X
-         h99XaPh65EA+yFb/rJ1TLNHJj4Sh5qdarey9Pq/mbGAArZJo73I6vyjT7xkIF1ZDMgum
-         Z1IOcSJ7/zzd6wUCUX/EbH/i+zx44Fiv5WwzOI2q/M2R+t+yNm8YKTzrpv8GRNchAdka
-         jeRQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=1jgvLflAAxvBosKOEF7kDL1G6ja5R1z9b1ecY6UNmPM=;
+        b=HW6g5DmXYm7CObQoSgVn4zPDpAjFD3bDdHCh+llYXBmJSRTYYHRkFltc3dwFjJjYZx
+         Ox9u/GjIEHVXROUztfH2Utsz+7jTPJGbJJdG/jpfaHRe6tB2cUBRzkmxtzsI5KB8hrHI
+         KsaIa6IIt6vHGxPwHyJTkRMrZlV/OnAf/9iUL1RM53ByEI4qexM6i0izKZf7lK4yVbr7
+         tOYP14HOW9kUUm82k4yzzFjThFyMsb9HvCHZf7kstfFAbatwPW3zYjXosxVoFliJ9PrP
+         gSKDyNd1Jgbw7th2cyVfT8bMNwCs60IYduYZty0kIqBeObRNyAgwLbEmHHUy8Z7D78Eg
+         fFrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/RImxULSEIcXltj7eh82B63gODFmYdSpUPrpbmj5VVA=;
-        b=0C9dmepM0Jh+tvMyVrFOyy2abNUjiR8+8QvsrPnY7GdLdUZhRlmjOWr3YcRfhZArBc
-         TnAd8ta153NugOkfU3slJ4gX4tsLSzIZW2cxmpReIlFeaAH89eHsVF9zG1dd17rJAc+O
-         juocOXS1nn28YxQq6D958aJI1A+g/V8bawQ/wVsRC63c36wM9jd/kDh+3M02Smz+QJB2
-         lZFycwWb22mtm/Yn373Hh4GWSMsC94704R8OPXFapbp0V4RVrH/UVJX+ilnrsx+ygHuN
-         OjPsVccaX+33/n9NNsp9uJVesgaqXCv3SL258sPNgM1GpI9q0roN2RNp7zK14RZj0+/2
-         kbcA==
-X-Gm-Message-State: AOAM533Uvia/cDQsF+iGVBIyMfvaSjfTvhqQgFRBIQYDW1kHVYzMFPUT
-        vj97+/nnexjdYW01vVi+Ovw=
-X-Google-Smtp-Source: ABdhPJzwGoe3r1UPqUrHoV9XO70tVxS7iM9rErpYXORaXUrC54pyWi6i9EdZQoe2vHnDte6zn3dFAA==
-X-Received: by 2002:adf:eb48:0:b0:203:f854:86cc with SMTP id u8-20020adfeb48000000b00203f85486ccmr12661949wrn.102.1647878908236;
-        Mon, 21 Mar 2022 09:08:28 -0700 (PDT)
+        bh=1jgvLflAAxvBosKOEF7kDL1G6ja5R1z9b1ecY6UNmPM=;
+        b=s9h2r7nwv3h1OWGSb5GTnjZakBPyZzG7spbIxbN6fIscjzUiO8+DBx01KNmEwx+k1X
+         KA3Bp/N5Je5qUdeQvcavxDDja7WHlK2l/jCn7yf9R7TPx5kmrygrPVmYZ3grEQnyMEGj
+         r40mlMpEWf4DSYXCkhjOwNe5Pq+Qzb4PBz4qe5/STkYQwa2SBqyMMGIFc7BJNRirgxGK
+         /sDwvgyvZk6qCBTvpSBccrqArp2IJ5PGp2dCqXo0XRvQ5bPeSdxepWhhWO1aEsfV4kfv
+         Rfe0ugt8UcdnvWdtR90rg4uG7S5a7ruYQ3UwrWcXyHVHXyP0u81SMcahiZzNWEyz08XF
+         LO3A==
+X-Gm-Message-State: AOAM533KDOyhdkWG6aR5uFTYcUMlk951sXZlX04aic5oAJTzLucO0tN2
+        KGxpt5tj5zv2SNe5atG0Wb0=
+X-Google-Smtp-Source: ABdhPJxUuasmpEvkC2pyxaysuBRVgcCYvD4XZuImNMGvntedUuWyzkyZ/Wiqi7uTLeB1LwqssBL58g==
+X-Received: by 2002:adf:c10b:0:b0:1ed:c40f:7f91 with SMTP id r11-20020adfc10b000000b001edc40f7f91mr18536219wre.276.1647878910252;
+        Mon, 21 Mar 2022 09:08:30 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
-        by smtp.googlemail.com with ESMTPSA id az19-20020a05600c601300b0038cadf3aa69sm2603864wmb.36.2022.03.21.09.08.27
+        by smtp.googlemail.com with ESMTPSA id az19-20020a05600c601300b0038cadf3aa69sm2603864wmb.36.2022.03.21.09.08.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 09:08:27 -0700 (PDT)
+        Mon, 21 Mar 2022 09:08:29 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -58,9 +58,10 @@ To:     Rob Herring <robh+dt@kernel.org>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
-Subject: [PATCH v5 12/18] clk: qcom: clk-krait: add apq/ipq8064 errata workaround
-Date:   Mon, 21 Mar 2022 16:38:49 +0100
-Message-Id: <20220321153855.12082-13-ansuelsmth@gmail.com>
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>
+Subject: [PATCH v5 14/18] dt-bindings: clock: Convert qcom,krait-cc to yaml
+Date:   Mon, 21 Mar 2022 16:38:51 +0100
+Message-Id: <20220321153855.12082-15-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220321153855.12082-1-ansuelsmth@gmail.com>
 References: <20220321153855.12082-1-ansuelsmth@gmail.com>
@@ -70,82 +71,122 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add apq/ipq8064 errata workaround where the sec_src clock gating needs to
-be disabled during switching. To enable this set disable_sec_src_gating
-in the mux struct.
+Convert qcom,krait-cc to yaml Documentation.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
- drivers/clk/qcom/clk-krait.c | 16 ++++++++++++++++
- drivers/clk/qcom/clk-krait.h |  1 +
- drivers/clk/qcom/krait-cc.c  |  1 +
- 3 files changed, 18 insertions(+)
+ .../bindings/clock/qcom,krait-cc.txt          | 34 -----------
+ .../bindings/clock/qcom,krait-cc.yaml         | 59 +++++++++++++++++++
+ 2 files changed, 59 insertions(+), 34 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/clock/qcom,krait-cc.txt
+ create mode 100644 Documentation/devicetree/bindings/clock/qcom,krait-cc.yaml
 
-diff --git a/drivers/clk/qcom/clk-krait.c b/drivers/clk/qcom/clk-krait.c
-index b6b7650dbf15..7ba5dbc72bce 100644
---- a/drivers/clk/qcom/clk-krait.c
-+++ b/drivers/clk/qcom/clk-krait.c
-@@ -18,13 +18,23 @@
- static DEFINE_SPINLOCK(krait_clock_reg_lock);
- 
- #define LPL_SHIFT	8
-+#define SECCLKAGD	BIT(4)
+diff --git a/Documentation/devicetree/bindings/clock/qcom,krait-cc.txt b/Documentation/devicetree/bindings/clock/qcom,krait-cc.txt
+deleted file mode 100644
+index 030ba60dab08..000000000000
+--- a/Documentation/devicetree/bindings/clock/qcom,krait-cc.txt
++++ /dev/null
+@@ -1,34 +0,0 @@
+-Krait Clock Controller
+-
+-PROPERTIES
+-
+-- compatible:
+-	Usage: required
+-	Value type: <string>
+-	Definition: must be one of:
+-			"qcom,krait-cc-v1"
+-			"qcom,krait-cc-v2"
+-
+-- #clock-cells:
+-	Usage: required
+-	Value type: <u32>
+-	Definition: must be 1
+-
+-- clocks:
+-	Usage: required
+-	Value type: <prop-encoded-array>
+-	Definition: reference to the clock parents of hfpll, secondary muxes.
+-
+-- clock-names:
+-	Usage: required
+-	Value type: <stringlist>
+-	Definition: must be "hfpll0", "hfpll1", "acpu0_aux", "acpu1_aux", "qsb".
+-
+-Example:
+-
+-	kraitcc: clock-controller {
+-		compatible = "qcom,krait-cc-v1";
+-		clocks = <&hfpll0>, <&hfpll1>, <&acpu0_aux>, <&acpu1_aux>, <qsb>;
+-		clock-names = "hfpll0", "hfpll1", "acpu0_aux", "acpu1_aux", "qsb";
+-		#clock-cells = <1>;
+-	};
+diff --git a/Documentation/devicetree/bindings/clock/qcom,krait-cc.yaml b/Documentation/devicetree/bindings/clock/qcom,krait-cc.yaml
+new file mode 100644
+index 000000000000..e879bfbe67ac
+--- /dev/null
++++ b/Documentation/devicetree/bindings/clock/qcom,krait-cc.yaml
+@@ -0,0 +1,59 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/clock/qcom,krait-cc.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- static void __krait_mux_set_sel(struct krait_mux_clk *mux, int sel)
- {
- 	unsigned long flags;
- 	u32 regval;
- 
- 	spin_lock_irqsave(&krait_clock_reg_lock, flags);
++title: Qualcomm Krait Clock Controller
 +
- 	regval = krait_get_l2_indirect_reg(mux->offset);
++maintainers:
++  - Ansuel Smith <ansuelsmth@gmail.com>
 +
-+	/* apq/ipq8064 Errata: disable sec_src clock gating during switch. */
-+	if (mux->disable_sec_src_gating) {
-+		regval |= SECCLKAGD;
-+		krait_set_l2_indirect_reg(mux->offset, regval);
-+	}
++description: |
++  Qualcomm Krait Clock Controller used to correctly scale the CPU and the L2
++  rates.
 +
- 	regval &= ~(mux->mask << mux->shift);
- 	regval |= (sel & mux->mask) << mux->shift;
- 	if (mux->lpl) {
-@@ -33,6 +43,12 @@ static void __krait_mux_set_sel(struct krait_mux_clk *mux, int sel)
- 	}
- 	krait_set_l2_indirect_reg(mux->offset, regval);
- 
-+	/* apq/ipq8064 Errata: re-enabled sec_src clock gating. */
-+	if (mux->disable_sec_src_gating) {
-+		regval &= ~SECCLKAGD;
-+		krait_set_l2_indirect_reg(mux->offset, regval);
-+	}
++properties:
++  compatible:
++    enum:
++      - qcom,krait-cc-v1
++      - qcom,krait-cc-v2
 +
- 	/* Wait for switch to complete. */
- 	mb();
- 	udelay(1);
-diff --git a/drivers/clk/qcom/clk-krait.h b/drivers/clk/qcom/clk-krait.h
-index 9120bd2f5297..f930538c539e 100644
---- a/drivers/clk/qcom/clk-krait.h
-+++ b/drivers/clk/qcom/clk-krait.h
-@@ -15,6 +15,7 @@ struct krait_mux_clk {
- 	u8		safe_sel;
- 	u8		old_index;
- 	bool		reparent;
-+	bool		disable_sec_src_gating;
- 
- 	struct clk_hw	hw;
- 	struct notifier_block   clk_nb;
-diff --git a/drivers/clk/qcom/krait-cc.c b/drivers/clk/qcom/krait-cc.c
-index 299eb4c81d96..cb8b267f1dc5 100644
---- a/drivers/clk/qcom/krait-cc.c
-+++ b/drivers/clk/qcom/krait-cc.c
-@@ -157,6 +157,7 @@ krait_add_sec_mux(struct device *dev, struct clk *qsb, int id,
- 	mux->shift = 2;
- 	mux->parent_map = sec_mux_map;
- 	mux->hw.init = &init;
-+	mux->disable_sec_src_gating = true;
- 
- 	init.name = kasprintf(GFP_KERNEL, "krait%s_sec_mux", s);
- 	if (!init.name)
++  clocks:
++    items:
++      - description: phandle to hfpll for CPU0 mux
++      - description: phandle to hfpll for CPU1 mux
++      - description: phandle to CPU0 aux clock
++      - description: phandle to CPU1 aux clock
++      - description: phandle to QSB fixed clk
++
++  clock-names:
++    items:
++      - const: hfpll0
++      - const: hfpll1
++      - const: acpu0_aux
++      - const: acpu1_aux
++      - const: qsb
++
++  '#clock-cells':
++    const: 1
++
++required:
++  - compatible
++  - clocks
++  - clock-names
++  - '#clock-cells'
++
++additionalProperties: false
++
++examples:
++  - |
++    clock-controller {
++      compatible = "qcom,krait-cc-v1";
++      clocks = <&hfpll0>, <&hfpll1>,
++               <&acpu0_aux>, <&acpu1_aux>, <&qsb>;
++      clock-names = "hfpll0", "hfpll1",
++                    "acpu0_aux", "acpu1_aux", "qsb";
++      #clock-cells = <1>;
++    };
++...
 -- 
 2.34.1
 
