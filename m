@@ -2,589 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E4FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:02:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EDA4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346634AbiCULDg (ORCPT
+        id S1346614AbiCULD5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 07:03:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48684 "EHLO
+        Mon, 21 Mar 2022 07:03:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346581AbiCULDO (ORCPT
+        with ESMTP id S1346620AbiCULDR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 07:03:14 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E55E214AC87;
-        Mon, 21 Mar 2022 04:01:44 -0700 (PDT)
+        Mon, 21 Mar 2022 07:03:17 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BE3A14B84C
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 04:01:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647860504; x=1679396504;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=xRBwtIDh/v/20pCfRvuDYxkddItfePzENa7BMyH4adk=;
-  b=EWpxffcLeYtPdYuvBYdQvJxj5QPTtsmxEHP5SK3csLA5X8nfNQ/w+94Y
-   6HD9Tu9Ue6jzooKW3IwpVe4QP+lYS1bb9a1jccZjt/q9Y57yGrZIyGEhU
-   nr5DMCIvC05vk4qG86GSgZq4hGm+s2vIP6z64qbPGRnIetUJGBsZoOHhG
-   O0fRglKRIm6/2y8kFah4/CVu00uVSCf9pYQmTPvdCXRl1HeAerCIdlIkG
-   DSmfTvjC2/owjGvLbVswR86+5+wI+s9GsiIQruSxRYPcUVpMZp0u+Qq73
-   RgeHbsbLu82VcXpfOxV1rf/MDsOb7ZwI0r6H/74TFqavCLoY4xlrRXJEs
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10292"; a="237467098"
+  t=1647860511; x=1679396511;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=STU6cY35f0Ar5xQ71SnPMC7cF7hVD3maLrZFmxx4A+8=;
+  b=jrnOz7aHPQ2ZslXg1e4FeCNXO7vfvyIjzEILP5BJLqak4EN/gyVeLdVD
+   PuzkRiW1l8KFlA8gkaJ50grYnC7AfPRmkOlHwqQNZmcJ61NmmDCuHmZQo
+   uxWLncD4oQeOn2eKTu8a0tF5KEnj9swWjz4BIRn4UreaIyyJsrxOBmaSg
+   nqbbjF2vQbSX9BtU+pXeqmae2hDt/XdFU9XsyQ2SWT6PfEAmG2m169x1n
+   6ixKZf7xtaqBWET14A61V/PosEfFXqD6u+NRUkM7AqkriBd2ItmnH0SWo
+   sGuHJZpUoUpvN2wv8Nxnr6Akr9dzTbw4qRiwW98ocemMJO5rlyJwDucA5
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10292"; a="239681187"
 X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
-   d="scan'208";a="237467098"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 04:01:24 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="239681187"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 04:01:50 -0700
 X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
-   d="scan'208";a="543173208"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga007.jf.intel.com with ESMTP; 21 Mar 2022 04:01:21 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22LB1HaF031880;
-        Mon, 21 Mar 2022 11:01:20 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Wojciech Drewek <wojciech.drewek@intel.com>,
-        Marcin Szycik <marcin.szycik@linux.intel.com>,
-        Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v4 net-next 4/5] ice: switch: use convenience macros to declare dummy pkt templates
-Date:   Mon, 21 Mar 2022 11:59:53 +0100
-Message-Id: <20220321105954.843154-5-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220321105954.843154-1-alexandr.lobakin@intel.com>
-References: <20220321105954.843154-1-alexandr.lobakin@intel.com>
+   d="scan'208";a="559819619"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.213.169]) ([10.254.213.169])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 04:01:47 -0700
+Message-ID: <ec863d22-b79c-2e50-5897-7f1ab5381e44@linux.intel.com>
+Date:   Mon, 21 Mar 2022 19:01:45 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Cc:     baolu.lu@linux.intel.com, Eric Auger <eric.auger@redhat.com>,
+        "Liu, Yi L" <yi.l.liu@intel.com>,
+        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH RFC 06/11] iommu/sva: Use attach/detach_pasid_dev in SVA
+ interfaces
+Content-Language: en-US
+To:     "Tian, Kevin" <kevin.tian@intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>
+References: <20220320064030.2936936-1-baolu.lu@linux.intel.com>
+ <20220320064030.2936936-7-baolu.lu@linux.intel.com>
+ <BL1PR11MB52714F57E430FCBE97DDAB478C169@BL1PR11MB5271.namprd11.prod.outlook.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <BL1PR11MB52714F57E430FCBE97DDAB478C169@BL1PR11MB5271.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Declarations of dummy/template packet headers and offsets can be
-minified to improve readability and simplify adding new templates.
-Move all the repetitive constructions into two macros and let them
-do the name and type expansions.
-Linewrap removal is yet another positive side effect.
+On 2022/3/21 16:04, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Sunday, March 20, 2022 2:40 PM
+>> +struct iommu_sva *
+>> +iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void
+>> *drvdata)
+>> +{
+>> +	int ret = -EINVAL;
+>> +	struct iommu_sva *handle;
+>> +	struct iommu_domain *domain;
+>> +
+>> +	handle = kzalloc(sizeof(*handle), GFP_KERNEL);
+>> +	if (!handle)
+>> +		return ERR_PTR(-ENOMEM);
+>> +
+>> +	ret = iommu_sva_alloc_pasid(mm, 1, (1U << dev->iommu->pasid_bits)
+>> - 1);
+>> +	if (ret)
+>> +		goto out;
+>> +
+>> +	domain = iommu_sva_domain_alloc(dev);
+>> +	if (!domain) {
+>> +		ret = -ENOMEM;
+>> +		goto out;
+>> +	}
+>> +	domain->sva_cookie = mm;
+> 
+> one domain can be attached by multiple devices, so this should not be
+> a blind alloc.
 
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Tested-by: Marcin Szycik <marcin.szycik@linux.intel.com>
----
- drivers/net/ethernet/intel/ice/ice_switch.c | 133 +++++++++-----------
- 1 file changed, 62 insertions(+), 71 deletions(-)
+Indeed. Perhaps we could associate the SVA domain with the mm->pasid and
+add a user counter inside the domain.
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
-index 4697eb8b4c66..cde9e480ea89 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-@@ -41,15 +41,22 @@ struct ice_dummy_pkt_profile {
- 	u16 pkt_len;
- };
- 
-+#define ICE_DECLARE_PKT_OFFSETS(type)					\
-+	static const struct ice_dummy_pkt_offsets			\
-+	ice_dummy_##type##_packet_offsets[]
-+
-+#define ICE_DECLARE_PKT_TEMPLATE(type)					\
-+	static const u8 ice_dummy_##type##_packet[]
-+
- #define ICE_PKT_PROFILE(type) ({					\
- 	(struct ice_dummy_pkt_profile){					\
--		.pkt		= dummy_##type##_packet,		\
--		.pkt_len	= sizeof(dummy_##type##_packet),	\
--		.offsets	= dummy_##type##_packet_offsets,	\
-+		.pkt		= ice_dummy_##type##_packet,		\
-+		.pkt_len	= sizeof(ice_dummy_##type##_packet),	\
-+		.offsets	= ice_dummy_##type##_packet_offsets,	\
- 	};								\
- })
- 
--static const struct ice_dummy_pkt_offsets dummy_gre_tcp_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(gre_tcp) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_ETYPE_OL,		12 },
- 	{ ICE_IPV4_OFOS,	14 },
-@@ -61,7 +68,7 @@ static const struct ice_dummy_pkt_offsets dummy_gre_tcp_packet_offsets[] = {
- 	{ ICE_PROTOCOL_LAST,	0 },
- };
- 
--static const u8 dummy_gre_tcp_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(gre_tcp) = {
- 	0x00, 0x00, 0x00, 0x00,	/* ICE_MAC_OFOS 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -96,7 +103,7 @@ static const u8 dummy_gre_tcp_packet[] = {
- 	0x00, 0x00, 0x00, 0x00
- };
- 
--static const struct ice_dummy_pkt_offsets dummy_gre_udp_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(gre_udp) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_ETYPE_OL,		12 },
- 	{ ICE_IPV4_OFOS,	14 },
-@@ -108,7 +115,7 @@ static const struct ice_dummy_pkt_offsets dummy_gre_udp_packet_offsets[] = {
- 	{ ICE_PROTOCOL_LAST,	0 },
- };
- 
--static const u8 dummy_gre_udp_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(gre_udp) = {
- 	0x00, 0x00, 0x00, 0x00,	/* ICE_MAC_OFOS 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -140,7 +147,7 @@ static const u8 dummy_gre_udp_packet[] = {
- 	0x00, 0x08, 0x00, 0x00,
- };
- 
--static const struct ice_dummy_pkt_offsets dummy_udp_tun_tcp_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(udp_tun_tcp) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_ETYPE_OL,		12 },
- 	{ ICE_IPV4_OFOS,	14 },
-@@ -155,7 +162,7 @@ static const struct ice_dummy_pkt_offsets dummy_udp_tun_tcp_packet_offsets[] = {
- 	{ ICE_PROTOCOL_LAST,	0 },
- };
- 
--static const u8 dummy_udp_tun_tcp_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(udp_tun_tcp) = {
- 	0x00, 0x00, 0x00, 0x00,  /* ICE_MAC_OFOS 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -193,7 +200,7 @@ static const u8 dummy_udp_tun_tcp_packet[] = {
- 	0x00, 0x00, 0x00, 0x00
- };
- 
--static const struct ice_dummy_pkt_offsets dummy_udp_tun_udp_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(udp_tun_udp) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_ETYPE_OL,		12 },
- 	{ ICE_IPV4_OFOS,	14 },
-@@ -208,7 +215,7 @@ static const struct ice_dummy_pkt_offsets dummy_udp_tun_udp_packet_offsets[] = {
- 	{ ICE_PROTOCOL_LAST,	0 },
- };
- 
--static const u8 dummy_udp_tun_udp_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(udp_tun_udp) = {
- 	0x00, 0x00, 0x00, 0x00,  /* ICE_MAC_OFOS 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -243,8 +250,7 @@ static const u8 dummy_udp_tun_udp_packet[] = {
- 	0x00, 0x08, 0x00, 0x00,
- };
- 
--static const struct ice_dummy_pkt_offsets
--dummy_gre_ipv6_tcp_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(gre_ipv6_tcp) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_ETYPE_OL,		12 },
- 	{ ICE_IPV4_OFOS,	14 },
-@@ -256,7 +262,7 @@ dummy_gre_ipv6_tcp_packet_offsets[] = {
- 	{ ICE_PROTOCOL_LAST,	0 },
- };
- 
--static const u8 dummy_gre_ipv6_tcp_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(gre_ipv6_tcp) = {
- 	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -296,8 +302,7 @@ static const u8 dummy_gre_ipv6_tcp_packet[] = {
- 	0x00, 0x00, 0x00, 0x00
- };
- 
--static const struct ice_dummy_pkt_offsets
--dummy_gre_ipv6_udp_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(gre_ipv6_udp) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_ETYPE_OL,		12 },
- 	{ ICE_IPV4_OFOS,	14 },
-@@ -309,7 +314,7 @@ dummy_gre_ipv6_udp_packet_offsets[] = {
- 	{ ICE_PROTOCOL_LAST,	0 },
- };
- 
--static const u8 dummy_gre_ipv6_udp_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(gre_ipv6_udp) = {
- 	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -346,8 +351,7 @@ static const u8 dummy_gre_ipv6_udp_packet[] = {
- 	0x00, 0x08, 0x00, 0x00,
- };
- 
--static const struct ice_dummy_pkt_offsets
--dummy_udp_tun_ipv6_tcp_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(udp_tun_ipv6_tcp) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_ETYPE_OL,		12 },
- 	{ ICE_IPV4_OFOS,	14 },
-@@ -362,7 +366,7 @@ dummy_udp_tun_ipv6_tcp_packet_offsets[] = {
- 	{ ICE_PROTOCOL_LAST,	0 },
- };
- 
--static const u8 dummy_udp_tun_ipv6_tcp_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(udp_tun_ipv6_tcp) = {
- 	0x00, 0x00, 0x00, 0x00,  /* ICE_MAC_OFOS 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -405,8 +409,7 @@ static const u8 dummy_udp_tun_ipv6_tcp_packet[] = {
- 	0x00, 0x00, 0x00, 0x00
- };
- 
--static const struct ice_dummy_pkt_offsets
--dummy_udp_tun_ipv6_udp_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(udp_tun_ipv6_udp) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_ETYPE_OL,		12 },
- 	{ ICE_IPV4_OFOS,	14 },
-@@ -421,7 +424,7 @@ dummy_udp_tun_ipv6_udp_packet_offsets[] = {
- 	{ ICE_PROTOCOL_LAST,	0 },
- };
- 
--static const u8 dummy_udp_tun_ipv6_udp_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(udp_tun_ipv6_udp) = {
- 	0x00, 0x00, 0x00, 0x00,  /* ICE_MAC_OFOS 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -462,7 +465,7 @@ static const u8 dummy_udp_tun_ipv6_udp_packet[] = {
- };
- 
- /* offset info for MAC + IPv4 + UDP dummy packet */
--static const struct ice_dummy_pkt_offsets dummy_udp_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(udp) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_ETYPE_OL,		12 },
- 	{ ICE_IPV4_OFOS,	14 },
-@@ -471,7 +474,7 @@ static const struct ice_dummy_pkt_offsets dummy_udp_packet_offsets[] = {
- };
- 
- /* Dummy packet for MAC + IPv4 + UDP */
--static const u8 dummy_udp_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(udp) = {
- 	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -491,7 +494,7 @@ static const u8 dummy_udp_packet[] = {
- };
- 
- /* offset info for MAC + VLAN + IPv4 + UDP dummy packet */
--static const struct ice_dummy_pkt_offsets dummy_vlan_udp_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(vlan_udp) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_VLAN_OFOS,	12 },
- 	{ ICE_ETYPE_OL,		16 },
-@@ -501,7 +504,7 @@ static const struct ice_dummy_pkt_offsets dummy_vlan_udp_packet_offsets[] = {
- };
- 
- /* C-tag (801.1Q), IPv4:UDP dummy packet */
--static const u8 dummy_vlan_udp_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(vlan_udp) = {
- 	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -523,7 +526,7 @@ static const u8 dummy_vlan_udp_packet[] = {
- };
- 
- /* offset info for MAC + IPv4 + TCP dummy packet */
--static const struct ice_dummy_pkt_offsets dummy_tcp_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(tcp) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_ETYPE_OL,		12 },
- 	{ ICE_IPV4_OFOS,	14 },
-@@ -532,7 +535,7 @@ static const struct ice_dummy_pkt_offsets dummy_tcp_packet_offsets[] = {
- };
- 
- /* Dummy packet for MAC + IPv4 + TCP */
--static const u8 dummy_tcp_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(tcp) = {
- 	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -555,7 +558,7 @@ static const u8 dummy_tcp_packet[] = {
- };
- 
- /* offset info for MAC + VLAN (C-tag, 802.1Q) + IPv4 + TCP dummy packet */
--static const struct ice_dummy_pkt_offsets dummy_vlan_tcp_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(vlan_tcp) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_VLAN_OFOS,	12 },
- 	{ ICE_ETYPE_OL,		16 },
-@@ -565,7 +568,7 @@ static const struct ice_dummy_pkt_offsets dummy_vlan_tcp_packet_offsets[] = {
- };
- 
- /* C-tag (801.1Q), IPv4:TCP dummy packet */
--static const u8 dummy_vlan_tcp_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(vlan_tcp) = {
- 	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -589,7 +592,7 @@ static const u8 dummy_vlan_tcp_packet[] = {
- 	0x00, 0x00,	/* 2 bytes for 4 byte alignment */
- };
- 
--static const struct ice_dummy_pkt_offsets dummy_tcp_ipv6_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(tcp_ipv6) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_ETYPE_OL,		12 },
- 	{ ICE_IPV6_OFOS,	14 },
-@@ -597,7 +600,7 @@ static const struct ice_dummy_pkt_offsets dummy_tcp_ipv6_packet_offsets[] = {
- 	{ ICE_PROTOCOL_LAST,	0 },
- };
- 
--static const u8 dummy_tcp_ipv6_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(tcp_ipv6) = {
- 	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -625,8 +628,7 @@ static const u8 dummy_tcp_ipv6_packet[] = {
- };
- 
- /* C-tag (802.1Q): IPv6 + TCP */
--static const struct ice_dummy_pkt_offsets
--dummy_vlan_tcp_ipv6_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(vlan_tcp_ipv6) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_VLAN_OFOS,	12 },
- 	{ ICE_ETYPE_OL,		16 },
-@@ -636,7 +638,7 @@ dummy_vlan_tcp_ipv6_packet_offsets[] = {
- };
- 
- /* C-tag (802.1Q), IPv6 + TCP dummy packet */
--static const u8 dummy_vlan_tcp_ipv6_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(vlan_tcp_ipv6) = {
- 	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -666,7 +668,7 @@ static const u8 dummy_vlan_tcp_ipv6_packet[] = {
- };
- 
- /* IPv6 + UDP */
--static const struct ice_dummy_pkt_offsets dummy_udp_ipv6_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(udp_ipv6) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_ETYPE_OL,		12 },
- 	{ ICE_IPV6_OFOS,	14 },
-@@ -675,7 +677,7 @@ static const struct ice_dummy_pkt_offsets dummy_udp_ipv6_packet_offsets[] = {
- };
- 
- /* IPv6 + UDP dummy packet */
--static const u8 dummy_udp_ipv6_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(udp_ipv6) = {
- 	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -703,8 +705,7 @@ static const u8 dummy_udp_ipv6_packet[] = {
- };
- 
- /* C-tag (802.1Q): IPv6 + UDP */
--static const struct ice_dummy_pkt_offsets
--dummy_vlan_udp_ipv6_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(vlan_udp_ipv6) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_VLAN_OFOS,	12 },
- 	{ ICE_ETYPE_OL,		16 },
-@@ -714,7 +715,7 @@ dummy_vlan_udp_ipv6_packet_offsets[] = {
- };
- 
- /* C-tag (802.1Q), IPv6 + UDP dummy packet */
--static const u8 dummy_vlan_udp_ipv6_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(vlan_udp_ipv6) = {
- 	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -741,8 +742,7 @@ static const u8 dummy_vlan_udp_ipv6_packet[] = {
- };
- 
- /* Outer IPv4 + Outer UDP + GTP + Inner IPv4 + Inner TCP */
--static const
--struct ice_dummy_pkt_offsets dummy_ipv4_gtpu_ipv4_tcp_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(ipv4_gtpu_ipv4_tcp) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_IPV4_OFOS,	14 },
- 	{ ICE_UDP_OF,		34 },
-@@ -752,7 +752,7 @@ struct ice_dummy_pkt_offsets dummy_ipv4_gtpu_ipv4_tcp_packet_offsets[] = {
- 	{ ICE_PROTOCOL_LAST,	0 },
- };
- 
--static const u8 dummy_ipv4_gtpu_ipv4_tcp_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(ipv4_gtpu_ipv4_tcp) = {
- 	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -790,8 +790,7 @@ static const u8 dummy_ipv4_gtpu_ipv4_tcp_packet[] = {
- };
- 
- /* Outer IPv4 + Outer UDP + GTP + Inner IPv4 + Inner UDP */
--static const
--struct ice_dummy_pkt_offsets dummy_ipv4_gtpu_ipv4_udp_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(ipv4_gtpu_ipv4_udp) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_IPV4_OFOS,	14 },
- 	{ ICE_UDP_OF,		34 },
-@@ -801,7 +800,7 @@ struct ice_dummy_pkt_offsets dummy_ipv4_gtpu_ipv4_udp_packet_offsets[] = {
- 	{ ICE_PROTOCOL_LAST,	0 },
- };
- 
--static const u8 dummy_ipv4_gtpu_ipv4_udp_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(ipv4_gtpu_ipv4_udp) = {
- 	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -836,8 +835,7 @@ static const u8 dummy_ipv4_gtpu_ipv4_udp_packet[] = {
- };
- 
- /* Outer IPv6 + Outer UDP + GTP + Inner IPv4 + Inner TCP */
--static const
--struct ice_dummy_pkt_offsets dummy_ipv4_gtpu_ipv6_tcp_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(ipv4_gtpu_ipv6_tcp) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_IPV4_OFOS,	14 },
- 	{ ICE_UDP_OF,		34 },
-@@ -847,7 +845,7 @@ struct ice_dummy_pkt_offsets dummy_ipv4_gtpu_ipv6_tcp_packet_offsets[] = {
- 	{ ICE_PROTOCOL_LAST,	0 },
- };
- 
--static const u8 dummy_ipv4_gtpu_ipv6_tcp_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(ipv4_gtpu_ipv6_tcp) = {
- 	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -889,8 +887,7 @@ static const u8 dummy_ipv4_gtpu_ipv6_tcp_packet[] = {
- 	0x00, 0x00, /* 2 bytes for 4 byte alignment */
- };
- 
--static const
--struct ice_dummy_pkt_offsets dummy_ipv4_gtpu_ipv6_udp_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(ipv4_gtpu_ipv6_udp) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_IPV4_OFOS,	14 },
- 	{ ICE_UDP_OF,		34 },
-@@ -900,7 +897,7 @@ struct ice_dummy_pkt_offsets dummy_ipv4_gtpu_ipv6_udp_packet_offsets[] = {
- 	{ ICE_PROTOCOL_LAST,	0 },
- };
- 
--static const u8 dummy_ipv4_gtpu_ipv6_udp_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(ipv4_gtpu_ipv6_udp) = {
- 	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -939,8 +936,7 @@ static const u8 dummy_ipv4_gtpu_ipv6_udp_packet[] = {
- 	0x00, 0x00, /* 2 bytes for 4 byte alignment */
- };
- 
--static const
--struct ice_dummy_pkt_offsets dummy_ipv6_gtpu_ipv4_tcp_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(ipv6_gtpu_ipv4_tcp) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_IPV6_OFOS,	14 },
- 	{ ICE_UDP_OF,		54 },
-@@ -950,7 +946,7 @@ struct ice_dummy_pkt_offsets dummy_ipv6_gtpu_ipv4_tcp_packet_offsets[] = {
- 	{ ICE_PROTOCOL_LAST,	0 },
- };
- 
--static const u8 dummy_ipv6_gtpu_ipv4_tcp_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(ipv6_gtpu_ipv4_tcp) = {
- 	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -992,8 +988,7 @@ static const u8 dummy_ipv6_gtpu_ipv4_tcp_packet[] = {
- 	0x00, 0x00, /* 2 bytes for 4 byte alignment */
- };
- 
--static const
--struct ice_dummy_pkt_offsets dummy_ipv6_gtpu_ipv4_udp_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(ipv6_gtpu_ipv4_udp) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_IPV6_OFOS,	14 },
- 	{ ICE_UDP_OF,		54 },
-@@ -1003,7 +998,7 @@ struct ice_dummy_pkt_offsets dummy_ipv6_gtpu_ipv4_udp_packet_offsets[] = {
- 	{ ICE_PROTOCOL_LAST,	0 },
- };
- 
--static const u8 dummy_ipv6_gtpu_ipv4_udp_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(ipv6_gtpu_ipv4_udp) = {
- 	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -1042,8 +1037,7 @@ static const u8 dummy_ipv6_gtpu_ipv4_udp_packet[] = {
- 	0x00, 0x00, /* 2 bytes for 4 byte alignment */
- };
- 
--static const
--struct ice_dummy_pkt_offsets dummy_ipv6_gtpu_ipv6_tcp_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(ipv6_gtpu_ipv6_tcp) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_IPV6_OFOS,	14 },
- 	{ ICE_UDP_OF,		54 },
-@@ -1053,7 +1047,7 @@ struct ice_dummy_pkt_offsets dummy_ipv6_gtpu_ipv6_tcp_packet_offsets[] = {
- 	{ ICE_PROTOCOL_LAST,	0 },
- };
- 
--static const u8 dummy_ipv6_gtpu_ipv6_tcp_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(ipv6_gtpu_ipv6_tcp) = {
- 	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -1100,8 +1094,7 @@ static const u8 dummy_ipv6_gtpu_ipv6_tcp_packet[] = {
- 	0x00, 0x00, /* 2 bytes for 4 byte alignment */
- };
- 
--static const
--struct ice_dummy_pkt_offsets dummy_ipv6_gtpu_ipv6_udp_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(ipv6_gtpu_ipv6_udp) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_IPV6_OFOS,	14 },
- 	{ ICE_UDP_OF,		54 },
-@@ -1111,7 +1104,7 @@ struct ice_dummy_pkt_offsets dummy_ipv6_gtpu_ipv6_udp_packet_offsets[] = {
- 	{ ICE_PROTOCOL_LAST,	0 },
- };
- 
--static const u8 dummy_ipv6_gtpu_ipv6_udp_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(ipv6_gtpu_ipv6_udp) = {
- 	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -1155,8 +1148,7 @@ static const u8 dummy_ipv6_gtpu_ipv6_udp_packet[] = {
- 	0x00, 0x00, /* 2 bytes for 4 byte alignment */
- };
- 
--static const
--struct ice_dummy_pkt_offsets dummy_ipv4_gtpu_ipv4_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(ipv4_gtpu_ipv4) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_IPV4_OFOS,	14 },
- 	{ ICE_UDP_OF,		34 },
-@@ -1164,7 +1156,7 @@ struct ice_dummy_pkt_offsets dummy_ipv4_gtpu_ipv4_packet_offsets[] = {
- 	{ ICE_PROTOCOL_LAST,	0 },
- };
- 
--static const u8 dummy_ipv4_gtpu_ipv4_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(ipv4_gtpu_ipv4) = {
- 	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
-@@ -1194,8 +1186,7 @@ static const u8 dummy_ipv4_gtpu_ipv4_packet[] = {
- 	0x00, 0x00,
- };
- 
--static const
--struct ice_dummy_pkt_offsets dummy_ipv6_gtp_packet_offsets[] = {
-+ICE_DECLARE_PKT_OFFSETS(ipv6_gtp) = {
- 	{ ICE_MAC_OFOS,		0 },
- 	{ ICE_IPV6_OFOS,	14 },
- 	{ ICE_UDP_OF,		54 },
-@@ -1203,7 +1194,7 @@ struct ice_dummy_pkt_offsets dummy_ipv6_gtp_packet_offsets[] = {
- 	{ ICE_PROTOCOL_LAST,	0 },
- };
- 
--static const u8 dummy_ipv6_gtp_packet[] = {
-+ICE_DECLARE_PKT_TEMPLATE(ipv6_gtp) = {
- 	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
--- 
-2.35.1
-
+Best regards,
+baolu
