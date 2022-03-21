@@ -2,166 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B81D2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:48:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADC46C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:51:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346854AbiCULuW (ORCPT
+        id S1346864AbiCULwg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 07:50:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35724 "EHLO
+        Mon, 21 Mar 2022 07:52:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344272AbiCULuU (ORCPT
+        with ESMTP id S1344272AbiCULwd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 07:50:20 -0400
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05E4151302
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 04:48:52 -0700 (PDT)
-Received: from epcas5p2.samsung.com (unknown [182.195.41.40])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220321114851epoutp01f275b7a91c1f02de362841b769fe579c~eYvgE67Ex1553315533epoutp01N
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 11:48:51 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220321114851epoutp01f275b7a91c1f02de362841b769fe579c~eYvgE67Ex1553315533epoutp01N
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1647863331;
-        bh=cVmbILAOErI1/Ntsxmq2/4Qe7dFI/4RFsr+Bznbjtw8=;
-        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-        b=pcFxUeREUOsvZdn8AEOy0RCSKTnVLZg9SLyQUXVuKrk/GBN2MTXNSLimAeJeA0y86
-         2MUS/5k3opwH1t79bltOLravq2dQHYdxVk9teDhEXPYQi7tPWCIlV2AgRuJdMVUrqV
-         NhwJ7Tckc+mZ0S1x3U3hMxA1JAuLvbO34WqQjWWk=
-Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
-        epcas5p3.samsung.com (KnoxPortal) with ESMTP id
-        20220321114850epcas5p3cc7ef564bef30093d8c9e293a2309268~eYvfHHhAE1354413544epcas5p3G;
-        Mon, 21 Mar 2022 11:48:50 +0000 (GMT)
-Received: from epsmges5p2new.samsung.com (unknown [182.195.38.181]) by
-        epsnrtp4.localdomain (Postfix) with ESMTP id 4KMXvJ0FVVz4x9Q7; Mon, 21 Mar
-        2022 11:48:44 +0000 (GMT)
-Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
-        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        CA.B0.12523.B1668326; Mon, 21 Mar 2022 20:48:43 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220321114843epcas5p2d8ed09bcc95965e899ec9bf9f2e538a3~eYvY5nEdP0791907919epcas5p2x;
-        Mon, 21 Mar 2022 11:48:43 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220321114843epsmtrp1446a9dd71c1fe67c0a621fc60828fa9c~eYvY4xl033127731277epsmtrp1Q;
-        Mon, 21 Mar 2022 11:48:43 +0000 (GMT)
-X-AuditID: b6c32a4a-5b7ff700000030eb-16-6238661be9e5
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        29.A8.03370.B1668326; Mon, 21 Mar 2022 20:48:43 +0900 (KST)
-Received: from alimakhtar03 (unknown [107.122.12.5]) by epsmtip2.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220321114839epsmtip2303f733938f43f5bc9ee880d74948e4f~eYvVei-_J1710117101epsmtip2U;
-        Mon, 21 Mar 2022 11:48:38 +0000 (GMT)
-From:   "Alim Akhtar" <alim.akhtar@samsung.com>
-To:     "'Luca Weiss'" <luca.weiss@fairphone.com>,
-        <linux-arm-msm@vger.kernel.org>
-Cc:     <~postmarketos/upstreaming@lists.sr.ht>,
-        <phone-devel@vger.kernel.org>, "'Andy Gross'" <agross@kernel.org>,
-        "'Bjorn Andersson'" <bjorn.andersson@linaro.org>,
-        "'Avri Altman'" <avri.altman@wdc.com>,
-        "'Rob Herring'" <robh+dt@kernel.org>,
-        "'Krzysztof Kozlowski'" <krzk+dt@kernel.org>,
-        <linux-scsi@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-In-Reply-To: <20220318183004.858707-2-luca.weiss@fairphone.com>
-Subject: RE: [PATCH 1/6] scsi: ufs: dt-bindings: Add SM6350 compatible
- string
-Date:   Mon, 21 Mar 2022 17:18:37 +0530
-Message-ID: <002001d83d19$9d596d70$d80c4850$@samsung.com>
+        Mon, 21 Mar 2022 07:52:33 -0400
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B5845522A;
+        Mon, 21 Mar 2022 04:51:05 -0700 (PDT)
+Received: by mail-qt1-x82a.google.com with SMTP id i4so11618209qti.7;
+        Mon, 21 Mar 2022 04:51:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=1bHq03jNRnCRtDNxwCXciuil1CSKlUgULr0uZ0a2LW8=;
+        b=iygiQUIqr3rmsvG7usVOfDxILLl7YQM4495zPlxxtygKNQZtBkT8HREnO9oTXDXaBA
+         iNWGOMtsZnUrqmzvXimmq3ckXyyqoUfzfQBlnCUVVIaweLE9yorNOIks+VYYH5SNqK9X
+         0R0QXJfESbVqxW6R/zsn0yRxpC/40snDVUUGQIt0heeTDqJRporPNBw/AOJSAouboovh
+         lVfPKdSZmFiF/Q5sVeA4NuA5recitstmMyq1VFzW/OH0Y5Rl8Vd1pa5oyS7EkuS6f04R
+         1szbJU57ACnt6pu7HkYxqRMDPiAuZjRsHH47DEtnaOdXt9UQ3n7Q9pq/piR4XJntd5RX
+         1+iQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=1bHq03jNRnCRtDNxwCXciuil1CSKlUgULr0uZ0a2LW8=;
+        b=MMdeXF0jIQfoEVvTkd/Rn95MFCHQvQMJemYt7PaPMdK2IQ2pOl1Y8mEGZX8F3XFjhY
+         dcE0WRkhkmxH6EwmCf8ABaos2NyQ5MrkA3n3du2rZJ8W2geBSh8zC1YJLdt7MyI3PlTo
+         MMmgZX7D8/ilFqf1PoV+TO0+5ezkIHLaYNuXe+Cz22N/rCAmyq/ZgB7sTByfti84/2Cz
+         CcrkaV9OgGi0DA7NCOLDoITM0K64h4YPK0G8KCfWon2Hs4TPA8pCx9h/6C+oEJ8Tdrr3
+         mDUzjJP8sehkWics1zX8ENJN/apqRWhYLmhrrn4uY+I64EewzlEOx000+XsisdKN2dJ+
+         mtzQ==
+X-Gm-Message-State: AOAM530A0FCEDF1WFQwn3FGOnu8Hm89Amh7Vp/cftIuNNVg1BihPqGyi
+        fdOkR0/DhtmCkBPrHNWlSgEoJ0EPqWEjCym5DTm10io0
+X-Google-Smtp-Source: ABdhPJyU5+hHh6+zzWHBO+Dqfa3hRra6qckaDVUnu3EYahpKFTecOt25UR/7q5Vn27iw/SximUAoVqzwK6rydNTKtfM=
+X-Received: by 2002:a05:622a:1996:b0:2e0:ffd3:a2d5 with SMTP id
+ u22-20020a05622a199600b002e0ffd3a2d5mr15757989qtc.390.1647863464594; Mon, 21
+ Mar 2022 04:51:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQDZaQauO888J59Marq/WZ4JfNFAKQH2rYCJAgAjn6Sup6oXsA==
-Content-Language: en-us
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrMJsWRmVeSWpSXmKPExsWy7bCmuq50mkWSwfMmK4tzj3+zWLz8eZXN
-        4vT+dywW84+cY7V4Oesem8XE/WfZLS7vmsNm0X19B5vFwxVGFgv+2Fm07j3CbrH5+19GBx6P
-        tqaXrB6bVnWyedy5tofN4/+dtewenzfJebQf6GYKYIvKtslITUxJLVJIzUvOT8nMS7dV8g6O
-        d443NTMw1DW0tDBXUshLzE21VXLxCdB1y8wBOlFJoSwxpxQoFJBYXKykb2dTlF9akqqQkV9c
-        YquUWpCSU2BSoFecmFtcmpeul5daYmVoYGBkClSYkJ0xZ9EBpoLZPBXn3jeyNTDO5+pi5OSQ
-        EDCR6Pq8mh3EFhLYzSjx5b8ehP0JyO5JgLA/M0pMOWcNU/9nyWtmiPguRolJDeZdjFxA9ktG
-        iQs3PzOBJNgEdCV2LG5jA7FFBAIkTm07wgJSxCzQyCyx7f0NFpAEp4C9xNz+TrBJwgL+Ekum
-        LQGLswioSvya9RnsIl4BS4mrf2dC2YISJ2c+AathFpCX2P52DjPERQoSP58uY4VY5iTxbvMi
-        qBpxiZdHj7CDLJYQOMAh8erTW0aIBheJIyvuskDYwhKvjm9hh7ClJF72twHZHEB2tkTPLmOI
-        cI3E0nnHoMrtJQ5cmcMCUsIsoCmxfpc+xCo+id7fT5ggOnklOtqEIKpVJZrfXYXqlJaY2N3N
-        CmF7SDTtP8g8gVFxFpLHZiF5bBaSB2YhLFvAyLKKUTK1oDg3PbXYtMAoL7UcHtnJ+bmbGMGp
-        V8trB+PDBx/0DjEycTAeYpTgYFYS4V38wTxJiDclsbIqtSg/vqg0J7X4EKMpMLQnMkuJJucD
-        k39eSbyhiaWBiZmZmYmlsZmhkjjv6fQNiUIC6YklqdmpqQWpRTB9TBycUg1MRva3q9u4fybf
-        lCp72bN1tZ2z7Kd5Zp895y5N4ni681/N0ZxtURPkL8td8Et+HHZ/UlyDYcS3XZKqV6b5zM/j
-        f7Qtu0Ku4HSrtEtf058TgkKR7xTX7xCYy2m56OnTwowrCWZF158sSRFU2Cvg6PjsDe/S5Zvc
-        tq/81VEw8fNhkd+HJ92taY9qU4jwl9rRvDHIYuVSHce9jZ69EvkFezu6OPbGbjZ8//95qOTt
-        5bPepLT75N4+u/9/7h4dy27TwnrhY1eP6mSt2vvnG4d0aI+C4cuzd/6lb3l9SOPny8C1FXIL
-        tVvvT/BRfXKfqT+wuCvfNHVd6bQZaw/3qDsfuvLM+vvk3xt6VL7zMq68fjC7VImlOCPRUIu5
-        qDgRAKWQDDNGBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprLIsWRmVeSWpSXmKPExsWy7bCSvK50mkWSwdNH3BbnHv9msXj58yqb
-        xen971gs5h85x2rxctY9NouJ+8+yW1zeNYfNovv6DjaLhyuMLBb8sbNo3XuE3WLz97+MDjwe
-        bU0vWT02repk87hzbQ+bx/87a9k9Pm+S82g/0M0UwBbFZZOSmpNZllqkb5fAlTFn0QGmgtk8
-        FefeN7I1MM7n6mLk5JAQMJH4s+Q1M4gtJLCDUeLkXHmIuLTE9Y0T2CFsYYmV/54D2VxANc8Z
-        JVbv2scCkmAT0JXYsbiNDcQWEQiQOLXtCAtIEbNAJ7PEtI3rWSGmHmaUWLVAC8TmFLCXmNvf
-        CbZNWMBXYvIFiEEsAqoSv2Z9BtvGK2ApcfXvTChbUOLkzCdANRxAQ/Uk2jYygoSZBeQltr+d
-        wwxxnILEz6fLWCFucJJ4t3kRC0SNuMTLo0fYJzAKz0IyaRbCpFlIJs1C0rGAkWUVo2RqQXFu
-        em6xYYFRXmq5XnFibnFpXrpecn7uJkZwDGpp7WDcs+qD3iFGJg7GQ4wSHMxKIryLP5gnCfGm
-        JFZWpRblxxeV5qQWH2KU5mBREue90HUyXkggPbEkNTs1tSC1CCbLxMEp1cA0v1LzmITT6rle
-        LEf0/CPvZXBHcbfali9/Xr3rg/ebM1e2GPFx7U5knxSSzfuswzNx6q5gyUNHLqWc58j948y0
-        zX5fgc7z+gW/+R/clk17bTZhtVzTV2Uutb3dSTdWnf5Sy36/tOpb9Pa4a/p63xJkeM2kc47e
-        LpyXO3PGrp4/u6V3v9zp+fTTOsttDUu1D8dd1WLMZ7l8Ycph013OK0I/52zX8Nry4vcO/Yda
-        cfL2rgaVWTFSVr1vHyrxPGJY25+yIblcZ/7xh18fbGtL5BRgO/9e7+y6WPtLvFZOk/UVfryf
-        5VJR/VTpidvjTIX234vSF8Uc3RNeqHNp+tTlEl68s6IDNvZqfv8/O8j587E/SizFGYmGWsxF
-        xYkAwgxR7TADAAA=
-X-CMS-MailID: 20220321114843epcas5p2d8ed09bcc95965e899ec9bf9f2e538a3
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220318183030epcas5p46eab9485e0e7d19a249759ef44e29928
-References: <20220318183004.858707-1-luca.weiss@fairphone.com>
-        <CGME20220318183030epcas5p46eab9485e0e7d19a249759ef44e29928@epcas5p4.samsung.com>
-        <20220318183004.858707-2-luca.weiss@fairphone.com>
+References: <CAPmgiUJVaACDyWkEhpC5Tfk233t-Tw6_f-Y99KLUDqv6dEq0tw@mail.gmail.com>
+ <YjMFTSKZp9eX/c4k@localhost.localdomain> <CAPmgiUJsd-gdq=JG1rF8BHfpADeS45rcVWwnC2qKE=7W1EryiQ@mail.gmail.com>
+ <YjdVHgildbWO7diJ@localhost.localdomain> <CAPmgiUK90T212icXkSJ2vSiCjXbUqO-fptNLL7NF6SMDAyTtRg@mail.gmail.com>
+ <YjhWCuybOW9RT47L@localhost.localdomain>
+In-Reply-To: <YjhWCuybOW9RT47L@localhost.localdomain>
+From:   cael <juanfengpy@gmail.com>
+Date:   Mon, 21 Mar 2022 19:50:53 +0800
+Message-ID: <CAPmgiUJnS4Z7+=-9WOaQ28jBASWwa+ocYzKRScU3D0qdKUW1xg@mail.gmail.com>
+Subject: Re: [PATCH] proc: fix dentry/inode overinstantiating under /proc/${pid}/net
+To:     Alexey Dobriyan <adobriyan@gmail.com>
+Cc:     akpm@linux-foundation.org, viro@zeniv.linux.org.uk,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+I see, I will test on my system.
 
-
->-----Original Message-----
->From: Luca Weiss [mailto:luca.weiss@fairphone.com]
->Sent: Saturday, March 19, 2022 12:00 AM
->To: linux-arm-msm@vger.kernel.org
->Cc: ~postmarketos/upstreaming@lists.sr.ht; phone-devel@vger.kernel.org;
->Luca Weiss <luca.weiss@fairphone.com>; Andy Gross <agross@kernel.org>;
->Bjorn Andersson <bjorn.andersson@linaro.org>; Alim Akhtar
-><alim.akhtar@samsung.com>; Avri Altman <avri.altman@wdc.com>; Rob
->Herring <robh+dt@kernel.org>; Krzysztof Kozlowski <krzk+dt@kernel.org>;
->linux-scsi@vger.kernel.org; devicetree@vger.kernel.org; linux-
->kernel@vger.kernel.org
->Subject: [PATCH 1/6] scsi: ufs: dt-bindings: Add SM6350 compatible string
+Alexey Dobriyan <adobriyan@gmail.com> =E4=BA=8E2022=E5=B9=B43=E6=9C=8821=E6=
+=97=A5=E5=91=A8=E4=B8=80 18:40=E5=86=99=E9=81=93=EF=BC=9A
 >
->Document the compatible for the UFS found on SM6350.
+> On Mon, Mar 21, 2022 at 05:15:02PM +0800, hui li wrote:
+> > Alexey Dobriyan <adobriyan@gmail.com> =E4=BA=8E2022=E5=B9=B43=E6=9C=882=
+1=E6=97=A5=E5=91=A8=E4=B8=80 00:24=E5=86=99=E9=81=93=EF=BC=9A
+> > >
+> > > When a process exits, /proc/${pid}, and /proc/${pid}/net dentries are=
+ flushed.
+> > > However some leaf dentries like /proc/${pid}/net/arp_cache aren't.
+> > > That's because respective PDEs have proc_misc_d_revalidate() hook whi=
+ch
+> > > returns 1 and leaves dentries/inodes in the LRU.
+> > >
+> > > Force revalidation/lookup on everything under /proc/${pid}/net by inh=
+eriting
+> > > proc_net_dentry_ops.
+> > >
+> > > Fixes: c6c75deda813 ("proc: fix lookup in /proc/net subdirectories af=
+ter setns(2)")
+> > > Reported-by: hui li <juanfengpy@gmail.com>
+> > > Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
+> > > ---
+> > >
+> > >  fs/proc/generic.c  |    4 ++++
+> > >  fs/proc/proc_net.c |    3 +++
+> > >  2 files changed, 7 insertions(+)
+> > >
+> > > --- a/fs/proc/generic.c
+> > > +++ b/fs/proc/generic.c
+> > > @@ -448,6 +448,10 @@ static struct proc_dir_entry *__proc_create(stru=
+ct proc_dir_entry **parent,
+> > >         proc_set_user(ent, (*parent)->uid, (*parent)->gid);
+> > >
+> > >         ent->proc_dops =3D &proc_misc_dentry_ops;
+> > > +       /* Revalidate everything under /proc/${pid}/net */
+> > > +       if ((*parent)->proc_dops =3D=3D &proc_net_dentry_ops) {
+> > > +               pde_force_lookup(ent);
+> > > +       }
+> > >
+> > >  out:
+> > >         return ent;
+> > > --- a/fs/proc/proc_net.c
+> > > +++ b/fs/proc/proc_net.c
+> > > @@ -376,6 +376,9 @@ static __net_init int proc_net_ns_init(struct net=
+ *net)
+> > >
+> > >         proc_set_user(netd, uid, gid);
+> > >
+> > > +       /* Seed dentry revalidation for /proc/${pid}/net */
+> > > +       pde_force_lookup(netd);
+> > > +
+> > >         err =3D -EEXIST;
+> > >         net_statd =3D proc_net_mkdir(net, "stat", netd);
+> > >         if (!net_statd)
 >
->Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
->---
-> Documentation/devicetree/bindings/ufs/qcom,ufs.yaml | 1 +
-> 1 file changed, 1 insertion(+)
+> > proc_misc_dentry_ops is a general ops for dentry under /proc, except
+> > for "/proc/${pid}/net"=EF=BC=8Cother dentries may also use there own op=
+s too,
+> > so I think change proc_misc_d_delete may be better?
+> > see patch under: https://lkml.org/lkml/2022/3/17/319
 >
->diff --git a/Documentation/devicetree/bindings/ufs/qcom,ufs.yaml
->b/Documentation/devicetree/bindings/ufs/qcom,ufs.yaml
->index 5b3a2157f7e5..d17db2cdf3c2 100644
->--- a/Documentation/devicetree/bindings/ufs/qcom,ufs.yaml
->+++ b/Documentation/devicetree/bindings/ufs/qcom,ufs.yaml
->@@ -27,6 +27,7 @@ properties:
->           - qcom,msm8996-ufshc
->           - qcom,msm8998-ufshc
->           - qcom,sdm845-ufshc
->+          - qcom,sm6350-ufshc
-
-You need to update "if:then" below as well, as this SoC is different than
-other in the series
-
->           - qcom,sm8150-ufshc
->           - qcom,sm8250-ufshc
->           - qcom,sm8350-ufshc
->--
->2.35.1
-
-
+> I don't think so.
+>
+> proc_misc_d_delete covers "everything else" part under /proc/ and
+> /proc/net which are 2 separate trees. Now /proc/net/ requires
+> revalidation because of
+>
+>         commit c6c75deda81344c3a95d1d1f606d5cee109e5d54
+>         proc: fix lookup in /proc/net subdirectories after setns(2)
+>
+> so the bug is that the above commit was applied only partially.
+> In particular, /proc/*/net/stat/arp_cache was created with
+> proc_create_seq_data(), avoiding proc_net_* APIs.
+>
+> And there is probably the same "lookup after setns find wrong file"
+> if you search hard enough in /proc/*/net/
+>
+> This is the logic. Please test on your systems.
