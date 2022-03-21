@@ -2,116 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D2ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:18:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82136C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:18:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349994AbiCUPTf (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 11:19:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37744 "EHLO
+        id S238446AbiCUPTj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 11:19:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349933AbiCUPTP (ORCPT
+        with ESMTP id S1349932AbiCUPTP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 11:19:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B2C411174C;
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D4B111DDC;
         Mon, 21 Mar 2022 08:17:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E7AB2B8175E;
-        Mon, 21 Mar 2022 15:17:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8CB8C340F4;
-        Mon, 21 Mar 2022 15:17:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647875867;
-        bh=9+FB8FqiPz2INA3LHeEMbXtjaqxdTmkp1xc/rbUvb8g=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=iY2kM+kk/k9XRIJpOweLDdoV0Qbbb9Le27cicZiqsTWHGuaubJxgJKDF3p7i1Lepy
-         FYDMrEVtCCOqmoUNxkbqmfdx5AiTxkKnBIkQk6jzKZs9e9c60k0BWEr+nsvrJHumw3
-         SxACHAsrR+7s8jr6tN77OthE9W4ckwlNz898NvR0mYagooAamWfywmFEZMetc7qdD2
-         dyjCNBNWdbMZxup0DHanVr8Zw/Mhb+fo52hkPUfVWdHUTUDF7OUxwJcZCwFHSzAqfB
-         ssLoyytLEYPe+jy6osPEQVJl6nezkF8xixnZaUIbnwR7xPDdIxNHWawg4zNJnGq2Fs
-         vNSK5qRXUR2SA==
-Received: by mail-ed1-f42.google.com with SMTP id b24so18220954edu.10;
-        Mon, 21 Mar 2022 08:17:47 -0700 (PDT)
-X-Gm-Message-State: AOAM530whwR1lYN3L7Ddk6yN4+veqJmt4fcslavZRsLEU6AB8XjqYxrw
-        MsuGad9tbPxR2w6ok5zNYX7SfSOLRxYKGtscLA==
-X-Google-Smtp-Source: ABdhPJzVOekr/XRMAYz6o3vgNpt77YLnLfN20A1NcI85VtDGlaILC4gRTvIJUrbrtw7CiwFutMg/Nb4GAJ585vY9D/0=
-X-Received: by 2002:a05:6402:1d51:b0:418:bd81:78b3 with SMTP id
- dz17-20020a0564021d5100b00418bd8178b3mr22893313edb.46.1647875865787; Mon, 21
- Mar 2022 08:17:45 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id m30so11324524wrb.1;
+        Mon, 21 Mar 2022 08:17:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=XhL5PcXPAVYZIaqVjbCyrF3IgCwpUk1BeN4L/hsgGTo=;
+        b=cHFxeW+dNxRnim5lHgkGnYGLUOXrAntyIXQ97bgPETSh50ci0sSBCoYftpHi8HNr45
+         E5VVBYCnOoxRpeLzSxqZDGQQSZai4X1NzRWBwu08C/WoT00RwSqGymMFZf+J+KkO412i
+         kegSRwz5mS3LFDjpt0OfbvkZ7JkEpuNgJGEX7KNOKXxVCFO3RqDhgQ1p/cZpeJpXcoP4
+         YicRMjXgRDnD9sA6dh0Q3XlYMgr6sLEaQnsc/DI+fUHkK+x25q/Cch5ciktMxsAjyDLo
+         r7fCbrCL6fR5JUqT+4kbKkFt5Q+y3+A/3yGKEZ3u+R0doExMbi+5S9PIbP4c55Hw8Beu
+         D4fQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=XhL5PcXPAVYZIaqVjbCyrF3IgCwpUk1BeN4L/hsgGTo=;
+        b=BSHn4fpFAKlmiTaokoyxfBsr16+lzMVKem+mAFca0VgZhxqt17qpLkP7gwHT6ynzHk
+         pusOITr80WEaGm9h/yRixuA1fz1WD/A5+fSxTE16qU0uT70VQrwnWn6rhOwKmWN72tVg
+         eQ/91ftTDVDA2lE45PvCSrc20dHyJwMPE5tfHBARh8ebVfVcSL6XX8vMWP13Eft/YSzp
+         Hx0APkzR8iYSYw+9TbaRVF0Dx0B5biquzv6QWmTM6CjjIDXbrmK6FtY0UHiq6w8UabTM
+         JSODF0T94M2w+x2ISsC0s7JZ4u6XL+l6FSBDo0efs2yv6oMRYIV95mMCcXA8P2LaCxzw
+         hJGQ==
+X-Gm-Message-State: AOAM53144HGU4EAS+T1XiduI7Ut0GWpiyHXpnhJ3iG/o2IZvIAWjxxNj
+        Oe/idAe+rodSPBb9Y3lsBs8=
+X-Google-Smtp-Source: ABdhPJy4fxPuhDbY7wiV30NpnJ0j4pmlrHKEwDEiCM3xIxrH7V/wV6fzz38BHzg62VuhqUHaM1UaCw==
+X-Received: by 2002:adf:f50d:0:b0:203:f72c:e26a with SMTP id q13-20020adff50d000000b00203f72ce26amr12386883wro.620.1647875868677;
+        Mon, 21 Mar 2022 08:17:48 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
+        by smtp.googlemail.com with ESMTPSA id 10-20020a5d47aa000000b00204012e4373sm7239729wrb.101.2022.03.21.08.17.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 08:17:48 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
+Subject: [PATCH v4 03/18] clk: qcom: gcc-ipq806x: add PXO_SRC in clk table
+Date:   Mon, 21 Mar 2022 15:48:10 +0100
+Message-Id: <20220321144825.11736-4-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220321144825.11736-1-ansuelsmth@gmail.com>
+References: <20220321144825.11736-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-References: <20220321104843.949645-1-maz@kernel.org>
-In-Reply-To: <20220321104843.949645-1-maz@kernel.org>
-From:   Rob Herring <robh@kernel.org>
-Date:   Mon, 21 Mar 2022 10:17:34 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqJacC6GbNebTfYyUEScROCFN4+Fg2v1_iYFfqAvW4E9Vw@mail.gmail.com>
-Message-ID: <CAL_JsqJacC6GbNebTfYyUEScROCFN4+Fg2v1_iYFfqAvW4E9Vw@mail.gmail.com>
-Subject: Re: [PATCH v2 0/2] PCI: xgene: Restore working PCIe functionnality
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        PCI <linux-pci@vger.kernel.org>,
-        Toan Le <toan@os.amperecomputing.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?Q?St=C3=A9phane_Graber?= <stgraber@ubuntu.com>,
-        dann frazier <dann.frazier@canonical.com>,
-        Android Kernel Team <kernel-team@android.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 5:49 AM Marc Zyngier <maz@kernel.org> wrote:
->
-> Since 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup") was
-> merged in the 5.5 time frame, PCIe on the venerable XGene platform has
-> been unusable: 6dce5aa59e0b broke both XGene-1 (Mustang and m400) and
-> XGene-2 (Merlin), while the addition of c7a75d07827a ("PCI: xgene: Fix
-> IB window setup") fixed XGene-2, but left the rest of the zoo
-> unusable.
->
-> It is understood that this systems come with "creative" DTs that don't
-> match the expectations of modern kernels. However, there is little to
-> be gained by forcing these changes on users -- the firmware is not
-> upgradable, and the current owner of the IP will deny that these
-> machines have ever existed.
+PXO_SRC is currently defined in the gcc include and referenced in the
+ipq8064 DTSI. Correctly provide a clk after gcc probe to fix kernel
+panic if a driver starts to actually use it.
 
-The gain for fixing this properly is not having drivers do their own
-dma-ranges parsing. We've seen what happens when drivers do their own
-parsing of standard properties (e.g. interrupt-map). Currently, we
-don't have any drivers doing their own parsing:
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+---
+ drivers/clk/qcom/gcc-ipq806x.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-$ git grep of_pci_dma_range_parser_init
-drivers/of/address.c:int of_pci_dma_range_parser_init(struct
-of_pci_range_parser *parser,
-drivers/of/address.c:EXPORT_SYMBOL_GPL(of_pci_dma_range_parser_init);
-drivers/of/address.c:#define of_dma_range_parser_init
-of_pci_dma_range_parser_init
-drivers/of/unittest.c:  if (of_pci_dma_range_parser_init(&parser, np)) {
-drivers/pci/of.c:       err = of_pci_dma_range_parser_init(&parser, dev_node);
-include/linux/of_address.h:extern int
-of_pci_dma_range_parser_init(struct of_pci_range_parser *parser,
-include/linux/of_address.h:static inline int
-of_pci_dma_range_parser_init(struct of_pci_range_parser *parser,
+diff --git a/drivers/clk/qcom/gcc-ipq806x.c b/drivers/clk/qcom/gcc-ipq806x.c
+index 27f6d7626abb..7271d3afdc89 100644
+--- a/drivers/clk/qcom/gcc-ipq806x.c
++++ b/drivers/clk/qcom/gcc-ipq806x.c
+@@ -26,6 +26,8 @@
+ #include "clk-hfpll.h"
+ #include "reset.h"
+ 
++static struct clk_regmap pxo = { };
++
+ static struct clk_pll pll0 = {
+ 	.l_reg = 0x30c4,
+ 	.m_reg = 0x30c8,
+@@ -2754,6 +2756,7 @@ static struct clk_dyn_rcg ubi32_core2_src_clk = {
+ };
+ 
+ static struct clk_regmap *gcc_ipq806x_clks[] = {
++	[PXO_SRC] = NULL,
+ 	[PLL0] = &pll0.clkr,
+ 	[PLL0_VOTE] = &pll0_vote,
+ 	[PLL3] = &pll3.clkr,
+@@ -3083,6 +3086,10 @@ static int gcc_ipq806x_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
++	clk = clk_get(dev, "pxo");
++	pxo.hw = *__clk_get_hw(clk);
++	gcc_ipq806x_clks[PXO_SRC] = &pxo;
++
+ 	regmap = dev_get_regmap(dev, NULL);
+ 	if (!regmap)
+ 		return -ENODEV;
+-- 
+2.34.1
 
-And we can probably further refactor this to be private to drivers/pci/of.c.
-
-For XGene-2 the issue is simply that the driver depends on the order
-of dma-ranges entries.
-
-For XGene-1, I'd still like to understand what the issue is. Reverting
-the first fix and fixing 'dma-ranges' should have fixed it. I need a
-dump of how the IB registers are initialized in both cases. I'm not
-saying changing 'dma-ranges' in the firmware is going to be required
-here. There's a couple of other ways we could fix that without a
-firmware change, but first I need to understand why it broke.
-
-Rob
-
-P.S. We're carrying ACPI and DT support for these platforms. It seems
-the few users are using DT, so can we drop the ACPI support? Or do I
-need to break it first and wait a year? ;)
