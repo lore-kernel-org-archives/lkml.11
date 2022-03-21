@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35685C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:59:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07926C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:59:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348540AbiCUOAf (ORCPT
+        id S1348549AbiCUOAl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:00:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46138 "EHLO
+        Mon, 21 Mar 2022 10:00:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348495AbiCUN54 (ORCPT
+        with ESMTP id S1348566AbiCUN6C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:57:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB76D192AA;
-        Mon, 21 Mar 2022 06:55:33 -0700 (PDT)
+        Mon, 21 Mar 2022 09:58:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1FC41704ED;
+        Mon, 21 Mar 2022 06:55:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BA9F612BC;
-        Mon, 21 Mar 2022 13:55:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C1E8C340E8;
-        Mon, 21 Mar 2022 13:55:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 18324B816CE;
+        Mon, 21 Mar 2022 13:55:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ADD2C340E8;
+        Mon, 21 Mar 2022 13:55:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647870929;
-        bh=4Pp+1U9O3buGlY5y0hV1jvev/KrdW88xCml6dpUJnLs=;
+        s=korg; t=1647870937;
+        bh=av1wBTGi2Bqzs0fqYUm4yaRE7NXDuiItpGaxgqopqBs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GcOl2N6e6a0MMQwRVuFmbRXFS70UWdjN/IDhPzsCAGV2Cu/UX7yO9A7JcHQKzrr0q
-         HnByi3JMuR1HleL5YGu6FUgzPYRYJ21znbwurrbCeSE++xBjX7+eYrTZFKJZFQimPI
-         79+bBCkYOws61WtpVUdBy5V0cwQXprO55pVNa6+8=
+        b=JoE+Hc/C907RRn/qsZHX61+JAI9qhbe++bx3a/VlSvxnmcQvyJLwsdv+RNFTZVTWP
+         W74QwJCDkqfs8M2txY7TvGIHSgAMVsAUh8XUcfDVqFrEwlQYhFwy9W3R0vLWx2RqK+
+         CxIvgfDhFWQuWJ3Cv+7o2/RUd4zfjYYD5i1Q8xFU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
-        Zhang Qiao <zhangqiao22@huawei.com>
-Subject: [PATCH 4.19 20/57] cpuset: Fix unsafe lock order between cpuset lock and cpuslock
-Date:   Mon, 21 Mar 2022 14:52:01 +0100
-Message-Id: <20220321133222.573355878@linuxfoundation.org>
+        Rob Herring <robh@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 4.19 23/57] arm64: Add part number for Arm Cortex-A77
+Date:   Mon, 21 Mar 2022 14:52:04 +0100
+Message-Id: <20220321133222.663078651@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133221.984120927@linuxfoundation.org>
 References: <20220321133221.984120927@linuxfoundation.org>
@@ -50,58 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Qiao <zhangqiao22@huawei.com>
+From: Rob Herring <robh@kernel.org>
 
-The backport commit 4eec5fe1c680a ("cgroup/cpuset: Fix a race
-between cpuset_attach() and cpu hotplug") looks suspicious since
-it comes before commit d74b27d63a8b ("cgroup/cpuset: Change
-cpuset_rwsem and hotplug lock order") v5.4-rc1~176^2~30 when
-the locking order was: cpuset lock, cpus lock.
+commit 8a6b88e66233f5f1779b0a1342aa9dc030dddcd5 upstream.
 
-Fix it with the correct locking order and reduce the cpus locking
-range because only set_cpus_allowed_ptr() needs the protection of
-cpus lock.
+Add the MIDR part number info for the Arm Cortex-A77.
 
-Fixes: 4eec5fe1c680a ("cgroup/cpuset: Fix a race between cpuset_attach() and cpu hotplug")
-Reported-by: Michal Koutný <mkoutny@suse.com>
-Signed-off-by: Zhang Qiao <zhangqiao22@huawei.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Link: https://lore.kernel.org/r/20201028182839.166037-1-robh@kernel.org
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/cgroup/cpuset.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ arch/arm64/include/asm/cputype.h |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/kernel/cgroup/cpuset.c
-+++ b/kernel/cgroup/cpuset.c
-@@ -1528,9 +1528,13 @@ static void cpuset_attach(struct cgroup_
- 	cgroup_taskset_first(tset, &css);
- 	cs = css_cs(css);
+--- a/arch/arm64/include/asm/cputype.h
++++ b/arch/arm64/include/asm/cputype.h
+@@ -81,6 +81,7 @@
+ #define ARM_CPU_PART_CORTEX_A55		0xD05
+ #define ARM_CPU_PART_CORTEX_A76		0xD0B
+ #define ARM_CPU_PART_NEOVERSE_N1	0xD0C
++#define ARM_CPU_PART_CORTEX_A77		0xD0D
  
--	cpus_read_lock();
- 	mutex_lock(&cpuset_mutex);
+ #define APM_CPU_PART_POTENZA		0x000
  
-+	/*
-+	 * It should hold cpus lock because a cpu offline event can
-+	 * cause set_cpus_allowed_ptr() failed.
-+	 */
-+	get_online_cpus();
- 	/* prepare for attach */
- 	if (cs == &top_cpuset)
- 		cpumask_copy(cpus_attach, cpu_possible_mask);
-@@ -1549,6 +1553,7 @@ static void cpuset_attach(struct cgroup_
- 		cpuset_change_task_nodemask(task, &cpuset_attach_nodemask_to);
- 		cpuset_update_task_spread_flag(cs, task);
- 	}
-+       put_online_cpus();
- 
- 	/*
- 	 * Change mm for all threadgroup leaders. This is expensive and may
-@@ -1584,7 +1589,6 @@ static void cpuset_attach(struct cgroup_
- 		wake_up(&cpuset_attach_wq);
- 
- 	mutex_unlock(&cpuset_mutex);
--	cpus_read_unlock();
- }
- 
- /* The various types of files and directories in a cpuset file system */
+@@ -109,6 +110,7 @@
+ #define MIDR_CORTEX_A55 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A55)
+ #define MIDR_CORTEX_A76 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A76)
+ #define MIDR_NEOVERSE_N1 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N1)
++#define MIDR_CORTEX_A77	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A77)
+ #define MIDR_THUNDERX	MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX)
+ #define MIDR_THUNDERX_81XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX)
+ #define MIDR_THUNDERX_83XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_83XX)
 
 
