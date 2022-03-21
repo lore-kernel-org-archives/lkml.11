@@ -2,38 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03B1AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:52:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12BD0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:52:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346952AbiCULxd (ORCPT
+        id S1347003AbiCULxg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 07:53:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48222 "EHLO
+        Mon, 21 Mar 2022 07:53:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346965AbiCULww (ORCPT
+        with ESMTP id S1346968AbiCULww (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 07:52:52 -0400
 Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B5B315B05B
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 04:51:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9465215B06E
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 04:51:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
         from:to:cc:subject:date:message-id:in-reply-to:references
-        :mime-version:content-transfer-encoding; s=k1; bh=k2S5I6Iv385ASD
-        dHgH6U1H/WEVCqefhmjYtrjjjQKg4=; b=sNpb5cWGveFIaKOfuGIP4pi08hDAtm
-        E8nvrHHNabLwIA9zl6t9aD1IQJ7nStBIjG4R4yBOg+QHKvbeKZm12SpUfdo6As1b
-        hii3yaaQAHXE6Zt8Xm/DNSgaPuflVz6qK+p+cbaMOe3nryFqBZfO4BF7zDvba/xn
-        aOnaQu1xp2SpQ=
-Received: (qmail 860460 invoked from network); 21 Mar 2022 12:51:11 +0100
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 21 Mar 2022 12:51:11 +0100
-X-UD-Smtp-Session: l3s3148p1@Bt/YHLnaEKcgAQnoAFxnAN8BywfgXJ9V
+        :mime-version:content-transfer-encoding; s=k1; bh=vgh5Qz7xpYNiUd
+        NyatSDwqGUyPjgf/Bm/A5158qFWOI=; b=vY6NGv7en2Z3dynFbL7wGT+tMxsrxl
+        ywAkLtcy7gYgI6AG4z3XCxcpLy7j7dewtEAUQg76MWAUlSshPl3M3fgVxrcV2yi8
+        KriuFDWUIOJnme7pJqiTDTBOnUho4O+0FB0SMQ9yZXnGlG6knp9gnv/bnC1Yayd6
+        GEQec/uZaFuDQ=
+Received: (qmail 860539 invoked from network); 21 Mar 2022 12:51:13 +0100
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 21 Mar 2022 12:51:13 +0100
+X-UD-Smtp-Session: l3s3148p1@1Bn0HLnaFKcgAQnoAFxnAN8BywfgXJ9V
 From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
 To:     linux-mmc@vger.kernel.org
 Cc:     linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
         Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [RFC PATCH 08/10] mmc: core: improve API to make clear hw_reset from bus_ops is for cards
-Date:   Mon, 21 Mar 2022 12:50:54 +0100
-Message-Id: <20220321115059.21803-9-wsa+renesas@sang-engineering.com>
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Jaehoon Chung <jh80.chung@samsung.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chaotian Jing <chaotian.jing@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev
+Subject: [RFC PATCH 10/10] mmc: improve API to make clear hw_reset callback is for cards
+Date:   Mon, 21 Mar 2022 12:50:56 +0100
+Message-Id: <20220321115059.21803-11-wsa+renesas@sang-engineering.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220321115059.21803-1-wsa+renesas@sang-engineering.com>
 References: <20220321115059.21803-1-wsa+renesas@sang-engineering.com>
@@ -43,132 +65,163 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To make it unambiguous that bus_ops->hw_reset() is for cards and not for
-controllers, we a) add 'card' to the function name and b) make the
-function argument mmc_card instead of mmc_host. All users are converted,
-too.
+To make it unambiguous that the hw_reset callback is for cards and not
+for controllers, we add 'card' to the callback name and convert all
+users in one go. We keep the argument as mmc_host, though, because the
+callback is used very early when mmc_card is not yet populated.
 
 Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 ---
- drivers/mmc/core/core.c | 4 ++--
- drivers/mmc/core/core.h | 2 +-
- drivers/mmc/core/mmc.c  | 6 +++---
- drivers/mmc/core/sd.c   | 8 ++++----
- drivers/mmc/core/sdio.c | 6 +++---
- 5 files changed, 13 insertions(+), 13 deletions(-)
+ drivers/mmc/core/core.c              | 4 ++--
+ drivers/mmc/core/mmc.c               | 4 ++--
+ drivers/mmc/host/bcm2835.c           | 2 +-
+ drivers/mmc/host/dw_mmc.c            | 2 +-
+ drivers/mmc/host/meson-mx-sdhc-mmc.c | 2 +-
+ drivers/mmc/host/mtk-sd.c            | 2 +-
+ drivers/mmc/host/sdhci.c             | 2 +-
+ drivers/mmc/host/sunxi-mmc.c         | 2 +-
+ drivers/mmc/host/uniphier-sd.c       | 2 +-
+ include/linux/mmc/host.h             | 2 +-
+ 10 files changed, 12 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/mmc/core/core.c b/drivers/mmc/core/core.c
-index 3498b341acaf..1d874b064202 100644
+index 7e48570007f9..9b8455c6e0c3 100644
 --- a/drivers/mmc/core/core.c
 +++ b/drivers/mmc/core/core.c
-@@ -969,7 +969,7 @@ void mmc_set_bus_width(struct mmc_host *host, unsigned int width)
+@@ -1989,9 +1989,9 @@ static void mmc_card_hw_reset_for_init(struct mmc_host *host)
+ {
+ 	mmc_pwrseq_reset(host);
+ 
+-	if (!(host->caps & MMC_CAP_HW_RESET) || !host->ops->hw_reset)
++	if (!(host->caps & MMC_CAP_HW_RESET) || !host->ops->card_hw_reset)
+ 		return;
+-	host->ops->hw_reset(host);
++	host->ops->card_hw_reset(host);
  }
  
- /*
-- * Set initial state after a power cycle or a hw_reset.
-+ * Set initial state after a power cycle or a card_hw_reset.
-  */
- void mmc_set_initial_state(struct mmc_host *host)
- {
-@@ -2009,7 +2009,7 @@ int mmc_card_hw_reset(struct mmc_card *card)
- 	struct mmc_host *host = card->host;
- 	int ret;
- 
--	ret = host->bus_ops->hw_reset(host);
-+	ret = host->bus_ops->card_hw_reset(card);
- 	if (ret < 0)
- 		pr_warn("%s: tried to HW reset card, got error %d\n",
- 			mmc_hostname(host), ret);
-diff --git a/drivers/mmc/core/core.h b/drivers/mmc/core/core.h
-index f5f3f623ea49..c54270a6d457 100644
---- a/drivers/mmc/core/core.h
-+++ b/drivers/mmc/core/core.h
-@@ -27,7 +27,7 @@ struct mmc_bus_ops {
- 	int (*runtime_resume)(struct mmc_host *);
- 	int (*alive)(struct mmc_host *);
- 	int (*shutdown)(struct mmc_host *);
--	int (*hw_reset)(struct mmc_host *);
-+	int (*card_hw_reset)(struct mmc_card *);
- 	int (*sw_reset)(struct mmc_host *);
- 	bool (*cache_enabled)(struct mmc_host *);
- 	int (*flush_cache)(struct mmc_host *);
+ /**
 diff --git a/drivers/mmc/core/mmc.c b/drivers/mmc/core/mmc.c
-index e7ea45386c22..1857f398298b 100644
+index 1857f398298b..9ea837e2c1ab 100644
 --- a/drivers/mmc/core/mmc.c
 +++ b/drivers/mmc/core/mmc.c
-@@ -2215,9 +2215,9 @@ static int mmc_can_reset(struct mmc_card *card)
- 	return 1;
+@@ -2225,11 +2225,11 @@ static int _mmc_card_hw_reset(struct mmc_card *card)
+ 	 */
+ 	_mmc_flush_cache(host);
+ 
+-	if ((host->caps & MMC_CAP_HW_RESET) && host->ops->hw_reset &&
++	if ((host->caps & MMC_CAP_HW_RESET) && host->ops->card_hw_reset &&
+ 	     mmc_can_reset(card)) {
+ 		/* If the card accept RST_n signal, send it. */
+ 		mmc_set_clock(host, host->f_init);
+-		host->ops->hw_reset(host);
++		host->ops->card_hw_reset(host);
+ 		/* Set initial state and call mmc_set_ios */
+ 		mmc_set_initial_state(host);
+ 	} else {
+diff --git a/drivers/mmc/host/bcm2835.c b/drivers/mmc/host/bcm2835.c
+index 463b707d9e99..641ab4f42125 100644
+--- a/drivers/mmc/host/bcm2835.c
++++ b/drivers/mmc/host/bcm2835.c
+@@ -1259,7 +1259,7 @@ static void bcm2835_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
+ static const struct mmc_host_ops bcm2835_ops = {
+ 	.request = bcm2835_request,
+ 	.set_ios = bcm2835_set_ios,
+-	.hw_reset = bcm2835_reset,
++	.card_hw_reset = bcm2835_reset,
+ };
+ 
+ static int bcm2835_add_host(struct bcm2835_host *host)
+diff --git a/drivers/mmc/host/dw_mmc.c b/drivers/mmc/host/dw_mmc.c
+index 06dc56cbada8..581614196a84 100644
+--- a/drivers/mmc/host/dw_mmc.c
++++ b/drivers/mmc/host/dw_mmc.c
+@@ -1812,7 +1812,7 @@ static const struct mmc_host_ops dw_mci_ops = {
+ 	.set_ios		= dw_mci_set_ios,
+ 	.get_ro			= dw_mci_get_ro,
+ 	.get_cd			= dw_mci_get_cd,
+-	.hw_reset               = dw_mci_hw_reset,
++	.card_hw_reset          = dw_mci_hw_reset,
+ 	.enable_sdio_irq	= dw_mci_enable_sdio_irq,
+ 	.ack_sdio_irq		= dw_mci_ack_sdio_irq,
+ 	.execute_tuning		= dw_mci_execute_tuning,
+diff --git a/drivers/mmc/host/meson-mx-sdhc-mmc.c b/drivers/mmc/host/meson-mx-sdhc-mmc.c
+index 28aa78aa08f3..e92e63cb5641 100644
+--- a/drivers/mmc/host/meson-mx-sdhc-mmc.c
++++ b/drivers/mmc/host/meson-mx-sdhc-mmc.c
+@@ -511,7 +511,7 @@ static int meson_mx_sdhc_execute_tuning(struct mmc_host *mmc, u32 opcode)
  }
  
--static int _mmc_hw_reset(struct mmc_host *host)
-+static int _mmc_card_hw_reset(struct mmc_card *card)
- {
--	struct mmc_card *card = host->card;
-+	struct mmc_host *host = card->host;
+ static const struct mmc_host_ops meson_mx_sdhc_ops = {
+-	.hw_reset			= meson_mx_sdhc_hw_reset,
++	.card_hw_reset			= meson_mx_sdhc_hw_reset,
+ 	.request			= meson_mx_sdhc_request,
+ 	.set_ios			= meson_mx_sdhc_set_ios,
+ 	.card_busy			= meson_mx_sdhc_card_busy,
+diff --git a/drivers/mmc/host/mtk-sd.c b/drivers/mmc/host/mtk-sd.c
+index e61b0b98065a..195dc897188b 100644
+--- a/drivers/mmc/host/mtk-sd.c
++++ b/drivers/mmc/host/mtk-sd.c
+@@ -2458,7 +2458,7 @@ static const struct mmc_host_ops mt_msdc_ops = {
+ 	.execute_tuning = msdc_execute_tuning,
+ 	.prepare_hs400_tuning = msdc_prepare_hs400_tuning,
+ 	.execute_hs400_tuning = msdc_execute_hs400_tuning,
+-	.hw_reset = msdc_hw_reset,
++	.card_hw_reset = msdc_hw_reset,
+ };
+ 
+ static const struct cqhci_host_ops msdc_cmdq_ops = {
+diff --git a/drivers/mmc/host/sdhci.c b/drivers/mmc/host/sdhci.c
+index 07c6da1f2f0f..22152029e14c 100644
+--- a/drivers/mmc/host/sdhci.c
++++ b/drivers/mmc/host/sdhci.c
+@@ -2999,7 +2999,7 @@ static const struct mmc_host_ops sdhci_ops = {
+ 	.set_ios	= sdhci_set_ios,
+ 	.get_cd		= sdhci_get_cd,
+ 	.get_ro		= sdhci_get_ro,
+-	.hw_reset	= sdhci_hw_reset,
++	.card_hw_reset	= sdhci_hw_reset,
+ 	.enable_sdio_irq = sdhci_enable_sdio_irq,
+ 	.ack_sdio_irq    = sdhci_ack_sdio_irq,
+ 	.start_signal_voltage_switch	= sdhci_start_signal_voltage_switch,
+diff --git a/drivers/mmc/host/sunxi-mmc.c b/drivers/mmc/host/sunxi-mmc.c
+index c62afd212692..0e8fbf4957d8 100644
+--- a/drivers/mmc/host/sunxi-mmc.c
++++ b/drivers/mmc/host/sunxi-mmc.c
+@@ -1115,7 +1115,7 @@ static const struct mmc_host_ops sunxi_mmc_ops = {
+ 	.get_cd		 = mmc_gpio_get_cd,
+ 	.enable_sdio_irq = sunxi_mmc_enable_sdio_irq,
+ 	.start_signal_voltage_switch = sunxi_mmc_volt_switch,
+-	.hw_reset	 = sunxi_mmc_hw_reset,
++	.card_hw_reset	 = sunxi_mmc_hw_reset,
+ 	.card_busy	 = sunxi_mmc_card_busy,
+ };
+ 
+diff --git a/drivers/mmc/host/uniphier-sd.c b/drivers/mmc/host/uniphier-sd.c
+index ccbf9885a52b..3a8defdcca77 100644
+--- a/drivers/mmc/host/uniphier-sd.c
++++ b/drivers/mmc/host/uniphier-sd.c
+@@ -597,7 +597,7 @@ static int uniphier_sd_probe(struct platform_device *pdev)
+ 			ret = PTR_ERR(priv->rst_hw);
+ 			goto free_host;
+ 		}
+-		host->ops.hw_reset = uniphier_sd_hw_reset;
++		host->ops.card_hw_reset = uniphier_sd_hw_reset;
+ 	}
+ 
+ 	if (host->mmc->caps & MMC_CAP_UHS) {
+diff --git a/include/linux/mmc/host.h b/include/linux/mmc/host.h
+index 7afb57cab00b..c193c50ccd78 100644
+--- a/include/linux/mmc/host.h
++++ b/include/linux/mmc/host.h
+@@ -181,7 +181,7 @@ struct mmc_host_ops {
+ 					 unsigned int max_dtr, int host_drv,
+ 					 int card_drv, int *drv_type);
+ 	/* Reset the eMMC card via RST_n */
+-	void	(*hw_reset)(struct mmc_host *host);
++	void	(*card_hw_reset)(struct mmc_host *host);
+ 	void	(*card_event)(struct mmc_host *host);
  
  	/*
- 	 * In the case of recovery, we can't expect flushing the cache to work
-@@ -2249,7 +2249,7 @@ static const struct mmc_bus_ops mmc_ops = {
- 	.runtime_resume = mmc_runtime_resume,
- 	.alive = mmc_alive,
- 	.shutdown = mmc_shutdown,
--	.hw_reset = _mmc_hw_reset,
-+	.card_hw_reset = _mmc_card_hw_reset,
- 	.cache_enabled = _mmc_cache_enabled,
- 	.flush_cache = _mmc_flush_cache,
- };
-diff --git a/drivers/mmc/core/sd.c b/drivers/mmc/core/sd.c
-index 68df6b2f49cc..c4a08ee8cdcc 100644
---- a/drivers/mmc/core/sd.c
-+++ b/drivers/mmc/core/sd.c
-@@ -1784,10 +1784,10 @@ static int mmc_sd_runtime_resume(struct mmc_host *host)
- 	return 0;
- }
- 
--static int mmc_sd_hw_reset(struct mmc_host *host)
-+static int mmc_sd_card_hw_reset(struct mmc_card *card)
- {
--	mmc_power_cycle(host, host->card->ocr);
--	return mmc_sd_init_card(host, host->card->ocr, host->card);
-+	mmc_power_cycle(card->host, card->ocr);
-+	return mmc_sd_init_card(card->host, card->ocr, card);
- }
- 
- static const struct mmc_bus_ops mmc_sd_ops = {
-@@ -1799,7 +1799,7 @@ static const struct mmc_bus_ops mmc_sd_ops = {
- 	.resume = mmc_sd_resume,
- 	.alive = mmc_sd_alive,
- 	.shutdown = mmc_sd_suspend,
--	.hw_reset = mmc_sd_hw_reset,
-+	.card_hw_reset = mmc_sd_card_hw_reset,
- 	.cache_enabled = sd_cache_enabled,
- 	.flush_cache = sd_flush_cache,
- };
-diff --git a/drivers/mmc/core/sdio.c b/drivers/mmc/core/sdio.c
-index 25799accf8a0..30242faf703e 100644
---- a/drivers/mmc/core/sdio.c
-+++ b/drivers/mmc/core/sdio.c
-@@ -1128,9 +1128,9 @@ static int mmc_sdio_runtime_resume(struct mmc_host *host)
-  * Returns 0 if the HW reset was executed synchronously, returns 1 if the HW
-  * reset was asynchronously scheduled, else a negative error code.
-  */
--static int mmc_sdio_hw_reset(struct mmc_host *host)
-+static int mmc_sdio_card_hw_reset(struct mmc_card *card)
- {
--	struct mmc_card *card = host->card;
-+	struct mmc_host *host = card->host;
- 
- 	/*
- 	 * In case the card is shared among multiple func drivers, reset the
-@@ -1175,7 +1175,7 @@ static const struct mmc_bus_ops mmc_sdio_ops = {
- 	.runtime_suspend = mmc_sdio_runtime_suspend,
- 	.runtime_resume = mmc_sdio_runtime_resume,
- 	.alive = mmc_sdio_alive,
--	.hw_reset = mmc_sdio_hw_reset,
-+	.card_hw_reset = mmc_sdio_card_hw_reset,
- 	.sw_reset = mmc_sdio_sw_reset,
- };
- 
 -- 
 2.30.2
 
