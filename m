@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CED20C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:56:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 679FCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244257AbiCUN5i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 09:57:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46380 "EHLO
+        id S1348390AbiCUN5l (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 09:57:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348355AbiCUN4R (ORCPT
+        with ESMTP id S1348312AbiCUN4U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:56:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657CE16F04C;
-        Mon, 21 Mar 2022 06:54:47 -0700 (PDT)
+        Mon, 21 Mar 2022 09:56:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 350D52FE59;
+        Mon, 21 Mar 2022 06:54:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0393AB816CA;
-        Mon, 21 Mar 2022 13:54:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6239CC340E8;
-        Mon, 21 Mar 2022 13:54:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C3AC3612A1;
+        Mon, 21 Mar 2022 13:54:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA596C340E8;
+        Mon, 21 Mar 2022 13:54:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647870884;
-        bh=qkttfvUkMX8pixr/UYRauWVmlsHrV8EzgM73QaxlJqM=;
+        s=korg; t=1647870890;
+        bh=dORWSbmUuQnkXIifjMZm1D83BGzCjw0RGmaor/Jk/98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mqc4ZUOBdHtPgx2/96/RYNwhOfbfdJmVJvFfIYb4m8MwVsPyrK/NJJfgbWlaM6BV0
-         1iAI4XxQcdfjGy5r14KV+5gScsvmv/RLzTajaaxkG2mRVq5iwrBujfaUoY5HY9hxGW
-         AM5FbMQJT5XddhOI27QnyOJ6xTkKEvZuJjOV+Jvc=
+        b=DYHB2wvKHo7CegzHzApCwxsWoNU65KITdNtBC6wW+Xg2eAEiUIW3oQXZl9aZzmQAF
+         WY2c/BZ5YFA0DxtJM16pTdJ3PdsXvwQJ4C+naLDa+AJFzuTftAa6DKD6tOjY/PYkse
+         hLda+14kMmRHdHPsLYvBXFHvtRiw9LRg1icgP4nI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julian Braha <julianbraha@gmail.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 07/22] ARM: 9178/1: fix unmet dependency on BITREVERSE for HAVE_ARCH_BITREVERSE
-Date:   Mon, 21 Mar 2022 14:51:38 +0100
-Message-Id: <20220321133217.823471072@linuxfoundation.org>
+Subject: [PATCH 4.14 09/22] atm: firestream: check the return value of ioremap() in fs_init()
+Date:   Mon, 21 Mar 2022 14:51:40 +0100
+Message-Id: <20220321133217.881927008@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133217.602054917@linuxfoundation.org>
 References: <20220321133217.602054917@linuxfoundation.org>
@@ -49,48 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julian Braha <julianbraha@gmail.com>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-[ Upstream commit 11c57c3ba94da74c3446924260e34e0b1950b5d7 ]
+[ Upstream commit d4e26aaea7f82ba884dcb4acfe689406bc092dc3 ]
 
-Resending this to properly add it to the patch tracker - thanks for letting
-me know, Arnd :)
+The function ioremap() in fs_init() can fail, so its return value should
+be checked.
 
-When ARM is enabled, and BITREVERSE is disabled,
-Kbuild gives the following warning:
-
-WARNING: unmet direct dependencies detected for HAVE_ARCH_BITREVERSE
-  Depends on [n]: BITREVERSE [=n]
-  Selected by [y]:
-  - ARM [=y] && (CPU_32v7M [=n] || CPU_32v7 [=y]) && !CPU_32v6 [=n]
-
-This is because ARM selects HAVE_ARCH_BITREVERSE
-without selecting BITREVERSE, despite
-HAVE_ARCH_BITREVERSE depending on BITREVERSE.
-
-This unmet dependency bug was found by Kismet,
-a static analysis tool for Kconfig. Please advise if this
-is not the appropriate solution.
-
-Signed-off-by: Julian Braha <julianbraha@gmail.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/atm/firestream.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/lib/Kconfig b/lib/Kconfig
-index 8396c4cfa1ab..1a33e9365951 100644
---- a/lib/Kconfig
-+++ b/lib/Kconfig
-@@ -16,7 +16,6 @@ config BITREVERSE
- config HAVE_ARCH_BITREVERSE
- 	bool
- 	default n
--	depends on BITREVERSE
- 	help
- 	  This option enables the use of hardware bit-reversal instructions on
- 	  architectures which support such operations.
+diff --git a/drivers/atm/firestream.c b/drivers/atm/firestream.c
+index e7cffd0cc361..3557ff9ecd82 100644
+--- a/drivers/atm/firestream.c
++++ b/drivers/atm/firestream.c
+@@ -1692,6 +1692,8 @@ static int fs_init(struct fs_dev *dev)
+ 	dev->hw_base = pci_resource_start(pci_dev, 0);
+ 
+ 	dev->base = ioremap(dev->hw_base, 0x1000);
++	if (!dev->base)
++		return 1;
+ 
+ 	reset_chip (dev);
+   
 -- 
 2.34.1
 
