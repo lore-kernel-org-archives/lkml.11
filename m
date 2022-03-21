@@ -2,116 +2,364 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB73EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 07:48:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24DB5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 07:50:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345036AbiCUHtt (ORCPT
+        id S1345033AbiCUHvg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 03:49:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58644 "EHLO
+        Mon, 21 Mar 2022 03:51:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344050AbiCUHtl (ORCPT
+        with ESMTP id S236143AbiCUHve (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 03:49:41 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBE7DD7F;
-        Mon, 21 Mar 2022 00:48:15 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KMRYh3Djqz1GBxf;
-        Mon, 21 Mar 2022 15:48:08 +0800 (CST)
-Received: from huawei.com (10.67.175.31) by dggpemm500024.china.huawei.com
- (7.185.36.203) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 21 Mar
- 2022 15:48:13 +0800
-From:   GUO Zihua <guozihua@huawei.com>
-To:     <linux-integrity@vger.kernel.org>
-CC:     <zohar@linux.ibm.com>, <dmitry.kasatkin@gmail.com>,
-        <roberto.sassu@huawei.com>,
-        <linux-security-module@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <xiujianfeng@huawei.com>,
-        <wangweiyang2@huawei.com>
-Subject: [PATCH] ima: remove template "ima" as the compiled default
-Date:   Mon, 21 Mar 2022 15:47:37 +0800
-Message-ID: <20220321074737.138002-1-guozihua@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 21 Mar 2022 03:51:34 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DB078F9A5
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 00:50:07 -0700 (PDT)
+X-UUID: dd85977061674e86a05a4ce73ab3ea31-20220321
+X-UUID: dd85977061674e86a05a4ce73ab3ea31-20220321
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 701284919; Mon, 21 Mar 2022 15:50:02 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Mon, 21 Mar 2022 15:50:00 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 21 Mar 2022 15:50:00 +0800
+Message-ID: <02e8f34923f936668c23380bf3164c12704b7f38.camel@mediatek.com>
+Subject: Re: [PATCH V2] drm/mediatek: Add vblank register/unregister
+ callback functions
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>
+CC:     <airlied@linux.ie>, <jason-jh.lin@mediatek.com>,
+        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <nancy.lin@mediatek.com>, <linux-mediatek@lists.infradead.org>,
+        <yongqiang.niu@mediatek.com>, <hsinyi@google.com>,
+        <matthias.bgg@gmail.com>, <linux-arm-kernel@lists.infradead.org>
+Date:   Mon, 21 Mar 2022 15:50:00 +0800
+In-Reply-To: <20220321072320.15019-1-rex-bc.chen@mediatek.com>
+References: <20220321072320.15019-1-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.175.31]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500024.china.huawei.com (7.185.36.203)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Template "ima" is a legacy template which limits the hash algorithm to
-either sha1 or md5. None of them should be considered "strong" these
-days. Besides, allowing template "ima" as the compiled default would
-also cause the following issue: the cmdline option "ima_hash=" must be
-behind "ima_template=", otherwise "ima_hash=" might be rejected.
+Hi, Rex:
 
-The root cause of this issue is that during the processing of ima_hash,
-we would try to check whether the hash algorithm is compatible with the
-template. If the template is not set at the moment we do the check, we
-check the algorithm against the compiled default template. If the
-complied default template is "ima", then we reject any hash algorithm
-other than sha1 and md5.
+On Mon, 2022-03-21 at 15:23 +0800, Rex-BC Chen wrote:
+> We encountered a kernel panic issue that callback data will be NULL
+> when
+> it's using in ovl irq handler. There is a timing issue between
+> mtk_disp_ovl_irq_handler() and mtk_ovl_disable_vblank().
+> 
+> To resolve this issue, we use the flow to register/unregister vblank
+> cb:
+> - Register callback function and callback data when crtc creates.
+> - Unregister callback function and callback data when crtc destroies.
+> 
+> With this solution, we can assure callback data will not be NULL when
+> vblank is disable.
 
-For example, if the compiled default template is "ima", and the default
-algorithm is sha1 (which is the current default). In the cmdline, we put
-in "ima_hash=sha256 ima_template=ima-ng". The expected behavior would be
-that ima starts with ima-ng as the template and sha256 as the hash
-algorithm. However, during the processing of "ima_hash=",
-"ima_template=" has not been processed yet, and hash_setup would check
-the configured hash algorithm against the compiled default: ima, and
-reject sha256. So at the end, the hash algorithm that is actually used
-will be sha1.
+Reviewed-by: CK Hu <ck.hu@mediatek.com>
 
-With template "ima" removed from the compiled default, we ensure that the
-default tempalte would at least be "ima-ng" which allows for basically
-any hash algorithm.
-
-This change would not break the algorithm compatibility checking for
-IMA.
-
-Fixes: 4286587dccd43 ("ima: add Kconfig default measurement list template")
-Signed-off-by: GUO Zihua <guozihua@huawei.com>
----
- security/integrity/ima/Kconfig | 14 +++++---------
- 1 file changed, 5 insertions(+), 9 deletions(-)
-
-diff --git a/security/integrity/ima/Kconfig b/security/integrity/ima/Kconfig
-index f3a9cc201c8c..9513df2ac19e 100644
---- a/security/integrity/ima/Kconfig
-+++ b/security/integrity/ima/Kconfig
-@@ -65,14 +65,11 @@ choice
- 	help
- 	  Select the default IMA measurement template.
- 
--	  The original 'ima' measurement list template contains a
--	  hash, defined as 20 bytes, and a null terminated pathname,
--	  limited to 255 characters.  The 'ima-ng' measurement list
--	  template permits both larger hash digests and longer
--	  pathnames.
--
--	config IMA_TEMPLATE
--		bool "ima"
-+	  The 'ima-ng' measurement list template permits various hash
-+	  digests and long pathnames. The compiled default template
-+	  can be overwritten using the kernel command line
-+	  'ima_template=' option.
-+
- 	config IMA_NG_TEMPLATE
- 		bool "ima-ng (default)"
- 	config IMA_SIG_TEMPLATE
-@@ -82,7 +79,6 @@ endchoice
- config IMA_DEFAULT_TEMPLATE
- 	string
- 	depends on IMA
--	default "ima" if IMA_TEMPLATE
- 	default "ima-ng" if IMA_NG_TEMPLATE
- 	default "ima-sig" if IMA_SIG_TEMPLATE
- 
--- 
-2.17.1
+> 
+> Fixes: 9b0704988b15 ("drm/mediatek: Register vblank callback
+> function")
+> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> Reviewed-by: jason-jh.lin <jason-jh.lin@mediatek.com>
+> 
+> ----
+> V2:
+> 1. Change title to "Add vblank register/unregister callback
+> functions".
+> ----
+> 
+> ---
+>  drivers/gpu/drm/mediatek/mtk_disp_drv.h     | 16 +++++++-----
+>  drivers/gpu/drm/mediatek/mtk_disp_ovl.c     | 22 ++++++++++++----
+>  drivers/gpu/drm/mediatek/mtk_disp_rdma.c    | 20 +++++++++-----
+>  drivers/gpu/drm/mediatek/mtk_drm_crtc.c     | 14 +++++++++-
+>  drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c |  4 +++
+>  drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h | 29 ++++++++++++++++---
+> --
+>  6 files changed, 80 insertions(+), 25 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/mediatek/mtk_disp_drv.h
+> b/drivers/gpu/drm/mediatek/mtk_disp_drv.h
+> index 86c3068894b1..974462831133 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_disp_drv.h
+> +++ b/drivers/gpu/drm/mediatek/mtk_disp_drv.h
+> @@ -76,9 +76,11 @@ void mtk_ovl_layer_off(struct device *dev,
+> unsigned int idx,
+>  void mtk_ovl_start(struct device *dev);
+>  void mtk_ovl_stop(struct device *dev);
+>  unsigned int mtk_ovl_supported_rotations(struct device *dev);
+> -void mtk_ovl_enable_vblank(struct device *dev,
+> -			   void (*vblank_cb)(void *),
+> -			   void *vblank_cb_data);
+> +void mtk_ovl_register_vblank_cb(struct device *dev,
+> +				void (*vblank_cb)(void *),
+> +				void *vblank_cb_data);
+> +void mtk_ovl_unregister_vblank_cb(struct device *dev);
+> +void mtk_ovl_enable_vblank(struct device *dev);
+>  void mtk_ovl_disable_vblank(struct device *dev);
+>  
+>  void mtk_rdma_bypass_shadow(struct device *dev);
+> @@ -93,9 +95,11 @@ void mtk_rdma_layer_config(struct device *dev,
+> unsigned int idx,
+>  			   struct cmdq_pkt *cmdq_pkt);
+>  void mtk_rdma_start(struct device *dev);
+>  void mtk_rdma_stop(struct device *dev);
+> -void mtk_rdma_enable_vblank(struct device *dev,
+> -			    void (*vblank_cb)(void *),
+> -			    void *vblank_cb_data);
+> +void mtk_rdma_register_vblank_cb(struct device *dev,
+> +				 void (*vblank_cb)(void *),
+> +				 void *vblank_cb_data);
+> +void mtk_rdma_unregister_vblank_cb(struct device *dev);
+> +void mtk_rdma_enable_vblank(struct device *dev);
+>  void mtk_rdma_disable_vblank(struct device *dev);
+>  
+>  #endif
+> diff --git a/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
+> b/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
+> index 2146299e5f52..1fa1bbac9f9c 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
+> @@ -96,14 +96,28 @@ static irqreturn_t mtk_disp_ovl_irq_handler(int
+> irq, void *dev_id)
+>  	return IRQ_HANDLED;
+>  }
+>  
+> -void mtk_ovl_enable_vblank(struct device *dev,
+> -			   void (*vblank_cb)(void *),
+> -			   void *vblank_cb_data)
+> +void mtk_ovl_register_vblank_cb(struct device *dev,
+> +				void (*vblank_cb)(void *),
+> +				void *vblank_cb_data)
+>  {
+>  	struct mtk_disp_ovl *ovl = dev_get_drvdata(dev);
+>  
+>  	ovl->vblank_cb = vblank_cb;
+>  	ovl->vblank_cb_data = vblank_cb_data;
+> +}
+> +
+> +void mtk_ovl_unregister_vblank_cb(struct device *dev)
+> +{
+> +	struct mtk_disp_ovl *ovl = dev_get_drvdata(dev);
+> +
+> +	ovl->vblank_cb = NULL;
+> +	ovl->vblank_cb_data = NULL;
+> +}
+> +
+> +void mtk_ovl_enable_vblank(struct device *dev)
+> +{
+> +	struct mtk_disp_ovl *ovl = dev_get_drvdata(dev);
+> +
+>  	writel(0x0, ovl->regs + DISP_REG_OVL_INTSTA);
+>  	writel_relaxed(OVL_FME_CPL_INT, ovl->regs +
+> DISP_REG_OVL_INTEN);
+>  }
+> @@ -112,8 +126,6 @@ void mtk_ovl_disable_vblank(struct device *dev)
+>  {
+>  	struct mtk_disp_ovl *ovl = dev_get_drvdata(dev);
+>  
+> -	ovl->vblank_cb = NULL;
+> -	ovl->vblank_cb_data = NULL;
+>  	writel_relaxed(0x0, ovl->regs + DISP_REG_OVL_INTEN);
+>  }
+>  
+> diff --git a/drivers/gpu/drm/mediatek/mtk_disp_rdma.c
+> b/drivers/gpu/drm/mediatek/mtk_disp_rdma.c
+> index d41a3970b944..943780fc7bf6 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_disp_rdma.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_disp_rdma.c
+> @@ -94,24 +94,32 @@ static void rdma_update_bits(struct device *dev,
+> unsigned int reg,
+>  	writel(tmp, rdma->regs + reg);
+>  }
+>  
+> -void mtk_rdma_enable_vblank(struct device *dev,
+> -			    void (*vblank_cb)(void *),
+> -			    void *vblank_cb_data)
+> +void mtk_rdma_register_vblank_cb(struct device *dev,
+> +				 void (*vblank_cb)(void *),
+> +				 void *vblank_cb_data)
+>  {
+>  	struct mtk_disp_rdma *rdma = dev_get_drvdata(dev);
+>  
+>  	rdma->vblank_cb = vblank_cb;
+>  	rdma->vblank_cb_data = vblank_cb_data;
+> -	rdma_update_bits(dev, DISP_REG_RDMA_INT_ENABLE,
+> RDMA_FRAME_END_INT,
+> -			 RDMA_FRAME_END_INT);
+>  }
+>  
+> -void mtk_rdma_disable_vblank(struct device *dev)
+> +void mtk_rdma_unregister_vblank_cb(struct device *dev)
+>  {
+>  	struct mtk_disp_rdma *rdma = dev_get_drvdata(dev);
+>  
+>  	rdma->vblank_cb = NULL;
+>  	rdma->vblank_cb_data = NULL;
+> +}
+> +
+> +void mtk_rdma_enable_vblank(struct device *dev)
+> +{
+> +	rdma_update_bits(dev, DISP_REG_RDMA_INT_ENABLE,
+> RDMA_FRAME_END_INT,
+> +			 RDMA_FRAME_END_INT);
+> +}
+> +
+> +void mtk_rdma_disable_vblank(struct device *dev)
+> +{
+>  	rdma_update_bits(dev, DISP_REG_RDMA_INT_ENABLE,
+> RDMA_FRAME_END_INT, 0);
+>  }
+>  
+> diff --git a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
+> b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
+> index d661edf7e0fe..e42a9bfa0ecb 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
+> @@ -152,6 +152,7 @@ static void mtk_drm_cmdq_pkt_destroy(struct
+> cmdq_pkt *pkt)
+>  static void mtk_drm_crtc_destroy(struct drm_crtc *crtc)
+>  {
+>  	struct mtk_drm_crtc *mtk_crtc = to_mtk_crtc(crtc);
+> +	int i;
+>  
+>  	mtk_mutex_put(mtk_crtc->mutex);
+>  #if IS_REACHABLE(CONFIG_MTK_CMDQ)
+> @@ -162,6 +163,14 @@ static void mtk_drm_crtc_destroy(struct drm_crtc
+> *crtc)
+>  		mtk_crtc->cmdq_client.chan = NULL;
+>  	}
+>  #endif
+> +
+> +	for (i = 0; i < mtk_crtc->ddp_comp_nr; i++) {
+> +		struct mtk_ddp_comp *comp;
+> +
+> +		comp = mtk_crtc->ddp_comp[i];
+> +		mtk_ddp_comp_unregister_vblank_cb(comp);
+> +	}
+> +
+>  	drm_crtc_cleanup(crtc);
+>  }
+>  
+> @@ -616,7 +625,7 @@ static int mtk_drm_crtc_enable_vblank(struct
+> drm_crtc *crtc)
+>  	struct mtk_drm_crtc *mtk_crtc = to_mtk_crtc(crtc);
+>  	struct mtk_ddp_comp *comp = mtk_crtc->ddp_comp[0];
+>  
+> -	mtk_ddp_comp_enable_vblank(comp, mtk_crtc_ddp_irq, &mtk_crtc-
+> >base);
+> +	mtk_ddp_comp_enable_vblank(comp);
+>  
+>  	return 0;
+>  }
+> @@ -916,6 +925,9 @@ int mtk_drm_crtc_create(struct drm_device
+> *drm_dev,
+>  			if (comp->funcs->ctm_set)
+>  				has_ctm = true;
+>  		}
+> +
+> +		mtk_ddp_comp_register_vblank_cb(comp, mtk_crtc_ddp_irq,
+> +						&mtk_crtc->base);
+>  	}
+>  
+>  	for (i = 0; i < mtk_crtc->ddp_comp_nr; i++)
+> diff --git a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
+> b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
+> index b4b682bc1991..028cf76b9531 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
+> @@ -297,6 +297,8 @@ static const struct mtk_ddp_comp_funcs ddp_ovl =
+> {
+>  	.config = mtk_ovl_config,
+>  	.start = mtk_ovl_start,
+>  	.stop = mtk_ovl_stop,
+> +	.register_vblank_cb = mtk_ovl_register_vblank_cb,
+> +	.unregister_vblank_cb = mtk_ovl_unregister_vblank_cb,
+>  	.enable_vblank = mtk_ovl_enable_vblank,
+>  	.disable_vblank = mtk_ovl_disable_vblank,
+>  	.supported_rotations = mtk_ovl_supported_rotations,
+> @@ -321,6 +323,8 @@ static const struct mtk_ddp_comp_funcs ddp_rdma =
+> {
+>  	.config = mtk_rdma_config,
+>  	.start = mtk_rdma_start,
+>  	.stop = mtk_rdma_stop,
+> +	.register_vblank_cb = mtk_rdma_register_vblank_cb,
+> +	.unregister_vblank_cb = mtk_rdma_unregister_vblank_cb,
+>  	.enable_vblank = mtk_rdma_enable_vblank,
+>  	.disable_vblank = mtk_rdma_disable_vblank,
+>  	.layer_nr = mtk_rdma_layer_nr,
+> diff --git a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h
+> b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h
+> index 4c6a98662305..b83f24cb045f 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h
+> +++ b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h
+> @@ -48,9 +48,11 @@ struct mtk_ddp_comp_funcs {
+>  		       unsigned int bpc, struct cmdq_pkt *cmdq_pkt);
+>  	void (*start)(struct device *dev);
+>  	void (*stop)(struct device *dev);
+> -	void (*enable_vblank)(struct device *dev,
+> -			      void (*vblank_cb)(void *),
+> -			      void *vblank_cb_data);
+> +	void (*register_vblank_cb)(struct device *dev,
+> +				   void (*vblank_cb)(void *),
+> +				   void *vblank_cb_data);
+> +	void (*unregister_vblank_cb)(struct device *dev);
+> +	void (*enable_vblank)(struct device *dev);
+>  	void (*disable_vblank)(struct device *dev);
+>  	unsigned int (*supported_rotations)(struct device *dev);
+>  	unsigned int (*layer_nr)(struct device *dev);
+> @@ -111,12 +113,25 @@ static inline void mtk_ddp_comp_stop(struct
+> mtk_ddp_comp *comp)
+>  		comp->funcs->stop(comp->dev);
+>  }
+>  
+> -static inline void mtk_ddp_comp_enable_vblank(struct mtk_ddp_comp
+> *comp,
+> -					      void (*vblank_cb)(void
+> *),
+> -					      void *vblank_cb_data)
+> +static inline void mtk_ddp_comp_register_vblank_cb(struct
+> mtk_ddp_comp *comp,
+> +						   void
+> (*vblank_cb)(void *),
+> +						   void
+> *vblank_cb_data)
+> +{
+> +	if (comp->funcs && comp->funcs->register_vblank_cb)
+> +		comp->funcs->register_vblank_cb(comp->dev, vblank_cb,
+> +						vblank_cb_data);
+> +}
+> +
+> +static inline void mtk_ddp_comp_unregister_vblank_cb(struct
+> mtk_ddp_comp *comp)
+> +{
+> +	if (comp->funcs && comp->funcs->unregister_vblank_cb)
+> +		comp->funcs->unregister_vblank_cb(comp->dev);
+> +}
+> +
+> +static inline void mtk_ddp_comp_enable_vblank(struct mtk_ddp_comp
+> *comp)
+>  {
+>  	if (comp->funcs && comp->funcs->enable_vblank)
+> -		comp->funcs->enable_vblank(comp->dev, vblank_cb,
+> vblank_cb_data);
+> +		comp->funcs->enable_vblank(comp->dev);
+>  }
+>  
+>  static inline void mtk_ddp_comp_disable_vblank(struct mtk_ddp_comp
+> *comp)
 
