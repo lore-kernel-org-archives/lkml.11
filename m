@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADDAAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:01:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07AC4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:01:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346590AbiCULDB (ORCPT
+        id S1346624AbiCULDS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 07:03:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48062 "EHLO
+        Mon, 21 Mar 2022 07:03:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240270AbiCULCv (ORCPT
+        with ESMTP id S1346579AbiCULDK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 07:02:51 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EC5612B77F;
-        Mon, 21 Mar 2022 04:01:25 -0700 (PDT)
+        Mon, 21 Mar 2022 07:03:10 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE2314F135;
+        Mon, 21 Mar 2022 04:01:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647860485; x=1679396485;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=VGK2tf/WMVRRuyd2IcAcZNLjAWSYfn++70ETfZeMG2E=;
-  b=jwBnnwqK00HG3NXr2G1wzvxtj7bgGgdJwOx0MFELmT+qV5vMGh9J8Gtw
-   1sHrIWBQM+pKLXHLaieP8mdcko5IXgaURH6AIsWXnQ6YgWgLWzxkkQ5pc
-   FhnxUf21ndYdA5q8dZuUbH4VsWb0BlSV+gw/05NuTRY2e8BcSCVBpukrt
-   Qi6Kd4yDbeiYI+QIBonPpDHi0RcBUpMIkhKw/5+/itR8VYdM7MifK6S+z
-   Jdi4vmGDGGA12HPK5XNWP7QRK70qTDxSApbA5g5d9l7m0sz/blspUYeIO
-   TbPwcH3YqXqTT+3GR6PwSEeom2n5qCJpHCcMzPVFQSbEAZVIHUHVZhHxb
+  t=1647860501; x=1679396501;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=NmyGAg3H5qIjkqj2AgtDJJmkpqDu2Ml32OAol27OBlQ=;
+  b=k3e92X1Q1twaVlP3jgWw2JL8ohG1zJYgRU1WgSN3ME3hYj0jX4LLRLJB
+   wQRjananrWQd56+UM4QegQ5Ww+weCjLgILNQ6QRksV7xNUXYxI9xbagNw
+   mLh4MQZsuqR8OWu7lFd1M0LdLUddkE6gfUuFxbzhTvutReKdnIdmGh0m3
+   GpYOtgRQykv/VZQusS6YwC2zm1xCb8liH2qhPN/mlFLM9M7y+NHjpJJ7K
+   Ou3PkLcN6GpGiZdcdInwltRHzDzFTdsAJ8CufCNeFJtb/L631gkPJuT+9
+   HebRAppzd6aM1ARVRvb7BM9nwcylun0WkYU7EbeFgge5S/2MZyDoFoR90
    g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10292"; a="244996721"
+X-IronPort-AV: E=McAfee;i="6200,9189,10292"; a="237467084"
 X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
-   d="scan'208";a="244996721"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 04:01:25 -0700
+   d="scan'208";a="237467084"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 04:01:22 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
-   d="scan'208";a="716454487"
+   d="scan'208";a="543173127"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga005.jf.intel.com with ESMTP; 21 Mar 2022 04:01:22 -0700
+  by orsmga007.jf.intel.com with ESMTP; 21 Mar 2022 04:01:18 -0700
 Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22LB1HaG031880;
-        Mon, 21 Mar 2022 11:01:21 GMT
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22LB1HaB031880;
+        Mon, 21 Mar 2022 11:01:17 GMT
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     intel-wired-lan@lists.osuosl.org
 Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
@@ -54,26 +54,27 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v4 net-next 5/5] ice: switch: convert packet template match code to rodata
-Date:   Mon, 21 Mar 2022 11:59:54 +0100
-Message-Id: <20220321105954.843154-6-alexandr.lobakin@intel.com>
+Subject: [PATCH v4 net-next 0/5] ice: switch: debloat packet templates code
+Date:   Mon, 21 Mar 2022 11:59:49 +0100
+Message-Id: <20220321105954.843154-1-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220321105954.843154-1-alexandr.lobakin@intel.com>
-References: <20220321105954.843154-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Trade text size for rodata size and replace tons of nested if-elses
-to the const mask match based structs. The almost entire
-ice_find_dummy_packet() now becomes just one plain while-increment
-loop. The order in ice_dummy_pkt_profiles[] should be same with the
-if-elses order previously, as masks become less and less strict
-through the array to follow the original code flow.
-Apart from removing 80 locs of 4-level if-elses, it brings a solid
-text size optimization:
+This hunts down several places around packet templates/dummies for
+switch rules which are either repetitive, fragile or just not
+really readable code.
+It's a common need to add new packet templates and to review such
+changes as well, try to simplify both with the help of a pair
+macros and aliases.
+ice_find_dummy_packet() became very complex at this point with tons
+of nested if-elses. It clearly showed this approach does not scale,
+so convert its logics to the simple mask-match + static const array.
+
+bloat-o-meter is happy about that (built w/ LLVM 13):
 
 add/remove: 0/1 grow/shrink: 1/1 up/down: 2/-1058 (-1056)
 Function                                     old     new   delta
@@ -86,321 +87,43 @@ RO Data                                      old     new   delta
 ice_dummy_pkt_profiles                         -     672    +672
 Total: Before=37895, After=38567, chg +1.77%
 
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Tested-by: Marcin Szycik <marcin.szycik@linux.intel.com>
----
- drivers/net/ethernet/intel/ice/ice_switch.c | 215 ++++++++++----------
- 1 file changed, 108 insertions(+), 107 deletions(-)
+Diffstat also looks nice, and adding new packet templates now takes
+less lines.
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
-index cde9e480ea89..ed7130b7abfe 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-@@ -30,6 +30,19 @@ static const u8 dummy_eth_header[DUMMY_ETH_HDR_LEN] = { 0x2, 0, 0, 0, 0, 0,
- 							0x2, 0, 0, 0, 0, 0,
- 							0x81, 0, 0, 0};
- 
-+enum {
-+	ICE_PKT_VLAN		= BIT(0),
-+	ICE_PKT_OUTER_IPV6	= BIT(1),
-+	ICE_PKT_TUN_GTPC	= BIT(2),
-+	ICE_PKT_TUN_GTPU	= BIT(3),
-+	ICE_PKT_TUN_NVGRE	= BIT(4),
-+	ICE_PKT_TUN_UDP		= BIT(5),
-+	ICE_PKT_INNER_IPV6	= BIT(6),
-+	ICE_PKT_INNER_TCP	= BIT(7),
-+	ICE_PKT_INNER_UDP	= BIT(8),
-+	ICE_PKT_GTP_NOPAY	= BIT(9),
-+};
-+
- struct ice_dummy_pkt_offsets {
- 	enum ice_protocol_type type;
- 	u16 offset; /* ICE_PROTOCOL_LAST indicates end of list */
-@@ -38,23 +51,23 @@ struct ice_dummy_pkt_offsets {
- struct ice_dummy_pkt_profile {
- 	const struct ice_dummy_pkt_offsets *offsets;
- 	const u8 *pkt;
-+	u32 match;
- 	u16 pkt_len;
- };
- 
--#define ICE_DECLARE_PKT_OFFSETS(type)					\
--	static const struct ice_dummy_pkt_offsets			\
-+#define ICE_DECLARE_PKT_OFFSETS(type)				\
-+	static const struct ice_dummy_pkt_offsets		\
- 	ice_dummy_##type##_packet_offsets[]
- 
--#define ICE_DECLARE_PKT_TEMPLATE(type)					\
-+#define ICE_DECLARE_PKT_TEMPLATE(type)				\
- 	static const u8 ice_dummy_##type##_packet[]
- 
--#define ICE_PKT_PROFILE(type) ({					\
--	(struct ice_dummy_pkt_profile){					\
--		.pkt		= ice_dummy_##type##_packet,		\
--		.pkt_len	= sizeof(ice_dummy_##type##_packet),	\
--		.offsets	= ice_dummy_##type##_packet_offsets,	\
--	};								\
--})
-+#define ICE_PKT_PROFILE(type, m) {				\
-+	.match		= (m),					\
-+	.pkt		= ice_dummy_##type##_packet,		\
-+	.pkt_len	= sizeof(ice_dummy_##type##_packet),	\
-+	.offsets	= ice_dummy_##type##_packet_offsets,	\
-+}
- 
- ICE_DECLARE_PKT_OFFSETS(gre_tcp) = {
- 	{ ICE_MAC_OFOS,		0 },
-@@ -1220,6 +1233,55 @@ ICE_DECLARE_PKT_TEMPLATE(ipv6_gtp) = {
- 	0x00, 0x00,
- };
- 
-+static const struct ice_dummy_pkt_profile ice_dummy_pkt_profiles[] = {
-+	ICE_PKT_PROFILE(ipv6_gtp, ICE_PKT_TUN_GTPU | ICE_PKT_OUTER_IPV6 |
-+				  ICE_PKT_GTP_NOPAY),
-+	ICE_PKT_PROFILE(ipv6_gtpu_ipv6_udp, ICE_PKT_TUN_GTPU |
-+					    ICE_PKT_OUTER_IPV6 |
-+					    ICE_PKT_INNER_IPV6 |
-+					    ICE_PKT_INNER_UDP),
-+	ICE_PKT_PROFILE(ipv6_gtpu_ipv6_tcp, ICE_PKT_TUN_GTPU |
-+					    ICE_PKT_OUTER_IPV6 |
-+					    ICE_PKT_INNER_IPV6),
-+	ICE_PKT_PROFILE(ipv6_gtpu_ipv4_udp, ICE_PKT_TUN_GTPU |
-+					    ICE_PKT_OUTER_IPV6 |
-+					    ICE_PKT_INNER_UDP),
-+	ICE_PKT_PROFILE(ipv6_gtpu_ipv4_tcp, ICE_PKT_TUN_GTPU |
-+					    ICE_PKT_OUTER_IPV6),
-+	ICE_PKT_PROFILE(ipv4_gtpu_ipv4, ICE_PKT_TUN_GTPU | ICE_PKT_GTP_NOPAY),
-+	ICE_PKT_PROFILE(ipv4_gtpu_ipv6_udp, ICE_PKT_TUN_GTPU |
-+					    ICE_PKT_INNER_IPV6 |
-+					    ICE_PKT_INNER_UDP),
-+	ICE_PKT_PROFILE(ipv4_gtpu_ipv6_tcp, ICE_PKT_TUN_GTPU |
-+					    ICE_PKT_INNER_IPV6),
-+	ICE_PKT_PROFILE(ipv4_gtpu_ipv4_udp, ICE_PKT_TUN_GTPU |
-+					    ICE_PKT_INNER_UDP),
-+	ICE_PKT_PROFILE(ipv4_gtpu_ipv4_tcp, ICE_PKT_TUN_GTPU),
-+	ICE_PKT_PROFILE(ipv6_gtp, ICE_PKT_TUN_GTPC | ICE_PKT_OUTER_IPV6),
-+	ICE_PKT_PROFILE(ipv4_gtpu_ipv4, ICE_PKT_TUN_GTPC),
-+	ICE_PKT_PROFILE(gre_ipv6_tcp, ICE_PKT_TUN_NVGRE | ICE_PKT_INNER_IPV6 |
-+				      ICE_PKT_INNER_TCP),
-+	ICE_PKT_PROFILE(gre_tcp, ICE_PKT_TUN_NVGRE | ICE_PKT_INNER_TCP),
-+	ICE_PKT_PROFILE(gre_ipv6_udp, ICE_PKT_TUN_NVGRE | ICE_PKT_INNER_IPV6),
-+	ICE_PKT_PROFILE(gre_udp, ICE_PKT_TUN_NVGRE),
-+	ICE_PKT_PROFILE(udp_tun_ipv6_tcp, ICE_PKT_TUN_UDP |
-+					  ICE_PKT_INNER_IPV6 |
-+					  ICE_PKT_INNER_TCP),
-+	ICE_PKT_PROFILE(udp_tun_tcp, ICE_PKT_TUN_UDP | ICE_PKT_INNER_TCP),
-+	ICE_PKT_PROFILE(udp_tun_ipv6_udp, ICE_PKT_TUN_UDP |
-+					  ICE_PKT_INNER_IPV6),
-+	ICE_PKT_PROFILE(udp_tun_udp, ICE_PKT_TUN_UDP),
-+	ICE_PKT_PROFILE(vlan_udp_ipv6, ICE_PKT_OUTER_IPV6 | ICE_PKT_INNER_UDP |
-+				       ICE_PKT_VLAN),
-+	ICE_PKT_PROFILE(udp_ipv6, ICE_PKT_OUTER_IPV6 | ICE_PKT_INNER_UDP),
-+	ICE_PKT_PROFILE(vlan_udp, ICE_PKT_INNER_UDP | ICE_PKT_VLAN),
-+	ICE_PKT_PROFILE(udp, ICE_PKT_INNER_UDP),
-+	ICE_PKT_PROFILE(vlan_tcp_ipv6, ICE_PKT_INNER_IPV6 | ICE_PKT_VLAN),
-+	ICE_PKT_PROFILE(tcp_ipv6, ICE_PKT_INNER_IPV6),
-+	ICE_PKT_PROFILE(vlan_tcp, ICE_PKT_VLAN),
-+	ICE_PKT_PROFILE(tcp, 0),
-+};
-+
- #define ICE_SW_RULE_RX_TX_ETH_HDR_SIZE \
- 	(offsetof(struct ice_aqc_sw_rules_elem, pdata.lkup_tx_rx.hdr) + \
- 	 (DUMMY_ETH_HDR_LEN * \
-@@ -5509,124 +5571,63 @@ ice_add_adv_recipe(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
-  *
-  * Returns the &ice_dummy_pkt_profile corresponding to these lookup params.
-  */
--static struct ice_dummy_pkt_profile
-+static const struct ice_dummy_pkt_profile *
- ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
- 		      enum ice_sw_tunnel_type tun_type)
- {
--	bool inner_tcp = false, inner_udp = false, outer_ipv6 = false;
--	bool vlan = false, inner_ipv6 = false, gtp_no_pay = false;
-+	const struct ice_dummy_pkt_profile *ret = ice_dummy_pkt_profiles;
-+	u32 match = 0;
- 	u16 i;
- 
-+	switch (tun_type) {
-+	case ICE_SW_TUN_GTPC:
-+		match |= ICE_PKT_TUN_GTPC;
-+		break;
-+	case ICE_SW_TUN_GTPU:
-+		match |= ICE_PKT_TUN_GTPU;
-+		break;
-+	case ICE_SW_TUN_NVGRE:
-+		match |= ICE_PKT_TUN_NVGRE;
-+		break;
-+	case ICE_SW_TUN_GENEVE:
-+	case ICE_SW_TUN_VXLAN:
-+		match |= ICE_PKT_TUN_UDP;
-+		break;
-+	default:
-+		break;
-+	}
-+
- 	for (i = 0; i < lkups_cnt; i++) {
- 		if (lkups[i].type == ICE_UDP_ILOS)
--			inner_udp = true;
-+			match |= ICE_PKT_INNER_UDP;
- 		else if (lkups[i].type == ICE_TCP_IL)
--			inner_tcp = true;
-+			match |= ICE_PKT_INNER_TCP;
- 		else if (lkups[i].type == ICE_IPV6_OFOS)
--			outer_ipv6 = true;
-+			match |= ICE_PKT_OUTER_IPV6;
- 		else if (lkups[i].type == ICE_VLAN_OFOS)
--			vlan = true;
-+			match |= ICE_PKT_VLAN;
- 		else if (lkups[i].type == ICE_ETYPE_OL &&
- 			 lkups[i].h_u.ethertype.ethtype_id ==
- 				cpu_to_be16(ICE_IPV6_ETHER_ID) &&
- 			 lkups[i].m_u.ethertype.ethtype_id ==
- 				cpu_to_be16(0xFFFF))
--			outer_ipv6 = true;
-+			match |= ICE_PKT_OUTER_IPV6;
- 		else if (lkups[i].type == ICE_ETYPE_IL &&
- 			 lkups[i].h_u.ethertype.ethtype_id ==
- 				cpu_to_be16(ICE_IPV6_ETHER_ID) &&
- 			 lkups[i].m_u.ethertype.ethtype_id ==
- 				cpu_to_be16(0xFFFF))
--			inner_ipv6 = true;
-+			match |= ICE_PKT_INNER_IPV6;
- 		else if (lkups[i].type == ICE_IPV6_IL)
--			inner_ipv6 = true;
-+			match |= ICE_PKT_INNER_IPV6;
- 		else if (lkups[i].type == ICE_GTP_NO_PAY)
--			gtp_no_pay = true;
--	}
--
--	if (tun_type == ICE_SW_TUN_GTPU) {
--		if (outer_ipv6) {
--			if (gtp_no_pay) {
--				return ICE_PKT_PROFILE(ipv6_gtp);
--			} else if (inner_ipv6) {
--				if (inner_udp)
--					return ICE_PKT_PROFILE(ipv6_gtpu_ipv6_udp);
--				else
--					return ICE_PKT_PROFILE(ipv6_gtpu_ipv6_tcp);
--			} else {
--				if (inner_udp)
--					return ICE_PKT_PROFILE(ipv6_gtpu_ipv4_udp);
--				else
--					return ICE_PKT_PROFILE(ipv6_gtpu_ipv4_tcp);
--			}
--		} else {
--			if (gtp_no_pay) {
--				return ICE_PKT_PROFILE(ipv4_gtpu_ipv4);
--			} else if (inner_ipv6) {
--				if (inner_udp)
--					return ICE_PKT_PROFILE(ipv4_gtpu_ipv6_udp);
--				else
--					return ICE_PKT_PROFILE(ipv4_gtpu_ipv6_tcp);
--			} else {
--				if (inner_udp)
--					return ICE_PKT_PROFILE(ipv4_gtpu_ipv4_udp);
--				else
--					return ICE_PKT_PROFILE(ipv4_gtpu_ipv4_tcp);
--			}
--		}
-+			match |= ICE_PKT_GTP_NOPAY;
- 	}
- 
--	if (tun_type == ICE_SW_TUN_GTPC) {
--		if (outer_ipv6)
--			return ICE_PKT_PROFILE(ipv6_gtp);
--		else
--			return ICE_PKT_PROFILE(ipv4_gtpu_ipv4);
--	}
--
--	if (tun_type == ICE_SW_TUN_NVGRE) {
--		if (inner_tcp && inner_ipv6)
--			return ICE_PKT_PROFILE(gre_ipv6_tcp);
--		else if (inner_tcp)
--			return ICE_PKT_PROFILE(gre_tcp);
--		else if (inner_ipv6)
--			return ICE_PKT_PROFILE(gre_ipv6_udp);
--		else
--			return ICE_PKT_PROFILE(gre_udp);
--	}
-+	while (ret->match && (match & ret->match) != ret->match)
-+		ret++;
- 
--	if (tun_type == ICE_SW_TUN_VXLAN ||
--	    tun_type == ICE_SW_TUN_GENEVE) {
--		if (inner_tcp && inner_ipv6)
--			return ICE_PKT_PROFILE(udp_tun_ipv6_tcp);
--		else if (inner_tcp)
--			return ICE_PKT_PROFILE(udp_tun_tcp);
--		else if (inner_ipv6)
--			return ICE_PKT_PROFILE(udp_tun_ipv6_udp);
--		else
--			return ICE_PKT_PROFILE(udp_tun_udp);
--	}
--
--	if (inner_udp && !outer_ipv6) {
--		if (vlan)
--			return ICE_PKT_PROFILE(vlan_udp);
--		else
--			return ICE_PKT_PROFILE(udp);
--	} else if (inner_udp && outer_ipv6) {
--		if (vlan)
--			return ICE_PKT_PROFILE(vlan_udp_ipv6);
--		else
--			return ICE_PKT_PROFILE(udp_ipv6);
--	} else if ((inner_tcp && outer_ipv6) || outer_ipv6) {
--		if (vlan)
--			return ICE_PKT_PROFILE(vlan_tcp_ipv6);
--		else
--			return ICE_PKT_PROFILE(tcp_ipv6);
--	}
--
--	if (vlan)
--		return ICE_PKT_PROFILE(vlan_tcp);
--
--	return ICE_PKT_PROFILE(tcp);
-+	return ret;
- }
- 
- /**
-@@ -5963,8 +5964,8 @@ ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
- {
- 	struct ice_adv_fltr_mgmt_list_entry *m_entry, *adv_fltr = NULL;
- 	struct ice_aqc_sw_rules_elem *s_rule = NULL;
-+	const struct ice_dummy_pkt_profile *profile;
- 	u16 rid = 0, i, rule_buf_sz, vsi_handle;
--	struct ice_dummy_pkt_profile profile;
- 	struct list_head *rule_head;
- 	struct ice_switch_info *sw;
- 	u16 word_cnt;
-@@ -6036,7 +6037,7 @@ ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
- 		}
- 		return status;
- 	}
--	rule_buf_sz = ICE_SW_RULE_RX_TX_NO_HDR_SIZE + profile.pkt_len;
-+	rule_buf_sz = ICE_SW_RULE_RX_TX_NO_HDR_SIZE + profile->pkt_len;
- 	s_rule = kzalloc(rule_buf_sz, GFP_KERNEL);
- 	if (!s_rule)
- 		return -ENOMEM;
-@@ -6096,7 +6097,7 @@ ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
- 	s_rule->pdata.lkup_tx_rx.recipe_id = cpu_to_le16(rid);
- 	s_rule->pdata.lkup_tx_rx.act = cpu_to_le32(act);
- 
--	status = ice_fill_adv_dummy_packet(lkups, lkups_cnt, s_rule, &profile);
-+	status = ice_fill_adv_dummy_packet(lkups, lkups_cnt, s_rule, profile);
- 	if (status)
- 		goto err_ice_add_adv_rule;
- 
-@@ -6104,7 +6105,7 @@ ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
- 	    rinfo->tun_type != ICE_SW_TUN_AND_NON_TUN) {
- 		status = ice_fill_adv_packet_tun(hw, rinfo->tun_type,
- 						 s_rule->pdata.lkup_tx_rx.hdr,
--						 profile.offsets);
-+						 profile->offsets);
- 		if (status)
- 			goto err_ice_add_adv_rule;
- 	}
+We'll probably come out with dynamic template crafting in a while,
+but for now let's improve what we have currently.
+
+From v3[0]:
+ - change u64:48 + u64:16 -> u32 + u16 to fix issues on 32-bit
+   platforms (and make object code a bit simpler);
+ - mention ice_find_dummy_packet() conversion in the cover letter.
+
+From v2[1]:
+ - rebase on top of the GTP changes;
+ - new: convert template search code to a rodata array (-1000 bytes
+   from .text, -400 bytes from ice.ko);
+ - collect Reviewed-by and Tested-by (Marcin, Michal).
+
+From v1[2]:
+ - rebase on top of the latest next-queue (to fix #3 not applying);
+ - adjust the kdoc accordingly to the function proto changes in #3;
+ - no functional changes.
+
+[0] https://lore.kernel.org/netdev/20220318161713.680436-1-alexandr.lobakin@intel.com
+[1] https://lore.kernel.org/netdev/20220127154009.623304-1-alexandr.lobakin@intel.com
+[2] https://lore.kernel.org/netdev/20220124173116.739083-1-alexandr.lobakin@intel.com
+
+Alexander Lobakin (5):
+  ice: switch: add and use u16[] aliases to ice_adv_lkup_elem::{h,m}_u
+  ice: switch: unobscurify bitops loop in ice_fill_adv_dummy_packet()
+  ice: switch: use a struct to pass packet template params
+  ice: switch: use convenience macros to declare dummy pkt templates
+  ice: switch: convert packet template match code to rodata
+
+ drivers/net/ethernet/intel/ice/ice_switch.c | 489 ++++++++------------
+ drivers/net/ethernet/intel/ice/ice_switch.h |  12 +-
+ 2 files changed, 211 insertions(+), 290 deletions(-)
+
 -- 
 2.35.1
 
