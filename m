@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC359C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:02:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC340C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:02:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348760AbiCUODv (ORCPT
+        id S1348829AbiCUOD7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:03:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43666 "EHLO
+        Mon, 21 Mar 2022 10:03:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348626AbiCUN6H (ORCPT
+        with ESMTP id S1348509AbiCUN55 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:58:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1083917869F;
-        Mon, 21 Mar 2022 06:55:58 -0700 (PDT)
+        Mon, 21 Mar 2022 09:57:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDCBF30F66;
+        Mon, 21 Mar 2022 06:55:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 574D1B816D2;
-        Mon, 21 Mar 2022 13:55:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 854B5C340E8;
-        Mon, 21 Mar 2022 13:55:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD9586126A;
+        Mon, 21 Mar 2022 13:55:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0168C340E8;
+        Mon, 21 Mar 2022 13:55:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647870948;
-        bh=1cGeZM7lyVNRB7mTnf78tGm3xMRJ021aoldxZLHfTog=;
+        s=korg; t=1647870932;
+        bh=MyxEPHJ/yrzATKXwkG2a916fXqChGg9FQQ7ePpmg8v4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zCoSJLGsKDtOIrE5ZuWASGtgwkK3dcapgXRy4xUS7s+meaLcLgkBYe0Mz2eMgtHgz
-         7A/l8+uzGgn6F28EG44atnhqqKsagvnlLYAJQo0qxZrYwrcLRDyZWpGccmjizgn47v
-         D7nurBGDjxj5AkuA+kOAguHmyYwsWz84nZ9MSItE=
+        b=nkaBK5pnszL4BOJWNdzKeuL3BfXKqtQL6ru85ZgltDCtNmy6K/pCLFXxtNkLGsm5T
+         TPfdoUwNEFVZebtOQ2Z7zxbj0XSlUreWrlpBXzdfRefMSTDDdH1FrNIM9Lhjx6Oa/f
+         921Tnm6u8kK+iAMHx39Zq9iFWuBkQyNy9qs7Lxfk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 4.19 27/57] arm64: entry: Make the trampoline cleanup optional
-Date:   Mon, 21 Mar 2022 14:52:08 +0100
-Message-Id: <20220321133222.779722505@linuxfoundation.org>
+        stable@vger.kernel.org, liqiong <liqiong@nfschina.com>
+Subject: [PATCH 4.19 21/57] mm: fix dereference a null pointer in migrate[_huge]_page_move_mapping()
+Date:   Mon, 21 Mar 2022 14:52:02 +0100
+Message-Id: <20220321133222.602567121@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133221.984120927@linuxfoundation.org>
 References: <20220321133221.984120927@linuxfoundation.org>
@@ -50,66 +48,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+From: liqiong <liqiong@nfschina.com>
 
-commit d739da1694a0eaef0358a42b76904b611539b77b upstream.
+Upstream doesn't use radix tree any more in migrate.c, no need this patch.
 
-Subsequent patches will add additional sets of vectors that use
-the same tricks as the kpti vectors to reach the full-fat vectors.
-The full-fat vectors contain some cleanup for kpti that is patched
-in by alternatives when kpti is in use. Once there are additional
-vectors, the cleanup will be needed in more cases.
+The two functions look up a slot and dereference the pointer,
+If the pointer is null, the kernel would crash and dump.
 
-But on big/little systems, the cleanup would be harmful if no
-trampoline vector were in use. Instead of forcing CPUs that don't
-need a trampoline vector to use one, make the trampoline cleanup
-optional.
+The 'numad' service calls 'migrate_pages' periodically. If some slots
+being replaced (Cache Eviction), the radix_tree_lookup_slot() returns
+a null pointer that causes kernel crash.
 
-Entry at the top of the vectors will skip the cleanup. The trampoline
-vectors can then skip the first instruction, triggering the cleanup
-to run.
+"numad":  crash> bt
+[exception RIP: migrate_page_move_mapping+337]
 
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
+Introduce pointer checking to avoid dereference a null pointer.
+
+Cc: <stable@vger.kernel.org> # linux-4.19.y
+Signed-off-by: liqiong <liqiong@nfschina.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/entry.S |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ mm/migrate.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -72,16 +72,20 @@
- 	.align 7
- .Lventry_start\@:
- #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
--alternative_if ARM64_UNMAP_KERNEL_AT_EL0
- 	.if	\el == 0
-+	/*
-+	 * This must be the first instruction of the EL0 vector entries. It is
-+	 * skipped by the trampoline vectors, to trigger the cleanup.
-+	 */
-+	b	.Lskip_tramp_vectors_cleanup\@
- 	.if	\regsize == 64
- 	mrs	x30, tpidrro_el0
- 	msr	tpidrro_el0, xzr
- 	.else
- 	mov	x30, xzr
- 	.endif
-+.Lskip_tramp_vectors_cleanup\@:
- 	.endif
--alternative_else_nop_endif
- #endif
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -472,6 +472,10 @@ int migrate_page_move_mapping(struct add
  
- 	sub	sp, sp, #S_FRAME_SIZE
-@@ -983,7 +987,7 @@ alternative_insn isb, nop, ARM64_WORKARO
- #endif
- 	prfm	plil1strm, [x30, #(1b - tramp_vectors)]
- 	msr	vbar_el1, x30
--	add	x30, x30, #(1b - tramp_vectors)
-+	add	x30, x30, #(1b - tramp_vectors + 4)
- 	isb
- 	ret
- .org 1b + 128	// Did we overflow the ventry slot?
+ 	pslot = radix_tree_lookup_slot(&mapping->i_pages,
+  					page_index(page));
++	if (pslot == NULL) {
++		xa_unlock_irq(&mapping->i_pages);
++		return -EAGAIN;
++	}
+ 
+ 	expected_count += hpage_nr_pages(page) + page_has_private(page);
+ 	if (page_count(page) != expected_count ||
+@@ -590,6 +594,10 @@ int migrate_huge_page_move_mapping(struc
+ 	xa_lock_irq(&mapping->i_pages);
+ 
+ 	pslot = radix_tree_lookup_slot(&mapping->i_pages, page_index(page));
++	if (pslot == NULL) {
++		xa_unlock_irq(&mapping->i_pages);
++		return -EAGAIN;
++	}
+ 
+ 	expected_count = 2 + page_has_private(page);
+ 	if (page_count(page) != expected_count ||
 
 
