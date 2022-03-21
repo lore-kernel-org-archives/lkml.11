@@ -2,109 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 694A5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:55:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B2B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:56:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346939AbiCUL5E (ORCPT
+        id S1346962AbiCUL5p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 07:57:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36876 "EHLO
+        Mon, 21 Mar 2022 07:57:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235298AbiCUL5A (ORCPT
+        with ESMTP id S241718AbiCUL5o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 07:57:00 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FAD210F4;
-        Mon, 21 Mar 2022 04:55:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647863736; x=1679399736;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=mfbOq5iAK8SE23byJMRPvctNFXZ1aD5KZOZcb0LP44M=;
-  b=DR1QgoQYQrVhL1OfDhk99/W8xfaqNFPlazz/dykZD0GDkIJP93wqzIhD
-   awC3UUtM1nrB+iLWH8RAW7VsU70EeuA5y666w5PP8IPduIHVTuOZ/Lq4v
-   vPhiXw64yvg9LFdBQQMyxtahGPMbB1ssPT+FigKb5NbuAnYLDpafsdSe6
-   TzM/MuRBjZ9XfdKcI+0/syGuWjKuBPaNBoW8dymp01Nsx11Gwq8aiEImB
-   M/2KOBzcR+c0XgO1ZR2uTq2MrDtlvKX2SoeLTMEVfthg873xrjvMzYeUr
-   o7s+fnBZYYE5GF7RR9c2MAAwjHBC3waxYtMopoW+hyO5ewQNcA7Oodq9D
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10292"; a="237475047"
-X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
-   d="scan'208";a="237475047"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 04:55:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
-   d="scan'208";a="692147795"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga001.fm.intel.com with ESMTP; 21 Mar 2022 04:55:33 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22LBtV4B012712;
-        Mon, 21 Mar 2022 11:55:31 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Wan Jiabing <wanjiabing@vivo.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [Intel-wired-lan] [PATCH] ice: use min() to make code cleaner in ice_gnss
-Date:   Mon, 21 Mar 2022 12:54:11 +0100
-Message-Id: <20220321115412.844440-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <8822dfa2-bdb8-fceb-e920-94afb50881e8@intel.com>
-References: <20220318094629.526321-1-wanjiabing@vivo.com> <8822dfa2-bdb8-fceb-e920-94afb50881e8@intel.com>
+        Mon, 21 Mar 2022 07:57:44 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B13D6155
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 04:56:19 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22LBtxLC038930;
+        Mon, 21 Mar 2022 06:55:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1647863759;
+        bh=bCLwbYerWXAY3w9LHvGZnWCYT3HwaOCLE1h4UadxiVI=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=yAETlEfxM3VF/6vMyekL3sRohU1rrTfNW5NSN3S+EIfLsVsZk41hbMXHa44/P7r2M
+         ofpwzpJMiPQE4jOUKeme0+l1i/h4mf7g7BNfaKZxyXBAuhPC2oUYn55Cs2HVGB40wV
+         wHDW+dg9V0vk77YwXbwJuPhxF/5S0I9EBw25Siz8=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22LBtxQG024843
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 21 Mar 2022 06:55:59 -0500
+Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 21
+ Mar 2022 06:55:58 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 21 Mar 2022 06:55:58 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22LBtwuF002242;
+        Mon, 21 Mar 2022 06:55:58 -0500
+Date:   Mon, 21 Mar 2022 17:25:57 +0530
+From:   Pratyush Yadav <p.yadav@ti.com>
+To:     Tudor Ambarus <tudor.ambarus@microchip.com>
+CC:     <michael@walle.cc>, <miquel.raynal@bootlin.com>, <richard@nod.at>,
+        <vigneshr@ti.com>, <linux-mtd@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <nicolas.ferre@microchip.com>,
+        <zhengxunli@mxic.com.tw>, <jaimeliao@mxic.com.tw>
+Subject: Re: [PATCH v6 1/7] mtd: spi-nor: Rename method,
+ s/spi_nor_match_id/spi_nor_match_name
+Message-ID: <20220321115557.lup4hdafc4oxnjlj@ti.com>
+References: <20220209133656.374903-1-tudor.ambarus@microchip.com>
+ <20220209133656.374903-2-tudor.ambarus@microchip.com>
+ <20220321115349.vffvanluf5b2wzhh@ti.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220321115349.vffvanluf5b2wzhh@ti.com>
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Nguyen <anthony.l.nguyen@intel.com>
-Date: Fri, 18 Mar 2022 13:19:26 -0700
-
-> On 3/18/2022 2:46 AM, Wan Jiabing wrote:
-
-Hey Wan,
-
-> > Fix the following coccicheck warning:
-> > ./drivers/net/ethernet/intel/ice/ice_gnss.c:79:26-27: WARNING opportunity for min()
-> >
-> > Use min() to make code cleaner.
-> >
-> > Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+On 21/03/22 05:23PM, Pratyush Yadav wrote:
+> On 09/02/22 03:36PM, Tudor Ambarus wrote:
+> > The method is matching a flash_info entry by searching by name. Rename
+> > the method for better clarity.
+> > 
+> > Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
 > 
-> There are build issues with this patch:
-> 
-> In file included from ./include/linux/kernel.h:26,
->                  from drivers/net/ethernet/intel/ice/ice.h:9,
->                  from drivers/net/ethernet/intel/ice/ice_gnss.c:4:
-> drivers/net/ethernet/intel/ice/ice_gnss.c: In function 'ice_gnss_read':
-> ./include/linux/minmax.h:20:35: error: comparison of distinct pointer types lacks a cast [-Werror]
->    20 |         (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
->       |                                   ^~
-> ./include/linux/minmax.h:26:18: note: in expansion of macro '__typecheck'
->    26 |                 (__typecheck(x, y) && __no_side_effects(x, y))
->       |                  ^~~~~~~~~~~
-> ./include/linux/minmax.h:36:31: note: in expansion of macro '__safe_cmp'
->    36 |         __builtin_choose_expr(__safe_cmp(x, y), \
->       |                               ^~~~~~~~~~
-> ./include/linux/minmax.h:45:25: note: in expansion of macro '__careful_cmp'
->    45 | #define min(x, y)       __careful_cmp(x, y, <)
->       |                         ^~~~~~~~~~~~~
-> drivers/net/ethernet/intel/ice/ice_gnss.c:79:30: note: in expansion of macro 'min'
->    79 |                 bytes_read = min(bytes_left, ICE_MAX_I2C_DATA_SIZE);
->       |                              ^~~
+> Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
 
-Use `min_t(typeof(bytes_left), ICE_MAX_I2C_DATA_SIZE)` to avoid
-this. Plain definitions are usually treated as `unsigned long`
-unless there's a suffix (u, ull etc.).
+Looks like you have sent another series with these patches. Let me 
+review that instead.
 
-> cc1: all warnings being treated as errors 
-
-Thanks,
-Al
+-- 
+Regards,
+Pratyush Yadav
+Texas Instruments Inc.
