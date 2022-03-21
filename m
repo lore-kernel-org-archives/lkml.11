@@ -2,161 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E69E1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 04:21:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 459F1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 04:25:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245400AbiCUEXN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 00:23:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41410 "EHLO
+        id S1344241AbiCUE0l (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 00:26:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239857AbiCUEXK (ORCPT
+        with ESMTP id S244277AbiCUE0f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 00:23:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8E01713D52
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 21:21:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647836504;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QvyzeWrMLOcevBTswhqEkb8FAM3gEDuF897VWUnNA6w=;
-        b=iQbPOfZ+VVEQG4wJZ9eFQ0puQCP3ucX8D3VzUk7Q3B6fAD/i1lW62aw3PRgrtyH0OTFhK7
-        brXkbQqe4qNnNiV4ndOPDSKl2g/LjgJM5ZP7qha1gJUeTn0iI/k5MTTOq+hnLA15CNNyvp
-        xqcdRX+49MOfaZN4xfzslILrGHueCFE=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-621-6DaFMsC2NbKClrPooPyz2w-1; Mon, 21 Mar 2022 00:21:38 -0400
-X-MC-Unique: 6DaFMsC2NbKClrPooPyz2w-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C2A891066566;
-        Mon, 21 Mar 2022 04:21:37 +0000 (UTC)
-Received: from localhost (ovpn-12-54.pek2.redhat.com [10.72.12.54])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id EBC06141DC29;
-        Mon, 21 Mar 2022 04:21:36 +0000 (UTC)
-Date:   Mon, 21 Mar 2022 12:21:33 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Coiby Xu <coxu@redhat.com>
-Cc:     kexec@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
-        Dave Young <dyoung@redhat.com>, Will Deacon <will@kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 1/3] kexec: clean up arch_kexec_kernel_verify_sig
-Message-ID: <Yjf9TbBo5ysjM7Nl@MiWiFi-R3L-srv>
-References: <20220318094101.274950-1-coxu@redhat.com>
- <20220318094101.274950-2-coxu@redhat.com>
+        Mon, 21 Mar 2022 00:26:35 -0400
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B55323151
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 21:25:10 -0700 (PDT)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-2db2add4516so143248227b3.1
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 21:25:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4NSXl8x9VQewgRZHgqXMmZGOEdV3eFjb3sYvvvg6pNg=;
+        b=J6gele5F7EmCQLLAJAVg85lJycQ/fkbtMV60Bxn6mvBD54K/cP91HfuCJSamixeAe6
+         SMimZpLUVi6GEmvbVU07gyHdeCeiYdtk4dmtLUJ8nH0xQuKRP5nXagiIZ3LrTCv9YfDe
+         C+mSOTSyfmPr+Jge0Xnm2nipVd5HfDakmx2EM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4NSXl8x9VQewgRZHgqXMmZGOEdV3eFjb3sYvvvg6pNg=;
+        b=xYHD9zem6kDDSr3pCJwladCXwKXJRM0zV6Z09zZLOQbu+I10UaxYYjhqVHUs3mORvu
+         zqeAGQyl9FbDyiyA4TrQHjmMAm74/IO6N51OiD3bQek9lkR5gXZ5k8y5gLWqt4UvR4qR
+         nwMAf+EyTes6ZSocOsHXExk+lT6jRPTUBHzdzrnB2lFU2dAIlZnhopVH7Retd1G6NEgC
+         Tv5/Ov9o6kbZa5rqWGk21TBoJ81NKpMDvYKx1wzZcEvWGnJMuJGyVzIKFhOw/xdatnSc
+         UOy4JJcTD01aBQ7sR+6/JUq3421+7pBTyENfwBHJeld5w9qvtCXy0j9HSSwbsiyx8QmK
+         Rbtg==
+X-Gm-Message-State: AOAM531tf6xci24IS9yqS4Z8etny9lGXy4tLbvxf08Nc44u0OPRS/ASd
+        l7lPebw2jmvLCke3ZDMNBNUEtjl4gkRp3FsAimJ4hw==
+X-Google-Smtp-Source: ABdhPJxzqdQkJL+E26J8ZUZbTwrpFeuieBZ6OBpvDJ70M8HbgvzqPpoqzxqTXlsc0yVVk8krFj2m/iV9tyn319SkBwY=
+X-Received: by 2002:a05:690c:9c:b0:2e6:4ca0:d140 with SMTP id
+ be28-20020a05690c009c00b002e64ca0d140mr502772ywb.161.1647836709475; Sun, 20
+ Mar 2022 21:25:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220318094101.274950-2-coxu@redhat.com>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+References: <20220318095417.2016-1-jianjun.wang@mediatek.com>
+ <20220318095417.2016-2-jianjun.wang@mediatek.com> <2e0989c3-7132-6091-5c9e-5dc8d9af22e8@collabora.com>
+ <319cf016-55fb-dcd4-9157-ad795c8e68ff@kernel.org> <e0adbb4d-aa87-49ea-d79f-11c5f4fc4bdd@collabora.com>
+In-Reply-To: <e0adbb4d-aa87-49ea-d79f-11c5f4fc4bdd@collabora.com>
+From:   Chen-Yu Tsai <wenst@chromium.org>
+Date:   Mon, 21 Mar 2022 12:24:58 +0800
+Message-ID: <CAGXv+5GzC_LFd_1uTBDT=2otiUrJn9NGa4g=R4NhED7-p-G9RA@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] dt-bindings: phy: mediatek: Add YAML schema for
+ PCIe PHY
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Jianjun Wang <jianjun.wang@mediatek.com>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rex-bc.chen@mediatek.com, Randy.Wu@mediatek.com,
+        jieyy.yang@mediatek.com, chuanjia.liu@mediatek.com,
+        qizhong.cheng@mediatek.com, jian.yang@mediatek.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03/18/22 at 05:40pm, Coiby Xu wrote:
-> Commit 9ec4ecef0af7 ("kexec_file,x86,powerpc: factor out kexec_file_ops
-> functions") allows implementing the arch-specific implementation of kernel
-> image verification in kexec_file_ops->verify_sig. Currently, there is no
+On Fri, Mar 18, 2022 at 9:56 PM AngeloGioacchino Del Regno
+<angelogioacchino.delregno@collabora.com> wrote:
+>
+> Il 18/03/22 14:51, Krzysztof Kozlowski ha scritto:
+> > On 18/03/2022 12:12, AngeloGioacchino Del Regno wrote:
+> >> Il 18/03/22 10:54, Jianjun Wang ha scritto:
+> >>> Add YAML schema documentation for PCIe PHY on MediaTek chipsets.
+> >>>
+> >>> Signed-off-by: Jianjun Wang <jianjun.wang@mediatek.com>
+> >>> ---
+> >>>    .../bindings/phy/mediatek,pcie-phy.yaml       | 75 +++++++++++++++++++
+> >>>    1 file changed, 75 insertions(+)
+> >>>    create mode 100644 Documentation/devicetree/bindings/phy/mediatek,pcie-phy.yaml
+> >>>
+> >>> diff --git a/Documentation/devicetree/bindings/phy/mediatek,pcie-phy.yaml b/Documentation/devicetree/bindings/phy/mediatek,pcie-phy.yaml
+> >>> new file mode 100644
+> >>> index 000000000000..868bf976568b
+> >>> --- /dev/null
+> >>> +++ b/Documentation/devicetree/bindings/phy/mediatek,pcie-phy.yaml
+> >>> @@ -0,0 +1,75 @@
+> >>> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> >>> +%YAML 1.2
+> >>> +---
+> >>> +$id: http://devicetree.org/schemas/phy/mediatek,pcie-phy.yaml#
+> >>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> >>> +
+> >>> +title: MediaTek PCIe PHY
+> >>> +
+> >>> +maintainers:
+> >>> +  - Jianjun Wang <jianjun.wang@mediatek.com>
+> >>> +
+> >>> +description: |
+> >>> +  The PCIe PHY supports physical layer functionality for PCIe Gen3 port.
+> >>> +
+> >>> +properties:
+> >>> +  compatible:
+> >>> +    const: mediatek,mt8195-pcie-phy
+> >>
+> >> Since I don't expect this driver to be only for MT8195, but to be extended to
+> >> support some more future MediaTek SoCs and, depending on the number of differences
+> >> in the possible future Gen4 PHYs, even different gen's, I propose to add a generic
+> >> compatible as const.
+> >>
+> >> So you'll have something like:
+> >>
+> >> - enum:
+> >>       - mediatek,mt8195-pcie-phy
+> >> - const: mediatek,pcie-gen3-phy
+> >
+> > I am not sure if this is a good idea. How sure are you that there will
+> > be no different PCIe Gen3 PHY not compatible with this one?
+> >
+> >
+>
+> Thanks for pointing that out, I have underestimated this option.
+>
+> Perhaps Jianjun may be more informed about whether my proposal is valid or not.
 
-Looking back at the old commit 9ec4ecef0af7, it mistakenly added a
-generic arch_kexec_kernel_verify_sig() which is marked as __weak,
-and expects any architecture will add a arch specified version if needed. 
-In fact those arch specified difference has been removed by wrapping
-them into each architecture's own struct kexec_file_ops methods. Means
-in the commit, the generic arch_kexec_kernel_verify_sig() is unnecessary
-at all.
+Just FYI, for Allwinner and I believe Rockchip as well, the compatible strings
+always list the first SoC the hardware block was seen on known at the time
+of driver/binding submission. No generic compatible strings are ever used.
 
-Now, you clean up that uncessary function with code change.
+Not sure if that's the general rule or not.
 
-I think description telling above analysis could be clearer. 
 
-> arch-specific implementation of arch_kexec_kernel_verify_sig. So clean it
-> up.
-> 
-> Suggested-by: Eric W. Biederman <ebiederm@xmission.com>
-> Signed-off-by: Coiby Xu <coxu@redhat.com>
-> ---
->  include/linux/kexec.h |  4 ----
->  kernel/kexec_file.c   | 34 +++++++++++++---------------------
->  2 files changed, 13 insertions(+), 25 deletions(-)
-> 
-> diff --git a/include/linux/kexec.h b/include/linux/kexec.h
-> index 0c994ae37729..755fed183224 100644
-> --- a/include/linux/kexec.h
-> +++ b/include/linux/kexec.h
-> @@ -196,10 +196,6 @@ int arch_kexec_apply_relocations(struct purgatory_info *pi,
->  				 const Elf_Shdr *relsec,
->  				 const Elf_Shdr *symtab);
->  int arch_kimage_file_post_load_cleanup(struct kimage *image);
-> -#ifdef CONFIG_KEXEC_SIG
-> -int arch_kexec_kernel_verify_sig(struct kimage *image, void *buf,
-> -				 unsigned long buf_len);
-> -#endif
->  int arch_kexec_locate_mem_hole(struct kexec_buf *kbuf);
->  
->  extern int kexec_add_buffer(struct kexec_buf *kbuf);
-> diff --git a/kernel/kexec_file.c b/kernel/kexec_file.c
-> index 8347fc158d2b..3720435807eb 100644
-> --- a/kernel/kexec_file.c
-> +++ b/kernel/kexec_file.c
-> @@ -89,25 +89,6 @@ int __weak arch_kimage_file_post_load_cleanup(struct kimage *image)
->  	return kexec_image_post_load_cleanup_default(image);
->  }
->  
-> -#ifdef CONFIG_KEXEC_SIG
-> -static int kexec_image_verify_sig_default(struct kimage *image, void *buf,
-> -					  unsigned long buf_len)
-> -{
-> -	if (!image->fops || !image->fops->verify_sig) {
-> -		pr_debug("kernel loader does not support signature verification.\n");
-> -		return -EKEYREJECTED;
-> -	}
-> -
-> -	return image->fops->verify_sig(buf, buf_len);
-> -}
-> -
-> -int __weak arch_kexec_kernel_verify_sig(struct kimage *image, void *buf,
-> -					unsigned long buf_len)
-> -{
-> -	return kexec_image_verify_sig_default(image, buf, buf_len);
-> -}
-> -#endif
-> -
->  /*
->   * arch_kexec_apply_relocations_add - apply relocations of type RELA
->   * @pi:		Purgatory to be relocated.
-> @@ -184,13 +165,24 @@ void kimage_file_post_load_cleanup(struct kimage *image)
->  }
->  
->  #ifdef CONFIG_KEXEC_SIG
-> +static int kexec_image_verify_sig(struct kimage *image, void *buf,
-> +		unsigned long buf_len)
-> +{
-> +	if (!image->fops || !image->fops->verify_sig) {
-> +		pr_debug("kernel loader does not support signature verification.\n");
-> +		return -EKEYREJECTED;
-> +	}
-> +
-> +	return image->fops->verify_sig(buf, buf_len);
-> +}
-> +
->  static int
->  kimage_validate_signature(struct kimage *image)
->  {
->  	int ret;
->  
-> -	ret = arch_kexec_kernel_verify_sig(image, image->kernel_buf,
-> -					   image->kernel_buf_len);
-> +	ret = kexec_image_verify_sig(image, image->kernel_buf,
-> +			image->kernel_buf_len);
->  	if (ret) {
->  
->  		if (IS_ENABLED(CONFIG_KEXEC_SIG_FORCE)) {
-> -- 
-> 2.34.1
-> 
-
+ChenYu
