@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AE17C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:12:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE484C352AA
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351239AbiCUOKs (ORCPT
+        id S1350529AbiCUOJ4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:10:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38040 "EHLO
+        Mon, 21 Mar 2022 10:09:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349157AbiCUODY (ORCPT
+        with ESMTP id S1349318AbiCUODh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:03:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA9D0179429;
-        Mon, 21 Mar 2022 07:00:30 -0700 (PDT)
+        Mon, 21 Mar 2022 10:03:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F9A017C423;
+        Mon, 21 Mar 2022 07:00:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 28E1461316;
-        Mon, 21 Mar 2022 14:00:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B4A3C340F5;
-        Mon, 21 Mar 2022 14:00:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B1FCF6129A;
+        Mon, 21 Mar 2022 14:00:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9610C340E8;
+        Mon, 21 Mar 2022 14:00:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871212;
-        bh=h3qbwoc/zH8vYH6OoEHkqCy8EwZ8+5z/AcfDyae0prU=;
+        s=korg; t=1647871248;
+        bh=JBwT2FpWuW+DXrzrhNxMCQ2pX1GZUCBphhPILV5OTbU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hPKeYGROLZaqvnxXcwJUF8zThxRLeBibCZJN4oLS+D7hD5c80EdjcZKrg6t2kllS7
-         di6GeyY1+3YMjxMjqoWtG+yUVPt9LnniXg71wAV35giNtrp8wqhzPJsCMK1Y1QuZg1
-         cr0xFgSduybKccQMZKeZ6iug8lE6+h9YJS4JKgRA=
+        b=qbmhkr/5grdeGc4uvowDUv/jd/gEHtEbfSpiiEiwF24+9bn5eIZStFjrbI2R1OisH
+         uvCM/bxN0XnS7W9oc+n8sFLa3C43ort90lRNPAdXCmmQZtIVl4d/Fw8lsO+0v3/dV3
+         dXnCj+61erRk/ObYuWRyLrL86rOpp8mGMvo75iU4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 14/32] hv_netvsc: Add check for kvmalloc_array
-Date:   Mon, 21 Mar 2022 14:52:50 +0100
-Message-Id: <20220321133220.975960878@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [PATCH 5.15 26/32] usb: gadget: rndis: prevent integer overflow in rndis_set_response()
+Date:   Mon, 21 Mar 2022 14:53:02 +0100
+Message-Id: <20220321133221.319477126@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133220.559554263@linuxfoundation.org>
 References: <20220321133220.559554263@linuxfoundation.org>
@@ -50,40 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 886e44c9298a6b428ae046e2fa092ca52e822e6a ]
+commit 65f3324f4b6fed78b8761c3b74615ecf0ffa81fa upstream.
 
-As the potential failure of the kvmalloc_array(),
-it should be better to check and restore the 'data'
-if fails in order to avoid the dereference of the
-NULL pointer.
+If "BufOffset" is very large the "BufOffset + 8" operation can have an
+integer overflow.
 
-Fixes: 6ae746711263 ("hv_netvsc: Add per-cpu ethtool stats for netvsc")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220314020125.2365084-1-jiasheng@iscas.ac.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@kernel.org
+Fixes: 38ea1eac7d88 ("usb: gadget: rndis: check size of RNDIS_MSG_SET command")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/20220301080424.GA17208@kili
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/hyperv/netvsc_drv.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/usb/gadget/function/rndis.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index 382bebc2420d..bdfcf75f0827 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -1586,6 +1586,9 @@ static void netvsc_get_ethtool_stats(struct net_device *dev,
- 	pcpu_sum = kvmalloc_array(num_possible_cpus(),
- 				  sizeof(struct netvsc_ethtool_pcpu_stats),
- 				  GFP_KERNEL);
-+	if (!pcpu_sum)
-+		return;
-+
- 	netvsc_get_pcpu_stats(dev, pcpu_sum);
- 	for_each_present_cpu(cpu) {
- 		struct netvsc_ethtool_pcpu_stats *this_sum = &pcpu_sum[cpu];
--- 
-2.34.1
-
+--- a/drivers/usb/gadget/function/rndis.c
++++ b/drivers/usb/gadget/function/rndis.c
+@@ -640,6 +640,7 @@ static int rndis_set_response(struct rnd
+ 	BufLength = le32_to_cpu(buf->InformationBufferLength);
+ 	BufOffset = le32_to_cpu(buf->InformationBufferOffset);
+ 	if ((BufLength > RNDIS_MAX_TOTAL_SIZE) ||
++	    (BufOffset > RNDIS_MAX_TOTAL_SIZE) ||
+ 	    (BufOffset + 8 >= RNDIS_MAX_TOTAL_SIZE))
+ 		    return -EINVAL;
+ 
 
 
