@@ -2,222 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22C32C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:38:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A0AEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:39:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350384AbiCUPkI (ORCPT
+        id S1350385AbiCUPkt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 11:40:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57110 "EHLO
+        Mon, 21 Mar 2022 11:40:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346365AbiCUPkE (ORCPT
+        with ESMTP id S241116AbiCUPkr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 11:40:04 -0400
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF47C25EB3;
-        Mon, 21 Mar 2022 08:38:38 -0700 (PDT)
-Received: by mail-wr1-f43.google.com with SMTP id h4so3282568wrc.13;
-        Mon, 21 Mar 2022 08:38:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Cf0m9Mwc2BlB8cGnAdUDBhvPmKLbUteebGr9iCh2DTg=;
-        b=pOOxZwcd25kDNpO+BArN7H8ZAAKmnVkpUzrE934/VBnrWaoSwEI8+G7DduBJgTp7rt
-         KwKtItq3R/UhgZN5QTU974IsD93RMACssIHR37/Bd2Slam8GQzqYdN0mCbzh9agDZqp6
-         n8w5Pd/SSvzbp0xdrE4NnHY7Lwka91St81ESom6TJ0lDKCTUEl3GYSmT2CAW3nB/3m5h
-         QBI388I7DEMNzLW+eNrnfiIzePonMTGSGXC2MISjboZzmGu+cZq7k5lBYFoiIJpez2xG
-         t9ZQws7wELFnA9DJIaLhtiIF+xBQ2UmBGNILVmT4FFNN+VcUff/vtjQQ5rZo0Qc8TI2E
-         R/rw==
-X-Gm-Message-State: AOAM533zjemfPtJuvC7N/71u9VfLyVfXDRRC+8ePQCnfdE/jIYDGC8iW
-        z61e4nD2LFTxo2/Lj8975Hg=
-X-Google-Smtp-Source: ABdhPJx3VX5shtu4IB2janA9ZSJj9UXkISBE89gJasz6bhAFIlep/kxEQ0RfkdFLmqh4yYAmU4AtGg==
-X-Received: by 2002:adf:82d1:0:b0:203:e43a:ed40 with SMTP id 75-20020adf82d1000000b00203e43aed40mr18980260wrc.492.1647877117324;
-        Mon, 21 Mar 2022 08:38:37 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.googlemail.com with ESMTPSA id p8-20020a5d59a8000000b00204178688d3sm2418319wrr.100.2022.03.21.08.38.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Mar 2022 08:38:36 -0700 (PDT)
-Message-ID: <39ea8a19-9c47-0a07-d938-a023d62b4450@kernel.org>
-Date:   Mon, 21 Mar 2022 16:38:35 +0100
+        Mon, 21 Mar 2022 11:40:47 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AEB23525D
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 08:39:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647877162; x=1679413162;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-id;
+  bh=3Aag5Lg2XqSw0CYTSeDsRBKRLZ1KqwvDj9lANj/XeAU=;
+  b=ZLYyPzE5q8OZrxHj/h/aUowgY1aT9/40H2sFuh2hZBkVK6jMxAEoxY8N
+   0OxbJknu3N/mIiXWkSv8g4CjBI/tAqlFblgecum7GQBH5q7D7On9o7Vly
+   47CcvvUlHGOZLzflKFXbqQ70oBoN46eUi9ZQ3CkXR2g1FU7B4YyNfKXCm
+   ze+SybgMCigtKTgpZSf6YMRFUXLgGoQiSA97NsDxJXZyOxU5By2i25uzF
+   Gfn0H4HE7FqU1hhismRwvvZEqRL9XjBhuFqUvGJE3fVPVIJIKSwsNdw+m
+   rkPa/srKz7e1ROwN0FGDkXoC4M9pMkM4/v+oAb0qv3KagNaN/3UfMdIvI
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10292"; a="237523924"
+X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
+   d="scan'208";a="237523924"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 08:39:22 -0700
+X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
+   d="scan'208";a="600520915"
+Received: from svisaggi-mobl2.ger.corp.intel.com (HELO jfecht-mobl.ger.corp.intel.com) ([10.252.56.144])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 08:39:20 -0700
+Date:   Mon, 21 Mar 2022 17:39:18 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Joe Perches <joe@perches.com>
+cc:     Andy Whitcroft <apw@canonical.com>,
+        Dwaipayan Ray <dwaipayanray1@gmail.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: [PATCH v3 1/1] checkpatch: don't suggest else is not useful with
+ chained if blocks
+Message-ID: <e14d1c82-775d-58ec-11f9-4f2771111fc3@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4 17/18] dt-bindings: arm: msm: Convert kpss-acc driver
- Documentation to yaml
-Content-Language: en-US
-To:     Ansuel Smith <ansuelsmth@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-clk@vger.kernel.org
-References: <20220321144825.11736-1-ansuelsmth@gmail.com>
- <20220321144825.11736-18-ansuelsmth@gmail.com>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <20220321144825.11736-18-ansuelsmth@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; BOUNDARY="8323329-719652851-1647876962=:10813"
+Content-ID: <c05cf049-67b8-2ab4-d5ad-2b3251743ff@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21/03/2022 15:48, Ansuel Smith wrote:
-> Convert kpss-acc driver Documentation to yaml.
-> The original Documentation was wrong all along. Fix it while we are
-> converting it.
-> The example was wrong as kpss-acc-v2 should only expose the regs but we
-> don't have any driver that expose additional clocks. The kpss-acc driver
-> is only specific to v1. For this exact reason, limit all the additional
-> bindings to v1.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-This looks not accurate. What additional bindings are you limiting here?
-I still see two clocks required for v2, just like old bindings were
-specifying.
+--8323329-719652851-1647876962=:10813
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+Content-ID: <666b7077-8a34-5624-8249-97f553fc3a14@linux.intel.com>
 
-> 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> ---
->  .../bindings/arm/msm/qcom,kpss-acc.txt        | 49 -----------
->  .../bindings/arm/msm/qcom,kpss-acc.yaml       | 88 +++++++++++++++++++
->  2 files changed, 88 insertions(+), 49 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.txt
->  create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.txt b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.txt
-> deleted file mode 100644
-> index 7f696362a4a1..000000000000
-> --- a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.txt
-> +++ /dev/null
-> @@ -1,49 +0,0 @@
-> -Krait Processor Sub-system (KPSS) Application Clock Controller (ACC)
-> -
-> -The KPSS ACC provides clock, power domain, and reset control to a Krait CPU.
-> -There is one ACC register region per CPU within the KPSS remapped region as
-> -well as an alias register region that remaps accesses to the ACC associated
-> -with the CPU accessing the region.
-> -
-> -PROPERTIES
-> -
-> -- compatible:
-> -	Usage: required
-> -	Value type: <string>
-> -	Definition: should be one of:
-> -			"qcom,kpss-acc-v1"
-> -			"qcom,kpss-acc-v2"
-> -
-> -- reg:
-> -	Usage: required
-> -	Value type: <prop-encoded-array>
-> -	Definition: the first element specifies the base address and size of
-> -		    the register region. An optional second element specifies
-> -		    the base address and size of the alias register region.
-> -
-> -- clocks:
-> -        Usage: required
-> -        Value type: <prop-encoded-array>
-> -        Definition: reference to the pll parents.
-> -
-> -- clock-names:
-> -        Usage: required
-> -        Value type: <stringlist>
-> -        Definition: must be "pll8_vote", "pxo".
-> -
-> -- clock-output-names:
-> -	Usage: optional
-> -	Value type: <string>
-> -	Definition: Name of the output clock. Typically acpuX_aux where X is a
-> -		    CPU number starting at 0.
-> -
-> -Example:
-> -
-> -	clock-controller@2088000 {
-> -		compatible = "qcom,kpss-acc-v2";
-> -		reg = <0x02088000 0x1000>,
-> -		      <0x02008000 0x1000>;
-> -		clocks = <&gcc PLL8_VOTE>, <&gcc PXO_SRC>;
-> -		clock-names = "pll8_vote", "pxo";
-> -		clock-output-names = "acpu0_aux";
-> -	};
-> diff --git a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.yaml b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.yaml
-> new file mode 100644
-> index 000000000000..5a3233b1654a
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.yaml
-> @@ -0,0 +1,88 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/arm/msm/qcom,kpss-acc.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Krait Processor Sub-system (KPSS) Application Clock Controller (ACC)
-> +
-> +maintainers:
-> +  - Ansuel Smith <ansuelsmth@gmail.com>
-> +
-> +description: |
-> +  The KPSS ACC provides clock, power domain, and reset control to a Krait CPU.
-> +  There is one ACC register region per CPU within the KPSS remapped region as
-> +  well as an alias register region that remaps accesses to the ACC associated
-> +  with the CPU accessing the region.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - qcom,kpss-acc-v1
-> +      - qcom,kpss-acc-v2
-> +
-> +  reg:
-> +    items:
-> +      - description: Base address and size of the register region
-> +      - description: Optional base address and size of the alias register region
-> +
-> +  clocks:
-> +    items:
-> +      - description: phandle to pll8_vote
-> +      - description: phandle to pxo_board
-> +
-> +  clock-names:
-> +    items:
-> +      - const: pll8_vote
-> +      - const: pxo
-> +
-> +  clock-output-names:
-> +    description: Name of the aux clock. Krait can have at most 4 cpu.
-> +    enum:
-> +      - acpu0_aux
-> +      - acpu1_aux
-> +      - acpu2_aux
-> +      - acpu3_aux
-> +
-> +  '#clock-cells':
-> +    const: 0
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +allOf:
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: qcom,kpss-acc-v1
-> +      then:
-> +        required:
-> +          - clocks
-> +          - clock-names
-> +          - clock-output-names
-> +          - '#clock-cells'
-> +
+When if blocks are chained with "else if" like this:
 
-I expect clock-output-names and clock-cells to be not allowed on v2
-(else: ... clock-output-names: false).
+	if (a)
+		c = 0;
+	else if (b)
+		break;
+	else
+		c = 1;
 
+checkpatch recommends removing else:
 
-Best regards,
-Krzysztof
+WARNING: else is not generally useful after a break or return
+
+Removing else will easily introduce logic errors in this situation
+so it's better to check if the preceding line has "else if" before
+issuing that warning.
+
+Fixes: 032a4c0f9a77 ("checkpatch: warn on unnecessary else after return or break")
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+---
+
+v2:
+- Don't match spuriously to removed lines
+- Extend check backwards to the first line with the same or lower indent 
+  as "else" line
+
+v3:
+- Add back the check to ensure line is defined
+
+ scripts/checkpatch.pl | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
+index b01c36a15d9d..3ea73155c42b 100755
+--- a/scripts/checkpatch.pl
++++ b/scripts/checkpatch.pl
+@@ -4037,14 +4037,24 @@ sub process {
+ # check indentation of any line with a bare else
+ # (but not if it is a multiple line "if (foo) return bar; else return baz;")
+ # if the previous line is a break or return and is indented 1 tab more...
++# but don't warn when there is "else if" before that line to avoid logic errors
+ 		if ($sline =~ /^\+([\t]+)(?:}[ \t]*)?else(?:[ \t]*{)?\s*$/) {
+ 			my $tabs = length($1) + 1;
+ 			if ($prevline =~ /^\+\t{$tabs,$tabs}break\b/ ||
+ 			    ($prevline =~ /^\+\t{$tabs,$tabs}return\b/ &&
+ 			     defined $lines[$linenr] &&
+ 			     $lines[$linenr] !~ /^[ \+]\t{$tabs,$tabs}return/)) {
+-				WARN("UNNECESSARY_ELSE",
+-				     "else is not generally useful after a break or return\n" . $hereprev);
++				my $ifline = $linenr - 3;
++				$tabs--;
++				while ($ifline >= 1 &&
++				       $lines[$ifline] !~ /^[^-]\t{0,$tabs}[^\t]/) {
++					$ifline--;
++				}
++				if (!defined $lines[$ifline] ||
++				    $lines[$ifline] !~ /^[\+ ]\t{$tabs,$tabs}(\} *|)else if\s*\(/) {
++					WARN("UNNECESSARY_ELSE",
++					     "else is not generally useful after a break or return\n" . $hereprev);
++				}
+ 			}
+ 		}
+ 
+-- 
+2.30.2
+--8323329-719652851-1647876962=:10813--
