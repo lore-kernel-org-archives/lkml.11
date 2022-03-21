@@ -2,152 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1BF2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:48:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8BC8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:48:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230078AbiCUWuF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:50:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52594 "EHLO
+        id S229978AbiCUWuJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:50:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229990AbiCUWtU (ORCPT
+        with ESMTP id S230082AbiCUWt3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:49:20 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10EEC476A5F
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:44:20 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id q7-20020a63e207000000b003801b9bb18dso7860377pgh.15
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:44:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=dc2dPnRhrgxNQaDjtZuInpm9Efgh6hIcIz8o5ukUhwE=;
-        b=DrKMziogyI2ZhedcH4G4Ei3Fu4JW8Wd2ZTt1gxzXIfpkq12wquOjlp5QgHBMbewKm9
-         CP5kTVW4LXSe0XcE32gMbU1rEM657zM0PXCVTfV17toFk2abzj+qdRdsRBCpxFSK1Aq2
-         9U47CMdKDp2HDj6EC1vM6HJ0t8cxsqqsTx1v8HiQ+ivLm5qFug9GNWwWtn5wSeSO/E/n
-         LScUWVhL/lggw07xDM41WkRpqBIAvRDzWpFEFg/8yDLoR5qZ966Iynnia4oIjYoUqrTI
-         o5nXq/cMf7D3TiuEk0ZZjdKM/2ASj1QViEcvI5+hIxgReIqaYpNs4dyGwnGd0/sKMhrv
-         5/vA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=dc2dPnRhrgxNQaDjtZuInpm9Efgh6hIcIz8o5ukUhwE=;
-        b=N0lPk6Z5WI7npa2VhJzcpj2aDTOjZ0J2QdKWOy52sEmi0gXI+Z2W+NczZwgOFKkGgD
-         b5qYeNvzm3DKOONUOZejrNTygFr/s0eMXvGhtV8CPtPlq9l0Bhnuvi5cykIsYUsRRX/V
-         xVGTqoHF1D6PSWmv+XYQmCXGNv4qrs7GvIf1yN/N3CTSW0uZd/d2eBr2fIPgm7TJJSpb
-         kHd+JimBNDYrSAidYHb6rDqxxonbgE3PBX936xFDVpA2o5mDUU802+ZIsWmR3UOdxX2o
-         3/kGopnFxBb63OrKu4HzSyyP3eDVtZaOmQm2FHPge0Z64Heysij/PCFG9yOBAqCWPPGD
-         D4+w==
-X-Gm-Message-State: AOAM533bawLgayQ1JrBNb96m+D3n94JNuTGHf4VPb6XHaTOJdyZhzB3i
-        ORKDyDCTAlJCA66xOH8QHC14Ih03eHKpu/skMchbs/HSoZecRQIFRyBnrAJyNFHHSKRSQgBD7dl
-        rDP03V46onvRixzq2JYIz6AJFPsMBaDqoJlGi2HdM89GJE1WFS1G3XmHCKZLSRjixYhBPnkpR
-X-Google-Smtp-Source: ABdhPJwY9ONxbMbgKA2YXXCdUVpfkviwbC45/b5RPsVV/bTsSoz5nQe6v31EiqywvFgrUIfJbfybt3mHY/8h
-X-Received: from bgardon.sea.corp.google.com ([2620:15c:100:202:b76a:f152:cb5e:5cd2])
- (user=bgardon job=sendgmr) by 2002:a05:6a00:1824:b0:4f6:dc69:227e with SMTP
- id y36-20020a056a00182400b004f6dc69227emr26416628pfa.58.1647902659439; Mon,
- 21 Mar 2022 15:44:19 -0700 (PDT)
-Date:   Mon, 21 Mar 2022 15:43:56 -0700
-In-Reply-To: <20220321224358.1305530-1-bgardon@google.com>
-Message-Id: <20220321224358.1305530-8-bgardon@google.com>
-Mime-Version: 1.0
-References: <20220321224358.1305530-1-bgardon@google.com>
-X-Mailer: git-send-email 2.35.1.894.gb6a874cedc-goog
-Subject: [PATCH v2 7/9] KVM: x86/mmu: Add try_get_mt_mask to x86_ops
-From:   Ben Gardon <bgardon@google.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, Peter Xu <peterx@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        David Dunn <daviddunn@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Junaid Shahid <junaids@google.com>,
-        Ben Gardon <bgardon@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 21 Mar 2022 18:49:29 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B2A232FC54;
+        Mon, 21 Mar 2022 15:29:45 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nfraprado)
+        with ESMTPSA id 31F8B1F43C7F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1647901332;
+        bh=zmphMdXTXzFGFa0RwIuHWJdT3xA7jKGE/mpq9uJmF1c=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VBJO/faZVdYkkZW7S6S1XBPPR6LKRRmTGoo2qAVAZN5qBGUXg/qfPG/sf5xVZxJVf
+         zdXS7BcU4jnJ5wZus5dlf5vSgLisAgoRvKAgoBArhq5L7/Xwe5AdVO6tpHQFjfcngO
+         nk0gCB7WdXH492QfW1beWbLGjFlwYNcXMkdXPlwykVa+PGWJWOgb7sV3pFnhriOmly
+         aucxvkej8FdSPm20Pk/zcDm2Tm8wpTkJLTeMS6HgWYYRx223zXe/452MFBYt+yNb9y
+         OilADcAb7fgrHVmGOerNagLpbdwMOV0FM3YAwOKAsPF2jIKMqWPVoQZGjpgs2qHw2d
+         erX5bBrvddeiA==
+Date:   Mon, 21 Mar 2022 18:22:07 -0400
+From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
+        <nfraprado@collabora.com>
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Ryder Lee <ryder.lee@kernel.org>,
+        Hui Liu <hui.liu@mediatek.com>
+Subject: Re: [PATCH v4 05/22] arm64: dts: mt8192: Add usb-phy node
+Message-ID: <20220321222207.ylfv2wznxayepjr5@notapiano>
+References: <20220318144534.17996-1-allen-kh.cheng@mediatek.com>
+ <20220318144534.17996-6-allen-kh.cheng@mediatek.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220318144534.17996-6-allen-kh.cheng@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add another function for getting the memory type mask to x86_ops.
-This version of the function can fail, but it does not require a vCPU
-pointer. It will be used in a subsequent commit for in-place large page
-promotion when disabling dirty logging.
+On Fri, Mar 18, 2022 at 10:45:17PM +0800, Allen-KH Cheng wrote:
+> Add xhci node for mt8192 SoC.
+> 
+> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
 
-No functional change intended.
+Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-Signed-off-by: Ben Gardon <bgardon@google.com>
----
- arch/x86/include/asm/kvm-x86-ops.h | 1 +
- arch/x86/include/asm/kvm_host.h    | 2 ++
- arch/x86/kvm/svm/svm.c             | 9 +++++++++
- arch/x86/kvm/vmx/vmx.c             | 1 +
- 4 files changed, 13 insertions(+)
-
-diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
-index 29affccb353c..29880363b5ed 100644
---- a/arch/x86/include/asm/kvm-x86-ops.h
-+++ b/arch/x86/include/asm/kvm-x86-ops.h
-@@ -88,6 +88,7 @@ KVM_X86_OP_OPTIONAL(sync_pir_to_irr)
- KVM_X86_OP_OPTIONAL_RET0(set_tss_addr)
- KVM_X86_OP_OPTIONAL_RET0(set_identity_map_addr)
- KVM_X86_OP_OPTIONAL_RET0(get_mt_mask)
-+KVM_X86_OP(try_get_mt_mask)
- KVM_X86_OP(load_mmu_pgd)
- KVM_X86_OP(has_wbinvd_exit)
- KVM_X86_OP(get_l2_tsc_offset)
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index f72e80178ffc..a114e4782702 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1422,6 +1422,8 @@ struct kvm_x86_ops {
- 	int (*set_tss_addr)(struct kvm *kvm, unsigned int addr);
- 	int (*set_identity_map_addr)(struct kvm *kvm, u64 ident_addr);
- 	u64 (*get_mt_mask)(struct kvm_vcpu *vcpu, gfn_t gfn, bool is_mmio);
-+	bool (*try_get_mt_mask)(struct kvm *kvm, gfn_t gfn,
-+				bool is_mmio, u64 *mask);
- 
- 	void (*load_mmu_pgd)(struct kvm_vcpu *vcpu, hpa_t root_hpa,
- 			     int root_level);
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index b069493ad5c7..e73415dfcf52 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -3944,6 +3944,13 @@ static bool svm_has_emulated_msr(struct kvm *kvm, u32 index)
- 	return true;
- }
- 
-+static bool svm_try_get_mt_mask(struct kvm *kvm, gfn_t gfn,
-+				bool is_mmio, u64 *mask)
-+{
-+	*mask = 0;
-+	return true;
-+}
-+
- static void svm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
- {
- 	struct vcpu_svm *svm = to_svm(vcpu);
-@@ -4600,6 +4607,8 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
- 	.check_apicv_inhibit_reasons = avic_check_apicv_inhibit_reasons,
- 	.apicv_post_state_restore = avic_apicv_post_state_restore,
- 
-+	.try_get_mt_mask = svm_try_get_mt_mask,
-+
- 	.get_exit_info = svm_get_exit_info,
- 
- 	.vcpu_after_set_cpuid = svm_vcpu_after_set_cpuid,
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 69c654567475..81e9805ed1d8 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -7813,6 +7813,7 @@ static struct kvm_x86_ops vmx_x86_ops __initdata = {
- 	.set_tss_addr = vmx_set_tss_addr,
- 	.set_identity_map_addr = vmx_set_identity_map_addr,
- 	.get_mt_mask = vmx_get_mt_mask,
-+	.try_get_mt_mask = vmx_try_get_mt_mask,
- 
- 	.get_exit_info = vmx_get_exit_info,
- 
--- 
-2.35.1.894.gb6a874cedc-goog
-
+> ---
+>  arch/arm64/boot/dts/mediatek/mt8192.dtsi | 22 ++++++++++++++++++++++
+>  1 file changed, 22 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> index 195d50894df4..28b93b76fe17 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> @@ -875,6 +875,28 @@
+>  			#clock-cells = <1>;
+>  		};
+>  
+> +		u3phy0: t-phy@11e40000 {
+> +			compatible = "mediatek,mt8192-tphy",
+> +				     "mediatek,generic-tphy-v2";
+> +			#address-cells = <1>;
+> +			#size-cells = <1>;
+> +			ranges = <0x0 0x0 0x11e40000 0x1000>;
+> +
+> +			u2port0: usb-phy@0 {
+> +				reg = <0x0 0x700>;
+> +				clocks = <&clk26m>;
+> +				clock-names = "ref";
+> +				#phy-cells = <1>;
+> +			};
+> +
+> +			u3port0: usb-phy@700 {
+> +				reg = <0x700 0x900>;
+> +				clocks = <&clk26m>;
+> +				clock-names = "ref";
+> +				#phy-cells = <1>;
+> +			};
+> +		};
+> +
+>  		i2c0: i2c@11f00000 {
+>  			compatible = "mediatek,mt8192-i2c";
+>  			reg = <0 0x11f00000 0 0x1000>,
+> -- 
+> 2.18.0
+> 
+> 
