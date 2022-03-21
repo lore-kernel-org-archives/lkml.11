@@ -2,95 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABE0AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:50:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65108C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:50:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230339AbiCUWwP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:52:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35536 "EHLO
+        id S230178AbiCUWwV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:52:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230197AbiCUWvt (ORCPT
+        with ESMTP id S230319AbiCUWvx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:51:49 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79DA23DA5F;
-        Mon, 21 Mar 2022 15:41:39 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: nfraprado)
-        with ESMTPSA id 1CDC01F43824
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1647902498;
-        bh=kI/wjHaSk0veo5TLOr3KNgxZeKIdR/WCP+DeGO3YYFA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iS3YE/xkM6pS7zwzvrFBf/k+0phCo54uO8OLGHbzvfBi2CzRboZXCE7HUyOG3168o
-         ZwQaigQV4XLRXSAOpGNFATX6kAg/ZPxusmhLLj5ScYifylmF/RRzF/u/JHRcs+1wc4
-         yhQ93sTnljzF41D9nX/qBx7d7A3F9ghtiWsNPVQ4MaJtBKnYRTxS8k5Zxz3U8WggOp
-         DtXFcYqTPIj44ETXfHk7vNJmubHcLkXJuKlyPLKKVJjAqswxoRX7aJtqLSLs0+NaTP
-         dLlRVTDZ3wnrWty48KAhhNGG9jR1C/z3XJ9hQhF5TkUCqUHucYV3cJRnHyL/gLGKxS
-         t044I3mz6MUbQ==
-Date:   Mon, 21 Mar 2022 18:41:33 -0400
-From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
-        <nfraprado@collabora.com>
-To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Ryder Lee <ryder.lee@kernel.org>,
-        Hui Liu <hui.liu@mediatek.com>
-Subject: Re: [PATCH v4 13/22] arm64: dts: mt8192: Add mipi_tx node
-Message-ID: <20220321224133.jjodvrurv6kvrouf@notapiano>
-References: <20220318144534.17996-1-allen-kh.cheng@mediatek.com>
- <20220318144534.17996-14-allen-kh.cheng@mediatek.com>
+        Mon, 21 Mar 2022 18:51:53 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CEF546AE60
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:41:43 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id a8so32747327ejc.8
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:41:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9lfgL3STyhcbUTg/2mdbbAna/81RZPKVO1DCdewIE0c=;
+        b=gyWTW65QfHhxvHH2bxgBaFULc3nQpwZVt/AImeBaMsagLh7ZILfBIv+cpBZ1WSMI9Y
+         TOPeV02sp4XiVQ8lLN4FhnC7+vP3gy404ImwUap5qVGjKFQLADRuLKDINVF1PWzZB4oh
+         U1mEyqWzxsu3MtArm0qnwbxI0Tx9hdG/LVKbNXemcrBdZ3oknTgvP+A4O4F1hDotj6c7
+         FVqupN7ClUGTVzfsEfmwX4wkAgsXCHqtd+IxXQCc+4lmBRSffgJC9BQPVBCIHWW3kbD/
+         9j6hHMT86dOmHX2WVzZ5qGs1t/Zz97eNKhrycXInFxW646D96NZqUdSy6LBktZ2feENm
+         LGqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9lfgL3STyhcbUTg/2mdbbAna/81RZPKVO1DCdewIE0c=;
+        b=eyIger7lDwxXIqADINbBSoWNEe4uqo9TnUTHjzowYeCJucJ1j7RaaBYA0q5s8oykd6
+         nCiOYyYo+HTiRgr/Ed8YbCjrzWwduVSkrTVn7mn4HUgea+RRENFtJTuOuEI73v548pCN
+         d7EtY+NzetWrKaAn/Mh1AjSVOBXxiXBXqojcEQrauFtVEtFA/mdXAPv/Q6nxqrjykGX3
+         eIbT6RBM+cruyZ0XKeMZpGcw5Nqcbezlk2D++Zgj/qaHcBalEzG29dq0ikbzX1G4X4Tn
+         igkUbsVevp7YNCHRGIjcEzLyCmxnhjjIOCjHOfm5myCoBIn1YwjSU/03CUfJKBH/CNDf
+         HN3w==
+X-Gm-Message-State: AOAM532xpLjthvf59fk9f9cqMZ6uyFvaSimc6Cre04R/3cC2RbBwJfev
+        2Jp5Oz6hMrUjCRBhz8WTd6YMEbZZ4q3t126hOoFVRpZYbISvjA==
+X-Google-Smtp-Source: ABdhPJyawG4O85guPSFaNHQuFtdGjIUfvponf4x7mJ068IZhUDgnWrnpRgCdV86cGiMMISGbZ7KYluPjZMFypJf0Ncc=
+X-Received: by 2002:a2e:6804:0:b0:245:f269:618 with SMTP id
+ c4-20020a2e6804000000b00245f2690618mr16315718lja.198.1647900072176; Mon, 21
+ Mar 2022 15:01:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220318144534.17996-14-allen-kh.cheng@mediatek.com>
+References: <20220321002638.379672-1-mizhang@google.com> <20220321002638.379672-4-mizhang@google.com>
+In-Reply-To: <20220321002638.379672-4-mizhang@google.com>
+From:   David Matlack <dmatlack@google.com>
+Date:   Mon, 21 Mar 2022 15:00:45 -0700
+Message-ID: <CALzav=dU5TPfhp1=n+zo+AcPkL4rpWCRpMCL91vE5z20R+mmjg@mail.gmail.com>
+Subject: Re: [PATCH 3/4] KVM: x86/mmu: explicitly check nx_hugepage in disallowed_hugepage_adjust()
+To:     Mingwei Zhang <mizhang@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm list <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ben Gardon <bgardon@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Peter Xu <peterx@redhat.com>, Ben Gardon <bgorden@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 10:45:25PM +0800, Allen-KH Cheng wrote:
-> Add mipi_tx node for mt8192 SoC.
-> 
-> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+On Sun, Mar 20, 2022 at 5:26 PM Mingwei Zhang <mizhang@google.com> wrote:
+>
+> Add extra check to specify the case of nx hugepage and allow KVM to
+> reconstruct large mapping after dirty logging is disabled. Existing code
+> works only for nx hugepage but the condition is too general in that does
+> not consider other usage case (such as dirty logging).
+
+KVM calls kvm_mmu_zap_collapsible_sptes() when dirty logging is
+disabled. Why is that not sufficient?
+
+> Moreover, existing
+> code assumes that a present PMD or PUD indicates that there exist 'smaller
+> SPTEs' under the paging structure. This assumption may no be true if
+> consider the zapping leafs only behavior in MMU.
+
+Good point. Although, that code just got reverted. Maybe say something like:
+
+  This assumption may not be true in the future if KVM gains support
+for zapping only leaf SPTEs.
+
+>
+> Missing the check causes KVM incorrectly regards the faulting page as a NX
+> huge page and refuse to map it at desired level. And this leads to back
+> performance in shadow mmu and potentiall TDP mmu.
+
+s/potentiall/potentially/
+
+>
+> Fixes: b8e8c8303ff2 ("kvm: mmu: ITLB_MULTIHIT mitigation")
+> Cc: stable@vger.kernel.org
+>
+> Reviewed-by: Ben Gardon <bgardon@google.com>
+> Signed-off-by: Mingwei Zhang <mizhang@google.com>
 > ---
->  arch/arm64/boot/dts/mediatek/mt8192.dtsi | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> index 2648f2847993..6b769fa5b427 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> @@ -1110,6 +1110,16 @@
->  			};
->  		};
->  
-> +		mipi_tx0: dsi-dphy@11e50000 {
-
-Typo here, should be dsi-phy, not dsi-dphy.
-
-Other than that,
-
-Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-
-> +			compatible = "mediatek,mt8183-mipi-tx";
-> +			reg = <0 0x11e50000 0 0x1000>;
-> +			clocks = <&apmixedsys CLK_APMIXED_MIPID26M>;
-> +			#clock-cells = <0>;
-> +			#phy-cells = <0>;
-> +			clock-output-names = "mipi_tx0_pll";
-> +			status = "disabled";
-> +		};
-> +
->  		i2c0: i2c@11f00000 {
->  			compatible = "mediatek,mt8192-i2c";
->  			reg = <0 0x11f00000 0 0x1000>,
-> -- 
-> 2.18.0
-> 
-> 
+>  arch/x86/kvm/mmu/mmu.c | 14 ++++++++++++--
+>  1 file changed, 12 insertions(+), 2 deletions(-)
+>
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index 5628d0ba637e..4d358c273f6c 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -2919,6 +2919,16 @@ void disallowed_hugepage_adjust(struct kvm_page_fault *fault, u64 spte, int cur_
+>             cur_level == fault->goal_level &&
+>             is_shadow_present_pte(spte) &&
+>             !is_large_pte(spte)) {
+> +               struct kvm_mmu_page *sp;
+> +               u64 page_mask;
+> +               /*
+> +                * When nx hugepage flag is not set, there is no reason to
+> +                * go down to another level. This helps demand paging to
+> +                * generate large mappings.
+> +                */
+> +               sp = to_shadow_page(spte & PT64_BASE_ADDR_MASK);
+> +               if (!sp->lpage_disallowed)
+> +                       return;
+>                 /*
+>                  * A small SPTE exists for this pfn, but FNAME(fetch)
+>                  * and __direct_map would like to create a large PTE
+> @@ -2926,8 +2936,8 @@ void disallowed_hugepage_adjust(struct kvm_page_fault *fault, u64 spte, int cur_
+>                  * patching back for them into pfn the next 9 bits of
+>                  * the address.
+>                  */
+> -               u64 page_mask = KVM_PAGES_PER_HPAGE(cur_level) -
+> -                               KVM_PAGES_PER_HPAGE(cur_level - 1);
+> +               page_mask = KVM_PAGES_PER_HPAGE(cur_level) -
+> +                       KVM_PAGES_PER_HPAGE(cur_level - 1);
+>                 fault->pfn |= fault->gfn & page_mask;
+>                 fault->goal_level--;
+>         }
+> --
+> 2.35.1.894.gb6a874cedc-goog
+>
