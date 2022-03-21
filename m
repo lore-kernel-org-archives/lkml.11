@@ -2,134 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6D63C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:48:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1BF2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:48:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230059AbiCUWuD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:50:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52438 "EHLO
+        id S230078AbiCUWuF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:50:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229797AbiCUWtU (ORCPT
+        with ESMTP id S229990AbiCUWtU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 18:49:20 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6453A7207;
-        Mon, 21 Mar 2022 15:29:25 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KMpbB31LYz4xc3;
-        Tue, 22 Mar 2022 09:05:42 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1647900345;
-        bh=gmYh7GMo3XiS2P6h/BZ+GHGO/dGum+YMp62zDLTtDtU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UNqQg1QalL1tX0zvuuptb7aZrlkz+7F2pEf4x51k9xBVs6OisaV3HoMoEXhz3Uzat
-         SVYSuK/xfxB8/08mO32OjWTJDoo8kc2lxGDQiAsYJrTCiGz8xsWIbtU7UkXySpiFVA
-         OwfM8bsABe6ymCTzslPuakDymH+eMJ/DPiyb7ZuxOOt665cUSUlYJp1bAySmznO2qQ
-         nKMdbMg4TCcnCDrMiorgFElL1Ffp2cpPTqSimXHza8kI4Wa6QAlu1H4dX5h5EULdiV
-         rLfuC+q2ZNMFIh8DxxfeaNtQ3BIWWQyyl44hSghG57u1sos0jyP8nHSov+psZMcIeY
-         rjvJQPocLwGPg==
-Date:   Tue, 22 Mar 2022 09:05:41 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "H.J. Lu" <hjl.tools@gmail.com>,
-        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        linux-toolchains <linux-toolchains@vger.kernel.org>,
-        Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: linux-next: build warnings after merge of the tip tree
-Message-ID: <20220322090541.7d06c8cb@canb.auug.org.au>
-In-Reply-To: <CAHk-=wguO61ACXPSz=hmCxNTzqE=mNr_bWLv6GH5jCVZLBL=qw@mail.gmail.com>
-References: <20220321140327.777f9554@canb.auug.org.au>
-        <Yjh11UjDZogc3foM@hirez.programming.kicks-ass.net>
-        <Yjh3xZuuY3QcZ1Bn@hirez.programming.kicks-ass.net>
-        <Yjh4xzSWtvR+vqst@hirez.programming.kicks-ass.net>
-        <YjiBbF+K4FKZyn6T@hirez.programming.kicks-ass.net>
-        <YjiZhRelDJeX4dfR@hirez.programming.kicks-ass.net>
-        <YjidpOZZJkF6aBTG@hirez.programming.kicks-ass.net>
-        <CAHk-=wigO=68WA8aMZnH9o8qRUJQbNJPERosvW82YuScrUTo7Q@mail.gmail.com>
-        <YjirfOJ2HQAnTrU4@hirez.programming.kicks-ass.net>
-        <CAHk-=wguO61ACXPSz=hmCxNTzqE=mNr_bWLv6GH5jCVZLBL=qw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/NW1DkACVm_Mf38+_y.WTVWm";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10EEC476A5F
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:44:20 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id q7-20020a63e207000000b003801b9bb18dso7860377pgh.15
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:44:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=dc2dPnRhrgxNQaDjtZuInpm9Efgh6hIcIz8o5ukUhwE=;
+        b=DrKMziogyI2ZhedcH4G4Ei3Fu4JW8Wd2ZTt1gxzXIfpkq12wquOjlp5QgHBMbewKm9
+         CP5kTVW4LXSe0XcE32gMbU1rEM657zM0PXCVTfV17toFk2abzj+qdRdsRBCpxFSK1Aq2
+         9U47CMdKDp2HDj6EC1vM6HJ0t8cxsqqsTx1v8HiQ+ivLm5qFug9GNWwWtn5wSeSO/E/n
+         LScUWVhL/lggw07xDM41WkRpqBIAvRDzWpFEFg/8yDLoR5qZ966Iynnia4oIjYoUqrTI
+         o5nXq/cMf7D3TiuEk0ZZjdKM/2ASj1QViEcvI5+hIxgReIqaYpNs4dyGwnGd0/sKMhrv
+         5/vA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=dc2dPnRhrgxNQaDjtZuInpm9Efgh6hIcIz8o5ukUhwE=;
+        b=N0lPk6Z5WI7npa2VhJzcpj2aDTOjZ0J2QdKWOy52sEmi0gXI+Z2W+NczZwgOFKkGgD
+         b5qYeNvzm3DKOONUOZejrNTygFr/s0eMXvGhtV8CPtPlq9l0Bhnuvi5cykIsYUsRRX/V
+         xVGTqoHF1D6PSWmv+XYQmCXGNv4qrs7GvIf1yN/N3CTSW0uZd/d2eBr2fIPgm7TJJSpb
+         kHd+JimBNDYrSAidYHb6rDqxxonbgE3PBX936xFDVpA2o5mDUU802+ZIsWmR3UOdxX2o
+         3/kGopnFxBb63OrKu4HzSyyP3eDVtZaOmQm2FHPge0Z64Heysij/PCFG9yOBAqCWPPGD
+         D4+w==
+X-Gm-Message-State: AOAM533bawLgayQ1JrBNb96m+D3n94JNuTGHf4VPb6XHaTOJdyZhzB3i
+        ORKDyDCTAlJCA66xOH8QHC14Ih03eHKpu/skMchbs/HSoZecRQIFRyBnrAJyNFHHSKRSQgBD7dl
+        rDP03V46onvRixzq2JYIz6AJFPsMBaDqoJlGi2HdM89GJE1WFS1G3XmHCKZLSRjixYhBPnkpR
+X-Google-Smtp-Source: ABdhPJwY9ONxbMbgKA2YXXCdUVpfkviwbC45/b5RPsVV/bTsSoz5nQe6v31EiqywvFgrUIfJbfybt3mHY/8h
+X-Received: from bgardon.sea.corp.google.com ([2620:15c:100:202:b76a:f152:cb5e:5cd2])
+ (user=bgardon job=sendgmr) by 2002:a05:6a00:1824:b0:4f6:dc69:227e with SMTP
+ id y36-20020a056a00182400b004f6dc69227emr26416628pfa.58.1647902659439; Mon,
+ 21 Mar 2022 15:44:19 -0700 (PDT)
+Date:   Mon, 21 Mar 2022 15:43:56 -0700
+In-Reply-To: <20220321224358.1305530-1-bgardon@google.com>
+Message-Id: <20220321224358.1305530-8-bgardon@google.com>
+Mime-Version: 1.0
+References: <20220321224358.1305530-1-bgardon@google.com>
+X-Mailer: git-send-email 2.35.1.894.gb6a874cedc-goog
+Subject: [PATCH v2 7/9] KVM: x86/mmu: Add try_get_mt_mask to x86_ops
+From:   Ben Gardon <bgardon@google.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, Peter Xu <peterx@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        David Matlack <dmatlack@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Junaid Shahid <junaids@google.com>,
+        Ben Gardon <bgardon@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/NW1DkACVm_Mf38+_y.WTVWm
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Add another function for getting the memory type mask to x86_ops.
+This version of the function can fail, but it does not require a vCPU
+pointer. It will be used in a subsequent commit for in-place large page
+promotion when disabling dirty logging.
 
-Hi all,
+No functional change intended.
 
-On Mon, 21 Mar 2022 09:52:58 -0700 Linus Torvalds <torvalds@linux-foundatio=
-n.org> wrote:
->
-> On Mon, Mar 21, 2022 at 9:45 AM Peter Zijlstra <peterz@infradead.org> wro=
-te:
-> > >
-> > > It's presumably not in any of the pull requests I already have
-> > > pending, but it would be nice if I saw some details of _what_ you are
-> > > complaining about, and not just the complaint itself ;) =20
-> >
-> > Duh, right. It's this series:
-> >
-> >   https://lore.kernel.org/bpf/164757541675.26179.17727138330733641017.g=
-it-patchwork-notify@kernel.org/
-> >
-> > That went into bpf-next last Friday. I just checked but haven't found a
-> > pull for it yet. =20
->=20
-> Thanks. I can confirm it's not in any of the pull requests I have
-> pending, so I'll just start doing my normal work and try to remember
-> to look out for this issue later.
+Signed-off-by: Ben Gardon <bgardon@google.com>
+---
+ arch/x86/include/asm/kvm-x86-ops.h | 1 +
+ arch/x86/include/asm/kvm_host.h    | 2 ++
+ arch/x86/kvm/svm/svm.c             | 9 +++++++++
+ arch/x86/kvm/vmx/vmx.c             | 1 +
+ 4 files changed, 13 insertions(+)
 
-The normal path for bpf-next code is via the net-next tree.  But the
-above series has not yet been merged into the net-next tree so is only
-in the bpf-next tree.
+diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
+index 29affccb353c..29880363b5ed 100644
+--- a/arch/x86/include/asm/kvm-x86-ops.h
++++ b/arch/x86/include/asm/kvm-x86-ops.h
+@@ -88,6 +88,7 @@ KVM_X86_OP_OPTIONAL(sync_pir_to_irr)
+ KVM_X86_OP_OPTIONAL_RET0(set_tss_addr)
+ KVM_X86_OP_OPTIONAL_RET0(set_identity_map_addr)
+ KVM_X86_OP_OPTIONAL_RET0(get_mt_mask)
++KVM_X86_OP(try_get_mt_mask)
+ KVM_X86_OP(load_mmu_pgd)
+ KVM_X86_OP(has_wbinvd_exit)
+ KVM_X86_OP(get_l2_tsc_offset)
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index f72e80178ffc..a114e4782702 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1422,6 +1422,8 @@ struct kvm_x86_ops {
+ 	int (*set_tss_addr)(struct kvm *kvm, unsigned int addr);
+ 	int (*set_identity_map_addr)(struct kvm *kvm, u64 ident_addr);
+ 	u64 (*get_mt_mask)(struct kvm_vcpu *vcpu, gfn_t gfn, bool is_mmio);
++	bool (*try_get_mt_mask)(struct kvm *kvm, gfn_t gfn,
++				bool is_mmio, u64 *mask);
+ 
+ 	void (*load_mmu_pgd)(struct kvm_vcpu *vcpu, hpa_t root_hpa,
+ 			     int root_level);
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index b069493ad5c7..e73415dfcf52 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -3944,6 +3944,13 @@ static bool svm_has_emulated_msr(struct kvm *kvm, u32 index)
+ 	return true;
+ }
+ 
++static bool svm_try_get_mt_mask(struct kvm *kvm, gfn_t gfn,
++				bool is_mmio, u64 *mask)
++{
++	*mask = 0;
++	return true;
++}
++
+ static void svm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
+ {
+ 	struct vcpu_svm *svm = to_svm(vcpu);
+@@ -4600,6 +4607,8 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
+ 	.check_apicv_inhibit_reasons = avic_check_apicv_inhibit_reasons,
+ 	.apicv_post_state_restore = avic_apicv_post_state_restore,
+ 
++	.try_get_mt_mask = svm_try_get_mt_mask,
++
+ 	.get_exit_info = svm_get_exit_info,
+ 
+ 	.vcpu_after_set_cpuid = svm_vcpu_after_set_cpuid,
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 69c654567475..81e9805ed1d8 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -7813,6 +7813,7 @@ static struct kvm_x86_ops vmx_x86_ops __initdata = {
+ 	.set_tss_addr = vmx_set_tss_addr,
+ 	.set_identity_map_addr = vmx_set_identity_map_addr,
+ 	.get_mt_mask = vmx_get_mt_mask,
++	.try_get_mt_mask = vmx_try_get_mt_mask,
+ 
+ 	.get_exit_info = vmx_get_exit_info,
+ 
+-- 
+2.35.1.894.gb6a874cedc-goog
 
-So, what am I to do?  Drop the bpf-next tree from linux-next until this
-is resolved?  Some input from the BPF people would be useful.
-
-Dave, Jakub, please do not merge the bpf-bext tree into the net-next
-tree for now.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/NW1DkACVm_Mf38+_y.WTVWm
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmI49rUACgkQAVBC80lX
-0GyZSwf/YAF9koEMRaqDbLHeyzvHSVVuqJ5aiqYdatLo85YQJEjezT2PWUv4WlVH
-iRC7bB9X+nzuwy+y9K2Cp0oC8a5XN/StPltylx+n6hCX/RLzJmiuLBzHu0RS8F9u
-kZ/YQap95KE2cc92SR/UMoGzngXmCjBvem/S7CJw4VZaHlSQStjR/LcwKhKHi/gq
-9S8zQhT5el5feN5dnJesUFLpiUqkhKP64L2pwmrMS0zG7ZksObEqEweal70AC0gV
-vVk3yygoku4YYCQMVHSVDUSLt5esDWotFzWrmFI9//P7ot29u68i8C7MFxgUumcW
-P3TwfTIEItlxQ46dt5Ip2Ob4HhFNWA==
-=O/2P
------END PGP SIGNATURE-----
-
---Sig_/NW1DkACVm_Mf38+_y.WTVWm--
