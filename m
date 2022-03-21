@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D912C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:52:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F5C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:52:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348161AbiCUNyI (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 09:54:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37010 "EHLO
+        id S244815AbiCUNyP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 09:54:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348167AbiCUNxr (ORCPT
+        with ESMTP id S1348179AbiCUNxv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:53:47 -0400
+        Mon, 21 Mar 2022 09:53:51 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22A92160140;
-        Mon, 21 Mar 2022 06:52:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C05A165A88;
+        Mon, 21 Mar 2022 06:52:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE398B81661;
-        Mon, 21 Mar 2022 13:52:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15929C340E8;
-        Mon, 21 Mar 2022 13:52:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B6A82B81678;
+        Mon, 21 Mar 2022 13:52:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C592C340E8;
+        Mon, 21 Mar 2022 13:52:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647870734;
-        bh=gXKDcqYLKYE2K5j8zlHjN7E6uqE22CiflRKziJavWcc=;
+        s=korg; t=1647870737;
+        bh=StJD6HhQKaIGM1vNZ+XgYbCaVxO/g95cVkOWPhqPyWA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2AOV2+cJNROu2jzdxVGt7+VMweQpcAtOo6N/+mK7gZ9MtaU9qNIXUXdKD8hMWtmtN
-         lEOMCwCQL7BsZe3aPaP0spIl4zVVuVPmW7dQHIsx3cyegP0AOgjxI1h5p5sRJQcYBN
-         SbgXmSzpKD5yBq905Rck9q9AnvhNWTKo00s3TyIc=
+        b=Gqyqe4/O3+QKF25dv4jwfsIm0OcTv06opiXunw1Dfyk3xMlstYUuThbsqx45oLVum
+         YlNgD3Xyv9tJfEZPbl1z9pHUk/zhB5Q6HO3FuKKNnzKiRL17Jnv7qzpglUxGC4xl1B
+         PgRFRBedY6s8omai1g5184yYN4iUzJXCB+RihkOg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        syzbot+75cccf2b7da87fb6f84b@syzkaller.appspotmail.com
-Subject: [PATCH 4.9 16/16] Input: aiptek - properly check endpoint type
-Date:   Mon, 21 Mar 2022 14:51:46 +0100
-Message-Id: <20220321133217.130534920@linuxfoundation.org>
+        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 02/16] ARM: dts: rockchip: fix a typo on rk3288 crypto-controller
+Date:   Mon, 21 Mar 2022 14:51:32 +0100
+Message-Id: <20220321133216.722084574@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133216.648316863@linuxfoundation.org>
 References: <20220321133216.648316863@linuxfoundation.org>
@@ -50,63 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Corentin Labbe <clabbe@baylibre.com>
 
-commit 5600f6986628dde8881734090588474f54a540a8 upstream.
+[ Upstream commit 3916c3619599a3970d3e6f98fb430b7c46266ada ]
 
-Syzbot reported warning in usb_submit_urb() which is caused by wrong
-endpoint type. There was a check for the number of endpoints, but not
-for the type of endpoint.
+crypto-controller had a typo, fix it.
+In the same time, rename it to just crypto
 
-Fix it by replacing old desc.bNumEndpoints check with
-usb_find_common_endpoints() helper for finding endpoints
-
-Fail log:
-
-usb 5-1: BOGUS urb xfer, pipe 1 != type 3
-WARNING: CPU: 2 PID: 48 at drivers/usb/core/urb.c:502 usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
-Modules linked in:
-CPU: 2 PID: 48 Comm: kworker/2:2 Not tainted 5.17.0-rc6-syzkaller-00226-g07ebd38a0da2 #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-Workqueue: usb_hub_wq hub_event
-...
-Call Trace:
- <TASK>
- aiptek_open+0xd5/0x130 drivers/input/tablet/aiptek.c:830
- input_open_device+0x1bb/0x320 drivers/input/input.c:629
- kbd_connect+0xfe/0x160 drivers/tty/vt/keyboard.c:1593
-
-Fixes: 8e20cf2bce12 ("Input: aiptek - fix crash on detecting device without endpoints")
-Reported-and-tested-by: syzbot+75cccf2b7da87fb6f84b@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Link: https://lore.kernel.org/r/20220308194328.26220-1-paskripkin@gmail.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Link: https://lore.kernel.org/r/20220209120355.1985707-1-clabbe@baylibre.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/tablet/aiptek.c |   10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ arch/arm/boot/dts/rk3288.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/input/tablet/aiptek.c
-+++ b/drivers/input/tablet/aiptek.c
-@@ -1821,15 +1821,13 @@ aiptek_probe(struct usb_interface *intf,
- 	input_set_abs_params(inputdev, ABS_TILT_Y, AIPTEK_TILT_MIN, AIPTEK_TILT_MAX, 0, 0);
- 	input_set_abs_params(inputdev, ABS_WHEEL, AIPTEK_WHEEL_MIN, AIPTEK_WHEEL_MAX - 1, 0, 0);
+diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
+index 7b727d738b69..4702aa980ef8 100644
+--- a/arch/arm/boot/dts/rk3288.dtsi
++++ b/arch/arm/boot/dts/rk3288.dtsi
+@@ -918,7 +918,7 @@
+ 		status = "disabled";
+ 	};
  
--	/* Verify that a device really has an endpoint */
--	if (intf->cur_altsetting->desc.bNumEndpoints < 1) {
-+	err = usb_find_common_endpoints(intf->cur_altsetting,
-+					NULL, NULL, &endpoint, NULL);
-+	if (err) {
- 		dev_err(&intf->dev,
--			"interface has %d endpoints, but must have minimum 1\n",
--			intf->cur_altsetting->desc.bNumEndpoints);
--		err = -EINVAL;
-+			"interface has no int in endpoints, but must have minimum 1\n");
- 		goto fail3;
- 	}
--	endpoint = &intf->cur_altsetting->endpoint[0].desc;
- 
- 	/* Go set up our URB, which is called when the tablet receives
- 	 * input.
+-	crypto: cypto-controller@ff8a0000 {
++	crypto: crypto@ff8a0000 {
+ 		compatible = "rockchip,rk3288-crypto";
+ 		reg = <0xff8a0000 0x4000>;
+ 		interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>;
+-- 
+2.34.1
+
 
 
