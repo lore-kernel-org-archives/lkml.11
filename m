@@ -2,62 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 870A3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:59:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A170AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:59:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231633AbiCUXBJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:01:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56386 "EHLO
+        id S231201AbiCUXBO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:01:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233580AbiCUW7R (ORCPT
+        with ESMTP id S233817AbiCUW7Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:59:17 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28FA368335
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:47:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
-        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=BA2NX4x2iCbeURYzHQoS8utf2aV6LFcUCSHKo7/Ktoo=; b=m7yjYgVnAFqCSGLfM2SPG70zm5
-        u5DoDzZUx8nWjrOtQjk2fvFgni5O4ThAfLoehlgngcUf+BHvdIAHFfJHn8Q26lzpqNKtHI90FIeKv
-        o+rDgQFxTj1mhyRlgNI1+jg0cuI154X/6460cSFvv8jbTIOfzqW9HuR6yqUO92l2qx64SLY8qSmh1
-        zOvusQZyRKhlj3bYU1RA9JQtEVFs3E47aNWi/oJH1GPCw7zoQ3PcLJGS1QF7WTYNC7Ew5d3ImQHJu
-        3FhVAp1PZ9qs8b0QFV/l3rJsNRzZeiesIx/4N1SUiWgOa84VxfWzVgR2iYavxtDGTNt1h5lThZsst
-        07SyPe9Q==;
-Received: from [165.90.126.25] (helo=killbill.home)
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1nWPLN-0000ww-GH; Mon, 21 Mar 2022 22:13:37 +0100
-From:   Melissa Wen <mwen@igalia.com>
-To:     airlied@linux.ie, daniel@ffwll.ch, emma@anholt.net
-Cc:     Rob Herring <robh@kernel.org>, Melissa Wen <mwen@igalia.com>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 0/2] drm/v3d: replace objs lookup steps with drm_gem_objects_lookup
-Date:   Mon, 21 Mar 2022 20:13:14 -0100
-Message-Id: <20220321211316.1423294-1-mwen@igalia.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 21 Mar 2022 18:59:25 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA4E5399B50;
+        Mon, 21 Mar 2022 15:47:35 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 99799223EA;
+        Mon, 21 Mar 2022 22:51:29 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1647899489;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zZPO69nLtcVoVNY/8WX7cNadUBapLv4v6RdmgLF+eNE=;
+        b=qC2R+Sk2zeSQp8GXc0s2WUZq/ahHlgtEhKCGH/PNDSbsgJQY0dRaNcDRdCPau4/UsejBxC
+        ZxWV2ZHm5B6MIL95cCFX4NNFA/kYiHNr1GWv57NH0rukuNgaLfV5rEngsLk6Chp6daOdKm
+        bi8zajADj1XswTXM2s5RihUA2YXiepg=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 21 Mar 2022 22:51:29 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: Clause 45 and Clause 22 PHYs on one MDIO bus
+In-Reply-To: <YjjeMo2YjMZkPIYa@lunn.ch>
+References: <240354b0a54b37e8b5764773711b8aa3@walle.cc>
+ <YjjeMo2YjMZkPIYa@lunn.ch>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <e26585742f492bf03959cfc469d02c52@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The first patch just prevents to iterate on a NULL job->bo array during
-job cleanup. This situation can happen when v3d_lookup_bos() fails to
-allocate memory for the job->bo array and job->bo_count was already set.
-The second replace BOs lookup steps in v3d_lookup_bos() with the
-common code in drm_gem_objects_lookup().
+Am 2022-03-21 21:21, schrieb Andrew Lunn:
+> On Mon, Mar 21, 2022 at 12:21:48PM +0100, Michael Walle wrote:
+>> The SoC I'm using is the LAN9668, which uses the mdio-mscc-mdio 
+>> driver.
+>> First problem there, it doesn't support C45 (yet) but also doesn't 
+>> check
+>> for MII_ADDR_C45 and happily reads/writes bogus registers.
+> 
+> There are many drivers like that :-(
+> 
+> Whenever a new driver is posted, it is one of the things i ask
+> for. But older drivers are missing such checks.
 
-Melissa Wen (2):
-  drm/v3d: cleanup BOs properly when lookup_bos fails
-  drm/v3d: replace obj lookup steps with drm_gem_objects_lookup
+Should that be a patch for net or net-next? One thing to consider;
+The gpy215 is probing just fine with a c22 only mdio driver which 
+doesn't
+check for c45 accesses. It might read fishy registers during its probe,
+though. After adding the c45 check in the mdio drivers read and write
+it will fail to probe. So depending on the mdio driver it might went
+unnoticed that the phy_get_c45_ids() could fail.
 
- drivers/gpu/drm/v3d/v3d_gem.c | 55 ++++-------------------------------
- 1 file changed, 6 insertions(+), 49 deletions(-)
+If it should go via net, then it should probably be accompanied
+by a patch to fix the gpy_probe() (i.e. ignoring -EOPNOTSUPP
+error).
 
--- 
-2.35.1
-
+-michael
