@@ -2,217 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2276C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:40:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39AD3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:41:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351320AbiCUQlk (ORCPT
+        id S1351330AbiCUQmh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 12:41:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38052 "EHLO
+        Mon, 21 Mar 2022 12:42:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237331AbiCUQlj (ORCPT
+        with ESMTP id S244448AbiCUQmf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 12:41:39 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8136A5F259;
-        Mon, 21 Mar 2022 09:40:12 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id d10so30974435eje.10;
-        Mon, 21 Mar 2022 09:40:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EJtLOy1z9qbTwrw3Odhnv9M+mtBkKVnNxZm6T651y2Q=;
-        b=JVDIFxZhuOHeEVexVd7T/hSG4JJGfSXpKlQR/ylBx3yWAjVJYEfPItWO8ljpF3SXyK
-         kxElOTx1KaFQuoERVOWLkF4AIAGfY2CqpmWMz82BdUET9PVmL2RlKqkCv+zRIe2EryPA
-         tjnTmY9UUibI1pF/rlunvzkCvkgRbAVnnRb13kguTQnkdlT4i7F9G0ND9/kYYbyeqz/L
-         vXctdMmUYxXFocGHomYINVhoQEUcNt7WvGjR1lhEnXabSL2ct4ttKaBXiSbP/1KhqEmd
-         F0lJTOmz1BZeJuRd/MHvUxJfkkxt8nKXEtPXNLJxrcd34Yyj/tCqf0qgPcxYzgqz0Vqo
-         kS7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EJtLOy1z9qbTwrw3Odhnv9M+mtBkKVnNxZm6T651y2Q=;
-        b=LjldzHyIthHOCwxyMHwb83wD/uCCkifxkUYd5Fxv8QneLLP12HtOs2V97NPA7kBBmZ
-         kkukIoMwgPAntXf3TfUHrlQo3Pw2AVsShSQXMnzBvTP/kQy5ZaHnPbI28H/IXvpRGbay
-         EAeVM/3JXK6HOKsNdTz2G/UMmyMTgg/tUkPAmJTKI8hxZZ+/3SfH/CdxvoKqoJVnKP3p
-         4mF8bgFkSuHag/JWGBWK7StTJ5WGZ5ODf9w3r3Cz7bFB1x6mr6a2vAfIUuaaJNS6hDi6
-         H/0SWF5AZjhOf0bRlueGXG4z+aCMcGmOmTOdxXiXSaU1/W5xFti3XYn36aA/3t0nBZIv
-         cdPg==
-X-Gm-Message-State: AOAM533i4638Lp1opecOyKXqYOfjHVYNOMn11EWfNxtA1bGR6IM436LA
-        Op7etaNevAwKfH2WURgWkL2WMKpXjXZZVN6bSD8=
-X-Google-Smtp-Source: ABdhPJx0/vREgiXqKTqUQ4+7St5r1LVPAwbRsGJP8mIxaSQcjKrEYSltuiOJGLsg2j99Lus5dg+jzHabi5US69p6aVg=
-X-Received: by 2002:a17:906:4cc7:b0:6d0:7efb:49f with SMTP id
- q7-20020a1709064cc700b006d07efb049fmr21578550ejt.639.1647880811015; Mon, 21
- Mar 2022 09:40:11 -0700 (PDT)
+        Mon, 21 Mar 2022 12:42:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE7CD6CA72
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:41:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6646EB818A0
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 16:41:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A22EFC340F0;
+        Mon, 21 Mar 2022 16:41:03 +0000 (UTC)
+Date:   Mon, 21 Mar 2022 16:40:59 +0000
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Tong Tiangen <tongtiangen@huawei.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Palmer Dabbelt <palmerdabbelt@google.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-riscv@lists.infradead.org
+Subject: Re: [PATCH -next 3/4] arm64: mm: add support for page table check
+Message-ID: <Yjiqm6tQB5To5Jd9@arm.com>
+References: <20220317141203.3646253-1-tongtiangen@huawei.com>
+ <20220317141203.3646253-4-tongtiangen@huawei.com>
+ <YjOFNEvj7EfBasCI@arm.com>
+ <cb91532b-c0cd-034c-2f93-4f76fabf5fc1@huawei.com>
+ <YjS+2FVpq8D4Gx0S@arm.com>
+ <d3006048-f737-439e-b985-cfbab69c4167@huawei.com>
 MIME-Version: 1.0
-References: <20220321042142.69239-1-frank@zago.net> <20220321042142.69239-2-frank@zago.net>
-In-Reply-To: <20220321042142.69239-2-frank@zago.net>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 21 Mar 2022 18:39:00 +0200
-Message-ID: <CAHp75VcyNDNfYyUvSk4kToLiLCVDWo5-Rz_1_fRtR7i8ZjGr7g@mail.gmail.com>
-Subject: Re: [PATCH v4 1/3] mfd: ch341: add core driver for the WCH CH341 in
- I2C/GPIO mode
-To:     frank zago <frank@zago.net>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Wolfram Sang <wsa@kernel.org>, Johan Hovold <johan@kernel.org>,
-        USB <linux-usb@vger.kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-i2c <linux-i2c@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d3006048-f737-439e-b985-cfbab69c4167@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 11:17 AM frank zago <frank@zago.net> wrote:
->
-> The CH341 is a multifunction chip, presenting 3 different USB PID. One
-> of these functions is for I2C/SPI/GPIO. This new set of drivers will
-> manage I2C and GPIO.
+On Mon, Mar 21, 2022 at 02:15:36PM +0800, Tong Tiangen wrote:
+> Considering all your suggestions, The final logic should be:
+> 
+> +#define pte_user(pte)          (!!(pte_val(pte) & PTE_USER))
+> 
+> +#define pmd_user(pmd)		pte_user(pmd_pte(pmd))
+> +#define pmd_user_exec(pmd)	pte_user_exec(pmd_pte(pmd))
+> 
+> +#define pud_user(pud)          pte_user(pud_pte(pud))
+> 
+> +static inline bool pte_user_accessible_page(pte_t pte)
+> +{
+> +	return pte_present(pte) && (pte_user(pte)|| pte_user_exec(pte));
+> +}
 
-...
+This is fine.
 
-> +The driver doesn't support detection of I2C device present on the
+> +static inline bool pmd_user_accessible_page(pmd_t pmd)
+> +{
+> +	return pmd_present(pmd) && (pmd_user(pmd)|| pmd_user_exec(pmd));
+> +}
 
-devices
+That's fine as well assuming that the function is only called on the
+set_pmd_at() path where we know that the pmd would be a block mapping
+(huge page). I think that's the case from a quick look at the current
+x86 implementation.
 
-> +bus. Apparently when a device is not present at a given address, the
-> +CH341 will return an extra byte of data, but the driver doesn't
-> +support that. This may be addressed in the future.
+> +static inline bool pud_user_accessible_page(pud_t pud)
+> +{
+> +	return pud_present(pud) && pud_user(pud);
+> +}
 
-...
-
->     spear-pcie-gadget
->     uacce
->     xilinx_sdfec
-> +   ch341
-
-Seems you broke the order.
-
-...
-
-> +config MFD_CH341
-
-> +       tristate "WinChipHead CH341 in I2C/SPI/GPIO mode"
-
-(1)
-
-> +       depends on USB
-> +       help
-> +         If you say yes to this option, support for the CH341 series
-> +         of chips, running in I2C/SPI/GPIO mode will be included.
-
-"chips running" (no comma needed)
-
-> +         The chip's SPI mode is not supported.
-
-Maybe no need to include SPI in the (1) along with dropping this line?
-
-> +         This driver can also be built as a module.  If so, the
-> +         module will be called ch341-core.
-
-...
-
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/slab.h>
-
-(2)
-
-> +#include <linux/mfd/core.h>
-
-> +
-> +#include <linux/mfd/ch341.h>
-
-Moving these two to (2) ?
-
-...
-
-> +       dev = kzalloc(sizeof(*dev), GFP_KERNEL);
-
-devm_kzalloc() ?
-
-> +       if (!dev)
-> +               return -ENOMEM;
-
-...
-
-> +       rc = mfd_add_hotplug_devices(&iface->dev, ch341_devs,
-> +                                    ARRAY_SIZE(ch341_devs));
-
-> +       if (rc) {
-
-> +               dev_err(&iface->dev, "Failed to add mfd devices to core.");
-> +               goto free_dev;
-
-return dev_err_probe(...); ?
-
-> +       }
-
-...
-
-> +       usb_set_intfdata(dev->iface, NULL);
-
-This has been done by device driver core  for the past 10+ years.
-
-...
-
-> +static const struct usb_device_id ch341_usb_table[] = {
-> +       { USB_DEVICE(0x1a86, 0x5512) },
-> +       { }
-> +};
-
-> +
-
-Redundant blank line.
-
-> +MODULE_DEVICE_TABLE(usb, ch341_usb_table);
-> +
-> +static struct usb_driver ch341_usb_driver = {
-> +       .name       = "ch341-mfd",
-> +       .id_table   = ch341_usb_table,
-> +       .probe      = ch341_usb_probe,
-
-> +       .disconnect = ch341_usb_disconnect
-
-Keep a comma to avoid unneeded churn in the future.
-
-> +};
-
-> +
-
-Redundant blank line.
-
-> +module_usb_driver(ch341_usb_driver);
-
-
-> +/*
-> + * Definitions for CH341 MFD driver
-> + */
-
-One line?
-
-...
-
-> +#include <linux/usb.h>
-
-No users of this header. Use forward declarations.
-
-> +#include <linux/mutex.h>
-
-Missed types.h.
-
-...
-
-> +#define DEFAULT_TIMEOUT 1000   /* 1s USB requests timeout */
-
-Use proper suffix, i.e. _MS.
+Same here.
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Catalin
