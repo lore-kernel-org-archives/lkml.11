@@ -2,67 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29148C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 19:19:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB521C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 19:19:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352765AbiCUTUe (ORCPT
+        id S1352591AbiCUTUh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 15:20:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36102 "EHLO
+        Mon, 21 Mar 2022 15:20:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352720AbiCUTUH (ORCPT
+        with ESMTP id S1352721AbiCUTUH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 15:20:07 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D84F5676B
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 341CF56439
         for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 12:18:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22FA560C7B
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 19:18:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E97E4C36AEB;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D74D960B72
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 19:18:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 43F12C36AE5;
         Mon, 21 Mar 2022 19:18:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1647890314;
-        bh=9+pV8SdzTikyNQKoJLOJYnJnZOIMsasdS8vVn+25Ol8=;
+        bh=z/IVU7yUDPyD4kBZ7kfM78K5GPE78ozUe0JivWh0PDU=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=npZUUcK6khWGghJ1S5SJZ/jwr9v7vBG8mI1lpI4EDADArjzU/lAvmyT/eto3qA7N5
-         lyEv10GPUphZlOsKTY81zkyH8gb5lUp/n8eoBhTjD3fpwvq19xZMV2LJeBzZ+BSmk+
-         WErfz43+BXZI621qC9VKdzXKmNAQgLCK+JaMjDQReUJrIHrlN8ZSDdHbNiyhL9Mf/t
-         y43JU3SpIk05jKgR5IPyMDkwdy8mG6JQc4NY1jVcv9WiseBkXndTt2f+aq3DPwK2QX
-         u5iKYeikjPn+2EEkwsm7Gbn4k7DiAHizVfF+oPtSnrRi1JhFHqJXLjO6SyhgIHSP6S
-         Buo0q+gsqhJoQ==
+        b=MVkxNcGXW7X7d7U/aYs4Vbv1yO/vl9oY88hxPLjs0zQvjQynst04xzoe4ArxzwqNT
+         HlMu4G9u9py6RVynh6aQY/3PuOZwn9tw9voBfo4Wp3C7llCNFutqQbiFeF1rQjXWro
+         C/Y2bZl4sWogvJv41J9MZ6d/uWpP5P5bu9P82ZWT7qKrTr1Fw65xGXFbmuaT5+xHLu
+         8kuxWz4NrqvHS19QBhuOTZ9+fguldFlVrB/QNAWq9mNppXZUxYgCoQUEMfGPOFgJ0O
+         GvjrjWz9o2D1cHcp3NhsYjZdzR2wk7TUCm5cQZ7Cgx8aPTKd9l/9hg+6yKDHpvpjdP
+         QLm3VZFEjd8ng==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D0F3CE6D44B;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 27E0FE6D44B;
         Mon, 21 Mar 2022 19:18:34 +0000 (UTC)
-Subject: Re: [GIT PULL] x86/cc for 5.18
+Subject: Re: [GIT PULL] x86/build for 5.18
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YjiTq6esjAKwvvZt@zn.tnic>
-References: <YjiTq6esjAKwvvZt@zn.tnic>
+In-Reply-To: <YjhUMfbawBB5YZaC@zn.tnic>
+References: <YjhUMfbawBB5YZaC@zn.tnic>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YjiTq6esjAKwvvZt@zn.tnic>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_cc_for_v5.18_rc1
-X-PR-Tracked-Commit-Id: 1e8c5971c249893ac33ca983c32bafcf5d50c727
+X-PR-Tracked-Message-Id: <YjhUMfbawBB5YZaC@zn.tnic>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_build_for_v5.18_rc1
+X-PR-Tracked-Commit-Id: 4eda2bc3431ebe5c8361580877a4666d10ea28a7
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 6b9bfb1365f40f14b1ad908c44dff61672c6404a
-Message-Id: <164789031485.24158.5279869676630089925.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: e10821b8a0350530bedcbe725c030ecfe5bd08c2
+Message-Id: <164789031416.24158.18293249540860331575.pr-tracker-bot@kernel.org>
 Date:   Mon, 21 Mar 2022 19:18:34 +0000
 To:     Borislav Petkov <bp@suse.de>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        =?utf-8?B?SsO2cmcgUsO2ZGVs?= <jroedel@suse.de>,
         x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 21 Mar 2022 16:03:07 +0100:
+The pull request you sent on Mon, 21 Mar 2022 11:32:17 +0100:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_cc_for_v5.18_rc1
+> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_build_for_v5.18_rc1
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/6b9bfb1365f40f14b1ad908c44dff61672c6404a
+https://git.kernel.org/torvalds/c/e10821b8a0350530bedcbe725c030ecfe5bd08c2
 
 Thank you!
 
