@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29A99C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:30:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C5B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:30:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351180AbiCUQbi (ORCPT
+        id S1351210AbiCUQbo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 12:31:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58392 "EHLO
+        Mon, 21 Mar 2022 12:31:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351145AbiCUQb1 (ORCPT
+        with ESMTP id S1351173AbiCUQba (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 12:31:27 -0400
+        Mon, 21 Mar 2022 12:31:30 -0400
 Received: from 189.cn (ptr.189.cn [183.61.185.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 656C750B17;
-        Mon, 21 Mar 2022 09:29:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A174F50B32;
+        Mon, 21 Mar 2022 09:30:02 -0700 (PDT)
 HMM_SOURCE_IP: 10.64.8.43:55736.678671471
 HMM_ATTACHE_NUM: 0000
 HMM_SOURCE_TYPE: SMTP
 Received: from clientip-114.242.206.180 (unknown [10.64.8.43])
-        by 189.cn (HERMES) with SMTP id B0B891002A6;
-        Tue, 22 Mar 2022 00:29:54 +0800 (CST)
+        by 189.cn (HERMES) with SMTP id CC8991002A7;
+        Tue, 22 Mar 2022 00:29:59 +0800 (CST)
 Received: from  ([114.242.206.180])
-        by gateway-151646-dep-b7fbf7d79-vjdjk with ESMTP id d23863fc0f3a4a70b7ff6078ead2ba9e for mripard@kernel.org;
-        Tue, 22 Mar 2022 00:29:57 CST
-X-Transaction-ID: d23863fc0f3a4a70b7ff6078ead2ba9e
+        by gateway-151646-dep-b7fbf7d79-vjdjk with ESMTP id bbd037efea214b91909513597202d761 for mripard@kernel.org;
+        Tue, 22 Mar 2022 00:30:00 CST
+X-Transaction-ID: bbd037efea214b91909513597202d761
 X-Real-From: 15330273260@189.cn
 X-Receive-IP: 114.242.206.180
 X-MEDUSA-Status: 0
@@ -53,9 +53,9 @@ To:     Maxime Ripard <mripard@kernel.org>,
         suijingfeng <suijingfeng@loongson.cn>
 Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
         devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH v11 4/7] MIPS: Loongson64: dts: introduce ls2k1000 pai evaluation board
-Date:   Tue, 22 Mar 2022 00:29:13 +0800
-Message-Id: <20220321162916.1116541-5-15330273260@189.cn>
+Subject: [PATCH v11 6/7] MIPS: Loongson64: defconfig: enable display bridge drivers on Loongson64
+Date:   Tue, 22 Mar 2022 00:29:15 +0800
+Message-Id: <20220321162916.1116541-7-15330273260@189.cn>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220321162916.1116541-1-15330273260@189.cn>
 References: <20220321162916.1116541-1-15330273260@189.cn>
@@ -67,150 +67,48 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: suijingfeng <suijingfeng@loongson.cn>
 
-   ___________________                           ____________________
-  |            -------|                         |                    |
-  |  CRTC0 --> | DVO0 ------------------------> | 1024x600 DPI Panel |
-  |  _   _     -------|  | Which panel to use   |____________________|
-  | | | | |           |  | with this board is a  ___________________
-  | |_| |_|           |  | choice of the user   |                   |
-  |                   |  +--------------------> | 800x480 DPI Panel |
-  |   DC In LS2K1000  |                         |___________________|
-  |  _   _            |     +------+
-  | | | | |           <---->| i2c1 |-----------+
-  | |_| |_|           |     +------+           |
-  |                   |        |               |               _________
-  |            -------|    +---------+         |              |         |
-  |  CRTC1 --> | DVO1 ---> | sii9022 | --> HDMI connector --> | Monitor |
-  |            -------|    +---------+                        |_________|
-  |___________________|
-
-The sii9022 HDMI transmitter working in transparent mode, in this case
-the edid is read from the monitor directly, not through sil9022's ddc
-channel. The PMON[2] firmware of this board is responsible for configure
-the sii9022 encoder at boot time. Due to i2c driver for lsk2000 SoC is
-not upstream yet, we simply replace the sii9022 with a 1024x768 panel.
-
-The i2c0 is not get used by lsdc driver for this board, so there no
-need to worry about DVO0.
-
-[1] https://wiki.debian.org/InstallingDebianOn/Lemote/Loongson2K1000
-[2] https://github.com/loongson-community/pmon
+ls3A4000 evb board is shipped with adv7123 and tfp410 while ls2k1000
+PI board use a DPI panel from FORLINX and a sii9022 HDMI transmitter.
 
 Signed-off-by: suijingfeng <suijingfeng@loongson.cn>
 Signed-off-by: Sui Jingfeng <15330273260@189.cn>
 ---
- arch/mips/boot/dts/loongson/ls2k1000_pai.dts | 102 +++++++++++++++++++
- 1 file changed, 102 insertions(+)
- create mode 100644 arch/mips/boot/dts/loongson/ls2k1000_pai.dts
+ arch/mips/configs/loongson2k_defconfig | 5 +++++
+ arch/mips/configs/loongson3_defconfig  | 5 +++++
+ 2 files changed, 10 insertions(+)
 
-diff --git a/arch/mips/boot/dts/loongson/ls2k1000_pai.dts b/arch/mips/boot/dts/loongson/ls2k1000_pai.dts
-new file mode 100644
-index 000000000000..0b0172d90677
---- /dev/null
-+++ b/arch/mips/boot/dts/loongson/ls2k1000_pai.dts
-@@ -0,0 +1,102 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/dts-v1/;
-+
-+#include "loongson64-2k1000.dtsi"
-+
-+/ {
-+	model = "LS2K1000_PAI_UDB_V1.5";
-+
-+	panel: display@0 {
-+		compatible = "hontron,070JII2135-A2", "panel-dpi";
-+		label = "LCD070CG1024600+DC21";
-+
-+		rotation = <0>;
-+		width-mm = <86>;
-+		height-mm = <154>;
-+
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		port@0 {
-+			reg = <0>;
-+
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			panel_in: endpoint@0 {
-+				reg = <0>;
-+				remote-endpoint = <&dc_out_rgb0>;
-+			};
-+		};
-+
-+		panel-timing {
-+			clock-frequency = <51200000>;
-+			hactive = <1024>;
-+			vactive = <600>;
-+			hsync-len = <4>;
-+			hfront-porch = <160>;
-+			hback-porch = <156>;
-+			vfront-porch = <11>;
-+			vback-porch = <23>;
-+			vsync-len = <1>;
-+
-+			hsync-active = <0>;
-+			vsync-active = <0>;
-+			de-active = <1>;
-+			pixelclk-active = <1>;
-+		};
-+	};
-+
-+	monitor: display@1 {
-+		compatible = "panel-dpi";
-+
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		port@0 {
-+			reg = <0>;
-+
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			monitor_in: endpoint@0 {
-+				reg = <0>;
-+				remote-endpoint = <&dc_out_rgb1>;
-+			};
-+		};
-+
-+		panel-timing {
-+			clock-frequency = <65000000>;
-+			hactive = <1024>;
-+			vactive = <768>;
-+			hfront-porch = <24>;
-+			hsync-len = <136>;
-+			hback-porch = <160>;
-+			vfront-porch = <3>;
-+			vback-porch = <6>;
-+			vsync-len = <29>;
-+
-+			hsync-active = <0>;
-+			vsync-active = <0>;
-+			de-active = <1>;
-+			pixelclk-active = <1>;
-+		};
-+	};
-+};
-+
-+&lsdc {
-+	ports {
-+		port@0 {
-+			endpoint {
-+				remote-endpoint = <&panel_in>;
-+			};
-+		};
-+
-+		port@1 {
-+			endpoint {
-+				remote-endpoint = <&monitor_in>;
-+			};
-+		};
-+	};
-+};
+diff --git a/arch/mips/configs/loongson2k_defconfig b/arch/mips/configs/loongson2k_defconfig
+index e948ca487e2d..0a97c332a5c3 100644
+--- a/arch/mips/configs/loongson2k_defconfig
++++ b/arch/mips/configs/loongson2k_defconfig
+@@ -243,6 +243,11 @@ CONFIG_MEDIA_USB_SUPPORT=y
+ CONFIG_USB_VIDEO_CLASS=m
+ CONFIG_DRM=y
+ CONFIG_DRM_RADEON=y
++CONFIG_DRM_DISPLAY_CONNECTOR=m
++CONFIG_DRM_PANEL_SIMPLE=m
++CONFIG_DRM_SII902X=m
++CONFIG_DRM_SIMPLE_BRIDGE=m
++CONFIG_DRM_TI_TFP410=m
+ CONFIG_FB_RADEON=y
+ CONFIG_LCD_CLASS_DEVICE=y
+ CONFIG_LCD_PLATFORM=m
+diff --git a/arch/mips/configs/loongson3_defconfig b/arch/mips/configs/loongson3_defconfig
+index 25ecd15bc952..35e2fc998768 100644
+--- a/arch/mips/configs/loongson3_defconfig
++++ b/arch/mips/configs/loongson3_defconfig
+@@ -280,6 +280,11 @@ CONFIG_MEDIA_USB_SUPPORT=y
+ CONFIG_USB_VIDEO_CLASS=m
+ CONFIG_DRM=y
+ CONFIG_DRM_RADEON=m
++CONFIG_DRM_DISPLAY_CONNECTOR=m
++CONFIG_DRM_PANEL_SIMPLE=m
++CONFIG_DRM_SII902X=m
++CONFIG_DRM_SIMPLE_BRIDGE=m
++CONFIG_DRM_TI_TFP410=m
+ CONFIG_DRM_QXL=y
+ CONFIG_DRM_VIRTIO_GPU=y
+ CONFIG_FB=y
 -- 
 2.25.1
 
