@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD3E8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:05:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CE94C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:05:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237391AbiCUOGh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:06:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43660 "EHLO
+        id S1348989AbiCUOGo (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 10:06:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348924AbiCUN6k (ORCPT
+        with ESMTP id S1348973AbiCUN6p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:58:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6384160149;
-        Mon, 21 Mar 2022 06:56:45 -0700 (PDT)
+        Mon, 21 Mar 2022 09:58:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A4BF1717A9;
+        Mon, 21 Mar 2022 06:56:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6F65FB81675;
-        Mon, 21 Mar 2022 13:56:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C19C5C340E8;
-        Mon, 21 Mar 2022 13:56:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CED88B816D2;
+        Mon, 21 Mar 2022 13:56:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8BD0C340E8;
+        Mon, 21 Mar 2022 13:56:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647870992;
-        bh=P4ItllVK1Q99xOMEu8UZUZ1sPP00zrEDI+e/7a0d0jM=;
+        s=korg; t=1647871012;
+        bh=rTpAFxWKjUXl+FS6u1hAIHGN6xs3GKhIshiVpQ53tVk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rrsLlycvX/83IosmDWalpTCccMwKV6vhf3wnOyAJb7Me9ok85/f9eFZ4b59ctsMD3
-         edrP8RhpB2y4zrC46/mr3Xmu1rKjVYJ6T00TexvG8mVmxdRARlzZZqgBTyJv7N5H1K
-         idkxcq4Lm0VbyugJOjr9BdpMW0MI9habMULav/I4=
+        b=Irc7t7SrXzQ0UNxCyDTNR1BQSkhPNXjy3IbFiqrI2NzqfDOboxVERMh1wCgQEUnGG
+         rWbCA9JWLFmZrWADrWfqJYeF8z/NCkv9NDDLKo8BA9UaUrMjXbctUBIn6QMYJxk1PF
+         eKK6F83G0WDTV7fjKHWHHqPQf29xOzYgifj7InGM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Joey Gouly <joey.gouly@arm.com>, Will Deacon <will@kernel.org>,
-        Marc Zyngier <maz@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Reiji Watanabe <reijiw@google.com>,
-        Catalin Marinas <catalin.marinas@arm.com>
-Subject: [PATCH 4.19 43/57] arm64: add ID_AA64ISAR2_EL1 sys register
-Date:   Mon, 21 Mar 2022 14:52:24 +0100
-Message-Id: <20220321133223.241904559@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 50/57] hv_netvsc: Add check for kvmalloc_array
+Date:   Mon, 21 Mar 2022 14:52:31 +0100
+Message-Id: <20220321133223.437365137@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133221.984120927@linuxfoundation.org>
 References: <20220321133221.984120927@linuxfoundation.org>
@@ -53,118 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joey Gouly <joey.gouly@arm.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-commit 9e45365f1469ef2b934f9d035975dbc9ad352116 upstream.
+[ Upstream commit 886e44c9298a6b428ae046e2fa092ca52e822e6a ]
 
-This is a new ID register, introduced in 8.7.
+As the potential failure of the kvmalloc_array(),
+it should be better to check and restore the 'data'
+if fails in order to avoid the dereference of the
+NULL pointer.
 
-Signed-off-by: Joey Gouly <joey.gouly@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: James Morse <james.morse@arm.com>
-Cc: Alexandru Elisei <alexandru.elisei@arm.com>
-Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
-Cc: Reiji Watanabe <reijiw@google.com>
-Acked-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20211210165432.8106-3-joey.gouly@arm.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 6ae746711263 ("hv_netvsc: Add per-cpu ethtool stats for netvsc")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220314020125.2365084-1-jiasheng@iscas.ac.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/include/asm/cpu.h    |    1 +
- arch/arm64/include/asm/sysreg.h |    1 +
- arch/arm64/kernel/cpufeature.c  |    9 +++++++++
- arch/arm64/kernel/cpuinfo.c     |    1 +
- arch/arm64/kvm/sys_regs.c       |    2 +-
- 5 files changed, 13 insertions(+), 1 deletion(-)
+ drivers/net/hyperv/netvsc_drv.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/arch/arm64/include/asm/cpu.h
-+++ b/arch/arm64/include/asm/cpu.h
-@@ -36,6 +36,7 @@ struct cpuinfo_arm64 {
- 	u64		reg_id_aa64dfr1;
- 	u64		reg_id_aa64isar0;
- 	u64		reg_id_aa64isar1;
-+	u64		reg_id_aa64isar2;
- 	u64		reg_id_aa64mmfr0;
- 	u64		reg_id_aa64mmfr1;
- 	u64		reg_id_aa64mmfr2;
---- a/arch/arm64/include/asm/sysreg.h
-+++ b/arch/arm64/include/asm/sysreg.h
-@@ -161,6 +161,7 @@
- 
- #define SYS_ID_AA64ISAR0_EL1		sys_reg(3, 0, 0, 6, 0)
- #define SYS_ID_AA64ISAR1_EL1		sys_reg(3, 0, 0, 6, 1)
-+#define SYS_ID_AA64ISAR2_EL1		sys_reg(3, 0, 0, 6, 2)
- 
- #define SYS_ID_AA64MMFR0_EL1		sys_reg(3, 0, 0, 7, 0)
- #define SYS_ID_AA64MMFR1_EL1		sys_reg(3, 0, 0, 7, 1)
---- a/arch/arm64/kernel/cpufeature.c
-+++ b/arch/arm64/kernel/cpufeature.c
-@@ -150,6 +150,10 @@ static const struct arm64_ftr_bits ftr_i
- 	ARM64_FTR_END,
- };
- 
-+static const struct arm64_ftr_bits ftr_id_aa64isar2[] = {
-+	ARM64_FTR_END,
-+};
+diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
+index 2dff0e110c6f..f094e4bc2175 100644
+--- a/drivers/net/hyperv/netvsc_drv.c
++++ b/drivers/net/hyperv/netvsc_drv.c
+@@ -1454,6 +1454,9 @@ static void netvsc_get_ethtool_stats(struct net_device *dev,
+ 	pcpu_sum = kvmalloc_array(num_possible_cpus(),
+ 				  sizeof(struct netvsc_ethtool_pcpu_stats),
+ 				  GFP_KERNEL);
++	if (!pcpu_sum)
++		return;
 +
- static const struct arm64_ftr_bits ftr_id_aa64pfr0[] = {
- 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_NONSTRICT, FTR_LOWER_SAFE, ID_AA64PFR0_CSV3_SHIFT, 4, 0),
- 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_NONSTRICT, FTR_LOWER_SAFE, ID_AA64PFR0_CSV2_SHIFT, 4, 0),
-@@ -396,6 +400,7 @@ static const struct __ftr_reg_entry {
- 	/* Op1 = 0, CRn = 0, CRm = 6 */
- 	ARM64_FTR_REG(SYS_ID_AA64ISAR0_EL1, ftr_id_aa64isar0),
- 	ARM64_FTR_REG(SYS_ID_AA64ISAR1_EL1, ftr_id_aa64isar1),
-+	ARM64_FTR_REG(SYS_ID_AA64ISAR2_EL1, ftr_id_aa64isar2),
- 
- 	/* Op1 = 0, CRn = 0, CRm = 7 */
- 	ARM64_FTR_REG(SYS_ID_AA64MMFR0_EL1, ftr_id_aa64mmfr0),
-@@ -544,6 +549,7 @@ void __init init_cpu_features(struct cpu
- 	init_cpu_ftr_reg(SYS_ID_AA64DFR1_EL1, info->reg_id_aa64dfr1);
- 	init_cpu_ftr_reg(SYS_ID_AA64ISAR0_EL1, info->reg_id_aa64isar0);
- 	init_cpu_ftr_reg(SYS_ID_AA64ISAR1_EL1, info->reg_id_aa64isar1);
-+	init_cpu_ftr_reg(SYS_ID_AA64ISAR2_EL1, info->reg_id_aa64isar2);
- 	init_cpu_ftr_reg(SYS_ID_AA64MMFR0_EL1, info->reg_id_aa64mmfr0);
- 	init_cpu_ftr_reg(SYS_ID_AA64MMFR1_EL1, info->reg_id_aa64mmfr1);
- 	init_cpu_ftr_reg(SYS_ID_AA64MMFR2_EL1, info->reg_id_aa64mmfr2);
-@@ -661,6 +667,8 @@ void update_cpu_features(int cpu,
- 				      info->reg_id_aa64isar0, boot->reg_id_aa64isar0);
- 	taint |= check_update_ftr_reg(SYS_ID_AA64ISAR1_EL1, cpu,
- 				      info->reg_id_aa64isar1, boot->reg_id_aa64isar1);
-+	taint |= check_update_ftr_reg(SYS_ID_AA64ISAR2_EL1, cpu,
-+				      info->reg_id_aa64isar2, boot->reg_id_aa64isar2);
- 
- 	/*
- 	 * Differing PARange support is fine as long as all peripherals and
-@@ -794,6 +802,7 @@ static u64 __read_sysreg_by_encoding(u32
- 	read_sysreg_case(SYS_ID_AA64MMFR2_EL1);
- 	read_sysreg_case(SYS_ID_AA64ISAR0_EL1);
- 	read_sysreg_case(SYS_ID_AA64ISAR1_EL1);
-+	read_sysreg_case(SYS_ID_AA64ISAR2_EL1);
- 
- 	read_sysreg_case(SYS_CNTFRQ_EL0);
- 	read_sysreg_case(SYS_CTR_EL0);
---- a/arch/arm64/kernel/cpuinfo.c
-+++ b/arch/arm64/kernel/cpuinfo.c
-@@ -334,6 +334,7 @@ static void __cpuinfo_store_cpu(struct c
- 	info->reg_id_aa64dfr1 = read_cpuid(ID_AA64DFR1_EL1);
- 	info->reg_id_aa64isar0 = read_cpuid(ID_AA64ISAR0_EL1);
- 	info->reg_id_aa64isar1 = read_cpuid(ID_AA64ISAR1_EL1);
-+	info->reg_id_aa64isar2 = read_cpuid(ID_AA64ISAR2_EL1);
- 	info->reg_id_aa64mmfr0 = read_cpuid(ID_AA64MMFR0_EL1);
- 	info->reg_id_aa64mmfr1 = read_cpuid(ID_AA64MMFR1_EL1);
- 	info->reg_id_aa64mmfr2 = read_cpuid(ID_AA64MMFR2_EL1);
---- a/arch/arm64/kvm/sys_regs.c
-+++ b/arch/arm64/kvm/sys_regs.c
-@@ -1289,7 +1289,7 @@ static const struct sys_reg_desc sys_reg
- 	/* CRm=6 */
- 	ID_SANITISED(ID_AA64ISAR0_EL1),
- 	ID_SANITISED(ID_AA64ISAR1_EL1),
--	ID_UNALLOCATED(6,2),
-+	ID_SANITISED(ID_AA64ISAR2_EL1),
- 	ID_UNALLOCATED(6,3),
- 	ID_UNALLOCATED(6,4),
- 	ID_UNALLOCATED(6,5),
+ 	netvsc_get_pcpu_stats(dev, pcpu_sum);
+ 	for_each_present_cpu(cpu) {
+ 		struct netvsc_ethtool_pcpu_stats *this_sum = &pcpu_sum[cpu];
+-- 
+2.34.1
+
 
 
