@@ -2,91 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73758C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:58:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E52C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:59:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231747AbiCUXAW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:00:22 -0400
+        id S230500AbiCUXAa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:00:30 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232049AbiCUW6A (ORCPT
+        with ESMTP id S232227AbiCUW6J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:58:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 601A9474EEC;
-        Mon, 21 Mar 2022 15:37:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B4491612BC;
-        Mon, 21 Mar 2022 21:53:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33A50C340F2;
-        Mon, 21 Mar 2022 21:52:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647899580;
-        bh=iwUeLQxCDC7OEVPT2rElS4J+zZ+Rdy4pMjpsoROH3zg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DWmYabA/DvwkcigvY3moY0SEHyuBlUsscl7c/l+ihBJqUo9B0MHeQfTALgnVA8HLl
-         c0sR+BpFXNQKjH2pXDt0LmfOVqasvtl8qFc61gn8T9KPu2G3EF0TSsgK73qGzDoXdP
-         dAsfSL8N4T/dIhM1qf0iOZ5fvP90TXJJ27CoUuTqAvdRy615/WNPRI1vwmevbQTFIV
-         INdGmyBB7ejzGb7jG61C1feAzgk7lhDtpO+YzcfBBGuOdMLaVwgkFRl97zid+zEHct
-         OmNlJ2J5++/FCG1KijfYuE00qLAButjLtpD+Us2j4/YPu4OqC5ny0Z2qTtyfe31Kzl
-         THJl1mdsGL+qw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Haimin Zhang <tcs_kernel@tencent.com>,
-        TCS Robot <tcs_robot@tencent.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 2/5] af_key: add __GFP_ZERO flag for compose_sadb_supported in function pfkey_register
-Date:   Mon, 21 Mar 2022 17:52:50 -0400
-Message-Id: <20220321215256.490267-2-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220321215256.490267-1-sashal@kernel.org>
-References: <20220321215256.490267-1-sashal@kernel.org>
+        Mon, 21 Mar 2022 18:58:09 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58637463017
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:36:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647902217; x=1679438217;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=0JBihKTrWugKzWMubuHFtCHqpF89FsyT6aX7ZFVtkaI=;
+  b=LUCTEueIbkG1giPl33cKti3WIlD7+TDrivtqzLoZRLjtaMwETCphNxct
+   H0wckFdnbSO4FSjZ5Fzjjq+bj6BPAFMknBjN5j/Uz+BKEqTPgsdbQwsgh
+   Iyrrjua8+mHRXuATfZ/1UlcSrMnBbAKtQyO9HRn7WkOL3RkSP2M1SM0rt
+   Li0PVMPm00ZfXWm9LfxdnQT/SPaiHDj/Z/zli1lKj8laxA/71L1Ve6OS+
+   MpFzBbjG8RwtXe6kIakwjNm8IvXsBoBoVcUeNsOUeZSa2pfakjRBgeUd5
+   3h0WXBw/S1KfIXfbtZJTJCe5O9Tvv3GEuCVQn5e0E+3HlO7iODf31gBiG
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="320866608"
+X-IronPort-AV: E=Sophos;i="5.90,199,1643702400"; 
+   d="scan'208";a="320866608"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 15:36:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,199,1643702400"; 
+   d="scan'208";a="560073008"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 21 Mar 2022 15:36:55 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nWQdy-000IDl-Bo; Mon, 21 Mar 2022 22:36:54 +0000
+Date:   Tue, 22 Mar 2022 06:36:16 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:sched/core] BUILD SUCCESS
+ 3387ce4d8a5f2956fab827edf499fe6780e83faa
+Message-ID: <6238fde0.Qe5umewxqwiDe2GE%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haimin Zhang <tcs_kernel@tencent.com>
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/core
+branch HEAD: 3387ce4d8a5f2956fab827edf499fe6780e83faa  headers/prep: Fix header to build standalone: <linux/psi.h>
 
-[ Upstream commit 9a564bccb78a76740ea9d75a259942df8143d02c ]
+elapsed time: 730m
 
-Add __GFP_ZERO flag for compose_sadb_supported in function pfkey_register
-to initialize the buffer of supp_skb to fix a kernel-info-leak issue.
-1) Function pfkey_register calls compose_sadb_supported to request
-a sk_buff. 2) compose_sadb_supported calls alloc_sbk to allocate
-a sk_buff, but it doesn't zero it. 3) If auth_len is greater 0, then
-compose_sadb_supported treats the memory as a struct sadb_supported and
-begins to initialize. But it just initializes the field sadb_supported_len
-and field sadb_supported_exttype without field sadb_supported_reserved.
+configs tested: 114
+configs skipped: 3
 
-Reported-by: TCS Robot <tcs_robot@tencent.com>
-Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/key/af_key.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index 9bf52a09b5ff..fd51db3be91c 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -1699,7 +1699,7 @@ static int pfkey_register(struct sock *sk, struct sk_buff *skb, const struct sad
- 
- 	xfrm_probe_algs();
- 
--	supp_skb = compose_sadb_supported(hdr, GFP_KERNEL);
-+	supp_skb = compose_sadb_supported(hdr, GFP_KERNEL | __GFP_ZERO);
- 	if (!supp_skb) {
- 		if (hdr->sadb_msg_satype != SADB_SATYPE_UNSPEC)
- 			pfk->registered &= ~(1<<hdr->sadb_msg_satype);
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+i386                 randconfig-c001-20220321
+arm                         cm_x300_defconfig
+sh                             sh03_defconfig
+mips                      maltasmvp_defconfig
+sh                        sh7763rdp_defconfig
+arm                           h3600_defconfig
+arm                       aspeed_g5_defconfig
+sh                      rts7751r2d1_defconfig
+sh                        edosk7760_defconfig
+arc                        nsimosci_defconfig
+sh                          rsk7201_defconfig
+h8300                     edosk2674_defconfig
+arc                 nsimosci_hs_smp_defconfig
+sh                         microdev_defconfig
+sh                              ul2_defconfig
+um                                  defconfig
+xtensa                    xip_kc705_defconfig
+arc                            hsdk_defconfig
+um                               alldefconfig
+mips                        vocore2_defconfig
+arm                  randconfig-c002-20220321
+arm                  randconfig-c002-20220320
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                                defconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+nds32                             allnoconfig
+nios2                               defconfig
+arc                              allyesconfig
+csky                                defconfig
+alpha                               defconfig
+nds32                               defconfig
+alpha                            allyesconfig
+nios2                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+h8300                            allyesconfig
+xtensa                           allyesconfig
+parisc                              defconfig
+parisc64                            defconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                             allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64               randconfig-a013-20220321
+x86_64               randconfig-a012-20220321
+x86_64               randconfig-a014-20220321
+x86_64               randconfig-a011-20220321
+x86_64               randconfig-a016-20220321
+x86_64               randconfig-a015-20220321
+i386                 randconfig-a013-20220321
+i386                 randconfig-a011-20220321
+i386                 randconfig-a012-20220321
+i386                 randconfig-a014-20220321
+i386                 randconfig-a016-20220321
+i386                 randconfig-a015-20220321
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+x86_64                    rhel-8.3-kselftests
+um                             i386_defconfig
+um                           x86_64_defconfig
+x86_64                              defconfig
+x86_64                           allyesconfig
+x86_64                                  kexec
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                         rhel-8.3-kunit
+
+clang tested configs:
+arm                          moxart_defconfig
+mips                      bmips_stb_defconfig
+powerpc                          allmodconfig
+mips                         tb0287_defconfig
+powerpc                 mpc832x_rdb_defconfig
+mips                     cu1000-neo_defconfig
+powerpc                     mpc512x_defconfig
+arm                       cns3420vb_defconfig
+riscv                          rv32_defconfig
+x86_64               randconfig-a001-20220321
+x86_64               randconfig-a003-20220321
+x86_64               randconfig-a005-20220321
+x86_64               randconfig-a004-20220321
+x86_64               randconfig-a002-20220321
+x86_64               randconfig-a006-20220321
+i386                 randconfig-a001-20220321
+i386                 randconfig-a006-20220321
+i386                 randconfig-a003-20220321
+i386                 randconfig-a005-20220321
+i386                 randconfig-a004-20220321
+i386                 randconfig-a002-20220321
+riscv                randconfig-r042-20220320
+hexagon              randconfig-r045-20220321
+hexagon              randconfig-r045-20220320
+hexagon              randconfig-r041-20220321
+hexagon              randconfig-r041-20220320
+
 -- 
-2.34.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
