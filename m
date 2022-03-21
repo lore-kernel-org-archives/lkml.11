@@ -2,140 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5BA7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:27:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E61C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:28:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344476AbiCUJ2k (ORCPT
+        id S1345889AbiCUJaQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 05:28:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51016 "EHLO
+        Mon, 21 Mar 2022 05:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233695AbiCUJ2i (ORCPT
+        with ESMTP id S238396AbiCUJaO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 05:28:38 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8A674F479
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 02:27:13 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id h1so17038281edj.1
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 02:27:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=lFsDWl+VJdRlH1sYqyaS7hLxexcdMEqqhguN78mfy8c=;
-        b=dC0lgqZosvcUacMyEqwuW0ThHJ/D8J1xh/TRRKdTaooqxUcUYptD0K+yYArEJf3H/j
-         xXIWQF9ijHb8L8hyx3uv0m4EtG8YMXlOi4ODzlF4+AOND4m8vETjo0oYLDb2MLJNKKyR
-         mQ1Z0AyJK86dnEdxOMJxrLknU0zo0VMcqtyaYMA2l8AvR0BpMmMf9URZFaFyEnLGmJha
-         1QERrkE6Qk9LOcpQWLgT+yGRYRg6x3h6rFA6fw9n1jW7c2Ssl0PR8YTXS4zu02lKxl1A
-         7XZOyv9YD4eYY7f/lgWQbyDCf/yqeKu1Jnzy180i3zfPxeuBd8+HpWWeT0JFg/01QA18
-         Um5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=lFsDWl+VJdRlH1sYqyaS7hLxexcdMEqqhguN78mfy8c=;
-        b=CCbiCuhUebLDTXS7V/SYxdQfZ9LPM++YJlaJzVUIXN4TfZKzhSguhEPzP2LD3xJNdZ
-         iE92M4ymyyynoH8MFADRo4g5igH6r2Dsi5GbR8B1VkgxHsAblmYU6wg46xU9dzTBdlBD
-         ek9BkwNq2PfaohoUdjNNJvZur95FUOAXbjd429gEph7iqE+fNxSBv17lDWZeny8D6TdM
-         PQXzzBwqBZUd1p0S9Vgz0Lq65kSZH0/1oBMysinDMU1aTOMdihQ8GNu9pS7LTLLZB4Xm
-         DriefkxO1+m3G6SpNTEmEVSCW4QArExu61X55NuM1YjvRHfATR5xATZZmPkYu6OuhsQj
-         bfwg==
-X-Gm-Message-State: AOAM532Av+QmSzgIeoHYH5pggbysKs8y1qSCecWtoHz/xjA3WQLN2oW7
-        PEQa2gDhPCzyK3OOwOUyY78=
-X-Google-Smtp-Source: ABdhPJzRs23bgn/uEHK3maxGciOp0ZhqC5tIWli5C8r3oBZ6fKGbzendUzVLC+nR+wC1Q+v4tPr1MQ==
-X-Received: by 2002:a05:6402:4247:b0:419:3990:3db6 with SMTP id g7-20020a056402424700b0041939903db6mr4593102edb.193.1647854832264;
-        Mon, 21 Mar 2022 02:27:12 -0700 (PDT)
-Received: from smtpclient.apple (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.gmail.com with ESMTPSA id l12-20020a056402028c00b00418f7fc4bd8sm6133003edv.91.2022.03.21.02.27.11
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 21 Mar 2022 02:27:11 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.60.0.1.1\))
-Subject: Re: [PATCH] staging: greybus: codecs: fix type confusion with
- dedicated list iterator variable
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-In-Reply-To: <20220321092132.GI3293@kadam>
-Date:   Mon, 21 Mar 2022 10:27:10 +0100
-Cc:     Vaibhav Agarwal <vaibhav.sr@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
-        Mark Greer <mgreer@animalcreek.com>,
-        Johan Hovold <johan@kernel.org>, Alex Elder <elder@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mike Rapport <rppt@kernel.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
+        Mon, 21 Mar 2022 05:30:14 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D4411A2D;
+        Mon, 21 Mar 2022 02:28:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1647854925; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aVrCF/2V/G1E36VXuX6ssaft/908rYw10LtHewuhQpk=;
+        b=HQJDghqRuYk7vr/fYw9xIQ6EefAjPgNraYg1zhVIO5ZaS0EjoS3CwCzI8vqadWft6Tu4f8
+        XhFwafzjwwCOJanoC31t+YmIBOCPjB/fVp+5RZs1qwRs5k/ZO48C5V91eOXaYn/19qT8C2
+        yHw7CsNWRxGQ3GyMtJJWuPfH8twYQwc=
+Date:   Mon, 21 Mar 2022 09:28:36 +0000
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH] iio: dac: ad5592r: Fix the missing return value.
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Zizhuang Deng <sunsetdzz@gmail.com>, Jonathan.Cameron@huawei.com,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        Paul Cercueil <paul.cercueil@analog.com>
+Message-Id: <OZ839R.NWJC2LY54LGX@crapouillou.net>
+In-Reply-To: <20220320152047.2a04a62e@jic23-huawei>
+References: <20220310125450.4164164-1-sunsetdzz@gmail.com>
+        <20220320152047.2a04a62e@jic23-huawei>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <56102C8D-DBFF-43A5-9641-04577F01AB6D@gmail.com>
-References: <20220319202058.2518847-1-jakobkoschel@gmail.com>
- <20220321084844.GG3293@kadam>
- <23587784-B0EB-4FDD-B5BC-DC1B16404DA7@gmail.com>
- <20220321092132.GI3293@kadam>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-X-Mailer: Apple Mail (2.3693.60.0.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi,
 
+Le dim., mars 20 2022 at 15:20:47 +0000, Jonathan Cameron=20
+<jic23@kernel.org> a =E9crit :
+> On Thu, 10 Mar 2022 20:54:50 +0800
+> Zizhuang Deng <sunsetdzz@gmail.com> wrote:
+>=20
+>>  The third call to `fwnode_property_read_u32` did not record
+>>  the return value, resulting in `channel_offstate` possibly
+>>  being assigned the wrong value.
+>>=20
+>>  Signed-off-by: Zizhuang Deng <sunsetdzz@gmail.com>
+> Hi,
+>=20
+> Definitely rather odd looking and I think your conclusion is correct.
+> +CC Paul for confirmation that this isn't doing something clever..
 
-> On 21. Mar 2022, at 10:21, Dan Carpenter <dan.carpenter@oracle.com> =
-wrote:
->=20
-> On Mon, Mar 21, 2022 at 10:06:13AM +0100, Jakob Koschel wrote:
->>=20
->>> On 21. Mar 2022, at 09:48, Dan Carpenter <dan.carpenter@oracle.com> =
-wrote:
->>>=20
->>> The subject says that it fixes a bug but it does not.
->>=20
->> Thank you for your review!
->>=20
->> I don't agree that this doesn't fix a bug:
->>=20
->>> +		}
->>> 	}
->>> 	if (!data) {
->>> -		dev_err(dai->dev, "%s:%s DATA connection missing\n",
->>> -			dai->name, module->name);
->>=20
->> Using 'module' when data =3D=3D NULL is *guaranteed* to be a type =
-confused
->> bogus pointer. It fundamentally can never be correct.
->=20
-> Ah.  I did not read all the way to the end of the patch.
->=20
-> The bugfix needs to be sent as it's own patch.  Just the one liner.  =
-It
-> needs a fixes tag as well.
->=20
-> [PATCH] staging: greybus: fix Oops in error message
->=20
-> The "module" pointer is invalid here.  It's the list iterator and we
-> exited the loop without finding a valid entry.
->=20
-> Fixes: 6dd67645f22c ("greybus: audio: Use single codec driver =
-registration")
-> Signed-off-by: You
->=20
-> 	if (!data) {
-> -		dev_err(dai->dev, "%s:%s DATA connection missing\n",
-> -			dai->name, module->name);
-> +		dev_err(dai->dev, "%s DATA connection missing\n",
-> +			dai->name);
-> 		mutex_unlock(&codec->lock);
->=20
-> We're happy to apply the other stuff as well, but we don't mix =
-cleanups
-> and bug fixes like that.
+It's been a while, but I don't think there was anything clever going on=20
+here - so the patch is fine.
 
-ok great, I'll separate and resubmit both. Thanks!
+Cheers,
+-Paul
 
 >=20
-> regards,
-> dan carpenter
+>>  ---
+>>   drivers/iio/dac/ad5592r-base.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>=20
+>>  diff --git a/drivers/iio/dac/ad5592r-base.c=20
+>> b/drivers/iio/dac/ad5592r-base.c
+>>  index a424b7220b61..4434c1b2a322 100644
+>>  --- a/drivers/iio/dac/ad5592r-base.c
+>>  +++ b/drivers/iio/dac/ad5592r-base.c
+>>  @@ -522,7 +522,7 @@ static int ad5592r_alloc_channels(struct=20
+>> iio_dev *iio_dev)
+>>   		if (!ret)
+>>   			st->channel_modes[reg] =3D tmp;
+>>=20
+>>  -		fwnode_property_read_u32(child, "adi,off-state", &tmp);
+>>  +		ret =3D fwnode_property_read_u32(child, "adi,off-state", &tmp);
+>>   		if (!ret)
+>>   			st->channel_offstate[reg] =3D tmp;
+>>   	}
+>=20
 
-	Jakob
 
