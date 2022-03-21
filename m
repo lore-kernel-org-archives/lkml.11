@@ -2,103 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1534C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:01:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 376A2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:01:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232222AbiCUXCZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:02:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56316 "EHLO
+        id S232238AbiCUXCc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:02:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231544AbiCUW5P (ORCPT
+        with ESMTP id S232153AbiCUXBA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:57:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A87213AF77C;
-        Mon, 21 Mar 2022 15:37:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FDF961316;
-        Mon, 21 Mar 2022 21:53:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8140C340F3;
-        Mon, 21 Mar 2022 21:53:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647899594;
-        bh=+q5RxOojXK2aXmj1sCA0/CjcBuKfUCjtIPk+ZhVoxD4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ffycKT0Z9koMzT4nddYh3Sx6XXQMagcCroqqpjf7bhRRdZQSj3ALvLXp05FsDFdlL
-         fXtpa6WkKld5Y7/z6vRQdsayVZ2jFxHFQsT+FUGyKGghn2TNEJKxLCMpPGxrVwmBcT
-         zRFQ5YWQ7XVQusQSAU1YNzsRf8r5m6dGi+J+ziP59xjFPkmuzSlK+W5Xk6YSIRT45N
-         pCP1bPQ5zeBfrKxG1VlqZ7gksByw5e+jtj0h8s7M7cMh1wXqflMBgm2QyKKKq5Z8Nk
-         U/LweafetvS8gz0kbU6B6FbbZ31MwN76czWDSohE4JHX9eid76TDu5W9SPhUhaduH9
-         84U5cW72irwuw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
-        syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com,
-        Willem de Bruijn <willemb@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 3/4] net: ipv6: fix skb_over_panic in __ip6_append_data
-Date:   Mon, 21 Mar 2022 17:53:04 -0400
-Message-Id: <20220321215308.490358-3-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220321215308.490358-1-sashal@kernel.org>
-References: <20220321215308.490358-1-sashal@kernel.org>
+        Mon, 21 Mar 2022 19:01:00 -0400
+Received: from qproxy2-pub.mail.unifiedlayer.com (qproxy2-pub.mail.unifiedlayer.com [69.89.16.161])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAEEF3B281E
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:48:19 -0700 (PDT)
+Received: from outbound-ss-761.bluehost.com (outbound-ss-761.bluehost.com [74.220.211.250])
+        by qproxy2.mail.unifiedlayer.com (Postfix) with ESMTP id D0B878049173
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 22:48:18 +0000 (UTC)
+Received: from cmgw10.mail.unifiedlayer.com (unknown [10.0.90.125])
+        by progateway8.mail.pro1.eigbox.com (Postfix) with ESMTP id 57AA2100495AF
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 22:48:17 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id WQoynvhuoQs3CWQozn1fMq; Mon, 21 Mar 2022 22:48:17 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=A+Opg4aG c=1 sm=1 tr=0 ts=623900b1
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=o8Y5sQTvuykA:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ObiOG8BB7lDJYuwDM1Nq7qDD7tggcSYR24w/UPSu4b0=; b=vDKL0XbUvrD2kH56m3EmL90hTB
+        Ky6dN6genK2BoQNu4841cU+k297+8iGvPOCWE0nlIMDDtI+q8Hc7lxRcQGvLp98PtSQelTRAuc5nS
+        liFCrlaIcijtfA38wbfDQZUQK;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:33672 helo=[10.0.1.48])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <re@w6rz.net>)
+        id 1nWQoy-001uP2-28; Mon, 21 Mar 2022 16:48:16 -0600
+Subject: Re: [PATCH 5.15 00/32] 5.15.31-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220321133220.559554263@linuxfoundation.org>
+In-Reply-To: <20220321133220.559554263@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+Message-ID: <797677de-44b5-6e86-e7de-6043c1a1a8af@w6rz.net>
+Date:   Mon, 21 Mar 2022 15:48:14 -0700
+User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1nWQoy-001uP2-28
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:33672
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 2
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tadeusz Struk <tadeusz.struk@linaro.org>
+On 3/21/22 6:52 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.31 release.
+> There are 32 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 23 Mar 2022 13:32:09 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.31-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-[ Upstream commit 5e34af4142ffe68f01c8a9acae83300f8911e20c ]
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
-Syzbot found a kernel bug in the ipv6 stack:
-LINK: https://syzkaller.appspot.com/bug?id=205d6f11d72329ab8d62a610c44c5e7e25415580
-The reproducer triggers it by sending a crafted message via sendmmsg()
-call, which triggers skb_over_panic, and crashes the kernel:
-
-skbuff: skb_over_panic: text:ffffffff84647fb4 len:65575 put:65575
-head:ffff888109ff0000 data:ffff888109ff0088 tail:0x100af end:0xfec0
-dev:<NULL>
-
-Update the check that prevents an invalid packet with MTU equal
-to the fregment header size to eat up all the space for payload.
-
-The reproducer can be found here:
-LINK: https://syzkaller.appspot.com/text?tag=ReproC&x=1648c83fb00000
-
-Reported-by: syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-Acked-by: Willem de Bruijn <willemb@google.com>
-Link: https://lore.kernel.org/r/20220310232538.1044947-1-tadeusz.struk@linaro.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/ipv6/ip6_output.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index d6f2126f4618..2aa39ce7093d 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1500,8 +1500,8 @@ static int __ip6_append_data(struct sock *sk,
- 		      sizeof(struct frag_hdr) : 0) +
- 		     rt->rt6i_nfheader_len;
- 
--	if (mtu < fragheaderlen ||
--	    ((mtu - fragheaderlen) & ~7) + fragheaderlen < sizeof(struct frag_hdr))
-+	if (mtu <= fragheaderlen ||
-+	    ((mtu - fragheaderlen) & ~7) + fragheaderlen <= sizeof(struct frag_hdr))
- 		goto emsgsize;
- 
- 	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
--- 
-2.34.1
+Tested-by: Ron Economos <re@w6rz.net>
 
