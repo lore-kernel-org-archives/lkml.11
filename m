@@ -2,146 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36C75C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:52:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69A68C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:53:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351513AbiCUQyV (ORCPT
+        id S1351529AbiCUQy0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 12:54:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53498 "EHLO
+        Mon, 21 Mar 2022 12:54:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351506AbiCUQyR (ORCPT
+        with ESMTP id S1351516AbiCUQyS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 12:54:17 -0400
-Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BCDF186885
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:52:31 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id DB4733201F73;
-        Mon, 21 Mar 2022 12:52:29 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Mon, 21 Mar 2022 12:52:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
-         h=cc:cc:content-transfer-encoding:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm1; bh=AYdSGwRMGldmW9
-        2q2sOAENktvfn95kOLjUtd9ziO5OE=; b=QWAsrxB+Mxp/m+32deSN0+TmPt92QW
-        B1KIGBAagmFxx6rfzS/9rnuiDW+GsQZJQWBEcC++fgWpCFfxH2jPxKPXwVxkP3Dj
-        qs9GD5evComStOb97lopehFMx4v9B6j0/F5cHWQEzxw1EC69ffDJ0IIyC3QxIO4V
-        HPZtsHFOgKwWw6MF/h+A2LI5gOYeIiIH8K8aLRIu0xzRpg5YYT7AKic9OGhlkeQu
-        xVj+A3CwFw0dxcffeMlcMdYLvxr/aJoWlu9/9UCvFl1mZLYNa4BJr1DuiBqxTSN7
-        dIaf5Veg76UadS3HLIgAipznQSp5VcPD2N7SmOMJoy0Eqkt+S7klKpkA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :from:from:in-reply-to:in-reply-to:message-id:mime-version
-        :references:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=AYdSGw
-        RMGldmW92q2sOAENktvfn95kOLjUtd9ziO5OE=; b=g61PwCZVDEDaX/4YvLPIYr
-        tD+Q6W5NuXbmwXxf16U82zGn9dBkLPNRuCGZgH0VsY6hEfRfCowDjEVNKzdwCLeR
-        aLl9Swu/QnY9yPEMTBuN8t5iN4Kr2rHSU9HDk6WkknMOysUco5/M+NbPyitlPqPM
-        LwRHlEwTPOTqtjWAs3Ru7u/RmuIAnOdztQXDUKzUDrQCITJBaHNQFCClvfdkCYlO
-        pfDelp2EZY2ICZ6qkx7dZm9DGRrXmAN/NFGLlB1dmBWECf3cjNyzBkGAF3CcUwqI
-        FKR4o9MGglGoVu4Ef78Kqr94yHTzG7J5oU8zSc/0dFv8NiwBNhESHfPSW+gK2Qpw
-        ==
-X-ME-Sender: <xms:Ta04YtdVzPBB-pDdTh2R7wiAgE-i0p3SKxGB_0YdEkWRP52dpavEwg>
-    <xme:Ta04YrPSSfi93X73OQSb0j2gkJoRuNqR6xz6iTjeUsEIQtG9B-Exzv6VonLdIYrtC
-    EORNX4PL6RlJg5igzw>
-X-ME-Received: <xmr:Ta04YmjgH3mLfapp0UcVon_kczxT62dif2xcbtbW034Vh0WNesJmSYUMcW5PJqgdPGWB56WOgrDrFZVgFUQHO5zrI2jZaAoJKqYt0ewlexgf8BYg94YlvXzepl1UVpo>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudegfedgleehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuvhgvnhcu
-    rfgvthgvrhcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrfgrthhtvg
-    hrnheptedvkeetleeuffffhfekteetffeggffgveehieelueefvddtueffveevlefhfeej
-    necuvehluhhsthgvrhfuihiivgepfeenucfrrghrrghmpehmrghilhhfrhhomhepshhvvg
-    hnsehsvhgvnhhpvghtvghrrdguvghv
-X-ME-Proxy: <xmx:Ta04Ym9o84pqWDDRezxG_7p6sgBxQyYD4Cnx4pAXEnzkQWkCXODP8Q>
-    <xmx:Ta04Ypv1Dp4_M26tZrBY2emU0alrm291L8EkkIInTbve3inNdmcEpQ>
-    <xmx:Ta04YlFx0hL6J-LlbJt_t9ciebdaHV7zoqq4nItjykPQQqJ7V3OIsw>
-    <xmx:Ta04YiFejgL5fvrB92M0nbnkaBN7Aj1OQ6Q2f4wjcsJWAeAG2nwPOw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 21 Mar 2022 12:52:27 -0400 (EDT)
-From:   Sven Peter <sven@svenpeter.dev>
-To:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>
-Cc:     Sven Peter <sven@svenpeter.dev>, Hector Martin <marcan@marcan.st>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Rob Herring <robh+dt@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <maz@kernel.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org
-Subject: [PATCH 9/9] nvme-apple: Add support for suspend/resume
-Date:   Mon, 21 Mar 2022 17:50:49 +0100
-Message-Id: <20220321165049.35985-10-sven@svenpeter.dev>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
-In-Reply-To: <20220321165049.35985-1-sven@svenpeter.dev>
-References: <20220321165049.35985-1-sven@svenpeter.dev>
+        Mon, 21 Mar 2022 12:54:18 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B88F2187BAC
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:52:37 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id o8so10717041pgf.9
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:52:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Gj3UMHNqRnWzHHbAUcJXNoc5r5iBg4SQ+AeAQZLvh7A=;
+        b=axKWmjQWLsFSpRdKAcGLNz1Y8g7HJYhfDahyiH8OYH8MEdHYj5s8sQVkmSGnBGsIgV
+         np4F/HkcnZnBI6EdjjlmkG2t9Wr9bRuHrlcs46EGc4dUnBfjPSeLjZM11/n2yHdQoW1B
+         O15BpOmynAS/GM4VMD7qvHuVJ6hche1Kxb1Yjb3UjxCoNWxkKFoxwAQ/HwDqA4mHf11u
+         rq1NFXFbngQCFT6L3nZTmBp1RYIKMogA7Lya3JfzBdVn4vl4zcnFAiJsrXw0iOOYbIuP
+         gKp77FWl+0MO1lQ09pa6hmy3Z1gnPMy7Yfk2xz1iaISphqEbb0WqwTuShLIJ9u/jHCS8
+         kC7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=Gj3UMHNqRnWzHHbAUcJXNoc5r5iBg4SQ+AeAQZLvh7A=;
+        b=0VvaenYexPE9jdfmkdyGAIDeA3Bb3T2rY+8i9n0qaslOjSE/F7ecPrsYu2vUl8dmB4
+         Q762LHi3loJuQZQYnaOa5vNw2FyLl0bSgfHiZ0AV8920XCFfTxOIqEC2wMwE2MNrAqD6
+         fIPKrhqBkz8Wa27OP1GCadi2t2h63ks0Po0ZHch+a6YsrvrrND7D2zQGy9+B5/9MyqVC
+         HJLyRaGD1WA4sCyMJr03mwt5vcCv5GMwRedRfs493imjDX4SO7sJlvJsN30Krq6uDhFm
+         PhglOP57J7cIEX4MmVFZMigREKwoqmC2puZBoDWoQiV7Oejv1q/K53PRJf/thIUn9zSA
+         F0gw==
+X-Gm-Message-State: AOAM5329NVNT7SbpR2On3I/0Fd0RUu0TE6VOrVh9B5A+lL721lr/e/rL
+        NaN1ur2XHRaTZBic3mlGuWeYtlitnNYFrA==
+X-Google-Smtp-Source: ABdhPJzgkJikm279F9gmGa3GYbcjgEBBfiEB60g0R8SZ0ZzPnD9A+sDgF3heTiJEB73kZJ3IocFA+g==
+X-Received: by 2002:a65:604a:0:b0:375:5cc8:7458 with SMTP id a10-20020a65604a000000b003755cc87458mr19022943pgp.205.1647881556857;
+        Mon, 21 Mar 2022 09:52:36 -0700 (PDT)
+Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
+        by smtp.gmail.com with ESMTPSA id n14-20020a17090a394e00b001c670d67b8esm35842pjf.32.2022.03.21.09.52.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 09:52:36 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Mon, 21 Mar 2022 06:52:34 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     Lai Jiangshan <jiangshanlai@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH v3 (repost)] workqueue: Warn flushing of kernel-global
+ workqueues
+Message-ID: <YjitUuIKTWbpX1/G@slm.duckdns.org>
+References: <2efd5461-fccd-f1d9-7138-0a6767cbf5fe@I-love.SAKURA.ne.jp>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2efd5461-fccd-f1d9-7138-0a6767cbf5fe@I-love.SAKURA.ne.jp>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+Hello, Tetsuo.
 
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Signed-off-by: Sven Peter <sven@svenpeter.dev>
----
- drivers/nvme/host/apple.c | 33 +++++++++++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+On Sat, Mar 19, 2022 at 01:42:59PM +0900, Tetsuo Handa wrote:
+> Since flush operation synchronously waits for completion, flushing
+> kernel-global WQs (e.g. system_wq) might introduce possibility of deadlock
+> due to unexpected locking dependency. Tejun Heo commented that it makes no
+> sense at all to call flush_workqueue() on the shared WQs as the caller has
+> no idea what it's gonna end up waiting for.
+> 
+> Although there is flush_scheduled_work() which flushes system_wq WQ with
+> "Think twice before calling this function! It's very easy to get into
+> trouble if you don't take great care." warning message, syzbot found a
+> circular locking dependency caused by flushing system_long_wq WQ [1].
+> Therefore, let's change the direction to that developers had better use
+> their local WQs if flush_workqueue() is inevitable.
+> 
+> To give developers time to update their modules, for now just emit
+> a warning message with ratelimit when flush_workqueue() is called on
+> kernel-global WQs. We will eventually convert this warning message into
+> WARN_ON() and kill flush_scheduled_work().
+> 
+> This patch introduces __WQ_NO_FLUSH flag for emitting warning. Don't set
+> this flag when creating your local WQs while updating your module, for
+> destroy_workqueue() will involve flush operation.
+> 
+> Theoretically, flushing specific work item using flush_work() queued on
+> kernel-global WQs (which are !WQ_MEM_RECLAIM) has possibility of deadlock.
+> But this patch does not emit warning when flush_work() is called on work
+> items queued on kernel-global WQs, based on assumption that we can create
+> kworker threads as needed and we won't hit max_active limit.
 
-diff --git a/drivers/nvme/host/apple.c b/drivers/nvme/host/apple.c
-index d89b4ab80169..c949a18ec690 100644
---- a/drivers/nvme/host/apple.c
-+++ b/drivers/nvme/host/apple.c
-@@ -1514,6 +1514,36 @@ static void apple_nvme_shutdown(struct platform_device *pdev)
- 		apple_rtkit_shutdown(anv->rtk);
- }
- 
-+#ifdef CONFIG_PM_SLEEP
-+static int apple_nvme_resume(struct device *dev)
-+{
-+	struct apple_nvme *anv = dev_get_drvdata(dev);
-+
-+	return  nvme_reset_ctrl(&anv->ctrl);
-+}
-+
-+static int apple_nvme_suspend(struct device *dev)
-+{
-+	struct apple_nvme *anv = dev_get_drvdata(dev);
-+	int ret = 0;
-+
-+	apple_nvme_disable(anv, true);
-+
-+	if (apple_rtkit_is_running(anv->rtk))
-+		ret = apple_rtkit_shutdown(anv->rtk);
-+
-+	writel_relaxed(0, anv->mmio_coproc + APPLE_ANS_COPROC_CPU_CONTROL);
-+	(void)readl_relaxed(anv->mmio_coproc + APPLE_ANS_COPROC_CPU_CONTROL);
-+
-+	return ret;
-+}
-+
-+static const struct dev_pm_ops apple_nvme_pm_ops = {
-+	.suspend	= apple_nvme_suspend,
-+	.resume		= apple_nvme_resume,
-+};
-+#endif
-+
- static const struct of_device_id apple_nvme_of_match[] = {
- 	{ .compatible = "apple,nvme-ans2" },
- 	{},
-@@ -1524,6 +1554,9 @@ static struct platform_driver apple_nvme_driver = {
- 	.driver = {
- 		.name = "nvme-apple",
- 		.of_match_table = apple_nvme_of_match,
-+#ifdef CONFIG_PM_SLEEP
-+		.pm = &apple_nvme_pm_ops,
-+#endif
- 	},
- 	.probe = apple_nvme_probe,
- 	.remove = apple_nvme_remove,
+As noted in the other thread, we can float this sort of patches in -next to
+suss out ones which aren't immediately obvious - e.g. something saves a
+pointer to one of the system workqueues and flushes that, but if this is to
+happen, somebody has to do the most of the legwork to convert most if not
+all of the existing users, which isn't necessarily difficult but is tedious,
+which is why it hasn't been done yet. So, if you wanna take on this, you
+gotta take on the conversions too. Just declaring it so doesn't really work.
+
+Thanks.
+
 -- 
-2.25.1
-
+tejun
