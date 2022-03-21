@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4968DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:04:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D934C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:04:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348860AbiCUOGA (ORCPT
+        id S1348861AbiCUOGJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:06:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60640 "EHLO
+        Mon, 21 Mar 2022 10:06:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349196AbiCUN7o (ORCPT
+        with ESMTP id S1349200AbiCUN7q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:59:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B96A8255B0;
-        Mon, 21 Mar 2022 06:58:17 -0700 (PDT)
+        Mon, 21 Mar 2022 09:59:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE982529B;
+        Mon, 21 Mar 2022 06:58:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5535D6125C;
-        Mon, 21 Mar 2022 13:58:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63456C340E8;
-        Mon, 21 Mar 2022 13:58:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A8216126A;
+        Mon, 21 Mar 2022 13:58:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35929C340E8;
+        Mon, 21 Mar 2022 13:58:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871096;
-        bh=Iu6+8UKizmEfUSOoYi6/uV6d0fxVYQ5PqqCfF95FSwA=;
+        s=korg; t=1647871099;
+        bh=piknHTfz8IlmjbVBR/wSKw2KHljvoIVt9GWTNwsHhUU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=buYsdJXczLIr17MXuA+xJsLAeh2M7Pu0fOyOcMt7iwBpOqATJdRhfk/sup+Y/2Kja
-         8lm151kozU8UzYT0uqhNZj2oGPQ8ruSFuFRjie9a1PLXMQqGrdDsxCTNFjpMgEH+MZ
-         ahV2BnGh8LFogX8esEIYJA1DgAu7BWA8MxdiuO9E=
+        b=mkR6W28nRXiMS0PZ/Mh8GkGyfOz3MZjsKkMmAbcNFsRZZvvugadXjr9Lej85gN5qq
+         Z0HEeDILBwlxB3jfUSgp3CaSBgGzloKJoPbpORB+vWXM8FUFeANtbvgxkgy4+UJJn0
+         PFZFcgNqai5ATwr/ZO92CGBPkXNdwd8W92RPXJdg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 06/17] atm: eni: Add check for dma_map_single
-Date:   Mon, 21 Mar 2022 14:52:42 +0100
-Message-Id: <20220321133217.340072563@linuxfoundation.org>
+Subject: [PATCH 5.4 07/17] hv_netvsc: Add check for kvmalloc_array
+Date:   Mon, 21 Mar 2022 14:52:43 +0100
+Message-Id: <20220321133217.369659883@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133217.148831184@linuxfoundation.org>
 References: <20220321133217.148831184@linuxfoundation.org>
@@ -52,33 +52,36 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 0f74b29a4f53627376cf5a5fb7b0b3fa748a0b2b ]
+[ Upstream commit 886e44c9298a6b428ae046e2fa092ca52e822e6a ]
 
-As the potential failure of the dma_map_single(),
-it should be better to check it and return error
-if fails.
+As the potential failure of the kvmalloc_array(),
+it should be better to check and restore the 'data'
+if fails in order to avoid the dereference of the
+NULL pointer.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Fixes: 6ae746711263 ("hv_netvsc: Add per-cpu ethtool stats for netvsc")
 Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/r/20220314020125.2365084-1-jiasheng@iscas.ac.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/atm/eni.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/hyperv/netvsc_drv.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/atm/eni.c b/drivers/atm/eni.c
-index de52428b8833..4816db0553ef 100644
---- a/drivers/atm/eni.c
-+++ b/drivers/atm/eni.c
-@@ -1116,6 +1116,8 @@ DPRINTK("iovcnt = %d\n",skb_shinfo(skb)->nr_frags);
- 	}
- 	paddr = dma_map_single(&eni_dev->pci_dev->dev,skb->data,skb->len,
- 			       DMA_TO_DEVICE);
-+	if (dma_mapping_error(&eni_dev->pci_dev->dev, paddr))
-+		return enq_next;
- 	ENI_PRV_PADDR(skb) = paddr;
- 	/* prepare DMA queue entries */
- 	j = 0;
+diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
+index 362b7ca6f3b2..57e92c5bfcc9 100644
+--- a/drivers/net/hyperv/netvsc_drv.c
++++ b/drivers/net/hyperv/netvsc_drv.c
+@@ -1445,6 +1445,9 @@ static void netvsc_get_ethtool_stats(struct net_device *dev,
+ 	pcpu_sum = kvmalloc_array(num_possible_cpus(),
+ 				  sizeof(struct netvsc_ethtool_pcpu_stats),
+ 				  GFP_KERNEL);
++	if (!pcpu_sum)
++		return;
++
+ 	netvsc_get_pcpu_stats(dev, pcpu_sum);
+ 	for_each_present_cpu(cpu) {
+ 		struct netvsc_ethtool_pcpu_stats *this_sum = &pcpu_sum[cpu];
 -- 
 2.34.1
 
