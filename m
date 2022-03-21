@@ -2,78 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C0BEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:30:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25C79C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:30:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232820AbiCUXbb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:31:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40394 "EHLO
+        id S232918AbiCUXbn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:31:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232628AbiCUXbZ (ORCPT
+        with ESMTP id S232724AbiCUXbi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 19:31:25 -0400
-Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95495357B60;
-        Mon, 21 Mar 2022 16:29:53 -0700 (PDT)
-Received: by mail-oi1-f180.google.com with SMTP id s207so17879646oie.11;
-        Mon, 21 Mar 2022 16:29:53 -0700 (PDT)
+        Mon, 21 Mar 2022 19:31:38 -0400
+Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15721355B91;
+        Mon, 21 Mar 2022 16:30:09 -0700 (PDT)
+Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-d39f741ba0so317229fac.13;
+        Mon, 21 Mar 2022 16:30:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=d3dOmL4Lu1fRiJ594ANhJlR56D28l0ED00gYien2ND8=;
-        b=grchtgxu3OGNNqxdqQI1hHRIEvrOrF1lTefUt8qQsXWsjQFe+Z8Nk3GsrKmmXWKiSq
-         ms2v/TdHCQnx0W0qzjOkaZ1sJLuqswcgW9awmNXg4M5LCo+Cu+2u6Xs6SrdoUzbBB0JR
-         w2MzvYr2mypAhlR9Ik/BiVQEAM2rq61anUK0M95TVzIckQcPfnl8CvF8eEv8RDjK9IoD
-         hvEdf/ZgZKg9+MS/Z4ZF3uXhdqUDpP/4syuHN2LmEsVin7zninmQzAfSQB8Ide77QXqc
-         smlUA2JiQVgENbMtOPoi9BSZgiQOB8CEQsJOq6wMEDGjWxW8SaXZ/C3zXwU3zWPF88sb
-         5h0A==
-X-Gm-Message-State: AOAM533WYMmla3QTD5gGbgJ4teGnVd9oaveESixrSiJuEBHd7cM/fWRc
-        q1zE5mSmkYfGgdAFPIbTBQ==
-X-Google-Smtp-Source: ABdhPJwmXMgPhnzMv1j3RzkiRGU/aCFAw8rg4efntETm5W+agBydMWcOHUXiHPK8mFuJfm6cNcXT2w==
-X-Received: by 2002:a05:6808:8c4:b0:2da:575e:3402 with SMTP id k4-20020a05680808c400b002da575e3402mr771261oij.8.1647905392875;
-        Mon, 21 Mar 2022 16:29:52 -0700 (PDT)
+        bh=jcbOalPGoZlPVOYBNp+MHPtkQGuUqsNk0ulK/GNGgc8=;
+        b=lq72NR4GPvdOAcKPyE3cVfmm49pHbwlMcgxdq333WHG0g3o0tTtRX+a7Zl+iew19pb
+         aA1w5aploCGvDrBv/+PpaxrpehiJHwPB2k5iXfaNQ1GjUzxc1zuKF/0RTi7jcJxXz6xK
+         kOLJu+teT6K80A92EuK/thFy/RQfeKA5NyGDyHufQmWW1PcPymvAKd6fJi3UjGCHMgGQ
+         XTjtOnkThV9iD/1XO2teXnzLnmjRTjIadaV8Rc1cQVA22871SXnqpGQbA5FxnshrtlHR
+         MCmFfNACaX8LT4L4HJRXCQawf6v8OhJMFcX5b2DoAKT0ppWxatJktku0x3NqllriHn26
+         lw7g==
+X-Gm-Message-State: AOAM533tcIWUrj2BngHwZbSSEDpydWIjxyGTd1aOh52bL/nBJ7PcHbFJ
+        Sm4eE9CoBq8B2P1GFIInvw==
+X-Google-Smtp-Source: ABdhPJwus8FT5y2o3/MJA9opEbTL/aWgDuKhBeOv7vLJJLqBbRBk4A9XVfafmZwyivYO4tXGW68qrQ==
+X-Received: by 2002:a05:6870:5687:b0:dd:d21b:4e54 with SMTP id p7-20020a056870568700b000ddd21b4e54mr604717oao.184.1647905407981;
+        Mon, 21 Mar 2022 16:30:07 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id w4-20020a4adec4000000b0032109de628esm7380250oou.6.2022.03.21.16.29.51
+        by smtp.gmail.com with ESMTPSA id x25-20020a056830409900b005af164235b4sm7795352ott.2.2022.03.21.16.30.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 16:29:52 -0700 (PDT)
-Received: (nullmailer pid 745601 invoked by uid 1000);
-        Mon, 21 Mar 2022 23:29:51 -0000
-Date:   Mon, 21 Mar 2022 18:29:51 -0500
+        Mon, 21 Mar 2022 16:30:07 -0700 (PDT)
+Received: (nullmailer pid 746077 invoked by uid 1000);
+        Mon, 21 Mar 2022 23:30:06 -0000
+Date:   Mon, 21 Mar 2022 18:30:06 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     Fenglin Wu <quic_fenglinw@quicinc.com>
-Cc:     devicetree@vger.kernel.org, collinsd@codeaurora.org,
-        subbaram@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        sboyd@kernel.org, Bjorn Andersson <bjorn.andersson@linaro.org>,
-        maz@kernel.org, Andy Gross <agross@kernel.org>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        tglx@linutronix.de
-Subject: Re: [PATCH v6 08/10] dt-bindings: spmi: spmi-pmic-arb: make
- interrupt properties as optional
-Message-ID: <YjkKb+o7KNJL4UOQ@robh.at.kernel.org>
-References: <1647497535-32151-1-git-send-email-quic_fenglinw@quicinc.com>
- <1647497535-32151-9-git-send-email-quic_fenglinw@quicinc.com>
+To:     Leilk Liu <leilk.liu@mediatek.com>
+Cc:     linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org
+Subject: Re: [PATCH V6 2/3] dt-bindings: spi: support hclk
+Message-ID: <YjkKfjeJ5cuSyE3d@robh.at.kernel.org>
+References: <20220321013922.24067-1-leilk.liu@mediatek.com>
+ <20220321013922.24067-3-leilk.liu@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1647497535-32151-9-git-send-email-quic_fenglinw@quicinc.com>
+In-Reply-To: <20220321013922.24067-3-leilk.liu@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 17 Mar 2022 14:12:13 +0800, Fenglin Wu wrote:
-> From: David Collins <collinsd@codeaurora.org>
+On Mon, 21 Mar 2022 09:39:21 +0800, Leilk Liu wrote:
+> this patch support hclk for AHB bus.
 > 
-> Make all interrupt related properties as optional instead of
-> required.  Some boards do not required PMIC IRQ support and it
-> isn't needed to handle SPMI bus transactions, so specify it as
-> optional.
-> 
-> Signed-off-by: David Collins <collinsd@codeaurora.org>
-> Signed-off-by: Fenglin Wu <quic_fenglinw@quicinc.com>
+> Signed-off-by: Leilk Liu <leilk.liu@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 > ---
->  Documentation/devicetree/bindings/spmi/qcom,spmi-pmic-arb.yaml | 3 ---
->  1 file changed, 3 deletions(-)
+>  .../devicetree/bindings/spi/mediatek,spi-mt65xx.yaml          | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
 
-Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
