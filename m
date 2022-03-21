@@ -2,108 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 782CAC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:10:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7E62C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:12:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347763AbiCUNL5 (ORCPT
+        id S1347776AbiCUNNx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 09:11:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52192 "EHLO
+        Mon, 21 Mar 2022 09:13:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232345AbiCUNLy (ORCPT
+        with ESMTP id S1347768AbiCUNNp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:11:54 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C8BC1D0EF;
-        Mon, 21 Mar 2022 06:10:29 -0700 (PDT)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22LAj81a024285;
-        Mon, 21 Mar 2022 13:10:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=dSRhfx3VoPovZmn5BHzSX5JfMdqftW5QA/0PFRNnjIU=;
- b=N4qjJhSIO1OgRK8iEblIGGnpKt31Mh9fCuLWWBphMuypKwzquZAaAjJMz/u1hntvOXi5
- kAQl/EmifPR5lmUXYT+edCKN6sFX2J1yqs3RyvO9b7RAeM5rlzG71E1N8jDWZOOTX2/M
- LQBQKmD+fbQbDcN7xqd8xKc+MNBIQ1xdAq3iwUS97mmXd/5YP/F8SS8dM3QrF5uuuju5
- rj0KgbDSftWHmCT4XORpXkwdk2i3g64l7m591Zdu87/5shmrWwzfvBfbFZe9zYaZ20eo
- mkbGHxvPCli03/SPyy92gOiTt1/ROLrqutlLcTCuUcNHZ8p4KC+M2fsoO2D7CyGT6bLf Rw== 
-Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3exmwkexqs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 21 Mar 2022 13:10:26 +0000
-Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
-        by ppma04wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22LCvTUF020282;
-        Mon, 21 Mar 2022 13:10:25 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-        by ppma04wdc.us.ibm.com with ESMTP id 3exd3j3tsr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 21 Mar 2022 13:10:25 +0000
-Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22LDAOAF29098254
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 21 Mar 2022 13:10:24 GMT
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 173C46A04D;
-        Mon, 21 Mar 2022 13:10:24 +0000 (GMT)
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F2EA76A04F;
-        Mon, 21 Mar 2022 13:10:22 +0000 (GMT)
-Received: from [9.47.158.152] (unknown [9.47.158.152])
-        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Mon, 21 Mar 2022 13:10:22 +0000 (GMT)
-Message-ID: <d79baf40-6bb7-d4f4-666d-91e1ad20be74@linux.ibm.com>
-Date:   Mon, 21 Mar 2022 09:10:22 -0400
+        Mon, 21 Mar 2022 09:13:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E96FA56204;
+        Mon, 21 Mar 2022 06:12:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B33961187;
+        Mon, 21 Mar 2022 13:12:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7831AC340E8;
+        Mon, 21 Mar 2022 13:12:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647868336;
+        bh=Kb8tCvStzi3n8+JN0EGg2+VHaHWyv6cqBFtYcHbhL00=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=b82nQt1DCCW9qSMH3kxM4r3MZdwdv0P9PtsfuQmAGSjAf24WlF3qK5q78KVhVzEBu
+         5a+8/KwI06gWqg0v0XOPj2vagC9oDBWUqnoAJ48leIx+R8gRL30lf2YC+IMOLjsNa2
+         AihMafAa3tDmfNYajv0ABZ0owZZhiFHdAlid//7k=
+Date:   Mon, 21 Mar 2022 14:12:13 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     sec@valis.email, steffen.klassert@secunet.com,
+        tadeusz.struk@linaro.org, stable-commits@vger.kernel.org
+Subject: Re: Patch "esp: Fix possible buffer overflow in ESP transformation"
+ has been added to the 4.19-stable tree
+Message-ID: <Yjh5rcxI/VW40j1+@kroah.com>
+References: <16478662281158@kroah.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH v6 4/5] ima: support fs-verity file digest based version 3
- signatures
-Content-Language: en-US
-To:     Mimi Zohar <zohar@linux.ibm.com>, linux-integrity@vger.kernel.org
-Cc:     Eric Biggers <ebiggers@kernel.org>, linux-fscrypt@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220318182151.100847-1-zohar@linux.ibm.com>
- <20220318182151.100847-5-zohar@linux.ibm.com>
-From:   Stefan Berger <stefanb@linux.ibm.com>
-In-Reply-To: <20220318182151.100847-5-zohar@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: hSEeA2y0OdL23AynEl1JBxWYH7heLFX8
-X-Proofpoint-GUID: hSEeA2y0OdL23AynEl1JBxWYH7heLFX8
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-21_05,2022-03-21_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- suspectscore=0 adultscore=0 mlxlogscore=999 spamscore=0 malwarescore=0
- mlxscore=0 clxscore=1015 bulkscore=0 priorityscore=1501 phishscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203210085
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <16478662281158@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 3/18/22 14:21, Mimi Zohar wrote:
-> IMA may verify a file's integrity against a "good" value stored in the
-> 'security.ima' xattr or as an appended signature, based on policy.  When
-> the "good value" is stored in the xattr, the xattr may contain a file
-> hash or signature.  In either case, the "good" value is preceded by a
-> header.  The first byte of the xattr header indicates the type of data
-> - hash, signature - stored in the xattr.  To support storing fs-verity
-> signatures in the 'security.ima' xattr requires further differentiating
-> the fs-verity signature from the existing IMA signature.
+On Mon, Mar 21, 2022 at 01:37:08PM +0100, gregkh@linuxfoundation.org wrote:
 > 
-> In addition the signatures stored in 'security.ima' xattr, need to be
-> disambiguated.  Instead of directly signing the fs-verity digest, a new
-> signature version 3 is defined as the hash of the ima_file_id structure,
-> which identifies the type of signature and the digest.
+> This is a note to let you know that I've just added the patch titled
+> 
+>     esp: Fix possible buffer overflow in ESP transformation
+> 
+> to the 4.19-stable tree which can be found at:
+>     http://www.kernel.org/git/?p=linux/kernel/git/stable/stable-queue.git;a=summary
+> 
+> The filename of the patch is:
+>      esp-fix-possible-buffer-overflow-in-esp-transformation.patch
+> and it can be found in the queue-4.19 subdirectory.
+> 
+> If you, or anyone else, feels it should not be added to the stable tree,
+> please let <stable@vger.kernel.org> know about it.
 
-Would it not be enough to just differentiat by the type of signature 
-rather than also bumping the version? It's still signature_v2_hdr but a 
-new type IMA_VERITY_DIGSIG is introduced there that shoud be sufficient 
-to indicate that a different method for calculating the hash is to be 
-used than for anything that existed before? sigv3 would then become the 
-more obvious veriftysig... ?
+Oops, nope, sorry this breaks the build on 5.4 and older kernels, now
+dropped.
+
+greg k-h
