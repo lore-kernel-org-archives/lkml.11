@@ -2,96 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10969C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:32:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 025F9C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:33:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350335AbiCUPdh (ORCPT
+        id S1345588AbiCUPej (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 11:33:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34914 "EHLO
+        Mon, 21 Mar 2022 11:34:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350390AbiCUPdO (ORCPT
+        with ESMTP id S1344805AbiCUPed (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 11:33:14 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77320169798;
-        Mon, 21 Mar 2022 08:31:49 -0700 (PDT)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22LCcr3N002576;
-        Mon, 21 Mar 2022 15:31:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=j672nln5CbyRKxNf6ezAqa0EiQ4l+vPrR3zPPLrfIT0=;
- b=KxniCuU1+R4lNGhNtOBA9uenObNWlTAgdIbk26VJwJpF1ISEJ82GvEjRedBS7Rj6vdvo
- 4AY3LX427ozfWhsclzORtDncZ5FUB3UjptvNEEGEcf5Xn0WfcWNQqhyfgjtCMgBg1CiX
- RKz+NW6Tl+U/LrYsgOlt5ALe0P9m32rHvuI5jpc49XovlnGwrxnX1gjT5pJXKXSmcDqq
- k2BInMU7xVZVPQzKm8yFCw3xd+9fErx7Vwh7xyytAEmOG82XhqYHZTB5v3/cRlLhePib
- m1Dk0n21NBFCGGtjx/TcEYohfFFM1yTcpMuD6V4M5pj/yxopI4tzBl6BWZL0DiUly8bj 9g== 
-Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3expy0f67t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 21 Mar 2022 15:31:19 +0000
-Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
-        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22LFRM6c019122;
-        Mon, 21 Mar 2022 15:31:18 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-        by ppma02wdc.us.ibm.com with ESMTP id 3ew6t96804-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 21 Mar 2022 15:31:18 +0000
-Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22LFVHiA12845538
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 21 Mar 2022 15:31:17 GMT
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 47034C605B;
-        Mon, 21 Mar 2022 15:31:17 +0000 (GMT)
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CC362C6055;
-        Mon, 21 Mar 2022 15:31:16 +0000 (GMT)
-Received: from v0005c16.aus.stglabs.ibm.com (unknown [9.211.47.134])
-        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Mon, 21 Mar 2022 15:31:16 +0000 (GMT)
-From:   Eddie James <eajames@linux.ibm.com>
-To:     linux-fsi@lists.ozlabs.org
-Cc:     linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        jdelvare@suse.com, linux@roeck-us.net, joel@jms.id.au,
-        jk@ozlabs.org, alistair@popple.id.au,
-        Eddie James <eajames@linux.ibm.com>
-Subject: [PATCH 0/2] fsi and hwmon (occ): Prevent occasional checksum failures
-Date:   Mon, 21 Mar 2022 10:31:10 -0500
-Message-Id: <20220321153112.12199-1-eajames@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
+        Mon, 21 Mar 2022 11:34:33 -0400
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EB31634E;
+        Mon, 21 Mar 2022 08:33:05 -0700 (PDT)
+Received: by mail-wr1-f52.google.com with SMTP id h23so20609133wrb.8;
+        Mon, 21 Mar 2022 08:33:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=3LRliTmfLlH3oKVFP57IUFaZfYEaxuZudtlO6I7qIIs=;
+        b=tSshbf46XCiFT/cS9MYxBW/VSFzYcnshB9vln1gUGNJfBlshI4ppzJn8Xvz8HbeMwt
+         V+qpZkDApL9k0rkF5tcXVOmBwU5y1Ks5pFbJn8do2OcvRfKW1mQDlI+lt7YdiHR3y5VJ
+         i8M8n1LW2xZ2J2tnilFWudYUd+x3mm81k4B46uUQdXypOo51XWT6SoJHrukUdwRLKWBi
+         mSfapkagaeuSBT2Cut134wju1SwaPS5gi74Xjw+RtNh4CZf++nakTINu5Y8UvburOELu
+         Ufu+YnectCsuMgeqJBj99UcwWL/GxckTk78WSe55Jgqh5FD1eQa5LvBZkbEy83p5vfJE
+         KJ1g==
+X-Gm-Message-State: AOAM531P9rt5TLOMMpNC/VMjrrfRjMxvaIlO370DGk4rHCidN3JidjE3
+        kkx8Lg0hW5FgA6mkUmnsgNA=
+X-Google-Smtp-Source: ABdhPJyoMJgUZCvV0Y0flDAyJ4coI02yk9wt3cl8Asvux4XUXpEuGTL0bFFEZcGPxGZh3Sj1ux4c7g==
+X-Received: by 2002:adf:e18d:0:b0:204:981:9f73 with SMTP id az13-20020adfe18d000000b0020409819f73mr6510342wrb.99.1647876783791;
+        Mon, 21 Mar 2022 08:33:03 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.googlemail.com with ESMTPSA id d14-20020a056000186e00b0020405198faasm6736607wri.52.2022.03.21.08.33.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Mar 2022 08:33:03 -0700 (PDT)
+Message-ID: <3ee94d1d-4e16-a744-c217-c4bc69ad96b4@kernel.org>
+Date:   Mon, 21 Mar 2022 16:33:02 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: SYIRL_syCVTsGlItUybE74VWBN5ObQ6h
-X-Proofpoint-GUID: SYIRL_syCVTsGlItUybE74VWBN5ObQ6h
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-21_06,2022-03-21_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- spamscore=0 mlxscore=0 mlxlogscore=796 phishscore=0 impostorscore=0
- malwarescore=0 clxscore=1011 priorityscore=1501 suspectscore=0 bulkscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203210098
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v4 15/18] dt-bindings: clock: Add L2 clocks to
+ qcom,krait-cc Documentation
+Content-Language: en-US
+To:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-clk@vger.kernel.org
+References: <20220321144825.11736-1-ansuelsmth@gmail.com>
+ <20220321144825.11736-16-ansuelsmth@gmail.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220321144825.11736-16-ansuelsmth@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Due to the OCC communication design with a shared SRAM area,
-checkum errors are expected due to corrupted buffer from OCC
-communications with other system components. Therefore, use a
-unique errno for checksum failures and retry the command twice
-in that case.
+On 21/03/2022 15:48, Ansuel Smith wrote:
+> Krait-cc qcom driver provide also L2 clocks and require the acpu_l2_aux
+> and the hfpll_l2 clock to be provided. Add these missing clocks to the
+> Documentation.
+> 
 
-Eddie James (2):
-  fsi: occ: Fix checksum failure mode
-  hwmon (occ): Retry for checksum failure
+Thanks. It would be also nice to see here short sentence about expected
+impact, e.g. there are no in-tree DTSes which would be affected, no out
+of tree known users etc.
 
- drivers/fsi/fsi-occ.c      |  7 +++++--
- drivers/hwmon/occ/p9_sbe.c | 28 ++++++++++++++++++----------
- 2 files changed, 23 insertions(+), 12 deletions(-)
+Because basically with this requirement you change the ABI, so you might
+break some users.
 
--- 
-2.27.0
+I will leave it to platform maintainers to decide whether it is accepted
+or not.
 
+
+Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+
+
+Best regards,
+Krzysztof
