@@ -2,151 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49805C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:16:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19853C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:17:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349900AbiCUPST (ORCPT
+        id S1349906AbiCUPSa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 11:18:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36660 "EHLO
+        Mon, 21 Mar 2022 11:18:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349890AbiCUPSQ (ORCPT
+        with ESMTP id S235225AbiCUPS2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 11:18:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 07F0110EC5A
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 08:16:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647875809;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nX4QZCO/oNI/owmGNcTSGcMnEF5mlfrSVaizLBz7uJ0=;
-        b=buoEHscV8d93rWe5zHzGJmIyTgBhH+xN63JqSUIhUnCGV7/AYpMQbcUKYrgYmiKa1bjnlb
-        m4x7O615a7tjxhtxFSODOISeTvo/Ue192l503kI4evEeiekCP4wLPVJUJSQucWue0r8v6R
-        PT7YuzQCWhyHoeIwRUmRLG95uLT7pfo=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-32-J4n9EuznNs-N3PQXTFnW8g-1; Mon, 21 Mar 2022 11:16:46 -0400
-X-MC-Unique: J4n9EuznNs-N3PQXTFnW8g-1
-Received: by mail-wr1-f69.google.com with SMTP id 71-20020adf82cd000000b00203dc43d216so3191693wrc.22
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 08:16:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=nX4QZCO/oNI/owmGNcTSGcMnEF5mlfrSVaizLBz7uJ0=;
-        b=GcSjvf3FxYGpRXMqJGVu4+1K4h2uAhsjLCZTTHg1o7ECkHqXBsUcbqQbtFtlY7hUeN
-         KbUQcUxjnx3NlZopO2HT9Ot5pjUWJGHCslCvtfHokzHE1Y7w7qPw/lHVQzEoLNnApodc
-         M0jX7Kc2oaig74RLNnYYMIyYs4hC85wMXXgOaxvi2tt7UkkiqI+h0SN8FIXDXi/hnmjQ
-         t7RxgKJs5GyW/Tl/c44tgV8YJqBBsm3G5PCyhO/W2X32goGNcp/wVoJpJ85HqYukTdbM
-         YmpIVVHIcJY+c7d/40G0A0f+Ut1GB7fKPeWuyiR3cih3X1g4bVts+h7A9Xy8MzHySKL/
-         OMTQ==
-X-Gm-Message-State: AOAM530N/JKlwcxw8706ckE8bmtnVGpqbfl8BkLUN5MRvGnmodA1rjy4
-        Ow90zOZuvcLPNtkJVMXLTrz+Q4KAfQiUQPrU9If6SBs3ClquDelJSq7BoVKNZSvQwNi9xRLdGUx
-        QssYk619urAjZp3IMdCkYpc9k
-X-Received: by 2002:a5d:5690:0:b0:203:f727:362 with SMTP id f16-20020a5d5690000000b00203f7270362mr13336324wrv.717.1647875805651;
-        Mon, 21 Mar 2022 08:16:45 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxzTIc10MZuTh5WcD+YFZa7hXvGCjsQ2g+VK/yHzoP82TjLC4Ii/L09EZIrxSnI/6aUkzWG0g==
-X-Received: by 2002:a5d:5690:0:b0:203:f727:362 with SMTP id f16-20020a5d5690000000b00203f7270362mr13336299wrv.717.1647875805316;
-        Mon, 21 Mar 2022 08:16:45 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c704:4900:849b:f76e:5e1f:ff95? (p200300cbc7044900849bf76e5e1fff95.dip0.t-ipconnect.de. [2003:cb:c704:4900:849b:f76e:5e1f:ff95])
-        by smtp.gmail.com with ESMTPSA id i5-20020adfaac5000000b00203fd04bf86sm7526495wrc.66.2022.03.21.08.16.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Mar 2022 08:16:44 -0700 (PDT)
-Message-ID: <9ae0a8e4-41b7-04f4-4435-17cbba9850fb@redhat.com>
-Date:   Mon, 21 Mar 2022 16:16:44 +0100
+        Mon, 21 Mar 2022 11:18:28 -0400
+X-Greylist: delayed 2095 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 21 Mar 2022 08:17:02 PDT
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C73105064;
+        Mon, 21 Mar 2022 08:17:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=zPMe5slwjVlR5NZ8SoEn7+jv/tU4wKHM4MULXO4el7E=; b=lP9VSHa8/RitwBvhw1IRLZWY1s
+        ntwJSXFtmAUK5Wy+pERCG/tr7Tj7+wIMr7/QSpTYj2QHXsM0UUHKhm9NKq94LFVwWEZVPhmqiuxjE
+        I3bembYQkjV3McKUcJ18LmCUlyC669SRGC8HssNm6AAhaOg3DqtG4q12QQTp5uQRcljDmd5sgM3/z
+        Io4axnOpi8u5Q9R1Bb78+4EyJA7mpdsj8MzGzuOEDjwf/gX9CfUqzjaNa5kurNld/Asq8hLLUjkNe
+        3OeKjY1p8fIdrXOdOhRI+Zwdx3xEZz0gR9yB/4zCdE3MW0R/z+xC+w+wDBQ7CM8/WyjzjT0xMKRXp
+        dxN5vsNA==;
+Received: from [187.39.124.208] (helo=localhost)
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
+        id 1nWJEP-0002GL-Uz; Mon, 21 Mar 2022 15:42:02 +0100
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+To:     linux-doc@vger.kernel.org
+Cc:     corbet@lwn.net, linux-kernel@vger.kernel.org, gpiccoli@igalia.com,
+        kernel@gpiccoli.net, Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH] Documentation: Fix duplicate statement about raw_spinlock_t type
+Date:   Mon, 21 Mar 2022 11:41:33 -0300
+Message-Id: <20220321144133.49804-1-gpiccoli@igalia.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [GIT PULL] Folio patches for 5.18 (MM part)
-Content-Language: en-US
-To:     Matthew Wilcox <willy@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Hugh Dickins <hughd@google.com>,
-        Alex Sierra <alex.sierra@amd.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        William Kucharski <william.kucharski@oracle.com>
-References: <Yjh+EuacJURShtJI@casper.infradead.org>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <Yjh+EuacJURShtJI@casper.infradead.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21.03.22 14:30, Matthew Wilcox wrote:
-> Hi Linus,
-> 
-> This is the first of two folio-related pull requests for this merge
-> window.  This is the MM side of things and we had some unfortunate
-> complex merge conflicts to resolve.  I decided to redo my changes on
-> top of Hugh's and Christoph's patches, so I'm the one sending the
-> pull request.
-> 
-> The following changes since commit f71077a4d84bbe8c7b91b7db7c4ef815755ac5e3:
-> 
->   Merge tag 'mmc-v5.17-rc1-2' of git://git.kernel.org/pub/scm/linux/kernel/git/ulfh/mmc (2022-02-16 12:09:22 -0800)
-> 
-> are available in the Git repository at:
-> 
->   git://git.infradead.org/users/willy/pagecache.git tags/folio-5.18
-> 
-> for you to fetch changes up to 5063f22c914e3e5f2239cf91f4986042dc705bde:
-> 
->   mm/damon: minor cleanup for damon_pa_young (2022-03-16 10:09:50 -0400)
-> 
-> ----------------------------------------------------------------
-> Folio changes for 5.18
-> 
-> Several of us had overlapping, conflicting changes to the MM this
-> round, and I volunteered to send the pull request.
-> 
->  - Hugh rewrote how munlock works to massively reduce the contention
->    on i_mmap_rwsem:
->    https://lore.kernel.org/linux-mm/8e4356d-9622-a7f0-b2c-f116b5f2efea@google.com/
->  - Christoph sorted out the page refcount mess for ZONE_DEVICE pages:
->    https://lore.kernel.org/linux-mm/20220210072828.2930359-1-hch@lst.de/
->  - I converted GUP to use folios and make pincount available for order-1
->    pages.
->  - I converted a few more truncation functions to use folios
->  - I converted page_vma_mapped_walk to use PFNs instead of pages
->  - I converted rmap_walk to use folios
->  - I converted most of shrink_page_list() to use a folio
->  - I added support for creating large folios in readahead
-> 
-> ----------------------------------------------------------------
-> Alex Sierra (10):
->       mm: add zone device coherent type memory support
->       mm: add device coherent vma selection for memory migration
->       mm/gup: fail get_user_pages for LONGTERM dev coherent type
->       drm/amdkfd: add SPM support for SVM
->       drm/amdkfd: coherent type as sys mem on migration to ram
->       lib: test_hmm add ioctl to get zone device type
->       lib: test_hmm add module param for zone device type
->       lib: add support for device coherent type in test_hmm
->       tools: update hmm-test to support device coherent type
->       tools: update test_hmm script to support SP config
-> 
-> Alistair Popple (2):
->       mm: remove the vma check in migrate_vma_setup()
->       mm/gup: migrate device coherent pages when pinning instead of failing
+Unless it was duplicate on purpose, to emphasize that a raw_spinlock_t
+is always a spinning lock regardless of PREEMPT_RT or kernel config,
+it's a bit odd that this text is duplicate. So, this patch just clean
+it up, keeping the consistency with the other sections of the text.
 
-... I thought DEVICE_COHERENT is still under development?
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Fixes: 919e9e6395cf ("Documentation: Add lock ordering and nesting documentation")
+Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+---
+ Documentation/locking/locktypes.rst | 3 ---
+ 1 file changed, 3 deletions(-)
 
-
+diff --git a/Documentation/locking/locktypes.rst b/Documentation/locking/locktypes.rst
+index bfa75ea1b66a..9933faad4771 100644
+--- a/Documentation/locking/locktypes.rst
++++ b/Documentation/locking/locktypes.rst
+@@ -211,9 +211,6 @@ raw_spinlock_t and spinlock_t
+ raw_spinlock_t
+ --------------
+ 
+-raw_spinlock_t is a strict spinning lock implementation regardless of the
+-kernel configuration including PREEMPT_RT enabled kernels.
+-
+ raw_spinlock_t is a strict spinning lock implementation in all kernels,
+ including PREEMPT_RT kernels.  Use raw_spinlock_t only in real critical
+ core code, low-level interrupt handling and places where disabling
 -- 
-Thanks,
-
-David / dhildenb
+2.35.1
 
