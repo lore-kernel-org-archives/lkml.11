@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A09D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:12:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F6BAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:13:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350925AbiCUQOV (ORCPT
+        id S1350933AbiCUQOY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 12:14:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49996 "EHLO
+        Mon, 21 Mar 2022 12:14:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350822AbiCUQN6 (ORCPT
+        with ESMTP id S1350770AbiCUQN7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 12:13:58 -0400
+        Mon, 21 Mar 2022 12:13:59 -0400
 Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5179969280
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:12:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC8176299
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:12:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
         from:to:cc:subject:date:message-id:in-reply-to:references
-        :mime-version:content-transfer-encoding; s=k1; bh=KqOKmkSiv4XScF
-        s86hoBk+u/08tcRXiCL6CqLW8A4xo=; b=2SNV0O58qpDM1YlOPb57qj0OOJ1tgw
-        aQMRd6Gb9OXfxbXbrGmJpPmgaZvpHmBzkfYrLe6EImSTf/2HRzkEL62OVa9uhm+G
-        2Hko1BFTM5mDQpvFFskCAiInGYE/lcjRofed1MoKNpRSxFyv0YfMfJrU68WTDma7
-        8u6hRijoOt//Y=
-Received: (qmail 957707 invoked from network); 21 Mar 2022 17:12:29 +0100
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 21 Mar 2022 17:12:29 +0100
-X-UD-Smtp-Session: l3s3148p1@xgpWw7zaHNkgAwDPXxCoAIeNYiWy88zT
+        :mime-version:content-transfer-encoding; s=k1; bh=cunoTtoK2oBcz7
+        VzEx0UYPGYOFgkoQ8XHd1+3sWASlQ=; b=Aohll0Vd/p4kbzsZ+4UQT12OrIw22L
+        aS2TiZhaIBJuEwJnJcGDT7IMbHWog/mbrvAzV0ng45Xccx1julWgTPwRmi8vR1Nz
+        EWid0qYB+OVQ3g+WVuENoSTN9Kh9kyvpZGfFFE6OQ8Z4CsAu/Nc64xiuSFUW4nOo
+        yO3HmrFlRktnk=
+Received: (qmail 957867 invoked from network); 21 Mar 2022 17:12:32 +0100
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 21 Mar 2022 17:12:32 +0100
+X-UD-Smtp-Session: l3s3148p1@GTuAw7zaKNkgAwDPXxCoAIeNYiWy88zT
 From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     linux-renesas-soc@vger.kernel.org,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Wolfram Sang <wsa+renesas@sang-engineering.com>
-Subject: [RFC PATCH 03/15] bus: mhi: core: use new name 'usleep_autoyield' instead of 'fsleep'
-Date:   Mon, 21 Mar 2022 17:12:11 +0100
-Message-Id: <20220321161223.2837-4-wsa+renesas@sang-engineering.com>
+Subject: [RFC PATCH 08/15] net: ethernet: realtek: use new name 'usleep_autoyield' instead of 'fsleep'
+Date:   Mon, 21 Mar 2022 17:12:16 +0100
+Message-Id: <20220321161223.2837-9-wsa+renesas@sang-engineering.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220321161223.2837-1-wsa+renesas@sang-engineering.com>
 References: <20220321161223.2837-1-wsa+renesas@sang-engineering.com>
@@ -50,22 +50,45 @@ Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 ---
 RFC, please do not apply yet
 
- drivers/bus/mhi/core/main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/bus/mhi/core/main.c b/drivers/bus/mhi/core/main.c
-index ffde617f93a3..2a8d724e1445 100644
---- a/drivers/bus/mhi/core/main.c
-+++ b/drivers/bus/mhi/core/main.c
-@@ -54,7 +54,7 @@ int __must_check mhi_poll_reg_field(struct mhi_controller *mhi_cntrl,
- 		if (out == val)
- 			return 0;
- 
--		fsleep(delayus);
-+		usleep_autoyield(delayus);
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 19e2621e0645..ec39b5b98cfb 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -727,7 +727,7 @@ static bool rtl_loop_wait(struct rtl8169_private *tp, const struct rtl_cond *c,
+ 	for (i = 0; i < n; i++) {
+ 		if (c->check(tp) == high)
+ 			return true;
+-		fsleep(usecs);
++		usleep_autoyield(usecs);
  	}
  
- 	return -ETIMEDOUT;
+ 	if (net_ratelimit())
+@@ -2468,7 +2468,7 @@ static void rtl_wait_txrx_fifo_empty(struct rtl8169_private *tp)
+ static void rtl_enable_rxdvgate(struct rtl8169_private *tp)
+ {
+ 	RTL_W32(tp, MISC, RTL_R32(tp, MISC) | RXDV_GATED_EN);
+-	fsleep(2000);
++	usleep_autoyield(2000);
+ 	rtl_wait_txrx_fifo_empty(tp);
+ }
+ 
+@@ -3972,11 +3972,11 @@ static void rtl8169_cleanup(struct rtl8169_private *tp, bool going_down)
+ 		break;
+ 	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_63:
+ 		rtl_enable_rxdvgate(tp);
+-		fsleep(2000);
++		usleep_autoyield(2000);
+ 		break;
+ 	default:
+ 		RTL_W8(tp, ChipCmd, RTL_R8(tp, ChipCmd) | StopReq);
+-		fsleep(100);
++		usleep_autoyield(100);
+ 		break;
+ 	}
+ 
 -- 
 2.34.1
 
