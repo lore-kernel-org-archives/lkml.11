@@ -2,128 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2612AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 08:39:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9F2DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 08:39:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345349AbiCUIk6 (ORCPT
+        id S1345357AbiCUIlC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 04:40:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41454 "EHLO
+        Mon, 21 Mar 2022 04:41:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345232AbiCUIkt (ORCPT
+        with ESMTP id S245345AbiCUIkz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 04:40:49 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 723002D1DC
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 01:39:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647851964; x=1679387964;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=zBkNcIaE7vRKqifh5x4wdiIAiDTn35u2wVhdHiRTcVk=;
-  b=AbK5hV6Za1CpCwVrQxmtjih7I9V1ZJAxrpgB+yL9K9h2O5Egi53PHYh6
-   wk8JGkTzIz3n4oNYG9Of6OK5UBiWFXxKYhzGX1Vu6sKdK8u4kxCwKw8lx
-   BJd9L6Ddqhl4IHyhfBUupOB+s6ddqhF8umhtHGNDfrdyXkn/vfGkLoIa9
-   27b+UPWe4E26Yy+StI21yduQ02VxdmKUoNZtbHobcL3y1xSRnKUkQ0bP9
-   Hn0e5vcYDg8qDQgOlY7nIKTw+rnmNv+GWa653ZbILnbJMLksM6q1QrnNo
-   BQpsV1bVlwHYe6tfhPodrAfgCBv+vE+5BwRCGck91Z/GjnBa67KJN4t6F
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10292"; a="237443986"
-X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
-   d="scan'208";a="237443986"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 01:39:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
-   d="scan'208";a="559773185"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 21 Mar 2022 01:39:22 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nWDZR-000Hem-PU; Mon, 21 Mar 2022 08:39:21 +0000
-Date:   Mon, 21 Mar 2022 16:39:01 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [ardb:efi-psci 2/2] drivers/firmware/psci/psci.c:158:9: error:
- implicit declaration of function 'efi_set_pgd'
-Message-ID: <202203211626.cYFXbogy-lkp@intel.com>
+        Mon, 21 Mar 2022 04:40:55 -0400
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E18332B1B8;
+        Mon, 21 Mar 2022 01:39:28 -0700 (PDT)
+Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 111C61BF213;
+        Mon, 21 Mar 2022 08:39:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1647851967;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=JMfmUQxoYTTnscW8TYupXGpFLuQ3KiBZX5n0t2r2KvU=;
+        b=ZINXow/fqTOdibFY3IroekzbrCGELeJ/wgb/Ne81TBoliGoj7rBGdmNOYc5qo0AdbEqC4I
+        iX5cgqZFhQWcYCs+6LKx1lTSgqM8R+M6SEHtfaBSQyJIa3fV3gYGNyrx+J6C5JZtqqLXIv
+        iXTZg316pooXXJSgoM1p5GXkyFQQvtD8AhEOvJAnrcwPLHK8i0BUxwkH/jH26x+TBgstkK
+        WRaqdGkidqV4jzZXnTAoSFDron0tnORHJqv5rwco8P7M5PHpyuOO5PJAgFLKbnpqte1P74
+        GWa9H5pzLPYSYaD5hBdHHi0UxSTRAYBmCyJEPKLxcs0TmLrSXBgM/jvGYYccUg==
+Date:   Mon, 21 Mar 2022 09:39:26 +0100
+From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        mchehab@kernel.org
+Subject: Re: [PATCH resend] media: i2c: ov5648: fix wrong pointer passed to
+ IS_ERR() and PTR_ERR()
+Message-ID: <Yjg5vl1prcd6y0rT@aptenodytes>
+References: <20220319035806.3299264-1-yangyingliang@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="59QPluZI0vorPPeN"
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220319035806.3299264-1-yangyingliang@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git efi-psci
-head:   4b8d4b95fbd43459a4b0ae3f9020a912f7621884
-commit: 4b8d4b95fbd43459a4b0ae3f9020a912f7621884 [2/2] efi: arm: implement PSCI method backed by EFI runtime code
-config: arm-allmodconfig (https://download.01.org/0day-ci/archive/20220321/202203211626.cYFXbogy-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/commit/?id=4b8d4b95fbd43459a4b0ae3f9020a912f7621884
-        git remote add ardb git://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git
-        git fetch --no-tags ardb efi-psci
-        git checkout 4b8d4b95fbd43459a4b0ae3f9020a912f7621884
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+--59QPluZI0vorPPeN
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-All errors (new ones prefixed by >>):
+Hi Yang,
 
-   drivers/firmware/psci/psci.c: In function '__invoke_psci_fn_efi':
->> drivers/firmware/psci/psci.c:158:9: error: implicit declaration of function 'efi_set_pgd' [-Werror=implicit-function-declaration]
-     158 |         efi_set_pgd(&efi_mm);
-         |         ^~~~~~~~~~~
-   cc1: some warnings being treated as errors
+On Sat 19 Mar 22, 11:58, Yang Yingliang wrote:
+> IS_ERR() and PTR_ERR() use wrong pointer, it should be
+> sensor->dovdd, fix it.
 
+Nice catch, thank-you!
 
-vim +/efi_set_pgd +158 drivers/firmware/psci/psci.c
+Reviewed-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 
-   131	
-   132	static unsigned long __invoke_psci_fn_efi(unsigned long function_id,
-   133				unsigned long arg0, unsigned long arg1,
-   134				unsigned long arg2)
-   135	{
-   136		unsigned long flags, ret;
-   137	
-   138		switch (function_id) {
-   139		case PSCI_0_2_FN_PSCI_VERSION:
-   140			return PSCI_VERSION(0, 2);
-   141		case PSCI_0_2_FN_MIGRATE_INFO_TYPE:
-   142			return PSCI_0_2_TOS_MP;
-   143		case PSCI_0_2_FN_CPU_SUSPEND:
-   144		case PSCI_0_2_FN_CPU_OFF:
-   145		case PSCI_0_2_FN_CPU_ON:
-   146		case PSCI_0_2_FN_AFFINITY_INFO:
-   147		case PSCI_0_2_FN64_CPU_SUSPEND:
-   148		case PSCI_0_2_FN64_CPU_ON:
-   149		case PSCI_0_2_FN64_AFFINITY_INFO:
-   150			if (WARN_ON_ONCE(!efi_psci.psci_handler ||
-   151					 !efi_enabled(EFI_RUNTIME_SERVICES)))
-   152		default:
-   153				return PSCI_RET_NOT_SUPPORTED;
-   154			break;
-   155		}
-   156	
-   157		raw_local_irq_save(flags);
- > 158		efi_set_pgd(&efi_mm);
-   159	
-   160		ret = efi_psci.psci_handler(function_id, arg0, arg1, arg2);
-   161	
-   162		efi_set_pgd(current->active_mm);
-   163		raw_local_irq_restore(flags);
-   164	
-   165		return ret;
-   166	}
-   167	
+Cheers,
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Paul
+
+> Fixes: e43ccb0a045f ("media: i2c: Add support for the OV5648 image sensor=
+")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> ---
+>  drivers/media/i2c/ov5648.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/media/i2c/ov5648.c b/drivers/media/i2c/ov5648.c
+> index 930ff6897044..dfcd33e9ee13 100644
+> --- a/drivers/media/i2c/ov5648.c
+> +++ b/drivers/media/i2c/ov5648.c
+> @@ -2498,9 +2498,9 @@ static int ov5648_probe(struct i2c_client *client)
+> =20
+>  	/* DOVDD: digital I/O */
+>  	sensor->dovdd =3D devm_regulator_get(dev, "dovdd");
+> -	if (IS_ERR(sensor->dvdd)) {
+> +	if (IS_ERR(sensor->dovdd)) {
+>  		dev_err(dev, "cannot get DOVDD (digital I/O) regulator\n");
+> -		ret =3D PTR_ERR(sensor->dvdd);
+> +		ret =3D PTR_ERR(sensor->dovdd);
+>  		goto error_endpoint;
+>  	}
+> =20
+> --=20
+> 2.25.1
+>=20
+
+--=20
+Paul Kocialkowski, Bootlin
+Embedded Linux and kernel engineering
+https://bootlin.com
+
+--59QPluZI0vorPPeN
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmI4Ob4ACgkQ3cLmz3+f
+v9HjNAgAmGq67LBBbTp9bg7Wg5UyQukKyemAP2kIIcBJyW4CZ0PlPTeK1E7G5OAN
+bOfhFNB9R4TyRiXlmy5/CxtJSEK7Bdfvim0H4PFGxcjFdZoo36/HkstIEX///l53
+4iOCFVTI52VDx3k9Rrc88229eGkvC0amYtUq9mhC3hdMytXdyDB2WTpW3RIjAZ9B
+OWQxvxmLwLjbOcC6ojLpPHopge1L/WnzcaRqS0VBok2kh3HZKK2zFKLCSZGl/orR
+RUn8fWkxld/gOqg93JuivfOvQYUuCFRnNrV5JEzQxDJx5YYmYYCaIGphl8vGi/qA
+aX1iG98ItVbmgMWxsQhc/VlbiUTcMg==
+=CWJH
+-----END PGP SIGNATURE-----
+
+--59QPluZI0vorPPeN--
