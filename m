@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F1B2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 07:23:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70483C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 07:23:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344833AbiCUHYt (ORCPT
+        id S1344852AbiCUHYx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 03:24:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57204 "EHLO
+        Mon, 21 Mar 2022 03:24:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243886AbiCUHYq (ORCPT
+        with ESMTP id S244578AbiCUHYq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 03:24:46 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD992BF4E;
-        Mon, 21 Mar 2022 00:23:19 -0700 (PDT)
-X-UUID: d5b037d265ea4a21adc927d3a8e69352-20220321
-X-UUID: d5b037d265ea4a21adc927d3a8e69352-20220321
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D514CDE89;
+        Mon, 21 Mar 2022 00:23:20 -0700 (PDT)
+X-UUID: 020b47e84d724129b9b452438f375d2b-20220321
+X-UUID: 020b47e84d724129b9b452438f375d2b-20220321
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
         (envelope-from <trevor.wu@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1558775644; Mon, 21 Mar 2022 15:23:16 +0800
+        with ESMTP id 126629414; Mon, 21 Mar 2022 15:23:14 +0800
 Received: from mtkcas10.mediatek.inc (172.21.101.39) by
  mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 21 Mar 2022 15:23:15 +0800
+ 15.0.1497.2; Mon, 21 Mar 2022 15:23:13 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 21 Mar 2022 15:23:15 +0800
+ Transport; Mon, 21 Mar 2022 15:23:13 +0800
 From:   Trevor Wu <trevor.wu@mediatek.com>
 To:     <broonie@kernel.org>, <tiwai@suse.com>, <robh+dt@kernel.org>,
         <matthias.bgg@gmail.com>
@@ -37,12 +37,10 @@ CC:     <trevor.wu@mediatek.com>, <alsa-devel@alsa-project.org>,
         <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <aaronyu@google.com>, <angelogioacchino.delregno@collabora.com>,
         <tzungbi@google.com>, <yc.hung@mediatek.com>
-Subject: [PATCH v3 3/6] ASoC: dt-bindings: mediatek: mt8195: merge mt8195 machine yaml
-Date:   Mon, 21 Mar 2022 15:23:09 +0800
-Message-ID: <20220321072312.14972-4-trevor.wu@mediatek.com>
+Subject: [PATCH v3 0/6] ASoC: mediatek: Add support for MT8195 sound card with max98390 and rt5682
+Date:   Mon, 21 Mar 2022 15:23:06 +0800
+Message-ID: <20220321072312.14972-1-trevor.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220321072312.14972-1-trevor.wu@mediatek.com>
-References: <20220321072312.14972-1-trevor.wu@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-MTK:  N
@@ -50,109 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Because the same binding components can be shared by all codecs
-combinations, we only reserve one binding file for mt8195 machine driver
-and rename to a generic name.
+This series of patches adds support for mt8195 board with mt6359, max98390
+and rt5682.
 
-We use compatible string to separate different codec combination instead
-of creating a new binding file for new codec combination.
+To prevent from copy-paste components, mt8195 machine drivers and 
+dt-bindings are merged in the patch.
 
-Signed-off-by: Trevor Wu <trevor.wu@mediatek.com>
----
- .../sound/mt8195-mt6359-rt1011-rt5682.yaml    | 51 -------------------
- ...-rt1019-rt5682.yaml => mt8195-mt6359.yaml} |  8 +--
- 2 files changed, 5 insertions(+), 54 deletions(-)
+Patches are based on broonie tree "for-next" branch.
+
+Changes since v2:
+  - split "merge machine driver" into two parts for better understanding
+
+Changes since v1:
+  - remove merged patches about reset controller
+  - propose a common machine driver instead of machine driver common code
+  - propose a common dt-bindings for mt8195 sound card
+
+Trevor Wu (6):
+  ASoC: mediatek: mt8195: revise mt8195-mt6359-rt1019-rt5682.c
+  ASoC: mediatek: mt8195: merge machine driver
+  ASoC: dt-bindings: mediatek: mt8195: merge mt8195 machine yaml
+  ASoC: mediatek: mt8195: rename card controls
+  ASoC: mediatek: mt8195: add machine support for max98390 and rt5682
+  ASoC: dt-bindings: mediatek: mt8195: support
+    mt8195-mt6359-max98390-rt5682
+
+ .../sound/mt8195-mt6359-rt1011-rt5682.yaml    |   51 -
+ ...-rt1019-rt5682.yaml => mt8195-mt6359.yaml} |    9 +-
+ sound/soc/mediatek/Kconfig                    |   26 +-
+ sound/soc/mediatek/mt8195/Makefile            |    3 +-
+ .../mt8195/mt8195-mt6359-rt1011-rt5682.c      | 1198 -----------------
+ ...mt6359-rt1019-rt5682.c => mt8195-mt6359.c} |  865 +++++++-----
+ 6 files changed, 569 insertions(+), 1583 deletions(-)
  delete mode 100644 Documentation/devicetree/bindings/sound/mt8195-mt6359-rt1011-rt5682.yaml
- rename Documentation/devicetree/bindings/sound/{mt8195-mt6359-rt1019-rt5682.yaml => mt8195-mt6359.yaml} (87%)
+ rename Documentation/devicetree/bindings/sound/{mt8195-mt6359-rt1019-rt5682.yaml => mt8195-mt6359.yaml} (84%)
+ delete mode 100644 sound/soc/mediatek/mt8195/mt8195-mt6359-rt1011-rt5682.c
+ rename sound/soc/mediatek/mt8195/{mt8195-mt6359-rt1019-rt5682.c => mt8195-mt6359.c} (78%)
 
-diff --git a/Documentation/devicetree/bindings/sound/mt8195-mt6359-rt1011-rt5682.yaml b/Documentation/devicetree/bindings/sound/mt8195-mt6359-rt1011-rt5682.yaml
-deleted file mode 100644
-index cf6ad7933e23..000000000000
---- a/Documentation/devicetree/bindings/sound/mt8195-mt6359-rt1011-rt5682.yaml
-+++ /dev/null
-@@ -1,51 +0,0 @@
--# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
--%YAML 1.2
-----
--$id: http://devicetree.org/schemas/sound/mt8195-mt6359-rt1011-rt5682.yaml#
--$schema: http://devicetree.org/meta-schemas/core.yaml#
--
--title: Mediatek MT8195 with MT6359, RT1011 and RT5682 ASoC sound card driver
--
--maintainers:
--  - Trevor Wu <trevor.wu@mediatek.com>
--
--description:
--  This binding describes the MT8195 sound card with RT1011 and RT5682.
--
--properties:
--  compatible:
--    const: mediatek,mt8195_mt6359_rt1011_rt5682
--
--  model:
--    $ref: /schemas/types.yaml#/definitions/string
--    description: User specified audio sound card name
--
--  mediatek,platform:
--    $ref: "/schemas/types.yaml#/definitions/phandle"
--    description: The phandle of MT8195 ASoC platform.
--
--  mediatek,dptx-codec:
--    $ref: "/schemas/types.yaml#/definitions/phandle"
--    description: The phandle of MT8195 Display Port Tx codec node.
--
--  mediatek,hdmi-codec:
--    $ref: "/schemas/types.yaml#/definitions/phandle"
--    description: The phandle of MT8195 HDMI codec node.
--
--additionalProperties: false
--
--required:
--  - compatible
--  - mediatek,platform
--
--examples:
--  - |
--
--    sound: mt8195-sound {
--        compatible = "mediatek,mt8195_mt6359_rt1011_rt5682";
--        mediatek,platform = <&afe>;
--        pinctrl-names = "default";
--        pinctrl-0 = <&aud_pins_default>;
--    };
--
--...
-diff --git a/Documentation/devicetree/bindings/sound/mt8195-mt6359-rt1019-rt5682.yaml b/Documentation/devicetree/bindings/sound/mt8195-mt6359.yaml
-similarity index 87%
-rename from Documentation/devicetree/bindings/sound/mt8195-mt6359-rt1019-rt5682.yaml
-rename to Documentation/devicetree/bindings/sound/mt8195-mt6359.yaml
-index 8f177e02ad35..74227fba91c7 100644
---- a/Documentation/devicetree/bindings/sound/mt8195-mt6359-rt1019-rt5682.yaml
-+++ b/Documentation/devicetree/bindings/sound/mt8195-mt6359.yaml
-@@ -1,10 +1,10 @@
- # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- %YAML 1.2
- ---
--$id: http://devicetree.org/schemas/sound/mt8195-mt6359-rt1019-rt5682.yaml#
-+$id: http://devicetree.org/schemas/sound/mt8195-mt6359.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
- 
--title: Mediatek MT8195 with MT6359, RT1019 and RT5682 ASoC sound card driver
-+title: Mediatek MT8195 ASoC sound card driver
- 
- maintainers:
-   - Trevor Wu <trevor.wu@mediatek.com>
-@@ -14,7 +14,9 @@ description:
- 
- properties:
-   compatible:
--    const: mediatek,mt8195_mt6359_rt1019_rt5682
-+    enum:
-+      - mediatek,mt8195_mt6359_rt1019_rt5682
-+      - mediatek,mt8195_mt6359_rt1011_rt5682
- 
-   model:
-     $ref: /schemas/types.yaml#/definitions/string
 -- 
 2.18.0
 
