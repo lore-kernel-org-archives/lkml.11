@@ -2,128 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CD2DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 10:32:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16ACAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 10:34:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346369AbiCUKeL (ORCPT
+        id S1346381AbiCUKf0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 06:34:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54048 "EHLO
+        Mon, 21 Mar 2022 06:35:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230223AbiCUKeH (ORCPT
+        with ESMTP id S1346371AbiCUKfX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 06:34:07 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C2B8F3F88;
-        Mon, 21 Mar 2022 03:32:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647858762; x=1679394762;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=uW0WOPC73UEvk44rb2hIDfT3tEzB1IDsf3NCkLUv0rE=;
-  b=J3WH2DC4l++3oDpMURG+Z9t4ovQWuTQNMeMzAJCWN08WkVdgYL1zKGIB
-   Q0zxrcBMMyHS2KpcDusRSORt9cqBmQkQ4w1efTmeHco+1BcbmXH1G8erB
-   mgYHnWkU8DNK9Kzyx3L9ZlzAtKP4bItAwxIuYVdkdunhzDQKWzP17oQzW
-   wmah6Ew96VwybQvHfhq9lg+7WO3gZLDvcPlMfg+coc+v9uUo2y5Je1KLl
-   XkfBgYEYf+4pYYteAnluQTkTwUNUPfti0eAer1uOYhIJaqYADt9/+y9I4
-   4LCm7v4NdsN26+LKiSzmX2bbMVrm7OXptvC8nemAY3DpJTRbJ2sM9lems
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10292"; a="255083998"
-X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
-   d="scan'208";a="255083998"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 03:32:42 -0700
-X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
-   d="scan'208";a="582820837"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 03:32:36 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nWFKQ-003p5V-A4;
-        Mon, 21 Mar 2022 12:31:58 +0200
-Date:   Mon, 21 Mar 2022 12:31:58 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "'Rafael J . Wysocki '" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-i2c@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 1/6] property: add fwnode_property_read_string_index()
-Message-ID: <YjhUHjeqL2UpB0Gm@smile.fi.intel.com>
-References: <20220318160059.328208-1-clement.leger@bootlin.com>
- <20220318160059.328208-2-clement.leger@bootlin.com>
- <YjSymEpNH8vnkQ+L@smile.fi.intel.com>
- <20220318174912.5759095f@fixe.home>
- <YjTK4UW7DwZ0S3QY@smile.fi.intel.com>
- <20220321084921.069c688e@fixe.home>
+        Mon, 21 Mar 2022 06:35:23 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E73444A3F3
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 03:33:56 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id h4so2061802wrc.13
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 03:33:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=CZC0d7HmPXrhiqppAlDfohvlvGHuAlJ7RvwDEFIcNS0=;
+        b=LIeaOZBhiL5yuerMk2lnp8a4PCOg/BOguucMT6ZJy0ZQ8nDgeL+1/0r6SheRMQfj3s
+         UIsDArpbrVfVL37a5hQyUPSU8evmwxS/g0N/OgLMX6pb76XutYg8rB/Uxys92+gu1o7n
+         +wSq9VC4gSpBNtgr8C4USp0MEAnrz+LjP53IPl+C3Vxi4tREEmOqboyAPOVAXn3oqTjH
+         mY6ZCwzttzdZe+z4q/V8hyDbQ2Rql/4qJ62dbIR7aDpUiae14O6NGsaf4CLDXcokiuEV
+         uMmQsvsoU4RoM9m23C+CahdI6U4pQust1iR6VuM4Ug5P855PNlOSywxM6pkMXHFJiGQh
+         I47g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=CZC0d7HmPXrhiqppAlDfohvlvGHuAlJ7RvwDEFIcNS0=;
+        b=iV4cn6NrScDS7zM01p9vJgO/PQxfHM7m3DqDmHMS2MoWDBVACZaXlQvxhDfLJGwcU/
+         7dKTQl7f5L25vdRl6pbGfBY7PsIsdt6vHpCfCM6wM4ZoF7n9L/8MGnlNjh6lTsMh5e6H
+         xEHOPiugwE54frOJex+MXan2lDKwjmSnFKTAyTE2w3sIMZ9rwnqtqFkJcAFnBnm9FeEF
+         qcBzSrG2rT2wV8QJfOfDRhrgawN9Nc5ryIuqjnlYYC+FM4yH9ySg/0vFEv+OZO8cPnwY
+         9V28smaBjutc/JTvzkGqJbhlbenNuYOSxEy7h/8PGo89SXyOWjZkX1P0O/ZEiDTly/Ie
+         P6gA==
+X-Gm-Message-State: AOAM530J09GJE6ZoTXbWnYLzETLmIAqjbJHrdEhD4ylSbTzbEX5APDgl
+        79SGlin/gUQv+Um9bx5yA/8pow==
+X-Google-Smtp-Source: ABdhPJxMDFBRsgpdkQRN/CL+cgnLwEQ62GCD5wLzKyKD4fJvfeI0ZoHKUlz+LhovUdTGLP9HonhymA==
+X-Received: by 2002:a05:6000:10cd:b0:203:d869:58e6 with SMTP id b13-20020a05600010cd00b00203d86958e6mr17991737wrx.683.1647858835402;
+        Mon, 21 Mar 2022 03:33:55 -0700 (PDT)
+Received: from google.com (110.121.148.146.bc.googleusercontent.com. [146.148.121.110])
+        by smtp.gmail.com with ESMTPSA id n14-20020a7bcbce000000b0038c7776a300sm12049059wmi.0.2022.03.21.03.33.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 03:33:53 -0700 (PDT)
+Date:   Mon, 21 Mar 2022 11:33:50 +0100
+From:   "Steinar H. Gunderson" <sesse@google.com>
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] perf intel-pt: Synthesize cycle events
+Message-ID: <YjhUjotmo+kYvoNP@google.com>
+References: <YiuKAk7SaXP7B7Ee@google.com>
+ <ba2c49da-22c5-06ea-e953-82211b953ca8@intel.com>
+ <YjBnet2813sEGjZY@google.com>
+ <c50bb87d-9fee-c4f9-a350-8729e503e43a@intel.com>
+ <YjDUO6bbyfGw/u0C@google.com>
+ <52903e58-e74c-5ea0-36b4-277ea3610af4@intel.com>
+ <YjGdoGy4Z2UUG9S9@google.com>
+ <ef780335-7dc6-3a23-54a8-b6fc9c8a2ed3@intel.com>
+ <YjHfGrZovk3N/H0f@google.com>
+ <371faf0d-f794-4a2e-0a1c-9d454d7c8b12@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220321084921.069c688e@fixe.home>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <371faf0d-f794-4a2e-0a1c-9d454d7c8b12@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 08:49:21AM +0100, Clément Léger wrote:
-> Le Fri, 18 Mar 2022 20:09:37 +0200,
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> a écrit :
-> > On Fri, Mar 18, 2022 at 05:49:12PM +0100, Clément Léger wrote:
-> > > Le Fri, 18 Mar 2022 18:26:00 +0200,
-> > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> a écrit :  
-> > > > On Fri, Mar 18, 2022 at 05:00:47PM +0100, Clément Léger wrote:  
-
-...
-
-> > > > > +	values = kcalloc(nval, sizeof(*values), GFP_KERNEL);
-> > > > > +	if (!values)
-> > > > > +		return -ENOMEM;
-> > > > > +
-> > > > > +	ret = fwnode_property_read_string_array(fwnode, propname, values, nval);
-> > > > > +	if (ret < 0)
-> > > > > +		goto out;
-> > > > > +
-> > > > > +	*string = values[index];
-> > > > > +out:
-> > > > > +	kfree(values);    
-> > > > 
-> > > > Here is UAF (use after free). How is it supposed to work?  
-> > > 
-> > > values is an array of pointers. I'm only retrieving a pointer out of
-> > > it.  
-> > 
-> > I see, thanks for pointing out.
-> > 
-> > Nevertheless, I don't like the idea of allocating memory in this case.
-> > Can we rather add a new callback that will provide us the necessary
-> > property directly?
-> > 
+On Mon, Mar 21, 2022 at 11:16:56AM +0200, Adrian Hunter wrote:
+> I had another look at this and it seemed *mostly* OK for me.  One change
+> I would make is to subject the cycle period to the logic of the 'A' option
+> (approximate IPC).
 > 
-> IMHO, it would indeed be better. However,
-> fwnode_property_match_string() also allocates memory to do the same
-> kind of operation. Would you also like a callback for this one ?
+> So what does the 'A' option do.
+> 
+> By default, IPC is output only when the exact number of cycles and
+> instructions is known for the sample.  Decoding walks instructions
+> to reconstruct the control flow, so the exact number of instructions
+> is known, but the cycle count (CYC packet) is only produced with
+> another packet, so only indirect/async branches or the first
+> conditional branch of a TNT packet.
 
-But matching string will need all of them to cover all possible cases.
-So, it doesn't rely on the certain index and needs allocation anyway.
+Ah, I hadn't thought of the fact that you only get the first branch per
+packet. It's a bit unfortunate for (exact) cycle counts, since I guess
+TNT packets can also easily cross functions?
 
--- 
-With Best Regards,
-Andy Shevchenko
+> So the cycle sample function looks like this:
+> 
+> static int intel_pt_synth_cycle_sample(struct intel_pt_queue *ptq)
+>
+> [...]
+>
+> With regard to the results you got with perf report, please try:
+> 
+> 	perf report --itrace=y0nse --show-total-period --stdio
+> 
+> and see if the percentages and cycle counts for rarely executed
+> functions make more sense.
 
+I already run mostly with 0ns period, so I don't think that's it.
+I tried your new version, and it's very similar to your previous one;
+there are some small changes (largest is that one function goes from
+2.5% to 2.2% or so), but the general gist of it is the same.
+I am increasingly leaning towards that my original version is wrong
+somehow, though.
 
+By the way, I noticed that synthesized call stacks do not respect
+--inline; is that on purpose? The patch seems simple enough (just
+a call to add_inlines), although it exposes extreme slowness in libbfd
+when run over large binaries, which I'll have to look into.
+(10+ ms for each address-to-symbol lookup is rather expensive when you
+have 4M samples to churn through!)
+
+/* Steinar */
