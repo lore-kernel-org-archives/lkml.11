@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B2F3C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:04:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00A1DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:04:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347701AbiCUNFY (ORCPT
+        id S1347712AbiCUNF0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 09:05:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56158 "EHLO
+        Mon, 21 Mar 2022 09:05:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347685AbiCUNFU (ORCPT
+        with ESMTP id S1347698AbiCUNFV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:05:20 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7616011A00
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 06:03:54 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id bt26so24475611lfb.3
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 06:03:54 -0700 (PDT)
+        Mon, 21 Mar 2022 09:05:21 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E04D11A00
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 06:03:56 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id m3so12496094lfj.11
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 06:03:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=86psb8kPn4M1qHzNjl7a471DNz143YZ1CZe8yVwqHQk=;
-        b=MZUi50SU3X1QiEt6eexLrwpbhToWV7FokIX44P2Zx5tZM4Gxgf8FGqmAMSynY0csS6
-         ib7J7JUObbOTWIOz4HA2GD04z1Vo7Fv8UmE1gXVEbPDNtrzru7f+3rSUWml05mgtJqmx
-         cn43SDW38HkLw2lD8627WiENyV8aQydMnRbzYqkTUvVAjGl0rQZJZJiYeXlU/FCKcp0d
-         aq419H6wZind4UdWlv8b0t2KtDlYiSthE3ecbVFAybtz9pULCrnkt9ZsuRkfqULOD6Ra
-         +1pb9R9UTsoNdBoKL0MYcfJnRWRIskc86zyg0KIIPTeVLU5450n4SeUKE34zVy8YIKUs
-         s9VQ==
+        bh=W0z57MDTx8X/SyhgQAkhX31Rs5nhmqitrzVboECbkLA=;
+        b=Lz/FOVX26uayYZYlzmjUwm07Y9oB4oNpOrCjJWBE52iTkKbkClMbVmACvEICTzdbH1
+         FNfqso+sVxYSbptKLbg4C8K6BTakUnZvgzYLzBWx9Kjkd1hZK9oS9mCBFbgw56xZkjr9
+         TqUxmyD17y9Jhskz/ttkVGmQdd4OY35QBbxWs5/XM1f9ehDm/KqI4H0LqUCvDClhgY85
+         NePCqzU2c42u7RWWXg/HnSBaYW6mnpEsmt89aYST9fpE4f3WWanh428wL6NzUi9CkJb6
+         rH3bVYqs73DQ2PX2mEbiVf9onaLUDerSBMT0h3hKXwpPH/aDNi26tO1FY3Swe0V3km/e
+         DHsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=86psb8kPn4M1qHzNjl7a471DNz143YZ1CZe8yVwqHQk=;
-        b=OLJYemygjE81fK15aGYbtz4FqWo1teiWCE8dfHOr99v4MtlS+yYvC/1Zws1TFe/gcJ
-         1ONGermQLbX0DoEJAfKjoS4ad7Itig41/U0Zma0MGrfYq101hCd3Js+yXAOw+aAMffsg
-         /b7CfvFR02aC7PkVIydhLhqek0eF+WP3oukVxnScwYkXoT1LrVWk+9Pj+BuUErApt0TO
-         OE48tvCF3Dum7A7VfVbi5SFlpb/IZHk+Vg2MO9p69zwct1/Aw6NUUgJYtr9ldbv8Z5rL
-         RZMLQDCQhmAJiU4NNLftFwg83PV3XbcRj++EPvzg3lzqUXztt54yEwNRH1qMzxmiBWzn
-         ncDA==
-X-Gm-Message-State: AOAM53223fxsK8GOk7rZKZ0dFcci81SoGtM33pMSoHf0EQ45x+t0MEYf
-        pZ6BemcWBuukTBua5g3QJaUnZLrwrkF5Yw==
-X-Google-Smtp-Source: ABdhPJwhDZguVWPogpCGYKoMEAwtip8urqaIuhszw8dc4AwNWLn+GAVav2oryEAtcT0n8bKfiij+Wg==
-X-Received: by 2002:a05:6512:16a2:b0:448:1fbb:8ca1 with SMTP id bu34-20020a05651216a200b004481fbb8ca1mr14832890lfb.125.1647867832136;
-        Mon, 21 Mar 2022 06:03:52 -0700 (PDT)
+        bh=W0z57MDTx8X/SyhgQAkhX31Rs5nhmqitrzVboECbkLA=;
+        b=vogp+QkwFnpAoSgCryKkL+fIzfEOB9KWbNOFFXl45DCcG+Qnopt2AfcZboCAr42ebM
+         QJotRkFGqiotDBOu/lJNj9nUvzG/xz4VmyTtMF0nVEeQ0Cq7kqsfTKwVrN8DMjih+1Bx
+         ffbXuxkfWTIMPZOibHgwsJPVPRqOZaCvGeCu6sPiQF/okJEwJf7ptg5cz+t5ng2/Mesi
+         vW59PjWWzQtq+pdbpbPIhrubv0Pqu8iEHP3VEwLP748nBg0yRthcidqN/ExQHvx8pyR6
+         CDSFA0WcWUrlKHEsXlcFHxhUDZVVlqL7UZ+U1Fu22fJYKWhFvmM5J6i3YFrjY8Yfhb1m
+         XGrA==
+X-Gm-Message-State: AOAM531tKSONYFgGGWBZtguUt+0Pb1PO3/Wg5S82oB9QeIw8OtayB/ns
+        qBtkac3UXU9TPYfTr14kzb05qfaU+3awYQ==
+X-Google-Smtp-Source: ABdhPJwOG6jjG3iZ9YMHTq7TqDll1uPUiJNIBWC6llDj8cTK+LUJ+QzrO/qEQqBOlNeA2gh3xmt83w==
+X-Received: by 2002:a05:6512:3c97:b0:44a:1183:bd48 with SMTP id h23-20020a0565123c9700b0044a1183bd48mr9038739lfv.525.1647867834313;
+        Mon, 21 Mar 2022 06:03:54 -0700 (PDT)
 Received: from jade.urgonet (h-79-136-84-253.A175.priv.bahnhof.se. [79.136.84.253])
-        by smtp.gmail.com with ESMTPSA id t27-20020a2e8e7b000000b00247f32b572asm2067738ljk.19.2022.03.21.06.03.51
+        by smtp.gmail.com with ESMTPSA id t27-20020a2e8e7b000000b00247f32b572asm2067738ljk.19.2022.03.21.06.03.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 06:03:51 -0700 (PDT)
+        Mon, 21 Mar 2022 06:03:53 -0700 (PDT)
 From:   Jens Wiklander <jens.wiklander@linaro.org>
 To:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org
 Cc:     Sumit Garg <sumit.garg@linaro.org>,
         Jens Wiklander <jens.wiklander@linaro.org>
-Subject: [PATCH v2 1/4] optee: rename rpc_arg_count to rpc_param_count
-Date:   Mon, 21 Mar 2022 14:03:38 +0100
-Message-Id: <20220321130341.935535-2-jens.wiklander@linaro.org>
+Subject: [PATCH v2 3/4] optee: add FF-A capability OPTEE_FFA_SEC_CAP_ARG_OFFSET
+Date:   Mon, 21 Mar 2022 14:03:40 +0100
+Message-Id: <20220321130341.935535-4-jens.wiklander@linaro.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220321130341.935535-1-jens.wiklander@linaro.org>
 References: <20220321130341.935535-1-jens.wiklander@linaro.org>
@@ -65,107 +65,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Renames the field rpc_arg_count in struct optee to rpc_param_count.
-Function parameter names and local variables are also renamed to match.
+Adds the secure capability OPTEE_FFA_SEC_CAP_ARG_OFFSET to indicate that
+OP-TEE with FF-A can support an argument struct at a non-zero offset into
+a passed shared memory object.
 
 Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
 ---
- drivers/tee/optee/call.c          |  6 +++---
- drivers/tee/optee/ffa_abi.c       | 10 +++++-----
- drivers/tee/optee/optee_private.h |  4 ++--
- 3 files changed, 10 insertions(+), 10 deletions(-)
+ drivers/tee/optee/ffa_abi.c   | 17 +++++++++++++++--
+ drivers/tee/optee/optee_ffa.h | 12 +++++++++++-
+ 2 files changed, 26 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tee/optee/call.c b/drivers/tee/optee/call.c
-index bd49ec934060..a9a237d20c61 100644
---- a/drivers/tee/optee/call.c
-+++ b/drivers/tee/optee/call.c
-@@ -113,12 +113,12 @@ struct tee_shm *optee_get_msg_arg(struct tee_context *ctx, size_t num_params,
- 	struct optee_msg_arg *ma;
- 
- 	/*
--	 * rpc_arg_count is set to the number of allocated parameters in
-+	 * rpc_param_count is set to the number of allocated parameters in
- 	 * the RPC argument struct if a second MSG arg struct is expected.
- 	 * The second arg struct will then be used for RPC.
- 	 */
--	if (optee->rpc_arg_count)
--		sz += OPTEE_MSG_GET_ARG_SIZE(optee->rpc_arg_count);
-+	if (optee->rpc_param_count)
-+		sz += OPTEE_MSG_GET_ARG_SIZE(optee->rpc_param_count);
- 
- 	shm = tee_shm_alloc_priv_buf(ctx, sz);
- 	if (IS_ERR(shm))
 diff --git a/drivers/tee/optee/ffa_abi.c b/drivers/tee/optee/ffa_abi.c
-index a5eb4ef46971..7686f7020616 100644
+index 7686f7020616..cc863aaefcd9 100644
 --- a/drivers/tee/optee/ffa_abi.c
 +++ b/drivers/tee/optee/ffa_abi.c
-@@ -678,7 +678,7 @@ static bool optee_ffa_api_is_compatbile(struct ffa_device *ffa_dev,
+@@ -615,12 +615,21 @@ static int optee_ffa_do_call_with_arg(struct tee_context *ctx,
+ 		.data0 = OPTEE_FFA_YIELDING_CALL_WITH_ARG,
+ 		.data1 = (u32)shm->sec_world_id,
+ 		.data2 = (u32)(shm->sec_world_id >> 32),
+-		.data3 = shm->offset,
++		.data3 = 0,
+ 	};
+ 	struct optee_msg_arg *arg;
+ 	unsigned int rpc_arg_offs;
+ 	struct optee_msg_arg *rpc_arg;
+ 
++	/*
++	 * The shared memory object has to start on a page when passed as
++	 * an argument struct. This is also what the shm pool allocator
++	 * returns, but check this before calling secure world to catch
++	 * eventual errors early in case something changes.
++	 */
++	if (shm->offset)
++		return -EINVAL;
++
+ 	arg = tee_shm_get_va(shm, 0);
+ 	if (IS_ERR(arg))
+ 		return PTR_ERR(arg);
+@@ -678,6 +687,7 @@ static bool optee_ffa_api_is_compatbile(struct ffa_device *ffa_dev,
  
  static bool optee_ffa_exchange_caps(struct ffa_device *ffa_dev,
  				    const struct ffa_dev_ops *ops,
--				    unsigned int *rpc_arg_count)
-+				    unsigned int *rpc_param_count)
++				    u32 *sec_caps,
+ 				    unsigned int *rpc_param_count)
  {
  	struct ffa_send_direct_data data = { OPTEE_FFA_EXCHANGE_CAPABILITIES };
- 	int rc;
-@@ -693,7 +693,7 @@ static bool optee_ffa_exchange_caps(struct ffa_device *ffa_dev,
- 		return false;
+@@ -694,6 +704,7 @@ static bool optee_ffa_exchange_caps(struct ffa_device *ffa_dev,
  	}
  
--	*rpc_arg_count = (u8)data.data1;
-+	*rpc_param_count = (u8)data.data1;
+ 	*rpc_param_count = (u8)data.data1;
++	*sec_caps = data.data2;
  
  	return true;
  }
-@@ -772,7 +772,7 @@ static void optee_ffa_remove(struct ffa_device *ffa_dev)
- static int optee_ffa_probe(struct ffa_device *ffa_dev)
- {
- 	const struct ffa_dev_ops *ffa_ops;
--	unsigned int rpc_arg_count;
-+	unsigned int rpc_param_count;
- 	struct tee_shm_pool *pool;
+@@ -777,6 +788,7 @@ static int optee_ffa_probe(struct ffa_device *ffa_dev)
  	struct tee_device *teedev;
  	struct tee_context *ctx;
-@@ -788,7 +788,7 @@ static int optee_ffa_probe(struct ffa_device *ffa_dev)
+ 	struct optee *optee;
++	u32 sec_caps;
+ 	int rc;
+ 
+ 	ffa_ops = ffa_dev_ops_get(ffa_dev);
+@@ -788,7 +800,8 @@ static int optee_ffa_probe(struct ffa_device *ffa_dev)
  	if (!optee_ffa_api_is_compatbile(ffa_dev, ffa_ops))
  		return -EINVAL;
  
--	if (!optee_ffa_exchange_caps(ffa_dev, ffa_ops, &rpc_arg_count))
-+	if (!optee_ffa_exchange_caps(ffa_dev, ffa_ops, &rpc_param_count))
+-	if (!optee_ffa_exchange_caps(ffa_dev, ffa_ops, &rpc_param_count))
++	if (!optee_ffa_exchange_caps(ffa_dev, ffa_ops, &sec_caps,
++				     &rpc_param_count))
  		return -EINVAL;
  
  	optee = kzalloc(sizeof(*optee), GFP_KERNEL);
-@@ -805,7 +805,7 @@ static int optee_ffa_probe(struct ffa_device *ffa_dev)
- 	optee->ops = &optee_ffa_ops;
- 	optee->ffa.ffa_dev = ffa_dev;
- 	optee->ffa.ffa_ops = ffa_ops;
--	optee->rpc_arg_count = rpc_arg_count;
-+	optee->rpc_param_count = rpc_param_count;
+diff --git a/drivers/tee/optee/optee_ffa.h b/drivers/tee/optee/optee_ffa.h
+index ee3a03fc392c..97266243deaa 100644
+--- a/drivers/tee/optee/optee_ffa.h
++++ b/drivers/tee/optee/optee_ffa.h
+@@ -81,8 +81,16 @@
+  *                   as the second MSG arg struct for
+  *                   OPTEE_FFA_YIELDING_CALL_WITH_ARG.
+  *        Bit[31:8]: Reserved (MBZ)
+- * w5-w7: Note used (MBZ)
++ * w5:	  Bitfield of secure world capabilities OPTEE_FFA_SEC_CAP_* below,
++ *	  unused bits MBZ.
++ * w6-w7: Not used (MBZ)
++ */
++/*
++ * Secure world supports giving an offset into the argument shared memory
++ * object, see also OPTEE_FFA_YIELDING_CALL_WITH_ARG
+  */
++#define OPTEE_FFA_SEC_CAP_ARG_OFFSET	BIT(0)
++
+ #define OPTEE_FFA_EXCHANGE_CAPABILITIES OPTEE_FFA_BLOCKING_CALL(2)
  
- 	teedev = tee_device_alloc(&optee_ffa_clnt_desc, NULL, optee->pool,
- 				  optee);
-diff --git a/drivers/tee/optee/optee_private.h b/drivers/tee/optee/optee_private.h
-index e77765c78878..e80c5d9b62ec 100644
---- a/drivers/tee/optee/optee_private.h
-+++ b/drivers/tee/optee/optee_private.h
-@@ -143,7 +143,7 @@ struct optee_ops {
-  * @notif:		notification synchronization struct
-  * @supp:		supplicant synchronization struct for RPC to supplicant
-  * @pool:		shared memory pool
-- * @rpc_arg_count:	If > 0 number of RPC parameters to make room for
-+ * @rpc_param_count:	If > 0 number of RPC parameters to make room for
-  * @scan_bus_done	flag if device registation was already done.
-  * @scan_bus_wq		workqueue to scan optee bus and register optee drivers
-  * @scan_bus_work	workq to scan optee bus and register optee drivers
-@@ -161,7 +161,7 @@ struct optee {
- 	struct optee_notif notif;
- 	struct optee_supp supp;
- 	struct tee_shm_pool *pool;
--	unsigned int rpc_arg_count;
-+	unsigned int rpc_param_count;
- 	bool   scan_bus_done;
- 	struct workqueue_struct *scan_bus_wq;
- 	struct work_struct scan_bus_work;
+ /*
+@@ -112,6 +120,8 @@
+  *	  OPTEE_MSG_GET_ARG_SIZE(num_params) follows a struct optee_msg_arg
+  *	  for RPC, this struct has reserved space for the number of RPC
+  *	  parameters as returned by OPTEE_FFA_EXCHANGE_CAPABILITIES.
++ *	  MBZ unless the bit OPTEE_FFA_SEC_CAP_ARG_OFFSET is received with
++ *	  OPTEE_FFA_EXCHANGE_CAPABILITIES.
+  * w7:    Not used (MBZ)
+  * Resume from RPC. Register usage:
+  * w3:    Service ID, OPTEE_FFA_YIELDING_CALL_RESUME
 -- 
 2.31.1
 
