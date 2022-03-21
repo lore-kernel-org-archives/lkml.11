@@ -2,88 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE158C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 08:55:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC32C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 08:56:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345463AbiCUI5O (ORCPT
+        id S1345511AbiCUI5c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 04:57:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47714 "EHLO
+        Mon, 21 Mar 2022 04:57:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345482AbiCUI5M (ORCPT
+        with ESMTP id S1345487AbiCUI5Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 04:57:12 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD44F57485
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 01:55:46 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id m30so9836848wrb.1
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 01:55:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=cO7AjDjeJIy5Qpw0zFf/SmS51/Q6KU0hyMEE6k8MFjw=;
-        b=OfbaYY90jqR7DZF9ctMaTAQhlRWGusytHu/XNiNObeiYtmHyF40LM79m3mobnIWzkX
-         7IaRCKvT5utAMqKrDRB8T46NX85oH4k6klPz6aGfQRsYVhOMLLtxHNGc0V19PgrW0ae8
-         Pboo5lIrHEMt3tsiVJ7uz7Wc8ttkL8UlHJ6Ol+wCOHPRJZLv5uCAa0xDEzNgV+qhJq8a
-         k17NOHYSoeL9QQhc0qwItq4tKcqUXiILGTSmQDT5lZb6ktmgqda0JhkN2ZBD+EEHzcDu
-         IwDx5ZeRHpUoLXssdAyhyIv2m1o/LihvJRQiP/3HF0uTkPkkFd4SEs4ulyy6wLKulwFI
-         5sLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=cO7AjDjeJIy5Qpw0zFf/SmS51/Q6KU0hyMEE6k8MFjw=;
-        b=kgSttI09kAeD4h2ZNmvqmtoseBmydZdEyZdtJdhh4oSMsGyIgpe+xbiIvXcREvFnEh
-         ZsHbDAkN8w+Ne9q364vyu73upXegcvwN+wsJ9n4ZPXz3EyJHcyOm0v5aSy0hHyqFb71y
-         Ctyz6KifxQzGN7VEW4ROnts2G0O1QY2S7rti9VqALEEMkm+nNi21u6xIVkuw4/cujD5Z
-         LcTb054to5AbF8RYPHxU8wkLrx/RkUaPOCAukYxwrMpvjc9IN0InTJ69bxD3swjwQSRR
-         SkA0blVDNodY/Iscw/xavwpkCccoPMz3UQcrMx+S0xgjlCMy21Dg3vwNWHjsHPJsZT8F
-         7YWg==
-X-Gm-Message-State: AOAM531TnORXajXhODCuNbrZ/MyY+yX8JrRiPRkkf+c8yKwrsk2+KvKL
-        HFjGsK/lWQ2EWW1oTG7apmHTXjAlrv/hAw==
-X-Google-Smtp-Source: ABdhPJzykKwMAclLaI4xDjTMsM+VxRcLKm2a+AU9zzxH+ICQUL/AelSy/MKJtNlPh8FvgENXUUQ3OA==
-X-Received: by 2002:a5d:5148:0:b0:203:d72f:cea2 with SMTP id u8-20020a5d5148000000b00203d72fcea2mr17118105wrt.306.1647852945334;
-        Mon, 21 Mar 2022 01:55:45 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id k40-20020a05600c1ca800b0038c6c8b7fa8sm14563408wms.25.2022.03.21.01.55.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 01:55:44 -0700 (PDT)
-Date:   Mon, 21 Mar 2022 08:55:43 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     Magnus Damm <damm@opensource.se>, Ian Molton <ian@mnementh.co.uk>,
-        Samuel Ortiz <sameo@linux.intel.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mfd: asic3: Add missing iounmap() on error
- asic3_mfd_probe
-Message-ID: <Yjg9jzeHl6W6JFeZ@google.com>
-References: <20220307072947.5369-1-linmq006@gmail.com>
+        Mon, 21 Mar 2022 04:57:25 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80A9574B6
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 01:56:00 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 21E0E1F37C;
+        Mon, 21 Mar 2022 08:55:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1647852959; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4lXn8H7X0Cxzr80o+IrzVtUQtim0twN1s6sfwci9lLw=;
+        b=nfdEZ03cTSQUD18tX1cLxj3cH0gtcr2EperTXe2rkHlZ8do31B1BYzocA15T1xZRXd/CrM
+        DtMwTsQJkldSHRP5Oq/Ntu6eju6gCJiYENn728M8KLbf/aQG8+VMzkNk8CQXHbfSHNNmGU
+        XpmdlKGWI4+EU6At+MTHoG5ejhNaloI=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 7E205A3B8A;
+        Mon, 21 Mar 2022 08:55:58 +0000 (UTC)
+Date:   Mon, 21 Mar 2022 09:55:57 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Nico Pache <npache@redhat.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Rafael Aquini <aquini@redhat.com>,
+        Waiman Long <longman@redhat.com>, Baoquan He <bhe@redhat.com>,
+        Christoph von Recklinghausen <crecklin@redhat.com>,
+        Don Dutile <ddutile@redhat.com>,
+        "Herton R . Krzesinski" <herton@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Darren Hart <dvhart@infradead.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Andre Almeida <andrealmeid@collabora.com>,
+        David Rientjes <rientjes@google.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joel Savitz <jsavitz@redhat.com>
+Subject: Re: [PATCH v5] mm/oom_kill.c: futex: Close a race between do_exit
+ and the oom_reaper
+Message-ID: <Yjg9ncgep58gFLiN@dhcp22.suse.cz>
+References: <20220318033621.626006-1-npache@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220307072947.5369-1-linmq006@gmail.com>
+In-Reply-To: <20220318033621.626006-1-npache@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 07 Mar 2022, Miaoqian Lin wrote:
-
-> Add the missing iounmap() before return from asic3_mfd_probe
-> in the error handling case.
+On Thu 17-03-22 21:36:21, Nico Pache wrote:
+> The pthread struct is allocated on PRIVATE|ANONYMOUS memory [1] which can
+> be targeted by the oom reaper. This mapping is used to store the futex
+> robust list; the kernel does not keep a copy of the robust list and instead
+> references a userspace address to maintain the robustness during a process
+> death. A race can occur between exit_mm and the oom reaper that allows
+> the oom reaper to free the memory of the futex robust list before the
+> exit path has handled the futex death:
 > 
-> Fixes: 64e8867ba809 ("mfd: tmio_mmc hardware abstraction for CNF area")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> ---
->  drivers/mfd/asic3.c | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
+>     CPU1                               CPU2
+> ------------------------------------------------------------------------
+>     page_fault
+>     out_of_memory
+>     do_exit "signal"
+>     wake_oom_reaper
+> 					oom_reaper
+>                         		oom_reap_task_mm (invalidates mm)
+>     exit_mm
+>     exit_mm_release
+>     futex_exit_release
+>     futex_cleanup
+>     exit_robust_list
+>     get_user (EFAULT- can't access memory)
 
-Applied, thanks.
+I still think it is useful to be explicit about the consequences of the
+EFAULT here. Did you want to mention that a failing get_user in this
+path would result in a hang because nobody is woken up when the current
+holder of the lock terminates.
 
+> While in the oom reaper thread, we must handle the futex cleanup without
+> sleeping. To achieve this, add the boolean `try` to futex_exit_begin().
+> This will control weather or not we use a trylock. Also introduce
+> try_futex_exit_release() which will utilize the trylock version of the
+> futex_cleanup_begin(). Also call kthread_use_mm in this context to assure
+> the get_user call in futex_cleanup() does not return with EFAULT.
+
+This alone is not sufficient. get_user can sleep in the #PF handler path
+(e.g. by waiting for swap in). Or is there any guarantee that the page
+is never swapped out? If we cannot rule out #PF then this is not a
+viable way to address the problem I am afraid.
+
+[...]
+> @@ -587,6 +588,18 @@ static bool oom_reap_task_mm(struct task_struct *tsk, struct mm_struct *mm)
+>  		goto out_unlock;
+>  	}
+>  
+> +	/* We can't reap a process holding a robust_list; the pthread
+> +	 * struct is allocated in userspace using PRIVATE | ANONYMOUS
+> +	 * memory which when reaped before futex_cleanup() can leave
+> +	 * the waiting process stuck. Try to perform the futex_cleanup,
+> +	 * and if unsuccessful, skip the OOM reaping.
+> +	 */
+> +	if (task_has_robust_list(tsk) && !try_futex_exit_release(tsk)) {
+> +		trace_skip_task_reaping(tsk->pid);
+> +		pr_info("oom_reaper: skipping task as it contains a robust list");
+> +		goto out_finish;
+> +	}
+> +
+>  	trace_start_task_reaping(tsk->pid);
+>  
+>  	/* failed to reap part of the address space. Try again later */
+
+Please also note that this all is done after mmap_lock has been already
+taken so a page fault could deadlock on the mmap_lock.
+
+The more I am thinking about this the more I am getting convinced that
+we should rather approach this differently and skip over vmas which can
+be holding the list. Have you considered this option?
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Michal Hocko
+SUSE Labs
