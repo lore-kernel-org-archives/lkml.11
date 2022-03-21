@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CE9EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:18:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B89B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:18:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349982AbiCUPT0 (ORCPT
+        id S1349987AbiCUPTa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 11:19:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37724 "EHLO
+        Mon, 21 Mar 2022 11:19:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349912AbiCUPTO (ORCPT
+        with ESMTP id S1349942AbiCUPTQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 11:19:14 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 438FB113D01;
-        Mon, 21 Mar 2022 08:17:49 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id a1so19788573wrh.10;
-        Mon, 21 Mar 2022 08:17:49 -0700 (PDT)
+        Mon, 21 Mar 2022 11:19:16 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42472EDF0B;
+        Mon, 21 Mar 2022 08:17:51 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id t11so21180761wrm.5;
+        Mon, 21 Mar 2022 08:17:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=8P3wAYvgFlPve71dG0z5aPiI1G8WoaU4vYr3l4vmoOE=;
-        b=W3ChpJLmwyrqPCndWOIVoo8/LzEsb1GaL6fs3Idbl4VVZS1J/DuIYBCHOtxEfsXK1V
-         13WBmhNyRHS2Z29fkHal0LKEyGn5w41lCFkCZUn9WoAwVFZvzO4dmex0REgLmCt+8GqD
-         BPitPzLyNJkL+myNs/77Bb98mwEBw8OSDz66amqb07C7HcgIpIr5v6RYvjTiWb05a1/j
-         a0nyiVI+UcJVlrqOWfkj37l4nNelwHQZYVWPIvTKXTko7Ey+NXIplJhydL6nSBt564yr
-         DoO90JO62JLi9fzohLMLK5GTkYQmHd32MhzeiU0+vR3yNvCaolf/Dho+HDGch86kbWDM
-         5enQ==
+        bh=8h0dp/sRCWnE/SzxqBhwWtp3OCJwunZ7486W2HMfBko=;
+        b=Z60PkwuF45a94nU3pDR2UUzDhsn150Rvh2gB+Ung2m71vatdGxrP4dLJWflsoYAdHz
+         +pjCVTMpDWLMKyl2Y6OSxmlNqJXfaHPaEGk5shhm2ccExJW89JB+0qaO0/fSa04rv3T7
+         HkBFAsEyVKs54e6bcul0kgdwcnHYaukpYhOG6+ww8ynG9LOyMetAkTMA76/7rBqIq2dd
+         KwWHOh57/IgSp44MmaT8smsC4HbRkJa7/EsjjbLceCjxay+dPBmwjvArVs3jn0EtPrTH
+         P7nWco+sg6wLdA01JHRTN2gJLqpcRq+mQ/Ak1FA4apu5sqt9KlVxhUdA9d7xK9KUSZ0z
+         E1tA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=8P3wAYvgFlPve71dG0z5aPiI1G8WoaU4vYr3l4vmoOE=;
-        b=Hi37aFjbt8VbxIhxVYduxt+CTs/qgE1fyCw5cTTHzK3fW7t3T6PkkUJqCgHnyt6fxq
-         l1xLbzbZcOS0WZg20MjP0sn7sUQEam5Bkt6wvLifUK6KLAOH7dVY4gRfOWhX5ayxR1BU
-         JCa+ciYe50T7S57Ia3EK5mfW7bUe+Bieo0jJwNrZ8ourUSVwKWOyaSd+VhImRwbbTPTx
-         mvAdfs6iJ4glk4IpFr6maYWcHsPPc2LX6didwIPaUkrmHYerklfmz4GFqgNx7Jmx9cb8
-         sSMzTUr0Ye+TNiOcfdb/u6ES+R9QKoRn01CGggvqTA72B+yQFVSVMnKyE+F6zDNG/avd
-         AIvw==
-X-Gm-Message-State: AOAM531GB2LppovOi3PEGDemaDsLZMnPa4EUce/CrHK5/R9gUvMwzqqy
-        /Cbx50X+9cLsZ6z6UwzlmNE=
-X-Google-Smtp-Source: ABdhPJysgBK1LnHyN+rGxiVt/F3ggQ40uJfDym2izMHgFoeqY5yLmZ6E75oijCclQCyteGdoF0aS3g==
-X-Received: by 2002:a05:6000:128f:b0:1f1:e586:87af with SMTP id f15-20020a056000128f00b001f1e58687afmr18727182wrx.222.1647875867682;
-        Mon, 21 Mar 2022 08:17:47 -0700 (PDT)
+        bh=8h0dp/sRCWnE/SzxqBhwWtp3OCJwunZ7486W2HMfBko=;
+        b=XmdQAK609T26LXwWNGLC+/jRDvZBhHGQuzO0InL8NU21VyEQsLSnf8T0ASuoXHz816
+         BHrcVisgXC9FhgX9cwEAD0kbmsAa0WNnLS4Nzcfeq0/kRRo35TW5UEeh7LbpNlUoSkfo
+         QVTDj1Topn7xLDeWL+zVp4FLabNnCMHDUm/1Pc+Xb21tXuVbYBCDzHi3t1Tf4qeYXG6H
+         tIpDfnLYMHyuwGO3CXxEtrAZgzEgzHKfQmSzXScelyy+vmumt4h+a9Iwv+h9mlMBWn4A
+         d1xKRRynHTVkouYFfFpuGEcy41TeCr6qMVLKSuNF4AfzLrkql+f214HhumOsWtfuYURD
+         XJ6Q==
+X-Gm-Message-State: AOAM530/XLef8lXAqvHa1KdWQ/MB9mZ4xm3uZN2PxdNA5mXX6o9olRiq
+        BD1h5DpKT7o9edKVonuuVqo=
+X-Google-Smtp-Source: ABdhPJyVphV0iTWxd2pv7sbyrbbMdvHxY2Wi0G2Zz9gj2N03j3KbicFxC/kSLrtfYCP2vxAfCxbfcw==
+X-Received: by 2002:a5d:504d:0:b0:203:e60e:49ef with SMTP id h13-20020a5d504d000000b00203e60e49efmr18601562wrt.546.1647875869752;
+        Mon, 21 Mar 2022 08:17:49 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
-        by smtp.googlemail.com with ESMTPSA id 10-20020a5d47aa000000b00204012e4373sm7239729wrb.101.2022.03.21.08.17.46
+        by smtp.googlemail.com with ESMTPSA id 10-20020a5d47aa000000b00204012e4373sm7239729wrb.101.2022.03.21.08.17.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 08:17:47 -0700 (PDT)
+        Mon, 21 Mar 2022 08:17:49 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -58,9 +58,9 @@ To:     Rob Herring <robh+dt@kernel.org>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
-Subject: [PATCH v4 02/18] clk: qcom: gcc-ipq806x: skip pxo/cxo fixed clk if already present
-Date:   Mon, 21 Mar 2022 15:48:09 +0100
-Message-Id: <20220321144825.11736-3-ansuelsmth@gmail.com>
+Subject: [PATCH v4 04/18] clk: qcom: clk-hfpll: use poll_timeout macro
+Date:   Mon, 21 Mar 2022 15:48:11 +0100
+Message-Id: <20220321144825.11736-5-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220321144825.11736-1-ansuelsmth@gmail.com>
 References: <20220321144825.11736-1-ansuelsmth@gmail.com>
@@ -70,55 +70,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Skip pxo/cxo clock registration if they are already defined in DTS as fixed
-clock.
+Use regmap_read_poll_timeout macro instead of do-while structure.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/clk/qcom/gcc-ipq806x.c | 20 ++++++++++++++------
- 1 file changed, 14 insertions(+), 6 deletions(-)
+ drivers/clk/qcom/clk-hfpll.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/clk/qcom/gcc-ipq806x.c b/drivers/clk/qcom/gcc-ipq806x.c
-index d6b7adb4be38..27f6d7626abb 100644
---- a/drivers/clk/qcom/gcc-ipq806x.c
-+++ b/drivers/clk/qcom/gcc-ipq806x.c
-@@ -10,6 +10,7 @@
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-+#include <linux/clk.h>
- #include <linux/clk-provider.h>
- #include <linux/regmap.h>
- #include <linux/reset-controller.h>
-@@ -3061,15 +3062,22 @@ static int gcc_ipq806x_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
- 	struct regmap *regmap;
-+	struct clk *clk;
- 	int ret;
+diff --git a/drivers/clk/qcom/clk-hfpll.c b/drivers/clk/qcom/clk-hfpll.c
+index e847d586a73a..a4e347eb4d4d 100644
+--- a/drivers/clk/qcom/clk-hfpll.c
++++ b/drivers/clk/qcom/clk-hfpll.c
+@@ -12,6 +12,8 @@
+ #include "clk-regmap.h"
+ #include "clk-hfpll.h"
  
--	ret = qcom_cc_register_board_clk(dev, "cxo_board", "cxo", 25000000);
--	if (ret)
--		return ret;
-+	clk = clk_get(dev, "cxo");
-+	if (IS_ERR(clk)) {
-+		ret = qcom_cc_register_board_clk(dev, "cxo_board", "cxo", 25000000);
-+		if (ret)
-+			return ret;
-+	}
++#define HFPLL_BUSY_WAIT_TIMEOUT	100
++
+ #define PLL_OUTCTRL	BIT(0)
+ #define PLL_BYPASSNL	BIT(1)
+ #define PLL_RESET_N	BIT(2)
+@@ -72,13 +74,12 @@ static void __clk_hfpll_enable(struct clk_hw *hw)
+ 	regmap_update_bits(regmap, hd->mode_reg, PLL_RESET_N, PLL_RESET_N);
  
--	ret = qcom_cc_register_board_clk(dev, "pxo_board", "pxo", 25000000);
--	if (ret)
--		return ret;
-+	clk = clk_get(dev, "pxo");
-+	if (IS_ERR(clk)) {
-+		ret = qcom_cc_register_board_clk(dev, "pxo_board", "pxo", 25000000);
-+		if (ret)
-+			return ret;
-+	}
+ 	/* Wait for PLL to lock. */
+-	if (hd->status_reg) {
+-		do {
+-			regmap_read(regmap, hd->status_reg, &val);
+-		} while (!(val & BIT(hd->lock_bit)));
+-	} else {
++	if (hd->status_reg)
++		regmap_read_poll_timeout(regmap, hd->status_reg, val,
++					 !(val & BIT(hd->lock_bit)), USEC_PER_MSEC * 2,
++					 HFPLL_BUSY_WAIT_TIMEOUT * USEC_PER_MSEC);
++	else
+ 		udelay(60);
+-	}
  
- 	ret = qcom_cc_probe(pdev, &gcc_ipq806x_desc);
- 	if (ret)
+ 	/* Enable PLL output. */
+ 	regmap_update_bits(regmap, hd->mode_reg, PLL_OUTCTRL, PLL_OUTCTRL);
 -- 
 2.34.1
 
