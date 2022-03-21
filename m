@@ -2,84 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6865BC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:31:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81A8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:32:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350287AbiCUPct (ORCPT
+        id S1350293AbiCUPdb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 11:32:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33084 "EHLO
+        Mon, 21 Mar 2022 11:33:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241939AbiCUPcp (ORCPT
+        with ESMTP id S1350382AbiCUPdM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 11:32:45 -0400
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F04C5169798;
-        Mon, 21 Mar 2022 08:31:19 -0700 (PDT)
-Received: by mail-wm1-f46.google.com with SMTP id q20so8786567wmq.1;
-        Mon, 21 Mar 2022 08:31:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=/5/C1gYgp4VfvcuFi8LRcN8/3RmQ7G2v7pTXWSD0gyk=;
-        b=ikU2jUK8bO2Y8uvXIouxrNntLlS3zOteRo7pzh6zSJRj+Ehe9WRh/zqCub/FMm6ZFE
-         8+An2O5WYwx3ZZZuaUzvuwgHA+AHZSnlyUihi/ubWUBemyi6cgTxgkdSAprvoBE0n4UM
-         lF7orA/1anN4N2UpAjsL6Tqbb8u5r5J4IfutZzY4642oTcq/SQK1K/H82+C1ohgdtwnC
-         JTOnvkNnkkq5xjE3IZ4/U20tLcCK29y7NARKK/EQO63LANKYmQcmFOFFN4JOE4r3LWS8
-         YnzOiDlISRizVea3inz3abGIS5JeJFVCrtw+ZukGGWE5swmzIIYq5d2PueRiK8Dp+hy6
-         DTMA==
-X-Gm-Message-State: AOAM530i74lfKoB8ZztmbTWKiowtw+9vhMnjvvLHMoj+34QDKOLm+6WC
-        yKPN83MC2Zr0UG49p7itY1E=
-X-Google-Smtp-Source: ABdhPJwVJp0KtpTuBf4c2VyunnMuFCDqiKloKbAIJMgm6G95zkywhdBK4Zy0uSs2jpqDnjxCqCmmuw==
-X-Received: by 2002:a05:600c:1d9f:b0:389:a1c4:f400 with SMTP id p31-20020a05600c1d9f00b00389a1c4f400mr27473867wms.171.1647876678403;
-        Mon, 21 Mar 2022 08:31:18 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.googlemail.com with ESMTPSA id h188-20020a1c21c5000000b0038c6c37efc3sm14255712wmh.12.2022.03.21.08.31.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Mar 2022 08:31:17 -0700 (PDT)
-Message-ID: <24ba0e3e-b6ba-8434-059a-8bda197a74e3@kernel.org>
-Date:   Mon, 21 Mar 2022 16:31:16 +0100
+        Mon, 21 Mar 2022 11:33:12 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19012169798;
+        Mon, 21 Mar 2022 08:31:47 -0700 (PDT)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22LE8t3V009572;
+        Mon, 21 Mar 2022 15:31:23 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=KI5N6+PYpu61hG9fQctRxXILuP78+G0I85VQgAon75g=;
+ b=E5+Njvmf9ReSDFt66di+E2tZD4L1IYXEEkcL5frqta75RADeGnBr1LeNNZEKChq9MMYV
+ 1raqAXa3KoRPZOIV7yKyUOfquTrwXl3Fc2bFMICzWG1LBWL4q9Ny1EqtYRhQLkEGp3Hw
+ 1zrsmyVn1tK608x6tpQ676teW8b9mXuXnpE6lF/COmbWtSyFNfm9Lqqy8Rfvol1roh+f
+ +VsXiSuWDQtkPdGU/fZ0+7Tes9bteLkWxu9blJO4mOax9JyDBpXIeWOLcczR1igp9cQH
+ jb7OYBfX1U9qgn6j7LOcM4Tl10rwmXXzamY2u+VLtNFOXKJD4DRvVcqVzj5eYs4tWm3c 1A== 
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3exb60td6k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 21 Mar 2022 15:31:23 +0000
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+        by ppma01wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22LFRReq028368;
+        Mon, 21 Mar 2022 15:31:22 GMT
+Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
+        by ppma01wdc.us.ibm.com with ESMTP id 3ew6t8p7t8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 21 Mar 2022 15:31:22 +0000
+Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
+        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22LFVKko16646514
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 21 Mar 2022 15:31:20 GMT
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C6CD7C6067;
+        Mon, 21 Mar 2022 15:31:20 +0000 (GMT)
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 49405C605B;
+        Mon, 21 Mar 2022 15:31:20 +0000 (GMT)
+Received: from v0005c16.aus.stglabs.ibm.com (unknown [9.211.47.134])
+        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Mon, 21 Mar 2022 15:31:20 +0000 (GMT)
+From:   Eddie James <eajames@linux.ibm.com>
+To:     linux-fsi@lists.ozlabs.org
+Cc:     linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        jdelvare@suse.com, linux@roeck-us.net, joel@jms.id.au,
+        jk@ozlabs.org, alistair@popple.id.au,
+        Eddie James <eajames@linux.ibm.com>
+Subject: [PATCH 1/2] fsi: occ: Fix checksum failure mode
+Date:   Mon, 21 Mar 2022 10:31:11 -0500
+Message-Id: <20220321153112.12199-2-eajames@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220321153112.12199-1-eajames@linux.ibm.com>
+References: <20220321153112.12199-1-eajames@linux.ibm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4 14/18] dt-bindings: clock: Convert qcom,krait-cc to
- yaml
-Content-Language: en-US
-To:     Ansuel Smith <ansuelsmth@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-clk@vger.kernel.org
-References: <20220321144825.11736-1-ansuelsmth@gmail.com>
- <20220321144825.11736-15-ansuelsmth@gmail.com>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <20220321144825.11736-15-ansuelsmth@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: MdSehqn6b5dG2CyXhHBPDP7YUzc_w0oJ
+X-Proofpoint-GUID: MdSehqn6b5dG2CyXhHBPDP7YUzc_w0oJ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-21_06,2022-03-21_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 mlxscore=0
+ lowpriorityscore=0 suspectscore=0 bulkscore=0 adultscore=0
+ priorityscore=1501 phishscore=0 mlxlogscore=999 spamscore=0
+ impostorscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2202240000 definitions=main-2203210098
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21/03/2022 15:48, Ansuel Smith wrote:
-> Convert qcom,krait-cc to yaml Documentation.
-> 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> ---
->  .../bindings/clock/qcom,krait-cc.txt          | 34 -----------
->  .../bindings/clock/qcom,krait-cc.yaml         | 59 +++++++++++++++++++
->  2 files changed, 59 insertions(+), 34 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/clock/qcom,krait-cc.txt
->  create mode 100644 Documentation/devicetree/bindings/clock/qcom,krait-cc.yaml
-> 
+Change the checksum errno to something different than the errno
+used for a bad SBE message. In addition, don't set the user's
+response length to the data length in this case, since it's not
+SBE FFDC.
 
+Signed-off-by: Eddie James <eajames@linux.ibm.com>
+---
+ drivers/fsi/fsi-occ.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+diff --git a/drivers/fsi/fsi-occ.c b/drivers/fsi/fsi-occ.c
+index c9cc75fbdfb9..3d04e8baecbb 100644
+--- a/drivers/fsi/fsi-occ.c
++++ b/drivers/fsi/fsi-occ.c
+@@ -246,7 +246,7 @@ static int occ_verify_checksum(struct occ *occ, struct occ_response *resp,
+ 	if (checksum != checksum_resp) {
+ 		dev_err(occ->dev, "Bad checksum: %04x!=%04x\n", checksum,
+ 			checksum_resp);
+-		return -EBADMSG;
++		return -EBADE;
+ 	}
+ 
+ 	return 0;
+@@ -575,8 +575,11 @@ int fsi_occ_submit(struct device *dev, const void *request, size_t req_len,
+ 	dev_dbg(dev, "resp_status=%02x resp_data_len=%d\n",
+ 		resp->return_status, resp_data_length);
+ 
+-	occ->client_response_size = resp_data_length + 7;
+ 	rc = occ_verify_checksum(occ, resp, resp_data_length);
++	if (rc)
++		goto done;
++
++	occ->client_response_size = resp_data_length + 7;
+ 
+  done:
+ 	*resp_len = occ->client_response_size;
+-- 
+2.27.0
 
-
-Best regards,
-Krzysztof
