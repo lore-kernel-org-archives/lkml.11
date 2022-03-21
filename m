@@ -2,169 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4549CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:12:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC602C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:13:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345714AbiCUJOJ (ORCPT
+        id S1345722AbiCUJOf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 05:14:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49216 "EHLO
+        Mon, 21 Mar 2022 05:14:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345704AbiCUJOG (ORCPT
+        with ESMTP id S1345704AbiCUJOb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 05:14:06 -0400
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FB45DB4BE
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 02:12:41 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id D37CF5C0127;
-        Mon, 21 Mar 2022 05:12:40 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 21 Mar 2022 05:12:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; bh=yk+nKpl1q7kSZQ0Ga4s6cX3UW3mqfycxEk/hbr
-        UrqjA=; b=tmBZLNYeUIr+1OS4X+l580Np02SDwdmZAkLq7BaZTqKx4CYSflht2Y
-        2vY9O0hLhund1WtFWicyL9AlUouCJpEzF0our6MgPUHGfbEfzN8Sw+Jvp4Llqv8J
-        hrLdnY/Zl3qsZ9ZNJpeDhXPjGHuZ5kN8xYrR669a8Qz6taSdx2LpNlCqpLP5h+h1
-        3FXEb4nVL/KkNXO+0F2X5aA1OEsyTTOetLs9M5NGmB+crUMZVUljwzp1u+bd5Un4
-        QSsTmthEOedQU0IuVjeX7u9IB198nUeLnjJ+c3CUKeyWl6i6di9voSRZ4QlNe95n
-        /FgUwVZhj1sPg+zL81esajn3L4mxD/jg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=yk+nKpl1q7kSZQ0Ga
-        4s6cX3UW3mqfycxEk/hbrUrqjA=; b=OHwE84h3b8iy5JgHvWJCL+WbZIVXUDo5p
-        Anl4bP0H2v0DZFIRFCb4UjK8LI9OoMRaYsfiFQGIgi/nUk7QRP5jf5CCjLtzVZJ8
-        9W3cKb85OuGyinPF1py1So0c+m3yK14VEj0JcrS8/jUA6RpQ6PjgBctGBQkbQ7Nv
-        fwIUmtkeGeFIDrAIg7dp348ARfpzBOAAuSDcSsgC8yQIJifBj7Qw22kitxMikyb4
-        K1k1For9j++/mX/3J218iyzqsKEstfRQAR4DCQ7rp4cP0BOzR77wo9E5bEEamJtE
-        qc6G1Hf0pwfBrd4j6BZ2kShe857mjWNAfcPzI3kG36+iy1kMejl/g==
-X-ME-Sender: <xms:iEE4YmDBLTBHDUhclVJviokp7ntaV0DOqxWy1XZxFH0Rk5fiQ2IWhQ>
-    <xme:iEE4YgiyrWuDdnbZkrx4_38UQyXf5v9zatDbEEWfeLK3GoDYfz-GkAYnbnG8JDeVD
-    sN0C4CSx_z8EdxhPjU>
-X-ME-Received: <xmr:iEE4YplVqO1OJDLaRbBXMOMbcPYeBlg35gGv5cDDwx9eky3BgQbDhpDpfAr5YyvYdHXVjiDYakIeCs8lBB2Ma7ijKafuNHzwHzJChPQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudegfedgtddvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucdnkfhovfculdeitddmnecujfgurhepfffhvffukf
-    hfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhmvgcutfhiphgrrhguuceo
-    mhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrthhtvghrnhepleekgeehhf
-    dutdeljefgleejffehfffgieejhffgueefhfdtveetgeehieehgedunecuvehluhhsthgv
-    rhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnh
-    hordhtvggthh
-X-ME-Proxy: <xmx:iEE4YkxUg0lVNp7aLgkfPhqEG4DM1O0K6MYNOZ1Y87HkY_pbsV7DvQ>
-    <xmx:iEE4YrTw-iSqQW1t4_VCiw-S6o6zmagB9aRq2XLBrk8bP4aoEIOeMA>
-    <xmx:iEE4YvbQ8LHvZk0KpIhyuMOQJSwZBHlvUrwWWEE1_h4mAMw4mwnShDJuog>
-    <xmx:iEE4YmHWawlOkLPlgyb0B27BR7bjfVAZG4U_L4151FITfp1BOIbbqg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 21 Mar 2022 05:12:39 -0400 (EDT)
-Date:   Mon, 21 Mar 2022 10:12:36 +0100
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jagan Teki <jagan@amarulasolutions.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v2] drm: of: Properly try all possible cases for
- bridge/panel detection
-Message-ID: <20220321091236.5rcottkhtztvijpl@houat>
-References: <20220318160249.126431-1-paul.kocialkowski@bootlin.com>
- <20220318161847.ezi6yat4on7rvfdf@houat>
- <YjSx1rNLTh/L3MQQ@aptenodytes>
+        Mon, 21 Mar 2022 05:14:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B512DB7CB
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 02:13:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647853985;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ruVQAPQyVxSUmpWM0lWG0+oQ7BPZ/wSzpsVTqVtPuBE=;
+        b=YLl7khnWJA3u5X1TcILcYwXKJOgCpdWUeQKmR4sjTitbsmj75pl1hXTBXbu7qayESJNI6l
+        q9MDECNNvRgK+/a0VNcaVtoWr3YCcGWZYVy5sZPnh/+hgkXlxbqyWcSgP2QjjbiqbE3xmx
+        tfGNN/oqPvdOfd6kjA45PodXCec9duk=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-660-D0Ortv9ZPLSX5UxCSBFwyQ-1; Mon, 21 Mar 2022 05:13:04 -0400
+X-MC-Unique: D0Ortv9ZPLSX5UxCSBFwyQ-1
+Received: by mail-ej1-f69.google.com with SMTP id gx12-20020a1709068a4c00b006df7e8181ceso6464052ejc.10
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 02:13:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=ruVQAPQyVxSUmpWM0lWG0+oQ7BPZ/wSzpsVTqVtPuBE=;
+        b=MCeJf511Xn7mwGrDNZfw5ota7kggFOvRSI/ELTWu7KVDERCOg66vav4aRcuVZs7l+E
+         vHrh1HOzCkJflwoewRdnD9Q+GLdGu96IhVBjxyL+9v9+6ReJ4e22fhWH6b58C7opZQP/
+         vuKzVdSeq0pRltC0+pXZvuSdYcGhbbS+nD1MtmEg4odSWGXfeQcshXpjcaT2OIrrc0KM
+         RYPTWuEydndqwTQzlbVMl6Eanbki40yFaAM1JBn1UNz6SC5F+mKje2KoZrZOTGA1bOSq
+         UhWGSPuZI2Acd8rYRzzYeAULJJYz1khavNnUYe4HKKqrg5MJUzvw/2CxRJxQeDh28Ojz
+         1RXg==
+X-Gm-Message-State: AOAM531zVBNlvaDkulHPszNdaM+ibCdHyJVH3da1h7mY40V3RfNGnBpD
+        gHHYvPC5ZECvpotZjpptQMiUflthFN+NRMjQ6+JmBqlsjPcm0kBF3ngO0XgDay59xislmUh9FUA
+        3u97TwF/f1ClhC14mJStdWdOrijuVXaPVgNs6cZptERMnC/XZHl8ulOFbdTH7+6qLRZDMNnfVdK
+        cQ
+X-Received: by 2002:a17:906:d204:b0:6d6:df17:835e with SMTP id w4-20020a170906d20400b006d6df17835emr19286331ejz.20.1647853982747;
+        Mon, 21 Mar 2022 02:13:02 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwH+3MilHjpAinJ5SoKmOS0poHWTbX3aX4bmpLEON1uG5YV4WPNHhIc+ApRiUKf1wGjcov1jw==
+X-Received: by 2002:a17:906:d204:b0:6d6:df17:835e with SMTP id w4-20020a170906d20400b006d6df17835emr19286311ejz.20.1647853982464;
+        Mon, 21 Mar 2022 02:13:02 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:63a7:c72e:ea0e:6045? ([2001:b07:6468:f312:63a7:c72e:ea0e:6045])
+        by smtp.googlemail.com with ESMTPSA id bw26-20020a170906c1da00b006c8aeca8febsm6647593ejb.47.2022.03.21.02.13.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Mar 2022 02:13:01 -0700 (PDT)
+Message-ID: <d6367754-7782-7c29-e756-ac02dbd4520b@redhat.com>
+Date:   Mon, 21 Mar 2022 10:13:00 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="5mrpx3bhcyhfcg74"
-Content-Disposition: inline
-In-Reply-To: <YjSx1rNLTh/L3MQQ@aptenodytes>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [FYI PATCH] Revert "KVM: x86/mmu: Zap only TDP MMU leafs in
+ kvm_zap_gfn_range()"
+Content-Language: en-US
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Sean Christopherson <sean.j.christopherson@intel.com>
+References: <20220318164833.2745138-1-pbonzini@redhat.com>
+In-Reply-To: <20220318164833.2745138-1-pbonzini@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 3/18/22 17:48, Paolo Bonzini wrote:
+> This reverts commit cf3e26427c08ad9015956293ab389004ac6a338e.
+> 
+> Multi-vCPU Hyper-V guests started crashing randomly on boot with the
+> latest kvm/queue and the problem can be bisected the problem to this
+> particular patch. Basically, I'm not able to boot e.g. 16-vCPU guest
+> successfully anymore. Both Intel and AMD seem to be affected. Reverting
+> the commit saves the day.
+> 
+> Reported-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 
---5mrpx3bhcyhfcg74
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This is not enough, the following is also needed to account
+for "KVM: x86/mmu: Defer TLB flush to caller when freeing TDP MMU shadow
+pages":
 
-On Fri, Mar 18, 2022 at 05:22:46PM +0100, Paul Kocialkowski wrote:
-> On Fri 18 Mar 22, 17:18, Maxime Ripard wrote:
-> > On Fri, Mar 18, 2022 at 05:02:49PM +0100, Paul Kocialkowski wrote:
-> > > While bridge/panel detection was initially relying on the usual
-> > > port/ports-based of graph detection, it was recently changed to
-> > > perform the lookup on any child node that is not port/ports
-> > > instead when such a node is available, with no fallback on the
-> > > usual way.
-> > >=20
-> > > This results in breaking detection when a child node is present
-> > > but does not contain any panel or bridge node, even when the
-> > > usual port/ports-based of graph is there.
-> > >=20
-> > > In order to support both situations properly, this commit reworks
-> > > the logic to try both options and not just one of the two: it will
-> > > only return -EPROBE_DEFER when both have failed.
-> > >=20
-> > > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> > > Fixes: 80253168dbfd ("drm: of: Lookup if child node has panel or brid=
-ge")
-> > > ---
-> > >=20
-> > > Changes since v1:
-> > > - Renamed remote to node;
-> > > - Renamed helper to find_panel_or_bridge;
-> > > - Cleared bridge pointer early;
-> > > - Returned early to make the code more concise;
-> > >=20
-> > > ---
-> > >  drivers/gpu/drm/drm_of.c | 98 ++++++++++++++++++++------------------=
---
-> > >  1 file changed, 49 insertions(+), 49 deletions(-)
-> > >=20
-> > > diff --git a/drivers/gpu/drm/drm_of.c b/drivers/gpu/drm/drm_of.c
-> > > index 9d90cd75c457..63137c833b7a 100644
-> > > --- a/drivers/gpu/drm/drm_of.c
-> > > +++ b/drivers/gpu/drm/drm_of.c
-> > > @@ -219,6 +219,28 @@ int drm_of_encoder_active_endpoint(struct device=
-_node *node,
-> > >  }
-> > >  EXPORT_SYMBOL_GPL(drm_of_encoder_active_endpoint);
-> > > =20
-> > > +static int find_panel_or_bridge(struct device_node *node,
-> > > +				struct drm_panel **panel,
-> > > +				struct drm_bridge **bridge)
-> > > +{
-> > > +	if (panel) {
-> > > +		*panel =3D of_drm_find_panel(node);
-> > > +		if (!IS_ERR(*panel))
-> > > +			return 0;
-> > > +		else
-> > > +			*panel =3D NULL;
-> >=20
-> > You don't need the else branch here, we already cleared panel in
-> > drm_of_find_panel_or_bridge
->=20
-> I think we do, because of_drm_find_panel doesn't return NULL when an error
-> happens but PTR_ERR(), so we need to clear it to keep up with previous
-> expectations.
+------------------- 8< ----------------
+From: Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH] kvm: x86/mmu: Flush TLB before zap_gfn_range releases RCU
 
-Ah, right. We should remove the else then, checkpatch complains about it.
+Since "KVM: x86/mmu: Zap only TDP MMU leafs in kvm_zap_gfn_range()"
+is going to be reverted, it's not going to be true anymore that
+the zap-page flow does not free any 'struct kvm_mmu_page'.  Introduce
+an early flush before tdp_mmu_zap_leafs() returns, to preserve
+bisectability.
 
-Maxime
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 
---5mrpx3bhcyhfcg74
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+index af60922906ef..7f63e1a704e3 100644
+--- a/arch/x86/kvm/mmu/tdp_mmu.c
++++ b/arch/x86/kvm/mmu/tdp_mmu.c
+@@ -941,13 +941,17 @@ static bool tdp_mmu_zap_leafs(struct kvm *kvm, struct kvm_mmu_page *root,
+  		flush = true;
+  	}
+  
++	/*
++	 * Need to flush before releasing RCU.  TODO: do it only if intermediate
++	 * page tables were zapped; there is no need to flush under RCU protection
++	 * if no 'struct kvm_mmu_page' is freed.
++	 */
++	if (flush)
++		kvm_flush_remote_tlbs_with_address(kvm, start, end - start);
++
+  	rcu_read_unlock();
+  
+-	/*
+-	 * Because this flow zaps _only_ leaf SPTEs, the caller doesn't need
+-	 * to provide RCU protection as no 'struct kvm_mmu_page' will be freed.
+-	 */
+-	return flush;
++	return false;
+  }
+  
+  /*
 
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYjhBhAAKCRDj7w1vZxhR
-xY30AP48CB5lqRqbdnOS6zvsuJf8aSBYpBIhroE2fAQCOUmvtwD+LPaP2ISCRzgk
-ZZKzRmLYAorwUG84gEHQLYeajML57AI=
-=J2Z3
------END PGP SIGNATURE-----
-
---5mrpx3bhcyhfcg74--
