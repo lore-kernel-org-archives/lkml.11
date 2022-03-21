@@ -2,84 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C4FFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:17:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95EAFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:18:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347795AbiCUNSb (ORCPT
+        id S1347802AbiCUNTp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 09:18:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49730 "EHLO
+        Mon, 21 Mar 2022 09:19:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234032AbiCUNS3 (ORCPT
+        with ESMTP id S234032AbiCUNTk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:18:29 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E33960069;
-        Mon, 21 Mar 2022 06:17:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=dPqXoSF/BeSCZ7Job8RJ69pE2t1ba6D8uNorfi1dsLk=; b=djdxHbzrr4Tlwtv6Aw+XiehFc0
-        frFLqPoENJSnbdMDNDHmwv3EVPrtXv43OXpoNz2JkpIBLNFn+CUfGbGROeOkxKBqJovdVVoVmuYJO
-        yhbP74jYXh8QP1a+RIXtRSOV+zxKrwNkrZ6mGNLLV4LFaPrXU/t5KCdWLfiRWmfq9v5w=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nWHu6-00Bwqw-7j; Mon, 21 Mar 2022 14:16:58 +0100
-Date:   Mon, 21 Mar 2022 14:16:58 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Robert Marko <robert.marko@sartura.hr>
-Cc:     gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
-        Rob Herring <robh+dt@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
-Subject: Re: [PATCH 1/2] arm64: dts: uDPU: update partition table
-Message-ID: <Yjh6ysD/fPT/IQLc@lunn.ch>
-References: <20220321121728.414839-1-robert.marko@sartura.hr>
- <Yjhyg5cNe5KZ6SOp@lunn.ch>
- <CA+HBbNHw5v+R5WHPTvNj7oVtz0szsCm=JCXPFRtUf2GW7Qz35Q@mail.gmail.com>
+        Mon, 21 Mar 2022 09:19:40 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0D3DC2180B
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 06:18:12 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C6ADE1042;
+        Mon, 21 Mar 2022 06:18:11 -0700 (PDT)
+Received: from [10.57.43.230] (unknown [10.57.43.230])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D09BE3F73D;
+        Mon, 21 Mar 2022 06:18:10 -0700 (PDT)
+Message-ID: <9159dd7d-0c5a-10a3-be47-7fb4a30a234b@arm.com>
+Date:   Mon, 21 Mar 2022 13:18:05 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+HBbNHw5v+R5WHPTvNj7oVtz0szsCm=JCXPFRtUf2GW7Qz35Q@mail.gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] arm64: assembler: Fine-tune code to improve code
+ readability
+Content-Language: en-GB
+To:     Zhiyuan Dai <daizhiyuan@phytium.com.cn>, catalin.marinas@arm.com,
+        will@kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+References: <1647831274-3555-1-git-send-email-daizhiyuan@phytium.com.cn>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <1647831274-3555-1-git-send-email-daizhiyuan@phytium.com.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 01:47:21PM +0100, Robert Marko wrote:
-> On Mon, Mar 21, 2022 at 1:41 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> >
-> > On Mon, Mar 21, 2022 at 01:17:27PM +0100, Robert Marko wrote:
-> > > Partition currently called "uboot" does not only contain U-boot, but
-> > > rather it contains TF-A, U-boot and U-boot environment.
-> > >
-> > > So, to avoid accidentally deleting the U-boot environment which is
-> > > located at 0x180000 split the partition.
-> > >
-> > > "uboot" is not the correct name as you can't boot these boards with U-boot
-> > > only, TF-A must be present as well, so rename the "uboot" partition to
-> > > "firmware".
-> >
-> > Are there any ABI issues here? If these names are being used
-> > somewhere, you are potentially breaking the boot. At minimum, i would
-> > like to see something in the commit message which indicates you have
-> > considered this and why you don't expect it to be a problem.
-> 
-> Hi Andrew, this won't break booting as BootROM does not care about
-> partitions nor naming, it will just go to 0x0 of the NOR and boot it.
-> 
-> The same renaming had already been done:
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/arch/arm64/boot/dts/marvell?h=v5.17&id=a9d9bfcadfb43b856dbcf9419de75f7420d5a225
-> 
-> I can update the commit message if required.
+On 2022-03-21 02:54, Zhiyuan Dai wrote:
+> This patch tweaks the code to improve readability.
 
-Yes, please. It is always good to indicate you have thought about
-issues like this. Not breaking the ABI is very important, and could
-result in this getting reverted at some point. So indicating why you
-think this is safe is useful information.
+...but it also changes what the code actually does :(
 
-      Andrew
+> Defined values are:
+>   PMUVer == 0b0000 : Performance Monitors Extension not implemented.
+
+Plus all the other values, but crucially up to:
+
+"0b1111 IMPLEMENTATION DEFINED form of performance monitors supported, 
+PMUv3 not supported."
+
+> Signed-off-by: Zhiyuan Dai <daizhiyuan@phytium.com.cn>
+> ---
+>   arch/arm64/include/asm/assembler.h | 9 ++++-----
+>   1 file changed, 4 insertions(+), 5 deletions(-)
+> 
+> diff --git a/arch/arm64/include/asm/assembler.h b/arch/arm64/include/asm/assembler.h
+> index 6ebdc0f..efd43a1 100644
+> --- a/arch/arm64/include/asm/assembler.h
+> +++ b/arch/arm64/include/asm/assembler.h
+> @@ -489,11 +489,10 @@
+>    */
+>   	.macro	reset_pmuserenr_el0, tmpreg
+>   	mrs	\tmpreg, id_aa64dfr0_el1
+> -	sbfx	\tmpreg, \tmpreg, #ID_AA64DFR0_PMUVER_SHIFT, #4
+
+This extracts a *signed* 4-bit field...
+
+> -	cmp	\tmpreg, #1			// Skip if no PMU present
+
+...so this rejects values of both 0 and -1.
+
+> -	b.lt	9000f
+> -	msr	pmuserenr_el0, xzr		// Disable PMU access from EL0
+> -9000:
+> +	ubfx	\tmpreg, \tmpreg, #ID_AA64DFR0_PMUVER_SHIFT, #4
+> +	cbz	\tmpreg, .Lskip_pmu_\@		// Skip if no PMU present
+> +	msr_s   SYS_PMUSERENR_EL0, xzr	// Disable PMU access from EL0
+
+How confident are you that it's safe to touch a PMUv3 register in an 
+unknown implementation which explicitly *isn't* PMUv3?
+
+Thanks,
+Robin.
+
+> +.Lskip_pmu_\@:
+>   	.endm
+>   
+>   /*
