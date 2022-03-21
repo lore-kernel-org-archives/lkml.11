@@ -2,115 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C465AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:57:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2650FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:57:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347029AbiCUL7E (ORCPT
+        id S1347032AbiCUL7M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 07:59:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44220 "EHLO
+        Mon, 21 Mar 2022 07:59:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347197AbiCUL6j (ORCPT
+        with ESMTP id S1345896AbiCUL7J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 07:58:39 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F5501575A2;
-        Mon, 21 Mar 2022 04:57:12 -0700 (PDT)
-X-UUID: 6e93e3f35d1c45c6acda66a5e805f1af-20220321
-X-UUID: 6e93e3f35d1c45c6acda66a5e805f1af-20220321
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <axe.yang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 915159880; Mon, 21 Mar 2022 19:51:58 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Mon, 21 Mar 2022 19:51:56 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 21 Mar 2022 19:51:55 +0800
-From:   Axe Yang <axe.yang@mediatek.com>
-To:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Chaotian Jing <chaotian.jing@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Adrian Hunter <adrian.hunter@intel.com>
-CC:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Satya Tangirala <satyat@google.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Axe Yang <axe.yang@mediatek.com>, Lucas Stach <dev@lynxeye.de>,
-        Eric Biggers <ebiggers@google.com>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Kiwoong Kim <kwmad.kim@samsung.com>,
-        Yue Hu <huyue2@yulong.com>, Tian Tao <tiantao6@hisilicon.com>,
-        <angelogioacchino.delregno@collabora.com>,
-        <linux-mmc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>
-Subject: [PATCH v8 0/3] mmc: mediatek: add support for SDIO async IRQ
-Date:   Mon, 21 Mar 2022 19:51:31 +0800
-Message-ID: <20220321115133.32121-1-axe.yang@mediatek.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 21 Mar 2022 07:59:09 -0400
+Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6149C15B07D;
+        Mon, 21 Mar 2022 04:57:32 -0700 (PDT)
+Received: by mail-qv1-xf2c.google.com with SMTP id gh15so6630201qvb.8;
+        Mon, 21 Mar 2022 04:57:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jGIwRa3FcC2veOls//vnX+YOmatILFcNzd8+dnQrnzU=;
+        b=bcOKssJof9v1EZ4ojQb0oapk0wlHmg6od+QJ9oqIE+DY2FS4ix3TxD+jpd7+xKzDwn
+         Ja0G3dV09hKBYxvUY6jMbY74VUMlJ+NzyKOl3+refyIWLpSDjYZbruk/07GVe+1NNaQu
+         EyuhNHHgy6uUez6OvF8j4bUpUMN4oJTd213hm4+edgtYAU5bJrUqLuutK6Twe4vc0VKJ
+         kRkvoMrmMiomL5IqzytGHjf1SDD1OqBpfxoQpq/J1XJxSbzpif1xFDKLnjcA7nWM7b8R
+         MZwKoJC4oiuXQcJRb1wyjIyvTmy2tpPC4yv+1C+0tri5+yiF2VtnO6aeMtblq43wZ5Qc
+         OwWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jGIwRa3FcC2veOls//vnX+YOmatILFcNzd8+dnQrnzU=;
+        b=Bayo3M+Yk24mwm5RSdSY63bt6AhxFLBH2KG/kXkgwIJ/AdUCHXVCk2+nNjA3i+cDao
+         iRy7Dguf7GTtr0t79PexeS0l8afXMNAIx21XRWxhoL0KBYND4zncBoYHkqeS8d+nTcOM
+         O9ZOjgU1kIk9QsqbimFvxUdpNnxLZRElj+hqjJHZ07LOaBu4ZDduc1DEI9lIZFyWKlxa
+         d/2ujuE5w88fByExZHUTmtwhSkC/QENvnjfPMb9HN3obC4eWS7ya6OwoSp2ZcSNVDk2b
+         iW+9EL1msyk3nxE9bhPet4UJeUk7av61JGnv/c9HPVctg/k00QRUil2Qjf0ii9gDPI1g
+         txdw==
+X-Gm-Message-State: AOAM531VLuVc6u9UvMG41sZ6XLGpeDox6ycmtEiVWnMIr6oCdIxuICf8
+        2lpejFCVp1MgPm90IQRh4rjDRwsFcc7VBtQMMwM=
+X-Google-Smtp-Source: ABdhPJzTt2NY5A4S7KLCgQ9QSNIqObNNWBN/Z5yI35spdYZbfQd4pV49kthYZEHCXSz+Qa5abuRmYkQ4aFOr3EsSLuU=
+X-Received: by 2002:a05:6214:1cc2:b0:435:1c62:62cc with SMTP id
+ g2-20020a0562141cc200b004351c6262ccmr15758217qvd.26.1647863851445; Mon, 21
+ Mar 2022 04:57:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+References: <20220321053815.71316-1-schspa@gmail.com> <87a6dj3b5c.fsf@jogness.linutronix.de>
+In-Reply-To: <87a6dj3b5c.fsf@jogness.linutronix.de>
+From:   Shi Schspa <schspa@gmail.com>
+Date:   Mon, 21 Mar 2022 19:57:19 +0800
+Message-ID: <CAMA88TpV6p4wRhx1dpRf7V2Oc27FzV_HR7mb70oGn83RGnfF-w@mail.gmail.com>
+Subject: Re: [PATCH 5.10-rt] printk: fix suppressed message print when reboot/panic
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     pmladek@suse.com, sergey.senozhatsky@gmail.com,
+        rostedt@goodmis.org, linux-rt-users@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bigeasy@linutronix.de,
+        tglx@linutronix.de
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changes in v8:
-- remove maxItems property under pinctrl-names property
+John Ogness <john.ogness@linutronix.de> writes:
 
-Changes in v7:
-- add device_init_wakeup() to register SDIO host as wakeup source
+> On 2022-03-21, Schspa Shi <schspa@gmail.com> wrote:
+>> Update printk_seq for suppressed message.
+>>
+>> Affects 5.9-rt and 5.10-rt
+>>
+>> When message is suppressed, printk_seq should be updated, otherwise
+>> this message will be printed when reboot. This problem was introduced
+>> in commit 3edc0c85d154 ("printk: Rebase on top of new ring buffer").
+>>
+>> Signed-off-by: Schspa Shi <schspa@gmail.com>
+>
+> Reviewed-by: John Ogness <john.ogness@linutronix.de>
+>
+> Nice catch. Thanks.
+>
+> 5.15-rt also has this issue, although the fix is slightly different. For
+> 5.15-rt, writing to con->printk_seq (via latched_seq_write()) requires
+> the console locked. Would you like to post a patch for 5.15-rt as well,
+> or would you like me to do it?
+>
 
-Changes in v6:
-- abandon cap-sdio-async-irq flag, use wakeup-source flag instead
-- extend interrupts and pinctrls in mediatek mmc host controller DT documents
-- add mmc_card_enable_async_irq() to access enable_async_irq flag
-- simplify wakeup irq implementation with dedicate wake up irq related interface
+I have upload a new patch for 5.15-rt, please review it too.
+Message-Id: <20220321111501.68241-1-schspa@gmail.com>
 
-Changes in v5:
-- resort variables to reversed xmas tree order
-- restore old copyright year range and add current year back
+> 5.16 and beyond does not have this issue.
+>
+> John Ogness
 
-Changes in v4:
-- add MMC_CAP2_SDIO_ASYNC_IRQ judge before lookup eint pinctrl
-- replace spin_lock_irqsave() variant with spin_lock() in eint irq handler
+BRs
 
-Changes in v3:
-- correct abbreviations with capital letters in commit message
-- replace copyright year with 2022 in mtk-sd.c
-- remove unnessary pointer casting
-- adjust variable order to reversed xmas tree
-- remove a redundant blank line
-- refine if statement, following standard pattern
-
-Changes in v2:
-- change flag name from 'cap-sdio-async-int' to 'cap-sdio-async-irq'
-- change corresponding macro names from xxx_INT to xxx_IRQ
-- resort new member in msdc_host structure
-- refine function msdc_request_dat1_eint_irq()
-- rename msdc_{suspend,resume} function names, add suffix '_noirq'
-- add MMC_CAP2_NO_SDIO judgement before parse eint related pin setting
-
-Axe Yang (3):
-  dt-bindings: mmc: mtk-sd: extend interrupts and pinctrls properties
-  mmc: core: Add support for SDIO wakeup interrupt
-  mmc: mediatek: add support for SDIO eint wakup IRQ
-
- .../devicetree/bindings/mmc/mtk-sd.yaml       |  23 +++-
- drivers/mmc/core/sdio.c                       |  17 +++
- drivers/mmc/host/mtk-sd.c                     | 100 ++++++++++++++++--
- include/linux/mmc/card.h                      |   8 +-
- include/linux/mmc/sdio.h                      |   5 +
- 5 files changed, 143 insertions(+), 10 deletions(-)
-
--- 
-2.25.1
-
-
+Schspa Shi
