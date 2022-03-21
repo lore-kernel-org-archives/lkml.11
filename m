@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8A83C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:03:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D4E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:03:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348784AbiCUOFF (ORCPT
+        id S1348879AbiCUOFM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:05:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59282 "EHLO
+        Mon, 21 Mar 2022 10:05:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349119AbiCUN7P (ORCPT
+        with ESMTP id S1349126AbiCUN7S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:59:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C5010CC;
-        Mon, 21 Mar 2022 06:57:49 -0700 (PDT)
+        Mon, 21 Mar 2022 09:59:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C67D710CC;
+        Mon, 21 Mar 2022 06:57:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C15BFB816CC;
-        Mon, 21 Mar 2022 13:57:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10F37C340E8;
-        Mon, 21 Mar 2022 13:57:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 63D586125C;
+        Mon, 21 Mar 2022 13:57:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 767D3C340E8;
+        Mon, 21 Mar 2022 13:57:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871066;
-        bh=jbi74pirWmIJryKTHRKMdiKZsXWXK+wLnFhWCEPB59E=;
+        s=korg; t=1647871071;
+        bh=iTxtJC1l3ApI+080GeDg+/sXNoxalLmyjWgvZ1KIW7g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fYafc3GE6Dk9sq1GN64lwXnQWTSnpbCkojE0uTiv0oC3OETOlqCBoapwccsi/OBkn
-         +Rk4nHTj2poDo/JIAoiObNA2fpQBvC0cnzuH4H7qxv62jmJ9j7KETQyeBpMGW/hgR7
-         9fr7nEGI3IvHScfP9TrBPDCNG8Vt4Ho78NgWXqUE=
+        b=L77uKD0/nJGMbQS0WMfu5y5ecBJlUs4VJxmVLoEfvFZCA+NrO2MCFIA36uvTRzvuu
+         W59N5LIS+A1NAVbkdxU8nlYxtHn/jqVcpv/4ieLDCHNxtXthdN2C615twfjI7G9gbN
+         BqhJEce6ywawTPE6VyKJ/D6b4aQsjoSIyHaTmTsE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        James Morse <james.morse@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 11/17] arm64: fix clang warning about TRAMP_VALIAS
-Date:   Mon, 21 Mar 2022 14:52:47 +0100
-Message-Id: <20220321133217.483718656@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        syzbot+348b571beb5eeb70a582@syzkaller.appspotmail.com
+Subject: [PATCH 5.4 13/17] usb: gadget: Fix use-after-free bug by not setting udc->dev.driver
+Date:   Mon, 21 Mar 2022 14:52:49 +0100
+Message-Id: <20220321133217.540026477@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133217.148831184@linuxfoundation.org>
 References: <20220321133217.148831184@linuxfoundation.org>
@@ -51,51 +49,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Alan Stern <stern@rowland.harvard.edu>
 
-[ Upstream commit 7f34b43e07cb512b28543fdcb9f35d1fbfda9ebc ]
+commit 16b1941eac2bd499f065a6739a40ce0011a3d740 upstream.
 
-The newly introduced TRAMP_VALIAS definition causes a build warning
-with clang-14:
+The syzbot fuzzer found a use-after-free bug:
 
-arch/arm64/include/asm/vectors.h:66:31: error: arithmetic on a null pointer treated as a cast from integer to pointer is a GNU extension [-Werror,-Wnull-pointer-arithmetic]
-                return (char *)TRAMP_VALIAS + SZ_2K * slot;
+BUG: KASAN: use-after-free in dev_uevent+0x712/0x780 drivers/base/core.c:2320
+Read of size 8 at addr ffff88802b934098 by task udevd/3689
 
-Change the addition to something clang does not complain about.
+CPU: 2 PID: 3689 Comm: udevd Not tainted 5.17.0-rc4-syzkaller-00229-g4f12b742eb2b #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0x8d/0x303 mm/kasan/report.c:255
+ __kasan_report mm/kasan/report.c:442 [inline]
+ kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
+ dev_uevent+0x712/0x780 drivers/base/core.c:2320
+ uevent_show+0x1b8/0x380 drivers/base/core.c:2391
+ dev_attr_show+0x4b/0x90 drivers/base/core.c:2094
 
-Fixes: bd09128d16fa ("arm64: Add percpu vectors for EL1")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Acked-by: James Morse <james.morse@arm.com>
-Link: https://lore.kernel.org/r/20220316183833.1563139-1-arnd@kernel.org
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Although the bug manifested in the driver core, the real cause was a
+race with the gadget core.  dev_uevent() does:
+
+	if (dev->driver)
+		add_uevent_var(env, "DRIVER=%s", dev->driver->name);
+
+and between the test and the dereference of dev->driver, the gadget
+core sets dev->driver to NULL.
+
+The race wouldn't occur if the gadget core registered its devices on
+a real bus, using the standard synchronization techniques of the
+driver core.  However, it's not necessary to make such a large change
+in order to fix this bug; all we need to do is make sure that
+udc->dev.driver is always NULL.
+
+In fact, there is no reason for udc->dev.driver ever to be set to
+anything, let alone to the value it currently gets: the address of the
+gadget's driver.  After all, a gadget driver only knows how to manage
+a gadget, not how to manage a UDC.
+
+This patch simply removes the statements in the gadget core that touch
+udc->dev.driver.
+
+Fixes: 2ccea03a8f7e ("usb: gadget: introduce UDC Class")
+CC: <stable@vger.kernel.org>
+Reported-and-tested-by: syzbot+348b571beb5eeb70a582@syzkaller.appspotmail.com
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+Link: https://lore.kernel.org/r/YiQgukfFFbBnwJ/9@rowland.harvard.edu
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/asm/vectors.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/usb/gadget/udc/core.c |    3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/arch/arm64/include/asm/vectors.h b/arch/arm64/include/asm/vectors.h
-index f64613a96d53..bc9a2145f419 100644
---- a/arch/arm64/include/asm/vectors.h
-+++ b/arch/arm64/include/asm/vectors.h
-@@ -56,14 +56,14 @@ enum arm64_bp_harden_el1_vectors {
- DECLARE_PER_CPU_READ_MOSTLY(const char *, this_cpu_vector);
+--- a/drivers/usb/gadget/udc/core.c
++++ b/drivers/usb/gadget/udc/core.c
+@@ -1303,7 +1303,6 @@ static void usb_gadget_remove_driver(str
+ 	usb_gadget_udc_stop(udc);
  
- #ifndef CONFIG_UNMAP_KERNEL_AT_EL0
--#define TRAMP_VALIAS	0
-+#define TRAMP_VALIAS	0ul
- #endif
+ 	udc->driver = NULL;
+-	udc->dev.driver = NULL;
+ 	udc->gadget->dev.driver = NULL;
+ }
  
- static inline const char *
- arm64_get_bp_hardening_vector(enum arm64_bp_harden_el1_vectors slot)
- {
- 	if (arm64_kernel_unmapped_at_el0())
--		return (char *)TRAMP_VALIAS + SZ_2K * slot;
-+		return (char *)(TRAMP_VALIAS + SZ_2K * slot);
+@@ -1352,7 +1351,6 @@ static int udc_bind_to_driver(struct usb
+ 			driver->function);
  
- 	WARN_ON_ONCE(slot == EL1_VECTOR_KPTI);
+ 	udc->driver = driver;
+-	udc->dev.driver = &driver->driver;
+ 	udc->gadget->dev.driver = &driver->driver;
  
--- 
-2.34.1
-
+ 	usb_gadget_udc_set_speed(udc, driver->max_speed);
+@@ -1374,7 +1372,6 @@ err1:
+ 		dev_err(&udc->dev, "failed to start %s: %d\n",
+ 			udc->driver->function, ret);
+ 	udc->driver = NULL;
+-	udc->dev.driver = NULL;
+ 	udc->gadget->dev.driver = NULL;
+ 	return ret;
+ }
 
 
