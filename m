@@ -2,104 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB15DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:13:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34A2AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:14:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345752AbiCUJOx (ORCPT
+        id S1344384AbiCUJPo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 05:14:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50814 "EHLO
+        Mon, 21 Mar 2022 05:15:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345732AbiCUJOm (ORCPT
+        with ESMTP id S235509AbiCUJPn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 05:14:42 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD9B31221;
-        Mon, 21 Mar 2022 02:13:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding:
-         in-reply-to:references;
-        bh=cW97tF9dygiHq7o/+gILOv2WKq3Hft3IjKo4B2OX804=;
-        b=coWnny8qKjTlyivEt/e70eY3W3J1Y/pDjAmMlFcseCPZJxnNZ0tFUjmZ7XXtrAgxfu/HMZufii7p9
-         p7cvgnenOiv+/Bcc73ljRYn1NwxMDZVODMCLR7v9EzNt5IQZjXH115yospFf310ck0Ofusq1j05LH6
-         ATq5OhqGJwt+mJ7PyjxECyR+OLAe09X8ALv5rB9tTw2qv9kJsFLi9WKctoF5VUh2uU5DKxrUpPpRs+
-         32kt2yltWn62cfDTPSSkxiJbxl9k/uH4fcOTE4rRjIPjNgNgCfZ3ENduXYi8dWKw4tqFM6k333lmEt
-         8HXwJyFlx+ar5rTai24jVAwmZiwvZZg==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.2.1410, Stamp: 3], Multi: [Enabled, t: (0.000009,0.008590)], BW: [Enabled, t: (0.000028,0.000002)], RTDA: [Enabled, t: (0.067393), Hit: No, Details: v2.28.0; Id: 15.52k225.1fuls0iij.3s20; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from localhost.localdomain ([85.143.252.66])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Mon, 21 Mar 2022 12:12:58 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>, mdf@kernel.org,
-        hao.wu@intel.com, yilun.xu@intel.com, trix@redhat.com,
-        conor.dooley@microchip.com, robh+dt@kernel.org, system@metrotek.ru,
-        linux-kernel@vger.kernel.org, linux-fpga@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH v5 2/2] dt-bindings: fpga: add binding doc for microchip-spi fpga mgr
-Date:   Mon, 21 Mar 2022 11:53:42 +0300
-Message-Id: <20220321085342.22228-3-i.bornyakov@metrotek.ru>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220321085342.22228-1-i.bornyakov@metrotek.ru>
-References: <20220321085342.22228-1-i.bornyakov@metrotek.ru>
+        Mon, 21 Mar 2022 05:15:43 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FC1531DFD;
+        Mon, 21 Mar 2022 02:14:13 -0700 (PDT)
+X-UUID: e030b7e5dcad4d9286f6479676f04775-20220321
+X-UUID: e030b7e5dcad4d9286f6479676f04775-20220321
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <jiaxin.yu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 524223218; Mon, 21 Mar 2022 17:14:10 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 21 Mar 2022 17:14:09 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 21 Mar 2022 17:14:08 +0800
+Message-ID: <17e6e8895ebc1113911481c7e097b394005db123.camel@mediatek.com>
+Subject: Re: [v5 3/4] ASoC: mediatek: mt8192: refactor for I2S8/I2S9 DAI
+ links of headset
+From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+CC:     <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <devicetree@vger.kernel.org>, <linmq006@gmail.com>,
+        <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <linux-mediatek@lists.infradead.org>, <trevor.wu@mediatek.com>,
+        <matthias.bgg@gmail.com>, <aaronyu@google.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <angelogioacchino.delregno@collabora.com>
+Date:   Mon, 21 Mar 2022 17:14:08 +0800
+In-Reply-To: <Yjf4KjXpVJaNnvb8@google.com>
+References: <20220319114111.11496-1-jiaxin.yu@mediatek.com>
+         <20220319114111.11496-4-jiaxin.yu@mediatek.com>
+         <Yjf4KjXpVJaNnvb8@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add Device Tree Binding doc for Microchip Polarfire FPGA Manager using
-slave SPI to load .dat formatted bitstream image.
+On Mon, 2022-03-21 at 11:59 +0800, Tzung-Bi Shih wrote:
+> On Sat, Mar 19, 2022 at 07:41:10PM +0800, Jiaxin Yu wrote:
+> > @@ -1145,6 +1140,13 @@ static int mt8192_mt6359_dev_probe(struct
+> > platform_device *pdev)
+> >  		goto err_speaker_codec;
+> >  	}
+> >  
+> > +	headset_codec = of_get_child_by_name(pdev->dev.of_node,
+> > "mediatek,headset-codec");
+> > +	if (!headset_codec) {
+> > +		ret = -EINVAL;
+> > +		dev_err_probe(&pdev->dev, ret, "Property
+> > 'headset_codec' missing or invalid\n");
+> > +		goto err_headset_codec;
+> > +	}
+> 
+> (to be neat) Does it have any reason to prevent from using
+> of_parse_phandle()
+> but of_get_child_by_name()?
 
-Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
----
- .../fpga/microchip,mpf-spi-fpga-mgr.yaml      | 32 +++++++++++++++++++
- 1 file changed, 32 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
+Hi Tzung-Bi,
 
-diff --git a/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
-new file mode 100644
-index 000000000000..6955fc527ed2
---- /dev/null
-+++ b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
-@@ -0,0 +1,32 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/fpga/microchip,mpf-spi-fpga-mgr.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Microchip Polarfire FPGA manager.
-+
-+description: |
-+  Device Tree Bindings for Microchip Polarfire FPGA Manager using slave SPI to
-+  load the bitstream in .dat format.
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+        - microchip,mpf-spi-fpga-mgr
-+
-+  reg:
-+    items:
-+      - description: spi chip select
-+
-+examples:
-+  - |
-+    spi@2008000 {
-+            ...
-+            fpga_mgr: fpga_mgr@0 {
-+                    compatible = "microchip,mpf-spi-fpga-mgr";
-+                    spi-max-frequency = <20000000>;
-+                    reg = <0>;
-+            };
-+    };
--- 
-2.34.1
+"mediatek,headset-codec" is a child node of pdev->dev.of_node, so I use
+of_get_child_by_name() to get and   pass it to
+snd_soc_of_get_dai_link_codecs().
 
+Jiaxin.Yu
+Thanks
 
