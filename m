@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 597DAC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:13:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B93EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:13:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347611AbiCUOPC (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:15:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38184 "EHLO
+        id S238166AbiCUOPQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 10:15:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349251AbiCUOIG (ORCPT
+        with ESMTP id S1349243AbiCUOIF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:08:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C4BB176D3A;
-        Mon, 21 Mar 2022 07:02:37 -0700 (PDT)
+        Mon, 21 Mar 2022 10:08:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AA52174B8B;
+        Mon, 21 Mar 2022 07:02:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 78E246134A;
-        Mon, 21 Mar 2022 14:02:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8790EC340E8;
-        Mon, 21 Mar 2022 14:02:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A429B816DC;
+        Mon, 21 Mar 2022 14:02:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FB63C340E8;
+        Mon, 21 Mar 2022 14:02:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871355;
-        bh=ZaI+z8jCsQjDVirhHnBpi8JKgIL/KUzOPVBzH8tgTL4=;
+        s=korg; t=1647871350;
+        bh=pApDzt38GhzWwzmU3F/B28vg6zW1m34oDcityxP6B0g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H31CvJYjyvaQDvGlu7RPOxme74SdnKtRBw7lcUlFdu9tgRxYOXiwkpz7ojQmHnih9
-         67s6JCqasKTGK0s7X+Hq+sBF0X57Gr8nr16KVl6v7y6ltY6frOtu/AEX6RINypSlUy
-         Sesnu7aj/Btbgjt9m1GcB6czGfSlI7Y+lf0AdNj4=
+        b=NHEVxCRZcwIQoxfxM+Z/Mtmysrk/hBeQcm17luwUFxwhFSrufojorKRx+HsHl8eTi
+         Nseh6SSait8QlN6s5Z0rsDS75YhfhWGwjfn3kIYnkkXjf/5j/5WRheZO69lJ4qEawL
+         WIlnJkJ8fZH1J1jrJynVKCXm/wYgA9LE3G2YVyto=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        syzbot+75cccf2b7da87fb6f84b@syzkaller.appspotmail.com
-Subject: [PATCH 5.16 32/37] Input: aiptek - properly check endpoint type
-Date:   Mon, 21 Mar 2022 14:53:14 +0100
-Message-Id: <20220321133222.222194278@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        syzbot+a48e3d1a875240cab5de@syzkaller.appspotmail.com
+Subject: [PATCH 5.16 30/37] usb: usbtmc: Fix bug in pipe direction for control transfers
+Date:   Mon, 21 Mar 2022 14:53:12 +0100
+Message-Id: <20220321133222.166033255@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133221.290173884@linuxfoundation.org>
 References: <20220321133221.290173884@linuxfoundation.org>
@@ -50,63 +48,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Alan Stern <stern@rowland.harvard.edu>
 
-commit 5600f6986628dde8881734090588474f54a540a8 upstream.
+commit e9b667a82cdcfe21d590344447d65daed52b353b upstream.
 
-Syzbot reported warning in usb_submit_urb() which is caused by wrong
-endpoint type. There was a check for the number of endpoints, but not
-for the type of endpoint.
+The syzbot fuzzer reported a minor bug in the usbtmc driver:
 
-Fix it by replacing old desc.bNumEndpoints check with
-usb_find_common_endpoints() helper for finding endpoints
-
-Fail log:
-
-usb 5-1: BOGUS urb xfer, pipe 1 != type 3
-WARNING: CPU: 2 PID: 48 at drivers/usb/core/urb.c:502 usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
+usb 5-1: BOGUS control dir, pipe 80001e80 doesn't match bRequestType 0
+WARNING: CPU: 0 PID: 3813 at drivers/usb/core/urb.c:412
+usb_submit_urb+0x13a5/0x1970 drivers/usb/core/urb.c:410
 Modules linked in:
-CPU: 2 PID: 48 Comm: kworker/2:2 Not tainted 5.17.0-rc6-syzkaller-00226-g07ebd38a0da2 #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-Workqueue: usb_hub_wq hub_event
+CPU: 0 PID: 3813 Comm: syz-executor122 Not tainted
+5.17.0-rc5-syzkaller-00306-g2293be58d6a1 #0
 ...
 Call Trace:
  <TASK>
- aiptek_open+0xd5/0x130 drivers/input/tablet/aiptek.c:830
- input_open_device+0x1bb/0x320 drivers/input/input.c:629
- kbd_connect+0xfe/0x160 drivers/tty/vt/keyboard.c:1593
+ usb_start_wait_urb+0x113/0x530 drivers/usb/core/message.c:58
+ usb_internal_control_msg drivers/usb/core/message.c:102 [inline]
+ usb_control_msg+0x2a5/0x4b0 drivers/usb/core/message.c:153
+ usbtmc_ioctl_request drivers/usb/class/usbtmc.c:1947 [inline]
 
-Fixes: 8e20cf2bce12 ("Input: aiptek - fix crash on detecting device without endpoints")
-Reported-and-tested-by: syzbot+75cccf2b7da87fb6f84b@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Link: https://lore.kernel.org/r/20220308194328.26220-1-paskripkin@gmail.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+The problem is that usbtmc_ioctl_request() uses usb_rcvctrlpipe() for
+all of its transfers, whether they are in or out.  It's easy to fix.
+
+CC: <stable@vger.kernel.org>
+Reported-and-tested-by: syzbot+a48e3d1a875240cab5de@syzkaller.appspotmail.com
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+Link: https://lore.kernel.org/r/YiEsYTPEE6lOCOA5@rowland.harvard.edu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/input/tablet/aiptek.c |   10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/usb/class/usbtmc.c |   13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
---- a/drivers/input/tablet/aiptek.c
-+++ b/drivers/input/tablet/aiptek.c
-@@ -1787,15 +1787,13 @@ aiptek_probe(struct usb_interface *intf,
- 	input_set_abs_params(inputdev, ABS_TILT_Y, AIPTEK_TILT_MIN, AIPTEK_TILT_MAX, 0, 0);
- 	input_set_abs_params(inputdev, ABS_WHEEL, AIPTEK_WHEEL_MIN, AIPTEK_WHEEL_MAX - 1, 0, 0);
+--- a/drivers/usb/class/usbtmc.c
++++ b/drivers/usb/class/usbtmc.c
+@@ -1919,6 +1919,7 @@ static int usbtmc_ioctl_request(struct u
+ 	struct usbtmc_ctrlrequest request;
+ 	u8 *buffer = NULL;
+ 	int rv;
++	unsigned int is_in, pipe;
+ 	unsigned long res;
  
--	/* Verify that a device really has an endpoint */
--	if (intf->cur_altsetting->desc.bNumEndpoints < 1) {
-+	err = usb_find_common_endpoints(intf->cur_altsetting,
-+					NULL, NULL, &endpoint, NULL);
-+	if (err) {
- 		dev_err(&intf->dev,
--			"interface has %d endpoints, but must have minimum 1\n",
--			intf->cur_altsetting->desc.bNumEndpoints);
--		err = -EINVAL;
-+			"interface has no int in endpoints, but must have minimum 1\n");
- 		goto fail3;
+ 	res = copy_from_user(&request, arg, sizeof(struct usbtmc_ctrlrequest));
+@@ -1928,12 +1929,14 @@ static int usbtmc_ioctl_request(struct u
+ 	if (request.req.wLength > USBTMC_BUFSIZE)
+ 		return -EMSGSIZE;
+ 
++	is_in = request.req.bRequestType & USB_DIR_IN;
++
+ 	if (request.req.wLength) {
+ 		buffer = kmalloc(request.req.wLength, GFP_KERNEL);
+ 		if (!buffer)
+ 			return -ENOMEM;
+ 
+-		if ((request.req.bRequestType & USB_DIR_IN) == 0) {
++		if (!is_in) {
+ 			/* Send control data to device */
+ 			res = copy_from_user(buffer, request.data,
+ 					     request.req.wLength);
+@@ -1944,8 +1947,12 @@ static int usbtmc_ioctl_request(struct u
+ 		}
  	}
--	endpoint = &intf->cur_altsetting->endpoint[0].desc;
  
- 	/* Go set up our URB, which is called when the tablet receives
- 	 * input.
++	if (is_in)
++		pipe = usb_rcvctrlpipe(data->usb_dev, 0);
++	else
++		pipe = usb_sndctrlpipe(data->usb_dev, 0);
+ 	rv = usb_control_msg(data->usb_dev,
+-			usb_rcvctrlpipe(data->usb_dev, 0),
++			pipe,
+ 			request.req.bRequest,
+ 			request.req.bRequestType,
+ 			request.req.wValue,
+@@ -1957,7 +1964,7 @@ static int usbtmc_ioctl_request(struct u
+ 		goto exit;
+ 	}
+ 
+-	if (rv && (request.req.bRequestType & USB_DIR_IN)) {
++	if (rv && is_in) {
+ 		/* Read control data from device */
+ 		res = copy_to_user(request.data, buffer, rv);
+ 		if (res)
 
 
