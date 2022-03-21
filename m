@@ -2,235 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B1EFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 12:03:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BCB1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 12:04:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347146AbiCUMFN (ORCPT
+        id S1347150AbiCUMFm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 08:05:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43356 "EHLO
+        Mon, 21 Mar 2022 08:05:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347126AbiCUMFI (ORCPT
+        with ESMTP id S1344372AbiCUMFh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 08:05:08 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9942659B;
-        Mon, 21 Mar 2022 05:03:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1647864223; x=1679400223;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=m1EMEvnuw4KcMR2XVcW7wIik1nwW4ZLC1f4ZafqxuJ8=;
-  b=iROuT2yf0IFGfKL7+jZu3Pn+SCum8aeCX5irUM2AOE1TA41SGPlet98d
-   ofFcuyB2v/JKL6Nft4vzg5+ufdUsmjvmHvUfeXVkIogrKep6eY/ghcN2i
-   3xnGwJp+On+xqlKNT3LfB7aHfGmhF7Xh8WMzrGC/5wGkohpNhXy/DPsPm
-   4=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 21 Mar 2022 05:03:41 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 05:03:40 -0700
-Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 21 Mar 2022 05:03:40 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 21 Mar 2022 05:03:36 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <rohitkr@codeaurora.org>, <srinivas.kandagatla@linaro.org>,
-        <dianders@chromium.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH v5 3/3] arm64: dts: qcom: sc7280: add lpass lpi pin controller node
-Date:   Mon, 21 Mar 2022 17:29:19 +0530
-Message-ID: <1647863959-3289-4-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1647863959-3289-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1647863959-3289-1-git-send-email-quic_srivasam@quicinc.com>
+        Mon, 21 Mar 2022 08:05:37 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B827659B;
+        Mon, 21 Mar 2022 05:04:11 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 6D4CC1F41AD2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1647864250;
+        bh=juB9ncatAw5tBbLICYJf9adbDnlB0mhtknonKfRigfo=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=LNfk/yFRVJb+YGgQfgF6LW7EDRJBX/qj4Tqt0oeQIhrJG5PlV26AG65D8k0UweCP9
+         wp9rcHBOA5mCaR7g7UZvkZWlmeKyJ42C6TQhqqPXpmCinlMVxfswclq7dwKphWGIax
+         DM896VSxIDIoDv44L1/ZA6sgvV0iwwsdIGe009LNef/1AFBftocX2ntjFdAQk+hVwO
+         n2jZzjgQ73CdAdWYkTMP4yl0FMadeWzc2bO0CHCjBSs+uWz6t0d+NYyND8LjyoXsFN
+         dJnywNHz+PQFaF1+Gd9rb3NqC5a8CI8LMmw3AtfCuMXWeL9xc3g+gzCh5+XT2a1/p1
+         KXOv1rrnPvIsg==
+Message-ID: <c1dfb526-1daf-5c14-2e4e-9ac2785eec20@collabora.com>
+Date:   Mon, 21 Mar 2022 13:04:07 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v4 22/22] arm64: dts: mt8192: Add pwm node
+Content-Language: en-US
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Ryder Lee <ryder.lee@kernel.org>,
+        Hui Liu <hui.liu@mediatek.com>
+References: <20220318144534.17996-1-allen-kh.cheng@mediatek.com>
+ <20220318144534.17996-23-allen-kh.cheng@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220318144534.17996-23-allen-kh.cheng@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add LPASS LPI pinctrl node required for Audio functionality on sc7280
-based platforms.
+Il 18/03/22 15:45, Allen-KH Cheng ha scritto:
+> Add pwm node for mt8192 SoC.
+> 
+> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
----
- arch/arm64/boot/dts/qcom/sc7280.dtsi | 147 +++++++++++++++++++++++++++++++++++
- 1 file changed, 147 insertions(+)
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index 8d8cec5..499299a 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -1987,6 +1987,153 @@
- 			qcom,bcm-voters = <&apps_bcm_voter>;
- 		};
- 
-+		lpass_tlmm: pinctrl@33c0000 {
-+			compatible = "qcom,sc7280-lpass-lpi-pinctrl";
-+			reg = <0 0x33c0000 0x0 0x20000>,
-+				<0 0x3550000 0x0 0x10000>;
-+			gpio-controller;
-+			#gpio-cells = <2>;
-+			gpio-ranges = <&lpass_tlmm 0 0 15>;
-+
-+			#clock-cells = <1>;
-+
-+			dmic01_active: dmic01-active {
-+				clk {
-+					pins = "gpio6";
-+					function = "dmic1_clk";
-+					drive-strength = <8>;
-+					output-high;
-+				};
-+
-+				data {
-+					pins = "gpio7";
-+					function = "dmic1_data";
-+					drive-strength = <8>;
-+				};
-+			};
-+
-+			dmic01_sleep: dmic01-sleep {
-+				clk {
-+					pins = "gpio6";
-+					function = "dmic1_clk";
-+					drive-strength = <2>;
-+					bias-disable;
-+					output-low;
-+				};
-+
-+				data {
-+					pins = "gpio7";
-+					function = "dmic1_data";
-+					drive-strength = <2>;
-+					pull-down;
-+				};
-+			};
-+
-+			dmic23_active: dmic02-active {
-+				clk {
-+					pins = "gpio8";
-+					function = "dmic2_clk";
-+					drive-strength = <8>;
-+					output-high;
-+				};
-+
-+				data {
-+					pins = "gpio9";
-+					function = "dmic2_data";
-+					drive-strength = <8>;
-+				};
-+			};
-+
-+			dmic23_sleep: dmic02-sleep {
-+				clk {
-+					pins = "gpio8";
-+					function = "dmic2_clk";
-+					drive-strength = <2>;
-+					bias-disable;
-+					output-low;
-+				};
-+
-+				data {
-+					pins = "gpio9";
-+					function = "dmic2_data";
-+					drive-strength = <2>;
-+					pull-down;
-+				};
-+			};
-+
-+			rx_swr_active: rx-swr-active {
-+				clk {
-+					pins = "gpio3";
-+					function = "swr_rx_clk";
-+					drive-strength = <2>;
-+					slew-rate = <1>;
-+					bias-disable;
-+				};
-+
-+				data {
-+					pins = "gpio4", "gpio5";
-+					function = "swr_rx_data";
-+					drive-strength = <2>;
-+					slew-rate = <1>;
-+					bias-bus-hold;
-+				};
-+			};
-+
-+			rx_swr_sleep: rx-swr-sleep {
-+				clk {
-+					pins = "gpio3";
-+					function = "swr_rx_clk";
-+					drive-strength = <2>;
-+					input-enable;
-+					bias-pull-down;
-+				};
-+
-+				data {
-+					pins = "gpio4", "gpio5";
-+					function = "swr_rx_data";
-+					drive-strength = <2>;
-+					input-enable;
-+					bias-pull-down;
-+				};
-+			};
-+
-+			tx_swr_active: tx-swr-active {
-+				clk {
-+					pins = "gpio0";
-+					function = "swr_tx_clk";
-+					drive-strength = <2>;
-+					slew-rate = <1>;
-+					bias-disable;
-+				};
-+
-+				data {
-+					pins = "gpio1", "gpio2", "gpio14";
-+					function = "swr_tx_data";
-+					drive-strength = <2>;
-+					slew-rate = <1>;
-+					bias-bus-hold;
-+				};
-+			};
-+
-+			tx_swr_sleep: tx-swr-sleep {
-+				clk {
-+					pins = "gpio0";
-+					function = "swr_tx_clk";
-+					drive-strength = <2>;
-+					input-enable;
-+					bias-pull-down;
-+				};
-+
-+				data {
-+					pins = "gpio1", "gpio2", "gpio14";
-+					function = "swr_tx_data";
-+					drive-strength = <2>;
-+					input-enable;
-+					bias-bus-hold;
-+				};
-+			};
-+		};
-+
- 		gpu: gpu@3d00000 {
- 			compatible = "qcom,adreno-635.0", "qcom,adreno";
- 			reg = <0 0x03d00000 0 0x40000>,
--- 
-2.7.4
-
+> ---
+>   arch/arm64/boot/dts/mediatek/mt8192.dtsi | 11 +++++++++++
+>   1 file changed, 11 insertions(+)
+> 
