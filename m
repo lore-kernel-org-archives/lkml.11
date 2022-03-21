@@ -2,97 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8288CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:46:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4049AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:46:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229705AbiCUWr5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:47:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54740 "EHLO
+        id S229719AbiCUWsC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:48:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229835AbiCUWrf (ORCPT
+        with ESMTP id S229797AbiCUWrf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 18:47:35 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E67843A35D7;
-        Mon, 21 Mar 2022 15:27:35 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E612636E819;
+        Mon, 21 Mar 2022 15:27:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 81CD722175;
-        Mon, 21 Mar 2022 22:41:56 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1647898916;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=H8b7+3L8jyoijK3U5LHdUPt3et03RXlG9z84o4vPklU=;
-        b=o/s/oQAP6fhf078SLdCjf35BeBa/MVgWK2EQ5ACRLZmmB8sjXAdT3mItde5d4yhj+YoGJW
-        3SLTBJsX0ffwSsf8G6o0IqCEkV2zYwBf0JTd4YWhUQpjzGtOJcFLRbz7kGeP13ltxceJGS
-        NnJZuKXpaSB3iQSAX/Coq1cQjYYnYPE=
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D205B81A4D;
+        Mon, 21 Mar 2022 22:03:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C557C340F8;
+        Mon, 21 Mar 2022 22:03:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647900223;
+        bh=Q7gazwmOiF1+pGMUPd49Zh6pNO4LTkSrTEg1R9lEwig=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=UcdkgUCRnjf+T4JeLeEPezb1Ad/rZaYpJCzlzw+MAAsHZhewgbzIci6bVvXeWCs3C
+         NzLq0oOHw++hHBtel/l5NqWbtchprKX2E14ME0S7FxWGfQvfi7reAx0ZORM37A0AFS
+         4XjpUf2TOohmM14Hs9nJ99b1zg9xmXHgBi8RZgF7Rq9IxmH7SW14mSK9MQBLb9eELd
+         7XFOSDInMs4wfF8UxggDApnwTbmYaeaFdMIpzIKYrkeRFrJbRlEcBna5w7AimpJSLk
+         Ah3ogsoHbm7In2pe4B/cEo5qE2fknhVVv35bIDnqPjdO/wY6ZRoSiubeWOg2KKj67b
+         6HqQcv3FYlyrA==
+Received: by mail-yb1-f171.google.com with SMTP id z8so30552512ybh.7;
+        Mon, 21 Mar 2022 15:03:43 -0700 (PDT)
+X-Gm-Message-State: AOAM53198xCckhrOc75EsO+z744t/vpjDxCgYcQH61yC3eBCY4R3tamZ
+        gnJbi8J2ITYvz2wC+9x5ENVg26ptNpkMecKnH9Q=
+X-Google-Smtp-Source: ABdhPJwUdLaKpQIQDkJmLsTAFWXPlXvioL7Q/635HKNveO8Z14I2OOLoc+cD3XHJ0vLQNRs6TluOSbPrGrvsR6WLsik=
+X-Received: by 2002:a25:8b81:0:b0:629:17d5:68c1 with SMTP id
+ j1-20020a258b81000000b0062917d568c1mr23210434ybl.449.1647900222062; Mon, 21
+ Mar 2022 15:03:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 21 Mar 2022 22:41:56 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: Clause 45 and Clause 22 PHYs on one MDIO bus
-In-Reply-To: <YjjhxbZgKHykJ+35@lunn.ch>
-References: <240354b0a54b37e8b5764773711b8aa3@walle.cc>
- <cdb3d3f6ad35d4e26fd8abb23b2e96a3@walle.cc> <YjjhxbZgKHykJ+35@lunn.ch>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <4d728d267e45fe591c933c86cdfff333@walle.cc>
-X-Sender: michael@walle.cc
+References: <20220318161528.1531164-1-benjamin.tissoires@redhat.com>
+ <20220318161528.1531164-7-benjamin.tissoires@redhat.com> <CAPhsuW64x8_m1pNN9gC8LA8ajAmy+5O3y+iOaC7ixSXU=J624Q@mail.gmail.com>
+ <CAO-hwJL+A5hqzGBCVCtp4diuM-_Aii+HAKNfz5oMZBTHCQrEkQ@mail.gmail.com>
+In-Reply-To: <CAO-hwJL+A5hqzGBCVCtp4diuM-_Aii+HAKNfz5oMZBTHCQrEkQ@mail.gmail.com>
+From:   Song Liu <song@kernel.org>
+Date:   Mon, 21 Mar 2022 15:03:31 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW7W_pGHFb4MyZHaFk9TV9zYaLXoTS_0hLoeqGOB8htRBg@mail.gmail.com>
+Message-ID: <CAPhsuW7W_pGHFb4MyZHaFk9TV9zYaLXoTS_0hLoeqGOB8htRBg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 06/17] HID: allow to change the report
+ descriptor from an eBPF program
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-03-21 21:36, schrieb Andrew Lunn:
->> Actually, it looks like mdiobus_c45_read() is really c45 only and only
->> used for PHYs which just support c45 and not c45-over-c22 (?). I was
->> mistaken by the heavy use of the function in phy_device.c. All the
->> methods in phy-c45.c use phy_*_mmd() functions. Thus it might only be
->> the mxl-gpy doing something fishy in its probe function.
-> 
-> Yes, there is something odd here. You should search back on the
-> mailing list.
-> 
-> If i remember correctly, it is something like it responds to both c22
-> and c45. If it is found via c22, phylib does not set phydev->is_c45,
-> and everything ends up going indirect. So the probe additionally tries
-> to find it via c45? Or something like that.
+On Mon, Mar 21, 2022 at 9:20 AM Benjamin Tissoires
+<benjamin.tissoires@redhat.com> wrote:
+>
+> On Fri, Mar 18, 2022 at 10:10 PM Song Liu <song@kernel.org> wrote:
+> >
+> > On Fri, Mar 18, 2022 at 9:17 AM Benjamin Tissoires
+> > <benjamin.tissoires@redhat.com> wrote:
+> > >
+> > > Make use of BPF_HID_ATTACH_RDESC_FIXUP so we can trigger an rdesc fixup
+> > > in the bpf world.
+> > >
+> > > Whenever the program gets attached/detached, the device is reconnected
+> > > meaning that userspace will see it disappearing and reappearing with
+> > > the new report descriptor.
+> > >
+> > > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> > >
+> > > ---
+> > >
+> > > changes in v3:
+> > > - ensure the ctx.size is properly bounded by allocated size
+> > > - s/link_attached/post_link_attach/
+> > > - removed the switch statement with only one case
+> > >
+> > > changes in v2:
+> > > - split the series by bpf/libbpf/hid/selftests and samples
+> > > ---
+> > >  drivers/hid/hid-bpf.c  | 62 ++++++++++++++++++++++++++++++++++++++++++
+> > >  drivers/hid/hid-core.c |  3 +-
+> > >  include/linux/hid.h    |  6 ++++
+> > >  3 files changed, 70 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/hid/hid-bpf.c b/drivers/hid/hid-bpf.c
+> > > index 5060ebcb9979..45c87ff47324 100644
+> > > --- a/drivers/hid/hid-bpf.c
+> > > +++ b/drivers/hid/hid-bpf.c
+> > > @@ -50,6 +50,14 @@ static struct hid_device *hid_bpf_fd_to_hdev(int fd)
+> > >         return hdev;
+> > >  }
+> > >
+> > > +static int hid_reconnect(struct hid_device *hdev)
+> > > +{
+> > > +       if (!test_and_set_bit(ffs(HID_STAT_REPROBED), &hdev->status))
+> > > +               return device_reprobe(&hdev->dev);
+> > > +
+> > > +       return 0;
+> > > +}
+> > > +
+> > >  static int hid_bpf_pre_link_attach(struct hid_device *hdev, enum bpf_hid_attach_type type)
+> > >  {
+> > >         int err = 0;
+> > > @@ -92,6 +100,12 @@ static int hid_bpf_pre_link_attach(struct hid_device *hdev, enum bpf_hid_attach_
+> > >         return err;
+> > >  }
+> > >
+> > > +static void hid_bpf_post_link_attach(struct hid_device *hdev, enum bpf_hid_attach_type type)
+> > > +{
+> > > +       if (type == BPF_HID_ATTACH_RDESC_FIXUP)
+> > > +               hid_reconnect(hdev);
+> > > +}
+> > > +
+> > >  static void hid_bpf_array_detach(struct hid_device *hdev, enum bpf_hid_attach_type type)
+> > >  {
+> > >         switch (type) {
+> > > @@ -99,6 +113,9 @@ static void hid_bpf_array_detach(struct hid_device *hdev, enum bpf_hid_attach_ty
+> > >                 kfree(hdev->bpf.device_data);
+> > >                 hdev->bpf.device_data = NULL;
+> > >                 break;
+> > > +       case BPF_HID_ATTACH_RDESC_FIXUP:
+> > > +               hid_reconnect(hdev);
+> > > +               break;
+> > >         default:
+> > >                 /* do nothing */
+> > >                 break;
+> > > @@ -116,6 +133,9 @@ static int hid_bpf_run_progs(struct hid_device *hdev, struct hid_bpf_ctx_kern *c
+> > >         case HID_BPF_DEVICE_EVENT:
+> > >                 type = BPF_HID_ATTACH_DEVICE_EVENT;
+> > >                 break;
+> > > +       case HID_BPF_RDESC_FIXUP:
+> > > +               type = BPF_HID_ATTACH_RDESC_FIXUP;
+> > > +               break;
+> > >         default:
+> > >                 return -EINVAL;
+> > >         }
+> > > @@ -155,11 +175,53 @@ u8 *hid_bpf_raw_event(struct hid_device *hdev, u8 *data, int *size)
+> > >         return ctx.data;
+> > >  }
+> > >
+> > > +u8 *hid_bpf_report_fixup(struct hid_device *hdev, u8 *rdesc, unsigned int *size)
+> > > +{
+> > > +       int ret;
+> > > +       struct hid_bpf_ctx_kern ctx = {
+> > > +               .type = HID_BPF_RDESC_FIXUP,
+> > > +               .hdev = hdev,
+> > > +               .size = *size,
+> > > +       };
+> > > +
+> > > +       if (bpf_hid_link_empty(&hdev->bpf, BPF_HID_ATTACH_RDESC_FIXUP))
+> >
+> > Do we need to lock bpf_hid_mutex before calling bpf_hid_link_empty()?
+> > (or maybe we
+> > already did?)
+>
+> The mutex is not locked before this call, indeed.
+>
+> However, bpf_hid_link_empty() is an inlined function that just calls
+> in the end list_empty(). Given that all the list heads are created
+> just once for the entire life of the HID device, I *think* this is
+> thread safe and does not require mutex locking.
 
-Yeah, found it: https://lore.kernel.org/netdev/YLaG9cdn6ewdffjV@lunn.ch/
+Hmm.. I guess you are right.
 
-But that means that if the controller is not c45 capable, it will always
-fail to probe, no?
+>
+> (I might be wrong)
+>
+> So when first plugging in the device, if there is a fighting process
+> that attempts to add a program, if the program managed to insert
+> itself before we enter this code, then the list won't be empty and we
+> will execute BPF_PROG_RUN_ARRAY(), and if not, well, we ignore it and
+> wait for reconnect().
+>
+> But now I am starting to wonder if I need to also protect
+> BPF_PROG_RUN_ARRAY() under bpf_hid_mutex...
 
-I've added the "if (regnum & MII_ADDR_C45) return -EOPNOTSUPP" to the
-mdio driver and the gpy phy will then fail to probe - as expected.
+I think this is not necessary.
 
-Should it check for -EOPNOTSUPP and just ignore that error and continue
-probing? Or make it a no-op if probe_capabilities say it has no c45
-access so it would take advantage of a quirk flag (derived from dt)?
-
->> Nevertheless, I'd still need the opt-out of any c45 access. Otherwise,
->> if someone will ever implement c45 support for the mdio-mscc-mdio
->> driver, I'll run in the erratic behavior.
-> 
-> Yah, i need to think about that. Are you purely in the DT world, or is
-> ACPI also an option?
-
-Just DT world.
-
-> Maybe extend of_mdiobus_register() to look for a DT property to limit
-> what values probe_capabilities can take?
-
-I'll have to give it a try. First I was thinking that we wouldn't need
-it because a broken PHY driver could just set a quirk 
-"broken_c45_access"
-or similar. But that would mean it has to be probed before any c45 PHY.
-Dunno if that will be true for the future. And it sounds rather fragile.
-So yes, a dt property might be a better option.
-
--michael
+Thanks,
+Song
