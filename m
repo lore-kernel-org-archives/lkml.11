@@ -2,52 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67268C4707E
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22449C35294
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351582AbiCUOLK (ORCPT
+        id S1351774AbiCUOLo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:11:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38086 "EHLO
+        Mon, 21 Mar 2022 10:11:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349094AbiCUODT (ORCPT
+        with ESMTP id S1348747AbiCUOCi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:03:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D2ED1777DC;
-        Mon, 21 Mar 2022 07:00:19 -0700 (PDT)
+        Mon, 21 Mar 2022 10:02:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6D353B565;
+        Mon, 21 Mar 2022 06:59:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A1BDB816DD;
-        Mon, 21 Mar 2022 14:00:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78B0DC340E8;
-        Mon, 21 Mar 2022 14:00:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A7162612A1;
+        Mon, 21 Mar 2022 13:59:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6D0DC340E8;
+        Mon, 21 Mar 2022 13:59:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871218;
-        bh=qOVgskf1QpCv/42Fu5pcrFzI5eB1xoZRISZBvhB1r0k=;
+        s=korg; t=1647871157;
+        bh=+EgaiHZSotoZIM9JUYSNx32Rt1/zHze/2ZvDe21kRe4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lL/HOvJmgkN0KBrJF+Xjzn1W2GXLgScgn6vM3KsRM65vVtL1gY7kF1ZF1ZjT9Wv3+
-         lMLZplBJ0P47GYLXrxgKLxqw1XIYFhRo4anT2deoNvykuf3zP0h2mxo/PVYnkVoH7C
-         X2d2gioXNh/0AGWQ2pIqR+gJm5gqA6yaUcnZEe2U=
+        b=Qpu29IsLfGbLvJMyi9hAzBNQsV1SPVI6ipysti6b/IecbiKTN3AtxrT1ms43GLmVB
+         0t1LCsz1l2WLyZjq9J/Y8jrAhfOuLtsUUhXi9ekrDN7zD67oxLiE3yix9UoxBBYTuL
+         Bdh4r3c1EajA2TmqiAPU/y8J3LKQqSJihd/78IUk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Christoph Fritz <chf.fritz@googlemail.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 16/32] drm/panel: simple: Fix Innolux G070Y2-L01 BPP settings
-Date:   Mon, 21 Mar 2022 14:52:52 +0100
-Message-Id: <20220321133221.033520901@linuxfoundation.org>
+Subject: [PATCH 5.10 08/30] net/packet: fix slab-out-of-bounds access in packet_recvmsg()
+Date:   Mon, 21 Mar 2022 14:52:38 +0100
+Message-Id: <20220321133219.889728310@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220321133220.559554263@linuxfoundation.org>
-References: <20220321133220.559554263@linuxfoundation.org>
+In-Reply-To: <20220321133219.643490199@linuxfoundation.org>
+References: <20220321133219.643490199@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -56,47 +51,117 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit fc1b6ef7bfb3d1d4df868b1c3e0480cacda6cd81 ]
+[ Upstream commit c700525fcc06b05adfea78039de02628af79e07a ]
 
-The Innolux G070Y2-L01 supports two modes of operation:
-1) FRC=Low/NC ... MEDIA_BUS_FMT_RGB666_1X7X3_SPWG ... BPP=6
-2) FRC=High ..... MEDIA_BUS_FMT_RGB888_1X7X4_SPWG ... BPP=8
+syzbot found that when an AF_PACKET socket is using PACKET_COPY_THRESH
+and mmap operations, tpacket_rcv() is queueing skbs with
+garbage in skb->cb[], triggering a too big copy [1]
 
-Currently the panel description mixes both, BPP from 1) and bus
-format from 2), which triggers a warning at panel-simple.c:615.
+Presumably, users of af_packet using mmap() already gets correct
+metadata from the mapped buffer, we can simply make sure
+to clear 12 bytes that might be copied to user space later.
 
-Pick the later, set bpp=8, fix the warning.
+BUG: KASAN: stack-out-of-bounds in memcpy include/linux/fortify-string.h:225 [inline]
+BUG: KASAN: stack-out-of-bounds in packet_recvmsg+0x56c/0x1150 net/packet/af_packet.c:3489
+Write of size 165 at addr ffffc9000385fb78 by task syz-executor233/3631
 
-Fixes: a5d2ade627dca ("drm/panel: simple: Add support for Innolux G070Y2-L01")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Christoph Fritz <chf.fritz@googlemail.com>
-Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
-Cc: Maxime Ripard <maxime@cerno.tech>
-Cc: Sam Ravnborg <sam@ravnborg.org>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220220040718.532866-1-marex@denx.de
-Signed-off-by: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+CPU: 0 PID: 3631 Comm: syz-executor233 Not tainted 5.17.0-rc7-syzkaller-02396-g0b3660695e80 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0xf/0x336 mm/kasan/report.c:255
+ __kasan_report mm/kasan/report.c:442 [inline]
+ kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
+ check_region_inline mm/kasan/generic.c:183 [inline]
+ kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
+ memcpy+0x39/0x60 mm/kasan/shadow.c:66
+ memcpy include/linux/fortify-string.h:225 [inline]
+ packet_recvmsg+0x56c/0x1150 net/packet/af_packet.c:3489
+ sock_recvmsg_nosec net/socket.c:948 [inline]
+ sock_recvmsg net/socket.c:966 [inline]
+ sock_recvmsg net/socket.c:962 [inline]
+ ____sys_recvmsg+0x2c4/0x600 net/socket.c:2632
+ ___sys_recvmsg+0x127/0x200 net/socket.c:2674
+ __sys_recvmsg+0xe2/0x1a0 net/socket.c:2704
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7fdfd5954c29
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 41 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffcf8e71e48 EFLAGS: 00000246 ORIG_RAX: 000000000000002f
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007fdfd5954c29
+RDX: 0000000000000000 RSI: 0000000020000500 RDI: 0000000000000005
+RBP: 0000000000000000 R08: 000000000000000d R09: 000000000000000d
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffcf8e71e60
+R13: 00000000000f4240 R14: 000000000000c1ff R15: 00007ffcf8e71e54
+ </TASK>
+
+addr ffffc9000385fb78 is located in stack of task syz-executor233/3631 at offset 32 in frame:
+ ____sys_recvmsg+0x0/0x600 include/linux/uio.h:246
+
+this frame has 1 object:
+ [32, 160) 'addr'
+
+Memory state around the buggy address:
+ ffffc9000385fa80: 00 04 f3 f3 f3 f3 f3 00 00 00 00 00 00 00 00 00
+ ffffc9000385fb00: 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1 00
+>ffffc9000385fb80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 f3
+                                                                ^
+ ffffc9000385fc00: f3 f3 f3 00 00 00 00 00 00 00 00 00 00 00 00 f1
+ ffffc9000385fc80: f1 f1 f1 00 f2 f2 f2 00 f2 f2 f2 00 00 00 00 00
+==================================================================
+
+Fixes: 0fb375fb9b93 ("[AF_PACKET]: Allow for > 8 byte hardware addresses.")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Link: https://lore.kernel.org/r/20220312232958.3535620-1-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/panel/panel-simple.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/packet/af_packet.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
-index b7b654f2dfd9..f9242c19b458 100644
---- a/drivers/gpu/drm/panel/panel-simple.c
-+++ b/drivers/gpu/drm/panel/panel-simple.c
-@@ -2510,7 +2510,7 @@ static const struct display_timing innolux_g070y2_l01_timing = {
- static const struct panel_desc innolux_g070y2_l01 = {
- 	.timings = &innolux_g070y2_l01_timing,
- 	.num_timings = 1,
--	.bpc = 6,
-+	.bpc = 8,
- 	.size = {
- 		.width = 152,
- 		.height = 91,
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index a31334b92be7..d0c95d7dd292 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -2278,8 +2278,11 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
+ 					copy_skb = skb_get(skb);
+ 					skb_head = skb->data;
+ 				}
+-				if (copy_skb)
++				if (copy_skb) {
++					memset(&PACKET_SKB_CB(copy_skb)->sa.ll, 0,
++					       sizeof(PACKET_SKB_CB(copy_skb)->sa.ll));
+ 					skb_set_owner_r(copy_skb, sk);
++				}
+ 			}
+ 			snaplen = po->rx_ring.frame_size - macoff;
+ 			if ((int)snaplen < 0) {
+@@ -3434,6 +3437,8 @@ static int packet_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ 	sock_recv_ts_and_drops(msg, sk, skb);
+ 
+ 	if (msg->msg_name) {
++		const size_t max_len = min(sizeof(skb->cb),
++					   sizeof(struct sockaddr_storage));
+ 		int copy_len;
+ 
+ 		/* If the address length field is there to be filled
+@@ -3456,6 +3461,10 @@ static int packet_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ 				msg->msg_namelen = sizeof(struct sockaddr_ll);
+ 			}
+ 		}
++		if (WARN_ON_ONCE(copy_len > max_len)) {
++			copy_len = max_len;
++			msg->msg_namelen = copy_len;
++		}
+ 		memcpy(msg->msg_name, &PACKET_SKB_CB(skb)->sa, copy_len);
+ 	}
+ 
 -- 
 2.34.1
 
