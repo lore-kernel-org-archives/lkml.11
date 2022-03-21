@@ -2,98 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0ED9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 18:05:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DCD1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 18:05:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351893AbiCUSGb (ORCPT
+        id S1351987AbiCUSGh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 14:06:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60460 "EHLO
+        Mon, 21 Mar 2022 14:06:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241367AbiCUSG3 (ORCPT
+        with ESMTP id S1351980AbiCUSGd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 14:06:29 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1FDE5DE4C
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 11:05:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=+zScwtX/0ywSew6B96Ie7Los4HXBqMBl4omHP7aKR20=; b=Yxg3Sck22bJIBXWdYeu1MSghNA
-        eu5QpotV/MH5f/7hKrBXUJpIGTxiLClWOW9VbqKPXP2L9QcGgdHCiF6KX3Q9Ltl/IlLBix6kVj2Do
-        ddaveWLy3aBJpacLKlA7vRbjH8rt2YsMNO0bpSwmiRHhJeIz/T3BcR5887S324WZ5E7Hzg1ASiSFc
-        3w3yhIBZ1bSMWlxCWeLrlFPU88AUSlPeu0NS9SWuQtZhcO4OvHffO/KMkRCPSvTZ59lZ5OVe1wnWv
-        QjYBCKikz8IffhdI0vnPzYD7R2rkcwDpVPTLQ8cUS+O2pfKQ/82Y9A1GbP21FRDC/B+C2bI6m6Qlp
-        kFJyhmBw==;
-Received: from [187.39.124.208] (helo=[192.168.0.110])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nWMOn-0008Ht-Mr; Mon, 21 Mar 2022 19:04:58 +0100
-Message-ID: <307799df-fddd-6c46-7dd5-323ea5628892@igalia.com>
-Date:   Mon, 21 Mar 2022 15:04:34 -0300
+        Mon, 21 Mar 2022 14:06:33 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4C015CB6D
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 11:05:07 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id z16so16185128pfh.3
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 11:05:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VSE/zjzMF4GUAODi9hUWbSKALcdRpi7FbYvoQ5n/zHE=;
+        b=fcyAfSP5auLlxa8uxnRYod/EMf7JE1qAALckx8tRF9JKQppHhU9QysjLogLKyxYU6a
+         2R0dvGNpSM3MjBR8fOWEDbotvhLJ42Pxjh1OR471p6ss5wu8DTreSiar/deSJfqS5Bz0
+         ZJrDvhsTfX+rv0DePsGh8eO9zBQS5Q1E1B9m1Dl2X5V7XOPM9zbO8xspgoNJrJraHldJ
+         0/lC1CNncq0xlOpMy1ldeuil3tJ8rYv0pzU/bwMTuDCOBr8j27BAiw2yTlVByaNLzcAH
+         MBY/ZTGVla0e3oHRwwiI3404xKCORRZ7UC0HAgiiacCLYjqVGDFCnIPNgeysH1TGdgfN
+         R6lg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VSE/zjzMF4GUAODi9hUWbSKALcdRpi7FbYvoQ5n/zHE=;
+        b=ZpfmML6g/mh2DhCejk0y/rEVZFcJMwCWNLht8b3cgNXQ2kS4nWNfxl047rhDhWVCoF
+         Z1Z69U2qoqoV5tL7l5ZnmngySCLjEfJ9CRzBoxtH1dB8CBR+JxMqixNF2luS82a1Ad/W
+         oTdKDQQNooZcJLoMYGPU45oBkvTA6rBYQnSpudzLNOSq2AVcbRolLAzPL2rnASzpKbHd
+         Vgejidnw+lgKQaknbJ75GpNOnRe+MkPaRjac1ddvssxh7+o8jYtV5PKFB3UtaLHxOvFy
+         fcBUOrSoCdRbvyQEvd4V7XaauoalCcLWvBVYuEBJPMPnkARngxnCuLh7UHjJ8Zey/uO4
+         dRgA==
+X-Gm-Message-State: AOAM531c58B38ZlBLZtKcSi4H3kikQNTRuPWMnFOLSrqwfQ1O9Oz2oT7
+        ACGe9RgBrM/jMP5bLZyCn5d89Fu1p47A/HRk+/pf
+X-Google-Smtp-Source: ABdhPJxhYv/ZbgyMx8y9NX4YnmX8FOmzPsTIfGrBazZdrmJADnDkiyJf7MEXQnfVPRrCwcTuhFqiH2ta2wyZE1ZbcL4=
+X-Received: by 2002:a63:1613:0:b0:382:2a7f:5ca1 with SMTP id
+ w19-20020a631613000000b003822a7f5ca1mr13980696pgl.151.1647885906868; Mon, 21
+ Mar 2022 11:05:06 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: Question about the Broadcom Always On register panic handling
-Content-Language: en-US
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        computersforpeace@gmail.com
-Cc:     "Guilherme G. Piccoli" <kernel@gpiccoli.net>, opendmb@gmail.com,
-        justinpopo6@gmail.com, mmayer@broadcom.com,
-        bcm-kernel-feedback-list@broadcom.com, kexec@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <6dac422b-d509-b863-0b31-98a07808ac0d@igalia.com>
- <781cafb0-8d06-8b56-907a-5175c2da196a@gmail.com>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <781cafb0-8d06-8b56-907a-5175c2da196a@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220316213055.2351342-1-morbo@google.com> <20220319222228.4160598-1-morbo@google.com>
+ <CAHk-=wh4B42bYZmGoY8=UsqHDuq_th2KN7TmXuTnhwyYWzQ5pg@mail.gmail.com>
+In-Reply-To: <CAHk-=wh4B42bYZmGoY8=UsqHDuq_th2KN7TmXuTnhwyYWzQ5pg@mail.gmail.com>
+From:   Bill Wendling <morbo@google.com>
+Date:   Mon, 21 Mar 2022 11:04:55 -0700
+Message-ID: <CAGG=3QWPAF4wtb93LJiv5Hz1pM+dvwM1+NNG8cr7813k-gpUTA@mail.gmail.com>
+Subject: Re: [PATCH v2] gpiolib: acpi: use correct format characters
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21/03/2022 13:32, Florian Fainelli wrote:
-> [...]
-> The AON (standing for always-on) is a small domain in the SoC that can 
-> retain its state across various system wide sleep states and specific 
-> reset conditions. The AON DATA RAM is a small ram of a few words (< 1KB) 
-> which can store persistent information across such events.
-> 
-> The purpose of this write was initially to help with indicating to the 
-> boot loader that a panic occurred and so that it should try its best to 
-> preserve the DRAM contents holding that buffer for recovery by the Linux 
-> kernel as opposed to wiping out DRAM clean again. I cannot go into the 
-> mechanics of what happens publicly unfortunately.
-> 
+On Sat, Mar 19, 2022 at 3:55 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> So I think that clang warning is only annoying, not helpful, but:
+>
+> On Sat, Mar 19, 2022 at 3:22 PM Bill Wendling <morbo@google.com> wrote:
+> >
+> > diff --git a/drivers/gpio/gpiolib-acpi.c b/drivers/gpio/gpiolib-acpi.c
+> > index a5495ad31c9c..92dd9b8784f2 100644
+> > --- a/drivers/gpio/gpiolib-acpi.c
+> > +++ b/drivers/gpio/gpiolib-acpi.c
+> > @@ -388,9 +388,9 @@ static acpi_status acpi_gpiochip_alloc_event(struct acpi_resource *ares,
+> >
+> >         if (pin <= 255) {
+> >                 char ev_name[5];
+> > -               sprintf(ev_name, "_%c%02hhX",
+> > +               sprintf(ev_name, "_%c%02X",
+>
+> This part I approve of.
+>
+> >                         agpio->triggering == ACPI_EDGE_SENSITIVE ? 'E' : 'L',
+> > -                       pin);
+> > +                       (unsigned char)pin);
+>
+> But this cast seems pointless and wrong.
+>
+You're right. I was trying to ensure that the patch didn't change
+behavior. But the cast achieves nothing. Thanks!
 
-Thanks a lot Florian! This is very good information, it's enough for me
-- I'd like to be sure it's not rebooting the board or something
-"extreme" like that, so in the end...it's kinda the opposite, it's
-preserving the DRAM.
+-bw
 
-
->>
->> Any information that helps me to document such panic event is very
->> welcome, and in case you have AON documentation, it'd be also pretty great!
-> 
-> Why are you asking specifically about this if I may ask? If you are a 
-> legitimate Broadcom STB customer you can reach out to our support and I 
-> am sure the question will come back for me to answer.
-
-Oh I'm not a Broadcom STB customer, I'm just working in the panic
-notifiers and was curious about this one. When I submit my series (soon)
-it's likely that there  will be a small refactor of this notifier plus a
-comment, with your great explanation.
-
-Regarding the full AON documentation, I just asked in case it's public
-and I couldn't find - it's unfortunate that a lot of code in the kernel
-is based on closed specifications, but I understand we can't do much
-about that. Your response was very useful, and enough for my work =)
-
-Cheers,
-
-
-Guilherme
+> Casts in general are bad, and should be avoided unless there's a real
+> reason for them. And that reason doesn't seem to exist. We don't
+> actually want to truncate the value of 'pin', and just a few lines
+> earlier actually checked that it is in range.
+>
+> And if 'pin' can't be negative - it comes from a 'u16' table
+> dereference - but even if it could have been that would have been a
+> different bug here anyway (and should have been fixed by tightening
+> the check).
+>
+> So the cast doesn't add anything - not for humans, and not for a
+> compiler that could just optimize it away because it saw the range
+> check.
+>
+> End result: just fix the pointless 'hh' in the print specifier. It
+> doesn't add anything, and only causes problems. Anybody who uses '%02X
+> to print a byte should only use it for byte values - and the code
+> already does.
+>
+> Of course, the _reason_ for this all was a warning that was pointless
+> to begin with, and should never have existed. Clang was not smart
+> enough to take the range knowledge that it _could_ have taken into
+> account, and instead wrote out a completely bogus warning.
+>
+> It's completely bogus not just because clang didn't do a sufficiently
+> good job of range analysis - it's completely bogus because a 'varargs'
+> function DOES NOT TAKE arguments of type 'char'.
+>
+> So the *only* reason to use '%hhX' in the first place is that you
+> *want* the sprintf() to actually limit the value to a byte for you
+> (possibly because you have a signed char, know it will sign-extend to
+> 'int', and want to limit it back to 8 bits).
+>
+> If you *actually* had a 'unsigned char' to begin with, you'd be
+> completely insane to use %hhX. It's just pointless.
+>
+> So warning that '%hhX' is paired with an 'int' is all just completely
+> mindless and wrong.
+>
+>               Linus
