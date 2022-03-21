@@ -2,125 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2854C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 17:45:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 766FFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 17:49:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350372AbiCURrD (ORCPT
+        id S1350658AbiCURur (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 13:47:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50538 "EHLO
+        Mon, 21 Mar 2022 13:50:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238056AbiCURrA (ORCPT
+        with ESMTP id S238056AbiCURuo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 13:47:00 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 448CE3B039;
-        Mon, 21 Mar 2022 10:45:34 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id B8B6C1F381;
-        Mon, 21 Mar 2022 17:45:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1647884732; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=peglqrh0TeDc2F8OaZcmUkLDagjJhol7WzzofXyyxO4=;
-        b=PnmDb1Bn2lmsEUIPSG3oXSY46IqI6iAnrhkUOd3imYGHhzUBGrywA4Q9uGXh7c/svUPKw5
-        ngHuZu78cVggAJKMr47ybLtd326kLSE1NoNSHr9Gfg480gkY2G8m9HV1lQGRPPiKOrSgdz
-        U10jIZn2E3ClJ36uP4+4GnMAPYs5WBQ=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id AB410139DB;
-        Mon, 21 Mar 2022 17:45:31 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id uViIKLu5OGIeUQAAMHmgww
-        (envelope-from <mkoutny@suse.com>); Mon, 21 Mar 2022 17:45:31 +0000
-Date:   Mon, 21 Mar 2022 18:45:30 +0100
-From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-To:     "T.J. Mercier" <tjmercier@google.com>
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        Liam Mark <lmark@codeaurora.org>,
-        Laura Abbott <labbott@redhat.com>,
-        Brian Starkey <Brian.Starkey@arm.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>, kaleshsingh@google.com,
-        Kenny.Ho@amd.com, dri-devel@lists.freedesktop.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
-        cgroups@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: Re: [RFC v3 5/8] dmabuf: Add gpu cgroup charge transfer function
-Message-ID: <20220321174530.GB9640@blackbody.suse.cz>
-References: <20220309165222.2843651-1-tjmercier@google.com>
- <20220309165222.2843651-6-tjmercier@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220309165222.2843651-6-tjmercier@google.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Mon, 21 Mar 2022 13:50:44 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DE6A1CFF1
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 10:49:18 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2d7eaa730d9so130923137b3.13
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 10:49:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=EfaFOAjTPM5RAgOXYIyeEo3JBWHCWxVtr2STLBqFs7s=;
+        b=XezFlHzxJB2Eg24lT23dIi1UOjH1SC9rD0AzLHQc2tEXmBwhaht9zUDBLON/lvPCV5
+         1Fil2ITDxsCx+153W6MRIKG+umsGpiiTtrYdo/8ZyKWAo46J2d+bahS1RLgek8hSC5II
+         o2ZCDXsnbEykSiI56nnXDAlXYMojAtIhDCFEj2q5sYXVBewtjVbi/en0173Y+6ColLQj
+         tofapO3SyQtYiF7Wu9go37pUalfBIrD1sxIv9WFQsjNQflLO6iiwKmpo+YdbkTW5N/su
+         vvQ8zjGqb63uA+vmD7NDG0fG5Mq3/PH1q4r+YMCr3FBln0C55ceInba9U9VUyapfDVCh
+         xHyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=EfaFOAjTPM5RAgOXYIyeEo3JBWHCWxVtr2STLBqFs7s=;
+        b=Rhbd6i3ytYuusAKLSY8XuniBJ8rcBrU2wXA5pKFF1HdFxHfVaw99n2ltuwkd9bCYqp
+         ZW/5JmDI9d87uiBp25hJY8rkiJVxi5cIYz3grvHJSZ0OwMvn0Yt6/zF0OSArer7fezCG
+         hYvStyMiCgfjYS80lh/pVyvd7zbw/21eP9Yln30N+fsSKmNtfNxhjY5rjeEt4/l3CczN
+         uvPPjEu0ydrU6081Jt3jsGvrIcH8nHEc0ifZsQpEXlysg3eNYSMtx5eyMsRud4CQygTP
+         glUyIgkJcjnA7NJuFaAsYMLpYHCFCiMosUIBRIridAnBsvH4O46ELFHKkjIQvB0NQrjF
+         QUIA==
+X-Gm-Message-State: AOAM533j/VeQQuMEXcdzjyjn0xABy34NaTDhJmVR0JFZAuJt6W5JyDyT
+        ZNMhhnP939ITTpWLSfui69eV5UGu
+X-Google-Smtp-Source: ABdhPJzXwGBbgCHT+vdwAS30l2sFHl+TVGAD3H33rlJfbVU9f5mzjAhSlqZjPldQ38H+fdwgEfRJ+m69AQ==
+X-Received: from fawn.svl.corp.google.com ([2620:15c:2cd:202:27bd:2eea:bd8:2ea5])
+ (user=morbo job=sendgmr) by 2002:a25:2043:0:b0:633:6cee:4aee with SMTP id
+ g64-20020a252043000000b006336cee4aeemr22966645ybg.628.1647884957542; Mon, 21
+ Mar 2022 10:49:17 -0700 (PDT)
+Date:   Mon, 21 Mar 2022 10:49:12 -0700
+In-Reply-To: <20220316213118.2352683-1-morbo@google.com>
+Message-Id: <20220321174912.164113-1-morbo@google.com>
+Mime-Version: 1.0
+References: <20220316213118.2352683-1-morbo@google.com>
+X-Mailer: git-send-email 2.35.1.894.gb6a874cedc-goog
+Subject: [PATCH] soc: qcom: smem: use correct format characters
+From:   Bill Wendling <morbo@google.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Cc:     Bill Wendling <morbo@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello.
+When compiling with -Wformat, clang emits the following warnings:
 
-On Wed, Mar 09, 2022 at 04:52:15PM +0000, "T.J. Mercier" <tjmercier@google.com> wrote:
-> +int dma_buf_charge_transfer(struct dma_buf *dmabuf, struct gpucg *gpucg)
-> +{
-> +#ifdef CONFIG_CGROUP_GPU
-> +	struct gpucg *current_gpucg;
-> +	int ret = 0;
-> +
-> +	/*
-> +	 * Verify that the cgroup of the process requesting the transfer is the
-> +	 * same as the one the buffer is currently charged to.
-> +	 */
-> +	current_gpucg = gpucg_get(current);
-> +	mutex_lock(&dmabuf->lock);
-> +	if (current_gpucg != dmabuf->gpucg) {
-> +		ret = -EPERM;
-> +		goto err;
-> +	}
+drivers/soc/qcom/smem.c:847:41: warning: format specifies type 'unsigned
+short' but the argument has type 'unsigned int' [-Wformat]
+                        dev_err(smem->dev, "bad host %hu\n", remote_host);
+                                                     ~~~     ^~~~~~~~~~~
+                                                     %u
+./include/linux/dev_printk.h:144:65: note: expanded from macro 'dev_err'
+        dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
+                                                               ~~~     ^~~~~~~~~~~
+./include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
+                _p_func(dev, fmt, ##__VA_ARGS__);                       \
+                             ~~~    ^~~~~~~~~~~
+drivers/soc/qcom/smem.c:852:47: warning: format specifies type 'unsigned
+short' but the argument has type 'unsigned int' [-Wformat]
+                        dev_err(smem->dev, "duplicate host %hu\n", remote_host);
+                                                           ~~~     ^~~~~~~~~~~
+                                                           %u
+./include/linux/dev_printk.h:144:65: note: expanded from macro 'dev_err'
+        dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
+                                                               ~~~     ^~~~~~~~~~~
+./include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
+                _p_func(dev, fmt, ##__VA_ARGS__);                       \
+                             ~~~    ^~~~~~~~~~~
 
-Add a shortcut for gpucg == current_gpucg?
+The types of these arguments are unconditionally defined, so this patch
+updates the format character to the correct one and change type of
+remote_host to "u16" to match with other types.
 
-> +
-> +	ret = gpucg_try_charge(gpucg, dmabuf->gpucg_dev, dmabuf->size);
-> +	if (ret)
-> +		goto err;
-> +
-> +	dmabuf->gpucg = gpucg;
-> +
-> +	/* uncharge the buffer from the cgroup it's currently charged to. */
-> +	gpucg_uncharge(current_gpucg, dmabuf->gpucg_dev, dmabuf->size);
+Link: https://github.com/ClangBuiltLinux/linux/issues/378
+Signed-off-by: Bill Wendling <morbo@google.com>
+---
+ drivers/soc/qcom/smem.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-I think gpucg_* API would need to cater for such transfers too since
-possibly transitional breach of a limit during the transfer may
-unnecessarily fail the operation.
+diff --git a/drivers/soc/qcom/smem.c b/drivers/soc/qcom/smem.c
+index e2057d8f1eff..9dd325df5682 100644
+--- a/drivers/soc/qcom/smem.c
++++ b/drivers/soc/qcom/smem.c
+@@ -819,7 +819,7 @@ qcom_smem_enumerate_partitions(struct qcom_smem *smem, u16 local_host)
+ 	struct smem_partition_header *header;
+ 	struct smem_ptable_entry *entry;
+ 	struct smem_ptable *ptable;
+-	unsigned int remote_host;
++	u16 remote_host;
+ 	u16 host0, host1;
+ 	int i;
+ 
+@@ -844,12 +844,12 @@ qcom_smem_enumerate_partitions(struct qcom_smem *smem, u16 local_host)
+ 			continue;
+ 
+ 		if (remote_host >= SMEM_HOST_COUNT) {
+-			dev_err(smem->dev, "bad host %hu\n", remote_host);
++			dev_err(smem->dev, "bad host %u\n", remote_host);
+ 			return -EINVAL;
+ 		}
+ 
+ 		if (smem->partitions[remote_host]) {
+-			dev_err(smem->dev, "duplicate host %hu\n", remote_host);
++			dev_err(smem->dev, "duplicate host %u\n", remote_host);
+ 			return -EINVAL;
+ 		}
+ 
+-- 
+2.35.1.894.gb6a874cedc-goog
 
-My 0.02€,
-Michal
