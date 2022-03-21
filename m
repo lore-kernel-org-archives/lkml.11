@@ -2,66 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6759EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:00:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06E97C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:00:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346547AbiCULBe (ORCPT
+        id S1346564AbiCULBn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 07:01:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41978 "EHLO
+        Mon, 21 Mar 2022 07:01:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346151AbiCULBb (ORCPT
+        with ESMTP id S1346553AbiCULBi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 07:01:31 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6EED2762BD;
-        Mon, 21 Mar 2022 04:00:06 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 19C051042;
-        Mon, 21 Mar 2022 04:00:06 -0700 (PDT)
-Received: from e123427-lin.arm.com (unknown [10.57.20.152])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 43F053F766;
-        Mon, 21 Mar 2022 04:00:04 -0700 (PDT)
-From:   Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-To:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Marc Zyngier <maz@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?q?St=C3=A9phane=20Graber?= <stgraber@ubuntu.com>,
-        kernel-team@android.com, dann frazier <dann.frazier@canonical.com>,
-        Rob Herring <robh@kernel.org>,
-        Toan Le <toan@os.amperecomputing.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH v2 0/2] PCI: xgene: Restore working PCIe functionnality
-Date:   Mon, 21 Mar 2022 10:59:51 +0000
-Message-Id: <164786014095.24674.3958001452052636083.b4-ty@arm.com>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220321104843.949645-1-maz@kernel.org>
-References: <20220321104843.949645-1-maz@kernel.org>
-MIME-Version: 1.0
+        Mon, 21 Mar 2022 07:01:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB60589321;
+        Mon, 21 Mar 2022 04:00:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3280FB8124B;
+        Mon, 21 Mar 2022 11:00:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DAE19C340F3;
+        Mon, 21 Mar 2022 11:00:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647860410;
+        bh=n6qC4hmVpj4wVG8saQK+2Vx0mlcjl2MotPLnb9j2Ah4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=e9jjBk/m4GcECe2Y/ELBhccRNWRsggoHb9n/NvAs8SdSKbjwLgU4xAtBnWR7jb2Z5
+         ZsJin8g4vLzmxXAFKL1/ugRQdXiOauwKfjhdGjx/+n8P/jGcsXYpaJVdwc70GGhyXp
+         8nQ8U7w3EhsIqdaeyHA83+eAxi2qUHsGCA2O1MOPtrErBFDNs3B1F0CauGH1eLm4x4
+         PC8tPELsAwIulIaqylAHHvSsh//ZVf9He70DXExzhoXGV6SJcjjBnr8RRE8zaIDreG
+         1tkMlK20Oz4pFYkS0bN+VSHrQH+sNYpVscu6mTe44NR/qvlmry0bbfTq3qHf9rapDH
+         F02hvaR8vsjBA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C01BCEAC081;
+        Mon, 21 Mar 2022 11:00:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH V5 0/2] Fix refcount leak and NPD bugs in ax25
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164786041078.7161.8989814381753324978.git-patchwork-notify@kernel.org>
+Date:   Mon, 21 Mar 2022 11:00:10 +0000
+References: <cover.1647563511.git.duoming@zju.edu.cn>
+In-Reply-To: <cover.1647563511.git.duoming@zju.edu.cn>
+To:     Duoming Zhou <duoming@zju.edu.cn>
+Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        ralf@linux-mips.org, jreuter@yaina.de, eric.dumazet@gmail.com,
+        dan.carpenter@oracle.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 21 Mar 2022 10:48:41 +0000, Marc Zyngier wrote:
-> Since 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup") was
-> merged in the 5.5 time frame, PCIe on the venerable XGene platform has
-> been unusable: 6dce5aa59e0b broke both XGene-1 (Mustang and m400) and
-> XGene-2 (Merlin), while the addition of c7a75d07827a ("PCI: xgene: Fix
-> IB window setup") fixed XGene-2, but left the rest of the zoo
-> unusable.
+Hello:
+
+This series was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Fri, 18 Mar 2022 08:54:03 +0800 you wrote:
+> The first patch fixes refcount leak in ax25 that could cause
+> ax25-ex-connected-session-now-listening-state-bug.
+> 
+> The second patch fixes NPD bugs in ax25 timers.
+> 
+> Duoming Zhou (2):
+>   ax25: Fix refcount leaks caused by ax25_cb_del()
+>   ax25: Fix NULL pointer dereferences in ax25 timers
 > 
 > [...]
 
-Applied to pci/xgene, thanks!
+Here is the summary with links:
+  - [V5,1/2] ax25: Fix refcount leaks caused by ax25_cb_del()
+    https://git.kernel.org/netdev/net/c/9fd75b66b8f6
+  - [V6,2/2] ax25: Fix NULL pointer dereferences in ax25 timers
+    https://git.kernel.org/netdev/net/c/fc6d01ff9ef0
 
-[1/2] PCI: xgene: Revert "PCI: xgene: Use inbound resources for setup"
-      https://git.kernel.org/lpieralisi/pci/c/1874b6d7ab
-[2/2] PCI: xgene: Revert "PCI: xgene: Fix IB window setup"
-      https://git.kernel.org/lpieralisi/pci/c/825da4e9ce
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Thanks,
-Lorenzo
+
