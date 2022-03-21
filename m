@@ -2,94 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD41DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 19:18:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA5B7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 19:18:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352562AbiCUTUG (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 15:20:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36114 "EHLO
+        id S245217AbiCUTUK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 15:20:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352620AbiCUTT4 (ORCPT
+        with ESMTP id S1352678AbiCUTUD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 15:19:56 -0400
-Received: from mail-oo1-f48.google.com (mail-oo1-f48.google.com [209.85.161.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA72C1CB00;
-        Mon, 21 Mar 2022 12:18:23 -0700 (PDT)
-Received: by mail-oo1-f48.google.com with SMTP id g5-20020a4ae885000000b003240bc9b2afso20385069ooe.10;
-        Mon, 21 Mar 2022 12:18:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=zQsaTPyUZRrtGSfO6Vj1TGY8oZRoTuE+VKGytgXpzzg=;
-        b=ArfqrP/y9oMW41ohoQWgFyxLlp0YQJDQtYwixlje6FqdqSX7xsXFpyQ3Y8fFrzTq+8
-         G992R8z93KzTzdc0geJd/2AzL2Rw2NXcuIMqdLTuueSxh6hwzR3UjzoJrTVQblIorKFQ
-         tp4wqYToVKGqwr/4lDNBT8jbWRcmgM+ymcP8YnGOH8560o1s99diInjoYdhHoNuxqA5z
-         C0FVGJlkxBocvHjdZbcl9N61imorABWqC08fhAQeebc7KqFdI7EUViCShQYW+jvIqzHg
-         wy0zolfds/z+emDcW89nJytL9Ked5Tj3dnixXCcNJLgM6Qpnq4lE8mAy2DrwnS2XQ2VO
-         CHHg==
-X-Gm-Message-State: AOAM532TsoJGio3TXYkpYJBuj+YuYFn5exyKxYwAPTPvXDYM5p5sheFB
-        tTneqD8M69rG8v585laoNQ==
-X-Google-Smtp-Source: ABdhPJzHrejqYtTO7cVO+lZa5TGwJfswtpENqFTFNjyk0JeJ7ytAcURFYCvK/4bCrBstINdyYiBs7Q==
-X-Received: by 2002:a05:6870:d207:b0:de:1872:fe43 with SMTP id g7-20020a056870d20700b000de1872fe43mr271409oac.242.1647890303057;
-        Mon, 21 Mar 2022 12:18:23 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id 15-20020aca110f000000b002da58c4ec52sm7835920oir.6.2022.03.21.12.18.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 12:18:21 -0700 (PDT)
-Received: (nullmailer pid 394706 invoked by uid 1000);
-        Mon, 21 Mar 2022 19:18:20 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-clk@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-        devicetree@vger.kernel.org,
-        Michael Turquette <mturquette@baylibre.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>
-In-Reply-To: <20220321153855.12082-19-ansuelsmth@gmail.com>
-References: <20220321153855.12082-1-ansuelsmth@gmail.com> <20220321153855.12082-19-ansuelsmth@gmail.com>
-Subject: Re: [PATCH v5 18/18] dt-bindings: arm: msm: Convert kpss-gcc driver Documentation to yaml
-Date:   Mon, 21 Mar 2022 14:18:20 -0500
-Message-Id: <1647890300.369438.394705.nullmailer@robh.at.kernel.org>
+        Mon, 21 Mar 2022 15:20:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 495932FFF7
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 12:18:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 72D1BB819BF
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 19:18:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 19707C36AE2;
+        Mon, 21 Mar 2022 19:18:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647890314;
+        bh=xxUCaEjmFMEt92IZfn6D4i9W0XKUuLSHve8L6v4vR4o=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=rvSmttoLBoT0EReA5ekxlrk5wMvlNvdFfqjrRhGMoyprigNg1c4qaSigTh9IR+30n
+         pGh3IfSX5d7MjzUiWpVTifODWbN12/F3wuw9toptt0T6C7eEAa/nluQUcqYYpfR5rd
+         8MN738i4ite0nOW7rZrzx+piYjtjXl3VilcSr/fPFvl9bEbXpLOmJaKg/suhBRBVEP
+         OiUNiQn8NgCgnEv4oNgyoTG2mD75x2EhU6xF1Pixl2xGF2sHw4l8BM9piDM6ynulwo
+         pLp4TivLacKe3SB1TZGYNCObN0ipG8pj0jGrpW5cikOJXvAccc2Un11iFDH+j1Z6Y4
+         4+Sjjzj+dhnqg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 03F7BE7BB0B;
+        Mon, 21 Mar 2022 19:18:34 +0000 (UTC)
+Subject: Re: [GIT PULL] x86/misc for 5.18
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <YjhTbqc1CNwBpENY@zn.tnic>
+References: <YjhTbqc1CNwBpENY@zn.tnic>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YjhTbqc1CNwBpENY@zn.tnic>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_misc_for_v5.18_rc1
+X-PR-Tracked-Commit-Id: 686016f732420f88dd2e1d67cf4bb5dffdb93c82
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 22687350452c80c8e8d2c62d05c1511902c27f42
+Message-Id: <164789031400.24158.2732889387052203689.pr-tracker-bot@kernel.org>
+Date:   Mon, 21 Mar 2022 19:18:34 +0000
+To:     Borislav Petkov <bp@suse.de>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 21 Mar 2022 16:38:55 +0100, Ansuel Smith wrote:
-> Convert kpss-gcc driver Documentation to yaml. Since kpss-gcc expose a
-> clock add the required '#clock-cells' binding while converting it.
-> 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> ---
->  .../bindings/arm/msm/qcom,kpss-gcc.txt        | 44 ------------
->  .../bindings/arm/msm/qcom,kpss-gcc.yaml       | 68 +++++++++++++++++++
->  2 files changed, 68 insertions(+), 44 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
->  create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
-> 
+The pull request you sent on Mon, 21 Mar 2022 11:29:02 +0100:
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_misc_for_v5.18_rc1
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/22687350452c80c8e8d2c62d05c1511902c27f42
 
-Full log is available here: https://patchwork.ozlabs.org/patch/1607841
+Thank you!
 
-
-clock-controller@2011000: '#clock-cells' is a required property
-	arch/arm/boot/dts/qcom-ipq8064-ap148.dt.yaml
-	arch/arm/boot/dts/qcom-ipq8064-rb3011.dt.yaml
-
-clock-controller@2011000: compatible:0: 'qcom,kpss-gcc' is not one of ['qcom,kpss-gcc-ipq8064', 'qcom,kpss-gcc-apq8064', 'qcom,kpss-gcc-msm8974', 'qcom,kpss-gcc-msm8960']
-	arch/arm/boot/dts/qcom-ipq8064-ap148.dt.yaml
-	arch/arm/boot/dts/qcom-ipq8064-rb3011.dt.yaml
-
-clock-controller@2011000: compatible:1: 'qcom,kpss-gcc' was expected
-	arch/arm/boot/dts/qcom-ipq8064-ap148.dt.yaml
-	arch/arm/boot/dts/qcom-ipq8064-rb3011.dt.yaml
-
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
