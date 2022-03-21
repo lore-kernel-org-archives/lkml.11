@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CFF4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:46:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07E2EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:46:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233436AbiCUXro (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:47:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39498 "EHLO
+        id S233527AbiCUXry (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:47:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233311AbiCUXqw (ORCPT
+        with ESMTP id S233364AbiCUXrB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 19:46:52 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FB3791ACD;
-        Mon, 21 Mar 2022 16:45:25 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id j13-20020a05600c1c0d00b0038c8f94aac2so461571wms.3;
-        Mon, 21 Mar 2022 16:45:25 -0700 (PDT)
+        Mon, 21 Mar 2022 19:47:01 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C05E543B;
+        Mon, 21 Mar 2022 16:45:32 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id t11so22784200wrm.5;
+        Mon, 21 Mar 2022 16:45:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=qACBw0o2MS9FzPU5J+S+Zvtw1uM7Qy8GLYaDlXl8cVc=;
-        b=iw4y1sosX82Uo7ZrwSqURxgcrLwJCvxn4uZoH3seSgje+Ees4ov9mTKU6d9ywwq5aI
-         ywxWQmy8rDQtQza0VIJkaP/n9uVWm8JNIZSRt+z25JKHsnUudVhUgGSdzvIV4nzfQMOP
-         6+dRijY7DZ4+LIhGrN6nGekLsEYXl0/Kej861IGv3SxJRvQCjKNObHlTqM0fVtkcH2kt
-         2q6DkLoEttaT6u+wE2bLgU3HbsvhbK+mCDu/SAwoR7lu3/jDgqXxJzpaFo86b/OorIgP
-         ISrptaYCONGiPSS/hebIU4MxMaHDT1iC+SHWMB6p+7oc0+4R6+lQWSnfg835+zkiqEmS
-         Y1Yg==
+        bh=KntnxEIslcAH3B4iwp3a7mNe3NHTLtligyxMWAIcv1w=;
+        b=IatH+BimJzIeGHXk5nktn42eXk06Zme6ZQ8njFt25twK2Gg1kwx1lAhHdNM3LQH7dz
+         mQFZo0e2p8BOB18UR7308LKprm543sjagjbNfVa7xolh6snNUJS7NY//vJx717tmKcAO
+         VX1AGQLLa5srzJzP1XHx6DSjsWD+wQgpIE2iX5MedLCfH9UIPb4OIpH/PLDjct87tJNi
+         o2zMbGQ6yNMMu7NHcxeAZZw7uxBp8rov8RDEIAzgsufcDCL/Vl/3M/Wpml5nkbc4D8UH
+         NJTdg9nopJj7yFAZQM/XJHrnGno4rxyv8e89hbblshqp4ETX1p7Fs8BeFV1LfMEliGEe
+         c13A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qACBw0o2MS9FzPU5J+S+Zvtw1uM7Qy8GLYaDlXl8cVc=;
-        b=eCDoosUc3642FZdFyiNABzcgqLLh3F21xTRyTTQ2pCESyRYzanWXUSU+picVG8uVhG
-         FQAze3IY5vuCC/R50KMMBrEI0GxoXZIWreuKqz+rrDfwcdbTN8I1DF5nyzwMT1rv6lVD
-         qHQvS3yHMEjSlRM03A1CKtJftyKjRXFugLFVaFU3DMuPjKKgR4FcOHMRsBwmVux3y15J
-         /5MD8aRoepgyBXvlwfgDZB4e5sotaPe0qkshUuHHimxsT+tB2ezqMk9C153y4gTYhX89
-         PzRm4lrS23e1W/foGzP302g5LzZ2imsCX+rNT48gVosdp8XgHYTFT+Kh3QbT2HFd9HJ+
-         PBBg==
-X-Gm-Message-State: AOAM530TZZRcmvHF5JAxMOlsqs4CRRtVdeqmUjITe9F04mWPRBSJY3q6
-        Bp2+TcjK/S4z5k1AW5A4gRg1iXtPdIM=
-X-Google-Smtp-Source: ABdhPJyc6HIlSVB3CoyWYcnXdbT1/VUCA3ga7IMCIxjAuQXe/ByImscn1BxBBGeNjhxgth3dsqjwqQ==
-X-Received: by 2002:a05:600c:2146:b0:38c:ab68:1919 with SMTP id v6-20020a05600c214600b0038cab681919mr1273044wml.52.1647906323799;
-        Mon, 21 Mar 2022 16:45:23 -0700 (PDT)
+        bh=KntnxEIslcAH3B4iwp3a7mNe3NHTLtligyxMWAIcv1w=;
+        b=qO1XKX3YsMU8G/m8SLjxv2kPcZsPl4c3cZ6yZP+Q2lWj0bxxuEr89Wpu0EOCgKx1R8
+         QgHDBNe+CnYbmmllBVaO2RUY0ta0DEDxUp0eA7Y84eEY2ehaCldKJa+wgGlJIJJHbFL3
+         0rbp4FcYN4FBpl+0DPLx5SRGLJHuvN3hnw2SLcVBaw3hYlCkZgHyE/h+RQIwv26YrhMW
+         RemD3WG9Inot7tTepTMN9nEa5ygQME48FxwIapqqNp/ucpOJT5Z2s64IhXBn4Cp2JV8a
+         tjOpIkG8Imn+tTi8Ttw/eJnYLkKXx+XtSQZebwEAO7203POf7V2sgSTDSR1DiUmt1573
+         gRRw==
+X-Gm-Message-State: AOAM530ob38ojaywrxDW1Kuu0SaDvzOwFfpNy/O++yc4/fRRikWV4YWu
+        Ag5uCGAeDqgeQ62B42cY9X4=
+X-Google-Smtp-Source: ABdhPJzh7ultj61Cwbg82x0fZ0oejvG8K5EIEbFWAc88D2M17FPNoKw/alaKDcOEFmy0+XhslbGySg==
+X-Received: by 2002:a05:6000:1883:b0:1f0:44f6:4bc0 with SMTP id a3-20020a056000188300b001f044f64bc0mr20515015wri.659.1647906331098;
+        Mon, 21 Mar 2022 16:45:31 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
-        by smtp.googlemail.com with ESMTPSA id n10-20020a5d588a000000b002052e4aaf89sm105497wrf.80.2022.03.21.16.45.22
+        by smtp.googlemail.com with ESMTPSA id n10-20020a5d588a000000b002052e4aaf89sm105497wrf.80.2022.03.21.16.45.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 16:45:23 -0700 (PDT)
+        Mon, 21 Mar 2022 16:45:30 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -57,9 +57,9 @@ To:     Rob Herring <robh+dt@kernel.org>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
-Subject: [PATCH v6 11/18] clk: qcom: krait-cc: force sec_mux to QSB
-Date:   Tue, 22 Mar 2022 00:15:41 +0100
-Message-Id: <20220321231548.14276-12-ansuelsmth@gmail.com>
+Subject: [PATCH v6 18/18] ARM: dts: qcom: qcom-ipq8064: add missing krait-cc compatible and clocks
+Date:   Tue, 22 Mar 2022 00:15:48 +0100
+Message-Id: <20220321231548.14276-19-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220321231548.14276-1-ansuelsmth@gmail.com>
 References: <20220321231548.14276-1-ansuelsmth@gmail.com>
@@ -69,62 +69,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that we have converted every driver to parent_data, it was
-notice that the bootloader can't really leave the system in a
-strange state where l2 or the cpu0/1 can be sourced in a number of ways
-for example cpu1 sourcing out of qsb, l2 sourcing out of pxo.
-To correctly reset the mux and the HFPLL force the sec_mux to QSB.
+Add missing krait-cc clock-controller and define missing aux clock for
+CPUs. Also change phandle for l2cc node to point to pxo_board instead
+of gcc PXO_SRC. This should align ipq8064 dtsi to the new changes in
+the Documentation.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/clk/qcom/krait-cc.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/qcom-ipq8064.dtsi | 24 ++++++++++++++++++++++--
+ 1 file changed, 22 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clk/qcom/krait-cc.c b/drivers/clk/qcom/krait-cc.c
-index 5f98ee1c3681..299eb4c81d96 100644
---- a/drivers/clk/qcom/krait-cc.c
-+++ b/drivers/clk/qcom/krait-cc.c
-@@ -15,6 +15,8 @@
+diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+index 996f4458d9fc..cebb5561f5d1 100644
+--- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
++++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+@@ -468,11 +468,19 @@ IRQ_TYPE_EDGE_RISING)>,
+ 		acc0: clock-controller@2088000 {
+ 			compatible = "qcom,kpss-acc-v1";
+ 			reg = <0x02088000 0x1000>, <0x02008000 0x1000>;
++			clock-output-names = "acpu0_aux";
++			clocks = <&gcc PLL8_VOTE>, <&pxo_board>;
++			clock-names = "pll8_vote", "pxo";
++			#clock-cells = <0>;
+ 		};
  
- #include "clk-krait.h"
+ 		acc1: clock-controller@2098000 {
+ 			compatible = "qcom,kpss-acc-v1";
+ 			reg = <0x02098000 0x1000>, <0x02008000 0x1000>;
++			clock-output-names = "acpu1_aux";
++			clocks = <&gcc PLL8_VOTE>, <&pxo_board>;
++			clock-names = "pll8_vote", "pxo";
++			#clock-cells = <0>;
+ 		};
  
-+#define QSB_RATE	1
+ 		adm_dma: dma-controller@18300000 {
+@@ -780,11 +788,23 @@ tcsr: syscon@1a400000 {
+ 		};
+ 
+ 		l2cc: clock-controller@2011000 {
+-			compatible = "qcom,kpss-gcc", "syscon";
++			compatible = "qcom,kpss-gcc-ipq8064", "qcom,kpss-gcc", "syscon";
+ 			reg = <0x2011000 0x1000>;
+-			clocks = <&gcc PLL8_VOTE>, <&gcc PXO_SRC>;
++			clocks = <&gcc PLL8_VOTE>, <&pxo_board>;
+ 			clock-names = "pll8_vote", "pxo";
+ 			clock-output-names = "acpu_l2_aux";
++			#clock-cells = <0>;
++		};
 +
- static unsigned int sec_mux_map[] = {
- 	2,
- 	0,
-@@ -181,6 +183,13 @@ krait_add_sec_mux(struct device *dev, struct clk *qsb, int id,
- 	if (ret)
- 		clk = ERR_PTR(ret);
++		kraitcc: clock-controller {
++			compatible = "qcom,krait-cc-v1";
++			clocks = <&gcc PLL9>, <&gcc PLL10>,
++				 <&acc0>, <&acc1>, <&qsb>,
++				 <&gcc PLL12>, <&l2cc>;
++			clock-names = "hfpll0", "hfpll1",
++				      "acpu0_aux", "acpu1_aux", "qsb",
++				      "hfpll_l2", "acpu_l2_aux";
++			#clock-cells = <1>;
+ 		};
  
-+	/*
-+	 * Force the sec_mux to be set to QSB rate.
-+	 * This is needed to correctly set the parents and
-+	 * to later reset mux and HFPLL to a known freq.
-+	 */
-+	clk_set_rate(clk, QSB_RATE);
-+
- err_clk:
- 	if (unique_aux)
- 		kfree(parent_name);
-@@ -378,7 +387,7 @@ static int krait_cc_probe(struct platform_device *pdev)
- 	 */
- 	cur_rate = clk_get_rate(l2_pri_mux_clk);
- 	aux_rate = 384000000;
--	if (cur_rate == 1) {
-+	if (cur_rate == QSB_RATE) {
- 		dev_info(dev, "L2 @ QSB rate. Forcing new rate.\n");
- 		cur_rate = aux_rate;
- 	}
-@@ -389,7 +398,7 @@ static int krait_cc_probe(struct platform_device *pdev)
- 	for_each_possible_cpu(cpu) {
- 		clk = clks[cpu];
- 		cur_rate = clk_get_rate(clk);
--		if (cur_rate == 1) {
-+		if (cur_rate == QSB_RATE) {
- 			dev_info(dev, "CPU%d @ QSB rate. Forcing new rate.\n", cpu);
- 			cur_rate = aux_rate;
- 		}
+ 		lcc: clock-controller@28000000 {
 -- 
 2.34.1
 
