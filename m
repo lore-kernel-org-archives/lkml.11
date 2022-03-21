@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09F32C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:13:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A784BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:13:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350952AbiCUQPL (ORCPT
+        id S1347296AbiCUQPT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 12:15:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50392 "EHLO
+        Mon, 21 Mar 2022 12:15:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350873AbiCUQOD (ORCPT
+        with ESMTP id S1350888AbiCUQOG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 12:14:03 -0400
+        Mon, 21 Mar 2022 12:14:06 -0400
 Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1558968FA0
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:12:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F327A74DD6
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:12:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
         from:to:cc:subject:date:message-id:in-reply-to:references
-        :mime-version:content-transfer-encoding; s=k1; bh=7PuDj/QvUlUETX
-        QKpnDRaKbIKjsepWpqguWN/JmA+9c=; b=v38BD8DOtXp5s4tRiDWeEbm0XfBKrl
-        UBSa7ZUb1i+/7TZnvziBhbaqcjdwTk7UQnzPKWnKnCBjP967vEKBVLpXy1GPLdRW
-        1rftaHJQd+RJguZBa+To+xGqyInOxYno0fJgE7VPzaWCIHBZS6nb5zmXHGX83tjD
-        ozRfxZ8ty87dw=
-Received: (qmail 957937 invoked from network); 21 Mar 2022 17:12:34 +0100
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 21 Mar 2022 17:12:34 +0100
-X-UD-Smtp-Session: l3s3148p1@kQeYw7zaLtkgAwDPXxCoAIeNYiWy88zT
+        :mime-version:content-transfer-encoding; s=k1; bh=jEz2JWGFyUlDzW
+        pfIqps0dXpIbCRQKaLSS5PMn2F+2E=; b=FLZH/45CYwgJsS+RdBouMD3gfVgMPJ
+        FazvroCNq3fvPRCocLvcZLkK0ABFtem4TUW8wqUyGBi4CI71tWVOycgHO8uypnEC
+        nKEBP9YHMf9DnudZXgKtNsedhRs9jww2Nurv+61T70dmoD7ajPfJaRGVLLqtsIMi
+        wwY+iI6i4fw3o=
+Received: (qmail 958078 invoked from network); 21 Mar 2022 17:12:36 +0100
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 21 Mar 2022 17:12:36 +0100
+X-UD-Smtp-Session: l3s3148p1@u9y4w7zaONkgAwDPXxCoAIeNYiWy88zT
 From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     linux-renesas-soc@vger.kernel.org,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Wolfram Sang <wsa+renesas@sang-engineering.com>
-Subject: [RFC PATCH 11/15] net: wireless: realtek: rtw88: use new name 'usleep_autoyield' instead of 'fsleep'
-Date:   Mon, 21 Mar 2022 17:12:19 +0100
-Message-Id: <20220321161223.2837-12-wsa+renesas@sang-engineering.com>
+Subject: [RFC PATCH 15/15] delay: remove the fallback for fsleep
+Date:   Mon, 21 Mar 2022 17:12:23 +0100
+Message-Id: <20220321161223.2837-16-wsa+renesas@sang-engineering.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220321161223.2837-1-wsa+renesas@sang-engineering.com>
 References: <20220321161223.2837-1-wsa+renesas@sang-engineering.com>
@@ -43,53 +43,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function was just renamed to be easier understandable. No functional
-change.
+All users are converted to usleep_autoyield now.
 
 Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 ---
 RFC, please do not apply yet
 
- drivers/net/wireless/realtek/rtw88/rtw8822c.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ include/linux/delay.h | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822c.c b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
-index 35c46e5209de..01e934c7b97f 100644
---- a/drivers/net/wireless/realtek/rtw88/rtw8822c.c
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
-@@ -1476,12 +1476,12 @@ static void rtw8822c_txgapk_read_offset(struct rtw_dev *rtwdev, u8 path)
- 	rtw_write32_mask(rtwdev, REG_IQKSTAT, MASKBYTE0, 0x0);
- 
- 	rtw_write32_mask(rtwdev, REG_TX_TONE_IDX, MASKBYTE0, 0x018);
--	fsleep(1000);
-+	usleep_autoyield(1000);
- 	if (channel >= 1 && channel <= 14)
- 		rtw_write32_mask(rtwdev, REG_R_CONFIG, MASKBYTE0, BIT_2G_SWING);
- 	else
- 		rtw_write32_mask(rtwdev, REG_R_CONFIG, MASKBYTE0, BIT_5G_SWING);
--	fsleep(1000);
-+	usleep_autoyield(1000);
- 
- 	rtw_write32_mask(rtwdev, REG_NCTL0, MASKDWORD, cfg1_1b00[path]);
- 	rtw_write32_mask(rtwdev, REG_NCTL0, MASKDWORD, cfg2_1b00[path]);
-@@ -2905,7 +2905,7 @@ static void rtw8822c_do_lck(struct rtw_dev *rtwdev)
- 
- 	rtw_write_rf(rtwdev, RF_PATH_A, RF_SYN_CTRL, RFREG_MASK, 0x80010);
- 	rtw_write_rf(rtwdev, RF_PATH_A, RF_SYN_PFD, RFREG_MASK, 0x1F0FA);
--	fsleep(1);
-+	usleep_autoyield(1);
- 	rtw_write_rf(rtwdev, RF_PATH_A, RF_AAC_CTRL, RFREG_MASK, 0x80000);
- 	rtw_write_rf(rtwdev, RF_PATH_A, RF_SYN_AAC, RFREG_MASK, 0x80001);
- 	read_poll_timeout(rtw_read_rf, val, val != 0x1, 1000, 100000,
-@@ -2915,7 +2915,7 @@ static void rtw8822c_do_lck(struct rtw_dev *rtwdev)
- 
- 	rtw_write_rf(rtwdev, RF_PATH_A, RF_FAST_LCK, RFREG_MASK, 0x0f000);
- 	rtw_write_rf(rtwdev, RF_PATH_A, RF_FAST_LCK, RFREG_MASK, 0x4f000);
--	fsleep(1);
-+	usleep_autoyield(1);
- 	rtw_write_rf(rtwdev, RF_PATH_A, RF_FAST_LCK, RFREG_MASK, 0x0f000);
+diff --git a/include/linux/delay.h b/include/linux/delay.h
+index d0919f52fec8..f1bf8d4103c0 100644
+--- a/include/linux/delay.h
++++ b/include/linux/delay.h
+@@ -88,6 +88,4 @@ static inline void usleep_autoyield(unsigned long usecs)
+ 		msleep(DIV_ROUND_UP(usecs, 1000));
  }
  
+-#define fsleep usleep_autoyield
+-
+ #endif /* defined(_LINUX_DELAY_H) */
 -- 
 2.34.1
 
