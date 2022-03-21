@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A27D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:45:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 414BFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:45:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233416AbiCUXrU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:47:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39488 "EHLO
+        id S233374AbiCUXrX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:47:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233231AbiCUXqu (ORCPT
+        with ESMTP id S233288AbiCUXqu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 19:46:50 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ED829155C;
-        Mon, 21 Mar 2022 16:45:21 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id v22so8847821wra.2;
-        Mon, 21 Mar 2022 16:45:21 -0700 (PDT)
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44F81985B7;
+        Mon, 21 Mar 2022 16:45:23 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id t11so22783856wrm.5;
+        Mon, 21 Mar 2022 16:45:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=uKLqUE0HqMblkYxTDEoLkraH8fYkNKsZ80vlgdu8msQ=;
-        b=PSd5RElnYKdfT7JJ4xRmSZsf3s4ZZ2M6RghbeBlNBFjRzifBRgCWiDV7DrMIm4b7eX
-         +s+QJOlASeV7W5CEHDrrK18BOw/rSPYOQpWO2ewmXSnwQzVb0XlkJttSS62WbzINMXjH
-         fM2MYijB/38Dk4gB5R1MXNPmTK1c0Bg1V4ge4p1dZQtgEqQPV1BI4CicnnJfC3yJkPtZ
-         IXQL1Mz/4H+QwCEhMSAOb2RQ3OOokFFBNsGeiOOt7Uh1lOPR5hu/V5R4pdhJHi1szrd3
-         hkIxMzx7ihaKt3cI6rHaVeorrGgc9w4z3sHmRS2vykSBNMoSvlq2kIut1PDcHDSjkZeX
-         X90w==
+        bh=YuacHx0JsXxYcT0I9GUMkZ9rOmfUJZlRqGllxjL2g6w=;
+        b=osru7FFXR43epZK4c2QW3QaucXPFQ5eFB9J8cxEdjKErs+bVgDMp0luFxr5I0JIatT
+         iu2Kj9az+J1MOvAcCa2CGyNdqU0ypWaIaFkMdHfqwbX/ZM9HqFfczrsABoU4auCCHAc0
+         mwEekFfczOFFtOqG2fr+Zd1yVNAscjL0l8LeQO5dRVi2Uf+NtXDBsyB6N7Z31tX/hN0R
+         SEQgP602r2zum/PW9geCPsbsorc72/oWJqVIgwZ0GIJZoUMq3YgiAcovOmU8wf/q14j9
+         QQYUon7eDtebGhgpCqQhOkbzjQCYPKkS//TepvZm+FfO0sriwbhG6ldaQHGDnH9yLikB
+         i72Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=uKLqUE0HqMblkYxTDEoLkraH8fYkNKsZ80vlgdu8msQ=;
-        b=gw1Xt8clpNeyB2ei15HtJDmI/8E8OvUjuUIVPnwc9FEL/GW0Q6smSqjzuTdtmH0bMY
-         gJKc3YHOTKSVSGjPWXvTD45CfcE3lg1hvjGzSM/XpsUfwkPFqmzGgXBB7+uGafbFLm4S
-         +TnhF75TRmBhVSU/u73wVeujez7CV9J4SqgpRp90gdAlV7kVJA6JJIF7hF8JXFIQ3x30
-         bkGKqjPsRr65NO14/NdrtcHEYs+9xuOoNURQsS1B6f69mPc2J2ja7uEfUvPJm9jSh8V9
-         jiPMw1gUHGrMhUX6ysYI41n3+c/M+h22LS7+8LJeRCAhE8NjuWxnWb6CaoCxmSyJ1zjl
-         JcSQ==
-X-Gm-Message-State: AOAM531nGAMN+0N/D0oaBLQhuK0b71cDMoApsT9uIQNUB7Ry6PUTgF6b
-        W0uA0pJpCgFi0BTXa1DJq7L6QrUQPz4=
-X-Google-Smtp-Source: ABdhPJygX3L7achtlpOONDVhOVZGbv6VOE93/ieKdwpP8aYhxet/ApXPkN9SKzQ40eRhSJNKomj63Q==
-X-Received: by 2002:adf:9581:0:b0:1ed:c341:4ed1 with SMTP id p1-20020adf9581000000b001edc3414ed1mr19797135wrp.299.1647906319637;
-        Mon, 21 Mar 2022 16:45:19 -0700 (PDT)
+        bh=YuacHx0JsXxYcT0I9GUMkZ9rOmfUJZlRqGllxjL2g6w=;
+        b=FFVPOfQZxTJnbuIoKlv9jPo/9hNoyWmRnKXZiV0EwBlrZrPVmj6AV8dVVrQ3uF79/h
+         K1RCBE/Yo5fhlDCgYxPSAJhj9Az8zGGkaylpI+eAJ+JT9vs9HAKz1V3j0klPRqiwh0Rd
+         AwTXWjGOLImyRE53+2g1j3mVB8jHUXymJPuH/SonJ9JvyXFdx/IyYzLYoA6NqyPKt7Ck
+         4qc+hL7pBmVOOPCrpyrCoFGgNpGeZScT9+P5iB8FrZ6GXgwVkfoBg5TMfRAKGDzFTGyM
+         iDMu5w6B+zXmUZsKMuloM7jQ6VKvwJTJLqWgne+3lTNabIzSaFzHvxQa08/njeZyMhqB
+         hh0A==
+X-Gm-Message-State: AOAM532RRh8R/uACuMj8/PjfCsLOGUDceJUaV3s7DDKaUftdI/YaYzww
+        hB/SPFznTerPC8xUqEJaI2c=
+X-Google-Smtp-Source: ABdhPJzHFtbV2R4F7mL5thcV/AiiTdas9T7vnBA0wMMKaPyuA22iynkUSHyS5hd1YA8o28g2wJR+Pw==
+X-Received: by 2002:a05:6000:1ac7:b0:1f1:f9ee:7c57 with SMTP id i7-20020a0560001ac700b001f1f9ee7c57mr19420906wry.52.1647906321760;
+        Mon, 21 Mar 2022 16:45:21 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
-        by smtp.googlemail.com with ESMTPSA id n10-20020a5d588a000000b002052e4aaf89sm105497wrf.80.2022.03.21.16.45.18
+        by smtp.googlemail.com with ESMTPSA id n10-20020a5d588a000000b002052e4aaf89sm105497wrf.80.2022.03.21.16.45.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 16:45:19 -0700 (PDT)
+        Mon, 21 Mar 2022 16:45:21 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -57,9 +57,9 @@ To:     Rob Herring <robh+dt@kernel.org>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
-Subject: [PATCH v6 07/18] clk: qcom: clk-krait: add hw_parent check for div2_round_rate
-Date:   Tue, 22 Mar 2022 00:15:37 +0100
-Message-Id: <20220321231548.14276-8-ansuelsmth@gmail.com>
+Subject: [PATCH v6 09/18] clk: qcom: krait-cc: drop pr_info and register qsb only if needed
+Date:   Tue, 22 Mar 2022 00:15:39 +0100
+Message-Id: <20220321231548.14276-10-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220321231548.14276-1-ansuelsmth@gmail.com>
 References: <20220321231548.14276-1-ansuelsmth@gmail.com>
@@ -69,32 +69,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Check if hw_parent is present before calculating the round_rate to
-prevent kernel panic. On error -EINVAL is reported.
+Replace pr_info() with dev_info() to provide better diagnostics.
+Register qsb fixed clk only if it's not declared in DTS.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/clk/qcom/clk-krait.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/clk/qcom/krait-cc.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/clk/qcom/clk-krait.c b/drivers/clk/qcom/clk-krait.c
-index e447fcc3806d..b6b7650dbf15 100644
---- a/drivers/clk/qcom/clk-krait.c
-+++ b/drivers/clk/qcom/clk-krait.c
-@@ -80,7 +80,12 @@ EXPORT_SYMBOL_GPL(krait_mux_clk_ops);
- static long krait_div2_round_rate(struct clk_hw *hw, unsigned long rate,
- 				  unsigned long *parent_rate)
- {
--	*parent_rate = clk_hw_round_rate(clk_hw_get_parent(hw), rate * 2);
-+	struct clk_hw *hw_parent = clk_hw_get_parent(hw);
-+
-+	if (!hw_parent)
-+		return -EINVAL;
-+
-+	*parent_rate = clk_hw_round_rate(hw_parent, rate * 2);
- 	return DIV_ROUND_UP(*parent_rate, 2);
- }
+diff --git a/drivers/clk/qcom/krait-cc.c b/drivers/clk/qcom/krait-cc.c
+index 645ad9e8dd73..e9508e3104ea 100644
+--- a/drivers/clk/qcom/krait-cc.c
++++ b/drivers/clk/qcom/krait-cc.c
+@@ -308,7 +308,9 @@ static int krait_cc_probe(struct platform_device *pdev)
+ 		return -ENODEV;
  
+ 	/* Rate is 1 because 0 causes problems for __clk_mux_determine_rate */
+-	clk = clk_register_fixed_rate(dev, "qsb", NULL, 0, 1);
++	if (IS_ERR(clk_get(dev, "qsb")))
++		clk = clk_register_fixed_rate(dev, "qsb", NULL, 0, 1);
++
+ 	if (IS_ERR(clk))
+ 		return PTR_ERR(clk);
+ 
+@@ -363,25 +365,25 @@ static int krait_cc_probe(struct platform_device *pdev)
+ 	cur_rate = clk_get_rate(l2_pri_mux_clk);
+ 	aux_rate = 384000000;
+ 	if (cur_rate == 1) {
+-		pr_info("L2 @ QSB rate. Forcing new rate.\n");
++		dev_info(dev, "L2 @ QSB rate. Forcing new rate.\n");
+ 		cur_rate = aux_rate;
+ 	}
+ 	clk_set_rate(l2_pri_mux_clk, aux_rate);
+ 	clk_set_rate(l2_pri_mux_clk, 2);
+ 	clk_set_rate(l2_pri_mux_clk, cur_rate);
+-	pr_info("L2 @ %lu KHz\n", clk_get_rate(l2_pri_mux_clk) / 1000);
++	dev_info(dev, "L2 @ %lu KHz\n", clk_get_rate(l2_pri_mux_clk) / 1000);
+ 	for_each_possible_cpu(cpu) {
+ 		clk = clks[cpu];
+ 		cur_rate = clk_get_rate(clk);
+ 		if (cur_rate == 1) {
+-			pr_info("CPU%d @ QSB rate. Forcing new rate.\n", cpu);
++			dev_info(dev, "CPU%d @ QSB rate. Forcing new rate.\n", cpu);
+ 			cur_rate = aux_rate;
+ 		}
+ 
+ 		clk_set_rate(clk, aux_rate);
+ 		clk_set_rate(clk, 2);
+ 		clk_set_rate(clk, cur_rate);
+-		pr_info("CPU%d @ %lu KHz\n", cpu, clk_get_rate(clk) / 1000);
++		dev_info(dev, "CPU%d @ %lu KHz\n", cpu, clk_get_rate(clk) / 1000);
+ 	}
+ 
+ 	of_clk_add_provider(dev->of_node, krait_of_get, clks);
 -- 
 2.34.1
 
