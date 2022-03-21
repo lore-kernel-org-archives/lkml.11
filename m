@@ -2,112 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E4D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:33:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E79BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:34:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349412AbiCUOfW (ORCPT
+        id S1349375AbiCUOfl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:35:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46118 "EHLO
+        Mon, 21 Mar 2022 10:35:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349857AbiCUOdL (ORCPT
+        with ESMTP id S1349466AbiCUOfB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:33:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5EC8B99
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 07:30:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 550E560AF7
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 14:30:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40E53C340E8;
-        Mon, 21 Mar 2022 14:30:37 +0000 (UTC)
-Date:   Mon, 21 Mar 2022 10:30:35 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>
-Subject: [GIT PULL] tracing/rtla: Updates to the RTLA tool
-Message-ID: <20220321103035.564a1df5@gandalf.local.home>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Mon, 21 Mar 2022 10:35:01 -0400
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3EA62AC1
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 07:33:22 -0700 (PDT)
+Received: by mail-qv1-xf2a.google.com with SMTP id ke15so2623858qvb.11
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 07:33:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=us46s+4EPzPx/x4i+BKRoQL7SxJrfbc5izH2Jmo2exM=;
+        b=DIuqnBQJ+D8uHwQ7rRY5uyiULjBVtGxEIduobDz0t0FBX5mpZcJsO2XEa7VcfdYkTV
+         Id4JSNKheF4QVSr29xg2y4dpXKa+mNZ2kUnP5A3CPEDMxNUr4EWymy9l4Vn/3RxTAMbI
+         5lTmrOiCAUkcw9k+dUBjP1pCVh5tgyhxuqknjM25vCB2aVtaav/IDcqyxrW7OWFOMHT8
+         bYMlSIU0PtnhAcyoLIXRIBv0xnx6zpiWOJNkCu5n+1hFtDdOBF6/ex9VAFmP3vHQTLif
+         pbOlH6lxjYZilIi5w3jrbWEPu0N5CQvdlTVbazta9mjupWBYWjNxrn9mm96PMVaICDk7
+         iucA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=us46s+4EPzPx/x4i+BKRoQL7SxJrfbc5izH2Jmo2exM=;
+        b=N4kdCFRvzXOTohIA5CsMbP5Ux2waNLs3kbGnb+0Wo9/l9dgBSRElyfa9bI/Gcf6jWf
+         +zlMXaoqagMl7pliTEqy9Mewpj9ICZjfsREsQ6eJj3LDxj4RcqzERLP+l5xHACoGGvvP
+         ERtxu9/Yv0NordNPUQdM/mhLUcaUCTIPHa7aYjDqbxRhYPiPC4/7xGRk4fshIO20FOek
+         jwuEO24jhoIDZPNqO5tVu0luy97xiVBoAK7KsYR2LSr4Jdp2HgtxCOulSY77q4lwFyGV
+         ASnE5nr07DjCfyj6CL0NLwLpf5WCU50MHPGuAhevpHekd91aGeipIX4PtjoVfv+QsDdu
+         UjZQ==
+X-Gm-Message-State: AOAM5329Ci9zkQQQZejNh0i9TEIKkWBjO8pDmMflftSDkpPuVmxOBQ3W
+        DjnEsUis6v0we0FsNqDgPFdd/hAD1ZF2+g==
+X-Google-Smtp-Source: ABdhPJzuIjrelcElq9DwcPDy1CDAqt1nawinhreHQoL5wDrjqG6A6BI3rtIwaguRYBMUW2VDRm2ACA==
+X-Received: by 2002:ad4:5f8e:0:b0:441:3dbf:15d5 with SMTP id jp14-20020ad45f8e000000b004413dbf15d5mr801181qvb.108.1647873202008;
+        Mon, 21 Mar 2022 07:33:22 -0700 (PDT)
+Received: from localhost (cpe-98-15-154-102.hvc.res.rr.com. [98.15.154.102])
+        by smtp.gmail.com with ESMTPSA id j11-20020a05622a038b00b002e1f0bc2e8csm9636047qtx.81.2022.03.21.07.33.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 07:33:21 -0700 (PDT)
+Date:   Mon, 21 Mar 2022 10:33:20 -0400
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     cgel.zte@gmail.com
+Cc:     axboe@kernel.dk, viro@zeniv.linux.org.uk,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, akpm@linux-foundation.org,
+        Yang Yang <yang.yang29@zte.com.cn>,
+        Ran Xiaokai <ran.xiaokai@zte.com.cn>
+Subject: Re: [PATCH] block/psi: make PSI annotations of submit_bio only work
+ for file pages
+Message-ID: <YjiMsGoXoDU+FwsS@cmpxchg.org>
+References: <20220316063927.2128383-1-yang.yang29@zte.com.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220316063927.2128383-1-yang.yang29@zte.com.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Mar 16, 2022 at 06:39:28AM +0000, cgel.zte@gmail.com wrote:
+> From: Yang Yang <yang.yang29@zte.com.cn>
+> 
+> psi tracks the time spent on submitting the IO of refaulting file pages
+> and anonymous pages[1]. But after we tracks refaulting anonymous pages
+> in swap_readpage[2][3], there is no need to track refaulting anonymous
+> pages in submit_bio.
+> 
+> So this patch can reduce redundant calling of psi_memstall_enter. And
+> make it easier to track refaulting file pages and anonymous pages
+> separately.
 
-Linus,
+I don't think this is an improvement.
 
-I'm sending this as a separate pull request from my normal tracing tree, as
-it had dependencies to commits in your tree but not in my development
-branch. As it only affects the tools/ directory, I kept it separate as it
-has no changes to the kernel itself.
-
-Real Time Linux Analysis Tool updates for 5.18
-
-Changes to RTLA:
-
- - Support for adjusting tracing_threashold
-
- - Add -a (auto) option to make it easier for users to debug in the field
-
- - Add -e option to add more events to the trace
-
- - Add --trigger option to add triggers to events
-
- - Add --filter option to filter events
-
- - Add support to save histograms to the file
-
- - Add --dma-latency to set /dev/cpu_dma_latency
-
- - Other fixes and cleanups
-
-Please pull the latest trace-rtla-v5.18 tree, which can be found at:
-
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git
-trace-rtla-v5.18
-
-Tag SHA1: cc921ea64d6df1bb8955ff5762dbcdc408e34264
-Head SHA1: 75016ca3acd0de79868ef5b0694195fe05288ade
-
-
-Daniel Bristot de Oliveira (15):
-      rtla/osnoise: Add support to adjust the tracing_thresh
-      rtla/osnoise: Add an option to set the threshold
-      rtla/osnoise: Add the automatic trace option
-      rtla/timerlat: Add the automatic trace option
-      rtla/trace: Add trace events helpers
-      rtla: Add -e/--event support
-      rtla/trace: Add trace event trigger helpers
-      rtla: Add --trigger support
-      rtla/trace: Add trace event filter helpers
-      rtla: Add --filter support
-      rtla/trace: Save event histogram output to a file
-      rtla: Check for trace off also in the trace instance
-      rtla/osnoise: Fix osnoise hist stop tracing message
-      rtla/timerlat: Add --dma-latency option
-      rtla: Tools main loop cleanup
-
-----
- Documentation/tools/rtla/common_options.rst        |  19 ++
- .../tools/rtla/common_osnoise_options.rst          |  10 +
- .../tools/rtla/common_timerlat_options.rst         |  12 +
- tools/tracing/rtla/src/osnoise.c                   |  83 +++++
- tools/tracing/rtla/src/osnoise.h                   |   8 +
- tools/tracing/rtla/src/osnoise_hist.c              |  95 +++++-
- tools/tracing/rtla/src/osnoise_top.c               |  91 +++++-
- tools/tracing/rtla/src/timerlat_hist.c             | 108 ++++++-
- tools/tracing/rtla/src/timerlat_top.c              | 103 +++++-
- tools/tracing/rtla/src/trace.c                     | 345 +++++++++++++++++++++
- tools/tracing/rtla/src/trace.h                     |  23 ++
- tools/tracing/rtla/src/utils.c                     |  33 ++
- tools/tracing/rtla/src/utils.h                     |   1 +
- 13 files changed, 903 insertions(+), 28 deletions(-)
----------------------------
+psi_memstall_enter() will check current->in_memstall once, detect the
+nested call, and bail. Your patch checks PageSwapBacked for every page
+being added. It's more branches for less robust code.
