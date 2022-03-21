@@ -2,94 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17F39C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:55:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19926C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:55:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231447AbiCUW5B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:57:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45668 "EHLO
+        id S231483AbiCUW5G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:57:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231455AbiCUW4A (ORCPT
+        with ESMTP id S230421AbiCUW4A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 18:56:00 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAD7044B80E;
-        Mon, 21 Mar 2022 15:34:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=XZ3oFyOSp0Vku3EvXsBQyxrGvvfq0+pDjNDfzwtDRnI=; b=lgATyuc8BDzyagsTk6S7pPJHcK
-        cAHP+N8Q5SqHFIS7Cg8rgYZK/HWBCCIB75xt36TSH0HEmeLYfac5IzauQiV3cmYUTCT0r1yY3+wne
-        bXIpPxwzFnzGIKuhiV6u84+HLGVmP7X2AQ8yuxyxomfReOQJDlh21GEoNw1FniHe+ib8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nWQbb-00C1yF-20; Mon, 21 Mar 2022 23:34:27 +0100
-Date:   Mon, 21 Mar 2022 23:34:27 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Walle <michael@walle.cc>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: Clause 45 and Clause 22 PHYs on one MDIO bus
-Message-ID: <Yjj9c/b8J50WiECf@lunn.ch>
-References: <240354b0a54b37e8b5764773711b8aa3@walle.cc>
- <cdb3d3f6ad35d4e26fd8abb23b2e96a3@walle.cc>
- <YjjhxbZgKHykJ+35@lunn.ch>
- <4d728d267e45fe591c933c86cdfff333@walle.cc>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4d728d267e45fe591c933c86cdfff333@walle.cc>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 280053AF74F;
+        Mon, 21 Mar 2022 15:37:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 59B356157B;
+        Mon, 21 Mar 2022 21:53:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C1162C36AF2;
+        Mon, 21 Mar 2022 21:53:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647899628;
+        bh=0D+2K3pDvtk5RwFQbQp2AVB6NUDbZ2a+esbXSCCsnoU=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=iKBQCLmQEu25yUNwOwFe7vWfyo6tyDD/Sdd6voAdLAL9+0ZBrSB50JixOe+YPgts+
+         jdRxs82s8K44SpHAlW+SORl2nC5h44DJfj1647sRqC+Ji29RHyDEJmkvuS3O2W92Ry
+         hVmUNjtXCjipJl1+5/qT4TgfwCk+SVqTHGHrnddpxSThRDey+6CklV0B3XydJlcRVG
+         00d2dKP8Fnb2brgicATyS08r/ut9OAe+rkOJFmQ/qB1OHibQrUmDk0nEepTq5kycZc
+         g9mYsSIJ2h+IFzwtkIHTfxy0LAlB3rTZfSIMO1Ttlnd+jxk8qDdxHW/8rwGiOV2T5m
+         0kI6YZ4cI0dTw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A9D9BE6D44B;
+        Mon, 21 Mar 2022 21:53:48 +0000 (UTC)
+Subject: Re: [GIT PULL] PNP update for v5.18-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <CAJZ5v0gAGJuDF0uZTB+_JGT_5svr1xZDJLYoxLFRGCcbEF0v+Q@mail.gmail.com>
+References: <CAJZ5v0gAGJuDF0uZTB+_JGT_5svr1xZDJLYoxLFRGCcbEF0v+Q@mail.gmail.com>
+X-PR-Tracked-List-Id: <linux-acpi.vger.kernel.org>
+X-PR-Tracked-Message-Id: <CAJZ5v0gAGJuDF0uZTB+_JGT_5svr1xZDJLYoxLFRGCcbEF0v+Q@mail.gmail.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git pnp-5.18-rc1
+X-PR-Tracked-Commit-Id: ed945296bb90ce79a7ff331885dd37eafa38b551
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: f400bea2d44beec76f7e7f45e5372ef790336a4d
+Message-Id: <164789962869.9856.16193995775823019630.pr-tracker-bot@kernel.org>
+Date:   Mon, 21 Mar 2022 21:53:48 +0000
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 10:41:56PM +0100, Michael Walle wrote:
-> Am 2022-03-21 21:36, schrieb Andrew Lunn:
-> > > Actually, it looks like mdiobus_c45_read() is really c45 only and only
-> > > used for PHYs which just support c45 and not c45-over-c22 (?). I was
-> > > mistaken by the heavy use of the function in phy_device.c. All the
-> > > methods in phy-c45.c use phy_*_mmd() functions. Thus it might only be
-> > > the mxl-gpy doing something fishy in its probe function.
-> > 
-> > Yes, there is something odd here. You should search back on the
-> > mailing list.
-> > 
-> > If i remember correctly, it is something like it responds to both c22
-> > and c45. If it is found via c22, phylib does not set phydev->is_c45,
-> > and everything ends up going indirect. So the probe additionally tries
-> > to find it via c45? Or something like that.
-> 
-> Yeah, found it: https://lore.kernel.org/netdev/YLaG9cdn6ewdffjV@lunn.ch/
-> 
-> But that means that if the controller is not c45 capable, it will always
-> fail to probe, no?
+The pull request you sent on Mon, 21 Mar 2022 17:45:28 +0100:
 
-The problem is around here:
+> git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git pnp-5.18-rc1
 
-https://elixir.bootlin.com/linux/latest/source/drivers/net/phy/phy-c45.c#L455
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/f400bea2d44beec76f7e7f45e5372ef790336a4d
 
-phydev->c45_ids.mmds_present needs to be set. Which happens as part of
-get_phy_c45_ids(). What probably needs to happen is the
-mdiobus_c45_read() in that function need to change to phy_read_mmd()
-so that it can use C45 over C22. The devil in the details is making
-sure it does actually do C45 if C45 is available, otherwise we could
-break devices on a C45 only bus, of which there is a few.
+Thank you!
 
-> I'll have to give it a try. First I was thinking that we wouldn't need
-> it because a broken PHY driver could just set a quirk "broken_c45_access"
-> or similar. But that would mean it has to be probed before any c45 PHY.
-> Dunno if that will be true for the future. And it sounds rather fragile.
-> So yes, a dt property might be a better option.
-
-This is unfortunately not a PHY property, but a bus property. This bus
-has a FUBAR PHY on it, which limits the protocols that can be used on
-this bus. And there is no clear relationship between PHYs, you cannot
-easily say which PHYs share the same bus. So even if the lan8814 was
-to indicate it is FUBAR, you have no idea which other PHYs are
-affected.
-
-A DT property is more generic, and if done correct, could actually ban
-C22 or it could ban C45.
-
-    Andrew
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
