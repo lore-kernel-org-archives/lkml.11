@@ -2,99 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57154C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:15:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5889CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:15:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346704AbiCULQs (ORCPT
+        id S1346714AbiCULRC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 07:16:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37074 "EHLO
+        Mon, 21 Mar 2022 07:17:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233736AbiCULQm (ORCPT
+        with ESMTP id S1346706AbiCULQz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 07:16:42 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9A554F99;
-        Mon, 21 Mar 2022 04:15:14 -0700 (PDT)
-Received: from mail-wm1-f51.google.com ([209.85.128.51]) by
- mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MhDEq-1o1iwU4Btq-00eIp5; Mon, 21 Mar 2022 12:15:13 +0100
-Received: by mail-wm1-f51.google.com with SMTP id bi13-20020a05600c3d8d00b0038c2c33d8f3so7460077wmb.4;
-        Mon, 21 Mar 2022 04:15:12 -0700 (PDT)
-X-Gm-Message-State: AOAM531nrNOtTOrV1uTHOBAJuVJiM0llPWnSOSRP2RHda1BJHRBEqeoy
-        kcKHu2aW3KVq8lxPnojYv4A8PCYDQekmi/j6LTU=
-X-Google-Smtp-Source: ABdhPJzKxQl6VSttlmzvEi1hOv2leyycaxxTRshXcWMv4AXgfyXlahFpsNNQtY+AZ5wBEfDoPO06uRJRVwd5uyfNNS0=
-X-Received: by 2002:a05:600c:4b83:b0:38c:49b5:5bfc with SMTP id
- e3-20020a05600c4b8300b0038c49b55bfcmr24337091wmp.33.1647857360314; Mon, 21
- Mar 2022 03:09:20 -0700 (PDT)
+        Mon, 21 Mar 2022 07:16:55 -0400
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2045A554A1;
+        Mon, 21 Mar 2022 04:15:29 -0700 (PDT)
+Received: by mail-qt1-x831.google.com with SMTP id c4so11588866qtx.1;
+        Mon, 21 Mar 2022 04:15:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=r58jtRbok/salGZLYM01BLC5vndO53EKP4rvTMG539M=;
+        b=N9g+VtIuE50+e80f/IWduxz+a2u7dFN/Ik1qSRvlzP90TaARL55x492QbBQC7DTF8Z
+         /uA614WiLOa3DCmi/soVltz8+lbAjUOZUqoJLfAYyW2EmlUefK8CNt1ZOn4aarrpVSrE
+         bauTmQhj0TuIokEDLfG5RDceSbn5f0GGUvLAtYMCHMNOd5xz6LRuwj6tearhenvWZX4x
+         wCNGYACHOhmS6PPC0m28yaLVmWIhzMo4GtQL1LeBJnU2/QNhT9DzpWD32qT1Ye7bNtBn
+         XdB2uNP7TfrQk6aoSn3J0+gpeDQ+WBCf1CWG6Xb7FRT8TYA9WWJiRuLcPZGY9SvZgzS6
+         LzEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=r58jtRbok/salGZLYM01BLC5vndO53EKP4rvTMG539M=;
+        b=VwEnTK/CJ/cjYxY0To88LVwbbWwCfEMxNvNOtKCjr2YpXOTA42CtXayP49L2hAFXRE
+         es2pqAEUBoytjKa0lfG2F3DF1F0q++yB5U30Tc4d1bnMsCjkHondE/ro0RFamiQqyjxd
+         NovzD8n8qW4CP1jgM2d22Cwq/5kW0YuSW4CnY2WvbB5qfodhudt+I9A3slsRf2rnHH+j
+         ZQpnEf/kVhiWM3+Yr/+Ne0tSPPfvsaS/YtBTETjqPzXarksIhBVdnA0k0b41YomToD31
+         l7yQpkwC1VLW8SGR8B2vIrd1T9odqA57AgIFHbwyz14PnACi5nv0SLgERm8CvCSHSqG6
+         rGXA==
+X-Gm-Message-State: AOAM531+UWl6ZxwTQmRFosOLfEffvjDZHS1AsfBMYciKLxgRQMmDhpGd
+        /uWFwfNfT2Lm4twAEVU4CXA=
+X-Google-Smtp-Source: ABdhPJy/HYNeExNgRICAe7MeZiNOQ3nwcf9303GuNuAbuyWWRy/LkElT8eUYYLCtAVQzhgCm8jFckA==
+X-Received: by 2002:ac8:5f07:0:b0:2e1:d695:d857 with SMTP id x7-20020ac85f07000000b002e1d695d857mr15755266qta.40.1647861328214;
+        Mon, 21 Mar 2022 04:15:28 -0700 (PDT)
+Received: from localhost (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
+        by smtp.gmail.com with UTF8SMTPSA id x21-20020a376315000000b0067d1b191f89sm7653630qkb.68.2022.03.21.04.15.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Mar 2022 04:15:27 -0700 (PDT)
+From:   Schspa Shi <schspa@gmail.com>
+To:     pmladek@suse.com, sergey.senozhatsky@gmail.com,
+        rostedt@goodmis.org, john.ogness@linutronix.de
+Cc:     linux-rt-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bigeasy@linutronix.de, tglx@linutronix.de, schspa@gmail.com
+Subject: [PATCH 5.15-rt] printk: fix suppressed message print when reboot/panic
+Date:   Mon, 21 Mar 2022 19:15:02 +0800
+Message-Id: <20220321111501.68241-1-schspa@gmail.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-References: <20220319142759.1026237-1-chenhuacai@loongson.cn>
-In-Reply-To: <20220319142759.1026237-1-chenhuacai@loongson.cn>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 21 Mar 2022 11:09:04 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a12dY57+ZPEREAUrsNf45S0_4-yYHen6p0-PjJEivjczg@mail.gmail.com>
-Message-ID: <CAK8P3a12dY57+ZPEREAUrsNf45S0_4-yYHen6p0-PjJEivjczg@mail.gmail.com>
-Subject: Re: [PATCH V8 00/22] arch: Add basic LoongArch support
-To:     Huacai Chen <chenhuacai@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:ZnGkfk570X1mQgyfANU13nhtx8Unvo25TN3oV2Riz+Tha+mptO5
- LUYkQe3vwkCqXCPjGIjuR3VgXdTqpzTiYgDl6npzESHpjpMEhoKv+I80lWpGVDjWpkjjrss
- hF3Fr68I/fRF+wzC16d2CX08JR7qLFF39jGBieyiFIHDmIBhx3hQOUw/y1aA4z87NQzin/t
- EEavyeCv3+D9aNMwhTA8w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:gTy4IGEUdE0=:9wy/OcskBTsPHIi+puE+dH
- 08jh+kRc/1DFhA9C9Z0/G2JBNxpJNsb3hBSaGRyJ+9JhoBCfz8R56X55PAg7E104WpkVe1LTX
- 8oKRwaYaD4qxgOtTWZNyL4JSxGB5a3rj7Bz5ndCUhxv/44SYOzsfU8LGiPWF6F+uBobPKoKrQ
- DlV6s26wKQcphKt3c0V61+X3ZolWwnyqK8wTu6qszfhMjRyQ4dPa9ihsFwj9AK2VEy4lRxzE6
- IfNSFPgNz64o4q089G5P8f9+9is2Cmb0/iP/MkqfGCewWMd+WdPR87a3qBwTeDoxzC1G6y9XB
- oeEyTWP7KrRZayvw/Hg0SLjRnDpt5x24L/dqoqWbTJf8jAIsmEwUazMtdMw3/1z1wLnuvThEw
- 4ZU+JN6SV3kV1tgcj49y/fCdQqI+MJ7ehV7mrjIEQ3h8W3S3kAWEzNbgUW4x7LmyjYfZH6T1H
- xmEdDSMrYV+807AugkiCbRlYa/N4acUIxlFf+uUAcLL8cZUyg2ndFTJxFFcdDfx3XXOxc9UGc
- 1C759GZ8UVEB0L4bzV5OFMw5d8VTWIHhx+aYG2LwKusfWVTwUz1etR6SbqZKu0wIjgavL5uE/
- IiaGfRuYWZzLiB8PJlVggKIsh7KB0+e9iW5xuss4CvkFMMO4ijuSRVFwNNe8RCr4weGzBYq65
- sjX2vKjFJxlxGeqYyphYf4xigEtsVZM1opX3yBMu/Ptzn2oo4g2vM+MMd0byMmvwGzACe1h01
- lW6SqAO/ge5nib1z1BpwlEXwZDBE1wDGZm0qxSNmj3QUJ+Pq0caAdd6LLhRbeHLv+jRXx8L/A
- 1XPsupWL4sg7tIeAfiPSA/Xtc/qoJT2tDwJEnudA1lBFKZ9kO4=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 19, 2022 at 3:27 PM Huacai Chen <chenhuacai@kernel.org> wrote:
->
-> LoongArch is a new RISC ISA, which is a bit like MIPS or RISC-V.
-> LoongArch includes a reduced 32-bit version (LA32R), a standard 32-bit
-> version (LA32S) and a 64-bit version (LA64). LoongArch use ACPI as its
-> boot protocol LoongArch-specific interrupt controllers (similar to APIC)
-> are already added in the next revision of ACPI Specification (current
-> revision is 6.4).
->
-> This patchset is adding basic LoongArch support in mainline kernel, we
-> can see a complete snapshot here:
-> https://github.com/loongson/linux/tree/loongarch-next
+Update printk_seq for suppressed message.
 
-This looks fine to me for the most part, and I only had comments on
-a couple of things that we we had discussed before. I think the syscall
-interface and the spinlock implementation bits can be addressed now
-by leaving the controversial bits out of the submission, but the boot
-interface still remains to be resolved.
+When message is suppressed, printk_seq should be updated, otherwise
+this message will be printed when reboot. This problem was introduced
+in commit 3edc0c85d154 ("printk: Rebase on top of new ring buffer").
 
-As discussed before, I think the best way to do this is to not have a
-documented custom interface but instead use the UEFI wrapper
-code for both the (current) ACPI based boot and potential DT based
-embedded systems that may get added later.
+This patch apply fix to 5.15-rt according to
+Message-ID: <87a6dj3b5c.fsf@jogness.linutronix.de>
 
-       Arnd
+Signed-off-by: Schspa Shi <schspa@gmail.com>
+---
+ kernel/printk/printk.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 0cc8e8acf545..c3e245c95de4 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -2255,8 +2255,12 @@ static int printk_kthread_func(void *data)
+ 		if (!(con->flags & CON_ENABLED))
+ 			continue;
+ 
+-		if (suppress_message_printing(r.info->level))
++		if (suppress_message_printing(r.info->level)) {
++			console_lock();
++			latched_seq_write(&con->printk_seq, seq);
++			console_unlock();
+ 			continue;
++		}
+ 
+ 		if (con->flags & CON_EXTENDED) {
+ 			len = info_print_ext_header(ext_text,
+-- 
+2.29.0
+
