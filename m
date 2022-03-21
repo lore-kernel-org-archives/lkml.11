@@ -2,67 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65170C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:52:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B848C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:52:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230516AbiCUWxe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:53:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44242 "EHLO
+        id S231224AbiCUWxj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:53:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230393AbiCUWxR (ORCPT
+        with ESMTP id S230358AbiCUWxR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 18:53:17 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8120883B0E
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:32:34 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647898632;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UX/7v0u3KE8MJrBCQwgWLG7WTu14xXAYSO+Yxy+PVNM=;
-        b=2vZy37bcZvuZno8ZxMqP9y7WHaxto1i2NppHCVOFkB14YTnPd0DTHVlwbTUjNAInX588Jc
-        soX1jHs+THzZOyL4OusdWJoyDNlsymJf8BDgi8NbAL8KIOmiVc37x4ZNFN9cvrBuxzWiFI
-        cnZLlbiMSRFgsENYkLEFq7mROFOTyb78d/GswM3JSc4qBa1h/gH56GndkMnYvMDRAw17fO
-        m+qRbotXI9fGWMvAH1i2huAh9ALdzvjS6QwrD8Lx4j1FHNBC1pZJi2ny2HRtL6ZMzPDT+G
-        36u5vK1ZVNM9dHeeNeDE/4NtMLGYZH+eloR7SlTGb+gXbb+E3VmKaop+vcrkww==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647898632;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UX/7v0u3KE8MJrBCQwgWLG7WTu14xXAYSO+Yxy+PVNM=;
-        b=i9d0cJwIHMIusT0plTcxsKiijSaTt8k+k85oKM18jOwm6mnkI9rDXnhQ2L9Jkm4Wtm6ous
-        mo7NQvKcjut9MiDg==
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B5683CCCD0;
+        Mon, 21 Mar 2022 15:32:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A9C97B81A7A;
+        Mon, 21 Mar 2022 21:53:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 795CAC36AE3;
+        Mon, 21 Mar 2022 21:53:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647899628;
+        bh=5+wBPsZpbBVwNV0lj418mnZUaeWICQcbnDvLB3PAOI8=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=RSdNDYUUqOFu4akpIfAMqOvcHNcRBROPzm4OIG0JKQohSpid7V65U9q4jlTNPWyGR
+         9zDsgtX0cFd0ObpiBMNPn0PJDmhS+q2jXKRocCdh/g5Zq/vEs6Bdy84tWdHhryD/GD
+         tJMwKj0i3ovNToP7X+daEUtBCW0mEfXIoJIqtB5nD/P43qvUk2USp0LV87N4sSNopl
+         R8jtRJgfxEEfs2D6j8fUKgCtBYpaugLmkloRPlYFdbPA+SGk8dwdjilvu4T35uiInv
+         VrzXGoie5o7VfnfW4kn7igFhLGQnKelkWiz2pryjiUehONxosex8TDygtD2N2H9otR
+         9j4P3+7AVTvyw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 62B90E6D44B;
+        Mon, 21 Mar 2022 21:53:48 +0000 (UTC)
+Subject: Re: [GIT PULL] ACPI updates for v5.18-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <CAJZ5v0jzzwLCo5=TAntL7_GW_VO=rWJ8Hnbne=n19UNNJzdR2A@mail.gmail.com>
+References: <CAJZ5v0jzzwLCo5=TAntL7_GW_VO=rWJ8Hnbne=n19UNNJzdR2A@mail.gmail.com>
+X-PR-Tracked-List-Id: <linux-acpi.vger.kernel.org>
+X-PR-Tracked-Message-Id: <CAJZ5v0jzzwLCo5=TAntL7_GW_VO=rWJ8Hnbne=n19UNNJzdR2A@mail.gmail.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git acpi-5.18-rc1
+X-PR-Tracked-Commit-Id: 1bde8bddb5db59e5bcd090b227c74d48965cedef
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 242ba6656d604aa8dc87451fc08143cb28d5a587
+Message-Id: <164789962839.9856.12794973265477392892.pr-tracker-bot@kernel.org>
+Date:   Mon, 21 Mar 2022 21:53:48 +0000
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         the arch/x86 maintainers <x86@kernel.org>
-Subject: Re: [GIT pull] x86/irq for v5.18-rc1
-In-Reply-To: <CAHk-=wg_Kyh4zVmBSc4H79jH+yv9wN7dMsf-5x=EDrORbL3fuQ@mail.gmail.com>
-References: <164786042536.122591.4459156564791679956.tglx@xen13>
- <164786043041.122591.4693682080153649212.tglx@xen13>
- <CAHk-=wg_Kyh4zVmBSc4H79jH+yv9wN7dMsf-5x=EDrORbL3fuQ@mail.gmail.com>
-Date:   Mon, 21 Mar 2022 22:37:12 +0100
-Message-ID: <87lex3asxj.ffs@tglx>
-MIME-Version: 1.0
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21 2022 at 12:17, Linus Torvalds wrote:
-> On Mon, Mar 21, 2022 at 4:02 AM Thomas Gleixner <tglx@linutronix.de> wrote:
-> I pulled this and then I unpulled it.
->
-> Because that stupid IRT routing table code already been reported to cause bugs:
->
->     https://lore.kernel.org/all/a2791312-2957-27e6-43af-c805bbb90266@collabora.com/
+The pull request you sent on Mon, 21 Mar 2022 17:31:39 +0100:
 
-I've missed that. My bad...
+> git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git acpi-5.18-rc1
 
-Thanks,
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/242ba6656d604aa8dc87451fc08143cb28d5a587
 
-        tglx
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
