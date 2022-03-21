@@ -2,231 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84504C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:53:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08C0BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:53:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347081AbiCULys (ORCPT
+        id S1347093AbiCULzR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 07:54:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52294 "EHLO
+        Mon, 21 Mar 2022 07:55:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347067AbiCULyV (ORCPT
+        with ESMTP id S1347068AbiCULzD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 07:54:21 -0400
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam08on2138.outbound.protection.outlook.com [40.107.100.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B09B15AAF3;
-        Mon, 21 Mar 2022 04:52:38 -0700 (PDT)
+        Mon, 21 Mar 2022 07:55:03 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2052.outbound.protection.outlook.com [40.107.92.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77ED75FD2
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 04:53:12 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SLH3q9jPd6Lf0d1bYmF9AcgzzU1rawR5kU0B3fGWUiBgigpeoTFo2h44clJBg3ZBhCoZujIXunLly5Au8ui0Oxj5430zyTenOmhEmYTEUUtI+iXJaVseNQmS1dvangDV2z+0Y8WRBfsO+72j5Tn7gzgbnjweLurUe206n36pgKHV8Drb35SD9DlYU5e0UUxHBuSxuSGBXqWuDoIdAqjY1lxaT3OULgrG1HEhnmFMJAoq9b7muQXKHXnl/0w9Fw2hR8u+QLct76SyKkEb0/e70G385DXVx6ytb5UJsl48EuxN+EXF+/bFrkV7UGpsbl9oJ1HazKRDgAeUZq6LlokjJg==
+ b=mZb25REvrbKSoPgXnQzo7e7kTwuMoSPJAjkwA1T2LeCuSinRiIyJQyytz+YBjJkxr+eR/MGdB3w/gwzM9gwtarFCjf6AJAZTq+nGQdr02r8GBjBlqEtOlVsQfVauuis8hptCxvdVUlBchvvPRSEE7fkBjsm9AUHj4BX2UaVH4D70m3wCoZGf0U3A6aILPttUYpzd4DZMjXlO+EtvUM3AxztPunjLxPQ+pcR7hY24VKPET9unl5Ee9gyjaiARD4MBm8YbrI0kPi+3sJVXxRdJxkr9VNIPAelxrB4mJE2VCKWHq4RyiwlhErVZxbJnARAI1s/bAhj57PrioyMxpb0BFQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YMRdPAHbmpQvKsY1OGijUl/wbrOuubHm3Cg7Sm0Y7uU=;
- b=kJB61WfBc0TI8XgP9fU9pm0mKFSGqp6UxKxqGiyAk7UOON5cgE/fc5aj2IO/NBLL/mnRcCCximlwL9jq03Pb21/JvE5p8ryv32jmUtLUcQ7jmJvHTFKWPZdPT2GKoyUihdD5Rq7XWl94EvSRaWXfeYqhAaK2cnWAqGczGFPvX2fSHDvQ5NgGMZQNakRN0AibECKo3j8Z/9a/6LjI6i/eknLCXGvQ7oV/5vL7FNcpc40AmREv9cSIAdvHgAKUXZ/tYTpc6RCllVFkDA6fmcm4y/cG8hxAKfgeVlADG0SEDgRcyUX+H3yT4ORcoS27SgwZLTVltAVvLCOdgt6oUunH/g==
+ bh=Kx8NsBkvvpMYV1uduBD3QJFGkOBXTeErLIbar2SO9hM=;
+ b=jFJGiGkpCvFckch0j/ukAaplNnqj/jg/v8gDh+a5Bboi6AC6lM3PU1Xn6hi/dCy+yHV1SS/lNuksBHLg8ZFvUyo0NAhKJGMd88FDr+/lYka9/7o56qZE1UZbgU215LDsnqJ5r31QAm5woE+2xAe2kjkObsiFJFLfw/WZTPY/htYMrjxxY3IxSJdg8TW7hUvoqGZVF3Bi/vMMiBBcDeDDKSDKcesR2k/hr5QoDKJpXuWMnUper/d59VrF0kFcSIaHjBBWb/CigdwO41+F82I7YOt5uodYqWdaUva1osMirh0DsI2wtQjTh7hDSH8kWiIg3/J94AEPbrGbs5XW8sQQFg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=analogixsemi.com; dmarc=pass action=none
- header.from=analogixsemi.com; dkim=pass header.d=analogixsemi.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=Analogixsemi.onmicrosoft.com; s=selector2-Analogixsemi-onmicrosoft-com;
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YMRdPAHbmpQvKsY1OGijUl/wbrOuubHm3Cg7Sm0Y7uU=;
- b=tK6SnZzP/3VG/4gmLCoALjT5wpfmpXTXHjrC+j5Qljlo4CWJsrlA3mXBuEplaDsb3Jw+R98G+mHIjMGUKkeGYTX8N7948ID9ftSIjBtSUP3FMax0E9oDl4WXVGYAs56738+44mYNmw4Xi+K0F0Zc654v823pou+vY/iKcMnJ1xc=
+ bh=Kx8NsBkvvpMYV1uduBD3QJFGkOBXTeErLIbar2SO9hM=;
+ b=Eervnx/ng/j6Mwp1qUWiZDGC4N+bbaRZCwp9elgSFV1c1vJPU+R5MhWqb+ah8NA5IQUQ1ppcZbPCYsBiQT99uEb4cYNyTo3IbjnzA5PfXHncOm5ceryHt93/m3eD+/VvJsFKSY8rhBUly/pphkkAXknOUhDIj5cwSo62GzO9plnbEInpuhxfJhU/KUkCSRJ84lkSBSeMtGOSkWtovVe8tjTLCuzv1T+ro5VmR5dLN65MrWOQEOppcTIRxDPsMShF8xGxenu1hif3OZy6yRhRw+8Ggn2cqqDz1AKosW3QjP0XLn+IrqI9PKgqMADkljo9W2ST4uyxkXu1WJYbrHL07A==
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=analogixsemi.com;
-Received: from BY5PR04MB6739.namprd04.prod.outlook.com (2603:10b6:a03:229::8)
- by BYAPR04MB4888.namprd04.prod.outlook.com (2603:10b6:a03:4f::13) with
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by CH2PR12MB4309.namprd12.prod.outlook.com (2603:10b6:610:a4::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.18; Mon, 21 Mar
- 2022 11:52:34 +0000
-Received: from BY5PR04MB6739.namprd04.prod.outlook.com
- ([fe80::a865:6d10:c4a9:1142]) by BY5PR04MB6739.namprd04.prod.outlook.com
- ([fe80::a865:6d10:c4a9:1142%9]) with mapi id 15.20.5081.023; Mon, 21 Mar 2022
- 11:52:34 +0000
-Date:   Mon, 21 Mar 2022 19:52:26 +0800
-From:   Xin Ji <xji@analogixsemi.com>
-To:     Robert Foss <robert.foss@linaro.org>
-Cc:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        =?iso-8859-1?Q?N=EDcolas_F=2E_R=2E_A=2E?= Prado 
-        <nfraprado@collabora.com>, Xin Ji <xji@analogixsemi.com>,
-        a.hajda@samsung.com, narmstrong@baylibre.com,
-        dan.carpenter@oracle.com, jonas@kwiboo.se,
-        jernej.skrabec@gmail.com, airlied@linux.ie, daniel@ffwll.ch,
-        sam@ravnborg.org, pihsun@chromium.org, tzungbi@google.com,
-        maxime@cerno.tech, drinkcat@google.com, hsinyi@chromium.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        bliang@analogixsemi.com, qwen@analogixsemi.com, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>
-Subject: Re: [PATCH v12 3/4] drm/bridge: anx7625: add MIPI DPI input feature
-Message-ID: <20220321115226.GA1484106@anxtwsw-Precision-3640-Tower>
-References: <20211105031904.2641088-1-xji@analogixsemi.com>
- <20211105031904.2641088-3-xji@analogixsemi.com>
- <YiTruiCIkyxs3jTC@pendragon.ideasonboard.com>
- <YiWiYpEfTOOqgyAN@google.com>
- <CAG3jFys-BYsBp07AAFQ2O_TFsXOwhcVDnsOh8WVNNSag3HZw+Q@mail.gmail.com>
- <CAG3jFyu47cv8oSecONM95KVoP=NOvgwafAp4TQ33CZ0Y4zWmnQ@mail.gmail.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.14; Mon, 21 Mar
+ 2022 11:53:09 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::11a0:970a:4c24:c70c]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::11a0:970a:4c24:c70c%5]) with mapi id 15.20.5081.023; Mon, 21 Mar 2022
+ 11:53:09 +0000
+Date:   Mon, 21 Mar 2022 08:53:08 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     "Tian, Kevin" <kevin.tian@intel.com>
+Cc:     Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        "Liu, Yi L" <yi.l.liu@intel.com>,
+        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH RFC 03/11] iommu: Add attach/detach_dev_pasid domain ops
+Message-ID: <20220321115308.GJ11336@nvidia.com>
+References: <20220320064030.2936936-1-baolu.lu@linux.intel.com>
+ <20220320064030.2936936-4-baolu.lu@linux.intel.com>
+ <BL1PR11MB527174765D1253AB4B88D2AD8C169@BL1PR11MB5271.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAG3jFyu47cv8oSecONM95KVoP=NOvgwafAp4TQ33CZ0Y4zWmnQ@mail.gmail.com>
-X-ClientProxiedBy: HKAPR04CA0009.apcprd04.prod.outlook.com
- (2603:1096:203:d0::19) To BY5PR04MB6739.namprd04.prod.outlook.com
- (2603:10b6:a03:229::8)
+In-Reply-To: <BL1PR11MB527174765D1253AB4B88D2AD8C169@BL1PR11MB5271.namprd11.prod.outlook.com>
+X-ClientProxiedBy: BL1PR13CA0351.namprd13.prod.outlook.com
+ (2603:10b6:208:2c6::26) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1fd5ba9c-1af6-4616-45e6-08da0b314930
-X-MS-TrafficTypeDiagnostic: BYAPR04MB4888:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR04MB48885EE0993DBAC49D9D6369C7169@BYAPR04MB4888.namprd04.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 04a068cd-1514-4106-0e6d-08da0b315e59
+X-MS-TrafficTypeDiagnostic: CH2PR12MB4309:EE_
+X-Microsoft-Antispam-PRVS: <CH2PR12MB4309B68AA4D39D4E08B40E0FC2169@CH2PR12MB4309.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3hYaZNBkDls4kwO2uqlSjySuaefLkM9M+77aGSZAxifpukNUkDEPppHy/2z8IeOzlxZ+0jZugHGTKtAkHimoP2CjobknbrWsVro6vjtCOwGQhJiMVOH7tMSAWdO7NJmMJZn8gKZzl4zKjXIQl46c9041/DpBviDhW09HX0NMlGcQgw9uw4yHP0IVxarkZyCbn7eerg15AGF9fKDbAqi8VcoIDpj4JjPJ9MNHodgLtR3dSN5zE9SL5KPOce/Wbie5qBOaxeoSy96kOaZYe3aJjw8aJhGGeDv5g381sCcAlcu306N4qhDk4KKQjBM0flzJv5O6gCcxY5jWpL0PFJA1N8iqAnOBiEdF0c/iZYY+VgyTlFUxXC5iGddF/K1XvKNFAAWNEvk9VcdTWs8FQiRwOMIwkZKwfRvTRWh0dmtNSAog2jUHv5DygeeVDvqtT3L5ryPaIFh8ydTjCyXfAEV75MhWcPfh1yppvMmZv8O5j7UwDlkxEvWW1qJKc39jPmXpt/Ln/8/L6v32nOuruX3K5apF92rHUAUQjWFNaz0t7SJ4lufgszaI8pj26PS0wNlF0FtJx8T8Z993zxlcPvbaFoZSCgJip4O7q0rw+GKrSw4tSKWszqnQ3uFC+op00ZEIenwQ/YuAFSGk0JBO4JoiUjp/1Ut9oyvpNseGrGQXjpMfVrU71fHwdruh2ndyaHKogs7svhUJvkAd772uXfc/F5g2niKzGa3I+KrrrJk7OcArvaspowEEdGB3ImbZ7zfp9IuJbJPpsCfOQQZstjPgGWKWInH4feINb/2Z4m+7ZvY=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR04MB6739.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(83380400001)(45080400002)(4326008)(66556008)(66946007)(8676002)(6666004)(508600001)(66476007)(966005)(6486002)(38350700002)(8936002)(38100700002)(9686003)(33716001)(2906002)(55236004)(316002)(33656002)(26005)(186003)(52116002)(5660300002)(6506007)(6916009)(54906003)(86362001)(7416002)(1076003)(6512007);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: s+VrihQxxqCD6cPhzyQv7NKSqoEgiSMXrsu3brgQfMJ5aW3kQi8OgcHTadlZRjrN2PfOyHs/Q3ViTvoZaYNzSAc61c7eOQCQBw6imWTAdYgDhgMOsVz2jJelk4eH8FDhQCqGbiiHNBvIatqr8i9oBRIsOdeclITrg0OzMTJwOd2BbhkaZL3Tx9E+iTDKcaFG6ntbuGUhffVI5ryDi3Ego+px9H06GHGegtAebc1f0psLHKCntS+j9Si5jNQhSMpjYN8q5/lUzfkQAzoat7b85A3VFUxh8B5VFxb+xTPWBa2vK43oWoQuYbiecOO/NUW9ys7YPK0JQPwylAZeUGp82ealWQe/ayRdbOoCSjG5gTtE6kIfGesbI9FRdJU0GmgM+098F455mz+u+0lTrkJqLn2W4WBTbYM7ctZQoqAncdLkggy2cp6m9KI7MJWh5YYUtFRSXM/TuEG5wygHl6vIRGX0KP8OyTWm8fTfEssBCugZ8CwSAb6fbF+jy4xN8aoUMSYyxmVEKjaUor1duJm9DsV2Vn5GNGQiaAf2ltKJPHa0qHWjaLHvwRF2QA9DV2L0lsGDYj0lPgn8Q61YEVjOZPhmIpZelh2H5wKwwc3JX6V4ihwJSRUZkwtfqm7JjIArKQgBA6ozcr+sxP+vDb7XgQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(508600001)(6486002)(6512007)(83380400001)(1076003)(2616005)(7416002)(4326008)(66476007)(66946007)(8676002)(66556008)(26005)(54906003)(6916009)(186003)(86362001)(38100700002)(8936002)(316002)(4744005)(36756003)(33656002)(6506007)(5660300002)(2906002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SLDqSfar7K0YBk6LWDM1ZXV3MpWy+IPIp/uhQmjiYrFibm8oIYetsalu1naV?=
- =?us-ascii?Q?Bw7crVgSjbTgTaptOzQR4qVZlxgG3KkqA6haXJdpKUMjljBZLaZF4IqXJBM1?=
- =?us-ascii?Q?/vz9U4D6HTT5RBlfo5Vw0Oev/PT3yC4onVyZi8WjrXa3a51qG/EB4LRI53nQ?=
- =?us-ascii?Q?C6+L4x+HVbGb6Y+7TM73lkvr8FBU+14w2UwE3KwYQ7h32pcoDi2iLO3f/a+C?=
- =?us-ascii?Q?8thoOFc/Al4L+F/fIwCJ7Q9/6TyplkHR54FbueYQmHYzb3l8S3F2ijyGB3/E?=
- =?us-ascii?Q?AIhIXQwo6+siAwJj6XmtGbQdHIQtocuUgAnNpQIX7W2T50OfyBuhUmKIgr13?=
- =?us-ascii?Q?LPmdW5P3ughCjTv+90W63jhz5R/50TsWHphN8qRaVuUREnTB9w7c3qSPHIap?=
- =?us-ascii?Q?Q+XihJuaRCB35f3nZO+S+70FIuwXpo6mD7siYXBk1H8uIf3Cx9zsvZd3rwHm?=
- =?us-ascii?Q?gguCTvTyuXH/ZyzNVeKUoSQ51u97U1SxYGiph1qXjPoomZehaspGuHvYp/2l?=
- =?us-ascii?Q?Mbnq2DfdfDCuUCSsK3U0SKjyVG/yvbAke++wcARcFm88WBt7FmP7LIHBsgPk?=
- =?us-ascii?Q?AL9wdqXuXnHDO9mCIvaJ8F6Cru4CwabCFOKxwZnef6/Zgzr9D5TueMFUtrIX?=
- =?us-ascii?Q?CqloalWgM6AuBEijrUhnUeWE2rUERkSVJd2OzEF3xrefukzCu6sktHX+eOIy?=
- =?us-ascii?Q?LZkKZ1MSfTvrjZTAkjN+Ajkprg9f2zyv/80gwRlbF7jy2dSU2Jdx6X/rKaqG?=
- =?us-ascii?Q?v3yqn0NnXgHrW/Cuzv/ciuRJoVcvgxP+M4DUykp+6FXUoqMOmrS8FCQ+xMgx?=
- =?us-ascii?Q?/93oz56gDoLNYObewwQ5MrkCehPwYwmbPpr3WmvppwuSD4x8gvXPZ7NLBjhM?=
- =?us-ascii?Q?/N/DEwn7WbDmpwWQijHbyBPFcnJo3ma7IH2ewSD2V6pNTwr/AhwZUgzaYscX?=
- =?us-ascii?Q?zczQGDJlJ4nOEz6H4CdvqWBD8kMzub4NXn3uz5MVChsClqOwlFc/X0bP6rl9?=
- =?us-ascii?Q?F10CKErLrQf5gHjAkXBTYqawzV/yAw36ywLOWJdZLEor4L1hUwERH39qzOn3?=
- =?us-ascii?Q?IEN98RICGsEbOxu2ju+mMiNirkZUm4rIyDq0hmjm++F2BsGHSGR0GFq1l3cG?=
- =?us-ascii?Q?fZ/e5hP/Hq3MQ7Txh3Q2ZvkrmK0fV84yvYs65S3syZV+8IAGfaab9y2jY0in?=
- =?us-ascii?Q?YaQ7dpZu/lB92aSX9M9t7Ax62RE4B9NT1whNfppWal57fXNWupJiwLXLyELG?=
- =?us-ascii?Q?kXmuvL+T6uIH//V/GbDkNT4k7fAU4+MZNmyp0rCae0dMi+HkMgr2R/ual5Mh?=
- =?us-ascii?Q?7b5elEf1pxk3SmhqgeSpcYpheYGAwY5hTlm3D0gwMJwdGrBppLJVPipY9SSS?=
- =?us-ascii?Q?Yco3YZdPUqWtM7GCG9HX2LGSw6YojjxiPFk2Did5kUZBj7uA2uTd7Cpcizd+?=
- =?us-ascii?Q?sH6gjErfRqVhkIxZtpCtaLFSiNFxHxuT?=
-X-OriginatorOrg: analogixsemi.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1fd5ba9c-1af6-4616-45e6-08da0b314930
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR04MB6739.namprd04.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Ie/9J31zj+IAyMNBc+A/IkvYEfI7FFoafAYYjvaHdGAOOfJ38VIb67JHJxhW?=
+ =?us-ascii?Q?Nq3gefPUe48CCwDDfR5FBVkk7qwDYcAlUpwOZv/4Kv1UkpM+WzC4EaBaMNdq?=
+ =?us-ascii?Q?+uUK9s8G2iQBoQGYcZECfGVcAXYC/SuXOOtKmu/InCWKUZgErI/HHL7XY/wB?=
+ =?us-ascii?Q?y+y03rR5N1QsB4hIsOBJGmADtqEcX4GAQEFmMH5FMC5/yFy6z8w3eTOxI8I0?=
+ =?us-ascii?Q?mPYXHT7jMJ+RqVE+ufFk6rCKC8X1phtL46KexQVnsDvlu1y4w3EVAk/N2KSS?=
+ =?us-ascii?Q?6N62Adw1Tf9FcnbkJLqMLqljRR2+MLdgMLoM38yqeEtwqwRZVLo10+LV7lbr?=
+ =?us-ascii?Q?5mc8BE37oQqBKtjZrSQ5GMQij445vHX6qwBkUpJ5xqPDTLaEdOKlPxsR/ylA?=
+ =?us-ascii?Q?q9/gnmXxt7VI5V87+VSJuGKgnWAnBbWEWsgdJ/9ulPNPjRP+zjiWZFcyoj9Y?=
+ =?us-ascii?Q?9fa9okmYR3fFiUN5GkneJAqLhQin5tVGS08jsMdGKFbe99aC7FYDE6EHVrjC?=
+ =?us-ascii?Q?2Uy/25OGJpakAs7Mf2rb7gtOzzntys4gu6i+5bC0o1pRBfEw+TcBGrq5dqID?=
+ =?us-ascii?Q?CCMsUEc8zr/8oN4vWPdZ+jzBkCEkqg5IW5mOLmZB/b0VxPjhvJG3T8dU4/qf?=
+ =?us-ascii?Q?qSPPQvj1AipTTnEoK+9r/5dSbIuFH2CflQS5CFJEJChP7r2b1Jlqx8BzG/G3?=
+ =?us-ascii?Q?zGbuNXoIqEA/xOiKDxT6hSQWp08B0f4ClmdTICu77mhXKNm4b/qqF4XwP2vD?=
+ =?us-ascii?Q?ckhIjo4CZpix6vqHSSBBC6DHNry6jZpw2yo7dYtnAWGAW18XsN88i+FcZDZM?=
+ =?us-ascii?Q?cZON0wVdfpka5MEPR6ZzZ2MYIFHselPmA+m1T7UKL9FywWDex12n5PVYfRDC?=
+ =?us-ascii?Q?dlbuQhN4X9rTZmPqMeQYk08iTszfMo7Xev+os6nH2Hut9Tmz2PZDu9LSHzta?=
+ =?us-ascii?Q?qHlngbIWCFO72CtIggHrYRohH8rH274ERXg240bX9CHbCIdZdeSrcAnzU1oY?=
+ =?us-ascii?Q?/J5a+DiHdE/makZQRYjjbYepYnFy2N4B9501DNlJc88MjhB/4BRfCmuHL2og?=
+ =?us-ascii?Q?Q45+XbZa025Xcvs5Aq42SwmAclh9+SvNdCunMShoUVJ9MdUJ6fziGj7Qq4OA?=
+ =?us-ascii?Q?AsxIQTaOhjTFzzBSm/CjedYF7GdrMHX5KOGzGQwuqm0VFKquiI7UyA+XK/iD?=
+ =?us-ascii?Q?8jbEiXmWrg62FOviu3P8iLfDycE9m2VpzezGw/XyyUJ9pOISrUQ+5Wj6RvQz?=
+ =?us-ascii?Q?JXt+nJsoJUgbhzXDhGx7xQvU1atTj7WNNmdOiZEn1c6Ts1+GVEQicJDkDzfn?=
+ =?us-ascii?Q?AFdTbMb5K23QoMpDQkQalSVsJKTmPU/qNHsoE+JFEsPxzUItqz3WXPs6zCro?=
+ =?us-ascii?Q?98Xemv7TG4RQQB3CIV2HkEiXg/pMZiKDdwOSvZ16st+CWrNj63zPCeLPktqQ?=
+ =?us-ascii?Q?SXS+TzDGKulTl66DjunHQSZNRnzcFyB1?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 04a068cd-1514-4106-0e6d-08da0b315e59
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2022 11:52:33.9924
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2022 11:53:09.1650
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: b099b0b4-f26c-4cf5-9a0f-d5be9acab205
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CvLLG4Z+CsuS/pFpqFXPA144aOfwA50wDc/zc0eH1+9UocNJIwFLvOpA7k/n6SWOnmydrHB9FcNeWZwMKI6jlg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR04MB4888
+X-MS-Exchange-CrossTenant-UserPrincipalName: sL31kX3sDTNbKK58lKtMJ1LRtgR7vnmGNQTa0pp/IM694a2aX9Nmi9WyYpTLMWR4
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4309
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 11:00:20AM +0100, Robert Foss wrote:
-> On Mon, 7 Mar 2022 at 16:49, Robert Foss <robert.foss@linaro.org> wrote:
-> >
-> > On Mon, 7 Mar 2022 at 07:12, Chen-Yu Tsai <wenst@chromium.org> wrote:
-> > >
-> > > On Sun, Mar 06, 2022 at 07:13:30PM +0200, Laurent Pinchart wrote:
-> > > > Hello Xin,
-> > > >
-> > > > (Question for Rob below, and I'm afraid this is urgent as we need to
-> > > > merge a fix in v5.17).
-> > > >
-> > > > On Fri, Nov 05, 2021 at 11:19:03AM +0800, Xin Ji wrote:
-> > > > > The basic anx7625 driver only support MIPI DSI rx signal input.
-> > > > > This patch add MIPI DPI rx input configuration support, after apply
-> > > > > this patch, the driver can support DSI rx or DPI rx by adding
-> > > > > 'bus-type' in DT.
-> > > > >
-> > > > > Reviewed-by: Robert Foss <robert.foss@linaro.org>
-> > > > > Signed-off-by: Xin Ji <xji@analogixsemi.com>
-> > > > > ---
-> > > > >  drivers/gpu/drm/bridge/analogix/anx7625.c | 247 ++++++++++++++++------
-> > > > >  drivers/gpu/drm/bridge/analogix/anx7625.h |  18 +-
-> > > > >  2 files changed, 205 insertions(+), 60 deletions(-)
-> > > > >
-> > > > > diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-> > > > > index f48e91134c20..f7c3386c8929 100644
-> > > > > --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
-> > > > > +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
-> > >
-> > > [...]
-> > >
-> > > > >  static int anx7625_parse_dt(struct device *dev,
-> > > > >                         struct anx7625_platform_data *pdata)
-> > > > >  {
-> > > > > -   struct device_node *np = dev->of_node;
-> > > > > +   struct device_node *np = dev->of_node, *ep0;
-> > > > >     struct drm_panel *panel;
-> > > > >     int ret;
-> > > > > +   int bus_type, mipi_lanes;
-> > > > > +
-> > > > > +   anx7625_get_swing_setting(dev, pdata);
-> > > > >
-> > > > > +   pdata->is_dpi = 1; /* default dpi mode */
-> > > > >     pdata->mipi_host_node = of_graph_get_remote_node(np, 0, 0);
-> > > > >     if (!pdata->mipi_host_node) {
-> > > > >             DRM_DEV_ERROR(dev, "fail to get internal panel.\n");
-> > > > >             return -ENODEV;
-> > > > >     }
-> > > > >
-> > > > > -   DRM_DEV_DEBUG_DRIVER(dev, "found dsi host node.\n");
-> > > > > +   bus_type = V4L2_FWNODE_BUS_TYPE_PARALLEL;
-> > > > > +   mipi_lanes = MAX_LANES_SUPPORT;
-> > > > > +   ep0 = of_graph_get_endpoint_by_regs(np, 0, 0);
-> > > > > +   if (ep0) {
-> > > > > +           if (of_property_read_u32(ep0, "bus-type", &bus_type))
-> > > > > +                   bus_type = 0;
-> > > > > +
-> > > > > +           mipi_lanes = of_property_count_u32_elems(ep0, "data-lanes");
-> > > > > +   }
-> > > > > +
-> > > > > +   if (bus_type == V4L2_FWNODE_BUS_TYPE_PARALLEL) /* bus type is Parallel(DSI) */
-> > > >
-> > > > This is not correct *at all*. V4L2_FWNODE_BUS_TYPE_PARALLEL has nothing
-> > > > to do with DSI. DSI stands for Digital *Serial* Interface. If anything,
-> > > > the V4L2_FWNODE_BUS_TYPE_PARALLEL type would map better to DPI, even if
-> > > > it's not an exact match.
-> > > >
-> > > > This patch has landed in v5.17-rc1, along with the corresponding
-> > > > bindings. As DT bindings are an ABI, we should really fix this before
-> > > > v5.17 is released. There is no DSI bus types defined in DT, and adding
-> > > > one as a fix so late in the v5.17-rc cycle seems a bit of a stretch to
-> > > > me (unless Rob disagrees).
-> > > >
-> > > > It would seem best to revert this series and the corresponding bindings,
-> > > > and retry in v5.18.
-> > >
-> > > There is a DT patch using this property that is already queued up for 5.17
-> > > in the soc tree:
-> > >
-> > > https://nam10.safelinks.protection.outlook.com/?url=https%3A%2F%2Flore.kernel.org%2Fall%2F20220214200507.2500693-1-nfraprado%40collabora.com%2F&amp;data=04%7C01%7Cxji%40analogixsemi.com%7C69542695a9cd42cff5a508da00ea7baa%7Cb099b0b4f26c4cf59a0fd5be9acab205%7C0%7C0%7C637823304343387964%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=KbitBhnvGWfpHu6PNLUmrgdqcoZbXaA3hGwq9iAjQfI%3D&amp;reserved=0
-> > >
-> > > merged here:
-> > >
-> > > https://nam10.safelinks.protection.outlook.com/?url=http%3A%2F%2Fgit.kernel.org%2Fsoc%2Fsoc%2Fc%2F32568ae37596b529628ac09b875f4874e614f63f&amp;data=04%7C01%7Cxji%40analogixsemi.com%7C69542695a9cd42cff5a508da00ea7baa%7Cb099b0b4f26c4cf59a0fd5be9acab205%7C0%7C0%7C637823304343387964%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=YJAs0IPxR0hrHpGR7K00itcTIF9cnz4L4ta%2B9ACQdSk%3D&amp;reserved=0
-> > >
-> > > We will need to revert that one as well.
-> >
-> > I just submitted a series reverting the dt-binding change + the
-> > related commit to "mt8183: jacuzzi".
-> > Can I get a quick r-b/a-b in order to get this into v5.17.
-> >
-> > https://nam10.safelinks.protection.outlook.com/?url=https%3A%2F%2Flore.kernel.org%2Fall%2F20220307154558.2505734-3-robert.foss%40linaro.org%2F&amp;data=04%7C01%7Cxji%40analogixsemi.com%7C69542695a9cd42cff5a508da00ea7baa%7Cb099b0b4f26c4cf59a0fd5be9acab205%7C0%7C0%7C637823304343387964%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=S5ScH2jid3ZRobvO%2Fl2nVgdOvFHNj1nWafTQYG3L9d0%3D&amp;reserved=0
-> >
-> 
-> v2 of revert submitted.
-> 
-> https://nam10.safelinks.protection.outlook.com/?url=https%3A%2F%2Flore.kernel.org%2Fall%2F20220308094911.2680291-1-robert.foss%40linaro.org%2F&amp;data=04%7C01%7Cxji%40analogixsemi.com%7C69542695a9cd42cff5a508da00ea7baa%7Cb099b0b4f26c4cf59a0fd5be9acab205%7C0%7C0%7C637823304343387964%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=D6ulS16g4v4x0u23OtYRrSeitTqllWwDzPiT%2BxMcQQg%3D&amp;reserved=0
-> 
-> Xin: Will you spin a series that adds DPI support and re-enables DPI
-> for anx7625? Additionally, "mt8183: jacuzzi" will have to have DPI
-> re-enabled.
-Hi Robert Foss, I'm little confused, do I need resend this serial or
-send a patch based on currently define(V4L2_FWNODE_BUS_TYPE_PARALLEL)?
+On Mon, Mar 21, 2022 at 07:13:49AM +0000, Tian, Kevin wrote:
 
-And use V4L2_FWNODE_BUS_TYPE_PARALLEL for DPI, other value for DSI
-setup?
+> 	/*
+> 	 * To keep things simple, SVA currently doesn't support IOMMU groups
+> 	 * with more than one device. Existing SVA-capable systems are not
+> 	 * affected by the problems that required IOMMU groups (lack of ACS
+> 	 * isolation, device ID aliasing and other hardware issues).
+> 	 */
+> 	if (iommu_group_device_count(group) != 1)
+> 		goto out_unlock;
+> 
+> btw I didn't see any safeguard on above assumption in device hotplug path
+> to a group which already has SVA enabled...
 
-Thanks,
-Xin
+This is because using device_count is always wrong for these kinds of
+tests.
+
+The exclusion needs to be built up from the new owner mechanism. Once
+the device is in SVA mode it is the same as having exclusive ownership
+against any other probes()
+
+Jason
