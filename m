@@ -2,103 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F665C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 19:11:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F32F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 19:16:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352520AbiCUTMv (ORCPT
+        id S1352501AbiCUTRe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 15:12:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41092 "EHLO
+        Mon, 21 Mar 2022 15:17:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352472AbiCUTMq (ORCPT
+        with ESMTP id S244434AbiCUTRd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 15:12:46 -0400
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0497D18CD3D
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 12:11:17 -0700 (PDT)
-Received: from relay12.mail.gandi.net (unknown [217.70.178.232])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id B037ECBD5F
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 19:09:38 +0000 (UTC)
-Received: (Authenticated sender: didi.debian@cknow.org)
-        by mail.gandi.net (Postfix) with ESMTPSA id 78855200004;
-        Mon, 21 Mar 2022 19:09:29 +0000 (UTC)
-From:   Diederik de Haas <didi.debian@cknow.org>
-To:     Eric Valette <eric.valette@free.fr>,
-        Salvatore Bonaccorso <carnil@debian.org>,
-        Thorsten Leemhuis <regressions@leemhuis.info>,
-        Sasha Levin <sashal@kernel.org>
-Cc:     David Airlie <airlied@linux.ie>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Luben Tuikov <luben.tuikov@amd.com>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        1005005@bugs.debian.org, Evan Quan <evan.quan@amd.com>,
-        Christian =?ISO-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Alex Deucher <alexdeucher@gmail.com>, dod@debian.org
-Subject: Re: Bug#1005005: Regression from 3c196f056666 ("drm/amdgpu: always reset the asic in suspend (v2)") on suspend?
-Date:   Mon, 21 Mar 2022 20:09:19 +0100
-Message-ID: <4421935.LvFx2qVVIh@prancing-pony>
-Organization: Connecting Knowledge
-In-Reply-To: <3873010.MHq7AAxBmi@ylum>
-References: <Ygf7KuWyc0d4HIFu@eldamar.lan> <164405721350.15142.10930772309423612672.reportbug@ylum.maison> <3873010.MHq7AAxBmi@ylum>
+        Mon, 21 Mar 2022 15:17:33 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D40BB16E7C4;
+        Mon, 21 Mar 2022 12:16:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 507F9CE1AEB;
+        Mon, 21 Mar 2022 19:16:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5219AC340F0;
+        Mon, 21 Mar 2022 19:16:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647890164;
+        bh=G8qfWWm1x+EcAbA5INzyuUHj7WBCgAwZaG8mPUD3DD8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BZroN3hbSxh+UR2JFv7JqrKLfrynTCQNrfwwi3+h2vi6W1Ra1FmV7IkOn26xr7XRz
+         XvoEgio3EiPuBQI63kRJQX4lNtYP8TqO8mTOCso94LtEXL8cF4ZQoGehYwVEK170YC
+         vHEdqJ75BwxSddK3iS+UScolInUtpTeYrRYGzr8j2Kxsjl1CoXAktpZCSVDMuE7DB0
+         RhzHFeEemKZk4WXDyTv338LGCXayY2EHbTc6D3DzKzTgzt4OiOeUm3lQ0GXjmCeNlP
+         VtWVzRfei00ohnuo4WHLyT8oSgX1xdQuhuiRnYY7H2OClN5U7XVfAcEdWCoi5yOQvO
+         K/xi/3Bz38dcg==
+Date:   Mon, 21 Mar 2022 12:16:02 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     kernel test robot <lkp@intel.com>
+Cc:     Roopa Prabhu <roopa@nvidia.com>, kbuild-all@lists.01.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vxlan: fix returnvar.cocci warnings
+Message-ID: <20220321121602.11b896e4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220321154456.GA30106@e0e7ddfdfbf7>
+References: <202203212331.4ZEJaAXK-lkp@intel.com>
+        <20220321154456.GA30106@e0e7ddfdfbf7>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart2269141.ElGaqSPkdT"; micalg="pgp-sha256"; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---nextPart2269141.ElGaqSPkdT
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
-From: Diederik de Haas <didi.debian@cknow.org>
-To: Eric Valette <eric.valette@free.fr>, Salvatore Bonaccorso <carnil@debian.org>, Thorsten Leemhuis <regressions@leemhuis.info>, Sasha Levin <sashal@kernel.org>
-Cc: David Airlie <airlied@linux.ie>, "Pan, Xinhui" <Xinhui.Pan@amd.com>, LKML <linux-kernel@vger.kernel.org>, amd-gfx list <amd-gfx@lists.freedesktop.org>, Luben Tuikov <luben.tuikov@amd.com>, Maling list - DRI developers <dri-devel@lists.freedesktop.org>, Alex Deucher <alexander.deucher@amd.com>, 1005005@bugs.debian.org, Evan Quan <evan.quan@amd.com>, Christian =?ISO-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, Alex Deucher <alexdeucher@gmail.com>, dod@debian.org
-Subject: Re: Bug#1005005: Regression from 3c196f056666 ("drm/amdgpu: always reset the asic in suspend (v2)") on suspend?
-Date: Mon, 21 Mar 2022 20:09:19 +0100
-Message-ID: <4421935.LvFx2qVVIh@prancing-pony>
-Organization: Connecting Knowledge
-In-Reply-To: <3873010.MHq7AAxBmi@ylum>
-References: <Ygf7KuWyc0d4HIFu@eldamar.lan> <164405721350.15142.10930772309423612672.reportbug@ylum.maison> <3873010.MHq7AAxBmi@ylum>
-
-On maandag 21 maart 2022 19:49:56 CET Dominique Dumont wrote:
-> On Monday, 21 March 2022 09:57:59 CET Thorsten Leemhuis wrote:
-> > Dominique/Salvatore/Eric, what's the status of this regression?
-> > According to the debian bug tracker the problem is solved with 5.16 and
-> > 5.17, but was 5.15 ever fixed?
+On Mon, 21 Mar 2022 23:44:57 +0800 kernel test robot wrote:
+> From: kernel test robot <lkp@intel.com>
 > 
-> I don't think so.
+> drivers/net/vxlan/vxlan_core.c:2962:5-8: Unneeded variable: "ret". Return "0" on line 2971
 > 
-> On kernel side, the commit fixing this issue is
-> e55a3aea418269266d84f426b3bd70794d3389c8 .
 > 
-> According to the logs of [1] , this commit landed in v5.17-rc3
+>  Remove unneeded variable used to store return value.
+> 
+> Generated by: scripts/coccinelle/misc/returnvar.cocci
+> 
+> Fixes: f9c4bb0b245c ("vxlan: vni filtering support on collect metadata device")
+> CC: Roopa Prabhu <roopa@nvidia.com>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: kernel test robot <lkp@intel.com>
 
-It was included in 5.15.22, but the newest 5.15 kernel uploaded to Debian was 
-5.15.15, so their is no fixed 5.15 in Debian.
-It was also included in 5.16.8 and the earlier version in Debian which had 
-that commit was 5.16.10 (uploaded 2022-02-18 to Unstable). Current version in 
-Unstable is 5.16.14. Testing/Bookworm now had 5.16.12.
-In Experimental, on 2022-02-12, 5.17-rc3 was uploaded.
-
-HTH,
-  Diederik
---nextPart2269141.ElGaqSPkdT
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQT1sUPBYsyGmi4usy/XblvOeH7bbgUCYjjNXwAKCRDXblvOeH7b
-bmG4APwKJH+NoQnMbqymwjfra7bWQF9in5WYMwgRu3GlvTiYhgD9FLab2MAFTrVL
-ufgQ54YsqRhBZcrwAhR1mtZBNyRlLw0=
-=SPqa
------END PGP SIGNATURE-----
-
---nextPart2269141.ElGaqSPkdT--
-
-
-
+Your tree is stale, this looks exactly like commit e58bc864630f
+("drivers: vxlan: fix returnvar.cocci warning") merged on March 8th.
