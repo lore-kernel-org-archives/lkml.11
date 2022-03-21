@@ -2,196 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C933C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:56:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D02C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:57:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349448AbiCUP6H (ORCPT
+        id S1350556AbiCUP66 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 11:58:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43530 "EHLO
+        Mon, 21 Mar 2022 11:58:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236298AbiCUP6F (ORCPT
+        with ESMTP id S236298AbiCUP6v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 11:58:05 -0400
-X-Greylist: delayed 672 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 21 Mar 2022 08:56:39 PDT
-Received: from louie.mork.no (louie.mork.no [IPv6:2001:41c8:51:8a:feff:ff:fe00:e5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A3D75D1B6;
-        Mon, 21 Mar 2022 08:56:39 -0700 (PDT)
-Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9f:8600:0:0:0:1])
-        (authenticated bits=0)
-        by louie.mork.no (8.15.2/8.15.2) with ESMTPSA id 22LFj3Jb506661
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Mon, 21 Mar 2022 15:45:05 GMT
-Received: from miraculix.mork.no ([IPv6:2a01:799:c9f:8602:8cd5:a7b0:d07:d516])
-        (authenticated bits=0)
-        by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPSA id 22LFj2lX1245399
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Mon, 21 Mar 2022 16:45:02 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1647877503; bh=eQHJWF+2Qkckbxc6boV6Ua513xsiPv7/H/5mXqIvaF8=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=CEHzqXz9IPk4GobVdbrQC0kKK23X+r4qs3QFYPDpbUhNNP45Zvb4YzY03Ox6D5jSz
-         PE+j54KI4Z2+vNUt8cOHFFuILpB+ApDllVRHBBfLUBYVwxpFj1dnwKSrMMr7d45MEE
-         gZ6/3Ws75fxF+YPCKskNO6fFk1g2iBnP/l40Cj04=
-Received: (nullmailer pid 902608 invoked by uid 1000);
-        Mon, 21 Mar 2022 15:45:01 -0000
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     Daehwan Jung <dh10.jung@samsung.com>
-Cc:     Mathias Nyman <mathias.nyman@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Howard Yen <howardyen@google.com>,
-        Jack Pham <jackp@codeaurora.org>,
-        Puma Hsu <pumahsu@google.com>,
-        "J . Avila" <elavila@google.com>, sc.suh@samsung.com
-Subject: Re: [PATCH v3 4/4] usb: host: add xhci-exynos driver
-In-Reply-To: <1647853194-62147-5-git-send-email-dh10.jung@samsung.com>
-        (Daehwan Jung's message of "Mon, 21 Mar 2022 17:59:54 +0900")
-Organization: m
-References: <1647853194-62147-1-git-send-email-dh10.jung@samsung.com>
-        <CGME20220321090205epcas2p15ac16f281554b663062e0e31666defab@epcas2p1.samsung.com>
-        <1647853194-62147-5-git-send-email-dh10.jung@samsung.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
-Date:   Mon, 21 Mar 2022 16:45:01 +0100
-Message-ID: <87r16v9uo2.fsf@miraculix.mork.no>
+        Mon, 21 Mar 2022 11:58:51 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2048.outbound.protection.outlook.com [40.107.220.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A8F1817A9;
+        Mon, 21 Mar 2022 08:57:25 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=heGBAiss2gGUjffD2xOOg4C+Km9CELn9ZzoM8pKlVquKP1J0dZ4gntYNsl6sgQmElmeaTi3z0wBQKao5SKgVPmMz4tSw7W+wMQr7tULxYJal8iFoEeYm1sGi6aIXm0Te7fVdbAGaLKLsuJp1OqlL+3LF7M2xRgamGKsWJ1tdp0puK3cngwlls8Tg1oHfMIoR6T8a6PIeFSDfZ7lUASOBxArtHIzQTBui/8ynjhf1pPw9f43I1tZ99sUImMYJqJa52vY/ZYBqhfhNYto2g055x//FtF14Cyw77eIYBT46UImcUzD5lrYx9zQLEC2d+nacc7iSIdxpH2HJz/UkHjo0bg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mLUbdUpnDeOElD7GlXamCZsg/mvNxKFSF0rXj2zS0Ec=;
+ b=mkyc8xzvMSCFwnIN6JeIRlITFjjvMPUvwmhGKKYGFtUCam319plDqih0DqbRgZAVB+3C3B1b3yUbxo06XNzSlEL1TOhRcwlfM1iB0V+4OVtlNhkJ/uFQXxyGy5FdhPS1hT/aCAQXHPWj6H3sDhwnlUKBSTGoiZx3Dl576ImV75dWISK34vSPAglTVLheKaEkb4h10t9vmO+stpq6q84dSMD+jXYxZPKyDbExcr/OaHtOYM7IUTILqYkq3q72KeI/ThmpxUA99APoRsoLQ5nGcJ8waRUOwWB0w+AA8NEbzxIgeCBMgsqgG+owGHFZuO29SxmJC7IpRquhltwj7V7exQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=opensource.cirrus.com
+ smtp.mailfrom=xilinx.com; dmarc=pass (p=none sp=none pct=100) action=none
+ header.from=xilinx.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mLUbdUpnDeOElD7GlXamCZsg/mvNxKFSF0rXj2zS0Ec=;
+ b=cyy0QXxumfI3+TXQvoDpc9Seh3svqT977cgZ+cMxAO3o58cHFz7NaYaQxobiKd5DSQlLY4BoPOuGes4hwClxdM5CncX82DiKQ3f4JptRTywag98kZQIaVqWSzs06MHlnju3qlg4fzP/5W1vvq/Fymrms23RceSPsKX4QHnCN15g=
+Received: from SN4PR0201CA0037.namprd02.prod.outlook.com
+ (2603:10b6:803:2e::23) by MWHPR0201MB3419.namprd02.prod.outlook.com
+ (2603:10b6:301:77::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.15; Mon, 21 Mar
+ 2022 15:57:24 +0000
+Received: from SN1NAM02FT0022.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:803:2e:cafe::fe) by SN4PR0201CA0037.outlook.office365.com
+ (2603:10b6:803:2e::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.22 via Frontend
+ Transport; Mon, 21 Mar 2022 15:57:23 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
+Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
+ SN1NAM02FT0022.mail.protection.outlook.com (10.97.5.0) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5081.14 via Frontend Transport; Mon, 21 Mar 2022 15:57:23 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Mon, 21 Mar 2022 08:57:15 -0700
+Received: from smtp.xilinx.com (172.19.127.95) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Mon, 21 Mar 2022 08:57:15 -0700
+Envelope-to: tanureal@opensource.cirrus.com,
+ linux-arm-kernel@lists.infradead.org,
+ linux-i2c@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ patches@opensource.cirrus.com
+Received: from [10.254.241.50] (port=49066)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <michal.simek@xilinx.com>)
+        id 1nWKPD-000C07-IC; Mon, 21 Mar 2022 08:57:15 -0700
+Message-ID: <dd26fa4a-870e-d969-04df-1f42487e2b54@xilinx.com>
+Date:   Mon, 21 Mar 2022 16:57:13 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.103.3 at canardo
-X-Virus-Status: Clean
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] i2c: cadence: Increase timeout per message if necessary
+Content-Language: en-US
+To:     Lucas Tanure <tanureal@opensource.cirrus.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-i2c@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <patches@opensource.cirrus.com>
+References: <20220309093147.102385-1-tanureal@opensource.cirrus.com>
+From:   Michal Simek <michal.simek@xilinx.com>
+In-Reply-To: <20220309093147.102385-1-tanureal@opensource.cirrus.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0c3b160e-5024-420e-8af2-08da0b537d30
+X-MS-TrafficTypeDiagnostic: MWHPR0201MB3419:EE_
+X-Microsoft-Antispam-PRVS: <MWHPR0201MB34193A7EAC35EC4C47AEF21CC6169@MWHPR0201MB3419.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qrHPYdIa8okcdXQFllfsPfBLY9QTZRC+n0BC/b53ML9tOEpsDIA9FXb5wHvqPXeojNfu1qZYaQRqH+OLyLR8Epaxr86p7V/3RdzmxqUiH4y7RQpwQ6spyr9xafjLOpRnBKkaQZq7+uD0hphxOR96Awj8fDTWaE1xcNsiK3kZJ3U0d2pdqLktmOEJaoidasDQMzFqWCrQzh786vrZiahh4AN0H6YXk10dNOTPrTrvpM7L0K9iEdWlWc+Gl1VRKbzqKifVcGDq6E0aNJgxN9w5ok35IoewLSL+3AKvLSFkMCMfh1hs4mnxvqujXPFJ7HF27VjATuPEbRDIypADsoh//uA5OnWPOiiIqPUIQCbmSt5rZ919Io7H9EyLVeWeWbk+dAm94QdjsZ68JGQpKwFhVhKvRq6r6XK+C9SGPc5qZ47BryP+FpyMAnc0lpyCh6l3cUtQTLKORTZMs5LFptmNv1TY+7Hs05h78tTRzmjymmcBxkXZnK5pCEfJIjupcAYVkMI1anreTMX0IZsO3WhfglkETlj62xi+1zilnPcqAi3+5CSfIZhjYghJI7ZshCOfMDZdVvQagUau1uGrz1PtLT7hHUH1a2w5raJP5goMrjDvUArcS1OAPs+Ewk6ZyWaPLVeluJ4YlwazNkR4Tp1bKJ9BvO9Fl9PLfTQz7I9GEfGE2TqNP5N+r6kTRZDYO2H44hobiN8zi3dSyIzrMF0CqnIMYl/36gmESWML8dgF/Fg=
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(31686004)(336012)(47076005)(356005)(70586007)(36756003)(5660300002)(70206006)(40460700003)(7636003)(186003)(26005)(8676002)(53546011)(426003)(36860700001)(110136005)(2906002)(4326008)(15650500001)(2616005)(44832011)(31696002)(6636002)(508600001)(9786002)(8936002)(54906003)(82310400004)(83380400001)(316002)(50156003)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2022 15:57:23.5933
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0c3b160e-5024-420e-8af2-08da0b537d30
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0022.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR0201MB3419
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Daehwan Jung <dh10.jung@samsung.com> writes:
++Shubhrajyoti
 
-> +++ b/drivers/usb/host/xhci-exynos.c
-> @@ -0,0 +1,982 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * xhci-exynos.c - xHCI host controller driver platform Bus Glue for Exy=
-nos.
-> + *
-> + * Copyright (C) 2022 Samsung Electronics Incorporated - http://www.sams=
-ung.com
-> + * Author: Daehwan Jung <dh10.jung@samsung.com>
-> + *
-> + * A lot of code borrowed from the Linux xHCI driver.
-> + */
-> +#include <linux/clk.h>
-> +#include <linux/dma-mapping.h>
-> +#include <linux/module.h>
-> +#include <linux/pci.h>
-> +#include <linux/of.h>
-> +#include <linux/of_device.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/usb/phy.h>
-> +#include <linux/slab.h>
-> +#include <linux/acpi.h>
-> +#include <linux/usb/of.h>
+On 3/9/22 10:31, Lucas Tanure wrote:
+> Timeout as 1 second sets a upper limit on the length of
+> the transfer executed, but there is no maximum length of
+> a write or read message set in i2c_adapter_quirks for this
+> controller.
+
+nit: I would expect that you have run any test and you reached an issue.
+Would be good to describe what exactly you have tried on which configuration to 
+make it super clear.
+
+> 
+> To remove that limitation calculate the minimal time
+> necessary, plus some wiggle room, for every message
+> and use it instead of the default one second, if
+> more than one second.
+> 
+> Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
+> ---
+>   drivers/i2c/busses/i2c-cadence.c | 12 ++++++++++--
+>   1 file changed, 10 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/i2c/busses/i2c-cadence.c b/drivers/i2c/busses/i2c-cadence.c
+> index 805c77143a0f..b4c1ad19cdae 100644
+> --- a/drivers/i2c/busses/i2c-cadence.c
+> +++ b/drivers/i2c/busses/i2c-cadence.c
+> @@ -760,7 +760,7 @@ static void cdns_i2c_master_reset(struct i2c_adapter *adap)
+>   static int cdns_i2c_process_msg(struct cdns_i2c *id, struct i2c_msg *msg,
+>   		struct i2c_adapter *adap)
+>   {
+> -	unsigned long time_left;
+> +	unsigned long time_left, msg_timeout;
+>   	u32 reg;
+>   
+>   	id->p_msg = msg;
+> @@ -785,8 +785,16 @@ static int cdns_i2c_process_msg(struct cdns_i2c *id, struct i2c_msg *msg,
+>   	else
+>   		cdns_i2c_msend(id);
+>   
+> +	/* Minimal time to execute this message */
+> +	msg_timeout = msecs_to_jiffies((1000 * msg->len * BITS_PER_BYTE) / id->i2c_clk);
+> +	/* Plus some wiggle room */
+> +	msg_timeout += msecs_to_jiffies(500);
 > +
-> +#include "xhci.h"
-> +#include "xhci-plat.h"
-> +#include "xhci-mvebu.h"
-> +#include "xhci-rcar.h"
-
-The xhci-plat.c file is Copyright (C) 2012 Texas Instruments Incorporated
-You can't just steal it.
-
-Besides, even if you could, this isn't about copying as much code as
-posible from A to B.  The point is to add as *little* code as possible
-to support your hardware.
-
-> +static int xhci_exynos_vendor_init(struct xhci_hcd *xhci)
-> +{
-> +	/* TODO */
-> +	return 0;
-> +}
-
-And you didn't even add that?
-
-> +static int xhci_exynos_wake_lock(struct xhci_hcd_exynos *xhci_exynos,
-> +				   int is_main_hcd, int is_lock)
-> +{
-> +	struct usb_hcd	*hcd =3D xhci_exynos->hcd;
-> +	struct xhci_hcd *xhci =3D hcd_to_xhci(hcd);
-> +	struct wakeup_source *main_wakelock, *shared_wakelock;
+> +	if (msg_timeout < adap->timeout)
+> +		msg_timeout = adap->timeout;
 > +
-> +	main_wakelock =3D xhci_exynos->main_wakelock;
-> +	shared_wakelock =3D xhci_exynos->shared_wakelock;
-
-Are these fields initialized anywhere?
-
-
-> +
-> +	if (xhci->xhc_state & XHCI_STATE_REMOVING)
-> +		return -ESHUTDOWN;
-> +
-> +	if (is_lock) {
-
-bool?
-
-> +		if (is_main_hcd)
-
-another bool?
-
-> +			__pm_stay_awake(main_wakelock);
-> +		else
-> +			__pm_stay_awake(shared_wakelock);
-> +	} else {
-> +		if (is_main_hcd)
-> +			__pm_relax(main_wakelock);
-> +		else
-> +			__pm_relax(shared_wakelock);
-> +	}
-
-Looks interesting.   Are you signalling relax/wakeups events to the PM
-core on device suspend/resume?  Why?
-
-> +static int xhci_exynos_address_device(struct usb_hcd *hcd, struct usb_de=
-vice *udev)
-> +{
-> +	struct xhci_hcd *xhci;
-> +	int ret;
-> +
-> +	ret =3D xhci_address_device(hcd, udev);
-> +	xhci =3D hcd_to_xhci(hcd);
-> +
-> +	return ret;
-> +}
-
-What's left here if we drop the unused parts?
-
-> +#ifdef CONFIG_OF
-> +static const struct xhci_plat_priv xhci_plat_marvell_armada =3D {
-> +	.init_quirk =3D xhci_mvebu_mbus_init_quirk,
-> +};
-> +
-> +static const struct xhci_plat_priv xhci_plat_marvell_armada3700 =3D {
-> +	.plat_setup =3D xhci_mvebu_a3700_plat_setup,
-> +	.init_quirk =3D xhci_mvebu_a3700_init_quirk,
-> +};
+>   	/* Wait for the signal of completion */
+> -	time_left = wait_for_completion_timeout(&id->xfer_done, adap->timeout);
+> +	time_left = wait_for_completion_timeout(&id->xfer_done, msg_timeout);
+>   	if (time_left == 0) {
+>   		cdns_i2c_master_reset(adap);
+>   		dev_err(id->adap.dev.parent,
 
 
-Right...
+If my assumption is right and there is any actual issue you had please send v2 
+and feel free to add there my:
+Acked-by: Michal Simek <michal.simek@xilinx.com>
 
-> +#ifdef CONFIG_ACPI
-> +static const struct acpi_device_id usb_xhci_acpi_match[] =3D {
-> +	/* XHCI-compliant USB Controller */
-> +	{ "PNP0D10", },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(acpi, usb_xhci_acpi_match);
-> +#endif
-
-Nice one
-
-There's no need to copy me if you plan to resend any of this.  I'm just
-a drive-by reader here anyway, and I've seen enough.
-
-Good luck!
+Thanks,
+Michal
 
 
-
-
-Bj=C3=B8rn
