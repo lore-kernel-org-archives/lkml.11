@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EA52C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58031C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:04:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348930AbiCUOFp (ORCPT
+        id S1348975AbiCUOEt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:05:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60362 "EHLO
+        Mon, 21 Mar 2022 10:04:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349173AbiCUN7e (ORCPT
+        with ESMTP id S1349111AbiCUN7L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:59:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C438255B0;
-        Mon, 21 Mar 2022 06:58:09 -0700 (PDT)
+        Mon, 21 Mar 2022 09:59:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 400CE10CC;
+        Mon, 21 Mar 2022 06:57:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2778E6126A;
-        Mon, 21 Mar 2022 13:58:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBA33C340E8;
-        Mon, 21 Mar 2022 13:58:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD594B81598;
+        Mon, 21 Mar 2022 13:57:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F938C340E8;
+        Mon, 21 Mar 2022 13:57:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871088;
-        bh=hg12RVOcVeX/qVd5Vr1cnlSIyR3Is5JuwGoCxLJRNE8=;
+        s=korg; t=1647871063;
+        bh=iAWoA/KtW5sunOlZanpzjYKJC7pZGFvMadTuEFgrzKQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BIDLf2+evEhqzuOEWkDvjKHlZHS3qhZ4ohu3hjLxARW6tuM8pR2UJoVFGwWIhdpTy
-         aRZItNnGDh9YfSc2QpeU6Z9cx8nC+32tXPRv/vr/9w0rInAIKVLXBpng4vM6yemkPj
-         wcD0fQSNltxFAaESI2nb8gAdndzSGUV7GO0mKllU=
+        b=Lygqz3ANgmJZkHhbMqmsoIRtBqAA7iox7PIFFMMOhjMUKU/ugSQl63V1R1WKnmpZW
+         22wxyzjOcSVgnSr1aRnw8L73pDQ1THNO0YfJg05Kq7rwzy/++Ov40eQObzE5AZUcYh
+         QMRgUcCcxCv+lDEJPnrd0Qnl1PCLJ178py23n+hQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Ard Biesheuvel <ardb@kernel.org>, linux-efi@vger.kernel.org,
-        Lukas Wunner <lukas@wunner.de>,
-        Octavian Purdila <octavian.purdila@intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Matt Fleming <matt@codeblueprint.co.uk>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 03/17] efi: fix return value of __setup handlers
-Date:   Mon, 21 Mar 2022 14:52:39 +0100
-Message-Id: <20220321133217.252494434@linuxfoundation.org>
+Subject: [PATCH 5.4 10/17] net: dsa: Add missing of_node_put() in dsa_port_parse_of
+Date:   Mon, 21 Mar 2022 14:52:46 +0100
+Message-Id: <20220321133217.455384427@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133217.148831184@linuxfoundation.org>
 References: <20220321133217.148831184@linuxfoundation.org>
@@ -55,79 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 9feaf8b387ee0ece9c1d7add308776b502a35d0c ]
+[ Upstream commit cb0b430b4e3acc88c85e0ad2e25f2a25a5765262 ]
 
-When "dump_apple_properties" is used on the kernel boot command line,
-it causes an Unknown parameter message and the string is added to init's
-argument strings:
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
 
-  Unknown kernel command line parameters "dump_apple_properties
-    BOOT_IMAGE=/boot/bzImage-517rc6 efivar_ssdt=newcpu_ssdt", will be
-    passed to user space.
-
- Run /sbin/init as init process
-   with arguments:
-     /sbin/init
-     dump_apple_properties
-   with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc6
-     efivar_ssdt=newcpu_ssdt
-
-Similarly when "efivar_ssdt=somestring" is used, it is added to the
-Unknown parameter message and to init's environment strings, polluting
-them (see examples above).
-
-Change the return value of the __setup functions to 1 to indicate
-that the __setup options have been handled.
-
-Fixes: 58c5475aba67 ("x86/efi: Retrieve and assign Apple device properties")
-Fixes: 475fb4e8b2f4 ("efi / ACPI: load SSTDs from EFI variables")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Cc: Ard Biesheuvel <ardb@kernel.org>
-Cc: linux-efi@vger.kernel.org
-Cc: Lukas Wunner <lukas@wunner.de>
-Cc: Octavian Purdila <octavian.purdila@intel.com>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: Matt Fleming <matt@codeblueprint.co.uk>
-Link: https://lore.kernel.org/r/20220301041851.12459-1-rdunlap@infradead.org
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Fixes: 6d4e5c570c2d ("net: dsa: get port type at parse time")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220316082602.10785-1-linmq006@gmail.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/efi/apple-properties.c | 2 +-
- drivers/firmware/efi/efi.c              | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ net/dsa/dsa2.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/firmware/efi/apple-properties.c b/drivers/firmware/efi/apple-properties.c
-index 0e206c9e0d7a..7ad2d85d7270 100644
---- a/drivers/firmware/efi/apple-properties.c
-+++ b/drivers/firmware/efi/apple-properties.c
-@@ -23,7 +23,7 @@ static bool dump_properties __initdata;
- static int __init dump_properties_enable(char *arg)
- {
- 	dump_properties = true;
--	return 0;
-+	return 1;
- }
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index 70e6fc2edd30..1f27641f9cc0 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -669,6 +669,7 @@ static int dsa_port_parse_of(struct dsa_port *dp, struct device_node *dn)
+ 		struct net_device *master;
  
- __setup("dump_apple_properties", dump_properties_enable);
-diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 415d7b3a59f8..8fd74a7501d4 100644
---- a/drivers/firmware/efi/efi.c
-+++ b/drivers/firmware/efi/efi.c
-@@ -231,7 +231,7 @@ static int __init efivar_ssdt_setup(char *str)
- 		memcpy(efivar_ssdt, str, strlen(str));
- 	else
- 		pr_warn("efivar_ssdt: name too long: %s\n", str);
--	return 0;
-+	return 1;
- }
- __setup("efivar_ssdt=", efivar_ssdt_setup);
+ 		master = of_find_net_device_by_node(ethernet);
++		of_node_put(ethernet);
+ 		if (!master)
+ 			return -EPROBE_DEFER;
  
 -- 
 2.34.1
