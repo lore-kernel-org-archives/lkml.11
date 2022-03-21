@@ -2,169 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CD81C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:49:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24F67C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:49:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229796AbiCUWuY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:50:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52618 "EHLO
+        id S230264AbiCUWud (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:50:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229953AbiCUWtx (ORCPT
+        with ESMTP id S230232AbiCUWuQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:49:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8CBC31FF34
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:29:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 025ED611FC
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 22:29:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBE92C36AE3;
-        Mon, 21 Mar 2022 22:29:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647901798;
-        bh=wutwcYfPuDKvje0wl8k99lEbUIaJw/Jfjn0jdgrmcf0=;
-        h=In-Reply-To:References:Date:From:To:Cc:Subject:From;
-        b=UCHgU0/nfTYpt+7mFjjE2sCGl8P1YZQ7v+ZoVmJIz4jeHfYP0HSEvcgglKWTKNOFy
-         FbA4J5y11c+46eMMWpMUkFbMrY4qR0xbaDTad9jg0NmwQ9L16t1+JXj5ZXaNxZGx4k
-         sj73XP18hGfw9cIC/ZToL4kq81omNVw51E0hRRWWtaPErzIspDf/mW/gG5su4JtKXZ
-         fGp7gVGxyFywtyJ3XbTANJdosljK8GzawYRRm5yKAdO7RdoizeQFvGgc1zLNRX73Wz
-         DW7ERqGQ3fQXgIcvJDoTT3k6ylFS9imY18yd0pbnoG9FjEd/TYEd5zRSfWi6TI7B0y
-         /48F8Rxdov7Zw==
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailauth.nyi.internal (Postfix) with ESMTP id 9B28827C0054;
-        Mon, 21 Mar 2022 18:29:56 -0400 (EDT)
-Received: from imap48 ([10.202.2.98])
-  by compute5.internal (MEProxy); Mon, 21 Mar 2022 18:29:56 -0400
-X-ME-Sender: <xms:Y_w4YvCCeUVgUydeHawN0zyU-tDs4wjhYGNYLoYHQeXrzeSVTtnmdQ>
-    <xme:Y_w4Ylh8lt2ZvAEVm0Ypg7bzIXziEB0qi9drVr8Q9aFZ9I4Of7Txs2K1oHxxRwqaV
-    QtxVGZ4EFsj2cFgz4o>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudegfedgudeivdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedftehn
-    ugihucfnuhhtohhmihhrshhkihdfuceolhhuthhosehkvghrnhgvlhdrohhrgheqnecugg
-    ftrfgrthhtvghrnhephfelhfdugeetvdfhfeeuveevtdegueekhfffheetffdtleevtdeh
-    tdeivdeuvedunecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghruf
-    hiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrnhguhidomhgvshhmthhprghu
-    thhhphgvrhhsohhnrghlihhthidqudduiedukeehieefvddqvdeifeduieeitdekqdhluh
-    htoheppehkvghrnhgvlhdrohhrgheslhhinhhugidrlhhuthhordhush
-X-ME-Proxy: <xmx:Y_w4YqlZSnVfv0k7OnZ4e1g0eF5mYs4kLX_4gU70_EXhM9X3uswt5g>
-    <xmx:Y_w4Yhxv5TeVGvFik2vqO-pIt2y_B8sKhEYQZJu9ogyqKTXHQXnOyw>
-    <xmx:Y_w4YkQ7l-A3VAvAjL5Kr8KsaaN4rUx0iWWzCDW__uhfBcuYrNv_Xw>
-    <xmx:ZPw4YrJA4wCcJfpzvSYpRLne0w4BPlILIDxy7fuqhbjim8ssiPlHZw>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 4342821E006E; Mon, 21 Mar 2022 18:29:55 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.5.0-alpha0-4907-g25ce6f34a9-fm-20220311.001-g25ce6f34
-Mime-Version: 1.0
-Message-Id: <6a5076ad-405e-4e5e-af55-fe2a6b01467d@www.fastmail.com>
-In-Reply-To: <20220310111545.10852-1-bharata@amd.com>
-References: <20220310111545.10852-1-bharata@amd.com>
-Date:   Mon, 21 Mar 2022 15:29:34 -0700
-From:   "Andy Lutomirski" <luto@kernel.org>
-To:     "Bharata B Rao" <bharata@amd.com>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>
-Cc:     linux-mm@kvack.org, "the arch/x86 maintainers" <x86@kernel.org>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        "Thomas Gleixner" <tglx@linutronix.de>,
-        "Ingo Molnar" <mingo@redhat.com>, "Borislav Petkov" <bp@alien8.de>,
-        "Dave Hansen" <dave.hansen@linux.intel.com>,
-        "Catalin Marinas" <catalin.marinas@arm.com>,
-        "Will Deacon" <will@kernel.org>, shuah@kernel.org,
-        "Oleg Nesterov" <oleg@redhat.com>, ananth.narayan@amd.com
-Subject: Re: [RFC PATCH v0 0/6] x86/AMD: Userspace address tagging
-Content-Type: text/plain
+        Mon, 21 Mar 2022 18:50:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB454370C90
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:30:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647901809;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=EAE8HCtpjM+jUc1ApTBvyoxBSZREVuBpm/2ip+JPuvw=;
+        b=g3xaE9ts4I5zA/pQyhDUnSj3damHaMO3Yj9chLDNMvrH0e4NOKUF3iUbtuNf6CqkKXgZtK
+        j8zBKaRtV6GeN1vxq6huZ+ZdiS5vq2kVllc363sMkny7Kd5myoo45YoycskZUUshOq7F6G
+        DZwpPHvPWgQKAGFpdrSVai7A8CLpndg=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-410-KyK5Dv_UMbOhSg7CnAfObA-1; Mon, 21 Mar 2022 18:04:24 -0400
+X-MC-Unique: KyK5Dv_UMbOhSg7CnAfObA-1
+Received: by mail-qv1-f71.google.com with SMTP id x6-20020ad44626000000b0044119c7bf4aso4243963qvv.12
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:04:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EAE8HCtpjM+jUc1ApTBvyoxBSZREVuBpm/2ip+JPuvw=;
+        b=UrNQ9wtDjgcsvF0Bd3StqUflFoSky4JGwTfmCiAU5PI/d/Q5jR87AvtHZbJTzW+Wwu
+         //EtIdX3/oJvf95eOkiT8HH4nkrACeAL8f8X5CUgrFooFXSjbcJ7IpDRxJPcLNobuOCL
+         Y68zfPozxUibzjixm5aR0hyTQyFdjNj2O3PqDD/G7o75jvNEXZN6wPQ6Pj82tAbMqEGI
+         pZAPe6s6kBA8M8jpAOmQR+JgLxPQtA8LgevJy5jtGkT43ytbW7NjW38JAgDY+edymJbX
+         fFLcJhlKEVA/zWI9YzAZD1Ezoul95akXo7Q0ZZ43A8YV0619RN0Xusc65ugWN/39p3Nk
+         4Hhg==
+X-Gm-Message-State: AOAM531O+jMNIe7wS1qXy6AbSQ++03Tuvm4N42qtg7N1BrO5nbnW4ccQ
+        l8pTAKWaNH0sLuZBWfPNfptUqs9HHN4mzpJooGISUc/E3ZZvNGBqLifJZ+4L8GDuVkS98M+C6Ry
+        XGbF+BphuaT27guLN6iItJntN
+X-Received: by 2002:a05:622a:13d2:b0:2e1:eedb:c81a with SMTP id p18-20020a05622a13d200b002e1eedbc81amr17047682qtk.437.1647900263482;
+        Mon, 21 Mar 2022 15:04:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy1U5Tj/wJe6NsZNnB2FgrrKyvSVD8FAkqs6udLgi3vy3yBsH2/Xd1pfjMZojGr6sjDBC2Sug==
+X-Received: by 2002:a05:622a:13d2:b0:2e1:eedb:c81a with SMTP id p18-20020a05622a13d200b002e1eedbc81amr17047671qtk.437.1647900263231;
+        Mon, 21 Mar 2022 15:04:23 -0700 (PDT)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id de26-20020a05620a371a00b0067dc7923b14sm8218854qkb.132.2022.03.21.15.04.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 15:04:22 -0700 (PDT)
+From:   trix@redhat.com
+To:     corbet@lwn.net, dan.j.williams@intel.com
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] nvdimm/blk: Fix title level
+Date:   Mon, 21 Mar 2022 15:04:08 -0700
+Message-Id: <20220321220408.2381974-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022, at 3:15 AM, Bharata B Rao wrote:
-> Hi,
->
-> This patchset makes use of Upper Address Ignore (UAI) feature available
-> on upcoming AMD processors to provide user address tagging support for x86/AMD.
->
-> UAI allows software to store a tag in the upper 7 bits of a logical
-> address [63:57]. When enabled, the processor will suppress the
-> traditional canonical address checks on the addresses. More information
-> about UAI can be found in section 5.10 of 'AMD64 Architecture
-> Programmer's Manual, Vol 2: System Programming' which is available from
->
-> https://bugzilla.kernel.org/attachment.cgi?id=300549
+From: Tom Rix <trix@redhat.com>
 
-I hate to be a pain, but I'm really not convinced that this feature is suitable for Linux.  There are a few reasons:
+make htmldocs fails with
+Sphinx parallel build error:
+docutils.utils.SystemMessage: ...nvdimm.rst:146:
+  (SEVERE/4) Title level inconsistent:
 
-Right now, the concept that the high bit of an address determines whether it's a user or a kernel address is fairly fundamental to the x86_64 (and x86_32!) code.  It may not be strictly necessary to preserve this, but violating it would require substantial thought.  With UAI enabled, kernel and user addresses are, functionally, interleaved.  This makes things like access_ok checks, and more generally anything that operates on a range of addresses, behave potentially quite differently.  A lot of auditing of existing code would be needed to make it safe.
+PMEM-REGIONs, Atomic Sectors, and DAX
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-UAI looks like it wasn't intended to be context switched and, indeed, your series doesn't context switch it.  As far as I'm concerned, this is an error, and if we support UAI at all, we should context switch it.  Yes, this will be slow, perhaps painfully slow.  AMD knows how to fix it by, for example, reading the Intel SDM.  By *not* context switching UAI, we force it on for all user code, including unsuspecting user code, as well as for kernel code.  Do we actually want it on for kernel code?  With LAM, in contrast, the semantics for kernel pointers vs user pointers actually make sense and can be set per mm, which will make things like io_uring (in theory) do the right thing.
+The PMEM vs BLK section was removed without changing
+the PMEM-REGIONS... title line.  Replace '^' with '_'.
 
-UAI and LAM are incompatible from a userspace perspective.  Since LAM is pretty clearly superior [0], it seems like a better long term outcome would be for programs that want tag bits to target LAM and for AMD to support LAM if there is demand.  For that matter, do we actually expect any userspace to want to support UAI?  (Are there existing too-clever sandboxes that would be broken by enabling UAI?)
+Fixes: f8669f1d6a86 ("nvdimm/blk: Delete the block-aperture window driver")
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ Documentation/driver-api/nvdimm/nvdimm.rst | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Given that UAI is not efficiently context switched, the implementation of uaccess is rather bizarre.  With the implementation in this series in particular, if the access_ok checks ever get out of sync with actual user access, a user access could be emitted with the high bits not masked despite the range check succeeding due to masking, which would, unless great care is taken, result in a "user" access hitting the kernel range.  That's no good.
+diff --git a/Documentation/driver-api/nvdimm/nvdimm.rst b/Documentation/driver-api/nvdimm/nvdimm.rst
+index 7917f64710920..be8587a558e1e 100644
+--- a/Documentation/driver-api/nvdimm/nvdimm.rst
++++ b/Documentation/driver-api/nvdimm/nvdimm.rst
+@@ -15,7 +15,7 @@ Version 13
+ 	    Supporting Documents
+ 	    Git Trees
+ 	LIBNVDIMM PMEM
+-	        PMEM-REGIONs, Atomic Sectors, and DAX
++	    PMEM-REGIONs, Atomic Sectors, and DAX
+ 	Example NVDIMM Platform
+ 	LIBNVDIMM Kernel Device Model and LIBNDCTL Userspace API
+ 	    LIBNDCTL: Context
+@@ -144,7 +144,7 @@ can be immediately attached to nd_pmem. This latter mode is called
+ label-less or "legacy".
+ 
+ PMEM-REGIONs, Atomic Sectors, and DAX
+-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++-------------------------------------
+ 
+ For the cases where an application or filesystem still needs atomic sector
+ update guarantees it can register a BTT on a PMEM device or partition.  See
+-- 
+2.26.3
 
-I believe it's possible for a high-quality kernel UAI implementation to exist, but, as above, I think it would be slow, and it might be quite complex and fragile.  Are we sure that it's worth supporting it?
-
-[0] I hope I don't have to argue this point.
-
-
-
->
-> Currently ARM64 provides a way for processes to opt-in for
-> relaxed tagged ABI via prctl() options PR_SET/GET_TAGGED_ADDR_CTRL.
-> The prctl() API was found to be a bit restrictive for x86 use and
-> Kirill had posted an extension to it as part of Intel LAM patchset.
-> (https://lore.kernel.org/linux-mm/20210205151631.43511-1-kirill.shutemov@linux.intel.com/)
->
-> This patchset builds on that prctl() extension and adds support
-> for AMD UAI. AMD implementation is kept separate as equivalent
-> Intel LAM implementation is likely to be different due to different
-> bit positions and tag width.
->
-> This is an early implementation which has been only lightly tested.
-> I have used the tags_test.c from selftests/vm/tags/ to test this.
-> For ARM64 changes, I have only ensured that the changes compile.
->
-> Regards,
-> Bharata.
->
-> Bharata B Rao (5):
->   x86/cpufeatures: Add Upper Address Ignore(UAI) as CPU feature
->   x86: Enable Upper Address Ignore(UAI) feature
->   x86: Provide an implementation of untagged_addr()
->   x86: Untag user pointers in access_ok()
->   x86: Add prctl() options to control tagged user addresses ABI
->
-> Kirill A. Shutemov (1):
->   mm, arm64: Update PR_SET/GET_TAGGED_ADDR_CTRL interface
->
->  arch/arm64/include/asm/processor.h            |  12 +-
->  arch/arm64/kernel/process.c                   |  45 +++++-
->  arch/arm64/kernel/ptrace.c                    |   4 +-
->  arch/x86/Kconfig                              |   9 ++
->  arch/x86/include/asm/cpufeatures.h            |   2 +-
->  arch/x86/include/asm/msr-index.h              |   2 +
->  arch/x86/include/asm/page_32.h                |   3 +
->  arch/x86/include/asm/page_64.h                |  26 ++++
->  arch/x86/include/asm/processor.h              |  12 ++
->  arch/x86/include/asm/thread_info.h            |   2 +
->  arch/x86/include/asm/uaccess.h                |  29 +++-
->  arch/x86/kernel/cpu/scattered.c               |   1 +
->  arch/x86/kernel/process.c                     | 134 ++++++++++++++++++
->  arch/x86/kernel/setup.c                       |   8 ++
->  kernel/sys.c                                  |  14 +-
->  .../testing/selftests/arm64/tags/tags_test.c  |  31 ----
->  .../selftests/{arm64 => vm}/tags/.gitignore   |   0
->  .../selftests/{arm64 => vm}/tags/Makefile     |   0
->  .../{arm64 => vm}/tags/run_tags_test.sh       |   0
->  tools/testing/selftests/vm/tags/tags_test.c   |  59 ++++++++
->  20 files changed, 335 insertions(+), 58 deletions(-)
->  delete mode 100644 tools/testing/selftests/arm64/tags/tags_test.c
->  rename tools/testing/selftests/{arm64 => vm}/tags/.gitignore (100%)
->  rename tools/testing/selftests/{arm64 => vm}/tags/Makefile (100%)
->  rename tools/testing/selftests/{arm64 => vm}/tags/run_tags_test.sh (100%)
->  create mode 100644 tools/testing/selftests/vm/tags/tags_test.c
->
-> -- 
-> 2.25.1
