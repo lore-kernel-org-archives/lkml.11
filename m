@@ -2,145 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 299F8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 21:12:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23E2CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 21:15:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230060AbiCUVOS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 17:14:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41420 "EHLO
+        id S230072AbiCUVQs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 17:16:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229830AbiCUVOO (ORCPT
+        with ESMTP id S229534AbiCUVQo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 17:14:14 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 709E51AF0E
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 14:12:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647897167; x=1679433167;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=slIpHa3AbN25NlolPKmVa69wvvtsdq5vnlIaFtnj5b4=;
-  b=ggG2unR7A6W9q9AHHGw1zC+Hpk3Gp6jr0r9pet/s/10p2wocILzdPGAH
-   D1c5P9WQh35MzhU9haX25y3sKXkTqa763BvwOv9WqyBMiLmTz9Aly0Vqf
-   e1Z7w6mPeYoFEeN3fQtSnfmsov1Ssu1q/VBu5lQbT2H5b51ot22v1Wd06
-   lKsqaSbRdQUrvBQHTDgM0N1L4LmzyXLK2z08x9KGStNUAzR2EqyiMLjaR
-   TlQyRrknQbWPxwyJFxQMcuMJkpqQUVFn065A7PJ/XoIbN+/cwixqm3RIJ
-   B/+Rs851lX/bqvHM19UkzQEi+0Xyxs1v3AdvNKm9o6lpbV24gN2XQxm79
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="282479161"
-X-IronPort-AV: E=Sophos;i="5.90,199,1643702400"; 
-   d="scan'208";a="282479161"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 14:12:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,199,1643702400"; 
-   d="scan'208";a="648709125"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 21 Mar 2022 14:12:45 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nWPKW-000I9n-QH; Mon, 21 Mar 2022 21:12:44 +0000
-Date:   Tue, 22 Mar 2022 05:12:12 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mingo-tip:master 2185/2335] arch/x86/pci/bus_numa.c:24:5: warning:
- no previous prototype for 'x86_pci_root_bus_node'
-Message-ID: <202203220527.DRupyyYd-lkp@intel.com>
+        Mon, 21 Mar 2022 17:16:44 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF4CC28F814
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 14:15:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Ii3OZp8pxT+C1BTuGgcw+63YrNr4SmJ8xYBhoY0Jnnk=; b=QM0LpZRlBphKJgtC91f9ifwaof
+        BDcCZHIHvhQKSH2ghlab6L3fTaZgy1OAV+Ygtlid+iRZA434hD21AJU8LpAsztHUM4cJYpPf9eajY
+        B1gH7p2Gytky0677wEqBUsgH9V39zKaJEkRt4K9IrB3baJEuj/Utl+Rr24HVtpbMYvT1wtFcTFDvd
+        zggVCMqkfWBpefkSz/+dJbDQK9BCgmH/tH10Vj7OwJBzqcsR3hstCCJ03h5bNwV83hAylCDNY/eNz
+        /QLbyjaZFgoMuR7FzcDVnboMCe1c1VCOj2fTDrglcAadbJP17a2N2Ha9lw+fk1jcu3E4l32gqWISV
+        rDVf0x5A==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nWPMj-003FTq-R5; Mon, 21 Mar 2022 21:15:02 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 46F763001C0;
+        Mon, 21 Mar 2022 22:14:59 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 0159A2DC2BF17; Mon, 21 Mar 2022 22:14:58 +0100 (CET)
+Date:   Mon, 21 Mar 2022 22:14:58 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [peterz-queue:locking/core 17/19] arch/x86/kvm/x86.h:29:30:
+ error: too many arguments to function call, expected 0, have 1
+Message-ID: <Yjjq0kgGjL8Nt9CJ@hirez.programming.kicks-ass.net>
+References: <202203191213.tC0sjaY7-lkp@intel.com>
+ <CAKwvOdnEyGLi14b0qsc2=aSRafCrQD-Zyh+Oq+E-vx+c1viErg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAKwvOdnEyGLi14b0qsc2=aSRafCrQD-Zyh+Oq+E-vx+c1viErg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git master
-head:   85293bf3fca6d85608cff1447ce3097583f15fab
-commit: c599df5b2e31219f6a937ab3cfb2d5d9a6fda0b2 [2185/2335] headers/deps: pci: Optimize <linux/pci.h> dependencies, remove <linux/topology.h> inclusion
-config: i386-randconfig-a001-20220314 (https://download.01.org/0day-ci/archive/20220322/202203220527.DRupyyYd-lkp@intel.com/config)
-compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=c599df5b2e31219f6a937ab3cfb2d5d9a6fda0b2
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip master
-        git checkout c599df5b2e31219f6a937ab3cfb2d5d9a6fda0b2
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+On Mon, Mar 21, 2022 at 10:51:29AM -0700, Nick Desaulniers wrote:
+> On Fri, Mar 18, 2022 at 9:10 PM kernel test robot <lkp@intel.com> wrote:
+> >
+> > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git locking/core
+> > head:   200a79c670d24d4d9a75a6a9cbfd14af2f5d0ad9
+> > commit: 5c9f3806a4400c2957abeea9419547f856457a20 [17/19] lockdep: Fix -Wunused-parameter for _THIS_IP_
+> > config: x86_64-randconfig-a014 (https://download.01.org/0day-ci/archive/20220319/202203191213.tC0sjaY7-lkp@intel.com/config)
+> > compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a6e70e4056dff962ec634c5bd4f2f4105a0bef71)
+> > reproduce (this is a W=1 build):
+> >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+> >         chmod +x ~/bin/make.cross
+> >         # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=5c9f3806a4400c2957abeea9419547f856457a20
+> >         git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
+> >         git fetch --no-tags peterz-queue locking/core
+> >         git checkout 5c9f3806a4400c2957abeea9419547f856457a20
+> >         # save the config file to linux build tree
+> >         mkdir build_dir
+> >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+> >
+> > If you fix the issue, kindly add following tag as appropriate
+> > Reported-by: kernel test robot <lkp@intel.com>
+> >
+> > All errors (new ones prefixed by >>):
+> >
+> >    In file included from arch/x86/kvm/x86.c:22:
+> >    In file included from arch/x86/kvm/mmu.h:7:
+> >    In file included from arch/x86/kvm/cpuid.h:5:
+> > >> arch/x86/kvm/x86.h:29:30: error: too many arguments to function call, expected 0, have 1
+> >            lockdep_hardirqs_on_prepare(CALLER_ADDR0);
+> >            ~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~
+> 
+> Peter, I think you dropped the hunk to include/linux/kvm_host.h when
+> applying this patch?
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> arch/x86/pci/bus_numa.c:24:5: warning: no previous prototype for 'x86_pci_root_bus_node' [-Wmissing-prototypes]
-      24 | int x86_pci_root_bus_node(int bus)
-         |     ^~~~~~~~~~~~~~~~~~~~~
->> arch/x86/pci/bus_numa.c:34:6: warning: no previous prototype for 'x86_pci_root_bus_resources' [-Wmissing-prototypes]
-      34 | void x86_pci_root_bus_resources(int bus, struct list_head *resources)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/x86_pci_root_bus_node +24 arch/x86/pci/bus_numa.c
-
-67f241f4579651 Yinghai Lu    2009-11-11  23  
-afcf21c2beca66 Bjorn Helgaas 2014-01-24 @24  int x86_pci_root_bus_node(int bus)
-afcf21c2beca66 Bjorn Helgaas 2014-01-24  25  {
-afcf21c2beca66 Bjorn Helgaas 2014-01-24  26  	struct pci_root_info *info = x86_find_pci_root_info(bus);
-afcf21c2beca66 Bjorn Helgaas 2014-01-24  27  
-afcf21c2beca66 Bjorn Helgaas 2014-01-24  28  	if (!info)
-afcf21c2beca66 Bjorn Helgaas 2014-01-24  29  		return NUMA_NO_NODE;
-afcf21c2beca66 Bjorn Helgaas 2014-01-24  30  
-afcf21c2beca66 Bjorn Helgaas 2014-01-24  31  	return info->node;
-afcf21c2beca66 Bjorn Helgaas 2014-01-24  32  }
-afcf21c2beca66 Bjorn Helgaas 2014-01-24  33  
-d28e5ac2a07e27 Yinghai Lu    2012-04-02 @34  void x86_pci_root_bus_resources(int bus, struct list_head *resources)
-d28e5ac2a07e27 Yinghai Lu    2012-04-02  35  {
-d28e5ac2a07e27 Yinghai Lu    2012-04-02  36  	struct pci_root_info *info = x86_find_pci_root_info(bus);
-d28e5ac2a07e27 Yinghai Lu    2012-04-02  37  	struct pci_root_res *root_res;
-14d76b68f2819a Jiang Liu     2015-02-05  38  	struct resource_entry *window;
-a10bb128b64fe0 Yinghai Lu    2012-05-17  39  	bool found = false;
-d28e5ac2a07e27 Yinghai Lu    2012-04-02  40  
-d28e5ac2a07e27 Yinghai Lu    2012-04-02  41  	if (!info)
-2cd6975a4ff92a Bjorn Helgaas 2011-10-28  42  		goto default_resources;
-67f241f4579651 Yinghai Lu    2009-11-11  43  
-2cd6975a4ff92a Bjorn Helgaas 2011-10-28  44  	printk(KERN_DEBUG "PCI: root bus %02x: hardware-probed resources\n",
-2cd6975a4ff92a Bjorn Helgaas 2011-10-28  45  	       bus);
-67f241f4579651 Yinghai Lu    2009-11-11  46  
-a10bb128b64fe0 Yinghai Lu    2012-05-17  47  	/* already added by acpi ? */
-14d76b68f2819a Jiang Liu     2015-02-05  48  	resource_list_for_each_entry(window, resources)
-a10bb128b64fe0 Yinghai Lu    2012-05-17  49  		if (window->res->flags & IORESOURCE_BUS) {
-a10bb128b64fe0 Yinghai Lu    2012-05-17  50  			found = true;
-a10bb128b64fe0 Yinghai Lu    2012-05-17  51  			break;
-a10bb128b64fe0 Yinghai Lu    2012-05-17  52  		}
-a10bb128b64fe0 Yinghai Lu    2012-05-17  53  
-a10bb128b64fe0 Yinghai Lu    2012-05-17  54  	if (!found)
-a10bb128b64fe0 Yinghai Lu    2012-05-17  55  		pci_add_resource(resources, &info->busn);
-a10bb128b64fe0 Yinghai Lu    2012-05-17  56  
-727ae8be30b428 Liu Jiang     2015-11-27  57  	list_for_each_entry(root_res, &info->resources, list)
-727ae8be30b428 Liu Jiang     2015-11-27  58  		pci_add_resource(resources, &root_res->res);
-727ae8be30b428 Liu Jiang     2015-11-27  59  
-2cd6975a4ff92a Bjorn Helgaas 2011-10-28  60  	return;
-2cd6975a4ff92a Bjorn Helgaas 2011-10-28  61  
-2cd6975a4ff92a Bjorn Helgaas 2011-10-28  62  default_resources:
-2cd6975a4ff92a Bjorn Helgaas 2011-10-28  63  	/*
-2cd6975a4ff92a Bjorn Helgaas 2011-10-28  64  	 * We don't have any host bridge aperture information from the
-2cd6975a4ff92a Bjorn Helgaas 2011-10-28  65  	 * "native host bridge drivers," e.g., amd_bus or broadcom_bus,
-2cd6975a4ff92a Bjorn Helgaas 2011-10-28  66  	 * so fall back to the defaults historically used by pci_create_bus().
-2cd6975a4ff92a Bjorn Helgaas 2011-10-28  67  	 */
-2cd6975a4ff92a Bjorn Helgaas 2011-10-28  68  	printk(KERN_DEBUG "PCI: root bus %02x: using default resources\n", bus);
-2cd6975a4ff92a Bjorn Helgaas 2011-10-28  69  	pci_add_resource(resources, &ioport_resource);
-2cd6975a4ff92a Bjorn Helgaas 2011-10-28  70  	pci_add_resource(resources, &iomem_resource);
-67f241f4579651 Yinghai Lu    2009-11-11  71  }
-67f241f4579651 Yinghai Lu    2009-11-11  72  
-
-:::::: The code at line 24 was first introduced by commit
-:::::: afcf21c2beca6604dbdc24fed1624c2499a85e7d x86/PCI: Add x86_pci_root_bus_node() to look up NUMA node from PCI bus
-
-:::::: TO: Bjorn Helgaas <bhelgaas@google.com>
-:::::: CC: Bjorn Helgaas <bhelgaas@google.com>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Could be I fat fingered some conflict, I'll try again.
