@@ -2,114 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A251FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 08:16:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37C42C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 08:16:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345155AbiCUIRY convert rfc822-to-8bit (ORCPT
+        id S1345153AbiCUIR3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 04:17:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49296 "EHLO
+        Mon, 21 Mar 2022 04:17:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345199AbiCUIRI (ORCPT
+        with ESMTP id S1345210AbiCUIRJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 04:17:08 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C98A12153C
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 01:15:18 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nWDBd-0004Zy-AB; Mon, 21 Mar 2022 09:14:45 +0100
-Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nWDBW-0023Fj-7t; Mon, 21 Mar 2022 09:14:39 +0100
-Received: from pza by lupine with local (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nWDBW-0001PK-AO; Mon, 21 Mar 2022 09:14:38 +0100
-Message-ID: <84f2c72ced35506522ea3a6be72879d1699f885b.camel@pengutronix.de>
-Subject: Re: [PATCH 1/2] net: mdio: add reset deassertion for Aspeed MDIO
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     Dylan Hung <dylan_hung@aspeedtech.com>, robh+dt@kernel.org,
-        joel@jms.id.au, andrew@aj.id.au, andrew@lunn.ch,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     BMC-SW@aspeedtech.com, stable@vger.kernel.org
-Date:   Mon, 21 Mar 2022 09:14:38 +0100
-In-Reply-To: <20220321070131.23363-2-dylan_hung@aspeedtech.com>
-References: <20220321070131.23363-1-dylan_hung@aspeedtech.com>
-         <20220321070131.23363-2-dylan_hung@aspeedtech.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.38.3-1 
-MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+        Mon, 21 Mar 2022 04:17:09 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CDBA122987;
+        Mon, 21 Mar 2022 01:15:19 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 430D01A1D7B;
+        Mon, 21 Mar 2022 09:15:18 +0100 (CET)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id F12361A0F97;
+        Mon, 21 Mar 2022 09:15:17 +0100 (CET)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id A3B07183AC99;
+        Mon, 21 Mar 2022 16:15:16 +0800 (+08)
+From:   haibo.chen@nxp.com
+To:     linus.walleij@linaro.org, brgl@bgdev.pl
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com, haibo.chen@nxp.com
+Subject: [PATCH] gpio: Add gpio alias support
+Date:   Mon, 21 Mar 2022 16:05:19 +0800
+Message-Id: <1647849919-8778-1-git-send-email-haibo.chen@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Dylan,
+From: Haibo Chen <haibo.chen@nxp.com>
 
-On Mo, 2022-03-21 at 15:01 +0800, Dylan Hung wrote:
-> Add reset deassertion for Aspeed MDIO.  There are 4 MDIO controllers
-> embedded in Aspeed AST2600 SOC and share one reset control register
-> SCU50[3]. So devm_reset_control_get_shared is used in this change.
-> 
-> Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
-> Cc: stable@vger.kernel.org
-> ---
->  drivers/net/mdio/mdio-aspeed.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/drivers/net/mdio/mdio-aspeed.c b/drivers/net/mdio/mdio-
-> aspeed.c
-> index e2273588c75b..8ac262a12d13 100644
-> --- a/drivers/net/mdio/mdio-aspeed.c
-> +++ b/drivers/net/mdio/mdio-aspeed.c
-> @@ -3,6 +3,7 @@
->  
->  #include <linux/bitfield.h>
->  #include <linux/delay.h>
-> +#include <linux/reset.h>
->  #include <linux/iopoll.h>
->  #include <linux/mdio.h>
->  #include <linux/module.h>
-> @@ -37,6 +38,7 @@
->  
->  struct aspeed_mdio {
->         void __iomem *base;
-> +       struct reset_control *reset;
->  };
->  
->  static int aspeed_mdio_read(struct mii_bus *bus, int addr, int
-> regnum)
-> @@ -120,6 +122,12 @@ static int aspeed_mdio_probe(struct
-> platform_device *pdev)
->         if (IS_ERR(ctx->base))
->                 return PTR_ERR(ctx->base);
->  
-> +       ctx->reset = devm_reset_control_get_shared(&pdev->dev, NULL);
+This patch allow setting gpio device id via device tree alias.
 
-The device tree bindings should have a required reset control property
-documented before this is added.
+Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
+---
+ drivers/gpio/gpiolib.c | 22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
 
-> +       if (IS_ERR(ctx->reset))
-> +               return PTR_ERR(ctx->reset);
-> +
-> +       reset_control_deassert(ctx->reset);
-> +
+diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
+index 56d090258d62..3d24351a33db 100644
+--- a/drivers/gpio/gpiolib.c
++++ b/drivers/gpio/gpiolib.c
+@@ -495,7 +495,7 @@ static void gpiodevice_release(struct device *dev)
+ 	list_del(&gdev->list);
+ 	spin_unlock_irqrestore(&gpio_lock, flags);
+ 
+-	ida_free(&gpio_ida, gdev->id);
++	ida_simple_remove(&gpio_ida, gdev->id);
+ 	kfree_const(gdev->label);
+ 	kfree(gdev->descs);
+ 	kfree(gdev);
+@@ -594,6 +594,7 @@ int gpiochip_add_data_with_key(struct gpio_chip *gc, void *data,
+ 	unsigned long flags;
+ 	int base = gc->base;
+ 	unsigned int i;
++	int alias_id, first_dynamic;
+ 	int ret = 0;
+ 	u32 ngpios;
+ 
+@@ -623,11 +624,20 @@ int gpiochip_add_data_with_key(struct gpio_chip *gc, void *data,
+ 	 */
+ 	gdev->dev.fwnode = dev_fwnode(&gdev->dev) ?: fwnode;
+ 
+-	gdev->id = ida_alloc(&gpio_ida, GFP_KERNEL);
+-	if (gdev->id < 0) {
+-		ret = gdev->id;
+-		goto err_free_gdev;
++	alias_id = of_alias_get_id(gdev->dev.of_node, "gpio");
++	if (alias_id < 0) {
++		first_dynamic = of_alias_get_highest_id("gpio");
++		if (first_dynamic < 0)
++			first_dynamic = 0;
++		else
++			first_dynamic++;
++		alias_id = ida_simple_get(&gpio_ida, first_dynamic, 0, GFP_KERNEL);
++		if (alias_id < 0) {
++			ret = alias_id;
++			goto err_free_gdev;
++		}
+ 	}
++	gdev->id = alias_id;
+ 
+ 	ret = dev_set_name(&gdev->dev, GPIOCHIP_NAME "%d", gdev->id);
+ 	if (ret)
+@@ -821,7 +831,7 @@ int gpiochip_add_data_with_key(struct gpio_chip *gc, void *data,
+ err_free_dev_name:
+ 	kfree(dev_name(&gdev->dev));
+ err_free_ida:
+-	ida_free(&gpio_ida, gdev->id);
++	ida_simple_remove(&gpio_ida, gdev->id);
+ err_free_gdev:
+ 	/* failures here can mean systems won't boot... */
+ 	if (ret != -EPROBE_DEFER) {
+-- 
+2.25.1
 
-This is missing a corresponding reset_control_assert() in
-aspeed_mdio_remove() and in the error path of of_mdiobus_register().
-That would allow to assert the reset line again after all MDIO
-controllers are unbound.
-
-regards
-Philipp
