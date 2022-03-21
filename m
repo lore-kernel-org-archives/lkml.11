@@ -2,123 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2D66C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:47:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21741C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:47:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229998AbiCUWsv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:48:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52182 "EHLO
+        id S229959AbiCUWtM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:49:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229706AbiCUWs0 (ORCPT
+        with ESMTP id S229995AbiCUWsv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:48:26 -0400
-Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 292173A35E8;
-        Mon, 21 Mar 2022 15:28:56 -0700 (PDT)
-Received: by mail-oi1-f181.google.com with SMTP id q189so17775145oia.9;
-        Mon, 21 Mar 2022 15:28:56 -0700 (PDT)
+        Mon, 21 Mar 2022 18:48:51 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 806653DE8C8
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:44:22 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id oj16-20020a17090b4d9000b001c7552b7546so330260pjb.8
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:44:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=ZLPE95jpMe8lV+T0TCTfToINWj+s4+K7bgD6GOm8guA=;
+        b=CajaE6dlLX8Yr8WIk2KWXbrjn53KC91j1SdU00qweOisaskCK3aHgMjE1CRdyXzLHZ
+         C5fKlRw9g7ow1hrQ3B4/846IJpwUt4SSvFLkn+TgoJ+23GpNU3R09NAccrh38bLASLTs
+         3V/Hgcx9TMY4ZuMziFaD1v5ypRe4VVHA/yy+7aBDikhuEKgExP6hMjh2Ja7ua/TmVe4q
+         f19e/dhTvg9tc52yHUU20EsiLLmcSRgflIDx9skeIvJzqRydezTEy6qRBWrA8hdPjXey
+         Swr4Hc6pa0cHv9jXCLFWH6ffZaEIDHDGXPjLtLFofGzs05REbJTpHmLqPDrWZeJfrsNB
+         Wpgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YO4SN1wEs/yJeLJGOZjJMDJTulq40d9dJPAb4zUdaCM=;
-        b=VC2kKz8hIxRruEthpLYXbB+mGXbxdGVXD8Pv0QBmJRgFQFQ/6Vo8DL8it05JCuqid1
-         X8+rU+u8PqcOfpEEayPMuk9ZKS8lcmw5RtaZks40cjtPfNVz680KmEwtDiTswAsU2aip
-         eNBlnYU9L3thkcUjhaJIqGqTM4sCzfBQpkZFpXsRNdfSz3o5IAWsUvtZ2yPwmD1ErqNs
-         RNW1vSfCWe9qqakVUnvU9SvRQcH8WwnU3wk61dueJABmW9tM7aA/vttfO0f+wkjDSbm2
-         ehpgLaQW50mfzTpx1UtK8+sU3o9mOgKXxt0FtWmO2x5QKRBYEH0iT2iIPrWgRBmc0R8U
-         61LQ==
-X-Gm-Message-State: AOAM530TbLNlce4wNOEIw3OhGJLEVOlxkJlbmgeXLYJM1Pt4o/ndNhmG
-        y+8GYrinTrGs6lkN6RCTk0BtFJl/Yw==
-X-Google-Smtp-Source: ABdhPJxLqe1bKl0PVo8niOwZUt8ulY+MNU1ZxCNz4XsGxJRbPcI37WuR1d6sG+t+t9WzTmU1AnOrTQ==
-X-Received: by 2002:a05:6870:c386:b0:dd:f8af:70f5 with SMTP id g6-20020a056870c38600b000ddf8af70f5mr464258oao.173.1647899461780;
-        Mon, 21 Mar 2022 14:51:01 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id r19-20020acaa813000000b002ed02ca6a3fsm7995244oie.1.2022.03.21.14.50.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 14:51:00 -0700 (PDT)
-Received: (nullmailer pid 600564 invoked by uid 1000);
-        Mon, 21 Mar 2022 21:50:59 -0000
-Date:   Mon, 21 Mar 2022 16:50:59 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-clk@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>
-Subject: Re: [PATCH v5 15/18] dt-bindings: clock: Add L2 clocks to
- qcom,krait-cc Documentation
-Message-ID: <YjjzQw4z6GCmlmp+@robh.at.kernel.org>
-References: <20220321153855.12082-1-ansuelsmth@gmail.com>
- <20220321153855.12082-16-ansuelsmth@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220321153855.12082-16-ansuelsmth@gmail.com>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=ZLPE95jpMe8lV+T0TCTfToINWj+s4+K7bgD6GOm8guA=;
+        b=6LGMg4m4Z8Hxt9bqePAfEKtNFXGPj/2SmxeDeOizr1D7U54zZlFDny2wgJ9314wDir
+         4x8YPGTGho4dwh4apJe4s4wzOc72oPUpi3IhnL8s8Ydy3q+FwT3n+zNoJPkhyE0SBYxR
+         RUgOhXb2rQl2CQcPpqVSAwkVt/iJu82m+b3rWQHk7qZQ1sIH2Y5V3NdjdOnZCPwcJsc3
+         0YtJyRbSCmg1PQOMGD1OlIUsxAywbRB9JwrvPkcfuu+qWcQweiD+Rrt5G67ji1zo3Y5Z
+         b0u+QSMn+PM0rMDAdHok0Q2CMFVxq476Ij0ApfSmoBOXwcYG1d0iT7il2YkXGL5UxjN4
+         I8GQ==
+X-Gm-Message-State: AOAM530Q2zyJhPDvyH/ld6rKaICwVCWBy9vBZSFW75t6rNCqX7JCYnH9
+        7dtVo+wkInj5VHxRcutCOGVHCgdRgR8/UPTKWZYWUDlkETsmlJmv/0LF+8YTwZzXdrkc3gB4okC
+        eARQgjIIjR+xZYB7IVYW1PsGl1vewjuz8d/vca1MC0nU/rzEKXfOPtaNGypl7RnlIqMUAPzOQ
+X-Google-Smtp-Source: ABdhPJx1NaHm335/J0Bcq4TpBTZou5NEHOeWgQqSdDOymCWGceNCKVwWAFHgIFAtBMbqfmtWLOi/tH5lmHwn
+X-Received: from bgardon.sea.corp.google.com ([2620:15c:100:202:b76a:f152:cb5e:5cd2])
+ (user=bgardon job=sendgmr) by 2002:a17:90b:4f92:b0:1bf:25e2:f6af with SMTP id
+ qe18-20020a17090b4f9200b001bf25e2f6afmr1480613pjb.98.1647902661983; Mon, 21
+ Mar 2022 15:44:21 -0700 (PDT)
+Date:   Mon, 21 Mar 2022 15:43:57 -0700
+In-Reply-To: <20220321224358.1305530-1-bgardon@google.com>
+Message-Id: <20220321224358.1305530-9-bgardon@google.com>
+Mime-Version: 1.0
+References: <20220321224358.1305530-1-bgardon@google.com>
+X-Mailer: git-send-email 2.35.1.894.gb6a874cedc-goog
+Subject: [PATCH v2 8/9] KVM: x86/mmu: Make kvm_is_mmio_pfn usable outside of spte.c
+From:   Ben Gardon <bgardon@google.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, Peter Xu <peterx@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        David Matlack <dmatlack@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Junaid Shahid <junaids@google.com>,
+        Ben Gardon <bgardon@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 04:38:52PM +0100, Ansuel Smith wrote:
-> Krait-cc qcom driver provide also L2 clocks and require the acpu_l2_aux
-> and the hfpll_l2 clock to be provided. Add these missing clocks to the
-> Documentation. The driver keep support for both old and this new
-> implementation and should prevent any regression by this fixup.
+Export kvm_is_mmio_pfn from spte.c. It will be used in a subsequent
+commit for in-place lpage promotion when disabling dirty logging.
 
-Depends on what the old driver looks for.
 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
-> ---
->  .../devicetree/bindings/clock/qcom,krait-cc.yaml     | 12 ++++++++----
->  1 file changed, 8 insertions(+), 4 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/clock/qcom,krait-cc.yaml b/Documentation/devicetree/bindings/clock/qcom,krait-cc.yaml
-> index e879bfbe67ac..f89b70ab01ae 100644
-> --- a/Documentation/devicetree/bindings/clock/qcom,krait-cc.yaml
-> +++ b/Documentation/devicetree/bindings/clock/qcom,krait-cc.yaml
-> @@ -23,16 +23,20 @@ properties:
->      items:
->        - description: phandle to hfpll for CPU0 mux
->        - description: phandle to hfpll for CPU1 mux
-> +      - description: phandle to hfpll for L2 mux
->        - description: phandle to CPU0 aux clock
->        - description: phandle to CPU1 aux clock
-> +      - description: phandle to L2 aux clock
->        - description: phandle to QSB fixed clk
+Signed-off-by: Ben Gardon <bgardon@google.com>
+---
+ arch/x86/kvm/mmu/spte.c | 2 +-
+ arch/x86/kvm/mmu/spte.h | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-Clock indices should not change. New clocks go on the end of the list.
+diff --git a/arch/x86/kvm/mmu/spte.c b/arch/x86/kvm/mmu/spte.c
+index 45e9c0c3932e..8e9b827c4ed5 100644
+--- a/arch/x86/kvm/mmu/spte.c
++++ b/arch/x86/kvm/mmu/spte.c
+@@ -69,7 +69,7 @@ u64 make_mmio_spte(struct kvm_vcpu *vcpu, u64 gfn, unsigned int access)
+ 	return spte;
+ }
+ 
+-static bool kvm_is_mmio_pfn(kvm_pfn_t pfn)
++bool kvm_is_mmio_pfn(kvm_pfn_t pfn)
+ {
+ 	if (pfn_valid(pfn))
+ 		return !is_zero_pfn(pfn) && PageReserved(pfn_to_page(pfn)) &&
+diff --git a/arch/x86/kvm/mmu/spte.h b/arch/x86/kvm/mmu/spte.h
+index cee02fe63429..e058a85e6c66 100644
+--- a/arch/x86/kvm/mmu/spte.h
++++ b/arch/x86/kvm/mmu/spte.h
+@@ -443,4 +443,5 @@ u64 kvm_mmu_changed_pte_notifier_make_spte(u64 old_spte, kvm_pfn_t new_pfn);
+ 
+ void kvm_mmu_reset_all_pte_masks(void);
+ 
++bool kvm_is_mmio_pfn(kvm_pfn_t pfn);
+ #endif
+-- 
+2.35.1.894.gb6a874cedc-goog
 
->  
->    clock-names:
->      items:
->        - const: hfpll0
->        - const: hfpll1
-> +      - const: hfpll_l2
->        - const: acpu0_aux
->        - const: acpu1_aux
-> +      - const: acpu_l2_aux
->        - const: qsb
->  
->    '#clock-cells':
-> @@ -50,10 +54,10 @@ examples:
->    - |
->      clock-controller {
->        compatible = "qcom,krait-cc-v1";
-> -      clocks = <&hfpll0>, <&hfpll1>,
-> -               <&acpu0_aux>, <&acpu1_aux>, <&qsb>;
-> -      clock-names = "hfpll0", "hfpll1",
-> -                    "acpu0_aux", "acpu1_aux", "qsb";
-> +      clocks = <&hfpll0>, <&hfpll1>, <&hfpll_l2>,
-> +               <&acpu0_aux>, <&acpu1_aux>, <&acpu_l2_aux>, <&qsb>;
-> +      clock-names = "hfpll0", "hfpll1", "hfpll_l2",
-> +                    "acpu0_aux", "acpu1_aux", "acpu_l2_aux", "qsb";
->        #clock-cells = <1>;
->      };
->  ...
-> -- 
-> 2.34.1
-> 
-> 
