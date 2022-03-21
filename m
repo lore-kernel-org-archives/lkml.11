@@ -2,75 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CBFCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:30:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58564C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:33:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232798AbiCUXcX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:32:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44364 "EHLO
+        id S232955AbiCUXer (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:34:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232628AbiCUXcV (ORCPT
+        with ESMTP id S232834AbiCUXeh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 19:32:21 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C7E3350092;
-        Mon, 21 Mar 2022 16:30:50 -0700 (PDT)
-X-UUID: 9153bbe7865c4bcc97157c3163476505-20220322
-X-UUID: 9153bbe7865c4bcc97157c3163476505-20220322
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <miles.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1947124393; Tue, 22 Mar 2022 07:30:46 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 22 Mar 2022 07:30:45 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 22 Mar 2022 07:30:45 +0800
-From:   Miles Chen <miles.chen@mediatek.com>
-To:     <trevor.wu@mediatek.com>
-CC:     <aaronyu@google.com>, <alsa-devel@alsa-project.org>,
-        <angelogioacchino.delregno@collabora.com>, <broonie@kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <matthias.bgg@gmail.com>,
-        <robh+dt@kernel.org>, <tiwai@suse.com>, <tzungbi@google.com>,
-        <yc.hung@mediatek.com>
-Subject: Re: [PATCH v3 3/6] ASoC: dt-bindings: mediatek: mt8195: merge mt8195 machine yaml
-Date:   Tue, 22 Mar 2022 07:30:45 +0800
-Message-ID: <20220321233045.22156-1-miles.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220321072312.14972-4-trevor.wu@mediatek.com>
-References: <20220321072312.14972-4-trevor.wu@mediatek.com>
+        Mon, 21 Mar 2022 19:34:37 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2EBD5577D;
+        Mon, 21 Mar 2022 16:33:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description;
+        bh=8INTyMSFBrX1EJ+aoDBL+ySWd7+IvZDAvs379S+ikME=; b=aLSfJs7R8GRGCLwR+bJOKO7Nb6
+        F1TSYPL+zA2r9J2yLcffA10yBBQtSQ/upF+xpW42/Dj7ELLUpNckJZOD4TZWcRsKE7ArM0todtkWu
+        7GCW7VJkm2+VgQH5SZbXxNVxSGyOZd3dwOveQS8LL/a5lRRXqqrJEhemc7yua2+Ob3AgEu5U1kala
+        7QuJPq1NQSEj6dSqpnDmPU/KScnYham+fku06RDaxWBwE4Uvrzd0QDr7TC6VIkRj95pD6brp+J+EC
+        2wLcn5Z61YHDkP+7h+1FC+b2BpEQzKaZxZZvxTNF2OizXmjcw2UzGny/zBNsa81dIucRheCCYASEn
+        8j2FNP6Q==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nWRW7-009QAL-Q6; Mon, 21 Mar 2022 23:32:51 +0000
+Date:   Mon, 21 Mar 2022 16:32:51 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christian Heimes <christian@python.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        James Morris <jmorris@namei.org>,
+        Kees Cook <keescook@chromium.org>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Philippe =?iso-8859-1?Q?Tr=E9buchet?= 
+        <philippe.trebuchet@ssi.gouv.fr>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Steve Dower <steve.dower@python.org>,
+        Thibaut Sautereau <thibaut.sautereau@ssi.gouv.fr>,
+        Vincent Strubel <vincent.strubel@ssi.gouv.fr>,
+        linux-fsdevel@vger.kernel.org, linux-integrity@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-security-module@vger.kernel.org
+Subject: Re: [GIT PULL] Add trusted_for(2) (was O_MAYEXEC)
+Message-ID: <YjkLI4D+ek9shkqL@bombadil.infradead.org>
+References: <20220321161557.495388-1-mic@digikod.net>
+ <Yji3/ejSErupJZtO@bombadil.infradead.org>
+ <cfa15768-ebf4-d198-fb1b-5a6ab47caedb@digikod.net>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <cfa15768-ebf4-d198-fb1b-5a6ab47caedb@digikod.net>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Trevor,
+On Mon, Mar 21, 2022 at 07:05:42PM +0100, Mickaël Salaün wrote:
+> 
+> On 21/03/2022 18:38, Luis Chamberlain wrote:
+> > On Mon, Mar 21, 2022 at 05:15:57PM +0100, Mickaël Salaün wrote:
+> > > Since I heard no objection, please consider to pull this code for
+> > > v5.18-rc1 .  These five patches have been successfully tested in the
+> > > latest linux-next releases for several weeks.
+> > 
+> > >   kernel/sysctl.c                                    |   9 +
+> > 
+> > Please don't add more sysctls there. We're slowly trying to move
+> > all these to their respective places so this does not become a larger
+> > kitchen sink mess.
+> 
+> It is not a new sysctl but proc_dointvec_minmax_sysadmin(). This helper is
+> shared between printk and fs subsystems.
 
->  
-> -title: Mediatek MT8195 with MT6359, RT1019 and RT5682 ASoC sound card driver
-> +title: Mediatek MT8195 ASoC sound card driver
+That should be good then, thanks!
 
-s/Mediatek/MediaTek/
-
-Thanks,
-Miles
->  
->  maintainers:
->    - Trevor Wu <trevor.wu@mediatek.com>
-> @@ -14,7 +14,9 @@ description:
->  
->  properties:
->    compatible:
-> -    const: mediatek,mt8195_mt6359_rt1019_rt5682
-> +    enum:
-> +      - mediatek,mt8195_mt6359_rt1019_rt5682
-> +      - mediatek,mt8195_mt6359_rt1011_rt5682
->  
->    model:
->      $ref: /schemas/types.yaml#/definitions/string
+  Luis
