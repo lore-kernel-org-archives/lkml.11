@@ -2,151 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB0E2C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:29:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B423BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:29:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349119AbiCUOan (ORCPT
+        id S1347451AbiCUOau (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:30:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59584 "EHLO
+        Mon, 21 Mar 2022 10:30:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349293AbiCUO1y (ORCPT
+        with ESMTP id S1349204AbiCUO1w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:27:54 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5733EFD2
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 07:21:59 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id g20so18035483edw.6
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 07:21:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fairphone.com; s=fair;
-        h=mime-version:content-transfer-encoding:date:message-id:cc:subject
-         :from:to:references:in-reply-to;
-        bh=wqQ731hjmzYwePMzj+DNt4zNoUy/RV/H/tR/xZClBEc=;
-        b=a7Rj6AcABHT78i9TWBgkQWPokagDU0jBGQ8LsSbBRRv/OI/4rMl/1lju5JlyvS+tKB
-         IuOqDYxcyotfBCrs3bvIdzLsazH1bv1ZEmVlUQGa01tFitcvq362wqqPjcwvMHU7Adyr
-         LKkIWbPU5R+35AO/6VOvWccjhxctlXSXVTUvF9VuG2KG6LZQSYI9F5O6OHG7RmNdiQsC
-         bUXm1f5BMaOcPQIoXlbmwPYJhJEIUd8GGJfSKJ0o7MumrzXVWEi6/qIwGoJ7Pq6eiTMO
-         Eppsl4kulnTjm3XxgvwUK4oVT+R3wYUCPwo0/7uQkZWeF7evkxcElK0yCJUwT40bNalq
-         gn9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:content-transfer-encoding:date
-         :message-id:cc:subject:from:to:references:in-reply-to;
-        bh=wqQ731hjmzYwePMzj+DNt4zNoUy/RV/H/tR/xZClBEc=;
-        b=qbQF+Gq4xKKc/ZHxJlE4aP6RX6Tub+acy0OXZODrJIPicTh3+V3N42f+Q56lWroGIK
-         uChjBDy9qvoVN5DBP+RfGWnTzUbasgAH0Bx+R3+oDwfyscyKViGeKnArIy8Bpv+C8SSN
-         p8rEhFpk48YL55YWqcI4B/0GxXjMZ9ilJsZXl2F7ZwzOe1yAtKPNYlPUpZSprclckf7H
-         hkqG5BglKXRnNyKHL8BcudfJksYSkKCGOtql2+AzK66YLLQwT3S5ASRc9Td1ITxgqA12
-         HKnTej6dP1pQb3AN+bUGuTMIXOcEMZ6Wi1l3BN6oDWBgNQLOaHqBVb5ADeuKTEEoRifi
-         3bYQ==
-X-Gm-Message-State: AOAM5317tXkaVEnCy9nXZwlERJAzcLM1BoY6nSQnTqIihy40aJRkLN1j
-        gAXlZHAQijarRhDZkt/5WuJR4Q==
-X-Google-Smtp-Source: ABdhPJyJQVu0Cr0w5giMNOtom9UMGLM/PCPym5H/QrHqy+QJ5fE7S8CUPrlQk3ekr9KXq9nUVZImUA==
-X-Received: by 2002:a05:6402:d2:b0:413:2e50:d6fd with SMTP id i18-20020a05640200d200b004132e50d6fdmr23158510edu.171.1647872517856;
-        Mon, 21 Mar 2022 07:21:57 -0700 (PDT)
-Received: from localhost (a246182.upc-a.chello.nl. [62.163.246.182])
-        by smtp.gmail.com with ESMTPSA id bn14-20020a170906c0ce00b006c5ef0494besm6945946ejb.86.2022.03.21.07.21.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Mar 2022 07:21:57 -0700 (PDT)
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date:   Mon, 21 Mar 2022 15:21:56 +0100
-Message-Id: <CIPM1ZGMNRPK.36O4MO2RGWRV8@otso>
-Cc:     <linux-arm-msm@vger.kernel.org>,
-        <~postmarketos/upstreaming@lists.sr.ht>,
-        <phone-devel@vger.kernel.org>, "Andy Gross" <agross@kernel.org>,
-        "Linus Walleij" <linus.walleij@linaro.org>,
-        "AngeloGioacchino Del Regno" 
-        <angelogioacchino.delregno@somainline.org>,
-        "Konrad Dybcio" <konrad.dybcio@somainline.org>,
-        <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 4/6] pinctrl: qcom: sm6350: fix order of UFS & SDC
- pins
-From:   "Luca Weiss" <luca.weiss@fairphone.com>
-To:     "Bjorn Andersson" <bjorn.andersson@linaro.org>
-References: <20220321133318.99406-1-luca.weiss@fairphone.com>
- <20220321133318.99406-5-luca.weiss@fairphone.com>
- <YjiIZBbPN7pAUl1q@builder.lan>
-In-Reply-To: <YjiIZBbPN7pAUl1q@builder.lan>
+        Mon, 21 Mar 2022 10:27:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A03C13F22;
+        Mon, 21 Mar 2022 07:21:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9FE8B81648;
+        Mon, 21 Mar 2022 14:16:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88048C340E8;
+        Mon, 21 Mar 2022 14:16:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647872163;
+        bh=hCDpnium04L+NX98eEF16B611YIyYCDehSO1Lv/GK5Q=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=m6ZOJwLTrYt/LUfTxurjawz2XhZxdcUobTBvnxXsYD2VMuffI2oTFFbpxePM6/rnU
+         2ZwiPGsLynn2+81ORsVpu8wTM770Z/e/DIS9dDv2lsc+QQzP9fG2LJUh+0sDHUFbaM
+         EjqgCpXZsPN8u3FIl+biRb0twzHJC1bCyh3Pr214ba8DpFcDnOhpI17I7xPQ2v04YG
+         LPF93Rs3QaK8fzj7wFYAA1sbOJmnxXuoazUmmU54mphGcpFvnpKlzGvzgX/C6lrMKD
+         hC49iEXsoaTW1CkmN2qVSs1jKWHT2IXkLud39oAxKwNMuXW/5FzNFkd40bIkVOXCgm
+         J43z5Wt9hIZWQ==
+Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nWIpE-00FyOT-QH; Mon, 21 Mar 2022 14:16:00 +0000
+MIME-Version: 1.0
+Date:   Mon, 21 Mar 2022 14:16:00 +0000
+From:   Marc Zyngier <maz@kernel.org>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: Fixes tag needs some work in the irqchip tree
+In-Reply-To: <20220322000617.0a351d78@canb.auug.org.au>
+References: <20220322000617.0a351d78@canb.auug.org.au>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <3f500c7bae56e4d7ca2840cf9a0be35c@kernel.org>
+X-Sender: maz@kernel.org
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 51.254.78.96
+X-SA-Exim-Rcpt-To: sfr@canb.auug.org.au, linux-kernel@vger.kernel.org, linux-next@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Bjorn,
+On 2022-03-21 13:06, Stephen Rothwell wrote:
+> Hi all,
+> 
+> In commit
+> 
+>   686121ebe6fc ("irqchip/gic-v4: Wait for GICR_VPENDBASER.Dirty to
+> clear before descheduling")
+> 
+> Fixes tag
+> 
+>   Fixes: 57e3cebd022f ("KVM: arm64: Delay the polling of the
+> GICR_VPENDBASER.Dirty
+> 
+> has these problem(s):
+> 
+>   - Subject has leading but no trailing parentheses
+>   - Subject has leading but no trailing quotes
+> 
+> Please do not split Fixes tags over more than one line.
 
-On Mon Mar 21, 2022 at 3:15 PM CET, Bjorn Andersson wrote:
-> On Mon 21 Mar 08:33 CDT 2022, Luca Weiss wrote:
->
-> > In other places the SDC and UFS pins have been swapped but this was
-> > missed in the PINCTRL_PIN definitions. Fix that.
-> >=20
-> > Fixes: 7d74b55afd27 ("pinctrl: qcom: Add SM6350 pinctrl driver")
-> > Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
->
-> Your proposed change looks good, but when I look at 7d74b55afd27 it
-> already has these entries in the correct order.
->
-> Can you please confirm that this is still applicable. Or help me see
-> what I am missing.
+Copy paste trikes back. Now fixed.
 
-There are 3 times where number and description should match.
-For this UFS pin on sm6350 only 2/3 match.
-2x the number is 156, 1x it's 163
+Thanks,
 
-$ grep -i ufs_reset drivers/pinctrl/qcom/pinctrl-sm6350.c
-        PINCTRL_PIN(163, "UFS_RESET"),
-static const unsigned int ufs_reset_pins[] =3D { 156 };
-        [156] =3D UFS_RESET(ufs_reset, 0xae000),
-
-Does that help?
-
-Regards
-Luca
-
-
->
-> Regards,
-> Bjorn
->
-> > ---
-> > Changes in v2:
-> > - nothing
-> >=20
-> >  drivers/pinctrl/qcom/pinctrl-sm6350.c | 16 ++++++++--------
-> >  1 file changed, 8 insertions(+), 8 deletions(-)
-> >=20
-> > diff --git a/drivers/pinctrl/qcom/pinctrl-sm6350.c b/drivers/pinctrl/qc=
-om/pinctrl-sm6350.c
-> > index 4d37b817b232..a91a86628f2f 100644
-> > --- a/drivers/pinctrl/qcom/pinctrl-sm6350.c
-> > +++ b/drivers/pinctrl/qcom/pinctrl-sm6350.c
-> > @@ -264,14 +264,14 @@ static const struct pinctrl_pin_desc sm6350_pins[=
-] =3D {
-> >  	PINCTRL_PIN(153, "GPIO_153"),
-> >  	PINCTRL_PIN(154, "GPIO_154"),
-> >  	PINCTRL_PIN(155, "GPIO_155"),
-> > -	PINCTRL_PIN(156, "SDC1_RCLK"),
-> > -	PINCTRL_PIN(157, "SDC1_CLK"),
-> > -	PINCTRL_PIN(158, "SDC1_CMD"),
-> > -	PINCTRL_PIN(159, "SDC1_DATA"),
-> > -	PINCTRL_PIN(160, "SDC2_CLK"),
-> > -	PINCTRL_PIN(161, "SDC2_CMD"),
-> > -	PINCTRL_PIN(162, "SDC2_DATA"),
-> > -	PINCTRL_PIN(163, "UFS_RESET"),
-> > +	PINCTRL_PIN(156, "UFS_RESET"),
-> > +	PINCTRL_PIN(157, "SDC1_RCLK"),
-> > +	PINCTRL_PIN(158, "SDC1_CLK"),
-> > +	PINCTRL_PIN(159, "SDC1_CMD"),
-> > +	PINCTRL_PIN(160, "SDC1_DATA"),
-> > +	PINCTRL_PIN(161, "SDC2_CLK"),
-> > +	PINCTRL_PIN(162, "SDC2_CMD"),
-> > +	PINCTRL_PIN(163, "SDC2_DATA"),
-> >  };
-> > =20
-> >  #define DECLARE_MSM_GPIO_PINS(pin) \
-> > --=20
-> > 2.35.1
-> >=20
-
+         M.
+-- 
+Jazz is not dead. It just smells funny...
