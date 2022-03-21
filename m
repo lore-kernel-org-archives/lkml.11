@@ -2,200 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E98CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 18:08:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DD6CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 18:10:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352014AbiCUSJv (ORCPT
+        id S1352019AbiCUSLb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 14:09:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42438 "EHLO
+        Mon, 21 Mar 2022 14:11:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351995AbiCUSJq (ORCPT
+        with ESMTP id S1352016AbiCUSL2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 14:09:46 -0400
-Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 423F5387B5
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 11:08:20 -0700 (PDT)
-Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-2d07ae0b1c0so165070757b3.2
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 11:08:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MPBHLr0cnx+S1dvf9V9sqGfXPZPsxNMBB1OP6fOxbfo=;
-        b=JFFEh1CTGLbS7t3f7mr0ceuCtf00CYZBnI4evLM7E4wDEEhE/w8kiOWfjfqIgas2Lc
-         yhbz9cou9K3ZQNWVwAZuXk04N/Ouym7QdnoNUAR8OBUXWCmWr0UeVeprTUicc/NfrsJ7
-         4hc2NQ+tKEJZJOOk0V+7Gcju8PCa6w9AfEFNI94XiIqJ5CW+u8VfFKh7J5LErquzFlRo
-         xBe9yhPXjwhfBXyWFWPDmhgvfquTvn7CZC2cfh9qCiCaSJPXMc55hgrtfIzXJ6y2bRhx
-         f+kMY70XmmzigJCqkvcinx88w57JNMpO9yS819FDxXspGbGIEGBXOQbqyVD4LnFwNtaf
-         CmpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MPBHLr0cnx+S1dvf9V9sqGfXPZPsxNMBB1OP6fOxbfo=;
-        b=qgGXQLj2jp+vbtFkwd+53r/Qe4umSpDsms5qB4e4szX8oizXKzuZJ+Y2s+ZNPx0Uqt
-         aQF7Q2kJhLHmq7AMsYn2bVty6QHOiJ+J7I7T4Rsrp894XDHpsiqQ6Q1rduDJViS70JPz
-         baKZ2AYlp2AXYkZ/3a7cqJfz1Fp6fI88g1qg5ISHwORcFW59bVYeXG3GK4qRYn9ZSPRc
-         Es5y/qOpJoEvvS/u5PjUU505ThZlVRHZsYk9ybUhisZbPrUfGo90QySxcM8SNO/iMXeH
-         WHpe83tnRVpl7o4pToBkAoWBnReI93o0bEtZDzgMZI1+agRkqr1Z6CCobFoF+nWfM4K4
-         y47g==
-X-Gm-Message-State: AOAM533ZwME9SiIYphO1Ztz7K09e9qYn0FHlggt55hSq2Pqr75FIoaNM
-        UW75XFFNqp39XMSsUVLRirpWeDTOAgqttzfqVjLQnQ==
-X-Google-Smtp-Source: ABdhPJzTfPQ/TNiJ8Ed+m0Hc2I16HRfZHKoAu/TOzPP/1wMRBrTv1KVrLuKj0ysPsKK/aqH7hvmrs9sI4ayfx5VaOQI=
-X-Received: by 2002:a0d:d44e:0:b0:2e5:dc71:c82b with SMTP id
- w75-20020a0dd44e000000b002e5dc71c82bmr16488979ywd.42.1647886098873; Mon, 21
- Mar 2022 11:08:18 -0700 (PDT)
+        Mon, 21 Mar 2022 14:11:28 -0400
+Received: from relay5.hostedemail.com (relay5.hostedemail.com [64.99.140.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E37654AA
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 11:09:59 -0700 (PDT)
+Received: from omf18.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay12.hostedemail.com (Postfix) with ESMTP id 50353121673;
+        Mon, 21 Mar 2022 18:09:58 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf18.hostedemail.com (Postfix) with ESMTPA id 3A11531;
+        Mon, 21 Mar 2022 18:09:57 +0000 (UTC)
+Message-ID: <91f167b531f8485bb9dcb2e9febb84e091f7f45f.camel@perches.com>
+Subject: Re: [PATCH] checkpatch: Validate "Fixes:" references
+From:   Joe Perches <joe@perches.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Whitcroft <apw@canonical.com>,
+        Dwaipayan Ray <dwaipayanray1@gmail.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Date:   Mon, 21 Mar 2022 11:09:55 -0700
+In-Reply-To: <20220321180709.1177684-1-bjorn.andersson@linaro.org>
+References: <20220321180709.1177684-1-bjorn.andersson@linaro.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-References: <20220321002638.379672-1-mizhang@google.com> <20220321002638.379672-5-mizhang@google.com>
-In-Reply-To: <20220321002638.379672-5-mizhang@google.com>
-From:   Ben Gardon <bgardon@google.com>
-Date:   Mon, 21 Mar 2022 11:08:08 -0700
-Message-ID: <CANgfPd8feg_4vhNJqhFViDaMfvp_C4PdtEGMGOJ-Z8smQuf3rQ@mail.gmail.com>
-Subject: Re: [PATCH 4/4] selftests: KVM: use dirty logging to check if page
- stats work correctly
-To:     Mingwei Zhang <mizhang@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Peter Xu <peterx@redhat.com>, Ben Gardon <bgorden@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Stat-Signature: sckydc9wmbm7uarbuo1kaa6w7fw5uz59
+X-Rspamd-Server: rspamout04
+X-Rspamd-Queue-Id: 3A11531
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1+wSAwUqgWlzCq4UcKAtHvoYJmHyLyUM/Q=
+X-HE-Tag: 1647886197-794169
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 20, 2022 at 5:26 PM Mingwei Zhang <mizhang@google.com> wrote:
->
-> When dirty logging is enabled, KVM splits the all hugepage mapping in
-> NPT/EPT into the smallest 4K size. This property could be used to check if
-> the page stats metrics work properly in KVM mmu. At the same time, this
-> logic might be used the other way around: using page stats to verify if
-> dirty logging really splits all huge pages. Moreover, when dirty logging is
-> disabled, KVM zaps corresponding SPTEs and we could check whether the large
-> pages come back when guest touches the pages again.
->
-> So add page stats checking in dirty logging performance selftest. In
-> particular, add checks in three locations:
->  - just after vm is created;
->  - after populating memory into vm but before enabling dirty logging;
->  - just after turning on dirty logging.
->  - after one final iteration after turning off dirty logging.
->
-> Tested using commands:
->  - ./dirty_log_perf_test -s anonymous_hugetlb_1gb
->  - ./dirty_log_perf_test -s anonymous_thp
->
-> Cc: Sean Christopherson <seanjc@google.com>
-> Cc: David Matlack <dmatlack@google.com>
-> Cc: Jing Zhang <jingzhangos@google.com>
-> Cc: Peter Xu <peterx@redhat.com>
->
-> Suggested-by: Ben Gardon <bgorden@google.com>
+On Mon, 2022-03-21 at 11:07 -0700, Bjorn Andersson wrote:
+> checkpatch guards about non-compliant or invalid commit references
+> embedded in the commit message, but a similar set of mistakes can be
+> made when referencing commits in "Fixes:".
+> 
+> Add sanity checks for references to missing commits, short hashes,
+> improper spacing, improper case or issues with the commit description.
 
-Woops, got a mail bounce from this. Should be:
-Suggested-by: Ben Gardon <bgardon@google.com>
+nak.
 
-> Signed-off-by: Mingwei Zhang <mizhang@google.com>
+The idea is ok but:
+
+This basically duplicates the commit test block so should this
+should be either a function or integrated into the commit test.
+
+> 
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 > ---
->  .../selftests/kvm/dirty_log_perf_test.c       | 52 +++++++++++++++++++
->  1 file changed, 52 insertions(+)
->
-> diff --git a/tools/testing/selftests/kvm/dirty_log_perf_test.c b/tools/testing/selftests/kvm/dirty_log_perf_test.c
-> index 1954b964d1cf..ab0457d91658 100644
-> --- a/tools/testing/selftests/kvm/dirty_log_perf_test.c
-> +++ b/tools/testing/selftests/kvm/dirty_log_perf_test.c
-> @@ -19,6 +19,10 @@
->  #include "perf_test_util.h"
->  #include "guest_modes.h"
->
-> +#ifdef __x86_64__
-> +#include "processor.h"
-> +#endif
+>  scripts/checkpatch.pl | 36 ++++++++++++++++++++++++++++++++++++
+>  1 file changed, 36 insertions(+)
+> 
+> diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
+> index 577e02998701..b602ab50fc5c 100755
+> --- a/scripts/checkpatch.pl
+> +++ b/scripts/checkpatch.pl
+> @@ -3273,6 +3273,42 @@ sub process {
+>  			$last_git_commit_id_linenr = $linenr if ($line =~ /\bcommit\s*$/i);
+>  		}
+>  
+> +# Check for valid Fixes:
+> +		if ($line =~ /^fixes:\s*([0-9a-f]{5,})/i) {
+> +			my $orig_commit = lc($1);
 > +
->  /* How many host loops to run by default (one KVM_GET_DIRTY_LOG for each loop)*/
->  #define TEST_HOST_LOOP_N               2UL
->
-> @@ -185,6 +189,14 @@ static void run_test(enum vm_guest_mode mode, void *arg)
->                                  p->slots, p->backing_src,
->                                  p->partition_vcpu_memory_access);
->
-> +#ifdef __x86_64__
-> +       TEST_ASSERT(vm_get_single_stat(vm, "pages_4k") == 0,
-> +                   "4K page is non zero");
-> +       TEST_ASSERT(vm_get_single_stat(vm, "pages_2m") == 0,
-> +                   "2M page is non zero");
-> +       TEST_ASSERT(vm_get_single_stat(vm, "pages_1g") == 0,
-> +                   "1G page is non zero");
-> +#endif
->         perf_test_set_wr_fract(vm, p->wr_fract);
->
->         guest_num_pages = (nr_vcpus * guest_percpu_mem_size) >> vm_get_page_shift(vm);
-> @@ -222,6 +234,16 @@ static void run_test(enum vm_guest_mode mode, void *arg)
->         pr_info("Populate memory time: %ld.%.9lds\n",
->                 ts_diff.tv_sec, ts_diff.tv_nsec);
->
-> +#ifdef __x86_64__
-> +       TEST_ASSERT(vm_get_single_stat(vm, "pages_4k") != 0,
-> +                   "4K page is zero");
-> +       if (p->backing_src == VM_MEM_SRC_ANONYMOUS_THP)
-> +               TEST_ASSERT(vm_get_single_stat(vm, "pages_2m") != 0,
-> +                           "2M page is zero");
-> +       if (p->backing_src == VM_MEM_SRC_ANONYMOUS_HUGETLB_1GB)
-> +               TEST_ASSERT(vm_get_single_stat(vm, "pages_1g") != 0,
-> +                           "1G page is zero");
-> +#endif
->         /* Enable dirty logging */
->         clock_gettime(CLOCK_MONOTONIC, &start);
->         enable_dirty_logging(vm, p->slots);
-> @@ -267,6 +289,14 @@ static void run_test(enum vm_guest_mode mode, void *arg)
->                                 iteration, ts_diff.tv_sec, ts_diff.tv_nsec);
->                 }
->         }
-> +#ifdef __x86_64__
-> +       TEST_ASSERT(vm_get_single_stat(vm, "pages_4k") != 0,
-> +                   "4K page is zero after dirty logging");
-> +       TEST_ASSERT(vm_get_single_stat(vm, "pages_2m") == 0,
-> +                   "2M page is non-zero after dirty logging");
-> +       TEST_ASSERT(vm_get_single_stat(vm, "pages_1g") == 0,
-> +                   "1G page is non-zero after dirty logging");
-> +#endif
->
->         /* Disable dirty logging */
->         clock_gettime(CLOCK_MONOTONIC, &start);
-> @@ -275,6 +305,28 @@ static void run_test(enum vm_guest_mode mode, void *arg)
->         pr_info("Disabling dirty logging time: %ld.%.9lds\n",
->                 ts_diff.tv_sec, ts_diff.tv_nsec);
->
-> +#ifdef __x86_64__
-> +       /*
-> +        * Increment iteration to run the vcpus again to verify if huge pages
-> +        * come back.
-> +        */
-> +       iteration++;
-> +       pr_info("Starting the final iteration to verify page stats\n");
+> +			my $case = 1;
+> +			my $short = 1;
+> +			my $space = 1;
+> +			my $has_quotes = 0;
+> +			my $id = '0123456789ab';
+> +			my $orig_desc = "commit description";
+> +			my $description = "";
 > +
-> +       for (vcpu_id = 0; vcpu_id < nr_vcpus; vcpu_id++) {
-> +               while (READ_ONCE(vcpu_last_completed_iteration[vcpu_id])
-> +                      != iteration)
-> +                       ;
-> +       }
+> +			$case = 0 if ($line =~ /^Fixes:\s+[0-9a-f]{5,40}[^A-F]/);
+> +			$short = 0 if ($line =~ /\bfixes:\s*[0-9a-f]{12,40}/i);
+> +			$space = 0 if ($line =~ /\bfixes: [0-9a-f]{5,} \(/i);
 > +
-> +       if (p->backing_src == VM_MEM_SRC_ANONYMOUS_THP)
-> +               TEST_ASSERT(vm_get_single_stat(vm, "pages_2m") != 0,
-> +                           "2M page is zero");
-> +       if (p->backing_src == VM_MEM_SRC_ANONYMOUS_HUGETLB_1GB)
-> +               TEST_ASSERT(vm_get_single_stat(vm, "pages_1g") != 0,
-> +                           "1G page is zero");
-> +#endif
+> +			if ($line =~ /\bfixes:\s+[0-9a-f]{5,}\s*($balanced_parens)/i) {
+> +				$orig_desc = substr($1, 1, -1);
+> +				if ($orig_desc =~ /^".*"$/) {
+> +					$orig_desc = substr($orig_desc, 1, -1);
+> +					$has_quotes = 1;
+> +				}
+> +			}
 > +
->         /* Tell the vcpu thread to quit */
->         host_quit = true;
->         perf_test_join_vcpu_threads(nr_vcpus);
-> --
-> 2.35.1.894.gb6a874cedc-goog
->
+> +			($id, $description) = git_commit_info($orig_commit,
+> +							      $id, $orig_desc);
+> +
+> +			if (defined($id) && ($short || $space || $case || ($orig_desc ne $description) || !$has_quotes)) {
+> +				ERROR("GIT_COMMIT_ID",
+> +				      "Please use git commit description style 'Fixes: <12+ chars of sha1> (\"<title line>\")' - ie: 'Fixes: $id (\"$description\")'\n" . $herecurr);
+> +			} elsif (!defined($id)) {
+> +				WARN("UNKNOWN_COMMIT_ID",
+> +				     "Unknown commit id '$orig_commit', maybe rebased or not pulled?\n" . $herecurr);
+> +			}
+> +		}
+> +
+>  # Check for added, moved or deleted files
+>  		if (!$reported_maintainer_file && !$in_commit_log &&
+>  		    ($line =~ /^(?:new|deleted) file mode\s*\d+\s*$/ ||
+
+
