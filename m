@@ -2,173 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 993D8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 18:03:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B23FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 18:04:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351961AbiCUSFL (ORCPT
+        id S1351968AbiCUSGF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 14:05:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54934 "EHLO
+        Mon, 21 Mar 2022 14:06:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240075AbiCUSFJ (ORCPT
+        with ESMTP id S1349445AbiCUSGE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 14:05:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C015D2AE0D;
-        Mon, 21 Mar 2022 11:03:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 72529B818E3;
-        Mon, 21 Mar 2022 18:03:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0394CC340F3;
-        Mon, 21 Mar 2022 18:03:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647885821;
-        bh=Cuz7+EZkEiHixqSIWD3I8sz1h+3g1vmvAAAG0nQtAkU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=WluDve9vmsL5a7vdcnX/pt/oWrTU1M6k+I9oqYNQeXdqet9zhkCHcMhcAzX7h67gM
-         IjagZrMQO2zOQr02FqN7iKLBQasc3CAjn/NhQ2je5NnqecqNWkuoZGLohDVrRSkXfm
-         VmChv8ew+B5ukMu9jNkTKmuvKoYtSiNtwHCMnBwR2L/gwHTCj/1xx7z/HgxArTwGnV
-         QyINaGte1kZXoaJoPt9ljohcGZN27zdw9dhvynlg351yWQIwWmctMqOLOR/yfbCMMK
-         b3Xvv58o0Wgt8M0qSj9wA0rhawQxSxK/8HCV+pn2uHsWdEQokmEvWdA2jWBR6BWss3
-         rLkO08/MBIaCA==
-Received: by mail-ej1-f53.google.com with SMTP id bg10so31466717ejb.4;
-        Mon, 21 Mar 2022 11:03:40 -0700 (PDT)
-X-Gm-Message-State: AOAM532XDDU5MWfBfAitNS2M49ci7VDXqDRW8QsS8RP7pURExP7NkeHz
-        dogU5XqVPUus0c2IuICNy6kVewoDWn8F34vhiA==
-X-Google-Smtp-Source: ABdhPJy6XgutRDx7Hw3xrWC3qWO+2ypsH6iZE6Pc0l8uRarmqBZvJt4+vGgD6mVCut3kJjIbWlAyS6Xj1GM7VC+iXwc=
-X-Received: by 2002:a17:907:2d8d:b0:6df:a06c:7c55 with SMTP id
- gt13-20020a1709072d8d00b006dfa06c7c55mr19404428ejc.325.1647885819160; Mon, 21
- Mar 2022 11:03:39 -0700 (PDT)
+        Mon, 21 Mar 2022 14:06:04 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EB9C4CD61;
+        Mon, 21 Mar 2022 11:04:38 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id n15so13457993plh.2;
+        Mon, 21 Mar 2022 11:04:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:from:subject:to:cc
+         :references:content-language:in-reply-to:content-transfer-encoding;
+        bh=aLAMIQ8Z/Brx4GgfsQ0HcQtispmXwswle1+zYBDv2JM=;
+        b=lrfYWw0h7r5509pqhsgV/reZahtlNdofwS6QxNFbJe7SH/kkWK7a2pHOo/Lz4b4O2d
+         HMIiLyOd69phUkQqMsxWcYPCTJ0Wfx3ZqX4uqgBZA2p3Z4hrZFxbYBHmYtqCCTk3HMQ2
+         I5FbxpfLD7057G+ykHNj97m+/ID6/qLZN5eRnAUSZ1bD+pFuAgrHygt25SJzaylaJcZH
+         t4jMKKg9YJGeqRM3hz6ddmWK7o+n+IllcKX5S71zvYwk4SU2aSaQHcUcWTbxDPF9F6y5
+         eXKhWIC8NNMCS6SxzMl7zeZLbemifs0ZBLxg3Ww3p+Dzzy8OJh93w3PtDTD83FMutxg9
+         TVvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:to:cc:references:content-language:in-reply-to
+         :content-transfer-encoding;
+        bh=aLAMIQ8Z/Brx4GgfsQ0HcQtispmXwswle1+zYBDv2JM=;
+        b=CAc3RouA/VdjDDO3BMapZIIWJn56RkYIU34Xz3LwzaL+DrhyZF8eZcnhBRJQqloYYt
+         RfawTwHWrFyvRd/Zj3VKfmRLogYQanGBVTeba93AKBW5jyRmXhyTFFaliBddy9v67uCt
+         BtOHkiq9lWo03D5E7Hx7VsZzjO61d5eC8I2V3sfctb6MHWO/A/a98a0jlweBmtA+ei9S
+         HnXiyaWkp7D12X6HoAo72qzh+8SdArR9ePFoMXsBExdOwo5LyclwBDolvEt25Z+ZsuLF
+         pc61TmpmZKXOZ00MvxEOo3aAh592GgdT+ehRkttXXXGnSe5HkrIOwLL0hHOH0/eRbeFX
+         UEYg==
+X-Gm-Message-State: AOAM533mF9SXCiYX5pEe6C/bVJf2tPCVDnCUgNb1B5XfByuYBwVvmfUa
+        DqXL2DEW1m0Pu1xgnd6I1TE=
+X-Google-Smtp-Source: ABdhPJzxVKNEzDd2T+O/tM3Jwt/u+g4+SzF/YQt8YFs6HGgO4SYfo1bT7GLj6MME54cabODbsD1T2g==
+X-Received: by 2002:a17:90b:1d02:b0:1c7:1802:c00e with SMTP id on2-20020a17090b1d0200b001c71802c00emr331358pjb.99.1647885878110;
+        Mon, 21 Mar 2022 11:04:38 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id h2-20020a056a00218200b004f66d50f054sm19871038pfi.158.2022.03.21.11.04.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Mar 2022 11:04:37 -0700 (PDT)
+Message-ID: <a88a3172-aca8-adb5-c9a3-e4d32a416190@gmail.com>
+Date:   Mon, 21 Mar 2022 11:04:35 -0700
 MIME-Version: 1.0
-References: <20220321104843.949645-1-maz@kernel.org> <CAL_JsqJacC6GbNebTfYyUEScROCFN4+Fg2v1_iYFfqAvW4E9Vw@mail.gmail.com>
- <87h77rxnyl.wl-maz@kernel.org>
-In-Reply-To: <87h77rxnyl.wl-maz@kernel.org>
-From:   Rob Herring <robh@kernel.org>
-Date:   Mon, 21 Mar 2022 13:03:27 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqK57KpZmzCE=86dLcHK4Ws_0w0ga4_qoYUe2GwFNpDzRw@mail.gmail.com>
-Message-ID: <CAL_JsqK57KpZmzCE=86dLcHK4Ws_0w0ga4_qoYUe2GwFNpDzRw@mail.gmail.com>
-Subject: Re: [PATCH v2 0/2] PCI: xgene: Restore working PCIe functionnality
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        PCI <linux-pci@vger.kernel.org>,
-        Toan Le <toan@os.amperecomputing.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?Q?St=C3=A9phane_Graber?= <stgraber@ubuntu.com>,
-        dann frazier <dann.frazier@canonical.com>,
-        Android Kernel Team <kernel-team@android.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH 5.10 00/30] 5.10.108-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220321133219.643490199@linuxfoundation.org>
+Content-Language: en-US
+In-Reply-To: <20220321133219.643490199@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 11:36 AM Marc Zyngier <maz@kernel.org> wrote:
->
-> On Mon, 21 Mar 2022 15:17:34 +0000,
-> Rob Herring <robh@kernel.org> wrote:
-> >
-> > On Mon, Mar 21, 2022 at 5:49 AM Marc Zyngier <maz@kernel.org> wrote:
-> > >
-> > > Since 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup") wa=
-s
-> > > merged in the 5.5 time frame, PCIe on the venerable XGene platform ha=
-s
-> > > been unusable: 6dce5aa59e0b broke both XGene-1 (Mustang and m400) and
-> > > XGene-2 (Merlin), while the addition of c7a75d07827a ("PCI: xgene: Fi=
-x
-> > > IB window setup") fixed XGene-2, but left the rest of the zoo
-> > > unusable.
-> > >
-> > > It is understood that this systems come with "creative" DTs that don'=
-t
-> > > match the expectations of modern kernels. However, there is little to
-> > > be gained by forcing these changes on users -- the firmware is not
-> > > upgradable, and the current owner of the IP will deny that these
-> > > machines have ever existed.
-> >
-> > The gain for fixing this properly is not having drivers do their own
-> > dma-ranges parsing. We've seen what happens when drivers do their own
-> > parsing of standard properties (e.g. interrupt-map).
->
-> We have, and we added the required exceptions for the legacy platforms
-> that the code base supported until then. We didn't leave things broken
-> just because we didn't like the way things were done a long time ago.
->
-> > Currently, we don't have any drivers doing their own parsing:
-> >
-> > $ git grep of_pci_dma_range_parser_init
-> > drivers/of/address.c:int of_pci_dma_range_parser_init(struct
-> > of_pci_range_parser *parser,
-> > drivers/of/address.c:EXPORT_SYMBOL_GPL(of_pci_dma_range_parser_init);
-> > drivers/of/address.c:#define of_dma_range_parser_init
-> > of_pci_dma_range_parser_init
-> > drivers/of/unittest.c:  if (of_pci_dma_range_parser_init(&parser, np)) =
-{
-> > drivers/pci/of.c:       err =3D of_pci_dma_range_parser_init(&parser, d=
-ev_node);
-> > include/linux/of_address.h:extern int
-> > of_pci_dma_range_parser_init(struct of_pci_range_parser *parser,
-> > include/linux/of_address.h:static inline int
-> > of_pci_dma_range_parser_init(struct of_pci_range_parser *parser,
-> >
-> > And we can probably further refactor this to be private to drivers/pci/=
-of.c.
-> >
-> > For XGene-2 the issue is simply that the driver depends on the order
-> > of dma-ranges entries.
-> >
-> > For XGene-1, I'd still like to understand what the issue is. Reverting
-> > the first fix and fixing 'dma-ranges' should have fixed it. I need a
-> > dump of how the IB registers are initialized in both cases. I'm not
-> > saying changing 'dma-ranges' in the firmware is going to be required
-> > here. There's a couple of other ways we could fix that without a
-> > firmware change, but first I need to understand why it broke.
->
-> Reverting 6dce5aa59e0b was enough for me, without changing anything
-> else.
+On 3/21/22 06:52, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.108 release.
+> There are 30 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 23 Mar 2022 13:32:09 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.108-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-Meaning c7a75d07827a didn't matter for you. I'm not sure that it would.
 
-Can you tell me what 'dma-ranges' contains on your system?
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
 
-> m400 probably uses an even older firmware (AFAIR, it was stuck
-> with an ancient version of u-boot that HP never updated, while Mustang
-> had a few updates). In any case, that DT cannot be changed.
-
-How is Dann changing it then? I assume he's not changing the firmware,
-but overriding it. That could be a possible solution.
-
-Do the DT's in the kernel tree correspond to anything anyone is using?
-I ask because at some point someone will need to address all the
-warnings they have or we should drop the dts files if they aren't
-close to reality. The same thing applies to Seattle BTW.
-
-> > Rob
-> >
-> > P.S. We're carrying ACPI and DT support for these platforms. It seems
-> > the few users are using DT, so can we drop the ACPI support? Or do I
-> > need to break it first and wait a year? ;)
->
-> I'm not sure people on the list are representative of all the users,
-> and I didn't realise the plan was "let's break everything we don't
-> like and see if someone wakes up" either. That definitely puts things
-> in a different perspective.
-
-I wasn't really suggesting breaking things on purpose. However, there
-is a cost to keeping code and it would be nice to know what's being
-used or not. The cost isn't *that* big, but it is not zero for what's
-not many users.
-
-At least for St=C3=A9phane, using ACPI didn't even work. I'm assuming there
-is some version of h/w and f/w out there that did work with the ACPI
-support in the kernel? That may have never been seen by anyone but APM
-and Jon Masters (his Tested-by is on the patch from APM adding ACPI
-support). It's not hard to imagine there was a version of firmware
-just to shut Jon up.
-
-Rob
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
