@@ -2,91 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2886C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:33:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC3D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:33:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349432AbiCUOfB (ORCPT
+        id S1347463AbiCUOfG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:35:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56134 "EHLO
+        Mon, 21 Mar 2022 10:35:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349794AbiCUOdH (ORCPT
+        with ESMTP id S1349562AbiCUOct (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:33:07 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8BE5E77F
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 07:30:06 -0700 (PDT)
-Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1nWJ2p-00029J-Ve; Mon, 21 Mar 2022 15:30:04 +0100
-Message-ID: <41eaaf17-1456-5971-e7d9-e5ccc65bcf01@leemhuis.info>
-Date:   Mon, 21 Mar 2022 15:30:02 +0100
+        Mon, 21 Mar 2022 10:32:49 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E1195D67C;
+        Mon, 21 Mar 2022 07:29:38 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KMcQW1Kb8zCr5Z;
+        Mon, 21 Mar 2022 22:27:31 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
+ (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 21 Mar
+ 2022 22:29:36 +0800
+From:   Ye Bin <yebin10@huawei.com>
+To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
+        <linux-ext4@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
+        <lczerner@redhat.com>, Ye Bin <yebin10@huawei.com>
+Subject: [PATCH -next v2] ext4: Fix symlink file size not match to file content
+Date:   Mon, 21 Mar 2022 22:44:38 +0800
+Message-ID: <20220321144438.201685-1-yebin10@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: Regression from 3c196f056666 ("drm/amdgpu: always reset the asic
- in suspend (v2)") on suspend?
-Content-Language: en-US
-To:     =?UTF-8?Q?=c3=89ric_Valette?= <eric.valette@free.fr>
-Cc:     Salvatore Bonaccorso <carnil@debian.org>,
-        Dominique Dumont <dod@debian.org>,
-        Sasha Levin <sashal@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Luben Tuikov <luben.tuikov@amd.com>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        1005005@bugs.debian.org, Evan Quan <evan.quan@amd.com>,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        Alex Deucher <alexdeucher@gmail.com>
-References: <Ygf7KuWyc0d4HIFu@eldamar.lan>
- <CADnq5_MfR99OhjumQESCO7Oq+JVOHOVgyVQHX4FpGFDnPu6CyQ@mail.gmail.com>
- <5164225.DI6hChFYCN@ylum> <c62d4ba9-2214-ca7d-ee78-ee19a9bf51e6@free.fr>
- <CADnq5_MWqz7-XhOS4zfuzi3=_nKa72iYaO0BcKNcVDwEvZ+YHw@mail.gmail.com>
- <61c2b2ce-d749-3723-ad27-f40e1c49d967@leemhuis.info>
- <ba7faa48-68a5-41f9-9192-f843e17c5a07@free.fr>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <ba7faa48-68a5-41f9-9192-f843e17c5a07@free.fr>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1647873006;988f5919;
-X-HE-SMSGID: 1nWJ2p-00029J-Ve
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21.03.22 13:07, Éric Valette wrote:
-> My problem has never been fixed.
->
-> The proposed patch has been applied to 5.15. I do not remerber which version 28 maybe.
-> 
-> I still have à RIP in pm_suspend. Did not test the Last two 15 versions.
-> 
-> I can leave with 5.10 est using own compiled kernels.
-> 
-> Thanks for asking.
+We got issue as follows:
+[home]# fsck.ext4  -fn  ram0yb
+e2fsck 1.45.6 (20-Mar-2020)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Symlink /p3/d14/d1a/l3d (inode #3494) is invalid.
+Clear? no
+Entry 'l3d' in /p3/d14/d1a (3383) has an incorrect filetype (was 7, should be 0).
+Fix? no
 
-This thread/the debian bug report
-(https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1005005 ) is getting
-long which makes things hard to grasp. But to me it looks a lot like the
-problem you are facing is different from the problem that others ran
-into and bisected -- but I might be totally wrong there. Have you ever
-tried reverting 3c196f056666 to seem if it helps (sorry if that's
-mentioned in the bug report somewhere, as I said, it became long)? I
-guess a bisection from your side really would help a lot; but before you
-go down that route you might want to give 5.17 and the latest 5.15.y
-kernel a try.
+As the symlink file size does not match the file content. If the writeback
+of the symlink data block failed, ext4_finish_bio() handles the end of IO.
+However this function fails to mark the buffer with BH_write_io_error and
+so when unmount does journal checkpoint it cannot detect the writeback
+error and will cleanup the journal. Thus we've lost the correct data in the
+journal area. To solve this issue, mark the buffer as BH_write_io_error in
+ext4_finish_bio().
 
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+---
+ fs/ext4/page-io.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-P.S.: As the Linux kernel's regression tracker I'm getting a lot of
-reports on my table. I can only look briefly into most of them and lack
-knowledge about most of the areas they concern. I thus unfortunately
-will sometimes get things wrong or miss something important. I hope
-that's not the case here; if you think it is, don't hesitate to tell me
-in a public reply, it's in everyone's interest to set the public record
-straight.
+diff --git a/fs/ext4/page-io.c b/fs/ext4/page-io.c
+index 495ce59fb4ad..14695e2b5042 100644
+--- a/fs/ext4/page-io.c
++++ b/fs/ext4/page-io.c
+@@ -134,8 +134,10 @@ static void ext4_finish_bio(struct bio *bio)
+ 				continue;
+ 			}
+ 			clear_buffer_async_write(bh);
+-			if (bio->bi_status)
++			if (bio->bi_status) {
++				set_buffer_write_io_error(bh);
+ 				buffer_io_error(bh);
++			}
+ 		} while ((bh = bh->b_this_page) != head);
+ 		spin_unlock_irqrestore(&head->b_uptodate_lock, flags);
+ 		if (!under_io) {
+-- 
+2.31.1
 
