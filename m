@@ -2,103 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C099C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:40:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DC21C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:41:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345957AbiCUJly (ORCPT
+        id S1345961AbiCUJmv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 05:41:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43484 "EHLO
+        Mon, 21 Mar 2022 05:42:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345953AbiCUJlw (ORCPT
+        with ESMTP id S244989AbiCUJms (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 05:41:52 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C371044A3A
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 02:40:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647855627; x=1679391627;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=46zPOcGkyW6Eo2Ri3C8hctKEdvTtcpCrYAuST6cSXTo=;
-  b=IeTObTt5CxUyUBtClt8troNYYNt4vTMWspvAO74vYdISoGcyhsS4Ksao
-   p53niZzgLJ+g6y3zIXo4CRi5EvRq8nnx5UgVZuuhhJm3/XiN5uHle6p3G
-   LtZEoUyG5RW/PcxgZxfsOKoqNM9MQ8IGlcekvrDMXXwusuwu6wbVzzvTj
-   urGM+KM8MBrfSdEvmKaVNfEFXPqAMfP6lwBNqRSB8yYYUAf0fjx2XdJji
-   9o7hmjTCu6++KEvrX+wIQTF+MxPF2VV6ifJdSvvf1rSohv9KRbsvsgp2O
-   en2LpoglgYBMS2qFot4F7NP+mXfOvuCfNyqgVvS3Z7XAKtkvGyFYY11Y3
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10292"; a="320714585"
-X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
-   d="scan'208";a="320714585"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 02:40:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
-   d="scan'208";a="600429789"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by fmsmga008.fm.intel.com with ESMTP; 21 Mar 2022 02:40:25 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nWEWW-000HgW-ND; Mon, 21 Mar 2022 09:40:24 +0000
-Date:   Mon, 21 Mar 2022 17:39:47 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Heiko Stuebner <heiko@sntech.de>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [ammarfaizi2-block:palmer/linux/riscv-d1-merge 19/20]
- arch/riscv/errata/thead/errata.c:61:6: warning: variable 'cpu_apply_errata'
- set but not used
-Message-ID: <202203211709.nW1Uc4Zs-lkp@intel.com>
+        Mon, 21 Mar 2022 05:42:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 078C45B3FC;
+        Mon, 21 Mar 2022 02:41:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6DA9B8117E;
+        Mon, 21 Mar 2022 09:41:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A6FCC36AE2;
+        Mon, 21 Mar 2022 09:41:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647855680;
+        bh=PA5/9WnwkF/956PEUqe0HUC0jBHuB/WEpZFZAjgcOPo=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Ig0yIp6nnvDCXMfOIfWkuqoa298Gqho8BLob4gl9UraOtx/IOf6QLLql5Fa2rPT7P
+         rexB5w4Dm+yYA/YmqTLEVsK9Ik+VPEB6KOL5Y7dv7Zady4hgf83Crfc2sW6WpHWcwL
+         n6sqTIauXgZSHNXybUCgM9WZn8kR8a9Nf6wNaaRyZu4nEYj/Cs+Tm+Irz/ObnzcPd+
+         NAqqUNouzsJ8R58YHwpr+XkU25t8RFmjZVdFAL5TEg1PkasnmX9t53XhfMnhhsuFSQ
+         7DAQcyoHIid5E+j93KzTuJHWyVZH1KSHticgdTZXtuvNf46KeUXti1P6XHpc1brATX
+         RPBaJTsvyPWYA==
+Received: by mail-ua1-f45.google.com with SMTP id 34so5535051uao.13;
+        Mon, 21 Mar 2022 02:41:20 -0700 (PDT)
+X-Gm-Message-State: AOAM531VSa1HlXnBgf5pSacTFSrtnv8NKyxS63PlKETJYBzY9XqrJhpE
+        JN8RWZKKRY9S1Fu/wcxQK6ynDjG41DFwkcvTJZg=
+X-Google-Smtp-Source: ABdhPJz2Dhu98c64JwlgRM4uWbyOOQxZ9DSBqgniZPOgIEr9/bx2eRULm+DkFPicObxWP4o8HfxCwc5WYhqfrMcLIGY=
+X-Received: by 2002:ab0:30b8:0:b0:356:c867:9283 with SMTP id
+ b24-20020ab030b8000000b00356c8679283mr2197618uam.118.1647855679197; Mon, 21
+ Mar 2022 02:41:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220319142759.1026237-1-chenhuacai@loongson.cn>
+ <20220319143817.1026708-1-chenhuacai@loongson.cn> <20220319143817.1026708-6-chenhuacai@loongson.cn>
+ <CAK8P3a2kroHVN3fTabuFVMz08SXytz-SC8X11BxxszsUCksJ4g@mail.gmail.com>
+In-Reply-To: <CAK8P3a2kroHVN3fTabuFVMz08SXytz-SC8X11BxxszsUCksJ4g@mail.gmail.com>
+From:   Huacai Chen <chenhuacai@kernel.org>
+Date:   Mon, 21 Mar 2022 17:41:11 +0800
+X-Gmail-Original-Message-ID: <CAAhV-H6zE7p6Tq8rg1Fq5cK5L38z-VHjxsZ+qm8+Cp5x=u_bUQ@mail.gmail.com>
+Message-ID: <CAAhV-H6zE7p6Tq8rg1Fq5cK5L38z-VHjxsZ+qm8+Cp5x=u_bUQ@mail.gmail.com>
+Subject: Re: [PATCH V8 13/22] LoongArch: Add system call support
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block palmer/linux/riscv-d1-merge
-head:   93a6d3583d613a2ff1c6d28060c78af8631e0d21
-commit: 5acf4c1828afd2b357b001c796fbbbaad5461ba4 [19/20] riscv: add memory-type errata for T-Head
-config: riscv-randconfig-c006-20220321 (https://download.01.org/0day-ci/archive/20220321/202203211709.nW1Uc4Zs-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 85e9b2687a13d1908aa86d1b89c5ce398a06cd39)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://github.com/ammarfaizi2/linux-block/commit/5acf4c1828afd2b357b001c796fbbbaad5461ba4
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block palmer/linux/riscv-d1-merge
-        git checkout 5acf4c1828afd2b357b001c796fbbbaad5461ba4
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
+Hi, Arnd,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+On Mon, Mar 21, 2022 at 5:01 PM Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> On Sat, Mar 19, 2022 at 3:38 PM Huacai Chen <chenhuacai@kernel.org> wrote:
+> >
+> > This patch adds system call support and related uaccess.h for LoongArch.
+> >
+> > Q: Why keep __ARCH_WANT_NEW_STAT definition while there is statx:
+> > A: Until the latest glibc release (2.34), statx is only used for 32-bit
+> >    platforms, or 64-bit platforms with 32-bit timestamp. I.e., Most 64-
+> >    bit platforms still use newstat now.
+> >
+> > Q: Why keep _ARCH_WANT_SYS_CLONE definition while there is clone3:
+> > A: The latest glibc release (2.34) has some basic support for clone3 but
+> >    it isn't complete. E.g., pthread_create() and spawni() have converted
+> >    to use clone3 but fork() will still use clone. Moreover, some seccomp
+> >    related applications can still not work perfectly with clone3.
+>
+> Please leave those out of the mainline kernel support though: Any users
+> of existing glibc binaries can keep using patched kernels for the moment,
+> and then later drop those pages when the proper glibc support gets
+> merged.
+The glibc commit d8ea0d0168b190bdf138a20358293c939509367f ("Add an
+internal wrapper for clone, clone2 and clone3") modified nearly
+everything in order to move to clone3(), except arch_fork() which used
+by fork(). And I cannot find any submitted patches to solve it. So I
+don't think this is just a forget, maybe there are other fundamental
+problems?
 
-All warnings (new ones prefixed by >>):
+>
+> > +#define __ua_size(size)                                                        \
+> > +       ((__builtin_constant_p(size) && (signed long) (size) > 0) ? 0 : (size))
+> > +
+> > +/*
+> > + * access_ok: - Checks if a user space pointer is valid
+> > + * @addr: User space pointer to start of block to check
+> > + * @size: Size of block to check
+> > + *
+> > + * Context: User context only. This function may sleep if pagefaults are
+> > + *          enabled.
+> > + *
+> > + * Checks if a pointer to a block of memory in user space is valid.
+> > + *
+> > + * Returns true (nonzero) if the memory block may be valid, false (zero)
+> > + * if it is definitely invalid.
+> > + *
+> > + * Note that, depending on architecture, this function probably just
+> > + * checks that the pointer is in the user space range - after calling
+> > + * this function, memory access functions may still return -EFAULT.
+> > + */
+> > +static inline int __access_ok(const void __user *p, unsigned long size)
+> > +{
+> > +       unsigned long addr = (unsigned long)p;
+> > +       unsigned long end = addr + size - !!size;
+> > +
+> > +       return (__UA_LIMIT & (addr | end | __ua_size(size))) == 0;
+> > +}
+> > +
+> > +#define access_ok(addr, size)                                  \
+> > +       likely(__access_ok((addr), (size)))
+>
+> I rewrote this bit a series that is currently queued for 5.18, so you
+> will have to adapt it to the new version, by just removing your
+> custom definitions.
+OK, this will be updated.
 
->> arch/riscv/errata/thead/errata.c:61:6: warning: variable 'cpu_apply_errata' set but not used [-Wunused-but-set-variable]
-           u32 cpu_apply_errata = 0;
-               ^
-   1 warning generated.
+>
+> > +#define __get_user(x, ptr) \
+> > +({                                                                     \
+> > +       int __gu_err = 0;                                               \
+> > +                                                                       \
+> > +       __chk_user_ptr(ptr);                                            \
+> > +       __get_user_common((x), sizeof(*(ptr)), ptr);                    \
+> > +       __gu_err;                                                       \
+> > +})
+>
+> It would be good to also provide a
+> __kernel_kernel_nofault()/__put_kernel_nofault()
+> implementation, as the default based on __get_user()/__put_user is not
+> ideal.
+They are provided in this file below.
 
-
-vim +/cpu_apply_errata +61 arch/riscv/errata/thead/errata.c
-
-    54	
-    55	void __init_or_module thead_errata_patch_func(struct alt_entry *begin, struct alt_entry *end,
-    56						      unsigned long archid, unsigned long impid,
-    57						      unsigned int stage)
-    58	{
-    59		struct alt_entry *alt;
-    60		u32 cpu_req_errata = thead_errata_probe(stage, archid, impid);
-  > 61		u32 cpu_apply_errata = 0;
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Huacai
+>
+>         Arnd
