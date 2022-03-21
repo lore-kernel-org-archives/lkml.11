@@ -2,100 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCBE3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:08:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07B9CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350768AbiCUQKO (ORCPT
+        id S1350801AbiCUQKR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 12:10:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59038 "EHLO
+        Mon, 21 Mar 2022 12:10:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350690AbiCUQJu (ORCPT
+        with ESMTP id S1350698AbiCUQJv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 12:09:50 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6E2286F7;
-        Mon, 21 Mar 2022 09:08:23 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id t11so21391391wrm.5;
-        Mon, 21 Mar 2022 09:08:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=fDLuIDyRCuRCH3Dc/gWWNAl91bj4g20Fwm4jwXMbE5A=;
-        b=VTFoGgHy46VG05v3mlZ7Rbg1Ij/iZQAYDOclaiGTVO2GXpFbGJ0w5UMnLQ54FQfBny
-         7HLTl8eUQ1oObSKvzrkutp15cFbKTLWcUm6L8V3lPHpfp3UpHIlpXQfBePq4bJZt8TLb
-         l2z9UMU4J3DG0X8xiM4gtbVvrIybZOS/jI25v3YW1EmjO0f9+fFiqFD0omrf8ZXVpj4W
-         Blo7usEyvfuFXtp+nAsAyM5jPL0AR4ylK7J/olkQJSyV4DFcnZBXj45JVeANKFKfvMyy
-         96HtDzA7RnTiDC24+INRc7Uy+UEVMy57GPnxWpUMC4ZEwyy3XcHNITGZCqlVk/pPJb/1
-         B5zA==
+        Mon, 21 Mar 2022 12:09:51 -0400
+Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEB7A289B8;
+        Mon, 21 Mar 2022 09:08:24 -0700 (PDT)
+Received: by mail-oi1-f179.google.com with SMTP id z8so16692359oix.3;
+        Mon, 21 Mar 2022 09:08:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=fDLuIDyRCuRCH3Dc/gWWNAl91bj4g20Fwm4jwXMbE5A=;
-        b=wrL3rw871CQGu9HlIYDb+9CucuY+XGGOJ6pDr0XNNejJJV4orTHuQljXVyph3jWuyl
-         9YaRl2M6Z0nwT4s13NH8MPln4Q11gOwflWAjw4OqgQUlaCDGcCZfZSubnUeTkV7iBEM7
-         ZCkIWbxxy/i/xsQrm3FAs/tg7IlEbFE4gdA3EC7rlSQlalKMgtlaDJKDnPU/9orCXlyY
-         WzjQ01wk16oBJtCayXC4g5by6EpSEjq1vcz8px2QE1je5OFD0hEWP8C1Cwa0iva0ooV3
-         ceyA8en2QZ2rjiEewfnvRb/FAYgJAzxm3Pjw/U8R5pGRgw31AOa4V4qxgg+K6YTcJBXn
-         B0UQ==
-X-Gm-Message-State: AOAM532gNALKQPS2Oi4CRAxiAeNoFv0X4bogWWHEKnWXL8jvxaXc0GIm
-        qslGcnfTNK+br0VkvI9KOvs=
-X-Google-Smtp-Source: ABdhPJxQl95223QIhrmEBBoQM5AbNKYcBBiv7qPwdMS5iIhOtA/y5V32KHAWTkxw8GRm9Agd55dtUw==
-X-Received: by 2002:a5d:59a5:0:b0:203:d46b:f27a with SMTP id p5-20020a5d59a5000000b00203d46bf27amr19357992wrr.126.1647878901726;
-        Mon, 21 Mar 2022 09:08:21 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
-        by smtp.googlemail.com with ESMTPSA id az19-20020a05600c601300b0038cadf3aa69sm2603864wmb.36.2022.03.21.09.08.20
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tCOTznouFD+iWjgYbDVoQOww7ryqponRKYWNROGxryg=;
+        b=661k3fO36NOv1fvvvx8yLnymdt4NT0+73nAvxySHskd/ZQoa7dWRub+SKplOXMefU8
+         GPSChkGMKOQenY24fRlgtQ3d7KDKZAVMV9ishgGbCvVvMJC1uK2cTHVtpHPdFBVLQUU3
+         SKKrmSJRvoypOymb0a3e89UTm9R3rY9dcIT3hDCU9Oetg36VkU/6Xd0kxNmdbVma6CHh
+         eh/uWTQ3XfzZt7TkycPeeFM44QGD3pTIf7I71nneGhWbBv8Tpl257lssNoJVsYclSu0p
+         nJWaJ6+90aW+L9dz5uEA9uH4aYq9F3Ykmi2LRmxeAoBZPbaDOG1XoRuXmaXdmbL+uU6o
+         bzbA==
+X-Gm-Message-State: AOAM533GRal4ZtTx5F2C5or1xYMXqmjy2GQT1FsevSE///5tqAbPNltq
+        Ik/SshpdjdQ0nfFEYAkkZA==
+X-Google-Smtp-Source: ABdhPJzCmplBnS1Fq/DfzqLFnp+aV9kDSRQR0Nhlx5kiGHG7agyTuRCc95XbpeqzGNkB/w+tdoAibA==
+X-Received: by 2002:aca:3643:0:b0:2ec:cb84:c5ba with SMTP id d64-20020aca3643000000b002eccb84c5bamr14905569oia.183.1647878904067;
+        Mon, 21 Mar 2022 09:08:24 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id bc36-20020a05682016a400b003240a532a1csm6859115oob.29.2022.03.21.09.08.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 09:08:21 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
-Subject: [PATCH v5 06/18] clk: qcom: clk-krait: unlock spin after mux completion
-Date:   Mon, 21 Mar 2022 16:38:43 +0100
-Message-Id: <20220321153855.12082-7-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220321153855.12082-1-ansuelsmth@gmail.com>
-References: <20220321153855.12082-1-ansuelsmth@gmail.com>
+        Mon, 21 Mar 2022 09:08:22 -0700 (PDT)
+Received: (nullmailer pid 139178 invoked by uid 1000);
+        Mon, 21 Mar 2022 16:08:20 -0000
+Date:   Mon, 21 Mar 2022 11:08:20 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     dann frazier <dann.frazier@canonical.com>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        PCI <linux-pci@vger.kernel.org>,
+        Toan Le <toan@os.amperecomputing.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?iso-8859-1?Q?St=E9phane?= Graber <stgraber@ubuntu.com>,
+        Android Kernel Team <kernel-team@android.com>
+Subject: Re: [PATCH v2 0/2] PCI: xgene: Restore working PCIe functionnality
+Message-ID: <Yjii9LUC+u/gmijj@robh.at.kernel.org>
+References: <20220321104843.949645-1-maz@kernel.org>
+ <CAL_JsqJacC6GbNebTfYyUEScROCFN4+Fg2v1_iYFfqAvW4E9Vw@mail.gmail.com>
+ <YjiewB5Nz5CyFuI0@xps13.dannf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YjiewB5Nz5CyFuI0@xps13.dannf>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Unlock spinlock after the mux switch is completed to prevent any corner
-case of mux request while the switch still needs to be done.
+On Mon, Mar 21, 2022 at 09:50:24AM -0600, dann frazier wrote:
+> On Mon, Mar 21, 2022 at 10:17:34AM -0500, Rob Herring wrote:
+> > On Mon, Mar 21, 2022 at 5:49 AM Marc Zyngier <maz@kernel.org> wrote:
+> > >
+> > > Since 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup") was
+> > > merged in the 5.5 time frame, PCIe on the venerable XGene platform has
+> > > been unusable: 6dce5aa59e0b broke both XGene-1 (Mustang and m400) and
+> > > XGene-2 (Merlin), while the addition of c7a75d07827a ("PCI: xgene: Fix
+> > > IB window setup") fixed XGene-2, but left the rest of the zoo
+> > > unusable.
+> > >
+> > > It is understood that this systems come with "creative" DTs that don't
+> > > match the expectations of modern kernels. However, there is little to
+> > > be gained by forcing these changes on users -- the firmware is not
+> > > upgradable, and the current owner of the IP will deny that these
+> > > machines have ever existed.
+> > 
+> > The gain for fixing this properly is not having drivers do their own
+> > dma-ranges parsing. We've seen what happens when drivers do their own
+> > parsing of standard properties (e.g. interrupt-map). Currently, we
+> > don't have any drivers doing their own parsing:
+> > 
+> > $ git grep of_pci_dma_range_parser_init
+> > drivers/of/address.c:int of_pci_dma_range_parser_init(struct
+> > of_pci_range_parser *parser,
+> > drivers/of/address.c:EXPORT_SYMBOL_GPL(of_pci_dma_range_parser_init);
+> > drivers/of/address.c:#define of_dma_range_parser_init
+> > of_pci_dma_range_parser_init
+> > drivers/of/unittest.c:  if (of_pci_dma_range_parser_init(&parser, np)) {
+> > drivers/pci/of.c:       err = of_pci_dma_range_parser_init(&parser, dev_node);
+> > include/linux/of_address.h:extern int
+> > of_pci_dma_range_parser_init(struct of_pci_range_parser *parser,
+> > include/linux/of_address.h:static inline int
+> > of_pci_dma_range_parser_init(struct of_pci_range_parser *parser,
+> > 
+> > And we can probably further refactor this to be private to drivers/pci/of.c.
+> > 
+> > For XGene-2 the issue is simply that the driver depends on the order
+> > of dma-ranges entries.
+> > 
+> > For XGene-1, I'd still like to understand what the issue is. Reverting
+> > the first fix and fixing 'dma-ranges' should have fixed it. I need a
+> > dump of how the IB registers are initialized in both cases.
+> 
+> Happy to provide that for the m400 if told how :)
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- drivers/clk/qcom/clk-krait.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Something like the below patch. This should be with the 'dma-ranges' 
+DT change and only c7a75d07827a reverted.
 
-diff --git a/drivers/clk/qcom/clk-krait.c b/drivers/clk/qcom/clk-krait.c
-index 59f1af415b58..e447fcc3806d 100644
---- a/drivers/clk/qcom/clk-krait.c
-+++ b/drivers/clk/qcom/clk-krait.c
-@@ -32,11 +32,12 @@ static void __krait_mux_set_sel(struct krait_mux_clk *mux, int sel)
- 		regval |= (sel & mux->mask) << (mux->shift + LPL_SHIFT);
- 	}
- 	krait_set_l2_indirect_reg(mux->offset, regval);
--	spin_unlock_irqrestore(&krait_clock_reg_lock, flags);
+8<-------------------------------------------------------------------
+diff --git a/drivers/pci/controller/pci-xgene.c b/drivers/pci/controller/pci-xgene.c
+index 0d5acbfc7143..6a435c31f45e 100644
+--- a/drivers/pci/controller/pci-xgene.c
++++ b/drivers/pci/controller/pci-xgene.c
+@@ -78,6 +78,7 @@ static u32 xgene_pcie_readl(struct xgene_pcie *port, u32 reg)
  
- 	/* Wait for switch to complete. */
- 	mb();
- 	udelay(1);
-+
-+	spin_unlock_irqrestore(&krait_clock_reg_lock, flags);
+ static void xgene_pcie_writel(struct xgene_pcie *port, u32 reg, u32 val)
+ {
++	dev_info(port->dev, "0x%04x <- 0x%08x\n", reg, val);
+ 	writel(val, port->csr_base + reg);
  }
  
- static int krait_mux_set_parent(struct clk_hw *hw, u8 index)
--- 
-2.34.1
-
+@@ -508,7 +509,9 @@ static void xgene_pcie_setup_ib_reg(struct xgene_pcie *port,
+ 	case 0:
+ 		xgene_pcie_set_ib_mask(port, BRIDGE_CFG_4, flags, size);
+ 		bar_addr = cfg_base + PCI_BASE_ADDRESS_0;
++		dev_info(port->dev, "BAR0L <- 0x%08x\n", bar_low);
+ 		writel(bar_low, bar_addr);
++		dev_info(port->dev, "BAR0H <- 0x%08x\n", upper_32_bits(cpu_addr));
+ 		writel(upper_32_bits(cpu_addr), bar_addr + 0x4);
+ 		pim_reg = PIM1_1L;
+ 		break;
