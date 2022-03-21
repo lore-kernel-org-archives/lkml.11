@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7462BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:05:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C9E6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:05:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349000AbiCUOGt (ORCPT
+        id S1349017AbiCUOGx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:06:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45244 "EHLO
+        Mon, 21 Mar 2022 10:06:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348968AbiCUN6o (ORCPT
+        with ESMTP id S1349009AbiCUN6r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:58:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 820C116068F;
-        Mon, 21 Mar 2022 06:56:53 -0700 (PDT)
+        Mon, 21 Mar 2022 09:58:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3DA2173F72;
+        Mon, 21 Mar 2022 06:57:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A98C2B81674;
-        Mon, 21 Mar 2022 13:56:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05612C340ED;
-        Mon, 21 Mar 2022 13:56:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 358A06125C;
+        Mon, 21 Mar 2022 13:57:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D906C340E8;
+        Mon, 21 Mar 2022 13:57:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871009;
-        bh=R1mmyF3W66JcYlAvZpdgAFCo4BLEqOwTQIP0aFl0cmw=;
+        s=korg; t=1647871023;
+        bh=4eqieXDYNFS9cksTph0yiFqzYytb0whZ/l9AHeJgR9c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xAmYFkcXoedm4ZPHPRPDMZDyAIFxbh959xhdPylZZ3r72dJ3EmEINi3wbcJx6WpaK
-         d81U9rGf0n+iqLxBegjBpeY2zpKQVLnHFPSs79D5kDmiLA8dEs4OiQRO9CqWEC16OT
-         My5DRnbl0gYXyxXPJhqRnII2gXL9DK3wrnjLmS3E=
+        b=MpEpNejE/dPBPxMABLXK+LBFoP6iFQjQvjM/TPao+YMzigy+KxfZP8tBEWLetRUcF
+         o9Ob3jXm+eFhnEg2aKXBqw9+c9vag5bX48n5Uqpkx69K1kRz96cT0lw6dyoE6AdZdt
+         EIuNr7wUkNDJpFxbTAe5G3YnDEllzm7coGaEnDt4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 49/57] atm: eni: Add check for dma_map_single
-Date:   Mon, 21 Mar 2022 14:52:30 +0100
-Message-Id: <20220321133223.409660032@linuxfoundation.org>
+Subject: [PATCH 4.19 53/57] net: dsa: Add missing of_node_put() in dsa_port_parse_of
+Date:   Mon, 21 Mar 2022 14:52:34 +0100
+Message-Id: <20220321133223.520348360@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133221.984120927@linuxfoundation.org>
 References: <20220321133221.984120927@linuxfoundation.org>
@@ -50,35 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 0f74b29a4f53627376cf5a5fb7b0b3fa748a0b2b ]
+[ Upstream commit cb0b430b4e3acc88c85e0ad2e25f2a25a5765262 ]
 
-As the potential failure of the dma_map_single(),
-it should be better to check it and return error
-if fails.
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 6d4e5c570c2d ("net: dsa: get port type at parse time")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220316082602.10785-1-linmq006@gmail.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/atm/eni.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/dsa/dsa2.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/atm/eni.c b/drivers/atm/eni.c
-index 1409d48affb7..f256aeeac1b3 100644
---- a/drivers/atm/eni.c
-+++ b/drivers/atm/eni.c
-@@ -1114,6 +1114,8 @@ DPRINTK("iovcnt = %d\n",skb_shinfo(skb)->nr_frags);
- 	}
- 	paddr = dma_map_single(&eni_dev->pci_dev->dev,skb->data,skb->len,
- 			       DMA_TO_DEVICE);
-+	if (dma_mapping_error(&eni_dev->pci_dev->dev, paddr))
-+		return enq_next;
- 	ENI_PRV_PADDR(skb) = paddr;
- 	/* prepare DMA queue entries */
- 	j = 0;
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index 7c10bc4dacd3..05aadb25e294 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -596,6 +596,7 @@ static int dsa_port_parse_of(struct dsa_port *dp, struct device_node *dn)
+ 		struct net_device *master;
+ 
+ 		master = of_find_net_device_by_node(ethernet);
++		of_node_put(ethernet);
+ 		if (!master)
+ 			return -EPROBE_DEFER;
+ 
 -- 
 2.34.1
 
