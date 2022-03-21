@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D2ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:45:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31950C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:45:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233401AbiCUXrJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:47:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39086 "EHLO
+        id S233207AbiCUXrM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:47:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233239AbiCUXqp (ORCPT
+        with ESMTP id S233264AbiCUXqq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 19:46:45 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 193AF90FF3;
-        Mon, 21 Mar 2022 16:45:18 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id b19so22738246wrh.11;
-        Mon, 21 Mar 2022 16:45:18 -0700 (PDT)
+        Mon, 21 Mar 2022 19:46:46 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24AE991AF3;
+        Mon, 21 Mar 2022 16:45:20 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id h4so4793993wrc.13;
+        Mon, 21 Mar 2022 16:45:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=8h0dp/sRCWnE/SzxqBhwWtp3OCJwunZ7486W2HMfBko=;
-        b=QhmJY7LtPm+UvAuVmH0Cww45PV2j8fBGDZzJz0y2y8NId+Cd2mvbcbYsW0jWKvg0cT
-         H5yZvlSLjtNd6YryThsWfap6lf9S595n3m12OhJ6ByBrw4SmgqiPtW9CoQyt7+FWQgxp
-         pMn9Wo2SHTXpojc1YiHuyauPtb5JGp/j3JK4fdNYktj0X6J2JkbFwi5vZKZBsbNTTqad
-         zch49jkz9Upu80QpWJlFWrDc2gbuLNXeuP/Q/4A/aXseR4aeGbvWFfMdkG+GWd0Rt50h
-         WYGrGbQwdPTfHHbxt4E361MeP9qtRlymgDyPkZwadH5hN88ntwBCuIuRgpRg5JwW7y1R
-         DC4w==
+        bh=fDLuIDyRCuRCH3Dc/gWWNAl91bj4g20Fwm4jwXMbE5A=;
+        b=AeVv7fxFBnMYc6TyGPQJgqr6Os1ISVirKCBnb0cEjT23JRQiN3kzSkbJC0WGd3S7U3
+         vuFTIdYM6A1YIEX5acudsY8cHSuJRoMOa9mi+QoIsisQ6LwKy03eGnozYKYM6/GHetaQ
+         N1pdi/Lojc3qRPlYDHAPF82xNp76yMtyK+ujOYFzMR6Rhq7+gVN8rtlHEcDZtsuw5TNk
+         mteDjvKEamD61BrgfDvh7G1hSK3Ah7yaYskBUKoewGEuf2CEane2pVgy+1/orAIx7vcm
+         HWJiToqyVRIWr6Tjm8c0Lr0tMk1YIz2D1ysWr6JYXdnJPWS/h4EjCIK8QpBtkm40tK0s
+         rcMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=8h0dp/sRCWnE/SzxqBhwWtp3OCJwunZ7486W2HMfBko=;
-        b=g75Hh0CH0hETIjIofYLyTqydKl/PvOzy/UHGjdxY1o5KPeQ0V6FV1z+F95CNsrjdBr
-         f5JzPrHCaZvHAPGrkt1iOCAMkeRP5jhfPlvtTXCcM4N7mep4K6WOwSEzDH61suqiEScy
-         YCBstoGJp5DqUt122d7v7NbWIWTw0A4X/t9ZBfjTAUrakBq7zlNw3CBnBoAwXlm542jf
-         8gEaO/ZzWcY0Zl+yVUvY6FLVlBeGFxhoeDGdFsTdzMk6xQqnJ0RXBufEf7N1m7jlpFQ9
-         JnF0O+lF8sn8b9qy5Ywr0cIkzPJzLpD33FGWUDtU3BDc0DnziFIdyOCOdRmHq0RaxGpq
-         wZ7w==
-X-Gm-Message-State: AOAM533jvCSHcAuO4YeoTPZhgSIARiOn8O6ZfTXEw0Y7WhgYvifeZY1y
-        M1c8uGd9jRsDS9pl4dNxLEE=
-X-Google-Smtp-Source: ABdhPJxmRmoCgMsgyiwehFFD8Yzdprsgc3FoR5L8FzxPCvZuXmmLtGDZwpQkmpLlYovVVi/l7qu2fg==
-X-Received: by 2002:a05:6000:18a3:b0:204:1f84:287e with SMTP id b3-20020a05600018a300b002041f84287emr1940879wri.184.1647906316517;
-        Mon, 21 Mar 2022 16:45:16 -0700 (PDT)
+        bh=fDLuIDyRCuRCH3Dc/gWWNAl91bj4g20Fwm4jwXMbE5A=;
+        b=7BOmn4wgmsrVr2HVChFUjDloGy1xrHjyp5UuA4zpUxv+USlKNpoRba6V2kP6Jeq1BY
+         ne8fzVT8fMqJIKBEdS6RCrczqXzAVcfdR8kNIIPREK6oMKNkrHQ6VbLsAGCkvfxkUvVE
+         HjDp1wj3ZVet927E3ayaRGxFICTNT9br+6QsRa/2276xEvU1Rlar7IeuI/bQVRZQSxP1
+         MhEZ0JgjyW1zLf41rJcfe//GdX9onLXXXvlP1CJ3d6B+J59Hb/Vr60XME3iFlin3gwjS
+         3EkAjLLCDTLMIhKWbN3jmiAFGMbCHpgIHtRC+kosQIcNUj2P5hRr+nZQXpbEKQP9b6m7
+         gtog==
+X-Gm-Message-State: AOAM533rQzXQSxBf9Ew+6vTldQ/pWyqNOEc4qDBcLDPAYVRQSUAu/ZPv
+        C2bc84o22naC1NICELRvUpU=
+X-Google-Smtp-Source: ABdhPJxNPd77bvjDTqhT6guQSbqvAquPuH8wDOmtU4K7LLM2fm96J7tPK8SxTOhH8GsSmBY3HCimNw==
+X-Received: by 2002:a5d:6c66:0:b0:204:93b:5dee with SMTP id r6-20020a5d6c66000000b00204093b5deemr7880786wrz.332.1647906318565;
+        Mon, 21 Mar 2022 16:45:18 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
-        by smtp.googlemail.com with ESMTPSA id n10-20020a5d588a000000b002052e4aaf89sm105497wrf.80.2022.03.21.16.45.15
+        by smtp.googlemail.com with ESMTPSA id n10-20020a5d588a000000b002052e4aaf89sm105497wrf.80.2022.03.21.16.45.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 16:45:16 -0700 (PDT)
+        Mon, 21 Mar 2022 16:45:18 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -57,9 +57,9 @@ To:     Rob Herring <robh+dt@kernel.org>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
-Subject: [PATCH v6 04/18] clk: qcom: clk-hfpll: use poll_timeout macro
-Date:   Tue, 22 Mar 2022 00:15:34 +0100
-Message-Id: <20220321231548.14276-5-ansuelsmth@gmail.com>
+Subject: [PATCH v6 06/18] clk: qcom: clk-krait: unlock spin after mux completion
+Date:   Tue, 22 Mar 2022 00:15:36 +0100
+Message-Id: <20220321231548.14276-7-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220321231548.14276-1-ansuelsmth@gmail.com>
 References: <20220321231548.14276-1-ansuelsmth@gmail.com>
@@ -69,45 +69,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use regmap_read_poll_timeout macro instead of do-while structure.
+Unlock spinlock after the mux switch is completed to prevent any corner
+case of mux request while the switch still needs to be done.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/clk/qcom/clk-hfpll.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ drivers/clk/qcom/clk-krait.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/qcom/clk-hfpll.c b/drivers/clk/qcom/clk-hfpll.c
-index e847d586a73a..a4e347eb4d4d 100644
---- a/drivers/clk/qcom/clk-hfpll.c
-+++ b/drivers/clk/qcom/clk-hfpll.c
-@@ -12,6 +12,8 @@
- #include "clk-regmap.h"
- #include "clk-hfpll.h"
+diff --git a/drivers/clk/qcom/clk-krait.c b/drivers/clk/qcom/clk-krait.c
+index 59f1af415b58..e447fcc3806d 100644
+--- a/drivers/clk/qcom/clk-krait.c
++++ b/drivers/clk/qcom/clk-krait.c
+@@ -32,11 +32,12 @@ static void __krait_mux_set_sel(struct krait_mux_clk *mux, int sel)
+ 		regval |= (sel & mux->mask) << (mux->shift + LPL_SHIFT);
+ 	}
+ 	krait_set_l2_indirect_reg(mux->offset, regval);
+-	spin_unlock_irqrestore(&krait_clock_reg_lock, flags);
  
-+#define HFPLL_BUSY_WAIT_TIMEOUT	100
+ 	/* Wait for switch to complete. */
+ 	mb();
+ 	udelay(1);
 +
- #define PLL_OUTCTRL	BIT(0)
- #define PLL_BYPASSNL	BIT(1)
- #define PLL_RESET_N	BIT(2)
-@@ -72,13 +74,12 @@ static void __clk_hfpll_enable(struct clk_hw *hw)
- 	regmap_update_bits(regmap, hd->mode_reg, PLL_RESET_N, PLL_RESET_N);
++	spin_unlock_irqrestore(&krait_clock_reg_lock, flags);
+ }
  
- 	/* Wait for PLL to lock. */
--	if (hd->status_reg) {
--		do {
--			regmap_read(regmap, hd->status_reg, &val);
--		} while (!(val & BIT(hd->lock_bit)));
--	} else {
-+	if (hd->status_reg)
-+		regmap_read_poll_timeout(regmap, hd->status_reg, val,
-+					 !(val & BIT(hd->lock_bit)), USEC_PER_MSEC * 2,
-+					 HFPLL_BUSY_WAIT_TIMEOUT * USEC_PER_MSEC);
-+	else
- 		udelay(60);
--	}
- 
- 	/* Enable PLL output. */
- 	regmap_update_bits(regmap, hd->mode_reg, PLL_OUTCTRL, PLL_OUTCTRL);
+ static int krait_mux_set_parent(struct clk_hw *hw, u8 index)
 -- 
 2.34.1
 
