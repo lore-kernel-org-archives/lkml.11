@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2B19C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C2E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348888AbiCUOHp (ORCPT
+        id S1349091AbiCUOHx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:07:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35558 "EHLO
+        Mon, 21 Mar 2022 10:07:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348513AbiCUOAW (ORCPT
+        with ESMTP id S1348603AbiCUOAy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:00:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18C9B396A6;
-        Mon, 21 Mar 2022 06:58:47 -0700 (PDT)
+        Mon, 21 Mar 2022 10:00:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B93E13B294;
+        Mon, 21 Mar 2022 06:58:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 925596125C;
-        Mon, 21 Mar 2022 13:58:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8084C340F2;
-        Mon, 21 Mar 2022 13:58:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 234E66126A;
+        Mon, 21 Mar 2022 13:58:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30489C340ED;
+        Mon, 21 Mar 2022 13:58:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871126;
-        bh=lhp5KPgkqNQMD0iMwsTPMTbGR16W4F3pRMK30uJXhLY=;
+        s=korg; t=1647871131;
+        bh=Goby18dRB64LCcK9TGq6lA+23ZiElZYoSMeCyCkZ5Pw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VXFT1sHfWHi3FSTV8U3w7z9tYRqc37t9twwL1fL24uuplD2WkBjKMzdGBaw1dJQ1g
-         eg9gc6lcZYflBfLlUHmnbsa3vEPbcy6AHhIS9pD1IYzAlxcNg648UxH1EqYvfeRiTt
-         9uwZ7uuudEV8pug3R6dTzs05BWRJYa/eaWgquaZE=
+        b=hcaOiTgVUMTtZLXot+UGCGBCsLlm2B5HS1ZRo7DZJ5ptx56Kzt6tIGMRnVyDN3krp
+         OIbcvZlWGp1DCcZs1od7InEQPY/pxchM8y8/wRzuo+JaIzQtgTgvw1J4lbg4BegyWH
+         y2YG8ucyU6uqffKKdIYEZqUggqgRgxrqBgVXiLrA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>,
+        Manish Chopra <manishc@marvell.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 14/30] net: dsa: Add missing of_node_put() in dsa_port_parse_of
-Date:   Mon, 21 Mar 2022 14:52:44 +0100
-Message-Id: <20220321133220.058790653@linuxfoundation.org>
+Subject: [PATCH 5.10 16/30] bnx2x: fix built-in kernel driver load failure
+Date:   Mon, 21 Mar 2022 14:52:46 +0100
+Message-Id: <20220321133220.116321726@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133219.643490199@linuxfoundation.org>
 References: <20220321133219.643490199@linuxfoundation.org>
@@ -50,34 +52,158 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Manish Chopra <manishc@marvell.com>
 
-[ Upstream commit cb0b430b4e3acc88c85e0ad2e25f2a25a5765262 ]
+[ Upstream commit 424e7834e293936a54fcf05173f2884171adc5a3 ]
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+Commit b7a49f73059f ("bnx2x: Utilize firmware 7.13.21.0")
+added request_firmware() logic in probe() which caused
+load failure when firmware file is not present in initrd (below),
+as access to firmware file is not feasible during probe.
 
-Fixes: 6d4e5c570c2d ("net: dsa: get port type at parse time")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220316082602.10785-1-linmq006@gmail.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+  Direct firmware load for bnx2x/bnx2x-e2-7.13.15.0.fw failed with error -2
+  Direct firmware load for bnx2x/bnx2x-e2-7.13.21.0.fw failed with error -2
+
+This patch fixes this issue by -
+
+1. Removing request_firmware() logic from the probe()
+   such that .ndo_open() handle it as it used to handle
+   it earlier
+
+2. Given request_firmware() is removed from probe(), so
+   driver has to relax FW version comparisons a bit against
+   the already loaded FW version (by some other PFs of same
+   adapter) to allow different compatible/close enough FWs with which
+   multiple PFs may run with (in different environments), as the
+   given PF who is in probe flow has no idea now with which firmware
+   file version it is going to initialize the device in ndo_open()
+
+Link: https://lore.kernel.org/all/46f2d9d9-ae7f-b332-ddeb-b59802be2bab@molgen.mpg.de/
+Reported-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Tested-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Fixes: b7a49f73059f ("bnx2x: Utilize firmware 7.13.21.0")
+Signed-off-by: Manish Chopra <manishc@marvell.com>
+Signed-off-by: Ariel Elior <aelior@marvell.com>
+Link: https://lore.kernel.org/r/20220316214613.6884-1-manishc@marvell.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/dsa/dsa2.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x.h   |  2 --
+ .../net/ethernet/broadcom/bnx2x/bnx2x_cmn.c   | 28 +++++++++++--------
+ .../net/ethernet/broadcom/bnx2x/bnx2x_main.c  | 15 ++--------
+ 3 files changed, 19 insertions(+), 26 deletions(-)
 
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 71c8ef7d4087..f543fca6dfcb 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -766,6 +766,7 @@ static int dsa_port_parse_of(struct dsa_port *dp, struct device_node *dn)
- 		struct net_device *master;
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
+index bb3ba614fb17..2a61229d3f97 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
+@@ -2534,6 +2534,4 @@ void bnx2x_register_phc(struct bnx2x *bp);
+  * Meant for implicit re-load flows.
+  */
+ int bnx2x_vlan_reconfigure_vid(struct bnx2x *bp);
+-int bnx2x_init_firmware(struct bnx2x *bp);
+-void bnx2x_release_firmware(struct bnx2x *bp);
+ #endif /* bnx2x.h */
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+index 41ebbb2c7d3a..198e041d8410 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+@@ -2363,24 +2363,30 @@ int bnx2x_compare_fw_ver(struct bnx2x *bp, u32 load_code, bool print_err)
+ 	/* is another pf loaded on this engine? */
+ 	if (load_code != FW_MSG_CODE_DRV_LOAD_COMMON_CHIP &&
+ 	    load_code != FW_MSG_CODE_DRV_LOAD_COMMON) {
+-		/* build my FW version dword */
+-		u32 my_fw = (bp->fw_major) + (bp->fw_minor << 8) +
+-				(bp->fw_rev << 16) + (bp->fw_eng << 24);
++		u8 loaded_fw_major, loaded_fw_minor, loaded_fw_rev, loaded_fw_eng;
++		u32 loaded_fw;
  
- 		master = of_find_net_device_by_node(ethernet);
-+		of_node_put(ethernet);
- 		if (!master)
- 			return -EPROBE_DEFER;
+ 		/* read loaded FW from chip */
+-		u32 loaded_fw = REG_RD(bp, XSEM_REG_PRAM);
++		loaded_fw = REG_RD(bp, XSEM_REG_PRAM);
  
+-		DP(BNX2X_MSG_SP, "loaded fw %x, my fw %x\n",
+-		   loaded_fw, my_fw);
++		loaded_fw_major = loaded_fw & 0xff;
++		loaded_fw_minor = (loaded_fw >> 8) & 0xff;
++		loaded_fw_rev = (loaded_fw >> 16) & 0xff;
++		loaded_fw_eng = (loaded_fw >> 24) & 0xff;
++
++		DP(BNX2X_MSG_SP, "loaded fw 0x%x major 0x%x minor 0x%x rev 0x%x eng 0x%x\n",
++		   loaded_fw, loaded_fw_major, loaded_fw_minor, loaded_fw_rev, loaded_fw_eng);
+ 
+ 		/* abort nic load if version mismatch */
+-		if (my_fw != loaded_fw) {
++		if (loaded_fw_major != BCM_5710_FW_MAJOR_VERSION ||
++		    loaded_fw_minor != BCM_5710_FW_MINOR_VERSION ||
++		    loaded_fw_eng != BCM_5710_FW_ENGINEERING_VERSION ||
++		    loaded_fw_rev < BCM_5710_FW_REVISION_VERSION_V15) {
+ 			if (print_err)
+-				BNX2X_ERR("bnx2x with FW %x was already loaded which mismatches my %x FW. Aborting\n",
+-					  loaded_fw, my_fw);
++				BNX2X_ERR("loaded FW incompatible. Aborting\n");
+ 			else
+-				BNX2X_DEV_INFO("bnx2x with FW %x was already loaded which mismatches my %x FW, possibly due to MF UNDI\n",
+-					       loaded_fw, my_fw);
++				BNX2X_DEV_INFO("loaded FW incompatible, possibly due to MF UNDI\n");
++
+ 			return -EBUSY;
+ 		}
+ 	}
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+index 7fa271db41b0..6333471916be 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+@@ -12366,15 +12366,6 @@ static int bnx2x_init_bp(struct bnx2x *bp)
+ 
+ 	bnx2x_read_fwinfo(bp);
+ 
+-	if (IS_PF(bp)) {
+-		rc = bnx2x_init_firmware(bp);
+-
+-		if (rc) {
+-			bnx2x_free_mem_bp(bp);
+-			return rc;
+-		}
+-	}
+-
+ 	func = BP_FUNC(bp);
+ 
+ 	/* need to reset chip if undi was active */
+@@ -12387,7 +12378,6 @@ static int bnx2x_init_bp(struct bnx2x *bp)
+ 
+ 		rc = bnx2x_prev_unload(bp);
+ 		if (rc) {
+-			bnx2x_release_firmware(bp);
+ 			bnx2x_free_mem_bp(bp);
+ 			return rc;
+ 		}
+@@ -13469,7 +13459,7 @@ do {									\
+ 	     (u8 *)bp->arr, len);					\
+ } while (0)
+ 
+-int bnx2x_init_firmware(struct bnx2x *bp)
++static int bnx2x_init_firmware(struct bnx2x *bp)
+ {
+ 	const char *fw_file_name, *fw_file_name_v15;
+ 	struct bnx2x_fw_file_hdr *fw_hdr;
+@@ -13569,7 +13559,7 @@ int bnx2x_init_firmware(struct bnx2x *bp)
+ 	return rc;
+ }
+ 
+-void bnx2x_release_firmware(struct bnx2x *bp)
++static void bnx2x_release_firmware(struct bnx2x *bp)
+ {
+ 	kfree(bp->init_ops_offsets);
+ 	kfree(bp->init_ops);
+@@ -14086,7 +14076,6 @@ static int bnx2x_init_one(struct pci_dev *pdev,
+ 	return 0;
+ 
+ init_one_freemem:
+-	bnx2x_release_firmware(bp);
+ 	bnx2x_free_mem_bp(bp);
+ 
+ init_one_exit:
 -- 
 2.34.1
 
