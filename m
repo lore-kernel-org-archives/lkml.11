@@ -2,79 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 043B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:54:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6AB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:58:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351514AbiCUQz7 (ORCPT
+        id S1351517AbiCUQ7m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 12:55:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60162 "EHLO
+        Mon, 21 Mar 2022 12:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235324AbiCUQzx (ORCPT
+        with ESMTP id S1348165AbiCUQ7k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 12:55:53 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D8F25FB8
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:54:27 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id t25so25567554lfg.7
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:54:27 -0700 (PDT)
+        Mon, 21 Mar 2022 12:59:40 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 444D73BF89
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:58:14 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id k124-20020a1ca182000000b0038c9cf6e2a6so2642615wme.0
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:58:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3QHsnyUwRgh9Zh5qpeVweLlzxCn7D7LuIU3RUmgqums=;
-        b=egpi7bBEIGYij/LrErQD5lmja50L04iTQ7SBgwFYf0PQb3jA12zLVfP27psT7ngrVr
-         FawBlv5grMXE2q6NPehTrvRvEc12Gsg9iJoVfhK9H7lkb7pX2rgvbyRIqMdTjVkumZdm
-         5pZuwDSuZYlmBKI2tvrXlJ0XBPH1XXkpj85Q0=
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=XUH9WW10O8cDNlW6XWZHeYweS24CM22UwaJeFld/Gew=;
+        b=AIAMLnn9JL9cbEph7aE6F7EAkIdQuoJnrSd1XK7IfaokJWBkyiJuTHEG2xJqjXABRF
+         DfVJMYjKYth04hY+REgO247uCeJPFJotbqvL4x542Dzk+bgkZw1LF82BxIf3DUzks1g8
+         aqP3KX8gVsT1Qjjq8hoSepjjNyena6RRm7ZD95Nd/yTFa0nPu74ER7BdzpwvOrkFsv+2
+         lON1jO/96OqlDwfeSpES0X7Svof79236Ef4IcBOu2Pmj8vTW8UoZIh4PkAaiwkUczdTn
+         7bP7SnlAi24XglfKv2zZvVI99YeDMd5vG8PcusyrqL+vjxrhgvOpwPtiY3OfNRrdYu4W
+         eREQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3QHsnyUwRgh9Zh5qpeVweLlzxCn7D7LuIU3RUmgqums=;
-        b=r63ZUSuqpkVQqx4R+V5PF7DkFTwVAx/1zXYhjkGn1Tj0SQDftKHkdRhA/kd5ogIQve
-         jrnlqOgCnoZ3tYN6d+d7VZ1FHOdTjUm4950DdppEcr1w93aFJyJApADv+ar/szsZHW+L
-         MNznp9fGlFPuSnFZIVkphWcc9ppj3ALQlvWvA70pLmYRBlleQN539qRmLbkd+4mDXt3h
-         /RNFtmgivymVCQL/F1vRhEiuYPLWpP+d6ovuZ2LuUep0luqPxWKzsrfReZcUm7d1CAj5
-         205L/b1Rsv/oXktdu0fiqyOV7BzzA3kiczze1XwlnOj2v6ElcPwF58vXrctY26U6MzvQ
-         tVTQ==
-X-Gm-Message-State: AOAM530/ysIZaZByf6KypcxSqY4gHvR+OfV5XUwqQtcvaKC6ed/DVkJj
-        27AYVLLwkHiJOQBpS5PNn1BP3v20cLKhha+iKZc=
-X-Google-Smtp-Source: ABdhPJzuQeYwv6xI1kbaJVzEdDc7wYbLg+Nc3kYKKgxxt9BM8/Y5s0RcMsm1LNiheXtSWR0ORKcTLg==
-X-Received: by 2002:ac2:410d:0:b0:443:7e85:2a4 with SMTP id b13-20020ac2410d000000b004437e8502a4mr14880905lfi.220.1647881663156;
-        Mon, 21 Mar 2022 09:54:23 -0700 (PDT)
-Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com. [209.85.208.169])
-        by smtp.gmail.com with ESMTPSA id w27-20020ac2599b000000b004481e254f08sm1844773lfn.240.2022.03.21.09.54.22
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Mar 2022 09:54:22 -0700 (PDT)
-Received: by mail-lj1-f169.google.com with SMTP id bn33so20719173ljb.6
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:54:22 -0700 (PDT)
-X-Received: by 2002:a2e:9904:0:b0:247:ec95:fdee with SMTP id
- v4-20020a2e9904000000b00247ec95fdeemr16344514lji.291.1647881661878; Mon, 21
- Mar 2022 09:54:21 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=XUH9WW10O8cDNlW6XWZHeYweS24CM22UwaJeFld/Gew=;
+        b=raQLJj9RWvZz0kaA1SMfZjGKLSxuOBsadt804DVjnGftjmicnBtT325lm8fHN+lleI
+         M8aE/dzc8462y1HfXosQ2YR11qUkrunOtYWwF1+nInYzwP2zRmAbqVXSPr0etIn4ZCPE
+         /84BkPXaPKTJrgdOUxUjT3QBNMmlkaE9NPmzRtWyfYRqN60QFGxCvCDC/T9INs63o5AG
+         Lzp9hgoMMtvK2pLLRXuWqVJIBrOOgeAY7eGJZrRDQcOa5jy0LOc+wlhcHxxn+uc3pj2l
+         l3NNaPECfDr4dkzNqQYHMB0j+oOfg0B6lU+Cvx0r+fvWaj6nVqiyX7W2NirxtQFqxMR1
+         MflQ==
+X-Gm-Message-State: AOAM531nKzIeE/7XEumNQYcnP7+bKFy+rXrS68siWwqjaEQfKD3aujyb
+        gl2ELgoaIsRAhyj8IbiTkLYzzDL60s1y/g==
+X-Google-Smtp-Source: ABdhPJwgI/lNEfCCsczpCw39SX//lh6xwO+7TI0RNrg77Mxku+B/7LkKfPrAokDRCbpTz7Sym1U5Tg==
+X-Received: by 2002:a05:600c:2188:b0:38c:9a21:9c95 with SMTP id e8-20020a05600c218800b0038c9a219c95mr17410wme.87.1647881892727;
+        Mon, 21 Mar 2022 09:58:12 -0700 (PDT)
+Received: from google.com (110.121.148.146.bc.googleusercontent.com. [146.148.121.110])
+        by smtp.gmail.com with ESMTPSA id az19-20020a05600c601300b0038cadf3aa69sm37767wmb.36.2022.03.21.09.58.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 09:58:11 -0700 (PDT)
+Date:   Mon, 21 Mar 2022 17:58:08 +0100
+From:   "Steinar H. Gunderson" <sesse@google.com>
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] perf intel-pt: Synthesize cycle events
+Message-ID: <YjiuoEUL6jH32cBi@google.com>
+References: <YjBnet2813sEGjZY@google.com>
+ <c50bb87d-9fee-c4f9-a350-8729e503e43a@intel.com>
+ <YjDUO6bbyfGw/u0C@google.com>
+ <52903e58-e74c-5ea0-36b4-277ea3610af4@intel.com>
+ <YjGdoGy4Z2UUG9S9@google.com>
+ <ef780335-7dc6-3a23-54a8-b6fc9c8a2ed3@intel.com>
+ <YjHfGrZovk3N/H0f@google.com>
+ <371faf0d-f794-4a2e-0a1c-9d454d7c8b12@intel.com>
+ <YjhUjotmo+kYvoNP@google.com>
+ <ffa56520-09b5-9c5d-7733-6767d2f8e350@intel.com>
 MIME-Version: 1.0
-References: <CAHk-=wj4fFjx2pgbGNBM4wJs3=eReZ05EQyprzgT2Jv8qJ2vJg@mail.gmail.com>
- <20220321145822.GA1158046@roeck-us.net>
-In-Reply-To: <20220321145822.GA1158046@roeck-us.net>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 21 Mar 2022 09:54:05 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgKR6aLAuo2xYCMXht0uzNA=2mYV2ymx+drs02BK1zaMg@mail.gmail.com>
-Message-ID: <CAHk-=wgKR6aLAuo2xYCMXht0uzNA=2mYV2ymx+drs02BK1zaMg@mail.gmail.com>
-Subject: Re: Linux 5.17
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ffa56520-09b5-9c5d-7733-6767d2f8e350@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 7:58 AM Guenter Roeck <linux@roeck-us.net> wrote:
->
-> Build results:
->         total: 155 pass: 155 fail: 0
-> Qemu test results:
->         total: 488 pass: 488 fail: 0
+On Mon, Mar 21, 2022 at 03:09:08PM +0200, Adrian Hunter wrote:
+> Yes, it can cross calls and returns.  'returns' due to "Return Compression"
+> which can be switched off at record time with config term noretcomp, but
+> that may cause more overflows / trace data loss.
+> 
+> To get accurate times for a single function there is Intel PT
+> address filtering.
+> 
+> Otherwise LBRs can have cycle times.
 
-Thanks for verifying. We got there eventually, even if it was unusually painful.
+Many interesting points, I'll be sure to look into them.
 
-                Linus
+Meanwhile, should I send a new patch with your latest changes?
+It's more your patch than mine now, it seems, but I think we're
+converging on something useful.
+
+>> By the way, I noticed that synthesized call stacks do not respect
+>> --inline; is that on purpose? The patch seems simple enough (just
+>> a call to add_inlines), although it exposes extreme slowness in libbfd
+>> when run over large binaries, which I'll have to look into.
+>> (10+ ms for each address-to-symbol lookup is rather expensive when you
+>> have 4M samples to churn through!)
+> No, not on purpose.
+
+The patch appears to be trivial:
+
+--- a/tools/perf/util/machine.c
++++ b/tools/perf/util/machine.c
+@@ -44,6 +44,7 @@
+ #include <linux/zalloc.h>
+
+ static void __machine__remove_thread(struct machine *machine, struct thread *th, bool lock);
++static int append_inlines(struct callchain_cursor *cursor, struct map_symbol *ms, u64 ip);
+
+ static struct dso *machine__kernel_dso(struct machine *machine)
+ {
+@@ -2217,6 +2218,10 @@ static int add_callchain_ip(struct thread *thread,
+ 	ms.maps = al.maps;
+ 	ms.map = al.map;
+ 	ms.sym = al.sym;
++
++	if (append_inlines(cursor, &ms, ip) == 0)
++		return 0;
++
+        srcline = callchain_srcline(&ms, al.addr);
+        return callchain_cursor_append(cursor, ip, &ms,
+                                       branch, flags, nr_loop_iter,
+
+but I'm seeing problems with “failing to process sample” when I go from
+10us to 1us, so I'll have to look into that.
+
+I've sent some libbfd patches try to help the slowness:
+
+  https://sourceware.org/git/?p=binutils-gdb.git;a=commitdiff;h=30cbd32aec30b4bc13427bbd87c4c63c739d4578
+  https://sourceware.org/pipermail/binutils/2022-March/120131.html
+  https://sourceware.org/pipermail/binutils/2022-March/120133.html
+
+/* Steinar */
