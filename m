@@ -2,63 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C542C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 17:45:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2854C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 17:45:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350314AbiCURqj (ORCPT
+        id S1350372AbiCURrD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 13:46:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48600 "EHLO
+        Mon, 21 Mar 2022 13:47:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238056AbiCURqe (ORCPT
+        with ESMTP id S238056AbiCURrA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 13:46:34 -0400
-Received: from smtp-bc0f.mail.infomaniak.ch (smtp-bc0f.mail.infomaniak.ch [45.157.188.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C9F3B039
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 10:45:07 -0700 (PDT)
-Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KMhpV2Q0WzMptYB;
-        Mon, 21 Mar 2022 18:45:06 +0100 (CET)
-Received: from localhost (unknown [23.97.221.149])
-        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4KMhpT4slkzlhMBQ;
-        Mon, 21 Mar 2022 18:45:05 +0100 (CET)
-From:   =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-To:     Jarkko Sakkinen <jarkko@kernel.org>
-Cc:     =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>,
-        David Howells <dhowells@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Eric Snowberg <eric.snowberg@oracle.com>,
-        Paul Moore <paul@paul-moore.com>, keyrings@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 0/1] Explain panic() calls for keyring initialization
-Date:   Mon, 21 Mar 2022 18:45:47 +0100
-Message-Id: <20220321174548.510516-1-mic@digikod.net>
+        Mon, 21 Mar 2022 13:47:00 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 448CE3B039;
+        Mon, 21 Mar 2022 10:45:34 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id B8B6C1F381;
+        Mon, 21 Mar 2022 17:45:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1647884732; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=peglqrh0TeDc2F8OaZcmUkLDagjJhol7WzzofXyyxO4=;
+        b=PnmDb1Bn2lmsEUIPSG3oXSY46IqI6iAnrhkUOd3imYGHhzUBGrywA4Q9uGXh7c/svUPKw5
+        ngHuZu78cVggAJKMr47ybLtd326kLSE1NoNSHr9Gfg480gkY2G8m9HV1lQGRPPiKOrSgdz
+        U10jIZn2E3ClJ36uP4+4GnMAPYs5WBQ=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id AB410139DB;
+        Mon, 21 Mar 2022 17:45:31 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id uViIKLu5OGIeUQAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Mon, 21 Mar 2022 17:45:31 +0000
+Date:   Mon, 21 Mar 2022 18:45:30 +0100
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     "T.J. Mercier" <tjmercier@google.com>
+Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
+        Liam Mark <lmark@codeaurora.org>,
+        Laura Abbott <labbott@redhat.com>,
+        Brian Starkey <Brian.Starkey@arm.com>,
+        John Stultz <john.stultz@linaro.org>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>, kaleshsingh@google.com,
+        Kenny.Ho@amd.com, dri-devel@lists.freedesktop.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+        cgroups@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: Re: [RFC v3 5/8] dmabuf: Add gpu cgroup charge transfer function
+Message-ID: <20220321174530.GB9640@blackbody.suse.cz>
+References: <20220309165222.2843651-1-tjmercier@google.com>
+ <20220309165222.2843651-6-tjmercier@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220309165222.2843651-6-tjmercier@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As suggested by Jarkko and explained by Paul, let's document the panic()
-calls from the blacklist keyring initialization.  This series applies on
-top of commit 50c486fe3108 ("certs: Allow root user to append signed hashes to the
-blacklist keyring").  This can smoothly be rebased on top of Jarkko's
-next branch.
+Hello.
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git/commit/?id=50c486fe310890c134b5cb36cf9a4135475a6074
+On Wed, Mar 09, 2022 at 04:52:15PM +0000, "T.J. Mercier" <tjmercier@google.com> wrote:
+> +int dma_buf_charge_transfer(struct dma_buf *dmabuf, struct gpucg *gpucg)
+> +{
+> +#ifdef CONFIG_CGROUP_GPU
+> +	struct gpucg *current_gpucg;
+> +	int ret = 0;
+> +
+> +	/*
+> +	 * Verify that the cgroup of the process requesting the transfer is the
+> +	 * same as the one the buffer is currently charged to.
+> +	 */
+> +	current_gpucg = gpucg_get(current);
+> +	mutex_lock(&dmabuf->lock);
+> +	if (current_gpucg != dmabuf->gpucg) {
+> +		ret = -EPERM;
+> +		goto err;
+> +	}
 
-Regards,
+Add a shortcut for gpucg == current_gpucg?
 
-Mickaël Salaün (1):
-  certs: Explain the rational to call panic()
+> +
+> +	ret = gpucg_try_charge(gpucg, dmabuf->gpucg_dev, dmabuf->size);
+> +	if (ret)
+> +		goto err;
+> +
+> +	dmabuf->gpucg = gpucg;
+> +
+> +	/* uncharge the buffer from the cgroup it's currently charged to. */
+> +	gpucg_uncharge(current_gpucg, dmabuf->gpucg_dev, dmabuf->size);
 
- certs/blacklist.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+I think gpucg_* API would need to cater for such transfers too since
+possibly transitional breach of a limit during the transfer may
+unnecessarily fail the operation.
 
-
-base-commit: 50c486fe310890c134b5cb36cf9a4135475a6074
--- 
-2.35.1
-
+My 0.02€,
+Michal
