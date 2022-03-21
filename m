@@ -2,91 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AA94C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:57:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7E3EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:57:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346090AbiCUJ62 (ORCPT
+        id S1346083AbiCUJ7Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 05:58:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41738 "EHLO
+        Mon, 21 Mar 2022 05:59:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345999AbiCUJ6J (ORCPT
+        with ESMTP id S233295AbiCUJ7N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 05:58:09 -0400
-Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 399EB13700E
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 02:56:44 -0700 (PDT)
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 22L9jwMZ079098;
-        Mon, 21 Mar 2022 17:45:58 +0800 (GMT-8)
-        (envelope-from dylan_hung@aspeedtech.com)
-Received: from DylanHung-PC.aspeed.com (192.168.2.216) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 21 Mar
- 2022 17:56:23 +0800
-From:   Dylan Hung <dylan_hung@aspeedtech.com>
-To:     <robh+dt@kernel.org>, <joel@jms.id.au>, <andrew@aj.id.au>,
-        <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <p.zabel@pengutronix.de>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-CC:     <BMC-SW@aspeedtech.com>, <stable@vger.kernel.org>
-Subject: [PATCH v2 1/3] dt-bindings: net: add reset property for aspeed, ast2600-mdio binding
-Date:   Mon, 21 Mar 2022 17:56:46 +0800
-Message-ID: <20220321095648.4760-2-dylan_hung@aspeedtech.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220321095648.4760-1-dylan_hung@aspeedtech.com>
-References: <20220321095648.4760-1-dylan_hung@aspeedtech.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.2.216]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 22L9jwMZ079098
+        Mon, 21 Mar 2022 05:59:13 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6D41D137029;
+        Mon, 21 Mar 2022 02:57:47 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EBD5C1042;
+        Mon, 21 Mar 2022 02:57:46 -0700 (PDT)
+Received: from e123648.arm.com (unknown [10.57.22.222])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 125BC3F766;
+        Mon, 21 Mar 2022 02:57:43 -0700 (PDT)
+From:   Lukasz Luba <lukasz.luba@arm.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     lukasz.luba@arm.com, dietmar.eggemann@arm.com,
+        Pierre.Gondois@arm.com, ionela.voinescu@arm.com,
+        viresh.kumar@linaro.org, rafael@kernel.org,
+        daniel.lezcano@linaro.org, linux-pm@vger.kernel.org,
+        mka@chromium.org, nm@ti.com, sboyd@kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, cristian.marussi@arm.com,
+        sudeep.holla@arm.com, matthias.bgg@gmail.com
+Subject: [RESEND][PATCH 0/8] Introduce support for artificial Energy Model
+Date:   Mon, 21 Mar 2022 09:57:21 +0000
+Message-Id: <20220321095729.20655-1-lukasz.luba@arm.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The AST2600 MDIO bus controller has a reset control bit and must be
-deasserted before the manipulating the MDIO controller.
+Hi all,
 
-Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
-Cc: stable@vger.kernel.org
----
- .../devicetree/bindings/net/aspeed,ast2600-mdio.yaml          | 4 ++++
- 1 file changed, 4 insertions(+)
+This patch set adds new callback and support for artificial Energy Model (EM).
+The new EMs have artificially generated performance states.
+Such EMs can be created from lean information sources, such
+as the relative energy efficiency between CPUs. The ACPI based
+platforms provide this information
+(ACPI 6.4, s5.2.12.14 'GIC CPU Interface (GICC) Structure'
+'Processor Power efficiency Class' field).
 
-diff --git a/Documentation/devicetree/bindings/net/aspeed,ast2600-mdio.yaml b/Documentation/devicetree/bindings/net/aspeed,ast2600-mdio.yaml
-index 1c88820cbcdf..8ba108e25d94 100644
---- a/Documentation/devicetree/bindings/net/aspeed,ast2600-mdio.yaml
-+++ b/Documentation/devicetree/bindings/net/aspeed,ast2600-mdio.yaml
-@@ -23,12 +23,15 @@ properties:
-   reg:
-     maxItems: 1
-     description: The register range of the MDIO controller instance
-+  resets:
-+    maxItems: 1
- 
- required:
-   - compatible
-   - reg
-   - "#address-cells"
-   - "#size-cells"
-+  - resets
- 
- unevaluatedProperties: false
- 
-@@ -39,6 +42,7 @@ examples:
-             reg = <0x1e650000 0x8>;
-             #address-cells = <1>;
-             #size-cells = <0>;
-+            resets = <&syscon 35>;
- 
-             ethphy0: ethernet-phy@0 {
-                     compatible = "ethernet-phy-ieee802.3-c22";
+Artificial EMs might require to directly provide the 'cost' of
+the generated performance state. This patch set adds a new callback
+.get_cost() for this. The EM framework does not force any model
+or formula, it's up to the platform code.
+
+Artificial EMs aim to leverage the Energy Aware Scheduler
+(EAS). Other frameworks relying on performance states
+information (i.e. IPA/DTPM) must be informed of the
+EM type and might be prevented from using it. This patch
+sets also does this by introducing a new flag:
+EM_PERF_DOMAIN_ARTIFICIAL.
+
+The patch set is based on current linux-next, where some
+changes to OPP & EM are queuing.
+
+The patch set also contains (patch 7/8 and patch 8/8) logic which prevents
+two EM's client frameworks from using this new EM type. Some other approach,
+using 'milli-watts', has been proposed and discussed, but refused [1].
+This new flag is more precised and should not leave space for
+wrong interpretation.
+
+Shortly after this patch set you will see a patch set implementing the
+platform code and registering this new EM.
+
+Regards,
+Lukasz Luba
+
+[1] https://lore.kernel.org/linux-pm/20220207073036.14901-1-lukasz.luba@arm.com/
+
+Lukasz Luba (7):
+  PM: EM: Add .get_cost() callback
+  PM: EM: Use the new .get_cost() callback while registering EM
+  PM: EM: Change the order of arguments in the .active_power() callback
+  PM: EM: Remove old debugfs files and print all 'flags'
+  Documentation: EM: Add artificial EM registration description
+  thermal: cooling: Check Energy Model type in cpufreq_cooling and
+    devfreq_cooling
+  powercap: DTPM: Check for Energy Model type
+
+Pierre Gondois (1):
+  PM: EM: Add artificial EM flag
+
+ Documentation/power/energy-model.rst  | 24 +++++++++-
+ drivers/cpufreq/mediatek-cpufreq-hw.c |  4 +-
+ drivers/cpufreq/scmi-cpufreq.c        |  4 +-
+ drivers/opp/of.c                      |  6 +--
+ drivers/powercap/dtpm_cpu.c           |  2 +-
+ drivers/thermal/cpufreq_cooling.c     |  2 +-
+ drivers/thermal/devfreq_cooling.c     |  8 ++--
+ include/linux/energy_model.h          | 35 +++++++++++++--
+ kernel/power/energy_model.c           | 63 +++++++++++++++------------
+ 9 files changed, 101 insertions(+), 47 deletions(-)
+
 -- 
-2.25.1
+2.17.1
 
