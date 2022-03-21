@@ -2,196 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B299FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:50:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B863BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:50:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230139AbiCUWvf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34258 "EHLO
+        id S230165AbiCUWvk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:51:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230006AbiCUWvW (ORCPT
+        with ESMTP id S230203AbiCUWvZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:51:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A42A9765A6;
-        Mon, 21 Mar 2022 15:42:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 51563612B3;
-        Mon, 21 Mar 2022 21:52:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9AF0C340E8;
-        Mon, 21 Mar 2022 21:52:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647899563;
-        bh=Y1v8fu2Y1p+s/RFwt//XCiGvgEoAtY+3ZUcAltp7kvE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Cxv6Ts8zdatqSBrcZWslqLy9oLLKxENtNFRgPWGOAhzdsxI2K8A5l7lRlRXQet3Fv
-         i9ACMiS0WhaeeVatpSCjotv3d/gfSvu/C6WqLojShp25Tm8uI9x2+Y8P52Hs7Vj2cL
-         J6VfmSC7NrhTg7ptB5RdGaHnuUWSgLXzwfNJsbC9lP3BvGE9/T6VFD9L/J+lxmfzof
-         QLN4sTillk5ygM38WqgoOGhoHd/vj0pw+s/pSrxdjpl6jP/TEdgKzOdailevJBm8r+
-         09PwD4gy198J3FSgbea+3/9QehUoVjM/CiYzQer9HY9VKDpbOzXPI7XrI23ENpjqY1
-         hzbGBs4SgaBNQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, nikita@trvn.ru,
-        song.bao.hua@hisilicon.com, linux-input@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 1/6] Input: zinitix - do not report shadow fingers
-Date:   Mon, 21 Mar 2022 17:52:32 -0400
-Message-Id: <20220321215240.490132-1-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Mon, 21 Mar 2022 18:51:25 -0400
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4565D38D2A4
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:42:11 -0700 (PDT)
+Received: by mail-oi1-x22f.google.com with SMTP id k10so6287546oia.0
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:42:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cWpcGr+6ZtCAxiOUcLCZPyeMFzj0VHLkO5iJ3VF02f4=;
+        b=oPx98dOIQ/h3ttHAG6/6YwYcqg7z9+fT8e3p530qSb0AGiFlCEiUBJAA/XHPNn4av5
+         IrNtz8J9D20C6CiPUqebgtBCtysnGTdWktCDdQQs23F09r5EekY59q/QOGyFZmB1xxfW
+         iPiRF6qWA438fV0Atp3T6GDy4p3WkKjn3pXPJY8DftTvsoIYnhx3dewT0KiDW7OdVKd2
+         D5jkB0If67Rs4Rb9WKLpYB9DEaiUmVpxgcsD6wURVIpcpxYxfvS9JbQjxsYeNeAONUGC
+         sCJiC5kqVR6g0fxwD0pkSb8T3MyE4sKdLwkPLYGUzH0GZJBZwRKxR5SuRgv3+eWXj/8S
+         Db2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cWpcGr+6ZtCAxiOUcLCZPyeMFzj0VHLkO5iJ3VF02f4=;
+        b=ab0JIjjYE8hUXXlGiL+tqwWe5bGEw8S9XJfeac4pbetSti3dkNFyGDQiz/iH/q5WN+
+         QERulNGJvQetzpfqatPwKeIlE1nsnjQuajJwQlNgh4VRlcJ88+jYPjnP95wOYWOP1T5B
+         dDRVJexp+VA20x2b7XGohKKlmg+QIOxgeF5UU9sSPaHyjQKVBQpei9lqmqaDlBhN2nyp
+         Z1Fefjj/HGXCvqS+w+tfk53g0aqAcV3KWPCV0+YLf+0sqBnI73oJUres6zh+3y9KIBqM
+         jy6bGRi8BmW0qns9DdkJ4RtjfIYG1BZevoDMgTVIyaiUdwAmWxSinDjrIRBa+bYKjqMQ
+         aL0g==
+X-Gm-Message-State: AOAM533m0fvc5sK1BUrfMNrKOYxotKveiYPI5lBxjIQTYNC09wfEy4qg
+        wTK1WPt+fC1/uPpvQzvY84Ft/Zt85cVXACYsRQ8LPg==
+X-Google-Smtp-Source: ABdhPJzmp3+qClIwuDyUCvItf45iFI8+VRyansEFfvpBFMcmDrxdR8LgWMKyewhdXFB3NkgmvKZ4FjVRRZQaygCfEtc=
+X-Received: by 2002:a05:6808:118d:b0:2d9:a01a:48c2 with SMTP id
+ j13-20020a056808118d00b002d9a01a48c2mr698989oil.269.1647902530829; Mon, 21
+ Mar 2022 15:42:10 -0700 (PDT)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20220301143650.143749-1-mlevitsk@redhat.com> <20220301143650.143749-5-mlevitsk@redhat.com>
+ <CALMp9eRjY6sX0OEBeYw4RsQKSjKvXKWOqRe=GVoQnmjy6D8deg@mail.gmail.com>
+ <6a7f13d1-ed00-b4a6-c39b-dd8ba189d639@redhat.com> <CALMp9eRRT6pi6tjZvsFbEhrgS+zsNg827iLD4Hvzsa4PeB6W-Q@mail.gmail.com>
+ <abe8584fa3691de1d6ae6c6617b8ea750b30fd1c.camel@redhat.com>
+ <CALMp9eSUSexhPWMWXE1HpSD+movaYcdge_J95LiLCnJyMEp3WA@mail.gmail.com> <8071f0f0a857b0775f1fb2d1ebd86ffc4fd9096b.camel@redhat.com>
+In-Reply-To: <8071f0f0a857b0775f1fb2d1ebd86ffc4fd9096b.camel@redhat.com>
+From:   Jim Mattson <jmattson@google.com>
+Date:   Mon, 21 Mar 2022 15:41:59 -0700
+Message-ID: <CALMp9eQgDpL0eD_GZde-s+THPWvQ0v6kmj3z_023f_KPERAyyA@mail.gmail.com>
+Subject: Re: [PATCH v3 4/7] KVM: x86: nSVM: support PAUSE filter threshold and
+ count when cpu_pm=on
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
+        Wanpeng Li <wanpengli@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Walleij <linus.walleij@linaro.org>
+On Mon, Mar 21, 2022 at 3:11 PM Maxim Levitsky <mlevitsk@redhat.com> wrote:
+>
+> On Mon, 2022-03-21 at 14:59 -0700, Jim Mattson wrote:
+> > On Mon, Mar 21, 2022 at 2:36 PM Maxim Levitsky <mlevitsk@redhat.com> wrote:
+> > > On Wed, 2022-03-09 at 11:07 -0800, Jim Mattson wrote:
+> > > > On Wed, Mar 9, 2022 at 10:47 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
+> > > > > On 3/9/22 19:35, Jim Mattson wrote:
+> > > > > > I didn't think pause filtering was virtualizable, since the value of
+> > > > > > the internal counter isn't exposed on VM-exit.
+> > > > > >
+> > > > > > On bare metal, for instance, assuming the hypervisor doesn't intercept
+> > > > > > CPUID, the following code would quickly trigger a PAUSE #VMEXIT with
+> > > > > > the filter count set to 2.
+> > > > > >
+> > > > > > 1:
+> > > > > > pause
+> > > > > > cpuid
+> > > > > > jmp 1
+> > > > > >
+> > > > > > Since L0 intercepts CPUID, however, L2 will exit to L0 on each loop
+> > > > > > iteration, and when L0 resumes L2, the internal counter will be set to
+> > > > > > 2 again. L1 will never see a PAUSE #VMEXIT.
+> > > > > >
+> > > > > > How do you handle this?
+> > > > > >
+> > > > >
+> > > > > I would expect that the same would happen on an SMI or a host interrupt.
+> > > > >
+> > > > >         1:
+> > > > >         pause
+> > > > >         outl al, 0xb2
+> > > > >         jmp 1
+> > > > >
+> > > > > In general a PAUSE vmexit will mostly benefit the VM that is pausing, so
+> > > > > having a partial implementation would be better than disabling it
+> > > > > altogether.
+> > > >
+> > > > Indeed, the APM does say, "Certain events, including SMI, can cause
+> > > > the internal count to be reloaded from the VMCB." However, expanding
+> > > > that set of events so much that some pause loops will *never* trigger
+> > > > a #VMEXIT seems problematic. If the hypervisor knew that the PAUSE
+> > > > filter may not be triggered, it could always choose to exit on every
+> > > > PAUSE.
+> > > >
+> > > > Having a partial implementation is only better than disabling it
+> > > > altogether if the L2 pause loop doesn't contain a hidden #VMEXIT to
+> > > > L0.
+> > > >
+> > >
+> > > Hi!
+> > >
+> > > You bring up a very valid point, which I didn't think about.
+> > >
+> > > However after thinking about this, I think that in practice,
+> > > this isn't a show stopper problem for exposing this feature to the guest.
+> > >
+> > >
+> > > This is what I am thinking:
+> > >
+> > > First lets assume that the L2 is malicious. In this case no doubt
+> > > it can craft such a loop which will not VMexit on PAUSE.
+> > > But that isn't a problem - instead of this guest could have just used NOP
+> > > which is not possible to intercept anyway - no harm is done.
+> > >
+> > > Now lets assume a non malicious L2:
+> > >
+> > >
+> > > First of all the problem can only happen when a VM exit is intercepted by L0,
+> > > and not by L1. Both above cases usually don't pass this criteria since L1 is highly
+> > > likely to intercept both CPUID and IO port access. It is also highly unlikely
+> > > to allow L2 direct access to L1's mmio ranges.
+> > >
+> > > Overall there are very few cases of deterministic vm exit which is intercepted
+> > > by L0 but not L1. If that happens then L1 will not catch the PAUSE loop,
+> > > which is not different much from not catching it because of not suitable
+> > > thresholds.
+> > >
+> > > Also note that this is an optimization only - due to count and threshold,
+> > > it is not guaranteed to catch all pause loops - in fact hypervisor has
+> > > to guess these values, and update them in attempt to catch as many such
+> > > loops as it can.
+> > >
+> > > I think overall it is OK to expose that feature to the guest
+> > > and it should even improve performance in some cases - currently
+> > > at least nested KVM intercepts every PAUSE otherwise.
+> >
+> > Can I at least request that this behavior be documented as a KVM
+> > virtual CPU erratum?
+>
+> 100%. Do you have a pointer where to document it?
 
-[ Upstream commit e941dc13fd3717122207d74539ab95da07ef797f ]
+I think this will be the first KVM virtual CPU erratum documented,
+though there are plenty of others that I'd like to see documented
+(e.g. nVMX processes posted interrupts on emulated VM-entry, AMD's
+merged PMU counters are only 48 bits wide, etc.).
 
-I observed the following problem with the BT404 touch pad
-running the Phosh UI:
+Maybe Paolo has some ideas?
 
-When e.g. typing on the virtual keyboard pressing "g" would
-produce "ggg".
-
-After some analysis it turns out the firmware reports that three
-fingers hit that coordinate at the same time, finger 0, 2 and
-4 (of the five available 0,1,2,3,4).
-
-DOWN
-  Zinitix-TS 3-0020: finger 0 down (246, 395)
-  Zinitix-TS 3-0020: finger 1 up (0, 0)
-  Zinitix-TS 3-0020: finger 2 down (246, 395)
-  Zinitix-TS 3-0020: finger 3 up (0, 0)
-  Zinitix-TS 3-0020: finger 4 down (246, 395)
-UP
-  Zinitix-TS 3-0020: finger 0 up (246, 395)
-  Zinitix-TS 3-0020: finger 2 up (246, 395)
-  Zinitix-TS 3-0020: finger 4 up (246, 395)
-
-This is one touch and release: i.e. this is all reported on
-touch (down) and release.
-
-There is a field in the struct touch_event called finger_cnt
-which is actually a bitmask of the fingers active in the
-event.
-
-Rename this field finger_mask as this matches the use contents
-better, then use for_each_set_bit() to iterate over just the
-fingers that are actally active.
-
-Factor out a finger reporting function zinitix_report_fingers()
-to handle all fingers.
-
-Also be more careful in reporting finger down/up: we were
-reporting every event with input_mt_report_slot_state(..., true);
-but this should only be reported on finger down or move,
-not on finger up, so also add code to check p->sub_status
-to see what is happening and report correctly.
-
-After this my Zinitix BT404 touchscreen report fingers
-flawlessly.
-
-The vendor drive I have notably does not use the "finger_cnt"
-and contains obviously incorrect code like this:
-
-  if (touch_dev->touch_info.finger_cnt > MAX_SUPPORTED_FINGER_NUM)
-      touch_dev->touch_info.finger_cnt = MAX_SUPPORTED_FINGER_NUM;
-
-As MAX_SUPPORTED_FINGER_NUM is an ordinal and the field is
-a bitmask this seems quite confused.
-
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Link: https://lore.kernel.org/r/20220228233017.2270599-1-linus.walleij@linaro.org
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/input/touchscreen/zinitix.c | 44 +++++++++++++++++++++++------
- 1 file changed, 35 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/input/touchscreen/zinitix.c b/drivers/input/touchscreen/zinitix.c
-index 1e70b8d2a8d7..400957f4c8c9 100644
---- a/drivers/input/touchscreen/zinitix.c
-+++ b/drivers/input/touchscreen/zinitix.c
-@@ -135,7 +135,7 @@ struct point_coord {
- 
- struct touch_event {
- 	__le16	status;
--	u8	finger_cnt;
-+	u8	finger_mask;
- 	u8	time_stamp;
- 	struct point_coord point_coord[MAX_SUPPORTED_FINGER_NUM];
- };
-@@ -311,11 +311,32 @@ static int zinitix_send_power_on_sequence(struct bt541_ts_data *bt541)
- static void zinitix_report_finger(struct bt541_ts_data *bt541, int slot,
- 				  const struct point_coord *p)
- {
-+	u16 x, y;
-+
-+	if (unlikely(!(p->sub_status &
-+		       (SUB_BIT_UP | SUB_BIT_DOWN | SUB_BIT_MOVE)))) {
-+		dev_dbg(&bt541->client->dev, "unknown finger event %#02x\n",
-+			p->sub_status);
-+		return;
-+	}
-+
-+	x = le16_to_cpu(p->x);
-+	y = le16_to_cpu(p->y);
-+
- 	input_mt_slot(bt541->input_dev, slot);
--	input_mt_report_slot_state(bt541->input_dev, MT_TOOL_FINGER, true);
--	touchscreen_report_pos(bt541->input_dev, &bt541->prop,
--			       le16_to_cpu(p->x), le16_to_cpu(p->y), true);
--	input_report_abs(bt541->input_dev, ABS_MT_TOUCH_MAJOR, p->width);
-+	if (input_mt_report_slot_state(bt541->input_dev, MT_TOOL_FINGER,
-+				       !(p->sub_status & SUB_BIT_UP))) {
-+		touchscreen_report_pos(bt541->input_dev,
-+				       &bt541->prop, x, y, true);
-+		input_report_abs(bt541->input_dev,
-+				 ABS_MT_TOUCH_MAJOR, p->width);
-+		dev_dbg(&bt541->client->dev, "finger %d %s (%u, %u)\n",
-+			slot, p->sub_status & SUB_BIT_DOWN ? "down" : "move",
-+			x, y);
-+	} else {
-+		dev_dbg(&bt541->client->dev, "finger %d up (%u, %u)\n",
-+			slot, x, y);
-+	}
- }
- 
- static irqreturn_t zinitix_ts_irq_handler(int irq, void *bt541_handler)
-@@ -323,6 +344,7 @@ static irqreturn_t zinitix_ts_irq_handler(int irq, void *bt541_handler)
- 	struct bt541_ts_data *bt541 = bt541_handler;
- 	struct i2c_client *client = bt541->client;
- 	struct touch_event touch_event;
-+	unsigned long finger_mask;
- 	int error;
- 	int i;
- 
-@@ -335,10 +357,14 @@ static irqreturn_t zinitix_ts_irq_handler(int irq, void *bt541_handler)
- 		goto out;
- 	}
- 
--	for (i = 0; i < MAX_SUPPORTED_FINGER_NUM; i++)
--		if (touch_event.point_coord[i].sub_status & SUB_BIT_EXIST)
--			zinitix_report_finger(bt541, i,
--					      &touch_event.point_coord[i]);
-+	finger_mask = touch_event.finger_mask;
-+	for_each_set_bit(i, &finger_mask, MAX_SUPPORTED_FINGER_NUM) {
-+		const struct point_coord *p = &touch_event.point_coord[i];
-+
-+		/* Only process contacts that are actually reported */
-+		if (p->sub_status & SUB_BIT_EXIST)
-+			zinitix_report_finger(bt541, i, p);
-+	}
- 
- 	input_mt_sync_frame(bt541->input_dev);
- 	input_sync(bt541->input_dev);
--- 
-2.34.1
-
+> Best regards,
+>         Maxim Levitsky
+>
+> >
+> > > Best regards,
+> > >         Maxim Levitsky
+> > >
+> > >
+> > >
+> > >
+>
+>
