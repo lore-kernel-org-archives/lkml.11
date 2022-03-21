@@ -2,71 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14CFFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:34:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6039BC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:34:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350319AbiCUPfo (ORCPT
+        id S1350336AbiCUPgP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 11:35:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42834 "EHLO
+        Mon, 21 Mar 2022 11:36:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350325AbiCUPfn (ORCPT
+        with ESMTP id S1345688AbiCUPgM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 11:35:43 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6205714021
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 08:34:17 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id u103so28707109ybi.9
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 08:34:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lrzf+wQzaUyINddaHGR9lP5hOlC3S86og95o5h4xVUc=;
-        b=Qodq+LsDrQAgYzP1Ma9xTtf3vXjcBRAEZHNU0RQKNpX520gF92zDAV+AbY8H4UT4p9
-         ahu/stIxIxyd5j89pAsE1eoaluAmrvAw2TJwH0dqRi4wxuK88VCSAsBXjJY3YOjtSMCi
-         gQag/ryFc5T/BT4vNB3ZsDzgKzsYM2YA/t+dIEFt5J/ZKsYCf0AtX+RGZ67v8wqC4aEs
-         EfRlidkiGIw6/4MFxiv3bFftzRQiFhw/z8kIAKmHedJ0us6dzlH9Vz3wmFSvMnQj0U5R
-         cTCpkoJbygkHpAxTIARBlazK+iARiuk2Mrm46LTmJnylmT0psG9LRgGgCsDMWRMM7WM0
-         JvZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lrzf+wQzaUyINddaHGR9lP5hOlC3S86og95o5h4xVUc=;
-        b=2W1tH/IRsJZiLLroMyZBJH6p+u4jywLZ16/5bHyV1KZ1E4+nIMvx8OWv5f12SCAQvu
-         4fn4iZ1oSMO7DF7Ue3v0EVAVQ9hpQqfuw9T3tgplr7z9o6OjyYhOoMV9kSzsmYDQGutI
-         vL5+L7elYVny4rIat2YVhUmBfubkgA6Mib0/K1joz59vawz8Ixyd2IJYH5446/biJmyu
-         5StOtg4CeQthqkprktYXulPmVouMRDOyO9RbEJDPycU4/P7JfRbSZBDhDgc/2tzQ1/i5
-         WlzounPGb9lEmJ31d0CayXioeNKlPzIHwifbJBowjMf0TeA3ZcbrsZC8OqTV32pjFsHW
-         U61g==
-X-Gm-Message-State: AOAM533fRB+1DQPvYlnGRhsaNuvbjCGdFzeVt0ZeLBKg+e0Lal0eKwTr
-        p06STVvKh6ztcizo5K7tNPsezSl1H0S0hvQqi9KpfYcFR+s=
-X-Google-Smtp-Source: ABdhPJznlQOBPmTpXspXCVCZMlv4ebzYSeypfjSsuGs5DtX1XtP5m78Z1q1k2RopWFzfy0pvSFDFZ8UKKYL8pwaJFQA=
-X-Received: by 2002:a5b:dc5:0:b0:624:f16d:7069 with SMTP id
- t5-20020a5b0dc5000000b00624f16d7069mr22292996ybr.295.1647876856663; Mon, 21
- Mar 2022 08:34:16 -0700 (PDT)
+        Mon, 21 Mar 2022 11:36:12 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 207C713F81;
+        Mon, 21 Mar 2022 08:34:47 -0700 (PDT)
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22LEdOp4008394;
+        Mon, 21 Mar 2022 15:34:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=yr7yLQm9scEdzY7wQQyoJTPo0UfjlE+sSQAPPp/a8fw=;
+ b=ZpOCXXdZ4rIt2jAcbuLyZlpf/eLo5f0N5xXAdvXxnjYCZed4DrTZ2ANb+B9LpEvHFGmg
+ aPVfxVuulZl3X5HWxzhfdcPuVttlGxel0bnmhU1JM/H+LhNC69ncsKCQbPXy32pEVSSM
+ Qij5FjutYH219Ey64vqPGMqhE9a+k6SeYZu2g8wQd0fhhCUlEtBcCMzEcniGYKxH6fyr
+ CJZrPgVHDV1Nq77luH6o51xwWCoI3PjyDJeJG7CgeYWFfxa7wc0XgXfzZ/95iwBMVHiz
+ fZt9v8cq2abG78CfSq9rZ98V/qL1p9U4bSic5V2Mcc3unKp3dluLW+2hy1frOqYU7IZw Pw== 
+Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3exnpg8tcw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 21 Mar 2022 15:34:25 +0000
+Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
+        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22LFRUS1019189;
+        Mon, 21 Mar 2022 15:31:24 GMT
+Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
+        by ppma02wdc.us.ibm.com with ESMTP id 3ew6t96813-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 21 Mar 2022 15:31:24 +0000
+Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
+        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22LFVMBc19136868
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 21 Mar 2022 15:31:23 GMT
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D1A9AC6065;
+        Mon, 21 Mar 2022 15:31:22 +0000 (GMT)
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6B694C605A;
+        Mon, 21 Mar 2022 15:31:22 +0000 (GMT)
+Received: from v0005c16.aus.stglabs.ibm.com (unknown [9.211.47.134])
+        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Mon, 21 Mar 2022 15:31:22 +0000 (GMT)
+From:   Eddie James <eajames@linux.ibm.com>
+To:     linux-fsi@lists.ozlabs.org
+Cc:     linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        jdelvare@suse.com, linux@roeck-us.net, joel@jms.id.au,
+        jk@ozlabs.org, alistair@popple.id.au,
+        Eddie James <eajames@linux.ibm.com>
+Subject: [PATCH 2/2] hwmon (occ): Retry for checksum failure
+Date:   Mon, 21 Mar 2022 10:31:12 -0500
+Message-Id: <20220321153112.12199-3-eajames@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220321153112.12199-1-eajames@linux.ibm.com>
+References: <20220321153112.12199-1-eajames@linux.ibm.com>
 MIME-Version: 1.0
-References: <202203200849.3dFXVKxt-lkp@intel.com>
-In-Reply-To: <202203200849.3dFXVKxt-lkp@intel.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 21 Mar 2022 16:34:05 +0100
-Message-ID: <CACRpkdaorR-mhZ9g2SraJJJ3sVw9yR5PgzGZOP16scQTC8+D8Q@mail.gmail.com>
-Subject: Re: arch/arm/mach-ixp4xx/common-pci.c:143:5: warning: no previous
- prototype for 'ixp4xx_pci_write'
-To:     kernel test robot <lkp@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: knGPd2jvmsSTxrCFUpXgVDsa3JXbRDiW
+X-Proofpoint-GUID: knGPd2jvmsSTxrCFUpXgVDsa3JXbRDiW
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-21_06,2022-03-21_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ lowpriorityscore=0 phishscore=0 mlxlogscore=999 spamscore=0
+ impostorscore=0 bulkscore=0 malwarescore=0 clxscore=1015 mlxscore=0
+ suspectscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2202240000 definitions=main-2203210098
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 20, 2022 at 1:07 AM kernel test robot <lkp@intel.com> wrote:
+Due to the OCC communication design with a shared SRAM area,
+checkum errors are expected due to corrupted buffer from OCC
+communications with other system components. Therefore, retry
+the command twice in the event of a checksum failure.
 
-> FYI, the error/warning still remains.
+Signed-off-by: Eddie James <eajames@linux.ibm.com>
+---
+ drivers/hwmon/occ/p9_sbe.c | 28 ++++++++++++++++++----------
+ 1 file changed, 18 insertions(+), 10 deletions(-)
 
-As I have repeated three times, this file goes away in the next merge window.
+diff --git a/drivers/hwmon/occ/p9_sbe.c b/drivers/hwmon/occ/p9_sbe.c
+index 49b13cc01073..7f4c3f979c54 100644
+--- a/drivers/hwmon/occ/p9_sbe.c
++++ b/drivers/hwmon/occ/p9_sbe.c
+@@ -84,17 +84,25 @@ static int p9_sbe_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len)
+ 	struct p9_sbe_occ *ctx = to_p9_sbe_occ(occ);
+ 	size_t resp_len = sizeof(*resp);
+ 	int rc;
+-
+-	rc = fsi_occ_submit(ctx->sbe, cmd, len, resp, &resp_len);
+-	if (rc < 0) {
+-		if (resp_len) {
+-			if (p9_sbe_occ_save_ffdc(ctx, resp, resp_len))
+-				sysfs_notify(&occ->bus_dev->kobj, NULL,
+-					     bin_attr_ffdc.attr.name);
++	int tries = 0;
++
++	do {
++		rc = fsi_occ_submit(ctx->sbe, cmd, len, resp, &resp_len);
++		if (rc < 0) {
++			if (resp_len) {
++				if (p9_sbe_occ_save_ffdc(ctx, resp, resp_len))
++					sysfs_notify(&occ->bus_dev->kobj, NULL,
++						     bin_attr_ffdc.attr.name);
++
++				return rc;
++			} else if (rc != -EBADE) {
++				return rc;
++			}
++			/* retry twice for checksum failures */
++		} else {
++			break;
+ 		}
+-
+-		return rc;
+-	}
++	} while (++tries < 3);
+ 
+ 	switch (resp->return_status) {
+ 	case OCC_RESP_CMD_IN_PRG:
+-- 
+2.27.0
 
-I suppose I am talking to an AI, because the hammering seems pretty dumb.
-
-Linus Walleij
