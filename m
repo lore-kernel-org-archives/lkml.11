@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E93F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:03:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA311C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:03:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348684AbiCUOEc (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:04:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46142 "EHLO
+        id S244924AbiCUOEl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 10:04:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348369AbiCUN5Y (ORCPT
+        with ESMTP id S1349104AbiCUN7J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:57:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D4F517584A;
-        Mon, 21 Mar 2022 06:55:19 -0700 (PDT)
+        Mon, 21 Mar 2022 09:59:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 866CE10CC;
+        Mon, 21 Mar 2022 06:57:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EABE0611CF;
-        Mon, 21 Mar 2022 13:55:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 073DBC340E8;
-        Mon, 21 Mar 2022 13:55:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2E597B81598;
+        Mon, 21 Mar 2022 13:57:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D7B6C340E8;
+        Mon, 21 Mar 2022 13:57:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647870918;
-        bh=gw27gFzAhBnBV+UypLRu5IfxJHjufI1qJ25YslvMYZI=;
+        s=korg; t=1647871060;
+        bh=5yEzG5mCcTVSwH9OiUgBrwqHfwd0OfKOqGsA5QmuISQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I0gf5ma6wR+yCLGSkBMX58sjZ+zU1638P/mOrji33ySnq2REDBk9Z7HkQ6MMJk0e6
-         93U4sbyM/CYU3hjsAjB+LcamlVGe/F5sQ6/6Pr7M2mH4DSFG2HPZ+P0LN2tpCEQQsp
-         Vq3Q7rkEl7PSuj9G4drElNbgYDlOu8M5eo/ymg9E=
+        b=Dk3DP0+Mlg5VFzLTfCZJEEue4hu9BijiY9d4ES2ZKJxJA4mAXfAp4Q+x4kXP2knUa
+         61zMGUWY6Z3S/2PPUeQPEO4ZBiWbpw3WPpq1392wzrJhrW4nToWz1ySdxRY0aaAACN
+         TaTPe3Ddsi2MSF++1pMDH/1rW80xJXhES/R6WFFA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        dann frazier <dann.frazier@canonical.com>
-Subject: [PATCH 4.19 17/57] sched/topology: Make sched_init_numa() use a set for the deduplicating sort
-Date:   Mon, 21 Mar 2022 14:51:58 +0100
-Message-Id: <20220321133222.485936257@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Masney <bmasney@redhat.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andrew Halaney <ahalaney@redhat.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.4 01/17] crypto: qcom-rng - ensure buffer for generate is completely filled
+Date:   Mon, 21 Mar 2022 14:52:37 +0100
+Message-Id: <20220321133217.193115204@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220321133221.984120927@linuxfoundation.org>
-References: <20220321133221.984120927@linuxfoundation.org>
+In-Reply-To: <20220321133217.148831184@linuxfoundation.org>
+References: <20220321133217.148831184@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,258 +52,154 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Valentin Schneider <valentin.schneider@arm.com>
+From: Brian Masney <bmasney@redhat.com>
 
-commit 620a6dc40754dc218f5b6389b5d335e9a107fd29 upstream.
+commit a680b1832ced3b5fa7c93484248fd221ea0d614b upstream.
 
-The deduplicating sort in sched_init_numa() assumes that the first line in
-the distance table contains all unique values in the entire table. I've
-been trying to pen what this exactly means for the topology, but it's not
-straightforward. For instance, topology.c uses this example:
+The generate function in struct rng_alg expects that the destination
+buffer is completely filled if the function returns 0. qcom_rng_read()
+can run into a situation where the buffer is partially filled with
+randomness and the remaining part of the buffer is zeroed since
+qcom_rng_generate() doesn't check the return value. This issue can
+be reproduced by running the following from libkcapi:
 
-  node   0   1   2   3
-    0:  10  20  20  30
-    1:  20  10  20  20
-    2:  20  20  10  20
-    3:  30  20  20  10
+    kcapi-rng -b 9000000 > OUTFILE
 
-  0 ----- 1
-  |     / |
-  |   /   |
-  | /     |
-  2 ----- 3
+The generated OUTFILE will have three huge sections that contain all
+zeros, and this is caused by the code where the test
+'val & PRNG_STATUS_DATA_AVAIL' fails.
 
-Which works out just fine. However, if we swap nodes 0 and 1:
+Let's fix this issue by ensuring that qcom_rng_read() always returns
+with a full buffer if the function returns success. Let's also have
+qcom_rng_generate() return the correct value.
 
-  1 ----- 0
-  |     / |
-  |   /   |
-  | /     |
-  2 ----- 3
+Here's some statistics from the ent project
+(https://www.fourmilab.ch/random/) that shows information about the
+quality of the generated numbers:
 
-we get this distance table:
+    $ ent -c qcom-random-before
+    Value Char Occurrences Fraction
+      0           606748   0.067416
+      1            33104   0.003678
+      2            33001   0.003667
+    ...
+    253   �        32883   0.003654
+    254   �        33035   0.003671
+    255   �        33239   0.003693
 
-  node   0  1  2  3
-    0:  10 20 20 20
-    1:  20 10 20 30
-    2:  20 20 10 20
-    3:  20 30 20 10
+    Total:       9000000   1.000000
 
-Which breaks the deduplicating sort (non-representative first line). In
-this case this would just be a renumbering exercise, but it so happens that
-we can have a deduplicating sort that goes through the whole table in O(n²)
-at the extra cost of a temporary memory allocation (i.e. any form of set).
+    Entropy = 7.811590 bits per byte.
 
-The ACPI spec (SLIT) mentions distances are encoded on 8 bits. Following
-this, implement the set as a 256-bits bitmap. Should this not be
-satisfactory (i.e. we want to support 32-bit values), then we'll have to go
-for some other sparse set implementation.
+    Optimum compression would reduce the size
+    of this 9000000 byte file by 2 percent.
 
-This has the added benefit of letting us allocate just the right amount of
-memory for sched_domains_numa_distance[], rather than an arbitrary
-(nr_node_ids + 1).
+    Chi square distribution for 9000000 samples is 9329962.81, and
+    randomly would exceed this value less than 0.01 percent of the
+    times.
 
-Note: DT binding equivalent (distance-map) decodes distances as 32-bit
-values.
+    Arithmetic mean value of data bytes is 119.3731 (127.5 = random).
+    Monte Carlo value for Pi is 3.197293333 (error 1.77 percent).
+    Serial correlation coefficient is 0.159130 (totally uncorrelated =
+    0.0).
 
-Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20210122123943.1217-2-valentin.schneider@arm.com
-Signed-off-by: dann frazier <dann.frazier@canonical.com>
+Without this patch, the results of the chi-square test is 0.01%, and
+the numbers are certainly not random according to ent's project page.
+The results improve with this patch:
+
+    $ ent -c qcom-random-after
+    Value Char Occurrences Fraction
+      0            35432   0.003937
+      1            35127   0.003903
+      2            35424   0.003936
+    ...
+    253   �        35201   0.003911
+    254   �        34835   0.003871
+    255   �        35368   0.003930
+
+    Total:       9000000   1.000000
+
+    Entropy = 7.999979 bits per byte.
+
+    Optimum compression would reduce the size
+    of this 9000000 byte file by 0 percent.
+
+    Chi square distribution for 9000000 samples is 258.77, and randomly
+    would exceed this value 42.24 percent of the times.
+
+    Arithmetic mean value of data bytes is 127.5006 (127.5 = random).
+    Monte Carlo value for Pi is 3.141277333 (error 0.01 percent).
+    Serial correlation coefficient is 0.000468 (totally uncorrelated =
+    0.0).
+
+This change was tested on a Nexus 5 phone (msm8974 SoC).
+
+Signed-off-by: Brian Masney <bmasney@redhat.com>
+Fixes: ceec5f5b5988 ("crypto: qcom-rng - Add Qcom prng driver")
+Cc: stable@vger.kernel.org # 4.19+
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Reviewed-by: Andrew Halaney <ahalaney@redhat.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/topology.h |    1 
- kernel/sched/topology.c  |   99 ++++++++++++++++++++++-------------------------
- 2 files changed, 49 insertions(+), 51 deletions(-)
+ drivers/crypto/qcom-rng.c |   17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
 
---- a/include/linux/topology.h
-+++ b/include/linux/topology.h
-@@ -47,6 +47,7 @@ int arch_update_cpu_topology(void);
- /* Conform to ACPI 2.0 SLIT distance definitions */
- #define LOCAL_DISTANCE		10
- #define REMOTE_DISTANCE		20
-+#define DISTANCE_BITS           8
- #ifndef node_distance
- #define node_distance(from,to)	((from) == (to) ? LOCAL_DISTANCE : REMOTE_DISTANCE)
- #endif
---- a/kernel/sched/topology.c
-+++ b/kernel/sched/topology.c
-@@ -1322,66 +1322,58 @@ static void init_numa_topology_type(void
- 	}
- }
- 
-+
-+#define NR_DISTANCE_VALUES (1 << DISTANCE_BITS)
-+
- void sched_init_numa(void)
+--- a/drivers/crypto/qcom-rng.c
++++ b/drivers/crypto/qcom-rng.c
+@@ -7,6 +7,7 @@
+ #include <linux/acpi.h>
+ #include <linux/clk.h>
+ #include <linux/crypto.h>
++#include <linux/iopoll.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+@@ -42,16 +43,19 @@ static int qcom_rng_read(struct qcom_rng
  {
--	int next_distance, curr_distance = node_distance(0, 0);
- 	struct sched_domain_topology_level *tl;
--	int level = 0;
--	int i, j, k;
--
--	sched_domains_numa_distance = kzalloc(sizeof(int) * (nr_node_ids + 1), GFP_KERNEL);
--	if (!sched_domains_numa_distance)
--		return;
--
--	/* Includes NUMA identity node at level 0. */
--	sched_domains_numa_distance[level++] = curr_distance;
--	sched_domains_numa_levels = level;
-+	unsigned long *distance_map;
-+	int nr_levels = 0;
-+	int i, j;
+ 	unsigned int currsize = 0;
+ 	u32 val;
++	int ret;
  
- 	/*
- 	 * O(nr_nodes^2) deduplicating selection sort -- in order to find the
- 	 * unique distances in the node_distance() table.
--	 *
--	 * Assumes node_distance(0,j) includes all distances in
--	 * node_distance(i,j) in order to avoid cubic time.
- 	 */
--	next_distance = curr_distance;
-+	distance_map = bitmap_alloc(NR_DISTANCE_VALUES, GFP_KERNEL);
-+	if (!distance_map)
-+		return;
-+
-+	bitmap_zero(distance_map, NR_DISTANCE_VALUES);
- 	for (i = 0; i < nr_node_ids; i++) {
- 		for (j = 0; j < nr_node_ids; j++) {
--			for (k = 0; k < nr_node_ids; k++) {
--				int distance = node_distance(i, k);
-+			int distance = node_distance(i, j);
- 
--				if (distance > curr_distance &&
--				    (distance < next_distance ||
--				     next_distance == curr_distance))
--					next_distance = distance;
--
--				/*
--				 * While not a strong assumption it would be nice to know
--				 * about cases where if node A is connected to B, B is not
--				 * equally connected to A.
--				 */
--				if (sched_debug() && node_distance(k, i) != distance)
--					sched_numa_warn("Node-distance not symmetric");
--
--				if (sched_debug() && i && !find_numa_distance(distance))
--					sched_numa_warn("Node-0 not representative");
-+			if (distance < LOCAL_DISTANCE || distance >= NR_DISTANCE_VALUES) {
-+				sched_numa_warn("Invalid distance value range");
-+				return;
- 			}
--			if (next_distance != curr_distance) {
--				sched_domains_numa_distance[level++] = next_distance;
--				sched_domains_numa_levels = level;
--				curr_distance = next_distance;
--			} else break;
-+
-+			bitmap_set(distance_map, distance, 1);
- 		}
-+	}
-+	/*
-+	 * We can now figure out how many unique distance values there are and
-+	 * allocate memory accordingly.
-+	 */
-+	nr_levels = bitmap_weight(distance_map, NR_DISTANCE_VALUES);
- 
--		/*
--		 * In case of sched_debug() we verify the above assumption.
--		 */
--		if (!sched_debug())
+ 	/* read random data from hardware */
+ 	do {
+-		val = readl_relaxed(rng->base + PRNG_STATUS);
+-		if (!(val & PRNG_STATUS_DATA_AVAIL))
 -			break;
-+	sched_domains_numa_distance = kcalloc(nr_levels, sizeof(int), GFP_KERNEL);
-+	if (!sched_domains_numa_distance) {
-+		bitmap_free(distance_map);
-+		return;
- 	}
++		ret = readl_poll_timeout(rng->base + PRNG_STATUS, val,
++					 val & PRNG_STATUS_DATA_AVAIL,
++					 200, 10000);
++		if (ret)
++			return ret;
  
-+	for (i = 0, j = 0; i < nr_levels; i++, j++) {
-+		j = find_next_bit(distance_map, NR_DISTANCE_VALUES, j);
-+		sched_domains_numa_distance[i] = j;
-+	}
-+
-+	bitmap_free(distance_map);
-+
- 	/*
--	 * 'level' contains the number of unique distances
-+	 * 'nr_levels' contains the number of unique distances
- 	 *
- 	 * The sched_domains_numa_distance[] array includes the actual distance
- 	 * numbers.
-@@ -1390,15 +1382,15 @@ void sched_init_numa(void)
- 	/*
- 	 * Here, we should temporarily reset sched_domains_numa_levels to 0.
- 	 * If it fails to allocate memory for array sched_domains_numa_masks[][],
--	 * the array will contain less then 'level' members. This could be
-+	 * the array will contain less then 'nr_levels' members. This could be
- 	 * dangerous when we use it to iterate array sched_domains_numa_masks[][]
- 	 * in other functions.
- 	 *
--	 * We reset it to 'level' at the end of this function.
-+	 * We reset it to 'nr_levels' at the end of this function.
- 	 */
- 	sched_domains_numa_levels = 0;
+ 		val = readl_relaxed(rng->base + PRNG_DATA_OUT);
+ 		if (!val)
+-			break;
++			return -EINVAL;
  
--	sched_domains_numa_masks = kzalloc(sizeof(void *) * level, GFP_KERNEL);
-+	sched_domains_numa_masks = kzalloc(sizeof(void *) * nr_levels, GFP_KERNEL);
- 	if (!sched_domains_numa_masks)
- 		return;
+ 		if ((max - currsize) >= WORD_SZ) {
+ 			memcpy(data, &val, WORD_SZ);
+@@ -60,11 +64,10 @@ static int qcom_rng_read(struct qcom_rng
+ 		} else {
+ 			/* copy only remaining bytes */
+ 			memcpy(data, &val, max - currsize);
+-			break;
+ 		}
+ 	} while (currsize < max);
  
-@@ -1406,7 +1398,7 @@ void sched_init_numa(void)
- 	 * Now for each level, construct a mask per node which contains all
- 	 * CPUs of nodes that are that many hops away from us.
- 	 */
--	for (i = 0; i < level; i++) {
-+	for (i = 0; i < nr_levels; i++) {
- 		sched_domains_numa_masks[i] =
- 			kzalloc(nr_node_ids * sizeof(void *), GFP_KERNEL);
- 		if (!sched_domains_numa_masks[i])
-@@ -1414,12 +1406,17 @@ void sched_init_numa(void)
- 
- 		for (j = 0; j < nr_node_ids; j++) {
- 			struct cpumask *mask = kzalloc(cpumask_size(), GFP_KERNEL);
-+			int k;
-+
- 			if (!mask)
- 				return;
- 
- 			sched_domains_numa_masks[i][j] = mask;
- 
- 			for_each_node(k) {
-+				if (sched_debug() && (node_distance(j, k) != node_distance(k, j)))
-+					sched_numa_warn("Node-distance not symmetric");
-+
- 				if (node_distance(j, k) > sched_domains_numa_distance[i])
- 					continue;
- 
-@@ -1431,7 +1428,7 @@ void sched_init_numa(void)
- 	/* Compute default topology size */
- 	for (i = 0; sched_domain_topology[i].mask; i++);
- 
--	tl = kzalloc((i + level + 1) *
-+	tl = kzalloc((i + nr_levels) *
- 			sizeof(struct sched_domain_topology_level), GFP_KERNEL);
- 	if (!tl)
- 		return;
-@@ -1454,7 +1451,7 @@ void sched_init_numa(void)
- 	/*
- 	 * .. and append 'j' levels of NUMA goodness.
- 	 */
--	for (j = 1; j < level; i++, j++) {
-+	for (j = 1; j < nr_levels; i++, j++) {
- 		tl[i] = (struct sched_domain_topology_level){
- 			.mask = sd_numa_mask,
- 			.sd_flags = cpu_numa_flags,
-@@ -1466,8 +1463,8 @@ void sched_init_numa(void)
- 
- 	sched_domain_topology = tl;
- 
--	sched_domains_numa_levels = level;
--	sched_max_numa_distance = sched_domains_numa_distance[level - 1];
-+	sched_domains_numa_levels = nr_levels;
-+	sched_max_numa_distance = sched_domains_numa_distance[nr_levels - 1];
- 
- 	init_numa_topology_type();
+-	return currsize;
++	return 0;
  }
+ 
+ static int qcom_rng_generate(struct crypto_rng *tfm,
+@@ -86,7 +89,7 @@ static int qcom_rng_generate(struct cryp
+ 	mutex_unlock(&rng->lock);
+ 	clk_disable_unprepare(rng->clk);
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ static int qcom_rng_seed(struct crypto_rng *tfm, const u8 *seed,
 
 
