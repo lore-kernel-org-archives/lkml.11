@@ -2,492 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50925C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:07:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8472C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:08:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350648AbiCUQJI (ORCPT
+        id S1350665AbiCUQJp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 12:09:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56714 "EHLO
+        Mon, 21 Mar 2022 12:09:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350637AbiCUQJG (ORCPT
+        with ESMTP id S1348453AbiCUQJn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 12:09:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3D71166FA4
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:07:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647878856;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=zpcoCC4yHq3ajeXZ8IqHbBVz9eP4OTlopTuEhplFUg4=;
-        b=YRRelgP1Bq7UKmw5Wh12l2+EU1/4pmrF7Zw1ltp6cnEJwmvjFTXG1P4DN5EXVzi/rkC+oe
-        WZB/a+RDxwG36n/L9FL6ow/Ee+4xCI1UOUlPZ4qsAg+dapr9qu5D1zqHf9UYrNVdW8s9JU
-        zYXJerjTgBZjNmPCXR2D9jewW+kBV8Y=
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com
- [209.85.216.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-591-zPQy_fWgNg6N1BHZqXGjaw-1; Mon, 21 Mar 2022 12:07:35 -0400
-X-MC-Unique: zPQy_fWgNg6N1BHZqXGjaw-1
-Received: by mail-pj1-f70.google.com with SMTP id x8-20020a17090a788800b001c662c78b4fso8237829pjk.5
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:07:34 -0700 (PDT)
+        Mon, 21 Mar 2022 12:09:43 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC91E24F28;
+        Mon, 21 Mar 2022 09:08:16 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id l1-20020a05600c4f0100b00389645443d2so8666614wmq.2;
+        Mon, 21 Mar 2022 09:08:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=odyYQFOVYxq6BgazS9Nr0CkzWyjXtxcOX5kCKN+mfRo=;
+        b=Q+9BbDj5yAcAvAUx7wqBIPtOyKQKtEBqdCggiJKmLMiteVht551v/B3sVusfmqGnKn
+         sdjibjwkbC46/ViDmo2+1nBX0eWa5CNdOWIb1z5HLsUKfk0VOrDhxY4gQjYMuRdbJzl9
+         iPzRma2mz4RHBbUVFNoi6TheZK6zN+epgNswm8KrcZTnpO2UsfCd7D50/99Kx9uswuZ1
+         mK7z1LSvJ2w49lkWepRWd4lL8dUMont4hEzqqXnpE1/4uI9d4iRwFt8YVuhMkPlrR043
+         S7oeSnJO0hjxHsUVQ6yyIypc1RTe9QZWHBLWJgbyAn45j6CWctn6w2Ym5RAout8PCRr6
+         wRuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zpcoCC4yHq3ajeXZ8IqHbBVz9eP4OTlopTuEhplFUg4=;
-        b=5p9pOyBMt4hZ8Q91fNom8mBjTrJkHeXmAyJEcPEDFgYj1qX55tlfrJO1+ImrvfGd1n
-         lJaqauE65hpgWGmlvRIrpUmLBnrcNQ7nUGKahbT6K6EDMDiSVjbUIVdqNVFgvI4x027f
-         +uAKI/q6/O+joLJ6CC2GOYdZrrL7Vz8ax4PW2nA0YeIlb7ysFltmzu8zzj08F/2QVjlc
-         htrTQJxWv4Re+IucZua3rKF4/ecvCU465j0o0Bp2h4h/sG3nfxTL6p9fkdYlSlqpoLk+
-         b17t+DeAgclgFtUnWTL6sSXFSWObXPT/iwMtLN6MGpboDIfFnYaewfK7eAVqciNqybNA
-         4QqQ==
-X-Gm-Message-State: AOAM5334cy5hbETJ4Zb6T2JzOhQKbz7glb87CluvT84LGKr/2gj7eM/R
-        B8uVEtVfuEW5OPnwylm2QJ44xuxm0B0w+lKcfxNpKKDJcm4wwuvTperBAiXvURQZqxbIfcXvqO2
-        xIVlybYSYAwneekGX/kxHdkCN3KQ+FsGnLZA+CGZh
-X-Received: by 2002:a17:902:c401:b0:154:1398:a16b with SMTP id k1-20020a170902c40100b001541398a16bmr13429804plk.67.1647878853100;
-        Mon, 21 Mar 2022 09:07:33 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwfR7xojQGSh+SlE52ZB3p3sYi5T6jUKMUP6HdTYmBdE+aOadzDpu21O7Hr0mDvNquBoaR05abTWhccSffR0dM=
-X-Received: by 2002:a17:902:c401:b0:154:1398:a16b with SMTP id
- k1-20020a170902c40100b001541398a16bmr13429769plk.67.1647878852756; Mon, 21
- Mar 2022 09:07:32 -0700 (PDT)
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=odyYQFOVYxq6BgazS9Nr0CkzWyjXtxcOX5kCKN+mfRo=;
+        b=j7rgoGyEYcInOx2HaxVSr1p9MkF/H0NUCyht3IawWMWV5ic/mEXo7JsCYh5Dme8Awm
+         m4HWmFBUzi4f6ZjxqKw2zMTz56+MOi6UQDVWq7eP0C21WIZ2sHm0Dyw+5ni0OeE4oBuM
+         U1bz3tcGHOV9Y4v9xWtkJwfVO5wcn2sRIes/6QNfF9ss1K32eY5vdIbBdwrbUSRU5RIQ
+         lB2lgO8pJFyyjVkE+Qs8YFf3GGlj2rSlrEzvNLUbwQQGuwvB6KtL6b+8ypDYYgg3rd0p
+         9EsH9lKTx80wTjsKN8xPmjg/OPcgjf7AUkuREZYjMxBR9m+znKRef0rAFWNHYSX9/A3v
+         xp6Q==
+X-Gm-Message-State: AOAM532nBNpgNUfbN/M2xUTxjPUtiIOxga5tEe8SEmr3bbiK+vyJPFPg
+        xXLt39sUy2K8nfMKYpIgVXE=
+X-Google-Smtp-Source: ABdhPJwqbpd5YCY6qvpx+9GyWXoE3s19tPFoJeXZI32w/uxBqOEMiu+EUDQtCNtj0pgUGm0DAGDHvA==
+X-Received: by 2002:a05:600c:4fc4:b0:38b:dd2e:9371 with SMTP id o4-20020a05600c4fc400b0038bdd2e9371mr25558117wmq.86.1647878895334;
+        Mon, 21 Mar 2022 09:08:15 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
+        by smtp.googlemail.com with ESMTPSA id az19-20020a05600c601300b0038cadf3aa69sm2603864wmb.36.2022.03.21.09.08.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 09:08:14 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
+Subject: [PATCH v5 00/18] Modernize rest of the krait drivers
+Date:   Mon, 21 Mar 2022 16:38:37 +0100
+Message-Id: <20220321153855.12082-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220318161528.1531164-1-benjamin.tissoires@redhat.com>
- <20220318161528.1531164-3-benjamin.tissoires@redhat.com> <CAPhsuW5qseqVs4=hz3VvSJ2ObqB2kTbKXoaOCh=5vjoU_AXnKQ@mail.gmail.com>
-In-Reply-To: <CAPhsuW5qseqVs4=hz3VvSJ2ObqB2kTbKXoaOCh=5vjoU_AXnKQ@mail.gmail.com>
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Date:   Mon, 21 Mar 2022 17:07:21 +0100
-Message-ID: <CAO-hwJ+WSi645HhNV_BYACoJe2UTc4KZzqH0oHocfnBR8xUYEQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 02/17] bpf: introduce hid program type
-To:     Song Liu <song@kernel.org>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Song,
+This is a follow-up to the ipq806x gcc modernize series. Manu cleanup
+changes and also some discoveries of wrong definition notice only with
+all these conversions.
 
-many thanks for the quick response.
+The first patch is an improvement of the clk_hw_get_parent_index. The
+original idea of clk_hw_get_parent_index was to give a way to access the
+parent index but for some reason the final version limited it to the
+current index. We change it to give the current parent if is not
+provided and to give the requested parent if provided. Any user of this
+function is updated to follow the new implementation.
 
-On Fri, Mar 18, 2022 at 9:48 PM Song Liu <song@kernel.org> wrote:
->
-> On Fri, Mar 18, 2022 at 9:16 AM Benjamin Tissoires
-> <benjamin.tissoires@redhat.com> wrote:
-> >
-> [...]
-> >
-> > diff --git a/include/linux/bpf-hid.h b/include/linux/bpf-hid.h
-> > new file mode 100644
-> > index 000000000000..9c8dbd389995
-> > --- /dev/null
-> > +++ b/include/linux/bpf-hid.h
-> >
-> [...]
-> > +
-> > +struct hid_bpf_ctx_kern {
-> > +       enum hid_bpf_event type;        /* read-only */
-> > +       struct hid_device *hdev;        /* read-only */
-> > +
-> > +       u16 size;                       /* used size in data (RW) */
-> > +       u8 *data;                       /* data buffer (RW) */
-> > +       u32 allocated_size;             /* allocated size of data (RO) */
->
-> Why u16 size vs. u32 allocated_size?
+The patch 2 and 3 are some additional fixes for gcc.
+The first one is a fix that register the pxo and cxo fixed clock only if
+they are not defined in DTS.
+The patch 3 require some explaination. In short is a big HACK to prevent
+kernel panic with this series.
 
-Probably an oversight because I wrote u32 in the public uapi. Will
-change this into u16 too.
+The kpss-xcc driver is a mess.
+The Documentation declare that the clocks should be provided but for some
+reason it was never followed.
+In fact in the ipq8064 DTSI only the clocks for l2cc are declared but
+for cpu0 and cpu1 the clocks are not defined.
+The kpss-xcc driver use parent_names so the clks are ignored and never
+used so till now it wasn't a problem (ignoring the fact that they
+doesn't follow documentation at all)
+On top of that, the l2cc node declare the pxo clock in a really strange
+way. It's declared using the PXO_SRC gcc clock that is never defined in
+the gcc ipq8064 clock table. (the correct way was to declare a fixed
+clock in dts and reference that)
+To prevent any kind of problem we use the patch 3 and provide the clk
+for PXO_SRC in the gcc clock table. We manually provide the clk after
+gcc probe.
 
-> Also, maybe shuffle the members
-> to remove some holes?
+Patch 4 is just a minor cleanup where we use the poll macro
 
-Ack will do in the next version.
+Patch 5 is the actually kpss-xcc conversion to parent data
 
->
-> > +
-> > +       s32 retval;                     /* in use when BPF_HID_ATTACH_USER_EVENT (RW) */
-> > +};
-> > +
-> [...]
->
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
->
-> We need to mirror these changes to tools/include/uapi/linux/bpf.h.
+Patch 6-7 should be a fixup of a real conver case
 
-OK. I did that in patch 4/17 but I can bring in the changes there too.
+Patch 8 converts the krait-cc to parent_data
+Patch 9 give some love to the code with some minor fixup
+Patch 10 drop the hardcoded safe sel and use the new
+clk_hw_get_parent_index to get the safe parent index.
+(also I discovered that the parent order was wrong)
 
->
-> > index 99fab54ae9c0..0e8438e93768 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -952,6 +952,7 @@ enum bpf_prog_type {
-> >         BPF_PROG_TYPE_LSM,
-> >         BPF_PROG_TYPE_SK_LOOKUP,
-> >         BPF_PROG_TYPE_SYSCALL, /* a program that can execute syscalls */
-> > +       BPF_PROG_TYPE_HID,
-> >  };
-> [...]
-> > +
-> >  /* When BPF ldimm64's insn[0].src_reg != 0 then this can have
-> >   * the following extensions:
-> >   *
-> > @@ -5129,6 +5145,16 @@ union bpf_attr {
-> >   *             The **hash_algo** is returned on success,
-> >   *             **-EOPNOTSUP** if the hash calculation failed or **-EINVAL** if
-> >   *             invalid arguments are passed.
-> > + *
-> > + * void *bpf_hid_get_data(void *ctx, u64 offset, u64 size)
-> > + *     Description
-> > + *             Returns a pointer to the data associated with context at the given
-> > + *             offset and size (in bytes).
-> > + *
-> > + *             Note: the returned pointer is refcounted and must be dereferenced
-> > + *             by a call to bpf_hid_discard;
-> > + *     Return
-> > + *             The pointer to the data. On error, a null value is returned.
->
-> Please use annotations like *size*, **NULL**.
+Patch 11 is an additional fixup to force the reset of the muxes even
+more.
 
-Ack
+Patch 12-13 are some additiona taken from the qsdk that were missing in
+the upstream driver
 
->
-> >   */
-> >  #define __BPF_FUNC_MAPPER(FN)          \
-> >         FN(unspec),                     \
-> > @@ -5325,6 +5351,7 @@ union bpf_attr {
-> >         FN(copy_from_user_task),        \
-> >         FN(skb_set_tstamp),             \
-> >         FN(ima_file_hash),              \
-> > +       FN(hid_get_data),               \
-> >         /* */
-> >
-> >  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-> > @@ -5925,6 +5952,10 @@ struct bpf_link_info {
-> >                 struct {
-> >                         __u32 ifindex;
-> >                 } xdp;
-> > +               struct  {
-> > +                       __s32 hidraw_number;
-> > +                       __u32 attach_type;
-> > +               } hid;
-> >         };
-> >  } __attribute__((aligned(8)));
-> >
-> > diff --git a/include/uapi/linux/bpf_hid.h b/include/uapi/linux/bpf_hid.h
-> > new file mode 100644
-> > index 000000000000..64a8b9dd8809
-> > --- /dev/null
-> > +++ b/include/uapi/linux/bpf_hid.h
-> > @@ -0,0 +1,31 @@
-> > +/* SPDX-License-Identifier: GPL-2.0-or-later WITH Linux-syscall-note */
-> > +
-> > +/*
-> > + *  HID BPF public headers
-> > + *
-> > + *  Copyright (c) 2022 Benjamin Tissoires
-> > + */
-> > +
-> > +#ifndef _UAPI__LINUX_BPF_HID_H__
-> > +#define _UAPI__LINUX_BPF_HID_H__
-> > +
-> > +#include <linux/types.h>
-> > +
-> > +enum hid_bpf_event {
-> > +       HID_BPF_UNDEF = 0,
-> > +       HID_BPF_DEVICE_EVENT,           /* when attach type is BPF_HID_DEVICE_EVENT */
-> > +       HID_BPF_RDESC_FIXUP,            /* ................... BPF_HID_RDESC_FIXUP */
-> > +       HID_BPF_USER_EVENT,             /* ................... BPF_HID_USER_EVENT */
->
-> Why don't we have a DRIVER_EVENT type here?
+Patch 14 converts krait-cc to yaml
 
-For driver event, I want to have a little bit more of information
-which tells which event we have:
-- HID_BPF_DRIVER_PROBE
-- HID_BPF_DRIVER_SUSPEND
-- HID_BPF_DRIVER_RAW_REQUEST
-- HID_BPF_DRIVER_RAW_REQUEST_ANSWER
-- etc...
+Patch 15 add to krait-cc Documentation the L2 clocks
 
-However, I am not entirely sure on the implementation of all of those,
-so I left them aside for now.
+Patch 16 finally adds all this stuff to the ipq8064 dtsi (and fix the
+stupid PXO_SRC phandle)
 
-I'll work on that for v4.
+Patch 17 converts the kpss-acc driver to yaml and fix some Documentation
+error
 
->
-> >
-> [...]
-> > +
-> > +BPF_CALL_3(bpf_hid_get_data, struct hid_bpf_ctx_kern*, ctx, u64, offset, u64, size)
-> > +{
-> > +       if (!size)
-> > +               return 0UL;
-> > +
-> > +       if (offset + size > ctx->allocated_size)
-> > +               return 0UL;
-> > +
-> > +       return (unsigned long)(ctx->data + offset);
-> > +}
-> > +
-> > +static const struct bpf_func_proto bpf_hid_get_data_proto = {
-> > +       .func      = bpf_hid_get_data,
-> > +       .gpl_only  = true,
-> > +       .ret_type  = RET_PTR_TO_ALLOC_MEM_OR_NULL,
-> > +       .arg1_type = ARG_PTR_TO_CTX,
-> > +       .arg2_type = ARG_ANYTHING,
-> > +       .arg3_type = ARG_CONST_ALLOC_SIZE_OR_ZERO,
->
-> I think we should use ARG_CONST_SIZE or ARG_CONST_SIZE_OR_ZERO?
+Patch 18 convets the kpss-gcc driver to yaml
 
-I initially tried this with ARG_CONST_SIZE_OR_ZERO but it doesn't work
-for 2 reasons:
-- we need to pair the argument ARG_CONST_SIZE_* with a pointer to a
-memory just before, which doesn't really make sense here
-- ARG_CONST_SIZE_* isn't handled in the same way
-ARG_CONST_ALLOC_SIZE_OR_ZERO is. The latter tells the verifier that
-the given size is the available size of the returned
-PTR_TO_ALLOC_MEM_OR_NULL, which is exactly what we want.
+I tested this series on a ipq8064 SoC by running a cache benchmark test
+to make sure the changes are correct and we don't silently cause
+regressions. Also I compared the output of the clk_summary every time
+and we finally have a sane output where the mux are correctly placed in
+the correct parent. (till now we had the cpu aux clock all over the
+place, probably never cause problems but who knows.)
 
->
-> > +};
-> > +
-> > +static const struct bpf_func_proto *
-> > +hid_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
-> > +{
-> > +       switch (func_id) {
-> > +       case BPF_FUNC_hid_get_data:
-> > +               return &bpf_hid_get_data_proto;
-> > +       default:
-> > +               return bpf_base_func_proto(func_id);
-> > +       }
-> > +}
-> [...]
-> > +
-> > +static int hid_bpf_prog_test_run(struct bpf_prog *prog,
-> > +                                const union bpf_attr *attr,
-> > +                                union bpf_attr __user *uattr)
-> > +{
-> > +       struct hid_device *hdev = NULL;
-> > +       struct bpf_prog_array *progs;
-> > +       bool valid_prog = false;
-> > +       int i;
-> > +       int target_fd, ret;
-> > +       void __user *data_out = u64_to_user_ptr(attr->test.data_out);
-> > +       void __user *data_in = u64_to_user_ptr(attr->test.data_in);
-> > +       u32 user_size_in = attr->test.data_size_in;
-> > +       u32 user_size_out = attr->test.data_size_out;
-> > +       u32 allocated_size = max(user_size_in, user_size_out);
-> > +       struct hid_bpf_ctx_kern ctx = {
-> > +               .type = HID_BPF_USER_EVENT,
-> > +               .allocated_size = allocated_size,
-> > +       };
-> > +
-> > +       if (!hid_hooks.hdev_from_fd)
-> > +               return -EOPNOTSUPP;
-> > +
-> > +       if (attr->test.ctx_size_in != sizeof(int))
-> > +               return -EINVAL;
->
-> ctx_size_in is always 4 bytes?
+v5:
+- Address comments from Krzysztof
+v4:
+- Fix more dt-bindings bog errors
+v3:
+- Split Documentation files for kpss and krait-cc
+v2:
+- introduce new API instead of fixing the existing one
+- do not reorganize variables in krait-cc
+- fix some comments error and improve it
+- return better error for patch 7
+- fix missing new line on patch 16
 
-Yes. Basically what I had in mind is that the "ctx" for
-user_prog_test_run is the file descriptor to the sysfs that represent
-the HID device.
-This seemed to me to be the easiest to handle for users.
+Ansuel Smith (18):
+  clk: introduce clk_hw_get_index_of_parent new API
+  clk: qcom: gcc-ipq806x: skip pxo/cxo fixed clk if already present
+  clk: qcom: gcc-ipq806x: add PXO_SRC in clk table
+  clk: qcom: clk-hfpll: use poll_timeout macro
+  clk: qcom: kpss-xcc: convert to parent data API
+  clk: qcom: clk-krait: unlock spin after mux completion
+  clk: qcom: clk-krait: add hw_parent check for div2_round_rate
+  clk: qcom: krait-cc: convert to parent_data API
+  clk: qcom: krait-cc: drop pr_info and register qsb only if needed
+  clk: qcom: krait-cc: drop hardcoded safe_sel
+  clk: qcom: krait-cc: force sec_mux to QSB
+  clk: qcom: clk-krait: add apq/ipq8064 errata workaround
+  clk: qcom: clk-krait: add enable disable ops
+  dt-bindings: clock: Convert qcom,krait-cc to yaml
+  dt-bindings: clock: Add L2 clocks to qcom,krait-cc Documentation
+  ARM: dts: qcom: qcom-ipq8064: add missing krait-cc compatible and
+    clocks
+  dt-bindings: arm: msm: Convert kpss-acc driver Documentation to yaml
+  dt-bindings: arm: msm: Convert kpss-gcc driver Documentation to yaml
 
-I'm open to suggestions though.
+ .../bindings/arm/msm/qcom,kpss-acc.txt        |  49 -----
+ .../bindings/arm/msm/qcom,kpss-acc.yaml       |  94 +++++++++
+ .../bindings/arm/msm/qcom,kpss-gcc.txt        |  44 -----
+ .../bindings/arm/msm/qcom,kpss-gcc.yaml       |  68 +++++++
+ .../bindings/clock/qcom,krait-cc.txt          |  34 ----
+ .../bindings/clock/qcom,krait-cc.yaml         |  63 ++++++
+ arch/arm/boot/dts/qcom-ipq8064.dtsi           |  20 +-
+ drivers/clk/clk.c                             |  14 ++
+ drivers/clk/qcom/clk-hfpll.c                  |  13 +-
+ drivers/clk/qcom/clk-krait.c                  |  44 ++++-
+ drivers/clk/qcom/clk-krait.h                  |   1 +
+ drivers/clk/qcom/gcc-ipq806x.c                |  27 ++-
+ drivers/clk/qcom/kpss-xcc.c                   |  25 +--
+ drivers/clk/qcom/krait-cc.c                   | 186 ++++++++++--------
+ include/linux/clk-provider.h                  |   1 +
+ 15 files changed, 447 insertions(+), 236 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.txt
+ create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.yaml
+ delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
+ create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
+ delete mode 100644 Documentation/devicetree/bindings/clock/qcom,krait-cc.txt
+ create mode 100644 Documentation/devicetree/bindings/clock/qcom,krait-cc.yaml
 
->
-> > +
-> > +       if (allocated_size > HID_MAX_BUFFER_SIZE)
-> > +               return -E2BIG;
-> > +
-> > +       if (copy_from_user(&target_fd, (void *)attr->test.ctx_in, attr->test.ctx_size_in))
-> > +               return -EFAULT;
-> > +
-> > +       hdev = hid_hooks.hdev_from_fd(target_fd);
-> > +       if (IS_ERR(hdev))
-> > +               return PTR_ERR(hdev);
-> > +
-> > +       if (allocated_size) {
-> > +               ctx.data = kzalloc(allocated_size, GFP_KERNEL);
-> > +               if (!ctx.data)
-> > +                       return -ENOMEM;
-> > +
-> > +               ctx.allocated_size = allocated_size;
-> > +       }
-> > +       ctx.hdev = hdev;
-> > +
-> > +       ret = mutex_lock_interruptible(&bpf_hid_mutex);
-> > +       if (ret)
-> > +               return ret;
-> > +
-> > +       /* check if the given program is of correct type and registered */
-> > +       progs = rcu_dereference_protected(hdev->bpf.run_array[BPF_HID_ATTACH_USER_EVENT],
-> > +                                         lockdep_is_held(&bpf_hid_mutex));
-> > +       if (!progs) {
-> > +               ret = -EFAULT;
-> > +               goto unlock;
-> > +       }
-> > +
-> > +       for (i = 0; i < bpf_prog_array_length(progs); i++) {
-> > +               if (progs->items[i].prog == prog) {
-> > +                       valid_prog = true;
-> > +                       break;
-> > +               }
-> > +       }
-> > +
-> > +       if (!valid_prog) {
-> > +               ret = -EINVAL;
-> > +               goto unlock;
-> > +       }
-> > +
-> > +       /* copy data_in from userspace */
-> > +       if (user_size_in) {
-> > +               if (copy_from_user(ctx.data, data_in, user_size_in)) {
-> > +                       ret = -EFAULT;
-> > +                       goto unlock;
-> > +               }
-> > +
-> > +               ctx.size = user_size_in;
-> > +       }
-> > +
-> > +       migrate_disable();
-> > +
-> > +       ret = bpf_prog_run(prog, &ctx);
-> > +
-> > +       migrate_enable();
-> > +
-> > +       if (user_size_out && data_out) {
-> > +               user_size_out = min3(user_size_out, (u32)ctx.size, allocated_size);
-> > +
-> > +               if (copy_to_user(data_out, ctx.data, user_size_out)) {
-> > +                       ret = -EFAULT;
-> > +                       goto unlock;
-> > +               }
-> > +
-> > +               if (copy_to_user(&uattr->test.data_size_out,
-> > +                                &user_size_out,
-> > +                                sizeof(user_size_out))) {
-> > +                       ret = -EFAULT;
-> > +                       goto unlock;
-> > +               }
-> > +       }
-> > +
-> > +       if (copy_to_user(&uattr->test.retval, &ctx.retval, sizeof(ctx.retval)))
-> > +               ret = -EFAULT;
-> > +
-> > +unlock:
-> > +       kfree(ctx.data);
-> > +
-> > +       mutex_unlock(&bpf_hid_mutex);
-> > +       return ret;
-> > +}
-> > +
-> > +const struct bpf_prog_ops hid_prog_ops = {
-> > +       .test_run = hid_bpf_prog_test_run,
-> > +};
-> > +
-> > +int bpf_hid_init(struct hid_device *hdev)
-> > +{
-> > +       int type;
-> > +
-> > +       for (type = 0; type < MAX_BPF_HID_ATTACH_TYPE; type++)
-> > +               INIT_LIST_HEAD(&hdev->bpf.links[type]);
-> > +
-> > +       return 0;
-> > +}
-> > +EXPORT_SYMBOL_GPL(bpf_hid_init);
-> > +
-> > +void bpf_hid_exit(struct hid_device *hdev)
-> > +{
-> > +       enum bpf_hid_attach_type type;
-> > +       struct bpf_hid_link *hid_link;
-> > +
-> > +       mutex_lock(&bpf_hid_mutex);
-> > +       for (type = 0; type < MAX_BPF_HID_ATTACH_TYPE; type++) {
-> > +               bpf_hid_run_array_detach(hdev, type);
-> > +               list_for_each_entry(hid_link, &hdev->bpf.links[type], node) {
-> > +                       hid_link->hdev = NULL; /* auto-detach link */
-> > +               }
-> > +       }
-> > +       mutex_unlock(&bpf_hid_mutex);
-> > +}
-> > +EXPORT_SYMBOL_GPL(bpf_hid_exit);
-> > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> > index b88688264ad0..d1c05011e5ab 100644
-> > --- a/kernel/bpf/syscall.c
-> > +++ b/kernel/bpf/syscall.c
-> > @@ -3,6 +3,7 @@
-> >   */
-> >  #include <linux/bpf.h>
-> >  #include <linux/bpf-cgroup.h>
-> > +#include <linux/bpf-hid.h>
-> >  #include <linux/bpf_trace.h>
-> >  #include <linux/bpf_lirc.h>
-> >  #include <linux/bpf_verifier.h>
-> > @@ -2205,6 +2206,7 @@ static bool is_sys_admin_prog_type(enum bpf_prog_type prog_type)
-> >  {
-> >         switch (prog_type) {
-> >         case BPF_PROG_TYPE_LIRC_MODE2:
-> > +       case BPF_PROG_TYPE_HID:
-> >                 return true;
-> >         default:
-> >                 return false;
-> > @@ -3199,6 +3201,11 @@ attach_type_to_prog_type(enum bpf_attach_type attach_type)
-> >                 return BPF_PROG_TYPE_SK_LOOKUP;
-> >         case BPF_XDP:
-> >                 return BPF_PROG_TYPE_XDP;
-> > +       case BPF_HID_DEVICE_EVENT:
-> > +       case BPF_HID_RDESC_FIXUP:
-> > +       case BPF_HID_USER_EVENT:
-> > +       case BPF_HID_DRIVER_EVENT:
-> > +               return BPF_PROG_TYPE_HID;
-> >         default:
-> >                 return BPF_PROG_TYPE_UNSPEC;
-> >         }
-> > @@ -3342,6 +3349,11 @@ static int bpf_prog_query(const union bpf_attr *attr,
-> >         case BPF_SK_MSG_VERDICT:
-> >         case BPF_SK_SKB_VERDICT:
-> >                 return sock_map_bpf_prog_query(attr, uattr);
-> > +       case BPF_HID_DEVICE_EVENT:
-> > +       case BPF_HID_RDESC_FIXUP:
-> > +       case BPF_HID_USER_EVENT:
-> > +       case BPF_HID_DRIVER_EVENT:
-> > +               return bpf_hid_prog_query(attr, uattr);
-> >         default:
-> >                 return -EINVAL;
-> >         }
-> > @@ -4336,6 +4348,8 @@ static int link_create(union bpf_attr *attr, bpfptr_t uattr)
-> >                 ret = bpf_perf_link_attach(attr, prog);
-> >                 break;
-> >  #endif
-> > +       case BPF_PROG_TYPE_HID:
-> > +               return bpf_hid_link_create(attr, prog);
-> >         default:
-> >                 ret = -EINVAL;
-> >         }
-> > --
-> > 2.35.1
-> >
->
-
-Cheers,
-Benjamin
+-- 
+2.34.1
 
