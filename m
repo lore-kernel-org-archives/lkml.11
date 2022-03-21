@@ -2,145 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B047AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:47:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 751B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:49:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346017AbiCUJsx (ORCPT
+        id S1346018AbiCUJus (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 05:48:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39044 "EHLO
+        Mon, 21 Mar 2022 05:50:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346025AbiCUJsl (ORCPT
+        with ESMTP id S1345420AbiCUJur (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 05:48:41 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 168AD1350A4;
-        Mon, 21 Mar 2022 02:47:14 -0700 (PDT)
-Received: from mail-wr1-f48.google.com ([209.85.221.48]) by
- mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MOzjW-1niHLI2G8y-00PQYd; Mon, 21 Mar 2022 10:47:12 +0100
-Received: by mail-wr1-f48.google.com with SMTP id h4so1886414wrc.13;
-        Mon, 21 Mar 2022 02:47:12 -0700 (PDT)
-X-Gm-Message-State: AOAM532fABBkxkanJAfZPCNauoHejVllUnZlaKMU87qgQmjA3xaeECVh
-        PqqRJBS6PxAlByq8h+x1icqAue1KP/fwoNz2JZc=
-X-Google-Smtp-Source: ABdhPJyOugVZs0WuLZGA5S5fvh4E/SZOrX2XaObUjw113bg3VATG3qE5f/uf70NlJtAeFLbVSJkTwKN5RI+nUV2zcU0=
-X-Received: by 2002:a5d:6d0f:0:b0:203:9157:1c48 with SMTP id
- e15-20020a5d6d0f000000b0020391571c48mr17167113wrq.192.1647852867006; Mon, 21
- Mar 2022 01:54:27 -0700 (PDT)
+        Mon, 21 Mar 2022 05:50:47 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E0611A3B0
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 02:49:22 -0700 (PDT)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22L9KWjI009807;
+        Mon, 21 Mar 2022 09:48:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
+ to : cc : references : in-reply-to : mime-version : message-id :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=uACQ4mkSEdVO1ltSwdh1bq5lSHA6sGk3PA6+HOFRvsA=;
+ b=GYn1f24rmSnc173ghwIlGToYJIDx0TZn+fKgKDGEoMiezO58lQnG/90vRoF0eQxwIbFf
+ a3saEKtEGkP6YXFBYbbdxf9xMHgN78Jx+58rFOrRv4YWOrbwPMVgTY5KAP5zEUEsRVr5
+ eUcb1AQFBrfi1AGXcthjKm+BwZ1jWu+Z1U9/f7ARUmk75/gG1san+wi2sDsEHGpw4E2e
+ suPTGcIyup67M1bs4q+a3czcjW0id5elCNZWqU3Y8p8nqKIh8gmu11qmu2BAWdEraQmM
+ nnYV7URc4RAhuCy/t81/nrric7P5MdoxRNFYYybtRWSV9bxK49CNULPxxW+lMsyEEb9j lw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3exm1tuvx6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 21 Mar 2022 09:48:54 +0000
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22L9j28B010391;
+        Mon, 21 Mar 2022 09:48:54 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3exm1tuvwt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 21 Mar 2022 09:48:54 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22L9hoZa016788;
+        Mon, 21 Mar 2022 09:48:52 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma04fra.de.ibm.com with ESMTP id 3ew6t8k28g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 21 Mar 2022 09:48:52 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22L9mnL738273404
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 21 Mar 2022 09:48:49 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BB71311C04C;
+        Mon, 21 Mar 2022 09:48:49 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5144611C050;
+        Mon, 21 Mar 2022 09:48:49 +0000 (GMT)
+Received: from localhost (unknown [9.43.115.88])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 21 Mar 2022 09:48:49 +0000 (GMT)
+Date:   Mon, 21 Mar 2022 15:18:47 +0530
+From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
+Subject: Re: [RFC PATCH 2/3] objtool: Enable and implement 'mcount' subcommand
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        Sathvika Vasireddy <sv@linux.ibm.com>
+Cc:     "aik@ozlabs.ru" <aik@ozlabs.ru>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>
+References: <20220318105140.43914-1-sv@linux.ibm.com>
+        <20220318105140.43914-3-sv@linux.ibm.com>
+        <8e792a9a-afb8-9b26-5e97-8f51c72c2d42@csgroup.eu>
+        <1647850610.961i89najm.naveen@linux.ibm.com>
+        <b06bb9bc-22d1-acce-fe68-c7c4cb7c15b5@csgroup.eu>
+In-Reply-To: <b06bb9bc-22d1-acce-fe68-c7c4cb7c15b5@csgroup.eu>
 MIME-Version: 1.0
-References: <20220319142759.1026237-1-chenhuacai@loongson.cn>
- <20220319143817.1026708-1-chenhuacai@loongson.cn> <20220319143817.1026708-6-chenhuacai@loongson.cn>
-In-Reply-To: <20220319143817.1026708-6-chenhuacai@loongson.cn>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 21 Mar 2022 09:54:11 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a2kroHVN3fTabuFVMz08SXytz-SC8X11BxxszsUCksJ4g@mail.gmail.com>
-Message-ID: <CAK8P3a2kroHVN3fTabuFVMz08SXytz-SC8X11BxxszsUCksJ4g@mail.gmail.com>
-Subject: Re: [PATCH V8 13/22] LoongArch: Add system call support
-To:     Huacai Chen <chenhuacai@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:rCdFpqmPfHoRNRNaxUfc7r0fQcv9wGvASDzi0v1Tk9Btj28/S55
- G4RecOA35Q8EeyTP6FMkSBtB3yoxWpgQ4SyAzfpm9nOCoBWBdgYWYEy0+31VkMMx61HN1s/
- yYP+Mqrvd/SiAz4zPg5weyXLGuLlyxT4vjPQ0mvvi+b0z3DPKtYtgCj2xj68uvVVhztSW4x
- FCNi15ETYUXu6smuqmf8g==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Sxg/epg92uQ=:ue5eF+gDBmWW08+qFfFcXf
- h83T+kssmzjynZ90jvgxYSD0o7DLi8Z2MXjo7fWY1RocC1iefr29urjy0iZAGIcqlez2win+0
- jgSswiKGZPDWEexrAlLxrrtpHb7Je4UOvs8VkqflJB7OT32gtPby6b+UxVFkJByH/xxk+Em1H
- IXoLzJurcMvjOIU6QREsMwJy0yIBSObf6GfK/vBNsvi+I4MQNlCZYK1DOvDO61XlzWGD6BgjY
- I4/KcjFGTqlNphgQ4ZFUEPNJZzTtS+CHJ0slSx5xZxn3nX1feVXNz3zDWRZO4q+NvHpoE5qKM
- PLC6sGYt+egiQ+vU5OXUCgWD6I8aRUmVlpwDHMtJ7HzwoxhhERdwwmUYCoS8U0xUvrC/vXPj+
- nnzayW9BEqsuItYZNp38NqLSMJIeAnQSdi0x7doN0/nH0ZsPzomUwL9fFw/khXCcp/GSkCq9+
- 65XURyCCN+1ZtEsA/6Mh5yPZCnZMY/OeuPWBqUhaNrETThdBBM/bJvMxA8+snJXq54LhOve0b
- rRsLZc2BOt9fb8+3RcFqfWtI9q1VUHUz4dnFC4Zxj0p18yV3AHgdHtocoJndSdvjNu3a4ulz1
- AlelrsUTFDTgVlPdlDO4Q1yXeKkNeIyUP/X33z4X8JmJfm9IAiTC6BUXsKEGm/yUgbJaowyFF
- MF6r+gvDxeSfg5OpiPQ9a88OGEh6FDUNPmh1/162ceKoaO8qAQgSU6GelmLD8n7CwHo/8LlDJ
- QlhXlwf1hkhlEcEIv+6JESi/YMRiGl6eZDFhRXhduGxJ8cImQGibR/BvVMHupUbf6nDqmzulx
- EHvViHDD/BI1PA9ymfsczDFwPaz89pkDxU+YRYHJox8FWlTeXk=
+User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
+Message-Id: <1647855901.ds85pb94ut.naveen@linux.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: tSHjZO6NQOGxCtFNq0VuINkfipUMz1Z4
+X-Proofpoint-ORIG-GUID: EqM63D410yDYoN7YNS15IzG2TfN4GzYV
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-21_04,2022-03-15_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
+ clxscore=1015 phishscore=0 bulkscore=0 adultscore=0 lowpriorityscore=0
+ malwarescore=0 priorityscore=1501 spamscore=0 mlxlogscore=657
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203210062
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 19, 2022 at 3:38 PM Huacai Chen <chenhuacai@kernel.org> wrote:
->
-> This patch adds system call support and related uaccess.h for LoongArch.
->
-> Q: Why keep __ARCH_WANT_NEW_STAT definition while there is statx:
-> A: Until the latest glibc release (2.34), statx is only used for 32-bit
->    platforms, or 64-bit platforms with 32-bit timestamp. I.e., Most 64-
->    bit platforms still use newstat now.
->
-> Q: Why keep _ARCH_WANT_SYS_CLONE definition while there is clone3:
-> A: The latest glibc release (2.34) has some basic support for clone3 but
->    it isn't complete. E.g., pthread_create() and spawni() have converted
->    to use clone3 but fork() will still use clone. Moreover, some seccomp
->    related applications can still not work perfectly with clone3.
+Christophe Leroy wrote:
+>=20
+>=20
+> Le 21/03/2022 =C3=A0 09:19, Naveen N. Rao a =C3=A9crit=C2=A0:
+>> Christophe Leroy wrote:
+>>=20
+>> We don't enable ftrace for vdso, so I suspect objtool run above will be=20
+>> a no-op. This needs to be confirmed, of course.
+>>=20
+>=20
+> I just checked without the series: recordmcount isn't run for VDSO, so=20
+> objtool shouldn't be run either when the series is applied.
 
-Please leave those out of the mainline kernel support though: Any users
-of existing glibc binaries can keep using patched kernels for the moment,
-and then later drop those pages when the proper glibc support gets
-merged.
+Agree. I was only pointing out that it would be harmless, but it is good=20
+to ensure objtool is skipped for files/directories where ftrace isn't=20
+enabled. recordmcount keys off the presence of CC_FLAGS_FTRACE, and we=20
+should do the same for 'objtool --mcount'.
 
-> +#define __ua_size(size)                                                        \
-> +       ((__builtin_constant_p(size) && (signed long) (size) > 0) ? 0 : (size))
-> +
-> +/*
-> + * access_ok: - Checks if a user space pointer is valid
-> + * @addr: User space pointer to start of block to check
-> + * @size: Size of block to check
-> + *
-> + * Context: User context only. This function may sleep if pagefaults are
-> + *          enabled.
-> + *
-> + * Checks if a pointer to a block of memory in user space is valid.
-> + *
-> + * Returns true (nonzero) if the memory block may be valid, false (zero)
-> + * if it is definitely invalid.
-> + *
-> + * Note that, depending on architecture, this function probably just
-> + * checks that the pointer is in the user space range - after calling
-> + * this function, memory access functions may still return -EFAULT.
-> + */
-> +static inline int __access_ok(const void __user *p, unsigned long size)
-> +{
-> +       unsigned long addr = (unsigned long)p;
-> +       unsigned long end = addr + size - !!size;
-> +
-> +       return (__UA_LIMIT & (addr | end | __ua_size(size))) == 0;
-> +}
-> +
-> +#define access_ok(addr, size)                                  \
-> +       likely(__access_ok((addr), (size)))
 
-I rewrote this bit a series that is currently queued for 5.18, so you
-will have to adapt it to the new version, by just removing your
-custom definitions.
-
-> +#define __get_user(x, ptr) \
-> +({                                                                     \
-> +       int __gu_err = 0;                                               \
-> +                                                                       \
-> +       __chk_user_ptr(ptr);                                            \
-> +       __get_user_common((x), sizeof(*(ptr)), ptr);                    \
-> +       __gu_err;                                                       \
-> +})
-
-It would be good to also provide a
-__kernel_kernel_nofault()/__put_kernel_nofault()
-implementation, as the default based on __get_user()/__put_user is not
-ideal.
-
-        Arnd
+- Naveen
