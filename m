@@ -2,199 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B0CDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:25:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B34C7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:25:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345839AbiCUJ1D (ORCPT
+        id S1345884AbiCUJ1F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 05:27:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44060 "EHLO
+        Mon, 21 Mar 2022 05:27:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345861AbiCUJ1B (ORCPT
+        with ESMTP id S1345867AbiCUJ1B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 05:27:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E25CF65154
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 02:25:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647854735;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GzohBbkrXG4LXx7mo3/JLEha1Z8wnON9GrcgVqSwS/Y=;
-        b=UbP75GyGALyKef6rFedLwC281x+CcooNeA7xh34InzUtPgjlWcnQMaLWcnVZzaCzrYUbYU
-        CArPmUGWapV+ioHbMb7EK1bepM49VzRqXiSdSEX03ezsTTcy+0otrSFT6J/hDBSLsJHZrs
-        VKHfEd0MqCucHMyPfZCjm5uwt/UiuJ8=
-Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com
- [209.85.210.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-381-ioT026ynNiWXfdDsJNW_2Q-1; Mon, 21 Mar 2022 05:25:33 -0400
-X-MC-Unique: ioT026ynNiWXfdDsJNW_2Q-1
-Received: by mail-pf1-f199.google.com with SMTP id w19-20020aa79553000000b004fa64758b82so6177305pfq.22
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 02:25:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=GzohBbkrXG4LXx7mo3/JLEha1Z8wnON9GrcgVqSwS/Y=;
-        b=Gs97eD3vKnX6G2kYjf6hygwxg6n0XWi7tmNN+NTthr4QmHmq6Oid7WdXHjJZGANnZm
-         Ndpmg9Eq9kWPZmlGVkhHYpu3nmMOAq6wFu8M8bF93nKim4r24PMUrUgQaT5QdS1xcMCZ
-         QmerPVvcnTZzq2bZ5LiGb8jZCY580iLngqe9KY4xLBxNU7cLC0I0CvsijHmD+Vu+T/ST
-         m13ItYQKMn2+p3CA7x4+U/5bWSC6GhSnuz+YDXwS/HDFllmjLRNPgh6RWlv0XwFYtovV
-         OnOOexzOavPQQZR3DPT2SDea06VRoyjDeQJOvQFKsnZ74QC8KSIOlHIlzdrmuCzw9a3/
-         M91Q==
-X-Gm-Message-State: AOAM533ZwfDwZolaYNk/+rwK8NyHbGWU39fqORpLHXs07jlb2TvGAvyx
-        mqP6WKGi5NHpk2tFoQ5+FrqfqGHRR2JQW6J5v7afj5iUMBZn8t6J0WzGAMXVLixYaYoAFp1Zr0d
-        Vh6fd1REvfOJTbg9j66nSlBRJd0spgSuC03M8KEF8
-X-Received: by 2002:a05:6a00:2182:b0:4fa:6d20:d95d with SMTP id h2-20020a056a00218200b004fa6d20d95dmr16423572pfi.83.1647854732190;
-        Mon, 21 Mar 2022 02:25:32 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy5GIeW+QMX4U4V2zHohKqElMK7B6VgQJYnzw3N7Tv/o+8SUhfr7/r1sr09VsGyUW1SRSGOo/l09OeZwZL0rvE=
-X-Received: by 2002:a05:6a00:2182:b0:4fa:6d20:d95d with SMTP id
- h2-20020a056a00218200b004fa6d20d95dmr16423547pfi.83.1647854731876; Mon, 21
- Mar 2022 02:25:31 -0700 (PDT)
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C3E96516A
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 02:25:36 -0700 (PDT)
+Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220321092533epoutp018e260b4a308c41b46df529a4daffc03c~eWyY-Ay151955619556epoutp01l
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:25:33 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220321092533epoutp018e260b4a308c41b46df529a4daffc03c~eWyY-Ay151955619556epoutp01l
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1647854733;
+        bh=e8bwc2Ysxw5MN4eM2XYne32AAf/UZRzAOxexveGEtGU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Pj6eeYL0D6KJSeslOYVfaNSLBcUcl9f/IdEkahTLt39NAknYRq1+0/zi0UOLgKbaS
+         BGhKMWftuLdWuz0WyFuqyWTu/as+q7syh+QWxpvBMr5pKq28iZGn/nx9lEWaa6HPTB
+         FcgrV4C4j+BEZGS3Qr9E4HSu/rOwiLg+n1lHz3Kk=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
+        20220321092532epcas2p10d70a6372d69a95910bfbccdb09004c1~eWyYcnmY00811308113epcas2p1f;
+        Mon, 21 Mar 2022 09:25:32 +0000 (GMT)
+Received: from epsmges2p3.samsung.com (unknown [182.195.36.89]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4KMTk31l5fz4x9Pv; Mon, 21 Mar
+        2022 09:25:31 +0000 (GMT)
+Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
+        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
+        CE.62.25540.88448326; Mon, 21 Mar 2022 18:25:28 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas2p4.samsung.com (KnoxPortal) with ESMTPA id
+        20220321092527epcas2p4d7935b4535902c27b412325ebd0f15f4~eWyTnZCk81323613236epcas2p4l;
+        Mon, 21 Mar 2022 09:25:27 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220321092527epsmtrp2e87ba18f1e93c2e9a8fd2290161d14ce~eWyTmcP4K1566415664epsmtrp2C;
+        Mon, 21 Mar 2022 09:25:27 +0000 (GMT)
+X-AuditID: b6c32a47-81bff700000063c4-8c-62384488471d
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        19.D3.29871.78448326; Mon, 21 Mar 2022 18:25:27 +0900 (KST)
+Received: from ubuntu (unknown [12.36.155.120]) by epsmtip2.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220321092527epsmtip2c105407545e6069710ade2a503c4f4db~eWyTeEG6c3183331833epsmtip20;
+        Mon, 21 Mar 2022 09:25:27 +0000 (GMT)
+Date:   Mon, 21 Mar 2022 18:24:09 +0900
+From:   Jung Daehwan <dh10.jung@samsung.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Mathias Nyman <mathias.nyman@intel.com>,
+        "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Howard Yen <howardyen@google.com>,
+        Jack Pham <jackp@codeaurora.org>,
+        Puma Hsu <pumahsu@google.com>,
+        "J . Avila" <elavila@google.com>, sc.suh@samsung.com
+Subject: Re: [PATCH v3 0/4] support USB offload feature
+Message-ID: <20220321092409.GA62265@ubuntu>
 MIME-Version: 1.0
-References: <20220320190602.7484-1-jose.exposito89@gmail.com>
-In-Reply-To: <20220320190602.7484-1-jose.exposito89@gmail.com>
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Date:   Mon, 21 Mar 2022 10:25:20 +0100
-Message-ID: <CAO-hwJKZUSTaWUpE_vsvAs-MNoZ8UJLgxiCyQ6OzwHYFZszf2w@mail.gmail.com>
-Subject: Re: [PATCH] HID: multitouch: fix Dell Precision 7550 and 7750 button type
-To:     =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>
-Cc:     jkosina@suse.cz, tiwai@suse.de, regressions@leemhuis.info,
-        peter.hutterer@who-t.net, linux-input@vger.kernel.org,
-        stable@vger.kernel.org, regressions@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <YjhB7+AaEXvuUmdi@kroah.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrIJsWRmVeSWpSXmKPExsWy7bCmmW6Hi0WSwe8pXBZPjixit2hevJ7N
+        4vqf94wW7c8vsFlc3jWHzWLRslZmi+ZNU1gtZq5Vtui6e4PRgdPjcl8vk8eCTaUei/e8ZPLY
+        P3cNu0ffllWMHp83yQWwRWXbZKQmpqQWKaTmJeenZOal2yp5B8c7x5uaGRjqGlpamCsp5CXm
+        ptoqufgE6Lpl5gDdpKRQlphTChQKSCwuVtK3synKLy1JVcjILy6xVUotSMkpMC/QK07MLS7N
+        S9fLSy2xMjQwMDIFKkzIzmjc9IS5YL9Axd/ra9kaGJfxdjFyckgImEjsPj2JuYuRi0NIYAej
+        xI/FK9kgnE+MEqf6HkI53xgl5i+7zwzTcuF1JwuILSSwl1GiY6EzhP2EUWLDwnAQm0VAVeLG
+        7auMIDabgJbEvR8nwHpFBIwl+s/OYgcZyiywgUnixJ3nYAlhAXOJ2VP62EFsXgFtiY4DJ5gg
+        bEGJkzOfgC3jFNCUmPLxJlA9B4eogIrEq4P1EPdM5JA4vU8QwnaRmLv6FNSdwhKvjm9hh7Cl
+        JD6/28sGYRdL7PrUygRyg4RAA6NE44MTUA3GErOetTOCzGcWyJTY9qQCxJQQUJY4cgvsAmYB
+        PomOw3/ZIcK8Eh1tQhCNyhLTL09ghbAlJQ6+Pgc10ENiWvN8dnjgrm48wjKBUX4WksdmISyb
+        BbZBR2LB7k9sEGFpieX/OCBMTYn1u/QXMLKuYhRLLSjOTU8tNiowhsd0cn7uJkZwWtVy38E4
+        4+0HvUOMTByMhxglOJiVRHgXfzBPEuJNSaysSi3Kjy8qzUktPsRoCoylicxSosn5wMSeVxJv
+        aGJpYGJmZmhuZGpgriTO65WyIVFIID2xJDU7NbUgtQimj4mDU6qBySBa/Wqh2edCS6f3Gf9m
+        l9ckluS8PJxiLmzNY2ow+WJE7bmUQ9MvL/TP7VxymVeK4345y6UyjeqEEsO7K5PC47e5Kwq6
+        qjTOXvh8/a+aVVts218f5XI+turVjvZonpK+NUIRJuHZ1b6hfGqzOvTv+5eebWPlF1bP5fQM
+        vP1k19Vgy+WHkmPrn764vnpDpMLae8LfA56lN270eFezbpdSvgavTvcfX+/XdT1yOmLXHN7M
+        MH24QjG4MPf1PvEvjeyzZjzJmeCq/Dc3VPbbWm1VjpmnDY8oCTYffDn1YffRbU9etSRfXvq1
+        /9BTUctXL2fd8TpYonnnZLDGQwm/2d6pN6bc1a1fLr9WO1TulNFzJZbijERDLeai4kQAWVo5
+        qjQEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrFLMWRmVeSWpSXmKPExsWy7bCSvG67i0WSweHdGhZPjixit2hevJ7N
+        4vqf94wW7c8vsFlc3jWHzWLRslZmi+ZNU1gtZq5Vtui6e4PRgdPjcl8vk8eCTaUei/e8ZPLY
+        P3cNu0ffllWMHp83yQWwRXHZpKTmZJalFunbJXBl7N0/hb3gD2/FzAPKDYx/uLoYOTkkBEwk
+        LrzuZOli5OIQEtjNKPGhrZ8RIiEpsXTuDXYIW1jifssRVoiiR4wSvzp3M4EkWARUJW7cvgrW
+        wCagJXHvxwlmEFtEwFii/+wsdpAGZoFNTBKzf68FSwgLmEvMntIHNpVXQFui48AJJoipOxgl
+        Pi/rYYJICEqcnPmEBcRmBpp6499LoDgHkC0tsfwfB0iYU0BTYsrHm8wgYVEBFYlXB+snMArO
+        QtI8C0nzLITmBYzMqxglUwuKc9Nziw0LDPNSy/WKE3OLS/PS9ZLzczcxgqNDS3MH4/ZVH/QO
+        MTJxMB5ilOBgVhLhXfzBPEmINyWxsiq1KD++qDQntfgQozQHi5I474Wuk/FCAumJJanZqakF
+        qUUwWSYOTqkGpsD/Jgu3TvPetX9hOC+3qu353r+7101miMp6dWQvq/TBH52XJEO9+K6sLjs2
+        51TLE/GnB4p8NyRw3PWZu9tR5FTPyaUN1+++mR+Q8anZNrl1hb6LU2vLX7W2e2tueVgu7Fli
+        G1auODVf+demZpmqB1ne95XLmS8diJe+86SD1b1hafzhy4HNMrtccvJ7uqetfpPk9klpwZW3
+        vbMMD035f7K74Ii7xO4jee+91q3e42+aF7LZ4ETjYoaNDy4Ky8ww+XE68XHK2ZbfjBOmqBlM
+        mtwuMu3tw4dbTn8/7Ke3Po6L+bn9wbxv115eMT11ReS2g+c639y9R+u9F8838fqfueeJ8ult
+        vWcv3lcQ+nLk3CRFJZbijERDLeai4kQARwF99/0CAAA=
+X-CMS-MailID: 20220321092527epcas2p4d7935b4535902c27b412325ebd0f15f4
+X-Msg-Generator: CA
+Content-Type: multipart/mixed;
+        boundary="----mwmExhcEqaTMgLyfw452.zc-R1ZLcLBBgXcQdqrDAhnQ.X2v=_22567d_"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220321090202epcas2p1bfa78db059c1f6f6acbbb015e4bf991c
+References: <CGME20220321090202epcas2p1bfa78db059c1f6f6acbbb015e4bf991c@epcas2p1.samsung.com>
+        <1647853194-62147-1-git-send-email-dh10.jung@samsung.com>
+        <YjhB7+AaEXvuUmdi@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jos=C3=A9,
+------mwmExhcEqaTMgLyfw452.zc-R1ZLcLBBgXcQdqrDAhnQ.X2v=_22567d_
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
 
-On Sun, Mar 20, 2022 at 8:06 PM Jos=C3=A9 Exp=C3=B3sito <jose.exposito89@gm=
-ail.com> wrote:
->
-> The touchpad present in the Dell Precision 7550 and 7750 laptops
-> reports a HID_DG_BUTTONTYPE of type MT_BUTTONTYPE_CLICKPAD. However,
-> the device is not a clickpad, it is a touchpad with physical buttons.
->
-> In order to fix this issue, a quirk for the device was introduced in
-> libinput [1] [2] to disable the INPUT_PROP_BUTTONPAD property:
->
->         [Precision 7x50 Touchpad]
->         MatchBus=3Di2c
->         MatchUdevType=3Dtouchpad
->         MatchDMIModalias=3Ddmi:*svnDellInc.:pnPrecision7?50*
->         AttrInputPropDisable=3DINPUT_PROP_BUTTONPAD
->
-> However, because of the change introduced in 37ef4c19b4 ("Input: clear
-> BTN_RIGHT/MIDDLE on buttonpads") the BTN_RIGHT key bit is not mapped
-> anymore breaking the device right click button.
->
-> In order to fix the issue, create a quirk for the device forcing its
-> button type to touchpad regardless of the value reported by the
-> firmware.
->
-> [1] https://gitlab.freedesktop.org/libinput/libinput/-/merge_requests/481
-> [2] https://bugzilla.redhat.com/show_bug.cgi?id=3D1868789
->
-> Fixes: 37ef4c19b4 ("Input: clear BTN_RIGHT/MIDDLE on buttonpads")
-> Signed-off-by: Jos=C3=A9 Exp=C3=B3sito <jose.exposito89@gmail.com>
-> ---
+On Mon, Mar 21, 2022 at 10:14:23AM +0100, Greg Kroah-Hartman wrote:
+> On Mon, Mar 21, 2022 at 05:59:50PM +0900, Daehwan Jung wrote:
+> > This patchset is for USB offload feature, which makes Co-processor to use
+> > some memories of xhci. Especially it's useful for USB Audio scenario.
+> > Audio stream would get shortcut because Co-processor directly write/read
+> > data in xhci memories. It could get speed-up using faster memory like SRAM.
+> > That's why this gives vendors flexibilty of memory management.
+> > Several pathches have been merged in AOSP kernel(android12-5.10) and I put
+> > together and split into 3 patches. Plus let me add user(xhci-exynos)
+> > module to see how user could use it.
+> > 
+> > To sum up, it's for providing xhci memories to Co-Processor.
+> > It would cover DCBAA, Device Context, Transfer Ring, Event Ring, ERST.
+> > It needs xhci hooks and to export some xhci symbols.
+> > 
+> > Changes in v2 :
+> > - Fix commit message by adding Signed-off-by in each patch.
+> > - Fix conflict on latest.
+> > 
+> > Changes in v3 :
+> > - Remove export symbols and xhci hooks which xhci-exynos don't need.
+> > - Modify commit message to clarify why it needs to export symbols.
+> > - Check compiling of xhci-exynos.
+> 
+> As I asked for in the previous submission, you MUST have a user for
+> these hooks, otherwise we can not accept them (nor would you WANT us to
+> accept them).  Please fix that up and add them to the next submission as
+> we can not do anything with this one.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-Thanks for the patch.
-However, I'd like to put this one on hold for a bit. I am discussing
-it right now with Peter and we are trying to see what are the possible
-implications of starting to fix those in the kernel one by one.
+Hi greg,
 
-So Jiri, please hold on before applying this one.
+I've submitted the user(xhci-exynos) together on the last patch of the patchset.
+You can see xhci-exynos uses these hooks and symbols.
 
-Cheers,
-Benjamin
+[PATCH v3 4/4] usb: host: add xhci-exynos driver
 
->  drivers/hid/hid-ids.h        |  3 +++
->  drivers/hid/hid-multitouch.c | 20 ++++++++++++++++++++
->  2 files changed, 23 insertions(+)
->
-> diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
-> index 78bd3ddda442..6cf7a5b6835b 100644
-> --- a/drivers/hid/hid-ids.h
-> +++ b/drivers/hid/hid-ids.h
-> @@ -287,6 +287,9 @@
->
->  #define USB_VENDOR_ID_CIDC             0x1677
->
-> +#define USB_VENDOR_ID_CIRQUE_CORP              0x0488
-> +#define USB_DEVICE_ID_DELL_PRECISION_7X50      0x120A
-> +
->  #define USB_VENDOR_ID_CJTOUCH          0x24b8
->  #define USB_DEVICE_ID_CJTOUCH_MULTI_TOUCH_0020 0x0020
->  #define USB_DEVICE_ID_CJTOUCH_MULTI_TOUCH_0040 0x0040
-> diff --git a/drivers/hid/hid-multitouch.c b/drivers/hid/hid-multitouch.c
-> index 99eabfb4145b..f012cf8e0b8c 100644
-> --- a/drivers/hid/hid-multitouch.c
-> +++ b/drivers/hid/hid-multitouch.c
-> @@ -71,6 +71,7 @@ MODULE_LICENSE("GPL");
->  #define MT_QUIRK_SEPARATE_APP_REPORT   BIT(19)
->  #define MT_QUIRK_FORCE_MULTI_INPUT     BIT(20)
->  #define MT_QUIRK_DISABLE_WAKEUP                BIT(21)
-> +#define MT_QUIRK_BUTTONTYPE_TOUCHPAD   BIT(22)
->
->  #define MT_INPUTMODE_TOUCHSCREEN       0x02
->  #define MT_INPUTMODE_TOUCHPAD          0x03
-> @@ -194,6 +195,7 @@ static void mt_post_parse(struct mt_device *td, struc=
-t mt_application *app);
->  #define MT_CLS_WIN_8_FORCE_MULTI_INPUT         0x0015
->  #define MT_CLS_WIN_8_DISABLE_WAKEUP            0x0016
->  #define MT_CLS_WIN_8_NO_STICKY_FINGERS         0x0017
-> +#define MT_CLS_BUTTONTYPE_TOUCHPAD             0x0018
->
->  /* vendor specific classes */
->  #define MT_CLS_3M                              0x0101
-> @@ -302,6 +304,15 @@ static const struct mt_class mt_classes[] =3D {
->                         MT_QUIRK_CONTACT_CNT_ACCURATE |
->                         MT_QUIRK_WIN8_PTP_BUTTONS,
->                 .export_all_inputs =3D true },
-> +       { .name =3D MT_CLS_BUTTONTYPE_TOUCHPAD,
-> +               .quirks =3D MT_QUIRK_ALWAYS_VALID |
-> +                       MT_QUIRK_IGNORE_DUPLICATES |
-> +                       MT_QUIRK_HOVERING |
-> +                       MT_QUIRK_CONTACT_CNT_ACCURATE |
-> +                       MT_QUIRK_STICKY_FINGERS |
-> +                       MT_QUIRK_WIN8_PTP_BUTTONS |
-> +                       MT_QUIRK_BUTTONTYPE_TOUCHPAD,
-> +               .export_all_inputs =3D true },
->
->         /*
->          * vendor specific classes
-> @@ -1286,6 +1297,9 @@ static int mt_touch_input_configured(struct hid_dev=
-ice *hdev,
->             (app->buttons_count =3D=3D 1))
->                 td->is_buttonpad =3D true;
->
-> +       if (app->quirks & MT_QUIRK_BUTTONTYPE_TOUCHPAD)
-> +               td->is_buttonpad =3D false;
-> +
->         if (td->is_buttonpad)
->                 __set_bit(INPUT_PROP_BUTTONPAD, input->propbit);
->
-> @@ -1872,6 +1886,12 @@ static const struct hid_device_id mt_devices[] =3D=
- {
->                 MT_USB_DEVICE(USB_VENDOR_ID_CHUNGHWAT,
->                         USB_DEVICE_ID_CHUNGHWAT_MULTITOUCH) },
->
-> +       /* Cirque Corp (Dell Precision 7550 and 7750 touchpad) */
-> +       { .driver_data =3D MT_CLS_BUTTONTYPE_TOUCHPAD,
-> +               HID_DEVICE(BUS_I2C, HID_GROUP_MULTITOUCH_WIN_8,
-> +                       USB_VENDOR_ID_CIRQUE_CORP,
-> +                       USB_DEVICE_ID_DELL_PRECISION_7X50) },
-> +
->         /* CJTouch panels */
->         { .driver_data =3D MT_CLS_NSMU,
->                 MT_USB_DEVICE(USB_VENDOR_ID_CJTOUCH,
-> --
-> 2.25.1
->
+Best Regards,
+Jung Daehwan
 
+------mwmExhcEqaTMgLyfw452.zc-R1ZLcLBBgXcQdqrDAhnQ.X2v=_22567d_
+Content-Type: text/plain; charset="utf-8"
+
+
+------mwmExhcEqaTMgLyfw452.zc-R1ZLcLBBgXcQdqrDAhnQ.X2v=_22567d_--
