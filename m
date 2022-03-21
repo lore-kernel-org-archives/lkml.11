@@ -2,96 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE986C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 10:49:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C565C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 10:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346504AbiCUKu6 (ORCPT
+        id S1346492AbiCUKvT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 06:50:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59994 "EHLO
+        Mon, 21 Mar 2022 06:51:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346469AbiCUKup (ORCPT
+        with ESMTP id S1346498AbiCUKvO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 06:50:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2997A23BD7;
-        Mon, 21 Mar 2022 03:49:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 736D7B81202;
-        Mon, 21 Mar 2022 10:49:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37DB5C340E8;
-        Mon, 21 Mar 2022 10:49:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647859757;
-        bh=huUpho3oZIwwEpj2ZIcjMR8j8ncYN4uWkyHSQ8QxcSg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=RlpZskjfYCQaHWnm3drieTw6GwGmKilaNAWb6JJpHjiRftl/luhKimA3ugS8iUjys
-         9PcvMy7xLWmhAhsI0FxaRZzgJt5Kd/w/PJuIyy+vlLi01PnhLQBwL5Em809Zy0+E5j
-         daOnB02G1bC3mFPOQezcP6gNNLJLyrGBnXM+XN8ZjVV9ZG3xDyB/XZodYBFudRTsjH
-         Xv4H/Z7C2yUGatVUPvVX8MGezPMc5YUpkNcTRMtGrt8+ymHY4VNd6NBTXbJVI+tDKM
-         KHZVeOBiKA700Zyt7Fe4ZBZyVh7bLhlpsXPHXKudFcva4ThrczkYX2OwOE9BwYkfwf
-         O5Z28nXSLtoCA==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nWFb8-00FvJp-On; Mon, 21 Mar 2022 10:49:15 +0000
-From:   Marc Zyngier <maz@kernel.org>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-pci@vger.kernel.org
-Cc:     Rob Herring <robh@kernel.org>,
-        Toan Le <toan@os.amperecomputing.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?q?St=C3=A9phane=20Graber?= <stgraber@ubuntu.com>,
-        dann frazier <dann.frazier@canonical.com>,
-        kernel-team@android.com
-Subject: [PATCH v2 0/2] PCI: xgene: Restore working PCIe functionnality
-Date:   Mon, 21 Mar 2022 10:48:41 +0000
-Message-Id: <20220321104843.949645-1-maz@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Mon, 21 Mar 2022 06:51:14 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA69E33E05;
+        Mon, 21 Mar 2022 03:49:45 -0700 (PDT)
+Received: from mail-lj1-f174.google.com ([209.85.208.174]) by
+ mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1N63i4-1o7j4y0AO0-016OGt; Mon, 21 Mar 2022 11:49:44 +0100
+Received: by mail-lj1-f174.google.com with SMTP id 17so4269401ljw.8;
+        Mon, 21 Mar 2022 03:49:43 -0700 (PDT)
+X-Gm-Message-State: AOAM533fEfKyRDrZl6t5ZGj0/hTxVU3+Q71+iJK8Mpc4XkNfkp1gAo6H
+        p2hKIlCXOlWKUyooNf879P11KDvamRqofD2bEgk=
+X-Google-Smtp-Source: ABdhPJzcZ0Yxl2PaNSM+qTLSuTVghKJG3OLAZNn+JUNcoqLnve1kS8gk8xn9EpeRekkC77XHfghVaNA2oBBlHj9vNLU=
+X-Received: by 2002:a05:6000:178c:b0:204:648:b4c4 with SMTP id
+ e12-20020a056000178c00b002040648b4c4mr6283444wrg.219.1647856201405; Mon, 21
+ Mar 2022 02:50:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, robh@kernel.org, toan@os.amperecomputing.com, lorenzo.pieralisi@arm.com, kw@linux.com, bhelgaas@google.com, stgraber@ubuntu.com, dann.frazier@canonical.com, kernel-team@android.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+References: <20220319142759.1026237-1-chenhuacai@loongson.cn>
+ <20220319143817.1026708-1-chenhuacai@loongson.cn> <20220319143817.1026708-3-chenhuacai@loongson.cn>
+ <CAK8P3a2gKGuMTLawFSf1hd3LY7rCVUquTPVHMcxBTok6+y-Rag@mail.gmail.com> <CAAhV-H6eDSU20gjLgEKM318i1ksk23thv9cLJKmAo_cBzjtEkw@mail.gmail.com>
+In-Reply-To: <CAAhV-H6eDSU20gjLgEKM318i1ksk23thv9cLJKmAo_cBzjtEkw@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 21 Mar 2022 10:49:45 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a0PXeEAvZeq0djqCFqPSkFe5z-bg81kcs69ZTcBSL=24Q@mail.gmail.com>
+Message-ID: <CAK8P3a0PXeEAvZeq0djqCFqPSkFe5z-bg81kcs69ZTcBSL=24Q@mail.gmail.com>
+Subject: Re: [PATCH V8 10/22] LoongArch: Add exception/interrupt handling
+To:     Huacai Chen <chenhuacai@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:YoaeS4jNV/JubHRnF4GIrDNIMQNQmUO1gQu8S3NIm8f/RE/rKV6
+ Dj4TegO2P6SEPv6EMhaH+ipnUUQGfji0yPu/I7NGFMqGnrRfPztjMoPZpE9ICiadMbEHlur
+ /g0U2q7gJhR+Pr3+Lo9Svw+6VKExaLPmKG3AJYlyxnXi9Bo7YSogW3CpqEtptzO2ovBm2bm
+ L+3OZIs0KtSfxHojkkBNQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Ml/XYeb+7Tc=:Yf1FWxdgbKn0Ji8IgXKODS
+ pKYHfR9ttwBrINb1uxK5fiD2QaTJlo3WBl96fUdM1zD7pvc84ylCS/8lxdCSlA4fAETjxATwc
+ 8pujZ9+trxJMmJsh7hBE8SshtzczxZrx+WGseKLqf48BjRkUNZHYZMrziv6uvNWnsTuhjAXbZ
+ WXQnReI9jVrfmyX6T224qlp3k8sKZo17fupBCvVgT8SGE9NsOQZCcGUrA6Y0M3OU5AxBvfZJ8
+ GJ18HAXZ3/rCXT0YtgSkLGnX1b5Jf/VIK+lUKNlNmf/RILSSDIOoMlUplaXsKYwc0+rkBxSYL
+ t4pyaF1+W/KcOSL3OKv1HI2Z8DTwvXZMNBSevGiThWwXHISCGoTdMY8RWCwb+HV/jGCITVJ4C
+ 6UBbtBdWi1sM21s5yCafx3QCGBUb46kyR4Nh7jI0wpvXs2QBgocQE+jO1ENtqBYOFvibz6xzF
+ LdEdt6ZNG+I2fWM4pyNMAYFs4neDRneG+XxUw6M1Aj3oEQI7lBY9baA4SkNX3DrnCOzMb1I+w
+ ySAjVYdYg/7hCOjQ/L68gh21NAhB52+Ky99ZgsRSWVTZlnQdPeulCAkizwOT8a/9v84535AsZ
+ q21obqH30JD1vV6WtvuRNyn+Yhb++ON9jFELtxiJLvhNlu/0oAaBhCYNcaS6ElldjMHQtbDeS
+ 1psRTY5VUYYQZzpNuL42SuIosIriV71s3e1h+LH52XQl6EVwxQ8YvOV6xatXmjhDGTvreIr1O
+ UGWuqxFSR0kipQebTTFk7tQVuHAczVS/W1nYNN89+YUuWHWRYH/Tk8/IFCDI2dbTYF3LbtBH7
+ K+lN/4iMG6kX+7mBARcv85Ru221KSOLddg/7tJCQj2K2FV8DDk=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup") was
-merged in the 5.5 time frame, PCIe on the venerable XGene platform has
-been unusable: 6dce5aa59e0b broke both XGene-1 (Mustang and m400) and
-XGene-2 (Merlin), while the addition of c7a75d07827a ("PCI: xgene: Fix
-IB window setup") fixed XGene-2, but left the rest of the zoo
-unusable.
+On Mon, Mar 21, 2022 at 9:46 AM Huacai Chen <chenhuacai@kernel.org> wrote:
+> On Mon, Mar 21, 2022 at 4:38 PM Arnd Bergmann <arnd@arndb.de> wrote:
+> > On Sat, Mar 19, 2022 at 3:38 PM Huacai Chen <chenhuacai@kernel.org> wrote:
+> >
+> > > +unsigned long eentry;
+> > > +EXPORT_SYMBOL_GPL(eentry);
+> > > +unsigned long tlbrentry;
+> > > +EXPORT_SYMBOL_GPL(tlbrentry);
+> >
+> > Why are these exported to modules? Maybe add a comment here, or remove
+> > the export if it's not actually needed.
+>
+> They are used by the kvm module in our internal repo.
 
-It is understood that this systems come with "creative" DTs that don't
-match the expectations of modern kernels. However, there is little to
-be gained by forcing these changes on users -- the firmware is not
-upgradable, and the current owner of the IP will deny that these
-machines have ever existed.
+Ok, that is fine then. For the moment, please add a comment about it here,
+or remove the exports in the initial merge and add them back when you
+submit the kvm code.
 
-Given that, revert both changes and let people enjoy their XGene boxes
-once again.
-
-* From v1 [1]:
-  - Also revert c7a75d07827a ("PCI: xgene: Fix IB window setup")
-
-[1] https://lore.kernel.org/r/20220314144429.1947610-1-maz@kernel.org
-
-Marc Zyngier (2):
-  PCI: xgene: Revert "PCI: xgene: Use inbound resources for setup"
-  PCI: xgene: Revert "PCI: xgene: Fix IB window setup"
-
- drivers/pci/controller/pci-xgene.c | 35 ++++++++++++++++++++----------
- 1 file changed, 23 insertions(+), 12 deletions(-)
-
--- 
-2.34.1
-
+       Arnd
