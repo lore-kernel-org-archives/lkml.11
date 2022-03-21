@@ -2,42 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81EE5C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 286EAC3525B
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:12:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352107AbiCUONT (ORCPT
+        id S1348452AbiCUOND (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:13:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38066 "EHLO
+        Mon, 21 Mar 2022 10:13:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348935AbiCUOFq (ORCPT
+        with ESMTP id S1348776AbiCUOFd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:05:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 137499F6EE;
-        Mon, 21 Mar 2022 07:01:42 -0700 (PDT)
+        Mon, 21 Mar 2022 10:05:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D563B289;
+        Mon, 21 Mar 2022 07:01:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 67DA46132C;
-        Mon, 21 Mar 2022 14:01:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CA7DC340E8;
-        Mon, 21 Mar 2022 14:01:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1B421B816DA;
+        Mon, 21 Mar 2022 14:01:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DEB5C340E8;
+        Mon, 21 Mar 2022 14:01:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871300;
-        bh=np3PsbtFyilrKjrzx10d3sqVMIWHD2rFyiUwMPptA/8=;
+        s=korg; t=1647871292;
+        bh=1NvZWoJdlvPUkVw4Aq0oXH5wnc5kbY4fIKkcrvdEqtM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Aiv+LtvfRCmFQlLSbPX+I96QmaMvvgWIE5lKGujK97VMdiSkGhVEqpOXGojM0KoPe
-         Ir1EKbujbgJJ8YSbuy7nRlUkYlqgYvXt+3l1raedf8rYgnN6GrGXyGZNYDXC4hhJwY
-         jKZLEm0bE51QQXNxKOiMDHD0yQOWoS7YGeCuK02c=
+        b=R24G6Ig89TIkG55sGS3O9D6n/oJvFJWX0y5WLU3XvnouiSrbRF0L3OJNIx5a+kFcn
+         CaeFZ8MSXwTdxgrWBNF1H5AanzXJ3f0EuvZzZsPU1pC+rb3zvJEEtgD/Cn3Qv9q2B4
+         HwOheZS+0tFpARvYXHCivK9rmI6ZHQ7dlyzYniTw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jocelyn Falempe <jfalempe@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>
-Subject: [PATCH 5.16 05/37] drm/mgag200: Fix PLL setup for g200wb and g200ew
-Date:   Mon, 21 Mar 2022 14:52:47 +0100
-Message-Id: <20220321133221.450651401@linuxfoundation.org>
+        stable@vger.kernel.org, Joseph Qi <joseph.qi@linux.alibaba.com>,
+        Mark Fasheh <mark@fasheh.com>,
+        Joel Becker <jlbec@evilplan.org>,
+        Junxiao Bi <junxiao.bi@oracle.com>,
+        Changwei Ge <gechangwei@live.cn>, Gang He <ghe@suse.com>,
+        Jun Piao <piaojun@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.16 02/37] ocfs2: fix crash when initialize filecheck kobj fails
+Date:   Mon, 21 Mar 2022 14:52:44 +0100
+Message-Id: <20220321133221.363764517@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133221.290173884@linuxfoundation.org>
 References: <20220321133221.290173884@linuxfoundation.org>
@@ -49,44 +55,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jocelyn Falempe <jfalempe@redhat.com>
+From: Joseph Qi <joseph.qi@linux.alibaba.com>
 
-commit 40ce1121c1d76daf9048a86e36c83e469281b9fd upstream.
+commit 7b0b1332cfdb94489836b67d088a779699f8e47e upstream.
 
-commit f86c3ed55920 ("drm/mgag200: Split PLL setup into compute and
- update functions") introduced a regression for g200wb and g200ew.
-The PLLs are not set up properly, and VGA screen stays
-black, or displays "out of range" message.
+Once s_root is set, genric_shutdown_super() will be called if
+fill_super() fails.  That means, we will call ocfs2_dismount_volume()
+twice in such case, which can lead to kernel crash.
 
-MGA1064_WB_PIX_PLLC_N/M/P was mistakenly replaced with
-MGA1064_PIX_PLLC_N/M/P which have different addresses.
+Fix this issue by initializing filecheck kobj before setting s_root.
 
-Patch tested on a Dell T310 with g200wb
-
-Fixes: f86c3ed55920 ("drm/mgag200: Split PLL setup into compute and update functions")
-Cc: stable@vger.kernel.org
-Signed-off-by: Jocelyn Falempe <jfalempe@redhat.com>
-Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220308174321.225606-1-jfalempe@redhat.com
+Link: https://lkml.kernel.org/r/20220310081930.86305-1-joseph.qi@linux.alibaba.com
+Fixes: 5f483c4abb50 ("ocfs2: add kobject for online file check")
+Signed-off-by: Joseph Qi <joseph.qi@linux.alibaba.com>
+Cc: Mark Fasheh <mark@fasheh.com>
+Cc: Joel Becker <jlbec@evilplan.org>
+Cc: Junxiao Bi <junxiao.bi@oracle.com>
+Cc: Changwei Ge <gechangwei@live.cn>
+Cc: Gang He <ghe@suse.com>
+Cc: Jun Piao <piaojun@huawei.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/mgag200/mgag200_pll.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ fs/ocfs2/super.c |   22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
---- a/drivers/gpu/drm/mgag200/mgag200_pll.c
-+++ b/drivers/gpu/drm/mgag200/mgag200_pll.c
-@@ -404,9 +404,9 @@ mgag200_pixpll_update_g200wb(struct mgag
- 		udelay(50);
+--- a/fs/ocfs2/super.c
++++ b/fs/ocfs2/super.c
+@@ -1106,17 +1106,6 @@ static int ocfs2_fill_super(struct super
+ 		goto read_super_error;
+ 	}
  
- 		/* program pixel pll register */
--		WREG_DAC(MGA1064_PIX_PLLC_N, xpixpllcn);
--		WREG_DAC(MGA1064_PIX_PLLC_M, xpixpllcm);
--		WREG_DAC(MGA1064_PIX_PLLC_P, xpixpllcp);
-+		WREG_DAC(MGA1064_WB_PIX_PLLC_N, xpixpllcn);
-+		WREG_DAC(MGA1064_WB_PIX_PLLC_M, xpixpllcm);
-+		WREG_DAC(MGA1064_WB_PIX_PLLC_P, xpixpllcp);
+-	root = d_make_root(inode);
+-	if (!root) {
+-		status = -ENOMEM;
+-		mlog_errno(status);
+-		goto read_super_error;
+-	}
+-
+-	sb->s_root = root;
+-
+-	ocfs2_complete_mount_recovery(osb);
+-
+ 	osb->osb_dev_kset = kset_create_and_add(sb->s_id, NULL,
+ 						&ocfs2_kset->kobj);
+ 	if (!osb->osb_dev_kset) {
+@@ -1134,6 +1123,17 @@ static int ocfs2_fill_super(struct super
+ 		goto read_super_error;
+ 	}
  
- 		udelay(50);
- 
++	root = d_make_root(inode);
++	if (!root) {
++		status = -ENOMEM;
++		mlog_errno(status);
++		goto read_super_error;
++	}
++
++	sb->s_root = root;
++
++	ocfs2_complete_mount_recovery(osb);
++
+ 	if (ocfs2_mount_local(osb))
+ 		snprintf(nodestr, sizeof(nodestr), "local");
+ 	else
 
 
