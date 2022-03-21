@@ -2,112 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F0D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 18:29:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7D50C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 18:29:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352167AbiCUSah (ORCPT
+        id S1352166AbiCUSan (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 14:30:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59850 "EHLO
+        Mon, 21 Mar 2022 14:30:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352138AbiCUSab (ORCPT
+        with ESMTP id S1352165AbiCUSah (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 14:30:31 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACBF02AE0A;
-        Mon, 21 Mar 2022 11:29:05 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id m3so14037773lfj.11;
-        Mon, 21 Mar 2022 11:29:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QJZE8dkCUnUnco1V96yxtmClw0LriXyfY1+6Wy3W2Cc=;
-        b=K/auwkg58bis+KPUyv2LucN9+M2eugoOwqQbdSPyxV/O+vsw08julPiPq/JKG/QQF4
-         hvUsNny4SYaI3irAM2JnrqK/hUchdS6UHbb4A/+vIx2bY9vQMubluIWrsAVCgJtmIgHn
-         nXN2WsRp5E+YMeuZNUwRfMWVL+XKgduggKhmZILxvMjCY7zYW9H3evS0m5ZZ3h3A8zIK
-         JKzoJO/vUuCBEPzXyuqb5jA6ogKNsDGhPS1zv0mD4shTBcJ35k5DChWFlhmdCDfhO33F
-         Rg8UONAMbrIWNO6yPHVzVEnh06oZNQGdlkkzecccFiIY3Hqt6wPtS1zL6k9uHjydBf0S
-         d+AQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QJZE8dkCUnUnco1V96yxtmClw0LriXyfY1+6Wy3W2Cc=;
-        b=OolXeokEEFlaCqfTPrGvIv1QPZVEE7vrl3ahQcEuOKBz/97ct3Iv1MacL2OPn25Ygw
-         SMJBXFu14xKa9+nMZBttpU2KaeHcJ1JIjUh8cVjK2Qrswjj+GFeG/zF+seDbLQArCWZy
-         w5QghfweEn8yF+1qbkU47J99P0dTVAaoQAgJNDVgEiX3PIUpSKsM4ep6j5Ua8FCT2kLy
-         UTSpGn2UgKLh6OIgYBFy7WhK2aJje9AmxRD1Pp28c31X5uJT8Bf+Yi0/Vm0tb7UInJ1V
-         c4vyPIrvdPpWw1kv3J5mHNpJCBdB68KGJ6P846R4T92z3n7QijN7bEj69Owo3JmNJ2uo
-         tfwg==
-X-Gm-Message-State: AOAM531GzeuEYmzRywSL2iOJRhvnNcvEPFfDbJc6dMnd/OneZwAzTyRr
-        7vUkQP5PYhjEY82zYqdsi2YBrfxvqpDT/DLO+g==
-X-Google-Smtp-Source: ABdhPJwXvLHLay8erHVCVarSzPk3KZSKXrgZr/Qo7BnjPvJl91SNmZ0JLwo1w/mYrxtHRGimXzrK+jroSI6bBTB7WGQ=
-X-Received: by 2002:a05:6512:3b2c:b0:44a:35fd:994c with SMTP id
- f44-20020a0565123b2c00b0044a35fd994cmr1302459lfv.473.1647887343882; Mon, 21
- Mar 2022 11:29:03 -0700 (PDT)
+        Mon, 21 Mar 2022 14:30:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B9E2B1A9;
+        Mon, 21 Mar 2022 11:29:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0969B61507;
+        Mon, 21 Mar 2022 18:29:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42A83C340F3;
+        Mon, 21 Mar 2022 18:29:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647887351;
+        bh=EHIoXmYCuzDlVCK0jURCIo59lgDODdUVpaJaU5SSLpg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qeL4wsD1g++Dcko05MgG1VrqlOEY/wR4/46wp1OsXiJ04a/Nqn0yRIkr8QfmxOOw3
+         0X/+BZjvQAhfw48Rqj4qi4etTu5qO4nhwHf+720KAC8veUmFgrM91J2t+1a64BZsQO
+         QdTzEzsP6lp/UkKWvdMpAwyvluEkeiLg0bzjvUggNZ1qa6uQHcr1zGBkrwLtTvGzAS
+         UOskj0J/graWCS9Q3E0mSCcPnIWt5/bhT/wqlIPgNoCpseMCrKoTsDIQzA9z1jyvlz
+         94xoCBxXPZKCs00ill82TBAkNGZW1t/t7rWb6qWdtyfK2YvImCAY8CbqUvcS5p5ros
+         zLe4oGstqSyiQ==
+Received: by pali.im (Postfix)
+        id 35DCAA5B; Mon, 21 Mar 2022 19:29:08 +0100 (CET)
+Date:   Mon, 21 Mar 2022 19:29:08 +0100
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/4] PCI: mvebu: Slot support
+Message-ID: <20220321182908.3q4s2ramvhfdpgab@pali>
+References: <20220302145733.12606-1-pali@kernel.org>
+ <20220308113831.pmq4apsxjwzfbesk@pali>
 MIME-Version: 1.0
-References: <20220317015854.18864-1-ctcchien@nuvoton.com> <20220317015854.18864-4-ctcchien@nuvoton.com>
- <37361667-C932-4139-B649-52DE029BDEE5@alien8.de>
-In-Reply-To: <37361667-C932-4139-B649-52DE029BDEE5@alien8.de>
-From:   Avi Fishman <avifishman70@gmail.com>
-Date:   Mon, 21 Mar 2022 20:28:51 +0200
-Message-ID: <CAKKbWA66rdm11fM2eWpQpSW2aCfFn-9OwJNNN4J2Q4rE2H4vEw@mail.gmail.com>
-Subject: Re: [PATCH v5 3/3] EDAC: nuvoton: Add NPCM memory controller driver
-To:     Boris Petkov <bp@alien8.de>
-Cc:     Medad CChien <medadyoung@gmail.com>, rric@kernel.org,
-        James Morse <james.morse@arm.com>, YSCHU@nuvoton.com,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        tony.luck@intel.com, Benjamin Fair <benjaminfair@google.com>,
-        Patrick Venture <venture@google.com>, KWLIU@nuvoton.com,
-        Rob Herring <robh+dt@kernel.org>, JJLIU0@nuvoton.com,
-        KFTING@nuvoton.com, Nancy Yuen <yuenn@google.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Tomer Maimon <tmaimon77@gmail.com>, ctcchien@nuvoton.com,
-        linux-edac <linux-edac@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220308113831.pmq4apsxjwzfbesk@pali>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 2:50 PM Boris Petkov <bp@alien8.de> wrote:
->
-> On March 17, 2022 1:58:54 AM UTC, Medad CChien <medadyoung@gmail.com> wrote:
-> >Add support for Nuvoton NPCM SoC.
-> >
-> >Signed-off-by: Medad CChien <ctcchien@nuvoton.com>
-> >Reported-by: kernel test robot <lkp@intel.com>
->
-> What exactly has the robot reported here?
->
-> >---
-> > drivers/edac/Kconfig     |   9 +
-> > drivers/edac/Makefile    |   1 +
-> > drivers/edac/npcm_edac.c | 710 +++++++++++++++++++++++++++++++++++++++
-> > 3 files changed, 720 insertions(+)
-> > create mode 100644 drivers/edac/npcm_edac.c
->
-> I don't see a MAINTAINERS file entry so that people can Cc you on bugs. See the other EDAC drivers for an example.
->
+PING?
 
-see in MAINTAINERS:
-ARM/NUVOTON NPCM ARCHITECTURE
-M:      Avi Fishman <avifishman70@gmail.com>
-M:      Tomer Maimon <tmaimon77@gmail.com>
-...
-F:      drivers/*/*npcm*
-F:      drivers/*/*/*npcm*
-
-Isn't it OK?
-
-> --
-> Sent from a small device: formatting sux and brevity is inevitable.
-
-
-
--- 
-Regards,
-Avi
+On Tuesday 08 March 2022 12:38:31 Pali Rohár wrote:
+> Hello Bjorn! Could you look if v2 changes are now fine?
+> 
+> On Wednesday 02 March 2022 15:57:29 Pali Rohár wrote:
+> > This patch series add slot support to pci-mvebu.c driver.
+> > 
+> > It is based on branch pci/mvebu of git repository:
+> > https://git.kernel.org/pub/scm/linux/kernel/git/lpieralisi/pci.git
+> > 
+> > Changes in v2:
+> > * Dropped patch with PCI_EXP_SLTCAP_*_SHIFT macros as it is not needed anymore
+> > * Dropped patch "ARM: dts: turris-omnia: Set PCIe slot-power-limit-milliwatt properties" which was applied
+> > * Added support for PCIe 6.0 slot power limit encodings
+> > * Round down slot power limit value
+> > * Fix handling of slot power limit with scale x1.0 (0x00 value)
+> > * Use FIELD_PREP instead of _SHIFT macros
+> > * Changed commit message to Bjorn's suggestion
+> > * Changed comments in the code to match PCIe spec
+> > * Preserve user settings of PCI_EXP_SLTCTL_ASPL_DISABLE bit
+> > 
+> > Pali Rohár (4):
+> >   PCI: Add PCI_EXP_SLTCTL_ASPL_DISABLE macro
+> >   dt-bindings: Add 'slot-power-limit-milliwatt' PCIe port property
+> >   PCI: Add function for parsing 'slot-power-limit-milliwatt' DT property
+> >   PCI: mvebu: Add support for sending Set_Slot_Power_Limit message
+> > 
+> >  Documentation/devicetree/bindings/pci/pci.txt |  6 ++
+> >  drivers/pci/controller/pci-mvebu.c            | 96 ++++++++++++++++++-
+> >  drivers/pci/of.c                              | 64 +++++++++++++
+> >  drivers/pci/pci.h                             | 15 +++
+> >  include/uapi/linux/pci_regs.h                 |  1 +
+> >  5 files changed, 177 insertions(+), 5 deletions(-)
+> > 
+> > -- 
+> > 2.20.1
+> > 
