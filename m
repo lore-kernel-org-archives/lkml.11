@@ -2,81 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DF13C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:13:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6978BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:13:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231719AbiCUXOc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:14:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42294 "EHLO
+        id S232202AbiCUXOl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:14:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233247AbiCUXNU (ORCPT
+        with ESMTP id S232623AbiCUXMy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 19:13:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B794152E4;
-        Mon, 21 Mar 2022 16:01:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 586BEB81AB7;
-        Mon, 21 Mar 2022 23:00:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EC6FAC36AE5;
-        Mon, 21 Mar 2022 23:00:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647903612;
-        bh=w1CtTPCxfIvq7QQwhD9WawNhvXWJlgd38o8mrvIUSp0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rdwxO+WUIn17cEs0dYTJbJvduoofvupzK6ixnlIqIcevlzytNJ1l2OBNohOErzZQf
-         B77dxZ4pu4M8Zd5on89WhWX2bgZwhEqTUSKyv48X25tn/O8YeSg4LhL3sPO+JgwfVI
-         GicGmVjQiXFLOHNfJhx500Cx/tnzM5rlXMvWqHDFwQNv2IwbD+jFwVp3K/PqenRkaW
-         G+JJayQAadmw+03640gejzblW+g0IIzrVzbQ6r6dEwwX3v/y+9469Ho6VU0dz7+osR
-         yLPFwwwJsJF8o8Dojxr71OP97TJ9VFj9BEb41fr8ArMrEUmKS2seBuEAzPDS+BmVpI
-         gfHlPheZpN0rg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C23F3EAC096;
-        Mon, 21 Mar 2022 23:00:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Mon, 21 Mar 2022 19:12:54 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70CE43A999B
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:59:46 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1647903553;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GO4RKzBldiOAEmJiMx6aLhvZMlZcwhA9ygIVn0/s/6U=;
+        b=q3mJoo5ZuVD9zYf9Am9/ptnPyfpKmmm64dWqVRlQl6cqkWpUCCM21vU1tnN8qVNwItjH0V
+        61r/WVxbjIYSGabq+7Z8ONAoM/OtFDoP0auZUnlwO05B9iELp2wOIxcoCqgGEUyvya8FFF
+        uX/SPYY/TkPopgaUWepZBjcpZxtktwTOKVSzsw6iFglDz7wwTrfdL6stM5Hs3FuPYIXtuj
+        6uEnllhyJJsA6U558260Gslj/WyPEsywd42ChO9qG7nZnmpeE9wKz0LG6zoSKAsYtGt1VW
+        +SxZkP53RnYS6HvfD0cwJaIxoRkwzlyJKVoFHMi/FfADrc64pFkAB2VDOtKxFw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1647903553;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GO4RKzBldiOAEmJiMx6aLhvZMlZcwhA9ygIVn0/s/6U=;
+        b=fwMnUpsZjdgqJKw+Ax8eJawy5A70hRdp+mZfIL2cQXgF/SAIHubRvQIKRPYpcxNf7Gg24d
+        bupB6o4Y7AfIt0DA==
+To:     Andy Lutomirski <luto@kernel.org>, Bharata B Rao <bharata@amd.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Cc:     linux-mm@kvack.org, the arch/x86 maintainers <x86@kernel.org>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, shuah@kernel.org,
+        Oleg Nesterov <oleg@redhat.com>, ananth.narayan@amd.com
+Subject: Re: [RFC PATCH v0 0/6] x86/AMD: Userspace address tagging
+In-Reply-To: <6a5076ad-405e-4e5e-af55-fe2a6b01467d@www.fastmail.com>
+References: <20220310111545.10852-1-bharata@amd.com>
+ <6a5076ad-405e-4e5e-af55-fe2a6b01467d@www.fastmail.com>
+Date:   Mon, 21 Mar 2022 23:59:12 +0100
+Message-ID: <87fsnac3pb.ffs@tglx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/2] net: dsa: mv88e6xxx: MST Fixes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164790361179.11439.10221727606089268354.git-patchwork-notify@kernel.org>
-Date:   Mon, 21 Mar 2022 23:00:11 +0000
-References: <20220318201321.4010543-1-tobias@waldekranz.com>
-In-Reply-To: <20220318201321.4010543-1-tobias@waldekranz.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, kabel@kernel.org,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+On Mon, Mar 21 2022 at 15:29, Andy Lutomirski wrote:
+> On Thu, Mar 10, 2022, at 3:15 AM, Bharata B Rao wrote:
+>> This patchset makes use of Upper Address Ignore (UAI) feature available
+>> on upcoming AMD processors to provide user address tagging support for x86/AMD.
+>>
+>> UAI allows software to store a tag in the upper 7 bits of a logical
+>> address [63:57]. When enabled, the processor will suppress the
+>> traditional canonical address checks on the addresses. More information
+>> about UAI can be found in section 5.10 of 'AMD64 Architecture
+>> Programmer's Manual, Vol 2: System Programming' which is available from
+>>
+>> https://bugzilla.kernel.org/attachment.cgi?id=300549
+>
+> I hate to be a pain, but I'm really not convinced that this feature is
+> suitable for Linux.  There are a few reasons:
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Abusing bit 63 is not suitable for any OS in my opinion.
 
-On Fri, 18 Mar 2022 21:13:19 +0100 you wrote:
-> 1/2 fixes the issue reported by Marek here:
-> 
-> https://lore.kernel.org/netdev/20220318182817.5ade8ecd@dellmb/
-> 
-> 2/2 adds a missing capability check to the new .vlan_msti_set
-> callback.
-> 
-> [...]
+> Right now, the concept that the high bit of an address determines
+> whether it's a user or a kernel address is fairly fundamental to the
+> x86_64 (and x86_32!) code.  It may not be strictly necessary to
+> preserve this, but violating it would require substantial thought.
+> With UAI enabled, kernel and user addresses are, functionally,
+> interleaved.  This makes things like access_ok checks, and more
+> generally anything that operates on a range of addresses, behave
+> potentially quite differently.  A lot of auditing of existing code
+> would be needed to make it safe.
 
-Here is the summary with links:
-  - [net-next,1/2] net: dsa: mv88e6xxx: Require ops be implemented to claim STU support
-    https://git.kernel.org/netdev/net-next/c/afaed2b142a1
-  - [net-next,2/2] net: dsa: mv88e6xxx: Ensure STU support in VLAN MSTI callback
-    https://git.kernel.org/netdev/net-next/c/bd48b911c88f
+Which might be finished ten years from now....
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Seriously there is no justification for the bit 63 abuse. This has been
+pointed out by various people to AMD before this saw the public. Other
+vendors seem to have gotten the memo.
 
+The proper solution here is to issue an erratum and fix this nonsense in
+microcode for the already taped out silicon and get rid of it in the
+design of future ones completely. Anything else is just wishful
+thinking.
 
+Thanks,
+
+        tglx
