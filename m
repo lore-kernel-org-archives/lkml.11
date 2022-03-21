@@ -2,191 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E52C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:59:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61D49C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:59:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230500AbiCUXAa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:00:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44086 "EHLO
+        id S231190AbiCUXAf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:00:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232227AbiCUW6J (ORCPT
+        with ESMTP id S232280AbiCUW6L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:58:09 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58637463017
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:36:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647902217; x=1679438217;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=0JBihKTrWugKzWMubuHFtCHqpF89FsyT6aX7ZFVtkaI=;
-  b=LUCTEueIbkG1giPl33cKti3WIlD7+TDrivtqzLoZRLjtaMwETCphNxct
-   H0wckFdnbSO4FSjZ5Fzjjq+bj6BPAFMknBjN5j/Uz+BKEqTPgsdbQwsgh
-   Iyrrjua8+mHRXuATfZ/1UlcSrMnBbAKtQyO9HRn7WkOL3RkSP2M1SM0rt
-   Li0PVMPm00ZfXWm9LfxdnQT/SPaiHDj/Z/zli1lKj8laxA/71L1Ve6OS+
-   MpFzBbjG8RwtXe6kIakwjNm8IvXsBoBoVcUeNsOUeZSa2pfakjRBgeUd5
-   3h0WXBw/S1KfIXfbtZJTJCe5O9Tvv3GEuCVQn5e0E+3HlO7iODf31gBiG
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="320866608"
-X-IronPort-AV: E=Sophos;i="5.90,199,1643702400"; 
-   d="scan'208";a="320866608"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 15:36:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,199,1643702400"; 
-   d="scan'208";a="560073008"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 21 Mar 2022 15:36:55 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nWQdy-000IDl-Bo; Mon, 21 Mar 2022 22:36:54 +0000
-Date:   Tue, 22 Mar 2022 06:36:16 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:sched/core] BUILD SUCCESS
- 3387ce4d8a5f2956fab827edf499fe6780e83faa
-Message-ID: <6238fde0.Qe5umewxqwiDe2GE%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+        Mon, 21 Mar 2022 18:58:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 385E946E777;
+        Mon, 21 Mar 2022 15:37:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 293A36156E;
+        Mon, 21 Mar 2022 21:53:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8B04CC36AE5;
+        Mon, 21 Mar 2022 21:53:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647899628;
+        bh=GJkjL4UZBkaIhfOg8EoXxAXciPyo1zbm8cTIH/VGHMA=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=oijYUMoHqXTTZgw0UJU079FLbSQ1cBfqLwhba8WknsAHviK4mB/9I/i3sx3Zg/Vy8
+         3Y0b/LOWkuFnMObTzgwYGo30HFOXGKC3uCuChgGKLHIWCpx/4ydK5t9PXQTkPXwqtR
+         wmZ8MgkmrBn/H6cYTYGUBykEQNiuIhPO3Oc2UmO9U/JSYZXhrtClUAvD++qHKV44Un
+         RFI2tt3vRKo9pE+XewrgU4u0AatFqxMYMElUO67b2KzzJ0XggZ2F6G7l1iAkSI0jzj
+         Bv8o2Z3rdGLIAx2BKjpKaSsmiFsjhNcIYi5YXfsxY48O94rTqdfPDZkFCoMgSLHXYY
+         InDsqnZKmSY+A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 73739EAC096;
+        Mon, 21 Mar 2022 21:53:48 +0000 (UTC)
+Subject: Re: [GIT PULL] Power management updates for v5.18-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <CAJZ5v0i+dDvX2J7CHfawmFXynifkNZ-0ZHYnraYv-HYJN5bdbA@mail.gmail.com>
+References: <CAJZ5v0i+dDvX2J7CHfawmFXynifkNZ-0ZHYnraYv-HYJN5bdbA@mail.gmail.com>
+X-PR-Tracked-List-Id: <linux-acpi.vger.kernel.org>
+X-PR-Tracked-Message-Id: <CAJZ5v0i+dDvX2J7CHfawmFXynifkNZ-0ZHYnraYv-HYJN5bdbA@mail.gmail.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git pm-5.18-rc1
+X-PR-Tracked-Commit-Id: ec3d8b8365e9865b43099e943ec5f0bc12f28f96
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 02b82b02c34321dde10d003aafcd831a769b2a8a
+Message-Id: <164789962846.9856.5443443057848471317.pr-tracker-bot@kernel.org>
+Date:   Mon, 21 Mar 2022 21:53:48 +0000
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/core
-branch HEAD: 3387ce4d8a5f2956fab827edf499fe6780e83faa  headers/prep: Fix header to build standalone: <linux/psi.h>
+The pull request you sent on Mon, 21 Mar 2022 17:36:05 +0100:
 
-elapsed time: 730m
+> git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git pm-5.18-rc1
 
-configs tested: 114
-configs skipped: 3
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/02b82b02c34321dde10d003aafcd831a769b2a8a
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-i386                 randconfig-c001-20220321
-arm                         cm_x300_defconfig
-sh                             sh03_defconfig
-mips                      maltasmvp_defconfig
-sh                        sh7763rdp_defconfig
-arm                           h3600_defconfig
-arm                       aspeed_g5_defconfig
-sh                      rts7751r2d1_defconfig
-sh                        edosk7760_defconfig
-arc                        nsimosci_defconfig
-sh                          rsk7201_defconfig
-h8300                     edosk2674_defconfig
-arc                 nsimosci_hs_smp_defconfig
-sh                         microdev_defconfig
-sh                              ul2_defconfig
-um                                  defconfig
-xtensa                    xip_kc705_defconfig
-arc                            hsdk_defconfig
-um                               alldefconfig
-mips                        vocore2_defconfig
-arm                  randconfig-c002-20220321
-arm                  randconfig-c002-20220320
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                                defconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-nds32                             allnoconfig
-nios2                               defconfig
-arc                              allyesconfig
-csky                                defconfig
-alpha                               defconfig
-nds32                               defconfig
-alpha                            allyesconfig
-nios2                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-h8300                            allyesconfig
-xtensa                           allyesconfig
-parisc                              defconfig
-parisc64                            defconfig
-s390                             allmodconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64               randconfig-a013-20220321
-x86_64               randconfig-a012-20220321
-x86_64               randconfig-a014-20220321
-x86_64               randconfig-a011-20220321
-x86_64               randconfig-a016-20220321
-x86_64               randconfig-a015-20220321
-i386                 randconfig-a013-20220321
-i386                 randconfig-a011-20220321
-i386                 randconfig-a012-20220321
-i386                 randconfig-a014-20220321
-i386                 randconfig-a016-20220321
-i386                 randconfig-a015-20220321
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-x86_64                    rhel-8.3-kselftests
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                                  kexec
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                         rhel-8.3-kunit
-
-clang tested configs:
-arm                          moxart_defconfig
-mips                      bmips_stb_defconfig
-powerpc                          allmodconfig
-mips                         tb0287_defconfig
-powerpc                 mpc832x_rdb_defconfig
-mips                     cu1000-neo_defconfig
-powerpc                     mpc512x_defconfig
-arm                       cns3420vb_defconfig
-riscv                          rv32_defconfig
-x86_64               randconfig-a001-20220321
-x86_64               randconfig-a003-20220321
-x86_64               randconfig-a005-20220321
-x86_64               randconfig-a004-20220321
-x86_64               randconfig-a002-20220321
-x86_64               randconfig-a006-20220321
-i386                 randconfig-a001-20220321
-i386                 randconfig-a006-20220321
-i386                 randconfig-a003-20220321
-i386                 randconfig-a005-20220321
-i386                 randconfig-a004-20220321
-i386                 randconfig-a002-20220321
-riscv                randconfig-r042-20220320
-hexagon              randconfig-r045-20220321
-hexagon              randconfig-r045-20220320
-hexagon              randconfig-r041-20220321
-hexagon              randconfig-r041-20220320
+Thank you!
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
