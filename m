@@ -2,110 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 376A2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:01:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17612C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:03:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232238AbiCUXCc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:02:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55036 "EHLO
+        id S231949AbiCUXEy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:04:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232153AbiCUXBA (ORCPT
+        with ESMTP id S231888AbiCUXEg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 19:01:00 -0400
-Received: from qproxy2-pub.mail.unifiedlayer.com (qproxy2-pub.mail.unifiedlayer.com [69.89.16.161])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAEEF3B281E
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:48:19 -0700 (PDT)
-Received: from outbound-ss-761.bluehost.com (outbound-ss-761.bluehost.com [74.220.211.250])
-        by qproxy2.mail.unifiedlayer.com (Postfix) with ESMTP id D0B878049173
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 22:48:18 +0000 (UTC)
-Received: from cmgw10.mail.unifiedlayer.com (unknown [10.0.90.125])
-        by progateway8.mail.pro1.eigbox.com (Postfix) with ESMTP id 57AA2100495AF
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 22:48:17 +0000 (UTC)
-Received: from box5620.bluehost.com ([162.241.219.59])
-        by cmsmtp with ESMTP
-        id WQoynvhuoQs3CWQozn1fMq; Mon, 21 Mar 2022 22:48:17 +0000
-X-Authority-Reason: nr=8
-X-Authority-Analysis: v=2.4 cv=A+Opg4aG c=1 sm=1 tr=0 ts=623900b1
- a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
- a=o8Y5sQTvuykA:10:nop_rcvd_month_year
- a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
- a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
- a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
-        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
-        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ObiOG8BB7lDJYuwDM1Nq7qDD7tggcSYR24w/UPSu4b0=; b=vDKL0XbUvrD2kH56m3EmL90hTB
-        Ky6dN6genK2BoQNu4841cU+k297+8iGvPOCWE0nlIMDDtI+q8Hc7lxRcQGvLp98PtSQelTRAuc5nS
-        liFCrlaIcijtfA38wbfDQZUQK;
-Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:33672 helo=[10.0.1.48])
-        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <re@w6rz.net>)
-        id 1nWQoy-001uP2-28; Mon, 21 Mar 2022 16:48:16 -0600
-Subject: Re: [PATCH 5.15 00/32] 5.15.31-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220321133220.559554263@linuxfoundation.org>
-In-Reply-To: <20220321133220.559554263@linuxfoundation.org>
-From:   Ron Economos <re@w6rz.net>
-Message-ID: <797677de-44b5-6e86-e7de-6043c1a1a8af@w6rz.net>
-Date:   Mon, 21 Mar 2022 15:48:14 -0700
-User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Mon, 21 Mar 2022 19:04:36 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF31E185946;
+        Mon, 21 Mar 2022 15:50:29 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id w4so13950601ply.13;
+        Mon, 21 Mar 2022 15:50:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DjDIX8FrnNGu2sjrMpbegjPBjATRwYY4jn7Ao70Kxyo=;
+        b=IaV+U83i5jJzWL8L+pKxUmTUm0rPMYYOsiZUl+5853A/3WhOMJimBY37LgFdAg9+C4
+         raODH5QYd1S8pEOSUHR5KU8kDwcLUZTp5htU64Lvpqruj45p1VilJKYTK503JNGKJcsW
+         0soXjGYIZpy2b+1izOhgzubWaySAQ0guXKN6PifYwEtKEO3IHZSkl4mPfSlvn1cziW+X
+         V2KAQXldEzaaom5rZoP2aVRv/dLfn4cBi8sM+L5IPA22AxetjrV99i0XMeWeFKGFDRXv
+         XQWxPa/vvXQ2ViqzsELJRMzdQV9Pd+pKv4slWwPClhaELCZyUWB4fsRNDZDwAROHhHe5
+         QSPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DjDIX8FrnNGu2sjrMpbegjPBjATRwYY4jn7Ao70Kxyo=;
+        b=Be6LPVV+R9OXfzjFSlyWnyK4oGhj/a1acJNZiAsCDMm8KBnSZUpBwSGcviUhHWDcnV
+         hlrbExmlQ1Ya7BDw45+r5XJz9p02DnZ2IiP0XOvCoJEzN2GfZ+xujlTB5T1S5cQOwKFD
+         wO8sA/tPAq7mzQv5hXa3kKX0lev7I3VAvF2iD+D4Hu5F4JFGSVSb5kD+1wfYzJDUvTD8
+         0gVZEeJxQxBWkOAi3qgg+B9s2953irb624W3Y3ZGMWbg6WQlDmtHeEM8Jro5N5+wZAxh
+         1M97XtnJ/YLVPjiiDhtFMO9TMxN4HlhXb2VTLOqPs+T5ZCj86+gEa1mGPKkebl9Sqphg
+         7CMw==
+X-Gm-Message-State: AOAM530rHLW2o8IAZj4IjosCUA5+R4qAfLCccy4kweFnJFC+rJKWA4Fz
+        8E0Lk+/Vj3flu6SzV+/C6xwYiiOd14AyEwDJlVY=
+X-Google-Smtp-Source: ABdhPJw9lrVe9NKMoe6AyhEoPhg1LpuOlXp8HBaE8bBK/xHhap0NsTF5dieSqAx7Rc6F2gLPnSouhFRil+H7jvXDXcE=
+X-Received: by 2002:a17:90b:3d03:b0:1c6:74bf:418a with SMTP id
+ pt3-20020a17090b3d0300b001c674bf418amr1494432pjb.33.1647903029013; Mon, 21
+ Mar 2022 15:50:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - box5620.bluehost.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - w6rz.net
-X-BWhitelist: no
-X-Source-IP: 73.162.232.9
-X-Source-L: No
-X-Exim-ID: 1nWQoy-001uP2-28
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:33672
-X-Source-Auth: re@w6rz.net
-X-Email-Count: 2
-X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
-X-Local-Domain: yes
+References: <20220321140327.777f9554@canb.auug.org.au> <Yjh11UjDZogc3foM@hirez.programming.kicks-ass.net>
+ <Yjh3xZuuY3QcZ1Bn@hirez.programming.kicks-ass.net> <Yjh4xzSWtvR+vqst@hirez.programming.kicks-ass.net>
+ <YjiBbF+K4FKZyn6T@hirez.programming.kicks-ass.net> <YjiZhRelDJeX4dfR@hirez.programming.kicks-ass.net>
+ <YjidpOZZJkF6aBTG@hirez.programming.kicks-ass.net> <CAHk-=wigO=68WA8aMZnH9o8qRUJQbNJPERosvW82YuScrUTo7Q@mail.gmail.com>
+ <YjirfOJ2HQAnTrU4@hirez.programming.kicks-ass.net> <CAHk-=wguO61ACXPSz=hmCxNTzqE=mNr_bWLv6GH5jCVZLBL=qw@mail.gmail.com>
+ <20220322090541.7d06c8cb@canb.auug.org.au> <CAADnVQJnZpQjUv-dw7SU-WwTOn_tZ8xmy5ydRn=g_m-9UyS2kw@mail.gmail.com>
+ <20220322094526.436ca4f7@elm.ozlabs.ibm.com>
+In-Reply-To: <20220322094526.436ca4f7@elm.ozlabs.ibm.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 21 Mar 2022 15:50:17 -0700
+Message-ID: <CAADnVQKg7GPVpg-22B2Ym5HFVoGaquoFZDEkRwTDgXzm+L8OOw@mail.gmail.com>
+Subject: Re: linux-next: build warnings after merge of the tip tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "H.J. Lu" <hjl.tools@gmail.com>,
+        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        linux-toolchains <linux-toolchains@vger.kernel.org>,
+        Andrew Cooper <Andrew.Cooper3@citrix.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/21/22 6:52 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.31 release.
-> There are 32 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Mon, Mar 21, 2022 at 3:46 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
 >
-> Responses should be made by Wed, 23 Mar 2022 13:32:09 +0000.
-> Anything received after that time might be too late.
+> Hi Alexei,
 >
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.31-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
+> On Mon, 21 Mar 2022 15:12:05 -0700 Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+> >
+> > That makes little sense. It's not an unusual merge conflict.
+> > Peter's endbr series conflict with Masami's fprobe.
+> > Peter has a trivial patch that fixes objtool warning.
+> > The question is how to land that patch.
+> > I think the best is for Linus to apply it after bpf-next->net-next gets
+> > merged.
 >
-> thanks,
->
-> greg k-h
+> Peter has other concerns, please read the thread and consider them.
 
-Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
-
-Tested-by: Ron Economos <re@w6rz.net>
-
+Masami is an expert in kprobe. He copy pasted a bit of kprobe logic
+to make it into 'multi kprobe' (he calls it fprobe).
+I believe he knows what he's doing.
+Steven reviewed and tested that set.
+We've tested it as well and don't have any correctness or api concerns.
