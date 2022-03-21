@@ -2,117 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29EDFC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:51:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5A1FC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:51:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346905AbiCULws (ORCPT
+        id S1346948AbiCULxP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 07:52:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47282 "EHLO
+        Mon, 21 Mar 2022 07:53:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346865AbiCULwk (ORCPT
+        with ESMTP id S1346893AbiCULwn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 07:52:40 -0400
+        Mon, 21 Mar 2022 07:52:43 -0400
 Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2092C156793
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 04:51:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C586156793
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 04:51:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        from:to:cc:subject:date:message-id:mime-version
-        :content-transfer-encoding; s=k1; bh=4S4Px63e2+0FVo0SEWjX4AYw/Zi
-        RThDbqzQpdXY0uk8=; b=oAESevOu8MJwUG4o1adMH4KtpWH/2eoSmcbwjO+TA6a
-        lGEZ8rUQjQZl1MfxvSzBiy3fAd0gwqzMWEeOtzhQbUH+mntJ6x+4KhSO6kL0y7/R
-        vDJOP8mgSH4whimqnpvNWnAMtcn0K6Zt+5CKKMjWEzEhQbvxiJEy/7Rgh8TG52l4
-        =
-Received: (qmail 860167 invoked from network); 21 Mar 2022 12:51:05 +0100
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 21 Mar 2022 12:51:05 +0100
-X-UD-Smtp-Session: l3s3148p1@EjOBHLnaAKcgAQnoAFxnAN8BywfgXJ9V
+        from:to:cc:subject:date:message-id:in-reply-to:references
+        :mime-version:content-transfer-encoding; s=k1; bh=3/MweonOnAZzh0
+        9fhx+1gPXXRGWjBJLCioPiGXAo618=; b=nFKi4GC/C+rUCjAYG4bFTffa8e/2Ix
+        htMeS+n4hfsDkaQI4dtnpKID6i1jFjEAKBXG5a3MIZeiwb5TAwSvAzniHqXBlOqJ
+        Ck0vMIXpZmgSbZMz2bB9Kb9TXQT5uLka9BJOJvRl/4grj6U5xYMipTffCIkjaKZd
+        tpgZRSId7PGDY=
+Received: (qmail 860337 invoked from network); 21 Mar 2022 12:51:08 +0100
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 21 Mar 2022 12:51:08 +0100
+X-UD-Smtp-Session: l3s3148p1@NoWpHLnaCKcgAQnoAFxnAN8BywfgXJ9V
 From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
 To:     linux-mmc@vger.kernel.org
 Cc:     linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
         Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        ath10k@lists.infradead.org, bcm-kernel-feedback-list@broadcom.com,
-        brcm80211-dev-list.pdl@broadcom.com,
-        linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        linux-rpi-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        SHA-cyfmac-dev-list@infineon.com
-Subject: [RFC PATCH 00/10] mmc: improve API to make clear {h|s}w_reset is for cards
-Date:   Mon, 21 Mar 2022 12:50:46 +0100
-Message-Id: <20220321115059.21803-1-wsa+renesas@sang-engineering.com>
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [RFC PATCH 04/10] mwifiex: sdio: update to new MMC API for resetting cards
+Date:   Mon, 21 Mar 2022 12:50:50 +0100
+Message-Id: <20220321115059.21803-5-wsa+renesas@sang-engineering.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220321115059.21803-1-wsa+renesas@sang-engineering.com>
+References: <20220321115059.21803-1-wsa+renesas@sang-engineering.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As discussed in 2020 [1], Ulf and I agreed that it would be easier to
-understand the {h|s}w_reset mechanisms if it was clear that they are for
-cards. This RFC series implements that by adding 'card' to the function
-names and changing the parameter to mmc_card where apropriate. Note that
-I only changed the MMC core. The SDHCI driver still uses hw_reset in its
-ops, I leave it to the SDHCI maintainers if they want to change that.
-Also, I didn't convert CAP_HW_RESET to CAP_CARD_HW_RESET yet although it
-should be done IMHO. However, we need an agreement on that first.
-Finally, I also did not check if all the host drivers are really doing a
-card reset or a controller reset. I tried but it was often not obvious
-what is actually happening in these functions without proper manuals.
+No functional change, only the name and the argument type change to
+avoid confusion between resetting a card and a host controller.
 
-I tested it with my Renesas boards, so far no regressions. Buildbots are
-currently checking the series. For this RFC, I sent this as one series
-so people can get an overview and comment on that. For a proper release,
-I think patches 1-5 should be one series, and 7-10 probably. Patch 6
-could then be applied once patches 2-4 hit the net tree. That's my
-proposal.
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+---
 
-This series is based on mmc/next as of yesterday. A branch is here:
+RFC, please do not apply yet.
 
-git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git renesas/mmc/reset-api
+ drivers/net/wireless/marvell/mwifiex/sdio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Looking forward to comments. Happy hacking,
-
-   Wolfram
-
-[1] https://lore.kernel.org/all/20200916090121.2350-1-wsa+renesas@sang-engineering.com/
-
-Wolfram Sang (10):
-  mmc: core: improve API to make clear mmc_hw_reset is for cards
-  ath10k: sdio: update to new MMC API for resetting cards
-  brcmfmac: sdio: update to new MMC API for resetting cards
-  mwifiex: sdio: update to new MMC API for resetting cards
-  wlcore: sdio: update to new MMC API for resetting cards
-  mmc: core: remove fallback for mmc_hw_reset()
-  mmc: core: improve API to make clear that mmc_sw_reset is for cards
-  mmc: core: improve API to make clear hw_reset from bus_ops is for
-    cards
-  mmc: core: improve API to make clear sw_reset from bus_ops is for
-    cards
-  mmc: improve API to make clear hw_reset callback is for cards
-
- drivers/mmc/core/block.c                      |  2 +-
- drivers/mmc/core/core.c                       | 31 ++++++++++---------
- drivers/mmc/core/core.h                       |  4 +--
- drivers/mmc/core/mmc.c                        | 10 +++---
- drivers/mmc/core/mmc_test.c                   |  3 +-
- drivers/mmc/core/sd.c                         |  8 ++---
- drivers/mmc/core/sdio.c                       | 12 ++++---
- drivers/mmc/host/bcm2835.c                    |  2 +-
- drivers/mmc/host/dw_mmc.c                     |  2 +-
- drivers/mmc/host/meson-mx-sdhc-mmc.c          |  2 +-
- drivers/mmc/host/mtk-sd.c                     |  2 +-
- drivers/mmc/host/sdhci.c                      |  2 +-
- drivers/mmc/host/sunxi-mmc.c                  |  2 +-
- drivers/mmc/host/uniphier-sd.c                |  2 +-
- drivers/net/wireless/ath/ath10k/sdio.c        |  2 +-
- .../broadcom/brcm80211/brcmfmac/sdio.c        |  2 +-
- drivers/net/wireless/marvell/mwifiex/sdio.c   |  2 +-
- drivers/net/wireless/ti/wlcore/sdio.c         |  2 +-
- include/linux/mmc/core.h                      |  4 +--
- include/linux/mmc/host.h                      |  2 +-
- 20 files changed, 51 insertions(+), 47 deletions(-)
-
+diff --git a/drivers/net/wireless/marvell/mwifiex/sdio.c b/drivers/net/wireless/marvell/mwifiex/sdio.c
+index bde9e4bbfffe..8c3730c7d93e 100644
+--- a/drivers/net/wireless/marvell/mwifiex/sdio.c
++++ b/drivers/net/wireless/marvell/mwifiex/sdio.c
+@@ -2639,7 +2639,7 @@ static void mwifiex_sdio_card_reset_work(struct mwifiex_adapter *adapter)
+ 
+ 	/* Run a HW reset of the SDIO interface. */
+ 	sdio_claim_host(func);
+-	ret = mmc_hw_reset(func->card->host);
++	ret = mmc_card_hw_reset(func->card);
+ 	sdio_release_host(func);
+ 
+ 	switch (ret) {
 -- 
 2.30.2
 
