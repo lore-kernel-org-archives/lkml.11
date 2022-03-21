@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4BE0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:01:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3511C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:01:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348729AbiCUOCX (ORCPT
+        id S1348637AbiCUOC1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:02:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44934 "EHLO
+        Mon, 21 Mar 2022 10:02:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348664AbiCUN6J (ORCPT
+        with ESMTP id S1348873AbiCUN6g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:58:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D97461788FA;
-        Mon, 21 Mar 2022 06:56:04 -0700 (PDT)
+        Mon, 21 Mar 2022 09:58:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF791770B2;
+        Mon, 21 Mar 2022 06:56:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BFEC0611D5;
-        Mon, 21 Mar 2022 13:55:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7016C340E8;
-        Mon, 21 Mar 2022 13:55:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 47A87B816CC;
+        Mon, 21 Mar 2022 13:56:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3E46C340E8;
+        Mon, 21 Mar 2022 13:56:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647870946;
-        bh=VtHrv/zsTXGAwqk5EXwLsRYqtaKkf9P3FsT6vhWFhxw=;
+        s=korg; t=1647870975;
+        bh=qJT4S2NpLywZTACbQpnZJg65a0QaJjD7XoQ2qhPl1hQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bsVfQI9rlW++p8rpPLsjr5FCTBZMt0tqVvB4Sz9+3YdJVJCQwbtKXJquPk+1gfwz6
-         y0nUqKJT3FA4hnEr19RSyZwfLGCp49Huo3jEUxxT+ivLdsv+pZrmnVXrKN+fQVzoLr
-         k0vC97W0j0QM6A/lf5kVPLdkVX/X2wG2sIUgZZLc=
+        b=xQDs0Y5Au1AdiEXl57EunV1lX3NRFhn2xKOyZjT3cMltgY32HB4h8bcssvbUZb4/9
+         HmyFWEi7aV4sO2xMCuHM//XMMuiILPx0+ju/Iwm3C7A0gd1bdZJ8J+xFnwwTuSouxN
+         FK5Kw+75N0GPAJ58uiLFqLpOquDAuYazkABl8oMQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 4.19 26/57] arm64: entry.S: Add ventry overflow sanity checks
-Date:   Mon, 21 Mar 2022 14:52:07 +0100
-Message-Id: <20220321133222.749786677@linuxfoundation.org>
+        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 08/57] ARM: dts: rockchip: fix a typo on rk3288 crypto-controller
+Date:   Mon, 21 Mar 2022 14:51:49 +0100
+Message-Id: <20220321133222.229128337@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133221.984120927@linuxfoundation.org>
 References: <20220321133221.984120927@linuxfoundation.org>
@@ -50,46 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+From: Corentin Labbe <clabbe@baylibre.com>
 
-commit 4330e2c5c04c27bebf89d34e0bc14e6943413067 upstream.
+[ Upstream commit 3916c3619599a3970d3e6f98fb430b7c46266ada ]
 
-Subsequent patches add even more code to the ventry slots.
-Ensure kernels that overflow a ventry slot don't get built.
+crypto-controller had a typo, fix it.
+In the same time, rename it to just crypto
 
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Link: https://lore.kernel.org/r/20220209120355.1985707-1-clabbe@baylibre.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/entry.S |    3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm/boot/dts/rk3288.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -70,6 +70,7 @@
+diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
+index 2ff81f3736c8..e442bf7427ae 100644
+--- a/arch/arm/boot/dts/rk3288.dtsi
++++ b/arch/arm/boot/dts/rk3288.dtsi
+@@ -957,7 +957,7 @@
+ 		status = "disabled";
+ 	};
  
- 	.macro kernel_ventry, el, label, regsize = 64
- 	.align 7
-+.Lventry_start\@:
- #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
- alternative_if ARM64_UNMAP_KERNEL_AT_EL0
- 	.if	\el == 0
-@@ -127,6 +128,7 @@ alternative_else_nop_endif
- 	mrs	x0, tpidrro_el0
- #endif
- 	b	el\()\el\()_\label
-+.org .Lventry_start\@ + 128	// Did we overflow the ventry slot?
- 	.endm
- 
- 	.macro tramp_alias, dst, sym
-@@ -984,6 +986,7 @@ alternative_insn isb, nop, ARM64_WORKARO
- 	add	x30, x30, #(1b - tramp_vectors)
- 	isb
- 	ret
-+.org 1b + 128	// Did we overflow the ventry slot?
- 	.endm
- 
- 	.macro tramp_exit, regsize = 64
+-	crypto: cypto-controller@ff8a0000 {
++	crypto: crypto@ff8a0000 {
+ 		compatible = "rockchip,rk3288-crypto";
+ 		reg = <0x0 0xff8a0000 0x0 0x4000>;
+ 		interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>;
+-- 
+2.34.1
+
 
 
