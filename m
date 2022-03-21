@@ -2,279 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF838C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 08:57:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F024BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 08:57:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345543AbiCUI6j (ORCPT
+        id S1345546AbiCUI6o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 04:58:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49358 "EHLO
+        Mon, 21 Mar 2022 04:58:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345522AbiCUI5y (ORCPT
+        with ESMTP id S1345561AbiCUI6D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 04:57:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B5B57485;
-        Mon, 21 Mar 2022 01:56:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9392161166;
-        Mon, 21 Mar 2022 08:56:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF7FDC36AE2;
-        Mon, 21 Mar 2022 08:56:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647852989;
-        bh=5b71O0M4hOE8WRFTD/qF2V3yAPLXWyKIX8OtNTzalko=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ABCTfHx2+Kdv7Zb8U/CBtl2L25DF34cgdE731d3KkXmBpCZFJlRFQyvzSjfT1Nw2S
-         W0qk09Bs8SFZgIddMe/IEBzZJ1vxhsgyMH6+1ldRGTUfjvJHj+zssNyR4YHXpE2xwq
-         9s+9TYrYY1QxZZtd2vp4rjIH8EN0s4v6FXIr4LaiYRyPmqyiKmlflMZbN2TWeoi0gS
-         a2nQg3nfSrkGtrPXYOb92qQb0gj7Hi1ieGnPhUHGNPBS5cOqP8nCEXc8iMz+W2e6Zj
-         CVG2cCx+u25nPHYKs7k22/hQv5GpUhOXdqk0nMoHolON0/mwrS+iq9HCkJYeOg+Sbq
-         dCY9shF7BNAag==
-From:   Tzung-Bi Shih <tzungbi@kernel.org>
-To:     bleung@chromium.org, groeck@chromium.org, robh+dt@kernel.org
-Cc:     chrome-platform@lists.linux.dev, tzungbi@kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 5/5] platform/chrome: cros_kbd_led_backlight: support EC PWM backend
-Date:   Mon, 21 Mar 2022 16:55:47 +0800
-Message-Id: <20220321085547.1162312-6-tzungbi@kernel.org>
-X-Mailer: git-send-email 2.35.1.894.gb6a874cedc-goog
-In-Reply-To: <20220321085547.1162312-1-tzungbi@kernel.org>
-References: <20220321085547.1162312-1-tzungbi@kernel.org>
+        Mon, 21 Mar 2022 04:58:03 -0400
+Received: from FRA01-PR2-obe.outbound.protection.outlook.com (mail-eopbgr120050.outbound.protection.outlook.com [40.107.12.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D35357485
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 01:56:38 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MGAIWl3vyqFGbOGNZtiwm+StJA0aAtInG4zf2P9x9LRS8Xzl2IWzf64mMqQwLCCrDuHUJVAiQkLEfOCXSuJuC2L7X2+9jS04OKe6kDd3Sc0dXnEjp4msFSieeUQinf1IzhNfq4cQpeFr72he7ND0qGZqtLj6g+0GHSnOVWTXmFq3taB2r+eJeBKZCcM0xdN3FPfG4wqBIhpER3XO0OmrJ58jjfOILkyyy8X5sogDveECUFLcm6LOpo+9UGsc0zhkBw/RGOYE2rPVL+Aqp35j//ljSI+mMxw241Sqgg7AYHXpbNNdlPYElkJfAifZLEq+llm2nwi24m3bOpLfSjK6HA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KZ4lpHHilCQlKbhraD9hdWMcktIaZ4HHCVlgMr2y7fU=;
+ b=N+RA3BkXZsE/48I5D+zWd7SkpWLDRy9DeKL48VsIo3EbGbsBjYXGl1rfsklSuipnuG+A8WpeaA0woLeP5BoYclwUMEfDxkyjXNSBYaU9rIDhMoSYv+Qdd69uxMBiZcQEh1eV/TkiwKj1GaaASiAmw7l8IbrJJEJu+su8RilMB2zdQGgX/8p7STiLKAIhMmdpCD53OxBribomRrzvnqfGMUeGSBx7M9HapiPI6cL/7w9x36iWHFjEJxeEdbIwJD7//bcwXCepYBpWwCziNKcalJyaQYYZaw7713NZ4xHtRC+UDzU/UeEbFNmw87d50pJu7GIcVoNJz7gUs3+VvywrNQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=csgroup.eu; dmarc=pass action=none header.from=csgroup.eu;
+ dkim=pass header.d=csgroup.eu; arc=none
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
+ by MR1P264MB4369.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:42::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.14; Mon, 21 Mar
+ 2022 08:56:36 +0000
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::cd2f:d05d:9aa3:400d]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::cd2f:d05d:9aa3:400d%6]) with mapi id 15.20.5081.022; Mon, 21 Mar 2022
+ 08:56:36 +0000
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Finn Thain <fthain@linux-m68k.org>
+CC:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] macintosh/via-pmu: Fix compiler warnings when
+ CONFIG_PROC_FS is disabled
+Thread-Topic: [PATCH] macintosh/via-pmu: Fix compiler warnings when
+ CONFIG_PROC_FS is disabled
+Thread-Index: AQHYO2NbGWH8CI3mhU+PVN1BAmrQRKzJZuMAgAAfJACAAASugIAAAagA
+Date:   Mon, 21 Mar 2022 08:56:36 +0000
+Message-ID: <073c34e0-a016-cf70-1deb-be286da94bde@csgroup.eu>
+References: <650f5577599a701fdd632cdd469a9cea9788cdf3.1647674431.git.fthain@linux-m68k.org>
+ <bb6d3131-3c46-654f-d2a0-6d57bb8cbfbf@csgroup.eu>
+ <39f63c1b-5a1b-8c8e-5991-813d3d3c2576@linux-m68k.org>
+ <7b16264-dfef-414-8195-87c14a89fb40@linux-m68k.org>
+In-Reply-To: <7b16264-dfef-414-8195-87c14a89fb40@linux-m68k.org>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=csgroup.eu;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: dd8f136c-682b-4dae-1821-08da0b18b4a2
+x-ms-traffictypediagnostic: MR1P264MB4369:EE_
+x-microsoft-antispam-prvs: <MR1P264MB43693E364D739352F9BCA3D5ED169@MR1P264MB4369.FRAP264.PROD.OUTLOOK.COM>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: LieT2NUB6yL7ft44WvPzyEIMhmRZTtwapCr2gcdqyf0hGB+9ODXXq8Ig5zmfaWbr5tQpIC+J262syEyMvJ/7fGL0b/QrtZ497cFLHYzk007mIhKjmNQpF0mA3MkHPtS0cLBtfbELZZgKTHIt7NatpAYvTvHS7OWjjXq5zKIpqfuf/QckgEdGoi2sDzL2w/xfadtWYARVQTakf84CMl8pbvBbZoCQ+dss4EUtumRClwL0RyXvXd4jm5z7sGHgib4G+JGC0gaDOY9ddr/ZfI0GZSJPIl3JJS4at8jGpR3xSZZeYajMnBoWF7pFiiXyTERmQhm02WYYhdhbwA/SaYUNNfzRFSQgG5kpeH+vIS0vLS2I3HSSrGQ9t1Vd50yyFZ15+nB/Oaky8KLcseueh7JbybDMazr9BAptE9Z1ngEt+eMbd4jB7L5xSRz6jv8+HlhbOsujibs1lqu5ReqlZIkR/JBp6Ic19+ZAzCNG5oDEuDVclwYUnkgwHKFQIyFe/mAjEupIy0UWmOusWKSOtzGlubi4jzeeKy5BPaXcuRMWgnZR6RUheArzW5yb3JqKpnmOYlCW3NI6tpb1iAyT5yE83p4GzmYvLaBgHY3LmQsBKD5q/EFhoRNUdRZZ23jR248RrJ+Uru9Z9ALu5qI3yU75sNxzyKG8j/L2l2qB+J7HipnVBNKmcq+oqcFm/rkO7KlWIDtETdnK17oFt44mqFUBMERmw0KRb7omS2KbK/9pZ9b8LxtP4SUsAkMGbI+eX7MLexV6ziZP0Y+eZ5oNHV2+hA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(508600001)(64756008)(66446008)(91956017)(8676002)(4326008)(71200400001)(38070700005)(5660300002)(8936002)(44832011)(83380400001)(36756003)(2616005)(66556008)(66476007)(26005)(186003)(66946007)(76116006)(66574015)(31686004)(6506007)(31696002)(6512007)(86362001)(2906002)(122000001)(6916009)(316002)(54906003)(6486002)(38100700002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?VmFDWFdYL1prc2hva2N2VTFLYUVHcHdoRTJhL3FWMkVONDc0N1hiUXR5M0dW?=
+ =?utf-8?B?bko1YWR5K2N1RzR0aysxWUtrWVh1U2xZR2dzRktuSnhkK3hQZWNUWE52b1hs?=
+ =?utf-8?B?ZysyVUFXVDNNaGVJWDZUeVFxMEdQMWVPUGhCQXI1c1RZb21hVHdHRXhJbGxM?=
+ =?utf-8?B?dGlSYVFKSU1xbmsxUUh3Zml6T0R0RVl3Y1dqejdqRHdDWCtGbzFVcXZicEI1?=
+ =?utf-8?B?dG40WFBmYVlmR0pEKzFBOXZOOFN6KzlQQ3NkQUZkd3VpY2RHd21SUmdKNjFB?=
+ =?utf-8?B?NzFqZk1Sd0xzc2h2NjBxWGhndW5tcEVpVDgzU0xZbm15TUVvdExiaFJLSWhi?=
+ =?utf-8?B?dHNZRkdETFVUVDlDZXRVTndMTEZLczlFMXZiOC9OV2hEeHhnU3BpQVh2ZUlr?=
+ =?utf-8?B?cjE0K0xMRzRWNlp3WmVFT29XOVVES0x6NDlqcFVBMFZteUdHdlZ0Vk80ZjB6?=
+ =?utf-8?B?cmpYdEFKdVY4UW1PZFVSMmplOEY3d3VORDdjeExFeFA1UytZTXA0VHk2MFNC?=
+ =?utf-8?B?ZUh3bHB6TFlxbm5rdk12ZXdPT3VJcUVyQmtRRjh3dWxMWkhtOGpQUTRtK05r?=
+ =?utf-8?B?Qkt1RHRqc2hTY21EQWRhTlFSWFN3ckdRSnlWMUVPU2Z5TnRsU21NNGxnTSt2?=
+ =?utf-8?B?d045Zm5KMkxVczNieXhvVUxDcEIxN1BMSjZSb2xVb3BRVnQxL1FRZGd1MUtJ?=
+ =?utf-8?B?U1JkMkhHdlNOOU5QYnB0anB4akhxQWtKNlVxdUpFMlpmc3ZyTGlSRkJ5Y2sy?=
+ =?utf-8?B?YnhUenRseGJyVFJVUXVlZjZueEZlalZGVU1oMnBMYUdXNzZIekhuMGoyMi9H?=
+ =?utf-8?B?d0dxSitOeG0xTXJ1ZmhzOVZpc3ZTVWtKK3RxSWNnN1F0M3BsMmlueDNvbk11?=
+ =?utf-8?B?eG5MNWR0Smw2V1EwU2xHNGhEa3praWVaWU03RzlsN0JBWi9mNjVaYzRWMXlY?=
+ =?utf-8?B?cjZnRjQzNkNUU3B3VHptTkhPUk9rMlFyeGhabEZJRS9nTUMzY1B1Y1BKeFUw?=
+ =?utf-8?B?VThEUVoxZjZBYTJ5MUtFQ215Q2F5RnpkbjhiN3NRYVllQ2hYdzZKdEFNQjQr?=
+ =?utf-8?B?VWlWa3JKc2F3dHE3WXVaaW85bEdsWklFMnhHUkpidmdIcGJXTVhvRHB2YkVx?=
+ =?utf-8?B?ejZTZnNJeVBtNU1xdUpkTXlLUkxicko0UCs2aEJka0FjZmNDVkNMamVzMFM2?=
+ =?utf-8?B?eFBzN3JNUFk1Y3NWckk4QnIrVnNKY1BqZ0FRYXVEZC9BNHR6YXdUMFNSYm1Z?=
+ =?utf-8?B?ZkZZSUhvMENDYStxVjRuWHUzYzVpM01ZSGpOd3A1cjlSR3BvK0xCR1NQZHZI?=
+ =?utf-8?B?eE9FbGRiRlBsWVEvZk1jcjVPbnovZmhIaHlSeUhtTmQ3Y09HSkZ4Zzd3S1dp?=
+ =?utf-8?B?dityY2JGSGlvQ2tJYk1iUG1IRnVGcnhMaUNZQWFTK0N1aEdtaUVsbW9NcnJF?=
+ =?utf-8?B?akRPTXhtcldrUVBDU05RTGtPS0w3eTE2Q05XQVNtcGxoUUE2eW5IYlpQYlcy?=
+ =?utf-8?B?Tmc0VUYxMVpZcERBU2RtUUNYZk5SUGVnb0EyZjl0NklNY1JXcGpySlVkblZx?=
+ =?utf-8?B?b0JocGp6TXlXU1lWR0pQSUxOK0tBVjQ2dEZzWCsxNFNFZ3lTL2xGVVRSeC9M?=
+ =?utf-8?B?QUZHdUM1U2E0RXIzbWY4aUdrV2RqZUdrWVgrbi9rUXN1c2Q5NHJSUFA1NTNT?=
+ =?utf-8?B?ZXFseUF0L2pFeERldFAxUnZ4R2QvZEk4ck5ld0xBTHVRSC9TMmNsNTI2SnZ6?=
+ =?utf-8?B?TmFMN0N5V2ZRVjhCaGFJSUttVlloVnRaL3h1SkovQ01kU2ttTGdWWkhRQkc1?=
+ =?utf-8?B?RWRSN0pWSW54cFJXK0t6bVpHSnMxbGpOdHRtT2Rqa0RPQlg2ZkhLTWViR0kx?=
+ =?utf-8?B?eHBrejNndFI4Z0UzNlFlN2E4MGtOaWhsUFBNbVlaSEcvTnRjVEQ3N1FtR0Q5?=
+ =?utf-8?B?UFhwbTEvTFF5UGswMkRYZkoxdVdXcUQzbm5pYURWTVBRbnJlVjBxSmxLMWpQ?=
+ =?utf-8?Q?vUwLX/V4pOa9cWpQ2PmK+pImYuGNfE=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <5477E6C06B07884FA6C30E54C4E8B704@FRAP264.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: csgroup.eu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: dd8f136c-682b-4dae-1821-08da0b18b4a2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Mar 2022 08:56:36.3520
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: IdFI8Ww+qLrOElPbJmENwrNyQ/t8Q9OkSKk25ev4KzQz9aXzXgbGQsVBOCnft/sOM+GmF29rDpIxJoiL7i8ELGHMZ8kSWMsabxAsROpOuSE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MR1P264MB4369
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-EC PWM backend uses EC_CMD_PWM_SET_KEYBOARD_BACKLIGHT and
-EC_CMD_PWM_GET_KEYBOARD_BACKLIGHT for setting and getting the brightness
-respectively.
-
-Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
----
-Changes from v2:
-- Turn CROS_KBD_LED_BACKLIGHT_EC_PWM to boolean.
-- Use #ifdef for boolean CROS_KBD_LED_BACKLIGHT_EC_PWM.
-
-Changes from v1:
-- Update email address accordingly.
-
- drivers/platform/chrome/Kconfig               |   6 +
- .../platform/chrome/cros_kbd_led_backlight.c  | 126 +++++++++++++++---
- 2 files changed, 117 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/platform/chrome/Kconfig b/drivers/platform/chrome/Kconfig
-index 3f74679a556c..e02789d7c0d4 100644
---- a/drivers/platform/chrome/Kconfig
-+++ b/drivers/platform/chrome/Kconfig
-@@ -142,6 +142,12 @@ config CROS_KBD_LED_BACKLIGHT_ACPI
- 	help
- 	  ChromeOS keyboard backlight ACPI backend.
- 
-+config CROS_KBD_LED_BACKLIGHT_EC_PWM
-+	bool "ChromeOS keyboard backlight EC PWM backend"
-+	depends on CROS_EC && CROS_KBD_LED_BACKLIGHT
-+	help
-+	  ChromeOS keyboard backlight EC PWM backend.
-+
- config CROS_EC_CHARDEV
- 	tristate "ChromeOS EC miscdevice"
- 	depends on MFD_CROS_EC_DEV
-diff --git a/drivers/platform/chrome/cros_kbd_led_backlight.c b/drivers/platform/chrome/cros_kbd_led_backlight.c
-index 5cbe27cb4610..8c35dd2fa607 100644
---- a/drivers/platform/chrome/cros_kbd_led_backlight.c
-+++ b/drivers/platform/chrome/cros_kbd_led_backlight.c
-@@ -11,10 +11,17 @@
- #include <linux/leds.h>
- #include <linux/module.h>
- #include <linux/of.h>
-+#include <linux/platform_data/cros_ec_commands.h>
-+#include <linux/platform_data/cros_ec_proto.h>
- #include <linux/platform_device.h>
- #include <linux/property.h>
- #include <linux/slab.h>
- 
-+struct keyboard_led_private {
-+	struct led_classdev cdev;
-+	struct cros_ec_device *ec;
-+};
-+
- /**
-  * struct keyboard_led_drvdata - keyboard LED driver data.
-  * @init:			Init function.
-@@ -40,6 +47,8 @@ struct keyboard_led_drvdata {
- 	enum led_brightness max_brightness;
- };
- 
-+#define KEYBOARD_BACKLIGHT_MAX 100
-+
- #ifdef CONFIG_CROS_KBD_LED_BACKLIGHT_ACPI
- 
- /* Keyboard LED ACPI Device must be defined in firmware */
-@@ -47,8 +56,6 @@ struct keyboard_led_drvdata {
- #define ACPI_KEYBOARD_BACKLIGHT_READ	ACPI_KEYBOARD_BACKLIGHT_DEVICE ".KBQC"
- #define ACPI_KEYBOARD_BACKLIGHT_WRITE	ACPI_KEYBOARD_BACKLIGHT_DEVICE ".KBCM"
- 
--#define ACPI_KEYBOARD_BACKLIGHT_MAX		100
--
- static void keyboard_led_set_brightness_acpi(struct led_classdev *cdev,
- 					     enum led_brightness brightness)
- {
-@@ -107,7 +114,7 @@ static const struct keyboard_led_drvdata keyboard_led_drvdata_acpi = {
- 	.init = keyboard_led_init_acpi,
- 	.brightness_set = keyboard_led_set_brightness_acpi,
- 	.brightness_get = keyboard_led_get_brightness_acpi,
--	.max_brightness = ACPI_KEYBOARD_BACKLIGHT_MAX,
-+	.max_brightness = KEYBOARD_BACKLIGHT_MAX,
- };
- 
- #else /* CONFIG_CROS_KBD_LED_BACKLIGHT_ACPI */
-@@ -123,34 +130,122 @@ static const struct keyboard_led_drvdata keyboard_led_drvdata_acpi = {
- 
- #endif /* CONFIG_CROS_KBD_LED_BACKLIGHT_ACPI */
- 
-+#ifdef CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM
-+
-+static int
-+keyboard_led_set_brightness_blocking_ec_pwm(struct led_classdev *cdev,
-+					    enum led_brightness brightness)
-+{
-+	struct {
-+		struct cros_ec_command msg;
-+		struct ec_params_pwm_set_keyboard_backlight params;
-+	} __packed buf;
-+	struct ec_params_pwm_set_keyboard_backlight *params = &buf.params;
-+	struct cros_ec_command *msg = &buf.msg;
-+	struct keyboard_led_private *private =
-+		container_of(cdev, struct keyboard_led_private, cdev);
-+
-+	memset(&buf, 0, sizeof(buf));
-+
-+	msg->version = 0;
-+	msg->command = EC_CMD_PWM_SET_KEYBOARD_BACKLIGHT;
-+	msg->insize = 0;
-+	msg->outsize = sizeof(*params);
-+
-+	params->percent = brightness;
-+
-+	return cros_ec_cmd_xfer_status(private->ec, msg);
-+}
-+
-+static enum led_brightness
-+keyboard_led_get_brightness_ec_pwm(struct led_classdev *cdev)
-+{
-+	struct {
-+		struct cros_ec_command msg;
-+		struct ec_response_pwm_get_keyboard_backlight resp;
-+	} __packed buf;
-+	struct ec_response_pwm_get_keyboard_backlight *resp = &buf.resp;
-+	struct cros_ec_command *msg = &buf.msg;
-+	struct keyboard_led_private *private =
-+		container_of(cdev, struct keyboard_led_private, cdev);
-+	int ret;
-+
-+	memset(&buf, 0, sizeof(buf));
-+
-+	msg->version = 0;
-+	msg->command = EC_CMD_PWM_GET_KEYBOARD_BACKLIGHT;
-+	msg->insize = sizeof(*resp);
-+	msg->outsize = 0;
-+
-+	ret = cros_ec_cmd_xfer_status(private->ec, msg);
-+	if (ret < 0)
-+		return ret;
-+
-+	return resp->percent;
-+}
-+
-+static int keyboard_led_init_ec_pwm(struct platform_device *pdev)
-+{
-+	struct keyboard_led_private *private = platform_get_drvdata(pdev);
-+
-+	private->ec = dev_get_drvdata(pdev->dev.parent);
-+	if (!private->ec) {
-+		dev_err(&pdev->dev, "no parent EC device\n");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct keyboard_led_drvdata keyboard_led_drvdata_ec_pwm = {
-+	.init = keyboard_led_init_ec_pwm,
-+	.brightness_set_blocking = keyboard_led_set_brightness_blocking_ec_pwm,
-+	.brightness_get = keyboard_led_get_brightness_ec_pwm,
-+	.max_brightness = KEYBOARD_BACKLIGHT_MAX,
-+};
-+
-+#else /* CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM */
-+
-+static int keyboard_led_init_ec_pwm_null(struct platform_device *pdev)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static const struct keyboard_led_drvdata keyboard_led_drvdata_ec_pwm = {
-+	.init = keyboard_led_init_ec_pwm_null,
-+};
-+
-+#endif /* CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM */
-+
- static int keyboard_led_probe(struct platform_device *pdev)
- {
--	struct led_classdev *cdev;
- 	const struct keyboard_led_drvdata *drvdata;
-+	struct keyboard_led_private *private;
- 	int error;
- 
- 	drvdata = device_get_match_data(&pdev->dev);
- 	if (!drvdata)
- 		return -EINVAL;
- 
-+	private = devm_kzalloc(&pdev->dev, sizeof(*private), GFP_KERNEL);
-+	if (!private)
-+		return -ENOMEM;
-+	platform_set_drvdata(pdev, private);
-+
- 	if (drvdata->init) {
- 		error = drvdata->init(pdev);
- 		if (error)
- 			return error;
- 	}
- 
--	cdev = devm_kzalloc(&pdev->dev, sizeof(*cdev), GFP_KERNEL);
--	if (!cdev)
--		return -ENOMEM;
--
--	cdev->name = "chromeos::kbd_backlight";
--	cdev->flags |= LED_CORE_SUSPENDRESUME;
--	cdev->max_brightness = drvdata->max_brightness;
--	cdev->brightness_set = drvdata->brightness_set;
--	cdev->brightness_set_blocking = drvdata->brightness_set_blocking;
--	cdev->brightness_get = drvdata->brightness_get;
-+	private->cdev.name = "chromeos::kbd_backlight";
-+	private->cdev.flags |= LED_CORE_SUSPENDRESUME;
-+	private->cdev.max_brightness = drvdata->max_brightness;
-+	private->cdev.brightness_set = drvdata->brightness_set;
-+	private->cdev.brightness_set_blocking = drvdata->brightness_set_blocking;
-+	private->cdev.brightness_get = drvdata->brightness_get;
- 
--	error = devm_led_classdev_register(&pdev->dev, cdev);
-+	error = devm_led_classdev_register(&pdev->dev, &private->cdev);
- 	if (error)
- 		return error;
- 
-@@ -169,6 +264,7 @@ MODULE_DEVICE_TABLE(acpi, keyboard_led_acpi_match);
- static const struct of_device_id keyboard_led_of_match[] = {
- 	{
- 		.compatible = "google,cros-kbd-led-backlight",
-+		.data = &keyboard_led_drvdata_ec_pwm,
- 	},
- 	{}
- };
--- 
-2.35.1.894.gb6a874cedc-goog
-
+DQoNCkxlIDIxLzAzLzIwMjIgw6AgMDk6NTAsIEZpbm4gVGhhaW4gYSDDqWNyaXTCoDoNCj4gSGkg
+Q2hyaXN0b3BoZSwNCj4gDQo+IE9uIE1vbiwgMjEgTWFyIDIwMjIsIEZpbm4gVGhhaW4gd3JvdGU6
+DQo+IA0KPj4gT24gTW9uLCAyMSBNYXIgMjAyMiwgQ2hyaXN0b3BoZSBMZXJveSB3cm90ZToNCj4+
+DQo+Pj4gTGUgMTkvMDMvMjAyMiDDoCAwODoyMCwgRmlubiBUaGFpbiBhIMOpY3JpdMKgOg0KPj4+
+PiBkcml2ZXJzL21hY2ludG9zaC92aWEtcG11LmM6ODk3OjEyOiB3YXJuaW5nOiAncG11X2JhdHRl
+cnlfcHJvY19zaG93JyBkZWZpbmVkIGJ1dCBub3QgdXNlZCBbLVd1bnVzZWQtZnVuY3Rpb25dDQo+
+Pj4+ICAgIHN0YXRpYyBpbnQgcG11X2JhdHRlcnlfcHJvY19zaG93KHN0cnVjdCBzZXFfZmlsZSAq
+bSwgdm9pZCAqdikNCj4+Pj4gICAgICAgICAgICAgICBefn5+fn5+fn5+fn5+fn5+fn5+fn4NCj4+
+Pj4gZHJpdmVycy9tYWNpbnRvc2gvdmlhLXBtdS5jOjg3MToxMjogd2FybmluZzogJ3BtdV9pcnFz
+dGF0c19wcm9jX3Nob3cnIGRlZmluZWQgYnV0IG5vdCB1c2VkIFstV3VudXNlZC1mdW5jdGlvbl0N
+Cj4+Pj4gICAgc3RhdGljIGludCBwbXVfaXJxc3RhdHNfcHJvY19zaG93KHN0cnVjdCBzZXFfZmls
+ZSAqbSwgdm9pZCAqdikNCj4+Pj4gICAgICAgICAgICAgICBefn5+fn5+fn5+fn5+fn5+fn5+fn5+
+DQo+Pj4+IGRyaXZlcnMvbWFjaW50b3NoL3ZpYS1wbXUuYzo4NjA6MTI6IHdhcm5pbmc6ICdwbXVf
+aW5mb19wcm9jX3Nob3cnIGRlZmluZWQgYnV0IG5vdCB1c2VkIFstV3VudXNlZC1mdW5jdGlvbl0N
+Cj4+Pj4gICAgc3RhdGljIGludCBwbXVfaW5mb19wcm9jX3Nob3coc3RydWN0IHNlcV9maWxlICpt
+LCB2b2lkICp2KQ0KPj4+PiAgICAgICAgICAgICAgIF5+fn5+fn5+fn5+fn5+fn5+fg0KPj4+Pg0K
+Pj4+PiBSZWFycmFuZ2Ugc29tZSBjb2RlIGFuZCBhZGQgc29tZSAjaWZkZWZzIHRvIGF2b2lkIHVu
+dXNlZCBjb2RlIHdhcm5pbmdzDQo+Pj4+IHdoZW4gQ09ORklHX1BST0NfRlMgaXMgZGlzYWJsZWQu
+DQo+Pj4NCj4+PiBXaHkgbm90IGp1c3QgcHV0IHRob3NlIHRocmVlIGZ1bmN0aW9ucyBpbnNpZGUg
+YW4gI2lmZGVmIENPTkZJR19QUk9DX0ZTID8NCj4+Pg0KPj4NCj4+IFlvdSdkIGdldCBhIHdhcm5p
+bmcgYWJvdXQgdGhlIHByb3RvdHlwZXMgKCJkZWNsYXJlZCBzdGF0aWMgYnV0IG5ldmVyDQo+PiBk
+ZWZpbmVkIikuIFJhdGhlciB0aGFuIGFkZCBhbiBpZmRlZiBhcm91bmQgdGhlIHByb3RvdHlwZXMg
+YXMgd2VsbCwgSQ0KPj4ganVzdCByZW9yZGVyZWQgdGhpbmdzIGEgbGl0dGxlLg0KPiANCj4gT29w
+cywgSSB3YXMgZm9yZ2V0dGluZyB0aGF0IEkgYWxzbyBhZGRlZCBhbiBpZmRlZiBhcm91bmQgdGhl
+IG5ldw0KPiBwcm90b3R5cGUuDQo+IA0KPiBUaGUgc2ltcGxlc3Qgc29sdXRpb24gaXMgcHJvYmFi
+bHkgdGhlIHBhdGNoIGJlbG93LCBhcyBpdCBiZXR0ZXIgZXhwbG9pdHMNCj4gdGhlIHN0dWJiZWQt
+b3V0IHByb2NfKiBBUEkgaW4gaW5jbHVkZS9saW51eC9wcm9jX2ZzLmguDQo+IA0KPiBXYXMgdGhp
+cyB3aGF0IHlvdSBoYWQgaW4gbWluZD8NCg0KWWVzIHRoYXQncyBleGFjdGx5IHdoYXQgSSBoYWQg
+aW4gbWluZC4NCg0KVGhhbmtzDQpDaHJpc3RvcGhl
