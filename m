@@ -2,94 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C565C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 10:49:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5024C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 10:50:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346492AbiCUKvT (ORCPT
+        id S1346499AbiCUKvk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 06:51:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33930 "EHLO
+        Mon, 21 Mar 2022 06:51:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346498AbiCUKvO (ORCPT
+        with ESMTP id S1346489AbiCUKvb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 06:51:14 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA69E33E05;
-        Mon, 21 Mar 2022 03:49:45 -0700 (PDT)
-Received: from mail-lj1-f174.google.com ([209.85.208.174]) by
- mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1N63i4-1o7j4y0AO0-016OGt; Mon, 21 Mar 2022 11:49:44 +0100
-Received: by mail-lj1-f174.google.com with SMTP id 17so4269401ljw.8;
-        Mon, 21 Mar 2022 03:49:43 -0700 (PDT)
-X-Gm-Message-State: AOAM533fEfKyRDrZl6t5ZGj0/hTxVU3+Q71+iJK8Mpc4XkNfkp1gAo6H
-        p2hKIlCXOlWKUyooNf879P11KDvamRqofD2bEgk=
-X-Google-Smtp-Source: ABdhPJzcZ0Yxl2PaNSM+qTLSuTVghKJG3OLAZNn+JUNcoqLnve1kS8gk8xn9EpeRekkC77XHfghVaNA2oBBlHj9vNLU=
-X-Received: by 2002:a05:6000:178c:b0:204:648:b4c4 with SMTP id
- e12-20020a056000178c00b002040648b4c4mr6283444wrg.219.1647856201405; Mon, 21
- Mar 2022 02:50:01 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220319142759.1026237-1-chenhuacai@loongson.cn>
- <20220319143817.1026708-1-chenhuacai@loongson.cn> <20220319143817.1026708-3-chenhuacai@loongson.cn>
- <CAK8P3a2gKGuMTLawFSf1hd3LY7rCVUquTPVHMcxBTok6+y-Rag@mail.gmail.com> <CAAhV-H6eDSU20gjLgEKM318i1ksk23thv9cLJKmAo_cBzjtEkw@mail.gmail.com>
-In-Reply-To: <CAAhV-H6eDSU20gjLgEKM318i1ksk23thv9cLJKmAo_cBzjtEkw@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 21 Mar 2022 10:49:45 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a0PXeEAvZeq0djqCFqPSkFe5z-bg81kcs69ZTcBSL=24Q@mail.gmail.com>
-Message-ID: <CAK8P3a0PXeEAvZeq0djqCFqPSkFe5z-bg81kcs69ZTcBSL=24Q@mail.gmail.com>
-Subject: Re: [PATCH V8 10/22] LoongArch: Add exception/interrupt handling
-To:     Huacai Chen <chenhuacai@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Mon, 21 Mar 2022 06:51:31 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D20A33CA7F;
+        Mon, 21 Mar 2022 03:50:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647859806; x=1679395806;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=fliE/T1LCX93MwQ1Bnv434Gg30/vCZwgY+6LB+3NqUM=;
+  b=TsGu0BRYZeiyiB8/6sY5MZXTLJ6ymjmqsG4vb53QTU+89QzWSAF6axs5
+   64Z20+sFkAFPmbx5PxzUk2AX4dVjjOF5G/YWFFOeCzSfnCO0MjIXMD/X0
+   hZSRhzBKbTOG2kfJ56+CU9NKpT9ZnVljX+LrZz8WYPh9txyURypo3VgXU
+   fcyX/qwgaSymw5VC6n2cLz+zkwXhBkTopI1qSi9JdmMQLmX2/Ig6TFCJn
+   M1WRvR9Q12BJWzcpY+NXwtJS21yldmweA/3pKzuX7wj9ZhJXLjcyk1YQO
+   VwZRzc2cW+5EUnmKYspXm2O39RNJAg1L8JnPkKvT2WXu0I1xXb3UPaEJ2
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10292"; a="257240841"
+X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
+   d="scan'208";a="257240841"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 03:50:06 -0700
+X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
+   d="scan'208";a="500128970"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 03:50:00 -0700
+Received: by lahna (sSMTP sendmail emulation); Mon, 21 Mar 2022 12:48:48 +0200
+Date:   Mon, 21 Mar 2022 12:48:48 +0200
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Rajat Jain <rajatja@google.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, linux-pci@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:YoaeS4jNV/JubHRnF4GIrDNIMQNQmUO1gQu8S3NIm8f/RE/rKV6
- Dj4TegO2P6SEPv6EMhaH+ipnUUQGfji0yPu/I7NGFMqGnrRfPztjMoPZpE9ICiadMbEHlur
- /g0U2q7gJhR+Pr3+Lo9Svw+6VKExaLPmKG3AJYlyxnXi9Bo7YSogW3CpqEtptzO2ovBm2bm
- L+3OZIs0KtSfxHojkkBNQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Ml/XYeb+7Tc=:Yf1FWxdgbKn0Ji8IgXKODS
- pKYHfR9ttwBrINb1uxK5fiD2QaTJlo3WBl96fUdM1zD7pvc84ylCS/8lxdCSlA4fAETjxATwc
- 8pujZ9+trxJMmJsh7hBE8SshtzczxZrx+WGseKLqf48BjRkUNZHYZMrziv6uvNWnsTuhjAXbZ
- WXQnReI9jVrfmyX6T224qlp3k8sKZo17fupBCvVgT8SGE9NsOQZCcGUrA6Y0M3OU5AxBvfZJ8
- GJ18HAXZ3/rCXT0YtgSkLGnX1b5Jf/VIK+lUKNlNmf/RILSSDIOoMlUplaXsKYwc0+rkBxSYL
- t4pyaF1+W/KcOSL3OKv1HI2Z8DTwvXZMNBSevGiThWwXHISCGoTdMY8RWCwb+HV/jGCITVJ4C
- 6UBbtBdWi1sM21s5yCafx3QCGBUb46kyR4Nh7jI0wpvXs2QBgocQE+jO1ENtqBYOFvibz6xzF
- LdEdt6ZNG+I2fWM4pyNMAYFs4neDRneG+XxUw6M1Aj3oEQI7lBY9baA4SkNX3DrnCOzMb1I+w
- ySAjVYdYg/7hCOjQ/L68gh21NAhB52+Ky99ZgsRSWVTZlnQdPeulCAkizwOT8a/9v84535AsZ
- q21obqH30JD1vV6WtvuRNyn+Yhb++ON9jFELtxiJLvhNlu/0oAaBhCYNcaS6ElldjMHQtbDeS
- 1psRTY5VUYYQZzpNuL42SuIosIriV71s3e1h+LH52XQl6EVwxQ8YvOV6xatXmjhDGTvreIr1O
- UGWuqxFSR0kipQebTTFk7tQVuHAczVS/W1nYNN89+YUuWHWRYH/Tk8/IFCDI2dbTYF3LbtBH7
- K+lN/4iMG6kX+7mBARcv85Ru221KSOLddg/7tJCQj2K2FV8DDk=
+        Rajat Jain <rajatxjain@gmail.com>,
+        Dmitry Torokhov <dtor@google.com>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Pavel Machek <pavel@denx.de>,
+        Oliver O'Halloran <oohall@gmail.com>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        iommu@lists.linux-foundation.org
+Subject: Re: [PATCH v4 2/2] PCI: ACPI: Support Microsoft's "DmaProperty"
+Message-ID: <YjhYEN/ajM71wMn0@lahna>
+References: <20220320062907.3272903-1-rajatja@google.com>
+ <20220320062907.3272903-2-rajatja@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220320062907.3272903-2-rajatja@google.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 9:46 AM Huacai Chen <chenhuacai@kernel.org> wrote:
-> On Mon, Mar 21, 2022 at 4:38 PM Arnd Bergmann <arnd@arndb.de> wrote:
-> > On Sat, Mar 19, 2022 at 3:38 PM Huacai Chen <chenhuacai@kernel.org> wrote:
-> >
-> > > +unsigned long eentry;
-> > > +EXPORT_SYMBOL_GPL(eentry);
-> > > +unsigned long tlbrentry;
-> > > +EXPORT_SYMBOL_GPL(tlbrentry);
-> >
-> > Why are these exported to modules? Maybe add a comment here, or remove
-> > the export if it's not actually needed.
->
-> They are used by the kvm module in our internal repo.
+On Sat, Mar 19, 2022 at 11:29:06PM -0700, Rajat Jain wrote:
+> The "DmaProperty" is supported and documented by Microsoft here:
+> https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports
+> They use this property for DMA protection:
+> https://docs.microsoft.com/en-us/windows/security/information-protection/kernel-dma-protection-for-thunderbolt
+> 
+> Support the "DmaProperty" with the same semantics. This is useful for
+> internal PCI devices that do not hang off a PCIe rootport, but offer
+> an attack surface for DMA attacks (e.g. internal network devices).
+> 
+> Signed-off-by: Rajat Jain <rajatja@google.com>
 
-Ok, that is fine then. For the moment, please add a comment about it here,
-or remove the exports in the initial merge and add them back when you
-submit the kvm code.
-
-       Arnd
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
