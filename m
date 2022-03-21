@@ -2,69 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3254C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:52:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65170C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:52:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230432AbiCUWxb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:53:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45588 "EHLO
+        id S230516AbiCUWxe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:53:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230335AbiCUWxQ (ORCPT
+        with ESMTP id S230393AbiCUWxR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:53:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 765CA3CCCCB;
-        Mon, 21 Mar 2022 15:32:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12FD4B81A7C;
-        Mon, 21 Mar 2022 21:53:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B8856C36AE3;
-        Mon, 21 Mar 2022 21:53:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647899630;
-        bh=mJpMKx/LEhyI2AArneD5Jiu/AsgrskpH6ERyGHkAU0U=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=RzhQIwGRGKX+OHIGebdFrab7fYja8mfMmn/bajtfTzXlsxgF/CdMw0d29wVnFNCWg
-         S+dHv/brHpPc0+CpsIFnqvDi53IYjyAIp//mYedfX8VkHfwC0CMXLMUINuVR6fxVrT
-         ouAq46s87LRzNjOjEQzeKagzppqbRPsf2Mx9hr78t/4caQVGW0Gf5jrzLoXvKaky1g
-         GnHOLaEThSjznCLQbnQxjtnn9tb+2bHhzBPUB0s5d0CqnncaeqIHxMUe+KCtlf0F/0
-         QHVg7rvw+jWAQtkvxhJBYsVIZDUZxlkI8qVPzvToyTTKSUjyoFv86vH/p6Eeq+/lbx
-         RymdTdXzx6P2g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A5A5DEAC096;
-        Mon, 21 Mar 2022 21:53:50 +0000 (UTC)
-Subject: Re: [GIT PULL] LKMM changes for v5.18
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220314033141.GA2594098@paulmck-ThinkPad-P17-Gen-1>
-References: <20220314033141.GA2594098@paulmck-ThinkPad-P17-Gen-1>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220314033141.GA2594098@paulmck-ThinkPad-P17-Gen-1>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git tags/lkmm.2022.03.13a
-X-PR-Tracked-Commit-Id: e2b665f612ca2ddc61c3d54817a3a780aee6b251
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: d2eb5500f1d916c9b0815cdc63c48a6d615532cc
-Message-Id: <164789963067.9856.11123238377689030524.pr-tracker-bot@kernel.org>
-Date:   Mon, 21 Mar 2022 21:53:50 +0000
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     torvalds@linux-foundation.org, mingo@kernel.org,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        kernel-team@fb.com, stern@rowland.harvard.edu
+        Mon, 21 Mar 2022 18:53:17 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8120883B0E
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:32:34 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1647898632;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UX/7v0u3KE8MJrBCQwgWLG7WTu14xXAYSO+Yxy+PVNM=;
+        b=2vZy37bcZvuZno8ZxMqP9y7WHaxto1i2NppHCVOFkB14YTnPd0DTHVlwbTUjNAInX588Jc
+        soX1jHs+THzZOyL4OusdWJoyDNlsymJf8BDgi8NbAL8KIOmiVc37x4ZNFN9cvrBuxzWiFI
+        cnZLlbiMSRFgsENYkLEFq7mROFOTyb78d/GswM3JSc4qBa1h/gH56GndkMnYvMDRAw17fO
+        m+qRbotXI9fGWMvAH1i2huAh9ALdzvjS6QwrD8Lx4j1FHNBC1pZJi2ny2HRtL6ZMzPDT+G
+        36u5vK1ZVNM9dHeeNeDE/4NtMLGYZH+eloR7SlTGb+gXbb+E3VmKaop+vcrkww==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1647898632;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UX/7v0u3KE8MJrBCQwgWLG7WTu14xXAYSO+Yxy+PVNM=;
+        b=i9d0cJwIHMIusT0plTcxsKiijSaTt8k+k85oKM18jOwm6mnkI9rDXnhQ2L9Jkm4Wtm6ous
+        mo7NQvKcjut9MiDg==
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        the arch/x86 maintainers <x86@kernel.org>
+Subject: Re: [GIT pull] x86/irq for v5.18-rc1
+In-Reply-To: <CAHk-=wg_Kyh4zVmBSc4H79jH+yv9wN7dMsf-5x=EDrORbL3fuQ@mail.gmail.com>
+References: <164786042536.122591.4459156564791679956.tglx@xen13>
+ <164786043041.122591.4693682080153649212.tglx@xen13>
+ <CAHk-=wg_Kyh4zVmBSc4H79jH+yv9wN7dMsf-5x=EDrORbL3fuQ@mail.gmail.com>
+Date:   Mon, 21 Mar 2022 22:37:12 +0100
+Message-ID: <87lex3asxj.ffs@tglx>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sun, 13 Mar 2022 20:31:41 -0700:
+On Mon, Mar 21 2022 at 12:17, Linus Torvalds wrote:
+> On Mon, Mar 21, 2022 at 4:02 AM Thomas Gleixner <tglx@linutronix.de> wrote:
+> I pulled this and then I unpulled it.
+>
+> Because that stupid IRT routing table code already been reported to cause bugs:
+>
+>     https://lore.kernel.org/all/a2791312-2957-27e6-43af-c805bbb90266@collabora.com/
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git tags/lkmm.2022.03.13a
+I've missed that. My bad...
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/d2eb5500f1d916c9b0815cdc63c48a6d615532cc
+Thanks,
 
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+        tglx
