@@ -2,94 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2544AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:00:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:02:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345596AbiCUJCA (ORCPT
+        id S1345576AbiCUJD0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 05:02:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33498 "EHLO
+        Mon, 21 Mar 2022 05:03:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345571AbiCUJBz (ORCPT
+        with ESMTP id S1345657AbiCUJDM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 05:01:55 -0400
-Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B1058C7CA;
-        Mon, 21 Mar 2022 02:00:28 -0700 (PDT)
-Received: by mail-qt1-f172.google.com with SMTP id v14so11398604qta.2;
-        Mon, 21 Mar 2022 02:00:28 -0700 (PDT)
+        Mon, 21 Mar 2022 05:03:12 -0400
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 506E088799;
+        Mon, 21 Mar 2022 02:01:47 -0700 (PDT)
+Received: by mail-ej1-f43.google.com with SMTP id o10so9655025ejd.1;
+        Mon, 21 Mar 2022 02:01:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xIZ3EUUKNdtUQ47jI5vIUZBFjHsbOyEGol2LvB0SN0o=;
-        b=Qxv/MUakbXwXTRVO/SQZjifkWTraB0Rm845cccjc923wfyieY+oThu4I80gLXMhCoJ
-         Bq4xBRcm/MIr8BEzMK8MLxpJeFpBhxhTIDHIdSUauT/Slnr5rbAHrB1c7qTmEctPab8+
-         UD9RuBi9bbKeTSj0ZbYbughNdeiA5qaa6nKjpR/ieguZOWRFuVeEyalWpwWfKgslX3Zw
-         u+E5M4/4z0GhVldXkNx9brEO7tx+9dH8r9mnMs6HaKGnITpbTsC6tw4mNiW+s71a4IAQ
-         6+2gaU1JfzKutYNtT5ZUsXXDMgt1x1lqXGNhQiTpQ4W048YE/lWaX85C0WvwdA44TQ7u
-         M1FQ==
-X-Gm-Message-State: AOAM533bT6UM+3YeKf029hmGcH2kI/Ao+yMSS34YcPhWptpMxhFNXw7F
-        X5rOa8IIQcPWf83XAkTZtCGTzMW9MBWAtQ==
-X-Google-Smtp-Source: ABdhPJxbdHbBA3Bahrof3NselpCQ3MCeJHm0U7LjM7L4UufcxNIF2+MXvsTPmVtLCxiKPM3GrG3G/Q==
-X-Received: by 2002:a05:622a:1822:b0:2e1:b2d4:d877 with SMTP id t34-20020a05622a182200b002e1b2d4d877mr15423381qtc.630.1647853227458;
-        Mon, 21 Mar 2022 02:00:27 -0700 (PDT)
-Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com. [209.85.219.171])
-        by smtp.gmail.com with ESMTPSA id bm21-20020a05620a199500b0067d5e6c7bd8sm7374128qkb.56.2022.03.21.02.00.26
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:content-language:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=E8Qau+0wzq+mozrZXVdR8i7saP5ro63onX2XCKgGjPo=;
+        b=n7Rdh5KO4xeTQqS8Gj1dPqbv3rXvEDAjk44t8iGhGd4uBOIC2V2iQYqpuez23BHzh+
+         BVuajzaAy2WnshqVynMyOs/0mUogP2TCFmYVgpKcCfaYjstaUsQugqlSgPj9xAIoIeSt
+         gE9lkxAHTi/HF3QgzgUSxb9BN7kEknPkt23cEHN5xdYe8oAHf29+sRdxFOvVboYo6pCm
+         pOTVzUPTP1yStMdD3vgGKIdIFBxMsboQ5d/FGZStmcdZxKuiP5b7NDpTHuouo8IBrxtK
+         EDbsS2wGfdCImFagCxF+Ta/E6iZmBQ5cgekm6xSBUngkeQut8WQoNkgaWbYKC8HoNNK0
+         TzTg==
+X-Gm-Message-State: AOAM531sb8j5XxmZqvrr8XE9PsOPB6ZPEE9Vrbeoi00W40y5EmjspI64
+        qrXGwpkwEPjOvN2eNxWAiGI=
+X-Google-Smtp-Source: ABdhPJyJtCs/QTnBz7Ahos9m7nuLWKArBgZLNjJtOZ1N8f3LU6ZRxI7xIaWvq1/XpCIdIM3IOBEmiw==
+X-Received: by 2002:a17:907:d0f:b0:6df:d55c:a9a5 with SMTP id gn15-20020a1709070d0f00b006dfd55ca9a5mr8939068ejc.447.1647853305846;
+        Mon, 21 Mar 2022 02:01:45 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.googlemail.com with ESMTPSA id l20-20020a1709062a9400b006ce71a88bf5sm6540726eje.183.2022.03.21.02.01.44
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Mar 2022 02:00:27 -0700 (PDT)
-Received: by mail-yb1-f171.google.com with SMTP id h126so26834183ybc.1;
-        Mon, 21 Mar 2022 02:00:26 -0700 (PDT)
-X-Received: by 2002:a25:dc4:0:b0:629:2337:f9ea with SMTP id
- 187-20020a250dc4000000b006292337f9eamr21473033ybn.6.1647853226676; Mon, 21
- Mar 2022 02:00:26 -0700 (PDT)
+        Mon, 21 Mar 2022 02:01:45 -0700 (PDT)
+Message-ID: <ef173db6-4635-8a77-c3e3-d96b0c2fa7a3@kernel.org>
+Date:   Mon, 21 Mar 2022 10:01:43 +0100
 MIME-Version: 1.0
-References: <247066a3104d25f9a05de8b3270fc3c848763bcc.1647673264.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <247066a3104d25f9a05de8b3270fc3c848763bcc.1647673264.git.christophe.jaillet@wanadoo.fr>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 21 Mar 2022 10:00:15 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUgXek+BDT4vJQfFcwDgQfyDAB=wXfdC0poynzH26=okw@mail.gmail.com>
-Message-ID: <CAMuHMdUgXek+BDT4vJQfFcwDgQfyDAB=wXfdC0poynzH26=okw@mail.gmail.com>
-Subject: Re: [PATCH] zorro: Fix a resource leak in zorro7xx_remove_one()
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        James Bottomley <James.Bottomley@steeleye.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org, scsi <linux-scsi@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH v4 2/2] mmc: Add mmc driver for Sunplus SP7021
+Content-Language: en-US
+To:     =?UTF-8?B?VG9ueSBIdWFuZyDpu4Pmh7fljpo=?= <tony.huang@sunplus.com>,
+        Tony Huang <tonyhuang.sunplus@gmail.com>,
+        "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "lhjeff911@gmail.com" <lhjeff911@gmail.com>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>
+Cc:     =?UTF-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>,
+        =?UTF-8?B?TGggS3VvIOmDreWKm+ixqg==?= <lh.Kuo@sunplus.com>
+References: <cover.1647652688.git.tonyhuang.sunplus@gmail.com>
+ <f954fb1c0d1c4950b71a8fc360c78edcca9954de.1647652688.git.tonyhuang.sunplus@gmail.com>
+ <e5426768-1dd0-0bef-25e8-2ab494f7723d@kernel.org>
+ <c6ecbe40dc234454b41bcbc0bf073084@sphcmbx02.sunplus.com.tw>
+In-Reply-To: <c6ecbe40dc234454b41bcbc0bf073084@sphcmbx02.sunplus.com.tw>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Christophe,
+On 21/03/2022 05:55, Tony Huang 黃懷厚 wrote:
+> Dear Krzysztof:
+>>
+>>> +	int dma_int_threshold;
+>>> +	struct sg_mapping_iter sg_miter; /* for pio mode to access sglist */
+>>> +	int dma_use_int; /* should raise irq when dma done */
+>>> +	struct spmmc_tuning_info emmc_tuning_info;
+>>> +	struct spsdc_tuning_info sd_tuning_info;
+>>> +	int restore_4bit_sdio_bus;
+>>> +	const struct spmmc_compatible *dev_comp; };
+>>> +
+>>> +struct spsdc_host {
+>>
+>> Where is this used?
+>>
+> 
+> struct spmmc_host{} for emmc.			
+> struct spsdc_host{} for SD card.			
+> The register base address and offset address of emmc and sd cards are different.			
+> eMMC and sdcard are their respective hardware settings.
 
-On Sat, Mar 19, 2022 at 8:01 AM Christophe JAILLET
-<christophe.jaillet@wanadoo.fr> wrote:
-> The error handling path of the probe releases a resource that is not freed
-> in the remove function.
->
-> In some cases, a ioremap() must be undone.
->
-> Add the missing iounmap() call in the remove function.
->
-> Fixes: 45804fbb00ee ("[SCSI] 53c700: Amiga Zorro NCR53c710 SCSI")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-Thanks for your patch!
+This is a weird answer. I asked where is this used (struct spsdc_host).
+There is no single reference of this type. Your answer does not cover it
+all. I know that eMMC and SD are different. That was not the question.
+The question is: point me to the code which uses this type.
 
-The online-summary should be
-"scsi: zorro7xx: Fix a resource leak in zorro7xx_remove_one()".
 
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Best regards,
+Krzysztof
