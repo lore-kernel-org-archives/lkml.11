@@ -2,110 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11654C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:27:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B8A7C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:28:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232919AbiCUX3N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:29:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46718 "EHLO
+        id S233152AbiCUX3k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:29:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233120AbiCUX3F (ORCPT
+        with ESMTP id S232789AbiCUX3V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 19:29:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 977F62C77BF
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 16:26:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F29FB81ABE
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 23:26:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 727CDC340E8;
-        Mon, 21 Mar 2022 23:26:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1647905175;
-        bh=zm2PRxe5xFsuwQYNcENkfpKJjH4eQjyHej02f6w7vjg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fGhw3WkLFHitotKvT3JlzZG0riB2q+AE/MkryHbgTQjYGLXL1C233leDbR81IFofB
-         NsHl5gPddbUrnzYwKJ7L5eLUUCYrCoFtWd8VdcspYc3DsurGS3obuw3Itzlr/3UxFF
-         ypV18Zu9I53mSAM9ws3iNQX4xxY19wBQRcw++xqQ=
-Date:   Mon, 21 Mar 2022 16:26:13 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Andrew Yang <andrew.yang@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        David Howells <dhowells@redhat.com>,
-        William Kucharski <william.kucharski@oracle.com>,
-        David Hildenbrand <david@redhat.com>,
-        Yang Shi <shy828301@gmail.com>, Marc Zyngier <maz@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, wsd_upstream@mediatek.com,
-        Nicholas Tang <nicholas.tang@mediatek.com>,
-        Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
-Subject: Re: [PATCH] mm/migrate: fix race between lock page and clear
- PG_Isolated
-Message-Id: <20220321162613.0a3510d18f1fa0f1637e9661@linux-foundation.org>
-In-Reply-To: <YjAIwAT6PnQnbckn@casper.infradead.org>
-References: <20220315030515.20263-1-andrew.yang@mediatek.com>
-        <YjAIwAT6PnQnbckn@casper.infradead.org>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Mon, 21 Mar 2022 19:29:21 -0400
+Received: from mail-oa1-f50.google.com (mail-oa1-f50.google.com [209.85.160.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C6C134ABAE;
+        Mon, 21 Mar 2022 16:27:06 -0700 (PDT)
+Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-dacc470e03so309173fac.5;
+        Mon, 21 Mar 2022 16:27:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=IfOgSlFcJksxU8PubWCVTs9HLG1nJKsuup/4fqR0uJQ=;
+        b=b5CcZLfMy+WlkqfABo9P2qTl6Mpt+tInviQxcVrQeHy9n8S9fYcEiVNzoRToKe+z7Q
+         aecEX2Pzzj7NubXuJa66ScWGh36J1Sf23OgBqIY9VgxTc7l7Wq6D0sPXWU+bAMWSd/7d
+         iLjyQOEGwVQSAUVZuBgGeAVevdK6ngEAKG7xs6fhT2jZ45E2ES2UFIraxkXIEZnwlEUJ
+         YE2/pCDMB4jb1OOTvX4Vzns11fUsmgWy7h0cxjVSJhF6zuPZ7pH3FaAmh46wevZSbfeG
+         QcFoNoNQEDk5vd+2X2FpcJwzuA7S0I4z0ChRgbuICK5PNjmC4V1/5n2l8F52s9HZTRJP
+         FmkA==
+X-Gm-Message-State: AOAM532WAiM/L7lw4/HrovploOR/lsJ9zMjFL72MxD0gWbvwCQ/Tb5ga
+        i9zkeKugqnDTVBkjLj0EjmUosmwZkg==
+X-Google-Smtp-Source: ABdhPJz5OurPXvO7jXlEUFzCMo8qHZUjHjGnUDgcet5Ci8hwHCOZunqcr4d4NKdhpDTI91pDLbBywA==
+X-Received: by 2002:a05:6870:b390:b0:da:cf0c:17ae with SMTP id w16-20020a056870b39000b000dacf0c17aemr575810oap.94.1647905225351;
+        Mon, 21 Mar 2022 16:27:05 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id j145-20020acaeb97000000b002d9f37166c1sm7943323oih.17.2022.03.21.16.27.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 16:27:04 -0700 (PDT)
+Received: (nullmailer pid 741695 invoked by uid 1000);
+        Mon, 21 Mar 2022 23:27:03 -0000
+Date:   Mon, 21 Mar 2022 18:27:03 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+Cc:     andrew@lunn.ch, netdev@vger.kernel.org, olteanv@gmail.com,
+        UNGLinuxDriver@microchip.com, woojung.huh@microchip.com,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v9 net-next 02/11] dt-bindings: net: add mdio property
+Message-ID: <YjkJxykT2dQxe3d/@robh.at.kernel.org>
+References: <20220318085540.281721-1-prasanna.vengateshan@microchip.com>
+ <20220318085540.281721-3-prasanna.vengateshan@microchip.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220318085540.281721-3-prasanna.vengateshan@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 15 Mar 2022 03:32:16 +0000 Matthew Wilcox <willy@infradead.org> wrote:
+On Fri, Mar 18, 2022 at 02:25:31PM +0530, Prasanna Vengateshan wrote:
+> mdio bus is applicable to any switch hence it is added as per the below request,
+> https://lore.kernel.org/netdev/1300f84832ef1c43ecb9edb311fb817e3aab5420.camel@microchip.com/
 
-> On Tue, Mar 15, 2022 at 11:05:15AM +0800, Andrew Yang wrote:
-> > When memory is tight, system may start to compact memory for large
-> > continuous memory demands. If one process tries to lock a memory page
-> > that is being locked and isolated for compaction, it may wait a long time
-> > or even forever. This is because compaction will perform non-atomic
-> > PG_Isolated clear while holding page lock, this may overwrite PG_waiters
-> > set by the process that can't obtain the page lock and add itself to the
-> > waiting queue to wait for the lock to be unlocked.
-> > 
-> > CPU1                            CPU2
-> > lock_page(page); (successful)
-> >                                 lock_page(); (failed)
-> > __ClearPageIsolated(page);      SetPageWaiters(page) (may be overwritten)
-> > unlock_page(page);
-> > 
-> > The solution is to not perform non-atomic operation on page flags while
-> > holding page lock.
-> > 
-> > Signed-off-by: andrew.yang <andrew.yang@mediatek.com>
-> > ---
-> >  include/linux/page-flags.h |  2 +-
-> >  mm/migrate.c               | 12 ++++++------
-> >  2 files changed, 7 insertions(+), 7 deletions(-)
-> > 
-> > diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
-> > index 1c3b6e5c8bfd..64a84a9835cb 100644
-> > --- a/include/linux/page-flags.h
-> > +++ b/include/linux/page-flags.h
-> > @@ -918,7 +918,7 @@ PAGE_TYPE_OPS(Guard, guard)
-> >  
-> >  extern bool is_free_buddy_page(struct page *page);
-> >  
-> > -__PAGEFLAG(Isolated, isolated, PF_ANY);
-> > +PAGEFLAG(Isolated, isolated, PF_ANY);
-> 
-> Agreed.  Further, page cannot be a tail page (this is implied by the
-> get_page_unless_zero() as tailpages have a zero refcount, and it
-> is assumed by __PageMovable() as page->mapping is undefined for tail
-> pages).  So this can actually be:
-> 
-> +PAGEFLAG(Isolated, isolated, PF_NO_TAIL);
-> 
-> I considered PF_ONLY_HEAD, but there are a lot more places that _check_
-> PageIsolated() and I don't want to prove that they're all definitely
-> working on head pages.
+Quoting that thread:
 
-There was no followup to this.  I'll send the patch upstream as-is, but
-please let's not forget this idea.
+> Yes indeed, since this is a common property of all DSA switches, it can
+> be defined or not depending on whether the switch does have an internal
+> MDIO bus controller or not.
 
+Whether or not a switch has an MDIO controller or not is a property of 
+that switch and therefore 'mdio' needs to be documented in those switch 
+bindings.
+
+> 
+> Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+> ---
+>  Documentation/devicetree/bindings/net/dsa/dsa.yaml | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/dsa/dsa.yaml b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
+> index b9d48e357e77..0f8426e219eb 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/dsa.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
+> @@ -31,6 +31,10 @@ properties:
+>        switch 1. <1 0> is cluster 1, switch 0. A switch not part of any cluster
+>        (single device hanging off a CPU port) must not specify this property
+>      $ref: /schemas/types.yaml#/definitions/uint32-array
+> +  
+> +  mdio:
+> +    $ref: /schemas/net/mdio.yaml#
+> +    unevaluatedProperties: false
+
+From a schema standpoint, this bans every switch from adding additional 
+properties under an mdio node. Not likely what you want.
+
+Rob
