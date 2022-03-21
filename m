@@ -2,99 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B23FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 18:04:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07062C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 18:04:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351968AbiCUSGF (ORCPT
+        id S1351981AbiCUSGM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 14:06:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58686 "EHLO
+        Mon, 21 Mar 2022 14:06:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349445AbiCUSGE (ORCPT
+        with ESMTP id S1349445AbiCUSGJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 14:06:04 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EB9C4CD61;
-        Mon, 21 Mar 2022 11:04:38 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id n15so13457993plh.2;
-        Mon, 21 Mar 2022 11:04:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=aLAMIQ8Z/Brx4GgfsQ0HcQtispmXwswle1+zYBDv2JM=;
-        b=lrfYWw0h7r5509pqhsgV/reZahtlNdofwS6QxNFbJe7SH/kkWK7a2pHOo/Lz4b4O2d
-         HMIiLyOd69phUkQqMsxWcYPCTJ0Wfx3ZqX4uqgBZA2p3Z4hrZFxbYBHmYtqCCTk3HMQ2
-         I5FbxpfLD7057G+ykHNj97m+/ID6/qLZN5eRnAUSZ1bD+pFuAgrHygt25SJzaylaJcZH
-         t4jMKKg9YJGeqRM3hz6ddmWK7o+n+IllcKX5S71zvYwk4SU2aSaQHcUcWTbxDPF9F6y5
-         eXKhWIC8NNMCS6SxzMl7zeZLbemifs0ZBLxg3Ww3p+Dzzy8OJh93w3PtDTD83FMutxg9
-         TVvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:content-language:in-reply-to
-         :content-transfer-encoding;
-        bh=aLAMIQ8Z/Brx4GgfsQ0HcQtispmXwswle1+zYBDv2JM=;
-        b=CAc3RouA/VdjDDO3BMapZIIWJn56RkYIU34Xz3LwzaL+DrhyZF8eZcnhBRJQqloYYt
-         RfawTwHWrFyvRd/Zj3VKfmRLogYQanGBVTeba93AKBW5jyRmXhyTFFaliBddy9v67uCt
-         BtOHkiq9lWo03D5E7Hx7VsZzjO61d5eC8I2V3sfctb6MHWO/A/a98a0jlweBmtA+ei9S
-         HnXiyaWkp7D12X6HoAo72qzh+8SdArR9ePFoMXsBExdOwo5LyclwBDolvEt25Z+ZsuLF
-         pc61TmpmZKXOZ00MvxEOo3aAh592GgdT+ehRkttXXXGnSe5HkrIOwLL0hHOH0/eRbeFX
-         UEYg==
-X-Gm-Message-State: AOAM533mF9SXCiYX5pEe6C/bVJf2tPCVDnCUgNb1B5XfByuYBwVvmfUa
-        DqXL2DEW1m0Pu1xgnd6I1TE=
-X-Google-Smtp-Source: ABdhPJzxVKNEzDd2T+O/tM3Jwt/u+g4+SzF/YQt8YFs6HGgO4SYfo1bT7GLj6MME54cabODbsD1T2g==
-X-Received: by 2002:a17:90b:1d02:b0:1c7:1802:c00e with SMTP id on2-20020a17090b1d0200b001c71802c00emr331358pjb.99.1647885878110;
-        Mon, 21 Mar 2022 11:04:38 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id h2-20020a056a00218200b004f66d50f054sm19871038pfi.158.2022.03.21.11.04.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Mar 2022 11:04:37 -0700 (PDT)
-Message-ID: <a88a3172-aca8-adb5-c9a3-e4d32a416190@gmail.com>
-Date:   Mon, 21 Mar 2022 11:04:35 -0700
+        Mon, 21 Mar 2022 14:06:09 -0400
+X-Greylist: delayed 21961 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 21 Mar 2022 11:04:43 PDT
+Received: from smtp-8fa8.mail.infomaniak.ch (smtp-8fa8.mail.infomaniak.ch [83.166.143.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F32C05881E
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 11:04:43 -0700 (PDT)
+Received: from smtp-2-0001.mail.infomaniak.ch (unknown [10.5.36.108])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KMjF56JnLzMprhJ;
+        Mon, 21 Mar 2022 19:04:41 +0100 (CET)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-2-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4KMjF25xRSzljsT5;
+        Mon, 21 Mar 2022 19:04:38 +0100 (CET)
+Message-ID: <cfa15768-ebf4-d198-fb1b-5a6ab47caedb@digikod.net>
+Date:   Mon, 21 Mar 2022 19:05:42 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH 5.10 00/30] 5.10.108-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220321133219.643490199@linuxfoundation.org>
+User-Agent: 
 Content-Language: en-US
-In-Reply-To: <20220321133219.643490199@linuxfoundation.org>
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christian Heimes <christian@python.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        James Morris <jmorris@namei.org>,
+        Kees Cook <keescook@chromium.org>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Paul Moore <paul@paul-moore.com>,
+        =?UTF-8?Q?Philippe_Tr=c3=a9buchet?= 
+        <philippe.trebuchet@ssi.gouv.fr>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Steve Dower <steve.dower@python.org>,
+        Thibaut Sautereau <thibaut.sautereau@ssi.gouv.fr>,
+        Vincent Strubel <vincent.strubel@ssi.gouv.fr>,
+        linux-fsdevel@vger.kernel.org, linux-integrity@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-security-module@vger.kernel.org
+References: <20220321161557.495388-1-mic@digikod.net>
+ <Yji3/ejSErupJZtO@bombadil.infradead.org>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [GIT PULL] Add trusted_for(2) (was O_MAYEXEC)
+In-Reply-To: <Yji3/ejSErupJZtO@bombadil.infradead.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/21/22 06:52, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.108 release.
-> There are 30 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 23 Mar 2022 13:32:09 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.108-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
 
+On 21/03/2022 18:38, Luis Chamberlain wrote:
+> On Mon, Mar 21, 2022 at 05:15:57PM +0100, Mickaël Salaün wrote:
+>> Since I heard no objection, please consider to pull this code for
+>> v5.18-rc1 .  These five patches have been successfully tested in the
+>> latest linux-next releases for several weeks.
+> 
+>>   kernel/sysctl.c                                    |   9 +
+> 
+> Please don't add more sysctls there. We're slowly trying to move
+> all these to their respective places so this does not become a larger
+> kitchen sink mess.
 
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
-
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+It is not a new sysctl but proc_dointvec_minmax_sysadmin(). This helper 
+is shared between printk and fs subsystems.
