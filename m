@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A05C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:00:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85F13C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:00:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231775AbiCUXBg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:01:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56776 "EHLO
+        id S231889AbiCUXBl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:01:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232007AbiCUW56 (ORCPT
+        with ESMTP id S231597AbiCUW5g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:57:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F94F3BE8B2;
-        Mon, 21 Mar 2022 15:37:15 -0700 (PDT)
+        Mon, 21 Mar 2022 18:57:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5915547A55E;
+        Mon, 21 Mar 2022 15:37:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B85E961528;
-        Mon, 21 Mar 2022 21:53:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73434C340F3;
-        Mon, 21 Mar 2022 21:53:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6FE961408;
+        Mon, 21 Mar 2022 21:53:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B27B0C36AE2;
+        Mon, 21 Mar 2022 21:53:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647899621;
-        bh=K+tDWAFZJnPKREwEHMhg1Ie2OWCsnVXB7aQ07ZjAkp4=;
+        s=k20201202; t=1647899599;
+        bh=o+MNUcvaVuauByRN8PyKm1WATJON5BR4mwWEdlzFQ24=;
         h=From:To:Cc:Subject:Date:From;
-        b=fPgKw3T8ZuBoVgDElMliJGdDYrWsH2tb/pkylfM9gMsgtQ0opEReqYEDB6Zl9o14/
-         otwpf6sw2cbDTv58aoE5MfMXxQsvOnLwuBQhGEGhemWG1UWdf8uY0SSRsnDRnmyMR4
-         2vbb3PnlCJrfv0BsA+BTVyeO0n2hEsEP9EVKjEBuRE1E4W4uBKQwGCEJsJ0JYHkp68
-         n+HjJlane88VMuFqOEhNjmcpjKiFy8x3l2apW5tfRDEX+ogO5xlcpyJGbc3b7zqZ/K
-         FUru1Qxqbc2zREwiJbZ7GZ2UdyJ33vH5Zff4AvaXksp85XXbhF0d6SzO5JgcQoaRIv
-         D/YWtFUgqB+Dw==
+        b=NBY/TtTum0VVn+QU4RO0bqVkZq2EbsLaks5WGbdkJAPbtp6zmHauPMQjsugTa1/Md
+         tCpX99oG+wVb50a7vd91INZriqYKyTz7q6gxjIlI8cqguYWH2HuLLuw26W5z8h8NZI
+         WcLEZYVLSx49d2CmATclfUSa4C59VPh6zJAlxvXD9YlXCW2cfhulIUcNz8Le3UUDXt
+         NX+aj6iEJVC1vzGCKXl9Ljba1iL8V7rRsaQtYg8PA7jfkwV7HgXuJwE/QEp46ER+Vw
+         d0PkXTCIFUIwnD2F1Qxt5L6kHh6gBZ5dg9u5e08D5RtOqd0x/Y7n2F48r78XWkB0hK
+         GLQBJoo0PIiqA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Haimin Zhang <tcs_kernel@tencent.com>,
@@ -39,9 +39,9 @@ Cc:     Haimin Zhang <tcs_kernel@tencent.com>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
         kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 1/2] af_key: add __GFP_ZERO flag for compose_sadb_supported in function pfkey_register
-Date:   Mon, 21 Mar 2022 17:53:37 -0400
-Message-Id: <20220321215338.490562-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 1/3] af_key: add __GFP_ZERO flag for compose_sadb_supported in function pfkey_register
+Date:   Mon, 21 Mar 2022 17:53:14 -0400
+Message-Id: <20220321215317.490418-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 X-stable: review
@@ -73,10 +73,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/key/af_key.c b/net/key/af_key.c
-index a10336cd7f97..9b3756aa7ca2 100644
+index 406e13478b01..2ac9560020f9 100644
 --- a/net/key/af_key.c
 +++ b/net/key/af_key.c
-@@ -1709,7 +1709,7 @@ static int pfkey_register(struct sock *sk, struct sk_buff *skb, const struct sad
+@@ -1703,7 +1703,7 @@ static int pfkey_register(struct sock *sk, struct sk_buff *skb, const struct sad
  
  	xfrm_probe_algs();
  
