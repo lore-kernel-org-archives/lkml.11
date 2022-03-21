@@ -2,135 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 011CDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:47:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D62A4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:47:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351402AbiCUQs1 (ORCPT
+        id S1351407AbiCUQsb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 12:48:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34718 "EHLO
+        Mon, 21 Mar 2022 12:48:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351385AbiCUQsW (ORCPT
+        with ESMTP id S233401AbiCUQsX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 12:48:22 -0400
-Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E7E51697AE;
-        Mon, 21 Mar 2022 09:46:56 -0700 (PDT)
+        Mon, 21 Mar 2022 12:48:23 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 766EC16D8CD
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:46:57 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id bx24-20020a17090af49800b001c6872a9e4eso10866050pjb.5
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:46:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1647881216; x=1679417216;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=11MtvQeckV9uTaf9kXjew1AzhoHaTDnjRXrFiqHtAhA=;
-  b=GsLz068INP7SZizwqCIBwLZ9ZcHj3khI+u4m7NIuX08V4llusTZmH6Ko
-   amQEBJsGq2KOB8Jfsc6fKNxpP2yWrwwRI3XQJlVKH343iFyzS9GQBCnFv
-   tSemVtzumRs6H5sRz+PbO/xeNHBvec1Q6cw0iG1VuvV3WrafFkNmHOU4+
-   Q=;
-X-Amazon-filename: 0001-KVM-x86-xen-add-support-for-32-bit-guests-in-SCHEDOP.patch
-X-IronPort-AV: E=Sophos;i="5.90,199,1643673600"; 
-   d="scan'208,223";a="72785739"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-31df91b1.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP; 21 Mar 2022 16:46:33 +0000
-Received: from EX13D32EUB002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2b-31df91b1.us-west-2.amazon.com (Postfix) with ESMTPS id 3E18041D51;
-        Mon, 21 Mar 2022 16:46:33 +0000 (UTC)
-Received: from EX13D43EUB002.ant.amazon.com (10.43.166.8) by
- EX13D32EUB002.ant.amazon.com (10.43.166.114) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Mon, 21 Mar 2022 16:46:32 +0000
-Received: from EX13D43EUB002.ant.amazon.com ([10.43.166.8]) by
- EX13D43EUB002.ant.amazon.com ([10.43.166.8]) with mapi id 15.00.1497.033;
- Mon, 21 Mar 2022 16:46:31 +0000
-From:   "Kaya, Metin" <metikaya@amazon.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>
-CC:     "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "Durrant, Paul" <pdurrant@amazon.co.uk>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>
-Subject: [PATCH 1/1] KVM: x86/xen: add support for 32-bit guests in
- SCHEDOP_poll
-Thread-Topic: [PATCH 1/1] KVM: x86/xen: add support for 32-bit guests in
- SCHEDOP_poll
-Thread-Index: AQHYPUKXQJvuOGfU2UCQzahjrnQ1Og==
-Date:   Mon, 21 Mar 2022 16:46:31 +0000
-Message-ID: <1647881191688.60603@amazon.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-GB
-X-MS-Has-Attach: yes
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.43.161.153]
-Content-Type: multipart/mixed; boundary="_002_164788119168860603amazoncom_"
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=V6tc3pkqZNZyKCTRozXMk87YSKEnJRwRCHnnvTYojQM=;
+        b=qJLjA563ml8lhITs2zgrhf5rlbXm0bI3sjBmmEadv2kyKIgzHrhs52TsG5Q3CkEwAH
+         yTbNE15rSUDyrpvTckkpN+wNAaeg2IxzpA9xLL50n93Qos3qRBJzXwLMRcTwYE3jIH0h
+         MP9D3xDb63d9F2gY48267Ltq9pjZwOwY215R0Ca9vRgi4rYwHO8nkt0m7kVXrLshZ6oJ
+         /MPPRk3tZQWqeUakFIbju39P0m9vw5VDuK0OpIs7w1oOjpQ5yz/+Bh0tQ8bp7j+xGTFN
+         SMBHmqL8kQfy0ojMUPijx5S1RPlfFD8NQ2WOXuWy9Hsk+rIxfPAn1DwHqBdF20hVNhtg
+         5fkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=V6tc3pkqZNZyKCTRozXMk87YSKEnJRwRCHnnvTYojQM=;
+        b=CXxPd5evIXgVkFZWbMbMXLrj2oQV7pAl1zACWR/3qS5xEtzQkI5mThgkYLcK8ta6cn
+         6FdcsSFN625I3qfpDJ/dt2GAJN5sXNhnS7uhjvhrHLDYcU6Duvz6MUlwwxtjn9g75As8
+         YSb1R7NonB5aWBB4Jy9wfKH4RJn7M31B0H85YEijUH3ySlgA7blWF9qVlkhYCnSLtKtZ
+         gr3RaVkD5KqFLs4ZMHsG6+vD/HXyHnVIhm/Km8X8rInRfvhW9uW6gF9g7N5yT0BYBfV2
+         qlznnrFbk6pwBTVc51N/1frMOZB+F1pilXOmhGDOuWISpM5En36cA6KtiKaiZeDx8hzC
+         M1eA==
+X-Gm-Message-State: AOAM532uSMfqG4zCg6kKXcbjmub75Qb4ZwMNLsuOR4AmKafK+WasPX/k
+        6m5X1m48U+R1EadvmecX1F8=
+X-Google-Smtp-Source: ABdhPJw1lU/HcU+i9TJEwn7QFHAfdz7Eg7o6ONFT68y6ASLupQld+f3Hq1/sh7yxe/ZQwDtEszM2KQ==
+X-Received: by 2002:a17:902:e5d1:b0:154:3319:19c7 with SMTP id u17-20020a170902e5d100b00154331919c7mr11436438plf.34.1647881216780;
+        Mon, 21 Mar 2022 09:46:56 -0700 (PDT)
+Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
+        by smtp.gmail.com with ESMTPSA id 68-20020a621647000000b004fa763ef1easm11159917pfw.125.2022.03.21.09.46.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 09:46:55 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Mon, 21 Mar 2022 06:46:53 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     Imran Khan <imran.f.khan@oracle.com>, gregkh@linuxfoundation.org,
+        akpm@linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [RESEND PATCH v7 7/8] kernfs: Replace per-fs rwsem with hashed
+ rwsems.
+Message-ID: <Yjir/d5S3J1PTiux@slm.duckdns.org>
+References: <20220317072612.163143-1-imran.f.khan@oracle.com>
+ <20220317072612.163143-8-imran.f.khan@oracle.com>
+ <YjPNOQJf/Wxa4YeV@zeniv-ca.linux.org.uk>
+ <536f2392-45d2-2f43-5e9d-01ef50e33126@oracle.com>
+ <YjgpaeFfFandY999@zeniv-ca.linux.org.uk>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YjgpaeFfFandY999@zeniv-ca.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---_002_164788119168860603amazoncom_
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+On Mon, Mar 21, 2022 at 07:29:45AM +0000, Al Viro wrote:
+...
+> stabilizing the tree topology.  Turn it into rwlock if you wish,
+> with that thing being a reader and existing users - writers.
+> And don't bother with further scaling, until and unless you see a real
+> contention on it.
 
+Given how rare these renames are, in the (unlikely) case the rename rwsem
+becomes a problem, we should probably just switch it to a percpu_rwsem.
 
---_002_164788119168860603amazoncom_
-Content-Type: text/x-patch;
-	name="0001-KVM-x86-xen-add-support-for-32-bit-guests-in-SCHEDOP.patch"
-Content-Description: 0001-KVM-x86-xen-add-support-for-32-bit-guests-in-SCHEDOP.patch
-Content-Disposition: attachment;
-	filename="0001-KVM-x86-xen-add-support-for-32-bit-guests-in-SCHEDOP.patch";
-	size=2871; creation-date="Mon, 21 Mar 2022 16:46:18 GMT";
-	modification-date="Mon, 21 Mar 2022 16:46:18 GMT"
-Content-Transfer-Encoding: base64
+Thanks.
 
-RnJvbSA0OTExMzk1OTU1MDUyNWJlNDBjMjNlOGJmYzRhZGRmNjllZGVjYTQ3IE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBNZXRpbiBLYXlhIDxtZXRpa2F5YUBhbWF6b24uY29tPgpEYXRl
-OiBNb24sIDIxIE1hciAyMDIyIDExOjA1OjMyICswMDAwClN1YmplY3Q6IFtQQVRDSF0gS1ZNOiB4
-ODYveGVuOiBhZGQgc3VwcG9ydCBmb3IgMzItYml0IGd1ZXN0cyBpbiBTQ0hFRE9QX3BvbGwKClRo
-aXMgcGF0Y2ggaW50cm9kdWNlcyBjb21wYXQgdmVyc2lvbiBvZiBzdHJ1Y3Qgc2NoZWRfcG9sbCBm
-b3IKU0NIRURPUF9wb2xsIHN1Yi1vcGVyYXRpb24gb2Ygc2NoZWRfb3AgaHlwZXJjYWxsLCByZWFk
-cyBjb3JyZWN0IGFtb3VudApvZiBkYXRhICgxNiBieXRlcyBpbiAzMi1iaXQgY2FzZSwgMjQgYnl0
-ZXMgb3RoZXJ3aXNlKSBieSB1c2luZyBuZXcKY29tcGF0X3NjaGVkX3BvbGwgc3RydWN0LCBjb3Bp
-ZXMgaXQgdG8gc2NoZWRfcG9sbCBwcm9wZXJseSwgYW5kIGxldHMKcmVzdCBvZiB0aGUgY29kZSBy
-dW4gYXMgaXMuCgpTaWduZWQtb2ZmLWJ5OiBNZXRpbiBLYXlhIDxtZXRpa2F5YUBhbWF6b24uY29t
-PgpSZXZpZXdlZC1ieTogRGF2aWQgV29vZGhvdXNlIDxkd213QGFtYXpvbi5jby51az4KUmV2aWV3
-ZWQtYnk6IFBhdWwgRHVycmFudCA8cGR1cnJhbnRAYW1hem9uLmNvLnVrPgotLS0KIGFyY2gveDg2
-L2t2bS94ZW4uYyB8IDMwICsrKysrKysrKysrKysrKysrKysrKysrKysrLS0tLQogYXJjaC94ODYv
-a3ZtL3hlbi5oIHwgIDcgKysrKysrKwogMiBmaWxlcyBjaGFuZ2VkLCAzMyBpbnNlcnRpb25zKCsp
-LCA0IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2FyY2gveDg2L2t2bS94ZW4uYyBiL2FyY2gv
-eDg2L2t2bS94ZW4uYwppbmRleCA3ZDAxOTgzZDEwODcuLmMwMjE2M2JmMWE5NyAxMDA2NDQKLS0t
-IGEvYXJjaC94ODYva3ZtL3hlbi5jCisrKyBiL2FyY2gveDg2L2t2bS94ZW4uYwpAQCAtOTk4LDIw
-ICs5OTgsNDIgQEAgc3RhdGljIGJvb2wga3ZtX3hlbl9zY2hlZG9wX3BvbGwoc3RydWN0IGt2bV92
-Y3B1ICp2Y3B1LCBib29sIGxvbmdtb2RlLAogCWV2dGNobl9wb3J0X3QgcG9ydCwgKnBvcnRzOwog
-CWdwYV90IGdwYTsKIAotCWlmICghbG9uZ21vZGUgfHwgIWxhcGljX2luX2tlcm5lbCh2Y3B1KSB8
-fAorCWlmICghbGFwaWNfaW5fa2VybmVsKHZjcHUpIHx8CiAJICAgICEodmNwdS0+a3ZtLT5hcmNo
-Lnhlbl9odm1fY29uZmlnLmZsYWdzICYgS1ZNX1hFTl9IVk1fQ09ORklHX0VWVENITl9TRU5EKSkK
-IAkJcmV0dXJuIGZhbHNlOwogCiAJaWR4ID0gc3JjdV9yZWFkX2xvY2soJnZjcHUtPmt2bS0+c3Jj
-dSk7CiAJZ3BhID0ga3ZtX21tdV9ndmFfdG9fZ3BhX3N5c3RlbSh2Y3B1LCBwYXJhbSwgTlVMTCk7
-CiAJc3JjdV9yZWFkX3VubG9jaygmdmNwdS0+a3ZtLT5zcmN1LCBpZHgpOwotCi0JaWYgKCFncGEg
-fHwga3ZtX3ZjcHVfcmVhZF9ndWVzdCh2Y3B1LCBncGEsICZzY2hlZF9wb2xsLAotCQkJCQlzaXpl
-b2Yoc2NoZWRfcG9sbCkpKSB7CisJaWYgKCFncGEpIHsKIAkJKnIgPSAtRUZBVUxUOwogCQlyZXR1
-cm4gdHJ1ZTsKIAl9CiAKKwlpZiAoSVNfRU5BQkxFRChDT05GSUdfNjRCSVQpICYmIGxvbmdtb2Rl
-KSB7CisJCWlmIChrdm1fdmNwdV9yZWFkX2d1ZXN0KHZjcHUsIGdwYSwgJnNjaGVkX3BvbGwsCisJ
-CQkJCXNpemVvZihzY2hlZF9wb2xsKSkpIHsKKwkJCSpyID0gLUVGQVVMVDsKKwkJCXJldHVybiB0
-cnVlOworCQl9CisJfSBlbHNlIHsKKwkJc3RydWN0IGNvbXBhdF9zY2hlZF9wb2xsIHNwOworCisJ
-CS8qCisJCSAqIFdlIGFzc3VtZSBzaXplIG9mIGNvbXBhdF9zY2hlZF9wb2xsIGlzIDE2IGJ5dGVz
-IGluIDMyLWJpdAorCQkgKiBlbnZpcm9ubWVudC4gTGV0J3MgYmUgaG9uZXN0LgorCQkgKi8KKwkJ
-QlVJTERfQlVHX09OKHNpemVvZihzdHJ1Y3QgY29tcGF0X3NjaGVkX3BvbGwpICE9IDE2KTsKKwor
-CQlpZiAoa3ZtX3ZjcHVfcmVhZF9ndWVzdCh2Y3B1LCBncGEsICZzcCwgc2l6ZW9mKHNwKSkpIHsK
-KwkJCSpyID0gLUVGQVVMVDsKKwkJCXJldHVybiB0cnVlOworCQl9CisJCXNjaGVkX3BvbGwucG9y
-dHMgPSAoZXZ0Y2huX3BvcnRfdCAqKSh1bnNpZ25lZCBsb25nKShzcC5wb3J0cyk7CisJCXNjaGVk
-X3BvbGwubnJfcG9ydHMgPSBzcC5ucl9wb3J0czsKKwkJc2NoZWRfcG9sbC50aW1lb3V0ID0gc3Au
-dGltZW91dDsKKwl9CisKIAlpZiAodW5saWtlbHkoc2NoZWRfcG9sbC5ucl9wb3J0cyA+IDEpKSB7
-CiAJCS8qIFhlbiAodW5vZmZpY2lhbGx5KSBsaW1pdHMgbnVtYmVyIG9mIHBvbGxlcnMgdG8gMTI4
-ICovCiAJCWlmIChzY2hlZF9wb2xsLm5yX3BvcnRzID4gMTI4KSB7CmRpZmYgLS1naXQgYS9hcmNo
-L3g4Ni9rdm0veGVuLmggYi9hcmNoL3g4Ni9rdm0veGVuLmgKaW5kZXggZWU1YzRhZTA3NTVjLi5i
-NWIyMDhjZDhjOWYgMTAwNjQ0Ci0tLSBhL2FyY2gveDg2L2t2bS94ZW4uaAorKysgYi9hcmNoL3g4
-Ni9rdm0veGVuLmgKQEAgLTE5Niw2ICsxOTYsMTMgQEAgc3RydWN0IGNvbXBhdF9zaGFyZWRfaW5m
-byB7CiAJc3RydWN0IGNvbXBhdF9hcmNoX3NoYXJlZF9pbmZvIGFyY2g7CiB9OwogCitzdHJ1Y3Qg
-Y29tcGF0X3NjaGVkX3BvbGwgeworCS8qIFRoaXMgaXMgYWN0dWFsbHkgYSBwb2ludGVyIHdoaWNo
-IGhhcyB0byBiZSA0IGJ5dGVzIGluIHNpemUuICovCisJdWludDMyX3QgcG9ydHM7CisJdW5zaWdu
-ZWQgaW50IG5yX3BvcnRzOworCXVpbnQ2NF90IHRpbWVvdXQ7Cit9IF9fcGFja2VkOworCiAjZGVm
-aW5lIENPTVBBVF9FVlRDSE5fMkxfTlJfQ0hBTk5FTFMgKDggKgkJCQlcCiAJCQkJICAgICAgc2l6
-ZW9mX2ZpZWxkKHN0cnVjdCBjb21wYXRfc2hhcmVkX2luZm8sIFwKIAkJCQkJCSAgIGV2dGNobl9w
-ZW5kaW5nKSkKLS0gCjIuMzIuMAoK
-
---_002_164788119168860603amazoncom_--
+-- 
+tejun
