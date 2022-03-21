@@ -2,54 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBA56C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 19:37:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A900AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 19:37:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352770AbiCUTif (ORCPT
+        id S1352788AbiCUTij (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 15:38:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44058 "EHLO
+        Mon, 21 Mar 2022 15:38:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237280AbiCUTie (ORCPT
+        with ESMTP id S1352773AbiCUTif (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 15:38:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1210F5F4D4
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 12:37:08 -0700 (PDT)
+        Mon, 21 Mar 2022 15:38:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A20175F4D4
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 12:37:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F6F860DEA
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 19:37:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BE7FC340F4;
-        Mon, 21 Mar 2022 19:37:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 53A76B819C5
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 19:37:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6A4CC340E8;
+        Mon, 21 Mar 2022 19:37:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647891427;
-        bh=SEYzK4vSPeMJtzy43JQGZXAJd12jPg80CMxvL3TbA+w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r846iCeB6K3PL1kLU1vH2gs6a0PdIpzad36VDkx9u7cQEhYoP7Jz2uHj6EmCP3PDh
-         FZRxAvWV9kSDFGrSVbX/XXZOc88F1CnddJpESghMwKrB4CvElhttUUG6qwqUU33+Cf
-         hS2u1Y+BXRPXWkuVCXJOP3MsKPSpAU9T+2WTdTXolpP2QOBAVyuraAU0pgNTWl8B1a
-         ahFuDiaEXVIKAQwwAWwEKiE2B/0ZlDRSFeVR3wBpOnoVVmig0lAsPajF+JKSAQy00v
-         VanAANIldemXRhCskV3UrPkOxEGR+8GDw2mTDEHv9rpH0je46UmBtvtF8ZrGSaYdvN
-         +BMezvI1JakXg==
+        s=k20201202; t=1647891426;
+        bh=mdyDFnR87SqdgVH5lS4apNChXRoes9ieiuJHDVbDoys=;
+        h=From:To:Cc:Subject:Date:From;
+        b=GozDQScCmFdrYD9sTEwf7iLkWtx54elNr3lAMk7fIZnSPjbh4NRWrYhkqATVhX9Uh
+         z661dxQtXo8HjcWMkoDjFk35R9RLDDyzkW6fs54n5PFYY93sBRdTNCiirXffbjJiE6
+         3xxNVU83OmGrerp51p48+IlzBzgYpnGdllzEFSPRiVwrmKCGCXrVsan5uQDc4MNGMa
+         daenQ9mUDoXRUGileMlk4XnEqvLzzd/lPPkG0w9FtcQ3hvKsqargJBeD4qdvOY/qlw
+         V8dT+PCg9vQd7AYklmLGKDbN8soDfHrXhWQzYvzce6Znx9gm95GCgPTnHX7U48u22+
+         phI2fitVATMmw==
 Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
         by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <maz@kernel.org>)
-        id 1nWNpx-00G5T9-0T; Mon, 21 Mar 2022 19:37:05 +0000
+        id 1nWNpw-00G5T9-9s; Mon, 21 Mar 2022 19:37:04 +0000
 From:   Marc Zyngier <maz@kernel.org>
 To:     linux-kernel <linux-kernel@vger.kernel.org>
 Cc:     Thomas Gleixner <tglx@linutronix.de>,
         John Garry <john.garry@huawei.com>,
         Xiongfeng Wang <wangxiongfeng2@huawei.com>,
         David Decotigny <ddecotig@google.com>
-Subject: [PATCH v2 3/3] irqchip/gic-v3: Always trust the managed affinity provided by the core code
-Date:   Mon, 21 Mar 2022 19:36:08 +0000
-Message-Id: <20220321193608.975495-4-maz@kernel.org>
+Subject: [PATCH v2 0/3] genirq: Managed affinity fixes
+Date:   Mon, 21 Mar 2022 19:36:05 +0000
+Message-Id: <20220321193608.975495-1-maz@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220321193608.975495-1-maz@kernel.org>
-References: <20220321193608.975495-1-maz@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 185.219.108.64
@@ -60,28 +58,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that the core code has been fixed to always give us an affinity
-that only includes online CPUs, directly use this affinity when
-computing a target CPU.
+John (and later on David) reported[1] a while ago that booting with
+maxcpus=1, managed affinity devices would fail to get the interrupts
+that were associated with offlined CPUs.
 
-Signed-off-by: Marc Zyngier <maz@kernel.org>
----
- drivers/irqchip/irq-gic-v3-its.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Similarly, Xiongfeng reported[2] that the GICv3 ITS would sometime use
+non-housekeeping CPUs instead of the affinity that was passed down as
+a parameter.
 
-diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
-index cd772973114a..2656efd5d2b6 100644
---- a/drivers/irqchip/irq-gic-v3-its.c
-+++ b/drivers/irqchip/irq-gic-v3-its.c
-@@ -1624,7 +1624,7 @@ static int its_select_cpu(struct irq_data *d,
- 
- 		cpu = cpumask_pick_least_loaded(d, tmpmask);
- 	} else {
--		cpumask_and(tmpmask, irq_data_get_affinity_mask(d), cpu_online_mask);
-+		cpumask_copy(tmpmask, aff_mask);
- 
- 		/* If we cannot cross sockets, limit the search to that node */
- 		if ((its_dev->its->flags & ITS_FLAGS_WORKAROUND_CAVIUM_23144) &&
+[1] can be fixed by not trying to activate these interrupts if no CPU
+that can satisfy the affinity is present (a patch addressing this was
+already posted[3])
+
+[2] is a consequence of affinities containing non-online CPUs being
+passed down to the interrupt controller driver and the ITS driver
+trying to paper over that by ignoring the affinity parameter and doing
+its own (stupid) thing. It would be better to (a) get the core code to
+remove the offline CPUs from the affinity mask at all times, and (b)
+fix the drivers so that they can trust the core code not to trip them.
+
+This small series, based on 5.17, addresses the above.
+
+Thanks,
+
+	M.
+
+[1] https://lore.kernel.org/r/78615d08-1764-c895-f3b7-bfddfbcbdfb9@huawei.com
+[2] https://lore.kernel.org/r/20220124073440.88598-1-wangxiongfeng2@huawei.com
+[3] https://lore.kernel.org/r/20220307190625.254426-1-maz@kernel.org
+
+Marc Zyngier (3):
+  genirq/msi: Shutdown managed interrupts with unsatifiable affinities
+  genirq: Always limit the affinity to online CPUs
+  irqchip/gic-v3: Always trust the managed affinity provided by the core
+    code
+
+ drivers/irqchip/irq-gic-v3-its.c |  2 +-
+ kernel/irq/manage.c              | 25 +++++++++++++++++--------
+ kernel/irq/msi.c                 | 15 +++++++++++++++
+ 3 files changed, 33 insertions(+), 9 deletions(-)
+
 -- 
 2.34.1
 
