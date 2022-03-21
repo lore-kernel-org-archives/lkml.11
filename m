@@ -2,208 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9941C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:44:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74895C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:44:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350479AbiCUPpj (ORCPT
+        id S1350492AbiCUPpz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 11:45:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49636 "EHLO
+        Mon, 21 Mar 2022 11:45:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234700AbiCUPpg (ORCPT
+        with ESMTP id S1350488AbiCUPpv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 11:45:36 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE3413DE4;
-        Mon, 21 Mar 2022 08:44:04 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id h16so8249221wmd.0;
-        Mon, 21 Mar 2022 08:44:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=XoXisWW93pi2sg9tIKJ01ulYb1YdPWU5OGPWRm7ICC8=;
-        b=ZkJpGUGZG9/PZzeERfZOKs755Ch+NcehEboHt9ataGdfL9hvC87CjoNyVxbqHHxAbZ
-         R+vrihTuqVommri1kJaqDILNLLl1/jXiK7/8yuL4ENXPCCpklTkxHRCz4/teui+aJgA4
-         n0w7eC++x+3Q/DuRGB4V9SAo8EZYQ7OYFk6rRCfVVI3mc4jgBZcTGWIo/5iqdCI/OBTg
-         9IkUdIShLal30IKV0DZ8VaBwDaEL14DLa13qFx5WX87BkZbwnWjsEAuh6GIWQJ3GhIun
-         UZg4IT6Q2RD7YzbPupQoNTNBBP+iQPhhzqS0+HtgTf3qDg1/ag9TNJlrljxJwbKZxD70
-         HotA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=XoXisWW93pi2sg9tIKJ01ulYb1YdPWU5OGPWRm7ICC8=;
-        b=DiHW7vePiRkykqYQ7rYzFJoEOG1TmKcL9ZERm3Ry2i8KmParjgKsPe6XTquumBqGez
-         sHRj/galPRSO7s7yBVrpHt7Dm6EyA7dIGCGQswwnyuBOQkMtyzvxCPtM03pQsQRcZKcm
-         HX/bj2NAf0oWhafCoBGyrz979XVJ7xJuTNHKrdwkpYUZG5YgHHFZytpG18gl0LyMD2fU
-         Q0Jr+/MROmYiscia32wBydT8ZN6xRj5X/1Hk3veUUEGmqXV3OGNxlT8USz1ieWYMRbdV
-         pD6rgPtwiMHpzi9kZ95hrS3TAAr1K6/CP+Z/DZyj7bvfs3ey4NN8X+CuEp4qubmS++AP
-         7taA==
-X-Gm-Message-State: AOAM531u9mGf+eKcdCx5s7ZLNkdncliT/hEcGrUJ4vm04hbN6k89RaQZ
-        s1FZAdQ67B1pjwxu1aZ33Zk=
-X-Google-Smtp-Source: ABdhPJxz1OvwDf6onrSDOBQ3m4NWwCfjreQVmBfTLj/cPJO7pdDw9tod5DFAPbxVQ1P8+ZVmz1FBfg==
-X-Received: by 2002:a7b:c844:0:b0:37b:b986:7726 with SMTP id c4-20020a7bc844000000b0037bb9867726mr20648461wml.160.1647877443015;
-        Mon, 21 Mar 2022 08:44:03 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
-        by smtp.gmail.com with ESMTPSA id k40-20020a05600c1ca800b0038c6c8b7fa8sm15457215wms.25.2022.03.21.08.44.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 08:44:02 -0700 (PDT)
-Date:   Mon, 21 Mar 2022 16:14:43 +0100
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-clk@vger.kernel.org
-Subject: Re: [PATCH v4 18/18] dt-bindings: arm: msm: Convert kpss-gcc driver
- Documentation to yaml
-Message-ID: <YjiWY9wxGMtUAcjY@Ansuel-xps.localdomain>
-References: <20220321144825.11736-1-ansuelsmth@gmail.com>
- <20220321144825.11736-19-ansuelsmth@gmail.com>
- <a7837388-e36f-9e55-4107-9f7f85571f3b@kernel.org>
+        Mon, 21 Mar 2022 11:45:51 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F14C13FB2
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 08:44:17 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: bbeckett)
+        with ESMTPSA id CF1551F42764
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1647877456;
+        bh=Z5EhRCR8SM/OwLmxsF67iIbxxSpDBZ8yq/gYZ2Z4Kss=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=kqpWzbAFNsd9ff+MRTD59ZUP6F2XXuxIZK8Y7dS4h07GqIxpZfWrbv3QCUOKmB6EC
+         cdscyqdG0uHJigAgGAAtnDQdpfqsOe2FvoX51SpHbpnD+9/ZmsV0yzO5QQoU3qgac3
+         J/U/Ip1ZlNX/q0DFrDwUIF4wQ543z7scn7YQj910n2DOF/mR1v2dzsqBJnAK+XEXUm
+         FLuZxZYy98DA5mHdIvvBYDB73HPKr9/j84UwgXzdLvT0vnvS0/e0+rIlg6b6Sbnpyh
+         lujNmAwU66FdB7y1ltGk8/grY+g/01BxZz71KJT/ARixDvp1ZP55n7hGEASZov3KNS
+         9R/ulETJM79FQ==
+Message-ID: <a29021bd-1447-038a-e141-d06b53173d36@collabora.com>
+Date:   Mon, 21 Mar 2022 15:44:13 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a7837388-e36f-9e55-4107-9f7f85571f3b@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] drm/ttm: fix potential null ptr deref in when mem space
+ alloc fails
+Content-Language: en-US
+To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        dri-devel@lists.freedesktop.org, Huang Rui <ray.huang@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Matthew Auld <matthew.auld@intel.com>
+Cc:     linux-kernel@vger.kernel.org
+References: <20220318195004.416539-1-bob.beckett@collabora.com>
+ <8688c626-5858-18ba-593b-cdf179ca5201@amd.com>
+From:   Robert Beckett <bob.beckett@collabora.com>
+In-Reply-To: <8688c626-5858-18ba-593b-cdf179ca5201@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 04:41:37PM +0100, Krzysztof Kozlowski wrote:
-> On 21/03/2022 15:48, Ansuel Smith wrote:
-> > Convert kpss-gcc driver Documentation to yaml.
-> > 
-> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> > ---
-> >  .../bindings/arm/msm/qcom,kpss-gcc.txt        | 44 ------------
-> >  .../bindings/arm/msm/qcom,kpss-gcc.yaml       | 68 +++++++++++++++++++
-> >  2 files changed, 68 insertions(+), 44 deletions(-)
-> >  delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
-> >  create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
-> > 
-> > diff --git a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
-> > deleted file mode 100644
-> > index e628758950e1..000000000000
-> > --- a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
-> > +++ /dev/null
-> > @@ -1,44 +0,0 @@
-> > -Krait Processor Sub-system (KPSS) Global Clock Controller (GCC)
-> > -
-> > -PROPERTIES
-> > -
-> > -- compatible:
-> > -	Usage: required
-> > -	Value type: <string>
-> > -	Definition: should be one of the following. The generic compatible
-> > -			"qcom,kpss-gcc" should also be included.
-> > -			"qcom,kpss-gcc-ipq8064", "qcom,kpss-gcc"
-> > -			"qcom,kpss-gcc-apq8064", "qcom,kpss-gcc"
-> > -			"qcom,kpss-gcc-msm8974", "qcom,kpss-gcc"
-> > -			"qcom,kpss-gcc-msm8960", "qcom,kpss-gcc"
-> > -
-> > -- reg:
-> > -	Usage: required
-> > -	Value type: <prop-encoded-array>
-> > -	Definition: base address and size of the register region
-> > -
-> > -- clocks:
-> > -	Usage: required
-> > -	Value type: <prop-encoded-array>
-> > -	Definition: reference to the pll parents.
-> > -
-> > -- clock-names:
-> > -	Usage: required
-> > -	Value type: <stringlist>
-> > -	Definition: must be "pll8_vote", "pxo".
-> > -
-> > -- clock-output-names:
-> > -	Usage: required
-> > -	Value type: <string>
-> > -	Definition: Name of the output clock. Typically acpu_l2_aux indicating
-> > -		    an L2 cache auxiliary clock.
-> > -
-> > -Example:
-> > -
-> > -	l2cc: clock-controller@2011000 {
-> > -		compatible = "qcom,kpss-gcc-ipq8064", "qcom,kpss-gcc";
-> > -		reg = <0x2011000 0x1000>;
-> > -		clocks = <&gcc PLL8_VOTE>, <&gcc PXO_SRC>;
-> > -		clock-names = "pll8_vote", "pxo";
-> > -		clock-output-names = "acpu_l2_aux";
-> > -	};
-> > diff --git a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
-> > new file mode 100644
-> > index 000000000000..20ee182eb16f
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
-> > @@ -0,0 +1,68 @@
-> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/arm/msm/qcom,kpss-gcc.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Krait Processor Sub-system (KPSS) Global Clock Controller (GCC)
-> > +
-> > +maintainers:
-> > +  - Ansuel Smith <ansuelsmth@gmail.com>
-> > +
-> > +description: |
-> > +  Krait Processor Sub-system (KPSS) Global Clock Controller (GCC). Used
-> > +  to control L2 mux (in the current implementation).
-> > +
-> > +properties:
-> > +  compatible:
-> > +    items:
-> > +      - enum:
-> > +          - qcom,kpss-gcc-ipq8064
-> > +          - qcom,kpss-gcc-apq8064
-> > +          - qcom,kpss-gcc-msm8974
-> > +          - qcom,kpss-gcc-msm8960
-> > +      - const: qcom,kpss-gcc
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  clocks:
-> > +    items:
-> > +      - description: phandle to pll8_vote
-> > +      - description: phandle to pxo_board
-> > +
-> > +  clock-names:
-> > +    items:
-> > +      - const: pll8_vote
-> > +      - const: pxo
-> > +
-> > +  clock-output-names:
-> > +    const: acpu_l2_aux
-> > +
-> > +  '#clock-cells':
-> > +    const: 0
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - clocks
-> > +  - clock-names
-> > +  - clock-output-names
-> > +  - '#clock-cells'
-> 
-> You add here a new required property, so this is not a pure conversion.
-> Please explain in the commit msg why are you doing this. I asked about
-> this in your previous patchset.
-> 
-> Best regards,
-> Krzysztof
 
-Sorry I probably missed it. Just to make sure you are referring to
-#clock-cells?
-Since this expose a clock, clock-cells is required. Should I put this in
-a different commit? 
 
--- 
-	Ansuel
+On 21/03/2022 09:51, Christian König wrote:
+> Am 18.03.22 um 20:50 schrieb Robert Beckett:
+>> when allocating a resource in place it is common to free the buffer's
+>> resource, then allocate a new resource in a different placement.
+>>
+>> e.g. amdgpu_bo_create_kernel_at calls ttm_resource_free, then calls
+>> ttm_bo_mem_space.
+> 
+> Well yes I'm working the drivers towards this, but NAK at the moment. 
+> Currently bo->resource is never expected to be NULL.
+> 
+> And yes I'm searching for this bug in amdgpu for quite a while. Where 
+> exactly does that happen?
+
+in my case, I am writing new code for i915 that does this. I will switch 
+it to allocate the new resource first, then free the old one if successful.
+
+For the existing amd case, see 
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c?h=v5.17#n384
+
+
+amdgpu_bo_create_kernel_at calls ttm_resource_free, then calls 
+ttm_bo_mem_space. If the ttm_bo_mem_space call fails (e.g. due to memory 
+pressure), then the error path will try to deref bo->resource, which 
+will be null at that point.
+
+
+to fix this, I honestly don't see a reason to not also have the safety 
+check for null there. It could check early and return an error if it is 
+null. I think that defensive programming here makes sense, better than a 
+null deref if someone programs it wrong.
+
+
+
+> 
+> Amdgpu is supposed to allocate a new resource first, then do a swap and 
+> the free the old one.
+> 
+> Thanks,
+> Christian.
+> 
+>>
+>> In this situation, bo->resource will be null as it is cleared during
+>> the initial freeing of the previous resource.
+>> This leads to a null deref.
+>>
+>> Fixes: d3116756a710 (drm/ttm: rename bo->mem and make it a pointer)
+>>
+>> Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+>> ---
+>>   drivers/gpu/drm/ttm/ttm_bo.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/gpu/drm/ttm/ttm_bo.c b/drivers/gpu/drm/ttm/ttm_bo.c
+>> index db3dc7ef5382..62b29ee7d040 100644
+>> --- a/drivers/gpu/drm/ttm/ttm_bo.c
+>> +++ b/drivers/gpu/drm/ttm/ttm_bo.c
+>> @@ -875,7 +875,7 @@ int ttm_bo_mem_space(struct ttm_buffer_object *bo,
+>>       }
+>>   error:
+>> -    if (bo->resource->mem_type == TTM_PL_SYSTEM && !bo->pin_count)
+>> +    if (bo->resource && bo->resource->mem_type == TTM_PL_SYSTEM && 
+>> !bo->pin_count)
+>>           ttm_bo_move_to_lru_tail_unlocked(bo);
+>>       return ret;
+> 
