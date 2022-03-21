@@ -2,278 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC85BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:29:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB0E2C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:29:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349068AbiCUOad (ORCPT
+        id S1349119AbiCUOan (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:30:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59588 "EHLO
+        Mon, 21 Mar 2022 10:30:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349355AbiCUO37 (ORCPT
+        with ESMTP id S1349293AbiCUO1y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:29:59 -0400
-Received: from srv6.fidu.org (srv6.fidu.org [IPv6:2a01:4f8:231:de0::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42B7557B1F;
-        Mon, 21 Mar 2022 07:25:23 -0700 (PDT)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by srv6.fidu.org (Postfix) with ESMTP id 8C7C7C8008A;
-        Mon, 21 Mar 2022 15:25:21 +0100 (CET)
-X-Virus-Scanned: Debian amavisd-new at srv6.fidu.org
-Received: from srv6.fidu.org ([127.0.0.1])
-        by localhost (srv6.fidu.org [127.0.0.1]) (amavisd-new, port 10024)
-        with LMTP id AKq31pyT3rN5; Mon, 21 Mar 2022 15:25:21 +0100 (CET)
-Received: from [192.168.178.30] (host-212-18-30-247.customer.m-online.net [212.18.30.247])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: wse@tuxedocomputers.com)
-        by srv6.fidu.org (Postfix) with ESMTPSA id EE73FC80080;
-        Mon, 21 Mar 2022 15:25:20 +0100 (CET)
-Message-ID: <e8fa9e33-f8af-d449-b357-6c6f310329ad@tuxedocomputers.com>
-Date:   Mon, 21 Mar 2022 15:25:16 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 1/3] Input/i8042: Merge quirk tables
-Content-Language: en-US
-To:     Hans de Goede <hdegoede@redhat.com>, dmitry.torokhov@gmail.com,
-        tiwai@suse.de, mpdesouza@suse.com, arnd@arndb.de, samuel@cavoj.net,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220308170523.783284-1-wse@tuxedocomputers.com>
- <20220308170523.783284-2-wse@tuxedocomputers.com>
- <e84d98e6-541d-8cc7-626e-f92d76230528@redhat.com>
-From:   Werner Sembach <wse@tuxedocomputers.com>
-In-Reply-To: <e84d98e6-541d-8cc7-626e-f92d76230528@redhat.com>
+        Mon, 21 Mar 2022 10:27:54 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5733EFD2
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 07:21:59 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id g20so18035483edw.6
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 07:21:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fairphone.com; s=fair;
+        h=mime-version:content-transfer-encoding:date:message-id:cc:subject
+         :from:to:references:in-reply-to;
+        bh=wqQ731hjmzYwePMzj+DNt4zNoUy/RV/H/tR/xZClBEc=;
+        b=a7Rj6AcABHT78i9TWBgkQWPokagDU0jBGQ8LsSbBRRv/OI/4rMl/1lju5JlyvS+tKB
+         IuOqDYxcyotfBCrs3bvIdzLsazH1bv1ZEmVlUQGa01tFitcvq362wqqPjcwvMHU7Adyr
+         LKkIWbPU5R+35AO/6VOvWccjhxctlXSXVTUvF9VuG2KG6LZQSYI9F5O6OHG7RmNdiQsC
+         bUXm1f5BMaOcPQIoXlbmwPYJhJEIUd8GGJfSKJ0o7MumrzXVWEi6/qIwGoJ7Pq6eiTMO
+         Eppsl4kulnTjm3XxgvwUK4oVT+R3wYUCPwo0/7uQkZWeF7evkxcElK0yCJUwT40bNalq
+         gn9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:content-transfer-encoding:date
+         :message-id:cc:subject:from:to:references:in-reply-to;
+        bh=wqQ731hjmzYwePMzj+DNt4zNoUy/RV/H/tR/xZClBEc=;
+        b=qbQF+Gq4xKKc/ZHxJlE4aP6RX6Tub+acy0OXZODrJIPicTh3+V3N42f+Q56lWroGIK
+         uChjBDy9qvoVN5DBP+RfGWnTzUbasgAH0Bx+R3+oDwfyscyKViGeKnArIy8Bpv+C8SSN
+         p8rEhFpk48YL55YWqcI4B/0GxXjMZ9ilJsZXl2F7ZwzOe1yAtKPNYlPUpZSprclckf7H
+         hkqG5BglKXRnNyKHL8BcudfJksYSkKCGOtql2+AzK66YLLQwT3S5ASRc9Td1ITxgqA12
+         HKnTej6dP1pQb3AN+bUGuTMIXOcEMZ6Wi1l3BN6oDWBgNQLOaHqBVb5ADeuKTEEoRifi
+         3bYQ==
+X-Gm-Message-State: AOAM5317tXkaVEnCy9nXZwlERJAzcLM1BoY6nSQnTqIihy40aJRkLN1j
+        gAXlZHAQijarRhDZkt/5WuJR4Q==
+X-Google-Smtp-Source: ABdhPJyJQVu0Cr0w5giMNOtom9UMGLM/PCPym5H/QrHqy+QJ5fE7S8CUPrlQk3ekr9KXq9nUVZImUA==
+X-Received: by 2002:a05:6402:d2:b0:413:2e50:d6fd with SMTP id i18-20020a05640200d200b004132e50d6fdmr23158510edu.171.1647872517856;
+        Mon, 21 Mar 2022 07:21:57 -0700 (PDT)
+Received: from localhost (a246182.upc-a.chello.nl. [62.163.246.182])
+        by smtp.gmail.com with ESMTPSA id bn14-20020a170906c0ce00b006c5ef0494besm6945946ejb.86.2022.03.21.07.21.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Mar 2022 07:21:57 -0700 (PDT)
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Date:   Mon, 21 Mar 2022 15:21:56 +0100
+Message-Id: <CIPM1ZGMNRPK.36O4MO2RGWRV8@otso>
+Cc:     <linux-arm-msm@vger.kernel.org>,
+        <~postmarketos/upstreaming@lists.sr.ht>,
+        <phone-devel@vger.kernel.org>, "Andy Gross" <agross@kernel.org>,
+        "Linus Walleij" <linus.walleij@linaro.org>,
+        "AngeloGioacchino Del Regno" 
+        <angelogioacchino.delregno@somainline.org>,
+        "Konrad Dybcio" <konrad.dybcio@somainline.org>,
+        <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 4/6] pinctrl: qcom: sm6350: fix order of UFS & SDC
+ pins
+From:   "Luca Weiss" <luca.weiss@fairphone.com>
+To:     "Bjorn Andersson" <bjorn.andersson@linaro.org>
+References: <20220321133318.99406-1-luca.weiss@fairphone.com>
+ <20220321133318.99406-5-luca.weiss@fairphone.com>
+ <YjiIZBbPN7pAUl1q@builder.lan>
+In-Reply-To: <YjiIZBbPN7pAUl1q@builder.lan>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Bjorn,
 
-Am 09.03.22 um 18:16 schrieb Hans de Goede:
-> Hi,
+On Mon Mar 21, 2022 at 3:15 PM CET, Bjorn Andersson wrote:
+> On Mon 21 Mar 08:33 CDT 2022, Luca Weiss wrote:
 >
-> On 3/8/22 18:05, Werner Sembach wrote:
->> Merge i8042 quirk tables to reduce code duplication for devices that need
->> more than one quirk.
->>
->> Also align quirkable options with command line parameters and make vendor
->> wide quirks per device overwriteable on a per device basis.
->>
->> Some duplication on the ASUS devices is required to mirror the exact
->> behaviour of the previous code.
-> Can you explain this a bit more ?
-Yes, see next patch
+> > In other places the SDC and UFS pins have been swapped but this was
+> > missed in the PINCTRL_PIN definitions. Fix that.
+> >=20
+> > Fixes: 7d74b55afd27 ("pinctrl: qcom: Add SM6350 pinctrl driver")
+> > Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
 >
+> Your proposed change looks good, but when I look at 7d74b55afd27 it
+> already has these entries in the correct order.
 >
->
->> Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
->> Cc: stable@vger.kernel.org
->> ---
->>  drivers/input/serio/i8042-x86ia64io.h | 1125 ++++++++++++++-----------
->>  1 file changed, 640 insertions(+), 485 deletions(-)
->>
->> diff --git a/drivers/input/serio/i8042-x86ia64io.h b/drivers/input/serio/i8042-x86ia64io.h
->> index 148a7c5fd0e2..689b9ee3e742 100644
->> --- a/drivers/input/serio/i8042-x86ia64io.h
->> +++ b/drivers/input/serio/i8042-x86ia64io.h
->> @@ -67,675 +67,821 @@ static inline void i8042_write_command(int val)
->>  
->>  #include <linux/dmi.h>
->>  
->> -static const struct dmi_system_id __initconst i8042_dmi_noloop_table[] = {
->> +#define SERIO_QUIRK_NOKBD		BIT(0)
->> +#define SERIO_QUIRK_NOAUX		BIT(1)
->> +#define SERIO_QUIRK_NOMUX		BIT(2)
->> +#define SERIO_QUIRK_FORCEMUX		BIT(3)
->> +#define SERIO_QUIRK_UNLOCK		BIT(4)
->> +#define SERIO_QUIRK_PROBE_DEFER		BIT(5)
->> +#define SERIO_QUIRK_RESET_ALWAYS	BIT(6)
->> +#define SERIO_QUIRK_RESET_NEVER		BIT(7)
->> +#define SERIO_QUIRK_DIECT		BIT(8)
->> +#define SERIO_QUIRK_DUMBKBD		BIT(9)
->> +#define SERIO_QUIRK_NOLOOP		BIT(10)
->> +#define SERIO_QUIRK_NOTIMEOUT		BIT(11)
->> +#define SERIO_QUIRK_KBDRESET		BIT(12)
->> +#define SERIO_QUIRK_DRITEK		BIT(13)
->> +#define SERIO_QUIRK_NOPNP		BIT(14)
->> +
->> +/* Quirk table for different mainboards. Options similar or identical to i8042
->> + * module parameters.
->> + * ORDERING IS IMPORTANT! The first match will be apllied and the rest ignored.
->> + * This allows entries to overwrite vendor wide quirks on a per device basis.
->> + * Where this is irrelevant, entries are sorted case sensitive by DMI_SYS_VENDOR
->> + * and/or DMI_BOARD_VENDOR to make it easier to avoid dublicate entries.
->> + */
->> +static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
-> <snip>
->
->> @@ -1167,11 +1307,6 @@ static int __init i8042_pnp_init(void)
->>  	bool pnp_data_busted = false;
->>  	int err;
->>  
->> -#ifdef CONFIG_X86
->> -	if (dmi_check_system(i8042_dmi_nopnp_table))
->> -		i8042_nopnp = true;
->> -#endif
->> -
->>  	if (i8042_nopnp) {
->>  		pr_info("PNP detection disabled\n");
->>  		return 0;
-> have you checked that i8042_platform_init() *always*
-> gets called before i8042_pnp_init()?
-As far as i can tell i8042_pnp_init() is only ever called inside i8042_platform_init() so moving this check from pnp
-init to platform init should be no problem.
->
-> Maybe just add something like this:
->
-> #ifdef CONFIG_X86
-> static void __init i8042_check_quirks(void)
-> {
-> 	const struct dmi_system_id *device_quirk_info;
-> 	uintptr_t quirks;
->
-> 	device_quirk_info = dmi_first_match(i8042_dmi_quirk_table);
-> 	if (!device_quirk_info)
-> 		return;
->
-> 	quirks = (uintptr_t)device_quirk_info->driver_data;
->
-> 	if (i8042_reset == I8042_RESET_DEFAULT) {
-> 		if (quirks & SERIO_QUIRK_RESET)
-> 			i8042_reset = I8042_RESET_ALWAYS;
-> 		if (quirks & SERIO_QUIRK_NOSELFTEST)
-> 			i8042_reset = I8042_RESET_NEVER;
-> 	}
->
-> 	/* Do more quirk checks */
-> }
-> #else
-> static inline void i8042_check_quirks(void) {}
-> #endif
->
-> (above the declaration of i8042_pnp_init())
->
-> And call i8042_check_quirks() in both
-> i8042_platform_init() and i8042_platform_init() ?
->
-> This also abstracts some of the CONFIG_X86
-> ifdef-ery out of the other functions.
->
->
->> @@ -1277,6 +1412,9 @@ static inline void i8042_pnp_exit(void) { }
->>  
->>  static int __init i8042_platform_init(void)
->>  {
->> +	bool i8042_reset_always_quirk = false;
->> +	bool i8042_reset_never_quirk = false;
-> I'm not a fan of these 2 helper variables, you can do this directly,
-> see above.
->
->> +	const struct dmi_system_id *device_quirk_info;
-> All 3 these variables will trigger unused variable
-> settings when compiling without CONFIG_X86 set. Note
-> introducing the i8042_check_quirks() helper as I suggest
-> above avoids this without needing more #ifdef-ery.
+> Can you please confirm that this is still applicable. Or help me see
+> what I am missing.
 
-Fixed by moving it to its own function as you suggested.
+There are 3 times where number and description should match.
+For this UFS pin on sm6350 only 2/3 match.
+2x the number is 156, 1x it's 163
 
-My original reasoning for the helper variables was that i didn't want to move the i8042_reset evaluation, but then did
-it anyways in the next patch after checking that pnp_init doesn't use the variable.
+$ grep -i ufs_reset drivers/pinctrl/qcom/pinctrl-sm6350.c
+        PINCTRL_PIN(163, "UFS_RESET"),
+static const unsigned int ufs_reset_pins[] =3D { 156 };
+        [156] =3D UFS_RESET(ufs_reset, 0xae000),
+
+Does that help?
+
+Regards
+Luca
+
 
 >
->>  	int retval;
->>  
->>  #ifdef CONFIG_X86
->> @@ -1297,6 +1435,44 @@ static int __init i8042_platform_init(void)
->>  	i8042_kbd_irq = I8042_MAP_IRQ(1);
->>  	i8042_aux_irq = I8042_MAP_IRQ(12);
->>  
->> +#ifdef CONFIG_X86
->> +	device_quirk_info = dmi_first_match(i8042_dmi_quirk_table);
->> +	if (device_quirk_info) {
->> +		if ((uintptr_t)device_quirk_info->driver_data & SERIO_QUIRK_NOKBD)
->> +			i8042_nokbd = true;
->> +		if ((uintptr_t)device_quirk_info->driver_data & SERIO_QUIRK_NOAUX)
->> +			i8042_noaux = true;
->> +		if ((uintptr_t)device_quirk_info->driver_data & SERIO_QUIRK_NOMUX)
->> +			i8042_nomux = true;
->> +		if ((uintptr_t)device_quirk_info->driver_data & SERIO_QUIRK_FORCEMUX)
->> +			i8042_nomux = false;
->> +		if ((uintptr_t)device_quirk_info->driver_data & SERIO_QUIRK_UNLOCK)
->> +			i8042_unlock = true;
->> +		if ((uintptr_t)device_quirk_info->driver_data & SERIO_QUIRK_PROBE_DEFER)
->> +			i8042_probe_defer = true;
->> +		if ((uintptr_t)device_quirk_info->driver_data & SERIO_QUIRK_RESET_ALWAYS)
->> +			i8042_reset_always_quirk = true;
->> +		if ((uintptr_t)device_quirk_info->driver_data & SERIO_QUIRK_RESET_NEVER)
->> +			i8042_reset_never_quirk = true;
->> +		if ((uintptr_t)device_quirk_info->driver_data & SERIO_QUIRK_DIECT)
->> +			i8042_direct = true;
->> +		if ((uintptr_t)device_quirk_info->driver_data & SERIO_QUIRK_DUMBKBD)
->> +			i8042_dumbkbd = true;
->> +		if ((uintptr_t)device_quirk_info->driver_data & SERIO_QUIRK_NOLOOP)
->> +			i8042_noloop = true;
->> +		if ((uintptr_t)device_quirk_info->driver_data & SERIO_QUIRK_NOTIMEOUT)
->> +			i8042_notimeout = true;
->> +		if ((uintptr_t)device_quirk_info->driver_data & SERIO_QUIRK_KBDRESET)
->> +			i8042_kbdreset = true;
->> +		if ((uintptr_t)device_quirk_info->driver_data & SERIO_QUIRK_DRITEK)
->> +			i8042_dritek = true;
->> +#ifdef CONFIG_PNP
->> +		if ((uintptr_t)device_quirk_info->driver_data & SERIO_QUIRK_NOPNP)
->> +			i8042_nopnp = true;
->> +#endif
->> +	}
->> +#endif
->> +
->>  	retval = i8042_pnp_init();
->>  	if (retval)
->>  		return retval;
->> @@ -1308,34 +1484,13 @@ static int __init i8042_platform_init(void)
->>  #ifdef CONFIG_X86
->>  	/* Honor module parameter when value is not default */
->>  	if (i8042_reset == I8042_RESET_DEFAULT) {
->> -		if (dmi_check_system(i8042_dmi_reset_table))
->> +		if (i8042_reset_always_quirk)
->>  			i8042_reset = I8042_RESET_ALWAYS;
->>  
->> -		if (dmi_check_system(i8042_dmi_noselftest_table))
->> +		if (i8042_reset_never_quirk)
->>  			i8042_reset = I8042_RESET_NEVER;
->>  	}
->>  
->> -	if (dmi_check_system(i8042_dmi_noloop_table))
->> -		i8042_noloop = true;
->> -
->> -	if (dmi_check_system(i8042_dmi_nomux_table))
->> -		i8042_nomux = true;
->> -
->> -	if (dmi_check_system(i8042_dmi_forcemux_table))
->> -		i8042_nomux = false;
->> -
->> -	if (dmi_check_system(i8042_dmi_notimeout_table))
->> -		i8042_notimeout = true;
->> -
->> -	if (dmi_check_system(i8042_dmi_dritek_table))
->> -		i8042_dritek = true;
->> -
->> -	if (dmi_check_system(i8042_dmi_kbdreset_table))
->> -		i8042_kbdreset = true;
->> -
->> -	if (dmi_check_system(i8042_dmi_probe_defer_table))
->> -		i8042_probe_defer = true;
->> -
->>  	/*
->>  	 * A20 was already enabled during early kernel init. But some buggy
->>  	 * BIOSes (in MSI Laptops) require A20 to be enabled using 8042 to
 > Regards,
+> Bjorn
 >
-> Hans
->
->
-Regards,
-
-Werner
+> > ---
+> > Changes in v2:
+> > - nothing
+> >=20
+> >  drivers/pinctrl/qcom/pinctrl-sm6350.c | 16 ++++++++--------
+> >  1 file changed, 8 insertions(+), 8 deletions(-)
+> >=20
+> > diff --git a/drivers/pinctrl/qcom/pinctrl-sm6350.c b/drivers/pinctrl/qc=
+om/pinctrl-sm6350.c
+> > index 4d37b817b232..a91a86628f2f 100644
+> > --- a/drivers/pinctrl/qcom/pinctrl-sm6350.c
+> > +++ b/drivers/pinctrl/qcom/pinctrl-sm6350.c
+> > @@ -264,14 +264,14 @@ static const struct pinctrl_pin_desc sm6350_pins[=
+] =3D {
+> >  	PINCTRL_PIN(153, "GPIO_153"),
+> >  	PINCTRL_PIN(154, "GPIO_154"),
+> >  	PINCTRL_PIN(155, "GPIO_155"),
+> > -	PINCTRL_PIN(156, "SDC1_RCLK"),
+> > -	PINCTRL_PIN(157, "SDC1_CLK"),
+> > -	PINCTRL_PIN(158, "SDC1_CMD"),
+> > -	PINCTRL_PIN(159, "SDC1_DATA"),
+> > -	PINCTRL_PIN(160, "SDC2_CLK"),
+> > -	PINCTRL_PIN(161, "SDC2_CMD"),
+> > -	PINCTRL_PIN(162, "SDC2_DATA"),
+> > -	PINCTRL_PIN(163, "UFS_RESET"),
+> > +	PINCTRL_PIN(156, "UFS_RESET"),
+> > +	PINCTRL_PIN(157, "SDC1_RCLK"),
+> > +	PINCTRL_PIN(158, "SDC1_CLK"),
+> > +	PINCTRL_PIN(159, "SDC1_CMD"),
+> > +	PINCTRL_PIN(160, "SDC1_DATA"),
+> > +	PINCTRL_PIN(161, "SDC2_CLK"),
+> > +	PINCTRL_PIN(162, "SDC2_CMD"),
+> > +	PINCTRL_PIN(163, "SDC2_DATA"),
+> >  };
+> > =20
+> >  #define DECLARE_MSM_GPIO_PINS(pin) \
+> > --=20
+> > 2.35.1
+> >=20
 
