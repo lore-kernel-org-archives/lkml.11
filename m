@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 740C8C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64F83C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350892AbiCUOKU (ORCPT
+        id S1350837AbiCUOKR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:10:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38064 "EHLO
+        Mon, 21 Mar 2022 10:10:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349290AbiCUODf (ORCPT
+        with ESMTP id S1349328AbiCUODh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:03:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9C3117B884;
-        Mon, 21 Mar 2022 07:00:47 -0700 (PDT)
+        Mon, 21 Mar 2022 10:03:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C59617DC9C;
+        Mon, 21 Mar 2022 07:00:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 919D66132F;
-        Mon, 21 Mar 2022 14:00:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A202EC340E8;
-        Mon, 21 Mar 2022 14:00:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9BC47B816DC;
+        Mon, 21 Mar 2022 14:00:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3CD6C36AF4;
+        Mon, 21 Mar 2022 14:00:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871237;
-        bh=M93oX6hsvrUhpN8B7XvzibrLcc4I2SIntqF+zDbjuwY=;
+        s=korg; t=1647871251;
+        bh=YI0Pj/MCWWLmrZ5PxLl4YpU7F5x0b+D5WDsBjbU/jyE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NzXx2fytyAPd1xS1QX31dhBRVPRIjq+BafO0gi4FaidP04WEmgOfQjljMisb2lPKV
-         TSzLWY4nEMzv/lTnONlcvPxoVFSyqgz4zLE7Sl67zLrl5THPuwbj35cgO6YPwV7fbg
-         Wi9yu8ndKCaGyWIyKwzVRd4ksIUiWsLfmb4I9AIc=
+        b=hhn+AAAXV6O0Mg82PErqZbtgrn1ukfADrE/Mvtg2kS0p/kI6fs3LnJESexCoP1T9v
+         WxfvVvY11jAqfXcjGWkvIfID4QkYduUbmMX6T1bhZFEK6pg2FQTI5vfkZne/gllEXm
+         B6nOL+REsInY52jfVSI0EOmDu1mpWLC7O+I2k8KU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 22/32] net: bcmgenet: skip invalid partial checksums
-Date:   Mon, 21 Mar 2022 14:52:58 +0100
-Message-Id: <20220321133221.205761871@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        syzbot+348b571beb5eeb70a582@syzkaller.appspotmail.com
+Subject: [PATCH 5.15 27/32] usb: gadget: Fix use-after-free bug by not setting udc->dev.driver
+Date:   Mon, 21 Mar 2022 14:53:03 +0100
+Message-Id: <20220321133221.347515228@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133220.559554263@linuxfoundation.org>
 References: <20220321133220.559554263@linuxfoundation.org>
@@ -51,45 +49,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Doug Berger <opendmb@gmail.com>
+From: Alan Stern <stern@rowland.harvard.edu>
 
-[ Upstream commit 0f643c88c8d240eba0ea25c2e095a46515ff46e9 ]
+commit 16b1941eac2bd499f065a6739a40ce0011a3d740 upstream.
 
-The RXCHK block will return a partial checksum of 0 if it encounters
-a problem while receiving a packet. Since a 1's complement sum can
-only produce this result if no bits are set in the received data
-stream it is fair to treat it as an invalid partial checksum and
-not pass it up the stack.
+The syzbot fuzzer found a use-after-free bug:
 
-Fixes: 810155397890 ("net: bcmgenet: use CHECKSUM_COMPLETE for NETIF_F_RXCSUM")
-Signed-off-by: Doug Berger <opendmb@gmail.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220317012812.1313196-1-opendmb@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+BUG: KASAN: use-after-free in dev_uevent+0x712/0x780 drivers/base/core.c:2320
+Read of size 8 at addr ffff88802b934098 by task udevd/3689
+
+CPU: 2 PID: 3689 Comm: udevd Not tainted 5.17.0-rc4-syzkaller-00229-g4f12b742eb2b #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0x8d/0x303 mm/kasan/report.c:255
+ __kasan_report mm/kasan/report.c:442 [inline]
+ kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
+ dev_uevent+0x712/0x780 drivers/base/core.c:2320
+ uevent_show+0x1b8/0x380 drivers/base/core.c:2391
+ dev_attr_show+0x4b/0x90 drivers/base/core.c:2094
+
+Although the bug manifested in the driver core, the real cause was a
+race with the gadget core.  dev_uevent() does:
+
+	if (dev->driver)
+		add_uevent_var(env, "DRIVER=%s", dev->driver->name);
+
+and between the test and the dereference of dev->driver, the gadget
+core sets dev->driver to NULL.
+
+The race wouldn't occur if the gadget core registered its devices on
+a real bus, using the standard synchronization techniques of the
+driver core.  However, it's not necessary to make such a large change
+in order to fix this bug; all we need to do is make sure that
+udc->dev.driver is always NULL.
+
+In fact, there is no reason for udc->dev.driver ever to be set to
+anything, let alone to the value it currently gets: the address of the
+gadget's driver.  After all, a gadget driver only knows how to manage
+a gadget, not how to manage a UDC.
+
+This patch simply removes the statements in the gadget core that touch
+udc->dev.driver.
+
+Fixes: 2ccea03a8f7e ("usb: gadget: introduce UDC Class")
+CC: <stable@vger.kernel.org>
+Reported-and-tested-by: syzbot+348b571beb5eeb70a582@syzkaller.appspotmail.com
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+Link: https://lore.kernel.org/r/YiQgukfFFbBnwJ/9@rowland.harvard.edu
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/broadcom/genet/bcmgenet.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/usb/gadget/udc/core.c |    3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-index 9a67e24f46b2..b4f99dd284e5 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -2243,8 +2243,10 @@ static unsigned int bcmgenet_desc_rx(struct bcmgenet_rx_ring *ring,
- 		dma_length_status = status->length_status;
- 		if (dev->features & NETIF_F_RXCSUM) {
- 			rx_csum = (__force __be16)(status->rx_csum & 0xffff);
--			skb->csum = (__force __wsum)ntohs(rx_csum);
--			skb->ip_summed = CHECKSUM_COMPLETE;
-+			if (rx_csum) {
-+				skb->csum = (__force __wsum)ntohs(rx_csum);
-+				skb->ip_summed = CHECKSUM_COMPLETE;
-+			}
- 		}
+--- a/drivers/usb/gadget/udc/core.c
++++ b/drivers/usb/gadget/udc/core.c
+@@ -1434,7 +1434,6 @@ static void usb_gadget_remove_driver(str
+ 	usb_gadget_udc_stop(udc);
  
- 		/* DMA flags and length are still valid no matter how
--- 
-2.34.1
-
+ 	udc->driver = NULL;
+-	udc->dev.driver = NULL;
+ 	udc->gadget->dev.driver = NULL;
+ }
+ 
+@@ -1496,7 +1495,6 @@ static int udc_bind_to_driver(struct usb
+ 			driver->function);
+ 
+ 	udc->driver = driver;
+-	udc->dev.driver = &driver->driver;
+ 	udc->gadget->dev.driver = &driver->driver;
+ 
+ 	usb_gadget_udc_set_speed(udc, driver->max_speed);
+@@ -1519,7 +1517,6 @@ err1:
+ 		dev_err(&udc->dev, "failed to start %s: %d\n",
+ 			udc->driver->function, ret);
+ 	udc->driver = NULL;
+-	udc->dev.driver = NULL;
+ 	udc->gadget->dev.driver = NULL;
+ 	return ret;
+ }
 
 
