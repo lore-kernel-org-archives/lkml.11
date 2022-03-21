@@ -2,85 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55E39C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:59:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABFE1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:59:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347053AbiCUMBM (ORCPT
+        id S1347059AbiCUMBU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 08:01:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55356 "EHLO
+        Mon, 21 Mar 2022 08:01:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243739AbiCUMBK (ORCPT
+        with ESMTP id S1347058AbiCUMBR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 08:01:10 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D7C933A2D
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 04:59:45 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KMY5W42NlzCr08;
-        Mon, 21 Mar 2022 19:57:35 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 21 Mar
- 2022 19:59:40 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>, <mhocko@suse.com>
-CC:     <kosaki.motohiro@jp.fujitsu.com>, <mgorman@suse.de>,
-        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH v2] mm/mempolicy: fix mpol_new leak in shared_policy_replace
-Date:   Tue, 22 Mar 2022 16:34:56 +0800
-Message-ID: <20220322083456.16563-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
+        Mon, 21 Mar 2022 08:01:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 97D5C35DFF
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 04:59:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647863989;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=M8SduSexr52RIvyqJ7K4vqt1DySM0qnqx8wYMGvEAVM=;
+        b=Zur6uNfLrMIyPBs/RP3Kn69v9OmNHOLFuI4DnbxrYLUjbhxNRaPvICxtOVjStwV8B/+DzA
+        RRqRoZRjm3xR5X5KVtqoG13i6ZP/qvjvI9jd9kN1nn/6uAYdHWgN/5pI5NBkU3ecd4Y7HT
+        5zKmiylzyZysYV3fWK4Z6m8Tomy7RiA=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-134-JZO2FG2FObqXwYcXkrAyYA-1; Mon, 21 Mar 2022 07:59:46 -0400
+X-MC-Unique: JZO2FG2FObqXwYcXkrAyYA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 73AA4811E7A;
+        Mon, 21 Mar 2022 11:59:45 +0000 (UTC)
+Received: from localhost (ovpn-13-106.pek2.redhat.com [10.72.13.106])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 86B5840C1241;
+        Mon, 21 Mar 2022 11:59:44 +0000 (UTC)
+Date:   Mon, 21 Mar 2022 19:59:40 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Eric DeVolder <eric.devolder@oracle.com>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        kexec@lists.infradead.org, ebiederm@xmission.com,
+        dyoung@redhat.com, vgoyal@redhat.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        hpa@zytor.com, nramas@linux.microsoft.com, thomas.lendacky@amd.com,
+        robh@kernel.org, efault@gmx.de, rppt@kernel.org, david@redhat.com,
+        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com
+Subject: Re: [PATCH v5 2/8] x86/crash hp: Introduce CRASH_HOTPLUG
+ configuration options
+Message-ID: <20220321115940.GA354864@MiWiFi-R3L-srv>
+References: <20220303162725.49640-1-eric.devolder@oracle.com>
+ <20220303162725.49640-3-eric.devolder@oracle.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220303162725.49640-3-eric.devolder@oracle.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If mpol_new is allocated but not used in restart loop, mpol_new will be
-freed via mpol_put before returning to the caller.  But refcnt is not
-initialized yet, so mpol_put could not do the right things and might leak
-the unused mpol_new. This issue could be triggered easily with the below
-code snippet if there're many processes doing the below work at the same
-time:
+On 03/03/22 at 11:27am, Eric DeVolder wrote:
+> Support for CPU and memory hotplug for crash is controlled by the
+> CRASH_HOTPLUG configuration option, introduced by this patch.
+> 
+> The CRASH_HOTPLUG_ELFCOREHDR_SZ related configuration option is
+> also introduced with this patch.
 
-  shmid = shmget((key_t)5566, 1024 * PAGE_SIZE, 0666|IPC_CREAT);
-  shm = shmat(shmid, 0, 0);
-  loop many times {
-    mbind(shm, 1024 * PAGE_SIZE, MPOL_LOCAL, mask, maxnode, 0);
-    mbind(shm + 128 * PAGE_SIZE, 128 * PAGE_SIZE, MPOL_DEFAULT, mask,
-          maxnode, 0);
-  }
+Maybe can rephrase it as:
 
-Fixes: 42288fe366c4 ("mm: mempolicy: Convert shared_policy mutex to spinlock")
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Cc: <stable@vger.kernel.org> # 3.8
----
-v1->v2:
-  Add reproducer snippet and Cc stable.
-  Thanks Michal Hocko for review and comment!
----
- mm/mempolicy.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/mm/mempolicy.c b/mm/mempolicy.c
-index a2516d31db6c..4cdd425b2752 100644
---- a/mm/mempolicy.c
-+++ b/mm/mempolicy.c
-@@ -2733,6 +2733,7 @@ static int shared_policy_replace(struct shared_policy *sp, unsigned long start,
- 	mpol_new = kmem_cache_alloc(policy_cache, GFP_KERNEL);
- 	if (!mpol_new)
- 		goto err_out;
-+	refcount_set(&mpol_new->refcnt, 1);
- 	goto restart;
- }
+x86/crash: Introduce new options to support cpu and memory hotplug of crash
  
--- 
-2.23.0
+CRASH_HOTPLUG is to enable cpu and memory hotplug of crash.
+
+CRASH_HOTPLUG_ELFCOREHDR_SZ is used to Specify the maximum size of
+the elfcorehdr buffer/segment.
+ 
+This is a preparation for later usage.
+
+Otherwise, this looks good to me.
+
+
+> 
+> Signed-off-by: Eric DeVolder <eric.devolder@oracle.com>
+> ---
+>  arch/x86/Kconfig | 26 ++++++++++++++++++++++++++
+>  1 file changed, 26 insertions(+)
+> 
+> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+> index 9f5bd41bf660..37eb26563f07 100644
+> --- a/arch/x86/Kconfig
+> +++ b/arch/x86/Kconfig
+> @@ -2061,6 +2061,32 @@ config CRASH_DUMP
+>  	  (CONFIG_RELOCATABLE=y).
+>  	  For more details see Documentation/admin-guide/kdump/kdump.rst
+>  
+> +config CRASH_HOTPLUG
+> +	bool "kernel updates of crash elfcorehdr"
+> +	depends on CRASH_DUMP && (HOTPLUG_CPU || MEMORY_HOTPLUG) && KEXEC_FILE
+> +	help
+> +	  Enable the kernel to update the crash elfcorehdr (which contains
+> +	  the list of CPUs and memory regions) directly when hot plug/unplug
+> +	  of CPUs or memory. Otherwise userspace must monitor these hot
+> +	  plug/unplug change notifications via udev in order to
+> +	  unload-then-reload the crash kernel so that the list of CPUs and
+> +	  memory regions is kept up-to-date. Note that the udev CPU and
+> +	  memory change notifications still occur (however, userspace is not
+> +	  required to monitor for crash dump purposes).
+> +
+> +config CRASH_HOTPLUG_ELFCOREHDR_SZ
+> +	depends on CRASH_HOTPLUG
+> +	int
+> +	default 131072
+> +	help
+> +	  Specify the maximum size of the elfcorehdr buffer/segment.
+> +	  The 128KiB default is sized so that it can accommodate 2048
+> +	  Elf64_Phdr, where each Phdr represents either a CPU or a
+> +	  region of memory.
+> +	  For example, this size can accommodate a machine with up to 1024
+> +	  CPUs and up to 1024 memory regions, eg. as represented by the
+> +	  'System RAM' entries in /proc/iomem.
+> +
+>  config KEXEC_JUMP
+>  	bool "kexec jump"
+>  	depends on KEXEC && HIBERNATION
+> -- 
+> 2.27.0
+> 
 
