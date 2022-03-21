@@ -2,113 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3868CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:28:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4EDFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:28:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349479AbiCUO3a (ORCPT
+        id S1349507AbiCUO3j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:29:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54398 "EHLO
+        Mon, 21 Mar 2022 10:29:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349216AbiCUO10 (ORCPT
+        with ESMTP id S1348845AbiCUO3E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:27:26 -0400
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C91B11A01;
-        Mon, 21 Mar 2022 07:20:36 -0700 (PDT)
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2e5e31c34bfso77775827b3.10;
-        Mon, 21 Mar 2022 07:20:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5H7qegm7zHouDAmzqApTcENSnAkHtRaj15CsQ0Zxro0=;
-        b=KA+ZaBdJpzKhoRIq+G+mvR6WiCdShXhPmHpTcx+NtZChcrffTAK/xHViqL2GI21Xbu
-         bMbrK/+GYik5txaJE6s3fD9ra/rG70JNH9IUgv7+hZLRcd5BHjaKy+aBXQUi9jtdnF9N
-         FXhxG/pIhl95h9oAUFMp4Dt0Bo9kGMJ3c9T0Tm8ReUgBniirbJoVurzrxGhz7dQfQSvc
-         4Vuig5ArmKrdEmn8BqMhpRiyQHnYPbOL7rkF5exbIJg0Kv8lRbMf/zAXFrpHqn6sbmSC
-         1OPI3AjyFRuxldzSZDC9T7hl9jm+zOMTEly8Tw/fmU98N7lyR+G2ho+jiUkGDsYj0cqQ
-         A7eQ==
-X-Gm-Message-State: AOAM5322eXvmVquXecIb/ZD1PSQ4JX1H5qw1LAaftCGP4pHmJEisy2fO
-        uXJC8KttpBwWTRN/OP88vtsTWN/G56803Ye8Hcthp/6vLqg=
-X-Google-Smtp-Source: ABdhPJwc25Stha1LMgXQd7Ju8xaSaIPrtfGJt4nJg2z9i3q3d0vdQVio83XMhRRK2JZyO/WbcNiiQOihrsDXWiiIVhQ=
-X-Received: by 2002:a81:36cf:0:b0:2e5:2597:a026 with SMTP id
- d198-20020a8136cf000000b002e52597a026mr24085340ywa.301.1647872435430; Mon, 21
- Mar 2022 07:20:35 -0700 (PDT)
+        Mon, 21 Mar 2022 10:29:04 -0400
+Received: from relay.hostedemail.com (relay.hostedemail.com [64.99.140.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68360554A5
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 07:24:57 -0700 (PDT)
+Received: from omf08.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay10.hostedemail.com (Postfix) with ESMTP id 09385192A;
+        Mon, 21 Mar 2022 14:24:55 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf08.hostedemail.com (Postfix) with ESMTPA id D6AA52002C;
+        Mon, 21 Mar 2022 14:24:54 +0000 (UTC)
+Message-ID: <fbd86774f021ada289918916ae17b7530e13ec4f.camel@perches.com>
+Subject: Re: [RFC PATCH 1/1] checkpatch: don't suggest else is not useful
+ with chained
+From:   Joe Perches <joe@perches.com>
+To:     Ilpo =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Andy Whitcroft <apw@canonical.com>,
+        Dwaipayan Ray <dwaipayanray1@gmail.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Date:   Mon, 21 Mar 2022 07:24:53 -0700
+In-Reply-To: <5a7bace5-eb8e-6e91-ae89-e4e47ab53a90@linux.intel.com>
+References: <5a7bace5-eb8e-6e91-ae89-e4e47ab53a90@linux.intel.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-References: <20220312043624.40732-1-dacohen@pm.me> <CAJZ5v0gqpQTuNN0WpnEd4dAQmnR=BXSoH_w7kkAxOG7xkftW6Q@mail.gmail.com>
- <YjU3sfYLcEqK1Usd@jiban.lan>
-In-Reply-To: <YjU3sfYLcEqK1Usd@jiban.lan>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 21 Mar 2022 15:20:20 +0100
-Message-ID: <CAJZ5v0j61EMFXpONqPBpQjzm3T3nFeHjfp2YdV3oXW8KnQJ2tw@mail.gmail.com>
-Subject: Re: [PATCH v2] PM: fix dynamic debug within pm_pr_debug()
-To:     David Cohen <dacohen@pm.me>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Rspamd-Server: rspamout02
+X-Rspamd-Queue-Id: D6AA52002C
+X-Stat-Signature: m58d1sym58pkyqzyecewowye4dbd1hrc
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1/Dkx9lnKEuqwJjoHAKXSETBbLMcZje8Is=
+X-HE-Tag: 1647872694-330695
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 19, 2022 at 2:54 AM David Cohen <dacohen@pm.me> wrote:
->
-> On Thu, Mar 17, 2022 at 02:45:11PM +0100, Rafael J. Wysocki wrote:
-> > On Sat, Mar 12, 2022 at 5:37 AM David Cohen <dacohen@pm.me> wrote:
-> > >
-> > > Currently, pm_pr_debug() and pm_deferred_pr_debug() use __pm_pr_debug()
-> > > to filter pm debug messages based on pm_debug_messages_on flag.
-> > > According to __pm_pr_debug() implementation, pm_deferred_pr_debug()
-> > > indirectly calls printk_deferred() within __pm_pr_debug() which doesn't
-> > > support dynamic debug, but pm_pr_debug() indirectly calls pr_debug()
-> >
-> > I'm not sure what you mean by pm_pr_debug().  There's no such thing in
-> > the kernel tree.
-> >
-> > Assuming that it means pm_pr_dbg(), it doesn't call pr_debug():
->
-> Yeah, I apologize for the typo. I meant pm_pr_dbg(). I can fix that if
-> you're ok with the patch as per comments below.
->
-> >
-> > #define pm_pr_dbg(fmt, ...) __pm_pr_dbg(false, fmt, ##__VA_ARGS__)
-> >
-> > and
-> >
-> > void __pm_pr_dbg(bool defer, const char *fmt, ...)
-> > {
-> > ...
-> >         if (defer)
-> >                printk_deferred(KERN_DEBUG "PM: %pV", &vaf);
-> >         else
-> >                printk(KERN_DEBUG "PM: %pV", &vaf);
-> >
-> > And as I said printk(KERN_DEBUG ...) is not equivalent to
-> > pr_debug(...), because it is not dynamic printk().
->
-> The problem is not about __pm_pr_dbg() calling printk(). The problem is
-> the pm files that used to call pr_debug() were modified to call
-> pm_pr_dbg() in order to be behing the pm_debug_messages_on flag, as per
-> this commit:
-> 8d8b2441db96 PM / sleep: Do not print debug messages by default
+On Mon, 2022-03-21 at 11:18 +0200, Ilpo Järvinen wrote:
+> When if blocks are chained with "else if" like this:
+> 
+> 	if (a)
+> 		c = 0;
+> 	else if (b)
+> 		break;
+> 	else
+> 		c = 1;
+> 
+> checkpatch recommends removing else:
+> 
+> WARNING: else is not generally useful after a break or return
+> 
+> Removing else will easily introduce logic errors in this situation
+> so it's better to check if the preceding line has "else if" before
+> issuing that warning.
+> 
+> Fixes: 032a4c0f9a77 ("checkpatch: warn on unnecessary else after return or break")
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> ---
+> 
+> I was only able to solve this case for single line if blocks but
+> it would be useful to address also multi-line if blocks but it is
+> beyond my understanding about checkpatch internals.
+> 
+>  scripts/checkpatch.pl | 13 ++++++++-----
+>  1 file changed, 8 insertions(+), 5 deletions(-)
+> 
+> diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
+[]
+> @@ -4037,14 +4037,17 @@ sub process {
+>  # check indentation of any line with a bare else
+>  # (but not if it is a multiple line "if (foo) return bar; else return baz;")
+>  # if the previous line is a break or return and is indented 1 tab more...
+> +# but don't warn when there is "else if" on before that line to avoid logic errors
+>  		if ($sline =~ /^\+([\t]+)(?:}[ \t]*)?else(?:[ \t]*{)?\s*$/) {
+>  			my $tabs = length($1) + 1;
+> -			if ($prevline =~ /^\+\t{$tabs,$tabs}break\b/ ||
+> -			    ($prevline =~ /^\+\t{$tabs,$tabs}return\b/ &&
+> -			     defined $lines[$linenr] &&
+> -			     $lines[$linenr] !~ /^[ \+]\t{$tabs,$tabs}return/)) {
+> +			if ($linenr >= 3 &&
+> +			    $lines[$linenr - 3] !~ /[} \t]else\s+if\s*\(/ &&
+> +			    ($prevline =~ /^\+\t{$tabs,$tabs}break\b/ ||
+> +			     ($prevline =~ /^\+\t{$tabs,$tabs}return\b/ &&
+> +			      defined $lines[$linenr] &&
+> +			      $lines[$linenr] !~ /^[ \+]\t{$tabs,$tabs}return/))) {
+>  				WARN("UNNECESSARY_ELSE",
+> -				     "else is not generally useful after a break or return\n" . $hereprev);
+> +				     "else is not generally useful after a break or return\n" . $hereprev . "\n");
 
-So what's the problem with setting pm_debug_messages_on in addition to
-enabling dynamic debug for a given file?
+I believe this wouldn't work on patches if the lines above
+are deletions.
 
-> That's the moment dynamic debug was no longer available for kernel pm files.
->
-> >
-> > pm_pr_dbg() is not dynamic printk() on purpose, so they both can be
-> > controlled independently.
->
-> The current solution is all or nothing (using pm_debug_messages_on). The
-> patch I'm sending is making dynamic debug available on the kernel pm
-> files, while still allowing the pm_debug_messages_on flag to work
-> independently.
 
-If you need a combination of pm_debug_messages_on and the pr_debug()
-type of dynamic debug, I would suggest adding a new macro, say
-pm_pr_dbg_dyn() or similar, for this purpose and use it as needed
-instead of attempting to modify the existing behavior everywhere.
