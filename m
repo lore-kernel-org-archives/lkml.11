@@ -2,140 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF243C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 08:40:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 716C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 08:41:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345356AbiCUImC (ORCPT
+        id S1345367AbiCUImk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 04:42:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47104 "EHLO
+        Mon, 21 Mar 2022 04:42:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244556AbiCUIl7 (ORCPT
+        with ESMTP id S1345358AbiCUImj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 04:41:59 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC60A0BD9;
-        Mon, 21 Mar 2022 01:40:34 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id qx21so28228719ejb.13;
-        Mon, 21 Mar 2022 01:40:34 -0700 (PDT)
+        Mon, 21 Mar 2022 04:42:39 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84A29A1441
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 01:41:09 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id yy13so28346261ejb.2
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 01:41:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=szeredi.hu; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=0T1DFi3YvaPuxckua7QaVBMphJ9LBbQAkY4vD+4O8Hw=;
-        b=XF6Mx1WGGfI49hR3SkziNiVObmVgNdDc6gvs/6Mk6RaZeRNCIJI0k/It0NC88nTx7K
-         T9YfkicpaEim0L6LwOxlNArBqVAp72YuaThUQXnzCiQcnRBEbfNtAyc4RTORJ9dZhNr5
-         DTHB4iMzYJt4P6O/5k+pdSlKlKGz9iqx0alZifrF7WJmuO5RHI1sFZvqp+GDrKVdN1CT
-         u6pM/ePd15wl/hZ3tf6kA4OrBqrE6RZikjaFvsMZdJ85T9/Qv/Yz4KO7NkbDCaRzQXSs
-         2RG1IxspOBuZIxHa+p5kCGGXGYxj257TfN96kB97PTke9N7ra0bWCkzQ2ahsJ9RVaVJ4
-         KQJw==
+        bh=T1TcUGL3Yr9pbZUIUf4urzAZZW+X+3X2guZDA8VSc8A=;
+        b=doxelnDMfXbB5iuIRK4hrnslkGX8BBTvxzAkb0q9tNJFa34Y3jqcWcfHpVibc9cfiJ
+         Lk3kupzHwyhzogtJ8ePTN72QZOettBzmKjpDw16KezAFhFYdc3WfdA8OP1ZDFtBcuSMZ
+         I2a8XVg4a9eRpDMpV128X0Nq+arrNVtHg4/Ys=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=0T1DFi3YvaPuxckua7QaVBMphJ9LBbQAkY4vD+4O8Hw=;
-        b=nSCgY08yKaaK6X5ZeWPg8tvT/vBSoZEZbIm+W8wLdKlF7OQyjBP2INQwN5NJZQBYKx
-         E1Sq03es2ztFFGJUS1ce2gVxl86WjuoXzHtc4ivh5VTLP4sHytSo8neIchmHCBV83DVr
-         LAzkZrS0h5JdKXG07r+PjTy8IvhsBxYcmKUs6c1CnX/Hzm6UOU9xGoaFtaBYb5vOKpgx
-         Y7cM6La6rFMhG1Y6EMeehet69mG3QoXy3HTuU8HIb6Z6eHG3UeJ6s8xiOaKrUd4EwSVx
-         w7rL/InREpI9ywFnHxLIMqozfx5ZA+mBxTmLiXqE7MrZUsqOG5wjU9NTqfnrhxjCKuu/
-         2Q7w==
-X-Gm-Message-State: AOAM530Kvk9sv5+Uxt+Gls/UglORNlLUYaLDqXcG86hrqatpZvxGRz1W
-        lB+O7wyU8aUZ0NwVeY8CSNfCSp0dNzzpQvn0rqL0/JxdALc=
-X-Google-Smtp-Source: ABdhPJyWXhAc5G784KNKjg20aw8U2AbVwMJniU0wYbqSmADml3xwxLADPRQj1KukNb2BhOgwpGyGLBB8NgIIs6z7nyY=
-X-Received: by 2002:a17:907:628e:b0:6d9:c6fa:6168 with SMTP id
- nd14-20020a170907628e00b006d9c6fa6168mr19815300ejc.132.1647852032784; Mon, 21
- Mar 2022 01:40:32 -0700 (PDT)
+        bh=T1TcUGL3Yr9pbZUIUf4urzAZZW+X+3X2guZDA8VSc8A=;
+        b=NCoyg1N76lrtJd4P41eyST+WcNrV5F0QPJ+j7O/wsrtjoDl5tJ5j3sxKOT2891hWr2
+         xXt1uzlmodrV3O0M1a+D+LpFnOSX7yhoO9UfBH9QxuUgJkw2rxq1JlIip+esLABjiBXB
+         rehcAPPu/xrJ7f5m/FyOl/ySZZ+OpTGAecelUT4ZLZwzTyeMYFIO9LMkKxdT1Zzc+juW
+         kpoDDNMSWOWlfxHj/6V74XagZ//lmI6TK2UE8LumkAtWJib3OrI8AhYOr/SoZTfDBdPX
+         47L0YZtpE93q91b7E0aj5EsC7WlNZ3PfwGqaw+r7Z64jVWibIOxfpitgK8nj1GW5gLib
+         4SXg==
+X-Gm-Message-State: AOAM532NRC5yyiKpKWmmhtHjLdR9vVJskxC3poGFhX1lrla5QNSSwQLr
+        eS/5lYeyfaDxqXDcIULz1o3DZbg++wMTbWBoAZAw3A==
+X-Google-Smtp-Source: ABdhPJy2lA62e8/yWwcG+98dZn7ToA9GNqRjH90QGk+nz/876LNhUqYCp2yX6ujlNu1Aaufl2Zr0QeGUdZqMPBJUzHQ=
+X-Received: by 2002:a17:906:280b:b0:6ce:f3c7:688f with SMTP id
+ r11-20020a170906280b00b006cef3c7688fmr19757403ejc.468.1647852068103; Mon, 21
+ Mar 2022 01:41:08 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220319181023.8090-1-jagathjog1996@gmail.com> <20220319181023.8090-4-jagathjog1996@gmail.com>
-In-Reply-To: <20220319181023.8090-4-jagathjog1996@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 21 Mar 2022 10:39:22 +0200
-Message-ID: <CAHp75VdB5q+Y2R46OO-kCKCkPY58YzyLNjN3PjJiQhTOgV4n2w@mail.gmail.com>
-Subject: Re: [PATCH v1 3/5] iio: accel: bma400: Add triggered buffer support
-To:     Jagath Jog J <jagathjog1996@gmail.com>
-Cc:     Dan Robertson <dan@dlrobertson.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220318171405.2728855-1-cmllamas@google.com> <CAJfpegsT6BO5P122wrKbni3qFkyHuq_0Qq4ibr05_SOa7gfvcw@mail.gmail.com>
+ <Yjfd1+k83U+meSbi@google.com>
+In-Reply-To: <Yjfd1+k83U+meSbi@google.com>
+From:   Miklos Szeredi <miklos@szeredi.hu>
+Date:   Mon, 21 Mar 2022 09:40:56 +0100
+Message-ID: <CAJfpeguoFHgG9Jm3hVqWnta3DB6toPRp_vD3EK74y90Aj3w+8Q@mail.gmail.com>
+Subject: Re: [PATCH] fuse: fix integer type usage in uapi header
+To:     Carlos Llamas <cmllamas@google.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alessio Balsini <balsini@android.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        kernel-team <kernel-team@android.com>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 19, 2022 at 8:10 PM Jagath Jog J <jagathjog1996@gmail.com> wrote:
+On Mon, 21 Mar 2022 at 03:07, Carlos Llamas <cmllamas@google.com> wrote:
 >
-> Added trigger buffer support to read continuous acceleration
-> data from device with data ready interrupt which is mapped
-> to INT1 pin.
+> On Fri, Mar 18, 2022 at 08:24:55PM +0100, Miklos Szeredi wrote:
+> > On Fri, 18 Mar 2022 at 18:14, Carlos Llamas <cmllamas@google.com> wrote:
+> > >
+> > > Kernel uapi headers are supposed to use __[us]{8,16,32,64} defined by
+> > > <linux/types.h> instead of 'uint32_t' and similar. This patch changes
+> > > all the definitions in this header to use the correct type. Previous
+> > > discussion of this topic can be found here:
+> > >
+> > >   https://lkml.org/lkml/2019/6/5/18
+> >
+> > This is effectively a revert of these two commits:
+> >
+> > 4c82456eeb4d ("fuse: fix type definitions in uapi header")
+> > 7e98d53086d1 ("Synchronize fuse header with one used in library")
+> >
+> > And so we've gone full circle and back to having to modify the header
+> > to be usable in the cross platform library...
+> >
+> > And also made lots of churn for what reason exactly?
+>
+> There are currently only two uapi headers making use of C99 types and
+> one is <linux/fuse.h>. This approach results in different typedefs being
+> selected when compiling for userspace vs the kernel.
 
-...
+Why is this a problem if the size of the resulting types is the same?
 
->  #include <linux/mutex.h>
->  #include <linux/regmap.h>
->  #include <linux/regulator/consumer.h>
-> +#include <linux/bits.h>
-> +#include <linux/bitfield.h>
-
-It would be nice to keep the above in order.
-
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
-
-These ones, possibly including iio headers from the above piece, are
-good to be grouped together here with a blank line in between the
-above part and iio/*.
-
-...
-
-> +static const unsigned long bma400_avail_scan_masks[] = {
-> +       GENMASK(3, 0),
-
-> +       0,
-
-No need to have a comma in terminator entry.
-
-> +};
-
-...
-
-> +       ret = regmap_bulk_read(data->regmap, BMA400_X_AXIS_LSB_REG,
-> +                              &data->buffer.buff, 3 * sizeof(__be16));
-
-sizeof(buff)
-
-...
-
-> +out:
-
-A useless label. Moreover this raises a question: why is it okay to
-always mark IRQ as handled?
-
-> +       return IRQ_HANDLED;
-
-...
-
-> +                       dev_err(dev, "iio trigger register failed\n");
-> +                       return ret;
-
-return dev_err_probe();
-
-...
-
-> +                       dev_err(dev, "request irq %d failed\n", irq);
-> +                       return ret;
-
-Ditto.
-
-...
-
-> +               dev_err(dev, "iio triggered buffer setup failed\n");
-> +               return ret;
-
-Ditto.
-
--- 
-With Best Regards,
-Andy Shevchenko
+Thanks,
+Miklos
