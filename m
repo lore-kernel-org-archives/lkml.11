@@ -2,70 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61D49C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:59:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C87FCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:59:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231190AbiCUXAf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:00:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57626 "EHLO
+        id S232049AbiCUXAn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:00:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232280AbiCUW6L (ORCPT
+        with ESMTP id S232177AbiCUW6H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:58:11 -0400
+        Mon, 21 Mar 2022 18:58:07 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 385E946E777;
-        Mon, 21 Mar 2022 15:37:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25F3246E744;
+        Mon, 21 Mar 2022 15:37:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 293A36156E;
-        Mon, 21 Mar 2022 21:53:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8B04CC36AE5;
-        Mon, 21 Mar 2022 21:53:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69B93612C6;
+        Mon, 21 Mar 2022 21:53:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 999DDC340E8;
+        Mon, 21 Mar 2022 21:53:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647899628;
-        bh=GJkjL4UZBkaIhfOg8EoXxAXciPyo1zbm8cTIH/VGHMA=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=oijYUMoHqXTTZgw0UJU079FLbSQ1cBfqLwhba8WknsAHviK4mB/9I/i3sx3Zg/Vy8
-         3Y0b/LOWkuFnMObTzgwYGo30HFOXGKC3uCuChgGKLHIWCpx/4ydK5t9PXQTkPXwqtR
-         wmZ8MgkmrBn/H6cYTYGUBykEQNiuIhPO3Oc2UmO9U/JSYZXhrtClUAvD++qHKV44Un
-         RFI2tt3vRKo9pE+XewrgU4u0AatFqxMYMElUO67b2KzzJ0XggZ2F6G7l1iAkSI0jzj
-         Bv8o2Z3rdGLIAx2BKjpKaSsmiFsjhNcIYi5YXfsxY48O94rTqdfPDZkFCoMgSLHXYY
-         InDsqnZKmSY+A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 73739EAC096;
-        Mon, 21 Mar 2022 21:53:48 +0000 (UTC)
-Subject: Re: [GIT PULL] Power management updates for v5.18-rc1
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CAJZ5v0i+dDvX2J7CHfawmFXynifkNZ-0ZHYnraYv-HYJN5bdbA@mail.gmail.com>
-References: <CAJZ5v0i+dDvX2J7CHfawmFXynifkNZ-0ZHYnraYv-HYJN5bdbA@mail.gmail.com>
-X-PR-Tracked-List-Id: <linux-acpi.vger.kernel.org>
-X-PR-Tracked-Message-Id: <CAJZ5v0i+dDvX2J7CHfawmFXynifkNZ-0ZHYnraYv-HYJN5bdbA@mail.gmail.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git pm-5.18-rc1
-X-PR-Tracked-Commit-Id: ec3d8b8365e9865b43099e943ec5f0bc12f28f96
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 02b82b02c34321dde10d003aafcd831a769b2a8a
-Message-Id: <164789962846.9856.5443443057848471317.pr-tracker-bot@kernel.org>
-Date:   Mon, 21 Mar 2022 21:53:48 +0000
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        s=k20201202; t=1647899581;
+        bh=zBPAwrlnCH7aaxkOxVUA1qL6iUWum35JVI5DILXQjHA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=CmCjrXQfVVEHhysQZk/nuBq1FgMltTCJyP6JPK7PSjQUnpf1PiwKzlmo9zISinIYc
+         eLtQmay1CNHsz4ql33A8ImuU7KBAkitXMXFuYo79+kQCHkKXVXeT+bUDd26nP6lCOS
+         oiags6ZHToJIHSw8JKRMcIELL4A/1rMlmKqb9TPYkLJ2Atuk0WA0zMJZHwWi7CW7ag
+         JOxOOuH+x/sbjThauIJSQd7Srt0Wx3ZvY47bMyKcthP2nUhUmzsV0j6r391oQnp8lH
+         h4/rUeHJOkJlpbxXlpzb0gDcHEOb1J+q29Nu7hxvwSgOzVaIDoFe8dpP9bdpLAUfxK
+         BjNJUJ9/vhDlg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
+        syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com,
+        Willem de Bruijn <willemb@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 3/5] net: ipv6: fix skb_over_panic in __ip6_append_data
+Date:   Mon, 21 Mar 2022 17:52:51 -0400
+Message-Id: <20220321215256.490267-3-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220321215256.490267-1-sashal@kernel.org>
+References: <20220321215256.490267-1-sashal@kernel.org>
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 21 Mar 2022 17:36:05 +0100:
+From: Tadeusz Struk <tadeusz.struk@linaro.org>
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git pm-5.18-rc1
+[ Upstream commit 5e34af4142ffe68f01c8a9acae83300f8911e20c ]
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/02b82b02c34321dde10d003aafcd831a769b2a8a
+Syzbot found a kernel bug in the ipv6 stack:
+LINK: https://syzkaller.appspot.com/bug?id=205d6f11d72329ab8d62a610c44c5e7e25415580
+The reproducer triggers it by sending a crafted message via sendmmsg()
+call, which triggers skb_over_panic, and crashes the kernel:
 
-Thank you!
+skbuff: skb_over_panic: text:ffffffff84647fb4 len:65575 put:65575
+head:ffff888109ff0000 data:ffff888109ff0088 tail:0x100af end:0xfec0
+dev:<NULL>
 
+Update the check that prevents an invalid packet with MTU equal
+to the fregment header size to eat up all the space for payload.
+
+The reproducer can be found here:
+LINK: https://syzkaller.appspot.com/text?tag=ReproC&x=1648c83fb00000
+
+Reported-by: syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Acked-by: Willem de Bruijn <willemb@google.com>
+Link: https://lore.kernel.org/r/20220310232538.1044947-1-tadeusz.struk@linaro.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/ipv6/ip6_output.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index 61970fd839c3..8aaf9cf3d74a 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1476,8 +1476,8 @@ static int __ip6_append_data(struct sock *sk,
+ 		      sizeof(struct frag_hdr) : 0) +
+ 		     rt->rt6i_nfheader_len;
+ 
+-	if (mtu < fragheaderlen ||
+-	    ((mtu - fragheaderlen) & ~7) + fragheaderlen < sizeof(struct frag_hdr))
++	if (mtu <= fragheaderlen ||
++	    ((mtu - fragheaderlen) & ~7) + fragheaderlen <= sizeof(struct frag_hdr))
+ 		goto emsgsize;
+ 
+ 	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.34.1
+
