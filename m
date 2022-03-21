@@ -2,110 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20930C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:06:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 612CEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:07:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349797AbiCUPHk (ORCPT
+        id S1349806AbiCUPIZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 11:07:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55490 "EHLO
+        Mon, 21 Mar 2022 11:08:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238929AbiCUPHd (ORCPT
+        with ESMTP id S238929AbiCUPIX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 11:07:33 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC02D35A8B
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 08:06:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647875164; x=1679411164;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=sF3Jyab+zqmGMPGVvvgzz0D1IVzwyPy158oTAeffMB4=;
-  b=UrSKDLRVTX8YXvglHAn1iBs6wWUpXlzqOyaGKZVzaakYX2OjzNJYr7nS
-   SMcc7zR7zwushpEefwTNUBvyuhrmNjHKZ0GSIugMGL0KNDdH41hLfqEYD
-   dRGJb1QBKiI988Nj2Lh4/8778Ypdy58XJnVmTjUufr2J/KPvp9BfxDaad
-   43F6Dl0nR9/Wb46AOgI9T62YDDrja09ss2JILLqfPMEWuguTBAK7mojrM
-   19NHtV5SwKHY79ybOhiWA4k9mmBOehgZqmqcdav/b+yrBjL9TufVCcxiI
-   n/9I+9igVKoY2iQDeOEuD3LgtJOmDIkmdG96tATRysXZazJYwpzmoXWYS
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10292"; a="257522117"
-X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
-   d="scan'208";a="257522117"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 08:06:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
-   d="scan'208";a="518469344"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 21 Mar 2022 08:06:02 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nWJbd-000HvL-NB; Mon, 21 Mar 2022 15:06:01 +0000
-Date:   Mon, 21 Mar 2022 23:05:23 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: mm/damon/core.c:469 __damon_stop() warn: if();
-Message-ID: <202203212359.HWkV7SP9-lkp@intel.com>
+        Mon, 21 Mar 2022 11:08:23 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22D1989CC1
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 08:06:58 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id v4so13281627pjh.2
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 08:06:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=cUWzEMBGSWQIxeTbgVTExlAUidpN0hciDnY2SRNTO88=;
+        b=nAGq6Llv/ELAFj7H2w6B7X5DpYP8ss13RxhDZkZzdHQBCoVd6p6Y+FvuaCClUWgGpV
+         /Q38BmXzh8bhAnJ3sbSRBM8QWlZMMVJtg6PjQrnK/3CunuwfUcgiLTZsgaKBh2WcWxpc
+         nzXspgZcrIrpYIjy1PMEoOoKyQd6Q10HRR7tc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=cUWzEMBGSWQIxeTbgVTExlAUidpN0hciDnY2SRNTO88=;
+        b=PFeuhRIt78g9sNOpAl40r52eHw5fSsXsJsrQ8Bbilhe3KtL87MNyj9pSxEZaoYXHzq
+         +lrtCo0Up3kyO+E/GdEKGScYm3KGCO4CDcUHJgiY4P8piTWVxyzZy2aj+kVFW80pZpx5
+         COd0s7rq1aRGgYAiNs5IIRukmH1GF3UKMvVANvFkTY6riDROFXw2ON3ySAKfqa/benu5
+         zNhtt6hQfOuQ1OssRm5M/Ed8AESvDeId1dcg8BzSs0e7dLbJHtKfJGuaCgfaSRWOQmc2
+         UIzlt0Oz2MxDuQ5BGvS89A1uoDpqS5qu5myK42v7jIy0SIUudKnCAkcDz4Dvs87Myj0f
+         6cCQ==
+X-Gm-Message-State: AOAM530DN8YyI7m0AKbAEiEbnMYf0egojDHAPaDne1+XsL0qbMoXJyaI
+        OniLWArDnaeBgfsb2boqxUTreQ==
+X-Google-Smtp-Source: ABdhPJxY1u68K7MleJKqbizLH3P90fX2j+ugb5+jPgtwZ5dFnzEr7pWUXriJJ5beLbdFdSVhJDLGVA==
+X-Received: by 2002:a17:902:dccc:b0:153:a902:e542 with SMTP id t12-20020a170902dccc00b00153a902e542mr13657289pll.16.1647875217525;
+        Mon, 21 Mar 2022 08:06:57 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id i7-20020a17090a65c700b001b936b8abe0sm20500425pjs.7.2022.03.21.08.06.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 08:06:57 -0700 (PDT)
+Date:   Mon, 21 Mar 2022 08:06:56 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>
+Subject: [GIT PULL] seccomp update for v5.18-rc1
+Message-ID: <202203210806.78B1156916@keescook>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   f443e374ae131c168a065ea1748feac6b2e76613
-commit: e1edc277e6f6dfb372216522dfc57f9381c39e35 linux/container_of.h: switch to static_assert
-date:   4 months ago
-config: nds32-randconfig-m031-20220320 (https://download.01.org/0day-ci/archive/20220321/202203212359.HWkV7SP9-lkp@intel.com/config)
-compiler: nds32le-linux-gcc (GCC) 11.2.0
+Hi Linus,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Please pull this tiny seccomp update for v5.18-rc1.
 
-smatch warnings:
-mm/damon/core.c:469 __damon_stop() warn: if();
+Thanks!
 
-vim +469 mm/damon/core.c
+-Kees
 
-2224d8485492e49 SeongJae Park 2021-09-07  456  
-2224d8485492e49 SeongJae Park 2021-09-07  457  /*
-2224d8485492e49 SeongJae Park 2021-09-07  458   * __damon_stop() - Stops monitoring of given context.
-2224d8485492e49 SeongJae Park 2021-09-07  459   * @ctx:	monitoring context
-2224d8485492e49 SeongJae Park 2021-09-07  460   *
-2224d8485492e49 SeongJae Park 2021-09-07  461   * Return: 0 on success, negative error code otherwise.
-2224d8485492e49 SeongJae Park 2021-09-07  462   */
-2224d8485492e49 SeongJae Park 2021-09-07  463  static int __damon_stop(struct damon_ctx *ctx)
-2224d8485492e49 SeongJae Park 2021-09-07  464  {
-0f91d13366a4024 Changbin Du   2021-11-05  465  	struct task_struct *tsk;
-0f91d13366a4024 Changbin Du   2021-11-05  466  
-2224d8485492e49 SeongJae Park 2021-09-07  467  	mutex_lock(&ctx->kdamond_lock);
-0f91d13366a4024 Changbin Du   2021-11-05  468  	tsk = ctx->kdamond;
-0f91d13366a4024 Changbin Du   2021-11-05 @469  	if (tsk) {
-0f91d13366a4024 Changbin Du   2021-11-05  470  		get_task_struct(tsk);
-2224d8485492e49 SeongJae Park 2021-09-07  471  		mutex_unlock(&ctx->kdamond_lock);
-0f91d13366a4024 Changbin Du   2021-11-05  472  		kthread_stop(tsk);
-0f91d13366a4024 Changbin Du   2021-11-05  473  		put_task_struct(tsk);
-2224d8485492e49 SeongJae Park 2021-09-07  474  		return 0;
-2224d8485492e49 SeongJae Park 2021-09-07  475  	}
-2224d8485492e49 SeongJae Park 2021-09-07  476  	mutex_unlock(&ctx->kdamond_lock);
-2224d8485492e49 SeongJae Park 2021-09-07  477  
-2224d8485492e49 SeongJae Park 2021-09-07  478  	return -EPERM;
-2224d8485492e49 SeongJae Park 2021-09-07  479  }
-2224d8485492e49 SeongJae Park 2021-09-07  480  
+The following changes since commit eed09ad261822a7bdc441ed192c6f444375e5527:
 
-:::::: The code at line 469 was first introduced by commit
-:::::: 0f91d13366a402420bf98eaaf393db03946c13e0 mm/damon: simplify stop mechanism
+  samples/seccomp: Adjust sample to also provide kill option (2022-02-10 19:09:12 -0800)
 
-:::::: TO: Changbin Du <changbin.du@gmail.com>
-:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git tags/seccomp-v5.18-rc1
+
+for you to fetch changes up to b5caa8dd9cc8ad5126f06e9266c326d38a1fc6d2:
+
+  samples/seccomp: Improve arch hints (2022-02-13 10:16:25 -0800)
+
+----------------------------------------------------------------
+seccomp update for v5.18-rc1
+
+- Improve architecture hints in sample (Kees Cook)
+
+----------------------------------------------------------------
+Kees Cook (1):
+      samples/seccomp: Improve arch hints
+
+ samples/seccomp/dropper.c | 84 ++++++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 73 insertions(+), 11 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Kees Cook
