@@ -2,83 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B46CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:42:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D65CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:45:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351350AbiCUQnu (ORCPT
+        id S1351357AbiCUQqe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 12:43:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47006 "EHLO
+        Mon, 21 Mar 2022 12:46:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344532AbiCUQns (ORCPT
+        with ESMTP id S1344532AbiCUQqc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 12:43:48 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 516A8160149;
-        Mon, 21 Mar 2022 09:42:23 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id h13so18582193ede.5;
-        Mon, 21 Mar 2022 09:42:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3mkHbSPd6I9+pLUf+5v33zhbkXtwBKoba4Y44U/ghK4=;
-        b=a0Ai9C62qgIb1RVT86zt38NbWnJNQRqkMjoCrmrXiZwPXFeTe6Ht+hsmJNS7tewJna
-         scGc491WOFvu5S/IIHi4EV2J8ir37IrE0XDvJwohLd/8WfBWEd5s6DmUbAPP+3B1RINW
-         xNuBwtWlj5XkWv3j75+yuzlwruE1gIyH1CkzACIp1XUmrAPj+Cb1/nE1HsauqLI8rnj+
-         89GDlqR5aPnr0oJ5osM7/RxBlr80YoR4+wvK42G3kRK4hVtZquBOiWHDPBvb7w6BIBjE
-         gEUEPKQvLvmanz0lMW03/xnda1BRRRzZyi6MsPXnbJ4X2CLWm/jO9eI3ZWeIiow/NIUV
-         +yOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3mkHbSPd6I9+pLUf+5v33zhbkXtwBKoba4Y44U/ghK4=;
-        b=5IrMJ2URjhFynzQskU/BafLGsfkbkmbyUh3CjvOSpvyOYDjaEASv1RYBo+gi5UgP5V
-         GetKqNpauGjXOLz1hai2sU1bRRqaHbwYc5n3AmBJvZ4pMxsylyRD2w0VO+5usuYDVhej
-         ja4VidT6lXkinaHqu8wE2wEGtHxvcJC6+Nuxw21c1pIE8o5NjSoF4Fdk5tuk/5zXnOfk
-         phBK5R2WPsvgDsz5vEj1pn7vr+696rbhLAR/H7++HTr6q4ij3TgbaPfr6PjBoQbi3Mu6
-         DQm7uZ4VZhuKLhy1UVHUgFNa8Io/k8t/YscbHa9P+JGUitRnbV6knLlM1KzU29F5f29A
-         Q3Rw==
-X-Gm-Message-State: AOAM531AYMGxV6DBxA+gJxUGGH9ejj6t2Pjr62cepMGzGKIFwnUICWVf
-        Sqm18hOjk7ukq7zgpJ7BqrgtN/BSIoZ0nboMckc=
-X-Google-Smtp-Source: ABdhPJy6kGu1C15zOwE86ppG4LYIi0tngDeWHbiK2qe/U/8MkbskwiXnxOOq4nCBaUHg8BTEe8Ml6R4CDSJRdAm4d5I=
-X-Received: by 2002:aa7:c30f:0:b0:419:2af:4845 with SMTP id
- l15-20020aa7c30f000000b0041902af4845mr20065302edq.296.1647880941751; Mon, 21
- Mar 2022 09:42:21 -0700 (PDT)
-MIME-Version: 1.0
-References: <1647849919-8778-1-git-send-email-haibo.chen@nxp.com>
-In-Reply-To: <1647849919-8778-1-git-send-email-haibo.chen@nxp.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 21 Mar 2022 18:41:11 +0200
-Message-ID: <CAHp75Veqswa9nuiRbuGE013EQ7d+-DWAiYqQG2o7p3=EDYk4pQ@mail.gmail.com>
-Subject: Re: [PATCH] gpio: Add gpio alias support
-To:     BOUGH CHEN <haibo.chen@nxp.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Mon, 21 Mar 2022 12:46:32 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 502762DD48;
+        Mon, 21 Mar 2022 09:45:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=oJ9Qvw5oXwS4GQGsOIZPh2cYX0tdWh2rdUhpNrMbGAI=; b=Wf13uQGgu5LlB1T0RiH5DnWLtr
+        Es3xkJsC7yQJbgDsza/QL5Lidt9VGfx0J8ACxJ1VQiWhhpRwilKwds11y6jEB6U8c8AJUVCHm+3cB
+        RSzbwfRbMNUVoOGLdXlu77Z96ra2u5NK9fxNI10e2UfLiHjW3aF5A2ojzoS7gSw5MdRBLLpKr8L3t
+        pfL7a/eU9x/hGgyTO/a5XYFdgMhWWLbU7sGC9vgve4jzwDwEp9BgI2ZTvrzrv+pkn+/gNWiTUvutd
+        FJ73bBCEEu5QX84N/91xSXagoa3qHjwgoqFey6RoIHd3Dpldx0f5KezJZcdtXkIou5upGV6wrHbuh
+        7XZX56JQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nWL9B-00AkyC-M3; Mon, 21 Mar 2022 16:44:45 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 1815930020B;
+        Mon, 21 Mar 2022 17:44:45 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id F34242DB88BF5; Mon, 21 Mar 2022 17:44:44 +0100 (CET)
+Date:   Mon, 21 Mar 2022 17:44:44 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "H.J. Lu" <hjl.tools@gmail.com>,
+        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        linux-toolchains <linux-toolchains@vger.kernel.org>,
+        Andrew Cooper <Andrew.Cooper3@citrix.com>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Subject: Re: linux-next: build warnings after merge of the tip tree
+Message-ID: <YjirfOJ2HQAnTrU4@hirez.programming.kicks-ass.net>
+References: <20220321140327.777f9554@canb.auug.org.au>
+ <Yjh11UjDZogc3foM@hirez.programming.kicks-ass.net>
+ <Yjh3xZuuY3QcZ1Bn@hirez.programming.kicks-ass.net>
+ <Yjh4xzSWtvR+vqst@hirez.programming.kicks-ass.net>
+ <YjiBbF+K4FKZyn6T@hirez.programming.kicks-ass.net>
+ <YjiZhRelDJeX4dfR@hirez.programming.kicks-ass.net>
+ <YjidpOZZJkF6aBTG@hirez.programming.kicks-ass.net>
+ <CAHk-=wigO=68WA8aMZnH9o8qRUJQbNJPERosvW82YuScrUTo7Q@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wigO=68WA8aMZnH9o8qRUJQbNJPERosvW82YuScrUTo7Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 11:22 AM <haibo.chen@nxp.com> wrote:
->
-> From: Haibo Chen <haibo.chen@nxp.com>
->
-> This patch allow setting gpio device id via device tree alias.
+On Mon, Mar 21, 2022 at 09:37:35AM -0700, Linus Torvalds wrote:
+> On Mon, Mar 21, 2022 at 8:46 AM Peter Zijlstra <peterz@infradead.org> wrote:
+> >
+> > This landing in -next only today (after having been committed last
+> > friday night) is another clue it should probably go next round.
+> 
+> I went and looked at lore to get the context that I didn't get in this
+> email that I was added to the participants for.
+> 
+> I didn't find the context there either.
+> 
+> Sure, I found the thread, but the whole "that x86 patch" that you
+> refer to was never actually specified even in the full thread as far
+> as I can tell. I see that there is an arm64 equivalent too of what you
+> are complaining about, and I have no idea about that one either..
+> 
+> Mind actually giving the full details so that we don't have to go
+> re-do the work you already did?
+> 
+> Because right now I know something is wrong, I know the warnings, but
+> I don't actually have any handle on the actual patches to look out
+> for.
+> 
+> It's presumably not in any of the pull requests I already have
+> pending, but it would be nice if I saw some details of _what_ you are
+> complaining about, and not just the complaint itself ;)
 
-allows
+Duh, right. It's this series:
 
-But read the Submitting Patches document about imperative mode.
+  https://lore.kernel.org/bpf/164757541675.26179.17727138330733641017.git-patchwork-notify@kernel.org/
 
-Moreover, this commit message is quite bad. Please, read [1] for
-making your commit messages meaningful and useful.
-
-[1]: https://cbea.ms/git-commit/
-
--- 
-With Best Regards,
-Andy Shevchenko
+That went into bpf-next last Friday. I just checked but haven't found a
+pull for it yet.
