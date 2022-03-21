@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 322CEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:18:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2037FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:19:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350137AbiCUPUV (ORCPT
+        id S1350150AbiCUPU2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 11:20:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38876 "EHLO
+        Mon, 21 Mar 2022 11:20:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350003AbiCUPTf (ORCPT
+        with ESMTP id S1349998AbiCUPTp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 11:19:35 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CB972DD9;
-        Mon, 21 Mar 2022 08:17:57 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id j18so11531503wrd.6;
-        Mon, 21 Mar 2022 08:17:57 -0700 (PDT)
+        Mon, 21 Mar 2022 11:19:45 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15894DF35;
+        Mon, 21 Mar 2022 08:18:00 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id v22so7253555wra.2;
+        Mon, 21 Mar 2022 08:18:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=HxwJ/rmGXQIKgHQmjTVr7v/2TGpe+xuVVbkVjt0eYLU=;
-        b=elB8X7nDW+MCLKa9DYw38ucoZJeNYT/mBKbWmpO7aQGPhKN6IifyAQ+EjgVjj44Wn9
-         8AiGW8J6SxU25VXd4ErZ2CwwLHZhoaE2ejNPN3PFKp1cOetjW/cExoMcTtcT2hZF68r+
-         3bxosGU5JKSAOj4HwzQOCbemoydE9YEvJC2VZTVrDCuFkDysQ+tvc3u4djzoqWj25IeE
-         xqPntVruHnfVx+GoRlTMV+2g7dwYLryncUe3P/+ganMhjEp4Y4shNHx8rdPZGXh6qfDc
-         mTUYmxKh/ry2vECAac8JgzVZwoTQQ/tiHeoQxb7dGYCkNeXGYJQD0jpXyztfu+cteEck
-         PH5Q==
+        bh=QkfgyebL6ZDeFyix3jLmVd6pOSFa+uhSyC95dgb9bxk=;
+        b=cZz0U/iOVfloYC4f/0atTNYv/Stene+gmHS7w3Adc4pxem/fX5HAIxC/NtEd9nhtUa
+         VVghCrlDb4OzRIUWSEGNha9hQZT/VZwfpKh4BO3fud8x5E8amyIdKcNWHGCDK4KGIk7v
+         Xw+RbNvXMZkggipNI41PC4ZZFYwGLXMlSXoiJJXb/JBzlf16wtm1MXn7I60cn2hhz83t
+         5LSDo63LqpTaIedlAirVU5DtEx+OY594kuIM0HTJbknFJzgdSO5H36Fy8mHwy/GShQYQ
+         zYLkCZ3UbBzMD04kfLRgrCjsp1AD7ylSOwEaR636nd30lCTeC5LYEMV1ffbFIk4pj8bz
+         ePrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=HxwJ/rmGXQIKgHQmjTVr7v/2TGpe+xuVVbkVjt0eYLU=;
-        b=ka2Fa6tAGNTqPnCcOZrnIhd0oc7gma90VVSp/r/gHdjkJqvT6BGnYBr8Adq7ci5oms
-         fD1kJIi/42ikZ5bkdCh1d33xRVgwxjFVd0lCX4vITl3o+VHFKttuv4tq4J8gU+i5ZaXx
-         XX9SbvtVhTLSffo+gy9dGUoMNQnQePq+0Jc0xXHpZUD2PtIAHqiWEwFpEgBoAE8lLWZF
-         +i6sss+3XNOZYSAbC+PnlhOL1SCv0kxhwlv1E+xVrdJkWozXNO5q1RjoDEb7yWeJd6MS
-         mmEqbVMALUTAonwjgArG6q9DbGNEAPWqbUdyNtwgNBv9fq6xxHuuw0yOYb99IbB8W95S
-         9ygw==
-X-Gm-Message-State: AOAM532zrp4yxdDtQc4v+WnOeUZ6JDR6xTjlEDL//JK1N/zP5Kk3RNeT
-        6lrsLgqoCzVXcVaC67ryhU0=
-X-Google-Smtp-Source: ABdhPJzZEeP7++6AWrLhVXszsuuwVS5RmvIXm9G7Lu9YwPqV/jWYRJ1F6Q68zgbw4McJrq157/6UDA==
-X-Received: by 2002:a5d:6da8:0:b0:1f1:fa31:e7f7 with SMTP id u8-20020a5d6da8000000b001f1fa31e7f7mr18991643wrs.389.1647875876226;
-        Mon, 21 Mar 2022 08:17:56 -0700 (PDT)
+        bh=QkfgyebL6ZDeFyix3jLmVd6pOSFa+uhSyC95dgb9bxk=;
+        b=6gIW3hzwHPX7h9sRM+z2OFporGlJU+luHZLW4mAPf1Z+EShbd+nZZrCGeFkbOcyGbb
+         r8MzoyDcVUaGEVBotTVm7NgQ20ciFDv7XHInV5c01doO3N8/VKdkXFfjBjl14uomsJKt
+         5MiEtIeNypbn8QYpOo1yLW3CPMfa72RtUv+3TxSY60fF3e8HS3Y6kvnwvjNSrwLiaiNf
+         vtCYjZqNcb0SALBX2YoexSJbg3M4ErVaa9WaPnhgBKUnuuOrZamLQRxwR2LCpSmYR/BW
+         IxNWo7cMTNyFkJYICnV4mm/bW26TN6VMw/KUPCRmAnwWdF83bUhlPfL/r0L/w5L5Q9tr
+         8/JA==
+X-Gm-Message-State: AOAM532w3cVjWfRWAEArAu6sLr9n3Cc57pDKKBW/HYpQ7Cezpg6+tKBy
+        0htIqbQt9YNW16MX03jJVVI=
+X-Google-Smtp-Source: ABdhPJxMbMXydtFMNDRzOikc97iALRWa2BHY78yEDBsHK90MSNPoteJbnFWvEKyH3mW9aeeUucyS4w==
+X-Received: by 2002:a5d:4890:0:b0:1ed:9d4e:f8ef with SMTP id g16-20020a5d4890000000b001ed9d4ef8efmr18962564wrq.595.1647875879268;
+        Mon, 21 Mar 2022 08:17:59 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
-        by smtp.googlemail.com with ESMTPSA id 10-20020a5d47aa000000b00204012e4373sm7239729wrb.101.2022.03.21.08.17.55
+        by smtp.googlemail.com with ESMTPSA id 10-20020a5d47aa000000b00204012e4373sm7239729wrb.101.2022.03.21.08.17.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 08:17:55 -0700 (PDT)
+        Mon, 21 Mar 2022 08:17:58 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -58,9 +58,9 @@ To:     Rob Herring <robh+dt@kernel.org>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
-Subject: [PATCH v4 10/18] clk: qcom: krait-cc: drop hardcoded safe_sel
-Date:   Mon, 21 Mar 2022 15:48:17 +0100
-Message-Id: <20220321144825.11736-11-ansuelsmth@gmail.com>
+Subject: [PATCH v4 13/18] clk: qcom: clk-krait: add enable disable ops
+Date:   Mon, 21 Mar 2022 15:48:20 +0100
+Message-Id: <20220321144825.11736-14-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220321144825.11736-1-ansuelsmth@gmail.com>
 References: <20220321144825.11736-1-ansuelsmth@gmail.com>
@@ -70,142 +70,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop hardcoded safe_sel definition and use helper to correctly calculate
-it. We assume qsb clk is always present as it should be declared in DTS
-per Documentation and in the absence of that, it's declared as a fixed
-clk.
+Add enable/disable ops for krait mux. On disable the mux is set to the
+safe selection.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/clk/qcom/krait-cc.c | 40 +++++++++++++++++++++++++------------
- 1 file changed, 27 insertions(+), 13 deletions(-)
+ drivers/clk/qcom/clk-krait.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/drivers/clk/qcom/krait-cc.c b/drivers/clk/qcom/krait-cc.c
-index e9508e3104ea..5f98ee1c3681 100644
---- a/drivers/clk/qcom/krait-cc.c
-+++ b/drivers/clk/qcom/krait-cc.c
-@@ -26,6 +26,17 @@ static unsigned int pri_mux_map[] = {
- 	0,
- };
+diff --git a/drivers/clk/qcom/clk-krait.c b/drivers/clk/qcom/clk-krait.c
+index 7ba5dbc72bce..061af57b0ec2 100644
+--- a/drivers/clk/qcom/clk-krait.c
++++ b/drivers/clk/qcom/clk-krait.c
+@@ -85,7 +85,25 @@ static u8 krait_mux_get_parent(struct clk_hw *hw)
+ 	return clk_mux_val_to_index(hw, mux->parent_map, 0, sel);
+ }
  
-+static u8 krait_get_mux_sel(struct krait_mux_clk *mux, struct clk *safe_clk)
++static int krait_mux_enable(struct clk_hw *hw)
 +{
-+	struct clk_hw *safe_hw = __clk_get_hw(safe_clk);
++	struct krait_mux_clk *mux = to_krait_mux_clk(hw);
 +
-+	/*
-+	 * We can ignore errors from clk_hw_get_index_of_parent()
-+	 * as we create these parents in this driver.
-+	 */
-+	return clk_hw_get_index_of_parent(&mux->hw, safe_hw);
++	__krait_mux_set_sel(mux, mux->en_mask);
++
++	return 0;
 +}
 +
- /*
-  * Notifier function for switching the muxes to safe parent
-  * while the hfpll is getting reprogrammed.
-@@ -116,8 +127,8 @@ krait_add_div(struct device *dev, int id, const char *s, unsigned int offset)
- }
- 
- static struct clk *
--krait_add_sec_mux(struct device *dev, int id, const char *s,
--		  unsigned int offset, bool unique_aux)
-+krait_add_sec_mux(struct device *dev, struct clk *qsb, int id,
-+		  const char *s, unsigned int offset, bool unique_aux)
- {
- 	int ret;
- 	struct krait_mux_clk *mux;
-@@ -144,7 +155,6 @@ krait_add_sec_mux(struct device *dev, int id, const char *s,
- 	mux->shift = 2;
- 	mux->parent_map = sec_mux_map;
- 	mux->hw.init = &init;
--	mux->safe_sel = 0;
- 
- 	init.name = kasprintf(GFP_KERNEL, "krait%s_sec_mux", s);
- 	if (!init.name)
-@@ -166,6 +176,7 @@ krait_add_sec_mux(struct device *dev, int id, const char *s,
- 	if (IS_ERR(clk))
- 		goto err_clk;
- 
-+	mux->safe_sel = krait_get_mux_sel(mux, qsb);
- 	ret = krait_notifier_register(dev, clk, mux);
- 	if (ret)
- 		clk = ERR_PTR(ret);
-@@ -204,7 +215,6 @@ krait_add_pri_mux(struct device *dev, struct clk *hfpll_div, struct clk *sec_mux
- 	mux->lpl = id >= 0;
- 	mux->parent_map = pri_mux_map;
- 	mux->hw.init = &init;
--	mux->safe_sel = 2;
- 
- 	init.name = kasprintf(GFP_KERNEL, "krait%s_pri_mux", s);
- 	if (!init.name)
-@@ -226,6 +236,7 @@ krait_add_pri_mux(struct device *dev, struct clk *hfpll_div, struct clk *sec_mux
- 	if (IS_ERR(clk))
- 		goto err_clk;
- 
-+	mux->safe_sel = krait_get_mux_sel(mux, sec_mux);
- 	ret = krait_notifier_register(dev, clk, mux);
- 	if (ret)
- 		clk = ERR_PTR(ret);
-@@ -238,7 +249,9 @@ krait_add_pri_mux(struct device *dev, struct clk *hfpll_div, struct clk *sec_mux
- }
- 
- /* id < 0 for L2, otherwise id == physical CPU number */
--static struct clk *krait_add_clks(struct device *dev, int id, bool unique_aux)
-+static struct clk *
-+krait_add_clks(struct device *dev, struct clk *qsb, int id,
-+	       bool unique_aux)
- {
- 	unsigned int offset;
- 	void *p = NULL;
-@@ -261,7 +274,7 @@ static struct clk *krait_add_clks(struct device *dev, int id, bool unique_aux)
- 		goto err;
- 	}
- 
--	sec_mux = krait_add_sec_mux(dev, id, s, offset, unique_aux);
-+	sec_mux = krait_add_sec_mux(dev, qsb, id, s, offset, unique_aux);
- 	if (IS_ERR(sec_mux)) {
- 		clk = sec_mux;
- 		goto err;
-@@ -301,18 +314,19 @@ static int krait_cc_probe(struct platform_device *pdev)
- 	int cpu;
- 	struct clk *clk;
- 	struct clk **clks;
--	struct clk *l2_pri_mux_clk;
-+	struct clk *l2_pri_mux_clk, *qsb;
- 
- 	id = of_match_device(krait_cc_match_table, dev);
- 	if (!id)
- 		return -ENODEV;
- 
- 	/* Rate is 1 because 0 causes problems for __clk_mux_determine_rate */
--	if (IS_ERR(clk_get(dev, "qsb")))
--		clk = clk_register_fixed_rate(dev, "qsb", NULL, 0, 1);
-+	qsb = clk_get(dev, "qsb");
-+	if (IS_ERR(qsb))
-+		qsb = clk_register_fixed_rate(dev, "qsb", NULL, 0, 1);
- 
--	if (IS_ERR(clk))
--		return PTR_ERR(clk);
-+	if (IS_ERR(qsb))
-+		return PTR_ERR(qsb);
- 
- 	if (!id->data) {
- 		clk = clk_register_fixed_factor(dev, "acpu_aux",
-@@ -327,13 +341,13 @@ static int krait_cc_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	for_each_possible_cpu(cpu) {
--		clk = krait_add_clks(dev, cpu, id->data);
-+		clk = krait_add_clks(dev, qsb, cpu, id->data);
- 		if (IS_ERR(clk))
- 			return PTR_ERR(clk);
- 		clks[cpu] = clk;
- 	}
- 
--	l2_pri_mux_clk = krait_add_clks(dev, -1, id->data);
-+	l2_pri_mux_clk = krait_add_clks(dev, qsb, -1, id->data);
- 	if (IS_ERR(l2_pri_mux_clk))
- 		return PTR_ERR(l2_pri_mux_clk);
- 	clks[4] = l2_pri_mux_clk;
++static void krait_mux_disable(struct clk_hw *hw)
++{
++	struct krait_mux_clk *mux = to_krait_mux_clk(hw);
++
++	__krait_mux_set_sel(mux, mux->safe_sel);
++}
++
+ const struct clk_ops krait_mux_clk_ops = {
++	.enable = krait_mux_enable,
++	.disable = krait_mux_disable,
+ 	.set_parent = krait_mux_set_parent,
+ 	.get_parent = krait_mux_get_parent,
+ 	.determine_rate = __clk_mux_determine_rate_closest,
 -- 
 2.34.1
 
