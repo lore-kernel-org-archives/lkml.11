@@ -2,270 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FB4FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:05:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E20BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:06:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231656AbiCUXGo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:06:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45806 "EHLO
+        id S231916AbiCUXH2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:07:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232096AbiCUXGV (ORCPT
+        with ESMTP id S231819AbiCUXHK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 19:06:21 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E33D8334D30;
-        Mon, 21 Mar 2022 15:53:43 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id p5so10625023pfo.5;
-        Mon, 21 Mar 2022 15:53:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=oz6xjnR4j2xmDxKG1XvyE47iS0YFnci2l2UEM/dmixc=;
-        b=SOKc28wevhkg+7ME4JLd0QJTKa2izrhVQYIfdTqc8si+BtGl3pqahSAAn3ZRnHuLKP
-         spYdl6lWCcHz5nmU4LBvUxzjVdsJQ5vxlAdBb7zd9UWi1w7MY0wq+rl5uJfOr3vhEfAB
-         tDKnzvmaLTB8rnqXbjtZID7HOUBAAYDQZKaYES6SEN3jDyfG0ae1VtEebOvxo8zyjxVk
-         sziZHG2bL/WD4wG9YAJ+uBSqjcgO0yVJBdNuVcDJuspp8js7IsgtQNDjXy0yHjDVy9Jz
-         n4aN3E+1i/eXOfs0JanuGfeMQv9BvFOEkxyZORqpNAWp5ipNBvtbwdpdekzmSlk9F4En
-         ox9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=oz6xjnR4j2xmDxKG1XvyE47iS0YFnci2l2UEM/dmixc=;
-        b=OtBVt/iFrXYZKrWUbJEAlO/vKsoOAqvXiTLVMgAOsbnIFmdbmTfsrUD7/sM7hVAOYC
-         CXBQJsxFB0PZPTtQEDNyEd5XWGmYGRdBOyi0NxdeckXpivlB6PlsF3VwjOSzSYGIBKd9
-         R/BGS/LadiKSzkqvZIEVKwqtYNLt0QriiObtWysz31JLo94tZze8yvFUoYLxr1YnZhsD
-         H/wXSiknWjgcPmrvRVrXmdA5cudPDPu/gSFk0FplEaJr2Ua3Eh45bAW9Xt+MPk3limbY
-         FES1Z2r2H0u5D/1Yc/mJdqEEqvMz5Wff3obXzk+0yhKZ1GgssyqPNQZCqDxIlTPFh4fI
-         meqQ==
-X-Gm-Message-State: AOAM5311oGy0Vr2i82I977pSyGNm/LJ1qMr+0i9E5z5eywaRE5WycGiV
-        dglueXJYfgjIscT9yrbtIhA7qXzflbWWc8r3
-X-Google-Smtp-Source: ABdhPJy2ZB3gFZGhjV9BUKxX9n90sNMR9M0qrjr7UZnRmc1hT5+Yh754ckBCyM8H9CI7HHMM2Ry1qg==
-X-Received: by 2002:a05:6a00:194c:b0:4f7:8a93:e814 with SMTP id s12-20020a056a00194c00b004f78a93e814mr25964720pfk.77.1647903174283;
-        Mon, 21 Mar 2022 15:52:54 -0700 (PDT)
-Received: from jagath-PC ([115.99.184.169])
-        by smtp.gmail.com with ESMTPSA id i7-20020a17090a65c700b001b936b8abe0sm446998pjs.7.2022.03.21.15.52.52
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 21 Mar 2022 15:52:53 -0700 (PDT)
-Date:   Tue, 22 Mar 2022 04:22:50 +0530
-From:   Jagath Jog J <jagathjog1996@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     dan@dlrobertson.com, andy.shevchenko@gmail.com,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 5/5] iio: accel: bma400: Add step change event
-Message-ID: <20220321225248.GE10058@jagath-PC>
-References: <20220319181023.8090-1-jagathjog1996@gmail.com>
- <20220319181023.8090-6-jagathjog1996@gmail.com>
- <20220320173726.5a9c02bb@jic23-huawei>
+        Mon, 21 Mar 2022 19:07:10 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3116425E91
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:57:46 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 960D022175;
+        Mon, 21 Mar 2022 23:56:33 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1647903393;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3+5AxZS2v0QEhyDGe/oHcf9cHqL61ODkbOB80EmEliM=;
+        b=TriGWu9bh10ofU/uWYYLsHC6kUBlIQgOI41JBeXIU9OaZ54ziQ02DYc5yTCtXM5I1dtGjQ
+        8q/chhRTxdO95xuz8F+WglTzxEwDukJAata3KF7NxXc9Rh5ehZkR9pm9fZTF348RJ/GvQR
+        JmX89bds/wLn0v8vocG9eXPx8GCFAOQ=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220320173726.5a9c02bb@jic23-huawei>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 21 Mar 2022 23:56:33 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Tudor Ambarus <tudor.ambarus@microchip.com>
+Cc:     p.yadav@ti.com, miquel.raynal@bootlin.com, richard@nod.at,
+        vigneshr@ti.com, linux-mtd@lists.infradead.org,
+        linux-kernel@vger.kernel.org, nicolas.ferre@microchip.com
+Subject: Re: [PATCH v2 4/8] mtd: spi-nor: core: Introduce method for RDID op
+In-Reply-To: <20220228111712.111737-5-tudor.ambarus@microchip.com>
+References: <20220228111712.111737-1-tudor.ambarus@microchip.com>
+ <20220228111712.111737-5-tudor.ambarus@microchip.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <0bdbe6ad8f39996df6345bb249e4a2e8@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Jonathan,
+Am 2022-02-28 12:17, schrieb Tudor Ambarus:
+> RDID is used in the core to auto detect the flash, but also by some
+> manufacturer drivers that contain flashes that support Octal DTR mode,
+> so that they can read the flash ID after the switch to Octal DTR was 
+> made
+> to test if the switch was successful. Introduce a core method for RDID 
+> op
+> to avoid code duplication.
 
-On Sun, Mar 20, 2022 at 05:37:26PM +0000, Jonathan Cameron wrote:
-> On Sat, 19 Mar 2022 23:40:23 +0530
-> Jagath Jog J <jagathjog1996@gmail.com> wrote:
-> 
-> > Added support for event when there is a detection of single step
-> > or double step change.
-> 
-> This is new - do we have any way of saying if it was single or
-> double that was detected?
+Some or all? Is that specific to the flash or can we just check that
+readid works in spi_nor_octal_dtr_enable()? That way we could also
+just get rid of the proto parameter for the read_id because it can
+be called after we set the reg_proto.
 
-Sorry, I could have mentioned this properly. Device will detect single step.
-If the sensor misses the detection of single step then it will indicate
-as double step for the next step. (Register - INT-STAT1)
-
-I will correct this in the next patch.
->   
-> > INT1 pin is used to interrupt and event
-> > is pushed to userspace.
-> 
-> My main question in here is the interaction between the event
-> enable and the channel enable in the previous patch.
-
-Channel enable will start the counter when sensor detects the steps,
-But there will be no interrupts for each step detection since INT pin
-mapping is not done here.
+-michael
 
 > 
-> If the channel is enabled, the event will read as enabled but
-> it looks to me like the interrupt will never happen...
+> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+> ---
+>  drivers/mtd/spi-nor/core.c | 58 ++++++++++++++++++++++++++------------
+>  drivers/mtd/spi-nor/core.h |  9 ++++++
+>  2 files changed, 49 insertions(+), 18 deletions(-)
 > 
-> So I think you need to also check if the interrupt is enabled.
+> diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
+> index b1d6fa65417d..281e3d25f74c 100644
+> --- a/drivers/mtd/spi-nor/core.c
+> +++ b/drivers/mtd/spi-nor/core.c
+> @@ -369,6 +369,41 @@ int spi_nor_write_disable(struct spi_nor *nor)
+>  	return ret;
+>  }
+> 
+> +/**
+> + * spi_nor_read_id() - Read the JEDEC ID.
+> + * @nor:	pointer to 'struct spi_nor'.
+> + * @naddr:	number of address bytes to send. Can be zero if the 
+> operation
+> + *		does not need to send an address.
+> + * @ndummy:	number of dummy bytes to send after an opcode or address. 
+> Can
+> + *		be zero if the operation does not require dummy bytes.
+> + * @id:		pointer to a DMA-able buffer where the value of the JEDEC ID
+> + *		will be written.
+> + * @reg_proto:	the SPI protocol for register operation.
+> + *
+> + * Return: 0 on success, -errno otherwise.
+> + */
+> +int spi_nor_read_id(struct spi_nor *nor, u8 naddr, u8 ndummy, u8 *id,
+> +		    enum spi_nor_protocol reg_proto)
+> +{
+> +	int ret;
+> +
+> +	if (nor->spimem) {
+> +		struct spi_mem_op op =
+> +			SPI_NOR_READID_OP(naddr, ndummy, id, SPI_NOR_MAX_ID_LEN);
+> +
+> +		spi_nor_spimem_setup_op(nor, &op, reg_proto);
+> +		ret = spi_mem_exec_op(nor->spimem, &op);
+> +	} else {
+> +		ret = nor->controller_ops->read_reg(nor, SPINOR_OP_RDID, id,
+> +						    SPI_NOR_MAX_ID_LEN);
+> +	}
+> +
+> +	if (ret)
+> +		dev_dbg(nor->dev, "error %d reading JEDEC ID\n", ret);
+> +
+> +	return ret;
+> +}
+> +
+>  /**
+>   * spi_nor_read_sr() - Read the Status Register.
+>   * @nor:	pointer to 'struct spi_nor'.
+> @@ -1649,28 +1684,15 @@ static const struct flash_info
+> *spi_nor_match_id(struct spi_nor *nor,
+>  	return NULL;
+>  }
+> 
+> -static const struct flash_info *spi_nor_read_id(struct spi_nor *nor)
+> +static const struct flash_info *spi_nor_detect(struct spi_nor *nor)
+>  {
+>  	const struct flash_info *info;
+>  	u8 *id = nor->bouncebuf;
+>  	int ret;
+> 
+> -	if (nor->spimem) {
+> -		struct spi_mem_op op =
+> -			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RDID, 1),
+> -				   SPI_MEM_OP_NO_ADDR,
+> -				   SPI_MEM_OP_NO_DUMMY,
+> -				   SPI_MEM_OP_DATA_IN(SPI_NOR_MAX_ID_LEN, id, 1));
+> -
+> -		ret = spi_mem_exec_op(nor->spimem, &op);
+> -	} else {
+> -		ret = nor->controller_ops->read_reg(nor, SPINOR_OP_RDID, id,
+> -						    SPI_NOR_MAX_ID_LEN);
+> -	}
+> -	if (ret) {
+> -		dev_dbg(nor->dev, "error %d reading JEDEC ID\n", ret);
+> +	ret = spi_nor_read_id(nor, 0, 0, id, nor->reg_proto);
+> +	if (ret)
+>  		return ERR_PTR(ret);
+> -	}
+> 
+>  	info = spi_nor_match_id(nor, id);
+>  	if (!info) {
+> @@ -2900,7 +2922,7 @@ static const struct flash_info
+> *spi_nor_get_flash_info(struct spi_nor *nor,
+>  		info = spi_nor_match_name(nor, name);
+>  	/* Try to auto-detect if chip name wasn't specified or not found */
+>  	if (!info) {
+> -		detected_info = spi_nor_read_id(nor);
+> +		detected_info = spi_nor_detect(nor);
+>  		info = detected_info;
+>  	}
+>  	if (IS_ERR_OR_NULL(info))
+> @@ -2913,7 +2935,7 @@ static const struct flash_info
+> *spi_nor_get_flash_info(struct spi_nor *nor,
+>  	if (name && !detected_info && info->id_len) {
+>  		const struct flash_info *jinfo;
+> 
+> -		jinfo = spi_nor_read_id(nor);
+> +		jinfo = spi_nor_detect(nor);
+>  		if (IS_ERR(jinfo)) {
+>  			return jinfo;
+>  		} else if (jinfo != info) {
+> diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
+> index b7fd760e3b47..f952061d5c24 100644
+> --- a/drivers/mtd/spi-nor/core.h
+> +++ b/drivers/mtd/spi-nor/core.h
+> @@ -11,6 +11,13 @@
+> 
+>  #define SPI_NOR_MAX_ID_LEN	6
+> 
+> +/* Standard SPI NOR flash operations. */
+> +#define SPI_NOR_READID_OP(naddr, ndummy, buf, len)			\
+> +	SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RDID, 0),			\
+> +		   SPI_MEM_OP_ADDR(naddr, 0, 0),			\
+> +		   SPI_MEM_OP_DUMMY(ndummy, 0),				\
+> +		   SPI_MEM_OP_DATA_IN(len, buf, 0))
+> +
+>  enum spi_nor_option_flags {
+>  	SNOR_F_HAS_SR_TB	= BIT(0),
+>  	SNOR_F_NO_OP_CHIP_ERASE	= BIT(1),
+> @@ -534,6 +541,8 @@ void spi_nor_unlock_and_unprep(struct spi_nor 
+> *nor);
+>  int spi_nor_sr1_bit6_quad_enable(struct spi_nor *nor);
+>  int spi_nor_sr2_bit1_quad_enable(struct spi_nor *nor);
+>  int spi_nor_sr2_bit7_quad_enable(struct spi_nor *nor);
+> +int spi_nor_read_id(struct spi_nor *nor, u8 naddr, u8 ndummy, u8 *id,
+> +		    enum spi_nor_protocol reg_proto);
+>  int spi_nor_read_sr(struct spi_nor *nor, u8 *sr);
+>  int spi_nor_sr_ready(struct spi_nor *nor);
+>  int spi_nor_read_cr(struct spi_nor *nor, u8 *cr);
 
-Sorry my mistake, I will maintain separate member in device
-structure for event.
-> 
-> The other way around is fine as any IIO ABI is allowed to affect
-> any other so when you enable the interrupt it can also enable
-> the channel in general.
-
-Then I will enable channel also while enabling interrupt.
-> 
-> > 
-> > Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
-> > ---
-> >  drivers/iio/accel/bma400.h      |  2 +
-> >  drivers/iio/accel/bma400_core.c | 72 +++++++++++++++++++++++++++++++++
-> >  2 files changed, 74 insertions(+)
-> > 
-> > diff --git a/drivers/iio/accel/bma400.h b/drivers/iio/accel/bma400.h
-> > index 65bbc80cbb7f..c833119bb42e 100644
-> > --- a/drivers/iio/accel/bma400.h
-> > +++ b/drivers/iio/accel/bma400.h
-> > @@ -39,6 +39,7 @@
-> >  #define BMA400_INT_STAT0_REG        0x0e
-> >  #define BMA400_INT_STAT1_REG        0x0f
-> >  #define BMA400_INT_STAT2_REG        0x10
-> > +#define BMA400_INT12_MAP_REG	    0x23
-> >  
-> >  /* Temperature register */
-> >  #define BMA400_TEMP_DATA_REG        0x11
-> > @@ -54,6 +55,7 @@
-> >  #define BMA400_STEP_CNT3_REG        0x17
-> >  #define BMA400_STEP_STAT_REG        0x18
-> >  #define BMA400_STEP_INT_MSK         BIT(0)
-> > +#define BMA400_STEP_STAT_MASK	    GENMASK(1, 0)
-> >  
-> >  /*
-> >   * Read-write configuration registers
-> > diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400_core.c
-> > index 305643e99eb5..79321e41df51 100644
-> > --- a/drivers/iio/accel/bma400_core.c
-> > +++ b/drivers/iio/accel/bma400_core.c
-> > @@ -26,6 +26,7 @@
-> >  #include <linux/iio/trigger.h>
-> >  #include <linux/iio/triggered_buffer.h>
-> >  #include <linux/iio/trigger_consumer.h>
-> > +#include <linux/iio/events.h>
-> >  
-> >  #include "bma400.h"
-> >  
-> > @@ -69,6 +70,7 @@ struct bma400_data {
-> >  	int scale;
-> >  	struct iio_trigger *trig;
-> >  	int steps_enabled;
-> > +	bool step_event_en;
-> >  	/* Correct time stamp alignment */
-> >  	struct {
-> >  		__be16 buff[3];
-> > @@ -166,6 +168,12 @@ static const struct iio_chan_spec_ext_info bma400_ext_info[] = {
-> >  	{ }
-> >  };
-> >  
-> > +static const struct iio_event_spec bma400_step_detect_event = {
-> > +	.type = IIO_EV_TYPE_CHANGE,
-> > +	.dir = IIO_EV_DIR_NONE,
-> > +	.mask_separate = BIT(IIO_EV_INFO_ENABLE),
-> > +};
-> > +
-> >  #define BMA400_ACC_CHANNEL(_index, _axis) { \
-> >  	.type = IIO_ACCEL, \
-> >  	.modified = 1, \
-> > @@ -208,6 +216,8 @@ static const struct iio_chan_spec bma400_channels[] = {
-> >  		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-> >  				      BIT(IIO_CHAN_INFO_ENABLE),
-> >  		.scan_index = -1, /* No buffer support */
-> > +		.event_spec = &bma400_step_detect_event,
-> > +		.num_event_specs = 1,
-> >  	},
-> >  
-> >  	IIO_CHAN_SOFT_TIMESTAMP(4),
-> > @@ -858,6 +868,59 @@ static int bma400_write_raw_get_fmt(struct iio_dev *indio_dev,
-> >  	}
-> >  }
-> >  
-> > +static int bma400_read_event_config(struct iio_dev *indio_dev,
-> > +				    const struct iio_chan_spec *chan,
-> > +				    enum iio_event_type type,
-> > +				    enum iio_event_direction dir)
-> > +{
-> > +	struct bma400_data *data = iio_priv(indio_dev);
-> > +
-> > +	switch (chan->type) {
-> > +	case IIO_STEPS:
-> > +		switch (type) {
-> > +		case IIO_EV_TYPE_CHANGE:
-> > +			return data->steps_enabled;
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +	return 0;
-> > +}
-> > +
-> > +static int bma400_write_event_config(struct iio_dev *indio_dev,
-> > +				     const struct iio_chan_spec *chan,
-> > +				     enum iio_event_type type,
-> > +				     enum iio_event_direction dir, int state)
-> > +{
-> > +	int ret;
-> > +	struct bma400_data *data = iio_priv(indio_dev);
-> > +
-> > +	switch (chan->type) {
-> > +	case IIO_STEPS:
-> > +		switch (type) {
-> > +		case IIO_EV_TYPE_CHANGE:
-> > +			mutex_lock(&data->mutex);
-> > +			ret = regmap_update_bits(data->regmap,
-> > +						 BMA400_INT12_MAP_REG,
-> > +						 BMA400_STEP_INT_MSK,
-> > +						 FIELD_PREP(BMA400_STEP_INT_MSK,
-> > +							    state));
-> > +			mutex_unlock(&data->mutex);
-> > +			if (ret)
-> > +				return ret;
-> > +			data->steps_enabled = state;
-> 
-> How does this interact with the use in the previous patch?
-> 
-> > +			return 0;
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +	return 0;
-> > +}
-> > +
-> >  static int bma400_data_rdy_trigger_set_state(struct iio_trigger *trig,
-> >  					     bool state)
-> >  {
-> > @@ -890,6 +953,8 @@ static const struct iio_info bma400_info = {
-> >  	.read_avail        = bma400_read_avail,
-> >  	.write_raw         = bma400_write_raw,
-> >  	.write_raw_get_fmt = bma400_write_raw_get_fmt,
-> > +	.read_event_config = bma400_read_event_config,
-> > +	.write_event_config = bma400_write_event_config,
-> >  };
-> >  
-> >  static const struct iio_trigger_ops bma400_trigger_ops = {
-> > @@ -945,6 +1010,13 @@ static irqreturn_t bma400_interrupt(int irq, void *private)
-> >  	if (status & BMA400_INT_DRDY_MSK)
-> >  		iio_trigger_poll_chained(data->trig);
-> >  
-> > +	if (status & (BMA400_STEP_STAT_MASK << 8)) {
-> 
-> FIELD_GET() would be cleaner
-> 
-> > +		iio_push_event(indio_dev,
-> > +			       IIO_EVENT_CODE(IIO_STEPS, 0, IIO_NO_MOD,
-> > +					      IIO_EV_DIR_NONE,
-> > +					      IIO_EV_TYPE_CHANGE, 0, 0, 0),
-> > +			       iio_get_time_ns(indio_dev));
-> > +		}
-> >  out:
-> >  	return IRQ_HANDLED;
-> >  }
-> 
+-- 
+-michael
