@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1AF6C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2D61C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:12:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351759AbiCUOLm (ORCPT
+        id S1351745AbiCUOLj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:11:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38006 "EHLO
+        Mon, 21 Mar 2022 10:11:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348565AbiCUOCj (ORCPT
+        with ESMTP id S1348758AbiCUOCk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:02:39 -0400
+        Mon, 21 Mar 2022 10:02:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F5CA27D3;
-        Mon, 21 Mar 2022 06:59:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F27E4B1A8A;
+        Mon, 21 Mar 2022 06:59:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B386B61325;
-        Mon, 21 Mar 2022 13:59:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9938C340ED;
-        Mon, 21 Mar 2022 13:59:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B2616126A;
+        Mon, 21 Mar 2022 13:59:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92C63C36AE9;
+        Mon, 21 Mar 2022 13:59:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871168;
-        bh=WbAXIMIpSRb7OSyInJWIlEk1e63sTaThqozBnDrl2dY=;
+        s=korg; t=1647871171;
+        bh=61xg3ooRqbjaYkRAfa/nCUQGRnjsqDJWwrdBHMkMXOU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u02wL1SW39FzXRYbI6Wr4VNYBTOOjMJFXrUt23gT3ZDI3RVepUxUI0zW1Vxq2u+Lm
-         u9fiQmv0GVCry/THldhali7hCktgIj+LbIgy1fxP66cCfjMSu2/Wdy8BQCGxo61Zv4
-         nr47/p4qZH5xVxu65ls4I8Ud48tMpB8Qezomftx0=
+        b=RRVshK95ALqJw3rXsbIDExvfT3nac1epcSQfkFpBdAwtkyaSitSJOniU3uc2FgbeY
+         2PYgUHfHLkoCZZz7YouOmfBG4/NqscvTxkFTtSOvkX4eLd+Fq1J8e9kKa71JkpZ3uI
+         WM8HjMCv/TpkuDfGFc7JmjFMtENDUjfGoRZdlOpA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, valis <sec@valis.email>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Tadeusz Struk <tadeusz.struk@linaro.org>
-Subject: [PATCH 5.10 29/30] esp: Fix possible buffer overflow in ESP transformation
-Date:   Mon, 21 Mar 2022 14:52:59 +0100
-Message-Id: <20220321133220.490047170@linuxfoundation.org>
+        stable@vger.kernel.org, Geliang Tang <geliang.tang@suse.com>,
+        Tommi Rantala <tommi.t.rantala@nokia.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 30/30] Revert "selftests/bpf: Add test for bpf_timer overwriting crash"
+Date:   Mon, 21 Mar 2022 14:53:00 +0100
+Message-Id: <20220321133220.519251852@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133219.643490199@linuxfoundation.org>
 References: <20220321133219.643490199@linuxfoundation.org>
@@ -50,95 +52,120 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steffen Klassert <steffen.klassert@secunet.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-commit ebe48d368e97d007bfeb76fcb065d6cfc4c96645 upstream.
+This reverts commit 4fb9be675be8360bede6fb8f0cad7948393fbef8 which is
+commit a7e75016a0753c24d6c995bc02501ae35368e333 upstream.
 
-The maximum message size that can be send is bigger than
-the  maximum site that skb_page_frag_refill can allocate.
-So it is possible to write beyond the allocated buffer.
+It is reported to break the bpf self-tests.
 
-Fix this by doing a fallback to COW in that case.
-
-v2:
-
-Avoid get get_order() costs as suggested by Linus Torvalds.
-
-Fixes: cac2661c53f3 ("esp4: Avoid skb_cow_data whenever possible")
-Fixes: 03e2a30f6a27 ("esp6: Avoid skb_cow_data whenever possible")
-Reported-by: valis <sec@valis.email>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Reported-by: Geliang Tang <geliang.tang@suse.com>
+Reported-by: Tommi Rantala <tommi.t.rantala@nokia.com>
+Cc: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/bpf/20220209070324.1093182-3-memxor@gmail.com
+Cc: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/a0a7298ca5c64b3d0ecfcc8821c2de79186fa9f7.camel@nokia.com
+Link: https://lore.kernel.org/r/HE1PR0402MB3497CB13A12C4D15D20A1FCCF8139@HE1PR0402MB3497.eurprd04.prod.outlook.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/esp.h  |    2 ++
- include/net/sock.h |    1 +
- net/ipv4/esp4.c    |    5 +++++
- net/ipv6/esp6.c    |    5 +++++
- 4 files changed, 13 insertions(+)
+ tools/testing/selftests/bpf/prog_tests/timer_crash.c |   32 -----------
+ tools/testing/selftests/bpf/progs/timer_crash.c      |   54 -------------------
+ 2 files changed, 86 deletions(-)
+ delete mode 100644 tools/testing/selftests/bpf/prog_tests/timer_crash.c
+ delete mode 100644 tools/testing/selftests/bpf/progs/timer_crash.c
 
---- a/include/net/esp.h
-+++ b/include/net/esp.h
-@@ -4,6 +4,8 @@
- 
- #include <linux/skbuff.h>
- 
-+#define ESP_SKB_FRAG_MAXSIZE (PAGE_SIZE << SKB_FRAG_PAGE_ORDER)
-+
- struct ip_esp_hdr;
- 
- static inline struct ip_esp_hdr *ip_esp_hdr(const struct sk_buff *skb)
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -2670,6 +2670,7 @@ extern int sysctl_optmem_max;
- extern __u32 sysctl_wmem_default;
- extern __u32 sysctl_rmem_default;
- 
-+#define SKB_FRAG_PAGE_ORDER	get_order(32768)
- DECLARE_STATIC_KEY_FALSE(net_high_order_alloc_disable_key);
- 
- static inline int sk_get_wmem0(const struct sock *sk, const struct proto *proto)
---- a/net/ipv4/esp4.c
-+++ b/net/ipv4/esp4.c
-@@ -448,6 +448,7 @@ int esp_output_head(struct xfrm_state *x
- 	struct page *page;
- 	struct sk_buff *trailer;
- 	int tailen = esp->tailen;
-+	unsigned int allocsz;
- 
- 	/* this is non-NULL only with TCP/UDP Encapsulation */
- 	if (x->encap) {
-@@ -457,6 +458,10 @@ int esp_output_head(struct xfrm_state *x
- 			return err;
- 	}
- 
-+	allocsz = ALIGN(skb->data_len + tailen, L1_CACHE_BYTES);
-+	if (allocsz > ESP_SKB_FRAG_MAXSIZE)
-+		goto cow;
-+
- 	if (!skb_cloned(skb)) {
- 		if (tailen <= skb_tailroom(skb)) {
- 			nfrags = 1;
---- a/net/ipv6/esp6.c
-+++ b/net/ipv6/esp6.c
-@@ -483,6 +483,7 @@ int esp6_output_head(struct xfrm_state *
- 	struct page *page;
- 	struct sk_buff *trailer;
- 	int tailen = esp->tailen;
-+	unsigned int allocsz;
- 
- 	if (x->encap) {
- 		int err = esp6_output_encap(x, skb, esp);
-@@ -491,6 +492,10 @@ int esp6_output_head(struct xfrm_state *
- 			return err;
- 	}
- 
-+	allocsz = ALIGN(skb->data_len + tailen, L1_CACHE_BYTES);
-+	if (allocsz > ESP_SKB_FRAG_MAXSIZE)
-+		goto cow;
-+
- 	if (!skb_cloned(skb)) {
- 		if (tailen <= skb_tailroom(skb)) {
- 			nfrags = 1;
+--- a/tools/testing/selftests/bpf/prog_tests/timer_crash.c
++++ /dev/null
+@@ -1,32 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-#include <test_progs.h>
+-#include "timer_crash.skel.h"
+-
+-enum {
+-	MODE_ARRAY,
+-	MODE_HASH,
+-};
+-
+-static void test_timer_crash_mode(int mode)
+-{
+-	struct timer_crash *skel;
+-
+-	skel = timer_crash__open_and_load();
+-	if (!ASSERT_OK_PTR(skel, "timer_crash__open_and_load"))
+-		return;
+-	skel->bss->pid = getpid();
+-	skel->bss->crash_map = mode;
+-	if (!ASSERT_OK(timer_crash__attach(skel), "timer_crash__attach"))
+-		goto end;
+-	usleep(1);
+-end:
+-	timer_crash__destroy(skel);
+-}
+-
+-void test_timer_crash(void)
+-{
+-	if (test__start_subtest("array"))
+-		test_timer_crash_mode(MODE_ARRAY);
+-	if (test__start_subtest("hash"))
+-		test_timer_crash_mode(MODE_HASH);
+-}
+--- a/tools/testing/selftests/bpf/progs/timer_crash.c
++++ /dev/null
+@@ -1,54 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-
+-#include <vmlinux.h>
+-#include <bpf/bpf_tracing.h>
+-#include <bpf/bpf_helpers.h>
+-
+-struct map_elem {
+-	struct bpf_timer timer;
+-	struct bpf_spin_lock lock;
+-};
+-
+-struct {
+-	__uint(type, BPF_MAP_TYPE_ARRAY);
+-	__uint(max_entries, 1);
+-	__type(key, int);
+-	__type(value, struct map_elem);
+-} amap SEC(".maps");
+-
+-struct {
+-	__uint(type, BPF_MAP_TYPE_HASH);
+-	__uint(max_entries, 1);
+-	__type(key, int);
+-	__type(value, struct map_elem);
+-} hmap SEC(".maps");
+-
+-int pid = 0;
+-int crash_map = 0; /* 0 for amap, 1 for hmap */
+-
+-SEC("fentry/do_nanosleep")
+-int sys_enter(void *ctx)
+-{
+-	struct map_elem *e, value = {};
+-	void *map = crash_map ? (void *)&hmap : (void *)&amap;
+-
+-	if (bpf_get_current_task_btf()->tgid != pid)
+-		return 0;
+-
+-	*(void **)&value = (void *)0xdeadcaf3;
+-
+-	bpf_map_update_elem(map, &(int){0}, &value, 0);
+-	/* For array map, doing bpf_map_update_elem will do a
+-	 * check_and_free_timer_in_array, which will trigger the crash if timer
+-	 * pointer was overwritten, for hmap we need to use bpf_timer_cancel.
+-	 */
+-	if (crash_map == 1) {
+-		e = bpf_map_lookup_elem(map, &(int){0});
+-		if (!e)
+-			return 0;
+-		bpf_timer_cancel(&e->timer);
+-	}
+-	return 0;
+-}
+-
+-char _license[] SEC("license") = "GPL";
 
 
