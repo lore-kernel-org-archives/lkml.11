@@ -2,193 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34015C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 18:32:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3091C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 18:33:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352197AbiCUSeA (ORCPT
+        id S1352188AbiCUSfG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 14:34:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45376 "EHLO
+        Mon, 21 Mar 2022 14:35:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352188AbiCUSd6 (ORCPT
+        with ESMTP id S238953AbiCUSfF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 14:33:58 -0400
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00DC6188A3F
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 11:32:32 -0700 (PDT)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-2d07ae0b1c4so165300677b3.11
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 11:32:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oyGzY8l76MsegSAn4xQxjQPLkZzO2340czzi6D4Ior8=;
-        b=Ej2kjVjfZTFuj5I2XgPtiMJGOUTZa2UlGmehWn+6/bXjwFlLt3vvGW6qp/Za/xN9fH
-         v4Hk1/ip8lasFXz+5aL0B0M4VJKXF4qVcUb8276ltduclc2KWaFsTGi0zr9B/RraDkhA
-         fD8Czx/aQABtevWJt4MhO+ulvmAvvgEWsYNu8CEdVK4z2gSYbB1y+P6/TTIzQ9nMvewJ
-         NSf7sxvzM2YrA+iNNLQk0A3q6U2Y3HMlG3dOjFEtwnRc8eszCrWcScnCMTHDNIjjlrc7
-         wZEsROJjcoKd7liyPjdKYFNXAYGT6OgRr62kuQd1sp6xXzufWYlAjm0Uom1qisVS4QRg
-         Cc+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oyGzY8l76MsegSAn4xQxjQPLkZzO2340czzi6D4Ior8=;
-        b=WfEXIDCzRfcuwWw8Z/634Ni9ms8WkQMr6RUspNiUzRLezkSG98gQ43QoD7pZ8t0FtJ
-         CR7X9tb8hF1zum8hR1gYGkYkuWo68GAir+QeDvGrjiBu+oQU6P2z4Oymn/Vn+WEvqiOe
-         y0HC3Pudr7vFDDyDbVRYH3HESavaezyeT6dNeg6qHbe6VJmX/IoAMKfHVOxDrfwVcZEi
-         m6zNwXN3O3E8hxpPbkLDWMciFMj0bcUiOotGGUMv6EsVkTQkZMo4XF6kM041X99Mqwix
-         zTmn1P7G/I3ZG0FeKnOiFybEJoA7BsqwNxXRGxjSYfEdb+48NMDIcsDP6Ys7jojpgCoX
-         Q7iQ==
-X-Gm-Message-State: AOAM530bKZC358Y2noyZHBqD3LdZ6J9qyAKPPaz10P+r9eicJitjghNE
-        Av3oESD44n0BRTsf6wKuaEpzHQr+OetJL8vhX8y1IA==
-X-Google-Smtp-Source: ABdhPJxA6zr4oETTteNTPmtvHbM8zDj8C+zMYhYAnSX9zKGVMbUu+sWYmd4DjTXO2SwQH+b//ZyEGy15S2jfvqLpPYo=
-X-Received: by 2002:a81:351:0:b0:2e5:9cb9:8c44 with SMTP id
- 78-20020a810351000000b002e59cb98c44mr26060988ywd.250.1647887551971; Mon, 21
- Mar 2022 11:32:31 -0700 (PDT)
+        Mon, 21 Mar 2022 14:35:05 -0400
+X-Greylist: delayed 762 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 21 Mar 2022 11:33:38 PDT
+Received: from mail.cybernetics.com (mail.cybernetics.com [173.71.130.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8C76762A7
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 11:33:38 -0700 (PDT)
+X-ASG-Debug-ID: 1647886851-0fb3b00bc488b5a0001-xx1T2L
+Received: from cybernetics.com ([10.10.4.126]) by mail.cybernetics.com with ESMTP id bFwvDITkKmngQ9Uc; Mon, 21 Mar 2022 14:20:51 -0400 (EDT)
+X-Barracuda-Envelope-From: tonyb@cybernetics.com
+X-Barracuda-RBL-Trusted-Forwarder: 10.10.4.126
+X-ASG-Whitelist: Client
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=cybernetics.com; s=mail;
+        bh=TnLfS5YUHN3LTRVR51dnyNj9HyvjTtJA6eggQNFB3nQ=;
+        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:References:Cc:To:
+        Content-Language:Subject:MIME-Version:Date:Message-ID; b=JFvmKUVf2mQnkugOBlUD
+        38WEillNpSOKksCRNZuuVfeQbk2AZRu6/Yveg6JA/b9OlGloywCkCwceTrv4HYtB9mG/jwf5/UpHO
+        tFYwSlYG5Ciog0+6e/ePvrDRs4+Eo+S3WriOZYsMMwjWP1sRHisACqT4grWAJk3a2hmdEUAHwc=
+Received: from [10.157.2.224] (HELO [192.168.200.1])
+  by cybernetics.com (CommuniGate Pro SMTP 7.1.1)
+  with ESMTPS id 11624553; Mon, 21 Mar 2022 14:20:51 -0400
+Message-ID: <6d8b3c24-12d1-043f-aec8-cfdc5b2e2786@cybernetics.com>
+X-Barracuda-RBL-Trusted-Forwarder: 10.157.2.224
+Date:   Mon, 21 Mar 2022 14:20:50 -0400
 MIME-Version: 1.0
-References: <cover.1646422845.git.isaku.yamahata@intel.com> <f3293bd872a916bf33165a2ec0d6fc50533b817f.1646422845.git.isaku.yamahata@intel.com>
-In-Reply-To: <f3293bd872a916bf33165a2ec0d6fc50533b817f.1646422845.git.isaku.yamahata@intel.com>
-From:   Sagi Shahar <sagis@google.com>
-Date:   Mon, 21 Mar 2022 11:32:21 -0700
-Message-ID: <CAAhR5DFPsmxYXXXZ9WNW=MDWRRz5jrntPvsnKw7VTrRh5CbohQ@mail.gmail.com>
-Subject: Re: [RFC PATCH v5 083/104] KVM: x86: Split core of hypercall
- emulation to helper function
-To:     "Yamahata, Isaku" <isaku.yamahata@intel.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Erdem Aktas <erdemaktas@google.com>,
-        Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] kernel: make TIF_NOTIFY_SIGNAL and core dumps co-exist
+Content-Language: en-US
+X-ASG-Orig-Subj: Re: [PATCH] kernel: make TIF_NOTIFY_SIGNAL and core dumps co-exist
+To:     Jens Axboe <axboe@kernel.dk>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Olivier Langlois <olivier@trillion01.com>
+References: <76d3418c-e9ba-4392-858a-5da8028e3526@kernel.dk>
+ <CAHk-=wgBMNC1ePTgqM6f0iBH94KE5_oHQYD2sqCbjev0KaZ6Kw@mail.gmail.com>
+ <7fb2d8a6-951c-092c-ccaa-15522ae2ed01@kernel.dk>
+From:   Tony Battersby <tonyb@cybernetics.com>
+In-Reply-To: <7fb2d8a6-951c-092c-ccaa-15522ae2ed01@kernel.dk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Barracuda-Connect: UNKNOWN[10.10.4.126]
+X-Barracuda-Start-Time: 1647886851
+X-Barracuda-URL: https://10.10.4.122:443/cgi-mod/mark.cgi
+X-Barracuda-BRTS-Status: 1
+X-Virus-Scanned: by bsmtpd at cybernetics.com
+X-Barracuda-Scan-Msg-Size: 2936
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 4, 2022 at 12:00 PM <isaku.yamahata@intel.com> wrote:
+On 8/19/21 10:59, Jens Axboe wrote:
+> On 8/18/21 8:57 PM, Linus Torvalds wrote:
+>> On Tue, Aug 17, 2021 at 8:06 PM Jens Axboe <axboe@kernel.dk> wrote:
+>>> task_work being added with notify == TWA_SIGNAL will utilize
+>>> TIF_NOTIFY_SIGNAL for signaling the targeted task that work is available.
+>>> If this happens while a task is going through a core dump, it'll
+>>> potentially disturb and truncate the dump as a signal interruption.
+>> This patch seems (a) buggy and (b) hacky.
+>>
+>>> --- a/kernel/task_work.c
+>>> +++ b/kernel/task_work.c
+>>> @@ -41,6 +41,12 @@ int task_work_add(struct task_struct *task, struct callback_head *work,
+>>>                 head = READ_ONCE(task->task_works);
+>>>                 if (unlikely(head == &work_exited))
+>>>                         return -ESRCH;
+>>> +               /*
+>>> +                * TIF_NOTIFY_SIGNAL notifications will interfere with
+>>> +                * a core dump in progress, reject them.
+>>> +                */
+>>> +               if (notify == TWA_SIGNAL && (task->flags & PF_SIGNALED))
+>>> +                       return -ESRCH;
+>> This basically seems to check task->flags with no serialization.
+>>
+>> I'm sure it works 99.9% of the time in practice, since you'd be really
+>> unlucky to hit any races, but I really don't see what the
+>> serialization logic is.
+>>
+>> Also, the main user that actually triggered the problem already has
+>>
+>>         if (unlikely(tsk->flags & PF_EXITING))
+>>                 goto fail;
+>>
+>> just above the call to task_work_add(), so this all seems very hacky indeed.
+>>
+>> Of course, I don't see what the serialization for _that_ one is either.
+>>
+>> Pls explain. You can't just randomly add tests for random flags that
+>> get modified by other random code.
+> You're absolutely right. On the io_uring side, in the current tree,
+> there's only one check where current != task being checked - and that's
+> in the poll rewait arming. That one should likely just go away. It may
+> be fine as it is, as it just pertains to ring exit cancelations. We want
+> to ensure that we don't rearm poll requests if the process is canceling
+> and going away. I'll take a closer look at that one.
 >
-> From: Sean Christopherson <sean.j.christopherson@intel.com>
->
-> By necessity, TDX will use a different register ABI for hypercalls.
-> Break out the core functionality so that it may be reused for TDX.
->
-> Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
-> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
-> ---
->  arch/x86/include/asm/kvm_host.h |  4 +++
->  arch/x86/kvm/x86.c              | 54 ++++++++++++++++++++-------------
->  2 files changed, 37 insertions(+), 21 deletions(-)
->
-> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-> index 8dab9f16f559..33b75b0e3de1 100644
-> --- a/arch/x86/include/asm/kvm_host.h
-> +++ b/arch/x86/include/asm/kvm_host.h
-> @@ -1818,6 +1818,10 @@ void kvm_request_apicv_update(struct kvm *kvm, bool activate,
->  void __kvm_request_apicv_update(struct kvm *kvm, bool activate,
->                                 unsigned long bit);
->
-> +unsigned long __kvm_emulate_hypercall(struct kvm_vcpu *vcpu, unsigned long nr,
-> +                                     unsigned long a0, unsigned long a1,
-> +                                     unsigned long a2, unsigned long a3,
-> +                                     int op_64_bit);
->  int kvm_emulate_hypercall(struct kvm_vcpu *vcpu);
->
->  int kvm_mmu_page_fault(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa, u64 error_code,
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 314ae43e07bf..9acb33a17445 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -9090,26 +9090,15 @@ static int complete_hypercall_exit(struct kvm_vcpu *vcpu)
->         return kvm_skip_emulated_instruction(vcpu);
->  }
->
-> -int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
-> +unsigned long __kvm_emulate_hypercall(struct kvm_vcpu *vcpu, unsigned long nr,
-> +                                     unsigned long a0, unsigned long a1,
-> +                                     unsigned long a2, unsigned long a3,
-> +                                     int op_64_bit)
->  {
-> -       unsigned long nr, a0, a1, a2, a3, ret;
-> -       int op_64_bit;
-> -
-> -       if (kvm_xen_hypercall_enabled(vcpu->kvm))
-> -               return kvm_xen_hypercall(vcpu);
-> -
-> -       if (kvm_hv_hypercall_enabled(vcpu))
-> -               return kvm_hv_hypercall(vcpu);
-> -
-> -       nr = kvm_rax_read(vcpu);
-> -       a0 = kvm_rbx_read(vcpu);
-> -       a1 = kvm_rcx_read(vcpu);
-> -       a2 = kvm_rdx_read(vcpu);
-> -       a3 = kvm_rsi_read(vcpu);
-> +       unsigned long ret;
->
->         trace_kvm_hypercall(nr, a0, a1, a2, a3);
->
-> -       op_64_bit = is_64_bit_hypercall(vcpu);
->         if (!op_64_bit) {
->                 nr &= 0xFFFFFFFF;
->                 a0 &= 0xFFFFFFFF;
-> @@ -9118,11 +9107,6 @@ int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
->                 a3 &= 0xFFFFFFFF;
->         }
->
-> -       if (static_call(kvm_x86_get_cpl)(vcpu) != 0) {
-> -               ret = -KVM_EPERM;
-> -               goto out;
-> -       }
-> -
->         ret = -KVM_ENOSYS;
->
->         switch (nr) {
-> @@ -9181,6 +9165,34 @@ int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
->                 ret = -KVM_ENOSYS;
->                 break;
->         }
-> +       return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(__kvm_emulate_hypercall);
-> +
-> +int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
-> +{
-> +       unsigned long nr, a0, a1, a2, a3, ret;
-> +       int op_64_bit;
-> +
-> +       if (kvm_xen_hypercall_enabled(vcpu->kvm))
-> +               return kvm_xen_hypercall(vcpu);
-> +
-> +       if (kvm_hv_hypercall_enabled(vcpu))
-> +               return kvm_hv_hypercall(vcpu);
-> +
-> +       nr = kvm_rax_read(vcpu);
-> +       a0 = kvm_rbx_read(vcpu);
-> +       a1 = kvm_rcx_read(vcpu);
-> +       a2 = kvm_rdx_read(vcpu);
-> +       a3 = kvm_rsi_read(vcpu);
-> +       op_64_bit = is_64_bit_mode(vcpu);
-
-I think this should be "op_64_bit = is_64_bit_hypercall(vcpu);"
-is_64_bit_mode was replaced with is_64_bit_hypercall to support
-protected guests here:
-https://lore.kernel.org/all/87cztf8h43.fsf@vitty.brq.redhat.com/T/
-
-Without it, op_64_bit will be set to 0 for TD VMs which will cause the
-upper 32 bit of the registers to be cleared in __kvm_emulate_hypercall
-
-> +
-> +       if (static_call(kvm_x86_get_cpl)(vcpu) != 0) {
-> +               ret = -KVM_EPERM;
-> +               goto out;
-> +       }
-> +
-> +       ret = __kvm_emulate_hypercall(vcpu, nr, a0, a1, a2, a3, op_64_bit);
->  out:
->         if (!op_64_bit)
->                 ret = (u32)ret;
-> --
-> 2.25.1
+> For this particular patch, I agree it's racy. I'll see if I can come up
+> with something better...
 >
 
-Sagi
+Continuing this thread from August 2021:
+
+I previously tested a version of Jens' patch backported to 5.10 and it
+fixed my problem.  Now I am trying to upgrade kernels, and 5.17 still
+has the same problem - coredumps from an io_uring program to a pipe are
+truncated.  Jens' patch applied to 5.17 again fixes the problem.  Has
+there been any progress with fixing the problem upstream?
+
+Reference:
+
+https://lore.kernel.org/all/8af373ec-9609-35a4-f185-f9bdc63d39b7@cybernetics.com/
+https://lore.kernel.org/all/76d3418c-e9ba-4392-858a-5da8028e3526@kernel.dk/
+
+Tony Battersby
+Cybernetics
+
