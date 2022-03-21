@@ -2,98 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 185D6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:34:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3007DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:34:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242822AbiCUNft (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 09:35:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53486 "EHLO
+        id S1347963AbiCUNgT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 09:36:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347910AbiCUNfT (ORCPT
+        with ESMTP id S1345886AbiCUNgO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:35:19 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E83DE3C4AC
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 06:33:53 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id z92so16905668ede.13
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 06:33:53 -0700 (PDT)
+        Mon, 21 Mar 2022 09:36:14 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C12D4131E
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 06:34:38 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id a8so29868170ejc.8
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 06:34:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fairphone.com; s=fair;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=DsNby0a3KqzAfOnj6mSyZetKsm2cbFk7h9HIg7MUGdQ=;
-        b=mVyqs6hGGEUzEFy32H/xYVc8XbIFlcX8m1ZC85sLopiDTeC1gHZcaYWZ1t9zaF9xhJ
-         EYsabs6hRni0eEKMdAghJhsH5U/tcQt0EiS5EP4KZ3mRazXyLtVGD12H72iJ7mYDRQbN
-         ORKFueJmChRJ5gjIlmvlPOvD4pVJq+PanCARu1rT8lQ00x+5dK3bfhHgP/vkmiURe5HT
-         DOA0f9njkv3mDnFZUcDzZFW7Wl0UMIduQZmfJkKsip8jeIdDg5sq2WRbbvITTvKO+bIq
-         AFN60dplhhuEVHC7vWPgmddrusV9fLlJEVQJETly7aK5vwYDy8tuXeSV18QY1Fc6qrrT
-         VTlA==
+        d=gmail.com; s=20210112;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=N8/CwtqN9kge4KyfLwif97kBN6bn65zBDJpOs3ol2XY=;
+        b=N+pLfUCjyXYZ1IVBqh+pWSg52dJdjSZVdhekNwZCcOUqAU9NgtFBf5EXl0SZkvbqdb
+         FlUfjIh9wfHQdouQEI2M6H7k5E/WNm1LYU9W1vv9rd3W92qZ5tamiKEIeu/HllwodkU2
+         Hrtv5t6626Yp8Yr+xLGvJzDRhhXQuOeWENK0/sFpvPstCFF1uyeAnu6aVTq1KGNOpuhE
+         Hhx9DfoQcqfC5z/IGDVXBuVQ5dYb+l+Ht28GfAd0uNdjGvX40Fy+Eg8lTENCjBexUBUu
+         Xt2+6Bt+pSH7bc1titJe+IQRT9UAdCVNfEeKCSdnRj8XfH0QLgxcRniUBr14HMWCH5ez
+         cU4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=DsNby0a3KqzAfOnj6mSyZetKsm2cbFk7h9HIg7MUGdQ=;
-        b=jK+pvjKxm/BnFmkaRfc+B44MN68/ZhundQ53ptQUHfAkNMq49wU5dS5M2ZOdlsEHPd
-         DXT+yCog7s+1NTsbPpt6pIJkV16YJ36aLPlQEBOq9aFVB84CXutohlxgUbWit4tLUHK/
-         G3tcWERzukYwAyeACtPyiudscESjGLcIPROQDPsKFGtAL57zEk8tMYjmZB331WRXA3zp
-         aaNZiosY35pWlHJYddnIjU7YZsUGLIk9jaVbeVHVc9szRO/Su/FmjFityRKjkZ4m0Lw0
-         TsNsReSTGEE8I35jR/4ywpYOYmqFRUQgn0HMdFDWis+d3ELHe/z5hcBC0xIwsEuWLNHC
-         zX9Q==
-X-Gm-Message-State: AOAM533tgKz8NaZcxwR4Co737eS3YFWL8MHl8hMIu4IIIaiFQi387sYf
-        xY4vMOVBh03mFtAnaQP7R9jaDQ==
-X-Google-Smtp-Source: ABdhPJwbmbOxiUJERj4MHNXeag+kdgbSCHJBfY82vjDCL38uvezqoHUBcVMRYz+Bz08iOVCcqVzlsg==
-X-Received: by 2002:a05:6402:51c7:b0:419:2bd7:efa4 with SMTP id r7-20020a05640251c700b004192bd7efa4mr8919920edd.135.1647869632531;
-        Mon, 21 Mar 2022 06:33:52 -0700 (PDT)
-Received: from otso.arnhem.chello.nl (a246182.upc-a.chello.nl. [62.163.246.182])
-        by smtp.gmail.com with ESMTPSA id r22-20020a17090638d600b006d584aaa9c9sm6862154ejd.133.2022.03.21.06.33.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 06:33:52 -0700 (PDT)
-From:   Luca Weiss <luca.weiss@fairphone.com>
-To:     linux-arm-msm@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Luca Weiss <luca.weiss@fairphone.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>, linux-phy@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/6] phy: qcom-qmp: Add SM6350 UFS PHY support
-Date:   Mon, 21 Mar 2022 14:33:15 +0100
-Message-Id: <20220321133318.99406-4-luca.weiss@fairphone.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220321133318.99406-1-luca.weiss@fairphone.com>
-References: <20220321133318.99406-1-luca.weiss@fairphone.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=N8/CwtqN9kge4KyfLwif97kBN6bn65zBDJpOs3ol2XY=;
+        b=UhRhZH3a6jmO4XJ0jQ/W5h7g0kS7HpGWRbrOvv04/dpZ9OBlOLJCXxOU65hj/3+Ccf
+         KHiUbRz8pP3b+A/O+aDacH7U3+67t+4ksH6ncmEU3kVmLxMYNeKvKmmaBY0LPPHarSHz
+         GvBxdbgvRXGxCOEyDt8tOrFY03t6t9dOkM0Qg/si/lPKpU5bjdwsZtAcG8468QShdEKV
+         KQYSBm5t2xp/bZ6LY8l1dwrhu5YLyFiGzCD/nZxIGCoK9ZPGOTHZVVeko7wwpNeBnNXF
+         +QA1hXIYJ2JEXxcK2lUE5015LQYn3RwnKdAFn1cxNMhg98e4Q4HosAWpSIpZiLtWgbyu
+         pwTQ==
+X-Gm-Message-State: AOAM533cstOdU1RbjLRKeU93BDeeQfUqVbV8tmW+ZQ43NjnDNm1uldTE
+        7588LKDfCdh82icr7fTDiiM=
+X-Google-Smtp-Source: ABdhPJxBH3xRePg3GN07CJFaSCHvo39gfLOYF2D01sOHTyhiAtmC+JM5coj4Vv88HOlhAoHDarpNdA==
+X-Received: by 2002:a17:907:9623:b0:6de:c0fb:8acc with SMTP id gb35-20020a170907962300b006dec0fb8accmr20266161ejc.380.1647869676508;
+        Mon, 21 Mar 2022 06:34:36 -0700 (PDT)
+Received: from smtpclient.apple (i130160.upc-i.chello.nl. [62.195.130.160])
+        by smtp.gmail.com with ESMTPSA id g13-20020a1709065d0d00b006df7dfa2a51sm6776497ejt.132.2022.03.21.06.34.35
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 21 Mar 2022 06:34:35 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [PATCH] ocfs2: fix check if list iterator did find an element
+From:   Jakob Koschel <jakobkoschel@gmail.com>
+In-Reply-To: <abcbf5d2-c348-7dc0-cfd3-9bcc6431bc64@linux.alibaba.com>
+Date:   Mon, 21 Mar 2022 14:34:34 +0100
+Cc:     Mark Fasheh <mark@fasheh.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ocfs2-devel@oss.oracle.com, Joel Becker <jlbec@evilplan.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <A7AA04AA-6B4C-4211-99A6-0D3C04ED7B26@gmail.com>
+References: <20220319203106.2541700-1-jakobkoschel@gmail.com>
+ <abcbf5d2-c348-7dc0-cfd3-9bcc6431bc64@linux.alibaba.com>
+To:     Joseph Qi <joseph.qi@linux.alibaba.com>
+X-Mailer: Apple Mail (2.3696.80.82.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The SM6350 UFS PHY is compatible with the one from SDM845. Add a
-compatible for that.
 
-Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
----
-Changes in v2:
-- nothing
+> On 21. Mar 2022, at 02:50, Joseph Qi <joseph.qi@linux.alibaba.com> =
+wrote:
+>=20
+>=20
+>=20
+> On 3/20/22 4:31 AM, Jakob Koschel wrote:
+>> Instead of setting 'res' to NULL, it should only be set if
+>> the suitable element was found.
+>>=20
+>> In the original code 'res' would have been set to an incorrect =
+pointer
+>> if the list is empty.
+>>=20
+> The logic before iteration can make sure track_list won't be empty.
+> Please refer the discussion via:
+> =
+https://lore.kernel.org/ocfs2-devel/bd0ec87e-b490-83dc-2363-5e5342c59fa4@l=
+inux.alibaba.com/T/#m96d4397930201d83d68677c33a9721ae8dbd8f15
 
- drivers/phy/qualcomm/phy-qcom-qmp.c | 3 +++
- 1 file changed, 3 insertions(+)
+ah yes, I just read up on the discussion there, sorry for having =
+duplicated it
+here.
 
-diff --git a/drivers/phy/qualcomm/phy-qcom-qmp.c b/drivers/phy/qualcomm/phy-qcom-qmp.c
-index b144ae1f729a..1628275265b5 100644
---- a/drivers/phy/qualcomm/phy-qcom-qmp.c
-+++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
-@@ -6007,6 +6007,9 @@ static const struct of_device_id qcom_qmp_phy_of_match_table[] = {
- 	}, {
- 		.compatible = "qcom,sm6115-qmp-ufs-phy",
- 		.data = &sm6115_ufsphy_cfg,
-+	}, {
-+		.compatible = "qcom,sm6350-qmp-ufs-phy",
-+		.data = &sdm845_ufsphy_cfg,
- 	}, {
- 		.compatible = "qcom,sm8150-qmp-ufs-phy",
- 		.data = &sm8150_ufsphy_cfg,
--- 
-2.35.1
+Was any conclusion reached there which fixes can/should be merged?
 
+This code obviously can always be safe if the list cannot be empty.
+That's also not necessarily the reason I'm fixing this. The reason is =
+that
+we want to get rid of any use of the list iterator variable after the =
+loop
+('res' in this case). This will allow moving the list iterator variable
+into the scope of the list iterator macro to forbid any invalid use of =
+it
+at compile time. Like this you don't have to rely on assumptions that =
+are
+hard to validate (e.g. that a certain list is never empty).
+
+The patch here is the minimal change to simply do that but looking at
+Dan Carpenter patch there might be more things in this code that can
+be simplified.
+
+[CC'd Dan Carpenter]
+
+See [1] for changes that have already been merged:
+
+[1] =
+https://lore.kernel.org/linux-kernel/20220308171818.384491-3-jakobkoschel@=
+gmail.com/
+
+>=20
+> Thanks,
+> Joseph
+>=20
+>> In preparation to limit the scope of the list iterator to the list
+>> traversal loop, use a dedicated pointer pointing to the found element =
+[1].
+>>=20
+>> Link: https://lore.kernel.org/all/YhdfEIwI4EdtHdym@kroah.com/
+>> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+>> ---
+>> fs/ocfs2/dlm/dlmdebug.c | 12 ++++++------
+>> 1 file changed, 6 insertions(+), 6 deletions(-)
+>>=20
+>> diff --git a/fs/ocfs2/dlm/dlmdebug.c b/fs/ocfs2/dlm/dlmdebug.c
+>> index d442cf5dda8a..be5e9ed7da8d 100644
+>> --- a/fs/ocfs2/dlm/dlmdebug.c
+>> +++ b/fs/ocfs2/dlm/dlmdebug.c
+>> @@ -541,7 +541,7 @@ static void *lockres_seq_start(struct seq_file =
+*m, loff_t *pos)
+>> 	struct debug_lockres *dl =3D m->private;
+>> 	struct dlm_ctxt *dlm =3D dl->dl_ctxt;
+>> 	struct dlm_lock_resource *oldres =3D dl->dl_res;
+>> -	struct dlm_lock_resource *res =3D NULL;
+>> +	struct dlm_lock_resource *res =3D NULL, *iter;
+>> 	struct list_head *track_list;
+>>=20
+>> 	spin_lock(&dlm->track_lock);
+>> @@ -556,11 +556,11 @@ static void *lockres_seq_start(struct seq_file =
+*m, loff_t *pos)
+>> 		}
+>> 	}
+>>=20
+>> -	list_for_each_entry(res, track_list, tracking) {
+>> -		if (&res->tracking =3D=3D &dlm->tracking_list)
+>> -			res =3D NULL;
+>> -		else
+>> -			dlm_lockres_get(res);
+>> +	list_for_each_entry(iter, track_list, tracking) {
+>> +		if (&iter->tracking !=3D &dlm->tracking_list) {
+>> +			dlm_lockres_get(iter);
+>> +			res =3D iter;
+>> +		}
+>> 		break;
+>> 	}
+>> 	spin_unlock(&dlm->track_lock);
+>>=20
+>> base-commit: 34e047aa16c0123bbae8e2f6df33e5ecc1f56601
+>> --
+>> 2.25.1
+
+	Jakob=
