@@ -2,388 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3371C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 04:31:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC23AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 04:31:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344357AbiCUEcp (ORCPT
+        id S1344378AbiCUEdQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 00:32:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44772 "EHLO
+        Mon, 21 Mar 2022 00:33:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244277AbiCUEcb (ORCPT
+        with ESMTP id S1344398AbiCUEdK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 00:32:31 -0400
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B262330F5C;
-        Sun, 20 Mar 2022 21:31:02 -0700 (PDT)
-Received: from relay2-d.mail.gandi.net (unknown [217.70.183.194])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id 1800FC96C2;
-        Mon, 21 Mar 2022 04:22:02 +0000 (UTC)
-Received: (Authenticated sender: frank@zago.net)
-        by mail.gandi.net (Postfix) with ESMTPSA id 4DDB740002;
-        Mon, 21 Mar 2022 04:21:49 +0000 (UTC)
-From:   frank zago <frank@zago.net>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Wolfram Sang <wsa@kernel.org>, Johan Hovold <johan@kernel.org>,
-        linux-usb@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
-        frank zago <frank@zago.net>
-Subject: [PATCH v4 1/3] mfd: ch341: add core driver for the WCH CH341 in I2C/GPIO mode
-Date:   Sun, 20 Mar 2022 23:21:40 -0500
-Message-Id: <20220321042142.69239-2-frank@zago.net>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220321042142.69239-1-frank@zago.net>
-References: <20220321042142.69239-1-frank@zago.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Mon, 21 Mar 2022 00:33:10 -0400
+Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8038E33E04
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 21:31:29 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 726FE5C0126;
+        Mon, 21 Mar 2022 00:31:27 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Mon, 21 Mar 2022 00:31:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:date:date:from:from:in-reply-to
+        :message-id:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=q/rwds
+        Z9GX/6TRc6IpzD6MxELSkwdXgINKIVSJHbvoo=; b=h6F6rsLrkM49LK8naaPQFf
+        jmtqZkVdkqmcyMr4bXXeDugsLCcVGu86AtOlAFLmyEx7mAWegcgTWAJtSoWNQUMz
+        airESWElgb83a15nivXWJ0F48Jrb3dxBJUuxwOW1YRgyVwVSbVx7LPFqyhL3g9xz
+        bEYSNF1JP1oWjITMieaNiAwyNN1L0I/qt29MomnJ7g1BZ/mgDnIkFVb4KBEACWxK
+        mpazMvWTffuAOTVjES7Njh6/bJFhto5t4/1R9+7RwKhfuKwvocBJ6+/xfgz9s0QK
+        Kuuku9MEWuk97E7pDAK0Mq3mxIg8VoXrFyZ1sIamiKNTzDzh0a0+s6Qv4SaSPZsw
+        ==
+X-ME-Sender: <xms:nv83YvA-2FdJGKP34KKJODHGQs3t0rk_jT9_7fGOc8XaRuE-gYcwfQ>
+    <xme:nv83YliI1Bx7RVotrYRR_cHtD4trKRiAfiC_IoXJAMHkVno8wj9U4eaK4qcdhvseV
+    b7wLZFW0ovz9zSWlCQ>
+X-ME-Received: <xmr:nv83Yql1fTFxpGDFJDOlMBnXO25-q1xdZOKgzBYPVKw2gp3Juu5fie4ykOsZEUrwJWOlRwuQVVlRycCQ8yzUqfmFJDgqwkbeWxI>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudegvddgjeduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepvffkhffuffestddtredttddttdenucfhrhhomhephfhinhhnucfvhhgrihhn
+    uceofhhthhgrihhnsehlihhnuhigqdhmieekkhdrohhrgheqnecuggftrfgrthhtvghrnh
+    eptdelteekleekkedvueejheekgfdvtdehhefhteeitefhteefgefhudehveevleelnecu
+    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepfhhthhgrih
+    hnsehlihhnuhigqdhmieekkhdrohhrgh
+X-ME-Proxy: <xmx:n_83Yhxb0BSWnHum-DGXUrspG3HgAw_pKDCO1FD7j1qu0lQ6y_ugFg>
+    <xmx:n_83YkS3pZBSY7M7oy2aWBHwybLJ16dVJEwSeShc45wRO7YsOe9WfA>
+    <xmx:n_83Yka8zOSqkGI9AveVdmN2fRjEIHIPG4wsQb2Sfpb88t-bNFAigg>
+    <xmx:n_83YqckGj0qhlbik_f0UQIB4iwgzag2VxvGWibOPdMoZW38JPDW6g>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 21 Mar 2022 00:31:24 -0400 (EDT)
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc:     "Michael Ellerman" <mpe@ellerman.id.au>,
+        "Geert Uytterhoeven" <geert@linux-m68k.org>,
+        "Randy Dunlap" <rdunlap@infradead.org>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Message-Id: <d987663bbed18d7dbf106db6066a759040b4e57a.1647837028.git.fthain@linux-m68k.org>
+From:   Finn Thain <fthain@linux-m68k.org>
+Subject: [PATCH] macintosh/via-pmu: Fix build failure when CONFIG_INPUT is
+ disabled
+Date:   Mon, 21 Mar 2022 15:30:28 +1100
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The CH341 is a multifunction chip, presenting 3 different USB PID. One
-of these functions is for I2C/SPI/GPIO. This new set of drivers will
-manage I2C and GPIO.
+drivers/macintosh/via-pmu-event.o: In function `via_pmu_event':
+via-pmu-event.c:(.text+0x44): undefined reference to `input_event'
+via-pmu-event.c:(.text+0x68): undefined reference to `input_event'
+via-pmu-event.c:(.text+0x94): undefined reference to `input_event'
+via-pmu-event.c:(.text+0xb8): undefined reference to `input_event'
+drivers/macintosh/via-pmu-event.o: In function `via_pmu_event_init':
+via-pmu-event.c:(.init.text+0x20): undefined reference to `input_allocate_device'
+via-pmu-event.c:(.init.text+0xc4): undefined reference to `input_register_device'
+via-pmu-event.c:(.init.text+0xd4): undefined reference to `input_free_device'
+make[1]: *** [Makefile:1155: vmlinux] Error 1
+make: *** [Makefile:350: __build_one_by_one] Error 2
 
-Signed-off-by: frank zago <frank@zago.net>
+Don't call into the input subsystem unless CONFIG_INPUT is built-in.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Finn Thain <fthain@linux-m68k.org>
 ---
- Documentation/misc-devices/ch341.rst | 114 +++++++++++++++++++++++++++
- Documentation/misc-devices/index.rst |   1 +
- MAINTAINERS                          |   7 ++
- drivers/mfd/Kconfig                  |  12 +++
- drivers/mfd/Makefile                 |   1 +
- drivers/mfd/ch341-core.c             | 103 ++++++++++++++++++++++++
- include/linux/mfd/ch341.h            |  25 ++++++
- 7 files changed, 263 insertions(+)
- create mode 100644 Documentation/misc-devices/ch341.rst
- create mode 100644 drivers/mfd/ch341-core.c
- create mode 100644 include/linux/mfd/ch341.h
+This is equivalent to the patch I sent a couple of days ago. This one
+is slightly longer and adds a new symbol so that Kconfig logic can been
+used instead of Makefile logic in case reviewers prefer that.
+---
+ drivers/macintosh/Kconfig   | 5 +++++
+ drivers/macintosh/Makefile  | 3 ++-
+ drivers/macintosh/via-pmu.c | 2 ++
+ 3 files changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/misc-devices/ch341.rst b/Documentation/misc-devices/ch341.rst
-new file mode 100644
-index 000000000000..a4884918cd32
---- /dev/null
-+++ b/Documentation/misc-devices/ch341.rst
-@@ -0,0 +1,114 @@
-+.. SPDX-License-Identifier: GPL-2.0-or-later
-+
-+===========================================================
-+WinChipHead (沁恒) CH341 linux driver for I2C and GPIO mode
-+===========================================================
-+
-+The CH341 is declined in several flavors, and may support one or more
-+of UART, SPI, I2C and GPIO, but not always simultaneously:
-+
-+  - CH341 A/B/F: UART, Printer, SPI, I2C and GPIO
-+  - CH341 C/T: UART and I2C
-+  - CH341 H: SPI
-+
-+They work in 3 different modes, with only one being presented
-+depending on the USB PID:
-+
-+  - 0x5523: UART mode, covered by the USB `ch341` serial driver
-+  - 0x5512: SPI/I2C/GPIO mode, covered by the MFD `ch341-mfd` driver
-+  - 0x5584: Parallel printer mode, covered by the USB `usblp` driver
-+
-+Mode selection is done at the hardware level by tying some
-+pins. Breakout boards with one of the CH341 chip usually have one or
-+more jumpers to select which mode they work on. At least one model
-+(CJMCU-341) appears to need bridging some solder pads to select a
-+different default. Breakout boards also don't usually offer an option
-+to configure the chip into printer mode; for that case, connect the
-+SCL and SDA lines directly together.
-+
-+The various CH341 appear to be indistinguishable from the
-+software. For instance the ch341 MFD driver will present a GPIO
-+interface for the CH341T although physical pins are not present, and
-+the device will accept GPIO commands.
-+
-+The ch341 MFD driver has been tested with a CH341A, CH341B and
-+CH341T.
-+
-+Some breakout boards work in 3.3V and 5V depending on some jumpers.
-+
-+The black chip programmer with a ZIF socket will power the CH341 at
-+3.3V if a jumper is set, but will only output 5V to the chips to be
-+programmed, which is not always desirable. A hardware hack to use 3.3V
-+everywhere, involving some soldering, is available at
-+https://eevblog.com/forum/repair/ch341a-serial-memory-programmer-power-supply-fix/
-+
-+Some sample code for the CH341 is available at the manufacturer
-+website, at http://wch-ic.com/products/CH341.html
-+
-+The repository at https://github.com/boseji/CH341-Store contains a lot
-+of information on these chips, including datasheets.
-+
-+This driver is based on the pre-existing work at
-+https://github.com/gschorcht/i2c-ch341-usb
-+
-+
-+I2C Caveats
-+-----------
-+
-+The ch341 doesn't work with a Wii nunchuk, possibly because the
-+pull-up value is too low (1500 ohms).
-+
-+i2c AT24 eeproms can be read but not programmed properly because the
-+at24 linux driver tries to write a byte at a time, and doesn't wait at
-+all (or enough) between writes. Data corruption on writes does occur.
-+
-+The driver doesn't support detection of I2C device present on the
-+bus. Apparently when a device is not present at a given address, the
-+CH341 will return an extra byte of data, but the driver doesn't
-+support that. This may be addressed in the future.
-+
-+
-+The GPIOs
-+---------
-+
-+16 GPIOs are available on the CH341 A/B/F. The first 6 are input/output,
-+and the last 10 are input only.
-+
-+Pinout and their names as they appear on some breakout boards::
-+
-+  CH341A/B/F     GPIO  Names                    Mode
-+    pin          line
-+
-+   15             0     D0, CS0                  input/output
-+   16             1     D1, CS1                  input/output
-+   17             2     D2, CS2                  input/output
-+   18             3     D3, SCK, DCK             input/output
-+   19             4     D4, DOUT2, CS3           input/output
-+   20             5     D5, MOSI, DOUT, SDO      input/output
-+   21             6     D6, DIN2                 input
-+   22             7     D7, MISO, DIN            input
-+    5             8     ERR                      input
-+    6             9     PEMP                     input
-+    7            10     INT                      input
-+    8            11     SLCT (SELECT)            input
-+   26            12     RST# (?)                 input
-+   27            13     WT (WAIT)                input
-+    4            14     DS (Data Select?)        input
-+    3            15     AS (Address Select?)     input
-+
-+
-+GPIO interrupt
-+~~~~~~~~~~~~~~
-+
-+The INT pin, corresponding to GPIO 10 is an input pin that can trigger
-+an interrupt on a rising edge. Only that pin is able to generate an
-+interrupt, and only on a rising edge. Trying to monitor events on
-+another GPIO, or that GPIO on something other than a rising edge, will
-+be rejected.
-+
-+
-+SPI
-+---
-+
-+This driver doesn't offer an SPI interface (yet) due to the
-+impossibility of declaring an SPI device like I2C does.
-diff --git a/Documentation/misc-devices/index.rst b/Documentation/misc-devices/index.rst
-index 30ac58f81901..190f93b56ec6 100644
---- a/Documentation/misc-devices/index.rst
-+++ b/Documentation/misc-devices/index.rst
-@@ -29,3 +29,4 @@ fit into other categories.
-    spear-pcie-gadget
-    uacce
-    xilinx_sdfec
-+   ch341
-diff --git a/MAINTAINERS b/MAINTAINERS
-index cd0f68d4a34a..a6b2805fd1a1 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -20845,6 +20845,13 @@ M:	David Härdeman <david@hardeman.nu>
- S:	Maintained
- F:	drivers/media/rc/winbond-cir.c
+diff --git a/drivers/macintosh/Kconfig b/drivers/macintosh/Kconfig
+index 5cdc361da37c..b9102f051bbb 100644
+--- a/drivers/macintosh/Kconfig
++++ b/drivers/macintosh/Kconfig
+@@ -67,6 +67,11 @@ config ADB_PMU
+ 	  this device; you should do so if your machine is one of those
+ 	  mentioned above.
  
-+WINCHIPHEAD CH341 I2C/GPIO MFD DRIVER
-+M:	Frank Zago <frank@zago.net>
-+L:	linux-usb@vger.kernel.org
-+S:	Maintained
-+F:	drivers/mfd/ch341-core.c
-+F:	include/linux/mfd/ch341.h
++config ADB_PMU_EVENT
++	bool
++	depends on ADB_PMU && INPUT=y
++	default y
 +
- WINSYSTEMS EBC-C384 WATCHDOG DRIVER
- M:	William Breathitt Gray <vilhelm.gray@gmail.com>
- L:	linux-watchdog@vger.kernel.org
-diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-index ba0b3eb131f1..84067e454c90 100644
---- a/drivers/mfd/Kconfig
-+++ b/drivers/mfd/Kconfig
-@@ -1778,6 +1778,18 @@ config MFD_LOCHNAGAR
- 	help
- 	  Support for Cirrus Logic Lochnagar audio development board.
+ config ADB_PMU_LED
+ 	bool "Support for the Power/iBook front LED"
+ 	depends on PPC_PMAC && ADB_PMU
+diff --git a/drivers/macintosh/Makefile b/drivers/macintosh/Makefile
+index 49819b1b6f20..712edcb3e0b0 100644
+--- a/drivers/macintosh/Makefile
++++ b/drivers/macintosh/Makefile
+@@ -12,7 +12,8 @@ obj-$(CONFIG_MAC_EMUMOUSEBTN)	+= mac_hid.o
+ obj-$(CONFIG_INPUT_ADBHID)	+= adbhid.o
+ obj-$(CONFIG_ANSLCD)		+= ans-lcd.o
  
-+config MFD_CH341
-+	tristate "WinChipHead CH341 in I2C/SPI/GPIO mode"
-+	depends on USB
-+	help
-+	  If you say yes to this option, support for the CH341 series
-+	  of chips, running in I2C/SPI/GPIO mode will be included.
-+
-+	  The chip's SPI mode is not supported.
-+
-+	  This driver can also be built as a module.  If so, the
-+	  module will be called ch341-core.
-+
- config MFD_ARIZONA
- 	select REGMAP
- 	select REGMAP_IRQ
-diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-index df1ecc4a4c95..a0364a0d5e33 100644
---- a/drivers/mfd/Makefile
-+++ b/drivers/mfd/Makefile
-@@ -13,6 +13,7 @@ obj-$(CONFIG_MFD_ASIC3)		+= asic3.o tmio_core.o
- obj-$(CONFIG_ARCH_BCM2835)	+= bcm2835-pm.o
- obj-$(CONFIG_MFD_BCM590XX)	+= bcm590xx.o
- obj-$(CONFIG_MFD_BD9571MWV)	+= bd9571mwv.o
-+obj-$(CONFIG_MFD_CH341)		+= ch341-core.o
- obj-$(CONFIG_MFD_CROS_EC_DEV)	+= cros_ec_dev.o
- obj-$(CONFIG_MFD_ENE_KB3930)	+= ene-kb3930.o
- obj-$(CONFIG_MFD_EXYNOS_LPASS)	+= exynos-lpass.o
-diff --git a/drivers/mfd/ch341-core.c b/drivers/mfd/ch341-core.c
-new file mode 100644
-index 000000000000..fbb2897cd956
---- /dev/null
-+++ b/drivers/mfd/ch341-core.c
-@@ -0,0 +1,103 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Core driver for the CH341A, CH341B and CH341T in I2C/SPI/GPIO
-+ * mode. There are cell drivers available for I2C and GPIO. SPI is not
-+ * yet supported.
-+ *
-+ * Copyright 2022, Frank Zago
-+ * Copyright (c) 2017 Gunar Schorcht (gunar@schorcht.net)
-+ * Copyright (c) 2016 Tse Lun Bien
-+ * Copyright (c) 2014 Marco Gittler
-+ * Copyright (c) 2006-2007 Till Harbaum (Till@Harbaum.org)
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/mfd/core.h>
-+
-+#include <linux/mfd/ch341.h>
-+
-+static const struct mfd_cell ch341_devs[] = {
-+};
-+
-+static int ch341_usb_probe(struct usb_interface *iface,
-+			   const struct usb_device_id *usb_id)
-+{
-+	struct usb_host_endpoint *endpoints;
-+	struct ch341_device *dev;
-+	int rc;
-+
-+	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
-+	if (!dev)
-+		return -ENOMEM;
-+
-+	dev->usb_dev = usb_get_dev(interface_to_usbdev(iface));
-+	dev->iface = iface;
-+	mutex_init(&dev->usb_lock);
-+
-+	if (iface->cur_altsetting->desc.bNumEndpoints != 3) {
-+		rc = -ENODEV;
-+		goto free_dev;
-+	}
-+
-+	endpoints = iface->cur_altsetting->endpoint;
-+	if (!usb_endpoint_is_bulk_in(&endpoints[0].desc) ||
-+	    !usb_endpoint_is_bulk_out(&endpoints[1].desc) ||
-+	    !usb_endpoint_xfer_int(&endpoints[2].desc)) {
-+		rc = -ENODEV;
-+		goto free_dev;
-+	}
-+
-+	dev->ep_in = endpoints[0].desc.bEndpointAddress;
-+	dev->ep_out = endpoints[1].desc.bEndpointAddress;
-+	dev->ep_intr = endpoints[2].desc.bEndpointAddress;
-+	dev->ep_intr_interval = endpoints[2].desc.bInterval;
-+
-+	usb_set_intfdata(iface, dev);
-+
-+	rc = mfd_add_hotplug_devices(&iface->dev, ch341_devs,
-+				     ARRAY_SIZE(ch341_devs));
-+	if (rc) {
-+		dev_err(&iface->dev, "Failed to add mfd devices to core.");
-+		goto free_dev;
-+	}
-+
-+	return 0;
-+
-+free_dev:
-+	usb_put_dev(dev->usb_dev);
-+	kfree(dev);
-+
-+	return rc;
-+}
-+
-+static void ch341_usb_disconnect(struct usb_interface *usb_if)
-+{
-+	struct ch341_device *dev = usb_get_intfdata(usb_if);
-+
-+	mfd_remove_devices(&usb_if->dev);
-+	usb_set_intfdata(dev->iface, NULL);
-+	usb_put_dev(dev->usb_dev);
-+	kfree(dev);
-+}
-+
-+static const struct usb_device_id ch341_usb_table[] = {
-+	{ USB_DEVICE(0x1a86, 0x5512) },
-+	{ }
-+};
-+
-+MODULE_DEVICE_TABLE(usb, ch341_usb_table);
-+
-+static struct usb_driver ch341_usb_driver = {
-+	.name       = "ch341-mfd",
-+	.id_table   = ch341_usb_table,
-+	.probe      = ch341_usb_probe,
-+	.disconnect = ch341_usb_disconnect
-+};
-+
-+module_usb_driver(ch341_usb_driver);
-+
-+MODULE_AUTHOR("Various");
-+MODULE_DESCRIPTION("CH341 USB to I2C/SPI/GPIO adapter");
-+MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/mfd/ch341.h b/include/linux/mfd/ch341.h
-new file mode 100644
-index 000000000000..246159477cdf
---- /dev/null
-+++ b/include/linux/mfd/ch341.h
-@@ -0,0 +1,25 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Definitions for CH341 MFD driver
-+ */
-+
-+#include <linux/usb.h>
-+#include <linux/mutex.h>
-+
-+#define DEFAULT_TIMEOUT 1000	/* 1s USB requests timeout */
-+
-+/* All commands fit inside a 32-byte segment. There may be several
-+ * of these segments in a USB command.
-+ */
-+#define SEG_SIZE 32
-+
-+struct ch341_device {
-+	struct usb_device *usb_dev;
-+	struct usb_interface *iface;
-+	struct mutex usb_lock;
-+
-+	int ep_in;
-+	int ep_out;
-+	int ep_intr;
-+	u8 ep_intr_interval;
-+};
+-obj-$(CONFIG_ADB_PMU)		+= via-pmu.o via-pmu-event.o
++obj-$(CONFIG_ADB_PMU)		+= via-pmu.o
++obj-$(CONFIG_ADB_PMU_EVENT)	+= via-pmu-event.o
+ obj-$(CONFIG_ADB_PMU_LED)	+= via-pmu-led.o
+ obj-$(CONFIG_PMAC_BACKLIGHT)	+= via-pmu-backlight.o
+ obj-$(CONFIG_ADB_CUDA)		+= via-cuda.o
+diff --git a/drivers/macintosh/via-pmu.c b/drivers/macintosh/via-pmu.c
+index b1859e5340b3..022e2fd4397b 100644
+--- a/drivers/macintosh/via-pmu.c
++++ b/drivers/macintosh/via-pmu.c
+@@ -1468,12 +1468,14 @@ pmu_handle_data(unsigned char *data, int len)
+ 		if (pmu_battery_count)
+ 			query_battery_state();
+ 		pmu_pass_intr(data, len);
++#ifdef CONFIG_ADB_PMU_EVENT
+ 		/* len == 6 is probably a bad check. But how do I
+ 		 * know what PMU versions send what events here? */
+ 		if (len == 6) {
+ 			via_pmu_event(PMU_EVT_POWER, !!(data[1]&8));
+ 			via_pmu_event(PMU_EVT_LID, data[1]&1);
+ 		}
++#endif
+ 		break;
+ 
+ 	default:
 -- 
 2.32.0
 
