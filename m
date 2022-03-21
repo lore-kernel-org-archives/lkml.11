@@ -2,93 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A4D8C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:18:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D235C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:20:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231414AbiCUXTt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:19:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42174 "EHLO
+        id S232269AbiCUXVr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:21:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233059AbiCUXSR (ORCPT
+        with ESMTP id S232616AbiCUXVi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 19:18:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 729945C35A;
-        Mon, 21 Mar 2022 16:07:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Mon, 21 Mar 2022 19:21:38 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2028B3E19E2
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 16:13:13 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78056B81A66;
-        Mon, 21 Mar 2022 22:55:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8D08C340E8;
-        Mon, 21 Mar 2022 22:55:04 +0000 (UTC)
-Date:   Mon, 21 Mar 2022 18:55:03 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "H.J. Lu" <hjl.tools@gmail.com>,
-        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        linux-toolchains <linux-toolchains@vger.kernel.org>,
-        Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: linux-next: build warnings after merge of the tip tree
-Message-ID: <20220321185503.0dcb5d9c@gandalf.local.home>
-In-Reply-To: <CAADnVQKg7GPVpg-22B2Ym5HFVoGaquoFZDEkRwTDgXzm+L8OOw@mail.gmail.com>
-References: <20220321140327.777f9554@canb.auug.org.au>
-        <Yjh11UjDZogc3foM@hirez.programming.kicks-ass.net>
-        <Yjh3xZuuY3QcZ1Bn@hirez.programming.kicks-ass.net>
-        <Yjh4xzSWtvR+vqst@hirez.programming.kicks-ass.net>
-        <YjiBbF+K4FKZyn6T@hirez.programming.kicks-ass.net>
-        <YjiZhRelDJeX4dfR@hirez.programming.kicks-ass.net>
-        <YjidpOZZJkF6aBTG@hirez.programming.kicks-ass.net>
-        <CAHk-=wigO=68WA8aMZnH9o8qRUJQbNJPERosvW82YuScrUTo7Q@mail.gmail.com>
-        <YjirfOJ2HQAnTrU4@hirez.programming.kicks-ass.net>
-        <CAHk-=wguO61ACXPSz=hmCxNTzqE=mNr_bWLv6GH5jCVZLBL=qw@mail.gmail.com>
-        <20220322090541.7d06c8cb@canb.auug.org.au>
-        <CAADnVQJnZpQjUv-dw7SU-WwTOn_tZ8xmy5ydRn=g_m-9UyS2kw@mail.gmail.com>
-        <20220322094526.436ca4f7@elm.ozlabs.ibm.com>
-        <CAADnVQKg7GPVpg-22B2Ym5HFVoGaquoFZDEkRwTDgXzm+L8OOw@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id E8E4C22175;
+        Tue, 22 Mar 2022 00:13:10 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1647904391;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=d0xza72s8F6FNg0Fbb13ObxsvTsGPI8FF+13zzU0Pw8=;
+        b=nfMtUOaRQPS1Ku1VXu9uHdN9PTrsF1hUFzWgRmsANEgXjQid3k3utpd0swizN13G1V6PGS
+        2oaq9WN2xDhCspOwbkBP6KRpL8kSeOtFfR5FXByNiJl7Hy5QKzWsjbEErEA47eo8TqCO5Z
+        v2Sw+iH/lL/i3hO4Q5HhVfAq/VXWo0U=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
+Date:   Tue, 22 Mar 2022 00:13:10 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Tudor Ambarus <tudor.ambarus@microchip.com>
+Cc:     p.yadav@ti.com, miquel.raynal@bootlin.com, richard@nod.at,
+        vigneshr@ti.com, linux-mtd@lists.infradead.org,
+        linux-kernel@vger.kernel.org, nicolas.ferre@microchip.com,
+        Takahiro Kuwano <Takahiro.Kuwano@infineon.com>
+Subject: Re: [PATCH v2 6/8] mtd: spi-nor: core: Add helpers to read/write any
+ register
+In-Reply-To: <20220228111712.111737-7-tudor.ambarus@microchip.com>
+References: <20220228111712.111737-1-tudor.ambarus@microchip.com>
+ <20220228111712.111737-7-tudor.ambarus@microchip.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <f3dcb594fbf512faa33361b8bfc7b98f@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 21 Mar 2022 15:50:17 -0700
-Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-
-> > Peter has other concerns, please read the thread and consider them.  
+Am 2022-02-28 12:17, schrieb Tudor Ambarus:
+> There are manufacturers that use registers indexed by address. Some of
+> them support "read/write any register" opcodes. Provide core methods 
+> that
+> can be used by all manufacturers. SPI NOR controller ops are 
+> intentionally
+> not supported as we intend to move all the SPI NOR controller drivers
+> under the SPI subsystem.
 > 
-> Masami is an expert in kprobe. He copy pasted a bit of kprobe logic
-> to make it into 'multi kprobe' (he calls it fprobe).
-> I believe he knows what he's doing.
-> Steven reviewed and tested that set.
-> We've tested it as well and don't have any correctness or api concerns.
+> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+> Tested-by: Takahiro Kuwano <Takahiro.Kuwano@infineon.com>
+> Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
+> ---
+>  drivers/mtd/spi-nor/core.c | 41 ++++++++++++++++++++++++++++++++++++++
+>  drivers/mtd/spi-nor/core.h |  4 ++++
+>  2 files changed, 45 insertions(+)
+> 
+> diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
+> index 281e3d25f74c..f1aa1e2ea7c9 100644
+> --- a/drivers/mtd/spi-nor/core.c
+> +++ b/drivers/mtd/spi-nor/core.c
+> @@ -307,6 +307,47 @@ ssize_t spi_nor_write_data(struct spi_nor *nor,
+> loff_t to, size_t len,
+>  	return nor->controller_ops->write(nor, to, len, buf);
+>  }
+> 
+> +/**
+> + * spi_nor_read_reg() - read register to flash memory
+> + * @nor:        pointer to 'struct spi_nor'.
+> + * @op:		SPI memory operation. op->data.buf must be DMA-able.
+> + * @proto:	SPI protocol to use for the register operation.
+> + *
+> + * Return: zero on success, -errno otherwise
+> + */
+> +int spi_nor_read_reg(struct spi_nor *nor, struct spi_mem_op *op,
+> +		     enum spi_nor_protocol proto)
+> +{
+> +	if (!nor->spimem)
+> +		return -EOPNOTSUPP;
+> +
+> +	spi_nor_spimem_setup_op(nor, op, proto);
+> +	return spi_nor_spimem_exec_op(nor, op);
+> +}
+> +
+> +/**
+> + * spi_nor_write_reg() - write register to flash memory
+> + * @nor:        pointer to 'struct spi_nor'
+> + * @op:		SPI memory operation. op->data.buf must be DMA-able.
+> + * @proto:	SPI protocol to use for the register operation.
+> + *
+> + * Return: zero on success, -errno otherwise
+> + */
+> +int spi_nor_write_reg(struct spi_nor *nor, struct spi_mem_op *op,
+> +		      enum spi_nor_protocol proto)
+> +{
+> +	int ret;
+> +
+> +	if (!nor->spimem)
+> +		return -EOPNOTSUPP;
+> +
+> +	ret = spi_nor_write_enable(nor);
+> +	if (ret)
+> +		return ret;
+> +	spi_nor_spimem_setup_op(nor, op, proto);
+> +	return spi_nor_spimem_exec_op(nor, op);
+> +}
+> +
+>  /**
+>   * spi_nor_write_enable() - Set write enable latch with Write Enable 
+> command.
+>   * @nor:	pointer to 'struct spi_nor'.
+> diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
+> index f952061d5c24..7c704475946d 100644
+> --- a/drivers/mtd/spi-nor/core.h
+> +++ b/drivers/mtd/spi-nor/core.h
+> @@ -554,6 +554,10 @@ ssize_t spi_nor_read_data(struct spi_nor *nor,
+> loff_t from, size_t len,
+>  			  u8 *buf);
+>  ssize_t spi_nor_write_data(struct spi_nor *nor, loff_t to, size_t len,
+>  			   const u8 *buf);
+> +int spi_nor_read_reg(struct spi_nor *nor, struct spi_mem_op *op,
+> +		     enum spi_nor_protocol proto);
+> +int spi_nor_write_reg(struct spi_nor *nor, struct spi_mem_op *op,
+> +		      enum spi_nor_protocol proto);
 
-I tested it from a ftrace perspective, not an IBT or other work being done
-in the x86 world.
+These look rather odd. I'd expect to see an address and such for
+such a "random register read/write". Looks like these functions
+don't do much except calling spi_nor_spimem_setup_op() and
+exec_op() and don't have anything to do with register access
+(except maybe for the write enable). Can't we have a bit more
+sophisticated interface in the core? Something that calls into
+the flash driver to assemble the spi_mem_op automatically? Assuming
+that this will be used more often to access registers in a flash.
 
-I'm fine with the work being done in kernel/tracing/ but it still requires
-the arch maintainer's acks for anything in arch/. I was under the
-impression that the arch specific code was Cc'ing the arch maintainers
-(which I always do when I touch their code). But I missed that they were
-not. That's my fault, I should have caught that.
+-michael
 
--- Steve
+>  int spi_nor_erase_sector(struct spi_nor *nor, u32 addr);
+> 
+>  int spi_nor_otp_read_secr(struct spi_nor *nor, loff_t addr, size_t
+> len, u8 *buf);
