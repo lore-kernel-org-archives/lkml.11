@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6525C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:58:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D50A9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:58:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231797AbiCUW5r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:57:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56388 "EHLO
+        id S231842AbiCUW5v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:57:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231575AbiCUW5P (ORCPT
+        with ESMTP id S231410AbiCUW5a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:57:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 817B83B2073;
-        Mon, 21 Mar 2022 15:37:37 -0700 (PDT)
+        Mon, 21 Mar 2022 18:57:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A29443B6DAD;
+        Mon, 21 Mar 2022 15:37:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B520BB81A61;
-        Mon, 21 Mar 2022 21:53:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E7E5C340F2;
-        Mon, 21 Mar 2022 21:53:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 98C7261556;
+        Mon, 21 Mar 2022 21:53:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B177C340E8;
+        Mon, 21 Mar 2022 21:53:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647899585;
-        bh=qYe/uBk0ndVaKY+4X1OhfMJEXd3Z6e/VbB81NnZOuOc=;
+        s=k20201202; t=1647899623;
+        bh=V71uAhPOIm1dgSRYeDXlMVloISpJ0FIXrczDGgzcvWI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m7u+vGjuU+kjaU5T6xXNPRR2Kej2ocgXxK1oSfdVwVdJsbbu3/AMHRBC/8YPM13GB
-         tqCxrGaRiXW2Vn2W62qxKUuP4Ufuo6b4bCxQ+6qDygiA/WyJe1f3QDISU5twDsfDYv
-         vzUxy85giTapQamuIi3JFzqzCwIPn8eXzdIe0jmbh70lP41XdurgxMpvlYWYA0FfOP
-         77EnX0SmVAdfeL93YBIvn5/kkMxbdpI+3Bh9tDu8qQ0r4tIlihElaLnEhaAAz4XFJr
-         xMZ4X+qI0j7hYy5nk9Cl+minAbJkjl8cn4IO8/oEBxWVSgbQvVrH1o9bw0IbXc+k0C
-         aM0dlaH+37BKg==
+        b=eXVgpOjSdk81uyB2wY0Jx5kJfYa4sJtEqXDQnsnYKgm3xG9nU6qwqM0YzKTfGyyoP
+         /7mOMJkbAog0IdnHsPVSQPaIbNbEzqYa1irjJBXDCVUl6wR7itdc6eoW9iEIJsHatW
+         YArUOdK+hlZtAkOkod71qt7wwY1zXbDKqhSYVfOGvGIyufG+m3tk98/0VwjrT70wnX
+         y9c6pGpBmNmRG1CmGQs3hda92floqB51AzWUakLxjp4wlVhcLYNNFLb3wbu61cMqVf
+         Q+ZP4CAYW6VWou8bAO7EOfxpEVOM7tldjGzLXcIZouTG6wxZ3mmDZDjOD4yG+sW5+D
+         PAkDTnHq1r1tA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yosry Ahmed <yosryahmed@google.com>, Shuah Khan <shuah@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-mm@kvack.org,
-        linux-kselftest@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.15 5/5] selftests: vm: fix clang build error multiple output files
-Date:   Mon, 21 Mar 2022 17:52:53 -0400
-Message-Id: <20220321215256.490267-5-sashal@kernel.org>
+Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
+        syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com,
+        Willem de Bruijn <willemb@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 2/2] net: ipv6: fix skb_over_panic in __ip6_append_data
+Date:   Mon, 21 Mar 2022 17:53:38 -0400
+Message-Id: <20220321215338.490562-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220321215256.490267-1-sashal@kernel.org>
-References: <20220321215256.490267-1-sashal@kernel.org>
+In-Reply-To: <20220321215338.490562-1-sashal@kernel.org>
+References: <20220321215338.490562-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,57 +55,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yosry Ahmed <yosryahmed@google.com>
+From: Tadeusz Struk <tadeusz.struk@linaro.org>
 
-[ Upstream commit 1c4debc443ef7037dcb7c4f08c33b9caebd21d2e ]
+[ Upstream commit 5e34af4142ffe68f01c8a9acae83300f8911e20c ]
 
-When building the vm selftests using clang, some errors are seen due to
-having headers in the compilation command:
+Syzbot found a kernel bug in the ipv6 stack:
+LINK: https://syzkaller.appspot.com/bug?id=205d6f11d72329ab8d62a610c44c5e7e25415580
+The reproducer triggers it by sending a crafted message via sendmmsg()
+call, which triggers skb_over_panic, and crashes the kernel:
 
-  clang -Wall -I ../../../../usr/include  -no-pie    gup_test.c ../../../../mm/gup_test.h -lrt -lpthread -o .../tools/testing/selftests/vm/gup_test
-  clang: error: cannot specify -o when generating multiple output files
-  make[1]: *** [../lib.mk:146: .../tools/testing/selftests/vm/gup_test] Error 1
+skbuff: skb_over_panic: text:ffffffff84647fb4 len:65575 put:65575
+head:ffff888109ff0000 data:ffff888109ff0088 tail:0x100af end:0xfec0
+dev:<NULL>
 
-Rework to add the header files to LOCAL_HDRS before including ../lib.mk,
-since the dependency is evaluated in '$(OUTPUT)/%:%.c $(LOCAL_HDRS)' in
-file lib.mk.
+Update the check that prevents an invalid packet with MTU equal
+to the fregment header size to eat up all the space for payload.
 
-Link: https://lkml.kernel.org/r/20220304000645.1888133-1-yosryahmed@google.com
-Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-Cc: Shuah Khan <shuah@kernel.org>
-Cc: Nathan Chancellor <nathan@kernel.org>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+The reproducer can be found here:
+LINK: https://syzkaller.appspot.com/text?tag=ReproC&x=1648c83fb00000
+
+Reported-by: syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Acked-by: Willem de Bruijn <willemb@google.com>
+Link: https://lore.kernel.org/r/20220310232538.1044947-1-tadeusz.struk@linaro.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/vm/Makefile | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ net/ipv6/ip6_output.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/vm/Makefile b/tools/testing/selftests/vm/Makefile
-index d9605bd10f2d..acf5eaeef9ff 100644
---- a/tools/testing/selftests/vm/Makefile
-+++ b/tools/testing/selftests/vm/Makefile
-@@ -1,6 +1,8 @@
- # SPDX-License-Identifier: GPL-2.0
- # Makefile for vm selftests
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index c474e4b4c4bb..fbad7828568f 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1321,8 +1321,8 @@ static int __ip6_append_data(struct sock *sk,
+ 		      sizeof(struct frag_hdr) : 0) +
+ 		     rt->rt6i_nfheader_len;
  
-+LOCAL_HDRS += $(selfdir)/vm/local_config.h $(top_srcdir)/mm/gup_test.h
-+
- include local_config.mk
+-	if (mtu < fragheaderlen ||
+-	    ((mtu - fragheaderlen) & ~7) + fragheaderlen < sizeof(struct frag_hdr))
++	if (mtu <= fragheaderlen ||
++	    ((mtu - fragheaderlen) & ~7) + fragheaderlen <= sizeof(struct frag_hdr))
+ 		goto emsgsize;
  
- uname_M := $(shell uname -m 2>/dev/null || echo not)
-@@ -139,10 +141,6 @@ endif
- 
- $(OUTPUT)/mlock-random-test $(OUTPUT)/memfd_secret: LDLIBS += -lcap
- 
--$(OUTPUT)/gup_test: ../../../../mm/gup_test.h
--
--$(OUTPUT)/hmm-tests: local_config.h
--
- # HMM_EXTRA_LIBS may get set in local_config.mk, or it may be left empty.
- $(OUTPUT)/hmm-tests: LDLIBS += $(HMM_EXTRA_LIBS)
- 
+ 	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
 -- 
 2.34.1
 
