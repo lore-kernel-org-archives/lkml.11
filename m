@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9022EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:54:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66024C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:54:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348256AbiCUN4E (ORCPT
+        id S1348286AbiCUN4H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 09:56:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42184 "EHLO
+        Mon, 21 Mar 2022 09:56:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348282AbiCUNzX (ORCPT
+        with ESMTP id S1348320AbiCUNz2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:55:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7158510CC;
-        Mon, 21 Mar 2022 06:53:58 -0700 (PDT)
+        Mon, 21 Mar 2022 09:55:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D76665F8E;
+        Mon, 21 Mar 2022 06:54:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0DEFF6126A;
-        Mon, 21 Mar 2022 13:53:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 007CCC340E8;
-        Mon, 21 Mar 2022 13:53:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A635B816C8;
+        Mon, 21 Mar 2022 13:54:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFC7DC340E8;
+        Mon, 21 Mar 2022 13:53:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647870837;
-        bh=9UTHSdHsMxTSqtDc4h9uay8BvRiMDiW4mvc8DvxMn4Q=;
+        s=korg; t=1647870840;
+        bh=QCLclt6Podyl2puOmDCwjqlOCtweKVJusbddgI3eqP4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rjK5gVyjI4ZT6/rw11byOHc7CX+MaC6H3+5JyrnSH9XqQY6sro9Bm/ylMR9r9+ORw
-         /JbGQtcMiO/HIm2N7/eBA/4f57X7/jsdKtizo/44t8P+LMVAZ7gYGQa6eciuXfDpWX
-         s78R7cHDxT9jp1frco/4qKRzW38/9ZxaG64TThjU=
+        b=2eKWnxcU89B1q21FI2jPdLSOTQg4P1dsqK5L7TCn0miT7n86FUxSWy6bwua5INuWC
+         VGkZvZ2I6ZG3/ynMsxbYU4vfAbFT9+DIaus3KTvzdoi4jxxapYIuiH3RpS9vaAP0pn
+         QgVxYPTKM87UaKUeko3Y+BzwzsvfZB0gr0qr5PkE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 11/22] tcp: make tcp_read_sock() more robust
-Date:   Mon, 21 Mar 2022 14:51:42 +0100
-Message-Id: <20220321133217.940648621@linuxfoundation.org>
+Subject: [PATCH 4.14 12/22] sfc: extend the locking on mcdi->seqno
+Date:   Mon, 21 Mar 2022 14:51:43 +0100
+Message-Id: <20220321133217.970199472@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133217.602054917@linuxfoundation.org>
 References: <20220321133217.602054917@linuxfoundation.org>
@@ -53,48 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit e3d5ea2c011ecb16fb94c56a659364e6b30fac94 ]
+[ Upstream commit f1fb205efb0ccca55626fd4ef38570dd16b44719 ]
 
-If recv_actor() returns an incorrect value, tcp_read_sock()
-might loop forever.
+seqno could be read as a stale value outside of the lock. The lock is
+already acquired to protect the modification of seqno against a possible
+race condition. Place the reading of this value also inside this locking
+to protect it against a possible race condition.
 
-Instead, issue a one time warning and make sure to make progress.
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
-Acked-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/r/20220302161723.3910001-2-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/sfc/mcdi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index c9f6f28e54f3..a0fd9ef2d2c6 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1657,11 +1657,13 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
- 				if (!copied)
- 					copied = used;
- 				break;
--			} else if (used <= len) {
--				seq += used;
--				copied += used;
--				offset += used;
- 			}
-+			if (WARN_ON_ONCE(used > len))
-+				used = len;
-+			seq += used;
-+			copied += used;
-+			offset += used;
-+
- 			/* If recv_actor drops the lock (e.g. TCP splice
- 			 * receive) the skb pointer might be invalid when
- 			 * getting here: tcp_collapse might have deleted it
+diff --git a/drivers/net/ethernet/sfc/mcdi.c b/drivers/net/ethernet/sfc/mcdi.c
+index 3df872f56289..040b52affe19 100644
+--- a/drivers/net/ethernet/sfc/mcdi.c
++++ b/drivers/net/ethernet/sfc/mcdi.c
+@@ -167,9 +167,9 @@ static void efx_mcdi_send_request(struct efx_nic *efx, unsigned cmd,
+ 	/* Serialise with efx_mcdi_ev_cpl() and efx_mcdi_ev_death() */
+ 	spin_lock_bh(&mcdi->iface_lock);
+ 	++mcdi->seqno;
++	seqno = mcdi->seqno & SEQ_MASK;
+ 	spin_unlock_bh(&mcdi->iface_lock);
+ 
+-	seqno = mcdi->seqno & SEQ_MASK;
+ 	xflags = 0;
+ 	if (mcdi->mode == MCDI_MODE_EVENTS)
+ 		xflags |= MCDI_HEADER_XFLAGS_EVREQ;
 -- 
 2.34.1
 
