@@ -2,149 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D663CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:52:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D912C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:52:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348134AbiCUNyC (ORCPT
+        id S1348161AbiCUNyI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 09:54:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37368 "EHLO
+        Mon, 21 Mar 2022 09:54:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348168AbiCUNxr (ORCPT
+        with ESMTP id S1348167AbiCUNxr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 09:53:47 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C10EF15DA95;
-        Mon, 21 Mar 2022 06:52:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647870735; x=1679406735;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=z8aewv7UAAbDhfYqkIWekrC7Fv3E1m/ILqiu4BxD2mM=;
-  b=X/yFZ4JuN01BOFdj57J+6Gq7QykOjAv/nMwxH+afJboNC51tLCt+yFIV
-   QVzFb5Kaa3d8LPLrC4aROJXoHFkBd5tIRO4QtOSIw3zTJq9E1RZIPEmUG
-   Ve9gobHMICjgpDucRROS9CJWAa8RfWM2gG+igU2S1LLDVgZz33H2KqxFt
-   4EsyFThY2uQBFfB8CfusuPvxgbZA+xQvsbkgEnaHc4OkPDwTvrllwuJBt
-   rqLS8grE6eRLjkbTgM3QAM+NfdZHqQbtiL0rSbQG0i52n21g2LZupqZEs
-   5FH8c/I3D4KxELaoXWRbSFPWrACWUFJ/q1zDms5LGc+EjdpaV4JoG9H5S
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10292"; a="257504962"
-X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
-   d="scan'208";a="257504962"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 06:52:15 -0700
-X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
-   d="scan'208";a="543232520"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 06:52:14 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nWIRd-003vDy-0Y;
-        Mon, 21 Mar 2022 15:51:37 +0200
-Date:   Mon, 21 Mar 2022 15:51:36 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH v7 1/1] gpio: add sloppy logic analyzer using polling
-Message-ID: <YjiC6Lg5k5gK/BfP@smile.fi.intel.com>
-References: <20220317085019.3987-1-wsa+renesas@sang-engineering.com>
- <20220317085019.3987-2-wsa+renesas@sang-engineering.com>
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22A92160140;
+        Mon, 21 Mar 2022 06:52:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BE398B81661;
+        Mon, 21 Mar 2022 13:52:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15929C340E8;
+        Mon, 21 Mar 2022 13:52:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647870734;
+        bh=gXKDcqYLKYE2K5j8zlHjN7E6uqE22CiflRKziJavWcc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=2AOV2+cJNROu2jzdxVGt7+VMweQpcAtOo6N/+mK7gZ9MtaU9qNIXUXdKD8hMWtmtN
+         lEOMCwCQL7BsZe3aPaP0spIl4zVVuVPmW7dQHIsx3cyegP0AOgjxI1h5p5sRJQcYBN
+         SbgXmSzpKD5yBq905Rck9q9AnvhNWTKo00s3TyIc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        syzbot+75cccf2b7da87fb6f84b@syzkaller.appspotmail.com
+Subject: [PATCH 4.9 16/16] Input: aiptek - properly check endpoint type
+Date:   Mon, 21 Mar 2022 14:51:46 +0100
+Message-Id: <20220321133217.130534920@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220321133216.648316863@linuxfoundation.org>
+References: <20220321133216.648316863@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220317085019.3987-2-wsa+renesas@sang-engineering.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 09:50:19AM +0100, Wolfram Sang wrote:
-> This is a sloppy logic analyzer using GPIOs. It comes with a script to
-> isolate a CPU for polling. While this is definitely not a production
-> level analyzer, it can be a helpful first view when remote debugging.
-> Read the documentation for details.
+From: Pavel Skripkin <paskripkin@gmail.com>
 
+commit 5600f6986628dde8881734090588474f54a540a8 upstream.
+
+Syzbot reported warning in usb_submit_urb() which is caused by wrong
+endpoint type. There was a check for the number of endpoints, but not
+for the type of endpoint.
+
+Fix it by replacing old desc.bNumEndpoints check with
+usb_find_common_endpoints() helper for finding endpoints
+
+Fail log:
+
+usb 5-1: BOGUS urb xfer, pipe 1 != type 3
+WARNING: CPU: 2 PID: 48 at drivers/usb/core/urb.c:502 usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
+Modules linked in:
+CPU: 2 PID: 48 Comm: kworker/2:2 Not tainted 5.17.0-rc6-syzkaller-00226-g07ebd38a0da2 #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+Workqueue: usb_hub_wq hub_event
 ...
+Call Trace:
+ <TASK>
+ aiptek_open+0xd5/0x130 drivers/input/tablet/aiptek.c:830
+ input_open_device+0x1bb/0x320 drivers/input/input.c:629
+ kbd_connect+0xfe/0x160 drivers/tty/vt/keyboard.c:1593
 
-> +	for (i = 0; i < priv->trig_len; i+= 2) {
+Fixes: 8e20cf2bce12 ("Input: aiptek - fix crash on detecting device without endpoints")
+Reported-and-tested-by: syzbot+75cccf2b7da87fb6f84b@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Link: https://lore.kernel.org/r/20220308194328.26220-1-paskripkin@gmail.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/input/tablet/aiptek.c |   10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-Missed space.
-
-> +		do {
-> +			ret = gpio_la_get_array(priv->descs, &state);
-> +			if (ret)
-> +				goto out;
-> +
-> +			ndelay(delay);
-> +		} while ((state & priv->trig_data[i]) != priv->trig_data[i + 1]);
-> +	}
-
-...
-
-> +static int fops_buf_size_set(void *data, u64 val)
-> +{
-> +	struct gpio_la_poll_priv *priv = data;
-
-> +	int ret = 0;
-
-Instead of this assignment and other related things, can we do the following?
-
-> +	void *p;
-> +
-> +	if (!val)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&priv->lock);
-> +
-> +	vfree(priv->blob.data);
-
-	priv->blob.data = NULL;
-	priv->blob.size = 0;
-
-> +	p = vzalloc(val);
-> +	if (!p) {
-> +		val = 0;
-> +		ret = -ENOMEM;
-> +	}
-
-	p = vzalloc(val);
-	if (!p)
-		return -ENOMEM;
-
-> +	priv->blob.data = p;
-> +	priv->blob.size = val;
-> +
-> +	mutex_unlock(&priv->lock);
-> +	return ret;
-> +}
-> +DEFINE_DEBUGFS_ATTRIBUTE(fops_buf_size, fops_buf_size_get, fops_buf_size_set, "%llu\n");
-
-> +	priv->trig_data = buf;
-> +	priv->trig_len = count;
-> +
-> +	return count;
-> +}
-> +
-> +static const struct file_operations fops_trigger = {
-> +	.owner = THIS_MODULE,
-> +	.open = trigger_open,
-> +	.write = trigger_write,
-> +	.llseek = no_llseek,
-> +	.release = single_release,
-> +};
-
-Can it be wrapped by DEFINE_SHOW_ATTRIBUTE()?
-
-...
-
-> +	dev_info(dev, "initialized");
-
-Not sure how this one would be helpful.
-
--- 
-With Best Regards,
-Andy Shevchenko
+--- a/drivers/input/tablet/aiptek.c
++++ b/drivers/input/tablet/aiptek.c
+@@ -1821,15 +1821,13 @@ aiptek_probe(struct usb_interface *intf,
+ 	input_set_abs_params(inputdev, ABS_TILT_Y, AIPTEK_TILT_MIN, AIPTEK_TILT_MAX, 0, 0);
+ 	input_set_abs_params(inputdev, ABS_WHEEL, AIPTEK_WHEEL_MIN, AIPTEK_WHEEL_MAX - 1, 0, 0);
+ 
+-	/* Verify that a device really has an endpoint */
+-	if (intf->cur_altsetting->desc.bNumEndpoints < 1) {
++	err = usb_find_common_endpoints(intf->cur_altsetting,
++					NULL, NULL, &endpoint, NULL);
++	if (err) {
+ 		dev_err(&intf->dev,
+-			"interface has %d endpoints, but must have minimum 1\n",
+-			intf->cur_altsetting->desc.bNumEndpoints);
+-		err = -EINVAL;
++			"interface has no int in endpoints, but must have minimum 1\n");
+ 		goto fail3;
+ 	}
+-	endpoint = &intf->cur_altsetting->endpoint[0].desc;
+ 
+ 	/* Go set up our URB, which is called when the tablet receives
+ 	 * input.
 
 
