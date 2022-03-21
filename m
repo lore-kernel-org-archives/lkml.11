@@ -2,140 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04B08C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 21:44:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04243C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 21:45:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229549AbiCUVqH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 17:46:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40186 "EHLO
+        id S229677AbiCUVqe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 17:46:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbiCUVqG (ORCPT
+        with ESMTP id S229481AbiCUVqc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 17:46:06 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C59E264561
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 14:41:22 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id q11so13839639pln.11
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 14:41:21 -0700 (PDT)
+        Mon, 21 Mar 2022 17:46:32 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 946EE3A145F;
+        Mon, 21 Mar 2022 14:41:51 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id s11so16565698pfu.13;
+        Mon, 21 Mar 2022 14:41:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=hzlxuoVcUtFNyYhd7IaP3vW/n/31iVrjVI0cYpxyVIg=;
-        b=AJJS8AlLvE3dh4Iw3f148oDobBs8GBjNK4HQR4fd1ld62s0aCs+22XINlkoJDU3AoS
-         8uOi8t84billfQr0/CqrEHKAzh01irX6vV3+g/0cziRJHBRIamVkeOpo/BnaIatO7PZV
-         Eh43oCbXlnRIdtB69OTh5c/BRYxUtttvmXan5DnrMyeb/hsvFapXSvlvx+JuWcvRFGHt
-         Ntke3y/TTx6l6EOaJqInsPSOd9mVsFU0WbP2/5lR+aO70ZuS7ys8aNRkV3i6D/Lf0evC
-         r6BJwCreN/NdOKs2SjJv0+1od6GQSOKpx1d5z0hh7EF2eui/EcuQxfMSPoOkBKCZ7FWC
-         /+Ew==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=NA1m9UyZ4lhhPpf1XufykiTNpRaeivKuhk1ObAu+BXw=;
+        b=LQTsvuzqLGnxWBpHNx87luZRiDd5e6nwkPpxuTQMdejb7r4ez2JV41xIavmg+0JYb1
+         3gfB/fykswbIdQhU1jzV9OE8Cz4MKbZu0ZC17EvjdpUdqeSvhnE+IKfeIfCJpwK5jYWe
+         11nNL+PBKvExIjtQsZ1B3f0S3/inF7KZ3VPc8xKiSVrcCIUyyKs2SnFPzgMkNLlPoJ1L
+         xI0VeJpt2iGJ61j5Zdfw732CbWjSEROH+SMQipF0k6q6ZRObWv8xT0WGlSXp2Dy/P1c5
+         XrlfcdNxjWB2ahRfPfwB31rX+InEsIgNv+/flquTjwASIUFfe68e111s3EzX8/fiAgaK
+         WYaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=hzlxuoVcUtFNyYhd7IaP3vW/n/31iVrjVI0cYpxyVIg=;
-        b=UbRXTHrsbs6r0S2xJn6wkWkjLM0sXBCuSClQGXF3b9YN1d7gUCaFKioapaKrzp61J/
-         E9n7l3nG4HC1IAZayHLTDvgXK+I9JlvEwUWUJ3kOFpzMcLyKFJ4XB6Nbd128LwbAnlmj
-         z7SHiKaXmgbbU2PnO3X7jNPgP0uaX6YpCN+2f8uSsUKXJlKgc8PYeACy5/qPq56NqJa8
-         DxXKjqomHcW+SJPzEfqZMeNA6YDlSRxsPgQQUGR/jdwYoEfNBX2eGURhDimjP6Z9uTog
-         OqWq0wUTvJgY33rOXnqzq/sSpEXUy/QqU6vyof2KMEgdyYr5rGmDSoe/zq67OmGly1i8
-         GyDA==
-X-Gm-Message-State: AOAM5331arWquAjePhmXc/F4LWOf3rOR4vRYwoiekQ99g7POnKsxphy9
-        cQ9VIolu8MYM979p/tlV0qxCTuXwPdI9sQebPhnRBg==
-X-Google-Smtp-Source: ABdhPJyzdofKTKHoiJ4iGCBbHSPi4Xc1wlwYjpgmL6SpWKAD7UioDwd+ubLQF8zj102JpbsH9iOBSWpSmWQXM5a6nHg=
-X-Received: by 2002:a17:903:32c7:b0:154:4156:f384 with SMTP id
- i7-20020a17090332c700b001544156f384mr10917932plr.34.1647898771195; Mon, 21
- Mar 2022 14:39:31 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=NA1m9UyZ4lhhPpf1XufykiTNpRaeivKuhk1ObAu+BXw=;
+        b=yxQuZgzERScbhX2iXKGCI7WDtws5oWhxokdVycM3WtCHAWhDpfAecOjB1kcDy5rc3r
+         7xapkk34jzRi8w3FBUSuOQZum1OGPzuo242qa8ctWAHxA/Ve8mwn4ePhsbQMx5KA0wGj
+         c3AoREf54nPHDgh2uP9c6KuEnfk1DmRPM4yDliT9rr2LpAJDIHHp9918POfNmK0ENYA3
+         4q0aFgLcokq4DLwCnd/4jXhXeyUf3gXtF3cViooER/ZVoe/4z/lxGCZYIOPTo5Yjl9Q0
+         8y8QYEnIjJX7wI83jM/QBNVvMSb48ey1+WVWX/kignndwwwr2WmMoCDkmwPvDJtgsxGI
+         kdsA==
+X-Gm-Message-State: AOAM531+OaxEGsIVmBPdOjoHQ2F1+OshRSqXOfLi2sqnibC96iphq4a+
+        utAugC8BmCADWsGunGxL22PRGj/nRFY=
+X-Google-Smtp-Source: ABdhPJwGsBOLEzAnmRQgfxIP4KZUd1qcl+p25o66/UzHbunEyTsNdmj5FAsUQ+gEDQnD43J7G3cuYQ==
+X-Received: by 2002:a63:ab47:0:b0:375:5d05:9f79 with SMTP id k7-20020a63ab47000000b003755d059f79mr19971911pgp.192.1647898102558;
+        Mon, 21 Mar 2022 14:28:22 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id b1-20020a17090aa58100b001bcb7bad374sm360872pjq.17.2022.03.21.14.28.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Mar 2022 14:28:21 -0700 (PDT)
+Message-ID: <2d15b283-8378-89e5-d01c-9e5f5e0e0919@gmail.com>
+Date:   Mon, 21 Mar 2022 14:28:19 -0700
 MIME-Version: 1.0
-References: <20220318114133.113627-1-kjain@linux.ibm.com> <20220318114133.113627-2-kjain@linux.ibm.com>
-In-Reply-To: <20220318114133.113627-2-kjain@linux.ibm.com>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Mon, 21 Mar 2022 14:39:23 -0700
-Message-ID: <CAPcyv4iqpTn89WLOW1XjFXGZEYG_MmPg+VQbcDJ9ygJ4Jaybtw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] powerpc/papr_scm: Fix build failure when
- CONFIG_PERF_EVENTS is not set
-To:     Kajol Jain <kjain@linux.ibm.com>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Linux NVDIMM <nvdimm@lists.linux.dev>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Weiny, Ira" <ira.weiny@intel.com>,
-        Vishal L Verma <vishal.l.verma@intel.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Santosh Sivaraj <santosh@fossix.org>, maddy@linux.ibm.com,
-        rnsastry@linux.ibm.com,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        atrajeev@linux.vnet.ibm.com, Vaibhav Jain <vaibhav@linux.ibm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Linux MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] net: bcmgenet: Use stronger register read/writes to
+ assure ordering
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jeremy Linton <jeremy.linton@arm.com>, netdev@vger.kernel.org,
+        opendmb@gmail.com, davem@davemloft.net,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org, Peter Robinson <pbrobinson@gmail.com>
+References: <20220310045358.224350-1-jeremy.linton@arm.com>
+ <0465ecd0-0cd7-1376-51bf-38aa385c128a@gmail.com>
+ <20220321142645.38b8a087@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220321142645.38b8a087@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 4:42 AM Kajol Jain <kjain@linux.ibm.com> wrote:
->
-> The following build failure occures when CONFIG_PERF_EVENTS is not set
-> as generic pmu functions are not visible in that scenario.
->
-> arch/powerpc/platforms/pseries/papr_scm.c:372:35: error: =E2=80=98struct =
-perf_event=E2=80=99 has no member named =E2=80=98attr=E2=80=99
->          p->nvdimm_events_map[event->attr.config],
->                                    ^~
-> In file included from ./include/linux/list.h:5,
->                  from ./include/linux/kobject.h:19,
->                  from ./include/linux/of.h:17,
->                  from arch/powerpc/platforms/pseries/papr_scm.c:5:
-> arch/powerpc/platforms/pseries/papr_scm.c: In function =E2=80=98papr_scm_=
-pmu_event_init=E2=80=99:
-> arch/powerpc/platforms/pseries/papr_scm.c:389:49: error: =E2=80=98struct =
-perf_event=E2=80=99 has no member named =E2=80=98pmu=E2=80=99
->   struct nvdimm_pmu *nd_pmu =3D to_nvdimm_pmu(event->pmu);
->                                                  ^~
-> ./include/linux/container_of.h:18:26: note: in definition of macro =E2=80=
-=98container_of=E2=80=99
->   void *__mptr =3D (void *)(ptr);     \
->                           ^~~
-> arch/powerpc/platforms/pseries/papr_scm.c:389:30: note: in expansion of m=
-acro =E2=80=98to_nvdimm_pmu=E2=80=99
->   struct nvdimm_pmu *nd_pmu =3D to_nvdimm_pmu(event->pmu);
->                               ^~~~~~~~~~~~~
-> In file included from ./include/linux/bits.h:22,
->                  from ./include/linux/bitops.h:6,
->                  from ./include/linux/of.h:15,
->                  from arch/powerpc/platforms/pseries/papr_scm.c:5:
->
-> Fix the build issue by adding check for CONFIG_PERF_EVENTS config option
-> and disabling the papr_scm perf interface support incase this config
-> is not set
->
-> Fixes: 4c08d4bbc089 ("powerpc/papr_scm: Add perf interface support") (Com=
-mit id
-> based on linux-next tree)
-> Signed-off-by: Kajol Jain <kjain@linux.ibm.com>
-> ---
->  arch/powerpc/platforms/pseries/papr_scm.c | 15 +++++++++++++++
+On 3/21/22 14:26, Jakub Kicinski wrote:
+> On Fri, 18 Mar 2022 12:04:34 -0700 Florian Fainelli wrote:
+>> On 3/9/22 8:53 PM, Jeremy Linton wrote:
+>>> GCC12 appears to be much smarter about its dependency tracking and is
+>>> aware that the relaxed variants are just normal loads and stores and
+>>> this is causing problems like:
+> 
+>>> Fixes: 69d2ea9c79898 ("net: bcmgenet: Use correct I/O accessors")
+>>> Reported-by: Peter Robinson <pbrobinson@gmail.com>
+>>> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+>>
+>> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+> 
+> Commit 8d3ea3d402db ("net: bcmgenet: Use stronger register read/writes
+> to assure ordering") in net now, thanks!
 
-This is a bit messier than I would have liked mainly because it dumps
-a bunch of ifdefery into a C file contrary to coding style, "Wherever
-possible, don't use preprocessor conditionals (#if, #ifdef) in .c
-files". I would expect this all to move to an organization like:
-
-arch/powerpc/platforms/pseries/papr_scm/main.c
-arch/powerpc/platforms/pseries/papr_scm/perf.c
-
-...and a new config symbol like:
-
-config PAPR_SCM_PERF
-       depends on PAPR_SCM && PERF_EVENTS
-       def_bool y
-
-...with wrappers in header files to make everything compile away
-without any need for main.c to carry an ifdef.
-
-Can you turn a patch like that in the next couple days? Otherwise, I
-think if Linus saw me sending a late breaking compile fix that threw
-coding style out the window he'd have cause to just drop the pull
-request entirely.
+Thank you Jakub!
+-- 
+Florian
