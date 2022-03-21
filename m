@@ -2,80 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE85AC3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFE81C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350139AbiCUOJX (ORCPT
+        id S1350081AbiCUOJU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:09:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35550 "EHLO
+        Mon, 21 Mar 2022 10:09:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349040AbiCUODR (ORCPT
+        with ESMTP id S1349005AbiCUODO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:03:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A3E040A33;
-        Mon, 21 Mar 2022 07:00:13 -0700 (PDT)
+        Mon, 21 Mar 2022 10:03:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 806C840A12;
+        Mon, 21 Mar 2022 07:00:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF1DDB816DC;
-        Mon, 21 Mar 2022 14:00:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7FF62C340F3;
-        Mon, 21 Mar 2022 14:00:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647871211;
-        bh=mK5teC6+zPKnFcJwOGzftb1WQnkYYL5SXQ2iHcLb02Y=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Ym2t4n+Bl/qIa1xdynVaIScKWfMvapwT1vyF1sygerHBs0d0gMtgkbnbOXlYVzFPh
-         D/0Y/UMobkUYQoh8kXEYP9obDpTdi8/F+VuGnL5ZTuYZYmjuJecnpcBI8lOVRO28ln
-         2sOgmnxfuhP6bIfETOv95XbzTWPbv6hdpodBPVDYD0kAjnIq0qEMP9jAjKQZ0ZvbbA
-         fNb5NcGF7GInXkH+7tashI+imHq9UkbkMGBBpdf9SmlXsNfRnO0pIfUEfUTAGabU8q
-         6fsNLtfnDLHR72t6DLPPWy8sggY5CaYC2GwTcKnXvOKhZP91znmH+9cish2YHRhepg
-         +D0XQ4qR3hSPg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 56C84EAC09C;
-        Mon, 21 Mar 2022 14:00:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by ams.source.kernel.org (Postfix) with ESMTPS id C61B4B816D7;
+        Mon, 21 Mar 2022 13:59:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CFB7C340E8;
+        Mon, 21 Mar 2022 13:59:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647871190;
+        bh=VyqiZa+McEGjcbbsPS6zcIHRdgCkZADjXTnVD631GgM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=LhTJSF763UyG5N3jxHUDPy+yvJaPUBftO02ZcR6PDj6XfzKfxo+dratpm9gOE5Z0q
+         yp6urCEu7H1UxvH0dCRXr6xvyK8KBySV20YZl0gcJ0BK9eXygEKUV2RQstIhrGc6vz
+         Dr8xDw8bFw9ouwuCPHKFHPNpB08UPcjeLE6V3esY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Gabriel Hojda <ghojda@yo2urs.ro>,
+        Markus Reichl <m.reichl@fivetechno.de>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Fabio Estevam <festevam@gmail.com>
+Subject: [PATCH 5.10 27/30] net: usb: Correct reset handling of smsc95xx
+Date:   Mon, 21 Mar 2022 14:52:57 +0100
+Message-Id: <20220321133220.431816122@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220321133219.643490199@linuxfoundation.org>
+References: <20220321133219.643490199@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next] bpf: Simplify check in btf_parse_hdr()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164787121135.8124.13693033583396195102.git-patchwork-notify@kernel.org>
-Date:   Mon, 21 Mar 2022 14:00:11 +0000
-References: <20220320075240.1001728-1-ytcoode@gmail.com>
-In-Reply-To: <20220320075240.1001728-1-ytcoode@gmail.com>
-To:     Yuntao Wang <ytcoode@gmail.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+From: Markus Reichl <m.reichl@fivetechno.de>
 
-This patch was applied to bpf/bpf-next.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
+commit 0bf3885324a8599e3af4c7379b8d4f621c9bbffa upstream.
 
-On Sun, 20 Mar 2022 15:52:40 +0800 you wrote:
-> Replace offsetof(hdr_len) + sizeof(hdr_len) with offsetofend(hdr_len) to
-> simplify the check for correctness of btf_data_size in btf_parse_hdr()
-> 
-> Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
-> ---
->  kernel/bpf/btf.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+On boards with LAN9514 and no preconfigured MAC address we don't get an
+ip address from DHCP after commit a049a30fc27c ("net: usb: Correct PHY handling
+of smsc95xx") anymore. Adding an explicit reset before starting the phy
+fixes the issue.
 
-Here is the summary with links:
-  - [bpf-next] bpf: Simplify check in btf_parse_hdr()
-    https://git.kernel.org/bpf/bpf-next/c/583669ab3aed
+[1]
+https://lore.kernel.org/netdev/199eebbd6b97f52b9119c9fa4fd8504f8a34de18.camel@collabora.com/
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+From: Gabriel Hojda <ghojda@yo2urs.ro>
+Fixes: a049a30fc27c ("net: usb: Correct PHY handling of smsc95xx")
+Signed-off-by: Gabriel Hojda <ghojda@yo2urs.ro>
+Signed-off-by: Markus Reichl <m.reichl@fivetechno.de>
+Tested-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Fabio Estevam <festevam@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/usb/smsc95xx.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -1961,7 +1961,8 @@ static const struct driver_info smsc95xx
+ 	.bind		= smsc95xx_bind,
+ 	.unbind		= smsc95xx_unbind,
+ 	.link_reset	= smsc95xx_link_reset,
+-	.reset		= smsc95xx_start_phy,
++	.reset		= smsc95xx_reset,
++	.check_connect	= smsc95xx_start_phy,
+ 	.stop		= smsc95xx_stop,
+ 	.rx_fixup	= smsc95xx_rx_fixup,
+ 	.tx_fixup	= smsc95xx_tx_fixup,
 
 
