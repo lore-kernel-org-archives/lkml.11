@@ -2,308 +2,320 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AA17C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 18:35:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08766C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 18:35:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352216AbiCUSgb (ORCPT
+        id S1352223AbiCUSg5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 14:36:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55228 "EHLO
+        Mon, 21 Mar 2022 14:36:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352204AbiCUSg3 (ORCPT
+        with ESMTP id S1345165AbiCUSgz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 14:36:29 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E117CDD8;
-        Mon, 21 Mar 2022 11:35:03 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id r13so31630858ejd.5;
-        Mon, 21 Mar 2022 11:35:03 -0700 (PDT)
+        Mon, 21 Mar 2022 14:36:55 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 356977CB3F;
+        Mon, 21 Mar 2022 11:35:29 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id t11so21944724wrm.5;
+        Mon, 21 Mar 2022 11:35:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=70EhybVMpn2jeXLei4BUqXO5qVf421e5ZHKcPrLPMWE=;
-        b=npJ4M/OLURWnOMLC38RxvQKgwfIj6ccStDShQutgct3Ee/yRbBIsd11ZbEY5WMrj8I
-         n9DRmUgSbKgAo7t9Vjtm/ry/Guc4vZyJbpbHgXDQ6IYHMcMwec58W3WZuRNC3PY7BPOv
-         53FXJrq6R27bIzMNUpdqsz2Ba6rCW+kVyyBioIwZpwSOW/skNaSwS/Mc8Lef0eiGA/rG
-         7KsSJD40oZarZYA/8WsNu6hPo/+0clzLTDcDDryJdjBiUX+nU7GmKDHTS2ecCLP/kn6t
-         zBTFs03qQXFemN8AX8ZKsWWFOzWqbDT/u9qO/+u7NyJjD9x7DO7mNCcMen5CVH+0OPSo
-         XFUg==
+         :content-disposition:in-reply-to;
+        bh=ygRBdrtfB7v+ohCVWn3q5IKwiR3oMv5iNtm3O5g1eWk=;
+        b=D9oWxg6bkjrL3aPwv3+kTIgXndoTPhdbgcDKMVoU2pTQEu7WwXqbQo7lYTAEQIasgG
+         ovXx8Zirgx47G2ddMxzLZlN6kG8z7aa+tr/vaHJhiGiRzZcGzExyxcdP8mRkbed5lTU4
+         iLuj9ry4HQ7dbMDGDUr6/UJ1CoT7mO+88E/hJPPLdLI696Jf78HZGhtqJihdBHgg3y6Q
+         b0ed8aE9he030Atb0eOeDcCYxMvsq/mtBLKabAZ+gSdDVOJemPToH/dQI2IdY1cT9F+t
+         KqipFZbw1twoXyUeHhZC4/2LIyNvdXSVXVDg3BPnwe+mbR+vE+dlMba//X9mUoOugGsE
+         IrJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=70EhybVMpn2jeXLei4BUqXO5qVf421e5ZHKcPrLPMWE=;
-        b=YHSmDVBERryl4/DLQsvd5HxF04lKYx7PRkpaoDv2IZ26+ktt6hUSj2Q48O1XedLNKL
-         6aEOykWNw2WHh9ziQ8imvt+v6fBG6Iwa9GXOpr3JwfpSGnNwzOXg5I25yk4NvyOBuldD
-         exhqRcWxYGDDq6SIk+BOGOjNSSQdxD2TzhLDIf8h/lbJEKILRIY6LKkXR4Uhp5iHhTdh
-         /R1BSMBIeMNur5VHdYtd1R3H91zYlInH8AnN/vPIR3jlBujSwrfR5oOCRa57YTdhDF92
-         UfX7NtS4nJp7ifceLvhO88T2/G+DvrDOydqTRdnC93AZLVio6MEcKBEjXNGQb4T3neMc
-         oWpA==
-X-Gm-Message-State: AOAM532LL6A9MbP0rWKVYGcI8Qnc+ndbfTeQseDZe+xrnBsXtIB65O+b
-        fTrjCNmn1XBVJMQDCABYVGsTKIWwmyB8k+htTwM=
-X-Google-Smtp-Source: ABdhPJxJNrJl3sJn8XHpjCub4gXAqsNaMq5KYqc37G8g3vQSAmk+GtxomgWUdu7cenHzrRYGg2d4VA==
-X-Received: by 2002:a17:906:99c1:b0:6db:f0cf:e38c with SMTP id s1-20020a17090699c100b006dbf0cfe38cmr21845461ejn.692.1647887701351;
-        Mon, 21 Mar 2022 11:35:01 -0700 (PDT)
-Received: from pswork ([62.96.250.75])
-        by smtp.gmail.com with ESMTPSA id l2-20020aa7cac2000000b003f9b3ac68d6sm8282363edt.15.2022.03.21.11.35.00
+         :mime-version:content-disposition:in-reply-to;
+        bh=ygRBdrtfB7v+ohCVWn3q5IKwiR3oMv5iNtm3O5g1eWk=;
+        b=bLxIqQOWuOrxl2IXHL+YuScKdd0j9XMnKo8UjiQCPmVIm1M6zW8vFqcK4Hxr/19O9Y
+         DO6xsIxPQCdYlozk2Xib6NIl0edfwMBoO/W/KhTaUx37H+s4CuS8dwsbNdE/PFeCa/D0
+         hCNKkUkFzbmxWChVCAx8PTpPvQGf4KWyZrDU92WTWbFlUXqcvcO7MvLQcyIb+2tPbl4X
+         80LrybzxXTN57ugz4aUk/IfQIzPoNsxiW8LTxW2kvCXrezxqrpKSKBMM+XIPxt95f/UP
+         WiljkMmqy4E7T+Q546VMpV79oE+cEM0/1LNmGthy64hoEBNQIhJK9zpdhvYxD60uC/2R
+         LoeQ==
+X-Gm-Message-State: AOAM5320LUH9dULjS95jkdOj/+nsxKw+7RCfDGcOtu5XzKiAMp6NodtI
+        hjItokM0vFtWEaEyYjR7adsJQ8Jq21c=
+X-Google-Smtp-Source: ABdhPJzYOBxlPpciY58IcxQx88jJgAf2Ph2oaHXBDviLUABgvy1TO/rauGWDw+xiypK6uGuhLLm2yw==
+X-Received: by 2002:adf:cc88:0:b0:203:f088:c9f5 with SMTP id p8-20020adfcc88000000b00203f088c9f5mr16450241wrj.312.1647887727458;
+        Mon, 21 Mar 2022 11:35:27 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
+        by smtp.gmail.com with ESMTPSA id p16-20020a5d6390000000b00203ffebddf3sm10174715wru.99.2022.03.21.11.35.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 11:35:01 -0700 (PDT)
-Date:   Mon, 21 Mar 2022 19:35:00 +0100
-From:   Padmanabha Srinivasaiah <treasure4paddy@gmail.com>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v2 2/3] bootconfig: Support embedding a bootconfig file
- in kernel
-Message-ID: <20220321183500.GA4065@pswork>
-References: <164724890153.731226.1478494969800777757.stgit@devnote2>
- <164724892075.731226.14103557516176115189.stgit@devnote2>
- <20220316191649.GA11547@pswork>
- <20220318101445.fdb151efe58c6c3a1c572500@kernel.org>
+        Mon, 21 Mar 2022 11:35:27 -0700 (PDT)
+Date:   Mon, 21 Mar 2022 19:06:07 +0100
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [net-next PATCH v2] net: dsa: qca8k: pack driver struct and
+ improve cache use
+Message-ID: <Yji+j8slhKynLJIv@Ansuel-xps.localdomain>
+References: <20220228110408.4903-1-ansuelsmth@gmail.com>
+ <20220303015327.k3fqkkxunm6kihjl@skbuf>
+ <Yjii20KryAsEQp1k@Ansuel-xps.localdomain>
+ <20220321172200.eaccmwzfvtw7bjs2@skbuf>
+ <Yji1QAMe/efWLBQE@Ansuel-xps.localdomain>
+ <Yji2b6XF13E1o2x3@Ansuel-xps.localdomain>
+ <20220321182226.zx2fqlntaxd7snup@skbuf>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220318101445.fdb151efe58c6c3a1c572500@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20220321182226.zx2fqlntaxd7snup@skbuf>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Masami Hiramatsu,
-
-On Fri, Mar 18, 2022 at 10:14:45AM +0900, Masami Hiramatsu wrote:
-> On Wed, 16 Mar 2022 20:16:49 +0100
-> Padmanabha Srinivasaiah <treasure4paddy@gmail.com> wrote:
-> 
-> > Hello Masami Hiramatsu,
-> > 
-> > On Mon, Mar 14, 2022 at 06:08:41PM +0900, Masami Hiramatsu wrote:
-> > > This allows kernel developer to embed a default bootconfig file in
-> > > the kernel instead of embedding it in the initrd. This will be good
-> > > for who are using the kernel without initrd, or who needs a default
-> > > bootconfigs.
-> > > This needs to set two kconfigs: CONFIG_EMBED_BOOT_CONFIG=y and set
-> > > the file path to CONFIG_EMBED_BOOT_CONFIG_FILE.
+On Mon, Mar 21, 2022 at 08:22:26PM +0200, Vladimir Oltean wrote:
+> On Mon, Mar 21, 2022 at 06:31:27PM +0100, Ansuel Smith wrote:
+> > On Mon, Mar 21, 2022 at 06:26:24PM +0100, Ansuel Smith wrote:
+> > > On Mon, Mar 21, 2022 at 07:22:00PM +0200, Vladimir Oltean wrote:
+> > > > On Mon, Mar 21, 2022 at 05:07:55PM +0100, Ansuel Smith wrote:
+> > > > > On Thu, Mar 03, 2022 at 03:53:27AM +0200, Vladimir Oltean wrote:
+> > > > > > On Mon, Feb 28, 2022 at 12:04:08PM +0100, Ansuel Smith wrote:
+> > > > > > > Pack qca8k priv and other struct using pahole and set the first priv
+> > > > > > > struct entry to mgmt_master and mgmt_eth_data to speedup access.
+> > > > > > > While at it also rework pcs struct and move it qca8k_ports_config
+> > > > > > > following other configuration set for the cpu ports.
+> > > > > > > 
+> > > > > > > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > > > > > > ---
+> > > > > > 
+> > > > > > How did you "pack" struct qca8k_priv exactly?
+> > > > > >
+> > > > > 
+> > > > > I'm trying to understand it too... also this was done basend on what
+> > > > > target? 
+> > > > 
+> > > > I used an arm64 toolchain, if that's what you're asking.
+> > > >
 > > > 
-> > > Note that you still need 'bootconfig' command line option to load the
-> > > embedded bootconfig. Also if you boot using an initrd with a different
-> > > bootconfig, the kernel will use the bootconfig in the initrd, instead
-> > > of the default bootconfig.
-> > > 
-> > > Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
-> > > ---
-> > >  include/linux/bootconfig.h |   10 ++++++++++
-> > >  init/Kconfig               |   21 +++++++++++++++++++++
-> > >  init/main.c                |   13 ++++++++-----
-> > >  lib/.gitignore             |    1 +
-> > >  lib/Makefile               |   12 ++++++++++++
-> > >  lib/bootconfig.c           |   23 +++++++++++++++++++++++
-> > >  6 files changed, 75 insertions(+), 5 deletions(-)
-> > > 
-> > > diff --git a/include/linux/bootconfig.h b/include/linux/bootconfig.h
-> > > index a4665c7ab07c..5dbda5e3e9bb 100644
-> > > --- a/include/linux/bootconfig.h
-> > > +++ b/include/linux/bootconfig.h
-> > > @@ -289,4 +289,14 @@ int __init xbc_get_info(int *node_size, size_t *data_size);
-> > >  /* XBC cleanup data structures */
-> > >  void __init xbc_exit(void);
-> > >  
-> > > +/* XBC embedded bootconfig data in kernel */
-> > > +#ifdef CONFIG_EMBED_BOOT_CONFIG
-> > > +char * __init xbc_get_embedded_bootconfig(size_t *size);
-> > > +#else
-> > > +static inline char *xbc_get_embedded_bootconfig(size_t *size)
-> > > +{
-> > > +	return NULL;
-> > > +}
-> > > +#endif
-> > > +
-> > >  #endif
-> > > diff --git a/init/Kconfig b/init/Kconfig
-> > > index e9119bf54b1f..70440804874d 100644
-> > > --- a/init/Kconfig
-> > > +++ b/init/Kconfig
-> > > @@ -1357,6 +1357,27 @@ config BOOT_CONFIG
-> > >  
-> > >  	  If unsure, say Y.
-> > >  
-> > > +config EMBED_BOOT_CONFIG
-> > > +	bool "Embed bootconfig file in the kernel"
-> > > +	depends on BOOT_CONFIG
-> > > +	default n
-> > > +	help
-> > > +	  Embed a bootconfig file given by EMBED_BOOT_CONFIG_FILE in the
-> > > +	  kernel. Usually, the bootconfig file is loaded with the initrd
-> > > +	  image. But if the system doesn't support initrd, this option will
-> > > +	  help you by embedding a bootconfig file while building the kernel.
-> > > +
-> > > +	  If unsure, say N.
-> > > +
-> > > +config EMBED_BOOT_CONFIG_FILE
-> > > +	string "Embedded bootconfig file path"
-> > > +	default ""
-> > > +	depends on EMBED_BOOT_CONFIG
-> > > +	help
-> > > +	  Specify a bootconfig file which will be embedded to the kernel.
-> > > +	  This bootconfig will be used if there is no initrd or no other
-> > > +	  bootconfig in the initrd.
-> > > +
-> > >  choice
-> > >  	prompt "Compiler optimization level"
-> > >  	default CC_OPTIMIZE_FOR_PERFORMANCE
-> > > diff --git a/init/main.c b/init/main.c
-> > > index 421050be5039..3803bf2e22ea 100644
-> > > --- a/init/main.c
-> > > +++ b/init/main.c
-> > > @@ -265,7 +265,7 @@ static int __init loglevel(char *str)
-> > >  early_param("loglevel", loglevel);
-> > >  
-> > >  #ifdef CONFIG_BLK_DEV_INITRD
-> > > -static void * __init get_boot_config_from_initrd(u32 *_size)
-> > > +static void * __init get_boot_config_from_initrd(size_t *_size)
-> > >  {
-> > >  	u32 size, csum;
-> > >  	char *data;
-> > > @@ -411,12 +411,15 @@ static void __init setup_boot_config(void)
-> > >  	static char tmp_cmdline[COMMAND_LINE_SIZE] __initdata;
-> > >  	const char *msg;
-> > >  	int pos;
-> > > -	u32 size;
-> > > +	size_t size;
-> > >  	char *data, *err;
-> > >  	int ret;
-> > >  
-> > >  	/* Cut out the bootconfig data even if we have no bootconfig option */
-> > >  	data = get_boot_config_from_initrd(&size);
-> > > +	/* If there is no bootconfig in initrd, try embedded one. */
-> > > +	if (!data)
-> > > +		data = xbc_get_embedded_bootconfig(&size);
-> > >  
-> > >  	strlcpy(tmp_cmdline, boot_command_line, COMMAND_LINE_SIZE);
-> > >  	err = parse_args("bootconfig", tmp_cmdline, NULL, 0, 0, 0, NULL,
-> > > @@ -435,8 +438,8 @@ static void __init setup_boot_config(void)
-> > >  	}
-> > >  
-> > >  	if (size >= XBC_DATA_MAX) {
-> > > -		pr_err("bootconfig size %d greater than max size %d\n",
-> > > -			size, XBC_DATA_MAX);
-> > > +		pr_err("bootconfig size %ld greater than max size %d\n",
-> > > +			(long)size, XBC_DATA_MAX);
-> > >  		return;
-> > >  	}
-> > >  
-> > > @@ -449,7 +452,7 @@ static void __init setup_boot_config(void)
-> > >  				msg, pos);
-> > >  	} else {
-> > >  		xbc_get_info(&ret, NULL);
-> > > -		pr_info("Load bootconfig: %d bytes %d nodes\n", size, ret);
-> > > +		pr_info("Load bootconfig: %ld bytes %d nodes\n", (long)size, ret);
-> > >  		/* keys starting with "kernel." are passed via cmdline */
-> > >  		extra_command_line = xbc_make_cmdline("kernel");
-> > >  		/* Also, "init." keys are init arguments */
-> > > diff --git a/lib/.gitignore b/lib/.gitignore
-> > > index e5e217b8307b..30a2a5db7033 100644
-> > > --- a/lib/.gitignore
-> > > +++ b/lib/.gitignore
-> > > @@ -6,3 +6,4 @@
-> > >  /oid_registry_data.c
-> > >  /test_fortify.log
-> > >  /test_fortify/*.log
-> > > +/default.bconf
-> > > diff --git a/lib/Makefile b/lib/Makefile
-> > > index 300f569c626b..8183785ee99d 100644
-> > > --- a/lib/Makefile
-> > > +++ b/lib/Makefile
-> > > @@ -279,6 +279,18 @@ $(foreach file, $(libfdt_files), \
-> > >  	$(eval CFLAGS_$(file) = -I $(srctree)/scripts/dtc/libfdt))
-> > >  lib-$(CONFIG_LIBFDT) += $(libfdt_files)
-> > >  
-> > > +ifeq ($(CONFIG_EMBED_BOOT_CONFIG),y)
-> > > +# Since the specified bootconfig file can be switched, we forcibly update the
-> > > +# default.bconf file always.
-> > > +$(obj)/default.bconf: FORCE
-> > > +	$(call cmd,defbconf)
-> > > +
-> > > +quiet_cmd_defbconf = GEN     $@
-> > > +      cmd_defbconf = cat < /dev/null $(CONFIG_EMBED_BOOT_CONFIG_FILE) > $@
-> > > +clean-files	+= default.bconf
-> > > +$(obj)/bootconfig.o: $(obj)/default.bconf
-> > > +endif
-> > > +
-> > >  lib-$(CONFIG_BOOT_CONFIG) += bootconfig.o
-> > >  
-> > >  obj-$(CONFIG_RBTREE_TEST) += rbtree_test.o
-> > > diff --git a/lib/bootconfig.c b/lib/bootconfig.c
-> > > index 74f3201ab8e5..3a3bf3a208e3 100644
-> > > --- a/lib/bootconfig.c
-> > > +++ b/lib/bootconfig.c
-> > > @@ -12,6 +12,29 @@
-> > >  #include <linux/kernel.h>
-> > >  #include <linux/memblock.h>
-> > >  #include <linux/string.h>
-> > > +
-> > > +#ifdef CONFIG_EMBED_BOOT_CONFIG
-> > > +asm (
-> > > +"	.pushsection .init.data, \"aw\"			\n"
-> > > +"	.global embedded_bootconfig_data		\n"
-> > > +"embedded_bootconfig_data:				\n"
-> > > +"	.incbin \"lib/default.bconf\"			\n"
-> > > +"	.global embedded_bootconfig_data_end		\n"
-> > > +"embedded_bootconfig_data_end:				\n"
-> > > +"	.popsection					\n"
-> > > +);
-> > > +
-> > > +extern __visible char embedded_bootconfig_data[];
-> > > +extern __visible char embedded_bootconfig_data_end[];
-> > > +
-> > > +char * __init xbc_get_embedded_bootconfig(size_t *size)
-> > > +{
-> > > +	*size = embedded_bootconfig_data_end - embedded_bootconfig_data;
-> > > +	return (*size) ? embedded_bootconfig_data : NULL;
-> > > +}
-> > > +
-> > > +#endif
-> > > +
-> > >  #else /* !__KERNEL__ */
-> > >  /*
-> > >   * NOTE: This is only for tools/bootconfig, because tools/bootconfig will
-> > >
-> > 
-> > Thanks tested the implemation, it works as expected.
+> > > That could be the reason of different results. Qca8k is mostly used on
+> > > 32bit systems with 4byte cache wonder. That could be the reason i have
+> > > different results and on a system like that it did suggest this order?
 > 
-> Great!
-> 
-> > 
-> > Also noted that a change in default.bconf requries a clean build, is it
-> > expected behaviour?
-> 
-> default.bconf will be always updated if CONFIG_EMBED_BOOT_CONFIG=y. So you can
-> do incremental build. (I tested it with the incremental build environment)
+> Is it impossible to use the qca8k driver on 64-bit systems?
 >
 
-Thanks, your observation made me to further experiment ther incremental build.
+It's possible but reality is that 99% it will be used on 32bit system.
+Wonder if we should optimize for that.
 
-Below are the observations I have:
-
-When I use GCC for a build; yes, the modified default.conf was observed on
-the target.
-
-But when I use clang; either with FULL or THIN LTO, the modified
-default.conf doesnt get reflected on the target.
-
-PS: Using: GCC version 8.2.1 20180802, LLVM version 13.0.2git.
-
-Thank you,
-Padmanabha.S
-> Thank you,
-> 
+> > > > > > Before:
+> > > > > > 
+> > > > > > struct qca8k_priv {
+> > > > > >         u8                         switch_id;            /*     0     1 */
+> > > > > >         u8                         switch_revision;      /*     1     1 */
+> > > > > >         u8                         mirror_rx;            /*     2     1 */
+> > > > > >         u8                         mirror_tx;            /*     3     1 */
+> > > > > >         u8                         lag_hash_mode;        /*     4     1 */
+> > > > > >         bool                       legacy_phy_port_mapping; /*     5     1 */
+> > > > > >         struct qca8k_ports_config  ports_config;         /*     6     7 */
+> > > > > > 
+> > > > > >         /* XXX 3 bytes hole, try to pack */
+> > > > > > 
+> > > > > >         struct regmap *            regmap;               /*    16     8 */
+> > > > > >         struct mii_bus *           bus;                  /*    24     8 */
+> > > > > >         struct ar8xxx_port_status  port_sts[7];          /*    32    28 */
+> > > > > > 
+> > > > > >         /* XXX 4 bytes hole, try to pack */
+> > > > > > 
+> > > > > >         /* --- cacheline 1 boundary (64 bytes) --- */
+> > > > > >         struct dsa_switch *        ds;                   /*    64     8 */
+> > > > > >         struct mutex               reg_mutex;            /*    72   160 */
+> > > > > >         /* --- cacheline 3 boundary (192 bytes) was 40 bytes ago --- */
+> > > > > >         struct device *            dev;                  /*   232     8 */
+> > > > > >         struct dsa_switch_ops      ops;                  /*   240   864 */
+> > > > > >         /* --- cacheline 17 boundary (1088 bytes) was 16 bytes ago --- */
+> > > > > >         struct gpio_desc *         reset_gpio;           /*  1104     8 */
+> > > > > >         unsigned int               port_mtu[7];          /*  1112    28 */
+> > > > > > 
+> > > > > >         /* XXX 4 bytes hole, try to pack */
+> > > > > > 
+> > > > > >         struct net_device *        mgmt_master;          /*  1144     8 */
+> > > > > >         /* --- cacheline 18 boundary (1152 bytes) --- */
+> > > > > >         struct qca8k_mgmt_eth_data mgmt_eth_data;        /*  1152   280 */
+> > > > > >         /* --- cacheline 22 boundary (1408 bytes) was 24 bytes ago --- */
+> > > > > >         struct qca8k_mib_eth_data  mib_eth_data;         /*  1432   272 */
+> > > > > >         /* --- cacheline 26 boundary (1664 bytes) was 40 bytes ago --- */
+> > > > > >         struct qca8k_mdio_cache    mdio_cache;           /*  1704     6 */
+> > > > > > 
+> > > > > >         /* XXX 2 bytes hole, try to pack */
+> > > > > > 
+> > > > > >         struct qca8k_pcs           pcs_port_0;           /*  1712    32 */
+> > > > > > 
+> > > > > >         /* XXX last struct has 4 bytes of padding */
+> > > > > > 
+> > > > > >         /* --- cacheline 27 boundary (1728 bytes) was 16 bytes ago --- */
+> > > > > >         struct qca8k_pcs           pcs_port_6;           /*  1744    32 */
+> > > > > > 
+> > > > > >         /* XXX last struct has 4 bytes of padding */
+> > > > > > 
+> > > > > >         /* size: 1776, cachelines: 28, members: 22 */
+> > > > > >         /* sum members: 1763, holes: 4, sum holes: 13 */
+> > > > > >         /* paddings: 2, sum paddings: 8 */
+> > > > > >         /* last cacheline: 48 bytes */
+> > > > > > };
+> > > > > > 
+> > > > > > After:
+> > > > > > 
+> > > > > > struct qca8k_priv {
+> > > > > >         struct net_device *        mgmt_master;          /*     0     8 */
+> > > > > >         struct qca8k_mgmt_eth_data mgmt_eth_data;        /*     8   280 */
+> > > > > >         /* --- cacheline 4 boundary (256 bytes) was 32 bytes ago --- */
+> > > > > >         struct qca8k_mdio_cache    mdio_cache;           /*   288     6 */
+> > > > > >         u8                         switch_id;            /*   294     1 */
+> > > > > >         u8                         switch_revision;      /*   295     1 */
+> > > > > >         u8                         mirror_rx;            /*   296     1 */
+> > > > > >         u8                         mirror_tx;            /*   297     1 */
+> > > > > >         u8                         lag_hash_mode;        /*   298     1 */
+> > > > > >         bool                       legacy_phy_port_mapping; /*   299     1 */
+> > > > > > 
+> > > > > >         /* XXX 4 bytes hole, try to pack */
+> > > > > > 
+> > > > > >         struct qca8k_ports_config  ports_config;         /*   304    72 */
+> > > > > >         /* --- cacheline 5 boundary (320 bytes) was 56 bytes ago --- */
+> > > > > >         struct regmap *            regmap;               /*   376     8 */
+> > > > > >         /* --- cacheline 6 boundary (384 bytes) --- */
+> > > > > >         struct mii_bus *           bus;                  /*   384     8 */
+> > > > > >         struct ar8xxx_port_status  port_sts[7];          /*   392    28 */
+> > > > > > 
+> > > > > >         /* XXX 4 bytes hole, try to pack */
+> > > > > > 
+> > > > > >         struct dsa_switch *        ds;                   /*   424     8 */
+> > > > > >         struct mutex               reg_mutex;            /*   432   160 */
+> > > > > >         /* --- cacheline 9 boundary (576 bytes) was 16 bytes ago --- */
+> > > > > >         struct device *            dev;                  /*   592     8 */
+> > > > > >         struct gpio_desc *         reset_gpio;           /*   600     8 */
+> > > > > >         struct dsa_switch_ops      ops;                  /*   608   864 */
+> > > > > >         /* --- cacheline 23 boundary (1472 bytes) --- */
+> > > > > >         struct qca8k_mib_eth_data  mib_eth_data;         /*  1472   280 */
+> > > > > > 
+> > > > > >         /* XXX last struct has 4 bytes of padding */
+> > > > > > 
+> > > > > >         /* --- cacheline 27 boundary (1728 bytes) was 24 bytes ago --- */
+> > > > > >         unsigned int               port_mtu[7];          /*  1752    28 */
+> > > > > > 
+> > > > > >         /* size: 1784, cachelines: 28, members: 20 */
+> > > > > >         /* sum members: 1772, holes: 2, sum holes: 8 */
+> > > > > >         /* padding: 4 */
+> > > > > >         /* paddings: 1, sum paddings: 4 */
+> > > > > >         /* last cacheline: 56 bytes */
+> > > > > > };
+> > > > > > 
+> > > > > > 1776 vs 1784. That's... larger?!
+> > > > > > 
+> > > > > > Also, struct qca8k_priv is so large because the "ops" member is a full
+> > > > > > copy of qca8k_switch_ops. I understand why commit db460c54b67f ("net:
+> > > > > > dsa: qca8k: extend slave-bus implementations") did this, but I wonder,
+> > > > > > is there no better way?
+> > > > > > 
+> > > > > 
+> > > > > Actually from what I can see the struct can be improved in 2 way...
+> > > > > The ancient struct
+> > > > > ar8xxx_port_status port_sts[QCA8K_NUM_PORTS];
+> > > > > can be totally dropped as I can't see why we still need it.
+> > > > > 
+> > > > > The duplicated ops is funny. I could be very confused but why it's done
+> > > > > like that? Can't we modify directly the already defined one and drop
+> > > > > struct dsa_switch_ops ops; from qca8k_priv?
+> > > > 
+> > > > Simply put, qca8k_switch_ops is per kernel, priv->ops is per driver
+> > > > instance.
+> > > > 
+> > > 
+> > > Right I totally missed that.
+> > > 
+> > > > > I mean is all of that to use priv->ops.phy_read instead of
+> > > > > priv->ds->ops.phy_read or even qca8k_switch_ops directly? o.o
+> > > > > 
+> > > > > Am I missing something?
+> > > > 
+> > > > The thing is that qca8k_setup_mdio_bus() wants DSA to use the
+> > > > legacy_phy_port_mapping only as a fallback. DSA uses this simplistic
+> > > > condition:
+> > > > 
+> > > > dsa_switch_setup():
+> > > > 	if (!ds->slave_mii_bus && ds->ops->phy_read) {
+> > > > 		ds->slave_mii_bus = mdiobus_alloc();
+> > > > 
+> > > > You might be tempted to say: hey, qca8k_mdio_register() populates
+> > > > ds->slave_mii_bus to an MDIO bus allocated by itself. So you'd be able
+> > > > to prune the mdiobus_alloc() because the first part of the condition is
+> > > > false.
+> > > > 
+> > > > But dsa_switch_teardown() has:
+> > > > 
+> > > > 	if (ds->slave_mii_bus && ds->ops->phy_read) {
+> > > > 		mdiobus_unregister(ds->slave_mii_bus);
+> > > > 
+> > > > In other words, dsa_switch_teardown() has lost track of who allocated
+> > > > the MDIO bus - it assumes that the DSA core has. That will conflict with
+> > > > qca8k which uses devres, so it would result in double free.
+> > > > 
+> > > > So that's basically what the problem is. The qca8k driver needs to have
+> > > > a NULL ds->ops->phy_read if it doesn't use the legacy_phy_port_mapping,
+> > > > so it won't confuse the DSA core.
+> > > > 
+> > > > Please note that I'm not really too familiar with this part of the DSA
+> > > > core since I don't have any hardware that makes any use of ds->slave_mii_bus.
+> > > > 
+> > > 
+> > > Ok now I see the problem. Thx for the good explaination. I wonder...
+> > > Should I use the easy path and just drop phy_read/write? Qca8k already
+> > > allocate a dedicated mdio for the same task... Should I just add some
+> > > check and make the dedicated mdio register without the OF API when it's
+> > > in legacy mode?
+> > > 
+> > > I think that at times the idea of that patch was to try to use as much
+> > > as possible generic dsa ops but if that would result in having the big
+> > > ops duplicated for every switch that doesn't seems that optmizied.
+> > > 
+> > > An alternative would be adding an additional flag to dsa to control how
+> > > DSA should handle slave_mii_bus. But I assume a solution like that would
+> > > be directly NACK as it's just an hack for a driver to save some space.
+> > > 
+> > > Or now that I think about it generilize all of this and add some API to
+> > > DSA to register an mdiobus with an mdio node if provided. Or even
+> > > provide some way to make the driver decide what to do... Some type of
+> > > configuration? Is it overkill or other driver would benefit from this?
+> > > Do we have other driver that declare a custom mdiobus instead of using
+> > > phy_read/write?
+> > >
 > > 
-> > Thanks and Regards,
-> > Padmanabha.S
+> > I just checked we have 4 driver that implement custom mdiobus using an
+> > of node and would benefit from this... Still don't know if it would be a
+> > good solution.
 > 
+> If you provide your own ds->slave_mii_bus there should be no reason to
+> need a ds->ops->phy_read, since your slave_mii_bus already has one.
 > 
-> -- 
-> Masami Hiramatsu <mhiramat@kernel.org>
+> Bottom line, phy_read is just there in case they it is helpful.
+> Whereas ds->slave_mii_bus is there if you want to have a non-OF based
+> phy_connect, with the implicit assumption that the phy_addr is equal to
+> the port, and it can't be in any other way.
+> 
+> So if ds->ops->phy_read / ds->ops->phy_write aren't useful, don't use them.
+> I suppose one of the drivers you saw with "custom mdiobus" was sja1105.
+> I have no interest whatsoever in converting that driver to use
+> ds->slave_mii_bus or ds->phy_read.
+
+My idea was to provide some type of API where the switch insert some
+type of data and DSA decide to declare a dsa mdiobus or a
+dedicated one based on the config provided. Think I will have to provide
+an RFC to better describe this idea. The idea would be to drop phy_read
+and phy_write and replace them with a single op that provide a
+configuration.
+
+-- 
+	Ansuel
