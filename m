@@ -2,121 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D05CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:49:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08C93C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:49:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229953AbiCUWuo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:50:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35528 "EHLO
+        id S230236AbiCUWvH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:51:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230187AbiCUWua (ORCPT
+        with ESMTP id S230183AbiCUWuu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:50:30 -0400
-Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D641A443A51;
-        Mon, 21 Mar 2022 15:30:23 -0700 (PDT)
-Received: by mail-oi1-f181.google.com with SMTP id s207so17759361oie.11;
-        Mon, 21 Mar 2022 15:30:23 -0700 (PDT)
+        Mon, 21 Mar 2022 18:50:50 -0400
+Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09D4B38F732;
+        Mon, 21 Mar 2022 15:30:39 -0700 (PDT)
+Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-de48295467so209439fac.2;
+        Mon, 21 Mar 2022 15:30:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=fd0ioVJnCUxmBqE5v/1CktP1XfO1ct0lyiZbE7j35V8=;
+        b=JPbAJMKIYbgC77xWESrjn/RacBD6J3iRT8AHohuSQ5gNjCihvenph23+NrpNOEwu23
+         fPCOh4WFVaCtXprRY1+RoyESnxJHObyb3e7zwlzQlYoUxWD8FHJi6I8iZ2o/tt8seIDU
+         4nIQwRqYQtohiDBBUOWlgDQWgjE4V4hJEdtowkSEVAdKm95uEwcq0N5uN1xcj6py3ZPz
+         BLhvCVi/hfkUOm5lwjHvODcUlvous1XOim6kczc+LPjHJO7V0AKP5N1a6xbKQyd2csvb
+         48cV81fo25s6sCrryb8VX35V8a9ku+yauFAL9EFR7buUWgj7OdF+/03okeAHnJCCM5C2
+         Nxbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zbp0hIb8uBy2/xVSmAWjwvVhJzm0B0givR3TBIiOw0Q=;
-        b=ECFyqAj1G+nUD67jd/CbWlSsNLp/9ZW/WNWfNTJ9WDvCiWgXbZk5Gah/DCrx3NW2N/
-         8SL6t8WK9dM+uLeiUx1bbaSba4Y/w7oO64JDhWwgz0ZOi4HARfurGomyotF+tCKLQS6p
-         81e9YrplS6nU1dgzN76mt5SXgSHy52UDGIcpE7Ir/eZWITUY+Le9oAj9sksemJV2HXAc
-         0XRDnSgoAfbGBtnAqvCn9ze3B5q662bUCMxS2y25TPgL+P+kvrlahEyOVext+Ho7aERm
-         e4yO9z6gBk5096BlSRCTGDrgn8OWMgFE451/ykcEqgX17imcolypywUqCOZ6cuK2dNRN
-         mXHw==
-X-Gm-Message-State: AOAM532Yt2BJuCtQWjTtF4/Fx3fozl/Com++mFAufxFDXnLGkCZhAGzR
-        WpXjVN4DSLQ5FDrtTMiFzg==
-X-Google-Smtp-Source: ABdhPJwt1zw6TNwDij87xVlDMEQVe7cTjU5dSscPmUpAKgOWzXQ8WYcqWpTBlrQ/KYGd/g16yMgQ4Q==
-X-Received: by 2002:a05:6808:30a2:b0:2da:3ab6:2c83 with SMTP id bl34-20020a05680830a200b002da3ab62c83mr675374oib.206.1647901823127;
-        Mon, 21 Mar 2022 15:30:23 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id p18-20020a056830131200b005ccf8ac6207sm2491234otq.80.2022.03.21.15.30.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 15:30:22 -0700 (PDT)
-Received: (nullmailer pid 656090 invoked by uid 1000);
-        Mon, 21 Mar 2022 22:30:18 -0000
-Date:   Mon, 21 Mar 2022 17:30:18 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Moudy Ho <moudy.ho@mediatek.com>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Rob Landley <rob@landley.net>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Alexandre Courbot <acourbot@chromium.org>, tfiga@chromium.org,
-        drinkcat@chromium.org, pihsun@chromium.org, hsinyi@google.com,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Maoguang Meng <maoguang.meng@mediatek.com>,
-        daoyuan huang <daoyuan.huang@mediatek.com>,
-        Ping-Hsun Wu <ping-hsun.wu@mediatek.com>,
-        menghui.lin@mediatek.com, sj.huang@mediatek.com,
-        allen-kh.cheng@mediatek.com, randy.wu@mediatek.com,
-        jason-jh.lin@mediatek.com, roy-cw.yeh@mediatek.com,
-        river.cheng@mediatek.com, srv_heupstream@mediatek.com,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-Subject: Re: [PATCH v14 4/6] dt-bindings: soc: mediatek: add gce-client-reg
- for MUTEX
-Message-ID: <Yjj8eoXmsYRRvb1I@robh.at.kernel.org>
-References: <20220317143926.15835-1-moudy.ho@mediatek.com>
- <20220317143926.15835-5-moudy.ho@mediatek.com>
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=fd0ioVJnCUxmBqE5v/1CktP1XfO1ct0lyiZbE7j35V8=;
+        b=ALmCKxooUO1TR3I8C6PU53UPFOFOJLhl6GDA9bIZ4AZFJEQyKhQjDHY8PlaLwYlojG
+         Um0hm6453mxYP6TvXd2AGkzSIC1GDgihI6P3ZJx1K1HNO65IgwZ/C+3QqGiiAH0jcHjv
+         3Tk2eonbWn+zXcfOslZAo8Ga6DBAa+VVpGAbtoljCV4XpGgFU5sBIbm1+HqEBzpQMLnM
+         sMyG0RzHBbl/dmUYQvomQTMsXyjlkKQdxnObsd5rpjEbhkVBp8KImK3UAEJZz8Dd9gNQ
+         dK/sC8KnH6fVWiAREcY+VxV58/MCK5a3fd4xv3S+ceplyy6/ZIgFRVi0SdjPWmQqXZEN
+         xVWg==
+X-Gm-Message-State: AOAM533c2VgKHBXdGqVdEPkDhHn1V1xKilU7NkgP9stlNVMjZUlN3dnw
+        x8NVQTgIHFT5uqpBt8wW3g0TM7I4Nwyr5dG4
+X-Google-Smtp-Source: ABdhPJx9PqwCNkYnhrgCr9dl47xOE1L03ITPFHLHegqf7Cg046EHXDpNqRAOoGssllJToGvQO1sgow==
+X-Received: by 2002:a17:90a:5ae2:b0:1c6:7168:1164 with SMTP id n89-20020a17090a5ae200b001c671681164mr1354065pji.119.1647901282882;
+        Mon, 21 Mar 2022 15:21:22 -0700 (PDT)
+Received: from jagath-PC ([115.99.184.169])
+        by smtp.gmail.com with ESMTPSA id u22-20020a056a00125600b004fa3aec7f89sm16017098pfi.75.2022.03.21.15.21.21
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 21 Mar 2022 15:21:22 -0700 (PDT)
+Date:   Tue, 22 Mar 2022 03:51:18 +0530
+From:   Jagath Jog J <jagathjog1996@gmail.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Dan Robertson <dan@dlrobertson.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 3/5] iio: accel: bma400: Add triggered buffer support
+Message-ID: <20220321222117.GD10058@jagath-PC>
+References: <20220319181023.8090-1-jagathjog1996@gmail.com>
+ <20220319181023.8090-4-jagathjog1996@gmail.com>
+ <CAHp75VdB5q+Y2R46OO-kCKCkPY58YzyLNjN3PjJiQhTOgV4n2w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220317143926.15835-5-moudy.ho@mediatek.com>
+In-Reply-To: <CAHp75VdB5q+Y2R46OO-kCKCkPY58YzyLNjN3PjJiQhTOgV4n2w@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 10:39:24PM +0800, Moudy Ho wrote:
-> In order to allow modules with latency requirements such as MDP3
-> to set registers through CMDQ, add the relevant GCE property.
-> 
-> Signed-off-by: Moudy Ho <moudy.ho@mediatek.com>
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> Reviewed-by: CK Hu <ck.hu@mediatek.com>
-> ---
->  .../devicetree/bindings/soc/mediatek/mediatek,mutex.yaml  | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/soc/mediatek/mediatek,mutex.yaml b/Documentation/devicetree/bindings/soc/mediatek/mediatek,mutex.yaml
-> index f825af49f820..a4892979480c 100644
-> --- a/Documentation/devicetree/bindings/soc/mediatek/mediatek,mutex.yaml
-> +++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,mutex.yaml
-> @@ -60,6 +60,14 @@ properties:
->        include/dt-bindings/gce/<chip>-gce.h of each chips.
->      $ref: /schemas/types.yaml#/definitions/phandle-array
->  
-> +  mediatek,gce-client-reg:
-> +    description: The register of client driver can be configured by gce with
-> +      4 arguments defined in this property, such as phandle of gce, subsys id,
-> +      register offset and size. Each GCE subsys id is mapping to a client
-> +      defined in the header include/dt-bindings/gce/<chip>-gce.h.
-> +    $ref: /schemas/types.yaml#/definitions/phandle-array
-> +    maxItems: 1
+Hello Andy,
 
-items:
-  items:
-    - description: phandle of GCE
-    - description: GCE subsys id
-    - description: register offset
-    - description: register size
+On Mon, Mar 21, 2022 at 10:39:22AM +0200, Andy Shevchenko wrote:
+> On Sat, Mar 19, 2022 at 8:10 PM Jagath Jog J <jagathjog1996@gmail.com> wrote:
+> >
+> > Added trigger buffer support to read continuous acceleration
+> > data from device with data ready interrupt which is mapped
+> > to INT1 pin.
+> 
+> ...
+> 
+> >  #include <linux/mutex.h>
+> >  #include <linux/regmap.h>
+> >  #include <linux/regulator/consumer.h>
+> > +#include <linux/bits.h>
+> > +#include <linux/bitfield.h>
+> 
+> It would be nice to keep the above in order.
+> 
+> > +#include <linux/iio/buffer.h>
+> > +#include <linux/iio/trigger.h>
+> > +#include <linux/iio/triggered_buffer.h>
+> > +#include <linux/iio/trigger_consumer.h>
+> 
+> These ones, possibly including iio headers from the above piece, are
+> good to be grouped together here with a blank line in between the
+> above part and iio/*.
+> 
+> ...
+> 
+> > +static const unsigned long bma400_avail_scan_masks[] = {
+> > +       GENMASK(3, 0),
+> 
+> > +       0,
+> 
+> No need to have a comma in terminator entry.
+> 
+> > +};
+> 
+> ...
+> 
+> > +       ret = regmap_bulk_read(data->regmap, BMA400_X_AXIS_LSB_REG,
+> > +                              &data->buffer.buff, 3 * sizeof(__be16));
+> 
+> sizeof(buff)
+> 
+> ...
+> 
+> > +out:
 
-> +
->  required:
->    - compatible
->    - reg
+Just to skip the below "if()" if error occurs in previous regmap read,
+I used this label.
+       if (status & BMA400_INT_DRDY_MSK)
+             iio_trigger_poll_chained(data->trig);
+
+I will remove the label in next patch
+> 
+> A useless label. Moreover this raises a question: why is it okay to
+> always mark IRQ as handled?
+> 
+> > +       return IRQ_HANDLED;
+
+Since I was not using top-half of the interrupt so I marked IRQ as handled
+even for error case in the handler.
+
+> 
+> ...
+> 
+> > +                       dev_err(dev, "iio trigger register failed\n");
+> > +                       return ret;
+> 
+> return dev_err_probe();
+> 
+> ...
+> 
+> > +                       dev_err(dev, "request irq %d failed\n", irq);
+> > +                       return ret;
+> 
+> Ditto.
+> 
+> ...
+> 
+> > +               dev_err(dev, "iio triggered buffer setup failed\n");
+> > +               return ret;
+> 
+> Ditto.
+
+I will change this in the next patch version.
+> 
 > -- 
-> 2.18.0
-> 
-> 
+> With Best Regards,
+> Andy Shevchenko
