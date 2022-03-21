@@ -2,191 +2,440 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E895C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:28:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DD40C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:28:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348030AbiCUO3p (ORCPT
+        id S1349148AbiCUO3T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:29:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34100 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349090AbiCUO3T (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 10:29:19 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD3BD5675B;
-        Mon, 21 Mar 2022 07:25:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647872706; x=1679408706;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ZRgMOrMKRu4QklsqExf2gmjTp684KRU6lmpsY+ibWYM=;
-  b=i0/4zLYkwiJ8NvI69RnJ/Eg2uKUZ27hDn5B90vRAAJHIxqUp4nVJhvQD
-   FLIRifQoWSx0uXI2FB7o6FtMes/po82QJpzo7cpJ6v44BKXs1kst0XfY1
-   hGLRusJWVnJ/nqttbjkMSE4UvI5qvTLvyf4e8VxeJlbR4uMSjuXgbWRVl
-   4AMHvZxbdT4RalOsU2cWM3E8lGltXZvTeIZZxqIJB0Zo+nAzTdHH4SYrC
-   ZlaqkVfJ0HDD3Lsn2JXRrzivQzGv9i5uPjYLZqLl3146OqLCE3e01wcsb
-   DDOyFv//8Tf7cXvMEWPidEuI98Is629XEwcHHv6GCez0ySqyNPSUn6fC+
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10292"; a="237506512"
-X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
-   d="scan'208";a="237506512"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 07:25:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
-   d="scan'208";a="824465825"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 21 Mar 2022 07:25:01 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nWIxu-000HtG-Qp; Mon, 21 Mar 2022 14:24:58 +0000
-Date:   Mon, 21 Mar 2022 22:24:20 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Quan Nguyen <quan@os.amperecomputing.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Derek Kiernan <derek.kiernan@xilinx.com>,
-        Dragan Cvetic <dragan.cvetic@xilinx.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thu Nguyen <thu@os.amperecomputing.com>,
-        Gustavo Pimentel <Gustavo.Pimentel@synopsys.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "open list:HARDWARE MONITORING" <linux-hwmon@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Open Source Submission <patches@amperecomputing.com>,
-        Phong Vo <phong@os.amperecomputing.com>,
-        "Thang Q . Nguyen" <thang@os.amperecomputing.com>
-Subject: Re: [PATCH v7 3/9] misc: smpro-errmon: Add Ampere's SMpro error
- monitor driver
-Message-ID: <202203212244.dJ8wLdCt-lkp@intel.com>
-References: <20220321081355.6802-4-quan@os.amperecomputing.com>
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59392 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349276AbiCUO1x (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 21 Mar 2022 10:27:53 -0400
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB97D1FCC1;
+        Mon, 21 Mar 2022 07:21:38 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 4BB0E5C013E;
+        Mon, 21 Mar 2022 10:21:38 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Mon, 21 Mar 2022 10:21:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sent.com; h=cc
+        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to
+        :reply-to:sender:subject:subject:to:to; s=fm3; bh=7T5ogzTVz+pREW
+        HQHtFgoPpVXuCA2hjAwdosZDFI+CE=; b=Hix2FzTy2ZmuW6BK5lkeOMhTARfjBT
+        iXuQbSBngj5gdw/VmLXkW+E3As9ekKUJZ1b7wDm8/fgF6VVZdmgt1cFarPv+t0zD
+        Xkx5NrxWQDB8gcbges8ZoPkqMPa/tsGGB5mnmawXLNSoNWeZjWoEo4paikqBdr0W
+        wgWrbut9Gf33ODzbPuhh7j6x4oWYmSP2fYSd+geKslJ8FY4f0wOOO/olunlxkf6i
+        q4LuFSsWhLtr523ErhFU3nWRuiJlsK0sKxdYxPB7/3VPqQvQpwp1eYHOua76cxBt
+        ACSMWNBZhSt0wGx4994pciJUxQjJ6vuN32eaoaeI9uA/zAAhRuhWNptg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :from:from:in-reply-to:in-reply-to:message-id:mime-version
+        :references:reply-to:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; bh=7T5ogzTVz+pREWHQHtFgoPpVXuCA2hjAwdosZDFI+CE=; b=H/8cFbIw
+        MMeoQQuyERsEmp99t9K7E3Zp3B9107hEZVjLr6hj4ieVlk8qswifA7n/4YynuLzU
+        UhEpRZkpbPNNJRCJaQzy+n8blXiFKi802qNE5YN9TWOA8msFNmkeqRHWEV/q8+9E
+        7EfVHeMJonpw3vq6xbhKrUUapJ4oTQtTsnYOeO+sy1IgiHbYXrc+pNMGpyjbLGAH
+        U3LKF1yzj/yJziPbo4gPo6Z4m5GCsrGabrdO9UGrkO6SsxqIErx5BcjE9qOC0oMQ
+        lwqGIUfTqg/61H8WXkHWOHySCkePma8FayAyejHGxY/cN0Tkiy7CFLuYdYhIxpVC
+        geq0uWthWeZiOg==
+X-ME-Sender: <xms:8ok4YifS5wimkFFuf_GT9Jgxlk1k92_f9f8d4moo1Cy7TtOfRN97Kw>
+    <xme:8ok4YsOgbed1bx5i11DwAoaPwHFlVVCUqk577UK7YqQRJj39_FmUoMr3QKuDpx-Rd
+    QqqsL-sDsH-sgWKAw>
+X-ME-Received: <xmr:8ok4Yjj9QE28atuf0RDA2NKr6K8cfl1wvli45MaySSyXRekT-PfRlMwljzLx7xwhy35-THETy_DnI5MVQw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudegfedgieefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvufffkffojghfrhgggfestdhqredtredttdenucfhrhhomhepkghiucgj
+    rghnuceoiihirdihrghnsehsvghnthdrtghomheqnecuggftrfgrthhtvghrnhepieejue
+    dvueduuefhgefhheeiuedvtedvuefgieegveetueeiueehtdegudehfeelnecuvehluhhs
+    thgvrhfuihiivgepudenucfrrghrrghmpehmrghilhhfrhhomhepiihirdihrghnsehsvg
+    hnthdrtghomh
+X-ME-Proxy: <xmx:8ok4Yv-Mr4yet1gWVeWUTgjRd9gTtF6_aQfmMlvlEsbB8J52fXdLMg>
+    <xmx:8ok4Yuvmw_gvy2r4NuyPV4UYWS1H1avgeW_ustCn_E05dbk119NE3Q>
+    <xmx:8ok4YmEQaxg6b2DbuKAFuSgvX-2tRFVaS-4HyO_jTpG57cAiSA2ZHg>
+    <xmx:8ok4YvkJbgTH7eZHy2Rh6JS6KA9ie3NIp7HAnPGvz8091UInzOH1yQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 21 Mar 2022 10:21:37 -0400 (EDT)
+From:   Zi Yan <zi.yan@sent.com>
+To:     Matthew Wilcox <willy@infradead.org>, linux-mm@kvack.org
+Cc:     Roman Gushchin <roman.gushchin@linux.dev>,
+        Shuah Khan <shuah@kernel.org>, Yang Shi <shy828301@gmail.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Hugh Dickins <hughd@google.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, Zi Yan <ziy@nvidia.com>
+Subject: [RFC PATCH 3/5] mm: thp: split huge page to any lower order pages.
+Date:   Mon, 21 Mar 2022 10:21:26 -0400
+Message-Id: <20220321142128.2471199-4-zi.yan@sent.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220321142128.2471199-1-zi.yan@sent.com>
+References: <20220321142128.2471199-1-zi.yan@sent.com>
+Reply-To: Zi Yan <ziy@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220321081355.6802-4-quan@os.amperecomputing.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Quan,
+From: Zi Yan <ziy@nvidia.com>
 
-I love your patch! Perhaps something to improve:
+To split a THP to any lower order pages, we need to reform THPs on
+subpages at given order and add page refcount based on the new page
+order. Also we need to reinitialize page_deferred_list after removing
+the page from the split_queue, otherwise a subsequent split will see
+list corruption when checking the page_deferred_list again.
 
-[auto build test WARNING on char-misc/char-misc-testing]
-[also build test WARNING on groeck-staging/hwmon-next lee-mfd/for-mfd-next v5.17 next-20220318]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+It has many uses, like minimizing the number of pages after
+truncating a pagecache THP. For anonymous THPs, we can only split them
+to order-0 like before until we add support for any size anonymous THPs.
 
-url:    https://github.com/0day-ci/linux/commits/Quan-Nguyen/Add-Ampere-s-Altra-SMPro-MFD-and-its-child-drivers/20220321-161811
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git 37fd83916da2e4cae03d350015c82a67b1b334c4
-config: hexagon-allyesconfig (https://download.01.org/0day-ci/archive/20220321/202203212244.dJ8wLdCt-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 85e9b2687a13d1908aa86d1b89c5ce398a06cd39)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/3e85c45303bab9bd02a4761bc7e182fb001ac625
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Quan-Nguyen/Add-Ampere-s-Altra-SMPro-MFD-and-its-child-drivers/20220321-161811
-        git checkout 3e85c45303bab9bd02a4761bc7e182fb001ac625
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/hwmon/ drivers/misc/
+Signed-off-by: Zi Yan <ziy@nvidia.com>
+---
+ include/linux/huge_mm.h |   8 +++
+ mm/huge_memory.c        | 111 ++++++++++++++++++++++++++++++----------
+ 2 files changed, 91 insertions(+), 28 deletions(-)
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+diff --git a/include/linux/huge_mm.h b/include/linux/huge_mm.h
+index 2999190adc22..c7153cd7e9e4 100644
+--- a/include/linux/huge_mm.h
++++ b/include/linux/huge_mm.h
+@@ -186,6 +186,8 @@ void free_transhuge_page(struct page *page);
+=20
+ bool can_split_folio(struct folio *folio, int *pextra_pins);
+ int split_huge_page_to_list(struct page *page, struct list_head *list);
++int split_huge_page_to_list_to_order(struct page *page, struct list_head *=
+list,
++		unsigned int new_order);
+ static inline int split_huge_page(struct page *page)
+ {
+ 	return split_huge_page_to_list(page, NULL);
+@@ -355,6 +357,12 @@ split_huge_page_to_list(struct page *page, struct list=
+_head *list)
+ {
+ 	return 0;
+ }
++static inline int
++split_huge_page_to_list_to_order(struct page *page, struct list_head *list,
++		unsigned int new_order)
++{
++	return 0;
++}
+ static inline int split_huge_page(struct page *page)
+ {
+ 	return 0;
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index fcfa46af6c4c..3617aa3ad0b1 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -2236,11 +2236,13 @@ void vma_adjust_trans_huge(struct vm_area_struct *v=
+ma,
+ static void unmap_page(struct page *page)
+ {
+ 	struct folio *folio =3D page_folio(page);
+-	enum ttu_flags ttu_flags =3D TTU_RMAP_LOCKED | TTU_SPLIT_HUGE_PMD |
+-		TTU_SYNC;
++	enum ttu_flags ttu_flags =3D TTU_RMAP_LOCKED | TTU_SYNC;
+=20
+ 	VM_BUG_ON_PAGE(!PageHead(page), page);
+=20
++	if (folio_order(folio) >=3D HPAGE_PMD_ORDER)
++		ttu_flags |=3D TTU_SPLIT_HUGE_PMD;
++
+ 	/*
+ 	 * Anon pages need migration entries to preserve them, but file
+ 	 * pages can simply be left unmapped, then faulted back on demand.
+@@ -2254,9 +2256,9 @@ static void unmap_page(struct page *page)
+ 	VM_WARN_ON_ONCE_PAGE(page_mapped(page), page);
+ }
+=20
+-static void remap_page(struct folio *folio, unsigned long nr)
++static void remap_page(struct folio *folio, unsigned short nr)
+ {
+-	int i =3D 0;
++	unsigned int i;
+=20
+ 	/* If unmap_page() uses try_to_migrate() on file, remove this check */
+ 	if (!folio_test_anon(folio))
+@@ -2274,7 +2276,6 @@ static void lru_add_page_tail(struct page *head, stru=
+ct page *tail,
+ 		struct lruvec *lruvec, struct list_head *list)
+ {
+ 	VM_BUG_ON_PAGE(!PageHead(head), head);
+-	VM_BUG_ON_PAGE(PageCompound(tail), head);
+ 	VM_BUG_ON_PAGE(PageLRU(tail), head);
+ 	lockdep_assert_held(&lruvec->lru_lock);
+=20
+@@ -2295,9 +2296,10 @@ static void lru_add_page_tail(struct page *head, str=
+uct page *tail,
+ }
+=20
+ static void __split_huge_page_tail(struct page *head, int tail,
+-		struct lruvec *lruvec, struct list_head *list)
++		struct lruvec *lruvec, struct list_head *list, unsigned int new_order)
+ {
+ 	struct page *page_tail =3D head + tail;
++	unsigned long compound_head_flag =3D new_order ? (1L << PG_head) : 0;
+=20
+ 	VM_BUG_ON_PAGE(atomic_read(&page_tail->_mapcount) !=3D -1, page_tail);
+=20
+@@ -2321,6 +2323,7 @@ static void __split_huge_page_tail(struct page *head,=
+ int tail,
+ #ifdef CONFIG_64BIT
+ 			 (1L << PG_arch_2) |
+ #endif
++			 compound_head_flag |
+ 			 (1L << PG_dirty)));
+=20
+ 	/* ->mapping in first tail page is compound_mapcount */
+@@ -2329,7 +2332,10 @@ static void __split_huge_page_tail(struct page *head=
+, int tail,
+ 	page_tail->mapping =3D head->mapping;
+ 	page_tail->index =3D head->index + tail;
+=20
+-	/* Page flags must be visible before we make the page non-compound. */
++	/*
++	 * Page flags must be visible before we make the page non-compound or
++	 * a compound page in new_order.
++	 */
+ 	smp_wmb();
+=20
+ 	/*
+@@ -2339,10 +2345,15 @@ static void __split_huge_page_tail(struct page *hea=
+d, int tail,
+ 	 * which needs correct compound_head().
+ 	 */
+ 	clear_compound_head(page_tail);
++	if (new_order) {
++		prep_compound_page(page_tail, new_order);
++		prep_transhuge_page(page_tail);
++	}
+=20
+ 	/* Finally unfreeze refcount. Additional reference from page cache. */
+-	page_ref_unfreeze(page_tail, 1 + (!PageAnon(head) ||
+-					  PageSwapCache(head)));
++	page_ref_unfreeze(page_tail, 1 + ((!PageAnon(head) ||
++					   PageSwapCache(head)) ?
++						thp_nr_pages(page_tail) : 0));
+=20
+ 	if (page_is_young(head))
+ 		set_page_young(page_tail);
+@@ -2360,7 +2371,7 @@ static void __split_huge_page_tail(struct page *head,=
+ int tail,
+ }
+=20
+ static void __split_huge_page(struct page *page, struct list_head *list,
+-		pgoff_t end)
++		pgoff_t end, unsigned int new_order)
+ {
+ 	struct folio *folio =3D page_folio(page);
+ 	struct page *head =3D &folio->page;
+@@ -2369,10 +2380,11 @@ static void __split_huge_page(struct page *page, st=
+ruct list_head *list,
+ 	unsigned long offset =3D 0;
+ 	unsigned int order =3D thp_order(head);
+ 	unsigned int nr =3D thp_nr_pages(head);
++	unsigned int new_nr =3D 1 << new_order;
+ 	int i;
+=20
+ 	/* complete memcg works before add pages to LRU */
+-	split_page_memcg(head, nr, 0);
++	split_page_memcg(head, nr, new_order);
+=20
+ 	if (PageAnon(head) && PageSwapCache(head)) {
+ 		swp_entry_t entry =3D { .val =3D page_private(head) };
+@@ -2387,42 +2399,50 @@ static void __split_huge_page(struct page *page, st=
+ruct list_head *list,
+=20
+ 	ClearPageHasHWPoisoned(head);
+=20
+-	for (i =3D nr - 1; i >=3D 1; i--) {
+-		__split_huge_page_tail(head, i, lruvec, list);
++	for (i =3D nr - new_nr; i >=3D new_nr; i -=3D new_nr) {
++		__split_huge_page_tail(head, i, lruvec, list, new_order);
+ 		/* Some pages can be beyond EOF: drop them from page cache */
+ 		if (head[i].index >=3D end) {
+ 			ClearPageDirty(head + i);
+ 			__delete_from_page_cache(head + i, NULL);
+ 			if (shmem_mapping(head->mapping))
+-				shmem_uncharge(head->mapping->host, 1);
++				shmem_uncharge(head->mapping->host, new_nr);
+ 			put_page(head + i);
+ 		} else if (!PageAnon(page)) {
+ 			__xa_store(&head->mapping->i_pages, head[i].index,
+ 					head + i, 0);
+ 		} else if (swap_cache) {
++			/*
++			 * split anonymous THPs (including swapped out ones) to
++			 * non-zero order not supported
++			 */
++			VM_BUG_ON(new_order);
+ 			__xa_store(&swap_cache->i_pages, offset + i,
+ 					head + i, 0);
+ 		}
+ 	}
+=20
+-	ClearPageCompound(head);
++	if (!new_order)
++		ClearPageCompound(head);
++	else
++		set_compound_order(head, new_order);
+ 	unlock_page_lruvec(lruvec);
+ 	/* Caller disabled irqs, so they are still disabled here */
+=20
+-	split_page_owner(head, order, 0);
++	split_page_owner(head, order, new_order);
+=20
+ 	/* See comment in __split_huge_page_tail() */
+ 	if (PageAnon(head)) {
+ 		/* Additional pin to swap cache */
+ 		if (PageSwapCache(head)) {
+-			page_ref_add(head, 2);
++			page_ref_add(head, 1 + new_nr);
+ 			xa_unlock(&swap_cache->i_pages);
+ 		} else {
+ 			page_ref_inc(head);
+ 		}
+ 	} else {
+ 		/* Additional pin to page cache */
+-		page_ref_add(head, 2);
++		page_ref_add(head, 1 + new_nr);
+ 		xa_unlock(&head->mapping->i_pages);
+ 	}
+ 	local_irq_enable();
+@@ -2435,7 +2455,14 @@ static void __split_huge_page(struct page *page, str=
+uct list_head *list,
+ 		split_swap_cluster(entry);
+ 	}
+=20
+-	for (i =3D 0; i < nr; i++) {
++	/*
++	 * set page to its compound_head when split to THPs, so that GUP pin and
++	 * PG_locked are transferred to the right after-split page
++	 */
++	if (new_order)
++		page =3D compound_head(page);
++
++	for (i =3D 0; i < nr; i +=3D new_nr) {
+ 		struct page *subpage =3D head + i;
+ 		if (subpage =3D=3D page)
+ 			continue;
+@@ -2472,36 +2499,60 @@ bool can_split_folio(struct folio *folio, int *pext=
+ra_pins)
+  * This function splits huge page into normal pages. @page can point to any
+  * subpage of huge page to split. Split doesn't change the position of @pa=
+ge.
+  *
++ * See split_huge_page_to_list_to_order() for more details.
++ *
++ * Returns 0 if the hugepage is split successfully.
++ * Returns -EBUSY if the page is pinned or if anon_vma disappeared from un=
+der
++ * us.
++ */
++int split_huge_page_to_list(struct page *page, struct list_head *list)
++{
++	return split_huge_page_to_list_to_order(page, list, 0);
++}
++
++/*
++ * This function splits huge page into pages in @new_order. @page can poin=
+t to
++ * any subpage of huge page to split. Split doesn't change the position of
++ * @page.
++ *
+  * Only caller must hold pin on the @page, otherwise split fails with -EBU=
+SY.
+  * The huge page must be locked.
+  *
+  * If @list is null, tail pages will be added to LRU list, otherwise, to @=
+list.
+  *
+- * Both head page and tail pages will inherit mapping, flags, and so on fr=
+om
+- * the hugepage.
++ * Pages in new_order will inherit mapping, flags, and so on from the huge=
+page.
+  *
+- * GUP pin and PG_locked transferred to @page. Rest subpages can be freed =
+if
+- * they are not mapped.
++ * GUP pin and PG_locked transferred to @page or the compound page @page b=
+elongs
++ * to. Rest subpages can be freed if they are not mapped.
+  *
+  * Returns 0 if the hugepage is split successfully.
+  * Returns -EBUSY if the page is pinned or if anon_vma disappeared from un=
+der
+  * us.
+  */
+-int split_huge_page_to_list(struct page *page, struct list_head *list)
++int split_huge_page_to_list_to_order(struct page *page, struct list_head *=
+list,
++				     unsigned int new_order)
+ {
+ 	struct folio *folio =3D page_folio(page);
+ 	struct page *head =3D &folio->page;
+ 	struct deferred_split *ds_queue =3D get_deferred_split_queue(head);
+-	XA_STATE(xas, &head->mapping->i_pages, head->index);
++	/* reset xarray order to new order after split */
++	XA_STATE_ORDER(xas, &head->mapping->i_pages, head->index, new_order);
+ 	struct anon_vma *anon_vma =3D NULL;
+ 	struct address_space *mapping =3D NULL;
+ 	int extra_pins, ret;
+ 	pgoff_t end;
+=20
++	VM_BUG_ON(thp_order(head) <=3D new_order);
+ 	VM_BUG_ON_PAGE(is_huge_zero_page(head), head);
+ 	VM_BUG_ON_PAGE(!PageLocked(head), head);
+ 	VM_BUG_ON_PAGE(!PageCompound(head), head);
+=20
++	/* Cannot split THP to order-1 (no order-1 THPs) */
++	VM_BUG_ON(new_order =3D=3D 1);
++
++	/* Split anonymous THP to non-zero order not support */
++	VM_BUG_ON(PageAnon(head) && new_order);
++
+ 	if (PageWriteback(head))
+ 		return -EBUSY;
+=20
+@@ -2582,7 +2633,7 @@ int split_huge_page_to_list(struct page *page, struct=
+ list_head *list)
+ 	if (page_ref_freeze(head, 1 + extra_pins)) {
+ 		if (!list_empty(page_deferred_list(head))) {
+ 			ds_queue->split_queue_len--;
+-			list_del(page_deferred_list(head));
++			list_del_init(page_deferred_list(head));
+ 		}
+ 		spin_unlock(&ds_queue->split_queue_lock);
+ 		if (mapping) {
+@@ -2592,14 +2643,18 @@ int split_huge_page_to_list(struct page *page, stru=
+ct list_head *list)
+ 			if (PageSwapBacked(head)) {
+ 				__mod_lruvec_page_state(head, NR_SHMEM_THPS,
+ 							-nr);
+-			} else {
++			} else if (!new_order) {
++				/*
++				 * Decrease THP stats only if split to normal
++				 * pages
++				 */
+ 				__mod_lruvec_page_state(head, NR_FILE_THPS,
+ 							-nr);
+ 				filemap_nr_thps_dec(mapping);
+ 			}
+ 		}
+=20
+-		__split_huge_page(page, list, end);
++		__split_huge_page(page, list, end, new_order);
+ 		ret =3D 0;
+ 	} else {
+ 		spin_unlock(&ds_queue->split_queue_lock);
+--=20
+2.35.1
 
-All warnings (new ones prefixed by >>):
-
->> drivers/misc/smpro-errmon.c:276:6: warning: variable 'data_hi' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-           if (addr2 != 0xff) {
-               ^~~~~~~~~~~~~
-   drivers/misc/smpro-errmon.c:303:28: note: uninitialized use occurs here
-                            ret_hi & 0xff, ret_lo, data_hi, data_lo);
-                                                   ^~~~~~~
-   drivers/misc/smpro-errmon.c:276:2: note: remove the 'if' if its condition is always true
-           if (addr2 != 0xff) {
-           ^~~~~~~~~~~~~~~~~~~
-   drivers/misc/smpro-errmon.c:265:47: note: initialize the variable 'data_hi' to silence this warning
-           unsigned int ret_hi, ret_lo, data_lo, data_hi;
-                                                        ^
-                                                         = 0
->> drivers/misc/smpro-errmon.c:276:6: warning: variable 'data_lo' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-           if (addr2 != 0xff) {
-               ^~~~~~~~~~~~~
-   drivers/misc/smpro-errmon.c:303:37: note: uninitialized use occurs here
-                            ret_hi & 0xff, ret_lo, data_hi, data_lo);
-                                                            ^~~~~~~
-   drivers/misc/smpro-errmon.c:276:2: note: remove the 'if' if its condition is always true
-           if (addr2 != 0xff) {
-           ^~~~~~~~~~~~~~~~~~~
-   drivers/misc/smpro-errmon.c:265:38: note: initialize the variable 'data_lo' to silence this warning
-           unsigned int ret_hi, ret_lo, data_lo, data_hi;
-                                               ^
-                                                = 0
-   2 warnings generated.
-
-
-vim +276 drivers/misc/smpro-errmon.c
-
-   261	
-   262	static s32 smpro_internal_err_get_info(struct regmap *regmap, u8 addr, u8 addr1,
-   263					       u8 addr2, u8 addr3, u8 subtype, char *buf)
-   264	{
-   265		unsigned int ret_hi, ret_lo, data_lo, data_hi;
-   266		int ret;
-   267	
-   268		ret = regmap_read(regmap, addr, &ret_lo);
-   269		if (ret)
-   270			return ret;
-   271	
-   272		ret = regmap_read(regmap, addr1, &ret_hi);
-   273		if (ret)
-   274			return ret;
-   275	
- > 276		if (addr2 != 0xff) {
-   277			ret = regmap_read(regmap, addr2, &data_lo);
-   278			if (ret)
-   279				return ret;
-   280			ret = regmap_read(regmap, addr3, &data_hi);
-   281			if (ret)
-   282				return ret;
-   283		}
-   284		/*
-   285		 * Output format:
-   286		 * <errType> <image> <dir> <Location> <errorCode> <data>
-   287		 * Where:
-   288		 *   + errType: SCP Error Type (3 bits)
-   289		 *      1: Warning
-   290		 *      2: Error
-   291		 *      4: Error with data
-   292		 *   + image: SCP Image Code (8 bits)
-   293		 *   + dir: Direction (1 bit)
-   294		 *      0: Enter
-   295		 *      1: Exit
-   296		 *   + location: SCP Module Location Code (8 bits)
-   297		 *   + errorCode: SCP Error Code (16 bits)
-   298		 *   + data : Extensive data (32 bits)
-   299		 *      All bits are 0 when errType is warning or error.
-   300		 */
-   301		return scnprintf(buf, MAX_MSG_LEN, "%01x %02x %01x %02x %04x %04x%04x\n",
-   302				 subtype, (ret_hi & 0xf000) >> 12, (ret_hi & 0x0800) >> 11,
-   303				 ret_hi & 0xff, ret_lo, data_hi, data_lo);
-   304	}
-   305	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
