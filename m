@@ -2,125 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DBB4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 12:15:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FDC1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 12:16:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347239AbiCUMQb (ORCPT
+        id S1347263AbiCUMRk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 08:16:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60076 "EHLO
+        Mon, 21 Mar 2022 08:17:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240603AbiCUMQa (ORCPT
+        with ESMTP id S240603AbiCUMRi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 08:16:30 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE7C3A6E09
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 05:15:04 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22LCEupe043704;
-        Mon, 21 Mar 2022 07:14:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1647864896;
-        bh=BNk4Jc1KDk892pR+9LlcEhmjDAUnom/cqNmHxG2VCrA=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=bhQLiQ9ifonNed+S6fsAAAETZ14ItgsxW/zx2mzOcNFeGepLFEF/t3ei1UJE6GhKP
-         Fg8F7Lpn3QmEiPq0fD2eSK1PFY8okikyk1xguNGSiGZywz2TYDzqL6DnkZNaTIX4Jk
-         T5dghXXn+WXa/PtVs03CSvTzNfU94ZQ8Do8jts1M=
-Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22LCEuQ6108888
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 21 Mar 2022 07:14:56 -0500
-Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 21
- Mar 2022 07:14:56 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE106.ent.ti.com
- (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 21 Mar 2022 07:14:56 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22LCEt9s028012;
-        Mon, 21 Mar 2022 07:14:56 -0500
-Date:   Mon, 21 Mar 2022 17:44:55 +0530
-From:   Pratyush Yadav <p.yadav@ti.com>
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>
-CC:     <michael@walle.cc>, <miquel.raynal@bootlin.com>, <richard@nod.at>,
-        <vigneshr@ti.com>, <linux-mtd@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <nicolas.ferre@microchip.com>
-Subject: Re: [PATCH v2 3/8] mtd: spi-nor: core: Use auto-detection only once
-Message-ID: <20220321121455.bpql7x4ebhq7s36l@ti.com>
-References: <20220228111712.111737-1-tudor.ambarus@microchip.com>
- <20220228111712.111737-4-tudor.ambarus@microchip.com>
+        Mon, 21 Mar 2022 08:17:38 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B48FA1587AA
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 05:16:13 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 582371042;
+        Mon, 21 Mar 2022 05:16:13 -0700 (PDT)
+Received: from wubuntu (unknown [10.57.73.6])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F204D3F66F;
+        Mon, 21 Mar 2022 05:16:12 -0700 (PDT)
+Date:   Mon, 21 Mar 2022 12:16:11 +0000
+From:   Qais Yousef <qais.yousef@arm.com>
+To:     Paul Bone <pbone@mozilla.com>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: Scheduling for heterogeneous computers
+Message-ID: <20220321121611.ssa7o2npy3ahdofk@wubuntu>
+References: <20220308092141.GF748856@aluminium>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220228111712.111737-4-tudor.ambarus@microchip.com>
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <20220308092141.GF748856@aluminium>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28/02/22 01:17PM, Tudor Ambarus wrote:
-> In case spi_nor_match_name() returned NULL, the auto detection was
-> issued twice. There's no reason to try to detect the same chip twice,
-> do the auto detection only once.
+Hi Paul
+
+On 03/08/22 20:21, Paul Bone wrote:
 > 
-> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-> ---
->  drivers/mtd/spi-nor/core.c | 10 ++++++----
->  1 file changed, 6 insertions(+), 4 deletions(-)
+> Are there plans for power-aware scheduling on heterogeneous computers that
+> processes & threads can opt-in to?
 > 
-> diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-> index f87cb7d3daab..b1d6fa65417d 100644
-> --- a/drivers/mtd/spi-nor/core.c
-> +++ b/drivers/mtd/spi-nor/core.c
-> @@ -2894,13 +2894,15 @@ static const struct flash_info *spi_nor_match_name(struct spi_nor *nor,
->  static const struct flash_info *spi_nor_get_flash_info(struct spi_nor *nor,
->  						       const char *name)
->  {
-> -	const struct flash_info *info = NULL;
-> +	const struct flash_info *info = NULL, *detected_info = NULL;
->  
->  	if (name)
->  		info = spi_nor_match_name(nor, name);
->  	/* Try to auto-detect if chip name wasn't specified or not found */
-> -	if (!info)
-> -		info = spi_nor_read_id(nor);
-> +	if (!info) {
-> +		detected_info = spi_nor_read_id(nor);
-> +		info = detected_info;
-> +	}
->  	if (IS_ERR_OR_NULL(info))
->  		return ERR_PTR(-ENOENT);
->  
-> @@ -2908,7 +2910,7 @@ static const struct flash_info *spi_nor_get_flash_info(struct spi_nor *nor,
->  	 * If caller has specified name of flash model that can normally be
->  	 * detected using JEDEC, let's verify it.
->  	 */
-> -	if (name && info->id_len) {
-> +	if (name && !detected_info && info->id_len) {
->  		const struct flash_info *jinfo;
->  
->  		jinfo = spi_nor_read_id(nor);
+> Several mainstream devices now offer power-aware heterogeneous scheduling:
+> 
+>  * Lots of ARM (and therefore android) devices offer big.LITTLE cores.
+>  * Apple's M1 CPU has "gold" and "silver" cores.  The gold cores are faster
+>    and have more cache.  I think there are other microarchitectual
+>    differences.
+>  * Intel's Alder Lake CPUs have P and E cores.  I'm told that the E cores
+>    don't save power though since each core type still gets the same work
+>    done per Watt, it's just that the P cores are bigger and faster.
+>  * Multicore CPUs that offer frequency scaling could get some power savings
+>    by switching off turbo boost and similar features.  They wonThe work/watt
+>    improves at the cost of throughput & responsiveness.
+> 
+> I'm aware that Linux does some Energy Aware Scheduling
+> https://docs.kernel.org/scheduler/sched-energy.html, however what I'm
+> looking for is an API that processes (but ideally threads) can opt in-to
+> (and out-of (unlike nice)) to say that the work they're currently doing is
+> bulk work.  It needs to get done but it doesn't have a deadline and
+> therefore can be done on a smaller / more power efficient core.  The idea is
+> that the same work gets done eventually, but for a background task (eg
+> Garbage Collection) it can be done in a greener or more
+> battery-charge-extending way.
+> 
+> MacOS has added an API for this as:
+>     pthread_set_qos_class_self_np()
+>     https://developer.apple.com/documentation/apple-silicon/tuning-your-code-s-performance-for-apple-silicon?preferredLanguage=occ
+> 
+> Windows has:
+>     ThreadPowerThrottling
+>     https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-setthreadinformation
+> 
+> I'm not aware of anything for Linux and I've been unable to find anything.
+> Are there any plans to implement this?  
 
-I think the flow can be a little bit better. How about:
+We do actually have a feature called util clamp (uclamp for short) that allows
+you to do that.
 
-	if (name)
-		info = spi_nor_match_name();
-	
-	if (!info) {
-		info = spi_nor_read_id();
-		if (IS_ERR_OR_NULL(info))
-			return ERR_PTR(-ENOENT);
+There's a new field in sched_setattr() to set UCLAMP_MIN and UCLAMP_MAX.
 
-		return info;
-	}
+UCLAMP_MIN hints towards performance. Ie: tell the system this task needs at
+least this performance level as a minimum. Which will be translated into task
+placement and frequency selection by the scheduler when this task is running.
 
-	if (name && info->id_len) {
-		...
-	}
+UCLAMP_MAX hints towards efficiency. Ie: tell the system this task does not
+need to operate above this performance level. Like UCLAMP_MIN, this will impact
+task placement and frequency selection when this task is running.
 
--- 
-Regards,
-Pratyush Yadav
-Texas Instruments Inc.
+There's a tool called uclampset in util-linux v2.37.2 that allows you to play
+with this. See this commit message for an example:
+
+	https://lore.kernel.org/lkml/20211216225320.2957053-2-qais.yousef@arm.com/
+
+There are some issues that you might need to be aware of though.
+
+	1. UCLAMP_MAX effectiveness issues when there are multiple tasks with
+	   different demands running on the same CPU.
+
+	   This LPC talk will explain the problem:
+	   https://www.youtube.com/watch?v=i5BdYn6SNQc&t=680s
+
+	2. fits_capacity() is not uclamp aware yet, and this means the task
+	   placement bias will not work as well as it should be.
+
+I am working on both these issues and kernel documentation to help better
+explain the feature. There's a cgroup interface in the cpu controller
+(cpu.uclamp.min/max).
+
+You need to use schedutil cpufreq governor.
+
+There was a LWN article on the feature that might help with more background:
+
+	https://lwn.net/Articles/762043/
+
+HTH.
+
+Cheers
+
+--
+Qais Yousef
