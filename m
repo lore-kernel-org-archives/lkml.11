@@ -2,78 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51571C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:29:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C64EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:29:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347325AbiCUObH (ORCPT
+        id S1349332AbiCUObM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:31:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34090 "EHLO
+        Mon, 21 Mar 2022 10:31:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349222AbiCUO11 (ORCPT
+        with ESMTP id S1349417AbiCUOaP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:27:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D6C8F11A08
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 07:20:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647872436;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pssBTLPsJmSQSwv+152p2Hsi/lwPzOT3VeLQVfSuxQg=;
-        b=R6C6e+xiUVxse2h0CnpcNjHzfwQSVotq6qDzRSRNH2qGJvK73oL+Q9FQfUdCr0jd3yRie4
-        2l4IlmTxq8DST1/soN0WX/fZT0+boJMfZk2k6amhUTP4sOknDivAC7S0CYFbukMXQ4BDVu
-        el9WjCCIA7gDBmqZmNeUvVBo5fYNiEE=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-599-I_3I7TfiM8aekFXq74AeEQ-1; Mon, 21 Mar 2022 10:20:31 -0400
-X-MC-Unique: I_3I7TfiM8aekFXq74AeEQ-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C6231802C16;
-        Mon, 21 Mar 2022 14:20:30 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A5B48492C14;
-        Mon, 21 Mar 2022 14:20:28 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20220316131723.111553-6-jefflexu@linux.alibaba.com>
-References: <20220316131723.111553-6-jefflexu@linux.alibaba.com> <20220316131723.111553-1-jefflexu@linux.alibaba.com>
-To:     Jeffle Xu <jefflexu@linux.alibaba.com>
+        Mon, 21 Mar 2022 10:30:15 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A402B24B;
+        Mon, 21 Mar 2022 07:26:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=q2baNzMLIXfSGSiUmbqX3eLXrnYx71EZPdk4mLBGa7c=; b=G51pkFK/0LvtxH3jQVMGNb9cjr
+        X3DGF1Rlnqj8lTf5AaDGuw8eN3ttTz1lumhhA6ojURBAIiR9RlI4JWC5dzqIh43hY2X9i2CxX2sn4
+        7sNnz+n7LWGPiP0TIhhoPg58eBXsgYVauXw3fjjuIncQxXdishY+6W1Ez3f87f1OrlEY/Z6Z08dQF
+        g9ZMaK4Bo0fFlZZ1ovtiS1WEJdl/xwFwjfEN7KEWS2opZVsMxRpEnor6XzBw57mpkQZGB0px+sEOx
+        MDp5mGP1ch3ZqNzKMEM7TgggQum7c1BgZ4okLyGpGZh0xECpYegoJoJp0W6p7V+Kxe/euOVIExhrV
+        hC4v3n0g==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nWIz2-00AeF9-B8; Mon, 21 Mar 2022 14:26:08 +0000
+Date:   Mon, 21 Mar 2022 14:26:08 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     JeffleXu <jefflexu@linux.alibaba.com>
 Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
         chao@kernel.org, linux-erofs@lists.ozlabs.org,
         torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        luodaowen.backend@bytedance.com
-Subject: Re: [PATCH v5 05/22] cachefiles: notify user daemon when withdrawing cookie
+        linux-fsdevel@vger.kernel.org, joseph.qi@linux.alibaba.com,
+        bo.liu@linux.alibaba.com, tao.peng@linux.alibaba.com,
+        gerry@linux.alibaba.com, eguan@linux.alibaba.com,
+        linux-kernel@vger.kernel.org, luodaowen.backend@bytedance.com
+Subject: Re: [PATCH v5 03/22] cachefiles: introduce on-demand read mode
+Message-ID: <YjiLACenpRV4XTcs@casper.infradead.org>
+References: <20220316131723.111553-1-jefflexu@linux.alibaba.com>
+ <20220316131723.111553-4-jefflexu@linux.alibaba.com>
+ <YjiAVezd5B9auhcP@casper.infradead.org>
+ <6bc551d2-15fc-5d17-c99b-8db588c6b671@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1030363.1647872428.1@warthog.procyon.org.uk>
-Date:   Mon, 21 Mar 2022 14:20:28 +0000
-Message-ID: <1030364.1647872428@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6bc551d2-15fc-5d17-c99b-8db588c6b671@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jeffle Xu <jefflexu@linux.alibaba.com> wrote:
+On Mon, Mar 21, 2022 at 10:08:47PM +0800, JeffleXu wrote:
+> reqs_lock is also used to protect the check of cache->flags. Please
+> refer to patch 4 [1] of this patchset.
 
-> Notify user daemon that cookie is going to be withdrawed, providing a
+Yes, that's exactly what I meant by "bad idea".
 
-"withdrawn".
+> ```
+> +	/*
+> +	 * Enqueue the pending request.
+> +	 *
+> +	 * Stop enqueuing the request when daemon is dying. So we need to
+> +	 * 1) check cache state, and 2) enqueue request if cache is alive.
+> +	 *
+> +	 * The above two ops need to be atomic as a whole. @reqs_lock is used
+> +	 * here to ensure that. Otherwise, request may be enqueued after xarray
+> +	 * has been flushed, in which case the orphan request will never be
+> +	 * completed and thus netfs will hang there forever.
+> +	 */
+> +	read_lock(&cache->reqs_lock);
+> +
+> +	/* recheck dead state under lock */
+> +	if (test_bit(CACHEFILES_DEAD, &cache->flags)) {
+> +		read_unlock(&cache->reqs_lock);
+> +		ret = -EIO;
+> +		goto out;
+> +	}
 
-> +	/* CLOSE request doesn't look forward a reply */
+So this is an error path.  We're almost always going to take the xa_lock
+immediately after taking the read_lock.  In other words, you've done two
+atomic operations instead of one.
 
-I'm not sure what you mean.
+> +	xa_lock(xa);
+> +	ret = __xa_alloc(xa, &id, req, xa_limit_32b, GFP_KERNEL);
+> +	if (!ret)
+> +		__xa_set_mark(xa, id, CACHEFILES_REQ_NEW);
+> +	xa_unlock(xa);
+> +
+> +	read_unlock(&cache->reqs_lock);
+> ```
+> 
+> It's mainly used to protect against the xarray flush.
+> 
+> Besides, IMHO read-write lock shall be more performance friendly, since
+> most cases are the read side.
 
-David
-
+That's almost never true.  rwlocks are usually a bad idea because you
+still have to bounce the cacheline, so you replace lock contention
+(which you can see) with cacheline contention (which is harder to
+measure).  And then you have questions about reader/writer fairness
+(should new readers queue behind a writer if there's one waiting, or
+should a steady stream of readers be able to hold a writer off
+indefinitely?)
