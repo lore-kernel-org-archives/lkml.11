@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14931C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:00:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AADD7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:00:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345366AbiCUOB2 (ORCPT
+        id S1348567AbiCUOBg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:01:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46632 "EHLO
+        Mon, 21 Mar 2022 10:01:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348783AbiCUN6R (ORCPT
+        with ESMTP id S1348789AbiCUN6R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 09:58:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39530174BB6;
-        Mon, 21 Mar 2022 06:56:31 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF9BE174BAA;
+        Mon, 21 Mar 2022 06:56:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A45A612F2;
-        Mon, 21 Mar 2022 13:56:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 354B3C340ED;
-        Mon, 21 Mar 2022 13:56:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 909FCB81598;
+        Mon, 21 Mar 2022 13:56:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D02C2C340E8;
+        Mon, 21 Mar 2022 13:56:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647870983;
-        bh=+cRuOoNDmwzag37vcUqbENMSP0FdPJl8YdzMLuF3ymE=;
+        s=korg; t=1647870989;
+        bh=LaU3vxjYoNBfirEwBHnRQFnFf8IXd9iO7q8zwVVXGiQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZSrzieM7IyerEpI7KKdHSiW1CqAN83gGzcjT169/Z0skJ3pvv4PJbi+OcTh7y7oNB
-         iE6kzbEiZhW+dn6q7EeCtwNGOxpyDk+bXgk1VYuj9us4QGHGDPxi51jMnGpIOTBo/2
-         VAdaPw+PVSKbX0nCYMJ9H0hIz2bGVz0qnKgc7nvQ=
+        b=js0+YGF7ps8RUY4QiGXDTx+dqNLjHVZtHFrTslvDeUjWV6ZCxmAYd0kOIUKBNC3IG
+         ERWXonu6dxuuS/mwnnBcjylXxyq3UfzsewIVAo6kdId0UnC9813xxxrMrNg8D/0x3E
+         XGa3zIExo7dYQdStFBdy5F6LTNLjZG5KjFXLhmdQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         Catalin Marinas <catalin.marinas@arm.com>,
         James Morse <james.morse@arm.com>
-Subject: [PATCH 4.19 32/57] arm64: entry: Move trampoline macros out of ifdefd section
-Date:   Mon, 21 Mar 2022 14:52:13 +0100
-Message-Id: <20220321133222.925652530@linuxfoundation.org>
+Subject: [PATCH 4.19 42/57] KVM: arm64: Allow SMCCC_ARCH_WORKAROUND_3 to be discovered and migrated
+Date:   Mon, 21 Mar 2022 14:52:23 +0100
+Message-Id: <20220321133223.213391721@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133221.984120927@linuxfoundation.org>
 References: <20220321133221.984120927@linuxfoundation.org>
@@ -52,51 +52,78 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: James Morse <james.morse@arm.com>
 
-commit 13d7a08352a83ef2252aeb464a5e08dfc06b5dfd upstream.
+commit a5905d6af492ee6a4a2205f0d550b3f931b03d03 upstream.
 
-The macros for building the kpti trampoline are all behind
-CONFIG_UNMAP_KERNEL_AT_EL0, and in a region that outputs to the
-.entry.tramp.text section.
+KVM allows the guest to discover whether the ARCH_WORKAROUND SMCCC are
+implemented, and to preserve that state during migration through its
+firmware register interface.
 
-Move the macros out so they can be used to generate other kinds of
-trampoline. Only the symbols need to be guarded by
-CONFIG_UNMAP_KERNEL_AT_EL0 and appear in the .entry.tramp.text section.
+Add the necessary boiler plate for SMCCC_ARCH_WORKAROUND_3.
 
 Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+[ kvm code moved to virt/kvm/arm, removed fw regs ABI. Added 32bit stub ]
 Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/entry.S |   12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ arch/arm/include/asm/kvm_host.h   |    7 +++++++
+ arch/arm64/include/asm/kvm_host.h |    5 +++++
+ virt/kvm/arm/psci.c               |   12 ++++++++++++
+ 3 files changed, 24 insertions(+)
 
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -933,12 +933,7 @@ ENDPROC(el0_svc)
+--- a/arch/arm/include/asm/kvm_host.h
++++ b/arch/arm/include/asm/kvm_host.h
+@@ -26,6 +26,7 @@
+ #include <asm/kvm_asm.h>
+ #include <asm/kvm_mmio.h>
+ #include <asm/fpstate.h>
++#include <asm/spectre.h>
+ #include <kvm/arm_arch_timer.h>
  
- 	.popsection				// .entry.text
+ #define __KVM_HAVE_ARCH_INTC_INITIALIZED
+@@ -367,4 +368,10 @@ void kvm_arch_free_vm(struct kvm *kvm);
  
--#ifdef CONFIG_UNMAP_KERNEL_AT_EL0
--/*
-- * Exception vectors trampoline.
-- */
--	.pushsection ".entry.tramp.text", "ax"
--
-+	// Move from tramp_pg_dir to swapper_pg_dir
- 	.macro tramp_map_kernel, tmp
- 	mrs	\tmp, ttbr1_el1
- 	add	\tmp, \tmp, #(PAGE_SIZE + RESERVED_TTBR0_SIZE)
-@@ -1029,6 +1024,11 @@ alternative_insn isb, nop, ARM64_WORKARO
- 	.endr
- 	.endm
+ #define kvm_arm_vcpu_loaded(vcpu)	(false)
  
-+#ifdef CONFIG_UNMAP_KERNEL_AT_EL0
-+/*
-+ * Exception vectors trampoline.
-+ */
-+	.pushsection ".entry.tramp.text", "ax"
- 	.align	11
- ENTRY(tramp_vectors)
- 	generate_tramp_vector
++static inline int kvm_arm_get_spectre_bhb_state(void)
++{
++	/* 32bit guests don't need firmware for this */
++	return SPECTRE_VULNERABLE; /* aka SMCCC_RET_NOT_SUPPORTED */
++}
++
+ #endif /* __ARM_KVM_HOST_H__ */
+--- a/arch/arm64/include/asm/kvm_host.h
++++ b/arch/arm64/include/asm/kvm_host.h
+@@ -542,4 +542,9 @@ void kvm_arch_free_vm(struct kvm *kvm);
+ 
+ #define kvm_arm_vcpu_loaded(vcpu)	((vcpu)->arch.sysregs_loaded_on_cpu)
+ 
++static inline enum mitigation_state kvm_arm_get_spectre_bhb_state(void)
++{
++	return arm64_get_spectre_bhb_state();
++}
++
+ #endif /* __ARM64_KVM_HOST_H__ */
+--- a/virt/kvm/arm/psci.c
++++ b/virt/kvm/arm/psci.c
+@@ -429,6 +429,18 @@ int kvm_hvc_call_handler(struct kvm_vcpu
+ 				break;
+ 			}
+ 			break;
++		case ARM_SMCCC_ARCH_WORKAROUND_3:
++			switch (kvm_arm_get_spectre_bhb_state()) {
++			case SPECTRE_VULNERABLE:
++				break;
++			case SPECTRE_MITIGATED:
++				val = SMCCC_RET_SUCCESS;
++				break;
++			case SPECTRE_UNAFFECTED:
++				val = SMCCC_ARCH_WORKAROUND_RET_UNAFFECTED;
++				break;
++			}
++			break;
+ 		}
+ 		break;
+ 	default:
 
 
