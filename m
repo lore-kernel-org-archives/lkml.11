@@ -2,48 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22449C35294
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3B35C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351774AbiCUOLo (ORCPT
+        id S1351715AbiCUOLe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:11:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35088 "EHLO
+        Mon, 21 Mar 2022 10:11:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348747AbiCUOCi (ORCPT
+        with ESMTP id S1348803AbiCUODx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:02:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6D353B565;
-        Mon, 21 Mar 2022 06:59:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A7162612A1;
-        Mon, 21 Mar 2022 13:59:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6D0DC340E8;
-        Mon, 21 Mar 2022 13:59:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871157;
-        bh=+EgaiHZSotoZIM9JUYSNx32Rt1/zHze/2ZvDe21kRe4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qpu29IsLfGbLvJMyi9hAzBNQsV1SPVI6ipysti6b/IecbiKTN3AtxrT1ms43GLmVB
-         0t1LCsz1l2WLyZjq9J/Y8jrAhfOuLtsUUhXi9ekrDN7zD67oxLiE3yix9UoxBBYTuL
-         Bdh4r3c1EajA2TmqiAPU/y8J3LKQqSJihd/78IUk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 08/30] net/packet: fix slab-out-of-bounds access in packet_recvmsg()
-Date:   Mon, 21 Mar 2022 14:52:38 +0100
-Message-Id: <20220321133219.889728310@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220321133219.643490199@linuxfoundation.org>
-References: <20220321133219.643490199@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 21 Mar 2022 10:03:53 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4401543480;
+        Mon, 21 Mar 2022 07:01:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647871274; x=1679407274;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=hIen9Z7wLd+Ry77Vwb3icZYihUovoSxjvkDO2KRoaVY=;
+  b=mT7UgVxIlxCv7wvTC6TyeGM7hNjy3+m2JwODO1nIv1EkFqMatyJCCPUN
+   REIpMwrvUjxlPgT7aKGvlyBYBiR20az+kCHb8K3ZbAyYYkHFGagx6FW6J
+   xtw9jyQLN/EXw7AaQ7pegfZMR/I4N9aOu50yV2F1SV1bg74AOrh5GaWDo
+   gcS341QLjJKgIRWH63NrYVBCCQeykhAubHxtmbsqpgLlTdeIedBY6To8a
+   HoLx6ZFsLQNdP5RGyYSN1OlgPwnpMAcUaiwzDf2+aSoMhhFpBtle2xBDP
+   Xji2HX+sjlSDmQAQCHmDchnBArzUiImc4X5OgRld93EIhO4j1lb+o0vAg
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10292"; a="255121571"
+X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
+   d="scan'208";a="255121571"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 07:01:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
+   d="scan'208";a="716506931"
+Received: from otc-lr-04.jf.intel.com ([10.54.39.41])
+  by orsmga005.jf.intel.com with ESMTP; 21 Mar 2022 07:01:08 -0700
+From:   kan.liang@linux.intel.com
+To:     acme@kernel.org, mingo@redhat.com, peterz@infradead.org,
+        jolsa@redhat.com, namhyung@kernel.org,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
+Cc:     ak@linux.intel.com, ahmad.yasin@intel.com,
+        zhengjun.xing@linux.intel.com,
+        Kan Liang <kan.liang@linux.intel.com>
+Subject: [PATCH] perf script: Add 'brstackinsnlen' for branch stacks
+Date:   Mon, 21 Mar 2022 07:00:12 -0700
+Message-Id: <1647871212-184070-1-git-send-email-kan.liang@linux.intel.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,119 +57,160 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Kan Liang <kan.liang@linux.intel.com>
 
-[ Upstream commit c700525fcc06b05adfea78039de02628af79e07a ]
+When analyzing with the perf script, it's useful to understand the
+captured instruction and the next sequential instruction. To calculate
+the address of the next sequential instruction, the length of the
+captured instruction is required. For example, you can’t know the next
+sequential instruction after an unconditional branch unless you
+calculate that based on its length.
 
-syzbot found that when an AF_PACKET socket is using PACKET_COPY_THRESH
-and mmap operations, tpacket_rcv() is queueing skbs with
-garbage in skb->cb[], triggering a too big copy [1]
+For branch stacks, the current perf script only prints the instruction
+bytes with 'brstackinsn', but lack of instruction length.
 
-Presumably, users of af_packet using mmap() already gets correct
-metadata from the mapped buffer, we can simply make sure
-to clear 12 bytes that might be copied to user space later.
+Add 'brstackinsnlen' to print the instruction length.
 
-BUG: KASAN: stack-out-of-bounds in memcpy include/linux/fortify-string.h:225 [inline]
-BUG: KASAN: stack-out-of-bounds in packet_recvmsg+0x56c/0x1150 net/packet/af_packet.c:3489
-Write of size 165 at addr ffffc9000385fb78 by task syz-executor233/3631
+$perf script -F ip,brstackinsn,brstackinsnlen --xed
+     7fa555be8f75
+        _start:
+        00007fa555be8090        mov %rsp, %rdi          ilen: 3
+        00007fa555be8093        callq  0x7fa555be8ea0   ilen: 5 # PRED
+102 cycles [102] 0.02 IPC
+        _dl_start+38:
+        00007fa555be8ec6        movq  %rdx,0x227853(%rip)       ilen: 7
+        00007fa555be8ecd        leaq  0x227f94(%rip),%rdx       ilen: 7
 
-CPU: 0 PID: 3631 Comm: syz-executor233 Not tainted 5.17.0-rc7-syzkaller-02396-g0b3660695e80 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0xf/0x336 mm/kasan/report.c:255
- __kasan_report mm/kasan/report.c:442 [inline]
- kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
- check_region_inline mm/kasan/generic.c:183 [inline]
- kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
- memcpy+0x39/0x60 mm/kasan/shadow.c:66
- memcpy include/linux/fortify-string.h:225 [inline]
- packet_recvmsg+0x56c/0x1150 net/packet/af_packet.c:3489
- sock_recvmsg_nosec net/socket.c:948 [inline]
- sock_recvmsg net/socket.c:966 [inline]
- sock_recvmsg net/socket.c:962 [inline]
- ____sys_recvmsg+0x2c4/0x600 net/socket.c:2632
- ___sys_recvmsg+0x127/0x200 net/socket.c:2674
- __sys_recvmsg+0xe2/0x1a0 net/socket.c:2704
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7fdfd5954c29
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 41 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffcf8e71e48 EFLAGS: 00000246 ORIG_RAX: 000000000000002f
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007fdfd5954c29
-RDX: 0000000000000000 RSI: 0000000020000500 RDI: 0000000000000005
-RBP: 0000000000000000 R08: 000000000000000d R09: 000000000000000d
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffcf8e71e60
-R13: 00000000000f4240 R14: 000000000000c1ff R15: 00007ffcf8e71e54
- </TASK>
-
-addr ffffc9000385fb78 is located in stack of task syz-executor233/3631 at offset 32 in frame:
- ____sys_recvmsg+0x0/0x600 include/linux/uio.h:246
-
-this frame has 1 object:
- [32, 160) 'addr'
-
-Memory state around the buggy address:
- ffffc9000385fa80: 00 04 f3 f3 f3 f3 f3 00 00 00 00 00 00 00 00 00
- ffffc9000385fb00: 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1 00
->ffffc9000385fb80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 f3
-                                                                ^
- ffffc9000385fc00: f3 f3 f3 00 00 00 00 00 00 00 00 00 00 00 00 f1
- ffffc9000385fc80: f1 f1 f1 00 f2 f2 f2 00 f2 f2 f2 00 00 00 00 00
-==================================================================
-
-Fixes: 0fb375fb9b93 ("[AF_PACKET]: Allow for > 8 byte hardware addresses.")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Link: https://lore.kernel.org/r/20220312232958.3535620-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
 ---
- net/packet/af_packet.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ tools/perf/builtin-script.c | 44 ++++++++++++++++++++++++++++++++------------
+ 1 file changed, 32 insertions(+), 12 deletions(-)
 
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index a31334b92be7..d0c95d7dd292 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -2278,8 +2278,11 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
- 					copy_skb = skb_get(skb);
- 					skb_head = skb->data;
- 				}
--				if (copy_skb)
-+				if (copy_skb) {
-+					memset(&PACKET_SKB_CB(copy_skb)->sa.ll, 0,
-+					       sizeof(PACKET_SKB_CB(copy_skb)->sa.ll));
- 					skb_set_owner_r(copy_skb, sk);
-+				}
- 			}
- 			snaplen = po->rx_ring.frame_size - macoff;
- 			if ((int)snaplen < 0) {
-@@ -3434,6 +3437,8 @@ static int packet_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 	sock_recv_ts_and_drops(msg, sk, skb);
+diff --git a/tools/perf/builtin-script.c b/tools/perf/builtin-script.c
+index fa478dd..5a7b2b0 100644
+--- a/tools/perf/builtin-script.c
++++ b/tools/perf/builtin-script.c
+@@ -124,6 +124,7 @@ enum perf_output_field {
+ 	PERF_OUTPUT_DATA_PAGE_SIZE  = 1ULL << 33,
+ 	PERF_OUTPUT_CODE_PAGE_SIZE  = 1ULL << 34,
+ 	PERF_OUTPUT_INS_LAT         = 1ULL << 35,
++	PERF_OUTPUT_BRSTACKINSNLEN  = 1ULL << 36,
+ };
  
- 	if (msg->msg_name) {
-+		const size_t max_len = min(sizeof(skb->cb),
-+					   sizeof(struct sockaddr_storage));
- 		int copy_len;
+ struct perf_script {
+@@ -191,6 +192,7 @@ struct output_option {
+ 	{.str = "data_page_size", .field = PERF_OUTPUT_DATA_PAGE_SIZE},
+ 	{.str = "code_page_size", .field = PERF_OUTPUT_CODE_PAGE_SIZE},
+ 	{.str = "ins_lat", .field = PERF_OUTPUT_INS_LAT},
++	{.str = "brstackinsnlen", .field = PERF_OUTPUT_BRSTACKINSNLEN},
+ };
  
- 		/* If the address length field is there to be filled
-@@ -3456,6 +3461,10 @@ static int packet_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 				msg->msg_namelen = sizeof(struct sockaddr_ll);
- 			}
- 		}
-+		if (WARN_ON_ONCE(copy_len > max_len)) {
-+			copy_len = max_len;
-+			msg->msg_namelen = copy_len;
-+		}
- 		memcpy(msg->msg_name, &PACKET_SKB_CB(skb)->sa, copy_len);
+ enum {
+@@ -488,7 +490,7 @@ static int evsel__check_attr(struct evsel *evsel, struct perf_session *session)
+ 		       "selected. Hence, no address to lookup the source line number.\n");
+ 		return -EINVAL;
  	}
+-	if (PRINT_FIELD(BRSTACKINSN) && !allow_user_set &&
++	if ((PRINT_FIELD(BRSTACKINSN) || PRINT_FIELD(BRSTACKINSNLEN)) && !allow_user_set &&
+ 	    !(evlist__combined_branch_type(session->evlist) & PERF_SAMPLE_BRANCH_ANY)) {
+ 		pr_err("Display of branch stack assembler requested, but non all-branch filter set\n"
+ 		       "Hint: run 'perf record -b ...'\n");
+@@ -1122,10 +1124,17 @@ static int print_srccode(struct thread *thread, u8 cpumode, uint64_t addr)
  
+ static int ip__fprintf_jump(uint64_t ip, struct branch_entry *en,
+ 			    struct perf_insn *x, u8 *inbuf, int len,
+-			    int insn, FILE *fp, int *total_cycles)
++			    int insn, FILE *fp, int *total_cycles,
++			    struct perf_event_attr *attr)
+ {
+-	int printed = fprintf(fp, "\t%016" PRIx64 "\t%-30s\t#%s%s%s%s", ip,
+-			      dump_insn(x, ip, inbuf, len, NULL),
++	int ilen = 0;
++	int printed = fprintf(fp, "\t%016" PRIx64 "\t%-30s\t", ip,
++			      dump_insn(x, ip, inbuf, len, &ilen));
++
++	if (PRINT_FIELD(BRSTACKINSNLEN))
++		printed += fprintf(fp, "ilen: %d\t", ilen);
++
++	printed += fprintf(fp, "#%s%s%s%s",
+ 			      en->flags.predicted ? " PRED" : "",
+ 			      en->flags.mispred ? " MISPRED" : "",
+ 			      en->flags.in_tx ? " INTX" : "",
+@@ -1211,7 +1220,8 @@ static int perf_sample__fprintf_brstackinsn(struct perf_sample *sample,
+ 		printed += ip__fprintf_sym(entries[nr - 1].from, thread,
+ 					   x.cpumode, x.cpu, &lastsym, attr, fp);
+ 		printed += ip__fprintf_jump(entries[nr - 1].from, &entries[nr - 1],
+-					    &x, buffer, len, 0, fp, &total_cycles);
++					    &x, buffer, len, 0, fp, &total_cycles,
++					    attr);
+ 		if (PRINT_FIELD(SRCCODE))
+ 			printed += print_srccode(thread, x.cpumode, entries[nr - 1].from);
+ 	}
+@@ -1242,14 +1252,17 @@ static int perf_sample__fprintf_brstackinsn(struct perf_sample *sample,
+ 			printed += ip__fprintf_sym(ip, thread, x.cpumode, x.cpu, &lastsym, attr, fp);
+ 			if (ip == end) {
+ 				printed += ip__fprintf_jump(ip, &entries[i], &x, buffer + off, len - off, ++insn, fp,
+-							    &total_cycles);
++							    &total_cycles, attr);
+ 				if (PRINT_FIELD(SRCCODE))
+ 					printed += print_srccode(thread, x.cpumode, ip);
+ 				break;
+ 			} else {
+ 				ilen = 0;
+-				printed += fprintf(fp, "\t%016" PRIx64 "\t%s\n", ip,
++				printed += fprintf(fp, "\t%016" PRIx64 "\t%s", ip,
+ 						   dump_insn(&x, ip, buffer + off, len - off, &ilen));
++				if (PRINT_FIELD(BRSTACKINSNLEN))
++					printed += fprintf(fp, "\tilen: %d", ilen);
++				printed += fprintf(fp, "\n");
+ 				if (ilen == 0)
+ 					break;
+ 				if (PRINT_FIELD(SRCCODE))
+@@ -1292,16 +1305,23 @@ static int perf_sample__fprintf_brstackinsn(struct perf_sample *sample,
+ 			      machine, thread, &x.is64bit, &x.cpumode, false);
+ 		if (len <= 0)
+ 			goto out;
+-		printed += fprintf(fp, "\t%016" PRIx64 "\t%s\n", sample->ip,
+-			dump_insn(&x, sample->ip, buffer, len, NULL));
++		ilen = 0;
++		printed += fprintf(fp, "\t%016" PRIx64 "\t%s", sample->ip,
++			dump_insn(&x, sample->ip, buffer, len, &ilen));
++		if (PRINT_FIELD(BRSTACKINSNLEN))
++			printed += fprintf(fp, "\tilen: %d", ilen);
++		printed += fprintf(fp, "\n");
+ 		if (PRINT_FIELD(SRCCODE))
+ 			print_srccode(thread, x.cpumode, sample->ip);
+ 		goto out;
+ 	}
+ 	for (off = 0; off <= end - start; off += ilen) {
+ 		ilen = 0;
+-		printed += fprintf(fp, "\t%016" PRIx64 "\t%s\n", start + off,
++		printed += fprintf(fp, "\t%016" PRIx64 "\t%s", start + off,
+ 				   dump_insn(&x, start + off, buffer + off, len - off, &ilen));
++		if (PRINT_FIELD(BRSTACKINSNLEN))
++			printed += fprintf(fp, "\tilen: %d", ilen);
++		printed += fprintf(fp, "\n");
+ 		if (ilen == 0)
+ 			break;
+ 		if (arch_is_branch(buffer + off, len - off, x.is64bit) && start + off != sample->ip) {
+@@ -1459,7 +1479,7 @@ static int perf_sample__fprintf_insn(struct perf_sample *sample,
+ 		for (i = 0; i < sample->insn_len; i++)
+ 			printed += fprintf(fp, " %02x", (unsigned char)sample->insn[i]);
+ 	}
+-	if (PRINT_FIELD(BRSTACKINSN))
++	if (PRINT_FIELD(BRSTACKINSN) || PRINT_FIELD(BRSTACKINSNLEN))
+ 		printed += perf_sample__fprintf_brstackinsn(sample, thread, attr, machine, fp);
+ 
+ 	return printed;
+@@ -3716,7 +3736,7 @@ int cmd_script(int argc, const char **argv)
+ 		     "Valid types: hw,sw,trace,raw,synth. "
+ 		     "Fields: comm,tid,pid,time,cpu,event,trace,ip,sym,dso,"
+ 		     "addr,symoff,srcline,period,iregs,uregs,brstack,"
+-		     "brstacksym,flags,bpf-output,brstackinsn,brstackoff,"
++		     "brstacksym,flags,bpf-output,brstackinsn,brstackinsnlen,brstackoff,"
+ 		     "callindent,insn,insnlen,synth,phys_addr,metric,misc,ipc,tod,"
+ 		     "data_page_size,code_page_size,ins_lat",
+ 		     parse_output_fields),
 -- 
-2.34.1
-
-
+2.7.4
 
