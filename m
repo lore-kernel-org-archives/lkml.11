@@ -2,100 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A1AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:02:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4D0DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:02:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345576AbiCUJD0 (ORCPT
+        id S1345638AbiCUJDo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 05:03:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39758 "EHLO
+        Mon, 21 Mar 2022 05:03:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345657AbiCUJDM (ORCPT
+        with ESMTP id S1345528AbiCUJDk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 05:03:12 -0400
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 506E088799;
-        Mon, 21 Mar 2022 02:01:47 -0700 (PDT)
-Received: by mail-ej1-f43.google.com with SMTP id o10so9655025ejd.1;
-        Mon, 21 Mar 2022 02:01:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:content-language:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=E8Qau+0wzq+mozrZXVdR8i7saP5ro63onX2XCKgGjPo=;
-        b=n7Rdh5KO4xeTQqS8Gj1dPqbv3rXvEDAjk44t8iGhGd4uBOIC2V2iQYqpuez23BHzh+
-         BVuajzaAy2WnshqVynMyOs/0mUogP2TCFmYVgpKcCfaYjstaUsQugqlSgPj9xAIoIeSt
-         gE9lkxAHTi/HF3QgzgUSxb9BN7kEknPkt23cEHN5xdYe8oAHf29+sRdxFOvVboYo6pCm
-         pOTVzUPTP1yStMdD3vgGKIdIFBxMsboQ5d/FGZStmcdZxKuiP5b7NDpTHuouo8IBrxtK
-         EDbsS2wGfdCImFagCxF+Ta/E6iZmBQ5cgekm6xSBUngkeQut8WQoNkgaWbYKC8HoNNK0
-         TzTg==
-X-Gm-Message-State: AOAM531sb8j5XxmZqvrr8XE9PsOPB6ZPEE9Vrbeoi00W40y5EmjspI64
-        qrXGwpkwEPjOvN2eNxWAiGI=
-X-Google-Smtp-Source: ABdhPJyJtCs/QTnBz7Ahos9m7nuLWKArBgZLNjJtOZ1N8f3LU6ZRxI7xIaWvq1/XpCIdIM3IOBEmiw==
-X-Received: by 2002:a17:907:d0f:b0:6df:d55c:a9a5 with SMTP id gn15-20020a1709070d0f00b006dfd55ca9a5mr8939068ejc.447.1647853305846;
-        Mon, 21 Mar 2022 02:01:45 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.googlemail.com with ESMTPSA id l20-20020a1709062a9400b006ce71a88bf5sm6540726eje.183.2022.03.21.02.01.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Mar 2022 02:01:45 -0700 (PDT)
-Message-ID: <ef173db6-4635-8a77-c3e3-d96b0c2fa7a3@kernel.org>
-Date:   Mon, 21 Mar 2022 10:01:43 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-Subject: Re: [PATCH v4 2/2] mmc: Add mmc driver for Sunplus SP7021
-Content-Language: en-US
-To:     =?UTF-8?B?VG9ueSBIdWFuZyDpu4Pmh7fljpo=?= <tony.huang@sunplus.com>,
-        Tony Huang <tonyhuang.sunplus@gmail.com>,
-        "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "lhjeff911@gmail.com" <lhjeff911@gmail.com>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>
-Cc:     =?UTF-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>,
-        =?UTF-8?B?TGggS3VvIOmDreWKm+ixqg==?= <lh.Kuo@sunplus.com>
-References: <cover.1647652688.git.tonyhuang.sunplus@gmail.com>
- <f954fb1c0d1c4950b71a8fc360c78edcca9954de.1647652688.git.tonyhuang.sunplus@gmail.com>
- <e5426768-1dd0-0bef-25e8-2ab494f7723d@kernel.org>
- <c6ecbe40dc234454b41bcbc0bf073084@sphcmbx02.sunplus.com.tw>
-In-Reply-To: <c6ecbe40dc234454b41bcbc0bf073084@sphcmbx02.sunplus.com.tw>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Mon, 21 Mar 2022 05:03:40 -0400
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C3598FE7B
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 02:02:11 -0700 (PDT)
+Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220321090206epoutp01a1df40e2aabb95e769f5a3f128f43c7f~eWd6wP33i2991429914epoutp01_
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:02:06 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220321090206epoutp01a1df40e2aabb95e769f5a3f128f43c7f~eWd6wP33i2991429914epoutp01_
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1647853326;
+        bh=obaOjAdryqP2qc69EQLjpYCegESyjAgiVw6k4cPxyZo=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=TklZW5x4B/BgVjI9IX3bpjOYVb9QD8su0GiUUGXeRCycEHeT7U/lQw/eO48zEycSb
+         PS6+js5QEx3HWUTruuyjIptelRFqVxkTvneSSnr/C2DQp58HCmcqeHM9iv2ipWcb9J
+         CVBt5EK6YrjJK4ovhbwYLE/DfzfNjLMCzIL0glE8=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
+        20220321090206epcas2p31eaf3d1b8e8c000912fd07a0ab4b9796~eWd6VOA1R3112631126epcas2p3R;
+        Mon, 21 Mar 2022 09:02:06 +0000 (GMT)
+Received: from epsmges2p2.samsung.com (unknown [182.195.36.102]) by
+        epsnrtp1.localdomain (Postfix) with ESMTP id 4KMTC00ssCz4x9QC; Mon, 21 Mar
+        2022 09:02:04 +0000 (GMT)
+Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
+        epsmges2p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        F2.81.16040.A0F38326; Mon, 21 Mar 2022 18:02:02 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTPA id
+        20220321090202epcas2p1bfa78db059c1f6f6acbbb015e4bf991c~eWd2xhO1m0731007310epcas2p1J;
+        Mon, 21 Mar 2022 09:02:02 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220321090202epsmtrp1b814ddbe0867f61120e1f78fe0ded0d7~eWd2wwwzq2591125911epsmtrp1W;
+        Mon, 21 Mar 2022 09:02:02 +0000 (GMT)
+X-AuditID: b6c32a46-bffff70000023ea8-66-62383f0a0288
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        FF.E7.03370.A0F38326; Mon, 21 Mar 2022 18:02:02 +0900 (KST)
+Received: from ubuntu.dsn.sec.samsung.com (unknown [12.36.155.120]) by
+        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220321090202epsmtip2e1e01a66a4ff88e0e31169705049d6c7~eWd2n55oj1773717737epsmtip2B;
+        Mon, 21 Mar 2022 09:02:02 +0000 (GMT)
+From:   Daehwan Jung <dh10.jung@samsung.com>
+To:     Mathias Nyman <mathias.nyman@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-usb@vger.kernel.org (open list:USB XHCI DRIVER),
+        linux-kernel@vger.kernel.org (open list),
+        Howard Yen <howardyen@google.com>,
+        Jack Pham <jackp@codeaurora.org>,
+        Puma Hsu <pumahsu@google.com>,
+        "J . Avila" <elavila@google.com>,
+        Daehwan Jung <dh10.jung@samsung.com>, sc.suh@samsung.com
+Subject: [PATCH v3 0/4] support USB offload feature
+Date:   Mon, 21 Mar 2022 17:59:50 +0900
+Message-Id: <1647853194-62147-1-git-send-email-dh10.jung@samsung.com>
+X-Mailer: git-send-email 2.7.4
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrPKsWRmVeSWpSXmKPExsWy7bCmuS6XvUWSwbV16hZ3FkxjsnhyZBG7
+        RfPi9WwW1/+8Z7Rof36BzeLyrjlsFouWtTJbNG+awmoxc62yRdfdG4wOXB6X+3qZPBZsKvVY
+        vOclk8f+uWvYPfq2rGL0+LxJLoAtKtsmIzUxJbVIITUvOT8lMy/dVsk7ON453tTMwFDX0NLC
+        XEkhLzE31VbJxSdA1y0zB+gwJYWyxJxSoFBAYnGxkr6dTVF+aUmqQkZ+cYmtUmpBSk6BeYFe
+        cWJucWleul5eaomVoYGBkSlQYUJ2xrvX11kL/vBVPDgh0sD4g7uLkZNDQsBEovn0M8YuRi4O
+        IYEdjBKHbvxgg3A+MUpsmdTFDOF8ZpSYfLwbyOEAa7mymAsivotR4vXVmewgo4QEfjBKNC0x
+        BqlhE9CS+L6QESQsIhAnsbTzEhNIPbPAaiaJ9x8vsoEkhAWMJU7d+w/WyyKgKjFlxjqwOK+A
+        q8T7k1uYIM6Tk7h5rhPsCAmBc+wSzV8nMkIkXCTubr7JDGELS7w6voUdwpaSeNnfBmUXS+z6
+        1MoE0dzAKNH44ARUg7HErGftjCCXMgtoSqzfpQ/xmLLEkVssIBXMAnwSHYf/skOEeSU62oQg
+        GpUlpl+ewAphS0ocfH0OaqCHxLTm+dBgiJXYs6STbQKj7CyE+QsYGVcxiqUWFOempxYbFRjB
+        oyg5P3cTIzilabntYJzy9oPeIUYmDsZDjBIczEoivIs/mCcJ8aYkVlalFuXHF5XmpBYfYjQF
+        htdEZinR5HxgUs0riTc0sTQwMTMzNDcyNTBXEuf1StmQKCSQnliSmp2aWpBaBNPHxMEp1cCk
+        ek9ep/vN5e6nx8unz3uWwlY6TaUl4HLz338fz3K/Fmx1uP9G0EY5MuF7bSEHfyYbv3HVyXXH
+        /ldeebFku2Tc3L95kz7oqh71Nlu6Xu4qe5/POi/G5Rsf7X3383T/CdPe/68tfgvnNKje7PV6
+        8MdM0XJ60ZInygL6zPv+nJg3q9b4rgozC6O64VLOS3mbHx1gZO9ZK/TIK9JHKtlQ/s2twD3v
+        Dv6Z9elg1+u0a2arbJ6WxsgZNDHsjdVJkb1s/oBJzSgpnl9z412xPJ4+IxPX3bb31+5W4pD6
+        0brWPk+1ZkqHmfFWk4eSBu/bM5fIGfxJvDdpicoWdZ29zloiu9633knP0vvm6e3hffBOBJcS
+        S3FGoqEWc1FxIgCol9Za8gMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupnluLIzCtJLcpLzFFi42LZdlhJXpfL3iLJYO97IYs7C6YxWTw5sojd
+        onnxejaL63/eM1q0P7/AZnF51xw2i0XLWpktmjdNYbWYuVbZouvuDUYHLo/Lfb1MHgs2lXos
+        3vOSyWP/3DXsHn1bVjF6fN4kF8AWxWWTkpqTWZZapG+XwJXx7vV11oI/fBUPTog0MP7g7mLk
+        4JAQMJG4spiri5GLQ0hgB6PE3V+rmLsYOYHikhJL595gh7CFJe63HGGFKPrGKHFi8yMmkGY2
+        AS2J7wsZQWpEBOIkVlzewwJSwyywkUli0oNLLCAJYQFjiVP3/oMNYhFQlZgyYx0biM0r4Crx
+        /uQWJogFchI3z3UyT2DkWcDIsIpRMrWgODc9t9iwwCgvtVyvODG3uDQvXS85P3cTIzjMtLR2
+        MO5Z9UHvECMTB+MhRgkOZiUR3sUfzJOEeFMSK6tSi/Lji0pzUosPMUpzsCiJ817oOhkvJJCe
+        WJKanZpakFoEk2Xi4JRqYBJ6KChzrzG3tkVc87buA4/iXNMLqtfVldtyzF7nPqlbcVup5Dn/
+        dfkHqsx52twRpY8MTE62+x45Ybpo9ZUK3r2h0RNWm4pPmPfjSbKly9QW/8n/ZwYvYYu/P1u7
+        JaN57vUd+ms/xseu9MibPSv3h7bAWY7dk7mLN4gc+iT1Ie+gcP1pB2lv96DDaa2G65a8+Dvn
+        ef/OHwscDi4OOxnR+X9j1Dz/H5dC21feuWwRt99M6nKchb0Xc/XBqICwvZuex09nXX9FSlGi
+        /l5f9K6350ovpXM7n5Wb+D7M5bH09fYNqbbnP2U8X7Wyb19hMeuTI10eyybJLdg34WrCJMvY
+        bbvmRhx9cTDVIXLz919ZizOUWIozEg21mIuKEwG+n9RaogIAAA==
+X-CMS-MailID: 20220321090202epcas2p1bfa78db059c1f6f6acbbb015e4bf991c
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220321090202epcas2p1bfa78db059c1f6f6acbbb015e4bf991c
+References: <CGME20220321090202epcas2p1bfa78db059c1f6f6acbbb015e4bf991c@epcas2p1.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21/03/2022 05:55, Tony Huang 黃懷厚 wrote:
-> Dear Krzysztof:
->>
->>> +	int dma_int_threshold;
->>> +	struct sg_mapping_iter sg_miter; /* for pio mode to access sglist */
->>> +	int dma_use_int; /* should raise irq when dma done */
->>> +	struct spmmc_tuning_info emmc_tuning_info;
->>> +	struct spsdc_tuning_info sd_tuning_info;
->>> +	int restore_4bit_sdio_bus;
->>> +	const struct spmmc_compatible *dev_comp; };
->>> +
->>> +struct spsdc_host {
->>
->> Where is this used?
->>
-> 
-> struct spmmc_host{} for emmc.			
-> struct spsdc_host{} for SD card.			
-> The register base address and offset address of emmc and sd cards are different.			
-> eMMC and sdcard are their respective hardware settings.
+This patchset is for USB offload feature, which makes Co-processor to use
+some memories of xhci. Especially it's useful for USB Audio scenario.
+Audio stream would get shortcut because Co-processor directly write/read
+data in xhci memories. It could get speed-up using faster memory like SRAM.
+That's why this gives vendors flexibilty of memory management.
+Several pathches have been merged in AOSP kernel(android12-5.10) and I put
+together and split into 3 patches. Plus let me add user(xhci-exynos)
+module to see how user could use it.
 
+To sum up, it's for providing xhci memories to Co-Processor.
+It would cover DCBAA, Device Context, Transfer Ring, Event Ring, ERST.
+It needs xhci hooks and to export some xhci symbols.
 
-This is a weird answer. I asked where is this used (struct spsdc_host).
-There is no single reference of this type. Your answer does not cover it
-all. I know that eMMC and SD are different. That was not the question.
-The question is: point me to the code which uses this type.
+Changes in v2 :
+- Fix commit message by adding Signed-off-by in each patch.
+- Fix conflict on latest.
 
+Changes in v3 :
+- Remove export symbols and xhci hooks which xhci-exynos don't need.
+- Modify commit message to clarify why it needs to export symbols.
+- Check compiling of xhci-exynos.
 
-Best regards,
-Krzysztof
+Daehwan Jung (4):
+  usb: host: export symbols for xhci hooks usage
+  usb: host: add xhci hooks for USB offload
+  usb: host: add some to xhci overrides for USB offload
+  usb: host: add xhci-exynos driver
+
+ drivers/usb/host/Kconfig       |   9 +
+ drivers/usb/host/Makefile      |   1 +
+ drivers/usb/host/xhci-exynos.c | 982 +++++++++++++++++++++++++++++++++
+ drivers/usb/host/xhci-exynos.h |  63 +++
+ drivers/usb/host/xhci-hub.c    |   7 +
+ drivers/usb/host/xhci-mem.c    | 150 ++++-
+ drivers/usb/host/xhci-plat.c   |  43 +-
+ drivers/usb/host/xhci-plat.h   |   7 +
+ drivers/usb/host/xhci-ring.c   |   1 +
+ drivers/usb/host/xhci.c        |  90 ++-
+ drivers/usb/host/xhci.h        |  50 ++
+ 11 files changed, 1379 insertions(+), 24 deletions(-)
+ create mode 100644 drivers/usb/host/xhci-exynos.c
+ create mode 100644 drivers/usb/host/xhci-exynos.h
+
+-- 
+2.31.1
+
