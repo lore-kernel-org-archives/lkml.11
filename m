@@ -2,111 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43DC5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:46:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D064C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:46:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350554AbiCUPrm (ORCPT
+        id S1350559AbiCUPrs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 11:47:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57296 "EHLO
+        Mon, 21 Mar 2022 11:47:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350517AbiCUPra (ORCPT
+        with ESMTP id S1350522AbiCUPrb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 11:47:30 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B665370A;
-        Mon, 21 Mar 2022 08:46:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=AEeSeutZfJtu2nIPuVFGjj2ShykAWgOjHpmhtGwOQnc=; b=ban8yFbw+5HuTNu6qlubpGMcDs
-        3OBD6aMZ4bm1OggDFeh+2L2p0OzCRcUhhCeLzlYZnag6JQPpRlOdT7BIpikJipkVZzysYMNz747Pj
-        YnGn5XuPWflO5LbmIM1PgDmdAUAZNEs1trbWwUp1pkgbQLfoPM382N+Uh5ToNU8h+pIKYRpUho8in
-        JY236BxNqB2GSG3MUC2T/60BtDgxDgerC+ngYlr4Mj5oaQiCLY3thXipHQRD415FIKAo1G48Y6ebv
-        lJQk5ooR1YXLwZ+qrO4kaLz2dRUzLXKQZpyKyCgOSpwZPo3HdlyPLzkxdfKuv0KXASDrXMBwdhVVo
-        CUxgeiMQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nWKE1-00AiA1-OO; Mon, 21 Mar 2022 15:45:41 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 936783001CD;
-        Mon, 21 Mar 2022 16:45:40 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 31210203A7684; Mon, 21 Mar 2022 16:45:40 +0100 (CET)
-Date:   Mon, 21 Mar 2022 16:45:40 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        mhiramat@kernel.org, rostedt@goodmis.org, ast@kernel.org,
-        hjl.tools@gmail.com, rick.p.edgecombe@intel.com, rppt@kernel.org,
-        linux-toolchains@vger.kernel.org, Andrew.Cooper3@citrix.com,
-        ndesaulniers@google.com,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: linux-next: build warnings after merge of the tip tree
-Message-ID: <YjidpOZZJkF6aBTG@hirez.programming.kicks-ass.net>
-References: <20220321140327.777f9554@canb.auug.org.au>
- <Yjh11UjDZogc3foM@hirez.programming.kicks-ass.net>
- <Yjh3xZuuY3QcZ1Bn@hirez.programming.kicks-ass.net>
- <Yjh4xzSWtvR+vqst@hirez.programming.kicks-ass.net>
- <YjiBbF+K4FKZyn6T@hirez.programming.kicks-ass.net>
- <YjiZhRelDJeX4dfR@hirez.programming.kicks-ass.net>
+        Mon, 21 Mar 2022 11:47:31 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F52357B1A;
+        Mon, 21 Mar 2022 08:46:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647877566; x=1679413566;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=pu7vZcm3vds3YMiUNrGH7dI0e1cLyRyYAZeDHVPZQ6Q=;
+  b=OwwM4e0zBZMujiHvgXO59HILe3VFiiULSooFeeVYYblWArgMOcNYXkoK
+   dQgvLawtRUmEB/cOhM1wkNYWNMK4Eey/WUX7nhQ0LwMw/GENJarNvZxwD
+   A7gtB2BXFRiR1gGNRfpt7W6tpiV88gewn5VMNkPPfubyasZBHbSPRF0NP
+   QFUWTgmf11FqCenETH7Uy3j6c9/bVID3L+jfxsz6fDO4gg+SsExCTISc1
+   A7YkVaQpoFIaMjXQ0jM0ORHSbtSzCC0zF7NdZ7eAfZr1s4zdrxR06Ao+r
+   8nVNlXaYUNhb6OoiH3fAiHT/qiTvRkltt/45DvqLXwky1sXamXl7z7l26
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10292"; a="282409575"
+X-IronPort-AV: E=Sophos;i="5.90,199,1643702400"; 
+   d="scan'208";a="282409575"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 08:46:06 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,199,1643702400"; 
+   d="scan'208";a="582906172"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 21 Mar 2022 08:46:03 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nWKEM-000Hww-O1; Mon, 21 Mar 2022 15:46:02 +0000
+Date:   Mon, 21 Mar 2022 23:44:57 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Roopa Prabhu <roopa@nvidia.com>
+Cc:     kbuild-all@lists.01.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] vxlan: fix returnvar.cocci warnings
+Message-ID: <20220321154456.GA30106@e0e7ddfdfbf7>
+References: <202203212331.4ZEJaAXK-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YjiZhRelDJeX4dfR@hirez.programming.kicks-ass.net>
+In-Reply-To: <202203212331.4ZEJaAXK-lkp@intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 04:28:06PM +0100, Peter Zijlstra wrote:
-> On Mon, Mar 21, 2022 at 02:45:16PM +0100, Peter Zijlstra wrote:
-> > On Mon, Mar 21, 2022 at 02:08:23PM +0100, Peter Zijlstra wrote:
-> > > On Mon, Mar 21, 2022 at 02:04:05PM +0100, Peter Zijlstra wrote:
-> > > > On Mon, Mar 21, 2022 at 01:55:49PM +0100, Peter Zijlstra wrote:
-> > > > > On Mon, Mar 21, 2022 at 02:03:27PM +1100, Stephen Rothwell wrote:
-> > > > > > Hi all,
-> > > > > > 
-> > > > > > After merging the tip tree, today's linux-next build (x864 allmodconfig)
-> > > > > > produced these new warnings:
-> > > > > > 
-> > > > > > vmlinux.o: warning: objtool: arch_rethook_prepare()+0x55: relocation to !ENDBR: arch_rethook_trampoline+0x0
-> > > > > > vmlinux.o: warning: objtool: arch_rethook_trampoline_callback()+0x3e: relocation to !ENDBR: arch_rethook_trampoline+0x0
-> > > > > > vmlinux.o: warning: objtool: unwind_next_frame()+0x93e: relocation to !ENDBR: arch_rethook_trampoline+0x0
-> > > > > > vmlinux.o: warning: objtool: unwind_next_frame()+0x5f2: relocation to !ENDBR: arch_rethook_trampoline+0x0
-> > > > > > vmlinux.o: warning: objtool: unwind_next_frame()+0x4a7: relocation to !ENDBR: arch_rethook_trampoline+0x0
-> > > > > > vmlinux.o: warning: objtool: __rethook_find_ret_addr()+0x81: relocation to !ENDBR: arch_rethook_trampoline+0x0
-> > > > > > vmlinux.o: warning: objtool: __rethook_find_ret_addr()+0x90: relocation to !ENDBR: arch_rethook_trampoline+0x0
-> > > > > > vmlinux.o: warning: objtool: rethook_trampoline_handler()+0x8c: relocation to !ENDBR: arch_rethook_trampoline+0x0
-> > > > > > vmlinux.o: warning: objtool: rethook_trampoline_handler()+0x9b: relocation to !ENDBR: arch_rethook_trampoline+0x0
-> > > > > 
-> > > > > Hurmph, lemme go figure out where that code comes from, I've not seen
-> > > > > those.
-> > > > 
-> > > > Ahh, something tracing. I'll go do some patches on top of it.
-> > > 
-> > > Also, that x86 patch has never his x86@kernel.org and doesn't have an
-> > > ACK from any x86 person :-(((
-> > 
-> > Worse, it adds a 3rd return trampoline without replacing any of the
-> > existing two :-(
-> > 
-> > Why was this merged?
-> 
-> It additionally gets ret wrong:
-> 
->   vmlinux.o: warning: objtool: arch_rethook_trampoline()+0x4a: missing int3 after ret
-> 
-> and afaict regs->ss is garbage (much like kretprobes it appears).
-> 
-> Can we please unmerge this stuff and try again later?
+From: kernel test robot <lkp@intel.com>
 
-This landing in -next only today (after having been committed last
-friday night) is another clue it should probably go next round.
+drivers/net/vxlan/vxlan_core.c:2962:5-8: Unneeded variable: "ret". Return "0" on line 2971
+
+
+ Remove unneeded variable used to store return value.
+
+Generated by: scripts/coccinelle/misc/returnvar.cocci
+
+Fixes: f9c4bb0b245c ("vxlan: vni filtering support on collect metadata device")
+CC: Roopa Prabhu <roopa@nvidia.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: kernel test robot <lkp@intel.com>
+---
+
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+head:   6d72dda014a4753974eb08950089ddf71fec4f60
+commit: f9c4bb0b245cee35ef66f75bf409c9573d934cf9 [8808/13988] vxlan: vni filtering support on collect metadata device
+:::::: branch date: 3 days ago
+:::::: commit date: 3 weeks ago
+
+ drivers/net/vxlan/vxlan_core.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+--- a/drivers/net/vxlan/vxlan_core.c
++++ b/drivers/net/vxlan/vxlan_core.c
+@@ -2959,7 +2959,6 @@ static void vxlan_flush(struct vxlan_dev
+ static int vxlan_stop(struct net_device *dev)
+ {
+ 	struct vxlan_dev *vxlan = netdev_priv(dev);
+-	int ret = 0;
+ 
+ 	vxlan_multicast_leave(vxlan);
+ 
+@@ -2968,7 +2967,7 @@ static int vxlan_stop(struct net_device
+ 	vxlan_flush(vxlan, false);
+ 	vxlan_sock_release(vxlan);
+ 
+-	return ret;
++	return 0;
+ }
+ 
+ /* Stub, nothing needs to be done. */
