@@ -2,152 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03C35C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:50:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0DC7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:51:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348084AbiCUNvY (ORCPT
+        id S1348093AbiCUNxS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 09:51:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56878 "EHLO
+        Mon, 21 Mar 2022 09:53:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232974AbiCUNvX (ORCPT
+        with ESMTP id S232974AbiCUNxR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:51:23 -0400
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5A088BF0C
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 06:49:46 -0700 (PDT)
-Received: (Authenticated sender: alex@ghiti.fr)
-        by mail.gandi.net (Postfix) with ESMTPSA id 4D8E6C000F;
-        Mon, 21 Mar 2022 13:49:42 +0000 (UTC)
-Message-ID: <2442936e-a53e-59bf-488f-95eac26d1252@ghiti.fr>
-Date:   Mon, 21 Mar 2022 14:49:41 +0100
+        Mon, 21 Mar 2022 09:53:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01ABC90CF6;
+        Mon, 21 Mar 2022 06:51:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4EDEB81675;
+        Mon, 21 Mar 2022 13:51:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3FB8C340E8;
+        Mon, 21 Mar 2022 13:51:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647870709;
+        bh=vUJhJg6ldXz1gDP6tMqmE7OSEel0kuH3BqZO7brjH5I=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GqGTgLmgjtCe+eOBSBlmTzGE1qAtFx20ln8WyIyXF3p+ISXyRdpmGf8kiUCnzR0a8
+         2p7tGGnr7hzEPPU4dtTy+f6EflwOkgDZXWCTYeeoZURqZmqSuUl6OD9N2jW09x2g4o
+         6HR6ygGMp9THKA29/PpjXcJBjc+ZMXEEypcFF4aw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yan Yan <evitayan@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 01/16] xfrm: Fix xfrm migrate issues when address family changes
+Date:   Mon, 21 Mar 2022 14:51:31 +0100
+Message-Id: <20220321133216.693646575@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220321133216.648316863@linuxfoundation.org>
+References: <20220321133216.648316863@linuxfoundation.org>
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [V3] PCI: fu740: Drop to 2.5GT/s to fix initial device probing on
- some boards
-Content-Language: en-US
-To:     Ben Dooks <ben.dooks@codethink.co.uk>, linux-pci@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Rob Herring <robh@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Greentime Hu <greentime.hu@sifive.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        David Abdurachmanov <david.abdurachmanov@sifive.com>
-References: <20220318152430.526320-1-ben.dooks@codethink.co.uk>
-From:   Alexandre Ghiti <alex@ghiti.fr>
-In-Reply-To: <20220318152430.526320-1-ben.dooks@codethink.co.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ben,
+From: Yan Yan <evitayan@google.com>
 
-On 3/18/22 16:24, Ben Dooks wrote:
-> The fu740 PCIe core does not probe any devices on the SiFive Unmatched
-> board without this fix (or having U-Boot explicitly start the PCIe via
-> either boot-script or user command). The fix is to start the link at
-> 2.5GT/s speeds and once the link is up then change the maximum speed back
-> to the default.
->
-> The U-Boot driver claims to set the link-speed to 2.5GT/s to get the probe
-> to work (and U-Boot does print link up at 2.5GT/s) in the following code:
-> https://source.denx.de/u-boot/u-boot/-/blob/master/drivers/pci/pcie_dw_sifive.c?id=v2022.01#L271
->
-> Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
-> --
-> Note, this patch has had significant re-work since the previous 4
-> sets, including trying to fix style, message, reliance on the U-Boot
-> fix and the comments about usage of LINK_CAP and reserved fields.
->
-> v2:
-> - fix issues with Gen1/2.5GTs
-> - updated comment on the initial probe
-> - run tests with both uninitialised and initialsed pcie from uboot
-> ---
->   drivers/pci/controller/dwc/pcie-fu740.c | 52 ++++++++++++++++++++++++-
->   1 file changed, 51 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/pci/controller/dwc/pcie-fu740.c b/drivers/pci/controller/dwc/pcie-fu740.c
-> index 842b7202b96e..ecac0364178a 100644
-> --- a/drivers/pci/controller/dwc/pcie-fu740.c
-> +++ b/drivers/pci/controller/dwc/pcie-fu740.c
-> @@ -181,10 +181,60 @@ static int fu740_pcie_start_link(struct dw_pcie *pci)
->   {
->   	struct device *dev = pci->dev;
->   	struct fu740_pcie *afp = dev_get_drvdata(dev);
-> +	u8 cap_exp = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
-> +	int ret;
-> +	u32 orig, tmp;
-> +
-> +	/*
-> +	 * Force 2.5GT/s when starting the link, due to some devices not
-> +	 * probing at higher speeds. This happens with the PCIe switch
-> +	 * on the Unmatched board when U-Boot has not initialised the PCIe.
-> +	 * The fix in U-Boot is to force 2.5GT/s, which then gets cleared
-> +	 * by the soft reset does by this driver.
-> +	 */
-> +
-> +	dev_dbg(dev, "cap_exp at %x\n", cap_exp);
-> +	dw_pcie_dbi_ro_wr_en(pci);
-> +
-> +	tmp = dw_pcie_readl_dbi(pci, cap_exp + PCI_EXP_LNKCAP);
-> +	orig = tmp & PCI_EXP_LNKCAP_SLS;
-> +	tmp &= ~PCI_EXP_LNKCAP_SLS;
-> +	tmp |= PCI_EXP_LNKCAP_SLS_2_5GB;
-> +	dw_pcie_writel_dbi(pci, cap_exp + PCI_EXP_LNKCAP, tmp);
->   
->   	/* Enable LTSSM */
->   	writel_relaxed(0x1, afp->mgmt_base + PCIEX8MGMT_APP_LTSSM_ENABLE);
-> -	return 0;
-> +
-> +	ret = dw_pcie_wait_for_link(pci);
-> +	if (ret) {
-> +		dev_err(dev, "error: link did not start\n");
-> +		goto err;
-> +	}
-> +
-> +	tmp = dw_pcie_readl_dbi(pci, cap_exp + PCI_EXP_LNKCAP);
-> +	if ((tmp & PCI_EXP_LNKCAP_SLS) != orig) {
-> +		dev_dbg(dev, "changing speed back to original\n");
-> +
-> +		tmp &= ~PCI_EXP_LNKCAP_SLS;
-> +		tmp |= orig;
-> +		dw_pcie_writel_dbi(pci, cap_exp + PCI_EXP_LNKCAP, tmp);
-> +
-> +		tmp = dw_pcie_readl_dbi(pci, PCIE_LINK_WIDTH_SPEED_CONTROL);
-> +		tmp |= PORT_LOGIC_SPEED_CHANGE;
-> +		dw_pcie_writel_dbi(pci, PCIE_LINK_WIDTH_SPEED_CONTROL, tmp);
-> +
-> +		ret = dw_pcie_wait_for_link(pci);
-> +		if (ret) {
-> +			dev_err(dev, "error: link did not start at new speed\n");
-> +			goto err;
-> +		}
-> +	}
-> +
-> +	ret = 0;
-> +err:
-> +	WARN_ON(ret);	/* we assume that errors will be very rare */
-> +	dw_pcie_dbi_ro_wr_dis(pci);
-> +	return ret;
->   }
->   
->   static int fu740_pcie_host_init(struct pcie_port *pp)
+[ Upstream commit e03c3bba351f99ad932e8f06baa9da1afc418e02 ]
 
-+cc Maciej and David as there is this other fix that seems to do the 
-same but differently, it's been under review for some time now: 
-https://lore.kernel.org/all/20220302000043.GA662523@bhelgaas/t/
+xfrm_migrate cannot handle address family change of an xfrm_state.
+The symptons are the xfrm_state will be migrated to a wrong address,
+and sending as well as receiving packets wil be broken.
 
-I fell onto this issue recently, I'll give your patch and the above a 
-try soon.
+This commit fixes it by breaking the original xfrm_state_clone
+method into two steps so as to update the props.family before
+running xfrm_init_state. As the result, xfrm_state's inner mode,
+outer mode, type and IP header length in xfrm_state_migrate can
+be updated with the new address family.
 
-Thanks
+Tested with additions to Android's kernel unit test suite:
+https://android-review.googlesource.com/c/kernel/tests/+/1885354
 
-Alex
+Signed-off-by: Yan Yan <evitayan@google.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/xfrm/xfrm_state.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+index 4d19f2ff6e05..73b4e7c0d336 100644
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -1238,9 +1238,6 @@ static struct xfrm_state *xfrm_state_clone(struct xfrm_state *orig)
+ 
+ 	memcpy(&x->mark, &orig->mark, sizeof(x->mark));
+ 
+-	if (xfrm_init_state(x) < 0)
+-		goto error;
+-
+ 	x->props.flags = orig->props.flags;
+ 	x->props.extra_flags = orig->props.extra_flags;
+ 
+@@ -1317,6 +1314,11 @@ struct xfrm_state *xfrm_state_migrate(struct xfrm_state *x,
+ 	if (!xc)
+ 		return NULL;
+ 
++	xc->props.family = m->new_family;
++
++	if (xfrm_init_state(xc) < 0)
++		goto error;
++
+ 	memcpy(&xc->id.daddr, &m->new_daddr, sizeof(xc->id.daddr));
+ 	memcpy(&xc->props.saddr, &m->new_saddr, sizeof(xc->props.saddr));
+ 
+-- 
+2.34.1
+
+
 
