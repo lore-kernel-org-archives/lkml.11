@@ -2,59 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFF87C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:47:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9533AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:48:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229781AbiCUWtP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:49:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54738 "EHLO
+        id S229631AbiCUWtf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:49:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229853AbiCUWtD (ORCPT
+        with ESMTP id S229978AbiCUWtY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:49:03 -0400
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4FF9181B1D
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:44:25 -0700 (PDT)
-Received: by mail-pf1-x449.google.com with SMTP id x29-20020aa7941d000000b004fa7e7f232fso4714724pfo.7
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:44:25 -0700 (PDT)
+        Mon, 21 Mar 2022 18:49:24 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9507E54F89
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:44:09 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id w6-20020a170902d70600b001547597fccbso871612ply.15
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:44:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=uCzuyzAeivg9rQW1tF47OPLIGzwSsZl5WKJom2K5UFo=;
-        b=FUDtiOGTljaKLXmMd+WjpcA4qQiPozroTXy+12tMQNQeBynzAQlWEhBHea7Z6YUYfy
-         F6eoo8Wzhk4F4yw6xXKagVR79ivkLNhDaiLZnHQWF9iPRGa9diKwHaC5r+1EhDOuMZNo
-         RRgL5eMAaL+ppbPzfxwlRn/mxprXf4AQzvdEWN9a8jCSO/WjVhzouewDi3fjh0sWsaO3
-         eGVdUvyYiwMeHANsAT1Od8JsF5htVoijWzAVuj8jyzvihrQ4B6TOEaszsYSxWMDnpcNS
-         IJCkwTNkwjA5RV0fEKq9rSwQgYZ/U2GKk0XSm5eCcXmsroJKk8hhhO+XonzxBtVS9kIh
-         Wlvw==
+        bh=JAqLlS07OA/mtsxC0lr2Zf5cFpfFqBoRXPdNY1Wgz24=;
+        b=H0R79d5UcBxs6D8qTK2NTVn6tY35vwRgidZ9zKMSXB6AwWAv393rNwo+bk6Kobd6Z5
+         oRZV28Nt+t3/pMmVONdGgSbhQmFKF1O3YFr49wCsjKjt3jqNXClIKbn9rtYDAStiWYH6
+         en2bFzaGUklc2rPx+LnmFK/I+5qR7NPW22uRZsApafZ+drfZt9UVbr3bEMAMmoJ9QqCn
+         SZs6gzWXmc96NYNWk8Sv6UWauWLr2i3zc3RvA7a8yfzvlWypGS0q3PYA7Sbv+VlXeili
+         7btitqt8zcL1ZY35A8yPxwCp7++B/0K0l/LqF4PrZ4n2PiPCxyKXVW0fo8OkJefTS/zt
+         qPUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=uCzuyzAeivg9rQW1tF47OPLIGzwSsZl5WKJom2K5UFo=;
-        b=yTmSbRPv13pxUG4LCfX1tV+lqMMAH1PuSWhgEkvF+t/H++qDyq1ogAufH3OsE9hYV8
-         Ej3punguEbOiQCB0UZRUBlhJgT/GdDKJMxA4MYYL8/x7KPSbvrE4cL7B4JCQpFkYowh1
-         8BcjlZuPvF7puYDKeWOFZhnCf+dqwAE6pA8nk8ikqVvngN6DcLwzOaFmvzZRPF//RoOf
-         k8qNHWxlFEw5ugNLi2dnuN6TyTkG21Lg4U1IE//d/T3AEcUaWm6KAxwvgTHrMi2KHXkM
-         pUzeh0YO/ITRSvL2stUXM7VNx5GsIbk4G5KfGtE3ZezBgtEnTcmUg73IZ+MgQx0RgiJu
-         jo1g==
-X-Gm-Message-State: AOAM533hRP1ikg/Re+Vcw+uEDZjpQGTiLaXgiBdrNwPHkMFTB2bHEL7T
-        0cHRBCjWgfkP4zJcYZrnbgMYVnGdPD3qbrSiAl7Vzla4HWya6bsYFKw1SBgS8uMRo7K6lbQ4N/w
-        ZdMrHQ2tEIO1CO70j+nFDoNVd9gDG3hI2QMPvbjreo5IIupke/53Ih8ovFLDcZlZwcAHn6Vti
-X-Google-Smtp-Source: ABdhPJzuK9aAeqw10fWLswjFrzy+1wQuny8/nM8UoMiivEPlbzYZ/OsJI1KZlbWt71dulve1DsCnOzXFmJ/A
+        bh=JAqLlS07OA/mtsxC0lr2Zf5cFpfFqBoRXPdNY1Wgz24=;
+        b=H0BwnLthgEQtOLZtjCrZJnFAV9BNA9dGGKfB1h4u6C3naQ02cIdNhEV/LvnFvfB0/X
+         0IkfWCu3tYqXmIOGRympbQXucbM5xsJbIx4DaVdCmsr+aZ+qj6sPiBXp5m9+oVNK8QvL
+         nWjQOaWgS5h+I2B2UO9z6m+hCf/Dnr0IeJoArkg4rieJJdTaZCO1a6XVllWysAKe1mW8
+         uaN/wxabzmit767ozQQsdEehzitDwc3CfUK3U40wEPQQNENoaGkRn9VirIm4OgKtoleq
+         2bokGe6Ajn+ZFfQnjQMcQRJBmOQUISJ4Xr9f8NE2V9dRJzu3lDU3NcB5xWVOe4SBJW48
+         qROQ==
+X-Gm-Message-State: AOAM5302tYrSx5BPoFOHaJqso8WqzNjcFM6E62YXG7dGMDspEY8Xwgeu
+        dUPwTZMTZAugDQYakYbQ8Miqx4JLY9PnY6+ccTd5oSCih3wbnEOfBA6p6XJjSEsmcDsWCgs7bJb
+        GU9fJ95eIxOpsU+StCSBu8EwzW0Qp3vwA+wEvyUTVLGaX/gPX0XRnrYTriatRzkls+Y6/scVQ
+X-Google-Smtp-Source: ABdhPJxAtqyFX+JDYmmYwf3rvEhv5BiLfQfw2OU879/OP5hly2ytp4JfLR+hS/L7jvzneV2Wb/vLVdfuP+fm
 X-Received: from bgardon.sea.corp.google.com ([2620:15c:100:202:b76a:f152:cb5e:5cd2])
- (user=bgardon job=sendgmr) by 2002:a17:90b:e81:b0:1c6:5a9c:5afa with SMTP id
- fv1-20020a17090b0e8100b001c65a9c5afamr188347pjb.1.1647902664757; Mon, 21 Mar
- 2022 15:44:24 -0700 (PDT)
-Date:   Mon, 21 Mar 2022 15:43:58 -0700
+ (user=bgardon job=sendgmr) by 2002:a17:903:2348:b0:154:dd0:aba8 with SMTP id
+ c8-20020a170903234800b001540dd0aba8mr15543475plh.51.1647902649014; Mon, 21
+ Mar 2022 15:44:09 -0700 (PDT)
+Date:   Mon, 21 Mar 2022 15:43:52 -0700
 In-Reply-To: <20220321224358.1305530-1-bgardon@google.com>
-Message-Id: <20220321224358.1305530-10-bgardon@google.com>
+Message-Id: <20220321224358.1305530-4-bgardon@google.com>
 Mime-Version: 1.0
 References: <20220321224358.1305530-1-bgardon@google.com>
 X-Mailer: git-send-email 2.35.1.894.gb6a874cedc-goog
-Subject: [PATCH v2 9/9] KVM: x86/mmu: Promote pages in-place when disabling
- dirty logging
+Subject: [PATCH v2 3/9] KVM: x86/mmu: Factor shadow_zero_check out of __make_spte
 From:   Ben Gardon <bgardon@google.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     Paolo Bonzini <pbonzini@redhat.com>, Peter Xu <peterx@redhat.com>,
@@ -70,158 +69,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When disabling dirty logging, the TDP MMU currently zaps each leaf entry
-mapping memory in the relevant memslot. This is very slow. Doing the zaps
-under the mmu read lock requires a TLB flush for every zap and the
-zapping causes a storm of ETP/NPT violations.
+In the interest of devloping a version of __make_spte that can function
+without a vCPU pointer, factor out the shadow_zero_mask to be an
+additional argument to the function.
 
-Instead of zapping, replace the split large pages with large page
-mappings directly. While this sort of operation has historically only
-been done in the vCPU page fault handler context, refactorings earlier
-in this series and the relative simplicity of the TDP MMU make it
-possible here as well.
-
-Running the dirty_log_perf_test on an Intel Skylake with 96 vCPUs and 1G
-of memory per vCPU, this reduces the time required to disable dirty
-logging from over 45 seconds to just over 1 second. It also avoids
-provoking page faults, improving vCPU performance while disabling
-dirty logging.
+No functional change intended.
 
 Signed-off-by: Ben Gardon <bgardon@google.com>
 ---
- arch/x86/kvm/mmu/mmu.c          |  4 +-
- arch/x86/kvm/mmu/mmu_internal.h |  6 +++
- arch/x86/kvm/mmu/tdp_mmu.c      | 73 ++++++++++++++++++++++++++++++++-
- 3 files changed, 79 insertions(+), 4 deletions(-)
+ arch/x86/kvm/mmu/spte.c | 10 ++++++----
+ arch/x86/kvm/mmu/spte.h |  2 +-
+ 2 files changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 6f98111f8f8b..a99c23ef90b6 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -100,7 +100,7 @@ module_param_named(flush_on_reuse, force_flush_and_sync_on_reuse, bool, 0644);
-  */
- bool tdp_enabled = false;
- 
--static int max_huge_page_level __read_mostly;
-+int max_huge_page_level;
- static int tdp_root_level __read_mostly;
- static int max_tdp_level __read_mostly;
- 
-@@ -4486,7 +4486,7 @@ static inline bool boot_cpu_is_amd(void)
-  * the direct page table on host, use as much mmu features as
-  * possible, however, kvm currently does not do execution-protection.
-  */
--static void
-+void
- build_tdp_shadow_zero_bits_mask(struct rsvd_bits_validate *shadow_zero_check,
- 				int shadow_root_level)
+diff --git a/arch/x86/kvm/mmu/spte.c b/arch/x86/kvm/mmu/spte.c
+index 931cf93c3b7e..ef2d85577abb 100644
+--- a/arch/x86/kvm/mmu/spte.c
++++ b/arch/x86/kvm/mmu/spte.c
+@@ -94,7 +94,7 @@ bool __make_spte(struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp,
+ 		 const struct kvm_memory_slot *slot, unsigned int pte_access,
+ 		 gfn_t gfn, kvm_pfn_t pfn, u64 old_spte, bool prefetch,
+ 		 bool can_unsync, bool host_writable, u64 mt_mask,
+-		 u64 *new_spte)
++		 struct rsvd_bits_validate *shadow_zero_check, u64 *new_spte)
  {
-diff --git a/arch/x86/kvm/mmu/mmu_internal.h b/arch/x86/kvm/mmu/mmu_internal.h
-index 1bff453f7cbe..6c08a5731fcb 100644
---- a/arch/x86/kvm/mmu/mmu_internal.h
-+++ b/arch/x86/kvm/mmu/mmu_internal.h
-@@ -171,4 +171,10 @@ void *mmu_memory_cache_alloc(struct kvm_mmu_memory_cache *mc);
- void account_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp);
- void unaccount_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp);
+ 	int level = sp->role.level;
+ 	u64 spte = SPTE_MMU_PRESENT_MASK;
+@@ -177,9 +177,9 @@ bool __make_spte(struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp,
+ 	if (prefetch)
+ 		spte = mark_spte_for_access_track(spte);
  
-+void
-+build_tdp_shadow_zero_bits_mask(struct rsvd_bits_validate *shadow_zero_check,
-+				int shadow_root_level);
-+
-+extern int max_huge_page_level __read_mostly;
-+
- #endif /* __KVM_X86_MMU_INTERNAL_H */
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index af60922906ef..eb8929e394ec 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -1709,6 +1709,66 @@ void kvm_tdp_mmu_clear_dirty_pt_masked(struct kvm *kvm,
- 		clear_dirty_pt_masked(kvm, root, gfn, mask, wrprot);
+-	WARN_ONCE(is_rsvd_spte(&vcpu->arch.mmu->shadow_zero_check, spte, level),
++	WARN_ONCE(is_rsvd_spte(shadow_zero_check, spte, level),
+ 		  "spte = 0x%llx, level = %d, rsvd bits = 0x%llx", spte, level,
+-		  get_rsvd_bits(&vcpu->arch.mmu->shadow_zero_check, spte, level));
++		  get_rsvd_bits(shadow_zero_check, spte, level));
+ 
+ 	if ((spte & PT_WRITABLE_MASK) && kvm_slot_dirty_track_enabled(slot)) {
+ 		/* Enforced by kvm_mmu_hugepage_adjust. */
+@@ -199,10 +199,12 @@ bool make_spte(struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp,
+ {
+ 	u64 mt_mask = static_call(kvm_x86_get_mt_mask)(vcpu, gfn,
+ 						       kvm_is_mmio_pfn(pfn));
++	struct rsvd_bits_validate *shadow_zero_check =
++			&vcpu->arch.mmu->shadow_zero_check;
+ 
+ 	return __make_spte(vcpu, sp, slot, pte_access, gfn, pfn, old_spte,
+ 			   prefetch, can_unsync, host_writable, mt_mask,
+-			   new_spte);
++			   shadow_zero_check, new_spte);
+ 
  }
  
-+static bool try_promote_lpage(struct kvm *kvm,
-+			      const struct kvm_memory_slot *slot,
-+			      struct tdp_iter *iter)
-+{
-+	struct kvm_mmu_page *sp = sptep_to_sp(iter->sptep);
-+	struct rsvd_bits_validate shadow_zero_check;
-+	bool map_writable;
-+	kvm_pfn_t pfn;
-+	u64 new_spte;
-+	u64 mt_mask;
-+
-+	/*
-+	 * If addresses are being invalidated, don't do in-place promotion to
-+	 * avoid accidentally mapping an invalidated address.
-+	 */
-+	if (unlikely(kvm->mmu_notifier_count))
-+		return false;
-+
-+	if (iter->level > max_huge_page_level || iter->gfn < slot->base_gfn ||
-+	    iter->gfn >= slot->base_gfn + slot->npages)
-+		return false;
-+
-+	pfn = __gfn_to_pfn_memslot(slot, iter->gfn, true, NULL, true,
-+				   &map_writable, NULL);
-+	if (is_error_noslot_pfn(pfn))
-+		return false;
-+
-+	/*
-+	 * Can't reconstitute an lpage if the consituent pages can't be
-+	 * mapped higher.
-+	 */
-+	if (iter->level > kvm_mmu_max_mapping_level(kvm, slot, iter->gfn,
-+						    pfn, PG_LEVEL_NUM))
-+		return false;
-+
-+	build_tdp_shadow_zero_bits_mask(&shadow_zero_check, iter->root_level);
-+
-+	/*
-+	 * In some cases, a vCPU pointer is required to get the MT mask,
-+	 * however in most cases it can be generated without one. If a
-+	 * vCPU pointer is needed kvm_x86_try_get_mt_mask will fail.
-+	 * In that case, bail on in-place promotion.
-+	 */
-+	if (unlikely(!static_call(kvm_x86_try_get_mt_mask)(kvm, iter->gfn,
-+							   kvm_is_mmio_pfn(pfn),
-+							   &mt_mask)))
-+		return false;
-+
-+	__make_spte(kvm, sp, slot, ACC_ALL, iter->gfn, pfn, 0, false, true,
-+		  map_writable, mt_mask, &shadow_zero_check, &new_spte);
-+
-+	if (tdp_mmu_set_spte_atomic(kvm, iter, new_spte))
-+		return true;
-+
-+	/* Re-read the SPTE as it must have been changed by another thread. */
-+	iter->old_spte = READ_ONCE(*rcu_dereference(iter->sptep));
-+
-+	return false;
-+}
-+
- /*
-  * Clear leaf entries which could be replaced by large mappings, for
-  * GFNs within the slot.
-@@ -1729,8 +1789,17 @@ static void zap_collapsible_spte_range(struct kvm *kvm,
- 		if (tdp_mmu_iter_cond_resched(kvm, &iter, false, true))
- 			continue;
- 
--		if (!is_shadow_present_pte(iter.old_spte) ||
--		    !is_last_spte(iter.old_spte, iter.level))
-+		if (iter.level > max_huge_page_level ||
-+		    iter.gfn < slot->base_gfn ||
-+		    iter.gfn >= slot->base_gfn + slot->npages)
-+			continue;
-+
-+		if (!is_shadow_present_pte(iter.old_spte))
-+			continue;
-+
-+		/* Try to promote the constitutent pages to an lpage. */
-+		if (!is_last_spte(iter.old_spte, iter.level) &&
-+		    try_promote_lpage(kvm, slot, &iter))
- 			continue;
- 
- 		pfn = spte_to_pfn(iter.old_spte);
+diff --git a/arch/x86/kvm/mmu/spte.h b/arch/x86/kvm/mmu/spte.h
+index d051f955699e..e8a051188eb6 100644
+--- a/arch/x86/kvm/mmu/spte.h
++++ b/arch/x86/kvm/mmu/spte.h
+@@ -414,7 +414,7 @@ bool __make_spte(struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp,
+ 		 const struct kvm_memory_slot *slot, unsigned int pte_access,
+ 		 gfn_t gfn, kvm_pfn_t pfn, u64 old_spte, bool prefetch,
+ 		 bool can_unsync, bool host_writable, u64 mt_mask,
+-		 u64 *new_spte);
++		 struct rsvd_bits_validate *shadow_zero_check, u64 *new_spte);
+ bool make_spte(struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp,
+ 	       const struct kvm_memory_slot *slot,
+ 	       unsigned int pte_access, gfn_t gfn, kvm_pfn_t pfn,
 -- 
 2.35.1.894.gb6a874cedc-goog
 
