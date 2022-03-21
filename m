@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2BDCC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0C8CC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349198AbiCUOIC (ORCPT
+        id S1349288AbiCUOII (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:08:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36470 "EHLO
+        Mon, 21 Mar 2022 10:08:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348452AbiCUOAd (ORCPT
+        with ESMTP id S1348398AbiCUOAV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:00:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB0D439BA1;
-        Mon, 21 Mar 2022 06:58:49 -0700 (PDT)
+        Mon, 21 Mar 2022 10:00:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 255563585C;
+        Mon, 21 Mar 2022 06:58:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3AAF561291;
-        Mon, 21 Mar 2022 13:58:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 512CBC340ED;
-        Mon, 21 Mar 2022 13:58:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9FE24B816DC;
+        Mon, 21 Mar 2022 13:58:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3A50C340E8;
+        Mon, 21 Mar 2022 13:58:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871128;
-        bh=WeHYTISiGy0tEOfyzMPaacVtWPx3fEeGhuDRgUWbPNA=;
+        s=korg; t=1647871123;
+        bh=z5b40hV7USiaybTi52DgQM4KYPVIVs5XmZFdjoSRWQE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XXHZr5gi8qyoJtyr7ytE0Yrw+eKs7Mw1cPfKjnmSFJZHhT9zSemDUB2GSRqjgSMdm
-         bCvoZ3/Nj2CKnkwzu4gvrXmXx4kVAFNSadR/lzI78h4h4Q9LgNm5PFfZW+lB3GfsVK
-         FKBNH9wqjEBSxoApb6+0a7JqzD8xiomH37e3qU9I=
+        b=NlQnZx7E5qHdS+15dRhZJp7Im+9SiuOqN/M1CgKW7U7ulzlHdmA7IabKw/Fvnk2EI
+         5IIU3n/KRYGdJg3Fa+NaVOri0G6FcJxZULsAzh3v9u8RClIoD7ZduXQ8wAqZEZdNyT
+         2E5EcDuk7jA7Ux9MiC68beQWZUK1Yo9kh3jlFPnQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juerg Haefliger <juergh@canonical.com>,
+        stable@vger.kernel.org,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 15/30] net: phy: mscc: Add MODULE_FIRMWARE macros
-Date:   Mon, 21 Mar 2022 14:52:45 +0100
-Message-Id: <20220321133220.087608399@linuxfoundation.org>
+Subject: [PATCH 5.10 13/30] net: handle ARPHRD_PIMREG in dev_is_mac_header_xmit()
+Date:   Mon, 21 Mar 2022 14:52:43 +0100
+Message-Id: <20220321133220.030602413@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133219.643490199@linuxfoundation.org>
 References: <20220321133219.643490199@linuxfoundation.org>
@@ -50,33 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juerg Haefliger <juerg.haefliger@canonical.com>
+From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 
-[ Upstream commit f1858c277ba40172005b76a31e6bb931bfc19d9c ]
+[ Upstream commit 4ee06de7729d795773145692e246a06448b1eb7a ]
 
-The driver requires firmware so define MODULE_FIRMWARE so that modinfo
-provides the details.
+This kind of interface doesn't have a mac header. This patch fixes
+bpf_redirect() to a PIM interface.
 
-Fixes: fa164e40c53b ("net: phy: mscc: split the driver into separate files")
-Signed-off-by: Juerg Haefliger <juergh@canonical.com>
-Link: https://lore.kernel.org/r/20220316151835.88765-1-juergh@canonical.com
+Fixes: 27b29f63058d ("bpf: add bpf_redirect() helper")
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Link: https://lore.kernel.org/r/20220315092008.31423-1-nicolas.dichtel@6wind.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/mscc/mscc_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+ include/linux/if_arp.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
-index 41a410124437..e14fa72791b0 100644
---- a/drivers/net/phy/mscc/mscc_main.c
-+++ b/drivers/net/phy/mscc/mscc_main.c
-@@ -2584,3 +2584,6 @@ MODULE_DEVICE_TABLE(mdio, vsc85xx_tbl);
- MODULE_DESCRIPTION("Microsemi VSC85xx PHY driver");
- MODULE_AUTHOR("Nagaraju Lakkaraju");
- MODULE_LICENSE("Dual MIT/GPL");
-+
-+MODULE_FIRMWARE(MSCC_VSC8584_REVB_INT8051_FW);
-+MODULE_FIRMWARE(MSCC_VSC8574_REVB_INT8051_FW);
+diff --git a/include/linux/if_arp.h b/include/linux/if_arp.h
+index bf5c5f32c65e..e147ea679467 100644
+--- a/include/linux/if_arp.h
++++ b/include/linux/if_arp.h
+@@ -51,6 +51,7 @@ static inline bool dev_is_mac_header_xmit(const struct net_device *dev)
+ 	case ARPHRD_VOID:
+ 	case ARPHRD_NONE:
+ 	case ARPHRD_RAWIP:
++	case ARPHRD_PIMREG:
+ 		return false;
+ 	default:
+ 		return true;
 -- 
 2.34.1
 
