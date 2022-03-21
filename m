@@ -2,103 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C87FCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:59:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE742C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:59:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232049AbiCUXAn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:00:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47446 "EHLO
+        id S232071AbiCUXAr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:00:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232177AbiCUW6H (ORCPT
+        with ESMTP id S232807AbiCUW6k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:58:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25F3246E744;
-        Mon, 21 Mar 2022 15:37:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69B93612C6;
-        Mon, 21 Mar 2022 21:53:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 999DDC340E8;
-        Mon, 21 Mar 2022 21:53:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647899581;
-        bh=zBPAwrlnCH7aaxkOxVUA1qL6iUWum35JVI5DILXQjHA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CmCjrXQfVVEHhysQZk/nuBq1FgMltTCJyP6JPK7PSjQUnpf1PiwKzlmo9zISinIYc
-         eLtQmay1CNHsz4ql33A8ImuU7KBAkitXMXFuYo79+kQCHkKXVXeT+bUDd26nP6lCOS
-         oiags6ZHToJIHSw8JKRMcIELL4A/1rMlmKqb9TPYkLJ2Atuk0WA0zMJZHwWi7CW7ag
-         JOxOOuH+x/sbjThauIJSQd7Srt0Wx3ZvY47bMyKcthP2nUhUmzsV0j6r391oQnp8lH
-         h4/rUeHJOkJlpbxXlpzb0gDcHEOb1J+q29Nu7hxvwSgOzVaIDoFe8dpP9bdpLAUfxK
-         BjNJUJ9/vhDlg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
-        syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com,
-        Willem de Bruijn <willemb@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 3/5] net: ipv6: fix skb_over_panic in __ip6_append_data
-Date:   Mon, 21 Mar 2022 17:52:51 -0400
-Message-Id: <20220321215256.490267-3-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220321215256.490267-1-sashal@kernel.org>
-References: <20220321215256.490267-1-sashal@kernel.org>
+        Mon, 21 Mar 2022 18:58:40 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D4B5362D06;
+        Mon, 21 Mar 2022 15:36:15 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id bi13-20020a05600c3d8d00b0038c2c33d8f3so396129wmb.4;
+        Mon, 21 Mar 2022 15:36:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=VEY0X4OyCU3/iAzQa5k+IyEdis1PzP3qOVzQs+i3IrU=;
+        b=LkwRWPCX/iULhA7/6CDwI/dQQG+8KKQEDgfZekVNHnJLVpuugYPcECcWvhcZh+pxGF
+         RQtjateZgvCJXR1QmD6Z1shAJcueM3/8XtWPuZcZLkU4O2ndQgvnniTyMTc7tLuRQLE6
+         lzIVOvGgLwJ529joD5QTMtSPhKevjJWSXAfrCBeFBIPPkW79CZiCHIvRnhkgEyr+bqkM
+         kQPES1cRfkfYwj5VSe/jbfrJ4hxQrP49MR02uPWx6bIxr2mc/VLxCR/VhwCSCkTujdd8
+         fGLOZkPRx58d58X3V0C49ZXm2M82PrMHaNHvrpuGRa49D0uQCiXIs+iaFq1k0CzIgPiG
+         2yYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VEY0X4OyCU3/iAzQa5k+IyEdis1PzP3qOVzQs+i3IrU=;
+        b=3xWeltTzY1mF1k4R8jUJ6KurG9vpf99540DiAe7W5suSSxgkCsybowEdbMOgiq3K1J
+         jlD5E5QzLQencR0Nrf2QKQrIpa5rZM1d1G/I+/W9XSdhTHK3I7hRm0FWF7Nib29rJflg
+         CfkO1a1NoTq3ZQYXrqvlo/8iuBkaUcQ8+1iUREfhm0rPJbo4OA7XgdKLxp7OpY83JxRO
+         jI46usYbtormYu4GwOP4y+FuHlNoI2Vd4HAktbrRSkVtoJ52J7QY6pPwFX+cQZNgnauH
+         Z8Iw3C0qdTS/5pebxM3vjM6fRP2zxZ91Gzg6adLMZEf6Hpsli/tCfVDqxQNCerQI1wLD
+         ztUQ==
+X-Gm-Message-State: AOAM531kYoyKHwfS37DK5iQR1c7JbfcOCFmszi3CmZMAtit2UdDQpGJF
+        GW3zOyptSak5pa9kNiA67SHfWPuJO10=
+X-Google-Smtp-Source: ABdhPJwOu5SgpIvDS+cc8Pa3YCZ3gEvW6NMK+B3R5zhf3SQ0JtRxwjwPpnCkLe2VulMXizTjOT7fHg==
+X-Received: by 2002:a7b:c922:0:b0:383:e7e2:4a1a with SMTP id h2-20020a7bc922000000b00383e7e24a1amr1015908wml.51.1647900049727;
+        Mon, 21 Mar 2022 15:00:49 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
+        by smtp.gmail.com with ESMTPSA id w5-20020a5d5445000000b00203f8c96bcesm8773157wrv.49.2022.03.21.15.00.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 15:00:49 -0700 (PDT)
+Date:   Mon, 21 Mar 2022 22:31:29 +0100
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-clk@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH v5 15/18] dt-bindings: clock: Add L2 clocks to
+ qcom,krait-cc Documentation
+Message-ID: <YjjusXDsyhWMUeZb@Ansuel-xps.localdomain>
+References: <20220321153855.12082-1-ansuelsmth@gmail.com>
+ <20220321153855.12082-16-ansuelsmth@gmail.com>
+ <YjjzQw4z6GCmlmp+@robh.at.kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YjjzQw4z6GCmlmp+@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tadeusz Struk <tadeusz.struk@linaro.org>
+On Mon, Mar 21, 2022 at 04:50:59PM -0500, Rob Herring wrote:
+> On Mon, Mar 21, 2022 at 04:38:52PM +0100, Ansuel Smith wrote:
+> > Krait-cc qcom driver provide also L2 clocks and require the acpu_l2_aux
+> > and the hfpll_l2 clock to be provided. Add these missing clocks to the
+> > Documentation. The driver keep support for both old and this new
+> > implementation and should prevent any regression by this fixup.
+> 
+> Depends on what the old driver looks for.
+>
 
-[ Upstream commit 5e34af4142ffe68f01c8a9acae83300f8911e20c ]
+The old driver used parent_names with the same name declared now in the
+Documentation.
 
-Syzbot found a kernel bug in the ipv6 stack:
-LINK: https://syzkaller.appspot.com/bug?id=205d6f11d72329ab8d62a610c44c5e7e25415580
-The reproducer triggers it by sending a crafted message via sendmmsg()
-call, which triggers skb_over_panic, and crashes the kernel:
+> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+> > ---
+> >  .../devicetree/bindings/clock/qcom,krait-cc.yaml     | 12 ++++++++----
+> >  1 file changed, 8 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/clock/qcom,krait-cc.yaml b/Documentation/devicetree/bindings/clock/qcom,krait-cc.yaml
+> > index e879bfbe67ac..f89b70ab01ae 100644
+> > --- a/Documentation/devicetree/bindings/clock/qcom,krait-cc.yaml
+> > +++ b/Documentation/devicetree/bindings/clock/qcom,krait-cc.yaml
+> > @@ -23,16 +23,20 @@ properties:
+> >      items:
+> >        - description: phandle to hfpll for CPU0 mux
+> >        - description: phandle to hfpll for CPU1 mux
+> > +      - description: phandle to hfpll for L2 mux
+> >        - description: phandle to CPU0 aux clock
+> >        - description: phandle to CPU1 aux clock
+> > +      - description: phandle to L2 aux clock
+> >        - description: phandle to QSB fixed clk
+> 
+> Clock indices should not change. New clocks go on the end of the list.
+> 
 
-skbuff: skb_over_panic: text:ffffffff84647fb4 len:65575 put:65575
-head:ffff888109ff0000 data:ffff888109ff0088 tail:0x100af end:0xfec0
-dev:<NULL>
+Sad but will change if necessary.
 
-Update the check that prevents an invalid packet with MTU equal
-to the fregment header size to eat up all the space for payload.
+> >  
+> >    clock-names:
+> >      items:
+> >        - const: hfpll0
+> >        - const: hfpll1
+> > +      - const: hfpll_l2
+> >        - const: acpu0_aux
+> >        - const: acpu1_aux
+> > +      - const: acpu_l2_aux
+> >        - const: qsb
+> >  
+> >    '#clock-cells':
+> > @@ -50,10 +54,10 @@ examples:
+> >    - |
+> >      clock-controller {
+> >        compatible = "qcom,krait-cc-v1";
+> > -      clocks = <&hfpll0>, <&hfpll1>,
+> > -               <&acpu0_aux>, <&acpu1_aux>, <&qsb>;
+> > -      clock-names = "hfpll0", "hfpll1",
+> > -                    "acpu0_aux", "acpu1_aux", "qsb";
+> > +      clocks = <&hfpll0>, <&hfpll1>, <&hfpll_l2>,
+> > +               <&acpu0_aux>, <&acpu1_aux>, <&acpu_l2_aux>, <&qsb>;
+> > +      clock-names = "hfpll0", "hfpll1", "hfpll_l2",
+> > +                    "acpu0_aux", "acpu1_aux", "acpu_l2_aux", "qsb";
+> >        #clock-cells = <1>;
+> >      };
+> >  ...
+> > -- 
+> > 2.34.1
+> > 
+> > 
 
-The reproducer can be found here:
-LINK: https://syzkaller.appspot.com/text?tag=ReproC&x=1648c83fb00000
-
-Reported-by: syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-Acked-by: Willem de Bruijn <willemb@google.com>
-Link: https://lore.kernel.org/r/20220310232538.1044947-1-tadeusz.struk@linaro.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/ipv6/ip6_output.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 61970fd839c3..8aaf9cf3d74a 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1476,8 +1476,8 @@ static int __ip6_append_data(struct sock *sk,
- 		      sizeof(struct frag_hdr) : 0) +
- 		     rt->rt6i_nfheader_len;
- 
--	if (mtu < fragheaderlen ||
--	    ((mtu - fragheaderlen) & ~7) + fragheaderlen < sizeof(struct frag_hdr))
-+	if (mtu <= fragheaderlen ||
-+	    ((mtu - fragheaderlen) & ~7) + fragheaderlen <= sizeof(struct frag_hdr))
- 		goto emsgsize;
- 
- 	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
 -- 
-2.34.1
-
+	Ansuel
