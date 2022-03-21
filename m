@@ -2,202 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BE2CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 10:28:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A34E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 10:29:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346344AbiCUK30 (ORCPT
+        id S1346341AbiCUKae (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 06:29:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36096 "EHLO
+        Mon, 21 Mar 2022 06:30:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244351AbiCUK3W (ORCPT
+        with ESMTP id S244438AbiCUKac (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 06:29:22 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EECABF66
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 03:27:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647858477; x=1679394477;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=LDF4W4xRXP4neOhFFxNRxYCmc5oPsktu1t/2i1GPpFI=;
-  b=GPhSUKAnxWzMVt5WS58a2h1Q/y04N+wAMvkbZpmyNNbOSkwx1m/D2Ye+
-   D1I735Bl79A651r8RBMDSL5/p2Ei/uQRANbczYGr8DG6NThOwV19JqdAr
-   yPNArO753uCm17JjmUU7wdp3YcyZi2rxoulLdBXO/4mJ2W2fQjZpDY+AP
-   +P5BvAuKWxhQFP4CbDQ5DX0gbr/wNIFuBCrgjjbUpvcC40OW6TGFzuoOf
-   0Dy37KrrXNLHX7BCOZvy+QGDqPOK3eRvJJS7XLYEUVOSw/5A6eJJbYkIX
-   oozdhesiHfLIRsLyuBlxuDS+GwAhLDFwZBpxQfOyXaQFnOqrzbTtEi9fQ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10292"; a="244990888"
-X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
-   d="scan'208";a="244990888"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 03:27:43 -0700
-X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
-   d="scan'208";a="559806927"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.213.169]) ([10.254.213.169])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 03:27:39 -0700
-Message-ID: <d62ef788-c6b9-8259-88cc-486efaade2b7@linux.intel.com>
-Date:   Mon, 21 Mar 2022 18:27:37 +0800
+        Mon, 21 Mar 2022 06:30:32 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66CEF4474D
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 03:29:07 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 263EF210F1;
+        Mon, 21 Mar 2022 10:29:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1647858546; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Ohkl4+33jfi6Z1kPMz6Vyni3nhlviTdHbNAfPyGKmX0=;
+        b=yX+OlS4Pc8XpW8wiD0OTbl3YxYBef6efZS9AXrBoiYncf0q847KHox5t5gOfDq7lC4s7Q9
+        Vwzwq4+UODirRouMgVVQOGBNfQNwA8FU2NLxFq0rBiqIpSu1OTyLb1bD+60ooaqtAJQNXy
+        MtbvzX9iPPWSINYwgtFtTROKrpTfJco=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1647858546;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Ohkl4+33jfi6Z1kPMz6Vyni3nhlviTdHbNAfPyGKmX0=;
+        b=R9SAD1aAuMKtazt6Uzllz9LrtKcnJPpuPfEKYhfBOcfT9l9+YTrwgXWvR9eWu3S///iWLu
+        YwgPg0IRxEU4zPAg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 19F3613AD5;
+        Mon, 21 Mar 2022 10:29:06 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id o/VOBnJTOGIaewAAMHmgww
+        (envelope-from <bp@suse.de>); Mon, 21 Mar 2022 10:29:06 +0000
+Date:   Mon, 21 Mar 2022 11:29:02 +0100
+From:   Borislav Petkov <bp@suse.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
+Subject: [GIT PULL] x86/misc for 5.18
+Message-ID: <YjhTbqc1CNwBpENY@zn.tnic>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Cc:     baolu.lu@linux.intel.com, Eric Auger <eric.auger@redhat.com>,
-        "Liu, Yi L" <yi.l.liu@intel.com>,
-        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH RFC 03/11] iommu: Add attach/detach_dev_pasid domain ops
-Content-Language: en-US
-To:     "Tian, Kevin" <kevin.tian@intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>
-References: <20220320064030.2936936-1-baolu.lu@linux.intel.com>
- <20220320064030.2936936-4-baolu.lu@linux.intel.com>
- <BL1PR11MB527174765D1253AB4B88D2AD8C169@BL1PR11MB5271.namprd11.prod.outlook.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <BL1PR11MB527174765D1253AB4B88D2AD8C169@BL1PR11MB5271.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/3/21 15:13, Tian, Kevin wrote:
->> From: Lu Baolu<baolu.lu@linux.intel.com>
->> Sent: Sunday, March 20, 2022 2:40 PM
->>
->> Attaching an IOMMU domain to a PASID of a device is a generic operation
->> for modern IOMMU drivers which support PASID-granular DMA address
->> translation. Currently visible usage scenarios include (but not limited):
->>
->>   - SVA
->>   - kernel DMA with PASID
->>   - hardware-assist mediated device
->>
->> This adds a pair of common domain ops for this purpose and implements a
->> couple of wrapper helpers for in-kernel usage.
->>
->> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
->> ---
->>   include/linux/iommu.h | 22 ++++++++++++++++++++++
->>   drivers/iommu/iommu.c | 41
->> +++++++++++++++++++++++++++++++++++++++++
->>   2 files changed, 63 insertions(+)
->>
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index 3e179b853380..e51845b9a146 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -268,6 +268,8 @@ struct iommu_ops {
->>    * struct iommu_domain_ops - domain specific operations
->>    * @attach_dev: attach an iommu domain to a device
->>    * @detach_dev: detach an iommu domain from a device
->> + * @attach_dev_pasid: attach an iommu domain to a pasid of device
->> + * @detach_dev_pasid: detach an iommu domain from a pasid of device
->>    * @map: map a physically contiguous memory region to an iommu domain
->>    * @map_pages: map a physically contiguous set of pages of the same size
->> to
->>    *             an iommu domain.
->> @@ -285,6 +287,10 @@ struct iommu_ops {
->>   struct iommu_domain_ops {
->>   	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
->>   	void (*detach_dev)(struct iommu_domain *domain, struct device
->> *dev);
->> +	int (*attach_dev_pasid)(struct iommu_domain *domain,
->> +				struct device *dev, ioasid_t id);
->> +	void (*detach_dev_pasid)(struct iommu_domain *domain,
->> +				 struct device *dev, ioasid_t id);
->>
->>   	int (*map)(struct iommu_domain *domain, unsigned long iova,
->>   		   phys_addr_t paddr, size_t size, int prot, gfp_t gfp);
->> @@ -678,6 +684,11 @@ int iommu_group_claim_dma_owner(struct
->> iommu_group *group, void *owner);
->>   void iommu_group_release_dma_owner(struct iommu_group *group);
->>   bool iommu_group_dma_owner_claimed(struct iommu_group *group);
->>
->> +int iommu_attach_device_pasid(struct iommu_domain *domain,
->> +			      struct device *dev, ioasid_t pasid);
->> +void iommu_detach_device_pasid(struct iommu_domain *domain,
->> +			       struct device *dev, ioasid_t pasid);
->> +
->>   #else /* CONFIG_IOMMU_API */
->>
->>   struct iommu_ops {};
->> @@ -1046,6 +1057,17 @@ static inline bool
->> iommu_group_dma_owner_claimed(struct iommu_group *group)
->>   {
->>   	return false;
->>   }
->> +
->> +static inline int iommu_attach_device_pasid(struct iommu_domain
->> *domain,
->> +					    struct device *dev, ioasid_t pasid)
->> +{
->> +	return -ENODEV;
->> +}
->> +
->> +static inline void iommu_detach_device_pasid(struct iommu_domain
->> *domain,
->> +					     struct device *dev, ioasid_t pasid)
->> +{
->> +}
->>   #endif /* CONFIG_IOMMU_API */
->>
->>   /**
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 0c42ece25854..78c71ee15f36 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -3167,3 +3167,44 @@ bool iommu_group_dma_owner_claimed(struct
->> iommu_group *group)
->>   	return user;
->>   }
->>   EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
->> +
->> +int iommu_attach_device_pasid(struct iommu_domain *domain,
->> +			      struct device *dev, ioasid_t pasid)
->> +{
->> +	struct iommu_group *group;
->> +	int ret = -EINVAL;
->> +
->> +	if (!domain->ops->attach_dev_pasid)
->> +		return -EINVAL;
->> +
->> +	group = iommu_group_get(dev);
->> +	if (!group)
->> +		return -ENODEV;
->> +
->> +	mutex_lock(&group->mutex);
->> +	if (iommu_group_device_count(group) != 1)
->> +		goto out_unlock;
-> Need move the reason of above limitation from iommu_sva_bind_device()
-> to here:
-> 
-> 	/*
-> 	 * To keep things simple, SVA currently doesn't support IOMMU groups
-> 	 * with more than one device. Existing SVA-capable systems are not
-> 	 * affected by the problems that required IOMMU groups (lack of ACS
-> 	 * isolation, device ID aliasing and other hardware issues).
-> 	 */
-> 	if (iommu_group_device_count(group) != 1)
-> 		goto out_unlock;
+Hi Linus,
 
-Yes. We need a comment around this code. But it's not only for SVA but
-also for all pasid attachment feature. I need more inputs to judge
-whether this limitation is reasonable.
+please pull the small pile of miscellaneous x86 updates for 5.18.
 
-> 
-> btw I didn't see any safeguard on above assumption in device hotplug path
-> to a group which already has SVA enabled...
-> 
+Thx.
 
-Agreed.
+---
 
-Best regards,
-baolu
+The following changes since commit e783362eb54cd99b2cac8b3a9aeac942e6f6ac07:
+
+  Linux 5.17-rc1 (2022-01-23 10:12:53 +0200)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_misc_for_v5.18_rc1
+
+for you to fetch changes up to 686016f732420f88dd2e1d67cf4bb5dffdb93c82:
+
+  MAINTAINERS: Mark VMware mailing list entries as email aliases (2022-03-15 17:46:15 +0100)
+
+----------------------------------------------------------------
+- Add support for a couple new insn sets to the insn decoder: AVX512-FP16,
+AMX, other misc insns.
+
+- Update VMware-specific MAINTAINERS entries
+
+----------------------------------------------------------------
+Adrian Hunter (6):
+      perf/tests: Add AMX instructions to x86 instruction decoder test
+      x86/insn: Add AMX instructions to the x86 instruction decoder
+      perf/tests: Add misc instructions to the x86 instruction decoder test
+      x86/insn: Add misc instructions to x86 instruction decoder
+      perf/tests: Add AVX512-FP16 instructions to x86 instruction decoder test
+      x86/insn: Add AVX512-FP16 instructions to the x86 instruction decoder
+
+Srivatsa S. Bhat (VMware) (3):
+      MAINTAINERS: Update maintainers for paravirt ops and VMware hypervisor interface
+      MAINTAINERS: Add Zack as maintainer of vmmouse driver
+      MAINTAINERS: Mark VMware mailing list entries as email aliases
+
+ MAINTAINERS                                  |   31 +-
+ arch/x86/include/asm/insn.h                  |    2 +-
+ arch/x86/lib/x86-opcode-map.txt              |  111 +-
+ tools/arch/x86/include/asm/insn.h            |    2 +-
+ tools/arch/x86/lib/x86-opcode-map.txt        |  111 +-
+ tools/perf/arch/x86/tests/insn-x86-dat-32.c  |  918 +++++++++++++++++
+ tools/perf/arch/x86/tests/insn-x86-dat-64.c  | 1426 ++++++++++++++++++++++++++
+ tools/perf/arch/x86/tests/insn-x86-dat-src.c | 1189 +++++++++++++++++++++
+ 8 files changed, 3749 insertions(+), 41 deletions(-)
+
+-- 
+Regards/Gruss,
+    Boris.
+
+SUSE Software Solutions Germany GmbH, GF: Ivo Totev, HRB 36809, AG Nürnberg
