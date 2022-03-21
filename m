@@ -2,107 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83B88C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 20:30:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 792A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 20:33:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353351AbiCUUbp (ORCPT
+        id S1353370AbiCUUe6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 16:31:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38276 "EHLO
+        Mon, 21 Mar 2022 16:34:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348478AbiCUUbn (ORCPT
+        with ESMTP id S238538AbiCUUe4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 16:31:43 -0400
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 470E07CB0A
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 13:30:17 -0700 (PDT)
-Received: by mail-oi1-x22f.google.com with SMTP id ay7so17499515oib.8
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 13:30:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=SVEe7hUZOZ574KT711GyJJUr8pqUU3sbXrrP/FH6lUQ=;
-        b=HgN8E2bzL5A2bOlDz55Mv25/tt/RKwL9jSNjt40u/m04w3/7P+7g9c1HkyBvlAeQfV
-         2dhF+CnMi7h+Hj27pLjB7vrt+MzJ33fr0SD0TfhrIdKlbvJbV3XL81l38mZBlmlSDQYN
-         U405VmvwgH/ui0st6tSGtygKgfRSLlo87paTk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=SVEe7hUZOZ574KT711GyJJUr8pqUU3sbXrrP/FH6lUQ=;
-        b=2e+ucJCNG2KrDyuPh0ppDmyaE19e2p2RpneV1BV/V5fCIrLRBqDiCIWrRhUlbJkOwB
-         OUHJRJiA4TmHBCtNpOQ6egLNpnGTdcQzrlw0h7D3Q+hmpHt3cTxEg87rv49L22uxGdpd
-         Pe7c2j7EjWethlXd4kHc4LhctbYuPotKPCNvI/lQ5BRmO29aCXK72Cvzqi6FXz6Eqk+c
-         Ud0hkZdr+29ED1b2aMJ7IV6nT8iT1s9JNwlHxpcrazV9IjxayhciMO60pNa7Z2EASAT7
-         JtM3/kV/eekawh3RnVmlU+VALvrQrTm8QnJiV2YBAllhnwT60CZjeOaoPU+1nSCPHY7/
-         840Q==
-X-Gm-Message-State: AOAM532wD2maTsYSF7JVFVFxPB8Q9DGdnfxe5yWf14TLaDU7i5ktvl3O
-        Ttkgiy2X2IojEwCy92YqsVwnVRB1hCGu1vAkcv0CEw==
-X-Google-Smtp-Source: ABdhPJy+w/ls2aSZCJrRsAdMrUWPb6dkwdIyuIvulQVig3ErIeGd57xFdDTojd0oyBT5QVRYIJdm9YWYMeqLFjZcwKg=
-X-Received: by 2002:aca:a9c8:0:b0:2da:45b6:b796 with SMTP id
- s191-20020acaa9c8000000b002da45b6b796mr428878oie.193.1647894616632; Mon, 21
- Mar 2022 13:30:16 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Mon, 21 Mar 2022 21:30:16 +0100
+        Mon, 21 Mar 2022 16:34:56 -0400
+Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4156B3A5E3
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 13:33:29 -0700 (PDT)
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 22LKXJxR008071;
+        Mon, 21 Mar 2022 21:33:19 +0100
+Date:   Mon, 21 Mar 2022 21:33:19 +0100
+From:   Willy Tarreau <w@1wt.eu>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Subject: Re: [PATCH 0/8] nolibc: small updates required for the self-tests
+Message-ID: <20220321203319.GA8066@1wt.eu>
+References: <20220321173314.7519-1-w@1wt.eu>
+ <20220321202908.GI4285@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-In-Reply-To: <1647863959-3289-3-git-send-email-quic_srivasam@quicinc.com>
-References: <1647863959-3289-1-git-send-email-quic_srivasam@quicinc.com> <1647863959-3289-3-git-send-email-quic_srivasam@quicinc.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Mon, 21 Mar 2022 21:30:16 +0100
-Message-ID: <CAE-0n5131FQaejVVHKwW9ZnoGM+uy6+jjJZMkh5Pa82=r5ojuQ@mail.gmail.com>
-Subject: Re: [PATCH v5 2/3] arm64: dts: qcom: sc7280: Add pinmux for I2S
- speaker and Headset
-To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        agross@kernel.org, bjorn.andersson@linaro.org,
-        devicetree@vger.kernel.org, dianders@chromium.org,
-        judyhsiao@chromium.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        rohitkr@codeaurora.org, srinivas.kandagatla@linaro.org
-Cc:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220321202908.GI4285@paulmck-ThinkPad-P17-Gen-1>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Srinivasa Rao Mandadapu (2022-03-21 04:59:18)
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> index 688fa95..4a7b18a 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> @@ -462,7 +462,28 @@
->         drive-strength = <10>;
->  };
->
-> +&sec_mi2s_data0 {
-> +       drive-strength = <6>;
-> +       bias-disable;
-> +};
-> +
-> +&sec_mi2s_sclk {
-> +       drive-strength = <6>;
-> +       bias-disable;
-> +};
-> +
-> +&sec_mi2s_ws {
-> +       drive-strength = <6>;
-> +};
-> +
->  &tlmm {
-> +       amp_en: amp-en {
-> +               pins = "gpio63";
-> +               function = "gpio";
+On Mon, Mar 21, 2022 at 01:29:08PM -0700, Paul E. McKenney wrote:
+> On Mon, Mar 21, 2022 at 06:33:06PM +0100, Willy Tarreau wrote:
+> > Hello Paul,
+> > 
+> > while developing the nolibc self-tests, I naturally faced a few
+> > limitations ranging from missing POLL* flags to missing strcmp() or
+> > getenv(), as well as the ability for printf() to print "(null)" on
+> > "%s" instead of crashing.
+> > 
+> > This series adds a makefile and a headers installation target that
+> > creates a sysroot made of kernel headers and nolibc headers, which
+> > significantly ease building programs.
+> > 
+> > I already have some test code with roughly 75 tests, but I find it
+> > misplaced in the nolibc dir, I need to move it to testing/selftests/
+> > before sending it to you.
+> > 
+> > This series is intended to be an add-on to what you already have in your
+> > dev branch. I don't intend to send you much more stuff on top of this,
+> > but I expect to see an update from Ammar's patch set (CCed). With all
+> > this I think we'll have a good basis to easily add new tests.
+> 
+> I have pulled this series in for review and testing, thank you!
+> 
+> It won't go into -next until v5.18-rc1 comes out, in about two weeks,
+> but it will at least be in -rcu.
 
-I'm pretty sure 'function = "gpio"' isn't needed. When a gpio is
-requested with gpio functions it gets muxed to gpio function
-automatically. See commit 1de7ddb3a15c ("pinctrl: msm: Mux out gpio
-function with gpio_request()").
+Perfect, thank you!
 
-> +               bias-pull-down;
-> +               drive-strength = <2>;
-> +       };
-> +
->         bt_en: bt-en {
->                 pins = "gpio85";
->                 function = "gpio";
+> I removed an ostensibly extraneous blank line from the end of
+> tools/include/nolibc/Makefile.  So please let me know if that blank line
+> is actually necessary.
+
+Oh I'm very sorry, that the type of thing I'm very careful about so it
+has definitely escaped my checks.
+
+Thanks,
+Willy
