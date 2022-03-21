@@ -2,305 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBE15C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:53:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58A18C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:53:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346848AbiCULyf (ORCPT
+        id S1347019AbiCULym (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 07:54:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52460 "EHLO
+        Mon, 21 Mar 2022 07:54:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347061AbiCULyG (ORCPT
+        with ESMTP id S1347040AbiCULyT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 07:54:06 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E618160173;
-        Mon, 21 Mar 2022 04:52:14 -0700 (PDT)
-X-UUID: 3860f8b112bb431bb3f4d32b459e07e4-20220321
-X-UUID: 3860f8b112bb431bb3f4d32b459e07e4-20220321
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
-        (envelope-from <axe.yang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 555175504; Mon, 21 Mar 2022 19:52:10 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Mon, 21 Mar 2022 19:52:09 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 21 Mar
- 2022 19:52:09 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 21 Mar 2022 19:52:08 +0800
-From:   Axe Yang <axe.yang@mediatek.com>
-To:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Chaotian Jing <chaotian.jing@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Adrian Hunter <adrian.hunter@intel.com>
-CC:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Satya Tangirala <satyat@google.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Axe Yang <axe.yang@mediatek.com>, Lucas Stach <dev@lynxeye.de>,
-        Eric Biggers <ebiggers@google.com>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Kiwoong Kim <kwmad.kim@samsung.com>,
-        Yue Hu <huyue2@yulong.com>, Tian Tao <tiantao6@hisilicon.com>,
-        <angelogioacchino.delregno@collabora.com>,
-        <linux-mmc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Yong Mao <yong.mao@mediatek.com>
-Subject: [PATCH v8 3/3] mmc: mediatek: add support for SDIO eint wakup IRQ
-Date:   Mon, 21 Mar 2022 19:51:34 +0800
-Message-ID: <20220321115133.32121-4-axe.yang@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220321115133.32121-1-axe.yang@mediatek.com>
-References: <20220321115133.32121-1-axe.yang@mediatek.com>
+        Mon, 21 Mar 2022 07:54:19 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CC24F165BB1;
+        Mon, 21 Mar 2022 04:52:33 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8915F1042;
+        Mon, 21 Mar 2022 04:52:33 -0700 (PDT)
+Received: from [10.57.43.230] (unknown [10.57.43.230])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0DDD73F66F;
+        Mon, 21 Mar 2022 04:52:31 -0700 (PDT)
+Message-ID: <44f3abe1-09a2-657f-7637-afa34781709b@arm.com>
+Date:   Mon, 21 Mar 2022 11:52:27 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 2/3] dt-bindings: timer: Document arm, cortex-a7-timer
+ in arch timer
+Content-Language: en-GB
+To:     Rob Herring <robh@kernel.org>,
+        Kuldeep Singh <singh.kuldeep87k@gmail.com>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <marc.zyngier@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+References: <20220317191527.96237-1-singh.kuldeep87k@gmail.com>
+ <20220317191527.96237-3-singh.kuldeep87k@gmail.com>
+ <558f0c92-c499-daca-e1ad-2b16137f8c06@arm.com>
+ <20220317212508.GB99538@9a2d8922b8f1> <Yjd23Gro6B6zWCrO@robh.at.kernel.org>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <Yjd23Gro6B6zWCrO@robh.at.kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for eint IRQ when MSDC is used as an SDIO host. This
-feature requires SDIO device support async IRQ function. With this
-feature, SDIO host can be awakened by SDIO card in suspend state,
-without additional pin.
+On 2022-03-20 18:47, Rob Herring wrote:
+> On Fri, Mar 18, 2022 at 02:55:08AM +0530, Kuldeep Singh wrote:
+>> On Thu, Mar 17, 2022 at 08:25:12PM +0000, Robin Murphy wrote:
+>>> On 2022-03-17 19:15, Kuldeep Singh wrote:
+>>>> Renesas RZ/N1D platform uses compatible "arm,cortex-a7-timer" in
+>>>> conjugation with "arm,armv7-timer". Since, initial entry is not
+>>>> documented, it start raising dtbs_check warnings.
+>>>>
+>>>> ['arm,cortex-a7-timer', 'arm,armv7-timer'] is too long
+>>>> 'arm,cortex-a7-timer' is not one of ['arm,armv7-timer', 'arm,armv8-timer']
+>>>> 'arm,cortex-a7-timer' is not one of ['arm,cortex-a15-timer']
+>>>>
+>>>> Document this compatible to address it. The motivation to add this
+>>>> change is taken from an already existing entry "arm,cortex-a15-timer".
+>>>> Please note, this will not hurt any arch timer users.
+>>>
+>>> Eh, if it's never been documented or supported, I say just get rid of it.
+>>> The arch timer interface is by definition part of a CPU, and we can tell
+>>> what the CPU is by reading its ID registers. Indeed that's how the driver
+>>> handles the non-zero number of CPU-specific errata that already exist - we
+>>> don't need compatibles for that.
+>>>
+>>> In some ways it might have been nice to have *SoC-specific* compatibles
+>>> given the difficulty some integrators seem to have had in wiring up a stable
+>>> count *to* the interface, but it's not like they could be magically added to
+>>> already-deployed DTs after a bug is discovered, and nor could we have
+>>> mandated them from day 1 just in case and subsequently maintained a binding
+>>> that is just an ever-growing list of every SoC. Oh well.
+>>
+>> Robin, A similar discussion was already done on v1 thread. Please see
+>> below for details:
+>> https://lore.kernel.org/linux-devicetree/20220317065925.GA9158@9a2d8922b8f1/
+>> https://lore.kernel.org/linux-devicetree/726bde76-d792-febf-d364-6eedeb748c3b@canonical.com/
+>>
+>> And final outcome of discussion turns out to add this compatible string.
+> 
+> I agree with Robin on dropping. More specific here is not useful. If
+> we're going to add some cores, then we should add every core
+> implementation.
 
-MSDC driver will time-share the SDIO DAT1 pin. During suspend, MSDC
-turn off clock and switch SDIO DAT1 pin to GPIO mode. And during
-resume, switch GPIO function back to DAT1 mode then turn on clock.
+Yeah, what I was trying to convey is that a compatible like 
+"arm,cortex-a76-timer" has the problem of being both too specific *and* 
+not specific enough to be genuinely useful *for the particular case of 
+the arch timer*. It's an architectural interface, where the actual 
+functional features are described through the interface itself, so the 
+purpose of the DT entry is really just to indicate that the standard 
+interface is present and describe how its externally-routed interrupts 
+are wired up.
 
-Some device tree property should be added or modified in MSDC node
-to support SDIO eint IRQ. Pinctrls named "state_dat1" and "state_eint"
-are mandatory. Since this feature depends on asynchronous interrupts,
-"wakeup-source", "keep-power-in-suspend" and "cap-sdio-irq" flags are
-necessary, and the interrupts list should be extended:
-        &mmcX {
-		...
-		interrupts-extended = <...>,
-                              	      <&pio xxx IRQ_TYPE_LEVEL_LOW>;
-                ...
-                pinctrl-names = "default", "state_uhs", "state_eint",
-                                "state_dat1";
-                ...
-                pinctrl-2 = <&mmc2_pins_eint>;
-                pinctrl-3 = <&mmc2_pins_dat1>;
-                ...
-                cap-sdio-irq;
-		keep-power-in-suspend;
-		wakeup-source;
-                ...
-        };
+However, it's also true that implementations of standard functionality 
+sometimes have bugs that software needs to know about, but in order for 
+specific DT compatibles to be useful in that respect they really need to 
+identify the *exact* implementation, e.g. to know that 
+"arm,cortex-a76-r0p0-timer" has a bug which needs working around, but 
+"arm,cortex-a76-r4p0-timer" does not. There might be cases where every 
+known version of a CPU is equally affected (e.g. Cortex-A73), but it 
+doesn't hold as a general assumption. Furthermore as mentioned, the 
+other class of bugs which affect this interface are not in the CPU's 
+implementation of the interface at all, but in the external SoC logic 
+that provides the counter value, and therefore it can be identification 
+of the overall SoC that matters regardless of which CPU IP(s) may be 
+present.
 
-Co-developed-by: Yong Mao <yong.mao@mediatek.com>
-Signed-off-by: Yong Mao <yong.mao@mediatek.com>
-Signed-off-by: Axe Yang <axe.yang@mediatek.com>
----
- drivers/mmc/host/mtk-sd.c | 100 +++++++++++++++++++++++++++++++++++---
- 1 file changed, 92 insertions(+), 8 deletions(-)
+If we'd had the benefit of 10 years worth of hindsight 10 years ago, we 
+probably wouldn't have defined "arm,cortex-a15-timer" either. However 
+the fact that we can't erase the legacy of that decision doesn't make an 
+argument for repeating it now.
 
-diff --git a/drivers/mmc/host/mtk-sd.c b/drivers/mmc/host/mtk-sd.c
-index 65037e1d7723..8560d040bacb 100644
---- a/drivers/mmc/host/mtk-sd.c
-+++ b/drivers/mmc/host/mtk-sd.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-- * Copyright (c) 2014-2015 MediaTek Inc.
-+ * Copyright (c) 2014-2015, 2022 MediaTek Inc.
-  * Author: Chaotian.Jing <chaotian.jing@mediatek.com>
-  */
- 
-@@ -20,6 +20,7 @@
- #include <linux/platform_device.h>
- #include <linux/pm.h>
- #include <linux/pm_runtime.h>
-+#include <linux/pm_wakeirq.h>
- #include <linux/regulator/consumer.h>
- #include <linux/slab.h>
- #include <linux/spinlock.h>
-@@ -440,8 +441,12 @@ struct msdc_host {
- 	struct pinctrl *pinctrl;
- 	struct pinctrl_state *pins_default;
- 	struct pinctrl_state *pins_uhs;
-+	struct pinctrl_state *pins_eint;
-+	struct pinctrl_state *pins_dat1;
- 	struct delayed_work req_timeout;
- 	int irq;		/* host interrupt */
-+	int eint_irq;		/* interrupt from sdio device for waking up system */
-+	int sdio_wake_irq_depth;
- 	struct reset_control *reset;
- 
- 	struct clk *src_clk;	/* msdc source clock */
-@@ -465,6 +470,7 @@ struct msdc_host {
- 	bool hs400_tuning;	/* hs400 mode online tuning */
- 	bool internal_cd;	/* Use internal card-detect logic */
- 	bool cqhci;		/* support eMMC hw cmdq */
-+	bool sdio_eint_ready;	/* Ready to support SDIO eint interrupt */
- 	struct msdc_save_para save_para; /* used when gate HCLK */
- 	struct msdc_tune_para def_tune_para; /* default tune setting */
- 	struct msdc_tune_para saved_tune_para; /* tune result of CMD21/CMD19 */
-@@ -1527,10 +1533,12 @@ static void msdc_enable_sdio_irq(struct mmc_host *mmc, int enb)
- 	__msdc_enable_sdio_irq(host, enb);
- 	spin_unlock_irqrestore(&host->lock, flags);
- 
--	if (enb)
--		pm_runtime_get_noresume(host->dev);
--	else
--		pm_runtime_put_noidle(host->dev);
-+	if (mmc->card && !mmc_card_enable_async_irq(mmc->card)) {
-+		if (enb)
-+			pm_runtime_get_noresume(host->dev);
-+		else
-+			pm_runtime_put_noidle(host->dev);
-+	}
- }
- 
- static irqreturn_t msdc_cmdq_irq(struct msdc_host *host, u32 intsts)
-@@ -2631,6 +2639,23 @@ static int msdc_drv_probe(struct platform_device *pdev)
- 		goto host_free;
- 	}
- 
-+	/* Support for SDIO eint irq ? */
-+	if (mmc->pm_caps & MMC_PM_WAKE_SDIO_IRQ) {
-+		host->pins_eint = pinctrl_lookup_state(host->pinctrl, "state_eint");
-+		if (IS_ERR(host->pins_eint)) {
-+			dev_dbg(&pdev->dev, "Cannot find pinctrl eint!\n");
-+		} else {
-+			host->pins_dat1 = pinctrl_lookup_state(host->pinctrl, "state_dat1");
-+			if (IS_ERR(host->pins_dat1)) {
-+				ret = dev_err_probe(&pdev->dev, PTR_ERR(host->pins_dat1),
-+						    "Cannot find pinctrl dat1!\n");
-+				goto host_free;
-+			}
-+
-+			host->sdio_eint_ready = true;
-+		}
-+	}
-+
- 	msdc_of_property_parse(pdev, host);
- 
- 	host->dev = &pdev->dev;
-@@ -2722,6 +2747,21 @@ static int msdc_drv_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto release;
- 
-+	if (host->sdio_eint_ready) {
-+		host->eint_irq = irq_of_parse_and_map(host->dev->of_node, 1);
-+		ret = host->eint_irq ? dev_pm_set_dedicated_wake_irq(host->dev, host->eint_irq) :
-+		      -ENODEV;
-+
-+		if (ret) {
-+			dev_err(host->dev, "Failed to register data1 eint irq!\n");
-+			goto release;
-+		}
-+
-+		dev_pm_disable_wake_irq(host->dev);
-+		pinctrl_select_state(host->pinctrl, host->pins_dat1);
-+	}
-+
-+	device_init_wakeup(host->dev, true);
- 	pm_runtime_set_active(host->dev);
- 	pm_runtime_set_autosuspend_delay(host->dev, MTK_MMC_AUTOSUSPEND_DELAY);
- 	pm_runtime_use_autosuspend(host->dev);
-@@ -2734,6 +2774,7 @@ static int msdc_drv_probe(struct platform_device *pdev)
- 	return 0;
- end:
- 	pm_runtime_disable(host->dev);
-+	dev_pm_clear_wake_irq(host->dev);
- release:
- 	platform_set_drvdata(pdev, NULL);
- 	msdc_deinit_hw(host);
-@@ -2845,6 +2886,16 @@ static int __maybe_unused msdc_runtime_suspend(struct device *dev)
- 	struct msdc_host *host = mmc_priv(mmc);
- 
- 	msdc_save_reg(host);
-+
-+	if (host->sdio_eint_ready) {
-+		disable_irq(host->irq);
-+		pinctrl_select_state(host->pinctrl, host->pins_eint);
-+		if (host->sdio_wake_irq_depth == 0) {
-+			dev_pm_enable_wake_irq(dev);
-+			host->sdio_wake_irq_depth++;
-+		}
-+		sdr_clr_bits(host->base + SDC_CFG, SDC_CFG_SDIOIDE);
-+	}
- 	msdc_gate_clock(host);
- 	return 0;
- }
-@@ -2860,12 +2911,25 @@ static int __maybe_unused msdc_runtime_resume(struct device *dev)
- 		return ret;
- 
- 	msdc_restore_reg(host);
-+
-+	if (host->sdio_eint_ready) {
-+		if (host->sdio_wake_irq_depth > 0) {
-+			dev_pm_disable_wake_irq(dev);
-+			host->sdio_wake_irq_depth--;
-+			sdr_set_bits(host->base + SDC_CFG, SDC_CFG_SDIOIDE);
-+		} else {
-+			sdr_clr_bits(host->base + MSDC_INTEN, MSDC_INTEN_SDIOIRQ);
-+		}
-+		pinctrl_select_state(host->pinctrl, host->pins_dat1);
-+		enable_irq(host->irq);
-+	}
- 	return 0;
- }
- 
--static int __maybe_unused msdc_suspend(struct device *dev)
-+static int __maybe_unused msdc_suspend_noirq(struct device *dev)
- {
- 	struct mmc_host *mmc = dev_get_drvdata(dev);
-+	struct msdc_host *host = mmc_priv(mmc);
- 	int ret;
- 
- 	if (mmc->caps2 & MMC_CAP2_CQE) {
-@@ -2874,16 +2938,36 @@ static int __maybe_unused msdc_suspend(struct device *dev)
- 			return ret;
- 	}
- 
-+	if (host->sdio_eint_ready)
-+		enable_irq_wake(host->eint_irq);
-+
- 	return pm_runtime_force_suspend(dev);
- }
- 
--static int __maybe_unused msdc_resume(struct device *dev)
-+static int __maybe_unused msdc_resume_noirq(struct device *dev)
- {
-+	struct mmc_host *mmc = dev_get_drvdata(dev);
-+	struct msdc_host *host = mmc_priv(mmc);
-+
-+	if (host->sdio_eint_ready) {
-+		disable_irq_wake(host->eint_irq);
-+
-+		/*
-+		 * In noirq resume stage, msdc_runtime_resume()
-+		 * won't be called, so disalbe wake irq here
-+		 * to block dedicated wake irq handler callback.
-+		 */
-+		if (likely(host->sdio_wake_irq_depth > 0)) {
-+			dev_pm_disable_wake_irq(dev);
-+			host->sdio_wake_irq_depth--;
-+		}
-+	}
-+
- 	return pm_runtime_force_resume(dev);
- }
- 
- static const struct dev_pm_ops msdc_dev_pm_ops = {
--	SET_SYSTEM_SLEEP_PM_OPS(msdc_suspend, msdc_resume)
-+	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(msdc_suspend_noirq, msdc_resume_noirq)
- 	SET_RUNTIME_PM_OPS(msdc_runtime_suspend, msdc_runtime_resume, NULL)
- };
- 
--- 
-2.25.1
+> If one has a big.LITTLE system with A15/A7 what would be the right
+> compatible value?
+> 
+>>
+>> I see people with different set of perspective in regard to whether keep
+>> compatible string or not. We should have some sort of evidences to
+>> support claims so that next time when similar situation arises, we'll be
+>> aware beforehand how to proceed.
+> 
+> Every situation tends to be different.
 
+Indeed, I certainly don't have a personal perspective of "delete all the 
+bindings!" in general - only when they're truly redundant (functionally, 
+any driver that can touch the arch timer registers can also read the CPU 
+ID registers, but even in the DT there should already be compatibles for 
+the CPUs themselves).
+
+Robin.
