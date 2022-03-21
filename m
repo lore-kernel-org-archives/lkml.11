@@ -2,167 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00C60C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 17:10:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35624C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 17:13:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351707AbiCURLb (ORCPT
+        id S1351714AbiCURPK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 13:11:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59396 "EHLO
+        Mon, 21 Mar 2022 13:15:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235913AbiCURL1 (ORCPT
+        with ESMTP id S235913AbiCURPJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 13:11:27 -0400
-Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA463427E1;
-        Mon, 21 Mar 2022 10:10:00 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id 71BB1E013D;
-        Mon, 21 Mar 2022 10:09:30 -0700 (PDT)
-Received: from comms.puri.sm ([127.0.0.1])
-        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id V6GEmpCEbAdy; Mon, 21 Mar 2022 10:09:29 -0700 (PDT)
-From:   Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        linux-pm@vger.kernel.org
-Cc:     Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Andrey Smirnov <andrew.smirnov@gmail.com>,
-        linux-kernel@vger.kernel.org, kernel@puri.sm,
-        stable@vger.kernel.org
-Subject: [PATCH v3] thermal: qoriq: Only enable sites that actually exist
-Date:   Mon, 21 Mar 2022 18:08:52 +0100
-Message-Id: <20220321170852.654094-1-sebastian.krzyszkowiak@puri.sm>
+        Mon, 21 Mar 2022 13:15:09 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17CA31EEE0;
+        Mon, 21 Mar 2022 10:13:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1647882810;
+        bh=514yCqBt9YIkWc17kdwF2tfB3GhQiz/IBxYH5kyKNho=;
+        h=X-UI-Sender-Class:Date:From:To:Subject;
+        b=CBSakBpgwHkh/n0km3I3JnCuh0tP46aYfGS8586beG1Tn3HVZAlgb8rvlyJOsGdXx
+         KBAHQD8nC6Wm1FsLvGWJ53xBj2/IDjhgbwrQmTbEwQVNjg4wFuW7iD1/ABuDVmGDdZ
+         BUMV4/uQ2tYmOaroZgwXt3JYCb9luSI8TLatw75M=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from p100 ([92.116.171.242]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1N3bSt-1oF49J3CBX-010gE5; Mon, 21
+ Mar 2022 18:13:30 +0100
+Date:   Mon, 21 Mar 2022 18:13:28 +0100
+From:   Helge Deller <deller@gmx.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        John David Anglin <dave.anglin@bell.net>,
+        Sven Schnelle <svens@stackframe.org>
+Subject: [GIT PULL] parisc architecture updates for v5.18-rc1
+Message-ID: <YjiyOIc71r53GME+@p100>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Provags-ID: V03:K1:ctT6yXFmvgp8eSc8nDMezAyMb5yxgAH4RoS2eNeumiq0VNJE3Tf
+ bRuiWwhtdt+D79Mh5AoX2rCMJTNm0spf0Df71D/LN8P4xhAD7cdYurf1iQpFq2GYj3RaB1n
+ 4SYaOvLOtpVCJEYsWPrZk0ajoDA3fQnPT+xcYZLf7q7uJ7dz5lM3upbhAT/wTPTZO5oVGbR
+ CfrO8NiZ8bWDnCzRez+bg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:875aeV5KhRE=:5VpYrkf2WQlSrmYIJMK4Kw
+ bU9EFfEw+OOAEOWGpe3IIfDQMLHTl6NX/s6i8vc5+09pLLnbSnUviwqpnKQXuYzj3wwcCG76D
+ Iwhgd5/EAh9xH9bwgqtXruJu9p8Ql+XEcfRE8LOJshRk5k/UnfPtp0zt+X1MTTsY0ySZSRWzP
+ ea3NVvfOiRcPe6JWPXSvayCBfhXyajEMdywM2/cXfPX5zxs1GpfoBgCrMHMsz6My4y1m44LOq
+ 7k0KfvGQKzmPjIHKPxQnTgeVc8D2SBT187r+RQfbRqVQ8ukDkIxX/ebkKnho4Xfj7ovYmmXrc
+ VqXdwN0PCTxN9HHJfcfAqXQxQTI/7dAhJcmo5gpe5xR0QbQREy5mOGVIDZdGdlstxSUimlg4r
+ oLfPQaNjBJsM/fYa5SfsGCTGAwLNOGU9RoNenNp0p8o0lBr/NypGQepd+xuW1Yr+pLwYVnyY4
+ g3GIEnZGv1pOBbGSrmeuv6G3Kn//idbrjdX1Qlm1TW55SvE21kQmhVP1c6x6mo8RJ6M7uDUQj
+ qMPb+uw/b/cGQx/fVJUc9PyiSc5nRrquwthh3vMw+6Z2KO0mMYt+GeeKn7Ytmv5UbmqGo6rZv
+ 3rxokL0/wnlvVAdL/IcgNbIj3zTmrrFQ8Gahs+LJAsYcsjlRf7EYmonix/dhheCNNV5PpqJze
+ VclNom8Scx1Y6h84h0e7ZxPMMKPSWUjqCFsBlkY+Tiwd6eLUq7pfSfu2FqVMXZpIA5mvqphIU
+ iLu/xZlPZ14XPBbIy/Dlgu+5DUA4CIFlzDBb8KWgqJH5aCQflDA+wQnpHuuw3QEjSX8BYH9DF
+ ZteALXkh7PXoei5Wm1vvI62dz/nZ8xsyBrKJPZfp+WdRTzCmWvnReL1Y0DBTCmG/YnUj8V0bN
+ yehdXfYZV7gWcTT9ZQvwaGS1Gvp3hQY4l3t95VoN5r0mE2W2goHWL0I2piN1KwaJVCqcvjIlf
+ W7y0dBRZhJSBcERwR5ulwTsDc9dgSVNj5HZaEdp4Zm87tkWVlplEKSRiFpgSMNdKH3N+0MBuh
+ LqspHigK/qoZe/r0jwA7qUaMNLHBbS2DrkblxssIJ5ugPkh2OnY6NM29nVD/Fuf7Mg==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On i.MX8MQ, enabling monitoring sites that aren't connected to anything
-can cause unwanted side effects on some units. This seems to happen
-once some of these sites report out-of-range readings and results in
-sensor misbehavior, such as thermal zone readings getting stuck or even
-suddenly reporting an impossibly high value, triggering emergency
-shutdowns.
+The following changes since commit ffb217a13a2eaf6d5bd974fc83036a53ca69f1e2:
 
-The datasheet lists all non-existent sites as "reserved" and doesn't
-make any guarantees about being able to enable them at all, so let's
-not do that. Instead, iterate over sensor DT nodes and only enable
-monitoring sites that are specified there prior to registering their
-thermal zones. This still fixes the issue with bogus data being
-reported on the first reading, but doesn't introduce problems that
-come with reading from non-existent sites.
+  Linux 5.17-rc7 (2022-03-06 14:28:31 -0800)
 
-Fixes: 45038e03d633 ("thermal: qoriq: Enable all sensors before registering them")
-Cc: stable@vger.kernel.org
-Signed-off-by: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
----
-v3: add cc: stable
-v2: augment the commit message with details on what the patch is doing
----
- drivers/thermal/qoriq_thermal.c | 63 ++++++++++++++++++++++-----------
- 1 file changed, 43 insertions(+), 20 deletions(-)
+are available in the Git repository at:
 
-diff --git a/drivers/thermal/qoriq_thermal.c b/drivers/thermal/qoriq_thermal.c
-index 73049f9bea25..ef0848849ee2 100644
---- a/drivers/thermal/qoriq_thermal.c
-+++ b/drivers/thermal/qoriq_thermal.c
-@@ -32,7 +32,6 @@
- #define TMR_DISABLE	0x0
- #define TMR_ME		0x80000000
- #define TMR_ALPF	0x0c000000
--#define TMR_MSITE_ALL	GENMASK(15, 0)
- 
- #define REGS_TMTMIR	0x008	/* Temperature measurement interval Register */
- #define TMTMIR_DEFAULT	0x0000000f
-@@ -129,33 +128,51 @@ static const struct thermal_zone_of_device_ops tmu_tz_ops = {
- static int qoriq_tmu_register_tmu_zone(struct device *dev,
- 				       struct qoriq_tmu_data *qdata)
- {
--	int id;
-+	int ret = 0;
-+	struct device_node *np, *child, *sensor_np;
- 
--	if (qdata->ver == TMU_VER1) {
--		regmap_write(qdata->regmap, REGS_TMR,
--			     TMR_MSITE_ALL | TMR_ME | TMR_ALPF);
--	} else {
--		regmap_write(qdata->regmap, REGS_V2_TMSR, TMR_MSITE_ALL);
--		regmap_write(qdata->regmap, REGS_TMR, TMR_ME | TMR_ALPF_V2);
--	}
-+	np = of_find_node_by_name(NULL, "thermal-zones");
-+	if (!np)
-+		return -ENODEV;
-+
-+	sensor_np = of_node_get(dev->of_node);
- 
--	for (id = 0; id < SITES_MAX; id++) {
-+	for_each_available_child_of_node(np, child) {
- 		struct thermal_zone_device *tzd;
--		struct qoriq_sensor *sensor = &qdata->sensor[id];
--		int ret;
-+		struct qoriq_sensor *sensor;
-+		int id, site;
-+
-+		ret = thermal_zone_of_get_sensor_id(child, sensor_np, &id);
-+
-+		if (ret < 0) {
-+			dev_err(dev, "failed to get valid sensor id: %d\n", ret);
-+			of_node_put(child);
-+			break;
-+		}
- 
-+		sensor = &qdata->sensor[id];
- 		sensor->id = id;
- 
-+		/* Enable monitoring */
-+		if (qdata->ver == TMU_VER1) {
-+			site = 0x1 << (15 - id);
-+			regmap_update_bits(qdata->regmap, REGS_TMR,
-+					   site | TMR_ME | TMR_ALPF,
-+					   site | TMR_ME | TMR_ALPF);
-+		} else {
-+			site = 0x1 << id;
-+			regmap_update_bits(qdata->regmap, REGS_V2_TMSR, site, site);
-+			regmap_write(qdata->regmap, REGS_TMR, TMR_ME | TMR_ALPF_V2);
-+		}
-+
- 		tzd = devm_thermal_zone_of_sensor_register(dev, id,
- 							   sensor,
- 							   &tmu_tz_ops);
--		ret = PTR_ERR_OR_ZERO(tzd);
--		if (ret) {
--			if (ret == -ENODEV)
--				continue;
--
--			regmap_write(qdata->regmap, REGS_TMR, TMR_DISABLE);
--			return ret;
-+		if (IS_ERR(tzd)) {
-+			ret = PTR_ERR(tzd);
-+			dev_err(dev, "failed to register thermal zone: %d\n", ret);
-+			of_node_put(child);
-+			break;
- 		}
- 
- 		if (devm_thermal_add_hwmon_sysfs(tzd))
-@@ -164,7 +181,13 @@ static int qoriq_tmu_register_tmu_zone(struct device *dev,
- 
- 	}
- 
--	return 0;
-+	of_node_put(sensor_np);
-+	of_node_put(np);
-+
-+	if (ret)
-+		regmap_write(qdata->regmap, REGS_TMR, TMR_DISABLE);
-+
-+	return ret;
- }
- 
- static int qoriq_tmu_calibration(struct device *dev,
--- 
-2.35.1
+  git://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-linux.git tags/for-5.18/parisc-1
 
+for you to fetch changes up to 53d862fac4a09b9c56cca0433fa9de5732fd05a1:
+
+  parisc: Fix invalidate/flush vmap routines (2022-03-21 13:30:54 +0100)
+
+----------------------------------------------------------------
+parisc architecture updates for kernel v5.18-rc1
+
+- add vDSO support (allows us to use read-only stacks)
+- many TLB and cache flush optimizations (by Dave Anglin)
+- fix handling of probe non-access faults (by Dave Anglin)
+- fix invalidate/flush vmap routines (by Dave Anglin)
+- avoid using hardware single-step in kprobes
+- enable ARCH_HAS_DEBUG_VM_PGTABLE
+- many cleanups in unaligned handlers, e.g. rewrite of existing assembly code
+- always use the self-extracting kernel feature
+- big refacturing and code reductions regarding space-register usage in get_user() and put_user()
+- add fillrect() support to stifb graphics driver
+
+----------------------------------------------------------------
+Helge Deller (18):
+      parisc: Add vDSO support
+      video/fbdev/stifb: Implement the stifb_fillrect() function
+      parisc: Always use the self-extracting kernel feature
+      parisc: Add defines for various space register
+      parisc: Use SR_USER and SR_KERNEL in get_user() and put_user()
+      parisc: Use constants to encode the space registers like SR_KERNEL
+      parisc: Reduce code size by optimizing get_current() function calls
+      parisc/unaligned: Use EFAULT fixup handler in unaligned handlers
+      parisc/unaligned: Rewrite inline assembly of emulate_ldh()
+      parisc/unaligned: Rewrite inline assembly of emulate_ldw()
+      parisc/unaligned: Rewrite 32-bit inline assembly of emulate_ldd()
+      parisc/unaligned: Rewrite 32-bit inline assembly of emulate_sth()
+      parisc/unaligned: Enhance user-space visible output
+      parisc: Avoid calling SMP cache flush functions on cache-less machines
+      parisc: Enable ARCH_HAS_DEBUG_VM_PGTABLE
+      parisc: Improve CPU socket and core bootup info text
+      parisc: Avoid using hardware single-step in kprobes
+      parisc: Avoid flushing cache on cache-less machines
+
+John David Anglin (5):
+      parisc: Fix non-access data TLB cache flush faults
+      parisc: Fix handling off probe non-access faults
+      parisc: Simplify fast path for non-access data TLB faults
+      parisc: Increase parisc_cache_flush_threshold setting
+      parisc: Fix invalidate/flush vmap routines
+
+ arch/parisc/Kconfig                           |  14 +-
+ arch/parisc/Makefile                          |  37 +++-
+ arch/parisc/include/asm/assembly.h            |   6 +
+ arch/parisc/include/asm/cache.h               |  11 +-
+ arch/parisc/include/asm/cacheflush.h          |  15 +-
+ arch/parisc/include/asm/current.h             |   8 +-
+ arch/parisc/include/asm/elf.h                 |  15 ++
+ arch/parisc/include/asm/kprobes.h             |   5 +-
+ arch/parisc/include/asm/mmu.h                 |   6 +-
+ arch/parisc/include/asm/mmu_context.h         |  16 +-
+ arch/parisc/include/asm/pgtable.h             |  11 +-
+ arch/parisc/include/asm/processor.h           |   2 +-
+ arch/parisc/include/asm/rt_sigframe.h         |  10 +-
+ arch/parisc/include/asm/special_insns.h       |   4 +-
+ arch/parisc/include/asm/tlbflush.h            |   2 +-
+ arch/parisc/include/asm/traps.h               |   1 +
+ arch/parisc/include/asm/uaccess.h             |  28 +--
+ arch/parisc/include/asm/unistd.h              |   4 -
+ arch/parisc/include/asm/vdso.h                |  24 +++
+ arch/parisc/include/uapi/asm/auxvec.h         |   8 +
+ arch/parisc/kernel/Makefile                   |   5 +
+ arch/parisc/kernel/alternative.c              |  10 +
+ arch/parisc/kernel/asm-offsets.c              |   9 +
+ arch/parisc/kernel/cache.c                    | 137 +++++++-------
+ arch/parisc/kernel/entry.S                    |  72 +-------
+ arch/parisc/kernel/kprobes.c                  |  28 +--
+ arch/parisc/kernel/pci-dma.c                  |   4 +-
+ arch/parisc/kernel/signal.c                   | 225 +++++++++++-----------
+ arch/parisc/kernel/signal32.h                 |  19 +-
+ arch/parisc/kernel/topology.c                 |   4 +-
+ arch/parisc/kernel/traps.c                    |  12 +-
+ arch/parisc/kernel/unaligned.c                | 257 ++++++++++----------------
+ arch/parisc/kernel/vdso.c                     | 122 ++++++++++++
+ arch/parisc/kernel/vdso32/Makefile            |  53 ++++++
+ arch/parisc/kernel/vdso32/gen_vdso_offsets.sh |  15 ++
+ arch/parisc/kernel/vdso32/note.S              |  26 +++
+ arch/parisc/kernel/vdso32/restart_syscall.S   |  32 ++++
+ arch/parisc/kernel/vdso32/sigtramp.S          | 195 +++++++++++++++++++
+ arch/parisc/kernel/vdso32/vdso32.lds.S        | 111 +++++++++++
+ arch/parisc/kernel/vdso32/vdso32_wrapper.S    |  14 ++
+ arch/parisc/kernel/vdso64/Makefile            |  48 +++++
+ arch/parisc/kernel/vdso64/gen_vdso_offsets.sh |  15 ++
+ arch/parisc/kernel/vdso64/note.S              |   2 +
+ arch/parisc/kernel/vdso64/restart_syscall.S   |   3 +
+ arch/parisc/kernel/vdso64/sigtramp.S          | 166 +++++++++++++++++
+ arch/parisc/kernel/vdso64/vdso64.lds.S        | 109 +++++++++++
+ arch/parisc/kernel/vdso64/vdso64_wrapper.S    |  14 ++
+ arch/parisc/lib/memcpy.c                      |  16 +-
+ arch/parisc/mm/fault.c                        |  89 +++++++++
+ drivers/video/fbdev/stifb.c                   |  45 ++++-
+ 50 files changed, 1534 insertions(+), 550 deletions(-)
+ create mode 100644 arch/parisc/include/asm/vdso.h
+ create mode 100644 arch/parisc/include/uapi/asm/auxvec.h
+ create mode 100644 arch/parisc/kernel/vdso.c
+ create mode 100644 arch/parisc/kernel/vdso32/Makefile
+ create mode 100755 arch/parisc/kernel/vdso32/gen_vdso_offsets.sh
+ create mode 100644 arch/parisc/kernel/vdso32/note.S
+ create mode 100644 arch/parisc/kernel/vdso32/restart_syscall.S
+ create mode 100644 arch/parisc/kernel/vdso32/sigtramp.S
+ create mode 100644 arch/parisc/kernel/vdso32/vdso32.lds.S
+ create mode 100644 arch/parisc/kernel/vdso32/vdso32_wrapper.S
+ create mode 100644 arch/parisc/kernel/vdso64/Makefile
+ create mode 100755 arch/parisc/kernel/vdso64/gen_vdso_offsets.sh
+ create mode 100644 arch/parisc/kernel/vdso64/note.S
+ create mode 100644 arch/parisc/kernel/vdso64/restart_syscall.S
+ create mode 100644 arch/parisc/kernel/vdso64/sigtramp.S
+ create mode 100644 arch/parisc/kernel/vdso64/vdso64.lds.S
+ create mode 100644 arch/parisc/kernel/vdso64/vdso64_wrapper.S
