@@ -2,233 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2A87C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 07:01:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D51DFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 07:02:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344749AbiCUHDQ (ORCPT
+        id S1344694AbiCUHEM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 03:03:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44626 "EHLO
+        Mon, 21 Mar 2022 03:04:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344736AbiCUHDG (ORCPT
+        with ESMTP id S245498AbiCUHEL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 03:03:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3C51BEF;
-        Mon, 21 Mar 2022 00:01:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CA9260F87;
-        Mon, 21 Mar 2022 07:01:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79D30C340E8;
-        Mon, 21 Mar 2022 07:01:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647846100;
-        bh=puLQDTiFTDL4+6lJJT8R6d0QSTr8Crkduhdp395IOrk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gmP8Yz2Emselwfr2/YGSJ6mDNqr1Pva2gGvBFdqECMY42RAhzp4xorRbqQ9T8HGIs
-         5jhpTeLSb/mdPUSlOkR2kwlw8hXbQ1WW4ERgl3hh7wQN9vliDwJByPGC1yLO0GwTyx
-         FFTswONw+Rd0L0hJnuw4wZpL1GTm2CihhRn6jowqqFJJKfn7PPoI8mtNNbhtCZGYqX
-         eVFz7wph6tXPz75hkJrdDn08EdU3h/wgg+cQiAYFpNXcdDsN6bGpod4RDOutComzJX
-         KgVLX2ebwLA/HKuIUWljo/k7TSW8lC/GlgIo2yuo8LLjEuyjaNHt3oKtbp0rA1yC60
-         qxeP6pqqp6RUg==
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: [PATCH bpf-next 2/2] bpf: Fix kprobe_multi return probe backtrace
-Date:   Mon, 21 Mar 2022 08:01:13 +0100
-Message-Id: <20220321070113.1449167-3-jolsa@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220321070113.1449167-1-jolsa@kernel.org>
-References: <20220321070113.1449167-1-jolsa@kernel.org>
+        Mon, 21 Mar 2022 03:04:11 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667554757C
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 00:02:46 -0700 (PDT)
+Received: from kwepemi100023.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KMQYB6YFcz1GBvf;
+        Mon, 21 Mar 2022 15:02:38 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ kwepemi100023.china.huawei.com (7.221.188.59) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 21 Mar 2022 15:02:44 +0800
+Received: from localhost.localdomain (10.67.164.66) by
+ kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 21 Mar 2022 15:02:43 +0800
+From:   Qi Liu <liuqi115@huawei.com>
+To:     <will@kernel.org>, <mark.rutland@arm.com>
+CC:     <zhangshaokun@hisilicon.com>, <linuxarm@huawei.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v3 1/2] drivers/perf: hisi: Associate PMUs in SICL with CPUs online
+Date:   Mon, 21 Mar 2022 15:01:23 +0800
+Message-ID: <20220321070124.41338-2-liuqi115@huawei.com>
+X-Mailer: git-send-email 2.24.0
+In-Reply-To: <20220321070124.41338-1-liuqi115@huawei.com>
+References: <20220321070124.41338-1-liuqi115@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.164.66]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Andrii reported that backtraces from kprobe_multi program attached
-as return probes are not complete and showing just initial entry [1].
+If a PMU is in SICL, we associate it with all CPUs online, rather
+than CPUs in the nearest SCCL.
 
-It's caused by changing registers to have original function ip address
-as instruction pointer even for return probe, which will screw backtrace
-from return probe.
-
-This change keeps registers intact and store original entry ip and
-link address on the stack in bpf_kprobe_multi_run_ctx struct, where
-bpf_get_func_ip and bpf_get_attach_cookie helpers for kprobe_multi
-programs can find it.
-
-[1] https://lore.kernel.org/bpf/CAEf4BzZDDqK24rSKwXNp7XL3ErGD4bZa1M6c_c4EvDSt3jrZcg@mail.gmail.com/T/#m8d1301c0ea0892ddf9dc6fba57a57b8cf11b8c51
-Fixes: ca74823c6e16 ("bpf: Add cookie support to programs attached with kprobe multi link")
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Signed-off-by: Qi Liu <liuqi115@huawei.com>
 ---
- kernel/trace/bpf_trace.c | 67 ++++++++++++++++++++++------------------
- 1 file changed, 37 insertions(+), 30 deletions(-)
+ drivers/perf/hisilicon/hisi_uncore_pa_pmu.c | 18 +++++++-----------
+ drivers/perf/hisilicon/hisi_uncore_pmu.c    |  4 ++++
+ drivers/perf/hisilicon/hisi_uncore_pmu.h    |  1 +
+ 3 files changed, 12 insertions(+), 11 deletions(-)
 
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 52c2998e1dc3..172ef545730d 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -80,7 +80,8 @@ u64 bpf_get_stack(u64 r1, u64 r2, u64 r3, u64 r4, u64 r5);
- static int bpf_btf_printf_prepare(struct btf_ptr *ptr, u32 btf_ptr_size,
- 				  u64 flags, const struct btf **btf,
- 				  s32 *btf_id);
--static u64 bpf_kprobe_multi_cookie(struct bpf_run_ctx *ctx, u64 ip);
-+static u64 bpf_kprobe_multi_cookie(struct bpf_run_ctx *ctx);
-+static u64 bpf_kprobe_multi_entry_ip(struct bpf_run_ctx *ctx);
- 
- /**
-  * trace_call_bpf - invoke BPF program
-@@ -1042,7 +1043,7 @@ static const struct bpf_func_proto bpf_get_func_ip_proto_kprobe = {
- 
- BPF_CALL_1(bpf_get_func_ip_kprobe_multi, struct pt_regs *, regs)
+diff --git a/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c b/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c
+index bad99d149172..54c604c0d404 100644
+--- a/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c
++++ b/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c
+@@ -258,13 +258,12 @@ static int hisi_pa_pmu_init_data(struct platform_device *pdev,
+ 				   struct hisi_pmu *pa_pmu)
  {
--	return instruction_pointer(regs);
-+	return bpf_kprobe_multi_entry_ip(current->bpf_ctx);
- }
+ 	/*
+-	 * Use the SCCL_ID and the index ID to identify the PA PMU,
+-	 * while SCCL_ID is the nearst SCCL_ID from this SICL and
+-	 * CPU core is chosen from this SCCL to manage this PMU.
++	 * As PA PMU is in SICL, use the SICL_ID and the index ID
++	 * to identify the PA PMU.
+ 	 */
+ 	if (device_property_read_u32(&pdev->dev, "hisilicon,scl-id",
+-				     &pa_pmu->sccl_id)) {
+-		dev_err(&pdev->dev, "Cannot read sccl-id!\n");
++				     &pa_pmu->sicl_id)) {
++		dev_err(&pdev->dev, "Cannot read sicl-id!\n");
+ 		return -EINVAL;
+ 	}
  
- static const struct bpf_func_proto bpf_get_func_ip_proto_kprobe_multi = {
-@@ -1054,7 +1055,7 @@ static const struct bpf_func_proto bpf_get_func_ip_proto_kprobe_multi = {
+@@ -275,6 +274,7 @@ static int hisi_pa_pmu_init_data(struct platform_device *pdev,
+ 	}
  
- BPF_CALL_1(bpf_get_attach_cookie_kprobe_multi, struct pt_regs *, regs)
- {
--	return bpf_kprobe_multi_cookie(current->bpf_ctx, instruction_pointer(regs));
-+	return bpf_kprobe_multi_cookie(current->bpf_ctx);
- }
+ 	pa_pmu->ccl_id = -1;
++	pa_pmu->sccl_id = -1;
  
- static const struct bpf_func_proto bpf_get_attach_cookie_proto_kmulti = {
-@@ -2219,15 +2220,16 @@ struct bpf_kprobe_multi_link {
- 	struct bpf_link link;
- 	struct fprobe fp;
- 	unsigned long *addrs;
+ 	pa_pmu->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(pa_pmu->base)) {
+@@ -399,13 +399,9 @@ static int hisi_pa_pmu_probe(struct platform_device *pdev)
+ 	ret = hisi_pa_pmu_dev_probe(pdev, pa_pmu);
+ 	if (ret)
+ 		return ret;
 -	/*
--	 * The run_ctx here is used to get struct bpf_kprobe_multi_link in
--	 * get_attach_cookie helper, so it can't be used to store data.
+-	 * PA is attached in SICL and the CPU core is chosen to manage this
+-	 * PMU which is the nearest SCCL, while its SCCL_ID is greater than
+-	 * one with the SICL_ID.
 -	 */
--	struct bpf_run_ctx run_ctx;
- 	u64 *cookies;
- 	u32 cnt;
- };
- 
-+struct bpf_kprobe_multi_run_ctx {
-+	struct bpf_run_ctx run_ctx;
-+	struct bpf_kprobe_multi_link *link;
-+	unsigned long entry_ip;
-+};
 +
- static void bpf_kprobe_multi_link_release(struct bpf_link *link)
+ 	name = devm_kasprintf(&pdev->dev, GFP_KERNEL, "hisi_sicl%u_pa%u",
+-			      pa_pmu->sccl_id - 1, pa_pmu->index_id);
++			      pa_pmu->sicl_id, pa_pmu->index_id);
+ 	if (!name)
+ 		return -ENOMEM;
+ 
+diff --git a/drivers/perf/hisilicon/hisi_uncore_pmu.c b/drivers/perf/hisilicon/hisi_uncore_pmu.c
+index a738aeab5c04..31930166c34b 100644
+--- a/drivers/perf/hisilicon/hisi_uncore_pmu.c
++++ b/drivers/perf/hisilicon/hisi_uncore_pmu.c
+@@ -458,6 +458,10 @@ static bool hisi_pmu_cpu_is_associated_pmu(struct hisi_pmu *hisi_pmu)
  {
- 	struct bpf_kprobe_multi_link *kmulti_link;
-@@ -2281,18 +2283,21 @@ static int bpf_kprobe_multi_cookie_cmp(const void *a, const void *b, const void
- 	return __bpf_kprobe_multi_cookie_cmp(a, b);
- }
+ 	int sccl_id, ccl_id;
  
--static u64 bpf_kprobe_multi_cookie(struct bpf_run_ctx *ctx, u64 ip)
-+static u64 bpf_kprobe_multi_cookie(struct bpf_run_ctx *ctx)
- {
-+	struct bpf_kprobe_multi_run_ctx *run_ctx;
- 	struct bpf_kprobe_multi_link *link;
-+	u64 *cookie, entry_ip;
- 	unsigned long *addr;
--	u64 *cookie;
- 
- 	if (WARN_ON_ONCE(!ctx))
- 		return 0;
--	link = container_of(ctx, struct bpf_kprobe_multi_link, run_ctx);
-+	run_ctx = container_of(current->bpf_ctx, struct bpf_kprobe_multi_run_ctx, run_ctx);
-+	link = run_ctx->link;
- 	if (!link->cookies)
- 		return 0;
--	addr = bsearch(&ip, link->addrs, link->cnt, sizeof(ip),
-+	entry_ip = run_ctx->entry_ip;
-+	addr = bsearch(&entry_ip, link->addrs, link->cnt, sizeof(entry_ip),
- 		       __bpf_kprobe_multi_cookie_cmp);
- 	if (!addr)
- 		return 0;
-@@ -2300,10 +2305,22 @@ static u64 bpf_kprobe_multi_cookie(struct bpf_run_ctx *ctx, u64 ip)
- 	return *cookie;
- }
- 
-+static u64 bpf_kprobe_multi_entry_ip(struct bpf_run_ctx *ctx)
-+{
-+	struct bpf_kprobe_multi_run_ctx *run_ctx;
++	/* If SCCL_ID is -1, the PMU is in SICL and can be associated this PMU with any CPU */
++	if (hisi_pmu->sccl_id == -1)
++		return true;
 +
-+	run_ctx = container_of(current->bpf_ctx, struct bpf_kprobe_multi_run_ctx, run_ctx);
-+	return run_ctx->entry_ip;
-+}
-+
- static int
- kprobe_multi_link_prog_run(struct bpf_kprobe_multi_link *link,
--			   struct pt_regs *regs)
-+			   unsigned long entry_ip, struct pt_regs *regs)
- {
-+	struct bpf_kprobe_multi_run_ctx run_ctx = {
-+		.link = link,
-+		.entry_ip = entry_ip,
-+	};
- 	struct bpf_run_ctx *old_run_ctx;
- 	int err;
- 
-@@ -2314,7 +2331,7 @@ kprobe_multi_link_prog_run(struct bpf_kprobe_multi_link *link,
- 
- 	migrate_disable();
- 	rcu_read_lock();
--	old_run_ctx = bpf_set_run_ctx(&link->run_ctx);
-+	old_run_ctx = bpf_set_run_ctx(&run_ctx.run_ctx);
- 	err = bpf_prog_run(link->link.prog, regs);
- 	bpf_reset_run_ctx(old_run_ctx);
- 	rcu_read_unlock();
-@@ -2329,24 +2346,10 @@ static void
- kprobe_multi_link_handler(struct fprobe *fp, unsigned long entry_ip,
- 			  struct pt_regs *regs)
- {
--	unsigned long saved_ip = instruction_pointer(regs);
- 	struct bpf_kprobe_multi_link *link;
- 
--	/*
--	 * Because fprobe's regs->ip is set to the next instruction of
--	 * dynamic-ftrace instruction, correct entry ip must be set, so
--	 * that the bpf program can access entry address via regs as same
--	 * as kprobes.
--	 *
--	 * Both kprobe and kretprobe see the entry ip of traced function
--	 * as instruction pointer.
--	 */
--	instruction_pointer_set(regs, entry_ip);
--
- 	link = container_of(fp, struct bpf_kprobe_multi_link, fp);
--	kprobe_multi_link_prog_run(link, regs);
--
--	instruction_pointer_set(regs, saved_ip);
-+	kprobe_multi_link_prog_run(link, entry_ip, regs);
- }
- 
- static int
-@@ -2513,7 +2516,11 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
- {
- 	return -EOPNOTSUPP;
- }
--static u64 bpf_kprobe_multi_cookie(struct bpf_run_ctx *ctx, u64 ip)
-+static u64 bpf_kprobe_multi_cookie(struct bpf_run_ctx *ctx)
-+{
-+	return 0;
-+}
-+static u64 bpf_kprobe_multi_entry_ip(struct bpf_run_ctx *ctx)
- {
- 	return 0;
- }
+ 	if (hisi_pmu->ccl_id == -1) {
+ 		/* If CCL_ID is -1, the PMU only shares the same SCCL */
+ 		hisi_read_sccl_and_ccl_id(&sccl_id, NULL);
+diff --git a/drivers/perf/hisilicon/hisi_uncore_pmu.h b/drivers/perf/hisilicon/hisi_uncore_pmu.h
+index 7f5841d6f592..96eeddad55ff 100644
+--- a/drivers/perf/hisilicon/hisi_uncore_pmu.h
++++ b/drivers/perf/hisilicon/hisi_uncore_pmu.h
+@@ -81,6 +81,7 @@ struct hisi_pmu {
+ 	struct device *dev;
+ 	struct hlist_node node;
+ 	int sccl_id;
++	int sicl_id;
+ 	int ccl_id;
+ 	void __iomem *base;
+ 	/* the ID of the PMU modules */
 -- 
-2.35.1
+2.24.0
 
