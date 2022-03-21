@@ -2,52 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B546C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1306C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:12:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351419AbiCUOLD (ORCPT
+        id S1351655AbiCUOLY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:11:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37908 "EHLO
+        Mon, 21 Mar 2022 10:11:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349129AbiCUODV (ORCPT
+        with ESMTP id S1348645AbiCUODt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:03:21 -0400
+        Mon, 21 Mar 2022 10:03:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27E0041320;
-        Mon, 21 Mar 2022 07:00:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7AAC18022E;
+        Mon, 21 Mar 2022 07:01:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC836B816DA;
-        Mon, 21 Mar 2022 14:00:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF5F9C340F2;
-        Mon, 21 Mar 2022 14:00:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7505AB81598;
+        Mon, 21 Mar 2022 14:01:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C10AAC340E8;
+        Mon, 21 Mar 2022 14:01:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871223;
-        bh=l/4aaPMy5P3KEVoiyumRgPHI+RSe1kw9SKejYd4DT4E=;
+        s=korg; t=1647871265;
+        bh=tj33CDVipt3Hwcf7gdEjoaIZbWPVmkUS+u0jcdrdLGM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nMqWhC+RzVVyr5AFfcq9GQlpRpmN2Q10jRoxiP6ihfv7KJ6Q6kT0NpGi1u3fBBGNJ
-         fTb0IAk7TMxRuF9v5OI2LvIQZ/6AiDF6KEcCPOVggjiVCRu3avJh+ytSva/smU3TV9
-         z1ly1ovtY/h1S0D/H7DMKtlK0OAmfVPWwQUjbhX0=
+        b=U2gqj89PCamlfA+V077NH88xQmolVsQ6PV6AiR+yU8Iz8n2DqkZtpZKSETLouC6NZ
+         U7t8+up0YUoV7PdlIKSpxLigBC1dvOeyUsvGDlUyoIM3UZVCCrNDLkN+RkFUJi5eNr
+         FDDgLVExfaiIdQ7AzqhLa+XQqzppckiRkYWXvQ5E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Brian Masney <bmasney@redhat.com>,
-        kernel test robot <lkp@intel.com>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Linux Kernel Functional Testing <lkft@linaro.org>,
-        Lyude Paul <lyude@redhat.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        dri-devel@lists.freedesktop.org, Dave Airlie <airlied@redhat.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 18/32] drm: Dont make DRM_PANEL_BRIDGE dependent on DRM_KMS_HELPERS
-Date:   Mon, 21 Mar 2022 14:52:54 +0100
-Message-Id: <20220321133221.091073183@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Petlan <mpetlan@redhat.com>,
+        Athira Jajeev <atrajeev@linux.vnet.ibm.com>,
+        Jiri Olsa <jolsa@kernel.org>, Kajol Jain <kjain@linux.ibm.com>,
+        Madhavan Srinivasan <maddy@linux.ibm.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.15 31/32] perf symbols: Fix symbol size calculation condition
+Date:   Mon, 21 Mar 2022 14:53:07 +0100
+Message-Id: <20220321133221.460200330@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133220.559554263@linuxfoundation.org>
 References: <20220321133220.559554263@linuxfoundation.org>
@@ -59,94 +52,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Zimmermann <tzimmermann@suse.de>
+From: Michael Petlan <mpetlan@redhat.com>
 
-[ Upstream commit 3c3384050d68570f9de0fec9e58824decfefba7a ]
+commit 3cf6a32f3f2a45944dd5be5c6ac4deb46bcd3bee upstream.
 
-Fix a number of undefined references to drm_kms_helper.ko in
-drm_dp_helper.ko:
+Before this patch, the symbol end address fixup to be called, needed two
+conditions being met:
 
-  arm-suse-linux-gnueabi-ld: drivers/gpu/drm/dp/drm_dp_mst_topology.o: in function `drm_dp_mst_duplicate_state':
-  drm_dp_mst_topology.c:(.text+0x2df0): undefined reference to `__drm_atomic_helper_private_obj_duplicate_state'
-  arm-suse-linux-gnueabi-ld: drivers/gpu/drm/dp/drm_dp_mst_topology.o: in function `drm_dp_delayed_destroy_work':
-  drm_dp_mst_topology.c:(.text+0x370c): undefined reference to `drm_kms_helper_hotplug_event'
-  arm-suse-linux-gnueabi-ld: drivers/gpu/drm/dp/drm_dp_mst_topology.o: in function `drm_dp_mst_up_req_work':
-  drm_dp_mst_topology.c:(.text+0x7938): undefined reference to `drm_kms_helper_hotplug_event'
-  arm-suse-linux-gnueabi-ld: drivers/gpu/drm/dp/drm_dp_mst_topology.o: in function `drm_dp_mst_link_probe_work':
-  drm_dp_mst_topology.c:(.text+0x82e0): undefined reference to `drm_kms_helper_hotplug_event'
+  if (prev->end == prev->start && prev->end != curr->start)
 
-This happens if panel-edp.ko has been configured with
+Where
+  "prev->end == prev->start" means that prev is zero-long
+                             (and thus needs a fixup)
+and
+  "prev->end != curr->start" means that fixup hasn't been applied yet
 
-  DRM_PANEL_EDP=y
-  DRM_DP_HELPER=y
-  DRM_KMS_HELPER=m
+However, this logic is incorrect in the following situation:
 
-which builds DP helpers into the kernel and KMS helpers sa a module.
-Making DRM_PANEL_EDP select DRM_KMS_HELPER resolves this problem.
+*curr  = {rb_node = {__rb_parent_color = 278218928,
+  rb_right = 0x0, rb_left = 0x0},
+  start = 0xc000000000062354,
+  end = 0xc000000000062354, namelen = 40, type = 2 '\002',
+  binding = 0 '\000', idle = 0 '\000', ignore = 0 '\000',
+  inlined = 0 '\000', arch_sym = 0 '\000', annotate2 = false,
+  name = 0x1159739e "kprobe_optinsn_page\t[__builtin__kprobes]"}
 
-To avoid a resulting cyclic dependency with DRM_PANEL_BRIDGE, don't
-make the latter depend on DRM_KMS_HELPER and fix the one DRM bridge
-drivers that doesn't already select DRM_KMS_HELPER. As KMS helpers
-cannot be selected directly by the user, config symbols should avoid
-depending on it anyway.
+*prev = {rb_node = {__rb_parent_color = 278219041,
+  rb_right = 0x109548b0, rb_left = 0x109547c0},
+  start = 0xc000000000062354,
+  end = 0xc000000000062354, namelen = 12, type = 2 '\002',
+  binding = 1 '\001', idle = 0 '\000', ignore = 0 '\000',
+  inlined = 0 '\000', arch_sym = 0 '\000', annotate2 = false,
+  name = 0x1095486e "optinsn_slot"}
 
-Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
-Fixes: 3755d35ee1d2 ("drm/panel: Select DRM_DP_HELPER for DRM_PANEL_EDP")
-Acked-by: Sam Ravnborg <sam@ravnborg.org>
-Tested-by: Brian Masney <bmasney@redhat.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc: Linux Kernel Functional Testing <lkft@linaro.org>
-Cc: Lyude Paul <lyude@redhat.com>
-Cc: Sam Ravnborg <sam@ravnborg.org>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-Cc: Maxime Ripard <mripard@kernel.org>
-Cc: dri-devel@lists.freedesktop.org
-Cc: Dave Airlie <airlied@redhat.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>
-Link: https://patchwork.freedesktop.org/patch/478296/
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+In this case, prev->start == prev->end == curr->start == curr->end,
+thus the condition above thinks that "we need a fixup due to zero
+length of prev symbol, but it has been probably done, since the
+prev->end == curr->start", which is wrong.
+
+After the patch, the execution path proceeds to arch__symbols__fixup_end
+function which fixes up the size of prev symbol by adding page_size to
+its end offset.
+
+Fixes: 3b01a413c196c910 ("perf symbols: Improve kallsyms symbol end addr calculation")
+Signed-off-by: Michael Petlan <mpetlan@redhat.com>
+Cc: Athira Jajeev <atrajeev@linux.vnet.ibm.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Kajol Jain <kjain@linux.ibm.com>
+Cc: Madhavan Srinivasan <maddy@linux.ibm.com>
+Link: http://lore.kernel.org/lkml/20220317135536.805-1-mpetlan@redhat.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/bridge/Kconfig | 2 +-
- drivers/gpu/drm/panel/Kconfig  | 1 +
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ tools/perf/util/symbol.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/bridge/Kconfig b/drivers/gpu/drm/bridge/Kconfig
-index 431b6e12a81f..68ec45abc1fb 100644
---- a/drivers/gpu/drm/bridge/Kconfig
-+++ b/drivers/gpu/drm/bridge/Kconfig
-@@ -8,7 +8,6 @@ config DRM_BRIDGE
- config DRM_PANEL_BRIDGE
- 	def_bool y
- 	depends on DRM_BRIDGE
--	depends on DRM_KMS_HELPER
- 	select DRM_PANEL
- 	help
- 	  DRM bridge wrapper of DRM panels
-@@ -30,6 +29,7 @@ config DRM_CDNS_DSI
- config DRM_CHIPONE_ICN6211
- 	tristate "Chipone ICN6211 MIPI-DSI/RGB Converter bridge"
- 	depends on OF
-+	select DRM_KMS_HELPER
- 	select DRM_MIPI_DSI
- 	select DRM_PANEL_BRIDGE
- 	help
-diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index f63fd0f90360..af1402d83d51 100644
---- a/drivers/gpu/drm/panel/Kconfig
-+++ b/drivers/gpu/drm/panel/Kconfig
-@@ -84,6 +84,7 @@ config DRM_PANEL_SIMPLE
- 	select VIDEOMODE_HELPERS
- 	select DRM_DP_AUX_BUS
- 	select DRM_DP_HELPER
-+	select DRM_KMS_HELPER
- 	help
- 	  DRM panel driver for dumb panels that need at most a regulator and
- 	  a GPIO to be powered up. Optionally a backlight can be attached so
--- 
-2.34.1
-
+--- a/tools/perf/util/symbol.c
++++ b/tools/perf/util/symbol.c
+@@ -231,7 +231,7 @@ void symbols__fixup_end(struct rb_root_c
+ 		prev = curr;
+ 		curr = rb_entry(nd, struct symbol, rb_node);
+ 
+-		if (prev->end == prev->start && prev->end != curr->start)
++		if (prev->end == prev->start || prev->end != curr->start)
+ 			arch__symbols__fixup_end(prev, curr);
+ 	}
+ 
 
 
