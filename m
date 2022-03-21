@@ -2,76 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8614C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:38:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3BA4C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:40:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233114AbiCUXkG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:40:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43908 "EHLO
+        id S233150AbiCUXlu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:41:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232957AbiCUXkD (ORCPT
+        with ESMTP id S232838AbiCUXls (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 19:40:03 -0400
-Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C1EFE435;
-        Mon, 21 Mar 2022 16:38:09 -0700 (PDT)
-Received: by mail-oi1-f180.google.com with SMTP id q129so15933025oif.4;
-        Mon, 21 Mar 2022 16:38:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8b7Epipii5BGkqqnIUmpeTC0jmBsZOQ1Tko6IQuWeXc=;
-        b=EeQNjBydUtHGwXexVkxBBNE6t6IVoTapMhzNjqpRq5yYbBluPn9kI51I691jf7XN/+
-         xbltQHyxgq38HltZMSwMG761QRmyecJHtfbHJOzCOH+EOeTR2c9x+ew7OLoNRPJ5Oq4O
-         weUPiywRhK2Ztggbl0qon3N2aDzBAhevG+EwdLQx0LzCiZaHN25z/Re0SJqXZVtfmuWT
-         nMdxzX3TZbXXdG4NlUbKsfdDuEpshO3mNLKw/ZbDyFvqDtQPhWtU/6FwNBcKaUng7PFe
-         TgNTyLURB3NyKpnUoeaE8SQAEaoAjBGBe13xUbukUqIAor+UWWvhjDElscCWd66pRuGG
-         DOGw==
-X-Gm-Message-State: AOAM533ipkOEv9z0M7xg6rSJhoPt/8lxkfq5S61noh4IL4kj4xx99rB5
-        /HgCIP+tl3MLSI1viLbiaQ==
-X-Google-Smtp-Source: ABdhPJxCD1OsOX4lizds5dSzn7Refv1mW/OIYri/zgYxYxIMkJZDVP/QLjzeYyI8RQgJfaT60iQ2qA==
-X-Received: by 2002:a05:6808:9b9:b0:2ef:7562:1586 with SMTP id e25-20020a05680809b900b002ef75621586mr772018oig.261.1647905888839;
-        Mon, 21 Mar 2022 16:38:08 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id l13-20020a056830054d00b005a3cce351a1sm8235978otb.28.2022.03.21.16.38.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 16:38:08 -0700 (PDT)
-Received: (nullmailer pid 757601 invoked by uid 1000);
-        Mon, 21 Mar 2022 23:38:07 -0000
-Date:   Mon, 21 Mar 2022 18:38:07 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        devicetree@vger.kernel.org, Ryder Lee <ryder.lee@kernel.org>,
-        Hui Liu <hui.liu@mediatek.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-mediatek@lists.infradead.org,
-        Chen-Yu Tsai <wenst@chromium.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 19/22] arm64: dts: mt8192: Add the mmsys reset bit to
- reset the dsi0
-Message-ID: <YjkMX6loduiyQdZy@robh.at.kernel.org>
-References: <20220318144534.17996-1-allen-kh.cheng@mediatek.com>
- <20220318144534.17996-20-allen-kh.cheng@mediatek.com>
+        Mon, 21 Mar 2022 19:41:48 -0400
+Received: from mailgw.felk.cvut.cz (mailgw.felk.cvut.cz [147.32.82.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A74D23D491;
+        Mon, 21 Mar 2022 16:40:21 -0700 (PDT)
+Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id 2EA9530AE004;
+        Tue, 22 Mar 2022 00:33:22 +0100 (CET)
+Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id 7581E30ADC00;
+        Tue, 22 Mar 2022 00:33:21 +0100 (CET)
+Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
+        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 22LNXLfP014302;
+        Tue, 22 Mar 2022 00:33:21 +0100
+Received: (from pisa@localhost)
+        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 22LNXLcA014301;
+        Tue, 22 Mar 2022 00:33:21 +0100
+From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
+To:     linux-can@vger.kernel.org, devicetree@vger.kernel.org,
+        "Marc Kleine-Budde" <mkl@pengutronix.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        David Miller <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>, mark.rutland@arm.com,
+        Carsten Emde <c.emde@osadl.org>, armbru@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Marin Jerabek <martin.jerabek01@gmail.com>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        Jiri Novak <jnovak@fel.cvut.cz>,
+        Jaroslav Beran <jara.beran@gmail.com>,
+        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
+        Drew Fustini <pdp7pdp7@gmail.com>,
+        Pavel Pisa <pisa@cmp.felk.cvut.cz>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v8 1/7] dt-bindings: vendor-prefix: add prefix for the Czech Technical University in Prague.
+Date:   Tue, 22 Mar 2022 00:32:28 +0100
+Message-Id: <ff3a7216114fcd83530e70b994ef0e4277ddf000.1647904780.git.pisa@cmp.felk.cvut.cz>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <cover.1647904780.git.pisa@cmp.felk.cvut.cz>
+References: <cover.1647904780.git.pisa@cmp.felk.cvut.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220318144534.17996-20-allen-kh.cheng@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 18 Mar 2022 22:45:31 +0800, Allen-KH Cheng wrote:
-> Reset the DSI hardware is needed to prevent different settings between
-> the bootloader and the kernel.
-> 
-> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-> ---
->  include/dt-bindings/reset/mt8192-resets.h | 3 +++
->  1 file changed, 3 insertions(+)
-> 
+The Czech Technical University in Prague (CTU) is one of
+the biggest and oldest (founded 1707) technical universities
+in Europe. The abbreviation in Czech language is ČVUT according
+to official name in Czech language
 
+  České vysoké učení technické v Praze
+
+The English translation
+
+  The Czech Technical University in Prague
+
+The university pages in English
+
+  https://www.cvut.cz/en
+
+Signed-off-by: Pavel Pisa <pisa@cmp.felk.cvut.cz>
 Acked-by: Rob Herring <robh@kernel.org>
+Acked-by: Pavel Machek <pavel@ucw.cz>
+---
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index 294093d45a230..7fa538d5046a4 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -277,6 +277,8 @@ patternProperties:
+     description: Hangzhou C-SKY Microsystems Co., Ltd
+   "^csq,.*":
+     description: Shenzen Chuangsiqi Technology Co.,Ltd.
++  "^ctu,.*":
++    description: Czech Technical University in Prague
+   "^cubietech,.*":
+     description: Cubietech, Ltd.
+   "^cui,.*":
+-- 
+2.20.1
+
+
