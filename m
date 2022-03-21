@@ -2,56 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0B6EC35278
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1C00C35295
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351175AbiCUOKp (ORCPT
+        id S1351730AbiCUOLg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:10:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35098 "EHLO
+        Mon, 21 Mar 2022 10:11:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349403AbiCUODm (ORCPT
+        with ESMTP id S1348767AbiCUOCl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:03:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C7A518005A;
-        Mon, 21 Mar 2022 07:01:02 -0700 (PDT)
+        Mon, 21 Mar 2022 10:02:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A0BC33E9B;
+        Mon, 21 Mar 2022 06:59:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E84FBB816D7;
-        Mon, 21 Mar 2022 14:01:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2179CC340E8;
-        Mon, 21 Mar 2022 14:00:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A7796132C;
+        Mon, 21 Mar 2022 13:59:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8161EC340F3;
+        Mon, 21 Mar 2022 13:59:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871259;
-        bh=u3F5wmbk+6PkM8pt2vrxqech9PMOYixTjf4rRI8WWcM=;
+        s=korg; t=1647871173;
+        bh=SisNPNMwIL3YAd74uiLsbQc1ojVwhNKoLmnSOriiSr0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ro0/ORY1qmo1P4eGyCR1bGBlU2Jm1h7meFiaGb3eFnOkb2bI97KgbbV+9O0nDk/cw
-         S1P2wujTNhgDBKCW5GLA4OxRhKCZLA+Zk1NzETY+DTsJVwxigFrf/5C/Od07hZoE2T
-         UfyxOFWhF2rPmtCOcjvF2M99NsoM9jPeR2Klhdq8=
+        b=1IWQp0u2MYu5Jtj0lqkxQynQNPpzjyIBNuMFMOizIkSgeey+XS9cn7uBfjGwPFqpV
+         ImkcgWAz5iyMYXLXa8ZNVpx1yOrj10Dgy/GwYRj0y30SSMifpHBflzP/H04BbEcrWZ
+         yMv4FadCRIdRRBBOtE7+ACk7x8EZrtCPXPr7Jl+8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guo Ziliang <guo.ziliang@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
-        Jiang Xuexin <jiang.xuexin@zte.com.cn>,
-        Yang Yang <yang.yang29@zte.com.cn>,
-        Hugh Dickins <hughd@google.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Minchan Kim <minchan@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Roger Quadros <rogerq@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 03/32] mm: swap: get rid of livelock in swapin readahead
-Date:   Mon, 21 Mar 2022 14:52:39 +0100
-Message-Id: <20220321133220.662265760@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        syzbot+348b571beb5eeb70a582@syzkaller.appspotmail.com
+Subject: [PATCH 5.10 21/30] usb: gadget: Fix use-after-free bug by not setting udc->dev.driver
+Date:   Mon, 21 Mar 2022 14:52:51 +0100
+Message-Id: <20220321133220.258860038@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220321133220.559554263@linuxfoundation.org>
-References: <20220321133220.559554263@linuxfoundation.org>
+In-Reply-To: <20220321133219.643490199@linuxfoundation.org>
+References: <20220321133219.643490199@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -60,83 +49,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ziliang <guo.ziliang@zte.com.cn>
+From: Alan Stern <stern@rowland.harvard.edu>
 
-commit 029c4628b2eb2ca969e9bf979b05dc18d8d5575e upstream.
+commit 16b1941eac2bd499f065a6739a40ce0011a3d740 upstream.
 
-In our testing, a livelock task was found.  Through sysrq printing, same
-stack was found every time, as follows:
+The syzbot fuzzer found a use-after-free bug:
 
-  __swap_duplicate+0x58/0x1a0
-  swapcache_prepare+0x24/0x30
-  __read_swap_cache_async+0xac/0x220
-  read_swap_cache_async+0x58/0xa0
-  swapin_readahead+0x24c/0x628
-  do_swap_page+0x374/0x8a0
-  __handle_mm_fault+0x598/0xd60
-  handle_mm_fault+0x114/0x200
-  do_page_fault+0x148/0x4d0
-  do_translation_fault+0xb0/0xd4
-  do_mem_abort+0x50/0xb0
+BUG: KASAN: use-after-free in dev_uevent+0x712/0x780 drivers/base/core.c:2320
+Read of size 8 at addr ffff88802b934098 by task udevd/3689
 
-The reason for the livelock is that swapcache_prepare() always returns
-EEXIST, indicating that SWAP_HAS_CACHE has not been cleared, so that it
-cannot jump out of the loop.  We suspect that the task that clears the
-SWAP_HAS_CACHE flag never gets a chance to run.  We try to lower the
-priority of the task stuck in a livelock so that the task that clears
-the SWAP_HAS_CACHE flag will run.  The results show that the system
-returns to normal after the priority is lowered.
+CPU: 2 PID: 3689 Comm: udevd Not tainted 5.17.0-rc4-syzkaller-00229-g4f12b742eb2b #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0x8d/0x303 mm/kasan/report.c:255
+ __kasan_report mm/kasan/report.c:442 [inline]
+ kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
+ dev_uevent+0x712/0x780 drivers/base/core.c:2320
+ uevent_show+0x1b8/0x380 drivers/base/core.c:2391
+ dev_attr_show+0x4b/0x90 drivers/base/core.c:2094
 
-In our testing, multiple real-time tasks are bound to the same core, and
-the task in the livelock is the highest priority task of the core, so
-the livelocked task cannot be preempted.
+Although the bug manifested in the driver core, the real cause was a
+race with the gadget core.  dev_uevent() does:
 
-Although cond_resched() is used by __read_swap_cache_async, it is an
-empty function in the preemptive system and cannot achieve the purpose
-of releasing the CPU.  A high-priority task cannot release the CPU
-unless preempted by a higher-priority task.  But when this task is
-already the highest priority task on this core, other tasks will not be
-able to be scheduled.  So we think we should replace cond_resched() with
-schedule_timeout_uninterruptible(1), schedule_timeout_interruptible will
-call set_current_state first to set the task state, so the task will be
-removed from the running queue, so as to achieve the purpose of giving
-up the CPU and prevent it from running in kernel mode for too long.
+	if (dev->driver)
+		add_uevent_var(env, "DRIVER=%s", dev->driver->name);
 
-(akpm: ugly hack becomes uglier.  But it fixes the issue in a
-backportable-to-stable fashion while we hopefully work on something
-better)
+and between the test and the dereference of dev->driver, the gadget
+core sets dev->driver to NULL.
 
-Link: https://lkml.kernel.org/r/20220221111749.1928222-1-cgel.zte@gmail.com
-Signed-off-by: Guo Ziliang <guo.ziliang@zte.com.cn>
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Reviewed-by: Ran Xiaokai <ran.xiaokai@zte.com.cn>
-Reviewed-by: Jiang Xuexin <jiang.xuexin@zte.com.cn>
-Reviewed-by: Yang Yang <yang.yang29@zte.com.cn>
-Acked-by: Hugh Dickins <hughd@google.com>
-Cc: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Cc: Michal Hocko <mhocko@kernel.org>
-Cc: Minchan Kim <minchan@kernel.org>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: Roger Quadros <rogerq@kernel.org>
-Cc: Ziliang Guo <guo.ziliang@zte.com.cn>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+The race wouldn't occur if the gadget core registered its devices on
+a real bus, using the standard synchronization techniques of the
+driver core.  However, it's not necessary to make such a large change
+in order to fix this bug; all we need to do is make sure that
+udc->dev.driver is always NULL.
+
+In fact, there is no reason for udc->dev.driver ever to be set to
+anything, let alone to the value it currently gets: the address of the
+gadget's driver.  After all, a gadget driver only knows how to manage
+a gadget, not how to manage a UDC.
+
+This patch simply removes the statements in the gadget core that touch
+udc->dev.driver.
+
+Fixes: 2ccea03a8f7e ("usb: gadget: introduce UDC Class")
+CC: <stable@vger.kernel.org>
+Reported-and-tested-by: syzbot+348b571beb5eeb70a582@syzkaller.appspotmail.com
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+Link: https://lore.kernel.org/r/YiQgukfFFbBnwJ/9@rowland.harvard.edu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/swap_state.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/gadget/udc/core.c |    3 ---
+ 1 file changed, 3 deletions(-)
 
---- a/mm/swap_state.c
-+++ b/mm/swap_state.c
-@@ -478,7 +478,7 @@ struct page *__read_swap_cache_async(swp
- 		 * __read_swap_cache_async(), which has set SWAP_HAS_CACHE
- 		 * in swap_map, but not yet added its page to swap cache.
- 		 */
--		cond_resched();
-+		schedule_timeout_uninterruptible(1);
- 	}
+--- a/drivers/usb/gadget/udc/core.c
++++ b/drivers/usb/gadget/udc/core.c
+@@ -1343,7 +1343,6 @@ static void usb_gadget_remove_driver(str
+ 	usb_gadget_udc_stop(udc);
  
- 	/*
+ 	udc->driver = NULL;
+-	udc->dev.driver = NULL;
+ 	udc->gadget->dev.driver = NULL;
+ }
+ 
+@@ -1405,7 +1404,6 @@ static int udc_bind_to_driver(struct usb
+ 			driver->function);
+ 
+ 	udc->driver = driver;
+-	udc->dev.driver = &driver->driver;
+ 	udc->gadget->dev.driver = &driver->driver;
+ 
+ 	usb_gadget_udc_set_speed(udc, driver->max_speed);
+@@ -1427,7 +1425,6 @@ err1:
+ 		dev_err(&udc->dev, "failed to start %s: %d\n",
+ 			udc->driver->function, ret);
+ 	udc->driver = NULL;
+-	udc->dev.driver = NULL;
+ 	udc->gadget->dev.driver = NULL;
+ 	return ret;
+ }
 
 
