@@ -2,129 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0540C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:23:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB23CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:24:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232584AbiCUXYa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:24:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55708 "EHLO
+        id S233165AbiCUXZc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:25:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232554AbiCUXYQ (ORCPT
+        with ESMTP id S233005AbiCUXZU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 19:24:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 925A0278555
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 16:17:47 -0700 (PDT)
+        Mon, 21 Mar 2022 19:25:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD2C73EE953
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 16:19:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23837B81A21
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 23:17:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86C47C340E8;
-        Mon, 21 Mar 2022 23:17:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E3AE614DD
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 23:18:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CBD75C340E8;
+        Mon, 21 Mar 2022 23:18:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647904664;
-        bh=y9xXWMwyEANoM6aeY6koZNPCFGb3yUKNDQjuQUtX7JY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rSY9bXGW0N5W+d2AHsxfL96+yWeLwzTaINMtf3MV3QrW+jcJumSbKNClS66ynent3
-         418H0sJ4vy+66ecCKoIusShJ60tw0TeDvizUA9FKtOjcbPA+BwR4PduTg3epP7u33k
-         CK8gR8E7K/94OKJs9clkdaDMUjUWVolmAGJcHvP6Hd+gnPFmnWHEJGyfA/zk0krHmn
-         QdfIyvybn/y95cB50mZGLdkyFXD8RKAggjwIfKDlGKBHM77dsQWaNi9h0ksyrTgdV8
-         xkM5efXRgSetllQDIbWMk5tg9/3Pl4LCmuXbWGBO+w5upjztBcKh3LUY6s8/buQpoy
-         FWSx8gZxemBeQ==
-Date:   Mon, 21 Mar 2022 16:17:37 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     kernel test robot <lkp@intel.com>
-Cc:     x86-ml <x86@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [tip:sched/core] BUILD SUCCESS
- 3387ce4d8a5f2956fab827edf499fe6780e83faa
-Message-ID: <YjkHkb7joeu5GCto@dev-arch.thelio-3990X>
-References: <6238fde0.Qe5umewxqwiDe2GE%lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6238fde0.Qe5umewxqwiDe2GE%lkp@intel.com>
+        s=k20201202; t=1647904724;
+        bh=m6KXw5cu77fFqjUg3xueUjK3R+aggc9DbsO4Dz7YKb0=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=q4wV+FLcxwwhxknK0UYjreaH6ViQl1NTjnslX3GCck+FSVyWbSQae/J9/GcH1ac0/
+         jvoJFI0dVEN0IGxNv9N/1rKatv3PXFKLn1TWa5MVkbsegy6TeBpwX2nmWkwS4c4hkM
+         DtlYz5xDGeXBHf8pNZn1dhW6NaB5cLx7E+5n9GHYyDsw0BEQyTcDakQye+vlidRXx2
+         4wvVlSeYUXkZZRtdo2DK3ctQirjbj7JH8WBfHri8NLab3VpyBuX6nYwaO9b+KfQShm
+         uvvVG1WYFRZMW8oYMdMXcnxRprB/XzX9ihwK9LgIDHXHXOF6FlEh0Q28XBliYHdPMx
+         LmbhokFNP56cA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B9BABE7BB0B;
+        Mon, 21 Mar 2022 23:18:44 +0000 (UTC)
+Subject: Re: [GIT PULL] random number generator updates for 5.18-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220317232804.931702-1-Jason@zx2c4.com>
+References: <20220317232804.931702-1-Jason@zx2c4.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220317232804.931702-1-Jason@zx2c4.com>
+X-PR-Tracked-Remote: ssh://git@gitolite.kernel.org/pub/scm/linux/kernel/git/crng/random.git tags/random-5.18-rc1-for-linus
+X-PR-Tracked-Commit-Id: 3e504d2026eb6c8762cd6040ae57db166516824a
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 5628b8de1228436d47491c662dc521bc138a3d43
+Message-Id: <164790472475.24500.3192057522006290577.pr-tracker-bot@kernel.org>
+Date:   Mon, 21 Mar 2022 23:18:44 +0000
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+The pull request you sent on Thu, 17 Mar 2022 17:28:04 -0600:
 
-On Tue, Mar 22, 2022 at 06:36:16AM +0800, kernel test robot wrote:
-> tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/core
-> branch HEAD: 3387ce4d8a5f2956fab827edf499fe6780e83faa  headers/prep: Fix header to build standalone: <linux/psi.h>
-> 
-> elapsed time: 730m
-> 
-> configs tested: 114
-> configs skipped: 3
-> 
-> The following configs have been built successfully.
-> More configs may be tested in the coming days.
-> 
-> gcc tested configs:
-...
-> arm                              allyesconfig
-> arm                              allmodconfig
+> ssh://git@gitolite.kernel.org/pub/scm/linux/kernel/git/crng/random.git tags/random-5.18-rc1-for-linus
 
-This caught my eye due to my earlier report:
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/5628b8de1228436d47491c662dc521bc138a3d43
 
-https://lore.kernel.org/r/YjiddAnoCCz7Tbt3@dev-arch.thelio-3990X/
+Thank you!
 
-Are you sure these configurations built sucessfully?
-
-
-$ git show -s
-commit 3387ce4d8a5f2956fab827edf499fe6780e83faa
-Author: Ingo Molnar <mingo@kernel.org>
-Date:   Mon Mar 21 11:05:50 2022 +0100
-
-    headers/prep: Fix header to build standalone: <linux/psi.h>
-    
-    Add the <linux/cgroup-defs.h> dependency to <linux/psi.h>, because
-    cgroup_move_task() will dereference 'struct css_set'.
-    
-    ( Only older toolchains are affected, due to variations in
-      the implementation of rcu_assign_pointer() et al. )
-    
-    Cc: Peter Zijlstra <peterz@infradead.org>
-    Cc: Linus Torvalds <torvalds@linux-foundation.org>
-    Reported-by: Sachin Sant <sachinp@linux.ibm.com>
-    Reported-by: Andrew Morton <akpm@linux-foundation.org>
-    Reported-by: Borislav Petkov <bp@alien8.de>
-    Signed-off-by: Ingo Molnar <mingo@kernel.org>
-
-$ make -skj"$(nproc)" ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- allmodconfig kernel/sched/
-In file included from kernel/sched/fair.c:52:
-kernel/sched/sched.h:87:11: fatal error: asm/paravirt_api_clock.h: No such file or directory
-   87 | # include <asm/paravirt_api_clock.h>
-      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~
-compilation terminated.
-make[3]: *** [scripts/Makefile.build:288: kernel/sched/fair.o] Error 1
-In file included from kernel/sched/build_utility.c:52:
-kernel/sched/sched.h:87:11: fatal error: asm/paravirt_api_clock.h: No such file or directory
-   87 | # include <asm/paravirt_api_clock.h>
-      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~
-compilation terminated.
-make[3]: *** [scripts/Makefile.build:288: kernel/sched/build_utility.o] Error 1
-In file included from kernel/sched/build_policy.c:33:
-kernel/sched/sched.h:87:11: fatal error: asm/paravirt_api_clock.h: No such file or directory
-   87 | # include <asm/paravirt_api_clock.h>
-      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~
-compilation terminated.
-make[3]: *** [scripts/Makefile.build:288: kernel/sched/build_policy.o] Error 1
-In file included from kernel/sched/core.c:81:
-kernel/sched/sched.h:87:11: fatal error: asm/paravirt_api_clock.h: No such file or directory
-   87 | # include <asm/paravirt_api_clock.h>
-      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~
-compilation terminated.
-...
-
-I am curious to know how this error was not caught by these builds?
-Perhaps an old .config from a previous allmodconfig is being reused,
-rather than just running "make allmodconfig"? If that is the case, it
-seems like that methodology will miss out on new configuration options
-over time.
-
-Cheers,
-Nathan
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
