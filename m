@@ -2,96 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27A2EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:59:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E2F1C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 17:02:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351543AbiCURBI (ORCPT
+        id S1351565AbiCURDZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 13:01:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49680 "EHLO
+        Mon, 21 Mar 2022 13:03:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346265AbiCURBG (ORCPT
+        with ESMTP id S1351583AbiCURDI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 13:01:06 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A21F62138
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:59:40 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id m3so13633737lfj.11
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:59:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wBQk8rHtEPTg6dv9p8Kge/KgK79GOS20rlTmW/7fX9Q=;
-        b=bWURaSxEHcwi/MbE/WuU8Lye1Vi23YYhdUI+3MOmVNwDrY5PlMMtW6JuuZL/XPUuXM
-         /xIA10lKeFvophAsWTdRVYSAaJzjOTQwuNZdK8oEQD45026nVACp1JOFN83h5QIaWZvB
-         hwG7x5qxPqyG6eqPlvpG/oiOPNsZ5g9rTCBZs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wBQk8rHtEPTg6dv9p8Kge/KgK79GOS20rlTmW/7fX9Q=;
-        b=1PnLA/nQiILcHK3lT3Vob5zBsW+QcZF3zDR8TSf2L7GkjeKz7ua4geV0Uogg5yisaU
-         4QMI/tSsUeY/3Hndu7fX26/9VaDnQRfgehTg4K+JYb1wef9T57JpI+o3FcVgeawj0DiW
-         8HMWo17uzMfrtb/bSl6nR4fZqE5qe37gHoEtLLRuv4oBrItZXiOlWhmJ9ydse9CacfCS
-         xrINOFMPXyr0zpEX4YCPratCkX6dPBDAnyt+snos2hPZT6URdCpPJLIwvS/mRhan22Tj
-         rmUu1W8cmxZjmFG3aIUebprU8Qu0YBBFwCkolC6S4LLQApqVROhI2OYIjTW1g2zbBdQx
-         u87Q==
-X-Gm-Message-State: AOAM533iKKCXKK35uLXTu+rPHDizgju+LPYgyO6ph7R1qxTwzWecwgcH
-        UBIz6qMj4z5IzBQK3d5TWVZOw4caA6wPd8FAObU=
-X-Google-Smtp-Source: ABdhPJyDzA1BSG84z4fZ43UrYR1WflUj6x+FN8nphUjUIndILyLyUs6UC6FF6rq1sUVGSfXSvL3b4w==
-X-Received: by 2002:a05:6512:10d4:b0:448:9691:435e with SMTP id k20-20020a05651210d400b004489691435emr14742243lfg.465.1647881975424;
-        Mon, 21 Mar 2022 09:59:35 -0700 (PDT)
-Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com. [209.85.167.47])
-        by smtp.gmail.com with ESMTPSA id m28-20020a19711c000000b0044a1fd4133asm746455lfc.215.2022.03.21.09.59.33
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Mar 2022 09:59:34 -0700 (PDT)
-Received: by mail-lf1-f47.google.com with SMTP id 5so7434885lfp.1
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:59:33 -0700 (PDT)
-X-Received: by 2002:a19:e048:0:b0:448:2caa:7ed2 with SMTP id
- g8-20020a19e048000000b004482caa7ed2mr15608242lfj.449.1647881973238; Mon, 21
- Mar 2022 09:59:33 -0700 (PDT)
+        Mon, 21 Mar 2022 13:03:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B71D9132EB7;
+        Mon, 21 Mar 2022 10:01:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 536EC61451;
+        Mon, 21 Mar 2022 17:01:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A43BC340E8;
+        Mon, 21 Mar 2022 17:01:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647882101;
+        bh=z74tmM91Um9X1h7Fhx54Fbs7WMs3ywKR9k3rFYogmiA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=p4DM2ufydUB+hlToCdfm9R6miNisFSTGqpnrdwux16BgmTvTDhbfRvFmzM5L6vW1v
+         ayIg+HMlsnwDpVZxQTp1Hl2/u0BCRxVQF6g+6BdlnqYMpfhg5GHtleX+McUaKIbjaC
+         mQrv/1pa8VWuzusofQFkwlRX9tyvINDCzaRiJ5ouiWwH6/osxtCmhdwclNWV3Ypz1d
+         uDSngg5GD5fQUJgAGSdxQhsb2AmQokTUSxCyIUWMnFUfigRdEHSV79eNouy/TE/wsp
+         /p71KygkDPu0CUEGzDomV89Q+nuLH7PQ7H2yf4hvCBoI+Kib69tr+h2SEioxROAzNm
+         DoWkvMr02pTSA==
+Date:   Mon, 21 Mar 2022 11:01:39 -0600
+From:   Keith Busch <kbusch@kernel.org>
+To:     Sven Peter <sven@svenpeter.dev>
+Cc:     Jens Axboe <axboe@fb.com>, Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Hector Martin <marcan@marcan.st>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Rob Herring <robh+dt@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <maz@kernel.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org
+Subject: Re: [PATCH 6/9] nvme-apple: Add initial Apple SoC NVMe driver
+Message-ID: <Yjivcz4BlCMfJBkM@C02CK6Q3MD6M>
+References: <20220321165049.35985-1-sven@svenpeter.dev>
+ <20220321165049.35985-7-sven@svenpeter.dev>
 MIME-Version: 1.0
-References: <20220319142759.1026237-1-chenhuacai@loongson.cn> <CAK8P3a12dY57+ZPEREAUrsNf45S0_4-yYHen6p0-PjJEivjczg@mail.gmail.com>
-In-Reply-To: <CAK8P3a12dY57+ZPEREAUrsNf45S0_4-yYHen6p0-PjJEivjczg@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 21 Mar 2022 09:59:17 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wj81Cgjb5xj=ghB0oEA4ronnc=WKZLTPGpJYPUn=QcQ5g@mail.gmail.com>
-Message-ID: <CAHk-=wj81Cgjb5xj=ghB0oEA4ronnc=WKZLTPGpJYPUn=QcQ5g@mail.gmail.com>
-Subject: Re: [PATCH V8 00/22] arch: Add basic LoongArch support
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Huacai Chen <chenhuacai@kernel.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220321165049.35985-7-sven@svenpeter.dev>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 4:09 AM Arnd Bergmann <arnd@arndb.de> wrote:
->
-> This looks fine to me for the most part [...]
+On Mon, Mar 21, 2022 at 05:50:46PM +0100, Sven Peter wrote:
+> +static bool apple_nvme_poll_cq(struct apple_nvme_queue *q,
+> +			       struct io_comp_batch *iob)
+> +{
+> +	bool found = false;
+> +
+> +	while (apple_nvme_cqe_pending(q)) {
+> +		found = true;
+> +
+> +		/*
+> +		 * load-load control dependency between phase and the rest of
+> +		 * the cqe requires a full read memory barrier
+> +		 */
+> +		dma_rmb();
+> +		apple_nvme_handle_cqe(q, iob, q->cq_head);
+> +		apple_nvme_update_cq_head(q);
+> +	}
+> +
+> +	if (found)
+> +		writel_relaxed(q->cq_head, q->cq_db);
 
-So it looks like this is getting there.. Do we have a way forward for
-this to be merged?
-
-I obviously can take the patches, but it would be even nicer to have a
-pull request, and you'd be the obvious person since you are - whether
-you like it or not - the "odd architecture guy".
-
-Hint hint ;)
-
-            Linus
+Doesn't a relaxed write mean that a subsequent write can bypass the previous?
+If so, that sounds like it can corrupt the cq head.
