@@ -2,128 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E1CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 18:05:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26A39C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 18:08:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351990AbiCUSHM (ORCPT
+        id S1352007AbiCUSJs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 14:07:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35412 "EHLO
+        Mon, 21 Mar 2022 14:09:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345172AbiCUSHJ (ORCPT
+        with ESMTP id S1351993AbiCUSJq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 14:07:09 -0400
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A3C5EDDE
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 11:05:43 -0700 (PDT)
-Received: by mail-oi1-x22f.google.com with SMTP id z8so17062197oix.3
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 11:05:43 -0700 (PDT)
+        Mon, 21 Mar 2022 14:09:46 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6DD5387B6
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 11:08:20 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id mz9-20020a17090b378900b001c657559290so3823pjb.2
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 11:08:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=csFbV8mex3SknnrbFvywrMSrr0CsC7QVTDfRrFG7bIc=;
-        b=RPet5TW1bR0DE2bWAU0VRzEoOKF0hmUrHqGvQL/S8gHdSwSDeg8xJ5mnbmRb04fKlY
-         E13YRRZ8/UN1VdBu3PoT3SWm3oMlVbfIyEA2i2xCQaxrfkKWkalxP+yPAWnrWrJnag0u
-         XXCzsSJNTRLY36JtE0LjLuoubdR4u/OkR+3E9lXsYrYpzIrLIa42k4JrdPaln6fBJcfh
-         Uc51G5e7zC5A40UWGUxrOUplsoBupbErpXcAw457hLkkBEqCPJ7Cd6Z5Dn9eLf5KDL58
-         vf6jW4Oaw9kgJjgzSveQml59YIqwHB7JwQxPOnMVzaNST5WZbIsMaSwxPXC/ECiyXhoZ
-         9r7w==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=67U3Z2XcJlRBA5r6fKuHVpCEmGfkLy5vZyJ9ghD60yU=;
+        b=TNT/gBllZiZ0tYMdVN2h6Nu1CfHmFRNsSVWVmgJWqeTocFJGIIb3xLUflmb2Xbhx9q
+         MdCYvUZD5LDw5yukGlzFxb99EQ2GcdFYgCARWv7Gr3pEXX5U/g50pBVxVPt4ZhNr5a/x
+         VjRv4M+nh6x3wJLti+SzX17OoJu+otOr8x0imo4nv1hUeFQFLvxbtR2BGsXICYiMY/mo
+         jVNmkdGSHAZsv8nLSjjTsW33LViVjtzjXtQwj/z22oc/mKR3Vcy0kT925uiJpr1p/KUN
+         7Ur/VXTjPYzzwM52Vq/bT5vSSWzJgai4h979kSvYjTeUU47hNNnekH1eV9HVlobSULM1
+         lO7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=csFbV8mex3SknnrbFvywrMSrr0CsC7QVTDfRrFG7bIc=;
-        b=e9/9K7QAXeZ4bjakbcvF2k0YyoS6EaRU3927yXbWjQ3Cxsd9BiXVcxT5Wuto8+OB37
-         JjpuAet9DoHCMDsMiEDlVpGjlakdynbNaenSgkGUjnfLJABVkLmfSPlZEIjOLaamp2PS
-         D7Y0S4vdejaoh+nkTv21c2TzK7v5eQR8sZjIoAzUN/qwNKBCWAq+LGv7x2kB1shMpaDb
-         ZSm9dQSJ/BQK2spuNNOnBacqktOAXpQ37CQi9qJpqZOllwCKnlINz4buMJIjyDCsfebs
-         MkpyugNhziowHYvMF3MzzFLXMYxlTMPquQNQRJ4jG3hYyn4526xIZIYeEUapAEmM3Ae3
-         +mZA==
-X-Gm-Message-State: AOAM5303QkKEdnVcHllNSrAsvBhfSphASq/Zn8Yoe0SK8eYKs/2G/CfU
-        xR3FedzGERihS34TLCZj5UD72g==
-X-Google-Smtp-Source: ABdhPJx43cjfp86LlzUzMsjt6s0dwo08dMlqc4P2DpMOyie/m//toVQ1lOOAa3zRzo0GllwOMVjkQQ==
-X-Received: by 2002:a05:6808:19a6:b0:2d9:c463:fac0 with SMTP id bj38-20020a05680819a600b002d9c463fac0mr179438oib.135.1647885942940;
-        Mon, 21 Mar 2022 11:05:42 -0700 (PDT)
-Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id r129-20020acac187000000b002ef358c6e0esm4086763oif.49.2022.03.21.11.05.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 11:05:42 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Andy Whitcroft <apw@canonical.com>, Joe Perches <joe@perches.com>,
-        Dwaipayan Ray <dwaipayanray1@gmail.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: [PATCH] checkpatch: Validate "Fixes:" references
-Date:   Mon, 21 Mar 2022 11:07:09 -0700
-Message-Id: <20220321180709.1177684-1-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.33.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=67U3Z2XcJlRBA5r6fKuHVpCEmGfkLy5vZyJ9ghD60yU=;
+        b=da7E1Jqb8N5wBE5zKs5BA/gIAsSW+gITi4xN0YPaxs/R7znxdb9SP9E++Y72XKSrwN
+         hdUfXbuGZTLyewhmNN3nuiJx0Ger7cTUhWbnHc158Gn+2Z5hlJJ39Ix6QNrVO62+3RZx
+         oDgu/qmYI89ZRooVMe5vlJeMWFjpQ+PH1BfpFkEX5MsAYXoU++Z4nqClmje72ogHa966
+         vv+1u9ThZtkYCxKCKi3cvYeo+EIxqABi7AY+6aWRohhbVk1tFtPchacr39+DsaGFIYKD
+         uSEMhK9cVSG/+KMe+9gejifi3m2EQvkgqJl5p1VcKh5sHtOXRhOQ3cgX+YYsURKFqp5e
+         FaUQ==
+X-Gm-Message-State: AOAM530L89JsrZVdgfqb6VdqbpdrN/r/NkCqnroC37C3V/ZjOEjAEh4z
+        D2bTyG287xMl0T8/3ox7ccNtDsbQyYwL9huihRdaJQ==
+X-Google-Smtp-Source: ABdhPJxdli37Q36UY14MXho3b/hG+Vqt/k/9g6vJskN9EhAP7yYNslsyHljpL+3GW0IP6iAmmXS2Blrig2Hpco3/F/I=
+X-Received: by 2002:a17:90a:5407:b0:1bf:43ce:f11b with SMTP id
+ z7-20020a17090a540700b001bf43cef11bmr367471pjh.31.1647886099922; Mon, 21 Mar
+ 2022 11:08:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220321150214.1895231-1-pgonda@google.com> <CAA03e5HEKPxfGZ57r=intg_ogTp_JPAio36QJXqviMZM_KmvEg@mail.gmail.com>
+In-Reply-To: <CAA03e5HEKPxfGZ57r=intg_ogTp_JPAio36QJXqviMZM_KmvEg@mail.gmail.com>
+From:   Peter Gonda <pgonda@google.com>
+Date:   Mon, 21 Mar 2022 12:08:08 -0600
+Message-ID: <CAMkAt6qbauEn1jGUYLQc6QURhCHLu7eDmzJhfHZZXN9FGbQOMA@mail.gmail.com>
+Subject: Re: [PATCH] Add KVM_EXIT_SHUTDOWN metadata for SEV-ES
+To:     Marc Orr <marcorr@google.com>
+Cc:     kvm list <kvm@vger.kernel.org>, Borislav Petkov <bp@alien8.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        Sean Christopherson <seanjc@google.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-checkpatch guards about non-compliant or invalid commit references
-embedded in the commit message, but a similar set of mistakes can be
-made when referencing commits in "Fixes:".
+> > diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+> > index 75fa6dd268f0..5f9d37dd3f6f 100644
+> > --- a/arch/x86/kvm/svm/sev.c
+> > +++ b/arch/x86/kvm/svm/sev.c
+> > @@ -2735,8 +2735,13 @@ static int sev_handle_vmgexit_msr_protocol(struct vcpu_svm *svm)
+> >                 pr_info("SEV-ES guest requested termination: %#llx:%#llx\n",
+> >                         reason_set, reason_code);
+> >
+> > -               ret = -EINVAL;
+> > -               break;
+> > +               vcpu->run->exit_reason = KVM_EXIT_SHUTDOWN;
+> > +               vcpu->run->shutdown.reason = KVM_SHUTDOWN_SEV_TERM;
+> > +               vcpu->run->shutdown.ndata = 2;
+> > +               vcpu->run->shutdown.data[0] = reason_set;
+> > +               vcpu->run->shutdown.data[1] = reason_code;
+> > +
+> > +               return 0;
+>
+> Maybe I'm missing something, but don't we want to keep returning an error?
+>
+> rationale: Current behavior: return -EINVAL to userpsace, but
+> userpsace cannot infer where the -EINVAL came from. After this patch:
+> We should still return -EINVAL to userspace, but now userspace can
+> parse this new info in the KVM run struct to properly terminate.
+>
 
-Add sanity checks for references to missing commits, short hashes,
-improper spacing, improper case or issues with the commit description.
-
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
- scripts/checkpatch.pl | 36 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
-
-diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
-index 577e02998701..b602ab50fc5c 100755
---- a/scripts/checkpatch.pl
-+++ b/scripts/checkpatch.pl
-@@ -3273,6 +3273,42 @@ sub process {
- 			$last_git_commit_id_linenr = $linenr if ($line =~ /\bcommit\s*$/i);
- 		}
- 
-+# Check for valid Fixes:
-+		if ($line =~ /^fixes:\s*([0-9a-f]{5,})/i) {
-+			my $orig_commit = lc($1);
-+
-+			my $case = 1;
-+			my $short = 1;
-+			my $space = 1;
-+			my $has_quotes = 0;
-+			my $id = '0123456789ab';
-+			my $orig_desc = "commit description";
-+			my $description = "";
-+
-+			$case = 0 if ($line =~ /^Fixes:\s+[0-9a-f]{5,40}[^A-F]/);
-+			$short = 0 if ($line =~ /\bfixes:\s*[0-9a-f]{12,40}/i);
-+			$space = 0 if ($line =~ /\bfixes: [0-9a-f]{5,} \(/i);
-+
-+			if ($line =~ /\bfixes:\s+[0-9a-f]{5,}\s*($balanced_parens)/i) {
-+				$orig_desc = substr($1, 1, -1);
-+				if ($orig_desc =~ /^".*"$/) {
-+					$orig_desc = substr($orig_desc, 1, -1);
-+					$has_quotes = 1;
-+				}
-+			}
-+
-+			($id, $description) = git_commit_info($orig_commit,
-+							      $id, $orig_desc);
-+
-+			if (defined($id) && ($short || $space || $case || ($orig_desc ne $description) || !$has_quotes)) {
-+				ERROR("GIT_COMMIT_ID",
-+				      "Please use git commit description style 'Fixes: <12+ chars of sha1> (\"<title line>\")' - ie: 'Fixes: $id (\"$description\")'\n" . $herecurr);
-+			} elsif (!defined($id)) {
-+				WARN("UNKNOWN_COMMIT_ID",
-+				     "Unknown commit id '$orig_commit', maybe rebased or not pulled?\n" . $herecurr);
-+			}
-+		}
-+
- # Check for added, moved or deleted files
- 		if (!$reported_maintainer_file && !$in_commit_log &&
- 		    ($line =~ /^(?:new|deleted) file mode\s*\d+\s*$/ ||
--- 
-2.33.1
-
+I removed the error return code here since an SEV guest may request a
+termination due to no fault of the host at all. This is now inline
+with any other shutdown requested by the guest. I don't have a strong
+preference here but EINVAL doesn't seem correct in all cases, do
+others have any thoughts on this?
