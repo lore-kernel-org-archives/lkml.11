@@ -2,53 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 050AAC4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 856FDC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349418AbiCUOIX (ORCPT
+        id S1349382AbiCUOIM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:08:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38066 "EHLO
+        Mon, 21 Mar 2022 10:08:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348688AbiCUOBD (ORCPT
+        with ESMTP id S1348676AbiCUOA5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:01:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8482340A33;
-        Mon, 21 Mar 2022 06:59:11 -0700 (PDT)
+        Mon, 21 Mar 2022 10:00:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F8F33D48F;
+        Mon, 21 Mar 2022 06:58:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99ADE612E7;
-        Mon, 21 Mar 2022 13:59:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D1C3C36AED;
-        Mon, 21 Mar 2022 13:59:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F19C612A1;
+        Mon, 21 Mar 2022 13:58:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 109A6C340ED;
+        Mon, 21 Mar 2022 13:58:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871143;
-        bh=f+LCZ3bh2GVBGvSo0w7qmYnQgZRd9peEz0XanTctYBE=;
+        s=korg; t=1647871137;
+        bh=saHmvrY9uxdGezIR6fec89oK13Fs/l/1MxLyPHD9tpQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D88Uel+kL9gxoKF46XxcuNYjlD03D/1CAuv658uqAJwhYKhI6cYrArI0IB0b7jm2s
-         JCRsweHbZ0GcOOJpHUCHLIMkDuYi8e2FvH7AeA7A9iaIcZNJO9P802WsKMxGiCIY2K
-         ht7aB5jbSVphFEu45pqr7cnfuPrXvw+hNNKeWbNo=
+        b=f14wjtNXL7RMQ1CUngUqRSEhktxPmRrQFkD0fCPd5fp4Xkr+q2WvcvfVlAAsVsNJK
+         wXoxqQ9OGpaUlQkmkdbY3Yq4R+G1Qe2vwkDVnipsCJJI4RkieCaQ/4+rQvRBRHQXwP
+         m+5Dr2hRrXUTGuIk9yqJO3vhEXYNWCUJHy/0fjBU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guo Ziliang <guo.ziliang@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
-        Jiang Xuexin <jiang.xuexin@zte.com.cn>,
-        Yang Yang <yang.yang29@zte.com.cn>,
-        Hugh Dickins <hughd@google.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Minchan Kim <minchan@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Roger Quadros <rogerq@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 03/30] mm: swap: get rid of livelock in swapin readahead
-Date:   Mon, 21 Mar 2022 14:52:33 +0100
-Message-Id: <20220321133219.745437892@linuxfoundation.org>
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 18/30] net: mscc: ocelot: fix backwards compatibility with single-chain tc-flower offload
+Date:   Mon, 21 Mar 2022 14:52:48 +0100
+Message-Id: <20220321133220.173764440@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133219.643490199@linuxfoundation.org>
 References: <20220321133219.643490199@linuxfoundation.org>
@@ -60,83 +50,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ziliang <guo.ziliang@zte.com.cn>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-commit 029c4628b2eb2ca969e9bf979b05dc18d8d5575e upstream.
+[ Upstream commit 8e0341aefcc9133f3f48683873284b169581315b ]
 
-In our testing, a livelock task was found.  Through sysrq printing, same
-stack was found every time, as follows:
+ACL rules can be offloaded to VCAP IS2 either through chain 0, or, since
+the blamed commit, through a chain index whose number encodes a specific
+PAG (Policy Action Group) and lookup number.
 
-  __swap_duplicate+0x58/0x1a0
-  swapcache_prepare+0x24/0x30
-  __read_swap_cache_async+0xac/0x220
-  read_swap_cache_async+0x58/0xa0
-  swapin_readahead+0x24c/0x628
-  do_swap_page+0x374/0x8a0
-  __handle_mm_fault+0x598/0xd60
-  handle_mm_fault+0x114/0x200
-  do_page_fault+0x148/0x4d0
-  do_translation_fault+0xb0/0xd4
-  do_mem_abort+0x50/0xb0
+The chain number is translated through ocelot_chain_to_pag() into a PAG,
+and through ocelot_chain_to_lookup() into a lookup number.
 
-The reason for the livelock is that swapcache_prepare() always returns
-EEXIST, indicating that SWAP_HAS_CACHE has not been cleared, so that it
-cannot jump out of the loop.  We suspect that the task that clears the
-SWAP_HAS_CACHE flag never gets a chance to run.  We try to lower the
-priority of the task stuck in a livelock so that the task that clears
-the SWAP_HAS_CACHE flag will run.  The results show that the system
-returns to normal after the priority is lowered.
+The problem with the blamed commit is that the above 2 functions don't
+have special treatment for chain 0. So ocelot_chain_to_pag(0) returns
+filter->pag = 224, which is in fact -32, but the "pag" field is an u8.
 
-In our testing, multiple real-time tasks are bound to the same core, and
-the task in the livelock is the highest priority task of the core, so
-the livelocked task cannot be preempted.
+So we end up programming the hardware with VCAP IS2 entries having a PAG
+of 224. But the way in which the PAG works is that it defines a subset
+of VCAP IS2 filters which should match on a packet. The default PAG is
+0, and previous VCAP IS1 rules (which we offload using 'goto') can
+modify it. So basically, we are installing filters with a PAG on which
+no packet will ever match. This is the hardware equivalent of adding
+filters to a chain which has no 'goto' to it.
 
-Although cond_resched() is used by __read_swap_cache_async, it is an
-empty function in the preemptive system and cannot achieve the purpose
-of releasing the CPU.  A high-priority task cannot release the CPU
-unless preempted by a higher-priority task.  But when this task is
-already the highest priority task on this core, other tasks will not be
-able to be scheduled.  So we think we should replace cond_resched() with
-schedule_timeout_uninterruptible(1), schedule_timeout_interruptible will
-call set_current_state first to set the task state, so the task will be
-removed from the running queue, so as to achieve the purpose of giving
-up the CPU and prevent it from running in kernel mode for too long.
+Restore the previous functionality by making ACL filters offloaded to
+chain 0 go to PAG 0 and lookup number 0. The choice of PAG is clearly
+correct, but the choice of lookup number isn't "as before" (which was to
+leave the lookup a "don't care"). However, lookup 0 should be fine,
+since even though there are ACL actions (policers) which have a
+requirement to be used in a specific lookup, that lookup is 0.
 
-(akpm: ugly hack becomes uglier.  But it fixes the issue in a
-backportable-to-stable fashion while we hopefully work on something
-better)
-
-Link: https://lkml.kernel.org/r/20220221111749.1928222-1-cgel.zte@gmail.com
-Signed-off-by: Guo Ziliang <guo.ziliang@zte.com.cn>
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Reviewed-by: Ran Xiaokai <ran.xiaokai@zte.com.cn>
-Reviewed-by: Jiang Xuexin <jiang.xuexin@zte.com.cn>
-Reviewed-by: Yang Yang <yang.yang29@zte.com.cn>
-Acked-by: Hugh Dickins <hughd@google.com>
-Cc: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Cc: Michal Hocko <mhocko@kernel.org>
-Cc: Minchan Kim <minchan@kernel.org>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: Roger Quadros <rogerq@kernel.org>
-Cc: Ziliang Guo <guo.ziliang@zte.com.cn>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 226e9cd82a96 ("net: mscc: ocelot: only install TCAM entries into a specific lookup and PAG")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Link: https://lore.kernel.org/r/20220316192117.2568261-1-vladimir.oltean@nxp.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/swap_state.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mscc/ocelot_flower.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
 
---- a/mm/swap_state.c
-+++ b/mm/swap_state.c
-@@ -512,7 +512,7 @@ struct page *__read_swap_cache_async(swp
- 		 * __read_swap_cache_async(), which has set SWAP_HAS_CACHE
- 		 * in swap_map, but not yet added its page to swap cache.
- 		 */
--		cond_resched();
-+		schedule_timeout_uninterruptible(1);
- 	}
+diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
+index 217e8333de6c..c4c4649b2088 100644
+--- a/drivers/net/ethernet/mscc/ocelot_flower.c
++++ b/drivers/net/ethernet/mscc/ocelot_flower.c
+@@ -54,6 +54,12 @@ static int ocelot_chain_to_block(int chain, bool ingress)
+  */
+ static int ocelot_chain_to_lookup(int chain)
+ {
++	/* Backwards compatibility with older, single-chain tc-flower
++	 * offload support in Ocelot
++	 */
++	if (chain == 0)
++		return 0;
++
+ 	return (chain / VCAP_LOOKUP) % 10;
+ }
  
- 	/*
+@@ -62,7 +68,15 @@ static int ocelot_chain_to_lookup(int chain)
+  */
+ static int ocelot_chain_to_pag(int chain)
+ {
+-	int lookup = ocelot_chain_to_lookup(chain);
++	int lookup;
++
++	/* Backwards compatibility with older, single-chain tc-flower
++	 * offload support in Ocelot
++	 */
++	if (chain == 0)
++		return 0;
++
++	lookup = ocelot_chain_to_lookup(chain);
+ 
+ 	/* calculate PAG value as chain index relative to the first PAG */
+ 	return chain - VCAP_IS2_CHAIN(lookup, 0);
+-- 
+2.34.1
+
 
 
