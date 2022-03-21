@@ -2,203 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4049AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:46:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0978EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:46:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229719AbiCUWsC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:48:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54734 "EHLO
+        id S229912AbiCUWsV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:48:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229797AbiCUWrf (ORCPT
+        with ESMTP id S229845AbiCUWsM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:47:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E612636E819;
-        Mon, 21 Mar 2022 15:27:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6D205B81A4D;
-        Mon, 21 Mar 2022 22:03:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C557C340F8;
-        Mon, 21 Mar 2022 22:03:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647900223;
-        bh=Q7gazwmOiF1+pGMUPd49Zh6pNO4LTkSrTEg1R9lEwig=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=UcdkgUCRnjf+T4JeLeEPezb1Ad/rZaYpJCzlzw+MAAsHZhewgbzIci6bVvXeWCs3C
-         NzLq0oOHw++hHBtel/l5NqWbtchprKX2E14ME0S7FxWGfQvfi7reAx0ZORM37A0AFS
-         4XjpUf2TOohmM14Hs9nJ99b1zg9xmXHgBi8RZgF7Rq9IxmH7SW14mSK9MQBLb9eELd
-         7XFOSDInMs4wfF8UxggDApnwTbmYaeaFdMIpzIKYrkeRFrJbRlEcBna5w7AimpJSLk
-         Ah3ogsoHbm7In2pe4B/cEo5qE2fknhVVv35bIDnqPjdO/wY6ZRoSiubeWOg2KKj67b
-         6HqQcv3FYlyrA==
-Received: by mail-yb1-f171.google.com with SMTP id z8so30552512ybh.7;
-        Mon, 21 Mar 2022 15:03:43 -0700 (PDT)
-X-Gm-Message-State: AOAM53198xCckhrOc75EsO+z744t/vpjDxCgYcQH61yC3eBCY4R3tamZ
-        gnJbi8J2ITYvz2wC+9x5ENVg26ptNpkMecKnH9Q=
-X-Google-Smtp-Source: ABdhPJwUdLaKpQIQDkJmLsTAFWXPlXvioL7Q/635HKNveO8Z14I2OOLoc+cD3XHJ0vLQNRs6TluOSbPrGrvsR6WLsik=
-X-Received: by 2002:a25:8b81:0:b0:629:17d5:68c1 with SMTP id
- j1-20020a258b81000000b0062917d568c1mr23210434ybl.449.1647900222062; Mon, 21
- Mar 2022 15:03:42 -0700 (PDT)
+        Mon, 21 Mar 2022 18:48:12 -0400
+Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34FE23A592C;
+        Mon, 21 Mar 2022 15:28:29 -0700 (PDT)
+Received: by mail-ot1-f54.google.com with SMTP id 17-20020a9d0611000000b005b251571643so11450201otn.2;
+        Mon, 21 Mar 2022 15:28:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=P30I1IvBZVWzxnjjs8xKnvlDjjaGWLFseUJUE0t0iug=;
+        b=CrB+tMlFpjHTSXg8Gn2v8DWc7jPVjtUqLQ9CAHIZh1fY/0P633UHu7U/0Bgi+Vga5r
+         rXzASm9uKs403Y8WSjJxCkCoE1K2PUlGnTahtR919klWYuRFFt6NLob7hPejQCwjt3A0
+         0cIrdgZ2UqBn876GtK8jo1s/kEL+AAA1UQTwhadZiDVPFykLBLLNNI56gVUM45Q4P9UH
+         64B+VHllK1G8OLxgF7PvAiNNXcpDQ0R5CV2U3HFljF1w0/K6QP7cevdJ829zuPMpXhwz
+         eyUL9GVLyu2uQ1cVR4QvhdPmXpkZ2uxEXLIv276wE1KqKW63BLkBsTeA+a5Kjia8DYwI
+         ne3A==
+X-Gm-Message-State: AOAM531ueoXZTkDMZaXw19ZulsYy/Wn4v3gJdLINOB6vzhYvD3aZrH7U
+        L2bJCzDjY3uA6txGvtldaA==
+X-Google-Smtp-Source: ABdhPJwhjaMdN3trRKuth/6PhzKCiyCDabep5R8B9rofsON9bTADl679fotxe+oPsBcjqvQOnCb4+Q==
+X-Received: by 2002:a9d:7994:0:b0:5b2:3110:e69c with SMTP id h20-20020a9d7994000000b005b23110e69cmr8812492otm.267.1647901708497;
+        Mon, 21 Mar 2022 15:28:28 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id g8-20020acab608000000b002ecf38fb699sm8030714oif.38.2022.03.21.15.28.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 15:28:27 -0700 (PDT)
+Received: (nullmailer pid 653541 invoked by uid 1000);
+        Mon, 21 Mar 2022 22:28:25 -0000
+Date:   Mon, 21 Mar 2022 17:28:25 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Moudy Ho <moudy.ho@mediatek.com>
+Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
+        linux-media@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Ping-Hsun Wu <ping-hsun.wu@mediatek.com>, tfiga@chromium.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Maoguang Meng <maoguang.meng@mediatek.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        jason-jh.lin@mediatek.com, river.cheng@mediatek.com,
+        linux-kernel@vger.kernel.org, roy-cw.yeh@mediatek.com,
+        srv_heupstream@mediatek.com,
+        Jernej Skrabec <jernej.skrabec@siol.net>, pihsun@chromium.org,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        devicetree@vger.kernel.org, hsinyi@google.com,
+        linux-arm-kernel@lists.infradead.org,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        daoyuan huang <daoyuan.huang@mediatek.com>,
+        randy.wu@mediatek.com,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        allen-kh.cheng@mediatek.com, sj.huang@mediatek.com,
+        linux-mediatek@lists.infradead.org, drinkcat@chromium.org,
+        menghui.lin@mediatek.com,
+        Alexandre Courbot <acourbot@chromium.org>,
+        Rob Landley <rob@landley.net>
+Subject: Re: [PATCH v14 3/6] dt-bindings: soc: mediatek: move out common
+ module from display folder
+Message-ID: <Yjj8CanzmdHeX7qz@robh.at.kernel.org>
+References: <20220317143926.15835-1-moudy.ho@mediatek.com>
+ <20220317143926.15835-4-moudy.ho@mediatek.com>
 MIME-Version: 1.0
-References: <20220318161528.1531164-1-benjamin.tissoires@redhat.com>
- <20220318161528.1531164-7-benjamin.tissoires@redhat.com> <CAPhsuW64x8_m1pNN9gC8LA8ajAmy+5O3y+iOaC7ixSXU=J624Q@mail.gmail.com>
- <CAO-hwJL+A5hqzGBCVCtp4diuM-_Aii+HAKNfz5oMZBTHCQrEkQ@mail.gmail.com>
-In-Reply-To: <CAO-hwJL+A5hqzGBCVCtp4diuM-_Aii+HAKNfz5oMZBTHCQrEkQ@mail.gmail.com>
-From:   Song Liu <song@kernel.org>
-Date:   Mon, 21 Mar 2022 15:03:31 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW7W_pGHFb4MyZHaFk9TV9zYaLXoTS_0hLoeqGOB8htRBg@mail.gmail.com>
-Message-ID: <CAPhsuW7W_pGHFb4MyZHaFk9TV9zYaLXoTS_0hLoeqGOB8htRBg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 06/17] HID: allow to change the report
- descriptor from an eBPF program
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220317143926.15835-4-moudy.ho@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 9:20 AM Benjamin Tissoires
-<benjamin.tissoires@redhat.com> wrote:
->
-> On Fri, Mar 18, 2022 at 10:10 PM Song Liu <song@kernel.org> wrote:
-> >
-> > On Fri, Mar 18, 2022 at 9:17 AM Benjamin Tissoires
-> > <benjamin.tissoires@redhat.com> wrote:
-> > >
-> > > Make use of BPF_HID_ATTACH_RDESC_FIXUP so we can trigger an rdesc fixup
-> > > in the bpf world.
-> > >
-> > > Whenever the program gets attached/detached, the device is reconnected
-> > > meaning that userspace will see it disappearing and reappearing with
-> > > the new report descriptor.
-> > >
-> > > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-> > >
-> > > ---
-> > >
-> > > changes in v3:
-> > > - ensure the ctx.size is properly bounded by allocated size
-> > > - s/link_attached/post_link_attach/
-> > > - removed the switch statement with only one case
-> > >
-> > > changes in v2:
-> > > - split the series by bpf/libbpf/hid/selftests and samples
-> > > ---
-> > >  drivers/hid/hid-bpf.c  | 62 ++++++++++++++++++++++++++++++++++++++++++
-> > >  drivers/hid/hid-core.c |  3 +-
-> > >  include/linux/hid.h    |  6 ++++
-> > >  3 files changed, 70 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/hid/hid-bpf.c b/drivers/hid/hid-bpf.c
-> > > index 5060ebcb9979..45c87ff47324 100644
-> > > --- a/drivers/hid/hid-bpf.c
-> > > +++ b/drivers/hid/hid-bpf.c
-> > > @@ -50,6 +50,14 @@ static struct hid_device *hid_bpf_fd_to_hdev(int fd)
-> > >         return hdev;
-> > >  }
-> > >
-> > > +static int hid_reconnect(struct hid_device *hdev)
-> > > +{
-> > > +       if (!test_and_set_bit(ffs(HID_STAT_REPROBED), &hdev->status))
-> > > +               return device_reprobe(&hdev->dev);
-> > > +
-> > > +       return 0;
-> > > +}
-> > > +
-> > >  static int hid_bpf_pre_link_attach(struct hid_device *hdev, enum bpf_hid_attach_type type)
-> > >  {
-> > >         int err = 0;
-> > > @@ -92,6 +100,12 @@ static int hid_bpf_pre_link_attach(struct hid_device *hdev, enum bpf_hid_attach_
-> > >         return err;
-> > >  }
-> > >
-> > > +static void hid_bpf_post_link_attach(struct hid_device *hdev, enum bpf_hid_attach_type type)
-> > > +{
-> > > +       if (type == BPF_HID_ATTACH_RDESC_FIXUP)
-> > > +               hid_reconnect(hdev);
-> > > +}
-> > > +
-> > >  static void hid_bpf_array_detach(struct hid_device *hdev, enum bpf_hid_attach_type type)
-> > >  {
-> > >         switch (type) {
-> > > @@ -99,6 +113,9 @@ static void hid_bpf_array_detach(struct hid_device *hdev, enum bpf_hid_attach_ty
-> > >                 kfree(hdev->bpf.device_data);
-> > >                 hdev->bpf.device_data = NULL;
-> > >                 break;
-> > > +       case BPF_HID_ATTACH_RDESC_FIXUP:
-> > > +               hid_reconnect(hdev);
-> > > +               break;
-> > >         default:
-> > >                 /* do nothing */
-> > >                 break;
-> > > @@ -116,6 +133,9 @@ static int hid_bpf_run_progs(struct hid_device *hdev, struct hid_bpf_ctx_kern *c
-> > >         case HID_BPF_DEVICE_EVENT:
-> > >                 type = BPF_HID_ATTACH_DEVICE_EVENT;
-> > >                 break;
-> > > +       case HID_BPF_RDESC_FIXUP:
-> > > +               type = BPF_HID_ATTACH_RDESC_FIXUP;
-> > > +               break;
-> > >         default:
-> > >                 return -EINVAL;
-> > >         }
-> > > @@ -155,11 +175,53 @@ u8 *hid_bpf_raw_event(struct hid_device *hdev, u8 *data, int *size)
-> > >         return ctx.data;
-> > >  }
-> > >
-> > > +u8 *hid_bpf_report_fixup(struct hid_device *hdev, u8 *rdesc, unsigned int *size)
-> > > +{
-> > > +       int ret;
-> > > +       struct hid_bpf_ctx_kern ctx = {
-> > > +               .type = HID_BPF_RDESC_FIXUP,
-> > > +               .hdev = hdev,
-> > > +               .size = *size,
-> > > +       };
-> > > +
-> > > +       if (bpf_hid_link_empty(&hdev->bpf, BPF_HID_ATTACH_RDESC_FIXUP))
-> >
-> > Do we need to lock bpf_hid_mutex before calling bpf_hid_link_empty()?
-> > (or maybe we
-> > already did?)
->
-> The mutex is not locked before this call, indeed.
->
-> However, bpf_hid_link_empty() is an inlined function that just calls
-> in the end list_empty(). Given that all the list heads are created
-> just once for the entire life of the HID device, I *think* this is
-> thread safe and does not require mutex locking.
+On Thu, 17 Mar 2022 22:39:23 +0800, Moudy Ho wrote:
+> In order to share the same hardware information with MDP3,
+> change the MUTEX dt-binding to the path "soc/mediatek".
+> 
+> Signed-off-by: Moudy Ho <moudy.ho@mediatek.com>
+> ---
+>  .../bindings/{display => soc}/mediatek/mediatek,mutex.yaml      | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>  rename Documentation/devicetree/bindings/{display => soc}/mediatek/mediatek,mutex.yaml (97%)
+> 
 
-Hmm.. I guess you are right.
-
->
-> (I might be wrong)
->
-> So when first plugging in the device, if there is a fighting process
-> that attempts to add a program, if the program managed to insert
-> itself before we enter this code, then the list won't be empty and we
-> will execute BPF_PROG_RUN_ARRAY(), and if not, well, we ignore it and
-> wait for reconnect().
->
-> But now I am starting to wonder if I need to also protect
-> BPF_PROG_RUN_ARRAY() under bpf_hid_mutex...
-
-I think this is not necessary.
-
-Thanks,
-Song
+Acked-by: Rob Herring <robh@kernel.org>
