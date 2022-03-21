@@ -2,134 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C18C9C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:02:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6132AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:03:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348907AbiCUOEL (ORCPT
+        id S1348912AbiCUOEY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:04:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43656 "EHLO
+        Mon, 21 Mar 2022 10:04:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348428AbiCUN5c (ORCPT
+        with ESMTP id S1348427AbiCUN5c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 09:57:32 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 554AC177089;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19EA0176D3A;
         Mon, 21 Mar 2022 06:55:24 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id o6-20020a17090a9f8600b001c6562049d9so14491048pjp.3;
-        Mon, 21 Mar 2022 06:55:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=T/cg/D61Rx2qtItbaDKzBrsQqCJp0A7fN462BM8Zc9c=;
-        b=qDwwwCcGB+gtqoVPosDcM3L5PDl5Tj6aM91f2HtUmNrsLQi0MJYwB/c95JDzSy9Wqr
-         K7tW/UXvpFuqkbLt3d4gsE/BbIslSJmejTRMsEoLUoq/pVM3EYn7YE0ii6MO6fwtTpqE
-         YC4G8pZPPLqcE58T/9WVqsvO+8dc9zCN56DU72m+//4UMR71e7KQmhiOglZbiQZov/ma
-         AvF+w/uwXvskbEJJMXB+wioMFwQYNWYQkLgbs0IGvx7Hs/aPWueJ+Dg6gJqtQ10swCZ+
-         6m4MDE1l6rra0ZJ8KLL+tovyAOpNY++bw0PBm1sBGQ+wfwb8QeQrU15zjsbkuCxn2ePI
-         B11w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=T/cg/D61Rx2qtItbaDKzBrsQqCJp0A7fN462BM8Zc9c=;
-        b=m6PQZ9eVOn8LqC0DHO/b1iNbSd5qYJUmy7NsWwsiVPRFilowbp0RJASw6MFu5fmWxA
-         TgfPYyyu0zFYzPS8RYblwQA6BvghtqJjmiaHuHld6Z4pWM5NbpsWMH+3SnxVev9gIyX6
-         QJZ5cMzcq08MfRkBYJxUTTUnDxSOaXsFBqKyhyZAV5BAtJ5RlvDIAAZZD5gBvCRvjbFB
-         8EFNKo/twetwdnyqSe67s+7hUSSOTB61cYeTFRhFXivcmvyqG18HNQ13LScA8jXfnd+U
-         HWql0s+qGXvulVORppmc2YZBD/KEz9ZRi4JV7HBOCkUAuXSCrawAnwFBzhAGpmLAEro4
-         E/pw==
-X-Gm-Message-State: AOAM533MhMIi0YM5Y8UO0U5smJ+U3mv/iIzUoG9AIeU/tZlb5IsEURT1
-        RU66Chs+mQNpN8/gHoVnLaGKKUkBkHh1RQ==
-X-Google-Smtp-Source: ABdhPJzpiyFkuIGJLf0bWw2DeEYaFR161YuddweM83B+KxzuYJ51Ob3lFjhNH3vOF0fOLqsOsA3eRg==
-X-Received: by 2002:a17:903:110d:b0:14e:ea6c:7086 with SMTP id n13-20020a170903110d00b0014eea6c7086mr13121381plh.0.1647870923727;
-        Mon, 21 Mar 2022 06:55:23 -0700 (PDT)
-Received: from [192.168.255.10] ([203.205.141.116])
-        by smtp.gmail.com with ESMTPSA id d6-20020a056a00244600b004f701135460sm20487487pfj.146.2022.03.21.06.55.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Mar 2022 06:55:23 -0700 (PDT)
-Message-ID: <08cbba2c-6e15-d138-ecb8-a22ded3f8c8a@gmail.com>
-Date:   Mon, 21 Mar 2022 21:55:19 +0800
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC92CB816C7;
+        Mon, 21 Mar 2022 13:55:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0E2CC340E8;
+        Mon, 21 Mar 2022 13:55:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647870921;
+        bh=4Hl79FCH9ex4jb0RPlHaXMWBQreyKU+jduSJMcs8qDE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RbBu5k/ozqf9Ea1qG4Vn5EqEsJmk0b+JkHBQvvop/X5kb/gdgaEeLeh3UVkXUhI9/
+         GOYlo6dljaH9fMBhBwTIJgaWMbcaVTCdnJAAG6zumIlUlg8O03Qy7d4Hy68P7NdUve
+         pw104+knRx6SwLi6Qod3lwooZ4PwIVkrF2mRsFFw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Barry Song <song.bao.hua@hisilicon.com>,
+        dann frazier <dann.frazier@canonical.com>
+Subject: [PATCH 4.19 18/57] sched/topology: Fix sched_domain_topology_level alloc in sched_init_numa()
+Date:   Mon, 21 Mar 2022 14:51:59 +0100
+Message-Id: <20220321133222.515538128@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220321133221.984120927@linuxfoundation.org>
+References: <20220321133221.984120927@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Subject: Re: [PATCH v3 0/4] KVM: x86: Use static calls to reduce kvm_pmu_ops
- overhead
-Content-Language: en-US
-From:   Like Xu <like.xu.linux@gmail.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, Jim Mattson <jmattson@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org
-References: <20220307115920.51099-1-likexu@tencent.com>
-Organization: Tencent
-In-Reply-To: <20220307115920.51099-1-likexu@tencent.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Knock knock, do we have any more comments on this patch set ?
+From: Dietmar Eggemann <dietmar.eggemann@arm.com>
 
-On 7/3/2022 7:59 pm, Like Xu wrote:
-> Hi,
-> 
-> This is a successor to the previous patch set [1] from Jason Baron, which
-> converts kvm_pmu_ops to use static_call. A typical perf use case [2] for
-> an Intel guest shows good performance gains (results are in patch 0004).
-> 
-> V2 -> V3 Changelog:
-> - Refine commit messages for __initdata; (Sean)
-> - Merge the logic of _defining_ and _update_; (Sean)
-> - Drop EXPORT_SYMBOL_GPL(kvm_pmu_ops); (Sean)
-> - Drop the _NULL() variant in the kvm-x86-*-ops.h; (Thanks to Paolo and Sean)
-> - Drop to export kvm_pmu_is_valid_msr() for nVMX; (Thanks to Sean)
-> - Based on the kvm/queue;
-> 
-> V1 -> V2 Changelog:
-> - Export kvm_pmu_is_valid_msr() for nVMX [Sean]
-> - Land memcpy() above kvm_ops_static_call_update() [Sean]
-> - Move the pmu_ops to kvm_x86_init_ops and tagged as __initdata. [Sean]
-> - Move the kvm_ops_static_call_update() to x86.c [Sean]
-> - Drop kvm_pmu_ops_static_call_update() [Sean]
-> - Fix WARNING that macros KVM_X86_OP should not use a trailing semicolon
-> 
-> Please note checkpatch.pl complains a lot about KVM_X86_*_OP macros:
-> - WARNING: macros should not use a trailing semicolon
-> - ERROR: Macros with multiple statements should be enclosed in a do - while loop
-> which could be addressed as a one-time follow-up if needed.
-> 
-> Previous:
-> https://lore.kernel.org/kvm/20211108111032.24457-1-likexu@tencent.com/
-> 
-> [1] https://lore.kernel.org/lkml/cover.1610680941.git.jbaron@akamai.com/
-> [2] perf record -e branch-instructions -e branch-misses \
-> -e cache-misses -e cache-references -e cpu-cycles \
-> -e instructions ./workload
-> 
-> Thanks,
-> 
-> Like Xu (4):
->    KVM: x86: Move kvm_ops_static_call_update() to x86.c
->    KVM: x86: Copy kvm_pmu_ops by value to eliminate layer of indirection
->    KVM: x86: Move .pmu_ops to kvm_x86_init_ops and tag as __initdata
->    KVM: x86: Use static calls to reduce kvm_pmu_ops overhead
-> 
->   arch/x86/include/asm/kvm-x86-pmu-ops.h | 31 +++++++++++++++++
->   arch/x86/include/asm/kvm_host.h        | 17 +--------
->   arch/x86/kvm/pmu.c                     | 48 +++++++++++++++-----------
->   arch/x86/kvm/pmu.h                     |  9 ++++-
->   arch/x86/kvm/svm/pmu.c                 |  2 +-
->   arch/x86/kvm/svm/svm.c                 |  2 +-
->   arch/x86/kvm/vmx/pmu_intel.c           |  2 +-
->   arch/x86/kvm/vmx/vmx.c                 |  2 +-
->   arch/x86/kvm/x86.c                     | 23 ++++++++++++
->   9 files changed, 94 insertions(+), 42 deletions(-)
->   create mode 100644 arch/x86/include/asm/kvm-x86-pmu-ops.h
-> 
+commit 71e5f6644fb2f3304fcb310145ded234a37e7cc1 upstream.
+
+Commit "sched/topology: Make sched_init_numa() use a set for the
+deduplicating sort" allocates 'i + nr_levels (level)' instead of
+'i + nr_levels + 1' sched_domain_topology_level.
+
+This led to an Oops (on Arm64 juno with CONFIG_SCHED_DEBUG):
+
+sched_init_domains
+  build_sched_domains()
+    __free_domain_allocs()
+      __sdt_free() {
+	...
+        for_each_sd_topology(tl)
+	  ...
+          sd = *per_cpu_ptr(sdd->sd, j); <--
+	  ...
+      }
+
+Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Tested-by: Vincent Guittot <vincent.guittot@linaro.org>
+Tested-by: Barry Song <song.bao.hua@hisilicon.com>
+Link: https://lkml.kernel.org/r/6000e39e-7d28-c360-9cd6-8798fd22a9bf@arm.com
+Signed-off-by: dann frazier <dann.frazier@canonical.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ kernel/sched/topology.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/kernel/sched/topology.c
++++ b/kernel/sched/topology.c
+@@ -1428,7 +1428,7 @@ void sched_init_numa(void)
+ 	/* Compute default topology size */
+ 	for (i = 0; sched_domain_topology[i].mask; i++);
+ 
+-	tl = kzalloc((i + nr_levels) *
++	tl = kzalloc((i + nr_levels + 1) *
+ 			sizeof(struct sched_domain_topology_level), GFP_KERNEL);
+ 	if (!tl)
+ 		return;
+
+
