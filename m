@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A628C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92631C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:58:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348460AbiCUN5z (ORCPT
+        id S1348598AbiCUN6F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 09:57:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43454 "EHLO
+        Mon, 21 Mar 2022 09:58:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348332AbiCUN4c (ORCPT
+        with ESMTP id S1348431AbiCUN5A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:56:32 -0400
+        Mon, 21 Mar 2022 09:57:00 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB90316F06E;
-        Mon, 21 Mar 2022 06:54:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 328F115DAB2;
+        Mon, 21 Mar 2022 06:55:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 28B00B81644;
-        Mon, 21 Mar 2022 13:54:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B6A4C340E8;
-        Mon, 21 Mar 2022 13:54:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98E99B816C7;
+        Mon, 21 Mar 2022 13:55:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E78BC340E8;
+        Mon, 21 Mar 2022 13:55:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647870895;
-        bh=wRlbELFcSaNKD9S2F10d7gbg4M2/MDxgsTY8gQvkjOM=;
+        s=korg; t=1647870904;
+        bh=TkkZj9aVcrLNI81bYLasKDlzB/c1Awu5HVrJX/PLp48=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JwoUBJZBlQL4uf5Zk5YJ+Dos/CzvSGY9UGnoICiS0X4u1xs4UCBVY/XJZj+z1qrCz
-         BfAL9ZBICIKcfKWLQd4gYLpIPkZQKX0OBQ5bbKCt7555wWQ+E1OS8wMjLXT+8Jve29
-         jJYxkJ/Qu2wtN+4Xg5LrwdLxy9aX4V1ko/Ltxosg=
+        b=v+Z0uuKWxZvEuAmP2beHhgWT9T7N6jZrqoRQZH5XSyy9CmS04t3VwgWHCRJhxhVDE
+         TeEE/L+ALD9ucbFbJeaZKIzGkd8GJCMIfTP+wzwoTp1M34lC6ym3TLVRz6sfvwdeCU
+         6xDndbqlLBdOwvuVSsGGvUJcyaThDEUKbtnspTIA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kai Lueke <kailueke@linux.microsoft.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Subject: [PATCH 4.19 01/57] Revert "xfrm: state and policy should fail if XFRMA_IF_ID 0"
-Date:   Mon, 21 Mar 2022 14:51:42 +0100
-Message-Id: <20220321133222.028331018@linuxfoundation.org>
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 12/57] atm: firestream: check the return value of ioremap() in fs_init()
+Date:   Mon, 21 Mar 2022 14:51:53 +0100
+Message-Id: <20220321133222.342173946@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133221.984120927@linuxfoundation.org>
 References: <20220321133221.984120927@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,69 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai Lueke <kailueke@linux.microsoft.com>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-commit a3d9001b4e287fc043e5539d03d71a32ab114bcb upstream.
+[ Upstream commit d4e26aaea7f82ba884dcb4acfe689406bc092dc3 ]
 
-This reverts commit 68ac0f3810e76a853b5f7b90601a05c3048b8b54 because ID
-0 was meant to be used for configuring the policy/state without
-matching for a specific interface (e.g., Cilium is affected, see
-https://github.com/cilium/cilium/pull/18789 and
-https://github.com/cilium/cilium/pull/19019).
+The function ioremap() in fs_init() can fail, so its return value should
+be checked.
 
-Signed-off-by: Kai Lueke <kailueke@linux.microsoft.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xfrm/xfrm_user.c |   21 +++------------------
- 1 file changed, 3 insertions(+), 18 deletions(-)
+ drivers/atm/firestream.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -620,13 +620,8 @@ static struct xfrm_state *xfrm_state_con
+diff --git a/drivers/atm/firestream.c b/drivers/atm/firestream.c
+index ef395b238816..f7880012b9a0 100644
+--- a/drivers/atm/firestream.c
++++ b/drivers/atm/firestream.c
+@@ -1692,6 +1692,8 @@ static int fs_init(struct fs_dev *dev)
+ 	dev->hw_base = pci_resource_start(pci_dev, 0);
  
- 	xfrm_smark_init(attrs, &x->props.smark);
+ 	dev->base = ioremap(dev->hw_base, 0x1000);
++	if (!dev->base)
++		return 1;
  
--	if (attrs[XFRMA_IF_ID]) {
-+	if (attrs[XFRMA_IF_ID])
- 		x->if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
--		if (!x->if_id) {
--			err = -EINVAL;
--			goto error;
--		}
--	}
- 
- 	err = __xfrm_init_state(x, false, attrs[XFRMA_OFFLOAD_DEV]);
- 	if (err)
-@@ -1332,13 +1327,8 @@ static int xfrm_alloc_userspi(struct sk_
- 
- 	mark = xfrm_mark_get(attrs, &m);
- 
--	if (attrs[XFRMA_IF_ID]) {
-+	if (attrs[XFRMA_IF_ID])
- 		if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
--		if (!if_id) {
--			err = -EINVAL;
--			goto out_noput;
--		}
--	}
- 
- 	if (p->info.seq) {
- 		x = xfrm_find_acq_byseq(net, mark, p->info.seq);
-@@ -1640,13 +1630,8 @@ static struct xfrm_policy *xfrm_policy_c
- 
- 	xfrm_mark_get(attrs, &xp->mark);
- 
--	if (attrs[XFRMA_IF_ID]) {
-+	if (attrs[XFRMA_IF_ID])
- 		xp->if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
--		if (!xp->if_id) {
--			err = -EINVAL;
--			goto error;
--		}
--	}
- 
- 	return xp;
-  error:
+ 	reset_chip (dev);
+   
+-- 
+2.34.1
+
 
 
