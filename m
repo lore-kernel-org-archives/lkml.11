@@ -2,89 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B423BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:29:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F38F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:29:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347451AbiCUOau (ORCPT
+        id S1349278AbiCUOa5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:30:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37192 "EHLO
+        Mon, 21 Mar 2022 10:30:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349204AbiCUO1w (ORCPT
+        with ESMTP id S1349242AbiCUO11 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:27:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A03C13F22;
-        Mon, 21 Mar 2022 07:21:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9FE8B81648;
-        Mon, 21 Mar 2022 14:16:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88048C340E8;
-        Mon, 21 Mar 2022 14:16:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647872163;
-        bh=hCDpnium04L+NX98eEF16B611YIyYCDehSO1Lv/GK5Q=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=m6ZOJwLTrYt/LUfTxurjawz2XhZxdcUobTBvnxXsYD2VMuffI2oTFFbpxePM6/rnU
-         2ZwiPGsLynn2+81ORsVpu8wTM770Z/e/DIS9dDv2lsc+QQzP9fG2LJUh+0sDHUFbaM
-         EjqgCpXZsPN8u3FIl+biRb0twzHJC1bCyh3Pr214ba8DpFcDnOhpI17I7xPQ2v04YG
-         LPF93Rs3QaK8fzj7wFYAA1sbOJmnxXuoazUmmU54mphGcpFvnpKlzGvzgX/C6lrMKD
-         hC49iEXsoaTW1CkmN2qVSs1jKWHT2IXkLud39oAxKwNMuXW/5FzNFkd40bIkVOXCgm
-         J43z5Wt9hIZWQ==
-Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nWIpE-00FyOT-QH; Mon, 21 Mar 2022 14:16:00 +0000
+        Mon, 21 Mar 2022 10:27:27 -0400
+Received: from out199-4.us.a.mail.aliyun.com (out199-4.us.a.mail.aliyun.com [47.90.199.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24A5E11A23;
+        Mon, 21 Mar 2022 07:20:44 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0V7r08HY_1647872438;
+Received: from B-P7TQMD6M-0146.local(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0V7r08HY_1647872438)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 21 Mar 2022 22:20:40 +0800
+Date:   Mon, 21 Mar 2022 22:20:38 +0800
+From:   Gao Xiang <hsiangkao@linux.alibaba.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     Matthew Wilcox <willy@infradead.org>, joseph.qi@linux.alibaba.com,
+        torvalds@linux-foundation.org, chao@kernel.org,
+        tao.peng@linux.alibaba.com, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-cachefs@redhat.com,
+        bo.liu@linux.alibaba.com, gregkh@linuxfoundation.org,
+        luodaowen.backend@bytedance.com, xiang@kernel.org,
+        gerry@linux.alibaba.com, linux-erofs@lists.ozlabs.org,
+        eguan@linux.alibaba.com
+Subject: Re: [Linux-cachefs] [PATCH v5 03/22] cachefiles: introduce on-demand
+ read mode
+Message-ID: <YjiJtrOEBa7p/8M2@B-P7TQMD6M-0146.local>
+Mail-Followup-To: David Howells <dhowells@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>, joseph.qi@linux.alibaba.com,
+        torvalds@linux-foundation.org, chao@kernel.org,
+        tao.peng@linux.alibaba.com, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-cachefs@redhat.com,
+        bo.liu@linux.alibaba.com, gregkh@linuxfoundation.org,
+        luodaowen.backend@bytedance.com, xiang@kernel.org,
+        gerry@linux.alibaba.com, linux-erofs@lists.ozlabs.org,
+        eguan@linux.alibaba.com
+References: <YjiAVezd5B9auhcP@casper.infradead.org>
+ <20220316131723.111553-1-jefflexu@linux.alibaba.com>
+ <20220316131723.111553-4-jefflexu@linux.alibaba.com>
+ <1029982.1647872043@warthog.procyon.org.uk>
 MIME-Version: 1.0
-Date:   Mon, 21 Mar 2022 14:16:00 +0000
-From:   Marc Zyngier <maz@kernel.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: Fixes tag needs some work in the irqchip tree
-In-Reply-To: <20220322000617.0a351d78@canb.auug.org.au>
-References: <20220322000617.0a351d78@canb.auug.org.au>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <3f500c7bae56e4d7ca2840cf9a0be35c@kernel.org>
-X-Sender: maz@kernel.org
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 51.254.78.96
-X-SA-Exim-Rcpt-To: sfr@canb.auug.org.au, linux-kernel@vger.kernel.org, linux-next@vger.kernel.org
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1029982.1647872043@warthog.procyon.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-03-21 13:06, Stephen Rothwell wrote:
-> Hi all,
+On Mon, Mar 21, 2022 at 02:14:03PM +0000, David Howells wrote:
+> Matthew Wilcox <willy@infradead.org> wrote:
 > 
-> In commit
+> > Why do you have a separate rwlock when the xarray already has its own
+> > spinlock?  This is usually a really bad idea.
 > 
->   686121ebe6fc ("irqchip/gic-v4: Wait for GICR_VPENDBASER.Dirty to
-> clear before descheduling")
+> Jeffle wants to hold a lock across the CACHEFILES_DEAD check and the xarray
+> access.
 > 
-> Fixes tag
-> 
->   Fixes: 57e3cebd022f ("KVM: arm64: Delay the polling of the
-> GICR_VPENDBASER.Dirty
-> 
-> has these problem(s):
-> 
->   - Subject has leading but no trailing parentheses
->   - Subject has leading but no trailing quotes
-> 
-> Please do not split Fixes tags over more than one line.
+> However, he tells xarray to do a GFP_KERNEL alloc whilst holding the rwlock:-/
 
-Copy paste trikes back. Now fixed.
+Yeah, sorry, there are trivial mistakes due to sleep in atomic
+contexts (sorry that I didn't catch them earlier..)
 
 Thanks,
+Gao Xiang
 
-         M.
--- 
-Jazz is not dead. It just smells funny...
+> 
+> David
+> --
+> Linux-cachefs mailing list
+> Linux-cachefs@redhat.com
+> https://listman.redhat.com/mailman/listinfo/linux-cachefs
