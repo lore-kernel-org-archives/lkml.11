@@ -2,126 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3338C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:50:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE00EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:51:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346025AbiCUJwC (ORCPT
+        id S1346030AbiCUJxO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 05:52:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48480 "EHLO
+        Mon, 21 Mar 2022 05:53:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343803AbiCUJv7 (ORCPT
+        with ESMTP id S1343803AbiCUJxK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 05:51:59 -0400
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF8A09BAD8
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 02:50:34 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id 509585C015A;
-        Mon, 21 Mar 2022 05:50:34 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Mon, 21 Mar 2022 05:50:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:date:date:from:from:in-reply-to
-        :message-id:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=xqO+J3
-        qYKvWooJVksUuAiiLBEJdNT3Gcv0iTkRapBjk=; b=lYjtzbmNgu9kHcHHiK3Z4S
-        Dsr8cAsC3eoZ21FA9GYNMArW6agjvK34YkZm2IEL1eCgxxG+GAUOvyrTMRBe0XS7
-        tTvfqzH3OPwq9SA4GblDIrIvWMiuK1oPZMglsLgZuJ1stUj9bHz632S3MKnF2Pag
-        G9K0mdfMJmPCfXnvRU17VNSMEGwiRtYVyFomfAbL5Mq0RFmYYwExJ1LtOlR6sw1Z
-        HtfNDswkO+q5oj2vGe2IulefbYLhZFdoTmNPJjYvwoX6BX0Tctmjl+QFcLhB6Bfg
-        WTwyOwjDAU+uU2+uoC9CIF1YKHWVMczeVwW0J17OgewZWMHTrHMNFDheA7O2Jm6w
-        ==
-X-ME-Sender: <xms:ako4Yux8q43usDDm96wgdu2H1deV3FakXwGGIf5m_REAzk1_28HdBg>
-    <xme:ako4YqRUxn2xzKbzU7Id-vLVlkC36KLiCZs8tkWKKH1oHfGzsFn_YchXSvCDeqOT4
-    pimMjGugYTDdPFVRwM>
-X-ME-Received: <xmr:ako4YgW6DfRERd-rdV_8o6HjweYOy6i0qBZXdZWNIcjnv5J_hJsZ6yohXljdl9EQV1xlceP-3-hZfARUAdRyTBbsUfQSWt-RFW4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudegfedgtdelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepvffkhffuffestddtredttddttdenucfhrhhomhephfhinhhnucfvhhgrihhn
-    uceofhhthhgrihhnsehlihhnuhigqdhmieekkhdrohhrgheqnecuggftrfgrthhtvghrnh
-    eptdelteekleekkedvueejheekgfdvtdehhefhteeitefhteefgefhudehveevleelnecu
-    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepfhhthhgrih
-    hnsehlihhnuhigqdhmieekkhdrohhrgh
-X-ME-Proxy: <xmx:ako4YkgeeFYL9MUuHfcBrJUPWJTYuzijYp2tN2l3UjwySb7xHJQG2Q>
-    <xmx:ako4YgBZ_VIRae9Wn588l_eKRby8MK8zlr80RZSeZsKhT_gmXif-zQ>
-    <xmx:ako4YlKBu4AWNY8YP5qVw4Mc5NtRTKhWBcqwdqfbKZsSeyaECSztwA>
-    <xmx:ako4YjOGuqakraTt_B-LeleQlEcEKwzY3o_m6BwrvOnJBY-YueV63Q>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 21 Mar 2022 05:50:32 -0400 (EDT)
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc:     "Randy Dunlap" <rdunlap@infradead.org>,
-        "Christophe Leroy" <christophe.leroy@csgroup.eu>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Message-Id: <0c11c0770fc4ec7e80a4b2e0ffce1055b792cfdb.1647854880.git.fthain@linux-m68k.org>
-From:   Finn Thain <fthain@linux-m68k.org>
-Subject: [PATCH v2] macintosh/via-pmu: Avoid compiler warnings when
- CONFIG_PROC_FS is disabled
-Date:   Mon, 21 Mar 2022 20:28:00 +1100
+        Mon, 21 Mar 2022 05:53:10 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2054.outbound.protection.outlook.com [40.107.243.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E88839BAEE
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 02:51:44 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jyBaXp2PIKW8Ruo8cRzG+zzget6yiobyB7Wjs3fkEW41bWAZSNSzEcCEwYE2AuS8D8J2IZ8+GyeQBrtJaSO79HqHWu7q00vgncRpgyK4GflWFNng/aXPDK1JvqSO1p6NlomHG2aUelBhoNovkZpCS5kc9Q/Ome/EhKHRgC0u+qh+tawScn1SQoaFIU6AdYHTi4Ng3gwFJVoBW1VZYRaRBtIvTKcDHjfEc2eyMbK/co1vVuT2LHcEbGRTfturl041/tCT+tzN+StrrMwjXqCRlMTNrnQnHvmHtHy3dAED1dQkIsy2JIk99wAESJuvy5y7Homh/3CVv01ZQ8Z55yrXGA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SdM+8CraNUcODBZ+ejblVoCAp9BYZQ1XhAJVplxHj3k=;
+ b=do/s/5qau6+/FxIGdDUXG/9iGyGEAWlxKRn4LH6je8SDtbofk5kzg/2QCcN/O1ii+CF47HM0SqTcKZANJsukG5SDD172fR2/8G6O8dJY0mNjl62MRpLfLFl4o8p5Syz6e3L73ORZDki2s0/T6haj4LFp1CU/r9le6kAJhhlm+p9e8tPnLYOA+HHNtqp61glOhh2lEtLFm4tVYDC29lE8TNZdymB4VIdqzxWdjlJBYg9jcWJu5z4owKg44Fz1rzWXrHc5jLwjoz/Uu6PHtPk0L2Sq8f/YECxVf8ktMnRqX03t6aCFgfgm6qh6Y3UnvsxEwP3kRTa7r6ReZCAd1JhjNw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SdM+8CraNUcODBZ+ejblVoCAp9BYZQ1XhAJVplxHj3k=;
+ b=P8reFv0Hgl8blucNXaPhMCSX6Rc1tYmX+24kpvhBKg0NRKh327OvTvPHwLtxfkPF+M/eD5SxVcFBM9H4wfrkaE72TI6M3e4bnyqtlOYfOoBFMJovP+DCwckgL9LXCKoZm0gNP7x88p32b2SwUjkTPT473Swn7dSVxHaJHFhMF70=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13)
+ by DS7PR12MB5839.namprd12.prod.outlook.com (2603:10b6:8:7a::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.17; Mon, 21 Mar
+ 2022 09:51:43 +0000
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::404f:1fc8:9f4c:f185]) by BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::404f:1fc8:9f4c:f185%6]) with mapi id 15.20.5081.023; Mon, 21 Mar 2022
+ 09:51:43 +0000
+Message-ID: <8688c626-5858-18ba-593b-cdf179ca5201@amd.com>
+Date:   Mon, 21 Mar 2022 10:51:38 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] drm/ttm: fix potential null ptr deref in when mem space
+ alloc fails
+Content-Language: en-US
+To:     Robert Beckett <bob.beckett@collabora.com>,
+        dri-devel@lists.freedesktop.org, Huang Rui <ray.huang@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Matthew Auld <matthew.auld@intel.com>
+Cc:     linux-kernel@vger.kernel.org
+References: <20220318195004.416539-1-bob.beckett@collabora.com>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+In-Reply-To: <20220318195004.416539-1-bob.beckett@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AM6P195CA0043.EURP195.PROD.OUTLOOK.COM
+ (2603:10a6:209:87::20) To BN8PR12MB3587.namprd12.prod.outlook.com
+ (2603:10b6:408:43::13)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e10c3bbf-73a1-45d5-88c2-08da0b20678b
+X-MS-TrafficTypeDiagnostic: DS7PR12MB5839:EE_
+X-Microsoft-Antispam-PRVS: <DS7PR12MB5839D6A8932A8E10BBB70A9E83169@DS7PR12MB5839.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: RviQt0aEJRsyfpHgGI/inldeniE4c6dmLgF+i9IDTfQbkHC+YGBU1O0hsZ9VSwqho0CMKwfPxWOXAY/3ThPP+MRFK+O8GfyACOKJOydT4aOEL2ALFcQZrjVkcOL+Dl/wUJrp25By4P9KBfs2gR3zVS8vpt+959qp2naxVU8CK1uu8Q8amUvPhwn8sVXRih2JVrZCOQr84xtsTnLZuT4CLqazhp1cHKeE6bLtWvrRhqhSc0tchSmYXho1S4UmPVZXbi9+tPi8x+2o9xKaLZp7gXtREcxOOQBZeg5755AsybdLlu7YhSVee/gWJ5yUtpB5sJEHltZNlJ4UGKeCeWoAGO6xorWCSYxuv2/clnlNXAef/8o5z+l8W5pewJzx0tzvmiEmh7zm8Pw25S+4jzrO0uCUmHeQr4yK2vcQvwTmAm9N8dofZA2WUdCzlBTbuxWwW/fT0JlubU9sNJUCUgPc8aYXVW1YSEwkbMltXRLgOK1q6SLOR03kdzH0groWCjH6wRZC0JdpXZAqaUzL+UCrq/0V72b86HJz1u/J2WCi/pKCA/Qco1bXJZWlwig7vQkh+b05gXLgY12OZWJp92ds7Gp2wFB3drxsyV0kd0Gz2VhY9Mq6JM4nBnabMCGvbG1weV0vFYPm3xyE/H4SCj9XnLTEfbvTSiminNgEmDujfBg0DX0wFNBrFWKF3JT9Hsngl8OlrDVaR0Ru3tcVuh41t7PG7XrF4FWDVom5wSEjb4YwRYPahow0HzUfNjxiT8MN
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3587.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(83380400001)(8676002)(4326008)(66946007)(66556008)(66476007)(508600001)(6666004)(6486002)(8936002)(2616005)(6512007)(2906002)(316002)(38100700002)(186003)(36756003)(5660300002)(6506007)(31686004)(86362001)(110136005)(31696002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?WHA1NktQTkxLQldNVS9JY3dqT1dwUGFZdmZpMkFpeHFKZTlMb1JPN1NMRFZx?=
+ =?utf-8?B?aCsvUTZVVGl0N0JaK2haelROR05IZjZvUWUvSzZwckNOa2xuWWJJOWVzaTFH?=
+ =?utf-8?B?WEVYSVIvWjVjSW9NQVNYenFjRFR1cjFKNlloSTV1SXkxbXIxaE8vc0ZLclhs?=
+ =?utf-8?B?aUtNc2RnOTlaNXBSNS9FSUg4WG1WMDYwWlpVTDRqVlVOZnpHYW5oL3NRWDFD?=
+ =?utf-8?B?bE1kLzB6MnVGVnVLYXEvekZpamxqaXFkblEyZFV0bXppbkl4OVFUdXg3ZTA3?=
+ =?utf-8?B?OGg5ajg4V3JQU1hMVW00d0M1dlJXY3V3N3pzQ3NlMVEwQTVIV0dOeHA4WUV0?=
+ =?utf-8?B?ZVNLTXBxTFppWFRwRDg3ZUFpTjN0RkF4V3NXVDA2SEFHWXc3UUJCNzRpREVn?=
+ =?utf-8?B?YUtXQWZNeHNWQzRpTk9xMkM2MmRJaWo5cXQ4WVVyOFBDemNHYWxSS1lNQzlm?=
+ =?utf-8?B?OThTY2QvejFDam04NDRwZll1a1o1eWduMGxobkN1RU1aUFp6NktVK3FNRm14?=
+ =?utf-8?B?emdzbVJrSXk0Zmhqc0I0Skk1REFhMXROYjlLUTFIWXJMT08vdjlhaEw1Y3A0?=
+ =?utf-8?B?UnA3Q1ZIU2FmeGt3T0ZPdjF5b3UyZDVEeHBQdUF0N0N2YlJ1YkhMK3RwM3dM?=
+ =?utf-8?B?VVJJYytjdDFCYzBKU2ZveGI2anBac3U1SE1VcG91cmRpSmpDTHVPdGw0N0du?=
+ =?utf-8?B?dEZacThUTnJ2UUV4UlFWd0huV3M3VUlkeitBRU9ZZUFpVXpaNGRVTDFFU3dX?=
+ =?utf-8?B?N0JOSEtVcXI2eHBUWVBKQUNCYVVNWWVoeXg4b2RFN1VxL3JWbGdZZTk5aEkz?=
+ =?utf-8?B?NDVtVzNjZzhUQVNaT2ZYVkM1KzFaVzYwTVdPbENRVWk2M2MxQ3hXclpOazlW?=
+ =?utf-8?B?YktQTEpPeTR1dlhaT294eXhxeWY3SVNLcVpPcTNhcWN3WWhJNCtRc1ZFZm50?=
+ =?utf-8?B?cjVEWmJqaVJGU3BJaFFzV1NaWTdxRThSdFZQWHRrSERuMDhsUGQzMGcvbzFQ?=
+ =?utf-8?B?UklvWGtUczV2bU15c08zUXIzemUvbjVEckRZemFUSXRVUHAxYjcrVVRJaDVq?=
+ =?utf-8?B?bkdRZjRaMDVQU255MmF6NGM4b3h0b0h5a0hObWZHMHVpSVZoZWRiYWpINlF6?=
+ =?utf-8?B?dkJFZGtIYlM3QW05UWNETTEzYnc5cjBHeDNOd3pIeEVGVFZJWEgxb2hUZG9G?=
+ =?utf-8?B?cGhOdi81dlVNN2V0clhTS3lNRVNFSERhSGtnUS9MQmZWQ2pTNzhOb2laMk4y?=
+ =?utf-8?B?NFVKd2txNCtCeTh1MFlHMmVMaXFhWWpEQVBZNlRCOEw2OThyWjJUTytWZk56?=
+ =?utf-8?B?NXcrR2RTWDE3bHZvMTMxNmRHZWZ0Q09EOWdoalVoN2VISFpoWVJiMEI2dDhl?=
+ =?utf-8?B?UHl2LzBOekVCT3lENktmMHZRTTlKM04rNlpnbnU2a1Nib0ZLNUZRNEVuYndD?=
+ =?utf-8?B?M1hqcHA0N2RybmtDYWFHcWtEcFhkTTJHZWJ6VlVHN3pQQXVDaVVKRS96TUlj?=
+ =?utf-8?B?bjNpYVc1TEhCbUlZbmlwd2h2dkdPMEVyZGxhL1ZpUVRjUU00NGllOElmUjAz?=
+ =?utf-8?B?WGpLb3BBNXZXMUtzT2Qyd3RBc2tYZHZtZDVtMVFsZiszWXUreU8rNHZVUzhk?=
+ =?utf-8?B?VkdWN3pOU3Q2SE5Ja0dDTytHZVkreXBXZmNPTG9wNHMrSXpUUHhhL2RqTW9J?=
+ =?utf-8?B?QzkxeUV4dld5VVhWTHUvVksxY0E2Wkw0bzM4UmJVMW9QYkpkR2R2RTdmS0NH?=
+ =?utf-8?B?cHZSVUw2NVg3RXJFSzhCcm5wYzJFRXBpd3R0ZDJWYWUrVlJUN0xSRTIwNUdH?=
+ =?utf-8?B?UHdJQ2t5dnN6YjRpUWxwMmI3N3ZRTFpVKzlPY2NML2hjcWUvWEFHc3AzM1dw?=
+ =?utf-8?B?ZjFMRkVaWUtxTjgvU1FyQkhQK3l0aDlVVlc5UFNzUEUwdkN5V2U5aTlSbWFp?=
+ =?utf-8?B?czVLeUVSMmRRSFJRaHhsRzZQZTVEMnRINE1FMyt2YStuZ0I3amN1N3lRbExh?=
+ =?utf-8?B?dmV4QlkwMkVWYWJYZTcxanpRaFk1Yi8zdFZkQzNWK2c3M1R0a3NoVk5YaEUy?=
+ =?utf-8?Q?ZZwVlH?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e10c3bbf-73a1-45d5-88c2-08da0b20678b
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3587.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2022 09:51:43.2278
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Z3ebCxAGl6Uw4QrDJ2Ywnc9sdti8+xcHxl9jt51CiTkEa0S95CB1ef4jmCyd+Lzv
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5839
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-drivers/macintosh/via-pmu.c:897:12: warning: 'pmu_battery_proc_show' defined but not used [-Wunused-function]
- static int pmu_battery_proc_show(struct seq_file *m, void *v)
-            ^~~~~~~~~~~~~~~~~~~~~
-drivers/macintosh/via-pmu.c:871:12: warning: 'pmu_irqstats_proc_show' defined but not used [-Wunused-function]
- static int pmu_irqstats_proc_show(struct seq_file *m, void *v)
-            ^~~~~~~~~~~~~~~~~~~~~~
-drivers/macintosh/via-pmu.c:860:12: warning: 'pmu_info_proc_show' defined but not used [-Wunused-function]
- static int pmu_info_proc_show(struct seq_file *m, void *v)
-            ^~~~~~~~~~~~~~~~~~
+Am 18.03.22 um 20:50 schrieb Robert Beckett:
+> when allocating a resource in place it is common to free the buffer's
+> resource, then allocate a new resource in a different placement.
+>
+> e.g. amdgpu_bo_create_kernel_at calls ttm_resource_free, then calls
+> ttm_bo_mem_space.
 
-Add some #ifdefs to avoid unused code warnings when CONFIG_PROC_FS is
-disabled.
+Well yes I'm working the drivers towards this, but NAK at the moment. 
+Currently bo->resource is never expected to be NULL.
 
-Cc: Randy Dunlap <rdunlap@infradead.org>
-Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-Suggested-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Finn Thain <fthain@linux-m68k.org>
----
-Changed since v1:
- - Simplified to take advantage of the fact that proc_mkdir() is stubbed
-   out when CONFIG_PROC_FS=n. Hence that call doesn't need to move
-   within the #ifdef.
----
- drivers/macintosh/via-pmu.c | 4 ++++
- 1 file changed, 4 insertions(+)
+And yes I'm searching for this bug in amdgpu for quite a while. Where 
+exactly does that happen?
 
-diff --git a/drivers/macintosh/via-pmu.c b/drivers/macintosh/via-pmu.c
-index 2109129ea1bb..495fd35b11de 100644
---- a/drivers/macintosh/via-pmu.c
-+++ b/drivers/macintosh/via-pmu.c
-@@ -204,9 +204,11 @@ static int init_pmu(void);
- static void pmu_start(void);
- static irqreturn_t via_pmu_interrupt(int irq, void *arg);
- static irqreturn_t gpio1_interrupt(int irq, void *arg);
-+#ifdef CONFIG_PROC_FS
- static int pmu_info_proc_show(struct seq_file *m, void *v);
- static int pmu_irqstats_proc_show(struct seq_file *m, void *v);
- static int pmu_battery_proc_show(struct seq_file *m, void *v);
-+#endif
- static void pmu_pass_intr(unsigned char *data, int len);
- static const struct proc_ops pmu_options_proc_ops;
- 
-@@ -857,6 +859,7 @@ query_battery_state(void)
- 			2, PMU_SMART_BATTERY_STATE, pmu_cur_battery+1);
- }
- 
-+#ifdef CONFIG_PROC_FS
- static int pmu_info_proc_show(struct seq_file *m, void *v)
- {
- 	seq_printf(m, "PMU driver version     : %d\n", PMU_DRIVER_VERSION);
-@@ -977,6 +980,7 @@ static const struct proc_ops pmu_options_proc_ops = {
- 	.proc_release	= single_release,
- 	.proc_write	= pmu_options_proc_write,
- };
-+#endif
- 
- #ifdef CONFIG_ADB
- /* Send an ADB command */
--- 
-2.32.0
+Amdgpu is supposed to allocate a new resource first, then do a swap and 
+the free the old one.
+
+Thanks,
+Christian.
+
+>
+> In this situation, bo->resource will be null as it is cleared during
+> the initial freeing of the previous resource.
+> This leads to a null deref.
+>
+> Fixes: d3116756a710 (drm/ttm: rename bo->mem and make it a pointer)
+>
+> Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+> ---
+>   drivers/gpu/drm/ttm/ttm_bo.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/gpu/drm/ttm/ttm_bo.c b/drivers/gpu/drm/ttm/ttm_bo.c
+> index db3dc7ef5382..62b29ee7d040 100644
+> --- a/drivers/gpu/drm/ttm/ttm_bo.c
+> +++ b/drivers/gpu/drm/ttm/ttm_bo.c
+> @@ -875,7 +875,7 @@ int ttm_bo_mem_space(struct ttm_buffer_object *bo,
+>   	}
+>   
+>   error:
+> -	if (bo->resource->mem_type == TTM_PL_SYSTEM && !bo->pin_count)
+> +	if (bo->resource && bo->resource->mem_type == TTM_PL_SYSTEM && !bo->pin_count)
+>   		ttm_bo_move_to_lru_tail_unlocked(bo);
+>   
+>   	return ret;
 
