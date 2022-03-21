@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13D71C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47DBDC4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349493AbiCUOI0 (ORCPT
+        id S1349744AbiCUOIl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:08:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35632 "EHLO
+        Mon, 21 Mar 2022 10:08:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348692AbiCUOBD (ORCPT
+        with ESMTP id S1348591AbiCUOBg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:01:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2725D40E79;
-        Mon, 21 Mar 2022 06:59:12 -0700 (PDT)
+        Mon, 21 Mar 2022 10:01:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 073559AE6F;
+        Mon, 21 Mar 2022 06:59:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A591B816D8;
-        Mon, 21 Mar 2022 13:59:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF7A1C36AE7;
-        Mon, 21 Mar 2022 13:58:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C8700B816D9;
+        Mon, 21 Mar 2022 13:59:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39791C340E8;
+        Mon, 21 Mar 2022 13:59:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871140;
-        bh=gBv0ktP47tMp4zSS382fSjACWfsSnLnoTOPO5fvY1FI=;
+        s=korg; t=1647871151;
+        bh=y8A8duvnQBc5gtrsNqlLqi4iN3RL7tqC4SsOZNQfcrI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V1ZbVR9vJ7Wg3HL+nob/EO1vYbtVvDnSMkpheDtpWdGgDR9yMk9XB30NFOIfAkZS+
-         KRv18D+0ITToajbNW63rjJkHDsAKGm8T6oBJDW3hilCIHiabywAmxbOdp2MSXPzAzw
-         eFqHxyFdQzeS33R5E2r84awuFpduPNRpUW15jyuk=
+        b=o46Ee6V/VFJgIlCoDcJRQUa8UX1LswfFcCMDVzh3WnNBFnxHxDlCFRTu+hVjsriAx
+         nzKIbKt5nhN2zSsK9b7N7dDIXLgcQs2WcdF6Doiba43a5AVjpxLuxy4SVv0iqQqpi0
+         4Z9k8T9C1ek5Bz/rsE0gJgLnBSQ/wxQKR1ZZR1bA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Mark Fasheh <mark@fasheh.com>,
-        Joel Becker <jlbec@evilplan.org>,
-        Junxiao Bi <junxiao.bi@oracle.com>,
-        Changwei Ge <gechangwei@live.cn>, Gang He <ghe@suse.com>,
-        Jun Piao <piaojun@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 02/30] ocfs2: fix crash when initialize filecheck kobj fails
-Date:   Mon, 21 Mar 2022 14:52:32 +0100
-Message-Id: <20220321133219.717685948@linuxfoundation.org>
+        stable@vger.kernel.org, Xiumei Mu <xmu@redhat.com>,
+        Sabrina Dubroca <sd@queasysnail.net>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 06/30] esp6: fix check on ipv6_skip_exthdrs return value
+Date:   Mon, 21 Mar 2022 14:52:36 +0100
+Message-Id: <20220321133219.832569425@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133219.643490199@linuxfoundation.org>
 References: <20220321133219.643490199@linuxfoundation.org>
@@ -55,70 +51,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joseph Qi <joseph.qi@linux.alibaba.com>
+From: Sabrina Dubroca <sd@queasysnail.net>
 
-commit 7b0b1332cfdb94489836b67d088a779699f8e47e upstream.
+[ Upstream commit 4db4075f92af2b28f415fc979ab626e6b37d67b6 ]
 
-Once s_root is set, genric_shutdown_super() will be called if
-fill_super() fails.  That means, we will call ocfs2_dismount_volume()
-twice in such case, which can lead to kernel crash.
+Commit 5f9c55c8066b ("ipv6: check return value of ipv6_skip_exthdr")
+introduced an incorrect check, which leads to all ESP packets over
+either TCPv6 or UDPv6 encapsulation being dropped. In this particular
+case, offset is negative, since skb->data points to the ESP header in
+the following chain of headers, while skb->network_header points to
+the IPv6 header:
 
-Fix this issue by initializing filecheck kobj before setting s_root.
+    IPv6 | ext | ... | ext | UDP | ESP | ...
 
-Link: https://lkml.kernel.org/r/20220310081930.86305-1-joseph.qi@linux.alibaba.com
-Fixes: 5f483c4abb50 ("ocfs2: add kobject for online file check")
-Signed-off-by: Joseph Qi <joseph.qi@linux.alibaba.com>
-Cc: Mark Fasheh <mark@fasheh.com>
-Cc: Joel Becker <jlbec@evilplan.org>
-Cc: Junxiao Bi <junxiao.bi@oracle.com>
-Cc: Changwei Ge <gechangwei@live.cn>
-Cc: Gang He <ghe@suse.com>
-Cc: Jun Piao <piaojun@huawei.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+That doesn't seem to be a problem, especially considering that if we
+reach esp6_input_done2, we're guaranteed to have a full set of headers
+available (otherwise the packet would have been dropped earlier in the
+stack). However, it means that the return value will (intentionally)
+be negative. We can make the test more specific, as the expected
+return value of ipv6_skip_exthdr will be the (negated) size of either
+a UDP header, or a TCP header with possible options.
+
+In the future, we should probably either make ipv6_skip_exthdr
+explicitly accept negative offsets (and adjust its return value for
+error cases), or make ipv6_skip_exthdr only take non-negative
+offsets (and audit all callers).
+
+Fixes: 5f9c55c8066b ("ipv6: check return value of ipv6_skip_exthdr")
+Reported-by: Xiumei Mu <xmu@redhat.com>
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ocfs2/super.c |   22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ net/ipv6/esp6.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/fs/ocfs2/super.c
-+++ b/fs/ocfs2/super.c
-@@ -1110,17 +1110,6 @@ static int ocfs2_fill_super(struct super
- 		goto read_super_error;
- 	}
+diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
+index fc8acb15dcfb..5ce8b6c344b8 100644
+--- a/net/ipv6/esp6.c
++++ b/net/ipv6/esp6.c
+@@ -808,8 +808,7 @@ int esp6_input_done2(struct sk_buff *skb, int err)
+ 		struct tcphdr *th;
  
--	root = d_make_root(inode);
--	if (!root) {
--		status = -ENOMEM;
--		mlog_errno(status);
--		goto read_super_error;
--	}
+ 		offset = ipv6_skip_exthdr(skb, offset, &nexthdr, &frag_off);
 -
--	sb->s_root = root;
--
--	ocfs2_complete_mount_recovery(osb);
--
- 	osb->osb_dev_kset = kset_create_and_add(sb->s_id, NULL,
- 						&ocfs2_kset->kobj);
- 	if (!osb->osb_dev_kset) {
-@@ -1138,6 +1127,17 @@ static int ocfs2_fill_super(struct super
- 		goto read_super_error;
- 	}
- 
-+	root = d_make_root(inode);
-+	if (!root) {
-+		status = -ENOMEM;
-+		mlog_errno(status);
-+		goto read_super_error;
-+	}
-+
-+	sb->s_root = root;
-+
-+	ocfs2_complete_mount_recovery(osb);
-+
- 	if (ocfs2_mount_local(osb))
- 		snprintf(nodestr, sizeof(nodestr), "local");
- 	else
+-		if (offset < 0) {
++		if (offset == -1) {
+ 			err = -EINVAL;
+ 			goto out;
+ 		}
+-- 
+2.34.1
+
 
 
