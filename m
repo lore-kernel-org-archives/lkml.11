@@ -2,162 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08C93C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:49:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C07DC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:50:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230236AbiCUWvH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:51:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52422 "EHLO
+        id S230418AbiCUWva (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:51:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230183AbiCUWuu (ORCPT
+        with ESMTP id S230290AbiCUWvU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:50:50 -0400
-Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09D4B38F732;
-        Mon, 21 Mar 2022 15:30:39 -0700 (PDT)
-Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-de48295467so209439fac.2;
-        Mon, 21 Mar 2022 15:30:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=fd0ioVJnCUxmBqE5v/1CktP1XfO1ct0lyiZbE7j35V8=;
-        b=JPbAJMKIYbgC77xWESrjn/RacBD6J3iRT8AHohuSQ5gNjCihvenph23+NrpNOEwu23
-         fPCOh4WFVaCtXprRY1+RoyESnxJHObyb3e7zwlzQlYoUxWD8FHJi6I8iZ2o/tt8seIDU
-         4nIQwRqYQtohiDBBUOWlgDQWgjE4V4hJEdtowkSEVAdKm95uEwcq0N5uN1xcj6py3ZPz
-         BLhvCVi/hfkUOm5lwjHvODcUlvous1XOim6kczc+LPjHJO7V0AKP5N1a6xbKQyd2csvb
-         48cV81fo25s6sCrryb8VX35V8a9ku+yauFAL9EFR7buUWgj7OdF+/03okeAHnJCCM5C2
-         Nxbw==
+        Mon, 21 Mar 2022 18:51:20 -0400
+Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1715B3AE9F8;
+        Mon, 21 Mar 2022 15:31:03 -0700 (PDT)
+Received: by mail-oi1-f180.google.com with SMTP id s207so17760675oie.11;
+        Mon, 21 Mar 2022 15:31:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=fd0ioVJnCUxmBqE5v/1CktP1XfO1ct0lyiZbE7j35V8=;
-        b=ALmCKxooUO1TR3I8C6PU53UPFOFOJLhl6GDA9bIZ4AZFJEQyKhQjDHY8PlaLwYlojG
-         Um0hm6453mxYP6TvXd2AGkzSIC1GDgihI6P3ZJx1K1HNO65IgwZ/C+3QqGiiAH0jcHjv
-         3Tk2eonbWn+zXcfOslZAo8Ga6DBAa+VVpGAbtoljCV4XpGgFU5sBIbm1+HqEBzpQMLnM
-         sMyG0RzHBbl/dmUYQvomQTMsXyjlkKQdxnObsd5rpjEbhkVBp8KImK3UAEJZz8Dd9gNQ
-         dK/sC8KnH6fVWiAREcY+VxV58/MCK5a3fd4xv3S+ceplyy6/ZIgFRVi0SdjPWmQqXZEN
-         xVWg==
-X-Gm-Message-State: AOAM533c2VgKHBXdGqVdEPkDhHn1V1xKilU7NkgP9stlNVMjZUlN3dnw
-        x8NVQTgIHFT5uqpBt8wW3g0TM7I4Nwyr5dG4
-X-Google-Smtp-Source: ABdhPJx9PqwCNkYnhrgCr9dl47xOE1L03ITPFHLHegqf7Cg046EHXDpNqRAOoGssllJToGvQO1sgow==
-X-Received: by 2002:a17:90a:5ae2:b0:1c6:7168:1164 with SMTP id n89-20020a17090a5ae200b001c671681164mr1354065pji.119.1647901282882;
-        Mon, 21 Mar 2022 15:21:22 -0700 (PDT)
-Received: from jagath-PC ([115.99.184.169])
-        by smtp.gmail.com with ESMTPSA id u22-20020a056a00125600b004fa3aec7f89sm16017098pfi.75.2022.03.21.15.21.21
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 21 Mar 2022 15:21:22 -0700 (PDT)
-Date:   Tue, 22 Mar 2022 03:51:18 +0530
-From:   Jagath Jog J <jagathjog1996@gmail.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Dan Robertson <dan@dlrobertson.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 3/5] iio: accel: bma400: Add triggered buffer support
-Message-ID: <20220321222117.GD10058@jagath-PC>
-References: <20220319181023.8090-1-jagathjog1996@gmail.com>
- <20220319181023.8090-4-jagathjog1996@gmail.com>
- <CAHp75VdB5q+Y2R46OO-kCKCkPY58YzyLNjN3PjJiQhTOgV4n2w@mail.gmail.com>
+         :mime-version:content-disposition:in-reply-to;
+        bh=qpBy8/OYx70t80yV9nniAHD9sFfG+3EO5lhZ6lcjTZM=;
+        b=T6eN2WCIAJYewai1GpzDKtUHOLkcPDA4NIdVjSWTiYnIxGPe4tg5ghNGeHobI/BVty
+         uaVfqIJ47dkfYZMd1EA7A8re143qlE2U4BZ+J1Mc4ppo48/J8JwVy+1Em/DBXZoj9qQj
+         IsKa5LwrKhg90Qg18tFCc6hrwPLE64ak3xN0ADQhj/wiliG5y25lB/0K5/O7x2cVh9A1
+         L9S4Pdq6mEYz0YE6ZGTqgIIpFQSDC4qrIP+bcEfQy1aAP3XLod0V9BGtoqqYsGB9qfmA
+         qCpjGjU4wvNbaWu921jd7ghMgMsqAO4Tq/e7y0mCmvFJ6+NnXQlMilVYZfUOgETS0dbW
+         9oiQ==
+X-Gm-Message-State: AOAM531OalwQTUrJKavfwcwyCpsbX68tmKa5igQrRy6JHVgVXQmffSOb
+        iipwDxXAJh6EsPcqm+NX18+Q5fWGWw==
+X-Google-Smtp-Source: ABdhPJx6TvCku6XWqq2RvsKNU9ONO8JkWRgLdjkvQQTVTOgGpV/EfV8t05/k3kfG37toxwZtiHYa/Q==
+X-Received: by 2002:a05:6870:e40e:b0:dd:c65c:ab6 with SMTP id n14-20020a056870e40e00b000ddc65c0ab6mr455755oag.79.1647899482382;
+        Mon, 21 Mar 2022 14:51:22 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id x25-20020a056830409900b005af164235b4sm7703648ott.2.2022.03.21.14.51.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 14:51:21 -0700 (PDT)
+Received: (nullmailer pid 601083 invoked by uid 1000);
+        Mon, 21 Mar 2022 21:51:20 -0000
+Date:   Mon, 21 Mar 2022 16:51:20 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        Andy Gross <agross@kernel.org>
+Subject: Re: [PATCH v5 14/18] dt-bindings: clock: Convert qcom,krait-cc to
+ yaml
+Message-ID: <YjjzWAu8p7i2RANW@robh.at.kernel.org>
+References: <20220321153855.12082-1-ansuelsmth@gmail.com>
+ <20220321153855.12082-15-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHp75VdB5q+Y2R46OO-kCKCkPY58YzyLNjN3PjJiQhTOgV4n2w@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20220321153855.12082-15-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Andy,
+On Mon, 21 Mar 2022 16:38:51 +0100, Ansuel Smith wrote:
+> Convert qcom,krait-cc to yaml Documentation.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+> ---
+>  .../bindings/clock/qcom,krait-cc.txt          | 34 -----------
+>  .../bindings/clock/qcom,krait-cc.yaml         | 59 +++++++++++++++++++
+>  2 files changed, 59 insertions(+), 34 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/clock/qcom,krait-cc.txt
+>  create mode 100644 Documentation/devicetree/bindings/clock/qcom,krait-cc.yaml
+> 
 
-On Mon, Mar 21, 2022 at 10:39:22AM +0200, Andy Shevchenko wrote:
-> On Sat, Mar 19, 2022 at 8:10 PM Jagath Jog J <jagathjog1996@gmail.com> wrote:
-> >
-> > Added trigger buffer support to read continuous acceleration
-> > data from device with data ready interrupt which is mapped
-> > to INT1 pin.
-> 
-> ...
-> 
-> >  #include <linux/mutex.h>
-> >  #include <linux/regmap.h>
-> >  #include <linux/regulator/consumer.h>
-> > +#include <linux/bits.h>
-> > +#include <linux/bitfield.h>
-> 
-> It would be nice to keep the above in order.
-> 
-> > +#include <linux/iio/buffer.h>
-> > +#include <linux/iio/trigger.h>
-> > +#include <linux/iio/triggered_buffer.h>
-> > +#include <linux/iio/trigger_consumer.h>
-> 
-> These ones, possibly including iio headers from the above piece, are
-> good to be grouped together here with a blank line in between the
-> above part and iio/*.
-> 
-> ...
-> 
-> > +static const unsigned long bma400_avail_scan_masks[] = {
-> > +       GENMASK(3, 0),
-> 
-> > +       0,
-> 
-> No need to have a comma in terminator entry.
-> 
-> > +};
-> 
-> ...
-> 
-> > +       ret = regmap_bulk_read(data->regmap, BMA400_X_AXIS_LSB_REG,
-> > +                              &data->buffer.buff, 3 * sizeof(__be16));
-> 
-> sizeof(buff)
-> 
-> ...
-> 
-> > +out:
-
-Just to skip the below "if()" if error occurs in previous regmap read,
-I used this label.
-       if (status & BMA400_INT_DRDY_MSK)
-             iio_trigger_poll_chained(data->trig);
-
-I will remove the label in next patch
-> 
-> A useless label. Moreover this raises a question: why is it okay to
-> always mark IRQ as handled?
-> 
-> > +       return IRQ_HANDLED;
-
-Since I was not using top-half of the interrupt so I marked IRQ as handled
-even for error case in the handler.
-
-> 
-> ...
-> 
-> > +                       dev_err(dev, "iio trigger register failed\n");
-> > +                       return ret;
-> 
-> return dev_err_probe();
-> 
-> ...
-> 
-> > +                       dev_err(dev, "request irq %d failed\n", irq);
-> > +                       return ret;
-> 
-> Ditto.
-> 
-> ...
-> 
-> > +               dev_err(dev, "iio triggered buffer setup failed\n");
-> > +               return ret;
-> 
-> Ditto.
-
-I will change this in the next patch version.
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
+Acked-by: Rob Herring <robh@kernel.org>
