@@ -2,146 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C823CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:54:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20327C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:54:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230273AbiCUWzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:55:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45344 "EHLO
+        id S231240AbiCUWzm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:55:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231228AbiCUWzJ (ORCPT
+        with ESMTP id S230453AbiCUWzX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:55:09 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E1F16E37C
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:33:49 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id h16-20020a056902009000b00628a70584b2so13057692ybs.6
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:33:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=SpMsyAVY3Ou4ayr2UUYCx6xfElQ9mcgAD2W4Le+nlxs=;
-        b=bxKFolBykFNwtGqa9A5Zv5QZ9Ai6Ja84JYVRKGk+yEJYFUgtKde7nioaqACjn8FG2G
-         tmv5I6Pm13yFLyrQhOoEW3XVEtflPeAjcShYbuWGFHRmh0cfao9cXbvNHclX4vYI5twx
-         JNzzvLk10AayW8KECkv/Nq2PgPL4870qnyxtnlxhOAGeW8oZhgXJHZK4g982LoK11iHx
-         X4ag52xx5xMBjQhkfIlRF+mmtK0/NJLrfi5/I1YLTtw0utBqzqj4m4vE2By+1YjcfGsu
-         wHOf7xkEHJHLEWXwGc1QwKTloyWocN5HuVM5SHn45E5vg/BRoO1BO1nwXnB0XdtGf2Bk
-         tSFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=SpMsyAVY3Ou4ayr2UUYCx6xfElQ9mcgAD2W4Le+nlxs=;
-        b=WI/M7OGDfKzJi9eAXDljnWAog+h5olfF4Y59+Cj8cvj4rWpBh3D/nAINt2FY2uTaZ4
-         V84vdR5cJyTDj8f9T4rfDHQFp0iu7ef9SOSAFtIB8jn60SXWzaAlxyrfeTx7XbxYb9Y3
-         XZadE1Laebdf8ZMXII7WbguNjrzo3Z371TwgNJeiRvOsPlIcgU/2gZ/5/pk0tSLtu7ck
-         gIWRsz5M6PinOUeCn5KueJrXQrHCiHBqaEmH/ac7TYIkceBsTxjY55KvzQmU0C8hU4n6
-         uBpvDiVp6x2RcFtqhV60pHFiLuepePeoNuG0yCEcaWI9FIce3I1U8OZ7XkZ7noVwUr3V
-         eeTg==
-X-Gm-Message-State: AOAM530qBuqy/Xzdopyq7eYZlmmwWrDdRXrOWZRfq7+Ah5eGu7svZGt6
-        6qi12VrUJ085ludQ84k4l+uHdyoCFYFC
-X-Google-Smtp-Source: ABdhPJwNEOs7GijFSfW6DVg3FBLi7BK61nctdq2vDBs8q3qZjbfN2iuMK2ufFC13SQ9m3MWAcUhaH2beDQqF
-X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:1626:404f:eb8e:caae])
- (user=irogers job=sendgmr) by 2002:a81:1e95:0:b0:2e5:ad0d:b7fc with SMTP id
- e143-20020a811e95000000b002e5ad0db7fcmr26767986ywe.328.1647902028157; Mon, 21
- Mar 2022 15:33:48 -0700 (PDT)
-Date:   Mon, 21 Mar 2022 15:33:44 -0700
-Message-Id: <20220321223344.1034479-1-irogers@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.894.gb6a874cedc-goog
-Subject: [PATCH] perf parse-events: Move slots only with topdown
-From:   Ian Rogers <irogers@google.com>
-To:     Kan Liang <kan.liang@linux.intel.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        James Clark <james.clark@arm.com>,
-        John Garry <john.garry@huawei.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
-Cc:     Stephane Eranian <eranian@google.com>,
-        Ian Rogers <irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 21 Mar 2022 18:55:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B7903B2A14;
+        Mon, 21 Mar 2022 15:37:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2D747B81A66;
+        Mon, 21 Mar 2022 21:53:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3F2BC340F0;
+        Mon, 21 Mar 2022 21:53:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647899590;
+        bh=/yE+Sme9P6DeiwPLI0+q7oIXGmD4IVHQHa6leBP2hnE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=M6yBvafZ3D2xuVh5WZt4BgylGkT5tEJcTybhGdLp+VQIvWc8tBYvQFSFHtLF7n0NX
+         cwa4Ry4I6O+/6/3Z+I/D7Iltcfd90XpOH4D6SJj/JjvZkDfMr5FnHjKwj7evAyQ1dj
+         SM+VBB0/9x6HDBT+/uq3xl6zBd8ff7WhDoC4vgJqJOUCDmMjA31J7RwsG+ROPt6Jz7
+         J1zuMtuKyXJ5TWGHbzxrkwKgiyKoeO1e8ns0Aif+xcTlQToyHZZXJY38CN1fbmInDC
+         ZPDRzh8kfrUqIkodRGl5e2xB2Z5m5JcZxEpajz6QYmPYX5PiyYKs640oXw+yLO7jjd
+         HPPNSSiH6Ux3Q==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, nikita@trvn.ru,
+        song.bao.hua@hisilicon.com, linux-input@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 1/4] Input: zinitix - do not report shadow fingers
+Date:   Mon, 21 Mar 2022 17:53:02 -0400
+Message-Id: <20220321215308.490358-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If slots isn't with a topdown event then moving it is unnecessary. For
-example {instructions, slots} is re-ordered:
+From: Linus Walleij <linus.walleij@linaro.org>
 
-$ perf stat -e '{instructions,slots}' -a sleep 1
+[ Upstream commit e941dc13fd3717122207d74539ab95da07ef797f ]
 
- Performance counter stats for 'system wide':
+I observed the following problem with the BT404 touch pad
+running the Phosh UI:
 
-       936,600,825      slots
-       144,440,968      instructions
+When e.g. typing on the virtual keyboard pressing "g" would
+produce "ggg".
 
-       1.006061423 seconds time elapsed
+After some analysis it turns out the firmware reports that three
+fingers hit that coordinate at the same time, finger 0, 2 and
+4 (of the five available 0,1,2,3,4).
 
-Which can break tools expecting the command line order to match the
-printed order. It is necessary to move the slots event first when it
-appears with topdown events. Add extra checking so that the slots event
-is only moved in the case of there being a topdown event like:
+DOWN
+  Zinitix-TS 3-0020: finger 0 down (246, 395)
+  Zinitix-TS 3-0020: finger 1 up (0, 0)
+  Zinitix-TS 3-0020: finger 2 down (246, 395)
+  Zinitix-TS 3-0020: finger 3 up (0, 0)
+  Zinitix-TS 3-0020: finger 4 down (246, 395)
+UP
+  Zinitix-TS 3-0020: finger 0 up (246, 395)
+  Zinitix-TS 3-0020: finger 2 up (246, 395)
+  Zinitix-TS 3-0020: finger 4 up (246, 395)
 
-$ perf stat -e '{instructions,slots,topdown-fe-bound}' -a sleep 1
+This is one touch and release: i.e. this is all reported on
+touch (down) and release.
 
- Performance counter stats for 'system wide':
+There is a field in the struct touch_event called finger_cnt
+which is actually a bitmask of the fingers active in the
+event.
 
-        2427568570      slots
-         300927614      instructions
-         551021649      topdown-fe-bound
+Rename this field finger_mask as this matches the use contents
+better, then use for_each_set_bit() to iterate over just the
+fingers that are actally active.
 
-       1.001771803 seconds time elapsed
+Factor out a finger reporting function zinitix_report_fingers()
+to handle all fingers.
 
-Fixes: 94dbfd6781a0 ("perf parse-events: Architecture specific leader override")
-Reported-by: Kan Liang <kan.liang@linux.intel.com>
-Signed-off-by: Ian Rogers <irogers@google.com>
+Also be more careful in reporting finger down/up: we were
+reporting every event with input_mt_report_slot_state(..., true);
+but this should only be reported on finger down or move,
+not on finger up, so also add code to check p->sub_status
+to see what is happening and report correctly.
+
+After this my Zinitix BT404 touchscreen report fingers
+flawlessly.
+
+The vendor drive I have notably does not use the "finger_cnt"
+and contains obviously incorrect code like this:
+
+  if (touch_dev->touch_info.finger_cnt > MAX_SUPPORTED_FINGER_NUM)
+      touch_dev->touch_info.finger_cnt = MAX_SUPPORTED_FINGER_NUM;
+
+As MAX_SUPPORTED_FINGER_NUM is an ordinal and the field is
+a bitmask this seems quite confused.
+
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Link: https://lore.kernel.org/r/20220228233017.2270599-1-linus.walleij@linaro.org
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/arch/x86/util/evlist.c | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
+ drivers/input/touchscreen/zinitix.c | 44 +++++++++++++++++++++++------
+ 1 file changed, 35 insertions(+), 9 deletions(-)
 
-diff --git a/tools/perf/arch/x86/util/evlist.c b/tools/perf/arch/x86/util/evlist.c
-index 8d9b55959256..cfc208d71f00 100644
---- a/tools/perf/arch/x86/util/evlist.c
-+++ b/tools/perf/arch/x86/util/evlist.c
-@@ -20,17 +20,27 @@ int arch_evlist__add_default_attrs(struct evlist *evlist)
+diff --git a/drivers/input/touchscreen/zinitix.c b/drivers/input/touchscreen/zinitix.c
+index 6df6f07f1ac6..17b10b81c713 100644
+--- a/drivers/input/touchscreen/zinitix.c
++++ b/drivers/input/touchscreen/zinitix.c
+@@ -135,7 +135,7 @@ struct point_coord {
  
- struct evsel *arch_evlist__leader(struct list_head *list)
+ struct touch_event {
+ 	__le16	status;
+-	u8	finger_cnt;
++	u8	finger_mask;
+ 	u8	time_stamp;
+ 	struct point_coord point_coord[MAX_SUPPORTED_FINGER_NUM];
+ };
+@@ -311,11 +311,32 @@ static int zinitix_send_power_on_sequence(struct bt541_ts_data *bt541)
+ static void zinitix_report_finger(struct bt541_ts_data *bt541, int slot,
+ 				  const struct point_coord *p)
  {
--	struct evsel *evsel, *first;
-+	struct evsel *evsel, *first, *slots = NULL;
-+	bool has_topdown = false;
- 
- 	first = list_first_entry(list, struct evsel, core.node);
- 
- 	if (!pmu_have_event("cpu", "slots"))
- 		return first;
- 
-+	/* If there is a slots event and a topdown event then the slots event comes first. */
- 	__evlist__for_each_entry(list, evsel) {
--		if (evsel->pmu_name && !strcmp(evsel->pmu_name, "cpu") &&
--			evsel->name && strcasestr(evsel->name, "slots"))
--			return evsel;
-+		if (evsel->pmu_name && !strcmp(evsel->pmu_name, "cpu") && evsel->name) {
-+			if (strcasestr(evsel->name, "slots")) {
-+				slots = evsel;
-+				if (slots == first)
-+					return first;
-+			}
-+			if (!strncasecmp(evsel->name, "topdown", 7))
-+				has_topdown = true;
-+			if (slots && has_topdown)
-+				return slots;
-+		}
- 	}
- 	return first;
++	u16 x, y;
++
++	if (unlikely(!(p->sub_status &
++		       (SUB_BIT_UP | SUB_BIT_DOWN | SUB_BIT_MOVE)))) {
++		dev_dbg(&bt541->client->dev, "unknown finger event %#02x\n",
++			p->sub_status);
++		return;
++	}
++
++	x = le16_to_cpu(p->x);
++	y = le16_to_cpu(p->y);
++
+ 	input_mt_slot(bt541->input_dev, slot);
+-	input_mt_report_slot_state(bt541->input_dev, MT_TOOL_FINGER, true);
+-	touchscreen_report_pos(bt541->input_dev, &bt541->prop,
+-			       le16_to_cpu(p->x), le16_to_cpu(p->y), true);
+-	input_report_abs(bt541->input_dev, ABS_MT_TOUCH_MAJOR, p->width);
++	if (input_mt_report_slot_state(bt541->input_dev, MT_TOOL_FINGER,
++				       !(p->sub_status & SUB_BIT_UP))) {
++		touchscreen_report_pos(bt541->input_dev,
++				       &bt541->prop, x, y, true);
++		input_report_abs(bt541->input_dev,
++				 ABS_MT_TOUCH_MAJOR, p->width);
++		dev_dbg(&bt541->client->dev, "finger %d %s (%u, %u)\n",
++			slot, p->sub_status & SUB_BIT_DOWN ? "down" : "move",
++			x, y);
++	} else {
++		dev_dbg(&bt541->client->dev, "finger %d up (%u, %u)\n",
++			slot, x, y);
++	}
  }
+ 
+ static irqreturn_t zinitix_ts_irq_handler(int irq, void *bt541_handler)
+@@ -323,6 +344,7 @@ static irqreturn_t zinitix_ts_irq_handler(int irq, void *bt541_handler)
+ 	struct bt541_ts_data *bt541 = bt541_handler;
+ 	struct i2c_client *client = bt541->client;
+ 	struct touch_event touch_event;
++	unsigned long finger_mask;
+ 	int error;
+ 	int i;
+ 
+@@ -335,10 +357,14 @@ static irqreturn_t zinitix_ts_irq_handler(int irq, void *bt541_handler)
+ 		goto out;
+ 	}
+ 
+-	for (i = 0; i < MAX_SUPPORTED_FINGER_NUM; i++)
+-		if (touch_event.point_coord[i].sub_status & SUB_BIT_EXIST)
+-			zinitix_report_finger(bt541, i,
+-					      &touch_event.point_coord[i]);
++	finger_mask = touch_event.finger_mask;
++	for_each_set_bit(i, &finger_mask, MAX_SUPPORTED_FINGER_NUM) {
++		const struct point_coord *p = &touch_event.point_coord[i];
++
++		/* Only process contacts that are actually reported */
++		if (p->sub_status & SUB_BIT_EXIST)
++			zinitix_report_finger(bt541, i, p);
++	}
+ 
+ 	input_mt_sync_frame(bt541->input_dev);
+ 	input_sync(bt541->input_dev);
 -- 
-2.35.1.894.gb6a874cedc-goog
+2.34.1
 
