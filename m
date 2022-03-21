@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 478CAC4707F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49291C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351833AbiCUOL5 (ORCPT
+        id S1351863AbiCUOMB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:11:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35544 "EHLO
+        Mon, 21 Mar 2022 10:12:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348939AbiCUOEO (ORCPT
+        with ESMTP id S1348944AbiCUOFK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:04:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53ED318116C;
-        Mon, 21 Mar 2022 07:01:21 -0700 (PDT)
+        Mon, 21 Mar 2022 10:05:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AF01181B2C;
+        Mon, 21 Mar 2022 07:01:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 93F3361331;
-        Mon, 21 Mar 2022 14:01:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98E96C340F4;
-        Mon, 21 Mar 2022 14:01:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ECD4BB816CE;
+        Mon, 21 Mar 2022 14:01:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 444E9C340ED;
+        Mon, 21 Mar 2022 14:01:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871279;
-        bh=UVpzg8vkB+appVM0yGsFhEW2xTZ4hJwU+sV8X/KCqV4=;
+        s=korg; t=1647871284;
+        bh=2nO093whqQ/sqbYqWbv0LaogH00/S1O/HY0QpO+NfNU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q4dmZsjxLT1mkKXhLxeo4kBgQ++/p7BbCQVZD0B8kG42fflA+D2EtrIwy6WpZVO+g
-         taVKWrxB81MgQu4dnftWDQvNZTspXeE+Q+fEftcvNtifo+y9i+S60yzGWL4OSA4srF
-         OaJkjeqXRPMRRKhqaCB0hG3uZwhAZs37ZYwLKaPg=
+        b=CiH/1Ha3UbvdZ/nBRLVJd6kUz7aGcQhQHHO4sa86nQubwWOQzW7oodf667KRnFCKV
+         K8RokQAh33z3sinIIsyqf9akd+P2m6/zx/PvNpupsqFaMhl8XEpeWY4opG5fyyMfOd
+         YKdnWim2sof2Fu26ow7wqzoW8IfaSpJH/AaT63Lc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Xiumei Mu <xmu@redhat.com>,
+        Sabrina Dubroca <sd@queasysnail.net>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 07/32] alx: acquire mutex for alx_reinit in alx_change_mtu
-Date:   Mon, 21 Mar 2022 14:52:43 +0100
-Message-Id: <20220321133220.776790538@linuxfoundation.org>
+Subject: [PATCH 5.15 09/32] esp6: fix check on ipv6_skip_exthdrs return value
+Date:   Mon, 21 Mar 2022 14:52:45 +0100
+Message-Id: <20220321133220.833086671@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133220.559554263@linuxfoundation.org>
 References: <20220321133220.559554263@linuxfoundation.org>
@@ -50,47 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Sabrina Dubroca <sd@queasysnail.net>
 
-[ Upstream commit 46b348fd2d81a341b15fb3f3f986204b038f5c42 ]
+[ Upstream commit 4db4075f92af2b28f415fc979ab626e6b37d67b6 ]
 
-alx_reinit has a lockdep assertion that the alx->mtx mutex must be held.
-alx_reinit is called from two places: alx_reset and alx_change_mtu.
-alx_reset does acquire alx->mtx before calling alx_reinit.
-alx_change_mtu does not acquire this mutex, nor do its callers or any
-path towards alx_change_mtu.
-Acquire the mutex in alx_change_mtu.
+Commit 5f9c55c8066b ("ipv6: check return value of ipv6_skip_exthdr")
+introduced an incorrect check, which leads to all ESP packets over
+either TCPv6 or UDPv6 encapsulation being dropped. In this particular
+case, offset is negative, since skb->data points to the ESP header in
+the following chain of headers, while skb->network_header points to
+the IPv6 header:
 
-The issue was introduced when the fine-grained locking was introduced
-to the code to replace the RTNL. The same commit also introduced the
-lockdep assertion.
+    IPv6 | ext | ... | ext | UDP | ESP | ...
 
-Fixes: 4a5fe57e7751 ("alx: use fine-grained locking instead of RTNL")
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Link: https://lore.kernel.org/r/20220310232707.44251-1-dossche.niels@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+That doesn't seem to be a problem, especially considering that if we
+reach esp6_input_done2, we're guaranteed to have a full set of headers
+available (otherwise the packet would have been dropped earlier in the
+stack). However, it means that the return value will (intentionally)
+be negative. We can make the test more specific, as the expected
+return value of ipv6_skip_exthdr will be the (negated) size of either
+a UDP header, or a TCP header with possible options.
+
+In the future, we should probably either make ipv6_skip_exthdr
+explicitly accept negative offsets (and adjust its return value for
+error cases), or make ipv6_skip_exthdr only take non-negative
+offsets (and audit all callers).
+
+Fixes: 5f9c55c8066b ("ipv6: check return value of ipv6_skip_exthdr")
+Reported-by: Xiumei Mu <xmu@redhat.com>
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/atheros/alx/main.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ net/ipv6/esp6.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/atheros/alx/main.c b/drivers/net/ethernet/atheros/alx/main.c
-index 4ea157efca86..98a8698a3201 100644
---- a/drivers/net/ethernet/atheros/alx/main.c
-+++ b/drivers/net/ethernet/atheros/alx/main.c
-@@ -1181,8 +1181,11 @@ static int alx_change_mtu(struct net_device *netdev, int mtu)
- 	alx->hw.mtu = mtu;
- 	alx->rxbuf_size = max(max_frame, ALX_DEF_RXBUF_SIZE);
- 	netdev_update_features(netdev);
--	if (netif_running(netdev))
-+	if (netif_running(netdev)) {
-+		mutex_lock(&alx->mtx);
- 		alx_reinit(alx);
-+		mutex_unlock(&alx->mtx);
-+	}
- 	return 0;
- }
+diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
+index b7b573085bd5..5023f59a5b96 100644
+--- a/net/ipv6/esp6.c
++++ b/net/ipv6/esp6.c
+@@ -813,8 +813,7 @@ int esp6_input_done2(struct sk_buff *skb, int err)
+ 		struct tcphdr *th;
  
+ 		offset = ipv6_skip_exthdr(skb, offset, &nexthdr, &frag_off);
+-
+-		if (offset < 0) {
++		if (offset == -1) {
+ 			err = -EINVAL;
+ 			goto out;
+ 		}
 -- 
 2.34.1
 
