@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80276C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:22:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56D60C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:22:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349261AbiCUORr (ORCPT
+        id S1349543AbiCUOSI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:17:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38336 "EHLO
+        Mon, 21 Mar 2022 10:18:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348687AbiCUOGz (ORCPT
+        with ESMTP id S1349477AbiCUOI0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:06:55 -0400
+        Mon, 21 Mar 2022 10:08:26 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD2353E5CD;
-        Mon, 21 Mar 2022 07:01:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B282546169;
+        Mon, 21 Mar 2022 07:02:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6F25DB816D7;
-        Mon, 21 Mar 2022 14:01:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0B9AC340ED;
-        Mon, 21 Mar 2022 14:01:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0420B816D7;
+        Mon, 21 Mar 2022 14:02:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BBAAC340E8;
+        Mon, 21 Mar 2022 14:02:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871317;
-        bh=P2IQTYz+6Lh8+CGifj/lOi7qPetT3jjEs9BZ0XForo0=;
+        s=korg; t=1647871369;
+        bh=oxVeHmU6vXUXNj8ii8MS42qnjCRLISMiq/1Pu/HbLOU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fv28FioWB2hxFu28KrmTa1vmnRCGtHbt0+kDrM057Ad0LFainvRu687Rhx0kIZ6Nq
-         KHFxMu993kObJ7mbCcnWAXsc1Zako++DYWXMdJ7GVUZY5bZvYu9bZ9wpFbSPbcwzY7
-         SX7ics5BUfUG4QS2VOTFnHjd18tBPWU3m0HjaYeU=
+        b=y+Q82zq41qiONYGp6esSJrDp3XsyJM92MHGVZgzoke7Pdm9lUTdASXWApehEOwYFa
+         stihnK3mjB+1Xh3RmRPDdI5XKjjfYBx6DcfeE9PowOdewsLb+SgIYBaMTVdbhAlJOF
+         OaIt/HhmM9e5NoB+mgR4TrWXu9AuqQR3Cn6/szsk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 19/37] net: handle ARPHRD_PIMREG in dev_is_mac_header_xmit()
-Date:   Mon, 21 Mar 2022 14:53:01 +0100
-Message-Id: <20220321133221.852248137@linuxfoundation.org>
+        stable@vger.kernel.org, Kalle Valo <quic_kvalo@quicinc.com>
+Subject: [PATCH 5.16 36/37] Revert "ath10k: drop beacon and probe response which leak from other channel"
+Date:   Mon, 21 Mar 2022 14:53:18 +0100
+Message-Id: <20220321133222.334723442@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133221.290173884@linuxfoundation.org>
 References: <20220321133221.290173884@linuxfoundation.org>
@@ -51,36 +48,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+From: Kalle Valo <quic_kvalo@quicinc.com>
 
-[ Upstream commit 4ee06de7729d795773145692e246a06448b1eb7a ]
+commit 45b4eb7ee6aa1a55a50831b328aa5f46ac3a7187 upstream.
 
-This kind of interface doesn't have a mac header. This patch fixes
-bpf_redirect() to a PIM interface.
+This reverts commit 3bf2537ec2e33310b431b53fd84be8833736c256.
 
-Fixes: 27b29f63058d ("bpf: add bpf_redirect() helper")
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Link: https://lore.kernel.org/r/20220315092008.31423-1-nicolas.dichtel@6wind.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+I was reported privately that this commit breaks AP and mesh mode on QCA9984
+(firmware 10.4-3.9.0.2-00156). So revert the commit to fix the regression.
+
+There was a conflict due to cfg80211 API changes but that was easy to fix.
+
+Fixes: 3bf2537ec2e3 ("ath10k: drop beacon and probe response which leak from other channel")
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220315155455.20446-1-kvalo@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/if_arp.h | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/ath/ath10k/wmi.c |   27 +--------------------------
+ 1 file changed, 1 insertion(+), 26 deletions(-)
 
-diff --git a/include/linux/if_arp.h b/include/linux/if_arp.h
-index b712217f7030..1ed52441972f 100644
---- a/include/linux/if_arp.h
-+++ b/include/linux/if_arp.h
-@@ -52,6 +52,7 @@ static inline bool dev_is_mac_header_xmit(const struct net_device *dev)
- 	case ARPHRD_VOID:
- 	case ARPHRD_NONE:
- 	case ARPHRD_RAWIP:
-+	case ARPHRD_PIMREG:
- 		return false;
- 	default:
- 		return true;
--- 
-2.34.1
-
+--- a/drivers/net/wireless/ath/ath10k/wmi.c
++++ b/drivers/net/wireless/ath/ath10k/wmi.c
+@@ -2611,30 +2611,9 @@ int ath10k_wmi_event_mgmt_rx(struct ath1
+ 		ath10k_mac_handle_beacon(ar, skb);
+ 
+ 	if (ieee80211_is_beacon(hdr->frame_control) ||
+-	    ieee80211_is_probe_resp(hdr->frame_control)) {
+-		struct ieee80211_mgmt *mgmt = (void *)skb->data;
+-		u8 *ies;
+-		int ies_ch;
+-
++	    ieee80211_is_probe_resp(hdr->frame_control))
+ 		status->boottime_ns = ktime_get_boottime_ns();
+ 
+-		if (!ar->scan_channel)
+-			goto drop;
+-
+-		ies = mgmt->u.beacon.variable;
+-
+-		ies_ch = cfg80211_get_ies_channel_number(mgmt->u.beacon.variable,
+-							 skb_tail_pointer(skb) - ies,
+-							 sband->band);
+-
+-		if (ies_ch > 0 && ies_ch != channel) {
+-			ath10k_dbg(ar, ATH10K_DBG_MGMT,
+-				   "channel mismatched ds channel %d scan channel %d\n",
+-				   ies_ch, channel);
+-			goto drop;
+-		}
+-	}
+-
+ 	ath10k_dbg(ar, ATH10K_DBG_MGMT,
+ 		   "event mgmt rx skb %pK len %d ftype %02x stype %02x\n",
+ 		   skb, skb->len,
+@@ -2648,10 +2627,6 @@ int ath10k_wmi_event_mgmt_rx(struct ath1
+ 	ieee80211_rx_ni(ar->hw, skb);
+ 
+ 	return 0;
+-
+-drop:
+-	dev_kfree_skb(skb);
+-	return 0;
+ }
+ 
+ static int freq_to_idx(struct ath10k *ar, int freq)
 
 
