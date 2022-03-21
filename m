@@ -2,128 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0068DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:11:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A17EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:12:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345697AbiCUJNG (ORCPT
+        id S1345705AbiCUJOG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 05:13:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47540 "EHLO
+        Mon, 21 Mar 2022 05:14:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235501AbiCUJNF (ORCPT
+        with ESMTP id S235501AbiCUJOE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 05:13:05 -0400
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F809C559C
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 02:11:40 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id B54EA5C0102;
-        Mon, 21 Mar 2022 05:11:39 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Mon, 21 Mar 2022 05:11:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=EaBaoXYAR6b4616S4
-        HVTs+O1Fjylx01QZh1cTzPU21s=; b=jbpPCrVncbBcY4X+FwPZg82jyiQkUUmmf
-        1WzAI21dnNO6ghSDonK7FYMnahrJ+UiY01HHnoF1QiRq8D5lC5N02m2M5rIyf/Ay
-        Kb36Oo618zk7x5ZGXbMYbNTyOB0O6tUpPu94lU/4kXMftRaBUe1gD8764Jgz59IG
-        i1O/v1rpQYHj9g294BKOAL6gJSN/qu+Y/i8dq2568X5WqxpM85/i66xp5Fm55WC2
-        iRW4qhMQ73WsSqY+HJlYHa2SQ6nA4tVwH8kCxcMBGoK7lWylsAGH/AoLPSA6oFzf
-        3RV9df8ZN+N8+hnZgcb1l9ItpLDAIjNjxCRYJkQRSqO9OsOHU8pVA==
-X-ME-Sender: <xms:S0E4YuUc06YA_sE-ekyolfXUyDsCW0Mpo-74-ZHXuEKsE-OPBTFHnA>
-    <xme:S0E4Yqkn6zSeMr0qeGAoolvWxe-ghz57YvbmLteVjh9aegH5Pmx162AnnL4zTdf8m
-    _xUtT97qkaXxYeDEy8>
-X-ME-Received: <xmr:S0E4YiYR7uL2CLnV2t4TL9EADRQv11LPuEjs8DWZfPJf4QHTmgEBqNiczum4B6wVypoRxcWe2ZesR6seY3NKFlMsCYeUQpM3FIg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudegfedgtdduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffujgfkfhggtgesmhdtreertddtjeenucfhrhhomhephfhinhhnucfv
-    hhgrihhnuceofhhthhgrihhnsehlihhnuhigqdhmieekkhdrohhrgheqnecuggftrfgrth
-    htvghrnhepfeffjeeigfehveehfeevhfetgefgieejieeviefhffffudfgfeekleffhffg
-    hedvnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepfh
-    hthhgrihhnsehlihhnuhigqdhmieekkhdrohhrgh
-X-ME-Proxy: <xmx:S0E4YlXdsIqRWw6y11QDsxECnFnCnsysxwZ9OsQ1t5Znfgq6PXM8Aw>
-    <xmx:S0E4YolfyPDTrTwsQQpqDOJDCSVtq3GgIUBs-9u6NGjNh7Zbqh2hWw>
-    <xmx:S0E4YqdfWOxnfVYEFb64rfxNimM9thv5i-lmGrlFE_jgmHhZLQRyDQ>
-    <xmx:S0E4Ytx0wh9jx2g3BESC2GZBoyiF5NFxEjK3tcx-6wa5dsfRvDn4xw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 21 Mar 2022 05:11:37 -0400 (EDT)
-Date:   Mon, 21 Mar 2022 20:11:47 +1100 (AEDT)
-From:   Finn Thain <fthain@linux-m68k.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] macintosh/via-pmu: Fix compiler warnings when CONFIG_PROC_FS
- is disabled
-In-Reply-To: <073c34e0-a016-cf70-1deb-be286da94bde@csgroup.eu>
-Message-ID: <b6d69a6-9e17-d370-a1cd-8f51204ea5d@linux-m68k.org>
-References: <650f5577599a701fdd632cdd469a9cea9788cdf3.1647674431.git.fthain@linux-m68k.org> <bb6d3131-3c46-654f-d2a0-6d57bb8cbfbf@csgroup.eu> <39f63c1b-5a1b-8c8e-5991-813d3d3c2576@linux-m68k.org> <7b16264-dfef-414-8195-87c14a89fb40@linux-m68k.org>
- <073c34e0-a016-cf70-1deb-be286da94bde@csgroup.eu>
+        Mon, 21 Mar 2022 05:14:04 -0400
+Received: from mg.sunplus.com (unknown [113.196.136.146])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 43A81DB4BE;
+        Mon, 21 Mar 2022 02:12:38 -0700 (PDT)
+X-MailGates: (flag:3,DYNAMIC,RELAY,NOHOST:PASS)(compute_score:DELIVER,40
+        ,3)
+Received: from 172.17.9.202
+        by mg02.sunplus.com with MailGates ESMTP Server V5.0(37793:0:AUTH_RELAY)
+        (envelope-from <tony.huang@sunplus.com>); Mon, 21 Mar 2022 17:13:00 +0800 (CST)
+Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
+ sphcmbx01.sunplus.com.tw (172.17.9.202) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.26; Mon, 21 Mar 2022 17:12:54 +0800
+Received: from sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd]) by
+ sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd%14]) with mapi id
+ 15.00.1497.026; Mon, 21 Mar 2022 17:12:54 +0800
+From:   =?utf-8?B?VG9ueSBIdWFuZyDpu4Pmh7fljpo=?= <tony.huang@sunplus.com>
+To:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Tony Huang <tonyhuang.sunplus@gmail.com>,
+        "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "lhjeff911@gmail.com" <lhjeff911@gmail.com>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>
+CC:     =?utf-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>,
+        =?utf-8?B?TGggS3VvIOmDreWKm+ixqg==?= <lh.Kuo@sunplus.com>
+Subject: RE: [PATCH v4 2/2] mmc: Add mmc driver for Sunplus SP7021
+Thread-Topic: [PATCH v4 2/2] mmc: Add mmc driver for Sunplus SP7021
+Thread-Index: AQHYOzO6cpYNd+UZBku5eHHWG55gaqzHpeaAgAGhbhD//8C6gIAAiLaA
+Date:   Mon, 21 Mar 2022 09:12:54 +0000
+Message-ID: <65f7b13e2c9d4bf484ecfd29b6ab4cc7@sphcmbx02.sunplus.com.tw>
+References: <cover.1647652688.git.tonyhuang.sunplus@gmail.com>
+ <f954fb1c0d1c4950b71a8fc360c78edcca9954de.1647652688.git.tonyhuang.sunplus@gmail.com>
+ <e5426768-1dd0-0bef-25e8-2ab494f7723d@kernel.org>
+ <c6ecbe40dc234454b41bcbc0bf073084@sphcmbx02.sunplus.com.tw>
+ <ef173db6-4635-8a77-c3e3-d96b0c2fa7a3@kernel.org>
+In-Reply-To: <ef173db6-4635-8a77-c3e3-d96b0c2fa7a3@kernel.org>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [172.25.108.54]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="-1463811774-918512666-1647853907=:7891"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
----1463811774-918512666-1647853907=:7891
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-
-On Mon, 21 Mar 2022, Christophe Leroy wrote:
-
-> Le 21/03/2022 =C3=A0 09:50, Finn Thain a =C3=A9crit=C2=A0:
-> > Hi Christophe,
-> >=20
-> > On Mon, 21 Mar 2022, Finn Thain wrote:
-> >=20
-> >> On Mon, 21 Mar 2022, Christophe Leroy wrote:
-> >>
-> >>> Le 19/03/2022 =C3=A0 08:20, Finn Thain a =C3=A9crit=C2=A0:
-> >>>> drivers/macintosh/via-pmu.c:897:12: warning: 'pmu_battery_proc_show'=
- defined but not used [-Wunused-function]
-> >>>>    static int pmu_battery_proc_show(struct seq_file *m, void *v)
-> >>>>               ^~~~~~~~~~~~~~~~~~~~~
-> >>>> drivers/macintosh/via-pmu.c:871:12: warning: 'pmu_irqstats_proc_show=
-' defined but not used [-Wunused-function]
-> >>>>    static int pmu_irqstats_proc_show(struct seq_file *m, void *v)
-> >>>>               ^~~~~~~~~~~~~~~~~~~~~~
-> >>>> drivers/macintosh/via-pmu.c:860:12: warning: 'pmu_info_proc_show' de=
-fined but not used [-Wunused-function]
-> >>>>    static int pmu_info_proc_show(struct seq_file *m, void *v)
-> >>>>               ^~~~~~~~~~~~~~~~~~
-> >>>>
-> >>>> Rearrange some code and add some #ifdefs to avoid unused code warnin=
-gs
-> >>>> when CONFIG_PROC_FS is disabled.
-> >>>
-> >>> Why not just put those three functions inside an #ifdef CONFIG_PROC_F=
-S ?
-> >>>
-> >>
-> >> You'd get a warning about the prototypes ("declared static but never
-> >> defined"). Rather than add an ifdef around the prototypes as well, I
-> >> just reordered things a little.
-> >=20
-> > Oops, I was forgetting that I also added an ifdef around the new
-> > prototype.
-> >=20
-> > The simplest solution is probably the patch below, as it better exploit=
-s
-> > the stubbed-out proc_* API in include/linux/proc_fs.h.
-> >=20
-> > Was this what you had in mind?
->=20
-> Yes that's exactly what I had in mind.
->=20
-
-OK, I'll submit it formally.
-
-Thanks for your review.
----1463811774-918512666-1647853907=:7891--
+RGVhciBrcnp5c3p0b2Y6DQoNCj4gPj4+ICsJaW50IGRtYV9pbnRfdGhyZXNob2xkOw0KPiA+Pj4g
+KwlzdHJ1Y3Qgc2dfbWFwcGluZ19pdGVyIHNnX21pdGVyOyAvKiBmb3IgcGlvIG1vZGUgdG8gYWNj
+ZXNzIHNnbGlzdCAqLw0KPiA+Pj4gKwlpbnQgZG1hX3VzZV9pbnQ7IC8qIHNob3VsZCByYWlzZSBp
+cnEgd2hlbiBkbWEgZG9uZSAqLw0KPiA+Pj4gKwlzdHJ1Y3Qgc3BtbWNfdHVuaW5nX2luZm8gZW1t
+Y190dW5pbmdfaW5mbzsNCj4gPj4+ICsJc3RydWN0IHNwc2RjX3R1bmluZ19pbmZvIHNkX3R1bmlu
+Z19pbmZvOw0KPiA+Pj4gKwlpbnQgcmVzdG9yZV80Yml0X3NkaW9fYnVzOw0KPiA+Pj4gKwljb25z
+dCBzdHJ1Y3Qgc3BtbWNfY29tcGF0aWJsZSAqZGV2X2NvbXA7IH07DQo+ID4+PiArDQo+ID4+PiAr
+c3RydWN0IHNwc2RjX2hvc3Qgew0KPiA+Pg0KPiA+PiBXaGVyZSBpcyB0aGlzIHVzZWQ/DQo+ID4+
+DQo+ID4NCj4gPiBzdHJ1Y3Qgc3BtbWNfaG9zdHt9IGZvciBlbW1jLg0KPiA+IHN0cnVjdCBzcHNk
+Y19ob3N0e30gZm9yIFNEIGNhcmQuDQo+ID4gVGhlIHJlZ2lzdGVyIGJhc2UgYWRkcmVzcyBhbmQg
+b2Zmc2V0IGFkZHJlc3Mgb2YgZW1tYyBhbmQgc2QgY2FyZHMgYXJlDQo+IGRpZmZlcmVudC4NCj4g
+PiBlTU1DIGFuZCBzZGNhcmQgYXJlIHRoZWlyIHJlc3BlY3RpdmUgaGFyZHdhcmUgc2V0dGluZ3Mu
+DQo+IA0KPiANCj4gVGhpcyBpcyBhIHdlaXJkIGFuc3dlci4gSSBhc2tlZCB3aGVyZSBpcyB0aGlz
+IHVzZWQgKHN0cnVjdCBzcHNkY19ob3N0KS4NCj4gVGhlcmUgaXMgbm8gc2luZ2xlIHJlZmVyZW5j
+ZSBvZiB0aGlzIHR5cGUuIFlvdXIgYW5zd2VyIGRvZXMgbm90IGNvdmVyIGl0IGFsbC4gSQ0KPiBr
+bm93IHRoYXQgZU1NQyBhbmQgU0QgYXJlIGRpZmZlcmVudC4gVGhhdCB3YXMgbm90IHRoZSBxdWVz
+dGlvbi4NCj4gVGhlIHF1ZXN0aW9uIGlzOiBwb2ludCBtZSB0byB0aGUgY29kZSB3aGljaCB1c2Vz
+IHRoaXMgdHlwZS4NCj4gDQoNClNvcnJ5LCBJIHdpbGwgcmVtb3ZlIHN0cnVjdCBzcHNkY19ob3N0
+IHt9Lg0KDQo=
