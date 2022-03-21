@@ -2,127 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55196C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 08:46:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACAEAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 08:47:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345397AbiCUIsO (ORCPT
+        id S1345424AbiCUIsc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 04:48:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40398 "EHLO
+        Mon, 21 Mar 2022 04:48:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345420AbiCUIr7 (ORCPT
+        with ESMTP id S1345402AbiCUIsU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 04:47:59 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC37A5E98;
-        Mon, 21 Mar 2022 01:46:35 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id b24so16904183edu.10;
-        Mon, 21 Mar 2022 01:46:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MIXaXRe6fXniSeUMQJNT+Y5fVee3c9bLU6mP2FbFMEI=;
-        b=HPEi+s6WHuEIucuNESN+56exbAgTPW/IyPFiMDR2Nw8O9wqz9unVp50uQEeTWtZuhw
-         s0C8zfIUrdD+qRqYGEB/VT/kINCHD4Gsxnq70tFlohTshaid8zE3/0JI28LcE+FhwJai
-         Tjt+7PP7Rk1OBL5T/4J4Wk9WJN5X5mNJmMAROYxbm6Ryl5uog5EaiHgWi2CU/clspExU
-         NPeLJZ3lrPI7mpdmyDxTDW3vl2NBu6AgKbDDRM1f2GUOQsHt2hwd7CKmyx1M6ysI1Vhd
-         4AVhxqAEnlIDKMP8A+RSO7iNDm95sM9AIpdBSTAeolrhsl6uH0fUQyv+DvMBhJEqBefY
-         CzPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MIXaXRe6fXniSeUMQJNT+Y5fVee3c9bLU6mP2FbFMEI=;
-        b=5D29EnHZS+K/SRcxR+o0Znlaj/aDhsRHDH3TYV9wQioB/rlkjNMHC5gUCnODmLvLiE
-         0OIIUwHJPMjoG1CJdgUAyYCYF03W8GJ91q/2gEgUxTPf/HJuctGT9SBUKEIMLafyUYZo
-         x2cLS5icD1Swt42FM92exAkrUeAeMY202YTLNIyvS4FjZBhhzftKQHbDST97OoU1SodI
-         PUW4h5twjltFiQz8BWcD45nb4/iz7pnUKh+Q+xXro+jG6IdTeM4URlBGJ1iyRFlLCKyY
-         d3BrvuR4xtAT2M3j5S7jhYk+oXzCHRUoKzIw7lMYRzGEWWE7PdKLJQgfwklkNmns26wA
-         Wrkw==
-X-Gm-Message-State: AOAM531Dh6WcVGxvQCwWDpB7Is2peR8kIGseE9mpXBUR8khbbPX8/VD4
-        hlEjY/FaNY7XCjfyeWzpL8EyCaGOSRQbTWyg8Yc=
-X-Google-Smtp-Source: ABdhPJzGrrpF8+dvvOula2t4S/9UqiIemKjG4DATGdQN7z4LgmbXUHAt4N/jlvzNXegmK/U6INqdrAcQX5VkfvYc4cQ=
-X-Received: by 2002:aa7:d1ce:0:b0:419:19ed:725a with SMTP id
- g14-20020aa7d1ce000000b0041919ed725amr12734450edp.270.1647852393881; Mon, 21
- Mar 2022 01:46:33 -0700 (PDT)
+        Mon, 21 Mar 2022 04:48:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F0271A6E00
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 01:46:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647852415;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lOTtoGOaj/bLg++xwN8hAlAI+e0GqN0W18n+jyMNEsI=;
+        b=E85ZRcCY64pz8urV+XAlhRkuZwFRmV2nJPnh1EYV6iagsafJQY6RV0noLd9bvY9fPGmyz/
+        bQv4UL1ok+b5YFCxjsNbUbrcB8+hZl5ElZI4j+0WGu/AvldmctHgOpqiahDU5Ba7UPcQd2
+        +E4oKcnv1rCzMGLeJ2NSvSPrL1lVC9o=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-593-Q_cVDoIdMC2yMzDVUvMfSQ-1; Mon, 21 Mar 2022 04:46:53 -0400
+X-MC-Unique: Q_cVDoIdMC2yMzDVUvMfSQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1DABA1C06910;
+        Mon, 21 Mar 2022 08:46:53 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 65577C15D40;
+        Mon, 21 Mar 2022 08:46:52 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <1821968.CQOukoFCf9@leap>
+References: <1821968.CQOukoFCf9@leap> <000000000000b1807c05daad8f98@google.com>
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc:     dhowells@redhat.com, christophe.jaillet@wanadoo.fr,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] KASAN: null-ptr-deref Read in __free_pages
 MIME-Version: 1.0
-References: <20220319181023.8090-1-jagathjog1996@gmail.com> <20220319181023.8090-6-jagathjog1996@gmail.com>
-In-Reply-To: <20220319181023.8090-6-jagathjog1996@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 21 Mar 2022 10:45:23 +0200
-Message-ID: <CAHp75VeKDpiLo9eJ+578XSqsoRx3YyKuJ4AJJJ3jTQLaENo=Lw@mail.gmail.com>
-Subject: Re: [PATCH v1 5/5] iio: accel: bma400: Add step change event
-To:     Jagath Jog J <jagathjog1996@gmail.com>
-Cc:     Dan Robertson <dan@dlrobertson.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <977072.1647852411.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date:   Mon, 21 Mar 2022 08:46:51 +0000
+Message-ID: <977073.1647852411@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 19, 2022 at 8:10 PM Jagath Jog J <jagathjog1996@gmail.com> wrote:
->
-> Added support for event when there is a detection of single step
-> or double step change. INT1 pin is used to interrupt and event
-> is pushed to userspace.
+Hi Fabio,
 
+How about using my patch instead?  I wonder if __free_pages() should check=
+ for
+a NULL pages pointer...
+
+David
+---
+watch_queue: Fix NULL dereference in error cleanup
+
+In watch_queue_set_size(), the error cleanup code doesn't take account of
+the fact that __free_page() can't handle a NULL pointer when trying to fre=
+e
+up buffer pages that did get allocated.
+
+Fix this by only calling __free_page() on non-NULL pointers extracted from
+the list (the list was allocated by kcalloc() so was pre-cleared).
+
+Without the fix, this can lead to something like the following:
+
+BUG: KASAN: null-ptr-deref in __free_pages+0x1f/0x1b0 mm/page_alloc.c:5473
+Read of size 4 at addr 0000000000000034 by task syz-executor168/3599
 ...
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ __kasan_report mm/kasan/report.c:446 [inline]
+ kasan_report.cold+0x66/0xdf mm/kasan/report.c:459
+ check_region_inline mm/kasan/generic.c:183 [inline]
+ kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
+ instrument_atomic_read include/linux/instrumented.h:71 [inline]
+ atomic_read include/linux/atomic/atomic-instrumented.h:27 [inline]
+ page_ref_count include/linux/page_ref.h:67 [inline]
+ put_page_testzero include/linux/mm.h:717 [inline]
+ __free_pages+0x1f/0x1b0 mm/page_alloc.c:5473
+ watch_queue_set_size+0x499/0x630 kernel/watch_queue.c:275
+ pipe_ioctl+0xac/0x2b0 fs/pipe.c:632
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:874 [inline]
+ __se_sys_ioctl fs/ioctl.c:860 [inline]
+ __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:860
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
->  #include <linux/iio/trigger.h>
->  #include <linux/iio/triggered_buffer.h>
->  #include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/events.h>
+Fixes: c73be61cede5 ("pipe: Add general notification queue support")
+Reported-and-tested-by: syzbot+d55757faa9b80590767b@syzkaller.appspotmail.=
+com
+Signed-off-by: David Howells <dhowells@redhat.com>
+---
+ kernel/watch_queue.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Keep this block ordered,
+diff --git a/kernel/watch_queue.c b/kernel/watch_queue.c
+index 00703444a219..09f35bab496e 100644
+--- a/kernel/watch_queue.c
++++ b/kernel/watch_queue.c
+@@ -272,7 +272,8 @@ long watch_queue_set_size(struct pipe_inode_info *pipe=
+, unsigned int nr_notes)
+ =
 
-...
+ error_p:
+ 	for (i =3D 0; i < nr_pages; i++)
+-		__free_page(pages[i]);
++		if (pages[i])
++			__free_page(pages[i]);
+ 	kfree(pages);
+ error:
+ 	(void) account_pipe_buffers(pipe->user, nr_pages, pipe->nr_accounted);
 
-> +       switch (chan->type) {
-> +       case IIO_STEPS:
-> +               switch (type) {
-> +               case IIO_EV_TYPE_CHANGE:
-> +                       return data->steps_enabled;
-> +               default:
-> +                       return -EINVAL;
-> +               }
-> +       default:
-> +               return -EINVAL;
-> +       }
-
-> +       return 0;
-
-Dead code.
-
-...
-
-> +       case IIO_STEPS:
-> +               switch (type) {
-> +               case IIO_EV_TYPE_CHANGE:
-> +                       mutex_lock(&data->mutex);
-> +                       ret = regmap_update_bits(data->regmap,
-> +                                                BMA400_INT12_MAP_REG,
-> +                                                BMA400_STEP_INT_MSK,
-> +                                                FIELD_PREP(BMA400_STEP_INT_MSK,
-> +                                                           state));
-> +                       mutex_unlock(&data->mutex);
-> +                       if (ret)
-> +                               return ret;
-> +                       data->steps_enabled = state;
-> +                       return 0;
-> +               default:
-> +                       return -EINVAL;
-> +               }
-> +       default:
-> +               return -EINVAL;
-> +       }
-
-> +       return 0;
-
-Ditto.
-
--- 
-With Best Regards,
-Andy Shevchenko
