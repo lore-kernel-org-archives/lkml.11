@@ -2,125 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F683C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:11:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57154C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:15:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346703AbiCULNT (ORCPT
+        id S1346704AbiCULQs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 07:13:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55874 "EHLO
+        Mon, 21 Mar 2022 07:16:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345241AbiCULNO (ORCPT
+        with ESMTP id S233736AbiCULQm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 07:13:14 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3BA39393E7;
-        Mon, 21 Mar 2022 04:11:49 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DF93C1042;
-        Mon, 21 Mar 2022 04:11:48 -0700 (PDT)
-Received: from [10.57.43.230] (unknown [10.57.43.230])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EA0783F766;
-        Mon, 21 Mar 2022 04:11:46 -0700 (PDT)
-Message-ID: <fd86c2cf-3068-1bea-2a6f-46cabb019062@arm.com>
-Date:   Mon, 21 Mar 2022 11:11:42 +0000
+        Mon, 21 Mar 2022 07:16:42 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9A554F99;
+        Mon, 21 Mar 2022 04:15:14 -0700 (PDT)
+Received: from mail-wm1-f51.google.com ([209.85.128.51]) by
+ mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MhDEq-1o1iwU4Btq-00eIp5; Mon, 21 Mar 2022 12:15:13 +0100
+Received: by mail-wm1-f51.google.com with SMTP id bi13-20020a05600c3d8d00b0038c2c33d8f3so7460077wmb.4;
+        Mon, 21 Mar 2022 04:15:12 -0700 (PDT)
+X-Gm-Message-State: AOAM531nrNOtTOrV1uTHOBAJuVJiM0llPWnSOSRP2RHda1BJHRBEqeoy
+        kcKHu2aW3KVq8lxPnojYv4A8PCYDQekmi/j6LTU=
+X-Google-Smtp-Source: ABdhPJzKxQl6VSttlmzvEi1hOv2leyycaxxTRshXcWMv4AXgfyXlahFpsNNQtY+AZ5wBEfDoPO06uRJRVwd5uyfNNS0=
+X-Received: by 2002:a05:600c:4b83:b0:38c:49b5:5bfc with SMTP id
+ e3-20020a05600c4b8300b0038c49b55bfcmr24337091wmp.33.1647857360314; Mon, 21
+ Mar 2022 03:09:20 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 2/2] thunderbolt: Make iommu_dma_protection more
- accurate
-Content-Language: en-GB
-To:     "mika.westerberg@linux.intel.com" <mika.westerberg@linux.intel.com>,
-        "Limonciello, Mario" <Mario.Limonciello@amd.com>
-Cc:     "joro@8bytes.org" <joro@8bytes.org>,
-        "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-        "andreas.noever@gmail.com" <andreas.noever@gmail.com>,
-        "michael.jamet@intel.com" <michael.jamet@intel.com>,
-        "YehezkelShB@gmail.com" <YehezkelShB@gmail.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "hch@lst.de" <hch@lst.de>
-References: <cover.1647624084.git.robin.murphy@arm.com>
- <0dd14883930c9f55ace22162e23765a37d91a057.1647624084.git.robin.murphy@arm.com>
- <DM4PR12MB51683722CF9A553563D0C721E2139@DM4PR12MB5168.namprd12.prod.outlook.com>
- <YjhaViFzmEjBgmmu@lahna>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <YjhaViFzmEjBgmmu@lahna>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220319142759.1026237-1-chenhuacai@loongson.cn>
+In-Reply-To: <20220319142759.1026237-1-chenhuacai@loongson.cn>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 21 Mar 2022 11:09:04 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a12dY57+ZPEREAUrsNf45S0_4-yYHen6p0-PjJEivjczg@mail.gmail.com>
+Message-ID: <CAK8P3a12dY57+ZPEREAUrsNf45S0_4-yYHen6p0-PjJEivjczg@mail.gmail.com>
+Subject: Re: [PATCH V8 00/22] arch: Add basic LoongArch support
+To:     Huacai Chen <chenhuacai@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Huacai Chen <chenhuacai@gmail.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:ZnGkfk570X1mQgyfANU13nhtx8Unvo25TN3oV2Riz+Tha+mptO5
+ LUYkQe3vwkCqXCPjGIjuR3VgXdTqpzTiYgDl6npzESHpjpMEhoKv+I80lWpGVDjWpkjjrss
+ hF3Fr68I/fRF+wzC16d2CX08JR7qLFF39jGBieyiFIHDmIBhx3hQOUw/y1aA4z87NQzin/t
+ EEavyeCv3+D9aNMwhTA8w==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:gTy4IGEUdE0=:9wy/OcskBTsPHIi+puE+dH
+ 08jh+kRc/1DFhA9C9Z0/G2JBNxpJNsb3hBSaGRyJ+9JhoBCfz8R56X55PAg7E104WpkVe1LTX
+ 8oKRwaYaD4qxgOtTWZNyL4JSxGB5a3rj7Bz5ndCUhxv/44SYOzsfU8LGiPWF6F+uBobPKoKrQ
+ DlV6s26wKQcphKt3c0V61+X3ZolWwnyqK8wTu6qszfhMjRyQ4dPa9ihsFwj9AK2VEy4lRxzE6
+ IfNSFPgNz64o4q089G5P8f9+9is2Cmb0/iP/MkqfGCewWMd+WdPR87a3qBwTeDoxzC1G6y9XB
+ oeEyTWP7KrRZayvw/Hg0SLjRnDpt5x24L/dqoqWbTJf8jAIsmEwUazMtdMw3/1z1wLnuvThEw
+ 4ZU+JN6SV3kV1tgcj49y/fCdQqI+MJ7ehV7mrjIEQ3h8W3S3kAWEzNbgUW4x7LmyjYfZH6T1H
+ xmEdDSMrYV+807AugkiCbRlYa/N4acUIxlFf+uUAcLL8cZUyg2ndFTJxFFcdDfx3XXOxc9UGc
+ 1C759GZ8UVEB0L4bzV5OFMw5d8VTWIHhx+aYG2LwKusfWVTwUz1etR6SbqZKu0wIjgavL5uE/
+ IiaGfRuYWZzLiB8PJlVggKIsh7KB0+e9iW5xuss4CvkFMMO4ijuSRVFwNNe8RCr4weGzBYq65
+ sjX2vKjFJxlxGeqYyphYf4xigEtsVZM1opX3yBMu/Ptzn2oo4g2vM+MMd0byMmvwGzACe1h01
+ lW6SqAO/ge5nib1z1BpwlEXwZDBE1wDGZm0qxSNmj3QUJ+Pq0caAdd6LLhRbeHLv+jRXx8L/A
+ 1XPsupWL4sg7tIeAfiPSA/Xtc/qoJT2tDwJEnudA1lBFKZ9kO4=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-03-21 10:58, mika.westerberg@linux.intel.com wrote:
-> Hi Mario,
-> 
-> On Fri, Mar 18, 2022 at 10:29:59PM +0000, Limonciello, Mario wrote:
->> [Public]
->>
->>> Between me trying to get rid of iommu_present() and Mario wanting to
->>> support the AMD equivalent of DMAR_PLATFORM_OPT_IN, scrutiny has
->>> shown
->>> that the iommu_dma_protection attribute is being far too optimistic.
->>> Even if an IOMMU might be present for some PCI segment in the system,
->>> that doesn't necessarily mean it provides translation for the device(s)
->>> we care about. Furthermore, all that DMAR_PLATFORM_OPT_IN really does
->>> is tell us that memory was protected before the kernel was loaded, and
->>> prevent the user from disabling the intel-iommu driver entirely. While
->>> that lets us assume kernel integrity, what matters for actual runtime
->>> DMA protection is whether we trust individual devices, based on the
->>> "external facing" property that we expect firmware to describe for
->>> Thunderbolt ports.
->>>
->>> It's proven challenging to determine the appropriate ports accurately
->>> given the variety of possible topologies, so while still not getting a
->>> perfect answer, by putting enough faith in firmware we can at least get
->>> a good bit closer. If we can see that any device near a Thunderbolt NHI
->>> has all the requisites for Kernel DMA Protection, chances are that it
->>> *is* a relevant port, but moreover that implies that firmware is playing
->>> the game overall, so we'll use that to assume that all Thunderbolt ports
->>> should be correctly marked and thus will end up fully protected.
->>>
->>
->> This approach looks generally good to me.  I do worry a little bit about older
->> systems that didn't set ExternalFacingPort in the FW but were previously setting
->> iommu_dma_protection, but I think that those could be treated on a quirk
->> basis to set PCI IDs for those root ports as external facing if/when they come
->> up.
-> 
-> There are no such systems out there AFAICT.
+On Sat, Mar 19, 2022 at 3:27 PM Huacai Chen <chenhuacai@kernel.org> wrote:
+>
+> LoongArch is a new RISC ISA, which is a bit like MIPS or RISC-V.
+> LoongArch includes a reduced 32-bit version (LA32R), a standard 32-bit
+> version (LA32S) and a 64-bit version (LA64). LoongArch use ACPI as its
+> boot protocol LoongArch-specific interrupt controllers (similar to APIC)
+> are already added in the next revision of ACPI Specification (current
+> revision is 6.4).
+>
+> This patchset is adding basic LoongArch support in mainline kernel, we
+> can see a complete snapshot here:
+> https://github.com/loongson/linux/tree/loongarch-next
 
-And even if there are, as above they've never actually been fully 
-protected and still won't be, so it's arguably a good thing for them to 
-stop thinking so.
+This looks fine to me for the most part, and I only had comments on
+a couple of things that we we had discussed before. I think the syscall
+interface and the spinlock implementation bits can be addressed now
+by leaving the controversial bits out of the submission, but the boot
+interface still remains to be resolved.
 
->> I'll send up a follow up patch that adds the AMD ACPI table check.
->> If it looks good can roll it into your series for v3, or if this series goes
->> as is for v2 it can come on its own.
->>
->>> CC: Mario Limonciello <mario.limonciello@amd.com>
->>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->>> ---
->>>
->>> v2: Give up trying to look for specific devices, just look for evidence
->>>      that firmware cares at all.
->>
->> I still do think you could know exactly which devices to use if you're in
->> SW CM mode, but I guess the consensus is to not bifurcate the way this
->> can be checked.
-> 
-> Indeed.
-> 
-> The patch looks good to me now. I will give it a try on a couple of
-> systems later today or tomorrow and let you guys know how it went. I
-> don't expect any problems but let's see.
-> 
-> Thanks a lot Robin for working on this :)
+As discussed before, I think the best way to do this is to not have a
+documented custom interface but instead use the UEFI wrapper
+code for both the (current) ACPI based boot and potential DT based
+embedded systems that may get added later.
 
-Heh, let's just hope the other half-dozen or so subsystems I need to 
-touch for this IOMMU cleanup aren't all quite as involved as this turned 
-out to be :)
-
-Cheers,
-Robin.
+       Arnd
