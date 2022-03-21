@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DEB8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 05:54:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42E09C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 05:54:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344505AbiCUFzj (ORCPT
+        id S1344510AbiCUFzr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 01:55:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34304 "EHLO
+        Mon, 21 Mar 2022 01:55:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344448AbiCUFzW (ORCPT
+        with ESMTP id S1344450AbiCUFzW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 01:55:22 -0400
 Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 802764F46E;
-        Sun, 20 Mar 2022 22:53:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87A694F470;
+        Sun, 20 Mar 2022 22:53:55 -0700 (PDT)
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22KMvCXq009189;
-        Sun, 20 Mar 2022 22:53:44 -0700
+        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22KMvCXr009189;
+        Sun, 20 Mar 2022 22:53:45 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=0FZ1Tt9xqAwcfvRTxs4rEuUdSAYP6HzAZzo3Mq07Cvo=;
- b=ZSTloC0vXCUcD1rdH8VEJM263pIrJFJp2ikxtPOf2ReGwQf9Dq9hRP0zMmyO4oDqssbG
- P21sSVWwCR2ykuc5ZiBdpK5TKxfGGm+8YPAZ2DKhmVM88ClLisHgloiwKeqeqLS8OziK
- 7ff1ucdNi4uO5DTuihUMpM2hg9MRT9QGGZtVBwhoH6ojrdqhm6sM5RY/2ow1kUpoCzSY
- rbltUysppH0RSM4VlPXscQRZNFRavV6/zewGAXFC3fApvsgE6gPV1+VcI9Ck2OzpaWNs
- VwI5bawZRCXUVxUFvSv8TnpGy2XRxmCTPUKmxk9W3iL/jSM6tLVIaJZn40ZnlqhmUUtw fw== 
+ content-type; s=pfpt0220; bh=4YPWAswcVAf236VF6nT/95B3FFUNy0VJDJjc4p7nO9A=;
+ b=XAlsbH1FC9suiVA8mqFF3SnJIO27qhSIluRw59KKjCs2BvTu+5aKZKqU31m5sJSUvX/1
+ Od5oGHd2UFs9XlFkKb5T0XGayzbDvK/AW4XJC/9c2EiIhxFFQMorNmgB8miJAuvcoy1K
+ gav4d08iV+ATCCxI93HoVrwFxLCVk4RCcT0GtTGlu7yixVk6UCR9IhRgP9jgA5XNz2iC
+ s5eVH1gf2u/9QCVWshwfF+y7c+fJwK6zD2kUG3lP8EQRweOlzbF5WE4rh1//z8m9d8f1
+ +3JTukxaYJ7dAnUpOVNRRCeMXeCHtMks5CD0ztq9SYOxyueDVhd4yoiMmcZnhyKszjS7 aA== 
 Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3ewchnp527-3
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3ewchnp527-4
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
         Sun, 20 Mar 2022 22:53:44 -0700
 Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 20 Mar
- 2022 22:53:41 -0700
+ 2022 22:53:42 -0700
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Sun, 20 Mar 2022 22:53:41 -0700
+ Transport; Sun, 20 Mar 2022 22:53:42 -0700
 Received: from sburla-PowerEdge-T630.caveonetworks.com (unknown [10.106.27.217])
-        by maili.marvell.com (Postfix) with ESMTP id 8BDB03F7050;
-        Sun, 20 Mar 2022 22:53:41 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 65FB03F7061;
+        Sun, 20 Mar 2022 22:53:42 -0700 (PDT)
 From:   Veerasenareddy Burru <vburru@marvell.com>
 To:     <vburru@marvell.com>, <davem@davemloft.net>, <kuba@kernel.org>,
         <corbet@lwn.net>, <netdev@vger.kernel.org>,
         <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     Abhijit Ayarekar <aayarekar@marvell.com>,
         Satananda Burla <sburla@marvell.com>
-Subject: [net-next PATCH v4 3/7] octeon_ep: Add mailbox for control commands
-Date:   Sun, 20 Mar 2022 22:53:33 -0700
-Message-ID: <20220321055337.4488-4-vburru@marvell.com>
+Subject: [net-next PATCH v4 7/7] octeon_ep: add ethtool support for Octeon PCI Endpoint NIC
+Date:   Sun, 20 Mar 2022 22:53:37 -0700
+Message-ID: <20220321055337.4488-8-vburru@marvell.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220321055337.4488-1-vburru@marvell.com>
 References: <20220321055337.4488-1-vburru@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Proofpoint-GUID: fK4l2VDPg3dj8n8ymFKK-i5cE3pnKzcU
-X-Proofpoint-ORIG-GUID: fK4l2VDPg3dj8n8ymFKK-i5cE3pnKzcU
+X-Proofpoint-GUID: 1tdoHo9JTtJXJulhin-GV7FcgUXleeE0
+X-Proofpoint-ORIG-GUID: 1tdoHo9JTtJXJulhin-GV7FcgUXleeE0
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
  definitions=2022-03-21_02,2022-03-15_01,2022-02-23_01
@@ -63,378 +63,528 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add mailbox between host and NIC to send control commands from host to
-NIC and receive responses and notifications from NIC to host driver,
-like link status update.
+Add support for the following ethtool commands:
+
+ethtool -i|--driver devname
+ethtool devname
+ethtool -s devname [speed N] [autoneg on|off] [advertise N]
+ethtool -S|--statistics devname
 
 Signed-off-by: Veerasenareddy Burru <vburru@marvell.com>
 Signed-off-by: Abhijit Ayarekar <aayarekar@marvell.com>
 Signed-off-by: Satananda Burla <sburla@marvell.com>
 ---
 V3 -> V4:
-  - Fix warnings/errors from "make W=1 C=1" that were missed to fix in
-    V3 patchset.
-  - Use " u8 __iomem" for variables used to access CSRs.
+  - fix build errors observed with "make W=1 C=1", that were missed
+    to fix in v3 patchset.
+  - declare the variables used with-in the file as static.
 
 V2 -> V3: no change.
 
 V1 -> V2:
-  - created by dividing PATCH 1/4 of original patch series.
+  - Fix build errors observed with clang and "make W=1 C=1".
+  - Address review comments:
+      - removed setting version string in get_drvinfo.
+      - defined helper macro for common code to set supported and
+        advertised modes in get_link_ksettings.
 
- .../marvell/octeon_ep/octep_ctrl_mbox.c       | 180 +++++++++++++++++-
- .../marvell/octeon_ep/octep_ctrl_mbox.h       |   6 +-
- .../marvell/octeon_ep/octep_ctrl_net.c        | 100 +++++++++-
- 3 files changed, 275 insertions(+), 11 deletions(-)
+ .../net/ethernet/marvell/octeon_ep/Makefile   |   2 +-
+ .../marvell/octeon_ep/octep_ethtool.c         | 463 ++++++++++++++++++
+ .../ethernet/marvell/octeon_ep/octep_main.c   |   1 +
+ 3 files changed, 465 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_ethtool.c
 
-diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c b/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c
-index 72a60c2a3cf0..df346dcedacc 100644
---- a/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c
-+++ b/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c
-@@ -65,20 +65,192 @@ static inline u32 octep_ctrl_mbox_circq_depth(u32 pi, u32 ci, u32 mask)
+diff --git a/drivers/net/ethernet/marvell/octeon_ep/Makefile b/drivers/net/ethernet/marvell/octeon_ep/Makefile
+index 6e2db8e80b4a..2026c8118158 100644
+--- a/drivers/net/ethernet/marvell/octeon_ep/Makefile
++++ b/drivers/net/ethernet/marvell/octeon_ep/Makefile
+@@ -6,4 +6,4 @@
+ obj-$(CONFIG_OCTEON_EP) += octeon_ep.o
  
- int octep_ctrl_mbox_init(struct octep_ctrl_mbox *mbox)
- {
--	return -EINVAL;
-+	u64 version, magic_num, status;
+ octeon_ep-y := octep_main.o octep_cn9k_pf.o octep_tx.o octep_rx.o \
+-	       octep_ctrl_mbox.o octep_ctrl_net.o
++	       octep_ethtool.o octep_ctrl_mbox.o octep_ctrl_net.o
+diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_ethtool.c b/drivers/net/ethernet/marvell/octeon_ep/octep_ethtool.c
+new file mode 100644
+index 000000000000..87ef129b269a
+--- /dev/null
++++ b/drivers/net/ethernet/marvell/octeon_ep/octep_ethtool.c
+@@ -0,0 +1,463 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Marvell Octeon EP (EndPoint) Ethernet Driver
++ *
++ * Copyright (C) 2020 Marvell.
++ *
++ */
 +
-+	if (!mbox)
-+		return -EINVAL;
++#include <linux/pci.h>
++#include <linux/netdevice.h>
++#include <linux/ethtool.h>
 +
-+	if (!mbox->barmem) {
-+		pr_info("octep_ctrl_mbox : Invalid barmem %p\n", mbox->barmem);
-+		return -EINVAL;
-+	}
++#include "octep_config.h"
++#include "octep_main.h"
++#include "octep_ctrl_net.h"
 +
-+	magic_num = readq(OCTEP_CTRL_MBOX_INFO_MAGIC_NUM_OFFSET(mbox->barmem));
-+	if (magic_num != OCTEP_CTRL_MBOX_MAGIC_NUMBER) {
-+		pr_info("octep_ctrl_mbox : Invalid magic number %llx\n", magic_num);
-+		return -EINVAL;
-+	}
++static const char octep_gstrings_global_stats[][ETH_GSTRING_LEN] = {
++	"rx_packets",
++	"tx_packets",
++	"rx_bytes",
++	"tx_bytes",
++	"rx_alloc_errors",
++	"tx_busy_errors",
++	"rx_dropped",
++	"tx_dropped",
++	"tx_hw_pkts",
++	"tx_hw_octs",
++	"tx_hw_bcast",
++	"tx_hw_mcast",
++	"tx_hw_underflow",
++	"tx_hw_control",
++	"tx_less_than_64",
++	"tx_equal_64",
++	"tx_equal_65_to_127",
++	"tx_equal_128_to_255",
++	"tx_equal_256_to_511",
++	"tx_equal_512_to_1023",
++	"tx_equal_1024_to_1518",
++	"tx_greater_than_1518",
++	"rx_hw_pkts",
++	"rx_hw_bytes",
++	"rx_hw_bcast",
++	"rx_hw_mcast",
++	"rx_pause_pkts",
++	"rx_pause_bytes",
++	"rx_dropped_pkts_fifo_full",
++	"rx_dropped_bytes_fifo_full",
++	"rx_err_pkts",
++};
 +
-+	version = readq(OCTEP_CTRL_MBOX_INFO_FW_VERSION_OFFSET(mbox->barmem));
-+	if (version != OCTEP_DRV_VERSION) {
-+		pr_info("octep_ctrl_mbox : Firmware version mismatch %llx != %x\n",
-+			version, OCTEP_DRV_VERSION);
-+		return -EINVAL;
-+	}
++#define OCTEP_GLOBAL_STATS_CNT (sizeof(octep_gstrings_global_stats) / ETH_GSTRING_LEN)
 +
-+	status = readq(OCTEP_CTRL_MBOX_INFO_FW_STATUS_OFFSET(mbox->barmem));
-+	if (status != OCTEP_CTRL_MBOX_STATUS_READY) {
-+		pr_info("octep_ctrl_mbox : Firmware is not ready.\n");
-+		return -EINVAL;
-+	}
++static const char octep_gstrings_tx_q_stats[][ETH_GSTRING_LEN] = {
++	"tx_packets_posted[Q-%u]",
++	"tx_packets_completed[Q-%u]",
++	"tx_bytes[Q-%u]",
++	"tx_busy[Q-%u]",
++};
 +
-+	mbox->barmem_sz = readl(OCTEP_CTRL_MBOX_INFO_BARMEM_SZ_OFFSET(mbox->barmem));
++#define OCTEP_TX_Q_STATS_CNT (sizeof(octep_gstrings_tx_q_stats) / ETH_GSTRING_LEN)
 +
-+	writeq(mbox->version, OCTEP_CTRL_MBOX_INFO_HOST_VERSION_OFFSET(mbox->barmem));
-+	writeq(OCTEP_CTRL_MBOX_STATUS_INIT, OCTEP_CTRL_MBOX_INFO_HOST_STATUS_OFFSET(mbox->barmem));
++static const char octep_gstrings_rx_q_stats[][ETH_GSTRING_LEN] = {
++	"rx_packets[Q-%u]",
++	"rx_bytes[Q-%u]",
++	"rx_alloc_errors[Q-%u]",
++};
 +
-+	mbox->h2fq.elem_cnt = readl(OCTEP_CTRL_MBOX_H2FQ_ELEM_CNT_OFFSET(mbox->barmem));
-+	mbox->h2fq.elem_sz = readl(OCTEP_CTRL_MBOX_H2FQ_ELEM_SZ_OFFSET(mbox->barmem));
-+	mbox->h2fq.mask = (mbox->h2fq.elem_cnt - 1);
-+	mutex_init(&mbox->h2fq_lock);
++#define OCTEP_RX_Q_STATS_CNT (sizeof(octep_gstrings_rx_q_stats) / ETH_GSTRING_LEN)
 +
-+	mbox->f2hq.elem_cnt = readl(OCTEP_CTRL_MBOX_F2HQ_ELEM_CNT_OFFSET(mbox->barmem));
-+	mbox->f2hq.elem_sz = readl(OCTEP_CTRL_MBOX_F2HQ_ELEM_SZ_OFFSET(mbox->barmem));
-+	mbox->f2hq.mask = (mbox->f2hq.elem_cnt - 1);
-+	mutex_init(&mbox->f2hq_lock);
++static void octep_get_drvinfo(struct net_device *netdev,
++			      struct ethtool_drvinfo *info)
++{
++	struct octep_device *oct = netdev_priv(netdev);
 +
-+	mbox->h2fq.hw_prod = OCTEP_CTRL_MBOX_H2FQ_PROD_OFFSET(mbox->barmem);
-+	mbox->h2fq.hw_cons = OCTEP_CTRL_MBOX_H2FQ_CONS_OFFSET(mbox->barmem);
-+	mbox->h2fq.hw_q = mbox->barmem +
-+			  OCTEP_CTRL_MBOX_INFO_SZ +
-+			  OCTEP_CTRL_MBOX_H2FQ_INFO_SZ +
-+			  OCTEP_CTRL_MBOX_F2HQ_INFO_SZ;
++	strscpy(info->driver, OCTEP_DRV_NAME, sizeof(info->driver));
++	strscpy(info->bus_info, pci_name(oct->pdev), sizeof(info->bus_info));
++}
 +
-+	mbox->f2hq.hw_prod = OCTEP_CTRL_MBOX_F2HQ_PROD_OFFSET(mbox->barmem);
-+	mbox->f2hq.hw_cons = OCTEP_CTRL_MBOX_F2HQ_CONS_OFFSET(mbox->barmem);
-+	mbox->f2hq.hw_q = mbox->h2fq.hw_q +
-+			  ((mbox->h2fq.elem_sz + sizeof(union octep_ctrl_mbox_msg_hdr)) *
-+			   mbox->h2fq.elem_cnt);
++static void octep_get_strings(struct net_device *netdev,
++			      u32 stringset, u8 *data)
++{
++	struct octep_device *oct = netdev_priv(netdev);
++	u16 num_queues = CFG_GET_PORTS_ACTIVE_IO_RINGS(oct->conf);
++	char *strings = (char *)data;
++	int i, j;
 +
-+	/* ensure ready state is seen after everything is initialized */
-+	wmb();
-+	writeq(OCTEP_CTRL_MBOX_STATUS_READY, OCTEP_CTRL_MBOX_INFO_HOST_STATUS_OFFSET(mbox->barmem));
-+
-+	pr_info("Octep ctrl mbox : Init successful.\n");
-+
-+	return 0;
- }
- 
- int octep_ctrl_mbox_send(struct octep_ctrl_mbox *mbox, struct octep_ctrl_mbox_msg *msg)
- {
--	return -EINVAL;
-+	unsigned long timeout = msecs_to_jiffies(OCTEP_CTRL_MBOX_MSG_TIMEOUT_MS);
-+	unsigned long period = msecs_to_jiffies(OCTEP_CTRL_MBOX_MSG_WAIT_MS);
-+	struct octep_ctrl_mbox_q *q;
-+	unsigned long expire;
-+	u64 *mbuf, *word0;
-+	u8 __iomem *qidx;
-+	u16 pi, ci;
-+	int i;
-+
-+	if (!mbox || !msg)
-+		return -EINVAL;
-+
-+	q = &mbox->h2fq;
-+	pi = readl(q->hw_prod);
-+	ci = readl(q->hw_cons);
-+
-+	if (!octep_ctrl_mbox_circq_space(pi, ci, q->mask))
-+		return -ENOMEM;
-+
-+	qidx = OCTEP_CTRL_MBOX_Q_OFFSET(q->hw_q, pi);
-+	mbuf = (u64 *)msg->msg;
-+	word0 = &msg->hdr.word0;
-+
-+	mutex_lock(&mbox->h2fq_lock);
-+	for (i = 1; i <= msg->hdr.sizew; i++)
-+		writeq(*mbuf++, (qidx + (i * 8)));
-+
-+	writeq(*word0, qidx);
-+
-+	pi = octep_ctrl_mbox_circq_inc(pi, q->mask);
-+	writel(pi, q->hw_prod);
-+	mutex_unlock(&mbox->h2fq_lock);
-+
-+	/* don't check for notification response */
-+	if (msg->hdr.flags & OCTEP_CTRL_MBOX_MSG_HDR_FLAG_NOTIFY)
-+		return 0;
-+
-+	expire = jiffies + timeout;
-+	while (true) {
-+		*word0 = readq(qidx);
-+		if (msg->hdr.flags == OCTEP_CTRL_MBOX_MSG_HDR_FLAG_RESP)
-+			break;
-+		schedule_timeout_interruptible(period);
-+		if (signal_pending(current) || time_after(jiffies, expire)) {
-+			pr_info("octep_ctrl_mbox: Timed out\n");
-+			return -EBUSY;
++	switch (stringset) {
++	case ETH_SS_STATS:
++		for (i = 0; i < OCTEP_GLOBAL_STATS_CNT; i++) {
++			snprintf(strings, ETH_GSTRING_LEN,
++				 octep_gstrings_global_stats[i]);
++			strings += ETH_GSTRING_LEN;
 +		}
++
++		for (i = 0; i < num_queues; i++) {
++			for (j = 0; j < OCTEP_TX_Q_STATS_CNT; j++) {
++				snprintf(strings, ETH_GSTRING_LEN,
++					 octep_gstrings_tx_q_stats[j], i);
++				strings += ETH_GSTRING_LEN;
++			}
++		}
++
++		for (i = 0; i < num_queues; i++) {
++			for (j = 0; j < OCTEP_RX_Q_STATS_CNT; j++) {
++				snprintf(strings, ETH_GSTRING_LEN,
++					 octep_gstrings_rx_q_stats[j], i);
++				strings += ETH_GSTRING_LEN;
++			}
++		}
++		break;
++	default:
++		break;
 +	}
-+	mbuf = (u64 *)msg->msg;
-+	for (i = 1; i <= msg->hdr.sizew; i++)
-+		*mbuf++ = readq(qidx + (i * 8));
++}
 +
++static int octep_get_sset_count(struct net_device *netdev, int sset)
++{
++	struct octep_device *oct = netdev_priv(netdev);
++	u16 num_queues = CFG_GET_PORTS_ACTIVE_IO_RINGS(oct->conf);
++
++	switch (sset) {
++	case ETH_SS_STATS:
++		return OCTEP_GLOBAL_STATS_CNT + (num_queues *
++		       (OCTEP_TX_Q_STATS_CNT + OCTEP_RX_Q_STATS_CNT));
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
++static void
++octep_get_ethtool_stats(struct net_device *netdev,
++			struct ethtool_stats *stats, u64 *data)
++{
++	struct octep_device *oct = netdev_priv(netdev);
++	struct octep_iface_tx_stats *iface_tx_stats;
++	struct octep_iface_rx_stats *iface_rx_stats;
++	u64 rx_packets, rx_bytes;
++	u64 tx_packets, tx_bytes;
++	u64 rx_alloc_errors, tx_busy_errors;
++	int q, i;
++
++	rx_packets = 0;
++	rx_bytes = 0;
++	tx_packets = 0;
++	tx_bytes = 0;
++	rx_alloc_errors = 0;
++	tx_busy_errors = 0;
++	tx_packets = 0;
++	tx_bytes = 0;
++	rx_packets = 0;
++	rx_bytes = 0;
++
++	octep_get_if_stats(oct);
++	iface_tx_stats = &oct->iface_tx_stats;
++	iface_rx_stats = &oct->iface_rx_stats;
++
++	for (q = 0; q < oct->num_oqs; q++) {
++		struct octep_iq *iq = oct->iq[q];
++		struct octep_oq *oq = oct->oq[q];
++
++		tx_packets += iq->stats.instr_completed;
++		tx_bytes += iq->stats.bytes_sent;
++		tx_busy_errors += iq->stats.tx_busy;
++
++		rx_packets += oq->stats.packets;
++		rx_bytes += oq->stats.bytes;
++		rx_alloc_errors += oq->stats.alloc_failures;
++	}
++	i = 0;
++	data[i++] = rx_packets;
++	data[i++] = tx_packets;
++	data[i++] = rx_bytes;
++	data[i++] = tx_bytes;
++	data[i++] = rx_alloc_errors;
++	data[i++] = tx_busy_errors;
++	data[i++] = iface_rx_stats->dropped_pkts_fifo_full +
++		    iface_rx_stats->err_pkts;
++	data[i++] = iface_tx_stats->xscol +
++		    iface_tx_stats->xsdef;
++	data[i++] = iface_tx_stats->pkts;
++	data[i++] = iface_tx_stats->octs;
++	data[i++] = iface_tx_stats->bcst;
++	data[i++] = iface_tx_stats->mcst;
++	data[i++] = iface_tx_stats->undflw;
++	data[i++] = iface_tx_stats->ctl;
++	data[i++] = iface_tx_stats->hist_lt64;
++	data[i++] = iface_tx_stats->hist_eq64;
++	data[i++] = iface_tx_stats->hist_65to127;
++	data[i++] = iface_tx_stats->hist_128to255;
++	data[i++] = iface_tx_stats->hist_256to511;
++	data[i++] = iface_tx_stats->hist_512to1023;
++	data[i++] = iface_tx_stats->hist_1024to1518;
++	data[i++] = iface_tx_stats->hist_gt1518;
++	data[i++] = iface_rx_stats->pkts;
++	data[i++] = iface_rx_stats->octets;
++	data[i++] = iface_rx_stats->mcast_pkts;
++	data[i++] = iface_rx_stats->bcast_pkts;
++	data[i++] = iface_rx_stats->pause_pkts;
++	data[i++] = iface_rx_stats->pause_octets;
++	data[i++] = iface_rx_stats->dropped_pkts_fifo_full;
++	data[i++] = iface_rx_stats->dropped_octets_fifo_full;
++	data[i++] = iface_rx_stats->err_pkts;
++
++	/* Per Tx Queue stats */
++	for (q = 0; q < oct->num_iqs; q++) {
++		struct octep_iq *iq = oct->iq[q];
++
++		data[i++] = iq->stats.instr_posted;
++		data[i++] = iq->stats.instr_completed;
++		data[i++] = iq->stats.bytes_sent;
++		data[i++] = iq->stats.tx_busy;
++	}
++
++	/* Per Rx Queue stats */
++	for (q = 0; q < oct->num_oqs; q++) {
++		struct octep_oq *oq = oct->oq[q];
++
++		data[i++] = oq->stats.packets;
++		data[i++] = oq->stats.bytes;
++		data[i++] = oq->stats.alloc_failures;
++	}
++}
++
++#define OCTEP_SET_ETHTOOL_LINK_MODES_BITMAP(octep_speeds, ksettings, name) \
++{ \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_10GBASE_T)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 10000baseT_Full); \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_10GBASE_R)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 10000baseR_FEC); \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_10GBASE_CR)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 10000baseCR_Full); \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_10GBASE_KR)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 10000baseKR_Full); \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_10GBASE_LR)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 10000baseLR_Full); \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_10GBASE_SR)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 10000baseSR_Full); \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_25GBASE_CR)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 25000baseCR_Full); \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_25GBASE_KR)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 25000baseKR_Full); \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_25GBASE_SR)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 25000baseSR_Full); \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_40GBASE_CR4)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 40000baseCR4_Full); \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_40GBASE_KR4)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 40000baseKR4_Full); \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_40GBASE_LR4)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 40000baseLR4_Full); \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_40GBASE_SR4)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 40000baseSR4_Full); \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_50GBASE_CR2)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 50000baseCR2_Full); \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_50GBASE_KR2)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 50000baseKR2_Full); \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_50GBASE_SR2)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 50000baseSR2_Full); \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_50GBASE_CR)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 50000baseCR_Full); \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_50GBASE_KR)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 50000baseKR_Full); \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_50GBASE_LR)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 50000baseLR_ER_FR_Full); \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_50GBASE_SR)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 50000baseSR_Full); \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_100GBASE_CR4)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 100000baseCR4_Full); \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_100GBASE_KR4)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 100000baseKR4_Full); \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_100GBASE_LR4)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 100000baseLR4_ER4_Full); \
++	if ((octep_speeds) & BIT(OCTEP_LINK_MODE_100GBASE_SR4)) \
++		ethtool_link_ksettings_add_link_mode(ksettings, name, 100000baseSR4_Full); \
++}
++
++static int octep_get_link_ksettings(struct net_device *netdev,
++				    struct ethtool_link_ksettings *cmd)
++{
++	struct octep_device *oct = netdev_priv(netdev);
++	struct octep_iface_link_info *link_info;
++	u32 advertised_modes, supported_modes;
++
++	ethtool_link_ksettings_zero_link_mode(cmd, supported);
++	ethtool_link_ksettings_zero_link_mode(cmd, advertising);
++
++	octep_get_link_info(oct);
++
++	advertised_modes = oct->link_info.advertised_modes;
++	supported_modes = oct->link_info.supported_modes;
++	link_info = &oct->link_info;
++
++	OCTEP_SET_ETHTOOL_LINK_MODES_BITMAP(supported_modes, cmd, supported);
++	OCTEP_SET_ETHTOOL_LINK_MODES_BITMAP(advertised_modes, cmd, advertising);
++
++	if (link_info->autoneg) {
++		if (link_info->autoneg & OCTEP_LINK_MODE_AUTONEG_SUPPORTED)
++			ethtool_link_ksettings_add_link_mode(cmd, supported, Autoneg);
++		if (link_info->autoneg & OCTEP_LINK_MODE_AUTONEG_ADVERTISED) {
++			ethtool_link_ksettings_add_link_mode(cmd, advertising, Autoneg);
++			cmd->base.autoneg = AUTONEG_ENABLE;
++		} else {
++			cmd->base.autoneg = AUTONEG_DISABLE;
++		}
++	} else {
++		cmd->base.autoneg = AUTONEG_DISABLE;
++	}
++
++	if (link_info->pause) {
++		if (link_info->pause & OCTEP_LINK_MODE_PAUSE_SUPPORTED)
++			ethtool_link_ksettings_add_link_mode(cmd, supported, Pause);
++		if (link_info->pause & OCTEP_LINK_MODE_PAUSE_ADVERTISED)
++			ethtool_link_ksettings_add_link_mode(cmd, advertising, Pause);
++	}
++
++	cmd->base.port = PORT_FIBRE;
++	ethtool_link_ksettings_add_link_mode(cmd, supported, FIBRE);
++	ethtool_link_ksettings_add_link_mode(cmd, advertising, FIBRE);
++
++	if (netif_carrier_ok(netdev)) {
++		cmd->base.speed = link_info->speed;
++		cmd->base.duplex = DUPLEX_FULL;
++	} else {
++		cmd->base.speed = SPEED_UNKNOWN;
++		cmd->base.duplex = DUPLEX_UNKNOWN;
++	}
 +	return 0;
- }
- 
- int octep_ctrl_mbox_recv(struct octep_ctrl_mbox *mbox, struct octep_ctrl_mbox_msg *msg)
- {
--	return -EINVAL;
-+	struct octep_ctrl_mbox_q *q;
-+	u32 count, pi, ci;
-+	u8 __iomem *qidx;
-+	u64 *mbuf;
-+	int i;
++}
 +
-+	if (!mbox || !msg)
++static int octep_set_link_ksettings(struct net_device *netdev,
++				    const struct ethtool_link_ksettings *cmd)
++{
++	struct octep_device *oct = netdev_priv(netdev);
++	struct octep_iface_link_info link_info_new;
++	struct octep_iface_link_info *link_info;
++	u64 advertised = 0;
++	u8 autoneg = 0;
++	int err;
++
++	link_info = &oct->link_info;
++	memcpy(&link_info_new, link_info, sizeof(struct octep_iface_link_info));
++
++	/* Only Full duplex is supported;
++	 * Assume full duplex when duplex is unknown.
++	 */
++	if (cmd->base.duplex != DUPLEX_FULL &&
++	    cmd->base.duplex != DUPLEX_UNKNOWN)
++		return -EOPNOTSUPP;
++
++	if (cmd->base.autoneg == AUTONEG_ENABLE) {
++		if (!(link_info->autoneg & OCTEP_LINK_MODE_AUTONEG_SUPPORTED))
++			return -EOPNOTSUPP;
++		autoneg = 1;
++	}
++
++	if (!bitmap_subset(cmd->link_modes.advertising,
++			   cmd->link_modes.supported,
++			   __ETHTOOL_LINK_MODE_MASK_NBITS))
 +		return -EINVAL;
 +
-+	q = &mbox->f2hq;
-+	pi = readl(q->hw_prod);
-+	ci = readl(q->hw_cons);
-+	count = octep_ctrl_mbox_circq_depth(pi, ci, q->mask);
-+	if (!count)
-+		return -EAGAIN;
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  10000baseT_Full))
++		advertised |= BIT(OCTEP_LINK_MODE_10GBASE_T);
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  10000baseR_FEC))
++		advertised |= BIT(OCTEP_LINK_MODE_10GBASE_R);
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  10000baseCR_Full))
++		advertised |= BIT(OCTEP_LINK_MODE_10GBASE_CR);
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  10000baseKR_Full))
++		advertised |= BIT(OCTEP_LINK_MODE_10GBASE_KR);
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  10000baseLR_Full))
++		advertised |= BIT(OCTEP_LINK_MODE_10GBASE_LR);
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  10000baseSR_Full))
++		advertised |= BIT(OCTEP_LINK_MODE_10GBASE_SR);
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  25000baseCR_Full))
++		advertised |= BIT(OCTEP_LINK_MODE_25GBASE_CR);
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  25000baseKR_Full))
++		advertised |= BIT(OCTEP_LINK_MODE_25GBASE_KR);
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  25000baseSR_Full))
++		advertised |= BIT(OCTEP_LINK_MODE_25GBASE_SR);
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  40000baseCR4_Full))
++		advertised |= BIT(OCTEP_LINK_MODE_40GBASE_CR4);
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  40000baseKR4_Full))
++		advertised |= BIT(OCTEP_LINK_MODE_40GBASE_KR4);
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  40000baseLR4_Full))
++		advertised |= BIT(OCTEP_LINK_MODE_40GBASE_LR4);
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  40000baseSR4_Full))
++		advertised |= BIT(OCTEP_LINK_MODE_40GBASE_SR4);
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  50000baseCR2_Full))
++		advertised |= BIT(OCTEP_LINK_MODE_50GBASE_CR2);
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  50000baseKR2_Full))
++		advertised |= BIT(OCTEP_LINK_MODE_50GBASE_KR2);
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  50000baseSR2_Full))
++		advertised |= BIT(OCTEP_LINK_MODE_50GBASE_SR2);
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  50000baseCR_Full))
++		advertised |= BIT(OCTEP_LINK_MODE_50GBASE_CR);
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  50000baseKR_Full))
++		advertised |= BIT(OCTEP_LINK_MODE_50GBASE_KR);
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  50000baseLR_ER_FR_Full))
++		advertised |= BIT(OCTEP_LINK_MODE_50GBASE_LR);
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  50000baseSR_Full))
++		advertised |= BIT(OCTEP_LINK_MODE_50GBASE_SR);
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  100000baseCR4_Full))
++		advertised |= BIT(OCTEP_LINK_MODE_100GBASE_CR4);
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  100000baseKR4_Full))
++		advertised |= BIT(OCTEP_LINK_MODE_100GBASE_KR4);
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  100000baseLR4_ER4_Full))
++		advertised |= BIT(OCTEP_LINK_MODE_100GBASE_LR4);
++	if (ethtool_link_ksettings_test_link_mode(cmd, advertising,
++						  100000baseSR4_Full))
++		advertised |= BIT(OCTEP_LINK_MODE_100GBASE_SR4);
 +
-+	qidx = OCTEP_CTRL_MBOX_Q_OFFSET(q->hw_q, ci);
-+	mbuf = (u64 *)msg->msg;
-+
-+	mutex_lock(&mbox->f2hq_lock);
-+
-+	msg->hdr.word0 = readq(qidx);
-+	for (i = 1; i <= msg->hdr.sizew; i++)
-+		*mbuf++ = readq(qidx + (i * 8));
-+
-+	ci = octep_ctrl_mbox_circq_inc(ci, q->mask);
-+	writel(ci, q->hw_cons);
-+
-+	mutex_unlock(&mbox->f2hq_lock);
-+
-+	if (msg->hdr.flags != OCTEP_CTRL_MBOX_MSG_HDR_FLAG_REQ || !mbox->process_req)
++	if (advertised == link_info->advertised_modes &&
++	    cmd->base.speed == link_info->speed &&
++	    cmd->base.autoneg == link_info->autoneg)
 +		return 0;
 +
-+	mbox->process_req(mbox->user_ctx, msg);
-+	mbuf = (u64 *)msg->msg;
-+	for (i = 1; i <= msg->hdr.sizew; i++)
-+		writeq(*mbuf++, (qidx + (i * 8)));
++	link_info_new.advertised_modes = advertised;
++	link_info_new.speed = cmd->base.speed;
++	link_info_new.autoneg = autoneg;
 +
-+	writeq(msg->hdr.word0, qidx);
++	err = octep_set_link_info(oct, &link_info_new);
++	if (err)
++		return err;
 +
++	memcpy(link_info, &link_info_new, sizeof(struct octep_iface_link_info));
 +	return 0;
- }
++}
++
++static const struct ethtool_ops octep_ethtool_ops = {
++	.get_drvinfo = octep_get_drvinfo,
++	.get_link = ethtool_op_get_link,
++	.get_strings = octep_get_strings,
++	.get_sset_count = octep_get_sset_count,
++	.get_ethtool_stats = octep_get_ethtool_stats,
++	.get_link_ksettings = octep_get_link_ksettings,
++	.set_link_ksettings = octep_set_link_ksettings,
++};
++
++void octep_set_ethtool_ops(struct net_device *netdev)
++{
++	netdev->ethtool_ops = &octep_ethtool_ops;
++}
+diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+index 1c9c00cc4641..31435c41e3f0 100644
+--- a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
++++ b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+@@ -1059,6 +1059,7 @@ static int octep_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	INIT_WORK(&octep_dev->ctrl_mbox_task, octep_ctrl_mbox_task);
  
- int octep_ctrl_mbox_uninit(struct octep_ctrl_mbox *mbox)
- {
--	return -EINVAL;
-+	if (!mbox)
-+		return -EINVAL;
-+
-+	writeq(OCTEP_CTRL_MBOX_STATUS_UNINIT,
-+	       OCTEP_CTRL_MBOX_INFO_HOST_STATUS_OFFSET(mbox->barmem));
-+	/* ensure uninit state is written before uninitialization */
-+	wmb();
-+
-+	mutex_destroy(&mbox->h2fq_lock);
-+	mutex_destroy(&mbox->f2hq_lock);
-+
-+	writeq(OCTEP_CTRL_MBOX_STATUS_INVALID,
-+	       OCTEP_CTRL_MBOX_INFO_HOST_STATUS_OFFSET(mbox->barmem));
-+	writeq(0, OCTEP_CTRL_MBOX_INFO_HOST_VERSION_OFFSET(mbox->barmem));
-+
-+	pr_info("Octep ctrl mbox : Uninit successful.\n");
-+
-+	return 0;
- }
-diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.h b/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.h
-index d5ad58c6bbaa..30f497f0bc26 100644
---- a/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.h
-+++ b/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.h
-@@ -107,11 +107,11 @@ struct octep_ctrl_mbox_q {
- 	/* q mask */
- 	u16 mask;
- 	/* producer address in bar mem */
--	void __iomem *hw_prod;
-+	u8 __iomem *hw_prod;
- 	/* consumer address in bar mem */
--	void __iomem *hw_cons;
-+	u8 __iomem *hw_cons;
- 	/* q base address in bar mem */
--	void __iomem *hw_q;
-+	u8 __iomem *hw_q;
- };
+ 	netdev->netdev_ops = &octep_netdev_ops;
++	octep_set_ethtool_ops(netdev);
+ 	netif_carrier_off(netdev);
  
- struct octep_ctrl_mbox {
-diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_net.c b/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_net.c
-index 021f888d8f6d..c3aca7b2775b 100644
---- a/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_net.c
-+++ b/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_net.c
-@@ -15,28 +15,120 @@
- 
- int octep_get_link_status(struct octep_device *oct)
- {
--	return 0;
-+	struct octep_ctrl_net_h2f_req req = {};
-+	struct octep_ctrl_net_h2f_resp *resp;
-+	struct octep_ctrl_mbox_msg msg = {};
-+	int err;
-+
-+	req.hdr.cmd = OCTEP_CTRL_NET_H2F_CMD_LINK_STATUS;
-+	req.link.cmd = OCTEP_CTRL_NET_CMD_GET;
-+
-+	msg.hdr.flags = OCTEP_CTRL_MBOX_MSG_HDR_FLAG_REQ;
-+	msg.hdr.sizew = OCTEP_CTRL_NET_H2F_STATE_REQ_SZW;
-+	msg.msg = &req;
-+	err = octep_ctrl_mbox_send(&oct->ctrl_mbox, &msg);
-+	if (err)
-+		return err;
-+
-+	resp = (struct octep_ctrl_net_h2f_resp *)&req;
-+	return resp->link.state;
- }
- 
- void octep_set_link_status(struct octep_device *oct, bool up)
- {
-+	struct octep_ctrl_net_h2f_req req = {};
-+	struct octep_ctrl_mbox_msg msg = {};
-+
-+	req.hdr.cmd = OCTEP_CTRL_NET_H2F_CMD_LINK_STATUS;
-+	req.link.cmd = OCTEP_CTRL_NET_CMD_SET;
-+	req.link.state = (up) ? OCTEP_CTRL_NET_STATE_UP : OCTEP_CTRL_NET_STATE_DOWN;
-+
-+	msg.hdr.flags = OCTEP_CTRL_MBOX_MSG_HDR_FLAG_REQ;
-+	msg.hdr.sizew = OCTEP_CTRL_NET_H2F_STATE_REQ_SZW;
-+	msg.msg = &req;
-+	octep_ctrl_mbox_send(&oct->ctrl_mbox, &msg);
- }
- 
- void octep_set_rx_state(struct octep_device *oct, bool up)
- {
-+	struct octep_ctrl_net_h2f_req req = {};
-+	struct octep_ctrl_mbox_msg msg = {};
-+
-+	req.hdr.cmd = OCTEP_CTRL_NET_H2F_CMD_RX_STATE;
-+	req.link.cmd = OCTEP_CTRL_NET_CMD_SET;
-+	req.link.state = (up) ? OCTEP_CTRL_NET_STATE_UP : OCTEP_CTRL_NET_STATE_DOWN;
-+
-+	msg.hdr.flags = OCTEP_CTRL_MBOX_MSG_HDR_FLAG_REQ;
-+	msg.hdr.sizew = OCTEP_CTRL_NET_H2F_STATE_REQ_SZW;
-+	msg.msg = &req;
-+	octep_ctrl_mbox_send(&oct->ctrl_mbox, &msg);
- }
- 
- int octep_get_mac_addr(struct octep_device *oct, u8 *addr)
- {
--	return -1;
-+	struct octep_ctrl_net_h2f_req req = {};
-+	struct octep_ctrl_net_h2f_resp *resp;
-+	struct octep_ctrl_mbox_msg msg = {};
-+	int err;
-+
-+	req.hdr.cmd = OCTEP_CTRL_NET_H2F_CMD_MAC;
-+	req.link.cmd = OCTEP_CTRL_NET_CMD_GET;
-+
-+	msg.hdr.flags = OCTEP_CTRL_MBOX_MSG_HDR_FLAG_REQ;
-+	msg.hdr.sizew = OCTEP_CTRL_NET_H2F_MAC_REQ_SZW;
-+	msg.msg = &req;
-+	err = octep_ctrl_mbox_send(&oct->ctrl_mbox, &msg);
-+	if (err)
-+		return err;
-+
-+	resp = (struct octep_ctrl_net_h2f_resp *)&req;
-+	memcpy(addr, resp->mac.addr, ETH_ALEN);
-+
-+	return err;
- }
- 
- int octep_get_link_info(struct octep_device *oct)
- {
--	return -1;
-+	struct octep_ctrl_net_h2f_req req = {};
-+	struct octep_ctrl_net_h2f_resp *resp;
-+	struct octep_ctrl_mbox_msg msg = {};
-+	int err;
-+
-+	req.hdr.cmd = OCTEP_CTRL_NET_H2F_CMD_LINK_INFO;
-+	req.mac.cmd = OCTEP_CTRL_NET_CMD_GET;
-+
-+	msg.hdr.flags = OCTEP_CTRL_MBOX_MSG_HDR_FLAG_REQ;
-+	msg.hdr.sizew = OCTEP_CTRL_NET_H2F_LINK_INFO_REQ_SZW;
-+	msg.msg = &req;
-+	err = octep_ctrl_mbox_send(&oct->ctrl_mbox, &msg);
-+	if (err)
-+		return err;
-+
-+	resp = (struct octep_ctrl_net_h2f_resp *)&req;
-+	oct->link_info.supported_modes = resp->link_info.supported_modes;
-+	oct->link_info.advertised_modes = resp->link_info.advertised_modes;
-+	oct->link_info.autoneg = resp->link_info.autoneg;
-+	oct->link_info.pause = resp->link_info.pause;
-+	oct->link_info.speed = resp->link_info.speed;
-+
-+	return err;
- }
- 
- int octep_set_link_info(struct octep_device *oct, struct octep_iface_link_info *link_info)
- {
--	return -1;
-+	struct octep_ctrl_net_h2f_req req = {};
-+	struct octep_ctrl_mbox_msg msg = {};
-+
-+	req.hdr.cmd = OCTEP_CTRL_NET_H2F_CMD_LINK_INFO;
-+	req.link_info.cmd = OCTEP_CTRL_NET_CMD_SET;
-+	req.link_info.info.advertised_modes = link_info->advertised_modes;
-+	req.link_info.info.autoneg = link_info->autoneg;
-+	req.link_info.info.pause = link_info->pause;
-+	req.link_info.info.speed = link_info->speed;
-+
-+	msg.hdr.flags = OCTEP_CTRL_MBOX_MSG_HDR_FLAG_REQ;
-+	msg.hdr.sizew = OCTEP_CTRL_NET_H2F_LINK_INFO_REQ_SZW;
-+	msg.msg = &req;
-+
-+	return octep_ctrl_mbox_send(&oct->ctrl_mbox, &msg);
- }
+ 	netdev->hw_features = NETIF_F_SG;
 -- 
 2.17.1
 
