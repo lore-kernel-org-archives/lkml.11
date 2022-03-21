@@ -2,177 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 735B8C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:46:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0727DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:46:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229931AbiCUWrq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:47:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52324 "EHLO
+        id S229861AbiCUWrs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:47:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229585AbiCUWre (ORCPT
+        with ESMTP id S229664AbiCUWrf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:47:34 -0400
+        Mon, 21 Mar 2022 18:47:35 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E65693A35C8
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:27:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5FAE2AB89C;
+        Mon, 21 Mar 2022 15:27:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3FF33B81A7D
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 21:59:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDF7DC340E8;
-        Mon, 21 Mar 2022 21:59:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 888C3B81AAA;
+        Mon, 21 Mar 2022 22:21:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 412CAC340E8;
+        Mon, 21 Mar 2022 22:21:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647899949;
-        bh=v7iFu1pvBkesNTpkONQEEnUI82Fc3+fzP2D8hT+4H+E=;
+        s=k20201202; t=1647901286;
+        bh=YdRuUQ7n1xMKIOQKXhmD50thxaX6B8sq7j5Ta8xBOgE=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=InOebjhs2iP9JpMUBePghbNI1h3pcvyWi2si9MKsRovRyimuyh+l3la7ejYMWv/V7
-         i5bfZI6iXRLuRjOQD3Q2oh5Y12hFD77MAopZ6v71E5VvNNI2Ghd3bSoBOXyD/ja0XN
-         Mn+LsmWl5voPEf/ZzvZcb0ri6sLVNnaDJlu7EIs7l5oyjTduHA18zswqUh4k3iHogM
-         nIAI24F1VkWwuk1yP9wLE7mjXRnqWn82GS+9iEesBjENaK7zb3LmPYn/w8s1rDgkB4
-         7Wwi5Xuoxx5r4zpDZf5X10BDMt/qW2zMl26EhhL3ULm9QACwBGRIeqAdbFL9ujFV/L
-         hEnhdb5m7xcyg==
-Date:   Mon, 21 Mar 2022 14:59:08 -0700
+        b=mjrrZhGi7hE60DXYpI8kfKjkj+BhXTfVQpSXi9BT1Apy9rZmUoILwCuqgWgjXu0yf
+         JpgH6Z6s4/G6nT/DnXwgZ/ye3OJr1CCaWjJjutJGCsRzVrZPt3zg4WKTr3ZlGlzZpr
+         1OQ3Udyb8DbZ+RPAKFG/RAhmqPtk31O9WLmwicpipRwY5r7RXeIed9dqsrIDHxlomJ
+         s4cO7P3CBiQfItlhxWaNLlyXHwOgldO1SRlMnF44TORG4zwkn5i6PxWBGob4XqZ5T/
+         /DPTr1cAGh3NUUjALHlSPYMO+C+5+nASO3V3YD5Ev0lSNOtwdt65XTaxUShbUweoF6
+         TQkJfmnr1r0mQ==
+Date:   Mon, 21 Mar 2022 15:21:25 -0700
 From:   "Darrick J. Wong" <djwong@kernel.org>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     kbuild@lists.01.org, lkp@intel.com, kbuild-all@lists.01.org,
-        "Darrick J. Wong" <darrick.wong@oracle.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [kbuild] [djwong-xfs:djwong-wtf 349/351]
- fs/xfs/xfs_bmap_util.c:1372 xfs_map_free_extent() warn: missing error code
- 'error'
-Message-ID: <20220321215908.GL8241@magnolia>
-References: <202203190831.AYu7l0vX-lkp@intel.com>
+To:     Gao Xiang <hsiangkao@linux.alibaba.com>
+Cc:     xfs <linux-xfs@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 0/3] xfs: some end COW remapping optimization
+Message-ID: <20220321222125.GN8241@magnolia>
+References: <20220216030854.30180-1-hsiangkao@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202203190831.AYu7l0vX-lkp@intel.com>
+In-Reply-To: <20220216030854.30180-1-hsiangkao@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 10:33:02AM +0300, Dan Carpenter wrote:
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git  djwong-wtf
-> head:   baa8d54bb35559f0bc36ec9e9933bec9ab23e25f
-> commit: b82670045aab66d3d66eca40f277354c3da07f1c [349/351] xfs: fallocate free space into a file
-> config: openrisc-randconfig-m031-20220317 (https://download.01.org/0day-ci/archive/20220319/202203190831.AYu7l0vX-lkp@intel.com/config )
-> compiler: or1k-linux-gcc (GCC) 11.2.0
+On Wed, Feb 16, 2022 at 11:08:51AM +0800, Gao Xiang wrote:
+> Hi folks,
 > 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> 
-> New smatch warnings:
-> fs/xfs/xfs_bmap_util.c:1372 xfs_map_free_extent() warn: missing error code 'error'
-> 
-> Old smatch warnings:
-> fs/xfs/xfs_buf.h:430 xfs_buftarg_zeroout() warn: bitwise AND condition is false here
-> 
-> vim +/error +1372 fs/xfs/xfs_bmap_util.c
-> 
-> b82670045aab66 Darrick J. Wong 2022-01-06  1341  /* Find a free extent in this AG and map it into the file. */
-> b82670045aab66 Darrick J. Wong 2022-01-06  1342  STATIC int
-> b82670045aab66 Darrick J. Wong 2022-01-06  1343  xfs_map_free_extent(
-> b82670045aab66 Darrick J. Wong 2022-01-06  1344  	struct xfs_inode	*ip,
-> b82670045aab66 Darrick J. Wong 2022-01-06  1345  	struct xfs_perag	*pag,
-> b82670045aab66 Darrick J. Wong 2022-01-06  1346  	xfs_agblock_t		*cursor,
-> b82670045aab66 Darrick J. Wong 2022-01-06  1347  	xfs_agblock_t		end_agbno,
-> b82670045aab66 Darrick J. Wong 2022-01-06  1348  	xfs_agblock_t		*last_enospc_agbno)
-> b82670045aab66 Darrick J. Wong 2022-01-06  1349  {
-> b82670045aab66 Darrick J. Wong 2022-01-06  1350  	struct xfs_bmbt_irec	irec;
-> b82670045aab66 Darrick J. Wong 2022-01-06  1351  	struct xfs_mount	*mp = ip->i_mount;
-> b82670045aab66 Darrick J. Wong 2022-01-06  1352  	struct xfs_trans	*tp;
-> b82670045aab66 Darrick J. Wong 2022-01-06  1353  	xfs_off_t		endpos;
-> b82670045aab66 Darrick J. Wong 2022-01-06  1354  	xfs_fsblock_t		fsbno;
-> b82670045aab66 Darrick J. Wong 2022-01-06  1355  	xfs_extlen_t		len;
-> b82670045aab66 Darrick J. Wong 2022-01-06  1356  	int			error;
-> b82670045aab66 Darrick J. Wong 2022-01-06  1357  
-> b82670045aab66 Darrick J. Wong 2022-01-06  1358  	if (fatal_signal_pending(current))
-> b82670045aab66 Darrick J. Wong 2022-01-06  1359  		return -EINTR;
-> b82670045aab66 Darrick J. Wong 2022-01-06  1360  
-> b82670045aab66 Darrick J. Wong 2022-01-06  1361  	error = xfs_trans_alloc_inode(ip, &M_RES(mp)->tr_write, 0, 0, false,
-> b82670045aab66 Darrick J. Wong 2022-01-06  1362  			&tp);
-> b82670045aab66 Darrick J. Wong 2022-01-06  1363  	if (error)
-> b82670045aab66 Darrick J. Wong 2022-01-06  1364  		return error;
-> b82670045aab66 Darrick J. Wong 2022-01-06  1365  
-> b82670045aab66 Darrick J. Wong 2022-01-06  1366  	error = xfs_alloc_find_freesp(tp, pag, cursor, end_agbno, &len);
-> b82670045aab66 Darrick J. Wong 2022-01-06  1367  	if (error)
-> b82670045aab66 Darrick J. Wong 2022-01-06  1368  		goto out_cancel;
-> b82670045aab66 Darrick J. Wong 2022-01-06  1369  
-> b82670045aab66 Darrick J. Wong 2022-01-06  1370  	/* Bail out if the cursor is beyond what we asked for. */
-> b82670045aab66 Darrick J. Wong 2022-01-06  1371  	if (*cursor >= end_agbno)
-> b82670045aab66 Darrick J. Wong 2022-01-06 @1372  		goto out_cancel;
-> 
-> This looks like it should have an error = -EINVAL;
+> Currently, xfs_reflink_end_cow_extent() will unconditionally unmap an
+> extent from DATA fork and then remap an extent from COW fork. It seems
+> somewhat ineffective since for many cases we could update real bmbt
+> records directly by sightly enhancing old
+> xfs_bmap_add_extent_unwritten_real() implementation, thus reduce some
+> measurable extra metadata overhead.
 
-Nope.  If xfs_alloc_find_freesp moves @cursor goes beyond end_agbno, we
-want to exit early so that the xfs_map_free_extent caller will return to
-userspace.
+Does it work with rmap enabled?
+
+Reading between the lines, I'm guessing the performance boost might
+come from avoiding a transaction roll and (possibly) reducing the need
+to log bmbt updates?  Particularly in the worst case where we split the
+bmbt only to rejoin the blocks immediately after.
+
+Recently, Dave and Allison have been pondering making an addition to the
+deferred log item code so that we could ->finish_item the first defer op
+in the same transaction that logs the caller's deferred operations.
+Might that get you most of the speed advantage that you're seeking?
+
+> It's important to us since, actually, we're planing to use a modified
+> alway-cow like atomic write approach internally for database
+> applications, therefore it'd be nice to do some optimization over
+> simple end COW approach. Also I think it's still generic and can
+> benefit other reflink use cases as well.
+
+Hmm, that sounds /awfully/ similar to what sqlite does with f2fs' atomic
+write ioctls.
+
+Alternately, would this[1] feature that's been sitting around in
+djwong-dev since late 2019 help?
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git/log/?h=atomic-file-updates
 
 --D
 
 > 
-> b82670045aab66 Darrick J. Wong 2022-01-06  1373  
-> b82670045aab66 Darrick J. Wong 2022-01-06  1374  	error = xfs_map_free_reserve_more(tp, ip, &len);
-> b82670045aab66 Darrick J. Wong 2022-01-06  1375  	if (error)
-> b82670045aab66 Darrick J. Wong 2022-01-06  1376  		goto out_cancel;
-> b82670045aab66 Darrick J. Wong 2022-01-06  1377  
-> b82670045aab66 Darrick J. Wong 2022-01-06  1378  	fsbno = XFS_AGB_TO_FSB(mp, pag->pag_agno, *cursor);
-> b82670045aab66 Darrick J. Wong 2022-01-06  1379  	do {
-> b82670045aab66 Darrick J. Wong 2022-01-06  1380  		error = xfs_bmapi_freesp(tp, ip, fsbno, len, &irec);
-> b82670045aab66 Darrick J. Wong 2022-01-06  1381  		if (error == -EAGAIN) {
-> b82670045aab66 Darrick J. Wong 2022-01-06  1382  			/* Failed to map space but were told to try again. */
-> b82670045aab66 Darrick J. Wong 2022-01-06  1383  			error = xfs_trans_commit(tp);
-> b82670045aab66 Darrick J. Wong 2022-01-06  1384  			goto out;
-> b82670045aab66 Darrick J. Wong 2022-01-06  1385  		}
-> b82670045aab66 Darrick J. Wong 2022-01-06  1386  		if (error != -ENOSPC)
-> b82670045aab66 Darrick J. Wong 2022-01-06  1387  			break;
-> b82670045aab66 Darrick J. Wong 2022-01-06  1388  		/*
-> b82670045aab66 Darrick J. Wong 2022-01-06  1389  		 * If we can't get the space, try asking for successively less
-> b82670045aab66 Darrick J. Wong 2022-01-06  1390  		 * space in case we're bumping up against per-AG metadata
-> b82670045aab66 Darrick J. Wong 2022-01-06  1391  		 * reservation limits...
-> b82670045aab66 Darrick J. Wong 2022-01-06  1392  		 */
-> b82670045aab66 Darrick J. Wong 2022-01-06  1393  		len >>= 1;
-> b82670045aab66 Darrick J. Wong 2022-01-06  1394  	} while (len > 0);
-> b82670045aab66 Darrick J. Wong 2022-01-06  1395  	if (error == -ENOSPC && *last_enospc_agbno != *cursor) {
-> b82670045aab66 Darrick J. Wong 2022-01-06  1396  		/*
-> b82670045aab66 Darrick J. Wong 2022-01-06  1397  		 * ...but even that might not work if an AGFL fixup allocated
-> b82670045aab66 Darrick J. Wong 2022-01-06  1398  		 * the block at *cursor.  The first time this happens, remember
-> b82670045aab66 Darrick J. Wong 2022-01-06  1399  		 * that we ran out of space here, and try again.
-> b82670045aab66 Darrick J. Wong 2022-01-06  1400  		 */
-> b82670045aab66 Darrick J. Wong 2022-01-06  1401  		*last_enospc_agbno = *cursor;
-> b82670045aab66 Darrick J. Wong 2022-01-06  1402  		error = 0;
-> b82670045aab66 Darrick J. Wong 2022-01-06  1403  		goto out_cancel;
-> b82670045aab66 Darrick J. Wong 2022-01-06  1404  	}
-> b82670045aab66 Darrick J. Wong 2022-01-06  1405  	if (error)
-> b82670045aab66 Darrick J. Wong 2022-01-06  1406  		goto out_cancel;
-> b82670045aab66 Darrick J. Wong 2022-01-06  1407  
-> b82670045aab66 Darrick J. Wong 2022-01-06  1408  	/* Update isize if needed. */
-> b82670045aab66 Darrick J. Wong 2022-01-06  1409  	endpos = XFS_FSB_TO_B(mp, irec.br_startoff + irec.br_blockcount);
-> b82670045aab66 Darrick J. Wong 2022-01-06  1410  	if (endpos > i_size_read(VFS_I(ip))) {
-> b82670045aab66 Darrick J. Wong 2022-01-06  1411  		i_size_write(VFS_I(ip), endpos);
-> b82670045aab66 Darrick J. Wong 2022-01-06  1412  		ip->i_disk_size = endpos;
-> b82670045aab66 Darrick J. Wong 2022-01-06  1413  		xfs_trans_log_inode(tp, ip, XFS_ILOG_CORE);
-> b82670045aab66 Darrick J. Wong 2022-01-06  1414  	}
-> b82670045aab66 Darrick J. Wong 2022-01-06  1415  
-> b82670045aab66 Darrick J. Wong 2022-01-06  1416  	error = xfs_trans_commit(tp);
-> b82670045aab66 Darrick J. Wong 2022-01-06  1417  	xfs_iunlock(ip, XFS_ILOCK_EXCL);
-> b82670045aab66 Darrick J. Wong 2022-01-06  1418  	if (error)
-> b82670045aab66 Darrick J. Wong 2022-01-06  1419  		return error;
-> b82670045aab66 Darrick J. Wong 2022-01-06  1420  
-> b82670045aab66 Darrick J. Wong 2022-01-06  1421  	*cursor += irec.br_blockcount;
-> b82670045aab66 Darrick J. Wong 2022-01-06  1422  	return 0;
-> b82670045aab66 Darrick J. Wong 2022-01-06  1423  out_cancel:
-> b82670045aab66 Darrick J. Wong 2022-01-06  1424  	xfs_trans_cancel(tp);
-> b82670045aab66 Darrick J. Wong 2022-01-06  1425  out:
-> b82670045aab66 Darrick J. Wong 2022-01-06  1426  	xfs_iunlock(ip, XFS_ILOCK_EXCL);
-> b82670045aab66 Darrick J. Wong 2022-01-06  1427  	return error;
-> b82670045aab66 Darrick J. Wong 2022-01-06  1428  }
+> I did some tests with ramdisk in order to measure metadata overhead:
 > 
-> ---
-> 0-DAY CI Kernel Test Service
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org 
-> _______________________________________________
-> kbuild mailing list -- kbuild@lists.01.org
-> To unsubscribe send an email to kbuild-leave@lists.01.org
+> echo 1 > /sys/fs/xfs/debug/always_cow
+> mkfs.xfs -f -mreflink=1 /dev/ram0
+> mount /dev/ram0 testdir
+> fio -filename=testdir/1 -size=1G -ioengine=psync -bs=4k -rw=randwrite -overwrite=1 -direct=1 -end_fsync=1 -name=job1
+> 
+> Test results as below:
+> Vanilla:
+> (1)   iops        : min= 7986, max=16434, avg=12505.76, stdev=2400.05, samples=41
+> (2)   iops        : min= 7636, max=16376, avg=12474.19, stdev=2258.18, samples=42
+> (3)   iops        : min= 8346, max=16439, avg=12227.95, stdev=2432.12, samples=42
+> (4)   iops        : min= 8580, max=16496, avg=12779.41, stdev=2297.42, samples=41
+> (5)   iops        : min= 8286, max=16556, avg=12500.76, stdev=2123.90, samples=41
+> 
+> Patched:
+> (1)   iops        : min= 7086, max=17132, avg=12931.20, stdev=2729.10, samples=40
+> (2)   iops        : min= 7704, max=17508, avg=13204.62, stdev=2507.70, samples=39
+> (3)   iops        : min= 8736, max=17634, avg=13253.08, stdev=2545.18, samples=39
+> (4)   iops        : min= 7188, max=17550, avg=12928.40, stdev=2633.64, samples=40
+> (5)   iops        : min= 8268, max=17446, avg=12837.55, stdev=2717.98, samples=40
+> 
+> xfstests seems survived. Comments are much welcomed and
+> thanks for your time!
+> 
+> Thanks,
+> Gao Xiang
+> 
+> Changes since v1:
+>  - fix missing tmp_logflags initialization;
+>  - drop unnecessary realtime inode check pointed out by Darrick.
+> 
+> Gao Xiang (3):
+>   xfs: get rid of LEFT, RIGHT, PREV in
+>     xfs_bmap_add_extent_unwritten_real()
+>   xfs: introduce xfs_bmap_update_extent_real()
+>   xfs: introduce xfs_bremapi_from_cowfork()
+> 
+>  fs/xfs/libxfs/xfs_bmap.c | 377 +++++++++++++++++++++++++--------------
+>  fs/xfs/libxfs/xfs_bmap.h |   7 +-
+>  fs/xfs/xfs_reflink.c     |  24 +--
+>  3 files changed, 252 insertions(+), 156 deletions(-)
+> 
+> -- 
+> 2.24.4
 > 
