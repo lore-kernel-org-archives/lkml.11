@@ -2,117 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5908C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:59:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38999C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:59:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232117AbiCUXBB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:01:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42420 "EHLO
+        id S231220AbiCUXBF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:01:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233222AbiCUW66 (ORCPT
+        with ESMTP id S233516AbiCUW7O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:58:58 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C339A52E52;
-        Mon, 21 Mar 2022 15:46:13 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KMqTq6cStz4xXV;
-        Tue, 22 Mar 2022 09:46:07 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1647902770;
-        bh=H8PBqR3nVa0lXAbzk96iqy7WYNZPPnz2jeC1t20qCF8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Nv2gboPVn/xp89O61PpDCFVDLttqjE0/u4+agmberg9y//+EPDKRwHRdHVAx1AmOQ
-         ++rsq/cFU5PPEToFobcS3s/N6XTvEsR8UtZ+9U8zwFV7vNKVjFfcedRLiu/7fuRduh
-         vQaK3mxTYr3Rxs6nqmX3Qa71boFlV/N6klXxFCWpYNDjNyfCIKzkc/w5YxEpFfYtaj
-         JsfEcWDlbpMdb5G6dBMhA6hR9hs7IzTA1IeqZIxp1zWen/LQ9JAQOfJYzR1lETUWht
-         49XKzOxocHboQbdxTNrqxfETaOs9BbfZybA9Qymc8JSzl9Aix0AlZnhZW4gzSQR7BQ
-         CZbv0zrLtbZZA==
-Date:   Tue, 22 Mar 2022 09:46:06 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "H.J. Lu" <hjl.tools@gmail.com>,
-        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        linux-toolchains <linux-toolchains@vger.kernel.org>,
-        Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: linux-next: build warnings after merge of the tip tree
-Message-ID: <20220322094526.436ca4f7@elm.ozlabs.ibm.com>
-In-Reply-To: <CAADnVQJnZpQjUv-dw7SU-WwTOn_tZ8xmy5ydRn=g_m-9UyS2kw@mail.gmail.com>
-References: <20220321140327.777f9554@canb.auug.org.au>
-        <Yjh11UjDZogc3foM@hirez.programming.kicks-ass.net>
-        <Yjh3xZuuY3QcZ1Bn@hirez.programming.kicks-ass.net>
-        <Yjh4xzSWtvR+vqst@hirez.programming.kicks-ass.net>
-        <YjiBbF+K4FKZyn6T@hirez.programming.kicks-ass.net>
-        <YjiZhRelDJeX4dfR@hirez.programming.kicks-ass.net>
-        <YjidpOZZJkF6aBTG@hirez.programming.kicks-ass.net>
-        <CAHk-=wigO=68WA8aMZnH9o8qRUJQbNJPERosvW82YuScrUTo7Q@mail.gmail.com>
-        <YjirfOJ2HQAnTrU4@hirez.programming.kicks-ass.net>
-        <CAHk-=wguO61ACXPSz=hmCxNTzqE=mNr_bWLv6GH5jCVZLBL=qw@mail.gmail.com>
-        <20220322090541.7d06c8cb@canb.auug.org.au>
-        <CAADnVQJnZpQjUv-dw7SU-WwTOn_tZ8xmy5ydRn=g_m-9UyS2kw@mail.gmail.com>
+        Mon, 21 Mar 2022 18:59:14 -0400
+X-Greylist: delayed 5588 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 21 Mar 2022 15:47:01 PDT
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00A2432F2D1
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:47:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=UxVnGroyv95bnhNLjHCmBweTO25U8rXxdLTQZ0CUFxg=; b=ChedVT+7B/T39CHBClrpYs3jZj
+        N02A9+7/GjMG75Zejvyrnmt+eh8ZUAnETnSQyVcHFpJR0Zl9YcstIV8KbZW3SKXYQxDV1bLEBGnWk
+        Kqe/YzykXnN3qAxcw/omDYjLyz2nK9wkeywm5weibie9iekj8UAYuRjtz4dGWLBhIdPmvWcBXpvFq
+        Lw3CYuojEmkXWxqw3/OZ9fd7xLzZvGMv1eZgUcFyhkgM1YsUbUQnYyKeXfQUCwCXvx99BYnOQpDhH
+        t8jWasPtSTgxEy+vI+HD73N/mmyDT/UHDDFcb/gVPU3fhiT8ArrsI8v7IuwA+iep+3+QM0bd+Fvks
+        hKJKoLCQ==;
+Received: from [165.90.126.25] (helo=killbill.home)
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
+        id 1nWPLi-0000ww-Co; Mon, 21 Mar 2022 22:13:58 +0100
+From:   Melissa Wen <mwen@igalia.com>
+To:     emma@anholt.net, airlied@linux.ie, daniel@ffwll.ch
+Cc:     Rob Herring <robh@kernel.org>, Melissa Wen <mwen@igalia.com>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 2/2] drm/v3d: replace obj lookup steps with drm_gem_objects_lookup
+Date:   Mon, 21 Mar 2022 20:13:16 -0100
+Message-Id: <20220321211316.1423294-3-mwen@igalia.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220321211316.1423294-1-mwen@igalia.com>
+References: <20220321211316.1423294-1-mwen@igalia.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Cu0BfOMHZbomI3JHSdJT/3a";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/Cu0BfOMHZbomI3JHSdJT/3a
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+As v3d_lookup_bos() performs the same steps as drm_gem_objects_lookup(),
+replace the explicit code in v3d to simply use the DRM function.
 
-Hi Alexei,
+Signed-off-by: Melissa Wen <mwen@igalia.com>
+---
+ drivers/gpu/drm/v3d/v3d_gem.c | 49 +++--------------------------------
+ 1 file changed, 3 insertions(+), 46 deletions(-)
 
-On Mon, 21 Mar 2022 15:12:05 -0700 Alexei Starovoitov <alexei.starovoitov@g=
-mail.com> wrote:
->
-> That makes little sense. It's not an unusual merge conflict.
-> Peter's endbr series conflict with Masami's fprobe.
-> Peter has a trivial patch that fixes objtool warning.
-> The question is how to land that patch.
-> I think the best is for Linus to apply it after bpf-next->net-next gets
-> merged.
+diff --git a/drivers/gpu/drm/v3d/v3d_gem.c b/drivers/gpu/drm/v3d/v3d_gem.c
+index 926bfc7e07fb..738b1080143d 100644
+--- a/drivers/gpu/drm/v3d/v3d_gem.c
++++ b/drivers/gpu/drm/v3d/v3d_gem.c
+@@ -294,10 +294,6 @@ v3d_lookup_bos(struct drm_device *dev,
+ 	       u64 bo_handles,
+ 	       u32 bo_count)
+ {
+-	u32 *handles;
+-	int ret = 0;
+-	int i;
+-
+ 	job->bo_count = bo_count;
+ 
+ 	if (!job->bo_count) {
+@@ -308,48 +304,9 @@ v3d_lookup_bos(struct drm_device *dev,
+ 		return -EINVAL;
+ 	}
+ 
+-	job->bo = kvmalloc_array(job->bo_count,
+-				 sizeof(struct drm_gem_cma_object *),
+-				 GFP_KERNEL | __GFP_ZERO);
+-	if (!job->bo) {
+-		DRM_DEBUG("Failed to allocate validated BO pointers\n");
+-		return -ENOMEM;
+-	}
+-
+-	handles = kvmalloc_array(job->bo_count, sizeof(u32), GFP_KERNEL);
+-	if (!handles) {
+-		ret = -ENOMEM;
+-		DRM_DEBUG("Failed to allocate incoming GEM handles\n");
+-		goto fail;
+-	}
+-
+-	if (copy_from_user(handles,
+-			   (void __user *)(uintptr_t)bo_handles,
+-			   job->bo_count * sizeof(u32))) {
+-		ret = -EFAULT;
+-		DRM_DEBUG("Failed to copy in GEM handles\n");
+-		goto fail;
+-	}
+-
+-	spin_lock(&file_priv->table_lock);
+-	for (i = 0; i < job->bo_count; i++) {
+-		struct drm_gem_object *bo = idr_find(&file_priv->object_idr,
+-						     handles[i]);
+-		if (!bo) {
+-			DRM_DEBUG("Failed to look up GEM BO %d: %d\n",
+-				  i, handles[i]);
+-			ret = -ENOENT;
+-			spin_unlock(&file_priv->table_lock);
+-			goto fail;
+-		}
+-		drm_gem_object_get(bo);
+-		job->bo[i] = bo;
+-	}
+-	spin_unlock(&file_priv->table_lock);
+-
+-fail:
+-	kvfree(handles);
+-	return ret;
++	return drm_gem_objects_lookup(file_priv,
++				      (void __user *)(uintptr_t)bo_handles,
++				      job->bo_count, &job->bo);
+ }
+ 
+ static void
+-- 
+2.35.1
 
-Peter has other concerns, please read the thread and consider them.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/Cu0BfOMHZbomI3JHSdJT/3a
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmI5AC8ACgkQAVBC80lX
-0GzcsAgAot0lRVnBEEWV9hhB+YPJDN1/HKUcKWm96ubGregiybHyYGuX5lmvbkyK
-sF0/8tQFMMA6fK+PxkZytEtDQKbQn6/c5394HkEiJ/ISWMtFDJ8xCr3dPoU7rVG4
-0BKLOkmcLGPuK7zRfBGe/xtAENj1g46CDMDKaGpJOqkABMzw9BFlQUZsGYhJDCXB
-ZBMwXD88Gcz+5wVtiCJPnLHjGKj4jTxclAm7HYA0b13nb0TaxfRyIGCJekzHET34
-IDMS0UjNT2JafuKj426Yqlx7Mk3sc85uwMYlkLA4pCaP+VYXyhbW1VDiaZZf/ry/
-7sJceaOu3fF4RgzHXeFU7ZFbHajuJQ==
-=/K55
------END PGP SIGNATURE-----
-
---Sig_/Cu0BfOMHZbomI3JHSdJT/3a--
