@@ -2,219 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E1C1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ECDCC352A1
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351641AbiCUOLV (ORCPT
+        id S1350023AbiCUOJR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:11:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33826 "EHLO
+        Mon, 21 Mar 2022 10:09:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348808AbiCUODA (ORCPT
+        with ESMTP id S1349003AbiCUODO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:03:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40459BB0AF;
-        Mon, 21 Mar 2022 06:59:43 -0700 (PDT)
+        Mon, 21 Mar 2022 10:03:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAA6D1760CA;
+        Mon, 21 Mar 2022 07:00:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 33725612B4;
-        Mon, 21 Mar 2022 13:59:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DCC9C340F4;
-        Mon, 21 Mar 2022 13:59:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47EBE611CF;
+        Mon, 21 Mar 2022 14:00:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5635AC340E8;
+        Mon, 21 Mar 2022 14:00:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871162;
-        bh=uIUkZdntBR9X1c85x447nY92nPfuVGYkI6fX78SLkPs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=oh44SsV8TvjK01bMBu2CV2+PFQxJLsoCur/qL64UNrONabFYLlAfRnmolxkmnDRqO
-         vD5ki5rjp6loyYCbbBXoNrQEVdXW1VdvTTRUBQXXrqtiHPFy3HcjS3qlgH2bsiJqoI
-         GLNkMu+C8UKtcGSc4we2utmV8bYgkUpteDRRUb1w=
+        s=korg; t=1647871209;
+        bh=HNI1dha5r5/aV4+8R/lLlKF+uCGDZHZnncogH9gUa+A=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wPPv1QRqufrtvt5zZvYeg/Jr8thbcbgn72VnjEnC83hFYf6zZJbIADzjGXqmSkK20
+         VCxOGAGqVvywhDAP6yN0cRodKJHI3btroVztgdkHZAyspEu4o2MhtE+qUJ8ndX/ONJ
+         72eozrnFfFg2ZEPcNlVQED7xpIZGSOrpbaOfUn9k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 5.10 00/30] 5.10.108-rc1 review
-Date:   Mon, 21 Mar 2022 14:52:30 +0100
-Message-Id: <20220321133219.643490199@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 13/32] iavf: Fix double free in iavf_reset_task
+Date:   Mon, 21 Mar 2022 14:52:49 +0100
+Message-Id: <20220321133220.947912427@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
+In-Reply-To: <20220321133220.559554263@linuxfoundation.org>
+References: <20220321133220.559554263@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.108-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.10.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.10.108-rc1
-X-KernelTest-Deadline: 2022-03-23T13:32+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.10.108 release.
-There are 30 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
 
-Responses should be made by Wed, 23 Mar 2022 13:32:09 +0000.
-Anything received after that time might be too late.
+[ Upstream commit 16b2dd8cdf6f4e0597c34899de74b4d012b78188 ]
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.108-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-and the diffstat can be found below.
+Fix double free possibility in iavf_disable_vf, as crit_lock is
+freed in caller, iavf_reset_task. Add kernel-doc for iavf_disable_vf.
+Remove mutex_unlock in iavf_disable_vf.
+Without this patch there is double free scenario, when calling
+iavf_reset_task.
 
-thanks,
+Fixes: e85ff9c631e1 ("iavf: Fix deadlock in iavf_reset_task")
+Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-greg k-h
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index 711e8c7f62de..7fca9dd8dcf6 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -2133,6 +2133,13 @@ static void iavf_watchdog_task(struct work_struct *work)
+ 		queue_delayed_work(iavf_wq, &adapter->watchdog_task, HZ * 2);
+ }
+ 
++/**
++ * iavf_disable_vf - disable VF
++ * @adapter: board private structure
++ *
++ * Set communication failed flag and free all resources.
++ * NOTE: This function is expected to be called with crit_lock being held.
++ **/
+ static void iavf_disable_vf(struct iavf_adapter *adapter)
+ {
+ 	struct iavf_mac_filter *f, *ftmp;
+@@ -2187,7 +2194,6 @@ static void iavf_disable_vf(struct iavf_adapter *adapter)
+ 	memset(adapter->vf_res, 0, IAVF_VIRTCHNL_VF_RESOURCE_SIZE);
+ 	iavf_shutdown_adminq(&adapter->hw);
+ 	adapter->netdev->flags &= ~IFF_UP;
+-	mutex_unlock(&adapter->crit_lock);
+ 	adapter->flags &= ~IAVF_FLAG_RESET_PENDING;
+ 	iavf_change_state(adapter, __IAVF_DOWN);
+ 	wake_up(&adapter->down_waitqueue);
+-- 
+2.34.1
 
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.10.108-rc1
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Revert "selftests/bpf: Add test for bpf_timer overwriting crash"
-
-Steffen Klassert <steffen.klassert@secunet.com>
-    esp: Fix possible buffer overflow in ESP transformation
-
-Fabio Estevam <festevam@denx.de>
-    smsc95xx: Ignore -ENODEV errors when device is unplugged
-
-Markus Reichl <m.reichl@fivetechno.de>
-    net: usb: Correct reset handling of smsc95xx
-
-Martyn Welch <martyn.welch@collabora.com>
-    net: usb: Correct PHY handling of smsc95xx
-
-Michael Petlan <mpetlan@redhat.com>
-    perf symbols: Fix symbol size calculation condition
-
-Pavel Skripkin <paskripkin@gmail.com>
-    Input: aiptek - properly check endpoint type
-
-Matt Lupfer <mlupfer@ddn.com>
-    scsi: mpt3sas: Page fault in reply q processing
-
-Alan Stern <stern@rowland.harvard.edu>
-    usb: usbtmc: Fix bug in pipe direction for control transfers
-
-Alan Stern <stern@rowland.harvard.edu>
-    usb: gadget: Fix use-after-free bug by not setting udc->dev.driver
-
-Dan Carpenter <dan.carpenter@oracle.com>
-    usb: gadget: rndis: prevent integer overflow in rndis_set_response()
-
-Arnd Bergmann <arnd@arndb.de>
-    arm64: fix clang warning about TRAMP_VALIAS
-
-Vladimir Oltean <vladimir.oltean@nxp.com>
-    net: mscc: ocelot: fix backwards compatibility with single-chain tc-flower offload
-
-Doug Berger <opendmb@gmail.com>
-    net: bcmgenet: skip invalid partial checksums
-
-Manish Chopra <manishc@marvell.com>
-    bnx2x: fix built-in kernel driver load failure
-
-Juerg Haefliger <juerg.haefliger@canonical.com>
-    net: phy: mscc: Add MODULE_FIRMWARE macros
-
-Miaoqian Lin <linmq006@gmail.com>
-    net: dsa: Add missing of_node_put() in dsa_port_parse_of
-
-Nicolas Dichtel <nicolas.dichtel@6wind.com>
-    net: handle ARPHRD_PIMREG in dev_is_mac_header_xmit()
-
-Marek Vasut <marex@denx.de>
-    drm/panel: simple: Fix Innolux G070Y2-L01 BPP settings
-
-Christoph Niedermaier <cniedermaier@dh-electronics.com>
-    drm/imx: parallel-display: Remove bus flags check in imx_pd_bridge_atomic_check()
-
-Jiasheng Jiang <jiasheng@iscas.ac.cn>
-    hv_netvsc: Add check for kvmalloc_array
-
-Jiasheng Jiang <jiasheng@iscas.ac.cn>
-    atm: eni: Add check for dma_map_single
-
-Eric Dumazet <edumazet@google.com>
-    net/packet: fix slab-out-of-bounds access in packet_recvmsg()
-
-Kurt Cancemi <kurt@x64architecture.com>
-    net: phy: marvell: Fix invalid comparison in the resume and suspend functions
-
-Sabrina Dubroca <sd@queasysnail.net>
-    esp6: fix check on ipv6_skip_exthdr's return value
-
-Jiyong Park <jiyong@google.com>
-    vsock: each transport cycles only on its own sockets
-
-Randy Dunlap <rdunlap@infradead.org>
-    efi: fix return value of __setup handlers
-
-Guo Ziliang <guo.ziliang@zte.com.cn>
-    mm: swap: get rid of livelock in swapin readahead
-
-Joseph Qi <joseph.qi@linux.alibaba.com>
-    ocfs2: fix crash when initialize filecheck kobj fails
-
-Brian Masney <bmasney@redhat.com>
-    crypto: qcom-rng - ensure buffer for generate is completely filled
-
-
--------------
-
-Diffstat:
-
- Makefile                                           |  4 +-
- arch/arm64/include/asm/vectors.h                   |  4 +-
- drivers/atm/eni.c                                  |  2 +
- drivers/crypto/qcom-rng.c                          | 17 +++--
- drivers/firmware/efi/apple-properties.c            |  2 +-
- drivers/firmware/efi/efi.c                         |  2 +-
- drivers/gpu/drm/imx/parallel-display.c             |  8 --
- drivers/gpu/drm/panel/panel-simple.c               |  2 +-
- drivers/input/tablet/aiptek.c                      | 10 +--
- drivers/net/ethernet/broadcom/bnx2x/bnx2x.h        |  2 -
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c    | 28 ++++---
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c   | 15 +---
- drivers/net/ethernet/broadcom/genet/bcmgenet.c     |  6 +-
- drivers/net/ethernet/mscc/ocelot_flower.c          | 16 +++-
- drivers/net/hyperv/netvsc_drv.c                    |  3 +
- drivers/net/phy/marvell.c                          |  8 +-
- drivers/net/phy/mscc/mscc_main.c                   |  3 +
- drivers/net/usb/smsc95xx.c                         | 86 ++++++++++++----------
- drivers/scsi/mpt3sas/mpt3sas_base.c                |  5 +-
- drivers/usb/class/usbtmc.c                         | 13 +++-
- drivers/usb/gadget/function/rndis.c                |  1 +
- drivers/usb/gadget/udc/core.c                      |  3 -
- drivers/vhost/vsock.c                              |  3 +-
- fs/ocfs2/super.c                                   | 22 +++---
- include/linux/if_arp.h                             |  1 +
- include/net/af_vsock.h                             |  3 +-
- include/net/esp.h                                  |  2 +
- include/net/sock.h                                 |  1 +
- mm/swap_state.c                                    |  2 +-
- net/dsa/dsa2.c                                     |  1 +
- net/ipv4/esp4.c                                    |  5 ++
- net/ipv6/esp6.c                                    |  8 +-
- net/packet/af_packet.c                             | 11 ++-
- net/vmw_vsock/af_vsock.c                           |  9 ++-
- net/vmw_vsock/virtio_transport.c                   |  7 +-
- net/vmw_vsock/vmci_transport.c                     |  5 +-
- tools/perf/util/symbol.c                           |  2 +-
- .../testing/selftests/bpf/prog_tests/timer_crash.c | 32 --------
- tools/testing/selftests/bpf/progs/timer_crash.c    | 54 --------------
- 39 files changed, 192 insertions(+), 216 deletions(-)
 
 
