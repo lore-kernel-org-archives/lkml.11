@@ -2,106 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4991FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:14:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 316A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:14:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349228AbiCUOQD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:16:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59888 "EHLO
+        id S233689AbiCUOQH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 10:16:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349783AbiCUOIo (ORCPT
+        with ESMTP id S1351521AbiCUOLH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:08:44 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A72793A5FA;
-        Mon, 21 Mar 2022 07:03:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1DC94CE18C3;
-        Mon, 21 Mar 2022 14:03:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30C68C340F2;
-        Mon, 21 Mar 2022 14:03:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871391;
-        bh=vZuF8pNbfFHYqxphOwnhbj2YwC3gKbMH1JxCRjKzhzI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ciISTSXZ7LCmKIFPfpOzTHZkv3djBaiOUDsYXis1CQf0liizTnXNLgIMtIPoZ9uIj
-         XeQGXWtRo7AvX8INiQDBg483Di6YLWlym3I63uXfHoaQs1Q4YFRkPbuZnDjwD5ipoR
-         qQTrB7dMMJTJmknxxsBeH6zJqdu+VWZWPjiXKNmI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        Mon, 21 Mar 2022 10:11:07 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E180201BB
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 07:07:29 -0700 (PDT)
+Date:   Mon, 21 Mar 2022 14:07:26 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1647871648;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=l6yc/vA9uu+Mbg963qnjC5ATlEBMQUpuZ5tmykv0Ezc=;
+        b=gLmIrEwl0xiSHN1s1Tz4dWgQ7PSiRKoL460wq2IOsxWLM9Q4Zxw/sQ5sSQjULlTibOejYP
+        bUBwlEKkTcBFCYrW1HkEIIFNW5uHT/D1cWH2Vy07yQbzzBJUSGDkybo0OK6PJUN3VBBiKy
+        9Sx0M8ZSc35SYPgta9Ilfdlu8+/O/xDEhmh6S/zM6nVp3QJ32fqwoaGQO1WvfDbfgAg/fS
+        p2xUr/y/eDB20NXVFRaNxd+DA94qWF6Wsxj1mtrLQQDG9yxhZvXphEMERLONlC2xVR71yz
+        LpHiY47iaxWUwfOgPvPYYwLpKmifT4DB0Y+58I7KGDrgs+3kGXCSwm6ukfML4A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1647871648;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=l6yc/vA9uu+Mbg963qnjC5ATlEBMQUpuZ5tmykv0Ezc=;
+        b=mvi85GYiWcsg0zhDNaj1HxLau1NtWDHdZHt+8SctVA2Jmr0q7kaztvHmWc2PojAxvWQZ+g
+        FVmzD93QbJdyexDA==
+From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        syzbot+b42749a851a47a0f581b@syzkaller.appspotmail.com,
-        Ming Lei <ming.lei@redhat.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.16 04/37] block: release rq qos structures for queue without disk
-Date:   Mon, 21 Mar 2022 14:52:46 +0100
-Message-Id: <20220321133221.421650667@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220321133221.290173884@linuxfoundation.org>
-References: <20220321133221.290173884@linuxfoundation.org>
-User-Agent: quilt/0.66
+Subject: [irqchip: irq/irqchip-next] irqchip/gic-v4: Wait for
+ GICR_VPENDBASER.Dirty to clear before descheduling
+Cc:     Jingyi Wang <wangjingyi11@huawei.com>,
+        Nianyao Tang <tangnianyao@huawei.com>,
+        Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
+In-Reply-To: <4aae10ba-b39a-5f84-754b-69c2eb0a2c03@huawei.com>
+References: <4aae10ba-b39a-5f84-754b-69c2eb0a2c03@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <164787164696.389.6013852304037958343.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Lei <ming.lei@redhat.com>
+The following commit has been merged into the irq/irqchip-next branch of irqchip:
 
-commit daaca3522a8e67c46e39ef09c1d542e866f85f3b upstream.
+Commit-ID:     e307414a346d99ead7b1e962daee331e71467d18
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/e307414a346d99ead7b1e962daee331e71467d18
+Author:        Marc Zyngier <maz@kernel.org>
+AuthorDate:    Thu, 17 Mar 2022 09:49:02 
+Committer:     Marc Zyngier <maz@kernel.org>
+CommitterDate: Mon, 21 Mar 2022 14:02:32 
 
-blkcg_init_queue() may add rq qos structures to request queue, previously
-blk_cleanup_queue() calls rq_qos_exit() to release them, but commit
-8e141f9eb803 ("block: drain file system I/O on del_gendisk")
-moves rq_qos_exit() into del_gendisk(), so memory leak is caused
-because queues may not have disk, such as un-present scsi luns, nvme
-admin queue, ...
+irqchip/gic-v4: Wait for GICR_VPENDBASER.Dirty to clear before descheduling
 
-Fixes the issue by adding rq_qos_exit() to blk_cleanup_queue() back.
+The way KVM drives GICv4.{0,1} is as follows:
+- vcpu_load() makes the VPE resident, instructing the RD to start
+  scanning for interrupts
+- just before entering the guest, we check that the RD has finished
+  scanning and that we can start running the vcpu
+- on preemption, we deschedule the VPE by making it invalid on
+  the RD
 
-BTW, v5.18 won't need this patch any more since we move
-blkcg_init_queue()/blkcg_exit_queue() into disk allocation/release
-handler, and patches have been in for-5.18/block.
+However, we are preemptible between the first two steps. If it so
+happens *and* that the RD was still scanning, we nonetheless write
+to the GICR_VPENDBASER register while Dirty is set, and bad things
+happen (we're in UNPRED land).
 
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: stable@vger.kernel.org
-Fixes: 8e141f9eb803 ("block: drain file system I/O on del_gendisk")
-Reported-by: syzbot+b42749a851a47a0f581b@syzkaller.appspotmail.com
-Signed-off-by: Ming Lei <ming.lei@redhat.com>
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220314043018.177141-1-ming.lei@redhat.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This affects both the 4.0 and 4.1 implementations.
+
+Make sure Dirty is cleared before performing the deschedule,
+meaning that its_clear_vpend_valid() becomes a sort of full VPE
+residency barrier.
+
+Reported-by: Jingyi Wang <wangjingyi11@huawei.com>
+Tested-by: Nianyao Tang <tangnianyao@huawei.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Fixes: 57e3cebd022f ("KVM: arm64: Delay the polling of the GICR_VPENDBASER.Dirty bit")
+Link: https://lore.kernel.org/r/4aae10ba-b39a-5f84-754b-69c2eb0a2c03@huawei.com
 ---
- block/blk-core.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/irqchip/irq-gic-v3-its.c | 28 +++++++++++++++++++---------
+ 1 file changed, 19 insertions(+), 9 deletions(-)
 
---- a/block/blk-core.c
-+++ b/block/blk-core.c
-@@ -51,6 +51,7 @@
- #include "blk-mq-sched.h"
- #include "blk-pm.h"
- #include "blk-throttle.h"
-+#include "blk-rq-qos.h"
+diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
+index 9e93ff2..c9b1df9 100644
+--- a/drivers/irqchip/irq-gic-v3-its.c
++++ b/drivers/irqchip/irq-gic-v3-its.c
+@@ -3011,18 +3011,12 @@ static int __init allocate_lpi_tables(void)
+ 	return 0;
+ }
  
- struct dentry *blk_debugfs_root;
+-static u64 its_clear_vpend_valid(void __iomem *vlpi_base, u64 clr, u64 set)
++static u64 read_vpend_dirty_clear(void __iomem *vlpi_base)
+ {
+ 	u32 count = 1000000;	/* 1s! */
+ 	bool clean;
+ 	u64 val;
  
-@@ -354,6 +355,9 @@ void blk_cleanup_queue(struct request_qu
- 	 */
- 	blk_freeze_queue(q);
+-	val = gicr_read_vpendbaser(vlpi_base + GICR_VPENDBASER);
+-	val &= ~GICR_VPENDBASER_Valid;
+-	val &= ~clr;
+-	val |= set;
+-	gicr_write_vpendbaser(val, vlpi_base + GICR_VPENDBASER);
+-
+ 	do {
+ 		val = gicr_read_vpendbaser(vlpi_base + GICR_VPENDBASER);
+ 		clean = !(val & GICR_VPENDBASER_Dirty);
+@@ -3033,10 +3027,26 @@ static u64 its_clear_vpend_valid(void __iomem *vlpi_base, u64 clr, u64 set)
+ 		}
+ 	} while (!clean && count);
  
-+	/* cleanup rq qos structures for queue without disk */
-+	rq_qos_exit(q);
+-	if (unlikely(val & GICR_VPENDBASER_Dirty)) {
++	if (unlikely(!clean))
+ 		pr_err_ratelimited("ITS virtual pending table not cleaning\n");
 +
- 	blk_queue_flag_set(QUEUE_FLAG_DEAD, q);
++	return val;
++}
++
++static u64 its_clear_vpend_valid(void __iomem *vlpi_base, u64 clr, u64 set)
++{
++	u64 val;
++
++	/* Make sure we wait until the RD is done with the initial scan */
++	val = read_vpend_dirty_clear(vlpi_base);
++	val &= ~GICR_VPENDBASER_Valid;
++	val &= ~clr;
++	val |= set;
++	gicr_write_vpendbaser(val, vlpi_base + GICR_VPENDBASER);
++
++	val = read_vpend_dirty_clear(vlpi_base);
++	if (unlikely(val & GICR_VPENDBASER_Dirty))
+ 		val |= GICR_VPENDBASER_PendingLast;
+-	}
  
- 	blk_sync_queue(q);
-
-
+ 	return val;
+ }
