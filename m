@@ -2,104 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8197C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:36:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36409C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:36:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350345AbiCUPh0 (ORCPT
+        id S1350356AbiCUPhc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 11:37:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50106 "EHLO
+        Mon, 21 Mar 2022 11:37:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345364AbiCUPhY (ORCPT
+        with ESMTP id S1345364AbiCUPha (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 11:37:24 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 381694B430;
-        Mon, 21 Mar 2022 08:35:59 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id q20so8794920wmq.1;
-        Mon, 21 Mar 2022 08:35:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=zeB3x3APdJn10Q/65pa9H4C06swtypRcP5k7mf1+6xM=;
-        b=UW2i+3qFiir2ZAB+TP2REhqERmIxVwvkZQx95jQmct4AMuf7P7E4uGp78abhHld5Ls
-         mrw9uo2WyxZiGDTiFruBC1l2CXYbRudjO7VFcFbMLcwkcqWGEWewNpXgBwoWDSRcfRNX
-         R2nwKGFb/6O+rLecLJW/lGA0ZdYyndDmU/uZa14/Tnzycz2TBcXqS/h/bK9hTMwQut7P
-         ryTujVsJUstA6eW3mwe8GjBReM5ZxtUyNzCPm7W4pD+/pJm0QKBQiKk9jjBs1wkIk892
-         HBr0NWev80E+WWTl6m6w44eHdjwiwI7MaBdXXrYmhVibfQ70uPwNBKJynh8j4eSd+z3j
-         Es4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zeB3x3APdJn10Q/65pa9H4C06swtypRcP5k7mf1+6xM=;
-        b=aLXcoLHe37iTZD/uvqWTRK0nCwofVB6RbK4em2A34N41WEqhkDB70/xYiT1A3rJ9o7
-         +TWnqPx26TKBmkx0geWQLJ2/LcLAmXvDczI3dyOJlIIOzu0e8dFZpaNZSjEa5LWawRBi
-         yDf8dAr7rFQ4FgOzVL55VtAfRMlitmChWrC+uEmNqGIscH94SmOGpVdw0GXky23munxt
-         zNyv0UEQN6xC1rbtVN3ryRYyJ2Hjyk7GQXhGK3VVPf/TTTKPDh7WXoKcam0Je8GtWEMU
-         H/ipefnH3474jP31bqrxeu+tdMQFqrHGka0e6pGfOu9KkzTSG7qXPeBtXebo2zGBqg6X
-         Zk0A==
-X-Gm-Message-State: AOAM533qd4e+E+bQVqDQ5c32109G9i8PpIym7s0Hd6gScD0ylBljifpz
-        pOpw65eMSOkQ0djReX7cIWcN4Lsg7P8=
-X-Google-Smtp-Source: ABdhPJwNo4n+gak51bhFbPpO1rwKapfoWzj27hvrH6TGolCr6Aa9tUINJNwvSciiDzE2HYt2Mu9e0w==
-X-Received: by 2002:a7b:cc12:0:b0:37c:1ae:100a with SMTP id f18-20020a7bcc12000000b0037c01ae100amr27344039wmh.54.1647876957649;
-        Mon, 21 Mar 2022 08:35:57 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
-        by smtp.gmail.com with ESMTPSA id g5-20020a5d64e5000000b00203914f5313sm13672805wri.114.2022.03.21.08.35.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 08:35:57 -0700 (PDT)
-Date:   Mon, 21 Mar 2022 16:06:38 +0100
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-clk@vger.kernel.org
-Subject: Re: [PATCH v4 15/18] dt-bindings: clock: Add L2 clocks to
- qcom,krait-cc Documentation
-Message-ID: <YjiUfln1MzDyTDHZ@Ansuel-xps.localdomain>
-References: <20220321144825.11736-1-ansuelsmth@gmail.com>
- <20220321144825.11736-16-ansuelsmth@gmail.com>
- <3ee94d1d-4e16-a744-c217-c4bc69ad96b4@kernel.org>
+        Mon, 21 Mar 2022 11:37:30 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 862FC52E39
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 08:36:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647876965; x=1679412965;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=45BRElyQlnzf/S18fYMTUOtYkpVmV2cKz2ZBPWFwUqY=;
+  b=LB7EHx8Q5mN+Handh3ajc973yWAzfNuk35FrmALCqI4MP2NQOEsW3uHz
+   tmgRprZjoIxyakRh2V95Eec8LHquR0MJZ/62UiqMuzm5PYWyhQpctq62w
+   8UvCy8HIuhHMxbQDbtp5Yfff5+u8729bCfv4RJwvQwbNQj02W4l+zbnJ3
+   oSY8AVVYFMg5YtaSOfTaFkeAvVNwztzobn2AXjsIyEkn7f+CrhOK5bZR0
+   C/urXOM2hTjAeOO5xTvw5SDxp9zBdmS89F66OaTqbrGZtmAmjim75jTCY
+   NRSwieb5o94fwRLOKmoRCTAh1RB8auTS9bQzVUdIHrFoAC9BRRJy5+iP/
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10292"; a="318291346"
+X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
+   d="scan'208";a="318291346"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 08:36:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
+   d="scan'208";a="648606062"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 21 Mar 2022 08:36:03 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nWK4g-000HwR-KK; Mon, 21 Mar 2022 15:36:02 +0000
+Date:   Mon, 21 Mar 2022 23:35:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Song Liu <song@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>
+Subject: [ammarfaizi2-block:bpf/bpf-next/master 251/258]
+ kernel/bpf/core.c:847:9: error: use of undeclared identifier 'PMD_SIZE'
+Message-ID: <202203212309.ifp4edvz-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3ee94d1d-4e16-a744-c217-c4bc69ad96b4@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 04:33:02PM +0100, Krzysztof Kozlowski wrote:
-> On 21/03/2022 15:48, Ansuel Smith wrote:
-> > Krait-cc qcom driver provide also L2 clocks and require the acpu_l2_aux
-> > and the hfpll_l2 clock to be provided. Add these missing clocks to the
-> > Documentation.
-> > 
-> 
-> Thanks. It would be also nice to see here short sentence about expected
-> impact, e.g. there are no in-tree DTSes which would be affected, no out
-> of tree known users etc.
-> 
-> Because basically with this requirement you change the ABI, so you might
-> break some users.
-> 
-> I will leave it to platform maintainers to decide whether it is accepted
-> or not.
-> 
-> 
-> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
-> 
-> 
-> Best regards,
-> Krzysztof
+tree:   https://github.com/ammarfaizi2/linux-block bpf/bpf-next/master
+head:   7ada3787e91c89b0aa7abf47682e8e587b855c13
+commit: ef078600eec20f20eb7833cf597d4a5edf2953c1 [251/258] bpf: Select proper size for bpf_prog_pack
+config: arm-randconfig-c002-20220321 (https://download.01.org/0day-ci/archive/20220321/202203212309.ifp4edvz-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 85e9b2687a13d1908aa86d1b89c5ce398a06cd39)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://github.com/ammarfaizi2/linux-block/commit/ef078600eec20f20eb7833cf597d4a5edf2953c1
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block bpf/bpf-next/master
+        git checkout ef078600eec20f20eb7833cf597d4a5edf2953c1
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
 
-In the driver I keep support for both and also I tested the changes with
-the old wrong implementation. Both works so we shouldn't have any
-regression.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> kernel/bpf/core.c:847:9: error: use of undeclared identifier 'PMD_SIZE'
+           size = PMD_SIZE * num_online_nodes();
+                  ^
+   kernel/bpf/core.c:1629:12: warning: no previous prototype for function 'bpf_probe_read_kernel' [-Wmissing-prototypes]
+   u64 __weak bpf_probe_read_kernel(void *dst, u32 size, const void *unsafe_ptr)
+              ^
+   kernel/bpf/core.c:1629:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   u64 __weak bpf_probe_read_kernel(void *dst, u32 size, const void *unsafe_ptr)
+   ^
+   static 
+   1 warning and 1 error generated.
+
+
+vim +/PMD_SIZE +847 kernel/bpf/core.c
+
+   841	
+   842	static size_t select_bpf_prog_pack_size(void)
+   843	{
+   844		size_t size;
+   845		void *ptr;
+   846	
+ > 847		size = PMD_SIZE * num_online_nodes();
+   848		ptr = module_alloc(size);
+   849	
+   850		/* Test whether we can get huge pages. If not just use PAGE_SIZE
+   851		 * packs.
+   852		 */
+   853		if (!ptr || !is_vm_area_hugepages(ptr))
+   854			size = PAGE_SIZE;
+   855	
+   856		vfree(ptr);
+   857		return size;
+   858	}
+   859	
 
 -- 
-	Ansuel
+0-DAY CI Kernel Test Service
+https://01.org/lkp
