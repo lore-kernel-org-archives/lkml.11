@@ -2,29 +2,29 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 488A3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 17:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D91EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 17:33:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348802AbiCURfJ (ORCPT
+        id S1349212AbiCURfN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 13:35:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34850 "EHLO
+        Mon, 21 Mar 2022 13:35:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348534AbiCURe5 (ORCPT
+        with ESMTP id S1348662AbiCURe5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 13:34:57 -0400
 Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C1F2566617
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C17FD6623B
         for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 10:33:30 -0700 (PDT)
 Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 22LHXNrS007571;
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 22LHXNTJ007570;
         Mon, 21 Mar 2022 18:33:23 +0100
 From:   Willy Tarreau <w@1wt.eu>
 To:     "Paul E . McKenney" <paulmck@kernel.org>
 Cc:     linux-kernel@vger.kernel.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Subject: [PATCH 2/8] tools/nolibc/stdlib: add a simple getenv() implementation
-Date:   Mon, 21 Mar 2022 18:33:08 +0100
-Message-Id: <20220321173314.7519-3-w@1wt.eu>
+Subject: [PATCH 1/8] tools/nolibc/stdio: make printf(%s) accept NULL
+Date:   Mon, 21 Mar 2022 18:33:07 +0100
+Message-Id: <20220321173314.7519-2-w@1wt.eu>
 X-Mailer: git-send-email 2.17.5
 In-Reply-To: <20220321173314.7519-1-w@1wt.eu>
 References: <20220321173314.7519-1-w@1wt.eu>
@@ -32,48 +32,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This implementation relies on an extern definition of the environ
-variable, that the caller must declare and initialize from envp.
+It's often convenient to support this, especially in test programs where
+a NULL may correspond to an allocation error or a non-existing value.
+Let's make printf("%s") support being passed a NULL. In this case it
+prints "(null)" like glibc's printf().
 
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 ---
- tools/include/nolibc/stdlib.h | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ tools/include/nolibc/stdio.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/include/nolibc/stdlib.h b/tools/include/nolibc/stdlib.h
-index 733105c574ee..aca8616335e3 100644
---- a/tools/include/nolibc/stdlib.h
-+++ b/tools/include/nolibc/stdlib.h
-@@ -60,6 +60,29 @@ int atoi(const char *s)
- 	return atol(s);
- }
- 
-+/* Tries to find the environment variable named <name> in the environment array
-+ * pointed to by global variable "environ" which must be declared as a char **,
-+ * and must be terminated by a NULL (it is recommended to set this variable to
-+ * the "envp" argument of main()). If the requested environment variable exists
-+ * its value is returned otherwise NULL is returned.
-+ */
-+static __attribute__((unused))
-+char *getenv(const char *name)
-+{
-+	extern char **environ;
-+	int idx, i;
-+
-+	if (environ) {
-+		for (idx = 0; environ[idx]; idx++) {
-+			for (i = 0; name[i] && name[i] == environ[idx][i];)
-+				i++;
-+			if (!name[i] && environ[idx][i] == '=')
-+				return &environ[idx][i+1];
-+		}
-+	}
-+	return NULL;
-+}
-+
- /* Converts the unsigned long integer <in> to its hex representation into
-  * buffer <buffer>, which must be long enough to store the number and the
-  * trailing zero (17 bytes for "ffffffffffffffff" or 9 for "ffffffff"). The
+diff --git a/tools/include/nolibc/stdio.h b/tools/include/nolibc/stdio.h
+index cb4d3ab3a565..559ebe052a75 100644
+--- a/tools/include/nolibc/stdio.h
++++ b/tools/include/nolibc/stdio.h
+@@ -220,6 +220,8 @@ int vfprintf(FILE *stream, const char *fmt, va_list args)
+ 			}
+ 			else if (c == 's') {
+ 				outstr = va_arg(args, char *);
++				if (!outstr)
++					outstr="(null)";
+ 			}
+ 			else if (c == '%') {
+ 				/* queue it verbatim */
 -- 
 2.35.1
 
