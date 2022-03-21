@@ -2,184 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE6FFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 18:29:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27379C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 18:30:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352177AbiCUSaz (ORCPT
+        id S1352187AbiCUSbh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 14:30:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33252 "EHLO
+        Mon, 21 Mar 2022 14:31:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352175AbiCUSav (ORCPT
+        with ESMTP id S1352180AbiCUSbe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 14:30:51 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ABB02CE1B
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 11:29:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647887365; x=1679423365;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=rONq22mMYd2BOfwVn3Vvkvv6jVlRMLok2GoRj1UqipM=;
-  b=FPs5gV/9CPhAhCroXh0JbsqYkYGmswSbj1jP04iOW+duexDyg151zekN
-   9IH8Lk4Kpu8YRvRmDxE7CywXeGKcP7mKeDqCf1d4J0lEe8AIR8ruhhgtf
-   PjXFAD8oG7Gx7GesKv1CjOlFyValwsOl+W4qGkIkW8pHXPULzf812JHDd
-   /JkUpnAe0p98e1l/mJCZycuVwSzcLSMzdnU3gc3PinHRVJEfGZGtURDLJ
-   xp9TrnSnts+NNv+FC2DbRWPG1PKsEFUP26xR3/Ji1W6YVYvsY1xaAQp62
-   wnkhmo94xYZdIGbOzvA4HAkyvqFJWMkLuNsVikqurV+V6pSn/WQzIcu9A
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="255185776"
-X-IronPort-AV: E=Sophos;i="5.90,199,1643702400"; 
-   d="scan'208";a="255185776"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 11:29:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,199,1643702400"; 
-   d="scan'208";a="648665264"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 21 Mar 2022 11:29:22 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nWMmQ-000I4F-6N; Mon, 21 Mar 2022 18:29:22 +0000
-Date:   Tue, 22 Mar 2022 02:29:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org,
-        mhocko@suse.com
-Cc:     kbuild-all@lists.01.org, kosaki.motohiro@jp.fujitsu.com,
-        mgorman@suse.de, linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        linmiaohe@huawei.com
-Subject: Re: [PATCH v2] mm/mempolicy: fix mpol_new leak in
- shared_policy_replace
-Message-ID: <202203220201.toJrpBkF-lkp@intel.com>
-References: <20220322083456.16563-1-linmiaohe@huawei.com>
+        Mon, 21 Mar 2022 14:31:34 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C83E6A03D;
+        Mon, 21 Mar 2022 11:30:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=MIME-Version:Content-Type:References:
+        In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=8+lxSDnsIF5KpnTgONfF3curH77bYqh75I5A5vIrF5w=; b=Cyb1auS1pCoCB5SSSrEqLag3W0
+        vqWmmwL9t0Wsu8VBjWdN67XBSf+R8fTCO3DtpDZNmPuZCBUdK9BzgmKKjyu7MohyuDRyCPymEYf3d
+        XruP3ni/aPNybZmaiY0gCvgXJy14S8jlgzPg0zk5Y8StZuQdczA819LrVa8txhPKN3j+LExKEC7J/
+        rhcNWGEkisJ4ypjG110PxI5cyqq9qIIS0sDzfqLUBNe/+kc06IsY+Sg81XNkjh6TlP47EM1zXlPQL
+        ei8Vy/FBvXdOhSxfct2QZSEkhltlf2wIiY9zEA4KLyvR2mNVV5vPdPyhOTjG1MesQVMKoumjXnJU5
+        etchCHOA==;
+Received: from [2001:8b0:10b:1:4a2a:e3ff:fe14:8625] (helo=u3832b3a9db3152.ant.amazon.com)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nWMml-003CTQ-AH; Mon, 21 Mar 2022 18:29:43 +0000
+Message-ID: <f595c9c2da606b799f3a8ded9807cb6d892156c5.camel@infradead.org>
+Subject: Re: [PATCH v1 0/1] Explain panic() calls for keyring initialization
+From:   David Woodhouse <dwmw2@infradead.org>
+To:     =?ISO-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Cc:     David Howells <dhowells@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Snowberg <eric.snowberg@oracle.com>,
+        Paul Moore <paul@paul-moore.com>, keyrings@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Mon, 21 Mar 2022 18:29:40 +0000
+In-Reply-To: <20220321174548.510516-1-mic@digikod.net>
+References: <20220321174548.510516-1-mic@digikod.net>
+Content-Type: multipart/signed; micalg="sha-256"; protocol="application/pkcs7-signature";
+        boundary="=-OSa0rOu8WwKRPvC7+ge0"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220322083456.16563-1-linmiaohe@huawei.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by desiato.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Miaohe,
 
-Thank you for the patch! Yet something to improve:
+--=-OSa0rOu8WwKRPvC7+ge0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-[auto build test ERROR on linux/master]
-[also build test ERROR on linus/master v5.17]
-[cannot apply to hnaz-mm/master next-20220321]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+On Mon, 2022-03-21 at 18:45 +0100, Micka=C3=ABl Sala=C3=BCn wrote:
+>=20
+> Micka=C3=ABl Sala=C3=BCn (1):
+>   certs: Explain the rational to call panic()
 
-url:    https://github.com/0day-ci/linux/commits/Miaohe-Lin/mm-mempolicy-fix-mpol_new-leak-in-shared_policy_replace/20220321-200100
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 2c271fe77d52a0555161926c232cd5bc07178b39
-config: ia64-defconfig (https://download.01.org/0day-ci/archive/20220322/202203220201.toJrpBkF-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/9a91a8a7964a3af0b60f08dc38b7815e5118206a
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Miaohe-Lin/mm-mempolicy-fix-mpol_new-leak-in-shared_policy_replace/20220321-200100
-        git checkout 9a91a8a7964a3af0b60f08dc38b7815e5118206a
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=ia64 SHELL=/bin/bash
+Nit: "rationale". Even in Simplified English, I believe "rational" is a
+completely different word.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+>  certs/blacklist.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
 
-All errors (new ones prefixed by >>):
-
-   mm/mempolicy.c: In function 'shared_policy_replace':
->> mm/mempolicy.c:2745:22: error: passing argument 1 of 'refcount_set' from incompatible pointer type [-Werror=incompatible-pointer-types]
-    2745 |         refcount_set(&mpol_new->refcnt, 1);
-         |                      ^~~~~~~~~~~~~~~~~
-         |                      |
-         |                      atomic_t *
-   In file included from include/linux/pid.h:7,
-                    from include/linux/sched.h:14,
-                    from include/linux/mempolicy.h:9,
-                    from mm/mempolicy.c:73:
-   include/linux/refcount.h:134:45: note: expected 'refcount_t *' {aka 'struct refcount_struct *'} but argument is of type 'atomic_t *'
-     134 | static inline void refcount_set(refcount_t *r, int n)
-         |                                 ~~~~~~~~~~~~^
-   cc1: some warnings being treated as errors
+Also, isn't it about time we changed this to call it a denylist?=20
 
 
-vim +/refcount_set +2745 mm/mempolicy.c
+--=-OSa0rOu8WwKRPvC7+ge0
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
 
-  2681	
-  2682	/* Replace a policy range. */
-  2683	static int shared_policy_replace(struct shared_policy *sp, unsigned long start,
-  2684					 unsigned long end, struct sp_node *new)
-  2685	{
-  2686		struct sp_node *n;
-  2687		struct sp_node *n_new = NULL;
-  2688		struct mempolicy *mpol_new = NULL;
-  2689		int ret = 0;
-  2690	
-  2691	restart:
-  2692		write_lock(&sp->lock);
-  2693		n = sp_lookup(sp, start, end);
-  2694		/* Take care of old policies in the same range. */
-  2695		while (n && n->start < end) {
-  2696			struct rb_node *next = rb_next(&n->nd);
-  2697			if (n->start >= start) {
-  2698				if (n->end <= end)
-  2699					sp_delete(sp, n);
-  2700				else
-  2701					n->start = end;
-  2702			} else {
-  2703				/* Old policy spanning whole new range. */
-  2704				if (n->end > end) {
-  2705					if (!n_new)
-  2706						goto alloc_new;
-  2707	
-  2708					*mpol_new = *n->policy;
-  2709					atomic_set(&mpol_new->refcnt, 1);
-  2710					sp_node_init(n_new, end, n->end, mpol_new);
-  2711					n->end = start;
-  2712					sp_insert(sp, n_new);
-  2713					n_new = NULL;
-  2714					mpol_new = NULL;
-  2715					break;
-  2716				} else
-  2717					n->end = start;
-  2718			}
-  2719			if (!next)
-  2720				break;
-  2721			n = rb_entry(next, struct sp_node, nd);
-  2722		}
-  2723		if (new)
-  2724			sp_insert(sp, new);
-  2725		write_unlock(&sp->lock);
-  2726		ret = 0;
-  2727	
-  2728	err_out:
-  2729		if (mpol_new)
-  2730			mpol_put(mpol_new);
-  2731		if (n_new)
-  2732			kmem_cache_free(sn_cache, n_new);
-  2733	
-  2734		return ret;
-  2735	
-  2736	alloc_new:
-  2737		write_unlock(&sp->lock);
-  2738		ret = -ENOMEM;
-  2739		n_new = kmem_cache_alloc(sn_cache, GFP_KERNEL);
-  2740		if (!n_new)
-  2741			goto err_out;
-  2742		mpol_new = kmem_cache_alloc(policy_cache, GFP_KERNEL);
-  2743		if (!mpol_new)
-  2744			goto err_out;
-> 2745		refcount_set(&mpol_new->refcnt, 1);
-  2746		goto restart;
-  2747	}
-  2748	
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCEkQw
+ggYQMIID+KADAgECAhBNlCwQ1DvglAnFgS06KwZPMA0GCSqGSIb3DQEBDAUAMIGIMQswCQYDVQQG
+EwJVUzETMBEGA1UECBMKTmV3IEplcnNleTEUMBIGA1UEBxMLSmVyc2V5IENpdHkxHjAcBgNVBAoT
+FVRoZSBVU0VSVFJVU1QgTmV0d29yazEuMCwGA1UEAxMlVVNFUlRydXN0IFJTQSBDZXJ0aWZpY2F0
+aW9uIEF1dGhvcml0eTAeFw0xODExMDIwMDAwMDBaFw0zMDEyMzEyMzU5NTlaMIGWMQswCQYDVQQG
+EwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYD
+VQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50
+aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEAyjztlApB/975Rrno1jvm2pK/KxBOqhq8gr2+JhwpKirSzZxQgT9tlC7zl6hn1fXjSo5MqXUf
+ItMltrMaXqcESJuK8dtK56NCSrq4iDKaKq9NxOXFmqXX2zN8HHGjQ2b2Xv0v1L5Nk1MQPKA19xeW
+QcpGEGFUUd0kN+oHox+L9aV1rjfNiCj3bJk6kJaOPabPi2503nn/ITX5e8WfPnGw4VuZ79Khj1YB
+rf24k5Ee1sLTHsLtpiK9OjG4iQRBdq6Z/TlVx/hGAez5h36bBJMxqdHLpdwIUkTqT8se3ed0PewD
+ch/8kHPo5fZl5u1B0ecpq/sDN/5sCG52Ds+QU5O5EwIDAQABo4IBZDCCAWAwHwYDVR0jBBgwFoAU
+U3m/WqorSs9UgOHYm8Cd8rIDZsswHQYDVR0OBBYEFAnA8vwL2pTbX/4r36iZQs/J4K0AMA4GA1Ud
+DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEF
+BQcDBDARBgNVHSAECjAIMAYGBFUdIAAwUAYDVR0fBEkwRzBFoEOgQYY/aHR0cDovL2NybC51c2Vy
+dHJ1c3QuY29tL1VTRVJUcnVzdFJTQUNlcnRpZmljYXRpb25BdXRob3JpdHkuY3JsMHYGCCsGAQUF
+BwEBBGowaDA/BggrBgEFBQcwAoYzaHR0cDovL2NydC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJT
+QUFkZFRydXN0Q0EuY3J0MCUGCCsGAQUFBzABhhlodHRwOi8vb2NzcC51c2VydHJ1c3QuY29tMA0G
+CSqGSIb3DQEBDAUAA4ICAQBBRHUAqznCFfXejpVtMnFojADdF9d6HBA4kMjjsb0XMZHztuOCtKF+
+xswhh2GqkW5JQrM8zVlU+A2VP72Ky2nlRA1GwmIPgou74TZ/XTarHG8zdMSgaDrkVYzz1g3nIVO9
+IHk96VwsacIvBF8JfqIs+8aWH2PfSUrNxP6Ys7U0sZYx4rXD6+cqFq/ZW5BUfClN/rhk2ddQXyn7
+kkmka2RQb9d90nmNHdgKrwfQ49mQ2hWQNDkJJIXwKjYA6VUR/fZUFeCUisdDe/0ABLTI+jheXUV1
+eoYV7lNwNBKpeHdNuO6Aacb533JlfeUHxvBz9OfYWUiXu09sMAviM11Q0DuMZ5760CdO2VnpsXP4
+KxaYIhvqPqUMWqRdWyn7crItNkZeroXaecG03i3mM7dkiPaCkgocBg0EBYsbZDZ8bsG3a08LwEsL
+1Ygz3SBsyECa0waq4hOf/Z85F2w2ZpXfP+w8q4ifwO90SGZZV+HR/Jh6rEaVPDRF/CEGVqR1hiuQ
+OZ1YL5ezMTX0ZSLwrymUE0pwi/KDaiYB15uswgeIAcA6JzPFf9pLkAFFWs1QNyN++niFhsM47qod
+x/PL+5jR87myx5uYdBEQkkDc+lKB1Wct6ucXqm2EmsaQ0M95QjTmy+rDWjkDYdw3Ms6mSWE3Bn7i
+5ZgtwCLXgAIe5W8mybM2JzCCBhQwggT8oAMCAQICEQDGvhmWZ0DEAx0oURL6O6l+MA0GCSqGSIb3
+DQEBCwUAMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYD
+VQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28g
+UlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTIyMDEwNzAw
+MDAwMFoXDTI1MDEwNjIzNTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9y
+ZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALQ3GpC2bomUqk+91wLYBzDMcCj5C9m6
+oZaHwvmIdXftOgTbCJXADo6G9T7BBAebw2JV38EINgKpy/ZHh7htyAkWYVoFsFPrwHounto8xTsy
+SSePMiPlmIdQ10BcVSXMUJ3Juu16GlWOnAMJY2oYfEzmE7uT9YgcBqKCo65pTFmOnR/VVbjJk4K2
+xE34GC2nAdUQkPFuyaFisicc6HRMOYXPuF0DuwITEKnjxgNjP+qDrh0db7PAjO1D4d5ftfrsf+kd
+RR4gKVGSk8Tz2WwvtLAroJM4nXjNPIBJNT4w/FWWc/5qPHJy2U+eITZ5LLE5s45mX2oPFknWqxBo
+bQZ8a9dsZ3dSPZBvE9ZrmtFLrVrN4eo1jsXgAp1+p7bkfqd3BgBEmfsYWlBXO8rVXfvPgLs32VdV
+NZxb/CDWPqBsiYv0Hv3HPsz07j5b+/cVoWqyHDKzkaVbxfq/7auNVRmPB3v5SWEsH8xi4Bez2V9U
+KxfYCnqsjp8RaC2/khxKt0A552Eaxnz/4ly/2C7wkwTQnBmdlFYhAflWKQ03Ufiu8t3iBE3VJbc2
+5oMrglj7TRZrmKq3CkbFnX0fyulB+kHimrt6PIWn7kgyl9aelIl6vtbhMA+l0nfrsORMa4kobqQ5
+C5rveVgmcIad67EDa+UqEKy/GltUwlSh6xy+TrK1tzDvAgMBAAGjggHMMIIByDAfBgNVHSMEGDAW
+gBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUzMeDMcimo0oz8o1R1Nver3ZVpSkwDgYD
+VR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYwFAYIKwYBBQUHAwQGCCsGAQUFBwMC
+MEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYBBQUHAgEWF2h0dHBzOi8vc2VjdGln
+by5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9jcmwuc2VjdGlnby5jb20vU2VjdGln
+b1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcmwwgYoGCCsGAQUFBwEB
+BH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdvLmNvbS9TZWN0aWdvUlNBQ2xpZW50
+QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAjBggrBgEFBQcwAYYXaHR0cDovL29j
+c3Auc2VjdGlnby5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5mcmFkZWFkLm9yZzANBgkqhkiG9w0B
+AQsFAAOCAQEAyW6MUir5dm495teKqAQjDJwuFCi35h4xgnQvQ/fzPXmtR9t54rpmI2TfyvcKgOXp
+qa7BGXNFfh1JsqexVkIqZP9uWB2J+uVMD+XZEs/KYNNX2PvIlSPrzIB4Z2wyIGQpaPLlYflrrVFK
+v9CjT2zdqvy2maK7HKOQRt3BiJbVG5lRiwbbygldcALEV9ChWFfgSXvrWDZspnU3Gjw/rMHrGnql
+Htlyebp3pf3fSS9kzQ1FVtVIDrL6eqhTwJxe+pXSMMqFiN0whpBtXdyDjzBtQTaZJ7zTT/vlehc/
+tDuqZwGHm/YJy883Ll+GP3NvOkgaRGWEuYWJJ6hFCkXYjyR9IzCCBhQwggT8oAMCAQICEQDGvhmW
+Z0DEAx0oURL6O6l+MA0GCSqGSIb3DQEBCwUAMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3Jl
+YXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0
+ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJl
+IEVtYWlsIENBMB4XDTIyMDEwNzAwMDAwMFoXDTI1MDEwNjIzNTk1OVowJDEiMCAGCSqGSIb3DQEJ
+ARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALQ3
+GpC2bomUqk+91wLYBzDMcCj5C9m6oZaHwvmIdXftOgTbCJXADo6G9T7BBAebw2JV38EINgKpy/ZH
+h7htyAkWYVoFsFPrwHounto8xTsySSePMiPlmIdQ10BcVSXMUJ3Juu16GlWOnAMJY2oYfEzmE7uT
+9YgcBqKCo65pTFmOnR/VVbjJk4K2xE34GC2nAdUQkPFuyaFisicc6HRMOYXPuF0DuwITEKnjxgNj
+P+qDrh0db7PAjO1D4d5ftfrsf+kdRR4gKVGSk8Tz2WwvtLAroJM4nXjNPIBJNT4w/FWWc/5qPHJy
+2U+eITZ5LLE5s45mX2oPFknWqxBobQZ8a9dsZ3dSPZBvE9ZrmtFLrVrN4eo1jsXgAp1+p7bkfqd3
+BgBEmfsYWlBXO8rVXfvPgLs32VdVNZxb/CDWPqBsiYv0Hv3HPsz07j5b+/cVoWqyHDKzkaVbxfq/
+7auNVRmPB3v5SWEsH8xi4Bez2V9UKxfYCnqsjp8RaC2/khxKt0A552Eaxnz/4ly/2C7wkwTQnBmd
+lFYhAflWKQ03Ufiu8t3iBE3VJbc25oMrglj7TRZrmKq3CkbFnX0fyulB+kHimrt6PIWn7kgyl9ae
+lIl6vtbhMA+l0nfrsORMa4kobqQ5C5rveVgmcIad67EDa+UqEKy/GltUwlSh6xy+TrK1tzDvAgMB
+AAGjggHMMIIByDAfBgNVHSMEGDAWgBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUzMeD
+Mcimo0oz8o1R1Nver3ZVpSkwDgYDVR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYw
+FAYIKwYBBQUHAwQGCCsGAQUFBwMCMEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYB
+BQUHAgEWF2h0dHBzOi8vc2VjdGlnby5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9j
+cmwuc2VjdGlnby5jb20vU2VjdGlnb1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1h
+aWxDQS5jcmwwgYoGCCsGAQUFBwEBBH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdv
+LmNvbS9TZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAj
+BggrBgEFBQcwAYYXaHR0cDovL29jc3Auc2VjdGlnby5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
+cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAyW6MUir5dm495teKqAQjDJwuFCi35h4xgnQv
+Q/fzPXmtR9t54rpmI2TfyvcKgOXpqa7BGXNFfh1JsqexVkIqZP9uWB2J+uVMD+XZEs/KYNNX2PvI
+lSPrzIB4Z2wyIGQpaPLlYflrrVFKv9CjT2zdqvy2maK7HKOQRt3BiJbVG5lRiwbbygldcALEV9Ch
+WFfgSXvrWDZspnU3Gjw/rMHrGnqlHtlyebp3pf3fSS9kzQ1FVtVIDrL6eqhTwJxe+pXSMMqFiN0w
+hpBtXdyDjzBtQTaZJ7zTT/vlehc/tDuqZwGHm/YJy883Ll+GP3NvOkgaRGWEuYWJJ6hFCkXYjyR9
+IzGCBMcwggTDAgEBMIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVz
+dGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMT
+NVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA
+xr4ZlmdAxAMdKFES+jupfjANBglghkgBZQMEAgEFAKCCAeswGAYJKoZIhvcNAQkDMQsGCSqGSIb3
+DQEHATAcBgkqhkiG9w0BCQUxDxcNMjIwMzIxMTgyOTQwWjAvBgkqhkiG9w0BCQQxIgQgLB4tCBmn
+LIBb/OEtckgWIWl17eO5M7+Y97EGtKvbMhkwgb0GCSsGAQQBgjcQBDGBrzCBrDCBljELMAkGA1UE
+BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYG
+A1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVTZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVu
+dGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAMa+GZZnQMQDHShREvo7qX4wgb8GCyqGSIb3
+DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVy
+MRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNl
+Y3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAxr4Z
+lmdAxAMdKFES+jupfjANBgkqhkiG9w0BAQEFAASCAgA44uLzTBdUMBxPmoa7vrVHpGyBCi0GkEPB
+MvPoxC5ZXBfNCDDuyKYTC1+NtS8g0DojEah10mWoQBaIMt9pLWmR0RcurLDMBiBKBYupUyewifvQ
+bPYIuaPjrARJBm3iWRIxx4k/r3mL64uDShY0uABHPOui/dM3O5TPI3vntQ+SlNSvS7a1DtmwNedK
+70baQPi8/qYTOWyKXVe+lFpGgNfr6uF886+KY7229H7ESb4dc9tY0afjEddbdc02if3RWxKXKDNz
+u60rsCRRj8OlI60NEOnHqUK7Gs1UdGpwnbKZiOLEFh0peUXDSazn0QHlxu21zpTtJHmrkn9JcklZ
+yeW7MxKLvq/IBr7L+NH/Ks9OS7si8LYCLYAj8Bg/LBVBdhobAisEHSnHyBmullmI12zLxkWkUE+G
+xo/uFXYnjjL9PamQy68DBnBiIfFRAgjG8xMFZN0ldMnGIgbGHjOIsAmRpy+4MAjwTUk539Sqv4Lw
+mm1XMrjNs7Q9csqFgGV+LN2j3aYcVlhrJBgC4YNE2/kgGp+WFBkMgi9r8VRgjt1U6uN3tHefpov2
+l9n0ns6k3rh2SmX8SZg0V5E26VJBr6o5XgdjvI7T6slgnBpxVGqE+K6If9KSiGEYTC7bya2s09cR
+yc0a98WKTPS8Lg/GBG2gQbOdg5zqae0XVPkfhPhqRQAAAAAAAA==
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+
+--=-OSa0rOu8WwKRPvC7+ge0--
+
