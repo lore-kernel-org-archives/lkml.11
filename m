@@ -2,83 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93246C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4445C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350203AbiCUOJ1 (ORCPT
+        id S1350259AbiCUOJ3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:09:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37904 "EHLO
+        Mon, 21 Mar 2022 10:09:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349021AbiCUODP (ORCPT
+        with ESMTP id S1349070AbiCUODS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:03:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F55B3FDB9;
-        Mon, 21 Mar 2022 07:00:13 -0700 (PDT)
+        Mon, 21 Mar 2022 10:03:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694081770AB;
+        Mon, 21 Mar 2022 07:00:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2481B611D5;
-        Mon, 21 Mar 2022 14:00:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 765B9C340ED;
-        Mon, 21 Mar 2022 14:00:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647871211;
-        bh=bVBvrrpl/LVzJIr8s5SQNGr1DSNPmf7L8H5CSTrC3ys=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=sTgD81bnayUrxx68z75eNF9OP+2f7A4tthAj2k6fu6sodlCoVg+IgBtcOwQ3kc2X8
-         ppsxhBBlWQ2VYIAO1Rj1LPMxzltd+N7lCdbkAbF+7V28FNSwJYAT/67qV4bp3UMbIR
-         eZvYJ3jn+2wqKjnz6kwRPoI7Q+FNjRFM3M800N0H9D/E7ZIVj00bY1xp2hVv2ve+AJ
-         bPfuP+QZq7nJmGPcWlZ1p2totMSaP41maS40gWt2Weqj2bwxz/Is9XWFDsHwZPOfYF
-         UIRtHN032YV3yrgJoqbzGs7BdgTRPpN/df1X9mQErMHLazsKS6LatT+fuxYi1oUQg9
-         t+pRCL2HD41Fg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4C3A0E7BB0B;
-        Mon, 21 Mar 2022 14:00:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8AE53B816CE;
+        Mon, 21 Mar 2022 14:00:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C335CC340F2;
+        Mon, 21 Mar 2022 14:00:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647871215;
+        bh=ZLNrGtC/1yYtaIEPvn2dN37TDlIhPm1AaMyY5zLM+o8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=L7NgKpvKl3q9avqaRcNYT4cF5OVB2Njhg6V/6NFTNzCmV8N6nR5CYGg4zR8tn0oNs
+         0XzNqdhFeKKiqsaF/PAz/FpIqS9CBgE82la5PICagMZnq4pyhnkb9hIzm7IT/tOxbJ
+         vyFC+1NMT93lI+G79RQCu1fBChobyOyg1ilnteYk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
+        Marek Vasut <marex@denx.de>,
+        Boris Brezillon <boris.brezillon@collabora.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Max Krummenacher <max.krummenacher@toradex.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 15/32] drm/imx: parallel-display: Remove bus flags check in imx_pd_bridge_atomic_check()
+Date:   Mon, 21 Mar 2022 14:52:51 +0100
+Message-Id: <20220321133221.004491467@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220321133220.559554263@linuxfoundation.org>
+References: <20220321133220.559554263@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next 0/2] bpf: Fix kprobe_multi return probe backtrace
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164787121130.8124.16949440007845247535.git-patchwork-notify@kernel.org>
-Date:   Mon, 21 Mar 2022 14:00:11 +0000
-References: <20220321070113.1449167-1-jolsa@kernel.org>
-In-Reply-To: <20220321070113.1449167-1-jolsa@kernel.org>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        mhiramat@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kafai@fb.com, songliubraving@fb.com,
-        yhs@fb.com, john.fastabend@gmail.com, kpsingh@chromium.org,
-        rostedt@goodmis.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+From: Christoph Niedermaier <cniedermaier@dh-electronics.com>
 
-This series was applied to bpf/bpf-next.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
+[ Upstream commit 6061806a863e8b65b109eb06a280041cc7525442 ]
 
-On Mon, 21 Mar 2022 08:01:11 +0100 you wrote:
-> hi,
-> Andrii reported that backtraces from kprobe_multi program attached
-> as return probes are not complete and showing just initial entry [1].
-> 
-> Sending the fix together with bpf_get_func_ip inline revert, which is
-> no longer suitable.
-> 
-> [...]
+If display timings were read from the devicetree using
+of_get_display_timing() and pixelclk-active is defined
+there, the flag DISPLAY_FLAGS_SYNC_POSEDGE/NEGEDGE is
+automatically generated. Through the function
+drm_bus_flags_from_videomode() e.g. called in the
+panel-simple driver this flag got into the bus flags,
+but then in imx_pd_bridge_atomic_check() the bus flag
+check failed and will not initialize the display. The
+original commit fe141cedc433 does not explain why this
+check was introduced. So remove the bus flags check,
+because it stops the initialization of the display with
+valid bus flags.
 
-Here is the summary with links:
-  - [bpf-next,1/2] Revert "bpf: Add support to inline bpf_get_func_ip helper on x86"
-    https://git.kernel.org/bpf/bpf-next/c/f705ec764b34
-  - [bpf-next,2/2] bpf: Fix kprobe_multi return probe backtrace
-    https://git.kernel.org/bpf/bpf-next/c/f70986902c86
+Fixes: fe141cedc433 ("drm/imx: pd: Use bus format/flags provided by the bridge when available")
+Signed-off-by: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+Cc: Marek Vasut <marex@denx.de>
+Cc: Boris Brezillon <boris.brezillon@collabora.com>
+Cc: Philipp Zabel <p.zabel@pengutronix.de>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+Cc: linux-arm-kernel@lists.infradead.org
+To: dri-devel@lists.freedesktop.org
+Tested-by: Max Krummenacher <max.krummenacher@toradex.com>
+Acked-by: Boris Brezillon <boris.brezillon@collabora.com>
+Signed-off-by: Marek Vasut <marex@denx.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220201113643.4638-1-cniedermaier@dh-electronics.com
+Signed-off-by: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/imx/parallel-display.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-You are awesome, thank you!
+diff --git a/drivers/gpu/drm/imx/parallel-display.c b/drivers/gpu/drm/imx/parallel-display.c
+index a8aba0141ce7..06cb1a59b9bc 100644
+--- a/drivers/gpu/drm/imx/parallel-display.c
++++ b/drivers/gpu/drm/imx/parallel-display.c
+@@ -217,14 +217,6 @@ static int imx_pd_bridge_atomic_check(struct drm_bridge *bridge,
+ 	if (!imx_pd_format_supported(bus_fmt))
+ 		return -EINVAL;
+ 
+-	if (bus_flags &
+-	    ~(DRM_BUS_FLAG_DE_LOW | DRM_BUS_FLAG_DE_HIGH |
+-	      DRM_BUS_FLAG_PIXDATA_DRIVE_POSEDGE |
+-	      DRM_BUS_FLAG_PIXDATA_DRIVE_NEGEDGE)) {
+-		dev_warn(imxpd->dev, "invalid bus_flags (%x)\n", bus_flags);
+-		return -EINVAL;
+-	}
+-
+ 	bridge_state->output_bus_cfg.flags = bus_flags;
+ 	bridge_state->input_bus_cfg.flags = bus_flags;
+ 	imx_crtc_state->bus_flags = bus_flags;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+2.34.1
+
 
 
