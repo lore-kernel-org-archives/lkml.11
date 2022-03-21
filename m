@@ -2,106 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ACDCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:01:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03354C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:03:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347662AbiCUNCe (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 09:02:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47850 "EHLO
+        id S242815AbiCUNEe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 09:04:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347628AbiCUNCc (ORCPT
+        with ESMTP id S234229AbiCUNE2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:02:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DE4EE141D96
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 06:01:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647867666;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vyCwznJa6TjTPjpCrpE02a2kKUtp5ybHGb6C5NGiBxo=;
-        b=V6IT4pPwkYQCnodKXjGRo1f8SpHBU6jDdx3cQN94BHn6pIEdQFrxkt/Kb80QyZY+tq15Ml
-        w9AyMdkLJ7hKMHQUaplK1Mc0q291N2bPfUe2JuWyKsWExpdw7b+ntOx6PWKUuPphswvDa7
-        si+Iuff/f/eJawkdr5YFyAWOhldTtVk=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-348-khI6kUuVOWm_Iwiqva_VUg-1; Mon, 21 Mar 2022 09:01:02 -0400
-X-MC-Unique: khI6kUuVOWm_Iwiqva_VUg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 247721066559;
-        Mon, 21 Mar 2022 13:01:01 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4C2B240CF8FB;
-        Mon, 21 Mar 2022 13:01:00 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH 2/2] watch_queue: Actually free the watch
-From:   David Howells <dhowells@redhat.com>
-To:     torvalds@linux-foundation.org
-Cc:     dhowells@redhat.com, fmdefrancesco@gmail.com, jannh@google.com,
-        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Mon, 21 Mar 2022 13:00:59 +0000
-Message-ID: <164786765966.1025645.8928727872789382885.stgit@warthog.procyon.org.uk>
-In-Reply-To: <164786764630.1025645.12332376420230352947.stgit@warthog.procyon.org.uk>
-References: <164786764630.1025645.12332376420230352947.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/1.4
+        Mon, 21 Mar 2022 09:04:28 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4088B139
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 06:03:01 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id q5so3435752plg.3
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 06:03:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=r0+Od+n3mnWlR1TFnZchNIM/GdPKAtnY5SiiOvRmnTM=;
+        b=TCPJaBfk/04kAILw2uiGrNaftNH9rQ97oP9XPr+Tw3Np45GpB54yTeD1xVrqeZacs3
+         jiy3+GouTv3s3In9ka4KOR2pRXI17ndtyPqDGgIZ9zP+D5AMGAA2NPqGkFvQhIvE5rOK
+         NaGaHytUZ3RDlJuD14pxML2uO+2+zW5WLB0dkuGIfGTY3GIOOXq/ey4AsQ5JPbm1UG7M
+         J3s8GsvanGd943MBqM5TQZQaJtD9uoV1PaacM6A3eoIC0h0Mc5MERcvdqqcWg/HS6FdC
+         aec1GaumZX7AdaaJSV+oUn3zHAwgV4bgOWrDRjVdoU+nr9ZgA2twTijxwBqYPEGGi97q
+         KUJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=r0+Od+n3mnWlR1TFnZchNIM/GdPKAtnY5SiiOvRmnTM=;
+        b=dxRuchjHwa5grK9L6Tfp3Ve9vBTUNAKBGVehanRYmzPYAsecswZgxwfqs1PCkMAzg1
+         n2AVeeVQ9TP6uqTmO5F3H1nFMHmPdF6XUuZpJVw863ZBTuqyLN2VD+NpKVRk80MhM/QS
+         X3lDwCBmNrSlJmA+KFk+imwXYba8CxXRPL8llVW7k19heMRp3MGXL6FvEFYjo/izUfg1
+         BUPl7ekqBB+IhTvUPb418ATb0EzC3kwA3p58tPe7vFEdpsSy0KQuV26D9y6U/D4NaT1r
+         ltcUXodj2/MQE19S4an4I1azdVHcDI+rqWdRWcwsjO7wZaMzJ1TVfus1jJooKt7e8L4T
+         w/MA==
+X-Gm-Message-State: AOAM530Rm7eS4Ns8NQyMhbtc2RgDd3x3ERIeIsB6tFv4mhzdXiKQVxPp
+        s854qJHL3QQK/od4iHVkMOnAzDkqNko7M1F7eg==
+X-Google-Smtp-Source: ABdhPJzLokYAQATmpIhBzFgbYbD9l6L/7rTAW/yvbzvu2aqQnL7tbRXM0shHvgx/qEZKeovVUqevpxUyFPhc0O9ZglU=
+X-Received: by 2002:a17:90b:1803:b0:1c7:24c4:ab52 with SMTP id
+ lw3-20020a17090b180300b001c724c4ab52mr3894290pjb.240.1647867780606; Mon, 21
+ Mar 2022 06:03:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+References: <1646983382-30036-1-git-send-email-zheyuma97@gmail.com> <YjMSMIrbsVZjEw8W@phenom.ffwll.local>
+In-Reply-To: <YjMSMIrbsVZjEw8W@phenom.ffwll.local>
+From:   Zheyu Ma <zheyuma97@gmail.com>
+Date:   Mon, 21 Mar 2022 21:02:47 +0800
+Message-ID: <CAMhUBjkohp=-4YZ7x6Yyf4tQr_2zCoR+RVmEZPGLoXTEhNoPFA@mail.gmail.com>
+Subject: Re: [PATCH] drm: drm_bufs: Error out if 'dev->agp' is a null pointer
+To:     Zheyu Ma <zheyuma97@gmail.com>, maarten.lankhorst@linux.intel.com,
+        mripard@kernel.org, tzimmermann@suse.de, airlied@linux.ie,
+        dri-devel@lists.freedesktop.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Cc:     Daniel Vetter <daniel@ffwll.ch>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-free_watch() does everything barring actually freeing the watch object.  Fix
-this by adding the missing kfree.
+On Thu, Mar 17, 2022 at 6:49 PM Daniel Vetter <daniel@ffwll.ch> wrote:
+>
+> On Fri, Mar 11, 2022 at 07:23:02AM +0000, Zheyu Ma wrote:
+> > The user program can control the 'drm_buf_desc::flags' via ioctl system
+> > call and enter the function drm_legacy_addbufs_agp(). If the driver
+> > doesn't initialize the agp resources, the driver will cause a null
+> > pointer dereference.
+> >
+> > The following log reveals it:
+> >     general protection fault, probably for non-canonical address
+> >     0xdffffc000000000f: 0000 [#1] PREEMPT SMP KASAN PTI
+> >     KASAN: null-ptr-deref in range [0x0000000000000078-0x000000000000007f]
+> >     Call Trace:
+> >      <TASK>
+> >      drm_ioctl_kernel+0x342/0x450 drivers/gpu/drm/drm_ioctl.c:785
+> >      drm_ioctl+0x592/0x940 drivers/gpu/drm/drm_ioctl.c:885
+> >      vfs_ioctl fs/ioctl.c:51 [inline]
+> >      __do_sys_ioctl fs/ioctl.c:874 [inline]
+> >      __se_sys_ioctl+0xaa/0xf0 fs/ioctl.c:860
+> >      do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> >      do_syscall_64+0x43/0x90 arch/x86/entry/common.c:80
+> >      entry_SYSCALL_64_after_hwframe+0x44/0xae
+> >
+> > Fix this bug by adding a check.
+> >
+> > Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+>
+> You can only hit this if you enabled a DRIVER_LEGACY drm driver, which
+> opens you up to tons of other CVEs and issues. What's your .config?
 
-kmemleak produces a report something like the following.  Note that as an
-address can be seen in the first word, the watch would appear to have gone
-through call_rcu().
+Yes, I enable the DRM_LEGACY option in the config.
+I think you mean this is not a normal configuration file? Do you have
+a recommended configuration option for when I want to test the GPU
+driver?
 
-BUG: memory leak
-unreferenced object 0xffff88810ce4a200 (size 96):
-  comm "syz-executor352", pid 3605, jiffies 4294947473 (age 13.720s)
-  hex dump (first 32 bytes):
-    e0 82 48 0d 81 88 ff ff 00 00 00 00 00 00 00 00  ..H.............
-    80 a2 e4 0c 81 88 ff ff 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffff8214e6cc>] kmalloc include/linux/slab.h:581 [inline]
-    [<ffffffff8214e6cc>] kzalloc include/linux/slab.h:714 [inline]
-    [<ffffffff8214e6cc>] keyctl_watch_key+0xec/0x2e0 security/keys/keyctl.c:1800
-    [<ffffffff8214ec84>] __do_sys_keyctl+0x3c4/0x490 security/keys/keyctl.c:2016
-    [<ffffffff84493a25>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-    [<ffffffff84493a25>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-    [<ffffffff84600068>] entry_SYSCALL_64_after_hwframe+0x44/0xae
+Actually, I use the following configs related to GPU:
 
-Fixes: c73be61cede5 ("pipe: Add general notification queue support")
-Reported-and-tested-by: syzbot+6e2de48f06cdb2884bfc@syzkaller.appspotmail.com
-Signed-off-by: David Howells <dhowells@redhat.com>
----
+CONFIG_AGP=y
+CONFIG_AGP_AMD64=y
+CONFIG_AGP_INTEL=y
+CONFIG_AGP_SIS=y
+CONFIG_AGP_VIA=y
+CONFIG_INTEL_GTT=y
+CONFIG_VGA_ARB=y
+CONFIG_VGA_ARB_MAX_GPUS=16
+CONFIG_DRM=y
+CONFIG_DRM_MIPI_DSI=y
+CONFIG_DRM_KMS_HELPER=y
+CONFIG_DRM_DEBUG_MODESET_LOCK=y
+CONFIG_DRM_FBDEV_EMULATION=y
+CONFIG_DRM_FBDEV_OVERALLOC=100
+CONFIG_DRM_TTM=y
+CONFIG_DRM_VRAM_HELPER=y
+CONFIG_DRM_TTM_HELPER=y
+CONFIG_DRM_GEM_SHMEM_HELPER=y
+CONFIG_DRM_SCHED=y
+CONFIG_DRM_RADEON=y
+CONFIG_DRM_AMDGPU=y
+CONFIG_DRM_AMD_DC=y
+CONFIG_DRM_AMD_DC_DCN=y
+CONFIG_DRM_I915=y
+CONFIG_DRM_I915_FORCE_PROBE=""
+CONFIG_DRM_I915_CAPTURE_ERROR=y
+CONFIG_DRM_I915_COMPRESS_ERROR=y
+CONFIG_DRM_I915_USERPTR=y
+CONFIG_DRM_I915_REQUEST_TIMEOUT=20000
+CONFIG_DRM_I915_FENCE_TIMEOUT=10000
+CONFIG_DRM_I915_USERFAULT_AUTOSUSPEND=250
+CONFIG_DRM_I915_HEARTBEAT_INTERVAL=2500
+CONFIG_DRM_I915_PREEMPT_TIMEOUT=640
+CONFIG_DRM_I915_MAX_REQUEST_BUSYWAIT=8000
+CONFIG_DRM_I915_STOP_TIMEOUT=100
+CONFIG_DRM_I915_TIMESLICE_DURATION=1
+CONFIG_DRM_VMWGFX=y
+CONFIG_DRM_GMA500=y
+CONFIG_DRM_UDL=y
+CONFIG_DRM_AST=y
+CONFIG_DRM_MGAG200=y
+CONFIG_DRM_QXL=y
+CONFIG_DRM_VIRTIO_GPU=y
+CONFIG_DRM_PANEL=y
+CONFIG_DRM_BRIDGE=y
+CONFIG_DRM_PANEL_BRIDGE=y
+CONFIG_DRM_BOCHS=y
+CONFIG_DRM_CIRRUS_QEMU=y
+CONFIG_DRM_GM12U320=y
+CONFIG_DRM_VBOXVIDEO=y
+CONFIG_DRM_GUD=y
+CONFIG_DRM_HYPERV=y
+CONFIG_DRM_LEGACY=y
+CONFIG_DRM_TDFX=y
+CONFIG_DRM_R128=y
+CONFIG_DRM_MGA=y
+CONFIG_DRM_SIS=y
+CONFIG_DRM_VIA=y
+CONFIG_DRM_SAVAGE=y
+CONFIG_DRM_PANEL_ORIENTATION_QUIRKS=y
 
- kernel/watch_queue.c |    1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/kernel/watch_queue.c b/kernel/watch_queue.c
-index 5848d4795816..3990e4df3d7b 100644
---- a/kernel/watch_queue.c
-+++ b/kernel/watch_queue.c
-@@ -395,6 +395,7 @@ static void free_watch(struct rcu_head *rcu)
- 	put_watch_queue(rcu_access_pointer(watch->queue));
- 	atomic_dec(&watch->cred->user->nr_watches);
- 	put_cred(watch->cred);
-+	kfree(watch);
- }
- 
- static void __put_watch(struct kref *kref)
-
-
+Thanks,
+Zheyu Ma
