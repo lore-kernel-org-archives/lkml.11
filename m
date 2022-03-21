@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D89B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:59:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35685C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:59:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348489AbiCUOA2 (ORCPT
+        id S1348540AbiCUOAf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:00:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46014 "EHLO
+        Mon, 21 Mar 2022 10:00:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348452AbiCUN5y (ORCPT
+        with ESMTP id S1348495AbiCUN54 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:57:54 -0400
+        Mon, 21 Mar 2022 09:57:56 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B07B1770B6;
-        Mon, 21 Mar 2022 06:55:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB76D192AA;
+        Mon, 21 Mar 2022 06:55:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B132612AB;
-        Mon, 21 Mar 2022 13:55:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B6AFC340E8;
-        Mon, 21 Mar 2022 13:55:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BA9F612BC;
+        Mon, 21 Mar 2022 13:55:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C1E8C340E8;
+        Mon, 21 Mar 2022 13:55:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647870927;
-        bh=dy8PW5AEdiEoildx1nD3DQnzreCRWT9CJl1QM0+Tp1I=;
+        s=korg; t=1647870929;
+        bh=4Pp+1U9O3buGlY5y0hV1jvev/KrdW88xCml6dpUJnLs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OM2YaGYAfGEjaOG8WW30BFWO170YeTm5G8LuVOGKH6j6MR10KbD0QraKpNxkynjjn
-         7PCNq8m6YoOyzj4k/MkbTF4VPMnck1M6yoFkhzdmwXpj2sB0ccIiDgPPt3s00Nq+Gz
-         GkkpJxuDnBvAbqjr7GGYietd9IEDNdCpY2slx4tY=
+        b=GcOl2N6e6a0MMQwRVuFmbRXFS70UWdjN/IDhPzsCAGV2Cu/UX7yO9A7JcHQKzrr0q
+         HnByi3JMuR1HleL5YGu6FUgzPYRYJ21znbwurrbCeSE++xBjX7+eYrTZFKJZFQimPI
+         79+bBCkYOws61WtpVUdBy5V0cwQXprO55pVNa6+8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xin Long <lucien.xin@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 4.19 02/57] sctp: fix the processing for INIT chunk
-Date:   Mon, 21 Mar 2022 14:51:43 +0100
-Message-Id: <20220321133222.057634450@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Zhang Qiao <zhangqiao22@huawei.com>
+Subject: [PATCH 4.19 20/57] cpuset: Fix unsafe lock order between cpuset lock and cpuslock
+Date:   Mon, 21 Mar 2022 14:52:01 +0100
+Message-Id: <20220321133222.573355878@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133221.984120927@linuxfoundation.org>
 References: <20220321133221.984120927@linuxfoundation.org>
@@ -51,161 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+From: Zhang Qiao <zhangqiao22@huawei.com>
 
-commit eae5783908042a762c24e1bd11876edb91d314b1 upstream.
+The backport commit 4eec5fe1c680a ("cgroup/cpuset: Fix a race
+between cpuset_attach() and cpu hotplug") looks suspicious since
+it comes before commit d74b27d63a8b ("cgroup/cpuset: Change
+cpuset_rwsem and hotplug lock order") v5.4-rc1~176^2~30 when
+the locking order was: cpuset lock, cpus lock.
 
-This patch fixes the problems below:
+Fix it with the correct locking order and reduce the cpus locking
+range because only set_cpus_allowed_ptr() needs the protection of
+cpus lock.
 
-1. In non-shutdown_ack_sent states: in sctp_sf_do_5_1B_init() and
-   sctp_sf_do_5_2_2_dupinit():
-
-  chunk length check should be done before any checks that may cause
-  to send abort, as making packet for abort will access the init_tag
-  from init_hdr in sctp_ootb_pkt_new().
-
-2. In shutdown_ack_sent state: in sctp_sf_do_9_2_reshutack():
-
-  The same checks as does in sctp_sf_do_5_2_2_dupinit() is needed
-  for sctp_sf_do_9_2_reshutack().
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Fixes: 4eec5fe1c680a ("cgroup/cpuset: Fix a race between cpuset_attach() and cpu hotplug")
+Reported-by: Michal Koutný <mkoutny@suse.com>
+Signed-off-by: Zhang Qiao <zhangqiao22@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sctp/sm_statefuns.c |   71 +++++++++++++++++++++++++++++++-----------------
- 1 file changed, 46 insertions(+), 25 deletions(-)
+ kernel/cgroup/cpuset.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/net/sctp/sm_statefuns.c
-+++ b/net/sctp/sm_statefuns.c
-@@ -164,6 +164,12 @@ static enum sctp_disposition __sctp_sf_d
- 					void *arg,
- 					struct sctp_cmd_seq *commands);
+--- a/kernel/cgroup/cpuset.c
++++ b/kernel/cgroup/cpuset.c
+@@ -1528,9 +1528,13 @@ static void cpuset_attach(struct cgroup_
+ 	cgroup_taskset_first(tset, &css);
+ 	cs = css_cs(css);
  
-+static enum sctp_disposition
-+__sctp_sf_do_9_2_reshutack(struct net *net, const struct sctp_endpoint *ep,
-+			   const struct sctp_association *asoc,
-+			   const union sctp_subtype type, void *arg,
-+			   struct sctp_cmd_seq *commands);
-+
- /* Small helper function that checks if the chunk length
-  * is of the appropriate length.  The 'required_length' argument
-  * is set to be the size of a specific chunk we are testing.
-@@ -345,6 +351,14 @@ enum sctp_disposition sctp_sf_do_5_1B_in
- 	if (!chunk->singleton)
- 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+-	cpus_read_lock();
+ 	mutex_lock(&cpuset_mutex);
  
-+	/* Make sure that the INIT chunk has a valid length.
-+	 * Normally, this would cause an ABORT with a Protocol Violation
-+	 * error, but since we don't have an association, we'll
-+	 * just discard the packet.
++	/*
++	 * It should hold cpus lock because a cpu offline event can
++	 * cause set_cpus_allowed_ptr() failed.
 +	 */
-+	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-+
- 	/* If the packet is an OOTB packet which is temporarily on the
- 	 * control endpoint, respond with an ABORT.
- 	 */
-@@ -359,14 +373,6 @@ enum sctp_disposition sctp_sf_do_5_1B_in
- 	if (chunk->sctp_hdr->vtag != 0)
- 		return sctp_sf_tabort_8_4_8(net, ep, asoc, type, arg, commands);
++	get_online_cpus();
+ 	/* prepare for attach */
+ 	if (cs == &top_cpuset)
+ 		cpumask_copy(cpus_attach, cpu_possible_mask);
+@@ -1549,6 +1553,7 @@ static void cpuset_attach(struct cgroup_
+ 		cpuset_change_task_nodemask(task, &cpuset_attach_nodemask_to);
+ 		cpuset_update_task_spread_flag(cs, task);
+ 	}
++       put_online_cpus();
  
--	/* Make sure that the INIT chunk has a valid length.
--	 * Normally, this would cause an ABORT with a Protocol Violation
--	 * error, but since we don't have an association, we'll
--	 * just discard the packet.
--	 */
--	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
--		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
--
- 	/* If the INIT is coming toward a closing socket, we'll send back
- 	 * and ABORT.  Essentially, this catches the race of INIT being
- 	 * backloged to the socket at the same time as the user isses close().
-@@ -1499,19 +1505,16 @@ static enum sctp_disposition sctp_sf_do_
- 	if (!chunk->singleton)
- 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+ 	/*
+ 	 * Change mm for all threadgroup leaders. This is expensive and may
+@@ -1584,7 +1589,6 @@ static void cpuset_attach(struct cgroup_
+ 		wake_up(&cpuset_attach_wq);
  
-+	/* Make sure that the INIT chunk has a valid length. */
-+	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-+
- 	/* 3.1 A packet containing an INIT chunk MUST have a zero Verification
- 	 * Tag.
- 	 */
- 	if (chunk->sctp_hdr->vtag != 0)
- 		return sctp_sf_tabort_8_4_8(net, ep, asoc, type, arg, commands);
- 
--	/* Make sure that the INIT chunk has a valid length.
--	 * In this case, we generate a protocol violation since we have
--	 * an association established.
--	 */
--	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
--		return sctp_sf_violation_chunklen(net, ep, asoc, type, arg,
--						  commands);
- 	/* Grab the INIT header.  */
- 	chunk->subh.init_hdr = (struct sctp_inithdr *)chunk->skb->data;
- 
-@@ -1829,9 +1832,9 @@ static enum sctp_disposition sctp_sf_do_
- 	 * its peer.
- 	*/
- 	if (sctp_state(asoc, SHUTDOWN_ACK_SENT)) {
--		disposition = sctp_sf_do_9_2_reshutack(net, ep, asoc,
--				SCTP_ST_CHUNK(chunk->chunk_hdr->type),
--				chunk, commands);
-+		disposition = __sctp_sf_do_9_2_reshutack(net, ep, asoc,
-+							 SCTP_ST_CHUNK(chunk->chunk_hdr->type),
-+							 chunk, commands);
- 		if (SCTP_DISPOSITION_NOMEM == disposition)
- 			goto nomem;
- 
-@@ -2930,13 +2933,11 @@ enum sctp_disposition sctp_sf_do_9_2_shu
-  * that belong to this association, it should discard the INIT chunk and
-  * retransmit the SHUTDOWN ACK chunk.
-  */
--enum sctp_disposition sctp_sf_do_9_2_reshutack(
--					struct net *net,
--					const struct sctp_endpoint *ep,
--					const struct sctp_association *asoc,
--					const union sctp_subtype type,
--					void *arg,
--					struct sctp_cmd_seq *commands)
-+static enum sctp_disposition
-+__sctp_sf_do_9_2_reshutack(struct net *net, const struct sctp_endpoint *ep,
-+			   const struct sctp_association *asoc,
-+			   const union sctp_subtype type, void *arg,
-+			   struct sctp_cmd_seq *commands)
- {
- 	struct sctp_chunk *chunk = arg;
- 	struct sctp_chunk *reply;
-@@ -2970,6 +2971,26 @@ nomem:
- 	return SCTP_DISPOSITION_NOMEM;
+ 	mutex_unlock(&cpuset_mutex);
+-	cpus_read_unlock();
  }
  
-+enum sctp_disposition
-+sctp_sf_do_9_2_reshutack(struct net *net, const struct sctp_endpoint *ep,
-+			 const struct sctp_association *asoc,
-+			 const union sctp_subtype type, void *arg,
-+			 struct sctp_cmd_seq *commands)
-+{
-+	struct sctp_chunk *chunk = arg;
-+
-+	if (!chunk->singleton)
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-+
-+	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-+
-+	if (chunk->sctp_hdr->vtag != 0)
-+		return sctp_sf_tabort_8_4_8(net, ep, asoc, type, arg, commands);
-+
-+	return __sctp_sf_do_9_2_reshutack(net, ep, asoc, type, arg, commands);
-+}
-+
- /*
-  * sctp_sf_do_ecn_cwr
-  *
+ /* The various types of files and directories in a cpuset file system */
 
 
