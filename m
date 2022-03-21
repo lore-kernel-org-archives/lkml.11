@@ -2,118 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24F12C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:31:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14F78C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:32:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349307AbiCUOcX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:32:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56294 "EHLO
+        id S243440AbiCUOeN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 10:34:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344963AbiCUOb6 (ORCPT
+        with ESMTP id S1350104AbiCUOd7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:31:58 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA46E56740
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 07:28:28 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 7B0A01F387;
-        Mon, 21 Mar 2022 14:28:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1647872907; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type;
-        bh=i+GubjXlIXayFoOJawergPNhbOhtk2f3oUXUcOm+nAA=;
-        b=Sk2/fLdEZyqRAFtMeQZLFvypARYlUKYEikv5N1YRD9m//ryui+62/az2pGanfXo8yONAKH
-        +oD6/cJo24OrzSQiELEgYUwUJhBq35mOAO78nxpzmwV8cReIN4YLUvD6G8WksdS/EpMfDf
-        hq63S634AK21PRQ3r0SAC3HD5HVzDmg=
-Received: from suse.cz (unknown [10.100.216.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 23ED9A3BC3;
-        Mon, 21 Mar 2022 14:28:27 +0000 (UTC)
-Date:   Mon, 21 Mar 2022 15:28:26 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-kernel@vger.kernel.org
-Subject: [GIT PULL] printk for 5.18
-Message-ID: <YjiLijmVZGox94IH@alley>
+        Mon, 21 Mar 2022 10:33:59 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1983A5D1A8
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 07:32:34 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id j18so11334280wrd.6
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 07:32:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=jPNbf4VBXaKauQrD5GdOw/7C1sM2aDR3HnxDjhZ0elg=;
+        b=K04KZ2llvCIBVjpLXRbj+FItZXFlk4ZVLcXMU/n3uOzyXQkjIt2p8UQRjAN1JRYeHw
+         odN5bc3b7y61QwvNr5Voo9HYGe+n6sUBYkPIHRCLkL2b8MpipkOPtqLac92fMqy93U/2
+         9Xve7ZthNZPcBZUKdMEkBljxtgCh7T6f6FGbg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=jPNbf4VBXaKauQrD5GdOw/7C1sM2aDR3HnxDjhZ0elg=;
+        b=qAFkZ8w9rZzE+yAha0gbw05EpebRUjYC1oPY4Ldx+fRz5O9Wmo/Gvn5Gt8fkb7DLFU
+         w6AmuVM7U/W6cbEP29juEdfO3Qf6b38ql0k6i+1k3UXZZOb4MMfMitVwdeCYgBVToVQP
+         yJozQ8NSNVHM5E3Kei1jfe/s6Aj67lzUQPpenWyQNQ5dSowp1VlOcKGQjaJXswJAG8fk
+         GNtW6QsOZiYaD7hdmXOEpkP/Iht2tnSdKKReJE3h4jBCxNcppUQuIgpg1HMfm1DsftRh
+         2Y4Eh/2JyLQhOtKb/xEKqz2X9+hsBS+Z/nyuaFungKwQ3+pNfGtT1ALAyPReFEnIHS1x
+         IqSw==
+X-Gm-Message-State: AOAM532oCuBz45hUgHAz+bu0DsPKS4CBUewzr8roWxekkmk6uzT4GD5a
+        QzNCFxaSqaTFvgEd3ig/nYnqqA==
+X-Google-Smtp-Source: ABdhPJxAUNMAkxYkB4uOST35byIe9LqZT6SPgd/wDbe3ZFo/1vnlqpEDwMr6f9llJhrZuMausBRxrg==
+X-Received: by 2002:adf:ea06:0:b0:203:ed67:6093 with SMTP id q6-20020adfea06000000b00203ed676093mr15652317wrm.596.1647873152722;
+        Mon, 21 Mar 2022 07:32:32 -0700 (PDT)
+Received: from fabiobaltieri-linux.lan ([37.228.205.1])
+        by smtp.gmail.com with ESMTPSA id u11-20020a05600c19cb00b00389efe9c512sm19092793wmq.23.2022.03.21.07.32.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 07:32:32 -0700 (PDT)
+From:   Fabio Baltieri <fabiobaltieri@chromium.org>
+To:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        chrome-platform@lists.linux.dev, linux-pwm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Fabio Baltieri <fabiobaltieri@chromium.org>
+Subject: [PATCH 1/4] dt-bindings: add mfd/cros_ec definitions
+Date:   Mon, 21 Mar 2022 14:32:19 +0000
+Message-Id: <20220321143222.2523373-2-fabiobaltieri@chromium.org>
+X-Mailer: git-send-email 2.35.1.894.gb6a874cedc-goog
+In-Reply-To: <20220321143222.2523373-1-fabiobaltieri@chromium.org>
+References: <20220321143222.2523373-1-fabiobaltieri@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+Add a dt-bindings include file for cros_ec devicetree definition, define
+a pair of special purpose PWM channels in it.
 
-please pull the latest printk changes from
+Signed-off-by: Fabio Baltieri <fabiobaltieri@chromium.org>
+---
+ include/dt-bindings/mfd/cros_ec.h | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+ create mode 100644 include/dt-bindings/mfd/cros_ec.h
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/printk/linux.git tags/printk-for-5.18
+diff --git a/include/dt-bindings/mfd/cros_ec.h b/include/dt-bindings/mfd/cros_ec.h
+new file mode 100644
+index 000000000000..e02414eae622
+--- /dev/null
++++ b/include/dt-bindings/mfd/cros_ec.h
+@@ -0,0 +1,18 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * DTS binding definitions used for the Chromium OS Embedded Controller.
++ *
++ * Copyright (c) 2022 The Chromium OS Authors. All rights reserved.
++ */
++
++#ifndef _DT_BINDINGS_MFD_CROS_EC_H
++#define _DT_BINDINGS_MFD_CROS_EC_H
++
++/* Typed channel for keyboard backlight. */
++#define CROS_EC_PWM_DT_KB_LIGHT		0
++/* Typed channel for display backlight. */
++#define CROS_EC_PWM_DT_DISPLAY_LIGHT	1
++/* Number of typed channels. */
++#define CROS_EC_PWM_DT_COUNT		2
++
++#endif
+-- 
+2.35.1.894.gb6a874cedc-goog
 
-==========================================
-
-- Make %pK behave the same as %p for kptr_restrict == 0 also
-  with no_hash_pointers parameter.
-
-- Ignore the default console in the device tree also when console=null
-  or console="" is used on the command line.
-
-- Document console=null and console="" behavior.
-
-- Prevent a deadlock and a livelock caused by console_lock in panic().
-
-- Make console_lock available for panicking CPU.
-
-- Fast query for the next to-be-used sequence number.
-
-- Use the expected return values in printk.devkmsg __setup handler.
-
-- Use the correct atomic operations in wake_up_klogd() irq_work handler.
-
-- Avoid possible unaligned access when handling %4cc printing format.
-
-----------------------------------------------------------------
-Andre Kalb (1):
-      printk: Set console_set_on_cmdline=1 when __add_preferred_console() is called with user_specified == true
-
-Andy Shevchenko (2):
-      vsprintf: Fix potential unaligned access
-      vsprintf: Move space out of string literals in fourcc_string()
-
-Christophe Leroy (1):
-      vsprintf: Fix %pK with kptr_restrict == 0
-
-Jiapeng Chong (1):
-      printk: make suppress_panic_printk static
-
-John Ogness (1):
-      printk: use atomic updates for klogd work
-
-Petr Mladek (4):
-      printk: ringbuffer: Improve prb_next_seq() performance
-      Merge branch 'for-5.18-vsprintf-fourcc-fixup' into for-linus
-      Merge branch 'for-5.18-panic-deadlocks' into for-linus
-      Merge branch 'rework/fast-next-seq' into for-linus
-
-Randy Dunlap (2):
-      Docs: printk: add 'console=null|""' to admin/kernel-parameters
-      printk: fix return value of printk.devkmsg __setup handler
-
-Stephen Brennan (4):
-      printk: Add panic_in_progress helper
-      printk: disable optimistic spin during panic
-      printk: Avoid livelock with heavy printk during panic
-      printk: Drop console_sem during panic
-
- Documentation/admin-guide/kernel-parameters.txt |  9 ++-
- kernel/printk/printk.c                          | 85 ++++++++++++++++++++++---
- kernel/printk/printk_ringbuffer.c               | 52 +++++++++++++--
- kernel/printk/printk_ringbuffer.h               |  2 +
- lib/vsprintf.c                                  | 49 ++++++++------
- 5 files changed, 161 insertions(+), 36 deletions(-)
