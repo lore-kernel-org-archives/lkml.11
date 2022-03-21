@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B93EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:13:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D18FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:14:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238166AbiCUOPQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:15:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38216 "EHLO
+        id S1348944AbiCUOPZ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 10:15:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349243AbiCUOIF (ORCPT
+        with ESMTP id S1349452AbiCUOIZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:08:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AA52174B8B;
-        Mon, 21 Mar 2022 07:02:32 -0700 (PDT)
+        Mon, 21 Mar 2022 10:08:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6FDC17A598;
+        Mon, 21 Mar 2022 07:02:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A429B816DC;
-        Mon, 21 Mar 2022 14:02:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FB63C340E8;
-        Mon, 21 Mar 2022 14:02:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 77F9B6132C;
+        Mon, 21 Mar 2022 14:02:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B96AC340E8;
+        Mon, 21 Mar 2022 14:02:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871350;
-        bh=pApDzt38GhzWwzmU3F/B28vg6zW1m34oDcityxP6B0g=;
+        s=korg; t=1647871366;
+        bh=qf/4IqoCH15v/gP5BPbKxETcCxWbZ+FrQYit2rRSzY0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NHEVxCRZcwIQoxfxM+Z/Mtmysrk/hBeQcm17luwUFxwhFSrufojorKRx+HsHl8eTi
-         Nseh6SSait8QlN6s5Z0rsDS75YhfhWGwjfn3kIYnkkXjf/5j/5WRheZO69lJ4qEawL
-         WIlnJkJ8fZH1J1jrJynVKCXm/wYgA9LE3G2YVyto=
+        b=T8BkqavWrskOaPUh5+adm55CKpvVIjQLw87q6k3z4Oy0+92iB2gd88fSVLTk7lWMc
+         nHbBiHiHm4Ir7P3dpw8rdTVLP6GBSCVt1SI0G6Xf8QIqOHb4gn+QXsLqLbt9x5b/2L
+         c5x8Xjii30k8x8jnoRPnA+hxyfeE5MeNSdnm/5v8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        syzbot+a48e3d1a875240cab5de@syzkaller.appspotmail.com
-Subject: [PATCH 5.16 30/37] usb: usbtmc: Fix bug in pipe direction for control transfers
-Date:   Mon, 21 Mar 2022 14:53:12 +0100
-Message-Id: <20220321133222.166033255@linuxfoundation.org>
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Marc Zyngier <maz@kernel.org>, Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 5.16 35/37] Revert "arm64: dts: freescale: Fix interrupt-map parent address cells"
+Date:   Mon, 21 Mar 2022 14:53:17 +0100
+Message-Id: <20220321133222.305922095@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133221.290173884@linuxfoundation.org>
 References: <20220321133221.290173884@linuxfoundation.org>
@@ -48,86 +49,162 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alan Stern <stern@rowland.harvard.edu>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-commit e9b667a82cdcfe21d590344447d65daed52b353b upstream.
+commit 1447c635802fd0f5e213ad5277753108d56a4db3 upstream.
 
-The syzbot fuzzer reported a minor bug in the usbtmc driver:
+This reverts commit 869f0ec048dc8fd88c0b2003373bd985795179fb. That
+updated the expected device tree binding format for the ls-extirq
+driver, without also updating the parsing code (ls_extirq_parse_map)
+to the new format.
 
-usb 5-1: BOGUS control dir, pipe 80001e80 doesn't match bRequestType 0
-WARNING: CPU: 0 PID: 3813 at drivers/usb/core/urb.c:412
-usb_submit_urb+0x13a5/0x1970 drivers/usb/core/urb.c:410
-Modules linked in:
-CPU: 0 PID: 3813 Comm: syz-executor122 Not tainted
-5.17.0-rc5-syzkaller-00306-g2293be58d6a1 #0
-...
-Call Trace:
- <TASK>
- usb_start_wait_urb+0x113/0x530 drivers/usb/core/message.c:58
- usb_internal_control_msg drivers/usb/core/message.c:102 [inline]
- usb_control_msg+0x2a5/0x4b0 drivers/usb/core/message.c:153
- usbtmc_ioctl_request drivers/usb/class/usbtmc.c:1947 [inline]
+The context is that the ls-extirq driver uses the standard
+"interrupt-map" OF property in a non-standard way, as suggested by
+Rob Herring during review:
+https://lore.kernel.org/lkml/20190927161118.GA19333@bogus/
 
-The problem is that usbtmc_ioctl_request() uses usb_rcvctrlpipe() for
-all of its transfers, whether they are in or out.  It's easy to fix.
+This has turned out to be problematic, as Marc Zyngier discovered
+through commit 041284181226 ("of/irq: Allow matching of an interrupt-map
+local to an interrupt controller"), later fixed through commit
+de4adddcbcc2 ("of/irq: Add a quirk for controllers with their own
+definition of interrupt-map"). Marc's position, expressed on multiple
+opportunities, is that:
 
-CC: <stable@vger.kernel.org>
-Reported-and-tested-by: syzbot+a48e3d1a875240cab5de@syzkaller.appspotmail.com
-Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-Link: https://lore.kernel.org/r/YiEsYTPEE6lOCOA5@rowland.harvard.edu
+(a) [ making private use of the reserved "interrupt-map" name in a
+    driver ] "is wrong, by the very letter of what an interrupt-map
+    means. If the interrupt map points to an interrupt controller,
+    that's the target for the interrupt."
+https://lore.kernel.org/lkml/87k0g8jlmg.wl-maz@kernel.org/
+
+(b) [ updating the driver's bindings to accept a non-reserved name for
+    this property, as an alternative, is ] "is totally pointless. These
+    machines have been in the wild for years, and existing DTs will be
+    there *forever*."
+https://lore.kernel.org/lkml/87ilvrk1r0.wl-maz@kernel.org/
+
+Considering the above, the Linux kernel has quirks in place to deal with
+the ls-extirq's non-standard use of the "interrupt-map". These quirks
+may be needed in other operating systems that consume this device tree,
+yet this is seen as the only viable solution.
+
+Therefore, the premise of the patch being reverted here is invalid.
+It doesn't matter whether the driver, in its non-standard use of the
+property, complies to the standard format or not, since this property
+isn't expected to be used for interrupt translation by the core.
+
+This change restores LS1088A, LS2088A/LS2085A and LX2160A to their
+previous bindings, which allows these systems to continue to use
+external interrupt lines with the correct polarity.
+
+Fixes: 869f0ec048dc ("arm64: dts: freescale: Fix 'interrupt-map' parent address cells")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Acked-by: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/class/usbtmc.c |   13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ arch/arm64/boot/dts/freescale/fsl-ls1088a.dtsi |   24 ++++++++++++------------
+ arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi |   24 ++++++++++++------------
+ arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi |   24 ++++++++++++------------
+ 3 files changed, 36 insertions(+), 36 deletions(-)
 
---- a/drivers/usb/class/usbtmc.c
-+++ b/drivers/usb/class/usbtmc.c
-@@ -1919,6 +1919,7 @@ static int usbtmc_ioctl_request(struct u
- 	struct usbtmc_ctrlrequest request;
- 	u8 *buffer = NULL;
- 	int rv;
-+	unsigned int is_in, pipe;
- 	unsigned long res;
- 
- 	res = copy_from_user(&request, arg, sizeof(struct usbtmc_ctrlrequest));
-@@ -1928,12 +1929,14 @@ static int usbtmc_ioctl_request(struct u
- 	if (request.req.wLength > USBTMC_BUFSIZE)
- 		return -EMSGSIZE;
- 
-+	is_in = request.req.bRequestType & USB_DIR_IN;
-+
- 	if (request.req.wLength) {
- 		buffer = kmalloc(request.req.wLength, GFP_KERNEL);
- 		if (!buffer)
- 			return -ENOMEM;
- 
--		if ((request.req.bRequestType & USB_DIR_IN) == 0) {
-+		if (!is_in) {
- 			/* Send control data to device */
- 			res = copy_from_user(buffer, request.data,
- 					     request.req.wLength);
-@@ -1944,8 +1947,12 @@ static int usbtmc_ioctl_request(struct u
- 		}
- 	}
- 
-+	if (is_in)
-+		pipe = usb_rcvctrlpipe(data->usb_dev, 0);
-+	else
-+		pipe = usb_sndctrlpipe(data->usb_dev, 0);
- 	rv = usb_control_msg(data->usb_dev,
--			usb_rcvctrlpipe(data->usb_dev, 0),
-+			pipe,
- 			request.req.bRequest,
- 			request.req.bRequestType,
- 			request.req.wValue,
-@@ -1957,7 +1964,7 @@ static int usbtmc_ioctl_request(struct u
- 		goto exit;
- 	}
- 
--	if (rv && (request.req.bRequestType & USB_DIR_IN)) {
-+	if (rv && is_in) {
- 		/* Read control data from device */
- 		res = copy_to_user(request.data, buffer, rv);
- 		if (res)
+--- a/arch/arm64/boot/dts/freescale/fsl-ls1088a.dtsi
++++ b/arch/arm64/boot/dts/freescale/fsl-ls1088a.dtsi
+@@ -241,18 +241,18 @@
+ 				interrupt-controller;
+ 				reg = <0x14 4>;
+ 				interrupt-map =
+-					<0 0 &gic 0 0 GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
+-					<1 0 &gic 0 0 GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>,
+-					<2 0 &gic 0 0 GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>,
+-					<3 0 &gic 0 0 GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
+-					<4 0 &gic 0 0 GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
+-					<5 0 &gic 0 0 GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>,
+-					<6 0 &gic 0 0 GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
+-					<7 0 &gic 0 0 GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>,
+-					<8 0 &gic 0 0 GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
+-					<9 0 &gic 0 0 GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>,
+-					<10 0 &gic 0 0 GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>,
+-					<11 0 &gic 0 0 GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
++					<0 0 &gic GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
++					<1 0 &gic GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>,
++					<2 0 &gic GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>,
++					<3 0 &gic GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
++					<4 0 &gic GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
++					<5 0 &gic GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>,
++					<6 0 &gic GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
++					<7 0 &gic GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>,
++					<8 0 &gic GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
++					<9 0 &gic GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>,
++					<10 0 &gic GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>,
++					<11 0 &gic GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
+ 				interrupt-map-mask = <0xffffffff 0x0>;
+ 			};
+ 		};
+--- a/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
++++ b/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
+@@ -293,18 +293,18 @@
+ 				interrupt-controller;
+ 				reg = <0x14 4>;
+ 				interrupt-map =
+-					<0 0 &gic 0 0 GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
+-					<1 0 &gic 0 0 GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>,
+-					<2 0 &gic 0 0 GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>,
+-					<3 0 &gic 0 0 GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
+-					<4 0 &gic 0 0 GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
+-					<5 0 &gic 0 0 GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>,
+-					<6 0 &gic 0 0 GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
+-					<7 0 &gic 0 0 GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>,
+-					<8 0 &gic 0 0 GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
+-					<9 0 &gic 0 0 GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>,
+-					<10 0 &gic 0 0 GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>,
+-					<11 0 &gic 0 0 GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
++					<0 0 &gic GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
++					<1 0 &gic GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>,
++					<2 0 &gic GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>,
++					<3 0 &gic GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
++					<4 0 &gic GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
++					<5 0 &gic GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>,
++					<6 0 &gic GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
++					<7 0 &gic GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>,
++					<8 0 &gic GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
++					<9 0 &gic GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>,
++					<10 0 &gic GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>,
++					<11 0 &gic GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
+ 				interrupt-map-mask = <0xffffffff 0x0>;
+ 			};
+ 		};
+--- a/arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi
++++ b/arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi
+@@ -680,18 +680,18 @@
+ 				interrupt-controller;
+ 				reg = <0x14 4>;
+ 				interrupt-map =
+-					<0 0 &gic 0 0 GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
+-					<1 0 &gic 0 0 GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>,
+-					<2 0 &gic 0 0 GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>,
+-					<3 0 &gic 0 0 GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
+-					<4 0 &gic 0 0 GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
+-					<5 0 &gic 0 0 GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>,
+-					<6 0 &gic 0 0 GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
+-					<7 0 &gic 0 0 GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>,
+-					<8 0 &gic 0 0 GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
+-					<9 0 &gic 0 0 GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>,
+-					<10 0 &gic 0 0 GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>,
+-					<11 0 &gic 0 0 GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
++					<0 0 &gic GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
++					<1 0 &gic GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>,
++					<2 0 &gic GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>,
++					<3 0 &gic GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
++					<4 0 &gic GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
++					<5 0 &gic GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>,
++					<6 0 &gic GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
++					<7 0 &gic GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>,
++					<8 0 &gic GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
++					<9 0 &gic GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>,
++					<10 0 &gic GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>,
++					<11 0 &gic GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
+ 				interrupt-map-mask = <0xffffffff 0x0>;
+ 			};
+ 		};
 
 
