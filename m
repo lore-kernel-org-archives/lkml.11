@@ -2,156 +2,336 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE3FFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 10:27:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C3D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 10:27:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346328AbiCUK2p (ORCPT
+        id S1346330AbiCUK3S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 06:28:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35368 "EHLO
+        Mon, 21 Mar 2022 06:29:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346320AbiCUK2l (ORCPT
+        with ESMTP id S244351AbiCUK3R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 06:28:41 -0400
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2132.outbound.protection.outlook.com [40.107.255.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C97C1DBD2D;
-        Mon, 21 Mar 2022 03:27:15 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QUMcUDWE2vms9UVYdesLGI5h6X40ctyuC423lT6HxansfLS7hA/TpShnsz3ptuZSrcgTPUGdtQDVeqL4Ye8rTc9HYEG7IJBFf0DhQJgpVOAeP/TFSXmHYbatYfCZhckK+Dkqe4+UHDyOaSng1Sxw2sVvAfGIPqNPq2w7XwU1F2BMEn7yYQeY8o3i/CqyyLwTV9BNhatHTiv8HgW+gXqwM3sIPqgi7uVyau6eNbMZTCu98deXIwAzC7XglUbamD+t9Doj/cqZCbovL8VUQe7d3mo9yeAVcL+DQFYgopGqd6xKqzHYgFWWElaks6/bPcVrKKEvwKmbKApgR63aubbp8w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aCLLRohJjok8TqVwRzKwzDc6MNI2v7ZjwAyyQWt5yQA=;
- b=L9Tj39MAAd8YtY9/QkKPQnPj7zM9kcYABKm2sUHSMUAzI8EV7J6XXWlrGyILKu6YDff087RqJlPKlXBnoIbZR9NKP4c/K95ZSCz07fVtZ/q2VRl70uptWl08U77thNJ9ZVqUXLbUdJqWRHSFyVyGpL+sCejxcbmd+WkhksAatD9VqPviWwV3VkU1b7Nta6w3t7d8ATNSWhJEt7DeIwRB5WK4yffexH4AOhAhUXUciYdJjRquRLjU2Q6Gn/kVxcz1KCGfE5HL2VL2U7FcuG3vpBTBWZCZOlJLVvvy8oW6WnRgKFdrdLFHwxMCoHRfxYL36eyH6/Hu7D33BuIz/f2LEg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aCLLRohJjok8TqVwRzKwzDc6MNI2v7ZjwAyyQWt5yQA=;
- b=cTqzL2oQXPqQampB+Hys7qpwgSN+e10WBpjCUqr5P0cedTmuhlCjKTEmWc9yLaeAysnRmCJujhilVWVckdhACL0P8lPMNHRuPH/Cpc+wdnZsLJLhEY3MzL+Jv2EJ2QnnxeldvU/OLQ6+bTdN7ylC1erru/XAXCoXYCMn5NTIAaI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from HK2PR06MB3492.apcprd06.prod.outlook.com (2603:1096:202:2f::10)
- by PUZPR06MB4575.apcprd06.prod.outlook.com (2603:1096:301:a6::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.14; Mon, 21 Mar
- 2022 10:27:13 +0000
-Received: from HK2PR06MB3492.apcprd06.prod.outlook.com
- ([fe80::d924:a610:681d:6d59]) by HK2PR06MB3492.apcprd06.prod.outlook.com
- ([fe80::d924:a610:681d:6d59%5]) with mapi id 15.20.5081.022; Mon, 21 Mar 2022
- 10:27:13 +0000
-From:   Guo Zhengkui <guozhengkui@vivo.com>
-To:     Shuah Khan <shuah@kernel.org>, Guo Zhengkui <guozhengkui@vivo.com>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Cc:     zhengkui_guo@outlook.com
-Subject: [PATCH linux-next] selftests/proc: fix array_size.cocci warning
-Date:   Mon, 21 Mar 2022 18:25:17 +0800
-Message-Id: <20220321102546.12569-1-guozhengkui@vivo.com>
-X-Mailer: git-send-email 2.20.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: HKAPR04CA0012.apcprd04.prod.outlook.com
- (2603:1096:203:d0::22) To HK2PR06MB3492.apcprd06.prod.outlook.com
- (2603:1096:202:2f::10)
+        Mon, 21 Mar 2022 06:29:17 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07A7BDA6E3
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 03:27:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647858472; x=1679394472;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=lwNcIeH9h9aZfu+Rz06TkUw+UBoRgaE7boHdn7yY4gc=;
+  b=CuiELwNFCS2aYqFCfCy834/c+OawbgN/1LiHM6zoU55WlUXxqbc7aDO5
+   WSgyo3JzMrjJESt6/o+g54kaEWvPrytYSbxRnwjab/nns9k690LFPMBdn
+   3lpbqGyAhBoa3T2SiIelpz4HL7wAcZ7/RGT9MSv+Zz/TvXavr5gNjOe9W
+   9t1HmzvV94bxNMVqkHrNsNjw4EyslsJTUgDmil5E7oQctakTPNyeOFTnL
+   aWGFfbQ4djVkpwxZxIAXaC7bNyxzFcX5goMe6oh3XEFtEpDkUMmvG6MtL
+   +rmBN5EAcinU9YZvvk+H0ExRRGTXbTdVXr6SMf95Jel1YfdTy8etKRaMD
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10292"; a="239675071"
+X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
+   d="scan'208";a="239675071"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 03:27:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
+   d="scan'208";a="692129385"
+Received: from pglc00034.png.intel.com ([10.221.207.54])
+  by fmsmga001.fm.intel.com with ESMTP; 21 Mar 2022 03:27:49 -0700
+From:   kah.jing.lee@intel.com
+To:     Dinh Nguyen <dinguyen@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, radu.bacrau@intel.com,
+        tien.sung.ang@intel.com, Kah Jing Lee <kah.jing.lee@intel.com>
+Subject: [PATCH v2] firmware: stratix10-rsu: extend RSU driver to get DCMF status
+Date:   Mon, 21 Mar 2022 18:27:46 +0800
+Message-Id: <20220321102746.29917-1-kah.jing.lee@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e0ea6273-2f9b-4446-c1db-08da0b255d07
-X-MS-TrafficTypeDiagnostic: PUZPR06MB4575:EE_
-X-Microsoft-Antispam-PRVS: <PUZPR06MB4575702BD403808FBA5381ACC7169@PUZPR06MB4575.apcprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: xcIoPqW5H+rFyfkf+ijO52z30GYDmWn4uOdJC+6x3n09PUOaH6x1w5E6UcrV+BbMxlSCfUrn7ky9ee2S7e/obv9+YZ23iNf6IxSYb+/8cPhLB9xiOSONmoPLGOnKgGzBmPgZMRP/DmaEVAJT7ApwWvBn9yUxwWKpVizPhqk3IgZQYZTadSVoHrQV0O7TdluJbxn+RAQVADKqYAP+h+Ws6fbzLMTshj8yCz/J4dM/XZ+QypbsFopYBtbOf4rCGP+6gE4I3p5r9SKAKAtacmqS5WdsUsH94zIFTA3fmgTtXAXO8BR+K+KJBiW+sjfg8kEj/gLPgZG+je+1jXnoHeB3Nv/5fNcSHkLkV2mGzKs+2a2RSJ+yZlagwD/ZTtAtg+rkyEaP6y7ZU7Y9QKCxBKmVsRR1AJGsYusyjgvrESuzgrGsL5a7eprzOqngrVIag2wXOtl5JEgU9Yc7Hy+qF2xCGeQ3RV6rvyY6CJLQ94haNQxtD7J/U7X52k9n/ylnA1M5W4Pw+SodvC+gGiYK9ocucH5zmeAXN3jN410nlHJKq6PCRUm4lgSyCo+wkcrVRbAqTw+D+sX83P5UDoEyoue/01oixw21a2IW6Xhq4ddFDjSFAWtQ+GqzAi4/ZMj0m3Mvold7WVvZoXJSZ+T5iXCC4FXqhJmr2XFimDJIHtBH2q+uW0uxNXuc8TpweXhn2EX1JjzTGWy3H299LhSFeQTfTg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK2PR06MB3492.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(4326008)(8676002)(316002)(6486002)(66476007)(66946007)(66556008)(6506007)(6512007)(52116002)(110136005)(186003)(26005)(1076003)(2616005)(8936002)(2906002)(83380400001)(5660300002)(36756003)(508600001)(38100700002)(38350700002)(86362001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+kmr0B4Mi2/xqE+KKbxtMq0u+afH41yXBnCQz8ma/PifBWMql8Xks7Kiy53a?=
- =?us-ascii?Q?/GzqoqpfYLM6eBCf2iqI/3ATcNWxY43anohX1KdI7TvPhFWcYt10TzXUFx6o?=
- =?us-ascii?Q?qN03VLk0gy6iG7EAYH76dJdXbw1+GlP207gNaPZjtL3rvUAi65IHA5TkO6C9?=
- =?us-ascii?Q?hoD5P1TCzekNfvUiBLVKtLg2OmlcROSqQ9geR1Fq8+wQ6piZJNM5eZxT7k8X?=
- =?us-ascii?Q?268ap76ccIXHDvKkVT8zKB4W0Zhn2k1PKry7gDkSIbacyB23MhUdLGvNiQZu?=
- =?us-ascii?Q?paek4z6FPyBlN268JtaySrNVpuvYWwAbOR5uOE5hig8f5L2tFdLMVbCL6k3J?=
- =?us-ascii?Q?+Nw5ER6qE6KWU9F22QU/oXQrAlFtksxMzOIW2IF9K1NrIK0/kt3+aTgUIXnb?=
- =?us-ascii?Q?tEkXufkxVSUFVY6wRkQz6ReoUsX0X6EuVy3XwF5RLIKitZEML4KKrCAtPXz7?=
- =?us-ascii?Q?OpOMbvpVEsGVMo8/I7ILP+ptIMpVJC9FCGkcASpr1CvG2DCrNvqmKggoe2OJ?=
- =?us-ascii?Q?4eSNuTEkU0QWUhn6YRKCy08L42ZpJ8PW71PJVA/wEw64Nw49zKrk73OOyzZ6?=
- =?us-ascii?Q?pOV6fwzYtDffpxWHdSzbjz/b/oUeMWsFZLwON9GDSN0oqRbQ/T3azoSnHVLJ?=
- =?us-ascii?Q?IKYjkTog3CPRwG9jAPsfNkb3oB573eAyqGazr9XIYBBSmpupMlCGQQeRgw1i?=
- =?us-ascii?Q?UU+w0fFvsM+Q0Fhrf1Jf93tOFa4Rc+F4zk5fWtQSZQYLVPqbLpqNOfk5bfR3?=
- =?us-ascii?Q?/x5+nqzRa0Z7dYSdXW3B0F7O6LFYwjAFxMSdrfiln6UNaKX4OFB1q/yb+n94?=
- =?us-ascii?Q?x9wQian67XLMSWA5oVVEnwYeMM9EJ/Spgrltnq5yD0igqrD/VZEs+mubhkRb?=
- =?us-ascii?Q?05+LDfv60woAJp4SDnKmQVB2GM6Z4NQC3JaVozZ48dO+jvxUHVMyoNq0/BjB?=
- =?us-ascii?Q?4musp1TOG90BXYc8gt4NG37wBZXI7mLNNKIECb/ixYSxLQP+jgNaqp4u8211?=
- =?us-ascii?Q?ETGS7vpJ5G75PEEVoUV9Kb/3XER/rTFXws4Eri7QBPxj1yQ3gai3YcZxjx6W?=
- =?us-ascii?Q?W8QKjKgM3QiIwSWzeae7bSTcOCHdLPxCBeoAe5iO3tn/ZPyeqqauNmi+2tGK?=
- =?us-ascii?Q?fBrF0TYwO3Sdh06gWFNSI346DubgtOkmOhCyeyVzAdyWv/niR/6Gpivins2Y?=
- =?us-ascii?Q?cFQQRdCLBFA5OlTGbZGet1u1Y8SWhRbsDFlm97LbQdVdlzWe1M6WF9zurxjN?=
- =?us-ascii?Q?U9q0weD3AVml0xa2mG1DuNHQE5K24rpVRqVUCAr9HqVOS2cANwViv0sy/LPj?=
- =?us-ascii?Q?J/F+N5MitM2KOQuu2ntzX2OpKowDNuZ0QaH9gZF4ECg2isgIsYT8Iz+mHNtY?=
- =?us-ascii?Q?1/15zjrZv9Im285rhNr2225JGkTUTXBEIus4/w9V3rLgKJkwUGkk8LGGlWRb?=
- =?us-ascii?Q?/Rvsd6jUn1ZNacTqI9SYrT/97wSId0to?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e0ea6273-2f9b-4446-c1db-08da0b255d07
-X-MS-Exchange-CrossTenant-AuthSource: HK2PR06MB3492.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2022 10:27:13.1175
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: H/73sjfAHGB4Ff0de95W4WmakTKHoYdmAUkzG35KzeJ57t4dmyEKt9WzkuxhcPHJLL38uwDghPP7zUkabYerIg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PUZPR06MB4575
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following coccicheck warning:
+From: Kah Jing Lee <kah.jing.lee@intel.com>
 
-tools/testing/selftests/proc/proc-pid-vm.c:371:26-27:
-WARNING: Use ARRAY_SIZE
-tools/testing/selftests/proc/proc-pid-vm.c:420:26-27:
-WARNING: Use ARRAY_SIZE
+Extend RSU driver to get DCMF status.
 
-It has been tested with gcc (Debian 8.3.0-6) 8.3.0 on x86_64.
+The status of each DCMF is reported. The currently used DCMF is used as
+reference, while the other three are compared against it to determine if
+they are corrupted.
 
-Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
+DCMF = Decision Configuration Management Firmware.
+RSU = Remote System Update
+
+Signed-off-by: Radu Bacrau <radu.bacrau@intel.com>
+Signed-off-by: Kah Jing Lee <kah.jing.lee@intel.com>
 ---
- tools/testing/selftests/proc/proc-pid-vm.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Changelog v2:
+* Fix the compilation error, missing declaration for COMMAND_RSU_DCMF_STATUS
+---
+ drivers/firmware/stratix10-rsu.c              | 131 +++++++++++++++++-
+ .../firmware/intel/stratix10-svc-client.h     |   4 +-
+ 2 files changed, 128 insertions(+), 7 deletions(-)
 
-diff --git a/tools/testing/selftests/proc/proc-pid-vm.c b/tools/testing/selftests/proc/proc-pid-vm.c
-index 18a3bde8bc96..28604c9f805c 100644
---- a/tools/testing/selftests/proc/proc-pid-vm.c
-+++ b/tools/testing/selftests/proc/proc-pid-vm.c
-@@ -46,6 +46,8 @@
- #include <sys/time.h>
- #include <sys/resource.h>
+diff --git a/drivers/firmware/stratix10-rsu.c b/drivers/firmware/stratix10-rsu.c
+index 9378075d04e9..856bc03ca07c 100644
+--- a/drivers/firmware/stratix10-rsu.c
++++ b/drivers/firmware/stratix10-rsu.c
+@@ -24,12 +24,16 @@
+ #define RSU_DCMF1_MASK			GENMASK_ULL(63, 32)
+ #define RSU_DCMF2_MASK			GENMASK_ULL(31, 0)
+ #define RSU_DCMF3_MASK			GENMASK_ULL(63, 32)
++#define RSU_DCMF0_STATUS_MASK		GENMASK_ULL(15, 0)
++#define RSU_DCMF1_STATUS_MASK		GENMASK_ULL(31, 16)
++#define RSU_DCMF2_STATUS_MASK		GENMASK_ULL(47, 32)
++#define RSU_DCMF3_STATUS_MASK		GENMASK_ULL(63, 48)
  
-+#include "../kselftest.h"
+ #define RSU_TIMEOUT	(msecs_to_jiffies(SVC_RSU_REQUEST_TIMEOUT_MS))
+ 
+ #define INVALID_RETRY_COUNTER		0xFF
+ #define INVALID_DCMF_VERSION		0xFF
+-
++#define INVALID_DCMF_STATUS		0xFFFFFFFF
+ 
+ typedef void (*rsu_callback)(struct stratix10_svc_client *client,
+ 			     struct stratix10_svc_cb_data *data);
+@@ -49,6 +53,10 @@ typedef void (*rsu_callback)(struct stratix10_svc_client *client,
+  * @dcmf_version.dcmf1: Quartus dcmf1 version
+  * @dcmf_version.dcmf2: Quartus dcmf2 version
+  * @dcmf_version.dcmf3: Quartus dcmf3 version
++ * @dcmf_status.dcmf0: dcmf0 status
++ * @dcmf_status.dcmf1: dcmf1 status
++ * @dcmf_status.dcmf2: dcmf2 status
++ * @dcmf_status.dcmf3: dcmf3 status
+  * @retry_counter: the current image's retry counter
+  * @max_retry: the preset max retry value
+  */
+@@ -73,6 +81,13 @@ struct stratix10_rsu_priv {
+ 		unsigned int dcmf3;
+ 	} dcmf_version;
+ 
++	struct {
++		unsigned int dcmf0;
++		unsigned int dcmf1;
++		unsigned int dcmf2;
++		unsigned int dcmf3;
++	} dcmf_status;
 +
- static inline long sys_execveat(int dirfd, const char *pathname, char **argv, char **envp, int flags)
- {
- 	return syscall(SYS_execveat, dirfd, pathname, argv, envp, flags);
-@@ -368,7 +370,7 @@ int main(void)
- 		};
- 		int i;
+ 	unsigned int retry_counter;
+ 	unsigned int max_retry;
+ };
+@@ -129,7 +144,7 @@ static void rsu_command_callback(struct stratix10_svc_client *client,
+ 	struct stratix10_rsu_priv *priv = client->priv;
  
--		for (i = 0; i < sizeof(S)/sizeof(S[0]); i++) {
-+		for (i = 0; i < ARRAY_SIZE(S); i++) {
- 			assert(memmem(buf, rv, S[i], strlen(S[i])));
- 		}
+ 	if (data->status == BIT(SVC_STATUS_NO_SUPPORT))
+-		dev_warn(client->dev, "FW doesn't support notify\n");
++		dev_warn(client->dev, "Secure FW doesn't support notify\n");
+ 	else if (data->status == BIT(SVC_STATUS_ERROR))
+ 		dev_err(client->dev, "Failure, returned status is %lu\n",
+ 			BIT(data->status));
+@@ -139,7 +154,7 @@ static void rsu_command_callback(struct stratix10_svc_client *client,
  
-@@ -417,7 +419,7 @@ int main(void)
- 		};
- 		int i;
+ /**
+  * rsu_retry_callback() - Callback from Intel service layer for getting
+- * the current image's retry counter from the firmware
++ * the current image's retry counter from firmware
+  * @client: pointer to client
+  * @data: pointer to callback data structure
+  *
+@@ -156,7 +171,7 @@ static void rsu_retry_callback(struct stratix10_svc_client *client,
+ 	if (data->status == BIT(SVC_STATUS_OK))
+ 		priv->retry_counter = *counter;
+ 	else if (data->status == BIT(SVC_STATUS_NO_SUPPORT))
+-		dev_warn(client->dev, "FW doesn't support retry\n");
++		dev_warn(client->dev, "Secure FW doesn't support retry\n");
+ 	else
+ 		dev_err(client->dev, "Failed to get retry counter %lu\n",
+ 			BIT(data->status));
+@@ -181,7 +196,7 @@ static void rsu_max_retry_callback(struct stratix10_svc_client *client,
+ 	if (data->status == BIT(SVC_STATUS_OK))
+ 		priv->max_retry = *max_retry;
+ 	else if (data->status == BIT(SVC_STATUS_NO_SUPPORT))
+-		dev_warn(client->dev, "FW doesn't support max retry\n");
++		dev_warn(client->dev, "Secure FW doesn't support max retry\n");
+ 	else
+ 		dev_err(client->dev, "Failed to get max retry %lu\n",
+ 			BIT(data->status));
+@@ -215,6 +230,35 @@ static void rsu_dcmf_version_callback(struct stratix10_svc_client *client,
+ 	complete(&priv->completion);
+ }
  
--		for (i = 0; i < sizeof(S)/sizeof(S[0]); i++) {
-+		for (i = 0; i < ARRAY_SIZE(S); i++) {
- 			assert(memmem(buf, rv, S[i], strlen(S[i])));
- 		}
++/**
++ * rsu_dcmf_status_callback() - Callback from Intel service layer for getting
++ * the DCMF status
++ * @client: pointer to client
++ * @data: pointer to callback data structure
++ *
++ * Callback from Intel service layer for DCMF status
++ */
++static void rsu_dcmf_status_callback(struct stratix10_svc_client *client,
++				     struct stratix10_svc_cb_data *data)
++{
++	struct stratix10_rsu_priv *priv = client->priv;
++	unsigned long long *value = (unsigned long long *)data->kaddr1;
++
++	if (data->status == BIT(SVC_STATUS_OK)) {
++		priv->dcmf_status.dcmf0 = FIELD_GET(RSU_DCMF0_STATUS_MASK,
++						    *value);
++		priv->dcmf_status.dcmf1 = FIELD_GET(RSU_DCMF1_STATUS_MASK,
++						    *value);
++		priv->dcmf_status.dcmf2 = FIELD_GET(RSU_DCMF2_STATUS_MASK,
++						    *value);
++		priv->dcmf_status.dcmf3 = FIELD_GET(RSU_DCMF3_STATUS_MASK,
++						    *value);
++	} else
++		dev_err(client->dev, "failed to get DCMF status\n");
++
++	complete(&priv->completion);
++}
++
+ /**
+  * rsu_send_msg() - send a message to Intel service layer
+  * @priv: pointer to rsu private data
+@@ -361,7 +405,8 @@ static ssize_t max_retry_show(struct device *dev,
+ 	if (!priv)
+ 		return -ENODEV;
+ 
+-	return sprintf(buf, "0x%08x\n", priv->max_retry);
++	return scnprintf(buf, sizeof(priv->max_retry),
++			 "0x%08x\n", priv->max_retry);
+ }
+ 
+ static ssize_t dcmf0_show(struct device *dev,
+@@ -408,6 +453,61 @@ static ssize_t dcmf3_show(struct device *dev,
+ 	return sprintf(buf, "0x%08x\n", priv->dcmf_version.dcmf3);
+ }
+ 
++static ssize_t dcmf0_status_show(struct device *dev,
++				 struct device_attribute *attr, char *buf)
++{
++	struct stratix10_rsu_priv *priv = dev_get_drvdata(dev);
++
++	if (!priv)
++		return -ENODEV;
++
++	if (priv->dcmf_status.dcmf0 == INVALID_DCMF_STATUS)
++		return -EIO;
++
++	return sprintf(buf, "0x%08x\n", priv->dcmf_status.dcmf0);
++}
++
++static ssize_t dcmf1_status_show(struct device *dev,
++				 struct device_attribute *attr, char *buf)
++{
++	struct stratix10_rsu_priv *priv = dev_get_drvdata(dev);
++
++	if (!priv)
++		return -ENODEV;
++
++	if (priv->dcmf_status.dcmf1 == INVALID_DCMF_STATUS)
++		return -EIO;
++
++	return sprintf(buf, "0x%08x\n", priv->dcmf_status.dcmf1);
++}
++
++static ssize_t dcmf2_status_show(struct device *dev,
++				struct device_attribute *attr, char *buf)
++{
++	struct stratix10_rsu_priv *priv = dev_get_drvdata(dev);
++
++	if (!priv)
++		return -ENODEV;
++
++	if (priv->dcmf_status.dcmf2 == INVALID_DCMF_STATUS)
++		return -EIO;
++
++	return sprintf(buf, "0x%08x\n", priv->dcmf_status.dcmf2);
++}
++
++static ssize_t dcmf3_status_show(struct device *dev,
++				 struct device_attribute *attr, char *buf)
++{
++	struct stratix10_rsu_priv *priv = dev_get_drvdata(dev);
++
++	if (!priv)
++		return -ENODEV;
++
++	if (priv->dcmf_status.dcmf3 == INVALID_DCMF_STATUS)
++		return -EIO;
++
++	return sprintf(buf, "0x%08x\n", priv->dcmf_status.dcmf3);
++}
+ static ssize_t reboot_image_store(struct device *dev,
+ 				  struct device_attribute *attr,
+ 				  const char *buf, size_t count)
+@@ -484,6 +584,10 @@ static DEVICE_ATTR_RO(dcmf0);
+ static DEVICE_ATTR_RO(dcmf1);
+ static DEVICE_ATTR_RO(dcmf2);
+ static DEVICE_ATTR_RO(dcmf3);
++static DEVICE_ATTR_RO(dcmf0_status);
++static DEVICE_ATTR_RO(dcmf1_status);
++static DEVICE_ATTR_RO(dcmf2_status);
++static DEVICE_ATTR_RO(dcmf3_status);
+ static DEVICE_ATTR_WO(reboot_image);
+ static DEVICE_ATTR_WO(notify);
+ 
+@@ -500,6 +604,10 @@ static struct attribute *rsu_attrs[] = {
+ 	&dev_attr_dcmf1.attr,
+ 	&dev_attr_dcmf2.attr,
+ 	&dev_attr_dcmf3.attr,
++	&dev_attr_dcmf0_status.attr,
++	&dev_attr_dcmf1_status.attr,
++	&dev_attr_dcmf2_status.attr,
++	&dev_attr_dcmf3_status.attr,
+ 	&dev_attr_reboot_image.attr,
+ 	&dev_attr_notify.attr,
+ 	NULL
+@@ -532,6 +640,10 @@ static int stratix10_rsu_probe(struct platform_device *pdev)
+ 	priv->dcmf_version.dcmf2 = INVALID_DCMF_VERSION;
+ 	priv->dcmf_version.dcmf3 = INVALID_DCMF_VERSION;
+ 	priv->max_retry = INVALID_RETRY_COUNTER;
++	priv->dcmf_status.dcmf0 = INVALID_DCMF_STATUS;
++	priv->dcmf_status.dcmf1 = INVALID_DCMF_STATUS;
++	priv->dcmf_status.dcmf2 = INVALID_DCMF_STATUS;
++	priv->dcmf_status.dcmf3 = INVALID_DCMF_STATUS;
+ 
+ 	mutex_init(&priv->lock);
+ 	priv->chan = stratix10_svc_request_channel_byname(&priv->client,
+@@ -561,6 +673,13 @@ static int stratix10_rsu_probe(struct platform_device *pdev)
+ 		stratix10_svc_free_channel(priv->chan);
  	}
+ 
++	ret = rsu_send_msg(priv, COMMAND_RSU_DCMF_STATUS,
++			   0, rsu_dcmf_status_callback);
++	if (ret) {
++		dev_err(dev, "Error, getting DCMF status %i\n", ret);
++		stratix10_svc_free_channel(priv->chan);
++	}
++
+ 	ret = rsu_send_msg(priv, COMMAND_RSU_RETRY, 0, rsu_retry_callback);
+ 	if (ret) {
+ 		dev_err(dev, "Error, getting RSU retry %i\n", ret);
+diff --git a/include/linux/firmware/intel/stratix10-svc-client.h b/include/linux/firmware/intel/stratix10-svc-client.h
+index 19781b0f6429..420b747b4a03 100644
+--- a/include/linux/firmware/intel/stratix10-svc-client.h
++++ b/include/linux/firmware/intel/stratix10-svc-client.h
+@@ -111,12 +111,14 @@ enum stratix10_svc_command_code {
+ 	COMMAND_RECONFIG_DATA_SUBMIT,
+ 	COMMAND_RECONFIG_DATA_CLAIM,
+ 	COMMAND_RECONFIG_STATUS,
+-	COMMAND_RSU_STATUS,
++	/* for RSU */
++    COMMAND_RSU_STATUS = 10,
+ 	COMMAND_RSU_UPDATE,
+ 	COMMAND_RSU_NOTIFY,
+ 	COMMAND_RSU_RETRY,
+ 	COMMAND_RSU_MAX_RETRY,
+ 	COMMAND_RSU_DCMF_VERSION,
++	COMMAND_RSU_DCMF_STATUS,
+ };
+ 
+ /**
 -- 
-2.20.1
+2.26.2
 
