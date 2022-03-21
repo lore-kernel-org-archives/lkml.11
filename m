@@ -2,131 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABFE1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:59:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99939C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 12:00:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347059AbiCUMBU (ORCPT
+        id S1347067AbiCUMCH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 08:01:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55884 "EHLO
+        Mon, 21 Mar 2022 08:02:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347058AbiCUMBR (ORCPT
+        with ESMTP id S1347048AbiCUMCF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 08:01:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 97D5C35DFF
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 04:59:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647863989;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=M8SduSexr52RIvyqJ7K4vqt1DySM0qnqx8wYMGvEAVM=;
-        b=Zur6uNfLrMIyPBs/RP3Kn69v9OmNHOLFuI4DnbxrYLUjbhxNRaPvICxtOVjStwV8B/+DzA
-        RRqRoZRjm3xR5X5KVtqoG13i6ZP/qvjvI9jd9kN1nn/6uAYdHWgN/5pI5NBkU3ecd4Y7HT
-        5zKmiylzyZysYV3fWK4Z6m8Tomy7RiA=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-134-JZO2FG2FObqXwYcXkrAyYA-1; Mon, 21 Mar 2022 07:59:46 -0400
-X-MC-Unique: JZO2FG2FObqXwYcXkrAyYA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Mon, 21 Mar 2022 08:02:05 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E62B532F3
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 05:00:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 73AA4811E7A;
-        Mon, 21 Mar 2022 11:59:45 +0000 (UTC)
-Received: from localhost (ovpn-13-106.pek2.redhat.com [10.72.13.106])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 86B5840C1241;
-        Mon, 21 Mar 2022 11:59:44 +0000 (UTC)
-Date:   Mon, 21 Mar 2022 19:59:40 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Eric DeVolder <eric.devolder@oracle.com>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        kexec@lists.infradead.org, ebiederm@xmission.com,
-        dyoung@redhat.com, vgoyal@redhat.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com, nramas@linux.microsoft.com, thomas.lendacky@amd.com,
-        robh@kernel.org, efault@gmx.de, rppt@kernel.org, david@redhat.com,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com
-Subject: Re: [PATCH v5 2/8] x86/crash hp: Introduce CRASH_HOTPLUG
- configuration options
-Message-ID: <20220321115940.GA354864@MiWiFi-R3L-srv>
-References: <20220303162725.49640-1-eric.devolder@oracle.com>
- <20220303162725.49640-3-eric.devolder@oracle.com>
+        by sin.source.kernel.org (Postfix) with ESMTPS id C800DCE13B1
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 12:00:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78E71C340E8;
+        Mon, 21 Mar 2022 12:00:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647864037;
+        bh=x7RIt4mLNf8mNberwc71l5fBa0XC8ugDp4MrJBP6Nek=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=Xa6xRMwoEmgjWxCWOEJdmmp7L8ZGpxrrK/IlLjLMCpZPbOecdMtKsY4ttW5bkyiQn
+         RQdQv+QdS/hH+Aa4AWx213Q864twi8Ro6gvE6BX1ttwwdPhY3CO+n685a17NeHdXJb
+         r4n7YMUlYiqSq4O6IGLvRKMpHHAgTmgI5N4PzK+fNfeh4BtsVZWG+/n9ODaVQ5RkdU
+         ftCJHj+SPsQQWa/J28XMkReAUUpgUaXPsRdx74w0qkQSPZTcOO7SicAeBXGbGliEZj
+         A1elc8hIO0p5rT5DdSpiLF6IBT+FCWBMHYDjMzNVotBhhHO7pcD2qt3VnOEYimFV/p
+         DKAYtWS5X3zPw==
+From:   Mark Brown <broonie@kernel.org>
+To:     Jiaxin Yu <jiaxin.yu@mediatek.com>
+Cc:     linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        trevor.wu@mediatek.com,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        alsa-devel@alsa-project.org,
+        angelogioacchino.delregno@collabora.com, tzungbi@google.com,
+        linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20220319120325.11882-1-jiaxin.yu@mediatek.com>
+References: <20220319120325.11882-1-jiaxin.yu@mediatek.com>
+Subject: Re: [PATCH] ASoC: mediatek: mt6358: add missing EXPORT_SYMBOLs
+Message-Id: <164786403520.879132.12234155577870165792.b4-ty@kernel.org>
+Date:   Mon, 21 Mar 2022 12:00:35 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220303162725.49640-3-eric.devolder@oracle.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03/03/22 at 11:27am, Eric DeVolder wrote:
-> Support for CPU and memory hotplug for crash is controlled by the
-> CRASH_HOTPLUG configuration option, introduced by this patch.
+On Sat, 19 Mar 2022 20:03:25 +0800, Jiaxin Yu wrote:
+> Fixes the following build errors when mt6358 is configured as module:
 > 
-> The CRASH_HOTPLUG_ELFCOREHDR_SZ related configuration option is
-> also introduced with this patch.
-
-Maybe can rephrase it as:
-
-x86/crash: Introduce new options to support cpu and memory hotplug of crash
- 
-CRASH_HOTPLUG is to enable cpu and memory hotplug of crash.
-
-CRASH_HOTPLUG_ELFCOREHDR_SZ is used to Specify the maximum size of
-the elfcorehdr buffer/segment.
- 
-This is a preparation for later usage.
-
-Otherwise, this looks good to me.
-
-
+> >> ERROR: modpost: "mt6358_set_mtkaif_protocol"
+> >> [sound/soc/mediatek/mt8186/mt8186-mt6366-rt1019-rt5682s.ko] undefined!
+> >> ERROR: modpost: "mt6358_set_mtkaif_protocol"
+> >> [sound/soc/mediatek/mt8186/mt8186-mt6366-da7219-max98357.ko] undefined!
 > 
-> Signed-off-by: Eric DeVolder <eric.devolder@oracle.com>
-> ---
->  arch/x86/Kconfig | 26 ++++++++++++++++++++++++++
->  1 file changed, 26 insertions(+)
-> 
-> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-> index 9f5bd41bf660..37eb26563f07 100644
-> --- a/arch/x86/Kconfig
-> +++ b/arch/x86/Kconfig
-> @@ -2061,6 +2061,32 @@ config CRASH_DUMP
->  	  (CONFIG_RELOCATABLE=y).
->  	  For more details see Documentation/admin-guide/kdump/kdump.rst
->  
-> +config CRASH_HOTPLUG
-> +	bool "kernel updates of crash elfcorehdr"
-> +	depends on CRASH_DUMP && (HOTPLUG_CPU || MEMORY_HOTPLUG) && KEXEC_FILE
-> +	help
-> +	  Enable the kernel to update the crash elfcorehdr (which contains
-> +	  the list of CPUs and memory regions) directly when hot plug/unplug
-> +	  of CPUs or memory. Otherwise userspace must monitor these hot
-> +	  plug/unplug change notifications via udev in order to
-> +	  unload-then-reload the crash kernel so that the list of CPUs and
-> +	  memory regions is kept up-to-date. Note that the udev CPU and
-> +	  memory change notifications still occur (however, userspace is not
-> +	  required to monitor for crash dump purposes).
-> +
-> +config CRASH_HOTPLUG_ELFCOREHDR_SZ
-> +	depends on CRASH_HOTPLUG
-> +	int
-> +	default 131072
-> +	help
-> +	  Specify the maximum size of the elfcorehdr buffer/segment.
-> +	  The 128KiB default is sized so that it can accommodate 2048
-> +	  Elf64_Phdr, where each Phdr represents either a CPU or a
-> +	  region of memory.
-> +	  For example, this size can accommodate a machine with up to 1024
-> +	  CPUs and up to 1024 memory regions, eg. as represented by the
-> +	  'System RAM' entries in /proc/iomem.
-> +
->  config KEXEC_JUMP
->  	bool "kexec jump"
->  	depends on KEXEC && HIBERNATION
-> -- 
-> 2.27.0
-> 
+> [...]
 
+Applied to
+
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-linus
+
+Thanks!
+
+[1/1] ASoC: mediatek: mt6358: add missing EXPORT_SYMBOLs
+      commit: a7663c89f4193dbf717572e46e5a3251940dbdc8
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
