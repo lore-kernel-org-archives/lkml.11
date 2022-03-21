@@ -2,68 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD093C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:58:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A95DC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 09:58:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346123AbiCUKAB (ORCPT
+        id S1346177AbiCUKAT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 06:00:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46616 "EHLO
+        Mon, 21 Mar 2022 06:00:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346144AbiCUJ7j (ORCPT
+        with ESMTP id S1346152AbiCUKAM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 05:59:39 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 17E2333E90;
-        Mon, 21 Mar 2022 02:58:12 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 732E5106F;
-        Mon, 21 Mar 2022 02:58:12 -0700 (PDT)
-Received: from e123648.arm.com (unknown [10.57.22.222])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 8F8753F766;
-        Mon, 21 Mar 2022 02:58:09 -0700 (PDT)
-From:   Lukasz Luba <lukasz.luba@arm.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     lukasz.luba@arm.com, dietmar.eggemann@arm.com,
-        Pierre.Gondois@arm.com, ionela.voinescu@arm.com,
-        viresh.kumar@linaro.org, rafael@kernel.org,
-        daniel.lezcano@linaro.org, linux-pm@vger.kernel.org,
-        mka@chromium.org, nm@ti.com, sboyd@kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, cristian.marussi@arm.com,
-        sudeep.holla@arm.com, matthias.bgg@gmail.com
-Subject: [RESEND][PATCH 8/8] powercap: DTPM: Check for Energy Model type
-Date:   Mon, 21 Mar 2022 09:57:29 +0000
-Message-Id: <20220321095729.20655-9-lukasz.luba@arm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220321095729.20655-1-lukasz.luba@arm.com>
-References: <20220321095729.20655-1-lukasz.luba@arm.com>
+        Mon, 21 Mar 2022 06:00:12 -0400
+Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E3F337BF8;
+        Mon, 21 Mar 2022 02:58:40 -0700 (PDT)
+Received: from mail.aspeedtech.com ([192.168.0.24])
+        by twspam01.aspeedtech.com with ESMTP id 22L9jvj1079097;
+        Mon, 21 Mar 2022 17:45:57 +0800 (GMT-8)
+        (envelope-from dylan_hung@aspeedtech.com)
+Received: from DylanHung-PC.aspeed.com (192.168.2.216) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 21 Mar
+ 2022 17:56:23 +0800
+From:   Dylan Hung <dylan_hung@aspeedtech.com>
+To:     <robh+dt@kernel.org>, <joel@jms.id.au>, <andrew@aj.id.au>,
+        <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <p.zabel@pengutronix.de>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+CC:     <BMC-SW@aspeedtech.com>
+Subject: [PATCH v2 0/3]  Add reset deassertion for Aspeed MDIO
+Date:   Mon, 21 Mar 2022 17:56:45 +0800
+Message-ID: <20220321095648.4760-1-dylan_hung@aspeedtech.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.2.216]
+X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
+ (192.168.0.24)
+X-DNSRBL: 
+X-MAIL: twspam01.aspeedtech.com 22L9jvj1079097
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Energy Model power values might be artificial. In such case
-it's safe to bail out during the registration, since the PowerCap
-framework supports only micro-Watts.
+Add missing reset deassertion for Aspeed MDIO. There are 4 MDIOs embedded
+in Aspeed AST2600 and share one reset control bit SCU50[3].
 
-Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
----
- drivers/powercap/dtpm_cpu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Dylan Hung (3):
+  dt-bindings: net: add reset property for aspeed, ast2600-mdio binding
+  net: mdio: add reset control for Aspeed MDIO
+  ARM: dts: aspeed: add reset properties into MDIO nodes
 
-diff --git a/drivers/powercap/dtpm_cpu.c b/drivers/powercap/dtpm_cpu.c
-index bca2f912d349..f5eced0842b3 100644
---- a/drivers/powercap/dtpm_cpu.c
-+++ b/drivers/powercap/dtpm_cpu.c
-@@ -211,7 +211,7 @@ static int __dtpm_cpu_setup(int cpu, struct dtpm *parent)
- 		return 0;
- 
- 	pd = em_cpu_get(cpu);
--	if (!pd)
-+	if (!pd || em_is_artificial(pd))
- 		return -EINVAL;
- 
- 	dtpm_cpu = kzalloc(sizeof(*dtpm_cpu), GFP_KERNEL);
+ .../bindings/net/aspeed,ast2600-mdio.yaml         |  4 ++++
+ arch/arm/boot/dts/aspeed-g6.dtsi                  |  4 ++++
+ drivers/net/mdio/mdio-aspeed.c                    | 15 ++++++++++++++-
+ 3 files changed, 22 insertions(+), 1 deletion(-)
+
 -- 
-2.17.1
+2.25.1
 
