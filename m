@@ -2,78 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93804C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:24:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CF4CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:24:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233087AbiCUXZl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:25:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43510 "EHLO
+        id S232577AbiCUX0V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:26:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233015AbiCUXZU (ORCPT
+        with ESMTP id S232602AbiCUX0M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 19:25:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7373134B531;
-        Mon, 21 Mar 2022 16:19:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D23A614D2;
-        Mon, 21 Mar 2022 23:18:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0348DC340F0;
-        Mon, 21 Mar 2022 23:18:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647904725;
-        bh=ge9/KE0MvPV2x4BOJKi7lxKFuT0TDOkEUBeJ1gTLFTI=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=jESsbixbCw4x2xf/+Da8jgRr+MXdwWKADpN2Kw6DRC7G7dH0na+anH9Yr3YCjc9gy
-         mxqX/9uCa81UrhkgjL6dTYbwgP9AbVP8ZW59L2ijm2Sgc9uNLn2+PvndGhrmIs7HRB
-         jMX0W5LxTimtj0J+Sbkh47kAEbehjtsYH6+/0SlucU2qn7OqV5LT2rMGaWBzd4l/nZ
-         W/54NuBNZVgq+Y9/9JjeGsWbU28bivfvNgYk+PmNCSAoKqEzTpF0zSM9C74EnRz8Kq
-         yU1zDPnJYAoJ3/VucG07Q9D1SPJucgJDf895KjGd98AiME7xIR0Z+JAS4O8jAk7J6G
-         uX+An6v/2cdQw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E60A1E6D44B;
-        Mon, 21 Mar 2022 23:18:44 +0000 (UTC)
-Subject: Re: [GIT PULL] Crypto Update for 5.18
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <Yje766s7fIqYg1Tk@gondor.apana.org.au>
-References: <20200803044024.GA6429@gondor.apana.org.au>
- <20201012033249.GA25179@gondor.apana.org.au>
- <20201214055515.GA14196@gondor.apana.org.au>
- <20210215024721.GA20593@gondor.apana.org.au>
- <20210426123200.kgbyk6ayey4l4lrw@gondor.apana.org.au>
- <20210628110050.GA12162@gondor.apana.org.au>
- <20210830082818.GA30921@gondor.apana.org.au>
- <20211102035201.GA23331@gondor.apana.org.au>
- <Ydzlo+UmL5bbDgUZ@gondor.apana.org.au> <Yje766s7fIqYg1Tk@gondor.apana.org.au>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Yje766s7fIqYg1Tk@gondor.apana.org.au>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/herbert/crypto-2.6.git linus
-X-PR-Tracked-Commit-Id: 0e03b8fd29363f2df44e2a7a176d486de550757a
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 93e220a62da36f766b3188e76e234607e41488f9
-Message-Id: <164790472493.24500.15386999744557853585.pr-tracker-bot@kernel.org>
-Date:   Mon, 21 Mar 2022 23:18:44 +0000
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
+        Mon, 21 Mar 2022 19:26:12 -0400
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F9E230CDA2
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 16:20:26 -0700 (PDT)
+Received: from epcas3p4.samsung.com (unknown [182.195.41.22])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220321225302epoutp01d84c85b3411e706087958a05724052f1~ehzaWg9Jd3003230032epoutp01y
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 22:53:02 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220321225302epoutp01d84c85b3411e706087958a05724052f1~ehzaWg9Jd3003230032epoutp01y
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1647903182;
+        bh=gZ85nLCWNmsAfvqI0fRnfzDwcZzX7wY6ZjjumUxiO1c=;
+        h=Subject:Reply-To:From:To:CC:In-Reply-To:Date:References:From;
+        b=hQh2xvqxioLvEpER8Wz4p0rsb2itJcbWLL2m0SUuFT+8BERFbgpitCqLq49NjOgPy
+         1jU8+tX0KTao2K3cydkoMye7BwDxXIGVIEJRjG3jOto7JVx6YA3HTUoeV71DM3caeA
+         5faaNKFJYgtOchA1/KgaTqXmQcRj30jBhQ/1pnnA=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas3p3.samsung.com (KnoxPortal) with ESMTP id
+        20220321225301epcas3p3f8bd9168c5b66209b475531c5b365d88~ehzZw3aKD0753007530epcas3p3P;
+        Mon, 21 Mar 2022 22:53:01 +0000 (GMT)
+Received: from epcpadp4 (unknown [182.195.40.18]) by epsnrtp2.localdomain
+        (Postfix) with ESMTP id 4KMqdn3gH8z4x9Pv; Mon, 21 Mar 2022 22:53:01 +0000
+        (GMT)
+Mime-Version: 1.0
+Subject: RE: [PATCH v2] ufs: fix an NULL check on list iterator
+Reply-To: daejun7.park@samsung.com
+Sender: Daejun Park <daejun7.park@samsung.com>
+From:   Daejun Park <daejun7.park@samsung.com>
+To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        ALIM AKHTAR <alim.akhtar@samsung.com>
+CC:     "avri.altman@wdc.com" <avri.altman@wdc.com>,
+        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
+        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+        Daejun Park <daejun7.park@samsung.com>,
+        "beanhuo@micron.com" <beanhuo@micron.com>,
+        "bvanassche@acm.org" <bvanassche@acm.org>,
+        Keoseong Park <keosung.park@samsung.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "stanley.chu@mediatek.com" <stanley.chu@mediatek.com>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "jakobkoschel@gmail.com" <jakobkoschel@gmail.com>
+X-Priority: 3
+X-Content-Kind-Code: NORMAL
+In-Reply-To: <20220320150733.21824-1-xiam0nd.tong@gmail.com>
+X-CPGS-Detection: blocking_info_exchange
+X-Drm-Type: N,general
+X-Msg-Generator: Mail
+X-Msg-Type: PERSONAL
+X-Reply-Demand: N
+Message-ID: <1891546521.01647903181504.JavaMail.epsvc@epcpadp4>
+Date:   Mon, 21 Mar 2022 22:17:08 +0900
+X-CMS-MailID: 20220321131708epcms2p666061b9d088cbc5319af243a9aed44a0
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+X-CPGSPASS: Y
+X-CPGSPASS: Y
+X-Hop-Count: 3
+X-CMS-RootMailID: 20220320150754epcas2p3ffdbcd31ff5f4432e8d0a1106c91d729
+References: <20220320150733.21824-1-xiam0nd.tong@gmail.com>
+        <CGME20220320150754epcas2p3ffdbcd31ff5f4432e8d0a1106c91d729@epcms2p6>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 21 Mar 2022 11:42:35 +1200:
+Hi Xiaomeng Tong,
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/herbert/crypto-2.6.git linus
+>The list iterator is always non-NULL so the check 'if (!rgn)'
+>is always false and the dev_err() is never called. Move the
+>check outside the loop and determine if 'victim_rgn' is NULL,
+>to fix this bug.
+> 
+>Fixes: 4b5f49079c52a ("scsi: ufs: ufshpb: L2P map management for HPB read")
+>Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+>---
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/93e220a62da36f766b3188e76e234607e41488f9
+Good catch. Free to add my reviewed-by tag.
 
-Thank you!
+Reviewed-by: Daejun Park <daejun7.park@samsung.com>
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Thanks,
+Daejun
