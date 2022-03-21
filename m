@@ -2,146 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC23AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 04:31:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF4DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 04:41:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344378AbiCUEdQ (ORCPT
+        id S1344340AbiCUEmU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 00:33:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47232 "EHLO
+        Mon, 21 Mar 2022 00:42:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344398AbiCUEdK (ORCPT
+        with ESMTP id S233041AbiCUEmO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 00:33:10 -0400
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8038E33E04
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Mar 2022 21:31:29 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 726FE5C0126;
-        Mon, 21 Mar 2022 00:31:27 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 21 Mar 2022 00:31:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:date:date:from:from:in-reply-to
-        :message-id:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=q/rwds
-        Z9GX/6TRc6IpzD6MxELSkwdXgINKIVSJHbvoo=; b=h6F6rsLrkM49LK8naaPQFf
-        jmtqZkVdkqmcyMr4bXXeDugsLCcVGu86AtOlAFLmyEx7mAWegcgTWAJtSoWNQUMz
-        airESWElgb83a15nivXWJ0F48Jrb3dxBJUuxwOW1YRgyVwVSbVx7LPFqyhL3g9xz
-        bEYSNF1JP1oWjITMieaNiAwyNN1L0I/qt29MomnJ7g1BZ/mgDnIkFVb4KBEACWxK
-        mpazMvWTffuAOTVjES7Njh6/bJFhto5t4/1R9+7RwKhfuKwvocBJ6+/xfgz9s0QK
-        Kuuku9MEWuk97E7pDAK0Mq3mxIg8VoXrFyZ1sIamiKNTzDzh0a0+s6Qv4SaSPZsw
-        ==
-X-ME-Sender: <xms:nv83YvA-2FdJGKP34KKJODHGQs3t0rk_jT9_7fGOc8XaRuE-gYcwfQ>
-    <xme:nv83YliI1Bx7RVotrYRR_cHtD4trKRiAfiC_IoXJAMHkVno8wj9U4eaK4qcdhvseV
-    b7wLZFW0ovz9zSWlCQ>
-X-ME-Received: <xmr:nv83Yql1fTFxpGDFJDOlMBnXO25-q1xdZOKgzBYPVKw2gp3Juu5fie4ykOsZEUrwJWOlRwuQVVlRycCQ8yzUqfmFJDgqwkbeWxI>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudegvddgjeduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepvffkhffuffestddtredttddttdenucfhrhhomhephfhinhhnucfvhhgrihhn
-    uceofhhthhgrihhnsehlihhnuhigqdhmieekkhdrohhrgheqnecuggftrfgrthhtvghrnh
-    eptdelteekleekkedvueejheekgfdvtdehhefhteeitefhteefgefhudehveevleelnecu
-    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepfhhthhgrih
-    hnsehlihhnuhigqdhmieekkhdrohhrgh
-X-ME-Proxy: <xmx:n_83Yhxb0BSWnHum-DGXUrspG3HgAw_pKDCO1FD7j1qu0lQ6y_ugFg>
-    <xmx:n_83YkS3pZBSY7M7oy2aWBHwybLJ16dVJEwSeShc45wRO7YsOe9WfA>
-    <xmx:n_83Yka8zOSqkGI9AveVdmN2fRjEIHIPG4wsQb2Sfpb88t-bNFAigg>
-    <xmx:n_83YqckGj0qhlbik_f0UQIB4iwgzag2VxvGWibOPdMoZW38JPDW6g>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 21 Mar 2022 00:31:24 -0400 (EDT)
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc:     "Michael Ellerman" <mpe@ellerman.id.au>,
-        "Geert Uytterhoeven" <geert@linux-m68k.org>,
-        "Randy Dunlap" <rdunlap@infradead.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Message-Id: <d987663bbed18d7dbf106db6066a759040b4e57a.1647837028.git.fthain@linux-m68k.org>
-From:   Finn Thain <fthain@linux-m68k.org>
-Subject: [PATCH] macintosh/via-pmu: Fix build failure when CONFIG_INPUT is
- disabled
-Date:   Mon, 21 Mar 2022 15:30:28 +1100
+        Mon, 21 Mar 2022 00:42:14 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A49047AD9;
+        Sun, 20 Mar 2022 21:40:48 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id 6so9487780pgg.0;
+        Sun, 20 Mar 2022 21:40:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=mWy+Nn/dpF8v1E/uejsR9Vh11q+4/9Uqdl66Nz5vyjM=;
+        b=T6QmrrzUypB3nXB94VGx+6PFzeBtPJi9+Q6KjR8JWcs8hjNtBDlpZbqvP63Oewepgl
+         a9BzoWwrliGpjm8La0JmiC7xFXCq4TnUzMG0svQR2h69pZKtjGUrUCq5s4y+qR5u1vuZ
+         iFu/QNJxGoqS5tZgoIk8RKg7KO0ggzvYL460wdssIEAlCXRyEKEIt8dvqbn12CW64Gkx
+         lj22h9pCnc7LjZT+Naq8V+x9kvWd5I9Iw44rDRiqCAxul98iAwCWged2UwuwuPZio1Qb
+         2IHN/03G8CKcl/5gLEm7I6Q/l97+Dd2sGTd33njFZSA5tZCYdm3GxB4aPhVPfs40+Zst
+         Oe5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=mWy+Nn/dpF8v1E/uejsR9Vh11q+4/9Uqdl66Nz5vyjM=;
+        b=x+XS4jlJvwlSwHkXWuNkiu6FgokEa+D3orOS5HE/IIzYVtp0mXf8J61ff8oUmdOclb
+         x6D4XkJJsuVoUGBK01I/FmJ3p/CrKAtb27zj8R+SB2KdVVeQ0135pPQZ2tWD8f5Xjscq
+         uOykwqx1uEBvaYSL5Re8BxdXiB+J2quAXressu8xcGII8vLabLnN9xwxGuqBCwI+dtHi
+         h60vvsDsF4KknCJ6Yx11oie/Zi1LXEcBxt85Mx2kWEfa7tmSNTLKeNL6X6jMoO5Hf1To
+         353r5Q56XM1gTHvUaUnrwW4wUojiWd9HZiHi8agbt8dl2L1eGoYDwFr/M8iIc7FgSKXn
+         0Mqw==
+X-Gm-Message-State: AOAM533x790NfJ7KI4UQAeLZUdumLmEGJdEmV9TjQXFbYWl6sLvmEmAZ
+        hlPiZONHsBCrY4pmg5/vbDCMWmFnvPk=
+X-Google-Smtp-Source: ABdhPJwi4DFefw3qAwd2mQw/fFT7L6PGR5jCrgPeG1K0RvLr8xTACPpIYhFnxP0vdDPBYsp3uXv2Ew==
+X-Received: by 2002:a63:2d07:0:b0:381:e49:ae0c with SMTP id t7-20020a632d07000000b003810e49ae0cmr16531805pgt.261.1647837647338;
+        Sun, 20 Mar 2022 21:40:47 -0700 (PDT)
+Received: from google.com ([2620:15c:202:201:31f6:c8f1:6f10:b2ec])
+        by smtp.gmail.com with ESMTPSA id y3-20020a056a00190300b004fa2411bb92sm17663825pfi.93.2022.03.20.21.40.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 20 Mar 2022 21:40:46 -0700 (PDT)
+Date:   Sun, 20 Mar 2022 21:40:44 -0700
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Aaro Koskinen <aaro.koskinen@iki.fi>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [BISECTED] input: ads7846: touchscreen broken on Nokia 770
+Message-ID: <YjgBzDzHuZMlI05j@google.com>
+References: <20220227185038.GA3016@darkstar.musicnaut.iki.fi>
+ <20220319151346.GE1986@darkstar.musicnaut.iki.fi>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220319151346.GE1986@darkstar.musicnaut.iki.fi>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-drivers/macintosh/via-pmu-event.o: In function `via_pmu_event':
-via-pmu-event.c:(.text+0x44): undefined reference to `input_event'
-via-pmu-event.c:(.text+0x68): undefined reference to `input_event'
-via-pmu-event.c:(.text+0x94): undefined reference to `input_event'
-via-pmu-event.c:(.text+0xb8): undefined reference to `input_event'
-drivers/macintosh/via-pmu-event.o: In function `via_pmu_event_init':
-via-pmu-event.c:(.init.text+0x20): undefined reference to `input_allocate_device'
-via-pmu-event.c:(.init.text+0xc4): undefined reference to `input_register_device'
-via-pmu-event.c:(.init.text+0xd4): undefined reference to `input_free_device'
-make[1]: *** [Makefile:1155: vmlinux] Error 1
-make: *** [Makefile:350: __build_one_by_one] Error 2
+Hi Aaro,
 
-Don't call into the input subsystem unless CONFIG_INPUT is built-in.
+On Sat, Mar 19, 2022 at 05:13:46PM +0200, Aaro Koskinen wrote:
+> Hi,
+> 
+> On Sun, Feb 27, 2022 at 08:50:39PM +0200, Aaro Koskinen wrote:
+> > I noticed touchscreen does not work anymore on Nokia 770:
+> > 
+> > [    2.131011] ads7846 spi2.0: touchscreen, irq 175
+> > [    2.200622] input: ADS7846 Touchscreen as /devices/platform/omap_uwire/spi_master/spi2/spi2.0/input/input0
+> > 
+> > (then touching the screen:)
+> > 
+> > [   52.316894] ads7846 spi2.0: spi_sync --> -22
+> > [   52.336944] ads7846 spi2.0: spi_sync --> -22
+> > 
+> > bisected this to:
+> > 
+> > commit 9c9509717b53e701469493a8d87ed42c7d782502
+> > Author: Oleksij Rempel <o.rempel@pengutronix.de>
+> > Date:   Wed Nov 11 16:39:05 2020 -0800
+> > 
+> >     Input: ads7846 - convert to full duplex
+> > 
+> > It seems it's failing on SPI_CONTROLLER_HALF_DUPLEX check in
+> > __spi_validate(). The controller used on this board (spi-omap-uwire)
+> > sets that flag. How ads7846 is now supposed to work in that case after
+> > this conversion?
+> 
+> Any comments?
+> 
+> The touchscreen works after reverting the following patches:
+> 
+> 6965eece2a89 ("Input: ads7846 - convert to one message")
+> 9c9509717b53 ("Input: ads7846 - convert to full duplex")
 
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Finn Thain <fthain@linux-m68k.org>
----
-This is equivalent to the patch I sent a couple of days ago. This one
-is slightly longer and adds a new symbol so that Kconfig logic can been
-used instead of Makefile logic in case reviewers prefer that.
----
- drivers/macintosh/Kconfig   | 5 +++++
- drivers/macintosh/Makefile  | 3 ++-
- drivers/macintosh/via-pmu.c | 2 ++
- 3 files changed, 9 insertions(+), 1 deletion(-)
+I do not believe we should simply revert the patches as that would
+penalize systems with nicer hardware, so my preference would be to see
+if we could support half duplex controllers within the new driver
+structure.
 
-diff --git a/drivers/macintosh/Kconfig b/drivers/macintosh/Kconfig
-index 5cdc361da37c..b9102f051bbb 100644
---- a/drivers/macintosh/Kconfig
-+++ b/drivers/macintosh/Kconfig
-@@ -67,6 +67,11 @@ config ADB_PMU
- 	  this device; you should do so if your machine is one of those
- 	  mentioned above.
- 
-+config ADB_PMU_EVENT
-+	bool
-+	depends on ADB_PMU && INPUT=y
-+	default y
-+
- config ADB_PMU_LED
- 	bool "Support for the Power/iBook front LED"
- 	depends on PPC_PMAC && ADB_PMU
-diff --git a/drivers/macintosh/Makefile b/drivers/macintosh/Makefile
-index 49819b1b6f20..712edcb3e0b0 100644
---- a/drivers/macintosh/Makefile
-+++ b/drivers/macintosh/Makefile
-@@ -12,7 +12,8 @@ obj-$(CONFIG_MAC_EMUMOUSEBTN)	+= mac_hid.o
- obj-$(CONFIG_INPUT_ADBHID)	+= adbhid.o
- obj-$(CONFIG_ANSLCD)		+= ans-lcd.o
- 
--obj-$(CONFIG_ADB_PMU)		+= via-pmu.o via-pmu-event.o
-+obj-$(CONFIG_ADB_PMU)		+= via-pmu.o
-+obj-$(CONFIG_ADB_PMU_EVENT)	+= via-pmu-event.o
- obj-$(CONFIG_ADB_PMU_LED)	+= via-pmu-led.o
- obj-$(CONFIG_PMAC_BACKLIGHT)	+= via-pmu-backlight.o
- obj-$(CONFIG_ADB_CUDA)		+= via-cuda.o
-diff --git a/drivers/macintosh/via-pmu.c b/drivers/macintosh/via-pmu.c
-index b1859e5340b3..022e2fd4397b 100644
---- a/drivers/macintosh/via-pmu.c
-+++ b/drivers/macintosh/via-pmu.c
-@@ -1468,12 +1468,14 @@ pmu_handle_data(unsigned char *data, int len)
- 		if (pmu_battery_count)
- 			query_battery_state();
- 		pmu_pass_intr(data, len);
-+#ifdef CONFIG_ADB_PMU_EVENT
- 		/* len == 6 is probably a bad check. But how do I
- 		 * know what PMU versions send what events here? */
- 		if (len == 6) {
- 			via_pmu_event(PMU_EVT_POWER, !!(data[1]&8));
- 			via_pmu_event(PMU_EVT_LID, data[1]&1);
- 		}
-+#endif
- 		break;
- 
- 	default:
+Thanks.
+
 -- 
-2.32.0
-
+Dmitry
