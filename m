@@ -2,52 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82136C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:18:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE94CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:18:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238446AbiCUPTj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 11:19:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37742 "EHLO
+        id S1350062AbiCUPTr (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 11:19:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349932AbiCUPTP (ORCPT
+        with ESMTP id S1349948AbiCUPTS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 11:19:15 -0400
+        Mon, 21 Mar 2022 11:19:18 -0400
 Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D4B111DDC;
-        Mon, 21 Mar 2022 08:17:50 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id m30so11324524wrb.1;
-        Mon, 21 Mar 2022 08:17:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 504BFEDF0B;
+        Mon, 21 Mar 2022 08:17:53 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id u16so20158813wru.4;
+        Mon, 21 Mar 2022 08:17:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=XhL5PcXPAVYZIaqVjbCyrF3IgCwpUk1BeN4L/hsgGTo=;
-        b=cHFxeW+dNxRnim5lHgkGnYGLUOXrAntyIXQ97bgPETSh50ci0sSBCoYftpHi8HNr45
-         E5VVBYCnOoxRpeLzSxqZDGQQSZai4X1NzRWBwu08C/WoT00RwSqGymMFZf+J+KkO412i
-         kegSRwz5mS3LFDjpt0OfbvkZ7JkEpuNgJGEX7KNOKXxVCFO3RqDhgQ1p/cZpeJpXcoP4
-         YicRMjXgRDnD9sA6dh0Q3XlYMgr6sLEaQnsc/DI+fUHkK+x25q/Cch5ciktMxsAjyDLo
-         r7fCbrCL6fR5JUqT+4kbKkFt5Q+y3+A/3yGKEZ3u+R0doExMbi+5S9PIbP4c55Hw8Beu
-         D4fQ==
+        bh=fDLuIDyRCuRCH3Dc/gWWNAl91bj4g20Fwm4jwXMbE5A=;
+        b=Za7W/slBsPjKinOPkZ2nZCjIHv+6kAIcjDdr+EVrNJfsgodzkSfMaEvSGVW7qEtmKw
+         G7dq/MKUs8mm5URj3DwRdQdjL9nF4CoDGoSKE6PN9WbbTeo+4YBOGfaQTx0j66LIp1X4
+         x/Vw7pGpSj3VN2uGVPFgbZHZlC+8KlNOyjJqRlHDW49ryoPbSkh8XoDznVeiOPkITpxe
+         MU1DGQis317QaiMz2OfGHSUevrLJWj1tRSKfcbZUmKooAJlTtaoWeM9rRsfWYzoeiPi0
+         V8UOs4IxIMQisL3FoQ49JoYxAWeAPcR1ZMW/PFDrWN9iQ1s3P977T6hN9L/xzujwX6iu
+         QMpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=XhL5PcXPAVYZIaqVjbCyrF3IgCwpUk1BeN4L/hsgGTo=;
-        b=BSHn4fpFAKlmiTaokoyxfBsr16+lzMVKem+mAFca0VgZhxqt17qpLkP7gwHT6ynzHk
-         pusOITr80WEaGm9h/yRixuA1fz1WD/A5+fSxTE16qU0uT70VQrwnWn6rhOwKmWN72tVg
-         eQ/91ftTDVDA2lE45PvCSrc20dHyJwMPE5tfHBARh8ebVfVcSL6XX8vMWP13Eft/YSzp
-         Hx0APkzR8iYSYw+9TbaRVF0Dx0B5biquzv6QWmTM6CjjIDXbrmK6FtY0UHiq6w8UabTM
-         JSODF0T94M2w+x2ISsC0s7JZ4u6XL+l6FSBDo0efs2yv6oMRYIV95mMCcXA8P2LaCxzw
-         hJGQ==
-X-Gm-Message-State: AOAM53144HGU4EAS+T1XiduI7Ut0GWpiyHXpnhJ3iG/o2IZvIAWjxxNj
-        Oe/idAe+rodSPBb9Y3lsBs8=
-X-Google-Smtp-Source: ABdhPJy4fxPuhDbY7wiV30NpnJ0j4pmlrHKEwDEiCM3xIxrH7V/wV6fzz38BHzg62VuhqUHaM1UaCw==
-X-Received: by 2002:adf:f50d:0:b0:203:f72c:e26a with SMTP id q13-20020adff50d000000b00203f72ce26amr12386883wro.620.1647875868677;
-        Mon, 21 Mar 2022 08:17:48 -0700 (PDT)
+        bh=fDLuIDyRCuRCH3Dc/gWWNAl91bj4g20Fwm4jwXMbE5A=;
+        b=DBsAmRAyH5OiYUJqXDtZpRRRxkv+0sUozBElQXvZbu3iimORXL9l8kwWjCfM8PUXpE
+         bZb6QQiwN3D3K/XD+8eBUPJdVPJZbKaEDIHpAZNilwmM0zlOlaM3zfYJraZibMIIGTkC
+         QwYDGKUTv8nNaXfWZx/VXAc584ONQpPTNZi59Wt36TV0htWl3u1q6LTjENLzqxJKF5pn
+         MY6AjWLR8Hd4/w4T48WnblsIUiEK4tEmwz52PfnBaG3gkozGkbJ1M+EGQeoUnzx84bzQ
+         wuwlq7023reHsVkaz3jW47bwNoPLtzvn0hHkGW7FGwhuEwrETTei5bMlsKLGVL7Lo7Mo
+         87MQ==
+X-Gm-Message-State: AOAM530RGTQygofvjSzQ0Y0lACuR693LTlOgYflg69HRyRByel2MoFMF
+        sNxVby8UGz5eP0up2AgN7AbU1/0TNhM=
+X-Google-Smtp-Source: ABdhPJyuqUrPKCTH9LaDiGhkitGK66ua3smDzdvkvO1yoJPyeVsDcg6vRDdohrCsGHDOsaZXXlNT9A==
+X-Received: by 2002:a5d:404c:0:b0:203:ea4e:3c07 with SMTP id w12-20020a5d404c000000b00203ea4e3c07mr17149999wrp.597.1647875871738;
+        Mon, 21 Mar 2022 08:17:51 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
-        by smtp.googlemail.com with ESMTPSA id 10-20020a5d47aa000000b00204012e4373sm7239729wrb.101.2022.03.21.08.17.47
+        by smtp.googlemail.com with ESMTPSA id 10-20020a5d47aa000000b00204012e4373sm7239729wrb.101.2022.03.21.08.17.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 08:17:48 -0700 (PDT)
+        Mon, 21 Mar 2022 08:17:51 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -57,9 +58,9 @@ To:     Rob Herring <robh+dt@kernel.org>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
-Subject: [PATCH v4 03/18] clk: qcom: gcc-ipq806x: add PXO_SRC in clk table
-Date:   Mon, 21 Mar 2022 15:48:10 +0100
-Message-Id: <20220321144825.11736-4-ansuelsmth@gmail.com>
+Subject: [PATCH v4 06/18] clk: qcom: clk-krait: unlock spin after mux completion
+Date:   Mon, 21 Mar 2022 15:48:13 +0100
+Message-Id: <20220321144825.11736-7-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220321144825.11736-1-ansuelsmth@gmail.com>
 References: <20220321144825.11736-1-ansuelsmth@gmail.com>
@@ -69,47 +70,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PXO_SRC is currently defined in the gcc include and referenced in the
-ipq8064 DTSI. Correctly provide a clk after gcc probe to fix kernel
-panic if a driver starts to actually use it.
+Unlock spinlock after the mux switch is completed to prevent any corner
+case of mux request while the switch still needs to be done.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/clk/qcom/gcc-ipq806x.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/clk/qcom/clk-krait.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/qcom/gcc-ipq806x.c b/drivers/clk/qcom/gcc-ipq806x.c
-index 27f6d7626abb..7271d3afdc89 100644
---- a/drivers/clk/qcom/gcc-ipq806x.c
-+++ b/drivers/clk/qcom/gcc-ipq806x.c
-@@ -26,6 +26,8 @@
- #include "clk-hfpll.h"
- #include "reset.h"
+diff --git a/drivers/clk/qcom/clk-krait.c b/drivers/clk/qcom/clk-krait.c
+index 59f1af415b58..e447fcc3806d 100644
+--- a/drivers/clk/qcom/clk-krait.c
++++ b/drivers/clk/qcom/clk-krait.c
+@@ -32,11 +32,12 @@ static void __krait_mux_set_sel(struct krait_mux_clk *mux, int sel)
+ 		regval |= (sel & mux->mask) << (mux->shift + LPL_SHIFT);
+ 	}
+ 	krait_set_l2_indirect_reg(mux->offset, regval);
+-	spin_unlock_irqrestore(&krait_clock_reg_lock, flags);
  
-+static struct clk_regmap pxo = { };
+ 	/* Wait for switch to complete. */
+ 	mb();
+ 	udelay(1);
 +
- static struct clk_pll pll0 = {
- 	.l_reg = 0x30c4,
- 	.m_reg = 0x30c8,
-@@ -2754,6 +2756,7 @@ static struct clk_dyn_rcg ubi32_core2_src_clk = {
- };
++	spin_unlock_irqrestore(&krait_clock_reg_lock, flags);
+ }
  
- static struct clk_regmap *gcc_ipq806x_clks[] = {
-+	[PXO_SRC] = NULL,
- 	[PLL0] = &pll0.clkr,
- 	[PLL0_VOTE] = &pll0_vote,
- 	[PLL3] = &pll3.clkr,
-@@ -3083,6 +3086,10 @@ static int gcc_ipq806x_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
-+	clk = clk_get(dev, "pxo");
-+	pxo.hw = *__clk_get_hw(clk);
-+	gcc_ipq806x_clks[PXO_SRC] = &pxo;
-+
- 	regmap = dev_get_regmap(dev, NULL);
- 	if (!regmap)
- 		return -ENODEV;
+ static int krait_mux_set_parent(struct clk_hw *hw, u8 index)
 -- 
 2.34.1
 
