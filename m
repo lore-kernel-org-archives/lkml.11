@@ -2,89 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 924E3C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 19:54:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41192C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 19:54:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352851AbiCUTz6 (ORCPT
+        id S1352861AbiCUT4W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 15:55:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48256 "EHLO
+        Mon, 21 Mar 2022 15:56:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345508AbiCUTz5 (ORCPT
+        with ESMTP id S1345508AbiCUT4U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 15:55:57 -0400
-Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6423F1760C1
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 12:54:31 -0700 (PDT)
-Received: by mail-oi1-x236.google.com with SMTP id 12so17362564oix.12
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 12:54:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=QXBlf8R7fSGWR/3BuJsl/P1v33Zj5B3eEF5yigv4sNc=;
-        b=Vce7EfiITzm8gxl6NBwyGua5ixW1vZhH1Ir7v7sc4x6VG3tSVGKfdZvO4l1xRRS/i5
-         U6XfBNFmzm6KDU9MRxSrKJv3+XlaQzIxsz+CR7/ADzSr7woQqe+pbOCxWGDNmT4HJXZr
-         CoSwMmU7qY0ubYritcAx0ydZsYThxSXezBK/Q=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=QXBlf8R7fSGWR/3BuJsl/P1v33Zj5B3eEF5yigv4sNc=;
-        b=I5/W8aFI1+mXm+UubQ7blBa3hGK2HLB1IB63Sr2TwMDmhv+SnkNJ6ChhDMkRsnvcfL
-         70znxbEPyJLCj1/zITn7EMFynqxZHUKLgaC2EJm93AAoBmKAmjgL1g934e1zpCffnnUZ
-         SBUmJmb3KYgx8Io/5CmjieIQC92r0h6o1IACiM4SebvlYx2SEaAmwPvKqfxhlb3az/tb
-         Vu7R1xp2GqkDSTZQyngB5tqMKB195jpT/inIFcsmEgOli5PeWsBXMJ3LDbnRQUkFlB3G
-         c/gXKtn777r9mprs2S3K2X5KKO4JsUuNZ+WTBxr1Gf2CaLOKomdWyegQ/y2CzOQbwGys
-         JJ7g==
-X-Gm-Message-State: AOAM533/EyChz3W/+G9It2v1Sxh099pnu4NUmMzmDYz/3+OMt5gFEK/O
-        L8vegVsbJThn2leFGv4C+w7/XfxrBhng3tj2TB3sQg==
-X-Google-Smtp-Source: ABdhPJyzcozfVCs/7sEauDjanN2DXGsR9pAH0AU6PpC1N1xDz/t8s6lXxcpcfcEAr4grxIi39N4fBq58a/fdEqI7/hA=
-X-Received: by 2002:aca:bd41:0:b0:2ec:ff42:814f with SMTP id
- n62-20020acabd41000000b002ecff42814fmr403257oif.63.1647892470808; Mon, 21 Mar
- 2022 12:54:30 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Mon, 21 Mar 2022 20:54:30 +0100
+        Mon, 21 Mar 2022 15:56:20 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63C3217DCAA;
+        Mon, 21 Mar 2022 12:54:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=4efTTqCS4Gsyb7wXaU8yL8zAGuclTlr6Cip6vqeSx5U=; b=gGjMpvSX+0ScawY3AAK5s8QnbO
+        XilmRzJ+bqBsjUujrCWbfeV/tiRX+pQZDKbIS1SYRtDXXz1K9KLWQrCrfPxGmLQfFztXcAsXJ2Ddo
+        l4tFcS3eTzqbtxZbVV5mTyle4MnmSMieKmIpHog/hTDlWj7SWmzHTxHQWMzK7iDKSGEKFuCuCF/9W
+        coeGAeogiJmc3cJpJwW11rZXRiUcEkhs/lgHGb9qR0vtxf8I6ssv8JvulnzZxoy9KoA+SjsZE3S7Q
+        24osUQanD2wp6GrgKEPW9Zicp2W4mjDyhuUcBHe/T+iGNKsM6u29kq3/ct+LGca1//oM3Lch994Ro
+        fcXZH5cw==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nWO6v-00AtdF-9P; Mon, 21 Mar 2022 19:54:37 +0000
+Date:   Mon, 21 Mar 2022 19:54:37 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Zi Yan <ziy@nvidia.com>
+Cc:     Roman Gushchin <roman.gushchin@linux.dev>, linux-mm@kvack.org,
+        Shuah Khan <shuah@kernel.org>, Yang Shi <shy828301@gmail.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Hugh Dickins <hughd@google.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [RFC PATCH 1/5] mm: memcg: make memcg huge page split support
+ any order split.
+Message-ID: <YjjX/bZrUmQfFjHC@casper.infradead.org>
+References: <20220321142128.2471199-1-zi.yan@sent.com>
+ <20220321142128.2471199-2-zi.yan@sent.com>
+ <YjjKh2NoWGcq28Oo@carbon.dhcp.thefacebook.com>
+ <0001CABA-9436-4EFF-9C7F-F67300D09DA1@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <1647865696-19192-4-git-send-email-quic_srivasam@quicinc.com>
-References: <1647865696-19192-1-git-send-email-quic_srivasam@quicinc.com> <1647865696-19192-4-git-send-email-quic_srivasam@quicinc.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Mon, 21 Mar 2022 20:54:30 +0100
-Message-ID: <CAE-0n535vbyis3APbVpSoKg8p7017HcYZHSoC=rtfngKp-3U9w@mail.gmail.com>
-Subject: Re: [PATCH v5 3/3] arm64: dts: qcom: sc7280: Add dt nodes for sound card
-To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        agross@kernel.org, bjorn.andersson@linaro.org,
-        devicetree@vger.kernel.org, dianders@chromium.org,
-        judyhsiao@chromium.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        rohitkr@codeaurora.org, srinivas.kandagatla@linaro.org
-Cc:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0001CABA-9436-4EFF-9C7F-F67300D09DA1@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Srinivasa Rao Mandadapu (2022-03-21 05:28:16)
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> index ca799c2..369c1e9 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> @@ -84,6 +84,99 @@
->                 pinctrl-names = "default";
->                 pinctrl-0 = <&nvme_pwren>;
->         };
-> +
-> +       sound: sound-card {
+On Mon, Mar 21, 2022 at 03:07:46PM -0400, Zi Yan wrote:
+> Yes. Will change it to new_nr to be consistent.
 
-How about
+uh, you're going to call ilog2?
 
-	sound: sound {
+I think this would look less inconsistent if 'nr' were an unsigned long
+(how long until we need 16GB pages?  Think PPC already supports those)
 
-It's not an actual sound card that you can plug in right?
-
-> +               compatible = "google,sc7280-herobrine";
-> +               model = "sc7280-wcd938x-max98360a-1mic";
-> +               status = "okay";
-
-This status can be left out as it's the default.
