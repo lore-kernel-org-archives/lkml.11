@@ -2,169 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C521C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9941C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 15:44:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350477AbiCUPog (ORCPT
+        id S1350479AbiCUPpj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 11:44:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44578 "EHLO
+        Mon, 21 Mar 2022 11:45:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350445AbiCUPoY (ORCPT
+        with ESMTP id S234700AbiCUPpg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 11:44:24 -0400
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E70F05EBC6;
-        Mon, 21 Mar 2022 08:42:56 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.90,198,1643641200"; 
-   d="scan'208";a="114269400"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie5.idc.renesas.com with ESMTP; 22 Mar 2022 00:42:56 +0900
-Received: from vb.home (unknown [10.226.92.216])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id A5E004007539;
-        Tue, 22 Mar 2022 00:42:52 +0900 (JST)
-From:   Phil Edworthy <phil.edworthy@renesas.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Mon, 21 Mar 2022 11:45:36 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE3413DE4;
+        Mon, 21 Mar 2022 08:44:04 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id h16so8249221wmd.0;
+        Mon, 21 Mar 2022 08:44:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=XoXisWW93pi2sg9tIKJ01ulYb1YdPWU5OGPWRm7ICC8=;
+        b=ZkJpGUGZG9/PZzeERfZOKs755Ch+NcehEboHt9ataGdfL9hvC87CjoNyVxbqHHxAbZ
+         R+vrihTuqVommri1kJaqDILNLLl1/jXiK7/8yuL4ENXPCCpklTkxHRCz4/teui+aJgA4
+         n0w7eC++x+3Q/DuRGB4V9SAo8EZYQ7OYFk6rRCfVVI3mc4jgBZcTGWIo/5iqdCI/OBTg
+         9IkUdIShLal30IKV0DZ8VaBwDaEL14DLa13qFx5WX87BkZbwnWjsEAuh6GIWQJ3GhIun
+         UZg4IT6Q2RD7YzbPupQoNTNBBP+iQPhhzqS0+HtgTf3qDg1/ag9TNJlrljxJwbKZxD70
+         HotA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=XoXisWW93pi2sg9tIKJ01ulYb1YdPWU5OGPWRm7ICC8=;
+        b=DiHW7vePiRkykqYQ7rYzFJoEOG1TmKcL9ZERm3Ry2i8KmParjgKsPe6XTquumBqGez
+         sHRj/galPRSO7s7yBVrpHt7Dm6EyA7dIGCGQswwnyuBOQkMtyzvxCPtM03pQsQRcZKcm
+         HX/bj2NAf0oWhafCoBGyrz979XVJ7xJuTNHKrdwkpYUZG5YgHHFZytpG18gl0LyMD2fU
+         Q0Jr+/MROmYiscia32wBydT8ZN6xRj5X/1Hk3veUUEGmqXV3OGNxlT8USz1ieWYMRbdV
+         pD6rgPtwiMHpzi9kZ95hrS3TAAr1K6/CP+Z/DZyj7bvfs3ey4NN8X+CuEp4qubmS++AP
+         7taA==
+X-Gm-Message-State: AOAM531u9mGf+eKcdCx5s7ZLNkdncliT/hEcGrUJ4vm04hbN6k89RaQZ
+        s1FZAdQ67B1pjwxu1aZ33Zk=
+X-Google-Smtp-Source: ABdhPJxz1OvwDf6onrSDOBQ3m4NWwCfjreQVmBfTLj/cPJO7pdDw9tod5DFAPbxVQ1P8+ZVmz1FBfg==
+X-Received: by 2002:a7b:c844:0:b0:37b:b986:7726 with SMTP id c4-20020a7bc844000000b0037bb9867726mr20648461wml.160.1647877443015;
+        Mon, 21 Mar 2022 08:44:03 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
+        by smtp.gmail.com with ESMTPSA id k40-20020a05600c1ca800b0038c6c8b7fa8sm15457215wms.25.2022.03.21.08.44.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 08:44:02 -0700 (PDT)
+Date:   Mon, 21 Mar 2022 16:14:43 +0100
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
         Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Phil Edworthy <phil.edworthy@renesas.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 00/14] Add new Renesas RZ/V2M SoC and Renesas RZ/V2M EVK support
-Date:   Mon, 21 Mar 2022 15:42:18 +0000
-Message-Id: <20220321154232.56315-1-phil.edworthy@renesas.com>
-X-Mailer: git-send-email 2.32.0
+        Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-clk@vger.kernel.org
+Subject: Re: [PATCH v4 18/18] dt-bindings: arm: msm: Convert kpss-gcc driver
+ Documentation to yaml
+Message-ID: <YjiWY9wxGMtUAcjY@Ansuel-xps.localdomain>
+References: <20220321144825.11736-1-ansuelsmth@gmail.com>
+ <20220321144825.11736-19-ansuelsmth@gmail.com>
+ <a7837388-e36f-9e55-4107-9f7f85571f3b@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a7837388-e36f-9e55-4107-9f7f85571f3b@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Mon, Mar 21, 2022 at 04:41:37PM +0100, Krzysztof Kozlowski wrote:
+> On 21/03/2022 15:48, Ansuel Smith wrote:
+> > Convert kpss-gcc driver Documentation to yaml.
+> > 
+> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > ---
+> >  .../bindings/arm/msm/qcom,kpss-gcc.txt        | 44 ------------
+> >  .../bindings/arm/msm/qcom,kpss-gcc.yaml       | 68 +++++++++++++++++++
+> >  2 files changed, 68 insertions(+), 44 deletions(-)
+> >  delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
+> >  create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
+> > 
+> > diff --git a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
+> > deleted file mode 100644
+> > index e628758950e1..000000000000
+> > --- a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
+> > +++ /dev/null
+> > @@ -1,44 +0,0 @@
+> > -Krait Processor Sub-system (KPSS) Global Clock Controller (GCC)
+> > -
+> > -PROPERTIES
+> > -
+> > -- compatible:
+> > -	Usage: required
+> > -	Value type: <string>
+> > -	Definition: should be one of the following. The generic compatible
+> > -			"qcom,kpss-gcc" should also be included.
+> > -			"qcom,kpss-gcc-ipq8064", "qcom,kpss-gcc"
+> > -			"qcom,kpss-gcc-apq8064", "qcom,kpss-gcc"
+> > -			"qcom,kpss-gcc-msm8974", "qcom,kpss-gcc"
+> > -			"qcom,kpss-gcc-msm8960", "qcom,kpss-gcc"
+> > -
+> > -- reg:
+> > -	Usage: required
+> > -	Value type: <prop-encoded-array>
+> > -	Definition: base address and size of the register region
+> > -
+> > -- clocks:
+> > -	Usage: required
+> > -	Value type: <prop-encoded-array>
+> > -	Definition: reference to the pll parents.
+> > -
+> > -- clock-names:
+> > -	Usage: required
+> > -	Value type: <stringlist>
+> > -	Definition: must be "pll8_vote", "pxo".
+> > -
+> > -- clock-output-names:
+> > -	Usage: required
+> > -	Value type: <string>
+> > -	Definition: Name of the output clock. Typically acpu_l2_aux indicating
+> > -		    an L2 cache auxiliary clock.
+> > -
+> > -Example:
+> > -
+> > -	l2cc: clock-controller@2011000 {
+> > -		compatible = "qcom,kpss-gcc-ipq8064", "qcom,kpss-gcc";
+> > -		reg = <0x2011000 0x1000>;
+> > -		clocks = <&gcc PLL8_VOTE>, <&gcc PXO_SRC>;
+> > -		clock-names = "pll8_vote", "pxo";
+> > -		clock-output-names = "acpu_l2_aux";
+> > -	};
+> > diff --git a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
+> > new file mode 100644
+> > index 000000000000..20ee182eb16f
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
+> > @@ -0,0 +1,68 @@
+> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/arm/msm/qcom,kpss-gcc.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Krait Processor Sub-system (KPSS) Global Clock Controller (GCC)
+> > +
+> > +maintainers:
+> > +  - Ansuel Smith <ansuelsmth@gmail.com>
+> > +
+> > +description: |
+> > +  Krait Processor Sub-system (KPSS) Global Clock Controller (GCC). Used
+> > +  to control L2 mux (in the current implementation).
+> > +
+> > +properties:
+> > +  compatible:
+> > +    items:
+> > +      - enum:
+> > +          - qcom,kpss-gcc-ipq8064
+> > +          - qcom,kpss-gcc-apq8064
+> > +          - qcom,kpss-gcc-msm8974
+> > +          - qcom,kpss-gcc-msm8960
+> > +      - const: qcom,kpss-gcc
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  clocks:
+> > +    items:
+> > +      - description: phandle to pll8_vote
+> > +      - description: phandle to pxo_board
+> > +
+> > +  clock-names:
+> > +    items:
+> > +      - const: pll8_vote
+> > +      - const: pxo
+> > +
+> > +  clock-output-names:
+> > +    const: acpu_l2_aux
+> > +
+> > +  '#clock-cells':
+> > +    const: 0
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - clocks
+> > +  - clock-names
+> > +  - clock-output-names
+> > +  - '#clock-cells'
+> 
+> You add here a new required property, so this is not a pure conversion.
+> Please explain in the commit msg why are you doing this. I asked about
+> this in your previous patchset.
+> 
+> Best regards,
+> Krzysztof
 
-RZ/V2M has a dual-core Cortex-A53 (1.0 GHz) CPU and built-in AI
-accelerator "DRP-AI" for vision, which is Renesas' original technology.
-It also has a 32-bit LPDDR4 interface and video codec (H.264).
+Sorry I probably missed it. Just to make sure you are referring to
+#clock-cells?
+Since this expose a clock, clock-cells is required. Should I put this in
+a different commit? 
 
-The RZ/V2M is used with ISP firmware that runs on one of the Cortex-A53
-cores. The firmware is an integral part of the SoC such that the HW
-User's Manual documents which of the peripheral modules are used by the
-firmware.
-
-Initial patches enables minimal peripherals on Renesas RZ/V2M EVK board
-and booted via nfs. Ethernet is broadly compatible with the
-etheravb-rcar-gen3 driver, but interrupts need some work so it's not
-been included in this patch set.
-
-Below blocks are enabled on Renesas RZ/V2M EVK board:
-- memory
-- External input clock
-- CPG
-- UART
-
-Links for SoC and EVK:
-[*] https://www.renesas.com/us/en/products/microcontrollers-microprocessors/rz-cortex-a-mpus/rzv2m-dual-cortex-a53-lpddr4x32bit-ai-accelerator-isp-4k-video-codec-4k-camera-input-fhd-display-output
-
-
-Sorry for cross posting the patches to multiple subsystems, as these are
-just the dt-binding patches included as part of initial bringup patches.
-
-Test logs on Renesas RZ/V2M EVK:
-
-/ # cat /proc/cpuinfo
-processor       : 0
-BogoMIPS        : 48.00
-Features        : fp asimd evtstrm crc32 cpuid
-CPU implementer : 0x41
-CPU architecture: 8
-CPU variant     : 0x0
-CPU part        : 0xd03
-CPU revision    : 4
-
-/ # cat /proc/meminfo
-MemTotal:        2617088 kB
-MemFree:         2560788 kB
-MemAvailable:    2495544 kB
-Buffers:               0 kB
-Cached:            24840 kB
-SwapCached:            0 kB
-Active:             7988 kB
-Inactive:          23420 kB
-Active(anon):        244 kB
-Inactive(anon):    14816 kB
-Active(file):       7744 kB
-Inactive(file):     8604 kB
-Unevictable:           0 kB
-Mlocked:               0 kB
-SwapTotal:             0 kB
-SwapFree:              0 kB
-Dirty:                 0 kB
-Writeback:             0 kB
-AnonPages:          6568 kB
-Mapped:             9924 kB
-Shmem:              8492 kB
-KReclaimable:       4244 kB
-Slab:              11768 kB
-SReclaimable:       4244 kB
-SUnreclaim:         7524 kB
-KernelStack:         908 kB
-PageTables:          620 kB
-NFS_Unstable:          0 kB
-Bounce:                0 kB
-WritebackTmp:          0 kB
-CommitLimit:     1308544 kB
-Committed_AS:      24500 kB
-VmallocTotal:   133143592960 kB
-VmallocUsed:        1208 kB
-VmallocChunk:          0 kB
-Percpu:              124 kB
-HardwareCorrupted:     0 kB
-AnonHugePages:         0 kB
-ShmemHugePages:        0 kB
-ShmemPmdMapped:        0 kB
-FileHugePages:         0 kB
-FilePmdMapped:         0 kB
-CmaTotal:          32768 kB
-CmaFree:           31208 kB
-HugePages_Total:       0
-HugePages_Free:        0
-HugePages_Rsvd:        0
-HugePages_Surp:        0
-Hugepagesize:       2048 kB
-Hugetlb:               0 kB
-/ #
-/ # cat /proc/interrupts
-           CPU0
- 11:       3394     GICv2  30 Level     arch_timer
- 14:       4644     GICv2 283 Level     eth0:ch0:rx_be
- 15:          0     GICv2 284 Level     eth0:ch1:rx_nc
- 32:       6706     GICv2 301 Level     eth0:ch18:tx_be
- 33:          0     GICv2 302 Level     eth0:ch19:tx_nc
- 36:          0     GICv2 305 Level     eth0:ch22:multi
- 38:          0     GICv2 309 Level     eth0:ch24:emac
- 43:        402     GICv2 272 Level     ttyS0
-IPI0:         0       Rescheduling interrupts
-IPI1:         0       Function call interrupts
-IPI2:         0       CPU stop interrupts
-IPI3:         0       CPU stop (for crash dump) interrupts
-IPI4:         0       Timer broadcast interrupts
-IPI5:         0       IRQ work interrupts
-IPI6:         0       CPU wake-up interrupts
-Err:          0
-/ #
-/ # for i in machine family soc_id revision; do echo -n "$i: ";cat /sys/devices/soc0/$i; done
-machine: RZ/V2M Evaluation Kit 2.0
-family: RZ/V2M
-soc_id: r9a09g011
-revision: 1.0
-
-Thanks
-Phil
+-- 
+	Ansuel
