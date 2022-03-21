@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D315C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2E72C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350426AbiCUOJt (ORCPT
+        id S1350309AbiCUOJh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:09:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37904 "EHLO
+        Mon, 21 Mar 2022 10:09:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349256AbiCUODe (ORCPT
+        with ESMTP id S1349076AbiCUODS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:03:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D8917A5AA;
-        Mon, 21 Mar 2022 07:00:42 -0700 (PDT)
+        Mon, 21 Mar 2022 10:03:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B09BD173F4F;
+        Mon, 21 Mar 2022 07:00:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25D74B816DA;
-        Mon, 21 Mar 2022 14:00:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CD68C340E8;
-        Mon, 21 Mar 2022 14:00:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 29D76B81598;
+        Mon, 21 Mar 2022 14:00:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76117C36AE3;
+        Mon, 21 Mar 2022 13:59:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871239;
-        bh=ncPSTEN0x7hwAkl3eUC7dRPKqq34LJzaKAZd0CZZJX4=;
+        s=korg; t=1647871198;
+        bh=AJsb5X7wBUotw3TxRY558vOtFqFD4GfaPxqom60XZWc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qir9TBe/AakRHXJ24Q5earUGLvz24Ho7Qs5nTKFpKHCKp4vnM5ta296Vm0RNpZcvs
-         qmZ8xsHOqZHVhguipNBgLZ7oUyP9tzwEUvLl1eTzHO56gEkdW/baWzCM0MjiLLaIek
-         jwXZPlYF1TarFPZAksGk+20hcL4tMpBGahzTIFK4=
+        b=zYRuZpBAYBW4/2WRhxseoHR+fn7KbiV7FpLObLsxLyFQJfFx4M2YC29HE33MMqKGl
+         /ipdXC+y240K0xn4w/9tAM1nQ1iCiooLHskqNUCnYVwpvnADrPpMdWmrzrb/jo/L+l
+         eSCClv37QgM/aBIfTcQPs8j59/6PMEAJP5lSr4io=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 23/32] net: mscc: ocelot: fix backwards compatibility with single-chain tc-flower offload
-Date:   Mon, 21 Mar 2022 14:52:59 +0100
-Message-Id: <20220321133221.234099431@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Masney <bmasney@redhat.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andrew Halaney <ahalaney@redhat.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.15 01/32] crypto: qcom-rng - ensure buffer for generate is completely filled
+Date:   Mon, 21 Mar 2022 14:52:37 +0100
+Message-Id: <20220321133220.604619228@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133220.559554263@linuxfoundation.org>
 References: <20220321133220.559554263@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,81 +53,154 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Brian Masney <bmasney@redhat.com>
 
-[ Upstream commit 8e0341aefcc9133f3f48683873284b169581315b ]
+commit a680b1832ced3b5fa7c93484248fd221ea0d614b upstream.
 
-ACL rules can be offloaded to VCAP IS2 either through chain 0, or, since
-the blamed commit, through a chain index whose number encodes a specific
-PAG (Policy Action Group) and lookup number.
+The generate function in struct rng_alg expects that the destination
+buffer is completely filled if the function returns 0. qcom_rng_read()
+can run into a situation where the buffer is partially filled with
+randomness and the remaining part of the buffer is zeroed since
+qcom_rng_generate() doesn't check the return value. This issue can
+be reproduced by running the following from libkcapi:
 
-The chain number is translated through ocelot_chain_to_pag() into a PAG,
-and through ocelot_chain_to_lookup() into a lookup number.
+    kcapi-rng -b 9000000 > OUTFILE
 
-The problem with the blamed commit is that the above 2 functions don't
-have special treatment for chain 0. So ocelot_chain_to_pag(0) returns
-filter->pag = 224, which is in fact -32, but the "pag" field is an u8.
+The generated OUTFILE will have three huge sections that contain all
+zeros, and this is caused by the code where the test
+'val & PRNG_STATUS_DATA_AVAIL' fails.
 
-So we end up programming the hardware with VCAP IS2 entries having a PAG
-of 224. But the way in which the PAG works is that it defines a subset
-of VCAP IS2 filters which should match on a packet. The default PAG is
-0, and previous VCAP IS1 rules (which we offload using 'goto') can
-modify it. So basically, we are installing filters with a PAG on which
-no packet will ever match. This is the hardware equivalent of adding
-filters to a chain which has no 'goto' to it.
+Let's fix this issue by ensuring that qcom_rng_read() always returns
+with a full buffer if the function returns success. Let's also have
+qcom_rng_generate() return the correct value.
 
-Restore the previous functionality by making ACL filters offloaded to
-chain 0 go to PAG 0 and lookup number 0. The choice of PAG is clearly
-correct, but the choice of lookup number isn't "as before" (which was to
-leave the lookup a "don't care"). However, lookup 0 should be fine,
-since even though there are ACL actions (policers) which have a
-requirement to be used in a specific lookup, that lookup is 0.
+Here's some statistics from the ent project
+(https://www.fourmilab.ch/random/) that shows information about the
+quality of the generated numbers:
 
-Fixes: 226e9cd82a96 ("net: mscc: ocelot: only install TCAM entries into a specific lookup and PAG")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20220316192117.2568261-1-vladimir.oltean@nxp.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+    $ ent -c qcom-random-before
+    Value Char Occurrences Fraction
+      0           606748   0.067416
+      1            33104   0.003678
+      2            33001   0.003667
+    ...
+    253   �        32883   0.003654
+    254   �        33035   0.003671
+    255   �        33239   0.003693
+
+    Total:       9000000   1.000000
+
+    Entropy = 7.811590 bits per byte.
+
+    Optimum compression would reduce the size
+    of this 9000000 byte file by 2 percent.
+
+    Chi square distribution for 9000000 samples is 9329962.81, and
+    randomly would exceed this value less than 0.01 percent of the
+    times.
+
+    Arithmetic mean value of data bytes is 119.3731 (127.5 = random).
+    Monte Carlo value for Pi is 3.197293333 (error 1.77 percent).
+    Serial correlation coefficient is 0.159130 (totally uncorrelated =
+    0.0).
+
+Without this patch, the results of the chi-square test is 0.01%, and
+the numbers are certainly not random according to ent's project page.
+The results improve with this patch:
+
+    $ ent -c qcom-random-after
+    Value Char Occurrences Fraction
+      0            35432   0.003937
+      1            35127   0.003903
+      2            35424   0.003936
+    ...
+    253   �        35201   0.003911
+    254   �        34835   0.003871
+    255   �        35368   0.003930
+
+    Total:       9000000   1.000000
+
+    Entropy = 7.999979 bits per byte.
+
+    Optimum compression would reduce the size
+    of this 9000000 byte file by 0 percent.
+
+    Chi square distribution for 9000000 samples is 258.77, and randomly
+    would exceed this value 42.24 percent of the times.
+
+    Arithmetic mean value of data bytes is 127.5006 (127.5 = random).
+    Monte Carlo value for Pi is 3.141277333 (error 0.01 percent).
+    Serial correlation coefficient is 0.000468 (totally uncorrelated =
+    0.0).
+
+This change was tested on a Nexus 5 phone (msm8974 SoC).
+
+Signed-off-by: Brian Masney <bmasney@redhat.com>
+Fixes: ceec5f5b5988 ("crypto: qcom-rng - Add Qcom prng driver")
+Cc: stable@vger.kernel.org # 4.19+
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Reviewed-by: Andrew Halaney <ahalaney@redhat.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mscc/ocelot_flower.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+ drivers/crypto/qcom-rng.c |   17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
-index afa062c5f82d..f1323af99b0c 100644
---- a/drivers/net/ethernet/mscc/ocelot_flower.c
-+++ b/drivers/net/ethernet/mscc/ocelot_flower.c
-@@ -54,6 +54,12 @@ static int ocelot_chain_to_block(int chain, bool ingress)
-  */
- static int ocelot_chain_to_lookup(int chain)
+--- a/drivers/crypto/qcom-rng.c
++++ b/drivers/crypto/qcom-rng.c
+@@ -8,6 +8,7 @@
+ #include <linux/clk.h>
+ #include <linux/crypto.h>
+ #include <linux/io.h>
++#include <linux/iopoll.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+@@ -43,16 +44,19 @@ static int qcom_rng_read(struct qcom_rng
  {
-+	/* Backwards compatibility with older, single-chain tc-flower
-+	 * offload support in Ocelot
-+	 */
-+	if (chain == 0)
-+		return 0;
-+
- 	return (chain / VCAP_LOOKUP) % 10;
+ 	unsigned int currsize = 0;
+ 	u32 val;
++	int ret;
+ 
+ 	/* read random data from hardware */
+ 	do {
+-		val = readl_relaxed(rng->base + PRNG_STATUS);
+-		if (!(val & PRNG_STATUS_DATA_AVAIL))
+-			break;
++		ret = readl_poll_timeout(rng->base + PRNG_STATUS, val,
++					 val & PRNG_STATUS_DATA_AVAIL,
++					 200, 10000);
++		if (ret)
++			return ret;
+ 
+ 		val = readl_relaxed(rng->base + PRNG_DATA_OUT);
+ 		if (!val)
+-			break;
++			return -EINVAL;
+ 
+ 		if ((max - currsize) >= WORD_SZ) {
+ 			memcpy(data, &val, WORD_SZ);
+@@ -61,11 +65,10 @@ static int qcom_rng_read(struct qcom_rng
+ 		} else {
+ 			/* copy only remaining bytes */
+ 			memcpy(data, &val, max - currsize);
+-			break;
+ 		}
+ 	} while (currsize < max);
+ 
+-	return currsize;
++	return 0;
  }
  
-@@ -62,7 +68,15 @@ static int ocelot_chain_to_lookup(int chain)
-  */
- static int ocelot_chain_to_pag(int chain)
- {
--	int lookup = ocelot_chain_to_lookup(chain);
-+	int lookup;
-+
-+	/* Backwards compatibility with older, single-chain tc-flower
-+	 * offload support in Ocelot
-+	 */
-+	if (chain == 0)
-+		return 0;
-+
-+	lookup = ocelot_chain_to_lookup(chain);
+ static int qcom_rng_generate(struct crypto_rng *tfm,
+@@ -87,7 +90,7 @@ static int qcom_rng_generate(struct cryp
+ 	mutex_unlock(&rng->lock);
+ 	clk_disable_unprepare(rng->clk);
  
- 	/* calculate PAG value as chain index relative to the first PAG */
- 	return chain - VCAP_IS2_CHAIN(lookup, 0);
--- 
-2.34.1
-
+-	return 0;
++	return ret;
+ }
+ 
+ static int qcom_rng_seed(struct crypto_rng *tfm, const u8 *seed,
 
 
