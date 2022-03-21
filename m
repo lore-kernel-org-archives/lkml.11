@@ -2,96 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 598C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:52:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65F82C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 22:53:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230211AbiCUWyW convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 18:54:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45662 "EHLO
+        id S230394AbiCUWya (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 18:54:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231255AbiCUWxk (ORCPT
+        with ESMTP id S230393AbiCUWyT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:53:40 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A41B23D819F
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:39:16 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-96-AKQkeZfLOTaKITOaaCe37w-1; Mon, 21 Mar 2022 22:39:13 +0000
-X-MC-Unique: AKQkeZfLOTaKITOaaCe37w-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Mon, 21 Mar 2022 22:39:14 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Mon, 21 Mar 2022 22:39:14 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Martin Kaiser' <martin@kaiser.cx>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
-        "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 0/6] staging: r8188eu: clean up odm dynamic functions
-Thread-Topic: [PATCH 0/6] staging: r8188eu: clean up odm dynamic functions
-Thread-Index: AQHYPWMAEqIti2f5FEmtSMAd4Wfc1azKba+w
-Date:   Mon, 21 Mar 2022 22:39:13 +0000
-Message-ID: <d5a5e6d319b244778e7109f4e0f45902@AcuMS.aculab.com>
-References: <20220321203031.143486-1-martin@kaiser.cx>
-In-Reply-To: <20220321203031.143486-1-martin@kaiser.cx>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Mon, 21 Mar 2022 18:54:19 -0400
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A137380F70;
+        Mon, 21 Mar 2022 15:33:00 -0700 (PDT)
+Date:   Mon, 21 Mar 2022 15:32:53 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1647901979;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4OY/H+zb0RIXu5WxaVqPmTsIU0BzpBHr2Aoo03K23OQ=;
+        b=lWfBFFlwAImoY6uLwKWFs0S0tB3p39fYyxokhIeIaZPj4jja16BD+f2jryUMXCpvSoQH58
+        KeNgR9rDqZZ733hMRZ75cM3upum9/Xboyi1T1hrsp4FdNCyEUqd/OOG+FlIywmGiFjuF4e
+        0dwiI5FqWUCpfqADo77fjlQiIREimSI=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     Zi Yan <ziy@nvidia.com>
+Cc:     Matthew Wilcox <willy@infradead.org>, linux-mm@kvack.org,
+        Shuah Khan <shuah@kernel.org>, Yang Shi <shy828301@gmail.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Hugh Dickins <hughd@google.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [RFC PATCH 4/5] mm: truncate: split huge page cache page to a
+ non-zero order if possible.
+Message-ID: <Yjj9FaoChB3u0Gbh@carbon.dhcp.thefacebook.com>
+References: <20220321142128.2471199-1-zi.yan@sent.com>
+ <20220321142128.2471199-5-zi.yan@sent.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220321142128.2471199-5-zi.yan@sent.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Kaiser
-> Sent: 21 March 2022 20:30
+On Mon, Mar 21, 2022 at 10:21:27AM -0400, Zi Yan wrote:
+> From: Zi Yan <ziy@nvidia.com>
 > 
-> Simplify the code for odm dynamic functions. Remove unused capabilities
-> and intermediate steps.
+> To minimize the number of pages after a huge page truncation, we do not
+> need to split it all the way down to order-0. The huge page has at most
+> three parts, the part before offset, the part to be truncated, the part
+> remaining at the end. Find the greatest common power of two multiplier of
+> the non-zero values of them as the new order, so we can split the huge
+> page to this order and keep the remaining pages as large and as few as
+> possible.
 
-Looks like a reasonable first tidyup to me :-)
-There is a lot more goop in there!
+Would you mind please to describe the algorithm in more details?
 
-	David
-
-> 
-> This should be applied after the "remove local BIT macro" patch.
-> 
-> Martin Kaiser (6):
->   staging: r8188eu: remove two limit defines
->   staging: r8188eu: remove unused defines for dynamic functions
->   staging: r8188eu: DYNAMIC_BB_DYNAMIC_TXPWR is not used
->   staging: r8188eu: DYNAMIC_BB_ANT_DIV is not used
->   staging: r8188eu: DYNAMIC_RF_CALIBRATION is not used
->   staging: r8188eu: refactor dm func set and clear
-> 
->  drivers/staging/r8188eu/core/rtw_mlme_ext.c   |  6 ++---
->  drivers/staging/r8188eu/core/rtw_wlan_util.c  | 12 ---------
->  drivers/staging/r8188eu/hal/usb_halinit.c     | 16 +++---------
->  drivers/staging/r8188eu/include/hal_intf.h    |  2 +-
->  .../staging/r8188eu/include/rtw_mlme_ext.h    | 25 -------------------
->  5 files changed, 7 insertions(+), 54 deletions(-)
-> 
-> --
-> 2.30.2
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+Thanks!
