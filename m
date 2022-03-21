@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D0FEC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31B71C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350462AbiCUOJw (ORCPT
+        id S1350606AbiCUOKA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:09:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35120 "EHLO
+        Mon, 21 Mar 2022 10:10:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349293AbiCUODg (ORCPT
+        with ESMTP id S1348903AbiCUODJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:03:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9CBE17B886;
-        Mon, 21 Mar 2022 07:00:47 -0700 (PDT)
+        Mon, 21 Mar 2022 10:03:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 100E13EF3E;
+        Mon, 21 Mar 2022 06:59:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F0DC8612A1;
-        Mon, 21 Mar 2022 14:00:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0829AC340ED;
-        Mon, 21 Mar 2022 14:00:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 370546131F;
+        Mon, 21 Mar 2022 13:59:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46F89C36AE7;
+        Mon, 21 Mar 2022 13:59:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871245;
-        bh=jbi74pirWmIJryKTHRKMdiKZsXWXK+wLnFhWCEPB59E=;
+        s=korg; t=1647871176;
+        bh=B2PwWKJauXDFQuvSQYT/EWCzPk39Vbs2uYKXUVD7pOM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qjBC5LQ8B0dFqsXj71WKwOF61gm7Q5HxcILuJWgyWFkEobXYKkhJPhT8RSBRoLh+a
-         8+TTepPFHNYPu9SQT9x0V+emCFW4ZbrMOMnXijpbntCOj7SZapzXr8W9KvGh1BGB77
-         YvrJjhIN7a3Zd6ZfBpenbFW/huoAfUFFf091jVI8=
+        b=06ofGKOpSv04Slz7EMElP9T/T31tmZD4tZwyQCIzoAey6tDBzAW3xVlvis0RumlZ8
+         ex7oKxfukWtnQko8qbuX3F3MxkJgnEpep9pj+qY6Trz7QLOlzd65QMMMgE+pTxC8wT
+         BKkxepjWq9Iu+CxLAkKjc9pYoZc7Irc2IjeX9eTA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        James Morse <james.morse@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 25/32] arm64: fix clang warning about TRAMP_VALIAS
-Date:   Mon, 21 Mar 2022 14:53:01 +0100
-Message-Id: <20220321133221.291123727@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        syzbot+a48e3d1a875240cab5de@syzkaller.appspotmail.com
+Subject: [PATCH 5.10 22/30] usb: usbtmc: Fix bug in pipe direction for control transfers
+Date:   Mon, 21 Mar 2022 14:52:52 +0100
+Message-Id: <20220321133220.287521534@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220321133220.559554263@linuxfoundation.org>
-References: <20220321133220.559554263@linuxfoundation.org>
+In-Reply-To: <20220321133219.643490199@linuxfoundation.org>
+References: <20220321133219.643490199@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,51 +49,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Alan Stern <stern@rowland.harvard.edu>
 
-[ Upstream commit 7f34b43e07cb512b28543fdcb9f35d1fbfda9ebc ]
+commit e9b667a82cdcfe21d590344447d65daed52b353b upstream.
 
-The newly introduced TRAMP_VALIAS definition causes a build warning
-with clang-14:
+The syzbot fuzzer reported a minor bug in the usbtmc driver:
 
-arch/arm64/include/asm/vectors.h:66:31: error: arithmetic on a null pointer treated as a cast from integer to pointer is a GNU extension [-Werror,-Wnull-pointer-arithmetic]
-                return (char *)TRAMP_VALIAS + SZ_2K * slot;
+usb 5-1: BOGUS control dir, pipe 80001e80 doesn't match bRequestType 0
+WARNING: CPU: 0 PID: 3813 at drivers/usb/core/urb.c:412
+usb_submit_urb+0x13a5/0x1970 drivers/usb/core/urb.c:410
+Modules linked in:
+CPU: 0 PID: 3813 Comm: syz-executor122 Not tainted
+5.17.0-rc5-syzkaller-00306-g2293be58d6a1 #0
+...
+Call Trace:
+ <TASK>
+ usb_start_wait_urb+0x113/0x530 drivers/usb/core/message.c:58
+ usb_internal_control_msg drivers/usb/core/message.c:102 [inline]
+ usb_control_msg+0x2a5/0x4b0 drivers/usb/core/message.c:153
+ usbtmc_ioctl_request drivers/usb/class/usbtmc.c:1947 [inline]
 
-Change the addition to something clang does not complain about.
+The problem is that usbtmc_ioctl_request() uses usb_rcvctrlpipe() for
+all of its transfers, whether they are in or out.  It's easy to fix.
 
-Fixes: bd09128d16fa ("arm64: Add percpu vectors for EL1")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Acked-by: James Morse <james.morse@arm.com>
-Link: https://lore.kernel.org/r/20220316183833.1563139-1-arnd@kernel.org
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+CC: <stable@vger.kernel.org>
+Reported-and-tested-by: syzbot+a48e3d1a875240cab5de@syzkaller.appspotmail.com
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+Link: https://lore.kernel.org/r/YiEsYTPEE6lOCOA5@rowland.harvard.edu
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/asm/vectors.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/usb/class/usbtmc.c |   13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/include/asm/vectors.h b/arch/arm64/include/asm/vectors.h
-index f64613a96d53..bc9a2145f419 100644
---- a/arch/arm64/include/asm/vectors.h
-+++ b/arch/arm64/include/asm/vectors.h
-@@ -56,14 +56,14 @@ enum arm64_bp_harden_el1_vectors {
- DECLARE_PER_CPU_READ_MOSTLY(const char *, this_cpu_vector);
+--- a/drivers/usb/class/usbtmc.c
++++ b/drivers/usb/class/usbtmc.c
+@@ -1889,6 +1889,7 @@ static int usbtmc_ioctl_request(struct u
+ 	struct usbtmc_ctrlrequest request;
+ 	u8 *buffer = NULL;
+ 	int rv;
++	unsigned int is_in, pipe;
+ 	unsigned long res;
  
- #ifndef CONFIG_UNMAP_KERNEL_AT_EL0
--#define TRAMP_VALIAS	0
-+#define TRAMP_VALIAS	0ul
- #endif
+ 	res = copy_from_user(&request, arg, sizeof(struct usbtmc_ctrlrequest));
+@@ -1898,12 +1899,14 @@ static int usbtmc_ioctl_request(struct u
+ 	if (request.req.wLength > USBTMC_BUFSIZE)
+ 		return -EMSGSIZE;
  
- static inline const char *
- arm64_get_bp_hardening_vector(enum arm64_bp_harden_el1_vectors slot)
- {
- 	if (arm64_kernel_unmapped_at_el0())
--		return (char *)TRAMP_VALIAS + SZ_2K * slot;
-+		return (char *)(TRAMP_VALIAS + SZ_2K * slot);
++	is_in = request.req.bRequestType & USB_DIR_IN;
++
+ 	if (request.req.wLength) {
+ 		buffer = kmalloc(request.req.wLength, GFP_KERNEL);
+ 		if (!buffer)
+ 			return -ENOMEM;
  
- 	WARN_ON_ONCE(slot == EL1_VECTOR_KPTI);
+-		if ((request.req.bRequestType & USB_DIR_IN) == 0) {
++		if (!is_in) {
+ 			/* Send control data to device */
+ 			res = copy_from_user(buffer, request.data,
+ 					     request.req.wLength);
+@@ -1914,8 +1917,12 @@ static int usbtmc_ioctl_request(struct u
+ 		}
+ 	}
  
--- 
-2.34.1
-
++	if (is_in)
++		pipe = usb_rcvctrlpipe(data->usb_dev, 0);
++	else
++		pipe = usb_sndctrlpipe(data->usb_dev, 0);
+ 	rv = usb_control_msg(data->usb_dev,
+-			usb_rcvctrlpipe(data->usb_dev, 0),
++			pipe,
+ 			request.req.bRequest,
+ 			request.req.bRequestType,
+ 			request.req.wValue,
+@@ -1927,7 +1934,7 @@ static int usbtmc_ioctl_request(struct u
+ 		goto exit;
+ 	}
+ 
+-	if (rv && (request.req.bRequestType & USB_DIR_IN)) {
++	if (rv && is_in) {
+ 		/* Read control data from device */
+ 		res = copy_to_user(request.data, buffer, rv);
+ 		if (res)
 
 
