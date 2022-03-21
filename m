@@ -2,88 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68361C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 12:34:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C15AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 12:34:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347450AbiCUMgG (ORCPT
+        id S1347371AbiCUMgQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 08:36:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40896 "EHLO
+        Mon, 21 Mar 2022 08:36:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233115AbiCUMgC (ORCPT
+        with ESMTP id S1347066AbiCUMgO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 08:36:02 -0400
-X-Greylist: delayed 1791 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 21 Mar 2022 05:34:36 PDT
-Received: from wp126.webpack.hosteurope.de (wp126.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8485::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF7B186E0;
-        Mon, 21 Mar 2022 05:34:36 -0700 (PDT)
-Received: from p5098d998.dip0.t-ipconnect.de ([80.152.217.152] helo=hermes.fivetechno.de); authenticated
-        by wp126.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        id 1nWGmA-0006Qk-Rz; Mon, 21 Mar 2022 13:04:42 +0100
-X-Virus-Scanned: by amavisd-new 2.12.1 using newest ClamAV at
-        linuxbbg.five-lan.de
-Received: from odroid-x2.fritz.box (pd9e89c2f.dip0.t-ipconnect.de [217.232.156.47])
-        (authenticated bits=0)
-        by hermes.fivetechno.de (8.15.2/8.16.1/SUSE Linux 0.8) with ESMTPSA id 22LC4fR3009568
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Mon, 21 Mar 2022 13:04:41 +0100
-From:   Markus Reichl <m.reichl@fivetechno.de>
-To:     Evgeniy Polyakov <zbr@ioremap.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Markus Reichl <m.reichl@fivetechno.de>,
-        linux-doc@vger.kernel.org (open list:DOCUMENTATION),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] w1: w1_therm: Document Maxim MAX31850 thermoelement IF.
-Date:   Mon, 21 Mar 2022 13:04:11 +0100
-Message-Id: <20220321120415.27533-1-m.reichl@fivetechno.de>
-X-Mailer: git-send-email 2.30.2
+        Mon, 21 Mar 2022 08:36:14 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AE0619C1B
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 05:34:49 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22LCYgRG082999;
+        Mon, 21 Mar 2022 07:34:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1647866082;
+        bh=/FSvcrz0QymIRCi6RH71gwTjqKsvMqVR1lnXAd9SB4E=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=Im7k/IiXxRtqScsM9BWgoSnBTBm29KR8Cqm/ORmxH9GCx/2rdh7+TX3qG6ujSoc0P
+         bklvB0xKPS9cbndfrAAm4hU98hE8PAOKn5TiLkarmqQP3RBjslJHLSKTK/nDPNwhWC
+         qAd1RmaK+3gHEQaTP5dJpPuelPOK7aNPm2A7zPwc=
+Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22LCYgDE005898
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 21 Mar 2022 07:34:42 -0500
+Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 21
+ Mar 2022 07:34:41 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE103.ent.ti.com
+ (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 21 Mar 2022 07:34:41 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22LCYf2i082341;
+        Mon, 21 Mar 2022 07:34:41 -0500
+Date:   Mon, 21 Mar 2022 18:04:40 +0530
+From:   Pratyush Yadav <p.yadav@ti.com>
+To:     Tudor Ambarus <tudor.ambarus@microchip.com>
+CC:     <michael@walle.cc>, <miquel.raynal@bootlin.com>, <richard@nod.at>,
+        <vigneshr@ti.com>, <linux-mtd@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <nicolas.ferre@microchip.com>
+Subject: Re: [PATCH v2 8/8] mtd: spi-nor: spansion: Rework
+ spi_nor_cypress_octal_dtr_enable()
+Message-ID: <20220321123440.prhhkzvgvgao2fqr@ti.com>
+References: <20220228111712.111737-1-tudor.ambarus@microchip.com>
+ <20220228111712.111737-9-tudor.ambarus@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;m.reichl@fivetechno.de;1647866077;b779f57f;
-X-HE-SMSGID: 1nWGmA-0006Qk-Rz
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220228111712.111737-9-tudor.ambarus@microchip.com>
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-w1_therm driver supports now MAX31850, too. Add it to documentation
-and fix a small typo.
+On 28/02/22 01:17PM, Tudor Ambarus wrote:
+> Introduce template operation to remove code duplication.
+> Split spi_nor_cypress_octal_dtr_enable() in
+> spi_nor_cypress_octal_dtr_ena() spi_nor_cypress_octal_dtr_dis() as it no
+> longer made sense to try to keep everything alltogether: too many
+> "if (enable)" throughout the code, which made the code difficult to read.
+> 
+> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-Signed-off-by: Markus Reichl <m.reichl@fivetechno.de>
----
- Documentation/w1/slaves/w1_therm.rst | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
 
-diff --git a/Documentation/w1/slaves/w1_therm.rst b/Documentation/w1/slaves/w1_therm.rst
-index c3c9ed7a356c..758dadba84f6 100644
---- a/Documentation/w1/slaves/w1_therm.rst
-+++ b/Documentation/w1/slaves/w1_therm.rst
-@@ -6,7 +6,8 @@ Supported chips:
- 
-   * Maxim ds18*20 based temperature sensors.
-   * Maxim ds1825 based temperature sensors.
--  * GXCAS GC20MH01 temperature sensor.
-+  * GXCAS GX20MH01 temperature sensor.
-+  * Maxim MAX31850 thermoelement interface.
- 
- Author: Evgeniy Polyakov <johnpol@2ka.mipt.ru>
- 
-@@ -15,7 +16,7 @@ Description
- -----------
- 
- w1_therm provides basic temperature conversion for ds18*20, ds28ea00, GX20MH01
--devices.
-+and MAX31850 devices.
- 
- Supported family codes:
- 
-@@ -137,3 +138,7 @@ bits in Config register; R2 bit in Config register enabling 13 and 14 bit
- resolutions. The device is powered up in 14-bit resolution mode. The conversion
- times specified in the datasheet are too low and have to be increased. The
- device supports driver features ``1`` and ``2``.
-+
-+MAX31850 device shares family number 0x3B with DS1825. The device is generally
-+compatible with DS1825. The higher 4 bits of Config register read all 1,
-+indicating 15, but the device is always operating in 14-bit resolution mode.
+Will send my tested-by separately once I get a chance to test this.
+
 -- 
-2.30.2
-
+Regards,
+Pratyush Yadav
+Texas Instruments Inc.
