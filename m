@@ -2,99 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A865C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:12:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2736DC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:12:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348734AbiCUONx (ORCPT
+        id S1345253AbiCUOOR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:13:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59570 "EHLO
+        Mon, 21 Mar 2022 10:14:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348579AbiCUOGx (ORCPT
+        with ESMTP id S1348854AbiCUOF7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:06:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8CB9538BDD
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 07:01:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647871312;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=e08TBu9LXeju0JfJXQDlbeITBDevreGVnW43wNE54QU=;
-        b=BbLMlC4qYcZq6m5/4hva+u+LQsJ9mogro+Rgaa+jVFBXJnmC/Vk58CQ0Iu4xoYdVCjQwZV
-        pCLmnXdA+rsrcWiBmwVSkYzQ8fu0xwEyOWk/Rchhbi+5nurWQHh8zGYq5XW2trqA+NLOjG
-        oYKpTrMsUnpZ1UULX6EiH6dBuR25F9c=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-470-H3oEy_SQPG2zWEEw1fs1Sw-1; Mon, 21 Mar 2022 10:01:46 -0400
-X-MC-Unique: H3oEy_SQPG2zWEEw1fs1Sw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Mon, 21 Mar 2022 10:05:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D85F6B2476;
+        Mon, 21 Mar 2022 07:01:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6CCF028035F1;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82C8BB816DD;
+        Mon, 21 Mar 2022 14:01:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF88BC340E8;
         Mon, 21 Mar 2022 14:01:45 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E5DB92166B2D;
-        Mon, 21 Mar 2022 14:01:34 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20220316131723.111553-5-jefflexu@linux.alibaba.com>
-References: <20220316131723.111553-5-jefflexu@linux.alibaba.com> <20220316131723.111553-1-jefflexu@linux.alibaba.com>
-To:     Jeffle Xu <jefflexu@linux.alibaba.com>
-Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
-        chao@kernel.org, linux-erofs@lists.ozlabs.org,
-        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        luodaowen.backend@bytedance.com
-Subject: Re: [PATCH v5 04/22] cachefiles: notify user daemon with anon_fd when looking up cookie
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647871306;
+        bh=Vdb1iWqlqHWiCH1Lg+xVDeo/BUxVscRQ0x8Astw8CXA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ZMpfSoo1Bdcp6LcC1Pu/7NEYKALE8/j0McI3yokFNz3M/KoYpJokmVf5iaZO6PU//
+         P2SAKah+Sq7CvYoVw0sijUWabY0ALwqpjgT/ORD5fSA9j3q12Jx47dEgDkoIQUA6Gq
+         nOQy+xxiZg8RhYTAs9m5hekCumKzs7E0t9/4F1gs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 15/37] iavf: Fix double free in iavf_reset_task
+Date:   Mon, 21 Mar 2022 14:52:57 +0100
+Message-Id: <20220321133221.737945027@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220321133221.290173884@linuxfoundation.org>
+References: <20220321133221.290173884@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1029247.1647871294.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date:   Mon, 21 Mar 2022 14:01:34 +0000
-Message-ID: <1029248.1647871294@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jeffle Xu <jefflexu@linux.alibaba.com> wrote:
+From: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
 
-> +	read_lock(&cache->reqs_lock);
-> +
-> +	/* recheck dead state under lock */
-> +	if (test_bit(CACHEFILES_DEAD, &cache->flags)) {
-> +		read_unlock(&cache->reqs_lock);
-> +		ret =3D -EIO;
-> +		goto out;
-> +	}
-> +
-> +	xa_lock(xa);
-> +	ret =3D __xa_alloc(xa, &id, req, xa_limit_32b, GFP_KERNEL);
+[ Upstream commit 16b2dd8cdf6f4e0597c34899de74b4d012b78188 ]
 
-You're holding a spinlock.  You can't use GFP_KERNEL.
+Fix double free possibility in iavf_disable_vf, as crit_lock is
+freed in caller, iavf_reset_task. Add kernel-doc for iavf_disable_vf.
+Remove mutex_unlock in iavf_disable_vf.
+Without this patch there is double free scenario, when calling
+iavf_reset_task.
 
-> +static int cachefiles_ondemand_cinit(struct cachefiles_cache *cache, ch=
-ar *args)
-> +{
-> ...
-> +	tmp =3D kstrdup(args, GFP_KERNEL);
+Fixes: e85ff9c631e1 ("iavf: Fix deadlock in iavf_reset_task")
+Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-No need to copy the string.  The caller already did that and added a NUL f=
-or
-good measure.
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index 138db07bdfa8..f2ce30366484 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -2133,6 +2133,13 @@ static void iavf_watchdog_task(struct work_struct *work)
+ 		queue_delayed_work(iavf_wq, &adapter->watchdog_task, HZ * 2);
+ }
+ 
++/**
++ * iavf_disable_vf - disable VF
++ * @adapter: board private structure
++ *
++ * Set communication failed flag and free all resources.
++ * NOTE: This function is expected to be called with crit_lock being held.
++ **/
+ static void iavf_disable_vf(struct iavf_adapter *adapter)
+ {
+ 	struct iavf_mac_filter *f, *ftmp;
+@@ -2187,7 +2194,6 @@ static void iavf_disable_vf(struct iavf_adapter *adapter)
+ 	memset(adapter->vf_res, 0, IAVF_VIRTCHNL_VF_RESOURCE_SIZE);
+ 	iavf_shutdown_adminq(&adapter->hw);
+ 	adapter->netdev->flags &= ~IFF_UP;
+-	mutex_unlock(&adapter->crit_lock);
+ 	adapter->flags &= ~IAVF_FLAG_RESET_PENDING;
+ 	iavf_change_state(adapter, __IAVF_DOWN);
+ 	wake_up(&adapter->down_waitqueue);
+-- 
+2.34.1
 
-I would probably move most of the functions added in this patch to
-fs/cachefiles/ondemand.c.
 
-David
 
