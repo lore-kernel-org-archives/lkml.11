@@ -2,208 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 829A3C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:09:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBB45C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:10:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238396AbiCUQLW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 12:11:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60216 "EHLO
+        id S1350369AbiCUQLx (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 12:11:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350776AbiCUQKI (ORCPT
+        with ESMTP id S1350866AbiCUQLG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 12:10:08 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E3762A709;
-        Mon, 21 Mar 2022 09:08:36 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id j18so11741453wrd.6;
-        Mon, 21 Mar 2022 09:08:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=FUy/r9Be6sB+uJt1vdamBW63PDhsfX/EA9tDB1Eiasg=;
-        b=qu88LCHuPVn7AFxJZgq681bD5nNpZ1cmwe3q/lcZukRgeiNtH4jeXe6Gq28zmbBsQW
-         PnG7Ry3M1GNTjqWNxtoFF3f+0EJVjWIbS+UDBtCWHAFiyiudvDDcq5ZDSQrRsM/PGQTd
-         elLlmiGWmni3XLDsi98xhx9WSPUlQLLTkoY3TGEEQ+8AFMkg5xhY6elVn4WLEa+nMRrO
-         GuRvNCiOJj0MqdS1jP7whBnFlFUzMimY3jw069ayoXLQgxP184GQ350B2n6SyBm0PbHs
-         3Iw82XFOQAJxV9u+ywZoJKqhTbqb2+VpeTpn3mIdrnkR4Ih8wuplT1W+wSBuDu19M5PR
-         VYWg==
+        Mon, 21 Mar 2022 12:11:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1165D2899A
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:09:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647878954;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sfGTEmUWEu/FuJm8rv4KxXhPR+l0i9Uc8G4IxOhNPME=;
+        b=X2fStYiGZGu28IzGz94/X4Qix5z/Hr13kjipABSXwtnFEVPKtoB3jGKKQOEvvv7EUMobrc
+        CAKxHClMNNbRxvOb6qvEgQIXUDwbnmNOnpiRhzPWC8bbpRr5GzxnEtDNJQwKuicIey3F1e
+        JEYO2hCnaXljuwhs2HJxk+XCrcv+W5E=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-272-fM6NJd5AOni4YYdRJe2zXw-1; Mon, 21 Mar 2022 12:09:12 -0400
+X-MC-Unique: fM6NJd5AOni4YYdRJe2zXw-1
+Received: by mail-wr1-f71.google.com with SMTP id 71-20020adf82cd000000b00203dc43d216so3238209wrc.22
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 09:09:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=FUy/r9Be6sB+uJt1vdamBW63PDhsfX/EA9tDB1Eiasg=;
-        b=cWaFwqOQcG4i5Gat1hBOpbkMkWCc//yWq1YAg+Ey3xU8huCjJrsqy6DTqfM5IBZ0t8
-         T1Y1LvK4xYoIfwvpg/IVTcFCjRVJvcYsXsrbr8fb08tR4MxtwuO2rIEZvY8RJmJyYssT
-         uLTEsHodUiu0tZ1W0D+FBGsH1kRPY5tA9XBxcpcpeTP8kUhB54e1lrq1wKESr0t2ligB
-         WEIsfW+5e5hWUOwADFPleVSNcn6L2qdmISeaaVPxPzS3dES0N4hZZbi0FT/EwcMm4DNA
-         gU9Ha8ZyXBPmb4kGAaoOsP+Z5InnBjv36o3Em/q/mCC4aDsoKswHIXqVnFQ45E8QLPhY
-         KLZQ==
-X-Gm-Message-State: AOAM531Am4Y/1O+/UbFmmbScF0wS6+cwyG79jexaSULsuP2nIOi9e41v
-        krFlj62Uiro2Rj5T4YEEwyw=
-X-Google-Smtp-Source: ABdhPJzN/TJk/yV+t+YAxeMzAmYMbqfRPoSyPVymQcoHJi1lmIcNRoQ7HePTAAS/mKeYTLWLk6EKeg==
-X-Received: by 2002:a05:6000:1d97:b0:204:1b0:74b2 with SMTP id bk23-20020a0560001d9700b0020401b074b2mr9042793wrb.14.1647878914463;
-        Mon, 21 Mar 2022 09:08:34 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
-        by smtp.googlemail.com with ESMTPSA id az19-20020a05600c601300b0038cadf3aa69sm2603864wmb.36.2022.03.21.09.08.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 09:08:34 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org
-Subject: [PATCH v5 18/18] dt-bindings: arm: msm: Convert kpss-gcc driver Documentation to yaml
-Date:   Mon, 21 Mar 2022 16:38:55 +0100
-Message-Id: <20220321153855.12082-19-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220321153855.12082-1-ansuelsmth@gmail.com>
-References: <20220321153855.12082-1-ansuelsmth@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=sfGTEmUWEu/FuJm8rv4KxXhPR+l0i9Uc8G4IxOhNPME=;
+        b=GdQVtHevxamBoqL5ngCx3IqxdMJUuaskFViDa8FrtRAuC49mvjkHCGDsHQD75gdjIq
+         LXUKwjakPGNYW5addWILUSN6x3iKdjkLvvI6NOHovpk11olSGQfQpqNziUnWZZzgG5Rb
+         l0m9u6+Sxw4cR/86xS4ii1gW9877W93n42oxrEf2P0wgItNFQ8DW1wL/5jTw7cvPhMQM
+         HypMrsgxMfPm7guZ4FOLhGJWfaJjW6LklEjWnOKNk/vFybWCafIyr4cW9+kR9fIxWkOv
+         iZfrnz3DH7csq2HVIjRY3AavV5wM3nwzluX+ZWtA6lqIuwEX2PMhlB/LzTGsTCnujBrm
+         15fg==
+X-Gm-Message-State: AOAM532FrCll+kW2uairDKYvLLo1+b+2TV9lMOC56mmn5N1//ml/zf0w
+        eWLUhHmHSPqxqdvrv9ueY9IxBIaKhJncUDsnKZLb+UEEZlleODRVPyOkHwK7iXNMEOh2lcnuHXo
+        TbnjzLM6TQKAqO6degrDZrsit
+X-Received: by 2002:adf:a4ce:0:b0:203:fce0:755e with SMTP id h14-20020adfa4ce000000b00203fce0755emr11044489wrb.510.1647878951694;
+        Mon, 21 Mar 2022 09:09:11 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxP8tnNpWfcqHVPmFM+7jTdPf3u8hsTPKsNtKPW9hZQPytRSq0aasePBoKmg+nUJ/TirjdyGQ==
+X-Received: by 2002:adf:a4ce:0:b0:203:fce0:755e with SMTP id h14-20020adfa4ce000000b00203fce0755emr11044467wrb.510.1647878951397;
+        Mon, 21 Mar 2022 09:09:11 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c704:4900:849b:f76e:5e1f:ff95? (p200300cbc7044900849bf76e5e1fff95.dip0.t-ipconnect.de. [2003:cb:c704:4900:849b:f76e:5e1f:ff95])
+        by smtp.gmail.com with ESMTPSA id f11-20020a7bcc0b000000b0037e0c362b6dsm14376699wmh.31.2022.03.21.09.09.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Mar 2022 09:09:10 -0700 (PDT)
+Message-ID: <51635f15-0f43-0f9d-e66f-9cd651431f81@redhat.com>
+Date:   Mon, 21 Mar 2022 17:09:09 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH V5 1/2] selftests: vm: bring common functions to a new
+ file
+Content-Language: en-US
+To:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>
+Cc:     kernel@collabora.com, krisman@collabora.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kselftest@vger.kernel.org
+References: <20220317103323.94799-1-usama.anjum@collabora.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220317103323.94799-1-usama.anjum@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert kpss-gcc driver Documentation to yaml. Since kpss-gcc expose a
-clock add the required '#clock-cells' binding while converting it.
+> diff --git a/tools/testing/selftests/vm/vm_util.h b/tools/testing/selftests/vm/vm_util.h
+> new file mode 100644
+> index 0000000000000..e9f5a0f2be196
+> --- /dev/null
+> +++ b/tools/testing/selftests/vm/vm_util.h
+> @@ -0,0 +1,10 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#include <stdint.h>
+> +#include <fcntl.h>
+> +#include "../kselftest.h"
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- .../bindings/arm/msm/qcom,kpss-gcc.txt        | 44 ------------
- .../bindings/arm/msm/qcom,kpss-gcc.yaml       | 68 +++++++++++++++++++
- 2 files changed, 68 insertions(+), 44 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
- create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
+Are that latter two really required in this header? IMHO they should be
+moved to the respective files that need them.
 
-diff --git a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
-deleted file mode 100644
-index e628758950e1..000000000000
---- a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
-+++ /dev/null
-@@ -1,44 +0,0 @@
--Krait Processor Sub-system (KPSS) Global Clock Controller (GCC)
--
--PROPERTIES
--
--- compatible:
--	Usage: required
--	Value type: <string>
--	Definition: should be one of the following. The generic compatible
--			"qcom,kpss-gcc" should also be included.
--			"qcom,kpss-gcc-ipq8064", "qcom,kpss-gcc"
--			"qcom,kpss-gcc-apq8064", "qcom,kpss-gcc"
--			"qcom,kpss-gcc-msm8974", "qcom,kpss-gcc"
--			"qcom,kpss-gcc-msm8960", "qcom,kpss-gcc"
--
--- reg:
--	Usage: required
--	Value type: <prop-encoded-array>
--	Definition: base address and size of the register region
--
--- clocks:
--	Usage: required
--	Value type: <prop-encoded-array>
--	Definition: reference to the pll parents.
--
--- clock-names:
--	Usage: required
--	Value type: <stringlist>
--	Definition: must be "pll8_vote", "pxo".
--
--- clock-output-names:
--	Usage: required
--	Value type: <string>
--	Definition: Name of the output clock. Typically acpu_l2_aux indicating
--		    an L2 cache auxiliary clock.
--
--Example:
--
--	l2cc: clock-controller@2011000 {
--		compatible = "qcom,kpss-gcc-ipq8064", "qcom,kpss-gcc";
--		reg = <0x2011000 0x1000>;
--		clocks = <&gcc PLL8_VOTE>, <&gcc PXO_SRC>;
--		clock-names = "pll8_vote", "pxo";
--		clock-output-names = "acpu_l2_aux";
--	};
-diff --git a/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
-new file mode 100644
-index 000000000000..20ee182eb16f
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
-@@ -0,0 +1,68 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/arm/msm/qcom,kpss-gcc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Krait Processor Sub-system (KPSS) Global Clock Controller (GCC)
-+
-+maintainers:
-+  - Ansuel Smith <ansuelsmth@gmail.com>
-+
-+description: |
-+  Krait Processor Sub-system (KPSS) Global Clock Controller (GCC). Used
-+  to control L2 mux (in the current implementation).
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - qcom,kpss-gcc-ipq8064
-+          - qcom,kpss-gcc-apq8064
-+          - qcom,kpss-gcc-msm8974
-+          - qcom,kpss-gcc-msm8960
-+      - const: qcom,kpss-gcc
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    items:
-+      - description: phandle to pll8_vote
-+      - description: phandle to pxo_board
-+
-+  clock-names:
-+    items:
-+      - const: pll8_vote
-+      - const: pxo
-+
-+  clock-output-names:
-+    const: acpu_l2_aux
-+
-+  '#clock-cells':
-+    const: 0
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - clock-names
-+  - clock-output-names
-+  - '#clock-cells'
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/qcom,gcc-ipq806x.h>
-+
-+    clock-controller@2011000 {
-+      compatible = "qcom,kpss-gcc-ipq8064", "qcom,kpss-gcc";
-+      reg = <0x2011000 0x1000>;
-+      clocks = <&gcc PLL8_VOTE>, <&pxo_board>;
-+      clock-names = "pll8_vote", "pxo";
-+      clock-output-names = "acpu_l2_aux";
-+      #clock-cells = <0>;
-+    };
-+...
-+
+If you return "bool" below, you might want to include <stdbool.h> here
+as well.
+
+> +
+> +uint64_t pagemap_get_entry(int fd, char *start);
+> +bool pagemap_is_softdirty(int fd, char *start);
+> +void clear_softdirty(void);
+> +uint64_t read_pmd_pagesize(void);
+> +uint64_t check_huge(void *addr);
+
+Apart from that, LGTM.
+
 -- 
-2.34.1
+Thanks,
+
+David / dhildenb
 
