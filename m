@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55918C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4183EC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350721AbiCUOKL (ORCPT
+        id S1350676AbiCUOKH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:10:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35548 "EHLO
+        Mon, 21 Mar 2022 10:10:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348919AbiCUODK (ORCPT
+        with ESMTP id S1348938AbiCUODL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:03:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FBC33FBF9;
-        Mon, 21 Mar 2022 06:59:59 -0700 (PDT)
+        Mon, 21 Mar 2022 10:03:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0692173369;
+        Mon, 21 Mar 2022 07:00:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C9CEB816E3;
-        Mon, 21 Mar 2022 13:59:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B04C6C340E8;
-        Mon, 21 Mar 2022 13:59:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8394E6125C;
+        Mon, 21 Mar 2022 13:59:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94223C340E8;
+        Mon, 21 Mar 2022 13:59:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871196;
-        bh=jbi74pirWmIJryKTHRKMdiKZsXWXK+wLnFhWCEPB59E=;
+        s=korg; t=1647871182;
+        bh=dGOcXsBKGb+pa/3WupTRMH4qEFSFdcbUJ2kNGLJFczo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I8PQMFrJCjHMeX8Am5DIMHgAgrKLK2FUe4gglGJoRLLgsUsUFO5/Nv7mhi2Kbx/LN
-         JGv7UDpfKRl69FQClN87Bsc9m8fEjxBWJwS8YTXYEVs1rgglB+rdgEfaNOuFh2fPyB
-         s9pkm2Ma85ww/0memxmdl53LDCDsLlVdhLlGRjJ0=
+        b=l7Wx7ntCuTC8Rm2tNoGI27cAHag33a7Tam8yfRIb92nd1iN2JCVdt9JmuwS6aMoAQ
+         A4iqgta699eCt0EZJDPGV/tYxbAzafvT4ISWnp/xemcJZwG+jfRcLm3EAH50QHDvXM
+         oPHkuqzWhLdqf+LMEixkR4h2os0PcrDKPP33MWo0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        James Morse <james.morse@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 19/30] arm64: fix clang warning about TRAMP_VALIAS
-Date:   Mon, 21 Mar 2022 14:52:49 +0100
-Message-Id: <20220321133220.201591833@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        syzbot+75cccf2b7da87fb6f84b@syzkaller.appspotmail.com
+Subject: [PATCH 5.10 24/30] Input: aiptek - properly check endpoint type
+Date:   Mon, 21 Mar 2022 14:52:54 +0100
+Message-Id: <20220321133220.344651840@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133219.643490199@linuxfoundation.org>
 References: <20220321133219.643490199@linuxfoundation.org>
@@ -51,51 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit 7f34b43e07cb512b28543fdcb9f35d1fbfda9ebc ]
+commit 5600f6986628dde8881734090588474f54a540a8 upstream.
 
-The newly introduced TRAMP_VALIAS definition causes a build warning
-with clang-14:
+Syzbot reported warning in usb_submit_urb() which is caused by wrong
+endpoint type. There was a check for the number of endpoints, but not
+for the type of endpoint.
 
-arch/arm64/include/asm/vectors.h:66:31: error: arithmetic on a null pointer treated as a cast from integer to pointer is a GNU extension [-Werror,-Wnull-pointer-arithmetic]
-                return (char *)TRAMP_VALIAS + SZ_2K * slot;
+Fix it by replacing old desc.bNumEndpoints check with
+usb_find_common_endpoints() helper for finding endpoints
 
-Change the addition to something clang does not complain about.
+Fail log:
 
-Fixes: bd09128d16fa ("arm64: Add percpu vectors for EL1")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Acked-by: James Morse <james.morse@arm.com>
-Link: https://lore.kernel.org/r/20220316183833.1563139-1-arnd@kernel.org
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+usb 5-1: BOGUS urb xfer, pipe 1 != type 3
+WARNING: CPU: 2 PID: 48 at drivers/usb/core/urb.c:502 usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
+Modules linked in:
+CPU: 2 PID: 48 Comm: kworker/2:2 Not tainted 5.17.0-rc6-syzkaller-00226-g07ebd38a0da2 #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+Workqueue: usb_hub_wq hub_event
+...
+Call Trace:
+ <TASK>
+ aiptek_open+0xd5/0x130 drivers/input/tablet/aiptek.c:830
+ input_open_device+0x1bb/0x320 drivers/input/input.c:629
+ kbd_connect+0xfe/0x160 drivers/tty/vt/keyboard.c:1593
+
+Fixes: 8e20cf2bce12 ("Input: aiptek - fix crash on detecting device without endpoints")
+Reported-and-tested-by: syzbot+75cccf2b7da87fb6f84b@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Link: https://lore.kernel.org/r/20220308194328.26220-1-paskripkin@gmail.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/asm/vectors.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/input/tablet/aiptek.c |   10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm64/include/asm/vectors.h b/arch/arm64/include/asm/vectors.h
-index f64613a96d53..bc9a2145f419 100644
---- a/arch/arm64/include/asm/vectors.h
-+++ b/arch/arm64/include/asm/vectors.h
-@@ -56,14 +56,14 @@ enum arm64_bp_harden_el1_vectors {
- DECLARE_PER_CPU_READ_MOSTLY(const char *, this_cpu_vector);
+--- a/drivers/input/tablet/aiptek.c
++++ b/drivers/input/tablet/aiptek.c
+@@ -1801,15 +1801,13 @@ aiptek_probe(struct usb_interface *intf,
+ 	input_set_abs_params(inputdev, ABS_TILT_Y, AIPTEK_TILT_MIN, AIPTEK_TILT_MAX, 0, 0);
+ 	input_set_abs_params(inputdev, ABS_WHEEL, AIPTEK_WHEEL_MIN, AIPTEK_WHEEL_MAX - 1, 0, 0);
  
- #ifndef CONFIG_UNMAP_KERNEL_AT_EL0
--#define TRAMP_VALIAS	0
-+#define TRAMP_VALIAS	0ul
- #endif
+-	/* Verify that a device really has an endpoint */
+-	if (intf->cur_altsetting->desc.bNumEndpoints < 1) {
++	err = usb_find_common_endpoints(intf->cur_altsetting,
++					NULL, NULL, &endpoint, NULL);
++	if (err) {
+ 		dev_err(&intf->dev,
+-			"interface has %d endpoints, but must have minimum 1\n",
+-			intf->cur_altsetting->desc.bNumEndpoints);
+-		err = -EINVAL;
++			"interface has no int in endpoints, but must have minimum 1\n");
+ 		goto fail3;
+ 	}
+-	endpoint = &intf->cur_altsetting->endpoint[0].desc;
  
- static inline const char *
- arm64_get_bp_hardening_vector(enum arm64_bp_harden_el1_vectors slot)
- {
- 	if (arm64_kernel_unmapped_at_el0())
--		return (char *)TRAMP_VALIAS + SZ_2K * slot;
-+		return (char *)(TRAMP_VALIAS + SZ_2K * slot);
- 
- 	WARN_ON_ONCE(slot == EL1_VECTOR_KPTI);
- 
--- 
-2.34.1
-
+ 	/* Go set up our URB, which is called when the tablet receives
+ 	 * input.
 
 
