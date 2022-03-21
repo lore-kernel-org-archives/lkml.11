@@ -2,58 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B33AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:50:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D954C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:50:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233783AbiCUXvi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:51:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59496 "EHLO
+        id S233790AbiCUXvk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:51:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233567AbiCUXvN (ORCPT
+        with ESMTP id S233578AbiCUXvK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 19:51:13 -0400
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D7221A8A2
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 16:49:19 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id s68-20020a625e47000000b004fa6520b540so7126601pfb.17
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 16:49:19 -0700 (PDT)
+        Mon, 21 Mar 2022 19:51:10 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBBA81AA051
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 16:49:10 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id z132-20020a63338a000000b003844e317066so167484pgz.19
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 16:49:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=03AtXXduXg1zb1Lu6FvRz8gaF3DklY9yvpB3ES+4Dvo=;
-        b=Q1xUUUmlqEpBGcIC6H+wXtC8Gr2rWlrSz7NI5xNmSE0uvZIhuVGBn3UBiUKZBNEP3y
-         uVJDWwuVe+43rOQ4ih/Q02ttE3rAuFeZ09lxezOVwWDDfJ/49M59H936VvqCqVYdbPMz
-         kEr69NpA4DkdxnFB5YyruXcZUqGqEGBmB45uzV/etPNq43icb12Av7RpQmZLXgbm9A9d
-         8uKXZ3Ng66TKGPqurVnVl/3Q/ufsUqWlXF1Hij+3jE1dOt3pcaa68W2Z/fgm6VNv7jnh
-         RwqSAAEAJ/T9NOGtFFtqaoreplYfA45saZWQEXhVN28LoX1yyKAGp9P24yQf0lLNQt6j
-         kjAQ==
+        bh=HTko+mjwSCY8/8jCHYIzXlXkhpUJFcRy2EV5oJp9m3Q=;
+        b=I22SNpJTSp7u2DkXDp+DZcXecT0aJNWQsYrggepx4bKXKn5jFK8VNlPisgR9wW+gZi
+         sypyACQIoThc8e16NmgO60qt1r5TdXaq4OBmHDr0wcQbVn8Ixvjf84zb0XZHVNOjcBqN
+         L07M7jQJ3Dmzbwwr8ienEAHrv2B7U3dwrascuPvMrO3R+s2U10dHS0H0k/WRZu4aDo4Z
+         xqqkSP7Mfc1F3HoUP89S8h+v7/104N7SfBKCakhJXwea8h7EaYHxn6B5fjTh+JEgAF/E
+         CIDd/hyZ2/pOhkrneK9nUuF4MxB9VfkIxSMd4+4YS+yVFstDLqD2CXAcR0U71vwoPaxJ
+         vcdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=03AtXXduXg1zb1Lu6FvRz8gaF3DklY9yvpB3ES+4Dvo=;
-        b=deeUxahzATMYa2fO3zxl8HwnzJhEuOuEgZBZGJPkCKFOsgtzanhhGTdd2GSM2GvWEC
-         L6RClTZG4rOrmKeAEmk3O/iQ2B18O89ighCBSCi9o3SqCaC3LrLeG0BidzdgKJzkWpq9
-         2dBcTlYTybEi0L6z/xzH+vHo70zvDMnZ14Y12WLyJP0dtDIN81jtevWTWQvusXSyefLH
-         ZAPRJHXdh4Ra9havuW4xZ4elhfy1437zu6QQ58T518wvogSCZByRZD1Swai8IZRUrNXl
-         xMVay4kjylHDS+0hRx/iByQK9gLO5bvJTQvXcuXUSkvNQxetE/qmOn1xknkZ8Ux9pO7j
-         iPAg==
-X-Gm-Message-State: AOAM533oVv34W/ZFaHH9T6mxnkp/eBkgBolupZCdI4BARNgdqrdW4qJ8
-        +2LtT31sbM1gryZQwBX2z1BZ5bE1McRTHwAOOdB0qihFFuSAZyvUUJvLSmcGKnxe2T2Zl3oHO/f
-        zB/7o4q9Yc6MJ2cP+2Iei+ZztV3ctde5E751UjsaO9sclKRjzhXaCd88k1qXEiiItYjSaryUf
-X-Google-Smtp-Source: ABdhPJyku+3fzcf4ntA+Tu3Q+OdzLeoDGPq6egXk8Edj0z6jYxTHXMgyqm99IUFx4je5oaBLEjfaCc7A1/nJ
+        bh=HTko+mjwSCY8/8jCHYIzXlXkhpUJFcRy2EV5oJp9m3Q=;
+        b=1rvtqiGTif2Rah/jT3m8SzBu81/BU6hHy9nCR9Q24/Fwz3t8foAzzcF0+gqK3Pa28S
+         0ilISY7SDlzxBlMHp2jYr222C4FefcGfitXgZIH6ASIZGGaJfqtlA3QurCCzHPtrt9So
+         z3hx2jo/ELAzZygX/2pucKjBB+GLG972eyer/NbW5hcqp0GLHPG8/9ZZcyqKn31EGwVS
+         +kEVP7DYYGL9UnxImeIuii2mTK/ObfnDMeWP0Y26hfkjxFoGvjU+LVeFehGjnulUw/IH
+         m6cRgAT9JIm+6tbl5aFOkiHtadhFaO8MJKHJuc/PwEQt/tkwe6zzcrVmzRGrl0ydNZxO
+         CDTQ==
+X-Gm-Message-State: AOAM532pe8mt/5nkwOeB6d9PZtD+WnHRu1IR1xGXhTR3h6NXx/d7Dd/e
+        JjiLAO/d8ufGTeo4eHArNPQVG0zf5raGPQ1EhXpgZLZ7m6RJ6JVyc5Jzxd53ROKu3d7NH+D2wpH
+        dfPBMIXbbsCOS0FYNIblYwT24j2/OjeJo4yx0X49UVAu2qrDze1ByXMu5E8TBXyCRb9MtvQVc
+X-Google-Smtp-Source: ABdhPJwFjw1Jalvb5hnttuiMTpyg11w5RmyTkRJZ7KAWW+wsSDGUQYl/Em4/xpRB5TScQjoOEihWnCIvol4p
 X-Received: from bgardon.sea.corp.google.com ([2620:15c:100:202:b76a:f152:cb5e:5cd2])
- (user=bgardon job=sendgmr) by 2002:aa7:943a:0:b0:4f6:adc9:d741 with SMTP id
- y26-20020aa7943a000000b004f6adc9d741mr25936431pfo.30.1647906558205; Mon, 21
- Mar 2022 16:49:18 -0700 (PDT)
-Date:   Mon, 21 Mar 2022 16:48:43 -0700
+ (user=bgardon job=sendgmr) by 2002:a05:6a00:238f:b0:4f7:78b1:2f6b with SMTP
+ id f15-20020a056a00238f00b004f778b12f6bmr26325911pfc.17.1647906549813; Mon,
+ 21 Mar 2022 16:49:09 -0700 (PDT)
+Date:   Mon, 21 Mar 2022 16:48:40 -0700
 In-Reply-To: <20220321234844.1543161-1-bgardon@google.com>
-Message-Id: <20220321234844.1543161-11-bgardon@google.com>
+Message-Id: <20220321234844.1543161-8-bgardon@google.com>
 Mime-Version: 1.0
 References: <20220321234844.1543161-1-bgardon@google.com>
 X-Mailer: git-send-email 2.35.1.894.gb6a874cedc-goog
-Subject: [PATCH v2 10/11] KVM: x86: Fix errant brace in KVM capability handling
+Subject: [PATCH v2 07/11] KVM: x86/MMU: Factor out updating NX hugepages state
+ for a VM
 From:   Ben Gardon <bgardon@google.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     Paolo Bonzini <pbonzini@redhat.com>, Peter Xu <peterx@redhat.com>,
@@ -69,32 +70,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The braces around the KVM_CAP_XSAVE2 block also surround the
-KVM_CAP_PMU_CAPABILITY block, likely the result of a merge issue. Simply
-move the curly brace back to where it belongs.
+Factor out the code to update the NX hugepages state for an individual
+VM. This will be expanded in future commits to allow per-VM control of
+Nx hugepages.
 
-Fixes: ba7bb663f5547 ("KVM: x86: Provide per VM capability for disabling PMU virtualization")
+No functional change intended.
+
 Signed-off-by: Ben Gardon <bgardon@google.com>
 ---
- arch/x86/kvm/x86.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/mmu/mmu.c | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 73df90a6932b..74351cbb9b5b 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -4352,10 +4352,10 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
- 		if (r < sizeof(struct kvm_xsave))
- 			r = sizeof(struct kvm_xsave);
- 		break;
-+	}
- 	case KVM_CAP_PMU_CAPABILITY:
- 		r = enable_pmu ? KVM_CAP_PMU_VALID_MASK : 0;
- 		break;
--	}
- 	case KVM_CAP_DISABLE_QUIRKS2:
- 		r = KVM_X86_VALID_QUIRKS;
- 		break;
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 3b8da8b0745e..1b59b56642f1 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -6195,6 +6195,15 @@ static void __set_nx_huge_pages(bool val)
+ 	nx_huge_pages = itlb_multihit_kvm_mitigation = val;
+ }
+ 
++static int kvm_update_nx_huge_pages(struct kvm *kvm)
++{
++	mutex_lock(&kvm->slots_lock);
++	kvm_mmu_zap_all_fast(kvm);
++	mutex_unlock(&kvm->slots_lock);
++
++	wake_up_process(kvm->arch.nx_lpage_recovery_thread);
++}
++
+ static int set_nx_huge_pages(const char *val, const struct kernel_param *kp)
+ {
+ 	bool old_val = nx_huge_pages;
+@@ -6217,13 +6226,8 @@ static int set_nx_huge_pages(const char *val, const struct kernel_param *kp)
+ 
+ 		mutex_lock(&kvm_lock);
+ 
+-		list_for_each_entry(kvm, &vm_list, vm_list) {
+-			mutex_lock(&kvm->slots_lock);
+-			kvm_mmu_zap_all_fast(kvm);
+-			mutex_unlock(&kvm->slots_lock);
+-
+-			wake_up_process(kvm->arch.nx_lpage_recovery_thread);
+-		}
++		list_for_each_entry(kvm, &vm_list, vm_list)
++			kvm_set_nx_huge_pages(kvm);
+ 		mutex_unlock(&kvm_lock);
+ 	}
+ 
 -- 
 2.35.1.894.gb6a874cedc-goog
 
