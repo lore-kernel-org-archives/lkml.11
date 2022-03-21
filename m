@@ -2,82 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF037C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:00:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D41AC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 23:00:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231624AbiCUXBY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 19:01:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47446 "EHLO
+        id S231569AbiCUXB3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 19:01:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233620AbiCUW7R (ORCPT
+        with ESMTP id S232031AbiCUW57 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 18:59:17 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2337E32A591
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 15:47:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=piBh/tjqMdJH263YcMC5WTs7iuvgu1VQYTi2OHIKUPI=; b=WrfLJoy9GqnP0b9IGqTfhorFFL
-        NLgE3SSkCmJFiE2jmoWtPp/q7asjGMrwBubHYS2DcgLTuDgsNOHcbrIQ1fQbcn18jZlgLOYpKUBFD
-        jAX7SuOaZrYOVQSvuzbOwiPfTV/zKOH9c3XeabYAFBOGCzmttLBvTzeknlHCWCQVIPckPqgbZukfT
-        m+CtO0eM2upoLqAd9Bb5ncNkuBLRInBZxYXq1Ozpee4jPjhlejhLSbE7rgNc7/triT0cM4+WwjgnW
-        p5lLcaTPfAsLL+E+4EqTeVbM1OMznVTtZmBNwBQJuCWS4iQrQwTKTK6bvk9ewPA/XFOXWwGQYKU4n
-        DTVk60LA==;
-Received: from [165.90.126.25] (helo=killbill.home)
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1nWPLc-0000ww-5f; Mon, 21 Mar 2022 22:13:52 +0100
-From:   Melissa Wen <mwen@igalia.com>
-To:     emma@anholt.net, airlied@linux.ie, daniel@ffwll.ch
-Cc:     Rob Herring <robh@kernel.org>, Melissa Wen <mwen@igalia.com>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] drm/v3d: cleanup BOs properly when lookup_bos fails
-Date:   Mon, 21 Mar 2022 20:13:15 -0100
-Message-Id: <20220321211316.1423294-2-mwen@igalia.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220321211316.1423294-1-mwen@igalia.com>
-References: <20220321211316.1423294-1-mwen@igalia.com>
+        Mon, 21 Mar 2022 18:57:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EB4A470760;
+        Mon, 21 Mar 2022 15:37:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 24A2F614FE;
+        Mon, 21 Mar 2022 21:53:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC7F5C340F2;
+        Mon, 21 Mar 2022 21:53:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647899618;
+        bh=IQULkUGvHtz5hhQCsHz0NF5N2mpPZcmPQN2C7Ay6gJ4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=adijprrdvsLi9dHvKaRJi6tBMd2Iy3izj4+HkNv0P5GxI+BSiQBC+MWboqvLYulZC
+         1hcdFDSbJtLruiK5dTgWSQatzgSZjZbDqmz7572xIodrInRIa6grSk1M3X5tCrCt/a
+         dSk65pWs1v4f0CGtOhJvKhWSWNIeyGe/DOdpQ+lXU5aV7EgwMGrqEEp+j6NJNhwwiU
+         UueMdOCvd0c2ToxbJbpLAYewslwv5dAaf2PdruVkodYH9+7hblkmiSMRLiP0NOs3WN
+         JhvX5gBceT3MikgkxvLONCONoY39JmjjNN1JMiyI0RvRDKKE9iBBEv4Vxz4XoYr0E4
+         Qt3iumrJ5NmFw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
+        syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com,
+        Willem de Bruijn <willemb@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 2/2] net: ipv6: fix skb_over_panic in __ip6_append_data
+Date:   Mon, 21 Mar 2022 17:53:23 -0400
+Message-Id: <20220321215323.490478-2-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220321215323.490478-1-sashal@kernel.org>
+References: <20220321215323.490478-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When v3d_lookup_bos fails to `allocate validated BO pointers`,
-job->bo_count was already set to args->bo_count, but job->bo points to
-NULL. In this scenario, we must verify that job->bo is not NULL before
-iterating on it to proper clean up a job. Also, drm_gem_object_put
-already checks that the object passed is not NULL, doing the job->bo[i]
-checker redundant.
+From: Tadeusz Struk <tadeusz.struk@linaro.org>
 
-Signed-off-by: Melissa Wen <mwen@igalia.com>
+[ Upstream commit 5e34af4142ffe68f01c8a9acae83300f8911e20c ]
+
+Syzbot found a kernel bug in the ipv6 stack:
+LINK: https://syzkaller.appspot.com/bug?id=205d6f11d72329ab8d62a610c44c5e7e25415580
+The reproducer triggers it by sending a crafted message via sendmmsg()
+call, which triggers skb_over_panic, and crashes the kernel:
+
+skbuff: skb_over_panic: text:ffffffff84647fb4 len:65575 put:65575
+head:ffff888109ff0000 data:ffff888109ff0088 tail:0x100af end:0xfec0
+dev:<NULL>
+
+Update the check that prevents an invalid packet with MTU equal
+to the fregment header size to eat up all the space for payload.
+
+The reproducer can be found here:
+LINK: https://syzkaller.appspot.com/text?tag=ReproC&x=1648c83fb00000
+
+Reported-by: syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Acked-by: Willem de Bruijn <willemb@google.com>
+Link: https://lore.kernel.org/r/20220310232538.1044947-1-tadeusz.struk@linaro.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/v3d/v3d_gem.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/ipv6/ip6_output.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/v3d/v3d_gem.c b/drivers/gpu/drm/v3d/v3d_gem.c
-index 92bc0faee84f..926bfc7e07fb 100644
---- a/drivers/gpu/drm/v3d/v3d_gem.c
-+++ b/drivers/gpu/drm/v3d/v3d_gem.c
-@@ -358,11 +358,11 @@ v3d_job_free(struct kref *ref)
- 	struct v3d_job *job = container_of(ref, struct v3d_job, refcount);
- 	int i;
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index fd496bda7ec7..373df391dc93 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1325,8 +1325,8 @@ static int __ip6_append_data(struct sock *sk,
+ 		      sizeof(struct frag_hdr) : 0) +
+ 		     rt->rt6i_nfheader_len;
  
--	for (i = 0; i < job->bo_count; i++) {
--		if (job->bo[i])
-+	if (job->bo) {
-+		for (i = 0; i < job->bo_count; i++)
- 			drm_gem_object_put(job->bo[i]);
-+		kvfree(job->bo);
- 	}
--	kvfree(job->bo);
+-	if (mtu < fragheaderlen ||
+-	    ((mtu - fragheaderlen) & ~7) + fragheaderlen < sizeof(struct frag_hdr))
++	if (mtu <= fragheaderlen ||
++	    ((mtu - fragheaderlen) & ~7) + fragheaderlen <= sizeof(struct frag_hdr))
+ 		goto emsgsize;
  
- 	dma_fence_put(job->irq_fence);
- 	dma_fence_put(job->done_fence);
+ 	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
 -- 
-2.35.1
+2.34.1
 
