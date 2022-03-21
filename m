@@ -2,102 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66952C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 18:36:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73A01C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 18:38:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352253AbiCUSiL (ORCPT
+        id S1352244AbiCUSjk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 14:38:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34288 "EHLO
+        Mon, 21 Mar 2022 14:39:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352240AbiCUSiI (ORCPT
+        with ESMTP id S243386AbiCUSje (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 14:38:08 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A28E181661;
-        Mon, 21 Mar 2022 11:36:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E21F8CE1AEB;
-        Mon, 21 Mar 2022 18:36:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F935C340F2;
-        Mon, 21 Mar 2022 18:36:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647887799;
-        bh=L4/pb0C+x3zLGknw3l+VTjgkqap8FhmEleEySHiDF8E=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=cdwwN42An54vRnJV3Zt6TSOetV1Xc7QPyxuYnzVQRstdts/+9tBw/vN/5o6vxRPvP
-         ijbMZhW+aAGq1xldOFxPyodaYfplB1eSxJ0CS2Mo7dz61U7nYflvTyt+G1aAqAZvEM
-         HRLwECd5PLAm43kKYR+/qnK3rdcNX5vEWy0iSaIRID8XnsVwtzM8oYo68gghHVyhzO
-         nlgYOJIChXUDInILMsW/DDnGxQLziSw91MgLfsBNiIPtE/GvOF/tMJE28f1YZpliUF
-         M06GU7erfFw8jNJaM8Yg6uOv+nYgQQ092LPWDaz6lqrXOl/EW6eGQ9ulqv6DyvBDw3
-         eEsqSN4fURNnQ==
-Date:   Mon, 21 Mar 2022 11:36:34 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "'Rafael J . Wysocki '" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-i2c@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 0/6] introduce fwnode in the I2C subsystem
-Message-ID: <20220321113634.56d6fe2b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220321115634.5f4b8bd4@fixe.home>
-References: <20220318160059.328208-1-clement.leger@bootlin.com>
-        <20220318100201.630c70bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20220321115634.5f4b8bd4@fixe.home>
+        Mon, 21 Mar 2022 14:39:34 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A882513D72;
+        Mon, 21 Mar 2022 11:38:06 -0700 (PDT)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22LGYZot030368;
+        Mon, 21 Mar 2022 18:38:05 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : content-type : content-transfer-encoding :
+ mime-version; s=pp1; bh=ynd1VaU6isawdUuAeHBM2vaeCiIL3/aGKa8zxkUPI3Q=;
+ b=p8EU+x6lVJ1HLWC2LoL2Aj3q7/0pwlUkxCo4Mo91ZbBMwFmreEtwIPqeVOODFVdAcVP/
+ s86jmVlZnMQ9xHA9YP3rt8GLkcr8Ixkiv2tj6HTzk4t+BrA3x7ovmWNNuMxeIImSnXhU
+ QFU81TqeqG70FLBAyCh2+czs+DdnzpOO8bVhFknmQtI/oVG5kyaF/+29yJfTtuwXohKW
+ dat8oGz+ya9SysoBdXjTHdU5FYpTjS1WdzgROP9E/EH0LApEnas5KEJJu9h8L6iAdw/F
+ tg/wEMVa8fO8wv1gIgxeaqdCBotaQoa1eN1XgXxS0cZSJhvuCxDdRKB3QRDz6rcWuZRW Uw== 
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3exf1v35h8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 21 Mar 2022 18:38:04 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22LIXhQo023268;
+        Mon, 21 Mar 2022 18:38:03 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma06fra.de.ibm.com with ESMTP id 3ew6ehuxs0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 21 Mar 2022 18:38:02 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22LIQLkP34341242
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 21 Mar 2022 18:26:21 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 930F25204F;
+        Mon, 21 Mar 2022 18:38:00 +0000 (GMT)
+Received: from sig-9-65-71-84.ibm.com (unknown [9.65.71.84])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 15BBB5204E;
+        Mon, 21 Mar 2022 18:37:59 +0000 (GMT)
+Message-ID: <a47c4a2bdc27d1a66ae09b9a07a851d6b27e6a5c.camel@linux.ibm.com>
+Subject: [GIT PULL] integrity: subsystem fixes for v5.18
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-integrity <linux-integrity@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Date:   Mon, 21 Mar 2022 14:37:53 -0400
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 3pdYNm80vdPHcLaNowjmsiY1BBvGa548
+X-Proofpoint-GUID: 3pdYNm80vdPHcLaNowjmsiY1BBvGa548
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-21_07,2022-03-21_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=929
+ priorityscore=1501 impostorscore=0 suspectscore=0 adultscore=0 bulkscore=0
+ lowpriorityscore=0 spamscore=0 mlxscore=0 malwarescore=0 clxscore=1015
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203210118
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 21 Mar 2022 11:56:34 +0100 Cl=C3=A9ment L=C3=A9ger wrote:
-> Le Fri, 18 Mar 2022 10:02:01 -0700,
-> Jakub Kicinski <kuba@kernel.org> a =C3=A9crit :
->=20
-> > On Fri, 18 Mar 2022 17:00:46 +0100 Cl=C3=A9ment L=C3=A9ger wrote: =20
-> > > In order to allow the I2C subsystem to be usable with fwnode, add
-> > > some functions to retrieve an i2c_adapter from a fwnode and use
-> > > these functions in both i2c mux and sfp. ACPI and device-tree are
-> > > handled to allow these modifications to work with both descriptions.
-> > >=20
-> > > This series is a subset of the one that was first submitted as a larg=
-er
-> > > series to add swnode support [1]. In this one, it will be focused on
-> > > fwnode support only since it seems to have reach a consensus that
-> > > adding fwnode to subsystems makes sense.
-> > >=20
-> > > [1] https://lore.kernel.org/netdev/YhPSkz8+BIcdb72R@smile.fi.intel.co=
-m/T/   =20
-> >=20
-> > Sorry to jump ahead but would be great to split it up so that every
-> > subsystem could apply its patches without risking conflicts, once
-> > consensus has been reached. =20
->=20
-> Hi Jakub,
->=20
-> Ok, to be clear, you would like a series which contains all the
-> "base" fwnode functions that I'm going to add to be sent separately
-> right ? And then also split i2c/net stuff that was sent in this series ?
+Hi Linus,
 
-I'm mostly concerned about conflicts, so if you can get the entire
-series into 5.18 before the merge window is over then consider it=20
-acked. If it doesn't make 5.18 looks like you'd need to send patches=20
-1 and 2 as a PR so that both the i2c and net trees can pull it.=20
-Once pulled send patch 6 out to net-next. Does that make sense?
+Except for extending the "encrypted" key type to support user provided
+data, the rest is code cleanup, __setup() usage bug fix, and a trivial
+change.
+
+thanks,
+
+Mimi
+
+
+The following changes since commit 754e0b0e35608ed5206d6a67a791563c631cec07:
+
+  Linux 5.17-rc4 (2022-02-13 12:13:30 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/zohar/linux-integrity.git tags/integrity-v5.18
+
+for you to fetch changes up to 4a48b4c428dc92b5e0b19de83e7eb8d530dddd48:
+
+  MAINTAINERS: add missing security/integrity/platform_certs (2022-02-28 21:08:54 -0500)
+
+----------------------------------------------------------------
+integrity-v5.18
+
+----------------------------------------------------------------
+Austin Kim (1):
+      ima: Fix trivial typos in the comments
+
+Mimi Zohar (4):
+      MAINTAINERS: add missing "security/integrity" directory
+      ima: rename IMA_ACTION_FLAGS to IMA_NONACTION_FLAGS
+      ima: define ima_max_digest_data struct without a flexible array variable
+      MAINTAINERS: add missing security/integrity/platform_certs
+
+Randy Dunlap (1):
+      EVM: fix the evm= __setup handler return value
+
+Stefan Berger (1):
+      ima: Return error code obtained from securityfs functions
+
+Yael Tzur (1):
+      KEYS: encrypted: Instantiate key with user-provided decrypted data
+
+ Documentation/security/keys/trusted-encrypted.rst | 25 ++++++--
+ MAINTAINERS                                       | 11 ++++
+ security/integrity/evm/evm_main.c                 |  2 +-
+ security/integrity/ima/ima_api.c                  | 12 ++--
+ security/integrity/ima/ima_fs.c                   | 31 +++++++---
+ security/integrity/ima/ima_init.c                 |  5 +-
+ security/integrity/ima/ima_main.c                 |  9 +--
+ security/integrity/ima/ima_policy.c               |  4 +-
+ security/integrity/ima/ima_template_lib.c         |  7 +--
+ security/integrity/integrity.h                    | 14 ++++-
+ security/keys/Kconfig                             | 19 ++++--
+ security/keys/encrypted-keys/encrypted.c          | 71 +++++++++++++++++------
+ 12 files changed, 146 insertions(+), 64 deletions(-)
+
