@@ -2,52 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78530C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:59:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D89B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 13:59:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348299AbiCUOAZ (ORCPT
+        id S1348489AbiCUOA2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:00:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43988 "EHLO
+        Mon, 21 Mar 2022 10:00:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348391AbiCUN5m (ORCPT
+        with ESMTP id S1348452AbiCUN5y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:57:42 -0400
+        Mon, 21 Mar 2022 09:57:54 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 734F1177094;
-        Mon, 21 Mar 2022 06:55:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B07B1770B6;
+        Mon, 21 Mar 2022 06:55:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E55EF612A1;
-        Mon, 21 Mar 2022 13:55:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B84A6C340E8;
-        Mon, 21 Mar 2022 13:55:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B132612AB;
+        Mon, 21 Mar 2022 13:55:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B6AFC340E8;
+        Mon, 21 Mar 2022 13:55:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647870924;
-        bh=ie2mKoXRPtnkgOIBTSNvK44GyHrmwv3sc63OLsGAZew=;
+        s=korg; t=1647870927;
+        bh=dy8PW5AEdiEoildx1nD3DQnzreCRWT9CJl1QM0+Tp1I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rdrxHT7CTG4uBQAeeMnm0hmZkE3zAwNDX5kxco5hZnN4SiA7UIRxEyQpl1ow+hNz+
-         WYmwf9Oq5mqN3hlVOFRK2C9emfgRWJeQwsPQba6SodyhFSb9dZSAEEw30a0GYV+8f2
-         4sMXXNni2f0niRRVkc/01Vd50iXSX+MqN77OyP+w=
+        b=OM2YaGYAfGEjaOG8WW30BFWO170YeTm5G8LuVOGKH6j6MR10KbD0QraKpNxkynjjn
+         7PCNq8m6YoOyzj4k/MkbTF4VPMnck1M6yoFkhzdmwXpj2sB0ccIiDgPPt3s00Nq+Gz
+         GkkpJxuDnBvAbqjr7GGYietd9IEDNdCpY2slx4tY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-        Sergei Trofimovich <slyfox@gentoo.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Anatoly Pugachev <matorola@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        dann frazier <dann.frazier@canonical.com>
-Subject: [PATCH 4.19 19/57] ia64: ensure proper NUMA distance and possible map initialization
-Date:   Mon, 21 Mar 2022 14:52:00 +0100
-Message-Id: <20220321133222.544166895@linuxfoundation.org>
+        stable@vger.kernel.org, Xin Long <lucien.xin@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 4.19 02/57] sctp: fix the processing for INIT chunk
+Date:   Mon, 21 Mar 2022 14:51:43 +0100
+Message-Id: <20220321133222.057634450@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133221.984120927@linuxfoundation.org>
 References: <20220321133221.984120927@linuxfoundation.org>
@@ -59,82 +51,161 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Valentin Schneider <valentin.schneider@arm.com>
+From: Xin Long <lucien.xin@gmail.com>
 
-commit b22a8f7b4bde4e4ab73b64908ffd5d90ecdcdbfd upstream.
+commit eae5783908042a762c24e1bd11876edb91d314b1 upstream.
 
-John Paul reported a warning about bogus NUMA distance values spurred by
-commit:
+This patch fixes the problems below:
 
-  620a6dc40754 ("sched/topology: Make sched_init_numa() use a set for the deduplicating sort")
+1. In non-shutdown_ack_sent states: in sctp_sf_do_5_1B_init() and
+   sctp_sf_do_5_2_2_dupinit():
 
-In this case, the afflicted machine comes up with a reported 256 possible
-nodes, all of which are 0 distance away from one another.  This was
-previously silently ignored, but is now caught by the aforementioned
-commit.
+  chunk length check should be done before any checks that may cause
+  to send abort, as making packet for abort will access the init_tag
+  from init_hdr in sctp_ootb_pkt_new().
 
-The culprit is ia64's node_possible_map which remains unchanged from its
-initialization value of NODE_MASK_ALL.  In John's case, the machine
-doesn't have any SRAT nor SLIT table, but AIUI the possible map remains
-untouched regardless of what ACPI tables end up being parsed.  Thus,
-!online && possible nodes remain with a bogus distance of 0 (distances \in
-[0, 9] are "reserved and have no meaning" as per the ACPI spec).
+2. In shutdown_ack_sent state: in sctp_sf_do_9_2_reshutack():
 
-Follow x86 / drivers/base/arch_numa's example and set the possible map to
-the parsed map, which in this case seems to be the online map.
+  The same checks as does in sctp_sf_do_5_2_2_dupinit() is needed
+  for sctp_sf_do_9_2_reshutack().
 
-Link: http://lore.kernel.org/r/255d6b5d-194e-eb0e-ecdd-97477a534441@physik.fu-berlin.de
-Link: https://lkml.kernel.org/r/20210318130617.896309-1-valentin.schneider@arm.com
-Fixes: 620a6dc40754 ("sched/topology: Make sched_init_numa() use a set for the deduplicating sort")
-Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
-Reported-by: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Tested-by: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Tested-by: Sergei Trofimovich <slyfox@gentoo.org>
-Cc: "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Vincent Guittot <vincent.guittot@linaro.org>
-Cc: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc: Anatoly Pugachev <matorola@gmail.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-[ dannf: Use node_distance instead of slit_distance since this is before
-  the rename that occurred in commit ef78e5ec9214 ("ia64: export
-  node_distance function"), plus a minor context adjustment ]
-Signed-off-by: dann frazier <dann.frazier@canonical.com>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/ia64/kernel/acpi.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ net/sctp/sm_statefuns.c |   71 +++++++++++++++++++++++++++++++-----------------
+ 1 file changed, 46 insertions(+), 25 deletions(-)
 
---- a/arch/ia64/kernel/acpi.c
-+++ b/arch/ia64/kernel/acpi.c
-@@ -537,7 +537,8 @@ void __init acpi_numa_fixup(void)
- 	if (srat_num_cpus == 0) {
- 		node_set_online(0);
- 		node_cpuid[0].phys_id = hard_smp_processor_id();
--		return;
-+		node_distance(0, 0) = LOCAL_DISTANCE;
-+		goto out;
- 	}
+--- a/net/sctp/sm_statefuns.c
++++ b/net/sctp/sm_statefuns.c
+@@ -164,6 +164,12 @@ static enum sctp_disposition __sctp_sf_d
+ 					void *arg,
+ 					struct sctp_cmd_seq *commands);
  
- 	/*
-@@ -580,7 +581,7 @@ void __init acpi_numa_fixup(void)
- 			for (j = 0; j < MAX_NUMNODES; j++)
- 				node_distance(i, j) = i == j ? LOCAL_DISTANCE :
- 							REMOTE_DISTANCE;
--		return;
-+		goto out;
- 	}
++static enum sctp_disposition
++__sctp_sf_do_9_2_reshutack(struct net *net, const struct sctp_endpoint *ep,
++			   const struct sctp_association *asoc,
++			   const union sctp_subtype type, void *arg,
++			   struct sctp_cmd_seq *commands);
++
+ /* Small helper function that checks if the chunk length
+  * is of the appropriate length.  The 'required_length' argument
+  * is set to be the size of a specific chunk we are testing.
+@@ -345,6 +351,14 @@ enum sctp_disposition sctp_sf_do_5_1B_in
+ 	if (!chunk->singleton)
+ 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
  
- 	memset(numa_slit, -1, sizeof(numa_slit));
-@@ -605,6 +606,8 @@ void __init acpi_numa_fixup(void)
- 		printk("\n");
- 	}
- #endif
-+out:
-+	node_possible_map = node_online_map;
++	/* Make sure that the INIT chunk has a valid length.
++	 * Normally, this would cause an ABORT with a Protocol Violation
++	 * error, but since we don't have an association, we'll
++	 * just discard the packet.
++	 */
++	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
++		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
++
+ 	/* If the packet is an OOTB packet which is temporarily on the
+ 	 * control endpoint, respond with an ABORT.
+ 	 */
+@@ -359,14 +373,6 @@ enum sctp_disposition sctp_sf_do_5_1B_in
+ 	if (chunk->sctp_hdr->vtag != 0)
+ 		return sctp_sf_tabort_8_4_8(net, ep, asoc, type, arg, commands);
+ 
+-	/* Make sure that the INIT chunk has a valid length.
+-	 * Normally, this would cause an ABORT with a Protocol Violation
+-	 * error, but since we don't have an association, we'll
+-	 * just discard the packet.
+-	 */
+-	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
+-		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+-
+ 	/* If the INIT is coming toward a closing socket, we'll send back
+ 	 * and ABORT.  Essentially, this catches the race of INIT being
+ 	 * backloged to the socket at the same time as the user isses close().
+@@ -1499,19 +1505,16 @@ static enum sctp_disposition sctp_sf_do_
+ 	if (!chunk->singleton)
+ 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+ 
++	/* Make sure that the INIT chunk has a valid length. */
++	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
++		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
++
+ 	/* 3.1 A packet containing an INIT chunk MUST have a zero Verification
+ 	 * Tag.
+ 	 */
+ 	if (chunk->sctp_hdr->vtag != 0)
+ 		return sctp_sf_tabort_8_4_8(net, ep, asoc, type, arg, commands);
+ 
+-	/* Make sure that the INIT chunk has a valid length.
+-	 * In this case, we generate a protocol violation since we have
+-	 * an association established.
+-	 */
+-	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
+-		return sctp_sf_violation_chunklen(net, ep, asoc, type, arg,
+-						  commands);
+ 	/* Grab the INIT header.  */
+ 	chunk->subh.init_hdr = (struct sctp_inithdr *)chunk->skb->data;
+ 
+@@ -1829,9 +1832,9 @@ static enum sctp_disposition sctp_sf_do_
+ 	 * its peer.
+ 	*/
+ 	if (sctp_state(asoc, SHUTDOWN_ACK_SENT)) {
+-		disposition = sctp_sf_do_9_2_reshutack(net, ep, asoc,
+-				SCTP_ST_CHUNK(chunk->chunk_hdr->type),
+-				chunk, commands);
++		disposition = __sctp_sf_do_9_2_reshutack(net, ep, asoc,
++							 SCTP_ST_CHUNK(chunk->chunk_hdr->type),
++							 chunk, commands);
+ 		if (SCTP_DISPOSITION_NOMEM == disposition)
+ 			goto nomem;
+ 
+@@ -2930,13 +2933,11 @@ enum sctp_disposition sctp_sf_do_9_2_shu
+  * that belong to this association, it should discard the INIT chunk and
+  * retransmit the SHUTDOWN ACK chunk.
+  */
+-enum sctp_disposition sctp_sf_do_9_2_reshutack(
+-					struct net *net,
+-					const struct sctp_endpoint *ep,
+-					const struct sctp_association *asoc,
+-					const union sctp_subtype type,
+-					void *arg,
+-					struct sctp_cmd_seq *commands)
++static enum sctp_disposition
++__sctp_sf_do_9_2_reshutack(struct net *net, const struct sctp_endpoint *ep,
++			   const struct sctp_association *asoc,
++			   const union sctp_subtype type, void *arg,
++			   struct sctp_cmd_seq *commands)
+ {
+ 	struct sctp_chunk *chunk = arg;
+ 	struct sctp_chunk *reply;
+@@ -2970,6 +2971,26 @@ nomem:
+ 	return SCTP_DISPOSITION_NOMEM;
  }
- #endif				/* CONFIG_ACPI_NUMA */
  
++enum sctp_disposition
++sctp_sf_do_9_2_reshutack(struct net *net, const struct sctp_endpoint *ep,
++			 const struct sctp_association *asoc,
++			 const union sctp_subtype type, void *arg,
++			 struct sctp_cmd_seq *commands)
++{
++	struct sctp_chunk *chunk = arg;
++
++	if (!chunk->singleton)
++		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
++
++	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
++		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
++
++	if (chunk->sctp_hdr->vtag != 0)
++		return sctp_sf_tabort_8_4_8(net, ep, asoc, type, arg, commands);
++
++	return __sctp_sf_do_9_2_reshutack(net, ep, asoc, type, arg, commands);
++}
++
+ /*
+  * sctp_sf_do_ecn_cwr
+  *
 
 
