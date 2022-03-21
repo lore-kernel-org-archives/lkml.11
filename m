@@ -2,108 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D08A1C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:30:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74B0BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 16:31:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351198AbiCUQcU (ORCPT
+        id S1351213AbiCUQct (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 12:32:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60992 "EHLO
+        Mon, 21 Mar 2022 12:32:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351252AbiCUQby (ORCPT
+        with ESMTP id S1347366AbiCUQcf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 12:31:54 -0400
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD6B251590;
-        Mon, 21 Mar 2022 09:30:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
-        MIME-Version:Date:Message-ID:content-disposition;
-        bh=s3lcHJdrwD/PP8Ft4hyr0+q/Au2xCLskRoPRksjWMDg=; b=UwUD9IU51AOICt2I/+sVTjvxII
-        wZYBfeMssjoQe2T0qlG1+L0eYZ4LbVhcubFCRO/2OS6wOLtS9+XiopbD1EkH+toG9GKQoClCJUVBv
-        IXGJGpStTl5+srDQmYp1xbkjL/b8dXXVh3kbHOW/QgabccEOt3Q/SGd3CbmUdfTlPH7Cc9yKpvFJm
-        XnNtNmvFPHvcnaLjr27SJuHOEcXm/aLsMTjQzMLS13rRqckIbHhKxCJ9met+H609042RTJShHnwRq
-        WDfUEL7aLMgguvqD6o9STcOThPCqp5XPPdV+nNmO8bywSRkP+xXRIhBZG4mhAEBPQRE/5mi0B8P3A
-        jpCtmouQ==;
-Received: from guinness.priv.deltatee.com ([172.16.1.162])
-        by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <logang@deltatee.com>)
-        id 1nWKvE-005YHB-DD; Mon, 21 Mar 2022 10:30:20 -0600
-Message-ID: <026bf48f-caf1-2d1e-b4de-553a6625a51b@deltatee.com>
-Date:   Mon, 21 Mar 2022 10:30:19 -0600
+        Mon, 21 Mar 2022 12:32:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ECC4F7F5C;
+        Mon, 21 Mar 2022 09:31:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE6BC6135B;
+        Mon, 21 Mar 2022 16:31:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3218DC340F0;
+        Mon, 21 Mar 2022 16:31:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647880269;
+        bh=G0Iu+15P7J/9+ldVRS0Kh3E5nSoQYqiC6yNgO0mYsEI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pTgGMiUOnY9NUs9Paagrn3RqiWs3DMFROmXDzrmjp2mFPLDMuvl3ii3I9iu1SerXt
+         +07UC/3W+PlrohAX6bdBg7l2105J3TrzDhL4mQ2Exar1y1loJhL3ewsTNRKPyaqCzw
+         5Lve8Zl9+L0MwDENJOFUB4jwOvhQFqv9tog8YZizwfB678fPIdj+Fjlui7SJ+5huqc
+         M7Ne8y+jhNudkxj81RdQIA13wJPUs4vRNPma2aw6VO9apynGJgtiS7e0csbEP0rMyp
+         QpjFShIauPSoKuKGwz2Dau6V7egM2fH8oZaAIu6M+02biOcDcV/OdwscuTLravWi7M
+         J1JsrsVCYvjaA==
+Received: by pali.im (Postfix)
+        id 5D6F6C77; Mon, 21 Mar 2022 17:31:06 +0100 (CET)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/3] serial: core: Document why UPF_SPD_CUST is not handled in uart_get_baud_rate()
+Date:   Mon, 21 Mar 2022 17:30:53 +0100
+Message-Id: <20220321163055.4058-2-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220321163055.4058-1-pali@kernel.org>
+References: <20220321163055.4058-1-pali@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Content-Language: en-CA
-To:     Shlomo Pongratz <shlomopongratz@gmail.com>
-Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        andrew.maier@eideticom.com, bhelgaas@google.com,
-        Shlomo Pongratz <shlomop@pliops.com>
-References: <20220321143120.12191-1-shlomop@pliops.com>
- <981016a7-f994-f0dd-422e-66ac909371c7@deltatee.com>
- <302CF9D7-ACBD-49D6-AE56-4830B746CE1F@gmail.com>
-From:   Logan Gunthorpe <logang@deltatee.com>
-In-Reply-To: <302CF9D7-ACBD-49D6-AE56-4830B746CE1F@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 172.16.1.162
-X-SA-Exim-Rcpt-To: shlomopongratz@gmail.com, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, andrew.maier@eideticom.com, bhelgaas@google.com, shlomop@pliops.com
-X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [PATCH v1] Intel Sky Lake-E host root ports check.
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Switch in uart_get_baud_rate() function is missing case for UPF_SPD_CUST
+flag. It is not obvious why it is missing here, so add comments explaining
+how deprecated UPF_SPD_CUST flag is handled and how drivers should call
+uart_get_baud_rate() and uart_get_divisor() functions.
 
+Signed-off-by: Pali Rohár <pali@kernel.org>
+---
+ drivers/tty/serial/serial_core.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
-On 2022-03-21 10:21, Shlomo Pongratz wrote:
-> See inline
-> 
-> Shlomo.
-> 
->> On 21 Mar 2022, at 17:46, Logan Gunthorpe <logang@deltatee.com
->> <mailto:logang@deltatee.com>> wrote:
->>
->>
->>
->> On 2022-03-21 08:31, Shlomo Pongratz wrote:
->>> On commit 7b94b53db34f ("PCI/P2PDMA: Add Intel Sky Lake-E Root Ports
->>> B, C, D to the whitelist")
->>> Andrew Maier added the Sky Lake-E additional devices
->>> 2031, 2032 and 2033 root ports to the already existing 2030 device.
->>> Note that the Intel devices 2030, 2031, 2032 and 2033 are ports A, B,
->>> C and D.
->>> Consider on a bus X only port C is connected downstream so in the PCI
->>> scan only
->>> device 8086:2032 on 0000:X:02.0 will be found as bridges that have no
->>> children are ignored.
->>> As a result the routine pci_host_bridge_dev will return NULL for
->>> devices under slot C.
->>> In the proposed patch port field is added to the whitelist which is 0
->>> for 2030, 1 for 2031,
->>> 2 for 2032 3 for 2033 and 0 for all other devices.
->>
->> The patch looks largely ok, but I'm not sure I follow this description.
->>
->> It sounds like in practice the host bridges B, C and D are not addressed
->> at function 0 as was assumed. But what does it mean that only C is
->> connected downstream? How can a bridge not be connected downstream?
->>
-> Maybe it is wrong usage of words.
-> I mean three are no devices behind port A and B, it is possible if there
-> if one has empty PCI slots.
-> I my case I had only on NVMe SSD connected to port C.
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 1e738f265eea..d8fc2616d62b 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -364,7 +364,17 @@ EXPORT_SYMBOL(uart_update_timeout);
+  *
+  *	Decode the termios structure into a numeric baud rate,
+  *	taking account of the magic 38400 baud rate (with spd_*
+- *	flags), and mapping the %B0 rate to 9600 baud.
++ *	flags, except cust), and mapping the %B0 rate to 9600 baud.
++ *
++ *	UPF_SPD_CUST flag is not handled in this function as it applies
++ *	to the custom divisor. When UPF_SPD_CUST flag is active and in
++ *	use then this function returns value 38400 and not the correct
++ *	baud rate.
++ *
++ *	Drivers should call uart_get_divisor() function with baud rate
++ *	returned from this function to calculate clock divisor. Function
++ *	uart_get_divisor() then handles UPF_SPD_CUST flag with magic
++ *	baud rate value 38400 and returns the correct custom divisor.
+  *
+  *	If the new baud rate is invalid, try the old termios setting.
+  *	If it's still invalid, we try 9600 baud.
+@@ -396,6 +406,7 @@ uart_get_baud_rate(struct uart_port *port, struct ktermios *termios,
+ 	case UPF_SPD_WARP:
+ 		altbaud = 460800;
+ 		break;
++	/* Flag UPF_SPD_CUST is not handed here, see description why. */
+ 	default:
+ 		altbaud = 38400;
+ 		break;
+@@ -462,6 +473,8 @@ EXPORT_SYMBOL(uart_get_baud_rate);
+  *	@baud: desired baud rate
+  *
+  *	Calculate the uart clock divisor for the port.
++ *
++ *	Handles also special case when UPF_SPD_CUST flag is in use.
+  */
+ unsigned int
+ uart_get_divisor(struct uart_port *port, unsigned int baud)
+-- 
+2.20.1
 
-If a bridge has no devices behind it, it's not ever going to get into
-the p2pdma code; so I'm not sure how that's relevant. And just because
-one user doesn't have any device behind a bridge, doesn't mean that all
-users have no devices under that bridge.
-
-Sounds like the commit description and comments just neeed to change to
-note that the function of each of the bridge is not always zero, as
-originally assumed.
-
-Logan
