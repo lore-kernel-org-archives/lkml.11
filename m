@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ECDCC352A1
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:12:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 478CAC4707F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350023AbiCUOJR (ORCPT
+        id S1351833AbiCUOL5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:09:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35108 "EHLO
+        Mon, 21 Mar 2022 10:11:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349003AbiCUODO (ORCPT
+        with ESMTP id S1348939AbiCUOEO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:03:14 -0400
+        Mon, 21 Mar 2022 10:04:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAA6D1760CA;
-        Mon, 21 Mar 2022 07:00:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53ED318116C;
+        Mon, 21 Mar 2022 07:01:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47EBE611CF;
-        Mon, 21 Mar 2022 14:00:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5635AC340E8;
-        Mon, 21 Mar 2022 14:00:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 93F3361331;
+        Mon, 21 Mar 2022 14:01:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98E96C340F4;
+        Mon, 21 Mar 2022 14:01:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871209;
-        bh=HNI1dha5r5/aV4+8R/lLlKF+uCGDZHZnncogH9gUa+A=;
+        s=korg; t=1647871279;
+        bh=UVpzg8vkB+appVM0yGsFhEW2xTZ4hJwU+sV8X/KCqV4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wPPv1QRqufrtvt5zZvYeg/Jr8thbcbgn72VnjEnC83hFYf6zZJbIADzjGXqmSkK20
-         VCxOGAGqVvywhDAP6yN0cRodKJHI3btroVztgdkHZAyspEu4o2MhtE+qUJ8ndX/ONJ
-         72eozrnFfFg2ZEPcNlVQED7xpIZGSOrpbaOfUn9k=
+        b=Q4dmZsjxLT1mkKXhLxeo4kBgQ++/p7BbCQVZD0B8kG42fflA+D2EtrIwy6WpZVO+g
+         taVKWrxB81MgQu4dnftWDQvNZTspXeE+Q+fEftcvNtifo+y9i+S60yzGWL4OSA4srF
+         OaJkjeqXRPMRRKhqaCB0hG3uZwhAZs37ZYwLKaPg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 13/32] iavf: Fix double free in iavf_reset_task
-Date:   Mon, 21 Mar 2022 14:52:49 +0100
-Message-Id: <20220321133220.947912427@linuxfoundation.org>
+Subject: [PATCH 5.15 07/32] alx: acquire mutex for alx_reinit in alx_change_mtu
+Date:   Mon, 21 Mar 2022 14:52:43 +0100
+Message-Id: <20220321133220.776790538@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133220.559554263@linuxfoundation.org>
 References: <20220321133220.559554263@linuxfoundation.org>
@@ -54,53 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit 16b2dd8cdf6f4e0597c34899de74b4d012b78188 ]
+[ Upstream commit 46b348fd2d81a341b15fb3f3f986204b038f5c42 ]
 
-Fix double free possibility in iavf_disable_vf, as crit_lock is
-freed in caller, iavf_reset_task. Add kernel-doc for iavf_disable_vf.
-Remove mutex_unlock in iavf_disable_vf.
-Without this patch there is double free scenario, when calling
-iavf_reset_task.
+alx_reinit has a lockdep assertion that the alx->mtx mutex must be held.
+alx_reinit is called from two places: alx_reset and alx_change_mtu.
+alx_reset does acquire alx->mtx before calling alx_reinit.
+alx_change_mtu does not acquire this mutex, nor do its callers or any
+path towards alx_change_mtu.
+Acquire the mutex in alx_change_mtu.
 
-Fixes: e85ff9c631e1 ("iavf: Fix deadlock in iavf_reset_task")
-Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
-Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+The issue was introduced when the fine-grained locking was introduced
+to the code to replace the RTNL. The same commit also introduced the
+lockdep assertion.
+
+Fixes: 4a5fe57e7751 ("alx: use fine-grained locking instead of RTNL")
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Link: https://lore.kernel.org/r/20220310232707.44251-1-dossche.niels@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/atheros/alx/main.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 711e8c7f62de..7fca9dd8dcf6 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -2133,6 +2133,13 @@ static void iavf_watchdog_task(struct work_struct *work)
- 		queue_delayed_work(iavf_wq, &adapter->watchdog_task, HZ * 2);
+diff --git a/drivers/net/ethernet/atheros/alx/main.c b/drivers/net/ethernet/atheros/alx/main.c
+index 4ea157efca86..98a8698a3201 100644
+--- a/drivers/net/ethernet/atheros/alx/main.c
++++ b/drivers/net/ethernet/atheros/alx/main.c
+@@ -1181,8 +1181,11 @@ static int alx_change_mtu(struct net_device *netdev, int mtu)
+ 	alx->hw.mtu = mtu;
+ 	alx->rxbuf_size = max(max_frame, ALX_DEF_RXBUF_SIZE);
+ 	netdev_update_features(netdev);
+-	if (netif_running(netdev))
++	if (netif_running(netdev)) {
++		mutex_lock(&alx->mtx);
+ 		alx_reinit(alx);
++		mutex_unlock(&alx->mtx);
++	}
+ 	return 0;
  }
  
-+/**
-+ * iavf_disable_vf - disable VF
-+ * @adapter: board private structure
-+ *
-+ * Set communication failed flag and free all resources.
-+ * NOTE: This function is expected to be called with crit_lock being held.
-+ **/
- static void iavf_disable_vf(struct iavf_adapter *adapter)
- {
- 	struct iavf_mac_filter *f, *ftmp;
-@@ -2187,7 +2194,6 @@ static void iavf_disable_vf(struct iavf_adapter *adapter)
- 	memset(adapter->vf_res, 0, IAVF_VIRTCHNL_VF_RESOURCE_SIZE);
- 	iavf_shutdown_adminq(&adapter->hw);
- 	adapter->netdev->flags &= ~IFF_UP;
--	mutex_unlock(&adapter->crit_lock);
- 	adapter->flags &= ~IAVF_FLAG_RESET_PENDING;
- 	iavf_change_state(adapter, __IAVF_DOWN);
- 	wake_up(&adapter->down_waitqueue);
 -- 
 2.34.1
 
