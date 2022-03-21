@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85488C35278
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB149C4707E
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349909AbiCUOI4 (ORCPT
+        id S1349956AbiCUOJL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:08:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38004 "EHLO
+        Mon, 21 Mar 2022 10:09:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348819AbiCUODB (ORCPT
+        with ESMTP id S1348982AbiCUODN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:03:01 -0400
+        Mon, 21 Mar 2022 10:03:13 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84CFBBD7E9;
-        Mon, 21 Mar 2022 06:59:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C91174BA7;
+        Mon, 21 Mar 2022 07:00:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9F334B81598;
-        Mon, 21 Mar 2022 13:59:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4854C340F2;
-        Mon, 21 Mar 2022 13:59:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9F33B816E4;
+        Mon, 21 Mar 2022 14:00:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32E43C340E8;
+        Mon, 21 Mar 2022 14:00:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871179;
-        bh=TvLU7XgDbq4FG8A8TsB4hsfrKgfT3NhKOFUGfv4zHF4=;
+        s=korg; t=1647871201;
+        bh=dja4BpNU5v3FWoo+Pg9KabpZUGDnbBswDF7NRHePqXI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yGWSr7nzFAkvAdb+0nRv4zoZE5MEvWky8cU6gZ6A5XC4K3smOmWHbTaq1MZkzoEKA
-         7lepxWk/Q5MPT1b3IGz/vNN5ERzGM7tJxBc/PesTYq8WZ1Xr8BfdiUsG+sW/E906G7
-         zNPwaBcHfPp3Jsqo+d1rzesPU0tmdXaV4bgOa5LA=
+        b=RhnkBQ1wLJgk/PLLRnzKc8i8gaTVtsmlzIZS94jEi+f7IFxeKK9yUOTf1ZyttaKJ3
+         YxYDaQbmlf5MwBp3QEmUXvI3Xqe32huN+e4d7EnbpyOa6fM7vcpMneWTLXEHJrS4Bl
+         EOXet4hEJA91xbH7pDRXFXRmCyMUk7JDCpknvM+c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        Matt Lupfer <mlupfer@ddn.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.10 23/30] scsi: mpt3sas: Page fault in reply q processing
-Date:   Mon, 21 Mar 2022 14:52:53 +0100
-Message-Id: <20220321133220.316060192@linuxfoundation.org>
+        stable@vger.kernel.org, Kurt Cancemi <kurt@x64architecture.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 10/32] net: phy: marvell: Fix invalid comparison in the resume and suspend functions
+Date:   Mon, 21 Mar 2022 14:52:46 +0100
+Message-Id: <20220321133220.861556589@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220321133219.643490199@linuxfoundation.org>
-References: <20220321133219.643490199@linuxfoundation.org>
+In-Reply-To: <20220321133220.559554263@linuxfoundation.org>
+References: <20220321133220.559554263@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,88 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matt Lupfer <mlupfer@ddn.com>
+From: Kurt Cancemi <kurt@x64architecture.com>
 
-commit 69ad4ef868c1fc7609daa235dfa46d28ba7a3ba3 upstream.
+[ Upstream commit 837d9e49402eaf030db55a49f96fc51d73b4b441 ]
 
-A page fault was encountered in mpt3sas on a LUN reset error path:
+This bug resulted in only the current mode being resumed and suspended when
+the PHY supported both fiber and copper modes and when the PHY only supported
+copper mode the fiber mode would incorrectly be attempted to be resumed and
+suspended.
 
-[  145.763216] mpt3sas_cm1: Task abort tm failed: handle(0x0002),timeout(30) tr_method(0x0) smid(3) msix_index(0)
-[  145.778932] scsi 1:0:0:0: task abort: FAILED scmd(0x0000000024ba29a2)
-[  145.817307] scsi 1:0:0:0: attempting device reset! scmd(0x0000000024ba29a2)
-[  145.827253] scsi 1:0:0:0: [sg1] tag#2 CDB: Receive Diagnostic 1c 01 01 ff fc 00
-[  145.837617] scsi target1:0:0: handle(0x0002), sas_address(0x500605b0000272b9), phy(0)
-[  145.848598] scsi target1:0:0: enclosure logical id(0x500605b0000272b8), slot(0)
-[  149.858378] mpt3sas_cm1: Poll ReplyDescriptor queues for completion of smid(0), task_type(0x05), handle(0x0002)
-[  149.875202] BUG: unable to handle page fault for address: 00000007fffc445d
-[  149.885617] #PF: supervisor read access in kernel mode
-[  149.894346] #PF: error_code(0x0000) - not-present page
-[  149.903123] PGD 0 P4D 0
-[  149.909387] Oops: 0000 [#1] PREEMPT SMP NOPTI
-[  149.917417] CPU: 24 PID: 3512 Comm: scsi_eh_1 Kdump: loaded Tainted: G S         O      5.10.89-altav-1 #1
-[  149.934327] Hardware name: DDN           200NVX2             /200NVX2-MB          , BIOS ATHG2.2.02.01 09/10/2021
-[  149.951871] RIP: 0010:_base_process_reply_queue+0x4b/0x900 [mpt3sas]
-[  149.961889] Code: 0f 84 22 02 00 00 8d 48 01 49 89 fd 48 8d 57 38 f0 0f b1 4f 38 0f 85 d8 01 00 00 49 8b 45 10 45 31 e4 41 8b 55 0c 48 8d 1c d0 <0f> b6 03 83 e0 0f 3c 0f 0f 85 a2 00 00 00 e9 e6 01 00 00 0f b7 ee
-[  149.991952] RSP: 0018:ffffc9000f1ebcb8 EFLAGS: 00010246
-[  150.000937] RAX: 0000000000000055 RBX: 00000007fffc445d RCX: 000000002548f071
-[  150.011841] RDX: 00000000ffff8881 RSI: 0000000000000001 RDI: ffff888125ed50d8
-[  150.022670] RBP: 0000000000000000 R08: 0000000000000000 R09: c0000000ffff7fff
-[  150.033445] R10: ffffc9000f1ebb68 R11: ffffc9000f1ebb60 R12: 0000000000000000
-[  150.044204] R13: ffff888125ed50d8 R14: 0000000000000080 R15: 34cdc00034cdea80
-[  150.054963] FS:  0000000000000000(0000) GS:ffff88dfaf200000(0000) knlGS:0000000000000000
-[  150.066715] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  150.076078] CR2: 00000007fffc445d CR3: 000000012448a006 CR4: 0000000000770ee0
-[  150.086887] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[  150.097670] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[  150.108323] PKRU: 55555554
-[  150.114690] Call Trace:
-[  150.120497]  ? printk+0x48/0x4a
-[  150.127049]  mpt3sas_scsih_issue_tm.cold.114+0x2e/0x2b3 [mpt3sas]
-[  150.136453]  mpt3sas_scsih_issue_locked_tm+0x86/0xb0 [mpt3sas]
-[  150.145759]  scsih_dev_reset+0xea/0x300 [mpt3sas]
-[  150.153891]  scsi_eh_ready_devs+0x541/0x9e0 [scsi_mod]
-[  150.162206]  ? __scsi_host_match+0x20/0x20 [scsi_mod]
-[  150.170406]  ? scsi_try_target_reset+0x90/0x90 [scsi_mod]
-[  150.178925]  ? blk_mq_tagset_busy_iter+0x45/0x60
-[  150.186638]  ? scsi_try_target_reset+0x90/0x90 [scsi_mod]
-[  150.195087]  scsi_error_handler+0x3a5/0x4a0 [scsi_mod]
-[  150.203206]  ? __schedule+0x1e9/0x610
-[  150.209783]  ? scsi_eh_get_sense+0x210/0x210 [scsi_mod]
-[  150.217924]  kthread+0x12e/0x150
-[  150.224041]  ? kthread_worker_fn+0x130/0x130
-[  150.231206]  ret_from_fork+0x1f/0x30
-
-This is caused by mpt3sas_base_sync_reply_irqs() using an invalid reply_q
-pointer outside of the list_for_each_entry() loop. At the end of the full
-list traversal the pointer is invalid.
-
-Move the _base_process_reply_queue() call inside of the loop.
-
-Link: https://lore.kernel.org/r/d625deae-a958-0ace-2ba3-0888dd0a415b@ddn.com
-Fixes: 711a923c14d9 ("scsi: mpt3sas: Postprocessing of target and LUN reset")
-Cc: stable@vger.kernel.org
-Acked-by: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
-Signed-off-by: Matt Lupfer <mlupfer@ddn.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 3758be3dc162 ("Marvell phy: add functions to suspend and resume both interfaces: fiber and copper links.")
+Signed-off-by: Kurt Cancemi <kurt@x64architecture.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220312201512.326047-1-kurt@x64architecture.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/mpt3sas/mpt3sas_base.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/phy/marvell.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/scsi/mpt3sas/mpt3sas_base.c
-+++ b/drivers/scsi/mpt3sas/mpt3sas_base.c
-@@ -1832,9 +1832,10 @@ mpt3sas_base_sync_reply_irqs(struct MPT3
- 				enable_irq(reply_q->os_irq);
- 			}
- 		}
-+
-+		if (poll)
-+			_base_process_reply_queue(reply_q);
- 	}
--	if (poll)
--		_base_process_reply_queue(reply_q);
- }
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index cfda625dbea5..4d726ee03ce2 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -1693,8 +1693,8 @@ static int marvell_suspend(struct phy_device *phydev)
+ 	int err;
  
- /**
+ 	/* Suspend the fiber mode first */
+-	if (!linkmode_test_bit(ETHTOOL_LINK_MODE_FIBRE_BIT,
+-			       phydev->supported)) {
++	if (linkmode_test_bit(ETHTOOL_LINK_MODE_FIBRE_BIT,
++			      phydev->supported)) {
+ 		err = marvell_set_page(phydev, MII_MARVELL_FIBER_PAGE);
+ 		if (err < 0)
+ 			goto error;
+@@ -1728,8 +1728,8 @@ static int marvell_resume(struct phy_device *phydev)
+ 	int err;
+ 
+ 	/* Resume the fiber mode first */
+-	if (!linkmode_test_bit(ETHTOOL_LINK_MODE_FIBRE_BIT,
+-			       phydev->supported)) {
++	if (linkmode_test_bit(ETHTOOL_LINK_MODE_FIBRE_BIT,
++			      phydev->supported)) {
+ 		err = marvell_set_page(phydev, MII_MARVELL_FIBER_PAGE);
+ 		if (err < 0)
+ 			goto error;
+-- 
+2.34.1
+
 
 
