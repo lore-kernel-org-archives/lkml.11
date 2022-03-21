@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5E2FC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4733C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:12:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351684AbiCUOL3 (ORCPT
+        id S1351699AbiCUOLc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:11:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35590 "EHLO
+        Mon, 21 Mar 2022 10:11:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348801AbiCUODx (ORCPT
+        with ESMTP id S1348802AbiCUODx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 10:03:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 338EA3EAA0;
-        Mon, 21 Mar 2022 07:01:15 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6091D18114A;
+        Mon, 21 Mar 2022 07:01:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4A25B816C8;
-        Mon, 21 Mar 2022 14:01:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1103DC340E8;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0413DB816CE;
         Mon, 21 Mar 2022 14:01:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65531C340ED;
+        Mon, 21 Mar 2022 14:01:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871273;
-        bh=np3PsbtFyilrKjrzx10d3sqVMIWHD2rFyiUwMPptA/8=;
+        s=korg; t=1647871270;
+        bh=aZf76KE9DN5cxUeQ8w5mlraiAepMF2EIiwiv9GroYyk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vTH7l3TN+zMwsthm2JMg7hhZxbdjwUNjD5GAfJ9EpaFetToKXiJ661V14e1kiFxkC
-         ncnKumL/cY/FCO2dYzBg3n45BFSGQ+VlWmJ/bRLYDOM6hUMaAa+brMBrEzSajDeMVZ
-         cta0+MIccjiEe/2gZ+KbyyNBXgtkdu+khtB8/Oe0=
+        b=NQh0yM0bJ+jxkhzJ9501otf9GGxI2Es3tIvKc/y62zUfxqdlLJwrPdLrchBI/pWpX
+         GtUCByu7jeKiBel8rzyklHlr/UtY6tBBVRkvw97d/uuBbbGCinkxCgmG5CbI2NPfbE
+         GnyfwguyT0ccMkIsjDD5kT/bF9kzbDqD3vWUtXUI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jocelyn Falempe <jfalempe@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>
-Subject: [PATCH 5.15 05/32] drm/mgag200: Fix PLL setup for g200wb and g200ew
-Date:   Mon, 21 Mar 2022 14:52:41 +0100
-Message-Id: <20220321133220.719518534@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        syzbot+b42749a851a47a0f581b@syzkaller.appspotmail.com,
+        Ming Lei <ming.lei@redhat.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 04/32] block: release rq qos structures for queue without disk
+Date:   Mon, 21 Mar 2022 14:52:40 +0100
+Message-Id: <20220321133220.691523932@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133220.559554263@linuxfoundation.org>
 References: <20220321133220.559554263@linuxfoundation.org>
@@ -49,44 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jocelyn Falempe <jfalempe@redhat.com>
+From: Ming Lei <ming.lei@redhat.com>
 
-commit 40ce1121c1d76daf9048a86e36c83e469281b9fd upstream.
+commit daaca3522a8e67c46e39ef09c1d542e866f85f3b upstream.
 
-commit f86c3ed55920 ("drm/mgag200: Split PLL setup into compute and
- update functions") introduced a regression for g200wb and g200ew.
-The PLLs are not set up properly, and VGA screen stays
-black, or displays "out of range" message.
+blkcg_init_queue() may add rq qos structures to request queue, previously
+blk_cleanup_queue() calls rq_qos_exit() to release them, but commit
+8e141f9eb803 ("block: drain file system I/O on del_gendisk")
+moves rq_qos_exit() into del_gendisk(), so memory leak is caused
+because queues may not have disk, such as un-present scsi luns, nvme
+admin queue, ...
 
-MGA1064_WB_PIX_PLLC_N/M/P was mistakenly replaced with
-MGA1064_PIX_PLLC_N/M/P which have different addresses.
+Fixes the issue by adding rq_qos_exit() to blk_cleanup_queue() back.
 
-Patch tested on a Dell T310 with g200wb
+BTW, v5.18 won't need this patch any more since we move
+blkcg_init_queue()/blkcg_exit_queue() into disk allocation/release
+handler, and patches have been in for-5.18/block.
 
-Fixes: f86c3ed55920 ("drm/mgag200: Split PLL setup into compute and update functions")
+Cc: Christoph Hellwig <hch@lst.de>
 Cc: stable@vger.kernel.org
-Signed-off-by: Jocelyn Falempe <jfalempe@redhat.com>
-Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220308174321.225606-1-jfalempe@redhat.com
+Fixes: 8e141f9eb803 ("block: drain file system I/O on del_gendisk")
+Reported-by: syzbot+b42749a851a47a0f581b@syzkaller.appspotmail.com
+Signed-off-by: Ming Lei <ming.lei@redhat.com>
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220314043018.177141-1-ming.lei@redhat.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/mgag200/mgag200_pll.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ block/blk-core.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/gpu/drm/mgag200/mgag200_pll.c
-+++ b/drivers/gpu/drm/mgag200/mgag200_pll.c
-@@ -404,9 +404,9 @@ mgag200_pixpll_update_g200wb(struct mgag
- 		udelay(50);
+--- a/block/blk-core.c
++++ b/block/blk-core.c
+@@ -49,6 +49,7 @@
+ #include "blk-mq.h"
+ #include "blk-mq-sched.h"
+ #include "blk-pm.h"
++#include "blk-rq-qos.h"
  
- 		/* program pixel pll register */
--		WREG_DAC(MGA1064_PIX_PLLC_N, xpixpllcn);
--		WREG_DAC(MGA1064_PIX_PLLC_M, xpixpllcm);
--		WREG_DAC(MGA1064_PIX_PLLC_P, xpixpllcp);
-+		WREG_DAC(MGA1064_WB_PIX_PLLC_N, xpixpllcn);
-+		WREG_DAC(MGA1064_WB_PIX_PLLC_M, xpixpllcm);
-+		WREG_DAC(MGA1064_WB_PIX_PLLC_P, xpixpllcp);
+ struct dentry *blk_debugfs_root;
  
- 		udelay(50);
+@@ -380,6 +381,9 @@ void blk_cleanup_queue(struct request_qu
+ 	 */
+ 	blk_freeze_queue(q);
  
++	/* cleanup rq qos structures for queue without disk */
++	rq_qos_exit(q);
++
+ 	blk_queue_flag_set(QUEUE_FLAG_DEAD, q);
+ 
+ 	blk_sync_queue(q);
 
 
