@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47DBDC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3351AC41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:11:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349744AbiCUOIl (ORCPT
+        id S1349681AbiCUOIi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:08:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38052 "EHLO
+        Mon, 21 Mar 2022 10:08:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348591AbiCUOBg (ORCPT
+        with ESMTP id S1348578AbiCUOBg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 10:01:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 073559AE6F;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14A9C44745;
         Mon, 21 Mar 2022 06:59:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8700B816D9;
-        Mon, 21 Mar 2022 13:59:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39791C340E8;
-        Mon, 21 Mar 2022 13:59:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ECEF7611D5;
+        Mon, 21 Mar 2022 13:59:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F32C8C340E8;
+        Mon, 21 Mar 2022 13:59:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871151;
-        bh=y8A8duvnQBc5gtrsNqlLqi4iN3RL7tqC4SsOZNQfcrI=;
+        s=korg; t=1647871154;
+        bh=7xh3drwf+VYtvLvhQqinf+lnwZkr3z7FFQHSQFrnSaQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o46Ee6V/VFJgIlCoDcJRQUa8UX1LswfFcCMDVzh3WnNBFnxHxDlCFRTu+hVjsriAx
-         nzKIbKt5nhN2zSsK9b7N7dDIXLgcQs2WcdF6Doiba43a5AVjpxLuxy4SVv0iqQqpi0
-         4Z9k8T9C1ek5Bz/rsE0gJgLnBSQ/wxQKR1ZZR1bA=
+        b=LXDcQyzZ7g1v1I70wFfq+Em3p14DQN3qHfZdfvOpvgtb0p2Fvjn6XPNO+c7lwkPq2
+         rMhL0DSR/bDFUjgXol8SI5LJ7LaoGX74g6WZMFhI80kr+LD+5cR0A57vDtkx3wM1G7
+         drulmfnOf41dLh6KP30fa3GSQX3+NAjDP+lc8geA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiumei Mu <xmu@redhat.com>,
-        Sabrina Dubroca <sd@queasysnail.net>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+        stable@vger.kernel.org, Kurt Cancemi <kurt@x64architecture.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 06/30] esp6: fix check on ipv6_skip_exthdrs return value
-Date:   Mon, 21 Mar 2022 14:52:36 +0100
-Message-Id: <20220321133219.832569425@linuxfoundation.org>
+Subject: [PATCH 5.10 07/30] net: phy: marvell: Fix invalid comparison in the resume and suspend functions
+Date:   Mon, 21 Mar 2022 14:52:37 +0100
+Message-Id: <20220321133219.861122873@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133219.643490199@linuxfoundation.org>
 References: <20220321133219.643490199@linuxfoundation.org>
@@ -51,55 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sabrina Dubroca <sd@queasysnail.net>
+From: Kurt Cancemi <kurt@x64architecture.com>
 
-[ Upstream commit 4db4075f92af2b28f415fc979ab626e6b37d67b6 ]
+[ Upstream commit 837d9e49402eaf030db55a49f96fc51d73b4b441 ]
 
-Commit 5f9c55c8066b ("ipv6: check return value of ipv6_skip_exthdr")
-introduced an incorrect check, which leads to all ESP packets over
-either TCPv6 or UDPv6 encapsulation being dropped. In this particular
-case, offset is negative, since skb->data points to the ESP header in
-the following chain of headers, while skb->network_header points to
-the IPv6 header:
+This bug resulted in only the current mode being resumed and suspended when
+the PHY supported both fiber and copper modes and when the PHY only supported
+copper mode the fiber mode would incorrectly be attempted to be resumed and
+suspended.
 
-    IPv6 | ext | ... | ext | UDP | ESP | ...
-
-That doesn't seem to be a problem, especially considering that if we
-reach esp6_input_done2, we're guaranteed to have a full set of headers
-available (otherwise the packet would have been dropped earlier in the
-stack). However, it means that the return value will (intentionally)
-be negative. We can make the test more specific, as the expected
-return value of ipv6_skip_exthdr will be the (negated) size of either
-a UDP header, or a TCP header with possible options.
-
-In the future, we should probably either make ipv6_skip_exthdr
-explicitly accept negative offsets (and adjust its return value for
-error cases), or make ipv6_skip_exthdr only take non-negative
-offsets (and audit all callers).
-
-Fixes: 5f9c55c8066b ("ipv6: check return value of ipv6_skip_exthdr")
-Reported-by: Xiumei Mu <xmu@redhat.com>
-Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Fixes: 3758be3dc162 ("Marvell phy: add functions to suspend and resume both interfaces: fiber and copper links.")
+Signed-off-by: Kurt Cancemi <kurt@x64architecture.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220312201512.326047-1-kurt@x64architecture.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/esp6.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/phy/marvell.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
-index fc8acb15dcfb..5ce8b6c344b8 100644
---- a/net/ipv6/esp6.c
-+++ b/net/ipv6/esp6.c
-@@ -808,8 +808,7 @@ int esp6_input_done2(struct sk_buff *skb, int err)
- 		struct tcphdr *th;
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index cb9d1852a75c..54786712a991 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -1536,8 +1536,8 @@ static int marvell_suspend(struct phy_device *phydev)
+ 	int err;
  
- 		offset = ipv6_skip_exthdr(skb, offset, &nexthdr, &frag_off);
--
--		if (offset < 0) {
-+		if (offset == -1) {
- 			err = -EINVAL;
- 			goto out;
- 		}
+ 	/* Suspend the fiber mode first */
+-	if (!linkmode_test_bit(ETHTOOL_LINK_MODE_FIBRE_BIT,
+-			       phydev->supported)) {
++	if (linkmode_test_bit(ETHTOOL_LINK_MODE_FIBRE_BIT,
++			      phydev->supported)) {
+ 		err = marvell_set_page(phydev, MII_MARVELL_FIBER_PAGE);
+ 		if (err < 0)
+ 			goto error;
+@@ -1571,8 +1571,8 @@ static int marvell_resume(struct phy_device *phydev)
+ 	int err;
+ 
+ 	/* Resume the fiber mode first */
+-	if (!linkmode_test_bit(ETHTOOL_LINK_MODE_FIBRE_BIT,
+-			       phydev->supported)) {
++	if (linkmode_test_bit(ETHTOOL_LINK_MODE_FIBRE_BIT,
++			      phydev->supported)) {
+ 		err = marvell_set_page(phydev, MII_MARVELL_FIBER_PAGE);
+ 		if (err < 0)
+ 			goto error;
 -- 
 2.34.1
 
