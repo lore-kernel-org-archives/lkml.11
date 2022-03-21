@@ -2,89 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B578CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 10:35:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48C2CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 10:35:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346390AbiCUKgg (ORCPT
+        id S1346396AbiCUKhP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 06:36:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33212 "EHLO
+        Mon, 21 Mar 2022 06:37:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343869AbiCUKgc (ORCPT
+        with ESMTP id S243611AbiCUKhM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 06:36:32 -0400
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A12E34F451;
-        Mon, 21 Mar 2022 03:35:06 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id DEC994000B;
-        Mon, 21 Mar 2022 10:35:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1647858905;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gDN+CXjHQ/ODiqIi4dB5EG+EwVHDnIZuq5gJO2YW93I=;
-        b=YAPDkLEccRFtepXqQK9cQ59TUdZ2aUHY90eETxmDDtopBwp0I/SYDIv8K/lLWe5Ucp0YZi
-        QTRIP1c1lr0GUX/7UsUpG1EXs+OXZNhYjpm9RY0NDlSRp2D33MAasXX7A06ukSrZv79dP1
-        +hmEVc8BB9NFQPqR/hKmKnpSTDvEEnV/KbpmOXusej+uZ2JnRHVEshCie1q7uTDjQJPs0Y
-        6m7yGdCUz+5yKQal3KjxlHF6I+9xN3CNuRb9HNkWS/rVoiUEVSLPZTtvAZ66nGHTJpnLhx
-        IQMzJ//4XyxHETcymPjwko6z7rlIbLx4W/+AHUymTjv5UOs9nGMM9ATbaa5IPQ==
-Date:   Mon, 21 Mar 2022 11:33:41 +0100
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "'Rafael J . Wysocki '" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-i2c@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 1/6] property: add fwnode_property_read_string_index()
-Message-ID: <20220321113341.3c243e96@fixe.home>
-In-Reply-To: <YjhUHjeqL2UpB0Gm@smile.fi.intel.com>
-References: <20220318160059.328208-1-clement.leger@bootlin.com>
-        <20220318160059.328208-2-clement.leger@bootlin.com>
-        <YjSymEpNH8vnkQ+L@smile.fi.intel.com>
-        <20220318174912.5759095f@fixe.home>
-        <YjTK4UW7DwZ0S3QY@smile.fi.intel.com>
-        <20220321084921.069c688e@fixe.home>
-        <YjhUHjeqL2UpB0Gm@smile.fi.intel.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Mon, 21 Mar 2022 06:37:12 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C5A01168F2
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 03:35:48 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id DE6E9210DE;
+        Mon, 21 Mar 2022 10:35:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1647858946; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=7+XMEOhK3D+awit/ithHqo4rIsrR8qyi2fhlkuLgcwE=;
+        b=UVvJscs4pyOSW9tJW++VrjBGii+bbTdhQPXgEiUb5lf2yAJGaLzSYVDK4lcEOcOtM+77uB
+        yeca16WWAZEmtmGuNb5sosQKunChqWcWVgyDx+yIWsqKjSrS/P7JPDAW1gNtHRH/rD8+yf
+        TTPbQe6JSzxf2XvHF/Fi1lbLXgc60ow=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1647858946;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=7+XMEOhK3D+awit/ithHqo4rIsrR8qyi2fhlkuLgcwE=;
+        b=wrb7X8w0bZUdi68lMyOtbon1cRKpL1UvFsHzTzx19RRmiObQL3TbnnV8cNYWU4Yflasndw
+        E+5iOjOIHaJnU+Cw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D2DDF13AD5;
+        Mon, 21 Mar 2022 10:35:46 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id VCGQMwJVOGLxfgAAMHmgww
+        (envelope-from <bp@suse.de>); Mon, 21 Mar 2022 10:35:46 +0000
+Date:   Mon, 21 Mar 2022 11:35:47 +0100
+From:   Borislav Petkov <bp@suse.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
+Subject: [GIT PULL] x86/paravirt for 5.18
+Message-ID: <YjhVA/LtQ4qFZuKd@zn.tnic>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Mon, 21 Mar 2022 12:31:58 +0200,
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> a =C3=A9crit :
+Hi Linus,
 
-> >=20
-> > IMHO, it would indeed be better. However,
-> > fwnode_property_match_string() also allocates memory to do the same
-> > kind of operation. Would you also like a callback for this one ? =20
->=20
-> But matching string will need all of them to cover all possible cases.
-> So, it doesn't rely on the certain index and needs allocation anyway.
+please pull a single x86/paravirt improvement for 5.18.
 
-Acked, it makes sense to keep it that way.
+Thx.
 
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+---
+
+The following changes since commit e783362eb54cd99b2cac8b3a9aeac942e6f6ac07:
+
+  Linux 5.17-rc1 (2022-01-23 10:12:53 +0200)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_paravirt_for_v5.18_rc1
+
+for you to fetch changes up to 2e1f8e55f9e054b4a49ffc06c7e33b5d4725f05e:
+
+  x86/paravirt: Use %rip-relative addressing in hook calls (2022-01-24 20:21:19 +0100)
+
+----------------------------------------------------------------
+- Shorten CALL insns to pvops by a byte by using rip-relative addressing
+
+----------------------------------------------------------------
+Jan Beulich (1):
+      x86/paravirt: Use %rip-relative addressing in hook calls
+
+ arch/x86/include/asm/paravirt_types.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+-- 
+Regards/Gruss,
+    Boris.
+
+SUSE Software Solutions Germany GmbH, GF: Ivo Totev, HRB 36809, AG Nürnberg
