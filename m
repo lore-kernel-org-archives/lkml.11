@@ -2,126 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 130DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:14:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4C1FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:15:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347600AbiCUOQL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:16:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55042 "EHLO
+        id S238798AbiCUOQU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 10:16:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351520AbiCUOLH (ORCPT
+        with ESMTP id S1351573AbiCUOLJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 10:11:07 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B0051EC5C;
-        Mon, 21 Mar 2022 07:07:29 -0700 (PDT)
-Date:   Mon, 21 Mar 2022 14:07:25 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647871647;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=If6MS7HC0nJlUhUSkmqmivVN3j72RbN2puChlY2LQoo=;
-        b=U5X41PKmtkdvii1MAF/iz+GK2OvQabL5XBp68bwYe43uHXdu/hsXK2LKW6SOCTFfsuwhps
-        cGFwYjiqTccYDo/dSZXccpUHOC7GeMloG3VGQximfP0PjNmdn3YPHYysjupfoP4YD14VV2
-        pIMTYoQBL1SFLkg/hRFva+IKM8xIXiM6gNa7iLXS0tHIHn2Wt/+dRzb0v/NwDtCg7E0fIL
-        spH6F1DXVDOGpyABamJxoAHW0FwCpWGeSshHK8yY9kwrQ7+C4ijMo6cOQoAIO+AmMsDElc
-        vEUvFoeZ+F6rxhH7v6qzmy1PYhfEOIxu2YUSehRBY6fS+UqNHWr7VPetXTgjbg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647871647;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=If6MS7HC0nJlUhUSkmqmivVN3j72RbN2puChlY2LQoo=;
-        b=Osw8/R5SDWmF1gWiZ0UU5dQ621LaDIA1R/WN8us+lXVXW4PIAH36dmfOsA9Lj3gkTNzXLF
-        mOwxtcPAcXZ+RhCw==
-From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-next] irqchip/gic-v3: Fix GICR_CTLR.RWP polling
-Cc:     Marc Zyngier <maz@kernel.org>, stable@vger.kernel.org,
-        Andre Przywara <andre.przywara@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        tglx@linutronix.de
-In-Reply-To: <20220315165034.794482-2-maz@kernel.org>
-References: <20220315165034.794482-2-maz@kernel.org>
+        Mon, 21 Mar 2022 10:11:09 -0400
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1068749F27;
+        Mon, 21 Mar 2022 07:08:52 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R321e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0V7qO7VJ_1647871727;
+Received: from 192.168.31.65(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V7qO7VJ_1647871727)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 21 Mar 2022 22:08:49 +0800
+Message-ID: <6bc551d2-15fc-5d17-c99b-8db588c6b671@linux.alibaba.com>
+Date:   Mon, 21 Mar 2022 22:08:47 +0800
 MIME-Version: 1.0
-Message-ID: <164787164587.389.8069156440924504066.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [PATCH v5 03/22] cachefiles: introduce on-demand read mode
+Content-Language: en-US
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org,
+        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
+        linux-fsdevel@vger.kernel.org, joseph.qi@linux.alibaba.com,
+        bo.liu@linux.alibaba.com, tao.peng@linux.alibaba.com,
+        gerry@linux.alibaba.com, eguan@linux.alibaba.com,
+        linux-kernel@vger.kernel.org, luodaowen.backend@bytedance.com
+References: <20220316131723.111553-1-jefflexu@linux.alibaba.com>
+ <20220316131723.111553-4-jefflexu@linux.alibaba.com>
+ <YjiAVezd5B9auhcP@casper.infradead.org>
+From:   JeffleXu <jefflexu@linux.alibaba.com>
+In-Reply-To: <YjiAVezd5B9auhcP@casper.infradead.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/irqchip-next branch of irqchip:
 
-Commit-ID:     49cdcea1b0772c29abb9468d82809933c718110e
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/49cdcea1b0772c29abb9468d82809933c718110e
-Author:        Marc Zyngier <maz@kernel.org>
-AuthorDate:    Tue, 15 Mar 2022 16:50:32 
-Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Mon, 21 Mar 2022 14:02:44 
 
-irqchip/gic-v3: Fix GICR_CTLR.RWP polling
+On 3/21/22 9:40 PM, Matthew Wilcox wrote:
+> On Wed, Mar 16, 2022 at 09:17:04PM +0800, Jeffle Xu wrote:
+>> +#ifdef CONFIG_CACHEFILES_ONDEMAND
+>> +	struct xarray			reqs;		/* xarray of pending on-demand requests */
+>> +	rwlock_t			reqs_lock;	/* Lock for reqs xarray */
+> 
+> Why do you have a separate rwlock when the xarray already has its own
+> spinlock?  This is usually a really bad idea.
 
-It turns out that our polling of RWP is totally wrong when checking
-for it in the redistributors, as we test the *distributor* bit index,
-whereas it is a different bit number in the RDs... Oopsie boo.
+Hi,
 
-This is embarassing. Not only because it is wrong, but also because
-it took *8 years* to notice the blunder...
+Thanks for reviewing.
 
-Just fix the damn thing.
+reqs_lock is also used to protect the check of cache->flags. Please
+refer to patch 4 [1] of this patchset.
 
-Fixes: 021f653791ad ("irqchip: gic-v3: Initial support for GICv3")
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Cc: stable@vger.kernel.org
-Reviewed-by: Andre Przywara <andre.przywara@arm.com>
-Reviewed-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Link: https://lore.kernel.org/r/20220315165034.794482-2-maz@kernel.org
----
- drivers/irqchip/irq-gic-v3.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+```
++	/*
++	 * Enqueue the pending request.
++	 *
++	 * Stop enqueuing the request when daemon is dying. So we need to
++	 * 1) check cache state, and 2) enqueue request if cache is alive.
++	 *
++	 * The above two ops need to be atomic as a whole. @reqs_lock is used
++	 * here to ensure that. Otherwise, request may be enqueued after xarray
++	 * has been flushed, in which case the orphan request will never be
++	 * completed and thus netfs will hang there forever.
++	 */
++	read_lock(&cache->reqs_lock);
++
++	/* recheck dead state under lock */
++	if (test_bit(CACHEFILES_DEAD, &cache->flags)) {
++		read_unlock(&cache->reqs_lock);
++		ret = -EIO;
++		goto out;
++	}
++
++	xa_lock(xa);
++	ret = __xa_alloc(xa, &id, req, xa_limit_32b, GFP_KERNEL);
++	if (!ret)
++		__xa_set_mark(xa, id, CACHEFILES_REQ_NEW);
++	xa_unlock(xa);
++
++	read_unlock(&cache->reqs_lock);
+```
 
-diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
-index 0efe1a9..9b63165 100644
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -206,11 +206,11 @@ static inline void __iomem *gic_dist_base(struct irq_data *d)
- 	}
- }
- 
--static void gic_do_wait_for_rwp(void __iomem *base)
-+static void gic_do_wait_for_rwp(void __iomem *base, u32 bit)
- {
- 	u32 count = 1000000;	/* 1s! */
- 
--	while (readl_relaxed(base + GICD_CTLR) & GICD_CTLR_RWP) {
-+	while (readl_relaxed(base + GICD_CTLR) & bit) {
- 		count--;
- 		if (!count) {
- 			pr_err_ratelimited("RWP timeout, gone fishing\n");
-@@ -224,13 +224,13 @@ static void gic_do_wait_for_rwp(void __iomem *base)
- /* Wait for completion of a distributor change */
- static void gic_dist_wait_for_rwp(void)
- {
--	gic_do_wait_for_rwp(gic_data.dist_base);
-+	gic_do_wait_for_rwp(gic_data.dist_base, GICD_CTLR_RWP);
- }
- 
- /* Wait for completion of a redistributor change */
- static void gic_redist_wait_for_rwp(void)
- {
--	gic_do_wait_for_rwp(gic_data_rdist_rd_base());
-+	gic_do_wait_for_rwp(gic_data_rdist_rd_base(), GICR_CTLR_RWP);
- }
- 
- #ifdef CONFIG_ARM64
+It's mainly used to protect against the xarray flush.
+
+Besides, IMHO read-write lock shall be more performance friendly, since
+most cases are the read side.
+
+
+[1] https://lkml.org/lkml/2022/3/16/351
+
+-- 
+Thanks,
+Jeffle
