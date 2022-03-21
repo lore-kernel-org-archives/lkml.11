@@ -2,141 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD50BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 10:59:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6759EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 11:00:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346543AbiCULAw (ORCPT
+        id S1346547AbiCULBe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 07:00:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38874 "EHLO
+        Mon, 21 Mar 2022 07:01:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232488AbiCULAv (ORCPT
+        with ESMTP id S1346151AbiCULBb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 07:00:51 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C6151E3CC
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 03:59:25 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id dr20so28660152ejc.6
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 03:59:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=Zzl3GYl80w+S9mI5wpD2NO28H32GyZAzJz9ChCnYhhk=;
-        b=BOeG2vnZA3JGkd2zKOK8WvSEdIkop3CBOdorIGHuagbywfrRREEbfwjaL+moII1QoU
-         kwxemH01uBlp6L5MKQCLgCYTU6Q4kNRQRSNmeY8yyNH3+Sfj+lh8IrDd/gpnbD3bt/x5
-         i7ZJVSxZHhJKvjuJSgq203uPnnCZX5jF2tFdrJ8FwEF3jB74skE/RyC8IOMLBGNtjLVs
-         YvBxyBgjs9y5yz5jg+5HPK4P5Ds17OXKP6+wfYE2xltgGNu1eJUZ6DOiCqvr6vbQ0K7T
-         Jv/GDBWoqlfF15yb70RHK20dHIRwWaLKxwIW/w18aiA5aLd9u7m0QFHgZkw0pkAiidv4
-         Eq3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :mime-version:content-disposition;
-        bh=Zzl3GYl80w+S9mI5wpD2NO28H32GyZAzJz9ChCnYhhk=;
-        b=hkRr9Z7hTlFBBXzESSrfscZ6KoR6RjB09yuO1qzw7laKXd/IFAqBkiGp2Pf+H2cKX8
-         qsqiUk62Z1NEVivvaFZATpywQmCkm6A3rZqUmxwArEuoFzADolF/8yxTNYMU9GdvOhwY
-         76k8V7KdTMKZ5E3nQUUTzX+cyLfZjC0E3uGEaW8YkppAOCLXs/pg+cwqZm8cOVAf43TQ
-         U1uHOtfSvNvlmHvrj950c7RjJoB22Tiq8UXlwq6txDkSpLaUKDAqgcuzLlSVFdQK6Ny0
-         j+fRHvsnWG/BQeTKGsVpvrwkGAO9RLASZNIu5ZjRDaklMfO/G++tiU2KCRAuB6l63p4W
-         s72w==
-X-Gm-Message-State: AOAM532KD8tmpmaJALNSEEZMtNWAAllimvd+9eFa5WGBLRrJpviUz/l1
-        ah4es7UjAzE2OIBsoAX7dbU=
-X-Google-Smtp-Source: ABdhPJzFQJFSyfa9BJo3F9NHYbj9M7wkim3YSPp0uiJrjdxczNULqZJmdMtcLCF2Dpvd/9uOZJM60A==
-X-Received: by 2002:a17:906:bb01:b0:6a7:df9:d67c with SMTP id jz1-20020a170906bb0100b006a70df9d67cmr19812804ejb.733.1647860364059;
-        Mon, 21 Mar 2022 03:59:24 -0700 (PDT)
-Received: from gmail.com (0526ECD0.dsl.pool.telekom.hu. [5.38.236.208])
-        by smtp.gmail.com with ESMTPSA id fx3-20020a170906b74300b006daecedee44sm6744062ejb.220.2022.03.21.03.59.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 03:59:23 -0700 (PDT)
-Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
-Date:   Mon, 21 Mar 2022 11:59:21 +0100
-From:   Ingo Molnar <mingo@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Subject: [GIT PULL] perf events changes for v5.18
-Message-ID: <YjhaieorORDCnPvh@gmail.com>
+        Mon, 21 Mar 2022 07:01:31 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6EED2762BD;
+        Mon, 21 Mar 2022 04:00:06 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 19C051042;
+        Mon, 21 Mar 2022 04:00:06 -0700 (PDT)
+Received: from e123427-lin.arm.com (unknown [10.57.20.152])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 43F053F766;
+        Mon, 21 Mar 2022 04:00:04 -0700 (PDT)
+From:   Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Marc Zyngier <maz@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?q?St=C3=A9phane=20Graber?= <stgraber@ubuntu.com>,
+        kernel-team@android.com, dann frazier <dann.frazier@canonical.com>,
+        Rob Herring <robh@kernel.org>,
+        Toan Le <toan@os.amperecomputing.com>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH v2 0/2] PCI: xgene: Restore working PCIe functionnality
+Date:   Mon, 21 Mar 2022 10:59:51 +0000
+Message-Id: <164786014095.24674.3958001452052636083.b4-ty@arm.com>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220321104843.949645-1-maz@kernel.org>
+References: <20220321104843.949645-1-maz@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Linus,
+On Mon, 21 Mar 2022 10:48:41 +0000, Marc Zyngier wrote:
+> Since 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup") was
+> merged in the 5.5 time frame, PCIe on the venerable XGene platform has
+> been unusable: 6dce5aa59e0b broke both XGene-1 (Mustang and m400) and
+> XGene-2 (Merlin), while the addition of c7a75d07827a ("PCI: xgene: Fix
+> IB window setup") fixed XGene-2, but left the rest of the zoo
+> unusable.
+> 
+> [...]
 
-Please pull the latest perf/core git tree from:
+Applied to pci/xgene, thanks!
 
-   git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git perf-core-2022-03-21
+[1/2] PCI: xgene: Revert "PCI: xgene: Use inbound resources for setup"
+      https://git.kernel.org/lpieralisi/pci/c/1874b6d7ab
+[2/2] PCI: xgene: Revert "PCI: xgene: Fix IB window setup"
+      https://git.kernel.org/lpieralisi/pci/c/825da4e9ce
 
-   # HEAD: 02a08d78f5c429c7dc8e5b9417b4efb518b3d041 perf/x86/intel/uncore: Fix the build on !CONFIG_PHYS_ADDR_T_64BIT
-
-Changes for this cycle were:
-
- - Fix address filtering for Intel/PT,ARM/CoreSight
- - Enable Intel/PEBS format 5
- - Allow more fixed-function counters for x86
- - Intel/PT: Enable not recording Taken-Not-Taken packets
- - Add a few branch-types
-
- Thanks,
-
-	Ingo
-
------------------->
-Adrian Hunter (5):
-      perf/x86/intel/pt: Relax address filter validation
-      x86: Share definition of __is_canonical_address()
-      perf/core: Fix address filter parser for multiple filters
-      perf/x86/intel/pt: Fix address filter config for 32-bit kernel
-      perf/core: Allow kernel address filter when not filtering the kernel
-
-Alexander Shishkin (2):
-      perf/x86/intel/pt: Add a capability and config bit for event tracing
-      perf/x86/intel/pt: Add a capability and config bit for disabling TNTs
-
-Anshuman Khandual (1):
-      perf: Add irq and exception return branch types
-
-Ingo Molnar (1):
-      perf/x86/intel/uncore: Fix the build on !CONFIG_PHYS_ADDR_T_64BIT
-
-Kan Liang (2):
-      perf/x86/intel: Enable PEBS format 5
-      perf/x86/intel: Increase max number of the fixed counters
-
-Steve Wahl (1):
-      perf/x86/intel/uncore: Make uncore_discovery clean for 64 bit addresses
-
-Wei Wang (1):
-      KVM: x86: use the KVM side max supported fixed counter
-
-
- arch/x86/events/intel/core.c             | 40 +++++++++++++++++-
- arch/x86/events/intel/ds.c               | 14 +++++--
- arch/x86/events/intel/lbr.c              |  4 +-
- arch/x86/events/intel/pt.c               | 71 +++++++++++++++++++++++++-------
- arch/x86/events/intel/uncore_discovery.c | 16 +++++--
- arch/x86/events/intel/uncore_discovery.h |  2 -
- arch/x86/include/asm/intel_ds.h          |  5 ++-
- arch/x86/include/asm/intel_pt.h          |  2 +
- arch/x86/include/asm/kvm_host.h          |  3 +-
- arch/x86/include/asm/msr-index.h         |  2 +
- arch/x86/include/asm/page.h              | 10 +++++
- arch/x86/include/asm/perf_event.h        |  2 +-
- arch/x86/kvm/cpuid.c                     |  3 +-
- arch/x86/kvm/emulate.c                   |  4 +-
- arch/x86/kvm/pmu.h                       |  2 -
- arch/x86/kvm/vmx/pmu_intel.c             |  4 +-
- arch/x86/kvm/x86.c                       |  4 +-
- arch/x86/kvm/x86.h                       |  7 +---
- arch/x86/mm/maccess.c                    |  7 +---
- include/uapi/linux/perf_event.h          |  2 +
- kernel/events/core.c                     |  5 ++-
- tools/include/uapi/linux/perf_event.h    |  2 +
- tools/perf/util/branch.c                 |  4 +-
- 23 files changed, 161 insertions(+), 54 deletions(-)
+Thanks,
+Lorenzo
