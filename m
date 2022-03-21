@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1DD3C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE644C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 14:02:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349220AbiCUODc (ORCPT
+        id S1349083AbiCUODT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 10:03:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45314 "EHLO
+        Mon, 21 Mar 2022 10:03:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349048AbiCUN6u (ORCPT
+        with ESMTP id S1349053AbiCUN6u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Mar 2022 09:58:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64117174B8D;
-        Mon, 21 Mar 2022 06:57:10 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE114C420;
+        Mon, 21 Mar 2022 06:57:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EED8D611D5;
-        Mon, 21 Mar 2022 13:57:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0653BC340E8;
-        Mon, 21 Mar 2022 13:57:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BF708611D5;
+        Mon, 21 Mar 2022 13:57:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D345AC340E8;
+        Mon, 21 Mar 2022 13:57:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647871029;
-        bh=hEnXSXsF12xuYbzJLH4q7s0j+f4DoWhrVmOI/kJV8so=;
+        s=korg; t=1647871032;
+        bh=6bMyHUGse5xr9hy/8HpOJoLVzlqHAA1nWa58gZ/xo00=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aKSUCc7kqHxKZgExH6CsyFVQ1k6GhcBmmlh6bha6A4JzfYy7FpOePvXl+dxgHFISO
-         Ad54jY9qMdCArU1ljQQwL13H4kwKHS/39ey63/GI8C+s/Cc4dTtFToP4iu5zgql2C5
-         RG1SZa09ib3LcHkEmNpUgKMweuEsicceQo72hugY=
+        b=n2FkUxln0CMt0dPqA2iyG02qVirNytc3RrREgjNdalAaHf26FkeYcD01+LemJx8QU
+         Rign1qqciwBHyvjAvL61KSLz2hf3YbJulS/Ik1yuFXe3mgNlX4sedpT1tDuZbTJg6h
+         5jTv+e4BgIRlpiLOCNL2yZCrXjhHlI4qN+qp2qF0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        syzbot+348b571beb5eeb70a582@syzkaller.appspotmail.com
-Subject: [PATCH 4.19 55/57] usb: gadget: Fix use-after-free bug by not setting udc->dev.driver
-Date:   Mon, 21 Mar 2022 14:52:36 +0100
-Message-Id: <20220321133223.575783577@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        syzbot+75cccf2b7da87fb6f84b@syzkaller.appspotmail.com
+Subject: [PATCH 4.19 56/57] Input: aiptek - properly check endpoint type
+Date:   Mon, 21 Mar 2022 14:52:37 +0100
+Message-Id: <20220321133223.604010519@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220321133221.984120927@linuxfoundation.org>
 References: <20220321133221.984120927@linuxfoundation.org>
@@ -49,86 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alan Stern <stern@rowland.harvard.edu>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-commit 16b1941eac2bd499f065a6739a40ce0011a3d740 upstream.
+commit 5600f6986628dde8881734090588474f54a540a8 upstream.
 
-The syzbot fuzzer found a use-after-free bug:
+Syzbot reported warning in usb_submit_urb() which is caused by wrong
+endpoint type. There was a check for the number of endpoints, but not
+for the type of endpoint.
 
-BUG: KASAN: use-after-free in dev_uevent+0x712/0x780 drivers/base/core.c:2320
-Read of size 8 at addr ffff88802b934098 by task udevd/3689
+Fix it by replacing old desc.bNumEndpoints check with
+usb_find_common_endpoints() helper for finding endpoints
 
-CPU: 2 PID: 3689 Comm: udevd Not tainted 5.17.0-rc4-syzkaller-00229-g4f12b742eb2b #0
+Fail log:
+
+usb 5-1: BOGUS urb xfer, pipe 1 != type 3
+WARNING: CPU: 2 PID: 48 at drivers/usb/core/urb.c:502 usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
+Modules linked in:
+CPU: 2 PID: 48 Comm: kworker/2:2 Not tainted 5.17.0-rc6-syzkaller-00226-g07ebd38a0da2 #0
 Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+Workqueue: usb_hub_wq hub_event
+...
 Call Trace:
  <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0x8d/0x303 mm/kasan/report.c:255
- __kasan_report mm/kasan/report.c:442 [inline]
- kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
- dev_uevent+0x712/0x780 drivers/base/core.c:2320
- uevent_show+0x1b8/0x380 drivers/base/core.c:2391
- dev_attr_show+0x4b/0x90 drivers/base/core.c:2094
+ aiptek_open+0xd5/0x130 drivers/input/tablet/aiptek.c:830
+ input_open_device+0x1bb/0x320 drivers/input/input.c:629
+ kbd_connect+0xfe/0x160 drivers/tty/vt/keyboard.c:1593
 
-Although the bug manifested in the driver core, the real cause was a
-race with the gadget core.  dev_uevent() does:
-
-	if (dev->driver)
-		add_uevent_var(env, "DRIVER=%s", dev->driver->name);
-
-and between the test and the dereference of dev->driver, the gadget
-core sets dev->driver to NULL.
-
-The race wouldn't occur if the gadget core registered its devices on
-a real bus, using the standard synchronization techniques of the
-driver core.  However, it's not necessary to make such a large change
-in order to fix this bug; all we need to do is make sure that
-udc->dev.driver is always NULL.
-
-In fact, there is no reason for udc->dev.driver ever to be set to
-anything, let alone to the value it currently gets: the address of the
-gadget's driver.  After all, a gadget driver only knows how to manage
-a gadget, not how to manage a UDC.
-
-This patch simply removes the statements in the gadget core that touch
-udc->dev.driver.
-
-Fixes: 2ccea03a8f7e ("usb: gadget: introduce UDC Class")
-CC: <stable@vger.kernel.org>
-Reported-and-tested-by: syzbot+348b571beb5eeb70a582@syzkaller.appspotmail.com
-Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-Link: https://lore.kernel.org/r/YiQgukfFFbBnwJ/9@rowland.harvard.edu
+Fixes: 8e20cf2bce12 ("Input: aiptek - fix crash on detecting device without endpoints")
+Reported-and-tested-by: syzbot+75cccf2b7da87fb6f84b@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Link: https://lore.kernel.org/r/20220308194328.26220-1-paskripkin@gmail.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/gadget/udc/core.c |    3 ---
- 1 file changed, 3 deletions(-)
+ drivers/input/tablet/aiptek.c |   10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
---- a/drivers/usb/gadget/udc/core.c
-+++ b/drivers/usb/gadget/udc/core.c
-@@ -1297,7 +1297,6 @@ static void usb_gadget_remove_driver(str
- 	usb_gadget_udc_stop(udc);
+--- a/drivers/input/tablet/aiptek.c
++++ b/drivers/input/tablet/aiptek.c
+@@ -1814,15 +1814,13 @@ aiptek_probe(struct usb_interface *intf,
+ 	input_set_abs_params(inputdev, ABS_TILT_Y, AIPTEK_TILT_MIN, AIPTEK_TILT_MAX, 0, 0);
+ 	input_set_abs_params(inputdev, ABS_WHEEL, AIPTEK_WHEEL_MIN, AIPTEK_WHEEL_MAX - 1, 0, 0);
  
- 	udc->driver = NULL;
--	udc->dev.driver = NULL;
- 	udc->gadget->dev.driver = NULL;
- }
+-	/* Verify that a device really has an endpoint */
+-	if (intf->cur_altsetting->desc.bNumEndpoints < 1) {
++	err = usb_find_common_endpoints(intf->cur_altsetting,
++					NULL, NULL, &endpoint, NULL);
++	if (err) {
+ 		dev_err(&intf->dev,
+-			"interface has %d endpoints, but must have minimum 1\n",
+-			intf->cur_altsetting->desc.bNumEndpoints);
+-		err = -EINVAL;
++			"interface has no int in endpoints, but must have minimum 1\n");
+ 		goto fail3;
+ 	}
+-	endpoint = &intf->cur_altsetting->endpoint[0].desc;
  
-@@ -1346,7 +1345,6 @@ static int udc_bind_to_driver(struct usb
- 			driver->function);
- 
- 	udc->driver = driver;
--	udc->dev.driver = &driver->driver;
- 	udc->gadget->dev.driver = &driver->driver;
- 
- 	usb_gadget_udc_set_speed(udc, driver->max_speed);
-@@ -1368,7 +1366,6 @@ err1:
- 		dev_err(&udc->dev, "failed to start %s: %d\n",
- 			udc->driver->function, ret);
- 	udc->driver = NULL;
--	udc->dev.driver = NULL;
- 	udc->gadget->dev.driver = NULL;
- 	return ret;
- }
+ 	/* Go set up our URB, which is called when the tablet receives
+ 	 * input.
 
 
