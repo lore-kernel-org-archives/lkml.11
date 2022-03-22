@@ -2,174 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E1F4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 07:54:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB61BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 07:54:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229554AbiCVHzd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 03:55:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47182 "EHLO
+        id S229673AbiCVHzs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 03:55:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229632AbiCVHz2 (ORCPT
+        with ESMTP id S229450AbiCVHzp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 03:55:28 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2132.outbound.protection.outlook.com [40.107.220.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 496154704C
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 00:54:01 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BGrYjO6xDV36WnpT5SsPeFkNkc6woe6CZLw/FtdQzukSizinhGdJA226gmqTDeBDNach2Ah7dpwb2QWQ23KMSCF80VnOC/3DAgcO7/gG5aN2fMNJTqvfqH75VydHm60SKKHYl3hFjhfxlNuiOOc/s/mOrEj9ag3UCgRYQITZ+eg+qX5grMAVtNsvCoO7WufXxZbTVPC8z+SGoQc1J7NFArOvCdENBPDg0/bHTIIIym7BjdiCoG7sNmaSf2Ph35v/ciVH5TSlTFddqG5o7BIAHvWvT3LtrG75ZmAybpfpafXu3lMQEE49BSY/f16/LUC+In8S2+9Ete/RXNBO8f6snA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=x2n9KOdCs7SoxObcPAuDb1ukujWuBGI32TNaJiWrQTA=;
- b=lUwFkOLF4VfiDniRD1yqnyTgN2nzME4TMBzadmQbUEkGO3HK4s/E3pgbFNjls5oIAvmJ4gzCVzXJJMYHqiyFjmW+HIYLXVSLQcGYOnjsgDzBJ224PJMFVYFxTnpMG3Jvq2bWdUpWV6lwegkOU+9KsnDh1eS5adFEMhe4oUz4A/hrzdBXvu8tHyMVoB6pjxki9Uj70/9BDpgjNsI8SqVe7/F/8nJxc1zgNmDFh8i8TT1DDo76MyYZcEbxMzF+ux8IxgwImSotrJs4xFHTQN0TGrZW10w+PW0OothwEKliyZPm2ghLMGopFEjCZVyU+7ILawXP5weW405H1bInyXLEWQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=analogixsemi.com; dmarc=pass action=none
- header.from=analogixsemi.com; dkim=pass header.d=analogixsemi.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=Analogixsemi.onmicrosoft.com; s=selector2-Analogixsemi-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x2n9KOdCs7SoxObcPAuDb1ukujWuBGI32TNaJiWrQTA=;
- b=Tgnepg3oq8PazrBCeMmD3uO6wiBXXzWUvasX4XDE4ejz3FkVowU+NXlYU23SgwabfNofnEIfm7E0b/v8osXrzJtMHmN+DPCjSJxWgWDCethFjP/8ZkKYsQOrWNwVuaWrbPU7G4Cwk7lagfNOH4XtYxIMpFRGa0PnVe/d8iid0n0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=analogixsemi.com;
-Received: from BY5PR04MB6739.namprd04.prod.outlook.com (2603:10b6:a03:229::8)
- by MN2PR04MB6351.namprd04.prod.outlook.com (2603:10b6:208:1a3::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.15; Tue, 22 Mar
- 2022 07:53:59 +0000
-Received: from BY5PR04MB6739.namprd04.prod.outlook.com
- ([fe80::a865:6d10:c4a9:1142]) by BY5PR04MB6739.namprd04.prod.outlook.com
- ([fe80::a865:6d10:c4a9:1142%9]) with mapi id 15.20.5102.016; Tue, 22 Mar 2022
- 07:53:59 +0000
-Date:   Tue, 22 Mar 2022 15:53:47 +0800
-From:   Xin Ji <xji@analogixsemi.com>
-To:     Pin-yen Lin <treapking@chromium.org>
-Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, treapking@google.com,
-        qwen@analogixsemi.com, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, hsinyi@chromium.org,
-        bliang@analogixsemi.com
-Subject: Re: drm/bridge: anx7625: Set downstream sink into normal status
-Message-ID: <20220322075347.GA1486712@anxtwsw-Precision-3640-Tower>
-References: <20220302120925.4153592-1-xji@analogixsemi.com>
- <CAEXTbpeUTdfA31gpiJAzvyCScjWLUqCxjpF6-YCFCe5JmiyDZw@mail.gmail.com>
- <CAEXTbpf2V9CD=rs_KkVkD58rhtbiicFNjdphbuS0PU_5P=x0ZA@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEXTbpf2V9CD=rs_KkVkD58rhtbiicFNjdphbuS0PU_5P=x0ZA@mail.gmail.com>
-X-ClientProxiedBy: SG2PR04CA0153.apcprd04.prod.outlook.com (2603:1096:4::15)
- To BY5PR04MB6739.namprd04.prod.outlook.com (2603:10b6:a03:229::8)
+        Tue, 22 Mar 2022 03:55:45 -0400
+Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [IPv6:2001:4b98:dc4:8::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D14A74A3D4;
+        Tue, 22 Mar 2022 00:54:17 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id D2EA4240002;
+        Tue, 22 Mar 2022 07:54:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1647935656;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hL95WIkdjvtUtma7mkkPOD4nhIAtPPlN3w0wuizzJOs=;
+        b=CtYGjJ3RELDYNEkF8xpunTXp7/UOD8Z1R5pYu/yHzgzpNiIWaVp+5QTsjUZ7X1eUepxBiT
+        7AdNl5rSbXWguc2UV5n8SRvtlL7SwbaOzuqTjJ6axk5N9M0aHhs8N6XQ9bmAioR4sdpax9
+        sDKHg8s13+R4MwRpc6/Fk1lloD+yl00xvaI9bafNniv0TtZUYBHA2zpqFQ+daiuqRd2e/S
+        q9SvPNlVW2QremxkvnjZmr99XWsWmaEM4bEajI4ZUXUkKYtsWRH6zJOtIhs0ct23zFa9/F
+        xOh2gHpUdmvscPFGHNJpsQ7v3XjUj4dt1dj7JlpL0mM4Lne0bah6cuomJFm6cQ==
+Date:   Tue, 22 Mar 2022 08:52:52 +0100
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "'Rafael J . Wysocki '" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-i2c@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 0/6] introduce fwnode in the I2C subsystem
+Message-ID: <20220322085252.143a700f@fixe.home>
+In-Reply-To: <20220321113634.56d6fe2b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20220318160059.328208-1-clement.leger@bootlin.com>
+        <20220318100201.630c70bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20220321115634.5f4b8bd4@fixe.home>
+        <20220321113634.56d6fe2b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5fa54995-f9f9-4455-7632-08da0bd91f61
-X-MS-TrafficTypeDiagnostic: MN2PR04MB6351:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR04MB63512E71BB585465F69BB14CC7179@MN2PR04MB6351.namprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Lm1ik11xHrfKC7Y72k4otnWwAG9rgYdkRu0qqHWOk68bK5C+tWF0/JwLuor3hg9M7HWIakNraEG7rrenl77kShDjoN9NbyLjFLrWvm1739Ib1YqkIQ2sje9NXh6ExtesITAQMV71an2ZoYZYj42gWHI/jsoz0Vcrzp47K5gVA2hOl9czRUkUBAwkCBeMnzPiEGGVHyeRcLNt1HTywcsuu7S172XSfXn4r+J1r+qxWVFywMFv4t040ZM0vioFBHcX/iD05i/sym/tT36zeKwYpMx2scmsEg1EUzrg4yKMetYCziFKA4OUYPOe2FOjEO+0tCfa3YgymH5giGGLOx88mKs7/KbKQz0cIwVEw4sVagdWBKCFelGwI3uSEi0YLq/8BCFpfdGv9n00wTSBFZZdJRR/5krJRV3vGxjHieuMZArZVtN13Qp8szGo2qySMUYsaB9LVE3Hz7Kt9eRdz/TmEnzpJJGVw5LgiYZDZBOLsbSUOd5ejkro7R2uASUgrRkbxNsHO5CaTL3ZKqrv0rRZJu1BKkEqHvEtAGNqBXr6N3DxIWkIub0dWkgLQh+KlObhtXv74wCrTFFJorrzHPjceqjnR/+/5ISoi6H1sJkDmCHi/JndXmIBkQ7bKyOXbr67O0iM8ktInAVo9A8vNy9RHZpSOzm771ZP2v2snUDxY+hZ9ZLITsdNbUWzRJB/dfbVaGK4o2LA6k91gKyeUuACPQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR04MB6739.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(186003)(26005)(83380400001)(86362001)(33716001)(6506007)(66946007)(6666004)(54906003)(66476007)(316002)(6916009)(6486002)(38100700002)(5660300002)(38350700002)(7416002)(8936002)(4326008)(2906002)(8676002)(107886003)(6512007)(53546011)(55236004)(66556008)(9686003)(52116002)(1076003)(33656002)(508600001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nY1NqHnnWKowrguLRqG8qI+NoX85shkM3xjIwCD1Sx1dRJ1zwLnLBUpvAfeR?=
- =?us-ascii?Q?kU2ToarYP2eoAkW9E1oM+wY6D2ok0KDbTQ9367npllpy952DP0BmDmUwoEZO?=
- =?us-ascii?Q?ZmFTEs7A8n5eAAT+xiyBL6BPBw14zx/YaTgbWsdtLCQEvNa9bCAK1L8Izoy0?=
- =?us-ascii?Q?FYoRHT3G3BlvGA71aOWkDVpRJMAcguolC0YF8vKsb0+5aKJkXvRe137JTl2p?=
- =?us-ascii?Q?0/rj4se9pqXi3dHW9XtZSYa2msuySG1pK3wOT/64O2XZALvKcR/4zkPAYjIS?=
- =?us-ascii?Q?yyQjxgsAwREaNVqn6CB8s0YOZWEwdlJPZ4/5p89MuoUgK3C53NueAUC4lMKH?=
- =?us-ascii?Q?ttEq2nn2KYQrLCP5IFW3zDQXUIbl2az1pcjSeIPeFhTnkq6Sd8TzZFZlk6EZ?=
- =?us-ascii?Q?asWUTQfoh4b2SSBrPrMf8oRKhNpCjga21f+nThzfjoXKB3Pns2Ab2uhgnUBH?=
- =?us-ascii?Q?Z5FZVSRKv+ktsu3hTx8gSrO4j0llthLtHyL7VGg1PcJ9eV8vQypWjaj5HFjl?=
- =?us-ascii?Q?nKKleMA6yj3vYsU2uYD2cQvZRDvmjHoFZihcT20voUk1feCjAUB0ejTOUM3d?=
- =?us-ascii?Q?pQJ3lrDL8yINssFgCgZ6JVBYJNcK9om/AS2Gm2A94p60Mz6qW1Sffl8uEIde?=
- =?us-ascii?Q?rFXz/wUnZ8N7S013SZdysVvv0wrL61YIzCgKibjKL9TJ8vNFgQlqdd5ukq67?=
- =?us-ascii?Q?s07Sgl5mvc/qMgCy0gtrExLcsEfr2aSQAhZXaGcMQ+qlrlogbmK2+xtkl0+x?=
- =?us-ascii?Q?OiGs9Ng0eT18V25LMFBGHrPtwkGsxP2wsqDqQo7HFYmJ5Y0JEc8cBMtahPra?=
- =?us-ascii?Q?O+uYRmN2IQL/hPFLA9+Jga/noIBuc9d595hxaA1nPjCDxVA86rbqht+7TryA?=
- =?us-ascii?Q?owVCOwbhAUL0H5KOSvUeeUmj+2n2zt5MyqSb3TDYn61nG/w98XUbeZp2ojpx?=
- =?us-ascii?Q?znVAEF64WnqrFmG9yTGWTM+N9KIxG2R/20X08wYDz9jYbqjKrE1IOdT0m7UG?=
- =?us-ascii?Q?/bRIbsAvoEzjt59u7mBcTfajegAx1NKRB14d2aEfUIPBONLw70qxS493xC/k?=
- =?us-ascii?Q?8XzJUuWiodGz5BlOesH/OuwffBfWDsgeo4DnSztXsTlklsCRJXk1lP23fb1p?=
- =?us-ascii?Q?RoWpElFe350VAqdoj0NY7Zhk64Gn4sDjEr1G+NN3eu3qBNwjh2fzG1K88chc?=
- =?us-ascii?Q?mStR6ix6oDCaaX69spV+bt9Rym7CLGApjMJzvKzH7E3d4INCVLf1LCRF9Wbo?=
- =?us-ascii?Q?puGavPILFyyS1RbkfpH+1IM+T/poDJ8nXylZ4Cd+S05wXdyh1+x+MFAULRtH?=
- =?us-ascii?Q?xiy68fCV3gaZp4zP8rNJOnXcLRkzJJaxY/OiMPCfryt/scCenf0LECAUHsc3?=
- =?us-ascii?Q?WHrFNO4J6DtWyeEpR+P7c2nEa2EJ4donLQ6UyXYvmxXudQYm0R8RsJaV+Eov?=
- =?us-ascii?Q?OWySX/g+WMoUdgXYkFFE7YnsEiIvjo8j?=
-X-OriginatorOrg: analogixsemi.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5fa54995-f9f9-4455-7632-08da0bd91f61
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR04MB6739.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2022 07:53:59.1135
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: b099b0b4-f26c-4cf5-9a0f-d5be9acab205
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9ENv9ZH5YihjOJHPywWq43bbByWThLqGVcNwqrSg5AsdTdZjMMa2oLMgv4sIj2eYI3Ih+vvKeyUQc9rMUT7mPw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR04MB6351
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 03:33:17PM +0800, Pin-yen Lin wrote:
-> Hi Xin,
-> 
-> Can we use dev_dbg instead of dev_info for the logging?
-> 
-> The log here is more like a debugging message, and using dev_dbg makes
-> it consistent with anx7625_dp_stop.
-> 
-> Sorry for not catching this earlier.
-> 
-> Best regards,
-> Pin-yen
-Hi Pin-yen, OK, I'll change it in next version.
-Thanks,
-Xin
-> 
-> On Thu, Mar 3, 2022 at 3:52 PM Pin-yen Lin <treapking@chromium.org> wrote:
-> >
-> > Reviewed-by: Pin-Yen Lin <treapking@chromium.org>
-> >
-> >
-> > On Wed, Mar 2, 2022 at 8:09 PM Xin Ji <xji@analogixsemi.com> wrote:
-> > >
-> > > As downstream sink was set into standby mode while bridge disabled,
-> > > this patch used for setting downstream sink into normal status
-> > > while enable bridge.
-> > >
-> > > Signed-off-by: Xin Ji <xji@analogixsemi.com>
-> > > ---
-> > >  drivers/gpu/drm/bridge/analogix/anx7625.c | 8 ++++++++
-> > >  1 file changed, 8 insertions(+)
-> > >
-> > > diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-> > > index 9aab879a8851..963eaf73ecab 100644
-> > > --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
-> > > +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
-> > > @@ -919,12 +919,20 @@ static void anx7625_dp_start(struct anx7625_data *ctx)
-> > >  {
-> > >         int ret;
-> > >         struct device *dev = &ctx->client->dev;
-> > > +       u8 data;
-> > >
-> > >         if (!ctx->display_timing_valid) {
-> > >                 DRM_DEV_ERROR(dev, "mipi not set display timing yet.\n");
-> > >                 return;
-> > >         }
-> > >
-> > > +       dev_info(dev, "set downstream sink into normal\n");
-> > > +       /* Downstream sink enter into normal mode */
-> > > +       data = 1;
-> > > +       ret = anx7625_aux_trans(ctx, DP_AUX_NATIVE_WRITE, 0x000600, 1, &data);
-> > > +       if (ret < 0)
-> > > +               dev_err(dev, "IO error : set sink into normal mode fail\n");
-> > > +
-> > >         /* Disable HDCP */
-> > >         anx7625_write_and(ctx, ctx->i2c.rx_p1_client, 0xee, 0x9f);
-> > >
+Le Mon, 21 Mar 2022 11:36:34 -0700,
+Jakub Kicinski <kuba@kernel.org> a =C3=A9crit :
+
+> > Hi Jakub,
+> >=20
+> > Ok, to be clear, you would like a series which contains all the
+> > "base" fwnode functions that I'm going to add to be sent separately
+> > right ? And then also split i2c/net stuff that was sent in this series =
+? =20
+>=20
+> I'm mostly concerned about conflicts, so if you can get the entire
+> series into 5.18 before the merge window is over then consider it=20
+> acked. If it doesn't make 5.18 looks like you'd need to send patches=20
+> 1 and 2 as a PR so that both the i2c and net trees can pull it.=20
+> Once pulled send patch 6 out to net-next. Does that make sense?
+
+Yes totally, I guess I'll go for I2C only and then I'll move on with
+next patches individually later. No need to hurry.
+
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
