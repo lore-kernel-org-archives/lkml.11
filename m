@@ -2,132 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00852C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 18:38:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B84E5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 18:39:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240773AbiCVSkI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 14:40:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41730 "EHLO
+        id S240782AbiCVSkc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 14:40:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240769AbiCVSkB (ORCPT
+        with ESMTP id S240778AbiCVSka (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 14:40:01 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FEDC13CCE
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 11:38:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647974312; x=1679510312;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=9piiOb39Mfsnkfd30y8KCGK2Ts89xnMpnuyTFirQ5bc=;
-  b=gyaamASOhazAKNgQ9C3Pd9FjwjAyIqRzlAdWLiYWkUW/QrFbtdY1VKxs
-   87wMSgQehcfis55l/RbYDq+LDkfre6090wScIjBL6X+YvIJXLnte0aR2D
-   syh4MkaeqKNdANax8gyi9MgZYbB+qS4lAvMqVWOvZrr3mXT3/e3bwbBKT
-   XnXDV8FkDJA+yKnNxhM97RlO+SRy6XnfFJLuTnq7j27jCWA1DvMj89lxK
-   UJJqbjDfqAnQQ+gd47WnEP+Rtn7eMb3U3yVoxTC8yCP6qimRt71902kmw
-   Aa295QrUNT8+Qv2dE8xB6NRNKvPBbvlPcpXZ1r5l5IhbL8jCcbHgANv2B
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10294"; a="238519564"
-X-IronPort-AV: E=Sophos;i="5.90,202,1643702400"; 
-   d="scan'208";a="238519564"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2022 11:38:31 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,202,1643702400"; 
-   d="scan'208";a="519019156"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 22 Mar 2022 11:38:29 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nWjOm-000JAq-Jd; Tue, 22 Mar 2022 18:38:28 +0000
-Date:   Wed, 23 Mar 2022 02:38:25 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Tom <support@vamrs.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Tue, 22 Mar 2022 14:40:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29C461BEB8;
+        Tue, 22 Mar 2022 11:39:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B6BF0612FC;
+        Tue, 22 Mar 2022 18:39:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87E19C340EC;
+        Tue, 22 Mar 2022 18:39:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647974341;
+        bh=83MxWvJXMMxW++0FlJkhqDhlQdcZsuRg4UGE2d3K+6w=;
+        h=Date:From:To:Cc:Subject:From;
+        b=il+PF/5lDTVALM0N2qoPSMPAqqGIuPjE3GYn6jbjRxPVk21cRep1A/IVxKET0tZXt
+         sok4x4hv+Lh0rwFR3UKK6eWuelqsBJFGzl7qOA2UtFoOPnjgwsArNBNKek24j7c6yF
+         OSZ2y7T7z/AuvmoYvDYfjT0ZQrj+sRjLGfCkjH9rccfZQll7np7/Mi+KWyQGwzEeUP
+         9KtwvNggDbbr20wGckoy0tkAvpT20UFRuDV8S2rN8vE2dYJwo8sRmaXjrMS2diN5Hk
+         oRPSNtCtdgeFMw8jeUtq9Rckgu8yIa1AgXa5OsE9ZLabnmWbYoU59DZ1JCP8IvZNXi
+         6+3RcNzP/PHpg==
+Date:   Tue, 22 Mar 2022 13:48:02 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Kees Cook <keescook@chromium.org>, linux-hardening@vger.kernel.org,
         linux-kernel@vger.kernel.org,
-        Emil Renner Berthing <kernel@esmil.dk>
-Subject: [esmil:visionfive 29/61] drivers/soc/sifive/sifive_l2_cache.c:152:3:
- error: implicit declaration of function 'writeq'
-Message-ID: <202203230258.Jcxld0wh-lkp@intel.com>
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: [GIT PULL] flexible-array transformations for 5.18-rc1
+Message-ID: <20220322184802.GA2533969@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/esmil/linux visionfive
-head:   243ce759ed5821edf38bf93ce7325e232b805547
-commit: 5a2aff3930cd923322a7bcd0b50f9077166ec562 [29/61] sifive/sifive_l2_cache: Add sifive_l2_flush64_range function
-config: riscv-buildonly-randconfig-r006-20220320 (https://download.01.org/0day-ci/archive/20220323/202203230258.Jcxld0wh-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 85e9b2687a13d1908aa86d1b89c5ce398a06cd39)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://github.com/esmil/linux/commit/5a2aff3930cd923322a7bcd0b50f9077166ec562
-        git remote add esmil https://github.com/esmil/linux
-        git fetch --no-tags esmil visionfive
-        git checkout 5a2aff3930cd923322a7bcd0b50f9077166ec562
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/kvm/ drivers/soc/sifive/
+The following changes since commit 26291c54e111ff6ba87a164d85d4a4e134b7315c:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+  Linux 5.17-rc2 (2022-01-30 15:37:07 +0200)
 
-All error/warnings (new ones prefixed by >>):
+are available in the Git repository at:
 
->> drivers/soc/sifive/sifive_l2_cache.c:152:3: error: implicit declaration of function 'writeq' [-Werror,-Wimplicit-function-declaration]
-                   writeq(line, l2_base + SIFIVE_L2_FLUSH64);
-                   ^
->> drivers/soc/sifive/sifive_l2_cache.c:142:19: warning: result of comparison of constant 36507222016 with expression of type 'unsigned long' is always false [-Wtautological-constant-out-of-range-compare]
-              (start + len) > (CONFIG_SIFIVE_L2_FLUSH_START +
-              ~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   1 warning and 1 error generated.
+  git://git.kernel.org/pub/scm/linux/kernel/git/gustavoars/linux.git tags/flexible-array-transformations-5.18-rc1
 
+for you to fetch changes up to 5224f79096170bf7b92cc8fe42a12f44b91e5f62:
 
-vim +/writeq +152 drivers/soc/sifive/sifive_l2_cache.c
+  treewide: Replace zero-length arrays with flexible-array members (2022-02-17 07:00:39 -0600)
 
-   123	
-   124	#ifdef CONFIG_SIFIVE_L2_FLUSH
-   125	void sifive_l2_flush64_range(unsigned long start, unsigned long len)
-   126	{
-   127		unsigned long line;
-   128	
-   129		if(!l2_base) {
-   130			pr_warn("L2CACHE: base addr invalid, skipping flush\n");
-   131			return;
-   132		}
-   133	
-   134		/* TODO: if (len == 0), skipping flush or going on? */
-   135		if(!len) {
-   136			pr_debug("L2CACHE: flush64 range @ 0x%lx(len:0)\n", start);
-   137			return;
-   138		}
-   139	
-   140		/* make sure the address is in the range */
-   141		if(start < CONFIG_SIFIVE_L2_FLUSH_START ||
- > 142		   (start + len) > (CONFIG_SIFIVE_L2_FLUSH_START +
-   143				     CONFIG_SIFIVE_L2_FLUSH_SIZE)) {
-   144			pr_warn("L2CACHE: flush64 out of range: %lx(%lx), skip flush\n",
-   145				start, len);
-   146			return;
-   147		}
-   148	
-   149		mb();	/* sync */
-   150		for (line = start; line < start + len;
-   151		     line += SIFIVE_L2_FLUSH64_LINE_LEN) {
- > 152			writeq(line, l2_base + SIFIVE_L2_FLUSH64);
-   153			mb();
-   154		}
-   155	}
-   156	EXPORT_SYMBOL_GPL(sifive_l2_flush64_range);
-   157	#endif
-   158	
+----------------------------------------------------------------
+flexible-array transformations for 5.18-rc1
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Hi Linus,
+
+Please, pull the following treewide patch that replaces zero-length arrays with
+flexible-array members. This patch has been baking in linux-next for a
+whole development cycle.
+
+Thanks
+--
+Gustavo
+
+----------------------------------------------------------------
+Gustavo A. R. Silva (1):
+      treewide: Replace zero-length arrays with flexible-array members
+
+ arch/alpha/include/asm/hwrpb.h                       |  2 +-
+ arch/ia64/include/asm/sal.h                          |  2 +-
+ arch/s390/include/asm/ccwgroup.h                     |  2 +-
+ arch/s390/include/asm/chsc.h                         |  2 +-
+ arch/s390/include/asm/eadm.h                         |  2 +-
+ arch/s390/include/asm/fcx.h                          |  4 ++--
+ arch/s390/include/asm/idals.h                        |  2 +-
+ arch/s390/include/asm/sclp.h                         |  2 +-
+ arch/s390/include/asm/sysinfo.h                      |  6 +++---
+ arch/sh/include/asm/thread_info.h                    |  2 +-
+ arch/sparc/include/asm/vio.h                         | 10 +++++-----
+ arch/um/include/shared/net_kern.h                    |  2 +-
+ arch/x86/include/asm/microcode_amd.h                 |  2 +-
+ arch/x86/include/asm/microcode_intel.h               |  4 ++--
+ arch/x86/include/asm/pci.h                           |  2 +-
+ arch/x86/include/asm/pci_x86.h                       |  2 +-
+ arch/xtensa/include/asm/bootparam.h                  |  2 +-
+ drivers/crypto/caam/pdb.h                            |  2 +-
+ drivers/gpu/drm/i915/gt/uc/intel_guc_ads.c           |  2 +-
+ drivers/gpu/drm/nouveau/include/nvfw/hs.h            |  2 +-
+ drivers/hwtracing/coresight/coresight-config.h       |  2 +-
+ drivers/misc/bcm-vk/bcm_vk.h                         |  2 +-
+ drivers/misc/habanalabs/include/common/cpucp_if.h    |  6 +++---
+ .../misc/habanalabs/include/gaudi/gaudi_packets.h    |  4 ++--
+ drivers/misc/habanalabs/include/goya/goya_packets.h  |  4 ++--
+ drivers/net/ethernet/freescale/enetc/enetc_hw.h      |  2 +-
+ drivers/net/ethernet/i825xx/sun3_82586.h             |  2 +-
+ drivers/net/ethernet/marvell/octeontx2/af/npc.h      |  6 +++---
+ drivers/net/ethernet/qlogic/qed/qed_mfw_hsi.h        |  2 +-
+ drivers/net/ethernet/ti/davinci_mdio.c               |  2 +-
+ drivers/scsi/dpt/dpti_i2o.h                          |  2 +-
+ drivers/scsi/elx/libefc_sli/sli4.h                   | 20 ++++++++++----------
+ drivers/scsi/mpi3mr/mpi3mr.h                         |  2 +-
+ drivers/scsi/qla2xxx/qla_bsg.h                       |  4 ++--
+ drivers/scsi/qla2xxx/qla_def.h                       |  2 +-
+ drivers/scsi/qla2xxx/qla_edif_bsg.h                  |  4 ++--
+ drivers/scsi/qla2xxx/qla_fw.h                        |  2 +-
+ drivers/scsi/qla4xxx/ql4_fw.h                        |  2 +-
+ drivers/staging/r8188eu/include/rtw_cmd.h            | 10 +++++-----
+ drivers/staging/rtl8712/rtl871x_cmd.h                |  8 ++++----
+ drivers/staging/rtl8723bs/include/ieee80211.h        |  2 +-
+ drivers/staging/rtl8723bs/include/rtw_cmd.h          |  2 +-
+ .../vc04_services/include/linux/raspberrypi/vchiq.h  |  2 +-
+ drivers/visorbus/vbuschannel.h                       |  2 +-
+ fs/cifs/ntlmssp.h                                    |  2 +-
+ fs/ext4/fast_commit.h                                |  4 ++--
+ fs/ksmbd/ksmbd_netlink.h                             |  2 +-
+ fs/ksmbd/ntlmssp.h                                   |  6 +++---
+ fs/ksmbd/smb2pdu.h                                   |  8 ++++----
+ fs/ksmbd/transport_rdma.c                            |  2 +-
+ fs/ksmbd/xattr.h                                     |  2 +-
+ fs/xfs/scrub/attr.h                                  |  2 +-
+ include/asm-generic/tlb.h                            |  4 ++--
+ include/linux/greybus/greybus_manifest.h             |  4 ++--
+ include/linux/greybus/hd.h                           |  2 +-
+ include/linux/greybus/module.h                       |  2 +-
+ include/linux/i3c/ccc.h                              |  6 +++---
+ include/linux/platform_data/brcmfmac.h               |  2 +-
+ include/linux/platform_data/cros_ec_commands.h       |  2 +-
+ include/net/bluetooth/mgmt.h                         |  2 +-
+ include/net/ioam6.h                                  |  2 +-
+ include/sound/sof/channel_map.h                      |  4 ++--
+ scripts/dtc/libfdt/fdt.h                             |  4 ++--
+ sound/soc/intel/atom/sst-mfld-dsp.h                  |  4 ++--
+ sound/soc/intel/skylake/skl-topology.h               |  2 +-
+ tools/lib/perf/include/perf/event.h                  |  2 +-
+ 66 files changed, 111 insertions(+), 111 deletions(-)
