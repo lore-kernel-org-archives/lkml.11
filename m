@@ -2,115 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C9CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 22:07:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFEB3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 22:09:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237592AbiCVWIj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 18:08:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56324 "EHLO
+        id S237602AbiCVWLT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 18:11:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237512AbiCVWIc (ORCPT
+        with ESMTP id S234966AbiCVWLP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 18:08:32 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2B9B6F4BC;
-        Tue, 22 Mar 2022 15:07:03 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KNQZB1hCtz4xMW;
-        Wed, 23 Mar 2022 09:06:58 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1647986822;
-        bh=EsSxbDR9FaVnz6o0uFGQYD9/VmUeFlXQQpVgqKg3qZU=;
-        h=Date:From:To:Cc:Subject:From;
-        b=YNqRNXLpPWoAreaWDoEPBErmxhMyJd8ZkYGpTfz+WkOTmMRKZMT1ZrmxjiLYf0C/i
-         WcGSHEyT0DmudFZLSdfL+np4ZtedELPc/SSe7HmyXCZHMhTDOQRX4YhmqfotCVrT2k
-         FFaZrfBolwMq/mt96co4/bTTejX0nXAd+FY+/UYoCmzqD+UDm8Yj3ooKz+ZS/San8k
-         e90CHL4yX+8xNRtReidt3RLWUGQeYoMK3NqCW+VZtLwcV7sKvSN2bmGkcO0eq/03t9
-         xN0uejTlXFY/bWeduvegXmUESqcj1MTCXw3zveCDzK6mLljYFRUafZi+6T+lV0kjSj
-         ArBl81pxkrlOg==
-Date:   Wed, 23 Mar 2022 09:06:57 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <paul@pwsan.com>
-Cc:     Atish Patra <atish.patra@wdc.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Atish Patra <atishp@rivosinc.com>,
-        Changbin Du <changbin.du@gmail.com>,
-        Changbin Du <changbin.du@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: linux-next: manual merge of the risc-v tree with Linus' tree
-Message-ID: <20220323090657.6538b9f6@canb.auug.org.au>
+        Tue, 22 Mar 2022 18:11:15 -0400
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 200FD2E6B9;
+        Tue, 22 Mar 2022 15:09:47 -0700 (PDT)
+Received: by mail-oi1-x22c.google.com with SMTP id v75so20987651oie.1;
+        Tue, 22 Mar 2022 15:09:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bKuz828VF2fnqYJiDhQ6BxBBrI6Befe+ANMb2LWyLXY=;
+        b=ZDnDdMJWQuK1ca6YkV3PDtYUPMv7B5K5vI9G1jUja55fsuCVw53EdAjkV1kEdDjYX4
+         aEwZX8yMW4WDoExgNXcsaOmFpLTyNGPCmR846z8rP9EHA0hDKNICAj69qNjNSOPvZP1P
+         u6f29pKTH+AwTHFAlh+XgtaTyx3wffpT9NByQH4ZUCNEl3lew1teYRSPCvM6zovHHo7z
+         LE4yJCx4xGM/m9fTFOW3k3F0bbN73GeaxzX/9B+WlDZoQkrHziC0vKam7muOjx4+xRdm
+         sLeNPltHCnRU0z2RSvvKfCJrSEgb0lJbuFgUC1TNN8y6Y4QCdmQffkknlFyhk3h75r03
+         anSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bKuz828VF2fnqYJiDhQ6BxBBrI6Befe+ANMb2LWyLXY=;
+        b=gYYzqI+x3Di8r+EN88jVdEGdofzmKVdxsf+dQTSH8Jpp6uXvubqFiCgLQvCE9WZUm6
+         hT+MdxjzP1L5g/e4pdDdF5KJNQwncTtyTi5K6TfT40PmVlQ22sDsTEOYfcwfQrbUnJVm
+         G9U22QUX+1cFD47lXMoiYnWdaSjkRWXE1RAG0H5MuG52WPuQszeqbkgzKdt3hX6Q7V+Q
+         4XenKAhudCR3qoGC60mKOIGsJKs1loyue1NNIpr4bvC/MUzjJGdzGC93ltYyaoKhONWN
+         zcDQ5ipeuE/RW9mDIqT3vlPmESVu2Kw1Vq06a8VPDcjE0XcjLf9DrUbzRAMtFbsWaVkw
+         J0bg==
+X-Gm-Message-State: AOAM532+OMwZcFhEHX/qYAs6X7eTUCEZrZDsc6zzfcr03XIgWHEGb265
+        CbK8vyo/pUnUU3irExc/lFD5HlPIfWsxEHFt0EvEiofGV5w=
+X-Google-Smtp-Source: ABdhPJw4fbgDr8owvDovV1TIhrd/gb5Uw8fQ5Ih+kAorfMegwd43bmhuMXPNkxL2bM0rImL9OgvAmSBzkIMmPUB3sqY=
+X-Received: by 2002:a05:6808:23c1:b0:2da:30fd:34d9 with SMTP id
+ bq1-20020a05680823c100b002da30fd34d9mr3230452oib.203.1647986986429; Tue, 22
+ Mar 2022 15:09:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/W+LMvh3XRYfEBCImGNDrQWK";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+References: <cover.1647894991.git.dsterba@suse.com> <CAADWXX-uX74SETx8QNnGDyBGMJHY-6wr8jC9Sjpv4ARqUca0Xw@mail.gmail.com>
+In-Reply-To: <CAADWXX-uX74SETx8QNnGDyBGMJHY-6wr8jC9Sjpv4ARqUca0Xw@mail.gmail.com>
+From:   Amir Goldstein <amir73il@gmail.com>
+Date:   Wed, 23 Mar 2022 00:09:35 +0200
+Message-ID: <CAOQ4uxgfrwW1eeNtOrs338GizpQx_XFVEyBb9PvqXyvJsOvbqg@mail.gmail.com>
+Subject: Re: [GIT PULL] Btrfs updates for 5.18
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     David Sterba <dsterba@suse.com>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-btrfs <linux-btrfs@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Olga Kornievskaia <kolga@netapp.com>,
+        Steve French <smfrench@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/W+LMvh3XRYfEBCImGNDrQWK
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Tue, Mar 22, 2022 at 10:11 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> On Mon, Mar 21, 2022 at 2:37 PM David Sterba <dsterba@suse.com> wrote:
+> >
+> > - allow reflinks/deduplication from two different mounts of the same
+> >   filesystem
+>
+> So I've pulled this, and it looks ok, but I'm not getting the warm and fuzzies.
+>
+> In particular, I'm not seeing any commentary about different
+> filesystems for this.
+>
+> There are several filesystems that use that ->remap_file_range()
+> operation, so these relaxed rules don't just affect btrfs.
+>
+> Yes, yes, checking for i_sb matching does seem sensible, but I'd
+> *really* have liked some sign that people checked with other
+> filesystem maintainers and this is ok for all of them, and they didn't
+> make assumptions about "always same mount" rather than "always same
+> filesystem".
+>
+> This affects at least cifs, nfs, overlayfs and ocfs2.
 
-Hi all,
+overlayfs shouldn't have a problem with that change.
 
-Today's linux-next merge of the risc-v tree got a conflict in:
+IIUC, cifs would also gain from this, because clone is implemented
+on server side and even two different sb's could technically do
+server side  duplicate_extents.
+Same goes for nfs v4.2.
 
-  arch/riscv/kernel/Makefile
+There was a lot of discussion on these aspects when cross server
+(i.e. cross sb) copy was implemented not so long ago.
+Relaxing cross-mnt clone is nothing compared to that.
 
-between commit:
 
-  22e2100b1b07 ("riscv: fix oops caused by irqsoff latency tracer")
+>
+> Adding fsdevel, and pointing to that
+>
+> -       if (src_file->f_path.mnt != dst_file->f_path.mnt)
+> +       if (file_inode(src_file)->i_sb != file_inode(dst_file)->i_sb)
+>
+> change in commit 9f5710bbfd30 ("fs: allow cross-vfsmount reflink/dedupe")
+>
+> And yes, there was already a comment about "Practically, they only
+> need to be on the same file system" from before that matches the new
+> behavior, but hey, comments have been known to be wrong in the past
+> too.
 
-from Linus' tree and commit:
+As the one who left this comment I can say it is based only on common
+sense, similar to the rationale in this recent commit.
+If it is any help, overlayfs has been doing cross mnt clones since
+  913b86e92e1f vfs: allow vfs_clone_file_range() across mount points
+I left the comment because I did not need to take responsibility for changing
+user behavior at the time, but I do not see any immediate harm from the user
+behavior changes now.
 
-  9dc6ce802136 ("RISC-V: Remove the current perf implementation")
+>
+> And yes, I'm also aware that do_clone_file_range() already had that
+> exact same i_sb check and it's not new, but since ioctl_file_clone()
+> cheched for the mount path, I don't think you could actually reach it
+> without being on the same mount.
+>
+> And while discussing these sanity checks: wouldn't it make sense to
+> check that *both* the source file and the destination file support
+> that remap_file_range() op, and it's the same op?
+>
+> Yes, yes, it probably always is in practice, but I could imagine some
+> type confusion thing. So wouldn't it be nice to also have something
+> like
+>
+>     if (dst_file->f_op != src_file->f_op)
+>           goto out_drop_write;
+>
+> in there? I'm thinking "how about dedupe from a directory to a regular
+> file" kind of craziness...
 
-from the risc-v tree.
+Both S_ISDIR and !S_ISREG cases are already checked for both clone
+and dedupe on both files (twice in fact), so at least that is not a concern.
 
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
+There may be other reasons to worry about, but I can't think of any.
 
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc arch/riscv/kernel/Makefile
-index ffc87e76b1dd,fb63b462ff85..000000000000
---- a/arch/riscv/kernel/Makefile
-+++ b/arch/riscv/kernel/Makefile
-@@@ -51,9 -51,6 +51,8 @@@ obj-$(CONFIG_MODULE_SECTIONS)	+=3D module
-  obj-$(CONFIG_FUNCTION_TRACER)	+=3D mcount.o ftrace.o
-  obj-$(CONFIG_DYNAMIC_FTRACE)	+=3D mcount-dyn.o
- =20
- +obj-$(CONFIG_TRACE_IRQFLAGS)	+=3D trace_irq.o
- +
-- obj-$(CONFIG_RISCV_BASE_PMU)	+=3D perf_event.o
-  obj-$(CONFIG_PERF_EVENTS)	+=3D perf_callchain.o
-  obj-$(CONFIG_HAVE_PERF_REGS)	+=3D perf_regs.o
-  obj-$(CONFIG_RISCV_SBI)		+=3D sbi.o
-
---Sig_/W+LMvh3XRYfEBCImGNDrQWK
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmI6SIEACgkQAVBC80lX
-0Gwcewf/W6wFEr+iKaAZte9wLwLBnQ2TccYSimXqLexuh4r0huIsd+DsVQ1yAnbT
-927xwqDHuALGJ1CosaTOb4/1ErSmiuW1lysK5tssL9vJyvIcrGfS57W+dQcyD8lS
-SUdxUAcOQwz83W3sVBWH2cUXd4CKQvIR0LQwQJbY8xJp6UYSk0PUKNSCPcUFF9Ks
-aowrMKWHg5v0U1tq+emiikTmEVQUxdJkBg+LvPkRS4G4JOI4E7jb252n1jaRUKcY
-2EsredlMppGzp+BuWv75nvq1+bVC6qIutu4kWlF7sW6DLpUYA65sijJVttVpVAA1
-M+Qc/l2pax7C23HSNomyS6aGJallNg==
-=eWdh
------END PGP SIGNATURE-----
-
---Sig_/W+LMvh3XRYfEBCImGNDrQWK--
+Thanks,
+Amir.
