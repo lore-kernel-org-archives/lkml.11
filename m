@@ -2,127 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60E8AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 14:39:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E5FEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 14:40:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237913AbiCVOlQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 10:41:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35064 "EHLO
+        id S237919AbiCVOlm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 10:41:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236750AbiCVOlO (ORCPT
+        with ESMTP id S236750AbiCVOlj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 10:41:14 -0400
-Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10A4412AC8;
-        Tue, 22 Mar 2022 07:39:47 -0700 (PDT)
-Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-d6e29fb3d7so1881600fac.7;
-        Tue, 22 Mar 2022 07:39:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=WxMgpeiQYhggSsVLRZ+q7Wz7Ufhtg8Nvw1FX59uyKIM=;
-        b=pfUofWc5YccH3Zbnj4KCFOAV8I71L318nWLCeKLpHUTKvd+BXMv9tEOu3iId6f7wED
-         jMyBo3MYsQS1NQ+tbu9yOkxRdREFIO0UlLmN7BZfZ/ybxAVP7CyViK75qZ+b60G2mkeb
-         x3gX7uel7QkZk0x6xUGDfo235NbPim1dmc9Tn1igxU5qO5qSWaFk7eQQ8PbXyHwqJZFE
-         vs/lST17/LBmjp0opMEm0qpf8q6VKYO0KA92dRCsQ4zDXwYxFY7RlloXJuVL+7HtiVQZ
-         UTg0anqQIRVWznllxg0NPsbxRXXWh3nrqVarepD0x8YDZFRpTDdsSEOoekQ+tID+f653
-         07HQ==
-X-Gm-Message-State: AOAM531oISgT7pVj6AvSSxAfuEuRlhgjvcWfsg72xf90zyj+EAbLmzjE
-        4q06Cb6rqemmYlqE9Vyxbg==
-X-Google-Smtp-Source: ABdhPJxPcgHGhDH2C+e7WOOnw416Mg/sQWc1cDtvNNEnB3Z8MzHF5ZBtTXUWtbYsyVbA1huXzoN4QQ==
-X-Received: by 2002:a05:6870:6108:b0:dd:ca26:f135 with SMTP id s8-20020a056870610800b000ddca26f135mr1818123oae.22.1647959986324;
-        Tue, 22 Mar 2022 07:39:46 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id f8-20020a4a8908000000b0032472938f95sm4241174ooi.17.2022.03.22.07.39.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Mar 2022 07:39:45 -0700 (PDT)
-Received: (nullmailer pid 1981681 invoked by uid 1000);
-        Tue, 22 Mar 2022 14:39:43 -0000
-Date:   Tue, 22 Mar 2022 09:39:43 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Robin Murphy <robin.murphy@arm.com>, Marc Zyngier <maz@kernel.org>
-Cc:     dann frazier <dann.frazier@canonical.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        PCI <linux-pci@vger.kernel.org>,
-        Toan Le <toan@os.amperecomputing.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?iso-8859-1?Q?St=E9phane?= Graber <stgraber@ubuntu.com>,
-        Android Kernel Team <kernel-team@android.com>
-Subject: Re: [PATCH v2 0/2] PCI: xgene: Restore working PCIe functionnality
-Message-ID: <Yjnfr7V6egc1sewb@robh.at.kernel.org>
-References: <20220321104843.949645-1-maz@kernel.org>
- <CAL_JsqJacC6GbNebTfYyUEScROCFN4+Fg2v1_iYFfqAvW4E9Vw@mail.gmail.com>
- <87h77rxnyl.wl-maz@kernel.org>
- <CAL_JsqK57KpZmzCE=86dLcHK4Ws_0w0ga4_qoYUe2GwFNpDzRw@mail.gmail.com>
- <87fsnbxgau.wl-maz@kernel.org>
- <e52c8cbd-031b-848f-3d78-dff8b93bd416@arm.com>
- <61809b8f-acaa-bae2-ac5e-aa47c55eea23@arm.com>
+        Tue, 22 Mar 2022 10:41:39 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 206CB25E;
+        Tue, 22 Mar 2022 07:40:10 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4B1821042;
+        Tue, 22 Mar 2022 07:40:10 -0700 (PDT)
+Received: from [10.57.43.230] (unknown [10.57.43.230])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 10C753F73B;
+        Tue, 22 Mar 2022 07:40:06 -0700 (PDT)
+Message-ID: <8b47440b-91df-ba2f-b004-33e4c6dc1f20@arm.com>
+Date:   Tue, 22 Mar 2022 14:40:02 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <61809b8f-acaa-bae2-ac5e-aa47c55eea23@arm.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 2/2] thunderbolt: Make iommu_dma_protection more
+ accurate
+Content-Language: en-GB
+To:     Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc:     joro@8bytes.org, baolu.lu@linux.intel.com,
+        andreas.noever@gmail.com, michael.jamet@intel.com,
+        YehezkelShB@gmail.com, iommu@lists.linux-foundation.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mario.limonciello@amd.com, hch@lst.de
+References: <cover.1647624084.git.robin.murphy@arm.com>
+ <0dd14883930c9f55ace22162e23765a37d91a057.1647624084.git.robin.murphy@arm.com>
+ <Yjm150r3KPKp/2O4@lahna>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <Yjm150r3KPKp/2O4@lahna>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 01:16:35PM +0000, Robin Murphy wrote:
-> On 2022-03-21 20:06, Robin Murphy wrote:
-> > On 2022-03-21 19:21, Marc Zyngier wrote:
-> > > On Mon, 21 Mar 2022 18:03:27 +0000,
-> > > Rob Herring <robh@kernel.org> wrote:
-> > > > 
-> > > > On Mon, Mar 21, 2022 at 11:36 AM Marc Zyngier <maz@kernel.org> wrote:
-> > > > > 
-> > > > > On Mon, 21 Mar 2022 15:17:34 +0000,
-> > > > > Rob Herring <robh@kernel.org> wrote:
-> > > > > > 
-> > > > > > On Mon, Mar 21, 2022 at 5:49 AM Marc Zyngier <maz@kernel.org> wrote:
-> > > > > > > 
-> > > > > > For XGene-1, I'd still like to understand what the issue is. Reverting
-> > > > > > the first fix and fixing 'dma-ranges' should have fixed it. I need a
-> > > > > > dump of how the IB registers are initialized in both cases. I'm not
-> > > > > > saying changing 'dma-ranges' in the firmware is going to be required
-> > > > > > here. There's a couple of other ways we could fix that without a
-> > > > > > firmware change, but first I need to understand why it broke.
-> > > > > 
-> > > > > Reverting 6dce5aa59e0b was enough for me, without changing anything
-> > > > > else.
-> > > > 
-> > > > Meaning c7a75d07827a didn't matter for you. I'm not sure that it would.
-> > > > 
-> > > > Can you tell me what 'dma-ranges' contains on your system?
-> > > 
-> > > Each pcie node (all 5 of them) has:
-> > > 
-> > > dma-ranges = <0x42000000 0x80 0x00 0x80 0x00 0x00 0x80000000
-> > >                0x42000000 0x00 0x00 0x00 0x00 0x80 0x00>;
-
-This is the same as what Stéphane has for Merlin. So c7a75d07827a ("PCI: 
-xgene: Fix IB window setup") should have fixed Mustang.
-
-> > 
-> > Hmm, is there anyone other than iommu-dma who actually depends on the
-> > resource list being sorted in ascending order of bus address? I recall
-> > at the time I pushed for creating the list in sorted order as it was the
-> > simplest and most efficient option, but there's no technical reason we
-> > couldn't create it in as-found order and defer the sorting until
-> > iova_reserve_pci_windows() (at worst that could even operate on a
-> > temporary copy if need be). It's just more code, which didn't need to
-> > exist without a good reason, but if this is one then exist it certainly
-> > may.
+On 2022-03-22 11:41, Mika Westerberg wrote:
+> Hi Robin,
 > 
-> Taking a closer look, the Cadence driver is already re-sorting the list
-> for its own setup, so iommu-dma can't assume the initial sort is
-> preserved and needs to do its own anyway. Does the (untested) diff below
-> end up helping X-Gene also?
+> I tried this now on two Intel systems. One with integrated Thunderbolt
+> and one with discrete. There was a small issue, see below but once fixed
+> it worked as expected :)
+> 
+> On Fri, Mar 18, 2022 at 05:42:58PM +0000, Robin Murphy wrote:
+>> Between me trying to get rid of iommu_present() and Mario wanting to
+>> support the AMD equivalent of DMAR_PLATFORM_OPT_IN, scrutiny has shown
+>> that the iommu_dma_protection attribute is being far too optimistic.
+>> Even if an IOMMU might be present for some PCI segment in the system,
+>> that doesn't necessarily mean it provides translation for the device(s)
+>> we care about. Furthermore, all that DMAR_PLATFORM_OPT_IN really does
+>> is tell us that memory was protected before the kernel was loaded, and
+>> prevent the user from disabling the intel-iommu driver entirely. While
+>> that lets us assume kernel integrity, what matters for actual runtime
+>> DMA protection is whether we trust individual devices, based on the
+>> "external facing" property that we expect firmware to describe for
+>> Thunderbolt ports.
+>>
+>> It's proven challenging to determine the appropriate ports accurately
+>> given the variety of possible topologies, so while still not getting a
+>> perfect answer, by putting enough faith in firmware we can at least get
+>> a good bit closer. If we can see that any device near a Thunderbolt NHI
+>> has all the requisites for Kernel DMA Protection, chances are that it
+>> *is* a relevant port, but moreover that implies that firmware is playing
+>> the game overall, so we'll use that to assume that all Thunderbolt ports
+>> should be correctly marked and thus will end up fully protected.
+>>
+>> CC: Mario Limonciello <mario.limonciello@amd.com>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+>>
+>> v2: Give up trying to look for specific devices, just look for evidence
+>>      that firmware cares at all.
+>>
+>>   drivers/thunderbolt/domain.c | 12 +++--------
+>>   drivers/thunderbolt/nhi.c    | 41 ++++++++++++++++++++++++++++++++++++
+>>   include/linux/thunderbolt.h  |  2 ++
+>>   3 files changed, 46 insertions(+), 9 deletions(-)
+>>
+>> diff --git a/drivers/thunderbolt/domain.c b/drivers/thunderbolt/domain.c
+>> index 7018d959f775..2889a214dadc 100644
+>> --- a/drivers/thunderbolt/domain.c
+>> +++ b/drivers/thunderbolt/domain.c
+>> @@ -7,9 +7,7 @@
+>>    */
+>>   
+>>   #include <linux/device.h>
+>> -#include <linux/dmar.h>
+>>   #include <linux/idr.h>
+>> -#include <linux/iommu.h>
+>>   #include <linux/module.h>
+>>   #include <linux/pm_runtime.h>
+>>   #include <linux/slab.h>
+>> @@ -257,13 +255,9 @@ static ssize_t iommu_dma_protection_show(struct device *dev,
+>>   					 struct device_attribute *attr,
+>>   					 char *buf)
+>>   {
+>> -	/*
+>> -	 * Kernel DMA protection is a feature where Thunderbolt security is
+>> -	 * handled natively using IOMMU. It is enabled when IOMMU is
+>> -	 * enabled and ACPI DMAR table has DMAR_PLATFORM_OPT_IN set.
+>> -	 */
+>> -	return sprintf(buf, "%d\n",
+>> -		       iommu_present(&pci_bus_type) && dmar_platform_optin());
+>> +	struct tb *tb = container_of(dev, struct tb, dev);
+>> +
+>> +	return sysfs_emit(buf, "%d\n", tb->nhi->iommu_dma_protection);
+>>   }
+>>   static DEVICE_ATTR_RO(iommu_dma_protection);
+>>   
+>> diff --git a/drivers/thunderbolt/nhi.c b/drivers/thunderbolt/nhi.c
+>> index c73da0532be4..9e396e283792 100644
+>> --- a/drivers/thunderbolt/nhi.c
+>> +++ b/drivers/thunderbolt/nhi.c
+>> @@ -14,6 +14,7 @@
+>>   #include <linux/errno.h>
+>>   #include <linux/pci.h>
+>>   #include <linux/interrupt.h>
+>> +#include <linux/iommu.h>
+>>   #include <linux/module.h>
+>>   #include <linux/delay.h>
+>>   #include <linux/property.h>
+>> @@ -1102,6 +1103,45 @@ static void nhi_check_quirks(struct tb_nhi *nhi)
+>>   		nhi->quirks |= QUIRK_AUTO_CLEAR_INT;
+>>   }
+>>   
+>> +static int nhi_check_iommu_pdev(struct pci_dev *pdev, void *data)
+>> +{
+>> +	if (!pdev->untrusted ||
+>> +	    !dev_iommu_capable(&pdev->dev, IOMMU_CAP_PRE_BOOT_PROTECTION))
+> 
+> This one needs to take the pdev->external_facing into account too
+> because most of the time there are no existing tunnels when the driver
+> is loaded so we only see the PCIe root/downstream port. I think this is
+> enough actually:
+> 
+> 	if (!pdev->external_facing ||
+> 	    !dev_iommu_capable(&pdev->dev, IOMMU_CAP_PRE_BOOT_PROTECTION))
 
-There's no IOMMU on X-Gene 1 or 2 based on the upstream dts files, so 
-how would this matter?
+Ah yes, my bad, for some reason I got the misapprehension into my head 
+that untrusted was propagated to the port as well, not just the devices 
+behind it. I'll fix this and tweak the comment below to match.
 
-Rob
+>> +		return 0;
+>> +	*(bool *)data = true;
+>> +	return 1; /* Stop walking */
+>> +}
+>> +
+>> +static void nhi_check_iommu(struct tb_nhi *nhi)
+>> +{
+>> +	struct pci_bus *bus = nhi->pdev->bus;
+>> +	bool port_ok = false;
+>> +
+>> +	/*
+>> +	 * Ideally what we'd do here is grab every PCI device that
+>> +	 * represents a tunnelling adapter for this NHI and check their
+>> +	 * status directly, but unfortunately USB4 seems to make it
+>> +	 * obnoxiously difficult to reliably make any correlation.
+>> +	 *
+>> +	 * So for now we'll have to bodge it... Hoping that the system
+>> +	 * is at least sane enough that an adapter is in the same PCI
+>> +	 * segment as its NHI, if we can find *something* on that segment
+>> +	 * which meets the requirements for Kernel DMA Protection, we'll
+>> +	 * take that to imply that firmware is aware and has (hopefully)
+>> +	 * done the right thing in general. We need to know that the PCI
+>> +	 * layer has seen the ExternalFacingPort property and propagated
+>> +	 * it to the "untrusted" flag that the IOMMU layer will then
+>> +	 * enforce, but also that the IOMMU driver itself can be trusted
+>> +	 * not to have been subverted by a pre-boot DMA attack.
+>> +	 */
+>> +	while (bus->parent)
+>> +		bus = bus->parent;
+>> +
+>> +	pci_walk_bus(bus, nhi_check_iommu_pdev, &port_ok);
+>> +
+>> +	nhi->iommu_dma_protection = port_ok;
+> 
+> I would put here a log debug, something like this:
+> 
+> dev_dbg(&nhi->pdev->dev, "IOMMU DMA protection is %sabled\n",
+> 	port_ok ? "en" : "dis");
+
+Ack. I'll wait and send a v3 once the merge window's over, and can roll 
+Mario's AMD IOMMU patch into that too.
+
+Thanks,
+Robin.
