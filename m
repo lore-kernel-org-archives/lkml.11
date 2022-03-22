@@ -2,69 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B8A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:16:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45608C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:17:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229862AbiCVISR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 04:18:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50170 "EHLO
+        id S230292AbiCVISk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 04:18:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229971AbiCVISH (ORCPT
+        with ESMTP id S229971AbiCVISj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 04:18:07 -0400
-X-Greylist: delayed 1838 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 22 Mar 2022 01:16:38 PDT
-Received: from mail-m965.mail.126.com (mail-m965.mail.126.com [123.126.96.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 947A752B3B;
-        Tue, 22 Mar 2022 01:16:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=SN5WM
-        GZNZQGwXdpNkm6YJj92Bkaye8WMwaev+X6OB10=; b=MSRQChtl1u1ymgLb+7dpt
-        VgxkQw52yGC4V/pEf+MhnlIbY88PxjXuYhOJRRv4Cgx27xOXSQOIn0wwwLFta5s4
-        6dDa8zXXfFgvpBAxEIwDw6Zc/557+Xa4cf+ck+XmHEtTciRQLuEbXWO8ubv2qrzp
-        wD3IIEwXTv3t5rpzwMGEws=
-Received: from localhost.localdomain (unknown [39.99.236.58])
-        by smtp10 (Coremail) with SMTP id NuRpCgAXuUWhfjli60UTCw--.24849S2;
-        Tue, 22 Mar 2022 15:45:40 +0800 (CST)
-From:   hongbin wang <wh_bin@126.com>
-To:     davem@davemloft.net
-Cc:     yoshfuji@linux-ipv6.org, sahern@kernel.org, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] p6_tunnel: Remove duplicate assignments
-Date:   Tue, 22 Mar 2022 15:45:25 +0800
-Message-Id: <20220322074525.136560-1-wh_bin@126.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 22 Mar 2022 04:18:39 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EF8552B3B;
+        Tue, 22 Mar 2022 01:17:12 -0700 (PDT)
+Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KN46y2PCGzfYyN;
+        Tue, 22 Mar 2022 16:15:38 +0800 (CST)
+Received: from dggpeml500018.china.huawei.com (7.185.36.186) by
+ dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 22 Mar 2022 16:17:10 +0800
+Received: from [10.67.111.186] (10.67.111.186) by
+ dggpeml500018.china.huawei.com (7.185.36.186) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 22 Mar 2022 16:17:10 +0800
+Message-ID: <655251c9-9d60-c825-a977-31df83b05cda@huawei.com>
+Date:   Tue, 22 Mar 2022 16:17:10 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.1
+Subject: Re: [PATCH] rcu: Use printk_deferred when holding rtp->cbs_gbl_lock
+To:     Steven Rostedt <rostedt@goodmis.org>
+CC:     <paulmck@kernel.org>, <josh@joshtriplett.org>,
+        <mathieu.desnoyers@efficios.com>, <jiangshanlai@gmail.com>,
+        <joel@joelfernandes.org>, <rcu@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220317084726.77336-1-zhangqiao22@huawei.com>
+ <20220317114924.791c6500@gandalf.local.home>
+From:   Zhang Qiao <zhangqiao22@huawei.com>
+In-Reply-To: <20220317114924.791c6500@gandalf.local.home>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: NuRpCgAXuUWhfjli60UTCw--.24849S2
-X-Coremail-Antispam: 1Uf129KBjDUn29KB7ZKAUJUUUU8529EdanIXcx71UUUUU7v73
-        VFW2AGmfu7bjvjm3AaLaJ3UbIYCTnIWIevJa73UjIFyTuYvjxU7eMKDUUUU
-X-Originating-IP: [39.99.236.58]
-X-CM-SenderInfo: xzkbuxbq6rjloofrz/1tbiGATLolpEGEM4QwAAsL
+X-Originating-IP: [10.67.111.186]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpeml500018.china.huawei.com (7.185.36.186)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-there is a same action when the variable is initialized
 
-Signed-off-by: hongbin wang <wh_bin@126.com>
----
- net/ipv6/ip6_tunnel.c | 2 --
- 1 file changed, 2 deletions(-)
 
-diff --git a/net/ipv6/ip6_tunnel.c b/net/ipv6/ip6_tunnel.c
-index 97ade833f58c..013e9998a45a 100644
---- a/net/ipv6/ip6_tunnel.c
-+++ b/net/ipv6/ip6_tunnel.c
-@@ -257,8 +257,6 @@ static int ip6_tnl_create2(struct net_device *dev)
- 	struct ip6_tnl_net *ip6n = net_generic(net, ip6_tnl_net_id);
- 	int err;
- 
--	t = netdev_priv(dev);
--
- 	dev->rtnl_link_ops = &ip6_link_ops;
- 	err = register_netdevice(dev);
- 	if (err < 0)
--- 
-2.25.1
+在 2022/3/17 23:49, Steven Rostedt 写道:
+> On Thu, 17 Mar 2022 16:47:26 +0800
+> Zhang Qiao <zhangqiao22@huawei.com> wrote:
+> 
+>> This patch tries to avoid this issue by using printk_deferred().
+> 
+> Isn't the new printk work suppose to resolve this?
+> 
+> If so, can we have another way to quiet these splats if that work is not in
+> yet?
 
+
+hello,
+
+can we change the cbs_gbl_lock to spinlock_t?
+
+thanks.
+
+Zhang Qiao.
+
+
+
+> 
+> -- Steve
+> .
+> 
