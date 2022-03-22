@@ -2,80 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F27BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 22:22:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68DCBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 22:23:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237479AbiCVWXe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 18:23:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47488 "EHLO
+        id S237863AbiCVWYo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 18:24:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbiCVWXc (ORCPT
+        with ESMTP id S237814AbiCVWYl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 18:23:32 -0400
-Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34EED6276;
-        Tue, 22 Mar 2022 15:22:04 -0700 (PDT)
-Received: by mail-lj1-f172.google.com with SMTP id b5so7282312ljf.13;
-        Tue, 22 Mar 2022 15:22:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mBOj/TLACVoWvnbuI9+M850QymsVSm9rsUXb8l3wuag=;
-        b=TquQjP65YymaRqWO2/ezIYqyGJMH1WkxdL1sLhtgQGm8w1l/KO7DwFe8GdGtJhnP70
-         PhdOkr3A1KyPuGBsUWDf5XmsUeyl1zCP9+FSIs3JWPlF/JucsyYotPebPuPEhGS1C8Cx
-         NRwE0yCZ6zc6mMRR0rZdfibqrw6rq2tNl2jacM06HJNF88+WraohebHPL6vTy+QGiAT6
-         iM4eMSXjvlUd7TmG5Pj14j0r52sixQrVsLEV0tgCJzvjz9HrqtbuVPTFE55y7alnusFf
-         4xuf6wHei2LbaMyzEW33qDCxQ2dRSlqH1LnC83OATL3iz4YPWGsl+IaOhuZIknb6K2lG
-         pRfw==
-X-Gm-Message-State: AOAM531r8jMmXBKxJQdmULHcX7xn/aKk25jTLQh7VKBsN3YNnonhKhY+
-        NoZKQlHe9ssaovvsk14kBsM5BGqYfdZerGIA+3o=
-X-Google-Smtp-Source: ABdhPJwXgsXaKHttITvr+kTe2b2qhetY6HiHTVuHHul+MFEHOIlrwyJaGpWbJz1WiOWxeRWBT/9ljeje0QcvRf8tT38=
-X-Received: by 2002:a05:651c:1544:b0:249:8c80:4282 with SMTP id
- y4-20020a05651c154400b002498c804282mr5965016ljp.202.1647987722546; Tue, 22
- Mar 2022 15:22:02 -0700 (PDT)
+        Tue, 22 Mar 2022 18:24:41 -0400
+X-Greylist: delayed 599 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 22 Mar 2022 15:23:12 PDT
+Received: from 5.mo581.mail-out.ovh.net (5.mo581.mail-out.ovh.net [178.32.120.239])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31A6BAE76
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 15:23:10 -0700 (PDT)
+Received: from player794.ha.ovh.net (unknown [10.110.103.2])
+        by mo581.mail-out.ovh.net (Postfix) with ESMTP id 8BF2423A75
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 22:06:30 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player794.ha.ovh.net (Postfix) with ESMTPSA id E7DF9256E9672;
+        Tue, 22 Mar 2022 22:06:24 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-103G005581338c0-c49d-48a1-bf29-e376bff1df54,
+                    39C76792797FC4B206737A387439D6B5F87E3063) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Matthew Wilcox <willy@infradead.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH] idr: Remove unused ida_simple_{get,remove}
+Date:   Tue, 22 Mar 2022 23:06:02 +0100
+Message-Id: <20220322220602.985011-1-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20220322120834.98637-1-zhouchengming@bytedance.com>
- <20220322120834.98637-3-zhouchengming@bytedance.com> <YjnIpn/PCM6wKpOC@hirez.programming.kicks-ass.net>
-In-Reply-To: <YjnIpn/PCM6wKpOC@hirez.programming.kicks-ass.net>
-From:   Namhyung Kim <namhyung@kernel.org>
-Date:   Tue, 22 Mar 2022 15:21:51 -0700
-Message-ID: <CAM9d7cju-Z0_+WuhCZ+Y-4Hm6MCmXbF6XVBGd-n8BP_yoici5Q@mail.gmail.com>
-Subject: Re: [PATCH v2 2/6] perf/core: Introduce percpu perf_cgroup
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Chengming Zhou <zhouchengming@bytedance.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Stephane Eranian <eranian@google.com>,
-        linux-perf-users <linux-perf-users@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        duanxiongchun@bytedance.com, songmuchun@bytedance.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 5216857219424093830
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudeghedgudehhecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkofgggfestdekredtredttdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepteegudfgleekieekteeggeetveefueefteeugfduieeitdfhhedtfeefkedvfeefnecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeelgedrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 6:01 AM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> On Tue, Mar 22, 2022 at 08:08:30PM +0800, Chengming Zhou wrote:
-> > Although we don't have incosistency problem any more, we can
-> > have other problem like:
-> >
-> > CPU1                                  CPU2
-> > (in context_switch)                   (attach running task)
-> >                                       prev->cgroups = cgrp2
-> > perf_cgroup_sched_switch(prev, next)
-> >       cgrp2 == cgrp2 is True
-> >
->
-> Again, I'm not following, how can you attach to a running task from
-> another CPU ?
+These are no longer used anywhere, remove them; update the
+nvmem-prodiver.h to refer to ida_alloc() which is what is used now
+(see drivers/nvmem/core.c).
 
-I think it's supported from the beginning by writing PID to a file
-in the cgroupfs.
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+---
+ include/linux/idr.h            | 8 --------
+ include/linux/nvmem-provider.h | 2 +-
+ 2 files changed, 1 insertion(+), 9 deletions(-)
 
-Thanks,
-Namhyung
+diff --git a/include/linux/idr.h b/include/linux/idr.h
+index a0dce14090a9..273b2158a428 100644
+--- a/include/linux/idr.h
++++ b/include/linux/idr.h
+@@ -314,14 +314,6 @@ static inline void ida_init(struct ida *ida)
+ 	xa_init_flags(&ida->xa, IDA_INIT_FLAGS);
+ }
+ 
+-/*
+- * ida_simple_get() and ida_simple_remove() are deprecated. Use
+- * ida_alloc() and ida_free() instead respectively.
+- */
+-#define ida_simple_get(ida, start, end, gfp)	\
+-			ida_alloc_range(ida, start, (end) - 1, gfp)
+-#define ida_simple_remove(ida, id)	ida_free(ida, id)
+-
+ static inline bool ida_is_empty(const struct ida *ida)
+ {
+ 	return xa_empty(&ida->xa);
+diff --git a/include/linux/nvmem-provider.h b/include/linux/nvmem-provider.h
+index c9a3ac9efeaa..e957cdc56619 100644
+--- a/include/linux/nvmem-provider.h
++++ b/include/linux/nvmem-provider.h
+@@ -75,7 +75,7 @@ struct nvmem_keepout {
+  *
+  * Note: A default "nvmem<id>" name will be assigned to the device if
+  * no name is specified in its configuration. In such case "<id>" is
+- * generated with ida_simple_get() and provided id field is ignored.
++ * generated with ida_alloc() and provided id field is ignored.
+  *
+  * Note: Specifying name and setting id to -1 implies a unique device
+  * whose name is provided as-is (kept unaltered).
+
+base-commit: 5191290407668028179f2544a11ae9b57f0bcf07
+-- 
+2.30.2
+
