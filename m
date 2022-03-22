@@ -2,100 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1CFCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 01:21:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0474C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 01:25:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234633AbiCVBXR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 21:23:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40022 "EHLO
+        id S234598AbiCVB1D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 21:27:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234621AbiCVBXM (ORCPT
+        with ESMTP id S234503AbiCVB07 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 21:23:12 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1319C2DCD
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 18:21:46 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id d5so8185827lfj.9
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 18:21:45 -0700 (PDT)
+        Mon, 21 Mar 2022 21:26:59 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC624E0EC;
+        Mon, 21 Mar 2022 18:25:33 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id g19so16938067pfc.9;
+        Mon, 21 Mar 2022 18:25:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=V7BLAt/fJYUj0OsISV5J6z9qzVDh6CQrx7wQ/ZZuGFs=;
-        b=PsdAyGqfgTpjhTv0nYwzSdVRaR+CB/53R2SZpWfxShtuAAHGPlf2B/Jg5PWRg3yudw
-         UotUSXTbQYjhSyEJ9OSNmmJ3VZtgRBv58AMCF7LrO3EJBDZ7K5tuaRPDCVNMbfm8qm9X
-         9ID6wa/EDvmSMzIdAZ+B3zN/k2wJoO6rHAcLQ=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=svKeoLbw/Rh/+w0dWnKtX9ir9NmoZ2RCvIsO83FTo+k=;
+        b=ii6ygNdxXF2YuMjx62GY/8lyC742aCoMJuNxD7GB602IPDTF3bwhqy5sRIcpp/gf9R
+         aRfk/igL0j3xPZf8vUlPeERF5MoHg3sel33OehBQY2TArO+cMC7d54kL0Ih/Y2Go/Pd8
+         9vAuGi2Qw97uN4xE9yuNwBgG2/ArTRa+H/ZdkdZZ4yesBiqNsLhu6rNyE5JKYYul3aZD
+         lw6aUWZvf8mX/DBioT0JE3QkcxFDtba1kAWLtyzXxcPvD138JcruxZfpw9fiYa+OyR3+
+         KgKj6aFyK5J00kYFuvBxGVNqgq6BJFafs2+PCFxYzez+se3EKCaDhHIjxhfsNmKw8eht
+         X7yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V7BLAt/fJYUj0OsISV5J6z9qzVDh6CQrx7wQ/ZZuGFs=;
-        b=nr0EGJTl+NWtTSkkJbLzoPaKMIzItjRGm311OSkCWo2+X9hAq6dTh1sKQ3c+42bHyl
-         1iEcBeclsF0uFEQ7lWTgs0Rd8h1z/d4QoE5mPYf03coaWfVq76OkwAlTuwSFFYvxTpwb
-         Mim+zS5MJB5TeG5g6dtKJ4yn0pU37WXKaGS2/bguRShvR3mQm2VOMpNuJYXcv6BVE9MA
-         PmL1LihGIFyOg2s0LGtlMqYcAYVtA5OhfQnSVYFpZP6/KBWG9SHNsmTv/oKobSxWwUxX
-         nXR49w4EMPwx77S4q7DEQZLq5Re248Mk20kZ3BQXccGuLe+btIr4+j7TfF8QaWWtl8dG
-         iS/g==
-X-Gm-Message-State: AOAM533qyBtKvcFz5gv+KKFYp9oa3INiKlGeFSt8hNoHpii2vlz7EZuR
-        3P4bZ/JpG/PKQdhbAtiz8CfoJwKRJP8srGS07GY=
-X-Google-Smtp-Source: ABdhPJxtY5MaCVOcoAIuDyPvNS+qfAKIuFbYyX8v50azwZFdPgvA6LcsmfzzPFnrrGOWsQwS8Fx3Xg==
-X-Received: by 2002:a05:6512:3f0a:b0:44a:e3f:2862 with SMTP id y10-20020a0565123f0a00b0044a0e3f2862mr11809562lfa.397.1647912103964;
-        Mon, 21 Mar 2022 18:21:43 -0700 (PDT)
-Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com. [209.85.208.172])
-        by smtp.gmail.com with ESMTPSA id m13-20020ac2424d000000b0044859fdd0b7sm1977675lfl.301.2022.03.21.18.21.43
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Mar 2022 18:21:43 -0700 (PDT)
-Received: by mail-lj1-f172.google.com with SMTP id 17so22177938lji.1
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 18:21:43 -0700 (PDT)
-X-Received: by 2002:a05:651c:1213:b0:247:e2d9:cdda with SMTP id
- i19-20020a05651c121300b00247e2d9cddamr17545979lja.443.1647912102735; Mon, 21
- Mar 2022 18:21:42 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=svKeoLbw/Rh/+w0dWnKtX9ir9NmoZ2RCvIsO83FTo+k=;
+        b=3rQYlNiHRV3vFyjILr1R7g6mHAOV59jq2w835SFYjGGHVNB2gWwiuGxgqzhUqBtU6r
+         JCcFlJvr6070vj78KwKSYdMrxTuxoWx5aLl3Bn08R1ZTRYwg3JLgtgAWo3GX1ai1WsF1
+         eqdi06XIgySo5IG59VCUlTZj5As0ZkORI+d198xQMn7IdLqZP/cF//sjqVZ1mfzskxqE
+         YsXt4+YgY8RO3MCd7cSfnnvx8OemAcJDLJnwphAGvHgV0C2ZueUhkYiznfDOikmq6L2T
+         6V9PpoDawoMduojfSmCt8oiUBPvUhD19c2zDfsDpB7LwGWmNmSOwbSMEfTdYLRi5w3X5
+         y57w==
+X-Gm-Message-State: AOAM530ypz/eoyUFIdJkUFmXh5llqvgez/f9GSYr6kzQ1asTGMYd/iht
+        yVUIA+qBnk6CnLEU0jIFc9PJhnIOXcMX26Bw
+X-Google-Smtp-Source: ABdhPJx89klCKoXhRGT7afcgmBcOslDABbniHk+l6vDRIv723MOLQCCNT26OWRB++AlmY1gihMWOVw==
+X-Received: by 2002:a05:6a00:2484:b0:4fa:997e:3290 with SMTP id c4-20020a056a00248400b004fa997e3290mr9036621pfv.37.1647912333030;
+        Mon, 21 Mar 2022 18:25:33 -0700 (PDT)
+Received: from localhost.localdomain (60-250-49-31.hinet-ip.hinet.net. [60.250.49.31])
+        by smtp.gmail.com with ESMTPSA id z16-20020a637e10000000b00382b21c6b0bsm1230539pgc.51.2022.03.21.18.25.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 18:25:32 -0700 (PDT)
+From:   Ivy Jian <ivyjian417@gmail.com>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     dianders@chromium.org, Ivy Jian <ivyjian417@gmail.com>,
+        Pan Sheng-Liang <sheng-liang.pan@quanta.corp-partner.google.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH] arm64: dts: qcom: switch panel compatible to "edp-panel" for limozeen
+Date:   Tue, 22 Mar 2022 09:25:26 +0800
+Message-Id: <20220322092524.1.Ied05fc4b996737e3481861c6ab130a706f288412@changeid>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220320231317.2171300-1-linux@roeck-us.net>
-In-Reply-To: <20220320231317.2171300-1-linux@roeck-us.net>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 21 Mar 2022 18:21:26 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgM1uHH1WJ47Zt5OGK5qjtFkvVCZLff+TKA2ahXAM1xQg@mail.gmail.com>
-Message-ID: <CAHk-=wgM1uHH1WJ47Zt5OGK5qjtFkvVCZLff+TKA2ahXAM1xQg@mail.gmail.com>
-Subject: Re: [GIT PULL] hwmon updates for v5.18
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     linux-hwmon@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 20, 2022 at 4:13 PM Guenter Roeck <linux@roeck-us.net> wrote:
->
-> Improvements to existing drivers:
-> - adt7x10: Convert to use regmap, convert to use with_info API,
->   use hwmon_notify_event, and other cleanup
-> - aquacomputer_d5next: Add support for Aquacomputer Farbwerk 360
-> - asus_wmi_sensors: Add ASUS ROG STRIX B450-F GAMING II
-> - asus_wmi_ec_sensors: Support T_Sensor on Prime X570-Pro
->   Deprecate driver (replaced by new driver)
-[...]
+some panel can't light up with new board with ps8640, switch compatible
+panel define to make it workable.
 
-To make my life easier, can I ask you to try to format these things a
-bit more sanely and legibly?
+Signed-off-by: Pan Sheng-Liang <sheng-liang.pan@quanta.corp-partner.google.com>
+Signed-off-by: Ivy Jian <ivyjian417@gmail.com>
+---
 
-You had this odd mix of sometimes using new lines to separate
-different things (eg that asus_wmi_ec_sensors entry), and sometimes
-just multiple different things in a list that then had line-breaks in
-the middle.
+ .../boot/dts/qcom/sc7180-trogdor-lazor-limozeen-nots-r9.dts     | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-That kind of stuff is _very_ hard to parse as anything but a random
-jumble of words all crammed together.
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor-limozeen-nots-r9.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor-limozeen-nots-r9.dts
+index 4e35aec6a1e5..c44ed54af690 100644
+--- a/arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor-limozeen-nots-r9.dts
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor-limozeen-nots-r9.dts
+@@ -20,7 +20,7 @@ / {
+ /delete-node/&ap_ts;
+ 
+ &panel {
+-	compatible = "innolux,n116bca-ea1", "innolux,n116bge";
++	compatible = "edp-panel";
+ };
+ 
+ &sdhc_2 {
+-- 
+2.25.1
 
-Whitespace to separate things is good, and some kind of consistent
-indentation makes it more legible. I edited it all up (hopefully
-correctly), but it would be nice to get it in a readable form to begin
-with..
-
-Yeah, if everything does well, nobody will ever need to read that
-merge message, but let's try to aim for nice and informative commit
-messages anyway.
-
-             Linus
