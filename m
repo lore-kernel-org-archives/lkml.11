@@ -2,153 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C25BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 14:47:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1999C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 14:48:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238238AbiCVOtG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 10:49:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38554 "EHLO
+        id S238218AbiCVOtm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 10:49:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238597AbiCVOsi (ORCPT
+        with ESMTP id S235045AbiCVOti (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 10:48:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7EA9376669
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 07:47:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647960429;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=4qzlNRqD4tfZikp/Dsm0XnaKMVbT8FwPh0SW/Cj1Wic=;
-        b=C4pJWM2V9fxKH9AboGEPqs2Y1WsKHFn+J2YkIWnsH1yYPKb1xaaXEci1x9YgsdhVEBgXfj
-        WXE3jgn6Ryg+2AiKR/1z5+/os0BvSrYA76PorFCm548W1ryoN1kpnwn/kWoEcnDsnva2//
-        gKjdLEj8PAYkCw9JxUnWzDAWHKeoTnc=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-530-kDEEsZCYMRyrx3_r-5US9A-1; Tue, 22 Mar 2022 10:47:08 -0400
-X-MC-Unique: kDEEsZCYMRyrx3_r-5US9A-1
-Received: by mail-qk1-f199.google.com with SMTP id i2-20020a05620a248200b0067b51fa1269so11911622qkn.19
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 07:47:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4qzlNRqD4tfZikp/Dsm0XnaKMVbT8FwPh0SW/Cj1Wic=;
-        b=EINwbrvBhtIIN1n4N4VKIgN3y6c7+R46v9WH3t8IeRf1JxaGLZn787TFme/Uqf95IY
-         E8EMAd1ET4OqbSmVNhKNTk2+W/mIe/teS2tWIgBHEdOMnqiH0OwaXph9NQ9uvgu4qqTA
-         YTMKC3ytlFROvMAf5JHLtk9AW6dYlArvuaebBFFodCyKQ0VFA1hbAq3eK4hr+T9+cneE
-         PoRm8TIQkrxyLfgRyQc20CLbre15fa2i7LGH/tXP/D7RwEgf3+M5BP9CICQnfAmJiGSw
-         Im6ICDCma1qi27dEMbd31mcx5hBQXFHyl4+XpH95pw8PLxi0isTlIss83r5V9ibpY8Ny
-         tfUg==
-X-Gm-Message-State: AOAM533onRW985nYMGKdxtv8r0GyiQQR5QeCO0tYwrqdKhFYph5r/3R1
-        LelKVTy7u1kWMDyvopB9mfGU1sssoVHmV+bSjrhMCLSV4K0TGHPZMDxjKkCRJZuRyD5ki9CFc+5
-        MnetlBMsBJ1OQAOlGcEz7+3O7
-X-Received: by 2002:a05:622a:205:b0:2e1:cda9:88e9 with SMTP id b5-20020a05622a020500b002e1cda988e9mr20487280qtx.384.1647960427432;
-        Tue, 22 Mar 2022 07:47:07 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwsLj5vUxfXBtD9PGWuK+FxEeeYZyjr67r11l2MMHSXkoX+jf7ZZy940QgqsSUCVpzKFaoUwA==
-X-Received: by 2002:a05:622a:205:b0:2e1:cda9:88e9 with SMTP id b5-20020a05622a020500b002e1cda988e9mr20487261qtx.384.1647960427212;
-        Tue, 22 Mar 2022 07:47:07 -0700 (PDT)
-Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id j188-20020a3755c5000000b0067d1c76a09fsm9474508qkb.74.2022.03.22.07.47.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Mar 2022 07:47:06 -0700 (PDT)
-From:   trix@redhat.com
-To:     hare@suse.com, jejb@linux.ibm.com, martin.petersen@oracle.com
-Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] [SCSI] aic7xxx: use standard pci subsystem, subdevice defines
-Date:   Tue, 22 Mar 2022 07:46:48 -0700
-Message-Id: <20220322144648.2467777-1-trix@redhat.com>
-X-Mailer: git-send-email 2.26.3
+        Tue, 22 Mar 2022 10:49:38 -0400
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B53112ACC
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 07:48:10 -0700 (PDT)
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
+        by gnuweeb.org (Postfix) with ESMTPSA id 165C47E34B
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 14:48:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1647960490;
+        bh=nhc/SeLNGo4re2yxQ5GoFnaoYMAKUce8gFXe5zfGqKM=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=P6BxpChDot2nfSG+lx9YbB3VILHuaugqpPNbFL95BMy34lnRQwG4iNbW6VrAGY4Ey
+         L/mWHHvhIDuy8yL2rIvcGfwIoUumgpc2paCDCL9bbzV2FQApI+EEC+T2KVo3dwF5kZ
+         UCpMGMwkfFIdBfmigZ3qP/xvA1cz10ZDcuHwEe6bxM6tSJVO6gMRew0l5e08w3oTLy
+         qvT5ZPQtNpAJkps2BOTDJv2WMJv2w6hxYksB5PKzWfyYGZUGrwfEfji1k2F8vyuK9C
+         DWoFhwN2WGFsPh8UY+gT1kpqqwBXv5jQDkAYqbwcBQHGuboL3kwVv7oCTQbL9FPR5W
+         Nd8a3isHmV2Jg==
+Received: by mail-lf1-f46.google.com with SMTP id w7so30207526lfd.6
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 07:48:09 -0700 (PDT)
+X-Gm-Message-State: AOAM532Ff/p2PvuezCptGId8T4/Y3J8Y64nftwIEGQv3WsgSdo6L2Slr
+        +P/ZJsVuIbevMI935e0D0cJ+7GMqbSbQkuU9wrQ=
+X-Google-Smtp-Source: ABdhPJws2O+yg6MTOzRKnrJ03Qv3OmYB19iwU83i646P4wI3U5QwCr8Nh6DmLxi2UmhoItx5UgiRuFRnOThEvm9siNM=
+X-Received: by 2002:a05:6512:c06:b0:44a:2a0f:9d3c with SMTP id
+ z6-20020a0565120c0600b0044a2a0f9d3cmr7838759lfu.136.1647960488026; Tue, 22
+ Mar 2022 07:48:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220322102115.186179-1-ammarfaizi2@gnuweeb.org>
+ <20220322102115.186179-4-ammarfaizi2@gnuweeb.org> <8653f6784a9b4272a59a75a530663567@AcuMS.aculab.com>
+ <a8eeec1d-656d-15a3-dde5-0f8cc8c5956b@gnuweeb.org> <20220322121338.GD10306@1wt.eu>
+ <22fd9709b3a64a548226741b682ca155@AcuMS.aculab.com>
+In-Reply-To: <22fd9709b3a64a548226741b682ca155@AcuMS.aculab.com>
+From:   Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
+Date:   Tue, 22 Mar 2022 21:47:56 +0700
+X-Gmail-Original-Message-ID: <CAOG64qP=Hn+Z6zO2pEafE4acLiGig79OCPQCAktb4bhV6DFBAg@mail.gmail.com>
+Message-ID: <CAOG64qP=Hn+Z6zO2pEafE4acLiGig79OCPQCAktb4bhV6DFBAg@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 3/8] tools/nolibc: i386: Implement syscall with 6 arguments
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Willy Tarreau <w@1wt.eu>, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Nugraha <richiisei@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "GNU/Weeb Mailing List" <gwml@vger.gnuweeb.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "llvm@lists.linux.dev" <llvm@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+On Tue, Mar 22, 2022 at 8:37 PM David Laight wrote:
+> dunno, 'asm' register variables are rather more horrid and
+> should probably only be used (for asm statements) when there aren't
+> suitable register constraints.
+>
+> (I'm sure there is a comment about that in the gcc docs.)
 
-Common defines should be used over custom defines.
+I don't find the comment that says so here:
+https://gcc.gnu.org/onlinedocs/gcc/Local-Register-Variables.html
 
-Change and remove these defines
-PCIR_SUBVEND_0 to PCI_SUBSYSTEM_VENDOR_ID
-PCIR_SUBDEV_0 to PCI_SUBSYSTEM_ID
+The current code looks valid to me, but I would still prefer to use
+the explicit register constraints instead of always using "r"(var) if
+available. No strong reason in denying that, tho. Still looks good.
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/scsi/aic7xxx/aic79xx_osm.h | 2 --
- drivers/scsi/aic7xxx/aic79xx_pci.c | 6 +++---
- drivers/scsi/aic7xxx/aic7xxx_osm.h | 2 --
- drivers/scsi/aic7xxx/aic7xxx_pci.c | 4 ++--
- 4 files changed, 5 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/scsi/aic7xxx/aic79xx_osm.h b/drivers/scsi/aic7xxx/aic79xx_osm.h
-index 679a4fd138746..793fe19993a90 100644
---- a/drivers/scsi/aic7xxx/aic79xx_osm.h
-+++ b/drivers/scsi/aic7xxx/aic79xx_osm.h
-@@ -420,8 +420,6 @@ ahd_unlock(struct ahd_softc *ahd, unsigned long *flags)
- 
- /* config registers for header type 0 devices */
- #define PCIR_MAPS	0x10
--#define PCIR_SUBVEND_0	0x2c
--#define PCIR_SUBDEV_0	0x2e
- 
- /****************************** PCI-X definitions *****************************/
- #define PCIXR_COMMAND	0x96
-diff --git a/drivers/scsi/aic7xxx/aic79xx_pci.c b/drivers/scsi/aic7xxx/aic79xx_pci.c
-index 2f0bdb9225a40..5fad41b1ab58d 100644
---- a/drivers/scsi/aic7xxx/aic79xx_pci.c
-+++ b/drivers/scsi/aic7xxx/aic79xx_pci.c
-@@ -260,8 +260,8 @@ ahd_find_pci_device(ahd_dev_softc_t pci)
- 
- 	vendor = ahd_pci_read_config(pci, PCIR_DEVVENDOR, /*bytes*/2);
- 	device = ahd_pci_read_config(pci, PCIR_DEVICE, /*bytes*/2);
--	subvendor = ahd_pci_read_config(pci, PCIR_SUBVEND_0, /*bytes*/2);
--	subdevice = ahd_pci_read_config(pci, PCIR_SUBDEV_0, /*bytes*/2);
-+	subvendor = ahd_pci_read_config(pci, PCI_SUBSYSTEM_VENDOR_ID, /*bytes*/2);
-+	subdevice = ahd_pci_read_config(pci, PCI_SUBSYSTEM_ID, /*bytes*/2);
- 	full_id = ahd_compose_id(device,
- 				 vendor,
- 				 subdevice,
-@@ -298,7 +298,7 @@ ahd_pci_config(struct ahd_softc *ahd, const struct ahd_pci_identity *entry)
- 	 * Record if this is an HP board.
- 	 */
- 	subvendor = ahd_pci_read_config(ahd->dev_softc,
--					PCIR_SUBVEND_0, /*bytes*/2);
-+					PCI_SUBSYSTEM_VENDOR_ID, /*bytes*/2);
- 	if (subvendor == SUBID_HP)
- 		ahd->flags |= AHD_HP_BOARD;
- 
-diff --git a/drivers/scsi/aic7xxx/aic7xxx_osm.h b/drivers/scsi/aic7xxx/aic7xxx_osm.h
-index 4782a304e93cc..51d9f4de07346 100644
---- a/drivers/scsi/aic7xxx/aic7xxx_osm.h
-+++ b/drivers/scsi/aic7xxx/aic7xxx_osm.h
-@@ -433,8 +433,6 @@ ahc_unlock(struct ahc_softc *ahc, unsigned long *flags)
- 
- /* config registers for header type 0 devices */
- #define PCIR_MAPS	0x10
--#define PCIR_SUBVEND_0	0x2c
--#define PCIR_SUBDEV_0	0x2e
- 
- typedef enum
- {
-diff --git a/drivers/scsi/aic7xxx/aic7xxx_pci.c b/drivers/scsi/aic7xxx/aic7xxx_pci.c
-index dab3a6d12c4d2..2d4c85426dc3e 100644
---- a/drivers/scsi/aic7xxx/aic7xxx_pci.c
-+++ b/drivers/scsi/aic7xxx/aic7xxx_pci.c
-@@ -673,8 +673,8 @@ ahc_find_pci_device(ahc_dev_softc_t pci)
- 
- 	vendor = ahc_pci_read_config(pci, PCIR_DEVVENDOR, /*bytes*/2);
- 	device = ahc_pci_read_config(pci, PCIR_DEVICE, /*bytes*/2);
--	subvendor = ahc_pci_read_config(pci, PCIR_SUBVEND_0, /*bytes*/2);
--	subdevice = ahc_pci_read_config(pci, PCIR_SUBDEV_0, /*bytes*/2);
-+	subvendor = ahc_pci_read_config(pci, PCI_SUBSYSTEM_VENDOR_ID, /*bytes*/2);
-+	subdevice = ahc_pci_read_config(pci, PCI_SUBSYSTEM_ID, /*bytes*/2);
- 	full_id = ahc_compose_id(device, vendor, subdevice, subvendor);
- 
- 	/*
--- 
-2.26.3
-
+-- Viro
