@@ -2,97 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18539C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 19:35:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B023C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 19:37:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231391AbiCVThS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 15:37:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44492 "EHLO
+        id S231706AbiCVTil (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 15:38:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229782AbiCVThI (ORCPT
+        with ESMTP id S229782AbiCVTii (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 15:37:08 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68CD98A339;
-        Tue, 22 Mar 2022 12:35:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding;
-        bh=62KKeJh+q5ATM9OJzn9594acBT1Ww/JtlIqMCX8BOF0=;
-        b=AlGx4T+JBIybBJ6znLE2HlvbsgUn/xr7Y8+FJMayJab0KSzR4qDCXDCAaFy9NUXBe4vzlj1np8hpg
-         uNRsj5N8jO3yVMHteZzVM2PpAejsOQYn23gt9kdUxQcIY2pOxR239I/M2SZCEc2rIvXfMeFZHxIXWF
-         Ckl6JpGo/yn5/kwJC6MxObcqOIyCCARKDPxK+/i1b6Uhqtvui/0Z9+SISElMRkB/4R4KNUkFFFRvdJ
-         QH24Ymo1fhvPsW9hG2ns0dr8ZVPx8Ib3gr5v0MDfQRfNkXxHNqnjeXYehXWUfZo0NQn2eWTl0g+/Cj
-         dABsmjBvFAsZWDPAwbWha5g82On5E9w==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.2.1410, Stamp: 3], Multi: [Enabled, t: (0.000009,0.009160)], BW: [Enabled, t: (0.000022,0.000001)], RTDA: [Enabled, t: (0.064925), Hit: No, Details: v2.28.0; Id: 15.52kce3.1fupi0r7g.v96c; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from localhost.localdomain ([178.70.66.234])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Tue, 22 Mar 2022 22:35:19 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>, mdf@kernel.org,
-        hao.wu@intel.com, yilun.xu@intel.com, trix@redhat.com,
-        conor.dooley@microchip.com, robh+dt@kernel.org, system@metrotek.ru,
-        linux-kernel@vger.kernel.org, linux-fpga@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH v8 0/2] Microchip Polarfire FPGA manager
-Date:   Tue, 22 Mar 2022 22:15:50 +0300
-Message-Id: <20220322191552.13156-1-i.bornyakov@metrotek.ru>
-X-Mailer: git-send-email 2.34.1
+        Tue, 22 Mar 2022 15:38:38 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B7888A6C8;
+        Tue, 22 Mar 2022 12:37:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=GNyzORUx4GXTT7/hj1mCmOnIXmKv2J5yosWB9fpbDWg=; b=MdScEsmNUv8CYjaq6xyKA/QxN9
+        99HtzcD8C5Luv02SuH8KKYzNXG2/z9eoPR6F+Of7b2lajNndvnQgTFYcmirKYEOKIl7Se9JldmMm5
+        E/263AwsHbY1LjLCfck+kKyE6/+BtsVrjFp+MPte5dcSxYvDzYluqVmur6voqTxcLZcU/xVskTKBX
+        Rnv8nuDMz3n95ftN044wXbdf+9PPcPf2/ifZZPTxINFS9hvFes7ZlPcS7C7k6pCnwJElIJDlz3crP
+        egdH6e1Il32660Qsnf7ExebqC9Kk7y4mHrwW7K5cop+zlkCe1y9/jFjb5XLJZ52VLs82F0v5GP/LB
+        LQ5sxRaA==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nWkJR-003Y0z-FU; Tue, 22 Mar 2022 19:37:01 +0000
+Message-ID: <adfeb8bb-50b3-7ff3-a55f-19fc23cd1121@infradead.org>
+Date:   Tue, 22 Mar 2022 12:36:52 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] Docs: admin/kernel-parameters: edit a few boot options
+Content-Language: en-US
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        linux-s390@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        sparclinux@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-ia64@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
+        Len Brown <lenb@kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>
+References: <20220321012216.23724-1-rdunlap@infradead.org>
+ <CAJZ5v0jBFOWZZrGuBb0GyJa3rKRwSYXrMFOtGu8jLnQ+OPtXHw@mail.gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <CAJZ5v0jBFOWZZrGuBb0GyJa3rKRwSYXrMFOtGu8jLnQ+OPtXHw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support to the FPGA manager for programming Microchip Polarfire
-FPGAs over slave SPI interface with .dat formatted bitsream image.
 
-Changelog:
-  v1 -> v2: fix printk formating
-  v2 -> v3:
-   * replace "microsemi" with "microchip"
-   * replace prefix "microsemi_fpga_" with "mpf_"
-   * more sensible .compatible and .name strings
-   * remove unused defines STATUS_SPI_VIOLATION and STATUS_SPI_ERROR
-  v3 -> v4: fix unused variable warning
-    Put 'mpf_of_ids' definition under conditional compilation, so it
-    would not hang unused if CONFIG_OF is not enabled.
-  v4 -> v5:
-   * prefix defines with MPF_
-   * mdelay() -> usleep_range()
-   * formatting fixes
-   * add DT bindings doc
-   * rework fpga_manager_ops.write() to fpga_manager_ops.write_sg()
-     We can't parse image header in write_init() because image header
-     size is not known beforehand. Thus parsing need to be done in
-     fpga_manager_ops.write() callback, but fpga_manager_ops.write()
-     also need to be reenterable. On the other hand,
-     fpga_manager_ops.write_sg() is called once. Thus, rework usage of
-     write() callback to write_sg().
-  v5 -> v6: fix patch applying
-     I forgot to clean up unrelated local changes which lead to error on
-     patch 0001-fpga-microchip-spi-add-Microchip-MPF-FPGA-manager.patch
-     applying on vanilla kernel.
-  v6 -> v7: fix binding doc to pass dt_binding_check
-  v7 -> v8: another fix for dt_binding_check warning
 
-Ivan Bornyakov (2):
-  fpga: microchip-spi: add Microchip MPF FPGA manager
-  dt-bindings: fpga: add binding doc for microchip-spi fpga mgr
+On 3/22/22 10:41, Rafael J. Wysocki wrote:
+> On Mon, Mar 21, 2022 at 2:22 AM Randy Dunlap <rdunlap@infradead.org> wrote:
+>> Clean up some of admin-guide/kernel-parameters.txt:
+>>
+>> a. "smt" should be "smt=" (S390)
+>> b. add "smt-enabled" for POWERPC
+>> c. Sparc supports the vdso= boot option
+>> d. make the tp_printk options (2) formatting similar to other options
+>>    by adding spacing
+>> e. add "trace_clock=" with a reference to Documentation/trace/ftrace.rst
+>> f. use [IA-64] as documented instead of [ia64]
+>> g. fix formatting and text for test_suspend=
+> This ->
+> 
+>> h. fix formatting for swapaccount=
+>> i. fix formatting and grammar for video.brightness_switch_enabled=
+> -> and the last one are fine with me, but I suppose that there will be a v2?
 
- .../fpga/microchip,mpf-spi-fpga-mgr.yaml      |  44 ++
- drivers/fpga/Kconfig                          |  10 +
- drivers/fpga/Makefile                         |   1 +
- drivers/fpga/microchip-spi.c                  | 448 ++++++++++++++++++
- 4 files changed, 503 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
- create mode 100644 drivers/fpga/microchip-spi.c
+Yes, there will be a v2.
+
+thanks.
 
 -- 
-2.34.1
-
-
+~Randy
