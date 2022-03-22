@@ -2,130 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A80DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 01:50:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB70FC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 01:51:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235170AbiCVBwJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 21:52:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38708 "EHLO
+        id S235163AbiCVBw0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 21:52:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235114AbiCVBwF (ORCPT
+        with ESMTP id S235118AbiCVBwU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 21:52:05 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0F0F3BA5B
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 18:50:37 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KMvXv1j8KzfZSf;
-        Tue, 22 Mar 2022 09:49:03 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 22 Mar 2022 09:50:35 +0800
-Subject: Re: [PATCH v2] mm/mempolicy: fix mpol_new leak in
- shared_policy_replace
-To:     Michal Hocko <mhocko@suse.com>
-CC:     <akpm@linux-foundation.org>, <kosaki.motohiro@jp.fujitsu.com>,
-        <mgorman@suse.de>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220322083456.16563-1-linmiaohe@huawei.com>
- <YjhrkDlvOnmqIP6n@dhcp22.suse.cz>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <8c7d2ef2-08d7-ea50-a82b-9e9800c5f54c@huawei.com>
-Date:   Tue, 22 Mar 2022 09:50:35 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
-MIME-Version: 1.0
-In-Reply-To: <YjhrkDlvOnmqIP6n@dhcp22.suse.cz>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+        Mon, 21 Mar 2022 21:52:20 -0400
+Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94CC43BA5B;
+        Mon, 21 Mar 2022 18:50:54 -0700 (PDT)
+Received: by mail-oi1-f170.google.com with SMTP id j83so18170157oih.6;
+        Mon, 21 Mar 2022 18:50:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=6wGO95480o++3hkVke2KCQeABv0JOzxQ2AVcywF5mS8=;
+        b=neFfjZUMragKNmD3hjaep8XtQScupTwKAPLsIuiRX09q3gMrUUiFyKEKM5IkExPBRd
+         QOIN093DhF/veq8EV3Mj5HyPxqVPS3hwhrVGewDdt9Lmc/DSQL2y4HOFF/PZRLuBSgjk
+         CqRyjNboEcqKQfa8w30F9AxTCjTc32dCcnkuGv9GAXLD4Gyay3NOwYUlN9Sj63w9OSsu
+         K/O54/U332hVNy1DlusXzXT1essdjEh8JxBsi3rvvmBt3YCBYMWUlIKs40zZgi5H72Fj
+         it9QEivFcSuqVTM8U/qkf66OFLrGL9Qz6qIQM8ebscq1Yp/hJ+LyQqDMG3eeF8Ke9Ue0
+         NNlg==
+X-Gm-Message-State: AOAM533W/hya12U6eaEYX+w4KYceja0DOaM3M1GgxW+uXsK1AiRU/MAa
+        7YKADIsCcwD0FZsmxOSU7w==
+X-Google-Smtp-Source: ABdhPJwj36RCG58UmGKrtvgw5QXEfOwvQc1Y4lLzuT9Y/w9iAv4/yO6DZ834We37179XQTFVsEmSEg==
+X-Received: by 2002:a54:4f89:0:b0:2ef:7561:d35d with SMTP id g9-20020a544f89000000b002ef7561d35dmr1055708oiy.261.1647913853228;
+        Mon, 21 Mar 2022 18:50:53 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id p8-20020a4aac08000000b00324907b406fsm1857479oon.21.2022.03.21.18.50.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 18:50:52 -0700 (PDT)
+Received: (nullmailer pid 941033 invoked by uid 1000);
+        Tue, 22 Mar 2022 01:50:51 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Corentin Labbe <clabbe@baylibre.com>
+Cc:     sboyd@kernel.org, devicetree@vger.kernel.org,
+        linux-rockchip@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        krzk+dt@kernel.org, mturquette@baylibre.com,
+        linux-crypto@vger.kernel.org, heiko@sntech.de, robh+dt@kernel.org,
+        herbert@gondor.apana.org.au, linux-clk@vger.kernel.org
+In-Reply-To: <20220321200739.3572792-22-clabbe@baylibre.com>
+References: <20220321200739.3572792-1-clabbe@baylibre.com> <20220321200739.3572792-22-clabbe@baylibre.com>
+Subject: Re: [PATCH v3 21/26] dt-bindings: crypto: convert rockchip-crypto to yaml
+Date:   Mon, 21 Mar 2022 20:50:51 -0500
+Message-Id: <1647913851.207213.941032.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/3/21 20:12, Michal Hocko wrote:
-> On Tue 22-03-22 16:34:56, Miaohe Lin wrote:
->> If mpol_new is allocated but not used in restart loop, mpol_new will be
->> freed via mpol_put before returning to the caller.  But refcnt is not
->> initialized yet, so mpol_put could not do the right things and might leak
->> the unused mpol_new.
+On Mon, 21 Mar 2022 20:07:34 +0000, Corentin Labbe wrote:
+> Convert rockchip-crypto to yaml
 > 
-> I would just add:
+> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> ---
+>  .../crypto/rockchip,rk3288-crypto.yaml        | 84 +++++++++++++++++++
+>  .../bindings/crypto/rockchip-crypto.txt       | 28 -------
+>  2 files changed, 84 insertions(+), 28 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/crypto/rockchip-crypto.txt
 > 
-> This would happen if mempolicy was updated on the shared shmem file
-> while the sp->lock has been dropped during the memory allocation.
-> 
 
-Do you mean the below commit log?
+Running 'make dtbs_check' with the schema in this patch gives the
+following warnings. Consider if they are expected or the schema is
+incorrect. These may not be new warnings.
 
-"""
-If mpol_new is allocated but not used in restart loop, mpol_new will be
-freed via mpol_put before returning to the caller.  But refcnt is not
-initialized yet, so mpol_put could not do the right things and might leak
-the unused mpol_new. This would happen if mempolicy was updated on the
-shared shmem file while the sp->lock has been dropped during the memory
-allocation.
+Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+This will change in the future.
 
-This issue could be triggered easily with the below code snippet if
-there're many processes doing the below work at the same time:
+Full log is available here: https://patchwork.ozlabs.org/patch/1607887
 
-  shmid = shmget((key_t)5566, 1024 * PAGE_SIZE, 0666|IPC_CREAT);
-  shm = shmat(shmid, 0, 0);
-  loop many times {
-    mbind(shm, 1024 * PAGE_SIZE, MPOL_LOCAL, mask, maxnode, 0);
-    mbind(shm + 128 * PAGE_SIZE, 128 * PAGE_SIZE, MPOL_DEFAULT, mask,
-          maxnode, 0);
-  }
-"""
 
->> This issue could be triggered easily with the below
->> code snippet if there're many processes doing the below work at the same
->> time:
->>
->>   shmid = shmget((key_t)5566, 1024 * PAGE_SIZE, 0666|IPC_CREAT);
->>   shm = shmat(shmid, 0, 0);
->>   loop many times {
->>     mbind(shm, 1024 * PAGE_SIZE, MPOL_LOCAL, mask, maxnode, 0);
->>     mbind(shm + 128 * PAGE_SIZE, 128 * PAGE_SIZE, MPOL_DEFAULT, mask,
->>           maxnode, 0);
->>   }
->>
->> Fixes: 42288fe366c4 ("mm: mempolicy: Convert shared_policy mutex to spinlock")
->> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
->> Cc: <stable@vger.kernel.org> # 3.8
-> 
-> Acked-by: Michal Hocko <mhocko@suse.com>
-> 
-> Thanks a lot!
-
-Many thanks for comment and Acked-by tag! :)
-
->> ---
->> v1->v2:
->>   Add reproducer snippet and Cc stable.
->>   Thanks Michal Hocko for review and comment!
->> ---
->>  mm/mempolicy.c | 1 +
->>  1 file changed, 1 insertion(+)
->>
->> diff --git a/mm/mempolicy.c b/mm/mempolicy.c
->> index a2516d31db6c..4cdd425b2752 100644
->> --- a/mm/mempolicy.c
->> +++ b/mm/mempolicy.c
->> @@ -2733,6 +2733,7 @@ static int shared_policy_replace(struct shared_policy *sp, unsigned long start,
->>  	mpol_new = kmem_cache_alloc(policy_cache, GFP_KERNEL);
->>  	if (!mpol_new)
->>  		goto err_out;
->> +	refcount_set(&mpol_new->refcnt, 1);
->>  	goto restart;
->>  }
->>  
->> -- 
->> 2.23.0
-> 
+cypto-controller@ff8a0000: 'reset-names' does not match any of the regexes: 'pinctrl-[0-9]+'
+	arch/arm/boot/dts/rk3288-evb-act8846.dt.yaml
+	arch/arm/boot/dts/rk3288-evb-rk808.dt.yaml
+	arch/arm/boot/dts/rk3288-firefly-beta.dt.yaml
+	arch/arm/boot/dts/rk3288-firefly.dt.yaml
+	arch/arm/boot/dts/rk3288-firefly-reload.dt.yaml
+	arch/arm/boot/dts/rk3288-miqi.dt.yaml
+	arch/arm/boot/dts/rk3288-phycore-rdk.dt.yaml
+	arch/arm/boot/dts/rk3288-popmetal.dt.yaml
+	arch/arm/boot/dts/rk3288-r89.dt.yaml
+	arch/arm/boot/dts/rk3288-rock2-square.dt.yaml
+	arch/arm/boot/dts/rk3288-rock-pi-n8.dt.yaml
+	arch/arm/boot/dts/rk3288-tinker.dt.yaml
+	arch/arm/boot/dts/rk3288-tinker-s.dt.yaml
+	arch/arm/boot/dts/rk3288-veyron-brain.dt.yaml
+	arch/arm/boot/dts/rk3288-veyron-fievel.dt.yaml
+	arch/arm/boot/dts/rk3288-veyron-jaq.dt.yaml
+	arch/arm/boot/dts/rk3288-veyron-jerry.dt.yaml
+	arch/arm/boot/dts/rk3288-veyron-mickey.dt.yaml
+	arch/arm/boot/dts/rk3288-veyron-mighty.dt.yaml
+	arch/arm/boot/dts/rk3288-veyron-minnie.dt.yaml
+	arch/arm/boot/dts/rk3288-veyron-pinky.dt.yaml
+	arch/arm/boot/dts/rk3288-veyron-speedy.dt.yaml
+	arch/arm/boot/dts/rk3288-veyron-tiger.dt.yaml
+	arch/arm/boot/dts/rk3288-vyasa.dt.yaml
 
