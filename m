@@ -2,170 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FB36C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:34:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 970B8C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:34:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231284AbiCVIfw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 04:35:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54434 "EHLO
+        id S231313AbiCVIgE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 04:36:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230467AbiCVIft (ORCPT
+        with ESMTP id S231322AbiCVIgB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 04:35:49 -0400
-Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [81.169.146.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA4A545510;
-        Tue, 22 Mar 2022 01:34:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1647938013;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=ntrq2GDLVZrYGtItjUXPdagiGGLGKRv1C9uWWopglQU=;
-    b=jlYDY1xt9eqCm8cyhDwadLpuygIPvUnrPSRWlrZKufoT9rGv8zvlmdRr11VjewO+mz
-    czpM096lvUC1eBwFWTne5ueeqCprl4lJoXydJdArqbSlkmMa0X8OvLsCbAke7JCp1/aV
-    W1OlanywjKPJVzlQOqgWf0zPYdNnVm66BoMtBO3KdFdFwBCXB4abcTmN/+clZo+NV7/l
-    jtaccaY979cr/zm5CtKV7fXBLGckN8aaDDeK0KDQZSsfGZL0jr7bug2EPBP2AJu4Xm+h
-    4j7UZR6fJZHZeesEFAjkmFl0sUqnfJrPxfO35KugV/cq5Q9677ZXZwpFi+PvEhpqWFYq
-    JXwQ==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVuBOfXW6v7w=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPV6:2a00:6020:1cfa:f900::b82]
-    by smtp.strato.de (RZmta 47.41.1 AUTH)
-    with ESMTPSA id cc2803y2M8XWDnA
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Tue, 22 Mar 2022 09:33:32 +0100 (CET)
-Message-ID: <17c8dc7b-7768-09cb-b48f-a923514f02db@hartkopp.net>
-Date:   Tue, 22 Mar 2022 09:33:31 +0100
+        Tue, 22 Mar 2022 04:36:01 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D107B4832A;
+        Tue, 22 Mar 2022 01:34:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=PE57yUUD9SrPCLBbUCyjgGk3MoukBa6T3fWyxi6SrV4=; b=s4AgvJNu5YIQCv3TC7zPFv8LNc
+        GOgCI8kFvtUZqetr9c7bbfPL/wm2WY8OyeCTJPq5sVwINdEfD/F4nGJFm0MabHV1YxcMEPtDq5zMr
+        aVWK94ftsDERQs4M1s8xykXQawIODQJ9/VSlAgwubD7+E6Sqa4WDLYKo06Ro+ChAVSet2WNSLsSC6
+        p6G/kzHL7j2VVuoLbwN11wdfYSKokrgs8oU2giY8hUecYj32X8sgq7c5q0jrLfSnVVeZxkOSaV7/U
+        LxTy4v+4V2YJ02TfzcvxBS33MjniXU/wWIVFBSN3kOt9VkbctOH5d632AysD2xG3MX6FkIINtg44/
+        dp39V0LQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nWZxz-00AQur-4e; Tue, 22 Mar 2022 08:34:11 +0000
+Date:   Tue, 22 Mar 2022 01:34:11 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     dan.j.williams@intel.com, willy@infradead.org, jack@suse.cz,
+        viro@zeniv.linux.org.uk, akpm@linux-foundation.org,
+        apopple@nvidia.com, shy828301@gmail.com, rcampbell@nvidia.com,
+        hughd@google.com, xiyuyang19@fudan.edu.cn,
+        kirill.shutemov@linux.intel.com, zwisler@kernel.org,
+        hch@infradead.org, linux-fsdevel@vger.kernel.org,
+        nvdimm@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, duanxiongchun@bytedance.com, smuchun@gmail.com
+Subject: Re: [PATCH v5 1/6] mm: rmap: fix cache flush on THP pages
+Message-ID: <YjmKAxH8y2cjcJrP@infradead.org>
+References: <20220318074529.5261-1-songmuchun@bytedance.com>
+ <20220318074529.5261-2-songmuchun@bytedance.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH v8 0/7] CTU CAN FD open-source IP core SocketCAN driver,
- PCI, platform integration and documentation
-Content-Language: en-US
-To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-can@vger.kernel.org, devicetree@vger.kernel.org,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        David Miller <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>, mark.rutland@arm.com,
-        Carsten Emde <c.emde@osadl.org>, armbru@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Marin Jerabek <martin.jerabek01@gmail.com>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        Jiri Novak <jnovak@fel.cvut.cz>,
-        Jaroslav Beran <jara.beran@gmail.com>,
-        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
-        Drew Fustini <pdp7pdp7@gmail.com>
-References: <cover.1647904780.git.pisa@cmp.felk.cvut.cz>
- <20220322074622.5gkjhs25epurecvx@pengutronix.de>
- <202203220918.33033.pisa@cmp.felk.cvut.cz>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-In-Reply-To: <202203220918.33033.pisa@cmp.felk.cvut.cz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220318074529.5261-2-songmuchun@bytedance.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Mar 18, 2022 at 03:45:24PM +0800, Muchun Song wrote:
+> The flush_cache_page() only remove a PAGE_SIZE sized range from the cache.
+> However, it does not cover the full pages in a THP except a head page.
+> Replace it with flush_cache_range() to fix this issue. At least, no
+> problems were found due to this. Maybe because the architectures that
+> have virtual indexed caches is less.
+> 
+> Fixes: f27176cfc363 ("mm: convert page_mkclean_one() to use page_vma_mapped_walk()")
+> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> Reviewed-by: Yang Shi <shy828301@gmail.com>
+> Reviewed-by: Dan Williams <dan.j.williams@intel.com>
 
+Looks good:
 
-On 22.03.22 09:18, Pavel Pisa wrote:
-> Hello Marc,
-> 
-> thanks for positive reply for our years effort.
-> 
-> On Tuesday 22 of March 2022 08:46:22 Marc Kleine-Budde wrote:
->> On 22.03.2022 00:32:27, Pavel Pisa wrote:
->>> This driver adds support for the CTU CAN FD open-source IP core.
->>
->> The driver looks much better now. Good work. Please have a look at the
->> TX path of the mcp251xfd driver, especially the tx_stop_queue and
->> tx_wake_queue in mcp251xfd_start_xmit() and mcp251xfd_handle_tefif(). A
->> lockless implementation should work in your hardware, too.
-> 
-> Is this blocker for now? I would like to start with years tested base.
-> 
-> We have HW timestamping implemented for actual stable CTU CAN FD IP core
-> version, support for variable number of TX buffers which count can be
-> parameterized up to 8 in the prepared version and long term desire to
-> configurable-SW defined multi-queue which our HW interface allows to
-> dynamically server by á TX buffers. But plan is to keep combinations
-> of the design and driver compatible from the actual revision.
-> 
-> I would be happy if we can agree on some base/minimal support and get
-> it into mainline and use it as base for the followup patch series.
-
-IMHO I would vote for this approach too.
-
-There are many users of that open source IP CAN core right now and the 
-out-of-tree maintenance is no fun for all of them.
-
-When the driver status is fine from the technical and programming style 
-standpoint we should move the improvements for the lockless 
-transmissions to a later date.
-
-Best regards,
-Oliver
-
-> 
-> I understand that I have sent code late for actual merge window,
-> but I am really loaded by teaching, related RISC-V simulator
-> https://github.com/cvut/qtrvsim , ESA and robotic projects
-> at company. So I would prefer to go step by step and cooperate
-> on updates and testing with my diploma students.
-> 
->> BTW: The PROP_SEG/PHASE_SEG1 issue is known:
->>> +A curious reader will notice that the durations of the segments PROP_SEG
->>> +and PHASE_SEG1 are not determined separately but rather combined and
->>> +then, by default, the resulting TSEG1 is evenly divided between PROP_SEG
->>> +and PHASE_SEG1.
->>
->> and the flexcan IP core in CAN-FD mode has the same problem. When
->> working on the bit timing parameter, I'll plan to have separate
->> PROP_SEG/PHASE_SEG1 min/max in the kernel, so that the bit timing
->> algorithm can take care of this.
-> 
-> Hmm, when I have thought about that years ago I have not noticed real
-> difference when time quanta is move between PROP_SEG and PHASE_SEG1.
-> So for me it had no influence on the algorithm computation and
-> could be done on the chip level when minimal and maximal sum is
-> respected. But may it be I have overlooked something and there is
-> difference for CAN FD.  May it be my colleagues Jiri Novak and
-> Ondrej Ille are more knowable.
-> 
-> As for the optimal timequantas per bit value, I agree that it
-> is not so simple. In the fact SJW and even tipple-sampling
-> should be defined in percentage of bit time and then all should
-> be optimized together and even combination with slight bitrate
-> error should be preferred against other exact matching when
-> there is significant difference in the other parameters values.
-> 
-> But I am not ready to dive into it till our ESA space NanoXplore
-> FPGA project passes final stage...
-> 
-> By the way we have received report from Andrew Dennison about
-> successful integration of CTU CAN FD into Litex based RISC-V
-> system. Tested with the Linux our Linux kernel driver.
-> 
-> The first iteration there, but he reported that some corrections
-> from his actual development needs to be added to the public
-> repo still to be usable out of the box
-> 
->    https://github.com/AndrewD/litecan
-> 
-> Best wishes,
-> 
->                  Pavel Pisa
->      phone:      +420 603531357
->      e-mail:     pisa@cmp.felk.cvut.cz
->      Department of Control Engineering FEE CVUT
->      Karlovo namesti 13, 121 35, Prague 2
->      university: http://dce.fel.cvut.cz/
->      personal:   http://cmp.felk.cvut.cz/~pisa
->      projects:   https://www.openhub.net/accounts/ppisa
->      CAN related:http://canbus.pages.fel.cvut.cz/
->      Open Technologies Research Education and Exchange Services
->      https://gitlab.fel.cvut.cz/otrees/org/-/wikis/home
-> 
+Reviewed-by: Christoph Hellwig <hch@lst.de>
