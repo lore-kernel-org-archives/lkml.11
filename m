@@ -2,228 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5DB6C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:08:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 063DEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229851AbiCVIKP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 04:10:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53588 "EHLO
+        id S229887AbiCVIKS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 04:10:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229758AbiCVIKG (ORCPT
+        with ESMTP id S229819AbiCVIKG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 22 Mar 2022 04:10:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4E10F14008
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 01:08:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647936511;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XwXLs2x0k3sHxPIhNa8hpQ1441Z7oOsOWyaaI8W2j5s=;
-        b=dEGgChpSD7oVXmnKLkhhyVmA2CCxcye/xsF2HDudVYKiSpXxkeIkYLClZhunANZOm3E54V
-        jyfdQFRgC9GejgkIO2tzFCaue8t92ncwsqnQxhfhDrkuJ0w1EfkLD/fggba6U6uiGkGl7S
-        247IgO5BZpXvVDknScOLpbgifr1ISD4=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-384-eyCSNExZP8-7hhveFCSmRw-1; Tue, 22 Mar 2022 04:08:26 -0400
-X-MC-Unique: eyCSNExZP8-7hhveFCSmRw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B1BA6185A79C;
-        Tue, 22 Mar 2022 08:08:25 +0000 (UTC)
-Received: from gshan.redhat.com (ovpn-12-33.pek2.redhat.com [10.72.12.33])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id E00A21121324;
-        Tue, 22 Mar 2022 08:08:14 +0000 (UTC)
-From:   Gavin Shan <gshan@redhat.com>
-To:     kvmarm@lists.cs.columbia.edu
-Cc:     linux-kernel@vger.kernel.org, eauger@redhat.com,
-        shannon.zhaosl@gmail.com, maz@kernel.org,
-        Jonathan.Cameron@huawei.com, will@kernel.org, pbonzini@redhat.com,
-        james.morse@arm.com, mark.rutland@arm.com, drjones@redhat.com,
-        vkuznets@redhat.com, shan.gavin@gmail.com
-Subject: [PATCH v5 04/22] KVM: arm64: Support SDEI_EVENT_REGISTER hypercall
-Date:   Tue, 22 Mar 2022 16:06:52 +0800
-Message-Id: <20220322080710.51727-5-gshan@redhat.com>
-In-Reply-To: <20220322080710.51727-1-gshan@redhat.com>
-References: <20220322080710.51727-1-gshan@redhat.com>
+Received: from out203-205-221-209.mail.qq.com (out203-205-221-209.mail.qq.com [203.205.221.209])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D4352AEB
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 01:08:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1647936509;
+        bh=xj3turLHj1+ZCP9WjX9RjyOgZj7/g+f5TXLsbJ08Z6M=;
+        h=From:To:Cc:Subject:Date;
+        b=xqVD+HGcJkCFOyljoIp7AMoNMKPGUu99PpNUIOlf+DvxjAJPPrI4fduHOJFacVYVr
+         GRuaYrjbg2nt5PsivERMq27ia9NEQ3IS16tfouF9eIDXJgAr3fXx+Bvj7l7kCGkCdw
+         kbZMhRo0T1ELx91QaoWHBT8Fl4UppkgV+gR7LG+U=
+Received: from localhost.localdomain ([43.227.136.188])
+        by newxmesmtplogicsvrsza7.qq.com (NewEsmtp) with SMTP
+        id 2198E433; Tue, 22 Mar 2022 16:08:25 +0800
+X-QQ-mid: xmsmtpt1647936505ts0dqrfgq
+Message-ID: <tencent_010A807048A5F97F0A900866A35C648E2E07@qq.com>
+X-QQ-XMAILINFO: OQhZ3T0tjf0amHFt3Tv8ZnikjPM7gbCsdRyJBbsvvF8MDJx4K0X2JtCTAGGCU0
+         USVhMFfAWjMjApTDU0aOobRK8pKYK3+RP3AW3nqaJpQDuEo3v+6XHgfjIidbeMx/M4EjU5yn3OBg
+         T1nJpiqqVxcWjX2wgfoZUT4d0K3/3Fn0ijEvxk4UYsL4gjD5JdZq/xB2vVpgTfR7qoaeyyWys8h3
+         GIxWb0I7I7iL6FCZfpKxoW+td9hHBy9cxxgmgapMa80vA6nSAuSyuoWnO5VwcirEQxNxDzspaFTc
+         Wzu9tf93C7pxlsPW9gYCxOV3rtvgNjp1P/Z1Jp9cktsS/4WE1j0EyR6N3Rw8N9Vq81jRNOqDxyNW
+         QsooJ8v+Ve1uqvfFswT+ZlDrIi/nOA5sfc5npycGs0faGzseuP8x+j8gP3C0uv/aGkcRcQ9NMqpr
+         ONKu3/KSyHZJKOpn5hM2FDv/AHegPeJPxfb0F1BAnIlUm3Uw4Dm9R0144DjFZQ1KrF4mT2qB6+bU
+         V1SsSXP2n6/OTq7FLHWbK2cWqLCMcB0hOxaUfTySxM4ExWp6XWT9DuIiQm8THsHfux+j3TFS/DGQ
+         xyo5dXyXvFCp2cLOTiO9r+v4QcU2zV//beLzq6LxW3hLz5TN1tHe64Or2BTg63qLl8o/vFWw8qKM
+         FtR1ZHdzjowCuoI5QPr/BkDrdodtZhjsET7o2lU2x9coG97wJYM8SrQZfjY6wghWAcRGx0q3IdjA
+         s0wa1nHLCU0GWlrnKN7w1Xp8vP8Ki2+qBF7Fji2KrB91QsrGWps/NIuvvemUGFtW/qTncFAhQi/M
+         1QmnJlQFv4lP8HuAjJk337DjfCMwrQQw8AFYhHkM3WbbR4R/y6L4ISkyHjUKjbtmyWHKu89AO8pn
+         j8RUABvcj64AYPpaYlnhmxhD/T1XOSZhApA9AxkzHkL9hvz+6Io18NpxRgiXT4EbP9MdGe3vxO
+From:   xkernel.wang@foxmail.com
+To:     xiang@kernel.org, chao@kernel.org
+Cc:     linux-erofs@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH] erofs: fix a potential NULL dereference of alloc_pages()
+Date:   Tue, 22 Mar 2022 16:08:12 +0800
+X-OQ-MSGID: <20220322080812.1574-1-xkernel.wang@foxmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This supports SDEI_EVENT_REGISTER hypercall, which is used by guest
-to register SDEI events. The SDEI event won't be raised until it's
-registered and enabled explicitly.
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-Only the exposed events can be registered. For shared event, the
-registered event instance is created. However, the instance may be
-not created for the private events.
+alloc_pages() returns the page on success or NULL if allocation fails,
+while set_page_private() will dereference `newpage`. So it is better to
+catch the memory error in case other errors happen.
 
-Signed-off-by: Gavin Shan <gshan@redhat.com>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
 ---
- arch/arm64/kvm/sdei.c | 128 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 128 insertions(+)
+ fs/erofs/zdata.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm64/kvm/sdei.c b/arch/arm64/kvm/sdei.c
-index 5a3a64cd6e84..2458dc666445 100644
---- a/arch/arm64/kvm/sdei.c
-+++ b/arch/arm64/kvm/sdei.c
-@@ -14,6 +14,35 @@
- #include <kvm/arm_hypercalls.h>
- #include <asm/kvm_sdei.h>
+diff --git a/fs/erofs/zdata.c b/fs/erofs/zdata.c
+index 11c7a1a..36a5421 100644
+--- a/fs/erofs/zdata.c
++++ b/fs/erofs/zdata.c
+@@ -735,11 +735,15 @@ static int z_erofs_do_read_page(struct z_erofs_decompress_frontend *fe,
+ 		struct page *const newpage =
+ 				alloc_page(GFP_NOFS | __GFP_NOFAIL);
  
-+static struct kvm_sdei_exposed_event *
-+find_exposed_event(struct kvm *kvm, unsigned long num)
-+{
-+	struct kvm_sdei_kvm *ksdei = kvm->arch.sdei;
-+	struct kvm_sdei_exposed_event *exposed_event;
-+
-+	list_for_each_entry(exposed_event, &ksdei->exposed_events, link) {
-+		if (exposed_event->state.num == num)
-+			return exposed_event;
-+	}
-+
-+	return NULL;
-+}
-+
-+static struct kvm_sdei_registered_event *
-+find_registered_event(struct kvm *kvm, unsigned long num)
-+{
-+	struct kvm_sdei_kvm *ksdei = kvm->arch.sdei;
-+	struct kvm_sdei_registered_event *registered_event;
-+
-+	list_for_each_entry(registered_event,
-+			    &ksdei->registered_events, link) {
-+		if (registered_event->state.num == num)
-+			return registered_event;
-+	}
-+
-+	return NULL;
-+}
-+
- static void remove_all_exposed_events(struct kvm *kvm)
- {
- 	struct kvm_sdei_kvm *ksdei = kvm->arch.sdei;
-@@ -126,6 +155,103 @@ static unsigned long hypercall_version(struct kvm_vcpu *vcpu)
- 	       0x4b564d;
- }
- 
-+static unsigned long hypercall_register(struct kvm_vcpu *vcpu)
-+{
-+	struct kvm *kvm = vcpu->kvm;
-+	struct kvm_sdei_kvm *ksdei = kvm->arch.sdei;
-+	struct kvm_sdei_exposed_event *exposed_event;
-+	struct kvm_sdei_registered_event *registered_event;
-+	unsigned long event_num = smccc_get_arg1(vcpu);
-+	unsigned long event_ep_address = smccc_get_arg2(vcpu);
-+	unsigned long event_ep_arg = smccc_get_arg3(vcpu);
-+	unsigned long route_mode = smccc_get_arg4(vcpu);
-+	unsigned long route_affinity = smccc_get_arg5(vcpu);
-+	int index;
-+	unsigned long ret = SDEI_SUCCESS;
-+
-+	if (!kvm_sdei_is_supported(event_num)) {
-+		ret = SDEI_INVALID_PARAMETERS;
-+		goto out;
-+	}
-+
-+	if (route_mode != SDEI_EVENT_REGISTER_RM_ANY &&
-+	    route_mode != SDEI_EVENT_REGISTER_RM_PE) {
-+		ret = SDEI_INVALID_PARAMETERS;
-+		goto out;
-+	}
-+
-+	spin_lock(&ksdei->lock);
-+
-+	/*
-+	 * The registered event could have been existing if it's a private
-+	 * one. We needn't to create another registered event instance
-+	 * in this case.
-+	 */
-+	registered_event = find_registered_event(kvm, event_num);
-+	if (registered_event) {
-+		exposed_event = registered_event->exposed_event;
-+		index = kvm_sdei_vcpu_index(vcpu, exposed_event);
-+		if (kvm_sdei_is_registered(registered_event, index) ||
-+		    kvm_sdei_is_unregister_pending(registered_event, index)) {
-+			ret = SDEI_DENIED;
-+			goto unlock;
+-		set_page_private(newpage, Z_EROFS_SHORTLIVED_PAGE);
+-		err = z_erofs_attach_page(clt, newpage,
+-					  Z_EROFS_PAGE_TYPE_EXCLUSIVE);
+-		if (!err)
+-			goto retry;
++		if (!newpage) {
++			err = -ENOMEM;
++		} else {
++			set_page_private(newpage, Z_EROFS_SHORTLIVED_PAGE);
++			err = z_erofs_attach_page(clt, newpage,
++						Z_EROFS_PAGE_TYPE_EXCLUSIVE);
++			if (!err)
++				goto retry;
 +		}
-+
-+		registered_event->state.route_mode        = route_mode;
-+		registered_event->state.route_affinity    = route_affinity;
-+		registered_event->state.ep_address[index] = event_ep_address;
-+		registered_event->state.ep_arg[index]     = event_ep_arg;
-+		kvm_sdei_set_registered(registered_event, index);
-+		goto unlock;
-+	}
-+
-+	/* Check if the exposed event exists */
-+	exposed_event = find_exposed_event(kvm, event_num);
-+	if (!exposed_event) {
-+		ret = SDEI_INVALID_PARAMETERS;
-+		goto unlock;
-+	}
-+
-+	/*
-+	 * Check if the count of registered event instances exceeds
-+	 * the limit.
-+	 */
-+	if (ksdei->registered_event_count >= KVM_SDEI_MAX_EVENTS) {
-+		ret = SDEI_OUT_OF_RESOURCE;
-+		goto unlock;
-+	}
-+
-+	/* Allocate the registered event instance */
-+	registered_event = kzalloc(sizeof(*registered_event),
-+				   GFP_KERNEL_ACCOUNT);
-+	if (!registered_event) {
-+		ret = SDEI_OUT_OF_RESOURCE;
-+		goto unlock;
-+	}
-+
-+	/* Initialize the registered event state */
-+	index = kvm_sdei_vcpu_index(vcpu, exposed_event);
-+	registered_event->state.num               = event_num;
-+	registered_event->state.route_mode        = route_affinity;
-+	registered_event->state.route_affinity    = route_affinity;
-+	registered_event->state.ep_address[index] = event_ep_address;
-+	registered_event->state.ep_arg[index]     = event_ep_arg;
-+	registered_event->kvm                     = kvm;
-+	registered_event->exposed_event           = exposed_event;
-+	registered_event->vcpu_event_count        = 0;
-+	kvm_sdei_set_registered(registered_event, index);
-+
-+	/* Add the registered event instance */
-+	ksdei->registered_event_count++;
-+	exposed_event->registered_event_count++;
-+	list_add_tail(&registered_event->link, &ksdei->registered_events);
-+
-+unlock:
-+	spin_unlock(&ksdei->lock);
-+out:
-+	return ret;
-+}
-+
- int kvm_sdei_hypercall(struct kvm_vcpu *vcpu)
- {
- 	struct kvm *kvm = vcpu->kvm;
-@@ -153,6 +279,8 @@ int kvm_sdei_hypercall(struct kvm_vcpu *vcpu)
- 		ret = hypercall_version(vcpu);
- 		break;
- 	case SDEI_1_0_FN_SDEI_EVENT_REGISTER:
-+		ret = hypercall_register(vcpu);
-+		break;
- 	case SDEI_1_0_FN_SDEI_EVENT_ENABLE:
- 	case SDEI_1_0_FN_SDEI_EVENT_DISABLE:
- 	case SDEI_1_0_FN_SDEI_EVENT_CONTEXT:
+ 	}
+ 
+ 	if (err)
 -- 
-2.23.0
-
