@@ -2,143 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D386C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 04:28:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C672FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 04:29:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236438AbiCVEaE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 00:30:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51084 "EHLO
+        id S236418AbiCVEbR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 00:31:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236363AbiCVE3w (ORCPT
+        with ESMTP id S236363AbiCVEbP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 00:29:52 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F468F33
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 21:28:24 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id q19so11775838pgm.6
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 21:28:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ha0vPVeUDzbZ9ELlg8Nq/jWp7wou24wRrMHx+56fZxo=;
-        b=dS5HqZLfymPE1FEpGN8CF3og/rwMyQBSfx//mku/6Pb3G6uEDl1wZJYqx/0D7Av8DB
-         0R1BwA2bSA0IC8XfDabP8u00zVP/zA3WEzNSMuXAkO7MmsKljJt6V2A+PNDvioOeH6nW
-         3nMjlgOtfyZPoBBpMQ7fPsw9NKXjHT/jHE+CHbiVi5dDwxeXEaxlNCBDYLvjAb9INsyy
-         +NtiEqpsIEdjuiUiLD9CBVdvQFZ7gF914nRZp1ZTPCTetElYHenjTD+iWWBdyCgIO8wf
-         LHLPoTah47tJSxQZC9JAYxjhYswJL9+dc/IM37RbZ/8D0FgLmpFtpOgHSyGmpmDuHeDg
-         hRhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ha0vPVeUDzbZ9ELlg8Nq/jWp7wou24wRrMHx+56fZxo=;
-        b=y/p/h3lHGVgNf22VNa7k/GsHscYc4hjeZbs4Fp9ilADC90YMCit8v1M7iKTb6JOy4Q
-         Czs4F4xlU9QS4n7vhLoefIW7qnrAG22YPKeh8eIOFYDRXgJrBJxI47UcmXQsalXggS8Q
-         3NiNDwwM9ruTQGs/543/UWTl2ZyvIwWjQhnyvfE4aa9sS5iFioiDQvUfdm9TYV2+dRND
-         FYOZAdO/yUuVjiQIIVCedbE67kZMcYdGvbL6aCrogStLqI9YmNIpQ6dcBKQIDj7mPgGB
-         tMnonJ1iNwAy0Efpsqoy5dmSCimS9RHrVZJKPOesbZSdv01LhPlaQYGtJJr9btlCDhlM
-         7KVw==
-X-Gm-Message-State: AOAM531t9FyYNykdtmRWcdPZM2GnLJjWSAAY+JJ96q/9stihdc9WdL9H
-        WYKOZ7gtOV1OkEbUJOzxX1udVg==
-X-Google-Smtp-Source: ABdhPJxpDLeQvQGuL6QYWTg3aYYr3a61A1CbgUAeNp//ITGJB7BSDfO3WaM6VagN1VPMXBANuZedqA==
-X-Received: by 2002:a05:6a00:1ac8:b0:4fa:917f:c1aa with SMTP id f8-20020a056a001ac800b004fa917fc1aamr11379307pfv.2.1647923303715;
-        Mon, 21 Mar 2022 21:28:23 -0700 (PDT)
-Received: from google.com (226.75.127.34.bc.googleusercontent.com. [34.127.75.226])
-        by smtp.gmail.com with ESMTPSA id j3-20020a056a00234300b004faabba358fsm4600997pfj.14.2022.03.21.21.28.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 21:28:23 -0700 (PDT)
-Date:   Tue, 22 Mar 2022 04:28:19 +0000
-From:   Mingwei Zhang <mizhang@google.com>
-To:     Ben Gardon <bgardon@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Peter Xu <peterx@redhat.com>, Ben Gardon <bgorden@google.com>
-Subject: Re: [PATCH 3/4] KVM: x86/mmu: explicitly check nx_hugepage in
- disallowed_hugepage_adjust()
-Message-ID: <YjlQY0EI1YMrCBm0@google.com>
-References: <20220321002638.379672-1-mizhang@google.com>
- <20220321002638.379672-4-mizhang@google.com>
- <CANgfPd_CexHH-QDs899RdEpAO=xGnSfdf80FZzOsum5oYEPCMw@mail.gmail.com>
+        Tue, 22 Mar 2022 00:31:15 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F38B1408C
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 21:29:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647923387; x=1679459387;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=e1W86sXEli1RnC50Lifh7zwKkpipBaeccg3PcImsLsw=;
+  b=ck+BZ7PLCOdFTPPGI353q+vIdU+Plw81S5dz1ka9z6sd7x7coJ2NYX0p
+   pVfZQK8YL7NP0iU0nS/ijUy777rx1E/GpUDbb267he4wzycYIAIuaFnl5
+   zwRYlrKRzUQ/TDQ/TaMoW7i8BS/Z3Bc1Rw2UVyKnW80EyGL8O4qoTYQqN
+   N2Ej8RWHRrzxkgL6InM02eaYdRIgkcwYiAZ8w24ZiC4fObi/tUsRMK3mJ
+   F20vj58msuA8QtMLdyq0mafa9HB19AYo1UktJRSLRP5uFr1vKl9G3CmFn
+   EkE7fgz75dAgokKC4dSepDwbg8LUiHLSPWTt31QhHn5jiQim32F1SrO98
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="257667672"
+X-IronPort-AV: E=Sophos;i="5.90,200,1643702400"; 
+   d="scan'208";a="257667672"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 21:29:47 -0700
+X-IronPort-AV: E=Sophos;i="5.90,200,1643702400"; 
+   d="scan'208";a="518718729"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.209.186]) ([10.254.209.186])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 21:29:42 -0700
+Message-ID: <ba9802c5-2a45-9a85-2e0b-ebbc84870dc8@linux.intel.com>
+Date:   Tue, 22 Mar 2022 12:29:40 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANgfPd_CexHH-QDs899RdEpAO=xGnSfdf80FZzOsum5oYEPCMw@mail.gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC 06/11] iommu/sva: Use attach/detach_pasid_dev in SVA
+ interfaces
+Content-Language: en-US
+To:     Jean-Philippe Brucker <jean-philippe@linaro.org>
+References: <20220320064030.2936936-1-baolu.lu@linux.intel.com>
+ <20220320064030.2936936-7-baolu.lu@linux.intel.com> <YjhiohZAbN1ornmB@myrica>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <YjhiohZAbN1ornmB@myrica>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022, Ben Gardon wrote:
-> On Sun, Mar 20, 2022 at 5:26 PM Mingwei Zhang <mizhang@google.com> wrote:
-> >
-> > Add extra check to specify the case of nx hugepage and allow KVM to
-> > reconstruct large mapping after dirty logging is disabled. Existing code
-> > works only for nx hugepage but the condition is too general in that does
-> > not consider other usage case (such as dirty logging). Moreover, existing
-> > code assumes that a present PMD or PUD indicates that there exist 'smaller
-> > SPTEs' under the paging structure. This assumption may no be true if
-> > consider the zapping leafs only behavior in MMU.
-> >
-> > Missing the check causes KVM incorrectly regards the faulting page as a NX
-> > huge page and refuse to map it at desired level. And this leads to back
-> > performance in shadow mmu and potentiall TDP mmu.
-> >
-> > Fixes: b8e8c8303ff2 ("kvm: mmu: ITLB_MULTIHIT mitigation")
-> > Cc: stable@vger.kernel.org
-> >
-> > Reviewed-by: Ben Gardon <bgardon@google.com>
-> > Signed-off-by: Mingwei Zhang <mizhang@google.com>
-> > ---
-> >  arch/x86/kvm/mmu/mmu.c | 14 ++++++++++++--
-> >  1 file changed, 12 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> > index 5628d0ba637e..4d358c273f6c 100644
-> > --- a/arch/x86/kvm/mmu/mmu.c
-> > +++ b/arch/x86/kvm/mmu/mmu.c
-> > @@ -2919,6 +2919,16 @@ void disallowed_hugepage_adjust(struct kvm_page_fault *fault, u64 spte, int cur_
-> >             cur_level == fault->goal_level &&
-> >             is_shadow_present_pte(spte) &&
-> >             !is_large_pte(spte)) {
-> > +               struct kvm_mmu_page *sp;
-> > +               u64 page_mask;
-> > +               /*
-> > +                * When nx hugepage flag is not set, there is no reason to
-> > +                * go down to another level. This helps demand paging to
-> > +                * generate large mappings.
-> > +                */
+On 2022/3/21 19:33, Jean-Philippe Brucker wrote:
+> On Sun, Mar 20, 2022 at 02:40:25PM +0800, Lu Baolu wrote:
+>> diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva-lib.c
+>> index 106506143896..47cf98e661ff 100644
+>> --- a/drivers/iommu/iommu-sva-lib.c
+>> +++ b/drivers/iommu/iommu-sva-lib.c
+>> @@ -3,6 +3,8 @@
+>>    * Helpers for IOMMU drivers implementing SVA
+>>    */
+>>   #include <linux/mutex.h>
+>> +#include <linux/iommu.h>
+>> +#include <linux/slab.h>
+>>   #include <linux/sched/mm.h>
+>>   
+>>   #include "iommu-sva-lib.h"
+>> @@ -69,3 +71,101 @@ struct mm_struct *iommu_sva_find(ioasid_t pasid)
+>>   	return ioasid_find(&iommu_sva_pasid, pasid, __mmget_not_zero);
+>>   }
+>>   EXPORT_SYMBOL_GPL(iommu_sva_find);
+>> +
+>> +static struct iommu_domain *iommu_sva_domain_alloc(struct device *dev)
+>> +{
+>> +	struct bus_type *bus = dev->bus;
+>> +	struct iommu_domain *domain;
+>> +
+>> +	if (!bus || !bus->iommu_ops)
+>> +		return NULL;
+>> +
+>> +	domain = bus->iommu_ops->domain_alloc(IOMMU_DOMAIN_SVA);
+>> +	if (domain)
+>> +		domain->type = IOMMU_DOMAIN_SVA;
+>> +
+>> +	return domain;
+>> +}
+>> +
+>> +/**
+>> + * iommu_sva_bind_device() - Bind a process address space to a device
+>> + * @dev: the device
+>> + * @mm: the mm to bind, caller must hold a reference to it
+>> + * @drvdata: opaque data pointer to pass to bind callback
+>> + *
+>> + * Create a bond between device and address space, allowing the device to access
+>> + * the mm using the returned PASID. If a bond already exists between @device and
+>> + * @mm, it is returned and an additional reference is taken.
+> This is not true anymore, we return a different structure for each call.
 > 
-> This comment is relevant to Google's internal demand paging scheme,
-> but isn't really relevant to UFFD demand paging.
-> Still, as demonstrated by the next commit, this is important for dirty
-> loggin, so I'd suggest updating this comment to refer to that instead.
-> 
+>> Caller must call
+>> + * iommu_sva_unbind_device() to release each reference.
+>> + *
+>> + * iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA) must be called first, to
+>> + * initialize the required SVA features.
+>> + *
+>> + * On error, returns an ERR_PTR value.
+>> + */
+>> +struct iommu_sva *
+>> +iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void *drvdata)
+>> +{
+>> +	int ret = -EINVAL;
+>> +	struct iommu_sva *handle;
+>> +	struct iommu_domain *domain;
+>> +
+>> +	handle = kzalloc(sizeof(*handle), GFP_KERNEL);
+>> +	if (!handle)
+>> +		return ERR_PTR(-ENOMEM);
+>> +
+>> +	ret = iommu_sva_alloc_pasid(mm, 1, (1U << dev->iommu->pasid_bits) - 1);
+>> +	if (ret)
+>> +		goto out;
+>> +
+>> +	domain = iommu_sva_domain_alloc(dev);
+>> +	if (!domain) {
+>> +		ret = -ENOMEM;
+>> +		goto out;
+>> +	}
+>> +	domain->sva_cookie = mm;
+>> +
+>> +	ret = iommu_attach_device_pasid(domain, dev, mm->pasid);
+>> +	if (ret)
+>> +		goto out_free_domain;
+>> +
+>> +	handle->dev = dev;
+>> +	handle->domain = domain;
+>> +	handle->pasid = mm->pasid;
+>> +
+>> +	return handle;
+>> +
+>> +out_free_domain:
+>> +	iommu_domain_free(domain);
+>> +out:
+>> +	kfree(handle);
+>> +
+>> +	return ERR_PTR(ret);
+>> +}
+>> +EXPORT_SYMBOL_GPL(iommu_sva_bind_device);
+>> +
+>> +/**
+>> + * iommu_sva_unbind_device() - Remove a bond created with iommu_sva_bind_device
+>> + * @handle: the handle returned by iommu_sva_bind_device()
+>> + *
+>> + * Put reference to a bond between device and address space.
+> Same here. But I'd prefer keeping the old behavior so device drivers don't
+> have to keep track of {dev, mm} pairs themselves.
 
-Ah, leaking my true motivation :-) Definitely will update the comment.
+Okay. Thank you for pointing this out. Let me figure it out in the next
+version.
 
-> > +               sp = to_shadow_page(spte & PT64_BASE_ADDR_MASK);
-> > +               if (!sp->lpage_disallowed)
-> > +                       return;
-> >                 /*
-> >                  * A small SPTE exists for this pfn, but FNAME(fetch)
-> >                  * and __direct_map would like to create a large PTE
-> > @@ -2926,8 +2936,8 @@ void disallowed_hugepage_adjust(struct kvm_page_fault *fault, u64 spte, int cur_
-> >                  * patching back for them into pfn the next 9 bits of
-> >                  * the address.
-> >                  */
-> > -               u64 page_mask = KVM_PAGES_PER_HPAGE(cur_level) -
-> > -                               KVM_PAGES_PER_HPAGE(cur_level - 1);
-> > +               page_mask = KVM_PAGES_PER_HPAGE(cur_level) -
-> > +                       KVM_PAGES_PER_HPAGE(cur_level - 1);
-> >                 fault->pfn |= fault->gfn & page_mask;
-> >                 fault->goal_level--;
-> >         }
-> > --
-> > 2.35.1.894.gb6a874cedc-goog
-> >
+Best regards,
+baolu
