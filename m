@@ -2,122 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ACCDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:09:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41573C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:10:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230083AbiCVILX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 04:11:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55872 "EHLO
+        id S230006AbiCVIL2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 04:11:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229995AbiCVILQ (ORCPT
+        with ESMTP id S229574AbiCVILQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 22 Mar 2022 04:11:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0308BB7EB
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 01:09:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647936587;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KDBG9hheIqOVlljCf2sb5fT6Csq9yFBt9fZvXIcLh5A=;
-        b=LFYC2VGEFThpNRS6KuFWp2LDatyHp/mIWZdo9tv+ZBCIaAqheRwi7v+gkAdolWYmSq0Lly
-        5y+dpDLjUtBUZQn8qqAFZ3Ox5HfFxrjFClexzngv0g4fB77Zd+m+zh6tEqjKcBqfV0kUjr
-        t9zGP2gwQhGsrsMfURr3cvbiGSzBdi8=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-19-fw8RiBStPEioOqaJUno_BA-1; Tue, 22 Mar 2022 04:09:43 -0400
-X-MC-Unique: fw8RiBStPEioOqaJUno_BA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4B6FB85A5BC;
-        Tue, 22 Mar 2022 08:09:43 +0000 (UTC)
-Received: from gshan.redhat.com (ovpn-12-33.pek2.redhat.com [10.72.12.33])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5D33F1121324;
-        Tue, 22 Mar 2022 08:09:33 +0000 (UTC)
-From:   Gavin Shan <gshan@redhat.com>
-To:     kvmarm@lists.cs.columbia.edu
-Cc:     linux-kernel@vger.kernel.org, eauger@redhat.com,
-        shannon.zhaosl@gmail.com, maz@kernel.org,
-        Jonathan.Cameron@huawei.com, will@kernel.org, pbonzini@redhat.com,
-        james.morse@arm.com, mark.rutland@arm.com, drjones@redhat.com,
-        vkuznets@redhat.com, shan.gavin@gmail.com
-Subject: [PATCH v5 12/22] KVM: arm64: Support SDEI_{PRIVATE, SHARED}_RESET
-Date:   Tue, 22 Mar 2022 16:07:00 +0800
-Message-Id: <20220322080710.51727-13-gshan@redhat.com>
-In-Reply-To: <20220322080710.51727-1-gshan@redhat.com>
-References: <20220322080710.51727-1-gshan@redhat.com>
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 998249FD4;
+        Tue, 22 Mar 2022 01:09:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1647936588; x=1679472588;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=2llnKuEBORghekHbMacPXqVHp+OZKNMd38Z8tDZ1r0s=;
+  b=nx8YVAERfbWWkAZ1WqspbLWZwjaTR7TfoifRHjHXKa13BtS8HXufPiNu
+   YG1pP8gJdMXxKfgiDJemIm1eU35UWiib2UtsmSC3LsJFt4CHRsbcSGzv8
+   JScIomhbEwouN9X7xDmzoU+pT1EdMO9Nd1yPASVhvzh2DR6kLE6jRm0Ne
+   A=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 22 Mar 2022 01:09:47 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2022 01:09:46 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 22 Mar 2022 01:09:46 -0700
+Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 22 Mar 2022 01:09:41 -0700
+Date:   Tue, 22 Mar 2022 13:39:37 +0530
+From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
+To:     Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+CC:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        "Matthias Kaehlcke" <mka@chromium.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <quic_pkondeti@quicinc.com>,
+        <quic_ppratap@quicinc.com>, <quic_kriskura@quicinc.com>
+Subject: Re: [PATCH v11 1/5] usb: dwc3: core: Add HS phy mode variable and
+ phy poweroff flag
+Message-ID: <20220322080937.GI23316@hu-pkondeti-hyd.qualcomm.com>
+References: <1647932876-23249-1-git-send-email-quic_c_sanm@quicinc.com>
+ <1647932876-23249-2-git-send-email-quic_c_sanm@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <1647932876-23249-2-git-send-email-quic_c_sanm@quicinc.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This supports SDEI_{PRIVATE, SHARED}_RESET. They are used by the
-guest to reset the private events on the calling vCPU or the
-shared events on all vCPUs.
+Hi Sandeep,
 
-Signed-off-by: Gavin Shan <gshan@redhat.com>
----
- arch/arm64/kvm/sdei.c | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+On Tue, Mar 22, 2022 at 12:37:52PM +0530, Sandeep Maheswaram wrote:
+> Add variables in dwc3 structure to check HS phy mode which is
+> used to configure interrupts and phy poweroff flag to check
+> the phy status during system resume.
+> 
+> Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+> ---
+>  drivers/usb/dwc3/core.h | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/usb/dwc3/core.h b/drivers/usb/dwc3/core.h
+> index 5c9d467..f11a60c 100644
+> --- a/drivers/usb/dwc3/core.h
+> +++ b/drivers/usb/dwc3/core.h
+> @@ -1154,6 +1154,9 @@ struct dwc3 {
+>  
+>  	bool			phys_ready;
+>  
+> +	unsigned int            hs_phy_mode;
+> +	bool			phy_power_off;
+> +
+>  	struct ulpi		*ulpi;
+>  	bool			ulpi_ready;
+>  
+Why adding members in a separate patch? This needs to be squashed with
+2/5 patch in the series where these members are used in taking host
+mode PM decisions. Please fix this.
 
-diff --git a/arch/arm64/kvm/sdei.c b/arch/arm64/kvm/sdei.c
-index b2a916724cfa..0dec35a0eed1 100644
---- a/arch/arm64/kvm/sdei.c
-+++ b/arch/arm64/kvm/sdei.c
-@@ -637,6 +637,31 @@ static unsigned long hypercall_mask(struct kvm_vcpu *vcpu, bool mask)
- 	return ret;
- }
- 
-+static unsigned long hypercall_reset(struct kvm_vcpu *vcpu, bool private)
-+{
-+	struct kvm *kvm = vcpu->kvm;
-+	struct kvm_sdei_kvm *ksdei = kvm->arch.sdei;
-+	struct kvm_sdei_exposed_event *exposed_event;
-+	struct kvm_sdei_registered_event *registered_event, *tmp;
-+	unsigned long r, ret = SDEI_SUCCESS;
-+
-+	spin_lock(&ksdei->lock);
-+
-+	list_for_each_entry_safe(registered_event, tmp,
-+				 &ksdei->registered_events, link) {
-+		exposed_event = registered_event->exposed_event;
-+		if (private ^ kvm_sdei_is_shared(exposed_event->state.type))
-+			continue;
-+
-+		r = unregister_one_event(kvm, NULL, registered_event);
-+		ret = (r == SDEI_SUCCESS) ? ret : r;
-+	}
-+
-+	spin_unlock(&ksdei->lock);
-+
-+	return ret;
-+}
-+
- int kvm_sdei_hypercall(struct kvm_vcpu *vcpu)
- {
- 	struct kvm *kvm = vcpu->kvm;
-@@ -700,8 +725,14 @@ int kvm_sdei_hypercall(struct kvm_vcpu *vcpu)
- 	case SDEI_1_0_FN_SDEI_INTERRUPT_BIND:
- 	case SDEI_1_0_FN_SDEI_INTERRUPT_RELEASE:
- 	case SDEI_1_1_FN_SDEI_EVENT_SIGNAL:
-+		ret = SDEI_NOT_SUPPORTED;
-+		break;
- 	case SDEI_1_0_FN_SDEI_PRIVATE_RESET:
-+		ret = hypercall_reset(vcpu, true);
-+		break;
- 	case SDEI_1_0_FN_SDEI_SHARED_RESET:
-+		ret = hypercall_reset(vcpu, false);
-+		break;
- 	case SDEI_1_1_FN_SDEI_FEATURES:
- 	default:
- 		ret = SDEI_NOT_SUPPORTED;
--- 
-2.23.0
-
+Thanks,
+Pavan
