@@ -2,75 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34583C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 07:52:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A54F7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 07:54:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229604AbiCVHxr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 03:53:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43082 "EHLO
+        id S229585AbiCVHz0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 03:55:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229494AbiCVHxo (ORCPT
+        with ESMTP id S229494AbiCVHzX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 03:53:44 -0400
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FE0A37031
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 00:52:17 -0700 (PDT)
-Received: by mail-oi1-x231.google.com with SMTP id o64so18688751oib.7
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 00:52:17 -0700 (PDT)
+        Tue, 22 Mar 2022 03:55:23 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 220374338F
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 00:53:52 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id yy13so34450870ejb.2
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 00:53:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=W67Ifbn9+3/f4cFhaY1VbqyNikmEaFjJI/hM/08NGxI=;
-        b=b2JgwWSHS8NJc5vqlHuEBiizr+FWZJmttbTGDpim0+Ur+Z0FdpBT3VitHb2q77U660
-         N0TRv+YBF0nuh9gdco+9bvXF9DJDFdV0sGZ5kbIHMXcz0ZHkDvvZZIbkTuckRjUKxLSU
-         WEcnsoYRRyJZrYvecGlMfifRDQCeEOG0NVfYzXKcZ0O5K8nc0JePVLphhGAlDi11FBAb
-         6KWhUzXScGDM3p6HTqm9sYYluC4UxAtZdoQFtPNrpp/RLNRIq+OVXfrryk5s9Ey0oaQU
-         YVjKUEHT5We4ZeyhuCDOfsEks9VfWpzOBOoXOm9hl+LaQvcGTTCIZ1dj+F2Hl83B/aeQ
-         dIBA==
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=AAxWSvxZc3dHAbuVIHS0Ej6XKzk9JLz41VAoFlDO6jw=;
+        b=C0uPodIT8HkST7rvrjEAsthafRPgDgdeogyPa1un9cJDZbJa20Jdr8DaXZoQwie8Rp
+         ixs06Tox9foTZsYh0W4rZGlhEGSSnf8vzLBth3PHPtfpjbQuwwT32koIj3xMhRkuE35h
+         mE9UL6Phgcf5ouszXqr829JHPnvDZRTUYybjYSD/53BKorbjQtcPrFnpZBR0ewkTJHPf
+         TChrG8h/DJhGId7IDw1fS/XN/NneBtnb39sgjeNm5wSbv8QEpQ1rDfP/KIYwYPTSHObU
+         6AqyTDMaTD6K0p2jV7IDqmIO+bQqhSdnK8Xa8JlOKnyNXwcBWkmSV3st3WKB8oKoxPRM
+         hhuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=W67Ifbn9+3/f4cFhaY1VbqyNikmEaFjJI/hM/08NGxI=;
-        b=WEV/Hkv4Xj7nSEVk8ZnCrhfyit+BUAw+tySU9yym3q3O8EfifoJ//TFwznlSkBmKzE
-         +yH4JIXOsfMGc6j5lLwnAxtP8offlGnfMbHAID//kJk+H8bM4YGb3XtgL5DT9tlXiKvd
-         YggCVucxmJ3rBP7NW0UAzL1JWu8pdSoC+nB3clQTHSv/A4a/4aywyladFae1g6XoD9by
-         6wuSi69nrc5ufDqVTIigCo3TJDgRj7vOoUFLt1K20GPECPIkDpqY2rWwzhXUIEgMPNSQ
-         7vUDeunVXT1UMtf8UCb0QvRF7zZNuUTiXWsqY/AkKFz1M3KjXj+fR6yZZLvPuRl74sy+
-         KqEw==
-X-Gm-Message-State: AOAM532nvmY9iSc1BvQl3BTUfbUYWF029C37+qSer+a1OBvELWY7O5i/
-        nU2DuyRJFMQLIlale7/v0K756/y+mZo6GxYfHpNqKw==
-X-Google-Smtp-Source: ABdhPJwySwOVDxkCIua6YQLJMk40ETjG0z4A8ooZ+GsSclch4HZ3gRSUM0cBagJQxQZCwl1Mf3jQI5pKj2L8ycxc/KY=
-X-Received: by 2002:a54:4899:0:b0:2ef:3d97:2528 with SMTP id
- r25-20020a544899000000b002ef3d972528mr1476133oic.211.1647935536041; Tue, 22
- Mar 2022 00:52:16 -0700 (PDT)
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=AAxWSvxZc3dHAbuVIHS0Ej6XKzk9JLz41VAoFlDO6jw=;
+        b=HR678o4wDpQoketq4QpTN0WCHVIR2syJSfmlpdDI3EbXYnNS3gjcxqcSV6JMrDK847
+         A579xHLORmC5LYCfYLpbKbJSXslbNKnDORCVkKrGRWgdjounmMXnZfmPlwGqN8tG1Cbd
+         yoMMzMgWMegeEFzhEInQfNsXWyqiDPJhFkZs5KI4H4fHtUQ5ie8bd/juq83iYJbmN8sy
+         ZVsHQoFrVodY97OppfXZbvI055IbxD+pKPRykas0CM4j3mU301IcflUbKWXxU2wUu7S+
+         UQ4P0YVeF/9hjM27lewF+I8NRLgRfA9qOhsKm2WU59hEnXLvFIyJhggM0+REvE5hGAh+
+         i9Gg==
+X-Gm-Message-State: AOAM530z5MuMONO2IJHRxzdIJEewVRBmDT6Y3SwNLXTKRr/AODA6bA9D
+        4Uc2q8bkDJ6qCDjbsou8dSc=
+X-Google-Smtp-Source: ABdhPJxhTfnbx2XGatBlTfA7tIzj0wD63Dzv0AJ5fDSXXhpdMy6c64spTxxCKLobqnFlUuWCj4acoA==
+X-Received: by 2002:a17:906:69c5:b0:6cf:d164:8b32 with SMTP id g5-20020a17090669c500b006cfd1648b32mr24065603ejs.233.1647935630735;
+        Tue, 22 Mar 2022 00:53:50 -0700 (PDT)
+Received: from gmail.com (0526ECD0.dsl.pool.telekom.hu. [5.38.236.208])
+        by smtp.gmail.com with ESMTPSA id l20-20020a1709062a9400b006ce71a88bf5sm7763971eje.183.2022.03.22.00.53.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Mar 2022 00:53:49 -0700 (PDT)
+Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
+Date:   Tue, 22 Mar 2022 08:53:46 +0100
+From:   Ingo Molnar <mingo@kernel.org>
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org,
+        patches@lists.linux.dev, Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH -next] sched/headers: ARM needs asm/paravirt_api_clock.h
+Message-ID: <YjmAihCq5jtUVXvq@gmail.com>
+References: <20220316204146.14000-1-rdunlap@infradead.org>
+ <Yjib7hDFRFEOwaWf@dev-arch.thelio-3990X>
 MIME-Version: 1.0
-References: <000000000000aa07b205daba6d49@google.com> <1035928.1647877207@warthog.procyon.org.uk>
-In-Reply-To: <1035928.1647877207@warthog.procyon.org.uk>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Tue, 22 Mar 2022 08:52:04 +0100
-Message-ID: <CACT4Y+YGp7dLiXCz1Ac5=FXG+gFAH7g-fn2vJtTsBfATc8Cxtw@mail.gmail.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in post_one_notification
-To:     David Howells <dhowells@redhat.com>
-Cc:     syzbot <syzbot+c70d87ac1d001f29a058@syzkaller.appspotmail.com>,
-        christophe.jaillet@wanadoo.fr, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yjib7hDFRFEOwaWf@dev-arch.thelio-3990X>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 21 Mar 2022 at 16:40, David Howells <dhowells@redhat.com> wrote:
->
-> > memcpy((void*)0x20000280, "/dev/adsp1\000", 11);
->
-> Is that significant to the test?!  I presume it's some sort of sound device?
 
-Hi David,
+* Nathan Chancellor <nathan@kernel.org> wrote:
 
-syzkaller tries to minimize reproducers and remove anything that's not
-necessary to reproduce the crash.
-However, this is done mechanically. Things may have some secondary
-effects that prevent removal, or a crash may be simply flaky and then
-removing just anything may lead to no crash.
+> On Wed, Mar 16, 2022 at 01:41:46PM -0700, Randy Dunlap wrote:
+> > Add <asm/paravirt_api_clock.h> for arch/arm/.
+> > 
+> > Fixes this build error:
+> > 
+> > In file included from ../kernel/sched/core.c:81:
+> > ../kernel/sched/sched.h:87:11: fatal error: asm/paravirt_api_clock.h: No such file or directory
+> >    87 | # include <asm/paravirt_api_clock.h>
+> > 
+> > Fixes: 4ff8f2ca6ccd ("sched/headers: Reorganize, clean up and optimize kernel/sched/sched.h dependencies")
+> > Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> > Cc: Ingo Molnar <mingo@kernel.org>
+> > Cc: Russell King <linux@armlinux.org.uk>
+> > Cc: linux-arm-kernel@lists.infradead.org
+> > Cc: patches@armlinux.org.uk
+> 
+> Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+
+Applied, thanks!
+
+	Ingo
