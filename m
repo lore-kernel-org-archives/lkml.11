@@ -2,106 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A75F9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 02:51:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25BC8C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 02:53:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235625AbiCVCwo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 22:52:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43000 "EHLO
+        id S235663AbiCVCyZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 22:54:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235577AbiCVCwl (ORCPT
+        with ESMTP id S235601AbiCVCyW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 22:52:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 900FC43394;
-        Mon, 21 Mar 2022 19:51:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39DBFB81B2B;
-        Tue, 22 Mar 2022 02:51:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFA03C340E8;
-        Tue, 22 Mar 2022 02:51:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647917471;
-        bh=2bRP5Y4GjdyK69yoEGR0c5zmw5oC670YQPme7HBz7aI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RGLUwqZ+K49EIH8om+WKvAR6jxqoIiIw9RR9JZHrdJgXpu8ppQl3VK2c4oUsIUMKQ
-         KPIcMzWiVkqoEgR871FYBMKuid/+/fBhMymN0k2ltopdoL6X2oYM0A2FNQT6FUHNHJ
-         vDBYd9xELM3oUSr14Cal/lRvCkt1UbEk/xfzEQdr+gtjjCDX0LtWPzVsiCrFaV5gHg
-         RePlCJ4QQ/S7Lsyi1Fg+7/+EBYsjR9Zy93mN582+w4vwPnjS35jgPZ4XUGupT4gSod
-         QGULjYhgu+Zbqm2aRouXslyvLhOMtIamrHy7dQQvd2pqgqPPQHFGsaHLTT6vv7CW8j
-         L4EOHrr8lrzjA==
-Date:   Mon, 21 Mar 2022 19:51:11 -0700
-From:   "Darrick J. Wong" <djwong@kernel.org>
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     linux-xfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH -next] xfs: clean up some inconsistent indenting
-Message-ID: <20220322025111.GN8224@magnolia>
-References: <20220322001137.96594-1-yang.lee@linux.alibaba.com>
+        Mon, 21 Mar 2022 22:54:22 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5CA85717B;
+        Mon, 21 Mar 2022 19:52:55 -0700 (PDT)
+Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KMwyR0XqXz1GCph;
+        Tue, 22 Mar 2022 10:52:47 +0800 (CST)
+Received: from dggpeml500003.china.huawei.com (7.185.36.200) by
+ dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 22 Mar 2022 10:52:53 +0800
+Received: from huawei.com (10.175.103.91) by dggpeml500003.china.huawei.com
+ (7.185.36.200) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 22 Mar
+ 2022 10:52:53 +0800
+From:   Yu Liao <liaoyu15@huawei.com>
+To:     <hca@linux.ibm.com>, <gor@linux.ibm.com>, <agordeev@linux.ibm.com>
+CC:     <linux-kernel@vger.kernel.org>, <linux-s390@vger.kernel.org>,
+        <liaoyu15@huawei.com>, <liwei391@huawei.com>
+Subject: [PATCH] s390: cleanup timer API use
+Date:   Tue, 22 Mar 2022 11:00:57 +0800
+Message-ID: <20220322030057.1243196-1-liaoyu15@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220322001137.96594-1-yang.lee@linux.alibaba.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml500003.china.huawei.com (7.185.36.200)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 08:11:37AM +0800, Yang Li wrote:
-> Eliminate the follow smatch warning:
-> fs/xfs/xfs_log.c:3702 xlog_verify_tail_lsn() warn: inconsistent
-> indenting
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+cleanup the s390's use of the timer API
+- del_timer() contains timer_pending() condition
+- mod_timer(timer, expires) is equivalent to:
 
-https://lore.kernel.org/linux-xfs/20210902233137.GB1826899@dread.disaster.area/
-?
+	del_timer(timer);
+	timer->expires = expires;
+	add_timer(timer);
 
---D
+If the timer is inactive it will be activated, using add_timer() on
+condition !timer_pending(&private->timer) is redundant.
 
-> ---
->  fs/xfs/xfs_log.c | 22 +++++++++++-----------
->  1 file changed, 11 insertions(+), 11 deletions(-)
-> 
-> diff --git a/fs/xfs/xfs_log.c b/fs/xfs/xfs_log.c
-> index a8034c0afdf2..5c8843026468 100644
-> --- a/fs/xfs/xfs_log.c
-> +++ b/fs/xfs/xfs_log.c
-> @@ -3699,21 +3699,21 @@ xlog_verify_tail_lsn(
->  	xfs_lsn_t	tail_lsn = be64_to_cpu(iclog->ic_header.h_tail_lsn);
->  	int		blocks;
->  
-> -    if (CYCLE_LSN(tail_lsn) == log->l_prev_cycle) {
-> -	blocks =
-> -	    log->l_logBBsize - (log->l_prev_block - BLOCK_LSN(tail_lsn));
-> +	if (CYCLE_LSN(tail_lsn) == log->l_prev_cycle) {
-> +		blocks = log->l_logBBsize -
-> +			(log->l_prev_block - BLOCK_LSN(tail_lsn));
->  	if (blocks < BTOBB(iclog->ic_offset)+BTOBB(log->l_iclog_hsize))
->  		xfs_emerg(log->l_mp, "%s: ran out of log space", __func__);
-> -    } else {
-> -	ASSERT(CYCLE_LSN(tail_lsn)+1 == log->l_prev_cycle);
-> +	} else {
-> +		ASSERT(CYCLE_LSN(tail_lsn)+1 == log->l_prev_cycle);
->  
-> -	if (BLOCK_LSN(tail_lsn) == log->l_prev_block)
-> -		xfs_emerg(log->l_mp, "%s: tail wrapped", __func__);
-> +		if (BLOCK_LSN(tail_lsn) == log->l_prev_block)
-> +			xfs_emerg(log->l_mp, "%s: tail wrapped", __func__);
->  
-> -	blocks = BLOCK_LSN(tail_lsn) - log->l_prev_block;
-> -	if (blocks < BTOBB(iclog->ic_offset) + 1)
-> -		xfs_emerg(log->l_mp, "%s: ran out of log space", __func__);
-> -    }
-> +		blocks = BLOCK_LSN(tail_lsn) - log->l_prev_block;
-> +		if (blocks < BTOBB(iclog->ic_offset) + 1)
-> +			xfs_emerg(log->l_mp, "%s: ran out of log space", __func__);
-> +	}
->  }
->  
->  /*
-> -- 
-> 2.20.1.7.g153144c
-> 
+Just cleanup, no logic change.
+
+Signed-off-by: Yu Liao <liaoyu15@huawei.com>
+---
+ drivers/s390/char/sclp.c       |  4 +---
+ drivers/s390/char/sclp_con.c   |  3 +--
+ drivers/s390/char/sclp_vt220.c |  6 ++----
+ drivers/s390/cio/device_fsm.c  | 12 +++---------
+ drivers/s390/cio/eadm_sch.c    | 12 +++---------
+ 5 files changed, 10 insertions(+), 27 deletions(-)
+
+diff --git a/drivers/s390/char/sclp.c b/drivers/s390/char/sclp.c
+index f0763e36b861..cb2491761958 100644
+--- a/drivers/s390/char/sclp.c
++++ b/drivers/s390/char/sclp.c
+@@ -745,9 +745,7 @@ sclp_sync_wait(void)
+ 	/* Loop until driver state indicates finished request */
+ 	while (sclp_running_state != sclp_running_state_idle) {
+ 		/* Check for expired request timer */
+-		if (timer_pending(&sclp_request_timer) &&
+-		    get_tod_clock_fast() > timeout &&
+-		    del_timer(&sclp_request_timer))
++		if (get_tod_clock_fast() > timeout && del_timer(&sclp_request_timer))
+ 			sclp_request_timer.function(&sclp_request_timer);
+ 		cpu_relax();
+ 	}
+diff --git a/drivers/s390/char/sclp_con.c b/drivers/s390/char/sclp_con.c
+index de028868c6f4..fe5ee2646fcf 100644
+--- a/drivers/s390/char/sclp_con.c
++++ b/drivers/s390/char/sclp_con.c
+@@ -109,8 +109,7 @@ static void sclp_console_sync_queue(void)
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&sclp_con_lock, flags);
+-	if (timer_pending(&sclp_con_timer))
+-		del_timer(&sclp_con_timer);
++	del_timer(&sclp_con_timer);
+ 	while (sclp_con_queue_running) {
+ 		spin_unlock_irqrestore(&sclp_con_lock, flags);
+ 		sclp_sync_wait();
+diff --git a/drivers/s390/char/sclp_vt220.c b/drivers/s390/char/sclp_vt220.c
+index 7bc4e4a10937..3b4e7e5d9b71 100644
+--- a/drivers/s390/char/sclp_vt220.c
++++ b/drivers/s390/char/sclp_vt220.c
+@@ -231,8 +231,7 @@ sclp_vt220_emit_current(void)
+ 			list_add_tail(&sclp_vt220_current_request->list,
+ 				      &sclp_vt220_outqueue);
+ 			sclp_vt220_current_request = NULL;
+-			if (timer_pending(&sclp_vt220_timer))
+-				del_timer(&sclp_vt220_timer);
++			del_timer(&sclp_vt220_timer);
+ 		}
+ 		sclp_vt220_flush_later = 0;
+ 	}
+@@ -776,8 +775,7 @@ static void __sclp_vt220_flush_buffer(void)
+ 
+ 	sclp_vt220_emit_current();
+ 	spin_lock_irqsave(&sclp_vt220_lock, flags);
+-	if (timer_pending(&sclp_vt220_timer))
+-		del_timer(&sclp_vt220_timer);
++	del_timer(&sclp_vt220_timer);
+ 	while (sclp_vt220_queue_running) {
+ 		spin_unlock_irqrestore(&sclp_vt220_lock, flags);
+ 		sclp_sync_wait();
+diff --git a/drivers/s390/cio/device_fsm.c b/drivers/s390/cio/device_fsm.c
+index 05e136cfb8be..6d63b968309a 100644
+--- a/drivers/s390/cio/device_fsm.c
++++ b/drivers/s390/cio/device_fsm.c
+@@ -113,16 +113,10 @@ ccw_device_timeout(struct timer_list *t)
+ void
+ ccw_device_set_timeout(struct ccw_device *cdev, int expires)
+ {
+-	if (expires == 0) {
++	if (expires == 0)
+ 		del_timer(&cdev->private->timer);
+-		return;
+-	}
+-	if (timer_pending(&cdev->private->timer)) {
+-		if (mod_timer(&cdev->private->timer, jiffies + expires))
+-			return;
+-	}
+-	cdev->private->timer.expires = jiffies + expires;
+-	add_timer(&cdev->private->timer);
++	else
++		mod_timer(&cdev->private->timer, jiffies + expires);
+ }
+ 
+ int
+diff --git a/drivers/s390/cio/eadm_sch.c b/drivers/s390/cio/eadm_sch.c
+index 8b463681a149..ab6a7495180a 100644
+--- a/drivers/s390/cio/eadm_sch.c
++++ b/drivers/s390/cio/eadm_sch.c
+@@ -112,16 +112,10 @@ static void eadm_subchannel_set_timeout(struct subchannel *sch, int expires)
+ {
+ 	struct eadm_private *private = get_eadm_private(sch);
+ 
+-	if (expires == 0) {
++	if (expires == 0)
+ 		del_timer(&private->timer);
+-		return;
+-	}
+-	if (timer_pending(&private->timer)) {
+-		if (mod_timer(&private->timer, jiffies + expires))
+-			return;
+-	}
+-	private->timer.expires = jiffies + expires;
+-	add_timer(&private->timer);
++	else
++		mod_timer(&private->timer, jiffies + expires);
+ }
+ 
+ static void eadm_subchannel_irq(struct subchannel *sch)
+-- 
+2.25.1
+
