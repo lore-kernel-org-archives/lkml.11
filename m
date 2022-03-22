@@ -2,108 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 097D9C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:07:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5193C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:07:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239374AbiCVRJU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 13:09:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41676 "EHLO
+        id S239386AbiCVRJV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 13:09:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237970AbiCVRJQ (ORCPT
+        with ESMTP id S238070AbiCVRJQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 22 Mar 2022 13:09:16 -0400
 Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7066371ECF
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C59971EC9
         for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:07:48 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 2B6DF1F38C;
+        by smtp-out2.suse.de (Postfix) with ESMTP id 16F531F387;
         Tue, 22 Mar 2022 17:07:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
         t=1647968867; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7BHpLrva0gn3z4ug3sivlVXdf446dwWnsWltmnc0TZg=;
-        b=lpqB+3ia31feVNsJ+xBeXoPm6qiplwLJhmVWhDZV/IyaXPbcHw3SGJXSzRSs4AC4A/GUng
-        pBBP5SQ+ligtAPpdNJZTRXrE3fhB8LOcXqKJ7LFW4xGGBNLbjQpvNsX2O/aL9VemqGMYlB
-        53hv0qnsSQn2sro/BM4Y8R47P1laEwE=
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=m0HZkkkCvfCXgsfLMiVZKxjN0kToTbJd7hKDVBIs6aw=;
+        b=yXztFw54QWyEjaLgsgPWhqqOKkFrluWU7938ub+Z2d1duXcO0guuhmxi7f54qsEy6ozkC5
+        ZuiOesYv/NlU1VLuwtG2uZZ8162OaN7k1uOl+xVdZoLjN+YRwAZ6xYZQ2SAXHcfh8BIJqq
+        Rx+H7ia0S2/KRivAdzVe2IEMvxdxaGk=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
         s=susede2_ed25519; t=1647968867;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7BHpLrva0gn3z4ug3sivlVXdf446dwWnsWltmnc0TZg=;
-        b=DZNpQcmbWVN9G8MQ1OCIhMSCIW7VkpTffNB6yrufNEyRTH9rnv6dvK62Km/q4i3NvKX5TL
-        dXqcSVcCEbXCNUDA==
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=m0HZkkkCvfCXgsfLMiVZKxjN0kToTbJd7hKDVBIs6aw=;
+        b=GNNkuVErgDbvoXDAHyunnpH0GP9D4G6s997TI+dN8OtjcWuqoLEY/0GCvrCk/2GwL1Eymx
+        N3JuCQ41MdjXX3Aw==
 Received: from alsa1.nue.suse.com (alsa1.suse.de [10.160.4.42])
-        by relay2.suse.de (Postfix) with ESMTP id 25492A3B87;
+        by relay2.suse.de (Postfix) with ESMTP id 0EF0EA3B87;
         Tue, 22 Mar 2022 17:07:47 +0000 (UTC)
 From:   Takashi Iwai <tiwai@suse.de>
 To:     alsa-devel@alsa-project.org
 Cc:     Hu Jiahui <kirin.say@gmail.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/4] ALSA: pcm: Fix races among concurrent read/write and buffer changes
-Date:   Tue, 22 Mar 2022 18:07:18 +0100
-Message-Id: <20220322170720.3529-3-tiwai@suse.de>
+Subject: [PATCH 0/4] ALSA: pcm: Fix ioctl races
+Date:   Tue, 22 Mar 2022 18:07:16 +0100
+Message-Id: <20220322170720.3529-1-tiwai@suse.de>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220322170720.3529-1-tiwai@suse.de>
-References: <20220322170720.3529-1-tiwai@suse.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the current PCM design, the read/write syscalls (as well as the
-equivalent ioctls) are allowed before the PCM stream is running, that
-is, at PCM PREPARED state.  Meanwhile, we also allow to re-issue
-hw_params and hw_free ioctl calls at the PREPARED state that may
-change or free the buffers, too.  The problem is that there is no
-protection against those mix-ups.
+Hi,
 
-This patch applies the previously introduced runtime->buffer_mutex to
-the read/write operations so that the concurrent hw_params or hw_free
-call can no longer interfere during the operation.  The mutex is
-unlocked before scheduling, so we don't take it too long.
+this is a patch set to address the recently reported bug for the racy
+PCM ioctls.  In short, the current ALSA PCM core doesn't take enough
+care of concurrent ioctl calls, and the concurrent calls may result in
+a use-after-free.  The reported problem was the concurrent hw_free
+calls, but there can be similar cases with other code paths like
+hw_params, prepare, etc, too.
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
----
- sound/core/pcm_lib.c | 4 ++++
- 1 file changed, 4 insertions(+)
+The patch set introduces the new runtime->buffer_mutex for protecting
+those.  The first patch is the fix for the reported issue (the races
+with hw_free), while the rest three are more hardening for the other
+similar executions.
 
-diff --git a/sound/core/pcm_lib.c b/sound/core/pcm_lib.c
-index f2090025236b..a40a35e51fad 100644
---- a/sound/core/pcm_lib.c
-+++ b/sound/core/pcm_lib.c
-@@ -1906,9 +1906,11 @@ static int wait_for_avail(struct snd_pcm_substream *substream,
- 		if (avail >= runtime->twake)
- 			break;
- 		snd_pcm_stream_unlock_irq(substream);
-+		mutex_unlock(&runtime->buffer_mutex);
- 
- 		tout = schedule_timeout(wait_time);
- 
-+		mutex_lock(&runtime->buffer_mutex);
- 		snd_pcm_stream_lock_irq(substream);
- 		set_current_state(TASK_INTERRUPTIBLE);
- 		switch (runtime->status->state) {
-@@ -2219,6 +2221,7 @@ snd_pcm_sframes_t __snd_pcm_lib_xfer(struct snd_pcm_substream *substream,
- 
- 	nonblock = !!(substream->f_flags & O_NONBLOCK);
- 
-+	mutex_lock(&runtime->buffer_mutex);
- 	snd_pcm_stream_lock_irq(substream);
- 	err = pcm_accessible_state(runtime);
- 	if (err < 0)
-@@ -2310,6 +2313,7 @@ snd_pcm_sframes_t __snd_pcm_lib_xfer(struct snd_pcm_substream *substream,
- 	if (xfer > 0 && err >= 0)
- 		snd_pcm_update_state(substream, runtime);
- 	snd_pcm_stream_unlock_irq(substream);
-+	mutex_unlock(&runtime->buffer_mutex);
- 	return xfer > 0 ? (snd_pcm_sframes_t)xfer : err;
- }
- EXPORT_SYMBOL(__snd_pcm_lib_xfer);
+[ Note that the patch 3 was slightly modified from the version I sent
+  to distros list, as I noticed possible lockdep (false-positive)
+  warnings.  The behavior is almost same, just written differently. ]
+
+
+thanks,
+
+Takashi
+
+===
+
+Takashi Iwai (4):
+  ALSA: pcm: Fix races among concurrent hw_params and hw_free calls
+  ALSA: pcm: Fix races among concurrent read/write and buffer changes
+  ALSA: pcm: Fix races among concurrent prepare and hw_params/hw_free
+    calls
+  ALSA: pcm: Fix races among concurrent prealloc proc writes
+
+ include/sound/pcm.h     |  1 +
+ sound/core/pcm.c        |  2 +
+ sound/core/pcm_lib.c    |  4 ++
+ sound/core/pcm_memory.c | 11 +++--
+ sound/core/pcm_native.c | 93 +++++++++++++++++++++++++----------------
+ 5 files changed, 71 insertions(+), 40 deletions(-)
+
 -- 
 2.31.1
 
