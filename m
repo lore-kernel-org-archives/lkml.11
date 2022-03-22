@@ -2,157 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1252AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:06:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91BBBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:06:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236756AbiCVRIG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 13:08:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39368 "EHLO
+        id S239358AbiCVRIM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 13:08:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231186AbiCVRIE (ORCPT
+        with ESMTP id S231186AbiCVRIH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 13:08:04 -0400
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 361B363BF4
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:06:36 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:36584)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nWhxq-00Be9o-HU; Tue, 22 Mar 2022 11:06:34 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:39048 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nWhxp-0006YH-5j; Tue, 22 Mar 2022 11:06:34 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Marco Elver <elver@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <Yjmn/kVblV3TdoAq@elver.google.com>
-        <87ee2uyr4z.fsf@email.froward.int.ebiederm.org>
-        <CANpmjNN4UjUTB5x6-2T-+b7MY=oAYn37MKvQy-4jYh6JDeJuKg@mail.gmail.com>
-Date:   Tue, 22 Mar 2022 12:06:06 -0500
-In-Reply-To: <CANpmjNN4UjUTB5x6-2T-+b7MY=oAYn37MKvQy-4jYh6JDeJuKg@mail.gmail.com>
-        (Marco Elver's message of "Tue, 22 Mar 2022 17:44:31 +0100")
-Message-ID: <87k0clvrwh.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Tue, 22 Mar 2022 13:08:07 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6FA86AA7C;
+        Tue, 22 Mar 2022 10:06:38 -0700 (PDT)
+Received: from mail-wr1-f49.google.com ([209.85.221.49]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MdwRi-1o6b0t0Zra-00b7Oq; Tue, 22 Mar 2022 18:06:37 +0100
+Received: by mail-wr1-f49.google.com with SMTP id v22so10423937wra.2;
+        Tue, 22 Mar 2022 10:06:37 -0700 (PDT)
+X-Gm-Message-State: AOAM531HT4Ch/uG5ZhcbR5kuU8Q7NyPTyYn5C+Sb8OwItukgQ1dSXfgG
+        E8UeBjs/tpn4VTPLX44eAwEUuc1w3CWTo6FWLQo=
+X-Google-Smtp-Source: ABdhPJzYB6ox3wweLxkaJdVg1CSTqhO684+KAFRluL7iV1tWdFcF/ONdn4ZX1CPYE6vDSSNrGQ2IMjZPkjDxTSOkd/Q=
+X-Received: by 2002:a5d:66ca:0:b0:203:fb72:a223 with SMTP id
+ k10-20020a5d66ca000000b00203fb72a223mr15794201wrw.12.1647968796788; Tue, 22
+ Mar 2022 10:06:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nWhxp-0006YH-5j;;;mid=<87k0clvrwh.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX18zZgVo2V4Ymywh3u9tzrBhXMZipJ3gZDQ=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: RFC: Use of user space handler vs. SIG_DFL on forced signals
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+References: <20220228114523.03b2f921@canb.auug.org.au> <20220322110925.7b295e54@canb.auug.org.au>
+ <8ce9d045-c3c9-c839-7b82-9f5ccdae2d52@gmx.de>
+In-Reply-To: <8ce9d045-c3c9-c839-7b82-9f5ccdae2d52@gmx.de>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 22 Mar 2022 18:06:20 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a3hR0JP-coRBNDytC1onPUfYCUn_q148kMO5-FWvxwgOg@mail.gmail.com>
+Message-ID: <CAK8P3a3hR0JP-coRBNDytC1onPUfYCUn_q148kMO5-FWvxwgOg@mail.gmail.com>
+Subject: Re: linux-next: manual merge of the parisc-hd tree with the
+ asm-generic tree
+To:     Helge Deller <deller@gmx.de>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:b7arbufAWiTYFolXORfGQsCYX9SiUGAUTONI9A2Nlj4TyoOF0zf
+ ND1U9hnsMYobhHze2QgiYShUwv/Wm8RpBjdIYUZ+NlCJDZ60PBmMojx8mwSSF0z1EEt58HG
+ LadnFRWmvoVv3pPhbnulDnWZkzw1V0Ejibmy8kC5rvC/LJwGyBn1/V4lEfrtQIivqY/YBfy
+ gqnv8UBCCQLgq5Dd9ofEg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:O1EZIwAfhLY=:ShQmAeFA9GihY9zCn8wNuu
+ p10TnwrPoQKQri0fKPeeTFH5OOMKoLD0VWVSsH/ptvt/ZmDzLqRGLQZASdr0w/uR9dTsVLZfR
+ xfqtqYFo2ff3ruEPeptyeOA0loBk9V+2d4QCDf/2zVQLhzSxuczV3TO2IzlySU9iUhO3Q1LmK
+ qC4U7+hdK8JwT8XklftGKfeA0p2E6RsecRPCk3mg1ka0sURspZ+jH6h/GQZv560J7hxe8pS0O
+ qQpajIdFbgEkpEjB9rDNo5MUMiEhQLa3/C2Gd/oYPFKYM0FOVLBs5U0/3vGBMZ6p88hqFDY4t
+ u3xGEU98Ru7i0wswik1ZokDfGE27rr/q4QqW9LIg++BF0Dbr/X27skTL0Brp+or1o9JPERjP4
+ MPEOFNwG4L/xY5pqV06T/1A5Kffh3kYxxsBYwmKrSPHBlyZZbubdiIjBxPSKzzBZGKK9lHYzq
+ 0a4s+pBMCyq/QqD2mY7sC+U9RK2f50GKyQ/QKdlpYFh9jqzVjn9BrlZ1uEv48PHYefnL5gQIU
+ dD7oz/kowuGAWXhV6zmJOanH88nYH2UbFK+BfpXMhMWZooV9VevBlYJMSEQRqY2ae8nSWVEqg
+ cA7Wn7UYm/y9dg/du/lal/ZDpkWAsyR21/UauX/IRs842LO+hkQTXacn3WPQ1nfDC5TIfFCM1
+ PNELxvhBdZ0bRA/q2vSer/ajszcTJMsd4nhVSuNWahg6UxEJQ9hof3CE6kkUjRitAMxI=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Marco Elver <elver@google.com> writes:
-
-> On Tue, 22 Mar 2022 at 15:54, Eric W. Biederman <ebiederm@xmission.com> wrote:
->> Marco Elver <elver@google.com> writes:
->>
->> > Hello,
->> >
->> > Currently force_sig_info_to_task() will always unblock a blocked signal
->> > but deliver the signal to SIG_DFL:
->> >
->> >       [...]
->> >        * Note: If we unblock the signal, we always reset it to SIG_DFL,
->> >        * since we do not want to have a signal handler that was blocked
->> >        * be invoked when user space had explicitly blocked it.
->> >       [...]
->> >
->> > Is this requirement part of the POSIX spec? Or is the intent simply to
->> > attempt to do the least-bad thing?
->>
->> I have not found any POSIX language about this.
->>
->> The options are either we terminate the application, or the application
->> spins forever re-triggering the trap.
+On Tue, Mar 22, 2022 at 8:34 AM Helge Deller <deller@gmx.de> wrote:
 >
-> Is this in case of things like SEGV? I think this doesn't quite apply
-> to us. The cause of the signal (perf event) is rather benign, and the
-> signal handler can deal with recursion.
-
-Yes. Signals like SIGSEGV are what force_sig_info_to_task is used for.
-
-Signals where a userspace instruction causes a fault and the signal
-is delivered immediately (synchronously) with that fault.
-
-
-> [...]
->> > For SIGTRAP on perf events we found this makes the situation worse,
->> > since the cause of the signal wasn't an error condition, but explicitly
->> > requested monitoring. In this case, we do in fact want delivery of the
->> > signal to user space even if the signal is blocked, i.e.
->> > force_sig_perf() should be an unblockable forced synchronous signal to
->> > user space!
->>
->> Which is exactly what we have.  If you block it you get terminated.
+> On 3/22/22 01:09, Stephen Rothwell wrote:
+> > Hi all,
+> >
+> > On Mon, 28 Feb 2022 11:45:23 +1100 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+> >>
+> >> Today's linux-next merge of the parisc-hd tree got a conflict in:
+> >>
+> >>   arch/parisc/lib/memcpy.c
+> >>
+> >> between commit:
+> >>
+> >>   967747bbc084 ("uaccess: remove CONFIG_SET_FS")
+> >>
+> >> from the asm-generic tree and commit:
+> >>
+> >>   d4a767ea8b0e ("parisc: Use constants to encode the space registers like SR_KERNEL")
+> >>
+> >> from the parisc-hd tree.
+> >
+> > This is now a conflict between the asm-generic tree and commit
+> >
+> >   360bd6c65807 ("parisc: Use constants to encode the space registers like SR_KERNEL")
+> >
+> > in Linus' tree.
 >
-> Right, however, in this case we want to monitor/trace memory accesses
-> etc, and some 3rd party code such as a library being traced isn't
-> under our control.
 >
-> What we can do instead is to intercept sigprocmask() and work around
-> the issue, but libc interception is brittle. :-/
-> We do just want to receive the signal, all the time.
+> Arnd,
+> can you please drop the changes in your asm-generic tree for
+> arch/parisc/lib/memcpy.c
+> They are not needed any more.
 >
-> [...]
->> I think HANDLER_UNBLOCK is pretty much nonsense.
->>
->> A block signal very much means that userspace is not prepared to handle
->> the signal.  So calling something that is not ready to be called can't
->> work.  That is common sense, and I expect in POSIX as well.
->
-> The fundamental question is, if we have a valid signal handler, but
-> sigprocmask() is called, how do we still keep receiving signals for
-> SIGTRAP despite sigprocmask()?
->
-> Perhaps this is impossible without intercepting sigprocmask() in user
-> space, in which we'll need to find a different solution.
 
-Or adding some kind of feature to the kernel where you can report that
-some signal is unblockable.
+Sorry I missed that earlier when the conflict happened originally.
 
->> I expect that either you are looking for something like what ptrace does
->> with signal interruptions where another process is notified, and
->> userspace does not need to be involved, or that this is a don't do that
->> then.
->>
->> Or possibly you have some weird asynchronous signal thing happening and
->> you are calling it synchronous.
->
-> Not quite. We need it to be synchronous, because we need to know the
-> precise instruction and potentially do some other stuff _before_
-> subsequent instructions.
->
-> A compromise might be to deliver synchronously normally, but when
-> blocked deliver asynchronously. But if the signal was delivered
-> asynchronously, we need to let the signal handler know delivery was
-> asynchronous, so that our tracing logic can recover and give up at
-> that point.
->
-> To do this indication if it was asynchronous, we probably need to
-> extend siginfo_t once more. Would that be reasonable?
+I can't really rebase my changes on top of your tree now, and just dropping
+the change without a rebase would break mine. I'll make sure to mention
+the conflict in the pull request then and have Linus resolve it.
 
-So the idea is to use normal signal delivery but to set a flag
-to indicate that the signal was blocked at the time it was sent?
-
-It should be possible to add another field that takes a non-zero
-value.  On older kernels it should always have a value of zero so it
-should be safe.
-
-It might also be possible to simply ignore the signal if it is blocked.
-
-In either case it will probably take a little bit of care to get the
-races out.
-
-Eric
+       Arnd
