@@ -2,114 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 605EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 01:50:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A80DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 01:50:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235150AbiCVBv7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 21:51:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38078 "EHLO
+        id S235170AbiCVBwJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 21:52:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235114AbiCVBv5 (ORCPT
+        with ESMTP id S235114AbiCVBwF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 21:51:57 -0400
-Received: from gateway30.websitewelcome.com (gateway30.websitewelcome.com [192.185.146.7])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E04DE3BA54
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 18:50:30 -0700 (PDT)
-Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
-        by gateway30.websitewelcome.com (Postfix) with ESMTP id 012B66D1F
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 20:50:30 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id WTdMnmipnHnotWTdNnrXgC; Mon, 21 Mar 2022 20:48:29 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=uywUMPoBYXp6PjZ9nM9SBumqFsG3gbfJp1KNVLB3onA=; b=4gTC9WJ7KGNBp7piv1YTtUa3lw
-        zLkOpNlQGAfi6oNWBaU+2qz0Cwg6xK2vbmA3X9jjkzdYj3OoXdFH02dQTAdVh8aenAQ0V2c1bDASh
-        4NUTQ06Gj9ymwWxBHnonpZI1WJWHn6+iRDyCm59aaw3hxIGDZ9vP1h0Tbanq2ELpdxcRO0MeJZnNJ
-        75rqt5K+62bPy2zSXFOb74fzzOp9mDkkH+wleqpt1E+3hjMqmCm5XD+tOWEC3JzLnfEiEqdfelZZF
-        38Q4I8uQ1I1p3epGbWPnzHuetZeq3J7Tt5IL1gNVpdILyqv+tqo4E78aM/Mbz12howATwzSyAS3IO
-        DqMcCM5A==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54388)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nWTdM-001yfU-Lc; Tue, 22 Mar 2022 01:48:28 +0000
-Message-ID: <b3830750-f534-0c1c-f09b-3cce7fc6208b@roeck-us.net>
-Date:   Mon, 21 Mar 2022 18:48:27 -0700
+        Mon, 21 Mar 2022 21:52:05 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0F0F3BA5B
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 18:50:37 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KMvXv1j8KzfZSf;
+        Tue, 22 Mar 2022 09:49:03 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 22 Mar 2022 09:50:35 +0800
+Subject: Re: [PATCH v2] mm/mempolicy: fix mpol_new leak in
+ shared_policy_replace
+To:     Michal Hocko <mhocko@suse.com>
+CC:     <akpm@linux-foundation.org>, <kosaki.motohiro@jp.fujitsu.com>,
+        <mgorman@suse.de>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220322083456.16563-1-linmiaohe@huawei.com>
+ <YjhrkDlvOnmqIP6n@dhcp22.suse.cz>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <8c7d2ef2-08d7-ea50-a82b-9e9800c5f54c@huawei.com>
+Date:   Tue, 22 Mar 2022 09:50:35 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [GIT PULL] hwmon updates for v5.18
+In-Reply-To: <YjhrkDlvOnmqIP6n@dhcp22.suse.cz>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-hwmon@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220320231317.2171300-1-linux@roeck-us.net>
- <CAHk-=wgM1uHH1WJ47Zt5OGK5qjtFkvVCZLff+TKA2ahXAM1xQg@mail.gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <CAHk-=wgM1uHH1WJ47Zt5OGK5qjtFkvVCZLff+TKA2ahXAM1xQg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nWTdM-001yfU-Lc
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54388
-X-Source-Auth: linux@roeck-us.net
-X-Email-Count: 1
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/21/22 18:21, Linus Torvalds wrote:
-> On Sun, Mar 20, 2022 at 4:13 PM Guenter Roeck <linux@roeck-us.net> wrote:
+On 2022/3/21 20:12, Michal Hocko wrote:
+> On Tue 22-03-22 16:34:56, Miaohe Lin wrote:
+>> If mpol_new is allocated but not used in restart loop, mpol_new will be
+>> freed via mpol_put before returning to the caller.  But refcnt is not
+>> initialized yet, so mpol_put could not do the right things and might leak
+>> the unused mpol_new.
+> 
+> I would just add:
+> 
+> This would happen if mempolicy was updated on the shared shmem file
+> while the sp->lock has been dropped during the memory allocation.
+> 
+
+Do you mean the below commit log?
+
+"""
+If mpol_new is allocated but not used in restart loop, mpol_new will be
+freed via mpol_put before returning to the caller.  But refcnt is not
+initialized yet, so mpol_put could not do the right things and might leak
+the unused mpol_new. This would happen if mempolicy was updated on the
+shared shmem file while the sp->lock has been dropped during the memory
+allocation.
+
+This issue could be triggered easily with the below code snippet if
+there're many processes doing the below work at the same time:
+
+  shmid = shmget((key_t)5566, 1024 * PAGE_SIZE, 0666|IPC_CREAT);
+  shm = shmat(shmid, 0, 0);
+  loop many times {
+    mbind(shm, 1024 * PAGE_SIZE, MPOL_LOCAL, mask, maxnode, 0);
+    mbind(shm + 128 * PAGE_SIZE, 128 * PAGE_SIZE, MPOL_DEFAULT, mask,
+          maxnode, 0);
+  }
+"""
+
+>> This issue could be triggered easily with the below
+>> code snippet if there're many processes doing the below work at the same
+>> time:
 >>
->> Improvements to existing drivers:
->> - adt7x10: Convert to use regmap, convert to use with_info API,
->>    use hwmon_notify_event, and other cleanup
->> - aquacomputer_d5next: Add support for Aquacomputer Farbwerk 360
->> - asus_wmi_sensors: Add ASUS ROG STRIX B450-F GAMING II
->> - asus_wmi_ec_sensors: Support T_Sensor on Prime X570-Pro
->>    Deprecate driver (replaced by new driver)
-> [...]
+>>   shmid = shmget((key_t)5566, 1024 * PAGE_SIZE, 0666|IPC_CREAT);
+>>   shm = shmat(shmid, 0, 0);
+>>   loop many times {
+>>     mbind(shm, 1024 * PAGE_SIZE, MPOL_LOCAL, mask, maxnode, 0);
+>>     mbind(shm + 128 * PAGE_SIZE, 128 * PAGE_SIZE, MPOL_DEFAULT, mask,
+>>           maxnode, 0);
+>>   }
+>>
+>> Fixes: 42288fe366c4 ("mm: mempolicy: Convert shared_policy mutex to spinlock")
+>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>> Cc: <stable@vger.kernel.org> # 3.8
 > 
-> To make my life easier, can I ask you to try to format these things a
-> bit more sanely and legibly?
+> Acked-by: Michal Hocko <mhocko@suse.com>
 > 
-> You had this odd mix of sometimes using new lines to separate
-> different things (eg that asus_wmi_ec_sensors entry), and sometimes
-> just multiple different things in a list that then had line-breaks in
-> the middle.
-> 
-> That kind of stuff is _very_ hard to parse as anything but a random
-> jumble of words all crammed together.
-> 
-> Whitespace to separate things is good, and some kind of consistent
-> indentation makes it more legible. I edited it all up (hopefully
-> correctly), but it would be nice to get it in a readable form to begin
-> with..
-> 
-> Yeah, if everything does well, nobody will ever need to read that
-> merge message, but let's try to aim for nice and informative commit
-> messages anyway.
+> Thanks a lot!
+
+Many thanks for comment and Acked-by tag! :)
+
+>> ---
+>> v1->v2:
+>>   Add reproducer snippet and Cc stable.
+>>   Thanks Michal Hocko for review and comment!
+>> ---
+>>  mm/mempolicy.c | 1 +
+>>  1 file changed, 1 insertion(+)
+>>
+>> diff --git a/mm/mempolicy.c b/mm/mempolicy.c
+>> index a2516d31db6c..4cdd425b2752 100644
+>> --- a/mm/mempolicy.c
+>> +++ b/mm/mempolicy.c
+>> @@ -2733,6 +2733,7 @@ static int shared_policy_replace(struct shared_policy *sp, unsigned long start,
+>>  	mpol_new = kmem_cache_alloc(policy_cache, GFP_KERNEL);
+>>  	if (!mpol_new)
+>>  		goto err_out;
+>> +	refcount_set(&mpol_new->refcnt, 1);
+>>  	goto restart;
+>>  }
+>>  
+>> -- 
+>> 2.23.0
 > 
 
-Sorry for that. I'll use your reformatting as example and use
-the same format in the future.
-
-Guenter
