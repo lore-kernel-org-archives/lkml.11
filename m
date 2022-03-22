@@ -2,121 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76BC2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 01:36:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85011C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 01:39:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234653AbiCVBhg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 21:37:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35512 "EHLO
+        id S234941AbiCVBlV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 21:41:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234610AbiCVBhe (ORCPT
+        with ESMTP id S234909AbiCVBlS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 21:37:34 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7416D7678;
-        Mon, 21 Mar 2022 18:36:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647912963; x=1679448963;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=Qgy/juc1I0r2YeGjveVENOWkM5dKEQi0FD/9Dw7Vy1A=;
-  b=JPb1I1x1Pj4ZXVvUK1+G2enBSohUilw3j9I6h2/b2taB3OCpRvYN4GzK
-   I2MPISEWJJrpj61GmkqIUwmMUmAj/W7kI/worqZXAXZGSL9P0czXs4vtn
-   TdB8lWqo0U0mPgYVAMY9q/583wkMpr34IHHaxnKK1gscjRVz4v640etFL
-   xwAlYNTMHY0owIlRy5ks7j+NNd8kiCwf+N9AENWecwltD47eVra3jQ+z3
-   XL8FPtoqI5lsggjFW+43XObR29hLNyrgEm1sACfppB1bjHG7MpB3mcJML
-   Ki2sFtPEAHyB6D4e3HL/l9XATV8Y2Ne6UnzzMIg1WrOMoBgRU3j/ks0D3
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="237635136"
-X-IronPort-AV: E=Sophos;i="5.90,200,1643702400"; 
-   d="scan'208";a="237635136"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 18:36:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,200,1643702400"; 
-   d="scan'208";a="500380607"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orsmga003.jf.intel.com with ESMTP; 21 Mar 2022 18:36:02 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Mon, 21 Mar 2022 18:36:02 -0700
-Received: from shsmsx601.ccr.corp.intel.com (10.109.6.141) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 21 Mar 2022 18:36:00 -0700
-Received: from shsmsx601.ccr.corp.intel.com ([10.109.6.141]) by
- SHSMSX601.ccr.corp.intel.com ([10.109.6.141]) with mapi id 15.01.2308.021;
- Tue, 22 Mar 2022 09:35:58 +0800
-From:   "Zhang, Cathy" <cathy.zhang@intel.com>
-To:     Jethro Beekman <jethro@fortanix.com>,
-        "Hansen, Dave" <dave.hansen@intel.com>,
-        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     "Raj, Ashok" <ashok.raj@intel.com>
-Subject: RE: [RFC PATCH v2 09/10] x86/cpu: Call ENCLS[EUPDATESVN] procedure in
- microcode update
-Thread-Topic: [RFC PATCH v2 09/10] x86/cpu: Call ENCLS[EUPDATESVN] procedure
- in microcode update
-Thread-Index: AQHYOAhnN0apP04FNkeGc4yeqoa7EazBPxwAgAAKxgCAAFoygIACtKKAgAZQFgA=
-Date:   Tue, 22 Mar 2022 01:35:58 +0000
-Message-ID: <f117484666f64892bf47bd743432b537@intel.com>
-References: <20220315010300.10199-1-cathy.zhang@intel.com>
- <20220315010300.10199-10-cathy.zhang@intel.com>
- <53e7d3a3-a576-7ef1-fa2d-d170fa1172a1@fortanix.com>
- <e1682971-4821-8e57-3232-de7a72086991@fortanix.com>
- <e121e972-7689-b2f3-5919-746e3a90cb36@intel.com>
- <4198920d-298c-6565-5d97-9d0a8fcc8441@fortanix.com>
-In-Reply-To: <4198920d-298c-6565-5d97-9d0a8fcc8441@fortanix.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.6.401.20
-dlp-reaction: no-action
-dlp-product: dlpe-windows
-x-originating-ip: [10.239.127.36]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+        Mon, 21 Mar 2022 21:41:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 822521408F
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 18:39:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1328615F6
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 01:39:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5670AC340EE;
+        Tue, 22 Mar 2022 01:39:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647913189;
+        bh=4YlVfWY1f6q0TCJGXupQXSgaW/J+hFm3bX84bVgdJrk=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=mswkzdUh8nrB0/N2TU4fGegCZ2ggRDMOWxHJ8P+IldegcYO65WdAWdUtcOoRAXuye
+         fhu8HgGbnidP9sbopm3VOMRJZdLMrPp3LzSyJQjGk/2s8XCn9f3bV+o5VWVu1EFNzI
+         qTveNVaf9/lwzcTSWEw5rPXiAusFGatfZQmRrPMYNO9T2UUOEFZriZDRqZH/656WS9
+         SyntQEtdL4l8KfOw8WT3HDAufkF7hcu7XmJYPpCGx+XeNm7wxII+3M+pV2h/At6D20
+         TtTpi8n/Tn8Ih1+Ga4yQsiN8E68oiWpny5OJ1LlZYRfsvD1rE9XIzS6O7O2j9jNIiE
+         ijBoSjd92UEDw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 428B7E6D44B;
+        Tue, 22 Mar 2022 01:39:49 +0000 (UTC)
+Subject: Re: [GIT PULL] regmap updates for v5.18
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220321123541.37912C340E8@smtp.kernel.org>
+References: <20220321123541.37912C340E8@smtp.kernel.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220321123541.37912C340E8@smtp.kernel.org>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git tags/regmap-v5.18
+X-PR-Tracked-Commit-Id: 0074f3f2b1e43d3cedd97e47fb6980db6d2ba79e
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: a50a8c3833864d959c18f742bf6aa1d38fbe28c9
+Message-Id: <164791318926.2267.16572059139430382489.pr-tracker-bot@kernel.org>
+Date:   Tue, 22 Mar 2022 01:39:49 +0000
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGkgSmV0aHJvLA0KDQpUaGFua3MgZm9yIGhlbHBpbmcgcmV2aWV3IQ0KDQo+IC0tLS0tT3JpZ2lu
-YWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IEpldGhybyBCZWVrbWFuIDxqZXRocm9AZm9ydGFuaXgu
-Y29tPg0KPiBTZW50OiBGcmlkYXksIE1hcmNoIDE4LCAyMDIyIDU6MDYgUE0NCj4gVG86IEhhbnNl
-biwgRGF2ZSA8ZGF2ZS5oYW5zZW5AaW50ZWwuY29tPjsgWmhhbmcsIENhdGh5DQo+IDxjYXRoeS56
-aGFuZ0BpbnRlbC5jb20+OyBsaW51eC1zZ3hAdmdlci5rZXJuZWwub3JnOyBsaW51eC1IaQ0KPiBr
-ZXJuZWxAdmdlci5rZXJuZWwub3JnDQo+IENjOiBSYWosIEFzaG9rIDxhc2hvay5yYWpAaW50ZWwu
-Y29tPg0KPiBTdWJqZWN0OiBSZTogW1JGQyBQQVRDSCB2MiAwOS8xMF0geDg2L2NwdTogQ2FsbCBF
-TkNMU1tFVVBEQVRFU1ZOXQ0KPiBwcm9jZWR1cmUgaW4gbWljcm9jb2RlIHVwZGF0ZQ0KPiANCj4g
-T24gMjAyMi0wMy0xNiAxNjo0NywgRGF2ZSBIYW5zZW4gd3JvdGU6DQo+ID4gT24gMy8xNi8yMiAw
-MzoyNCwgSmV0aHJvIEJlZWttYW4gd3JvdGU6DQo+ID4+PiBEb2luZyB0aGlzIGF1dG9tYXRpY2Fs
-bHkgYW5kIHVuY29uZGl0aW9uYWxseSBkdXJpbmcgYSBtaWNyb2NvZGUNCj4gPj4+IHVwZGF0ZSBz
-ZWVtcyB1bmRlc2lyYWJsZS4gVGhpcyByZXF1aXJlcyB0aGUgdXNlcmxhbmQgdG9vbGluZyB0aGF0
-DQo+ID4+PiBpcyBjb29yZGluYXRpbmcgdGhlIG1pY3JvY29kZSB1cGRhdGUgdG8gYmUgYXdhcmUg
-b2YgYW55IFNHWA0KPiA+Pj4gZW5jbGF2ZXMgdGhhdCBhcmUgcnVubmluZyBhbmQgcG9zc2libHkg
-Y29vcmRpbmF0ZSBzZXF1ZW5jaW5nIHdpdGgNCj4gPj4+IHRoZSBwcm9jZXNzZXMgY29udGFpbmlu
-ZyB0aG9zZSBlbmNsYXZlcy4gVGhpcyBjb3VwbGluZyBkb2VzIG5vdA0KPiA+Pj4gZXhpc3QgdG9k
-YXkuDQo+ID4+IEFsc28sIGEgbWljcm9jb2RlIHVwZGF0ZSBtYXkgbm90IGFmZmVjdCBTR1ggc2Vj
-dXJpdHkgYXQgYWxsIGFuZCBkb2luZw0KPiA+PiB0aGUgRVVQREFURVNWTiBwcm9jZWR1cmUgbWF5
-IG5vdCBiZSByZXF1aXJlZCBmb3IgdGhpcyBwYXJ0aWN1bGFyDQo+ID4+IHVwZGF0ZS4gVGhpcyBj
-YXNlIGlzIGNhbGxlZCBvdXQgc3BlY2lmaWNhbGx5IGluIHRoZSBFVVBEQVRFU1ZODQo+ID4+IGRv
-Y3VtZW50YXRpb24uDQo+ID4NCj4gPiBJIGRvbid0IHRoaW5rIEludGVsIHByb3ZpZGVzIHRoZSBt
-ZXRhZGF0YSBmb3IgdGhlIGtlcm5lbCB0byB0ZWxsIGlmIGFuDQo+ID4gdXBkYXRlIHJlcXVpcmVz
-IGFuIEVVUERBVEVTVk4gcHJvY2VkdXJlIG9yIG5vdC4gIElmIHRoaXMgaXMgaW5jb252ZW5pZW50
-DQo+ID4gZm9yIHlvdSwgSSdkIHN1Z2dlc3QgcmVwb3J0aW5nIHRoaXMgdG8gdGhlIGZvbGtzIGF0
-IEludGVsIHdobyBjYW4gZml4DQo+ID4gaXQuICBJdCBkb2Vzbid0IHNlZW0gbGlrZSBzb21ldGhp
-bmcgd2hpY2ggdGhleSBhcmUgbW90aXZhdGVkIHRvIGZpeC4NCj4gDQo+IFdoZXRoZXIgb3Igbm90
-IG1ldGFkYXRhIGlzIGN1cnJlbnRseSBtYWRlIGF2YWlsYWJsZSBpcyBvcnRob2dvbmFsIHRvDQo+
-IGNyZWF0aW5nIGEgbWVjaGFuaXNtIGJ5IHdoaWNoIHVzZXJzcGFjZSBjYW4gaW5kaWRhdGUgdGhh
-dCBhIHBhcnRpY3VsYXINCj4gbWljcm9jb2RlIHVwZGF0ZSBzaG91bGRuJ3QgdHJpZ2dlciB0aGUg
-RVVQREFURVNWTiBwcm9jZWR1cmUuDQoNCkknbSBub3Qgc3VyZSBpZiB5b3UgaGF2ZSBub3RpY2Vk
-IHRoZSBkaXNjdXNzaW9ucyBpbiB2MToNCmh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2FsbC8xNzQy
-YmU5ZS1jMThlLTI4YzktNzVjOC0xNDRiZjFmNmEzMTFAaW50ZWwuY29tL1QvI20xOGU2ZmVjZDhj
-OWM1MTdjNjhjYjRkNjJlNTNmMjQ5MDlhYmQ1MGE3DQoNCldlIHJlbW92ZSB0aGUgc3lzZnMgd2hp
-Y2ggYWxsb3dzIHVzZXJzcGFjZSB0byBkZWNpZGUgaWYgYW5kIHdoZW4gdG8NCnRyaWdnZXIgdGhl
-IEVVUERBVEVTVk4gcHJvY2VkdXJlLiBQbGVhc2UgY29tbWVudCBpZiB5b3UgaGF2ZSBvdGhlcg0K
-c3VnZ2VzdGlvbi4NCg0KPiANCj4gLS0NCj4gSmV0aHJvIEJlZWttYW4gfCBGb3J0YW5peA0K
+The pull request you sent on Mon, 21 Mar 2022 12:35:29 +0000:
+
+> https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git tags/regmap-v5.18
+
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/a50a8c3833864d959c18f742bf6aa1d38fbe28c9
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
