@@ -2,59 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3406FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:41:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E2B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:41:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231517AbiCVImb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 04:42:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53364 "EHLO
+        id S231583AbiCVImq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 04:42:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231260AbiCVImZ (ORCPT
+        with ESMTP id S231502AbiCVImh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 04:42:25 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B962313CF6;
-        Tue, 22 Mar 2022 01:40:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=/NmC01N3JvtvFUOOHkfjZBbXiJu6Ht33d+DqM28OQjQ=; b=rJ9Ly2kbGsEib6Dqq36DIfmdfV
-        i+XI3dFmUgfuD/aGQHoWFIgUeAVLyTZjCJ+omMMV0iETJaBeOcIABp+40IVM4CJ+etUXdxc4q0fHJ
-        NZAA5jJIbkIPobLGx7ZFqxioEvYZ+FgZOpEiA/iFD3u0R17FIl1PJNWCUjX5Ms7dwF8674YSqaWQ7
-        NO9i10AvgHrFeA88WtbNR2lSUbQIG2X0fxlhm5zMlDaoPDt2ZzIhDC2YK/ahc55hi17Owrr0zN7/d
-        hqxLNwZnbJG9c+yg0+d2J042/0YzcHGf4p3JtlaT+YSIsjTRKS0hQPDKSVlhS6FgTFVrQLR68K9fM
-        6o9rZQWg==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nWa4N-00ARy0-D1; Tue, 22 Mar 2022 08:40:47 +0000
-Date:   Tue, 22 Mar 2022 01:40:47 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Jane Chu <jane.chu@oracle.com>
-Cc:     david@fromorbit.com, djwong@kernel.org, dan.j.williams@intel.com,
-        hch@infradead.org, vishal.l.verma@intel.com, dave.jiang@intel.com,
-        agk@redhat.com, snitzer@redhat.com, dm-devel@redhat.com,
-        ira.weiny@intel.com, willy@infradead.org, vgoyal@redhat.com,
-        linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org
-Subject: Re: [PATCH v6 1/6] x86/mm: fix comment
-Message-ID: <YjmLj78jjoieT2nm@infradead.org>
-References: <20220319062833.3136528-1-jane.chu@oracle.com>
- <20220319062833.3136528-2-jane.chu@oracle.com>
+        Tue, 22 Mar 2022 04:42:37 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C99CE6BDD1;
+        Tue, 22 Mar 2022 01:41:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1647938468; x=1679474468;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=nijQD/zlc5+xUJ+OIlvFTQfbS4iCg/CX/NvW4jL1NHY=;
+  b=IzRqD4+BN1Gtp9FKWKiOZhFBtwvOfvmSEVP1nJgYpo3uTFgy7ffMGfO9
+   hBD6hpnVODEwMrBUByswgbZXhtl72OPz7S9Z/9IVxD+SFVB/qc9AbtbKo
+   bfQ0fBiXmepuX9wDVK7e8rBeHeKYd1UuLxiFx5kMneEFqRy0wJSr1+ygg
+   8=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 22 Mar 2022 01:41:08 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2022 01:41:08 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 22 Mar 2022 01:41:07 -0700
+Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 22 Mar 2022 01:41:03 -0700
+Date:   Tue, 22 Mar 2022 14:10:59 +0530
+From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
+To:     Pavan Kondeti <quic_pkondeti@quicinc.com>
+CC:     Sandeep Maheswaram <quic_c_sanm@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        "Matthias Kaehlcke" <mka@chromium.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <quic_ppratap@quicinc.com>,
+        <quic_kriskura@quicinc.com>
+Subject: Re: [PATCH v11 2/5] usb: dwc3: core: Host wake up support from
+ system suspend
+Message-ID: <20220322084059.GN23316@hu-pkondeti-hyd.qualcomm.com>
+References: <1647932876-23249-1-git-send-email-quic_c_sanm@quicinc.com>
+ <1647932876-23249-3-git-send-email-quic_c_sanm@quicinc.com>
+ <20220322083221.GJ23316@hu-pkondeti-hyd.qualcomm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20220319062833.3136528-2-jane.chu@oracle.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <20220322083221.GJ23316@hu-pkondeti-hyd.qualcomm.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 19, 2022 at 12:28:28AM -0600, Jane Chu wrote:
-> There is no _set_memory_prot internal helper, while coming across
-> the code, might as well fix the comment.
+Hi Sandeep,
+
+On Tue, Mar 22, 2022 at 02:02:21PM +0530, Pavan Kondeti wrote:
+> Hi Sandeep,
 > 
-> Signed-off-by: Jane Chu <jane.chu@oracle.com>
+> On Tue, Mar 22, 2022 at 12:37:53PM +0530, Sandeep Maheswaram wrote:
+> > During suspend read the status of all port and make sure the PHYs
+> > are in the correct mode based on current speed.
+> > Phy interrupt masks are set based on this mode. Keep track of the mode
+> > of the HS PHY to be able to configure wakeup properly.
+> > 
+> > Also check during suspend if any wakeup capable devices are
+> > connected to the controller (directly or through hubs), if there
+> > are none set a flag to indicate that the PHY is powered
+> > down during suspend.
+> > 
+> > Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+> > ---
+> >  drivers/usb/dwc3/core.c | 54 ++++++++++++++++++++++++++++++++++++++++---------
+> >  1 file changed, 45 insertions(+), 9 deletions(-)
+> > 
+> > diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+> > index 1170b80..232a734 100644
+> > --- a/drivers/usb/dwc3/core.c
+> > +++ b/drivers/usb/dwc3/core.c
+> > @@ -32,12 +32,14 @@
+> >  #include <linux/usb/gadget.h>
+> >  #include <linux/usb/of.h>
+> >  #include <linux/usb/otg.h>
+> > +#include <linux/usb/hcd.h>
+> >  
+> >  #include "core.h"
+> >  #include "gadget.h"
+> >  #include "io.h"
+> >  
+> >  #include "debug.h"
+> > +#include "../host/xhci.h"
+> >  
+> >  #define DWC3_DEFAULT_AUTOSUSPEND_DELAY	5000 /* ms */
+> >  
+> > @@ -1861,10 +1863,36 @@ static int dwc3_core_init_for_resume(struct dwc3 *dwc)
+> >  	return ret;
+> >  }
+> >  
+> > +static void dwc3_set_phy_speed_mode(struct dwc3 *dwc)
+> > +{
+> > +
+> > +	int i, num_ports;
+> > +	u32 reg;
+> > +	struct usb_hcd	*hcd = platform_get_drvdata(dwc->xhci);
+> > +	struct xhci_hcd	*xhci_hcd = hcd_to_xhci(hcd);
+> > +
+> > +	dwc->hs_phy_mode = 0;
+> > +
+Sorry, My bad. I did not notice that the flags are cleared here.
 
-Looks good:
-
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+Thanks,
+Pavan
