@@ -2,130 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B120C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 11:12:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74CC5C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 11:15:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234048AbiCVLOF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 07:14:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37744 "EHLO
+        id S231743AbiCVLQv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 07:16:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232818AbiCVLNx (ORCPT
+        with ESMTP id S230414AbiCVLQs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 07:13:53 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1FC1681671;
-        Tue, 22 Mar 2022 04:12:25 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C29EF153B;
-        Tue, 22 Mar 2022 04:12:24 -0700 (PDT)
-Received: from bogus (e103737-lin.cambridge.arm.com [10.1.197.49])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AD5153F66F;
-        Tue, 22 Mar 2022 04:12:23 -0700 (PDT)
-Date:   Tue, 22 Mar 2022 11:12:21 +0000
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Stefano Stabellini <sstabellini@kernel.org>
-Cc:     Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Souvik Chakravarty <Souvik.Chakravarty@arm.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 2/2] dt-bindings: xen: Add xen,scmi-devid property
- description for SCMI
-Message-ID: <YjmvFZOqAcnoBcR+@bogus>
-References: <cover.1646639462.git.oleksii_moisieiev@epam.com>
- <5859bb58c8caf87985deb84d7f6bfc8182bd6a59.1646639462.git.oleksii_moisieiev@epam.com>
- <Yie47a4lqXjVzgxI@robh.at.kernel.org>
- <20220316164619.GA3489934@EPUAKYIW015D>
- <YjIzeyNoWhVAY5HK@bogus>
- <alpine.DEB.2.22.394.2203181644560.2910984@ubuntu-linux-20-04-desktop>
+        Tue, 22 Mar 2022 07:16:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C2C727DAA7
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 04:15:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647947719;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9+UC/u0PtbhZRKj2jRfChXJZesydUtyvw1SAh08In7c=;
+        b=i5swd/M1rZ+0vVvBO5B/j0hsn0TivLa1CZVshusv2AmLW0yXytKIHUld2zrjzQOBcgGrKm
+        R2kmawj0UjVnh4D30C6rpDTFprgAVjnxdLJDZV8kjthP4m19Ccfw5KPaAc+XzetjM4CiYu
+        lKBlMTlCwaQL9IRDTZhzGN4edbh0IRE=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-79-NmZIIGm0NW6Zx2rH4l8CdA-1; Tue, 22 Mar 2022 07:15:18 -0400
+X-MC-Unique: NmZIIGm0NW6Zx2rH4l8CdA-1
+Received: by mail-ej1-f71.google.com with SMTP id 13-20020a170906328d00b006982d0888a4so8454258ejw.9
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 04:15:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=9+UC/u0PtbhZRKj2jRfChXJZesydUtyvw1SAh08In7c=;
+        b=bZ0NYl9TueJTyrQGP99NvunnHg2rKwkc+G0IPNOvs1vAAbo+2vR+DN3Fayc/LrMjBp
+         gqWvVzjhPIM8XVJ4khlohLLW736BznG1mbsIhQgbX+0OxuqdG7hWMmy4gokk0EFazbbo
+         23gmSTr1t4GHCliQcF2q7gQy9sJb5hsZmIvx4Jko92G+m7g1DXxyrzYP62qyD1LeIwtw
+         8tItE24DAkzozqS19chBXkVBkwjM+HmRqqQt9sdJMync83YiNfWhV5aYA0iCsP4en7h6
+         4d8e4z9RIqknQZ/J+1GR48JbWFufWAKPoDcHD2s3ksXlDmAU+vWbiETcPpK9scc1VkFL
+         dsDA==
+X-Gm-Message-State: AOAM530KpyDVdXGv0QxQR3RRPlOcj35ZNfW9fFpZlatmUCIKDHcM16pY
+        h6w+j/oj9hZlWOQFgPuq41tJ5xyjo8L1uTU2PY2G+IxAcjmzJ2XOygNsoWcxiIAu8jgeILiWhkv
+        gynNdP0IkTZcDETj7wwPe7/oV
+X-Received: by 2002:a17:907:6d0d:b0:6db:f0f8:654d with SMTP id sa13-20020a1709076d0d00b006dbf0f8654dmr25117726ejc.304.1647947717428;
+        Tue, 22 Mar 2022 04:15:17 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJztuw0yNJlw73T6KIfQYuamz6XiUFLX3+Qtr0m4cBQUuSF6vyV6Eeh/JUedUW2DEs+W3oFzWQ==
+X-Received: by 2002:a17:907:6d0d:b0:6db:f0f8:654d with SMTP id sa13-20020a1709076d0d00b006dbf0f8654dmr25117698ejc.304.1647947717179;
+        Tue, 22 Mar 2022 04:15:17 -0700 (PDT)
+Received: from ?IPV6:2001:1c00:c1e:bf00:cdb2:2781:c55:5db0? (2001-1c00-0c1e-bf00-cdb2-2781-0c55-5db0.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:cdb2:2781:c55:5db0])
+        by smtp.gmail.com with ESMTPSA id qa44-20020a17090786ac00b006dbe1ca23casm8117781ejc.45.2022.03.22.04.15.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Mar 2022 04:15:16 -0700 (PDT)
+Message-ID: <30340bc0-3a75-cccc-ed98-f80f3ce94627@redhat.com>
+Date:   Tue, 22 Mar 2022 12:15:15 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.22.394.2203181644560.2910984@ubuntu-linux-20-04-desktop>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH] Revert "Input: clear BTN_RIGHT/MIDDLE on buttonpads"
+Content-Language: en-US
+To:     =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        jkosina@suse.cz
+Cc:     tiwai@suse.de, benjamin.tissoires@redhat.com,
+        regressions@leemhuis.info, peter.hutterer@who-t.net,
+        linux-input@vger.kernel.org, stable@vger.kernel.org,
+        regressions@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20220321184404.20025-1-jose.exposito89@gmail.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220321184404.20025-1-jose.exposito89@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 04:53:20PM -0700, Stefano Stabellini wrote:
-> On Wed, 16 Mar 2022, Sudeep Holla wrote:
-> > On Wed, Mar 16, 2022 at 04:46:20PM +0000, Oleksii Moisieiev wrote:
-> > > 
-> > > > + The reason I want to keep it xen specific at the moment as we had some
-> > > > plan to extended the device-id usage in the spec which hasn't progressed
-> > > > a bit(I must admit that before you ask), and this addition should not be
-> > > > obstruct that future development. If we align with what we define xen
-> > > > specific as part of $subject work, we can always define generic binding
-> > > > in the future and slowly make the other obsolete over the time.
-> > > 
-> > > IIUC you have some plans to provide device_id support to the device-tree
-> > > bindings from your side. Maybe we can discuss some of your plans here
-> > > and we can come up with the generic device-id binding?
-> > > So I will have something to base on in Xen.
-> > > 
-> > 
-> > Sorry if I wasn't clear in earlier emails. What I mentioned was that I would
-> > like to reserve the generic namespace(i.e. just device-id) for generic SCMI
-> > usage. Since we haven't defined it clearly in the spec, I don't want to
-> > introduce the generic definition and binding now.
-> > 
-> > As mentioned earlier, though Xen definition and generic once may be exactly
-> > same, but we won't know until then. So keep the xen usage and namespace
-> > separate for now to avoid any future conflicts.
+Hi,
+
+On 3/21/22 19:44, José Expósito wrote:
+> This reverts commit 37ef4c19b4c659926ce65a7ac709ceaefb211c40.
 > 
+> The touchpad present in the Dell Precision 7550 and 7750 laptops
+> reports a HID_DG_BUTTONTYPE of type MT_BUTTONTYPE_CLICKPAD. However,
+> the device is not a clickpad, it is a touchpad with physical buttons.
 > 
-> Hi Sudeep,
+> In order to fix this issue, a quirk for the device was introduced in
+> libinput [1] [2] to disable the INPUT_PROP_BUTTONPAD property:
 > 
-> I thought the specification already covered this device id, it simply
-> delegated the description of it to Device Tree or ACPI, which is common
-> behavior in ARM specs. What is missing in the SCMI spec from your point
-> of view?
->
+> 	[Precision 7x50 Touchpad]
+> 	MatchBus=i2c
+> 	MatchUdevType=touchpad
+> 	MatchDMIModalias=dmi:*svnDellInc.:pnPrecision7?50*
+> 	AttrInputPropDisable=INPUT_PROP_BUTTONPAD
+> 
+> However, because of the change introduced in 37ef4c19b4 ("Input: clear
+> BTN_RIGHT/MIDDLE on buttonpads") the BTN_RIGHT key bit is not mapped
+> anymore breaking the device right click button and making impossible to
+> workaround it in user space.
+> 
+> In order to avoid breakage on other present or future devices, revert
+> the patch causing the issue.
+> 
+> Cc: stable@vger.kernel.org
+> Link: https://gitlab.freedesktop.org/libinput/libinput/-/merge_requests/481 [1]
+> Link: https://bugzilla.redhat.com/show_bug.cgi?id=1868789  [2]
+> Signed-off-by: José Expósito <jose.exposito89@gmail.com>
 
-While you can say so, but for me it isn't to an extent that we can support
-software around it. I did share my feedback with spec author but as you
-know it was needed for virtualisation use-case like Xen and was rushed
-into the spec. All it states is "Device identifier" identifies the device
-and the enumeration is not part of the spec. It defers to DT/ACPI.
+Thanks, patch looks good to me:
 
-Since I didn't have to use that in OSPM, I hadn't given much thought/review
-on that.
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
 
->
-> Or would you like this scmi-devid Device Tree property (or similar) to
-> be described in the SCMI specification itself?
->
-
-Spec doesn't cover that in general but do carry some recommendations
-sometimes.
-
-> Typically Device Tree and ACPI descriptions are delegated to Device Tree
-> and ACPI respectively. Also specification updates are typically slow
-> (for good reason.) We might be waiting for a long time. It is usually
-> not a matter of days.
-
-I agree.
-
-As I said, there were thoughts about adding device protocol to make
-all the other protocols centered around the device. The idea is as below:
-
-Today a device A is associated with clock domain X, reset domain Y,
-voltage domain Z, perf domain P, power domain Q, ...and so on.
-Especially this would get complex with lots of devices and for virtual
-machines.
-
-Instead let all these different operations use the device identifier A
-in the above case to drive clock, reset, perf, power, voltage,...etc.
-
-While this was just initial idea, I am bit wary of the fact that it would
-alter the definition of device identifier. Also there is orthogonal topic
-of device assignment in various contexts and associated identifiers.
-IIRC Rob briefly raised concerns on one of such topics.
-
-With all these in consideration, I preferred to not use the "device-id"
-in the standard namespace for anything else until we get clarity on these.
-
---
 Regards,
-Sudeep
+
+Hans
+
+
+> ---
+>  drivers/input/input.c | 6 ------
+>  1 file changed, 6 deletions(-)
+> 
+> diff --git a/drivers/input/input.c b/drivers/input/input.c
+> index c3139bc2aa0d..ccaeb2426385 100644
+> --- a/drivers/input/input.c
+> +++ b/drivers/input/input.c
+> @@ -2285,12 +2285,6 @@ int input_register_device(struct input_dev *dev)
+>  	/* KEY_RESERVED is not supposed to be transmitted to userspace. */
+>  	__clear_bit(KEY_RESERVED, dev->keybit);
+>  
+> -	/* Buttonpads should not map BTN_RIGHT and/or BTN_MIDDLE. */
+> -	if (test_bit(INPUT_PROP_BUTTONPAD, dev->propbit)) {
+> -		__clear_bit(BTN_RIGHT, dev->keybit);
+> -		__clear_bit(BTN_MIDDLE, dev->keybit);
+> -	}
+> -
+>  	/* Make sure that bitmasks not mentioned in dev->evbit are clean. */
+>  	input_cleanse_bitmasks(dev);
+>  
+
