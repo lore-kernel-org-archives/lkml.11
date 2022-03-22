@@ -2,233 +2,230 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C19C6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 14:18:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F330CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 14:26:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233006AbiCVOUN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 10:20:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55000 "EHLO
+        id S237047AbiCVO1h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 10:27:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237533AbiCVORR (ORCPT
+        with ESMTP id S231478AbiCVO1c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 10:17:17 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F3D66CA68
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 07:14:23 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id bx5so15743631pjb.3
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 07:14:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=KmpoxwlpdTAmi630hXs8vMPAHLsHiDF3ysmYDpSnUTk=;
-        b=JWxzsQssqkgSNvCTgcwwzwsdqz1p75+shTj5YzO8qnOEiIAYKrq9yRyt4y62hW5uwx
-         1VLaJ3pKRVpsclR29L1T5rIj3E+BqAXwWWq+jF90OKXC3niaLCSNvSZh9YF5mKa34AWJ
-         6Tp54RpBjaCtrh9eVbCVrM58OwU3GbGESyf04GnEOXw6xY6aZ2pVEWE4f6lb0yTxwsTr
-         +rCLN9bNmozUETJ/gK3nAwXybZ4+RseB2J/IU71WP1aju3osHxK51DIloW+bqLQ5EUwl
-         kwLx767RVMYLbN6fPCfv8iaxw9Rfe47gNr344YO3vInL4ZH9Wll7gAHR/rgswxH8fLIg
-         P7LQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=KmpoxwlpdTAmi630hXs8vMPAHLsHiDF3ysmYDpSnUTk=;
-        b=M+TPY1MkUu/NbF6AbS67yEl2QMKqfjFHQqr+eoNV5uPMi8d/tdrEjpAq4b3FAQJgP6
-         SlPPqDhLHCNUD2+/Mpe+iWL5YbN6nVymKLzU69PJTcKtsW+Ub+tLMjWgUtmWmNV7Awm4
-         HQAYldUmHQ9WpEHp3ZnG6r8vjaz4boNdwzWlAEcfTDe5wZdFKyvncf97U4MtfjBYTR5K
-         e97p4getczX3Rpj6a4DMEpbtR/Cl8cGfVA1voG49YM7M7nyLrEq8ZGhyuaq/QeUmmoxV
-         Y5axV1R3Ul4fsZXaaKfkTrclCNDQ3OeZQGl+ryCG75EsHVT2u7tm+fzT/vOKllzWBZJ5
-         wFQw==
-X-Gm-Message-State: AOAM532L0LKNS+1Cc9cSZK/u0lELeu5Y/e2uLPIeT5GkO9c921qwuBA/
-        6q2NWOzbcrejyivzQD8pGiN/Jw==
-X-Google-Smtp-Source: ABdhPJy3vkob5aeMtKN+V8UhtCkWt2UnP72EwVNaLFPfcPOK35s1aHFtUwtyWCN6Veqy2oRF19cNNg==
-X-Received: by 2002:a17:902:d508:b0:154:2f99:a531 with SMTP id b8-20020a170902d50800b001542f99a531mr16804442plg.133.1647958460998;
-        Tue, 22 Mar 2022 07:14:20 -0700 (PDT)
-Received: from ?IPV6:2409:8a28:e62:3990:4de5:990f:881e:dd0e? ([2409:8a28:e62:3990:4de5:990f:881e:dd0e])
-        by smtp.gmail.com with ESMTPSA id g1-20020a056a000b8100b004faa79a72e8sm7149447pfj.156.2022.03.22.07.14.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Mar 2022 07:14:20 -0700 (PDT)
-Message-ID: <7807fc23-c6c9-b6a9-62ef-e34e8beefdea@bytedance.com>
-Date:   Tue, 22 Mar 2022 22:14:11 +0800
+        Tue, 22 Mar 2022 10:27:32 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F98F329BB
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 07:25:59 -0700 (PDT)
+Received: from kwepemi500024.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KNDFj3VdpzBrbm;
+        Tue, 22 Mar 2022 22:22:01 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi500024.china.huawei.com (7.221.188.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 22 Mar 2022 22:25:56 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 22 Mar 2022 22:25:55 +0800
+From:   Tong Tiangen <tongtiangen@huawei.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+CC:     <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-riscv@lists.infradead.org>,
+        Tong Tiangen <tongtiangen@huawei.com>
+Subject: [PATCH -next v2 3/4] arm64: mm: add support for page table check
+Date:   Tue, 22 Mar 2022 14:44:46 +0000
+Message-ID: <20220322144447.3563146-4-tongtiangen@huawei.com>
+X-Mailer: git-send-email 2.18.0.huawei.25
+In-Reply-To: <20220322144447.3563146-1-tongtiangen@huawei.com>
+References: <20220322144447.3563146-1-tongtiangen@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Subject: Re: [External] Re: [PATCH v3 3/3] arm64/ftrace: Make function graph
- use ftrace directly
-Content-Language: en-US
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     mark.rutland@arm.com, mingo@redhat.com, tglx@linutronix.de,
-        catalin.marinas@arm.com, will@kernel.org,
-        dave.hansen@linux.intel.com, broonie@kernel.org, x86@kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        songmuchun@bytedance.com, qirui.001@bytedance.com
-References: <20220224093251.49971-1-zhouchengming@bytedance.com>
- <20220224093251.49971-3-zhouchengming@bytedance.com>
- <c8b7508b-ce2a-c7dc-92c4-ca5f17992844@bytedance.com>
- <20220322094100.73dc3ad0@gandalf.local.home>
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-In-Reply-To: <20220322094100.73dc3ad0@gandalf.local.home>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/3/22 9:41 下午, Steven Rostedt wrote:
-> On Tue, 22 Mar 2022 20:48:00 +0800
-> Chengming Zhou <zhouchengming@bytedance.com> wrote:
-> 
->> Hello,
->>
->> ping... have any comments?
-> 
-> Hi Chengming,
-> 
-> BTW, if you don't hear back for a week, it's OK to send a ping. You don't
-> need to wait a month. Usually, it's just that the maintainers have other
-> priorities and will try to look at it when they get a chance, but then
-> forget to do so :-/
+From: Kefeng Wang <wangkefeng.wang@huawei.com>
 
-Hi Steve, ok, I got it ;-)
+As commit d283d422c6c4 ("x86: mm: add x86_64 support for page table
+check"), add some necessary page table check hooks into routines that
+modify user page tables.
 
-> 
-> 
->>
->> Thanks.
->>
->> On 2022/2/24 5:32 下午, Chengming Zhou wrote:
->>> As we do in commit 0c0593b45c9b ("x86/ftrace: Make function graph
->>> use ftrace directly"), we don't need special hook for graph tracer,
->>> but instead we use graph_ops:func function to install return_hooker.
->>>
->>> Since commit 3b23e4991fb6 ("arm64: implement ftrace with regs") add
->>> implementation for FTRACE_WITH_REGS on arm64, we can easily adopt
->>> the same cleanup on arm64. And this cleanup only changes the
->>> FTRACE_WITH_REGS implementation, so the mcount-based implementation
->>> is unaffected.
->>>
->>> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
->>> ---
->>> Changes in v3:
->>>  - Add comments in ftrace_graph_func() as suggested by Steve.
->>>
->>> Changes in v2:
->>>  - Remove FTRACE_WITH_REGS ftrace_graph_caller asm as suggested by Mark.
->>> ---
->>>  arch/arm64/include/asm/ftrace.h  |  7 +++++++
->>>  arch/arm64/kernel/entry-ftrace.S | 17 -----------------
->>>  arch/arm64/kernel/ftrace.c       | 17 +++++++++++++++++
->>>  3 files changed, 24 insertions(+), 17 deletions(-)
->>>
->>> diff --git a/arch/arm64/include/asm/ftrace.h b/arch/arm64/include/asm/ftrace.h
->>> index 1494cfa8639b..dbc45a4157fa 100644
->>> --- a/arch/arm64/include/asm/ftrace.h
->>> +++ b/arch/arm64/include/asm/ftrace.h
->>> @@ -80,8 +80,15 @@ static inline unsigned long ftrace_call_adjust(unsigned long addr)
->>>  
->>>  #ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
->>>  struct dyn_ftrace;
->>> +struct ftrace_ops;
->>> +struct ftrace_regs;
->>> +
->>>  int ftrace_init_nop(struct module *mod, struct dyn_ftrace *rec);
->>>  #define ftrace_init_nop ftrace_init_nop
->>> +
->>> +void ftrace_graph_func(unsigned long ip, unsigned long parent_ip,
->>> +		       struct ftrace_ops *op, struct ftrace_regs *fregs);
->>> +#define ftrace_graph_func ftrace_graph_func
->>>  #endif
->>>  
->>>  #define ftrace_return_address(n) return_address(n)
->>> diff --git a/arch/arm64/kernel/entry-ftrace.S b/arch/arm64/kernel/entry-ftrace.S
->>> index e535480a4069..d42a205ef625 100644
->>> --- a/arch/arm64/kernel/entry-ftrace.S
->>> +++ b/arch/arm64/kernel/entry-ftrace.S
->>> @@ -97,12 +97,6 @@ SYM_CODE_START(ftrace_common)
->>>  SYM_INNER_LABEL(ftrace_call, SYM_L_GLOBAL)
->>>  	bl	ftrace_stub
->>>  
->>> -#ifdef CONFIG_FUNCTION_GRAPH_TRACER
->>> -SYM_INNER_LABEL(ftrace_graph_call, SYM_L_GLOBAL) // ftrace_graph_caller();
->>> -	nop				// If enabled, this will be replaced
->>> -					// "b ftrace_graph_caller"
->>> -#endif
->>> -
->>>  /*
->>>   * At the callsite x0-x8 and x19-x30 were live. Any C code will have preserved
->>>   * x19-x29 per the AAPCS, and we created frame records upon entry, so we need
->>> @@ -127,17 +121,6 @@ ftrace_common_return:
->>>  	ret	x9
->>>  SYM_CODE_END(ftrace_common)
->>>  
->>> -#ifdef CONFIG_FUNCTION_GRAPH_TRACER
->>> -SYM_CODE_START(ftrace_graph_caller)
->>> -	ldr	x0, [sp, #S_PC]
->>> -	sub	x0, x0, #AARCH64_INSN_SIZE	// ip (callsite's BL insn)
->>> -	add	x1, sp, #S_LR			// parent_ip (callsite's LR)
->>> -	ldr	x2, [sp, #PT_REGS_SIZE]	   	// parent fp (callsite's FP)
->>> -	bl	prepare_ftrace_return
->>> -	b	ftrace_common_return
->>> -SYM_CODE_END(ftrace_graph_caller)
->>> -#endif
->>> -
->>>  #else /* CONFIG_DYNAMIC_FTRACE_WITH_REGS */
->>>  
->>>  /*
->>> diff --git a/arch/arm64/kernel/ftrace.c b/arch/arm64/kernel/ftrace.c
->>> index 4506c4a90ac1..35eb7c9b5e53 100644
->>> --- a/arch/arm64/kernel/ftrace.c
->>> +++ b/arch/arm64/kernel/ftrace.c
->>> @@ -268,6 +268,22 @@ void prepare_ftrace_return(unsigned long self_addr, unsigned long *parent,
->>>  }
->>>  
->>>  #ifdef CONFIG_DYNAMIC_FTRACE
->>> +
->>> +#ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
-> 
-> Is there a case were we have DYNAMIC_FTRACE but not
-> DYNAMIC_FTRACE_WITH_REGS?
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
+---
+ arch/arm64/Kconfig               |  1 +
+ arch/arm64/include/asm/pgtable.h | 65 +++++++++++++++++++++++++++++---
+ 2 files changed, 61 insertions(+), 5 deletions(-)
 
-Yes, when HAVE_DYNAMIC_FTRACE_WITH_REGS is not selected because of low gcc version.
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 962c84952c98..1880dd0a8a11 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -91,6 +91,7 @@ config ARM64
+ 	select ARCH_SUPPORTS_ATOMIC_RMW
+ 	select ARCH_SUPPORTS_INT128 if CC_HAS_INT128
+ 	select ARCH_SUPPORTS_NUMA_BALANCING
++	select ARCH_SUPPORTS_PAGE_TABLE_CHECK
+ 	select ARCH_WANT_COMPAT_IPC_PARSE_VERSION if COMPAT
+ 	select ARCH_WANT_DEFAULT_BPF_JIT
+ 	select ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT
+diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
+index 94e147e5456c..30ed787b5df3 100644
+--- a/arch/arm64/include/asm/pgtable.h
++++ b/arch/arm64/include/asm/pgtable.h
+@@ -33,6 +33,7 @@
+ #include <linux/mmdebug.h>
+ #include <linux/mm_types.h>
+ #include <linux/sched.h>
++#include <linux/page_table_check.h>
+ 
+ #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+ #define __HAVE_ARCH_FLUSH_PMD_TLB_RANGE
+@@ -96,6 +97,7 @@ static inline pteval_t __phys_to_pte_val(phys_addr_t phys)
+ #define pte_young(pte)		(!!(pte_val(pte) & PTE_AF))
+ #define pte_special(pte)	(!!(pte_val(pte) & PTE_SPECIAL))
+ #define pte_write(pte)		(!!(pte_val(pte) & PTE_WRITE))
++#define pte_user(pte)		(!!(pte_val(pte) & PTE_USER))
+ #define pte_user_exec(pte)	(!(pte_val(pte) & PTE_UXN))
+ #define pte_cont(pte)		(!!(pte_val(pte) & PTE_CONT))
+ #define pte_devmap(pte)		(!!(pte_val(pte) & PTE_DEVMAP))
+@@ -312,7 +314,7 @@ static inline void __check_racy_pte_update(struct mm_struct *mm, pte_t *ptep,
+ 		     __func__, pte_val(old_pte), pte_val(pte));
+ }
+ 
+-static inline void set_pte_at(struct mm_struct *mm, unsigned long addr,
++static inline void __set_pte_at(struct mm_struct *mm, unsigned long addr,
+ 			      pte_t *ptep, pte_t pte)
+ {
+ 	if (pte_present(pte) && pte_user_exec(pte) && !pte_special(pte))
+@@ -343,6 +345,13 @@ static inline void set_pte_at(struct mm_struct *mm, unsigned long addr,
+ 	set_pte(ptep, pte);
+ }
+ 
++static inline void set_pte_at(struct mm_struct *mm, unsigned long addr,
++			      pte_t *ptep, pte_t pte)
++{
++	page_table_check_pte_set(mm, addr, ptep, pte);
++	return __set_pte_at(mm, addr, ptep, pte);
++}
++
+ /*
+  * Huge pte definitions.
+  */
+@@ -438,6 +447,8 @@ static inline int pmd_trans_huge(pmd_t pmd)
+ #define pmd_dirty(pmd)		pte_dirty(pmd_pte(pmd))
+ #define pmd_young(pmd)		pte_young(pmd_pte(pmd))
+ #define pmd_valid(pmd)		pte_valid(pmd_pte(pmd))
++#define pmd_user(pmd)		pte_user(pmd_pte(pmd))
++#define pmd_user_exec(pmd)	pte_user_exec(pmd_pte(pmd))
+ #define pmd_cont(pmd)		pte_cont(pmd_pte(pmd))
+ #define pmd_wrprotect(pmd)	pte_pmd(pte_wrprotect(pmd_pte(pmd)))
+ #define pmd_mkold(pmd)		pte_pmd(pte_mkold(pmd_pte(pmd)))
+@@ -485,8 +496,19 @@ static inline pmd_t pmd_mkdevmap(pmd_t pmd)
+ #define pud_pfn(pud)		((__pud_to_phys(pud) & PUD_MASK) >> PAGE_SHIFT)
+ #define pfn_pud(pfn,prot)	__pud(__phys_to_pud_val((phys_addr_t)(pfn) << PAGE_SHIFT) | pgprot_val(prot))
+ 
+-#define set_pmd_at(mm, addr, pmdp, pmd)	set_pte_at(mm, addr, (pte_t *)pmdp, pmd_pte(pmd))
+-#define set_pud_at(mm, addr, pudp, pud)	set_pte_at(mm, addr, (pte_t *)pudp, pud_pte(pud))
++static inline void set_pmd_at(struct mm_struct *mm, unsigned long addr,
++			      pmd_t *pmdp, pmd_t pmd)
++{
++	page_table_check_pmd_set(mm, addr, pmdp, pmd);
++	return __set_pte_at(mm, addr, (pte_t *)pmdp, pmd_pte(pmd));
++}
++
++static inline void set_pud_at(struct mm_struct *mm, unsigned long addr,
++			      pud_t *pudp, pud_t pud)
++{
++	page_table_check_pud_set(mm, addr, pudp, pud);
++	return __set_pte_at(mm, addr, (pte_t *)pudp, pud_pte(pud));
++}
+ 
+ #define __p4d_to_phys(p4d)	__pte_to_phys(p4d_pte(p4d))
+ #define __phys_to_p4d_val(phys)	__phys_to_pte_val(phys)
+@@ -627,6 +649,24 @@ static inline unsigned long pmd_page_vaddr(pmd_t pmd)
+ #define pud_present(pud)	pte_present(pud_pte(pud))
+ #define pud_leaf(pud)		pud_sect(pud)
+ #define pud_valid(pud)		pte_valid(pud_pte(pud))
++#define pud_user(pud)		pte_user(pud_pte(pud))
++
++#ifdef CONFIG_PAGE_TABLE_CHECK
++static inline bool pte_user_accessible_page(pte_t pte)
++{
++	return pte_present(pte) && (pte_user(pte) || pte_user_exec(pte));
++}
++
++static inline bool pmd_user_accessible_page(pmd_t pmd)
++{
++	return pmd_present(pmd) && (pmd_user(pmd) || pmd_user_exec(pmd));
++}
++
++static inline bool pud_user_accessible_page(pud_t pud)
++{
++	return pud_present(pud) && pud_user(pud);
++}
++#endif
+ 
+ static inline void set_pud(pud_t *pudp, pud_t pud)
+ {
+@@ -856,11 +896,21 @@ static inline int pmdp_test_and_clear_young(struct vm_area_struct *vma,
+ }
+ #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+ 
++static inline pte_t __ptep_get_and_clear(struct mm_struct *mm,
++				       unsigned long address, pte_t *ptep)
++{
++	return __pte(xchg_relaxed(&pte_val(*ptep), 0));
++}
++
+ #define __HAVE_ARCH_PTEP_GET_AND_CLEAR
+ static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
+ 				       unsigned long address, pte_t *ptep)
+ {
+-	return __pte(xchg_relaxed(&pte_val(*ptep), 0));
++	pte_t pte = __ptep_get_and_clear(mm, address, ptep);
++
++	page_table_check_pte_clear(mm, address, pte);
++
++	return pte;
+ }
+ 
+ #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+@@ -868,7 +918,11 @@ static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
+ static inline pmd_t pmdp_huge_get_and_clear(struct mm_struct *mm,
+ 					    unsigned long address, pmd_t *pmdp)
+ {
+-	return pte_pmd(ptep_get_and_clear(mm, address, (pte_t *)pmdp));
++	pmd_t pmd = pte_pmd(__ptep_get_and_clear(mm, address, (pte_t *)pmdp));
++
++	page_table_check_pmd_clear(mm, address, pmd);
++
++	return pmd;
+ }
+ #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+ 
+@@ -902,6 +956,7 @@ static inline void pmdp_set_wrprotect(struct mm_struct *mm,
+ static inline pmd_t pmdp_establish(struct vm_area_struct *vma,
+ 		unsigned long address, pmd_t *pmdp, pmd_t pmd)
+ {
++	page_table_check_pmd_set(vma->vm_mm, address, pmdp, pmd);
+ 	return __pmd(xchg_relaxed(&pmd_val(*pmdp), pmd_val(pmd)));
+ }
+ #endif
+-- 
+2.18.0.huawei.25
 
-> 
->>> +void ftrace_graph_func(unsigned long ip, unsigned long parent_ip,
->>> +		       struct ftrace_ops *op, struct ftrace_regs *fregs)
->>> +{
->>> +	/*
->>> +	 * Athough graph_ops doesn't have FTRACE_OPS_FL_SAVE_REGS set in flags,
->>> +	 * regs can't be NULL in DYNAMIC_FTRACE_WITH_REGS. By design, it should
->>> +	 * be fixed when DYNAMIC_FTRACE_WITH_ARGS is implemented.
->>> +	 */
->>> +	struct pt_regs *regs = arch_ftrace_get_regs(fregs);
->>> +	unsigned long *parent = (unsigned long *)&procedure_link_pointer(regs);
->>> +
->>> +	prepare_ftrace_return(ip, parent, frame_pointer(regs));
->>> +}
->>> +#else
-> 
-> You deleted ftrace_graph_caller above from entry-ftrace.S, if we can get
-> here with some options, wouldn't that break the build?
-
-The above ftrace_graph_caller deleted is only for CONFIG_DYNAMIC_FTRACE_WITH_REGS,
-and I tried using a low gcc version that doesn't select HAVE_DYNAMIC_FTRACE_WITH_REGS,
-it can build success.
-
-Thanks.
-
-> 
-> -- Steve
-> 
-> 
->>>  /*
->>>   * Turn on/off the call to ftrace_graph_caller() in ftrace_caller()
->>>   * depending on @enable.
->>> @@ -297,5 +313,6 @@ int ftrace_disable_ftrace_graph_caller(void)
->>>  {
->>>  	return ftrace_modify_graph_caller(false);
->>>  }
->>> +#endif /* CONFIG_DYNAMIC_FTRACE_WITH_REGS */
->>>  #endif /* CONFIG_DYNAMIC_FTRACE */
->>>  #endif /* CONFIG_FUNCTION_GRAPH_TRACER */  
-> 
