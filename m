@@ -2,52 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26EFEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 00:47:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CF02C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 00:47:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234486AbiCVAtT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 20:49:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55924 "EHLO
+        id S234495AbiCVAtV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 20:49:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234445AbiCVAtO (ORCPT
+        with ESMTP id S234460AbiCVAtQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 20:49:14 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B356275C8;
-        Mon, 21 Mar 2022 17:47:48 -0700 (PDT)
+        Mon, 21 Mar 2022 20:49:16 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A31C627B0F;
+        Mon, 21 Mar 2022 17:47:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1647910068; x=1679446068;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=C5lTDdOfMPAE0ajPAQDA9bQQeuDZypCaA114x2yCVZU=;
-  b=b5elKTMmROsEj45tUc83YMI6w6gAzXPsz0x7YOdzBAvScUgneGdazAvS
-   E7IiglN7xATYSiU169dSKMC9YxYqCe+8Q3TJTSFrrfnFM16tTClZPWjdE
-   LfasyRA4XCKGtBc4grRX+8JJ8tSRdIh06j1QJ1Ys0jaOYHyt7/R6UgOwo
-   4=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 21 Mar 2022 17:47:48 -0700
+  t=1647910069; x=1679446069;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=4Hfyz22PouTDUj0o7xhLSgeFJEeNsb/nS9a947rwT5E=;
+  b=VM/GUYKLe933AvBzEX3attDYoWB2YwBfgojvdzsDvEUk+zOS13jR6lCI
+   TdcYT54eFkWQiJxbvgEGi9EDW5m6/EkpTdKG4XnoLtHNxoMh7QUOZS6lk
+   jF4FBUzfzWHBVxtJJbKpVNsk+pVZ2g+pR/5qVtVBZ/G7tKmO+F0sMURIy
+   8=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 21 Mar 2022 17:47:48 -0700
 X-QCInternal: smtphost
 Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 17:47:47 -0700
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 17:47:49 -0700
 Received: from collinsd-linux.qualcomm.com (10.80.80.8) by
  nasanex01b.na.qualcomm.com (10.46.141.250) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 21 Mar 2022 17:47:47 -0700
+ 15.2.986.22; Mon, 21 Mar 2022 17:47:48 -0700
 From:   David Collins <quic_collinsd@quicinc.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Mark Brown <broonie@kernel.org>,
+To:     Mark Brown <broonie@kernel.org>,
         Liam Girdwood <lgirdwood@gmail.com>,
-        <devicetree@vger.kernel.org>
+        Sudeep Holla <sudeep.holla@arm.com>
 CC:     David Collins <quic_collinsd@quicinc.com>,
+        Rob Herring <robh+dt@kernel.org>,
         Cristian Marussi <cristian.marussi@arm.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        "Subbaraman Narayanamurthy" <quic_subbaram@quicinc.com>
-Subject: [PATCH v2 0/2] regulator: scmi: add support for registering SCMI regulators by name
-Date:   Mon, 21 Mar 2022 17:47:18 -0700
-Message-ID: <cover.1647909090.git.quic_collinsd@quicinc.com>
+        Subbaraman Narayanamurthy <quic_subbaram@quicinc.com>
+Subject: [PATCH v2 2/2] regulator: scmi: add support for registering SCMI regulators by name
+Date:   Mon, 21 Mar 2022 17:47:20 -0700
+Message-ID: <822eefd3ad25daf2da66c9257e2a69e93d9df5a4.1647909090.git.quic_collinsd@quicinc.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <cover.1647909090.git.quic_collinsd@quicinc.com>
+References: <cover.1647909090.git.quic_collinsd@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.80.80.8]
@@ -70,22 +72,94 @@ Voltage Domains by the SCMI platform.  It also ensures that the
 correct Voltage Domain is selected for a given physical regulator.
 This cannot be guaranteed with numeric Voltage Domain IDs alone.
 
-Changes in v2:
-- Replaced usage of DT property "regulator-name" with "arm,scmi-domain-name".
+Signed-off-by: David Collins <quic_collinsd@quicinc.com>
+---
+ drivers/regulator/scmi-regulator.c | 58 ++++++++++++++++++++++++++++--
+ 1 file changed, 55 insertions(+), 3 deletions(-)
 
-v1 of this patch series can be found at [1].
-
-[1]: https://lore.kernel.org/lkml/cover.1643069954.git.quic_collinsd@quicinc.com/T/
-
-David Collins (2):
-  dt-bindings: firmware: arm,scmi: define support for name based
-    regulators
-  regulator: scmi: add support for registering SCMI regulators by name
-
- .../bindings/firmware/arm,scmi.yaml           | 15 ++++-
- drivers/regulator/scmi-regulator.c            | 58 ++++++++++++++++++-
- 2 files changed, 67 insertions(+), 6 deletions(-)
-
+diff --git a/drivers/regulator/scmi-regulator.c b/drivers/regulator/scmi-regulator.c
+index 1f02f60ad136..15f9167b96ab 100644
+--- a/drivers/regulator/scmi-regulator.c
++++ b/drivers/regulator/scmi-regulator.c
+@@ -31,6 +31,7 @@
+ #include <linux/regulator/of_regulator.h>
+ #include <linux/scmi_protocol.h>
+ #include <linux/slab.h>
++#include <linux/string.h>
+ #include <linux/types.h>
+ 
+ static const struct scmi_voltage_proto_ops *voltage_ops;
+@@ -252,16 +253,67 @@ static int scmi_regulator_common_init(struct scmi_regulator *sreg)
+ 	return 0;
+ }
+ 
++static int scmi_regulator_map_name(struct scmi_protocol_handle *ph,
++				   struct scmi_regulator_info *rinfo,
++				   const char *name)
++{
++	const struct scmi_voltage_info *vinfo;
++	int i;
++
++	for (i = 0; i < rinfo->num_doms; i++) {
++		vinfo = voltage_ops->info_get(ph, i);
++		if (!vinfo)
++			continue;
++		if (!strncmp(vinfo->name, name, sizeof(vinfo->name)))
++			return i;
++	}
++
++	return -ENODEV;
++}
++
+ static int process_scmi_regulator_of_node(struct scmi_device *sdev,
+ 					  struct scmi_protocol_handle *ph,
+ 					  struct device_node *np,
+ 					  struct scmi_regulator_info *rinfo)
+ {
+ 	u32 dom, ret;
++	int name_dom;
++	const char *name;
+ 
+-	ret = of_property_read_u32(np, "reg", &dom);
+-	if (ret)
+-		return ret;
++	dom = rinfo->num_doms;
++	if (of_find_property(np, "reg", NULL)) {
++		ret = of_property_read_u32(np, "reg", &dom);
++		if (ret)
++			return ret;
++
++		if (dom >= rinfo->num_doms)
++			return -ENODEV;
++	}
++
++	if (of_find_property(np, "arm,scmi-domain-name", NULL)) {
++		ret = of_property_read_string(np, "arm,scmi-domain-name",
++					      &name);
++		if (ret)
++			return ret;
++
++		name_dom = scmi_regulator_map_name(ph, rinfo, name);
++		if (name_dom < 0) {
++			dev_err(&sdev->dev,
++				"No SCMI Voltage Domain found named %s. Skipping: %s\n",
++				name, np->full_name);
++			return name_dom;
++		}
++
++		if (dom >= rinfo->num_doms)
++			dom = name_dom;
++
++		if (name_dom != dom) {
++			dev_err(&sdev->dev,
++				"SCMI Voltage Domain %s ID mismatch, %u (DT) != %d (firmware). Skipping: %s\n",
++				name, dom, name_dom, np->full_name);
++			return -EINVAL;
++		}
++	}
+ 
+ 	if (dom >= rinfo->num_doms)
+ 		return -ENODEV;
 -- 
 2.17.1
 
