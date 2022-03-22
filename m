@@ -2,84 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 997F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 15:20:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4958C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 15:20:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238701AbiCVPVn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 11:21:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41148 "EHLO
+        id S235631AbiCVPUp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 11:20:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238647AbiCVPV0 (ORCPT
+        with ESMTP id S238384AbiCVPUW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 11:21:26 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CBA5888EB;
-        Tue, 22 Mar 2022 08:19:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=82Iai9rshD4beiVR/j7WhNo1cfOZSCSdMFJeraPEq2g=; b=da9HiTmJD+ymSvajQWByZu8GUx
-        86F+53OJsDWx617vaeyp46vNQgmSe2zo/Sq4RUl7edRnmisEdLfMi9Fxe16tctKyR4cwAanPhD3A1
-        xAZOQlanU7pMAM0exWcHANDTxu8n+y7fY7ANgHdUMygeoY24iGq+N6L1kOaobHsNc0fiRVqhxo7nd
-        rdtoe9T1KKM7U0SPgdV3OJd6AUp3Ig11ie4bJD2+1m+cn5LU369xSYtC17R4oCUs7IH/RYxT48lEl
-        RJglRD24J5uIWzLAshq5sqSsahGx5+n0RLHLR5C4WIc7kOgV8C3RfRiJhTLmm3gIeAnm7Y5c4bnQb
-        YKxs6KRg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nWgI3-00BhxY-9w; Tue, 22 Mar 2022 15:19:19 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 1372430007E;
-        Tue, 22 Mar 2022 16:19:16 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id D436D31AA29F5; Tue, 22 Mar 2022 16:19:16 +0100 (CET)
-Date:   Tue, 22 Mar 2022 16:19:16 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        mhiramat@kernel.org, ast@kernel.org, hjl.tools@gmail.com,
-        rick.p.edgecombe@intel.com, rppt@kernel.org,
-        linux-toolchains@vger.kernel.org, Andrew.Cooper3@citrix.com,
-        ndesaulniers@google.com
-Subject: Re: linux-next: build warnings after merge of the tip tree
-Message-ID: <Yjno9GS9Q0JEnZyc@hirez.programming.kicks-ass.net>
-References: <20220321121209.3b95e406@gandalf.local.home>
- <20220321121549.1c8588c5@gandalf.local.home>
- <YjiqgPL+pPGkOgCv@hirez.programming.kicks-ass.net>
- <20220321124551.3d73660b@gandalf.local.home>
- <Yjis6hJKUj/WrSwK@hirez.programming.kicks-ass.net>
- <20220321125419.0a20415c@gandalf.local.home>
- <YjmAz0MbdW4Q1Cnv@hirez.programming.kicks-ass.net>
- <20220322091242.1ad0206b@gandalf.local.home>
- <Yjneyn8o06svJkY4@hirez.programming.kicks-ass.net>
- <20220322110438.25c2a760@gandalf.local.home>
+        Tue, 22 Mar 2022 11:20:22 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933895BD18;
+        Tue, 22 Mar 2022 08:18:55 -0700 (PDT)
+Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
+        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22MAwx97011964;
+        Tue, 22 Mar 2022 10:18:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=PODMain02222019;
+ bh=t/gIWbrFIeUs9lIXPjB+8KVuHGKfVEEHJnT4Li9xa8I=;
+ b=SBS2lIuO9N+/MJGmp4DGKT+md5CDYkGHdaeA6XJMkj/b5DbKwnq7H/Cf7mTav3TjxxC8
+ 43aO9iTgfkopOiOf3tJ8yOFLpSrj1E+3kr7UvH6WuFrB3u0mzi46oz85/Mto30j0mvk2
+ QUWFY2HM2DOHTdgVnIlRLo1ClAluITfb4nLnfm/y5palFt6DdjPoAlp9Pz/DPsaZ1IuJ
+ rlTbmCTON7H/mlhCTyt6bat2QGusyGK0MMT/y7sB8AcJaa5d9jaKQbyOqkq4RYoezsHu
+ hGDX2jgLqRo+HcQOtDEmAEyul+ejAixhDhs8IccaGgdeBTTvqpdp+EaLm7Q3n32llQwA iw== 
+Received: from ediex01.ad.cirrus.com ([84.19.233.68])
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3ewck1cb46-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 22 Mar 2022 10:18:33 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 22 Mar
+ 2022 15:18:31 +0000
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
+ Transport; Tue, 22 Mar 2022 15:18:31 +0000
+Received: from aryzen.ad.cirrus.com (unknown [198.61.65.125])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 2F3E0477;
+        Tue, 22 Mar 2022 15:18:30 +0000 (UTC)
+From:   Lucas Tanure <tanureal@opensource.cirrus.com>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Lucas Tanure <tanureal@opensource.cirrus.com>
+Subject: [PATCH v5 00/16] Support external boost at CS35l41 ASoC driver
+Date:   Tue, 22 Mar 2022 15:18:03 +0000
+Message-ID: <20220322151819.4299-1-tanureal@opensource.cirrus.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220322110438.25c2a760@gandalf.local.home>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: QSUQrxhAm6eOeHid3RiILi13Lrg6IOn7
+X-Proofpoint-GUID: QSUQrxhAm6eOeHid3RiILi13Lrg6IOn7
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 11:04:38AM -0400, Steven Rostedt wrote:
-> On Tue, 22 Mar 2022 15:35:54 +0100
-> Peter Zijlstra <peterz@infradead.org> wrote:
+Move the support for CS35L41 external boost to its shared library
+for ASoC use.
+This move resulted in cs35l41_hda_reg_sequence being removed,
+and its steps were broken down into regmap writes or functions
+from the library. And hardware configuration struct was unified
+for its use in the shared lib.
+While at it, some minor bugs were found and fixed it.
 
-> > I suggested inhibiting tail-call to notrace, you said no. You now seem to
-> > agree that solves it.
-> 
-> I said inhibiting tail-calls was a solution, but only inhibiting it to
-> notrace would probably have a significant performance impact.
-> 
-> I thought you were talking about adding notrace to tail calls, not the
-> other way around. Maybe that is our confusion in this conversation.
+v5 changelog:
+ - Fixed wrong indentation at Documentation patch
+ - Use of consistent prefix
 
-Yeah, I meant inhibiting the compiler from doing tail-calls.
+v4 changelog:
+ - Separated GPIO 1 and 2 function enums
+
+v3 changelog:
+ - Remove patches already accepted
+ - Improved logic in documentation patch
+ - Documentation patch goes before its code
+ - Fixed missing Signed-off-by
+ - Fixed subject for HDA patches
+
+v2 changelog:
+ - Instead of removing the log, playback actions will log the last regmap access.
+ - Documentation patch with the correct subject line and fixed bug reported by Rob Herring on the
+ provided example.
+
+Previous versions:
+ v1: https://lkml.org/lkml/2022/3/3/759
+ v2: https://lkml.org/lkml/2022/3/4/743
+ v3: https://lkml.org/lkml/2022/3/8/975
+ v4: https://lkml.org/lkml/2022/3/17/267
+
+David Rhodes (1):
+  ASoC: cs35l41: Document CS35l41 External Boost
+
+Lucas Tanure (15):
+  ALSA: cs35l41: Unify hardware configuration
+  ALSA: cs35l41: Check hw_config before using it
+  ALSA: cs35l41: Move cs35l41_gpio_config to shared lib
+  ALSA: hda: cs35l41: Fix I2S params comments
+  ALSA: hda: cs35l41: Always configure the DAI
+  ALSA: hda: cs35l41: Add Boost type flag
+  ALSA: hda: cs35l41: Put the device into safe mode for external boost
+  ALSA: hda: cs35l41: Mute the device before shutdown
+  ALSA: cs35l41: Enable Internal Boost in shared lib
+  ALSA: hda: cs35l41: Move boost config to initialization code
+  ALSA: hda: cs35l41: Remove cs35l41_hda_reg_sequence struct
+  ALSA: hda: cs35l41: Reorganize log for playback actions
+  ALSA: hda: cs35l41: Handle all external boost setups the same way
+  ALSA: hda: cs35l41: Move external boost handling to lib for ASoC use
+  ASoC: cs35l41: Support external boost
+
+ .../bindings/sound/cirrus,cs35l41.yaml        |  44 ++-
+ include/sound/cs35l41.h                       |  59 +++-
+ sound/pci/hda/cs35l41_hda.c                   | 295 ++++++------------
+ sound/pci/hda/cs35l41_hda.h                   |  27 +-
+ sound/soc/codecs/cs35l41-i2c.c                |   4 +-
+ sound/soc/codecs/cs35l41-lib.c                | 190 ++++++++++-
+ sound/soc/codecs/cs35l41-spi.c                |   4 +-
+ sound/soc/codecs/cs35l41.c                    | 166 +++++-----
+ sound/soc/codecs/cs35l41.h                    |   5 +-
+ 9 files changed, 443 insertions(+), 351 deletions(-)
+
+-- 
+2.35.1
+
