@@ -2,121 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C767C43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 16:36:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BAC0C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 16:37:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239132AbiCVQiY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 12:38:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36282 "EHLO
+        id S239144AbiCVQii (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 12:38:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239125AbiCVQiU (ORCPT
+        with ESMTP id S239139AbiCVQig (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 12:38:20 -0400
-Received: from lahtoruutu.iki.fi (lahtoruutu.iki.fi [IPv6:2a0b:5c81:1c1::37])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A8AD5C369;
-        Tue, 22 Mar 2022 09:36:51 -0700 (PDT)
-Received: from darkstar.musicnaut.iki.fi (85-76-100-34-nat.elisa-mobile.fi [85.76.100.34])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: aaro.koskinen)
-        by lahtoruutu.iki.fi (Postfix) with ESMTPSA id 789CC1B002D3;
-        Tue, 22 Mar 2022 18:36:47 +0200 (EET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi; s=lahtoruutu;
-        t=1647967008;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=RNrNBemsZsaG7NZqTZ3MCUPdFOPCvyRw2+V4JUFQ0Nk=;
-        b=AwQeGd4204Vkw2568/3IwnUQBQ0Fh1dXtTS6xgcE5LdH4O44DDujrzanA3Ztya+Ibx1nNf
-        JyapZaT+3E4mNaK8XtkSDXDB4EOWkTPjxDydWRqxlICq5KxJc4eqJlxzrXJLF/cRCqUZrf
-        x4V7AZ7+tzZWU7IpoqcaUskfjCf21Cvwh6CbaQYH+dl1lDUZXPkGNKy/1HmHSFgmnTEtOb
-        4fWa4oUd/Q4vKk4vsxACXhQWFTAyBKri4h7BCo+I5SwR22alCGwKCC9yJ0V8bjJVMa2Lpk
-        fdc0v0hlSPhAK45pi8KQOJBm4PA8QpjZqXf8MUxhJR91vUyxj8Sjq5tyvPaPdg==
-Date:   Tue, 22 Mar 2022 18:36:46 +0200
-From:   Aaro Koskinen <aaro.koskinen@iki.fi>
-To:     Janusz Krzysztofik <jmkrzyszt@gmail.com>
-Cc:     Tony Lindgren <tony@atomide.com>, Paul Walmsley <paul@pwsan.com>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Helge Deller <deller@gmx.de>, linux-omap@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-usb@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, Felipe Balbi <balbi@kernel.org>,
-        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, linux-mmc@vger.kernel.org,
-        alsa-devel@alsa-project.org
-Subject: Re: [PATCH v2] ARM: OMAP1: Prepare for conversion of OMAP1 clocks to
- CCF
-Message-ID: <20220322163646.GD297526@darkstar.musicnaut.iki.fi>
-References: <20220310233307.99220-3-jmkrzyszt@gmail.com>
- <20220321215416.236250-1-jmkrzyszt@gmail.com>
+        Tue, 22 Mar 2022 12:38:36 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83BFF403D5
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 09:37:08 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id p22so699952iod.2
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 09:37:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JOfXdzXzom6Ge5ZLgXzIGQus82db3leTmrAjGklzd9Q=;
+        b=W7gg5FEmb7uxqnDAcUfh5CV+kC4GYkqT8OcL2WTqcIBqxSZRDJmJ/2gLKqdl7XMk8v
+         pYHQk3UYlI2AhECBf/mDel5kEBNLZAF5P2Lj1AZQWacQJuZzsIH/8N48AFUrXpp01APa
+         n/g0b0y4ZABi9OmApD7DnWllC+7H5cl3AWHqwMir0T9Vabx5y82GLQ7JYZTx2AHAR4sG
+         RMehGZTtMu5WQXj/aQYkWLTSStcyOc0KgKo0Z7dLa47hwx42BY2Jqy7weAHLer7QProV
+         Rvi4s/Q/CZyHcl48lolOhbUA59gzKc2MQL2IEeBkS3HcoWzdqdqkbnSjWZ7aL/YJaCWS
+         VR7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JOfXdzXzom6Ge5ZLgXzIGQus82db3leTmrAjGklzd9Q=;
+        b=llbPvR3CM4SU0gnnBnKUTJiZwsFPGq0wRnZrg7EtZA7e2ZRqnN7ipsUxKU+BQnYuYY
+         H58jQZsZUHUcHB5rZ8AbHALzZT6XhRwhHrfm+8yuLWodFW893/w090ASj7LZsFP2Rc+z
+         /DECAMhg1KeOfjkx418qyVoASOjlx/uH4dgnRV7TFDDfcFoQGg2RzaPFIY0tsJUW+4h9
+         vP/68gicNeqBxRIIj81JvNtD0KB6RHxW3U1At+K58DBsGeAmUMnamB5Fexb3PUIhMsSB
+         s012yskz8mRobfp8bJU+rAP3RiUp+h4XLGsHLlLZdtyAy3kSa5BDMtpUdpbPU4z34gEx
+         Z3Cw==
+X-Gm-Message-State: AOAM5309e3wZLlHl+w7jxFXgZ9gutkQVIIms1BGt3irLRW/SmbvY2DU6
+        FHZ1bskqq/8udV2ASaewrqa65Bi7U7QH9BGd6IfnDw==
+X-Google-Smtp-Source: ABdhPJwVZtOBWRKjFVYelGiTBEh3P0bSkSMlPiJx9YRcUB59FPs9X6xraruImv6x+xw3kcgPnjbn0kSIQoVv4FrRFbs=
+X-Received: by 2002:a6b:cd0c:0:b0:649:adb8:79eb with SMTP id
+ d12-20020a6bcd0c000000b00649adb879ebmr4395012iog.138.1647967027714; Tue, 22
+ Mar 2022 09:37:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220321215416.236250-1-jmkrzyszt@gmail.com>
-ARC-Authentication-Results: i=1;
-        ORIGINATING;
-        auth=pass smtp.auth=aaro.koskinen smtp.mailfrom=aaro.koskinen@iki.fi
-ARC-Seal: i=1; s=lahtoruutu; d=iki.fi; t=1647967008; a=rsa-sha256;
-        cv=none;
-        b=l2ZnGsGINPS9lZ5lJlSl6lZOgGL7Q607SYPV0J7WR6YGktBvdwhgSHlOmX5wRAHk7ZfcLc
-        zWtjZl9vuQ8iZacCUsrqZ+A1kGWNR+XopLUfhq6z4OojVlDNVy+DO6pAEkD2VsFi4gdBwY
-        gW1AKxorc7PrNyH1dQJmHyt53UaFPwYDrpa/8uLCUJ2vjL9PcWxdevZZwdnAwYmepKjI5R
-        ZnmhP+hd3sLudvP2V9GtzwtgGlUhnU+ZbFcY+J9r/BScbaJCeFfyYojSKrAbgB7XAN0pWq
-        tZWDfB/LL1en0FbHwSw/DMl44aemO9uXJeoIXxxlUkebpSB6zKugvTu7ZJELXw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi;
-        s=lahtoruutu; t=1647967008;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=RNrNBemsZsaG7NZqTZ3MCUPdFOPCvyRw2+V4JUFQ0Nk=;
-        b=oL/5cvCYEppmlz4BJVPwqBpl81I2Z6QgKsr1OROeI8lunAjaoDigGvxhxH32vZ/zvJS32+
-        BDZ6ooMIZE1UsrSiwxmWSUbT6Tcu93Suy4+zbuXo+nXdRIg5GRwRx6SMS/LmjsCoLo6HyT
-        9u0ITw35hSb4Mznr2j+ojp6dBv1OoviG8VOl390BQiNhGlXtYN9C3FU1pZU2iWPeFSdReh
-        X7PkfpGOPTbfe12YpZz7gagw/3UkqPdBSW+ZvgjsMxxfpG/ZH+1H4Ig2hPZqt2oD/iZml7
-        V6yDtD0vk6EH9/pO08Zsx2Bjsa+ZOpz2OGYNEdzkbYnttQmBh8szxuKjg2mMEw==
+References: <20220318191343.72812-1-abbotti@mev.co.uk> <YjgW7L77+Y2fylcR@xz-m1.local>
+ <a2380fac-d173-50e3-963a-d7fc22b2da5d@gmail.com> <CAJHvVch=vO6gwyn+swyeHEQ4mUccL6T+Vt3G9akeEjXZ6XKM-A@mail.gmail.com>
+In-Reply-To: <CAJHvVch=vO6gwyn+swyeHEQ4mUccL6T+Vt3G9akeEjXZ6XKM-A@mail.gmail.com>
+From:   Axel Rasmussen <axelrasmussen@google.com>
+Date:   Tue, 22 Mar 2022 09:36:32 -0700
+Message-ID: <CAJHvVchqALH-0Y8LgkqAFnwbfEjkheNTKhpSeUMY2d+bU44tGg@mail.gmail.com>
+Subject: Re: [PATCH] ioctl_userfaultfd.2: Corrections for returned .ioctls members
+To:     "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
+Cc:     Peter Xu <peterx@redhat.com>, Ian Abbott <abbotti@mev.co.uk>,
+        linux-man@vger.kernel.org,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Tue, Mar 22, 2022 at 9:23 AM Axel Rasmussen <axelrasmussen@google.com> wrote:
+>
+> On Tue, Mar 22, 2022 at 5:32 AM Alejandro Colomar (man-pages)
+> <alx.manpages@gmail.com> wrote:
+> >
+> > Hi Ian and Peter,
+> >
+> > On 3/21/22 07:10, Peter Xu wrote:
+> > > On Fri, Mar 18, 2022 at 07:13:43PM +0000, Ian Abbott wrote:
+> > >> Support for the `UFFDIO_WRITEPROTECT` operation is not indicated in the
+> > >> `ioctls` member of `struct uffdio_api`.  It is indicated in the `ioctls`
+> > >> member of `struct uffdio_register` along with indications of support for
+> > >> the `UFFDIO_COPY`, `UFFDIO_WAKE` and `UFFDIO_ZEROPAGE` operations (and
+> > >> also the `UFFDIO_CONTINUE` operation supported since Linux 5.13 but
+> > >> that is not documented by this man page yet.)
+> > >
+> > > I thought it should have landed but indeed it's not.  Copying Axel.
+>
+> Ah, I mistakenly thought it got merged, but there were a few remaining
+> issues Alejandro wanted addressed first. I'll send a v3 of it later
+> today.
+>
+> For what it's worth, as part of adding minor fault handling, we pretty
+> significantly change the ioctl field's behavior, and I rewrote a lot
+> of the documentation around it. So, it may conflict with this patch.
+> :/ Sorry about that.
 
-On Mon, Mar 21, 2022 at 10:54:16PM +0100, Janusz Krzysztofik wrote:
-> In preparation for conversion of OMAP1 clocks to common clock framework,
-> identify users of those clocks which don't call clk_prepare/unprepare()
-> and update them to call clk_prepare_enable/clk_disable_unprepare() instead
-> of just clk_enable/disable(), as required by CCF implementation of clock
-> API.
-> 
-> v2: update still a few more OMAP specific drivers missed in v1,
->   - call clk_prepare/unprepare() just after/before clk_get/put() where it
->     can make more sense than merging prepare/unprepare with enable/disable.
+Heh, I spoke too soon. My patch doesn't touch this after all, I think
+the patches don't conflict. :) It's been a while since I looked at
+it...
 
-Something is still broken. When doing kexec (using CCF kernel), the
-kexec'ed kernel now hangs early (on 770):
-
-[    0.853912] MUX: initialized W4_USB_PUEN
-[    0.858001] MUX: initialized V6_USB0_TXD
-[    0.862060] MUX: initialized W5_USB0_SE0
-[    0.866210] MUX: initialized Y5_USB0_RCV
-[    0.870269] MUX: initialized AA9_USB0_VP
-[    0.874389] MUX: initialized R9_USB0_VM
-[    0.878356] USB: hmc 16, usb0 6 wires (dev), Mini-AB on usb0
-[    0.886230] initcall customize_machine+0x0/0x30 returned 0 after 29296 usecs
-[    0.893707] calling  init_atags_procfs+0x0/0xe8 @ 1
-[    0.898864] initcall init_atags_procfs+0x0/0xe8 returned 0 after 0 usecs
-[    0.905883] calling  exceptions_init+0x0/0x8c @ 1
-[    0.910797] initcall exceptions_init+0x0/0x8c returned 0 after 0 usecs
-[    0.917602] calling  omap_init+0x0/0xc @ 1
-[    0.922393] initcall omap_init+0x0/0xc returned 0 after 9765 usecs
-[    0.928863] calling  omap1_init_devices+0x0/0x2c @ 1
-[    2.568664] random: fast init done
-
-Probably something is now disabled that has been previously always
-enabled by default/bootloader. I'll try adding some printk()s to see
-the exact place where it hangs...
-
-A.
+>
+> > >
+> > >>
+> > >> Fixes: f559fa36a678 ("ioctl_userfaultfd.2: Add write-protect mode docs")
+> > >> Signed-off-by: Ian Abbott <abbotti@mev.co.uk>
+> >
+> > Patch applied.
+> >
+> > >
+> > > The patch looks correct to me, thanks for fixing it.
+> > >
+> > > Acked-by: Peter Xu <peterx@redhat.com>
+> >
+> > And tag appended.
+> >
+> > Thank you both!
+> >
+> > Alex
+> >
+> > >
+> > >> ---
+> > >>   man2/ioctl_userfaultfd.2 | 27 ++++++++++++++++++++-------
+> > >>   1 file changed, 20 insertions(+), 7 deletions(-)
+> > >>
+> > >> diff --git a/man2/ioctl_userfaultfd.2 b/man2/ioctl_userfaultfd.2
+> > >> index 504f61d4b..e930af520 100644
+> > >> --- a/man2/ioctl_userfaultfd.2
+> > >> +++ b/man2/ioctl_userfaultfd.2
+> > >> @@ -235,11 +235,6 @@ operation is supported.
+> > >>   The
+> > >>   .B UFFDIO_UNREGISTER
+> > >>   operation is supported.
+> > >> -.TP
+> > >> -.B 1 << _UFFDIO_WRITEPROTECT
+> > >> -The
+> > >> -.B UFFDIO_WRITEPROTECT
+> > >> -operation is supported.
+> > >>   .PP
+> > >>   This
+> > >>   .BR ioctl (2)
+> > >> @@ -333,8 +328,26 @@ If the operation is successful, the kernel modifies the
+> > >>   bit-mask field to indicate which
+> > >>   .BR ioctl (2)
+> > >>   operations are available for the specified range.
+> > >> -This returned bit mask is as for
+> > >> -.BR UFFDIO_API .
+> > >> +This returned bit mask can contain the following bits:
+> > >> +.TP
+> > >> +.B 1 << _UFFDIO_COPY
+> > >> +The
+> > >> +.B UFFDIO_COPY
+> > >> +operation is supported.
+> > >> +.TP
+> > >> +.B 1 << _UFFDIO_WAKE
+> > >> +The
+> > >> +.B UFFDIO_WAKE
+> > >> +operation is supported.
+> > >> +.TP
+> > >> +.B 1 << _UFFDIO_WRITEPROTECT
+> > >> +The
+> > >> +.B UFFDIO_WRITEPROTECT
+> > >> +.TP
+> > >> +.B 1 << _UFFDIO_ZEROPAGE
+> > >> +The
+> > >> +.B UFFDIO_ZEROPAGE
+> > >> +operation is supported.
+> > >>   .PP
+> > >>   This
+> > >>   .BR ioctl (2)
+> > >> --
+> > >
+> >
+> > --
+> > Alejandro Colomar
+> > Linux man-pages comaintainer; http://www.kernel.org/doc/man-pages/
+> > http://www.alejandro-colomar.es/
