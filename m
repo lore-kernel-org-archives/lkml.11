@@ -2,106 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC7B4C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:10:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94CE6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:10:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229982AbiCVILb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 04:11:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55872 "EHLO
+        id S230150AbiCVILj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 04:11:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230088AbiCVILX (ORCPT
+        with ESMTP id S230126AbiCVILa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 04:11:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1821317AA8
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 01:09:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647936595;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tBV53gfAtLB3fP5o321O7+SQMgvVIUsp841j85CAZrU=;
-        b=eOdwpFvM2V3JnEHZiQILgYKXqmYOU+tZ/CWebpL2kZjtaEpJUDzYL0VJOcvJAPKM14S79L
-        gVYanVU5BUcxUBWbGkCHgm6uGbh6HJtq8QgxhQgiRZK3qnmnN9F1oeRjRSNeiNkoSrEHMZ
-        k+RFxVlIBy2HO2nSlbg7MBIGBCJJ8oc=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-446-PO0S3A_wOziZB4dY8nXkWw-1; Tue, 22 Mar 2022 04:09:52 -0400
-X-MC-Unique: PO0S3A_wOziZB4dY8nXkWw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 47F80899EC4;
-        Tue, 22 Mar 2022 08:09:51 +0000 (UTC)
-Received: from gshan.redhat.com (ovpn-12-33.pek2.redhat.com [10.72.12.33])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1A89D1121324;
-        Tue, 22 Mar 2022 08:09:43 +0000 (UTC)
-From:   Gavin Shan <gshan@redhat.com>
-To:     kvmarm@lists.cs.columbia.edu
-Cc:     linux-kernel@vger.kernel.org, eauger@redhat.com,
-        shannon.zhaosl@gmail.com, maz@kernel.org,
-        Jonathan.Cameron@huawei.com, will@kernel.org, pbonzini@redhat.com,
-        james.morse@arm.com, mark.rutland@arm.com, drjones@redhat.com,
-        vkuznets@redhat.com, shan.gavin@gmail.com
-Subject: [PATCH v5 13/22] KVM: arm64: Support SDEI_FEATURES hypercall
-Date:   Tue, 22 Mar 2022 16:07:01 +0800
-Message-Id: <20220322080710.51727-14-gshan@redhat.com>
-In-Reply-To: <20220322080710.51727-1-gshan@redhat.com>
-References: <20220322080710.51727-1-gshan@redhat.com>
+        Tue, 22 Mar 2022 04:11:30 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CD471A801
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 01:10:02 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id bi12so34551079ejb.3
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 01:10:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UXb3smoMBvhttrnsQRq5L6nwxrUqkBCEz6UXeK2LsH8=;
+        b=4tHROM5eCxSqEH+0gGrEnQdJzb3byz4cfatE08GCqso2U3NWO33XyHCsHGRAAGtbKb
+         t0efUnAewq8+OrK/I02DP8+aliGeDn/7Km2OaIUVZMy2f9DpgJysKEIUAyYjddfPipvN
+         puMJrcdYUcuPoFZPWnzDHsxq63L5tYZ+3mHGLKQz83yUofsP+oD1R2hWtJ5uwSGef/rc
+         9l4vj24A8/wEqvnAGDttH5GhAmknGrb9cjKm2Zi74KqBSmQUEwDm2b2aNXCPaTirTsAu
+         +P+7mZafsecyY22vSVQml7i+bhCjkwkzmDhwnqObhFslS4D1a80RgoZXET2PWNqozcnL
+         Of0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UXb3smoMBvhttrnsQRq5L6nwxrUqkBCEz6UXeK2LsH8=;
+        b=1rc+4uS3cMUYv3iOk2O01XA73Bs0CZsOZsIhVTWofm0AvIsd/1IK55UQAnK9Vu3jfv
+         Y9KvrJfKELcxSTpZTvp6t13Ldx8QizR9i+gT4e5k3vcXBz1iTBnp1YqIUel9LPrIs2D1
+         OaE4JJ9MRhyv45BEdSZ5OdIPu+5dhibug+V4aJCagcrw75f9idxrNo564mjr15yf2pWQ
+         8wMVMZ6khAMlLUS7ljkkprgu322F8pEDYvRHC9l9jHNrPIVQNt07AHwtVsX3fGkjlitE
+         H96sHpuisORa4ppF1TgDs4HlkrU0rhKcg4UkSr8tkt0fotp8sHA5VihjUx5lNY7ChxHc
+         C9bg==
+X-Gm-Message-State: AOAM533yd2gxZmXIGRkW7jMCPHW/eTyMNCMSsr4zKYpBQt2HzDEVPUIB
+        gJtUl9fvY6yJAMU+V6WiAh4tbl9H2fl/g0WP77hr
+X-Google-Smtp-Source: ABdhPJxMV3tMgyliq/Nq7i+1MdGsQiG9PVmkXa91IJJOjIjnkC5OCFpSR+1s6Ks+jhBd8B3xg8jK6elJTPVqMNbZ+O4=
+X-Received: by 2002:a17:907:a422:b0:6e0:238c:4f44 with SMTP id
+ sg34-20020a170907a42200b006e0238c4f44mr5927362ejc.257.1647936600722; Tue, 22
+ Mar 2022 01:10:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+References: <20211227091241.103-1-xieyongji@bytedance.com> <Ycycda8w/zHWGw9c@infradead.org>
+ <CACycT3usfTdzmK=gOsBf3=-0e8HZ3_0ZiBJqkWb_r7nki7xzYA@mail.gmail.com>
+ <YdMgCS1RMcb5V2RJ@localhost.localdomain> <CACycT3vYt0XNV2GdjKjDS1iyWieY_OV4h=W1qqk_AAAahRZowA@mail.gmail.com>
+ <YdSMqKXv0PUkAwfl@localhost.localdomain> <CACycT3tPZOSkCXPz-oYCXRJ_EOBs3dC0+Juv=FYsa6qRS0GVCw@mail.gmail.com>
+ <CACycT3tTKBpS_B5vVJ8MZ1iuaF2bf-01=9+tAdxUddziF2DQ-g@mail.gmail.com>
+ <CACycT3thVwb466u2JR-oDRHLY5j_uxAx5uXXGmaoCZL5vs__mQ@mail.gmail.com>
+ <Yg+5Wytvc2eG8uLD@localhost.localdomain> <CACycT3umMYfwVZRXinEBM=Kh+kQPYH5GBN6eKrt9unZSM8W0qw@mail.gmail.com>
+In-Reply-To: <CACycT3umMYfwVZRXinEBM=Kh+kQPYH5GBN6eKrt9unZSM8W0qw@mail.gmail.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Tue, 22 Mar 2022 16:10:01 +0800
+Message-ID: <CACycT3t7=uXfu62WhahwaZpA15WbL42qB_dicB9kb2DS5-R9Qw@mail.gmail.com>
+Subject: Re: [PATCH v2] nbd: Don't use workqueue to handle recv work
+To:     Josef Bacik <josef@toxicpanda.com>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Bart Van Assche <bvanassche@acm.org>,
+        linux-block@vger.kernel.org, nbd@other.debian.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This supports SDEI_FEATURES hypercall. It's used by the guest to
-retrieve the supported features, which are number of binding slots
-and relative mode for the event handler. Currently, none of them
-is supported.
+Ping.
 
-Signed-off-by: Gavin Shan <gshan@redhat.com>
----
- arch/arm64/kvm/sdei.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+Hi Josef, any other comments for this approach.
 
-diff --git a/arch/arm64/kvm/sdei.c b/arch/arm64/kvm/sdei.c
-index 0dec35a0eed1..1e0ca9022eaa 100644
---- a/arch/arm64/kvm/sdei.c
-+++ b/arch/arm64/kvm/sdei.c
-@@ -662,6 +662,20 @@ static unsigned long hypercall_reset(struct kvm_vcpu *vcpu, bool private)
- 	return ret;
- }
- 
-+static unsigned long hypercall_features(struct kvm_vcpu *vcpu)
-+{
-+	unsigned long feature = smccc_get_arg1(vcpu);
-+
-+	switch (feature) {
-+	case 0: /* BIND_SLOTS */
-+		return 0;
-+	case 1: /* RELATIVE_MODE */
-+		return 0;
-+	}
-+
-+	return SDEI_INVALID_PARAMETERS;
-+}
-+
- int kvm_sdei_hypercall(struct kvm_vcpu *vcpu)
- {
- 	struct kvm *kvm = vcpu->kvm;
-@@ -734,6 +748,8 @@ int kvm_sdei_hypercall(struct kvm_vcpu *vcpu)
- 		ret = hypercall_reset(vcpu, false);
- 		break;
- 	case SDEI_1_1_FN_SDEI_FEATURES:
-+		ret = hypercall_features(vcpu);
-+		break;
- 	default:
- 		ret = SDEI_NOT_SUPPORTED;
- 	}
--- 
-2.23.0
-
+On Sat, Feb 19, 2022 at 9:04 PM Yongji Xie <xieyongji@bytedance.com> wrote:
+>
+> On Fri, Feb 18, 2022 at 11:21 PM Josef Bacik <josef@toxicpanda.com> wrote:
+> >
+> > On Tue, Feb 15, 2022 at 09:17:37PM +0800, Yongji Xie wrote:
+> > > Ping again.
+> > >
+> > > Hi Josef, could you take a look?
+> >
+> > Sorry Yongji this got lost.  Again in the reconnect case we're still setting up
+> > a long running thread, so it's not like it'll happen during a normal reclaim
+> > path thing, it'll be acted upon by userspace.  Thanks,
+> >
+>
+> During creating this long running thread, we might trigger memory
+> reclaim since workqueue will use GFP_KERNEL allocation for it. Then a
+> deadlock can occur if the memory reclaim happens to hit the page cache
+> on this reconnecting nbd device.
+>
+> Thanks,
+> Yongji
