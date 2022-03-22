@@ -2,93 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFA4CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 13:29:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB850C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 13:30:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235601AbiCVNa0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 09:30:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41598 "EHLO
+        id S234475AbiCVNan (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 09:30:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235495AbiCVNaY (ORCPT
+        with ESMTP id S235633AbiCVNah (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 09:30:24 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C2B5624BE8;
-        Tue, 22 Mar 2022 06:28:56 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8A68D1042;
-        Tue, 22 Mar 2022 06:28:56 -0700 (PDT)
-Received: from [10.1.39.145] (e127744.cambridge.arm.com [10.1.39.145])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9636B3F73B;
-        Tue, 22 Mar 2022 06:28:54 -0700 (PDT)
-Subject: Re: [PATCH v2 1/1] perf test arm64: Test unwinding using fame-pointer
- (fp) mode
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     James Clark <james.clark@arm.com>, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, mark.rutland@arm.com,
-        namhyung@kernel.org, leo.yan@linaro.org, Alexandre.Truong@arm.com,
-        Jiri Olsa <jolsa@kernel.org>
-References: <20220316172015.98000-1-german.gomez@arm.com>
- <592a32d6-b618-951c-9db9-711d022ff85e@arm.com>
- <b2ff473a-f252-89c9-78b3-bacff2876869@arm.com> <YjjlohvNAL8lKlV+@kernel.org>
-From:   German Gomez <german.gomez@arm.com>
-Message-ID: <cebb404f-b40c-35f9-0395-32cb28a34ab6@arm.com>
-Date:   Tue, 22 Mar 2022 13:27:52 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Tue, 22 Mar 2022 09:30:37 -0400
+Received: from mailgate.ics.forth.gr (mailgate.ics.forth.gr [139.91.1.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3104227CDA
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 06:29:05 -0700 (PDT)
+Received: from av3.ics.forth.gr (av3in.ics.forth.gr [139.91.1.77])
+        by mailgate.ics.forth.gr (8.15.2/ICS-FORTH/V10-1.8-GATE) with ESMTP id 22MDT0Km001060
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 15:29:01 +0200 (EET)
+DKIM-Signature: v=1; a=rsa-sha256; d=ics.forth.gr; s=av; c=relaxed/simple;
+        q=dns/txt; i=@ics.forth.gr; t=1647955736; x=1650547736;
+        h=From:Sender:Reply-To:Subject:Date:Message-Id:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=c2YIwja29O1WBS129ebO6CkccAwpqLVJQ1HQcp3TXN0=;
+        b=EFoyRNR4AObZg/WhT450pv9k9/cyaQZXT0c/TCKa7WxdhcYAL0g87FiwAMhDRlKi
+        gibP9NTTskZ/DXQN87gDte0mZ39qgtYPWjAxasfQWHBF5izs30Jh77tomqTNEE67
+        uMsOy0Qu0GwyqXtCoDPORtpdaZ855ANoJ11+ovJ0AuTKsOFGYYZ1BeUBvyZxNqDy
+        f4lY/kv45l8UuLlJgUjuiRK8kcjUbzGtIF4kEQbY31FeTo+//3N0dU4HD46tucS5
+        ku2SV0SpMVBiJKoL6nSvTTOaFKV/ytGo6vZFosN+hgtxABArWKOlYsbhCxUN9zuL
+        xhx6ff+32Ko8q3TVWZQbJw==;
+X-AuditID: 8b5b014d-f0a8d700000035db-42-6239cf1827f6
+Received: from enigma.ics.forth.gr (webmail.ics.forth.gr [139.91.151.35])
+        by av3.ics.forth.gr (Symantec Messaging Gateway) with SMTP id 68.A4.13787.81FC9326; Tue, 22 Mar 2022 15:28:56 +0200 (EET)
+X-ICS-AUTH-INFO: Authenticated user: mick@ics.forth.gr at ics.forth.gr
+From:   Nick Kossifidis <mick@ics.forth.gr>
+To:     palmer@dabbelt.com, paul.walmsley@sifive.com, aou@eecs.berkeley.edu
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Nick Kossifidis <mick@ics.forth.gr>
+Subject: [PATCH] RISC-V-fixes: relocate DTB if it's outside memory region
+Date:   Tue, 22 Mar 2022 15:28:39 +0200
+Message-Id: <20220322132839.3653682-1-mick@ics.forth.gr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-In-Reply-To: <YjjlohvNAL8lKlV+@kernel.org>
-Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupiluLIzCtJLcpLzFFi42Lpjp6urCtx3jLJoPGvmMXW37PYLS7vmsNm
+        se1zC5tF87tz7BYvL/cwW7TN4ndg83jz8iWLx+GOL+weDzddYvLYvKTe41LzdXaPz5vkAtii
+        uGxSUnMyy1KL9O0SuDJmrDUsOChQMfX5D5YGxuu8XYycHBICJhJ9u9rZuhi5OIQEjjJKNF/a
+        zQ6RcJO4fX8nK4jNJqApMf/SQRYQW0TAXWL15D9MIDazQL7Eti/nmEFsYQFPie27f4D1sgio
+        SsxauYQRxOYVsJDYu/o/I8RMeYn9B88yQ8QFJU7OfMICMUdeonnrbOYJjDyzkKRmIUktYGRa
+        xSiQWGasl5lcrJeWX1SSoZdetIkRHFyMvjsYb29+q3eIkYmD8RCjBAezkgjvv9/GSUK8KYmV
+        ValF+fFFpTmpxYcYpTlYlMR5Wa7JJAkJpCeWpGanphakFsFkmTg4pRqYuIPyDi+Y9UCNo/Hu
+        uZPGlhda3acaf5UM3CZwpTfsfZnFvg+hFx1sVx7+N+Pay6CEuV3Sct/fN61a8L4ydQWbgHn9
+        AcGz6hzC0bM5mYPe6Tzam3ni4j15OR82/gNGRy1Eup9Iz42O4clcEbp9hbFhuOG93kO6XafK
+        d9kLydl+uugtdNy1P/hZmHxt2ISNmg9FmV1mev2NdZA68eWoZHjPu01/Nzl8XFckpPKrxiNC
+        dSdf8Pob6+pl4kU2XpslPv+Pw7S0ebXr+e20zliyLvzwpjPxU/zX48/XtETyRy17FBG84Z+U
+        iNKMCtuCWfP0Dttr9axcz3+6a42Y2dLF/7ftlE58fsroTk7ifa+Aw0G+SizFGYmGWsxFxYkA
+        rj6lgJ0CAAA=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+In case the DTB provided by the bootloader/BootROM is before the kernel
+image or outside /memory, we won't be able to access it through the
+linear mapping, and get a segfault on setup_arch(). Currently OpenSBI
+relocates DTB but that's not always the case (e.g. if FW_JUMP_FDT_ADDR
+is not specified), and it's also not the most portable approach since
+the default FW_JUMP_FDT_ADDR of the generic platform relocates the DTB
+at a specific offset that may not be available. To avoid this situation
+copy DTB so that it's visible through the linear mapping.
 
-On 21/03/2022 20:52, Arnaldo Carvalho de Melo wrote:
-> Em Wed, Mar 16, 2022 at 05:48:50PM +0000, German Gomez escreveu:
->> On 16/03/2022 17:30, James Clark wrote:
->>> On 16/03/2022 17:20, German Gomez wrote:
->>>> Add a shell script to check that the call-graphs generated using frame
->>>> pointers (--call-graph fp) are complete and not missing leaf functions:
->>>>
->>>>   | $ perf test 88 -v
->>>>   |  88: Check Arm64 callgraphs are complete in fp mode                  :
->>>>   | --- start ---
->>>>   | test child forked, pid 8734
->>>>   |  + Compiling test program (/tmp/test_program.Cz3yL)...
->>>>   |  + Recording (PID=8749)...
->>>>   |  + Stopping perf-record...
->>>>   | test_program.Cz
->>>>   |                  728 leaf
->>>>   |                  753 parent
->>>>   |                  76c main
->>>>   | test child finished with 0
->>>>   | ---- end ----
->>>>   | Check Arm SPE callgraphs are complete in fp mode: Ok
->>>>
->>> Ran it on N1SDP and it passes, and it fails if b9f6fbb3b2c2 isn't applied.
->> I forgot to mention in the notes that it's supposed to work with both unwinders:
->>
->> $ make                # for libunwind (default)
->> $ make NO_LIBUNWIND=1 # for libdw
-> I'll add it to the cset commit log, and also will fix this:
->
-> ⬢[acme@toolbox perf]$        git am ./v2_20220316_german_gomez_perf_test_arm64_test_unwinding_using_fame_pointer_fp_mode.mbx
-> Applying: perf test arm64: Test unwinding using fame-pointer (fp) mode
-> .git/rebase-apply/patch:72: trailing whitespace.
-> # program
-> warning: 1 line adds whitespace errors.
-> tools/perf/tests/shell/test_arm_callgraph_fp.sh:58: trailing whitespace.
-> +# program
-> ⬢[acme@toolbox perf]$
->  
+Signed-off-by: Nick Kossifidis <mick@ics.forth.gr>
+---
+ arch/riscv/mm/init.c | 21 +++++++++++++++++++--
+ 1 file changed, 19 insertions(+), 2 deletions(-)
 
-Thanks Arnaldo, I forgot to run the checkpatch script.
+diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
+index 0d588032d..697a9aed4 100644
+--- a/arch/riscv/mm/init.c
++++ b/arch/riscv/mm/init.c
+@@ -206,8 +206,25 @@ static void __init setup_bootmem(void)
+ 	 * early_init_fdt_reserve_self() since __pa() does
+ 	 * not work for DTB pointers that are fixmap addresses
+ 	 */
+-	if (!IS_ENABLED(CONFIG_BUILTIN_DTB))
+-		memblock_reserve(dtb_early_pa, fdt_totalsize(dtb_early_va));
++	if (!IS_ENABLED(CONFIG_BUILTIN_DTB)) {
++		/*
++		 * In case the DTB is not located in a memory region we won't
++		 * be able to locate it later on via the linear mapping and
++		 * get a segfault when accessing it via __va(dtb_early_pa).
++		 * To avoid this situation copy DTB to a memory region.
++		 * Note that memblock_phys_alloc will also reserve DTB region.
++		 */
++		if (!memblock_is_memory(dtb_early_pa)) {
++			size_t fdt_size = fdt_totalsize(dtb_early_va);
++			phys_addr_t new_dtb_early_pa = memblock_phys_alloc(fdt_size, PAGE_SIZE);
++			void *new_dtb_early_va = early_memremap(new_dtb_early_pa, fdt_size);
++
++			memcpy(new_dtb_early_va, dtb_early_va, fdt_size);
++			early_memunmap(new_dtb_early_va, fdt_size);
++			_dtb_early_pa = new_dtb_early_pa;
++		} else
++			memblock_reserve(dtb_early_pa, fdt_totalsize(dtb_early_va));
++	}
+ 
+ 	early_init_fdt_scan_reserved_mem();
+ 	dma_contiguous_reserve(dma32_phys_limit);
+-- 
+2.34.1
 
->>> Reviewed-by: James Clark <james.clark@arm.com>
->>>
->>>> Fixes: b9f6fbb3b2c2 ("perf arm64: Inject missing frames when using 'perf record --call-graph=fp'")
->>>> Suggested-by: Jiri Olsa <jolsa@kernel.org>
->>>> Signed-off-by: German Gomez <german.gomez@arm.com>
