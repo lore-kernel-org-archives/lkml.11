@@ -2,91 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 063DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:08:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65835C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:08:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229887AbiCVIKS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 04:10:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53586 "EHLO
+        id S229930AbiCVIKW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 04:10:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229819AbiCVIKG (ORCPT
+        with ESMTP id S229816AbiCVIKO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 04:10:06 -0400
-Received: from out203-205-221-209.mail.qq.com (out203-205-221-209.mail.qq.com [203.205.221.209])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D4352AEB
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 01:08:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1647936509;
-        bh=xj3turLHj1+ZCP9WjX9RjyOgZj7/g+f5TXLsbJ08Z6M=;
-        h=From:To:Cc:Subject:Date;
-        b=xqVD+HGcJkCFOyljoIp7AMoNMKPGUu99PpNUIOlf+DvxjAJPPrI4fduHOJFacVYVr
-         GRuaYrjbg2nt5PsivERMq27ia9NEQ3IS16tfouF9eIDXJgAr3fXx+Bvj7l7kCGkCdw
-         kbZMhRo0T1ELx91QaoWHBT8Fl4UppkgV+gR7LG+U=
-Received: from localhost.localdomain ([43.227.136.188])
-        by newxmesmtplogicsvrsza7.qq.com (NewEsmtp) with SMTP
-        id 2198E433; Tue, 22 Mar 2022 16:08:25 +0800
-X-QQ-mid: xmsmtpt1647936505ts0dqrfgq
-Message-ID: <tencent_010A807048A5F97F0A900866A35C648E2E07@qq.com>
-X-QQ-XMAILINFO: OQhZ3T0tjf0amHFt3Tv8ZnikjPM7gbCsdRyJBbsvvF8MDJx4K0X2JtCTAGGCU0
-         USVhMFfAWjMjApTDU0aOobRK8pKYK3+RP3AW3nqaJpQDuEo3v+6XHgfjIidbeMx/M4EjU5yn3OBg
-         T1nJpiqqVxcWjX2wgfoZUT4d0K3/3Fn0ijEvxk4UYsL4gjD5JdZq/xB2vVpgTfR7qoaeyyWys8h3
-         GIxWb0I7I7iL6FCZfpKxoW+td9hHBy9cxxgmgapMa80vA6nSAuSyuoWnO5VwcirEQxNxDzspaFTc
-         Wzu9tf93C7pxlsPW9gYCxOV3rtvgNjp1P/Z1Jp9cktsS/4WE1j0EyR6N3Rw8N9Vq81jRNOqDxyNW
-         QsooJ8v+Ve1uqvfFswT+ZlDrIi/nOA5sfc5npycGs0faGzseuP8x+j8gP3C0uv/aGkcRcQ9NMqpr
-         ONKu3/KSyHZJKOpn5hM2FDv/AHegPeJPxfb0F1BAnIlUm3Uw4Dm9R0144DjFZQ1KrF4mT2qB6+bU
-         V1SsSXP2n6/OTq7FLHWbK2cWqLCMcB0hOxaUfTySxM4ExWp6XWT9DuIiQm8THsHfux+j3TFS/DGQ
-         xyo5dXyXvFCp2cLOTiO9r+v4QcU2zV//beLzq6LxW3hLz5TN1tHe64Or2BTg63qLl8o/vFWw8qKM
-         FtR1ZHdzjowCuoI5QPr/BkDrdodtZhjsET7o2lU2x9coG97wJYM8SrQZfjY6wghWAcRGx0q3IdjA
-         s0wa1nHLCU0GWlrnKN7w1Xp8vP8Ki2+qBF7Fji2KrB91QsrGWps/NIuvvemUGFtW/qTncFAhQi/M
-         1QmnJlQFv4lP8HuAjJk337DjfCMwrQQw8AFYhHkM3WbbR4R/y6L4ISkyHjUKjbtmyWHKu89AO8pn
-         j8RUABvcj64AYPpaYlnhmxhD/T1XOSZhApA9AxkzHkL9hvz+6Io18NpxRgiXT4EbP9MdGe3vxO
-From:   xkernel.wang@foxmail.com
-To:     xiang@kernel.org, chao@kernel.org
-Cc:     linux-erofs@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH] erofs: fix a potential NULL dereference of alloc_pages()
-Date:   Tue, 22 Mar 2022 16:08:12 +0800
-X-OQ-MSGID: <20220322080812.1574-1-xkernel.wang@foxmail.com>
+        Tue, 22 Mar 2022 04:10:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 74CA42BFA
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 01:08:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647936526;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CA0H5z8Y8jCywSeEwJTZ/p/KNFj1y45LOqR+04gyQvM=;
+        b=P4lejcfDAKxMRzaHpAeRSzLSu6hyMzT1etaaXEZuOz37uFb5/hryx/Tz5CqoWausnHFmyT
+        MRAhDcLjDHMyhIMfjZp2etuRx1IjL80eW9gLobgHVLhxKNVKNzX2c0agKBZ+IY5ts+ANER
+        9XGBqOqMXnJTftO4DgTHS0XXL1CnjvU=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-594-IV6VDCqaMjeWV-YfzD9R6Q-1; Tue, 22 Mar 2022 04:08:43 -0400
+X-MC-Unique: IV6VDCqaMjeWV-YfzD9R6Q-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C0B5B1C05AF2;
+        Tue, 22 Mar 2022 08:08:42 +0000 (UTC)
+Received: from gshan.redhat.com (ovpn-12-33.pek2.redhat.com [10.72.12.33])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0ACDB1121324;
+        Tue, 22 Mar 2022 08:08:32 +0000 (UTC)
+From:   Gavin Shan <gshan@redhat.com>
+To:     kvmarm@lists.cs.columbia.edu
+Cc:     linux-kernel@vger.kernel.org, eauger@redhat.com,
+        shannon.zhaosl@gmail.com, maz@kernel.org,
+        Jonathan.Cameron@huawei.com, will@kernel.org, pbonzini@redhat.com,
+        james.morse@arm.com, mark.rutland@arm.com, drjones@redhat.com,
+        vkuznets@redhat.com, shan.gavin@gmail.com
+Subject: [PATCH v5 06/22] KVM: arm64: Support SDEI_EVENT_CONTEXT hypercall
+Date:   Tue, 22 Mar 2022 16:06:54 +0800
+Message-Id: <20220322080710.51727-7-gshan@redhat.com>
+In-Reply-To: <20220322080710.51727-1-gshan@redhat.com>
+References: <20220322080710.51727-1-gshan@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+This supports SDEI_EVENT_CONTEXT hypercall. It's used by the guest
+to retrieve the registers (R0 - R17) in the preempted context
+in the SDEI event handler. The preempted context is saved prior to
+servicing or handling the SDEI event and restored after that.
 
-alloc_pages() returns the page on success or NULL if allocation fails,
-while set_page_private() will dereference `newpage`. So it is better to
-catch the memory error in case other errors happen.
-
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Signed-off-by: Gavin Shan <gshan@redhat.com>
 ---
- fs/erofs/zdata.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+ arch/arm64/kvm/sdei.c | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-diff --git a/fs/erofs/zdata.c b/fs/erofs/zdata.c
-index 11c7a1a..36a5421 100644
---- a/fs/erofs/zdata.c
-+++ b/fs/erofs/zdata.c
-@@ -735,11 +735,15 @@ static int z_erofs_do_read_page(struct z_erofs_decompress_frontend *fe,
- 		struct page *const newpage =
- 				alloc_page(GFP_NOFS | __GFP_NOFAIL);
+diff --git a/arch/arm64/kvm/sdei.c b/arch/arm64/kvm/sdei.c
+index 4ab58f264992..4488d3f044f2 100644
+--- a/arch/arm64/kvm/sdei.c
++++ b/arch/arm64/kvm/sdei.c
+@@ -297,6 +297,34 @@ static unsigned long hypercall_enable(struct kvm_vcpu *vcpu, bool enable)
+ 	return ret;
+ }
  
--		set_page_private(newpage, Z_EROFS_SHORTLIVED_PAGE);
--		err = z_erofs_attach_page(clt, newpage,
--					  Z_EROFS_PAGE_TYPE_EXCLUSIVE);
--		if (!err)
--			goto retry;
-+		if (!newpage) {
-+			err = -ENOMEM;
-+		} else {
-+			set_page_private(newpage, Z_EROFS_SHORTLIVED_PAGE);
-+			err = z_erofs_attach_page(clt, newpage,
-+						Z_EROFS_PAGE_TYPE_EXCLUSIVE);
-+			if (!err)
-+				goto retry;
-+		}
- 	}
- 
- 	if (err)
++static unsigned long hypercall_context(struct kvm_vcpu *vcpu)
++{
++	struct kvm_sdei_vcpu *vsdei = vcpu->arch.sdei;
++	struct kvm_sdei_vcpu_regs_state *regs;
++	unsigned long param_id = smccc_get_arg1(vcpu);
++	unsigned long ret = SDEI_SUCCESS;
++
++	spin_lock(&vsdei->lock);
++
++	/* Check if the pending event exists */
++	if (!vsdei->critical_event && !vsdei->normal_event) {
++		ret = SDEI_DENIED;
++		goto unlock;
++	}
++
++	/* Fetch the requested register */
++	regs = vsdei->critical_event ? &vsdei->state.critical_regs :
++				       &vsdei->state.normal_regs;
++	if (param_id < ARRAY_SIZE(regs->regs))
++		ret = regs->regs[param_id];
++	else
++		ret = SDEI_INVALID_PARAMETERS;
++
++unlock:
++	spin_unlock(&vsdei->lock);
++	return ret;
++}
++
+ int kvm_sdei_hypercall(struct kvm_vcpu *vcpu)
+ {
+ 	struct kvm *kvm = vcpu->kvm;
+@@ -333,6 +361,8 @@ int kvm_sdei_hypercall(struct kvm_vcpu *vcpu)
+ 		ret = hypercall_enable(vcpu, false);
+ 		break;
+ 	case SDEI_1_0_FN_SDEI_EVENT_CONTEXT:
++		ret = hypercall_context(vcpu);
++		break;
+ 	case SDEI_1_0_FN_SDEI_EVENT_COMPLETE:
+ 	case SDEI_1_0_FN_SDEI_EVENT_COMPLETE_AND_RESUME:
+ 	case SDEI_1_0_FN_SDEI_EVENT_UNREGISTER:
 -- 
+2.23.0
+
