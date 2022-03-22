@@ -2,242 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5198CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 10:41:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1A97C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 10:41:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233167AbiCVKm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 06:42:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37202 "EHLO
+        id S233187AbiCVKmf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 06:42:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231699AbiCVKmZ (ORCPT
+        with ESMTP id S233131AbiCVKmb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 06:42:25 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E4175BE46
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 03:40:58 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id u103so32818558ybi.9
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 03:40:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=BfLZfuNtHWSHfLJgUzXihlygGTtjO/2p9TMnJyQ6tCM=;
-        b=hWcOt8AhGMyvua19JFIDB9WfPadCHKN0/sHwH2vXPlgRkpt4R2stFDEHzffM4XSlvt
-         84+jbaZYMvUW4Inf5dJTTF4Yq39N7XQfa2Br8p0PuZHyhOJncwTtO5q0sR5KWMMQahKF
-         9TOEAVJzzKLnRooSj7ERbSkzpCd1v1QoudtNbRrgxCLrgQ1MmE9YAGvxC7s8piwF86HY
-         n1HepRFmn/QhLeItLRL0wpOV2mPfJ+fsAVTkdLzJEXFVhk6Gbcr+peRAKbs3eerCZEAD
-         HUQVaaiEgTKihH/Ap7giAakhYZ4qLzCHb90Z33Y2uQknw1B8TtV3CGamnyt0DNH4az58
-         t5kA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=BfLZfuNtHWSHfLJgUzXihlygGTtjO/2p9TMnJyQ6tCM=;
-        b=oZEpTuwOLpa7+2pIaPOJaq/bzppQW0xieZOZ0Gdc1rHfuauRwKMkXmo7tQkMmWeXAP
-         x+ExlgMC4xATnyZE5GGRiNR/2N5BdXgp/jSAD3tBxz4jvYJlNTA6rvcYw48Ux/BAMxva
-         vknxeARfkB+Bt8kKZr8i/6GJlZQTVoIS/PobMk/9NFFTtZQICAkTMDLj4o/ndHcceX/U
-         VxegSVXtLJD5AEUyt15BNq/3jQo4bVahrG4Y+2dxokJP3ht73o1lNTPHwRbTEsQBZ2d2
-         4zv68W3VPMUx3lkqdhFqyIYNoOaX/gKj0WMeNut/0A7LHw+D9eeJgsci6zmTA+15HxJa
-         QiIA==
-X-Gm-Message-State: AOAM5335ZXOmxzLsHz3XbUUPbrW2zSv8gYvC2kmJR9eMOLnXAfJyljVy
-        wZ46SXxGMkBm5UoZ6KFaC7sW3xH27y7XWP2xr+vYiA==
-X-Google-Smtp-Source: ABdhPJyjO8ekN2nhTEy+oPGf1waYGacEgnYxt8muuywguXzT/ZhhgfccPboEwOn9eMY5WxbjqNn9GDOa3ROQbJdH2Hg=
-X-Received: by 2002:a25:9909:0:b0:624:57e:d919 with SMTP id
- z9-20020a259909000000b00624057ed919mr26913929ybn.494.1647945657111; Tue, 22
- Mar 2022 03:40:57 -0700 (PDT)
+        Tue, 22 Mar 2022 06:42:31 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90CAC8118E;
+        Tue, 22 Mar 2022 03:41:04 -0700 (PDT)
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22M7Yd7G008885;
+        Tue, 22 Mar 2022 06:40:57 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3ew9165je5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 22 Mar 2022 06:40:57 -0400
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 22MAeuq9036322
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 22 Mar 2022 06:40:56 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Tue, 22 Mar
+ 2022 06:40:55 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Tue, 22 Mar 2022 06:40:55 -0400
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 22MAelC9008328;
+        Tue, 22 Mar 2022 06:40:50 -0400
+From:   <alexandru.tachici@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>,
+        Alexandru Tachici <alexandru.tachici@analog.com>
+Subject: [PATCH v3 0/6] iio: adc: ad_sigma_delta: Add sequencer support
+Date:   Tue, 22 Mar 2022 12:50:23 +0200
+Message-ID: <20220322105029.86389-1-alexandru.tachici@analog.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <20220321133217.148831184@linuxfoundation.org>
-In-Reply-To: <20220321133217.148831184@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 22 Mar 2022 16:10:45 +0530
-Message-ID: <CA+G9fYt-D-A_hfy8vd6WwX+9F4jETO+5Cmcn72eoupbUJQe23w@mail.gmail.com>
-Subject: Re: [PATCH 5.4 00/17] 5.4.187-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: ZcWShtxLslYC5WeAeL1DESe4-8tlT_Ey
+X-Proofpoint-ORIG-GUID: ZcWShtxLslYC5WeAeL1DESe4-8tlT_Ey
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-22_03,2022-03-22_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
+ phishscore=0 mlxlogscore=999 suspectscore=0 malwarescore=0 clxscore=1015
+ impostorscore=0 bulkscore=0 priorityscore=1501 adultscore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2203220062
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 21 Mar 2022 at 19:28, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.4.187 release.
-> There are 17 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Wed, 23 Mar 2022 13:32:09 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
-5.4.187-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-5.4.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+From: Alexandru Tachici <alexandru.tachici@analog.com>
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+Some sigma-delta chips support sampling of multiple
+channels in continuous mode.
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+When the operating with more than one channel enabled,
+the channel sequencer cycles through the enabled channels
+in sequential order, from first channel to the last one.
+If a channel is disabled, it is skipped by the sequencer.
 
-## Build
-* kernel: 5.4.187-rc1
-* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
-rc.git
-* git branch: linux-5.4.y
-* git commit: 7f44fdc1563d6bca95ee9fb4414e4b8286bccb0c
-* git describe: v5.4.186-18-g7f44fdc1563d
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.4.y/build/v5.4.1=
-86-18-g7f44fdc1563d
+If more than one channel is used in continuous mode,
+instruct the device to append the status to the SPI transfer
+(1 extra byte) every time we receive a sample.
+All sigma-delta chips possessing a sampling sequencer have
+this ability. Inside the status register there will be
+the number of the converted channel. In this way, even
+if the CPU won't keep up with the sampling rate, it won't
+send to userspace wrong channel samples.
 
-## Test Regressions (compared to v5.4.185-44-ge52a2b0f299b)
-No test regressions found.
+1. Removed the 1 byte .shift from channel spec in AD7124,
+it confuses userspace apps (no need to shift right).
 
-## Metric Regressions (compared to v5.4.185-44-ge52a2b0f299b)
-No metric regressions found.
+2. Add update_scan_mode to AD7124, it is required in order
+to enable/disable multiple channels at once
 
-## Test Fixes (compared to v5.4.185-44-ge52a2b0f299b)
-No test fixes found.
+3. Add update_scan_mode to AD7192, it is required in order
+to enable/disable multiple channels at once
 
-## Metric Fixes (compared to v5.4.185-44-ge52a2b0f299b)
-No metric fixes found.
+4. Add sequencer support for sigma_delta library.
 
-## Test result summary
-total: 91651, pass: 76371, fail: 1036, skip: 12975, xfail: 1269
+5. Add sigma_delta_info values and callbacks for sequencer
+support in AD7124.
 
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 295 total, 295 passed, 0 failed
-* arm64: 31 total, 29 passed, 2 failed
-* dragonboard-410c: 1 total, 1 passed, 0 failed
-* hi6220-hikey: 1 total, 1 passed, 0 failed
-* i386: 22 total, 22 passed, 0 failed
-* juno-r2: 1 total, 1 passed, 0 failed
-* mips: 41 total, 38 passed, 3 failed
-* parisc: 14 total, 14 passed, 0 failed
-* powerpc: 65 total, 50 passed, 15 failed
-* riscv: 32 total, 27 passed, 5 failed
-* s390: 14 total, 13 passed, 1 failed
-* sh: 26 total, 24 passed, 2 failed
-* sparc: 14 total, 14 passed, 0 failed
-* x15: 1 total, 1 passed, 0 failed
-* x86: 1 total, 1 passed, 0 failed
-* x86_64: 46 total, 46 passed, 0 failed
+6. Add sigma_delta_info values and callbacks for sequencer
+support in AD7192.
 
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kselftest-android
-* kselftest-arm64
-* kselftest-bpf
-* kselftest-breakpoints
-* kselftest-capabilities
-* kselftest-cgroup
-* kselftest-clone3
-* kselftest-core
-* kselftest-cpu-hotplug
-* kselftest-cpufreq
-* kselftest-drivers
-* kselftest-efivarfs
-* kselftest-filesystems
-* kselftest-firmware
-* kselftest-fpu
-* kselftest-futex
-* kselftest-gpio
-* kselftest-intel_pstate
-* kselftest-ipc
-* kselftest-ir
-* kselftest-kcmp
-* kselftest-kexec
-* kselftest-kvm
-* kselftest-lib
-* kselftest-livepatch
-* kselftest-membarrier
-* kselftest-memfd
-* kselftest-memory-hotplug
-* kselftest-mincore
-* kselftest-mount
-* kselftest-mqueue
-* kselftest-net
-* kselftest-netfilter
-* kselftest-nsfs
-* kselftest-openat2
-* kselftest-pid_namespace
-* kselftest-pidfd
-* kselftest-proc
-* kselftest-pstore
-* kselftest-ptrace
-* kselftest-rseq
-* kselftest-rtc
-* kselftest-seccomp
-* kselftest-sigaltstack
-* kselftest-size
-* kselftest-splice
-* kselftest-static_keys
-* kselftest-sync
-* kselftest-sysctl
-* kselftest-tc-testing
-* kselftest-timens
-* kselftest-timers
-* kselftest-tmpfs
-* kselftest-tpm2
-* kselftest-user
-* kselftest-vm
-* kselftest-x86
-* kselftest-zram
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* linux-log-parser
-* ltp-cap_bounds-tests
-* ltp-commands-tests
-* ltp-containers-tests
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps-tests
-* ltp-fs-tests
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple-tests
-* ltp-fsx-tests
-* ltp-hugetlb-tests
-* ltp-io-tests
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty-tests
-* ltp-sched-tests
-* ltp-securebits-tests
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* perf
-* perf/Zstd-perf.data-compression
-* rcutorture
-* ssuite
-* v4l2-compliance
-* vdso
+Alexandru Tachici (5):
+  iio: adc: ad7124: Remove shift from scan_type
+  iio: adc: ad7124: Add update_scan_mode
+  iio: adc: ad7192: Add update_scan_mode
+  iio: adc: ad7124: add sequencer support
+  iio: adc: ad7192: add sequencer support
+
+Lars-Peter Clausen (1):
+  iio: adc: ad_sigma_delta: Add sequencer support
+
+Changelog V2 -> V3:
+  - ad_sd_buffer_postenable(), aligned (slot * storagebits) to 8 bytes
+  - devm_krealloc instead of krealloc for samples_buf in ad_sd_buffer_postenable()
+  - in ad_sigma_delta_append_status, check return value before setting .status_appended
+  - iio: adc: ad_sigma_delta: Add sequencer support: added explanations on
+  desynchronization checking and recovery
+  - in ad7124_append_status() modify st->adc_control after write has taken place without errors
+  - in ad7124_update_scan_mode() take cfg mutex only once instead of every time a
+  set_channel happens
+  - in ad7192_disable_all() modify st->conf after write taken place without errors
+  - in ad7192_append_status() modify st->mode after write taken place without errors
+
+ drivers/iio/adc/ad7124.c               |  86 ++++++++++++++-
+ drivers/iio/adc/ad7192.c               |  64 ++++++++++-
+ drivers/iio/adc/ad_sigma_delta.c       | 143 +++++++++++++++++++++++--
+ include/linux/iio/adc/ad_sigma_delta.h |  38 +++++++
+ 4 files changed, 315 insertions(+), 16 deletions(-)
 
 --
-Linaro LKFT
-https://lkft.linaro.org
+2.25.1
