@@ -2,141 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55141C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 12:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B5D7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Mar 2022 12:39:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347501AbiCUMjV (ORCPT
+        id S1347504AbiCUMk2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 08:39:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52076 "EHLO
+        Mon, 21 Mar 2022 08:40:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343611AbiCUMjK (ORCPT
+        with ESMTP id S234493AbiCUMk1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 08:39:10 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3FAF1680B5
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 05:37:20 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id w25so17614073edi.11
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 05:37:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bRjhCmUK3oCUee61cBk8RWBfzYem6vzRvo8MfD2Xsek=;
-        b=TXnBWcEzq++rM6dKuuLB6BLFl6gqNs6THIYwaBvze0VDaT1xhchA/2D4sZuvIkC4A+
-         Na98eVdTzfmRT+t+I3XEOCyQVchH6ujIL7WjDl3me4DULQxxu19jvtZi2Q6a8dieIjwc
-         CpYWth0Ucw5mTFfayzPOTuxgo42NV7t5g8yqnhfxNPpW6ZU9gW68024901NoTsy0WhRk
-         I3xcuC/NPtbSDQHHFRRLSnbe1nszFIcYqVtjCcNoThTcJawdDaiWYritHMJpWrx92OTZ
-         5YXJbV0IbZvCiVH01JgNGqIR6TfJEiLzTm+CM1eEh/dOGrEPwwlNRSAzc3qVhaZarX/d
-         8Lbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bRjhCmUK3oCUee61cBk8RWBfzYem6vzRvo8MfD2Xsek=;
-        b=olFzcK2hECCgRfBVCUGoQpn24I8X+KxYt2f3xj6JSnKU5hcnce5C9AtTdw+smzQO7A
-         WfSzPlnImcDyTLpMj5J3tijNxJXnEHdGKb1oNB/wvKgusV0Hr/21KzKRD8mYA7iqmjR+
-         HXdQWxsOaVORl7TIbci0aYsxazv36qi179Lxa0tcj67lH0wxFtKWkqP7Jv3y/BVsJn/O
-         SE3oGMXwiOnbYk4iQQ6TGfKcTm8e0fCJ3ROSTbVpvKfpL6dUH2nQbo69QqbvwcVUEQl+
-         G/K3Z5wYd0w2fgy2GMLyZwr10hHHPxP0SH93E+t5UG5HDxm3EOwbQ+r7TOHo8cTyf7Co
-         rK+Q==
-X-Gm-Message-State: AOAM531OSvyJwcJlrKRn9MpODLsh+WWZ4vksNkz7aPeLPuOSwLxw3etb
-        yPRozjMjYsf1GEZU+JNiaOk=
-X-Google-Smtp-Source: ABdhPJxdZNGfZ/MJWrWNAUwKIPsAS8dgeql0tJLH/bNUH2QSyyo1NxAh4EGJxzpnmqzwon6K90lyYg==
-X-Received: by 2002:a05:6402:3488:b0:419:172c:e287 with SMTP id v8-20020a056402348800b00419172ce287mr14182660edc.87.1647866239250;
-        Mon, 21 Mar 2022 05:37:19 -0700 (PDT)
-Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id g11-20020a170906538b00b006ae38eb0561sm6923828ejo.195.2022.03.21.05.37.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 05:37:18 -0700 (PDT)
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-To:     Vaibhav Agarwal <vaibhav.sr@gmail.com>
-Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
-        linux-kernel@vger.kernel.org, greybus-dev@lists.linaro.org,
-        linux-staging@lists.linux.dev, Mark Greer <mgreer@animalcreek.com>,
-        Johan Hovold <johan@kernel.org>, Alex Elder <elder@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH] staging: greybus: codecs: use dedicated list iterator variable
-Date:   Mon, 21 Mar 2022 13:37:12 +0100
-Message-Id: <20220321123712.3068778-1-jakobkoschel@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 21 Mar 2022 08:40:27 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2B862B27F
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 05:39:01 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KMZ1B1SBTz1GCmk;
+        Mon, 21 Mar 2022 20:38:54 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
+ (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 21 Mar
+ 2022 20:38:59 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <cl@linux.com>, <penberg@kernel.org>, <rientjes@google.com>,
+        <iamjoonsoo.kim@lge.com>, <akpm@linux-foundation.org>,
+        <vbabka@suse.cz>
+CC:     <roman.gushchin@linux.dev>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
+Subject: [PATCH] mm/slab: remove some unused functions
+Date:   Tue, 22 Mar 2022 17:14:21 +0800
+Message-ID: <20220322091421.25285-1-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In preparation to limit the scope of the list iterator to the list
-traversal loop, use a dedicated pointer to point to the found element [1].
+alternate_node_alloc and ____cache_alloc_node are always called when
+CONFIG_NUMA. So we can remove the unused !CONFIG_NUMA variant. Also
+forward declaration for alternate_node_alloc is unnecessary. Remove
+it too.
 
-Link: https://lore.kernel.org/all/YhdfEIwI4EdtHdym@kroah.com/
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
- drivers/staging/greybus/audio_codec.c | 20 ++++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
+ mm/slab.c | 13 -------------
+ 1 file changed, 13 deletions(-)
 
-diff --git a/drivers/staging/greybus/audio_codec.c b/drivers/staging/greybus/audio_codec.c
-index b589cf6b1d03..a446d6455fbd 100644
---- a/drivers/staging/greybus/audio_codec.c
-+++ b/drivers/staging/greybus/audio_codec.c
-@@ -497,7 +497,7 @@ static int gbcodec_prepare(struct snd_pcm_substream *substream,
- 			   struct snd_soc_dai *dai)
- {
- 	int ret;
--	struct gbaudio_module_info *module;
-+	struct gbaudio_module_info *module = NULL, *iter;
- 	struct gbaudio_data_connection *data;
- 	struct gb_bundle *bundle;
- 	struct gbaudio_codec_info *codec = dev_get_drvdata(dai->dev);
-@@ -511,11 +511,13 @@ static int gbcodec_prepare(struct snd_pcm_substream *substream,
- 		return -ENODEV;
- 	}
+diff --git a/mm/slab.c b/mm/slab.c
+index d9dec7a8fd79..81301df47057 100644
+--- a/mm/slab.c
++++ b/mm/slab.c
+@@ -619,18 +619,6 @@ static inline int cache_free_alien(struct kmem_cache *cachep, void *objp)
+ 	return 0;
+ }
  
--	list_for_each_entry(module, &codec->module_list, list) {
-+	list_for_each_entry(iter, &codec->module_list, list) {
- 		/* find the dai */
--		data = find_data(module, dai->id);
--		if (data)
-+		data = find_data(iter, dai->id);
-+		if (data) {
-+			module = iter;
- 			break;
-+		}
- 	}
- 	if (!data) {
- 		dev_err(dai->dev, "DATA connection missing\n");
-@@ -563,7 +565,7 @@ static int gbcodec_mute_stream(struct snd_soc_dai *dai, int mute, int stream)
+-static inline void *alternate_node_alloc(struct kmem_cache *cachep,
+-		gfp_t flags)
+-{
+-	return NULL;
+-}
+-
+-static inline void *____cache_alloc_node(struct kmem_cache *cachep,
+-		 gfp_t flags, int nodeid)
+-{
+-	return NULL;
+-}
+-
+ static inline gfp_t gfp_exact_node(gfp_t flags)
  {
- 	int ret;
- 	struct gbaudio_data_connection *data;
--	struct gbaudio_module_info *module;
-+	struct gbaudio_module_info *module = NULL, *iter;
- 	struct gb_bundle *bundle;
- 	struct gbaudio_codec_info *codec = dev_get_drvdata(dai->dev);
- 	struct gbaudio_stream_params *params;
-@@ -592,11 +594,13 @@ static int gbcodec_mute_stream(struct snd_soc_dai *dai, int mute, int stream)
- 		return ret;
- 	}
+ 	return flags & ~__GFP_NOFAIL;
+@@ -639,7 +627,6 @@ static inline gfp_t gfp_exact_node(gfp_t flags)
+ #else	/* CONFIG_NUMA */
  
--	list_for_each_entry(module, &codec->module_list, list) {
-+	list_for_each_entry(iter, &codec->module_list, list) {
- 		/* find the dai */
--		data = find_data(module, dai->id);
--		if (data)
-+		data = find_data(iter, dai->id);
-+		if (data) {
-+			module = iter;
- 			break;
-+		}
- 	}
- 	if (!data) {
- 		dev_err(dai->dev, "%s:%s DATA connection missing\n",
-
-base-commit: f443e374ae131c168a065ea1748feac6b2e76613
+ static void *____cache_alloc_node(struct kmem_cache *, gfp_t, int);
+-static void *alternate_node_alloc(struct kmem_cache *, gfp_t);
+ 
+ static struct alien_cache *__alloc_alien_cache(int node, int entries,
+ 						int batch, gfp_t gfp)
 -- 
-2.25.1
+2.23.0
 
