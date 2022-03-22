@@ -2,84 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99126C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 01:42:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED47EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 01:44:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235083AbiCVBng (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 21:43:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32864 "EHLO
+        id S235019AbiCVBqO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 21:46:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235065AbiCVBnd (ORCPT
+        with ESMTP id S234610AbiCVBqN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 21:43:33 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95B6131527;
-        Mon, 21 Mar 2022 18:42:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=nVKhBCI4fMEjs9snfx8gEi1XWAYrextgE1D2YFOqA+E=; b=KOTzp/ypUL84dSmnhYdBK64S3e
-        cjIoXkT4/g9vCeDQ1hpbdVsWfS0il7vI5bQ30uMNd/GFbaMpcNWHgC3ktL3luZ3qBChTbP/DG+zZk
-        hGR6Y5f7gZv2YxUCHy5X1oWwNrRtcDELBA1erJfr8Qqb75te3FBRcD8d/g5jupI2wrjvVKnhwtkG+
-        YwvPfwzYmMVD2T0JOtB99sv+7tKCcWfjfodnRtBqAoXgxtEhBxJat9hNXhAP90vMva4qmjHTmpoKB
-        Fk0X6NMFFvRJSjiweo47aZywVhCyTolZrQxtbsVQlNdwalbJHp5BU1KGAtW13hK4F5P68m4bSHpDW
-        84hhJD6w==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nWTX4-00B9cV-TB; Tue, 22 Mar 2022 01:41:59 +0000
-Message-ID: <ffe0183c-7e48-2ac7-9c69-ca87d98c442a@infradead.org>
-Date:   Mon, 21 Mar 2022 18:41:49 -0700
+        Mon, 21 Mar 2022 21:46:13 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 198E313D28
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 18:44:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647913487; x=1679449487;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=3xQpy8OcUXHBr+agltF40I6tYOZmZNSpGKbvL4qlQ34=;
+  b=YUeqc25W0OTXFJAwCiDEAmoViXG9RvuaiqNl1yppRejdQ/T1O9a+qP2y
+   ercGjSldD4YXUsXbC0KQg5dnJ7szQf4O9PJSp+08Tlfpr1pnQPIC6brGP
+   e/dB38VKvpVJ7LWY5CXu99HwCE2dJCl/MsAQK6Yn1kwMVium+WoA3yKKC
+   asAy7fce9lMNYm6vF4jBsFn7x+7WFuDRYhkoQX76ONhbTY3nuKWcChO0D
+   EFdWR21Iolc+0ANw+7x7ZLoOxiBrRFd31gdEqJzfKKLio4AZM6/ZwyUY3
+   XM1R2tJPxRZNlp8D1snNWxdwLwHj/cltcrAT6lDvlQ0RaMjoh+sYIVyzK
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="256514965"
+X-IronPort-AV: E=Sophos;i="5.90,200,1643702400"; 
+   d="scan'208";a="256514965"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 18:44:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,200,1643702400"; 
+   d="scan'208";a="636860076"
+Received: from unknown (HELO localhost.localdomain) ([10.226.216.87])
+  by FMSMGA003.fm.intel.com with ESMTP; 21 Mar 2022 18:44:45 -0700
+From:   kah.jing.lee@intel.com
+To:     Dinh Nguyen <dinguyen@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, radu.bacrau@intel.com,
+        tien.sung.ang@intel.com
+Subject: Re: [PATCH v2] firmware: stratix10-rsu: extend RSU driver to get DCMF status
+Date:   Tue, 22 Mar 2022 17:44:28 +0800
+Message-Id: <20220322094429.375237-1-kah.jing.lee@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <238c6460-16a2-c630-9027-3fe31d0d59c5@kernel.org>
+References: <238c6460-16a2-c630-9027-3fe31d0d59c5@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] Docs: admin/kernel-parameters: edit a few boot options
-Content-Language: en-US
-To:     Michael Ellerman <mpe@ellerman.id.au>, linux-kernel@vger.kernel.org
-Cc:     Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        linux-s390@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        sparclinux@vger.kernel.org,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-ia64@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Pavel Machek <pavel@ucw.cz>, Len Brown <lenb@kernel.org>,
-        linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-References: <20220321012216.23724-1-rdunlap@infradead.org>
- <87ils6hl1z.fsf@mpe.ellerman.id.au>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <87ils6hl1z.fsf@mpe.ellerman.id.au>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+Sorry folks. Made a mistake, miss spacing error in the checkpatch in header file. 
+Will be more careful on the next upstream. 
 
-On 3/21/22 17:45, Michael Ellerman wrote:
-> Randy Dunlap <rdunlap@infradead.org> writes:
->> Clean up some of admin-guide/kernel-parameters.txt:
->>
->> a. "smt" should be "smt=" (S390)
->> b. add "smt-enabled" for POWERPC
-> 
-> I'd rather you didn't. It's not well tested and we ignore it entirely on
-> some platforms because it causes bugs. Eventually I'd like to remove it.
-> 
-> If we ever get time we'd want to support the generic `nosmt` argument
-> instead.
+Hi Dinh,
+Do I continue with this v2 subject or re-send with another v3 patch subject ?
+This version has the correct format check. 
 
-No problem. Thanks for replying.
+Thanks. 
+KJ
 
--- 
-~Randy
