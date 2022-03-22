@@ -2,84 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A67DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 20:34:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5636FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 20:34:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233969AbiCVUdy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 16:33:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35544 "EHLO
+        id S233944AbiCVUgD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 16:36:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233857AbiCVUdt (ORCPT
+        with ESMTP id S233967AbiCVUgB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 16:33:49 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 322A7F11;
-        Tue, 22 Mar 2022 13:32:21 -0700 (PDT)
-Received: from fraeml707-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KNNQR0mwHz6H7Kg;
-        Wed, 23 Mar 2022 04:30:07 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml707-chm.china.huawei.com (10.206.15.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 22 Mar 2022 21:32:19 +0100
-Received: from localhost (10.47.75.191) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 22 Mar
- 2022 20:32:18 +0000
-Date:   Tue, 22 Mar 2022 20:32:16 +0000
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Andrea Merello <andrea.merello@gmail.com>
-CC:     Jonathan Cameron <jic23@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Matt Ranostay <matt.ranostay@konsulko.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Andrea Merello <andrea.merello@iit.it>
-Subject: Re: [v3 13/13] docs: iio: add documentation for BNO055 driver
-Message-ID: <20220322203216.0000141f@Huawei.com>
-In-Reply-To: <CAN8YU5PvqJ3_wA7JnFRFT_53KftrqzaanELj5Xjbw0d8cnQ6tA@mail.gmail.com>
-References: <20220217162710.33615-1-andrea.merello@gmail.com>
-        <20220217162710.33615-14-andrea.merello@gmail.com>
-        <20220219170645.565afed8@jic23-huawei>
-        <CAN8YU5PvqJ3_wA7JnFRFT_53KftrqzaanELj5Xjbw0d8cnQ6tA@mail.gmail.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        Tue, 22 Mar 2022 16:36:01 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D95024583
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 13:34:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647981273; x=1679517273;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=F68gsgzQ6q45gRjwkymW50Bm3d+yzytyo4dB8GvA06U=;
+  b=DqNcGiobyqniORHIKwIGO1ua4EGLFcHbAU3Uv0KmfR9zkiX9KQ1S1Cp2
+   O/lC31FzcnqrgGb3o2lQtlKO0EGCAFgbMCWVfZdI08FCHlMe172pPgDis
+   KIyZ6VD/W2Jx2zmqVJegEs+aaV8qZi9AQWyZQukxS3nSmZL80tUp/lLqY
+   gmA3Dvx680g7b2euDfPyc8FB6EMYeyTNnV+gx4O3k7fgCrwaLY1QOs0tP
+   MLOr64ZKlbyMCNH4d9+D2KP7bZaEc6aa4muY8Q3BwXSMkpZPTiDEbv9Pq
+   /DOuVS2tCmc0sarX+ARgnt6GEPpzQVbU/DU+UrMdvvd/vr1OmMQnni2B6
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10294"; a="255505346"
+X-IronPort-AV: E=Sophos;i="5.90,202,1643702400"; 
+   d="scan'208";a="255505346"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2022 13:34:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,202,1643702400"; 
+   d="scan'208";a="717114193"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 22 Mar 2022 13:34:31 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nWlD4-000JGW-Rb; Tue, 22 Mar 2022 20:34:30 +0000
+Date:   Wed, 23 Mar 2022 04:33:31 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:master] BUILD SUCCESS
+ d40396b363c081b032670eb84965a6922f57742a
+Message-ID: <623a329b.U1zab4RHIQDyc9T0%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.75.191]
-X-ClientProxiedBy: lhreml742-chm.china.huawei.com (10.201.108.192) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 22 Mar 2022 11:30:12 +0100
-Andrea Merello <andrea.merello@gmail.com> wrote:
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git master
+branch HEAD: d40396b363c081b032670eb84965a6922f57742a  Merge branch into tip/master: 'sched/core'
 
-> [...]
-> 
-> > > +IIO attributes for unavailable measurements (e.g. Euler angles when fusion
-> > > +mode is disabled) just read zero.  
-> >
-> > Hmm. Should probably return -EBUSY as 0 could be a valid value.
-> >  
-> 
-> While it seems reasonable,  that can be easily done while reading from
-> sysfs, but how do we handle this when reading from buffer?
-> Right now both sysfs and buffer read zero from unused chans, which it
-> is at least consistent..
+elapsed time: 724m
 
-Can't we refuse to start the buffer if we have a channel enabled that
-makes no sense in the current mode?
+configs tested: 121
+configs skipped: 3
 
-If seems very odd to allow capture of 'nothing'.
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-Jonathan
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+i386                          randconfig-c001
+m68k                             alldefconfig
+riscv                    nommu_k210_defconfig
+arc                        vdk_hs38_defconfig
+m68k                         apollo_defconfig
+m68k                       m5475evb_defconfig
+ia64                             allmodconfig
+nios2                               defconfig
+arm                             pxa_defconfig
+arc                           tb10x_defconfig
+parisc64                            defconfig
+m68k                            mac_defconfig
+powerpc                 mpc837x_rdb_defconfig
+sh                           se7712_defconfig
+xtensa                  cadence_csp_defconfig
+sparc                       sparc64_defconfig
+powerpc                 mpc834x_itx_defconfig
+sh                             sh03_defconfig
+powerpc                     rainier_defconfig
+arm                         vf610m4_defconfig
+sh                        edosk7705_defconfig
+mips                           ci20_defconfig
+m68k                        mvme147_defconfig
+arm                            hisi_defconfig
+nds32                               defconfig
+arm                  randconfig-c002-20220321
+arm                  randconfig-c002-20220320
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+arc                              allyesconfig
+nds32                             allnoconfig
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64               randconfig-a016-20220321
+x86_64               randconfig-a011-20220321
+x86_64               randconfig-a012-20220321
+x86_64               randconfig-a013-20220321
+x86_64               randconfig-a014-20220321
+x86_64               randconfig-a015-20220321
+i386                 randconfig-a014-20220321
+i386                 randconfig-a013-20220321
+i386                 randconfig-a016-20220321
+i386                 randconfig-a015-20220321
+i386                 randconfig-a011-20220321
+i386                 randconfig-a012-20220321
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+x86_64                    rhel-8.3-kselftests
+um                             i386_defconfig
+um                           x86_64_defconfig
+x86_64                           allyesconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                         rhel-8.3-kunit
+x86_64                                  kexec
+
+clang tested configs:
+x86_64                        randconfig-c007
+mips                 randconfig-c004-20220320
+arm                  randconfig-c002-20220320
+powerpc              randconfig-c003-20220320
+riscv                randconfig-c006-20220320
+i386                          randconfig-c001
+arm                  randconfig-c002-20220322
+powerpc              randconfig-c003-20220322
+riscv                randconfig-c006-20220322
+arm                     am200epdkit_defconfig
+arm                        spear3xx_defconfig
+mips                         tb0287_defconfig
+powerpc                 mpc832x_rdb_defconfig
+powerpc                     tqm8540_defconfig
+mips                       lemote2f_defconfig
+mips                        omega2p_defconfig
+i386                 randconfig-a001-20220321
+i386                 randconfig-a006-20220321
+i386                 randconfig-a003-20220321
+i386                 randconfig-a005-20220321
+i386                 randconfig-a004-20220321
+i386                 randconfig-a002-20220321
+x86_64               randconfig-a003-20220321
+x86_64               randconfig-a001-20220321
+x86_64               randconfig-a002-20220321
+x86_64               randconfig-a004-20220321
+x86_64               randconfig-a005-20220321
+x86_64               randconfig-a006-20220321
+riscv                randconfig-r042-20220320
+hexagon              randconfig-r045-20220321
+hexagon              randconfig-r045-20220320
+hexagon              randconfig-r041-20220321
+hexagon              randconfig-r041-20220320
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
