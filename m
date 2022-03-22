@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DD66C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 15:19:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25CDBC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 15:19:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238283AbiCVPUk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 11:20:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35762 "EHLO
+        id S238476AbiCVPVB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 11:21:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238380AbiCVPUW (ORCPT
+        with ESMTP id S238406AbiCVPUY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 11:20:22 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16C685BD07;
-        Tue, 22 Mar 2022 08:18:55 -0700 (PDT)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22MAwx98011964;
-        Tue, 22 Mar 2022 10:18:34 -0500
+        Tue, 22 Mar 2022 11:20:24 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AB4D5BD07;
+        Tue, 22 Mar 2022 08:18:56 -0700 (PDT)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22MCnUfG013136;
+        Tue, 22 Mar 2022 10:18:42 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=PODMain02222019;
- bh=ywH4uvwDWdVJqzTUsp5wR4R1KwoCSnX2piA1HLbaG9Q=;
- b=PuVUMQCW9j0bsgsTlP5a9VT5ecjTo1gMRy9mYNL7XIq4wzKpevlrJpxbDeJdv2aD7f1g
- ExDCLEdc0l+0jJdRSTdEcqCicWk56Ie1b1soF/+w3zV5LmxG2KSfcy3iHtpnuFiot5nl
- +2QJ8lD+Mr+xYMAnFbmtXKsU8c9COK8eKVx2Jgs1BGihM8jigrG85Vf25XtqizjpdZ9F
- tX7m5vpPs3G47m0+gWNI6E7H2Qb70LFVLqmBO0WvW6zf5vBkytWA9v30VWoLdvYp6tr9
- 9G448sO144VwNlSNzuGWrLIZ45offzxD5lGFUGiCLnEDaB5wFfhBk75wCu1UVy38w3kd LA== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3ewck1cb46-2
+ bh=xxRGWV0GdBuYVwUw8paO+jr9OgLMwyNzezVazBUiXZE=;
+ b=HqC6KOaiVZVJNQRTVAwsFyOtNSziuAYe+rH6HYakf+BfURaIS887qiCxiJJw7uKf5Ji4
+ yxBrNXOtV27/cFbpPrAVgxWpL5tvO9HnSfDOE4Sq+6tneyLscxUv2swYFj1buBm0ZOwd
+ w9+bH7JDZtmLAN3wGzZH334vaBj809HfMJFl/rCB/K8t/0A8ODmCbmEhQ/P3rd7bwsD3
+ L1QZRDsfzvv5Js5i9n+1FZsproBIKbH051QKUh5JapW3BlnUTqdr0c8X8ZW05xoATfBG
+ +VhP3uEPqLGo/X5dur+3GP7QYfEelbdxJlDNkYERYTI+Vhy95rZwF3Yn7m0IKsGxdSzL gw== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3ewbknc0jc-9
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 22 Mar 2022 10:18:33 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
+        Tue, 22 Mar 2022 10:18:42 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 22 Mar
- 2022 15:18:32 +0000
+ 2022 15:18:35 +0000
 Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Tue, 22 Mar 2022 15:18:32 +0000
+ Transport; Tue, 22 Mar 2022 15:18:35 +0000
 Received: from aryzen.ad.cirrus.com (unknown [198.61.65.125])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 7B0A5459;
-        Tue, 22 Mar 2022 15:18:32 +0000 (UTC)
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id D0379477;
+        Tue, 22 Mar 2022 15:18:34 +0000 (UTC)
 From:   Lucas Tanure <tanureal@opensource.cirrus.com>
 To:     Liam Girdwood <lgirdwood@gmail.com>,
         Mark Brown <broonie@kernel.org>,
@@ -49,72 +49,74 @@ To:     Liam Girdwood <lgirdwood@gmail.com>,
 CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Lucas Tanure <tanureal@opensource.cirrus.com>
-Subject: [PATCH v5 05/16] ALSA: hda: cs35l41: Always configure the DAI
-Date:   Tue, 22 Mar 2022 15:18:08 +0000
-Message-ID: <20220322151819.4299-6-tanureal@opensource.cirrus.com>
+Subject: [PATCH v5 12/16] ALSA: hda: cs35l41: Reorganize log for playback actions
+Date:   Tue, 22 Mar 2022 15:18:15 +0000
+Message-ID: <20220322151819.4299-13-tanureal@opensource.cirrus.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220322151819.4299-1-tanureal@opensource.cirrus.com>
 References: <20220322151819.4299-1-tanureal@opensource.cirrus.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: Dk5Pg5HwnvG9vV9JPIiov28pgRmkg7hi
-X-Proofpoint-GUID: Dk5Pg5HwnvG9vV9JPIiov28pgRmkg7hi
+X-Proofpoint-ORIG-GUID: b4Q3ovl4SDfzykNyvcrg2iEmhMZieSEB
+X-Proofpoint-GUID: b4Q3ovl4SDfzykNyvcrg2iEmhMZieSEB
 X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The dai configuration is always the same and should always configured
-during the opening the stream.
+For each case, only log the last regmap access, so it doesn't get
+overwritten, and as all regmap access should show the same issues
+logging the last one should be enough.
+Change to dev_err to log this error.
+
+Also, differentiate between a regmap access failure and invalid
+playback action.
 
 Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
 ---
- sound/pci/hda/cs35l41_hda.c | 10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
+ sound/pci/hda/cs35l41_hda.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
 diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
-index d2addae8c085..f853530eb385 100644
+index ece784662dbd..3294837ff606 100644
 --- a/sound/pci/hda/cs35l41_hda.c
 +++ b/sound/pci/hda/cs35l41_hda.c
-@@ -111,8 +111,6 @@ static const struct reg_sequence cs35l41_reset_to_safe[] = {
- static const struct cs35l41_hda_reg_sequence cs35l41_hda_reg_seq_no_bst = {
- 	.probe		= cs35l41_reset_to_safe,
- 	.num_probe	= ARRAY_SIZE(cs35l41_reset_to_safe),
--	.open		= cs35l41_hda_config,
--	.num_open	= ARRAY_SIZE(cs35l41_hda_config),
- 	.prepare	= cs35l41_safe_to_active,
- 	.num_prepare	= ARRAY_SIZE(cs35l41_safe_to_active),
- 	.cleanup	= cs35l41_active_to_safe,
-@@ -120,8 +118,6 @@ static const struct cs35l41_hda_reg_sequence cs35l41_hda_reg_seq_no_bst = {
- };
- 
- static const struct cs35l41_hda_reg_sequence cs35l41_hda_reg_seq_ext_bst = {
--	.open		= cs35l41_hda_config,
--	.num_open	= ARRAY_SIZE(cs35l41_hda_config),
- 	.prepare	= cs35l41_start_ext_vspk,
- 	.num_prepare	= ARRAY_SIZE(cs35l41_start_ext_vspk),
- 	.cleanup	= cs35l41_stop_ext_vspk,
-@@ -129,8 +125,6 @@ static const struct cs35l41_hda_reg_sequence cs35l41_hda_reg_seq_ext_bst = {
- };
- 
- static const struct cs35l41_hda_reg_sequence cs35l41_hda_reg_seq_int_bst = {
--	.open		= cs35l41_hda_config,
--	.num_open	= ARRAY_SIZE(cs35l41_hda_config),
- 	.prepare	= cs35l41_hda_start_bst,
- 	.num_prepare	= ARRAY_SIZE(cs35l41_hda_start_bst),
- 	.cleanup	= cs35l41_hda_stop_bst,
-@@ -146,8 +140,8 @@ static void cs35l41_hda_playback_hook(struct device *dev, int action)
+@@ -144,10 +144,9 @@ static void cs35l41_hda_playback_hook(struct device *dev, int action)
  
  	switch (action) {
  	case HDA_GEN_PCM_ACT_OPEN:
--		if (reg_seq->open)
--			ret = regmap_multi_reg_write(reg, reg_seq->open, reg_seq->num_open);
-+		ret = regmap_multi_reg_write(reg, cs35l41_hda_config,
-+					     ARRAY_SIZE(cs35l41_hda_config));
+-		ret = regmap_multi_reg_write(reg, cs35l41_hda_config,
+-					     ARRAY_SIZE(cs35l41_hda_config));
+-		regmap_update_bits(reg, CS35L41_PWR_CTRL2,
+-				   CS35L41_AMP_EN_MASK, 1 << CS35L41_AMP_EN_SHIFT);
++		regmap_multi_reg_write(reg, cs35l41_hda_config, ARRAY_SIZE(cs35l41_hda_config));
++		ret = regmap_update_bits(reg, CS35L41_PWR_CTRL2,
++					 CS35L41_AMP_EN_MASK, 1 << CS35L41_AMP_EN_SHIFT);
  		break;
  	case HDA_GEN_PCM_ACT_PREPARE:
- 		if (reg_seq->prepare)
+ 		ret = cs35l41_hda_global_enable(cs35l41, 1);
+@@ -157,16 +156,16 @@ static void cs35l41_hda_playback_hook(struct device *dev, int action)
+ 		ret = cs35l41_hda_global_enable(cs35l41, 0);
+ 		break;
+ 	case HDA_GEN_PCM_ACT_CLOSE:
+-		regmap_update_bits(reg, CS35L41_PWR_CTRL2,
+-				   CS35L41_AMP_EN_MASK, 0 << CS35L41_AMP_EN_SHIFT);
++		ret = regmap_update_bits(reg, CS35L41_PWR_CTRL2,
++					 CS35L41_AMP_EN_MASK, 0 << CS35L41_AMP_EN_SHIFT);
+ 		break;
+ 	default:
+-		ret = -EINVAL;
++		dev_warn(cs35l41->dev, "Playback action not supported: %d\n", action);
+ 		break;
+ 	}
+ 
+ 	if (ret)
+-		dev_warn(cs35l41->dev, "Failed to apply multi reg write: %d\n", ret);
++		dev_err(cs35l41->dev, "Regmap access fail: %d\n", ret);
+ }
+ 
+ static int cs35l41_hda_channel_map(struct device *dev, unsigned int tx_num, unsigned int *tx_slot,
 -- 
 2.35.1
 
