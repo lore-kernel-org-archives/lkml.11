@@ -2,115 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 921EEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 15:41:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1070C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 15:41:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237181AbiCVPmd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 11:42:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47798 "EHLO
+        id S238696AbiCVPmf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 11:42:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238687AbiCVPm0 (ORCPT
+        with ESMTP id S238698AbiCVPm0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 22 Mar 2022 11:42:26 -0400
-Received: from gateway20.websitewelcome.com (gateway20.websitewelcome.com [192.185.61.9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 021A68BF34
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 08:40:52 -0700 (PDT)
-Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
-        by gateway20.websitewelcome.com (Postfix) with ESMTP id 93380400F923F
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:19:39 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id WgINnjfyAb6UBWgINnzlWw; Tue, 22 Mar 2022 10:19:39 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=CPW0jKKDu2ErkcxGpk3zLqZYpgPh+rOyqsZe2Y8TEt4=; b=YEwIwL3kI9LQjIR69kJnYUwJnx
-        kFrm50Ke2/4YuDre3URXPm69vvo2XFbq8JDM43i+Ly6edQ9qaD0K2CFl+AcHL10v2aRROYtMgzK3n
-        qbjLELTOs4xI2QNFJgiRzc/ECnSKlbm5iwjcjgYYBsShOxjIeqFDtOyQlW4sS4PSyJnWrQhqi/AzC
-        txYek+g9vITOkNC/rOx3mhGcSPwK4DnVBDBcX7o2XN/uUWLJFbIpiBl0DcjjV18utxXfizoYV1K6V
-        /MVpk7dqjMmDR8kQo2c2N39vIRQAPPzcmPDy0cF+4YhdRFeRDgkwzxu/Hrxmcrgf8XWQYcEjjYJY3
-        VVGZZufg==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54396)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nWgIN-000PFB-28; Tue, 22 Mar 2022 15:19:39 +0000
-Message-ID: <78abe69b-7914-1b38-c94e-7143f61f4909@roeck-us.net>
-Date:   Tue, 22 Mar 2022 08:19:37 -0700
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81A638C7C2;
+        Tue, 22 Mar 2022 08:40:55 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id jx9so2100360pjb.5;
+        Tue, 22 Mar 2022 08:40:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=UeqnEbJtsjk38FgKKJvvntXTXF5S5w1SgNTftwLe55I=;
+        b=LqMPZ32/mNBrsEGWAuuBqOcOWjEwRjwdv6OukQumYHYqDTGJWfL44Ze/DJzeaQGGDU
+         ZmwzF2QAN/8aD9BUepQdhQALlIoW5IOZGXOgCbJfrBmWdg4vmTLF/fB+cc4CR/GHGHpN
+         MPkX8YVNx93pPBbTmryACB2U7UeyR2LwtuFwjNZDrlEcvD+sVpbEoectmN2bMOO0aQjY
+         jGPj6SDRFcyu11CIFh5BU018KTKDDPcZ4Ynsf/EDAlOB1+gErnLQi/UuxUu8wEgrYOGO
+         v9cOtGFj62dvDpxgWLuLOBx4DmDQ1HbL7B+UGzvpwM2LOPo52YXdvb7cNc3bQVWZVkdk
+         zHrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=UeqnEbJtsjk38FgKKJvvntXTXF5S5w1SgNTftwLe55I=;
+        b=LwnTECXiupqavnREtqzeZqfAvLczxJrK8CMUctHOcNmlsWod8sPpqWfn9umhshgyK9
+         nofYcRy9cS9GeR7i3n6+WNGZH/P/TAZQGwyBlQK8oF1qwARLUIOKcYFKxchNpS6xcbIM
+         ZP0+7stcAoWdw4/S2bUg9DdHB3Yt+T2gfXew38mnXxGnAh1N/6E7TYtEno7g2lp/OvTz
+         4+gMaVlC0TdQ77sY6Ud8vMmnnSmlD4Rx8zzmrr0U4hrV7L7Acn/X4Ghb137sZ7JeZoDV
+         4ni68cSZU2WftqdxXCJrXvBDpOAlyPvoJokvynTh7wi+uZGNO43DmoQUYXvSvT4AFIF4
+         QH3w==
+X-Gm-Message-State: AOAM533xWXbF9rFtg7de81JiJpr8BNYHji50LTUppH/oPcg8tE9MscP1
+        pxXmhBIjudPox2REwDiqTytnkF0C2mUsyK57
+X-Google-Smtp-Source: ABdhPJxnVeDiW9j5igEfONbmgwW2E/cXPuxXfw1GcXeDZO5bdExIeNTPWy5GGIHL0/Jy7Cq5o0XNGw==
+X-Received: by 2002:a17:90b:4785:b0:1c6:ad62:dda3 with SMTP id hz5-20020a17090b478500b001c6ad62dda3mr5756285pjb.232.1647963654718;
+        Tue, 22 Mar 2022 08:40:54 -0700 (PDT)
+Received: from jagath-PC ([115.99.184.169])
+        by smtp.gmail.com with ESMTPSA id v23-20020a17090a521700b001bbfc181c93sm3174317pjh.19.2022.03.22.08.40.51
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 22 Mar 2022 08:40:54 -0700 (PDT)
+Date:   Tue, 22 Mar 2022 21:10:49 +0530
+From:   Jagath Jog J <jagathjog1996@gmail.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Dan Robertson <dan@dlrobertson.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 3/5] iio: accel: bma400: Add triggered buffer support
+Message-ID: <20220322154047.GA3677@jagath-PC>
+References: <20220319181023.8090-1-jagathjog1996@gmail.com>
+ <20220319181023.8090-4-jagathjog1996@gmail.com>
+ <CAHp75VdB5q+Y2R46OO-kCKCkPY58YzyLNjN3PjJiQhTOgV4n2w@mail.gmail.com>
+ <20220321222117.GD10058@jagath-PC>
+ <CAHp75Vdp12bm+CHWun36b36Sui73zh0_wtY5YhEqVdNy4rUxVA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: hppa vDSO and compiler (non-)support
-Content-Language: en-US
-To:     Helge Deller <deller@gmx.de>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-parisc@vger.kernel.org,
-        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
-        =?UTF-8?Q?Martin_Li=c5=a1ka?= <mliska@suse.cz>,
-        Andreas Schwab <schwab@linux-m68k.org>
-References: <d2713ae1-0ca5-9e5a-b7d2-b7d0f1f5614a@kernel.org>
- <2e1f3e41-7097-e68d-d312-9319ad62565c@gmx.de>
- <d2a09bf3-9bd3-588a-99a1-598281d08678@kernel.org>
- <dd4e55aa-0b3e-6e18-7ec2-3bec02cafde0@kernel.org> <YjjJNb0D/b+ZXBVZ@ls3530>
- <28696c20-21ad-b0ac-8093-4ce07225fcd8@kernel.org>
- <812d4a38-8cb1-a7be-c504-87d095aea883@gmx.de>
- <20220322130516.GA724287@roeck-us.net>
- <ccc25312-890a-a534-1681-5ecde56328d0@gmx.de>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <ccc25312-890a-a534-1681-5ecde56328d0@gmx.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nWgIN-000PFB-28
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54396
-X-Source-Auth: linux@roeck-us.net
-X-Email-Count: 3
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAHp75Vdp12bm+CHWun36b36Sui73zh0_wtY5YhEqVdNy4rUxVA@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/22/22 07:25, Helge Deller wrote:
-> On 3/22/22 14:05, Guenter Roeck wrote:
->> Does that also fix the build problems now seen in mainline ?
-> 
-> No.
-> 
->> Building parisc64:generic-64bit_defconfig ... failed
->> --------------
->> Error log:
->> arch/parisc/kernel/vdso64/Makefile:30: FORCE prerequisite is missing
->> arch/parisc/kernel/vdso32/sigtramp.S: Assembler messages:
->> arch/parisc/kernel/vdso32/sigtramp.S:39: Error: unknown pseudo-op: `.proc'
->> ...
->> arch/parisc/kernel/vdso32/restart_syscall.S:32: Error: .cfi_endproc without corresponding .cfi_startproc
->> make[2]: *** [arch/parisc/kernel/vdso32/Makefile:34: arch/parisc/kernel/vdso32/restart_syscall.o] Error 1
->> make[2]: *** Waiting for unfinished jobs....
->> make[2]: *** [arch/parisc/kernel/vdso32/Makefile:34: arch/parisc/kernel/vdso32/sigtramp.o] Error 1
->> make[1]: *** [arch/parisc/Makefile:177: vdso_prepare] Error 2
->> make: *** [Makefile:219: __sub-make] Error 2
->>
->> This is with hppa64-linux-gcc (GCC) 11.2.0.
-> 
-> Can you check if you have the 32-bit compiler (hppa-linux-gcc) installed too?
-> The errors above happen when building the 32-bit vDSO, for which you need the 32-bit compiler.
-> 
+Hello Andy,
 
-Yes, I do, but that doesn't help much if I want to build a 64-bit target such
-as generic-64bit_defconfig. Am I missing something ?
+On Tue, Mar 22, 2022 at 10:54:53AM +0200, Andy Shevchenko wrote:
+> On Tue, Mar 22, 2022 at 12:21 AM Jagath Jog J <jagathjog1996@gmail.com> wrote:
+> > On Mon, Mar 21, 2022 at 10:39:22AM +0200, Andy Shevchenko wrote:
+> > > On Sat, Mar 19, 2022 at 8:10 PM Jagath Jog J <jagathjog1996@gmail.com> wrote:
+> 
+> First of all, you left many uncommented comments. I assume you agree
+> with my comments and are going to address them. If it's not the case,
+> please elaborate.
 
-Guenter
+Yes Andy, I agree with your comments and I will address them in the next v2 series.
+
+> 
+> ...
+> 
+> > > > +out:
+> >
+> > Just to skip the below "if()" if error occurs in previous regmap read,
+> > I used this label.
+> >        if (status & BMA400_INT_DRDY_MSK)
+> >              iio_trigger_poll_chained(data->trig);
+> >
+> > I will remove the label in next patch
+> 
+> Just return directly.
+> 
+> ...
+> 
+> > > A useless label. Moreover this raises a question: why is it okay to
+> > > always mark IRQ as handled?
+> > >
+> > > > +       return IRQ_HANDLED;
+> >
+> > Since I was not using top-half of the interrupt so I marked IRQ as handled
+> > even for error case in the handler.
+> 
+> Yes, but why? Isn't it an erroneous state? Does it mean spurious
+> interrupt? Does it mean interrupt is unserviced?
+
+Sorry, even for erroneous state I was returning IRQ_HANDLED.
+As shown below, now for erroneous state and spurious interrupt I will return
+IRQ_NONE and for valid interrupt IRQ_HANDLED will be returned.
+
+Is below method is correct?
+
+static irqreturn_t bma400_interrupt(int irq, void *private)
+{
+       struct iio_dev *indio_dev = private;
+       struct bma400_data *data = iio_priv(indio_dev);
+       int ret;
+       __le16 status;
+
+       mutex_lock(&data->mutex);
+       ret = regmap_bulk_read(data->regmap, BMA400_INT_STAT0_REG, &status,
+                              sizeof(status));
+       mutex_unlock(&data->mutex);
+       if (ret)
+               return IRQ_NONE;
+
+       if (le16_to_cpu(status) & BMA400_INT_DRDY_MSK) {
+               iio_trigger_poll_chained(data->trig);
+	       return IRQ_HANDLED;
+	}
+
+        return IRQ_NONE;
+}
+
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
