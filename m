@@ -2,164 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CF02C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 00:47:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 111AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 00:49:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234495AbiCVAtV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 20:49:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55996 "EHLO
+        id S234487AbiCVAua (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 20:50:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234460AbiCVAtQ (ORCPT
+        with ESMTP id S234456AbiCVAu3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 20:49:16 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A31C627B0F;
-        Mon, 21 Mar 2022 17:47:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1647910069; x=1679446069;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=4Hfyz22PouTDUj0o7xhLSgeFJEeNsb/nS9a947rwT5E=;
-  b=VM/GUYKLe933AvBzEX3attDYoWB2YwBfgojvdzsDvEUk+zOS13jR6lCI
-   TdcYT54eFkWQiJxbvgEGi9EDW5m6/EkpTdKG4XnoLtHNxoMh7QUOZS6lk
-   jF4FBUzfzWHBVxtJJbKpVNsk+pVZ2g+pR/5qVtVBZ/G7tKmO+F0sMURIy
-   8=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 21 Mar 2022 17:47:48 -0700
-X-QCInternal: smtphost
-Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 17:47:49 -0700
-Received: from collinsd-linux.qualcomm.com (10.80.80.8) by
- nasanex01b.na.qualcomm.com (10.46.141.250) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 21 Mar 2022 17:47:48 -0700
-From:   David Collins <quic_collinsd@quicinc.com>
-To:     Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Sudeep Holla <sudeep.holla@arm.com>
-CC:     David Collins <quic_collinsd@quicinc.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        Subbaraman Narayanamurthy <quic_subbaram@quicinc.com>
-Subject: [PATCH v2 2/2] regulator: scmi: add support for registering SCMI regulators by name
-Date:   Mon, 21 Mar 2022 17:47:20 -0700
-Message-ID: <822eefd3ad25daf2da66c9257e2a69e93d9df5a4.1647909090.git.quic_collinsd@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <cover.1647909090.git.quic_collinsd@quicinc.com>
-References: <cover.1647909090.git.quic_collinsd@quicinc.com>
+        Mon, 21 Mar 2022 20:50:29 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E01B02F3BD
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 17:49:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647910142; x=1679446142;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=0x7qIpjv0NuBVYWXT9Tw0mEj9Ru1y7+aMXqGBkCgSwc=;
+  b=Ag6g7MDhLCmplK7Jes7zPXCvDBAbApNYYb0bLlwdlfSgxEWX1jE8c+ai
+   p3a7q7IlHshEviy3dZhbQQ0hL2m8VT18hUgWcrsN3LiLfVXup844sufP6
+   UvuobO4C1e+fIMWhgFUPO9wvqRN6hE5rCWgcHiDgiGrgrvNqAbxRGwnSB
+   eD2sVePyJg7XeRSURHh1RdgSsmFOUQMSVwF70z9y/m/qp40y0fz/beIxG
+   vmazL9lc1/bI4koQWNTyUkpb2CfDyrmw+dqLJvhb8snm07EGvAFwjzrXi
+   qzz69Uc+GnFKeTS1Zu5fyaABgeFFBVFQ0Qc5APZo89HHC6wTBXTnSLsPs
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="282517335"
+X-IronPort-AV: E=Sophos;i="5.90,200,1643702400"; 
+   d="scan'208";a="282517335"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 17:49:02 -0700
+X-IronPort-AV: E=Sophos;i="5.90,200,1643702400"; 
+   d="scan'208";a="560120071"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.208.85]) ([10.254.208.85])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 17:48:59 -0700
+Message-ID: <85d61ad6-0cf0-ac65-3312-32d0cdeb1b27@linux.intel.com>
+Date:   Tue, 22 Mar 2022 08:48:57 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Cc:     baolu.lu@linux.intel.com, Eric Auger <eric.auger@redhat.com>,
+        "Liu, Yi L" <yi.l.liu@intel.com>,
+        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH RFC 01/11] iommu: Add pasid_bits field in struct dev_iommu
+Content-Language: en-US
+To:     "Tian, Kevin" <kevin.tian@intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>
+References: <20220320064030.2936936-1-baolu.lu@linux.intel.com>
+ <20220320064030.2936936-2-baolu.lu@linux.intel.com>
+ <BL1PR11MB527130BAAC3B4F48E4901F5D8C169@BL1PR11MB5271.namprd11.prod.outlook.com>
+ <7de05f5e-864f-175e-5604-29561d330884@linux.intel.com>
+ <BN9PR11MB5276981B9328F10E5FC89B728C179@BN9PR11MB5276.namprd11.prod.outlook.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276981B9328F10E5FC89B728C179@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support to register SCMI regulator subnodes based on an SCMI
-Voltage Domain name specified via the "arm,scmi-domain-name" device
-tree property.  In doing so, make the "reg" property optional with
-the constraint that at least one of "reg" or "arm,scmi-domain-name"
-must be specified.  If both are specified, then both must match the
-Voltage Domain data exposed by the SCMI platform.
+On 2022/3/22 8:26, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Monday, March 21, 2022 6:22 PM
+>>>> -				if (features >= 0)
+>>>> +				if (features >= 0) {
+>>>>    					info->pasid_supported = features | 1;
+>>>> +					dev->iommu->pasid_bits =
+>>>> +						fls(pci_max_pasids(pdev)) - 1;
+>>> Original intel_svm_alloc_pasid() covers both PCI and non-PCI devices:
+>>>
+>>> 	ioasid_t max_pasid = dev_is_pci(dev) ?
+>>> 		pci_max_pasids(to_pci_dev(dev)) : intel_pasid_max_id;
+>>>
+>>> though I'm not sure whether non-PCI SVA has been supported indeed, this
+>>> patch implies a functional change here.
+>>>
+>>
+>> The info->pasid_supported is only set for PCI devices. So the status is
+>> that non-PCI SVA hasn't been supported. No functional change here from
+>> this point of view.
+>>
+> 
+> Then this information should be included in the commit msg.
 
-Name based SCMI regulator registration helps ensure that an SCMI
-agent doesn't need to be aware of the numbering scheme used for
-Voltage Domains by the SCMI platform.  It also ensures that the
-correct Voltage Domain is selected for a given physical regulator.
-This cannot be guaranteed with numeric Voltage Domain IDs alone.
+Sure.
 
-Signed-off-by: David Collins <quic_collinsd@quicinc.com>
----
- drivers/regulator/scmi-regulator.c | 58 ++++++++++++++++++++++++++++--
- 1 file changed, 55 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/regulator/scmi-regulator.c b/drivers/regulator/scmi-regulator.c
-index 1f02f60ad136..15f9167b96ab 100644
---- a/drivers/regulator/scmi-regulator.c
-+++ b/drivers/regulator/scmi-regulator.c
-@@ -31,6 +31,7 @@
- #include <linux/regulator/of_regulator.h>
- #include <linux/scmi_protocol.h>
- #include <linux/slab.h>
-+#include <linux/string.h>
- #include <linux/types.h>
- 
- static const struct scmi_voltage_proto_ops *voltage_ops;
-@@ -252,16 +253,67 @@ static int scmi_regulator_common_init(struct scmi_regulator *sreg)
- 	return 0;
- }
- 
-+static int scmi_regulator_map_name(struct scmi_protocol_handle *ph,
-+				   struct scmi_regulator_info *rinfo,
-+				   const char *name)
-+{
-+	const struct scmi_voltage_info *vinfo;
-+	int i;
-+
-+	for (i = 0; i < rinfo->num_doms; i++) {
-+		vinfo = voltage_ops->info_get(ph, i);
-+		if (!vinfo)
-+			continue;
-+		if (!strncmp(vinfo->name, name, sizeof(vinfo->name)))
-+			return i;
-+	}
-+
-+	return -ENODEV;
-+}
-+
- static int process_scmi_regulator_of_node(struct scmi_device *sdev,
- 					  struct scmi_protocol_handle *ph,
- 					  struct device_node *np,
- 					  struct scmi_regulator_info *rinfo)
- {
- 	u32 dom, ret;
-+	int name_dom;
-+	const char *name;
- 
--	ret = of_property_read_u32(np, "reg", &dom);
--	if (ret)
--		return ret;
-+	dom = rinfo->num_doms;
-+	if (of_find_property(np, "reg", NULL)) {
-+		ret = of_property_read_u32(np, "reg", &dom);
-+		if (ret)
-+			return ret;
-+
-+		if (dom >= rinfo->num_doms)
-+			return -ENODEV;
-+	}
-+
-+	if (of_find_property(np, "arm,scmi-domain-name", NULL)) {
-+		ret = of_property_read_string(np, "arm,scmi-domain-name",
-+					      &name);
-+		if (ret)
-+			return ret;
-+
-+		name_dom = scmi_regulator_map_name(ph, rinfo, name);
-+		if (name_dom < 0) {
-+			dev_err(&sdev->dev,
-+				"No SCMI Voltage Domain found named %s. Skipping: %s\n",
-+				name, np->full_name);
-+			return name_dom;
-+		}
-+
-+		if (dom >= rinfo->num_doms)
-+			dom = name_dom;
-+
-+		if (name_dom != dom) {
-+			dev_err(&sdev->dev,
-+				"SCMI Voltage Domain %s ID mismatch, %u (DT) != %d (firmware). Skipping: %s\n",
-+				name, dom, name_dom, np->full_name);
-+			return -EINVAL;
-+		}
-+	}
- 
- 	if (dom >= rinfo->num_doms)
- 		return -ENODEV;
--- 
-2.17.1
-
+Best regards,
+baolu
