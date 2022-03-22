@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF939C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 15:40:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39224C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 15:40:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238641AbiCVPmN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 11:42:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46424 "EHLO
+        id S238671AbiCVPmP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 11:42:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238499AbiCVPmJ (ORCPT
+        with ESMTP id S238647AbiCVPmM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 11:42:09 -0400
+        Tue, 22 Mar 2022 11:42:12 -0400
 Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2906E89307
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 08:40:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A388890B7
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 08:40:45 -0700 (PDT)
 Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KNG0P1xBBz9sTJ;
-        Tue, 22 Mar 2022 16:40:37 +0100 (CET)
+        by localhost (Postfix) with ESMTP id 4KNG0Q0lwkz9sTb;
+        Tue, 22 Mar 2022 16:40:38 +0100 (CET)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from pegase2.c-s.fr ([172.26.127.65])
         by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id fyuRthqRyGhe; Tue, 22 Mar 2022 16:40:37 +0100 (CET)
+        with ESMTP id 4PM4Gat-FIaZ; Tue, 22 Mar 2022 16:40:38 +0100 (CET)
 Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KNG0N09Bfz9sTN;
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KNG0N0HP6z9sTQ;
         Tue, 22 Mar 2022 16:40:36 +0100 (CET)
 Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id E6A2B8B778;
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id EB5B88B773;
         Tue, 22 Mar 2022 16:40:35 +0100 (CET)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from messagerie.si.c-s.fr ([127.0.0.1])
         by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id DASnUpcyQiCP; Tue, 22 Mar 2022 16:40:35 +0100 (CET)
+        with ESMTP id JCefATiHZUjg; Tue, 22 Mar 2022 16:40:35 +0100 (CET)
 Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.203.14])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 9AFE58B774;
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id A0C928B775;
         Tue, 22 Mar 2022 16:40:35 +0100 (CET)
 Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 22MFeU4I1513378
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 22MFeTP91513366
         (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Tue, 22 Mar 2022 16:40:30 +0100
+        Tue, 22 Mar 2022 16:40:29 +0100
 Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 22MFeUuq1513377;
-        Tue, 22 Mar 2022 16:40:30 +0100
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 22MFeTkt1513365;
+        Tue, 22 Mar 2022 16:40:29 +0100
 X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
 From:   Christophe Leroy <christophe.leroy@csgroup.eu>
 To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
@@ -49,63 +49,44 @@ To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
         Michael Ellerman <mpe@ellerman.id.au>
 Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
         linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH v1 4/4] powerpc/code-patching: Use jump_label to check if poking_init() is done
-Date:   Tue, 22 Mar 2022 16:40:21 +0100
-Message-Id: <8d6088aca7b63247377b6d9e4897d08d935fbe93.1647962456.git.christophe.leroy@csgroup.eu>
+Subject: [PATCH v1 1/4] powerpc/code-patching: Don't call is_vmalloc_or_module_addr() without CONFIG_MODULES
+Date:   Tue, 22 Mar 2022 16:40:18 +0100
+Message-Id: <f3c701cce00a38620788c0fc43ff0b611a268c54.1647962456.git.christophe.leroy@csgroup.eu>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1647962456.git.christophe.leroy@csgroup.eu>
 References: <cover.1647962456.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1647963619; l=1657; s=20211009; h=from:subject:message-id; bh=VpCvKObwtwt586zecmpLYRX0hNgaFguYgIynvmw/m08=; b=6g96jp94nOECf9453iw6yW4xXNCjIbsZcPV9VpQOZT5CHAxxbybhTCDWxioVRHhOYBl7Q7CXK5xL 9Io9NWy6DhdpnjrZtNfLAVvAqesW4m13bQIuubUf5UGoGjPsamUM
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1647963619; l=872; s=20211009; h=from:subject:message-id; bh=ZfTeZCNos+9TM+ODeoKZHrQvpqXI+wYtliNjGS/FiJM=; b=y5DV3Rx5CzGcO3XwPAk0teKABXW5GFOefONOVHZn1mu1Pcs+/6DNAonka28vtA9euT6tXjo2tHYi xGKNxqKCBjfjNLBhVPeY7F9lk/9sVA5bihINd7OBH8ps1PPwrk33
 X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It's only during early startup that poking_init() is not done yet,
-for instance when calling ftrace_init().
+If CONFIG_MODULES is not set, there is no point in checking
+whether text is in module area.
 
-Once poking_init() has been called there must be a poking area, no
-need to check it everytime patch_instruction() is called.
-
-ftrace activation time is reduced by 7% with the change on an 8xx.
+This reduced the time needed to activate/deactivate ftrace
+by more than 10% on an 8xx.
 
 Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- arch/powerpc/lib/code-patching.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ arch/powerpc/lib/code-patching.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/powerpc/lib/code-patching.c b/arch/powerpc/lib/code-patching.c
-index ab434c3853c9..8bd74bbe8b8d 100644
+index 00c68e7fb11e..f970f189875b 100644
 --- a/arch/powerpc/lib/code-patching.c
 +++ b/arch/powerpc/lib/code-patching.c
-@@ -79,6 +79,8 @@ static int text_area_cpu_down(unsigned int cpu)
- 	return 0;
- }
+@@ -97,7 +97,7 @@ static int map_patch_area(void *addr, unsigned long text_poke_addr)
+ {
+ 	unsigned long pfn;
  
-+static __ro_after_init DEFINE_STATIC_KEY_FALSE(poking_init_done);
-+
- /*
-  * Although BUG_ON() is rude, in this case it should only happen if ENOMEM, and
-  * we judge it as being preferable to a kernel that will crash later when
-@@ -89,6 +91,7 @@ void __init poking_init(void)
- 	BUG_ON(!cpuhp_setup_state(CPUHP_AP_ONLINE_DYN,
- 		"powerpc/text_poke:online", text_area_cpu_up,
- 		text_area_cpu_down));
-+	static_branch_enable(&poking_init_done);
- }
- 
- static unsigned long get_patch_pfn(void *addr)
-@@ -176,7 +179,7 @@ static int do_patch_instruction(u32 *addr, ppc_inst_t instr)
- 	 * when text_poke_area is not ready, but we still need
- 	 * to allow patching. We just do the plain old patching
- 	 */
--	if (!this_cpu_read(text_poke_area))
-+	if (!static_branch_likely(&poking_init_done))
- 		return raw_patch_instruction(addr, instr);
- 
- 	local_irq_save(flags);
+-	if (is_vmalloc_or_module_addr(addr))
++	if (IS_ENABLED(CONFIG_MODULES) && is_vmalloc_or_module_addr(addr))
+ 		pfn = vmalloc_to_pfn(addr);
+ 	else
+ 		pfn = __pa_symbol(addr) >> PAGE_SHIFT;
 -- 
 2.35.1
 
