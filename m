@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4652C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 02:00:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D3E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 02:01:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235279AbiCVCCM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 22:02:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50452 "EHLO
+        id S235322AbiCVCC7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 22:02:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235223AbiCVCCJ (ORCPT
+        with ESMTP id S235295AbiCVCC6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 22:02:09 -0400
-Received: from gateway20.websitewelcome.com (gateway20.websitewelcome.com [192.185.47.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4861066605
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 19:00:27 -0700 (PDT)
-Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
-        by gateway20.websitewelcome.com (Postfix) with ESMTP id 44FB6400CCD5F
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 21:00:27 -0500 (CDT)
+        Mon, 21 Mar 2022 22:02:58 -0400
+Received: from gateway23.websitewelcome.com (gateway23.websitewelcome.com [192.185.47.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CEC5D9D
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 19:01:19 -0700 (PDT)
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+        by gateway23.websitewelcome.com (Postfix) with ESMTP id AC1C2851E
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 21:01:18 -0500 (CDT)
 Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
         by cmsmtp with SMTP
-        id WToxnkkjVdx86WToxnX2bA; Mon, 21 Mar 2022 21:00:27 -0500
+        id WTpmnUEsab6UBWTpmnlDh2; Mon, 21 Mar 2022 21:01:18 -0500
 X-Authority-Reason: nr=8
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
@@ -28,18 +28,18 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
         Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=RjG4CJxPmnCuh2n3glFYf0Nn/mXZSKpTPO8ffE9SV34=; b=B/mWKep0rSsZXJfvyH81vgBsWF
-        6Bux7Znz4+ja+GYflBy2rCXpGDQyFPdIrwCR4bf5Ag8xD1H4iWEkCzRJpsRHCR1Jzb4JPcyXIOMXg
-        bnV7MkIyhhH0w0qILqsxuD8dW8S63EEe9kEEgcyRn/eeRF10jYfVJ1wogrEHvaZ3KsDyunZk8lNCe
-        1X0aX927MSl9hav3WZM7DZa4LkUdegJaqGT+Htgs22rWM9Z6urMEXvfmyXQtWG9HeRtnVxmI7Tz66
-        tjvzGj/BlfljEbdf26dgcVAHSuES2jMoUgwio7+GotCm/T+Nod0mXizsCSd2LmPYB8h2e71uMUNbS
-        ggdsOFMQ==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57590 helo=localhost)
+        bh=hWnTey+FyR6LRXe2f6A+JT0pvBHxARNd7bnunBkTFKg=; b=B9EMsC13eWVCJpEolcuFFV+J/z
+        EpwwtVGZ9BDQW4zU/93JnqBPtuKIufu2mPhxizzzoAqBzAlCx4ErsAdoXkqPIWzNayOYzAF1T549J
+        E0CTTeYZ6ht6MAFJEcuW/ktFKcAtS+FZNIZztFJ5romiinPqg4f6YzbtcErhWL54MUWAkyZUoVaXU
+        /7M2iWYCUh6nZg9N3+P2PRyAHWK3FjcAQi193Jo15uAEhLZJ5+brzBGgOt6IMqy1TjI17iZa1DILX
+        QSmj6q1IIAgPqqEk5PwYikb0Kfgpb02MTRL5moHFxA2xT+Tt0GM5gChCnusMONIr58BiJZMa6G136
+        vcmk8mYA==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57594 helo=localhost)
         by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <linux@roeck-us.net>)
-        id 1nWTow-0026Ws-DU; Tue, 22 Mar 2022 02:00:26 +0000
-Date:   Mon, 21 Mar 2022 19:00:25 -0700
+        id 1nWTpl-0027BO-Rp; Tue, 22 Mar 2022 02:01:17 +0000
+Date:   Mon, 21 Mar 2022 19:01:16 -0700
 From:   Guenter Roeck <linux@roeck-us.net>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
@@ -48,13 +48,13 @@ Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
         lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
         f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
         slade@sladewatkins.com
-Subject: Re: [PATCH 5.10 00/30] 5.10.108-rc1 review
-Message-ID: <20220322020025.GE4126967@roeck-us.net>
-References: <20220321133219.643490199@linuxfoundation.org>
+Subject: Re: [PATCH 5.16 00/37] 5.16.17-rc1 review
+Message-ID: <20220322020116.GG4126967@roeck-us.net>
+References: <20220321133221.290173884@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220321133219.643490199@linuxfoundation.org>
+In-Reply-To: <20220321133221.290173884@linuxfoundation.org>
 X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
 X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
 X-AntiAbuse: Original Domain - vger.kernel.org
@@ -63,22 +63,22 @@ X-AntiAbuse: Sender Address Domain - roeck-us.net
 X-BWhitelist: no
 X-Source-IP: 108.223.40.66
 X-Source-L: No
-X-Exim-ID: 1nWTow-0026Ws-DU
+X-Exim-ID: 1nWTpl-0027BO-Rp
 X-Source: 
 X-Source-Args: 
 X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57590
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57594
 X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 12
+X-Email-Count: 38
 X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
 X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 02:52:30PM +0100, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.108 release.
-> There are 30 patches in this series, all will be posted as a response
+On Mon, Mar 21, 2022 at 02:52:42PM +0100, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.16.17 release.
+> There are 37 patches in this series, all will be posted as a response
 > to this one.  If anyone has any issues with these being applied, please
 > let me know.
 > 
@@ -87,9 +87,9 @@ On Mon, Mar 21, 2022 at 02:52:30PM +0100, Greg Kroah-Hartman wrote:
 > 
 
 Build results:
-	total: 161 pass: 161 fail: 0
+	total: 155 pass: 155 fail: 0
 Qemu test results:
-	total: 477 pass: 477 fail: 0
+	total: 488 pass: 488 fail: 0
 
 Tested-by: Guenter Roeck <linux@roeck-us.net>
 
