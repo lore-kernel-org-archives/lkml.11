@@ -2,162 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D39EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 10:43:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 208FAC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 10:45:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233319AbiCVKpP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 06:45:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43106 "EHLO
+        id S233372AbiCVKrO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 06:47:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233364AbiCVKpK (ORCPT
+        with ESMTP id S230082AbiCVKrK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 06:45:10 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 77F668166C;
-        Tue, 22 Mar 2022 03:43:30 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D95A1106F;
-        Tue, 22 Mar 2022 03:43:29 -0700 (PDT)
-Received: from [10.1.197.1] (ewhatever.cambridge.arm.com [10.1.197.1])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3A4C63F66F;
-        Tue, 22 Mar 2022 03:43:28 -0700 (PDT)
-Message-ID: <e890feb0-9f90-c0f2-e5f0-10ed5dbe6d81@arm.com>
-Date:   Tue, 22 Mar 2022 10:43:26 +0000
+        Tue, 22 Mar 2022 06:47:10 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A3912752;
+        Tue, 22 Mar 2022 03:45:42 -0700 (PDT)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KN7PY4fsNz67Q1X;
+        Tue, 22 Mar 2022 18:43:29 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Tue, 22 Mar 2022 11:45:39 +0100
+Received: from localhost.localdomain (10.69.192.58) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 22 Mar 2022 10:45:36 +0000
+From:   John Garry <john.garry@huawei.com>
+To:     <axboe@kernel.dk>, <damien.lemoal@opensource.wdc.com>,
+        <bvanassche@acm.org>, <jejb@linux.ibm.com>,
+        <martin.petersen@oracle.com>, <hch@lst.de>, <ming.lei@redhat.com>,
+        <hare@suse.de>
+CC:     <chenxiang66@hisilicon.com>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-ide@vger.kernel.org>,
+        <linux-scsi@vger.kernel.org>, <dm-devel@redhat.com>,
+        <beanhuo@micron.com>, John Garry <john.garry@huawei.com>
+Subject: [PATCH RFC 00/11] blk-mq/libata/scsi: SCSI driver tagging improvements
+Date:   Tue, 22 Mar 2022 18:39:34 +0800
+Message-ID: <1647945585-197349-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 00/10] coresight: Add new API to allocate trace source ID
- values
-Content-Language: en-US
-To:     Mike Leach <mike.leach@linaro.org>, coresight@lists.linaro.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     mathieu.poirier@linaro.org, peterz@infradead.org, mingo@redhat.com,
-        acme@kernel.org, linux-perf-users@vger.kernel.org,
-        leo.yan@linaro.org, James Clark <james.clark@arm.com>
-References: <20220308205000.27646-1-mike.leach@linaro.org>
-From:   Suzuki Kuruppassery Poulose <suzuki.poulose@arm.com>
-In-Reply-To: <20220308205000.27646-1-mike.leach@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+ Cc: James Clark
+Currently SCSI low-level drivers are required to manage tags for commands
+which do not come via the block layer - libata internal commands would be
+an example of one of these.
 
-Hi Mike,
+There was some work to provide "reserved commands" support in such series
+as https://lore.kernel.org/linux-scsi/20211125151048.103910-1-hare@suse.de/
 
-On 08/03/2022 20:49, Mike Leach wrote:
-> The current method for allocating trace source ID values to sources is
-> to use a fixed algorithm for CPU based sources of (cpu_num * 2 + 0x10).
-> The STM is allocated ID 0x1.
-> 
-> This fixed algorithm is used in both the CoreSight driver code, and by
-> perf when writing the trace metadata in the AUXTRACE_INFO record.
-> 
-> The method needs replacing as currently:-
-> 1. It is inefficient in using available IDs.
-> 2. Does not scale to larger systems with many cores and the algorithm
-> has no limits so will generate invalid trace IDs for cpu number > 44.
+This was based on allocating a request for the lifetime of the "internal"
+command.
 
-Thanks for addressing this issue.
+This series tries to solve that problem by not just allocating the request
+but also sending it through the block layer, that being the normal flow
+for a request. We need to do this as we may only poll completion of
+requests through the block layer, so would need to do this for poll queue
+support.
 
-> 
-> Additionally requirements to allocate additional system IDs on some
-> systems have been seen.
-> 
-> This patch set  introduces an API that allows the allocation of trace IDs
-> in a dynamic manner.
-> 
-> Architecturally reserved IDs are never allocated, and the system is
-> limited to allocating only valid IDs.
-> 
-> Each of the current trace sources ETM3.x, ETM4.x and STM is updated to use
-> the new API.
-> 
-> perf handling is changed so that the ID associated with the CPU is read
-> from sysfs. The ID allocator is notified when perf events start and stop
-> so CPU based IDs are kept constant throughout any perf session.
-> 
-> For the ETMx.x devices IDs are allocated on certain events
-> a) When using sysfs, an ID will be allocated on hardware enable, and freed
-> when the sysfs reset is written.
-> b) When using perf, ID is allocated on hardware enable, and freed on
-> hardware disable.
-> 
-> For both cases the ID is allocated when sysfs is read to get the current
-> trace ID. This ensures that consistent decode metadata can be extracted
-> from the system where this read occurs before device enable.
+There is still scope to allocate commands just to get a tag as token as
+that may suit some other scenarios, but it's not what we do here.
 
+This series extends blk-mq to support a request queue having a custom set
+of ops. In addition SCSI core code adds support for these type of requests.
 
-> 
-> Note: This patchset breaks backward compatibility for perf record.
-> Because the method for generating the AUXTRACE_INFO meta data has
-> changed, using an older perf record will result in metadata that
-> does not match the trace IDs used in the recorded trace data.
-> This mismatch will cause subsequent decode to fail. Older versions of
-> perf will still be able to decode data generated by the updated system.
+This series does not include SCSI core handling for enabling reserved
+tags per tagset, but that would be easy to add.
 
-I have some concerns over this and the future plans for the dynamic
-allocation per sink. i.e., we are breaking/modifying the perf now to
-accommodate the dynamic nature of the trace id of a given CPU/ETM.
-The proposed approach of exposing this via sysfs may (am not sure if
-this would be the case) break for the trace-id per sink change, as a
-sink could assign different trace-id for a CPU depending.
+Based on mkp-scsi 5.18/scsi-staging @ 66daf3e6b993 
 
-So, instead if we make the trace-id available in the perf (say, an new
-record format, PERF_RECORD_CS_ETM_TRACEID ?) record, we can rely on the
-new packet for the trace-id, irrespective of how that is allocated and
-remove the locking/linking of the trace-id with that of the sysfs. This
-is not something that exists today. (Ideally it would have been nice to
-have some additional fields in RECORD_AUXINFO, but we don't. Instead of
-breaking/extending that, we could add a new RECORD).
+Please consider as an RFC for now. I think that the libata change has the
+largest scope for improvement...
 
-I believe the packet may need to be generated only once for a session
-and that will also allow the flexibility of moving trace-id allocation
-around (to a sink in the future).
+John Garry (11):
+  blk-mq: Add blk_mq_init_queue_ops()
+  scsi: core: Add SUBMITTED_BY_SCSI_CUSTOM_OPS
+  libata: Send internal commands through the block layer
+  scsi: libsas: Send SMP commands through the block layer
+  scsi: libsas: Send TMF commands through the block layer
+  scsi: core: Add scsi_alloc_request_hwq()
+  scsi: libsas: Send internal abort commands through the block layer
+  scsi: libsas: Change ATA support to deal with each qc having a SCSI
+    command
+  scsi: libsas: Add sas_task_to_unique_tag()
+  scsi: libsas: Add sas_task_to_hwq()
+  scsi: hisi_sas: Remove private tag management
 
-Thoughts ?
+ block/blk-mq.c                         |  23 +++-
+ drivers/ata/libata-core.c              | 121 +++++++++++++------
+ drivers/md/dm-rq.c                     |   2 +-
+ drivers/scsi/hisi_sas/hisi_sas_main.c  |  66 +----------
+ drivers/scsi/hisi_sas/hisi_sas_v2_hw.c |   3 +-
+ drivers/scsi/hisi_sas/hisi_sas_v3_hw.c |   3 +-
+ drivers/scsi/libsas/sas_ata.c          |  11 +-
+ drivers/scsi/libsas/sas_expander.c     |  38 ++++--
+ drivers/scsi/libsas/sas_internal.h     |   1 +
+ drivers/scsi/libsas/sas_scsi_host.c    | 153 ++++++++++++++++++++-----
+ drivers/scsi/scsi_lib.c                |  14 +++
+ include/linux/blk-mq.h                 |   5 +-
+ include/scsi/libsas.h                  |   4 +-
+ include/scsi/scsi_cmnd.h               |   4 +
+ 14 files changed, 298 insertions(+), 150 deletions(-)
 
-Kind regards
-Suzuki
-
-
-> 
-> 
-> Applies to coresight/next [b54f53bc11a5]
-> Tested on DB410c
-> 
-> Mike Leach (10):
->    coresight: trace-id: Add API to dynamically assign trace ID values
->    coresight: trace-id: Set up source trace ID map for system
->    coresight: stm: Update STM driver to use Trace ID api
->    coresight: etm4x: Use trace ID API to dynamically allocate trace ID
->    coresight: etm3x: Use trace ID API to allocate IDs
->    coresight: perf: traceid: Add perf notifiers for trace ID
->    perf: cs-etm: Update event to read trace ID from sysfs
->    coresight: Remove legacy Trace ID allocation mechanism
->    coresight: etmX.X: stm: Remove unused legacy source trace ID ops
->    coresight: trace-id: Add debug & test macros to trace id allocation
-> 
->   drivers/hwtracing/coresight/Makefile          |   2 +-
->   drivers/hwtracing/coresight/coresight-core.c  |  64 ++---
->   .../hwtracing/coresight/coresight-etm-perf.c  |  16 +-
->   drivers/hwtracing/coresight/coresight-etm.h   |   3 +-
->   .../coresight/coresight-etm3x-core.c          |  93 ++++---
->   .../coresight/coresight-etm3x-sysfs.c         |  28 +-
->   .../coresight/coresight-etm4x-core.c          |  63 ++++-
->   .../coresight/coresight-etm4x-sysfs.c         |  32 ++-
->   drivers/hwtracing/coresight/coresight-etm4x.h |   3 +
->   drivers/hwtracing/coresight/coresight-priv.h  |   1 +
->   drivers/hwtracing/coresight/coresight-stm.c   |  49 +---
->   .../hwtracing/coresight/coresight-trace-id.c  | 255 ++++++++++++++++++
->   .../hwtracing/coresight/coresight-trace-id.h  |  69 +++++
->   include/linux/coresight-pmu.h                 |  12 -
->   include/linux/coresight.h                     |   3 -
->   tools/perf/arch/arm/util/cs-etm.c             |  12 +-
->   16 files changed, 530 insertions(+), 175 deletions(-)
->   create mode 100644 drivers/hwtracing/coresight/coresight-trace-id.c
->   create mode 100644 drivers/hwtracing/coresight/coresight-trace-id.h
-> 
+-- 
+2.26.2
 
