@@ -2,89 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9317CC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:20:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12B63C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:23:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239518AbiCVRV7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 13:21:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59346 "EHLO
+        id S239524AbiCVRYd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 13:24:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238596AbiCVRV5 (ORCPT
+        with ESMTP id S239519AbiCVRY2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 13:21:57 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAA9B275F9
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:20:27 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id u16so23388393wru.4
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:20:27 -0700 (PDT)
+        Tue, 22 Mar 2022 13:24:28 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19090237;
+        Tue, 22 Mar 2022 10:23:00 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id i186so2375524wma.3;
+        Tue, 22 Mar 2022 10:23:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=klmvLMjbhecm1dnOMFwYg5TFnV3WErf04K5GrMiLkZg=;
-        b=SWuScJCronuoC7Z3TBASO5IIOKWKgRonLFJmfKKtsjkjM1UFU/0a2h0IpH0oNgO61X
-         TKF7993iliLo8MhWH2Pt+lYiVDMnB9hVp/vhHmxA9M/d9kyH8mYyUxpoksfGhekvpVi/
-         AzRR6dbjFmaqSXrSsAfqbQPKfJADZ/EW8aKHPfhAj2YivkFGwX40OxVn/8F1JpQKM7EV
-         140iatXNYUzSgHCLiUEqpPw/wxzoWUgGk0cWHCG6QSti9CGJX07yCVU7rdRtFKrxgc/+
-         DUuylRykw/81EktBzgaDX9d+XzOEGA9XXZOwJQtm7Jnp1ho8afXItg8qIpbBg+Rhdacy
-         oHcg==
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=cyh9GNwkSeiWX8VVWJet6cmrStrv1Y1BhHYKMAKCy08=;
+        b=aRoVcBOHgM/bPJSJSqXhRaIwaT3UuhMY9GonRHMXbqEfftdO0iIwyyW/iDkbCVTA+e
+         lNKBzC3Po3YV8/FIHb59G0SaTYApGQwOdaAk4JTTI7rQHrvX5CjAp9Z1C0G/2MtNXuoN
+         fndArZZiBp/+Eq/1j1NXFzXmsohvZ6Gd/hULxlIoJwVu1E13X+DZKiPiOLpgPqbpeCi3
+         SRMNMfnWD0WRbvPh7VfsNnyZaFN/DcfZrmwCKiEpobCRDKDF3ffHqcJkK6b0OxT7vGFx
+         Z+QEBaeN8aIOtMOuNbKHShBjLjpMu6c7mKNsF/lRhxu6zS/+f6RC7pU+LzFAykulzgOH
+         Nwuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=klmvLMjbhecm1dnOMFwYg5TFnV3WErf04K5GrMiLkZg=;
-        b=MWoEYbsvk91gpEJSevp+GAfKMoN8Vy93bz8kEnYCswP7rT8fuBD5Xeke6gN/svI8z1
-         cbWhRUpWJmG8Fyb3KDdw0YRejooMKogolx0V8E6wEXlRhz9tDj13eepOO9CfvLSevw7s
-         LcNBUSRfIILAr5X/0ckC1heGL3KKITctU+nOoBWowRLU07GLKgznFa34O8IjwCo1Jk9h
-         7NmQ/Lbiomm8Nh6ZMvMLYQ2c9EFJErFCoKordPLd4Yuw2H8GUNqbRFQrf9V7Fwf/i7Fz
-         UYmCc+UgPo5GqUWeapoEuA+fXxkzb+M7MIE3EbQlr964wXZTjEEV7APQaCH74k4qswD6
-         cGnA==
-X-Gm-Message-State: AOAM531727voY/WP7km/dUgPAMvYfkeGgmfCdiFJnnSEmSIRgdOupYXx
-        kuCPFme8i3ZZpXTvONe0pf6wZFfyMloLPMmYicCKH/t1TAg=
-X-Google-Smtp-Source: ABdhPJx/nKEZcJDd/ekvcHdFdncpRSjxaY99nDV82un0XYkxYcgzXA4TsvD4QNobTQevQ91j9X+TyWVj3rJF3EQtbms=
-X-Received: by 2002:a05:6000:1862:b0:204:e417:9cf8 with SMTP id
- d2-20020a056000186200b00204e4179cf8mr3707264wri.593.1647969626263; Tue, 22
- Mar 2022 10:20:26 -0700 (PDT)
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=cyh9GNwkSeiWX8VVWJet6cmrStrv1Y1BhHYKMAKCy08=;
+        b=nFcJcbB4al7BodMrwwyrwm4BHZah9OWMxzJj49kxy9Lv8uGA09QlzdKa+7FYi7zp/B
+         +TkN/ZAoBP8Jfu0tee+CX9ej6teTP58w8fy80mK0+m3+3DL2cgVv3zfBHWFhoH9RQV7X
+         dEgulhxNcp6Vi4KG6a4viIDwhRDttGygy/zt2X3nGirjkFmrAeGDa4CYXnetV2yduD1N
+         cv2ipPLnQAzUTkIgW4phf3JyZV0rXr7mSZBqOOYIh4HaCf3AZIRCUwc6mnbsRxwzW2Ab
+         JX2AB1J18DgkCAvUnujZn91nyMC3rOswc1w7Y1/xa7VHp3qdVOwmqqYKDYVTNexpXuhE
+         OrkQ==
+X-Gm-Message-State: AOAM5334kEM1ENFjewL0Ca8tV1DiFpeUvfCAsZsHclDzyQ8cS6g+yem5
+        yYc9TahiNMhJLo25nDVXxEYwWYa65xk=
+X-Google-Smtp-Source: ABdhPJxEAXXzHubn+advKnJbYKpYFmUIB3ii3RqP1kAQOxL/SWRw9xfmj4/gWfLzVzKc22HV24m2+A==
+X-Received: by 2002:a1c:e908:0:b0:38c:782c:2a62 with SMTP id q8-20020a1ce908000000b0038c782c2a62mr4742238wmc.135.1647969778541;
+        Tue, 22 Mar 2022 10:22:58 -0700 (PDT)
+Received: from avogadro.lan ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.gmail.com with ESMTPSA id d15-20020a056000186f00b0020384249361sm18516828wri.104.2022.03.22.10.22.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Mar 2022 10:22:57 -0700 (PDT)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH] KVM: x86: Fix clang -Wimplicit-fallthrough in do_host_cpuid()
+Date:   Tue, 22 Mar 2022 18:22:52 +0100
+Message-Id: <20220322172252.269813-1-pbonzini@redhat.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220322152906.112164-1-nathan@kernel.org>
+References: 
 MIME-Version: 1.0
-References: <20220204035644.734878-1-xiehuan09@gmail.com> <20220208230830.6b8c03c0f4f11c1ed18da236@kernel.org>
- <20220208104806.5272f2ea@gandalf.local.home> <CAEr6+EANLuP1=PpGvB4G1j4a-iM-mM4c69Pvo7j8GtafKPhyPw@mail.gmail.com>
- <20220228110822.4b906204@gandalf.local.home>
-In-Reply-To: <20220228110822.4b906204@gandalf.local.home>
-From:   Jeff Xie <xiehuan09@gmail.com>
-Date:   Wed, 23 Mar 2022 01:20:14 +0800
-Message-ID: <CAEr6+EAJqM6py_8xtVyH3BZ9U+vODVecSUkLdZkKu3FN2ZkRtw@mail.gmail.com>
-Subject: Re: [PATCH v9 0/4] trace: Introduce objtrace trigger to trace the
- kernel object
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Masami Hiramatsu <mhiramat@kernel.org>, mingo@redhat.com,
-        Tom Zanussi <zanussi@kernel.org>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi steve,
+Queued, thanks.
 
-On Tue, Mar 1, 2022 at 12:08 AM Steven Rostedt <rostedt@goodmis.org> wrote:
->
-> On Sun, 27 Feb 2022 00:01:06 +0800
-> Jeff Xie <xiehuan09@gmail.com> wrote:
->
-> > Congratulations on joining google.  Just check out this series when
-> > you are free.
-> >
-> > Please don't get me wrong, I'm not pushing anyone.
-> > It just doesn't feel good that I haven't responded to emails for a long time ;-)
->
-> And keep responding ;-) I want to look at this series, and your emails do
-> remind me (it's still in my patchwork queue, so it wont be forgotten, but
-> it is getting crowded in that queue of "todo"s).
->
-> Yeah, I'm hoping to start being able to do more upstream, but I'm still a
-> bit in the flux of figuring out what I'm suppose to be doing at work ;-)
->
-> -- Steve
+Paolo
 
-Hope this series is less crowded in your todo queue ;-)
----
-JeffXie
+
