@@ -2,95 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49B12C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 01:08:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 206F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 01:09:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234560AbiCVBJy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 21:09:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47480 "EHLO
+        id S234555AbiCVBKw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 21:10:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234503AbiCVBJv (ORCPT
+        with ESMTP id S234514AbiCVBKs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 21:09:51 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8752C326E3
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 18:08:24 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id e16so13148041lfc.13
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 18:08:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=o7yH1N6bykKRjzWg6oyTeuwepWWp/goED5PPpUMzQ9E=;
-        b=WrQCEtaAcmLw7HHta3xhGEwyQLWBmp7QkoBHN0zxhkKlObDo9AVKeWaj2VrWYQATCP
-         qgCaDokY76AeSSD4JJJmK2u0JL9NXvM6Gx0r/lp7V3w8n75xIE3UUdHUhGVamCHg9Bi0
-         LshiXVFb1y2ae8HAaqoxkFqLoawZKQw3F9IcA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=o7yH1N6bykKRjzWg6oyTeuwepWWp/goED5PPpUMzQ9E=;
-        b=hFLGUrL5EF9qvyLVEBSG0rEMGmda0kaV0cYQQgOP0BApdFMIXJDY7olSpQGtNl054y
-         4CppmPtTfRSQ8OD5Rfah0Lzs9K7llYSOL2dAHeVMrLdH7Pu2JHPxQ4ijfkcjLTLakgTk
-         CJuUi89sflsYAR+CmgL8pUP/TsH3Tk/hfdv+Z/R/h6lrdxHZjgmcWW3bPI74ltqvluZk
-         HSv/nwoN+iL4++52b2n6j3metwIb0uqsXCxvF4JA9IGUEgVwSe9IDow7SwJF0hC3XPx5
-         DpxkvyKW2Pzf3gbrLqwSwPe0RFnF+Yiy0QwKXu0gmuf04/hF1n7g67JUA+x8eexCH7OI
-         EFEQ==
-X-Gm-Message-State: AOAM533dSwfRhe1ENOvhJxBBR6YjcZu7wWnZ/qz+vbkCr/B63KRT6TkH
-        8QbLShU1z9fMvUciBnw9Xqlq9QBqY6Tb7tTyo5k=
-X-Google-Smtp-Source: ABdhPJx70ATw6JfrRwWfaFoynB+eXZ/Btpvblp86MEzLZZ0skSa3P+ia5u80pTRx+184lB+mOKtyjQ==
-X-Received: by 2002:a05:6512:2294:b0:448:6c86:3c78 with SMTP id f20-20020a056512229400b004486c863c78mr15899751lfu.531.1647911302322;
-        Mon, 21 Mar 2022 18:08:22 -0700 (PDT)
-Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com. [209.85.167.49])
-        by smtp.gmail.com with ESMTPSA id o15-20020a2e730f000000b00247eae1ebe7sm2275155ljc.75.2022.03.21.18.08.21
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Mar 2022 18:08:21 -0700 (PDT)
-Received: by mail-lf1-f49.google.com with SMTP id 5so9164448lfp.1
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 18:08:21 -0700 (PDT)
-X-Received: by 2002:ac2:4f92:0:b0:448:7eab:c004 with SMTP id
- z18-20020ac24f92000000b004487eabc004mr16180797lfs.27.1647911300965; Mon, 21
- Mar 2022 18:08:20 -0700 (PDT)
+        Mon, 21 Mar 2022 21:10:48 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1189519C17;
+        Mon, 21 Mar 2022 18:09:19 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KMtfv06kcz1GClN;
+        Tue, 22 Mar 2022 09:09:11 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
+ (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 22 Mar
+ 2022 09:09:17 +0800
+From:   Ye Bin <yebin10@huawei.com>
+To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
+        <linux-ext4@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
+        <lczerner@redhat.com>, Ye Bin <yebin10@huawei.com>
+Subject: [PATCH -next] ext4: fix bug_on in start_this_handle during umount filesystem
+Date:   Tue, 22 Mar 2022 09:24:19 +0800
+Message-ID: <20220322012419.725457-1-yebin10@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <YjhZUezhnamHAl0H@gmail.com> <Yjh58h8cpcPERVZA@qian>
- <CAHk-=whrqeX-8yHEdSCGFUyyC2sj=OLyeFR9civUiswR=A+PwA@mail.gmail.com> <875yo6ajsa.fsf@yhuang6-desk2.ccr.corp.intel.com>
-In-Reply-To: <875yo6ajsa.fsf@yhuang6-desk2.ccr.corp.intel.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 21 Mar 2022 18:08:04 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjSR0xJOdkEDcJ6pGHMOLupghu-ZNUHSuUa5ET_nGaZOQ@mail.gmail.com>
-Message-ID: <CAHk-=wjSR0xJOdkEDcJ6pGHMOLupghu-ZNUHSuUa5ET_nGaZOQ@mail.gmail.com>
-Subject: Re: [GIT PULL] scheduler updates for v5.18
-To:     "Huang, Ying" <ying.huang@intel.com>
-Cc:     Qian Cai <quic_qiancai@quicinc.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Thomas Gleixner <tglx@linutronix.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 5:54 PM Huang, Ying <ying.huang@intel.com> wrote:
->
-> >
-> > Ok, dropped from my queue. Thanks,
->
-> Can you just drop the last one, that is,
->
->   sched/numa: Avoid migrating task to CPU-less node
+We got issue as follows:
+------------[ cut here ]------------
+kernel BUG at fs/jbd2/transaction.c:389!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
+CPU: 9 PID: 131 Comm: kworker/9:1 Not tainted 5.17.0-862.14.0.6.x86_64-00001-g23f87daf7d74-dirty #197
+Workqueue: events flush_stashed_error_work
+RIP: 0010:start_this_handle+0x41c/0x1160
+RSP: 0018:ffff888106b47c20 EFLAGS: 00010202
+RAX: ffffed10251b8400 RBX: ffff888128dc204c RCX: ffffffffb52972ac
+RDX: 0000000000000200 RSI: 0000000000000004 RDI: ffff888128dc2050
+RBP: 0000000000000039 R08: 0000000000000001 R09: ffffed10251b840a
+R10: ffff888128dc204f R11: ffffed10251b8409 R12: ffff888116d78000
+R13: 0000000000000000 R14: dffffc0000000000 R15: ffff888128dc2000
+FS:  0000000000000000(0000) GS:ffff88839d680000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000001620068 CR3: 0000000376c0e000 CR4: 00000000000006e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ jbd2__journal_start+0x38a/0x790
+ jbd2_journal_start+0x19/0x20
+ flush_stashed_error_work+0x110/0x2b3
+ process_one_work+0x688/0x1080
+ worker_thread+0x8b/0xc50
+ kthread+0x26f/0x310
+ ret_from_fork+0x22/0x30
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
 
-I will need a new pull request - that commit isn't actually the last
-in there, so it's not just a "do a pull but don't take the last
-commit" (which I've done once or twice, but it also loses the tag
-signature in the process).
+Above issue may happen as follows:
+      umount            read procfs            error_work
+ext4_put_super
+  flush_work(&sbi->s_error_work);
 
-                     Linus
+                      ext4_mb_seq_groups_show
+	                ext4_mb_load_buddy_gfp
+			  ext4_mb_init_group
+			    ext4_mb_init_cache
+	                      ext4_read_block_bitmap_nowait
+			        ext4_validate_block_bitmap
+				  ext4_error
+			            ext4_handle_error
+			              schedule_work(&EXT4_SB(sb)->s_error_work);
+
+  ext4_unregister_sysfs(sb);
+  jbd2_journal_destroy(sbi->s_journal);
+    journal_kill_thread
+      journal->j_flags |= JBD2_UNMOUNT;
+
+                                          flush_stashed_error_work
+				            jbd2_journal_start
+					      start_this_handle
+					        BUG_ON(journal->j_flags & JBD2_UNMOUNT);
+
+To solve this issue, we call 'ext4_unregister_sysfs' in 'ext4_put_super' firstly
+like 'ext4_fill_super' error handle.
+
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+---
+ fs/ext4/super.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
+
+diff --git a/fs/ext4/super.c b/fs/ext4/super.c
+index 81749eaddf4c..a673012e35c8 100644
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -1199,20 +1199,25 @@ static void ext4_put_super(struct super_block *sb)
+ 	int aborted = 0;
+ 	int i, err;
+ 
+-	ext4_unregister_li_request(sb);
+-	ext4_quota_off_umount(sb);
+-
+-	flush_work(&sbi->s_error_work);
+-	destroy_workqueue(sbi->rsv_conversion_wq);
+-	ext4_release_orphan_info(sb);
+-
+ 	/*
+ 	 * Unregister sysfs before destroying jbd2 journal.
+ 	 * Since we could still access attr_journal_task attribute via sysfs
+ 	 * path which could have sbi->s_journal->j_task as NULL
++	 * Unregister sysfs before flush sbi->s_error_work.
++	 * Since user may read /proc/fs/ext4/xx/mb_groups during umount, If
++	 * read metadata verify failed then will queue error work.
++	 * flush_stashed_error_work will call start_this_handle may trigger
++	 * BUG_ON.
+ 	 */
+ 	ext4_unregister_sysfs(sb);
+ 
++	ext4_unregister_li_request(sb);
++	ext4_quota_off_umount(sb);
++
++	flush_work(&sbi->s_error_work);
++	destroy_workqueue(sbi->rsv_conversion_wq);
++	ext4_release_orphan_info(sb);
++
+ 	if (sbi->s_journal) {
+ 		aborted = is_journal_aborted(sbi->s_journal);
+ 		err = jbd2_journal_destroy(sbi->s_journal);
+-- 
+2.31.1
+
