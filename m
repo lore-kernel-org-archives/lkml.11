@@ -2,75 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ADBFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:53:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AB94C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:54:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239967AbiCVRzL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 13:55:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60912 "EHLO
+        id S236093AbiCVRz1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 13:55:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239590AbiCVRzF (ORCPT
+        with ESMTP id S239590AbiCVRzZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 13:55:05 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C98BBE13
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:53:37 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id mp6-20020a17090b190600b001c6841b8a52so3690808pjb.5
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:53:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3s5gDWos+PtUBLd8/ihqJugKS3ctUwBv/GPhwSs2FSg=;
-        b=J0hXkgmwRkfvoxa+/cJHitTUDL4MBLzi6/4VZaaROhoGfxwHEt9opFvvnk30v5W76A
-         gSPMZK0GobqR+CVlBi0YKf08GT0gASfjlWZg7jTTZCWi1tsGBEU/boiHzw6vJavQMChW
-         3+mm6C1Mus9NgYXuUAHqwUeWZeQpB1++KwRAZeikitNpYgIFbzWHIXyxCh+0By7ZWy0f
-         93e0UaB9SSeMHBEV5+/uOc56iHw3Yx5LKftZuTA/67kUZ8gXdr7dZGsPBFP7eH9B/3/e
-         VDS5j3NfD+/us8Wi/aSwLJgSNWcWyAjy7Hpc9pFWirXCQPOdPssBmAoiGSMJITWbxPme
-         7jwg==
+        Tue, 22 Mar 2022 13:55:25 -0400
+Received: from mail-io1-f44.google.com (mail-io1-f44.google.com [209.85.166.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C122BF64;
+        Tue, 22 Mar 2022 10:53:56 -0700 (PDT)
+Received: by mail-io1-f44.google.com with SMTP id k25so21023258iok.8;
+        Tue, 22 Mar 2022 10:53:56 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=3s5gDWos+PtUBLd8/ihqJugKS3ctUwBv/GPhwSs2FSg=;
-        b=0bqF4X+XJY1kICQKfMqA/gAu6Lx3FYD+6jGxdF6ILmRg02LJGVhtJb0K4Y3b4eJ7B8
-         evYZ8U76HCM/HQ+th0wppUAKK1YNCVl5o0hzKS3m7omH57Q188DHAhr/T8GSvSWjTyTQ
-         8jI26tASATS1RKFAaO7+bfwoYPoeHc8Nan0HM8unEm4REATtek9xuglT5oP3vo3d1aLk
-         V4aINVSHVVUAE29lA7UjN0Z0OG2fdDm+aDe+vLGNK3Pk/Qydzf5NfnbzNokUZfkl4FJp
-         xWLlBvMF189CDeFclMXkQ9FW4VgFDCQG3x7E+IFfVM9sTh3HYWGI5vXrZ/S6TjHOhODt
-         kOwg==
-X-Gm-Message-State: AOAM533LxnRlhs6/m7Dbvgd3//IcX3ibtFUHkw0OcG2qflP5L0ps6zZ7
-        ar3QRgsgPlQuPHlkUQomz8WqstDCIPZDH0ApK15DOQ==
-X-Google-Smtp-Source: ABdhPJyet6bOhKvdAllqdaC/IxzQPS5NrzuBCij/+cPDNReudOSbHOq6XC8Buzc2uf6Zwfci6Gv8/fi7bvkucL9VT0s=
-X-Received: by 2002:a17:902:7296:b0:14b:4bc6:e81 with SMTP id
- d22-20020a170902729600b0014b4bc60e81mr19167073pll.132.1647971616906; Tue, 22
- Mar 2022 10:53:36 -0700 (PDT)
+        bh=D2A9hIX+HQzPzacEyBKyVneC9YjFuPVHNWbb21zj8QU=;
+        b=G/DRqWnO9oBa0v0mWBmqqXKQ5SNJsSqPyhH0BoBDRvJyp4+xHHEz+jMWcTTVFfAgXY
+         d/tp4ZhvPzQ37rac+aBMQA2ZqASTpGBg4sPyRKH1a+rQOJ7Ttvz0L2aktpuHnUCQPbKf
+         gWf0I5jtylNmEIwDvIrfk6+zBceNm5BS4veR5QzOKLIcO1/iSX6/42DrEPbyuv3q/f2T
+         b81jM52Dt1THbZO/4r/mLzaOgmN7MzyIniKCoSWgrjh4tLRXANpbZYsUEzGEx0u2Kamq
+         oGlPIahZCYWEeA1IU1SlWigcGtVJQCgI/eCLETEqN04pTJU5Ck4g2w1hjInLmpRS5cC6
+         +vZw==
+X-Gm-Message-State: AOAM530KFAVOAu47W35AkkG/ruMC+Fh+yyB5PLrzUnwql4EIVafn9aFK
+        X23Kukrdcuj0AJpEEYV8gTWW+09vEUnF9PMXPnQ=
+X-Google-Smtp-Source: ABdhPJybQ9Fg8kVP1Ef/Uke9w08AyhnVuzLoJLnuIy27SVBKgSVsDfe9yCvTgOOjjxApYyfs7pQj6d/+xpbswqqZdTU=
+X-Received: by 2002:a05:6602:2a4e:b0:648:b557:e84b with SMTP id
+ k14-20020a0566022a4e00b00648b557e84bmr12893660iov.91.1647971636300; Tue, 22
+ Mar 2022 10:53:56 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220307094158.404882-1-wanjiabing@vivo.com>
-In-Reply-To: <20220307094158.404882-1-wanjiabing@vivo.com>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Tue, 22 Mar 2022 10:53:29 -0700
-Message-ID: <CAPcyv4im7c47C+jrTbQC=FGgCV35ME8vuYA2-KXYRKsdEuOuuQ@mail.gmail.com>
-Subject: Re: [PATCH] cxl/core/port: fix NULL but dereferenced coccicheck error
-To:     Wan Jiabing <wanjiabing@vivo.com>
-Cc:     Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-cxl@vger.kernel.org,
+References: <20220319215447.2625681-1-jakobkoschel@gmail.com>
+In-Reply-To: <20220319215447.2625681-1-jakobkoschel@gmail.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 22 Mar 2022 18:53:22 +0100
+Message-ID: <CAJZ5v0iRvaRyWEZqBxgx5juXUc6Oec5tsiiXfFPd_JGBMKVvJQ@mail.gmail.com>
+Subject: Re: [PATCH] ACPI, APEI: fix using the correct variable for sizeof()
+To:     Jakob Koschel <jakobkoschel@gmail.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kael_w@qq.com
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Len Brown <lenb@kernel.org>, James Morse <james.morse@arm.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Mike Rapoport <rppt@kernel.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 7, 2022 at 1:43 AM Wan Jiabing <wanjiabing@vivo.com> wrote:
+On Sat, Mar 19, 2022 at 10:55 PM Jakob Koschel <jakobkoschel@gmail.com> wrote:
 >
-> Fix the following coccicheck warning:
-> ./drivers/cxl/core/port.c:913:21-24: ERROR: port is NULL but dereferenced.
+> While the original code is valid, it is not the obvious choice for the
+> sizeof() call and in preparation to limit the scope of the list iterator
+> variable the sizeof should be changed to the size of the variable
+> being allocated.
 >
-> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+> ---
+>  drivers/acpi/apei/apei-base.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/acpi/apei/apei-base.c b/drivers/acpi/apei/apei-base.c
+> index c7fdb12c3310..33b7fbbeda82 100644
+> --- a/drivers/acpi/apei/apei-base.c
+> +++ b/drivers/acpi/apei/apei-base.c
+> @@ -319,7 +319,7 @@ static int apei_res_add(struct list_head *res_list,
+>         if (res_ins)
+>                 list_add(&res_ins->list, res_list);
+>         else {
+> -               res_ins = kmalloc(sizeof(*res), GFP_KERNEL);
+> +               res_ins = kmalloc(sizeof(*res_ins), GFP_KERNEL);
+>                 if (!res_ins)
+>                         return -ENOMEM;
+>                 res_ins->start = start;
+>
+> base-commit: 34e047aa16c0123bbae8e2f6df33e5ecc1f56601
+> --
 
-Thanks, applied.
+Applied as 5.18-rc material, thanks!
