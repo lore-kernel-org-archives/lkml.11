@@ -2,132 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A921C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 10:48:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04600C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 10:49:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233532AbiCVKtz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 06:49:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55458 "EHLO
+        id S233378AbiCVKub (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 06:50:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233660AbiCVKrv (ORCPT
+        with ESMTP id S231843AbiCVKu2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 06:47:51 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D068167E;
-        Tue, 22 Mar 2022 03:46:16 -0700 (PDT)
-Received: from fraeml739-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KN7QC5qZ7z683yD;
-        Tue, 22 Mar 2022 18:44:03 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml739-chm.china.huawei.com (10.206.15.220) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 22 Mar 2022 11:46:14 +0100
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 22 Mar 2022 10:46:10 +0000
-From:   John Garry <john.garry@huawei.com>
-To:     <axboe@kernel.dk>, <damien.lemoal@opensource.wdc.com>,
-        <bvanassche@acm.org>, <jejb@linux.ibm.com>,
-        <martin.petersen@oracle.com>, <hch@lst.de>, <ming.lei@redhat.com>,
-        <hare@suse.de>
-CC:     <chenxiang66@hisilicon.com>, <linux-block@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-ide@vger.kernel.org>,
-        <linux-scsi@vger.kernel.org>, <dm-devel@redhat.com>,
-        <beanhuo@micron.com>, John Garry <john.garry@huawei.com>
-Subject: [PATCH 09/11] scsi: libsas: Add sas_task_to_unique_tag()
-Date:   Tue, 22 Mar 2022 18:39:43 +0800
-Message-ID: <1647945585-197349-10-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1647945585-197349-1-git-send-email-john.garry@huawei.com>
-References: <1647945585-197349-1-git-send-email-john.garry@huawei.com>
+        Tue, 22 Mar 2022 06:50:28 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A5A7811BA;
+        Tue, 22 Mar 2022 03:49:01 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id AA00C210F1;
+        Tue, 22 Mar 2022 10:48:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1647946138; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0/MS6PTFwvGlMff+fmHo+wapCdTSqM2WuKx4kjihEQ8=;
+        b=ZfLXpa9/tqS97W10ssQ0skDVsBjSAB/1cV3Ek5JsGuhhpq1QQb6Ra47mIr3JqBUvrq0/td
+        Yu7F6S2P7ELd8+00xeqqsGb0S0xW7QxJepCI9d8hnACUGnRmXVX10ejVSWtM+k7RoBgU7m
+        ay+/Gr1afpGP8qICEQz8iCZwNPQtdEY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1647946138;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0/MS6PTFwvGlMff+fmHo+wapCdTSqM2WuKx4kjihEQ8=;
+        b=/A43+c8IpcqTZouKIxX2h47kT1r6+4qpeFL5cxmq842YCs1/2I1TVVNEK3wgIGo2AQ1uxi
+        zBazoeg1K5ylpyCg==
+Received: from quack3.suse.cz (unknown [10.100.224.230])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 98986A3B88;
+        Tue, 22 Mar 2022 10:48:58 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 4DC3DA0610; Tue, 22 Mar 2022 11:48:57 +0100 (CET)
+Date:   Tue, 22 Mar 2022 11:48:57 +0100
+From:   Jan Kara <jack@suse.cz>
+To:     Ye Bin <yebin10@huawei.com>
+Cc:     tytso@mit.edu, adilger.kernel@dilger.ca,
+        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jack@suse.cz, lczerner@redhat.com
+Subject: Re: [PATCH -next] ext4: fix bug_on in start_this_handle during
+ umount filesystem
+Message-ID: <20220322104857.ehiu3payojri4cmq@quack3.lan>
+References: <20220322012419.725457-1-yebin10@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220322012419.725457-1-yebin10@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a function to get the unique request tag from a sas_task.
+On Tue 22-03-22 09:24:19, Ye Bin wrote:
+> We got issue as follows:
+> ------------[ cut here ]------------
+> kernel BUG at fs/jbd2/transaction.c:389!
+> invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
+> CPU: 9 PID: 131 Comm: kworker/9:1 Not tainted 5.17.0-862.14.0.6.x86_64-00001-g23f87daf7d74-dirty #197
+> Workqueue: events flush_stashed_error_work
+> RIP: 0010:start_this_handle+0x41c/0x1160
+> RSP: 0018:ffff888106b47c20 EFLAGS: 00010202
+> RAX: ffffed10251b8400 RBX: ffff888128dc204c RCX: ffffffffb52972ac
+> RDX: 0000000000000200 RSI: 0000000000000004 RDI: ffff888128dc2050
+> RBP: 0000000000000039 R08: 0000000000000001 R09: ffffed10251b840a
+> R10: ffff888128dc204f R11: ffffed10251b8409 R12: ffff888116d78000
+> R13: 0000000000000000 R14: dffffc0000000000 R15: ffff888128dc2000
+> FS:  0000000000000000(0000) GS:ffff88839d680000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 0000000001620068 CR3: 0000000376c0e000 CR4: 00000000000006e0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>  <TASK>
+>  jbd2__journal_start+0x38a/0x790
+>  jbd2_journal_start+0x19/0x20
+>  flush_stashed_error_work+0x110/0x2b3
+>  process_one_work+0x688/0x1080
+>  worker_thread+0x8b/0xc50
+>  kthread+0x26f/0x310
+>  ret_from_fork+0x22/0x30
+>  </TASK>
+> Modules linked in:
+> ---[ end trace 0000000000000000 ]---
+> 
+> Above issue may happen as follows:
+>       umount            read procfs            error_work
+> ext4_put_super
+>   flush_work(&sbi->s_error_work);
+> 
+>                       ext4_mb_seq_groups_show
+> 	                ext4_mb_load_buddy_gfp
+> 			  ext4_mb_init_group
+> 			    ext4_mb_init_cache
+> 	                      ext4_read_block_bitmap_nowait
+> 			        ext4_validate_block_bitmap
+> 				  ext4_error
+> 			            ext4_handle_error
+> 			              schedule_work(&EXT4_SB(sb)->s_error_work);
+> 
+>   ext4_unregister_sysfs(sb);
+>   jbd2_journal_destroy(sbi->s_journal);
+>     journal_kill_thread
+>       journal->j_flags |= JBD2_UNMOUNT;
+> 
+>                                           flush_stashed_error_work
+> 				            jbd2_journal_start
+> 					      start_this_handle
+> 					        BUG_ON(journal->j_flags & JBD2_UNMOUNT);
+> 
+> To solve this issue, we call 'ext4_unregister_sysfs' in 'ext4_put_super' firstly
+> like 'ext4_fill_super' error handle.
+> 
+> Signed-off-by: Ye Bin <yebin10@huawei.com>
 
-Signed-off-by: John Garry <john.garry@huawei.com>
----
- drivers/scsi/hisi_sas/hisi_sas_main.c |  8 ++++----
- drivers/scsi/libsas/sas_scsi_host.c   | 14 ++++++++++++++
- include/scsi/libsas.h                 |  2 ++
- 3 files changed, 20 insertions(+), 4 deletions(-)
+Looks good. Thanks! Feel free to add:
 
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_main.c b/drivers/scsi/hisi_sas/hisi_sas_main.c
-index e438c68e249a..f6b64c789335 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_main.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_main.c
-@@ -177,13 +177,13 @@ static void hisi_sas_slot_index_set(struct hisi_hba *hisi_hba, int slot_idx)
- }
- 
- static int hisi_sas_slot_index_alloc(struct hisi_hba *hisi_hba,
--				     struct scsi_cmnd *scsi_cmnd)
-+				     struct sas_task *task)
- {
- 	int index;
- 	void *bitmap = hisi_hba->slot_index_tags;
- 
--	if (scsi_cmnd)
--		return scsi_cmd_to_rq(scsi_cmnd)->tag;
-+	if (task)
-+		return sas_task_to_unique_tag(task);
- 
- 	spin_lock(&hisi_hba->lock);
- 	index = find_next_zero_bit(bitmap, hisi_hba->slot_index_count,
-@@ -572,7 +572,7 @@ static int hisi_sas_queue_command(struct sas_task *task, gfp_t gfp_flags)
- 	if (!internal_abort && hisi_hba->hw->slot_index_alloc)
- 		rc = hisi_hba->hw->slot_index_alloc(hisi_hba, device);
- 	else
--		rc = hisi_sas_slot_index_alloc(hisi_hba, scmd);
-+		rc = hisi_sas_slot_index_alloc(hisi_hba, task);
- 
- 	if (rc < 0)
- 		goto err_out_dif_dma_unmap;
-diff --git a/drivers/scsi/libsas/sas_scsi_host.c b/drivers/scsi/libsas/sas_scsi_host.c
-index f139977098c2..425904fa4cc7 100644
---- a/drivers/scsi/libsas/sas_scsi_host.c
-+++ b/drivers/scsi/libsas/sas_scsi_host.c
-@@ -1065,6 +1065,20 @@ int sas_execute_internal_abort_dev(struct domain_device *device,
- }
- EXPORT_SYMBOL_GPL(sas_execute_internal_abort_dev);
- 
-+static u32 sas_task_to_rq_unique_tag(struct sas_task *task)
-+{
-+	return blk_mq_unique_tag(scsi_cmd_to_rq(task->uldd_task));
-+}
-+
-+unsigned int sas_task_to_unique_tag(struct sas_task *task)
-+{
-+	u32 unique = sas_task_to_rq_unique_tag(task);
-+
-+	return blk_mq_unique_tag_to_tag(unique);
-+
-+}
-+EXPORT_SYMBOL_GPL(sas_task_to_unique_tag);
-+
- int sas_execute_tmf(struct domain_device *device, void *parameter,
- 		    int para_len, int force_phy_id,
- 		    struct sas_tmf_task *tmf)
-diff --git a/include/scsi/libsas.h b/include/scsi/libsas.h
-index ff04eb6d250b..3d9ef4c2c889 100644
---- a/include/scsi/libsas.h
-+++ b/include/scsi/libsas.h
-@@ -625,6 +625,8 @@ struct sas_task {
- 	struct sas_tmf_task *tmf;
- };
- 
-+unsigned int sas_task_to_unique_tag(struct sas_task *task);
-+
- struct sas_task_slow {
- 	/* standard/extra infrastructure for slow path commands (SMP and
- 	 * internal lldd commands
+Reviewed-by: Jan Kara <jack@suse.cz>
+
+								Honza
+
+> ---
+>  fs/ext4/super.c | 19 ++++++++++++-------
+>  1 file changed, 12 insertions(+), 7 deletions(-)
+> 
+> diff --git a/fs/ext4/super.c b/fs/ext4/super.c
+> index 81749eaddf4c..a673012e35c8 100644
+> --- a/fs/ext4/super.c
+> +++ b/fs/ext4/super.c
+> @@ -1199,20 +1199,25 @@ static void ext4_put_super(struct super_block *sb)
+>  	int aborted = 0;
+>  	int i, err;
+>  
+> -	ext4_unregister_li_request(sb);
+> -	ext4_quota_off_umount(sb);
+> -
+> -	flush_work(&sbi->s_error_work);
+> -	destroy_workqueue(sbi->rsv_conversion_wq);
+> -	ext4_release_orphan_info(sb);
+> -
+>  	/*
+>  	 * Unregister sysfs before destroying jbd2 journal.
+>  	 * Since we could still access attr_journal_task attribute via sysfs
+>  	 * path which could have sbi->s_journal->j_task as NULL
+> +	 * Unregister sysfs before flush sbi->s_error_work.
+> +	 * Since user may read /proc/fs/ext4/xx/mb_groups during umount, If
+> +	 * read metadata verify failed then will queue error work.
+> +	 * flush_stashed_error_work will call start_this_handle may trigger
+> +	 * BUG_ON.
+>  	 */
+>  	ext4_unregister_sysfs(sb);
+>  
+> +	ext4_unregister_li_request(sb);
+> +	ext4_quota_off_umount(sb);
+> +
+> +	flush_work(&sbi->s_error_work);
+> +	destroy_workqueue(sbi->rsv_conversion_wq);
+> +	ext4_release_orphan_info(sb);
+> +
+>  	if (sbi->s_journal) {
+>  		aborted = is_journal_aborted(sbi->s_journal);
+>  		err = jbd2_journal_destroy(sbi->s_journal);
+> -- 
+> 2.31.1
+> 
 -- 
-2.26.2
-
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
