@@ -2,101 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 216CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:39:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18DD4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:39:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239763AbiCVRkh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 13:40:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44976 "EHLO
+        id S239784AbiCVRlB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 13:41:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232667AbiCVRke (ORCPT
+        with ESMTP id S239770AbiCVRk5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 13:40:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19555B3ED
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:39:06 -0700 (PDT)
+        Tue, 22 Mar 2022 13:40:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 619CE887A3
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:39:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D39861559
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 17:39:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ED99C340EC;
-        Tue, 22 Mar 2022 17:39:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E759BB81D38
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 17:39:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B83AC36AEB
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 17:39:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647970745;
-        bh=DjiS32vPPzgMI5rZD9Y+sAxvdb/r9L8MYhIr+oCkLbY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=PuOe6xXlR8M/pSW0JOJW/vpBNEMzZJsv5u93nq9rsn92kFQrafwTgu2K07GlyhCpL
-         LNbGvT+LYU6IRHu+ucWvAKQQQ99o6ZzA+Bo6rl/Lva65oRy+CRCwODtr2+MgcszJqZ
-         sL/U+4tFbFSyTsy1YsANuLE5x0aEBCev5kExZ5X+QxTqo38IpSmlZxyTkRqSN1Qxh/
-         c56s6IU8/V9bpHHkSxcqqfToRB8Q+GoPnKISIBhJJAetw5MbNyQFY8M6RjTiJvk/yN
-         cHuoPhVUPhESTckSAJt+K30DnNTmKOu6g/L4IkA02KRjzR5bPr+T78FWZRu+7Xb+ui
-         bHEqWBuZmsz7Q==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        David Gow <davidgow@google.com>, linux-um@lists.infradead.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH] um: Fix filtering '-mno-global-merge'
-Date:   Tue, 22 Mar 2022 10:35:47 -0700
-Message-Id: <20220322173547.677760-1-nathan@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        s=k20201202; t=1647970766;
+        bh=8q6r8juMrDBnbfWTc+rVHMGsrIAAdRTfUtHXinUmhWc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=jKoC8utb6vQC7JxzlBEup2+AX7aBbfyHynQsN5+F+64vE408VhuXBoRLdaIp0onHX
+         cLVDZCmqzqjmX62Q8geT5nkGkzIvYJj7GfEDuc09mj859qR4C9jfFKWPJybqcxZDmR
+         T9Uz8MPJdezD1UANrBMb7yai0hiMCB2PxpC5yP++t/SHOHAueZAAWwAFVjnLeNjJxm
+         kXRBpt95lK1sBvfcluiTroBzd760fbW31+v/a5nb46bklZWpOqQTLu2EDu3kml/QSG
+         mEdWP2lJ4q16hiixMgSKCzwKenbKqgbtTbuTCgs6aqHJ3EXKT1B1cuuw0eYy3aNctn
+         1/RBOpbLaXqsg==
+Received: by mail-ed1-f44.google.com with SMTP id w25so22552373edi.11
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:39:26 -0700 (PDT)
+X-Gm-Message-State: AOAM531ANEnFrJfG3a7B+nIrjTk954RZL67SqSqRzcwLWLUK+bWnyVMT
+        EsC04hxMZQbjNMEl7Niiy/RcBt3uYQF1JIlIKe80lg==
+X-Google-Smtp-Source: ABdhPJz7l0qlFBKeBFie+TrVzQ/TBK3pBt0oidyYtw1ppUgJq/0zjb7jE93WaRMBlLa2DXZ0Fd5SSnrUxfju6EPJzCQ=
+X-Received: by 2002:a50:cf48:0:b0:415:df40:9e3d with SMTP id
+ d8-20020a50cf48000000b00415df409e3dmr29229293edk.185.1647970764645; Tue, 22
+ Mar 2022 10:39:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220322145012.1315376-1-milan@mdaverde.com> <ca7b331c-bd35-7d51-3df4-723bc36676f8@isovalent.com>
+In-Reply-To: <ca7b331c-bd35-7d51-3df4-723bc36676f8@isovalent.com>
+From:   KP Singh <kpsingh@kernel.org>
+Date:   Tue, 22 Mar 2022 18:39:13 +0100
+X-Gmail-Original-Message-ID: <CACYkzJ49NibikDxgq9BudWu6ieW4ZkiEWCy_yAsJUFtEiS9CEg@mail.gmail.com>
+Message-ID: <CACYkzJ49NibikDxgq9BudWu6ieW4ZkiEWCy_yAsJUFtEiS9CEg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf/bpftool: add unprivileged_bpf_disabled check
+ against value of 2
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Milan Landaverde <milan@mdaverde.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Paul Chaignon <paul@isovalent.com>,
+        =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@corigine.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When booting a clang compiled UML kernel, the kernel panics when trying
-to run init:
+On Tue, Mar 22, 2022 at 4:54 PM Quentin Monnet <quentin@isovalent.com> wrote:
+>
+> 2022-03-22 10:49 UTC-0400 ~ Milan Landaverde <milan@mdaverde.com>
+> > In [1], we added a kconfig knob that can set
+> > /proc/sys/kernel/unprivileged_bpf_disabled to 2
+> >
+> > We now check against this value in bpftool feature probe
+> >
+> > [1] https://lore.kernel.org/bpf/74ec548079189e4e4dffaeb42b8987bb3c852eee.1620765074.git.daniel@iogearbox.net
+> >
+> > Signed-off-by: Milan Landaverde <milan@mdaverde.com>
+>
+> Acked-by: Quentin Monnet <quentin@isovalent.com>
 
-  wait_stub_done : failed to wait for SIGTRAP, pid = 651294, n = 651294, errno = 0, status = 0xb7f
-  Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+Acked-by: KP Singh <kpsingh@kernel.org>
 
-After the commit in Fixes, many flags from KBUILD_CFLAGS do not appear
-in USER_CFLAGS, likely due to USER_CFLAGS initially being a recursive
-variable ("VAR =") then being switched to a simple ("VAR :=") variable.
-For example, diffing arch/x86/um/.ptrace_user.o.cmd shows flags such as
-'-Os' and '-fno-delete-null-pointer-checks' getting dropped, which both
-impact code generation.
-
-Rework the filtering to use filter-out instead of patsubst, which allows
-all the patterns that USER_CFLAGS cares about to be excluded in one
-command and ensures all flags from KBUILD_CFLAGS are transferred over to
-USER_CFLAGS properly, which resolves the boot issue noted above.
-
-Fixes: 6580c5c18fb3 ("um: clang: Strip out -mno-global-merge from USER_CFLAGS")
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
----
- arch/um/Makefile | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
-
-diff --git a/arch/um/Makefile b/arch/um/Makefile
-index 320b09cd513c..d202f501e9e1 100644
---- a/arch/um/Makefile
-+++ b/arch/um/Makefile
-@@ -70,15 +70,11 @@ KBUILD_CFLAGS += $(CFLAGS) $(CFLAGS-y) -D__arch_um__ \
- 
- KBUILD_AFLAGS += $(ARCH_INCLUDE)
- 
--USER_CFLAGS = $(patsubst $(KERNEL_DEFINES),,$(patsubst -I%,,$(KBUILD_CFLAGS))) \
-+USER_CFLAGS = $(filter-out $(KERNEL_DEFINES) -I% -mno-global-merge,$(KBUILD_CFLAGS)) \
- 		$(ARCH_INCLUDE) $(MODE_INCLUDE) $(filter -I%,$(CFLAGS)) \
- 		-D_FILE_OFFSET_BITS=64 -idirafter $(srctree)/include \
- 		-idirafter $(objtree)/include -D__KERNEL__ -D__UM_HOST__
- 
--ifdef CONFIG_CC_IS_CLANG
--USER_CFLAGS := $(patsubst -mno-global-merge,,$(USER_CFLAGS))
--endif
--
- #This will adjust *FLAGS accordingly to the platform.
- include $(srctree)/$(ARCH_DIR)/Makefile-os-$(OS)
- 
-
-base-commit: 82017457957a550d7d00dde419435dd74a890887
--- 
-2.35.1
-
+Thanks, this is very useful!
