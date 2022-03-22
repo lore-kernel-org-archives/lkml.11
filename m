@@ -2,104 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91BBBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:06:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C342BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:07:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239358AbiCVRIM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 13:08:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39506 "EHLO
+        id S239364AbiCVRJR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 13:09:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231186AbiCVRIH (ORCPT
+        with ESMTP id S231186AbiCVRJQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 13:08:07 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6FA86AA7C;
-        Tue, 22 Mar 2022 10:06:38 -0700 (PDT)
-Received: from mail-wr1-f49.google.com ([209.85.221.49]) by
- mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MdwRi-1o6b0t0Zra-00b7Oq; Tue, 22 Mar 2022 18:06:37 +0100
-Received: by mail-wr1-f49.google.com with SMTP id v22so10423937wra.2;
-        Tue, 22 Mar 2022 10:06:37 -0700 (PDT)
-X-Gm-Message-State: AOAM531HT4Ch/uG5ZhcbR5kuU8Q7NyPTyYn5C+Sb8OwItukgQ1dSXfgG
-        E8UeBjs/tpn4VTPLX44eAwEUuc1w3CWTo6FWLQo=
-X-Google-Smtp-Source: ABdhPJzYB6ox3wweLxkaJdVg1CSTqhO684+KAFRluL7iV1tWdFcF/ONdn4ZX1CPYE6vDSSNrGQ2IMjZPkjDxTSOkd/Q=
-X-Received: by 2002:a5d:66ca:0:b0:203:fb72:a223 with SMTP id
- k10-20020a5d66ca000000b00203fb72a223mr15794201wrw.12.1647968796788; Tue, 22
- Mar 2022 10:06:36 -0700 (PDT)
+        Tue, 22 Mar 2022 13:09:16 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 705ED71ECE
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:07:48 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 275341F388;
+        Tue, 22 Mar 2022 17:07:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1647968867; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6fbhaIjiu6I6EYFCJgaK9dNKTeI2PHW3Jz9RETaj5Jk=;
+        b=axLGYK+2eJqTAJT6AHwmEIH2U+zTkwMYlcdhFT7LRom+FJXzPKxvwg+RaCCZc503Re/r5C
+        kq9E+oxOaRFihY8MoEqPkouhqiqpetEgtorCvY2jvEeu1zPgOom4ShlSk3Rr4XRQ/JFAP7
+        2yze0edDeIIrOxb3xK53QZHsc6NwDPo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1647968867;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6fbhaIjiu6I6EYFCJgaK9dNKTeI2PHW3Jz9RETaj5Jk=;
+        b=aX3VigDl4w5EpjgURghWRhJ2jtP/06Qj1oO4MCdBmYw+Eawp0xU3uOmfyup3bVh2hYpgUf
+        apeQK+8RRo1jHkCg==
+Received: from alsa1.nue.suse.com (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 14899A3B88;
+        Tue, 22 Mar 2022 17:07:47 +0000 (UTC)
+From:   Takashi Iwai <tiwai@suse.de>
+To:     alsa-devel@alsa-project.org
+Cc:     Hu Jiahui <kirin.say@gmail.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/4] ALSA: pcm: Fix races among concurrent hw_params and hw_free calls
+Date:   Tue, 22 Mar 2022 18:07:17 +0100
+Message-Id: <20220322170720.3529-2-tiwai@suse.de>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220322170720.3529-1-tiwai@suse.de>
+References: <20220322170720.3529-1-tiwai@suse.de>
 MIME-Version: 1.0
-References: <20220228114523.03b2f921@canb.auug.org.au> <20220322110925.7b295e54@canb.auug.org.au>
- <8ce9d045-c3c9-c839-7b82-9f5ccdae2d52@gmx.de>
-In-Reply-To: <8ce9d045-c3c9-c839-7b82-9f5ccdae2d52@gmx.de>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 22 Mar 2022 18:06:20 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a3hR0JP-coRBNDytC1onPUfYCUn_q148kMO5-FWvxwgOg@mail.gmail.com>
-Message-ID: <CAK8P3a3hR0JP-coRBNDytC1onPUfYCUn_q148kMO5-FWvxwgOg@mail.gmail.com>
-Subject: Re: linux-next: manual merge of the parisc-hd tree with the
- asm-generic tree
-To:     Helge Deller <deller@gmx.de>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:b7arbufAWiTYFolXORfGQsCYX9SiUGAUTONI9A2Nlj4TyoOF0zf
- ND1U9hnsMYobhHze2QgiYShUwv/Wm8RpBjdIYUZ+NlCJDZ60PBmMojx8mwSSF0z1EEt58HG
- LadnFRWmvoVv3pPhbnulDnWZkzw1V0Ejibmy8kC5rvC/LJwGyBn1/V4lEfrtQIivqY/YBfy
- gqnv8UBCCQLgq5Dd9ofEg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:O1EZIwAfhLY=:ShQmAeFA9GihY9zCn8wNuu
- p10TnwrPoQKQri0fKPeeTFH5OOMKoLD0VWVSsH/ptvt/ZmDzLqRGLQZASdr0w/uR9dTsVLZfR
- xfqtqYFo2ff3ruEPeptyeOA0loBk9V+2d4QCDf/2zVQLhzSxuczV3TO2IzlySU9iUhO3Q1LmK
- qC4U7+hdK8JwT8XklftGKfeA0p2E6RsecRPCk3mg1ka0sURspZ+jH6h/GQZv560J7hxe8pS0O
- qQpajIdFbgEkpEjB9rDNo5MUMiEhQLa3/C2Gd/oYPFKYM0FOVLBs5U0/3vGBMZ6p88hqFDY4t
- u3xGEU98Ru7i0wswik1ZokDfGE27rr/q4QqW9LIg++BF0Dbr/X27skTL0Brp+or1o9JPERjP4
- MPEOFNwG4L/xY5pqV06T/1A5Kffh3kYxxsBYwmKrSPHBlyZZbubdiIjBxPSKzzBZGKK9lHYzq
- 0a4s+pBMCyq/QqD2mY7sC+U9RK2f50GKyQ/QKdlpYFh9jqzVjn9BrlZ1uEv48PHYefnL5gQIU
- dD7oz/kowuGAWXhV6zmJOanH88nYH2UbFK+BfpXMhMWZooV9VevBlYJMSEQRqY2ae8nSWVEqg
- cA7Wn7UYm/y9dg/du/lal/ZDpkWAsyR21/UauX/IRs842LO+hkQTXacn3WPQ1nfDC5TIfFCM1
- PNELxvhBdZ0bRA/q2vSer/ajszcTJMsd4nhVSuNWahg6UxEJQ9hof3CE6kkUjRitAMxI=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 8:34 AM Helge Deller <deller@gmx.de> wrote:
->
-> On 3/22/22 01:09, Stephen Rothwell wrote:
-> > Hi all,
-> >
-> > On Mon, 28 Feb 2022 11:45:23 +1100 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> >>
-> >> Today's linux-next merge of the parisc-hd tree got a conflict in:
-> >>
-> >>   arch/parisc/lib/memcpy.c
-> >>
-> >> between commit:
-> >>
-> >>   967747bbc084 ("uaccess: remove CONFIG_SET_FS")
-> >>
-> >> from the asm-generic tree and commit:
-> >>
-> >>   d4a767ea8b0e ("parisc: Use constants to encode the space registers like SR_KERNEL")
-> >>
-> >> from the parisc-hd tree.
-> >
-> > This is now a conflict between the asm-generic tree and commit
-> >
-> >   360bd6c65807 ("parisc: Use constants to encode the space registers like SR_KERNEL")
-> >
-> > in Linus' tree.
->
->
-> Arnd,
-> can you please drop the changes in your asm-generic tree for
-> arch/parisc/lib/memcpy.c
-> They are not needed any more.
->
+Currently we have neither proper check nor protection against the
+concurrent calls of PCM hw_params and hw_free ioctls, which may result
+in a UAF.  Since the existing PCM stream lock can't be used for
+protecting the whole ioctl operations, we need a new mutex to protect
+those racy calls.
 
-Sorry I missed that earlier when the conflict happened originally.
+This patch introduced a new mutex, runtime->buffer_mutex, and applies
+it to both hw_params and hw_free ioctl code paths.  Along with it, the
+both functions are slightly modified (the mmap_count check is moved
+into the state-check block) for code simplicity.
 
-I can't really rebase my changes on top of your tree now, and just dropping
-the change without a rebase would break mine. I'll make sure to mention
-the conflict in the pull request then and have Linus resolve it.
+Reported-by: Hu Jiahui <kirin.say@gmail.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+---
+ include/sound/pcm.h     |  1 +
+ sound/core/pcm.c        |  2 ++
+ sound/core/pcm_native.c | 61 ++++++++++++++++++++++++++---------------
+ 3 files changed, 42 insertions(+), 22 deletions(-)
 
-       Arnd
+diff --git a/include/sound/pcm.h b/include/sound/pcm.h
+index 36da42cd0774..314f2779cab5 100644
+--- a/include/sound/pcm.h
++++ b/include/sound/pcm.h
+@@ -401,6 +401,7 @@ struct snd_pcm_runtime {
+ 	wait_queue_head_t tsleep;	/* transfer sleep */
+ 	struct fasync_struct *fasync;
+ 	bool stop_operating;		/* sync_stop will be called */
++	struct mutex buffer_mutex;	/* protect for buffer changes */
+ 
+ 	/* -- private section -- */
+ 	void *private_data;
+diff --git a/sound/core/pcm.c b/sound/core/pcm.c
+index ba4a987ed1c6..edd9849210f2 100644
+--- a/sound/core/pcm.c
++++ b/sound/core/pcm.c
+@@ -969,6 +969,7 @@ int snd_pcm_attach_substream(struct snd_pcm *pcm, int stream,
+ 	init_waitqueue_head(&runtime->tsleep);
+ 
+ 	runtime->status->state = SNDRV_PCM_STATE_OPEN;
++	mutex_init(&runtime->buffer_mutex);
+ 
+ 	substream->runtime = runtime;
+ 	substream->private_data = pcm->private_data;
+@@ -1002,6 +1003,7 @@ void snd_pcm_detach_substream(struct snd_pcm_substream *substream)
+ 	} else {
+ 		substream->runtime = NULL;
+ 	}
++	mutex_destroy(&runtime->buffer_mutex);
+ 	kfree(runtime);
+ 	put_pid(substream->pid);
+ 	substream->pid = NULL;
+diff --git a/sound/core/pcm_native.c b/sound/core/pcm_native.c
+index a056b3ef3c84..266895374b83 100644
+--- a/sound/core/pcm_native.c
++++ b/sound/core/pcm_native.c
+@@ -685,33 +685,40 @@ static int snd_pcm_hw_params_choose(struct snd_pcm_substream *pcm,
+ 	return 0;
+ }
+ 
++#if IS_ENABLED(CONFIG_SND_PCM_OSS)
++#define is_oss_stream(substream)	((substream)->oss.oss)
++#else
++#define is_oss_stream(substream)	false
++#endif
++
+ static int snd_pcm_hw_params(struct snd_pcm_substream *substream,
+ 			     struct snd_pcm_hw_params *params)
+ {
+ 	struct snd_pcm_runtime *runtime;
+-	int err, usecs;
++	int err = 0, usecs;
+ 	unsigned int bits;
+ 	snd_pcm_uframes_t frames;
+ 
+ 	if (PCM_RUNTIME_CHECK(substream))
+ 		return -ENXIO;
+ 	runtime = substream->runtime;
++	mutex_lock(&runtime->buffer_mutex);
+ 	snd_pcm_stream_lock_irq(substream);
+ 	switch (runtime->status->state) {
+ 	case SNDRV_PCM_STATE_OPEN:
+ 	case SNDRV_PCM_STATE_SETUP:
+ 	case SNDRV_PCM_STATE_PREPARED:
++		if (!is_oss_stream(substream) &&
++		    atomic_read(&substream->mmap_count))
++			err = -EBADFD;
+ 		break;
+ 	default:
+-		snd_pcm_stream_unlock_irq(substream);
+-		return -EBADFD;
++		err = -EBADFD;
++		break;
+ 	}
+ 	snd_pcm_stream_unlock_irq(substream);
+-#if IS_ENABLED(CONFIG_SND_PCM_OSS)
+-	if (!substream->oss.oss)
+-#endif
+-		if (atomic_read(&substream->mmap_count))
+-			return -EBADFD;
++	if (err)
++		goto unlock;
+ 
+ 	snd_pcm_sync_stop(substream, true);
+ 
+@@ -799,16 +806,21 @@ static int snd_pcm_hw_params(struct snd_pcm_substream *substream,
+ 	if (usecs >= 0)
+ 		cpu_latency_qos_add_request(&substream->latency_pm_qos_req,
+ 					    usecs);
+-	return 0;
++	err = 0;
+  _error:
+-	/* hardware might be unusable from this time,
+-	   so we force application to retry to set
+-	   the correct hardware parameter settings */
+-	snd_pcm_set_state(substream, SNDRV_PCM_STATE_OPEN);
+-	if (substream->ops->hw_free != NULL)
+-		substream->ops->hw_free(substream);
+-	if (substream->managed_buffer_alloc)
+-		snd_pcm_lib_free_pages(substream);
++	if (err) {
++		/* hardware might be unusable from this time,
++		 * so we force application to retry to set
++		 * the correct hardware parameter settings
++		 */
++		snd_pcm_set_state(substream, SNDRV_PCM_STATE_OPEN);
++		if (substream->ops->hw_free != NULL)
++			substream->ops->hw_free(substream);
++		if (substream->managed_buffer_alloc)
++			snd_pcm_lib_free_pages(substream);
++	}
++ unlock:
++	mutex_unlock(&runtime->buffer_mutex);
+ 	return err;
+ }
+ 
+@@ -848,26 +860,31 @@ static int do_hw_free(struct snd_pcm_substream *substream)
+ static int snd_pcm_hw_free(struct snd_pcm_substream *substream)
+ {
+ 	struct snd_pcm_runtime *runtime;
+-	int result;
++	int result = 0;
+ 
+ 	if (PCM_RUNTIME_CHECK(substream))
+ 		return -ENXIO;
+ 	runtime = substream->runtime;
++	mutex_lock(&runtime->buffer_mutex);
+ 	snd_pcm_stream_lock_irq(substream);
+ 	switch (runtime->status->state) {
+ 	case SNDRV_PCM_STATE_SETUP:
+ 	case SNDRV_PCM_STATE_PREPARED:
++		if (atomic_read(&substream->mmap_count))
++			result = -EBADFD;
+ 		break;
+ 	default:
+-		snd_pcm_stream_unlock_irq(substream);
+-		return -EBADFD;
++		result = -EBADFD;
++		break;
+ 	}
+ 	snd_pcm_stream_unlock_irq(substream);
+-	if (atomic_read(&substream->mmap_count))
+-		return -EBADFD;
++	if (result)
++		goto unlock;
+ 	result = do_hw_free(substream);
+ 	snd_pcm_set_state(substream, SNDRV_PCM_STATE_OPEN);
+ 	cpu_latency_qos_remove_request(&substream->latency_pm_qos_req);
++ unlock:
++	mutex_unlock(&runtime->buffer_mutex);
+ 	return result;
+ }
+ 
+-- 
+2.31.1
+
