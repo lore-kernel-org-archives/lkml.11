@@ -2,95 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E6C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 02:04:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E500BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 02:07:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235294AbiCVCFt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 22:05:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34912 "EHLO
+        id S235350AbiCVCJT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 22:09:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235230AbiCVCFq (ORCPT
+        with ESMTP id S235253AbiCVCJS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 22:05:46 -0400
-Received: from gateway30.websitewelcome.com (gateway30.websitewelcome.com [192.185.146.7])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1334C32D202
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 19:03:13 -0700 (PDT)
-Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
-        by gateway30.websitewelcome.com (Postfix) with ESMTP id 00AB76195
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 21:02:53 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id WTpLn4RWF9AGSWTpLn1t1l; Mon, 21 Mar 2022 21:00:52 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
-        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
-        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=g27MsJHa78gn5+i9iDqdRbBSflWAeb93cHCQigYjrhk=; b=Jq/buYjAyf6+CSbWJimBgL9cOV
-        ZEMliHmHVMIERmMhqiS//xix/zxFgK4bcmrzbglwMiiRzbY1x2MiNrXtGAvgLFwjUXl9z1IOsVjb4
-        nXd6Cra51fNJFVkpZ9FLeHU2Xge9d7Eik2dazhQAyXaabxU0lNS0JtD/AEgQphDnwy+cV+Ck+rtj3
-        4NrSoi66xR2kGtGBVk6hik7wl8DzD2nSPKDQ3c1QtJS6HvNME4T3Uwaq0wwEVIirqlX1/8kc61Y+m
-        DyGA4P5ehM6dQlEDgGt5xRl+dN2flbL3FYL+E0Y9NVEnEJiWnfRiUuLRZt8onxbtzEbjradiLWTrL
-        z5UnrVyQ==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57592 helo=localhost)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nWTpL-0026my-4h; Tue, 22 Mar 2022 02:00:51 +0000
-Date:   Mon, 21 Mar 2022 19:00:49 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.15 00/32] 5.15.31-rc1 review
-Message-ID: <20220322020049.GF4126967@roeck-us.net>
-References: <20220321133220.559554263@linuxfoundation.org>
+        Mon, 21 Mar 2022 22:09:18 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FB2D1659F
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 19:07:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647914859; x=1679450859;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=4QHTQqOCfuHh34BV23OvUlXLlh99QNGEm5Xas8FhS9U=;
+  b=LLKRerU75/t+ff9WyjXZXbv9OdBQpq12UJQDKtwZJN8LgyA9DXE9JJWP
+   SVX8JG1C6/fwznIsKTriHQogwSaHPgl+qeXAx3jExPgjkXqN+8Tkd/NXf
+   waJrjplUIMjBb/iUa04jeC2G8hn7OOM1oi5jPQAOhMpx60guZEdczvhgk
+   Rz76TxZfTVra3pxBQeQIcTs4prxHa7SB8sK7M+S5YL5T95i2IqP2QnYmA
+   PEPb26I3DgBj2302ORU2SVoaK+zLssr2FICUw+yqcZrUSnEeC1/pv1wu6
+   hayeoYhfzmB9Z7R6dT+44Y5RSLhTAAEaeYr2x2xCg8eWP3TWPwSx2rLnA
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="257647575"
+X-IronPort-AV: E=Sophos;i="5.90,200,1643702400"; 
+   d="scan'208";a="257647575"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 19:07:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,200,1643702400"; 
+   d="scan'208";a="648795930"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 21 Mar 2022 19:07:37 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nWTvt-000IM0-0u; Tue, 22 Mar 2022 02:07:37 +0000
+Date:   Tue, 22 Mar 2022 10:07:14 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Jason A. Donenfeld" <zx2c4@kernel.org>
+Cc:     kbuild-all@lists.01.org, build@wireguard.com,
+        linux-kernel@vger.kernel.org
+Subject: [zx2c4-wireguard:devel 1/2] lib/crypto/poly1305-selftest.c:1043:13:
+ warning: no previous prototype for 'poly1305_selftest'
+Message-ID: <202203221028.sbW0FzME-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220321133220.559554263@linuxfoundation.org>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nWTpL-0026my-4h
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57592
-X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 25
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 02:52:36PM +0100, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.31 release.
-> There are 32 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 23 Mar 2022 13:32:09 +0000.
-> Anything received after that time might be too late.
-> 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/zx2c4/wireguard-linux.git devel
+head:   85edbe4cea2a4446b6425d67a00c04dce142b2f2
+commit: 957612a1219877cad2e0fd43f89dea54575db069 [1/2] crypto: poly1305 - add library selftests
+config: nds32-randconfig-m031-20220321 (https://download.01.org/0day-ci/archive/20220322/202203221028.sbW0FzME-lkp@intel.com/config)
+compiler: nds32le-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/zx2c4/wireguard-linux.git/commit/?id=957612a1219877cad2e0fd43f89dea54575db069
+        git remote add zx2c4-wireguard https://git.kernel.org/pub/scm/linux/kernel/git/zx2c4/wireguard-linux.git
+        git fetch --no-tags zx2c4-wireguard devel
+        git checkout 957612a1219877cad2e0fd43f89dea54575db069
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nds32 SHELL=/bin/bash lib/crypto/
 
-Build results:
-	total: 156 pass: 156 fail: 0
-Qemu test results:
-	total: 488 pass: 488 fail: 0
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Tested-by: Guenter Roeck <linux@roeck-us.net>
+All warnings (new ones prefixed by >>):
 
-Guenter
+>> lib/crypto/poly1305-selftest.c:1043:13: warning: no previous prototype for 'poly1305_selftest' [-Wmissing-prototypes]
+    1043 | bool __init poly1305_selftest(void)
+         |             ^~~~~~~~~~~~~~~~~
+
+
+vim +/poly1305_selftest +1043 lib/crypto/poly1305-selftest.c
+
+  1042	
+> 1043	bool __init poly1305_selftest(void)
+  1044	{
+  1045		bool success = true;
+  1046		size_t i, j;
+  1047	
+  1048		for (i = 0; i < ARRAY_SIZE(poly1305_testvecs); ++i) {
+  1049			struct poly1305_desc_ctx poly1305;
+  1050			u8 out[POLY1305_DIGEST_SIZE];
+  1051	
+  1052			memset(out, 0, sizeof(out));
+  1053			memset(&poly1305, 0, sizeof(poly1305));
+  1054			poly1305_init(&poly1305, poly1305_testvecs[i].key);
+  1055			poly1305_update(&poly1305, poly1305_testvecs[i].input,
+  1056					poly1305_testvecs[i].ilen);
+  1057			poly1305_final(&poly1305, out);
+  1058			if (memcmp(out, poly1305_testvecs[i].output,
+  1059				   POLY1305_DIGEST_SIZE)) {
+  1060				pr_err("poly1305 self-test %zu: FAIL\n", i + 1);
+  1061				success = false;
+  1062			}
+  1063	
+  1064			if (poly1305_testvecs[i].ilen <= 1)
+  1065				continue;
+  1066	
+  1067			for (j = 1; j < poly1305_testvecs[i].ilen - 1; ++j) {
+  1068				memset(out, 0, sizeof(out));
+  1069				memset(&poly1305, 0, sizeof(poly1305));
+  1070				poly1305_init(&poly1305, poly1305_testvecs[i].key);
+  1071				poly1305_update(&poly1305, poly1305_testvecs[i].input, j);
+  1072				poly1305_update(&poly1305,
+  1073						poly1305_testvecs[i].input + j,
+  1074						poly1305_testvecs[i].ilen - j);
+  1075				poly1305_final(&poly1305, out);
+  1076				if (memcmp(out, poly1305_testvecs[i].output,
+  1077					   POLY1305_DIGEST_SIZE)) {
+  1078					pr_err("poly1305 self-test %zu (split %zu): FAIL\n",
+  1079					       i + 1, j);
+  1080					success = false;
+  1081				}
+  1082	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
