@@ -2,200 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94097C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 11:53:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E37C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 11:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234514AbiCVLyl convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 07:54:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42670 "EHLO
+        id S234454AbiCVL7M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 07:59:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234665AbiCVLyV (ORCPT
+        with ESMTP id S229484AbiCVL7L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 07:54:21 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4075985675
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 04:52:46 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-401-rM2dEyRPOySuFi2zcClhJw-1; Tue, 22 Mar 2022 11:52:43 +0000
-X-MC-Unique: rM2dEyRPOySuFi2zcClhJw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Tue, 22 Mar 2022 11:52:43 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Tue, 22 Mar 2022 11:52:43 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Ammar Faizi' <ammarfaizi2@gnuweeb.org>, Willy Tarreau <w@1wt.eu>
-CC:     "Paul E. McKenney" <paulmck@kernel.org>,
-        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
-        Nugraha <richiisei@gmail.com>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>
-Subject: RE: [RFC PATCH v2 6/8] tools/nolibc/stdlib: Implement `malloc()`,
- `calloc()`, `realloc()` and `free()`
-Thread-Topic: [RFC PATCH v2 6/8] tools/nolibc/stdlib: Implement `malloc()`,
- `calloc()`, `realloc()` and `free()`
-Thread-Index: AQHYPdaybn74E+3FG0GW9mJht1aJxazLSY+g
-Date:   Tue, 22 Mar 2022 11:52:43 +0000
-Message-ID: <56935393241242adab6f32c50dd74c23@AcuMS.aculab.com>
-References: <20220322102115.186179-1-ammarfaizi2@gnuweeb.org>
- <20220322102115.186179-7-ammarfaizi2@gnuweeb.org>
-In-Reply-To: <20220322102115.186179-7-ammarfaizi2@gnuweeb.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Tue, 22 Mar 2022 07:59:11 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D2F323BE0
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 04:57:44 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id h16so10050102wmd.0
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 04:57:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=hLtfvRdZCZE7DrPVlS8YfsRhGZmzIPo7skcuEYSO4hw=;
+        b=j+9e3zTSe7YMjvusq8VyhZY8Obm1Kcc84Veo/LfnBMvLWNPygsyrEsf+RY0OIJLaFq
+         2qrQXWhRsxbJStpyY1JXXNOpzqUs4y9+tbRNniXopvJSP4ZIKD4g4f/mg/fQV7uzARsQ
+         A6biV9wAj972M4YbMUVyHjZNliIG5QZI2oZNIGMV1waqfp2D5sNp1G5is4pS3hDHy0Wv
+         Ch/lV6rhzQxdqpDjOdf9zM3vMdVZuN29JoaNmAnD9i8HYWK/gYQHuBM+xRk9M84sLOK+
+         18oShMvbAI6J+YyNyMl4sFCFFVIzwl9a0MxmOjckbFGduxwz2vGqZuARwkxYRyZ1YqB9
+         0u3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=hLtfvRdZCZE7DrPVlS8YfsRhGZmzIPo7skcuEYSO4hw=;
+        b=a0iFpW4JuZpyA4smzgsHU+GE7sLLXFyBfHaeAxv+VFy+03ue4nob5b9LchwSKwPe+S
+         fRTKzpW/NQogPTn5jQBuRHYNxB88pTrF7r1VFDnXdLRbNsCLC/NgVvM/ZrcGNJ6afE5p
+         mG3/ZS+GRPga9a+k5IVsTaYiQlK658xpXpd43iG5kEArCoK62J7VwgXKnWrc6uD4LKsp
+         xuI0gdpFMa4AdZdhmsFUP9ofeZcI2ZhuBxcl7YhcQ6D0b64yU+cPMHIbJndF7jxd179z
+         UgM+vV1mgKyjPWHXwSqZwxqSi63CeS5gMf+YAR0+n4QBW7MGurnkkU/MPg3jluqKG0eH
+         S/3A==
+X-Gm-Message-State: AOAM530p7ep5/up1VtQPYL/u5UKVM157AOdUOrlWU3VftSPcJZcd4TNZ
+        cQHdUrdJxl08ZdQCB30icDvmlg==
+X-Google-Smtp-Source: ABdhPJyNqqUErWG52sDeu7pVzR3d0PgnXUIIgLZtllrYMoG+RJX1I7Iq+B2wvNyxlO0RIJXxVMt8TQ==
+X-Received: by 2002:a05:600c:3b86:b0:38c:afdf:66cd with SMTP id n6-20020a05600c3b8600b0038cafdf66cdmr3361285wms.198.1647950262573;
+        Tue, 22 Mar 2022 04:57:42 -0700 (PDT)
+Received: from google.com (110.121.148.146.bc.googleusercontent.com. [146.148.121.110])
+        by smtp.gmail.com with ESMTPSA id w5-20020a5d5445000000b00203f8c96bcesm9981236wrv.49.2022.03.22.04.57.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Mar 2022 04:57:41 -0700 (PDT)
+Date:   Tue, 22 Mar 2022 12:57:38 +0100
+From:   "Steinar H. Gunderson" <sesse@google.com>
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] perf intel-pt: Synthesize cycle events
+Message-ID: <Yjm5stBpRC0g4G8s@google.com>
+References: <c50bb87d-9fee-c4f9-a350-8729e503e43a@intel.com>
+ <YjDUO6bbyfGw/u0C@google.com>
+ <52903e58-e74c-5ea0-36b4-277ea3610af4@intel.com>
+ <YjGdoGy4Z2UUG9S9@google.com>
+ <ef780335-7dc6-3a23-54a8-b6fc9c8a2ed3@intel.com>
+ <YjHfGrZovk3N/H0f@google.com>
+ <371faf0d-f794-4a2e-0a1c-9d454d7c8b12@intel.com>
+ <YjhUjotmo+kYvoNP@google.com>
+ <ffa56520-09b5-9c5d-7733-6767d2f8e350@intel.com>
+ <YjiuoEUL6jH32cBi@google.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YjiuoEUL6jH32cBi@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ammar Faizi
-> Sent: 22 March 2022 10:21
-> 
-> Implement basic dynamic allocator functions. These functions are
-> currently only available on architectures that have nolibc mmap()
-> syscall implemented. These are not a super-fast memory allocator,
-> but at least they can satisfy basic needs for having heap without
-> libc.
-> 
-> Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
-> ---
-> 
-> @@ Changelog:
-> 
->    Link: https://lore.kernel.org/lkml/20220320093750.159991-6-ammarfaizi2@gnuweeb.org
->    RFC v1 -> RFC v2:
->     - Move container_of() and offsetof() macro to types.h with a
->       separate patch (comment from Willy).
-> ---
->  tools/include/nolibc/stdlib.h | 68 +++++++++++++++++++++++++++++++++++
->  1 file changed, 68 insertions(+)
-> 
-> diff --git a/tools/include/nolibc/stdlib.h b/tools/include/nolibc/stdlib.h
-> index aca8616335e3..a0ed75431e0a 100644
-> --- a/tools/include/nolibc/stdlib.h
-> +++ b/tools/include/nolibc/stdlib.h
-> @@ -11,7 +11,12 @@
->  #include "arch.h"
->  #include "types.h"
->  #include "sys.h"
-> +#include "string.h"
-> 
-> +struct nolibc_heap {
-> +	size_t	len;
-> +	char	user_p[] __attribute__((__aligned__));
+On Mon, Mar 21, 2022 at 05:58:08PM +0100, Steinar H. Gunderson wrote:
+> but I'm seeing problems with “failing to process sample” when I go from
+> 10us to 1us, so I'll have to look into that.
 
-Doesn't that need (number) in the attribute?
+I took a debug log from perf report; the last few lines are (I abridged
+some symbol names):
 
-> +};
-> 
->  /* Buffer used to store int-to-ASCII conversions. Will only be implemented if
->   * any of the related functions is implemented. The area is large enough to
-> @@ -60,6 +65,18 @@ int atoi(const char *s)
->  	return atol(s);
->  }
-> 
-> +static __attribute__((unused))
-> +void free(void *ptr)
-> +{
-> +	struct nolibc_heap *heap;
-> +
-> +	if (!ptr)
-> +		return;
-> +
-> +	heap = container_of(ptr, struct nolibc_heap, user_p);
-> +	munmap(heap, heap->len);
-> +}
-> +
->  /* Tries to find the environment variable named <name> in the environment array
->   * pointed to by global variable "environ" which must be declared as a char **,
->   * and must be terminated by a NULL (it is recommended to set this variable to
-> @@ -205,6 +222,57 @@ char *ltoa(long in)
->  	return itoa_buffer;
->  }
-> 
-> +static __attribute__((unused))
-> +void *malloc(size_t len)
-> +{
-> +	struct nolibc_heap *heap;
+symbol__new: cppgc::internal::MemberBase::GetRaw() const 0x6078a90-0x60792d0
+symbol__new: cppgc::internal::BasicMember<...>::Get() const 0x6078a90-0x60792d0
+symbol__new: cppgc::internal::BasicMember<...>::operator->() const 0x6078a90-0x60792d0
+__symbol__inc_addr_samples: addr=0x5561dc37cbf6
+__symbol__inc_addr_samples(896): ERANGE! sym->name=void blink::ElementRuleCollector::CollectMatchingRulesForList<...>(...), start=0x6074310, addr=0x6078bf6, end=0x6078a90
+problem adding hist entry, skipping event
+Intel PT: failed to deliver event, error -34
+0x5739a8 [0x8]: failed to process type: 68 [Numerical result out of range]
 
-If you do (say):
-	len = ROUNDUP(len + sizeof *heap, 4096)
-you can optimise a lot of the realloc() calls.
+and this is evidently fatal. So for whatever reason, the sample address
+is attributed to some symbol, and that symbol is assumed to have a
+single range (is this even necessarily true?), we refuse the event,
+and then we fail the entire report. (It doesn't happen with --stdio,
+though!)
 
-I actually wonder if compiling a mini-libc.a
-and then linking the programs against it might
-be better than all these static functions?
--ffunction-sections can help a bit (where supported).
+I'm a bit at a loss how to debug this. It doesn't happen without the
+inlines being synthesized, but I don't know if there's something wrong
+with it, or if it's just the symptom (I've certainly seen “failed to
+process sample” without PT before).
 
-	David
-	
-> +
-> +	heap = mmap(NULL, sizeof(*heap) + len, PROT_READ|PROT_WRITE,
-> +		    MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
-> +	if (__builtin_expect(heap == MAP_FAILED, 0))
-> +		return NULL;
-> +
-> +	heap->len = sizeof(*heap) + len;
-> +	return heap->user_p;
-> +}
-> +
-> +static __attribute__((unused))
-> +void *calloc(size_t size, size_t nmemb)
-> +{
-> +	void *orig;
-> +	size_t res = 0;
-> +
-> +	if (__builtin_expect(__builtin_mul_overflow(nmemb, size, &res), 0)) {
-> +		SET_ERRNO(ENOMEM);
-> +		return NULL;
-> +	}
-> +
-> +	/*
-> +	 * No need to zero the heap, the MAP_ANONYMOUS in malloc()
-> +	 * already does it.
-> +	 */
-> +	return malloc(res);
-> +}
-> +
-> +static __attribute__((unused))
-> +void *realloc(void *old_ptr, size_t new_size)
-> +{
-> +	struct nolibc_heap *heap;
-> +	void *ret;
-> +
-> +	ret = malloc(new_size);
-> +	if (__builtin_expect(!ret, 0))
-> +		return NULL;
-> +
-> +	if (!old_ptr)
-> +		return ret;
-> +
-> +	heap = container_of(old_ptr, struct nolibc_heap, user_p);
-> +	memcpy(ret, heap->user_p, heap->len);
-> +	munmap(heap, heap->len);
-> +	return ret;
-> +}
-> +
->  /* converts unsigned long integer <in> to a string using the static itoa_buffer
->   * and returns the pointer to that string.
->   */
-> --
-> Ammar Faizi
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+/* Steinar */
