@@ -2,116 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67E36C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 14:42:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8680FC3527C
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 14:42:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238102AbiCVOmp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 10:42:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40794 "EHLO
+        id S238074AbiCVOnf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 10:43:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238064AbiCVOml (ORCPT
+        with ESMTP id S238095AbiCVOml (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 22 Mar 2022 10:42:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62F2285BF1;
-        Tue, 22 Mar 2022 07:41:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 742C5616D9;
-        Tue, 22 Mar 2022 14:41:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2468C340EC;
-        Tue, 22 Mar 2022 14:40:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647960062;
-        bh=WR+ViwuRqnCNHeWZRXz67/g9MyXNDCz9XQM2h/2HeVE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S/VIFryMNJMFV/I8i+eo0QdCeg4pc+VG0av2aVlxvC18mXiiD9qOREEiJV748aNaL
-         TmSgxyUXSsLgJTh+wOrNdLsLwFih7pOk83KfL85gUyRxjh7pbVBpkulERfsEE38dnS
-         CZeIHv8+xVv19GlvjvkdxvZGBpmtKwXTvsBWUPt3Z5tyeUCzYdBvSHbpoAFeUb0uyU
-         OLeY76e7zfN9c4Et9ClcQvVhwCIXx4jN1ScUL6XDLLKCsheoQcQ/Ai/gPbqXk3mHFR
-         qdZQ8bJbLG+bj39L4sn2aeA/p2UIJ+49ZJ4D/qXg0lHDTZgvkMvVltV0Lta6S3VF10
-         +nwDiWD10hL+g==
-From:   guoren@kernel.org
-To:     guoren@kernel.org, palmer@dabbelt.com, arnd@arndb.de,
-        gregkh@linuxfoundation.org, hch@lst.de
-Cc:     linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-csky@vger.kernel.org,
-        linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-parisc@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        x86@kernel.org, heiko@sntech.de, Guo Ren <guoren@linux.alibaba.com>
-Subject: [PATCH V9 07/20] syscalls: compat: Fix the missing part for __SYSCALL_COMPAT
-Date:   Tue, 22 Mar 2022 22:39:50 +0800
-Message-Id: <20220322144003.2357128-8-guoren@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220322144003.2357128-1-guoren@kernel.org>
-References: <20220322144003.2357128-1-guoren@kernel.org>
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 227E78930C;
+        Tue, 22 Mar 2022 07:41:09 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id x34so20762162ede.8;
+        Tue, 22 Mar 2022 07:41:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OzyTaasiO8jKwxHbdxBCj4qwgrblVvgvVf/SVRqTgd0=;
+        b=ekdWaU3QDKePVgnBed2hzRqhGz5Qeu/183EdI12go49UJyJ1bFqc57tT9tW5TaDytI
+         3s82S4vVZoTzakk/CpjzL4O75/EzxiAWdzEwMiWgf2Lta4QhLu0Lsl0j3znXGlkTOIaf
+         srM79z7DK/H/SNs2gRUYhVno/Gvozxqee6t0KB99t3/7+V8GPQKq8/jwpq9aaATb7Jjl
+         ZokV6pTht5oV3wdv07eko4EOO2yhKue98E8Xfh3eQVki0CcUj1/rESZmGMC5Ny4dsbRk
+         oASc4jJIhraUepd+cQpasQWk+8w/EqIgDIuvgIpZIe1EQhb70HABDGOk3J4pOOPX1zu4
+         Eelg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OzyTaasiO8jKwxHbdxBCj4qwgrblVvgvVf/SVRqTgd0=;
+        b=WneydY55qWXO2Bj06IhFHOJsKfPlBhBOhXhN+EHXn7A6gPov3NsTO+NlpPKGbG1LTM
+         ZcsdpHDq/cgYBunBzBGekbRHgJY46AQ+PmIPmC8KISoxSytRkjP4hJHmM4JQ7F17Jfti
+         gNTX0icOnQGshDJ8k9DTrillPzwDpetj8QSnvMJ/mLcDRBJ9Ailylj10uNJwmdLTonGv
+         /WXVl+UJFmGXMOaLUfsIl7Dhk7mMh+00u3MOKhbyRbt8MIrxKo+dj1qIWRaG06nNtP1L
+         SoT/2fes3O4afU8XVHg1t75eI+rXob+QFDBvJmA39ILPzXbmcj6QVf3gW8A15UIbNqLp
+         9pMA==
+X-Gm-Message-State: AOAM533rJUpK0Dr5HTkr7hC300pl2/gDGv8HP4oCUcWDdJiCx3LYPtii
+        Lw5x8axWUOLAM/f5SA0tlZBcCyoMzazCYXAjdSM=
+X-Google-Smtp-Source: ABdhPJzdAIkFASoexhx9ghd9uoqOIfZ4rY1nnGow0Ezbv59oe8/Dpew/t5rSUL6LsutpjDZX15IsCS0wdmCoxBamQiw=
+X-Received: by 2002:a05:6402:d7:b0:413:673:ba2f with SMTP id
+ i23-20020a05640200d700b004130673ba2fmr28858146edu.29.1647960067499; Tue, 22
+ Mar 2022 07:41:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220310150905.1.Ie0a005d7a763d501e03b7abe8ee968ca99d23282@changeid>
+ <CAMRc=McbY6vK_M9fP7Hzg8LE9ANOZKN49hmBFn92YFH+2ToM8w@mail.gmail.com>
+In-Reply-To: <CAMRc=McbY6vK_M9fP7Hzg8LE9ANOZKN49hmBFn92YFH+2ToM8w@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 22 Mar 2022 16:39:57 +0200
+Message-ID: <CAHp75Vf8ktdCYTAULz2j-3CPON75707TpwV0FDL36V_GQ4Ttgw@mail.gmail.com>
+Subject: Re: [PATCH] gpio: Drop CONFIG_DEBUG_GPIO
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Brian Norris <briannorris@chromium.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Jianqun Xu <jay.xu@rock-chips.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ren <guoren@linux.alibaba.com>
+On Mon, Mar 14, 2022 at 6:35 PM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
+> On Fri, Mar 11, 2022 at 12:09 AM Brian Norris <briannorris@chromium.org> wrote:
 
-Make "uapi asm unistd.h" could be used for architectures' COMPAT
-mode. The __SYSCALL_COMPAT is first used in riscv.
+> I like it. It's true we don't see many of those DEBUG constructs
+> anymore nowadays and overhead for might_sleep() and WARN_ON() is
+> negligible.
 
-Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-Signed-off-by: Guo Ren <guoren@kernel.org>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Tested-by: Heiko Stuebner <heiko@sntech.de>
----
- include/uapi/asm-generic/unistd.h       | 4 ++--
- tools/include/uapi/asm-generic/unistd.h | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+I don't like the part about removing -DDEBUG at all.
 
-diff --git a/include/uapi/asm-generic/unistd.h b/include/uapi/asm-generic/unistd.h
-index 1c48b0ae3ba3..45fa180cc56a 100644
---- a/include/uapi/asm-generic/unistd.h
-+++ b/include/uapi/asm-generic/unistd.h
-@@ -383,7 +383,7 @@ __SYSCALL(__NR_syslog, sys_syslog)
- 
- /* kernel/ptrace.c */
- #define __NR_ptrace 117
--__SYSCALL(__NR_ptrace, sys_ptrace)
-+__SC_COMP(__NR_ptrace, sys_ptrace, compat_sys_ptrace)
- 
- /* kernel/sched/core.c */
- #define __NR_sched_setparam 118
-@@ -779,7 +779,7 @@ __SYSCALL(__NR_rseq, sys_rseq)
- #define __NR_kexec_file_load 294
- __SYSCALL(__NR_kexec_file_load,     sys_kexec_file_load)
- /* 295 through 402 are unassigned to sync up with generic numbers, don't use */
--#if __BITS_PER_LONG == 32
-+#if defined(__SYSCALL_COMPAT) || __BITS_PER_LONG == 32
- #define __NR_clock_gettime64 403
- __SYSCALL(__NR_clock_gettime64, sys_clock_gettime)
- #define __NR_clock_settime64 404
-diff --git a/tools/include/uapi/asm-generic/unistd.h b/tools/include/uapi/asm-generic/unistd.h
-index 1c48b0ae3ba3..45fa180cc56a 100644
---- a/tools/include/uapi/asm-generic/unistd.h
-+++ b/tools/include/uapi/asm-generic/unistd.h
-@@ -383,7 +383,7 @@ __SYSCALL(__NR_syslog, sys_syslog)
- 
- /* kernel/ptrace.c */
- #define __NR_ptrace 117
--__SYSCALL(__NR_ptrace, sys_ptrace)
-+__SC_COMP(__NR_ptrace, sys_ptrace, compat_sys_ptrace)
- 
- /* kernel/sched/core.c */
- #define __NR_sched_setparam 118
-@@ -779,7 +779,7 @@ __SYSCALL(__NR_rseq, sys_rseq)
- #define __NR_kexec_file_load 294
- __SYSCALL(__NR_kexec_file_load,     sys_kexec_file_load)
- /* 295 through 402 are unassigned to sync up with generic numbers, don't use */
--#if __BITS_PER_LONG == 32
-+#if defined(__SYSCALL_COMPAT) || __BITS_PER_LONG == 32
- #define __NR_clock_gettime64 403
- __SYSCALL(__NR_clock_gettime64, sys_clock_gettime)
- #define __NR_clock_settime64 404
+> Applied, thanks!
+
+Shall I send a partial revert?
+
 -- 
-2.25.1
-
+With Best Regards,
+Andy Shevchenko
