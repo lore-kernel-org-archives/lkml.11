@@ -2,110 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6CCEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 18:18:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1324C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 18:19:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237207AbiCVSTz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 14:19:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52198 "EHLO
+        id S238892AbiCVSUr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 14:20:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236377AbiCVSTv (ORCPT
+        with ESMTP id S234340AbiCVSUo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 14:19:51 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6DAA4704C
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 11:18:22 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id u3so1500417wrg.3
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 11:18:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=conchuod-ie.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Au0wuGbmyZQRc3YRooDi+lrIszQt6rNnlcrfEDXqtwM=;
-        b=mXhuIMjn3uChtCcb9K8CZhFjjPYtbSBGn8NMsUNFxDideafXuSwJUpedM6R5NkuD41
-         FWodwy/Zvv2BSJCJ6e32JpS18fFx7FY0lvk37TkItGCwdtB+yU5idyhXuiemVKE18V0C
-         l0QquQJW2o06l3mJTYCKgD3MpzmwURJInuRHOM7HTvRdIxV6/dKbwY9BEuIJdlyqLswQ
-         yu7D6bN6COkQhTMw+tRbDgkQycyMvHZLHG/AH8r/GHfE9g148SbWHA7YERGAvqYSLwn3
-         v0FU5xXPaWOTSku+mt5Szj0T2gQQXoVEKOnOWDR7bAukdFSUyKm3n3XOLAHcO2q3zcsw
-         dfoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Au0wuGbmyZQRc3YRooDi+lrIszQt6rNnlcrfEDXqtwM=;
-        b=ERxuG7sZFPtmKzXq8ZrAu48UdLBemf6uVslrvjbiYd+S1Ro22aT6IdLNcdK+7Y5mTO
-         1D6OWYwdWuvoZ01JW4nMv4fXL3zsrQQBB9duMuRD35V3tqaLMyOMXgX5BBNhs0jXF9JJ
-         km3MY+bfbGPWUHhDwIm3l5p9rg4hEkVTNg8ow0Q475TZY+LtoHsWno0RY0IJb3Y9fSO1
-         wkVOlVHRoD7pTKN188J85I+yGBgSNKBO/I0Froaqmc7/vcmWYvev93AgxabnyeyFMUua
-         qj33S4Buk8PHCPL5iOEtgx9n2THL1RdKFI3DOJK4us+Id6J7c47Ck8nwatSTJcSQqIXd
-         FhAA==
-X-Gm-Message-State: AOAM530zZ0MvhmxiHMJs4Jzi00r+hAZJZQygB+uDsGkeeK94sOUT86+h
-        WAehJRrULwHjpgyMcJ9PG2RCcA==
-X-Google-Smtp-Source: ABdhPJzo+v251N7F/kHeIIlbL9L7OkMaXL6JiW+aiVCl9WMXHup3N+5Shv6bcH5nGjpVfy+o5CVcdw==
-X-Received: by 2002:adf:fe8d:0:b0:203:e02e:c6c7 with SMTP id l13-20020adffe8d000000b00203e02ec6c7mr23986364wrr.37.1647973101291;
-        Tue, 22 Mar 2022 11:18:21 -0700 (PDT)
-Received: from [192.168.2.116] ([109.76.4.19])
-        by smtp.gmail.com with ESMTPSA id z13-20020a5d440d000000b00203f2b010b1sm11796069wrq.44.2022.03.22.11.18.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Mar 2022 11:18:20 -0700 (PDT)
-Message-ID: <c0328672-6dd1-b65b-1e2f-6f2562084f2d@conchuod.ie>
-Date:   Tue, 22 Mar 2022 18:18:18 +0000
+        Tue, 22 Mar 2022 14:20:44 -0400
+X-Greylist: delayed 1346 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 22 Mar 2022 11:19:16 PDT
+Received: from gateway30.websitewelcome.com (gateway30.websitewelcome.com [192.185.197.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6BF96E8EA
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 11:19:16 -0700 (PDT)
+Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
+        by gateway30.websitewelcome.com (Postfix) with ESMTP id F206015D4A
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 12:56:48 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id WikSnFGGGRnrrWikSnbGx6; Tue, 22 Mar 2022 12:56:48 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=+7brRiRvYR2VidHiE43DL07dgBdAsSYPqfIk9b4TX/g=; b=StQ7WEwTCb/rt89VCe+LQ+ERB3
+        QXWawfzAKDTeBk43IYokD+KpmviLLj48HZ6Hdz6Gtv7W0x9SfXi41CA7r8C9zZ23Pvsjnaxrq96PA
+        Xh5IdeTdXhHHWO3QJNulu9uqk+8kZeiomOeJiD0ZWg6KT4wgh0R12OuxUioWkkDwKTiTnJM7JGJqi
+        +ZM34ZtPX8NXMvyTGRbVqdYCe+rcqabUesJcdWq64y6z4YsvRI4XcveyYK5C6Uds0zKkh0UxczVYc
+        t23ai+O230YiBstGhXLG2gwrDSTpEMCyE7845DZOyf22ZUtOxKleVeCYKKXbK5ah+HB8WeZaLyZTd
+        j2uEbZpQ==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54402)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nWikR-002XCh-MU; Tue, 22 Mar 2022 17:56:47 +0000
+Message-ID: <d5c23f68-30ba-a5eb-6bea-501736e79c88@roeck-us.net>
+Date:   Tue, 22 Mar 2022 10:56:44 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 0/5] Generic Ticket Spinlocks
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v1] random: block in /dev/urandom
 Content-Language: en-US
-To:     Palmer Dabbelt <palmer@rivosinc.com>,
-        linux-riscv@lists.infradead.org
-Cc:     jonas@southpole.se, stefan.kristiansson@saunalahti.fi,
-        shorne@gmail.com, mingo@redhat.com, Will Deacon <will@kernel.org>,
-        longman@redhat.com, boqun.feng@gmail.com,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>, aou@eecs.berkeley.edu,
-        Arnd Bergmann <arnd@arndb.de>, jszhang@kernel.org,
-        wangkefeng.wang@huawei.com, openrisc@lists.librecores.org,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        peterz@infradead.org
-References: <20220316232600.20419-1-palmer@rivosinc.com>
-From:   Conor Dooley <mail@conchuod.ie>
-In-Reply-To: <20220316232600.20419-1-palmer@rivosinc.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-arch@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>,
+        Nick Hu <nickhu@andestech.com>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Michal Simek <monstr@monstr.eu>,
+        Borislav Petkov <bp@alien8.de>, Guo Ren <guoren@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Joshua Kinard <kumba@gentoo.org>,
+        David Laight <David.Laight@aculab.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Lennart Poettering <mzxreary@0pointer.de>,
+        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Theodore Ts'o <tytso@mit.edu>
+References: <20220217162848.303601-1-Jason@zx2c4.com>
+ <20220322155820.GA1745955@roeck-us.net> <YjoC5kQMqyC/3L5Y@zx2c4.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <YjoC5kQMqyC/3L5Y@zx2c4.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nWikR-002XCh-MU
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54402
+X-Source-Auth: linux@roeck-us.net
+X-Email-Count: 33
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16/03/2022 23:25, Palmer Dabbelt wrote:
-> Peter sent an RFC out about a year ago
-> <https://lore.kernel.org/lkml/YHbBBuVFNnI4kjj3@hirez.programming.kicks-ass.net/>,
-> but after a spirited discussion it looks like we lost track of things.
-> IIRC there was broad consensus on this being the way to go, but there
-> was a lot of discussion so I wasn't sure.  Given that it's been a year,
-> I figured it'd be best to just send this out again formatted a bit more
-> explicitly as a patch.
+On 3/22/22 10:09, Jason A. Donenfeld wrote:
+> Hey Guenter,
 > 
-> This has had almost no testing (just a build test on RISC-V defconfig),
-> but I wanted to send it out largely as-is because I didn't have a SOB
-> from Peter on the code.  I had sent around something sort of similar in
-> spirit, but this looks completely re-written.  Just to play it safe I
-> wanted to send out almost exactly as it was posted.  I'd probably rename
-> this tspinlock and tspinlock_types, as the mis-match kind of makes my
-> eyes go funny, but I don't really care that much.  I'll also go through
-> the other ports and see if there's any more candidates, I seem to
-> remember there having been more than just OpenRISC but it's been a
-> while.
+> On Tue, Mar 22, 2022 at 08:58:20AM -0700, Guenter Roeck wrote:
+>> On Thu, Feb 17, 2022 at 05:28:48PM +0100, Jason A. Donenfeld wrote:
+>>> This topic has come up countless times, and usually doesn't go anywhere.
+>>> This time I thought I'd bring it up with a slightly narrower focus,
+>>> updated for some developments over the last three years: we finally can
+>>> make /dev/urandom always secure, in light of the fact that our RNG is
+>>> now always seeded.
+>>>
+>>
+>> [ ... ]
+>>
+>> This patch (or a later version of it) made it into mainline and causes a
+>> large number of qemu boot test failures for various architectures (arm,
+>> m68k, microblaze, sparc32, xtensa are the ones I observed). Common
+>> denominator is that boot hangs at "Saving random seed:". A sample bisect
+>> log is attached. Reverting this patch fixes the problem.
 > 
-> I'm in no big rush for this and given the complex HW dependencies I
-> think it's best to target it for 5.19, that'd give us a full merge
-> window for folks to test/benchmark it on their systems to make sure it's
-> OK.
+> As Linus said, it was worth a try, but I guess it just didn't work. For
+> my own curiosity, though, do you have a link to those QEMU VMs you could
+> share? I'd sort of like to poke around, and if we do ever reattempt this
+> sometime down the road, it seems like understanding everything about why
+> the previous time failed might be a good idea.
+> 
 
-Is there a specific way you have been testing/benching things, or is it 
-just a case of test what we ourselves care about?
+Everything - including the various root file systems - is at
+git@github.com:groeck/linux-build-test.git. Look into rootfs/ for the
+various boot tests. I'll be happy to provide some qemu command lines
+if needed.
 
-Thanks,
-Conor.
-
-> RISC-V has a forward progress guarantee so we should be safe, but
-> these can always trip things up.
+Guenter
