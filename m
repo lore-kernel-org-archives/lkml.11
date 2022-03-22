@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C34B8C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 15:18:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 998EAC4167D
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 15:19:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238423AbiCVPU0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 11:20:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35692 "EHLO
+        id S238442AbiCVPU2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 11:20:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232906AbiCVPUW (ORCPT
+        with ESMTP id S231368AbiCVPUW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 22 Mar 2022 11:20:22 -0400
 Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F8EA5AEEE;
-        Tue, 22 Mar 2022 08:18:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 846535B3C8;
+        Tue, 22 Mar 2022 08:18:54 -0700 (PDT)
 Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22MCnUfC013136;
-        Tue, 22 Mar 2022 10:18:39 -0500
+        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22MCnUfJ013136;
+        Tue, 22 Mar 2022 10:18:45 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=PODMain02222019;
- bh=pAESqVmG+wUGs5ZQth8dL+0iG0WS7AgiO/N1TkpwKJY=;
- b=gOaYQoDFwPILbkgtTbhlhvMTKEYaRYKm4c69yC1ULmyOMrYmL7+LQSCdTQQo4WwI5TXg
- IQH/ew5aoRQk8PRz8OPShuW6i5jhUtL3D7Y5knc4dZfA9RGbrwSE1FhFyD3p/2nEX9YI
- huPMub9hDupsdM3YGCHPQuBntrPKZu84yHf99Hd6xdmRgozzpuUC2+Ffia1T0utKAVoc
- iSj70zpNp9QGgkFvVSLIu7cnICStEIW6y5zLpkWPZC2ydTZBZ7oKCLeKAPDcJ0QUyqLT
- CM+0ncDujKImrVOOyq4gO+k/PZkDkuh4YMzoe2UaOZG5BDZPRFkBG/Sf7zM4YALQG/y5 7A== 
+ bh=88j6W7SHJZbOMK9K011Geilq+x6rV9nUNipk+jibvFk=;
+ b=JMUCgGQR5xexfzRWp27NTFc/f7i/D1Lb0TOWuj4p93PJe09l8YZiLDhC7mGL4FENoG8k
+ tSbAwOKeZzNUS8N4JxaH+9gngQ2HYv+M1LgslU/GyY6M9uzQZPlzYQMpVUJHmc8oVg7o
+ vgddVkil1giipzmzbLTX+b8g8m/5q38icVHuURTosvYVMhd3lTc6OkiI7SWC6dkJouO+
+ 2rEJ26+/5/8ZSuBrlmYP4Cp6nQoUpUEK5m8EqVIfAPJHa3LCubnK0QvfD5AxoXCY5SvX
+ OXJ6CHZFcqxvmOUN+Ry0h/TwmvHil1SyNZgpydlK9lvXDQ5MlxKYbiVYQkvGR9K34Dqf VA== 
 Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3ewbknc0jc-6
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3ewbknc0jc-12
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 22 Mar 2022 10:18:39 -0500
+        Tue, 22 Mar 2022 10:18:45 -0500
 Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
  (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 22 Mar
- 2022 15:18:34 +0000
+ 2022 15:18:36 +0000
 Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Tue, 22 Mar 2022 15:18:34 +0000
+ Transport; Tue, 22 Mar 2022 15:18:36 +0000
 Received: from aryzen.ad.cirrus.com (unknown [198.61.65.125])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id C41C8B1A;
-        Tue, 22 Mar 2022 15:18:33 +0000 (UTC)
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id D03D4459;
+        Tue, 22 Mar 2022 15:18:35 +0000 (UTC)
 From:   Lucas Tanure <tanureal@opensource.cirrus.com>
 To:     Liam Girdwood <lgirdwood@gmail.com>,
         Mark Brown <broonie@kernel.org>,
@@ -48,49 +48,114 @@ To:     Liam Girdwood <lgirdwood@gmail.com>,
         Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
 CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        David Rhodes <drhodes@opensource.cirrus.com>,
         Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>
-Subject: [PATCH v5 09/16] ALSA: cs35l41: Enable Internal Boost in shared lib
-Date:   Tue, 22 Mar 2022 15:18:12 +0000
-Message-ID: <20220322151819.4299-10-tanureal@opensource.cirrus.com>
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v5 15/16] ASoC: cs35l41: Document CS35l41 External Boost
+Date:   Tue, 22 Mar 2022 15:18:18 +0000
+Message-ID: <20220322151819.4299-16-tanureal@opensource.cirrus.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220322151819.4299-1-tanureal@opensource.cirrus.com>
 References: <20220322151819.4299-1-tanureal@opensource.cirrus.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: 2jAyLTn1s1GhbXB1D83b_Csb6j4TehUF
-X-Proofpoint-GUID: 2jAyLTn1s1GhbXB1D83b_Csb6j4TehUF
+X-Proofpoint-ORIG-GUID: 1q-26pGBs38hzOa5sSwl9CbGd7XaW5-9
+X-Proofpoint-GUID: 1q-26pGBs38hzOa5sSwl9CbGd7XaW5-9
 X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Internal Boost enable is the default option from reset, but with
-external boost support, internal boost must be disabled.
-Add the enable of internal boost in cs35l41_boost_config to
-centralize the internal boost configuration.
+From: David Rhodes <drhodes@opensource.cirrus.com>
 
+Document internal and external boost feature for ASoC CS35L41.
+For internal boost the following properties are required:
+- cirrus,boost-peak-milliamp
+- cirrus,boost-ind-nanohenry
+- cirrus,boost-cap-microfarad
+
+For external boost, the GPIO1 must be configured as output,
+so the following properties are required:
+- cirrus,gpio1-src-select = <1>
+- cirrus,gpio1-output-enable
+
+Signed-off-by: David Rhodes <drhodes@opensource.cirrus.com>
 Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- sound/soc/codecs/cs35l41-lib.c | 3 +++
- 1 file changed, 3 insertions(+)
+ .../bindings/sound/cirrus,cs35l41.yaml        | 44 +++++++++++++++++--
+ 1 file changed, 41 insertions(+), 3 deletions(-)
 
-diff --git a/sound/soc/codecs/cs35l41-lib.c b/sound/soc/codecs/cs35l41-lib.c
-index eeeaeaa0db82..03039d8488b9 100644
---- a/sound/soc/codecs/cs35l41-lib.c
-+++ b/sound/soc/codecs/cs35l41-lib.c
-@@ -1036,6 +1036,9 @@ int cs35l41_boost_config(struct device *dev, struct regmap *regmap, int boost_in
- 		return ret;
- 	}
+diff --git a/Documentation/devicetree/bindings/sound/cirrus,cs35l41.yaml b/Documentation/devicetree/bindings/sound/cirrus,cs35l41.yaml
+index 3235702ce402..51d815d0c696 100644
+--- a/Documentation/devicetree/bindings/sound/cirrus,cs35l41.yaml
++++ b/Documentation/devicetree/bindings/sound/cirrus,cs35l41.yaml
+@@ -75,6 +75,19 @@ properties:
+     maximum: 3
+     default: 2
  
-+	regmap_update_bits(regmap, CS35L41_PWR_CTRL2, CS35L41_BST_EN_MASK,
-+			   CS35L41_BST_EN_DEFAULT << CS35L41_BST_EN_SHIFT);
++  cirrus,boost-type:
++    description:
++      Configures the type of Boost being used.
++      Internal boost requires boost-peak-milliamp, boost-ind-nanohenry and
++      boost-cap-microfarad.
++      External Boost must have GPIO1 as GPIO output. GPIO1 will be set high to
++      enable boost voltage.
++      0 = Internal Boost
++      1 = External Boost
++    $ref: "/schemas/types.yaml#/definitions/uint32"
++    minimum: 0
++    maximum: 1
 +
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(cs35l41_boost_config);
+   cirrus,gpio1-polarity-invert:
+     description:
+       Boolean which specifies whether the GPIO1
+@@ -131,9 +144,32 @@ required:
+   - compatible
+   - reg
+   - "#sound-dai-cells"
+-  - cirrus,boost-peak-milliamp
+-  - cirrus,boost-ind-nanohenry
+-  - cirrus,boost-cap-microfarad
++
++allOf:
++  - if:
++      properties:
++        cirrus,boost-type:
++          const: 0
++    then:
++      required:
++        - cirrus,boost-peak-milliamp
++        - cirrus,boost-ind-nanohenry
++        - cirrus,boost-cap-microfarad
++    else:
++      if:
++        properties:
++          cirrus,boost-type:
++            const: 1
++      then:
++        required:
++          - cirrus,gpio1-output-enable
++          - cirrus,gpio1-src-select
++        properties:
++          cirrus,boost-peak-milliamp: false
++          cirrus,boost-ind-nanohenry: false
++          cirrus,boost-cap-microfarad: false
++          cirrus,gpio1-src-select:
++            enum: [1]
+ 
+ additionalProperties: false
+ 
+@@ -150,6 +186,8 @@ examples:
+           VA-supply = <&dummy_vreg>;
+           VP-supply = <&dummy_vreg>;
+           reset-gpios = <&gpio 110 0>;
++
++          cirrus,boost-type = <0>;
+           cirrus,boost-peak-milliamp = <4500>;
+           cirrus,boost-ind-nanohenry = <1000>;
+           cirrus,boost-cap-microfarad = <15>;
 -- 
 2.35.1
 
