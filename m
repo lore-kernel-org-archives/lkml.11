@@ -2,177 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E96E1C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 13:43:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84E9EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 13:45:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235821AbiCVNpF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 09:45:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39484 "EHLO
+        id S235844AbiCVNq3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 09:46:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232683AbiCVNpD (ORCPT
+        with ESMTP id S235823AbiCVNq1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 09:45:03 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB2AD6145;
-        Tue, 22 Mar 2022 06:43:33 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id l7-20020a05600c1d0700b0038c99618859so2623190wms.2;
-        Tue, 22 Mar 2022 06:43:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=sUWPIP8GGlUV6VTKUliU0ZHihvV6xHZFMDP/CthCS1Y=;
-        b=kMiThXn0nYgm8kE9/5EMEUd8O+PbiR58lHQyKuCcXR9EnM/D1SqqpTE6RCdV1X25G2
-         l8g7Afpgbu7uEWO6cMsOHaLUqgVcBvc0UXE8VLy71Jk3gEYaBmmZ7YQZjq0peIwRN7YS
-         pcSSh+oSHkWK8j2mMr8q3Pt4Qq/Nmb57vctQQo1ezBtCy/Lqhv9mNTujciIcBFiR/cj3
-         wv0Tg48dt1Olollfdfo/Pz6efrGjhW/lDlryryfodStI2ZGKmrzW9iFiWhYGXh3lutEc
-         9GlyHsqdnLtFABWLXE5RSc20zOcjMWcMuonTzDhuXa+RyZaIN7qHUEyjT+PcdlgUmaRJ
-         9rfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sUWPIP8GGlUV6VTKUliU0ZHihvV6xHZFMDP/CthCS1Y=;
-        b=7ODUo15p9XCkFbB+nG6vPcELnwoSldNEWAX73/9T4b6HWmf6bIRlanLebpDkuoho+K
-         9NvtXKH93faIVkD7y8GodlZseYfkMFS/c+yUMgwXuXMdQIc40YCB1olThR8srZHq43q8
-         uheAnUjIbifsK0OnixDTwxsah7nsqfACscIJ31NNHS2MUFaqRY4TNvBBVSHBPuY59lTj
-         w4rpEPyl5SJS1hzHmiaWvdfVdtXMEOFVNJ3GgAFu4cZ74Cw4Uv8GGZlLYPoXGIzYJfbV
-         SWz1UHlbe58idW6u2G6l83cpd7M73kl5JToghQRUcuvHKj/f+Db8yiuYcfyanCdRW/oR
-         hgcQ==
-X-Gm-Message-State: AOAM531X/R7YSpx67qmSUiGBOQPl7ombJH80VCQ4n33PJHjRBMPVy6K1
-        td13WZcph53KmXUP77hCZHI=
-X-Google-Smtp-Source: ABdhPJzLfbPQALu/tIjINp547kjDW6t8wUr3vl4gLrMN21/OlnP9ymOVeRnzDdJSQWmTLH34IZu+cw==
-X-Received: by 2002:adf:908e:0:b0:1e7:bea7:3486 with SMTP id i14-20020adf908e000000b001e7bea73486mr21814271wri.401.1647956612387;
-        Tue, 22 Mar 2022 06:43:32 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
-        by smtp.gmail.com with ESMTPSA id 189-20020a1c02c6000000b0038c57df82aasm1961561wmc.20.2022.03.22.06.43.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Mar 2022 06:43:31 -0700 (PDT)
-Date:   Tue, 22 Mar 2022 14:43:31 +0100
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>
-Subject: Re: [PATCH v6 00/18] Modernize rest of the krait drivers
-Message-ID: <YjnSg1NixXzjyXX9@Ansuel-xps.localdomain>
-References: <20220321231548.14276-1-ansuelsmth@gmail.com>
- <CAL_JsqKbgZ39XBbT3nueN+vs9GdL9+mejJKYqB-o8-A3xti6jQ@mail.gmail.com>
+        Tue, 22 Mar 2022 09:46:27 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 275E82610E
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 06:45:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647956700; x=1679492700;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=xNjDnMgEHpCF2A25uwYP+Yv48qAIEF8LeOXaCc3uCd0=;
+  b=WJ6iZ+MgXYxKGSVew7/9lVe/lBUlMVTCbaXIWURPONZ8SfztgTIjnRni
+   2KaEo+rF/HyJBtjkYum/6uoLnBrqR90VvuPgud+aX4PLZ+Dsrqp9Xm21K
+   bwG3KsXkwjjH+RJk8Ty5f1fq/cyA1LPS33wIcW2+c3sYPe3WuG2B4oEvX
+   7J97caqryJgomRip3kfNprGJGu8nhL9HbggPyuv/FB30U0pV9YvAdTQ39
+   0qQ9jVDYeP2GMpuGN0iwuskC4/5TsoykeggqOFT273gtUi4KgblKYn5GQ
+   HiLNaFGEyTKAdzLuN1Hs+OVw08/yOJXw0ShD6R8BjXoPRw4UHZe3PVQnA
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="237761000"
+X-IronPort-AV: E=Sophos;i="5.90,201,1643702400"; 
+   d="scan'208";a="237761000"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2022 06:44:50 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,201,1643702400"; 
+   d="scan'208";a="518881444"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 22 Mar 2022 06:44:49 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nWeoa-000Irk-AU; Tue, 22 Mar 2022 13:44:48 +0000
+Date:   Tue, 22 Mar 2022 21:44:37 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [mingo-tip:master 421/2335] include/linux/huge_mm.h:168:6: error:
+ implicit declaration of function 'vma_is_dax'
+Message-ID: <202203222155.TlSyCe5J-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAL_JsqKbgZ39XBbT3nueN+vs9GdL9+mejJKYqB-o8-A3xti6jQ@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 08:56:13PM -0500, Rob Herring wrote:
-> On Mon, Mar 21, 2022 at 6:45 PM Ansuel Smith <ansuelsmth@gmail.com> wrote:
-> >
-> > This is a follow-up to the ipq806x gcc modernize series. Manu cleanup
-> > changes and also some discoveries of wrong definition notice only with
-> > all these conversions.
-> >
-> > The first patch is an improvement of the clk_hw_get_parent_index. The
-> > original idea of clk_hw_get_parent_index was to give a way to access the
-> > parent index but for some reason the final version limited it to the
-> > current index. We change it to give the current parent if is not
-> > provided and to give the requested parent if provided. Any user of this
-> > function is updated to follow the new implementation.
-> >
-> > The patch 2 and 3 are some additional fixes for gcc.
-> > The first one is a fix that register the pxo and cxo fixed clock only if
-> > they are not defined in DTS.
-> > The patch 3 require some explaination. In short is a big HACK to prevent
-> > kernel panic with this series.
-> >
-> > The kpss-xcc driver is a mess.
-> > The Documentation declare that the clocks should be provided but for some
-> > reason it was never followed.
-> > In fact in the ipq8064 DTSI only the clocks for l2cc are declared but
-> > for cpu0 and cpu1 the clocks are not defined.
-> > The kpss-xcc driver use parent_names so the clks are ignored and never
-> > used so till now it wasn't a problem (ignoring the fact that they
-> > doesn't follow documentation at all)
-> > On top of that, the l2cc node declare the pxo clock in a really strange
-> > way. It's declared using the PXO_SRC gcc clock that is never defined in
-> > the gcc ipq8064 clock table. (the correct way was to declare a fixed
-> > clock in dts and reference that)
-> > To prevent any kind of problem we use the patch 3 and provide the clk
-> > for PXO_SRC in the gcc clock table. We manually provide the clk after
-> > gcc probe.
-> >
-> > Patch 4 is just a minor cleanup where we use the poll macro
-> >
-> > Patch 5 is the actually kpss-xcc conversion to parent data
-> >
-> > Patch 6-7 should be a fixup of a real conver case
-> >
-> > Patch 8 converts the krait-cc to parent_data
-> > Patch 9 give some love to the code with some minor fixup
-> > Patch 10 drop the hardcoded safe sel and use the new
-> > clk_hw_get_parent_index to get the safe parent index.
-> > (also I discovered that the parent order was wrong)
-> >
-> > Patch 11 is an additional fixup to force the reset of the muxes even
-> > more.
-> >
-> > Patch 12-13 are some additiona taken from the qsdk that were missing in
-> > the upstream driver
-> >
-> > Patch 14 converts krait-cc to yaml
-> >
-> > Patch 15 add to krait-cc Documentation the L2 clocks
-> >
-> > Patch 16 converts the kpss-acc driver to yaml and fix some Documentation
-> > error
-> >
-> > Patch 17 convets the kpss-gcc driver to yaml
-> >
-> > Patch 18 finally adds all this stuff to the ipq8064 dtsi (and fix the
-> > stupid PXO_SRC phandle)
-> >
-> > I tested this series on a ipq8064 SoC by running a cache benchmark test
-> > to make sure the changes are correct and we don't silently cause
-> > regressions. Also I compared the output of the clk_summary every time
-> > and we finally have a sane output where the mux are correctly placed in
-> > the correct parent. (till now we had the cpu aux clock all over the
-> > place, probably never cause problems but who knows.)
-> >
-> > v6:
-> > - Move dts patch as last patch
-> > - Address commencts from Rob
-> > - Fix warning from make dtbs_check
-> > v5:
-> > - Address comments from Krzysztof
-> > v4:
-> > - Fix more dt-bindings bog errors
-> > v3:
-> > - Split Documentation files for kpss and krait-cc
-> > v2:
-> > - introduce new API instead of fixing the existing one
-> > - do not reorganize variables in krait-cc
-> > - fix some comments error and improve it
-> > - return better error for patch 7
-> > - fix missing new line on patch 16
-> 
-> 6 versions in a week is too many, especially with the merge window
-> starting. Please give some time for review of all the patches and by
-> more than one person. It doesn't look like any of the clk driver
-> patches have been reviewed since v1 for example.
-> 
-> Rob
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git master
+head:   85293bf3fca6d85608cff1447ce3097583f15fab
+commit: f7a0205170ca096c85d224726dc7f9cfc5950de3 [421/2335] headers/uninline: Uninline multi-use function: vma_is_dax() and vma_is_fsdax()
+config: i386-randconfig-a016-20220314 (https://download.01.org/0day-ci/archive/20220322/202203222155.TlSyCe5J-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 85e9b2687a13d1908aa86d1b89c5ce398a06cd39)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=f7a0205170ca096c85d224726dc7f9cfc5950de3
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip master
+        git checkout f7a0205170ca096c85d224726dc7f9cfc5950de3
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash fs/
 
-Yes sorry. There was an initial review for the clk driver from v1 to
-v2 but nothing else. I was trying to make the Documentation ready while
-I wait for a second review of the clk code.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Will wait for clk code review to send v7 hoping it will be the final
-version.
+Note: the mingo-tip/master HEAD 85293bf3fca6d85608cff1447ce3097583f15fab builds fine.
+      It only hurts bisectability.
+
+All errors (new ones prefixed by >>):
+
+   In file included from fs/fuse/virtio_fs.c:8:
+   In file included from include/linux/dax.h:6:
+   In file included from include/linux/mm.h:689:
+>> include/linux/huge_mm.h:168:6: error: implicit declaration of function 'vma_is_dax' [-Werror,-Wimplicit-function-declaration]
+           if (vma_is_dax(vma))
+               ^
+   In file included from fs/fuse/virtio_fs.c:8:
+   In file included from include/linux/dax.h:6:
+>> include/linux/mm.h:3240:13: error: conflicting types for 'vma_is_dax'
+   extern bool vma_is_dax(const struct vm_area_struct *vma);
+               ^
+   include/linux/huge_mm.h:168:6: note: previous implicit declaration is here
+           if (vma_is_dax(vma))
+               ^
+   2 errors generated.
+
+
+vim +/vma_is_dax +168 include/linux/huge_mm.h
+
+bae84953815793 Aneesh Kumar K.V  2021-02-24  152  
+bae84953815793 Aneesh Kumar K.V  2021-02-24  153  	/*
+bae84953815793 Aneesh Kumar K.V  2021-02-24  154  	 * If the hardware/firmware marked hugepage support disabled.
+bae84953815793 Aneesh Kumar K.V  2021-02-24  155  	 */
+bae84953815793 Aneesh Kumar K.V  2021-02-24  156  	if (transparent_hugepage_flags & (1 << TRANSPARENT_HUGEPAGE_NEVER_DAX))
+bae84953815793 Aneesh Kumar K.V  2021-02-24  157  		return false;
+bae84953815793 Aneesh Kumar K.V  2021-02-24  158  
+e6be37b2e7bddf Miaohe Lin        2021-06-30  159  	if (!transhuge_vma_enabled(vma, vma->vm_flags))
+16981d763501c0 Dan Williams      2017-07-10  160  		return false;
+16981d763501c0 Dan Williams      2017-07-10  161  
+222100eed264ba Anshuman Khandual 2020-04-01  162  	if (vma_is_temporary_stack(vma))
+16981d763501c0 Dan Williams      2017-07-10  163  		return false;
+16981d763501c0 Dan Williams      2017-07-10  164  
+16981d763501c0 Dan Williams      2017-07-10  165  	if (transparent_hugepage_flags & (1 << TRANSPARENT_HUGEPAGE_FLAG))
+16981d763501c0 Dan Williams      2017-07-10  166  		return true;
+bae84953815793 Aneesh Kumar K.V  2021-02-24  167  
+baabda26142451 Dan Williams      2017-07-10 @168  	if (vma_is_dax(vma))
+baabda26142451 Dan Williams      2017-07-10  169  		return true;
+baabda26142451 Dan Williams      2017-07-10  170  
+16981d763501c0 Dan Williams      2017-07-10  171  	if (transparent_hugepage_flags &
+16981d763501c0 Dan Williams      2017-07-10  172  				(1 << TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG))
+16981d763501c0 Dan Williams      2017-07-10  173  		return !!(vma->vm_flags & VM_HUGEPAGE);
+16981d763501c0 Dan Williams      2017-07-10  174  
+16981d763501c0 Dan Williams      2017-07-10  175  	return false;
+16981d763501c0 Dan Williams      2017-07-10  176  }
+16981d763501c0 Dan Williams      2017-07-10  177  
+
+:::::: The code at line 168 was first introduced by commit
+:::::: baabda261424517110ea98c6651f632ebf2561e3 mm: always enable thp for dax mappings
+
+:::::: TO: Dan Williams <dan.j.williams@intel.com>
+:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
 
 -- 
-	Ansuel
+0-DAY CI Kernel Test Service
+https://01.org/lkp
