@@ -2,71 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC473C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 03:06:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDD5DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 03:07:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236024AbiCVDIV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 23:08:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48860 "EHLO
+        id S236022AbiCVDI1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 23:08:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235991AbiCVDIH (ORCPT
+        with ESMTP id S235991AbiCVDIZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 23:08:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 207EE28E3D
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 20:06:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 21 Mar 2022 23:08:25 -0400
+X-Greylist: delayed 559 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 21 Mar 2022 20:06:56 PDT
+Received: from crane.ash.relay.mailchannels.net (crane.ash.relay.mailchannels.net [23.83.222.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E47939690
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 20:06:55 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id 195B0800DEE;
+        Tue, 22 Mar 2022 02:57:33 +0000 (UTC)
+Received: from pdx1-sub0-mail-a295.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id 05E17800E65;
+        Tue, 22 Mar 2022 02:57:32 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1647917852; a=rsa-sha256;
+        cv=none;
+        b=OpX/wT83WSUgkwuyqo+AX183ZF64agEolIpgS5YaHhEw+K5Z5HdloR1lKnlVv6tLbessRM
+        cgwpsu3lSwUJYEjZwzjLR+TWW2zvxqDLFMJnEsriR9WrnLyIy+yRrhFRGhktfzLWVBDbU/
+        nst71cZedfBM0b354icqNabdXWG7ppuH53O67CUwlBuADn1ldo0cv3TffoR+mJcovapUok
+        CTSdlHQC7biMgfqvsW9yEzja/6S6JJsrOyrcxnjfUYc79JP/qMaGpkthwXHk0JFY7C99f0
+        jQfS5UzqyXU6VpUy6U0bomHKQcPzoQYpZOeV/K+jPHEsY2woRC0FSycbWtbpHA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1647917852;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=SDRgY4hCcw5IyJP6ZI91B9IoNIRgIUTKVFMsD2qfdRk=;
+        b=CuIXw+6epD9n3Q+3WuIKBbuh+kRU4d+NMYi5nnCcsDAspzmVy7hYMofjScXYZ7DmqBB14Q
+        EXWzxT+genBBJaGYbIUY22K7LydDAgMIJ1Dwyx8/lJdBpfHLhagwmHcGyQitCGgmR+5hz4
+        w6XMcXzk6lahpAwNlc5kbWSifSt/ERGHbe5SR+h7NeKFPFJ11wN6ZJjxNc5Of+o2BDtdQQ
+        BOqxnwdOrY86JdjHx9E8VMheV1e8I9sujZm3rZTp8RGH1mIjwrsZd3ZmqRCQVpUwNlBWXh
+        nouyDEr2B+ThmaRmTrve0Vl7T/ySxjEskJPwRC//jCgQO5zq4t8SdRCMWUcVoA==
+ARC-Authentication-Results: i=1;
+        rspamd-74bfb75fc6-dqqqm;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from pdx1-sub0-mail-a295.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.121.210.153 (trex/6.5.3);
+        Tue, 22 Mar 2022 02:57:33 +0000
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Glossy-Thread: 2b8b6da7311fbb33_1647917852452_1069914907
+X-MC-Loop-Signature: 1647917852451:2066250030
+X-MC-Ingress-Time: 1647917852451
+Received: from offworld (unknown [104.36.25.8])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3FD0B81B44
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 03:06:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6CF9DC36AE7;
-        Tue, 22 Mar 2022 03:06:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647918398;
-        bh=+VrkQ5qQx0jI/dAgMz/rAx+2rfiHpCNeN9ROIsRsLz4=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=jI5PalNCKR36sU7ebtUFBdyk+77FzFwb5lnipXgh3qNqy8m2Q+kgVewC4OHHoahx/
-         WhKTdbMtYQLAk9Nlw9/SsZI0ne5rYtwJCg+KbQkPHPo1x2j2N/IOiLS1tbhrsGVaux
-         ViwIUNtVBP+b+L5HpUxzDjuRxTF0RU6xUinJ42+9den48z5Wl/BPZ+RZT4t45eiLLo
-         jCD6d2RuOs6ZFf2UKAMYWFVDIvRUOIdlNZtG6MSQ33hpcj+aH2Xsvws8LlhkXNOMOK
-         Nmkk+XuHYZOWrqZQyEXeBrFoYP3akszqXe9NXGOUS7KTqjq29fWrXl+IEOtGYUenyE
-         DuGzkESTAlYmg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5A655E7BB0B;
-        Tue, 22 Mar 2022 03:06:38 +0000 (UTC)
-Subject: Re: [GIT PULL] pstore updates for v5.18-rc1
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <202203210747.C40221E63F@keescook>
-References: <202203210747.C40221E63F@keescook>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <202203210747.C40221E63F@keescook>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git tags/pstore-v5.18-rc1
-X-PR-Tracked-Commit-Id: 8126b1c73108bc691f5643df19071a59a69d0bc6
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: fd2d7a4a354539dc141f702c6c277bf3380e8778
-Message-Id: <164791839836.13286.3803635250418520072.pr-tracker-bot@kernel.org>
-Date:   Tue, 22 Mar 2022 03:06:38 +0000
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a295.dreamhost.com (Postfix) with ESMTPSA id 4KMx3s4gbMz3f;
+        Mon, 21 Mar 2022 19:57:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1647917851;
+        bh=SDRgY4hCcw5IyJP6ZI91B9IoNIRgIUTKVFMsD2qfdRk=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=ZroK2pC8DsKo78Rr0oYJm5AKcTKhlJq8fuI5kDFImQeZG8OpdaZdgtMKnVF6YyeIw
+         vrG7aUVDDlLMyK1Avt0J3Q3nb5MS6p3icwP/XxcWoVZ/zYN06R5q2gAm6Q5T1/4Agh
+         iVHLtPeC0UrzHe4XtjIzYufm+YiL/ZjKh8+daF3Pg5UVC4Mm3vU29PYygc81DlKEok
+         EVhVtf0F+HxuXufstBjni/DdzHFuqG70PIPcto4MzvpGBZSJlm0waWlG01tRHG2a1L
+         vR4+5e9zq4dAnqFKobDNmRWctorBX6mci0CFpslaPGNzhbuyeyDDbqDd2YoEGerkYD
+         /2R3fmoTk0a/g==
+Date:   Mon, 21 Mar 2022 19:57:24 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     Nico Pache <npache@redhat.com>
+Cc:     Michal Hocko <mhocko@suse.com>, linux-mm@kvack.org,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Joel Savitz <jsavitz@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, Rafael Aquini <aquini@redhat.com>,
+        Waiman Long <longman@redhat.com>, Baoquan He <bhe@redhat.com>,
+        Christoph von Recklinghausen <crecklin@redhat.com>,
+        Don Dutile <ddutile@redhat.com>,
+        "Herton R . Krzesinski" <herton@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Darren Hart <dvhart@infradead.org>,
+        Andre Almeida <andrealmeid@collabora.com>,
+        David Rientjes <rientjes@google.com>
+Subject: Re: [PATCH v5] mm/oom_kill.c: futex: Close a race between do_exit
+ and the oom_reaper
+Message-ID: <20220322025724.j3japdo5qocwgchz@offworld>
+Mail-Followup-To: Nico Pache <npache@redhat.com>,
+        Michal Hocko <mhocko@suse.com>, linux-mm@kvack.org,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Joel Savitz <jsavitz@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, Rafael Aquini <aquini@redhat.com>,
+        Waiman Long <longman@redhat.com>, Baoquan He <bhe@redhat.com>,
+        Christoph von Recklinghausen <crecklin@redhat.com>,
+        Don Dutile <ddutile@redhat.com>,
+        "Herton R . Krzesinski" <herton@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Darren Hart <dvhart@infradead.org>,
+        Andre Almeida <andrealmeid@collabora.com>,
+        David Rientjes <rientjes@google.com>
+References: <20220318033621.626006-1-npache@redhat.com>
+ <Yjg9ncgep58gFLiN@dhcp22.suse.cz>
+ <20220322004231.rwmnbjpq4ms6fnbi@offworld>
+ <c8bb0b6d-981c-8591-d5b6-17414c934758@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <c8bb0b6d-981c-8591-d5b6-17414c934758@redhat.com>
+User-Agent: NeoMutt/20201120
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 21 Mar 2022 07:47:53 -0700:
+On Mon, 21 Mar 2022, Nico Pache wrote:
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git tags/pstore-v5.18-rc1
+>We could proceed with the V3 approach; however if we are able to find a complete
+>solution that keeps both functionalities (Concurrent OOM Reaping & Robust Futex)
+>working, I dont see why we wouldnt go for it.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/fd2d7a4a354539dc141f702c6c277bf3380e8778
+Because semantically killing the process is, imo, the wrong thing to do. My
+performance argument before however is bogus as the overhead of robust futexes
+is pretty negligible within the lifetime of a lock. That said, the users still
+have good(?) reasons for not wanting the lock holder to crash on them.
 
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Thanks,
+Davidlohr
