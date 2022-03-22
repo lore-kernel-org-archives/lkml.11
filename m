@@ -2,151 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11B02C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 07:23:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45C3BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 07:25:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237465AbiCVHYq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 03:24:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59464 "EHLO
+        id S237458AbiCVH1B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 03:27:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237446AbiCVHYi (ORCPT
+        with ESMTP id S237439AbiCVH0z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 03:24:38 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 087C4104
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 00:23:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647933790; x=1679469790;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=iequToxxaQhdjkfVG1qjNqki5Rv90Ro3GMV7eguZDy4=;
-  b=KlW0aUYJjcA69WxC/Sgq61jaRrBu04yffPHfG7oH0QNcsbtkUlQCufRd
-   FPi8ibpNllHwcMlj/YnBLojowWIeNz3obXWnJakwvgmE708j9DCUfQNzQ
-   ZlsfxHIc3knD6UoPRgcJiU+GFFbY8AfeX5uu+zI5XZKfxV5+45BvM6Snk
-   ZCBMyb1faAdRZoDBJsj7dHs2prRwvsgkZLob6NrW1HT4iRwS/OEPQrdlg
-   Z2Mv6lFAqIM5oFhQ9gTV1GWA9yAb5ML8uUn6XLiq/gN5mDCntTW8Tx0wG
-   KQJ+m6Qew+eXYeOfRCR9Na5FgbMOHg3OtTpr34DwMqZ6v7YdLxj0P8m/D
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="256568262"
-X-IronPort-AV: E=Sophos;i="5.90,201,1643702400"; 
-   d="scan'208";a="256568262"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2022 00:23:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,201,1643702400"; 
-   d="scan'208";a="560249941"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 22 Mar 2022 00:23:07 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nWYrC-000IaP-S8; Tue, 22 Mar 2022 07:23:06 +0000
-Date:   Tue, 22 Mar 2022 15:22:30 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [bpf-next:master 209/265] kernel/trace/fprobe.c:201:14: sparse:
- sparse: incorrect type in assignment (different address spaces)
-Message-ID: <202203221549.JQIr40CT-lkp@intel.com>
+        Tue, 22 Mar 2022 03:26:55 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 740764756B
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 00:25:28 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id a1so22249365wrh.10
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 00:25:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=Ag85I8PruQxLQ72jOk0/wsx8Hp44RVX6T6D7aHNVsTA=;
+        b=X1LaQW84nOPXcmH6so+bm9cVBbXpSasbHQRylsYLX0jMRX8euf2J4dyP4g5SlMZyHR
+         IK1EN+PgMGyB2SAcOBjtDyTVdawdSBul8JDNGKZ9vvrUtnRfB/B3zN/lWIJcsdZ2+gQ+
+         jkl1eyRGiizehq3fXOvU0I738M9u95T20xpuoYMCQEB0Ip+l77VoueQTS1qIB+Jqv6E4
+         3S2l2NYyr71wu4/CbQ2q7CN+rl7SQlV0370lyfT2g6Di7KHaDPJmHollzdFZWeVcWhMi
+         uvxHB89+G6RiUA/rlOPj07DzIGhHOW8GZsCV/a9ufpvB8j8GFmWD1dlyPrxbInm4FYdX
+         Ec7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Ag85I8PruQxLQ72jOk0/wsx8Hp44RVX6T6D7aHNVsTA=;
+        b=zBc/ihAj4uMw2OXxAkjJMyvWt+7L15ootH1kC8b+MAXZWZVh0fAkmxYd3bGocMu2Pn
+         IfF9myI2Y7RJe7cskd+t+8Z6wM2MFWCwlakxJBUj4MvOmI1Zx698UeqFIJR3phX+ccbx
+         rMMEwYAcC44rqGKugbMsMPzkNDrkSEVvadhc/3k+X4azxtqaN7lpZV0vuoNDL7WhR3L+
+         vQJHUQhrfbTmroIT+GKBza3y3qbcNNzRS15i7zZ/iP8s8vyR0bVpCQIZPsY8Rk1Qqzo3
+         VWZtU4hvRkkas2LVGHT+73/gwEzJ4DmZAjO0lyt0zB+KrJS7fNOeN5ZlSBw+2PWMtK7j
+         72BQ==
+X-Gm-Message-State: AOAM533Z/i0yz9rDNXyM2x9+1lmrFw2YQ04fJyeotHsLtDfXb8hJOXrf
+        f/NGdoLSBPGFL/E0Rw0Ho42Zq7vWBNoZaA==
+X-Google-Smtp-Source: ABdhPJySKf9ebNrzKsIlcfG7NXMzXFxZX1tDzRxEAy5KUNqkeHkGmnmqcdE69reHVubUbIefi26dOg==
+X-Received: by 2002:adf:816b:0:b0:203:7fae:a245 with SMTP id 98-20020adf816b000000b002037faea245mr21373932wrm.619.1647933927055;
+        Tue, 22 Mar 2022 00:25:27 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id q2-20020adff502000000b00203f17d73dbsm11159750wro.12.2022.03.22.00.25.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Mar 2022 00:25:26 -0700 (PDT)
+Date:   Tue, 22 Mar 2022 07:25:24 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     linus.walleij@linaro.org, lukas.bulwahn@gmail.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH -next] mfd: db8500-prcmu: Remove unused inline function
+Message-ID: <Yjl55FWHtRbVUDcs@google.com>
+References: <20220311125518.31064-1-yuehaibing@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220311125518.31064-1-yuehaibing@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-head:   f97b8b9bd630fb76c0e9e11cbf390e3d64a144d7
-commit: 5b0ab78998e32564a011b14c4c7f9c81e2d42b9d [209/265] fprobe: Add exit_handler support
-config: i386-allmodconfig (https://download.01.org/0day-ci/archive/20220322/202203221549.JQIr40CT-lkp@intel.com/config)
-compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?id=5b0ab78998e32564a011b14c4c7f9c81e2d42b9d
-        git remote add bpf-next https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
-        git fetch --no-tags bpf-next master
-        git checkout 5b0ab78998e32564a011b14c4c7f9c81e2d42b9d
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash kernel/trace/ samples/
+On Fri, 11 Mar 2022, YueHaibing wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> commit b0e846248de5 ("mfd: db8500-prcmu: Remove dead code for a non-existing config")
+> left behind this, remove it.
+> 
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
+>  include/linux/mfd/dbx500-prcmu.h | 4 ----
+>  1 file changed, 4 deletions(-)
 
-
-sparse warnings: (new ones prefixed by >>)
->> kernel/trace/rethook.c:68:9: sparse: sparse: incompatible types in comparison expression (different address spaces):
->> kernel/trace/rethook.c:68:9: sparse:    void ( [noderef] __rcu * )( ... )
->> kernel/trace/rethook.c:68:9: sparse:    void ( * )( ... )
---
->> kernel/trace/fprobe.c:201:14: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct ftrace_hash *hash @@     got struct ftrace_hash [noderef] __rcu *filter_hash @@
-   kernel/trace/fprobe.c:201:14: sparse:     expected struct ftrace_hash *hash
-   kernel/trace/fprobe.c:201:14: sparse:     got struct ftrace_hash [noderef] __rcu *filter_hash
-
-vim +201 kernel/trace/fprobe.c
-
-   158	
-   159	/**
-   160	 * register_fprobe() - Register fprobe to ftrace by pattern.
-   161	 * @fp: A fprobe data structure to be registered.
-   162	 * @filter: A wildcard pattern of probed symbols.
-   163	 * @notfilter: A wildcard pattern of NOT probed symbols.
-   164	 *
-   165	 * Register @fp to ftrace for enabling the probe on the symbols matched to @filter.
-   166	 * If @notfilter is not NULL, the symbols matched the @notfilter are not probed.
-   167	 *
-   168	 * Return 0 if @fp is registered successfully, -errno if not.
-   169	 */
-   170	int register_fprobe(struct fprobe *fp, const char *filter, const char *notfilter)
-   171	{
-   172		struct ftrace_hash *hash;
-   173		unsigned char *str;
-   174		int ret, len;
-   175	
-   176		if (!fp || !filter)
-   177			return -EINVAL;
-   178	
-   179		fprobe_init(fp);
-   180	
-   181		len = strlen(filter);
-   182		str = kstrdup(filter, GFP_KERNEL);
-   183		ret = ftrace_set_filter(&fp->ops, str, len, 0);
-   184		kfree(str);
-   185		if (ret)
-   186			return ret;
-   187	
-   188		if (notfilter) {
-   189			len = strlen(notfilter);
-   190			str = kstrdup(notfilter, GFP_KERNEL);
-   191			ret = ftrace_set_notrace(&fp->ops, str, len, 0);
-   192			kfree(str);
-   193			if (ret)
-   194				goto out;
-   195		}
-   196	
-   197		/* TODO:
-   198		 * correctly calculate the total number of filtered symbols
-   199		 * from both filter and notfilter.
-   200		 */
- > 201		hash = fp->ops.local_hash.filter_hash;
-   202		if (WARN_ON_ONCE(!hash))
-   203			goto out;
-   204	
-   205		ret = fprobe_init_rethook(fp, (int)hash->count);
-   206		if (!ret)
-   207			ret = register_ftrace_function(&fp->ops);
-   208	
-   209	out:
-   210		if (ret)
-   211			fprobe_fail_cleanup(fp);
-   212		return ret;
-   213	}
-   214	EXPORT_SYMBOL_GPL(register_fprobe);
-   215	
+Applied, thanks.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
