@@ -2,88 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8F55C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 11:30:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76D35C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 11:31:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234221AbiCVLcP convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 07:32:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48334 "EHLO
+        id S233838AbiCVLdM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 07:33:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234220AbiCVLcL (ORCPT
+        with ESMTP id S234248AbiCVLdE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 07:32:11 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2811183002
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 04:30:44 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nWciS-0001V7-9P; Tue, 22 Mar 2022 12:30:20 +0100
-Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nWciM-002HVb-6d; Tue, 22 Mar 2022 12:30:16 +0100
-Received: from pza by lupine with local (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nWciO-0004ki-0V; Tue, 22 Mar 2022 12:30:16 +0100
-Message-ID: <c1b3042cd36b8ee66f8d7308743252bdaa9a35f1.camel@pengutronix.de>
-Subject: Re: [PATCH 07/64] media: platform: place NXP drivers on a separate
- dir
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Niklas =?ISO-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Cai Huoqing <caihuoqing@baidu.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>,
-        Ming Qian <ming.qian@nxp.com>,
-        Mirela Rabulea <mirela.rabulea@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Rikard Falkeborn <rikard.falkeborn@gmail.com>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Wei Yongjun <weiyongjun1@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org
-Date:   Tue, 22 Mar 2022 12:30:15 +0100
-In-Reply-To: <92c02beaa7918253ca0d537e4454b839def2ab38.1647242579.git.mchehab@kernel.org>
-References: <cover.1647242578.git.mchehab@kernel.org>
-         <92c02beaa7918253ca0d537e4454b839def2ab38.1647242579.git.mchehab@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.38.3-1 
+        Tue, 22 Mar 2022 07:33:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C110882D2C
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 04:31:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2AD6B612F5
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 11:31:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27358C340F0;
+        Tue, 22 Mar 2022 11:31:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647948696;
+        bh=Q803Ahh2mXBrXYeT2gzMvlXoFBqdS/QQwfKfuZr72KE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=j5C+iEKDhFncKyOkwb+7ZLqwnyfRKMuB/qf++cLRjNkSe1LI4aUDhEpKLMdiSSnqt
+         bAOT/Xtxhe3i5Ae0hDn1jDLEW2RwcUuX5+Kqq0hVaS5rg8ojii9VkYsxTQlS/iv9R5
+         rCD+qeLYUqng7rUXGu6WToL6doPELz0+V8fxgbYA=
+Date:   Tue, 22 Mar 2022 12:31:32 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc:     Sathish Kumar <skumark1902@gmail.com>, Larry.Finger@lwfinger.net,
+        florian.c.schilhabel@googlemail.com, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] staging: rtl8712: Fix CamelCase warnings
+Message-ID: <YjmzlGZJaBxLljq2@kroah.com>
+References: <20220318101440.13887-1-skumark1902@gmail.com>
+ <YjRswrHu0JUm9331@kroah.com>
+ <3a85ae64-00c1-6483-f1d7-c12abdd3ff3a@gmail.com>
+ <1786742.atdPhlSkOF@leap>
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1786742.atdPhlSkOF@leap>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mo, 2022-03-14 at 08:54 +0100, Mauro Carvalho Chehab wrote:
-> In order to cleanup the main platform media directory, move NXP
-> drivers to their own directory.
+On Tue, Mar 22, 2022 at 11:42:21AM +0100, Fabio M. De Francesco wrote:
+> On martedì 22 marzo 2022 05:30:29 CET Sathish Kumar wrote:
+> > On 18/03/22 4:58 pm, Greg KH wrote:
+> > > On Fri, Mar 18, 2022 at 03:44:40PM +0530, Sathish Kumar wrote:
+> > >> This patch fixes the checkpatch.pl warnings like:
+> > >> CHECK: Avoid CamelCase: <blnEnableRxFF0Filter>
+> > >> +   u8 blnEnableRxFF0Filter;
+> > >>
+> > >> Signed-off-by: Sathish Kumar <skumark1902@gmail.com>
+> > >> ---
+> > >> Changes in v2:
+> > >>      - Remove the "bln" prefix
+> > >> ---
+> > >>   drivers/staging/rtl8712/drv_types.h   | 2 +-
+> > >>   drivers/staging/rtl8712/rtl871x_cmd.c | 2 +-
+> > >>   drivers/staging/rtl8712/xmit_linux.c  | 4 ++--
+> > >>   3 files changed, 4 insertions(+), 4 deletions(-)
+> > >>
+> > >> [...]
+> > >>
+> > >>   	do {
+> > >>   		msleep(100);
+> > >> -	} while (adapter->blnEnableRxFF0Filter == 1);
+> > >> +	} while (adapter->enable_rx_ff0_filter == 1);
+> > > Ah, that's funny.  It's amazing it works at all and that the compiler
+> > > doesn't optimize this away.  This isn't a good pattern to use in kernel
+> > Do you mean the following code is not a good pattern in kernel?
+> > do {
+> > msleep();
+> > } while(condition);
 > 
-> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Exactly, this is not a pattern that works as you expect :)
+> 
+> I was waiting for Greg to detail something more about this subject but, 
+> since it looks like he has no time yet to respond, I'll try to interpret 
+> his words.
+> 
+> (@Greg, please forgive me if I saying something different from what you
+> intended to convey :)).
+> 
+> The reason why this pattern does not work as expected is too long to be
+> explained here. However, I think that Greg is suggesting to you to research
+> and use what are called "Condition variables".
 
-Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+Kind of.  The problem is that "condition" here is just looking at a
+random variable.  There is no sort of assurance that the variable will
+actually change or that that compiler even has to read from memory for
+it.  It could cache the value the first time it is read and then never
+update it for the whole loop logic.
 
-regards
-Philipp
+Please read Documentation/memory-barriers.txt for how to fix this all up
+and do it properly.
+
+Again, it's amazing that the current code even works at all.  So maybe
+it doesn't!  :)
+
+thansks,
+
+greg k-h
