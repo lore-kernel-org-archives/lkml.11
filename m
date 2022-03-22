@@ -2,110 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E721C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 20:32:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9B9AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 20:33:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233834AbiCVUdo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 16:33:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35438 "EHLO
+        id S234012AbiCVUfN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 16:35:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231282AbiCVUdm (ORCPT
+        with ESMTP id S233870AbiCVUfL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 16:33:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0E6BCC2;
-        Tue, 22 Mar 2022 13:32:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A37B616F6;
-        Tue, 22 Mar 2022 20:32:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64379C340EC;
-        Tue, 22 Mar 2022 20:32:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647981133;
-        bh=o3E0Y08RPMj1egwbWNbnzxUc/jwp9wDcfpxs75c2JQ0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ontDsE0ma8rQ6pUD/sa6Q9cAXKh9FhrP8mGAWHHEmq0wEDG92pqmJrhnXP4NviOQ+
-         90NY8lR0hbLWLGfsZSK6v4pw158Ipcliq9q5NwvZUPTUFN67ZflLz/Y6SLfZ+7lEQC
-         U1rHhKx6ygQWnf+XpUe0Qh2SFLwMOvgLFfhwLVD7DzF6zDVPWLI91XuQLhPNhg9oth
-         ZMhgAnG/c+Hqu0j+rUNuGqohfwhdxLQjuqfnzFv0TIbWp0xH2f+N8eJMuA7cDaMf+o
-         DQugWz7ATJaFSeDyz7jCqrs9L0HWlZ+UlO4q7uGKoZNx9KUf2WaNEubvEmAOSc9fwa
-         jmhHZPhvJyHYQ==
-Date:   Tue, 22 Mar 2022 22:31:19 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>
-Cc:     David Howells <dhowells@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Eric Snowberg <eric.snowberg@oracle.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>,
-        keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@linux.microsoft.com>
-Subject: Re: [PATCH v2 1/1] certs: Explain the rationale to call panic()
-Message-ID: <YjoyF02zD5WdAMOW@iki.fi>
-References: <20220322111323.542184-1-mic@digikod.net>
- <20220322111323.542184-2-mic@digikod.net>
+        Tue, 22 Mar 2022 16:35:11 -0400
+Received: from smtp.smtpout.orange.fr (smtp06.smtpout.orange.fr [80.12.242.128])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA27245BB
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 13:33:42 -0700 (PDT)
+Received: from pop-os.home ([90.126.236.122])
+        by smtp.orange.fr with ESMTPA
+        id WlCGnBrc3IQAdWlCGn8qgV; Tue, 22 Mar 2022 21:33:41 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Tue, 22 Mar 2022 21:33:41 +0100
+X-ME-IP: 90.126.236.122
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Helge Deller <deller@gmx.de>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH] video: of: display_timing: Remove a redundant zeroing of memory
+Date:   Tue, 22 Mar 2022 21:33:38 +0100
+Message-Id: <99f22ad1068fbbbc95acea59871cd408cde2623d.1647981212.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220322111323.542184-2-mic@digikod.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 12:13:23PM +0100, Mickaël Salaün wrote:
-> From: Mickaël Salaün <mic@linux.microsoft.com>
-> 
-> The blacklist_init() function calls panic() for memory allocation
-> errors.  This change documents the reason why we don't return -ENODEV.
-> 
-> Suggested-by: Paul Moore <paul@paul-moore.com> [1]
-> Requested-by: Jarkko Sakkinen <jarkko@kernel.org> [1]
-> Link: https://lore.kernel.org/r/YjeW2r6Wv55Du0bJ@iki.fi [1]
-> Reviewed-by: Paul Moore <paul@paul-moore.com>
-> Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-> Signed-off-by: Mickaël Salaün <mic@linux.microsoft.com>
-> Link: https://lore.kernel.org/r/20220322111323.542184-2-mic@digikod.net
-> ---
-> 
-> Changes since v1:
-> * Fix commit subject spelling spotted by David Woodhouse.
-> * Reword one sentence as suggested by Paul Moore.
-> * Add Reviewed-by Paul Moore.
-> * Add Reviewed-by Jarkko Sakkinen.
-> ---
->  certs/blacklist.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
-> 
-> diff --git a/certs/blacklist.c b/certs/blacklist.c
-> index 486ce0dd8e9c..25094ea73600 100644
-> --- a/certs/blacklist.c
-> +++ b/certs/blacklist.c
-> @@ -307,6 +307,15 @@ static int restrict_link_for_blacklist(struct key *dest_keyring,
->  
->  /*
->   * Initialise the blacklist
-> + *
-> + * The blacklist_init() function is registered as an initcall via
-> + * device_initcall().  As a result if the blacklist_init() function fails for
-> + * any reason the kernel continues to execute.  While cleanly returning -ENODEV
-> + * could be acceptable for some non-critical kernel parts, if the blacklist
-> + * keyring fails to load it defeats the certificate/key based deny list for
-> + * signed modules.  If a critical piece of security functionality that users
-> + * expect to be present fails to initialize, panic()ing is likely the right
-> + * thing to do.
->   */
->  static int __init blacklist_init(void)
->  {
-> -- 
-> 2.35.1
-> 
+of_parse_display_timing() already call memset(0) on its 2nd argument, so
+there is no need to clear it explicitly before calling this function.
 
-Thank you, I'll put this into my "queue" folder and apply as soon I have
-bandwidth.
+Use kmalloc() instead of kzalloc() to save a few cycles.
 
-BR, Jarkko
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/video/of_display_timing.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/video/of_display_timing.c b/drivers/video/of_display_timing.c
+index f93b6abbe258..bebd371c6b93 100644
+--- a/drivers/video/of_display_timing.c
++++ b/drivers/video/of_display_timing.c
+@@ -199,7 +199,7 @@ struct display_timings *of_get_display_timings(const struct device_node *np)
+ 		struct display_timing *dt;
+ 		int r;
+ 
+-		dt = kzalloc(sizeof(*dt), GFP_KERNEL);
++		dt = kmalloc(sizeof(*dt), GFP_KERNEL);
+ 		if (!dt) {
+ 			pr_err("%pOF: could not allocate display_timing struct\n",
+ 				np);
+-- 
+2.32.0
+
