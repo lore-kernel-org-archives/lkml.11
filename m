@@ -2,94 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D68EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 23:08:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCD48C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 23:11:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236970AbiCVXKA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 19:10:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47182 "EHLO
+        id S238755AbiCVXMv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 19:12:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230148AbiCVXJ5 (ORCPT
+        with ESMTP id S235216AbiCVXMs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 19:09:57 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D9B5EDCC
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 16:08:27 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id t5so35249pfg.4
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 16:08:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=spacecubics-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WVuJ5iTMnLNg6p4o6FYZzWHkDiNOVLzOVLvxqh6C8Y4=;
-        b=LlXGZhX0rVNs3cNb3DAGu9aomSpRR2vuW7l7DcvmvZVZMKPgeUSI7WxeyGGKf6V3+v
-         4q2Az1q/1o1sFKWPwC4qHAM9UwHxP2ZpGa6kjxB5e3YcEH44psttcBZgtOom+aa3qDEx
-         QnAZWL9FNaQesELzuft1OW9ZoJ751IRQKRFK4Qy+kjZW++9xQtx40OXaEmhXpsdTydaQ
-         ocKEYwgkVDMMCTvNJuUiCOU5mlr3HCkzjtg2zjkQZTxeun8p2VdGNx25frevoEfsn4vu
-         9XwWyaqB6PWKQXO1V+JwKP0ZDzdW9ZTkSCE9brkxKKJA92CRiaVv/8LumBs2EmSGk5qQ
-         iIMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WVuJ5iTMnLNg6p4o6FYZzWHkDiNOVLzOVLvxqh6C8Y4=;
-        b=zXxp0BgxuMZCvvoRyklR7JntHEJPMvl1irEeJj+ntHDnjEoXKg0A/xTqsE1S/xYoif
-         rlrE15ykLYeaA6DgHtkACO3t/ROXdJfoyWEb/V4hF9cII/aqo3RKWEPncBm2kIdzan6j
-         zgoD4zG7msDogmlTZkABeas6N+YotjSD+YepDe87MEzZCrnn8Ek4WFOJnWBAade4IC4Y
-         qJRcrZdTwdXeo5ILPKtN2vBz+Lbpuu0UVH9gEW8p9Tx35IAk+VCn5Zp8aZpr3zmAPdAW
-         iv8tXEup7vLJqDsVU9RqWecuX7EEKjBPrShpknbZpPA6Hfrb6R/79tjnLP5SWMYJzDac
-         kZGQ==
-X-Gm-Message-State: AOAM532oly4XmMskYzXsnMl36Hx+ZONZQX9T2sQnBRu1pHQqieJSE5/i
-        tpj7s8fFn0F3Pw5jeFjYStWQSsY6703VH4FsQCPrUw==
-X-Google-Smtp-Source: ABdhPJytcKyVVLZRHTvS/Y/aI+XgKcwjXvUtr6xRy6GO8nXN6NBbyX6AuEi+Tpd6Lc9sF9z5bKeJWcwSkPju1XRiW6Y=
-X-Received: by 2002:a05:6a02:19c:b0:385:f2a0:2b38 with SMTP id
- bj28-20020a056a02019c00b00385f2a02b38mr3263566pgb.286.1647990507325; Tue, 22
- Mar 2022 16:08:27 -0700 (PDT)
+        Tue, 22 Mar 2022 19:12:48 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C12C55E77D;
+        Tue, 22 Mar 2022 16:11:19 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KNS0L0xxrz4xPv;
+        Wed, 23 Mar 2022 10:11:14 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1647990674;
+        bh=SKiE5f0/Rlq6TatzPPOaTLpSSUfpNd+aBF9Lwqd3Wxc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=YD2AFpl+HTCeT2v/pAmYJb57NG9nifW3tZvzVWd3KzbMELsgafecqRqU4gx6YAzxf
+         neru+5NPsgpB0xooxfm5Gv+zOIzXSkjM5IZokMuXxghOhNlTxiABjIt05YzpACkb5x
+         4LmXkn5McD5gii3yvZ0UMS1c75Qd8E3VLmDg7JFTXLk76idIOb8YBQdyWG4qpweK1i
+         54+M30tzACYWE+/THTEjtwcrUs9Q3be8E9sAm1E1KSJzXas+VhM3WFSw6jSBg1+MbC
+         4GGpPEQBjeOrzgZ+QHbpTNVg3ay8niVVTEU6Bl5FZV+2Au4iXJjS5Emg4ftVhO4zpZ
+         +lC2XDcZbhMgQ==
+Date:   Wed, 23 Mar 2022 10:11:13 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build warnings after merge of the tip tree
+Message-ID: <20220323101113.1baac8a3@canb.auug.org.au>
+In-Reply-To: <20220322215252.GU8939@worktop.programming.kicks-ass.net>
+References: <20220322145108.2878ed64@canb.auug.org.au>
+        <20220322215252.GU8939@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-References: <20220311080208.45047-1-hbh25y@gmail.com>
-In-Reply-To: <20220311080208.45047-1-hbh25y@gmail.com>
-From:   Yasushi SHOJI <yashi@spacecubics.com>
-Date:   Wed, 23 Mar 2022 08:08:16 +0900
-Message-ID: <CAGLTpnK=4Gd8S488osvrbttkMvtsPy8eCGspV4-=z2N3UGZ5rw@mail.gmail.com>
-Subject: Re: [PATCH] can: mcba_usb: fix possible double dev_kfree_skb in mcba_usb_start_xmit
-To:     Hangyu Hua <hbh25y@gmail.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        stefan.maetje@esd.eu, Pavel Skripkin <paskripkin@gmail.com>,
-        remigiusz.kollataj@mobica.com,
-        linux-can <linux-can@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/wNfwU3ae+nICKJRKk=3l6.6";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Hangyu,
+--Sig_/wNfwU3ae+nICKJRKk=3l6.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Mar 11, 2022 at 5:02 PM Hangyu Hua <hbh25y@gmail.com> wrote:
+Hi Peter,
+
+On Tue, 22 Mar 2022 22:52:52 +0100 Peter Zijlstra <peterz@infradead.org> wr=
+ote:
 >
-> There is no need to call dev_kfree_skb when usb_submit_urb fails beacause
-> can_put_echo_skb deletes original skb and can_free_echo_skb deletes the cloned
-> skb.
+> On Tue, Mar 22, 2022 at 02:51:08PM +1100, Stephen Rothwell wrote:
+> >=20
+> > After merging the tip tree, today's linux-next build (x86_64 allmodconf=
+ig)
+> > produced these warnings:
+> >=20
+> > WARNING: modpost: EXPORT symbol "device_match_devt" [vmlinux] version .=
+..
+> > Is "device_match_devt" prototyped in <asm/asm-prototypes.h>?
+> >=20
+> > I get thousands like this :-(
+> >=20
+> > I don't know what has done this, but there is a new Kbuild and modpost
+> > change:
+> >=20
+> >   2f35e67f621f ("kbuild: Fixup the IBT kbuild changes") =20
+>=20
+> It was; I rebased that commit and asked Boris to regen tip so you should
+> have it fixed for the next round.
 
-So, it's more like, "we don't need to call dev_kfree_skb() after
-can_put_echo_skb()
-because can_put_echo_skb() consumes the given skb.".  It seems it doesn't depend
-on the condition of usb_submit_urb().  Plus, we don't see the "cloned
-skb" at the
-call site.
+Excellent thanks (I just picked up the new tip tree).
 
-Would you mind adding a comment on can_put_echo_skb(), in a separate patch,
-saying the fact that it consumes the skb?
+--=20
+Cheers,
+Stephen Rothwell
 
-ems_usb.c, gs_usb.c and possibly some others seem to call
-dev_kfree_skb() as well.
-Are they affected?
+--Sig_/wNfwU3ae+nICKJRKk=3l6.6
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-Best,
--- 
-           yashi
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmI6V5EACgkQAVBC80lX
+0GyYxAf/bTmLw5KE6+1PwsQn4MRbEqgb6On6EXye0bxwRywmTeWi0uFO+pmK6507
+9Of81uFfR7uRmJXHxK47fbKjPP4hbQ9iSryPomD29U8n9NH0K/X9FHytcMWzNy64
+aa0bJHbxyuGlD75ZjxFvEeosI5wso/I/qN5c/D0+9sChmh9xHTOmp269m2hwJ2bU
+LMprFeGKh1EcOXvIItz9rhIvn84drCIT9q1NOpPcB+nAQVsbvQ+GFp0hg6UqfNK/
+6ikjGBwUn6cTlsvWgcaojW5qFImWI1Q21f2PpYHjWbv56N6loVn5cxd2Lu6anbkn
+qeaqtEEBp2hfNHgSXZWheebg6daBrw==
+=rWK9
+-----END PGP SIGNATURE-----
+
+--Sig_/wNfwU3ae+nICKJRKk=3l6.6--
