@@ -2,700 +2,269 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4FBFC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:55:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DD58C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:57:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239981AbiCVR46 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 13:56:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40368 "EHLO
+        id S240009AbiCVR6j convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 13:58:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236750AbiCVR44 (ORCPT
+        with ESMTP id S239994AbiCVR6h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 13:56:56 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A20ABE13;
-        Tue, 22 Mar 2022 10:55:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1647971727; x=1679507727;
-  h=from:to:cc:subject:date:message-id;
-  bh=CJza1qn5LBfVDwk2IB4JxBLd7TTNSvYA6XWx6rm2vjY=;
-  b=m8tOljZ4balbgLcXz61QTWusyORPkKE7DF0E70Roe/JvQzl160BVzzJL
-   JXSHUZt3MfaN1wPOBkRCIhOzd10nXxVrCNE3FNMSVvOO5lll6bTCGIzPX
-   aafQ1xXT0X7tpWEh/HWgyJYTp3VzhGmkWsH1s/eoy14iDwad2TYYFYsRg
-   c=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 22 Mar 2022 10:55:27 -0700
-X-QCInternal: smtphost
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 22 Mar 2022 10:55:25 -0700
-X-QCInternal: smtphost
-Received: from vpolimer-linux.qualcomm.com ([10.204.67.235])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 22 Mar 2022 23:25:12 +0530
-Received: by vpolimer-linux.qualcomm.com (Postfix, from userid 463814)
-        id D5C4E4E3D; Tue, 22 Mar 2022 23:25:10 +0530 (IST)
-From:   Vinod Polimera <quic_vpolimer@quicinc.com>
-To:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
-Cc:     Vinod Polimera <quic_vpolimer@quicinc.com>,
-        linux-kernel@vger.kernel.org, robdclark@gmail.com,
-        dmitry.baryshkov@linaro.org, dianders@chromium.org,
-        quic_kalyant@quicinc.com
-Subject: [PATCH v6] drm/msm/disp/dpu1: add inline rotation support for sc7280 target
-Date:   Tue, 22 Mar 2022 23:25:00 +0530
-Message-Id: <1647971700-31592-1-git-send-email-quic_vpolimer@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 22 Mar 2022 13:58:37 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05CCC8EB66
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:57:09 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id m4-20020a924b04000000b002c851e73720so584607ilg.23
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:57:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to:content-transfer-encoding;
+        bh=7hSYUpq30shPrn1anLJiqXbFF/RwF850jZ3TUw5aUK0=;
+        b=sDG3yxzK+c7wYCWFfmk8nWQ23Pu/11keyH1U95LXGvEWyUbgFCdbW8anz9+AfXPv9x
+         ouWjCt2Dr3nkEiycFCU2PI7MFJnDDNIE4Kkto85DFrjn2HDQJMSbNVw2sRgOakr9kjb9
+         GLRUs/a03RmzjiuMKxzz+1Ue9YXx4P7cfdc0Lzgmiz7GZaYToO87N643O3K3V6HpqOw/
+         wo6Ji3ML7nO7ZVofMhtHsFIrTW6ZYqWAkEqwqPErYuu24EKvTrKZ0hN1xhbrfTiaADlY
+         nRqzAf0A791NUa8sV80QiEph6RzEmgp95xq4YEH8tj4fri2Is2XFOb6qH2eGzLJSMyFz
+         sJnw==
+X-Gm-Message-State: AOAM53146cVS22/hqZZke9X4sUv3n2Hr9G3zWq99dwff2Id8wxrgaycI
+        XRk5Eg9G4jNw6WrjHlpTrRyj/tuIBiZPE8qFiLch4H14DbGn
+X-Google-Smtp-Source: ABdhPJxB5yYCMAkHyiCEB19bhX1fxpgNANyrAcwXTQgkU0m/HHcm3zF2uVBtyabaKeMtcE2SzWLJX/6ad3jFky4Y0nq7me8zYR/v
+MIME-Version: 1.0
+X-Received: by 2002:a05:6638:13d4:b0:31a:65c5:a4ee with SMTP id
+ i20-20020a05663813d400b0031a65c5a4eemr11992531jaj.259.1647971828403; Tue, 22
+ Mar 2022 10:57:08 -0700 (PDT)
+Date:   Tue, 22 Mar 2022 10:57:08 -0700
+In-Reply-To: <20220322134809.3382-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000006e971305dad25766@google.com>
+Subject: Re: [syzbot] BUG: sleeping function called from invalid context in blk_release_queue
+From:   syzbot <syzbot+bbea00057d3d55c4889b@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-- Some DPU versions support inline rot90. It is supported only for
-limited amount of UBWC formats.
-- There are two versions of inline rotators, v1 (present on sm8250 and
-sm7250) and v2 (sc7280). These versions differ in the list of supported
-formats and in the scaler possibilities.
+Hello,
 
-Changes in RFC:
-- Rebase changes to the latest code base.
-- Append rotation config variables with v2 and
-remove unused variables.(Dmitry)
-- Move pixel_ext setup separately from scaler3 config.(Dmitry)
-- Add 270 degree rotation to supported rotation list.(Dmitry)
+syzbot tried to test the proposed patch but the build/boot failed:
 
-Changes in V2:
-- Remove unused macros and fix indentation.
-- Add check if 90 rotation is supported and
-add supported rotations to rot_cfg.
+00000000 R09: 0000000000000001
+R10: ffffffff873c1678 R11: 0000000000000000 R12: 0000000000000000
+R13: ffff8880b9c00000 R14: 000000000003b180 R15: ffff88806f8f8ec0
+FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000056420cdd2db0 CR3: 000000006a719000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ napi_schedule include/linux/netdevice.h:465 [inline]
+ wg_queue_enqueue_per_peer_rx drivers/net/wireguard/queueing.h:204 [inline]
+ wg_packet_decrypt_worker+0x408/0x5d0 drivers/net/wireguard/receive.c:510
+ process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
+ </TASK>
 
-Changes in V3:
-- Fix indentation.
-- Move rot_supported to sspp capabilities. (Dmitry)
-- Config pixel_ext based on src_h/src_w directly. (Dmitry)
-- Misc changes.
 
-Changes in V4:
-- Pass boolean value to sspp blk based on supported rotations for each hw.
+[   32.467287][ T3174] 8021q: adding VLAN 0 to HW filter on device bond0
+[   32.481614][ T3174] eql: remember to turn off Van-Jacobson compression on your slave devices
+Starting sshd: OK
 
-Changes in V5:
-- Update boolean value to true/false and add it for qcm2290.
+syzkaller
+syzkaller login: [   43.713954][   T27] kauditd_printk_skb: 37 callbacks suppressed
+[   43.713966][   T27] audit: type=1400 audit(1647971762.505:73): avc:  denied  { transition } for  pid=3381 comm="sshd" path="/bin/sh" dev="sda1" ino=73 scontext=system_u:system_r:initrc_t tcontext=root:sysadm_r:sysadm_t tclass=process permissive=1
+[   43.744491][   T27] audit: type=1400 audit(1647971762.535:74): avc:  denied  { write } for  pid=3381 comm="sh" path="pipe:[718]" dev="pipefs" ino=718 scontext=root:sysadm_r:sysadm_t tcontext=system_u:system_r:initrc_t tclass=fifo_file permissive=1
+Warning: Permanently added '10.128.0.110' (ECDSA) to the list of known hosts.
+2022/03/22 17:56:12 fuzzer started
+2022/03/22 17:56:12 connecting to host at 10.128.0.169:44989
+2022/03/22 17:56:12 checking machine...
+2022/03/22 17:56:12 checking revisions...
+2022/03/22 17:56:12 testing simple program...
+[   54.135544][   T27] audit: type=1400 audit(1647971772.925:75): avc:  denied  { getattr } for  pid=3585 comm="syz-fuzzer" path="user:[4026531837]" dev="nsfs" ino=4026531837 scontext=root:sysadm_r:sysadm_t tcontext=system_u:object_r:nsfs_t tclass=file permissive=1
+[   54.159389][   T27] audit: type=1400 audit(1647971772.935:76): avc:  denied  { read } for  pid=3585 comm="syz-fuzzer" dev="nsfs" ino=4026531837 scontext=root:sysadm_r:sysadm_t tcontext=system_u:object_r:nsfs_t tclass=file permissive=1
+[   54.182001][   T27] audit: type=1400 audit(1647971772.935:77): avc:  denied  { open } for  pid=3585 comm="syz-fuzzer" path="user:[4026531837]" dev="nsfs" ino=4026531837 scontext=root:sysadm_r:sysadm_t tcontext=system_u:object_r:nsfs_t tclass=file permissive=1
+[   54.206388][   T27] audit: type=1400 audit(1647971772.955:78): avc:  denied  { read } for  pid=3585 comm="syz-fuzzer" name="raw-gadget" dev="devtmpfs" ino=730 scontext=root:sysadm_r:sysadm_t tcontext=system_u:object_r:device_t tclass=chr_file permissive=1
+[   54.211078][ T3594] cgroup: Unknown subsys name 'net'
+[   54.229939][   T27] audit: type=1400 audit(1647971772.955:79): avc:  denied  { open } for  pid=3585 comm="syz-fuzzer" path="/dev/raw-gadget" dev="devtmpfs" ino=730 scontext=root:sysadm_r:sysadm_t tcontext=system_u:object_r:device_t tclass=chr_file permissive=1
+[   54.258611][   T27] audit: type=1400 audit(1647971772.955:80): avc:  denied  { read } for  pid=3585 comm="syz-fuzzer" name="vhci" dev="devtmpfs" ino=1072 scontext=root:sysadm_r:sysadm_t tcontext=system_u:object_r:vhost_device_t tclass=chr_file permissive=1
+[   54.282401][   T27] audit: type=1400 audit(1647971772.955:81): avc:  denied  { open } for  pid=3585 comm="syz-fuzzer" path="/dev/vhci" dev="devtmpfs" ino=1072 scontext=root:sysadm_r:sysadm_t tcontext=system_u:object_r:vhost_device_t tclass=chr_file permissive=1
+[   54.306043][   T27] audit: type=1400 audit(1647971772.995:82): avc:  denied  { mounton } for  pid=3594 comm="syz-executor" path="/syzcgroup/unified" dev="sda1" ino=1136 scontext=root:sysadm_r:sysadm_t tcontext=root:object_r:root_t tclass=dir permissive=1
+[   54.329350][   T27] audit: type=1400 audit(1647971772.995:83): avc:  denied  { mount } for  pid=3594 comm="syz-executor" name="/" dev="cgroup2" ino=1 scontext=root:sysadm_r:sysadm_t tcontext=system_u:object_r:cgroup_t tclass=filesystem permissive=1
+[   54.352653][   T27] audit: type=1400 audit(1647971773.035:84): avc:  denied  { unmount } for  pid=3594 comm="syz-executor" scontext=root:sysadm_r:sysadm_t tcontext=system_u:object_r:cgroup_t tclass=filesystem permissive=1
+[   54.465100][ T3594] cgroup: Unknown subsys name 'rlimit'
+[   55.749146][ T3597] Bluetooth: hci0: unexpected cc 0x0c03 length: 249 > 1
+[   55.757962][ T3597] Bluetooth: hci0: unexpected cc 0x1003 length: 249 > 9
+[   55.765791][ T3597] Bluetooth: hci0: unexpected cc 0x1001 length: 249 > 9
+[   55.774317][ T3597] Bluetooth: hci0: unexpected cc 0x0c23 length: 249 > 4
+[   55.782335][ T3597] Bluetooth: hci0: unexpected cc 0x0c25 length: 249 > 3
+[   55.790024][ T3597] Bluetooth: hci0: unexpected cc 0x0c38 length: 249 > 2
+[   55.888732][ T3596] chnl_net:caif_netlink_parms(): no params data found
+[   55.935296][ T3596] bridge0: port 1(bridge_slave_0) entered blocking state
+[   55.942935][ T3596] bridge0: port 1(bridge_slave_0) entered disabled state
+[   55.951228][ T3596] device bridge_slave_0 entered promiscuous mode
+[   55.960805][ T3596] bridge0: port 2(bridge_slave_1) entered blocking state
+[   55.968208][ T3596] bridge0: port 2(bridge_slave_1) entered disabled state
+[   55.977002][ T3596] device bridge_slave_1 entered promiscuous mode
+[   56.001058][ T3596] bond0: (slave bond_slave_0): Enslaving as an active interface with an up link
+[   56.012334][ T3596] bond0: (slave bond_slave_1): Enslaving as an active interface with an up link
+[   56.036313][ T3596] team0: Port device team_slave_0 added
+[   56.043980][ T3596] team0: Port device team_slave_1 added
+[   56.062964][ T3596] batman_adv: batadv0: Adding interface: batadv_slave_0
+[   56.070197][ T3596] batman_adv: batadv0: The MTU of interface batadv_slave_0 is too small (1500) to handle the transport of batman-adv packets. Packets going over this interface will be fragmented on layer2 which could impact the performance. Setting the MTU to 1560 would solve the problem.
+[   56.096244][ T3596] batman_adv: batadv0: Not using interface batadv_slave_0 (retrying later): interface not active
+[   56.109529][ T3596] batman_adv: batadv0: Adding interface: batadv_slave_1
+[   56.116590][ T3596] batman_adv: batadv0: The MTU of interface batadv_slave_1 is too small (1500) to handle the transport of batman-adv packets. Packets going over this interface will be fragmented on layer2 which could impact the performance. Setting the MTU to 1560 would solve the problem.
+[   56.142881][ T3596] batman_adv: batadv0: Not using interface batadv_slave_1 (retrying later): interface not active
+[   56.169447][ T3596] device hsr_slave_0 entered promiscuous mode
+[   56.176134][ T3596] device hsr_slave_1 entered promiscuous mode
+[   56.269761][ T3596] netdevsim netdevsim0 netdevsim0: renamed from eth0
+[   56.280937][ T3596] netdevsim netdevsim0 netdevsim1: renamed from eth1
+[   56.290761][ T3596] netdevsim netdevsim0 netdevsim2: renamed from eth2
+[   56.301238][ T3596] netdevsim netdevsim0 netdevsim3: renamed from eth3
+[   56.323697][ T3596] bridge0: port 2(bridge_slave_1) entered blocking state
+[   56.330921][ T3596] bridge0: port 2(bridge_slave_1) entered forwarding state
+[   56.339194][ T3596] bridge0: port 1(bridge_slave_0) entered blocking state
+[   56.346413][ T3596] bridge0: port 1(bridge_slave_0) entered forwarding state
+[   56.396709][ T3596] 8021q: adding VLAN 0 to HW filter on device bond0
+[   56.410674][ T2978] IPv6: ADDRCONF(NETDEV_CHANGE): veth0: link becomes ready
+[   56.422814][ T2978] bridge0: port 1(bridge_slave_0) entered disabled state
+[   56.432014][ T2978] bridge0: port 2(bridge_slave_1) entered disabled state
+[   56.440155][ T2978] IPv6: ADDRCONF(NETDEV_CHANGE): bond0: link becomes ready
+[   56.456015][ T3596] 8021q: adding VLAN 0 to HW filter on device team0
+[   56.469551][ T3606] IPv6: ADDRCONF(NETDEV_CHANGE): bridge_slave_0: link becomes ready
+[   56.478037][ T3606] bridge0: port 1(bridge_slave_0) entered blocking state
+[   56.485116][ T3606] bridge0: port 1(bridge_slave_0) entered forwarding state
+[   56.497293][ T2978] IPv6: ADDRCONF(NETDEV_CHANGE): bridge_slave_1: link becomes ready
+[   56.506617][ T2978] bridge0: port 2(bridge_slave_1) entered blocking state
+[   56.514201][ T2978] bridge0: port 2(bridge_slave_1) entered forwarding state
+[   56.539518][ T2978] IPv6: ADDRCONF(NETDEV_CHANGE): team_slave_0: link becomes ready
+[   56.549352][ T2978] IPv6: ADDRCONF(NETDEV_CHANGE): team_slave_1: link becomes ready
+[   56.559707][ T2978] IPv6: ADDRCONF(NETDEV_CHANGE): hsr_slave_0: link becomes ready
+[   56.568764][ T2978] IPv6: ADDRCONF(NETDEV_CHANGE): hsr_slave_1: link becomes ready
+[   56.579092][ T3596] IPv6: ADDRCONF(NETDEV_CHANGE): hsr0: link becomes ready
+[   56.590204][ T3607] IPv6: ADDRCONF(NETDEV_CHANGE): team0: link becomes ready
+[   56.611807][ T3596] 8021q: adding VLAN 0 to HW filter on device batadv0
+[   56.619341][ T3607] IPv6: ADDRCONF(NETDEV_CHANGE): vxcan0: link becomes ready
+[   56.626779][ T3607] IPv6: ADDRCONF(NETDEV_CHANGE): vxcan1: link becomes ready
+[   56.740702][  T918] IPv6: ADDRCONF(NETDEV_CHANGE): veth0_virt_wifi: link becomes ready
+[   56.755262][ T3607] IPv6: ADDRCONF(NETDEV_CHANGE): veth0_vlan: link becomes ready
+[   56.765895][ T3596] device veth0_vlan entered promiscuous mode
+[   56.774072][  T918] IPv6: ADDRCONF(NETDEV_CHANGE): vlan0: link becomes ready
+[   56.782437][  T918] IPv6: ADDRCONF(NETDEV_CHANGE): vlan1: link becomes ready
+[   56.795036][ T3596] device veth1_vlan entered promiscuous mode
+[   56.815649][  T918] IPv6: ADDRCONF(NETDEV_CHANGE): macvlan0: link becomes ready
+[   56.823912][  T918] IPv6: ADDRCONF(NETDEV_CHANGE): macvlan1: link becomes ready
+[   56.832252][  T918] IPv6: ADDRCONF(NETDEV_CHANGE): veth0_macvtap: link becomes ready
+[   56.843344][ T3596] device veth0_macvtap entered promiscuous mode
+[   56.854010][ T3596] device veth1_macvtap entered promiscuous mode
+[   56.870540][ T3596] batman_adv: batadv0: Interface activated: batadv_slave_0
+[   56.881039][  T918] IPv6: ADDRCONF(NETDEV_CHANGE): veth0_to_batadv: link becomes ready
+[   56.892621][  T918] IPv6: ADDRCONF(NETDEV_CHANGE): macvtap0: link becomes ready
+[   56.903247][ T3596] batman_adv: batadv0: Interface activated: batadv_slave_1
+[   56.911688][ T3607] IPv6: ADDRCONF(NETDEV_CHANGE): batadv_slave_1: link becomes ready
+[   56.920911][ T3607] IPv6: ADDRCONF(NETDEV_CHANGE): veth1_to_batadv: link becomes ready
+[   56.931905][ T3596] netdevsim netdevsim0 netdevsim0: set [1, 0] type 2 family 0 port 6081 - 0
+executing program
+[   56.948659][ T3596] netdevsim netdevsim0 netdevsim1: set [1, 0] type 2 family 0 port 6081 - 0
+[   56.957369][ T3596] netdevsim netdevsim0 netdevsim2: set [1, 0] type 2 family 0 port 6081 - 0
+[   56.966522][ T3596] netdevsim netdevsim0 netdevsim3: set [1, 0] type 2 family 0 port 6081 - 0
+[   56.999871][ T3606] ------------[ cut here ]------------
+[   57.005683][ T3606] WARNING: CPU: 0 PID: 3606 at net/core/dev.c:4280 __napi_schedule+0xe2/0x440
+[   57.014591][ T3606] Modules linked in:
+[   57.018588][ T3606] CPU: 0 PID: 3606 Comm: kworker/0:3 Not tainted 5.17.0-next-20220321-syzkaller-dirty #0
+[   57.018624][ T3606] Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+[   57.018640][ T3606] Workqueue: wg-crypt-wg0 wg_packet_decrypt_worker
+[   57.045433][ T3606] RIP: 0010:__napi_schedule+0xe2/0x440
+[   57.051066][ T3606] Code: 74 4a e8 d1 c1 3b fa 31 ff 65 44 8b 25 57 59 c6 78 41 81 e4 00 ff 0f 00 44 89 e6 e8 d8 c3 3b fa 45 85 e4 75 07 e8 ae c1 3b fa <0f> 0b e8 a7 c1 3b fa 65 44 8b 25 77 63 c6 78 31 ff 44 89 e6 e8 b5
+[   57.067042][ T1084] wlan0: Created IBSS using preconfigured BSSID 50:50:50:50:50:50
+[   57.070904][ T3606] RSP: 0018:ffffc9000345fc78 EFLAGS: 00010093
+[   57.070928][ T3606] RAX: 0000000000000000 RBX: ffff888070589a48 RCX: 0000000000000000
+[   57.070941][ T3606] RDX: ffff88802199c180 RSI: ffffffff873c1682 RDI: 0000000000000003
+[   57.070956][ T3606] RBP: 0000000000000200 R08: 0000000000000000 R09: 0000000000000001
+[   57.070970][ T3606] R10: ffffffff873c1678 R11: 0000000000000000 R12: 0000000000000000
+[   57.070984][ T3606] R13: ffff8880b9c00000 R14: 000000000003b180 R15: ffff88806f8f8ec0
+[   57.093188][ T3606] FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+[   57.093215][ T3606] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   57.093230][ T3606] CR2: 000056420cdd2db0 CR3: 000000006a719000 CR4: 00000000003506f0
+[   57.093245][ T3606] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[   57.157189][ T3606] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[   57.165160][ T3606] Call Trace:
+[   57.168447][ T3606]  <TASK>
+[   57.171387][ T3606]  wg_packet_decrypt_worker+0x408/0x5d0
+[   57.177231][ T3606]  process_one_work+0x996/0x1610
+[   57.182468][ T3606]  ? pwq_dec_nr_in_flight+0x2a0/0x2a0
+[   57.187872][ T3606]  ? rwlock_bug.part.0+0x90/0x90
+[   57.192808][ T3606]  ? _raw_spin_lock_irq+0x41/0x50
+[   57.197846][ T3606]  worker_thread+0x665/0x1080
+[   57.202550][ T3606]  ? __kthread_parkme+0x15f/0x220
+[   57.207663][ T3606]  ? process_one_work+0x1610/0x1610
+[   57.213043][ T3606]  kthread+0x2e9/0x3a0
+[   57.217131][ T3606]  ? kthread_complete_and_exit+0x40/0x40
+[   57.222861][ T3606]  ret_from_fork+0x1f/0x30
+[   57.227279][ T3606]  </TASK>
+[   57.230291][ T3606] Kernel panic - not syncing: panic_on_warn set ...
+[   57.237581][ T3606] CPU: 0 PID: 3606 Comm: kworker/0:3 Not tainted 5.17.0-next-20220321-syzkaller-dirty #0
+[   57.247421][ T3606] Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+[   57.257570][ T3606] Workqueue: wg-crypt-wg0 wg_packet_decrypt_worker
+[   57.264122][ T3606] Call Trace:
+[   57.267432][ T3606]  <TASK>
+[   57.270626][ T3606]  dump_stack_lvl+0xcd/0x134
+[   57.275394][ T3606]  panic+0x2d7/0x636
+[   57.279292][ T3606]  ? panic_print_sys_info.part.0+0x10b/0x10b
+[   57.285286][ T3606]  ? __warn.cold+0x1d1/0x2c5
+[   57.289883][ T3606]  ? __napi_schedule+0xe2/0x440
+[   57.294944][ T3606]  __warn.cold+0x1e2/0x2c5
+[   57.299540][ T3606]  ? __napi_schedule+0xe2/0x440
+[   57.304419][ T3606]  report_bug+0x1bd/0x210
+[   57.309008][ T3606]  handle_bug+0x3c/0x60
+[   57.313427][ T3606]  exc_invalid_op+0x14/0x40
+[   57.318035][ T3606]  asm_exc_invalid_op+0x12/0x20
+[   57.322984][ T3606] RIP: 0010:__napi_schedule+0xe2/0x440
+[   57.328448][ T3606] Code: 74 4a e8 d1 c1 3b fa 31 ff 65 44 8b 25 57 59 c6 78 41 81 e4 00 ff 0f 00 44 89 e6 e8 d8 c3 3b fa 45 85 e4 75 07 e8 ae c1 3b fa <0f> 0b e8 a7 c1 3b fa 65 44 8b 25 77 63 c6 78 31 ff 44 89 e6 e8 b5
+[   57.348960][ T3606] RSP: 0018:ffffc9000345fc78 EFLAGS: 00010093
+[   57.355050][ T3606] RAX: 0000000000000000 RBX: ffff888070589a48 RCX: 0000000000000000
+[   57.363106][ T3606] RDX: ffff88802199c180 RSI: ffffffff873c1682 RDI: 0000000000000003
+[   57.371088][ T3606] RBP: 0000000000000200 R08: 0000000000000000 R09: 0000000000000001
+[   57.379069][ T3606] R10: ffffffff873c1678 R11: 0000000000000000 R12: 0000000000000000
+[   57.387122][ T3606] R13: ffff8880b9c00000 R14: 000000000003b180 R15: ffff88806f8f8ec0
+[   57.395350][ T3606]  ? __napi_schedule+0xd8/0x440
+[   57.400222][ T3606]  ? __napi_schedule+0xe2/0x440
+[   57.405107][ T3606]  ? __napi_schedule+0xe2/0x440
+[   57.410057][ T3606]  wg_packet_decrypt_worker+0x408/0x5d0
+[   57.415803][ T3606]  process_one_work+0x996/0x1610
+[   57.420847][ T3606]  ? pwq_dec_nr_in_flight+0x2a0/0x2a0
+[   57.426230][ T3606]  ? rwlock_bug.part.0+0x90/0x90
+[   57.431256][ T3606]  ? _raw_spin_lock_irq+0x41/0x50
+[   57.436372][ T3606]  worker_thread+0x665/0x1080
+[   57.441055][ T3606]  ? __kthread_parkme+0x15f/0x220
+[   57.446101][ T3606]  ? process_one_work+0x1610/0x1610
+[   57.451565][ T3606]  kthread+0x2e9/0x3a0
+[   57.455724][ T3606]  ? kthread_complete_and_exit+0x40/0x40
+[   57.461364][ T3606]  ret_from_fork+0x1f/0x30
+[   57.465912][ T3606]  </TASK>
+[   57.469667][ T3606] Kernel Offset: disabled
+[   57.474426][ T3606] Rebooting in 86400 seconds..
 
-Changes in V6:
-- Add changes that are missed as part of v5.
-- Add dpu_find_format inline function to find valid format. (Dmitry)
 
-Co-developed-by: Kalyan Thota <quic_kalyant@quicinc.com>
-Signed-off-by: Kalyan Thota <quic_kalyant@quicinc.com>
-Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
----
- drivers/gpu/drm/msm/disp/dpu1/dpu_formats.h    |  21 +++
- drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c | 185 ++++++++++++++-----------
- drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h |  18 +++
- drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c      | 109 ++++++++++++---
- drivers/gpu/drm/msm/disp/dpu1/dpu_plane.h      |   2 +
- 5 files changed, 230 insertions(+), 105 deletions(-)
+Error text is too large and was truncated, full error text is at:
+https://syzkaller.appspot.com/x/error.txt?x=17aae1a3700000
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_formats.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_formats.h
-index 418f5ae..8e26ea5 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_formats.h
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_formats.h
-@@ -31,6 +31,27 @@ const struct msm_format *dpu_get_msm_format(
- 		struct msm_kms *kms,
- 		const uint32_t format,
- 		const uint64_t modifiers);
-+/**
-+ * dpu_find_format - validate if the pixel format is supported
-+ * @fmt:		pointer to the dpu format
-+ * @supported_formats:	supported formats by dpu HW
-+ * @num_formatss:	total number of formats
-+ *
-+ * Return: false if not valid format, true on success
-+ */
-+static inline bool dpu_find_format(const struct dpu_format *fmt, const u32 *supported_formats,
-+					size_t num_formats)
-+{
-+	int i;
-+
-+	for (i = 0; i < num_formats; i++) {
-+		/* check for valid formats supported by inline rotation */
-+		if (fmt->base.pixel_format == supported_formats[i])
-+			return true;
-+	}
-+
-+	return false;
-+}
- 
- /**
-  * dpu_format_check_modified_format - validate format and buffers for
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
-index a4fe77c..ced7fb3 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
-@@ -35,6 +35,9 @@
- 	BIT(DPU_SSPP_TS_PREFILL) | BIT(DPU_SSPP_TS_PREFILL_REC1) |\
- 	BIT(DPU_SSPP_CDP) | BIT(DPU_SSPP_EXCL_RECT))
- 
-+#define VIG_SC7280_MASK \
-+	(VIG_SC7180_MASK | BIT(DPU_SSPP_INLINE_ROTATION))
-+
- #define DMA_SDM845_MASK \
- 	(BIT(DPU_SSPP_SRC) | BIT(DPU_SSPP_QOS) | BIT(DPU_SSPP_QOS_8LVL) |\
- 	BIT(DPU_SSPP_TS_PREFILL) | BIT(DPU_SSPP_TS_PREFILL_REC1) |\
-@@ -203,6 +206,11 @@ static const uint32_t plane_formats_yuv[] = {
- 	DRM_FORMAT_YVU420,
- };
- 
-+static const u32 rotation_v2_formats[] = {
-+	DRM_FORMAT_NV12,
-+	/* TODO add formats after validation */
-+};
-+
- /*************************************************************
-  * DPU sub blocks config
-  *************************************************************/
-@@ -642,8 +650,7 @@ static const struct dpu_ctl_cfg qcm2290_ctl[] = {
-  *************************************************************/
- 
- /* SSPP common configuration */
--
--#define _VIG_SBLK(num, sdma_pri, qseed_ver) \
-+#define _VIG_SBLK(num, sdma_pri, qseed_ver, rot_cfg) \
- 	{ \
- 	.maxdwnscale = MAX_DOWNSCALE_RATIO, \
- 	.maxupscale = MAX_UPSCALE_RATIO, \
-@@ -660,6 +667,7 @@ static const struct dpu_ctl_cfg qcm2290_ctl[] = {
- 	.num_formats = ARRAY_SIZE(plane_formats_yuv), \
- 	.virt_format_list = plane_formats, \
- 	.virt_num_formats = ARRAY_SIZE(plane_formats), \
-+	.rotation_cfg = rot_cfg, \
- 	}
- 
- #define _DMA_SBLK(num, sdma_pri) \
-@@ -676,22 +684,28 @@ static const struct dpu_ctl_cfg qcm2290_ctl[] = {
- 	}
- 
- static const struct dpu_sspp_sub_blks msm8998_vig_sblk_0 =
--				_VIG_SBLK("0", 0, DPU_SSPP_SCALER_QSEED3);
-+				_VIG_SBLK("0", 0, DPU_SSPP_SCALER_QSEED3, NULL);
- static const struct dpu_sspp_sub_blks msm8998_vig_sblk_1 =
--				_VIG_SBLK("1", 0, DPU_SSPP_SCALER_QSEED3);
-+				_VIG_SBLK("1", 0, DPU_SSPP_SCALER_QSEED3, NULL);
- static const struct dpu_sspp_sub_blks msm8998_vig_sblk_2 =
--				_VIG_SBLK("2", 0, DPU_SSPP_SCALER_QSEED3);
-+				_VIG_SBLK("2", 0, DPU_SSPP_SCALER_QSEED3, NULL);
- static const struct dpu_sspp_sub_blks msm8998_vig_sblk_3 =
--				_VIG_SBLK("3", 0, DPU_SSPP_SCALER_QSEED3);
-+				_VIG_SBLK("3", 0, DPU_SSPP_SCALER_QSEED3, NULL);
-+
-+static const struct dpu_rotation_cfg dpu_rot_sc7280_cfg_v2 = {
-+	.rot_maxheight = 1088,
-+	.rot_num_formats = ARRAY_SIZE(rotation_v2_formats),
-+	.rot_format_list = rotation_v2_formats,
-+};
- 
- static const struct dpu_sspp_sub_blks sdm845_vig_sblk_0 =
--				_VIG_SBLK("0", 5, DPU_SSPP_SCALER_QSEED3);
-+				_VIG_SBLK("0", 5, DPU_SSPP_SCALER_QSEED3, NULL);
- static const struct dpu_sspp_sub_blks sdm845_vig_sblk_1 =
--				_VIG_SBLK("1", 6, DPU_SSPP_SCALER_QSEED3);
-+				_VIG_SBLK("1", 6, DPU_SSPP_SCALER_QSEED3, NULL);
- static const struct dpu_sspp_sub_blks sdm845_vig_sblk_2 =
--				_VIG_SBLK("2", 7, DPU_SSPP_SCALER_QSEED3);
-+				_VIG_SBLK("2", 7, DPU_SSPP_SCALER_QSEED3, NULL);
- static const struct dpu_sspp_sub_blks sdm845_vig_sblk_3 =
--				_VIG_SBLK("3", 8, DPU_SSPP_SCALER_QSEED3);
-+				_VIG_SBLK("3", 8, DPU_SSPP_SCALER_QSEED3, NULL);
- 
- static const struct dpu_sspp_sub_blks sdm845_dma_sblk_0 = _DMA_SBLK("8", 1);
- static const struct dpu_sspp_sub_blks sdm845_dma_sblk_1 = _DMA_SBLK("9", 2);
-@@ -699,7 +713,7 @@ static const struct dpu_sspp_sub_blks sdm845_dma_sblk_2 = _DMA_SBLK("10", 3);
- static const struct dpu_sspp_sub_blks sdm845_dma_sblk_3 = _DMA_SBLK("11", 4);
- 
- #define SSPP_BLK(_name, _id, _base, _features, \
--		_sblk, _xinid, _type, _clkctrl) \
-+		_sblk, _xinid, _type, _clkctrl, _rotsupported) \
- 	{ \
- 	.name = _name, .id = _id, \
- 	.base = _base, .len = 0x1c8, \
-@@ -707,98 +721,103 @@ static const struct dpu_sspp_sub_blks sdm845_dma_sblk_3 = _DMA_SBLK("11", 4);
- 	.sblk = &_sblk, \
- 	.xin_id = _xinid, \
- 	.type = _type, \
--	.clk_ctrl = _clkctrl \
-+	.clk_ctrl = _clkctrl, \
-+	.rot_supported = _rotsupported ? DRM_MODE_ROTATE_MASK | DRM_MODE_REFLECT_MASK : \
-+			DRM_MODE_ROTATE_0 | DRM_MODE_ROTATE_180 | DRM_MODE_REFLECT_MASK, \
- 	}
- 
- static const struct dpu_sspp_cfg msm8998_sspp[] = {
--	SSPP_BLK("sspp_0", SSPP_VIG0, 0x4000, VIG_MSM8998_MASK,
--		msm8998_vig_sblk_0, 0,  SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG0),
--	SSPP_BLK("sspp_1", SSPP_VIG1, 0x6000, VIG_MSM8998_MASK,
--		msm8998_vig_sblk_1, 4,  SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG1),
--	SSPP_BLK("sspp_2", SSPP_VIG2, 0x8000, VIG_MSM8998_MASK,
--		msm8998_vig_sblk_2, 8, SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG2),
--	SSPP_BLK("sspp_3", SSPP_VIG3, 0xa000, VIG_MSM8998_MASK,
--		msm8998_vig_sblk_3, 12,  SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG3),
--	SSPP_BLK("sspp_8", SSPP_DMA0, 0x24000,  DMA_MSM8998_MASK,
--		sdm845_dma_sblk_0, 1, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA0),
--	SSPP_BLK("sspp_9", SSPP_DMA1, 0x26000,  DMA_MSM8998_MASK,
--		sdm845_dma_sblk_1, 5, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA1),
--	SSPP_BLK("sspp_10", SSPP_DMA2, 0x28000,  DMA_CURSOR_MSM8998_MASK,
--		sdm845_dma_sblk_2, 9, SSPP_TYPE_DMA, DPU_CLK_CTRL_CURSOR0),
--	SSPP_BLK("sspp_11", SSPP_DMA3, 0x2a000,  DMA_CURSOR_MSM8998_MASK,
--		sdm845_dma_sblk_3, 13, SSPP_TYPE_DMA, DPU_CLK_CTRL_CURSOR1),
-+	SSPP_BLK("sspp_0", SSPP_VIG0, 0x4000, VIG_MSM8998_MASK, msm8998_vig_sblk_0,
-+		0, SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG0, false),
-+	SSPP_BLK("sspp_1", SSPP_VIG1, 0x6000, VIG_MSM8998_MASK, msm8998_vig_sblk_1,
-+		4, SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG1, false),
-+	SSPP_BLK("sspp_2", SSPP_VIG2, 0x8000, VIG_MSM8998_MASK, msm8998_vig_sblk_2,
-+		8, SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG2, false),
-+	SSPP_BLK("sspp_3", SSPP_VIG3, 0xa000, VIG_MSM8998_MASK, msm8998_vig_sblk_3,
-+		12, SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG3, false),
-+	SSPP_BLK("sspp_8", SSPP_DMA0, 0x24000,  DMA_MSM8998_MASK, sdm845_dma_sblk_0,
-+		1, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA0, false),
-+	SSPP_BLK("sspp_9", SSPP_DMA1, 0x26000,  DMA_MSM8998_MASK, sdm845_dma_sblk_1,
-+		5, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA1, false),
-+	SSPP_BLK("sspp_10", SSPP_DMA2, 0x28000,  DMA_CURSOR_MSM8998_MASK, sdm845_dma_sblk_2,
-+		9, SSPP_TYPE_DMA, DPU_CLK_CTRL_CURSOR0, false),
-+	SSPP_BLK("sspp_11", SSPP_DMA3, 0x2a000,  DMA_CURSOR_MSM8998_MASK, sdm845_dma_sblk_3,
-+		13, SSPP_TYPE_DMA, DPU_CLK_CTRL_CURSOR1, false),
- };
- 
- static const struct dpu_sspp_cfg sdm845_sspp[] = {
--	SSPP_BLK("sspp_0", SSPP_VIG0, 0x4000, VIG_SDM845_MASK,
--		sdm845_vig_sblk_0, 0,  SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG0),
--	SSPP_BLK("sspp_1", SSPP_VIG1, 0x6000, VIG_SDM845_MASK,
--		sdm845_vig_sblk_1, 4,  SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG1),
--	SSPP_BLK("sspp_2", SSPP_VIG2, 0x8000, VIG_SDM845_MASK,
--		sdm845_vig_sblk_2, 8, SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG2),
--	SSPP_BLK("sspp_3", SSPP_VIG3, 0xa000, VIG_SDM845_MASK,
--		sdm845_vig_sblk_3, 12,  SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG3),
--	SSPP_BLK("sspp_8", SSPP_DMA0, 0x24000,  DMA_SDM845_MASK,
--		sdm845_dma_sblk_0, 1, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA0),
--	SSPP_BLK("sspp_9", SSPP_DMA1, 0x26000,  DMA_SDM845_MASK,
--		sdm845_dma_sblk_1, 5, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA1),
--	SSPP_BLK("sspp_10", SSPP_DMA2, 0x28000,  DMA_CURSOR_SDM845_MASK,
--		sdm845_dma_sblk_2, 9, SSPP_TYPE_DMA, DPU_CLK_CTRL_CURSOR0),
--	SSPP_BLK("sspp_11", SSPP_DMA3, 0x2a000,  DMA_CURSOR_SDM845_MASK,
--		sdm845_dma_sblk_3, 13, SSPP_TYPE_DMA, DPU_CLK_CTRL_CURSOR1),
-+	SSPP_BLK("sspp_0", SSPP_VIG0, 0x4000, VIG_SDM845_MASK, sdm845_vig_sblk_0,
-+		0, SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG0, false),
-+	SSPP_BLK("sspp_1", SSPP_VIG1, 0x6000, VIG_SDM845_MASK, sdm845_vig_sblk_1,
-+		4, SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG1, false),
-+	SSPP_BLK("sspp_2", SSPP_VIG2, 0x8000, VIG_SDM845_MASK, sdm845_vig_sblk_2,
-+		8, SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG2, false),
-+	SSPP_BLK("sspp_3", SSPP_VIG3, 0xa000, VIG_SDM845_MASK, sdm845_vig_sblk_3,
-+		12, SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG3, false),
-+	SSPP_BLK("sspp_8", SSPP_DMA0, 0x24000,  DMA_SDM845_MASK, sdm845_dma_sblk_0,
-+		1, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA0, false),
-+	SSPP_BLK("sspp_9", SSPP_DMA1, 0x26000,  DMA_SDM845_MASK, sdm845_dma_sblk_1,
-+		5, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA1, false),
-+	SSPP_BLK("sspp_10", SSPP_DMA2, 0x28000,  DMA_CURSOR_SDM845_MASK, sdm845_dma_sblk_2,
-+		9, SSPP_TYPE_DMA, DPU_CLK_CTRL_CURSOR0, false),
-+	SSPP_BLK("sspp_11", SSPP_DMA3, 0x2a000,  DMA_CURSOR_SDM845_MASK, sdm845_dma_sblk_3,
-+		13, SSPP_TYPE_DMA, DPU_CLK_CTRL_CURSOR1, false),
- };
- 
- static const struct dpu_sspp_sub_blks sc7180_vig_sblk_0 =
--				_VIG_SBLK("0", 4, DPU_SSPP_SCALER_QSEED4);
-+				_VIG_SBLK("0", 4, DPU_SSPP_SCALER_QSEED4, NULL);
-+
-+static const struct dpu_sspp_sub_blks sc7280_vig_sblk_0 =
-+				_VIG_SBLK("0", 4, DPU_SSPP_SCALER_QSEED4, &dpu_rot_sc7280_cfg_v2);
- 
- static const struct dpu_sspp_cfg sc7180_sspp[] = {
--	SSPP_BLK("sspp_0", SSPP_VIG0, 0x4000, VIG_SC7180_MASK,
--		sc7180_vig_sblk_0, 0,  SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG0),
--	SSPP_BLK("sspp_8", SSPP_DMA0, 0x24000,  DMA_SDM845_MASK,
--		sdm845_dma_sblk_0, 1, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA0),
--	SSPP_BLK("sspp_9", SSPP_DMA1, 0x26000,  DMA_CURSOR_SDM845_MASK,
--		sdm845_dma_sblk_1, 5, SSPP_TYPE_DMA, DPU_CLK_CTRL_CURSOR0),
--	SSPP_BLK("sspp_10", SSPP_DMA2, 0x28000,  DMA_CURSOR_SDM845_MASK,
--		sdm845_dma_sblk_2, 9, SSPP_TYPE_DMA, DPU_CLK_CTRL_CURSOR1),
-+	SSPP_BLK("sspp_0", SSPP_VIG0, 0x4000, VIG_SC7180_MASK, sc7180_vig_sblk_0,
-+		0, SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG0, false),
-+	SSPP_BLK("sspp_8", SSPP_DMA0, 0x24000,  DMA_SDM845_MASK, sdm845_dma_sblk_0,
-+		1, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA0, false),
-+	SSPP_BLK("sspp_9", SSPP_DMA1, 0x26000,  DMA_CURSOR_SDM845_MASK,	sdm845_dma_sblk_1,
-+		5, SSPP_TYPE_DMA, DPU_CLK_CTRL_CURSOR0, false),
-+	SSPP_BLK("sspp_10", SSPP_DMA2, 0x28000,  DMA_CURSOR_SDM845_MASK, sdm845_dma_sblk_2,
-+		9, SSPP_TYPE_DMA, DPU_CLK_CTRL_CURSOR1, false),
- };
- 
- static const struct dpu_sspp_sub_blks sm8250_vig_sblk_0 =
--				_VIG_SBLK("0", 5, DPU_SSPP_SCALER_QSEED3LITE);
-+				_VIG_SBLK("0", 5, DPU_SSPP_SCALER_QSEED3LITE, NULL);
- static const struct dpu_sspp_sub_blks sm8250_vig_sblk_1 =
--				_VIG_SBLK("1", 6, DPU_SSPP_SCALER_QSEED3LITE);
-+				_VIG_SBLK("1", 6, DPU_SSPP_SCALER_QSEED3LITE, NULL);
- static const struct dpu_sspp_sub_blks sm8250_vig_sblk_2 =
--				_VIG_SBLK("2", 7, DPU_SSPP_SCALER_QSEED3LITE);
-+				_VIG_SBLK("2", 7, DPU_SSPP_SCALER_QSEED3LITE, NULL);
- static const struct dpu_sspp_sub_blks sm8250_vig_sblk_3 =
--				_VIG_SBLK("3", 8, DPU_SSPP_SCALER_QSEED3LITE);
-+				_VIG_SBLK("3", 8, DPU_SSPP_SCALER_QSEED3LITE, NULL);
- 
- static const struct dpu_sspp_cfg sm8250_sspp[] = {
--	SSPP_BLK("sspp_0", SSPP_VIG0, 0x4000, VIG_SM8250_MASK,
--		sm8250_vig_sblk_0, 0,  SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG0),
--	SSPP_BLK("sspp_1", SSPP_VIG1, 0x6000, VIG_SM8250_MASK,
--		sm8250_vig_sblk_1, 4,  SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG1),
--	SSPP_BLK("sspp_2", SSPP_VIG2, 0x8000, VIG_SM8250_MASK,
--		sm8250_vig_sblk_2, 8, SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG2),
--	SSPP_BLK("sspp_3", SSPP_VIG3, 0xa000, VIG_SM8250_MASK,
--		sm8250_vig_sblk_3, 12,  SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG3),
--	SSPP_BLK("sspp_8", SSPP_DMA0, 0x24000,  DMA_SDM845_MASK,
--		sdm845_dma_sblk_0, 1, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA0),
--	SSPP_BLK("sspp_9", SSPP_DMA1, 0x26000,  DMA_SDM845_MASK,
--		sdm845_dma_sblk_1, 5, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA1),
--	SSPP_BLK("sspp_10", SSPP_DMA2, 0x28000,  DMA_CURSOR_SDM845_MASK,
--		sdm845_dma_sblk_2, 9, SSPP_TYPE_DMA, DPU_CLK_CTRL_CURSOR0),
--	SSPP_BLK("sspp_11", SSPP_DMA3, 0x2a000,  DMA_CURSOR_SDM845_MASK,
--		sdm845_dma_sblk_3, 13, SSPP_TYPE_DMA, DPU_CLK_CTRL_CURSOR1),
-+	SSPP_BLK("sspp_0", SSPP_VIG0, 0x4000, VIG_SM8250_MASK, sm8250_vig_sblk_0,
-+		0, SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG0, false),
-+	SSPP_BLK("sspp_1", SSPP_VIG1, 0x6000, VIG_SM8250_MASK, sm8250_vig_sblk_1,
-+		4, SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG1, false),
-+	SSPP_BLK("sspp_2", SSPP_VIG2, 0x8000, VIG_SM8250_MASK, sm8250_vig_sblk_2,
-+		8, SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG2, false),
-+	SSPP_BLK("sspp_3", SSPP_VIG3, 0xa000, VIG_SM8250_MASK, sm8250_vig_sblk_3,
-+		12, SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG3, false),
-+	SSPP_BLK("sspp_8", SSPP_DMA0, 0x24000,  DMA_SDM845_MASK, sdm845_dma_sblk_0,
-+		1, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA0, false),
-+	SSPP_BLK("sspp_9", SSPP_DMA1, 0x26000,  DMA_SDM845_MASK, sdm845_dma_sblk_1,
-+		5, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA1, false),
-+	SSPP_BLK("sspp_10", SSPP_DMA2, 0x28000,  DMA_CURSOR_SDM845_MASK, sdm845_dma_sblk_2,
-+		9, SSPP_TYPE_DMA, DPU_CLK_CTRL_CURSOR0, false),
-+	SSPP_BLK("sspp_11", SSPP_DMA3, 0x2a000,  DMA_CURSOR_SDM845_MASK, sdm845_dma_sblk_3,
-+		13, SSPP_TYPE_DMA, DPU_CLK_CTRL_CURSOR1, false),
- };
- 
- static const struct dpu_sspp_cfg sc7280_sspp[] = {
--	SSPP_BLK("sspp_0", SSPP_VIG0, 0x4000, VIG_SC7180_MASK,
--		sc7180_vig_sblk_0, 0,  SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG0),
--	SSPP_BLK("sspp_8", SSPP_DMA0, 0x24000,  DMA_SDM845_MASK,
--		sdm845_dma_sblk_0, 1, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA0),
--	SSPP_BLK("sspp_9", SSPP_DMA1, 0x26000,  DMA_CURSOR_SDM845_MASK,
--		sdm845_dma_sblk_1, 5, SSPP_TYPE_DMA, DPU_CLK_CTRL_CURSOR0),
--	SSPP_BLK("sspp_10", SSPP_DMA2, 0x28000,  DMA_CURSOR_SDM845_MASK,
--		sdm845_dma_sblk_2, 9, SSPP_TYPE_DMA, DPU_CLK_CTRL_CURSOR1),
-+	SSPP_BLK("sspp_0", SSPP_VIG0, 0x4000, VIG_SC7280_MASK, sc7280_vig_sblk_0,
-+		0,  SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG0, true),
-+	SSPP_BLK("sspp_8", SSPP_DMA0, 0x24000,  DMA_SDM845_MASK, sdm845_dma_sblk_0,
-+		1, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA0, false),
-+	SSPP_BLK("sspp_9", SSPP_DMA1, 0x26000,  DMA_CURSOR_SDM845_MASK,	sdm845_dma_sblk_1,
-+		5, SSPP_TYPE_DMA, DPU_CLK_CTRL_CURSOR0, false),
-+	SSPP_BLK("sspp_10", SSPP_DMA2, 0x28000,  DMA_CURSOR_SDM845_MASK, sdm845_dma_sblk_2,
-+		9, SSPP_TYPE_DMA, DPU_CLK_CTRL_CURSOR1, false),
- };
- 
- 
-@@ -820,9 +839,9 @@ static const struct dpu_sspp_sub_blks qcm2290_dma_sblk_0 = _DMA_SBLK("8", 1);
- 
- static const struct dpu_sspp_cfg qcm2290_sspp[] = {
- 	SSPP_BLK("sspp_0", SSPP_VIG0, 0x4000, VIG_QCM2290_MASK,
--		 qcm2290_vig_sblk_0, 0, SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG0),
-+		qcm2290_vig_sblk_0, 0, SSPP_TYPE_VIG, DPU_CLK_CTRL_VIG0, false),
- 	SSPP_BLK("sspp_8", SSPP_DMA0, 0x24000,  DMA_SDM845_MASK,
--		 qcm2290_dma_sblk_0, 1, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA0),
-+		qcm2290_dma_sblk_0, 1, SSPP_TYPE_DMA, DPU_CLK_CTRL_DMA0, false),
- };
- 
- /*************************************************************
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
-index b85b24b..d009d83 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
-@@ -112,6 +112,7 @@ enum {
-  * @DPU_SSPP_TS_PREFILL      Supports prefill with traffic shaper
-  * @DPU_SSPP_TS_PREFILL_REC1 Supports prefill with traffic shaper multirec
-  * @DPU_SSPP_CDP             Supports client driven prefetch
-+ * @DPU_SSPP_INLINE_ROTATION Support inline rotation
-  * @DPU_SSPP_MAX             maximum value
-  */
- enum {
-@@ -132,6 +133,7 @@ enum {
- 	DPU_SSPP_TS_PREFILL,
- 	DPU_SSPP_TS_PREFILL_REC1,
- 	DPU_SSPP_CDP,
-+	DPU_SSPP_INLINE_ROTATION,
- 	DPU_SSPP_MAX
- };
- 
-@@ -315,6 +317,18 @@ struct dpu_qos_lut_tbl {
- };
- 
- /**
-+ * struct dpu_rotation_cfg - define inline rotation config
-+ * @rot_maxheight: max pre rotated height allowed for rotation
-+ * @rot_num_formats: number of elements in @rot_format_list
-+ * @rot_format_list: list of supported rotator formats
-+ */
-+struct dpu_rotation_cfg {
-+	u32 rot_maxheight;
-+	size_t rot_num_formats;
-+	const u32 *rot_format_list;
-+};
-+
-+/**
-  * struct dpu_caps - define DPU capabilities
-  * @max_mixer_width    max layer mixer line width support.
-  * @max_mixer_blendstages max layer mixer blend stages or
-@@ -369,6 +383,7 @@ struct dpu_caps {
-  * @num_formats: Number of supported formats
-  * @virt_format_list: Pointer to list of supported formats for virtual planes
-  * @virt_num_formats: Number of supported formats for virtual planes
-+ * @dpu_rotation_cfg: inline rotation configuration
-  */
- struct dpu_sspp_sub_blks {
- 	u32 creq_vblank;
-@@ -390,6 +405,7 @@ struct dpu_sspp_sub_blks {
- 	u32 num_formats;
- 	const u32 *virt_format_list;
- 	u32 virt_num_formats;
-+	const struct dpu_rotation_cfg *rotation_cfg;
- };
- 
- /**
-@@ -492,6 +508,7 @@ struct dpu_ctl_cfg {
-  * @xin_id:            bus client identifier
-  * @clk_ctrl           clock control identifier
-  * @type               sspp type identifier
-+ * @rot_supported      allowed rotations
-  */
- struct dpu_sspp_cfg {
- 	DPU_HW_BLK_INFO;
-@@ -499,6 +516,7 @@ struct dpu_sspp_cfg {
- 	u32 xin_id;
- 	enum dpu_clk_ctrl_type clk_ctrl;
- 	u32 type;
-+	u32 rot_supported;
- };
- 
- /**
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c
-index 6565682..ff854cc 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c
-@@ -528,11 +528,19 @@ static void _dpu_plane_setup_scaler3(struct dpu_plane *pdpu,
- 		struct dpu_plane_state *pstate,
- 		uint32_t src_w, uint32_t src_h, uint32_t dst_w, uint32_t dst_h,
- 		struct dpu_hw_scaler3_cfg *scale_cfg,
--		struct dpu_hw_pixel_ext *pixel_ext,
- 		const struct dpu_format *fmt,
- 		uint32_t chroma_subsmpl_h, uint32_t chroma_subsmpl_v)
- {
- 	uint32_t i;
-+	bool inline_rotation = pstate->rotation & DRM_MODE_ROTATE_90;
-+
-+	/*
-+	 * For inline rotation cases, scaler config is post-rotation,
-+	 * so swap the dimensions here. However, pixel extension will
-+	 * need pre-rotation settings.
-+	 */
-+	if (inline_rotation)
-+		swap(src_w, src_h);
- 
- 	scale_cfg->phase_step_x[DPU_SSPP_COMP_0] =
- 		mult_frac((1 << PHASE_STEP_SHIFT), src_w, dst_w);
-@@ -571,11 +579,6 @@ static void _dpu_plane_setup_scaler3(struct dpu_plane *pdpu,
- 			scale_cfg->preload_x[i] = DPU_QSEED3_DEFAULT_PRELOAD_H;
- 			scale_cfg->preload_y[i] = DPU_QSEED3_DEFAULT_PRELOAD_V;
- 		}
--
--		pixel_ext->num_ext_pxls_top[i] =
--			scale_cfg->src_height[i];
--		pixel_ext->num_ext_pxls_left[i] =
--			scale_cfg->src_width[i];
- 	}
- 	if (!(DPU_FORMAT_IS_YUV(fmt)) && (src_h == dst_h)
- 		&& (src_w == dst_w))
-@@ -591,6 +594,24 @@ static void _dpu_plane_setup_scaler3(struct dpu_plane *pdpu,
- 	scale_cfg->enable = 1;
- }
- 
-+static void _dpu_plane_setup_pixel_ext(struct dpu_hw_scaler3_cfg *scale_cfg,
-+				struct dpu_hw_pixel_ext *pixel_ext,
-+				uint32_t src_w, uint32_t src_h,
-+				uint32_t chroma_subsmpl_h, uint32_t chroma_subsmpl_v)
-+{
-+	int i;
-+
-+	for (i = 0; i < DPU_MAX_PLANES; i++) {
-+		if (i == DPU_SSPP_COMP_1_2 || i == DPU_SSPP_COMP_2) {
-+			src_w /= chroma_subsmpl_h;
-+			src_h /= chroma_subsmpl_v;
-+		}
-+
-+		pixel_ext->num_ext_pxls_top[i] = src_h;
-+		pixel_ext->num_ext_pxls_left[i] = src_w;
-+	}
-+}
-+
- static const struct dpu_csc_cfg dpu_csc_YUV2RGB_601L = {
- 	{
- 		/* S15.16 format */
-@@ -665,7 +686,12 @@ static void _dpu_plane_setup_scaler(struct dpu_plane *pdpu,
- 			drm_rect_height(&pipe_cfg->src_rect),
- 			drm_rect_width(&pipe_cfg->dst_rect),
- 			drm_rect_height(&pipe_cfg->dst_rect),
--			&scaler3_cfg, &pixel_ext, fmt,
-+			&scaler3_cfg, fmt,
-+			info->hsub, info->vsub);
-+
-+	/* configure pixel extension based on scalar config */
-+	_dpu_plane_setup_pixel_ext(&scaler3_cfg, &pixel_ext,
-+			drm_rect_width(&pipe_cfg->src_rect), drm_rect_height(&pipe_cfg->src_rect),
- 			info->hsub, info->vsub);
- 
- 	if (pdpu->pipe_hw->ops.setup_pe)
-@@ -956,6 +982,33 @@ static bool dpu_plane_validate_src(struct drm_rect *src,
- 		drm_rect_equals(fb_rect, src);
- }
- 
-+static int dpu_plane_check_inline_rotation(struct dpu_plane *pdpu,
-+						const struct dpu_sspp_sub_blks *sblk,
-+						struct drm_rect src, const struct dpu_format *fmt)
-+{
-+	size_t num_formats;
-+	const u32 *supported_formats;
-+
-+	if (!sblk->rotation_cfg) {
-+		DPU_ERROR("invalid rotation cfg\n");
-+		return -EINVAL;
-+	}
-+
-+	if (drm_rect_width(&src) > sblk->rotation_cfg->rot_maxheight) {
-+		DPU_DEBUG_PLANE(pdpu, "invalid height for inline rot:%d max:%d\n",
-+				src.y2, sblk->rotation_cfg->rot_maxheight);
-+		return -EINVAL;
-+	}
-+
-+	supported_formats = sblk->rotation_cfg->rot_format_list;
-+	num_formats = sblk->rotation_cfg->rot_num_formats;
-+
-+	if (!DPU_FORMAT_IS_UBWC(fmt) || !dpu_find_format(fmt, supported_formats, num_formats))
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
- static int dpu_plane_atomic_check(struct drm_plane *plane,
- 				  struct drm_atomic_state *state)
- {
-@@ -968,15 +1021,19 @@ static int dpu_plane_atomic_check(struct drm_plane *plane,
- 	const struct dpu_format *fmt;
- 	struct drm_rect src, dst, fb_rect = { 0 };
- 	uint32_t min_src_size, max_linewidth;
-+	unsigned int rotation = 0;
-+	uint32_t supported_rotations = DRM_MODE_REFLECT_MASK | DRM_MODE_ROTATE_0;
-+	const struct dpu_sspp_cfg *pipe_hw_caps = pdpu->pipe_hw->cap;
-+	const struct dpu_sspp_sub_blks *sblk = pdpu->pipe_hw->cap->sblk;
- 
- 	if (new_plane_state->crtc)
- 		crtc_state = drm_atomic_get_new_crtc_state(state,
- 							   new_plane_state->crtc);
- 
--	min_scale = FRAC_16_16(1, pdpu->pipe_hw->cap->sblk->maxupscale);
-+	min_scale = FRAC_16_16(1, sblk->maxupscale);
- 	ret = drm_atomic_helper_check_plane_state(new_plane_state, crtc_state,
- 						  min_scale,
--						  pdpu->pipe_hw->cap->sblk->maxdwnscale << 16,
-+						  sblk->maxdwnscale << 16,
- 						  true, true);
- 	if (ret) {
- 		DPU_DEBUG_PLANE(pdpu, "Check plane state failed (%d)\n", ret);
-@@ -1002,8 +1059,8 @@ static int dpu_plane_atomic_check(struct drm_plane *plane,
- 	min_src_size = DPU_FORMAT_IS_YUV(fmt) ? 2 : 1;
- 
- 	if (DPU_FORMAT_IS_YUV(fmt) &&
--		(!(pdpu->pipe_hw->cap->features & DPU_SSPP_SCALER) ||
--		 !(pdpu->pipe_hw->cap->features & DPU_SSPP_CSC_ANY))) {
-+		(!(pipe_hw_caps->features & DPU_SSPP_SCALER) ||
-+		 !(pipe_hw_caps->features & DPU_SSPP_CSC_ANY))) {
- 		DPU_DEBUG_PLANE(pdpu,
- 				"plane doesn't have scaler/csc for yuv\n");
- 		return -EINVAL;
-@@ -1036,6 +1093,20 @@ static int dpu_plane_atomic_check(struct drm_plane *plane,
- 		return -E2BIG;
- 	}
- 
-+	if (pipe_hw_caps->features & BIT(DPU_SSPP_INLINE_ROTATION))
-+		supported_rotations |= DRM_MODE_ROTATE_90;
-+
-+	rotation = drm_rotation_simplify(new_plane_state->rotation,
-+					supported_rotations);
-+
-+	if ((pipe_hw_caps->features & BIT(DPU_SSPP_INLINE_ROTATION)) &&
-+		(rotation & DRM_MODE_ROTATE_90)) {
-+		ret = dpu_plane_check_inline_rotation(pdpu, sblk, src, fmt);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	pstate->rotation = rotation;
- 	pstate->needs_qos_remap = drm_atomic_crtc_needs_modeset(crtc_state);
- 
- 	return 0;
-@@ -1151,21 +1222,19 @@ static void dpu_plane_sspp_atomic_update(struct drm_plane *plane)
- 				pstate->multirect_mode);
- 
- 	if (pdpu->pipe_hw->ops.setup_format) {
--		unsigned int rotation;
-+		unsigned int rotation = pstate->rotation;
- 
- 		src_flags = 0x0;
- 
--		rotation = drm_rotation_simplify(state->rotation,
--						 DRM_MODE_ROTATE_0 |
--						 DRM_MODE_REFLECT_X |
--						 DRM_MODE_REFLECT_Y);
--
- 		if (rotation & DRM_MODE_REFLECT_X)
- 			src_flags |= DPU_SSPP_FLIP_LR;
- 
- 		if (rotation & DRM_MODE_REFLECT_Y)
- 			src_flags |= DPU_SSPP_FLIP_UD;
- 
-+		if (rotation & DRM_MODE_ROTATE_90)
-+			src_flags |= DPU_SSPP_ROT_90;
-+
- 		/* update format */
- 		pdpu->pipe_hw->ops.setup_format(pdpu->pipe_hw, fmt, src_flags,
- 				pstate->multirect_index);
-@@ -1531,11 +1600,7 @@ struct drm_plane *dpu_plane_init(struct drm_device *dev,
- 			BIT(DRM_MODE_BLEND_COVERAGE));
- 
- 	drm_plane_create_rotation_property(plane,
--			DRM_MODE_ROTATE_0,
--			DRM_MODE_ROTATE_0 |
--			DRM_MODE_ROTATE_180 |
--			DRM_MODE_REFLECT_X |
--			DRM_MODE_REFLECT_Y);
-+		    DRM_MODE_ROTATE_0, pdpu->pipe_hw->cap->rot_supported);
- 
- 	drm_plane_enable_fb_damage_clips(plane);
- 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.h
-index 50781e2..e146310 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.h
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.h
-@@ -26,6 +26,7 @@
-  * @plane_fetch_bw: calculated BW per plane
-  * @plane_clk: calculated clk per plane
-  * @needs_dirtyfb: whether attached CRTC needs pixel data explicitly flushed
-+ * @rotation: simplified drm rotation hint
-  */
- struct dpu_plane_state {
- 	struct drm_plane_state base;
-@@ -40,6 +41,7 @@ struct dpu_plane_state {
- 	u64 plane_clk;
- 
- 	bool needs_dirtyfb;
-+	unsigned int rotation;
- };
- 
- /**
--- 
-2.7.4
+
+Tested on:
+
+commit:         f9006d92 Add linux-next specific files for 20220321
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/
+kernel config:  https://syzkaller.appspot.com/x/.config?x=988d5d4e5a475e90
+dashboard link: https://syzkaller.appspot.com/bug?extid=bbea00057d3d55c4889b
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=17f20eeb700000
 
