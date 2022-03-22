@@ -2,144 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 316B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 15:41:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 921EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 15:41:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238706AbiCVPm3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 11:42:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47628 "EHLO
+        id S237181AbiCVPmd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 11:42:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238684AbiCVPm0 (ORCPT
+        with ESMTP id S238687AbiCVPm0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 22 Mar 2022 11:42:26 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B4A48BF23
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 08:40:51 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KNG0S6KMDz9sTf;
-        Tue, 22 Mar 2022 16:40:40 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id IdS7A4p8cTJ3; Tue, 22 Mar 2022 16:40:40 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KNG0N0gHPz9sTX;
-        Tue, 22 Mar 2022 16:40:36 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 0522E8B763;
-        Tue, 22 Mar 2022 16:40:36 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id GtRwm26YODKb; Tue, 22 Mar 2022 16:40:35 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.203.14])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id A2F258B776;
-        Tue, 22 Mar 2022 16:40:35 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 22MFeT9R1513370
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Tue, 22 Mar 2022 16:40:29 +0100
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 22MFeT5D1513369;
-        Tue, 22 Mar 2022 16:40:29 +0100
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH v1 2/4] powerpc/code-patching: Speed up page mapping/unmapping
-Date:   Tue, 22 Mar 2022 16:40:19 +0100
-Message-Id: <3a1e34312b5c169cde846174c275241db85f7406.1647962456.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1647962456.git.christophe.leroy@csgroup.eu>
-References: <cover.1647962456.git.christophe.leroy@csgroup.eu>
+Received: from gateway20.websitewelcome.com (gateway20.websitewelcome.com [192.185.61.9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 021A68BF34
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 08:40:52 -0700 (PDT)
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+        by gateway20.websitewelcome.com (Postfix) with ESMTP id 93380400F923F
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:19:39 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id WgINnjfyAb6UBWgINnzlWw; Tue, 22 Mar 2022 10:19:39 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=CPW0jKKDu2ErkcxGpk3zLqZYpgPh+rOyqsZe2Y8TEt4=; b=YEwIwL3kI9LQjIR69kJnYUwJnx
+        kFrm50Ke2/4YuDre3URXPm69vvo2XFbq8JDM43i+Ly6edQ9qaD0K2CFl+AcHL10v2aRROYtMgzK3n
+        qbjLELTOs4xI2QNFJgiRzc/ECnSKlbm5iwjcjgYYBsShOxjIeqFDtOyQlW4sS4PSyJnWrQhqi/AzC
+        txYek+g9vITOkNC/rOx3mhGcSPwK4DnVBDBcX7o2XN/uUWLJFbIpiBl0DcjjV18utxXfizoYV1K6V
+        /MVpk7dqjMmDR8kQo2c2N39vIRQAPPzcmPDy0cF+4YhdRFeRDgkwzxu/Hrxmcrgf8XWQYcEjjYJY3
+        VVGZZufg==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54396)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nWgIN-000PFB-28; Tue, 22 Mar 2022 15:19:39 +0000
+Message-ID: <78abe69b-7914-1b38-c94e-7143f61f4909@roeck-us.net>
+Date:   Tue, 22 Mar 2022 08:19:37 -0700
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1647963619; l=2635; s=20211009; h=from:subject:message-id; bh=35yiHUmQqTxn+N9RYcp08cbKx03tJYDkvUBA219cU6Q=; b=C1icnQR+MZ6ADKWVnpRpqlb+vWViOhf0mEe0MchKsPUtNDbD69fdcgFkM7Crvql273l7ISOsCS4r vocZXidRCkWjGuy8MaUzY/j17WJUfzCAxHHqn5HSwDR8dbaeozAW
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: hppa vDSO and compiler (non-)support
+Content-Language: en-US
+To:     Helge Deller <deller@gmx.de>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-parisc@vger.kernel.org,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Martin_Li=c5=a1ka?= <mliska@suse.cz>,
+        Andreas Schwab <schwab@linux-m68k.org>
+References: <d2713ae1-0ca5-9e5a-b7d2-b7d0f1f5614a@kernel.org>
+ <2e1f3e41-7097-e68d-d312-9319ad62565c@gmx.de>
+ <d2a09bf3-9bd3-588a-99a1-598281d08678@kernel.org>
+ <dd4e55aa-0b3e-6e18-7ec2-3bec02cafde0@kernel.org> <YjjJNb0D/b+ZXBVZ@ls3530>
+ <28696c20-21ad-b0ac-8093-4ce07225fcd8@kernel.org>
+ <812d4a38-8cb1-a7be-c504-87d095aea883@gmx.de>
+ <20220322130516.GA724287@roeck-us.net>
+ <ccc25312-890a-a534-1681-5ecde56328d0@gmx.de>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <ccc25312-890a-a534-1681-5ecde56328d0@gmx.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nWgIN-000PFB-28
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54396
+X-Source-Auth: linux@roeck-us.net
+X-Email-Count: 3
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit 591b4b268435 ("powerpc/code-patching: Pre-map patch area")
-the patch area is premapped so intermediate page tables are already
-allocated.
+On 3/22/22 07:25, Helge Deller wrote:
+> On 3/22/22 14:05, Guenter Roeck wrote:
+>> Does that also fix the build problems now seen in mainline ?
+> 
+> No.
+> 
+>> Building parisc64:generic-64bit_defconfig ... failed
+>> --------------
+>> Error log:
+>> arch/parisc/kernel/vdso64/Makefile:30: FORCE prerequisite is missing
+>> arch/parisc/kernel/vdso32/sigtramp.S: Assembler messages:
+>> arch/parisc/kernel/vdso32/sigtramp.S:39: Error: unknown pseudo-op: `.proc'
+>> ...
+>> arch/parisc/kernel/vdso32/restart_syscall.S:32: Error: .cfi_endproc without corresponding .cfi_startproc
+>> make[2]: *** [arch/parisc/kernel/vdso32/Makefile:34: arch/parisc/kernel/vdso32/restart_syscall.o] Error 1
+>> make[2]: *** Waiting for unfinished jobs....
+>> make[2]: *** [arch/parisc/kernel/vdso32/Makefile:34: arch/parisc/kernel/vdso32/sigtramp.o] Error 1
+>> make[1]: *** [arch/parisc/Makefile:177: vdso_prepare] Error 2
+>> make: *** [Makefile:219: __sub-make] Error 2
+>>
+>> This is with hppa64-linux-gcc (GCC) 11.2.0.
+> 
+> Can you check if you have the 32-bit compiler (hppa-linux-gcc) installed too?
+> The errors above happen when building the 32-bit vDSO, for which you need the 32-bit compiler.
+> 
 
-Use __set_pte_at() directly instead of the heavy map_kernel_page(),
-at for unmapping just do a pte_clear() followed by a flush.
+Yes, I do, but that doesn't help much if I want to build a 64-bit target such
+as generic-64bit_defconfig. Am I missing something ?
 
-__set_pte_at() can be used directly without the filters in
-set_pte_at() because we are mapping a normal page non executable.
-
-Make sure gcc knows text_poke_area is page aligned in order to
-optimise the flush.
-
-This change reduces by 66% the time needed to activate ftrace on
-an 8xx (588000 tb ticks instead of 1744000).
-
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- arch/powerpc/lib/code-patching.c | 27 ++++++++++++++++-----------
- 1 file changed, 16 insertions(+), 11 deletions(-)
-
-diff --git a/arch/powerpc/lib/code-patching.c b/arch/powerpc/lib/code-patching.c
-index f970f189875b..62692c6031bc 100644
---- a/arch/powerpc/lib/code-patching.c
-+++ b/arch/powerpc/lib/code-patching.c
-@@ -90,17 +90,20 @@ void __init poking_init(void)
- 		text_area_cpu_down));
- }
- 
-+static unsigned long get_patch_pfn(void *addr)
-+{
-+	if (IS_ENABLED(CONFIG_MODULES) && is_vmalloc_or_module_addr(addr))
-+		return vmalloc_to_pfn(addr);
-+	else
-+		return __pa_symbol(addr) >> PAGE_SHIFT;
-+}
-+
- /*
-  * This can be called for kernel text or a module.
-  */
- static int map_patch_area(void *addr, unsigned long text_poke_addr)
- {
--	unsigned long pfn;
--
--	if (IS_ENABLED(CONFIG_MODULES) && is_vmalloc_or_module_addr(addr))
--		pfn = vmalloc_to_pfn(addr);
--	else
--		pfn = __pa_symbol(addr) >> PAGE_SHIFT;
-+	unsigned long pfn = get_patch_pfn(addr);
- 
- 	return map_kernel_page(text_poke_addr, (pfn << PAGE_SHIFT), PAGE_KERNEL);
- }
-@@ -145,17 +148,19 @@ static int __do_patch_instruction(u32 *addr, ppc_inst_t instr)
- 	int err;
- 	u32 *patch_addr;
- 	unsigned long text_poke_addr;
-+	pte_t *pte;
-+	unsigned long pfn = get_patch_pfn(addr);
- 
--	text_poke_addr = (unsigned long)__this_cpu_read(text_poke_area)->addr;
-+	text_poke_addr = (unsigned long)__this_cpu_read(text_poke_area)->addr & PAGE_MASK;
- 	patch_addr = (u32 *)(text_poke_addr + offset_in_page(addr));
- 
--	err = map_patch_area(addr, text_poke_addr);
--	if (err)
--		return err;
-+	pte = virt_to_kpte(text_poke_addr);
-+	__set_pte_at(&init_mm, text_poke_addr, pte, pfn_pte(pfn, PAGE_KERNEL), 0);
- 
- 	err = __patch_instruction(addr, instr, patch_addr);
- 
--	unmap_patch_area(text_poke_addr);
-+	pte_clear(&init_mm, text_poke_addr, pte);
-+	flush_tlb_kernel_range(text_poke_addr, text_poke_addr + PAGE_SIZE);
- 
- 	return err;
- }
--- 
-2.35.1
-
+Guenter
