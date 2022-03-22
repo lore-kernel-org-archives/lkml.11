@@ -2,215 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F596C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:41:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88429C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:41:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239868AbiCVRmv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 13:42:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54360 "EHLO
+        id S239906AbiCVRm4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 13:42:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239847AbiCVRmp (ORCPT
+        with ESMTP id S239852AbiCVRmr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 13:42:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 676838D691
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:41:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647970876;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=I6BtCBu5Oq00qG5Jtfeh+nKlDytZZoOPC9H3EiLLaQU=;
-        b=S0nzvcg2uhrn5QPFGIwC4rSbod5KrWHh8yY3wcgy/HZIrtOb8Up0H3hMlFKS8WIEffdBSr
-        rUmPT6UF3qW0nravcuY1N9dP+idgpF75wqPSXbtWR7X084OKz3htvaqvkteH6KjH7ayGv2
-        b48zOkN7FpKrKdZd+5M70oGM9I1YoZE=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-484-Vgx2cQRNPc-MioS53Ncb1g-1; Tue, 22 Mar 2022 13:41:11 -0400
-X-MC-Unique: Vgx2cQRNPc-MioS53Ncb1g-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 87321185A7A4;
-        Tue, 22 Mar 2022 17:41:10 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.40.194.231])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5B25CC090DC;
-        Tue, 22 Mar 2022 17:41:06 +0000 (UTC)
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     kvm@vger.kernel.org
-Cc:     Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>,
-        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Jim Mattson <jmattson@google.com>, x86@kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH v4 4/6] KVM: x86: nSVM: implement nested vGIF
-Date:   Tue, 22 Mar 2022 19:40:48 +0200
-Message-Id: <20220322174050.241850-5-mlevitsk@redhat.com>
-In-Reply-To: <20220322174050.241850-1-mlevitsk@redhat.com>
-References: <20220322174050.241850-1-mlevitsk@redhat.com>
+        Tue, 22 Mar 2022 13:42:47 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5A2758D696;
+        Tue, 22 Mar 2022 10:41:18 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 12D631042;
+        Tue, 22 Mar 2022 10:41:18 -0700 (PDT)
+Received: from [10.57.43.230] (unknown [10.57.43.230])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CE0043F66F;
+        Tue, 22 Mar 2022 10:41:15 -0700 (PDT)
+Message-ID: <e9e589fe-8363-3f52-e9cd-08778485ad79@arm.com>
+Date:   Tue, 22 Mar 2022 17:41:11 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 5/9] soc: apple: Add RTKit IPC library
+Content-Language: en-GB
+To:     Arnd Bergmann <arnd@arndb.de>, Sven Peter <sven@svenpeter.dev>
+Cc:     Hector Martin <marcan@marcan.st>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Rob Herring <robh+dt@kernel.org>,
+        Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Marc Zyngier <maz@kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-nvme@lists.infradead.org
+References: <20220321165049.35985-1-sven@svenpeter.dev>
+ <20220321165049.35985-6-sven@svenpeter.dev>
+ <CAK8P3a2VgrWHerXTX4_wS8UU7fpN9-JZ5xESaWrr-WGYqGty=g@mail.gmail.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <CAK8P3a2VgrWHerXTX4_wS8UU7fpN9-JZ5xESaWrr-WGYqGty=g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In case L1 enables vGIF for L2, the L2 cannot affect L1's GIF, regardless
-of STGI/CLGI intercepts, and since VM entry enables GIF, this means
-that L1's GIF is always 1 while L2 is running.
+On 2022-03-22 13:13, Arnd Bergmann wrote:
+>> +#define rtk_err(format, arg...) dev_err(rtk->dev, "RTKit: " format, ##arg)
+>> +#define rtk_warn(format, arg...) dev_warn(rtk->dev, "RTKit: " format, ##arg)
+>> +#define rtk_info(format, arg...) dev_info(rtk->dev, "RTKit: " format, ##arg)
+>> +#define rtk_dbg(format, arg...) dev_dbg(rtk->dev, "RTKit: " format, ##arg)
+> 
+> I generally don't like the custom printing macros, please just open-code
+> the prints where they are used, that makes it easier for other kernel
+> developers to see exactly what is being printed
 
-Thus in this case leave L1's vGIF in vmcb01, while letting L2
-control the vGIF thus implementing nested vGIF.
+More to the point, implicitly depending on having something named "rtk" 
+in scope is pretty much inexcusable, and the only thing left after 
+fixing that is what we have pr_fmt for ;)
 
-Also allow KVM to toggle L1's GIF during nested entry/exit
-by always using vmcb01.
-
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
----
- arch/x86/kvm/svm/nested.c | 17 +++++++++++++----
- arch/x86/kvm/svm/svm.c    |  5 +++++
- arch/x86/kvm/svm/svm.h    | 35 +++++++++++++++++++++++++++++------
- 3 files changed, 47 insertions(+), 10 deletions(-)
-
-diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-index 0a0b4b26c91e..47a5e8d8b578 100644
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -439,6 +439,10 @@ void nested_sync_control_from_vmcb02(struct vcpu_svm *svm)
- 		 */
- 		mask &= ~V_IRQ_MASK;
- 	}
-+
-+	if (nested_vgif_enabled(svm))
-+		mask |= V_GIF_MASK;
-+
- 	svm->nested.ctl.int_ctl        &= ~mask;
- 	svm->nested.ctl.int_ctl        |= svm->vmcb->control.int_ctl & mask;
- }
-@@ -603,10 +607,8 @@ static void nested_vmcb02_prepare_save(struct vcpu_svm *svm, struct vmcb *vmcb12
- 
- static void nested_vmcb02_prepare_control(struct vcpu_svm *svm)
- {
--	const u32 int_ctl_vmcb01_bits =
--		V_INTR_MASKING_MASK | V_GIF_MASK | V_GIF_ENABLE_MASK;
--
--	const u32 int_ctl_vmcb12_bits = V_TPR_MASK | V_IRQ_INJECTION_BITS_MASK;
-+	u32 int_ctl_vmcb01_bits = V_INTR_MASKING_MASK;
-+	u32 int_ctl_vmcb12_bits = V_TPR_MASK | V_IRQ_INJECTION_BITS_MASK;
- 
- 	struct kvm_vcpu *vcpu = &svm->vcpu;
- 	struct vmcb *vmcb01 = svm->vmcb01.ptr;
-@@ -623,6 +625,13 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm)
- 	 */
- 	WARN_ON(kvm_apicv_activated(svm->vcpu.kvm));
- 
-+
-+
-+	if (svm->vgif_enabled && (svm->nested.ctl.int_ctl & V_GIF_ENABLE_MASK))
-+		int_ctl_vmcb12_bits |= (V_GIF_MASK | V_GIF_ENABLE_MASK);
-+	else
-+		int_ctl_vmcb01_bits |= (V_GIF_MASK | V_GIF_ENABLE_MASK);
-+
- 	/* Copied from vmcb01.  msrpm_base can be overwritten later.  */
- 	vmcb02->control.nested_ctl = vmcb01->control.nested_ctl;
- 	vmcb02->control.iopm_base_pa = vmcb01->control.iopm_base_pa;
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 4c23cb1895ab..7fb4cf3bce4f 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -4030,6 +4030,8 @@ static void svm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
- 	svm->pause_threshold_enabled = kvm_cpu_cap_has(X86_FEATURE_PFTHRESHOLD) &&
- 			guest_cpuid_has(vcpu, X86_FEATURE_PFTHRESHOLD);
- 
-+	svm->vgif_enabled = vgif && guest_cpuid_has(vcpu, X86_FEATURE_VGIF);
-+
- 	svm_recalc_instruction_intercepts(vcpu, svm);
- 
- 	/* For sev guests, the memory encryption bit is not reserved in CR3.  */
-@@ -4789,6 +4791,9 @@ static __init void svm_set_cpu_caps(void)
- 		if (boot_cpu_has(X86_FEATURE_PFTHRESHOLD))
- 			kvm_cpu_cap_set(X86_FEATURE_PFTHRESHOLD);
- 
-+		if (vgif)
-+			kvm_cpu_cap_set(X86_FEATURE_VGIF);
-+
- 		/* Nested VM can receive #VMEXIT instead of triggering #GP */
- 		kvm_cpu_cap_set(X86_FEATURE_SVME_ADDR_CHK);
- 	}
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index 9895fd6a7310..ba0c90bc5c55 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -239,6 +239,7 @@ struct vcpu_svm {
- 	bool lbrv_enabled                 : 1;
- 	bool pause_filter_enabled         : 1;
- 	bool pause_threshold_enabled      : 1;
-+	bool vgif_enabled                 : 1;
- 
- 	u32 ldr_reg;
- 	u32 dfr_reg;
-@@ -457,26 +458,48 @@ static inline bool svm_is_intercept(struct vcpu_svm *svm, int bit)
- 	return vmcb_is_intercept(&svm->vmcb->control, bit);
- }
- 
-+static inline bool nested_vgif_enabled(struct vcpu_svm *svm)
-+{
-+	return svm->vgif_enabled && (svm->nested.ctl.int_ctl & V_GIF_ENABLE_MASK);
-+}
-+
-+static inline struct vmcb *get_vgif_vmcb(struct vcpu_svm *svm)
-+{
-+	if (!vgif)
-+		return NULL;
-+
-+	if (is_guest_mode(&svm->vcpu) && !nested_vgif_enabled(svm))
-+		return svm->nested.vmcb02.ptr;
-+	else
-+		return svm->vmcb01.ptr;
-+}
-+
- static inline void enable_gif(struct vcpu_svm *svm)
- {
--	if (vgif)
--		svm->vmcb->control.int_ctl |= V_GIF_MASK;
-+	struct vmcb *vmcb = get_vgif_vmcb(svm);
-+
-+	if (vmcb)
-+		vmcb->control.int_ctl |= V_GIF_MASK;
- 	else
- 		svm->vcpu.arch.hflags |= HF_GIF_MASK;
- }
- 
- static inline void disable_gif(struct vcpu_svm *svm)
- {
--	if (vgif)
--		svm->vmcb->control.int_ctl &= ~V_GIF_MASK;
-+	struct vmcb *vmcb = get_vgif_vmcb(svm);
-+
-+	if (vmcb)
-+		vmcb->control.int_ctl &= ~V_GIF_MASK;
- 	else
- 		svm->vcpu.arch.hflags &= ~HF_GIF_MASK;
- }
- 
- static inline bool gif_set(struct vcpu_svm *svm)
- {
--	if (vgif)
--		return !!(svm->vmcb->control.int_ctl & V_GIF_MASK);
-+	struct vmcb *vmcb = get_vgif_vmcb(svm);
-+
-+	if (vmcb)
-+		return !!(vmcb->control.int_ctl & V_GIF_MASK);
- 	else
- 		return !!(svm->vcpu.arch.hflags & HF_GIF_MASK);
- }
--- 
-2.26.3
-
+Robin.
