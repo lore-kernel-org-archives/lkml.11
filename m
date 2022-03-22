@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97097C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:25:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3C64C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:25:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239671AbiCVR1I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 13:27:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50788 "EHLO
+        id S239707AbiCVR1O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 13:27:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239658AbiCVR1A (ORCPT
+        with ESMTP id S239711AbiCVR1H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 13:27:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AD00A4A913
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:25:25 -0700 (PDT)
+        Tue, 22 Mar 2022 13:27:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 31CBD4C422
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:25:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647969924;
+        s=mimecast20190719; t=1647969933;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ljE1Q1pDWFeHEafcYaJmat1sJuOoQ7xxJXxrlZIWhVE=;
-        b=WTxzQ5dV3A6y6Gxlw6lgSnm/baOWT/lRjWRAixhalTkWXjC79HR6lYjuUPeJ7saotFUrbi
-        SKmhgwpwjtqdMBipQ3dI1nmsGJKBMxnQfvNqgkkN4HG3yzFdXxN25Uwg4YAW6yBImb69ll
-        jG0MW7hJrsYaywHZ+OTRcqOSyjepano=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=q8as9H1HZf7aEv/ALL6no45LqVp0BSMxnSHwKmtFgbg=;
+        b=guMotcHcwiDePjyHakIC3ig3AZnyFnbu6p4QS31PY+8sE0ahe/HQ9klQ9xkC1A5u70WNCe
+        KlKVL5YPEpWiV12FLShFzJbhAQvwcJ/R47MrfmuOmrAj6eI5Kmj7RbME/RlGWv5CVeVHM1
+        1VL4qk+n7rG3rlpmUn6GXdvg7KdjJAk=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-623-5yc3rfuCN3GmkPs4NLhyDA-1; Tue, 22 Mar 2022 13:25:21 -0400
-X-MC-Unique: 5yc3rfuCN3GmkPs4NLhyDA-1
+ us-mta-544-_IGqjONjPyORBbMY1V1xUw-1; Tue, 22 Mar 2022 13:25:28 -0400
+X-MC-Unique: _IGqjONjPyORBbMY1V1xUw-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8A2FD1C05B0C;
-        Tue, 22 Mar 2022 17:25:20 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EB4F3811E78;
+        Tue, 22 Mar 2022 17:25:27 +0000 (UTC)
 Received: from localhost.localdomain (unknown [10.40.194.231])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3557C2166B2D;
-        Tue, 22 Mar 2022 17:25:17 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 991382166B44;
+        Tue, 22 Mar 2022 17:25:24 +0000 (UTC)
 From:   Maxim Levitsky <mlevitsk@redhat.com>
 To:     kvm@vger.kernel.org
 Cc:     Jim Mattson <jmattson@google.com>,
@@ -53,9 +53,9 @@ Cc:     Jim Mattson <jmattson@google.com>,
         Vitaly Kuznetsov <vkuznets@redhat.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH 5/8] KVM: x86: SVM: move tsc ratio definitions to svm.h
-Date:   Tue, 22 Mar 2022 19:24:46 +0200
-Message-Id: <20220322172449.235575-6-mlevitsk@redhat.com>
+Subject: [PATCH 7/8] KVM: x86: SVM: fix tsc scaling when the host doesn't support it
+Date:   Tue, 22 Mar 2022 19:24:48 +0200
+Message-Id: <20220322172449.235575-8-mlevitsk@redhat.com>
 In-Reply-To: <20220322172449.235575-1-mlevitsk@redhat.com>
 References: <20220322172449.235575-1-mlevitsk@redhat.com>
 MIME-Version: 1.0
@@ -65,92 +65,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Another piece of SVM spec which should be in the header file
+It was decided that when TSC scaling is not supported,
+the virtual MSR_AMD64_TSC_RATIO should still have the default '1.0'
+value.
 
+However in this case kvm_max_tsc_scaling_ratio is not set,
+which breaks various assumptions.
+
+Fix this by always calculating kvm_max_tsc_scaling_ratio
+regardless of host support.
+
+Suggested-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- arch/x86/include/asm/svm.h |  6 ++++++
- arch/x86/kvm/svm/svm.c     | 15 +++++----------
- 2 files changed, 11 insertions(+), 10 deletions(-)
+ arch/x86/kvm/svm/svm.c | 4 ++--
+ arch/x86/kvm/vmx/vmx.c | 7 +++----
+ arch/x86/kvm/x86.c     | 4 +---
+ 3 files changed, 6 insertions(+), 9 deletions(-)
 
-diff --git a/arch/x86/include/asm/svm.h b/arch/x86/include/asm/svm.h
-index ab572d8def2b..f70a5108d464 100644
---- a/arch/x86/include/asm/svm.h
-+++ b/arch/x86/include/asm/svm.h
-@@ -221,6 +221,12 @@ struct __attribute__ ((__packed__)) vmcb_control_area {
- #define SVM_NESTED_CTL_SEV_ES_ENABLE	BIT(2)
- 
- 
-+#define SVM_TSC_RATIO_RSVD	0xffffff0000000000ULL
-+#define SVM_TSC_RATIO_MIN	0x0000000000000001ULL
-+#define SVM_TSC_RATIO_MAX	0x000000ffffffffffULL
-+#define SVM_TSC_RATIO_DEFAULT	0x0100000000ULL
-+
-+
- /* AVIC */
- #define AVIC_LOGICAL_ID_ENTRY_GUEST_PHYSICAL_ID_MASK	(0xFFULL)
- #define AVIC_LOGICAL_ID_ENTRY_VALID_BIT			31
 diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index e9a5c1e80889..ea3f0b2605e5 100644
+index fb31ed01086c..acf04cf4ed2a 100644
 --- a/arch/x86/kvm/svm/svm.c
 +++ b/arch/x86/kvm/svm/svm.c
-@@ -72,10 +72,6 @@ MODULE_DEVICE_TABLE(x86cpu, svm_cpu_id);
- 
- #define DEBUGCTL_RESERVED_BITS (~(0x3fULL))
- 
--#define TSC_RATIO_RSVD          0xffffff0000000000ULL
--#define TSC_RATIO_MIN		0x0000000000000001ULL
--#define TSC_RATIO_MAX		0x000000ffffffffffULL
--
- static bool erratum_383_found __read_mostly;
- 
- u32 msrpm_offsets[MSRPM_OFFSETS] __read_mostly;
-@@ -87,7 +83,6 @@ u32 msrpm_offsets[MSRPM_OFFSETS] __read_mostly;
- static uint64_t osvw_len = 4, osvw_status;
- 
- static DEFINE_PER_CPU(u64, current_tsc_ratio);
--#define TSC_RATIO_DEFAULT	0x0100000000ULL
- 
- static const struct svm_direct_access_msrs {
- 	u32 index;   /* Index of the MSR */
-@@ -483,7 +478,7 @@ static void svm_hardware_disable(void)
- {
- 	/* Make sure we clean up behind us */
- 	if (tsc_scaling)
--		wrmsrl(MSR_AMD64_TSC_RATIO, TSC_RATIO_DEFAULT);
-+		wrmsrl(MSR_AMD64_TSC_RATIO, SVM_TSC_RATIO_DEFAULT);
- 
- 	cpu_svm_disable();
- 
-@@ -529,8 +524,8 @@ static int svm_hardware_enable(void)
- 		 * Set the default value, even if we don't use TSC scaling
- 		 * to avoid having stale value in the msr
- 		 */
--		wrmsrl(MSR_AMD64_TSC_RATIO, TSC_RATIO_DEFAULT);
--		__this_cpu_write(current_tsc_ratio, TSC_RATIO_DEFAULT);
-+		wrmsrl(MSR_AMD64_TSC_RATIO, SVM_TSC_RATIO_DEFAULT);
-+		__this_cpu_write(current_tsc_ratio, SVM_TSC_RATIO_DEFAULT);
- 	}
- 
- 
-@@ -2729,7 +2724,7 @@ static int svm_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr)
- 			break;
- 		}
- 
--		if (data & TSC_RATIO_RSVD)
-+		if (data & SVM_TSC_RATIO_RSVD)
- 			return 1;
- 
- 		svm->tsc_ratio_msr = data;
-@@ -4776,7 +4771,7 @@ static __init int svm_hardware_setup(void)
+@@ -4763,10 +4763,10 @@ static __init int svm_hardware_setup(void)
  		} else {
  			pr_info("TSC scaling supported\n");
  			kvm_has_tsc_control = true;
--			kvm_max_tsc_scaling_ratio = TSC_RATIO_MAX;
-+			kvm_max_tsc_scaling_ratio = SVM_TSC_RATIO_MAX;
- 			kvm_tsc_scaling_ratio_frac_bits = 32;
+-			kvm_max_tsc_scaling_ratio = SVM_TSC_RATIO_MAX;
+-			kvm_tsc_scaling_ratio_frac_bits = 32;
  		}
  	}
++	kvm_max_tsc_scaling_ratio = SVM_TSC_RATIO_MAX;
++	kvm_tsc_scaling_ratio_frac_bits = 32;
+ 
+ 	tsc_aux_uret_slot = kvm_add_user_return_msr(MSR_TSC_AUX);
+ 
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 84a7500cd80c..e3a311b9ba34 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -7980,12 +7980,11 @@ static __init int hardware_setup(void)
+ 	if (!enable_apicv)
+ 		vmx_x86_ops.sync_pir_to_irr = NULL;
+ 
+-	if (cpu_has_vmx_tsc_scaling()) {
++	if (cpu_has_vmx_tsc_scaling())
+ 		kvm_has_tsc_control = true;
+-		kvm_max_tsc_scaling_ratio = KVM_VMX_TSC_MULTIPLIER_MAX;
+-		kvm_tsc_scaling_ratio_frac_bits = 48;
+-	}
+ 
++	kvm_max_tsc_scaling_ratio = KVM_VMX_TSC_MULTIPLIER_MAX;
++	kvm_tsc_scaling_ratio_frac_bits = 48;
+ 	kvm_has_bus_lock_exit = cpu_has_vmx_bus_lock_detection();
+ 
+ 	set_bit(0, vmx_vpid_bitmap); /* 0 is reserved for host */
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index ba920e537ddf..9c27239f987f 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -11631,10 +11631,8 @@ int kvm_arch_hardware_setup(void *opaque)
+ 		u64 max = min(0x7fffffffULL,
+ 			      __scale_tsc(kvm_max_tsc_scaling_ratio, tsc_khz));
+ 		kvm_max_guest_tsc_khz = max;
+-
+-		kvm_default_tsc_scaling_ratio = 1ULL << kvm_tsc_scaling_ratio_frac_bits;
+ 	}
+-
++	kvm_default_tsc_scaling_ratio = 1ULL << kvm_tsc_scaling_ratio_frac_bits;
+ 	kvm_init_msr_list();
+ 	return 0;
+ }
 -- 
 2.26.3
 
