@@ -2,113 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F979C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 20:11:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23F94C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 20:11:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232874AbiCVUM7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 16:12:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60424 "EHLO
+        id S232970AbiCVUNR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 16:13:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232970AbiCVUMt (ORCPT
+        with ESMTP id S232903AbiCVUNO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 16:12:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41E5142EE2;
-        Tue, 22 Mar 2022 13:11:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B2AB0616B4;
-        Tue, 22 Mar 2022 20:11:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E14A2C340EC;
-        Tue, 22 Mar 2022 20:11:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647979880;
-        bh=cvZLjZSrlMWpzpNsliNWbCv6RnObT7KD71mdI7Ouk0o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=f3YK1mzA7uy9itbbNhbMTkbuxlPamacpjzK9EMmZYVohrjKtrHkljfsKYA2aIhIV4
-         nUh93fygLMFhTq9R5FS9rCRj0hTY0YTOjVBnNS1LROYIywEsmTjl/phIaXby9SL1iZ
-         sVpNKHB56OysJmWozm0TU4ZlLndbzKGj0DBneErLgA4qc6vpChVbnst9NVy4JBomyY
-         1iOr8gse8HboUGdejEeStUN1mP77fWXIVhK3Egs7jM1RhHc2dcgc8D72O2ATJ0gMYR
-         kJqhKB/rfbj1OXnZdbyk1Lt22fh8LZ0JzPf7sDyW54plr6wmD8Z4KmyT8ou+Zo9Rac
-         Tn2f80UxZb/Sg==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 9DA0D40407; Tue, 22 Mar 2022 17:11:16 -0300 (-03)
-Date:   Tue, 22 Mar 2022 17:11:16 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     John Garry <john.garry@huawei.com>
-Cc:     Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-perf-users@vger.kernel.org
-Subject: Re: perf version issues
-Message-ID: <YjotZExyiwhnX6ev@kernel.org>
-References: <8a75f3b1-2b99-1233-3a70-070311b6ebc1@huawei.com>
+        Tue, 22 Mar 2022 16:13:14 -0400
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3254C60DA3
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 13:11:46 -0700 (PDT)
+Received: by mail-qk1-x72b.google.com with SMTP id b67so14868768qkc.6
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 13:11:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=toxicpanda-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=v00bZ5/GrtJkHwEVsUd7zi7yA5VU4pS81+ixMGyiNzw=;
+        b=t+zVhg/8DWIoJ9+TtqA9MfYhQixNsuvDLGpv2FtmuHR13aC4IiMRykbt24V7fLjGf0
+         KIp2nF82eLjNJn28YsTWtPDfhcIaeQ4w21KrccvrBOa9CmL6MRroZq2Me3AE1FTNQVoA
+         UjWD1Wt+diwfRBF/jNshIDtN0nzoIK3pD2E1+x64Qn1Ct1NyY2TOlZNC0nDppzi2+MLT
+         +9j0GwAgchYoFywDRL4PUiopvWmZSd0jAPkFiglav9xAvzA6+mId1xcPZnVm8vfGicTp
+         cuUpL4VSxX0aN/KYHdyZjA4pBjttMlcN6fP50/DO/FAPZyZDsf8PwH+7JF3AGii+1ZL9
+         s5TQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=v00bZ5/GrtJkHwEVsUd7zi7yA5VU4pS81+ixMGyiNzw=;
+        b=c4cY2x9e3PSTkwSVw4ueEI93EjbhHD/P1QE2oCjaFKuhj/vBW8ZXzzOwqimec1eztH
+         ibVD73n7mwKOHg+Zq08qZIN3JxSYJpJY0AVjhm/9wJeKl3ChVUXXU3wtePNq9Ckt7cwY
+         Joxa7WRs/+hnTNuQzbNJs3ayr7BWJVmfHg7pn+qvwlt8/Va988brlm6jAJ1wJoE4DFIW
+         7YYonZSmCigIk2Vfr6zRTfAMjg98pzxfj/P6yYXfPWXvkbC0pi7UQYtuKjAaONlU2Tl4
+         82kxw5c3evlL/2pYDFuUrZ/+Kx0QAO4WXRIHCJfvB2NCF+UUs/Bsr9E/jLS0ayL4ourC
+         t0jQ==
+X-Gm-Message-State: AOAM530k4e/B4sA+zqV24UfUDeb73J6keM2SiX/4zLf0REMrGUuUCygz
+        imQMEXGW36S/PG4ZWi3oKYuEafcjQYMwkw==
+X-Google-Smtp-Source: ABdhPJw2EzkiZtzBMvlZNpbdB92S79Fvr6YfPQrZJ+/2xT2gVC35TkQhMhJqaM4L+dUFXDBlTAKjmg==
+X-Received: by 2002:a05:620a:200f:b0:67b:3fb7:8784 with SMTP id c15-20020a05620a200f00b0067b3fb78784mr16519494qka.336.1647979905206;
+        Tue, 22 Mar 2022 13:11:45 -0700 (PDT)
+Received: from localhost (cpe-174-109-172-136.nc.res.rr.com. [174.109.172.136])
+        by smtp.gmail.com with ESMTPSA id a16-20020a05622a02d000b002e20e4bf4aesm7517324qtx.23.2022.03.22.13.11.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Mar 2022 13:11:44 -0700 (PDT)
+Date:   Tue, 22 Mar 2022 16:11:38 -0400
+From:   Josef Bacik <josef@toxicpanda.com>
+To:     Xie Yongji <xieyongji@bytedance.com>
+Cc:     axboe@kernel.dk, bvanassche@acm.org, linux-block@vger.kernel.org,
+        nbd@other.debian.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] nbd: Don't use workqueue to handle recv work
+Message-ID: <YjotekJZcSvwoZhp@localhost.localdomain>
+References: <20211227091241.103-1-xieyongji@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <8a75f3b1-2b99-1233-3a70-070311b6ebc1@huawei.com>
-X-Url:  http://acmel.wordpress.com
+In-Reply-To: <20211227091241.103-1-xieyongji@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Re-adding lkml and Ian, Jiri, as I found some strange behaviour with
-'git cherry-pick'.
-
-Em Mon, Mar 21, 2022 at 08:43:26AM +0000, John Garry escreveu:
-> Hi Arnaldo,
+On Mon, Dec 27, 2021 at 05:12:41PM +0800, Xie Yongji wrote:
+> The rescuer thread might take over the works queued on
+> the workqueue when the worker thread creation timed out.
+> If this happens, we have no chance to create multiple
+> recv threads which causes I/O hung on this nbd device.
 > 
-> I have been finding that during my development that the output from "perf
-> -v" may be incorrect in certain circumstances. I sent some patches to fix it
-> up:
-> https://lore.kernel.org/linux-perf-users/1645449409-158238-1-git-send-email-john.garry@huawei.com/T/#mf7234d2e331a53370c148eb4a0633d405a5c6832
+> To fix it, we can not simply remove the WQ_MEM_RECLAIM
+> flag since the recv work is in the memory reclaim path.
+> So this patch tries to create kthreads directly to
+> handle the recv work instead of using workqueue.
 > 
-> Is there some issue that these cannot be processed?
 
-So, while testing it I noticed that if we use 'git cherry-pick' it
-doesn't trigger a rebuild, even having a new head :-\
+I still don't understand why we can't drop WQ_MEM_RECLAIM.  IIRC your argument
+is that we need it because a reconnect could happen under memory pressure and we
+need to be able to queue work for that.  However your code makes it so we're
+just doing a kthread_create(), which isn't coming out of some emergency pool, so
+it's just as likely to fail as a !WQ_MEM_RECLAIM workqueue.  Thanks,
 
-I.e. with the two patches in at the HEAD, try:
-
-  $ git log --oneline -2
-  cb66befccba18fac (HEAD -> perf/core) perf tools: Fix version kernel tag
-  4e666cdb06eede20 perf tools: Fix dependency for version file creation
-  $ make -C tools/perf O=/tmp/build/perf install-bin
-  $ perf -v
-  perf version 5.17.rc8.gcb66befccba1
-
-Ok so far, now lets remove HEAD and leave just the first patch, that has
-the ORIG_HEAD dependency to trigger a rebuild:
-
-  $ git reset --hard HEAD~
-  HEAD is now at 4e666cdb06eede20 perf tools: Fix dependency for version file creation
-  $ make -C tools/perf O=/tmp/build/perf install-bin
-  $ perf -v
-  perf version 5.17.rc8.g4e666cdb06ee
-
-Ok, detected and rebuilt, perf -v works as expected.
-
-Now lets try cherry picking your second patch:
-
-$ git cherry-pick cb66befccba18fac
-  [perf/core 8ff6a6c06a90a362] perf tools: Fix version kernel tag
-   Author: John Garry <john.garry@huawei.com>
-   Date: Mon Feb 21 21:16:49 2022 +0800
-   1 file changed, 4 insertions(+), 9 deletions(-)
-  $ make -C tools/perf O=/tmp/build/perf install-bin
-  $ perf -v
-  perf version 5.17.rc8.g4e666cdb06ee
-
-Now it doesn´t notice it and there is no automatic rebuild triggered, we
-stay with the cset from before the cherry-pick :-\
-
-$ git log --oneline -2
-8ff6a6c06a90a362 (HEAD -> perf/core) perf tools: Fix version kernel tag
-4e666cdb06eede20 perf tools: Fix dependency for version file creation
-$
-
-Anyway, your patch works for some cases, so its an improvement and I'll
-apply it, we can continue from there.
-
-- Arnaldo
+Josef
