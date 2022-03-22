@@ -2,109 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3381C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 07:33:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D91BCC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 07:33:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237591AbiCVHej (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 03:34:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44510 "EHLO
+        id S235888AbiCVHe7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 03:34:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237568AbiCVHef (ORCPT
+        with ESMTP id S237593AbiCVHej (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 03:34:35 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F3E51FCE3
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 00:33:07 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[127.0.0.1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1nWZ0U-0007ql-Hp; Tue, 22 Mar 2022 08:32:42 +0100
-Message-ID: <23cd140f-1046-7059-c9bd-ca4aac1d5183@pengutronix.de>
-Date:   Tue, 22 Mar 2022 08:32:34 +0100
+        Tue, 22 Mar 2022 03:34:39 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A08C0220EF;
+        Tue, 22 Mar 2022 00:33:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647934390; x=1679470390;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=qjqTS0bRelAsBLt8UQTDT7EFfOOxxrUvy9T/WMTF0Xo=;
+  b=V8F7eAE/gHSaFIXYpbyc5OLtAXcA6xqEkUHp9lvPQQ6Cw5PGBKUa8QnM
+   XIiUVzttDsMlgrT8d5prOha2XtQcMk+AUW2igLDp6hC/vCN0wFcDrU6ap
+   RE+5PhnOtuz0lUEqIzsax9o7h38OY3/ensLgQYc/cQ+mGJyxgD9xmOGxO
+   BgKdchlb21WMPIbshREvrsQJXqeiUKfKKpr464/DOlXrqcYAPRCq3X4le
+   y9xCaayE6AfALVKdlwMe1mlNNysDh7gbaGtIN3SNTqtD4QxMGwSfUW5z+
+   /ccN8Zro1UJO39l0SjheajTPbL2LLGIFng+IBgocSlIa44ailauDtUfxp
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="282584989"
+X-IronPort-AV: E=Sophos;i="5.90,201,1643702400"; 
+   d="scan'208";a="282584989"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2022 00:33:10 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,201,1643702400"; 
+   d="scan'208";a="515243243"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga002.jf.intel.com with ESMTP; 22 Mar 2022 00:33:07 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nWZ0t-000Iam-5w; Tue, 22 Mar 2022 07:33:07 +0000
+Date:   Tue, 22 Mar 2022 15:32:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Atish Patra <atish.patra@wdc.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@rivosinc.com>,
+        Anup Patel <anup@brainfault.org>, linux-doc@vger.kernel.org
+Subject: [ammarfaizi2-block:palmer/linux/riscv-pmu 10/15]
+ drivers/perf/riscv_pmu_legacy.c:76: warning: This comment starts with '/**',
+ but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+Message-ID: <202203221500.ajQCd6Bp-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [EXT] [PATCH v6 3/4] crypto: caam - add in-kernel interface for
- blob generator
-Content-Language: en-US
-To:     Pankaj Gupta <pankaj.gupta@nxp.com>,
-        Horia Geanta <horia.geanta@nxp.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        Eric Biggers <ebiggers@kernel.org>,
-        David Gstir <david@sigma-star.at>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        Jan Luebbe <j.luebbe@pengutronix.de>,
-        Richard Weinberger <richard@nod.at>,
-        "tharvey@gateworks.com" <tharvey@gateworks.com>,
-        Franck Lenormand <franck.lenormand@nxp.com>,
-        James Morris <jmorris@namei.org>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        James Bottomley <jejb@linux.ibm.com>,
-        "Serge E. Hallyn" <serge@hallyn.com>
-References: <20220316164335.1720255-1-a.fatoum@pengutronix.de>
- <20220316164335.1720255-4-a.fatoum@pengutronix.de>
- <DU2PR04MB86302DB35042F4DAE7C27FA695179@DU2PR04MB8630.eurprd04.prod.outlook.com>
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-In-Reply-To: <DU2PR04MB86302DB35042F4DAE7C27FA695179@DU2PR04MB8630.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Pankaj,
+tree:   https://github.com/ammarfaizi2/linux-block palmer/linux/riscv-pmu
+head:   33363c336516e4beb9dd7e8265b369ff96d07dcb
+commit: 9b3e150e310ee71d7bae1e31c38a300cfa5e951b [10/15] RISC-V: Add a simple platform driver for RISC-V legacy perf
+config: riscv-randconfig-r042-20220320 (https://download.01.org/0day-ci/archive/20220322/202203221500.ajQCd6Bp-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 85e9b2687a13d1908aa86d1b89c5ce398a06cd39)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        # https://github.com/ammarfaizi2/linux-block/commit/9b3e150e310ee71d7bae1e31c38a300cfa5e951b
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block palmer/linux/riscv-pmu
+        git checkout 9b3e150e310ee71d7bae1e31c38a300cfa5e951b
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/perf/
 
-On 22.03.22 07:25, Pankaj Gupta wrote:
-> Hi Ahmad,
-> 
-> Suggested to define macro with more details.
-> Please find comments in-line.
-> 
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> len = 4 + (4 + ALIGN(keymod_len, 4)) + 2*(4 + 4 + 
->>>>> + CAAM_PTR_SZ_MAX) + 4;
-> 
->> +/* header + (key mod immediate) + 2x seq_intlen pointers + op */
->> +#define CAAM_BLOB_DESC_BYTES_MAX \
->> +       (CAAM_CMD_SZ + \
->> +        CAAM_CMD_SZ + CAAM_BLOB_KEYMOD_LENGTH + \
->> +        2 * (CAAM_CMD_SZ + CAAM_PTR_SZ_MAX) + \
->> +        CAAM_CMD_SZ)
->> +
-> 
-> Suggested to replace the above macro like below:
-> 
-> +#define CAAM_BLOB_DESC_BYTES_MAX \			
-> +       (CAAM_CMD_SZ + \					/* Command to initialize & stating length of  descriptor */
-> +        CAAM_CMD_SZ + CAAM_BLOB_KEYMOD_LENGTH + \	/* Command to append the key-modifier + followed by the key-modifier data */
-> +        (CAAM_CMD_SZ + CAAM_PTR_SZ_MAX) + \		/* Command to include input plain key and pointer to the input key */
-> +        (CAAM_CMD_SZ + CAAM_PTR_SZ_MAX) + \		/* Command to include output-key blob and pointer to the output-key blob */
-> +        CAAM_CMD_SZ)						/* Command describing the Operation to perform */
+All warnings (new ones prefixed by >>):
+
+>> drivers/perf/riscv_pmu_legacy.c:76: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+    * This is just a simple implementation to allow legacy implementations
 
 
-Sure thing, will do for v7. Otherwise, if all looks good to you,
-can I have your Reviewed-by?
+vim +76 drivers/perf/riscv_pmu_legacy.c
 
-Thanks,
-Ahmad
+    74	
+    75	/**
+  > 76	 * This is just a simple implementation to allow legacy implementations
+    77	 * compatible with new RISC-V PMU driver framework.
+    78	 * This driver only allows reading two counters i.e CYCLE & INSTRET.
+    79	 * However, it can not start or stop the counter. Thus, it is not very useful
+    80	 * will be removed in future.
+    81	 */
+    82	static void pmu_legacy_init(struct riscv_pmu *pmu)
+    83	{
+    84		pr_info("Legacy PMU implementation is available\n");
+    85	
+    86		pmu->num_counters = RISCV_PMU_LEGACY_NUM_CTR;
+    87		pmu->ctr_start = pmu_legacy_ctr_start;
+    88		pmu->ctr_stop = NULL;
+    89		pmu->event_map = pmu_legacy_event_map;
+    90		pmu->ctr_get_idx = pmu_legacy_ctr_get_idx;
+    91		pmu->ctr_get_width = NULL;
+    92		pmu->ctr_clear_idx = NULL;
+    93		pmu->ctr_read = pmu_legacy_read_ctr;
+    94	
+    95		perf_pmu_register(&pmu->pmu, "cpu", PERF_TYPE_RAW);
+    96	}
+    97	
 
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+0-DAY CI Kernel Test Service
+https://01.org/lkp
