@@ -2,158 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72527C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 22:16:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0037C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 22:17:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238321AbiCVWR4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 18:17:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54552 "EHLO
+        id S237762AbiCVWTK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 18:19:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237801AbiCVWR3 (ORCPT
+        with ESMTP id S233046AbiCVWTJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 18:17:29 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12BC85370C
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 15:15:53 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id 190-20020a2505c7000000b00629283fec72so15593011ybf.5
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 15:15:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=2fFnNoJQ3H9hVlBp1UXUfdC5Kvmn9rISGKDSRRVelmI=;
-        b=FeK8lZX/ROxlGZdXcfs3viVelDZve+bBs7HH6xjHv4eJzGcbkdJsHU3ntygvtCUVdv
-         NkJDOEKDSVaTVVsIpTZvk2RI17GNfD/pBO6FMzyEfAAbKW81vTjR5OG4LDX28/UbGB7/
-         GwS0ShbbmF6ggSA0boU17tSlUhud+E45xsmvm2cLow8VusQXIHaREHjTh7IB91L018Kj
-         2l3o0VFKO2Nsot2yfkJ6lw7/CZXbVQeSRXc0FYiGtpKMxtpVSQgObgpjSNFtzlC+RA1A
-         y5H4DxQtg+OLmsSv2AILaNhpYcEaomltUcM87D/LWfe6DNXBZ2T1iUBKz3sRh9N2mrmY
-         tT2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=2fFnNoJQ3H9hVlBp1UXUfdC5Kvmn9rISGKDSRRVelmI=;
-        b=A7FV1NgXXvmLSJoBqEa3NWG2ZRz1y8J8iu4lNMQOZEr5UNPOSYyLB94HKen0r7GiXv
-         1ihEeOs5gGpVjw0gtZy5rh+7d8W3h8QZexCT6XPetFe00IAdecjfN66ADFPGpwGuSYta
-         EoCDqvfFlUtMlG3LCV5Pbfqpbn/zjPEeU8S2ZyrBgf7kjVRaxnPboyPX2Jpa+jLNPwNe
-         Fsw3f/949xDn/2EiO+jfBRXwyQvZAdGS8BHK5VmZ2PG3uLpsxZmC0MzX/rWaDDs4tRmJ
-         k7pNWCBZPrgFk7EM3Zd+5F0ZoQnt/6iyQna694FOPt5lBVl+qs3huBa4/TgncUsOGxPs
-         eAbw==
-X-Gm-Message-State: AOAM5321/Kfn71b4OejGjQElFXZR6GowXZ7cXUlWo3c/wLpS+d5Zb+yz
-        wK4d83TUq+aeoGCgHj9bzmoiYMpCYAg0DuwrsjVKBQpL/vCNPfNTPbXwxQcEGmIi81DELVWSgeI
-        NCLE9/QH4cW2R7Y63W6Vj5v56WQerBK+el7QUED+OqPRDR17tc+ic+3wx8O+MVtxakFAuyLWf
-X-Google-Smtp-Source: ABdhPJw3TC+WRfnFqahAcvGue3nO6s3yog1WpVhe27t0TXbnHPo6u9I//9ZYQkF2rNY9FfXGVLe011cHC51i
-X-Received: from uluru3.svl.corp.google.com ([2620:15c:2cd:202:1817:acc9:c45f:d133])
- (user=eranian job=sendgmr) by 2002:a25:3246:0:b0:633:af97:a3eb with SMTP id
- y67-20020a253246000000b00633af97a3ebmr25789591yby.274.1647987352324; Tue, 22
- Mar 2022 15:15:52 -0700 (PDT)
-Date:   Tue, 22 Mar 2022 15:15:15 -0700
-In-Reply-To: <20220322221517.2510440-1-eranian@google.com>
-Message-Id: <20220322221517.2510440-12-eranian@google.com>
-Mime-Version: 1.0
-References: <20220322221517.2510440-1-eranian@google.com>
-X-Mailer: git-send-email 2.35.1.894.gb6a874cedc-goog
-Subject: [PATCH v7 11/13] perf tools: Improve IBS error handling
-From:   Stephane Eranian <eranian@google.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     peterz@infradead.org, kim.phillips@amd.com, acme@redhat.com,
-        jolsa@redhat.com, songliubraving@fb.com, rafael@kernel.org,
-        ravi.bangoria@amd.com, sandipan.das@amd.com
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 22 Mar 2022 18:19:09 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF1BA12606;
+        Tue, 22 Mar 2022 15:17:40 -0700 (PDT)
+Received: from fraeml713-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KNQly3HSxz67ZGL;
+        Wed, 23 Mar 2022 06:15:26 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml713-chm.china.huawei.com (10.206.15.32) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 22 Mar 2022 23:17:38 +0100
+Received: from [10.47.85.68] (10.47.85.68) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 22 Mar
+ 2022 22:17:37 +0000
+Message-ID: <a2c46546-b828-353b-4b70-826a614b1594@huawei.com>
+Date:   Tue, 22 Mar 2022 22:17:36 +0000
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: perf version issues
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+CC:     Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        <linux-perf-users@vger.kernel.org>
+References: <8a75f3b1-2b99-1233-3a70-070311b6ebc1@huawei.com>
+ <YjotZExyiwhnX6ev@kernel.org>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <YjotZExyiwhnX6ev@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.47.85.68]
+X-ClientProxiedBy: lhreml730-chm.china.huawei.com (10.201.108.81) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kim Phillips <kim.phillips@amd.com>
+On 22/03/2022 20:11, Arnaldo Carvalho de Melo wrote:
+>> I have been finding that during my development that the output from "perf
+>> -v" may be incorrect in certain circumstances. I sent some patches to fix it
+>> up:
+>> https://lore.kernel.org/linux-perf-users/1645449409-158238-1-git-send-email-john.garry@huawei.com/T/#mf7234d2e331a53370c148eb4a0633d405a5c6832
+>>
+>> Is there some issue that these cannot be processed?
+> So, while testing it I noticed that if we use 'git cherry-pick' it
+> doesn't trigger a rebuild, even having a new head:-\
+> 
+> I.e. with the two patches in at the HEAD, try:
+> 
+>    $ git log --oneline -2
+>    cb66befccba18fac (HEAD -> perf/core) perf tools: Fix version kernel tag
+>    4e666cdb06eede20 perf tools: Fix dependency for version file creation
+>    $ make -C tools/perf O=/tmp/build/perf install-bin
+>    $ perf -v
+>    perf version 5.17.rc8.gcb66befccba1
+> 
+> Ok so far, now lets remove HEAD and leave just the first patch, that has
+> the ORIG_HEAD dependency to trigger a rebuild:
+> 
+>    $ git reset --hard HEAD~
+>    HEAD is now at 4e666cdb06eede20 perf tools: Fix dependency for version file creation
+>    $ make -C tools/perf O=/tmp/build/perf install-bin
+>    $ perf -v
+>    perf version 5.17.rc8.g4e666cdb06ee
+> 
+> Ok, detected and rebuilt, perf -v works as expected.
 
-improve the error message returned on failed perf_event_open() on AMD when
-using IBS.
+ok, good
 
-Output of executing 'perf record -e ibs_op// true' BEFORE this patch:
+> 
+> Now lets try cherry picking your second patch:
+> 
+> $ git cherry-pick cb66befccba18fac
+>    [perf/core 8ff6a6c06a90a362] perf tools: Fix version kernel tag
+>     Author: John Garry<john.garry@huawei.com>
+>     Date: Mon Feb 21 21:16:49 2022 +0800
+>     1 file changed, 4 insertions(+), 9 deletions(-)
+>    $ make -C tools/perf O=/tmp/build/perf install-bin
+>    $ perf -v
+>    perf version 5.17.rc8.g4e666cdb06ee
+> 
+> Now it doesn´t notice it and there is no automatic rebuild triggered, we
+> stay with the cset from before the cherry-pick:-\
+> 
+> $ git log --oneline -2
+> 8ff6a6c06a90a362 (HEAD -> perf/core) perf tools: Fix version kernel tag
+> 4e666cdb06eede20 perf tools: Fix dependency for version file creation
+> $
+> 
+> Anyway, your patch works for some cases, so its an improvement and I'll
+> apply it, we can continue from there.
 
-The sys_perf_event_open() syscall returned with 22 (Invalid argument)for event (ibs_op//u).
-/bin/dmesg | grep -i perf may provide additional information.
+Thanks,
 
-Output after:
+I just noticed the "reset --hard HEAD^" problem and not cherry-pick'ing. 
+Let me check this tomorrow.
 
-AMD IBS cannot exclude kernel events.  Try running at a higher privilege level.
-
-Output of executing 'sudo perf record -e ibs_op// true' BEFORE this patch:
-
-Error:
-The sys_perf_event_open() syscall returned with 22 (Invalid argument) for event (ibs_op//).
-/bin/dmesg | grep -i perf may provide additional information.
-
-Output after:
-
-Error:
-AMD IBS may only be available in system-wide/per-cpu mode.  Try using -a, or -C and workload affinity
-
-Signed-off-by: Kim Phillips <kim.phillips@amd.com>
-Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Jiri Olsa <jolsa@redhat.com>
-Cc: Joao Martins <joao.m.martins@oracle.com>
-Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Michael Petlan <mpetlan@redhat.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Robert Richter <robert.richter@amd.com>
-Cc: Stephane Eranian <eranian@google.com>
----
- tools/perf/util/evsel.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
-
-diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
-index 14b0e7ffa2c7..e8ff7a4bd490 100644
---- a/tools/perf/util/evsel.c
-+++ b/tools/perf/util/evsel.c
-@@ -2847,9 +2847,23 @@ static bool find_process(const char *name)
- 	return ret ? false : true;
- }
- 
-+static bool is_amd(const char *arch, const char *cpuid)
-+{
-+	return arch && !strcmp("x86", arch) && cpuid && strstarts(cpuid, "AuthenticAMD");
-+}
-+
-+static bool is_amd_ibs(struct evsel *evsel)
-+{
-+	return evsel->core.attr.precise_ip
-+	    || (evsel->pmu_name && !strncmp(evsel->pmu_name, "ibs", 3));
-+}
-+
- int evsel__open_strerror(struct evsel *evsel, struct target *target,
- 			 int err, char *msg, size_t size)
- {
-+	struct perf_env *env = evsel__env(evsel);
-+	const char *arch = perf_env__arch(env);
-+	const char *cpuid = perf_env__cpuid(env);
- 	char sbuf[STRERR_BUFSIZE];
- 	int printed = 0, enforced = 0;
- 
-@@ -2949,6 +2963,17 @@ int evsel__open_strerror(struct evsel *evsel, struct target *target,
- 			return scnprintf(msg, size,
- 	"Invalid event (%s) in per-thread mode, enable system wide with '-a'.",
- 					evsel__name(evsel));
-+		if (is_amd(arch, cpuid)) {
-+			if (is_amd_ibs(evsel)) {
-+				if (evsel->core.attr.exclude_kernel)
-+					return scnprintf(msg, size,
-+	"AMD IBS can't exclude kernel events.  Try running at a higher privilege level.");
-+				if (!evsel->core.system_wide)
-+					return scnprintf(msg, size,
-+	"AMD IBS may only be available in system-wide/per-cpu mode.  Try using -a, or -C and workload affinity");
-+			}
-+		}
-+
- 		break;
- 	case ENODATA:
- 		return scnprintf(msg, size, "Cannot collect data source with the load latency event alone. "
--- 
-2.35.1.894.gb6a874cedc-goog
+john
 
