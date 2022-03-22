@@ -2,84 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23F94C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 20:11:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 493F3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 20:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232970AbiCVUNR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 16:13:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60766 "EHLO
+        id S233090AbiCVUN0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 16:13:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232903AbiCVUNO (ORCPT
+        with ESMTP id S232988AbiCVUNU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 16:13:14 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3254C60DA3
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 13:11:46 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id b67so14868768qkc.6
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 13:11:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=toxicpanda-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=v00bZ5/GrtJkHwEVsUd7zi7yA5VU4pS81+ixMGyiNzw=;
-        b=t+zVhg/8DWIoJ9+TtqA9MfYhQixNsuvDLGpv2FtmuHR13aC4IiMRykbt24V7fLjGf0
-         KIp2nF82eLjNJn28YsTWtPDfhcIaeQ4w21KrccvrBOa9CmL6MRroZq2Me3AE1FTNQVoA
-         UjWD1Wt+diwfRBF/jNshIDtN0nzoIK3pD2E1+x64Qn1Ct1NyY2TOlZNC0nDppzi2+MLT
-         +9j0GwAgchYoFywDRL4PUiopvWmZSd0jAPkFiglav9xAvzA6+mId1xcPZnVm8vfGicTp
-         cuUpL4VSxX0aN/KYHdyZjA4pBjttMlcN6fP50/DO/FAPZyZDsf8PwH+7JF3AGii+1ZL9
-         s5TQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=v00bZ5/GrtJkHwEVsUd7zi7yA5VU4pS81+ixMGyiNzw=;
-        b=c4cY2x9e3PSTkwSVw4ueEI93EjbhHD/P1QE2oCjaFKuhj/vBW8ZXzzOwqimec1eztH
-         ibVD73n7mwKOHg+Zq08qZIN3JxSYJpJY0AVjhm/9wJeKl3ChVUXXU3wtePNq9Ckt7cwY
-         Joxa7WRs/+hnTNuQzbNJs3ayr7BWJVmfHg7pn+qvwlt8/Va988brlm6jAJ1wJoE4DFIW
-         7YYonZSmCigIk2Vfr6zRTfAMjg98pzxfj/P6yYXfPWXvkbC0pi7UQYtuKjAaONlU2Tl4
-         82kxw5c3evlL/2pYDFuUrZ/+Kx0QAO4WXRIHCJfvB2NCF+UUs/Bsr9E/jLS0ayL4ourC
-         t0jQ==
-X-Gm-Message-State: AOAM530k4e/B4sA+zqV24UfUDeb73J6keM2SiX/4zLf0REMrGUuUCygz
-        imQMEXGW36S/PG4ZWi3oKYuEafcjQYMwkw==
-X-Google-Smtp-Source: ABdhPJw2EzkiZtzBMvlZNpbdB92S79Fvr6YfPQrZJ+/2xT2gVC35TkQhMhJqaM4L+dUFXDBlTAKjmg==
-X-Received: by 2002:a05:620a:200f:b0:67b:3fb7:8784 with SMTP id c15-20020a05620a200f00b0067b3fb78784mr16519494qka.336.1647979905206;
-        Tue, 22 Mar 2022 13:11:45 -0700 (PDT)
-Received: from localhost (cpe-174-109-172-136.nc.res.rr.com. [174.109.172.136])
-        by smtp.gmail.com with ESMTPSA id a16-20020a05622a02d000b002e20e4bf4aesm7517324qtx.23.2022.03.22.13.11.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Mar 2022 13:11:44 -0700 (PDT)
-Date:   Tue, 22 Mar 2022 16:11:38 -0400
-From:   Josef Bacik <josef@toxicpanda.com>
-To:     Xie Yongji <xieyongji@bytedance.com>
-Cc:     axboe@kernel.dk, bvanassche@acm.org, linux-block@vger.kernel.org,
-        nbd@other.debian.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] nbd: Don't use workqueue to handle recv work
-Message-ID: <YjotekJZcSvwoZhp@localhost.localdomain>
-References: <20211227091241.103-1-xieyongji@bytedance.com>
+        Tue, 22 Mar 2022 16:13:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D98CB69CC4;
+        Tue, 22 Mar 2022 13:11:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 67781616C6;
+        Tue, 22 Mar 2022 20:11:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6850EC340EC;
+        Tue, 22 Mar 2022 20:11:51 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="S+qu6etc"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1647979907;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=LGxhNs6syTgAQkmDH5Xf0lVNC+PZFSBXYRSBv5AiVEA=;
+        b=S+qu6etcxIO5ns2EJ3VPuXm6xJtT5RMXtMQPVHhSkszz0TsStLx7dE/lvkZa9F5cpCHfzq
+        6QyTK7wjcTOjJf960cTwfIGU1NdcGKBEKG1ObIPIZNblGFs6w3KCoCjjXrcTzxSg9zrDnU
+        CFkhjjCx04lsy+aJKRijTXXhGO+bOmk=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 7df72291 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 22 Mar 2022 20:11:47 +0000 (UTC)
+Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-2e592e700acso204137497b3.5;
+        Tue, 22 Mar 2022 13:11:47 -0700 (PDT)
+X-Gm-Message-State: AOAM530yJ4VdXIfNdc5wxxbXUcIA3e8YkHXFU9ZtzPrUCxWi1QIk7bUU
+        KXhsbeivwT93O4FFrtbwJ4dkQHhreBPKYpV6/hw=
+X-Google-Smtp-Source: ABdhPJyV6N9zcsJlxnOI3YYRy1eTAlslombqvZiB+iMgzQOgy48+yY/h7duvef+r0nQ4lW6SO846hEmi0VowfwhzvIo=
+X-Received: by 2002:a0d:d508:0:b0:2e5:d9ec:d668 with SMTP id
+ x8-20020a0dd508000000b002e5d9ecd668mr24763243ywd.499.1647979905391; Tue, 22
+ Mar 2022 13:11:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211227091241.103-1-xieyongji@bytedance.com>
+Received: by 2002:a05:7110:4707:b0:171:cd8f:b3d2 with HTTP; Tue, 22 Mar 2022
+ 13:11:44 -0700 (PDT)
+In-Reply-To: <PH0PR21MB30253A8BA8B189686B8E65EAD7179@PH0PR21MB3025.namprd21.prod.outlook.com>
+References: <CAHmME9qHnvwrxEue4Pdm_E1qZQGXFuR9orJSKCWj8fH5TSh6fA@mail.gmail.com>
+ <20220228183355.9090-1-Jason@zx2c4.com> <CAHp75VcjrD3kwN1BfWpjKXaVpG7MHfftMUscSGhcJfStm4b-Xg@mail.gmail.com>
+ <CAMj1kXFmEAKJRHCiuXyGECCmOs0+xX9AVeBDxfuD0XuX2TQ2Uw@mail.gmail.com>
+ <Yh0+LA8B1jw8tnl9@smile.fi.intel.com> <CAHmME9qW4EiYU6_kTffMdK5ijJY1DF6YRt=gDjj1vKqDxB0Raw@mail.gmail.com>
+ <MN0PR21MB3098981B77F513976A62CA57D7019@MN0PR21MB3098.namprd21.prod.outlook.com>
+ <CAMj1kXFZZoOeXnjxdU+gOJTN=Szn=eiXgRhSS9_nnHgwADNHjA@mail.gmail.com>
+ <MN0PR21MB3098EC13B4E8488E692DB28AD7019@MN0PR21MB3098.namprd21.prod.outlook.com>
+ <CAMj1kXFe-B=n1zp6M0yBuqJmmfOXTFbkzj29iK+QpPGK=LxRmA@mail.gmail.com> <PH0PR21MB30253A8BA8B189686B8E65EAD7179@PH0PR21MB3025.namprd21.prod.outlook.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Tue, 22 Mar 2022 14:11:44 -0600
+X-Gmail-Original-Message-ID: <CAHmME9pYObVqAPoGxTmvKhj31NFLO=_G7WECYDC0vb9nDTBhuw@mail.gmail.com>
+Message-ID: <CAHmME9pYObVqAPoGxTmvKhj31NFLO=_G7WECYDC0vb9nDTBhuw@mail.gmail.com>
+Subject: Re: [PATCH 2/3 v6] ACPI: allow longer device IDs
+To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Cc:     Ard Biesheuvel <ardb@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-crypto <linux-crypto@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Alexander Graf <graf@amazon.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Len Brown <lenb@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Dec 27, 2021 at 05:12:41PM +0800, Xie Yongji wrote:
-> The rescuer thread might take over the works queued on
-> the workqueue when the worker thread creation timed out.
-> If this happens, we have no chance to create multiple
-> recv threads which causes I/O hung on this nbd device.
-> 
-> To fix it, we can not simply remove the WQ_MEM_RECLAIM
-> flag since the recv work is in the memory reclaim path.
-> So this patch tries to create kthreads directly to
-> handle the recv work instead of using workqueue.
-> 
+Hi Michael,
 
-I still don't understand why we can't drop WQ_MEM_RECLAIM.  IIRC your argument
-is that we need it because a reconnect could happen under memory pressure and we
-need to be able to queue work for that.  However your code makes it so we're
-just doing a kthread_create(), which isn't coming out of some emergency pool, so
-it's just as likely to fail as a !WQ_MEM_RECLAIM workqueue.  Thanks,
+On 3/22/22, Michael Kelley (LINUX) <mikelley@microsoft.com> wrote:
+> From: Ard Biesheuvel <ardb@kernel.org> Sent: Monday, February 28, 2022 2:47
+> PM
+>>
+>> On Mon, 28 Feb 2022 at 23:38, Michael Kelley (LINUX)
+>> <mikelley@microsoft.com> wrote:
+>> >
+>> > From: Ard Biesheuvel <ardb@kernel.org> Sent: Monday, February 28, 2022
+>> > 2:22 PM
+>> > >
+>> > > On Mon, 28 Feb 2022 at 23:14, Michael Kelley (LINUX)
+>> > > <mikelley@microsoft.com> wrote:
+>> > > >
+>> > > > From: Jason A. Donenfeld <Jason@zx2c4.com> Sent: Monday, February
+>> > > > 28, 2022
+>> > > 1:55 PM
+>> > > > >
+>> > > > > Hi Andy,
+>> > > > >
+>> > > > > On Mon, Feb 28, 2022 at 10:28 PM Andy Shevchenko
+>> > > > > <andy.shevchenko@gmail.com> wrote:
+>> > > > > > My point is that this is clear abuse of the spec and:
+>> > > > > > 1) we have to enable the broken, because it is already in the
+>> > > > > > wild with
+>> > > > > >    the comment that this is an issue
+>> > > > > >
+>> > > > > > AND
+>> > > > > >
+>> > > > > > 2) issue an ECR / work with MS to make sure they understand the
+>> > > > > > problem.
+>> > > > > >
+>> > > > > > This can be done in parallel. What I meant as a prerequisite is
+>> > > > > > to start doing
+>> > > > > > 2) while we have 1) on table.
+>> > > > >
+>> > > > > Oh, okay, that makes sense. If you want to get (2) going, by all
+>> > > > > means
+>> > > > > go for it. I have no idea how to do this myself; Ard said
+>> > > > > something
+>> > > > > about joining the UEFI forum as an individual something or another
+>> > > > > but
+>> > > > > I don't think I'm the man for the job there. Is this something
+>> > > > > that
+>> > > > > Intel can do with their existing membership (is that the right
+>> > > > > term?)
+>> > > > > at the UEFI forum? Or maybe a Microsoft engineer on the list?
+>> > > >
+>> > > > My team at Microsoft, which works on Linux, filed a bug on this
+>> > > > issue against the Hyper-V team about a year ago, probably when the
+>> > > > issue
+>> > > > was raised during the previous attempt to implement the
+>> > > > functionality
+>> > > > in Linux.  I've talked with the Hyper-V dev manager, and they
+>> > > > acknowledge
+>> > > > that the ACPI entry Hyper-V provides to guest VMs violates the spec.
+>> > > >  But
+>> > > > changing to an identifier that meets the spec is problematic
+>> > > > because
+>> > > > of backwards compatibility with Windows guests on Hyper-V that
+>> > > > consume the current identifier.  There's no practical way to have
+>> > > > Hyper-V
+>> > > > provide a conformant identifier AND fix all the Windows guests out
+>> > > > in
+>> > > > the wild to consume the new identifier.   As a result, at this point
+>> > > > Hyper-V
+>> > > > is not planning to change anything.
+>> > > >
+>> > > > It's a lousy state-of-affairs, but as mentioned previously in this
+>> > > > thread,
+>> > > > it seems to be one that we will have to live with.
+>> > > >
+>> > >
+>> > > Thanks for chiming in.
+>> > >
+>> > > Why not do something like
+>> > >
+>> > > Name (_CID, Package (2) { "VM_GEN_COUNTER", "VMGENCTR" } )
+>> > >
+>> > > ?
+>> > >
+>> > > That way, older clients can match on the existing _CID and new
+>> > > clients
+>> > > can match on the spec compliant one.
+>> >
+>> > I'll run this by the Hyper-V guys.  I don't have the ACPI expertise to
+>> > disagree
+>> > with them when they say they can't change it. :-(
+>> >
+>>
+>> Yes, please, even if it makes no difference for this particular patch.
+>
+> The Hyper-V guys pass along their thanks for your suggestion.  They have
+> created an internal build with the change and verified that it preserves
+> compatibility with Windows guests.  I've tested with Linux guests and
+> Jason's new driver (modified to look for "VMGENCTR"), and it all looks
+> good.
+> It will take a little while to wend its way through the Windows/Hyper-V
+> release system, but they are planning to take the change.
+>
+> Michael
+>
 
-Josef
+Do you want to send a patch against the crng/random.git tree adding that new id?
+
+Jason
