@@ -2,245 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22C5BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 20:02:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72092C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 20:03:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232487AbiCVUEA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 16:04:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56566 "EHLO
+        id S232554AbiCVUEc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 16:04:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231512AbiCVUD6 (ORCPT
+        with ESMTP id S231512AbiCVUE3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 16:03:58 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 856C9BCF
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 13:02:30 -0700 (PDT)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22MJ3r1q020972;
-        Tue, 22 Mar 2022 20:00:54 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=o3sT2wAYugVVZLMZFoWqzPzj2wgcJkVbnTckjo+xtLY=;
- b=KiryJ8Cxca3Lgbx1VCnUZIxRRbVoNutb3v4FPOgDODUSu065ZlaS1jFvxaf2pB9GNTp3
- yW27jCU0oMhndp0GmzT1mEMLx0QCsCjRiG3oLo5avTf3zJQahPUOZVkxVit6H4gwCX6i
- sPsCZ+p69JTBMrPKBUHps10rrduir0GlMTmXE8sR7Zx7INnjT2+63NTQHtNP1SAcCHpT
- PF+88oup5x2FsXAGVEiPLfrnHcZuV+O3trS1DQijTq/InDXfkNJm5vL5IH/A8iFqwq4z
- Lhuii5ooQ1S6/r2iyzTVMIc0ecupb52OCaUaq2e572kdzGm3YlE/NVd6DjwL/Lw6eP/E zw== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3ew5y1ymd9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 22 Mar 2022 20:00:54 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 22MJuDrP062192;
-        Tue, 22 Mar 2022 20:00:52 GMT
-Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1anam02lp2042.outbound.protection.outlook.com [104.47.57.42])
-        by userp3020.oracle.com with ESMTP id 3exawht6qh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 22 Mar 2022 20:00:52 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mYMwVmMUyjgEK77qp938tKeAg2uo25sdVLAWdfwgFHr9f41MaM77KdogR2jlXcJegy8vtD/JIeXOeFMVIHaWonAH/n+YpLfXGayVz3e2I1/YOuuore+GAh77IuRHiqh17dhYHzbsoFs6ZurlHhd6sI94vcizxYUHSLBeUXGE5wMrGYszTD9pu3Hfp422e4vWewdZ5gnaKrjRQpanHP0VEqMsoS5aMoypeCxyddC3AIKnycM9UPiob+g+BrRiHQCxmkUYxW+S6DCSulS/jz6Wfj+p9m+fQT6HdinW3rpTAl+u/VZGzMxemZAbRbsYFtmRleiGI0M7mSEJpmdbF52Mvg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=o3sT2wAYugVVZLMZFoWqzPzj2wgcJkVbnTckjo+xtLY=;
- b=Ziw3DkcKMdnrNzy+Y0W9mdTLx1mClAiYZQRxmwTabubs2W+XU8ByBwR4Jk8vIrpDR3llarpW948arMA8vxatTOfUqI6ahqlyNr7KG57oT9O4sGZySsqyAQq56DgnmM5xUzneHlH2IYncTk4fApGYPYdH7bj1eWdJ1y6xSAKEibivW0TTPcnv93X2N2nflgaLP4YdG9SuuzOv2XF6P7LpMk2NFuHnmRNk9DS/FuX/qMMQCaLHD1JWDYpf0ft/KAjxLbayrD+eEGdkmuzd5gXNRnBnP2/Twft9yrwIiXU1XCNNx4uepCwJFSeqyq8sSVt2uszLFeNBBzSpCyNEIyV3fw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Tue, 22 Mar 2022 16:04:29 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A934EF41
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 13:02:59 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id q1-20020a17090a4f8100b001c6575ae105so2616171pjh.0
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 13:02:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=o3sT2wAYugVVZLMZFoWqzPzj2wgcJkVbnTckjo+xtLY=;
- b=f4u96vpJmxVZ8PeyUuFEjmKn4P+26WXL3bgVa6ZrTdc9Nzfs9G4kJdX9ih3R9Dff4zibvanAYMxlVQPMaJL8Y6EA7fUGYdDw8L2yLNt+gJojzyKNr0uh5cwfK9osW7JIbkQmTzu+zE0vAZhyc5nDJ8IyQUMBjnlkgqNN+5DK2Yo=
-Received: from BLAPR10MB5009.namprd10.prod.outlook.com (2603:10b6:208:321::10)
- by DM6PR10MB2730.namprd10.prod.outlook.com (2603:10b6:5:b3::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.16; Tue, 22 Mar
- 2022 20:00:51 +0000
-Received: from BLAPR10MB5009.namprd10.prod.outlook.com
- ([fe80::1b2:b41c:b2f0:c755]) by BLAPR10MB5009.namprd10.prod.outlook.com
- ([fe80::1b2:b41c:b2f0:c755%9]) with mapi id 15.20.5102.016; Tue, 22 Mar 2022
- 20:00:51 +0000
-Message-ID: <bf8a41ed-3d93-9f60-5e2d-780abc177325@oracle.com>
-Date:   Tue, 22 Mar 2022 16:00:43 -0400
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Subject: Re: [PATCH] xen: fix is_xen_pmu()
-Content-Language: en-US
-To:     Juergen Gross <jgross@suse.com>, xen-devel@lists.xenproject.org,
-        x86@kernel.org, linux-kernel@vger.kernel.org
-Cc:     Stefano Stabellini <sstabellini@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        =?UTF-8?Q?Marek_Marczykowski-G=c3=b3recki?= 
-        <marmarek@invisiblethingslab.com>
-References: <20220322155001.21979-1-jgross@suse.com>
-From:   Boris Ostrovsky <boris.ostrovsky@oracle.com>
-In-Reply-To: <20220322155001.21979-1-jgross@suse.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9z2OhjirVkz2pUbqaGLshsVzbhbV6ISeuMuKyH7hsWQ=;
+        b=K2Z9Zm7zGkxEMQYec2pWhgy2XOQfPvprN/HESKZHkKo7Ap1wOflyxcYFVKuQSFNTtJ
+         b9eFHIu5L4AWWJc2rbAjlYQK/tgMamITSdBIPTLzdCBvH8/DXHUfNKDYKSV7uYAznF90
+         5FxANI/+CMn1ACq4S2PDBARc6QZrHnYt+JDhpLr4w8ewc+e7OZeymUewObip6OUr83bx
+         ISHC6wAzK0V580zpUIfhQ0ipyyDhSG+fqlhmjqKrcby6Xp2j4oPkxHvlbuOTiWi5cEHr
+         onyxLF1gkS/IltPtPUFuIQ6wdwtukxWWzPL22YWYSAJ3n74leqv6DMiSscTz9OOEhs1N
+         LAvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=9z2OhjirVkz2pUbqaGLshsVzbhbV6ISeuMuKyH7hsWQ=;
+        b=dCHHs1dsEwQ7bBUy6j7mde8Vo4ww1nbtQ0ivV2UINAu0/JhhXFjGrhuNp6kgvgmy+p
+         1BnnND31UJln1nJYhw7L/CLIDoI1nWSTULGxL2JCAtl6YjjPDA5R1Dtf+qy28fr0UINh
+         cop54rOyeWNMVCIkvM5Yr7uH9bKR6+DpDQJDnH9TgiCkC7k6Xn1NufJvu+O2+4NDUshg
+         Xd8wIiZmd+CaFve51VcxpSuAxCDxDy6D8UlwYD/krEoEyXDGdQJpFDUbJioOha18aCXc
+         NREBXf+hsJtbN6bemfM6bg+qT2+q15Uomqm7E5eUxckKVtCJl87ouBmKzXz70AVkxAhB
+         O6GA==
+X-Gm-Message-State: AOAM532sxyHf8qsevBvIx0tGmkQu+m0RFQE4nUnjeGHnPnUe1yvfmy2l
+        yrZHHl8ND8rgJ1euyazcjlbrrQ==
+X-Google-Smtp-Source: ABdhPJxGBLZF1jlZKcKbjlOflMXaW/vAHBWu7fR9pPGvxm7TO7lO3LkOEzMtr4yuUNUKm16mJIbDEQ==
+X-Received: by 2002:a17:902:e88e:b0:154:7562:176d with SMTP id w14-20020a170902e88e00b001547562176dmr8166892plg.13.1647979378618;
+        Tue, 22 Mar 2022 13:02:58 -0700 (PDT)
+Received: from localhost ([12.3.194.138])
+        by smtp.gmail.com with ESMTPSA id h2-20020a056a00218200b004f6519ce666sm24451135pfi.170.2022.03.22.13.02.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Mar 2022 13:02:58 -0700 (PDT)
+Date:   Tue, 22 Mar 2022 13:02:58 -0700 (PDT)
+X-Google-Original-Date: Tue, 22 Mar 2022 13:02:56 PDT (-0700)
+Subject:     Re: [PATCH 0/5] Generic Ticket Spinlocks
+In-Reply-To: <c0328672-6dd1-b65b-1e2f-6f2562084f2d@conchuod.ie>
+CC:     linux-riscv@lists.infradead.org, jonas@southpole.se,
+        stefan.kristiansson@saunalahti.fi, shorne@gmail.com,
+        mingo@redhat.com, Will Deacon <will@kernel.org>,
+        longman@redhat.com, boqun.feng@gmail.com,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        aou@eecs.berkeley.edu, Arnd Bergmann <arnd@arndb.de>,
+        jszhang@kernel.org, wangkefeng.wang@huawei.com,
+        openrisc@lists.librecores.org, linux-kernel@vger.kernel.org,
+        linux-arch@vger.kernel.org, peterz@infradead.org
+From:   Palmer Dabbelt <palmer@rivosinc.com>
+To:     mail@conchuod.ie
+Message-ID: <mhng-f97b1e7d-1523-4ae5-923b-e73a8db48824@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SJ0PR05CA0112.namprd05.prod.outlook.com
- (2603:10b6:a03:334::27) To BLAPR10MB5009.namprd10.prod.outlook.com
- (2603:10b6:208:321::10)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 24e44fd6-698c-4d94-be61-08da0c3eaa2b
-X-MS-TrafficTypeDiagnostic: DM6PR10MB2730:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR10MB2730F9D7674E3E24750FC7388A179@DM6PR10MB2730.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bHsfcAEOQ2bUaGMLoNSjvUg3BNiuSzLCFe1jNiiNYltYk1toItw0aEj3QY+5tl/wxdrOsMbaVw5xkAd6FvcVcabKY5UPeqHO4U1GyZu9u4V10wi2A1Mq1KNAoK/1eCVG5xt3NnX5SQDPEeavUObUoI38cZpXTEkxg2yVsR3lwtNEFG34JD7+cuZAibtUyR5At796tabsS54LG6r2CVIPAMKoi8dkaz1IKE3VRu7s7dagaBC4CFjOQgfFPJHM5I9qUNES8iWslSNzR4a+k5zlRQKsC2+cR1tm7UUasvViHhM/Wgl5I0P1ESpJZZjoMqznde3AUyZi/Z9YtXBmvIEWlgwF0+jH7SZhMJ0l+YZ2bWg6X8LCO0gfgK8zZvbLSTW4ajwlStVoO/UzOOlbTQqZGEbAk0DU5fHo9C8C3rol2ymVZZcGAWKBbKALltg+Ofy9LtQ5dUQYEjNF3KGef7X398Elr1wJtdK/0RsMgwDagbuAGSxbs6mZzeP6Q8TLfa9VD2GNnlyF/y2KUXdVBoESycY04bkSMnH8HIHC5rC4DkDft7ACGB6k9s3u4EsK3bvatk5LU2MlkY93SDDV7RO2UMbJ9JrAMcszxv4UD+XmciDQKw+L/2EeqRyVh7mOvRvYfGunXobudoE3nc9fTqpbynj1XTaOK/i5ayAzFvHtMO262LDK4dNGukOrCyfyiKqU5w2EopAbOkSXxRkdABvM3S/N0J3umUAXnhtlAx+V6AY=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BLAPR10MB5009.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(8676002)(4326008)(2906002)(66476007)(66946007)(186003)(26005)(2616005)(5660300002)(8936002)(66556008)(7416002)(44832011)(38100700002)(83380400001)(86362001)(31696002)(316002)(31686004)(6486002)(54906003)(6666004)(36756003)(45080400002)(6512007)(6506007)(53546011)(508600001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UlovNXRYUlYvMWtoVWg1dktqam5tZHY4ZkprbWNtQnJTUEVlSTY0RndyRFVn?=
- =?utf-8?B?SUtVckZLYXFHdDhQeGkrMFdJWE5UZS9IeXUweTdrSkNQUU93a21qN0tZU3hS?=
- =?utf-8?B?M2xvOWtsQ2tVc2I3WXVjekJVa0JwbkZWdVpOaFp2SWJXMVo5RktaczhVaVg4?=
- =?utf-8?B?T3NNVTNjZHJYR2w2MTFGbXdWMU5DZUl6cFBTRzA2VGhicmtnTXZZeGtqZ3F6?=
- =?utf-8?B?d2FNaFdLa3poVjlCVEFDZUFRWjduOTlRZlFzUnVPWUtRVHNlQ05UVnNnOUc1?=
- =?utf-8?B?ZUlnRnVxVys2blUxZnlMeEYrZ1lTdm1MWlVyTlprYlpzcTNKVVBnd3RoWHJN?=
- =?utf-8?B?d1FVTDM1c3ZJZVlEK0h1d3VaK2JwUE1WcENpbG9JMVRyQS9yUXpSSk0yMXVX?=
- =?utf-8?B?bkdIN1FLNE5uR0VMdDlqWVVuWGxWbzZhQnR0SEREQ1l5M0dWYklOUmZjSmhx?=
- =?utf-8?B?bUs2cnZ0cXB0SEJqb2dFbWZuUUhsUTZORDZMTGxKdllFTWZ3dW9WTTUvS0J1?=
- =?utf-8?B?YkcyV3ZSSVE2L1RBYkF0RTlLRVhOVURvNisxM2ljOERkK1VmZ2c0cVo3UlFi?=
- =?utf-8?B?Qy9temlFMndxaCtxLzVkUWNtWDNkeVNEdGY5SlFmNk5wK2RqaTBpdDIxbjl6?=
- =?utf-8?B?eVlTVTBlVVV4cExyVW96Ty8wVXZjTktMbUpmc3BiaWM3c0tINjBEcndkVVg3?=
- =?utf-8?B?dzMzUEpJV3VFOXhTbk11SlNZR3Fsbk5CWE5vQkZTbXQ5aHNMT2crSFFLeU5J?=
- =?utf-8?B?OUlQZjltRmVQVkk1ZnRhaEVvZ0JHQXBuSDFFZUxNaVlQV2dGN3RmSHJ4K0JB?=
- =?utf-8?B?SzRyOG9ZTm5ibXFtV1NtbEZtVk5YcUNHRXNkaDlLM0orMDU2YlorUDBJemxH?=
- =?utf-8?B?YlFCUUhpcWpndkdOcHlaRENSVThRaEZBKy8xZEEzaDY5RHlWTHJWSU8zVUJs?=
- =?utf-8?B?Z3JhTjNJVDkrRUNuZ0R2c0NFbkk2em1YV243eXcwbHJZemxaUXpOelJZNW01?=
- =?utf-8?B?ZGtlZzFPTXN1Yk01a0VqNnZ0aHUxQ1dBYk02YnRnTFVUMFRGSDM5UkV6Z01n?=
- =?utf-8?B?cFJkbWh1eFBPaXpscWx2dDdSdVNzOFNqWEYxZzN0UEhRQjZlS1g5eW1pNnJz?=
- =?utf-8?B?RXNzUitBQ3ZldDRBdVQvS2REeHpBRVZqSVpvUkZSUy9vdGQ2OGJzM1o0aGpj?=
- =?utf-8?B?Rksza0REb3FUZlpscW8wVW9abEZZdWtJMG5ld1VvQ242aVN5U09lY2szTWpC?=
- =?utf-8?B?WksvRW8vY0UvdTJDazdtWk9EKzhTRU5SdDFJZGFnWXNjWFNtZll0dVFuM1I3?=
- =?utf-8?B?SDlENFNsZ2JHY3dWUzYxb0hyVGt2UW1YRzJwNDM2MVUycmZzL2ZvWXhCOTUr?=
- =?utf-8?B?dGN3ZTBiRVdET012UjJ3bWkzTkFOMmEvZUovTzVGUzZVRmVWRXNJM2ZKMmt3?=
- =?utf-8?B?ZVJYaXB1SXZ5OG5wSFc0dGV4L2k2K2lzc0o1dENiODFjZlJLVU5pUElWQllv?=
- =?utf-8?B?bGFlMjJ1djMzQTRURU1XZzBrZXNnVTQ3YXptYitQMTBiTEYxaXlrcGNtSGQ2?=
- =?utf-8?B?RlRZdFBEMERjQnRqdEJ4UXZnc1gyQkRwQ1JmTWhQUzRoK01vVVdVWSt6a0d0?=
- =?utf-8?B?M3A5WlIvalVSRk8wb3kySHM1L0NYamNMdisrajcxeURnOWlkbjJzNHJERkNN?=
- =?utf-8?B?dk5tMU5abnI3RWVJS09iWTl5cDg2dGY4ODU0dWdMUnUzTGNzUExsRU1pYlF6?=
- =?utf-8?B?VFV3RnlxV1JmRGhVUXUwVG9HUDFFUURVdWpRU29BV1p5R0JVZURWT0x1UWJ2?=
- =?utf-8?B?MWtHcm5mMEdNdUFxdVk0SHpxU0JVUDNlbkxrMmc5RUZMZmxjZDhTcmszVG1M?=
- =?utf-8?B?eXZuUjNGeEdSRHM5NXloVFF3UUx3SldLWmZmMSs5Skk5cTRsL0I4VksxcUxV?=
- =?utf-8?B?d0dpS0VNMmZOdnJqUXBYWUlNcWFXQmxPQ08wQU04MmFuQmFTQU1MWHpsRGFU?=
- =?utf-8?B?Y1NIUndLWDdRPT0=?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 24e44fd6-698c-4d94-be61-08da0c3eaa2b
-X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB5009.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2022 20:00:50.9939
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 59BcXluEotDzo3o4rssxOAdbHSJelYaIbypuy3wMRlELB6s6bUziJ2Q5akZVP+iW8Voe3+Q8Y+RFFF3eRpBBT08jZtWZ9KMCSyXaTJMQFYs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB2730
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10294 signatures=694350
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 phishscore=0
- mlxlogscore=999 adultscore=0 suspectscore=0 malwarescore=0 spamscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203220104
-X-Proofpoint-GUID: iaul_O4QrRAbRmSyqt_mwBeOGpf-C1BU
-X-Proofpoint-ORIG-GUID: iaul_O4QrRAbRmSyqt_mwBeOGpf-C1BU
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 3/22/22 11:50 AM, Juergen Gross wrote:
-> is_xen_pmu() is taking the cpu number as parameter, but it is not using
-> it. Instead it just tests whether the Xen PMU initialization on the
-> current cpu did succeed. As this test is done by checking a percpu
-> pointer, preemption needs to be disabled in order to avoid switching
-> the cpu while doing the test. While resuming from suspend() this seems
-> not to be the case:
+On Tue, 22 Mar 2022 11:18:18 PDT (-0700), mail@conchuod.ie wrote:
+> On 16/03/2022 23:25, Palmer Dabbelt wrote:
+>> Peter sent an RFC out about a year ago
+>> <https://lore.kernel.org/lkml/YHbBBuVFNnI4kjj3@hirez.programming.kicks-ass.net/>,
+>> but after a spirited discussion it looks like we lost track of things.
+>> IIRC there was broad consensus on this being the way to go, but there
+>> was a lot of discussion so I wasn't sure.  Given that it's been a year,
+>> I figured it'd be best to just send this out again formatted a bit more
+>> explicitly as a patch.
+>>
+>> This has had almost no testing (just a build test on RISC-V defconfig),
+>> but I wanted to send it out largely as-is because I didn't have a SOB
+>> from Peter on the code.  I had sent around something sort of similar in
+>> spirit, but this looks completely re-written.  Just to play it safe I
+>> wanted to send out almost exactly as it was posted.  I'd probably rename
+>> this tspinlock and tspinlock_types, as the mis-match kind of makes my
+>> eyes go funny, but I don't really care that much.  I'll also go through
+>> the other ports and see if there's any more candidates, I seem to
+>> remember there having been more than just OpenRISC but it's been a
+>> while.
+>>
+>> I'm in no big rush for this and given the complex HW dependencies I
+>> think it's best to target it for 5.19, that'd give us a full merge
+>> window for folks to test/benchmark it on their systems to make sure it's
+>> OK.
 >
-> [   88.082751] ACPI: PM: Low-level resume complete
-> [   88.087933] ACPI: EC: EC started
-> [   88.091464] ACPI: PM: Restoring platform NVS memory
-> [   88.097166] xen_acpi_processor: Uploading Xen processor PM info
-> [   88.103850] Enabling non-boot CPUs ...
-> [   88.108128] installing Xen timer for CPU 1
-> [   88.112763] BUG: using smp_processor_id() in preemptible [00000000] code: systemd-sleep/7138
-> [   88.122256] caller is is_xen_pmu+0x12/0x30
-> [   88.126937] CPU: 0 PID: 7138 Comm: systemd-sleep Tainted: G        W         5.16.13-2.fc32.qubes.x86_64 #1
-> [   88.137939] Hardware name: Star Labs StarBook/StarBook, BIOS 7.97 03/21/2022
-> [   88.145930] Call Trace:
-> [   88.148757]  <TASK>
-> [   88.151193]  dump_stack_lvl+0x48/0x5e
-> [   88.155381]  check_preemption_disabled+0xde/0xe0
-> [   88.160641]  is_xen_pmu+0x12/0x30
-> [   88.164441]  xen_smp_intr_init_pv+0x75/0x100
+> Is there a specific way you have been testing/benching things, or is it
+> just a case of test what we ourselves care about?
 
+I do a bunch of functional testing in QEMU (it's all in my 
+riscv-systems-ci repo, but that's not really fit for human consumption 
+so I don't tell folks to use it).  That's pretty much useless for 
+something like this: sure it'd find something just straight-up broken in 
+the lock implementation, but the stuff I'm really worried about here 
+would be poor interactions with hardware that wasn't designed/tested 
+against this flavor of locks.
 
-There is actually another PMU-related problem on restore which was caused (or, rather, highlighted) by ff083a2d972f56bebfd82409ca62e5dfce950961:
+I don't currently do any regular testing on HW, but there's a handful of 
+folks who do.  If you've got HW you care about then the best bet is to 
+give this a shot on it.  There's already been some boot test reports, so 
+it's at least mostly there (on RISC-V, last I saw it was breaking 
+OpenRISC so there's probably some lurking issue somewhere).  I was 
+hoping we'd get enough coverage that way to have confidence in this, but 
+if not then I've got a bunch of RISC-V hardware lying around that I can 
+spin up to fill the gaps.
 
+As far as what workloads, I really don't know here.  At least on RISC-V, 
+I think any lock microbenchmarks would be essentially meaningless: this 
+is fair, so even if lock/unlock is a bit slower that's probably a win 
+for real workloads.  That said, I'm not sure any of the existing 
+hardware runs any workloads that I'm personally interested in so unless 
+this is some massive hit to just general system responsiveness or 
+make/GCC then I'm probably not going to find anything.
 
-[  116.861637] ------------[ cut here ]------------
-[  116.861651] WARNING: CPU: 1 PID: 31 at kernel/events/core.c:6614 perf_register_guest_info_callbacks+0x68/0x70
-[  116.861673] Modules linked in:
-[  116.861682] CPU: 1 PID: 31 Comm: xenwatch Not tainted 5.17.0-rc7ostr #103
-[  116.861695] RIP: e030:perf_register_guest_info_callbacks+0x68/0x70
-[  116.861706] Code: c7 c7 40 e1 86 82 e8 d7 e7 ff ff 48 8b 53 10 48 85 d2 74 14 48 c7 c6 f0 0a c0 81 48 c7 c7 30 e1 86 82 5b e9 ba e7 ff ff 5b c3 <0f> 0b c3 0f 1f 44 00 00 0f 1f 44 00 00 48 8b 05 54 fd 0b 02 48 39
-[  116.861747] RSP: e02b:ffffc9004016fe18 EFLAGS: 00010286
-[  116.861758] RAX: ffffffff82432850 RBX: 0000000000000003 RCX: ffff888079c00000
-[  116.861768] RDX: ffff888079c00000 RSI: ffffc9004016fe30 RDI: ffffffff82432850
-[  116.861778] RBP: 0000000000000000 R08: 0000160000000000 R09: ffffea00000ed340
-[  116.861788] R10: 0000000000000758 R11: 0000000000000000 R12: ffff888003b4d000
-[  116.861797] R13: 0000000000000003 R14: ffffffff8162cf10 R15: 0000000000000000
-[  116.861819] FS:  0000000000000000(0000) GS:ffff888079c80000(0000) knlGS:0000000000000000
-[  116.861830] CS:  e030 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  116.861839] CR2: 0000000000000000 CR3: 00000000062b6000 CR4: 0000000000040660
-[  116.861853] Call Trace:
-[  116.861861]  <TASK>
-[  116.861866]  xen_pmu_init+0x187/0x280
-[  116.861879]  xen_arch_resume+0x30/0x50
-[  116.861888]  do_suspend.cold+0x132/0x147
-[  116.861899]  shutdown_handler+0x12e/0x140
-[  116.861910]  xenwatch_thread+0x94/0x180
-[  116.861919]  ? finish_wait+0x80/0x80
-[  116.861928]  kthread+0xe7/0x110
-[  116.861938]  ? kthread_complete_and_exit+0x20/0x20
-[  116.861948]  ret_from_fork+0x22/0x30
-[  116.861959]  </TASK>
-[  116.861964] ---[ end trace 0000000000000000 ]---
+Happy to hear if anyone has ideas, though.
 
-
-I was going to send a patch but I think yours can be slightly modified to take care of this problem as well.
-
-
-
-> @@ -542,6 +539,7 @@ void xen_pmu_init(int cpu)
->   	per_cpu(xenpmu_shared, cpu).flags = 0;
->   
->   	if (cpu == 0) {
-
-
-               if (!is_xen_pmu)
-
-
-> +		is_xen_pmu = true;
->   		perf_register_guest_info_callbacks(&xen_guest_cbs);
->   		xen_pmu_arch_init();
->   	}
-> @@ -572,4 +570,7 @@ void xen_pmu_finish(int cpu)
->   
->   	free_pages((unsigned long)per_cpu(xenpmu_shared, cpu).xenpmu_data, 0);
->   	per_cpu(xenpmu_shared, cpu).xenpmu_data = NULL;
-> +
-> +	if (cpu == 0)
-> +		is_xen_pmu = false;
-
-
-And drop this hunk.
-
-
--boris
-
-
+>
+> Thanks,
+> Conor.
+>
+>> RISC-V has a forward progress guarantee so we should be safe, but
+>> these can always trip things up.
