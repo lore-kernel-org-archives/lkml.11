@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07EC8C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 02:15:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB95BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 02:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235358AbiCVCRT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 22:17:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49406 "EHLO
+        id S235378AbiCVCRX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 22:17:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235304AbiCVCRR (ORCPT
+        with ESMTP id S235328AbiCVCRS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 22:17:17 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4EFC2C65C;
-        Mon, 21 Mar 2022 19:14:35 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id j13-20020a05600c1c0d00b0038c8f94aac2so578297wms.3;
-        Mon, 21 Mar 2022 19:14:35 -0700 (PDT)
+        Mon, 21 Mar 2022 22:17:18 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D94D62CCA8;
+        Mon, 21 Mar 2022 19:14:37 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id n35so7949907wms.5;
+        Mon, 21 Mar 2022 19:14:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sdd1MbpFc96EBVpraGZv4SQwPLUuIivkyZm7CBii8j4=;
-        b=hHtXisGIKgsRgXl2aaPr+EUuYc2u2wadLeKL9y1/9kq6i6bDr0HKXKMI5/FZsDK5gg
-         q3wN8h/jyBmmk0hPvyeu7NVjLUu1eYvL8Li5lt/unA49x/toQa27Xn8tVTIIXTebXhvW
-         AINfBpgRxBtH0hMVHwzdr7KwIk/vnbVK2+vjZnBesEtij35VOBf9+X7FQqPAON/hGQ3T
-         /IVDb/F6XO1jj04l/IFAva/ZHZKQA8tZHB9Jwz7mBLkyvjnrRVVW/4SX2E45Y92PFZ1o
-         6Zvwoj9BmlzChxw6hWfuKXoszG5lDIFFznq1IoKrcRdDwXSuKP87QOEdUsNymvS2UuCP
-         2HBQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=pQbf7iGYZbf1aURiBPER2SslgHTAcNmDZn6J10o+zx8=;
+        b=QgjoZXxW9XjeJx6tl7jhthMRCN1yYSuJTVOXtqzVquvaPAH7PV6ReENpXpJR1N/+E5
+         xOT+DSg8iutJnstH/tbQ3do6ODVMEOlbvnWitx0w2QeLk2w3atiXl6uRyJ2ip88Aakay
+         sB+TU5Z3wos/Lp4sLWa6/5N1CQ+PBJod7eruIbW16p2ICFjmZdM1hEb0QzEanWlui5+x
+         bSraMhWJKN8Kw/Y3XXOJJfIyu+ylVayaa1tRotEm4Dpw19RSTqTiXyzbgKe644Ylh7pI
+         nzfkQqlNsLw7n8KxFfxzirldF1re656/R3AnHOxSVDMap75JN/8Q88vpYeyHZ9y9fUtj
+         d8YA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sdd1MbpFc96EBVpraGZv4SQwPLUuIivkyZm7CBii8j4=;
-        b=QH072dpp3+rGbF/KKKrBeETUODXgZ9HyY5JfRsE5nyrHU6CBxRZhcPOg+KztWdDlWc
-         RHdaU+UfWljUA9jpkI80Qb8mzNU1UG0VhyvKuL/zeL3EI/awhnyBu09yoDtAKFXa9PtF
-         nS5UtfFlmsvX7YYOgt4AtADp2EgYrTrJSydrAhpsHnMr96x2o22zlV7AbPvr4b+xTMrj
-         YC28lm3rAw5ivlHBO9RlYoavU1KvU3ieRE0Dq2gIp4OKVnKHWXjj/+fGuxKL1XhE7ul6
-         V0VGYhjcSSa0FAF5yyVkFvz90CPJ5MFhaPTaFES1EZRIDJjhmDYn4E5C2ztDlx5/WZ4f
-         jXfg==
-X-Gm-Message-State: AOAM5325EilczHeJWrIZ4LCQJu82GMh1fbZLP4th3oJ1h5JBXE7w8rT2
-        S5TGUxL4HCB32d8J0tHQ1Qc=
-X-Google-Smtp-Source: ABdhPJykoBybX4K3S8TnzSGe7g3kCe/Omzqb01qUiONSvRLJkL+Cl5UvGOKE+z7qlZjzGztqRjUcoA==
-X-Received: by 2002:a05:600c:a08:b0:38c:93c8:36e9 with SMTP id z8-20020a05600c0a0800b0038c93c836e9mr1601092wmp.97.1647915274083;
-        Mon, 21 Mar 2022 19:14:34 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=pQbf7iGYZbf1aURiBPER2SslgHTAcNmDZn6J10o+zx8=;
+        b=3fuw+/4coEZOPrnJZV0Y6CUc2izrLpHWw02KDpzAwLAJ1K6aDMuAF8fCtL3s4FFEX6
+         A8cMUj6U0e4W/irNRIlBBABe+lK5vdzqnAbSk1WnjxeDnuifZlg2bXcTfLZ+7OtHOQ+x
+         guUY3e3LuCi663/veDDz04WvtvK6/VzxoIDS++KrA34YoTeQ/SPVPkv/z1L6naguA02n
+         6nSfahThkWxIUZbnH5fznOxn8XZp7WyWp9LsuL68d74T3B6x/sQz3tMtl6Bn6KCTTCnn
+         dfLR55hlfFjROMdpg1uqKCJt5WcFHLg7Um4bZfTw4E/0/JbHGdS6QdIqEhkNR9uj1ZIF
+         yCTA==
+X-Gm-Message-State: AOAM5315cBhoGBRusRvPi+if9/S3NbveL4HnVJxJ+mKODtIWrRsdlvbf
+        xJsQCU39ylbyMniUd5RoswM=
+X-Google-Smtp-Source: ABdhPJxkutwPB2uel9GTM0z0PMGhFRA5Hs+vtTTJs07jpj9cMnEY7AqD/3joAw+ZAX8rVmVlodX4Og==
+X-Received: by 2002:a05:600c:1c1e:b0:38c:b393:b355 with SMTP id j30-20020a05600c1c1e00b0038cb393b355mr1579417wms.92.1647915276351;
+        Mon, 21 Mar 2022 19:14:36 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
-        by smtp.googlemail.com with ESMTPSA id m2-20020a056000024200b00205718e3a3csm177968wrz.2.2022.03.21.19.14.33
+        by smtp.googlemail.com with ESMTPSA id m2-20020a056000024200b00205718e3a3csm177968wrz.2.2022.03.21.19.14.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 19:14:33 -0700 (PDT)
+        Mon, 21 Mar 2022 19:14:35 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -58,55 +58,107 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net-next PATCH 0/4] Reduce qca8k_priv space usage
-Date:   Tue, 22 Mar 2022 02:45:02 +0100
-Message-Id: <20220322014506.27872-1-ansuelsmth@gmail.com>
+Subject: [net-next PATCH 2/4] drivers: net: dsa: qca8k: drop port_sts from qca8k_priv
+Date:   Tue, 22 Mar 2022 02:45:04 +0100
+Message-Id: <20220322014506.27872-3-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220322014506.27872-1-ansuelsmth@gmail.com>
+References: <20220322014506.27872-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These 4 patch is a first attempt at reducting qca8k_priv space.
-The code changed a lot during times and we have many old logic
-that can be replaced with new implementation
+Port_sts is a thing of the past for this driver. It was something
+present on the initial implementation of this driver and parts of the
+original struct were dropped over time. Using an array of int to store if
+a port is enabled or not to handle PM operation seems overkill. Switch
+and use a simple u8 to store the port status where each bit correspond
+to a port. (bit is set port is enabled, bit is not set, port is disabled)
+Also add some comments to better describe why we need to track port
+status.
 
-The first patch drop the tracking of MTU. We now base all on the
-MTU saved in the slave dev. Just like DSA core does to get the max
-MTU across all port to set a correct MTU for the cpu port.
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+---
+ drivers/net/dsa/qca8k.c | 15 +++++++++------
+ drivers/net/dsa/qca8k.h |  9 ++++-----
+ 2 files changed, 13 insertions(+), 11 deletions(-)
 
-The second patch finally drop a piece of story of this driver.
-The ar8xxx_port_status struct was used by the first implementation
-of this driver to put all sort of status data for the port...
-With the evolution of DSA all that stuff got dropped till only
-the enabled state was the only part of the that struct.
-Since it's overkill to keep an array of int, we convert the variable
-to a simple u8 where we store the status of each port. This is needed
-to don't reanable ports on system resume.
-
-The third patch is a preparation for patch 4. As Vladimir explained
-in another patch, we waste a tons of space by keeping a duplicate of
-the switch dsa ops in qca8k_priv. The only reason for this is to
-dynamically set the correct mdiobus configuration (a legacy dsa one,
-or a custom dedicated one)
-To solve this problem, we just drop the phy_read/phy_write and we
-declare a custom mdiobus in any case. 
-This way we can use a static dsa switch ops struct and we can drop it
-from qca8k_priv
-
-Patch 4 finally drop the duplicated dsa_switch_ops.
-
-Ansuel Smith (4):
-  drivers: net: dsa: qca8k: drop MTU tracking from qca8k_priv
-  drivers: net: dsa: qca8k: drop port_sts from qca8k_priv
-  drivers: net: dsa: qca8k: rework and simplify mdiobus logic
-  drivers: net: dsa: qca8k: drop dsa_switch_ops from qca8k_priv
-
- drivers/net/dsa/qca8k.c | 157 +++++++++++++++++-----------------------
- drivers/net/dsa/qca8k.h |  12 +--
- 2 files changed, 71 insertions(+), 98 deletions(-)
-
+diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+index 4366d87b4bbd..33cedae6875c 100644
+--- a/drivers/net/dsa/qca8k.c
++++ b/drivers/net/dsa/qca8k.c
+@@ -2346,7 +2346,7 @@ qca8k_port_enable(struct dsa_switch *ds, int port,
+ 	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
+ 
+ 	qca8k_port_set_status(priv, port, 1);
+-	priv->port_sts[port].enabled = 1;
++	priv->port_enabled_map |= BIT(port);
+ 
+ 	if (dsa_is_user_port(ds, port))
+ 		phy_support_asym_pause(phy);
+@@ -2360,7 +2360,7 @@ qca8k_port_disable(struct dsa_switch *ds, int port)
+ 	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
+ 
+ 	qca8k_port_set_status(priv, port, 0);
+-	priv->port_sts[port].enabled = 0;
++	priv->port_enabled_map &= ~BIT(port);
+ }
+ 
+ static int
+@@ -3251,13 +3251,16 @@ static void qca8k_sw_shutdown(struct mdio_device *mdiodev)
+ static void
+ qca8k_set_pm(struct qca8k_priv *priv, int enable)
+ {
+-	int i;
++	int port;
+ 
+-	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
+-		if (!priv->port_sts[i].enabled)
++	for (port = 0; port < QCA8K_NUM_PORTS; port++) {
++		/* Do not enable on resume if the port was
++		 * disabled before.
++		 */
++		if (!(priv->port_enabled_map & BIT(port)))
+ 			continue;
+ 
+-		qca8k_port_set_status(priv, i, enable);
++		qca8k_port_set_status(priv, port, enable);
+ 	}
+ }
+ 
+diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+index 562d75997e55..12d8d090298b 100644
+--- a/drivers/net/dsa/qca8k.h
++++ b/drivers/net/dsa/qca8k.h
+@@ -324,10 +324,6 @@ enum qca8k_mid_cmd {
+ 	QCA8K_MIB_CAST = 3,
+ };
+ 
+-struct ar8xxx_port_status {
+-	int enabled;
+-};
+-
+ struct qca8k_match_data {
+ 	u8 id;
+ 	bool reduced_package;
+@@ -388,11 +384,14 @@ struct qca8k_priv {
+ 	u8 mirror_rx;
+ 	u8 mirror_tx;
+ 	u8 lag_hash_mode;
++	/* Each bit correspond to a port. This switch can support a max of 7 port.
++	 * Bit 1: port enabled. Bit 0: port disabled.
++	 */
++	u8 port_enabled_map;
+ 	bool legacy_phy_port_mapping;
+ 	struct qca8k_ports_config ports_config;
+ 	struct regmap *regmap;
+ 	struct mii_bus *bus;
+-	struct ar8xxx_port_status port_sts[QCA8K_NUM_PORTS];
+ 	struct dsa_switch *ds;
+ 	struct mutex reg_mutex;
+ 	struct device *dev;
 -- 
 2.34.1
 
