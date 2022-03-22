@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF69AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 10:22:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1CDFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 10:22:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232588AbiCVKXi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 06:23:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44120 "EHLO
+        id S232972AbiCVKXm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 06:23:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233058AbiCVKXb (ORCPT
+        with ESMTP id S233043AbiCVKXe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 06:23:31 -0400
+        Tue, 22 Mar 2022 06:23:34 -0400
 Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 703C481198
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 03:21:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A82A4811B7
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 03:22:04 -0700 (PDT)
 Received: from integral2.. (unknown [182.2.69.158])
-        by gnuweeb.org (Postfix) with ESMTPSA id 09F127E33E;
-        Tue, 22 Mar 2022 10:21:53 +0000 (UTC)
+        by gnuweeb.org (Postfix) with ESMTPSA id EF33E7E343;
+        Tue, 22 Mar 2022 10:22:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1647944516;
-        bh=x+mKN/1p95Zf0+fLiZBiEJVGOeVZbrDqmetqJdLgFD4=;
+        s=default; t=1647944523;
+        bh=vWuQhpoAXiBJj3wfUX35L7A8raKBOQqVL60x1T1gmI8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cT5xjjU4jkQdMIwuGOxBIramShd5dkEo+XyOG2iYIYWG9zFSZ60OS42FDLHCfdf4D
-         oQeb5+PUAmNrCiFpeA6M/Unj/FM6NvgggmZO9FIKxgvlektJV6Ro7ZEQyGugl20YOi
-         e/QO4nySl3GgRXzZ7cAphWPkHyS8MxgUZbKP/L7XrsYsgH6HJYOUc0yzFGBs2sBhpd
-         YAy2K0L7ScVcuoDD6ISwWIoBLMh8VEiZdx5rncoCMjrNXbSSLTBni5Ib9tRBWmw2Yo
-         wSCSPAG2MpnGgaEkwT/vAHSVhpvYugdNBPhxE/Mu0u9Cos4cEhN8HtnkOtVWVAPd48
-         GpX+C/AjNdH4g==
+        b=cpwcf9F07dn3br1s8e47fpUodg+PtsS/O7sdpWg5xam/tebk5YqqseF4WV9nLvrLx
+         R0f/cjcT6EqBf5GPINaxgDQ9GE+xhkinW9uEsebfZBKILuMtZB0nHnQrLrmm0l9GQS
+         EZtTy9oxqFrpZrJT9NF9LEfShN1WJ8ljl8Iuwa62dQDP3TszQm5Q9DkcC4CiTXY2dN
+         FjdvNr+FsnUlWPJDnOnxWUisClxdqu+PB89BpDiAO8UfcfN+ZzLUgC6eDr3W1mJfUV
+         Xg+2LqxbmcNrxI1+Rk9bWUZk9om8jBNWbzTz6enf9EGZgaVIp89NxTMcV08rclNRoI
+         TrWTRN2LMdHzA==
 From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
 To:     Willy Tarreau <w@1wt.eu>
 Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
@@ -36,9 +36,9 @@ Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
         Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Subject: [RFC PATCH v2 6/8] tools/nolibc/stdlib: Implement `malloc()`, `calloc()`, `realloc()` and `free()`
-Date:   Tue, 22 Mar 2022 17:21:13 +0700
-Message-Id: <20220322102115.186179-7-ammarfaizi2@gnuweeb.org>
+Subject: [RFC PATCH v2 8/8] tools/include/string: Implement `strdup()` and `strndup()`
+Date:   Tue, 22 Mar 2022 17:21:15 +0700
+Message-Id: <20220322102115.186179-9-ammarfaizi2@gnuweeb.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220322102115.186179-1-ammarfaizi2@gnuweeb.org>
 References: <20220322102115.186179-1-ammarfaizi2@gnuweeb.org>
@@ -48,119 +48,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Implement basic dynamic allocator functions. These functions are
-currently only available on architectures that have nolibc mmap()
-syscall implemented. These are not a super-fast memory allocator,
-but at least they can satisfy basic needs for having heap without
-libc.
+These functions are currently only available on architectures that have
+my_syscall6() macro implemented. Since these functions use malloc(),
+malloc() uses mmap(), mmap() depends on my_syscall6() macro.
+
+On architectures that don't support my_syscall6(), these function will
+always return NULL with errno set to ENOSYS.
 
 Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 ---
 
 @@ Changelog:
 
-   Link: https://lore.kernel.org/lkml/20220320093750.159991-6-ammarfaizi2@gnuweeb.org
+   Link RFC v1: https://lore.kernel.org/lkml/20220320093750.159991-7-ammarfaizi2@gnuweeb.org/
    RFC v1 -> RFC v2:
-    - Move container_of() and offsetof() macro to types.h with a
-      separate patch (comment from Willy).
+    - Update strdup and strndup implementation, use strlen and strnlen to get
+      the string length first (comment from Willy and Alviro).
+    - Fix the subject line prefix, it was "tools/include/string: ", it should be
+      "tools/nolibc/string: ".
+    - Update the commit message.
 ---
- tools/include/nolibc/stdlib.h | 68 +++++++++++++++++++++++++++++++++++
- 1 file changed, 68 insertions(+)
+ tools/include/nolibc/string.h | 32 ++++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
-diff --git a/tools/include/nolibc/stdlib.h b/tools/include/nolibc/stdlib.h
-index aca8616335e3..a0ed75431e0a 100644
---- a/tools/include/nolibc/stdlib.h
-+++ b/tools/include/nolibc/stdlib.h
-@@ -11,7 +11,12 @@
- #include "arch.h"
- #include "types.h"
- #include "sys.h"
-+#include "string.h"
+diff --git a/tools/include/nolibc/string.h b/tools/include/nolibc/string.h
+index 1426eefc1ef2..bcc76f89199e 100644
+--- a/tools/include/nolibc/string.h
++++ b/tools/include/nolibc/string.h
+@@ -9,6 +9,8 @@
  
-+struct nolibc_heap {
-+	size_t	len;
-+	char	user_p[] __attribute__((__aligned__));
-+};
+ #include "std.h"
  
- /* Buffer used to store int-to-ASCII conversions. Will only be implemented if
-  * any of the related functions is implemented. The area is large enough to
-@@ -60,6 +65,18 @@ int atoi(const char *s)
- 	return atol(s);
++static void *malloc(size_t len);
++
+ /*
+  * As much as possible, please keep functions alphabetically sorted.
+  */
+@@ -147,6 +149,36 @@ size_t strnlen(const char *str, size_t maxlen)
+ 	return len;
  }
  
 +static __attribute__((unused))
-+void free(void *ptr)
++char *strdup(const char *str)
 +{
-+	struct nolibc_heap *heap;
++	size_t len;
++	char *ret;
 +
-+	if (!ptr)
-+		return;
++	len = strlen(str);
++	ret = malloc(len + 1);
++	if (__builtin_expect(ret != NULL, 1))
++		memcpy(ret, str, len + 1);
 +
-+	heap = container_of(ptr, struct nolibc_heap, user_p);
-+	munmap(heap, heap->len);
-+}
-+
- /* Tries to find the environment variable named <name> in the environment array
-  * pointed to by global variable "environ" which must be declared as a char **,
-  * and must be terminated by a NULL (it is recommended to set this variable to
-@@ -205,6 +222,57 @@ char *ltoa(long in)
- 	return itoa_buffer;
- }
- 
-+static __attribute__((unused))
-+void *malloc(size_t len)
-+{
-+	struct nolibc_heap *heap;
-+
-+	heap = mmap(NULL, sizeof(*heap) + len, PROT_READ|PROT_WRITE,
-+		    MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
-+	if (__builtin_expect(heap == MAP_FAILED, 0))
-+		return NULL;
-+
-+	heap->len = sizeof(*heap) + len;
-+	return heap->user_p;
-+}
-+
-+static __attribute__((unused))
-+void *calloc(size_t size, size_t nmemb)
-+{
-+	void *orig;
-+	size_t res = 0;
-+
-+	if (__builtin_expect(__builtin_mul_overflow(nmemb, size, &res), 0)) {
-+		SET_ERRNO(ENOMEM);
-+		return NULL;
-+	}
-+
-+	/*
-+	 * No need to zero the heap, the MAP_ANONYMOUS in malloc()
-+	 * already does it.
-+	 */
-+	return malloc(res);
-+}
-+
-+static __attribute__((unused))
-+void *realloc(void *old_ptr, size_t new_size)
-+{
-+	struct nolibc_heap *heap;
-+	void *ret;
-+
-+	ret = malloc(new_size);
-+	if (__builtin_expect(!ret, 0))
-+		return NULL;
-+
-+	if (!old_ptr)
-+		return ret;
-+
-+	heap = container_of(old_ptr, struct nolibc_heap, user_p);
-+	memcpy(ret, heap->user_p, heap->len);
-+	munmap(heap, heap->len);
 +	return ret;
 +}
 +
- /* converts unsigned long integer <in> to a string using the static itoa_buffer
-  * and returns the pointer to that string.
-  */
++static __attribute__((unused))
++char *strndup(const char *str, size_t maxlen)
++{
++	size_t len;
++	char *ret;
++
++	len = strnlen(str, maxlen);
++	ret = malloc(len + 1);
++	if (__builtin_expect(ret != NULL, 1)) {
++		memcpy(ret, str, len);
++		ret[len] = '\0';
++	}
++
++	return ret;
++}
++
+ static __attribute__((unused))
+ size_t strlcat(char *dst, const char *src, size_t size)
+ {
 -- 
 Ammar Faizi
 
