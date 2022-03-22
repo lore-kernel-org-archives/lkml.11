@@ -2,121 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF63EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 10:50:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FCEAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 10:51:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233553AbiCVKwP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 06:52:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42350 "EHLO
+        id S233600AbiCVKwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 06:52:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232589AbiCVKwO (ORCPT
+        with ESMTP id S232589AbiCVKwd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 06:52:14 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08C5F811AB
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 03:50:43 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id r23so21219579edb.0
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 03:50:42 -0700 (PDT)
+        Tue, 22 Mar 2022 06:52:33 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B52814AD
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 03:51:05 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id n35so8732138wms.5
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 03:51:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mYTrYht6AUVnHXQusTG11+67vE+GSz/eL3E7YG6g+Pw=;
-        b=ANKaLn6pxoQ7ntAGRfscx+nhCUuIQg6KGgHc2SLz7Nw9rUbFNwcBqrrTqoF/VBnJcs
-         8Wz6ufDb9jeQ9sNpCa5Nr8MhwBeMGvmMPk2aFVRKaPNVj4E5Vm+m/Wg9NjHvlVoK/Hk5
-         f/O+f44s2o9PE3kWaZTYJWCb7oy0ZasIcJYhtS95dmdVshVkdRphmeSdvWLPn3f0TWp4
-         IvFu0B+FeH5Mt74hp7eoeRs3uo9jUeMaB4NF1HzaGVXiEs+q4KEV6GKuf7TqRwhsvelg
-         IY2pXwWgLE8MrzcciduF87125OQ29cHzLMy9G/M5gE6/jSwtl8LjqZHPAWiqSDGokhmK
-         dQog==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=fW7h21v3Ivjw1G7/perEqnpmWeToQrSlBMPA8HUbBbg=;
+        b=YlFDV8YLOUfJUtA/tnmM25PrK7KOpQHQY2lGFJMNk+l+60xoMCycTAuuHx3S9rIHY7
+         nMwNl0FokoOoLTGslZoRXBrjdkltAkXoRTeoOagHgnu0ekn2QfjMOMPRSayMUNea2EHD
+         PmbxEJz151Z3iqzvcOP+m6CfWfPU2GVHs6/nvtZQw1zlhgKRTSQf0FwmL5SEK4230H5M
+         FjzrbBFkViZarSr6H04LfdhpuLzB7XeLqa97LQoe8iVIuk8hH4bFnfZh6ZPs183AtsoC
+         mBE6YFlJ5Yai3Xtb6WuuGKZymUnl/uFszmdEWzYyGwJg/0qGITDBcqQ2sieCAFQZcHyV
+         GFrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mYTrYht6AUVnHXQusTG11+67vE+GSz/eL3E7YG6g+Pw=;
-        b=WK7T51Q8tY3YgJF4E4FSZ+QNQKq9+qT4uWX4dAEE3UyxssXT0Z059hpCOYC/UEOL4c
-         t9e2ukSzNxTtN+8L3ag6HIx0oUjnCiUT1IUbgZs+begQJr1K6pth9pZXJPSyclpqBqzg
-         8NfoSaVQOOYS19iWiFogyNYLRfLVtEzdUTrUSu0dY+KaWJSMRBk8YLdaPv4j4Dy4i3Vf
-         htqKhmdy/iGU+xxll8K5CPwpOwc3tX54f62fR9BZDnBlc07sj/RXZE+GdsBa6HGW0V24
-         ZhdBH0aXo+LitYa+4HUBaOWJGbTpp3mSHnJE2wMva3iPIRYSknynbkChwZp06sqLzlSv
-         Ng/w==
-X-Gm-Message-State: AOAM533dMaeNAIEJTicIpYdAp/qKPyjSddn/HbqJ8DNb47GwMVuyYa5T
-        ARI7tgATHEBUAiCH8qos+gg=
-X-Google-Smtp-Source: ABdhPJyEZZAgxNy2fD1bE8J9IveKSflMCMIFwxeBJptbSFj6LuDNtRfI8Wb4aBiasqcTiCr3z2aJRw==
-X-Received: by 2002:a05:6402:cac:b0:410:a920:4e90 with SMTP id cn12-20020a0564020cac00b00410a9204e90mr27660444edb.60.1647946241469;
-        Tue, 22 Mar 2022 03:50:41 -0700 (PDT)
-Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id e6-20020a056402190600b00413d03ac4a2sm7419629edz.69.2022.03.22.03.50.40
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=fW7h21v3Ivjw1G7/perEqnpmWeToQrSlBMPA8HUbBbg=;
+        b=4VwAYwOLjBrCrHnUK7d3+1Fs3byNzB0TiDIYbv7xljrLEcV7/cgg8qCnDjLpqK2HGv
+         UwvzwSNvBwCqkL5+b+z0XW2KGmZ4+qBxcHhLcFFahR9ES0Jsp8iwT1Wux7v2E09mSi5r
+         VCl9pdpgrM5ESGpEk08kbxhfl9t2n34qR8x3Sz0rnRCXg5zh7UQD6PlNj4hLNgvBNxWD
+         bfudSzQk0pyvWM6mKK3uZVvShM9CxX9X1cmNbGZiHUONP6SL+lGWkN+grtpjoyn3VpbA
+         CFQyHLUZ09q70ubw3yStsIjxhHEr+Z5MftBPhTImaPYH4Kxktf21SijJ2l/oaXGDAcuk
+         KaFQ==
+X-Gm-Message-State: AOAM5327JB93OKzqZEVU9jy1S0YobWGV8faulJmNeIefhSjSgdjjSZUC
+        AY0YNdaNO9erT60Fpf2S8A2B6/DdxPw=
+X-Google-Smtp-Source: ABdhPJxFEtSvxdd+B1CGdwG6gjVZbwxFsjrRBm3mgCGTlktWdC2/h9/QjppSlG72zku9Vpj1ck7x5Q==
+X-Received: by 2002:a5d:5886:0:b0:204:85e:5a3a with SMTP id n6-20020a5d5886000000b00204085e5a3amr9875996wrf.434.1647946264431;
+        Tue, 22 Mar 2022 03:51:04 -0700 (PDT)
+Received: from leap.localnet (host-79-37-100-169.retail.telecomitalia.it. [79.37.100.169])
+        by smtp.gmail.com with ESMTPSA id m9-20020a05600c4f4900b00389e8184edcsm1617116wmq.35.2022.03.22.03.51.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Mar 2022 03:50:41 -0700 (PDT)
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-To:     Mark Fasheh <mark@fasheh.com>
-Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
-        linux-kernel@vger.kernel.org, ocfs2-devel@oss.oracle.com,
-        Joel Becker <jlbec@evilplan.org>,
-        Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH v2] ocfs2: remove usage of list iterator variable after the loop body
-Date:   Tue, 22 Mar 2022 11:50:14 +0100
-Message-Id: <20220322105014.3626194-1-jakobkoschel@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 22 Mar 2022 03:51:03 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Sathish Kumar <skumark1902@gmail.com>
+Cc:     Larry.Finger@lwfinger.net, florian.c.schilhabel@googlemail.com,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] staging: rtl8712: Fix CamelCase warnings
+Date:   Tue, 22 Mar 2022 11:51:01 +0100
+Message-ID: <2364205.jE0xQCEvom@leap>
+In-Reply-To: <1786742.atdPhlSkOF@leap>
+References: <20220318101440.13887-1-skumark1902@gmail.com> <3a85ae64-00c1-6483-f1d7-c12abdd3ff3a@gmail.com> <1786742.atdPhlSkOF@leap>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To move the list iterator variable into the list_for_each_entry_*()
-macro in the future it should be avoided to use the list iterator
-variable after the loop body.
+On marted=C3=AC 22 marzo 2022 11:42:21 CET Fabio M. De Francesco wrote:
 
-To *never* use the list iterator variable after the loop it was
-concluded to use a separate iterator variable [1].
+> The reason why this pattern does not work as expected is too long to be
+> explained here. However, I think that Greg is suggesting to you to resear=
+ch
+> and use what are called "Condition variables".
 
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
----
- fs/ocfs2/dlm/dlmdebug.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+Sorry, "Condition" -> "Completion".
 
-diff --git a/fs/ocfs2/dlm/dlmdebug.c b/fs/ocfs2/dlm/dlmdebug.c
-index d442cf5dda8a..be5e9ed7da8d 100644
---- a/fs/ocfs2/dlm/dlmdebug.c
-+++ b/fs/ocfs2/dlm/dlmdebug.c
-@@ -541,7 +541,7 @@ static void *lockres_seq_start(struct seq_file *m, loff_t *pos)
- 	struct debug_lockres *dl = m->private;
- 	struct dlm_ctxt *dlm = dl->dl_ctxt;
- 	struct dlm_lock_resource *oldres = dl->dl_res;
--	struct dlm_lock_resource *res = NULL;
-+	struct dlm_lock_resource *res = NULL, *iter;
- 	struct list_head *track_list;
- 
- 	spin_lock(&dlm->track_lock);
-@@ -556,11 +556,11 @@ static void *lockres_seq_start(struct seq_file *m, loff_t *pos)
- 		}
- 	}
- 
--	list_for_each_entry(res, track_list, tracking) {
--		if (&res->tracking == &dlm->tracking_list)
--			res = NULL;
--		else
--			dlm_lockres_get(res);
-+	list_for_each_entry(iter, track_list, tracking) {
-+		if (&iter->tracking != &dlm->tracking_list) {
-+			dlm_lockres_get(iter);
-+			res = iter;
-+		}
- 		break;
- 	}
- 	spin_unlock(&dlm->track_lock);
+=46abio
 
-base-commit: f443e374ae131c168a065ea1748feac6b2e76613
--- 
-2.25.1
 
