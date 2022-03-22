@@ -2,101 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAD70C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 12:07:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CC5AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 12:07:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234585AbiCVMI4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 08:08:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58626 "EHLO
+        id S234611AbiCVMJM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 08:09:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234546AbiCVMIv (ORCPT
+        with ESMTP id S234604AbiCVMJJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 08:08:51 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 503B383B3E
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 05:07:23 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id bg31-20020a05600c3c9f00b00381590dbb33so1459062wmb.3
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 05:07:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=e3ViaRO1Rr2sI+l49irYHhSyo75k9Je9Jgyertt2k5E=;
-        b=GgC5/8cQ71t5bSlOD9BnaRPBc608es5k4URD9kvqaEkT5DWFsenaaorsTuFWteaFEd
-         hpAgAGB6IWCH2dJaavSJ8jFwayIZcsQp1IRPc0iau+6hitpeD+xeFMSCkcUaPvtQGyIw
-         AWVLJ3L+lhqEBpo73QXJIPEoxkhP5agkIxkUU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=e3ViaRO1Rr2sI+l49irYHhSyo75k9Je9Jgyertt2k5E=;
-        b=4cUUzW322vZG0X0LRhZicZCh9GWEJuDYndt5D5BR4b9jN51MoRKNIP7e75/1bDd3KH
-         bYfwSvgSgCHS/BHXfy5VLFRiC0M2y4dT7lp9Geu+waObxewFnBNxVl6QwA3bEWEAjKQS
-         50kC3R37uHtChCOncSDG39wMzJGLU0INjBrVj7rTxoTclhu+3gsOS3r5FX53DBP3TLHD
-         za/uhnZFxnKV9kpnzxU5i+LID9Elxya8TtnrsYiv0T3f43DYbrlqVDXq2KvEthVfwdzf
-         ip+vkPKEpT6HOJNo7uhdbfx4Oax/WNqYRqxtkVLsNjnVpxlBilxUKCLIQ+881GRdyXVS
-         +Lgw==
-X-Gm-Message-State: AOAM530ogG9tx5IseeBTIzzxAmbuvRqGIDwpOPhcd1CF9Btluafvxw5u
-        agIKBLClRbE3ghvQIuULTqO+Ig==
-X-Google-Smtp-Source: ABdhPJzzDktpUdftxhms3YkoLwxzADyuJj5fnu5TzuR25YBbuhb6hxkCKVsQ1/mv6cY18+N8sYJWbw==
-X-Received: by 2002:a5d:6da9:0:b0:204:16b9:ce7d with SMTP id u9-20020a5d6da9000000b0020416b9ce7dmr6518191wrs.293.1647950842504;
-        Tue, 22 Mar 2022 05:07:22 -0700 (PDT)
-Received: from google.com ([37.228.205.1])
-        by smtp.gmail.com with ESMTPSA id m28-20020a05600c3b1c00b0038cb3e1773asm1704764wms.44.2022.03.22.05.07.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Mar 2022 05:07:21 -0700 (PDT)
-Date:   Tue, 22 Mar 2022 12:07:19 +0000
-From:   Fabio Baltieri <fabiobaltieri@chromium.org>
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        chrome-platform@lists.linux.dev, linux-pwm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] dt-bindings: add mfd/cros_ec definitions
-Message-ID: <Yjm797USkb6nUGXq@google.com>
-References: <20220321143222.2523373-1-fabiobaltieri@chromium.org>
- <20220321143222.2523373-2-fabiobaltieri@chromium.org>
- <2942ea7a-3e23-7df1-daff-c266a82682fb@kernel.org>
+        Tue, 22 Mar 2022 08:09:09 -0400
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F76184ECE
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 05:07:42 -0700 (PDT)
+Received: from [192.168.12.80] (unknown [182.2.69.158])
+        by gnuweeb.org (Postfix) with ESMTPSA id F29957E308;
+        Tue, 22 Mar 2022 12:07:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1647950861;
+        bh=6+Vksk11nsg1faQTkiQCnBBB8df1qVnWOn2yS0BMZik=;
+        h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
+        b=BbQy2doFPp/k3wyxs9aSPO2wEus9iNM6OnCQFsA4LaUig2IIEBWtt+C+utsdua2xM
+         qBwTkUddH5lM0BfZKhkHmUBMpIVSDsPtqLcFrEcig9XhJnv0FAZdQX5h92O58k/Ub8
+         alHRhOoC50U4OKWB3HUCxpPC/DKZQqkzn3NCqQf9rMVjqRitUC0EV3QIZ9GNCwHVUZ
+         NquJroGm9W/ksrRSVwC6aqRHz7UHuvZfosXT4JaHw407aEPLc2/xDGnOx6QJKWS41i
+         HM5o3T1wUWgV+5+/vs91oTXoyME7gmhWm9wvpprbt/VBfYU+0Y+3LbzlqS+o2kLSb1
+         d+HJSWh+hsZGg==
+Message-ID: <bbd23799-3fce-7029-782b-16c5ae8a0f3a@gnuweeb.org>
+Date:   Tue, 22 Mar 2022 19:07:34 +0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2942ea7a-3e23-7df1-daff-c266a82682fb@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC PATCH v2 3/8] tools/nolibc: i386: Implement syscall with 6
+ arguments
+Content-Language: en-US
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+To:     David Laight <David.Laight@ACULAB.COM>, Willy Tarreau <w@1wt.eu>
+Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
+        Nugraha <richiisei@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "llvm@lists.linux.dev" <llvm@lists.linux.dev>
+References: <20220322102115.186179-1-ammarfaizi2@gnuweeb.org>
+ <20220322102115.186179-4-ammarfaizi2@gnuweeb.org>
+ <8653f6784a9b4272a59a75a530663567@AcuMS.aculab.com>
+ <a8eeec1d-656d-15a3-dde5-0f8cc8c5956b@gnuweeb.org>
+In-Reply-To: <a8eeec1d-656d-15a3-dde5-0f8cc8c5956b@gnuweeb.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 04:46:49PM +0100, Krzysztof Kozlowski wrote:
-> On 21/03/2022 15:32, Fabio Baltieri wrote:
-> > Add a dt-bindings include file for cros_ec devicetree definition, define
-> > a pair of special purpose PWM channels in it.
-> > 
-> > Signed-off-by: Fabio Baltieri <fabiobaltieri@chromium.org>
-> > ---
-> >  include/dt-bindings/mfd/cros_ec.h | 18 ++++++++++++++++++
-> >  1 file changed, 18 insertions(+)
-> >  create mode 100644 include/dt-bindings/mfd/cros_ec.h
-> > 
-> > diff --git a/include/dt-bindings/mfd/cros_ec.h b/include/dt-bindings/mfd/cros_ec.h
-> > new file mode 100644
-> > index 000000000000..e02414eae622
-> > --- /dev/null
-> > +++ b/include/dt-bindings/mfd/cros_ec.h
-> > @@ -0,0 +1,18 @@
-> > +/* SPDX-License-Identifier: GPL-2.0-or-later */
+On 3/22/22 7:02 PM, Ammar Faizi wrote:
+> Well, I agree with your previous email. Now since we no longer use a #pragma
+> optimize with -fomit-frame-pointer, the function is not needed. I propose the
+> following macro (this is not so much different with other my_syscall macro),
+> expect the 6th argument can be in reg or mem.
 > 
-> Same license as for bindings (GPL-2.0-only OR BSD-2-Clause), unless you
-> cannot (is it a derivative work?).
+> The "rm" constraint here gives the opportunity for the compiler to use %ebp
+> instead of memory if -fomit-frame-pointer is turned on.
+> 
+> #define my_syscall6(num, arg1, arg2, arg3, arg4, arg5, arg6) \
+> ({                                                         \
+>      long _ret;                                             \
+>      register long _num asm("eax") = (num);                 \
+>      register long _arg1 asm("ebx") = (long)(arg1);         \
+>      register long _arg2 asm("ecx") = (long)(arg2);         \
+>      register long _arg3 asm("edx") = (long)(arg3);         \
+>      register long _arg4 asm("esi") = (long)(arg4);         \
+>      register long _arg5 asm("edi") = (long)(arg5);         \
+>      long _arg6 = (long)(arg6); /* Might be in memory */    \
+>                                                             \
+>      asm volatile (                                         \
+>          "pushl  %[_arg6]\n\t"                              \
+>          "pushl  %%ebp\n\t"                                 \
+>          "movl   4(%%esp), %%ebp\n\t"                       \
+>          "int    $0x80\n\t"                                 \
+>          "popl   %%ebp\n\t"                                 \
+>          "addl   $4,%%esp\n\t"                              \
+>          : "=a"(_ret)                                       \
+>          : "r"(_num), "r"(_arg1), "r"(_arg2), "r"(_arg3),   \
+>            "r"(_arg4),"r"(_arg5), [_arg6]"rm"(_arg6)        \
+>          : "memory", "cc"                                   \
+>      );                                                     \
+>      _ret;                                                  \
+> })
+> 
+> What do you think?
+> 
 
-Ack, it's not, will change in v2, thanks!
+For the following code:
 
-> 
-> 
-> Best regards,
-> Krzysztof
+   int main()
+   {
+     mmap(NULL, 0x1000, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+     return 0;
+   }
+
+GCC generates this:
+
+   00001000 <main>:
+     1000: push   %ebp
+     1001: mov    $0xc0,%eax
+     1006: mov    $0x1000,%ecx
+     100b: mov    $0x3,%edx
+     1010: push   %edi
+     1011: xor    %ebp,%ebp
+     1013: mov    $0xffffffff,%edi
+     1018: push   %esi
+     1019: mov    $0x22,%esi
+     101e: push   %ebx
+     101f: xor    %ebx,%ebx
+     1021: push   %ebp        <--- arg6 here
+     1022: push   %ebp
+     1023: mov    0x4(%esp),%ebp
+     1027: int    $0x80
+     1029: pop    %ebp
+     102a: add    $0x4,%esp
+     102d: xor    %eax,%eax
+     102f: pop    %ebx
+     1030: pop    %esi
+     1031: pop    %edi
+     1032: pop    %ebp
+     1033: ret
 
 -- 
-Fabio Baltieri
+Ammar Faizi
