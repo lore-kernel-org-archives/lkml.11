@@ -2,90 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF5CEC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 16:40:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A54CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 16:40:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239196AbiCVQl2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 12:41:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45620 "EHLO
+        id S239190AbiCVQmU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 12:42:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239183AbiCVQlZ (ORCPT
+        with ESMTP id S233894AbiCVQmR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 12:41:25 -0400
-Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 900AB6E55A;
-        Tue, 22 Mar 2022 09:39:57 -0700 (PDT)
-Received: by mail-lj1-f176.google.com with SMTP id q5so24692548ljb.11;
-        Tue, 22 Mar 2022 09:39:57 -0700 (PDT)
+        Tue, 22 Mar 2022 12:42:17 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF8435DE70
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 09:40:49 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id bx5so16082072pjb.3
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 09:40:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=o3rpaN/qyinfx9+vbmrN+Nl3xvluf+KWJ9u60Df0dI0=;
+        b=QhaVfmthOFvJjSrnWlkog3LBOWRKOE36iBal/RBM71veF92SS3i5KnHz09/P354ZWl
+         fzZJegvx2igVgWyTDdzPNJPxnH3+dhp2x8jpjI0oLC8pfAEX6K14bnrBoT+m4n1oJFD7
+         kraI8Tb2fWil7TAnlhEZty7Eq5EogL6rWBY6ai6C0thn2u1RMXpkIAezO6NPTzHLpTKM
+         +Guy7ANft5u6Q2/HVwiOwHTsdg7qMSXEfPn9wQnphf1cG3iYOe6gARQh343YvhJsDwq4
+         CseUA33ciulReM9O2aG9iEMav/WgwqR/AMZL0QMBu9oWL5L2H1bvyrPuecz5TcOsBevg
+         PrXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+z636ynkHRELaXITIsopPF4jHcBApicZM14jpe3tGzw=;
-        b=irezaqSSqLdBt2qMZCJXvCoI59MgJq1a9F0UUWvONPJshU+4JxJoVRxNyZnERccXsz
-         ynHguFT4GwcBe7H7rLjmkM67Ka0G4D4uPFLWp+IAF6tfp3XKUCuWuvYDIxWiUM9q54Be
-         AcGiyBiiXVzu4kI88rja0zM5kwWHelbGEjUlQESeK5Mz9HbdYDNDSn4HcVvDnsIPD9nm
-         yGOxjD/dcOtueEL6l5qvqgit4rinqp140A4hwdeyNciJCmqQpZ/xeQuKoymZKEo0N7sN
-         A0nUYrSHpRRyu/P5uGRFYKwf8K+yx1ubqF0qv3KJsy3iPRQ7BCLP4w65VRM3Irc87eiK
-         tAPA==
-X-Gm-Message-State: AOAM531YGS9h/Cg/of5kqx+sPis+bAr/FgJnrfZ3EbRQU+ZxZXcBnu+h
-        29eJxY6hY8Dj2zFrgssd/PA93WPZy53mlbp7b6w=
-X-Google-Smtp-Source: ABdhPJzmNwaA+S9mbxm3QKGORbTHyOH3ENafnCoDzOrBSFZyJBcREvJ28TfDn85NU4dHlg3bhXm3A16Z16QxW8c9cGY=
-X-Received: by 2002:a05:651c:1549:b0:249:9448:d643 with SMTP id
- y9-20020a05651c154900b002499448d643mr1916178ljp.457.1647967195779; Tue, 22
- Mar 2022 09:39:55 -0700 (PDT)
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=o3rpaN/qyinfx9+vbmrN+Nl3xvluf+KWJ9u60Df0dI0=;
+        b=phkraV1KVMbkAfU22hjEjUldGtcQDJQjD+ws2AXETeS3I/4esqNlHS0FXVM6Bk1IaJ
+         fG6GigV8p9BCwPmTDx7KiHsyM6PNNNeCRfORjYUKXpdeCN2DuzWxF9AOzPqyI8nx3zKf
+         1ib+WYe/YjwRkNsOIyYebex1Z6LuyAemuuALncceERw8oU4t90EELQNpoM9y0CMGxmen
+         Ev1bfWada4eSK3EBA0UFYH0by7Vhy+sqn0DURFSi7aruEp0DY1D/gWSSJ0e/oTEGHcq0
+         ScDSO6s/QhQlrjTEhx4nkIPt/BAvrx+gZl2t+vBGNGADSOo91hP5OGafr00jocMdKelb
+         dOsA==
+X-Gm-Message-State: AOAM533W8MfFOoFWxHgv2e1a3JV6iAWCMPECsA5iR1h2LPcyHqVF5tfJ
+        fViCF0DKAWa3YCuijFlvsRk=
+X-Google-Smtp-Source: ABdhPJw+ZSxglIa59oM8dqp+OvB4VBQJBGSRrgGNAwPsoMOLR6fskYHNekuYghYCFY+cDr/NQCbZ3A==
+X-Received: by 2002:a17:90b:4b0e:b0:1c6:f499:1cc9 with SMTP id lx14-20020a17090b4b0e00b001c6f4991cc9mr6043138pjb.133.1647967248925;
+        Tue, 22 Mar 2022 09:40:48 -0700 (PDT)
+Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
+        by smtp.gmail.com with ESMTPSA id e11-20020a63e00b000000b0037341d979b8sm17860051pgh.94.2022.03.22.09.40.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Mar 2022 09:40:48 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Tue, 22 Mar 2022 06:40:46 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Vincent Guittot <vincent.guittot@linaro.org>
+Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+        mgorman@suse.de, linux-kernel@vger.kernel.org, parth@linux.ibm.com,
+        qais.yousef@arm.com, chris.hyser@oracle.com,
+        pkondeti@codeaurora.org, Valentin.Schneider@arm.com,
+        patrick.bellasi@matbug.net, David.Laight@aculab.com,
+        pjt@google.com, pavel@ucw.cz, dhaval.giani@oracle.com,
+        qperret@google.com, tim.c.chen@linux.intel.com
+Subject: Re: [RFC 6/6] sched/fair: Add sched group latency support
+Message-ID: <Yjn8DohJ8CZ6pEvf@slm.duckdns.org>
+References: <20220311161406.23497-1-vincent.guittot@linaro.org>
+ <20220311161406.23497-7-vincent.guittot@linaro.org>
+ <Yji0twS4N+0b/Rs9@slm.duckdns.org>
+ <CAKfTPtA8g-MJMPRM2R_Bfo9rGSyR3cYAUy_j5UrRM+SAB=Mm7w@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220316224548.500123-1-namhyung@kernel.org> <20220316224548.500123-3-namhyung@kernel.org>
- <YjSBRNxzaE9c+F/1@boqun-archlinux> <YjS2rlezTh9gdlDh@hirez.programming.kicks-ass.net>
- <CAM9d7cjUR6shddKM2h9uFXgQf+0F504fnJmKRSfc3+PG3TmEyg@mail.gmail.com>
- <20220318180750.744f08d4@gandalf.local.home> <CAM9d7ci-91efxreUvLBhkAcs0rpngzR9+3BnZBDb4zLai2Ewcw@mail.gmail.com>
- <CAM9d7cgCEsH6grH556Js6VX-cXAO_3hT7C+RSm+sxxBDgxHvig@mail.gmail.com> <20220322085915.6c2e7ff9@gandalf.local.home>
-In-Reply-To: <20220322085915.6c2e7ff9@gandalf.local.home>
-From:   Namhyung Kim <namhyung@kernel.org>
-Date:   Tue, 22 Mar 2022 09:39:44 -0700
-Message-ID: <CAM9d7ciG3Oq7VutnRpzDLqA0Cbkg=D8Aw_Gv1gC+F7+haSzf-g@mail.gmail.com>
-Subject: Re: [PATCH 2/2] locking: Apply contention tracepoints in the slow path
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Byungchul Park <byungchul.park@lge.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Radoslaw Burny <rburny@google.com>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKfTPtA8g-MJMPRM2R_Bfo9rGSyR3cYAUy_j5UrRM+SAB=Mm7w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 5:59 AM Steven Rostedt <rostedt@goodmis.org> wrote:
->
-> On Mon, 21 Mar 2022 22:31:30 -0700
-> Namhyung Kim <namhyung@kernel.org> wrote:
->
-> > > Thanks for the info.  But it's unclear to me if it provides the custom
-> > > event with the same or different name.  Can I use both of the original
-> > > and the custom events at the same time?
->
-> Sorry, missed your previous question.
+Hello,
 
-No problem!
+On Tue, Mar 22, 2022 at 05:10:36PM +0100, Vincent Guittot wrote:
+> latency_nice is quite similar to nice. The nice latency is used as an
+> index to get a latency weight in the range [-1024:1024].  latency_nice
+> is in the range [-20:19] and latency_prio shifts it in the range
+> [0:40] . This index is then used to get the latency weight similar to
+> how the nice prio is used to get a weight. That being said, the
+> latency should probably reflect the latency_weight instead of the
+> latency_prio in order to be aligned with the weight and weight.nice
+> fields of cgroups.
+> 
+> As described in patch 5 commit message, the weight is then used to
+> compute a relative offset to check whether the waking task can preempt
+> the current running task.
 
->
-> >
-> > I've read the code and understood that it's a separate event that can
-> > be used together.  Then I think we can leave the tracepoint with the
-> > return value and let users customize it for their needs later.
->
-> Right, thanks for looking deeper at it.
+So, what I'm trying to say is if it is actually a weight, just use weight
+values instead of arbitrary mapped nice values. Nobody can tell how the
+latency nice value of -2 compares against, say, 3. If you can define it
+clearly in terms of weights (or something else clearly describable), it'd be
+a lot better.
 
-And thanks for your review.  I'll post a v4 soon.
+Thanks.
 
-Thanks,
-Namhyung
+-- 
+tejun
