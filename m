@@ -2,139 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88875C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 12:12:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62E2DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 12:13:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233383AbiCVMN7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 08:13:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49564 "EHLO
+        id S233400AbiCVMPZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 08:15:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232249AbiCVMNy (ORCPT
+        with ESMTP id S230488AbiCVMPX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 08:13:54 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 727B0814B7;
-        Tue, 22 Mar 2022 05:12:26 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id mj15-20020a17090b368f00b001c637aa358eso2493591pjb.0;
-        Tue, 22 Mar 2022 05:12:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=IPjgN3VpyqWKrThD0C2Vv68XFS2hlHNg6yKh9JHRBog=;
-        b=i4DYvQFQdyo/5cGeJC8YCDIAwZGR/35Ev0FGHGhqm4PmaXZhwqDqwpV56iN1d1CTjM
-         VZcf5qQ2rZQuZD4p238kBM0r6GFWxmT0hhew6gUmKBqreUkeulpNBPqtI0nLW48qVUwX
-         vgETrP1DEGJLzakL+r4z/w2UrP8Tc2xqJ2KFYBM1vP+8OEogx8uhjTC5shiNlXoTye9l
-         skl36slIW/bDhZA+UWpwoWIBsUFLikYa+XVyNnhFIMM215ET9iW6u3r5K/lNbwcW7E4T
-         LMl+gqC363rYdTVb4DO6hb5Y31gf65C5arsrIbHXymKFHP9IwLbGl+hNHlovnCTlcziL
-         jw6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=IPjgN3VpyqWKrThD0C2Vv68XFS2hlHNg6yKh9JHRBog=;
-        b=GknEa54wvS/NjUBeBfkD4rS6tuByYwO4/ImiIxwXuulQrNO7LcUwrd45ekYWulflwU
-         3SHS/039+8W2eDZl5O/7xdI5Hc6zzTjG/3KiNmOfb2+iD8UTxDq05qZGeSt7uSayEUuq
-         BIFgDJ1bbpZ+5Eqt1vjoU+wJfWwMuswCfIAHQ2nJtT9zJugDpAQjh7scOZGoiuCIrh5p
-         73qAfMhRDtFFuoOy3ggrd2JuisOHoHwEs+PzrmKyCADULX5Wr2WqroVXxIqWxFE1MRty
-         1fCykfySyDMcQyRSlnLYI7fAkhdyZw1Jk0ku15J1x8lEeTEPbK9QIlvIh5HBg2oYCyin
-         RPjA==
-X-Gm-Message-State: AOAM530oweC/AP/bb9Y0dby3mC76raz7nSkU88ydiec6yunI35sHEuVr
-        P9lix1k4M/AiTgZs/Rd2BOU=
-X-Google-Smtp-Source: ABdhPJxUF1F8+qJ3SlHYJaeCDF9cQ1MjbET2UM6ubThZHeCEwWI9y8r1CoVnmEtudVQLijl65PtVsg==
-X-Received: by 2002:a17:902:b18a:b0:153:758e:c1 with SMTP id s10-20020a170902b18a00b00153758e00c1mr17757017plr.37.1647951145750;
-        Tue, 22 Mar 2022 05:12:25 -0700 (PDT)
-Received: from localhost.localdomain ([2409:4053:719:67ea:fc62:7f30:7002:e0c2])
-        by smtp.googlemail.com with ESMTPSA id b20-20020a17090a991400b001befe07ae5csm2708380pjp.22.2022.03.22.05.12.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Mar 2022 05:12:25 -0700 (PDT)
-From:   Dharmendra Singh <dharamhans87@gmail.com>
-Cc:     fuse-devel@lists.sourceforge.net, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, miklos@szeredi.hu,
-        dharamhans87@gmail.com, bshubert@ddn.com, amir73il@gmail.com
-Subject: Re: [PATCH v2 0/2] FUSE: Atomic lookup + open performance numbers
-Date:   Tue, 22 Mar 2022 17:42:12 +0530
-Message-Id: <20220322121212.5087-1-dharamhans87@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220322115148.3870-1-dharamhans87@gmail.com>
-References: <20220322115148.3870-1-dharamhans87@gmail.com>
-To:     unlisted-recipients:; (no To-header on input)
+        Tue, 22 Mar 2022 08:15:23 -0400
+Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9FFB26AA59
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 05:13:55 -0700 (PDT)
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 22MCDceW010766;
+        Tue, 22 Mar 2022 13:13:38 +0100
+Date:   Tue, 22 Mar 2022 13:13:38 +0100
+From:   Willy Tarreau <w@1wt.eu>
+To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Cc:     David Laight <David.Laight@ACULAB.COM>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
+        Nugraha <richiisei@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "llvm@lists.linux.dev" <llvm@lists.linux.dev>
+Subject: Re: [RFC PATCH v2 3/8] tools/nolibc: i386: Implement syscall with 6
+ arguments
+Message-ID: <20220322121338.GD10306@1wt.eu>
+References: <20220322102115.186179-1-ammarfaizi2@gnuweeb.org>
+ <20220322102115.186179-4-ammarfaizi2@gnuweeb.org>
+ <8653f6784a9b4272a59a75a530663567@AcuMS.aculab.com>
+ <a8eeec1d-656d-15a3-dde5-0f8cc8c5956b@gnuweeb.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a8eeec1d-656d-15a3-dde5-0f8cc8c5956b@gnuweeb.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Subject: 'Re: [PATCH v2 0/2] FUSE: Atomic lookup + open performance numbers'
+On Tue, Mar 22, 2022 at 07:02:53PM +0700, Ammar Faizi wrote:
+> I propose the
+> following macro (this is not so much different with other my_syscall macro),
+> expect the 6th argument can be in reg or mem.
+> 
+> The "rm" constraint here gives the opportunity for the compiler to use %ebp
+> instead of memory if -fomit-frame-pointer is turned on.
+> 
+> #define my_syscall6(num, arg1, arg2, arg3, arg4, arg5, arg6) \
+> ({                                                         \
+>     long _ret;                                             \
+>     register long _num asm("eax") = (num);                 \
+>     register long _arg1 asm("ebx") = (long)(arg1);         \
+>     register long _arg2 asm("ecx") = (long)(arg2);         \
+>     register long _arg3 asm("edx") = (long)(arg3);         \
+>     register long _arg4 asm("esi") = (long)(arg4);         \
+>     register long _arg5 asm("edi") = (long)(arg5);         \
+>     long _arg6 = (long)(arg6); /* Might be in memory */    \
+>                                                            \
+>     asm volatile (                                         \
+>         "pushl  %[_arg6]\n\t"                              \
+>         "pushl  %%ebp\n\t"                                 \
+>         "movl   4(%%esp), %%ebp\n\t"                       \
+>         "int    $0x80\n\t"                                 \
+>         "popl   %%ebp\n\t"                                 \
+>         "addl   $4,%%esp\n\t"                              \
+>         : "=a"(_ret)                                       \
+>         : "r"(_num), "r"(_arg1), "r"(_arg2), "r"(_arg3),   \
+>           "r"(_arg4),"r"(_arg5), [_arg6]"rm"(_arg6)        \
+>         : "memory", "cc"                                   \
+>     );                                                     \
+>     _ret;                                                  \
+> })
+> 
+> What do you think?
 
-Thanks, Miklos. For measuring the performance, bonnie++ was used over passthrough_ll mount on tmpfs.
-When taking numbers on vm, I could see non-deterministic behaviour in the results. Therefore core
-binding was used for passthrough_ll and bonnie++, keeping them on separate cores.
+Hmmm indeed that comes back to the existing constructs and is certainly
+more in line with the rest of the code (plus it will not be affected by
+-O0).
 
-Here are the google sheets having performance numbers.
-https://docs.google.com/spreadsheets/d/1JRgF8DTR9xk5zz3_azmLcyy5kW3bgjjItmS8CYsAoT4/edit#gid=0
-https://docs.google.com/spreadsheets/d/1JRgF8DTR9xk5zz3_azmLcyy5kW3bgjjItmS8CYsAoT4/edit#gid=1833203226
+I seem to remember a register allocation issue which kept me away from
+implementing it this way on i386 back then, but given that my focus was
+not as much on i386 as it was on other platforms, it's likely that I have
+not insisted too much and not tried this one which looks like the way to
+go to me.
 
-Following are the libfuse patches(commit on March 7 and March 8 in first link) which were used to test
-these changes
-https://github.com/aakefbs/libfuse/commits/atomic-open-and-no-flush
-https://github.com/libfuse/libfuse/pull/644
-
-Parameters used in mounting passthrough_ll:
- numactl --localalloc --physcpubind=16-23 passthrough_ll -f -osource=/tmp/source,allow_other,allow_root,
- cache=never -o max_idle_threads=1 /tmp/dest
-     (Here cache=never results in direct-io on the file)
-
-Parameters used in bonnie++:
-In sheet 0B:
-numactl --localalloc --physcpubind=0-7  bonnie++ -x 4 -q -s0  -d /tmp/dest/ -n 10:0:0:10 -r 0 -u 0 2>/dev/null
-
-in sheet 1B:
-numactl --localalloc --physcpubind=0-7 bonnie++ -x 4 -q -s0 -d /tmp/dest/ -n 10:1:1:10 -r 0 -u 0 2>/dev/null
-
-Additional settings done on the testing machine:
-cpupower frequency-set -g performance
-
-Running bonnie++ gives us results for Create/s,  Read/s and Delete/s. Below table summarises the numbers
-for  these three operations. Please note that for read of 0 bytes, bonnie++ does ops in order of create-open,
-close and stat but no atomic open.  Therefore performance results  in the sheet 0B had overhead of extra
-stat calls.  Whereas in sheet 1B, we directed bonnie++ to read 1 byte and this triggered atomic open call but
-numbers for this run involve overhead for read operation itself instead of just plain open/close.
-
-Here is the table summarising the performance numbers
-
-Table: 0B
-                                               Sequential                  |            Random
-                                           Creat/s       Read/s    Del/s   |    Creat/s     Read/s      Del/s
-Patched Libfuse                                -3.55%    -4.9%    -4.43%   |    -0.4%      -1.6%       -1.0%
-Patched Libfuse + No-Flush                     +22.3%    +6%       +5.15%  |    +27.9%     +14.5%       +2.8%
-Patched Libfuse + Patched FuseK                +22.9%    +6.1%     +5.3%   |    +28.3%     +14.5%       +2.3%
-Patched Libfuse + Patched FuseK + No-Flush     +33.4%    -4.4%     -3.73%  |    +38.8%     -2.5%        -2.0%
-
-
-
- Table: 1B
-                                                  Sequential                    |                  Random
-                                           Create/s       Read/s       Del/s    |      Create/s     Read/s     Del/s
-Patched Libfuse                            -0.22%        -0.35%       -0.7%     |      -0.27%        -0.78%    -2.35%
-Patched Libfuse + No-Flush                 +2.5%         +2.6%        -9.6%     |      +2.5%         -8.6%     -6.26%
-Patched Libfuse + Patched FuseK            +1.63%        -1.0%        -11.45%   |      +4.48%        -6.84%    -4.0%
-Patched Libfuse + Patched FuseK + No-Flush  +32.43%      +26.61%      +076%     |      +33.2%       +14.7%     -0.40%
-
-Here
-No-Flush = No flush trigger from fuse kernel into libfuse
-
-In Table 1B, we see 4th row has good improvements for both create and Read whereas Del seems to be almost not
-changed. In Table 0B, 4th row we have Read perf reduced, it was found out that this was caused by some changes
-in libfuse. So this was fixed and in Table 1B, same row, we can see increased numbers.
-
-In Table 0B, 3rd row, we have good numbers because bonnie++ used 0 bytes to read  and this changed behaviour
-and impacted perf whereas for the same row, Table 1B we have reduced numbers because it involved flush
-calls for 1 byte from the fuse kernel into libfuse.
-
-These changes are not for fuse kernel/users-space context switches only, but our main goal is to have improvement performance
-for network file systems
-   - Number network round trips
-   - Reduce load on meta servers with thousands of clients
-
-Reduced kernel/userspace context switches is 'just' a side effect.
-
-Thanks,
-Dharmendra
+Willy
