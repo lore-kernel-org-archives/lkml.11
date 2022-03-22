@@ -2,122 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DED5C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 03:36:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A272EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 03:39:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236163AbiCVDiU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 23:38:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37220 "EHLO
+        id S236136AbiCVDlR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 23:41:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236241AbiCVDiG (ORCPT
+        with ESMTP id S236157AbiCVDlN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 23:38:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 28555BD7
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 20:36:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647920198;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=iMzx+aioEJysUsrwA03nQ3DLxiWp0PNXhW4lisYP70U=;
-        b=ija/uiPG7vViYO1JI+76TgZGvUhEoHTwz2vk3WcRXw531UfQ++nsGBJDrHiNOqMVqzYqPV
-        M971K3lr+t/91cw3WK2+TTfO68BVJvd3CPmCTtCHwkMxWpfaahYiDK8iGQsR1rhMT4PSLz
-        1gD8nzeAQGWNVSzcXpwHkxYeuC0z0AY=
-Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
- [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-557-SZUVseLTN8SoyZqXjFU05A-1; Mon, 21 Mar 2022 23:36:37 -0400
-X-MC-Unique: SZUVseLTN8SoyZqXjFU05A-1
-Received: by mail-lf1-f69.google.com with SMTP id z39-20020a0565120c2700b0044a219505a4so1254299lfu.11
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 20:36:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iMzx+aioEJysUsrwA03nQ3DLxiWp0PNXhW4lisYP70U=;
-        b=q4pnBH9vpa9NV4Rl5BWqbKZrHG7N/eFgzaIbjed/aTAmtkrTBnAGMyhuA5AmyV6KFf
-         OwGbIqTwyZ0gnuWgx2QVLZAb/oBuwGH7/jyI4RPaBw5hbzD1UvkQ6bmCWLDtBOrj0QPl
-         Nod1nPIH/BETIlf+SQV74JLOeOlZwXCd5xIlK6XYdHUx40I+mQJuhrPj1ov/NNEUXulz
-         1u9zETKWUx8Hckdh4gf39Qth5reRauP53kngW5BwwG16SedfXpdWPal8IPbCmJiAIZ0k
-         i1Di/TwaSt8L/pe7zOaerd0nCXukOx9ZbJRru0JC3hnVLD6xH03b3wYFt4JgA/TfxASB
-         j+Kg==
-X-Gm-Message-State: AOAM532dxmdraLYYnWPAhTS/VGAgTpkag7RWfLDbWWqkCTGLZNTW7CUX
-        MmWGVIqoOE68n2mL/6RhuKAZaEGn3e7l+Md9XWN66UWOpNJL8LQpEEeknkwI+Pl8sSNGUhlHUhT
-        cAYmmucYjEQhm/GOj0QJb4LjINZXrSAuMVE6j9V2Z
-X-Received: by 2002:a05:6512:b81:b0:448:b342:513c with SMTP id b1-20020a0565120b8100b00448b342513cmr16747263lfv.257.1647920195435;
-        Mon, 21 Mar 2022 20:36:35 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyj1G/AYOP3skVnNg/P+5mXQxxZT3muCA9UKvGxFZZI4XYPIarVqtXRw6VTfqLiA2IK6CTrcVHAKh6xTpSY7rc=
-X-Received: by 2002:a05:6512:b81:b0:448:b342:513c with SMTP id
- b1-20020a0565120b8100b00448b342513cmr16747254lfv.257.1647920195269; Mon, 21
- Mar 2022 20:36:35 -0700 (PDT)
+        Mon, 21 Mar 2022 23:41:13 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B37286262
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 20:39:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647920386; x=1679456386;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=iNJVsi91LXwI+KDYvgStCpTZNqDYFiZwPuSi1+SqKLg=;
+  b=Z2oYULGAcvE/1eFrdnXOIsWRUgzo8L34YGaVOIar/eK1oYVXW6ypfnq2
+   /2art43Rs9qeIbRU3vYLJg2MT0koszO+d2CYuGaT+W94SbD3F+nJRewZL
+   cqJ5/IVaEn8TdTmgK9tgVScyNiN3ttpvpY1njhHM2F13zLyquxwQZ1WIs
+   ul8C0rfgUPexpd0Bm6RYQgaMM7OzS9hEwPMu3/fEx2oIfza6R7OMhk51o
+   Kv+wjzaGff03SniCZHvi+q+WjbrWAKhZQ1nMNX9oCutzMddxfJ0zYl5DN
+   4le9Hil3oP2bna9knY0dH3PBwH9woear5Mnjd2tFvCt9/vUOpDTFmfJjZ
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="238318234"
+X-IronPort-AV: E=Sophos;i="5.90,200,1643702400"; 
+   d="scan'208";a="238318234"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 20:39:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,200,1643702400"; 
+   d="scan'208";a="648819314"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 21 Mar 2022 20:39:44 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nWVN1-000IRL-Ct; Tue, 22 Mar 2022 03:39:43 +0000
+Date:   Tue, 22 Mar 2022 11:38:52 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Jason A. Donenfeld" <zx2c4@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, build@wireguard.com,
+        linux-kernel@vger.kernel.org
+Subject: [zx2c4-wireguard:devel 1/2] lib/crypto/poly1305-selftest.c:1043:13:
+ warning: no previous prototype for function 'poly1305_selftest'
+Message-ID: <202203221101.Vd8pIU2T-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220321154931.859511-1-keirf@google.com>
-In-Reply-To: <20220321154931.859511-1-keirf@google.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Tue, 22 Mar 2022 11:36:23 +0800
-Message-ID: <CACGkMEuEh+vsDok6hrp96kgGHkxbmzskFMJOouR3mo3d3VjwdQ@mail.gmail.com>
-Subject: Re: [PATCH] virtio: pci: Sanity check the bar index in find_shm_cap
-To:     Keir Fraser <keirf@google.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 11:49 PM Keir Fraser <keirf@google.com> wrote:
->
-> The bar index is used as an index into the device's resource list
-> and should be checked as within range for a standard bar.
->
-> Signed-off-by: Keir Fraser <keirf@google.com>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/zx2c4/wireguard-linux.git devel
+head:   85edbe4cea2a4446b6425d67a00c04dce142b2f2
+commit: 957612a1219877cad2e0fd43f89dea54575db069 [1/2] crypto: poly1305 - add library selftests
+config: s390-randconfig-r044-20220320 (https://download.01.org/0day-ci/archive/20220322/202203221101.Vd8pIU2T-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 85e9b2687a13d1908aa86d1b89c5ce398a06cd39)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/zx2c4/wireguard-linux.git/commit/?id=957612a1219877cad2e0fd43f89dea54575db069
+        git remote add zx2c4-wireguard https://git.kernel.org/pub/scm/linux/kernel/git/zx2c4/wireguard-linux.git
+        git fetch --no-tags zx2c4-wireguard devel
+        git checkout 957612a1219877cad2e0fd43f89dea54575db069
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash lib/crypto/
 
-Patch looks good, do we need a similar check in vp_modern_map_capability()?
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Thanks
+All warnings (new ones prefixed by >>):
 
-> ---
->  drivers/virtio/virtio_pci_modern.c | 10 ++++++++--
->  1 file changed, 8 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/virtio/virtio_pci_modern.c b/drivers/virtio/virtio_pci_modern.c
-> index 5455bc041fb6..84bace98dff5 100644
-> --- a/drivers/virtio/virtio_pci_modern.c
-> +++ b/drivers/virtio/virtio_pci_modern.c
-> @@ -293,7 +293,7 @@ static int virtio_pci_find_shm_cap(struct pci_dev *dev, u8 required_id,
->
->         for (pos = pci_find_capability(dev, PCI_CAP_ID_VNDR); pos > 0;
->              pos = pci_find_next_capability(dev, pos, PCI_CAP_ID_VNDR)) {
-> -               u8 type, cap_len, id;
-> +               u8 type, cap_len, id, res_bar;
->                 u32 tmp32;
->                 u64 res_offset, res_length;
->
-> @@ -317,7 +317,12 @@ static int virtio_pci_find_shm_cap(struct pci_dev *dev, u8 required_id,
->
->                 /* Type, and ID match, looks good */
->                 pci_read_config_byte(dev, pos + offsetof(struct virtio_pci_cap,
-> -                                                        bar), bar);
-> +                                                        bar), &res_bar);
-> +               if (res_bar >= PCI_STD_NUM_BARS) {
-> +                       dev_err(&dev->dev, "%s: shm cap with bad bar: %d\n",
-> +                               __func__, res_bar);
-> +                       continue;
-> +               }
->
->                 /* Read the lower 32bit of length and offset */
->                 pci_read_config_dword(dev, pos + offsetof(struct virtio_pci_cap,
-> @@ -337,6 +342,7 @@ static int virtio_pci_find_shm_cap(struct pci_dev *dev, u8 required_id,
->                                                      length_hi), &tmp32);
->                 res_length |= ((u64)tmp32) << 32;
->
-> +               *bar = res_bar;
->                 *offset = res_offset;
->                 *len = res_length;
->
-> --
-> 2.35.1.894.gb6a874cedc-goog
->
+>> lib/crypto/poly1305-selftest.c:1043:13: warning: no previous prototype for function 'poly1305_selftest' [-Wmissing-prototypes]
+   bool __init poly1305_selftest(void)
+               ^
+   lib/crypto/poly1305-selftest.c:1043:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   bool __init poly1305_selftest(void)
+   ^
+   static 
+   1 warning generated.
 
+
+vim +/poly1305_selftest +1043 lib/crypto/poly1305-selftest.c
+
+  1042	
+> 1043	bool __init poly1305_selftest(void)
+  1044	{
+  1045		bool success = true;
+  1046		size_t i, j;
+  1047	
+  1048		for (i = 0; i < ARRAY_SIZE(poly1305_testvecs); ++i) {
+  1049			struct poly1305_desc_ctx poly1305;
+  1050			u8 out[POLY1305_DIGEST_SIZE];
+  1051	
+  1052			memset(out, 0, sizeof(out));
+  1053			memset(&poly1305, 0, sizeof(poly1305));
+  1054			poly1305_init(&poly1305, poly1305_testvecs[i].key);
+  1055			poly1305_update(&poly1305, poly1305_testvecs[i].input,
+  1056					poly1305_testvecs[i].ilen);
+  1057			poly1305_final(&poly1305, out);
+  1058			if (memcmp(out, poly1305_testvecs[i].output,
+  1059				   POLY1305_DIGEST_SIZE)) {
+  1060				pr_err("poly1305 self-test %zu: FAIL\n", i + 1);
+  1061				success = false;
+  1062			}
+  1063	
+  1064			if (poly1305_testvecs[i].ilen <= 1)
+  1065				continue;
+  1066	
+  1067			for (j = 1; j < poly1305_testvecs[i].ilen - 1; ++j) {
+  1068				memset(out, 0, sizeof(out));
+  1069				memset(&poly1305, 0, sizeof(poly1305));
+  1070				poly1305_init(&poly1305, poly1305_testvecs[i].key);
+  1071				poly1305_update(&poly1305, poly1305_testvecs[i].input, j);
+  1072				poly1305_update(&poly1305,
+  1073						poly1305_testvecs[i].input + j,
+  1074						poly1305_testvecs[i].ilen - j);
+  1075				poly1305_final(&poly1305, out);
+  1076				if (memcmp(out, poly1305_testvecs[i].output,
+  1077					   POLY1305_DIGEST_SIZE)) {
+  1078					pr_err("poly1305 self-test %zu (split %zu): FAIL\n",
+  1079					       i + 1, j);
+  1080					success = false;
+  1081				}
+  1082	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
