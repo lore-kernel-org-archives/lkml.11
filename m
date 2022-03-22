@@ -2,55 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E9C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 20:24:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E54BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 20:24:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233481AbiCVUZk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 16:25:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37272 "EHLO
+        id S233524AbiCVUZn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 16:25:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233132AbiCVUZe (ORCPT
+        with ESMTP id S233398AbiCVUZg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 16:25:34 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C48866605;
-        Tue, 22 Mar 2022 13:24:04 -0700 (PDT)
-Date:   Tue, 22 Mar 2022 20:24:01 -0000
+        Tue, 22 Mar 2022 16:25:36 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B7C6623B;
+        Tue, 22 Mar 2022 13:24:02 -0700 (PDT)
+Date:   Tue, 22 Mar 2022 20:23:59 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647980642;
+        s=2020; t=1647980640;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=nz/sukE6PInVvM9h+ofEmBCoxy87nddE04sngK80dBA=;
-        b=k4IUlwag23zNNwqPUOpfD0gnY1oHfAMtHyjNMUDPxWqpGzLphj4Mwh/0lE+wbdel2kjMys
-        mts5c8BVNqmTtciXRVo3W89+g0dEOLfu6R3AyWYM8Wki6YMlVsHASIkqu1qh2cdBYa8EUY
-        6DTOMWLa2SC6dQGWriXMaCfjoV6WoXt+4+0eLVOK32SGj6YgOz/pG94aJuu7RDs9JTlmYH
-        AN/cD+X/nNrd3EqyBMylVoumF891NgvYFxUhtc+jirmxi6OMOU1ttgruf+MiM4AY0BGBEs
-        LTC2OPr9sgF2CNX/MD1W2NiaEk4pFfUHHdUMaIX9MIQQu/r5MdlshZDfStif5w==
+        bh=OU+9MCdRKjPoheduOcb7ol1j9uyfiPT/49iygn0hpfM=;
+        b=AT+L+48YUJErfQY+IvMDD6m2dgI9HffaCtIVDEyWZK74OPwNsVO7XgtydUqIXev9931X9z
+        2KJWsxArLTI8uvAxyG7oecL1BhB9SIKC51jhhhjSk6r2dfKdbJNON92e5nv1HUbpHvQTnw
+        pvM5l4/0aGWkWFM2yRCq6TdKxLiNASrNaACTR5hSwvJ484RFwVDtQTrQ6Fv5OMVBeZd96X
+        ilodyaSp6UiTRZgwr6ecyiLQO4pco/Bf9icfJJzE2tm4p7P5HiKluJW58OGvQeYEORC6o2
+        xwhWQtdeC7VRsGS0gAXjY7+xvaAucLPCwbsyXCcON6mmItJRVD3fcAXoqs4j1A==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647980642;
+        s=2020e; t=1647980640;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=nz/sukE6PInVvM9h+ofEmBCoxy87nddE04sngK80dBA=;
-        b=B+SFKg38g0Leyn3zP6XTfVwI0tPT/2eDm9KIyEuz+bEZZQJc1jVpr4yHvSB++np+0eP98u
-        poPtxHWEzGYi07DQ==
-From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
+        bh=OU+9MCdRKjPoheduOcb7ol1j9uyfiPT/49iygn0hpfM=;
+        b=tSzteDW/T/M09lGP/EUdmBKfiNiO6FER0wH5LfKJneeQXK/ee0jKJ9torZYnRj3RpwqcY7
+        VI+24xpJlJ5Y1jBA==
+From:   "tip-bot2 for Nathan Chancellor" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/core] kbuild: Fixup the IBT kbuild changes
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+Subject: [tip: x86/core] x86/Kconfig: Only allow CONFIG_X86_KERNEL_IBT with
+ ld.lld >= 14.0.0
+Cc:     Nathan Chancellor <nathan@kernel.org>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <CAK7LNAQ2mYMnOKMQheVi+6byUFE3KEkjm1zcndNUfe0tORGvug@mail.gmail.com>
-References: <CAK7LNAQ2mYMnOKMQheVi+6byUFE3KEkjm1zcndNUfe0tORGvug@mail.gmail.com>
+In-Reply-To: <20220318230747.3900772-3-nathan@kernel.org>
+References: <20220318230747.3900772-3-nathan@kernel.org>
 MIME-Version: 1.0
-Message-ID: <164798064161.389.18177166280677198728.tip-bot2@tip-bot2>
+Message-ID: <164798063954.389.10917139884144168372.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -61,193 +62,41 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/core branch of tip:
 
-Commit-ID:     d31ed5d767c0452b4f49846d80a0bfeafa3a4ded
-Gitweb:        https://git.kernel.org/tip/d31ed5d767c0452b4f49846d80a0bfeafa3a4ded
-Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Fri, 18 Mar 2022 12:19:27 +01:00
+Commit-ID:     f6a2c2b2de817078ac5a7e58c10e746165e7825d
+Gitweb:        https://git.kernel.org/tip/f6a2c2b2de817078ac5a7e58c10e746165e7825d
+Author:        Nathan Chancellor <nathan@kernel.org>
+AuthorDate:    Fri, 18 Mar 2022 16:07:47 -07:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 22 Mar 2022 21:12:04 +01:00
+CommitterDate: Tue, 22 Mar 2022 21:12:13 +01:00
 
-kbuild: Fixup the IBT kbuild changes
+x86/Kconfig: Only allow CONFIG_X86_KERNEL_IBT with ld.lld >= 14.0.0
 
-Masahiro-san deemed my kbuild changes to support whole module objtool
-runs too terrible to live and gracefully provided an alternative.
+With CONFIG_X86_KERNEL_IBT=y and a version of ld.lld prior to 14.0.0,
+there are numerous objtool warnings along the lines of:
 
-Suggested-by: Masahiro Yamada <masahiroy@kernel.org>
+  warning: objtool: .plt+0x6: indirect jump found in RETPOLINE build
+
+This is a known issue that has been resolved in ld.lld 14.0.0. Prevent
+CONFIG_X86_KERNEL_IBT from being selectable when using one of these
+problematic ld.lld versions.
+
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/CAK7LNAQ2mYMnOKMQheVi+6byUFE3KEkjm1zcndNUfe0tORGvug@mail.gmail.com
+Link: https://lore.kernel.org/r/20220318230747.3900772-3-nathan@kernel.org
 ---
- scripts/Makefile.build | 66 +++++++++++------------------------------
- scripts/Makefile.lib   |  4 +-
- scripts/mod/modpost.c  | 12 +++----
- 3 files changed, 27 insertions(+), 55 deletions(-)
+ arch/x86/Kconfig | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index 926d254..2173a67 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -86,18 +86,12 @@ ifdef need-builtin
- targets-for-builtin += $(obj)/built-in.a
- endif
- 
--targets-for-modules :=
-+targets-for-modules := $(patsubst %.o, %.mod, $(filter %.o, $(obj-m)))
- 
--ifdef CONFIG_LTO_CLANG
--targets-for-modules += $(patsubst %.o, %.lto.o, $(filter %.o, $(obj-m)))
--endif
--
--ifdef CONFIG_X86_KERNEL_IBT
--targets-for-modules += $(patsubst %.o, %.objtool, $(filter %.o, $(obj-m)))
-+ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
-+targets-for-modules += $(patsubst %.o, %.prelink.o, $(filter %.o, $(obj-m)))
- endif
- 
--targets-for-modules += $(patsubst %.o, %.mod, $(filter %.o, $(obj-m)))
--
- ifdef need-modorder
- targets-for-modules += $(obj)/modules.order
- endif
-@@ -244,31 +238,16 @@ objtool_args =								\
- 	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
- 	$(if $(CONFIG_SLS), --sls)
- 
--cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool_args) $(@:.objtool=.o))
--cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$(@:.objtool=.o): $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
-+cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool_args) $@)
-+cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$@: $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
- 
- endif # CONFIG_STACK_VALIDATION
- 
--ifdef CONFIG_LTO_CLANG
-+ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
- 
- # Skip objtool for LLVM bitcode
- $(obj)/%.o: objtool-enabled :=
- 
--# objtool was skipped for LLVM bitcode, run it now that we have compiled
--# modules into native code
--$(obj)/%.lto.o: objtool-enabled = y
--$(obj)/%.lto.o: part-of-module := y
--
--else ifdef CONFIG_X86_KERNEL_IBT
--
--# Skip objtool on individual files
--$(obj)/%.o: objtool-enabled :=
--
--# instead run objtool on the module as a whole, right before
--# the final link pass with the linker script.
--$(obj)/%.objtool: objtool-enabled = y
--$(obj)/%.objtool: part-of-module := y
--
- else
- 
- # 'OBJECT_FILES_NON_STANDARD := y': skip objtool checking for a directory
-@@ -310,19 +289,24 @@ $(obj)/%.o: $(src)/%.c $(recordmcount_source) FORCE
- 	$(call if_changed_rule,cc_o_c)
- 	$(call cmd,force_checksrc)
- 
--ifdef CONFIG_LTO_CLANG
-+ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
- # Module .o files may contain LLVM bitcode, compile them into native code
- # before ELF processing
--quiet_cmd_cc_lto_link_modules = LTO [M] $@
--      cmd_cc_lto_link_modules =						\
-+quiet_cmd_cc_prelink_modules = LD [M]  $@
-+      cmd_cc_prelink_modules =						\
- 	$(LD) $(ld_flags) -r -o $@					\
--		$(shell [ -s $(@:.lto.o=.o.symversions) ] &&		\
--			echo -T $(@:.lto.o=.o.symversions))		\
-+               $(shell [ -s $(@:.prelink.o=.o.symversions) ] &&		\
-+                       echo -T $(@:.prelink.o=.o.symversions))		\
- 		--whole-archive $(filter-out FORCE,$^)			\
- 		$(cmd_objtool)
- 
--$(obj)/%.lto.o: $(obj)/%.o FORCE
--	$(call if_changed,cc_lto_link_modules)
-+# objtool was skipped for LLVM bitcode, run it now that we have compiled
-+# modules into native code
-+$(obj)/%.prelink.o: objtool-enabled = y
-+$(obj)/%.prelink.o: part-of-module := y
-+
-+$(obj)/%.prelink.o: $(obj)/%.o FORCE
-+	$(call if_changed,cc_prelink_modules)
- endif
- 
- cmd_mod = { \
-@@ -333,18 +317,6 @@ cmd_mod = { \
- $(obj)/%.mod: $(obj)/%$(mod-prelink-ext).o FORCE
- 	$(call if_changed,mod)
- 
--#
--# Since objtool will re-write the file it will change the timestamps, therefore
--# it is critical that the %.objtool file gets a timestamp *after* objtool runs.
--#
--# Additionally, care must be had with ordering this rule against the other rules
--# that take %.o as a dependency.
--#
--cmd_objtool_mod = true $(cmd_objtool) ; touch $@
--
--$(obj)/%.objtool: $(obj)/%$(mod-prelink-ext).o FORCE
--	$(call if_changed,objtool_mod)
--
- quiet_cmd_cc_lst_c = MKLST   $@
-       cmd_cc_lst_c = $(CC) $(c_flags) -g -c -o $*.o $< && \
- 		     $(CONFIG_SHELL) $(srctree)/scripts/makelst $*.o \
-@@ -498,7 +470,7 @@ $(obj)/lib.a: $(lib-y) FORCE
- # Do not replace $(filter %.o,^) with $(real-prereqs). When a single object
- # module is turned into a multi object module, $^ will contain header file
- # dependencies recorded in the .*.cmd file.
--ifdef CONFIG_LTO_CLANG
-+ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
- quiet_cmd_link_multi-m = AR [M]  $@
- cmd_link_multi-m =						\
- 	$(cmd_update_lto_symversions);				\
-diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
-index 79be57f..8bfc923 100644
---- a/scripts/Makefile.lib
-+++ b/scripts/Makefile.lib
-@@ -230,11 +230,11 @@ dtc_cpp_flags  = -Wp,-MMD,$(depfile).pre.tmp -nostdinc                    \
- 		 $(addprefix -I,$(DTC_INCLUDE))                          \
- 		 -undef -D__DTS__
- 
--ifeq ($(CONFIG_LTO_CLANG),y)
-+ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
- # With CONFIG_LTO_CLANG, .o files in modules might be LLVM bitcode, so we
- # need to run LTO to compile them into native code (.lto.o) before further
- # processing.
--mod-prelink-ext := .lto
-+mod-prelink-ext := .prelink
- endif
- 
- # Useful for describing the dependency of composite objects
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 6bfa332..09c3ab0 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -1989,9 +1989,9 @@ static char *remove_dot(char *s)
- 		if (m && (s[n + m] == '.' || s[n + m] == 0))
- 			s[n] = 0;
- 
--		/* strip trailing .lto */
--		if (strends(s, ".lto"))
--			s[strlen(s) - 4] = '\0';
-+		/* strip trailing .prelink */
-+		if (strends(s, ".prelink"))
-+			s[strlen(s) - 8] = '\0';
- 	}
- 	return s;
- }
-@@ -2015,9 +2015,9 @@ static void read_symbols(const char *modname)
- 		/* strip trailing .o */
- 		tmp = NOFAIL(strdup(modname));
- 		tmp[strlen(tmp) - 2] = '\0';
--		/* strip trailing .lto */
--		if (strends(tmp, ".lto"))
--			tmp[strlen(tmp) - 4] = '\0';
-+		/* strip trailing .prelink */
-+		if (strends(tmp, ".prelink"))
-+			tmp[strlen(tmp) - 8] = '\0';
- 		mod = new_module(tmp);
- 		free(tmp);
- 	}
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 921e4eb..8757926 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -1875,6 +1875,8 @@ config X86_KERNEL_IBT
+ 	prompt "Indirect Branch Tracking"
+ 	bool
+ 	depends on X86_64 && CC_HAS_IBT && STACK_VALIDATION
++	# https://github.com/llvm/llvm-project/commit/9d7001eba9c4cb311e03cd8cdc231f9e579f2d0f
++	depends on !LD_IS_LLD || LLD_VERSION >= 140000
+ 	help
+ 	  Build the kernel with support for Indirect Branch Tracking, a
+ 	  hardware support course-grain forward-edge Control Flow Integrity
