@@ -2,139 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FDB0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:45:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3478BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:45:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231720AbiCVIqu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 04:46:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41532 "EHLO
+        id S231726AbiCVIrD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 04:47:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231699AbiCVIqr (ORCPT
+        with ESMTP id S231713AbiCVIq7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 04:46:47 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F2CA2A718
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 01:45:20 -0700 (PDT)
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id F2C633F1AC
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 08:45:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1647938718;
-        bh=neGecA7HBSwD46fG4cAmxThQpgGejbSlPRN3sQKWp0I=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=tc6NGEUQry8gtblhf6xBdp8zarCM16TlC7J84MC3x0GFdiD9zGpxWFjNxQlcq2DOf
-         NEVBFYkfNAcqfhUODZPCe+sFYFYKGjQf3w7kSFMMwTcK12bjBRw+aVlK0AxQBMMpWB
-         Ot/h6rO7c6qf7HuYdcqRAAFYvg/4ZYcKcwwDOqUE9D5MavZVsg12jYhORh/8YNVaks
-         1e8rMEIaMyiSzZfnogECspQpzeA32l0k9EfUOzgrrC1Oq+ZFA6NskkT599lvkaTLXR
-         CfJ+hwgIe7p2XZFzK7QkWZBl3CvmW1S4JME0k5ckGS6JNCSOEJnATE2Yt0Mu55Iqrq
-         WRgwuou3OEhuQ==
-Received: by mail-ed1-f69.google.com with SMTP id x5-20020a50ba85000000b00418e8ce90ffso9877247ede.14
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 01:45:18 -0700 (PDT)
+        Tue, 22 Mar 2022 04:46:59 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FCDB4665A;
+        Tue, 22 Mar 2022 01:45:32 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id mp6-20020a17090b190600b001c6841b8a52so1872297pjb.5;
+        Tue, 22 Mar 2022 01:45:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=q52eDajcdb7Rqfr+TDj+rYXShCii6o0JcJYCHCQrCGw=;
+        b=K2ABBwDVUHxHtK2uHgGcfUS7M4wmkh4de2tKP2a9Xqbf/z/ymA6z8qVnrdmT4XMJbx
+         5PgcYEURK58nvh3DLvkHm6BDLwvprLyMFNfPkCFuNkxuoOGZErPi7uZUf6TvMe3I/TiO
+         SY/+eZXzVVQdQpQ0LuMM/KpcOA+1frwC2xqx0SMEeYnlNfH2tEYCYNmiOCF862Cz2wPg
+         RiWi+RxmTo+AZUCD/XWfBIlCEHHyNafSDNLt1wK+BO7kaotk4arfVWI/929ZRwPIQvSD
+         Av+9LRdQFxIFwRzsw2PhyUbQ5ewRwVuZ6JYVzI34ZQCGXL1vTPLJW7QL9JRHSC+GxKxU
+         qbXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=neGecA7HBSwD46fG4cAmxThQpgGejbSlPRN3sQKWp0I=;
-        b=XOl3FJrVLBTRaByERARXnCs+WnbP3Ss/Rm7Em272OZqIC5OQm4kDQOZSRlvupM85jr
-         JxkNWDjkBSw8iVDdrlqcVKYRKjqesiLK4irqVtD17/wCprH8MXZUoez0yLFjt8i6aUep
-         fVREpKKkjt5nkk4rrvJNG+PuvboDnDFEnj+WGGZKwzpyo4mlWXAwHl5zVp9+gBluXy91
-         EyCt9qwQGRDqDAMlTbi5aTEWrzOyc/7GJu1M9d1Y2C/dlha2+JA7JvLg1m/hm111W3f0
-         vOQjcz5JXaLYNU4NrA70Sm5zBt7q0p7qx8VsI5N6SxvsmUktfcn13ZnFtHZGZEqG5sID
-         J+wQ==
-X-Gm-Message-State: AOAM532QbBFH9YiZjtMyFkRFfygxpvGCQFgOYPtsdgmNZDbPPTKdnkC9
-        kSw+BzIo8B9dxbO184LEcjCA/0Ha4oMA56/nCe8mhwsRAT29xg5XvLFRLh06yapBqlLwh+T3aKw
-        T/x/3IvdR5WyjUKEYIhBjxtEPh8/NAm8vHVx5uCkymQ==
-X-Received: by 2002:a5d:59a1:0:b0:204:1777:fc08 with SMTP id p1-20020a5d59a1000000b002041777fc08mr5740195wrr.545.1647938708535;
-        Tue, 22 Mar 2022 01:45:08 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw04a3TswDavls/3TZ+Ylafig5G9XRM4IJdq5o+8htxAoCK7PnTDqyBAOY10yAJcYtgnX428g==
-X-Received: by 2002:a5d:59a1:0:b0:204:1777:fc08 with SMTP id p1-20020a5d59a1000000b002041777fc08mr5740165wrr.545.1647938708324;
-        Tue, 22 Mar 2022 01:45:08 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id f9-20020a05600c4e8900b0038c740951ebsm1522235wmq.24.2022.03.22.01.45.06
+        bh=q52eDajcdb7Rqfr+TDj+rYXShCii6o0JcJYCHCQrCGw=;
+        b=0B+i5GGa+dzqXYWhh9MOQPc40n9dtwUVbT2GSAYOqnazUYJE3jI3i2VNf5ZpUfT6Wt
+         pnxmgLHhat9WwU+cDHnjXJ+0hKy/nF1DONZn7of8ralUCjnHbuAkrZr2ENFedGtQ89lv
+         GJ4WxFtEWH4XrTz6m2YCcsuX0pNfBOp+SHsUOTjgFVVRVrQtZlOhRXiVygm1tj+VzHF2
+         U5yYAISyQGRrkoNSuHQeqbYoKSqcQoC7EMlbTIiuHJNPmMra8fF9iZPpY9JBZrqHHiMM
+         obxpfSMiDxOa2yQudJpFP8atQmTxVaFENDwBIi9e/OCgzpPwWceqS8t7tNLzBWC+OfHp
+         4Q4A==
+X-Gm-Message-State: AOAM531xPEuSHu9keu0qAQbv9ss5us07hziYyvAOtvFOdY/KCeVw7YST
+        pacftHevhY4vIOA2V+dWtzPGtXB3HiLIH3rC
+X-Google-Smtp-Source: ABdhPJws0PsQepO6L48R2qUzhyAhVI7bVwQlm0yX1tw8IO51B6YBn0ZbfsDGV29mhR7CFTfLgJF6qA==
+X-Received: by 2002:a17:902:c713:b0:153:f75d:253b with SMTP id p19-20020a170902c71300b00153f75d253bmr16949319plp.99.1647938732164;
+        Tue, 22 Mar 2022 01:45:32 -0700 (PDT)
+Received: from [192.168.43.80] (subs02-180-214-232-13.three.co.id. [180.214.232.13])
+        by smtp.gmail.com with ESMTPSA id f22-20020a056a0022d600b004f7a0b47b0dsm23918412pfj.109.2022.03.22.01.45.27
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Mar 2022 01:45:07 -0700 (PDT)
-Message-ID: <a8290aa4-8a2c-68c3-bc55-82abcd27385e@canonical.com>
-Date:   Tue, 22 Mar 2022 09:45:05 +0100
+        Tue, 22 Mar 2022 01:45:31 -0700 (PDT)
+Message-ID: <70cc1b0b-0510-71da-aded-2134cdc22f6a@gmail.com>
+Date:   Tue, 22 Mar 2022 15:45:26 +0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 2/2] dt-bindings: clock: drop useless consumer example
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 5.15 00/32] 5.15.31-rc1 review
 Content-Language: en-US
-To:     Jesse Taube <mr.bossman075@gmail.com>,
-        Rob Herring <robh@kernel.org>
-Cc:     Manivannan Sadhasivam <mani@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Luca Ceresoli <luca@lucaceresoli.net>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Steffen Trumtrar <s.trumtrar@pengutronix.de>,
-        "A.s. Dong" <aisheng.dong@nxp.com>,
-        Giulio Benetti <giulio.benetti@benettiengineering.com>,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-References: <20220316130858.93455-1-krzysztof.kozlowski@canonical.com>
- <20220316130858.93455-2-krzysztof.kozlowski@canonical.com>
- <YjjCpQ9vwFoEmFFi@robh.at.kernel.org>
- <ca6c4fe5-93c5-9ad4-0c9f-86ec3213d44e@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <ca6c4fe5-93c5-9ad4-0c9f-86ec3213d44e@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220321133220.559554263@linuxfoundation.org>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <20220321133220.559554263@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/03/2022 02:45, Jesse Taube wrote:
+On 21/03/22 20.52, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.31 release.
+> There are 32 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> 
-> On 3/21/22 14:23, Rob Herring wrote:
->> On Wed, Mar 16, 2022 at 02:08:58PM +0100, Krzysztof Kozlowski wrote:
->>> Consumer examples in the bindings of resource providers are trivial,
->>> useless and duplication of code.  Remove the example code for consumer
->>>
->>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
->>> ---
->>>   .../bindings/clock/bitmain,bm1880-clk.yaml           | 12 ------------
->>>   .../devicetree/bindings/clock/idt,versaclock5.yaml   |  7 -------
->>>   .../devicetree/bindings/clock/imx1-clock.yaml        |  9 ---------
->>>   .../devicetree/bindings/clock/imx21-clock.yaml       |  9 ---------
->>>   .../devicetree/bindings/clock/imx23-clock.yaml       |  9 ---------
->>>   .../devicetree/bindings/clock/imx25-clock.yaml       |  8 --------
->>>   .../devicetree/bindings/clock/imx27-clock.yaml       |  9 ---------
->>>   .../devicetree/bindings/clock/imx28-clock.yaml       |  9 ---------
->>>   .../devicetree/bindings/clock/imx31-clock.yaml       |  8 --------
->>>   .../devicetree/bindings/clock/imx35-clock.yaml       |  8 --------
->>>   .../devicetree/bindings/clock/imx7ulp-pcc-clock.yaml | 11 -----------
->>>   .../devicetree/bindings/clock/imx7ulp-scg-clock.yaml | 11 -----------
->>>   .../devicetree/bindings/clock/imx8qxp-lpcg.yaml      | 11 -----------
->>>   .../devicetree/bindings/clock/imxrt1050-clock.yaml   |  8 --------
->>>   .../bindings/clock/nvidia,tegra124-car.yaml          |  7 -------
->>>   .../bindings/clock/nvidia,tegra20-car.yaml           |  7 -------
->>>   16 files changed, 143 deletions(-)
->>
->> Doesn't apply to my tree (no imxrt1050-clock.yaml), so
-> merge against linux-next I can submit another patch if needed.
->> Acked-by: Rob Herring <robh@kernel.org>
 
-Let me send it after the merge window - all dependencies should be there.
+Successfully cross-compiled for arm64 (bcm2711_defconfig, gcc 10.2.0)
+and powerpc (ps3_defconfig, gcc 11.2.0).
 
+Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
 
-Best regards,
-Krzysztof
+-- 
+An old man doll... just what I always wanted! - Clara
