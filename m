@@ -2,74 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C052C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 15:59:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7121FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 16:00:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236206AbiCVQA7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 12:00:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48748 "EHLO
+        id S236687AbiCVQBw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 12:01:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231546AbiCVQAz (ORCPT
+        with ESMTP id S238932AbiCVQAL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 12:00:55 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DE0777B135
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 08:59:27 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 62D77ED1;
-        Tue, 22 Mar 2022 08:59:27 -0700 (PDT)
-Received: from [10.0.0.14] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E95C93F73B;
-        Tue, 22 Mar 2022 08:59:25 -0700 (PDT)
-Message-ID: <bc66bee6-7c99-b289-f5e9-ccaf03d5605d@arm.com>
-Date:   Tue, 22 Mar 2022 15:59:20 +0000
+        Tue, 22 Mar 2022 12:00:11 -0400
+Received: from gateway31.websitewelcome.com (gateway31.websitewelcome.com [192.185.143.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A5D427CC4
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 08:58:24 -0700 (PDT)
+Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
+        by gateway31.websitewelcome.com (Postfix) with ESMTP id 0AD8FC7244D
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:58:24 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id WgtrnQQA922u3WgtrnqWYV; Tue, 22 Mar 2022 10:58:24 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
+        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
+        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=FmnYj8XY37ozsL1ncMDDe7VB7cs7ym+XNgIT3Nh/4mw=; b=Kw0GKrzk9B0sN5VlG6Annzh8cf
+        rq7p+wcAyXObM/5XIdD+jQnafNsb9MldsbS2dJ220mIzfYucD5gyd2BTWJ1gpWkppysQ9fiAJi43d
+        BZAxCn7tC4ErJB0O5csom3VWJFd6gGICvZlBbyT7zyxaxeTYWgYz6N7I3Na8EVNS7DSGHhDWLW1+S
+        YB2J+I8uZOLSahLR36ZwEOvxctQs0PAKcfC13I9vB/n0xn9FiwrCUy9b+FVwwf2Z2uaiDssdV4bpm
+        wvUSKJMPsLbrcH0E3CmeuJRS1Zb83L9dNx1usrPbQhd9JrJ8hhfcqWzzinJMvHfqr8kp1KItot6Fn
+        u2oobCLw==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57610 helo=localhost)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nWgtq-000tfT-Ls; Tue, 22 Mar 2022 15:58:22 +0000
+Date:   Tue, 22 Mar 2022 08:58:20 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-arch@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>,
+        Nick Hu <nickhu@andestech.com>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Michal Simek <monstr@monstr.eu>,
+        Borislav Petkov <bp@alien8.de>, Guo Ren <guoren@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Joshua Kinard <kumba@gentoo.org>,
+        David Laight <David.Laight@aculab.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Lennart Poettering <mzxreary@0pointer.de>,
+        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Theodore Ts'o <tytso@mit.edu>
+Subject: Re: [PATCH v1] random: block in /dev/urandom
+Message-ID: <20220322155820.GA1745955@roeck-us.net>
+References: <20220217162848.303601-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Subject: Re: [PATCH v2] cpu/hotplug: Set st->cpu earlier
-Content-Language: en-US
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Steven Price <steven.price@arm.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, Baokun Li <libaokun1@huawei.com>,
-        Dongli Zhang <dongli.zhang@oracle.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Yuan ZhaoXiong <yuanzhaoxiong@baidu.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>
-References: <20220316153637.288199-1-steven.price@arm.com>
- <878rt2atre.ffs@tglx>
-From:   Vincent Donnefort <vincent.donnefort@arm.com>
-In-Reply-To: <878rt2atre.ffs@tglx>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220217162848.303601-1-Jason@zx2c4.com>
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nWgtq-000tfT-Ls
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57610
+X-Source-Auth: guenter@roeck-us.net
+X-Email-Count: 38
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 22/03/2022 15:31, Thomas Gleixner wrote:
-> On Wed, Mar 16 2022 at 15:36, Steven Price wrote:
->> Setting the 'cpu' member of struct cpuhp_cpu_state in cpuhp_create() is
->> too late as other callbacks can be made before that point.
+On Thu, Feb 17, 2022 at 05:28:48PM +0100, Jason A. Donenfeld wrote:
+> This topic has come up countless times, and usually doesn't go anywhere.
+> This time I thought I'd bring it up with a slightly narrower focus,
+> updated for some developments over the last three years: we finally can
+> make /dev/urandom always secure, in light of the fact that our RNG is
+> now always seeded.
 > 
-> What?
-> 
->          CPUHP_OFFLINE = 0,
->          CPUHP_CREATE_THREADS,
-> 
-> The create threads callback is the very first callback which is invoked
-> for a to be plugged CPU on the control CPU. So which earlier callback
-> can be invoked and fail?
-> 
-> Thanks,
-> 
->          tglx
 
+[ ... ]
 
-CPUHP_CREATE_THREADS itself can fail, before st->cpu is set. Also, that 
-value is used outside of the callbacks (cpuhp_set_state() in _cpu_up()).
+This patch (or a later version of it) made it into mainline and causes a
+large number of qemu boot test failures for various architectures (arm,
+m68k, microblaze, sparc32, xtensa are the ones I observed). Common
+denominator is that boot hangs at "Saving random seed:". A sample bisect
+log is attached. Reverting this patch fixes the problem.
 
-But indeed this description could be refined a bit.
+Guenter
+
+---
+# bad: [8565d64430f8278bea38dab0a3ab60b4e11c71e4] Merge tag 'bounds-fixes-v5.18-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux
+# good: [f443e374ae131c168a065ea1748feac6b2e76613] Linux 5.17
+git bisect start 'HEAD' 'v5.17'
+# bad: [5628b8de1228436d47491c662dc521bc138a3d43] Merge tag 'random-5.18-rc1-for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/crng/random
+git bisect bad 5628b8de1228436d47491c662dc521bc138a3d43
+# good: [a04b1bf574e1f4875ea91f5c62ca051666443200] Merge tag 'for-5.18/parisc-1' of git://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-linux
+git bisect good a04b1bf574e1f4875ea91f5c62ca051666443200
+# good: [242ba6656d604aa8dc87451fc08143cb28d5a587] Merge tag 'acpi-5.18-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm
+git bisect good 242ba6656d604aa8dc87451fc08143cb28d5a587
+# good: [02b82b02c34321dde10d003aafcd831a769b2a8a] Merge tag 'pm-5.18-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm
+git bisect good 02b82b02c34321dde10d003aafcd831a769b2a8a
+# bad: [77553cf8f44863b31da242cf24671d76ddb61597] random: don't let 644 read-only sysctls be written to
+git bisect bad 77553cf8f44863b31da242cf24671d76ddb61597
+# good: [a07fdae346c35c6ba286af1c88e0effcfa330bf9] random: add proper SPDX header
+git bisect good a07fdae346c35c6ba286af1c88e0effcfa330bf9
+# good: [58340f8e952b613e0ead0bed58b97b05bf4743c5] random: defer fast pool mixing to worker
+git bisect good 58340f8e952b613e0ead0bed58b97b05bf4743c5
+# good: [da3951ebdcd1cb1d5c750e08cd05aee7b0c04d9a] random: round-robin registers as ulong, not u32
+git bisect good da3951ebdcd1cb1d5c750e08cd05aee7b0c04d9a
+# good: [abded93ec1e9692920fe309f07f40bd1035f2940] random: unify cycles_t and jiffies usage and types
+git bisect good abded93ec1e9692920fe309f07f40bd1035f2940
+# bad: [6f98a4bfee72c22f50aedb39fb761567969865fe] random: block in /dev/urandom
+git bisect bad 6f98a4bfee72c22f50aedb39fb761567969865fe
+# good: [c2a7de4feb6e09f23af7accc0f882a8fa92e7ae5] random: do crng pre-init loading in worker rather than irq
+git bisect good c2a7de4feb6e09f23af7accc0f882a8fa92e7ae5
+# first bad commit: [6f98a4bfee72c22f50aedb39fb761567969865fe] random: block in /dev/urandom
