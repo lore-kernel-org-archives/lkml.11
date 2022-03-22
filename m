@@ -2,144 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B84E5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 18:39:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4DCCC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 18:41:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240782AbiCVSkc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 14:40:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43000 "EHLO
+        id S237538AbiCVSmm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 14:42:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240778AbiCVSka (ORCPT
+        with ESMTP id S237440AbiCVSmi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 14:40:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29C461BEB8;
-        Tue, 22 Mar 2022 11:39:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B6BF0612FC;
-        Tue, 22 Mar 2022 18:39:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87E19C340EC;
-        Tue, 22 Mar 2022 18:39:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647974341;
-        bh=83MxWvJXMMxW++0FlJkhqDhlQdcZsuRg4UGE2d3K+6w=;
-        h=Date:From:To:Cc:Subject:From;
-        b=il+PF/5lDTVALM0N2qoPSMPAqqGIuPjE3GYn6jbjRxPVk21cRep1A/IVxKET0tZXt
-         sok4x4hv+Lh0rwFR3UKK6eWuelqsBJFGzl7qOA2UtFoOPnjgwsArNBNKek24j7c6yF
-         OSZ2y7T7z/AuvmoYvDYfjT0ZQrj+sRjLGfCkjH9rccfZQll7np7/Mi+KWyQGwzEeUP
-         9KtwvNggDbbr20wGckoy0tkAvpT20UFRuDV8S2rN8vE2dYJwo8sRmaXjrMS2diN5Hk
-         oRPSNtCtdgeFMw8jeUtq9Rckgu8yIa1AgXa5OsE9ZLabnmWbYoU59DZ1JCP8IvZNXi
-         6+3RcNzP/PHpg==
-Date:   Tue, 22 Mar 2022 13:48:02 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Kees Cook <keescook@chromium.org>, linux-hardening@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: [GIT PULL] flexible-array transformations for 5.18-rc1
-Message-ID: <20220322184802.GA2533969@embeddedor>
+        Tue, 22 Mar 2022 14:42:38 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC9E67E089
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 11:41:06 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id u3so25281448ljd.0
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 11:41:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6hTMbyYeigRQeN9QMQvqrXsCNDpWwIiaSK6s7Jke5nc=;
+        b=CaHFN2rKysBv+YFPDeAFoLOQngE5Gp0VZxxBT90z5DiJiOEkx38lbvNAdq2/lbVB7j
+         kdVL1/S5eao5imxibMgio72pVYq4O3PSUZ2m90JZ6XUxs0TUfHSTcpsbUSu/J4T+A3EO
+         dagc1fuIVmItQKgNEjj6BcgvbsHF5EymzQxq4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6hTMbyYeigRQeN9QMQvqrXsCNDpWwIiaSK6s7Jke5nc=;
+        b=6zgM4ivFVNKuKdRyS1pFyaw610pWBsg2VbzLys0CSsWS7qAsAIUitvAsvcQNik/YcH
+         puGSQn0JlfqXxQ7Wk9lLrg93qBWsP0IaO6KeusWErEaB6nkx/jY6xwqoUHTpnp2W8SZA
+         8wRfFt7cUh4i47wEwPQXjFxJX6Ghqd8Ytwb6kEYChuUTvA//zFNNQiBD6lMghhXqeUPO
+         qY/eOuCN+DmZbKahXExJ9LVyEjcWmTkmO9B+tXxnCY6XFlZ4OYRbRU5ipcOHzZiRzAHv
+         3onrkrEENS8MF/i5husu0fHZfKU64nWWVP3ffrNmUGAAK85VFe6KO/KaYixZKoWYssO9
+         J+Aw==
+X-Gm-Message-State: AOAM531e0nBoJ6J5jR2oXB7C6UVCuEhWjUrKYkscmYMcTnNtgfLXHAJT
+        TWcdqTV6qgS0QZ7p1CXj1Hz3UtxNM1z+A4PMvX4=
+X-Google-Smtp-Source: ABdhPJxxqmaJfXKAJwWDQMRnrWbrLrHi5bdvdqWUqk1BQJBQN4Hkm3VkMYWe7lLri2z7pYZkl0oVRg==
+X-Received: by 2002:a2e:8610:0:b0:249:7bc4:bbb8 with SMTP id a16-20020a2e8610000000b002497bc4bbb8mr12215540lji.370.1647974464533;
+        Tue, 22 Mar 2022 11:41:04 -0700 (PDT)
+Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com. [209.85.208.180])
+        by smtp.gmail.com with ESMTPSA id z13-20020a195e4d000000b0044a49605b88sm46593lfi.50.2022.03.22.11.41.03
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Mar 2022 11:41:04 -0700 (PDT)
+Received: by mail-lj1-f180.google.com with SMTP id u3so25281363ljd.0
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 11:41:03 -0700 (PDT)
+X-Received: by 2002:a05:651c:1213:b0:247:e2d9:cdda with SMTP id
+ i19-20020a05651c121300b00247e2d9cddamr20230108lja.443.1647974463703; Tue, 22
+ Mar 2022 11:41:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220322164655.83229-1-Jason@zx2c4.com>
+In-Reply-To: <20220322164655.83229-1-Jason@zx2c4.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 22 Mar 2022 11:40:47 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whnK3eG6+=Q7MgcLEKAny1Eqdc9XKyq5W49Dz6x1bHAqw@mail.gmail.com>
+Message-ID: <CAHk-=whnK3eG6+=Q7MgcLEKAny1Eqdc9XKyq5W49Dz6x1bHAqw@mail.gmail.com>
+Subject: Re: [PATCH] random: go back to not blocking in /dev/urandom
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit 26291c54e111ff6ba87a164d85d4a4e134b7315c:
+On Tue, Mar 22, 2022 at 9:47 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+>
+> This reverts commit 6f98a4bfee72 ("random: block in /dev/urandom").
 
-  Linux 5.17-rc2 (2022-01-30 15:37:07 +0200)
+Just a note that by the time I saw this, I already had my own revert
+in the tree.
 
-are available in the Git repository at:
+It's pushed out now, as commit 0313bc278dac.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gustavoars/linux.git tags/flexible-array-transformations-5.18-rc1
-
-for you to fetch changes up to 5224f79096170bf7b92cc8fe42a12f44b91e5f62:
-
-  treewide: Replace zero-length arrays with flexible-array members (2022-02-17 07:00:39 -0600)
-
-----------------------------------------------------------------
-flexible-array transformations for 5.18-rc1
-
-Hi Linus,
-
-Please, pull the following treewide patch that replaces zero-length arrays with
-flexible-array members. This patch has been baking in linux-next for a
-whole development cycle.
-
-Thanks
---
-Gustavo
-
-----------------------------------------------------------------
-Gustavo A. R. Silva (1):
-      treewide: Replace zero-length arrays with flexible-array members
-
- arch/alpha/include/asm/hwrpb.h                       |  2 +-
- arch/ia64/include/asm/sal.h                          |  2 +-
- arch/s390/include/asm/ccwgroup.h                     |  2 +-
- arch/s390/include/asm/chsc.h                         |  2 +-
- arch/s390/include/asm/eadm.h                         |  2 +-
- arch/s390/include/asm/fcx.h                          |  4 ++--
- arch/s390/include/asm/idals.h                        |  2 +-
- arch/s390/include/asm/sclp.h                         |  2 +-
- arch/s390/include/asm/sysinfo.h                      |  6 +++---
- arch/sh/include/asm/thread_info.h                    |  2 +-
- arch/sparc/include/asm/vio.h                         | 10 +++++-----
- arch/um/include/shared/net_kern.h                    |  2 +-
- arch/x86/include/asm/microcode_amd.h                 |  2 +-
- arch/x86/include/asm/microcode_intel.h               |  4 ++--
- arch/x86/include/asm/pci.h                           |  2 +-
- arch/x86/include/asm/pci_x86.h                       |  2 +-
- arch/xtensa/include/asm/bootparam.h                  |  2 +-
- drivers/crypto/caam/pdb.h                            |  2 +-
- drivers/gpu/drm/i915/gt/uc/intel_guc_ads.c           |  2 +-
- drivers/gpu/drm/nouveau/include/nvfw/hs.h            |  2 +-
- drivers/hwtracing/coresight/coresight-config.h       |  2 +-
- drivers/misc/bcm-vk/bcm_vk.h                         |  2 +-
- drivers/misc/habanalabs/include/common/cpucp_if.h    |  6 +++---
- .../misc/habanalabs/include/gaudi/gaudi_packets.h    |  4 ++--
- drivers/misc/habanalabs/include/goya/goya_packets.h  |  4 ++--
- drivers/net/ethernet/freescale/enetc/enetc_hw.h      |  2 +-
- drivers/net/ethernet/i825xx/sun3_82586.h             |  2 +-
- drivers/net/ethernet/marvell/octeontx2/af/npc.h      |  6 +++---
- drivers/net/ethernet/qlogic/qed/qed_mfw_hsi.h        |  2 +-
- drivers/net/ethernet/ti/davinci_mdio.c               |  2 +-
- drivers/scsi/dpt/dpti_i2o.h                          |  2 +-
- drivers/scsi/elx/libefc_sli/sli4.h                   | 20 ++++++++++----------
- drivers/scsi/mpi3mr/mpi3mr.h                         |  2 +-
- drivers/scsi/qla2xxx/qla_bsg.h                       |  4 ++--
- drivers/scsi/qla2xxx/qla_def.h                       |  2 +-
- drivers/scsi/qla2xxx/qla_edif_bsg.h                  |  4 ++--
- drivers/scsi/qla2xxx/qla_fw.h                        |  2 +-
- drivers/scsi/qla4xxx/ql4_fw.h                        |  2 +-
- drivers/staging/r8188eu/include/rtw_cmd.h            | 10 +++++-----
- drivers/staging/rtl8712/rtl871x_cmd.h                |  8 ++++----
- drivers/staging/rtl8723bs/include/ieee80211.h        |  2 +-
- drivers/staging/rtl8723bs/include/rtw_cmd.h          |  2 +-
- .../vc04_services/include/linux/raspberrypi/vchiq.h  |  2 +-
- drivers/visorbus/vbuschannel.h                       |  2 +-
- fs/cifs/ntlmssp.h                                    |  2 +-
- fs/ext4/fast_commit.h                                |  4 ++--
- fs/ksmbd/ksmbd_netlink.h                             |  2 +-
- fs/ksmbd/ntlmssp.h                                   |  6 +++---
- fs/ksmbd/smb2pdu.h                                   |  8 ++++----
- fs/ksmbd/transport_rdma.c                            |  2 +-
- fs/ksmbd/xattr.h                                     |  2 +-
- fs/xfs/scrub/attr.h                                  |  2 +-
- include/asm-generic/tlb.h                            |  4 ++--
- include/linux/greybus/greybus_manifest.h             |  4 ++--
- include/linux/greybus/hd.h                           |  2 +-
- include/linux/greybus/module.h                       |  2 +-
- include/linux/i3c/ccc.h                              |  6 +++---
- include/linux/platform_data/brcmfmac.h               |  2 +-
- include/linux/platform_data/cros_ec_commands.h       |  2 +-
- include/net/bluetooth/mgmt.h                         |  2 +-
- include/net/ioam6.h                                  |  2 +-
- include/sound/sof/channel_map.h                      |  4 ++--
- scripts/dtc/libfdt/fdt.h                             |  4 ++--
- sound/soc/intel/atom/sst-mfld-dsp.h                  |  4 ++--
- sound/soc/intel/skylake/skl-topology.h               |  2 +-
- tools/lib/perf/include/perf/event.h                  |  2 +-
- 66 files changed, 111 insertions(+), 111 deletions(-)
+                   Linus
