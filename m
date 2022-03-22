@@ -2,124 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A46C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 07:31:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C757EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 07:32:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237556AbiCVHdT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 03:33:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38242 "EHLO
+        id S237566AbiCVHdw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 03:33:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237518AbiCVHdR (ORCPT
+        with ESMTP id S237518AbiCVHdt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 03:33:17 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8EC1CFCD;
-        Tue, 22 Mar 2022 00:31:50 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id v4so14960610pjh.2;
-        Tue, 22 Mar 2022 00:31:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=r4xA4YpWvDAW9lMA2GfpmJRYpPh3E38DjIkUV0HV+uY=;
-        b=XNxhv4/i9m6xgW7eDDhyYG5Ouj06COWiugANv4Hkgo/bnHhuClzi/M1F8FtdhuUz1Z
-         /H3sM5jaLVfiRLC/RbTSr2MQt4XDfMmPFlyOQ2bXzz/wIGD+kba5AY4rDD04iDgxk7S0
-         WL+pt8MqZ22r8E9Y/WzOT3H84OufyyXg1FW8TJCB2VssakOsljaCIFdQZHDiklMp65cD
-         EG3mxmqPc6YnxE+zmv+JY/wbwJeEhliVwN5Eu8oXvTj15G5tjOkdatnEjOZA41ygJCdr
-         ZzqWfUrdxqcEyTQBWAcnr580fWrRaowZuJlqGQO4mY/jqp188491P3DmC9kikYcaYYGx
-         0AlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=r4xA4YpWvDAW9lMA2GfpmJRYpPh3E38DjIkUV0HV+uY=;
-        b=mnPvFZxGn86s33RQuh+Fcz9Yl3IMCHYJVKH54/1RSXju5fVsV/YOA3LnRhSXh/FwH/
-         KVH6cmAP15A4vORabc+jyxh4/Nk+Yuuc6g/bIAi/+X0bfqnKtuNV/SmWTAUz/b2phn8r
-         lCDZpgW7XuXX8UcFPSuUr4+FtlYMJlQfnG2a7TtJPtUVurZZeHP0z6Mr/Hl+7l01Csl0
-         SUHY8haU6mYeJRFdQWzX1eMfF9igQTA9CEpsCdJjGxL1OOA+gcdnx9rSpjFL+dfzxFRy
-         ai3Hw+x8kVS0RV8wA/1jGl77/dF0L0427pSiJeB9POXhHmEbdOAeU9OCQHzfeUhLo1Ix
-         nm7w==
-X-Gm-Message-State: AOAM533715zWRndaoS7zbx6CNL8NxDTabhZbyxEvvkmDAI1XMSibLvS6
-        CoQAIjXkyfA37GflXHY14zE=
-X-Google-Smtp-Source: ABdhPJw37CzyUc9LRpoPZhJ7Cqz1Vq5kO/UE+2fGyOYqk66Y101+bDEBftdrZmW6wzUiUmdiS8rH7w==
-X-Received: by 2002:a17:902:f683:b0:153:ee22:18b7 with SMTP id l3-20020a170902f68300b00153ee2218b7mr16451640plg.159.1647934310027;
-        Tue, 22 Mar 2022 00:31:50 -0700 (PDT)
-Received: from [192.168.255.10] ([203.205.141.112])
-        by smtp.gmail.com with ESMTPSA id t8-20020aa79468000000b004f764340d8bsm23806525pfq.92.2022.03.22.00.31.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Mar 2022 00:31:49 -0700 (PDT)
-Message-ID: <7c3c082c-2cad-44ae-1b66-6b1ab73dc11e@gmail.com>
-Date:   Tue, 22 Mar 2022 15:31:43 +0800
+        Tue, 22 Mar 2022 03:33:49 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D91181D0E8
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 00:32:21 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22M7WBb2071859;
+        Tue, 22 Mar 2022 02:32:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1647934331;
+        bh=JRlgwQNcHIvUegKc8BpIBbPxG9WUaR3kB8dj7pMCOgs=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=ffbZOrVJS20wCouUKcklHHTF806Jh/BYhOrrG81p1RQNRi9pDuxDMYwuud9qMb1UZ
+         W0s2YU8kPwaAm2IO1t0sNgcNuGAY0xsDtaZhMPGmQWAzx6DeIALDuhlyr310fRoazc
+         OTQsXayAbGMveuqoxbaiGdyghCakYvkvzCuwso6k=
+Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22M7WBIl001498
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 22 Mar 2022 02:32:11 -0500
+Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 22
+ Mar 2022 02:32:11 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE103.ent.ti.com
+ (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 22 Mar 2022 02:32:10 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22M7WAHg051389;
+        Tue, 22 Mar 2022 02:32:10 -0500
+Date:   Tue, 22 Mar 2022 13:02:09 +0530
+From:   Pratyush Yadav <p.yadav@ti.com>
+To:     Michael Walle <michael@walle.cc>
+CC:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        <miquel.raynal@bootlin.com>, <richard@nod.at>, <vigneshr@ti.com>,
+        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <nicolas.ferre@microchip.com>
+Subject: Re: [PATCH v2 4/8] mtd: spi-nor: core: Introduce method for RDID op
+Message-ID: <20220322073209.26m2udmftiaxxtcq@ti.com>
+References: <20220228111712.111737-1-tudor.ambarus@microchip.com>
+ <20220228111712.111737-5-tudor.ambarus@microchip.com>
+ <0bdbe6ad8f39996df6345bb249e4a2e8@walle.cc>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Subject: Re: [PATCH 7/7] kvm: x86/cpuid: Fix Architectural Performance
- Monitoring support
-Content-Language: en-US
-To:     Sandipan Das <sandipan.das@amd.com>
-Cc:     peterz@infradead.org, bp@alien8.de, dave.hansen@linux.intel.com,
-        acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, namhyung@kernel.org,
-        jolsa@kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        pbonzini@redhat.com, jmattson@google.com, eranian@google.com,
-        ananth.narayan@amd.com, ravi.bangoria@amd.com,
-        santosh.shukla@amd.com, kvm list <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-perf-users@vger.kernel.org, x86@kernel.org
-References: <cover.1647498015.git.sandipan.das@amd.com>
- <bc58ac02d642ea1fcbd04a525046dfe978e9f323.1647498015.git.sandipan.das@amd.com>
-From:   Like Xu <like.xu.linux@gmail.com>
-Organization: Tencent
-In-Reply-To: <bc58ac02d642ea1fcbd04a525046dfe978e9f323.1647498015.git.sandipan.das@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <0bdbe6ad8f39996df6345bb249e4a2e8@walle.cc>
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17/3/2022 2:28 pm, Sandipan Das wrote:
-> CPUID 0xA provides information on Architectural Performance
-> Monitoring features on some x86 processors. It advertises a
-> PMU version which Qemu uses to determine the availability of
-> additional MSRs to manage the PMCs.
+On 21/03/22 11:56PM, Michael Walle wrote:
+> Am 2022-02-28 12:17, schrieb Tudor Ambarus:
+> > RDID is used in the core to auto detect the flash, but also by some
+> > manufacturer drivers that contain flashes that support Octal DTR mode,
+> > so that they can read the flash ID after the switch to Octal DTR was
+> > made
+> > to test if the switch was successful. Introduce a core method for RDID
+> > op
+> > to avoid code duplication.
 > 
-> Upon receiving a KVM_GET_SUPPORTED_CPUID ioctl request for
-> the same, the kernel constructs return values based on the
-> x86_pmu_capability irrespective of the vendor.
-> 
-> This CPUID function and additional MSRs are not supported on
-> AMD processors. If PerfMonV2 is detected, the PMU version is
-> set to 2 and guest startup breaks because of an attempt to
-> access a non-existent MSR. Return zeros to avoid this.
-> 
-> Fixes: a6c06ed1a60a ("KVM: Expose the architectural performance monitoring CPUID leaf")
-> Reported-by: Vasant Hegde <vasant.hegde@amd.com>
+> Some or all? Is that specific to the flash or can we just check that
+> readid works in spi_nor_octal_dtr_enable()? That way we could also
+> just get rid of the proto parameter for the read_id because it can
+> be called after we set the reg_proto.
 
-The new 0003 patch introduces this issue (and more kvm issues)
-due to "x86_pmu.version = 2", so this is not a fix in the strictest sense.
+It is specific to the flash. Not all flashes support RDID in 8D mode. 
+And the RDID command is also different in 8D mode for various flashes. 
+For example, Micron MT35XU512ABA flash expects 8 dummy cycles and 0 
+address cycles. Cypress S28HS512T expects 4 address cycles and 3 dummy 
+cycles.
 
-Btw, do you need my effort to virtualize AMD PerfMonV2 ?
+The octal_dtr_enable hook would know what parameters to use but it is 
+harder for the core to know since this information is not discoverable 
+via SFDP.
 
-> Signed-off-by: Sandipan Das <sandipan.das@amd.com>
-> ---
->   arch/x86/kvm/cpuid.c | 5 +++++
->   1 file changed, 5 insertions(+)
 > 
-> diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-> index b8f8d268d058..1d9ca5726167 100644
-> --- a/arch/x86/kvm/cpuid.c
-> +++ b/arch/x86/kvm/cpuid.c
-> @@ -865,6 +865,11 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
->   		union cpuid10_eax eax;
->   		union cpuid10_edx edx;
->   
-> +		if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD) {
-> +			entry->eax = entry->ebx = entry->ecx = entry->edx = 0;
-> +			break;
-> +		}
-> +
->   		perf_get_x86_pmu_capability(&cap);
->   
->   		/*
+> -michael
+> 
+> > 
+> > Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+> > ---
+> >  drivers/mtd/spi-nor/core.c | 58 ++++++++++++++++++++++++++------------
+> >  drivers/mtd/spi-nor/core.h |  9 ++++++
+> >  2 files changed, 49 insertions(+), 18 deletions(-)
+> > 
+> > diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
+> > index b1d6fa65417d..281e3d25f74c 100644
+> > --- a/drivers/mtd/spi-nor/core.c
+> > +++ b/drivers/mtd/spi-nor/core.c
+> > @@ -369,6 +369,41 @@ int spi_nor_write_disable(struct spi_nor *nor)
+> >  	return ret;
+> >  }
+> > 
+> > +/**
+> > + * spi_nor_read_id() - Read the JEDEC ID.
+> > + * @nor:	pointer to 'struct spi_nor'.
+> > + * @naddr:	number of address bytes to send. Can be zero if the
+> > operation
+> > + *		does not need to send an address.
+> > + * @ndummy:	number of dummy bytes to send after an opcode or address.
+> > Can
+> > + *		be zero if the operation does not require dummy bytes.
+> > + * @id:		pointer to a DMA-able buffer where the value of the JEDEC ID
+> > + *		will be written.
+> > + * @reg_proto:	the SPI protocol for register operation.
+> > + *
+> > + * Return: 0 on success, -errno otherwise.
+> > + */
+> > +int spi_nor_read_id(struct spi_nor *nor, u8 naddr, u8 ndummy, u8 *id,
+> > +		    enum spi_nor_protocol reg_proto)
+> > +{
+> > +	int ret;
+> > +
+> > +	if (nor->spimem) {
+> > +		struct spi_mem_op op =
+> > +			SPI_NOR_READID_OP(naddr, ndummy, id, SPI_NOR_MAX_ID_LEN);
+> > +
+> > +		spi_nor_spimem_setup_op(nor, &op, reg_proto);
+> > +		ret = spi_mem_exec_op(nor->spimem, &op);
+> > +	} else {
+> > +		ret = nor->controller_ops->read_reg(nor, SPINOR_OP_RDID, id,
+> > +						    SPI_NOR_MAX_ID_LEN);
+> > +	}
+> > +
+> > +	if (ret)
+> > +		dev_dbg(nor->dev, "error %d reading JEDEC ID\n", ret);
+> > +
+> > +	return ret;
+> > +}
+> > +
+> >  /**
+> >   * spi_nor_read_sr() - Read the Status Register.
+> >   * @nor:	pointer to 'struct spi_nor'.
+> > @@ -1649,28 +1684,15 @@ static const struct flash_info
+> > *spi_nor_match_id(struct spi_nor *nor,
+> >  	return NULL;
+> >  }
+> > 
+> > -static const struct flash_info *spi_nor_read_id(struct spi_nor *nor)
+> > +static const struct flash_info *spi_nor_detect(struct spi_nor *nor)
+> >  {
+> >  	const struct flash_info *info;
+> >  	u8 *id = nor->bouncebuf;
+> >  	int ret;
+> > 
+> > -	if (nor->spimem) {
+> > -		struct spi_mem_op op =
+> > -			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RDID, 1),
+> > -				   SPI_MEM_OP_NO_ADDR,
+> > -				   SPI_MEM_OP_NO_DUMMY,
+> > -				   SPI_MEM_OP_DATA_IN(SPI_NOR_MAX_ID_LEN, id, 1));
+> > -
+> > -		ret = spi_mem_exec_op(nor->spimem, &op);
+> > -	} else {
+> > -		ret = nor->controller_ops->read_reg(nor, SPINOR_OP_RDID, id,
+> > -						    SPI_NOR_MAX_ID_LEN);
+> > -	}
+> > -	if (ret) {
+> > -		dev_dbg(nor->dev, "error %d reading JEDEC ID\n", ret);
+> > +	ret = spi_nor_read_id(nor, 0, 0, id, nor->reg_proto);
+> > +	if (ret)
+> >  		return ERR_PTR(ret);
+> > -	}
+> > 
+> >  	info = spi_nor_match_id(nor, id);
+> >  	if (!info) {
+> > @@ -2900,7 +2922,7 @@ static const struct flash_info
+> > *spi_nor_get_flash_info(struct spi_nor *nor,
+> >  		info = spi_nor_match_name(nor, name);
+> >  	/* Try to auto-detect if chip name wasn't specified or not found */
+> >  	if (!info) {
+> > -		detected_info = spi_nor_read_id(nor);
+> > +		detected_info = spi_nor_detect(nor);
+> >  		info = detected_info;
+> >  	}
+> >  	if (IS_ERR_OR_NULL(info))
+> > @@ -2913,7 +2935,7 @@ static const struct flash_info
+> > *spi_nor_get_flash_info(struct spi_nor *nor,
+> >  	if (name && !detected_info && info->id_len) {
+> >  		const struct flash_info *jinfo;
+> > 
+> > -		jinfo = spi_nor_read_id(nor);
+> > +		jinfo = spi_nor_detect(nor);
+> >  		if (IS_ERR(jinfo)) {
+> >  			return jinfo;
+> >  		} else if (jinfo != info) {
+> > diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
+> > index b7fd760e3b47..f952061d5c24 100644
+> > --- a/drivers/mtd/spi-nor/core.h
+> > +++ b/drivers/mtd/spi-nor/core.h
+> > @@ -11,6 +11,13 @@
+> > 
+> >  #define SPI_NOR_MAX_ID_LEN	6
+> > 
+> > +/* Standard SPI NOR flash operations. */
+> > +#define SPI_NOR_READID_OP(naddr, ndummy, buf, len)			\
+> > +	SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RDID, 0),			\
+> > +		   SPI_MEM_OP_ADDR(naddr, 0, 0),			\
+> > +		   SPI_MEM_OP_DUMMY(ndummy, 0),				\
+> > +		   SPI_MEM_OP_DATA_IN(len, buf, 0))
+> > +
+> >  enum spi_nor_option_flags {
+> >  	SNOR_F_HAS_SR_TB	= BIT(0),
+> >  	SNOR_F_NO_OP_CHIP_ERASE	= BIT(1),
+> > @@ -534,6 +541,8 @@ void spi_nor_unlock_and_unprep(struct spi_nor *nor);
+> >  int spi_nor_sr1_bit6_quad_enable(struct spi_nor *nor);
+> >  int spi_nor_sr2_bit1_quad_enable(struct spi_nor *nor);
+> >  int spi_nor_sr2_bit7_quad_enable(struct spi_nor *nor);
+> > +int spi_nor_read_id(struct spi_nor *nor, u8 naddr, u8 ndummy, u8 *id,
+> > +		    enum spi_nor_protocol reg_proto);
+> >  int spi_nor_read_sr(struct spi_nor *nor, u8 *sr);
+> >  int spi_nor_sr_ready(struct spi_nor *nor);
+> >  int spi_nor_read_cr(struct spi_nor *nor, u8 *cr);
+> 
+> -- 
+> -michael
+
+-- 
+Regards,
+Pratyush Yadav
+Texas Instruments Inc.
