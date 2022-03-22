@@ -2,522 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFA0DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 02:54:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2E72C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 02:55:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235727AbiCVCzY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 22:55:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53732 "EHLO
+        id S235726AbiCVC5B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 22:57:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235723AbiCVCzR (ORCPT
+        with ESMTP id S235698AbiCVC47 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 22:55:17 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89D67227C6F;
-        Mon, 21 Mar 2022 19:53:49 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id g19so17058542pfc.9;
-        Mon, 21 Mar 2022 19:53:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=hgxTxmsnaTYyizSw4eAQyNDGLmIntCuoWZzioX+aEz8=;
-        b=Xwcx6lqcFZu7ahSvJAXSMICOYkVwiQe0bnG9/Fpbje9rbP0XR8xLBV5WQ3Ad4VtNRu
-         Xyg8ID+Dk6oKQgCckfsV2gJCbvD/B1aSW9x0sMluqXvodR0lBmSKWN6MziWL0ziydwdf
-         FYM6dvXsEoR1VUKfQGOuEq0nbW1peZtfBNlHBBdkrxafAmvo3JKsnsQpMoQtJGJP9k1T
-         PNSxWWEDeX96Atc9MebuE8y22lhg4QyIs98TwBiqfgnrLjS0ntYLtmPd/fJGEDTf/OBx
-         ay9Fl9Sahzorjfz9gsHhCya2KNZ0zEOsFskMBNrbueZlA7qy4jtj/12QK5xVGuIIXVjV
-         phuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=hgxTxmsnaTYyizSw4eAQyNDGLmIntCuoWZzioX+aEz8=;
-        b=kIDWek/WsEQN8rf9Jgk6oOgrABzT/sUn0ewDauw1L5szDaLpyPuD+qoUdX4I3axi8Z
-         0/aJeTfjkMYGGMBzSoqWI8FIsPAFPYC0mUXJ75q5e3P1XB2jZZGarACRwQrzNs4rlC60
-         ULXjrCiaODr+cAvGZzHakJLDIeucjrLolB4Y5kyr5CVFQnAbCmKLhSSTa1Zpwh6moG8B
-         TW2ucJ9XR75brUQ8PqxxXvHZWeT5ml1wteWiDl5WM8uRvKGS0BBgUawqFGXxwIgAee7P
-         bJwENHjLOmfRdGzkNkLgD5Hzt/s9eOEjDPEL2jVk+mm8gOSPveONkN2PDaAqyBILxji/
-         KWhQ==
-X-Gm-Message-State: AOAM532FncmZlBEZaita7RnToygcczNhjwtANZTsbioSvllBSmoEuW6E
-        Bq7mH0KcW1MvktlTHl1sDyg=
-X-Google-Smtp-Source: ABdhPJyviixAHAnfhAmjEBP87ZsQbnEGmFDaQFa94lB4d1hmM9MTM6/stpS1bt0ZFqi8rviRuTjMxQ==
-X-Received: by 2002:a05:6a00:1990:b0:4fa:b49c:d64b with SMTP id d16-20020a056a00199000b004fab49cd64bmr3025274pfl.82.1647917628961;
-        Mon, 21 Mar 2022 19:53:48 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.114])
-        by smtp.gmail.com with ESMTPSA id g24-20020a17090a579800b001c60f919656sm764687pji.18.2022.03.21.19.53.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 19:53:48 -0700 (PDT)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com
-Cc:     rostedt@goodmis.org, mingo@redhat.com, xeb@mail.ru,
-        davem@davemloft.net, yoshfuji@linux-ipv6.org,
-        imagedong@tencent.com, edumazet@google.com, kafai@fb.com,
-        talalahmad@google.com, keescook@chromium.org, alobakin@pm.me,
-        flyingpeng@tencent.com, mengensun@tencent.com,
-        dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, benbjiang@tencent.com
-Subject: [PATCH net-next v4 4/4] net: icmp: add skb drop reasons to icmp protocol
-Date:   Tue, 22 Mar 2022 10:52:20 +0800
-Message-Id: <20220322025220.190568-5-imagedong@tencent.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220322025220.190568-1-imagedong@tencent.com>
-References: <20220322025220.190568-1-imagedong@tencent.com>
+        Mon, 21 Mar 2022 22:56:59 -0400
+Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2085.outbound.protection.outlook.com [40.107.113.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EEBB3A721C
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 19:55:33 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UnvuVq01I2wx7fvo9KZv1qQDytYzdJBm5lVYVUDKAg2AZBkDutRzJ0IwrrKutCGhbhCbcZqiuUFMvAQNl4J3iMAuhE6aVU2dg9IjT/MZNOLHspW2kACA4ws2thyLJK7Tjy707UwK15f6+rBVxDKDiqDVH8kHIqGqFUkYzxzfCfwBXGqOOccLxgh1CAncoj6p49yvji+dfLY9dEWkoHC2L3FHRMRrOq6BvH+9ez2k2Stx482xLddFuwwRPRphL9syu8g3ecjZgbdFX/JzDKoQw7JRqyNxCOk8IXzq87BzHJldX5BhO3rmFXIJ+pqRM76BzSNU5GpYGOWyOMhUoksxSg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=b3CnOfZtzevBzoRS8RL/yNY2dv5y+VQimy9zpj0aS1s=;
+ b=LYi7dWbcbOJ6qIFS5XPXrZDOAVY9b/WdFPgKgSYk162PSSI/XxD2+9b4qbp7LSBtiQ7AetvIllUltmnu0MVplTFkv79PS0y1MbV0H5Kr7XOjY6EX7qV1yGKILUjWWRQVjU5qYR/nVIm+oH3uGlvRt5o8l5Ro1keOviH4pLwMepvPIgs4BHnvfYKSvhZu35TXRq/WwC/qB/2AaSPWpq/qxrCyO4I51xIZr5u6fn7WS49JBKHL957OmhkCBUsNYszLkeFhTwJ3rBfPK6rMh1/yiEL4+cmINcxRMsMQDTyTM0hyWq4+n0euSqV52eatJz+oiQKRK3PLQqagxc+2vk14kw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nec.com; dmarc=pass action=none header.from=nec.com; dkim=pass
+ header.d=nec.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nec.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=b3CnOfZtzevBzoRS8RL/yNY2dv5y+VQimy9zpj0aS1s=;
+ b=Zw5XVtSXmMnA/Dal9mTjNRA9/7bo8FY6CuvGrl04azPBWVatiW/ZQn8xbSFI+KF0cb4h7tbYotmaCMiq/UgogcRp4JtHbAVnXBd0ndHMo5tTWKKDat7Io8mNAW8DvpxQ/mI62uUQ6kCyTOTGrIlbDGUF2w8HapCqpCtWqEsieag=
+Received: from TYWPR01MB8591.jpnprd01.prod.outlook.com (2603:1096:400:13c::10)
+ by OS3PR01MB9461.jpnprd01.prod.outlook.com (2603:1096:604:1c7::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.17; Tue, 22 Mar
+ 2022 02:55:30 +0000
+Received: from TYWPR01MB8591.jpnprd01.prod.outlook.com
+ ([fe80::cdeb:f61:5132:905d]) by TYWPR01MB8591.jpnprd01.prod.outlook.com
+ ([fe80::cdeb:f61:5132:905d%8]) with mapi id 15.20.5081.023; Tue, 22 Mar 2022
+ 02:55:30 +0000
+From:   =?utf-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPo+OAgOebtOS5nyk=?= 
+        <naoya.horiguchi@nec.com>
+To:     Yang Shi <shy828301@gmail.com>
+CC:     Naoya Horiguchi <naoya.horiguchi@linux.dev>,
+        Linux MM <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v5] mm/hwpoison: fix race between hugetlb free/demotion
+ and memory_failure_hugetlb()
+Thread-Topic: [PATCH v5] mm/hwpoison: fix race between hugetlb free/demotion
+ and memory_failure_hugetlb()
+Thread-Index: AQHYPYZPUV0YUqyZX0uAEo2rlZPAm6zKtYUA
+Date:   Tue, 22 Mar 2022 02:55:30 +0000
+Message-ID: <20220322025528.GA188243@hori.linux.bs1.fc.nec.co.jp>
+References: <20220318051612.271802-1-naoya.horiguchi@linux.dev>
+ <CAHbLzkrYf=jF2ZGLur5JpB_smoUkp51e2x1v5mr3CD5z73D=Ow@mail.gmail.com>
+In-Reply-To: <CAHbLzkrYf=jF2ZGLur5JpB_smoUkp51e2x1v5mr3CD5z73D=Ow@mail.gmail.com>
+Accept-Language: ja-JP, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nec.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 87c57d94-4bb5-4383-4363-08da0baf6d59
+x-ms-traffictypediagnostic: OS3PR01MB9461:EE_
+x-microsoft-antispam-prvs: <OS3PR01MB946194DE4AB1AA26E16DE5E9E7179@OS3PR01MB9461.jpnprd01.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: y4jVLDaIwcJSifC2wWTJBXx1ydfge8UEicvSNI2jhIbWeUe8Bv04EY9Fd8bu8OP1+Omi3q9gXn10flX3KQuJj2AHPwJBhYdbusJtkGPeJK+CKHv4KXz9cQwrU2KbOrljLual2MW9suLfnHVcGvrvUBsCkJdmLPT4YfvLdpepHD5YecwZyRMQbFPgb7oEr7Bx7trRaum0y2AvZjVr8oTFdc2v6gobgklfn1BL7wZY8ohZR9NbeLH8T+rn2zniMfxZIDE1+z6qd897pE2rDbKI3xo3JnqlXH1j9gsyobNUCoR6hS0f4mqRO+PjPlxZAOe1dKsmjL3Dj2KZf//b2FzH7yoMepRukgBpkFzqC2bJEtB1KG27hDzU3pmYcedkxeh+3lplfLiL1NQExg5yQKeuuoAN6S95vxEN5wWQWH4Hz0XkAmY1hSb1++hpeVaOlIrnSE/D2FM/aUFumzdf3N/oy1F1h6qOgP/+afHM6fmoiTD6qgndS8uMhqYQvhF9eRwIdX7Wc5fdp54nPuY1qQ2uAMv4ehbnexCGLJRtv9nevkpA5gVqIvmVAzjaGo3HoFn/IUmJ6U0HqcXxaYkSBCq33tL//TJdLeaGdDJ0iov1m5wMbu+v+HP2rfiG7Ts4/jOLrXLjgj52mtpr7+p9OjpgNuo7q0z71UVgY6Lib+u8N0s5dOOHwBEhssdc+2amCKDtpL1MEYPoVRQivDYVX1XiDg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYWPR01MB8591.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6486002)(86362001)(122000001)(38070700005)(1076003)(6916009)(82960400001)(54906003)(508600001)(5660300002)(2906002)(53546011)(6506007)(55236004)(316002)(38100700002)(9686003)(8936002)(83380400001)(33656002)(85182001)(186003)(26005)(66556008)(66476007)(66946007)(8676002)(66446008)(64756008)(4326008)(76116006)(71200400001)(6512007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?RW1KVFpqT3hLcnJCNHJObjVCYUV6LzJFTzR0NW5YUVd6cjhxanQybnQ3N0Rl?=
+ =?utf-8?B?ODk4bkJoMU1WKy8weEFTZ2hqMmN2MWRwaTVkNms0MkpxSWkyNmwrbEwzNTE3?=
+ =?utf-8?B?ZGFadWtwTzhuTE1RQ3RmNndJbTA3TWR0aXZjSHYyenZHZzgzd0xlL2RNWUFj?=
+ =?utf-8?B?U1pRcHV0aFZ3T3djbCtkRFZVOVlZUUlici9nMGxTN2wxQU0rWElkV1REendN?=
+ =?utf-8?B?K1I4dmVxS1hMN0ZIbTV6UGxMSGxnNUg4cDlsbUlPbmlRMFhRS2RMd3Frb3BY?=
+ =?utf-8?B?bGFUVUlFOEFaNk9JV2grR29VZXJOY3Z0N3prZnp4TUZHQjlmZ2loL3RMdFNL?=
+ =?utf-8?B?UUt0emRtZ2h6RHpQeVNBdnZQY2NLZzBLTzZZTERZN0h3d2pKUVpQWEVWTmpH?=
+ =?utf-8?B?VHhQcEFNc0VGempKdFB5RVJhWlJnMHNGVzVVd2RSbnJNZVZVM1hvT0h4VFVI?=
+ =?utf-8?B?d1NKbkpxZVhvY1pkUWt6U21waVRYYjNJVHJQZEEyMldGZ1FFZVppbER6VjlO?=
+ =?utf-8?B?alhQYXBGL2U1MFp4S0IzVEdTM2lWenkyTzIwaDZEbCtkcU1GWEJGWXhOaXMw?=
+ =?utf-8?B?SCtTeTl5b1BqYXByNEVzUXA2NHhnL05INjlWVG9nZFlOb000NkFiTlhNMFJ6?=
+ =?utf-8?B?UTFCUUxYN3RRVVU2bFNPbFRmeGtiVHFaMllOalQ2R0JUc1V3TmR0QlE0MDUy?=
+ =?utf-8?B?MUdTYjFFQ0JtTVFqZlQxVUtSQkt6VTNoRlBDWDMvWHg4ZnJLL0V3aHJXd0x3?=
+ =?utf-8?B?OFpoSTA4c283Y2dpQkQySWZrMitmazE2VDI0YzVPVVBPcEdxVTBwWExuc0Iy?=
+ =?utf-8?B?TEdDUDdPaUJhK3BYRm5vbFV3NEFtblZTWDZKMENxZFl3bmM1Z0REdXk5TXhw?=
+ =?utf-8?B?bUNMQU5ObWxib2k5N2pqQ3VtQWtqbEw0c2VKMWkvNXBCY21aNXl4Z0FNN0Jk?=
+ =?utf-8?B?Z1VTanhKSnpUc2xWMElNZkFZc1BJbDNNZVI0ZWhEKy90R0p4QzROTmlxR0Nv?=
+ =?utf-8?B?Ym1qOU1pOW12VFBZWWNGSXhIeTJBTHFURHZ6emczU0dzZGMwWWxpTVlvc1cx?=
+ =?utf-8?B?R3daN3RtQ1V1YWhzbDBNRFQ4QW05eVkyaHNtdE8vWWZCaW1JTW9PeWs2WUJM?=
+ =?utf-8?B?bWJPY0tPbmFYbzhLWTIzRStuRG50K3RIM2lDcEhjR3ZScy9NSzBEam5MdjVq?=
+ =?utf-8?B?Q3Q0cm1WL2htSkc3VTZYckZvbXArMmxSV3l2V2k0bnRFL2R6b1lEWitnR1NG?=
+ =?utf-8?B?cnlMMXhWdWdYbEF1OTdMMFNqYklUTm1yekpwVUZmdGh5RTlUV2Q1VStYMTcw?=
+ =?utf-8?B?eTAwZm15eHJJUEFNSzJzZk1INlpoQm9DcTNzd0REYW5UZVhScmk2NVhIN0tp?=
+ =?utf-8?B?UFBCbjI0VGpSS2hDTEdoSFIzeTkwendRSk1WSnlNL2NFZm8wcTRaSGRiMHZO?=
+ =?utf-8?B?ZmxRMmxPNElET3NPY1RBMVJvbjBsQjhPM3EyRE4rMWFLTkFveURiWGtpT1B2?=
+ =?utf-8?B?VTROd3NzbFhWdVVBQ3h5Z3dSVHNPRG9Qcm4wUGxTNHZkUC9vQytsdEhGU2dY?=
+ =?utf-8?B?bTRMQ0VUc3ZieDl0MmxHMTc3VUZCR2lhZzRMM2VnbUhyVGxSRGtmL1RsbG9O?=
+ =?utf-8?B?VE5EQmZQdGJxcjl3YzJra01DNTFaeXBEUWpZZ0cwa2FlVFJMMUdjTkxDNVVK?=
+ =?utf-8?B?YzlJUndvMkg1SXhwUWFWN29qTTErckwzZDJ5V1VtOHB2Z0dBbklUazhOSG0z?=
+ =?utf-8?B?VjBNcE5STVF6ZzI3SHgxODl0V3cxMHdjcVR4MlRnQXNHaVd5VzVkZlB6TnJs?=
+ =?utf-8?B?ZER3UjF5Uk0ydFp2clNlQVR1VFk1QnNrVTNleW9HR2dmeHVmK0V6emROZXlQ?=
+ =?utf-8?B?aHpmSDNUcVlJZlFodWUva09SbXlKLzJVVTViK21jQXUzN0FKRGY2czVGVlFQ?=
+ =?utf-8?B?SXpZNzRFN3BwRjlOS2IwNmt1UzFEeVkxK0cvYUs2bVBnZW50V2VySEVIVGlO?=
+ =?utf-8?B?amZ0WHZxUmV3PT0=?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <F95359BB08BC484785A131BFC5988D00@jpnprd01.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: nec.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TYWPR01MB8591.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 87c57d94-4bb5-4383-4363-08da0baf6d59
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Mar 2022 02:55:30.7001
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: e67df547-9d0d-4f4d-9161-51c6ed1f7d11
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ZAJqhB+ryAjdZPeYyqmyxBY0mV9J+DxsUAGVPUT09rFeHIdjNwz62qkkSZFjlQ6lh4LArIZ2klIrEfZXQBS4qw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS3PR01MB9461
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
-
-Replace kfree_skb() used in icmp_rcv() and icmpv6_rcv() with
-kfree_skb_reason().
-
-In order to get the reasons of the skb drops after icmp message handle,
-we change the return type of 'handler()' in 'struct icmp_control' from
-'bool' to 'enum skb_drop_reason'. This may change its original
-intention, as 'false' means failure, but 'SKB_NOT_DROPPED_YET' means
-success now. Therefore, all 'handler' and the call of them need to be
-handled. Following 'handler' functions are involved:
-
-icmp_unreach()
-icmp_redirect()
-icmp_echo()
-icmp_timestamp()
-icmp_discard()
-
-And following new drop reasons are added:
-
-SKB_DROP_REASON_ICMP_CSUM
-SKB_DROP_REASON_RFC_1122
-
-The reason 'RFC_1122' is introduced for the case that the packet doesn't
-follow rfc 1122 and is dropped. This is not a common case, and I believe
-we can locate the problem from the data in the packet. For now, this
-'RFC_1122' is used for the icmp broadcasts with wrong types.
-
-Maybe there should be a document file for these reasons. For example,
-list all the case that causes the 'RFC_1122' drop reason. Therefore,
-users can locate their problems according to the document.
-
-Reviewed-by: Hao Peng <flyingpeng@tencent.com>
-Reviewed-by: Jiang Biao <benbjiang@tencent.com>
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
----
-v4:
-- remove SKB_DROP_REASON_ICMP_TYPE and SKB_DROP_REASON_ICMP_BROADCAST
-  and introduce the SKB_DROP_REASON_RFC_1122
----
- include/linux/skbuff.h     |  2 +
- include/net/ping.h         |  2 +-
- include/trace/events/skb.h |  2 +
- net/ipv4/icmp.c            | 75 ++++++++++++++++++++++----------------
- net/ipv4/ping.c            | 14 ++++---
- net/ipv6/icmp.c            | 24 +++++++-----
- 6 files changed, 72 insertions(+), 47 deletions(-)
-
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 10ba07892c46..3c30cc6f559e 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -442,6 +442,8 @@ enum skb_drop_reason {
- 	SKB_DROP_REASON_TAP_TXFILTER,	/* dropped by tx filter implemented
- 					 * at tun/tap, e.g., check_filter()
- 					 */
-+	SKB_DROP_REASON_ICMP_CSUM,	/* ICMP checksum error */
-+	SKB_DROP_REASON_RFC_1122,	/* dropped as RFC 1122 is not followed */
- 	SKB_DROP_REASON_MAX,
- };
- 
-diff --git a/include/net/ping.h b/include/net/ping.h
-index 2fe78874318c..b68fbfdb606f 100644
---- a/include/net/ping.h
-+++ b/include/net/ping.h
-@@ -76,7 +76,7 @@ int  ping_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
- int  ping_common_sendmsg(int family, struct msghdr *msg, size_t len,
- 			 void *user_icmph, size_t icmph_len);
- int  ping_queue_rcv_skb(struct sock *sk, struct sk_buff *skb);
--bool ping_rcv(struct sk_buff *skb);
-+enum skb_drop_reason ping_rcv(struct sk_buff *skb);
- 
- #ifdef CONFIG_PROC_FS
- void *ping_seq_start(struct seq_file *seq, loff_t *pos, sa_family_t family);
-diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
-index 85abd7cbd221..52c965f3fca7 100644
---- a/include/trace/events/skb.h
-+++ b/include/trace/events/skb.h
-@@ -61,6 +61,8 @@
- 	EM(SKB_DROP_REASON_HDR_TRUNC, HDR_TRUNC)		\
- 	EM(SKB_DROP_REASON_TAP_FILTER, TAP_FILTER)		\
- 	EM(SKB_DROP_REASON_TAP_TXFILTER, TAP_TXFILTER)		\
-+	EM(SKB_DROP_REASON_ICMP_CSUM, ICMP_CSUM)		\
-+	EM(SKB_DROP_REASON_RFC_1122, RFC_1122)			\
- 	EMe(SKB_DROP_REASON_MAX, MAX)
- 
- #undef EM
-diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index 72a375c7f417..1cd6296f312c 100644
---- a/net/ipv4/icmp.c
-+++ b/net/ipv4/icmp.c
-@@ -186,7 +186,7 @@ EXPORT_SYMBOL(icmp_err_convert);
-  */
- 
- struct icmp_control {
--	bool (*handler)(struct sk_buff *skb);
-+	enum skb_drop_reason (*handler)(struct sk_buff *skb);
- 	short   error;		/* This ICMP is classed as an error message */
- };
- 
-@@ -839,8 +839,9 @@ static bool icmp_tag_validation(int proto)
-  *	ICMP_PARAMETERPROB.
-  */
- 
--static bool icmp_unreach(struct sk_buff *skb)
-+static enum skb_drop_reason icmp_unreach(struct sk_buff *skb)
- {
-+	enum skb_drop_reason reason = SKB_NOT_DROPPED_YET;
- 	const struct iphdr *iph;
- 	struct icmphdr *icmph;
- 	struct net *net;
-@@ -860,8 +861,10 @@ static bool icmp_unreach(struct sk_buff *skb)
- 	icmph = icmp_hdr(skb);
- 	iph   = (const struct iphdr *)skb->data;
- 
--	if (iph->ihl < 5) /* Mangled header, drop. */
-+	if (iph->ihl < 5)  { /* Mangled header, drop. */
-+		reason = SKB_DROP_REASON_IP_INHDR;
- 		goto out_err;
-+	}
- 
- 	switch (icmph->type) {
- 	case ICMP_DEST_UNREACH:
-@@ -941,10 +944,10 @@ static bool icmp_unreach(struct sk_buff *skb)
- 	icmp_socket_deliver(skb, info);
- 
- out:
--	return true;
-+	return reason;
- out_err:
- 	__ICMP_INC_STATS(net, ICMP_MIB_INERRORS);
--	return false;
-+	return reason ?: SKB_DROP_REASON_NOT_SPECIFIED;
- }
- 
- 
-@@ -952,20 +955,20 @@ static bool icmp_unreach(struct sk_buff *skb)
-  *	Handle ICMP_REDIRECT.
-  */
- 
--static bool icmp_redirect(struct sk_buff *skb)
-+static enum skb_drop_reason icmp_redirect(struct sk_buff *skb)
- {
- 	if (skb->len < sizeof(struct iphdr)) {
- 		__ICMP_INC_STATS(dev_net(skb->dev), ICMP_MIB_INERRORS);
--		return false;
-+		return SKB_DROP_REASON_PKT_TOO_SMALL;
- 	}
- 
- 	if (!pskb_may_pull(skb, sizeof(struct iphdr))) {
- 		/* there aught to be a stat */
--		return false;
-+		return SKB_DROP_REASON_NOMEM;
- 	}
- 
- 	icmp_socket_deliver(skb, ntohl(icmp_hdr(skb)->un.gateway));
--	return true;
-+	return SKB_NOT_DROPPED_YET;
- }
- 
- /*
-@@ -982,7 +985,7 @@ static bool icmp_redirect(struct sk_buff *skb)
-  *	See also WRT handling of options once they are done and working.
-  */
- 
--static bool icmp_echo(struct sk_buff *skb)
-+static enum skb_drop_reason icmp_echo(struct sk_buff *skb)
- {
- 	struct icmp_bxm icmp_param;
- 	struct net *net;
-@@ -990,7 +993,7 @@ static bool icmp_echo(struct sk_buff *skb)
- 	net = dev_net(skb_dst(skb)->dev);
- 	/* should there be an ICMP stat for ignored echos? */
- 	if (net->ipv4.sysctl_icmp_echo_ignore_all)
--		return true;
-+		return SKB_NOT_DROPPED_YET;
- 
- 	icmp_param.data.icmph	   = *icmp_hdr(skb);
- 	icmp_param.skb		   = skb;
-@@ -1001,10 +1004,10 @@ static bool icmp_echo(struct sk_buff *skb)
- 	if (icmp_param.data.icmph.type == ICMP_ECHO)
- 		icmp_param.data.icmph.type = ICMP_ECHOREPLY;
- 	else if (!icmp_build_probe(skb, &icmp_param.data.icmph))
--		return true;
-+		return SKB_NOT_DROPPED_YET;
- 
- 	icmp_reply(&icmp_param, skb);
--	return true;
-+	return SKB_NOT_DROPPED_YET;
- }
- 
- /*	Helper for icmp_echo and icmpv6_echo_reply.
-@@ -1122,7 +1125,7 @@ EXPORT_SYMBOL_GPL(icmp_build_probe);
-  *		  MUST be accurate to a few minutes.
-  *		  MUST be updated at least at 15Hz.
-  */
--static bool icmp_timestamp(struct sk_buff *skb)
-+static enum skb_drop_reason icmp_timestamp(struct sk_buff *skb)
- {
- 	struct icmp_bxm icmp_param;
- 	/*
-@@ -1147,17 +1150,17 @@ static bool icmp_timestamp(struct sk_buff *skb)
- 	icmp_param.data_len	   = 0;
- 	icmp_param.head_len	   = sizeof(struct icmphdr) + 12;
- 	icmp_reply(&icmp_param, skb);
--	return true;
-+	return SKB_NOT_DROPPED_YET;
- 
- out_err:
- 	__ICMP_INC_STATS(dev_net(skb_dst(skb)->dev), ICMP_MIB_INERRORS);
--	return false;
-+	return SKB_DROP_REASON_PKT_TOO_SMALL;
- }
- 
--static bool icmp_discard(struct sk_buff *skb)
-+static enum skb_drop_reason icmp_discard(struct sk_buff *skb)
- {
- 	/* pretend it was a success */
--	return true;
-+	return SKB_NOT_DROPPED_YET;
- }
- 
- /*
-@@ -1165,18 +1168,20 @@ static bool icmp_discard(struct sk_buff *skb)
-  */
- int icmp_rcv(struct sk_buff *skb)
- {
--	struct icmphdr *icmph;
-+	enum skb_drop_reason reason = SKB_DROP_REASON_NOT_SPECIFIED;
- 	struct rtable *rt = skb_rtable(skb);
- 	struct net *net = dev_net(rt->dst.dev);
--	bool success;
-+	struct icmphdr *icmph;
- 
- 	if (!xfrm4_policy_check(NULL, XFRM_POLICY_IN, skb)) {
- 		struct sec_path *sp = skb_sec_path(skb);
- 		int nh;
- 
- 		if (!(sp && sp->xvec[sp->len - 1]->props.flags &
--				 XFRM_STATE_ICMP))
-+				 XFRM_STATE_ICMP)) {
-+			reason = SKB_DROP_REASON_XFRM_POLICY;
- 			goto drop;
-+		}
- 
- 		if (!pskb_may_pull(skb, sizeof(*icmph) + sizeof(struct iphdr)))
- 			goto drop;
-@@ -1184,8 +1189,11 @@ int icmp_rcv(struct sk_buff *skb)
- 		nh = skb_network_offset(skb);
- 		skb_set_network_header(skb, sizeof(*icmph));
- 
--		if (!xfrm4_policy_check_reverse(NULL, XFRM_POLICY_IN, skb))
-+		if (!xfrm4_policy_check_reverse(NULL, XFRM_POLICY_IN,
-+						skb)) {
-+			reason = SKB_DROP_REASON_XFRM_POLICY;
- 			goto drop;
-+		}
- 
- 		skb_set_network_header(skb, nh);
- 	}
-@@ -1207,13 +1215,13 @@ int icmp_rcv(struct sk_buff *skb)
- 		/* We can't use icmp_pointers[].handler() because it is an array of
- 		 * size NR_ICMP_TYPES + 1 (19 elements) and PROBE has code 42.
- 		 */
--		success = icmp_echo(skb);
--		goto success_check;
-+		reason = icmp_echo(skb);
-+		goto reason_check;
- 	}
- 
- 	if (icmph->type == ICMP_EXT_ECHOREPLY) {
--		success = ping_rcv(skb);
--		goto success_check;
-+		reason = ping_rcv(skb);
-+		goto reason_check;
- 	}
- 
- 	/*
-@@ -1222,8 +1230,10 @@ int icmp_rcv(struct sk_buff *skb)
- 	 *	RFC 1122: 3.2.2  Unknown ICMP messages types MUST be silently
- 	 *		  discarded.
- 	 */
--	if (icmph->type > NR_ICMP_TYPES)
-+	if (icmph->type > NR_ICMP_TYPES) {
-+		reason = SKB_DROP_REASON_UNHANDLED_PROTO;
- 		goto error;
-+	}
- 
- 	/*
- 	 *	Parse the ICMP message
-@@ -1239,27 +1249,30 @@ int icmp_rcv(struct sk_buff *skb)
- 		if ((icmph->type == ICMP_ECHO ||
- 		     icmph->type == ICMP_TIMESTAMP) &&
- 		    net->ipv4.sysctl_icmp_echo_ignore_broadcasts) {
-+			reason = SKB_DROP_REASON_RFC_1122;
- 			goto error;
- 		}
- 		if (icmph->type != ICMP_ECHO &&
- 		    icmph->type != ICMP_TIMESTAMP &&
- 		    icmph->type != ICMP_ADDRESS &&
- 		    icmph->type != ICMP_ADDRESSREPLY) {
-+			reason = SKB_DROP_REASON_RFC_1122;
- 			goto error;
- 		}
- 	}
- 
--	success = icmp_pointers[icmph->type].handler(skb);
--success_check:
--	if (success)  {
-+	reason = icmp_pointers[icmph->type].handler(skb);
-+reason_check:
-+	if (!reason)  {
- 		consume_skb(skb);
- 		return NET_RX_SUCCESS;
- 	}
- 
- drop:
--	kfree_skb(skb);
-+	kfree_skb_reason(skb, reason);
- 	return NET_RX_DROP;
- csum_error:
-+	reason = SKB_DROP_REASON_ICMP_CSUM;
- 	__ICMP_INC_STATS(net, ICMP_MIB_CSUMERRORS);
- error:
- 	__ICMP_INC_STATS(net, ICMP_MIB_INERRORS);
-diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
-index 877270ad17c9..b383e0393206 100644
---- a/net/ipv4/ping.c
-+++ b/net/ipv4/ping.c
-@@ -960,12 +960,12 @@ EXPORT_SYMBOL_GPL(ping_queue_rcv_skb);
-  *	All we need to do is get the socket.
-  */
- 
--bool ping_rcv(struct sk_buff *skb)
-+enum skb_drop_reason ping_rcv(struct sk_buff *skb)
- {
-+	enum skb_drop_reason reason = SKB_DROP_REASON_NO_SOCKET;
- 	struct sock *sk;
- 	struct net *net = dev_net(skb->dev);
- 	struct icmphdr *icmph = icmp_hdr(skb);
--	bool rc = false;
- 
- 	/* We assume the packet has already been checked by icmp_rcv */
- 
-@@ -980,15 +980,17 @@ bool ping_rcv(struct sk_buff *skb)
- 		struct sk_buff *skb2 = skb_clone(skb, GFP_ATOMIC);
- 
- 		pr_debug("rcv on socket %p\n", sk);
--		if (skb2 && !ping_queue_rcv_skb(sk, skb2))
--			rc = true;
-+		if (skb2)
-+			reason = __ping_queue_rcv_skb(sk, skb2);
-+		else
-+			reason = SKB_DROP_REASON_NOMEM;
- 		sock_put(sk);
- 	}
- 
--	if (!rc)
-+	if (reason)
- 		pr_debug("no socket, dropping\n");
- 
--	return rc;
-+	return reason;
- }
- EXPORT_SYMBOL_GPL(ping_rcv);
- 
-diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
-index e6b978ea0e87..01c8003c9fc9 100644
---- a/net/ipv6/icmp.c
-+++ b/net/ipv6/icmp.c
-@@ -864,21 +864,23 @@ void icmpv6_notify(struct sk_buff *skb, u8 type, u8 code, __be32 info)
- 
- static int icmpv6_rcv(struct sk_buff *skb)
- {
-+	enum skb_drop_reason reason = SKB_DROP_REASON_NOT_SPECIFIED;
- 	struct net *net = dev_net(skb->dev);
- 	struct net_device *dev = icmp6_dev(skb);
- 	struct inet6_dev *idev = __in6_dev_get(dev);
- 	const struct in6_addr *saddr, *daddr;
- 	struct icmp6hdr *hdr;
- 	u8 type;
--	bool success = false;
- 
- 	if (!xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb)) {
- 		struct sec_path *sp = skb_sec_path(skb);
- 		int nh;
- 
- 		if (!(sp && sp->xvec[sp->len - 1]->props.flags &
--				 XFRM_STATE_ICMP))
-+				 XFRM_STATE_ICMP)) {
-+			reason = SKB_DROP_REASON_XFRM_POLICY;
- 			goto drop_no_count;
-+		}
- 
- 		if (!pskb_may_pull(skb, sizeof(*hdr) + sizeof(struct ipv6hdr)))
- 			goto drop_no_count;
-@@ -886,8 +888,11 @@ static int icmpv6_rcv(struct sk_buff *skb)
- 		nh = skb_network_offset(skb);
- 		skb_set_network_header(skb, sizeof(*hdr));
- 
--		if (!xfrm6_policy_check_reverse(NULL, XFRM_POLICY_IN, skb))
-+		if (!xfrm6_policy_check_reverse(NULL, XFRM_POLICY_IN,
-+						skb)) {
-+			reason = SKB_DROP_REASON_XFRM_POLICY;
- 			goto drop_no_count;
-+		}
- 
- 		skb_set_network_header(skb, nh);
- 	}
-@@ -924,11 +929,11 @@ static int icmpv6_rcv(struct sk_buff *skb)
- 		break;
- 
- 	case ICMPV6_ECHO_REPLY:
--		success = ping_rcv(skb);
-+		reason = ping_rcv(skb);
- 		break;
- 
- 	case ICMPV6_EXT_ECHO_REPLY:
--		success = ping_rcv(skb);
-+		reason = ping_rcv(skb);
- 		break;
- 
- 	case ICMPV6_PKT_TOOBIG:
-@@ -994,19 +999,20 @@ static int icmpv6_rcv(struct sk_buff *skb)
- 	/* until the v6 path can be better sorted assume failure and
- 	 * preserve the status quo behaviour for the rest of the paths to here
- 	 */
--	if (success)
--		consume_skb(skb);
-+	if (reason)
-+		kfree_skb_reason(skb, reason);
- 	else
--		kfree_skb(skb);
-+		consume_skb(skb);
- 
- 	return 0;
- 
- csum_error:
-+	reason = SKB_DROP_REASON_ICMP_CSUM;
- 	__ICMP6_INC_STATS(dev_net(dev), idev, ICMP6_MIB_CSUMERRORS);
- discard_it:
- 	__ICMP6_INC_STATS(dev_net(dev), idev, ICMP6_MIB_INERRORS);
- drop_no_count:
--	kfree_skb(skb);
-+	kfree_skb_reason(skb, reason);
- 	return 0;
- }
- 
--- 
-2.35.1
-
+T24gTW9uLCBNYXIgMjEsIDIwMjIgYXQgMDU6NDY6NDhQTSAtMDcwMCwgWWFuZyBTaGkgd3JvdGU6
+DQo+IE9uIFRodSwgTWFyIDE3LCAyMDIyIGF0IDEwOjE2IFBNIE5hb3lhIEhvcmlndWNoaQ0KPiA8
+bmFveWEuaG9yaWd1Y2hpQGxpbnV4LmRldj4gd3JvdGU6DQo+ID4NCj4gPiBGcm9tOiBOYW95YSBI
+b3JpZ3VjaGkgPG5hb3lhLmhvcmlndWNoaUBuZWMuY29tPg0KPiA+DQo+ID4gVGhlcmUgaXMgYSBy
+YWNlIGNvbmRpdGlvbiBiZXR3ZWVuIG1lbW9yeV9mYWlsdXJlX2h1Z2V0bGIoKSBhbmQgaHVnZXRs
+Yg0KPiA+IGZyZWUvZGVtb3Rpb24sIHdoaWNoIGNhdXNlcyBzZXR0aW5nIFBhZ2VIV1BvaXNvbiBm
+bGFnIG9uIHRoZSB3cm9uZyBwYWdlLg0KPiA+IFRoZSBvbmUgc2ltcGxlIHJlc3VsdCBpcyB0aGF0
+IHdyb25nIHByb2Nlc3NlcyBjYW4gYmUga2lsbGVkLCBidXQgYW5vdGhlcg0KPiA+IChtb3JlIHNl
+cmlvdXMpIG9uZSBpcyB0aGF0IHRoZSBhY3R1YWwgZXJyb3IgaXMgbGVmdCB1bmhhbmRsZWQsIHNv
+IG5vIG9uZQ0KPiA+IHByZXZlbnRzIGxhdGVyIGFjY2VzcyB0byBpdCwgYW5kIHRoYXQgbWlnaHQg
+bGVhZCB0byBtb3JlIHNlcmlvdXMgcmVzdWx0cw0KPiA+IGxpa2UgY29uc3VtaW5nIGNvcnJ1cHRl
+ZCBkYXRhLg0KPiA+DQo+ID4gVGhpbmsgYWJvdXQgdGhlIGJlbG93IHJhY2Ugd2luZG93Og0KPiA+
+DQo+ID4gICBDUFUgMSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgQ1BVIDINCj4g
+PiAgIG1lbW9yeV9mYWlsdXJlX2h1Z2V0bGINCj4gPiAgIHN0cnVjdCBwYWdlICpoZWFkID0gY29t
+cG91bmRfaGVhZChwKTsNCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICBodWdldGxiIHBhZ2UgbWlnaHQgYmUgZnJlZWQgdG8NCj4gPiAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICBidWRkeSwgb3IgZXZlbiBjaGFuZ2VkIHRvIGFub3Ro
+ZXINCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBjb21wb3Vu
+ZCBwYWdlLg0KPiA+DQo+ID4gICBnZXRfaHdwb2lzb25fcGFnZSAtLSBwYWdlIGlzIG5vdCB3aGF0
+IHdlIHdhbnQgbm93Li4uDQo+ID4NCj4gPiBUaGUgY29tcG91bmRfaGVhZCBpcyBjYWxsZWQgb3V0
+c2lkZSBodWdldGxiX2xvY2ssIHNvIHRoZSBoZWFkIGlzIG5vdA0KPiA+IHJlbGlhYmxlLg0KPiA+
+DQo+ID4gU28gc2V0IFBhZ2VIV1BvaXNvbiBmbGFnIGFmdGVyIHBhc3NpbmcgcHJlY2hlY2tzLiBB
+bmQgdG8gZGV0ZWN0DQo+ID4gcG90ZW50aWFsIHZpb2xhdGlvbiwgdGhpcyBwYXRjaCBhbHNvIGlu
+dHJvZHVjZXMgYSBuZXcgYWN0aW9uIHR5cGUNCj4gPiBNRl9NU0dfRElGRkVSRU5UX1BBR0VfU0la
+RS4NCj4gPg0KPiA+IFJlcG9ydGVkLWJ5OiBNaWtlIEtyYXZldHogPG1pa2Uua3JhdmV0ekBvcmFj
+bGUuY29tPg0KPiA+IFNpZ25lZC1vZmYtYnk6IE5hb3lhIEhvcmlndWNoaSA8bmFveWEuaG9yaWd1
+Y2hpQG5lYy5jb20+DQo+ID4gU2lnbmVkLW9mZi1ieTogTWlhb2hlIExpbiA8bGlubWlhb2hlQGh1
+YXdlaS5jb20+DQo+ID4gQ2M6IDxzdGFibGVAdmdlci5rZXJuZWwub3JnPg0KLi4uDQo+ID4gQEAg
+LTE1NDcsMjEgKzE1NDUsMzEgQEAgc3RhdGljIGludCBtZW1vcnlfZmFpbHVyZV9odWdldGxiKHVu
+c2lnbmVkIGxvbmcgcGZuLCBpbnQgZmxhZ3MpDQo+ID4gICAgICAgICAgKiBJZiB0aGlzIGhhcHBl
+bnMganVzdCBiYWlsIG91dC4NCj4gPiAgICAgICAgICAqLw0KPiA+ICAgICAgICAgaWYgKCFQYWdl
+SHVnZShwKSB8fCBjb21wb3VuZF9oZWFkKHApICE9IGhlYWQpIHsNCj4gPiArICAgICAgICAgICAg
+ICAgaWYgKFRlc3RTZXRQYWdlSFdQb2lzb24ocCkpDQo+ID4gKyAgICAgICAgICAgICAgICAgICAg
+ICAgYWxyZWFkeV9od3BvaXNvbmVkID0gcGZuOw0KPiA+ICsgICAgICAgICAgICAgICBlbHNlDQo+
+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgbnVtX3BvaXNvbmVkX3BhZ2VzX2luYygpOw0KPiA+
+ICAgICAgICAgICAgICAgICBhY3Rpb25fcmVzdWx0KHBmbiwgTUZfTVNHX0RJRkZFUkVOVF9QQUdF
+X1NJWkUsIE1GX0lHTk9SRUQpOw0KPiANCj4gVGhlIGNvbW1pdCBsb2cgc2F5cyAidGhpcyBwYXRj
+aCBhbHNvIGludHJvZHVjZXMgYSBuZXcgYWN0aW9uIHR5cGUNCj4gTUZfTVNHX0RJRkZFUkVOVF9Q
+QUdFX1NJWkUiLCBidXQgaXQgaXMgbm90IGRlZmluZWQgaW4gdGhlIHBhdGNoIGFuZCBpdA0KPiBp
+cyBjYWxsZWQgaGVyZS4gRGlkIEkgbWlzcyBzb21ldGhpbmc/DQoNClNvcnJ5LCB5b3UncmUgcmln
+aHQuICBNRl9NU0dfRElGRkVSRU5UX1BBR0VfU0laRSBpcyBkZWZpbmVkIGluIHRoZSBzZXBhcmF0
+ZQ0KcGF0Y2ggaW4gbW1vdG0sIGFuZCBkaXNhcHBlYXJlZCB3aGVuIHJlYmFzaW5nIChub3QgaW50
+ZW5kZWQpLg0KSSB0aGluayBvZiByZWJhc2luZyB0aGlzIHRvIG1haW5saW5lIGFnYWluIHRvIGFw
+cGx5IGNsZWFubHkgdG8gLXN0YWJsZSwNCmV4cGVjdGluZyBpdCB0byBhcHBsaWVkIGJlZm9yZSBv
+dGhlciByZWNlbnQgaHdwb2lzb24gcGF0Y2hlcy4NCg0KVGhhbmtzLA0KTmFveWEgSG9yaWd1Y2hp
