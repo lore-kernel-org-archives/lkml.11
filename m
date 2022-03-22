@@ -2,106 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 881F9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 09:04:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5921BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 09:04:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231580AbiCVJFt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 05:05:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54486 "EHLO
+        id S231644AbiCVJF4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 05:05:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232227AbiCVJEe (ORCPT
+        with ESMTP id S231515AbiCVJFq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 05:04:34 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC641C01;
-        Tue, 22 Mar 2022 02:03:05 -0700 (PDT)
-Received: from fraeml738-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KN5786v40z6892N;
-        Tue, 22 Mar 2022 17:00:52 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml738-chm.china.huawei.com (10.206.15.219) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 22 Mar 2022 10:03:03 +0100
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 22 Mar 2022 09:03:00 +0000
-From:   John Garry <john.garry@huawei.com>
-To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>
-CC:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <hch@lst.de>, <ming.lei@redhat.com>, <bvanassche@acm.org>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH] scsi: core: Refine how we set tag_set NUMA node
-Date:   Tue, 22 Mar 2022 16:57:18 +0800
-Message-ID: <1647939438-187933-1-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
+        Tue, 22 Mar 2022 05:05:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A67AA44A2D
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 02:04:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D7D4B81C16
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 09:04:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C83D2C340EE;
+        Tue, 22 Mar 2022 09:04:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647939857;
+        bh=bATFr0wq7Cf/1RkRBizWVvZl0hCoNH8ejbumoz6bjao=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Vr2C7oc0EQ5iqRCtm3aE6rhKGaJ42gHatF7i8FMLy6ZHnyK0tpMpho+KPuj+ov6FS
+         xZsS0s620vkSt6Kak2CPgn3FARjH3w/O34yKzJrhJnmdscG5WoOHwOqFO7xB9UZiKs
+         ouauTcvv3lDLdpvOHKnKDLVTxbeGjkd6bxP2kMgA=
+Date:   Tue, 22 Mar 2022 09:47:29 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc:     David Kershner <david.kershner@unisys.com>,
+        sparmaintainer@unisys.com, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: unisys: Properly test debugfs_create_dir()
+ return values
+Message-ID: <YjmNIX4RsbG8LpyF@kroah.com>
+References: <20220322083858.16887-1-fmdefrancesco@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220322083858.16887-1-fmdefrancesco@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For SCSI hosts which enable host_tagset the NUMA node returned from
-blk_mq_hw_queue_to_node() is NUMA_NO_NODE always. Then, since in
-scsi_mq_setup_tags() the default we choose for the tag_set NUMA node is
-NUMA_NO_NODE, we always evaluate the NUMA node as NUMA_NO_NODE in
-functions like blk_mq_alloc_rq_map().
+On Tue, Mar 22, 2022 at 09:38:58AM +0100, Fabio M. De Francesco wrote:
+> debugfs_create_dir() returns a pointers to a dentry objects. On failures
+> it returns errors. Currently the values returned to visornic_probe()
+> seem to be tested for being equal to NULL in case of failures.
+> 
+> Properly test with "if (IS_ERR())" and then assign the correct error 
+> value to the "err" variable.
+> 
+> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> ---
+>  drivers/staging/unisys/visornic/visornic_main.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/staging/unisys/visornic/visornic_main.c b/drivers/staging/unisys/visornic/visornic_main.c
+> index 643432458105..58d03f3d3173 100644
+> --- a/drivers/staging/unisys/visornic/visornic_main.c
+> +++ b/drivers/staging/unisys/visornic/visornic_main.c
+> @@ -1922,11 +1922,11 @@ static int visornic_probe(struct visor_device *dev)
+>  	/* create debug/sysfs directories */
+>  	devdata->eth_debugfs_dir = debugfs_create_dir(netdev->name,
+>  						      visornic_debugfs_dir);
+> -	if (!devdata->eth_debugfs_dir) {
+> +	if (IS_ERR(devdata->eth_debugfs_dir)) {
 
-The reason we get NUMA_NO_NODE from blk_mq_hw_queue_to_node() is that
-the hctx_idx passed is BLK_MQ_NO_HCTX_IDX - so we can't match against a
-(HW) queue mapping index.
+We really shouldn't be checking this value at all.  There's no reason to
+check the return value of a debugfs_* call.  Can you fix up the code to
+do that instead?
 
-Improve this by defaulting the tag_set NUMA node to the same NUMA node
-of the SCSI host DMA dev.
+thanks,
 
-Signed-off-by: John Garry <john.garry@huawei.com>
-
-diff --git a/drivers/scsi/hosts.c b/drivers/scsi/hosts.c
-index f69b77cbf538..8352f90d997d 100644
---- a/drivers/scsi/hosts.c
-+++ b/drivers/scsi/hosts.c
-@@ -229,10 +229,6 @@ int scsi_add_host_with_dma(struct Scsi_Host *shost, struct device *dev,
- 	if (error)
- 		goto fail;
- 
--	error = scsi_mq_setup_tags(shost);
--	if (error)
--		goto fail;
--
- 	if (!shost->shost_gendev.parent)
- 		shost->shost_gendev.parent = dev ? dev : &platform_bus;
- 	if (!dma_dev)
-@@ -240,6 +236,10 @@ int scsi_add_host_with_dma(struct Scsi_Host *shost, struct device *dev,
- 
- 	shost->dma_dev = dma_dev;
- 
-+	error = scsi_mq_setup_tags(shost);
-+	if (error)
-+		goto fail;
-+
- 	/*
- 	 * Increase usage count temporarily here so that calling
- 	 * scsi_autopm_put_host() will trigger runtime idle if there is
-diff --git a/drivers/scsi/scsi_lib.c b/drivers/scsi/scsi_lib.c
-index 0a70aa763a96..7faa83b89fa4 100644
---- a/drivers/scsi/scsi_lib.c
-+++ b/drivers/scsi/scsi_lib.c
-@@ -1982,7 +1982,11 @@ int scsi_mq_setup_tags(struct Scsi_Host *shost)
- 	tag_set->nr_maps = shost->nr_maps ? : 1;
- 	tag_set->queue_depth = shost->can_queue;
- 	tag_set->cmd_size = cmd_size;
-+	#ifdef CONFIG_NUMA
-+	tag_set->numa_node = shost->dma_dev->numa_node;
-+	#else
- 	tag_set->numa_node = NUMA_NO_NODE;
-+	#endif
- 	tag_set->flags = BLK_MQ_F_SHOULD_MERGE;
- 	tag_set->flags |=
- 		BLK_ALLOC_POLICY_TO_MQ_FLAG(shost->hostt->tag_alloc_policy);
--- 
-2.26.2
-
+greg k-h
