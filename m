@@ -2,75 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54DBEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 23:27:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29180C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 23:27:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240722AbiCVX3F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 19:29:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37976 "EHLO
+        id S240752AbiCVX3J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 19:29:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239423AbiCVX24 (ORCPT
+        with ESMTP id S239991AbiCVX25 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 19:28:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65146532EF
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 16:27:28 -0700 (PDT)
+        Tue, 22 Mar 2022 19:28:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4329532EB
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 16:27:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0128B6125D
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5CDF0B81DAB
         for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 23:27:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 69114C340F2;
-        Tue, 22 Mar 2022 23:27:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F110BC340F6;
+        Tue, 22 Mar 2022 23:27:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1647991647;
-        bh=raGDJnpiOkzFxVlHJXg+myOWavCaRyjpbJikY5YKdKA=;
+        bh=AWlB00YHGmlczlDQEJMBKfhu5pKN7oMG2YtAaMytQvw=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=BjJhECdWDg9EcEDIWtMqghtuA/KclGOFSp5q8g0KCQANKJ1gonYbUUqGY02lbffCH
-         Cn2kE8eAtd/GBW6H4nTzsr6IkL09CD7pHg0WSR7ZlyJ96sFx/vxKPaZnFrurt8WhWZ
-         skTZaPmC2reKcmtZtxrdM8jNDQFE3hXe1Wzbsx5UHguR4Z0LllH1WlwoepWgZueDlh
-         1emXro55z4cA5WvogJCpdfRscqm14/XVWHKUpJ/Igx9kxsLNiWYYClXMmbuKhE+4Rn
-         ie8c0PF+KeUY+IydAUxmTuR0xWXTSGzD6c9R5X+/jPrgp00REIcivIB87KAnd2DcFQ
-         qXeAR9rfHSi3w==
+        b=Vse/EBiQnxCb/grk+0Paqknt+QWE+V0NYhXNfhgbUBbAvxrUCAb1T4s4/4aJGn6Ru
+         EesE4afTbtRzhvu7v+QRxBmgTuMz1a8S4l/s7cOWy0pnpo5n30iAVHpmLKPnPsfQ0d
+         EeLVeY+w+/QT4q1lteXKjpQxW5KnIMsWlA1T6pVjirUhOMSBTwGNpqUmXxbhHlrN3Z
+         b7k6gHzhMfk/1PrMcTgCFqBX6zfKMpezLGtMo6UzFeLjtxHuCfoFlnKI/mRIa8qHvy
+         1JXUGXjdj6anKKjDMyY2TEI9CIUBM3zaVIG5CBGTQYZDD8C5LNhDOZgISWNnqOcJN+
+         1laWKg+JcurMQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 57010E6D402;
-        Tue, 22 Mar 2022 23:27:27 +0000 (UTC)
-Subject: Re: [GIT PULL -v2] scheduler updates for v5.18
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DF02CE6D402;
+        Tue, 22 Mar 2022 23:27:26 +0000 (UTC)
+Subject: Re: [GIT PULL] locking changes for v5.18
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YjmulZMqswiXsuki@gmail.com>
-References: <YjhZUezhnamHAl0H@gmail.com> <YjmulZMqswiXsuki@gmail.com>
+In-Reply-To: <YjhdcJB4FaLfsoyO@gmail.com>
+References: <YjhdcJB4FaLfsoyO@gmail.com>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YjmulZMqswiXsuki@gmail.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched-core-2022-03-22
-X-PR-Tracked-Commit-Id: ffea9fb319360b9ead8befac6bb2db2b54fd53e6
+X-PR-Tracked-Message-Id: <YjhdcJB4FaLfsoyO@gmail.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git locking-core-2022-03-21
+X-PR-Tracked-Commit-Id: cd27ccfc727e99352321c0c75012ab9c5a90321e
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 3fe2f7446f1e029b220f7f650df6d138f91651f2
-Message-Id: <164799164735.11565.9583328147558087117.pr-tracker-bot@kernel.org>
-Date:   Tue, 22 Mar 2022 23:27:27 +0000
+X-PR-Merge-Commit-Id: ebd326ce724d5b2e5274724e6d6a46a046e28203
+Message-Id: <164799164690.11565.4407042081542491958.pr-tracker-bot@kernel.org>
+Date:   Tue, 22 Mar 2022 23:27:26 +0000
 To:     Ingo Molnar <mingo@kernel.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
         linux-kernel@vger.kernel.org,
         Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
         Borislav Petkov <bp@alien8.de>,
-        Thomas Gleixner <tglx@linutronix.de>
+        Andrew Morton <akpm@linux-foundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Tue, 22 Mar 2022 12:10:13 +0100:
+The pull request you sent on Mon, 21 Mar 2022 12:11:44 +0100:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched-core-2022-03-22
+> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git locking-core-2022-03-21
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/3fe2f7446f1e029b220f7f650df6d138f91651f2
+https://git.kernel.org/torvalds/c/ebd326ce724d5b2e5274724e6d6a46a046e28203
 
 Thank you!
 
