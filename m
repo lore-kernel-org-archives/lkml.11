@@ -2,111 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C6ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 13:26:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7484C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 13:28:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235564AbiCVN2W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 09:28:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33858 "EHLO
+        id S235589AbiCVN3e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 09:29:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235551AbiCVN2T (ORCPT
+        with ESMTP id S235495AbiCVN32 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 09:28:19 -0400
-Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B82586E18
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 06:26:48 -0700 (PDT)
-Received: from [192.168.12.80] (unknown [182.2.69.158])
-        by gnuweeb.org (Postfix) with ESMTPSA id 27DA87E2DF;
-        Tue, 22 Mar 2022 13:26:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1647955607;
-        bh=SKM43D9jDBq+PWDOPBX3QtOzn+TW4kuM/fe+xnCwC/k=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=PbUywEleF/ZAh7d/Q0QM2FLLqGcJDHh3Bnp1FuuSZVHvDKGlnXorXzwiTk+H7QyFs
-         5kXTKXnyoR7y00+wug7GGo/IiyaYuugAx4JpRBOsRp0pTyhMGjuMxxpcYMk3Lfeqqx
-         0UZyJgqhH1yvH7EWrJDwLJ4V3+YiNVzXqYjermxXLrouTvY4OlwTBzOMApswMng4vh
-         X4PC6leIptY6ORiiC3hpk1qICmTlOD+UkiyMFg0karoCZfuuxWlZe+alAYCL0xmsAX
-         NRnP0WSKSLggQlIhUAZbE/i5GdP/a2KvfAFH6CtkMWUyx7thFLHnUj/RzwK0OmOJus
-         5iwSpioO3BNYw==
-Message-ID: <81569a1c-a6d3-ceb2-a1f1-f229a024d684@gnuweeb.org>
-Date:   Tue, 22 Mar 2022 20:26:37 +0700
+        Tue, 22 Mar 2022 09:29:28 -0400
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3797F286E8
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 06:28:00 -0700 (PDT)
+Received: by mail-qv1-xf31.google.com with SMTP id kl29so7362293qvb.2
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 06:28:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=F6f3afV4tqtncF73mZhO2dGGO3BMaajonDRieyQCctk=;
+        b=Bkl2XAz6E8KGmYNmKGhq2KqHYHZulnIzry2lGn5C0jSspo+Oj1bGpBF7hRebnGm1ro
+         gUxe+Z1iIWvYN+soEo1YYLxJG0AYb1JzTDdMxHFwPfhu0vJQahs6KAl0X7HZSZS+HGDZ
+         RQDPlBS0zxYVzblUj9IltsrR2Q6xsv+HbHSAQ2OpYkQoN3c/TpI4QY7FrS3Du1MHHEk5
+         xMfrQmvwR2JNO29BzZ8MWEOTFEeSFqDOO0eN+AdmssOkpO6tMjoKKPv58LWUzBYWJKw3
+         RHopVEXO8j8Xl/DZZKB7zfPr67zMIlXhVKSZSmK8BDrnpRnukEMqe55+Sqz+ojEx9aW0
+         wyGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=F6f3afV4tqtncF73mZhO2dGGO3BMaajonDRieyQCctk=;
+        b=lQ6rfLx/we7WOLV+4/wp+MieZjfFFOx1tjOcxxIlTpQNAtgeE5nY/ez+oyvm9s3QPN
+         Ogmo19CqJtkprfTJYA1RpBd23purm6qFC7dLUrh3AWWHRC/abh3V+H3Q93yLtl2lAAl7
+         ybkb+kZhXESemrZNdmyDnifvh79F3kGp/cHeAEKaAdoUCoo027BmZ7dFHdVAUiZVmy3j
+         L0xykvHXEGGWVn7aDkCI3Rn1iKFotyQiKdOMnuchhYdAW2/xyJWNAY4gU6BiRMAvvQYp
+         XSqv+CGlAOM9Rs3mBU/oDwgxnUjr2Xx10wmrKrvGrU2iodocdRaLcRJJOsUKy9caXnpv
+         dYLw==
+X-Gm-Message-State: AOAM533dy/gUO3aN6dBTk/GxTf5zmdro+dAGA83VW1rVJl7idvS4tsRq
+        0bPp8C1tRek8SriDcglwXiqG7g==
+X-Google-Smtp-Source: ABdhPJxyu3mAkevGNq3TrkT+TrWR/F8CTnpZC9QiUtL8T0XWIE+cAVlAe4rnnsYArb7XiDZ32JeJUQ==
+X-Received: by 2002:a0c:fc46:0:b0:440:f78f:f4c4 with SMTP id w6-20020a0cfc46000000b00440f78ff4c4mr16130924qvp.108.1647955679440;
+        Tue, 22 Mar 2022 06:27:59 -0700 (PDT)
+Received: from localhost (cpe-98-15-154-102.hvc.res.rr.com. [98.15.154.102])
+        by smtp.gmail.com with ESMTPSA id l126-20020a37bb84000000b0067b3c2bcc0dsm9349493qkf.1.2022.03.22.06.27.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Mar 2022 06:27:59 -0700 (PDT)
+Date:   Tue, 22 Mar 2022 09:27:58 -0400
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     CGEL <cgel.zte@gmail.com>
+Cc:     axboe@kernel.dk, viro@zeniv.linux.org.uk,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, akpm@linux-foundation.org,
+        Yang Yang <yang.yang29@zte.com.cn>,
+        Ran Xiaokai <ran.xiaokai@zte.com.cn>
+Subject: Re: [PATCH] block/psi: make PSI annotations of submit_bio only work
+ for file pages
+Message-ID: <YjnO3p6vvAjeMCFC@cmpxchg.org>
+References: <20220316063927.2128383-1-yang.yang29@zte.com.cn>
+ <YjiMsGoXoDU+FwsS@cmpxchg.org>
+ <623938d1.1c69fb81.52716.030f@mx.google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [RFC PATCH v2 3/8] tools/nolibc: i386: Implement syscall with 6
- arguments
-Content-Language: en-US
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     David Laight <David.Laight@ACULAB.COM>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
-        Nugraha <richiisei@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "llvm@lists.linux.dev" <llvm@lists.linux.dev>
-References: <20220322102115.186179-1-ammarfaizi2@gnuweeb.org>
- <20220322102115.186179-4-ammarfaizi2@gnuweeb.org>
- <8653f6784a9b4272a59a75a530663567@AcuMS.aculab.com>
- <a8eeec1d-656d-15a3-dde5-0f8cc8c5956b@gnuweeb.org>
- <20220322121338.GD10306@1wt.eu>
-From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
-In-Reply-To: <20220322121338.GD10306@1wt.eu>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <623938d1.1c69fb81.52716.030f@mx.google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/22/22 7:13 PM, Willy Tarreau wrote:
-> On Tue, Mar 22, 2022 at 07:02:53PM +0700, Ammar Faizi wrote:
->> I propose the
->> following macro (this is not so much different with other my_syscall macro),
->> expect the 6th argument can be in reg or mem.
->>
->> The "rm" constraint here gives the opportunity for the compiler to use %ebp
->> instead of memory if -fomit-frame-pointer is turned on.
->>
->> #define my_syscall6(num, arg1, arg2, arg3, arg4, arg5, arg6) \
->> ({                                                         \
->>      long _ret;                                             \
->>      register long _num asm("eax") = (num);                 \
->>      register long _arg1 asm("ebx") = (long)(arg1);         \
->>      register long _arg2 asm("ecx") = (long)(arg2);         \
->>      register long _arg3 asm("edx") = (long)(arg3);         \
->>      register long _arg4 asm("esi") = (long)(arg4);         \
->>      register long _arg5 asm("edi") = (long)(arg5);         \
->>      long _arg6 = (long)(arg6); /* Might be in memory */    \
->>                                                             \
->>      asm volatile (                                         \
->>          "pushl  %[_arg6]\n\t"                              \
->>          "pushl  %%ebp\n\t"                                 \
->>          "movl   4(%%esp), %%ebp\n\t"                       \
->>          "int    $0x80\n\t"                                 \
->>          "popl   %%ebp\n\t"                                 \
->>          "addl   $4,%%esp\n\t"                              \
->>          : "=a"(_ret)                                       \
->>          : "r"(_num), "r"(_arg1), "r"(_arg2), "r"(_arg3),   \
->>            "r"(_arg4),"r"(_arg5), [_arg6]"rm"(_arg6)        \
->>          : "memory", "cc"                                   \
->>      );                                                     \
->>      _ret;                                                  \
->> })
->>
->> What do you think?
+On Tue, Mar 22, 2022 at 02:47:42AM +0000, CGEL wrote:
+> On Mon, Mar 21, 2022 at 10:33:20AM -0400, Johannes Weiner wrote:
+> > On Wed, Mar 16, 2022 at 06:39:28AM +0000, cgel.zte@gmail.com wrote:
+> > > From: Yang Yang <yang.yang29@zte.com.cn>
+> > > 
+> > > psi tracks the time spent on submitting the IO of refaulting file pages
+> > > and anonymous pages[1]. But after we tracks refaulting anonymous pages
+> > > in swap_readpage[2][3], there is no need to track refaulting anonymous
+> > > pages in submit_bio.
+> > > 
+> > > So this patch can reduce redundant calling of psi_memstall_enter. And
+> > > make it easier to track refaulting file pages and anonymous pages
+> > > separately.
+> > 
+> > I don't think this is an improvement.
+> > 
+> > psi_memstall_enter() will check current->in_memstall once, detect the
+> > nested call, and bail. Your patch checks PageSwapBacked for every page
+> > being added. It's more branches for less robust code.
 > 
-> Hmmm indeed that comes back to the existing constructs and is certainly
-> more in line with the rest of the code (plus it will not be affected by
-> -O0).
+> We are also working for a new patch to classify different reasons cause
+> psi_memstall_enter(): reclaim, thrashing, compact, etc. This will help
+> user to tuning sysctl, for example, if user see high compact delay, he
+> may try do adjust THP sysctl to reduce the compact delay.
 > 
-> I seem to remember a register allocation issue which kept me away from
-> implementing it this way on i386 back then, but given that my focus was
-> not as much on i386 as it was on other platforms, it's likely that I have
-> not insisted too much and not tried this one which looks like the way to
-> go to me.
+> To support that, we should distinguish what's the reason cause psi in
+> submit_io(), this patch does the job.
 
-I turned out GCC refuses to use "rm" if we compile without -fomit-frame-pointer
-(e.g. without optimization / -O0). So I will still use "m" here.
-
--- 
-Ammar Faizi
+Please submit these patches together then. On its own, this patch
+isn't desirable.
