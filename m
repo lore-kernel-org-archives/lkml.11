@@ -2,75 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B89DFC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 13:46:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19ED6C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 13:51:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235875AbiCVNsF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 09:48:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51212 "EHLO
+        id S235872AbiCVNxI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 09:53:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236046AbiCVNsA (ORCPT
+        with ESMTP id S235876AbiCVNwz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 09:48:00 -0400
-Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3DF026ACB
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 06:46:32 -0700 (PDT)
-Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-2e5827a76f4so191014777b3.6
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 06:46:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iQXVtoNNOTzoC5qZU7/1ecuc9O/zDp2OQHUTN6wFNH4=;
-        b=qXbsV6VDEGOklazgM3cMrjtcJViQEQD+5sjq/f8HPRSOkw9PfJbLmANL2XxUdpi8nU
-         kg6sSs8d6uPoAfawQLGXG2TWj7dBOySsSfG8Fb6RH03xwEx8SaWEWfS35xIQbuHBL7jE
-         aaeKfKFPuOfsoaulDr6cv6o3aIeJ/udNHdKCSKlieJ0kzF6RJDNPd81RZ+y/3BqFmfx8
-         qgGJaZSdQqwop60RX1HT58wL91s7krigV8jwHibUgizeSB3IE9DmeTeG4/nP3pBXxRKJ
-         q/BKLJ2G6rBiS/5tdRicXh/eY/ZltWUa4hwkcC5/5430zPwc1CZ/coRxWKFjzAGz+AxD
-         SABw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iQXVtoNNOTzoC5qZU7/1ecuc9O/zDp2OQHUTN6wFNH4=;
-        b=Wl7q1AGJLKhHHL/39DyOPuGG4qsTEtkp5XBfbh1yxhB+QdTMYE1/y9ZDffkle/1VuZ
-         Z+R2hAoYM8aIk1ROFS/ecV2bdiZ0pTsdcoBm8d8rttF/LduWtv5+n/T48tp/k2CwqKbn
-         u0lGrjG3ob17T3A4FsaKG+9k9RTAKQTKg3jFzrJMQ1pQtLYxmI17ntdjQh9HQOoXiTKq
-         d8XphzpEHOZLyfYVEvZ6ft1BJHnnZmGE5mu4/As4jFtfPXhvz2iILa0AfQBQf+qiGHAS
-         4Mu1V0XH4+hBPjQB0NfPM355KrjXdFiirxTLtYI4PqjKAZqhVURBa0v1xzxjWnoS5aUg
-         kxow==
-X-Gm-Message-State: AOAM533rE0lAZlJ7Qo35JE0MmzU7CDizTFdR3P5HPzatOSQ/2feCc6z8
-        yNeXai2loThbp2ZeHtBAp359d9Rks63AiaRk13fKYiXvTBF2dQ==
-X-Google-Smtp-Source: ABdhPJzFT8gy0YTryuzIkqAwXuMAOd4TJntnOiSZt+GqRpVTvpk3Jc9rNKAQjUkIPCmI5srs5BWm4mxrQHc9KwFPhb4=
-X-Received: by 2002:a81:5dd6:0:b0:2d6:3041:12e0 with SMTP id
- r205-20020a815dd6000000b002d6304112e0mr30293148ywb.331.1647956792172; Tue, 22
- Mar 2022 06:46:32 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220322121338.27428-1-liqiong@nfschina.com>
-In-Reply-To: <20220322121338.27428-1-liqiong@nfschina.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Tue, 22 Mar 2022 21:44:36 +0800
-Message-ID: <CAMZfGtVxFieFwEB5Xw0yKbri39og97u2RngRABTAUVXZSD_2Vw@mail.gmail.com>
-Subject: Re: [External] [PATCH] mm: remove unnecessary (void*) conversions.
-To:     liqiong <liqiong@nfschina.com>
-Cc:     =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
-        <naoya.horiguchi@nec.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org, yuzhe@nfschina.com,
-        renyu@nfschina.com
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 22 Mar 2022 09:52:55 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF9650B07;
+        Tue, 22 Mar 2022 06:51:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6D0CACE1E18;
+        Tue, 22 Mar 2022 13:51:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17D78C340EC;
+        Tue, 22 Mar 2022 13:51:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647957084;
+        bh=+PcSzqlfSr4quKABCcRJgSwsi7LZhav0meRk6eGzyQk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FdatOK5EsCCKNSnd0SFBfhCB1ogmnUyN25HzjzgibJkE8MGgn40+e8L/IOlsBXcEJ
+         HMrA0modxfnFK4pVridEsoQREyNK44MG/If1ZkUJh1d+8MYgKmupFlpE3rY//nXs0K
+         ZvQ+DZfvR6W2vDeaCzZ9QCJqkTpRsj1ZqKBXFS8rxAu8MBIYQDsXEyGq7ssz3WENOU
+         8DSxM+7R10paiWeViNMFJbu5uU0Ulj0GswYgV+N4JJPnJBH+rf9AljCATLTAE9YUUX
+         XiJMzjq03TNToclXEXlkhNm9G+E2juwvKLEPI0p4V6UnVnTPiCNz8d9K8EaVBRA6H4
+         SzRxDhwH0LBFQ==
+Date:   Tue, 22 Mar 2022 22:51:18 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        rostedt@goodmis.org, ast@kernel.org, hjl.tools@gmail.com,
+        rick.p.edgecombe@intel.com, rppt@kernel.org,
+        linux-toolchains@vger.kernel.org, Andrew.Cooper3@citrix.com,
+        ndesaulniers@google.com
+Subject: Re: linux-next: build warnings after merge of the tip tree
+Message-Id: <20220322225118.ec33bf93e19d40f27d73c8d1@kernel.org>
+In-Reply-To: <YjnMDlS/6a4UWFQm@FVFF77S0Q05N>
+References: <20220321140327.777f9554@canb.auug.org.au>
+        <Yjh11UjDZogc3foM@hirez.programming.kicks-ass.net>
+        <Yjh3xZuuY3QcZ1Bn@hirez.programming.kicks-ass.net>
+        <YjisdqdofbDIYj2U@hirez.programming.kicks-ass.net>
+        <20220322143136.0e78366c3521b54b7b9385b8@kernel.org>
+        <YjnMDlS/6a4UWFQm@FVFF77S0Q05N>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 8:14 PM liqiong <liqiong@nfschina.com> wrote:
->
-> No need cast (void*) to (struct hwp_walk*).
->
-> Signed-off-by: liqiong <liqiong@nfschina.com>
+On Tue, 22 Mar 2022 13:15:58 +0000
+Mark Rutland <mark.rutland@arm.com> wrote:
 
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+> On Tue, Mar 22, 2022 at 02:31:36PM +0900, Masami Hiramatsu wrote:
+> > On Mon, 21 Mar 2022 17:48:54 +0100
+> > Peter Zijlstra <peterz@infradead.org> wrote:
+> > 
+> > > On Mon, Mar 21, 2022 at 02:04:05PM +0100, Peter Zijlstra wrote:
+> > > > On Mon, Mar 21, 2022 at 01:55:49PM +0100, Peter Zijlstra wrote:
+> > > > > On Mon, Mar 21, 2022 at 02:03:27PM +1100, Stephen Rothwell wrote:
+> > > > > > Hi all,
+> > > > > > 
+> > > > > > After merging the tip tree, today's linux-next build (x864 allmodconfig)
+> > > > > > produced these new warnings:
+> > > > > > 
+> > > > > > vmlinux.o: warning: objtool: arch_rethook_prepare()+0x55: relocation to !ENDBR: arch_rethook_trampoline+0x0
+> > > > > > vmlinux.o: warning: objtool: arch_rethook_trampoline_callback()+0x3e: relocation to !ENDBR: arch_rethook_trampoline+0x0
+> > > > > > vmlinux.o: warning: objtool: unwind_next_frame()+0x93e: relocation to !ENDBR: arch_rethook_trampoline+0x0
+> > > > > > vmlinux.o: warning: objtool: unwind_next_frame()+0x5f2: relocation to !ENDBR: arch_rethook_trampoline+0x0
+> > > > > > vmlinux.o: warning: objtool: unwind_next_frame()+0x4a7: relocation to !ENDBR: arch_rethook_trampoline+0x0
+> > > > > > vmlinux.o: warning: objtool: __rethook_find_ret_addr()+0x81: relocation to !ENDBR: arch_rethook_trampoline+0x0
+> > > > > > vmlinux.o: warning: objtool: __rethook_find_ret_addr()+0x90: relocation to !ENDBR: arch_rethook_trampoline+0x0
+> > > > > > vmlinux.o: warning: objtool: rethook_trampoline_handler()+0x8c: relocation to !ENDBR: arch_rethook_trampoline+0x0
+> > > > > > vmlinux.o: warning: objtool: rethook_trampoline_handler()+0x9b: relocation to !ENDBR: arch_rethook_trampoline+0x0
+> > > > > 
+> > > > > Hurmph, lemme go figure out where that code comes from, I've not seen
+> > > > > those.
+> > > > 
+> > > > Ahh, something tracing. I'll go do some patches on top of it.
+> > > 
+> > > The below gets rid of the objtool warnings.
+> > 
+> > Yes, I confirmed that.
+> > 
+> > > But I still think it's fairly terrible to get a (flawed) carbon copy of
+> > > the kretprobe code.
+> > 
+> > Indeed. I would like to replace the trampoline code of kretprobe with
+> > rethook, eventually. There is no reason why we keep the clone.
+> > (But I need more arch maintainers help for that, there are too many
+> >  archs implemented kretprobes)
+> 
+> FWIW, I'm more than happy to help on the arm64 side if you could Cc me for
+> that; I'm aware of other things in this area I'd like to clean up for
+> backtracing, too.
+
+Thank you for your warm help. OK, let me update and submit the rethook
+for arm64 :-)
 
 Thanks.
+
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
