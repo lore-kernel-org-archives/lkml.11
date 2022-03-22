@@ -2,102 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42236C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 05:51:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D5E0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 05:52:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236821AbiCVFxD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 01:53:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33086 "EHLO
+        id S236799AbiCVFxp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 01:53:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236941AbiCVFvn (ORCPT
+        with ESMTP id S236783AbiCVFxn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 01:51:43 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 128202E091
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 22:50:15 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id n18so14576503plg.5
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 22:50:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=OiFNJfidtcLZL95dwA0p8vHTH/+gyq0cBwTFe4nfHC4=;
-        b=Xah2mlFjMxPCVZIJqy66fknjtsMhxeCVTydPkhuVIhFnZ/BgjgGhNaruBdgj1vZs0b
-         2QMa6sw4IY0eovwypGbY5TuWnxD7RFBNjbuOHKjHlXYB4Yu3e/vb1+PnDfyCPgOq5fbK
-         9aGO1/lXoHepeHBldsyDEKan7b9G6CzNcaA+PrdoAt6MJpmUttOPFoIppKVzJ3phEnmB
-         NpxDUDwv9dcKkYpsJ+BmSfpgbBdJKNNPRXr1yK1Wt1n4H5i++vO6BarrEMpL7FvHwJnY
-         cVVtFc//UpVaMp+244Mr+JBarhoElto4LmSS55vSEUqIeYBn/GR80lsLAZZ2pUmcBhTE
-         vqHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=OiFNJfidtcLZL95dwA0p8vHTH/+gyq0cBwTFe4nfHC4=;
-        b=11hoHT3oaktsuxqdx+OR4MZM/GNrV4msjLGbMdxgOR2X+UUXuVDPCTK9svppsmtGYP
-         I9cOmqcsj1JB3WPYq3ZwXmW9Zla4WDr9unut++nm8l92kYDeR/l5XNiUXBEzKR0WbRh8
-         hzpaCpZI8Fmly2VtP2ksRz9Z5sj88XEg8h26GvAx14ZfDrhXv91meJw73e7ZdG4zrf8s
-         jggpLM13ahuGlKfxaqjVOvroldRbF/MesMmFbfpQosQ/hJaZxV2rl2N2Kq3HREv1H4Mo
-         7nVnNeQXuMaVmmzDhdPG6qUIwOScZ52C+KGXuxu74+t4XC0MpDrYreRfatFQ1rmsOFm3
-         4tFg==
-X-Gm-Message-State: AOAM531PanmtJRgB4p14y5acc/rBkwcVo2GkxUbSqc5lg1+Uu/k8APwY
-        ytcNZ5DgDEgVSLSvED4ksDs2eA==
-X-Google-Smtp-Source: ABdhPJyTbqoe7gBP/CG0o/jv5uRTemAQdRxljUYXISAvD47ve8cH8r8ZXSpYzJBA6cH1dGxCRFJKqw==
-X-Received: by 2002:a17:90b:504:b0:1c7:3095:fd78 with SMTP id r4-20020a17090b050400b001c73095fd78mr3068701pjz.142.1647928214587;
-        Mon, 21 Mar 2022 22:50:14 -0700 (PDT)
-Received: from localhost ([223.184.83.228])
-        by smtp.gmail.com with ESMTPSA id m14-20020a637d4e000000b00380b83e2e1fsm16229226pgn.70.2022.03.21.22.50.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 22:50:13 -0700 (PDT)
-Date:   Tue, 22 Mar 2022 11:20:12 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Sumit Gupta <sumitg@nvidia.com>
-Cc:     rafael@kernel.org, robh+dt@kernel.org, krzk+dt@kernel.org,
-        treding@nvidia.com, jonathanh@nvidia.com, linux-pm@vger.kernel.org,
-        linux-tegra@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ksitaraman@nvidia.com,
-        sanjayc@nvidia.com, bbasu@nvidia.com
-Subject: Re: [Patch v1 3/3] cpufreq: tegra194: Add support for Tegra234
-Message-ID: <20220322055012.oewlqykxb4dlkhbr@vireshk-i7>
-References: <20220316135831.900-1-sumitg@nvidia.com>
- <20220316135831.900-4-sumitg@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220316135831.900-4-sumitg@nvidia.com>
-User-Agent: NeoMutt/20180716-391-311a52
+        Tue, 22 Mar 2022 01:53:43 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 982E1FC1;
+        Mon, 21 Mar 2022 22:52:14 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id A122E1A13C3;
+        Tue, 22 Mar 2022 06:52:12 +0100 (CET)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 6A3711A13B0;
+        Tue, 22 Mar 2022 06:52:12 +0100 (CET)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 38CFA183AD6F;
+        Tue, 22 Mar 2022 13:52:11 +0800 (+08)
+From:   haibo.chen@nxp.com
+To:     linus.walleij@linaro.org, brgl@bgdev.pl, andy.shevchenko@gmail.com
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com, haibo.chen@nxp.com
+Subject: [PATCH v2] gpio: Allow setting gpio device id via device tree alias
+Date:   Tue, 22 Mar 2022 13:40:49 +0800
+Message-Id: <1647927649-9907-1-git-send-email-haibo.chen@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16-03-22, 19:28, Sumit Gupta wrote:
-> @@ -442,6 +538,13 @@ static int tegra194_cpufreq_probe(struct platform_device *pdev)
->  	if (!data->tables)
->  		return -ENOMEM;
->  
-> +	if (of_device_is_compatible(pdev->dev.of_node, "nvidia,tegra234-ccplex-cluster")) {
+From: Haibo Chen <haibo.chen@nxp.com>
 
-Since you have soc specific data, that should be used here to know if you need
-to map registers or not. You shouldn't use device-compatible here again.
+For some SoCs which contain different cores, like few ARM A cores
+and few ARM M cores. Some GPIO controllers like GPIO3/GPIO4/GPIO5
+belong to A core domain, some GPIO controllers like GPIO1/GPIO2
+belong to M core domain. Linux only cover A cores, without gpio
+alias, we can get gpiochip0/gpiochip1/gpiochip2 to map the real
+GPIO3/GPIO4/GPIO5, it's difficult for users to identify this map
+relation, and hardcode the gpio device index. With gpio alias,
+we can easily make gpiochip3 map to GPIO3, gpiochip4 map to GPIO4.
+For GPIO controllers do not claim the alias, it will get one id
+which larger than all the claimed aliases.
 
-> +		/* mmio registers are used for frequency request and re-construction */
-> +		data->regs = devm_platform_ioremap_resource(pdev, 0);
-> +		if (IS_ERR(data->regs))
-> +			return PTR_ERR(data->regs);
-> +	}
-> +
->  	platform_set_drvdata(pdev, data);
->  
->  	bpmp = tegra_bpmp_get(&pdev->dev);
-> @@ -486,6 +589,7 @@ static int tegra194_cpufreq_remove(struct platform_device *pdev)
->  
->  static const struct of_device_id tegra194_cpufreq_of_match[] = {
->  	{ .compatible = "nvidia,tegra194-ccplex", .data = &tegra194_cpufreq_soc },
-> +	{ .compatible = "nvidia,tegra234-ccplex-cluster", .data = &tegra234_cpufreq_soc },
->  	{ /* sentinel */ }
->  };
->  
-> -- 
-> 2.17.1
+Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
+---
+ drivers/gpio/gpiolib.c | 22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
+index 56d090258d62..3d24351a33db 100644
+--- a/drivers/gpio/gpiolib.c
++++ b/drivers/gpio/gpiolib.c
+@@ -495,7 +495,7 @@ static void gpiodevice_release(struct device *dev)
+ 	list_del(&gdev->list);
+ 	spin_unlock_irqrestore(&gpio_lock, flags);
+ 
+-	ida_free(&gpio_ida, gdev->id);
++	ida_simple_remove(&gpio_ida, gdev->id);
+ 	kfree_const(gdev->label);
+ 	kfree(gdev->descs);
+ 	kfree(gdev);
+@@ -594,6 +594,7 @@ int gpiochip_add_data_with_key(struct gpio_chip *gc, void *data,
+ 	unsigned long flags;
+ 	int base = gc->base;
+ 	unsigned int i;
++	int alias_id, first_dynamic;
+ 	int ret = 0;
+ 	u32 ngpios;
+ 
+@@ -623,11 +624,20 @@ int gpiochip_add_data_with_key(struct gpio_chip *gc, void *data,
+ 	 */
+ 	gdev->dev.fwnode = dev_fwnode(&gdev->dev) ?: fwnode;
+ 
+-	gdev->id = ida_alloc(&gpio_ida, GFP_KERNEL);
+-	if (gdev->id < 0) {
+-		ret = gdev->id;
+-		goto err_free_gdev;
++	alias_id = of_alias_get_id(gdev->dev.of_node, "gpio");
++	if (alias_id < 0) {
++		first_dynamic = of_alias_get_highest_id("gpio");
++		if (first_dynamic < 0)
++			first_dynamic = 0;
++		else
++			first_dynamic++;
++		alias_id = ida_simple_get(&gpio_ida, first_dynamic, 0, GFP_KERNEL);
++		if (alias_id < 0) {
++			ret = alias_id;
++			goto err_free_gdev;
++		}
+ 	}
++	gdev->id = alias_id;
+ 
+ 	ret = dev_set_name(&gdev->dev, GPIOCHIP_NAME "%d", gdev->id);
+ 	if (ret)
+@@ -821,7 +831,7 @@ int gpiochip_add_data_with_key(struct gpio_chip *gc, void *data,
+ err_free_dev_name:
+ 	kfree(dev_name(&gdev->dev));
+ err_free_ida:
+-	ida_free(&gpio_ida, gdev->id);
++	ida_simple_remove(&gpio_ida, gdev->id);
+ err_free_gdev:
+ 	/* failures here can mean systems won't boot... */
+ 	if (ret != -EPROBE_DEFER) {
 -- 
-viresh
+2.25.1
+
