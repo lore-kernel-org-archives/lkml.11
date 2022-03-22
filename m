@@ -2,235 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CC0AC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:41:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 793C4C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:41:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239968AbiCVRnB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 13:43:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54740 "EHLO
+        id S237270AbiCVRnR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 13:43:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239838AbiCVRms (ORCPT
+        with ESMTP id S239871AbiCVRnH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 13:42:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4A00F8D6B4
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:41:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647970879;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=yRZVgnhGNhp1SEmmju1ezoyCZEkfsIAzfhESgLEwrvA=;
-        b=bc+tthDZ2p6eDsClEPxBCikugoPST9hFEIBY65PwOUizNqpaBHl4senHIyihpo8F6+gq/b
-        TXDvz2UH2cptsbcYM4NaeydVLZOmvSB0fpI+flBuQjGSGYEyFtNlFQNxfx/lNqS7wOgywb
-        qDSxAStJ8GJ28W8EK1dW9rqHhbysNgM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-557-v9SZljw5P-ucCsTym0YxEQ-1; Tue, 22 Mar 2022 13:41:18 -0400
-X-MC-Unique: v9SZljw5P-ucCsTym0YxEQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 967DC85A5BE;
-        Tue, 22 Mar 2022 17:41:17 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.40.194.231])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 70E26C26E9B;
-        Tue, 22 Mar 2022 17:41:14 +0000 (UTC)
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     kvm@vger.kernel.org
-Cc:     Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>,
-        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Jim Mattson <jmattson@google.com>, x86@kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH v4 6/6] KVM: x86: SVM: allow AVIC to co-exist with a nested guest running
-Date:   Tue, 22 Mar 2022 19:40:50 +0200
-Message-Id: <20220322174050.241850-7-mlevitsk@redhat.com>
-In-Reply-To: <20220322174050.241850-1-mlevitsk@redhat.com>
-References: <20220322174050.241850-1-mlevitsk@redhat.com>
+        Tue, 22 Mar 2022 13:43:07 -0400
+Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com [209.85.219.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28DFC888E1;
+        Tue, 22 Mar 2022 10:41:32 -0700 (PDT)
+Received: by mail-yb1-f173.google.com with SMTP id l2so34975549ybe.8;
+        Tue, 22 Mar 2022 10:41:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uBwvYMbRVWzNNTUELOPjunMscPYO6cMzGqNzPKWdzP4=;
+        b=pqSkVKr9o5xxU9E3uC1DqaDY4d7CFIftzyPbBG9upaShWKRLQoQrNJ+dKnhHwaWOhf
+         gS9dPn0tEt0rN4N6GmQ0IdeuRavH+Tjhx965wW1I/Q74CdmACK4A1BkbcKmkd7KUx67/
+         rPuGZPAaFS8nrgmTloz1H6wMLH2AMF92+5mCMqJ9OnmEU5vHlxMGr/31fheAlMkAQI/d
+         ssOI4qflSmrHI4ue8FY8hCsaOjSH/87iqFDlVlxVVbn6qCwcgtJIgODh0BiU8HVLEFtg
+         JDDtXSfIrZ1oH8ylsOX1pTJm58WgTVZ5IpjcAlwOUmKrfI9GvWNTtRkfDaKpj0fq5svv
+         Xd1Q==
+X-Gm-Message-State: AOAM5331pEgSJ48pa9L1VNpUc1402f/3GwcGy5AU14SKIVEzKZGoDgq/
+        Xoms/5bil+yB0ZqTP9r+Mbeel+chmJ8D7S7wK1A=
+X-Google-Smtp-Source: ABdhPJxQ4E8QnsbmqO3EZO6txiQD37jFX04p93gcdE/1YLnV3YAWltpIKi/mcrTNopQ2Ayq1ac6N0Ls0Fa9Cpq5Tvyg=
+X-Received: by 2002:a25:508:0:b0:633:bcf2:d29a with SMTP id
+ 8-20020a250508000000b00633bcf2d29amr19967378ybf.81.1647970891362; Tue, 22 Mar
+ 2022 10:41:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+References: <20220321012216.23724-1-rdunlap@infradead.org>
+In-Reply-To: <20220321012216.23724-1-rdunlap@infradead.org>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 22 Mar 2022 18:41:20 +0100
+Message-ID: <CAJZ5v0jBFOWZZrGuBb0GyJa3rKRwSYXrMFOtGu8jLnQ+OPtXHw@mail.gmail.com>
+Subject: Re: [PATCH] Docs: admin/kernel-parameters: edit a few boot options
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        linux-s390@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        sparclinux@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-ia64@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Pavel Machek <pavel@ucw.cz>, Len Brown <lenb@kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Inhibit the AVIC of the vCPU that is running nested for the duration of the
-nested run, so that all interrupts arriving from both its vCPU siblings
-and from KVM are delivered using normal IPIs and cause that vCPU to vmexit.
+On Mon, Mar 21, 2022 at 2:22 AM Randy Dunlap <rdunlap@infradead.org> wrote:
+>
+> Clean up some of admin-guide/kernel-parameters.txt:
+>
+> a. "smt" should be "smt=" (S390)
+> b. add "smt-enabled" for POWERPC
+> c. Sparc supports the vdso= boot option
+> d. make the tp_printk options (2) formatting similar to other options
+>    by adding spacing
+> e. add "trace_clock=" with a reference to Documentation/trace/ftrace.rst
+> f. use [IA-64] as documented instead of [ia64]
+> g. fix formatting and text for test_suspend=
 
-Note that unlike normal AVIC inhibition, there is no need to
-update the AVIC mmio memslot, because the nested guest uses its
-own set of paging tables.
-That also means that AVIC doesn't need to be inhibited VM wide.
+This ->
 
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
----
- arch/x86/kvm/svm/avic.c   |  7 +++++++
- arch/x86/kvm/svm/nested.c | 17 ++++++++++-------
- arch/x86/kvm/svm/svm.c    | 30 +++++++++++++++++++-----------
- arch/x86/kvm/svm/svm.h    |  1 +
- 4 files changed, 37 insertions(+), 18 deletions(-)
+> h. fix formatting for swapaccount=
+> i. fix formatting and grammar for video.brightness_switch_enabled=
 
-diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index b39fe614467a..334fca06a3c8 100644
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -357,6 +357,13 @@ int avic_incomplete_ipi_interception(struct kvm_vcpu *vcpu)
- 	return 1;
- }
- 
-+unsigned long avic_vcpu_get_apicv_inhibit_reasons(struct kvm_vcpu *vcpu)
-+{
-+	if (is_guest_mode(vcpu))
-+		return APICV_INHIBIT_REASON_NESTED;
-+	return 0;
-+}
-+
- static u32 *avic_get_logical_id_entry(struct kvm_vcpu *vcpu, u32 ldr, bool flat)
- {
- 	struct kvm_svm *kvm_svm = to_kvm_svm(vcpu->kvm);
-diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-index 47a5e8d8b578..26fd48603fab 100644
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -619,13 +619,6 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm)
- 	 * exit_int_info, exit_int_info_err, next_rip, insn_len, insn_bytes.
- 	 */
- 
--	/*
--	 * Also covers avic_vapic_bar, avic_backing_page, avic_logical_id,
--	 * avic_physical_id.
--	 */
--	WARN_ON(kvm_apicv_activated(svm->vcpu.kvm));
--
--
- 
- 	if (svm->vgif_enabled && (svm->nested.ctl.int_ctl & V_GIF_ENABLE_MASK))
- 		int_ctl_vmcb12_bits |= (V_GIF_MASK | V_GIF_ENABLE_MASK);
-@@ -766,6 +759,9 @@ int enter_svm_guest_mode(struct kvm_vcpu *vcpu, u64 vmcb12_gpa,
- 
- 	svm_set_gif(svm, true);
- 
-+	if (kvm_vcpu_apicv_active(vcpu))
-+		kvm_make_request(KVM_REQ_APICV_UPDATE, vcpu);
-+
- 	return 0;
- }
- 
-@@ -1043,6 +1039,13 @@ int nested_svm_vmexit(struct vcpu_svm *svm)
- 	if (unlikely(vmcb01->save.rflags & X86_EFLAGS_TF))
- 		kvm_queue_exception(&(svm->vcpu), DB_VECTOR);
- 
-+	/*
-+	 * Un-inhibit the AVIC right away, so that other vCPUs can start
-+	 * to benefit from it right away.
-+	 */
-+	if (kvm_apicv_activated(vcpu->kvm))
-+		kvm_vcpu_update_apicv(vcpu);
-+
- 	return 0;
- }
- 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 7fb4cf3bce4f..28d7a4aebafd 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -1468,7 +1468,7 @@ static void svm_set_vintr(struct vcpu_svm *svm)
- 	/*
- 	 * The following fields are ignored when AVIC is enabled
- 	 */
--	WARN_ON(kvm_apicv_activated(svm->vcpu.kvm));
-+	WARN_ON(kvm_vcpu_apicv_activated(&svm->vcpu));
- 
- 	svm_set_intercept(svm, INTERCEPT_VINTR);
- 
-@@ -2977,9 +2977,16 @@ static int interrupt_window_interception(struct kvm_vcpu *vcpu)
- 	svm_clear_vintr(to_svm(vcpu));
- 
- 	/*
--	 * For AVIC, the only reason to end up here is ExtINTs.
-+	 * If not running nested, for AVIC, the only reason to end up here is ExtINTs.
- 	 * In this case AVIC was temporarily disabled for
- 	 * requesting the IRQ window and we have to re-enable it.
-+	 *
-+	 * If running nested, still remove the VM wide AVIC inhibit to
-+	 * support case in which the interrupt window was requested when the
-+	 * vCPU was not running nested.
-+
-+	 * All vCPUs which run still run nested, will remain to have their
-+	 * AVIC still inhibited due to per-cpu AVIC inhibition.
- 	 */
- 	kvm_clear_apicv_inhibit(vcpu->kvm, APICV_INHIBIT_REASON_IRQWIN);
- 
-@@ -3574,10 +3581,16 @@ static void svm_enable_irq_window(struct kvm_vcpu *vcpu)
- 		/*
- 		 * IRQ window is not needed when AVIC is enabled,
- 		 * unless we have pending ExtINT since it cannot be injected
--		 * via AVIC. In such case, we need to temporarily disable AVIC,
-+		 * via AVIC. In such case, KVM needs to temporarily disable AVIC,
- 		 * and fallback to injecting IRQ via V_IRQ.
-+		 *
-+		 * If running nested, AVIC is already locally inhibited
-+		 * on this vCPU, therefore there is no need to request
-+		 * the VM wide AVIC inhibition.
- 		 */
--		kvm_set_apicv_inhibit(vcpu->kvm, APICV_INHIBIT_REASON_IRQWIN);
-+		if (!is_guest_mode(vcpu))
-+			kvm_set_apicv_inhibit(vcpu->kvm, APICV_INHIBIT_REASON_IRQWIN);
-+
- 		svm_set_vintr(svm);
- 	}
- }
-@@ -4048,13 +4061,6 @@ static void svm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
- 		 */
- 		if (guest_cpuid_has(vcpu, X86_FEATURE_X2APIC))
- 			kvm_set_apicv_inhibit(kvm, APICV_INHIBIT_REASON_X2APIC);
--
--		/*
--		 * Currently, AVIC does not work with nested virtualization.
--		 * So, we disable AVIC when cpuid for SVM is set in the L1 guest.
--		 */
--		if (nested && guest_cpuid_has(vcpu, X86_FEATURE_SVM))
--			kvm_set_apicv_inhibit(kvm, APICV_INHIBIT_REASON_NESTED);
- 	}
- 	init_vmcb_after_set_cpuid(vcpu);
- }
-@@ -4717,6 +4723,7 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
- 	.complete_emulated_msr = svm_complete_emulated_msr,
- 
- 	.vcpu_deliver_sipi_vector = svm_vcpu_deliver_sipi_vector,
-+	.vcpu_get_apicv_inhibit_reasons = avic_vcpu_get_apicv_inhibit_reasons,
- };
- 
- /*
-@@ -4918,6 +4925,7 @@ static __init int svm_hardware_setup(void)
- 	} else {
- 		svm_x86_ops.vcpu_blocking = NULL;
- 		svm_x86_ops.vcpu_unblocking = NULL;
-+		svm_x86_ops.vcpu_get_apicv_inhibit_reasons = NULL;
- 	}
- 
- 	if (vls) {
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index ba0c90bc5c55..c6db1fe17cbc 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -622,6 +622,7 @@ int avic_pi_update_irte(struct kvm *kvm, unsigned int host_irq,
- void avic_vcpu_blocking(struct kvm_vcpu *vcpu);
- void avic_vcpu_unblocking(struct kvm_vcpu *vcpu);
- void avic_ring_doorbell(struct kvm_vcpu *vcpu);
-+unsigned long avic_vcpu_get_apicv_inhibit_reasons(struct kvm_vcpu *vcpu);
- 
- /* sev.c */
- 
--- 
-2.26.3
+-> and the last one are fine with me, but I suppose that there will be a v2?
 
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Cc: Heiko Carstens <hca@linux.ibm.com>
+> Cc: Vasily Gorbik <gor@linux.ibm.com>
+> Cc: Alexander Gordeev <agordeev@linux.ibm.com>
+> Cc: Christian Borntraeger <borntraeger@linux.ibm.com>
+> Cc: Sven Schnelle <svens@linux.ibm.com>
+> Cc: linux-s390@vger.kernel.org
+> Cc: Steven Rostedt <rostedt@goodmis.org>
+> Cc: Ingo Molnar <mingo@redhat.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: sparclinux@vger.kernel.org
+> Cc: Michael Ellerman <mpe@ellerman.id.au>
+> Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+> Cc: Paul Mackerras <paulus@samba.org>
+> Cc: linuxppc-dev@lists.ozlabs.org
+> Cc: linux-ia64@vger.kernel.org
+> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+> Cc: Pavel Machek <pavel@ucw.cz>
+> Cc: Len Brown <lenb@kernel.org>
+> Cc: linux-pm@vger.kernel.org
+> Cc: linux-acpi@vger.kernel.org
+> Cc: Johannes Weiner <hannes@cmpxchg.org>
+> Cc: Andrew Morton <akpm@linux-foundation.org>
+> Cc: Jonathan Corbet <corbet@lwn.net>
+> Cc: linux-doc@vger.kernel.org
+> ---
+>  Documentation/admin-guide/kernel-parameters.txt |   33 +++++++++-----
+>  1 file changed, 22 insertions(+), 11 deletions(-)
+>
+> --- linux-next-20220318.orig/Documentation/admin-guide/kernel-parameters.txt
+> +++ linux-next-20220318/Documentation/admin-guide/kernel-parameters.txt
+> @@ -2814,7 +2814,7 @@
+>                         different yeeloong laptops.
+>                         Example: machtype=lemote-yeeloong-2f-7inch
+>
+> -       max_addr=nn[KMG]        [KNL,BOOT,ia64] All physical memory greater
+> +       max_addr=nn[KMG]        [KNL,BOOT,IA-64] All physical memory greater
+>                         than or equal to this physical address is ignored.
+>
+>         maxcpus=        [SMP] Maximum number of processors that an SMP kernel
+> @@ -3057,7 +3057,7 @@
+>
+>         mga=            [HW,DRM]
+>
+> -       min_addr=nn[KMG]        [KNL,BOOT,ia64] All physical memory below this
+> +       min_addr=nn[KMG]        [KNL,BOOT,IA-64] All physical memory below this
+>                         physical address is ignored.
+>
+>         mini2440=       [ARM,HW,KNL]
+> @@ -5382,13 +5382,19 @@
+>                                 1: Fast pin select (default)
+>                                 2: ATC IRMode
+>
+> -       smt             [KNL,S390] Set the maximum number of threads (logical
+> +       smt=            [KNL,S390] Set the maximum number of threads (logical
+>                         CPUs) to use per physical CPU on systems capable of
+>                         symmetric multithreading (SMT). Will be capped to the
+>                         actual hardware limit.
+>                         Format: <integer>
+>                         Default: -1 (no limit)
+>
+> +       smt-enabled=    [PPC 64-bit] Enable SMT, disable SMT, or set the
+> +                       maximum number of threads. This can be used to override
+> +                       the Open Firmware (OF) option.
+> +                       Format: on | off | <integer>
+> +                       Default: all threads enabled
+> +
+>         softlockup_panic=
+>                         [KNL] Should the soft-lockup detector generate panics.
+>                         Format: 0 | 1
+> @@ -5768,8 +5774,9 @@
+>                         This parameter controls use of the Protected
+>                         Execution Facility on pSeries.
+>
+> -       swapaccount=[0|1]
+> -                       [KNL] Enable accounting of swap in memory resource
+> +       swapaccount=    [KNL]
+> +                       Format: [0|1]
+> +                       Enable accounting of swap in memory resource
+>                         controller if no parameter or 1 is given or disable
+>                         it if 0 is given (See Documentation/admin-guide/cgroup-v1/memory.rst)
+>
+> @@ -5815,7 +5822,8 @@
+>
+>         tdfx=           [HW,DRM]
+>
+> -       test_suspend=   [SUSPEND][,N]
+> +       test_suspend=   [SUSPEND]
+> +                       Format: { "mem" | "standby" | "freeze" }[,N]
+>                         Specify "mem" (for Suspend-to-RAM) or "standby" (for
+>                         standby suspend) or "freeze" (for suspend type freeze)
+>                         as the system sleep state during system startup with
+> @@ -5902,6 +5910,8 @@
+>         trace_buf_size=nn[KMG]
+>                         [FTRACE] will set tracing buffer size on each cpu.
+>
+> +       trace_clock=    [FTRACE] See Documentation/trace/ftrace.rst
+> +
+>         trace_event=[event-list]
+>                         [FTRACE] Set and start specified trace events in order
+>                         to facilitate early boot debugging. The event-list is a
+> @@ -5924,7 +5934,7 @@
+>                         See also Documentation/trace/ftrace.rst "trace options"
+>                         section.
+>
+> -       tp_printk[FTRACE]
+> +       tp_printk       [FTRACE]
+>                         Have the tracepoints sent to printk as well as the
+>                         tracing ring buffer. This is useful for early boot up
+>                         where the system hangs or reboots and does not give the
+> @@ -5946,7 +5956,7 @@
+>                         frequency tracepoints such as irq or sched, can cause
+>                         the system to live lock.
+>
+> -       tp_printk_stop_on_boot[FTRACE]
+> +       tp_printk_stop_on_boot [FTRACE]
+>                         When tp_printk (above) is set, it can cause a lot of noise
+>                         on the console. It may be useful to only include the
+>                         printing of events during boot up, as user space may
+> @@ -6295,7 +6305,7 @@
+>                                         HIGHMEM regardless of setting
+>                                         of CONFIG_HIGHPTE.
+>
+> -       vdso=           [X86,SH]
+> +       vdso=           [X86,SH,SPARC]
+>                         On X86_32, this is an alias for vdso32=.  Otherwise:
+>
+>                         vdso=1: enable VDSO (the default)
+> @@ -6321,11 +6331,12 @@
+>         video=          [FB] Frame buffer configuration
+>                         See Documentation/fb/modedb.rst.
+>
+> -       video.brightness_switch_enabled= [0,1]
+> +       video.brightness_switch_enabled= [ACPI]
+> +                       Format: [0|1]
+>                         If set to 1, on receiving an ACPI notify event
+>                         generated by hotkey, video driver will adjust brightness
+>                         level and then send out the event to user space through
+> -                       the allocated input device; If set to 0, video driver
+> +                       the allocated input device. If set to 0, video driver
+>                         will only send out the event without touching backlight
+>                         brightness level.
+>                         default: 1
