@@ -2,85 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3207BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 11:12:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B9D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 11:12:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233817AbiCVLNl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 07:13:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37440 "EHLO
+        id S233990AbiCVLN5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 07:13:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230135AbiCVLNi (ORCPT
+        with ESMTP id S231534AbiCVLNw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 07:13:38 -0400
-Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com [209.85.219.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74B198021D;
-        Tue, 22 Mar 2022 04:12:07 -0700 (PDT)
-Received: by mail-yb1-f178.google.com with SMTP id y142so32914005ybe.11;
-        Tue, 22 Mar 2022 04:12:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eAEB4EkYiyDLjCGXztqi5rjXvrVzYwYiLfT7TEzd0Gg=;
-        b=VMu0JthSWwJQzlqBhxdgxeHSTYPHATGBuT280Fwbbki1RMDIuLY78HvQjj4arVnZxW
-         qGVKvGVXa8XjjhxQ2GI5vx+6cUauMoOAYWMxqo+ntBCx/GbGBcdLnpM98izP5fcdbyEA
-         f90Eo8iVCbIWNet6FOwE/A81cfOr+bCXhGse7YtVPb+qZ8u0PgNGayZVgGPv6IvWnASF
-         +4gAx5gq0lxCUzreHCx9jPl0wSb6E34RMe40vtuYM5oTBecyF7CyxJkta16Cb1VygFDa
-         D4kwwYYWCB93FlziMMseZhD6dWGQwfM9ZiDxFtri5av8SakrEEp99RG1Apr5A/s5u14i
-         cSFQ==
-X-Gm-Message-State: AOAM5339LZI2ElCH6pzns412m8gWvP6QE8IZ0xtvgRg5QfOcSpF6wrO/
-        HeggixuUxFPvb/1HugZ5CS/VGANecql7sX0vvnk=
-X-Google-Smtp-Source: ABdhPJy7J3kPzMh3zGdCCagbfKmYuXjzWcE8v2f7kXswi1R/nTTBK/UC4hqgkaKir+RL0Wu6Iy0fT3HByLTjqEq1cT8=
-X-Received: by 2002:a25:fe10:0:b0:625:262f:e792 with SMTP id
- k16-20020a25fe10000000b00625262fe792mr25846281ybe.365.1647947526731; Tue, 22
- Mar 2022 04:12:06 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220320062907.3272903-1-rajatja@google.com> <YjmQq1DvWnJwUh6R@infradead.org>
-In-Reply-To: <YjmQq1DvWnJwUh6R@infradead.org>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 22 Mar 2022 12:11:54 +0100
-Message-ID: <CAJZ5v0h9TnUELahzkO59Vqoio1QRHfixk58Yxgffa72rmEBgOA@mail.gmail.com>
-Subject: Re: [PATCH v4 1/2] PCI: Rename "pci_dev->untrusted" to "pci_dev->poses_dma_risk"
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Rajat Jain <rajatja@google.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rajat Jain <rajatxjain@gmail.com>,
-        Dmitry Torokhov <dtor@google.com>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Pavel Machek <pavel@denx.de>,
-        "Oliver O'Halloran" <oohall@gmail.com>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Tue, 22 Mar 2022 07:13:52 -0400
+Received: from smtp-bc0d.mail.infomaniak.ch (smtp-bc0d.mail.infomaniak.ch [IPv6:2001:1600:3:17::bc0d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B52D81666
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 04:12:24 -0700 (PDT)
+Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KN82v01l3zMqKMC;
+        Tue, 22 Mar 2022 12:12:23 +0100 (CET)
+Received: from localhost (unknown [23.97.221.149])
+        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4KN82t5Gg3zlhMCB;
+        Tue, 22 Mar 2022 12:12:22 +0100 (CET)
+From:   =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
+To:     Jarkko Sakkinen <jarkko@kernel.org>
+Cc:     =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>,
+        David Howells <dhowells@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
         David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+        Eric Snowberg <eric.snowberg@oracle.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Tyler Hicks <tyhicks@linux.microsoft.com>,
+        keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@linux.microsoft.com>
+Subject: [PATCH v2 1/1] certs: Explain the rationale to call panic()
+Date:   Tue, 22 Mar 2022 12:13:23 +0100
+Message-Id: <20220322111323.542184-2-mic@digikod.net>
+In-Reply-To: <20220322111323.542184-1-mic@digikod.net>
+References: <20220322111323.542184-1-mic@digikod.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 10:02 AM Christoph Hellwig <hch@infradead.org> wrote:
->
-> On Sat, Mar 19, 2022 at 11:29:05PM -0700, Rajat Jain wrote:
-> > Rename the field to make it more clear, that the device can execute DMA
-> > attacks on the system, and thus the system may need protection from
-> > such attacks from this device.
-> >
-> > No functional change intended.
-> >
-> > Signed-off-by: Rajat Jain <rajatja@google.com>
-> > ---
-> > v4: Initial version, created based on comments on other patch
->
-> What a horrible name.  Why not untrusted_dma which captures the
-> intent much better?
+From: Mickaël Salaün <mic@linux.microsoft.com>
 
-FWIW, I like this one much better too.
+The blacklist_init() function calls panic() for memory allocation
+errors.  This change documents the reason why we don't return -ENODEV.
+
+Suggested-by: Paul Moore <paul@paul-moore.com> [1]
+Requested-by: Jarkko Sakkinen <jarkko@kernel.org> [1]
+Link: https://lore.kernel.org/r/YjeW2r6Wv55Du0bJ@iki.fi [1]
+Reviewed-by: Paul Moore <paul@paul-moore.com>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Mickaël Salaün <mic@linux.microsoft.com>
+Link: https://lore.kernel.org/r/20220322111323.542184-2-mic@digikod.net
+---
+
+Changes since v1:
+* Fix commit subject spelling spotted by David Woodhouse.
+* Reword one sentence as suggested by Paul Moore.
+* Add Reviewed-by Paul Moore.
+* Add Reviewed-by Jarkko Sakkinen.
+---
+ certs/blacklist.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/certs/blacklist.c b/certs/blacklist.c
+index 486ce0dd8e9c..25094ea73600 100644
+--- a/certs/blacklist.c
++++ b/certs/blacklist.c
+@@ -307,6 +307,15 @@ static int restrict_link_for_blacklist(struct key *dest_keyring,
+ 
+ /*
+  * Initialise the blacklist
++ *
++ * The blacklist_init() function is registered as an initcall via
++ * device_initcall().  As a result if the blacklist_init() function fails for
++ * any reason the kernel continues to execute.  While cleanly returning -ENODEV
++ * could be acceptable for some non-critical kernel parts, if the blacklist
++ * keyring fails to load it defeats the certificate/key based deny list for
++ * signed modules.  If a critical piece of security functionality that users
++ * expect to be present fails to initialize, panic()ing is likely the right
++ * thing to do.
+  */
+ static int __init blacklist_init(void)
+ {
+-- 
+2.35.1
+
