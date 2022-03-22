@@ -2,117 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AC84C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 11:07:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5927C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 11:07:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233917AbiCVLIq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 07:08:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46424 "EHLO
+        id S233965AbiCVLIu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 07:08:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233036AbiCVLIo (ORCPT
+        with ESMTP id S233880AbiCVLIo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 22 Mar 2022 07:08:44 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 398908021D;
-        Tue, 22 Mar 2022 04:07:17 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id 123-20020a1c1981000000b0038b3616a71aso1277212wmz.4;
-        Tue, 22 Mar 2022 04:07:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nuGWDZlXSZNQGXcVqmqYeVN3TUgNMalMalmgFdEvLsg=;
-        b=X4RgYA0+Ajt10eWG3Cch8vH9Av08UbBn9ubtGq13/DWrudpJ9HsL8NBFjPSUVGn6mf
-         NwZdtF8uAnK4t8OaDZfbPuRFUb4M2szufCnJ77oIudRfuZLBsOnsBCXuc3SQ72PreVmi
-         0GJ/rFbF3XQbbIu5UtA/wmNCTc3XeseBSjrjD9iZZc2s30/TIfUnVH0tJsLMwKBduBX2
-         ewi2AwR9tjbRS3WiL/OxG3kh57cl7AM7sScY2C7rjg9503Y7oRUad4M4U7CxJ4HmHe9t
-         qmLv+HZ+Nm5KMpqztfekztjTkYJaz7eW3eNz9JlLspoqijvuTMz5RuSezD7rNbpBR+kz
-         fsOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=nuGWDZlXSZNQGXcVqmqYeVN3TUgNMalMalmgFdEvLsg=;
-        b=DlGi3IbJeAO0unAtcTHLQcc5bFw5qfzrTBdJKSSPVyXfg+M+NjkkAaA8N1vID/ltaZ
-         glG2ydn1/LP/V84VMvXojNSzucNNBeFuRyxJWv/rHws6LTzg5GbNQJ/qaOE5VCGQ287l
-         ruzk4yQP0xdU2Vst9wmC8EMsyyq4GklfgCn08PasF3HK8KsU5MNWwhqafeqpJWWvXFCF
-         4m2Ap57pWVpGJWU9w8avtUieDEKc2QL4rYdTjZ/eFSgBld3IWh7qinQuexepiiv/a8Ig
-         YCBd+O9f5fm8G+rzbNr54JQ69RjEg7nKjD+a0Vjysbv/VwruoMwnzTTZGcmNQxBsSs4Y
-         OIfA==
-X-Gm-Message-State: AOAM531zCU7Vkfih9EikUL89N0cNSQz/tNxlBDi0yyDrdxygiwPC2etk
-        6zt1WqNmr7yWiy3AJ8XMzpF/YVqqZRY=
-X-Google-Smtp-Source: ABdhPJyYkc/0WmhNc7t3CoJMz8icf/aTLLqcf8k5iFIr0sUggSjDbLvekBHQdd0qX0SvqiTcjPEdCQ==
-X-Received: by 2002:adf:e348:0:b0:1f0:537:1807 with SMTP id n8-20020adfe348000000b001f005371807mr22271075wrj.11.1647947235642;
-        Tue, 22 Mar 2022 04:07:15 -0700 (PDT)
-Received: from avogadro.lan ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.gmail.com with ESMTPSA id f13-20020a05600c4e8d00b0038c949ef0d5sm1746379wmq.8.2022.03.22.04.07.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Mar 2022 04:07:15 -0700 (PDT)
-Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     mlevitsk@redhat.com, jmattson@google.com
-Subject: [PATCH 0/3] Documentation: KVM: add a place to document API quirks and (x86) CPU errata
-Date:   Tue, 22 Mar 2022 12:07:09 +0100
-Message-Id: <20220322110712.222449-1-pbonzini@redhat.com>
-X-Mailer: git-send-email 2.35.1
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9DE080212
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 04:07:16 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KN7rR3PkNz4wBF;
+        Tue, 22 Mar 2022 19:03:19 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
+ (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 22 Mar
+ 2022 19:07:14 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <akpm@linux-foundation.org>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <linmiaohe@huawei.com>
+Subject: [PATCH] mm: compaction: use helper isolation_suitable
+Date:   Tue, 22 Mar 2022 19:07:50 +0800
+Message-ID: <20220322110750.60311-1-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reorganize Documentation/virt/kvm to be less x86-centric, and add a new
-file to document the ways in which x86 emulation is "wrong".  There are
-surely many more, for now just add the skeleton.  Please reply to this
-message with things that you'd like to see documented.
+Use helper isolation_suitable to check whether page is suitable to isolate
+to simplify the code. Minor readability improvement.
 
-While at it add also a section for places where the KVM API is bad or
-returns wrong values.  Please also include them in reply to this message
-if you are interested in seeing them documented.
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ mm/compaction.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Paolo
-
-Paolo Bonzini (3):
-  Documentation: KVM: add separate directories for architecture-specific
-    documentation
-  Documentation: KVM: add virtual CPU errata documentation
-  Documentation: KVM: add API issues section
-
- Documentation/virt/kvm/api.rst                | 46 +++++++++++++++++++
- Documentation/virt/kvm/index.rst              | 28 ++++-------
- Documentation/virt/kvm/s390/index.rst         | 12 +++++
- .../virt/kvm/{ => s390}/s390-diag.rst         |  0
- .../virt/kvm/{ => s390}/s390-pv-boot.rst      |  0
- Documentation/virt/kvm/{ => s390}/s390-pv.rst |  0
- .../kvm/{ => x86}/amd-memory-encryption.rst   |  0
- Documentation/virt/kvm/{ => x86}/cpuid.rst    |  0
- Documentation/virt/kvm/x86/errata.rst         | 39 ++++++++++++++++
- .../virt/kvm/{ => x86}/halt-polling.rst       |  0
- .../virt/kvm/{ => x86}/hypercalls.rst         |  0
- Documentation/virt/kvm/x86/index.rst          | 19 ++++++++
- Documentation/virt/kvm/{ => x86}/mmu.rst      |  0
- Documentation/virt/kvm/{ => x86}/msr.rst      |  0
- .../virt/kvm/{ => x86}/nested-vmx.rst         |  0
- .../kvm/{ => x86}/running-nested-guests.rst   |  0
- .../virt/kvm/{ => x86}/timekeeping.rst        |  0
- 17 files changed, 124 insertions(+), 20 deletions(-)
- create mode 100644 Documentation/virt/kvm/s390/index.rst
- rename Documentation/virt/kvm/{ => s390}/s390-diag.rst (100%)
- rename Documentation/virt/kvm/{ => s390}/s390-pv-boot.rst (100%)
- rename Documentation/virt/kvm/{ => s390}/s390-pv.rst (100%)
- rename Documentation/virt/kvm/{ => x86}/amd-memory-encryption.rst (100%)
- rename Documentation/virt/kvm/{ => x86}/cpuid.rst (100%)
- create mode 100644 Documentation/virt/kvm/x86/errata.rst
- rename Documentation/virt/kvm/{ => x86}/halt-polling.rst (100%)
- rename Documentation/virt/kvm/{ => x86}/hypercalls.rst (100%)
- create mode 100644 Documentation/virt/kvm/x86/index.rst
- rename Documentation/virt/kvm/{ => x86}/mmu.rst (100%)
- rename Documentation/virt/kvm/{ => x86}/msr.rst (100%)
- rename Documentation/virt/kvm/{ => x86}/nested-vmx.rst (100%)
- rename Documentation/virt/kvm/{ => x86}/running-nested-guests.rst (100%)
- rename Documentation/virt/kvm/{ => x86}/timekeeping.rst (100%)
-
+diff --git a/mm/compaction.c b/mm/compaction.c
+index c3e37aa9ff9e..86f34053c39d 100644
+--- a/mm/compaction.c
++++ b/mm/compaction.c
+@@ -899,7 +899,7 @@ isolate_migratepages_block(struct compact_control *cc, unsigned long low_pfn,
+ 		 * not falsely conclude that the block should be skipped.
+ 		 */
+ 		if (!valid_page && IS_ALIGNED(low_pfn, pageblock_nr_pages)) {
+-			if (!cc->ignore_skip_hint && get_pageblock_skip(page)) {
++			if (!isolation_suitable(cc, page)) {
+ 				low_pfn = end_pfn;
+ 				page = NULL;
+ 				goto isolate_abort;
 -- 
-2.35.1
+2.23.0
 
