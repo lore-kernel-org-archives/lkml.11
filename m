@@ -2,234 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD12FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 01:47:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47ABEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 01:49:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235179AbiCVBsz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 21:48:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51352 "EHLO
+        id S235196AbiCVBuu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 21:50:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235381AbiCVBs0 (ORCPT
+        with ESMTP id S235123AbiCVBur (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 21:48:26 -0400
-Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEC5F377CA;
-        Mon, 21 Mar 2022 18:46:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1647913617; x=1679449617;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=LXdAWfbEEyMtMPiS0cq35JyKZEaDBL+llZxzocq1lNE=;
-  b=AAAI85nzhHSrQK+pcI1rvgT3yWNAxPCnGpDN7fWTWhkb4XxR8GFGcx6T
-   ZCtGkibFHtLNX3Fl1wJMoKbqqVi6ucfxEfmrSTFY9v9eMoW/bq3YruA8r
-   ZHNvXHXQ5qMUeb8InMRHvnH0k87JNUeRuy9UneGuIXHXTmueVd4yk4fWx
-   M=;
-X-IronPort-AV: E=Sophos;i="5.90,200,1643673600"; 
-   d="scan'208";a="183544633"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2a-ff3df2fe.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP; 22 Mar 2022 01:46:55 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2a-ff3df2fe.us-west-2.amazon.com (Postfix) with ESMTPS id 947E440BC2;
-        Tue, 22 Mar 2022 01:46:54 +0000 (UTC)
-Received: from EX13D05UWC004.ant.amazon.com (10.43.162.223) by
- EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Tue, 22 Mar 2022 01:46:54 +0000
-Received: from EX13MTAUEA002.ant.amazon.com (10.43.61.77) by
- EX13D05UWC004.ant.amazon.com (10.43.162.223) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Tue, 22 Mar 2022 01:46:53 +0000
-Received: from localhost (10.187.171.8) by mail-relay.amazon.com
- (10.43.61.169) with Microsoft SMTP Server id 15.0.1497.32 via Frontend
- Transport; Tue, 22 Mar 2022 01:46:53 +0000
-From:   Eduardo Valentin <eduval@amazon.com>
-To:     Guenter Roeck <linux@roeck-us.net>, <eduval@amazon.com>
-CC:     Jean Delvare <jdelvare@suse.com>, <linux-hwmon@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Eduardo Valentin <evalenti@kernel.org>
-Subject: [PATCH 1/1] drivers: hwmon: pmbus: register with thermal for PSC_TEMPERATURE
-Date:   Mon, 21 Mar 2022 18:46:50 -0700
-Message-ID: <20220322014650.14956-1-eduval@amazon.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 21 Mar 2022 21:50:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED61A2CC94
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 18:49:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A5F760A20
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 01:49:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D7A3C340E8;
+        Tue, 22 Mar 2022 01:49:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647913759;
+        bh=ddTucoDObbko3r4dIUh3A+Wyax31f7BdaGshebkC8ak=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=vKS5FvHjypP7+oJU8VJ14xcilm7aYOXpmyBeLBmAH286j/eeSjrthKWCl25Zbex89
+         a6GKYtJXzFMK+KIUMk5ZBKMAFLpOa7+ti+XarxoocpWXsIV8ukU9iJykHePX9BveSk
+         Ys1ebK1KcjmbhfykfeMYl3he4JrKtNQoeOxricTKyRMcGnab2jhXjS9VSxqR0v+Ldp
+         pnsBMh5sH9axv+mpcDXKuwJ+vM08aYb2My7MVG2YXIcP3PJhXEwsxkaRrT0x9CwA+p
+         XZjYSBBQmJTLbjJktpXLNbHAAbYDjNfRE5WtmoUZvKOTt+P3R3Lb6JkvESNOjQjWG9
+         L7HUDpcVyJJ3w==
+Date:   Mon, 21 Mar 2022 18:49:12 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Fangrui Song <maskray@google.com>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH v2] riscv module: remove (NOLOAD)
+Message-ID: <YjkrGAqx9nl/PtWh@dev-arch.thelio-3990X>
+References: <mhng-7fe2c5d9-a8e6-4123-ac5c-0c9190792520@palmer-ri-x1c9>
+ <20220322012617.3517297-1-maskray@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220322012617.3517297-1-maskray@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some pmbus device drivers have device tree support and
-may want to use of-thermal to register a thermal zone
-OF sensor for those device drivers.
+On Mon, Mar 21, 2022 at 06:26:17PM -0700, Fangrui Song wrote:
+> On ELF, (NOLOAD) sets the section type to SHT_NOBITS[1]. It is conceptually
+> inappropriate for .plt, .got, and .got.plt sections which are always
+> SHT_PROGBITS.
+> 
+> In GNU ld, if PLT entries are needed, .plt will be SHT_PROGBITS anyway
+> and (NOLOAD) will be essentially ignored. In ld.lld, since
+> https://reviews.llvm.org/D118840 ("[ELF] Support (TYPE=<value>) to
+> customize the output section type"), ld.lld will report a `section type
+> mismatch` error (later changed to a warning). Just remove (NOLOAD) to
+> fix the warning.
+> 
+> [1] https://lld.llvm.org/ELF/linker_script.html As of today, "The
+> section should be marked as not loadable" on
+> https://sourceware.org/binutils/docs/ld/Output-Section-Type.html is
+> outdated for ELF.
+> 
+> Link: https://github.com/ClangBuiltLinux/linux/issues/1597
+> Fixes: ab1ef68e5401 ("RISC-V: Add sections of PLT and GOT for kernel module")
+> Reported-by: Nathan Chancellor <nathan@kernel.org>
+> Signed-off-by: Fangrui Song <maskray@google.com>
 
-This way we allow describing device tree thermal zones
-for pmbus device drivers with device tree support.
+Thank you for the resend! I think the Fixes: tag you chose is more
+accurate than Palmer's suggested one. Same tags as v1, if Palmer would
+not mind taking them while applying:
 
-This patch achieves this by registering pmbus sensors
-with thermal subsystem if they are PSC_TEMPERATURE
-and are providing _input hwmon interface.
+Cc: stable@vger.kernel.org
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+Tested-by: Nathan Chancellor <nathan@kernel.org>
 
-Cc: Guenter Roeck <linux@roeck-us.net> (maintainer:PMBUS HARDWARE MONITORING DRIVERS)
-Cc: Jean Delvare <jdelvare@suse.com> (maintainer:HARDWARE MONITORING)
-Cc: linux-hwmon@vger.kernel.org (open list:PMBUS HARDWARE MONITORING DRIVERS)
-Cc: linux-kernel@vger.kernel.org (open list)
-Signed-off-by: Eduardo Valentin <eduval@amazon.com>
-Signed-off-by: Eduardo Valentin <evalenti@kernel.org>
----
- drivers/hwmon/pmbus/pmbus_core.c | 88 +++++++++++++++++++++++++++++---
- 1 file changed, 80 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
-index 776ee2237be2..a51cdfab1c3e 100644
---- a/drivers/hwmon/pmbus/pmbus_core.c
-+++ b/drivers/hwmon/pmbus/pmbus_core.c
-@@ -19,6 +19,8 @@
- #include <linux/pmbus.h>
- #include <linux/regulator/driver.h>
- #include <linux/regulator/machine.h>
-+#include <linux/of.h>
-+#include <linux/thermal.h>
- #include "pmbus.h"
- 
- /*
-@@ -1078,7 +1080,71 @@ static int pmbus_add_boolean(struct pmbus_data *data,
- 	return pmbus_add_attribute(data, &a->dev_attr.attr);
- }
- 
--static struct pmbus_sensor *pmbus_add_sensor(struct pmbus_data *data,
-+/* of thermal for pmbus temperature sensors */
-+struct pmbus_thermal_data {
-+	struct i2c_client *client;
-+	struct pmbus_sensor *sensor;
-+};
-+
-+static int pmbus_thermal_get_temp(void *data, int *temp)
-+{
-+	struct pmbus_thermal_data *tdata = data;
-+	struct i2c_client *client = tdata->client;
-+	struct pmbus_sensor *sensor = tdata->sensor;
-+	struct pmbus_data *pmbus_data = i2c_get_clientdata(client);
-+	struct device *dev = pmbus_data->hwmon_dev;
-+	int ret = 0;
-+
-+	if (!dev) {
-+		/* May not even get to hwmon yet */
-+		*temp = 0;
-+		return 0;
-+	}
-+
-+	mutex_lock(&pmbus_data->update_lock);
-+	pmbus_update_sensor_data(client, sensor);
-+	if (sensor->data < 0)
-+		ret = sensor->data;
-+	else
-+		*temp = (int)pmbus_reg2data(pmbus_data, sensor);
-+	mutex_unlock(&pmbus_data->update_lock);
-+
-+	return ret;
-+}
-+
-+static const struct thermal_zone_of_device_ops pmbus_thermal_ops = {
-+	.get_temp = pmbus_thermal_get_temp,
-+};
-+
-+static int pmbus_thermal_add_sensor(struct i2c_client *client,
-+				    struct pmbus_data *pmbus_data,
-+				    struct pmbus_sensor *sensor, int index)
-+{
-+	struct device *dev = pmbus_data->dev;
-+	struct pmbus_thermal_data *tdata;
-+	struct thermal_zone_device *tzd;
-+
-+	tdata = devm_kzalloc(dev, sizeof(*tdata), GFP_KERNEL);
-+	if (!tdata)
-+		return -ENOMEM;
-+
-+	tdata->sensor = sensor;
-+	tdata->client = client;
-+
-+	tzd = devm_thermal_zone_of_sensor_register(dev, index, tdata,
-+						   &pmbus_thermal_ops);
-+	/*
-+	 * If CONFIG_THERMAL_OF is disabled, this returns -ENODEV,
-+	 * so ignore that error but forward any other error.
-+	 */
-+	if (IS_ERR(tzd) && (PTR_ERR(tzd) != -ENODEV))
-+		return PTR_ERR(tzd);
-+
-+	return 0;
-+}
-+
-+static struct pmbus_sensor *pmbus_add_sensor(struct i2c_client *client,
-+					     struct pmbus_data *data,
- 					     const char *name, const char *type,
- 					     int seq, int page, int phase,
- 					     int reg,
-@@ -1121,6 +1187,10 @@ static struct pmbus_sensor *pmbus_add_sensor(struct pmbus_data *data,
- 	sensor->next = data->sensors;
- 	data->sensors = sensor;
- 
-+	/* temperature sensors with _input values are registered with thermal */
-+	if (class == PSC_TEMPERATURE && strcmp(type, "input") == 0)
-+		pmbus_thermal_add_sensor(client, data, sensor, seq);
-+
- 	return sensor;
- }
- 
-@@ -1216,8 +1286,9 @@ static int pmbus_add_limit_attrs(struct i2c_client *client,
- 
- 	for (i = 0; i < nlimit; i++) {
- 		if (pmbus_check_word_register(client, page, l->reg)) {
--			curr = pmbus_add_sensor(data, name, l->attr, index,
--						page, 0xff, l->reg, attr->class,
-+			curr = pmbus_add_sensor(client, data, name, l->attr,
-+						index, page, 0xff, l->reg,
-+						attr->class,
- 						attr->update || l->update,
- 						false, true);
- 			if (!curr)
-@@ -1258,7 +1329,7 @@ static int pmbus_add_sensor_attrs_one(struct i2c_client *client,
- 		if (ret)
- 			return ret;
- 	}
--	base = pmbus_add_sensor(data, name, "input", index, page, phase,
-+	base = pmbus_add_sensor(client, data, name, "input", index, page, phase,
- 				attr->reg, attr->class, true, true, true);
- 	if (!base)
- 		return -ENOMEM;
-@@ -1887,7 +1958,7 @@ static int pmbus_add_fan_ctrl(struct i2c_client *client,
- {
- 	struct pmbus_sensor *sensor;
- 
--	sensor = pmbus_add_sensor(data, "fan", "target", index, page,
-+	sensor = pmbus_add_sensor(client, data, "fan", "target", index, page,
- 				  0xff, PMBUS_VIRT_FAN_TARGET_1 + id, PSC_FAN,
- 				  false, false, true);
- 
-@@ -1898,14 +1969,14 @@ static int pmbus_add_fan_ctrl(struct i2c_client *client,
- 			(data->info->func[page] & PMBUS_HAVE_PWM34)))
- 		return 0;
- 
--	sensor = pmbus_add_sensor(data, "pwm", NULL, index, page,
-+	sensor = pmbus_add_sensor(client, data, "pwm", NULL, index, page,
- 				  0xff, PMBUS_VIRT_PWM_1 + id, PSC_PWM,
- 				  false, false, true);
- 
- 	if (!sensor)
- 		return -ENOMEM;
- 
--	sensor = pmbus_add_sensor(data, "pwm", "enable", index, page,
-+	sensor = pmbus_add_sensor(client, data, "pwm", "enable", index, page,
- 				  0xff, PMBUS_VIRT_PWM_ENABLE_1 + id, PSC_PWM,
- 				  true, false, false);
- 
-@@ -1947,7 +2018,8 @@ static int pmbus_add_fan_attributes(struct i2c_client *client,
- 			    (!(regval & (PB_FAN_1_INSTALLED >> ((f & 1) * 4)))))
- 				continue;
- 
--			if (pmbus_add_sensor(data, "fan", "input", index,
-+			if (pmbus_add_sensor(client, data, "fan",
-+					     "input", index,
- 					     page, 0xff, pmbus_fan_registers[f],
- 					     PSC_FAN, true, true, true) == NULL)
- 				return -ENOMEM;
--- 
-2.17.1
-
+> ---
+>  arch/riscv/include/asm/module.lds.h | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/arch/riscv/include/asm/module.lds.h b/arch/riscv/include/asm/module.lds.h
+> index 4254ff2ff049..1075beae1ac6 100644
+> --- a/arch/riscv/include/asm/module.lds.h
+> +++ b/arch/riscv/include/asm/module.lds.h
+> @@ -2,8 +2,8 @@
+>  /* Copyright (C) 2017 Andes Technology Corporation */
+>  #ifdef CONFIG_MODULE_SECTIONS
+>  SECTIONS {
+> -	.plt (NOLOAD) : { BYTE(0) }
+> -	.got (NOLOAD) : { BYTE(0) }
+> -	.got.plt (NOLOAD) : { BYTE(0) }
+> +	.plt : { BYTE(0) }
+> +	.got : { BYTE(0) }
+> +	.got.plt : { BYTE(0) }
+>  }
+>  #endif
+> -- 
+> 2.35.1.894.gb6a874cedc-goog
+> 
