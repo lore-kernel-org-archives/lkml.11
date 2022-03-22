@@ -2,94 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 573D3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 00:01:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA496C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 00:02:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233800AbiCVADQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 20:03:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53356 "EHLO
+        id S233810AbiCVAEX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 20:04:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233451AbiCVADO (ORCPT
+        with ESMTP id S233451AbiCVAEV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 20:03:14 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2666B5BD18
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 17:00:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647907249; x=1679443249;
-  h=from:to:cc:subject:references:date:in-reply-to:
-   message-id:mime-version;
-  bh=UDulXBbHl84BXC6Y9lJgX+jNJtZKcReNo6dsx18aGgo=;
-  b=Ismshecq2GTWjApLq96TtNT06OieeRt4nFZE+pjQYNNl9Qcf2JK7y9oA
-   O6ADcamAImt96FPFQOKfUez+8R2XVClHuUhiWohE7hoQ8/XPzeg5ysOcl
-   kEoomuX9zR633z9hBuoSSWOYG5T/va2/Q8S+gMwgk0f0QNBwveoQK2wXo
-   C5bxoJu3V/EX382DB4S+gUeKU0II9M1CUMYHmhfqARugmId4XOv2Wn/gf
-   PrjrQPNb6OONfY81YUw4mplCwQgE35UjrM8YFAiUekaILAw3ds5zD9xmf
-   2oRv+z7eEYApsbwmAKS/P6/Bsz1tvbqW3VZF9j12cIs9dXfLMabi3ou8b
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="318387830"
-X-IronPort-AV: E=Sophos;i="5.90,199,1643702400"; 
-   d="scan'208";a="318387830"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 16:59:07 -0700
-X-IronPort-AV: E=Sophos;i="5.90,199,1643702400"; 
-   d="scan'208";a="560104256"
-Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.94])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 16:59:03 -0700
-From:   "Huang, Ying" <ying.huang@intel.com>
-To:     Qian Cai <quic_qiancai@quicinc.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        <linux-kernel@vger.kernel.org>,
-        "Juri Lelli" <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        "Andrew Morton" <akpm@linux-foundation.org>,
-        Borislav Petkov <bp@alien8.de>,
-        "Thomas Gleixner" <tglx@linutronix.de>
-Subject: Re: [GIT PULL] scheduler updates for v5.18
-References: <YjhZUezhnamHAl0H@gmail.com> <Yjh58h8cpcPERVZA@qian>
-Date:   Tue, 22 Mar 2022 07:59:01 +0800
-In-Reply-To: <Yjh58h8cpcPERVZA@qian> (Qian Cai's message of "Mon, 21 Mar 2022
-        09:13:22 -0400")
-Message-ID: <8735jac0xm.fsf@yhuang6-desk2.ccr.corp.intel.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Mon, 21 Mar 2022 20:04:21 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430461ADBC
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 17:01:52 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-2e5757b57caso173580747b3.4
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 17:01:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ywTufhA3FR1/uGbGs9dVJU1wkRSfjG6XIwDZtPklIYU=;
+        b=sNLMReKM2ItpOQlh0a49eKt4IyTU1NVD0wjxZ50uS3Z/lUS3/RqBwBWbFDtWrAjiHv
+         Yw8lcxv6B7ZgLVnIHIlEaASd1HtIG5IhsXeNrXRLJKQq38nDiwnGgUgUXStG2Z7IYZxQ
+         yOpTdOGwyEoptGU7xuBMDIYiwG6hSwINV06i4wog605QayijGdDbTTKO9XCx2yuDN2l5
+         dzqgXIpxo594MF1bk5mAcsbtFNNCDITBM4qqQ+/z8ZLWIozPi7/dlWuet/OrYb9f55Jq
+         CG5vMSlknY9UvTHDOkL09NhG8awlzh/ePDjqGWZTS343e+NsjUMC4o32n6ciNn+9fBTO
+         YM6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ywTufhA3FR1/uGbGs9dVJU1wkRSfjG6XIwDZtPklIYU=;
+        b=TkmK6pTzUa5mpQeyHWSDCf3Imb248LXYlpE1DCJp8MTZSmAaqMUB0pi/ZosqS3UWnT
+         3TkrLHRTim07I5BsXEbOsHfd1K0dgLg8FjII+Jm6BS8gkllx39Is2LjaMHrxha42ezGB
+         u9cMImYEenbwtnOM/RhytG7ccscYL1QeqoTZW1wSUwuGHhgxvQ6X6MokNdic5aRT6mJI
+         oD+Qs0UNcH9CAIw6JBhhx4Ym3TSIE/qJO05ERAixhWKTctKLhagQ0HIyrqyujt3TLoFw
+         gfXpV5W3rRzstBkGOJm0TPalqPmTpZc+oVdHuBMLS5MqPlzzJP6cuQ3R6OOH8A9BvhFa
+         URAA==
+X-Gm-Message-State: AOAM533ntdFT+Dq40Hh4thtfSlzGStQkRHXXIpthAMWZlxQAVm8Qi767
+        HFcPEtHbKXvL4Ec6sIc6zAPxqJx0j8LRSti7mfrFIA==
+X-Google-Smtp-Source: ABdhPJwQPleOGUzzVS5PuXozRt8Rq46qgetZgQA9Bho/3bRRZMg1eV9Y/vVIhEwWfkqe7AdRn/plzXYfKzJmPTJ6Sro=
+X-Received: by 2002:a81:5706:0:b0:2e5:c451:b257 with SMTP id
+ l6-20020a815706000000b002e5c451b257mr23336409ywb.126.1647907294658; Mon, 21
+ Mar 2022 17:01:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ascii
+References: <20220317225844.1262643-1-linus.walleij@linaro.org>
+ <20220317225844.1262643-3-linus.walleij@linaro.org> <67600921-a4ea-367e-6b45-c4a1a12ae88b@kernel.org>
+ <Yjd5ZFzTHIl+NAWV@robh.at.kernel.org>
+In-Reply-To: <Yjd5ZFzTHIl+NAWV@robh.at.kernel.org>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 22 Mar 2022 01:01:23 +0100
+Message-ID: <CACRpkdawW5MHN6vYBJ3R4c_t+7Y5hi5u2XV5AWu5mz3UEQnLJQ@mail.gmail.com>
+Subject: Re: [PATCH 3/5 v2] dt-bindings: gnss: Rewrite sirfstar binding in YAML
+To:     Rob Herring <robh@kernel.org>
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Johan Hovold <johan@kernel.org>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Qian Cai <quic_qiancai@quicinc.com> writes:
+On Sun, Mar 20, 2022 at 7:58 PM Rob Herring <robh@kernel.org> wrote:
 
-> On Mon, Mar 21, 2022 at 11:54:09AM +0100, Ingo Molnar wrote:
->> Huang Ying (3):
->>       sched/numa-balancing: Move some document to make it consistent with the code
->>       sched/numa: Fix NUMA topology for systems with CPU-less nodes
+> I fixed up both and applied.
 
-These 2 patches are good.
+Thanks for handling this Rob!
 
->>       sched/numa: Avoid migrating task to CPU-less node
-
-As Qian pointed out, this needs to be updated.
-
-> Linus, I don't think you want to merge this as-is. This will introduce a
-> kernel crash on arm64 NUMA as mentioned in this thread,
->
-> https://lore.kernel.org/lkml/Yh6H8SPSqpjv1dl7@qian
->
-> Ying sent an updated patch to fix the crash but is missing from this pull
-> request for some reasons.
->
-> https://lore.kernel.org/lkml/87y21lkxlv.fsf_-_@yhuang6-desk2.ccr.corp.intel.com/
-
-This is sent as an UPDATE patch.  Hi, Peter, do you need a new version
-of patchset when some patches needs to be updated in general?
-
-Best Regards,
-Huang, Ying
+Yours,
+Linus Walleij
