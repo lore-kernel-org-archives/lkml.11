@@ -2,130 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 982D1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:50:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89BA2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:51:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232196AbiCVRwW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 13:52:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55588 "EHLO
+        id S239894AbiCVRw3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 13:52:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236937AbiCVRwV (ORCPT
+        with ESMTP id S239841AbiCVRwZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 13:52:21 -0400
-Received: from gateway34.websitewelcome.com (gateway34.websitewelcome.com [192.185.148.109])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8A996D3BC
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:50:52 -0700 (PDT)
-Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
-        by gateway34.websitewelcome.com (Postfix) with ESMTP id 5F3FEFA1325
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 12:50:52 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id Wieinnl7Yb6UBWiein3c7H; Tue, 22 Mar 2022 12:50:52 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=EMkcbT+z9hMOzCQkn6zBneEne+tFD8pPsSScVB5S/8c=; b=tKSGP7T3pSSclCVTZcl0BF07xK
-        V2cH7CWm9DyHmYD5pdewLguU80f+3UlP08AEGWnkqKBQOC3a5r9nr7fdo3G5rKOiefZGfYny2trfA
-        lKKpNmqO+iogtwwWnV+IpBCmM3KsWEN2LfWPGE8zcdCedivQDCBhpvhVWwh13h9kiLn9y9zBDQ+xj
-        xidJLOUIconUNrEB47IP5XNfPochoTLkbxCuaMKJB1amoiLyzuOVq3Gdmq1Ku3ntR7qCGF9dd+cSN
-        l+VsSt9hM3xoNzUH2UF8AFzJ4gDWnmWDTDt3iuhX4g+9WY2BhayVAm3FOMa+FJH9pRlGTK4skmOKm
-        85BuCSSQ==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54400)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nWieh-002Tku-QZ; Tue, 22 Mar 2022 17:50:51 +0000
-Message-ID: <11063f42-6d3c-64d2-f3ed-9593be469fa5@roeck-us.net>
-Date:   Tue, 22 Mar 2022 10:50:50 -0700
+        Tue, 22 Mar 2022 13:52:25 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73F106D3BC
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:50:56 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id w7so31077866lfd.6
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:50:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xVTkoL6IvScupcc82uGKxY6t/dEoMhywmokb0M6nLRQ=;
+        b=SxzIsWJtVeaoBw1JvaNfWaX6iOJGZ1awG+smm6ZI3+2778B8fIRobefB0fFKcM4q6y
+         2r4/TVzojriOvGIybdvH82leIyhyqc+uKQhIoA5t/IeWmMqoqy0YAgzr+NxHjUuOLxlx
+         Q2wcsmI+T+V32+6FiBPcrXt1ViZUuv3r4KJS0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xVTkoL6IvScupcc82uGKxY6t/dEoMhywmokb0M6nLRQ=;
+        b=xzYBK97pebPrZag6cYoqLl7JigHXZk5UjFWa9hEhCkDH+2YYzzmNlOZtqvlKu2WpvI
+         JCTJutVHJEReQmCrfPXhCmZuJR8j9ChAZ86yC5MPv0AS9pHYaHApS47vGQDt2LwAm2aH
+         zek0FrCdRnGUkvkUxAyiOcyBjdkrpnHvRl10POffYztrl0WDz/ycTykKmQZ9vty03fzc
+         VqUmG5P5T/flDu5ZUow5OKX5DTudcfVnZEAajqrSkmun9L+Rsqp1BBqqU/GhglcCHzwO
+         s2tDldc3npnHhjOeYykTOYb3P3QGdmbDW9MyvRiZczXD4A530LjQeLWoc7niAVu3nJbY
+         NQvw==
+X-Gm-Message-State: AOAM530mQsBEQr/dyiwimNhn6DTyWvVM62EBfIFw6SNxbKAvqOvv7jFe
+        vnfUwiaMXq6CzDnyfMJ24RbpTJwLSuHTLrigz3g=
+X-Google-Smtp-Source: ABdhPJwmTntAlNcdrpCzHUJgWtqFqeUPVaKX1JwLNZ2enCdj6LC5U30nc84iRSGWeAyVEjhCX0YlIw==
+X-Received: by 2002:ac2:5bcb:0:b0:44a:1fd6:6b14 with SMTP id u11-20020ac25bcb000000b0044a1fd66b14mr11745765lfn.186.1647971453692;
+        Tue, 22 Mar 2022 10:50:53 -0700 (PDT)
+Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com. [209.85.208.174])
+        by smtp.gmail.com with ESMTPSA id h8-20020ac25d68000000b00447b5cad2a7sm2270462lft.228.2022.03.22.10.50.51
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Mar 2022 10:50:52 -0700 (PDT)
+Received: by mail-lj1-f174.google.com with SMTP id u3so25094704ljd.0
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:50:51 -0700 (PDT)
+X-Received: by 2002:a2e:9904:0:b0:247:ec95:fdee with SMTP id
+ v4-20020a2e9904000000b00247ec95fdeemr20114422lji.291.1647971451760; Tue, 22
+ Mar 2022 10:50:51 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: hppa vDSO and compiler (non-)support
-Content-Language: en-US
-To:     Helge Deller <deller@gmx.de>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-parisc@vger.kernel.org,
-        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
-        =?UTF-8?Q?Martin_Li=c5=a1ka?= <mliska@suse.cz>,
-        Andreas Schwab <schwab@linux-m68k.org>
-References: <d2713ae1-0ca5-9e5a-b7d2-b7d0f1f5614a@kernel.org>
- <2e1f3e41-7097-e68d-d312-9319ad62565c@gmx.de>
- <d2a09bf3-9bd3-588a-99a1-598281d08678@kernel.org>
- <dd4e55aa-0b3e-6e18-7ec2-3bec02cafde0@kernel.org> <YjjJNb0D/b+ZXBVZ@ls3530>
- <28696c20-21ad-b0ac-8093-4ce07225fcd8@kernel.org>
- <812d4a38-8cb1-a7be-c504-87d095aea883@gmx.de>
- <20220322130516.GA724287@roeck-us.net>
- <ccc25312-890a-a534-1681-5ecde56328d0@gmx.de>
- <78abe69b-7914-1b38-c94e-7143f61f4909@roeck-us.net>
- <4d52b78d-ed39-102f-ba64-3ba9c17f58f9@gmx.de>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <4d52b78d-ed39-102f-ba64-3ba9c17f58f9@gmx.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nWieh-002Tku-QZ
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54400
-X-Source-Auth: linux@roeck-us.net
-X-Email-Count: 3
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+References: <YjjihIZuvZpUjaSs@google.com> <CAHk-=wgsmvoJFKFWxQ2orEVUOWH1agk9iUNZ=-DFh5OXZL=Ldw@mail.gmail.com>
+ <51cded74-3135-eed8-06d3-0b2165e3b379@redhat.com>
+In-Reply-To: <51cded74-3135-eed8-06d3-0b2165e3b379@redhat.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 22 Mar 2022 10:50:35 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wi=Xsekgj7zfw_vpOM673CG24vznmz-yx9G05rWSAAYXg@mail.gmail.com>
+Message-ID: <CAHk-=wi=Xsekgj7zfw_vpOM673CG24vznmz-yx9G05rWSAAYXg@mail.gmail.com>
+Subject: Re: [GIT PULL] f2fs for 5.18
+To:     Waiman Long <longman@redhat.com>, Tim Murray <timmurray@google.com>
+Cc:     Jaegeuk Kim <jaegeuk@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux F2FS Dev Mailing List 
+        <linux-f2fs-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/22/22 09:16, Helge Deller wrote:
-> On 3/22/22 16:19, Guenter Roeck wrote:
->> On 3/22/22 07:25, Helge Deller wrote:
->>> On 3/22/22 14:05, Guenter Roeck wrote:
->>>> Does that also fix the build problems now seen in mainline ?
->>>
->>> No.
->>>
->>>> Building parisc64:generic-64bit_defconfig ... failed
->>>> --------------
->>>> Error log:
->>>> arch/parisc/kernel/vdso64/Makefile:30: FORCE prerequisite is missing
->>>> arch/parisc/kernel/vdso32/sigtramp.S: Assembler messages:
->>>> arch/parisc/kernel/vdso32/sigtramp.S:39: Error: unknown pseudo-op: `.proc'
->>>> ...
->>>> arch/parisc/kernel/vdso32/restart_syscall.S:32: Error: .cfi_endproc without corresponding .cfi_startproc
->>>> make[2]: *** [arch/parisc/kernel/vdso32/Makefile:34: arch/parisc/kernel/vdso32/restart_syscall.o] Error 1
->>>> make[2]: *** Waiting for unfinished jobs....
->>>> make[2]: *** [arch/parisc/kernel/vdso32/Makefile:34: arch/parisc/kernel/vdso32/sigtramp.o] Error 1
->>>> make[1]: *** [arch/parisc/Makefile:177: vdso_prepare] Error 2
->>>> make: *** [Makefile:219: __sub-make] Error 2
->>>>
->>>> This is with hppa64-linux-gcc (GCC) 11.2.0.
->>>
->>> Can you check if you have the 32-bit compiler (hppa-linux-gcc) installed too?
->>> The errors above happen when building the 32-bit vDSO, for which you need the 32-bit compiler.
->>>
->>
->> Yes, I do, but that doesn't help much if I want to build a 64-bit target such
->> as generic-64bit_defconfig. Am I missing something ?
-> 
-> The 64-bit PA-RISC kernel now includes a built-in a 32-bit and a 64-bit vDSO for userspace.
-> To build the 32-bit vDSO (vdso32) you need the 32-bit hppa compiler installed.
-> That's what's being done above - see the path: arch/parisc/kernel/vdso32/
-> Can you try "make V=1" to see the command line?
-> 
+On Tue, Mar 22, 2022 at 10:37 AM Waiman Long <longman@redhat.com> wrote:
+>
+> AFAICS, the read-unfair rwsem code is created to resolve a potential
+> lock starvation problem that they found on linux-5.10.y stable tree. I
+> believe I have fixed that in the v5.11 kernel, see commit 2f06f702925
+> ("locking/rwsem: Prevent potential lock starvation").
 
+Ahh.
 
-I am currently bisecting another problem. I'll try that afterwards.
-Either case, how does one specify two cross compilers with two different
-prefixes on the command line ?
+Adding Tim Murray to the cc, since he was the source of that odd
+reader-unfair thing.
 
-Guenter
+I really *really* dislike people thinking they can do locking
+primitives, because history has taught us that they are wrong.
+
+Even when people get the semantics and memory ordering right (which is
+not always the case, but at least the f2fs code uses real lock
+primitives - just oddly - and should thus be ok), it invariably tends
+to be a sign of something else being very wrong.
+
+And I can easily believe that in this case it's due to a rmsem issue
+that was already fixed long long ago as per Waiman.
+
+Can people please test with the actual modern rwsem code and with the
+odd reader-unfair locks disabled?
+
+            Linus
