@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72770C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 20:24:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85E2BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 20:24:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233608AbiCVU0W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 16:26:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40838 "EHLO
+        id S233675AbiCVU0Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 16:26:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbiCVU0S (ORCPT
+        with ESMTP id S233398AbiCVU0S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 22 Mar 2022 16:26:18 -0400
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD5266604
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 13:24:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 563596660C
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 13:24:50 -0700 (PDT)
 Received: from dslb-178-004-174-067.178.004.pools.vodafone-ip.de ([178.4.174.67] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1nWl3b-0006W7-IT; Tue, 22 Mar 2022 21:24:43 +0100
+        id 1nWl3e-0006W7-Ev; Tue, 22 Mar 2022 21:24:46 +0100
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -27,30 +27,71 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Michael Straube <straube.linux@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 0/4] staging: r8188eu: simple mlme cleanups
-Date:   Tue, 22 Mar 2022 21:24:35 +0100
-Message-Id: <20220322202439.157999-1-martin@kaiser.cx>
+Subject: [PATCH 3/4] staging: r8188eu: remove empty rtw_dummy_event_callback
+Date:   Tue, 22 Mar 2022 21:24:38 +0100
+Message-Id: <20220322202439.157999-4-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220322202439.157999-1-martin@kaiser.cx>
+References: <20220322202439.157999-1-martin@kaiser.cx>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-some simple cleanups in the mlme part of the driver
+Remove the empty function rtw_dummy_event_callback.
 
-Martin Kaiser (4):
-  staging: r8188eu: make _rtw_init_mlme_priv static
-  staging: r8188eu: the MCS_rate_2R array is not used
-  staging: r8188eu: remove empty rtw_dummy_event_callback
-  staging: r8188eu: remove empty rtw_fwdbg_event_callback
+Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+---
+ drivers/staging/r8188eu/core/rtw_mlme.c        | 4 ----
+ drivers/staging/r8188eu/include/rtw_mlme_ext.h | 5 ++---
+ 2 files changed, 2 insertions(+), 7 deletions(-)
 
- drivers/staging/r8188eu/core/rtw_mlme.c        | 11 +----------
- drivers/staging/r8188eu/core/rtw_mlme_ext.c    |  1 -
- drivers/staging/r8188eu/include/rtw_mlme.h     |  2 --
- drivers/staging/r8188eu/include/rtw_mlme_ext.h |  9 +++------
- 4 files changed, 4 insertions(+), 19 deletions(-)
-
+diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
+index 59af1df81565..4ef50224c775 100644
+--- a/drivers/staging/r8188eu/core/rtw_mlme.c
++++ b/drivers/staging/r8188eu/core/rtw_mlme.c
+@@ -747,10 +747,6 @@ void rtw_surveydone_event_callback(struct adapter	*adapter, u8 *pbuf)
+ 	rtw_os_xmit_schedule(adapter);
+ }
+ 
+-void rtw_dummy_event_callback(struct adapter *adapter, u8 *pbuf)
+-{
+-}
+-
+ void rtw_fwdbg_event_callback(struct adapter *adapter, u8 *pbuf)
+ {
+ }
+diff --git a/drivers/staging/r8188eu/include/rtw_mlme_ext.h b/drivers/staging/r8188eu/include/rtw_mlme_ext.h
+index 3dde2bd0d77a..3da7b93ba5e9 100644
+--- a/drivers/staging/r8188eu/include/rtw_mlme_ext.h
++++ b/drivers/staging/r8188eu/include/rtw_mlme_ext.h
+@@ -744,7 +744,6 @@ struct C2HEvent_Header {
+ 	unsigned int rsvd;
+ };
+ 
+-void rtw_dummy_event_callback(struct adapter *adapter, u8 *pbuf);
+ void rtw_fwdbg_event_callback(struct adapter *adapter, u8 *pbuf);
+ 
+ enum rtw_c2h_event {
+@@ -781,7 +780,7 @@ enum rtw_c2h_event {
+ #ifdef _RTW_MLME_EXT_C_
+ 
+ static struct fwevent wlanevents[] = {
+-	{0, rtw_dummy_event_callback},	/*0*/
++	{0, NULL},	/*0*/
+ 	{0, NULL},
+ 	{0, NULL},
+ 	{0, NULL},
+@@ -795,7 +794,7 @@ static struct fwevent wlanevents[] = {
+ 	{sizeof(struct stassoc_event), &rtw_stassoc_event_callback},
+ 	{sizeof(struct stadel_event), &rtw_stadel_event_callback},
+ 	{0, NULL},
+-	{0, rtw_dummy_event_callback},
++	{0, NULL},
+ 	{0, NULL},	/*15*/
+ 	{0, NULL},
+ 	{0, NULL},
 -- 
 2.30.2
 
