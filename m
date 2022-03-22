@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58CB0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 15:19:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 560F9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 15:20:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238620AbiCVPVY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 11:21:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36040 "EHLO
+        id S238666AbiCVPVc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 11:21:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238418AbiCVPUZ (ORCPT
+        with ESMTP id S238426AbiCVPU0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 11:20:25 -0400
+        Tue, 22 Mar 2022 11:20:26 -0400
 Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2BD45BD07;
-        Tue, 22 Mar 2022 08:18:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DCD75C376;
+        Tue, 22 Mar 2022 08:18:58 -0700 (PDT)
 Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22MCnUfH013136;
-        Tue, 22 Mar 2022 10:18:43 -0500
+        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22MCnUfE013136;
+        Tue, 22 Mar 2022 10:18:41 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=PODMain02222019;
- bh=of9QB3tmkL0oOWKdhTGtzmf3Ml8UuecLfoNp3KwvfIM=;
- b=R6EfgCNgPXGRfrXx17Ba2QnDlwKWg/c6BhmFmbpgxeJ8ESW/2vim0UgLkn+cPQZanhGd
- BXGRSThtOr5ofF6RY/WoDxzMy0I0azmvTKpCWssO714J+ZU1FMoxq7m9M9BKErOVTYaz
- 479/bxwb7Rj65t5Yl8GjD6V1Jse8L91REmtBZqpbbuKzC2Agj0/nIfnIhNKE3HgYz/q0
- wRi5VdrGB40Evp/6oq4tBy+KWSEErTPMzQy3Ai/DYimIaTr9d6Um65a0SglvfNvEMCB7
- ly33qSvGBs1aRDKZro3f78sv8XuOELUMgSfn6jPNna4Ii6W8I115W1dBixNXDkEfZ2aa MA== 
+ bh=3nhOFHaKQJh3XucbkU2hs6zrA/ub+CIhO8/W/aOlH9E=;
+ b=lScX8eARR+Sj7DQxKdI6jiCNzeeZ2MhmtsGwFWSVGQ/nYOKfwbggm7Hwh4HbV5Sm1z9l
+ SCWWb1dy0yGvyMEkMQ9o17dRVHsaSH+GAoEre8KbX0hUZhdxW+RwQPsll8nRVrf1z7LB
+ wN8dt2RWD1NRXVV7CWQ0fsuVxNTChmq004hcuX4Ysz4cshrF6a0LvbIl1WDTicgdtVIV
+ PxH2gO20WwOPTka1Mnnw4v4QweCrt0ZERyqnerwMtUgOCT/6ex+yxQ9z+PziX4ODzosk
+ L6Wo2xeU+p9cEfgyllcFIZhHYKzqzwKRbrlIxlMyvnR4UCOE1l+IUS50V+ka5o6gWG8a Ng== 
 Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3ewbknc0jc-10
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3ewbknc0jc-8
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 22 Mar 2022 10:18:43 -0500
+        Tue, 22 Mar 2022 10:18:40 -0500
 Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
  (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 22 Mar
- 2022 15:18:35 +0000
+ 2022 15:18:34 +0000
 Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Tue, 22 Mar 2022 15:18:35 +0000
+ Transport; Tue, 22 Mar 2022 15:18:34 +0000
 Received: from aryzen.ad.cirrus.com (unknown [198.61.65.125])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 2DB44B1A;
-        Tue, 22 Mar 2022 15:18:35 +0000 (UTC)
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 800B1459;
+        Tue, 22 Mar 2022 15:18:34 +0000 (UTC)
 From:   Lucas Tanure <tanureal@opensource.cirrus.com>
 To:     Liam Girdwood <lgirdwood@gmail.com>,
         Mark Brown <broonie@kernel.org>,
@@ -49,169 +49,201 @@ To:     Liam Girdwood <lgirdwood@gmail.com>,
 CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Lucas Tanure <tanureal@opensource.cirrus.com>
-Subject: [PATCH v5 13/16] ALSA: hda: cs35l41: Handle all external boost setups the same way
-Date:   Tue, 22 Mar 2022 15:18:16 +0000
-Message-ID: <20220322151819.4299-14-tanureal@opensource.cirrus.com>
+Subject: [PATCH v5 11/16] ALSA: hda: cs35l41: Remove cs35l41_hda_reg_sequence struct
+Date:   Tue, 22 Mar 2022 15:18:14 +0000
+Message-ID: <20220322151819.4299-12-tanureal@opensource.cirrus.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220322151819.4299-1-tanureal@opensource.cirrus.com>
 References: <20220322151819.4299-1-tanureal@opensource.cirrus.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: 7XVvfU0-0duuGkRadj7JBhJnx31tx6y5
-X-Proofpoint-GUID: 7XVvfU0-0duuGkRadj7JBhJnx31tx6y5
+X-Proofpoint-ORIG-GUID: 1zoZqV1kTG9MROfx2H__FLHIlUNDKKpe
+X-Proofpoint-GUID: 1zoZqV1kTG9MROfx2H__FLHIlUNDKKpe
 X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-External boost enables sequences for devices with or without GPIO1 as
-VSPK switch are the same if devices are put in safe mode from reset.
-As a previous patch put all external boost devices into safe mode
-from reset, all external boost devices can be handled in the same way
-for stream open and close.
-
-The only difference is that devices without an VSPK switch can not be
-put in reset and devices with it can be put into reset if a
-configuration is applied.
-The function cs35l41_hda_safe_reset is created to handle the safe reset
-of the chip, and as systems without VSPK switch are not supported
-anymore, only the CS35L41 HDA driver should check its return.
+Remove cs35l41_hd_reg_sequence as it adds a layer of flexibility not needed.
+As cs35l41_hda_(start/stop)_bst is a single register, it can be replaced by
+regmap_update_bits with usleep_range to wait for the same 3000us that
+reg_sequence had.
 
 Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
 ---
- sound/pci/hda/cs35l41_hda.c | 60 +++++++++++++++----------------------
- 1 file changed, 24 insertions(+), 36 deletions(-)
+ sound/pci/hda/cs35l41_hda.c | 79 ++++++++++++++++---------------------
+ sound/pci/hda/cs35l41_hda.h | 14 -------
+ 2 files changed, 33 insertions(+), 60 deletions(-)
 
 diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
-index 3294837ff606..e54b5fbb6fb5 100644
+index 6e82ab9517f0..ece784662dbd 100644
 --- a/sound/pci/hda/cs35l41_hda.c
 +++ b/sound/pci/hda/cs35l41_hda.c
-@@ -32,33 +32,9 @@ static const struct reg_sequence cs35l41_hda_mute[] = {
+@@ -32,14 +32,6 @@ static const struct reg_sequence cs35l41_hda_mute[] = {
  	{ CS35L41_AMP_DIG_VOL_CTRL,	0x0000A678 }, // AMP_VOL_PCM Mute
  };
  
--// only on amps where GPIO1 is used to control ext. VSPK switch
--static const struct reg_sequence cs35l41_start_ext_vspk[] = {
-+static const struct reg_sequence cs35l41_safe_to_reset[] = {
- 	{ 0x00000040,			0x00000055 },
- 	{ 0x00000040,			0x000000AA },
--	{ 0x00007438,			0x00585941 },
--	{ 0x00007414,			0x08C82222 },
--	{ 0x0000742C,			0x00000009 },
--	{ 0x00011008,			0x00008001 },
--	{ 0x0000742C,			0x0000000F },
--	{ 0x0000742C,			0x00000079 },
--	{ 0x00007438,			0x00585941 },
+-static const struct reg_sequence cs35l41_hda_start_bst[] = {
 -	{ CS35L41_PWR_CTRL1,		0x00000001, 3000}, // set GLOBAL_EN = 1
--	{ 0x0000742C,			0x000000F9 },
--	{ 0x00007438,			0x00580941 },
--	{ 0x00000040,			0x000000CC },
--	{ 0x00000040,			0x00000033 },
 -};
 -
--//only on amps where GPIO1 is used to control ext. VSPK switch
--static const struct reg_sequence cs35l41_stop_ext_vspk[] = {
--	{ 0x00000040,			0x00000055 },
--	{ 0x00000040,			0x000000AA },
--	{ 0x00007438,			0x00585941 },
--	{ 0x00002014,			0x00000000, 3000}, // set GLOBAL_EN = 0
--	{ 0x0000742C,			0x00000009 },
--	{ 0x00007438,			0x00580941 },
--	{ 0x00011008,			0x00000001 },
- 	{ 0x0000393C,			0x000000C0, 6000},
- 	{ 0x0000393C,			0x00000000 },
- 	{ 0x00007414,			0x00C82222 },
-@@ -73,7 +49,7 @@ static const struct reg_sequence cs35l41_safe_to_active[] = {
- 	{ 0x0000742C,			0x0000000F },
- 	{ 0x0000742C,			0x00000079 },
- 	{ 0x00007438,			0x00585941 },
--	{ CS35L41_PWR_CTRL1,		0x00000001, 2000 }, // GLOBAL_EN = 1
-+	{ CS35L41_PWR_CTRL1,		0x00000001, 3000 }, // GLOBAL_EN = 1
- 	{ 0x0000742C,			0x000000F9 },
- 	{ 0x00007438,			0x00580941 },
- 	{ 0x00000040,			0x000000CC },
-@@ -85,7 +61,7 @@ static const struct reg_sequence cs35l41_active_to_safe[] = {
- 	{ 0x00000040,			0x000000AA },
- 	{ 0x00007438,			0x00585941 },
- 	{ CS35L41_PWR_CTRL1,		0x00000000 },
--	{ 0x0000742C,			0x00000009, 2000 },
-+	{ 0x0000742C,			0x00000009, 3000 },
- 	{ 0x00007438,			0x00580941 },
- 	{ 0x00000040,			0x000000CC },
- 	{ 0x00000040,			0x00000033 },
-@@ -101,6 +77,21 @@ static const struct reg_sequence cs35l41_reset_to_safe[] = {
+-static const struct reg_sequence cs35l41_hda_stop_bst[] = {
+-	{ CS35L41_PWR_CTRL1,		0x00000000, 3000}, // set GLOBAL_EN = 0
+-};
+-
+ // only on amps where GPIO1 is used to control ext. VSPK switch
+ static const struct reg_sequence cs35l41_start_ext_vspk[] = {
+ 	{ 0x00000040,			0x00000055 },
+@@ -109,31 +101,44 @@ static const struct reg_sequence cs35l41_reset_to_safe[] = {
  	{ 0x00000040,			0x00000033 },
  };
  
-+static bool cs35l41_hda_safe_reset(struct cs35l41_hda *cs35l41)
+-static const struct cs35l41_hda_reg_sequence cs35l41_hda_reg_seq_no_bst = {
+-	.prepare	= cs35l41_safe_to_active,
+-	.num_prepare	= ARRAY_SIZE(cs35l41_safe_to_active),
+-	.cleanup	= cs35l41_active_to_safe,
+-	.num_cleanup	= ARRAY_SIZE(cs35l41_active_to_safe),
+-};
++static int cs35l41_hda_global_enable(struct cs35l41_hda *cs35l41, int enable)
 +{
++	int ret;
+ 
+-static const struct cs35l41_hda_reg_sequence cs35l41_hda_reg_seq_ext_bst = {
+-	.prepare	= cs35l41_start_ext_vspk,
+-	.num_prepare	= ARRAY_SIZE(cs35l41_start_ext_vspk),
+-	.cleanup	= cs35l41_stop_ext_vspk,
+-	.num_cleanup	= ARRAY_SIZE(cs35l41_stop_ext_vspk),
+-};
 +	switch (cs35l41->hw_cfg.bst_type) {
++	case CS35L41_INT_BOOST:
++		ret = regmap_update_bits(cs35l41->regmap, CS35L41_PWR_CTRL1,
++					 CS35L41_GLOBAL_EN_MASK,
++					 enable << CS35L41_GLOBAL_EN_SHIFT);
++		usleep_range(3000, 3100);
++		break;
 +	case CS35L41_EXT_BOOST:
-+		regmap_write(cs35l41->regmap, CS35L41_GPIO1_CTRL1, 0x00000001);
-+		regmap_multi_reg_write(cs35l41->regmap, cs35l41_safe_to_reset,
-+				       ARRAY_SIZE(cs35l41_safe_to_reset));
-+		return true;
++		if (enable)
++			ret = regmap_multi_reg_write(cs35l41->regmap, cs35l41_start_ext_vspk,
++						     ARRAY_SIZE(cs35l41_start_ext_vspk));
++		else
++			ret = regmap_multi_reg_write(cs35l41->regmap, cs35l41_stop_ext_vspk,
++						     ARRAY_SIZE(cs35l41_stop_ext_vspk));
++		break;
 +	case CS35L41_EXT_BOOST_NO_VSPK_SWITCH:
-+		return false;
++		if (enable)
++			ret = regmap_multi_reg_write(cs35l41->regmap, cs35l41_safe_to_active,
++						     ARRAY_SIZE(cs35l41_safe_to_active));
++		else
++			ret = regmap_multi_reg_write(cs35l41->regmap, cs35l41_active_to_safe,
++						     ARRAY_SIZE(cs35l41_active_to_safe));
++		break;
 +	default:
-+		return true;
++		ret = -EINVAL;
++		break;
 +	}
-+};
-+
- static int cs35l41_hda_global_enable(struct cs35l41_hda *cs35l41, int enable)
+ 
+-static const struct cs35l41_hda_reg_sequence cs35l41_hda_reg_seq_int_bst = {
+-	.prepare	= cs35l41_hda_start_bst,
+-	.num_prepare	= ARRAY_SIZE(cs35l41_hda_start_bst),
+-	.cleanup	= cs35l41_hda_stop_bst,
+-	.num_cleanup	= ARRAY_SIZE(cs35l41_hda_stop_bst),
++	return ret;
+ };
+ 
+ static void cs35l41_hda_playback_hook(struct device *dev, int action)
  {
- 	int ret;
-@@ -113,13 +104,6 @@ static int cs35l41_hda_global_enable(struct cs35l41_hda *cs35l41, int enable)
- 		usleep_range(3000, 3100);
- 		break;
- 	case CS35L41_EXT_BOOST:
--		if (enable)
--			ret = regmap_multi_reg_write(cs35l41->regmap, cs35l41_start_ext_vspk,
--						     ARRAY_SIZE(cs35l41_start_ext_vspk));
--		else
--			ret = regmap_multi_reg_write(cs35l41->regmap, cs35l41_stop_ext_vspk,
--						     ARRAY_SIZE(cs35l41_stop_ext_vspk));
--		break;
- 	case CS35L41_EXT_BOOST_NO_VSPK_SWITCH:
- 		if (enable)
- 			ret = regmap_multi_reg_write(cs35l41->regmap, cs35l41_safe_to_active,
-@@ -147,6 +131,8 @@ static void cs35l41_hda_playback_hook(struct device *dev, int action)
- 		regmap_multi_reg_write(reg, cs35l41_hda_config, ARRAY_SIZE(cs35l41_hda_config));
- 		ret = regmap_update_bits(reg, CS35L41_PWR_CTRL2,
- 					 CS35L41_AMP_EN_MASK, 1 << CS35L41_AMP_EN_SHIFT);
-+		if (cs35l41->hw_cfg.bst_type == CS35L41_EXT_BOOST)
-+			regmap_write(reg, CS35L41_GPIO1_CTRL1, 0x00008001);
+ 	struct cs35l41_hda *cs35l41 = dev_get_drvdata(dev);
+-	const struct cs35l41_hda_reg_sequence *reg_seq = cs35l41->reg_seq;
+ 	struct regmap *reg = cs35l41->regmap;
+ 	int ret = 0;
+ 
+@@ -145,19 +150,15 @@ static void cs35l41_hda_playback_hook(struct device *dev, int action)
+ 				   CS35L41_AMP_EN_MASK, 1 << CS35L41_AMP_EN_SHIFT);
  		break;
  	case HDA_GEN_PCM_ACT_PREPARE:
- 		ret = cs35l41_hda_global_enable(cs35l41, 1);
-@@ -158,6 +144,8 @@ static void cs35l41_hda_playback_hook(struct device *dev, int action)
+-		if (reg_seq->prepare)
+-			ret = regmap_multi_reg_write(reg, reg_seq->prepare, reg_seq->num_prepare);
++		ret = cs35l41_hda_global_enable(cs35l41, 1);
+ 		break;
+ 	case HDA_GEN_PCM_ACT_CLEANUP:
+ 		regmap_multi_reg_write(reg, cs35l41_hda_mute, ARRAY_SIZE(cs35l41_hda_mute));
+-		if (reg_seq->cleanup)
+-			ret = regmap_multi_reg_write(reg, reg_seq->cleanup, reg_seq->num_cleanup);
++		ret = cs35l41_hda_global_enable(cs35l41, 0);
+ 		break;
  	case HDA_GEN_PCM_ACT_CLOSE:
- 		ret = regmap_update_bits(reg, CS35L41_PWR_CTRL2,
- 					 CS35L41_AMP_EN_MASK, 0 << CS35L41_AMP_EN_SHIFT);
-+		if (cs35l41->hw_cfg.bst_type == CS35L41_EXT_BOOST)
-+			regmap_write(reg, CS35L41_GPIO1_CTRL1, 0x00000001);
+ 		regmap_update_bits(reg, CS35L41_PWR_CTRL2,
+ 				   CS35L41_AMP_EN_MASK, 0 << CS35L41_AMP_EN_SHIFT);
+-		if (reg_seq->close)
+-			ret = regmap_multi_reg_write(reg, reg_seq->close, reg_seq->num_close);
  		break;
  	default:
- 		dev_warn(cs35l41->dev, "Playback action not supported: %d\n", action);
-@@ -517,7 +505,7 @@ int cs35l41_hda_probe(struct device *dev, const char *device_name, int id, int i
- 	return 0;
+ 		ret = -EINVAL;
+@@ -221,7 +222,6 @@ static int cs35l41_hda_apply_properties(struct cs35l41_hda *cs35l41)
  
- err:
--	if (cs35l41->hw_cfg.bst_type != CS35L41_EXT_BOOST_NO_VSPK_SWITCH)
-+	if (cs35l41_hda_safe_reset(cs35l41))
- 		gpiod_set_value_cansleep(cs35l41->reset_gpio, 0);
- 	gpiod_put(cs35l41->reset_gpio);
+ 	switch (hw_cfg->bst_type) {
+ 	case CS35L41_INT_BOOST:
+-		cs35l41->reg_seq = &cs35l41_hda_reg_seq_int_bst;
+ 		ret = cs35l41_boost_config(cs35l41->dev, cs35l41->regmap,
+ 					   hw_cfg->bst_ind, hw_cfg->bst_cap, hw_cfg->bst_ipk);
+ 		if (ret)
+@@ -229,10 +229,6 @@ static int cs35l41_hda_apply_properties(struct cs35l41_hda *cs35l41)
+ 		break;
+ 	case CS35L41_EXT_BOOST:
+ 	case CS35L41_EXT_BOOST_NO_VSPK_SWITCH:
+-		if (hw_cfg->bst_type == CS35L41_EXT_BOOST)
+-			cs35l41->reg_seq = &cs35l41_hda_reg_seq_ext_bst;
+-		else
+-			cs35l41->reg_seq = &cs35l41_hda_reg_seq_no_bst;
+ 		regmap_multi_reg_write(cs35l41->regmap, cs35l41_reset_to_safe,
+ 				       ARRAY_SIZE(cs35l41_reset_to_safe));
+ 		ret = regmap_update_bits(cs35l41->regmap, CS35L41_PWR_CTRL2, CS35L41_BST_EN_MASK,
+@@ -511,15 +507,6 @@ int cs35l41_hda_probe(struct device *dev, const char *device_name, int id, int i
+ 	if (ret)
+ 		goto err;
  
-@@ -531,7 +519,7 @@ void cs35l41_hda_remove(struct device *dev)
+-	if (cs35l41->reg_seq->probe) {
+-		ret = regmap_multi_reg_write(cs35l41->regmap, cs35l41->reg_seq->probe,
+-					     cs35l41->reg_seq->num_probe);
+-		if (ret) {
+-			dev_err(cs35l41->dev, "Fail to apply probe reg patch: %d\n", ret);
+-			goto err;
+-		}
+-	}
+-
+ 	ret = component_add(cs35l41->dev, &cs35l41_hda_comp_ops);
+ 	if (ret) {
+ 		dev_err(cs35l41->dev, "Register component failed: %d\n", ret);
+diff --git a/sound/pci/hda/cs35l41_hda.h b/sound/pci/hda/cs35l41_hda.h
+index 17f10764f174..44d9204ffdf1 100644
+--- a/sound/pci/hda/cs35l41_hda.h
++++ b/sound/pci/hda/cs35l41_hda.h
+@@ -27,24 +27,10 @@ enum cs35l41_hda_gpio_function {
+ 	CS35l41_SYNC,
+ };
  
- 	component_del(cs35l41->dev, &cs35l41_hda_comp_ops);
+-struct cs35l41_hda_reg_sequence {
+-	const struct reg_sequence *probe;
+-	unsigned int num_probe;
+-	const struct reg_sequence *open;
+-	unsigned int num_open;
+-	const struct reg_sequence *prepare;
+-	unsigned int num_prepare;
+-	const struct reg_sequence *cleanup;
+-	unsigned int num_cleanup;
+-	const struct reg_sequence *close;
+-	unsigned int num_close;
+-};
+-
+ struct cs35l41_hda {
+ 	struct device *dev;
+ 	struct regmap *regmap;
+ 	struct gpio_desc *reset_gpio;
+-	const struct cs35l41_hda_reg_sequence *reg_seq;
+ 	struct cs35l41_hw_cfg hw_cfg;
  
--	if (cs35l41->hw_cfg.bst_type != CS35L41_EXT_BOOST_NO_VSPK_SWITCH)
-+	if (cs35l41_hda_safe_reset(cs35l41))
- 		gpiod_set_value_cansleep(cs35l41->reset_gpio, 0);
- 	gpiod_put(cs35l41->reset_gpio);
- }
+ 	int irq;
 -- 
 2.35.1
 
