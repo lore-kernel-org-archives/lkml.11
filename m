@@ -2,129 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 131D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 23:33:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFACBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 23:38:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240541AbiCVXfJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 19:35:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55868 "EHLO
+        id S240579AbiCVXkG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 19:40:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230009AbiCVXfH (ORCPT
+        with ESMTP id S241442AbiCVXjv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 19:35:07 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F60440909;
-        Tue, 22 Mar 2022 16:33:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647992018; x=1679528018;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=0h5+Be9KVGlp5EUr2LBBREV33KBgaXWkMwKFPpsWbQI=;
-  b=eSgSjvB60hrj3F3asMDYQ4cUNxsQvonpl22hCicbi4Lu/2OE/9JJxV43
-   Dj3krfBLBa1l0cRO+3OAi14poAifXEoWFl+fAcvXwNZNFavQq2TUk5zvN
-   kEjQketrdBSrOsfhzre6Euwixb/sIke39e3gJJi5Ls6fTVH56iQCg0dkd
-   JBrxXDGnqvxZLyO3n+HSgfusQ6B8uUxo1ev7nzhRwSTJzkuPWNgWOi9YS
-   FghtEycixBvU3v4Mb+a3PgvE5xtahlAqejMmc8XLTbovecrXLfAuYBlm4
-   alxQn/9u7HtUEy7i0OeHHwygjWoTmXsWnCN5PLmTwKu/B/e4/vlg4zIGf
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10294"; a="321178197"
-X-IronPort-AV: E=Sophos;i="5.90,203,1643702400"; 
-   d="scan'208";a="321178197"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2022 16:33:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,203,1643702400"; 
-   d="scan'208";a="515577430"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 22 Mar 2022 16:33:35 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nWo0M-000JOv-Gf; Tue, 22 Mar 2022 23:33:34 +0000
-Date:   Wed, 23 Mar 2022 07:32:56 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Werner Sembach <wse@tuxedocomputers.com>,
-        dmitry.torokhov@gmail.com, tiwai@suse.de, mpdesouza@suse.com,
-        arnd@arndb.de, hdegoede@redhat.com, samuel@cavoj.net,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org
-Subject: Re: [PATCH v4 3/4] input/i8042: Add debug output for quirks
-Message-ID: <202203230711.7C5PXp0s-lkp@intel.com>
-References: <20220322162125.59838-4-wse@tuxedocomputers.com>
+        Tue, 22 Mar 2022 19:39:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 044B432996;
+        Tue, 22 Mar 2022 16:38:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 903A261252;
+        Tue, 22 Mar 2022 23:38:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F08B1C340F2;
+        Tue, 22 Mar 2022 23:38:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647992301;
+        bh=Rl6UbQHgIDuIZXTEr3KxFphz2xVsXFACCwsYJCc9Foc=;
+        h=In-Reply-To:References:From:Date:Subject:To:Cc:From;
+        b=RMkO1k1uRrd3MYz1fVVoo8rvu6nTTwWo663BI3cKuT52leGP+D0YnSctOwlj21wZu
+         o+oAFV22egqV5SDCINjimBkejMfAd5tZz4FE05WN65Jgumb933lMsxuxyN+9P58iuR
+         9O5/gtgSS3oM3/AnB8jDcBb7FVMeNj44bhEp6ipa5Xm13MgGv9XHEgn12f21SswIlw
+         u9oNU59NRqSG+grclBXTDtRZ8uwMxqX/baYRfLQYGgpjpPlH15jXBSwb2oEqQdJrzt
+         mJ7ThjNTXVHz9oyrZGrPnp2gYtN20Kq8MSziJnyhwGnbDmr6PSno50pbp3PY6d/DD1
+         HUN5LWQuQv0tA==
+Received: by mail-wr1-f42.google.com with SMTP id u3so2414976wrg.3;
+        Tue, 22 Mar 2022 16:38:20 -0700 (PDT)
+X-Gm-Message-State: AOAM531DmzxbkmYjBslnNSfrQa4e8zTS7i6KZ8Ur1eYXRhkgvqrrzT9x
+        aAW3oU+EsS3ZeY8/EmPKdvcKkcMV5U7ECEsx5kY=
+X-Google-Smtp-Source: ABdhPJzcg278ZxDjnI+PAPQsTD7HvxcDXuSxkbmldiXfC2g12QTbS7y7QzXW7ZoN8ScCP1YK8myMYXNVUavbho2ce9I=
+X-Received: by 2002:a5d:47a5:0:b0:203:d4fd:4653 with SMTP id
+ 5-20020a5d47a5000000b00203d4fd4653mr24623747wrb.229.1647992299262; Tue, 22
+ Mar 2022 16:38:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220322162125.59838-4-wse@tuxedocomputers.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Received: by 2002:a05:6000:2c1:0:0:0:0 with HTTP; Tue, 22 Mar 2022 16:38:18
+ -0700 (PDT)
+In-Reply-To: <f8f1f383c4533a91a6025b1db5827ed6aaab002f.1647980983.git.christophe.jaillet@wanadoo.fr>
+References: <f8f1f383c4533a91a6025b1db5827ed6aaab002f.1647980983.git.christophe.jaillet@wanadoo.fr>
+From:   Namjae Jeon <linkinjeon@kernel.org>
+Date:   Wed, 23 Mar 2022 08:38:18 +0900
+X-Gmail-Original-Message-ID: <CAKYAXd9uGsASkCSuKS7NW0MsME2n9Bhk8Sf=L0_uvs1qXU1wLg@mail.gmail.com>
+Message-ID: <CAKYAXd9uGsASkCSuKS7NW0MsME2n9Bhk8Sf=L0_uvs1qXU1wLg@mail.gmail.com>
+Subject: Re: [PATCH] ksmbd: Remove a redundant zeroing of memory
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steve French <sfrench@samba.org>,
+        Hyunchul Lee <hyc.lee@gmail.com>, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-cifs@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Werner,
+2022-03-23 5:29 GMT+09:00, Christophe JAILLET <christophe.jaillet@wanadoo.fr>:
+> fill_transform_hdr() already call memset(0) on its 1st argument, so there
+> is no need to clear it explicitly before calling this function.
+>
+> Use kmalloc() instead of kzalloc() to save a few cycles.
+>
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+> Alternatively, fill_transform_hdr() has only one caller. So its memset()
+> could be removed instead and this kzalloc() left as is.
+I prefer this. Could you update the patch ?
 
-Thank you for the patch! Yet something to improve:
-
-[auto build test ERROR on dtor-input/next]
-[also build test ERROR on v5.17 next-20220322]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Werner-Sembach/input-i8042-Move-__initconst-to-fix-code-styling-warning/20220323-012205
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git next
-config: x86_64-buildonly-randconfig-r002-20220321 (https://download.01.org/0day-ci/archive/20220323/202203230711.7C5PXp0s-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 902f4708fe1d03b0de7e5315ef875006a6adc319)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/d92be72641d5753be3aa94fe5961e2dbe2b5bdc9
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Werner-Sembach/input-i8042-Move-__initconst-to-fix-code-styling-warning/20220323-012205
-        git checkout d92be72641d5753be3aa94fe5961e2dbe2b5bdc9
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from drivers/input/serio/i8042.c:135:
-   In file included from drivers/input/serio/i8042.h:23:
->> drivers/input/serio/i8042-x86ia64io.h:1512:3: error: use of undeclared identifier 'i8042_nopnp'
-                   i8042_nopnp ? " nopnp" : "");
-                   ^
-   1 error generated.
-
-
-vim +/i8042_nopnp +1512 drivers/input/serio/i8042-x86ia64io.h
-
-  1494	
-  1495		i8042_check_quirks();
-  1496	
-  1497		pr_debug("Active quirks (empty means none):%s%s%s%s%s%s%s%s%s%s%s%s%s\n",
-  1498			i8042_nokbd ? " nokbd" : "",
-  1499			i8042_noaux ? " noaux" : "",
-  1500			i8042_nomux ? " nomux" : "",
-  1501			i8042_unlock ? " unlock" : "",
-  1502			i8042_probe_defer ? "probe_defer" : "",
-  1503			i8042_reset == I8042_RESET_DEFAULT ?
-  1504				"" : i8042_reset == I8042_RESET_ALWAYS ?
-  1505					" reset_always" : " reset_never",
-  1506			i8042_direct ? " direct" : "",
-  1507			i8042_dumbkbd ? " dumbkbd" : "",
-  1508			i8042_noloop ? " noloop" : "",
-  1509			i8042_notimeout ? " notimeout" : "",
-  1510			i8042_kbdreset ? " kbdreset" : "",
-  1511			i8042_dritek ? " dritek" : "",
-> 1512			i8042_nopnp ? " nopnp" : "");
-  1513	
-  1514		retval = i8042_pnp_init();
-  1515		if (retval)
-  1516			return retval;
-  1517	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks!
+> ---
+>  fs/ksmbd/smb2pdu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
+> index bcb98109bac9..0e4f819e5859 100644
+> --- a/fs/ksmbd/smb2pdu.c
+> +++ b/fs/ksmbd/smb2pdu.c
+> @@ -8434,7 +8434,7 @@ int smb3_encrypt_resp(struct ksmbd_work *work)
+>  	if (ARRAY_SIZE(iov) < rq_nvec)
+>  		return -ENOMEM;
+>
+> -	work->tr_buf = kzalloc(sizeof(struct smb2_transform_hdr) + 4,
+> GFP_KERNEL);
+> +	work->tr_buf = kmalloc(sizeof(struct smb2_transform_hdr) + 4,
+> GFP_KERNEL);
+>  	if (!work->tr_buf)
+>  		return rc;
+>
+> --
+> 2.32.0
+>
+>
