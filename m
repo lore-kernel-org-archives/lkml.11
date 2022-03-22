@@ -2,155 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65AB8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:45:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 462DBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:46:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231742AbiCVIrJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 04:47:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43146 "EHLO
+        id S231768AbiCVIrn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 04:47:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231732AbiCVIrF (ORCPT
+        with ESMTP id S231743AbiCVIrk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 04:47:05 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86570488A0;
-        Tue, 22 Mar 2022 01:45:37 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id m67so32410087ybm.4;
-        Tue, 22 Mar 2022 01:45:37 -0700 (PDT)
+        Tue, 22 Mar 2022 04:47:40 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4851B4C417;
+        Tue, 22 Mar 2022 01:46:13 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id k10so7052814edj.2;
+        Tue, 22 Mar 2022 01:46:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=+iR4cCSnBvYIEX8JGakAV745I2rgE58S9R2YY4Ged7c=;
-        b=NIARtr2oBs7uLYQBYidFLx6MPr55F+lN7qAoql6P3hnq45R1mXdc9VfJ8mEFo9hZXB
-         brCk27+g2z4tjCw+jNan4V813Fu7jvJb4vKphwkvh0ixkI/X0rAJUfH/PMx12sHVSi6I
-         5vB4YSwU7b7V0ZUbHVme3qC+0mM/LGF0as2ysi8L/04eTWPfCA1Tg/0GvoO3Q4Rh8W2i
-         wRaNcLi/NQYckSD8SAv5+Ys0piFZrTv/qFor7iThwAjc1eu+sNNDfpwWobhd03+7bSEb
-         xlYh+RuGpr0nY/ByJ43BeJNeSg8ECs3u6x9WvWLFjwaLpRQdNc+PxKPQPoAnjX0IxwBl
-         n1Hw==
+        bh=ksvGP3yP3QXBfeqcjncUFi6hCmkjvpUrrJVwZ45Fxdg=;
+        b=faIWsKv8b9f7l4f8DpWBAEhe/U2Up4aCHJ9PnY4jNXQked+orxeHvIjxr48AHCqhy5
+         YdoC/2zYEvKiPv3VxIXgQ2q62qV+M97d2ZnpneG7ASsP493vL8R6BkOzc25MuCpHLKTI
+         uNxlsSmBa+mweazHJovFMmJU08DTlGXiAI1iDF6/Rj3gn7bCntI9j8idPuX7RmWauufj
+         S+7ABuu23ZCM4F0ziyjA662s7zXCCqt4+XN/vK6sCTUIcwEbEmBRn58p+/dv8sOEP+Ct
+         zYd3f9G7C7VM++Ci32HR4J74LYIVCeo2pRWXo3HwtEKNJ5DOyoF2vnYM1c6M0jbsWVYN
+         qglg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=+iR4cCSnBvYIEX8JGakAV745I2rgE58S9R2YY4Ged7c=;
-        b=DR3Z3Mw2kUPjxbOWXrfA4K1Yofmx5x1uI2REfWTkcqnkxBlUPhqrNKvPmHJH2D9y7g
-         Etbsw43OZupZkxfGGWkFZ6z+Uz1fcsbf3eFbg/LRZw/w/k/m9jNflmfU1Uch+HXrri3a
-         2b/2mLmoheunOhPioBV2uz6b4G/fDCmXCcu1DuNk8gkomoeUrrK1UtmtJ4kucYFvqI+f
-         tKDHDoKDiYeCClySL87zTUQ96PFg7qwDoo60ArhXlw4qL8ig9DLVvSrTWXvTinAF8omf
-         TZMUyfCjcU0bXGwhjH4HQPE1uGSIUpjazDB+Yz8h3yEUXReijZbgoRlZ95GCFpRwFvRW
-         01+Q==
-X-Gm-Message-State: AOAM532NtC2Ej/UVzKpGn49+UD1BoMUEY/gsT+s8T6iV4odQmTOBbgBG
-        s5X2kHQZEJc18dFLui5VHn/oylFF8ixCbvSK7Tk=
-X-Google-Smtp-Source: ABdhPJw6H/IKc8pB2tyJzweSxfHKCrXN2p8geLUHg4bnZl1ae8zz+b4V+A1AAXqfxr8U643fQljqZsv1xh/JqETo5gI=
-X-Received: by 2002:a25:4003:0:b0:633:8ab5:b93e with SMTP id
- n3-20020a254003000000b006338ab5b93emr26470634yba.387.1647938736779; Tue, 22
- Mar 2022 01:45:36 -0700 (PDT)
+        bh=ksvGP3yP3QXBfeqcjncUFi6hCmkjvpUrrJVwZ45Fxdg=;
+        b=ULuPXKOoVp4Xl3Z9lMgli34VehUwxgmBMEP7E6CpWt3G45y2Ur4SFVx+nUmv6KUXJ9
+         lDm/Wcj/PyPWzsWkl7s0rDyFgkmO24j3ItU3n7AmrCX5PEXgTgMnRLHh/SyEEAOix3vM
+         mK+/WDcumEe+/7Y0Z5iJdPhVUDBCvkFRrmUvi644rmdZl3krSQygVeWMWKRAXdpYCQZd
+         WGYAIwrqCXX8XgUoFEnAYlfcFXIX3SPoIRZoUsHOLdQLvITZ+NN8m72q/PCeh3UGCcY1
+         HvmsZJvUUMgFNQD0wLrqWdMr5DIPQQDgN+KxXKq17OMcowBPnz0O0pMLM4y/1enBfxMy
+         lQHg==
+X-Gm-Message-State: AOAM531RbDllyJxeKp4PkOIBE+k3DezjTAaRHQ2J0rImaEhcSVVOfu/m
+        /ISvmw+lBx+c+vieHNGdiIoiFJ50IqZefH2DniI=
+X-Google-Smtp-Source: ABdhPJw2/JvIRiFz1odA3bIFiYDfYHfEMmBsLFazrWltix/Y5vNQvG19DXbFZRmg7wGdl1qK5X/BJLSoSux7ERoO4FY=
+X-Received: by 2002:a05:6402:27d1:b0:419:1b02:4a04 with SMTP id
+ c17-20020a05640227d100b004191b024a04mr17403213ede.218.1647938771580; Tue, 22
+ Mar 2022 01:46:11 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220309021230.721028-1-yuzhao@google.com> <20220309021230.721028-11-yuzhao@google.com>
- <CAGsJ_4xqRGp1gV89+bAx5iA=AVwj2TA+No92UqLHFa0i14MBMQ@mail.gmail.com> <CAOUHufbP7kHquWiD3VsmD=veNFF2v_E9HWqdYSMbS1nPJic0Fg@mail.gmail.com>
-In-Reply-To: <CAOUHufbP7kHquWiD3VsmD=veNFF2v_E9HWqdYSMbS1nPJic0Fg@mail.gmail.com>
-From:   Barry Song <21cnbao@gmail.com>
-Date:   Tue, 22 Mar 2022 21:45:23 +1300
-Message-ID: <CAGsJ_4wPWRkmioxGYOwZ9KwdiJUUdgH9Xd38MJH6B2sKJNG+iA@mail.gmail.com>
-Subject: Re: [PATCH v9 10/14] mm: multi-gen LRU: kill switch
-To:     Yu Zhao <yuzhao@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        LAK <linux-arm-kernel@lists.infradead.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Kernel Page Reclaim v2 <page-reclaim@google.com>,
-        x86 <x86@kernel.org>, Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>
+References: <1647927649-9907-1-git-send-email-haibo.chen@nxp.com>
+In-Reply-To: <1647927649-9907-1-git-send-email-haibo.chen@nxp.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 22 Mar 2022 10:45:01 +0200
+Message-ID: <CAHp75VdZ9RVuMrgWXOWqCrmvHBtkz+S=dxXhR44Ri3p6Pj5LMA@mail.gmail.com>
+Subject: Re: [PATCH v2] gpio: Allow setting gpio device id via device tree alias
+To:     BOUGH CHEN <haibo.chen@nxp.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 9:20 PM Yu Zhao <yuzhao@google.com> wrote:
+On Tue, Mar 22, 2022 at 7:52 AM <haibo.chen@nxp.com> wrote:
 >
-> On Tue, Mar 22, 2022 at 1:47 AM Barry Song <21cnbao@gmail.com> wrote:
-> >
-> ...
-> > > +static bool drain_evictable(struct lruvec *lruvec)
-> > > +{
-> > > +       int gen, type, zone;
-> > > +       int remaining = MAX_LRU_BATCH;
-> > > +
-> > > +       for_each_gen_type_zone(gen, type, zone) {
-> > > +               struct list_head *head = &lruvec->lrugen.lists[gen][type][zone];
-> > > +
-> > > +               while (!list_empty(head)) {
-> > > +                       bool success;
-> > > +                       struct folio *folio = lru_to_folio(head);
-> > > +
-> > > +                       VM_BUG_ON_FOLIO(folio_test_unevictable(folio), folio);
-> > > +                       VM_BUG_ON_FOLIO(folio_test_active(folio), folio);
-> > > +                       VM_BUG_ON_FOLIO(folio_is_file_lru(folio) != type, folio);
-> > > +                       VM_BUG_ON_FOLIO(folio_zonenum(folio) != zone, folio);
-> > > +
-> > > +                       success = lru_gen_del_folio(lruvec, folio, false);
-> > > +                       VM_BUG_ON(!success);
-> > > +                       lruvec_add_folio(lruvec, folio);
-> >
-> > for example, max_seq=4(GEN=0) and max_seq-1=3, then we are supposed to put
-> > max_seq in the head of active list. but your code seems to be putting max_seq-1
-> > after putting max_seq, then max_seq is more likely to be evicted
-> > afterwards as it
-> > is in the tail of the active list.
+> From: Haibo Chen <haibo.chen@nxp.com>
 >
-> This is correct.
+> For some SoCs which contain different cores, like few ARM A cores
+> and few ARM M cores. Some GPIO controllers like GPIO3/GPIO4/GPIO5
+> belong to A core domain, some GPIO controllers like GPIO1/GPIO2
+> belong to M core domain. Linux only cover A cores, without gpio
+> alias, we can get gpiochip0/gpiochip1/gpiochip2 to map the real
+> GPIO3/GPIO4/GPIO5, it's difficult for users to identify this map
+> relation, and hardcode the gpio device index. With gpio alias,
 
-maybe something like below can fix it:
- #define for_each_gen_type_zone(gen, type, zone)
-         \
--       for ((gen) = 0; (gen) < MAX_NR_GENS; (gen)++)                   \
-+       for (int seq = min_seq[type], (gen)=(seq_to_gen(seq)); seq <=
-max_seq ; seq++)                       \
-                for ((type) = 0; (type) < ANON_AND_FILE; (type)++)      \
-                        for ((zone) = 0; (zone) < MAX_NR_ZONES; (zone)++)
+With the GPIO
 
-but i am not quite sure it is worth it if we don't switch mglru/lru that
-often. so it is all up to you, either fix it or put a comment to describe
-we are not trying to make an active list with completely the same
-temperature (hot/cold) as pages were in mglru lists.
+> we can easily make gpiochip3 map to GPIO3, gpiochip4 map to GPIO4.
+> For GPIO controllers do not claim the alias, it will get one id
 
->
-> > anyway, it might not be so important. I can't imagine we will
-> > frequently switch mglru
-> > with lru dynamically. will we?
->
-> I certainly hope not :)
+If GPIO
 
-me too.
+> which larger than all the claimed aliases.
 
-Thanks
-Barry
+which is
+
+...
+
+I'm not sure I understand the issue. The other GPIO drivers and hence
+user space (which is already quite a question why user space needs
+this) may distinguish the GPIO chips by labels and device names.
+What's wrong with that approach?
+
+-- 
+With Best Regards,
+Andy Shevchenko
