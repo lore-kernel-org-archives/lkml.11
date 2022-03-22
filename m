@@ -2,273 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 233C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:30:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9286C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:31:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231168AbiCVIb5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 04:31:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39392 "EHLO
+        id S231184AbiCVIdF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 04:33:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229706AbiCVIbx (ORCPT
+        with ESMTP id S231175AbiCVIc7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 04:31:53 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBC0713F8D;
-        Tue, 22 Mar 2022 01:30:24 -0700 (PDT)
-X-UUID: 2c5a5ae2a33341f9803f4fa11f802fd3-20220322
-X-UUID: 2c5a5ae2a33341f9803f4fa11f802fd3-20220322
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <chun-jie.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1934978458; Tue, 22 Mar 2022 16:30:18 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Tue, 22 Mar 2022 16:30:17 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 22 Mar 2022 16:30:17 +0800
-Message-ID: <51750d230b38aa3d2e9d370247bcb4be93a35877.camel@mediatek.com>
-Subject: Re: [PATCH v2 02/15] clk: mediatek: Add MT8186 mcusys clock support
-From:   Chun-Jie Chen <chun-jie.chen@mediatek.com>
-To:     Chen-Yu Tsai <wenst@chromium.org>
-CC:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Nicolas Boichat <drinkcat@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <linux-clk@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <srv_heupstream@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Tue, 22 Mar 2022 16:30:17 +0800
-In-Reply-To: <CAGXv+5Fq4_dZBWJvKZ8ADUSQF4bTu-QWZ+7KG1dsJoWDrT2nXg@mail.gmail.com>
-References: <20220221015258.913-1-chun-jie.chen@mediatek.com>
-         <20220221015258.913-3-chun-jie.chen@mediatek.com>
-         <CAGXv+5Fq4_dZBWJvKZ8ADUSQF4bTu-QWZ+7KG1dsJoWDrT2nXg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Tue, 22 Mar 2022 04:32:59 -0400
+Received: from gproxy2-pub.mail.unifiedlayer.com (gproxy2-pub.mail.unifiedlayer.com [69.89.18.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D94E738BE4
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 01:31:30 -0700 (PDT)
+Received: from cmgw13.mail.unifiedlayer.com (unknown [10.0.90.128])
+        by progateway4.mail.pro1.eigbox.com (Postfix) with ESMTP id 1E39D100405F0
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 08:31:30 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id WZvNnBHmSY8ycWZvNnn5VT; Tue, 22 Mar 2022 08:31:30 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=ff9od2cF c=1 sm=1 tr=0 ts=62398962
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=o8Y5sQTvuykA:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Xg6Z9MnRwFMJUtWyEmzpSzEvafd4fSSDjSnPaN7n+FE=; b=OJ5Gp9iTZfMIovGOkYcdMxODng
+        klzNSaRH/BdnG70MihERkbGuTS30/fD2xrEV2cTz6dmAxQhsd2hbCc5LEjIh05w/qBp0rvwIKLDeK
+        kYOVMeXTvW4hKH9RLZJKT4QR0;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:33758 helo=[10.0.1.48])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <re@w6rz.net>)
+        id 1nWZvM-0010h5-QB; Tue, 22 Mar 2022 02:31:28 -0600
+Subject: Re: [PATCH 5.16 00/37] 5.16.17-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220321133221.290173884@linuxfoundation.org>
+In-Reply-To: <20220321133221.290173884@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+Message-ID: <e74296b1-601a-961d-b501-7fed7f1aca0b@w6rz.net>
+Date:   Tue, 22 Mar 2022 01:31:26 -0700
+User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1nWZvM-0010h5-QB
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:33758
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 2
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-03-09 at 18:13 +0800, Chen-Yu Tsai wrote:
-> Hi,
-> 
-> On Mon, Feb 21, 2022 at 9:59 AM Chun-Jie Chen
-> <chun-jie.chen@mediatek.com> wrote:
-> > 
-> > Add MT8186 mcusys clock controller which provides muxes
-> > to select the clock source of APMCU.
-> > 
-> > Signed-off-by: Chun-Jie Chen <chun-jie.chen@mediatek.com>
-> > Acked-by: AngeloGioacchino Del Regno <
-> > angelogioacchino.delregno@collabora.com>
-> > ---
-> >  drivers/clk/mediatek/Kconfig          |   8 ++
-> >  drivers/clk/mediatek/Makefile         |   1 +
-> >  drivers/clk/mediatek/clk-mt8186-mcu.c | 106
-> > ++++++++++++++++++++++++++
-> >  3 files changed, 115 insertions(+)
-> >  create mode 100644 drivers/clk/mediatek/clk-mt8186-mcu.c
-> > 
-> > diff --git a/drivers/clk/mediatek/Kconfig
-> > b/drivers/clk/mediatek/Kconfig
-> > index 01ef02c54725..d5936cfb3bee 100644
-> > --- a/drivers/clk/mediatek/Kconfig
-> > +++ b/drivers/clk/mediatek/Kconfig
-> > @@ -512,6 +512,14 @@ config COMMON_CLK_MT8183_VENCSYS
-> >         help
-> >           This driver supports MediaTek MT8183 vencsys clocks.
-> > 
-> > +config COMMON_CLK_MT8186
-> > +       bool "Clock driver for MediaTek MT8186"
-> > +       depends on ARM64 || COMPILE_TEST
-> > +       select COMMON_CLK_MEDIATEK
-> > +       default ARCH_MEDIATEK
-> > +       help
-> > +         This driver supports MediaTek MT8186 clocks.
-> > +
-> >  config COMMON_CLK_MT8192
-> >         bool "Clock driver for MediaTek MT8192"
-> >         depends on ARM64 || COMPILE_TEST
-> > diff --git a/drivers/clk/mediatek/Makefile
-> > b/drivers/clk/mediatek/Makefile
-> > index 7b0c2646ce4a..677fa4f0eea2 100644
-> > --- a/drivers/clk/mediatek/Makefile
-> > +++ b/drivers/clk/mediatek/Makefile
-> > @@ -71,6 +71,7 @@ obj-$(CONFIG_COMMON_CLK_MT8183_MFGCFG) += clk-
-> > mt8183-mfgcfg.o
-> >  obj-$(CONFIG_COMMON_CLK_MT8183_MMSYS) += clk-mt8183-mm.o
-> >  obj-$(CONFIG_COMMON_CLK_MT8183_VDECSYS) += clk-mt8183-vdec.o
-> >  obj-$(CONFIG_COMMON_CLK_MT8183_VENCSYS) += clk-mt8183-venc.o
-> > +obj-$(CONFIG_COMMON_CLK_MT8186) += clk-mt8186-mcu.o
-> >  obj-$(CONFIG_COMMON_CLK_MT8192) += clk-mt8192.o
-> >  obj-$(CONFIG_COMMON_CLK_MT8192_AUDSYS) += clk-mt8192-aud.o
-> >  obj-$(CONFIG_COMMON_CLK_MT8192_CAMSYS) += clk-mt8192-cam.o
-> > diff --git a/drivers/clk/mediatek/clk-mt8186-mcu.c
-> > b/drivers/clk/mediatek/clk-mt8186-mcu.c
-> > new file mode 100644
-> > index 000000000000..6d82c5de16c1
-> > --- /dev/null
-> > +++ b/drivers/clk/mediatek/clk-mt8186-mcu.c
-> > @@ -0,0 +1,106 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +//
-> > +// Copyright (c) 2022 MediaTek Inc.
-> > +// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
-> > +
-> > +#include "clk-mtk.h"
-> 
-> Please move local headers after global ones. And please do this for
-> all
-> patches.
-> 
-> > +
-> > +#include <dt-bindings/clock/mt8186-clk.h>
-> > +#include <linux/clk-provider.h>
-> > +#include <linux/platform_device.h>
-> > +
-> > +static DEFINE_SPINLOCK(mt8186_clk_lock);
-> > +
-> > +static const char * const mcu_armpll_ll_parents[] = {
-> > +       "clk26m",
-> > +       "armpll_ll",
-> > +       "mainpll",
-> > +       "univpll_d2"
-> > +};
-> > +
-> > +static const char * const mcu_armpll_bl_parents[] = {
-> > +       "clk26m",
-> > +       "armpll_bl",
-> > +       "mainpll",
-> > +       "univpll_d2"
-> > +};
-> > +
-> > +static const char * const mcu_armpll_bus_parents[] = {
-> > +       "clk26m",
-> > +       "ccipll",
-> > +       "mainpll",
-> > +       "univpll_d2"
-> > +};
-> > +
-> > +static struct mtk_composite mcu_muxes[] = {
-> > +       /* CPU_PLLDIV_CFG0 */
-> > +       MUX(CLK_MCU_ARMPLL_LL_SEL, "mcu_armpll_ll_sel",
-> > mcu_armpll_ll_parents, 0x2A0, 9, 2),
-> 
-> Can you add a comment stating that these registers have other bits
-> that
-> should not be touched? Otherwise anyone reading the datasheet might
-> consider this to be incomplete.
-> 
-> I assume the other bits (such as one field that looks like a divider)
-> are
-> configured in the bootloader, or the POR defaults are correct.
-> 
+On 3/21/22 6:52 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.16.17 release.
+> There are 37 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 23 Mar 2022 13:32:09 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.17-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Yes, We only control mux in linux side and keep same value in divider.
-I will add more description in v4. Sorry I missed this comment before.
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
-> > +       /* CPU_PLLDIV_CFG1 */
-> > +       MUX(CLK_MCU_ARMPLL_BL_SEL, "mcu_armpll_bl_sel",
-> > mcu_armpll_bl_parents, 0x2A4, 9, 2),
-> > +       /* BUS_PLLDIV_CFG */
-> > +       MUX(CLK_MCU_ARMPLL_BUS_SEL, "mcu_armpll_bus_sel",
-> > mcu_armpll_bus_parents, 0x2E0, 9, 2),
-> > +};
-> 
-> Note: I've checked the register bits against the datasheet.
-> 
-> > +
-> > +static const struct of_device_id of_match_clk_mt8186_mcu[] = {
-> > +       { .compatible = "mediatek,mt8186-mcusys", },
-> > +       {}
-> > +};
-> > +
-> > +static int clk_mt8186_mcu_probe(struct platform_device *pdev)
-> > +{
-> > +       struct clk_onecell_data *clk_data;
-> > +       struct device_node *node = pdev->dev.of_node;
-> > +       int r;
-> > +       void __iomem *base;
-> > +
-> > +       clk_data = mtk_alloc_clk_data(CLK_MCU_NR_CLK);
-> > +       if (!clk_data)
-> > +               return -ENOMEM;
-> > +
-> > +       base = devm_platform_ioremap_resource(pdev, 0);
-> > +       if (IS_ERR(base)) {
-> > +               r = PTR_ERR(base);
-> > +               goto free_mcu_data;
-> > +       }
-> > +
-> > +       r = mtk_clk_register_composites(mcu_muxes,
-> > ARRAY_SIZE(mcu_muxes), base,
-> > +                                       &mt8186_clk_lock,
-> > clk_data);
-> 
-> I don't think you need the lock. None of the bit fields you have
-> defined
-> in this driver have overlapping registers.
-> 
-> 
-> Regards
-> ChenYu
-> 
-
-Yes, the muxes register of big and little CPU are not overlapping,
-I will remove the lock in next patch.
-
-Thanks!
-
-> > +       if (r)
-> > +               goto free_mcu_data;
-> > +
-> > +       r = of_clk_add_provider(node, of_clk_src_onecell_get,
-> > clk_data);
-> > +       if (r)
-> > +               goto unregister_composite_muxes;
-> > +
-> > +       platform_set_drvdata(pdev, clk_data);
-> > +
-> > +       return r;
-> > +
-> > +unregister_composite_muxes:
-> > +       mtk_clk_unregister_composites(mcu_muxes,
-> > ARRAY_SIZE(mcu_muxes), clk_data);
-> > +free_mcu_data:
-> > +       mtk_free_clk_data(clk_data);
-> > +       return r;
-> > +}
-> > +
-> > +static int clk_mt8186_mcu_remove(struct platform_device *pdev)
-> > +{
-> > +       struct clk_onecell_data *clk_data =
-> > platform_get_drvdata(pdev);
-> > +       struct device_node *node = pdev->dev.of_node;
-> > +
-> > +       of_clk_del_provider(node);
-> > +       mtk_clk_unregister_composites(mcu_muxes,
-> > ARRAY_SIZE(mcu_muxes), clk_data);
-> > +       mtk_free_clk_data(clk_data);
-> > +
-> > +       return 0;
-> > +}
-> > +
-> > +static struct platform_driver clk_mt8186_mcu_drv = {
-> > +       .probe = clk_mt8186_mcu_probe,
-> > +       .remove = clk_mt8186_mcu_remove,
-> > +       .driver = {
-> > +               .name = "clk-mt8186-mcu",
-> > +               .of_match_table = of_match_clk_mt8186_mcu,
-> > +       },
-> > +};
-> > +builtin_platform_driver(clk_mt8186_mcu_drv);
-> > --
-> > 2.18.0
-> > 
+Tested-by: Ron Economos <re@w6rz.net>
 
