@@ -2,158 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 666F5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 11:45:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BF7BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 11:48:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234386AbiCVLq0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 07:46:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55010 "EHLO
+        id S233102AbiCVLuX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 07:50:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231818AbiCVLqY (ORCPT
+        with ESMTP id S231546AbiCVLuT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 07:46:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B435D4AE0B
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 04:44:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 22 Mar 2022 07:50:19 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5A895DE70;
+        Tue, 22 Mar 2022 04:48:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647949731; x=1679485731;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=6QjCSLV5pHvUu+Co9Q8F1SIwOXRHIVGiCuCTzOhLowU=;
+  b=IiS5eOcSAbKAwXnij0pxHeEzhEKlnJHgJ1kq9d0fQ1FNXHGTVyzeHi9S
+   1BQWkYVpTXySqJgtqsLyxTKxmBrw5XuuN3O6xctY9PfSMQvgK7AtkWGw+
+   xWg+5Njj9u16/KELflLX9IC78Pn9P+EXBfKtm/201UjaYx20Rc7QZE8Jh
+   FAaB+JaGgWtqMsEo0qBu5mSR4svJUj6xtvvG5z9+4m05+Y48ddMIGzhzo
+   TMHutrOtrFL5Vk0DJy29/MydBLuGSa2TCIOYUy5E52lkonPg0zNm726/O
+   1HCSjc5A75Bg0DL4dKO6IhPxuczA4EteI/dDAzZV1k/sNgb8c83cprWNH
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="239954907"
+X-IronPort-AV: E=Sophos;i="5.90,201,1643702400"; 
+   d="scan'208";a="239954907"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2022 04:48:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,201,1643702400"; 
+   d="scan'208";a="583228928"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga001.jf.intel.com with ESMTP; 22 Mar 2022 04:48:51 -0700
+Received: from [10.209.120.44] (alwinma-MOBL2.amr.corp.intel.com [10.209.120.44])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4E14FB81CA0
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 11:44:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81416C340EC;
-        Tue, 22 Mar 2022 11:44:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647949494;
-        bh=+0r1IVgjA7xYvFqjlSYTelChQdleZQ8HY0Q371h6m30=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=l636owiMehGIYeJFaMCfXrg85FNoqpBa/g0RSK6r+d2Mabjk//tXU7W8a/Eff0Idh
-         kPYPUn71elMTbZqd94mUrKwu2p+58sPJyIgB92RA1z3JcUPMHJftGXuJo1DyxZ2Bk/
-         up3ri++dNnq8S2dJ8+GUdSB1RBFDF2n4MMMoudLhdrpAcVyKVeRIqtv+E6782d0ZpS
-         wKECVxh1XNcuShw2TJU9K4T2I/i2plkeFsi+dxlDKcrXjITE0pTyK3gjlLhZjvOHQu
-         gyOdbT9SIcbQj2xsPTUaf9WaWTbKWPXs0QJPvp7lzZOrF2+r+Yu99Qx1JpoyI0I0es
-         JwkMCab/Bj57A==
-Date:   Tue, 22 Mar 2022 20:44:50 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     kernel test robot <lkp@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: Re: [bpf-next:master 209/265] kernel/trace/fprobe.c:201:14: sparse:
- sparse: incorrect type in assignment (different address spaces)
-Message-Id: <20220322204450.a09369b16d3e585be31dc394@kernel.org>
-In-Reply-To: <202203221549.JQIr40CT-lkp@intel.com>
-References: <202203221549.JQIr40CT-lkp@intel.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        by linux.intel.com (Postfix) with ESMTPS id B9E53580A6C;
+        Tue, 22 Mar 2022 04:48:49 -0700 (PDT)
+Message-ID: <ffd440b7-fef9-a5ae-95b7-73c1f8a212ef@linux.intel.com>
+Date:   Tue, 22 Mar 2022 07:48:48 -0400
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] perf parse-events: Move slots only with topdown
+Content-Language: en-US
+To:     Ian Rogers <irogers@google.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        James Clark <james.clark@arm.com>,
+        John Garry <john.garry@huawei.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
+Cc:     Stephane Eranian <eranian@google.com>
+References: <20220321223344.1034479-1-irogers@google.com>
+From:   "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <20220321223344.1034479-1-irogers@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 22 Mar 2022 15:22:30 +0800
-kernel test robot <lkp@intel.com> wrote:
-
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-> head:   f97b8b9bd630fb76c0e9e11cbf390e3d64a144d7
-> commit: 5b0ab78998e32564a011b14c4c7f9c81e2d42b9d [209/265] fprobe: Add exit_handler support
-> config: i386-allmodconfig (https://download.01.org/0day-ci/archive/20220322/202203221549.JQIr40CT-lkp@intel.com/config)
-> compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
-> reproduce:
->         # apt-get install sparse
->         # sparse version: v0.6.4-dirty
->         # https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?id=5b0ab78998e32564a011b14c4c7f9c81e2d42b9d
->         git remote add bpf-next https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
->         git fetch --no-tags bpf-next master
->         git checkout 5b0ab78998e32564a011b14c4c7f9c81e2d42b9d
->         # save the config file to linux build tree
->         mkdir build_dir
->         make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash kernel/trace/ samples/
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> 
-> sparse warnings: (new ones prefixed by >>)
-> >> kernel/trace/rethook.c:68:9: sparse: sparse: incompatible types in comparison expression (different address spaces):
-> >> kernel/trace/rethook.c:68:9: sparse:    void ( [noderef] __rcu * )( ... )
-> >> kernel/trace/rethook.c:68:9: sparse:    void ( * )( ... )
-> --
-> >> kernel/trace/fprobe.c:201:14: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct ftrace_hash *hash @@     got struct ftrace_hash [noderef] __rcu *filter_hash @@
->    kernel/trace/fprobe.c:201:14: sparse:     expected struct ftrace_hash *hash
->    kernel/trace/fprobe.c:201:14: sparse:     got struct ftrace_hash [noderef] __rcu *filter_hash
-> 
-> vim +201 kernel/trace/fprobe.c
-> 
->    158	
->    159	/**
->    160	 * register_fprobe() - Register fprobe to ftrace by pattern.
->    161	 * @fp: A fprobe data structure to be registered.
->    162	 * @filter: A wildcard pattern of probed symbols.
->    163	 * @notfilter: A wildcard pattern of NOT probed symbols.
->    164	 *
->    165	 * Register @fp to ftrace for enabling the probe on the symbols matched to @filter.
->    166	 * If @notfilter is not NULL, the symbols matched the @notfilter are not probed.
->    167	 *
->    168	 * Return 0 if @fp is registered successfully, -errno if not.
->    169	 */
->    170	int register_fprobe(struct fprobe *fp, const char *filter, const char *notfilter)
->    171	{
->    172		struct ftrace_hash *hash;
->    173		unsigned char *str;
->    174		int ret, len;
->    175	
->    176		if (!fp || !filter)
->    177			return -EINVAL;
->    178	
->    179		fprobe_init(fp);
->    180	
->    181		len = strlen(filter);
->    182		str = kstrdup(filter, GFP_KERNEL);
->    183		ret = ftrace_set_filter(&fp->ops, str, len, 0);
->    184		kfree(str);
->    185		if (ret)
->    186			return ret;
->    187	
->    188		if (notfilter) {
->    189			len = strlen(notfilter);
->    190			str = kstrdup(notfilter, GFP_KERNEL);
->    191			ret = ftrace_set_notrace(&fp->ops, str, len, 0);
->    192			kfree(str);
->    193			if (ret)
->    194				goto out;
->    195		}
->    196	
->    197		/* TODO:
->    198		 * correctly calculate the total number of filtered symbols
->    199		 * from both filter and notfilter.
->    200		 */
->  > 201		hash = fp->ops.local_hash.filter_hash;
-
-Hm, I need to use rcu_access_pointer() to access the filter_hash field,
-because it is a __rcu pointer.
-
-Thank you,
-
->    202		if (WARN_ON_ONCE(!hash))
->    203			goto out;
->    204	
->    205		ret = fprobe_init_rethook(fp, (int)hash->count);
->    206		if (!ret)
->    207			ret = register_ftrace_function(&fp->ops);
->    208	
->    209	out:
->    210		if (ret)
->    211			fprobe_fail_cleanup(fp);
->    212		return ret;
->    213	}
->    214	EXPORT_SYMBOL_GPL(register_fprobe);
->    215	
-> 
-> -- 
-> 0-DAY CI Kernel Test Service
-> https://01.org/lkp
 
 
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
+On 3/21/2022 6:33 PM, Ian Rogers wrote:
+> If slots isn't with a topdown event then moving it is unnecessary. For
+> example {instructions, slots} is re-ordered:
+> 
+> $ perf stat -e '{instructions,slots}' -a sleep 1
+> 
+>   Performance counter stats for 'system wide':
+> 
+>         936,600,825      slots
+>         144,440,968      instructions
+> 
+>         1.006061423 seconds time elapsed
+> 
+> Which can break tools expecting the command line order to match the
+> printed order. It is necessary to move the slots event first when it
+> appears with topdown events. Add extra checking so that the slots event
+> is only moved in the case of there being a topdown event like:
+> 
+> $ perf stat -e '{instructions,slots,topdown-fe-bound}' -a sleep 1
+> 
+>   Performance counter stats for 'system wide':
+> 
+>          2427568570      slots
+>           300927614      instructions
+>           551021649      topdown-fe-bound
+> 
+>         1.001771803 seconds time elapsed
+> 
+> Fixes: 94dbfd6781a0 ("perf parse-events: Architecture specific leader override")
+> Reported-by: Kan Liang <kan.liang@linux.intel.com>
+> Signed-off-by: Ian Rogers <irogers@google.com>
+
+Thanks Ian. The patch works well.
+
+Tested-by: Kan Liang <kan.liang@linux.intel.com>
+
+Thanks,
+Kan
+> ---
+>   tools/perf/arch/x86/util/evlist.c | 18 ++++++++++++++----
+>   1 file changed, 14 insertions(+), 4 deletions(-)
+> 
+> diff --git a/tools/perf/arch/x86/util/evlist.c b/tools/perf/arch/x86/util/evlist.c
+> index 8d9b55959256..cfc208d71f00 100644
+> --- a/tools/perf/arch/x86/util/evlist.c
+> +++ b/tools/perf/arch/x86/util/evlist.c
+> @@ -20,17 +20,27 @@ int arch_evlist__add_default_attrs(struct evlist *evlist)
+>   
+>   struct evsel *arch_evlist__leader(struct list_head *list)
+>   {
+> -	struct evsel *evsel, *first;
+> +	struct evsel *evsel, *first, *slots = NULL;
+> +	bool has_topdown = false;
+>   
+>   	first = list_first_entry(list, struct evsel, core.node);
+>   
+>   	if (!pmu_have_event("cpu", "slots"))
+>   		return first;
+>   
+> +	/* If there is a slots event and a topdown event then the slots event comes first. */
+>   	__evlist__for_each_entry(list, evsel) {
+> -		if (evsel->pmu_name && !strcmp(evsel->pmu_name, "cpu") &&
+> -			evsel->name && strcasestr(evsel->name, "slots"))
+> -			return evsel;
+> +		if (evsel->pmu_name && !strcmp(evsel->pmu_name, "cpu") && evsel->name) {
+> +			if (strcasestr(evsel->name, "slots")) {
+> +				slots = evsel;
+> +				if (slots == first)
+> +					return first;
+> +			}
+> +			if (!strncasecmp(evsel->name, "topdown", 7))
+> +				has_topdown = true;
+> +			if (slots && has_topdown)
+> +				return slots;
+> +		}
+>   	}
+>   	return first;
+>   }
