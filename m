@@ -2,91 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5193C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:07:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A8C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:08:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239386AbiCVRJV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 13:09:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41672 "EHLO
+        id S239393AbiCVRJ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 13:09:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238070AbiCVRJQ (ORCPT
+        with ESMTP id S239202AbiCVRJQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 22 Mar 2022 13:09:16 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C59971EC9
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F6AE71ED1
         for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:07:48 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 16F531F387;
+        by smtp-out1.suse.de (Postfix) with ESMTP id 3AB67210F0;
         Tue, 22 Mar 2022 17:07:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
         t=1647968867; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=m0HZkkkCvfCXgsfLMiVZKxjN0kToTbJd7hKDVBIs6aw=;
-        b=yXztFw54QWyEjaLgsgPWhqqOKkFrluWU7938ub+Z2d1duXcO0guuhmxi7f54qsEy6ozkC5
-        ZuiOesYv/NlU1VLuwtG2uZZ8162OaN7k1uOl+xVdZoLjN+YRwAZ6xYZQ2SAXHcfh8BIJqq
-        Rx+H7ia0S2/KRivAdzVe2IEMvxdxaGk=
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OKjFtB5KBr9W4w3NflnR7TkFxvAb0C5HMxfUzYIzr7s=;
+        b=Vw95QBvC7cbTiU9SNUtLQSonYr3TkhQcan8iNTv8RiCH8N1dR+YThU56V5EDKHoqkvvrUO
+        ZzvOcAW8EFpXpuZUKdhywBM/+IHGdAZM+/2uurakRCxllv4CKA5qHde1H122A1vQsT1pdO
+        W0wKG48wPmQeihrQTEG9036FwahmFNk=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
         s=susede2_ed25519; t=1647968867;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=m0HZkkkCvfCXgsfLMiVZKxjN0kToTbJd7hKDVBIs6aw=;
-        b=GNNkuVErgDbvoXDAHyunnpH0GP9D4G6s997TI+dN8OtjcWuqoLEY/0GCvrCk/2GwL1Eymx
-        N3JuCQ41MdjXX3Aw==
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OKjFtB5KBr9W4w3NflnR7TkFxvAb0C5HMxfUzYIzr7s=;
+        b=OU5aFBrDmu/SozBe6LOmSsOl+7vDH57qPQHFE/j9z8rXUuMYXfJbFMfrYXrZUo6aRgnhzl
+        wdUl6cLEyeF+L9DQ==
 Received: from alsa1.nue.suse.com (alsa1.suse.de [10.160.4.42])
-        by relay2.suse.de (Postfix) with ESMTP id 0EF0EA3B87;
+        by relay2.suse.de (Postfix) with ESMTP id 29758A3B89;
         Tue, 22 Mar 2022 17:07:47 +0000 (UTC)
 From:   Takashi Iwai <tiwai@suse.de>
 To:     alsa-devel@alsa-project.org
 Cc:     Hu Jiahui <kirin.say@gmail.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH 0/4] ALSA: pcm: Fix ioctl races
-Date:   Tue, 22 Mar 2022 18:07:16 +0100
-Message-Id: <20220322170720.3529-1-tiwai@suse.de>
+Subject: [PATCH 3/4] ALSA: pcm: Fix races among concurrent prepare and hw_params/hw_free calls
+Date:   Tue, 22 Mar 2022 18:07:19 +0100
+Message-Id: <20220322170720.3529-4-tiwai@suse.de>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220322170720.3529-1-tiwai@suse.de>
+References: <20220322170720.3529-1-tiwai@suse.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Like the previous fixes to hw_params and hw_free ioctl races, we need
+to paper over the concurrent prepare ioctl calls against hw_params and
+hw_free, too.
 
-this is a patch set to address the recently reported bug for the racy
-PCM ioctls.  In short, the current ALSA PCM core doesn't take enough
-care of concurrent ioctl calls, and the concurrent calls may result in
-a use-after-free.  The reported problem was the concurrent hw_free
-calls, but there can be similar cases with other code paths like
-hw_params, prepare, etc, too.
+This patch implements the locking with the existing
+runtime->buffer_mutex for prepare ioctls.  Unlike the previous case
+for snd_pcm_hw_hw_params() and snd_pcm_hw_free(), snd_pcm_prepare() is
+performed to the linked streams, hence the lock can't be applied
+simply on the top.  For tracking the lock in each linked substream, we
+modify snd_pcm_action_group() slightly and apply the buffer_mutex for
+the case stream_lock=false (formerly there was no lock applied)
+there.
 
-The patch set introduces the new runtime->buffer_mutex for protecting
-those.  The first patch is the fix for the reported issue (the races
-with hw_free), while the rest three are more hardening for the other
-similar executions.
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+---
+ sound/core/pcm_native.c | 32 ++++++++++++++++++--------------
+ 1 file changed, 18 insertions(+), 14 deletions(-)
 
-[ Note that the patch 3 was slightly modified from the version I sent
-  to distros list, as I noticed possible lockdep (false-positive)
-  warnings.  The behavior is almost same, just written differently. ]
-
-
-thanks,
-
-Takashi
-
-===
-
-Takashi Iwai (4):
-  ALSA: pcm: Fix races among concurrent hw_params and hw_free calls
-  ALSA: pcm: Fix races among concurrent read/write and buffer changes
-  ALSA: pcm: Fix races among concurrent prepare and hw_params/hw_free
-    calls
-  ALSA: pcm: Fix races among concurrent prealloc proc writes
-
- include/sound/pcm.h     |  1 +
- sound/core/pcm.c        |  2 +
- sound/core/pcm_lib.c    |  4 ++
- sound/core/pcm_memory.c | 11 +++--
- sound/core/pcm_native.c | 93 +++++++++++++++++++++++++----------------
- 5 files changed, 71 insertions(+), 40 deletions(-)
-
+diff --git a/sound/core/pcm_native.c b/sound/core/pcm_native.c
+index 266895374b83..0e4fbf5fd87b 100644
+--- a/sound/core/pcm_native.c
++++ b/sound/core/pcm_native.c
+@@ -1190,15 +1190,17 @@ struct action_ops {
+ static int snd_pcm_action_group(const struct action_ops *ops,
+ 				struct snd_pcm_substream *substream,
+ 				snd_pcm_state_t state,
+-				bool do_lock)
++				bool stream_lock)
+ {
+ 	struct snd_pcm_substream *s = NULL;
+ 	struct snd_pcm_substream *s1;
+ 	int res = 0, depth = 1;
+ 
+ 	snd_pcm_group_for_each_entry(s, substream) {
+-		if (do_lock && s != substream) {
+-			if (s->pcm->nonatomic)
++		if (s != substream) {
++			if (!stream_lock)
++				mutex_lock_nested(&s->runtime->buffer_mutex, depth);
++			else if (s->pcm->nonatomic)
+ 				mutex_lock_nested(&s->self_group.mutex, depth);
+ 			else
+ 				spin_lock_nested(&s->self_group.lock, depth);
+@@ -1226,18 +1228,18 @@ static int snd_pcm_action_group(const struct action_ops *ops,
+ 		ops->post_action(s, state);
+ 	}
+  _unlock:
+-	if (do_lock) {
+-		/* unlock streams */
+-		snd_pcm_group_for_each_entry(s1, substream) {
+-			if (s1 != substream) {
+-				if (s1->pcm->nonatomic)
+-					mutex_unlock(&s1->self_group.mutex);
+-				else
+-					spin_unlock(&s1->self_group.lock);
+-			}
+-			if (s1 == s)	/* end */
+-				break;
++	/* unlock streams */
++	snd_pcm_group_for_each_entry(s1, substream) {
++		if (s1 != substream) {
++			if (!stream_lock)
++				mutex_unlock(&s1->runtime->buffer_mutex);
++			else if (s1->pcm->nonatomic)
++				mutex_unlock(&s1->self_group.mutex);
++			else
++				spin_unlock(&s1->self_group.lock);
+ 		}
++		if (s1 == s)	/* end */
++			break;
+ 	}
+ 	return res;
+ }
+@@ -1367,10 +1369,12 @@ static int snd_pcm_action_nonatomic(const struct action_ops *ops,
+ 
+ 	/* Guarantee the group members won't change during non-atomic action */
+ 	down_read(&snd_pcm_link_rwsem);
++	mutex_lock(&substream->runtime->buffer_mutex);
+ 	if (snd_pcm_stream_linked(substream))
+ 		res = snd_pcm_action_group(ops, substream, state, false);
+ 	else
+ 		res = snd_pcm_action_single(ops, substream, state);
++	mutex_unlock(&substream->runtime->buffer_mutex);
+ 	up_read(&snd_pcm_link_rwsem);
+ 	return res;
+ }
 -- 
 2.31.1
 
