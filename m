@@ -2,196 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79D5BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 10:57:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0F85C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 10:58:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233754AbiCVK6n convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 06:58:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34364 "EHLO
+        id S233775AbiCVLAV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 07:00:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233977AbiCVK6d (ORCPT
+        with ESMTP id S231140AbiCVLAU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 06:58:33 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AEBE7692B5
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 03:57:05 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-9-Lon-t17yP1qoUoOghi9yew-1; Tue, 22 Mar 2022 10:57:01 +0000
-X-MC-Unique: Lon-t17yP1qoUoOghi9yew-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Tue, 22 Mar 2022 10:57:02 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Tue, 22 Mar 2022 10:57:01 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Ammar Faizi' <ammarfaizi2@gnuweeb.org>, Willy Tarreau <w@1wt.eu>
-CC:     "Paul E. McKenney" <paulmck@kernel.org>,
-        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
-        Nugraha <richiisei@gmail.com>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "llvm@lists.linux.dev" <llvm@lists.linux.dev>
-Subject: RE: [RFC PATCH v2 3/8] tools/nolibc: i386: Implement syscall with 6
- arguments
-Thread-Topic: [RFC PATCH v2 3/8] tools/nolibc: i386: Implement syscall with 6
- arguments
-Thread-Index: AQHYPdalMvftIu2CIkSH1LImoy2kmazLOrmQ
-Date:   Tue, 22 Mar 2022 10:57:01 +0000
-Message-ID: <35ec31089f724a74a584f946deac6248@AcuMS.aculab.com>
-References: <20220322102115.186179-1-ammarfaizi2@gnuweeb.org>
- <20220322102115.186179-4-ammarfaizi2@gnuweeb.org>
-In-Reply-To: <20220322102115.186179-4-ammarfaizi2@gnuweeb.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Tue, 22 Mar 2022 07:00:20 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 531D657163;
+        Tue, 22 Mar 2022 03:58:53 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id bi12so35403728ejb.3;
+        Tue, 22 Mar 2022 03:58:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6eTie8pN9DOlF868bn+y4zBjLnv2GLhQ4xR2n+oPB4o=;
+        b=QzvTPalSltc1H2yWkF7TA/9e8Udp1ApWJdjNySe8TcsiL2zt3+USc7xlja6WIms09q
+         j7Oac21kyr1Ue9ryUmmWZXJUwmgEjcfqOsczHxYoJrErWgb31lsHM0N/jlrR2Kkv3HE3
+         ugKYnoHgOte8xlT3opFPTr39L/c24oQp8YHr7oojZPCXf4Phj3PX8a/LEathe2YlnxGD
+         7D2dC5en8o51c6mBvB38CkZJZD/HwHvMjPLGCDEr8I51RpTYvQwRlE2xSQDwRxRVbC/R
+         8Ma/wmPsDJM9xvdx1Galp5ZxfHuyYmfAdOJx33Dq0TkNs1vv1ViIPVC+kKhdbMO4JeM3
+         1/dw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6eTie8pN9DOlF868bn+y4zBjLnv2GLhQ4xR2n+oPB4o=;
+        b=guSRRA2HDYsjQvhsqAhUE1V7+NrvQiXH/R6YCfjCqpsHJ6rdEbRJiFKgere2WnMq1r
+         q2B+Xf5IZmZvkzOZCx7OjBiHa7Lh/jkqdDxs9QuJd1mgCVAaUnrhXqLtAHqlZD8fQIRq
+         xFLPscVd6zRAcr1ZKrBvPl/1tB3dDLynGLfM1bXkkhGaSo1llgyh85cdwnwCirytBmAA
+         +rIwJMA828Q1IOnPVwmIWAk/xWKEpjN5CQZnS38diNeFiUODnjETby6/3vtbcaAKtuDf
+         yVqP64+XpaAmH9NtV5QGhAt8UlgrBDrP2s0vrfzq2Q5cRhOZlotPsyg2KnPmIYhg7NMS
+         TOyQ==
+X-Gm-Message-State: AOAM530OS6P3uQhp823rMrQopA7FmfSzFhRAPaFXEWaA9ikYUJHKYoch
+        SXDZuihTNcaLQVwWXPiKV0jWriE0c+Y=
+X-Google-Smtp-Source: ABdhPJyazF0uGyLpbtzXM77PFzEF7PotXeqSwSX5ULFhQ7tu8+unt2hSIdsJNfpHLou/gGNVbk9Zrg==
+X-Received: by 2002:a17:906:e87:b0:6df:8602:5801 with SMTP id p7-20020a1709060e8700b006df86025801mr25367980ejf.140.1647946731535;
+        Tue, 22 Mar 2022 03:58:51 -0700 (PDT)
+Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
+        by smtp.googlemail.com with ESMTPSA id da19-20020a056402177300b00413583e0996sm9227623edb.14.2022.03.22.03.58.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Mar 2022 03:58:51 -0700 (PDT)
+From:   Jakob Koschel <jakobkoschel@gmail.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
+        linux-kernel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, netdev@vger.kernel.org,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
+Subject: [PATCH v2] netfilter: nf_tables: replace unnecessary use of list_for_each_entry_continue()
+Date:   Tue, 22 Mar 2022 11:56:44 +0100
+Message-Id: <20220322105645.3667322-1-jakobkoschel@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ammar Faizi
-> Sent: 22 March 2022 10:21
-> 
-> On i386, the 6th argument of syscall goes in %ebp. However, both Clang
-> and GCC cannot use %ebp in the clobber list and in the "r" constraint
-> without using -fomit-frame-pointer. To make it always available for
-> any kind of compilation, the below workaround is implemented.
-> 
-> For clang (the Assembly statement can't clobber %ebp):
->   1) Push the 6-th argument.
->   2) Push %ebp.
->   3) Load the 6-th argument from 4(%esp) to %ebp.
->   4) Do the syscall (int $0x80).
->   5) Pop %ebp (restore the old value of %ebp).
->   6) Add %esp by 4 (undo the stack pointer).
-> 
-> For GCC, fortunately it has a #pragma that can force a specific function
-> to be compiled with -fomit-frame-pointer, so it can use "r"(var) where
-> var is a variable bound to %ebp.
+Since there is no way for list_for_each_entry_continue() to start
+interating in the middle of the list they can be replaced with a call
+to list_for_each_entry().
 
-You need to use the 'clang' pattern for gcc.
-#pragma optimise is fundamentally broken.
-What actually happens here is the 'inline' gets lost
-(because of the implied -O0) and you get far worse code
-than you might expect.
+In preparation to limit the scope of the list iterator to the list
+traversal loop, the list iterator variable 'rule' should not be used
+past the loop.
 
-Since you need the 'clang' version, use it all the time.
+v1->v2:
+- also replace first usage of list_for_each_entry_continue() (Florian
+Westphal)
 
-	David
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+---
+ net/netfilter/nf_tables_api.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-> 
-> Cc: x86@kernel.org
-> Cc: llvm@lists.linux.dev
-> Link: https://lore.kernel.org/lkml/2e335ac54db44f1d8496583d97f9dab0@AcuMS.aculab.com
-> Suggested-by: David Laight <David.Laight@ACULAB.COM>
-> Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
-> ---
-> 
-> @@ Changelog:
-> 
->    Link RFC v1: https://lore.kernel.org/llvm/20220320093750.159991-4-ammarfaizi2@gnuweeb.org
->    RFC v1 -> RFC v2:
->     - Fix %ebp saving method. Don't use redzone, i386 doesn't have a redzone
->       (comment from David and Alviro).
-> ---
->  tools/include/nolibc/arch-i386.h | 66 ++++++++++++++++++++++++++++++++
->  1 file changed, 66 insertions(+)
-> 
-> diff --git a/tools/include/nolibc/arch-i386.h b/tools/include/nolibc/arch-i386.h
-> index 125a691fc631..9f4dc36e6ac2 100644
-> --- a/tools/include/nolibc/arch-i386.h
-> +++ b/tools/include/nolibc/arch-i386.h
-> @@ -167,6 +167,72 @@ struct sys_stat_struct {
->  	_ret;                                                                 \
->  })
-> 
-> +
-> +/*
-> + * Both Clang and GCC cannot use %ebp in the clobber list and in the "r"
-> + * constraint without using -fomit-frame-pointer. To make it always
-> + * available for any kind of compilation, the below workaround is
-> + * implemented.
-> + *
-> + * For clang (the Assembly statement can't clobber %ebp):
-> + *   1) Push the 6-th argument.
-> + *   2) Push %ebp.
-> + *   3) Load the 6-th argument from 4(%esp) to %ebp.
-> + *   4) Do the syscall (int $0x80).
-> + *   5) Pop %ebp (restore the old value of %ebp).
-> + *   6) Add %esp by 4 (undo the stack pointer).
-> + *
-> + * For GCC, fortunately it has a #pragma that can force a specific function
-> + * to be compiled with -fomit-frame-pointer, so it can use "r"(var) where
-> + * var is a variable bound to %ebp.
-> + *
-> + */
-> +#if defined(__clang__)
-> +static inline long ____do_syscall6(long eax, long ebx, long ecx, long edx,
-> +				   long esi, long edi, long ebp)
-> +{
-> +	__asm__ volatile (
-> +		"pushl	%[arg6]\n\t"
-> +		"pushl	%%ebp\n\t"
-> +		"movl	4(%%esp), %%ebp\n\t"
-> +		"int	$0x80\n\t"
-> +		"popl	%%ebp\n\t"
-> +		"addl	$4,%%esp\n\t"
-> +		: "=a"(eax)
-> +		: "a"(eax), "b"(ebx), "c"(ecx), "d"(edx), "S"(esi), "D"(edi),
-> +		  [arg6]"m"(ebp)
-> +		: "memory", "cc"
-> +	);
-> +	return eax;
-> +}
-> +
-> +#else /* #if defined(__clang__) */
-> +#pragma GCC push_options
-> +#pragma GCC optimize "-fomit-frame-pointer"
-> +static long ____do_syscall6(long eax, long ebx, long ecx, long edx, long esi,
-> +			    long edi, long ebp)
-> +{
-> +	register long __ebp __asm__("ebp") = ebp;
-> +	__asm__ volatile (
-> +		"int	$0x80"
-> +		: "=a"(eax)
-> +		: "a"(eax), "b"(ebx), "c"(ecx), "d"(edx), "S"(esi), "D"(edi),
-> +		  "r"(__ebp)
-> +		: "memory", "cc"
-> +	);
-> +	return eax;
-> +}
-> +#pragma GCC pop_options
-> +#endif /* #if defined(__clang__) */
-> +
-> +#define my_syscall6(num, arg1, arg2, arg3, arg4, arg5, arg6) (   \
-> +	____do_syscall6((long)(num), (long)(arg1),               \
-> +			(long)(arg2), (long)(arg3),              \
-> +			(long)(arg4), (long)(arg5),              \
-> +			(long)(arg6))                            \
-> +)
-> +
-> +
->  /* startup code */
->  /*
->   * i386 System V ABI mandates:
-> --
-> Ammar Faizi
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index d71a33ae39b3..6a8239b25a66 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -8279,10 +8279,8 @@ static int nf_tables_commit_chain_prepare(struct net *net, struct nft_chain *cha
+ 	if (chain->blob_next || !nft_is_active_next(net, chain))
+ 		return 0;
 
+-	rule = list_entry(&chain->rules, struct nft_rule, list);
 -
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+ 	data_size = 0;
+-	list_for_each_entry_continue(rule, &chain->rules, list) {
++	list_for_each_entry(rule, &chain->rules, list) {
+ 		if (nft_is_active_next(net, rule)) {
+ 			data_size += sizeof(*prule) + rule->dlen;
+ 			if (data_size > INT_MAX)
+@@ -8299,7 +8297,7 @@ static int nf_tables_commit_chain_prepare(struct net *net, struct nft_chain *cha
+ 	data_boundary = data + data_size;
+ 	size = 0;
+
+-	list_for_each_entry_continue(rule, &chain->rules, list) {
++	list_for_each_entry(rule, &chain->rules, list) {
+ 		if (!nft_is_active_next(net, rule))
+ 			continue;
+
+
+base-commit: f443e374ae131c168a065ea1748feac6b2e76613
+--
+2.25.1
 
