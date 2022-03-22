@@ -2,85 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A445CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 00:17:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0512C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 00:18:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233891AbiCVATD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 20:19:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52422 "EHLO
+        id S233914AbiCVAT0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 20:19:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233905AbiCVAS7 (ORCPT
+        with ESMTP id S233905AbiCVATZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 20:18:59 -0400
-Received: from out199-3.us.a.mail.aliyun.com (out199-3.us.a.mail.aliyun.com [47.90.199.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96103DE905;
-        Mon, 21 Mar 2022 17:16:15 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0V7sYEL4_1647907898;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0V7sYEL4_1647907898)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 22 Mar 2022 08:11:39 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     djwong@kernel.org
-Cc:     linux-xfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH -next] xfs: clean up some inconsistent indenting
-Date:   Tue, 22 Mar 2022 08:11:37 +0800
-Message-Id: <20220322001137.96594-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        Mon, 21 Mar 2022 20:19:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9779C126FB8
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 17:16:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B37DB819F9
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 00:14:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FA3AC340EE;
+        Tue, 22 Mar 2022 00:14:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647908080;
+        bh=ptq/x+NmLEN93pVa3brLVtmIuD2jc5p162570UhOGQ0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=CmGegkS2ilwEKTVAUxejCavZAzG3ZrQ+HgomCHaYhL/c0BdCu8AdIN+Te3GCUGPEl
+         gnUHJEhnMqtWIr8bIP/z55kCLyBYkGiXsDLO4TKC6mgpgvcYP60ZHXe1lXSowrjQTH
+         df0W02qQ1wiAEjBYF7NlnCyFnC1YFqJJ2KzN8Qd2R2pU0Ur9cRRoKiX7SRWa6EBGE9
+         F8/3vMBGbbTKEdagT4TANbEz/KSeQOzOHx4K0g9atyX+m8QlK5rcS7Aej89TnqYAJc
+         20CSPIMvwnEeROONYUgO5fwkvbJ9slOQ0mgAlBqVjiDCgLphKSLwIugQZ/YM86eHQo
+         QesHDFlCDJ6pw==
+Date:   Mon, 21 Mar 2022 17:14:38 -0700
+From:   Jaegeuk Kim <jaegeuk@kernel.org>
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net
+Subject: Re: [f2fs-dev] [PATCH] f2fs: introduce data read/write showing path
+ info
+Message-ID: <YjkU7tP+Rjs90X38@google.com>
+References: <20220321223315.3228326-1-jaegeuk@kernel.org>
+ <Yjj/L5/kwc5Oo74E@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yjj/L5/kwc5Oo74E@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Eliminate the follow smatch warning:
-fs/xfs/xfs_log.c:3702 xlog_verify_tail_lsn() warn: inconsistent
-indenting
+On 03/21, Eric Biggers wrote:
+> On Mon, Mar 21, 2022 at 03:33:15PM -0700, Jaegeuk Kim wrote:
+> > This was used in Android for a long time. Let's upstream it.
+> > 
+> 
+> You still need to explain why this is useful.
+> 
+> > +static inline char *f2fs_get_pathname(char *buf, int len, struct inode *inode)
+> > +{
+> > +	char *path;
+> > +	struct dentry *d;
+> > +
+> > +	/*
+> > +	 * d_obtain_alias() will either iput() if it locates an existing
+> > +	 * dentry or transfer the reference to the new dentry created.
+> > +	 * So get an extra reference here.
+> > +	 */
+> > +	ihold(inode);
+> > +	d = d_obtain_alias(inode);
+> 
+> Why does this use d_obtain_alias() to get a dentry instead of just using the
+> dentry of the open file?
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
----
- fs/xfs/xfs_log.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+:( I shouldn't copy the code from aosp simply.
 
-diff --git a/fs/xfs/xfs_log.c b/fs/xfs/xfs_log.c
-index a8034c0afdf2..5c8843026468 100644
---- a/fs/xfs/xfs_log.c
-+++ b/fs/xfs/xfs_log.c
-@@ -3699,21 +3699,21 @@ xlog_verify_tail_lsn(
- 	xfs_lsn_t	tail_lsn = be64_to_cpu(iclog->ic_header.h_tail_lsn);
- 	int		blocks;
- 
--    if (CYCLE_LSN(tail_lsn) == log->l_prev_cycle) {
--	blocks =
--	    log->l_logBBsize - (log->l_prev_block - BLOCK_LSN(tail_lsn));
-+	if (CYCLE_LSN(tail_lsn) == log->l_prev_cycle) {
-+		blocks = log->l_logBBsize -
-+			(log->l_prev_block - BLOCK_LSN(tail_lsn));
- 	if (blocks < BTOBB(iclog->ic_offset)+BTOBB(log->l_iclog_hsize))
- 		xfs_emerg(log->l_mp, "%s: ran out of log space", __func__);
--    } else {
--	ASSERT(CYCLE_LSN(tail_lsn)+1 == log->l_prev_cycle);
-+	} else {
-+		ASSERT(CYCLE_LSN(tail_lsn)+1 == log->l_prev_cycle);
- 
--	if (BLOCK_LSN(tail_lsn) == log->l_prev_block)
--		xfs_emerg(log->l_mp, "%s: tail wrapped", __func__);
-+		if (BLOCK_LSN(tail_lsn) == log->l_prev_block)
-+			xfs_emerg(log->l_mp, "%s: tail wrapped", __func__);
- 
--	blocks = BLOCK_LSN(tail_lsn) - log->l_prev_block;
--	if (blocks < BTOBB(iclog->ic_offset) + 1)
--		xfs_emerg(log->l_mp, "%s: ran out of log space", __func__);
--    }
-+		blocks = BLOCK_LSN(tail_lsn) - log->l_prev_block;
-+		if (blocks < BTOBB(iclog->ic_offset) + 1)
-+			xfs_emerg(log->l_mp, "%s: ran out of log space", __func__);
-+	}
- }
- 
- /*
--- 
-2.20.1.7.g153144c
-
+> 
+> - Eric
