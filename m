@@ -2,48 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 225FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 11:18:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EEC9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 11:19:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234084AbiCVLUW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 07:20:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60944 "EHLO
+        id S234087AbiCVLVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 07:21:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232248AbiCVLUS (ORCPT
+        with ESMTP id S231368AbiCVLUz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 07:20:18 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E23AD26DB;
-        Tue, 22 Mar 2022 04:18:51 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 5189868AFE; Tue, 22 Mar 2022 12:18:48 +0100 (CET)
-Date:   Tue, 22 Mar 2022 12:18:48 +0100
-From:   Christoph Hellwig <hch@lst.de>
-To:     John Garry <john.garry@huawei.com>
-Cc:     axboe@kernel.dk, damien.lemoal@opensource.wdc.com,
-        bvanassche@acm.org, jejb@linux.ibm.com, martin.petersen@oracle.com,
-        hch@lst.de, ming.lei@redhat.com, hare@suse.de,
-        chenxiang66@hisilicon.com, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-scsi@vger.kernel.org, dm-devel@redhat.com, beanhuo@micron.com
-Subject: Re: [PATCH 01/11] blk-mq: Add blk_mq_init_queue_ops()
-Message-ID: <20220322111848.GA29270@lst.de>
-References: <1647945585-197349-1-git-send-email-john.garry@huawei.com> <1647945585-197349-2-git-send-email-john.garry@huawei.com>
+        Tue, 22 Mar 2022 07:20:55 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C20A726DB
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 04:19:27 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KN89F3CX6zfZ6x;
+        Tue, 22 Mar 2022 19:17:53 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
+ (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 22 Mar
+ 2022 19:19:25 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <akpm@linux-foundation.org>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <linmiaohe@huawei.com>
+Subject: [PATCH] mm/mremap: use helper mlock_future_check
+Date:   Tue, 22 Mar 2022 19:20:04 +0800
+Message-ID: <20220322112004.27380-1-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1647945585-197349-2-git-send-email-john.garry@huawei.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 06:39:35PM +0800, John Garry wrote:
-> Add an API to allocate a request queue which accepts a custom set of
-> blk_mq_ops for that request queue.
-> 
-> The reason which we may want custom ops is for queuing requests which we
-> don't want to go through the normal queuing path.
+Use helper mlock_future_check to check whether it's safe to resize the
+locked_vm to simplify the code. Minor readability improvement.
 
-Eww.  I really do not think we should do separate ops per queue, as that
-is going to get us into a deep mess eventually.
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ mm/mremap.c | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
+
+diff --git a/mm/mremap.c b/mm/mremap.c
+index 9d76da79594d..e776d4c2345c 100644
+--- a/mm/mremap.c
++++ b/mm/mremap.c
+@@ -763,14 +763,8 @@ static struct vm_area_struct *vma_to_resize(unsigned long addr,
+ 	if (vma->vm_flags & (VM_DONTEXPAND | VM_PFNMAP))
+ 		return ERR_PTR(-EFAULT);
+ 
+-	if (vma->vm_flags & VM_LOCKED) {
+-		unsigned long locked, lock_limit;
+-		locked = mm->locked_vm << PAGE_SHIFT;
+-		lock_limit = rlimit(RLIMIT_MEMLOCK);
+-		locked += new_len - old_len;
+-		if (locked > lock_limit && !capable(CAP_IPC_LOCK))
+-			return ERR_PTR(-EAGAIN);
+-	}
++	if (mlock_future_check(mm, vma->vm_flags, new_len - old_len))
++		return ERR_PTR(-EAGAIN);
+ 
+ 	if (!may_expand_vm(mm, vma->vm_flags,
+ 				(new_len - old_len) >> PAGE_SHIFT))
+-- 
+2.23.0
+
