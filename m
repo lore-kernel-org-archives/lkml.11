@@ -2,139 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDD5DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 03:07:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8E05C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 03:07:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236022AbiCVDI1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 23:08:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50042 "EHLO
+        id S236020AbiCVDIy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 23:08:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235991AbiCVDIZ (ORCPT
+        with ESMTP id S235872AbiCVDIt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 23:08:25 -0400
-X-Greylist: delayed 559 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 21 Mar 2022 20:06:56 PDT
-Received: from crane.ash.relay.mailchannels.net (crane.ash.relay.mailchannels.net [23.83.222.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E47939690
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 20:06:55 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 195B0800DEE;
-        Tue, 22 Mar 2022 02:57:33 +0000 (UTC)
-Received: from pdx1-sub0-mail-a295.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 05E17800E65;
-        Tue, 22 Mar 2022 02:57:32 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1647917852; a=rsa-sha256;
-        cv=none;
-        b=OpX/wT83WSUgkwuyqo+AX183ZF64agEolIpgS5YaHhEw+K5Z5HdloR1lKnlVv6tLbessRM
-        cgwpsu3lSwUJYEjZwzjLR+TWW2zvxqDLFMJnEsriR9WrnLyIy+yRrhFRGhktfzLWVBDbU/
-        nst71cZedfBM0b354icqNabdXWG7ppuH53O67CUwlBuADn1ldo0cv3TffoR+mJcovapUok
-        CTSdlHQC7biMgfqvsW9yEzja/6S6JJsrOyrcxnjfUYc79JP/qMaGpkthwXHk0JFY7C99f0
-        jQfS5UzqyXU6VpUy6U0bomHKQcPzoQYpZOeV/K+jPHEsY2woRC0FSycbWtbpHA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1647917852;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=SDRgY4hCcw5IyJP6ZI91B9IoNIRgIUTKVFMsD2qfdRk=;
-        b=CuIXw+6epD9n3Q+3WuIKBbuh+kRU4d+NMYi5nnCcsDAspzmVy7hYMofjScXYZ7DmqBB14Q
-        EXWzxT+genBBJaGYbIUY22K7LydDAgMIJ1Dwyx8/lJdBpfHLhagwmHcGyQitCGgmR+5hz4
-        w6XMcXzk6lahpAwNlc5kbWSifSt/ERGHbe5SR+h7NeKFPFJ11wN6ZJjxNc5Of+o2BDtdQQ
-        BOqxnwdOrY86JdjHx9E8VMheV1e8I9sujZm3rZTp8RGH1mIjwrsZd3ZmqRCQVpUwNlBWXh
-        nouyDEr2B+ThmaRmTrve0Vl7T/ySxjEskJPwRC//jCgQO5zq4t8SdRCMWUcVoA==
-ARC-Authentication-Results: i=1;
-        rspamd-74bfb75fc6-dqqqm;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from pdx1-sub0-mail-a295.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.121.210.153 (trex/6.5.3);
-        Tue, 22 Mar 2022 02:57:33 +0000
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Glossy-Thread: 2b8b6da7311fbb33_1647917852452_1069914907
-X-MC-Loop-Signature: 1647917852451:2066250030
-X-MC-Ingress-Time: 1647917852451
-Received: from offworld (unknown [104.36.25.8])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Mon, 21 Mar 2022 23:08:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B2E9140F4;
+        Mon, 21 Mar 2022 20:07:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a295.dreamhost.com (Postfix) with ESMTPSA id 4KMx3s4gbMz3f;
-        Mon, 21 Mar 2022 19:57:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1647917851;
-        bh=SDRgY4hCcw5IyJP6ZI91B9IoNIRgIUTKVFMsD2qfdRk=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=ZroK2pC8DsKo78Rr0oYJm5AKcTKhlJq8fuI5kDFImQeZG8OpdaZdgtMKnVF6YyeIw
-         vrG7aUVDDlLMyK1Avt0J3Q3nb5MS6p3icwP/XxcWoVZ/zYN06R5q2gAm6Q5T1/4Agh
-         iVHLtPeC0UrzHe4XtjIzYufm+YiL/ZjKh8+daF3Pg5UVC4Mm3vU29PYygc81DlKEok
-         EVhVtf0F+HxuXufstBjni/DdzHFuqG70PIPcto4MzvpGBZSJlm0waWlG01tRHG2a1L
-         vR4+5e9zq4dAnqFKobDNmRWctorBX6mci0CFpslaPGNzhbuyeyDDbqDd2YoEGerkYD
-         /2R3fmoTk0a/g==
-Date:   Mon, 21 Mar 2022 19:57:24 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Nico Pache <npache@redhat.com>
-Cc:     Michal Hocko <mhocko@suse.com>, linux-mm@kvack.org,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Joel Savitz <jsavitz@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, Rafael Aquini <aquini@redhat.com>,
-        Waiman Long <longman@redhat.com>, Baoquan He <bhe@redhat.com>,
-        Christoph von Recklinghausen <crecklin@redhat.com>,
-        Don Dutile <ddutile@redhat.com>,
-        "Herton R . Krzesinski" <herton@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Darren Hart <dvhart@infradead.org>,
-        Andre Almeida <andrealmeid@collabora.com>,
-        David Rientjes <rientjes@google.com>
-Subject: Re: [PATCH v5] mm/oom_kill.c: futex: Close a race between do_exit
- and the oom_reaper
-Message-ID: <20220322025724.j3japdo5qocwgchz@offworld>
-Mail-Followup-To: Nico Pache <npache@redhat.com>,
-        Michal Hocko <mhocko@suse.com>, linux-mm@kvack.org,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Joel Savitz <jsavitz@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, Rafael Aquini <aquini@redhat.com>,
-        Waiman Long <longman@redhat.com>, Baoquan He <bhe@redhat.com>,
-        Christoph von Recklinghausen <crecklin@redhat.com>,
-        Don Dutile <ddutile@redhat.com>,
-        "Herton R . Krzesinski" <herton@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Darren Hart <dvhart@infradead.org>,
-        Andre Almeida <andrealmeid@collabora.com>,
-        David Rientjes <rientjes@google.com>
-References: <20220318033621.626006-1-npache@redhat.com>
- <Yjg9ncgep58gFLiN@dhcp22.suse.cz>
- <20220322004231.rwmnbjpq4ms6fnbi@offworld>
- <c8bb0b6d-981c-8591-d5b6-17414c934758@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF37EB81B41;
+        Tue, 22 Mar 2022 03:07:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80126C340E8;
+        Tue, 22 Mar 2022 03:07:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647918440;
+        bh=JbminCrwvlKeHI7BEmFEsF5mDATqt+IS8qjcZ0/Jt9M=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=QXAmVA5wzyUI2A1gidTxf5+Lo6mDAbigvc7Oy0OmXaaB60pzd2ZM3RZzXh1ONfLiQ
+         rcm70kJ/Ci2YoNfEesX6/y+NDr/MfTm7yzMJcVfqf5rppfBhzFhpYm3soqnr8vyEqY
+         0T9J/oRiVAWY51zw2o99VDzbxSp85Gx2cfDifP5vWxNS/tMHx13Ea+2/y90cvg03l5
+         6gAp8I2yarUR5IZlxfxhCsGvLMrXZeLHenIZlvc706Alb8DGCG8hGWzfBl0t1Me22X
+         omXtfJopIWR+aXYBRHLZKCZK3ZkqQ73ONWYFzfcorVZgEMzViOXN3wifI1BFd32Ulv
+         JiY+QggjG5riw==
+Received: by mail-vs1-f41.google.com with SMTP id 2so9784745vse.4;
+        Mon, 21 Mar 2022 20:07:20 -0700 (PDT)
+X-Gm-Message-State: AOAM531aCzh68XRbmaPpJ+FEO+ZW9rMf/PBCYllqnCNNjpVHOJJ2ZfBK
+        NApFte2jWFdiHEXUbfg/fIdhYsGJQiSR/jFfPkU=
+X-Google-Smtp-Source: ABdhPJx4+oH0hOgpdvstgqFyVbmteIBIBzG7Uewe8HbwCzcGggSv3RFh+6z7krU1v8KMTHuDPkzMCzfD1G8XtTDEGEY=
+X-Received: by 2002:a05:6102:2e5:b0:325:30d7:c452 with SMTP id
+ j5-20020a05610202e500b0032530d7c452mr1451473vsj.67.1647918439548; Mon, 21 Mar
+ 2022 20:07:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <c8bb0b6d-981c-8591-d5b6-17414c934758@redhat.com>
-User-Agent: NeoMutt/20201120
+References: <20220319142759.1026237-1-chenhuacai@loongson.cn>
+ <20220319143817.1026708-1-chenhuacai@loongson.cn> <20220319143817.1026708-4-chenhuacai@loongson.cn>
+ <CAK8P3a1ST1hBnhepvoQ9UTbAM=56JEU=-OiBAFQeK2rgaZ5aWw@mail.gmail.com>
+In-Reply-To: <CAK8P3a1ST1hBnhepvoQ9UTbAM=56JEU=-OiBAFQeK2rgaZ5aWw@mail.gmail.com>
+From:   Huacai Chen <chenhuacai@kernel.org>
+Date:   Tue, 22 Mar 2022 11:07:11 +0800
+X-Gmail-Original-Message-ID: <CAAhV-H7akp8RNyw=7qJPgWeApAzf0u4kBNbOHzgQN9Mx3PfzcQ@mail.gmail.com>
+Message-ID: <CAAhV-H7akp8RNyw=7qJPgWeApAzf0u4kBNbOHzgQN9Mx3PfzcQ@mail.gmail.com>
+Subject: Re: [PATCH V8 11/22] LoongArch: Add process management
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 21 Mar 2022, Nico Pache wrote:
+Hi, Arnd,
 
->We could proceed with the V3 approach; however if we are able to find a complete
->solution that keeps both functionalities (Concurrent OOM Reaping & Robust Futex)
->working, I dont see why we wouldnt go for it.
+On Mon, Mar 21, 2022 at 4:43 PM Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> On Sat, Mar 19, 2022 at 3:38 PM Huacai Chen <chenhuacai@kernel.org> wrote:
+>
+> > +#ifdef CONFIG_PAGE_SIZE_64KB
+> > +#define THREAD_SIZE_ORDER (0)
+> > +#endif
+> > +
+> > +#define THREAD_SIZE (PAGE_SIZE << THREAD_SIZE_ORDER)
+> > +#define THREAD_MASK (THREAD_SIZE - 1UL)
+> > +
+>
+> Having a 64KB stack area is rather wasteful. I think you should use a sub-page
+> allocation in this configuration, or possibly disallow 64KB page configuration
+> entirely.
+>
+> Note that you have to use full pages when using CONFIG_VMAP_STACK, but
+> you don't seem to support that at the moment, so allocating only 16KB stacks
+> on a 64KB page config should still work.
+I think using a 16KB stack for all configurations (4KB/16KB/64KB) is
+the simplest way. Right?
 
-Because semantically killing the process is, imo, the wrong thing to do. My
-performance argument before however is bogus as the overhead of robust futexes
-is pretty negligible within the lifetime of a lock. That said, the users still
-have good(?) reasons for not wanting the lock holder to crash on them.
-
-Thanks,
-Davidlohr
+Huacai
+>
+>        Arnd
