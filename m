@@ -2,105 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B11BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 16:03:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1DF8C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 16:04:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238302AbiCVQEm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 12:04:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34602 "EHLO
+        id S238858AbiCVQFc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 12:05:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236653AbiCVQEi (ORCPT
+        with ESMTP id S236653AbiCVQF3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 12:04:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 538452186
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 09:03:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647964989;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc; bh=TYrBsKa5StLxSmcyuHRyNtTAfASWqZ8KDbpJaYy3rsE=;
-        b=W/5DausXqHCC2uS3SpbB3ouydTih6E1r1/aQx/M54ObfNcd6SeV53v7Uq6QkiUcXz+LyVh
-        TQRS5UtRwVaoNicS2n9/9pkVRVlyTzNppnK7uEkMD11cZNroHmGpfeAlm/w2JUVjX8vMI7
-        2SMWTwo+ddbAYLpTWTOY2F18ZZsP/Cc=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-374-Po9Jd18JM5iqeEIC7-JoeA-1; Tue, 22 Mar 2022 12:03:06 -0400
-X-MC-Unique: Po9Jd18JM5iqeEIC7-JoeA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 22 Mar 2022 12:05:29 -0400
+Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 662456F4BD;
+        Tue, 22 Mar 2022 09:04:00 -0700 (PDT)
+Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
+ by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
+ id 8cec46cd286a4186; Tue, 22 Mar 2022 17:03:59 +0100
+Received: from kreacher.localnet (unknown [213.134.175.187])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9292D811E7A;
-        Tue, 22 Mar 2022 16:03:05 +0000 (UTC)
-Received: from pauld.bos.com (dhcp-17-51.bos.redhat.com [10.18.17.51])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 64000C07F5B;
-        Tue, 22 Mar 2022 16:03:05 +0000 (UTC)
-From:   Phil Auld <pauld@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH] arch/arm64:  Fix topology initialization for core scheduling
-Date:   Tue, 22 Mar 2022 12:03:04 -0400
-Message-Id: <20220322160304.26229-1-pauld@redhat.com>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+        by v370.home.net.pl (Postfix) with ESMTPSA id 479F566B920;
+        Tue, 22 Mar 2022 17:03:58 +0100 (CET)
+From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
+To:     Linux ACPI <linux-acpi@vger.kernel.org>
+Cc:     Linux PM <linux-pm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Ionela Voinescu <ionela.voinescu@arm.com>
+Subject: [PATCH v1 1/2] ACPI: CPPC: Avoid out of bounds access when parsing _CPC data
+Date:   Tue, 22 Mar 2022 17:02:05 +0100
+Message-ID: <4725716.31r3eYUQgx@kreacher>
+In-Reply-To: <5552457.DvuYhMxLoT@kreacher>
+References: <5552457.DvuYhMxLoT@kreacher>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="UTF-8"
+X-CLIENT-IP: 213.134.175.187
+X-CLIENT-HOSTNAME: 213.134.175.187
+X-VADE-SPAMSTATE: clean
+X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudeghedgkedvucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkjghfggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpeetgefgleetgeduheeugeeikeevudelueelvdeufeejfeffgeefjedugfetfeehhfenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecukfhppedvudefrddufeegrddujeehrddukeejnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvddufedrudefgedrudejhedrudekjedphhgvlhhopehkrhgvrggthhgvrhdrlhhotggrlhhnvghtpdhmrghilhhfrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqedpnhgspghrtghpthhtohepiedprhgtphhtthhopehlihhnuhigqdgrtghpihesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhpmhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehsrhhinhhivhgr
+ shdrphgrnhgurhhuvhgruggrsehlihhnuhigrdhinhhtvghlrdgtohhmpdhrtghpthhtohepmhgrrhhiohdrlhhimhhonhgtihgvlhhlohesrghmugdrtghomhdprhgtphhtthhopehiohhnvghlrgdrvhhoihhnvghstghusegrrhhmrdgtohhm
+X-DCC--Metrics: v370.home.net.pl 1024; Body=6 Fuz1=6 Fuz2=6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some arm64 rely on store_cpu_topology() to setup the real topology.
-This needs to be done before the call to notify_cpu_starting() which
-tell the scheduler about the cpu otherwise the core scheduling data
-structures are setup in a way that does not match the actual topology.
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-Without this change stress-ng (which enables core scheduling in its prctl 
-tests) causes a warning and then a crash (trimmed for legibility):
+If the NumEntries field in the _CPC return package is less than 2, do
+not attempt to access the "Revision" element of that package, because
+it may not be present then.
 
-[ 1853.805168] ------------[ cut here ]------------
-[ 1853.809784] task_rq(b)->core != rq->core
-[ 1853.809792] WARNING: CPU: 117 PID: 0 at kernel/sched/fair.c:11102 cfs_prio_less+0x1b4/0x1c4
-...
-[ 1854.015210] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
-...
-[ 1854.231256] Call trace:
-[ 1854.233689]  pick_next_task+0x3dc/0x81c
-[ 1854.237512]  __schedule+0x10c/0x4cc
-[ 1854.240988]  schedule_idle+0x34/0x54
-
-Fixes: 9edeaea1bc45 ("sched: Core-wide rq->lock")
-Signed-off-by: Phil Auld <pauld@redhat.com>
+Fixes: 337aadff8e45 ("ACPI: Introduce CPU performance controls using CPPC")
+BugLink: https://lore.kernel.org/lkml/20220322143534.GC32582@xsang-OptiPlex-9020/
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 ---
-This is a similar issue to 
-  f2703def339c ("MIPS: smp: fill in sibling and core maps earlier") 
-which fixed it for MIPS. 
+ drivers/acpi/cppc_acpi.c |    5 +++++
+ 1 file changed, 5 insertions(+)
+
+Index: linux-pm/drivers/acpi/cppc_acpi.c
+===================================================================
+--- linux-pm.orig/drivers/acpi/cppc_acpi.c
++++ linux-pm/drivers/acpi/cppc_acpi.c
+@@ -679,6 +679,11 @@ int acpi_cppc_processor_probe(struct acp
+ 	cpc_obj = &out_obj->package.elements[0];
+ 	if (cpc_obj->type == ACPI_TYPE_INTEGER)	{
+ 		num_ent = cpc_obj->integer.value;
++		if (num_ent <= 1) {
++			pr_debug("Unexpected _CPC NumEntries value (%d) for CPU:%d\n",
++				 num_ent, pr->id);
++			goto out_free;
++		}
+ 	} else {
+ 		pr_debug("Unexpected entry type(%d) for NumEntries\n",
+ 				cpc_obj->type);
 
 
-
- arch/arm64/kernel/smp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
-index 27df5c1e6baa..3b46041f2b97 100644
---- a/arch/arm64/kernel/smp.c
-+++ b/arch/arm64/kernel/smp.c
-@@ -234,6 +234,7 @@ asmlinkage notrace void secondary_start_kernel(void)
- 	 * Log the CPU info before it is marked online and might get read.
- 	 */
- 	cpuinfo_store_cpu();
-+	store_cpu_topology(cpu);
- 
- 	/*
- 	 * Enable GIC and timers.
-@@ -242,7 +243,6 @@ asmlinkage notrace void secondary_start_kernel(void)
- 
- 	ipi_setup(cpu);
- 
--	store_cpu_topology(cpu);
- 	numa_add_cpu(cpu);
- 
- 	/*
--- 
-2.18.0
 
