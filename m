@@ -2,114 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E78BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 20:14:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36D14C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 20:14:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233162AbiCVUPk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 16:15:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36876 "EHLO
+        id S233185AbiCVUPw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 16:15:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233410AbiCVUPb (ORCPT
+        with ESMTP id S233396AbiCVUPs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 16:15:31 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D0E0DF83;
-        Tue, 22 Mar 2022 13:14:03 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: nfraprado)
-        with ESMTPSA id 5AD151F42EBA
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1647980041;
-        bh=CHw7sZCuJpAli88yUDsSE7+L4DPTITJnekKWt6hXu+8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=h0xFVdRqaYEq/WG30NJ6ZSA+WJpaI1VAtF463Z9pVkqndqm6IJ7czLjyD8i8NfZWh
-         CoMhVRHRlBaWkm20jGRYkIlJOqabo8/PYnzmbEcHqPY4M2HWHY7F0543offvVfKsHp
-         FjkuM+dLOg/4Xy/fZQQGyRjRzsAB7fGxiGyZvPqRVzj5P/C1nQyisKy0DRtpBdenA3
-         uIVI6C9LlDFJzLEz4jGJHcl751IHsHRVvNoG+YIg9d8lSpa7NsPfOsREeaS+7eJr3Z
-         lpMB1UcrLPNEHWdZcC2JY2/PtDI0G5tDhKt2GJjWxS7J+iIrcQH53Zj8iCoWwzti0l
-         ooijqNv5T82AA==
-Date:   Tue, 22 Mar 2022 16:13:57 -0400
-From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
-        <nfraprado@collabora.com>
-To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Ryder Lee <ryder.lee@kernel.org>,
-        Hui Liu <hui.liu@mediatek.com>
-Subject: Re: [PATCH v4 20/22] arm64: dts: mt8192: Add dsi node
-Message-ID: <20220322201357.ykxi4h7l3rkp6z3s@notapiano>
-References: <20220318144534.17996-1-allen-kh.cheng@mediatek.com>
- <20220318144534.17996-21-allen-kh.cheng@mediatek.com>
+        Tue, 22 Mar 2022 16:15:48 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11olkn2060.outbound.protection.outlook.com [40.92.20.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51234E084;
+        Tue, 22 Mar 2022 13:14:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AcliExBMkOmk5hs6PCFreLYPLB5Fury1Ljhz+m0+Dv1YGzCc+LZnrTIYDpX34Yl1m+B4s75AlTpB2EobQEY4PMWkTcT2bJKG9Tw88TV/SnKEdZZU/03q8kxwt4b0RYrTVxyBYCqZB1fydc3Dl8X/Ad21gYuw+A5wbvqtysQZTNnmbYYgYyV1zM0Oc9NRxFM0hiMAdj7ac4tNON4g3TQWX+GwFLDUqunPeOoLnajpOUgRM9kYFBaf3M9MK9k2yqjC/Vz6yFyPd7VeSQPldJhz+sf5jVGCcRuhv/c0MP+OkwSJFyQ6EeQeecHblCGPwDAFKFp5U3Be4KvQLp332DIu5Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MDaL7ddZ1/etRra8Mk/HJzC5cq5iMdvg6aCSXdnZfGE=;
+ b=dxXl01v6Rek9Nt9XT+6JV0K23jeNqrus1QobvMumxFlqzx7EqsHswGOdUf5x2Q49CDMLE5xlkzDsYrPfysaK9+cQrVLYRJxDWegFeOvs6LLzJ1/sbenBaukihmyKuglBgZnF2uk2sM0o95+5BICbROw1rM64ica5e2NJstY21lVbdyE4TlhnisSPud7jn5zJ3Y8VgCl8YCQOAUqxiWjSJ6KogUaQkOM0wCDMd8+tf4H3bUROxSfidMjzESRHs1uCEbrp2KN+VZ1KQefvnArB4TSzHNMqenzXsMA3EqLB3uNGvHm3zE+J+GjELC0UW9JuX0iP2lKuu1Fn4MLs7sRxYQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Received: from CY4PR04MB0567.namprd04.prod.outlook.com (2603:10b6:903:b1::20)
+ by BN6PR04MB0660.namprd04.prod.outlook.com (2603:10b6:404:d9::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.16; Tue, 22 Mar
+ 2022 20:14:17 +0000
+Received: from CY4PR04MB0567.namprd04.prod.outlook.com
+ ([fe80::451b:e5ed:c1a3:4070]) by CY4PR04MB0567.namprd04.prod.outlook.com
+ ([fe80::451b:e5ed:c1a3:4070%5]) with mapi id 15.20.5102.016; Tue, 22 Mar 2022
+ 20:14:17 +0000
+From:   Jonathan Bakker <xc-racer2@live.ca>
+To:     krzk@kernel.org, alim.akhtar@samsung.com
+Cc:     robh+dt@kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jonathan Bakker <xc-racer2@live.ca>
+Subject: [PATCH 0/7] ARM: dts: s5pv210: Bugfixes, features, and improvements
+Date:   Tue, 22 Mar 2022 13:11:37 -0700
+Message-ID: <CY4PR04MB05677B4C4E26A8A179F6ABC0CB179@CY4PR04MB0567.namprd04.prod.outlook.com>
+X-Mailer: git-send-email 2.20.1
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-TMN:  [/tFiGYUTJpR9E41DVPyPQ0IqJGOc5YzunLU9jZDWajdeKTikKkZWsk2Db92xHm34]
+X-ClientProxiedBy: MWHPR17CA0094.namprd17.prod.outlook.com
+ (2603:10b6:300:c2::32) To CY4PR04MB0567.namprd04.prod.outlook.com
+ (2603:10b6:903:b1::20)
+X-Microsoft-Original-Message-ID: <20220322201144.20320-1-xc-racer2@live.ca>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220318144534.17996-21-allen-kh.cheng@mediatek.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5c5d531a-dbfd-40d0-75c4-08da0c408a96
+X-MS-TrafficTypeDiagnostic: BN6PR04MB0660:EE_
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 7nPbVRSBM8jbqhoFP4WrOu0QHwymPCZnvJHxS1Rgm20vSY4mxunf8Dmkt/nWS1AQlKsOTwE1/t30zNUjLhdgYCvKhebEu0PbHfSpiWaPepApd0vKKTB8qlDrbnX+0HtdGLdMJHoysBIR8NQhq3sy51mzLNtg/UtXcMsqHJD7pvQu10vdU0YEqFT54fFhMyMPO0Cnn44rWvDCqlX2Z94oiYKwQ/2DXs2TaTMK+8awZNHq3Kg2cZ2rgyG1SScGHxtmVhjQU0mmQX0ckfCSmhqaesrSWI8tPN0eS9B7x+TbiZ7HHEQPbf8+cw08ztXmyiDtln7cGE2PP5Jps31CdqP2eS1ZPgOuvQDu/WjVxdysboDYcwQs1tniT4mY9l4hDwdhGDwlcQKSHNfst2nTLf7nxp8NgSF4eYHimCcVy+RJ9OPW0mvsmFWz+YRlw5AD/ftjB6bya7v/PmXM4ooRoxPSsYAvGoazNIK+00Q/Ot5ZSidvNJqsQHcTUI0/clMe6S+cmmLqwclzYVanZXpWFt9t8DUGUTrXNGhY9pa7BGOQrh6x/LT9zTDmC5eM7bXWr0+vLRT8rNq4WvRoYZpJY7yOUg==
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/yIthz6WTa019gnKpEcgX18qN0yDyqEsWYlVnNcMA7VKQFY7rkgOHRGzPN+9?=
+ =?us-ascii?Q?i1zsdAAWIm0eq2NIffE90HA+u1UanRMwXO+97SIHtFa2dQabGcgG+emTOXZm?=
+ =?us-ascii?Q?igwd/IGwuLatErfrwc1Oa1tqKoSgFQIQ4w9HHr5d+WlJElS4ieq5LimCtdwU?=
+ =?us-ascii?Q?qDvEOe7geFMnz8J7Fn9vZXE+NAlqel886z7/JAlN0JVB8qtxwV8Goz89FQdW?=
+ =?us-ascii?Q?VH+Ohq5/Tyb4Z80zjY6Lw/X31BpI+HWK+Gq3zcDDuNbIY5mxh+MkHE90nG1H?=
+ =?us-ascii?Q?6r525y/HmhnlqVePrLTQcGQE7sxD+6yrR7I5/hjjT0nquhTWkPoQfqzS/vSO?=
+ =?us-ascii?Q?3kefLYXu2bL8nMsNwXh8reRyfATvoVeBdvToP9EtoKb8JOHwjbD9YcboAvSJ?=
+ =?us-ascii?Q?hZMBu+JtTn6HfoMhLtgA2mTaYa7zx74Pa+jm1rw+RZh5Da53dYphEu1KCKF7?=
+ =?us-ascii?Q?cCFNuKllnTt39gG+ZXG7clpYWbYtrkeLTmIuPplu3gLI6HEBfDU2szeOygOA?=
+ =?us-ascii?Q?Z8dPDQ4SAslyUjQIVwIk3N+IiecDgFoCcDj5VYFVX2B7Ss8CD9qEd4gLKWi4?=
+ =?us-ascii?Q?LSm7GqreIZytOHTP+spYGvujmdbeGi7XFh5MGn7tPNHnuVYrfs/yQFWJFls7?=
+ =?us-ascii?Q?EL6XBs5grtPThSy0eF/cL9S2T/WsFVEklCy7IsnbLr7xsPvLlV2fNU3FjCel?=
+ =?us-ascii?Q?RLvCXF6sLZ+MARmCS4M8S5Kjhx/eOu4ZeXd7gAXuV0gWwEVAgnGhrYkc46gU?=
+ =?us-ascii?Q?65rz9ORcz/4zoc2sA8LgL0j/gI7Js4UH1dPMaM5IVeYfxj2e364e9aXXFBw9?=
+ =?us-ascii?Q?zldkI0HHzCaw0LwNeO75Ul25wZPGobrzRvXduhn6dYP0OG1uR37aDSy9Nl4v?=
+ =?us-ascii?Q?tU/7E2RdLJBizcP77ZsaPV7YcV51ouy1KVB7vcqeqBlWPgctvh24DID7pZOx?=
+ =?us-ascii?Q?TDg4uEAQmYeapjlR0Ovc8/QsRZ/vkNX6w0oEq5w7ik9i8PcWvWc9x0blFDsG?=
+ =?us-ascii?Q?IwH/f5YJ6xW7U2KnesoHswUAhsBPgyZSf7E5EzNjoqTXEltUJL/MVfXxXwVV?=
+ =?us-ascii?Q?X/HqMhguP6NmVrIMBYxil2FWeU9vhd2i+8FbwxGjbLzClFTDnfqjfV0nGgEa?=
+ =?us-ascii?Q?ym2ofKWe8T6VileR8NgjAdGP+7nDmFfTu6zuUJObBlPlsRTZeCQxFLtpLJHl?=
+ =?us-ascii?Q?yL+x94Itc8isp7OSb58NiNcB3NT7H+emRUeaxQ=3D=3D?=
+X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-edb50.templateTenant
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c5d531a-dbfd-40d0-75c4-08da0c408a96
+X-MS-Exchange-CrossTenant-AuthSource: CY4PR04MB0567.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2022 20:14:17.4840
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR04MB0660
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 10:45:32PM +0800, Allen-KH Cheng wrote:
-> Add dsi ndoe for mt8192 SoC.
+Various cleanups to fix warnings when running make dtbs_check are included,
+as are bugfixes for the panel CS pin and bluetooth interrupt name on Aries.
 
-Minor typo: ndoe -> node.
+The new feature is charging support for Aries board, note that the galaxys
+(i9000) and fascinate4g (SGH-T959P) have slightly different batteries,
+and so the DTS can't be shared.
 
-> 
-> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Jonathan Bakker (7):
+  ARM: dts: s5pv210: Split memory nodes to match spec
+  ARM: dts: s5pv210: Adjust I2S entries to match spec
+  ARM: dts: s5pv210: Adjust DMA node names to match spec
+  ARM: dts: s5pv210: Remove spi-cs-high on panel in Aries
+  ARM: dts: s5pv210: Correct interrupt name for bluetooth in Aries
+  ARM: dts: s5pv210: Add charger regulator to max8998 in Aries
+  ARM: dts: s5pv210: Add charger support in Aries
 
-Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+ arch/arm/boot/dts/s5pv210-aquila.dts      |   8 +-
+ arch/arm/boot/dts/s5pv210-aries.dtsi      |  25 +++-
+ arch/arm/boot/dts/s5pv210-fascinate4g.dts | 162 ++++++++++++++++++++++
+ arch/arm/boot/dts/s5pv210-galaxys.dts     | 144 +++++++++++++++++++
+ arch/arm/boot/dts/s5pv210-goni.dts        |  14 +-
+ arch/arm/boot/dts/s5pv210.dtsi            |  24 ++--
+ 6 files changed, 354 insertions(+), 23 deletions(-)
 
-> ---
->  arch/arm64/boot/dts/mediatek/mt8192.dtsi | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> index 59183fb6c80b..08e0dd2483d1 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> @@ -13,6 +13,7 @@
->  #include <dt-bindings/pinctrl/mt8192-pinfunc.h>
->  #include <dt-bindings/phy/phy.h>
->  #include <dt-bindings/power/mt8192-power.h>
-> +#include <dt-bindings/reset/mt8192-resets.h>
->  #include <dt-bindings/reset/ti-syscon.h>
->  
->  / {
-> @@ -1203,6 +1204,7 @@
->  			compatible = "mediatek,mt8192-mmsys", "syscon";
->  			reg = <0 0x14000000 0 0x1000>;
->  			#clock-cells = <1>;
-> +			#reset-cells = <1>;
->  		};
->  
->  		mutex: mutex@14001000 {
-> @@ -1327,6 +1329,20 @@
->  			clocks = <&mmsys CLK_MM_DISP_DITHER0>;
->  		};
->  
-> +		dsi0: dsi@14010000 {
-> +			compatible = "mediatek,mt8183-dsi";
-> +			reg = <0 0x14010000 0 0x1000>;
-> +			interrupts = <GIC_SPI 265 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			clocks = <&mmsys CLK_MM_DSI0>,
-> +				 <&mmsys CLK_MM_DSI_DSI0>,
-> +				 <&mipi_tx0>;
-> +			clock-names = "engine", "digital", "hs";
-> +			resets = <&mmsys MT8192_MMSYS_SW0_RST_B_DISP_DSI0>;
-> +			phys = <&mipi_tx0>;
-> +			phy-names = "dphy";
-> +			status = "disabled";
-> +		};
-> +
->  		ovl_2l2: ovl@14014000 {
->  			compatible = "mediatek,mt8192-disp-ovl-2l";
->  			reg = <0 0x14014000 0 0x1000>;
-> -- 
-> 2.18.0
-> 
-> 
+-- 
+2.20.1
+
