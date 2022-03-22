@@ -2,71 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AF2DC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 03:11:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B917C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 03:12:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235972AbiCVDNW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 23:13:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41610 "EHLO
+        id S235958AbiCVDNk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 23:13:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235970AbiCVDNA (ORCPT
+        with ESMTP id S235955AbiCVDNg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 23:13:00 -0400
-Received: from mg.sunplus.com (unknown [113.196.136.162])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2852650464;
-        Mon, 21 Mar 2022 20:11:30 -0700 (PDT)
-X-MailGates: (compute_score:DELIVER,40,3)
-Received: from 172.17.9.112
-        by mg01.sunplus.com with MailGates ESMTP Server V5.0(29435:0:AUTH_RELAY)
-        (envelope-from <lh.Kuo@sunplus.com>); Tue, 22 Mar 2022 10:55:33 +0800 (CST)
-Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
- sphcmbx02.sunplus.com.tw (172.17.9.112) with Microsoft SMTP Server (TLS) id
- 15.0.1497.26; Tue, 22 Mar 2022 10:55:27 +0800
-Received: from sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd]) by
- sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd%14]) with mapi id
- 15.00.1497.026; Tue, 22 Mar 2022 10:55:27 +0800
-From:   =?utf-8?B?TGggS3VvIOmDreWKm+ixqg==?= <lh.Kuo@sunplus.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Li-hao Kuo <lhjeff911@gmail.com>,
-        "rafael@kernel.org" <rafael@kernel.org>,
-        "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
-        "amitk@kernel.org" <amitk@kernel.org>,
-        "rui.zhang@intel.com" <rui.zhang@intel.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     =?utf-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
-Subject: RE: [PATCH v5 1/2] thermal: Add thermal driver for Sunplus SP7021
-Thread-Topic: [PATCH v5 1/2] thermal: Add thermal driver for Sunplus SP7021
-Thread-Index: AQHYOOIj2xpFGzmabEWuBVS5oWPniazBrPKAgAkQncA=
-Date:   Tue, 22 Mar 2022 02:55:27 +0000
-Message-ID: <4c05e7767bfe401b8c139e159855fe77@sphcmbx02.sunplus.com.tw>
-References: <cover.1647399369.git.lhjeff911@gmail.com>
- <a658d7513a62e067086d8e2a73920bb892293569.1647399369.git.lhjeff911@gmail.com>
- <9b263f80-15df-efd3-2682-0adda06f5b5f@canonical.com>
-In-Reply-To: <9b263f80-15df-efd3-2682-0adda06f5b5f@canonical.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [172.25.108.51]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Mon, 21 Mar 2022 23:13:36 -0400
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B856A52E34
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 20:12:07 -0700 (PDT)
+Received: by mail-qt1-x834.google.com with SMTP id c4so13545897qtx.1
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 20:12:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wG5fSZfV4Ui132L8PxZtgVxXrjvZE1zrn5D7t7om3CQ=;
+        b=j+MhUKpC99YlXHJmofUFmvZ7JMm8f1lD1dEv5viTB7yo1w6WsEn9LRkwRmi1udZlBo
+         lbw1PxzP/UzoGGZbdcu+DXrMkyzobI34uZwgD/t6h0mWYPTldfk3E8qx6HEovODviD0B
+         DgNFp/S6SO3uQePK5Xea2muNAMpjhqXZSzvPmPey7PfiVqkzpOwbG7MNUotqcJx28qg9
+         hRbiykT5yVt4nHsmCISYmgHePdMh+hEvl8kn7L6yUHHomu9VFDnJTG/Ezy02wpZw9GFk
+         b+UBkQlsZ3pq+F/DoQAHvXiB4TmJovm7+ta6stuu1yoJD/owNDh7p6WAG2O+ZhsW2Cao
+         d1Sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wG5fSZfV4Ui132L8PxZtgVxXrjvZE1zrn5D7t7om3CQ=;
+        b=nTbOMoL5rkbmivHQN8D0q8Yw2l4MlMfduFZ5l3vgT8zVcEMw6r+eCA0xqXgwmupt5r
+         DPVllGgSqsAZErLAMJhzxvQr9+DPEfUzu4J0NitaWy58rJoD96K2JKarnBAUaDSnpDt+
+         w5Kheh74q6bUWq3QbQp6LFzwkCRTStsWf7/JH0G8xIV3C5h3sdN875iFeFm/fw+Py1an
+         MaRaXiHyjnnXUzIKiiVRwmoFwHrF5FypemKu8Qu3MYC5GjMQD6rLgRaDDn5AqCL5mMMy
+         bu8gzEDkWnZ9ux7SXlIMfYR7pNeqrmbTayJPLg9C/SkP5Ecy1D2K97oNXkLLZ1uvf441
+         d50Q==
+X-Gm-Message-State: AOAM533OFyTKMS1W9HKKtddKdTNbOgsT0e9CDFIbhLipEG72JWU/3rfQ
+        L+Kfem02WhuXoPkcqXJlkC4=
+X-Google-Smtp-Source: ABdhPJwzZKQggTLLNuTOg+kQxkzYF5H19omxmoi4DnXhZEUanJJDTiU+sV1zxIxuk1GtpC+shRknig==
+X-Received: by 2002:a05:622a:40a:b0:2e0:7235:f7a9 with SMTP id n10-20020a05622a040a00b002e07235f7a9mr18677883qtx.500.1647918726766;
+        Mon, 21 Mar 2022 20:12:06 -0700 (PDT)
+Received: from localhost ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id s19-20020a05622a179300b002e1ceeb21d0sm12911910qtk.97.2022.03.21.20.12.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 20:12:06 -0700 (PDT)
+Message-ID: <62393e86.1c69fb81.bb254.3d1a@mx.google.com>
+X-Google-Original-Message-ID: <20220322031203.GB2326136@cgel.zte@gmail.com>
+Date:   Tue, 22 Mar 2022 03:12:03 +0000
+From:   CGEL <cgel.zte@gmail.com>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     bsingharora@gmail.com, akpm@linux-foundation.org,
+        yang.yang29@zte.com.cn, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: [PATCH] delayacct: track delays from ksm cow
+References: <20220316133420.2131707-1-yang.yang29@zte.com.cn>
+ <412dc01c-8829-eac2-52c7-3f704dbb5a98@redhat.com>
+ <6232970f.1c69fb81.4e365.c9f2@mx.google.com>
+ <4e76476b-1da0-09c5-7dc4-0b2db796a549@redhat.com>
+ <62330402.1c69fb81.d2ba6.0538@mx.google.com>
+ <987bd014-c5ab-52cb-627e-2085560cb327@redhat.com>
+ <6233e342.1c69fb81.692f.6286@mx.google.com>
+ <2bb1c357-5335-9d96-d862-bd51c1014193@redhat.com>
+ <6236c600.1c69fb81.7cd4.a900@mx.google.com>
+ <0414c610-7f56-2dd2-0d83-ac3a5194eb60@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0414c610-7f56-2dd2-0d83-ac3a5194eb60@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiA+ICsJcmVzID0gcGxhdGZvcm1fZ2V0X3Jlc291cmNlKHBkZXYsIElPUkVTT1VSQ0VfTUVNLCAw
-KTsNCj4gPiArCWlmIChJU19FUlIocmVzKSkNCj4gPiArCQlyZXR1cm4gZGV2X2Vycl9wcm9iZSgm
-cGRldi0+ZGV2LCBQVFJfRVJSKHJlcyksICJyZXNvdXJjZSBnZXQNCj4gPiArZmFpbFxuIik7DQo+
-ID4gKw0KPiA+ICsJc3BfZGF0YS0+cmVncyA9IGRldm1faW9yZW1hcCgmcGRldi0+ZGV2LCByZXMt
-PnN0YXJ0LCByZXNvdXJjZV9zaXplKHJlcykpOw0KPiA+ICsJaWYgKElTX0VSUihzcF9kYXRhLT5y
-ZWdzKSkNCj4gPiArCQlyZXR1cm4gZGV2X2Vycl9wcm9iZSgmcGRldi0+ZGV2LCBQVFJfRVJSKHNw
-X2RhdGEtPnJlZ3MpLCAibWFzX2Jhc2UNCj4gPiArZ2V0IGZhaWxcbiIpOw0KPiANCj4gVXNlIGRl
-dm1fcGxhdGZvcm1faW9yZW1hcF9yZXNvdXJjZSgpIGluc3RlYWQuDQo+DQoNCk90aGVyIGRyaXZl
-cnMgbXVzdCBhbHNvIGFjY2VzcyB0aGVzZSByZWdpc3RlcnMuDQpXYXJuaW5nIHdoZW4gdXNpbmcg
-ZGV2bV9wbGF0Zm9ybV9pb3JlbWFwX3Jlc291cmNlDQpDYW4gSSBrZWVwIHRoZSBvcmlnaW5hbCBz
-ZXR0aW5ncz8NCg0KDQo=
+On Mon, Mar 21, 2022 at 04:45:40PM +0100, David Hildenbrand wrote:
+> On 20.03.22 07:13, CGEL wrote:
+> > On Fri, Mar 18, 2022 at 09:24:44AM +0100, David Hildenbrand wrote:
+> >> On 18.03.22 02:41, CGEL wrote:
+> >>> On Thu, Mar 17, 2022 at 11:05:22AM +0100, David Hildenbrand wrote:
+> >>>> On 17.03.22 10:48, CGEL wrote:
+> >>>>> On Thu, Mar 17, 2022 at 09:17:13AM +0100, David Hildenbrand wrote:
+> >>>>>> On 17.03.22 03:03, CGEL wrote:
+> >>>>>>> On Wed, Mar 16, 2022 at 03:56:23PM +0100, David Hildenbrand wrote:
+> >>>>>>>> On 16.03.22 14:34, cgel.zte@gmail.com wrote:
+> >>>>>>>>> From: Yang Yang <yang.yang29@zte.com.cn>
+> >>>>>>>>>
+> >>>>>>>>> Delay accounting does not track the delay of ksm cow.  When tasks
+> >>>>>>>>> have many ksm pages, it may spend a amount of time waiting for ksm
+> >>>>>>>>> cow.
+> >>>>>>>>>
+> >>>>>>>>> To get the impact of tasks in ksm cow, measure the delay when ksm
+> >>>>>>>>> cow happens. This could help users to decide whether to user ksm
+> >>>>>>>>> or not.
+> >>>>>>>>>
+> >>>>>>>>> Also update tools/accounting/getdelays.c:
+> >>>>>>>>>
+> >>>>>>>>>     / # ./getdelays -dl -p 231
+> >>>>>>>>>     print delayacct stats ON
+> >>>>>>>>>     listen forever
+> >>>>>>>>>     PID     231
+> >>>>>>>>>
+> >>>>>>>>>     CPU             count     real total  virtual total    delay total  delay average
+> >>>>>>>>>                      6247     1859000000     2154070021     1674255063          0.268ms
+> >>>>>>>>>     IO              count    delay total  delay average
+> >>>>>>>>>                         0              0              0ms
+> >>>>>>>>>     SWAP            count    delay total  delay average
+> >>>>>>>>>                         0              0              0ms
+> >>>>>>>>>     RECLAIM         count    delay total  delay average
+> >>>>>>>>>                         0              0              0ms
+> >>>>>>>>>     THRASHING       count    delay total  delay average
+> >>>>>>>>>                         0              0              0ms
+> >>>>>>>>>     KSM             count    delay total  delay average
+> >>>>>>>>>                      3635      271567604              0ms
+> >>>>>>>>>
+> >>>>>>>>
+> >>>>>>>> TBH I'm not sure how particularly helpful this is and if we want this.
+> >>>>>>>>
+> >>>>>>> Thanks for replying.
+> >>>>>>>
+> >>>>>>> Users may use ksm by calling madvise(, , MADV_MERGEABLE) when they want
+> >>>>>>> save memory, it's a tradeoff by suffering delay on ksm cow. Users can
+> >>>>>>> get to know how much memory ksm saved by reading
+> >>>>>>> /sys/kernel/mm/ksm/pages_sharing, but they don't know what the costs of
+> >>>>>>> ksm cow delay, and this is important of some delay sensitive tasks. If
+> >>>>>>> users know both saved memory and ksm cow delay, they could better use
+> >>>>>>> madvise(, , MADV_MERGEABLE).
+> >>>>>>
+> >>>>>> But that happens after the effects, no?
+> >>>>>>
+> >>>>>> IOW a user already called madvise(, , MADV_MERGEABLE) and then gets the
+> >>>>>> results.
+> >>>>>>
+> >>>>> Image user are developing or porting their applications on experiment
+> >>>>> machine, they could takes those benchmark as feedback to adjust whether
+> >>>>> to use madvise(, , MADV_MERGEABLE) or it's range.
+> >>>>
+> >>>> And why can't they run it with and without and observe performance using
+> >>>> existing metrics (or even application-specific metrics?)?
+> >>>>
+> >>>>
+> >>> I think the reason why we need this patch, is just like why we need                                                                                                     
+> >>> swap,reclaim,thrashing getdelay information. When system is complex,
+> >>> it's hard to precise tell which kernel activity impact the observe
+> >>> performance or application-specific metrics, preempt? cgroup throttle?
+> >>> swap? reclaim? IO?
+> >>>
+> >>> So if we could get the factor's precise impact data, when we are tunning
+> >>> the factor(for this patch it's ksm), it's more efficient.
+> >>>
+> >>
+> >> I'm not convinced that we want to make or write-fault handler more
+> >> complicated for such a corner case with an unclear, eventual use case.
+> > 
+> > IIRC, KSM is designed for VM. But recently we found KSM works well for
+> > system with many containers(save about 10%~20% of total memroy), and
+> > container technology is more popular today, so KSM may be used more.
+> > 
+> > To reduce the impact for write-fault handler, we may write a new function
+> > with ifdef CONFIG_KSM inside to do this job?
+> 
+> Maybe we just want to catch the impact of the write-fault handler when
+> copying more generally?
+>
+We know kernel has different kind of COW, some are transparent for user.
+For example child process may cause COW, and user should not care this
+performance impact, because it's kernel inside mechanism, user is hard
+to do something. But KSM is different, user can do the policy tuning in
+userspace. If we metric all the COW, it may be noise, doesn't it?
+> > 
+> >> IIRC, whenever using KSM you're already agreeing to eventually pay a
+> >> performance price, and the price heavily depends on other factors in the
+> >> system. Simply looking at the number of write-faults might already give
+> >> an indication what changed with KSM being enabled.
+> >>
+> > While saying "you're already agreeing to pay a performance price", I think
+> > this is the shortcoming of KSM that putting off it being used more widely.
+> > It's not easy for user/app to decide how to use madvise(, ,MADV_MERGEABLE).
+> 
+> ... and my point is that the metric you're introducing might absolutely
+> not be expressive for such users playing with MADV_MERGEABLE. IMHO
+> people will look at actual application performance to figure out what
+> "harm" will be done, no?
+> 
+> But I do see value in capturing how many COW we have in general --
+> either via a counter or via a delay as proposed by you.
+> 
+Thanks for your affirmative. As describe above, or we add a vm counter:
+KSM_COW? 
+> > 
+> > Is there a more easy way to use KSM, enjoying memory saving while minimum
+> > the performance price for container? We think it's possible, and are working
+> > for a new patch: provide a knob for cgroup to enable/disable KSM for all tasks
+> > in this cgroup, so if your container is delay sensitive just leave it, and if
+> > not you can easy to enable KSM without modify app code.
+> > 
+> > Before using the new knob, user might want to know the precise impact of KSM.
+> > I think write-faults is indirection. If indirection is good enough, why we need
+> > taskstats and PSI? By the way, getdelays support container statistics.
+> 
+> Would anything speak against making this more generic and capturing the
+> delay for any COW, not just for KSM?
+I think we'd better to export data to userspace that is meaning for user.
+User may no need kernel inside mechanism'data.
+
+Thanks.
+> 
+> -- 
+> Thanks,
+> 
+> David / dhildenb
