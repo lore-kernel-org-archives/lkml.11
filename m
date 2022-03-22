@@ -2,54 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8088AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 20:24:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16BE1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 20:24:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229594AbiCVUZf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 16:25:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37208 "EHLO
+        id S233440AbiCVUZi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 16:25:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229603AbiCVUZd (ORCPT
+        with ESMTP id S229616AbiCVUZe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 16:25:33 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA0B513D03;
+        Tue, 22 Mar 2022 16:25:34 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2478466600;
         Tue, 22 Mar 2022 13:24:02 -0700 (PDT)
-Date:   Tue, 22 Mar 2022 20:23:58 -0000
+Date:   Tue, 22 Mar 2022 20:24:00 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647980639;
+        s=2020; t=1647980641;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=FpHf3J0IndPvb6SXBQNlzJ+ROW8V9+wZlTmcC3yDDs4=;
-        b=opHOCMceNZhVJGDsTfLP8xSrg6gxG88cM/NW9jmzVb1pmfEQ1/qMTCSLsJpeKvue0Wgyqw
-        R4KehqIV2YIeiDG5oRkzOd4kpqTt00iECzUU9LrEjRddpOCo9w0qxbjRWCdgKBSUzLs8s1
-        8vfzL8XHMoS6NkjrvSMzJx5j6mRLgLzz0X+hDVBpiPfVaU/KAcTBqJ/KXaVxHQOVuqaS4L
-        b6AyQwUjVsnja0PdcSKzkSDZvj4JsMndEoJHR+3RADUdiPyLW2AEd+4ouiGit3Nm6Ulmee
-        rKk2K5J8oM9miMcRrr1NhdUGDyRdpXWluBc/eZyQC9BKd/lZUgkwXyYk0Iq63g==
+        bh=8kywFf8VlHS1oYms1GMJtOQogL6li1B/8ObC7yvuhbs=;
+        b=y3zbldPaze5+Km/rPpWLwW2kC7HLgiHlkCS+jOA18Ajjd9O9h3LRpFFL9WU4JBK2/jLsTm
+        RqpdxSAyAdLSzgkQB9GIf0utr/IOKKYv3qXScsf/MAflS81eiqxSkMlRTHeG+aJsmSTeve
+        woncraxwjVwxId6tLMOblYk+2mqBBbV6oLwSsAsVwVLhyidWgtxvin6tUGZpFp0+Dl5a+H
+        HrT3eMEMcP81mssvodbdBawkiolX4PTGE45o9OAwpY9eJsWzgjvAdWG+G9V15onW1R2AZJ
+        WZ0Lb0RAwxyh4DFq8+JZkBEsEeMDPdQCsO1PMLb44Lld1m2Kvwo/dzGBUhdYmg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647980639;
+        s=2020e; t=1647980641;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=FpHf3J0IndPvb6SXBQNlzJ+ROW8V9+wZlTmcC3yDDs4=;
-        b=4qfXszj1baf3oHysagXadL4NXyMaV9VaZb/xJRl4aXBXMg9F5YYcnAb577GJRR1wwvaUgo
-        F4SxYL6bYlkMREDg==
-From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
+        bh=8kywFf8VlHS1oYms1GMJtOQogL6li1B/8ObC7yvuhbs=;
+        b=AXC7c4XTGYpf0kKSb7ZrLwgJj7B/AVeR8tCkXQma+iCPR2iuRPVE73UlzyKp7szN5psXFa
+        RKNlfQ+VMQH8X7Bg==
+From:   "tip-bot2 for Nathan Chancellor" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/core] kvm/emulate: Fix SETcc emulation for ENDBR
-Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+Subject: [tip: x86/core] x86/Kconfig: Only enable CONFIG_CC_HAS_IBT for clang
+ >= 14.0.0
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <YjMVpfe%2f9ldmWX8W@hirez.programming.kicks-ass.net>
-References: <YjMVpfe%2f9ldmWX8W@hirez.programming.kicks-ass.net>
+In-Reply-To: <20220318230747.3900772-2-nathan@kernel.org>
+References: <20220318230747.3900772-2-nathan@kernel.org>
 MIME-Version: 1.0
-Message-ID: <164798063843.389.2521199357883501962.tip-bot2@tip-bot2>
+Message-ID: <164798064053.389.15506291444001135104.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -60,55 +62,52 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/core branch of tip:
 
-Commit-ID:     3986f65d4f408ce9d0a361e3226a3246a5fb701c
-Gitweb:        https://git.kernel.org/tip/3986f65d4f408ce9d0a361e3226a3246a5fb701c
-Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Mon, 21 Mar 2022 10:13:12 +01:00
+Commit-ID:     262448f3d18959d175b10e28a3b65f41d1d7313f
+Gitweb:        https://git.kernel.org/tip/262448f3d18959d175b10e28a3b65f41d1d7313f
+Author:        Nathan Chancellor <nathan@kernel.org>
+AuthorDate:    Fri, 18 Mar 2022 16:07:46 -07:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 22 Mar 2022 21:12:14 +01:00
+CommitterDate: Tue, 22 Mar 2022 21:12:13 +01:00
 
-kvm/emulate: Fix SETcc emulation for ENDBR
+x86/Kconfig: Only enable CONFIG_CC_HAS_IBT for clang >= 14.0.0
 
-Companion patch for commit fe83f5eae432 ("kvm/emulate: Fix SETcc
-emulation function offsets with SLS"), now extending it to cover the
-additional ENDBR instruction.
+Commit 156ff4a544ae ("x86/ibt: Base IBT bits") added a check for a crash
+with 'clang -fcf-protection=branch -mfentry -pg', which intended to
+exclude Clang versions older than 14.0.0 from selecting
+CONFIG_X86_KERNEL_IBT.
 
+clang-11 does not have the issue that the check is testing for, so
+CONFIG_X86_KERNEL_IBT is selectable. Unfortunately, there is a different
+crash in clang-11 that was fixed in clang-12. To make matters worse,
+that crash does not appear to be entirely deterministic, as the same
+input to the compiler will sometimes crash and other times not, which
+makes dynamically checking for the crash like the '-pg' one unreliable.
+
+To make everything work properly for all common versions of clang, use a
+hard version check of 14.0.0, as that will be the first release upstream
+that has both bugs properly fixed.
+
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/YjMVpfe%2f9ldmWX8W@hirez.programming.kicks-ass.net
+Link: https://lore.kernel.org/r/20220318230747.3900772-2-nathan@kernel.org
 ---
- arch/x86/kvm/emulate.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ arch/x86/Kconfig | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-index d98fb36..df5e6c0 100644
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -24,6 +24,7 @@
- #include <linux/stringify.h>
- #include <asm/debugreg.h>
- #include <asm/nospec-branch.h>
-+#include <asm/ibt.h>
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 0f0672d..921e4eb 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -1865,9 +1865,10 @@ config CC_HAS_IBT
+ 	# GCC >= 9 and binutils >= 2.29
+ 	# Retpoline check to work around https://gcc.gnu.org/bugzilla/show_bug.cgi?id=93654
+ 	# Clang/LLVM >= 14
+-	# fentry check to work around https://reviews.llvm.org/D111108
++	# https://github.com/llvm/llvm-project/commit/e0b89df2e0f0130881bf6c39bf31d7f6aac00e0f
++	# https://github.com/llvm/llvm-project/commit/dfcf69770bc522b9e411c66454934a37c1f35332
+ 	def_bool ((CC_IS_GCC && $(cc-option, -fcf-protection=branch -mindirect-branch-register)) || \
+-		  (CC_IS_CLANG && $(success,echo "void a(void) {}" | $(CC) -Werror $(CLANG_FLAGS) -fcf-protection=branch -mfentry -pg -x c - -c -o /dev/null))) && \
++		  (CC_IS_CLANG && CLANG_VERSION >= 140000)) && \
+ 		  $(as-instr,endbr64)
  
- #include "x86.h"
- #include "tss.h"
-@@ -434,15 +435,16 @@ static int fastop(struct x86_emulate_ctxt *ctxt, fastop_t fop);
- /*
-  * Depending on .config the SETcc functions look like:
-  *
-+ * ENDBR       [4 bytes; CONFIG_X86_KERNEL_IBT]
-  * SETcc %al   [3 bytes]
-  * RET         [1 byte]
-  * INT3        [1 byte; CONFIG_SLS]
-  *
-- * Which gives possible sizes 4 or 5.  When rounded up to the
-- * next power-of-two alignment they become 4 or 8.
-+ * Which gives possible sizes 4, 5, 8 or 9.  When rounded up to the
-+ * next power-of-two alignment they become 4, 8 or 16 resp.
-  */
--#define SETCC_LENGTH	(4 + IS_ENABLED(CONFIG_SLS))
--#define SETCC_ALIGN	(4 << IS_ENABLED(CONFIG_SLS))
-+#define SETCC_LENGTH	(ENDBR_INSN_SIZE + 4 + IS_ENABLED(CONFIG_SLS))
-+#define SETCC_ALIGN	(4 << IS_ENABLED(CONFIG_SLS) << HAS_KERNEL_IBT)
- static_assert(SETCC_LENGTH <= SETCC_ALIGN);
- 
- #define FOP_SETCC(op) \
+ config X86_KERNEL_IBT
