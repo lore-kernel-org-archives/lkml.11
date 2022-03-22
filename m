@@ -2,106 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 611FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 06:10:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D32BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 06:18:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236867AbiCVGL0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 02:11:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43514 "EHLO
+        id S236953AbiCVGUG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 02:20:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229485AbiCVGLX (ORCPT
+        with ESMTP id S236883AbiCVGUC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 02:11:23 -0400
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F289DBAC;
-        Mon, 21 Mar 2022 23:09:55 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R581e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=xueshuai@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V7uMwUf_1647929391;
-Received: from 30.240.116.16(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0V7uMwUf_1647929391)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 22 Mar 2022 14:09:52 +0800
-Message-ID: <b41bcee1-9bbf-4094-04e8-50cc45de72b5@linux.alibaba.com>
-Date:   Tue, 22 Mar 2022 14:09:46 +0800
+        Tue, 22 Mar 2022 02:20:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FE96F24;
+        Mon, 21 Mar 2022 23:18:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA0646142A;
+        Tue, 22 Mar 2022 06:18:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6EF2C340EC;
+        Tue, 22 Mar 2022 06:18:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647929914;
+        bh=E4QiXgUS2gXJ+MZo3C+fEHnauzWfzK2THXjd2mXgGto=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MNAkSF+etXMHwBztM/4fhNzfUV5LGdJ9adoMWSEjsTvXZAOSVe+5OxeMSx7Lrgaym
+         EIF0YQaGwE1I0NSmmYXcyVmIIxeVPl3OybUqLGSK3YWRFxv1eb+DF1q1Lsq7xMtlsH
+         Odi29Y+P9yvJSDTzh1oEpgPfwJTL93Wl3FJZYdnzE0xVV/Bj5FEq2hmbmW6GuTaRel
+         dRzMluIqOSUJIlWl3Glh1SGEtlnCrLlePVuLjE+UGxl0anC8Uia0jkVNVy4ZrWFRx9
+         iwu8el1/9/OOcY1Y3YcUoS4iX+ZFCCV0HUHvbwmQY8WrrZqS91xTeVl1XKf2nibnov
+         AfHb/B+Rj3JXg==
+Date:   Mon, 21 Mar 2022 23:18:33 -0700
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the net-next tree
+Message-ID: <20220322061833.ayp5sb4fb64e6lzo@sx1>
+References: <20220321183941.74be2543@canb.auug.org.au>
+ <20220321144531.2b0503a1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Subject: Re: [PATCH v7 0/3] EDAC/ghes: refactor memory error reporting to
- avoid code duplication
-Content-Language: en-US
-To:     bp@alien8.de, rric@kernel.org
-Cc:     mchehab@kernel.org, tony.luck@intel.com, james.morse@arm.com,
-        ardb@kernel.org, linux-edac@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
-        zhangliguang@linux.alibaba.com, zhuo.song@linux.alibaba.com
-References: <20211210134019.28536-1-xueshuai@linux.alibaba.com>
- <20220308144053.49090-1-xueshuai@linux.alibaba.com>
-From:   Shuai Xue <xueshuai@linux.alibaba.com>
-In-Reply-To: <20220308144053.49090-1-xueshuai@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220321144531.2b0503a1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Gentle ping.
+On 21 Mar 14:45, Jakub Kicinski wrote:
+>On Mon, 21 Mar 2022 18:39:41 +1100 Stephen Rothwell wrote:
+>> Hi all,
+>>
+>> After merging the net-next tree, today's linux-next build (x86_64
+>> allmodconfig) failed like this:
+>>
+>> In file included from include/linux/string.h:253,
+>>                  from include/linux/bitmap.h:11,
+>>                  from include/linux/cpumask.h:12,
+>>                  from arch/x86/include/asm/cpumask.h:5,
+>>                  from arch/x86/include/asm/msr.h:11,
+>>                  from arch/x86/include/asm/processor.h:22,
+>>                  from arch/x86/include/asm/timex.h:5,
+>>                  from include/linux/timex.h:65,
+>>                  from include/linux/time32.h:13,
+>>                  from include/linux/time.h:60,
+>>                  from include/linux/ktime.h:24,
+>>                  from include/linux/timer.h:6,
+>>                  from include/linux/netdevice.h:24,
+>>                  from include/trace/events/xdp.h:8,
+>>                  from include/linux/bpf_trace.h:5,
+>>                  from drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c:33:
+>> In function 'fortify_memset_chk',
+>>     inlined from 'mlx5e_xmit_xdp_frame' at drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c:438:3:
+>> include/linux/fortify-string.h:242:25: error: call to '__write_overflow_field' declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Werror=attribute-warning]
+>>   242 |                         __write_overflow_field(p_size_field, size);
+>>       |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>>
+>> Caused by commit
+>>
+>>   9ded70fa1d81 ("net/mlx5e: Don't prefill WQEs in XDP SQ in the multi buffer mode")
+>>
+>> exposed by the kspp tree.
+>>
+>> I have applied the following fix patch for today (a better one is
+>> probably possible).
+>
+>Hi Saeed,
+>
+>thoughts?
+>
 
-在 2022/3/8 PM10:40, Shuai Xue 写道:
-> ghes_edac_report_mem_error() in ghes_edac.c is a Long Method and have
-> Duplicated Code with cper_mem_err_location(), cper_dimm_err_location(), and
-> cper_mem_err_type_str() in drivers/firmware/efi/cper.c. In addition, the
-> cper_print_mem() in drivers/firmware/efi/cper.c only reports the error
-> status and misses its description.
-> 
-> This patch set is to refactor ghes_edac_report_mem_error with:
-> 
-> - Patch 01 is to wrap up error status decoding logics and reuse it in
->     cper_print_mem().
-> - Patch 02 is to introduces cper_*(), into ghes_edac_report_mem_error(),
->   this can avoid bunch of duplicate code lines;
-> - Patch 03 is to improve report format  
-> 
-> Changes since v6:
-> - Rework patch 02 by Borislav Petkov
-> - add patch 03 to improve format
-> - Link: https://lore.kernel.org/r/20220303122626.99740-3-xueshuai@linux.alibaba.com
->   
-> Changes since v5:
-> - Delete change summary in commit log
-> - Link: https://lore.kernel.org/all/20220126081702.55167-1-xueshuai@linux.alibaba.com/
-> - Thanks Borislav Petkov for review comments.
-> 
-> Changes since v4:
-> - Fix alignment and format problem
-> - Link: https://lore.kernel.org/all/20220125024939.30635-1-xueshuai@linux.alibaba.com/
-> 
-> Changes since v3:
-> 
-> - make cper_mem_err_status_str table a lot more compact
-> - Fix alignment and format problem
-> - Link: https://lore.kernel.org/all/20220124024759.19176-1-xueshuai@linux.alibaba.com/
-> 
-> Changes since v2:
-> 
-> - delete the unified patch
-> - adjusted the order of patches
-> - Link: https://lore.kernel.org/all/20211210134019.28536-1-xueshuai@linux.alibaba.com/
-> 
-> Changes since v1:
-> 
-> - add a new patch to unify ghes and cper before removing duplication.
-> - document the changes in patch description
-> - add EXPORT_SYMBOL_GPL()s for cper_*()
-> - document and the dependency and add UEFI_CPER dependency explicitly
-> - Link: https://lore.kernel.org/all/20211207031905.61906-2-xueshuai@linux.alibaba.com/
-> 
-> Shuai Xue (3):
->   efi/cper: add cper_mem_err_status_str to decode error description
->   EDAC/ghes: Unify CPER memory error location reporting
->   efi/cper: reformat CPER memory error location to more readable
-> 
->  drivers/edac/Kconfig        |   1 +
->  drivers/edac/ghes_edac.c    | 200 +++++++-----------------------------
->  drivers/firmware/efi/cper.c |  64 ++++++++----
->  include/linux/cper.h        |   3 +
->  4 files changed, 87 insertions(+), 181 deletions(-)
-
+I forgot about this warning in net :-/ we did a similar patch to net to
+avoid it, Stephen's patch is correct, 
+I will submit his fixup to net-next in the morning.
 
