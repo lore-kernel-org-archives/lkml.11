@@ -2,296 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45118C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 11:06:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AC84C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 11:07:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233907AbiCVLIQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 07:08:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45462 "EHLO
+        id S233917AbiCVLIq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 07:08:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233906AbiCVLHz (ORCPT
+        with ESMTP id S233036AbiCVLIo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 07:07:55 -0400
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E7A86B098
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 04:06:28 -0700 (PDT)
-Received: by mail-qv1-xf2f.google.com with SMTP id r1so13384337qvr.12
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 04:06:28 -0700 (PDT)
+        Tue, 22 Mar 2022 07:08:44 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 398908021D;
+        Tue, 22 Mar 2022 04:07:17 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id 123-20020a1c1981000000b0038b3616a71aso1277212wmz.4;
+        Tue, 22 Mar 2022 04:07:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
+        h=sender:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=xuSL+QxMbS0U0QUndRwl6D2gxTmGSO+ZRxuEuZ/Ya3o=;
-        b=dk43yL4/ZQ0sR2tqOcbXgprBWl5VD3ZIPW5KMvzxKWYp/9NxAHWNTh/jc2G05OpZ5F
-         8dU/PY3xTCIH0vgGpDKw0/pHCJKsigNU2gTwBn4u+t8URbifSzMzzVZoLFPG96t4jTL1
-         fOhJg5fR2/mdZQXpUbOTWSMTnbmaA3WRlaFGqkTzmS46JA+cao4t66cIRphNiTrRxs2+
-         rEKZWVXIYSaExXeK14L8uPz8WSbtReYWvhooy/p64o/9w+LYOt4zPy2zK6w3xadXMsJy
-         xzdoEyI4U6Bz5f2Vhs+GqMrPqOWYEoy9N7w8hS9cMkVRdzd7sjIGrXgwfU6YP6u3IHjG
-         XG+g==
+        bh=nuGWDZlXSZNQGXcVqmqYeVN3TUgNMalMalmgFdEvLsg=;
+        b=X4RgYA0+Ajt10eWG3Cch8vH9Av08UbBn9ubtGq13/DWrudpJ9HsL8NBFjPSUVGn6mf
+         NwZdtF8uAnK4t8OaDZfbPuRFUb4M2szufCnJ77oIudRfuZLBsOnsBCXuc3SQ72PreVmi
+         0GJ/rFbF3XQbbIu5UtA/wmNCTc3XeseBSjrjD9iZZc2s30/TIfUnVH0tJsLMwKBduBX2
+         ewi2AwR9tjbRS3WiL/OxG3kh57cl7AM7sScY2C7rjg9503Y7oRUad4M4U7CxJ4HmHe9t
+         qmLv+HZ+Nm5KMpqztfekztjTkYJaz7eW3eNz9JlLspoqijvuTMz5RuSezD7rNbpBR+kz
+         fsOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xuSL+QxMbS0U0QUndRwl6D2gxTmGSO+ZRxuEuZ/Ya3o=;
-        b=WHp/fVfseqMR3xvBtwfnGvnmeX1fnBZGc0ebRfCByj4pS8EAGRiOCDiNIK9KzVObiv
-         PK1t/6gmhBjgIFLKBFXFZSCsrM4pgKauHqbv3i3KfQ4bsR4wL+wL8G7WZ6UUXVjWkHrm
-         c+rmG6VjDsI9lhZG8zPCdWMhN3KAxHgWdQrTHzhUNewQqeChlBJTWiEO19EDfBEKs/s4
-         B0VHqqRE9cmnID1nY+ZLz1Vl87RYmx6HUPa1/qqqNDuaGIhJWiC21LmhUxxMhpKsbTHd
-         Yx/LCAp/PlQRh2/3zBF9AEXqc3XM4053ps3UiMhiuXGTaPeXcubBdYmjsGpTz2EKNl7l
-         HdKA==
-X-Gm-Message-State: AOAM530sDLHT52bt00uWp5W8dcHq2FpGlhM+8WzXxPOD9zB5SHm9kdOs
-        j6+65fvyD866CuB4QbbwP80=
-X-Google-Smtp-Source: ABdhPJzEipQGfEX0E/yScKf40M4KhluyIvmkv7Y4h6TidcHPBlm8r0YXn4rVVut1u3n94y5GhnbmAA==
-X-Received: by 2002:a0c:f70d:0:b0:441:4558:b70c with SMTP id w13-20020a0cf70d000000b004414558b70cmr1657348qvn.82.1647947187250;
-        Tue, 22 Mar 2022 04:06:27 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id p13-20020a05622a048d00b002e1ce0c627csm14284668qtx.58.2022.03.22.04.06.24
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=nuGWDZlXSZNQGXcVqmqYeVN3TUgNMalMalmgFdEvLsg=;
+        b=DlGi3IbJeAO0unAtcTHLQcc5bFw5qfzrTBdJKSSPVyXfg+M+NjkkAaA8N1vID/ltaZ
+         glG2ydn1/LP/V84VMvXojNSzucNNBeFuRyxJWv/rHws6LTzg5GbNQJ/qaOE5VCGQ287l
+         ruzk4yQP0xdU2Vst9wmC8EMsyyq4GklfgCn08PasF3HK8KsU5MNWwhqafeqpJWWvXFCF
+         4m2Ap57pWVpGJWU9w8avtUieDEKc2QL4rYdTjZ/eFSgBld3IWh7qinQuexepiiv/a8Ig
+         YCBd+O9f5fm8G+rzbNr54JQ69RjEg7nKjD+a0Vjysbv/VwruoMwnzTTZGcmNQxBsSs4Y
+         OIfA==
+X-Gm-Message-State: AOAM531zCU7Vkfih9EikUL89N0cNSQz/tNxlBDi0yyDrdxygiwPC2etk
+        6zt1WqNmr7yWiy3AJ8XMzpF/YVqqZRY=
+X-Google-Smtp-Source: ABdhPJyYkc/0WmhNc7t3CoJMz8icf/aTLLqcf8k5iFIr0sUggSjDbLvekBHQdd0qX0SvqiTcjPEdCQ==
+X-Received: by 2002:adf:e348:0:b0:1f0:537:1807 with SMTP id n8-20020adfe348000000b001f005371807mr22271075wrj.11.1647947235642;
+        Tue, 22 Mar 2022 04:07:15 -0700 (PDT)
+Received: from avogadro.lan ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.gmail.com with ESMTPSA id f13-20020a05600c4e8d00b0038c949ef0d5sm1746379wmq.8.2022.03.22.04.07.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Mar 2022 04:06:26 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: yang.yang29@zte.com.cn
-To:     akpm@linux-foundation.org, david@redhat.com
-Cc:     bsingharora@gmail.com, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, Yang Yang <yang.yang29@zte.com.cn>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>
-Subject: [PATCH] delayacct: track delays from COW
-Date:   Tue, 22 Mar 2022 11:04:45 +0000
-Message-Id: <20220322110444.2340748-1-yang.yang29@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 22 Mar 2022 04:07:15 -0700 (PDT)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     mlevitsk@redhat.com, jmattson@google.com
+Subject: [PATCH 0/3] Documentation: KVM: add a place to document API quirks and (x86) CPU errata
+Date:   Tue, 22 Mar 2022 12:07:09 +0100
+Message-Id: <20220322110712.222449-1-pbonzini@redhat.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yang <yang.yang29@zte.com.cn>
+Reorganize Documentation/virt/kvm to be less x86-centric, and add a new
+file to document the ways in which x86 emulation is "wrong".  There are
+surely many more, for now just add the skeleton.  Please reply to this
+message with things that you'd like to see documented.
 
-Delay accounting does not track the delay of COW. When tasks trigger
-much COW, it may spend a amount of time waiting for it. To get the
-impact of tasks in COW, measure the delay when it happens. This
-could help users to do tunnings, such as decide whether to use
-ksm or not.
+While at it add also a section for places where the KVM API is bad or
+returns wrong values.  Please also include them in reply to this message
+if you are interested in seeing them documented.
 
-Also update tools/accounting/getdelays.c:
+Paolo
 
-    / # ./getdelays -dl -p 231
-    print delayacct stats ON
-    listen forever
-    PID     231
+Paolo Bonzini (3):
+  Documentation: KVM: add separate directories for architecture-specific
+    documentation
+  Documentation: KVM: add virtual CPU errata documentation
+  Documentation: KVM: add API issues section
 
-    CPU             count     real total  virtual total    delay total  delay average
-                     6247     1859000000     2154070021     1674255063          0.268ms
-    IO              count    delay total  delay average
-                        0              0              0ms
-    SWAP            count    delay total  delay average
-                        0              0              0ms
-    RECLAIM         count    delay total  delay average
-                        0              0              0ms
-    THRASHING       count    delay total  delay average
-                        0              0              0ms
-    COMPACT         count    delay total  delay average
-                        3          72758              0ms
-    COW             count    delay total  delay average
-                     3635      271567604              0ms
+ Documentation/virt/kvm/api.rst                | 46 +++++++++++++++++++
+ Documentation/virt/kvm/index.rst              | 28 ++++-------
+ Documentation/virt/kvm/s390/index.rst         | 12 +++++
+ .../virt/kvm/{ => s390}/s390-diag.rst         |  0
+ .../virt/kvm/{ => s390}/s390-pv-boot.rst      |  0
+ Documentation/virt/kvm/{ => s390}/s390-pv.rst |  0
+ .../kvm/{ => x86}/amd-memory-encryption.rst   |  0
+ Documentation/virt/kvm/{ => x86}/cpuid.rst    |  0
+ Documentation/virt/kvm/x86/errata.rst         | 39 ++++++++++++++++
+ .../virt/kvm/{ => x86}/halt-polling.rst       |  0
+ .../virt/kvm/{ => x86}/hypercalls.rst         |  0
+ Documentation/virt/kvm/x86/index.rst          | 19 ++++++++
+ Documentation/virt/kvm/{ => x86}/mmu.rst      |  0
+ Documentation/virt/kvm/{ => x86}/msr.rst      |  0
+ .../virt/kvm/{ => x86}/nested-vmx.rst         |  0
+ .../kvm/{ => x86}/running-nested-guests.rst   |  0
+ .../virt/kvm/{ => x86}/timekeeping.rst        |  0
+ 17 files changed, 124 insertions(+), 20 deletions(-)
+ create mode 100644 Documentation/virt/kvm/s390/index.rst
+ rename Documentation/virt/kvm/{ => s390}/s390-diag.rst (100%)
+ rename Documentation/virt/kvm/{ => s390}/s390-pv-boot.rst (100%)
+ rename Documentation/virt/kvm/{ => s390}/s390-pv.rst (100%)
+ rename Documentation/virt/kvm/{ => x86}/amd-memory-encryption.rst (100%)
+ rename Documentation/virt/kvm/{ => x86}/cpuid.rst (100%)
+ create mode 100644 Documentation/virt/kvm/x86/errata.rst
+ rename Documentation/virt/kvm/{ => x86}/halt-polling.rst (100%)
+ rename Documentation/virt/kvm/{ => x86}/hypercalls.rst (100%)
+ create mode 100644 Documentation/virt/kvm/x86/index.rst
+ rename Documentation/virt/kvm/{ => x86}/mmu.rst (100%)
+ rename Documentation/virt/kvm/{ => x86}/msr.rst (100%)
+ rename Documentation/virt/kvm/{ => x86}/nested-vmx.rst (100%)
+ rename Documentation/virt/kvm/{ => x86}/running-nested-guests.rst (100%)
+ rename Documentation/virt/kvm/{ => x86}/timekeeping.rst (100%)
 
-Signed-off-by: Yang Yang <yang.yang29@zte.com.cn>
-Reviewed-by: Ran Xiaokai <ran.xiaokai@zte.com.cn>
----
- include/linux/delayacct.h      | 28 ++++++++++++++++++++++++++++
- include/uapi/linux/taskstats.h |  6 +++++-
- kernel/delayacct.c             | 16 ++++++++++++++++
- mm/memory.c                    |  8 ++++++++
- tools/accounting/getdelays.c   |  8 +++++++-
- 5 files changed, 64 insertions(+), 2 deletions(-)
-
-diff --git a/include/linux/delayacct.h b/include/linux/delayacct.h
-index 6b16a6930a19..89b202c695d3 100644
---- a/include/linux/delayacct.h
-+++ b/include/linux/delayacct.h
-@@ -45,9 +45,13 @@ struct task_delay_info {
- 	u64 compact_start;
- 	u64 compact_delay;	/* wait for memory compact */
- 
-+	u64 cow_start;
-+	u64 cow_delay;	/* wait for cow */
-+
- 	u32 freepages_count;	/* total count of memory reclaim */
- 	u32 thrashing_count;	/* total count of thrash waits */
- 	u32 compact_count;	/* total count of memory compact */
-+	u32 cow_count;	/* total count of cow */
- };
- #endif
- 
-@@ -75,6 +79,8 @@ extern void __delayacct_swapin_start(void);
- extern void __delayacct_swapin_end(void);
- extern void __delayacct_compact_start(void);
- extern void __delayacct_compact_end(void);
-+extern void __delayacct_cow_start(void);
-+extern void __delayacct_cow_end(void);
- 
- static inline void delayacct_tsk_init(struct task_struct *tsk)
- {
-@@ -191,6 +197,24 @@ static inline void delayacct_compact_end(void)
- 		__delayacct_compact_end();
- }
- 
-+static inline void delayacct_cow_start(void)
-+{
-+	if (!static_branch_unlikely(&delayacct_key))
-+		return;
-+
-+	if (current->delays)
-+		__delayacct_cow_start();
-+}
-+
-+static inline void delayacct_cow_end(void)
-+{
-+	if (!static_branch_unlikely(&delayacct_key))
-+		return;
-+
-+	if (current->delays)
-+		__delayacct_cow_end();
-+}
-+
- #else
- static inline void delayacct_init(void)
- {}
-@@ -225,6 +249,10 @@ static inline void delayacct_compact_start(void)
- {}
- static inline void delayacct_compact_end(void)
- {}
-+static inline void delayacct_cow_start(void)
-+{}
-+static inline void delayacct_cow_end(void)
-+{}
- 
- #endif /* CONFIG_TASK_DELAY_ACCT */
- 
-diff --git a/include/uapi/linux/taskstats.h b/include/uapi/linux/taskstats.h
-index 12327d32378f..cfb9a2e0e95a 100644
---- a/include/uapi/linux/taskstats.h
-+++ b/include/uapi/linux/taskstats.h
-@@ -34,7 +34,7 @@
-  */
- 
- 
--#define TASKSTATS_VERSION	11
-+#define TASKSTATS_VERSION	12
- #define TS_COMM_LEN		32	/* should be >= TASK_COMM_LEN
- 					 * in linux/sched.h */
- 
-@@ -176,6 +176,10 @@ struct taskstats {
- 	/* Delay waiting for memory compact */
- 	__u64	compact_count;
- 	__u64	compact_delay_total;
-+
-+	/* Delay waiting for cow */
-+	__u64	cow_count;
-+	__u64	cow_delay_total;
- };
- 
- 
-diff --git a/kernel/delayacct.c b/kernel/delayacct.c
-index 2c1e18f7c5cf..c9a833270fe0 100644
---- a/kernel/delayacct.c
-+++ b/kernel/delayacct.c
-@@ -177,11 +177,14 @@ int delayacct_add_tsk(struct taskstats *d, struct task_struct *tsk)
- 	d->thrashing_delay_total = (tmp < d->thrashing_delay_total) ? 0 : tmp;
- 	tmp = d->compact_delay_total + tsk->delays->compact_delay;
- 	d->compact_delay_total = (tmp < d->compact_delay_total) ? 0 : tmp;
-+	tmp = d->cow_delay_total + tsk->delays->cow_delay;
-+	d->cow_delay_total = (tmp < d->cow_delay_total) ? 0 : tmp;
- 	d->blkio_count += tsk->delays->blkio_count;
- 	d->swapin_count += tsk->delays->swapin_count;
- 	d->freepages_count += tsk->delays->freepages_count;
- 	d->thrashing_count += tsk->delays->thrashing_count;
- 	d->compact_count += tsk->delays->compact_count;
-+	d->cow_count += tsk->delays->cow_count;
- 	raw_spin_unlock_irqrestore(&tsk->delays->lock, flags);
- 
- 	return 0;
-@@ -249,3 +252,16 @@ void __delayacct_compact_end(void)
- 		      &current->delays->compact_delay,
- 		      &current->delays->compact_count);
- }
-+
-+void __delayacct_cow_start(void)
-+{
-+	current->delays->cow_start = local_clock();
-+}
-+
-+void __delayacct_cow_end(void)
-+{
-+	delayacct_end(&current->delays->lock,
-+		      &current->delays->cow_start,
-+		      &current->delays->cow_delay,
-+		      &current->delays->cow_count);
-+}
-diff --git a/mm/memory.c b/mm/memory.c
-index 4499cf09c21f..4111f97c91a0 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -3006,6 +3006,8 @@ static vm_fault_t wp_page_copy(struct vm_fault *vmf)
- 	int page_copied = 0;
- 	struct mmu_notifier_range range;
- 
-+	delayacct_cow_start();
-+
- 	if (unlikely(anon_vma_prepare(vma)))
- 		goto oom;
- 
-@@ -3030,6 +3032,8 @@ static vm_fault_t wp_page_copy(struct vm_fault *vmf)
- 			put_page(new_page);
- 			if (old_page)
- 				put_page(old_page);
-+
-+			delayacct_cow_end();
- 			return 0;
- 		}
- 	}
-@@ -3128,12 +3132,16 @@ static vm_fault_t wp_page_copy(struct vm_fault *vmf)
- 			free_swap_cache(old_page);
- 		put_page(old_page);
- 	}
-+
-+	delayacct_cow_end();
- 	return page_copied ? VM_FAULT_WRITE : 0;
- oom_free_new:
- 	put_page(new_page);
- oom:
- 	if (old_page)
- 		put_page(old_page);
-+
-+	delayacct_cow_end();
- 	return VM_FAULT_OOM;
- }
- 
-diff --git a/tools/accounting/getdelays.c b/tools/accounting/getdelays.c
-index 11e86739456d..0f6e4831a77b 100644
---- a/tools/accounting/getdelays.c
-+++ b/tools/accounting/getdelays.c
-@@ -207,6 +207,8 @@ static void print_delayacct(struct taskstats *t)
- 	       "THRASHING%12s%15s%15s\n"
- 	       "      %15llu%15llu%15llums\n"
- 	       "COMPACT  %12s%15s%15s\n"
-+	       "      %15llu%15llu%15llums\n"
-+	       "COW   %15s%15s%15s\n"
- 	       "      %15llu%15llu%15llums\n",
- 	       "count", "real total", "virtual total",
- 	       "delay total", "delay average",
-@@ -234,7 +236,11 @@ static void print_delayacct(struct taskstats *t)
- 	       "count", "delay total", "delay average",
- 	       (unsigned long long)t->compact_count,
- 	       (unsigned long long)t->compact_delay_total,
--	       average_ms(t->compact_delay_total, t->compact_count));
-+	       average_ms(t->compact_delay_total, t->compact_count),
-+	       "count", "delay total", "delay average",
-+	       (unsigned long long)t->cow_count,
-+	       (unsigned long long)t->cow_delay_total,
-+	       average_ms(t->cow_delay_total, t->cow_count));
- }
- 
- static void task_context_switch_counts(struct taskstats *t)
 -- 
-2.25.1
+2.35.1
 
