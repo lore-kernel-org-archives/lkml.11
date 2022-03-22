@@ -2,98 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89BA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:51:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9309C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:51:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239894AbiCVRw3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 13:52:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56002 "EHLO
+        id S239918AbiCVRxG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 13:53:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239841AbiCVRwZ (ORCPT
+        with ESMTP id S239895AbiCVRxE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 13:52:25 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73F106D3BC
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:50:56 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id w7so31077866lfd.6
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:50:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xVTkoL6IvScupcc82uGKxY6t/dEoMhywmokb0M6nLRQ=;
-        b=SxzIsWJtVeaoBw1JvaNfWaX6iOJGZ1awG+smm6ZI3+2778B8fIRobefB0fFKcM4q6y
-         2r4/TVzojriOvGIybdvH82leIyhyqc+uKQhIoA5t/IeWmMqoqy0YAgzr+NxHjUuOLxlx
-         Q2wcsmI+T+V32+6FiBPcrXt1ViZUuv3r4KJS0=
+        Tue, 22 Mar 2022 13:53:04 -0400
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D138CD89;
+        Tue, 22 Mar 2022 10:51:35 -0700 (PDT)
+Received: by mail-ed1-f41.google.com with SMTP id z92so21693012ede.13;
+        Tue, 22 Mar 2022 10:51:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xVTkoL6IvScupcc82uGKxY6t/dEoMhywmokb0M6nLRQ=;
-        b=xzYBK97pebPrZag6cYoqLl7JigHXZk5UjFWa9hEhCkDH+2YYzzmNlOZtqvlKu2WpvI
-         JCTJutVHJEReQmCrfPXhCmZuJR8j9ChAZ86yC5MPv0AS9pHYaHApS47vGQDt2LwAm2aH
-         zek0FrCdRnGUkvkUxAyiOcyBjdkrpnHvRl10POffYztrl0WDz/ycTykKmQZ9vty03fzc
-         VqUmG5P5T/flDu5ZUow5OKX5DTudcfVnZEAajqrSkmun9L+Rsqp1BBqqU/GhglcCHzwO
-         s2tDldc3npnHhjOeYykTOYb3P3QGdmbDW9MyvRiZczXD4A530LjQeLWoc7niAVu3nJbY
-         NQvw==
-X-Gm-Message-State: AOAM530mQsBEQr/dyiwimNhn6DTyWvVM62EBfIFw6SNxbKAvqOvv7jFe
-        vnfUwiaMXq6CzDnyfMJ24RbpTJwLSuHTLrigz3g=
-X-Google-Smtp-Source: ABdhPJwmTntAlNcdrpCzHUJgWtqFqeUPVaKX1JwLNZ2enCdj6LC5U30nc84iRSGWeAyVEjhCX0YlIw==
-X-Received: by 2002:ac2:5bcb:0:b0:44a:1fd6:6b14 with SMTP id u11-20020ac25bcb000000b0044a1fd66b14mr11745765lfn.186.1647971453692;
-        Tue, 22 Mar 2022 10:50:53 -0700 (PDT)
-Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com. [209.85.208.174])
-        by smtp.gmail.com with ESMTPSA id h8-20020ac25d68000000b00447b5cad2a7sm2270462lft.228.2022.03.22.10.50.51
-        for <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=vZ/ZwDND2DM7W3zO7/91P5DQk072Qyyap8DYUvTWLHg=;
+        b=FjLnjC2emab4rOZhrdPuYjxr5zNtB620yJSQAsRtKiofHJ62zFE0Q+DOZbn4Hp4xof
+         KDR2UDd+LI2lzOgUlCDYBsAkqP801vSUKQ70Hkrb3nr8T6Ga0LlFL/kHFx/7WXon5yy8
+         IkBjiOSzf1TMGYJkRMAxHGN4VTdTUuuDqsc90h6utIOhdXa54npgYb0DTjwjKlsIIHp6
+         U7TV7YCwp8fdLK4R1P+3E8fz5KFdOU7EPj9u+wdIQV15Ey0FTr1cXa5TP8Z2pgEM1tj/
+         /UOtLi/Yd/mX+grU0PZiRAgcsUDjJUWxIIzKpcD5s4WqBDIIeMC2U54Kxhi7yLuQyiMG
+         +sEA==
+X-Gm-Message-State: AOAM532C2EgCYJrxxcqZ/YEFKL4wEDnr45t8HQpEtmnQh18WPnQBEB2G
+        0OA3mtfM/E5B9vc8yRkL/z6XDT0LXGY=
+X-Google-Smtp-Source: ABdhPJzA/0REXywCUbR+lRzR+Yv1EhYQ71lr10sQZ9QR9zkrdf6Gy0wWv0YrWg4hPXs7CE+OgS4pjQ==
+X-Received: by 2002:a05:6402:4414:b0:408:4dc0:3ee9 with SMTP id y20-20020a056402441400b004084dc03ee9mr29953899eda.203.1647971494344;
+        Tue, 22 Mar 2022 10:51:34 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.googlemail.com with ESMTPSA id b11-20020a170906728b00b006df8494d384sm8419729ejl.122.2022.03.22.10.51.33
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Mar 2022 10:50:52 -0700 (PDT)
-Received: by mail-lj1-f174.google.com with SMTP id u3so25094704ljd.0
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:50:51 -0700 (PDT)
-X-Received: by 2002:a2e:9904:0:b0:247:ec95:fdee with SMTP id
- v4-20020a2e9904000000b00247ec95fdeemr20114422lji.291.1647971451760; Tue, 22
- Mar 2022 10:50:51 -0700 (PDT)
+        Tue, 22 Mar 2022 10:51:33 -0700 (PDT)
+Message-ID: <7f3a0b7b-96d3-2d6b-308b-2e9cca13663b@kernel.org>
+Date:   Tue, 22 Mar 2022 18:51:32 +0100
 MIME-Version: 1.0
-References: <YjjihIZuvZpUjaSs@google.com> <CAHk-=wgsmvoJFKFWxQ2orEVUOWH1agk9iUNZ=-DFh5OXZL=Ldw@mail.gmail.com>
- <51cded74-3135-eed8-06d3-0b2165e3b379@redhat.com>
-In-Reply-To: <51cded74-3135-eed8-06d3-0b2165e3b379@redhat.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 22 Mar 2022 10:50:35 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wi=Xsekgj7zfw_vpOM673CG24vznmz-yx9G05rWSAAYXg@mail.gmail.com>
-Message-ID: <CAHk-=wi=Xsekgj7zfw_vpOM673CG24vznmz-yx9G05rWSAAYXg@mail.gmail.com>
-Subject: Re: [GIT PULL] f2fs for 5.18
-To:     Waiman Long <longman@redhat.com>, Tim Murray <timmurray@google.com>
-Cc:     Jaegeuk Kim <jaegeuk@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux F2FS Dev Mailing List 
-        <linux-f2fs-devel@lists.sourceforge.net>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 1/2] dt-bindings: thermal: Add ARTPEC-8 compatible string
+ for exynos-thermal
+Content-Language: en-US
+To:     hypmean.kim@samsung.com, "bzolnier@gmail.com" <bzolnier@gmail.com>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
+        "amitk@kernel.org" <amitk@kernel.org>,
+        "rui.zhang@intel.com" <rui.zhang@intel.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        ALIM AKHTAR <alim.akhtar@samsung.com>
+Cc:     "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "linux-samsung-soc@vger.kernel.org" 
+        <linux-samsung-soc@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220322075617.109855-1-hypmean.kim@samsung.com>
+ <CGME20220322075557epcas2p26c9dcb578e9c5f68a23f7fe1bdf35f65@epcms2p5>
+ <20220322081928epcms2p5c426f8eebbc5251a294ab08ae869e487@epcms2p5>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220322081928epcms2p5c426f8eebbc5251a294ab08ae869e487@epcms2p5>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 10:37 AM Waiman Long <longman@redhat.com> wrote:
->
-> AFAICS, the read-unfair rwsem code is created to resolve a potential
-> lock starvation problem that they found on linux-5.10.y stable tree. I
-> believe I have fixed that in the v5.11 kernel, see commit 2f06f702925
-> ("locking/rwsem: Prevent potential lock starvation").
+On 22/03/2022 09:19, Sang Min Kim wrote:
+> Extend the exynos-thermal dt bindings document to include compatible
+> string supporting ARTPEC-8 SoC
+>  
+> Signed-off-by: sangmin kim <hypmean.kim@samsung.com>
 
-Ahh.
+This does not look complete. Your driver uses different binding...
 
-Adding Tim Murray to the cc, since he was the source of that odd
-reader-unfair thing.
-
-I really *really* dislike people thinking they can do locking
-primitives, because history has taught us that they are wrong.
-
-Even when people get the semantics and memory ordering right (which is
-not always the case, but at least the f2fs code uses real lock
-primitives - just oddly - and should thus be ok), it invariably tends
-to be a sign of something else being very wrong.
-
-And I can easily believe that in this case it's due to a rmsem issue
-that was already fixed long long ago as per Waiman.
-
-Can people please test with the actual modern rwsem code and with the
-odd reader-unfair locks disabled?
-
-            Linus
+Best regards,
+Krzysztof
