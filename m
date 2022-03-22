@@ -2,224 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7C16C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 21:01:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7FB6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 21:02:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235141AbiCVVDE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 17:03:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45442 "EHLO
+        id S234999AbiCVVDw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 17:03:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235087AbiCVVCt (ORCPT
+        with ESMTP id S234990AbiCVVDl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 17:02:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7472B52E0F;
-        Tue, 22 Mar 2022 14:01:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 22 Mar 2022 17:03:41 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B391254BC8;
+        Tue, 22 Mar 2022 14:02:10 -0700 (PDT)
+Received: from [192.168.0.3] (ip5f5ae922.dynamic.kabel-deutschland.de [95.90.233.34])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C86DDB81DAB;
-        Tue, 22 Mar 2022 21:01:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 404D9C340EE;
-        Tue, 22 Mar 2022 21:01:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647982875;
-        bh=mXcy1351Q+KX/ctUS80CaNY82irKPeqQR5GkcO7LZc0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rqryPQpq3tMfs6fciTQ6wuFbdyUwHo7e533740fhC+9QYD5iYeZzJVTdjxnZSZPPE
-         SDGiRA42cebAjEEtH9Z52TZjrFpEpZsvuOvsmut3LDPbMOcem8E+hWA69ZN/NbTPAJ
-         uLeet+4pdhrukGD8lhS2hO0iA8a+6W8NKYb4BEAbMMbYJkLicn3LBXV40BWwfQNmH3
-         xUBGifQhLXxxkZSvxwOPnvUsg3AKFeYQ7rKjVYnumRhtYAjnmQKBQUpVl8HgXFe4lQ
-         DVUlOTijR8RW2NuKvOlR4ei8Pu9syb5/LqEdSe85RnvVJVxmp84A4I0oa81PBN5DTU
-         cVWBAFrz/+z/Q==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 5659940407; Tue, 22 Mar 2022 18:01:12 -0300 (-03)
-Date:   Tue, 22 Mar 2022 18:01:12 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     kan.liang@linux.intel.com
-Cc:     mingo@redhat.com, peterz@infradead.org, jolsa@redhat.com,
-        namhyung@kernel.org, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, ak@linux.intel.com,
-        ahmad.yasin@intel.com, zhengjun.xing@linux.intel.com
-Subject: Re: [PATCH] perf script: Add 'brstackinsnlen' for branch stacks
-Message-ID: <Yjo5GGbRUcnzRoGI@kernel.org>
-References: <1647871212-184070-1-git-send-email-kan.liang@linux.intel.com>
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 4387161EA1928;
+        Tue, 22 Mar 2022 22:02:07 +0100 (CET)
+Message-ID: <68ccb162-459b-cb95-19cf-3e0335e4c981@molgen.mpg.de>
+Date:   Tue, 22 Mar 2022 22:02:06 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Don't do arithmetic on anything smaller than 'int' (was: [PATCH v2]
+ ice: use min_t() to make code cleaner in ice_gnss)
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Laight <David.Laight@ACULAB.COM>
+Cc:     Wan Jiabing <wanjiabing@vivo.com>,
+        intel-wired-lan@lists.osuosl.org,
+        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20220321135947.378250-1-wanjiabing@vivo.com>
+ <f888e3cf09944f9aa63532c9f59e69fb@AcuMS.aculab.com>
+ <20220322175038.2691665-1-alexandr.lobakin@intel.com>
+ <af3fa59809654c9b9939f1e0bd8ca76b@AcuMS.aculab.com>
+ <20220322112730.482d674d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <20220322112730.482d674d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <1647871212-184070-1-git-send-email-kan.liang@linux.intel.com>
-X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Mon, Mar 21, 2022 at 07:00:12AM -0700, kan.liang@linux.intel.com escreveu:
-> From: Kan Liang <kan.liang@linux.intel.com>
-> 
-> When analyzing with the perf script, it's useful to understand the
-> captured instruction and the next sequential instruction. To calculate
-> the address of the next sequential instruction, the length of the
-> captured instruction is required. For example, you can’t know the next
-> sequential instruction after an unconditional branch unless you
-> calculate that based on its length.
-> 
-> For branch stacks, the current perf script only prints the instruction
-> bytes with 'brstackinsn', but lack of instruction length.
-> 
-> Add 'brstackinsnlen' to print the instruction length.
-> 
-> $perf script -F ip,brstackinsn,brstackinsnlen --xed
->      7fa555be8f75
->         _start:
->         00007fa555be8090        mov %rsp, %rdi          ilen: 3
->         00007fa555be8093        callq  0x7fa555be8ea0   ilen: 5 # PRED
-> 102 cycles [102] 0.02 IPC
->         _dl_start+38:
->         00007fa555be8ec6        movq  %rdx,0x227853(%rip)       ilen: 7
->         00007fa555be8ecd        leaq  0x227f94(%rip),%rdx       ilen: 7
-> 
-> Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Dear Linux folks,
 
-You forgot to update tools/perf/Documentation/perf-script.txt, I added
-it this time.
 
-Thanks, applied.
-
-- Arnaldo
-
-> ---
->  tools/perf/builtin-script.c | 44 ++++++++++++++++++++++++++++++++------------
->  1 file changed, 32 insertions(+), 12 deletions(-)
+Am 22.03.22 um 19:27 schrieb Jakub Kicinski:
+> On Tue, 22 Mar 2022 18:12:08 +0000 David Laight wrote:
+>>>> Oh FFS why is that u16?
+>>>> Don't do arithmetic on anything smaller than 'int'
+>>>
+>>> Any reasoning? I don't say it's good or bad, just want to hear your
+>>> arguments (disasms, perf and object code measurements) etc.
+>>
+>> Look at the object code on anything except x86.
+>> The compiler has to add instruction to mask the value
+>> (which is in a full sized register) down to 16 bits
+>> after every arithmetic operation.
 > 
-> diff --git a/tools/perf/builtin-script.c b/tools/perf/builtin-script.c
-> index fa478dd..5a7b2b0 100644
-> --- a/tools/perf/builtin-script.c
-> +++ b/tools/perf/builtin-script.c
-> @@ -124,6 +124,7 @@ enum perf_output_field {
->  	PERF_OUTPUT_DATA_PAGE_SIZE  = 1ULL << 33,
->  	PERF_OUTPUT_CODE_PAGE_SIZE  = 1ULL << 34,
->  	PERF_OUTPUT_INS_LAT         = 1ULL << 35,
-> +	PERF_OUTPUT_BRSTACKINSNLEN  = 1ULL << 36,
->  };
->  
->  struct perf_script {
-> @@ -191,6 +192,7 @@ struct output_option {
->  	{.str = "data_page_size", .field = PERF_OUTPUT_DATA_PAGE_SIZE},
->  	{.str = "code_page_size", .field = PERF_OUTPUT_CODE_PAGE_SIZE},
->  	{.str = "ins_lat", .field = PERF_OUTPUT_INS_LAT},
-> +	{.str = "brstackinsnlen", .field = PERF_OUTPUT_BRSTACKINSNLEN},
->  };
->  
->  enum {
-> @@ -488,7 +490,7 @@ static int evsel__check_attr(struct evsel *evsel, struct perf_session *session)
->  		       "selected. Hence, no address to lookup the source line number.\n");
->  		return -EINVAL;
->  	}
-> -	if (PRINT_FIELD(BRSTACKINSN) && !allow_user_set &&
-> +	if ((PRINT_FIELD(BRSTACKINSN) || PRINT_FIELD(BRSTACKINSNLEN)) && !allow_user_set &&
->  	    !(evlist__combined_branch_type(session->evlist) & PERF_SAMPLE_BRANCH_ANY)) {
->  		pr_err("Display of branch stack assembler requested, but non all-branch filter set\n"
->  		       "Hint: run 'perf record -b ...'\n");
-> @@ -1122,10 +1124,17 @@ static int print_srccode(struct thread *thread, u8 cpumode, uint64_t addr)
->  
->  static int ip__fprintf_jump(uint64_t ip, struct branch_entry *en,
->  			    struct perf_insn *x, u8 *inbuf, int len,
-> -			    int insn, FILE *fp, int *total_cycles)
-> +			    int insn, FILE *fp, int *total_cycles,
-> +			    struct perf_event_attr *attr)
->  {
-> -	int printed = fprintf(fp, "\t%016" PRIx64 "\t%-30s\t#%s%s%s%s", ip,
-> -			      dump_insn(x, ip, inbuf, len, NULL),
-> +	int ilen = 0;
-> +	int printed = fprintf(fp, "\t%016" PRIx64 "\t%-30s\t", ip,
-> +			      dump_insn(x, ip, inbuf, len, &ilen));
-> +
-> +	if (PRINT_FIELD(BRSTACKINSNLEN))
-> +		printed += fprintf(fp, "ilen: %d\t", ilen);
-> +
-> +	printed += fprintf(fp, "#%s%s%s%s",
->  			      en->flags.predicted ? " PRED" : "",
->  			      en->flags.mispred ? " MISPRED" : "",
->  			      en->flags.in_tx ? " INTX" : "",
-> @@ -1211,7 +1220,8 @@ static int perf_sample__fprintf_brstackinsn(struct perf_sample *sample,
->  		printed += ip__fprintf_sym(entries[nr - 1].from, thread,
->  					   x.cpumode, x.cpu, &lastsym, attr, fp);
->  		printed += ip__fprintf_jump(entries[nr - 1].from, &entries[nr - 1],
-> -					    &x, buffer, len, 0, fp, &total_cycles);
-> +					    &x, buffer, len, 0, fp, &total_cycles,
-> +					    attr);
->  		if (PRINT_FIELD(SRCCODE))
->  			printed += print_srccode(thread, x.cpumode, entries[nr - 1].from);
->  	}
-> @@ -1242,14 +1252,17 @@ static int perf_sample__fprintf_brstackinsn(struct perf_sample *sample,
->  			printed += ip__fprintf_sym(ip, thread, x.cpumode, x.cpu, &lastsym, attr, fp);
->  			if (ip == end) {
->  				printed += ip__fprintf_jump(ip, &entries[i], &x, buffer + off, len - off, ++insn, fp,
-> -							    &total_cycles);
-> +							    &total_cycles, attr);
->  				if (PRINT_FIELD(SRCCODE))
->  					printed += print_srccode(thread, x.cpumode, ip);
->  				break;
->  			} else {
->  				ilen = 0;
-> -				printed += fprintf(fp, "\t%016" PRIx64 "\t%s\n", ip,
-> +				printed += fprintf(fp, "\t%016" PRIx64 "\t%s", ip,
->  						   dump_insn(&x, ip, buffer + off, len - off, &ilen));
-> +				if (PRINT_FIELD(BRSTACKINSNLEN))
-> +					printed += fprintf(fp, "\tilen: %d", ilen);
-> +				printed += fprintf(fp, "\n");
->  				if (ilen == 0)
->  					break;
->  				if (PRINT_FIELD(SRCCODE))
-> @@ -1292,16 +1305,23 @@ static int perf_sample__fprintf_brstackinsn(struct perf_sample *sample,
->  			      machine, thread, &x.is64bit, &x.cpumode, false);
->  		if (len <= 0)
->  			goto out;
-> -		printed += fprintf(fp, "\t%016" PRIx64 "\t%s\n", sample->ip,
-> -			dump_insn(&x, sample->ip, buffer, len, NULL));
-> +		ilen = 0;
-> +		printed += fprintf(fp, "\t%016" PRIx64 "\t%s", sample->ip,
-> +			dump_insn(&x, sample->ip, buffer, len, &ilen));
-> +		if (PRINT_FIELD(BRSTACKINSNLEN))
-> +			printed += fprintf(fp, "\tilen: %d", ilen);
-> +		printed += fprintf(fp, "\n");
->  		if (PRINT_FIELD(SRCCODE))
->  			print_srccode(thread, x.cpumode, sample->ip);
->  		goto out;
->  	}
->  	for (off = 0; off <= end - start; off += ilen) {
->  		ilen = 0;
-> -		printed += fprintf(fp, "\t%016" PRIx64 "\t%s\n", start + off,
-> +		printed += fprintf(fp, "\t%016" PRIx64 "\t%s", start + off,
->  				   dump_insn(&x, start + off, buffer + off, len - off, &ilen));
-> +		if (PRINT_FIELD(BRSTACKINSNLEN))
-> +			printed += fprintf(fp, "\tilen: %d", ilen);
-> +		printed += fprintf(fp, "\n");
->  		if (ilen == 0)
->  			break;
->  		if (arch_is_branch(buffer + off, len - off, x.is64bit) && start + off != sample->ip) {
-> @@ -1459,7 +1479,7 @@ static int perf_sample__fprintf_insn(struct perf_sample *sample,
->  		for (i = 0; i < sample->insn_len; i++)
->  			printed += fprintf(fp, " %02x", (unsigned char)sample->insn[i]);
->  	}
-> -	if (PRINT_FIELD(BRSTACKINSN))
-> +	if (PRINT_FIELD(BRSTACKINSN) || PRINT_FIELD(BRSTACKINSNLEN))
->  		printed += perf_sample__fprintf_brstackinsn(sample, thread, attr, machine, fp);
->  
->  	return printed;
-> @@ -3716,7 +3736,7 @@ int cmd_script(int argc, const char **argv)
->  		     "Valid types: hw,sw,trace,raw,synth. "
->  		     "Fields: comm,tid,pid,time,cpu,event,trace,ip,sym,dso,"
->  		     "addr,symoff,srcline,period,iregs,uregs,brstack,"
-> -		     "brstacksym,flags,bpf-output,brstackinsn,brstackoff,"
-> +		     "brstacksym,flags,bpf-output,brstackinsn,brstackinsnlen,brstackoff,"
->  		     "callindent,insn,insnlen,synth,phys_addr,metric,misc,ipc,tod,"
->  		     "data_page_size,code_page_size,ins_lat",
->  		     parse_output_fields),
-> -- 
-> 2.7.4
+> Isn't it also slower on some modern x86 CPUs?
+> I could have sworn someone mentioned that in the past.
 
--- 
+I know of Scott’s article *Small Integers: Big Penalty* from 2012 [1].
 
-- Arnaldo
+
+Kind regards,
+
+Paul
+
+
+[1]: https://notabs.org/coding/smallIntsBigPenalty.htm
+> _______________________________________________
+> Intel-wired-lan mailing list
+> Intel-wired-lan@osuosl.org
+> https://lists.osuosl.org/mailman/listinfo/intel-wired-lan
