@@ -2,122 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E44CDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 18:07:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B064C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 18:08:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240184AbiCVSJC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 14:09:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51804 "EHLO
+        id S240191AbiCVSJq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 14:09:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234190AbiCVSI7 (ORCPT
+        with ESMTP id S236572AbiCVSJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 14:08:59 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E3A369727
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 11:07:31 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id 17so25105999lji.1
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 11:07:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cfOuUBo85WR0ru+OZ9vCbVy6pqMJNH141NsoPZ9iuzU=;
-        b=CMulEQgOmYp7vegEsV0YqllOAJc/0EN/MM1/NaiwpHzfLRazS7VZwqTu86PQodXmRH
-         27Dp+NKvW82SedQ0AiFEk8k6KtsoqvVc2Ktkj+vBPo+rOxpog7Czlfd42FkV+TEMZR2e
-         lHh7eeAHJozDHcNvI2t7CbOouFS/QKkgnYpbkOVDm2etwVjH8vNvN3ijCwAPdCN9CgAL
-         jKfBxWyx5pLq2PH9UBLyS9IQwObqQqi3auuQRZAirTmGwfdEym62AJmgmggBbtGePp1W
-         vN/jmkjpAIEFytgWImTpPalrKwRYtRh1N2DiU+12PLGpjblMpU1ou/PerroTB7VlSXvZ
-         22rg==
+        Tue, 22 Mar 2022 14:09:44 -0400
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D86165D13;
+        Tue, 22 Mar 2022 11:08:16 -0700 (PDT)
+Received: by mail-ej1-f45.google.com with SMTP id dr20so37415001ejc.6;
+        Tue, 22 Mar 2022 11:08:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cfOuUBo85WR0ru+OZ9vCbVy6pqMJNH141NsoPZ9iuzU=;
-        b=XIvnvcMAq0T5q/wrhJ2uJVqoZkrTmRDq+xaf+tmytx/vMAC/cY8ph8gER4+gQkGnCT
-         /AAmxAiEE+7fTIBVh54V4Sa0jz+4iNu3gOyVkSxez+VJe2Z8qPchaXuIaB/1WUHb1ceP
-         66itgiJOK++cJ5HvOTm1gILIpkau7WUZ5d7R0Czj3WAx5/uMGLM4ti+IoRfJshDPOvyS
-         qpvLwjbslrtPfdXYDUFc4Pzk0ZMjL2hlOoXfVQ2f9NWW1PHCPptOXDdrA11bYxanSgAn
-         tURi5zi9jsgVztTDsNCD6ksu9yTfp/Xs34yOPoYCC4n6g6E5zsetNndn9tfVGpSTtdUG
-         amlQ==
-X-Gm-Message-State: AOAM531ZpXmGyvxH1cp644WwCL14Vnp7EthkMPdQijKWeRgvC8p/G7n2
-        GbjvNQbZEamByHns1FWBZ9GeC+O2Nb2qivVg7VJNjg==
-X-Google-Smtp-Source: ABdhPJzZtMmIKpcAsTy1AEu98Zzs8vVyBVsxshLo15ayhRFMzjm0Fhtnzr+4KvTUzMrwGoRbfL/7ds3WWEPCw+QAQmk=
-X-Received: by 2002:a2e:3004:0:b0:223:c126:5d1a with SMTP id
- w4-20020a2e3004000000b00223c1265d1amr19404530ljw.408.1647972449253; Tue, 22
- Mar 2022 11:07:29 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:content-language:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=xklhjzZKzADY2xRK99pbIfVzHLVmN5wMRTs9ZPfdbng=;
+        b=WsNBOrifNwv/I038wgPe5EYzd30do0PnzUKANhA40zPTxqqc3H1gnkxqhDiX+dH8z7
+         9OQpnBLd+IjVrDDE04iyYfbk9rUn28y+oT1QrLhW+Z1n04ZJpayxiOeqZYxrwgxKB3DI
+         /UUfebykAJq7LYMlR84IL4TfNF8XFNwWGfOUuwf9tvMWocZV7hVAUp5iU7wxia4uYmzK
+         YEDdGjuu7Zsh+wh8vZoI5TXRJ3bH0JAZrPH17u4toZn8jAIzV3erqkwOIKXSe+JSzFms
+         t/fYjMy8fpaF4Ucz75LZ0Pa2W3n/sDOLRW0+bXQy86+kW2DSli63T9zD6f3oN57blHWQ
+         A0QQ==
+X-Gm-Message-State: AOAM530K6j+PoNmp8aAh2ImOi57CHD+41bxYD8ZoUA5pjuXY7gE3ZNLg
+        zeTSGcnr9TtyHH5LZGtiecs=
+X-Google-Smtp-Source: ABdhPJxUAx4IdVJWahehxkglRm1NqufvIFeuOA2YpXQp/NK47AD8PHQ9rSGI79bpqQ4VfewQip7ZhA==
+X-Received: by 2002:a17:906:58cd:b0:6df:f5f8:3037 with SMTP id e13-20020a17090658cd00b006dff5f83037mr13658660ejs.531.1647972494886;
+        Tue, 22 Mar 2022 11:08:14 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.googlemail.com with ESMTPSA id l20-20020a1709062a9400b006ce71a88bf5sm8516663eje.183.2022.03.22.11.08.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Mar 2022 11:08:14 -0700 (PDT)
+Message-ID: <a8eb005e-3fa4-ef60-c94c-5a6decb7a5df@kernel.org>
+Date:   Tue, 22 Mar 2022 19:08:12 +0100
 MIME-Version: 1.0
-References: <20220322102115.186179-1-ammarfaizi2@gnuweeb.org>
- <20220322102115.186179-3-ammarfaizi2@gnuweeb.org> <CAKwvOdkEwkzT0uf9a5SokCScDTY4gbhNFZ+fLxsti9innaEZRQ@mail.gmail.com>
- <20220322172550.GL10306@1wt.eu> <CAKwvOdmr6u-zNynUDAg4pmwerQFUkG+eD0QhpzDED9eg+U2pfA@mail.gmail.com>
- <20220322175816.GN10306@1wt.eu>
-In-Reply-To: <20220322175816.GN10306@1wt.eu>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 22 Mar 2022 11:07:17 -0700
-Message-ID: <CAKwvOd=LvBL4NTUWMc0rJ-3K+MU5rv-p+j2pfbuseGdiA2ccJw@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 2/8] tools/nolibc: Remove .global _start from the
- entry point code
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "GNU/Weeb Mailing List" <gwml@vger.gnuweeb.org>,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH v3 1/2] dt-bindings: phy: mediatek: Add YAML schema for
+ PCIe PHY
+Content-Language: en-US
+To:     Jianjun Wang <jianjun.wang@mediatek.com>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     Wei-Shun Chang <weishunc@google.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rex-bc.chen@mediatek.com, randy.wu@mediatek.com,
+        jieyy.yang@mediatek.com, chuanjia.liu@mediatek.com,
+        qizhong.cheng@mediatek.com, jian.yang@mediatek.com
+References: <20220322024705.9665-1-jianjun.wang@mediatek.com>
+ <20220322024705.9665-2-jianjun.wang@mediatek.com>
+In-Reply-To: <20220322024705.9665-2-jianjun.wang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 10:58 AM Willy Tarreau <w@1wt.eu> wrote:
->
-> On Tue, Mar 22, 2022 at 10:30:53AM -0700, Nick Desaulniers wrote:
-> > On Tue, Mar 22, 2022 at 10:25 AM Willy Tarreau <w@1wt.eu> wrote:
-> > > The purpose is clearly *not* to implement a libc, but to have
-> > > something very lightweight that allows to compile trivial programs. A good
-> > > example of this is tools/testing/selftests/rcutorture/bin/mkinitrd.sh. I'm
-> > > personally using a tiny pre-init shell that I always package with my
-> > > kernels and that builds with them [1]. It will never do big things but
-> > > the balance between ease of use and coding effort is pretty good in my
-> > > experience. And I'm also careful not to make it complicated to use nor
-> > > to maintain, pragmatism is important and the effort should remain on the
-> > > program developer if some arbitration is needed.
-> >
-> > Neat, I bet that helps generate very small initrd! Got any quick size
-> > measurements?
->
-> Yep:
->
-> First, the usual static printf("hello world!\n"):
->
->   $ ll hello-*libc
->   -rwxrwxr-x 1 willy dev 719232 Mar 22 18:50 hello-glibc*
->   -rwxrwxr-x 1 willy dev   1248 Mar 22 18:51 hello-nolibc*
+On 22/03/2022 03:47, Jianjun Wang wrote:
+> Add YAML schema documentation for PCIe PHY on MediaTek chipsets.
+> 
+> Signed-off-by: Jianjun Wang <jianjun.wang@mediatek.com>
+> ---
+>  .../bindings/phy/mediatek,pcie-phy.yaml       | 75 +++++++++++++++++++
+>  1 file changed, 75 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/phy/mediatek,pcie-phy.yaml
+> 
 
-! What! Are those both statically linked?
 
-> This one supports ~30-40 simple commands (mount/unmount, mknod, ls, ln),
-> a tar extractor, multi-level braces, and boolean expression evaluation,
-> variable expansion, and a config file parser to script all this. The code
-> is 20 years old and is really ugly (even uglier than you think). But that
-> gives an idea. 20 years ago the init was much simpler and 800 bytes (my
-> constraint was for single floppies containing kernel+rootfs) and strings
-> were manually merged by tails and put in .text to drop .rodata.
+Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
 
-Oh, so nolibc has been around for a while then?
 
-ld.lld will do string merging in that fashion at -O2 (the linker can
-accept and optimization level).  I did have a kernel patch for that
-somewhere, need to update it for CC_OPTIMIZE_FOR_SIZE...
-
-I guess the tradeoff with strings in .text is that now the strings
-themselves are r+x and not just r?
-
->
-> You'll also note that there's 0 data segment above. That used to be
-> convenient to further shrink programs, but these days given how linkers
-> arrange segments by permissions that doesn't save as much as it used to,
-> and it's likely that at some points I'll assume that there must be some
-> variables by default (errno, environ, etc) and that we'll accept to invest
-> a few extra tens of bytes by default for more convenience.
-
-Thanks for the measurements.
--- 
-Thanks,
-~Nick Desaulniers
+Best regards,
+Krzysztof
