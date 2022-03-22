@@ -2,151 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA574C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 15:02:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C444FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 15:04:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237145AbiCVPDv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 11:03:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39448 "EHLO
+        id S237492AbiCVPGL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 11:06:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235565AbiCVPDs (ORCPT
+        with ESMTP id S234323AbiCVPGJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 11:03:48 -0400
-Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 106FE4A910;
-        Tue, 22 Mar 2022 08:02:21 -0700 (PDT)
-Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-dd9d3e7901so1943337fac.8;
-        Tue, 22 Mar 2022 08:02:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LZrnZENFzHAcyG4z8YXGbb1cPaECVD2LaEEDGj9rfYI=;
-        b=TF9jEF6m9LY/GrpSjhibPjwgUdgGdxq6KTWYcmHt615IW70CFrQG12JWjZstL7zcgb
-         a/NLweUqlB03nAZ3Ngbo7ez0Bldo514ZLSE0RVPpeQi+2kFzqNFobBm2XYvgJNg5tjdL
-         cZw2f2I5iZ8l2mFCDS6kwhpSzCcjhBxMrcbJ7p3gnuv6KtiaN79ayZuHOuJMNCiSphhT
-         evi780bsQYFcX18gtesyEZygMZGLXRcxp0tbsYrQPvXutG0RwPwMtHijHKnby1240VNA
-         DYiaCZyG2d+xQS2nJhi9kyy1zRH0YcqDbHeQjUJtRbh+Mtv5RjPf7w7kfepICbq4jerp
-         KRfw==
-X-Gm-Message-State: AOAM530HD/wZRSgTL3ynf/UHxPPCteFjBKNXWYZjk7VhCejQkPMLiuRD
-        otIqxuAWiVZ/7+qkOkBstTzpnYKfdg==
-X-Google-Smtp-Source: ABdhPJxdZIXeGXL5BgfAh0JHUsLAqnvcG4qAGL//HhwVWpYiVL440dU2hgKLJXDQsjMwp3OqJlK5gg==
-X-Received: by 2002:a05:6870:4789:b0:dd:e6e0:2471 with SMTP id c9-20020a056870478900b000dde6e02471mr1892795oaq.195.1647961338852;
-        Tue, 22 Mar 2022 08:02:18 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id n62-20020acaef41000000b002ef646e6690sm3141414oih.53.2022.03.22.08.02.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Mar 2022 08:02:17 -0700 (PDT)
-Received: (nullmailer pid 2012421 invoked by uid 1000);
-        Tue, 22 Mar 2022 15:02:16 -0000
-Date:   Tue, 22 Mar 2022 10:02:16 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Jiaxin Yu <jiaxin.yu@mediatek.com>
-Cc:     broonie@kernel.org, tzungbi@google.com,
-        angelogioacchino.delregno@collabora.com, aaronyu@google.com,
-        matthias.bgg@gmail.com, trevor.wu@mediatek.com, linmq006@gmail.com,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-Subject: Re: [v5 1/4] ASoC: dt-bindings: mt8192-mt6359: add new compatible
- and new properties
-Message-ID: <Yjnk+AYb0Eo8ufJA@robh.at.kernel.org>
-References: <20220319114111.11496-1-jiaxin.yu@mediatek.com>
- <20220319114111.11496-2-jiaxin.yu@mediatek.com>
- <YjkLVwvxvOKr30qL@robh.at.kernel.org>
- <0e909de12a52ae88633634d868bd5001eef1b830.camel@mediatek.com>
+        Tue, 22 Mar 2022 11:06:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E24F80224;
+        Tue, 22 Mar 2022 08:04:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6B4960B38;
+        Tue, 22 Mar 2022 15:04:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A22F1C340ED;
+        Tue, 22 Mar 2022 15:04:39 +0000 (UTC)
+Date:   Tue, 22 Mar 2022 11:04:38 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        mhiramat@kernel.org, ast@kernel.org, hjl.tools@gmail.com,
+        rick.p.edgecombe@intel.com, rppt@kernel.org,
+        linux-toolchains@vger.kernel.org, Andrew.Cooper3@citrix.com,
+        ndesaulniers@google.com
+Subject: Re: linux-next: build warnings after merge of the tip tree
+Message-ID: <20220322110438.25c2a760@gandalf.local.home>
+In-Reply-To: <Yjneyn8o06svJkY4@hirez.programming.kicks-ass.net>
+References: <20220321112805.1393f9b9@gandalf.local.home>
+        <YjiiDFHIQg78QwSb@hirez.programming.kicks-ass.net>
+        <20220321121209.3b95e406@gandalf.local.home>
+        <20220321121549.1c8588c5@gandalf.local.home>
+        <YjiqgPL+pPGkOgCv@hirez.programming.kicks-ass.net>
+        <20220321124551.3d73660b@gandalf.local.home>
+        <Yjis6hJKUj/WrSwK@hirez.programming.kicks-ass.net>
+        <20220321125419.0a20415c@gandalf.local.home>
+        <YjmAz0MbdW4Q1Cnv@hirez.programming.kicks-ass.net>
+        <20220322091242.1ad0206b@gandalf.local.home>
+        <Yjneyn8o06svJkY4@hirez.programming.kicks-ass.net>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0e909de12a52ae88633634d868bd5001eef1b830.camel@mediatek.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 11:45:24AM +0800, Jiaxin Yu wrote:
-> On Mon, 2022-03-21 at 18:33 -0500, Rob Herring wrote:
-> > On Sat, Mar 19, 2022 at 07:41:08PM +0800, Jiaxin Yu wrote:
-> > > 1. Adds new compatible string "mt8192_mt6359_rt1015p_rt5682s" for
-> > > machines
-> > > with rt1015p and rt5682s.
-> > > 2. Adds new property "mediatek,headset-codec" for getting headset
-> > > codecs.
-> > > 3. Adds new property "mediatek,speaker-codec" for getting speaker
-> > > codecs.
+On Tue, 22 Mar 2022 15:35:54 +0100
+Peter Zijlstra <peterz@infradead.org> wrote:
+
+> On Tue, Mar 22, 2022 at 09:12:42AM -0400, Steven Rostedt wrote:
+> 
+> > > Suppose:
 > > > 
-> > > Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
-> > > ---
-> > >  .../sound/mt8192-mt6359-rt1015-rt5682.yaml    | 29
-> > > +++++++++++++++++++
-> > >  1 file changed, 29 insertions(+)
+> > > notrace func_B()
+> > > {
+> > > 	...
+> > > }
 > > > 
-> > > diff --git a/Documentation/devicetree/bindings/sound/mt8192-mt6359-
-> > > rt1015-rt5682.yaml
-> > > b/Documentation/devicetree/bindings/sound/mt8192-mt6359-rt1015-
-> > > rt5682.yaml
-> > > index a781e7aaaa38..aa0476eedd38 100644
-> > > --- a/Documentation/devicetree/bindings/sound/mt8192-mt6359-rt1015-
-> > > rt5682.yaml
-> > > +++ b/Documentation/devicetree/bindings/sound/mt8192-mt6359-rt1015-
-> > > rt5682.yaml
-> > > @@ -18,6 +18,7 @@ properties:
-> > >      enum:
-> > >        - mediatek,mt8192_mt6359_rt1015_rt5682
-> > >        - mediatek,mt8192_mt6359_rt1015p_rt5682
-> > > +      - mediatek,mt8192_mt6359_rt1015p_rt5682s
-> > >  
-> > >    mediatek,platform:
-> > >      $ref: "/schemas/types.yaml#/definitions/phandle"
-> > > @@ -27,6 +28,25 @@ properties:
-> > >      $ref: "/schemas/types.yaml#/definitions/phandle"
-> > >      description: The phandle of HDMI codec.
-> > >  
-> > > +patternProperties:
-> > > +  "^mediatek,headset-codec$":
+> > > func_A()
+> > > {
+> > > 	...
+> > > 	return func_B();
+> > > }
+> > > 
+> > > then inhibiting tail calls would end up looking like:  
 > > 
-> > Fixed string, not a pattern. Move to 'properties'. Drop the vendor 
-> > prefix too.
+> > If we inhibit tail calls, then we do not need to make func_B notrace.  
+> 
+> Dude, you're arguing in circles :-( the notrace was a given.
+
+Why is it notrace? Sorry to be dense, but it's not a given to me.
+
+> 
+> > > func_A:
+> > > 	call __fentry__
+> > > 	...
+> > > 	call func_B
+> > > 	call __fexit__
+> > > 	ret
+> > > 
+> > > Then A is fully traced, B is invisible, as per spec. What is the
+> > > problem?  
 > > 
-> Hi Rob,
+> > The above is fine, but then func_B is not a tail call and can also be
+> > traced.  
 > 
-> I originally referred to simple-card.yaml and move "xxx.yyy" to the
-> patternProperties.
-> 
-> Such as:
-> # use patternProperties to avoid naming "xxx,yyy" issue
-> patternProperties:
->   "^simple-audio-card,widgets$":
->     $ref: "#/definitions/widgets"
+> Again, B is notrace as a given. This was all about how to deal with
+> notrace functions.
 
-That was working around an issue and I've now fixed this.
+
+No, it was about how to deal with notrace functions that were tail calls.
+That was what I had an issue with. Because the solution you proposed had
+func_A depend on func_B executing its call __fexit__ which it would not, if
+it was not traced.
 
 > 
-> But your comment is more reasonable. I will move them to 'properties'
-> and drop the vendor prefix. Thanks for your review.
+> I suggested inhibiting tail-call to notrace, you said no. You now seem to
+> agree that solves it.
+
+I said inhibiting tail-calls was a solution, but only inhibiting it to
+notrace would probably have a significant performance impact.
+
+I thought you were talking about adding notrace to tail calls, not the
+other way around. Maybe that is our confusion in this conversation.
+
 > 
-> 
-> > > +    description: Holds subnode which indicates headset dai.
-> > > +    type: object
-> > > +    properties:
-> > > +      sound-dai:
-> > > +        $ref: /schemas/types.yaml#/definitions/phandle-array
+> > > The problem you initially had, of doing a tail-call into a notrace, was
+> > > that the __fexit__ call went missing, because notrace will obviously not
+> > > have that. But that's avoided by inhibiting all tail-calls between
+> > > notrace and !notrace functions (note that notrace must also not
+> > > tail-call !notrace).  
 > > 
-> > Standard property, don't need a type or description. Just how many
-> > and 
-> > what each one is if more than 1.
+> > I'm confused by the above. Why can't a notrace tail call a !notrace?
+> > If we tail call to a
+> > 
+> > func_B:
+> > 	call __fentry__
+> > 	...
+> > 	call __fexit__
+> > 	ret
+> > 
+> > then the fentry and fexit show a perfectly valid trace of func_B.  
 > 
-> Should I describe them as below?
+> Bah; I thought I had a case this morning, but now I can't seem to recall
+> :/
+
+That happens to all of us ;-)
+
 > 
-> properties:
-> ...
->   speaker-codec:
->     type: object
->     properties:
->       sound-dai:
->          maxItems: 1
-> ...
+> > > Your worry seems to stem about loosing visiblilty of !notrace functions,
+> > > but AFAICT that doesn't happen.  
+> > 
+> > My worry is:
+> > 
+> > func_A:
+> > 	call __fentry__
+> > 	...
+> > 	jmp func_B
+> > 
+> > Where do we do the call __fexit__ ?  
+> 
+> In B (or wherever if B again does a tail-call).
 
-Yes.
+But there's no guarantee that the call __fexit__ will not be a nop in
+func_B. Remember, these are all turned on and off. If we just trace func_A
+and not func_B, we will never have a call __fexit__ for func_A.
 
-Rob
+> 
+> > That was the original concern, and I think the proposed solutions have
+> > convoluted our thoughts about what we are trying to fix. So let's go back
+> > to the beginning, and see how to deal with it.
+> > 
+> > That is, we have:
+> > 
+> > func_C:
+> > 	call __fenty__
+> > 	...
+> > 	call func_A:
+> > 	...
+> > 	call func_B:
+> > 	...
+> > 	call __fexit__
+> > 	ret
+> > 
+> > func_A:
+> > 	call __fentry__
+> > 	...  
+> 	call __ftail__
+> > 	jmp func_B
+> > 
+> > func_B:
+> > 	call __fentry__
+> > 	...
+> > 	call __fexit__
+> > 	ret
+> > 
+> > Where the above is C calling A and B as normal functions, A calling B as a
+> > tail call and B just being a normal function called by both A and C (and
+> > many other functions).  
+> 
+> We need the __ftail__ thing to mark the trace-stack entry of func_A as
+> complete, then any future __fexit__ will be able to pop all completed
+> entries.
+> 
+> In recap:
+> 
+> 	__fentry__ -- push on trace-stack
+> 	__ftail__  -- mark top-most entry complete
+> 	__fexit__  -- mark top-most entry complete;
+> 	              pop all completed entries
+
+Again, this would require that the tail-calls are also being traced.
+
+> 
+> inhibit tail-calls to notrace.
+
+Just inhibiting tail-calls to notrace would work without any of the above.
+But my fear is that will cause a noticeable performance impact.
+
+> 
+> > And note, I do not want to limit function tracing (which does not rely on
+> > __fexit__) just because we can't figure out how to handle __fexit__.  
+> 
+> I'm not following. Regular function tracing needs none of this.
+
+The regular function tracing does not need this. Only function graph
+tracing. I was thinking you were *adding* notrace to tail calls and such,
+which is what I was against. But apparently that is not what you were
+saying.
+
+> 
+> It's function graph tracing, kretprobes and whatever else this rethook
+> stuff is about that needs this because return trampolines will stop
+> working somewhere in the not too distant future.
+
+Another crazy solution is to have:
+
+func_A:
+	call __fentry__
+	...
+tail:	jmp 1f 
+	call 1f
+	call __fexit__
+	ret
+1:	jmp func_B
+
+
+where the compiler tells us about "tail:" and that we know that func_A ends
+with a tail call, and if we want to trace the end of func_A we convert that
+jmp 1f into a nop. And then we call the func_B and it's return comes back
+to where we call __fexit__ and then return normally.
+
+-- Steve
