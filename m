@@ -2,75 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29180C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 23:27:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35A00C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 23:30:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240752AbiCVX3J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 19:29:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37988 "EHLO
+        id S238705AbiCVXcT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 19:32:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239991AbiCVX25 (ORCPT
+        with ESMTP id S232688AbiCVXcR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 19:28:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4329532EB
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 16:27:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5CDF0B81DAB
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 23:27:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id F110BC340F6;
-        Tue, 22 Mar 2022 23:27:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647991647;
-        bh=AWlB00YHGmlczlDQEJMBKfhu5pKN7oMG2YtAaMytQvw=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=Vse/EBiQnxCb/grk+0Paqknt+QWE+V0NYhXNfhgbUBbAvxrUCAb1T4s4/4aJGn6Ru
-         EesE4afTbtRzhvu7v+QRxBmgTuMz1a8S4l/s7cOWy0pnpo5n30iAVHpmLKPnPsfQ0d
-         EeLVeY+w+/QT4q1lteXKjpQxW5KnIMsWlA1T6pVjirUhOMSBTwGNpqUmXxbhHlrN3Z
-         b7k6gHzhMfk/1PrMcTgCFqBX6zfKMpezLGtMo6UzFeLjtxHuCfoFlnKI/mRIa8qHvy
-         1JXUGXjdj6anKKjDMyY2TEI9CIUBM3zaVIG5CBGTQYZDD8C5LNhDOZgISWNnqOcJN+
-         1laWKg+JcurMQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DF02CE6D402;
-        Tue, 22 Mar 2022 23:27:26 +0000 (UTC)
-Subject: Re: [GIT PULL] locking changes for v5.18
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YjhdcJB4FaLfsoyO@gmail.com>
-References: <YjhdcJB4FaLfsoyO@gmail.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YjhdcJB4FaLfsoyO@gmail.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git locking-core-2022-03-21
-X-PR-Tracked-Commit-Id: cd27ccfc727e99352321c0c75012ab9c5a90321e
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: ebd326ce724d5b2e5274724e6d6a46a046e28203
-Message-Id: <164799164690.11565.4407042081542491958.pr-tracker-bot@kernel.org>
-Date:   Tue, 22 Mar 2022 23:27:26 +0000
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Andrew Morton <akpm@linux-foundation.org>
+        Tue, 22 Mar 2022 19:32:17 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 222D067D0A;
+        Tue, 22 Mar 2022 16:30:46 -0700 (PDT)
+X-UUID: 394dd279d67247d5bcf32c48e9ae501a-20220323
+X-UUID: 394dd279d67247d5bcf32c48e9ae501a-20220323
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <sean.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 2119202589; Wed, 23 Mar 2022 07:30:43 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 23 Mar 2022 07:30:41 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 23 Mar
+ 2022 07:30:41 +0800
+Received: from mtkswgap22.mediatek.inc (172.21.77.33) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 23 Mar 2022 07:30:41 +0800
+From:   <sean.wang@mediatek.com>
+To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>
+CC:     <sean.wang@mediatek.com>, <Soul.Huang@mediatek.com>,
+        <YN.Chen@mediatek.com>, <Leon.Yen@mediatek.com>,
+        <Eric-SY.Chang@mediatek.com>, <Deren.Wu@mediatek.com>,
+        <km.lin@mediatek.com>, <robin.chiu@mediatek.com>,
+        <Eddie.Chen@mediatek.com>, <ch.yeh@mediatek.com>,
+        <posh.sun@mediatek.com>, <ted.huang@mediatek.com>,
+        <Eric.Liang@mediatek.com>, <Stella.Chang@mediatek.com>,
+        <Tom.Chou@mediatek.com>, <steve.lee@mediatek.com>,
+        <jsiuda@google.com>, <frankgor@google.com>,
+        <abhishekpandit@google.com>, <michaelfsun@google.com>,
+        <mcchou@chromium.org>, <shawnku@google.com>,
+        <linux-bluetooth@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        "Yake Yang" <yake.yang@mediatek.com>
+Subject: [PATCH] Bluetooth: mt7921s: Fix the incorrect pointer check
+Date:   Wed, 23 Mar 2022 07:30:40 +0800
+Message-ID: <5d56b2a23e6e793c64ed98890329ce1beb010ce0.1647991506.git.objelf@gmail.com>
+X-Mailer: git-send-email 1.7.9.5
+MIME-Version: 1.0
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 21 Mar 2022 12:11:44 +0100:
+From: Sean Wang <sean.wang@mediatek.com>
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git locking-core-2022-03-21
+Fix the incorrect pointer check on ven_data.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/ebd326ce724d5b2e5274724e6d6a46a046e28203
+Fixes: f41b91fa1783 ("Bluetooth: mt7921s: Add .btmtk_get_codec_config_data")
+Co-developed-by: Yake Yang <yake.yang@mediatek.com>
+Signed-off-by: Yake Yang <yake.yang@mediatek.com>
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+---
+ drivers/bluetooth/btmtksdio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thank you!
-
+diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
+index f3dc5881fff7..b6d77e04240c 100644
+--- a/drivers/bluetooth/btmtksdio.c
++++ b/drivers/bluetooth/btmtksdio.c
+@@ -961,7 +961,7 @@ static int btmtksdio_get_codec_config_data(struct hci_dev *hdev,
+ 	}
+ 
+ 	*ven_data = kmalloc(sizeof(__u8), GFP_KERNEL);
+-	if (!ven_data) {
++	if (!*ven_data) {
+ 		err = -ENOMEM;
+ 		goto error;
+ 	}
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.25.1
+
