@@ -2,117 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92267C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:53:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ADBFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:53:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239961AbiCVRzG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 13:55:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60916 "EHLO
+        id S239967AbiCVRzL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 13:55:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239946AbiCVRzF (ORCPT
+        with ESMTP id S239590AbiCVRzF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 22 Mar 2022 13:55:05 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCA5BBE30;
-        Tue, 22 Mar 2022 10:53:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647971617; x=1679507617;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=GOSyCMT3Bo8pMPfvKQ6OUb28JkU8aRwvgc6c1E/p/HM=;
-  b=B+kfcUm0RBWon1+HvTZuAamntyPWOB6ublxkKUZjpHfGJHvukY1g9EBF
-   EMnIuNeQjMt/Nyets3Mw1czzTe0qbi/Wtr0EgiBQ1tYmk1nwuNC4Y/4mC
-   ATptsjFDWml1ABeU/xKh62bayEPEK/8sSGLXFeIgb9TvBCLLxzLZj7732
-   sqi5D9YWulrKU+4umpigMu5QfTJWZGz1gPsn3CGeyx6c6b/Smasp712Gv
-   IRYqjgQT8EokoXjZDwoyiei/Y80CdYJDsW1cVoG+fZJedSboMwhvTCqE1
-   kHG9Zd/aU8uqg7o+UUo0UKX5yK8fMM6nxgUUUlkAuonBP3hxTVl6vA28i
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10294"; a="245374809"
-X-IronPort-AV: E=Sophos;i="5.90,202,1643702400"; 
-   d="scan'208";a="245374809"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2022 10:52:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,202,1643702400"; 
-   d="scan'208";a="692645180"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga001.fm.intel.com with ESMTP; 22 Mar 2022 10:51:58 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22MHpvJb002184;
-        Tue, 22 Mar 2022 17:51:57 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     David Laight <David.Laight@ACULAB.COM>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        "'Wan Jiabing'" <wanjiabing@vivo.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] ice: use min_t() to make code cleaner in ice_gnss
-Date:   Tue, 22 Mar 2022 18:50:38 +0100
-Message-Id: <20220322175038.2691665-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <f888e3cf09944f9aa63532c9f59e69fb@AcuMS.aculab.com>
-References: <20220321135947.378250-1-wanjiabing@vivo.com> <f888e3cf09944f9aa63532c9f59e69fb@AcuMS.aculab.com>
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C98BBE13
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:53:37 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id mp6-20020a17090b190600b001c6841b8a52so3690808pjb.5
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:53:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3s5gDWos+PtUBLd8/ihqJugKS3ctUwBv/GPhwSs2FSg=;
+        b=J0hXkgmwRkfvoxa+/cJHitTUDL4MBLzi6/4VZaaROhoGfxwHEt9opFvvnk30v5W76A
+         gSPMZK0GobqR+CVlBi0YKf08GT0gASfjlWZg7jTTZCWi1tsGBEU/boiHzw6vJavQMChW
+         3+mm6C1Mus9NgYXuUAHqwUeWZeQpB1++KwRAZeikitNpYgIFbzWHIXyxCh+0By7ZWy0f
+         93e0UaB9SSeMHBEV5+/uOc56iHw3Yx5LKftZuTA/67kUZ8gXdr7dZGsPBFP7eH9B/3/e
+         VDS5j3NfD+/us8Wi/aSwLJgSNWcWyAjy7Hpc9pFWirXCQPOdPssBmAoiGSMJITWbxPme
+         7jwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3s5gDWos+PtUBLd8/ihqJugKS3ctUwBv/GPhwSs2FSg=;
+        b=0bqF4X+XJY1kICQKfMqA/gAu6Lx3FYD+6jGxdF6ILmRg02LJGVhtJb0K4Y3b4eJ7B8
+         evYZ8U76HCM/HQ+th0wppUAKK1YNCVl5o0hzKS3m7omH57Q188DHAhr/T8GSvSWjTyTQ
+         8jI26tASATS1RKFAaO7+bfwoYPoeHc8Nan0HM8unEm4REATtek9xuglT5oP3vo3d1aLk
+         V4aINVSHVVUAE29lA7UjN0Z0OG2fdDm+aDe+vLGNK3Pk/Qydzf5NfnbzNokUZfkl4FJp
+         xWLlBvMF189CDeFclMXkQ9FW4VgFDCQG3x7E+IFfVM9sTh3HYWGI5vXrZ/S6TjHOhODt
+         kOwg==
+X-Gm-Message-State: AOAM533LxnRlhs6/m7Dbvgd3//IcX3ibtFUHkw0OcG2qflP5L0ps6zZ7
+        ar3QRgsgPlQuPHlkUQomz8WqstDCIPZDH0ApK15DOQ==
+X-Google-Smtp-Source: ABdhPJyet6bOhKvdAllqdaC/IxzQPS5NrzuBCij/+cPDNReudOSbHOq6XC8Buzc2uf6Zwfci6Gv8/fi7bvkucL9VT0s=
+X-Received: by 2002:a17:902:7296:b0:14b:4bc6:e81 with SMTP id
+ d22-20020a170902729600b0014b4bc60e81mr19167073pll.132.1647971616906; Tue, 22
+ Mar 2022 10:53:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220307094158.404882-1-wanjiabing@vivo.com>
+In-Reply-To: <20220307094158.404882-1-wanjiabing@vivo.com>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Tue, 22 Mar 2022 10:53:29 -0700
+Message-ID: <CAPcyv4im7c47C+jrTbQC=FGgCV35ME8vuYA2-KXYRKsdEuOuuQ@mail.gmail.com>
+Subject: Re: [PATCH] cxl/core/port: fix NULL but dereferenced coccicheck error
+To:     Wan Jiabing <wanjiabing@vivo.com>
+Cc:     Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-cxl@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kael_w@qq.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Laight <David.Laight@ACULAB.COM>
-Date: Mon, 21 Mar 2022 16:02:20 +0000
+On Mon, Mar 7, 2022 at 1:43 AM Wan Jiabing <wanjiabing@vivo.com> wrote:
+>
+> Fix the following coccicheck warning:
+> ./drivers/cxl/core/port.c:913:21-24: ERROR: port is NULL but dereferenced.
+>
+> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
 
-> From: Wan Jiabing
-> > Sent: 21 March 2022 14:00
-> >
-> > Fix the following coccicheck warning:
-> > ./drivers/net/ethernet/intel/ice/ice_gnss.c:79:26-27: WARNING opportunity for min()
-> >
-> > Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
-> > ---
-> > Changelog:
-> > v2:
-> > - Use typeof(bytes_left) instead of u8.
-> > ---
-> >  drivers/net/ethernet/intel/ice/ice_gnss.c | 3 +--
-> >  1 file changed, 1 insertion(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/net/ethernet/intel/ice/ice_gnss.c b/drivers/net/ethernet/intel/ice/ice_gnss.c
-> > index 35579cf4283f..57586a2e6dec 100644
-> > --- a/drivers/net/ethernet/intel/ice/ice_gnss.c
-> > +++ b/drivers/net/ethernet/intel/ice/ice_gnss.c
-> > @@ -76,8 +76,7 @@ static void ice_gnss_read(struct kthread_work *work)
-> >  	for (i = 0; i < data_len; i += bytes_read) {
-> >  		u16 bytes_left = data_len - i;
-> 
-> Oh FFS why is that u16?
-> Don't do arithmetic on anything smaller than 'int'
-
-Any reasoning? I don't say it's good or bad, just want to hear your
-arguments (disasms, perf and object code measurements) etc.
-
-> 
-> 	David
-> 
-> >
-> > -		bytes_read = bytes_left < ICE_MAX_I2C_DATA_SIZE ? bytes_left :
-> > -					  ICE_MAX_I2C_DATA_SIZE;
-> > +		bytes_read = min_t(typeof(bytes_left), bytes_left, ICE_MAX_I2C_DATA_SIZE);
-> >
-> >  		err = ice_aq_read_i2c(hw, link_topo, ICE_GNSS_UBX_I2C_BUS_ADDR,
-> >  				      cpu_to_le16(ICE_GNSS_UBX_EMPTY_DATA),
-> > --
-> > 2.35.1
-> 
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
-
-Thanks,
-Al
+Thanks, applied.
