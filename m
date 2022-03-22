@@ -2,96 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44491C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 04:52:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB4F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 04:52:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236608AbiCVExs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 00:53:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55784 "EHLO
+        id S236600AbiCVEyY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 00:54:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236567AbiCVExc (ORCPT
+        with ESMTP id S236567AbiCVEyW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 00:53:32 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6893E9BAC8;
-        Mon, 21 Mar 2022 21:52:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding;
-        bh=F2PNjHl4rmC8UgOnj2jVs0WLgwPYSsdn2UDLTRFAhwU=;
-        b=QiiDY/7jbOZ5bQfhUp+Fk7+xnxg2F5T3iVWVkEfUz+i+ktx5yePCG3M1WwlSP7kjwhjDRhy3qjjvX
-         816uKgtfweysZwkU5SJ+NW6bkcs1qMYNMSuNho4zNTBES9aD0rfiRQnBQKsQkquLXKgKrVZVE+wAMi
-         yF0gxTwtUsJ7Ic8mV3lu0kvDTfS/tHwd9ho4lw+O93vNbjxdrJgME+acOs2FgnQ1X846+7Pbya5rU6
-         aFxt2QdPS8AQjPKRx2w3kALGSUGa+5nolhKvwTYFvOlvQGt5LdOOsnH1s5jsAaH3d+50nOqi3DDa7z
-         OzgkbR2DtQw5wW/4rEkNEDEgbOXiiFA==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.2.1410, Stamp: 3], Multi: [Enabled, t: (0.000009,0.008186)], BW: [Enabled, t: (0.000022,0.000001)], RTDA: [Enabled, t: (0.063727), Hit: No, Details: v2.28.0; Id: 15.52kaoo.1funvetfu.1se3; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from localhost.localdomain ([178.70.66.234])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Tue, 22 Mar 2022 07:51:42 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>, mdf@kernel.org,
-        hao.wu@intel.com, yilun.xu@intel.com, trix@redhat.com,
-        conor.dooley@microchip.com, robh+dt@kernel.org, system@metrotek.ru,
-        linux-kernel@vger.kernel.org, linux-fpga@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH v7 0/2] Microchip Polarfire FPGA manager
-Date:   Tue, 22 Mar 2022 07:32:17 +0300
-Message-Id: <20220322043219.23770-1-i.bornyakov@metrotek.ru>
-X-Mailer: git-send-email 2.34.1
+        Tue, 22 Mar 2022 00:54:22 -0400
+Received: from mail-vk1-xa2c.google.com (mail-vk1-xa2c.google.com [IPv6:2607:f8b0:4864:20::a2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 958CC98F73
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 21:52:54 -0700 (PDT)
+Received: by mail-vk1-xa2c.google.com with SMTP id d129so3545236vkh.13
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 21:52:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WZwFAXeypL3jPipKNgPJxQINJj6JMXunijbszepaSjU=;
+        b=YFh0z8aRY3bgF45d2I8rgI3ST09NIq0Hofz3dyojfGq9mke2zfjLTsefMvQvUBTJgm
+         1qnKwVGrEXKXSj0hr1XpDupQwV09DvcSlZv2oyo79KqZp8KW5tKNq+0f1ASQPMGtcfJj
+         P5fQrQ8ujRVKAEfEuFzSHk0AfcCg6JSuVh6LG1bUk+O7UOrgYohfOEL9uBkgKuz4Wreu
+         Q8KI8EdVa4vu6DTWcfdyaVSbtYeXcWRWcrhBF6Lx8WDBw43iNsBdBH0EcHw0kye8ODpH
+         XYWP2nIJloYZp0SmdNuOj8C9hJ23ZC46NCbzbhzmgg4s3AxfY1MAHIflZ+Ntz3noPvvn
+         it6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WZwFAXeypL3jPipKNgPJxQINJj6JMXunijbszepaSjU=;
+        b=cAKU06FbLnOd1S3zOpwTcDmS7nQH1vjaeMwSGOEN0j6SXNnos1ZCcz15b98joR6Ccc
+         GDg5OcuUeh8TuGALgEzzGjqojhNGD0d5kDX1hcwm2+CMM2qVkryJpiE1i+Xpx/j5EFiJ
+         mEDVK8X8zwHoApzzjHSBg2nzw9QT7VTcZo9iK01knl/isHDGTsYwn1228Pl7D4LJ49ju
+         13bRQVWJ6kCMJ6VSH1QcMIoxALVkyFH1wW+NLo2yOgcdT4rQDfmR1vxXR1BkF+ngo/mS
+         FB7AxAUjSsC7TkniBcOvEaXoVJ/f0TZT8Ut3kaPs0O4/mHiRMoLeqAgotT54YSgQULr8
+         8ZBA==
+X-Gm-Message-State: AOAM530JheCTkJmtTTsfiUPoLVh6wpdEMyqD+eojzGTwd1HRQMS/9Hjs
+        Obl44vtusquMMqzasPal2R3rXB5tDLLVqGaZTuNSjw==
+X-Google-Smtp-Source: ABdhPJxFR1nglzJK4RoUAy7iy7C1My9l/amg903cMnO5caRvyJNwsaMuy9GXoP8bTaVJxjBoEyZx6dpVzJR7dnuPQ7o=
+X-Received: by 2002:a05:6122:887:b0:332:699e:7e67 with SMTP id
+ 7-20020a056122088700b00332699e7e67mr9362524vkf.35.1647924773467; Mon, 21 Mar
+ 2022 21:52:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+References: <20220309021230.721028-1-yuzhao@google.com> <20220309021230.721028-6-yuzhao@google.com>
+ <875yoh552i.fsf@yhuang6-desk2.ccr.corp.intel.com> <CAOUHufYPSesiePfxaV=y9Vne5cb+Y_vQtJyQ1NiO1CFus=8WOA@mail.gmail.com>
+ <CAFxkdAouXr5Qn9asFge0P-HqA4aAk56yqP4xEiaWYRioJ1ssyA@mail.gmail.com> <cf736b49-57e3-51df-56af-5b71d0304e4a@redhat.com>
+In-Reply-To: <cf736b49-57e3-51df-56af-5b71d0304e4a@redhat.com>
+From:   Yu Zhao <yuzhao@google.com>
+Date:   Mon, 21 Mar 2022 22:52:42 -0600
+Message-ID: <CAOUHufbkSffDkUgv03kGdNs2-6V-fTHRKr7hjsZJubA_yWU7bQ@mail.gmail.com>
+Subject: Re: [PATCH v9 05/14] mm: multi-gen LRU: groundwork
+To:     Prarit Bhargava <prarit@redhat.com>,
+        Justin Forbes <jforbes@fedoraproject.org>
+Cc:     Andi Kleen <ak@linux.intel.com>, kernel-team@lists.ubuntu.com,
+        Vaibhav Jain <vaibhav@linux.ibm.com>,
+        Rik van Riel <riel@surriel.com>,
+        Mel Gorman <mgorman@suse.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Brian Geffon <bgeffon@google.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        "Huang, Ying" <ying.huang@intel.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Steven Barrett <steven@liquorix.net>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
+        Will Deacon <will@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mike Rapoport <rppt@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>, Hillf Danton <hdanton@sina.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        kernel <kernel@lists.fedoraproject.org>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Matthew Wilcox <willy@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Linux-MM <linux-mm@kvack.org>,
+        Kernel Page Reclaim v2 <page-reclaim@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support to the FPGA manager for programming Microchip Polarfire
-FPGAs over slave SPI interface with .dat formatted bitsream image.
+On Mon, Mar 21, 2022 at 1:18 PM Prarit Bhargava <prarit@redhat.com> wrote:
+>
+> On 3/21/22 14:58, Justin Forbes wrote:
+> > On Mon, Mar 14, 2022 at 4:30 AM Yu Zhao <yuzhao@google.com> wrote:
+> >>
+> >> On Mon, Mar 14, 2022 at 2:09 AM Huang, Ying <ying.huang@intel.com> wrote:
+> >>>
+> >>> Hi, Yu,
+> >>>
+> >>> Yu Zhao <yuzhao@google.com> writes:
+> >>>> diff --git a/mm/Kconfig b/mm/Kconfig
+> >>>> index 3326ee3903f3..747ab1690bcf 100644
+> >>>> --- a/mm/Kconfig
+> >>>> +++ b/mm/Kconfig
+> >>>> @@ -892,6 +892,16 @@ config ANON_VMA_NAME
+> >>>>          area from being merged with adjacent virtual memory areas due to the
+> >>>>          difference in their name.
+> >>>>
+> >>>> +# the multi-gen LRU {
+> >>>> +config LRU_GEN
+> >>>> +     bool "Multi-Gen LRU"
+> >>>> +     depends on MMU
+> >>>> +     # the following options can use up the spare bits in page flags
+> >>>> +     depends on !MAXSMP && (64BIT || !SPARSEMEM || SPARSEMEM_VMEMMAP)
+> >>>
+> >>> LRU_GEN depends on !MAXSMP.  So, What is the maximum NR_CPUS supported
+> >>> by LRU_GEN?
+> >>
+> >> LRU_GEN doesn't really care about NR_CPUS. IOW, it doesn't impose a
+> >> max number. The dependency is with NODES_SHIFT selected by MAXSMP:
+> >>      default "10" if MAXSMP
+> >> This combined with LAST_CPUPID_SHIFT can exhaust the spare bits in page flags.
+> >>
+> >> MAXSMP is meant for kernel developers to test their code, and it
+> >> should not be used in production [1]. But some distros unfortunately
+> >> ship kernels built with this option, e.g., Fedora and Ubuntu. And
+> >> their users reported build errors to me after they applied MGLRU on
+> >> those kernels ("Not enough bits in page flags"). Let me add Fedora and
+> >> Ubuntu to this thread.
+> >>
+> >> Fedora and Ubuntu,
+> >>
+> >> Could you please clarify if there is a reason to ship kernels built
+> >> with MAXSMP? Otherwise, please consider disabling this option. Thanks.
+> >>
+> >> As per above, MAXSMP enables ridiculously large numbers of CPUs and
+> >> NUMA nodes for testing purposes. It is detrimental to performance,
+> >> e.g., CPUMASK_OFFSTACK.
+> >
+> > It was enabled for Fedora, and RHEL because we did need more than 512
+> > CPUs, originally only in RHEL until SGI (years ago) complained that
+> > they were testing very large machines with Fedora.  The testing done
+> > on RHEL showed that the performance impact was minimal.   For a very
+> > long time we had MAXSMP off and carried a patch which allowed us to
+> > turn on CPUMASK_OFFSTACK without debugging because there was supposed
+> > to be "something else" coming.  In 2019 we gave up, dropped that patch
+> > and just turned on MAXSMP.
+> >
+> > I do not have any metrics for how often someone runs Fedora on a
+> > ridiculously large machine these days, but I would guess that number
+> > is not 0.
+>
+> It is not 0.  I've seen data from large systems (1000+ logical threads)
+> that are running Fedora albeit with a modified Fedora kernel.
+>
+> Additionally the max limit for CPUS in RHEL is 1792, however, we have
+> recently had a request to *double* that to 3584.  You should just assume
+> that number will continue to increase.
 
-Changelog:
-  v1 -> v2: fix printk formating
-  v2 -> v3:
-   * replace "microsemi" with "microchip"
-   * replace prefix "microsemi_fpga_" with "mpf_"
-   * more sensible .compatible and .name strings
-   * remove unused defines STATUS_SPI_VIOLATION and STATUS_SPI_ERROR
-  v3 -> v4: fix unused variable warning
-    Put 'mpf_of_ids' definition under conditional compilation, so it
-    would not hang unused if CONFIG_OF is not enabled.
-  v4 -> v5:
-   * prefix defines with MPF_
-   * mdelay() -> usleep_range()
-   * formatting fixes
-   * add DT bindings doc
-   * rework fpga_manager_ops.write() to fpga_manager_ops.write_sg()
-     We can't parse image header in write_init() because image header
-     size is not known beforehand. Thus parsing need to be done in
-     fpga_manager_ops.write() callback, but fpga_manager_ops.write()
-     also need to be reenterable. On the other hand,
-     fpga_manager_ops.write_sg() is called once. Thus, rework usage of
-     write() callback to write_sg().
-  v5 -> v6: fix patch applying
-     I forgot to clean up unrelated local changes which lead to error on
-     patch 0001-fpga-microchip-spi-add-Microchip-MPF-FPGA-manager.patch
-     applying on vanilla kernel.
-  v6 ->v7: fix binding doc to pass dt_binding_check
+Good to know. Thanks.
 
-Ivan Bornyakov (2):
-  fpga: microchip-spi: add Microchip MPF FPGA manager
-  dt-bindings: fpga: add binding doc for microchip-spi fpga mgr
-
- .../fpga/microchip,mpf-spi-fpga-mgr.yaml      |  44 ++
- drivers/fpga/Kconfig                          |  10 +
- drivers/fpga/Makefile                         |   1 +
- drivers/fpga/microchip-spi.c                  | 448 ++++++++++++++++++
- 4 files changed, 503 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
- create mode 100644 drivers/fpga/microchip-spi.c
-
--- 
-2.34.1
-
-
+From the standpoint of overhead, I'd consider NR_CPUS=4096 and
+NODES_SHIFT=7 as the next step, before going with MAXSMP.
