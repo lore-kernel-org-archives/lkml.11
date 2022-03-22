@@ -2,120 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0F85C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 10:58:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 305D1C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 10:59:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233775AbiCVLAV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 07:00:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41074 "EHLO
+        id S233779AbiCVLAh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 07:00:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231140AbiCVLAU (ORCPT
+        with ESMTP id S233780AbiCVLAe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 07:00:20 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 531D657163;
-        Tue, 22 Mar 2022 03:58:53 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id bi12so35403728ejb.3;
-        Tue, 22 Mar 2022 03:58:53 -0700 (PDT)
+        Tue, 22 Mar 2022 07:00:34 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C163C66238
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 03:59:05 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id o10so16600826ejd.1
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 03:59:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=sartura-hr.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=6eTie8pN9DOlF868bn+y4zBjLnv2GLhQ4xR2n+oPB4o=;
-        b=QzvTPalSltc1H2yWkF7TA/9e8Udp1ApWJdjNySe8TcsiL2zt3+USc7xlja6WIms09q
-         j7Oac21kyr1Ue9ryUmmWZXJUwmgEjcfqOsczHxYoJrErWgb31lsHM0N/jlrR2Kkv3HE3
-         ugKYnoHgOte8xlT3opFPTr39L/c24oQp8YHr7oojZPCXf4Phj3PX8a/LEathe2YlnxGD
-         7D2dC5en8o51c6mBvB38CkZJZD/HwHvMjPLGCDEr8I51RpTYvQwRlE2xSQDwRxRVbC/R
-         8Ma/wmPsDJM9xvdx1Galp5ZxfHuyYmfAdOJx33Dq0TkNs1vv1ViIPVC+kKhdbMO4JeM3
-         1/dw==
+        bh=zfghx/qEkC2ONfoEHoNhajwMqvVU/Rw6+xNqAELkwE4=;
+        b=3ggq4f3T64nDuKSwbTf/6v4FwlZ/AFMKwVp+igZxWrKaF6n6Orwm1OAgFbA5Zm8EwI
+         0MzsmZOeTGQRLC93xUoEqVOCa3qKL8W8N48Ph8Ci544dyke+Dgi95sgCezM+4d9GE1S2
+         jdHBYObpDUd/YWJ34i0wcPkKigC2hEwzzakfhC7iGQPMQp+pkSJ1JyeSG4y1v0YfTcI2
+         lWZsZb6H8h1GXh6cF3j3Z5z0xQi3RRycMyZxZM6TKTiWP5LZsoaaTRRsx0au5lm8SwUl
+         /ijvmNlzSWC1LWRZd+mvBRfwFjPoyAJqN58Gdf0d5gW+KcJzXDHxLixGiS0qdmPADSm6
+         WsKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=6eTie8pN9DOlF868bn+y4zBjLnv2GLhQ4xR2n+oPB4o=;
-        b=guSRRA2HDYsjQvhsqAhUE1V7+NrvQiXH/R6YCfjCqpsHJ6rdEbRJiFKgere2WnMq1r
-         q2B+Xf5IZmZvkzOZCx7OjBiHa7Lh/jkqdDxs9QuJd1mgCVAaUnrhXqLtAHqlZD8fQIRq
-         xFLPscVd6zRAcr1ZKrBvPl/1tB3dDLynGLfM1bXkkhGaSo1llgyh85cdwnwCirytBmAA
-         +rIwJMA828Q1IOnPVwmIWAk/xWKEpjN5CQZnS38diNeFiUODnjETby6/3vtbcaAKtuDf
-         yVqP64+XpaAmH9NtV5QGhAt8UlgrBDrP2s0vrfzq2Q5cRhOZlotPsyg2KnPmIYhg7NMS
-         TOyQ==
-X-Gm-Message-State: AOAM530OS6P3uQhp823rMrQopA7FmfSzFhRAPaFXEWaA9ikYUJHKYoch
-        SXDZuihTNcaLQVwWXPiKV0jWriE0c+Y=
-X-Google-Smtp-Source: ABdhPJyazF0uGyLpbtzXM77PFzEF7PotXeqSwSX5ULFhQ7tu8+unt2hSIdsJNfpHLou/gGNVbk9Zrg==
-X-Received: by 2002:a17:906:e87:b0:6df:8602:5801 with SMTP id p7-20020a1709060e8700b006df86025801mr25367980ejf.140.1647946731535;
-        Tue, 22 Mar 2022 03:58:51 -0700 (PDT)
-Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id da19-20020a056402177300b00413583e0996sm9227623edb.14.2022.03.22.03.58.50
+        bh=zfghx/qEkC2ONfoEHoNhajwMqvVU/Rw6+xNqAELkwE4=;
+        b=rBNqNBh80NoKxNngofdeleYssPHQS+5yqYjyElbXPdQ0wB4K+kh9HMNRiknQipdgp2
+         WrtqDhGHUB5k2luTpUnR5HIkpGhAew9EUfu/JtbLMVrzPGgr6NsZkbFQf6YKoCmMqTxF
+         utJktPevf5frdpqdN0r3xYMduXCsdz8c+HcCCcQj7VtBSrFh0+AQgHHvmKRWt1qCQ1IG
+         A8LMw0Y5mLhjYLXyiLPUHMjMN2RPCnSmR2zU0GubvwR5vdkXD77g7+hflqKSxwaZuCD5
+         zVBt/tY7sStII0CMYOLgxiRtQAB7I7udiRy5XmkvdVXjiqBmgivG6999uCu6nKdHq1E8
+         sCQg==
+X-Gm-Message-State: AOAM532TBGhMltzzvOV2JFjoDnCK2fjuH7vl4weq2fFtfns/qdNzzlX7
+        Ewqt22AdlQztSFLnNMB1unBd+w==
+X-Google-Smtp-Source: ABdhPJzmf1aOUH0Mk/vPLVvoQz/uaOiphL8+V2bJXKtiEls+synowm9ZyksG2v6vj+lPIw7QNwo2ew==
+X-Received: by 2002:a17:907:7f88:b0:6db:c308:c247 with SMTP id qk8-20020a1709077f8800b006dbc308c247mr25177763ejc.300.1647946744330;
+        Tue, 22 Mar 2022 03:59:04 -0700 (PDT)
+Received: from fedora.robimarko.hr (cpezg-94-253-144-57-cbl.xnet.hr. [94.253.144.57])
+        by smtp.googlemail.com with ESMTPSA id b7-20020a056402084700b004190d2fc521sm6150240edz.89.2022.03.22.03.59.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Mar 2022 03:58:51 -0700 (PDT)
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
-        linux-kernel@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, netdev@vger.kernel.org,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH v2] netfilter: nf_tables: replace unnecessary use of list_for_each_entry_continue()
-Date:   Tue, 22 Mar 2022 11:56:44 +0100
-Message-Id: <20220322105645.3667322-1-jakobkoschel@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 22 Mar 2022 03:59:03 -0700 (PDT)
+From:   Robert Marko <robert.marko@sartura.hr>
+To:     andrew@lunn.ch, gregory.clement@bootlin.com,
+        sebastian.hesselbarth@gmail.com, robh+dt@kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, pali@kernel.org, marek.behun@nic.cz
+Cc:     Robert Marko <robert.marko@sartura.hr>
+Subject: [PATCH v2 1/2] arm64: dts: uDPU: update partition table
+Date:   Tue, 22 Mar 2022 11:58:56 +0100
+Message-Id: <20220322105857.1107016-1-robert.marko@sartura.hr>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since there is no way for list_for_each_entry_continue() to start
-interating in the middle of the list they can be replaced with a call
-to list_for_each_entry().
+Partition currently called "uboot" does not only contain U-boot, but
+rather it contains TF-A, U-boot and U-boot environment.
 
-In preparation to limit the scope of the list iterator to the list
-traversal loop, the list iterator variable 'rule' should not be used
-past the loop.
+So, to avoid accidentally deleting the U-boot environment which is
+located at 0x180000 split the partition.
 
-v1->v2:
-- also replace first usage of list_for_each_entry_continue() (Florian
-Westphal)
+"uboot" is not the correct name as you can't boot these boards with U-boot
+only, TF-A must be present as well, so rename the "uboot" partition to
+"firmware".
 
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+While we are here, describe the NOR node as "spi-flash@0" instead of
+"m25p80@0" which is the old SPI-NOR driver name.
+
+This won't break booting for existing devices as the SoC-s BootROM is not
+partition aware at all, it will simply try booting from 0x0 of the
+boot device that is set by bootstrap pins.
+
+This will however prevent accidental or automated flashing of just U-boot
+to the partition.
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
 ---
- net/netfilter/nf_tables_api.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+Changes in v2:
+* Update the commit description by adressing ABI breaking concerns
+---
+ arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index d71a33ae39b3..6a8239b25a66 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -8279,10 +8279,8 @@ static int nf_tables_commit_chain_prepare(struct net *net, struct nft_chain *cha
- 	if (chain->blob_next || !nft_is_active_next(net, chain))
- 		return 0;
-
--	rule = list_entry(&chain->rules, struct nft_rule, list);
--
- 	data_size = 0;
--	list_for_each_entry_continue(rule, &chain->rules, list) {
-+	list_for_each_entry(rule, &chain->rules, list) {
- 		if (nft_is_active_next(net, rule)) {
- 			data_size += sizeof(*prule) + rule->dlen;
- 			if (data_size > INT_MAX)
-@@ -8299,7 +8297,7 @@ static int nf_tables_commit_chain_prepare(struct net *net, struct nft_chain *cha
- 	data_boundary = data + data_size;
- 	size = 0;
-
--	list_for_each_entry_continue(rule, &chain->rules, list) {
-+	list_for_each_entry(rule, &chain->rules, list) {
- 		if (!nft_is_active_next(net, rule))
- 			continue;
-
-
-base-commit: f443e374ae131c168a065ea1748feac6b2e76613
---
-2.25.1
+diff --git a/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts b/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts
+index 95d46e8d081c..ac64949bb53e 100644
+--- a/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts
++++ b/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts
+@@ -99,7 +99,7 @@ &spi0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&spi_quad_pins>;
+ 
+-	m25p80@0 {
++	spi-flash@0 {
+ 		compatible = "jedec,spi-nor";
+ 		reg = <0>;
+ 		spi-max-frequency = <54000000>;
+@@ -108,10 +108,15 @@ partitions {
+ 			compatible = "fixed-partitions";
+ 			#address-cells = <1>;
+ 			#size-cells = <1>;
+-			/* only bootloader is located on the SPI */
++
+ 			partition@0 {
+-				label = "uboot";
+-				reg = <0 0x400000>;
++				label = "firmware";
++				reg = <0x0 0x180000>;
++			};
++
++			partition@180000 {
++				label = "u-boot-env";
++				reg = <0x180000 0x10000>;
+ 			};
+ 		};
+ 	};
+-- 
+2.35.1
 
