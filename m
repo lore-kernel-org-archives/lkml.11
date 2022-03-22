@@ -2,146 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C10CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 16:19:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3639EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 16:21:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239013AbiCVQU7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 12:20:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37498 "EHLO
+        id S239016AbiCVQXC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 12:23:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236352AbiCVQU4 (ORCPT
+        with ESMTP id S236352AbiCVQXB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 12:20:56 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C55C411A28;
-        Tue, 22 Mar 2022 09:19:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1647965966; x=1679501966;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=U7HtkD8e2y1BOHA9zy3SPJmEKe96PjQ8/7rxSr5oFsI=;
-  b=dS3vIWW1rB5aytj1fgPR4CeR5G5L+MIMt0c4m/gwp7CaoamTuL82aNqX
-   71CU4218QZguGlG39Zt2s8pUzc4mjyrpkNH1yU6vuqRSXV+LvFPX1EUoY
-   PnJr3cJ2h/9tGZvCKG1VuOHKO6eIZPpeClGWnwhDp6ycxpzrYcaEbyetj
-   c=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 22 Mar 2022 09:19:25 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2022 09:19:24 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 22 Mar 2022 09:19:24 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 22 Mar 2022 09:19:18 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@codeaurora.org>,
-        <perex@perex.cz>, <tiwai@suse.com>,
-        <srinivas.kandagatla@linaro.org>, <rohitkr@codeaurora.org>,
-        <linux-arm-msm@vger.kernel.org>, <alsa-devel@alsa-project.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <swboyd@chromium.org>, <judyhsiao@chromium.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH] ASoC: codecs: Fix error handling in power domain init and exit handlers
-Date:   Tue, 22 Mar 2022 21:48:57 +0530
-Message-ID: <1647965937-32203-1-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 22 Mar 2022 12:23:01 -0400
+Received: from srv6.fidu.org (srv6.fidu.org [159.69.62.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDAC221E1E;
+        Tue, 22 Mar 2022 09:21:31 -0700 (PDT)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by srv6.fidu.org (Postfix) with ESMTP id F15AFC800A1;
+        Tue, 22 Mar 2022 17:21:29 +0100 (CET)
+Authentication-Results: srv6.fidu.org (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=tuxedocomputers.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        tuxedocomputers.com; h=content-transfer-encoding:mime-version
+        :x-mailer:message-id:date:date:subject:subject:from:from; s=
+        default; t=1647966089; x=1649780490; bh=UtZBNRgWNS685gHiBC5AYcn3
+        7IcwlIiOgwaXZ2OaY2w=; b=LRXelzLDJXNORoYBP6SqoG8OkcI8s01YZtkCrF8u
+        rCr5g+r9nMLPbOxAMdhcBo+pGiFVxOwQwrXnStlgn+O7GcYyJQ+doDOU0rBq2avn
+        zj7zWZ9CCOUzv1J50TPZ66GPbktv4vIF486B6kDpUMdT/sqJC0oHROydZiTzorZb
+        XHc=
+X-Virus-Scanned: Debian amavisd-new at srv6.fidu.org
+Received: from srv6.fidu.org ([127.0.0.1])
+        by localhost (srv6.fidu.org [127.0.0.1]) (amavisd-new, port 10026)
+        with LMTP id khTitntSUZQ5; Tue, 22 Mar 2022 17:21:29 +0100 (CET)
+Received: from wsembach-tuxedo.fritz.box (unknown [IPv6:2001:a61:6168:d301:4be4:641d:6061:c5dc])
+        (Authenticated sender: wse@tuxedocomputers.com)
+        by srv6.fidu.org (Postfix) with ESMTPA id 8C90BC80099;
+        Tue, 22 Mar 2022 17:21:29 +0100 (CET)
+From:   Werner Sembach <wse@tuxedocomputers.com>
+To:     dmitry.torokhov@gmail.com, tiwai@suse.de, mpdesouza@suse.com,
+        arnd@arndb.de, hdegoede@redhat.com, samuel@cavoj.net,
+        wse@tuxedocomputers.com, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v4] input/i8042: Rework quirk tables
+Date:   Tue, 22 Mar 2022 17:21:21 +0100
+Message-Id: <20220322162125.59838-1-wse@tuxedocomputers.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update error handling in power domain init and exit handlers, as existing handling
-may cause issues in device remove function.
-Use appropriate pm core api for power domain get and sync to avoid redundant code.
+Following a suggestion by Hans de Goede, I reworked the quirk tables in the
+i8042 driver. Now all quirks only use a single table. This makes quirks
+easier to search by device and reduces code line count and memory usage.
 
-Fixes: 9e3d83c52844 ("ASoC: codecs: Add power domains support in digital macro codecs")
+The frist patch is minor housekeeping new to this 4th revision
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- sound/soc/codecs/lpass-macro-common.c | 35 +++++++++++++++++++----------------
- 1 file changed, 19 insertions(+), 16 deletions(-)
+The 2nd patch merges the tables together.
 
-diff --git a/sound/soc/codecs/lpass-macro-common.c b/sound/soc/codecs/lpass-macro-common.c
-index 6cede75..3c661fd 100644
---- a/sound/soc/codecs/lpass-macro-common.c
-+++ b/sound/soc/codecs/lpass-macro-common.c
-@@ -24,42 +24,45 @@ struct lpass_macro *lpass_macro_pds_init(struct device *dev)
- 		return ERR_PTR(-ENOMEM);
- 
- 	l_pds->macro_pd = dev_pm_domain_attach_by_name(dev, "macro");
--	if (IS_ERR_OR_NULL(l_pds->macro_pd))
--		return NULL;
--
--	ret = pm_runtime_get_sync(l_pds->macro_pd);
--	if (ret < 0) {
--		pm_runtime_put_noidle(l_pds->macro_pd);
-+	if (IS_ERR_OR_NULL(l_pds->macro_pd)) {
-+		ret = PTR_ERR(l_pds->macro_pd);
- 		goto macro_err;
- 	}
- 
-+	ret = pm_runtime_resume_and_get(l_pds->macro_pd);
-+	if (ret < 0)
-+		goto macro_sync_err;
-+
- 	l_pds->dcodec_pd = dev_pm_domain_attach_by_name(dev, "dcodec");
--	if (IS_ERR_OR_NULL(l_pds->dcodec_pd))
-+	if (IS_ERR_OR_NULL(l_pds->dcodec_pd)) {
-+		ret = PTR_ERR(l_pds->dcodec_pd);
- 		goto dcodec_err;
-+	}
- 
--	ret = pm_runtime_get_sync(l_pds->dcodec_pd);
--	if (ret < 0) {
--		pm_runtime_put_noidle(l_pds->dcodec_pd);
-+	ret = pm_runtime_resume_and_get(l_pds->dcodec_pd);
-+	if (ret < 0)
- 		goto dcodec_sync_err;
--	}
- 	return l_pds;
- 
- dcodec_sync_err:
- 	dev_pm_domain_detach(l_pds->dcodec_pd, false);
- dcodec_err:
- 	pm_runtime_put(l_pds->macro_pd);
--macro_err:
-+macro_sync_err:
- 	dev_pm_domain_detach(l_pds->macro_pd, false);
-+macro_err:
- 	return ERR_PTR(ret);
- }
- EXPORT_SYMBOL_GPL(lpass_macro_pds_init);
- 
- void lpass_macro_pds_exit(struct lpass_macro *pds)
- {
--	pm_runtime_put(pds->macro_pd);
--	dev_pm_domain_detach(pds->macro_pd, false);
--	pm_runtime_put(pds->dcodec_pd);
--	dev_pm_domain_detach(pds->dcodec_pd, false);
-+	if (pds) {
-+		pm_runtime_put(pds->macro_pd);
-+		dev_pm_domain_detach(pds->macro_pd, false);
-+		pm_runtime_put(pds->dcodec_pd);
-+		dev_pm_domain_detach(pds->dcodec_pd, false);
-+	}
- }
- EXPORT_SYMBOL_GPL(lpass_macro_pds_exit);
- 
--- 
-2.7.4
+The 3rd patch add optional debug output to see which quirks get applied.
+
+The 4th patch adds a list of Clevo devices that need multiple quirks.
+With the reworked table they don't need to be inserted multiple times now,
+which was required in v1 and v2 of this patch.
+
+I also included the extra quirk for the Clevo NS7xMU, which was a separate
+patch before.
+
+The added Clevo devices are now only identified by their board name as this
+is the only somewhat reliable string that might not be changed by resellers.
+
 
