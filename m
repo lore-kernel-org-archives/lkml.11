@@ -2,64 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5DAFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:23:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7AEAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:23:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239540AbiCVRYn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 13:24:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40562 "EHLO
+        id S239552AbiCVRYq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 13:24:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239534AbiCVRYj (ORCPT
+        with ESMTP id S239525AbiCVRYk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 13:24:39 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF292289;
-        Tue, 22 Mar 2022 10:23:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=DqNqEclD4N3mlsM6SsC6M7YOYDs+yhCj0iuv2SDtItw=; b=Ix7DcVJABa3F9SOEi7SEcU8aCd
-        oNNPI0Lr6w4+vjGOCe/J8EbkMJFodcyJ9kE3iNYh9cGRS1JAF0P96xH3RE1Gken/ZB9bcC2rUAhl6
-        odZ47uyPZ//taSibqkJxdmpc8tH3kFfwzp2Qh7YEiezEPaM891fdRKhRTVTIFBxPXPWKDkPAFmNf9
-        iSrolrRRn6nT9DQJXioflA2qof3PMHEnnlVoEU3O+HZS2Wg6QmlH1jXUcB/0WWc4RpwE9wNof/VyG
-        wQ3J2zszPQ5kFBcB5lZ3cyzoAthzy38fIDR/VAwU8fIA1PMX2MKoLO+Offs/Wu3jPYSeY+o4CQuit
-        teGWv+3g==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nWiDp-00BiOb-TU; Tue, 22 Mar 2022 17:23:05 +0000
-Date:   Tue, 22 Mar 2022 10:23:05 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Aaron Tomlin <atomlin@redhat.com>
-Cc:     christophe.leroy@csgroup.eu, cl@linux.com, mbenes@suse.cz,
-        akpm@linux-foundation.org, jeyu@kernel.org,
-        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        void@manifault.com, atomlin@atomlin.com, allen.lkml@gmail.com,
-        joe@perches.com, msuchanek@suse.de, oleksandr@natalenko.name,
-        jason.wessel@windriver.com, pmladek@suse.com,
-        daniel.thompson@linaro.org, hch@infradead.org
-Subject: Re: [PATCH v12 00/14] module: core code clean up
-Message-ID: <YjoF+ZoOb//gL2N5@bombadil.infradead.org>
-References: <20220322140344.556474-1-atomlin@redhat.com>
+        Tue, 22 Mar 2022 13:24:40 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9302697
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:23:11 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id h7so13500881lfl.2
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:23:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UI6IdkHO1Ce++v4SaLpwOnJOwU7d+FJPmUdI5pUTRyE=;
+        b=ODOcxjgtnTokJhq+iwqHbWCzeAZBV5BHLUnl+SfPcnQbCPUA32VYdzSgQPu+R0V5Oc
+         LOX36yzr/Ok6oTqeCrrsPc9enhp/AEQ4fLBbhY9IM+kEdjwZ0kheWb9v+kvXcu2eaHu4
+         49yhuMftUCepZufEyK9CKXp+4gagEX4g0EloY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UI6IdkHO1Ce++v4SaLpwOnJOwU7d+FJPmUdI5pUTRyE=;
+        b=13TKir04ncyzAFiB/5JH8x7JrVxnXlnBJKEq/Eee+TobXz5hjKPy1uXQHMBGC64N/R
+         v2N7w9+gXW6WJNlsAijoHJBEt26MvYD7Qga2Fv9GMKxlpIn77k8aCb9Rrj3xvaNv8uOZ
+         faJz/pLCk9+FsfNIhvqeV+9pgP7UKvOM83wSFQKzHiAtQZq/m8zPkWffl93GmWft4t7d
+         A5Z0MZj0MagBZjU+9u2T61+XIxhxniqddbQGl3eExOVsnuUAhwzWa8kFHzydEuHVxiFB
+         nSeR9KTcgf0nB5IN8xQ/7VwcUckZdCEx5inASSXZqxzmtM8k7Yake4Xi3vupac5txjla
+         1oEA==
+X-Gm-Message-State: AOAM533Iq9gpIJLRAJo/UxTUTQubiLN1biKE0iMiNXJNclgaVpYGnwsN
+        Foe3OFPEOHTwVbMhcwP/61XED+9cD2ecjoEAOQQ=
+X-Google-Smtp-Source: ABdhPJyfPdnQcs25C0axXJ91+8HJ5kK5FxxhFnErxXwz19m+pvfeIeiKO473IJFUlJttHa+SpSYESA==
+X-Received: by 2002:a05:6512:3c96:b0:44a:3c85:ddb0 with SMTP id h22-20020a0565123c9600b0044a3c85ddb0mr2584996lfv.457.1647969788350;
+        Tue, 22 Mar 2022 10:23:08 -0700 (PDT)
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com. [209.85.208.182])
+        by smtp.gmail.com with ESMTPSA id 11-20020a2e154b000000b0024967cd674esm2117503ljv.35.2022.03.22.10.23.07
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Mar 2022 10:23:07 -0700 (PDT)
+Received: by mail-lj1-f182.google.com with SMTP id h11so24915698ljb.2
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:23:07 -0700 (PDT)
+X-Received: by 2002:a2e:9b10:0:b0:247:f28c:ffd3 with SMTP id
+ u16-20020a2e9b10000000b00247f28cffd3mr19288283lji.152.1647969787311; Tue, 22
+ Mar 2022 10:23:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220322140344.556474-1-atomlin@redhat.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+References: <YjjihIZuvZpUjaSs@google.com>
+In-Reply-To: <YjjihIZuvZpUjaSs@google.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 22 Mar 2022 10:22:50 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgsmvoJFKFWxQ2orEVUOWH1agk9iUNZ=-DFh5OXZL=Ldw@mail.gmail.com>
+Message-ID: <CAHk-=wgsmvoJFKFWxQ2orEVUOWH1agk9iUNZ=-DFh5OXZL=Ldw@mail.gmail.com>
+Subject: Re: [GIT PULL] f2fs for 5.18
+To:     Jaegeuk Kim <jaegeuk@kernel.org>, Waiman Long <longman@redhat.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux F2FS Dev Mailing List 
+        <linux-f2fs-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 02:03:30PM +0000, Aaron Tomlin wrote:
-> Hi Luis,
-> 
-> As per your suggestion [1], this is an attempt to refactor and split
-> optional code out of core module support code into separate components.
-> This version is based on Linus' commit b47d5a4f6b8d ("Merge tag
-> 'audit-pr-20220321' of
-> git://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/audit").
-> 
-> No changes in this iteration. Each patch has the same In-Reply-To.
+On Mon, Mar 21, 2022 at 1:39 PM Jaegeuk Kim <jaegeuk@kernel.org> wrote:
+>
+> In this cycle, f2fs has some performance improvements for Android workloads such
+> as using read-unfair rwsems [...]
 
-Queued on to modules-testing, thanks!
+I've pulled this, but that read-unfair rwsem code looks incredibly
+dodgy. Doing your own locking is always a bad sign, and it ahs
+traditionally come back to bite us pretty much every time. At least it
+uses real lock primitives, just in a really odd way.
 
-  Luis
+The whole notion of making an rwsem unfair to readers sounds really
+really odd.  I mean, the whole and only _point_ of an rwsem is to
+allow concurrent readers, and traditionally if it's unfair it's unfair
+to _writers_ because that tends to be better for throughput (but
+unfairness can cause horrible latency).
+
+So it smells like there's something bad going on in f2fs.
+
+That said, I'm adding Waiman to the cc here in case he would have
+ideas at least for a cleaner interface. Our rw_semaphores are
+explicitly trying to be fair, because unfairness (the other way) was
+such a big problem.
+
+I'm wondering it the optimistic read lock stealing is bothering f2fs?
+
+               Linus
