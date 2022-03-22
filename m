@@ -2,153 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4428C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 10:42:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF4BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 10:43:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233277AbiCVKoC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 06:44:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39418 "EHLO
+        id S232203AbiCVKo2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 06:44:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233267AbiCVKn7 (ORCPT
+        with ESMTP id S233308AbiCVKoP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 06:43:59 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6CD81192
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 03:42:26 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id j13-20020a05600c1c0d00b0038c8f94aac2so1483809wms.3
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 03:42:25 -0700 (PDT)
+        Tue, 22 Mar 2022 06:44:15 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CFE281491;
+        Tue, 22 Mar 2022 03:42:46 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id g19so17790331pfc.9;
+        Tue, 22 Mar 2022 03:42:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=DFfOJE9o2HqAJOSqBaJFQFfutWgZMKV4kI/WYj73AZY=;
-        b=WkdbAVUeg++bdea+vhZthWfIKaO5ibIym7B19DfJlss0ygAzE8WtcxGgk3Rq9sfFed
-         UwgqLMLZKc6Y5I+J0KyeK+hsrns5AZtsO4FdBKxgXLtHgiGpPPS6eYt4h5NuD+eqzrs8
-         RLLj0Gz4hLS8zETFMySV+vWfhFXY5tlf1zSLiPqTs5B62TnVhn+jFjDyu77AyJ6j/UaZ
-         5xMfZNuKmut2DhAcvKoRWuqv6jjpfmj9nmbrHqpIc/4/So2tfdOZbdQZNfONwnZPj4hC
-         vIyxAzVxXxI1zAMtF4rg90j5QD4xanY1EHUcO/HsV4bsTH4VQTWmnFs6nz4SUmxImV5Q
-         nsgA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=9Gttik6DAPko7SlbVcNht0UxM+4SmfM9425wk43Thfg=;
+        b=LxQ1BOpl+Ecu1cULmapUOe6dnw1b0DA2zJ9x0YJFVjFo93B3HoiXw0xIr3DeYOSVh0
+         FMMwgkGhRb1FhjzhGjn6TKSNq2IdNzU182+p4f0HC1M0Ptp3SrEAU6dOkii1jWW+i6Cp
+         oRz9CWjcpMwIrnqmWs0M4N/VqDLI6gOhxoCjpk5JmkL9ukevRaTd2P2qV6ls8QPTTFuA
+         CBrz0bl7s6fmnDuYX43M8ETljAkVmwiUkvVNufzPKALVbJ8WR75L+RUHLOUQyD+Cvwn2
+         N9hbMDSRA9fBf1bu6fK+N4IAix46Ngb3hFdxbq6wtxNNfulxtmhg41JmsK6oV834fQ43
+         SlHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=DFfOJE9o2HqAJOSqBaJFQFfutWgZMKV4kI/WYj73AZY=;
-        b=CvdLoBRrw8D9n3eyZKHWy3SfFSPS1qrMTQsseHJlzXvkUwiD26kyDfqQ6FP45TVV5K
-         bUuslvjPacR7JueSw2ujnMucYgRyRB7ZFWinVHujPsSK4PyzZZokvk8OOP5js04CfFDd
-         aokwgER6+U0zlhRVcSstV5KrOry56Bt02/feY1+hqHV5LCltd097RwTWdoj9ruRsZQdy
-         VB4+RZbqqdjKLBsArSXz9tkaha9NNN819ArIbTqYjNRN68U6M9/SeqP2NB91lXZiC4sE
-         0bXpE2gOwZDZ1FtrwViYbI9gVU1BvvEEP7TnLRMgmFjVdxf81QWgp0UQj5Yz7VpZoWaC
-         zdpA==
-X-Gm-Message-State: AOAM531uxpKszMipvMSf/9ZI+d3d0z8gBV+bo+KxbR65gHN6JYvO1GoE
-        DVsbtyckl/x7OT+5pGlbH2U=
-X-Google-Smtp-Source: ABdhPJx81q0d4bF09rUxEJOf+ippZhBk0x9Q/jaLlDzPBAcA10A2VFYKheCupIeUBtiYMxr654a3Ww==
-X-Received: by 2002:adf:db4b:0:b0:203:e76f:fc45 with SMTP id f11-20020adfdb4b000000b00203e76ffc45mr20818549wrj.549.1647945744429;
-        Tue, 22 Mar 2022 03:42:24 -0700 (PDT)
-Received: from leap.localnet (host-79-37-100-169.retail.telecomitalia.it. [79.37.100.169])
-        by smtp.gmail.com with ESMTPSA id c12-20020a05600c0a4c00b00381141f4967sm1903414wmq.35.2022.03.22.03.42.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Mar 2022 03:42:23 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Sathish Kumar <skumark1902@gmail.com>
-Cc:     Larry.Finger@lwfinger.net, florian.c.schilhabel@googlemail.com,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] staging: rtl8712: Fix CamelCase warnings
-Date:   Tue, 22 Mar 2022 11:42:21 +0100
-Message-ID: <1786742.atdPhlSkOF@leap>
-In-Reply-To: <3a85ae64-00c1-6483-f1d7-c12abdd3ff3a@gmail.com>
-References: <20220318101440.13887-1-skumark1902@gmail.com> <YjRswrHu0JUm9331@kroah.com> <3a85ae64-00c1-6483-f1d7-c12abdd3ff3a@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="UTF-8"
+         :references;
+        bh=9Gttik6DAPko7SlbVcNht0UxM+4SmfM9425wk43Thfg=;
+        b=VUlxmCaXY/6Ibk0oJXCUO5e4Np/Du+o/duen9JiO6DwCm/GMQXIblbbiMmWRJnn6pX
+         M8szs0H6TESWnzV9X/NlrKBEjttThp3/37i7u2BqXdmlahkY1HbP+ggSVKE9BbjsHMwh
+         tNfjc/SffXg1PJT+7A9Hkbva6SINxNGk9TZfdW7pq+XkE24gqmMfvlkV20+jZm2bVGkN
+         PHREMk3SB03QLIE1H3kJnWcH77b9C7xBAnUh+r5BEjmEHTTIuAzXnRxSG7IzvrsVnelM
+         R8+OefHfTk4BlpW1v1yjL1U1PxyvWN0rDapyjLestqAQgzzCPi+izdsKN3NB6vT3ROjU
+         L4IQ==
+X-Gm-Message-State: AOAM530PcqbIShjnYWU5BNCWrC7MlfvLLxryv6YbN/WQHxQf6YtlSqzp
+        c7mKLSIMu0dTYxI/76B/BrM=
+X-Google-Smtp-Source: ABdhPJwoaValgjhqyTSexjYCmFYTLl7A1kx7i7LcQssrohXyaQVDVBUpnScXRKJlnW1aHHWbZUW0BQ==
+X-Received: by 2002:a05:6a00:a0c:b0:4f6:661e:8dda with SMTP id p12-20020a056a000a0c00b004f6661e8ddamr28529112pfh.66.1647945765759;
+        Tue, 22 Mar 2022 03:42:45 -0700 (PDT)
+Received: from scdiu3.sunplus.com ([113.196.136.192])
+        by smtp.googlemail.com with ESMTPSA id r26-20020a63a01a000000b00385fe08c264sm78113pge.1.2022.03.22.03.42.43
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 22 Mar 2022 03:42:45 -0700 (PDT)
+From:   Hammer Hsieh <hammerh0314@gmail.com>
+To:     thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
+        lee.jones@linaro.org, robh+dt@kernel.org,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     wells.lu@sunplus.com, hammer.hsieh@sunplus.com,
+        Hammer Hsieh <hammerh0314@gmail.com>
+Subject: [PATCH v4 1/2] dt-bindings: pwm: Add bindings doc for Sunplus SoC SP7021 PWM Driver
+Date:   Tue, 22 Mar 2022 18:43:00 +0800
+Message-Id: <1647945781-10191-2-git-send-email-hammerh0314@gmail.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1647945781-10191-1-git-send-email-hammerh0314@gmail.com>
+References: <1647945781-10191-1-git-send-email-hammerh0314@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On marted=C3=AC 22 marzo 2022 05:30:29 CET Sathish Kumar wrote:
-> On 18/03/22 4:58 pm, Greg KH wrote:
-> > On Fri, Mar 18, 2022 at 03:44:40PM +0530, Sathish Kumar wrote:
-> >> This patch fixes the checkpatch.pl warnings like:
-> >> CHECK: Avoid CamelCase: <blnEnableRxFF0Filter>
-> >> +   u8 blnEnableRxFF0Filter;
-> >>
-> >> Signed-off-by: Sathish Kumar <skumark1902@gmail.com>
-> >> ---
-> >> Changes in v2:
-> >>      - Remove the "bln" prefix
-> >> ---
-> >>   drivers/staging/rtl8712/drv_types.h   | 2 +-
-> >>   drivers/staging/rtl8712/rtl871x_cmd.c | 2 +-
-> >>   drivers/staging/rtl8712/xmit_linux.c  | 4 ++--
-> >>   3 files changed, 4 insertions(+), 4 deletions(-)
-> >>
-> >> [...]
-> >>
-> >>   	do {
-> >>   		msleep(100);
-> >> -	} while (adapter->blnEnableRxFF0Filter =3D=3D 1);
-> >> +	} while (adapter->enable_rx_ff0_filter =3D=3D 1);
-> > Ah, that's funny.  It's amazing it works at all and that the compiler
-> > doesn't optimize this away.  This isn't a good pattern to use in kernel
-> Do you mean the following code is not a good pattern in kernel?
-> do {
-> msleep();
-> } while(condition);
+Add bindings doc for Sunplus SoC SP7021 PWM Driver
 
-Exactly, this is not a pattern that works as you expect :)
+Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+Signed-off-by: Hammer Hsieh <hammerh0314@gmail.com>
+---
+Changes in v4:
+ - no change
 
-I was waiting for Greg to detail something more about this subject but,=20
-since it looks like he has no time yet to respond, I'll try to interpret=20
-his words.
+ .../bindings/pwm/sunplus,sp7021-pwm.yaml           | 42 ++++++++++++++++++++++
+ MAINTAINERS                                        |  5 +++
+ 2 files changed, 47 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/sunplus,sp7021-pwm.yaml
 
-(@Greg, please forgive me if I saying something different from what you
-intended to convey :)).
-
-The reason why this pattern does not work as expected is too long to be
-explained here. However, I think that Greg is suggesting to you to research
-and use what are called "Condition variables".
-
-Take some time to research and understand what the Linuc kernel uses for
-waiting for completion or state changes: struct completion,=20
-wait_for_completion(), complete(), and others.
-
-Another related mechanism are the Linux kernel "Wait Queues". Do some=20
-research and understand how to use wait_event{,_interruptible,timeout}=20
-and wake_up{,all,interruptible,interruptible_all}.
-
-If I recall correctly you may find one or more of my own patches to
-r8188eu where I use those API (git-log is your friend).
-
-I hope that all the above will be sufficient to start with.
-
-Again, Greg please correct my words if I'm misinterpreting what you
-requested to Sathish.
-
-Thanks,
-
-=46abio M. De Francesco
-
-> > I know it's not caused by your change here, but perhaps you might
-> > want to fix this up to work properly?
-> >
-> > thanks,
-> >
-> > greg k-h
->=20
-> Do i need to replace the above code with some other mechanism?
->=20
-> If yes, please let me know which mechanism i should use? Or what should=20
-> I do here?
->=20
-> Note : I am new to Linux kernel development and looking forward to learn=
-=20
-> and contribute.
->=20
-> Thanks,
-> Sathish
->=20
->=20
-
-
-
+diff --git a/Documentation/devicetree/bindings/pwm/sunplus,sp7021-pwm.yaml b/Documentation/devicetree/bindings/pwm/sunplus,sp7021-pwm.yaml
+new file mode 100644
+index 0000000..d4fc9e8
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/sunplus,sp7021-pwm.yaml
+@@ -0,0 +1,42 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) Sunplus Co., Ltd. 2021
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/sunplus,sp7021-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Sunplus SoC SP7021 PWM Controller
++
++maintainers:
++  - Hammer Hsieh <hammerh0314@gmail.com>
++
++allOf:
++  - $ref: pwm.yaml#
++
++properties:
++  compatible:
++    const: sunplus,sp7021-pwm
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  '#pwm-cells':
++    const: 2
++
++unevaluatedProperties: false
++
++required:
++  - reg
++  - clocks
++
++examples:
++  - |
++    pwm: pwm@9c007a00 {
++      compatible = "sunplus,sp7021-pwm";
++      reg = <0x9c007a00 0x80>;
++      clocks = <&clkc 0xa2>;
++      #pwm-cells = <2>;
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2524b75..e1cb7eb 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -18531,6 +18531,11 @@ L:	netdev@vger.kernel.org
+ S:	Maintained
+ F:	drivers/net/ethernet/dlink/sundance.c
+ 
++SUNPLUS PWM DRIVER
++M:	Hammer Hsieh <hammerh0314@gmail.com>
++S:	Maintained
++F:	Documentation/devicetree/bindings/pwm/sunplus,sp7021-pwm.yaml
++
+ SUNPLUS RTC DRIVER
+ M:	Vincent Shih <vincent.sunplus@gmail.com>
+ L:	linux-rtc@vger.kernel.org
+-- 
+2.7.4
 
