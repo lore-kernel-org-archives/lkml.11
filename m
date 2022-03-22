@@ -2,100 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AD5BC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 14:50:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1815C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 14:50:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235045AbiCVOvZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 10:51:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48762 "EHLO
+        id S235226AbiCVOva (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 10:51:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232474AbiCVOvW (ORCPT
+        with ESMTP id S235162AbiCVOv2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 10:51:22 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3B477DA81
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 07:49:54 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id h1so21948393edj.1
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 07:49:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=prkQt9RpM+7l5K2UvqCUpCZSH7p5IrHg8A49ArllTqM=;
-        b=lIeumwJyNYL0NOt/DuMtMmgKBNMr82iwJ8IAhqxLzwR660AQywfKwy1ayNtVTWFoVQ
-         afWCOxIcf24q2ksOyLXVCbHE32/V1la3704hf92xopAAWre7Q/F/0yK8Y7DK8oxwSVTp
-         Wmc6te0Q9bZpWlgzuhr0qWcTEkNrZcBnLhY0V+fOH0PqxKOaQ8HS3jZ9x36IBiYoW0dL
-         q2gu8Mcw6TJpn4F5A4HQ7L7F2ZWaFrKRp0Vhvv/CuFdxfIQQUTHNEUfzb94aYD3aoHoR
-         ik0zDQ5uItlFLcF8HW4nYP6DMbnCJJ0cAh+ag06+53WbeiZgzEaPSQ6EaEhjYrwn/rHA
-         IkwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=prkQt9RpM+7l5K2UvqCUpCZSH7p5IrHg8A49ArllTqM=;
-        b=yHlatnfbXFBst4H8bi25g6I5uAdoscQe6M9R3eQ41Di5qojwYX5nw416b8Hp5wJ1OL
-         rR4v2lm26TABpstqu+wxgMnl1W/1iaV+o6sMDRWc4E7vpq0pW/jybgQk/SLOMU9Yatlm
-         ZkO3P/6035F/69wH+TtZucLJNNjrjCq5Y8wutm83dHVHzN0LFlw3woHHR7jrHrosHNUV
-         mP1dSG/NX0wx5lCr+w3W7qUNflAgbbIrNqHbWBcYxon0pbYQzZkgieHWw9OnLO2PAWIE
-         clKAcDZIPPukR7cuq+nagYQ5cItRijNYrRV4BFnDmpNBxD/0uMIi8EyWudC4TssumhXK
-         /4VA==
-X-Gm-Message-State: AOAM531j9skSaJAI/jtGDZ2t/oXQna5MRhMCEYCR1hnbpouKp9CRk9wM
-        Jhd54RbEkNoGK5zsvqIOg2sroGPZ6fm0uNiXBXEMHg==
-X-Google-Smtp-Source: ABdhPJySdp9qGr1NlLDPTr1KX1DOtrvc698fyZvizwq73G1HriVNPck+onkZwHbLqv6fbdrxfxCdUEGTrdCPpMlhpas=
-X-Received: by 2002:a50:c00f:0:b0:418:d6b8:7f9a with SMTP id
- r15-20020a50c00f000000b00418d6b87f9amr29454855edb.141.1647960593251; Tue, 22
- Mar 2022 07:49:53 -0700 (PDT)
+        Tue, 22 Mar 2022 10:51:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EB658565D
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 07:50:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C27E9616D7
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 14:49:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD113C340EC;
+        Tue, 22 Mar 2022 14:49:57 +0000 (UTC)
+Date:   Tue, 22 Mar 2022 10:49:56 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     mark.rutland@arm.com, mingo@redhat.com, tglx@linutronix.de,
+        catalin.marinas@arm.com, will@kernel.org,
+        dave.hansen@linux.intel.com, broonie@kernel.org, x86@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        songmuchun@bytedance.com, qirui.001@bytedance.com
+Subject: Re: [External] Re: [PATCH v3 3/3] arm64/ftrace: Make function graph
+ use ftrace directly
+Message-ID: <20220322104956.42203163@gandalf.local.home>
+In-Reply-To: <7807fc23-c6c9-b6a9-62ef-e34e8beefdea@bytedance.com>
+References: <20220224093251.49971-1-zhouchengming@bytedance.com>
+        <20220224093251.49971-3-zhouchengming@bytedance.com>
+        <c8b7508b-ce2a-c7dc-92c4-ca5f17992844@bytedance.com>
+        <20220322094100.73dc3ad0@gandalf.local.home>
+        <7807fc23-c6c9-b6a9-62ef-e34e8beefdea@bytedance.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220310150905.1.Ie0a005d7a763d501e03b7abe8ee968ca99d23282@changeid>
- <CAHp75Vfbs6sPsrjwxNWLZQu=pEoar2K5sY=fX9a7KkOe=mwsZw@mail.gmail.com>
-In-Reply-To: <CAHp75Vfbs6sPsrjwxNWLZQu=pEoar2K5sY=fX9a7KkOe=mwsZw@mail.gmail.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Tue, 22 Mar 2022 15:49:42 +0100
-Message-ID: <CAMRc=Mc_bw40uY68jcPYR-Lwe-qLcxmQeZO47WrexZtSiE_M5Q@mail.gmail.com>
-Subject: Re: [PATCH] gpio: Drop CONFIG_DEBUG_GPIO
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Brian Norris <briannorris@chromium.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Jianqun Xu <jay.xu@rock-chips.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 3:38 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> On Fri, Mar 11, 2022 at 4:55 AM Brian Norris <briannorris@chromium.org> wrote:
->
-> ...
->
-> > Description: it says nothing about enabling extra printk()s. But -DDEBUG
-> > does just that; it turns on every dev_dbg()/pr_debug() that would
-> > otherwise be silent.
->
-> Which is what some and I are using a lot during development.
->
+On Tue, 22 Mar 2022 22:14:11 +0800
+Chengming Zhou <zhouchengming@bytedance.com> wrote:
 
-AFAIK this: https://www.kernel.org/doc/local/pr_debug.txt is the right
-way to do it?
+> > You deleted ftrace_graph_caller above from entry-ftrace.S, if we can get
+> > here with some options, wouldn't that break the build?  
+> 
+> The above ftrace_graph_caller deleted is only for CONFIG_DYNAMIC_FTRACE_WITH_REGS,
+> and I tried using a low gcc version that doesn't select HAVE_DYNAMIC_FTRACE_WITH_REGS,
+> it can build success.
 
-https://www.kernel.org/doc/local/pr_debug.txt
+OK, I didn't look too deep into this.
 
-This doesn't mention adding Kconfig options just to enable debug messages.
+I don't have an issue with this patch, but it needs to go through the arm64
+tree.
 
-> ...
->
-> > -ccflags-$(CONFIG_DEBUG_GPIO)   += -DDEBUG
-> > -
->
-> NAK to this change.
->
-> I'm not against enabling might_sleep() unconditionally.
->
-
-These are already controlled by CONFIG_DEBUG_ATOMIC_SLEEP, no? Or
-maybe I can't parse that double negation.
-
-Bart
+-- Steve
