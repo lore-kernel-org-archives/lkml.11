@@ -2,100 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CED9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 03:27:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7115C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 03:28:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236142AbiCVD3U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 23:29:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35700 "EHLO
+        id S236115AbiCVDaC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 23:30:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236049AbiCVD3A (ORCPT
+        with ESMTP id S236049AbiCVD3w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 23:29:00 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 227A3E9CB5;
-        Mon, 21 Mar 2022 20:27:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1647919654; x=1679455654;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=NeQgRFIMFaBb8gkIXKoWb96J7lg5ULFzPB022MVbE2c=;
-  b=U6XExGjIsHZlS066TSSmvIdxLvai95gIMwR/c37QCmmrYe5CxL5zi4kg
-   Ld39VL703WxBvQt/UvVF4I0584Spi4jPxgRS0PfBXWCWVyPyfB0z4N+Hl
-   JpidBfu/QepymKf0X9Uw1XF49Lm8JDEP8LGnFd5ZO8No0virRnNSneQQD
-   o=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 21 Mar 2022 20:27:33 -0700
-X-QCInternal: smtphost
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 21 Mar 2022 20:27:31 -0700
-X-QCInternal: smtphost
-Received: from vpolimer-linux.qualcomm.com ([10.204.67.235])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 22 Mar 2022 08:57:14 +0530
-Received: by vpolimer-linux.qualcomm.com (Postfix, from userid 463814)
-        id 5B74B542F; Tue, 22 Mar 2022 08:57:13 +0530 (IST)
-From:   Vinod Polimera <quic_vpolimer@quicinc.com>
-To:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
-Cc:     Vinod Polimera <quic_vpolimer@quicinc.com>,
-        linux-kernel@vger.kernel.org, robdclark@gmail.com,
-        dmitry.baryshkov@linaro.org, dianders@chromium.org,
-        quic_kalyant@quicinc.com
-Subject: [PATCH v7 3/5] arm64: dts: qcom: sm7180: remove assigned-clock-rate property for mdp clk
-Date:   Tue, 22 Mar 2022 08:57:09 +0530
-Message-Id: <1647919631-14447-4-git-send-email-quic_vpolimer@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1647919631-14447-1-git-send-email-quic_vpolimer@quicinc.com>
-References: <1647919631-14447-1-git-send-email-quic_vpolimer@quicinc.com>
+        Mon, 21 Mar 2022 23:29:52 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E4E91557CC
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 20:28:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=PmzPsSEKYvhyhANMX4sguPg6Lgk0mR2MoyENFqhEmKw=; b=mk/1gfNMyD8Tbu45EN0gijuV2K
+        qk8T4dUfPkMENKDrupG+/GfXWOowOd0HTyBG4Uzy2UAf2hhyZZaEk1m1S3S3m8ff1OWwZTD2mMEiZ
+        3rZNLgp9BBSeikPTKE9xDu1GuQZamXSdnXVpF2THB275OapMj5NU66adFsU4V+zk0YvqKaoDP+7Gn
+        YSFRbLycxi0MKWykLCx9MqFildpP1A3+T+94FPEIgyCvBFw+CPA9olkXh+fiYocgV3f6gBwfd4lDL
+        DCIdRWFQGe0+ZGMr8GaY8hhWEKRo1HcgdOGkVNHktNOuCTFpI6LzLooO0AiCv3Idm5orpcv0e6DoF
+        dp9G6NcA==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nWVBs-00BDz7-I6; Tue, 22 Mar 2022 03:28:12 +0000
+Date:   Tue, 22 Mar 2022 03:28:12 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Yinan Zhang <zhangyinan2019@email.szu.edu.cn>
+Cc:     akpm@linux-foundation.org, vbabka@suse.cz,
+        william.kucharski@oracle.com, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, yejiajian2018@email.szu.edu.cn,
+        hanshenghong2019@email.szu.edu.cn, caoyixuan2019@email.szu.edu.cn,
+        zhaochongxi2019@email.szu.edu.cn, yuhongf@szu.edu.cn
+Subject: Re: [PATCH 1/2] mm/page_owner.c: introduce vmalloc allocator for
+ page_owner
+Message-ID: <YjlCTOrCUHnVxIqj@casper.infradead.org>
+References: <20220322032225.1402992-1-zhangyinan2019@email.szu.edu.cn>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220322032225.1402992-1-zhangyinan2019@email.szu.edu.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop the assigned clock rate property and vote on the mdp clock as per
-calculated value during the usecase.
+On Tue, Mar 22, 2022 at 11:22:24AM +0800, Yinan Zhang wrote:
+> An application's memory consumption is high and keeps increasing,
+> then it is suspected of having memory leak. There are several
+> commonly used memory allocators: slab, cma, vmalloc, etc. The memory
+> leak identification can be speed up if page information allocated
+> by an individual allocator are analyzed individually. This patch
+> introduce vmalloc allocator for page_owner.
 
-This patch is dependent on the patch ("drm/msm/disp/dpu1: set mdp clk
-to the maximum frequency in opp table during probe") [1].
-
-[1] https://lore.kernel.org/r/1647269217-14064-2-git-send-email-quic_vpolimer@quicinc.com/
-
-Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
----
- arch/arm64/boot/dts/qcom/sc7180.dtsi | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
-
-diff --git a/arch/arm64/boot/dts/qcom/sc7180.dtsi b/arch/arm64/boot/dts/qcom/sc7180.dtsi
-index e1c46b8..eaab746 100644
---- a/arch/arm64/boot/dts/qcom/sc7180.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7180.dtsi
-@@ -2900,9 +2900,6 @@
- 				 <&dispcc DISP_CC_MDSS_MDP_CLK>;
- 			clock-names = "iface", "ahb", "core";
- 
--			assigned-clocks = <&dispcc DISP_CC_MDSS_MDP_CLK>;
--			assigned-clock-rates = <300000000>;
--
- 			interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
- 			interrupt-controller;
- 			#interrupt-cells = <1>;
-@@ -2932,12 +2929,10 @@
- 					 <&dispcc DISP_CC_MDSS_VSYNC_CLK>;
- 				clock-names = "bus", "iface", "rot", "lut", "core",
- 					      "vsync";
--				assigned-clocks = <&dispcc DISP_CC_MDSS_MDP_CLK>,
--						  <&dispcc DISP_CC_MDSS_VSYNC_CLK>,
-+				assigned-clocks = <&dispcc DISP_CC_MDSS_VSYNC_CLK>,
- 						  <&dispcc DISP_CC_MDSS_ROT_CLK>,
- 						  <&dispcc DISP_CC_MDSS_AHB_CLK>;
--				assigned-clock-rates = <300000000>,
--						       <19200000>,
-+				assigned-clock-rates = <19200000>,
- 						       <19200000>,
- 						       <19200000>;
- 				operating-points-v2 = <&mdp_opp_table>;
--- 
-2.7.4
-
+Why is /proc/vmallocinfo not enough?
