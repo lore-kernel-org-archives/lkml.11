@@ -2,114 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12EB7C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 04:52:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2009C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 04:52:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236601AbiCVExf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 00:53:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55820 "EHLO
+        id S236615AbiCVExm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 00:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236545AbiCVExc (ORCPT
+        with ESMTP id S236560AbiCVExc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 22 Mar 2022 00:53:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E96BB188D;
-        Mon, 21 Mar 2022 21:52:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C177CB81B7D;
-        Tue, 22 Mar 2022 04:51:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72538C340EC;
-        Tue, 22 Mar 2022 04:51:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647924718;
-        bh=eKcLWgpHdf9XPGlZN+BHHdUf5YEZfdRlI78wdT/+Xg4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oUA2kdr5H79czLwPSKctVD/I+r/J0wt8ZbNJUSZPjKx2IF/9UfbirKRI+ZjTJWZla
-         5GsmxvxkkHqwZtibJx3CE16a/2dUP8zDcnFZIxNJrrrAtw9N+HH3cKntzbesgez7Wm
-         63O/bOiS8QaRh79TLD9lbgJYAhPXOud+bo4sLEjCOxz0hLHFFyZtSVL4Z/PAC1bkMF
-         6TQ05OTRVwdaT49VLHoqkXku7T8bZTohwq4E151IhzG0YYW/GUCbrlo09FeFJtgAXc
-         Li6rkKj/uQ77BgX+QOP+aaSxYQ3aDpSx4tg2uGHq+mjfogVu8tF90NAUTahOm4i/Gc
-         38lfIxP+tmOiw==
-Date:   Tue, 22 Mar 2022 13:51:51 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "H.J. Lu" <hjl.tools@gmail.com>,
-        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        linux-toolchains <linux-toolchains@vger.kernel.org>,
-        Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: linux-next: build warnings after merge of the tip tree
-Message-Id: <20220322135151.307e7d7c478d1263e0eef43e@kernel.org>
-In-Reply-To: <CAADnVQKg7GPVpg-22B2Ym5HFVoGaquoFZDEkRwTDgXzm+L8OOw@mail.gmail.com>
-References: <20220321140327.777f9554@canb.auug.org.au>
-        <Yjh11UjDZogc3foM@hirez.programming.kicks-ass.net>
-        <Yjh3xZuuY3QcZ1Bn@hirez.programming.kicks-ass.net>
-        <Yjh4xzSWtvR+vqst@hirez.programming.kicks-ass.net>
-        <YjiBbF+K4FKZyn6T@hirez.programming.kicks-ass.net>
-        <YjiZhRelDJeX4dfR@hirez.programming.kicks-ass.net>
-        <YjidpOZZJkF6aBTG@hirez.programming.kicks-ass.net>
-        <CAHk-=wigO=68WA8aMZnH9o8qRUJQbNJPERosvW82YuScrUTo7Q@mail.gmail.com>
-        <YjirfOJ2HQAnTrU4@hirez.programming.kicks-ass.net>
-        <CAHk-=wguO61ACXPSz=hmCxNTzqE=mNr_bWLv6GH5jCVZLBL=qw@mail.gmail.com>
-        <20220322090541.7d06c8cb@canb.auug.org.au>
-        <CAADnVQJnZpQjUv-dw7SU-WwTOn_tZ8xmy5ydRn=g_m-9UyS2kw@mail.gmail.com>
-        <20220322094526.436ca4f7@elm.ozlabs.ibm.com>
-        <CAADnVQKg7GPVpg-22B2Ym5HFVoGaquoFZDEkRwTDgXzm+L8OOw@mail.gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AE8682D2E;
+        Mon, 21 Mar 2022 21:52:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding:
+         in-reply-to:references;
+        bh=CKLX5KrV+QnDJKYWiBEwK8mRCIHVCAVHILurpqHNKKw=;
+        b=hsndZg/2r0oLfjULarb89O3MxgvkNBKYSmjBOWrapBeS7OxSFqroDRlRycQnUVpmJiXx15Iuayksq
+         OkOd+lLfsAyNB6kRyeWsMnSUEqAKzFfdx+KwC2x/LgZsu2WvEQABhDLpYI/xP4Fv/ibxLgpjPnS8hb
+         /6OF3NExr6OocOpRNtGvwlSvHJBAx0OkEbi5Yw/RJhdgsPiFfKZ7+CPKcPi2ghuwr4FrEuuCuGSYq9
+         Oy1kURWvNbLan2NJAxHVV1RiSE01A6uUE23OBc/xFHudyvlK1sjAElIG+EWb1KNhVNgbXIIrrFXrbB
+         icTMQ0Jp8xrtAOyDnAtTzi7+jAE4B5w==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.2.1410, Stamp: 3], Multi: [Enabled, t: (0.000012,0.007487)], BW: [Enabled, t: (0.000029,0.000002)], RTDA: [Enabled, t: (0.065288), Hit: No, Details: v2.28.0; Id: 15.52kaot.1funveveo.1sim; mclb], total: 0(700)
+X-Footer: bWV0cm90ZWsucnU=
+Received: from localhost.localdomain ([178.70.66.234])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Tue, 22 Mar 2022 07:51:45 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>, mdf@kernel.org,
+        hao.wu@intel.com, yilun.xu@intel.com, trix@redhat.com,
+        conor.dooley@microchip.com, robh+dt@kernel.org, system@metrotek.ru,
+        linux-kernel@vger.kernel.org, linux-fpga@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH v7 2/2] dt-bindings: fpga: add binding doc for microchip-spi fpga mgr
+Date:   Tue, 22 Mar 2022 07:32:19 +0300
+Message-Id: <20220322043219.23770-3-i.bornyakov@metrotek.ru>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220322043219.23770-1-i.bornyakov@metrotek.ru>
+References: <20220322043219.23770-1-i.bornyakov@metrotek.ru>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 21 Mar 2022 15:50:17 -0700
-Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+Add Device Tree Binding doc for Microchip Polarfire FPGA Manager using
+slave SPI to load .dat formatted bitstream image.
 
-> On Mon, Mar 21, 2022 at 3:46 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> >
-> > Hi Alexei,
-> >
-> > On Mon, 21 Mar 2022 15:12:05 -0700 Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > That makes little sense. It's not an unusual merge conflict.
-> > > Peter's endbr series conflict with Masami's fprobe.
-> > > Peter has a trivial patch that fixes objtool warning.
-> > > The question is how to land that patch.
-> > > I think the best is for Linus to apply it after bpf-next->net-next gets
-> > > merged.
-> >
-> > Peter has other concerns, please read the thread and consider them.
-> 
-> Masami is an expert in kprobe. He copy pasted a bit of kprobe logic
-> to make it into 'multi kprobe' (he calls it fprobe).
-> I believe he knows what he's doing.
-> Steven reviewed and tested that set.
-> We've tested it as well and don't have any correctness or api concerns.
+Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+---
+ .../fpga/microchip,mpf-spi-fpga-mgr.yaml      | 44 +++++++++++++++++++
+ 1 file changed, 44 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
 
-Sorry, that's my mistake to not Ccing to arch maintainers for the arch
-dependent patches. Let me update and send v13 for this fprobe series.
-
-Thank you,
-
+diff --git a/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
+new file mode 100644
+index 000000000000..15c4505334ac
+--- /dev/null
++++ b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
+@@ -0,0 +1,44 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/fpga/microchip,mpf-spi-fpga-mgr.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Microchip Polarfire FPGA manager.
++
++maintainers:
++  - Ivan Bornyakov <i.bornyakov@metrotek.ru>
++
++description:
++  Device Tree Bindings for Microchip Polarfire FPGA Manager using slave SPI to
++  load the bitstream in .dat format.
++
++properties:
++  compatible:
++    enum:
++      - microchip,mpf-spi-fpga-mgr
++
++  reg:
++    description: SPI chip select
++    maxItems: 1
++
++  spi-max-frequency: true
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    spi@2008000 {
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            fpga_mgr@0 {
++                    compatible = "microchip,mpf-spi-fpga-mgr";
++                    spi-max-frequency = <20000000>;
++                    reg = <0>;
++            };
++    };
 -- 
-Masami Hiramatsu <mhiramat@kernel.org>
+2.34.1
+
+
