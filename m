@@ -2,133 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2850CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:20:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21A6EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:22:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230398AbiCVIWD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 04:22:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35672 "EHLO
+        id S230419AbiCVIYE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 04:24:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229833AbiCVIV7 (ORCPT
+        with ESMTP id S229833AbiCVIX7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 04:21:59 -0400
-Received: from mail-vk1-xa29.google.com (mail-vk1-xa29.google.com [IPv6:2607:f8b0:4864:20::a29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 760125EDD3
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 01:20:32 -0700 (PDT)
-Received: by mail-vk1-xa29.google.com with SMTP id d129so3710346vkh.13
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 01:20:32 -0700 (PDT)
+        Tue, 22 Mar 2022 04:23:59 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2076.outbound.protection.outlook.com [40.107.237.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226EE5EDF8;
+        Tue, 22 Mar 2022 01:22:33 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ldy8qnI34ft5PBi94L5Zid5GoS08N231FE8gAho9cTl2UxOU2aoY/eLjVQOLO1Jq3+yljCsnZQcfHx+AySkoTZ5+pZgOAZnUqzUdZxYIt2O5eTeTkfiKnlcQLw8tzuGdPmeFX58Tnr/QDuUBnMtbN6fM0TsmYAUdhKRCFhocC6pxp9cIjg7jqRuGBM4dbjj4D0w1rXZ7Xq7wWiWbr4g08BWAz2CWCasIS9i/3O/MN60yN8jSaqryYqJ1JaDAZfUaoeJBBAJWyl5htv8hxhMRtocSVCzYR66fLnOsH1KRkfqB5ZuRutJY1okY3By78yZJF6bAqjrtlp8vkIkSdko2ZA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Ak2q+Yo2MKKkrgeLry6olHVen+gLKXxsh6LRiTLIbMg=;
+ b=NzEPk5+tu9FUlD6bsXCzbsVlEYjUb15ArFaekAXCnfNou+y9zPazRatnak6/YxcLHV5kC9ConLTbfm+r/lSGldh9SpnPqwMq/0LpRbJlY/UXdgdCXHXxUu6qXX/ObOv+RNNI9iKdK3aZfPacJ42u72tNGCYbJTtKTy6xhGtYfK7tAD0tnivKhLJqCNAKrhZMU5G5YrRIKQK27wJTeYMxnp+Tyw9bqqMgbBdPwBLVXkdJpwZVV6KbA/ED+wRXgm687eae55BUD1wOvCTpZ2SBXZUGWntJaCwJdML5N667XkgCdJvN22Hain2XVKontufCwOsdYju9eWTI5hQs3G5PAA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=kernel.org smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=42YXUZS4Bh5f7hZiKMs+uWT14p+nXPI0hRRdRy/jBrw=;
-        b=HIPCGJVN9RSH1xeF7DYptNWpIBgK5qTF6waBgSfWsR4iPSDHQ0R00bHPHJdDkN960d
-         K7G1Q/6J52SMtagmwRDP4lSrs52niH41e/LBaFclp7unH1AbDGZdOrOR+zGUpYmRtmC1
-         pilPjufkqcjV3hlOTs8zT2MSTqVXKiErKeWhpQ2QbTkZJZ28mm7wvOgo6ntWobN6L4Xt
-         sCxCFYNtSfTOHAaIo9ncr4syVy4JuVFSa2RJ8nhK7gVVtYjaVCIoeuZACTgnbtGzIUzC
-         PBeAJStLHBI7ryXcA/uBYCbzEht6PpalY/d3EFU6hDOzpvE+FTd2Mhft7LrwySgVuWT1
-         TTgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=42YXUZS4Bh5f7hZiKMs+uWT14p+nXPI0hRRdRy/jBrw=;
-        b=O+DE0BTgaFMg5q3HVt+2ruK1zhLuMRnpIifRsGDXzoxq25LU9Iaq3cA74/pNcnM8i0
-         jFI56uxeM0HDldXOkEJhDUIgTK8TmjPBrccd9dzvEsPrCo7MUzafQ4NYd+2GNgf4J/8w
-         xUpJyUPxG/zbhsSOxP2lX2JBxFBm+g6zCJOuvEp6smhL8mUxDAcCVp9tkcJ+ioOlRtbF
-         Pd2SlePrbck+1Q9xS9xdDjtMwgLQawx7mCuz/pCGXHVWmARhiFZc78/9RFoIDDf6VdJ+
-         p2ce8QmmujfnPX2bJRaoWFer0PdMf3cLr7mTERjTSyICs/pDpW6mF7X9cFL1V9uYqkKS
-         HcAA==
-X-Gm-Message-State: AOAM533fHJkbTj7eSS8OJ/GxZAA/icY4jtjW1FHokvHYXOKs7wsKUUOy
-        5k3BJl3rjej3XP+of9VtP/xUkQhddxdz6l7oiQwxVA==
-X-Google-Smtp-Source: ABdhPJyk9a1oX9F0PyYF9vK0N7xNfdbrYjqPWxhBwPh3TBqJeyDmyw2FybEi5s6bYuVOH4xB/QKDtj49PVeU9VdWwX4=
-X-Received: by 2002:a05:6122:2213:b0:31b:76c3:16df with SMTP id
- bb19-20020a056122221300b0031b76c316dfmr9732880vkb.31.1647937231477; Tue, 22
- Mar 2022 01:20:31 -0700 (PDT)
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ak2q+Yo2MKKkrgeLry6olHVen+gLKXxsh6LRiTLIbMg=;
+ b=iP6dN+J3yGCPkjUgrwzSIbdcl6VthXkjo5Ymlu6YFTaceMMe8gR5vmySXxCFt0SODp7RXvk1gtiIcHb6J+TPiP9irg6edsr8szs3sblhRs7mMVsk2jty5Gv+qW0N9SQ8tIytt+I47lmKPXQkS7e+VSgToa8Na80BzY+WxAjDwB8=
+Received: from SA9PR13CA0077.namprd13.prod.outlook.com (2603:10b6:806:23::22)
+ by DM5PR02MB2841.namprd02.prod.outlook.com (2603:10b6:3:108::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.15; Tue, 22 Mar
+ 2022 08:22:30 +0000
+Received: from SN1NAM02FT0029.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:806:23:cafe::29) by SA9PR13CA0077.outlook.office365.com
+ (2603:10b6:806:23::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.12 via Frontend
+ Transport; Tue, 22 Mar 2022 08:22:30 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ SN1NAM02FT0029.mail.protection.outlook.com (10.97.4.175) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5081.14 via Frontend Transport; Tue, 22 Mar 2022 08:22:30 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Tue, 22 Mar 2022 01:22:15 -0700
+Received: from smtp.xilinx.com (172.19.127.95) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Tue, 22 Mar 2022 01:22:15 -0700
+Envelope-to: git@xilinx.com,
+ mdf@kernel.org,
+ hao.wu@intel.com,
+ yilun.xu@intel.com,
+ trix@redhat.com,
+ linux-fpga@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org
+Received: from [10.140.6.60] (port=48200 helo=xhdnavam40.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <nava.manne@xilinx.com>)
+        id 1nWZmR-000Ei2-7J; Tue, 22 Mar 2022 01:22:15 -0700
+From:   Nava kishore Manne <nava.manne@xilinx.com>
+To:     <mdf@kernel.org>, <hao.wu@intel.com>, <yilun.xu@intel.com>,
+        <trix@redhat.com>, <michal.simek@xilinx.com>,
+        <linux-fpga@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <git@xilinx.com>
+CC:     Nava kishore Manne <nava.manne@xilinx.com>
+Subject: [PATCH v2 1/5] fpga: zynq: Fix incorrect variable type
+Date:   Tue, 22 Mar 2022 13:51:58 +0530
+Message-ID: <20220322082202.2007321-2-nava.manne@xilinx.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220322082202.2007321-1-nava.manne@xilinx.com>
+References: <20220322082202.2007321-1-nava.manne@xilinx.com>
 MIME-Version: 1.0
-References: <20220309021230.721028-1-yuzhao@google.com> <20220309021230.721028-11-yuzhao@google.com>
- <CAGsJ_4xqRGp1gV89+bAx5iA=AVwj2TA+No92UqLHFa0i14MBMQ@mail.gmail.com>
-In-Reply-To: <CAGsJ_4xqRGp1gV89+bAx5iA=AVwj2TA+No92UqLHFa0i14MBMQ@mail.gmail.com>
-From:   Yu Zhao <yuzhao@google.com>
-Date:   Tue, 22 Mar 2022 02:20:20 -0600
-Message-ID: <CAOUHufbP7kHquWiD3VsmD=veNFF2v_E9HWqdYSMbS1nPJic0Fg@mail.gmail.com>
-Subject: Re: [PATCH v9 10/14] mm: multi-gen LRU: kill switch
-To:     Barry Song <21cnbao@gmail.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        LAK <linux-arm-kernel@lists.infradead.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Kernel Page Reclaim v2 <page-reclaim@google.com>,
-        x86 <x86@kernel.org>, Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c202cb06-8f5b-4e36-5868-08da0bdd1b6a
+X-MS-TrafficTypeDiagnostic: DM5PR02MB2841:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR02MB2841D1D7338AEF2D2BF1E38DC2179@DM5PR02MB2841.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: MJweJw7Qalvbrvz4kUfuEI6MPz9KzD3OH7Uf3hZ6euQFxSVzbpDMg7OWaPsARULuXUPT1dCFnIix5FHf27NAhJfuyzteZv/QqGb49J4hEHzN8GljWeU6SUuNqc9Qw270gi3FYWAXQag79aqNpq00TEspjVznVIvozoeF98pJVHUIaGPWpe3NUI4YDCZGto44AYd7WOCpg220+s8IbrUprJj1u1ZjYSe0iOOa2Cht4mP+wQw0klD+Y5mEwNilMEbmqfffMIs/ZR35kFpeBdNxJEfZB4wO0UhMocAcH6TN/mLYSByt7HrFpBx05vfrozVgdhRh0io8LxmRs1GhZXCHXixk9iLKxesOmFP6dsyl/miS0psxYQfAUU/S2sKXB5ifdREjolc0VQXvLHeiJXbheaELRh4v8ge5IE4pMq3Jwz6KqtN0WYLOPCRn8R6ZbRs1zr1AkVNfw3x791dmtf9QyMczzJy3BcmHQD02iLgPaY2+5p6Ju4AeyJOTVIfGOhvfXuoE5BAklrNjbF4+gLMXSQU50Vl0u68uH+wvoAMAkgx3MrbxXfIFy4VwgaOd8bIg5Inos34SiMRdMGLOGmHYR+fErM/otsXh7EnsVjuloOI5VUZsoRMxQRsCHViCjrbKuxAITrb8pAdlSbMF49D35bEA2BWbdshqiTnfMQeXhzIbdhD0lKHfPPqndMOXH7UJGrTLJYY4G9dYWLemiIk6HxEhKCeHZYoYDz7oXceg1Rs=
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(107886003)(186003)(26005)(6636002)(2906002)(1076003)(110136005)(4744005)(508600001)(336012)(316002)(426003)(6666004)(40460700003)(82310400004)(7696005)(7636003)(2616005)(70206006)(36860700001)(70586007)(8676002)(8936002)(83380400001)(356005)(9786002)(36756003)(47076005)(4326008)(5660300002)(102446001)(2101003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2022 08:22:30.0103
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c202cb06-8f5b-4e36-5868-08da0bdd1b6a
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0029.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR02MB2841
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 1:47 AM Barry Song <21cnbao@gmail.com> wrote:
->
-...
-> > +static bool drain_evictable(struct lruvec *lruvec)
-> > +{
-> > +       int gen, type, zone;
-> > +       int remaining = MAX_LRU_BATCH;
-> > +
-> > +       for_each_gen_type_zone(gen, type, zone) {
-> > +               struct list_head *head = &lruvec->lrugen.lists[gen][type][zone];
-> > +
-> > +               while (!list_empty(head)) {
-> > +                       bool success;
-> > +                       struct folio *folio = lru_to_folio(head);
-> > +
-> > +                       VM_BUG_ON_FOLIO(folio_test_unevictable(folio), folio);
-> > +                       VM_BUG_ON_FOLIO(folio_test_active(folio), folio);
-> > +                       VM_BUG_ON_FOLIO(folio_is_file_lru(folio) != type, folio);
-> > +                       VM_BUG_ON_FOLIO(folio_zonenum(folio) != zone, folio);
-> > +
-> > +                       success = lru_gen_del_folio(lruvec, folio, false);
-> > +                       VM_BUG_ON(!success);
-> > +                       lruvec_add_folio(lruvec, folio);
->
-> for example, max_seq=4(GEN=0) and max_seq-1=3, then we are supposed to put
-> max_seq in the head of active list. but your code seems to be putting max_seq-1
-> after putting max_seq, then max_seq is more likely to be evicted
-> afterwards as it
-> is in the tail of the active list.
+zynq_fpga_has_sync () API is expecting "u8 *" but the
+formal parameter that was passed is of type "const char *".
+To fix this issue cast the const char pointer to u8 pointer.
 
-This is correct.
+Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
+---
+Changes for v2:
+		-None.
 
-> anyway, it might not be so important. I can't imagine we will
-> frequently switch mglru
-> with lru dynamically. will we?
+ drivers/fpga/zynq-fpga.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I certainly hope not :)
+diff --git a/drivers/fpga/zynq-fpga.c b/drivers/fpga/zynq-fpga.c
+index 426aa34c6a0d..12f644e79e91 100644
+--- a/drivers/fpga/zynq-fpga.c
++++ b/drivers/fpga/zynq-fpga.c
+@@ -275,7 +275,7 @@ static int zynq_fpga_ops_write_init(struct fpga_manager *mgr,
+ 
+ 	/* don't globally reset PL if we're doing partial reconfig */
+ 	if (!(info->flags & FPGA_MGR_PARTIAL_RECONFIG)) {
+-		if (!zynq_fpga_has_sync(buf, count)) {
++		if (!zynq_fpga_has_sync((u8 *)buf, count)) {
+ 			dev_err(&mgr->dev,
+ 				"Invalid bitstream, could not find a sync word. Bitstream must be a byte swapped .bin file\n");
+ 			err = -EINVAL;
+-- 
+2.25.1
+
