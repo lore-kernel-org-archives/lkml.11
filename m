@@ -2,181 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05380C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:52:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92267C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:53:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239945AbiCVRxq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 13:53:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58080 "EHLO
+        id S239961AbiCVRzG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 13:55:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234579AbiCVRxn (ORCPT
+        with ESMTP id S239946AbiCVRzF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 13:53:43 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7D6E8D6AF;
-        Tue, 22 Mar 2022 10:52:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1647971499;
-        bh=8I3GWS6pWMeWlp9zUKzJSs1LzgYKqg1PVBPAq/Lm0LU=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=QGdT7wfvtbx7EEq50BWSNOASiB8Ii9nryA7qMItQPCg349ur6bRln9+OctCQWWaFw
-         sKEmfK1ssCrodaywip/zGtr1TH9dzGkPDga3DON2C8SDJrjv3Q4Yk4TNwFde19j3Rf
-         TgNQQ5wqXK/XhOkavE7/CibOdmg6poxuBj+4PKko=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([5.146.194.160]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MGz1V-1nJIfA2WJf-00E1fI; Tue, 22
- Mar 2022 18:51:39 +0100
-Date:   Tue, 22 Mar 2022 18:51:35 +0100
-From:   Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     Avi Fishman <avifishman70@gmail.com>
-Cc:     Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Tomer Maimon <tmaimon77@gmail.com>, KWLIU@nuvoton.com,
-        Tali Perry <tali.perry1@gmail.com>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        JJLIU0@nuvoton.com, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Tomer Maimon <tomer.maimon@nuvoton.com>,
-        devicetree <devicetree@vger.kernel.org>, bence98@sch.bme.hu,
-        Arnd Bergmann <arnd@arndb.de>, sven@svenpeter.dev,
-        Rob Herring <robh+dt@kernel.org>,
-        Avi Fishman <Avi.Fishman@nuvoton.com>,
-        Tyrone Ting <warp5tw@gmail.com>, yangyicong@hisilicon.com,
-        semen.protsenko@linaro.org, jie.deng@intel.com,
-        Patrick Venture <venture@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, kfting@nuvoton.com,
-        Tali Perry <tali.perry@nuvoton.com>, olof@lixom.net
-Subject: Re: [PATCH v3 08/11] i2c: npcm: Correct register access width
-Message-ID: <YjoMpyEmuXHObF1p@latitude>
-References: <20220303083141.8742-1-warp5tw@gmail.com>
- <20220303083141.8742-9-warp5tw@gmail.com>
- <YiCZlhJoXPLpQ6/D@smile.fi.intel.com>
- <CAHb3i=t+Ai3w5mMhmZxxMsD7Zv0xpM4ZicMCmdDMtVn_OMbWYA@mail.gmail.com>
- <YiDNdlEKqorDFkZB@smile.fi.intel.com>
- <YiJ5unrCb82ZMV4Z@latitude>
- <CAKKbWA4quvDbHWBdckAsKe65fDXXe8M-9CsjaP=4wsA=-NnULA@mail.gmail.com>
+        Tue, 22 Mar 2022 13:55:05 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCA5BBE30;
+        Tue, 22 Mar 2022 10:53:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647971617; x=1679507617;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=GOSyCMT3Bo8pMPfvKQ6OUb28JkU8aRwvgc6c1E/p/HM=;
+  b=B+kfcUm0RBWon1+HvTZuAamntyPWOB6ublxkKUZjpHfGJHvukY1g9EBF
+   EMnIuNeQjMt/Nyets3Mw1czzTe0qbi/Wtr0EgiBQ1tYmk1nwuNC4Y/4mC
+   ATptsjFDWml1ABeU/xKh62bayEPEK/8sSGLXFeIgb9TvBCLLxzLZj7732
+   sqi5D9YWulrKU+4umpigMu5QfTJWZGz1gPsn3CGeyx6c6b/Smasp712Gv
+   IRYqjgQT8EokoXjZDwoyiei/Y80CdYJDsW1cVoG+fZJedSboMwhvTCqE1
+   kHG9Zd/aU8uqg7o+UUo0UKX5yK8fMM6nxgUUUlkAuonBP3hxTVl6vA28i
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10294"; a="245374809"
+X-IronPort-AV: E=Sophos;i="5.90,202,1643702400"; 
+   d="scan'208";a="245374809"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2022 10:52:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,202,1643702400"; 
+   d="scan'208";a="692645180"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga001.fm.intel.com with ESMTP; 22 Mar 2022 10:51:58 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22MHpvJb002184;
+        Tue, 22 Mar 2022 17:51:57 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     David Laight <David.Laight@ACULAB.COM>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        "'Wan Jiabing'" <wanjiabing@vivo.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] ice: use min_t() to make code cleaner in ice_gnss
+Date:   Tue, 22 Mar 2022 18:50:38 +0100
+Message-Id: <20220322175038.2691665-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <f888e3cf09944f9aa63532c9f59e69fb@AcuMS.aculab.com>
+References: <20220321135947.378250-1-wanjiabing@vivo.com> <f888e3cf09944f9aa63532c9f59e69fb@AcuMS.aculab.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="xEONTgdtFn65elzz"
-Content-Disposition: inline
-In-Reply-To: <CAKKbWA4quvDbHWBdckAsKe65fDXXe8M-9CsjaP=4wsA=-NnULA@mail.gmail.com>
-X-Provags-ID: V03:K1:0rjSZOfEJikFn7A+rHnQNa8z+5/c3I2xEC7rEjobVZzMEAraX6e
- HuMvVgLJ7P7UCggzPmwigflP5I4Y42Hx83j5Wq4SLEmryBl9Q62CsWZ5TVO2lnQ9e4YVuLt
- ce9YVgEYqgx/WHDMUqNy6S2guHkv8SCiC72aUek3IHtIqD2Lo6gY+hqyRGy6/GYZY/8SsCU
- 21BsmVI3TAmgW/4gTihZw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:ClpHcWe8vX0=:FnYR1l8g/xZYeCZXfKUnPC
- ZQ1Jm5fS9cmjKDrj78s7VFpOhu3kBgNos+6ZQguLEF9pHKnSh9+npF2SdI80BXPXR4Di1Z08F
- A11pAz5nZl7/G0IxbtG4eBNDVHMJr8slGm8t/719Lsdwc3P7xKYCO31ExqHApgZYBz8tUFqEf
- mXYly5cDCwimiO9Ny4meh5dfynQ4OjJ53zT3Y76TzNC2h7CFOMyMNCOgmESg0wyAoKwIK7Xqw
- ULrqaLAr3zJuV/wN2VNGK48+Nsx1RNaNbPX/n+8BepsAf0FYm51CAZpelLD9dqfYn1pgm/0tg
- fN7/mNErFnSsfPDIlGI+DY+uaDrXEB48aHwO7PFL8oHsRMgTKSB8/vxHLkShyu0ixa80Ah1AC
- mUTjB7Ep46l9DojTrkHSOIKvCTG24kTmzK12GtvZAay597EKCn+pdCUiqNCxtGDdr8MibGlr1
- liR7qS6Xzx6B7hiBlyuoRQGtIsmkhSW42LXdVPqzFaQeZQ+YFoO5rpqk/ZyNKZ1F9s/krbbt+
- 4Imm8dSEfsXTVTDNaJEALxF/uEas5uzTP2BpIVKEmD0EymQkFuqNfXzypVMo47L7N4ITbmML8
- oPFSfLIv0xJMpc3dMBj8r9PWMin7Wa++ManQcf3O/GF/WU/RZMfLHJ5ndxB/i4/U0j11GEIe0
- ATkE0rlYWI0qleAyWQ+tnv+q+RFdUEcVqiv1yCGi2BzcmjU0KuVlN2BdzO3MkPjKuXbpf1uIp
- cT+EFhJejQNm/mljmHEsCEIaUw7lZYOqYPtAaWBJ3N3/rT46ijUNyicrAtvc+I470x6v+pDzp
- BMKuZEfMR430mGMbS+ng1ofWwVz1oy+tdsM+qKSI+sYsvTmGJWY+c2+bSxnGaaKseQQI8/ct2
- Zj8kg9vRi6LoMTwQqcmFeiygjPCjDlvlmOoRt+DQXl064e05wX+NhPPPjxQrNrZOEp39zmCOD
- N+S5rVXt0hWElZmwZoeQmKmon7b/RY0U7Mm+cb34+sYMJw6TcI/nlDcxTLV3hTYPpD5ZCfydF
- K04Vrx1fA5aJNtueyyXXjmIEnivAYonb2LtK4pSM42REOm/YQ0bD5dqMx8koNn3SuKmT/StPn
- Evc2hracwZPBr8=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: David Laight <David.Laight@ACULAB.COM>
+Date: Mon, 21 Mar 2022 16:02:20 +0000
 
---xEONTgdtFn65elzz
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, Mar 22, 2022 at 07:18:34PM +0200, Avi Fishman wrote:
-> On Fri, Mar 4, 2022 at 10:42 PM Jonathan Neusch=C3=A4fer
-> <j.neuschaefer@gmx.net> wrote:
+> From: Wan Jiabing
+> > Sent: 21 March 2022 14:00
 > >
-> > Hello,
+> > Fix the following coccicheck warning:
+> > ./drivers/net/ethernet/intel/ice/ice_gnss.c:79:26-27: WARNING opportunity for min()
 > >
-> > On Thu, Mar 03, 2022 at 04:15:18PM +0200, Andy Shevchenko wrote:
-> > > On Thu, Mar 03, 2022 at 02:54:27PM +0200, Tali Perry wrote:
-> > > > > On Thu, Mar 03, 2022 at 04:31:38PM +0800, Tyrone Ting wrote:
-> > > > > > From: Tyrone Ting <kfting@nuvoton.com>
-> > > > > >
-> > > > > > Use ioread8 instead of ioread32 to access the SMBnCTL3 register=
- since
-> > > > > > the register is only 8-bit wide.
-> > > > >
-> > > > > > Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C contro=
-ller driver")
-> > > > >
-> > > > > No, this is bad commit message, since you have bitwise masks and =
-there is
-> > > > > nothing to fix from functional point of view. So, why is this a f=
-ix?
-> > > > >
-> > > >
-> > > > The next gen of this device is a 64 bit cpu.
-> > > > The module is and was 8 bit.
-> > > >
-> > > > The ioread32 that seemed to work smoothly on a 32 bit machine
-> > > > was causing a panic on a 64 bit machine.
-> > > > since the module is 8 bit we changed to ioread8.
-> > > > This is working both for the 32 and 64 CPUs with no issue.
-> > >
-> > > Then the commit message is completely wrong here.
+> > Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+> > ---
+> > Changelog:
+> > v2:
+> > - Use typeof(bytes_left) instead of u8.
+> > ---
+> >  drivers/net/ethernet/intel/ice/ice_gnss.c | 3 +--
+> >  1 file changed, 1 insertion(+), 2 deletions(-)
 > >
-> > I disagree: The commit message is perhaps incomplete, but not wrong.
-> > The SMBnCTL3 register was specified as 8 bits wide in the datasheets of
-> > multiple chip generations, as far as I can tell, but the driver wrongly
-> > made a 32-bit access, which just happened not to blow up.
+> > diff --git a/drivers/net/ethernet/intel/ice/ice_gnss.c b/drivers/net/ethernet/intel/ice/ice_gnss.c
+> > index 35579cf4283f..57586a2e6dec 100644
+> > --- a/drivers/net/ethernet/intel/ice/ice_gnss.c
+> > +++ b/drivers/net/ethernet/intel/ice/ice_gnss.c
+> > @@ -76,8 +76,7 @@ static void ice_gnss_read(struct kthread_work *work)
+> >  	for (i = 0; i < data_len; i += bytes_read) {
+> >  		u16 bytes_left = data_len - i;
+> 
+> Oh FFS why is that u16?
+> Don't do arithmetic on anything smaller than 'int'
+
+Any reasoning? I don't say it's good or bad, just want to hear your
+arguments (disasms, perf and object code measurements) etc.
+
+> 
+> 	David
+> 
 > >
-> > So, indeed, "since the register is only 8-bit wide" seems to be a
-> > correct claim.
+> > -		bytes_read = bytes_left < ICE_MAX_I2C_DATA_SIZE ? bytes_left :
+> > -					  ICE_MAX_I2C_DATA_SIZE;
+> > +		bytes_read = min_t(typeof(bytes_left), bytes_left, ICE_MAX_I2C_DATA_SIZE);
 > >
-> > > And provide necessary (no need to have noisy commit messages)
-> > > bits of the oops to show what's going on
-> >
-> > I guess it's blowing up now because SMBnCTL3 isn't 32-bit aligned
-> > (being at offset 0x0e in the controller).
-> >
->=20
-> Hi Andy,
-> After this clarification can you please acknowledge this specific patch?
-> If you think there is a better way to describe this, can you propose one?
+> >  		err = ice_aq_read_i2c(hw, link_topo, ICE_GNSS_UBX_I2C_BUS_ADDR,
+> >  				      cpu_to_le16(ICE_GNSS_UBX_EMPTY_DATA),
+> > --
+> > 2.35.1
+> 
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
 
-To be honest, I think it's probably best to include all the necessary
-explanations in the next version of this patch, i.e.:
-
- - That the register was always defined as 8-bit in the datasheets,
-   and so the 32-bit access was always incorrect, but simply didn't
-   cause a visible error
- - How the 32-bit access caused an error now, perhaps with a trimmed
-   Oops log as Andy suggested
-
-
-Jonathan
-
---xEONTgdtFn65elzz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEvHAHGBBjQPVy+qvDCDBEmo7zX9sFAmI6DIQACgkQCDBEmo7z
-X9s7OQ//X2W94xxyy5YEI/+1O2hIBvmm36jDMTS3z+mAnxmeUKhEBZdn0v8d/euk
-JSimNGFJCDze0zmLhJK6yve/1N0Jg0IersKHikjnx06ZU4mgxG5udJKCU2W6MPVj
-Zp4IiXgBQ7pTDEMlgEPbT0wSjkmuiiimkjp6QWJZkyKapp3SttzUOiKX/3SeyUtZ
-Y1/L3txILtSnYuzlvlL5knG+KJu2Um3/BKCOEzqop+FeQr/16wEvYUWS5Ggg94kK
-M9uwBI9cgOhvqS+SOFoNHyPc2VIJ6zsshwz6lB8/NrRQMqrpqyjwZttderEguxNO
-MP96a9M7VKpytM+eEbzIZFIxSa/A0zeNqXXXQNB/K+t7Awwdhf32qD4jPRIK0JCK
-2pO+hBT5XfRXmRI6f3U7X7lpSpzlR+DMLkq7nEI76rgJfN5qI87ml+WmbzIDXPFf
-b04x9eu6AbFeSuz0HW+F/MFwimMiTz+CKVpF7hgZEmJew7OiJT2a1bu6eTPr+4Fv
-pOut/60haUWiMulL9QXqbk+0gWWa8k3Mzv6DwQ0wbO/GFHkzlRfBOkMyUUXmNnho
-RdBd0cCISHsGLRsRkXEHgCRT67X1sadBrxcB03k91MKNNJoD4mnUr79JpFvIJidC
-XL4AOd2HO/z+OFq2y4K14ea8dPl1NgziCcFpC46TAKBrywMDtgg=
-=EGzi
------END PGP SIGNATURE-----
-
---xEONTgdtFn65elzz--
+Thanks,
+Al
