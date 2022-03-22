@@ -2,314 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A754C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 00:47:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45BC0C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 00:47:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234448AbiCVAs3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 20:48:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52750 "EHLO
+        id S234474AbiCVAtR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 20:49:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234341AbiCVAs0 (ORCPT
+        with ESMTP id S234341AbiCVAtO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 20:48:26 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24A4CF00
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 17:47:00 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id e5so2377900pls.4
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 17:47:00 -0700 (PDT)
+        Mon, 21 Mar 2022 20:49:14 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72CC42715E;
+        Mon, 21 Mar 2022 17:47:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZEAhtCrJUXhBfx1FoGP14Q/p+PdLnLauLi6Y8sm/760=;
-        b=o/BMgl9zNdPqkzoshOb4BN3pBKErNJDh3XzX1/tMZ9NzCkJ/ZbXNDx26fRZgONGgQy
-         UHlOMFasMuUeUcWLKEbe+OlDIcbP6nEfc+/uMl+ih9Xgk/10ZsAsbEMK6qnY7FBj9brx
-         CZL0gZHUnWtjpudj595id8UEmGdVUCifVxfIfg10s3tXb3VVDy73Y9XoYtCGXSsTwX3o
-         TQkD2fvSZXY0uTfQFneIYANdAi/zbH86xjyVbhgvMPX0Q1uzSdeJIQW9DuCxS6c1lhSv
-         FxoVabG48tP91Ynm+cGuhUJaZDUVXxolY6AOQWrYoZ/+kIUKCCBwrgIExCu+d1wthw1T
-         YwpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZEAhtCrJUXhBfx1FoGP14Q/p+PdLnLauLi6Y8sm/760=;
-        b=KACme7+RqnrRQXpUzu7HisUzuYiZmbgOUTfS+EOV3oeH6SzqqNEKA/fC8UmlnR1NDq
-         24uY4tkfP9FsI4l25MKX3FKNYMPmM+BLKQ6av6WDJRsMRpXJyndeEE5GHnkjZFNKPQB4
-         4HwKOrBG3Ze+9eRnKFQVaXbj7KBc7zKzuhQ/h+ZHSNri6T1n2OopwuVmbEX8hvsaR8Xf
-         GjxJFIUqLijtqu0ffZbvG4qZmeEpSrlaxCA0kUt6eyi1RD6JgOkNZW/ztohMczQlvDAW
-         N491JB6Ftxg8OvPzDNDVmMI6xabMiNK5Cbrh7EAP5k/7P9GIP0yDZB1KmyfPu5TBKN3k
-         57Yw==
-X-Gm-Message-State: AOAM531aFWi/HRhOlinhyf65IfSIDWVJDbmVaN4jFbAnhhXAkPeTFlUN
-        Oc4v3CMKnbTs7UF7VpgG5S2UNoS8aNBblj2BHYY=
-X-Google-Smtp-Source: ABdhPJwIxH6y1BkKtneP0BlJrp7ZyjYudITDvla33DF12Q0ZgQbsw+L0huwBaOcV9h8Zl89NIPIxey9yQ1dG9Uy7V5M=
-X-Received: by 2002:a17:903:1cd:b0:154:5edf:5704 with SMTP id
- e13-20020a17090301cd00b001545edf5704mr7063631plh.26.1647910019578; Mon, 21
- Mar 2022 17:46:59 -0700 (PDT)
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1647910068; x=1679446068;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=ubdrenh8RZbdb9SUuFRL3yPGdNKdx7dpJeScfreUfxs=;
+  b=oV/gQ17iGHzNyojLz15qsnxaDROH+Rej42hWjC0+p4lE5Z1eJ5I8xAKY
+   dA8HbI562z07F4HgPFv04SjVvicx0E8bc1VEVHuDCN40F5iGEqQTMRzXx
+   aqIRIbqHy/nJeuiNkRi9yO01he6a52rSc8K+8L7zBf3tpecWhD0ShV95X
+   k=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 21 Mar 2022 17:47:48 -0700
+X-QCInternal: smtphost
+Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 17:47:48 -0700
+Received: from collinsd-linux.qualcomm.com (10.80.80.8) by
+ nasanex01b.na.qualcomm.com (10.46.141.250) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 21 Mar 2022 17:47:47 -0700
+From:   David Collins <quic_collinsd@quicinc.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        <devicetree@vger.kernel.org>
+CC:     David Collins <quic_collinsd@quicinc.com>,
+        Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        "Subbaraman Narayanamurthy" <quic_subbaram@quicinc.com>
+Subject: [PATCH v2 1/2] dt-bindings: firmware: arm,scmi: define support for name based regulators
+Date:   Mon, 21 Mar 2022 17:47:19 -0700
+Message-ID: <4c94b4351b8d38167e972df46fbc507f9499513a.1647909090.git.quic_collinsd@quicinc.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <cover.1647909090.git.quic_collinsd@quicinc.com>
+References: <cover.1647909090.git.quic_collinsd@quicinc.com>
 MIME-Version: 1.0
-References: <20220318051612.271802-1-naoya.horiguchi@linux.dev>
-In-Reply-To: <20220318051612.271802-1-naoya.horiguchi@linux.dev>
-From:   Yang Shi <shy828301@gmail.com>
-Date:   Mon, 21 Mar 2022 17:46:48 -0700
-Message-ID: <CAHbLzkrYf=jF2ZGLur5JpB_smoUkp51e2x1v5mr3CD5z73D=Ow@mail.gmail.com>
-Subject: Re: [PATCH v5] mm/hwpoison: fix race between hugetlb free/demotion
- and memory_failure_hugetlb()
-To:     Naoya Horiguchi <naoya.horiguchi@linux.dev>
-Cc:     Linux MM <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 10:16 PM Naoya Horiguchi
-<naoya.horiguchi@linux.dev> wrote:
->
-> From: Naoya Horiguchi <naoya.horiguchi@nec.com>
->
-> There is a race condition between memory_failure_hugetlb() and hugetlb
-> free/demotion, which causes setting PageHWPoison flag on the wrong page.
-> The one simple result is that wrong processes can be killed, but another
-> (more serious) one is that the actual error is left unhandled, so no one
-> prevents later access to it, and that might lead to more serious results
-> like consuming corrupted data.
->
-> Think about the below race window:
->
->   CPU 1                                   CPU 2
->   memory_failure_hugetlb
->   struct page *head = compound_head(p);
->                                           hugetlb page might be freed to
->                                           buddy, or even changed to another
->                                           compound page.
->
->   get_hwpoison_page -- page is not what we want now...
->
-> The compound_head is called outside hugetlb_lock, so the head is not
-> reliable.
->
-> So set PageHWPoison flag after passing prechecks. And to detect
-> potential violation, this patch also introduces a new action type
-> MF_MSG_DIFFERENT_PAGE_SIZE.
->
-> Reported-by: Mike Kravetz <mike.kravetz@oracle.com>
-> Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> Cc: <stable@vger.kernel.org>
-> ---
-> ChangeLog v4 -> v5:
-> - call TestSetPageHWPoison() when page_handle_poison() fails.
-> - call TestSetPageHWPoison() for unhandlable cases (MF_MSG_UNKNOWN and
->   MF_MSG_DIFFERENT_PAGE_SIZE).
-> - Set PageHWPoison on the head page only when the error page is surely
->   a hugepage, otherwise set the flag on the raw page.
-> - rebased onto v5.17-rc8-mmotm-2022-03-16-17-42
->
-> ChangeLog v3 -> v4:
-> - squash with "mm/memory-failure.c: fix race with changing page
->   compound again".
-> - update patch subject and description based on it.
->
-> ChangeLog v2 -> v3:
-> - rename the patch because page lock is not the primary factor to
->   solve the reported issue.
-> - updated description in the same manner.
-> - call page_handle_poison() instead of __page_handle_poison() for
->   free hugepage case.
-> - reorder put_page and unlock_page (thanks to Miaohe Lin)
->
-> ChangeLog v1 -> v2:
-> - pass subpage to get_hwpoison_huge_page() instead of head page.
-> - call compound_head() in hugetlb_lock to avoid race with hugetlb
->   demotion/free.
-> ---
->  mm/hugetlb.c        |  8 +++--
->  mm/memory-failure.c | 75 +++++++++++++++++++++++++++------------------
->  2 files changed, 51 insertions(+), 32 deletions(-)
->
-> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-> index fbf598bbc4e3..d8ef67c049e4 100644
-> --- a/mm/hugetlb.c
-> +++ b/mm/hugetlb.c
-> @@ -6777,14 +6777,16 @@ bool isolate_huge_page(struct page *page, struct list_head *list)
->
->  int get_hwpoison_huge_page(struct page *page, bool *hugetlb)
->  {
-> +       struct page *head;
->         int ret = 0;
->
->         *hugetlb = false;
->         spin_lock_irq(&hugetlb_lock);
-> -       if (PageHeadHuge(page)) {
-> +       head = compound_head(page);
-> +       if (PageHeadHuge(head)) {
->                 *hugetlb = true;
-> -               if (HPageFreed(page) || HPageMigratable(page))
-> -                       ret = get_page_unless_zero(page);
-> +               if (HPageFreed(head) || HPageMigratable(head))
-> +                       ret = get_page_unless_zero(head);
->                 else
->                         ret = -EBUSY;
->         }
-> diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-> index e939719c0765..9323a5653dec 100644
-> --- a/mm/memory-failure.c
-> +++ b/mm/memory-failure.c
-> @@ -1194,7 +1194,7 @@ static int __get_hwpoison_page(struct page *page, unsigned long flags)
->         int ret = 0;
->         bool hugetlb = false;
->
-> -       ret = get_hwpoison_huge_page(head, &hugetlb);
-> +       ret = get_hwpoison_huge_page(page, &hugetlb);
->         if (hugetlb)
->                 return ret;
->
-> @@ -1281,11 +1281,10 @@ static int get_any_page(struct page *p, unsigned long flags)
->
->  static int __get_unpoison_page(struct page *page)
->  {
-> -       struct page *head = compound_head(page);
->         int ret = 0;
->         bool hugetlb = false;
->
-> -       ret = get_hwpoison_huge_page(head, &hugetlb);
-> +       ret = get_hwpoison_huge_page(page, &hugetlb);
->         if (hugetlb)
->                 return ret;
->
-> @@ -1504,39 +1503,38 @@ static int memory_failure_hugetlb(unsigned long pfn, int flags)
->         struct page *head = compound_head(p);
->         int res;
->         unsigned long page_flags;
-> -
-> -       if (TestSetPageHWPoison(head)) {
-> -               pr_err("Memory failure: %#lx: already hardware poisoned\n",
-> -                      pfn);
-> -               res = -EHWPOISON;
-> -               if (flags & MF_ACTION_REQUIRED)
-> -                       res = kill_accessing_process(current, page_to_pfn(head), flags);
-> -               return res;
-> -       }
-> -
-> -       num_poisoned_pages_inc();
-> +       bool put = false;
-> +       unsigned long already_hwpoisoned = 0;
->
->         if (!(flags & MF_COUNT_INCREASED)) {
->                 res = get_hwpoison_page(p, flags);
->                 if (!res) {
->                         lock_page(head);
->                         if (hwpoison_filter(p)) {
-> -                               if (TestClearPageHWPoison(head))
-> -                                       num_poisoned_pages_dec();
->                                 unlock_page(head);
->                                 return -EOPNOTSUPP;
->                         }
->                         unlock_page(head);
-> -                       res = MF_FAILED;
-> -                       if (__page_handle_poison(p)) {
-> -                               page_ref_inc(p);
-> +                       if (page_handle_poison(p, true, false)) {
->                                 res = MF_RECOVERED;
-> +                       } else {
-> +                               if (TestSetPageHWPoison(head))
-> +                                       already_hwpoisoned = page_to_pfn(head);
-> +                               else
-> +                                       num_poisoned_pages_inc();
-> +                               res = MF_FAILED;
->                         }
->                         action_result(pfn, MF_MSG_FREE_HUGE, res);
-> -                       return res == MF_RECOVERED ? 0 : -EBUSY;
-> +                       res = res == MF_RECOVERED ? 0 : -EBUSY;
-> +                       goto out;
->                 } else if (res < 0) {
-> +                       if (TestSetPageHWPoison(p))
-> +                               already_hwpoisoned = pfn;
-> +                       else
-> +                               num_poisoned_pages_inc();
->                         action_result(pfn, MF_MSG_UNKNOWN, MF_IGNORED);
-> -                       return -EBUSY;
-> +                       res = -EBUSY;
-> +                       goto out;
->                 }
->         }
->
-> @@ -1547,21 +1545,31 @@ static int memory_failure_hugetlb(unsigned long pfn, int flags)
->          * If this happens just bail out.
->          */
->         if (!PageHuge(p) || compound_head(p) != head) {
-> +               if (TestSetPageHWPoison(p))
-> +                       already_hwpoisoned = pfn;
-> +               else
-> +                       num_poisoned_pages_inc();
->                 action_result(pfn, MF_MSG_DIFFERENT_PAGE_SIZE, MF_IGNORED);
+Allow SCMI regulator subnodes to be specified either by ID using
+the "reg" property or by name using the "arm,scmi-domain-name"
+property.
 
-The commit log says "this patch also introduces a new action type
-MF_MSG_DIFFERENT_PAGE_SIZE", but it is not defined in the patch and it
-is called here. Did I miss something?
+Name based SCMI regulator specification helps ensure that an SCMI
+agent doesn't need to be aware of the numbering scheme used for
+Voltage Domains by the SCMI platform.  It also ensures that the
+correct Voltage Domain is selected for a given physical regulator.
+This cannot be guaranteed with numeric Voltage Domain IDs alone.
 
->                 res = -EBUSY;
-> -               goto out;
-> +               goto unlock_page;
->         }
->
->         page_flags = head->flags;
->
->         if (hwpoison_filter(p)) {
-> -               if (TestClearPageHWPoison(head))
-> -                       num_poisoned_pages_dec();
-> -               put_page(p);
-> +               put = true;
->                 res = -EOPNOTSUPP;
-> -               goto out;
-> +               goto unlock_page;
-> +       }
-> +
-> +       if (TestSetPageHWPoison(head)) {
-> +               put = true;
-> +               already_hwpoisoned = page_to_pfn(head);
-> +               goto unlock_page;
->         }
->
-> +       num_poisoned_pages_inc();
-> +
->         /*
->          * TODO: hwpoison for pud-sized hugetlb doesn't work right now, so
->          * simply disable it. In order to make it work properly, we need
-> @@ -1574,18 +1582,27 @@ static int memory_failure_hugetlb(unsigned long pfn, int flags)
->         if (huge_page_size(page_hstate(head)) > PMD_SIZE) {
->                 action_result(pfn, MF_MSG_NON_PMD_HUGE, MF_IGNORED);
->                 res = -EBUSY;
-> -               goto out;
-> +               goto unlock_page;
->         }
->
->         if (!hwpoison_user_mappings(p, pfn, flags, head)) {
->                 action_result(pfn, MF_MSG_UNMAP_FAILED, MF_IGNORED);
->                 res = -EBUSY;
-> -               goto out;
-> +               goto unlock_page;
->         }
->
->         return identify_page_state(pfn, p, page_flags);
-> -out:
-> +unlock_page:
->         unlock_page(head);
-> +out:
-> +       if (put)
-> +               put_page(p);
-> +       if (already_hwpoisoned) {
-> +               pr_err("Memory failure: %#lx: already hardware poisoned\n", pfn);
-> +               res = -EHWPOISON;
-> +               if (flags & MF_ACTION_REQUIRED)
-> +                       res = kill_accessing_process(current, already_hwpoisoned, flags);
-> +       }
->         return res;
->  }
->
-> --
-> 2.25.1
->
+Signed-off-by: David Collins <quic_collinsd@quicinc.com>
+---
+ .../devicetree/bindings/firmware/arm,scmi.yaml    | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/firmware/arm,scmi.yaml b/Documentation/devicetree/bindings/firmware/arm,scmi.yaml
+index 5c4c6782e052..08cb5de967ac 100644
+--- a/Documentation/devicetree/bindings/firmware/arm,scmi.yaml
++++ b/Documentation/devicetree/bindings/firmware/arm,scmi.yaml
+@@ -155,7 +155,7 @@ properties:
+           The list of all regulators provided by this SCMI controller.
+ 
+         patternProperties:
+-          '^regulators@[0-9a-f]+$':
++          '^regulator.+$':
+             type: object
+             $ref: "../regulator/regulator.yaml#"
+ 
+@@ -164,8 +164,17 @@ properties:
+                 maxItems: 1
+                 description: Identifier for the voltage regulator.
+ 
+-            required:
+-              - reg
++              arm,scmi-domain-name:
++                description:
++                  A string matching the name of the SCMI voltage domain for this
++                  regulator.
++                $ref: "/schemas/types.yaml#/definitions/string"
++
++            anyOf:
++              - required:
++                  - reg
++              - required:
++                  - arm,scmi-domain-name
+ 
+ additionalProperties: false
+ 
+-- 
+2.17.1
+
