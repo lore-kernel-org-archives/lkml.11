@@ -2,163 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23405C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 06:23:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0434BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 06:24:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236954AbiCVGY2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 02:24:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36080 "EHLO
+        id S237030AbiCVGZe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 02:25:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236996AbiCVGYZ (ORCPT
+        with ESMTP id S237045AbiCVGZ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 02:24:25 -0400
-Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8970F2611E
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 23:22:56 -0700 (PDT)
-Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
-        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220322062253epoutp030a198b661d92b5198bb0b5f9276f9793~en8LsFIq62613326133epoutp030
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 06:22:53 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220322062253epoutp030a198b661d92b5198bb0b5f9276f9793~en8LsFIq62613326133epoutp030
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1647930173;
-        bh=b2Tm1I1oYfFqGoAEd6xIqKXTAY0QWdrTrH32PHTYG0A=;
-        h=Subject:Reply-To:From:To:CC:Date:References:From;
-        b=HGuu0i2m6FRZWtzeBXN71AQ99WyojF4nEkL15dJmVxkWgCKg603qLKNZiaiOerzjJ
-         mzZtpKs5NDn8cudfr3uicZTIX71s/lTwJiNx/Yqws/tDVr+7Ao59j93PQ1ZHdJ8F61
-         DtCBr/xhPhQs/R8+JIA0YXxeQPOm+vQjvZNBS/JI=
-Received: from epsmges5p2new.samsung.com (unknown [182.195.42.74]) by
-        epcas5p4.samsung.com (KnoxPortal) with ESMTP id
-        20220322062252epcas5p425e362d31c74f8218a3352c3bfd905d3~en8K8YL1Z1320513205epcas5p4J;
-        Tue, 22 Mar 2022 06:22:52 +0000 (GMT)
-X-AuditID: b6c32a4a-5b7ff700000030eb-b6-62396b3c0e47
-Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
-        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        E1.15.12523.C3B69326; Tue, 22 Mar 2022 15:22:52 +0900 (KST)
-Mime-Version: 1.0
-Subject: RE: [PATCH 1/1 module-next] kallsyms: enhance %pS/s/b printing when
- KALLSYSMS is disabled
-Reply-To: maninder1.s@samsung.com
-Sender: Maninder Singh <maninder1.s@samsung.com>
-From:   Maninder Singh <maninder1.s@samsung.com>
-To:     Sergey Senozhatsky <senozhatsky@chromium.org>
-CC:     "mcgrof@kernel.org" <mcgrof@kernel.org>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        "linux@rasmusvillemoes.dk" <linux@rasmusvillemoes.dk>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "wangkefeng.wang@huawei.com" <wangkefeng.wang@huawei.com>,
-        Vaneet Narang <v.narang@samsung.com>,
-        "swboyd@chromium.org" <swboyd@chromium.org>,
-        "ojeda@kernel.org" <ojeda@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
-        "avimalin@gmail.com" <avimalin@gmail.com>,
-        "atomlin@redhat.com" <atomlin@redhat.com>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "ndesaulniers@google.com" <ndesaulniers@google.com>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "void@manifault.com" <void@manifault.com>
-X-Priority: 3
-X-Content-Kind-Code: NORMAL
-X-Drm-Type: N,general
-X-Msg-Generator: Mail
-X-Msg-Type: PERSONAL
-X-Reply-Demand: N
-Message-ID: <20220322062219epcms5p1bc1cc758470ebf175aa4eee20b7837ae@epcms5p1>
-Date:   Tue, 22 Mar 2022 11:52:19 +0530
-X-CMS-MailID: 20220322062219epcms5p1bc1cc758470ebf175aa4eee20b7837ae
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrLKsWRmVeSWpSXmKPExsWy7bCmuq5NtmWSwbwrfBZz1q9hs+htms5k
-        cWT+GlaLBwevs1uc6c61uLxrDptFw+zvrBaPZ81js7gx4SmjxYcJ/5ksVs5fzmjx//FXVou3
-        d6azWOzreMBksXvjIjaL43eeMlkcOjmX0WL78vVsFo2f7zM6CHvMbrjI4rFz1l12j5Z9t9g9
-        Fmwq9Wg58pbVY/MKLY9NqzrZPE7M+M3iMe9koMeZ1duYPC50ZXu833eVzaNvyypGj/VbrrJ4
-        fN4kF8AfxWWTkpqTWZZapG+XwJUxccsexoK/ahWvms6zNTD+Vu1i5OSQEDCROHP2L3MXIxeH
-        kMBuRomL+zeydTFycPAKCEr83SEMUiMskCKxdtceRhBbSEBR4sKMNYwgJcICBhK/tmqAhNkE
-        9CRW7drDAmKLCBhK/O9rZwIZySwwn13i9Jv77BC7eCVmtD9lgbClJbYv38oIYYtK3Fz9lh3G
-        fn9sPlRcRKL13llmCFtQ4sHP3VBxGYnVm3tZQBZICHQzSqx/txfKmcEo0fNoGlSHucT6JavA
-        pvIK+EpcOvMDrJtFQFWi88pCNogaF4mvV16DxZkFtCWWLXzNDPIZs4CmxPpd+hAlshJTT61j
-        gijhk+j9/YQJ5pkd82BsVYmWmxtYYR77/PEj1JMeEk+fn2aDBFygxLL3p9gnMMrPQgTvLCSL
-        ZyEsXsDIvIpRMrWgODc9tdi0wCgvtVyvODG3uDQvXS85P3cTIzhFanntYHz44IPeIUYmDsZD
-        jBIczEoivIs/mCcJ8aYkVlalFuXHF5XmpBYfYpTmYFES5z2dviFRSCA9sSQ1OzW1ILUIJsvE
-        wSnVwCSqtsRg9ZtUh381YRIuc2+/E1r19IRVjXiaTsH2E7wOnyaqLuRY5d++yW+CuP57oZff
-        Zh7qmiARar9l85ygnU/WhN18cbU53t/92uVUh+S2XfZM69LtviYfMbimfXaHbJDFkhcZl5+Z
-        ha24/zB88xLzpX+WHisNr1BqiM5iTKm9zn31Vfoj7+8fU6Wm7KuzKZJ8JMa4WvucgcIV5Z0C
-        zxYVRtWer3lYW9te5h3UFVGzg+fJP6HTKZGaby0L6rkUZYue5GqHNFv7n5WNU3+k5r28YlbO
-        F6d4lqXJ336rBrMtF01M2ZvepH9z2aFVR+O7W6Su+DLzpJl+6f+9p9LJ+8jS6B8eK15wmZeY
-        TuHtV2Ipzkg01GIuKk4EAKbOIBQABAAA
-X-CMS-RootMailID: 20220316043552epcas5p29b0723b7c55a3bcc9b4d858660e45933
-References: <CGME20220316043552epcas5p29b0723b7c55a3bcc9b4d858660e45933@epcms5p1>
+        Tue, 22 Mar 2022 02:25:26 -0400
+Received: from mx1.cqplus1.com (unknown [113.204.237.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 12D472AC59
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 23:23:51 -0700 (PDT)
+X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
+        LIVER,40,3)
+Received: from 172.28.114.216
+        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(7841:0:AUTH_RELAY)
+        (envelope-from <qinjian@cqplus1.com>); Tue, 22 Mar 2022 14:16:33 +0800 (CST)
+From:   Qin Jian <qinjian@cqplus1.com>
+To:     krzysztof.kozlowski@canonical.com
+Cc:     robh+dt@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        tglx@linutronix.de, maz@kernel.org, p.zabel@pengutronix.de,
+        linux@armlinux.org.uk, arnd@arndb.de,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        Qin Jian <qinjian@cqplus1.com>, Rob Herring <robh@kernel.org>
+Subject: [PATCH v11 2/9] dt-bindings: reset: Add bindings for SP7021 reset driver
+Date:   Tue, 22 Mar 2022 14:16:53 +0800
+Message-Id: <55db801055793f43678e902395913330ecb8fbbf.1647928316.git.qinjian@cqplus1.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <cover.1647928315.git.qinjian@cqplus1.com>
+References: <cover.1647928315.git.qinjian@cqplus1.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi=C2=A0Sergey,=0D=0A=C2=A0=0D=0A>=C2=A0>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if=C2=
-=A0(add_offset)=C2=A0=7B=0D=0A>=C2=A0>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0base=C2=A0=3D=C2=A0mod->core_layout.=
-base;=0D=0A>=C2=A0>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0offset=C2=A0=3D=C2=A0value=C2=A0-=C2=A0(unsigned=C2=A0=
-long)base;=0D=0A>=C2=A0>=C2=A0+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=7D=0D=0A>=C2=A0=0D=
-=0A>=C2=A0What=C2=A0if=C2=A0address=C2=A0is=C2=A0in=C2=A0module=C2=A0init?=
-=C2=A0Shouldn't=C2=A0this=C2=A0be=C2=A0something=C2=A0like=0D=0A>=C2=A0=0D=
-=0A>=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if=C2=A0(within_m=
-odule_init(value,=C2=A0mod))=0D=0A>=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0offset=C2=A0=
-=3D=C2=A0value=C2=A0-=C2=A0(unsigned=C2=A0long)mod->init_layout.base;=0D=0A=
->=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0else=0D=0A>=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0offset=C2=A0=3D=C2=A0value=C2=A0-=C2=A0(unsigned=C2=A0lon=
-g)mod->core_layout.base;=0D=0A=C2=A0=0D=0AYes,=C2=A0this=C2=A0can=C2=A0be=
-=C2=A0done,=C2=A0but=C2=A0I=C2=A0think=C2=A0then=C2=A0we=C2=A0need=C2=A0to=
-=C2=A0handle=C2=A0it=C2=A0with=C2=A0some=C2=A0more=C2=A0info.=0D=0A=C2=A0=
-=0D=0AIn=C2=A0module=C2=A0allocation=C2=A0first=C2=A0we=C2=A0load=C2=A0core=
-_layout=C2=A0and=C2=A0then=C2=A0init_layout=C2=A0w.r.t=C2=A0address=C2=A0ra=
-nge=0D=0Aas=C2=A0below=C2=A0(ARM64):=0D=0A=C2=A0=0D=0Affff800000eb0000=C2=
-=A0->=C2=A0core_layout=0D=0Affff800000eb4000=C2=A0->=C2=A0init_layout=0D=0A=
-=C2=A0=0D=0A=C2=A0=0D=0ASo=C2=A0if=C2=A0we=C2=A0write=C2=A0only=C2=A0offset=
-(w.r.t=C2=A0core_layout),=C2=A0then=C2=A0user=C2=A0can=C2=A0get=C2=A0a=C2=
-=A0hint=C2=A0if=C2=A0it=C2=A0going=C2=A0beyond=C2=A0normal=C2=A0text=0D=0At=
-hen=C2=A0it=C2=A0means=C2=A0it=C2=A0is=C2=A0init=C2=A0text.=0D=0A=C2=A0=0D=
-=0ABut=C2=A0if=C2=A0we=C2=A0take=C2=A0offset=C2=A0from=C2=A0init=C2=A0and=
-=C2=A0core=C2=A0separately,=C2=A0and=C2=A0we=C2=A0only=C2=A0print=C2=A0the=
-=C2=A0offset=C2=A0(not=C2=A0function=C2=A0name),=0D=0Awe=C2=A0need=C2=A0to=
-=C2=A0write=C2=A0alongwith=C2=A0offset=C2=A0that=C2=A0it=C2=A0is=C2=A0init=
-=C2=A0or=C2=A0core=C2=A0area.=0D=0AOtherwise=C2=A0user=C2=A0will=C2=A0get=
-=C2=A0confused=C2=A0which=C2=A0offset=C2=A0it=C2=A0is,=C2=A0whether=C2=A0to=
-=C2=A0check=C2=A0init=C2=A0or=C2=A0core=C2=A0text=C2=A0area.=0D=0A=C2=A0=0D=
-=0AAnd=C2=A0also=C2=A0while=C2=A0printing=C2=A0modules,=C2=A0kernel=C2=A0al=
-so=C2=A0uses=C2=A0core_layout=C2=A0as=C2=A0base=C2=A0address=C2=A0only:=0D=
-=0A=C2=A0=0D=0Astatic=C2=A0int=C2=A0m_show(struct=C2=A0seq_file=C2=A0*m,=C2=
-=A0void=C2=A0*p)=0D=0A=7B=0D=0A..=0D=0A=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0/*=C2=A0Used=C2=A0by=C2=A0oprofile=C2=A0and=C2=A0other=C2=A0sim=
-ilar=C2=A0tools.=C2=A0*/=0D=0A=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0value=C2=A0=3D=C2=A0m->private=C2=A0?=C2=A0NULL=C2=A0:=C2=A0mod->core_la=
-yout.base;=0D=0A=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0seq_printf(=
-m,=C2=A0=22=C2=A00x%px=22,=C2=A0value);=0D=0A..=0D=0A=7D=0D=0A=C2=A0=0D=0Aa=
-nd=C2=A0also=C2=A0normal=C2=A0%ps=C2=A0prints=C2=A0like=C2=A0below:=0D=0A=
-=C2=A0=0D=0Aps=C2=A00xffff800000eb4004=0D=0Aload=C2=A0address=C2=A0of=C2=A0=
-module=C2=A0is=C2=A00xffff800000eb0000=0D=0Aso=C2=A0normal=C2=A0offset=C2=
-=A0is=C2=A04004=C2=A0for=C2=A0init=C2=A0text=C2=A0section.=0D=0A=C2=A0=0D=
-=0Aand=C2=A0same=C2=A0thing=C2=A0is=C2=A0printed=C2=A0with=C2=A0current=C2=
-=A0patch:=0D=0ApS=C2=A00xffff800000eb0000+0x4004=C2=A0=5Bcrash=5D=0D=0A=C2=
-=A0=0D=0AStill=C2=A0if=C2=A0we=C2=A0need=C2=A0to=C2=A0handle=C2=A0separatel=
-y,=C2=A0then=C2=A0please=C2=A0suggest=C2=A0only=C2=A0offset=C2=A0is=C2=A0ok=
-=C2=A0or=C2=A0we=C2=A0need=C2=A0to=0D=0Aadd=C2=A0string=C2=A0for=C2=A0init=
-=C2=A0or=C2=A0core=C2=A0also=C2=A0like=C2=A0below:=0D=0A=C2=A0=0D=0A=C2=A0=
-=C2=A0=C2=A0init_text=C2=A0start=C2=A0+=C2=A0offset=0D=0ApS=C2=A00xffff8000=
-00eb4000+0x4=C2=A0=5Bcrash=C2=A0init_text=5D=0D=0A=C2=A0=0D=0AAnd=C2=A0also=
-=C2=A0then=C2=A0there=C2=A0will=C2=A0be=C2=A0discrepancy=C2=A0for=C2=A0roda=
-ta=C2=A0or=C2=A0other=C2=A0sections,=C2=A0which=C2=A0offset=C2=A0to=C2=A0ta=
-ke.=0D=0AIf=C2=A0we=C2=A0are=C2=A0taking=C2=A0it=C2=A0from=C2=A0core_layout=
-=C2=A0then=C2=A0init=C2=A0section=C2=A0can=C2=A0also=C2=A0be=C2=A0taken=C2=
-=A0with=C2=A0same.=0D=0AAs=C2=A0of=C2=A0now=C2=A0it=C2=A0is=C2=A0unique=C2=
-=A0offset=C2=A0calculation=C2=A0for=C2=A0all=C2=A0sections.=0D=0A=C2=A0=0D=
-=0AThanks,=0D=0AManinder=C2=A0Singh
+Add documentation to describe Sunplus SP7021 reset driver bindings.
+
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Qin Jian <qinjian@cqplus1.com>
+---
+ .../bindings/reset/sunplus,reset.yaml         | 38 ++++++++
+ MAINTAINERS                                   |  2 +
+ include/dt-bindings/reset/sp-sp7021.h         | 97 +++++++++++++++++++
+ 3 files changed, 137 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/reset/sunplus,reset.yaml
+ create mode 100644 include/dt-bindings/reset/sp-sp7021.h
+
+diff --git a/Documentation/devicetree/bindings/reset/sunplus,reset.yaml b/Documentation/devicetree/bindings/reset/sunplus,reset.yaml
+new file mode 100644
+index 000000000..c083c821f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/reset/sunplus,reset.yaml
+@@ -0,0 +1,38 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) Sunplus Co., Ltd. 2021
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/reset/sunplus,reset.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++
++title: Sunplus SoC Reset Controller
++
++maintainers:
++  - Qin Jian <qinjian@cqplus1.com>
++
++properties:
++  compatible:
++    const: sunplus,sp7021-reset
++
++  "#reset-cells":
++    const: 1
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - "#reset-cells"
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    rstc: reset@9c000054 {
++      compatible = "sunplus,sp7021-reset";
++      #reset-cells = <1>;
++      reg = <0x9c000054 0x28>;
++    };
++
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 8b5e2e639..a8be86b25 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2744,6 +2744,8 @@ L:	linux-arm-kernel@lists.infradead.org (moderated for mon-subscribers)
+ S:	Maintained
+ W:	https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
+ F:	Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
++F:	Documentation/devicetree/bindings/reset/sunplus,reset.yaml
++F:	include/dt-bindings/reset/sp-sp7021.h
+ 
+ ARM/Synaptics SoC support
+ M:	Jisheng Zhang <jszhang@kernel.org>
+diff --git a/include/dt-bindings/reset/sp-sp7021.h b/include/dt-bindings/reset/sp-sp7021.h
+new file mode 100644
+index 000000000..fd2a50327
+--- /dev/null
++++ b/include/dt-bindings/reset/sp-sp7021.h
+@@ -0,0 +1,97 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
++/*
++ * Copyright (C) Sunplus Technology Co., Ltd.
++ *       All rights reserved.
++ */
++#ifndef _DT_BINDINGS_RST_SUNPLUS_SP7021_H
++#define _DT_BINDINGS_RST_SUNPLUS_SP7021_H
++
++/* mo_reset0 ~ mo_reset9 */
++#define RST_SYSTEM		0x00
++#define RST_RTC			0x02
++#define RST_IOCTL		0x03
++#define RST_IOP			0x04
++#define RST_OTPRX		0x05
++#define RST_NOC			0x06
++#define RST_BR			0x07
++#define RST_RBUS_L00	        0x08
++#define RST_SPIFL		0x09
++#define RST_SDCTRL0		0x0a
++#define RST_PERI0		0x0b
++#define RST_A926		0x0d
++#define RST_UMCTL2		0x0e
++#define RST_PERI1		0x0f
++
++#define RST_DDR_PHY0	        0x10
++#define RST_ACHIP		0x12
++#define RST_STC0		0x14
++#define RST_STC_AV0		0x15
++#define RST_STC_AV1		0x16
++#define RST_STC_AV2		0x17
++#define RST_UA0			0x18
++#define RST_UA1			0x19
++#define RST_UA2			0x1a
++#define RST_UA3			0x1b
++#define RST_UA4			0x1c
++#define RST_HWUA		0x1d
++#define RST_DDC0		0x1e
++#define RST_UADMA		0x1f
++
++#define RST_CBDMA0		0x20
++#define RST_CBDMA1		0x21
++#define RST_SPI_COMBO_0	        0x22
++#define RST_SPI_COMBO_1	        0x23
++#define RST_SPI_COMBO_2	        0x24
++#define RST_SPI_COMBO_3	        0x25
++#define RST_AUD			0x26
++#define RST_USBC0		0x2a
++#define RST_USBC1		0x2b
++#define RST_UPHY0		0x2d
++#define RST_UPHY1		0x2e
++
++#define RST_I2CM0		0x30
++#define RST_I2CM1		0x31
++#define RST_I2CM2		0x32
++#define RST_I2CM3		0x33
++#define RST_PMC			0x3d
++#define RST_CARD_CTL0	        0x3e
++#define RST_CARD_CTL1	        0x3f
++
++#define RST_CARD_CTL4	        0x42
++#define RST_BCH			0x44
++#define RST_DDFCH		0x4b
++#define RST_CSIIW0		0x4c
++#define RST_CSIIW1		0x4d
++#define RST_MIPICSI0	        0x4e
++#define RST_MIPICSI1	        0x4f
++
++#define RST_HDMI_TX		0x50
++#define RST_VPOST		0x55
++
++#define RST_TGEN		0x60
++#define RST_DMIX		0x61
++#define RST_TCON		0x6a
++#define RST_INTERRUPT	        0x6f
++
++#define RST_RGST		0x70
++#define RST_GPIO		0x73
++#define RST_RBUS_TOP	        0x74
++
++#define RST_MAILBOX		0x86
++#define RST_SPIND		0x8a
++#define RST_I2C2CBUS	        0x8b
++#define RST_SEC			0x8d
++#define RST_DVE			0x8e
++#define RST_GPOST0		0x8f
++
++#define RST_OSD0		0x90
++#define RST_DISP_PWM	        0x92
++#define RST_UADBG		0x93
++#define RST_DUMMY_MASTER	0x94
++#define RST_FIO_CTL		0x95
++#define RST_FPGA		0x96
++#define RST_L2SW		0x97
++#define RST_ICM			0x98
++#define RST_AXI_GLOBAL	        0x99
++
++#endif
+-- 
+2.33.1
+
