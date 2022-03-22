@@ -2,223 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7B52C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 07:45:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A95E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 07:46:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230075AbiCVHrX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 03:47:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49600 "EHLO
+        id S229525AbiCVHsN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 03:48:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbiCVHrG (ORCPT
+        with ESMTP id S229494AbiCVHsM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 03:47:06 -0400
-Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C44248E62;
-        Tue, 22 Mar 2022 00:44:05 -0700 (PDT)
-Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173]) (authenticated)
-        by conssluserg-02.nifty.com with ESMTP id 22M7hfwg024030;
-        Tue, 22 Mar 2022 16:43:42 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 22M7hfwg024030
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1647935022;
-        bh=SxNJQMCFxMMS774Ea8L8kiMXQtPQJv6QAVqqcm0uVn4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=UEItilZiP+cUTpZNRVTdbVAD52FXU6NkWMlptDK9pT8xt9P+qfQ7KN4hA9mzTXhtA
-         FKnDsCOillbU43IR2Zwy0g+mxMhlN9o14FXoGF4N4BYMCKsMoOBgHmHC18wPKdh0X2
-         gfczEITCmPS841iU9jMaQ0TcAVb2Z3629S2/4r6i6aIGInwa5sQupbDld7X2TQXpzO
-         EHDVGvC5lR+A5OBbgzDPy3zfDYVmM+ixdxi91DxU0m0i0CCyX8/zHnRELUQhubZF3S
-         /YvIozqJlo3IOtbX8EjKcuMDtgColCffLWW7oOdADqDYo1+HIc5ZNjY3bDDeqIavil
-         6SuY60ias7rIQ==
-X-Nifty-SrcIP: [209.85.210.173]
-Received: by mail-pf1-f173.google.com with SMTP id t5so17519056pfg.4;
-        Tue, 22 Mar 2022 00:43:42 -0700 (PDT)
-X-Gm-Message-State: AOAM5319+bJihV1JYYGaK2qs1oy5+PgsgmqW/GJQ8v8FhbTIh/SHmYug
-        e3R/+cP9WNjKJvOYXIyGRxgcLD5eGrcBsFsiUhM=
-X-Google-Smtp-Source: ABdhPJxZ9zN4TLQP11Pq9u2qB1LjyeqixgQ28H3ffG4zL3mh7x0Vg0EhRvibe59lLMa6kYIH0QuRXzZSUyA15djKsoA=
-X-Received: by 2002:a63:ec47:0:b0:382:692a:dc04 with SMTP id
- r7-20020a63ec47000000b00382692adc04mr9278053pgj.352.1647935021432; Tue, 22
- Mar 2022 00:43:41 -0700 (PDT)
+        Tue, 22 Mar 2022 03:48:12 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE929C33
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 00:46:45 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nWZDl-0000k1-JB; Tue, 22 Mar 2022 08:46:25 +0100
+Received: from pengutronix.de (2a03-f580-87bc-d400-7c76-e54b-1dbb-9ff1.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:7c76:e54b:1dbb:9ff1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 3DBDF511F6;
+        Tue, 22 Mar 2022 07:46:23 +0000 (UTC)
+Date:   Tue, 22 Mar 2022 08:46:22 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>
+Cc:     linux-can@vger.kernel.org, devicetree@vger.kernel.org,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        David Miller <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>, mark.rutland@arm.com,
+        Carsten Emde <c.emde@osadl.org>, armbru@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Marin Jerabek <martin.jerabek01@gmail.com>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        Jiri Novak <jnovak@fel.cvut.cz>,
+        Jaroslav Beran <jara.beran@gmail.com>,
+        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
+        Drew Fustini <pdp7pdp7@gmail.com>
+Subject: Re: [PATCH v8 0/7] CTU CAN FD open-source IP core SocketCAN driver,
+ PCI, platform integration and documentation
+Message-ID: <20220322074622.5gkjhs25epurecvx@pengutronix.de>
+References: <cover.1647904780.git.pisa@cmp.felk.cvut.cz>
 MIME-Version: 1.0
-References: <20220306223016.2239094-1-ctshao@google.com> <CAKwvOdnmtRYnSx3VvG=PEnzpzWa8f=0bn1xDymjER5EShS2tmw@mail.gmail.com>
- <YiaMJCHOOuujHwiK@google.com> <CAK7LNAS-=Fne6fyiqzQ6DwNLOdF-HAY9Libn10uyV9GmQQMUKQ@mail.gmail.com>
- <YjFQvhv7I6w8xjbK@google.com>
-In-Reply-To: <YjFQvhv7I6w8xjbK@google.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Tue, 22 Mar 2022 16:42:57 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATmPXs6f-Oe4XmfcZSRPsCsuexSebA=4-jyNsMYHu9cag@mail.gmail.com>
-Message-ID: <CAK7LNATmPXs6f-Oe4XmfcZSRPsCsuexSebA=4-jyNsMYHu9cag@mail.gmail.com>
-Subject: Re: [PATCH v4] config: Allow kernel installation packaging to
- override pkg-config
-To:     Chun-Tse Shao <ctshao@google.com>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Nicolas Schier <nicolas@fjasle.eu>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        David Howells <dhowells@redhat.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        keyrings@vger.kernel.org, DTML <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="36z23q6udvpbfk4u"
+Content-Disposition: inline
+In-Reply-To: <cover.1647904780.git.pisa@cmp.felk.cvut.cz>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 11:51 AM Chun-Tse Shao <ctshao@google.com> wrote:
->
-> Tue, Mar 08, 2022 at 01:01:45PM +0900, Masahiro Yamada wrote:
-> > On Tue, Mar 8, 2022 at 7:50 AM Chun-Tse Shao <ctshao@google.com> wrote:
-> > >
-> > > On Mon, Mar 07, 2022 at 10:17:17AM -0800, Nick Desaulniers wrote:
-> > > > On Sun, Mar 6, 2022 at 2:39 PM Chun-Tse Shao <ctshao@google.com> wrote:
-> > > > >
-> > > > > Add HOSTPKG_CONFIG to allow tooling that builds the kernel to override
-> > > > > what pkg-config and parameters are used.
-> > > >
-> > > > Sorry, kind a late thought here for v4, but we don't seem to prefix
-> > > > many other host side tools with HOST_, i.e. LEX, YACC, AWK, PERL,
-> > > > PYTHON3, etc.  Maybe just having the variable identifier be simply
-> > > > PKGCONFIG rather than HOSTPKG_CONFIG then put it at the end of the
-> > > > list in the top level Makefile after ZSTD (i.e. the list of host
-> > > > tools)?  There's HOST_ prefixes when there's more than one tool
-> > > > involved (i.e. host compiler vs target compiler), but I suspect
-> > > > there's no such distinction for the existing uses of pkg-config?
-> > > >
-> > > Thanks for your suggestion, Nick! Yes I think it makes sense with PKGCONFIG
-> > > instead of HOSTPKG_CONFIG since there is only one tool involved. I will
-> > > work on it and submit a new patch.
-> > >
-> >
-> > Please hold on.
-> >
-> > I was also wondering what to do with the "HOST" prefix.
-> >
-> > Libraries are usually arch-dependent.
-> > (in other words, pkg-config should return different library paths
-> > for $(CC) and $(HOSTCC) )
-> >
-> > You already understood this, so you added "HOST" prefix.
-> >
-> >
-> > Please let me take time for further discussion.
-> > I will come back to this when I get some time.
-> >
-> >
->
-> Hi Mashiro,
->
-> I was wondering if you were able to look more into this.
->
-> Thank you!
->
-> -CT
->
-> > In the meantime,
-> >   a8a5cd8b472ca20e5b8fa649c43b3756867322f8
-> > as reference info if you have not seen it.
-> >
-> >
-> > How many distros support something like
-> > "aarch64-linux-gnu-pkg-config"  ?
-> >
-> > Ubuntu 18.04 and 20.04 seem to support it.
-> > I do not know for others.
-> >
-> >
-> >
-> >
 
+--36z23q6udvpbfk4u
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On 22.03.2022 00:32:27, Pavel Pisa wrote:
+> This driver adds support for the CTU CAN FD open-source IP core.
+> More documentation and core sources at project page
+> (https://gitlab.fel.cvut.cz/canbus/ctucanfd_ip_core).
+> The core integration to Xilinx Zynq system as platform driver
+> is available (https://gitlab.fel.cvut.cz/canbus/zynq/zynq-can-sja1000-top=
+).
+> Implementation on Intel FPGA based PCI Express board is available
+> from project (https://gitlab.fel.cvut.cz/canbus/pcie-ctucanfd).
+> The CTU CAN FD core emulation send for review for QEMU mainline.
+> Development repository for QEMU emulation - ctu-canfd branch of
+>   https://gitlab.fel.cvut.cz/canbus/qemu-canbus
+>=20
+> More about CAN bus related projects used and developed at CTU FEE
+> on the guidepost page http://canbus.pages.fel.cvut.cz/ .
 
-Sorry for the delay.
-I am OK with the idea of allowing users to override the pkg-config command,
-but I tend to take time before making a decision.
+The driver looks much better now. Good work. Please have a look at the
+TX path of the mcp251xfd driver, especially the tx_stop_queue and
+tx_wake_queue in mcp251xfd_start_xmit() and mcp251xfd_handle_tefif(). A
+lockless implementation should work in your hardware, too.
 
+BTW: The PROP_SEG/PHASE_SEG1 issue is known:
 
+> +A curious reader will notice that the durations of the segments PROP_SEG
+> +and PHASE_SEG1 are not determined separately but rather combined and
+> +then, by default, the resulting TSEG1 is evenly divided between PROP_SEG
+> +and PHASE_SEG1.
 
+and the flexcan IP core in CAN-FD mode has the same problem. When
+working on the bit timing parameter, I'll plan to have separate
+PROP_SEG/PHASE_SEG1 min/max in the kernel, so that the bit timing
+algorithm can take care of this.
 
-Does anybody have any insight / thoughts about the following points?
+regards,
+Marc
 
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
+--36z23q6udvpbfk4u
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmI5fswACgkQrX5LkNig
+013PMQgAry/PkuGGU7GSA3xJRLELcIKOAuwmQaJF/J1/IKeEaZOtD6W/7ml1q9OX
+jpiKdNr/4kgkkEbmF4RpUJcu47Q3R4pYsKdu02b80vbul8tz+pc1vSrJdectiZgN
+2Ni1L+fR78bnICKivXNyPBFRhmbwakBkEUihKIMipb9+r6i7EhzuEt2f9B7ENyin
+3OtnjT9ilKigKGyWhzFgpVE1OVpZA6JuU4FeI5Tn1W1hq3oR7285Z9pI78++mC5a
+2YRreiqXhywLExr46RWqEnnAqhQApJr8TLB323llhmzeYQcb/uz5RZhXKull3Lzx
+lAkWRDnyip0aWFAvXdpaSva9WQoFCg==
+=VfJn
+-----END PGP SIGNATURE-----
 
-
-[Q1]   with/without "HOST" prefix
-
-
-Apparently, "pkg-config" should return different libs/cflags
-for $(CC) and $(HOSTCC).
-
-I think the non-prefixed macro name "PKG_CONFIG" should be
-reserved for $(CC)  (building for the target system).
-
-"HOSTPKG_CONFIG" looks unbalanced
-due to the underscore.
-
-Perhaps, "HOST_PKG_CONFIG" might be better?
-
-
-
-
-[Q2]    "pkg-config" vs "pkgconf"
-
-The traditional pkg-config implementation [1] is not actively
-maintained these days.
-The last commit was more than one year ago.
-
-The alternative one 'pkgconf' [2] is more active.
-
-In fact, Fedora already switched to 'pkgconf' [3].
-Now 'pkg-config' is just a wrapper of 'pkgconf'.
-Many distributions already support pkgconf.
-
-
-I considered the shorter macro name "HOSTPKGCONF" and
-
-   HOSTPKGCONF  = pkgconf
-
-but I am not sure if this is the right decision.
-Maybe we should stick to "PKG_CONFIG" / "HOST_PKG_CONFIG"
-for the macro names.
-
-
-  [1]  https://gitlab.freedesktop.org/pkg-config/pkg-config.git
-  [2]  https://github.com/pkgconf/pkgconf.git
-  [3]  https://fedoraproject.org/wiki/Changes/pkgconf_as_system_pkg-config_implementation
-
-
-
-
-
-[Q3] What is the trend of handling cross-compile by pkg-config (or pkgconf).
-
-
-By default, pkg-config returns the libs/cflags for native builds.
-
-For cross builds, the search paths for the *.pc files must be changed
-via the "PKG_CONFIG_LIBDIR" environment variable.
-
-To ease this, some distributions provide  <triplet>-pkg-config
-(for example,   aarch64-linux-gnu-pkg-config).
-This became the nationale for tools/build/feature/Makefile defining:
-
-   PKG_CONFIG ?= $(CROSS_COMPILE)pkg-config
-
-But, this wrapper shell script is not always available.
-I do not know how to do it with the LLVM tool suite.
-I am not quite sure if this is the global solution.
-
-
-These days, pkgconf supports another way, .personality file [4]
-to specify the .pc search paths for cross builds.
-
-Is it reasonable to use an option to distinguish native / cross builds
-and use the same macro   "PKG_CONFIG = pkg-config" everywhere ?
-
-
-[4] http://manpages.ubuntu.com/manpages/focal/en/man5/pkgconf-personality.5.html
+--36z23q6udvpbfk4u--
