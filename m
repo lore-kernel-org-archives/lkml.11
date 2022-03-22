@@ -2,173 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C32A3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 14:09:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24C57C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 14:13:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236325AbiCVOKx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 10:10:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41204 "EHLO
+        id S236498AbiCVOPK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 10:15:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234928AbiCVOKm (ORCPT
+        with ESMTP id S236505AbiCVOPB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 10:10:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 85DBB5E773
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 07:09:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647958154;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XjrS+i8ux47oEqISC/xAzvVvrtglGui4NIu7mtB3Zfk=;
-        b=dRCk5HozTd2BTjVC1ifS7Ak05l6jUoZPE7HGYNU6vcvDYkEyJZLqLCUgaLpVxTy1/LVWkb
-        /qyAFjfah7NhTmZwZo99XuMXP2tEJroEQeJzZh84dK8p+gnccnIKxizt8tmrqLNRcggJ9E
-        2fVSFRshKPztyKfVEUpFXDgirZm0Ctk=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-38-ftpneX9iOnK-XC9D8TR9iQ-1; Tue, 22 Mar 2022 10:09:12 -0400
-X-MC-Unique: ftpneX9iOnK-XC9D8TR9iQ-1
-Received: by mail-wm1-f69.google.com with SMTP id 12-20020a05600c24cc00b0038c6caa95f7so985438wmu.4
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 07:09:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=XjrS+i8ux47oEqISC/xAzvVvrtglGui4NIu7mtB3Zfk=;
-        b=3Lr42U9xZyBYzYkx4X0kG6bHsJlbJhmiS99DEnJblIMSyH1W2PjOddbEjLzrB/QAeK
-         8ub+J7g7EOdPSjyNJzJdeN6f4iNi8fTMLUmc4IiGIB0JUoI3M+Ha2+ze0PQ4dGr0CVvr
-         iROigf2wTqGcZzRjAvA5MJpafH/sKPgFomVBlJOTRluDBEMritsXyNvUKo+payadoM3F
-         KM40fUeA0DCHZC3Bt1xqvzTYkAVDtdijYxSCyhZAXhDtla+mBR+fZMtGSONAFFiuKFrS
-         zFaJ26zERXqsx9Xbcbru4t03QwfNFBfTfDmbav+TZ+Ti3pvz7ILkpnndsHQAcKEM+jbk
-         ooUQ==
-X-Gm-Message-State: AOAM533tpoKRX2tDVOzygGlpXx1/67BwL1GR0wi5gPH7fxUZSH13ttfY
-        3kHJM3C2P0tvzbptoBd9gmii+R1KzBT9zzhpZSFeRsFOlyAD04CxfEaBqRqDK4nuBvRo+q08nFd
-        glBXihtCBZHBqGT8iwB2i74LG
-X-Received: by 2002:a05:6000:1ace:b0:203:d45b:fbce with SMTP id i14-20020a0560001ace00b00203d45bfbcemr21853211wry.673.1647958151074;
-        Tue, 22 Mar 2022 07:09:11 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwthJ2YR6qum+rIdVwv5c7F+YfWcOGMnm3G5bxJSaXDIMo7k9XlQ8+7FNG7SNMTkGwYmHNl7g==
-X-Received: by 2002:a05:6000:1ace:b0:203:d45b:fbce with SMTP id i14-20020a0560001ace00b00203d45bfbcemr21853185wry.673.1647958150834;
-        Tue, 22 Mar 2022 07:09:10 -0700 (PDT)
-Received: from redhat.com ([2.55.132.0])
-        by smtp.gmail.com with ESMTPSA id 6-20020a05600c020600b0038cbb21fb00sm1106899wmi.39.2022.03.22.07.09.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Mar 2022 07:09:10 -0700 (PDT)
-Date:   Tue, 22 Mar 2022 10:09:06 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net] vsock/virtio: enable VQs early on probe
-Message-ID: <20220322100835-mutt-send-email-mst@kernel.org>
-References: <20220322103823.83411-1-sgarzare@redhat.com>
- <20220322092723-mutt-send-email-mst@kernel.org>
- <20220322140500.bn5yrqj5ljckhcdb@sgarzare-redhat>
+        Tue, 22 Mar 2022 10:15:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 960F275C21;
+        Tue, 22 Mar 2022 07:13:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A30D5615F4;
+        Tue, 22 Mar 2022 14:13:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4652BC340F0;
+        Tue, 22 Mar 2022 14:13:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647958401;
+        bh=sj7dHnIhjDPjmxjj1mLrGBUQ1XaqXVRV+kSbTR9LmwY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QwL3BKm+Lr4dRHJxt+JU5QMrC9uFOmEZ7re3ZgfsPMpoh/qcayzq0xBkoepEJMAdQ
+         tYo4SdZUegJ7aQCRAHn/rxAZemaBwESz9DkFzkMCHvvZGoyHL3rFcnSvcQDY/Ast3T
+         Rw5v3g/j/6hKUNDscw+wLiUE1AzWB739Okkqt8BUYmlOLLfw1r9UsadFEod5z4p1jf
+         BkPE+mprJLGYYTtmmw8aZzDvv9vaLPFPS0droiP5BgbaJDOXTeybxxHc9afGoEmqR/
+         miIXL4pUPg6T6MTZDmnvNCPVbgNNwBknLUQXnB09o0ioABBuKubYQXGcFhvLl6ZcHc
+         oMjnB++dFGgew==
+From:   Jeff Layton <jlayton@kernel.org>
+To:     idryomov@gmail.com, xiubli@redhat.com
+Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lhenriques@suse.de, Eric Biggers <ebiggers@google.com>
+Subject: [RFC PATCH v11 02/51] fscrypt: export fscrypt_base64url_encode and fscrypt_base64url_decode
+Date:   Tue, 22 Mar 2022 10:12:27 -0400
+Message-Id: <20220322141316.41325-3-jlayton@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220322141316.41325-1-jlayton@kernel.org>
+References: <20220322141316.41325-1-jlayton@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220322140500.bn5yrqj5ljckhcdb@sgarzare-redhat>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 03:05:00PM +0100, Stefano Garzarella wrote:
-> On Tue, Mar 22, 2022 at 09:36:14AM -0400, Michael S. Tsirkin wrote:
-> > On Tue, Mar 22, 2022 at 11:38:23AM +0100, Stefano Garzarella wrote:
-> > > virtio spec requires drivers to set DRIVER_OK before using VQs.
-> > > This is set automatically after probe returns, but virtio-vsock
-> > > driver uses VQs in the probe function to fill rx and event VQs
-> > > with new buffers.
-> > 
-> > 
-> > So this is a spec violation. absolutely.
-> > 
-> > > Let's fix this, calling virtio_device_ready() before using VQs
-> > > in the probe function.
-> > > 
-> > > Fixes: 0ea9e1d3a9e3 ("VSOCK: Introduce virtio_transport.ko")
-> > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> > > ---
-> > >  net/vmw_vsock/virtio_transport.c | 2 ++
-> > >  1 file changed, 2 insertions(+)
-> > > 
-> > > diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-> > > index 5afc194a58bb..b1962f8cd502 100644
-> > > --- a/net/vmw_vsock/virtio_transport.c
-> > > +++ b/net/vmw_vsock/virtio_transport.c
-> > > @@ -622,6 +622,8 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
-> > >  	INIT_WORK(&vsock->event_work, virtio_transport_event_work);
-> > >  	INIT_WORK(&vsock->send_pkt_work, virtio_transport_send_pkt_work);
-> > > 
-> > > +	virtio_device_ready(vdev);
-> > > +
-> > >  	mutex_lock(&vsock->tx_lock);
-> > >  	vsock->tx_run = true;
-> > >  	mutex_unlock(&vsock->tx_lock);
-> > 
-> > Here's the whole code snippet:
-> > 
-> > 
-> >        mutex_lock(&vsock->tx_lock);
-> >        vsock->tx_run = true;
-> >        mutex_unlock(&vsock->tx_lock);
-> > 
-> >        mutex_lock(&vsock->rx_lock);
-> >        virtio_vsock_rx_fill(vsock);
-> >        vsock->rx_run = true;
-> >        mutex_unlock(&vsock->rx_lock);
-> > 
-> >        mutex_lock(&vsock->event_lock);
-> >        virtio_vsock_event_fill(vsock);
-> >        vsock->event_run = true;
-> >        mutex_unlock(&vsock->event_lock);
-> > 
-> >        if (virtio_has_feature(vdev, VIRTIO_VSOCK_F_SEQPACKET))
-> >                vsock->seqpacket_allow = true;
-> > 
-> >        vdev->priv = vsock;
-> >        rcu_assign_pointer(the_virtio_vsock, vsock);
-> > 
-> >        mutex_unlock(&the_virtio_vsock_mutex);
-> > 
-> > 
-> > I worry that this is not the only problem here:
-> > seqpacket_allow and setting of vdev->priv at least after
-> > device is active look suspicious.
-> 
-> Right, so if you agree I'll move these before virtio_device_ready().
-> 
-> > E.g.:
-> > 
-> > static void virtio_vsock_event_done(struct virtqueue *vq)
-> > {
-> >        struct virtio_vsock *vsock = vq->vdev->priv;
-> > 
-> >        if (!vsock)
-> >                return;
-> >        queue_work(virtio_vsock_workqueue, &vsock->event_work);
-> > }
-> > 
-> > looks like it will miss events now they will be reported earlier.
-> > One might say that since vq has been kicked it might send
-> > interrupts earlier too so not a new problem, but
-> > there's a chance device actually waits until DRIVER_OK
-> > to start operating.
-> 
-> Yes I see, should I break into 2 patches (one where I move the code already
-> present and this one)?
-> 
-> Maybe a single patch is fine since it's the complete solution.
-> 
-> Thank you for the detailed explanation,
-> Stefano
+Ceph is going to add fscrypt support, but we still want encrypted
+filenames to be composed of printable characters, so we can maintain
+compatibility with clients that don't support fscrypt.
 
-Two I think since movement can be backported to before the hardening
-effort.
+We could just adopt fscrypt's current nokey name format, but that is
+subject to change in the future, and it also contains dirhash fields
+that we don't need for cephfs. Because of this, we're going to concoct
+our own scheme for encoding encrypted filenames. It's very similar to
+fscrypt's current scheme, but doesn't bother with the dirhash fields.
 
+The ceph encoding scheme will use base64 encoding as well, and we also
+want it to avoid characters that are illegal in filenames. Export the
+fscrypt base64 encoding/decoding routines so we can use them in ceph's
+fscrypt implementation.
+
+Acked-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
+---
+ fs/crypto/fname.c       | 8 ++++----
+ include/linux/fscrypt.h | 5 +++++
+ 2 files changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/fs/crypto/fname.c b/fs/crypto/fname.c
+index a9be4bc74a94..1e4233c95005 100644
+--- a/fs/crypto/fname.c
++++ b/fs/crypto/fname.c
+@@ -182,8 +182,6 @@ static int fname_decrypt(const struct inode *inode,
+ static const char base64url_table[65] =
+ 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+ 
+-#define FSCRYPT_BASE64URL_CHARS(nbytes)	DIV_ROUND_UP((nbytes) * 4, 3)
+-
+ /**
+  * fscrypt_base64url_encode() - base64url-encode some binary data
+  * @src: the binary data to encode
+@@ -198,7 +196,7 @@ static const char base64url_table[65] =
+  * Return: the length of the resulting base64url-encoded string in bytes.
+  *	   This will be equal to FSCRYPT_BASE64URL_CHARS(srclen).
+  */
+-static int fscrypt_base64url_encode(const u8 *src, int srclen, char *dst)
++int fscrypt_base64url_encode(const u8 *src, int srclen, char *dst)
+ {
+ 	u32 ac = 0;
+ 	int bits = 0;
+@@ -217,6 +215,7 @@ static int fscrypt_base64url_encode(const u8 *src, int srclen, char *dst)
+ 		*cp++ = base64url_table[(ac << (6 - bits)) & 0x3f];
+ 	return cp - dst;
+ }
++EXPORT_SYMBOL_GPL(fscrypt_base64url_encode);
+ 
+ /**
+  * fscrypt_base64url_decode() - base64url-decode a string
+@@ -233,7 +232,7 @@ static int fscrypt_base64url_encode(const u8 *src, int srclen, char *dst)
+  * Return: the length of the resulting decoded binary data in bytes,
+  *	   or -1 if the string isn't a valid base64url string.
+  */
+-static int fscrypt_base64url_decode(const char *src, int srclen, u8 *dst)
++int fscrypt_base64url_decode(const char *src, int srclen, u8 *dst)
+ {
+ 	u32 ac = 0;
+ 	int bits = 0;
+@@ -256,6 +255,7 @@ static int fscrypt_base64url_decode(const char *src, int srclen, u8 *dst)
+ 		return -1;
+ 	return bp - dst;
+ }
++EXPORT_SYMBOL_GPL(fscrypt_base64url_decode);
+ 
+ bool fscrypt_fname_encrypted_size(const union fscrypt_policy *policy,
+ 				  u32 orig_len, u32 max_len,
+diff --git a/include/linux/fscrypt.h b/include/linux/fscrypt.h
+index 91ea9477e9bd..671181d196a8 100644
+--- a/include/linux/fscrypt.h
++++ b/include/linux/fscrypt.h
+@@ -46,6 +46,9 @@ struct fscrypt_name {
+ /* Maximum value for the third parameter of fscrypt_operations.set_context(). */
+ #define FSCRYPT_SET_CONTEXT_MAX_SIZE	40
+ 
++/* len of resulting string (sans NUL terminator) after base64 encoding nbytes */
++#define FSCRYPT_BASE64URL_CHARS(nbytes)		DIV_ROUND_UP((nbytes) * 4, 3)
++
+ #ifdef CONFIG_FS_ENCRYPTION
+ 
+ /*
+@@ -305,6 +308,8 @@ void fscrypt_free_inode(struct inode *inode);
+ int fscrypt_drop_inode(struct inode *inode);
+ 
+ /* fname.c */
++int fscrypt_base64url_encode(const u8 *src, int len, char *dst);
++int fscrypt_base64url_decode(const char *src, int len, u8 *dst);
+ int fscrypt_setup_filename(struct inode *inode, const struct qstr *iname,
+ 			   int lookup, struct fscrypt_name *fname);
+ 
 -- 
-MST
+2.35.1
 
