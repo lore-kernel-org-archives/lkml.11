@@ -2,184 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C37F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 19:15:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECC9BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 19:17:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230000AbiCVTQc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 15:16:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41890 "EHLO
+        id S230397AbiCVTSd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 15:18:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229523AbiCVTQa (ORCPT
+        with ESMTP id S230112AbiCVTSa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 15:16:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88940B87D;
-        Tue, 22 Mar 2022 12:15:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1C94FB81D59;
-        Tue, 22 Mar 2022 19:15:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAF40C340EC;
-        Tue, 22 Mar 2022 19:14:57 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="ayNjLncA"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1647976496;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=i/U5LyvFIKyE1xMxL9o+v3ZqxPzAfBijQuHujE0+oF8=;
-        b=ayNjLncAbSXIHKGoSRZt2lzsl4IKwOpfI0CHuEFRLd58tJC3pCQKgTb3YV766sf0uSJ8tL
-        vbfl7eoejf2RDXytvp1K7Uaomnb7PR0h2dXz0HuJQ/8CepsnqfPcdER+8WZKD4I1o0yxOT
-        tgidsdVAY2g+AhnePuD2pscPNSud2IU=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 600c7da9 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 22 Mar 2022 19:14:55 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Theodore Ts'o <tytso@mit.edu>, Jann Horn <jannh@google.com>
-Subject: [PATCH] random: allow writes to /dev/urandom to influence fast init
-Date:   Tue, 22 Mar 2022 13:14:36 -0600
-Message-Id: <20220322191436.110963-1-Jason@zx2c4.com>
+        Tue, 22 Mar 2022 15:18:30 -0400
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C764C252A6
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 12:17:02 -0700 (PDT)
+Received: by mail-il1-x12f.google.com with SMTP id j15so2967390ila.13
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 12:17:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=3fa+Yc6J9FxvaVrYGbZmAuXR7+SlkzyafMy9YlzUS1Y=;
+        b=mnwYcMbEhWEt1ZQDtvrtE6C5PJL52JtuOjET1yFuu4hvsaINKYn5YBI/l+cuJpUZ23
+         OcJhgMRiuSM88DEAcpkV5HXwFfVXPdAmu8Q92zmu3BGyhOG1LXl99DeIJboI/XpoaD1M
+         VBvHdMdjyYLW9Zjp+uYEYImDlO/rcbMPXT8vrdabcIe5Ye5xtVnyWxgNivyOABj3T+5o
+         090PQRLV3FgYof0P75g1kj7MniSvqadd0kBDkHJJeHjVNcjm9sLrbqCV9nY85Y56r7c2
+         KrXvkVILE4QIXXgB0EMi4HO4aVOKo+jx1u/rVCyDXweGU1LLlcwN5llvqjaTGb7O/4XF
+         V6jA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=3fa+Yc6J9FxvaVrYGbZmAuXR7+SlkzyafMy9YlzUS1Y=;
+        b=mDO0IZgR2jNFWuCZ5eCrftM/FKGfawB6Q10vc18rPkilhVEHc+yW4r1fjttlutfbHP
+         Q3GgUz2Hz264AnWd/4BKJqDMMWOHjMGI1NZJpkS/fH9BR1YWs6lUSct5oiK2DrR5fqag
+         9LsG8SETPIE6xDDzGsg9vmt7NSc6WHmrHN62WhidnwahslyGq5WmmOjBhC/8QCYeOJHr
+         ONiJhMjxH1c6HQ2+zkDIK5GLianBOCRC75X1BqwuroyXi2ycKC2njK+2ZaJMg5ZfwBwp
+         4tL51hgJsMrg60cmVL0YLCp6P1UA7e3KxYHnXxpZVtteHHpA/QT73SZCJmTSdXo/toyA
+         IVgA==
+X-Gm-Message-State: AOAM532Ssy0O9jh6ndd163nojbAPXbF9EudIFsa3ls8DZQxuTsyE7KMm
+        Lys4J904c6pRy7eLYNOXZKs2aQ==
+X-Google-Smtp-Source: ABdhPJxexP6W39etDP0GPcNUFFmkpxISqnOw3uLuajzE/l70iX6vTuZlNV7gAnA4y2MK4QBhyqT6xA==
+X-Received: by 2002:a05:6e02:1587:b0:2c2:5c48:a695 with SMTP id m7-20020a056e02158700b002c25c48a695mr12637288ilu.169.1647976622129;
+        Tue, 22 Mar 2022 12:17:02 -0700 (PDT)
+Received: from [192.168.1.172] ([207.135.234.126])
+        by smtp.gmail.com with ESMTPSA id e17-20020a5d8ad1000000b00644d51bbffcsm10823699iot.36.2022.03.22.12.17.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Mar 2022 12:17:01 -0700 (PDT)
+Message-ID: <0cd64678-f4de-0e30-87d2-01f32311ee98@kernel.dk>
+Date:   Tue, 22 Mar 2022 13:17:01 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [syzbot] KASAN: use-after-free Read in tty_release
+Content-Language: en-US
+To:     syzbot <syzbot+09ad4050dd3a120bfccd@syzkaller.appspotmail.com>,
+        asml.silence@gmail.com, gregkh@linuxfoundation.org,
+        io-uring@vger.kernel.org, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <0000000000006a354705dad2387e@google.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <0000000000006a354705dad2387e@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For as far back as I can tell, writing to /dev/urandom or /dev/random
-will put entropy into the pool, but won't immediately use it, and won't
-credit it either. Instead, crediting is controlled by the ioctls
-RNDADDTOENTCNT and RNDADDENTROPY. If, however, this happens during early
-boot before the input pool is ready, we have a dangerous situation with
-seed files as commonly used by shell scripts:
+#syz test: git://git.kernel.dk/linux-block for-5.18/io_uring
 
-  dd if=seedfile of=/dev/urandom # write seed into pool
-  dd if=/dev/urandom of=seedfile count=1 bs=32 # read new seed for next boot
-
-Since the entropy in seedfile isn't credited there, this won't cause the
-RNG to transition from crng_init=0 to crng_init=2, and so when we make a
-new seedfile for next boot, we'll still be getting crng_init=0-quality
-randomness, which may well regress from the original seedfile.
-
-I fixed a related issue in systemd with
-<https://github.com/systemd/systemd/commit/da2862ef06f22fc8d31dafced6d2d6dc14f2ee0b>,
-which is a clean way of doing it, but it doesn't really help with
-existing shell scripts. And the behavior here remains bad and
-surprising.
-
-So this patch fixes the issue by including /dev/urandom writes as part
-of the "fast init", but not crediting it as part of the fast init
-counter. This is more or less exactly what's already done for
-kernel-sourced entropy whose quality we don't know, when we use
-add_device_randomness(), which both contributes to the input pool and to
-the fast init key.
-
-There is one caveat to consider, which is what happens if the user
-additionally calls RNDADDTOENTCNT after having written to /dev/urandom,
-expecting to credit that write. That might give way to this pathological
-pattern:
-
-   - write(urandom_fd, &single_byte, 1);
-   - ioctl(urandom_fd, RNDADDTOENTCNT, 8);
-   - attacker brute forces that single byte.
-   - write(urandom_fd, &single_byte, 1);
-   - ioctl(urandom_fd, RNDADDTOENTCNT, 8);
-   - attacker brute forces that single byte.
-   - write(urandom_fd, &single_byte, 1);
-   - ioctl(urandom_fd, RNDADDTOENTCNT, 8);
-   - attacker brute forces that single byte.
-   - write(urandom_fd, &single_byte, 1);
-   - ioctl(urandom_fd, RNDADDTOENTCNT, 8);
-   - attacker brute forces that single byte.
-   - write(urandom_fd, &single_byte, 1);
-   - ioctl(urandom_fd, RNDADDTOENTCNT, 8);
-   - attacker brute forces that single byte.
-   - ...
-
-After this goes 32 times, the crng has now initialized, except an
-attacker was able to bruteforce the whole state, making for a sort of
-boot time "premature next" problem.
-
-This is bad, but the case above is pretty pathological. Part of this
-stems from the fact that /dev/urandom write + RNDADDTOENTCNT is a poor
-interface, because it's unclear whether the crediting will follow the
-writing, whereas we know in the add_device_randomness() case that we
-_won't_ credit it, so we don't have to worry about that.
-
-The better interface for userspace is RNDADDENTROPY, which takes the
-input buffer and the entropy credit all at once, so we can make the
-right decision. For the RNDADDENTROPY, we do not take part in fast init
-if entropy is being credited.
-
-And perhaps we might consider attempting to deprecate RNDADDTOENTCNT at
-some point in the future.
-
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Jann Horn <jannh@google.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
-This isn't a "perfect" solution, and the of entropy accounting sort of
-points both to problems there and to how the "fast init" phase fits in
-to the overall design. So I'll think this over a bit for a few days, and
-maybe it might lead to more improvements in fast init handling later.
-
- drivers/char/random.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 706f08edf0dc..7b7f5e6596c2 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1493,7 +1493,7 @@ static __poll_t random_poll(struct file *file, poll_table *wait)
- 	return mask;
- }
- 
--static int write_pool(const char __user *ubuf, size_t count)
-+static int write_pool(const char __user *ubuf, size_t count, bool will_credit)
- {
- 	size_t len;
- 	int ret = 0;
-@@ -1507,6 +1507,8 @@ static int write_pool(const char __user *ubuf, size_t count)
- 		}
- 		count -= len;
- 		ubuf += len;
-+		if (unlikely(crng_init == 0 && !will_credit))
-+			crng_pre_init_inject(block, len, false);
- 		mix_pool_bytes(block, len);
- 		cond_resched();
- 	}
-@@ -1521,7 +1523,13 @@ static ssize_t random_write(struct file *file, const char __user *buffer,
- {
- 	int ret;
- 
--	ret = write_pool(buffer, count);
-+	/*
-+	 * We set "will_credit" to false here, which might be wrong if the
-+	 * user subsequently calls RNDADDTOENTCNT. But it accounts for the
-+	 * more common case of shell scripts writing to /dev/urandom and
-+	 * then immediately reading back a seed file.
-+	 */
-+	ret = write_pool(buffer, count, false);
- 	if (ret)
- 		return ret;
- 
-@@ -1584,7 +1592,7 @@ static long random_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
- 			return -EINVAL;
- 		if (get_user(size, p++))
- 			return -EFAULT;
--		retval = write_pool((const char __user *)p, size);
-+		retval = write_pool((const char __user *)p, size, ent_count > 0);
- 		if (retval < 0)
- 			return retval;
- 		credit_entropy_bits(ent_count);
 -- 
-2.35.1
+Jens Axboe
 
