@@ -2,153 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F9CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 21:14:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EA2EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 21:15:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235295AbiCVVPp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 17:15:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33878 "EHLO
+        id S233839AbiCVVQj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 17:16:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235266AbiCVVPl (ORCPT
+        with ESMTP id S235311AbiCVVQi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 17:15:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C00FA48E49
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 14:14:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647983651;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SIVLkwlhPM3w906YxQwZL+nXYzlTqcHmn11/FV0IJ2I=;
-        b=Vo0jLs4Et8LNC/vvncdtyRc9LmfTrqI+CxTG+Foa9/PZbx991eKw62bvfd27KlZvpC2LQp
-        8fDY2pO1fTQ6sWb7+OBteX+IdvbRleJUeiFYu2hWynWImOZVgFwVIqOblrPByU3xo8doke
-        IjxuBxtsEmkxIIUQOaaHu29zJlIS9lM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-444-gAQqERV8OKCorngkS2_1Ew-1; Tue, 22 Mar 2022 17:14:06 -0400
-X-MC-Unique: gAQqERV8OKCorngkS2_1Ew-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D5727803B22;
-        Tue, 22 Mar 2022 21:14:05 +0000 (UTC)
-Received: from [10.18.17.215] (dhcp-17-215.bos.redhat.com [10.18.17.215])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 793A440D0166;
-        Tue, 22 Mar 2022 21:14:05 +0000 (UTC)
-Message-ID: <cbf542d9-d3d4-9de8-5a96-4d5fcea69f6a@redhat.com>
-Date:   Tue, 22 Mar 2022 17:14:05 -0400
+        Tue, 22 Mar 2022 17:16:38 -0400
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91487396A4
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 14:15:09 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id s4-20020a92c5c4000000b002c7884b8608so9852566ilt.21
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 14:15:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=MG5Y8xILdnFlJljeDRhJEgQB6FlTo+9PoQNjAE5QtFg=;
+        b=FwOT5qzDZ8y36L/Zwnw6h+DEvc1q8OPSWlHYCVJAvNzBkmc9GB/4QwG+nkxIgOcENw
+         EH/de6zHaO/T8ygmzpU3W7vn0J3vExZfgN2rfrzI0wQJlZOEVRsNATgRnnskXjA3oFUl
+         hbNEwvmYrCAAEjONEUrH9Isd3WrHt3cil7BgTYDYgddr2Ws9F5joaHFvGJS+HkoQsvum
+         /F38r7d6/f6WA0iOumR8TEDDtIeD84qYbT2Xj4bzNMqU6Pw1Uk5rntvLDDY2zWYAaa2w
+         oAG5RhrgWDoPZ8j+cvSJDWTqmxp2Mynqx7iA6b+I5hjUw59gN4iKKM0qUU0Fwm7GIi1o
+         7bGA==
+X-Gm-Message-State: AOAM530YJixziYRPrbAq6eKi0qJM1fcowyVbZ5xnJXhDV8KhAMBz1GGy
+        0hkcyxXP6jFIfQn/DSwVya94L104c74gPDJPDL2grpkvE35w
+X-Google-Smtp-Source: ABdhPJzTvsmDj8F2NfYsv6RQxGTEFIkU5OHFdqWqiIQHfiW3AlzdeqdQlJ/DXbOuA/B92prR6jT/PoV0AmcCO+DnykKKdH6Hytq8
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [OpenRISC] [PATCH V2 1/5] asm-generic: ticket-lock: New generic
- ticket-based spinlock
-Content-Language: en-US
-To:     Stafford Horne <shorne@gmail.com>
-Cc:     guoren@kernel.org, palmer@dabbelt.com, arnd@arndb.de,
-        boqun.feng@gmail.com, peterz@infradead.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-csky@vger.kernel.org, openrisc@lists.librecores.org,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        linux-riscv@lists.infradead.org
-References: <20220319035457.2214979-1-guoren@kernel.org>
- <20220319035457.2214979-2-guoren@kernel.org> <Yjk+LGwhc50zvsk2@antec>
- <54d6221d-0c4f-9329-042d-4f74c4ea288f@redhat.com> <Yjo6bI+DWolVT/bQ@antec>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <Yjo6bI+DWolVT/bQ@antec>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+X-Received: by 2002:a05:6602:2f04:b0:648:cfb5:974a with SMTP id
+ q4-20020a0566022f0400b00648cfb5974amr13360299iow.187.1647983709020; Tue, 22
+ Mar 2022 14:15:09 -0700 (PDT)
+Date:   Tue, 22 Mar 2022 14:15:09 -0700
+In-Reply-To: <5cd8d8f7-b172-12a1-5c4f-f9933b576208@kernel.dk>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000092671e05dad51b08@google.com>
+Subject: Re: [syzbot] KASAN: use-after-free Read in add_wait_queue
+From:   syzbot <syzbot+950cee6d91e62329be2c@syzkaller.appspotmail.com>
+To:     asml.silence@gmail.com, axboe@kernel.dk, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/22/22 17:06, Stafford Horne wrote:
-> On Tue, Mar 22, 2022 at 11:54:37AM -0400, Waiman Long wrote:
->> On 3/21/22 23:10, Stafford Horne wrote:
->>> Hello,
->>>
->>> There is a problem with this patch on Big Endian machines, see below.
->>>
->>> On Sat, Mar 19, 2022 at 11:54:53AM +0800, guoren@kernel.org wrote:
->>>> From: Peter Zijlstra <peterz@infradead.org>
->>>>
->>>> This is a simple, fair spinlock.  Specifically it doesn't have all the
->>>> subtle memory model dependencies that qspinlock has, which makes it more
->>>> suitable for simple systems as it is more likely to be correct.
->>>>
->>>> [Palmer: commit text]
->>>> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
->>>>
->>>> --
->>>>
->>>> I have specifically not included Peter's SOB on this, as he sent his
->>>> original patch
->>>> <https://lore.kernel.org/lkml/YHbBBuVFNnI4kjj3@hirez.programming.kicks-ass.net/>
->>>> without one.
->>>> ---
->>>>    include/asm-generic/spinlock.h          | 11 +++-
->>>>    include/asm-generic/spinlock_types.h    | 15 +++++
->>>>    include/asm-generic/ticket-lock-types.h | 11 ++++
->>>>    include/asm-generic/ticket-lock.h       | 86 +++++++++++++++++++++++++
->>>>    4 files changed, 120 insertions(+), 3 deletions(-)
->>>>    create mode 100644 include/asm-generic/spinlock_types.h
->>>>    create mode 100644 include/asm-generic/ticket-lock-types.h
->>>>    create mode 100644 include/asm-generic/ticket-lock.h
->>>>
->>>> diff --git a/include/asm-generic/ticket-lock.h b/include/asm-generic/ticket-lock.h
->>>> new file mode 100644
->>>> index 000000000000..59373de3e32a
->>>> --- /dev/null
->>>> +++ b/include/asm-generic/ticket-lock.h
->>> ...
->>>
->>>> +static __always_inline void ticket_unlock(arch_spinlock_t *lock)
->>>> +{
->>>> +	u16 *ptr = (u16 *)lock + __is_defined(__BIG_ENDIAN);
->>> As mentioned, this patch series breaks SMP on OpenRISC.  I traced it to this
->>> line.  The above `__is_defined(__BIG_ENDIAN)`  does not return 1 as expected
->>> even on BIG_ENDIAN machines.  This works:
->>>
->>>
->>> diff --git a/include/asm-generic/ticket-lock.h b/include/asm-generic/ticket-lock.h
->>> index 59373de3e32a..52b5dc9ffdba 100644
->>> --- a/include/asm-generic/ticket-lock.h
->>> +++ b/include/asm-generic/ticket-lock.h
->>> @@ -26,6 +26,7 @@
->>>    #define __ASM_GENERIC_TICKET_LOCK_H
->>>    #include <linux/atomic.h>
->>> +#include <linux/kconfig.h>
->>>    #include <asm-generic/ticket-lock-types.h>
->>>    static __always_inline void ticket_lock(arch_spinlock_t *lock)
->>> @@ -51,7 +52,7 @@ static __always_inline bool ticket_trylock(arch_spinlock_t *lock)
->>>    static __always_inline void ticket_unlock(arch_spinlock_t *lock)
->>>    {
->>> -       u16 *ptr = (u16 *)lock + __is_defined(__BIG_ENDIAN);
->>> +       u16 *ptr = (u16 *)lock + IS_ENABLED(CONFIG_CPU_BIG_ENDIAN);
->>>           u32 val = atomic_read(lock);
->>>           smp_store_release(ptr, (u16)val + 1);
->>>
->>>
->>>> +	u32 val = atomic_read(lock);
->>>> +
->>>> +	smp_store_release(ptr, (u16)val + 1);
->>>> +}
->>>> +
->> __BIG_ENDIAN is defined in <linux/kconfig.h>. I believe that if you include
->> <linux/kconfig.h>, the second hunk is not really needed and vice versa.
-> I thought so too, but it doesn't seem to work.  I think __is_defined is not
-> doing what we think in this context.  It looks like __is_defined works when a
-> macro is defined as 1, in this case we have __BIG_ENDIAN 4321.
+Hello,
 
-You are right. __is_defined() only for 1 or not 1. So it can't be used 
-for __BIG_ENDIAN.
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-I was not aware of that. Anyway, the <linux/kconfig.h> include is not 
-really needed then.
+Reported-and-tested-by: syzbot+950cee6d91e62329be2c@syzkaller.appspotmail.com
 
-Cheers,
-Longman
+Tested on:
 
+commit:         7d58de1a io_uring: don't recycle provided buffer if pu..
+git tree:       git://git.kernel.dk/linux-block for-5.18/io_uring
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3172c0bf8614827
+dashboard link: https://syzkaller.appspot.com/bug?extid=950cee6d91e62329be2c
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+
+Note: no patches were applied.
+Note: testing is done by a robot and is best-effort only.
