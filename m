@@ -2,81 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78EFBC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:37:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 216CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 17:39:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239744AbiCVRjM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 13:39:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40534 "EHLO
+        id S239763AbiCVRkh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 13:40:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239623AbiCVRjI (ORCPT
+        with ESMTP id S232667AbiCVRke (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 13:39:08 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC5050E25;
-        Tue, 22 Mar 2022 10:37:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=zVXKwBc1JcWHQCoSSK+DrgoMAyqc1wIUN0g4y2t1xXU=; b=FM6OAmOQAamX1rwFcjPZhLhkv9
-        JPdM78sMnPU3Wfz+ph/B/NHi/dGZHoK9a0D0YtFwhbsUGKlOfhH8jxv6JplGJ/Mwt5+6Xu8B5INLs
-        onq5r4RHi2ml+v43GbK13NcQFTHwMt3kxwRpmflaKyZiSRTMKwhTp42Z548wataFM4GJ6GSAhoTeR
-        JK5piU/Zv+uxpzp/ktuxAC4dBhfCgMSjW0rCTzKZQXI09zkC3GOw7hgzC7Zt+lkpsSDAiH+r0Asoe
-        3ruJuIvYxVv2Q7JXV8Cbu/guJ88QGP74ZN18VGCD2+OVQ+FU7lzz2JRIKUUFUQTXDQXKUIxIRrjJo
-        FfKsuj4w==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nWiRi-00BkYT-6u; Tue, 22 Mar 2022 17:37:26 +0000
-Date:   Tue, 22 Mar 2022 10:37:26 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
-Cc:     Mimi Zohar <zohar@linux.ibm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Philipp Rudo <prudo@redhat.com>, Baoquan He <bhe@redhat.com>,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        AKASHI Takahiro <takahiro.akashi@linaro.org>,
-        James Morse <james.morse@arm.com>,
-        Dave Young <dyoung@redhat.com>,
-        Kairui Song <kasong@redhat.com>,
-        Martin Schwidefsky <schwidefsky@de.ibm.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-modules@vger.kernel.org,
-        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org,
-        stable@kernel.org, Eric Snowberg <eric.snowberg@oracle.com>
-Subject: Re: [PATCH 4/4] module, KEYS: Make use of platform keyring for
- signature verification
-Message-ID: <YjoJVnTuaw/3l7Xp@bombadil.infradead.org>
-References: <cover.1644953683.git.msuchanek@suse.de>
- <840433bc93a58d6dfc4d96c34c0c3b158a0e669d.1644953683.git.msuchanek@suse.de>
- <3e39412657a4b0839bcf38544d591959e89877b8.camel@linux.ibm.com>
- <20220215204730.GQ3113@kunlun.suse.cz>
- <c3f6f6c8a9db34cc1cdc1000f9272c2b36445e15.camel@linux.ibm.com>
- <20220216105645.GS3113@kunlun.suse.cz>
- <edb305079c28e49021166423af0378f8d218f269.camel@linux.ibm.com>
- <20220216120911.GT3113@kunlun.suse.cz>
+        Tue, 22 Mar 2022 13:40:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19555B3ED
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 10:39:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D39861559
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 17:39:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ED99C340EC;
+        Tue, 22 Mar 2022 17:39:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647970745;
+        bh=DjiS32vPPzgMI5rZD9Y+sAxvdb/r9L8MYhIr+oCkLbY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=PuOe6xXlR8M/pSW0JOJW/vpBNEMzZJsv5u93nq9rsn92kFQrafwTgu2K07GlyhCpL
+         LNbGvT+LYU6IRHu+ucWvAKQQQ99o6ZzA+Bo6rl/Lva65oRy+CRCwODtr2+MgcszJqZ
+         sL/U+4tFbFSyTsy1YsANuLE5x0aEBCev5kExZ5X+QxTqo38IpSmlZxyTkRqSN1Qxh/
+         c56s6IU8/V9bpHHkSxcqqfToRB8Q+GoPnKISIBhJJAetw5MbNyQFY8M6RjTiJvk/yN
+         cHuoPhVUPhESTckSAJt+K30DnNTmKOu6g/L4IkA02KRjzR5bPr+T78FWZRu+7Xb+ui
+         bHEqWBuZmsz7Q==
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        David Gow <davidgow@google.com>, linux-um@lists.infradead.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH] um: Fix filtering '-mno-global-merge'
+Date:   Tue, 22 Mar 2022 10:35:47 -0700
+Message-Id: <20220322173547.677760-1-nathan@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220216120911.GT3113@kunlun.suse.cz>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+When booting a clang compiled UML kernel, the kernel panics when trying
+to run init:
 
-How's this series going? Did you and Mimi sort things out? Either way,
-just wanted to let you kow you can base your changes on modules-testing
-[0] if you want to resubmit for v5.19 (v5.18 will be too late already).
-Once testing is done what is on modules-testing will go to modules-next
-for testing for v5.19. There are no changes planned for v5.18 other than
-fixes and so far there are none.
+  wait_stub_done : failed to wait for SIGTRAP, pid = 651294, n = 651294, errno = 0, status = 0xb7f
+  Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
 
-[0] https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git/log/?h=modules-testing
+After the commit in Fixes, many flags from KBUILD_CFLAGS do not appear
+in USER_CFLAGS, likely due to USER_CFLAGS initially being a recursive
+variable ("VAR =") then being switched to a simple ("VAR :=") variable.
+For example, diffing arch/x86/um/.ptrace_user.o.cmd shows flags such as
+'-Os' and '-fno-delete-null-pointer-checks' getting dropped, which both
+impact code generation.
 
-  Luis
+Rework the filtering to use filter-out instead of patsubst, which allows
+all the patterns that USER_CFLAGS cares about to be excluded in one
+command and ensures all flags from KBUILD_CFLAGS are transferred over to
+USER_CFLAGS properly, which resolves the boot issue noted above.
+
+Fixes: 6580c5c18fb3 ("um: clang: Strip out -mno-global-merge from USER_CFLAGS")
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+---
+ arch/um/Makefile | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/arch/um/Makefile b/arch/um/Makefile
+index 320b09cd513c..d202f501e9e1 100644
+--- a/arch/um/Makefile
++++ b/arch/um/Makefile
+@@ -70,15 +70,11 @@ KBUILD_CFLAGS += $(CFLAGS) $(CFLAGS-y) -D__arch_um__ \
+ 
+ KBUILD_AFLAGS += $(ARCH_INCLUDE)
+ 
+-USER_CFLAGS = $(patsubst $(KERNEL_DEFINES),,$(patsubst -I%,,$(KBUILD_CFLAGS))) \
++USER_CFLAGS = $(filter-out $(KERNEL_DEFINES) -I% -mno-global-merge,$(KBUILD_CFLAGS)) \
+ 		$(ARCH_INCLUDE) $(MODE_INCLUDE) $(filter -I%,$(CFLAGS)) \
+ 		-D_FILE_OFFSET_BITS=64 -idirafter $(srctree)/include \
+ 		-idirafter $(objtree)/include -D__KERNEL__ -D__UM_HOST__
+ 
+-ifdef CONFIG_CC_IS_CLANG
+-USER_CFLAGS := $(patsubst -mno-global-merge,,$(USER_CFLAGS))
+-endif
+-
+ #This will adjust *FLAGS accordingly to the platform.
+ include $(srctree)/$(ARCH_DIR)/Makefile-os-$(OS)
+ 
+
+base-commit: 82017457957a550d7d00dde419435dd74a890887
+-- 
+2.35.1
+
