@@ -2,100 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E523CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 13:56:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C0FBC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 14:01:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235980AbiCVN6W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 09:58:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33052 "EHLO
+        id S236006AbiCVOCf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 10:02:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235976AbiCVN6T (ORCPT
+        with ESMTP id S233715AbiCVOCc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 09:58:19 -0400
-Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EB838300E
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 06:56:52 -0700 (PDT)
-Received: from [192.168.12.80] (unknown [182.2.69.158])
-        by gnuweeb.org (Postfix) with ESMTPSA id 22E547E2DF;
-        Tue, 22 Mar 2022 13:56:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1647957411;
-        bh=PjMcysHt2dknFDp2J9SgqL6N1EYY0N4Y0Qnc7+5AWNU=;
-        h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
-        b=rXc5Yqn0rJPnMDmwFzT311hNYadKNDbfYhAXlKq1HdV4nFdHuj4d07ws2l6NaEKPu
-         yjxuOTNcFslyG1L5AgvuqxyEMfDa8YGIZ3vSXSCoMdCcU629fqWOmQNHoq9gSf+KFS
-         nb0YUhj7LC2xiNE0+zGXuTwBWAwd+ygrOQiEyKQnjZnCO63MwIFQHH9R4WvUkxrhSX
-         qcZ+zi5Lu8FhxEfc0iyIFb87KMgI0M3sk1OIj82XNInUR2CaUCO3hKVoqqtjrr+ROI
-         bnCvuabDEuA7dLmYawUJ/SOjEi1Jnd2uSr+6w5+7kfL0orpqEPglbfbckgQvusnH7c
-         JnkAxD+Yv2+bw==
-Message-ID: <8f11bc01-4b63-eaf7-6da3-77556cfb0118@gnuweeb.org>
-Date:   Tue, 22 Mar 2022 20:56:44 +0700
+        Tue, 22 Mar 2022 10:02:32 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20CF222BFA;
+        Tue, 22 Mar 2022 07:01:05 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id mz9-20020a17090b378900b001c657559290so2833606pjb.2;
+        Tue, 22 Mar 2022 07:01:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ucF8X/ru747b6gOWvx4+oiyC4RRj7HH4AUsYaKe1X4o=;
+        b=GBBWBYzqkyZsj+S/k4SV+0KuwR+q6Czyk7hnburccuH39DaIAQ7yneQ2b9wDVflyaf
+         WtuPlTk9AB1mXxnXZ9bTdtLLTujkhzjyttG67jbBNM6xiRAfnk+msyBzIv9tD6uTqbzM
+         Iq+cMr2489ixsubKRzOjpH669UxNg3xHrFh/5YWN4aq1OyPAtXqWuq08OpKgEckQCyo3
+         wzChtD9UcqzkESrZ6HAeh2FEy8yRwEY5YJxMVTNEG3n8D3KpBzErnO+HD652evJJNyXd
+         oW3+uB6uXnnBBw4Pxx4bz7kNagmNnDlv5B0nAMfEOpFzdp+yl2emagnH4Ya35cXVhrma
+         h6Zg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ucF8X/ru747b6gOWvx4+oiyC4RRj7HH4AUsYaKe1X4o=;
+        b=U0/XrAuUE1W+514Y89dAW1pm5Tr76kx+625mzxUWMnicHM540r0z6WoQlKZRMmB/V+
+         S+nWZWquAxJD+4rKVPafDHJbSFOiWZ6wtXX/4DINWZYVeAdeHL3EsNbJhTzI5bs2u/yE
+         AGhkIWTlKlaD+Yx2ASfmAdHqFDl1EVDzbQ947xpIqI37hYD3GJU6rvS+B9HEi9DkwKhT
+         u5ceRpjKzRCJWuAN6nuzQ+4apJO2Nrdb4PX7NfwcbW6nL4xLYO/JEC9srgZK/faqT23J
+         2lqEFGtzMEQnnhAkMObQbVntTl7sF/dLEfZQ6zbuxsLPdl5Oihn7ykEr0c/Iw1Km33mr
+         aQXw==
+X-Gm-Message-State: AOAM531Jm+E5Wzt4Vz3GuRzyWBKq7mc4BUpev0UmVaoOItFw/pnCWz3w
+        5Stc49HQkWiqdC9HqfYL7qc=
+X-Google-Smtp-Source: ABdhPJzHhOFhZ4ulGYF5UmmBHf45uOml+/vin/wZl0DE+uYnWm+g0SxCfdYAUU6QQb3iITLIlzpVrQ==
+X-Received: by 2002:a17:90a:af88:b0:1bd:6b5d:4251 with SMTP id w8-20020a17090aaf8800b001bd6b5d4251mr5284265pjq.134.1647957664527;
+        Tue, 22 Mar 2022 07:01:04 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id g1-20020a17090adac100b001c67cedd84esm2956983pjx.42.2022.03.22.07.01.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Mar 2022 07:01:04 -0700 (PDT)
+Message-ID: <55b5d052-7171-0da8-0dcd-38b107f52f52@gmail.com>
+Date:   Tue, 22 Mar 2022 07:01:01 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [RFC PATCH v2 3/8] tools/nolibc: i386: Implement syscall with 6
- arguments
+ Thunderbird/91.6.1
+Subject: Re: [PATCH net-next v3 2/3] net: ipvlan: add net device refcount
+ tracker
 Content-Language: en-US
-From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
-To:     Willy Tarreau <w@1wt.eu>, David Laight <David.Laight@aculab.com>
-Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
-        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
-        Nugraha <richiisei@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "llvm@lists.linux.dev" <llvm@lists.linux.dev>
-References: <20220322102115.186179-1-ammarfaizi2@gnuweeb.org>
- <20220322102115.186179-4-ammarfaizi2@gnuweeb.org>
- <8653f6784a9b4272a59a75a530663567@AcuMS.aculab.com>
- <a8eeec1d-656d-15a3-dde5-0f8cc8c5956b@gnuweeb.org>
- <20220322121338.GD10306@1wt.eu>
- <81569a1c-a6d3-ceb2-a1f1-f229a024d684@gnuweeb.org>
- <20220322133413.GG10306@1wt.eu>
- <58cb5455-d065-b508-b328-20b57c3a67a7@gnuweeb.org>
- <3b8984ecfbcd4c93aeb468d01728cd74@AcuMS.aculab.com>
- <20220322134100.GH10306@1wt.eu>
- <9cfcb296-9dfe-aef1-4209-20a3a95c50ba@gnuweeb.org>
- <98304cd4-a443-5e5e-9764-654ecd1d458b@gnuweeb.org>
-In-Reply-To: <98304cd4-a443-5e5e-9764-654ecd1d458b@gnuweeb.org>
+To:     Ziyang Xuan <william.xuanziyang@huawei.com>, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Cc:     edumazet@google.com, brianvv@google.com,
+        linux-kernel@vger.kernel.org
+References: <cover.1647664114.git.william.xuanziyang@huawei.com>
+ <185e45470629ad7a0aeef7a61b608d5cf13fcbf3.1647664114.git.william.xuanziyang@huawei.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+In-Reply-To: <185e45470629ad7a0aeef7a61b608d5cf13fcbf3.1647664114.git.william.xuanziyang@huawei.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/22/22 8:54 PM, Ammar Faizi wrote:
-> 
-> Willy, something goes wrong here...
-> 
-> ammarfaizi2@integral2:~/work/linux.work/tools/include/nolibc$ taskset -c 0 gcc -ffreestanding -nostdlib -nostartfiles test.c -o test -lgcc
-> /usr/bin/ld: /tmp/ccHiYiks.o: warning: relocation against `environ' in read-only section `.text'
-> /usr/bin/ld: /tmp/ccHiYiks.o: in function `getenv':
-> test.c:(.text+0x1f76): undefined reference to `environ'
-> /usr/bin/ld: test.c:(.text+0x1fc3): undefined reference to `environ'
-> /usr/bin/ld: test.c:(.text+0x1ffc): undefined reference to `environ'
-> /usr/bin/ld: test.c:(.text+0x2021): undefined reference to `environ'
-> /usr/bin/ld: test.c:(.text+0x2049): undefined reference to `environ'
-> /usr/bin/ld: warning: creating DT_TEXTREL in a PIE
-> collect2: error: ld returned 1 exit status
-> ammarfaizi2@integral2:~/work/linux.work/tools/include/nolibc$
-> 
-> 
-> I suspect it's caused by commit:
-> 
-> commit c970abe796019b3d576fd154a54b94efb35c02b1
-> Author: Willy Tarreau <w@1wt.eu>
-> Date:   Mon Mar 21 18:33:08 2022 +0100
-> 
->      tools/nolibc/stdlib: add a simple getenv() implementation
->      This implementation relies on an extern definition of the environ
->      variable, that the caller must declare and initialize from envp.
->      Signed-off-by: Willy Tarreau <w@1wt.eu>
->      Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-> 
-> I will take a look deeper on this...
 
-This bug only exists when compiling without optimization.
+On 3/19/22 02:53, Ziyang Xuan wrote:
+> Add net device refcount tracker to ipvlan.
 
--- 
-Ammar Faizi
+
+Just squash this to prior patch.
+
+
+Ideally all new dev_hold()/dev_put() should be
+
+dev_hold_track() and dev_put_track()
+
+
+> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+> ---
+>   drivers/net/ipvlan/ipvlan.h      | 1 +
+>   drivers/net/ipvlan/ipvlan_main.c | 4 ++--
+>   2 files changed, 3 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/ipvlan/ipvlan.h b/drivers/net/ipvlan/ipvlan.h
+> index 3837c897832e..6605199305b7 100644
+> --- a/drivers/net/ipvlan/ipvlan.h
+> +++ b/drivers/net/ipvlan/ipvlan.h
+> @@ -64,6 +64,7 @@ struct ipvl_dev {
+>   	struct list_head	pnode;
+>   	struct ipvl_port	*port;
+>   	struct net_device	*phy_dev;
+> +	netdevice_tracker	dev_tracker;
+>   	struct list_head	addrs;
+>   	struct ipvl_pcpu_stats	__percpu *pcpu_stats;
+>   	DECLARE_BITMAP(mac_filters, IPVLAN_MAC_FILTER_SIZE);
+> diff --git a/drivers/net/ipvlan/ipvlan_main.c b/drivers/net/ipvlan/ipvlan_main.c
+> index dcdc01403f22..be06f122092e 100644
+> --- a/drivers/net/ipvlan/ipvlan_main.c
+> +++ b/drivers/net/ipvlan/ipvlan_main.c
+> @@ -160,7 +160,7 @@ static int ipvlan_init(struct net_device *dev)
+>   	port->count += 1;
+>   
+>   	/* Get ipvlan's reference to phy_dev */
+> -	dev_hold(phy_dev);
+> +	dev_hold_track(phy_dev, &ipvlan->dev_tracker, GFP_KERNEL);
+>   
+>   	return 0;
+>   }
+> @@ -674,7 +674,7 @@ static void ipvlan_dev_free(struct net_device *dev)
+>   	struct ipvl_dev *ipvlan = netdev_priv(dev);
+>   
+>   	/* Get rid of the ipvlan's reference to phy_dev */
+> -	dev_put(ipvlan->phy_dev);
+> +	dev_put_track(ipvlan->phy_dev, &ipvlan->dev_tracker);
+>   }
+>   
+>   void ipvlan_link_setup(struct net_device *dev)
