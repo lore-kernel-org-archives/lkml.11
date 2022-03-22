@@ -2,66 +2,238 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5927C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 11:07:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1D2AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 11:07:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233965AbiCVLIu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 07:08:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46422 "EHLO
+        id S233988AbiCVLIx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 07:08:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233880AbiCVLIo (ORCPT
+        with ESMTP id S233910AbiCVLIp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 07:08:44 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9DE080212
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 04:07:16 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KN7rR3PkNz4wBF;
-        Tue, 22 Mar 2022 19:03:19 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 22 Mar
- 2022 19:07:14 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH] mm: compaction: use helper isolation_suitable
-Date:   Tue, 22 Mar 2022 19:07:50 +0800
-Message-ID: <20220322110750.60311-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
+        Tue, 22 Mar 2022 07:08:45 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2998A80211;
+        Tue, 22 Mar 2022 04:07:18 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id r190-20020a1c2bc7000000b0038a1013241dso1280309wmr.1;
+        Tue, 22 Mar 2022 04:07:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=qSUlhzlA1s0q6/uoUd3jdsktSfPe0Uq9dHq53cc4Gxg=;
+        b=XA5jZz1m1fVkCv5KbXNRwidDsuCEqJojKTKiXtRcF1KsBPZ35mI1Q5etGXwyot4QYY
+         zz6jtCy+SkoH91ciK+DPJi/vNajDBnGKBxMCBXl6so9uvwulI0uLsyzTYDnjxfPEhw+k
+         3N/41iPSEEIC8DYAHOlvvHhACLCRpd4Q7veAK24AEE9jH+8dXd7ZaoYsFfLPXZ2g2grU
+         xkVIKK/Y9jo4ZEOxuvvbnYf29+zp+3G2lnAVqWQHH1q9aZ86NkNmHEzzmN9HRUVAyTPM
+         nmwa8DROBpAa+wlTUGMtMaekvqRS8SEmb6VzluOA4sN5mteRVNx6/hndxpbz5R5ADwRY
+         pEHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=qSUlhzlA1s0q6/uoUd3jdsktSfPe0Uq9dHq53cc4Gxg=;
+        b=dqoQA8w4OWJPNDVqCfnIeyf6xDDXLE+9VaNBd4OvpkGMM06vwmK+RFYyjG7sDdZho0
+         DsFcXcXYDSFSc9T9/0AfpW/0t9148c2P54rG+j6SVRLCmdLs0hgdDhhmpeR3rrytgZ12
+         udzhr2jfXYMdTetrSbvWwSI3ut7/0ZxieCzfRRFEnyVJsfAo/TcCuOVK+nQV1klKTkFB
+         ejZL8XMQG3cvPO7pQA8kwO+V/Ck4G04An8GVy6upFYclZnxqxxw8FQ6h5dJspVFHxnOf
+         FkpGF35kYTL1pXwuxRXB7zEXl/23UqK0t7DCe1E3mbRpQ3mnlSsuRaBI2UctUBqwz3bz
+         771A==
+X-Gm-Message-State: AOAM532Gen4gta0rQ2iN2bN+Ang08DPpmAKAtlyCytGKcP7v7fJZXHLv
+        29SINH5RpLfv2VGh3oJOzfx/HLsmbBE=
+X-Google-Smtp-Source: ABdhPJwaj6eNRUFaM56E9G8HghIEbHssoHxrDMcjFvbAA1Skt9pig7VM8osSqap4IDWGBhTzsCJH9A==
+X-Received: by 2002:a7b:c0ca:0:b0:38c:b9a9:a64d with SMTP id s10-20020a7bc0ca000000b0038cb9a9a64dmr2114497wmh.195.1647947236585;
+        Tue, 22 Mar 2022 04:07:16 -0700 (PDT)
+Received: from avogadro.lan ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.gmail.com with ESMTPSA id f13-20020a05600c4e8d00b0038c949ef0d5sm1746379wmq.8.2022.03.22.04.07.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Mar 2022 04:07:16 -0700 (PDT)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     mlevitsk@redhat.com, jmattson@google.com
+Subject: [PATCH 1/3] Documentation: KVM: add separate directories for architecture-specific documentation
+Date:   Tue, 22 Mar 2022 12:07:10 +0100
+Message-Id: <20220322110712.222449-2-pbonzini@redhat.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220322110712.222449-1-pbonzini@redhat.com>
+References: <20220322110712.222449-1-pbonzini@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use helper isolation_suitable to check whether page is suitable to isolate
-to simplify the code. Minor readability improvement.
+ARM already has an arm/ subdirectory, but s390 and x86 do not even though
+they have a relatively large number of files specific to them.  Create
+new directories in Documentation/virt/kvm for these two architectures
+as well.
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+While at it, group the API documentation and the developer documentation
+in the table of contents.
+
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- mm/compaction.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/virt/kvm/index.rst              | 28 ++++++-------------
+ Documentation/virt/kvm/s390/index.rst         | 12 ++++++++
+ .../virt/kvm/{ => s390}/s390-diag.rst         |  0
+ .../virt/kvm/{ => s390}/s390-pv-boot.rst      |  0
+ Documentation/virt/kvm/{ => s390}/s390-pv.rst |  0
+ .../kvm/{ => x86}/amd-memory-encryption.rst   |  0
+ Documentation/virt/kvm/{ => x86}/cpuid.rst    |  0
+ .../virt/kvm/{ => x86}/halt-polling.rst       |  0
+ .../virt/kvm/{ => x86}/hypercalls.rst         |  0
+ Documentation/virt/kvm/x86/index.rst          | 18 ++++++++++++
+ Documentation/virt/kvm/{ => x86}/mmu.rst      |  0
+ Documentation/virt/kvm/{ => x86}/msr.rst      |  0
+ .../virt/kvm/{ => x86}/nested-vmx.rst         |  0
+ .../kvm/{ => x86}/running-nested-guests.rst   |  0
+ .../virt/kvm/{ => x86}/timekeeping.rst        |  0
+ 15 files changed, 38 insertions(+), 20 deletions(-)
+ create mode 100644 Documentation/virt/kvm/s390/index.rst
+ rename Documentation/virt/kvm/{ => s390}/s390-diag.rst (100%)
+ rename Documentation/virt/kvm/{ => s390}/s390-pv-boot.rst (100%)
+ rename Documentation/virt/kvm/{ => s390}/s390-pv.rst (100%)
+ rename Documentation/virt/kvm/{ => x86}/amd-memory-encryption.rst (100%)
+ rename Documentation/virt/kvm/{ => x86}/cpuid.rst (100%)
+ rename Documentation/virt/kvm/{ => x86}/halt-polling.rst (100%)
+ rename Documentation/virt/kvm/{ => x86}/hypercalls.rst (100%)
+ create mode 100644 Documentation/virt/kvm/x86/index.rst
+ rename Documentation/virt/kvm/{ => x86}/mmu.rst (100%)
+ rename Documentation/virt/kvm/{ => x86}/msr.rst (100%)
+ rename Documentation/virt/kvm/{ => x86}/nested-vmx.rst (100%)
+ rename Documentation/virt/kvm/{ => x86}/running-nested-guests.rst (100%)
+ rename Documentation/virt/kvm/{ => x86}/timekeeping.rst (100%)
 
-diff --git a/mm/compaction.c b/mm/compaction.c
-index c3e37aa9ff9e..86f34053c39d 100644
---- a/mm/compaction.c
-+++ b/mm/compaction.c
-@@ -899,7 +899,7 @@ isolate_migratepages_block(struct compact_control *cc, unsigned long low_pfn,
- 		 * not falsely conclude that the block should be skipped.
- 		 */
- 		if (!valid_page && IS_ALIGNED(low_pfn, pageblock_nr_pages)) {
--			if (!cc->ignore_skip_hint && get_pageblock_skip(page)) {
-+			if (!isolation_suitable(cc, page)) {
- 				low_pfn = end_pfn;
- 				page = NULL;
- 				goto isolate_abort;
+diff --git a/Documentation/virt/kvm/index.rst b/Documentation/virt/kvm/index.rst
+index b6833c7bb474..e0a2c74e1043 100644
+--- a/Documentation/virt/kvm/index.rst
++++ b/Documentation/virt/kvm/index.rst
+@@ -8,25 +8,13 @@ KVM
+    :maxdepth: 2
+ 
+    api
+-   amd-memory-encryption
+-   cpuid
+-   halt-polling
+-   hypercalls
+-   locking
+-   mmu
+-   msr
+-   nested-vmx
+-   ppc-pv
+-   s390-diag
+-   s390-pv
+-   s390-pv-boot
+-   timekeeping
+-   vcpu-requests
+-
+-   review-checklist
+-
+-   arm/index
+-
+    devices/index
+ 
+-   running-nested-guests
++   arm/index
++   s390/index
++   ppc-pv
++   x86/index
++
++   locking
++   vcpu-requests
++   review-checklist
+diff --git a/Documentation/virt/kvm/s390/index.rst b/Documentation/virt/kvm/s390/index.rst
+new file mode 100644
+index 000000000000..605f488f0cc5
+--- /dev/null
++++ b/Documentation/virt/kvm/s390/index.rst
+@@ -0,0 +1,12 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++====================
++KVM for s390 systems
++====================
++
++.. toctree::
++   :maxdepth: 2
++
++   s390-diag
++   s390-pv
++   s390-pv-boot
+diff --git a/Documentation/virt/kvm/s390-diag.rst b/Documentation/virt/kvm/s390/s390-diag.rst
+similarity index 100%
+rename from Documentation/virt/kvm/s390-diag.rst
+rename to Documentation/virt/kvm/s390/s390-diag.rst
+diff --git a/Documentation/virt/kvm/s390-pv-boot.rst b/Documentation/virt/kvm/s390/s390-pv-boot.rst
+similarity index 100%
+rename from Documentation/virt/kvm/s390-pv-boot.rst
+rename to Documentation/virt/kvm/s390/s390-pv-boot.rst
+diff --git a/Documentation/virt/kvm/s390-pv.rst b/Documentation/virt/kvm/s390/s390-pv.rst
+similarity index 100%
+rename from Documentation/virt/kvm/s390-pv.rst
+rename to Documentation/virt/kvm/s390/s390-pv.rst
+diff --git a/Documentation/virt/kvm/amd-memory-encryption.rst b/Documentation/virt/kvm/x86/amd-memory-encryption.rst
+similarity index 100%
+rename from Documentation/virt/kvm/amd-memory-encryption.rst
+rename to Documentation/virt/kvm/x86/amd-memory-encryption.rst
+diff --git a/Documentation/virt/kvm/cpuid.rst b/Documentation/virt/kvm/x86/cpuid.rst
+similarity index 100%
+rename from Documentation/virt/kvm/cpuid.rst
+rename to Documentation/virt/kvm/x86/cpuid.rst
+diff --git a/Documentation/virt/kvm/halt-polling.rst b/Documentation/virt/kvm/x86/halt-polling.rst
+similarity index 100%
+rename from Documentation/virt/kvm/halt-polling.rst
+rename to Documentation/virt/kvm/x86/halt-polling.rst
+diff --git a/Documentation/virt/kvm/hypercalls.rst b/Documentation/virt/kvm/x86/hypercalls.rst
+similarity index 100%
+rename from Documentation/virt/kvm/hypercalls.rst
+rename to Documentation/virt/kvm/x86/hypercalls.rst
+diff --git a/Documentation/virt/kvm/x86/index.rst b/Documentation/virt/kvm/x86/index.rst
+new file mode 100644
+index 000000000000..55ede8e070b6
+--- /dev/null
++++ b/Documentation/virt/kvm/x86/index.rst
+@@ -0,0 +1,18 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++===================
++KVM for x86 systems
++===================
++
++.. toctree::
++   :maxdepth: 2
++
++   amd-memory-encryption
++   cpuid
++   halt-polling
++   hypercalls
++   mmu
++   msr
++   nested-vmx
++   running-nested-guests
++   timekeeping
+diff --git a/Documentation/virt/kvm/mmu.rst b/Documentation/virt/kvm/x86/mmu.rst
+similarity index 100%
+rename from Documentation/virt/kvm/mmu.rst
+rename to Documentation/virt/kvm/x86/mmu.rst
+diff --git a/Documentation/virt/kvm/msr.rst b/Documentation/virt/kvm/x86/msr.rst
+similarity index 100%
+rename from Documentation/virt/kvm/msr.rst
+rename to Documentation/virt/kvm/x86/msr.rst
+diff --git a/Documentation/virt/kvm/nested-vmx.rst b/Documentation/virt/kvm/x86/nested-vmx.rst
+similarity index 100%
+rename from Documentation/virt/kvm/nested-vmx.rst
+rename to Documentation/virt/kvm/x86/nested-vmx.rst
+diff --git a/Documentation/virt/kvm/running-nested-guests.rst b/Documentation/virt/kvm/x86/running-nested-guests.rst
+similarity index 100%
+rename from Documentation/virt/kvm/running-nested-guests.rst
+rename to Documentation/virt/kvm/x86/running-nested-guests.rst
+diff --git a/Documentation/virt/kvm/timekeeping.rst b/Documentation/virt/kvm/x86/timekeeping.rst
+similarity index 100%
+rename from Documentation/virt/kvm/timekeeping.rst
+rename to Documentation/virt/kvm/x86/timekeeping.rst
 -- 
-2.23.0
+2.35.1
+
 
