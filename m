@@ -2,69 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C1A1C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 02:35:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB2FEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 02:39:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235535AbiCVChG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Mar 2022 22:37:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39448 "EHLO
+        id S235603AbiCVClP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Mar 2022 22:41:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235473AbiCVChE (ORCPT
+        with ESMTP id S235474AbiCVClN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Mar 2022 22:37:04 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B3D91D336
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 19:35:37 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id k10so6329948edj.2
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 19:35:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9U+Osd0Ywd7K3Q5dzjNP1l5cw5z550AZ4vENcKfoJTI=;
-        b=hPhRJKwpCtvaJRJ5ORxoXh/YpcExsBn6BCoOQ1fC5K3xC4ibXYRa/+JIiwpG7UqQnl
-         og3vOm6xY2vogsMHLP2MND6ONWDDrhj/oRlPKWGMQ+OJbEsw/tiVhGhkeQ3mdifI4zG5
-         cMFPD2G32t5pVc7oQD6XJDUck4f2/nbDY0/4g=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9U+Osd0Ywd7K3Q5dzjNP1l5cw5z550AZ4vENcKfoJTI=;
-        b=QN4j/31/880rTrbHD4Nis0zVJy/NnzlhXwFLw/xBadSW4LjteZGf7cXH2MYkg88KGf
-         nX+6vftnSxfGYmWrefBTTgAT/FNorpnd+gJEdy+aF2sVV2nUiCsj9M/zA91LQYFj8tlq
-         Eziz4o259CNAg6JZtxIb4IuRNo1JTThmV7wh+x/U2ySkgtK33FQ+YL9gSzS+Q5Pte4PD
-         kUSm4QMPU+OqiZI93RmCuAbp0OlCO+F5azwL7E7HQ8rRbI47fF9GiZpfHybpzEawbScp
-         YkTVWGLJWQzZ0CbRLmazW8CHHfi/00Kk7jlLRZIwmX5GDO8WGfnf3pnAxc25PnLBM+fn
-         MiGA==
-X-Gm-Message-State: AOAM5321IEoo4u4FH/z6vcJsc6bBus3Trvb5myehU2s9jaMYnAXKkKbW
-        dFqPBwIee56MduT97u2XdQDYJLwPwOuJVKcZWb9LQA==
-X-Google-Smtp-Source: ABdhPJwAWZr4dSQPkIi4kcb7ZF+mdJ/97ynQL1DHvgNE5S0Npt9H/NohER38+Qxw8+xN+RkulppxmTdJDfyIMWPo7Ec=
-X-Received: by 2002:a05:6402:207a:b0:419:3e9f:494f with SMTP id
- bd26-20020a056402207a00b004193e9f494fmr8125843edb.397.1647916535965; Mon, 21
- Mar 2022 19:35:35 -0700 (PDT)
+        Mon, 21 Mar 2022 22:41:13 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E12A21BEB8
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Mar 2022 19:39:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647916786; x=1679452786;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=MVRDQpXXQf7bjaR/Df+5U5lgjPu0P+yUN0qIYsAb4ws=;
+  b=OHV1xId+PKpUDxockPGadV+OKPKPvLdUpoefX2JJZGimsmWEyUOWKN3g
+   EeGDJRrPNpqoWMiKUPwfs0ZPCNaaHeTi8HfYMBb75ou7Sl9Q9Dqy3E8j9
+   f7qESuOtW9u3685txB1xjvKesSYtRowDfnJetyVQTZs7gxMW0n4RbgJ/Q
+   KUg5LNYLNi3sI+M//kvTKThHzQGsp7llLinflSEErrCkRYvz13EKlxnpc
+   GVDHQ5eadyIYixUHws4ZVdMoNRmhx+kZ4wZ+HbEJZQtAE+Qhh8UaBBVJL
+   tBAY16Zj8NSL8HCaiwNnfXAJP3m3f7QNJ1uN+FMHvqQJxeypSgUa5zbDA
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="320907263"
+X-IronPort-AV: E=Sophos;i="5.90,200,1643702400"; 
+   d="scan'208";a="320907263"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 19:39:46 -0700
+X-IronPort-AV: E=Sophos;i="5.90,200,1643702400"; 
+   d="scan'208";a="716742214"
+Received: from rongch2-mobl.ccr.corp.intel.com (HELO [10.255.30.60]) ([10.255.30.60])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 19:39:44 -0700
+Subject: Re: [tip:sched/core] BUILD SUCCESS
+ 3387ce4d8a5f2956fab827edf499fe6780e83faa
+To:     Nathan Chancellor <nathan@kernel.org>,
+        kernel test robot <lkp@intel.com>
+Cc:     x86-ml <x86@kernel.org>, linux-kernel@vger.kernel.org
+References: <6238fde0.Qe5umewxqwiDe2GE%lkp@intel.com>
+ <YjkHkb7joeu5GCto@dev-arch.thelio-3990X>
+From:   "Chen, Rong A" <rong.a.chen@intel.com>
+Message-ID: <24dd031a-8ea7-5f01-4d80-3fb30d212c8a@intel.com>
+Date:   Tue, 22 Mar 2022 10:39:41 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.12.0
 MIME-Version: 1.0
-References: <cover.1647894991.git.dsterba@suse.com>
-In-Reply-To: <cover.1647894991.git.dsterba@suse.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 21 Mar 2022 19:35:25 -0700
-Message-ID: <CAADWXX96p7Np92nJfVTd-yWbgqETyzYMC+kBbyjxmCXfi+trTg@mail.gmail.com>
-Subject: Re: [GIT PULL] Btrfs updates for 5.18
-To:     David Sterba <dsterba@suse.com>
-Cc:     linux-btrfs <linux-btrfs@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <YjkHkb7joeu5GCto@dev-arch.thelio-3990X>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 2:37 PM David Sterba <dsterba@suse.com> wrote:
->
-> this update contains feature updates, performance improvements,
-> preparatory and core work and some related VFS updates.  Please pull,
-> thanks.
 
-Hmm. This was marked as spam for me.
 
-Not sure why - the email looks fine, and has proper DKIM and SPF records.
+On 3/22/2022 7:17 AM, Nathan Chancellor wrote:
+> Hello,
+> 
+> On Tue, Mar 22, 2022 at 06:36:16AM +0800, kernel test robot wrote:
+>> tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/core
+>> branch HEAD: 3387ce4d8a5f2956fab827edf499fe6780e83faa  headers/prep: Fix header to build standalone: <linux/psi.h>
+>>
+>> elapsed time: 730m
+>>
+>> configs tested: 114
+>> configs skipped: 3
+>>
+>> The following configs have been built successfully.
+>> More configs may be tested in the coming days.
+>>
+>> gcc tested configs:
+> ...
+>> arm                              allyesconfig
+>> arm                              allmodconfig
+> 
+> This caught my eye due to my earlier report:
+> 
+> https://lore.kernel.org/r/YjiddAnoCCz7Tbt3@dev-arch.thelio-3990X/
+> 
+> Are you sure these configurations built sucessfully?
+> 
+> 
+> $ git show -s
+> commit 3387ce4d8a5f2956fab827edf499fe6780e83faa
+> Author: Ingo Molnar <mingo@kernel.org>
+> Date:   Mon Mar 21 11:05:50 2022 +0100
+> 
+>      headers/prep: Fix header to build standalone: <linux/psi.h>
+>      
+>      Add the <linux/cgroup-defs.h> dependency to <linux/psi.h>, because
+>      cgroup_move_task() will dereference 'struct css_set'.
+>      
+>      ( Only older toolchains are affected, due to variations in
+>        the implementation of rcu_assign_pointer() et al. )
+>      
+>      Cc: Peter Zijlstra <peterz@infradead.org>
+>      Cc: Linus Torvalds <torvalds@linux-foundation.org>
+>      Reported-by: Sachin Sant <sachinp@linux.ibm.com>
+>      Reported-by: Andrew Morton <akpm@linux-foundation.org>
+>      Reported-by: Borislav Petkov <bp@alien8.de>
+>      Signed-off-by: Ingo Molnar <mingo@kernel.org>
+> 
+> $ make -skj"$(nproc)" ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- allmodconfig kernel/sched/
+> In file included from kernel/sched/fair.c:52:
+> kernel/sched/sched.h:87:11: fatal error: asm/paravirt_api_clock.h: No such file or directory
+>     87 | # include <asm/paravirt_api_clock.h>
+>        |           ^~~~~~~~~~~~~~~~~~~~~~~~~~
+> compilation terminated.
+> make[3]: *** [scripts/Makefile.build:288: kernel/sched/fair.o] Error 1
+> In file included from kernel/sched/build_utility.c:52:
+> kernel/sched/sched.h:87:11: fatal error: asm/paravirt_api_clock.h: No such file or directory
+>     87 | # include <asm/paravirt_api_clock.h>
+>        |           ^~~~~~~~~~~~~~~~~~~~~~~~~~
+> compilation terminated.
+> make[3]: *** [scripts/Makefile.build:288: kernel/sched/build_utility.o] Error 1
+> In file included from kernel/sched/build_policy.c:33:
+> kernel/sched/sched.h:87:11: fatal error: asm/paravirt_api_clock.h: No such file or directory
+>     87 | # include <asm/paravirt_api_clock.h>
+>        |           ^~~~~~~~~~~~~~~~~~~~~~~~~~
+> compilation terminated.
+> make[3]: *** [scripts/Makefile.build:288: kernel/sched/build_policy.o] Error 1
+> In file included from kernel/sched/core.c:81:
+> kernel/sched/sched.h:87:11: fatal error: asm/paravirt_api_clock.h: No such file or directory
+>     87 | # include <asm/paravirt_api_clock.h>
+>        |           ^~~~~~~~~~~~~~~~~~~~~~~~~~
+> compilation terminated.
+> ...
+> 
+> I am curious to know how this error was not caught by these builds?
+> Perhaps an old .config from a previous allmodconfig is being reused,
+> rather than just running "make allmodconfig"? If that is the case, it
+> seems like that methodology will miss out on new configuration options
+> over time.
+> 
+> Cheers,
+> Nathan
+> 
 
-              Linus
+Hi Nathan,
+
+Thanks for your reminding, the problem commit is 4ff8f2ca6ccd 
+("sched/headers: Reorganize, clean up and optimize kernel/sched/sched.h 
+dependencies"),
+the bot has sent two build reports related to it:
+
+   https://lore.kernel.org/all/202203152116.qphmikIZ-lkp@intel.com/
+   https://lore.kernel.org/all/202203152144.uFQqgVUf-lkp@intel.com/
+
+and more reports were stopped to avoid too many noise, like below one:
+
+   tree: 
+https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+   head:   97add482e9033a9386baa8824fbea34d0cbfe663
+   commit: 4ff8f2ca6ccd9e0cc5665d09f86d631b3ae3a14c [7191/13392] 
+sched/headers: Reorganize, clean up and optimize kernel/sched/sched.h 
+dependencies
+   :::::: branch date: 17 hours ago
+   :::::: commit date: 3 weeks ago
+   config: arm-randconfig-c002-20220317 (attached as .config)
+   compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
+   reproduce (this is a W=1 build):
+           wget 
+https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross 
+-O ~/bin/make.cross
+           chmod +x ~/bin/make.cross
+           # 
+https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=4ff8f2ca6ccd9e0cc5665d09f86d631b3ae3a14c
+           git remote add linux-next 
+https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
+           git fetch --no-tags linux-next master
+           git checkout 4ff8f2ca6ccd9e0cc5665d09f86d631b3ae3a14c
+           # save the config file to linux build tree
+           mkdir build_dir
+           COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 
+make.cross O=build_dir ARCH=arm SHELL=/bin/bash kernel/
+
+   If you fix the issue, kindly add following tag as appropriate
+   Reported-by: kernel test robot <lkp@intel.com>
+
+   All errors (new ones prefixed by >>):
+
+      In file included from kernel/sched/core.c:79:
+   >> kernel/sched/sched.h:87:11: fatal error: asm/paravirt_api_clock.h: 
+No such file or directory
+         87 | # include <asm/paravirt_api_clock.h>
+            |           ^~~~~~~~~~~~~~~~~~~~~~~~~~
+      compilation terminated.
+
+
+We'll adjust the strategy avoid blocking some important reports.
+
+Best Regards,
+Rong Chen
