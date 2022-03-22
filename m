@@ -2,92 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A8ADC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 22:51:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8272C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 22:51:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238402AbiCVWw5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 18:52:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36984 "EHLO
+        id S238486AbiCVWxE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 18:53:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229778AbiCVWw4 (ORCPT
+        with ESMTP id S229778AbiCVWxC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 18:52:56 -0400
-X-Greylist: delayed 528 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 22 Mar 2022 15:51:27 PDT
-Received: from postfix01.core.dcmtl.stgraber.net (postfix01.core.dcmtl.stgraber.net [IPv6:2602:fc62:a:1001:216:3eff:feb3:6927])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5AC5DA5E;
-        Tue, 22 Mar 2022 15:51:27 -0700 (PDT)
-Received: from dakara.stgraber.net (unknown [IPv6:2602:fc62:b:1000:5436:5b25:64e4:d81a])
-        by postfix01.core.dcmtl.stgraber.net (Postfix) with ESMTP id 41FD41FD94;
-        Tue, 22 Mar 2022 22:42:36 +0000 (UTC)
-From:   =?UTF-8?q?St=C3=A9phane=20Graber?= <stgraber@ubuntu.com>
-To:     kuba@kernel.org
-Cc:     davem@davemloft.net, iyappan@os.amperecomputing.com,
-        keyur@os.amperecomputing.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, quan@os.amperecomputing.com,
-        stable@vger.kernel.org, stgraber@ubuntu.com,
-        toan@os.amperecomputing.com
-Subject: [PATCH v2] drivers: net: xgene: Fix regression in CRC stripping
-Date:   Tue, 22 Mar 2022 18:42:06 -0400
-Message-Id: <20220322224205.752795-1-stgraber@ubuntu.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220318141207.284972b7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20220318141207.284972b7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        Tue, 22 Mar 2022 18:53:02 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A04D25DA72;
+        Tue, 22 Mar 2022 15:51:33 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id i184so2851551pgc.1;
+        Tue, 22 Mar 2022 15:51:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1vztlqi0NlGRoIXQyqiMSOi7b8rX2cFL0tMJ+wH/2ZQ=;
+        b=ZkaCFeD4okTI/mcV3ziegaOTmSg/J+0RaFUIlC8MYQP/DrFEQb7gGi1KPaWaTSktCo
+         QiVQkhLhaua8oH9WYAA+gwWgpDMsZqF+qYAsIx6/itHn5lsfgFvdPiAZtEo58gW3U+5y
+         Xj3X6rNyub9Zwu50L6TLSjfBD4ldzTSdYrkSN0I0j/oXkyNedfSHx44zL1jn20yAL0r7
+         5q9B0OZuB1W4s5PkM23+U/v63t4JG8ATPv9NxwaYiMiZlfPAlOCSkb8FEGYkHvU4MH6m
+         7tOZG7fWSrAkHiooTVrewT4wOSS9awCRHf5W0rISbSX+cYESykVlJSixcPzbw6slllia
+         AhAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1vztlqi0NlGRoIXQyqiMSOi7b8rX2cFL0tMJ+wH/2ZQ=;
+        b=OyHdIKrphA4SyjZqTUYD81r4oWQDm4rp15lf4BKXK1RawPnzDVDJbD2+rwWZPAPMUg
+         bxHH+91lO2CLt8s+8knCNnQRrcjXMYERIV42y7W4PwTJ8ZiED9RLlbs/8BT3/TVLTC7V
+         U9/LhnhnbtscaR4SOBpZIEtNLsGtQEb55I1NpMBWNhZVBRsDGUwfAjbNQvU0OLhVJN3k
+         geQk5Mi4hRFN9twwnpr/+6Nz/DYVAMVkTbBZlZDIMhZ7wj/hK0i7zT/76+fxjnIdkKpe
+         7dLkz4Tyt58gH27bjE2swNx5EA0oTY6usXwrGdtsDKq0dX+UTFusSHfyiAEW4muD0z8I
+         p66Q==
+X-Gm-Message-State: AOAM5306kcs0seQOwGmyWdw5Fa2CeJiTwMGl1UG6563GRnnt6vkVOsg2
+        nnU3CCVpoLQvpd5W+G4O7/FgINTFLvCkBrcFkvA=
+X-Google-Smtp-Source: ABdhPJxaDjb86XDSFFXHgm/5BHKgjZ1H5gBhPR6BvzC2gzZJ1eD2Zb8MXXorlR5YVKbkUivid4o3lla3Vec5E33VExI=
+X-Received: by 2002:aa7:805a:0:b0:4f6:dc68:5d41 with SMTP id
+ y26-20020aa7805a000000b004f6dc685d41mr31193479pfm.69.1647989493007; Tue, 22
+ Mar 2022 15:51:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220318161528.1531164-1-benjamin.tissoires@redhat.com> <20220318161528.1531164-7-benjamin.tissoires@redhat.com>
+In-Reply-To: <20220318161528.1531164-7-benjamin.tissoires@redhat.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 22 Mar 2022 15:51:21 -0700
+Message-ID: <CAADnVQLvhWxEtHETg0tasJ7Fp5JHNRYWdjhnxi1y1gBpXS=bvQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 06/17] HID: allow to change the report
+ descriptor from an eBPF program
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        LKML <linux-kernel@vger.kernel.org>, linux-input@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephane Graber <stgraber@ubuntu.com>
+On Fri, Mar 18, 2022 at 9:16 AM Benjamin Tissoires
+<benjamin.tissoires@redhat.com> wrote:
+>
+> +u8 *hid_bpf_report_fixup(struct hid_device *hdev, u8 *rdesc, unsigned int *size)
+> +{
+> +       int ret;
+> +       struct hid_bpf_ctx_kern ctx = {
+> +               .type = HID_BPF_RDESC_FIXUP,
+> +               .hdev = hdev,
+> +               .size = *size,
+> +       };
+> +
+> +       if (bpf_hid_link_empty(&hdev->bpf, BPF_HID_ATTACH_RDESC_FIXUP))
+> +               goto ignore_bpf;
+> +
+> +       ctx.data = kmemdup(rdesc, HID_MAX_DESCRIPTOR_SIZE, GFP_KERNEL);
+> +       if (!ctx.data)
+> +               goto ignore_bpf;
+> +
+> +       ctx.allocated_size = HID_MAX_DESCRIPTOR_SIZE;
+> +
+> +       ret = hid_bpf_run_progs(hdev, &ctx);
+> +       if (ret)
+> +               goto ignore_bpf;
+> +
+> +       if (ctx.size > ctx.allocated_size)
+> +               goto ignore_bpf;
+> +
+> +       *size = ctx.size;
+> +
+> +       if (*size) {
+> +               rdesc = krealloc(ctx.data, *size, GFP_KERNEL);
+> +       } else {
+> +               rdesc = NULL;
+> +               kfree(ctx.data);
+> +       }
+> +
+> +       return rdesc;
+> +
+> + ignore_bpf:
+> +       kfree(ctx.data);
+> +       return kmemdup(rdesc, *size, GFP_KERNEL);
+> +}
+> +
+>  int __init hid_bpf_module_init(void)
+>  {
+>         struct bpf_hid_hooks hooks = {
+>                 .hdev_from_fd = hid_bpf_fd_to_hdev,
+>                 .pre_link_attach = hid_bpf_pre_link_attach,
+> +               .post_link_attach = hid_bpf_post_link_attach,
+>                 .array_detach = hid_bpf_array_detach,
+>         };
+>
+> diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
+> index 937fab7eb9c6..3182c39db006 100644
+> --- a/drivers/hid/hid-core.c
+> +++ b/drivers/hid/hid-core.c
+> @@ -1213,7 +1213,8 @@ int hid_open_report(struct hid_device *device)
+>                 return -ENODEV;
+>         size = device->dev_rsize;
+>
+> -       buf = kmemdup(start, size, GFP_KERNEL);
+> +       /* hid_bpf_report_fixup() ensures we work on a copy of rdesc */
+> +       buf = hid_bpf_report_fixup(device, start, &size);
 
-All packets on ingress (except for jumbo) are terminated with a 4-bytes
-CRC checksum. It's the responsability of the driver to strip those 4
-bytes. Unfortunately a change dating back to March 2017 re-shuffled some
-code and made the CRC stripping code effectively dead.
+Looking at this patch and the majority of other patches...
+the code is doing a lot of work to connect HID side with bpf.
+At the same time the evolution of the patch series suggests
+that these hook points are not quite stable. More hooks and
+helpers are being added.
+It tells us that it's way too early to introduce a stable
+interface between HID and bpf.
+We suggest to use __weak global functions and unstable kfunc helpers
+to achieve the same goal.
+This way HID side and bpf side can evolve without introducing
+stable uapi burden.
+For example this particular patch can be compressed to:
+__weak int hid_bpf_report_fixup(struct hid_device *hdev, u8 *rdesc,
+unsigned int *size)
+{
+   return 0;
+}
+ALLOW_ERROR_INJECTION(ALLOW_ERROR_INJECTION, ERRNO);
 
-This change re-orders that part a bit such that the datalen is
-immediately altered if needed.
+- buf = kmemdup(start, size, GFP_KERNEL);
++ if (!hid_bpf_report_fixup(device, start, &size))
++   buf = kmemdup(start, size, GFP_KERNEL);
 
-Fixes: 4902a92270fb ("drivers: net: xgene: Add workaround for errata 10GE_8/ENET_11")
-Signed-off-by: Stephane Graber <stgraber@ubuntu.com>
-Tested-by: Stephane Graber <stgraber@ubuntu.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: stable@vger.kernel.org
----
- drivers/net/ethernet/apm/xgene/xgene_enet_main.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+Then bpf program can replace hid_bpf_report_fixup function and adjust its
+return value while reading args.
 
-diff --git a/drivers/net/ethernet/apm/xgene/xgene_enet_main.c b/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
-index ff2d099aab21..53dc8d5fede8 100644
---- a/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
-+++ b/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
-@@ -696,6 +696,12 @@ static int xgene_enet_rx_frame(struct xgene_enet_desc_ring *rx_ring,
- 	buf_pool->rx_skb[skb_index] = NULL;
- 
- 	datalen = xgene_enet_get_data_len(le64_to_cpu(raw_desc->m1));
-+
-+	/* strip off CRC as HW isn't doing this */
-+	nv = GET_VAL(NV, le64_to_cpu(raw_desc->m0));
-+	if (!nv)
-+		datalen -= 4;
-+
- 	skb_put(skb, datalen);
- 	prefetch(skb->data - NET_IP_ALIGN);
- 	skb->protocol = eth_type_trans(skb, ndev);
-@@ -717,12 +723,8 @@ static int xgene_enet_rx_frame(struct xgene_enet_desc_ring *rx_ring,
- 		}
- 	}
- 
--	nv = GET_VAL(NV, le64_to_cpu(raw_desc->m0));
--	if (!nv) {
--		/* strip off CRC as HW isn't doing this */
--		datalen -= 4;
-+	if (!nv)
- 		goto skip_jumbo;
--	}
- 
- 	slots = page_pool->slots - 1;
- 	head = page_pool->head;
--- 
-2.34.1
+Similar approach can be done with all other hooks.
 
+Once api between HID and bpf stabilizes we can replace nop functions
+with writeable tracepoints to make things a bit more stable
+while still allowing for change of the interface in the future.
+
+The amount of bpf specific code in HID core will be close to zero
+while bpf can be used to flexibly tweak it.
+
+kfunc is a corresponding mechanism to introduce unstable api
+from bpf into the kernel instead of stable helpers.
+Just whitelist some functions as unstable kfunc helpers and call them
+from bpf progs.
+See net/bpf/test_run.c and bpf_kfunc_call* for inspiration.
