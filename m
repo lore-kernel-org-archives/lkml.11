@@ -2,97 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05E54C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 16:21:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E78C4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 16:21:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239056AbiCVQXP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 12:23:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45686 "EHLO
+        id S239063AbiCVQXS convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 12:23:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239024AbiCVQXE (ORCPT
+        with ESMTP id S239032AbiCVQXG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 12:23:04 -0400
-Received: from srv6.fidu.org (srv6.fidu.org [IPv6:2a01:4f8:231:de0::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247E5240B2;
-        Tue, 22 Mar 2022 09:21:33 -0700 (PDT)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by srv6.fidu.org (Postfix) with ESMTP id D98B3C800A8;
-        Tue, 22 Mar 2022 17:21:30 +0100 (CET)
-Authentication-Results: srv6.fidu.org (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=tuxedocomputers.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        tuxedocomputers.com; h=content-transfer-encoding:mime-version
-        :references:in-reply-to:x-mailer:message-id:date:date:subject
-        :subject:from:from; s=default; t=1647966090; x=1649780491; bh=44
-        Hrq2X2ixKEMAekiQyA1I/d2m0fPPILtxPrSJHc3l8=; b=CGnK6tHUO0Vlz7fRZn
-        cN0G3OaeVW+Dej1F5mNJdZvO6rXztnLbMVK+Gzs/vv3gt2zWEcEGXnssCwE0Qo2l
-        ilUlCobosxqBuitH5/X5rc2LYJeVqo9Oi2SofHI90mMyIaJQ2ZFHZQgNtRUh8sH9
-        OqZTAyLcQBKWkC8kZMangBUss=
-X-Virus-Scanned: Debian amavisd-new at srv6.fidu.org
-Received: from srv6.fidu.org ([127.0.0.1])
-        by localhost (srv6.fidu.org [127.0.0.1]) (amavisd-new, port 10026)
-        with LMTP id Nr0OEtkbtOcB; Tue, 22 Mar 2022 17:21:30 +0100 (CET)
-Received: from wsembach-tuxedo.fritz.box (unknown [IPv6:2001:a61:6168:d301:4be4:641d:6061:c5dc])
-        (Authenticated sender: wse@tuxedocomputers.com)
-        by srv6.fidu.org (Postfix) with ESMTPA id 7D6ACC8009B;
-        Tue, 22 Mar 2022 17:21:30 +0100 (CET)
-From:   Werner Sembach <wse@tuxedocomputers.com>
-To:     dmitry.torokhov@gmail.com, tiwai@suse.de, mpdesouza@suse.com,
-        arnd@arndb.de, hdegoede@redhat.com, samuel@cavoj.net,
-        wse@tuxedocomputers.com, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v4 3/4] input/i8042: Add debug output for quirks
-Date:   Tue, 22 Mar 2022 17:21:24 +0100
-Message-Id: <20220322162125.59838-4-wse@tuxedocomputers.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220322162125.59838-1-wse@tuxedocomputers.com>
-References: <20220322162125.59838-1-wse@tuxedocomputers.com>
+        Tue, 22 Mar 2022 12:23:06 -0400
+Received: from mail3.swissbit.com (mail3.swissbit.com [176.95.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA5B7245AD;
+        Tue, 22 Mar 2022 09:21:37 -0700 (PDT)
+Received: from mail3.swissbit.com (localhost [127.0.0.1])
+        by DDEI (Postfix) with ESMTP id B3EAA4638F2;
+        Tue, 22 Mar 2022 17:21:35 +0100 (CET)
+Received: from mail3.swissbit.com (localhost [127.0.0.1])
+        by DDEI (Postfix) with ESMTP id A2DC44638E4;
+        Tue, 22 Mar 2022 17:21:35 +0100 (CET)
+X-TM-AS-ERS: 10.149.2.84-127.5.254.253
+X-TM-AS-SMTP: 1.0 ZXguc3dpc3NiaXQuY29t Y2xvZWhsZUBoeXBlcnN0b25lLmNvbQ==
+X-DDEI-TLS-USAGE: Used
+Received: from ex.swissbit.com (SBDEEX02.sbitdom.lan [10.149.2.84])
+        by mail3.swissbit.com (Postfix) with ESMTPS;
+        Tue, 22 Mar 2022 17:21:35 +0100 (CET)
+Received: from sbdeex02.sbitdom.lan (10.149.2.84) by sbdeex02.sbitdom.lan
+ (10.149.2.84) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 22 Mar
+ 2022 17:21:35 +0100
+Received: from sbdeex02.sbitdom.lan ([fe80::e0eb:ade8:2d90:1f74]) by
+ sbdeex02.sbitdom.lan ([fe80::e0eb:ade8:2d90:1f74%8]) with mapi id
+ 15.02.0986.022; Tue, 22 Mar 2022 17:21:35 +0100
+From:   =?iso-8859-1?Q?Christian_L=F6hle?= <CLoehle@hyperstone.com>
+To:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        =?iso-8859-1?Q?Christian_L=F6hle?= <CLoehle@hyperstone.com>
+CC:     Avri Altman <Avri.Altman@wdc.com>,
+        "david-b@pacbell.net" <david-b@pacbell.net>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH] mmc: block: Check for errors after write on SPI
+Thread-Topic: [PATCH] mmc: block: Check for errors after write on SPI
+Thread-Index: AQHYPgh2IUgShFZhDU2/hO/RN7a7Qw==
+Date:   Tue, 22 Mar 2022 16:21:34 +0000
+Message-ID: <9d1ea819e4bb4222a227a02d5f6ad97c@hyperstone.com>
+Accept-Language: en-US, de-DE
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.154.1.4]
+Content-Type: text/plain;
+        charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-TMASE-Version: DDEI-5.1-8.6.1018-26788.001
+X-TMASE-Result: 10--2.793200-10.000000
+X-TMASE-MatchedRID: 0aps3uOmWi5rFdvBEmTnvLZ0InVwVLVTn5nfR7I2dFOxPXYIh1l6dlg7
+        cH4SOkOpdWqA+wY3gFZusJxXwmCOnpDH5Y6LoY7BRZfQN+FVqbA1kR+05VC1hsiCh8yBqE+tbiP
+        oclJOCy2GN/nQcKVf4OaffHI8kAmiHY/bzRmIaZH2TmdnNlUFIJki3iIBA3o/d3XtjqAaoMLBTP
+        qP0WxWQAGRC3bBIF8o0+pR+Ea5cIJI5l15C51feb+viKbH3Jj7+VJ6lZyB0s/3K1BQq7xa/qPFj
+        JEFr+olIoOsWgr8s12OhzOa6g8KrZJJPyubgmhlggtVtSto6r/F+XkGTl73rdhmSDF+y18n4CzB
+        jSy1DpI=
+X-TMASE-SNAP-Result: 1.821001.0001-0-1-22:0,33:0,34:0-0
+X-TMASE-INERTIA: 0-0;;;;
+X-TMASE-XGENCLOUD: d857b4c3-3f2c-4488-ad4d-658a55c19b80-0-0-200-0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make new quirk table easily debugable with some debug output.
+Introduce a SEND_STATUS check for writes through SPI to not mark
+an unsuccessful write as successful.
 
-With no functional change, evaluation of i8042_reset_quirk and
-i8042_reset_never_quirk had to be moved for this.
+Since SPI SD/MMC does not have states, after a write, the card will
+just hold the line LOW until it is ready again. The driver marks the
+write therefore as completed as soon as it reads something other than
+all zeroes.
+The driver does not distinguish from a card no longer signalling busy
+and it being disconnected (and the line being pulled-up by the host).
+This lead to writes being marked as successful when disconnecting
+a busy card.
+Now the card is ensured to be still connected by an additional CMD13,
+just like non-SPI is ensured to go back to TRAN state.
 
-Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
+While at it and since we already poll for the post-write status anyway,
+we might as well check for SPIs error bits (any of them).
+
+The disconnecting card problem is reproducable for me after continuous
+write activity and randomly disconnecting, around every 20-50 tries
+on SPI DS for some card.
+
+Fixes: 7213d175e3b6f ("MMC/SD card driver learns SPI")
 Cc: stable@vger.kernel.org
+Signed-off-by: Christian Loehle <cloehle@hyperstone.com>
 ---
- drivers/input/serio/i8042-x86ia64io.h | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ drivers/mmc/core/block.c | 25 ++++++++++++++++++++++++-
+ 1 file changed, 24 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/input/serio/i8042-x86ia64io.h b/drivers/input/serio/i8042-x86ia64io.h
-index dbfbd6a2763a..229d4936910f 100644
---- a/drivers/input/serio/i8042-x86ia64io.h
-+++ b/drivers/input/serio/i8042-x86ia64io.h
-@@ -1494,6 +1494,23 @@ static int __init i8042_platform_init(void)
+diff --git a/drivers/mmc/core/block.c b/drivers/mmc/core/block.c
+index 4e67c1403cc9..fa34c4bbeebd 100644
+--- a/drivers/mmc/core/block.c
++++ b/drivers/mmc/core/block.c
+@@ -1903,9 +1903,32 @@ static int mmc_blk_card_busy(struct mmc_card *card, struct request *req)
+ 	struct mmc_blk_busy_data cb_data;
+ 	int err;
  
- 	i8042_check_quirks();
+-	if (mmc_host_is_spi(card->host) || rq_data_dir(req) == READ)
++	if (rq_data_dir(req) == READ)
+ 		return 0;
  
-+	pr_debug("Active quirks (empty means none):%s%s%s%s%s%s%s%s%s%s%s%s%s\n",
-+		i8042_nokbd ? " nokbd" : "",
-+		i8042_noaux ? " noaux" : "",
-+		i8042_nomux ? " nomux" : "",
-+		i8042_unlock ? " unlock" : "",
-+		i8042_probe_defer ? "probe_defer" : "",
-+		i8042_reset == I8042_RESET_DEFAULT ?
-+			"" : i8042_reset == I8042_RESET_ALWAYS ?
-+				" reset_always" : " reset_never",
-+		i8042_direct ? " direct" : "",
-+		i8042_dumbkbd ? " dumbkbd" : "",
-+		i8042_noloop ? " noloop" : "",
-+		i8042_notimeout ? " notimeout" : "",
-+		i8042_kbdreset ? " kbdreset" : "",
-+		i8042_dritek ? " dritek" : "",
-+		i8042_nopnp ? " nopnp" : "");
++	/*
++	 * SPI does not have a TRAN state we have to wait on, instead the
++	 * card is ready again when it no longer holds the line LOW.
++	 * We still have to ensure two things here before we know the write
++	 * was successful:
++	 * 1. The card has not disconnected during busy and we actually read our
++	 * own pull-up, thinking it was still connected, so ensure it
++	 * still responds.
++	 * 2. Check for any error bits, in particular R1_SPI_IDLE to catch a
++	 * just reconnected card after being disconnected during busy.
++	 */
++	if (mmc_host_is_spi(card->host)) {
++		u32 status = 0;
 +
- 	retval = i8042_pnp_init();
- 	if (retval)
- 		return retval;
++		err = __mmc_send_status(card, &status, 0);
++		/* All R1 and R2 bits of SPI are errors in our case */
++		if (status)
++			err = err ? err : -EIO;
++		if (err)
++			mqrq->brq.data.bytes_xfered = 0;
++		return err;
++	}
++
+ 	cb_data.card = card;
+ 	cb_data.status = 0;
+ 	err = __mmc_poll_for_busy(card->host, 0, MMC_BLK_TIMEOUT_MS,
 -- 
-2.25.1
+2.34.1
+Hyperstone GmbH | Reichenaustr. 39a  | 78467 Konstanz
+Managing Director: Dr. Jan Peter Berns.
+Commercial register of local courts: Freiburg HRB381782
 
