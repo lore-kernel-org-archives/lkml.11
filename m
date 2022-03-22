@@ -2,87 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC219C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 13:41:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85E8DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 13:41:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235793AbiCVNnH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 09:43:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59976 "EHLO
+        id S235812AbiCVNnK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 09:43:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235432AbiCVNmn (ORCPT
+        with ESMTP id S235877AbiCVNm6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 09:42:43 -0400
-Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9F61B86E2B
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 06:41:15 -0700 (PDT)
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 22MDf0De011046;
-        Tue, 22 Mar 2022 14:41:00 +0100
-Date:   Tue, 22 Mar 2022 14:41:00 +0100
-From:   Willy Tarreau <w@1wt.eu>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     "'Ammar Faizi'" <ammarfaizi2@gnuweeb.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
-        Nugraha <richiisei@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "llvm@lists.linux.dev" <llvm@lists.linux.dev>
-Subject: Re: [RFC PATCH v2 3/8] tools/nolibc: i386: Implement syscall with 6
- arguments
-Message-ID: <20220322134100.GH10306@1wt.eu>
-References: <20220322102115.186179-1-ammarfaizi2@gnuweeb.org>
- <20220322102115.186179-4-ammarfaizi2@gnuweeb.org>
- <8653f6784a9b4272a59a75a530663567@AcuMS.aculab.com>
- <a8eeec1d-656d-15a3-dde5-0f8cc8c5956b@gnuweeb.org>
- <20220322121338.GD10306@1wt.eu>
- <81569a1c-a6d3-ceb2-a1f1-f229a024d684@gnuweeb.org>
- <20220322133413.GG10306@1wt.eu>
- <58cb5455-d065-b508-b328-20b57c3a67a7@gnuweeb.org>
- <3b8984ecfbcd4c93aeb468d01728cd74@AcuMS.aculab.com>
+        Tue, 22 Mar 2022 09:42:58 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDC9185BF2;
+        Tue, 22 Mar 2022 06:41:30 -0700 (PDT)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22MDbMDM004427;
+        Tue, 22 Mar 2022 13:41:28 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=zBky09gpZxVUERWeYr3BZiOSqFMAs8Fbzj2n2/ZIL1M=;
+ b=cKCQj0c5u1l+oi8e+lx6g1zD+za/WmjOmxUcN61U6C+41zEbruMuEvBVwWo78FCBRhYw
+ vVtbReDpnXiNGMZ4KKDS82s5JRTaHzE1p1oTPq9tRKGdGpAjr0VFI4Jxjeipx9gdLRGr
+ TYTPbjkXhO7TYzE+fiFrPzKOd5QjprLA4uYUrbE+boW4N1chU6Sg4BCWkIrb+8wOjdtQ
+ zs/GGAd4fzhIPhzj0imkYkovH8VBXBC5sv/RT6FAO/faMDMEdzDobfxTuvuQ62BB1VP4
+ Wa8+Aa2IkE6AcGQE0q8Hdo6Dwh2fDs7y6GcMD1g3CREii8xHNdeTqWGw2qsAGYtJarLf 6A== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3ey5wcc8cd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 22 Mar 2022 13:41:27 +0000
+Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22MDdZ5P012439;
+        Tue, 22 Mar 2022 13:41:27 GMT
+Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3ey5wcc8c4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 22 Mar 2022 13:41:27 +0000
+Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
+        by ppma05wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22MDZOmN003639;
+        Tue, 22 Mar 2022 13:41:26 GMT
+Received: from b03cxnp07027.gho.boulder.ibm.com (b03cxnp07027.gho.boulder.ibm.com [9.17.130.14])
+        by ppma05wdc.us.ibm.com with ESMTP id 3ew6t9mbp3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 22 Mar 2022 13:41:26 +0000
+Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
+        by b03cxnp07027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22MDfOKs25559478
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 22 Mar 2022 13:41:25 GMT
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D8FFE6E04E;
+        Tue, 22 Mar 2022 13:41:24 +0000 (GMT)
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8E05E6E052;
+        Tue, 22 Mar 2022 13:41:23 +0000 (GMT)
+Received: from [9.65.234.56] (unknown [9.65.234.56])
+        by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Tue, 22 Mar 2022 13:41:23 +0000 (GMT)
+Message-ID: <381b7144-3e60-a825-06fb-ea15ecb4c365@linux.ibm.com>
+Date:   Tue, 22 Mar 2022 09:41:22 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3b8984ecfbcd4c93aeb468d01728cd74@AcuMS.aculab.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v18 14/18] s390/vfio-ap: sysfs attribute to display the
+ guest's matrix
+Content-Language: en-US
+To:     jjherne@linux.ibm.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     freude@linux.ibm.com, borntraeger@de.ibm.com, cohuck@redhat.com,
+        mjrosato@linux.ibm.com, pasic@linux.ibm.com,
+        alex.williamson@redhat.com, kwankhede@nvidia.com,
+        fiuczy@linux.ibm.com
+References: <20220215005040.52697-1-akrowiak@linux.ibm.com>
+ <20220215005040.52697-15-akrowiak@linux.ibm.com>
+ <d66ef5e1-9a77-a71c-e182-ca1f3fc17574@linux.ibm.com>
+From:   Tony Krowiak <akrowiak@linux.ibm.com>
+In-Reply-To: <d66ef5e1-9a77-a71c-e182-ca1f3fc17574@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: WPx93eGmqkoosjzIaxXGg2yp2gsj5woR
+X-Proofpoint-GUID: kbt4o666BROnwwKsGqGmS7VnAruNwko0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-22_04,2022-03-22_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ mlxlogscore=999 malwarescore=0 adultscore=0 lowpriorityscore=0
+ phishscore=0 impostorscore=0 mlxscore=0 spamscore=0 suspectscore=0
+ bulkscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203220078
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 01:39:41PM +0000, David Laight wrote:
-> From: Ammar Faizi
-> > Sent: 22 March 2022 13:37
-> > 
-> > On 3/22/22 8:34 PM, Willy Tarreau wrote:
-> > >> I turned out GCC refuses to use "rm" if we compile without -fomit-frame-pointer
-> > >> (e.g. without optimization / -O0). So I will still use "m" here.
-> > >
-> > > OK that's fine. then you can probably simplify it like this:
-> > >
-> > >        long _arg6 = (long)(arg6); /* Might be in memory */    \
-> > >                                                               \
-> > >        asm volatile (                                         \
-> > >            "pushl  %%ebp\n\t"                                 \
-> > >            "movl   %[_arg6], %%ebp\n\t"                       \
-> > >            "int    $0x80\n\t"                                 \
-> > >            "popl   %%ebp\n\t"                                 \
-> > >            : "=a"(_ret)                                       \
-> > >            : "r"(_num), "r"(_arg1), "r"(_arg2), "r"(_arg3),   \
-> > >              "r"(_arg4),"r"(_arg5), [_arg6]"m"(_arg6)        \
-> > >            : "memory", "cc"                                   \
-> > >        );                                                     \
-> > >
-> > > See ? no more push, no more addl, direct load from memory.
-> > 
-> > Uggh... I crafted the same code like you suggested before, but then
-> > I realized it's buggy, it's buggy because %[_arg6] may live in N(%esp).
-> > 
-> > When you pushl %ebp, the %esp changes, N(%esp) no longer points to the
-> > 6-th argument.
-> 
-> Yep - that is why I wrote the 'push arg6'.
 
-Got it and you're right indeed, sorry for the noise :-)
 
-Willy
+On 3/22/22 09:22, Jason J. Herne wrote:
+> On 2/14/22 19:50, Tony Krowiak wrote:
+>> The matrix of adapters and domains configured in a guest's APCB may
+>> differ from the matrix of adapters and domains assigned to the matrix 
+>> mdev,
+>> so this patch introduces a sysfs attribute to display the matrix of
+>> adapters and domains that are or will be assigned to the APCB of a guest
+>> that is or will be using the matrix mdev. For a matrix mdev denoted by
+>> $uuid, the guest matrix can be displayed as follows:
+>>
+>>     cat /sys/devices/vfio_ap/matrix/$uuid/guest_matrix
+> My OCD wants you to name this matrix_guest instead of guest_matrix. 
+> Simply
+> because then "matrix" and "matrix_guest" will be grouped together when 
+> doing
+> an ls on the parent directory. As a system admin, its the little 
+> things that
+> make the difference :) Please consider... though I won't withhold an 
+> R-b for
+> it.
+
+I am going to leave it as guest_matrix for two reasons:
+1. To me, the name matrix_guest reads like the guest belongs to the 
+matrix rather
+     than the matrix belonging to the guest.
+2. Changing it will require changes to all of the automated test cases 
+that check
+     sysfs to determine whether the attribute is present and I don't 
+think the juice
+     is worth the squeeze.
+
+>
+> Reviewed-by: Jason J. Herne <jjherne@linux.ibm.com>
+>
+
