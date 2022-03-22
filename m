@@ -2,88 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB723C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 09:04:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3186EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 09:08:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232185AbiCVJGB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 05:06:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59434 "EHLO
+        id S231663AbiCVJKO convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 05:10:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231578AbiCVJFs (ORCPT
+        with ESMTP id S230391AbiCVJKN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 05:05:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC7046668
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 02:04:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B075361658
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 09:04:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1DE9C340EE;
-        Tue, 22 Mar 2022 09:04:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647939860;
-        bh=E7kgiCH6KC61WFNUuFqMt1ZzIW1CD6iDp319+kmnUr0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hP85i/2dfhMiZlecOUXNTkuYtTJmi42dvZ5sBLxd9MhpNr5ebuTs3xxFqSSbOI2XQ
-         kPePMBOZFm1lhjfBrITLl0XHuA++/irJ0HnV7qeJ9jiMGNJfnQTvUb1KJn1P6rbhlM
-         q7eDksrHRhkef9lUjALnQ3C4R3686mcDOGgQVMIs=
-Date:   Tue, 22 Mar 2022 09:48:28 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Cc:     David Kershner <david.kershner@unisys.com>,
-        sparmaintainer@unisys.com, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: unisys: Properly test debugfs_create_dir()
- return values
-Message-ID: <YjmNXFlt9+waf94q@kroah.com>
-References: <20220322083858.16887-1-fmdefrancesco@gmail.com>
+        Tue, 22 Mar 2022 05:10:13 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FDD65F270
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 02:08:46 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1nWaV3-0002h8-Qv; Tue, 22 Mar 2022 10:08:21 +0100
+Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1nWaUn-002G5K-VH; Tue, 22 Mar 2022 10:08:08 +0100
+Received: from pza by lupine with local (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1nWaUq-00015B-0c; Tue, 22 Mar 2022 10:08:08 +0100
+Message-ID: <b861bc8259084432dffe3ca6b3a76ee682fd4b64.camel@pengutronix.de>
+Subject: Re: [PATCH v2 3/3] ARM: dts: aspeed: add reset properties into MDIO
+ nodes
+From:   Philipp Zabel <p.zabel@pengutronix.de>
+To:     Dylan Hung <dylan_hung@aspeedtech.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "joel@jms.id.au" <joel@jms.id.au>,
+        "andrew@aj.id.au" <andrew@aj.id.au>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        BMC-SW <BMC-SW@aspeedtech.com>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+Date:   Tue, 22 Mar 2022 10:08:07 +0100
+In-Reply-To: <HK0PR06MB28348F925FEDA3853DD3489D9C179@HK0PR06MB2834.apcprd06.prod.outlook.com>
+References: <20220321095648.4760-1-dylan_hung@aspeedtech.com>
+         <20220321095648.4760-4-dylan_hung@aspeedtech.com>
+         <eefe6dd8-6542-a5c2-6bdf-2c3ffe06e06b@kernel.org>
+         <HK0PR06MB2834CFADF087A439B06F87C29C179@HK0PR06MB2834.apcprd06.prod.outlook.com>
+         <Yjk722CyEW3q1ntm@lunn.ch>
+         <HK0PR06MB28348F925FEDA3853DD3489D9C179@HK0PR06MB2834.apcprd06.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220322083858.16887-1-fmdefrancesco@gmail.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: p.zabel@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 09:38:58AM +0100, Fabio M. De Francesco wrote:
-> debugfs_create_dir() returns a pointers to a dentry objects. On failures
-> it returns errors. Currently the values returned to visornic_probe()
-> seem to be tested for being equal to NULL in case of failures.
+On Di, 2022-03-22 at 03:22 +0000, Dylan Hung wrote:
+> > -----Original Message-----
+> > From: Andrew Lunn [mailto:andrew@lunn.ch]
+> > Sent: 2022年3月22日 11:01 AM
+> > To: Dylan Hung <dylan_hung@aspeedtech.com>
+> > Cc: Krzysztof Kozlowski <krzk@kernel.org>; robh+dt@kernel.org;
+> > joel@jms.id.au; andrew@aj.id.au; hkallweit1@gmail.com;
+> > linux@armlinux.org.uk; davem@davemloft.net; kuba@kernel.org;
+> > pabeni@redhat.com; p.zabel@pengutronix.de; 
+> > devicetree@vger.kernel.org;
+> > linux-arm-kernel@lists.infradead.org;
+> > linux-aspeed@lists.ozlabs.org;
+> > linux-kernel@vger.kernel.org; netdev@vger.kernel.org; BMC-SW
+> > <BMC-SW@aspeedtech.com>; stable@vger.kernel.org
+> > Subject: Re: [PATCH v2 3/3] ARM: dts: aspeed: add reset properties
+> > into MDIO
+> > nodes
+> > 
+> > On Tue, Mar 22, 2022 at 02:32:13AM +0000, Dylan Hung wrote:
+> > > > -----Original Message-----
+> > > > From: Krzysztof Kozlowski [mailto:krzk@kernel.org]
+> > > > Sent: 2022年3月21日 11:53 PM
+> > > > To: Dylan Hung <dylan_hung@aspeedtech.com>; robh+dt@kernel.org;
+> > > > joel@jms.id.au; andrew@aj.id.au; andrew@lunn.ch;
+> > > > hkallweit1@gmail.com; linux@armlinux.org.uk; 
+> > > > davem@davemloft.net;
+> > > > kuba@kernel.org; pabeni@redhat.com; p.zabel@pengutronix.de;
+> > > > devicetree@vger.kernel.org; 
+> > > > linux-arm-kernel@lists.infradead.org;
+> > > > linux-aspeed@lists.ozlabs.org; linux-kernel@vger.kernel.org;
+> > > > netdev@vger.kernel.org
+> > > > Cc: BMC-SW <BMC-SW@aspeedtech.com>; stable@vger.kernel.org
+> > > > Subject: Re: [PATCH v2 3/3] ARM: dts: aspeed: add reset
+> > > > properties
+> > > > into MDIO nodes
+> > > > 
+> > > > On 21/03/2022 10:56, Dylan Hung wrote:
+> > > > > Add reset control properties into MDIO nodes.  The 4 MDIO
+> > > > > controllers in
+> > > > > AST2600 SOC share one reset control bit SCU50[3].
+> > > > > 
+> > > > > Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
+> > > > > Cc: stable@vger.kernel.org
+> > > > 
+> > > > Please describe the bug being fixed. See stable-kernel-rules.
+> > > 
+> > > Thank you for your comment.
+> > > The reset deassertion of the MDIO device was usually done by the
+> > bootloader (u-boot).
+> > > However, one of our clients uses proprietary bootloader and
+> > > doesn't
+> > > deassert the MDIO reset so failed to access the HW in kernel
+> > > driver.
+> > 
+> > So are you saying mainline u-boot releases the reset?
+> > 
+> Yes, if the mdio devices are used in u-boot.
 > 
-> Properly test with "if (IS_ERR())" and then assign the correct error 
-> value to the "err" variable.
+> > > The reset deassertion is missing in the kernel driver since it
+> > > was
+> > > created, should I add a BugFix for the first commit of this
+> > > driver?
+> > 
+> > Yes, that is normal. Ideally the kernel should not depend on u-
+> > boot, because
+> > often people want to use other bootloaders, e.g. barebox. You
+> > should also
+> > consider kexec, where one kernel hands over to another kernel,
+> > without the
+> > bootloader being involved. In such a situation, you ideally want to
+> > assert and
+> > deassert the reset just to clean away any state the old kernel left
+> > around.
+> > 
+> > But please do note, that the reset is optional, since you need to
+> > be able to
+> > work with old DT blobs which don't have the reset property in them.
+> > 
 > 
-> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-> ---
->  drivers/staging/unisys/visornic/visornic_main.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/staging/unisys/visornic/visornic_main.c b/drivers/staging/unisys/visornic/visornic_main.c
-> index 643432458105..58d03f3d3173 100644
-> --- a/drivers/staging/unisys/visornic/visornic_main.c
-> +++ b/drivers/staging/unisys/visornic/visornic_main.c
-> @@ -1922,11 +1922,11 @@ static int visornic_probe(struct visor_device *dev)
->  	/* create debug/sysfs directories */
->  	devdata->eth_debugfs_dir = debugfs_create_dir(netdev->name,
->  						      visornic_debugfs_dir);
-> -	if (!devdata->eth_debugfs_dir) {
-> +	if (IS_ERR(devdata->eth_debugfs_dir)) {
->  		dev_err(&dev->device,
->  			"%s debugfs_create_dir %s failed\n",
->  			__func__, netdev->name);
-> -		err = -ENOMEM;
-> +		err = PTR_ERR(devdata->eth_debugfs_dir);
->  		goto cleanup_register_netdev;
->  	}
+> Thank you. I will let the reset property be optional and modify the
+> error-checking in the driver accordingly in V3.
 
-Also, why does this variable have to be saved off at all?  It should
-only be used later when removing the directory, and we can just look it
-up at that point in time, right?
+No need to change the error checking, just use 
+devm_reset_control_get_optional_shared().
 
-Also, what happens if the network device name changes?
 
-thanks,
-
-greg k-h
+regards
+Philipp
