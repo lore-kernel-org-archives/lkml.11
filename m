@@ -2,125 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C0FBC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 14:01:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85D03C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 14:03:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236006AbiCVOCf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 10:02:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47884 "EHLO
+        id S236055AbiCVOEk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 10:04:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233715AbiCVOCc (ORCPT
+        with ESMTP id S236027AbiCVOEe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 10:02:32 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20CF222BFA;
-        Tue, 22 Mar 2022 07:01:05 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id mz9-20020a17090b378900b001c657559290so2833606pjb.2;
-        Tue, 22 Mar 2022 07:01:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ucF8X/ru747b6gOWvx4+oiyC4RRj7HH4AUsYaKe1X4o=;
-        b=GBBWBYzqkyZsj+S/k4SV+0KuwR+q6Czyk7hnburccuH39DaIAQ7yneQ2b9wDVflyaf
-         WtuPlTk9AB1mXxnXZ9bTdtLLTujkhzjyttG67jbBNM6xiRAfnk+msyBzIv9tD6uTqbzM
-         Iq+cMr2489ixsubKRzOjpH669UxNg3xHrFh/5YWN4aq1OyPAtXqWuq08OpKgEckQCyo3
-         wzChtD9UcqzkESrZ6HAeh2FEy8yRwEY5YJxMVTNEG3n8D3KpBzErnO+HD652evJJNyXd
-         oW3+uB6uXnnBBw4Pxx4bz7kNagmNnDlv5B0nAMfEOpFzdp+yl2emagnH4Ya35cXVhrma
-         h6Zg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ucF8X/ru747b6gOWvx4+oiyC4RRj7HH4AUsYaKe1X4o=;
-        b=U0/XrAuUE1W+514Y89dAW1pm5Tr76kx+625mzxUWMnicHM540r0z6WoQlKZRMmB/V+
-         S+nWZWquAxJD+4rKVPafDHJbSFOiWZ6wtXX/4DINWZYVeAdeHL3EsNbJhTzI5bs2u/yE
-         AGhkIWTlKlaD+Yx2ASfmAdHqFDl1EVDzbQ947xpIqI37hYD3GJU6rvS+B9HEi9DkwKhT
-         u5ceRpjKzRCJWuAN6nuzQ+4apJO2Nrdb4PX7NfwcbW6nL4xLYO/JEC9srgZK/faqT23J
-         2lqEFGtzMEQnnhAkMObQbVntTl7sF/dLEfZQ6zbuxsLPdl5Oihn7ykEr0c/Iw1Km33mr
-         aQXw==
-X-Gm-Message-State: AOAM531Jm+E5Wzt4Vz3GuRzyWBKq7mc4BUpev0UmVaoOItFw/pnCWz3w
-        5Stc49HQkWiqdC9HqfYL7qc=
-X-Google-Smtp-Source: ABdhPJzHhOFhZ4ulGYF5UmmBHf45uOml+/vin/wZl0DE+uYnWm+g0SxCfdYAUU6QQb3iITLIlzpVrQ==
-X-Received: by 2002:a17:90a:af88:b0:1bd:6b5d:4251 with SMTP id w8-20020a17090aaf8800b001bd6b5d4251mr5284265pjq.134.1647957664527;
-        Tue, 22 Mar 2022 07:01:04 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id g1-20020a17090adac100b001c67cedd84esm2956983pjx.42.2022.03.22.07.01.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Mar 2022 07:01:04 -0700 (PDT)
-Message-ID: <55b5d052-7171-0da8-0dcd-38b107f52f52@gmail.com>
-Date:   Tue, 22 Mar 2022 07:01:01 -0700
+        Tue, 22 Mar 2022 10:04:34 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE1B92181D;
+        Tue, 22 Mar 2022 07:03:06 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 123B7210E2;
+        Tue, 22 Mar 2022 14:03:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1647957785; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hxjeJtctvItHxAuxf7YEFgNghbofAlK0X837AW6jowg=;
+        b=1HahhxYubHjyjXf3x5tSAPtNs94DufBIYB7u1A0vP4mor3219f8y8piYhga6u25WArLFnS
+        pI8luKQLIIAZLESqTiECLMRUY4662mREjQaQbZ+DXRDgXhqh9PhuolvCY5UGWoSBNymWZY
+        cUDR+Cib+KwSMmvEjIpoPJ373jjq/vI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1647957785;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hxjeJtctvItHxAuxf7YEFgNghbofAlK0X837AW6jowg=;
+        b=+s+pJvWejwOUWanic85/07ZAh2YkVuMiJHwRm5qpSCNi/cyi9lVo7pmXn2La49cbMKqUf/
+        nn/meLPCRH0vGQBA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D1B4112FC5;
+        Tue, 22 Mar 2022 14:03:04 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id ZcjaMhjXOWI6HQAAMHmgww
+        (envelope-from <hare@suse.de>); Tue, 22 Mar 2022 14:03:04 +0000
+Message-ID: <306df4cf-0ee0-2b1e-044c-aed6c70122f9@suse.de>
+Date:   Tue, 22 Mar 2022 15:03:04 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH net-next v3 2/3] net: ipvlan: add net device refcount
- tracker
+ Thunderbird/91.4.0
 Content-Language: en-US
-To:     Ziyang Xuan <william.xuanziyang@huawei.com>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Cc:     edumazet@google.com, brianvv@google.com,
-        linux-kernel@vger.kernel.org
-References: <cover.1647664114.git.william.xuanziyang@huawei.com>
- <185e45470629ad7a0aeef7a61b608d5cf13fcbf3.1647664114.git.william.xuanziyang@huawei.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-In-Reply-To: <185e45470629ad7a0aeef7a61b608d5cf13fcbf3.1647664114.git.william.xuanziyang@huawei.com>
+To:     John Garry <john.garry@huawei.com>, Christoph Hellwig <hch@lst.de>
+Cc:     axboe@kernel.dk, damien.lemoal@opensource.wdc.com,
+        bvanassche@acm.org, jejb@linux.ibm.com, martin.petersen@oracle.com,
+        ming.lei@redhat.com, chenxiang66@hisilicon.com,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-scsi@vger.kernel.org,
+        dm-devel@redhat.com, beanhuo@micron.com
+References: <1647945585-197349-1-git-send-email-john.garry@huawei.com>
+ <1647945585-197349-2-git-send-email-john.garry@huawei.com>
+ <20220322111848.GA29270@lst.de>
+ <cacc3f7b-c8be-0f72-1c52-562c15b468a4@huawei.com>
+ <b5df2ef1-2d6d-340e-e4b4-09132dc0516b@suse.de>
+ <a5e42012-c1fc-082e-e636-594abc07dd70@huawei.com>
+From:   Hannes Reinecke <hare@suse.de>
+Subject: Re: [PATCH 01/11] blk-mq: Add blk_mq_init_queue_ops()
+In-Reply-To: <a5e42012-c1fc-082e-e636-594abc07dd70@huawei.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 3/22/22 13:30, John Garry wrote:
+> On 22/03/2022 12:16, Hannes Reinecke wrote:
+>> On 3/22/22 12:33, John Garry wrote:
+>>> On 22/03/2022 11:18, Christoph Hellwig wrote:
+>>>> On Tue, Mar 22, 2022 at 06:39:35PM +0800, John Garry wrote:
+>>>>> Add an API to allocate a request queue which accepts a custom set of
+>>>>> blk_mq_ops for that request queue.
+>>>>>
+>>>>> The reason which we may want custom ops is for queuing requests 
+>>>>> which we
+>>>>> don't want to go through the normal queuing path.
+>>>>
+>>>> Eww.  I really do not think we should do separate ops per queue, as 
+>>>> that
+>>>> is going to get us into a deep mess eventually.
+>>>>
+>>>
+>>> Yeah... so far (here) it works out quite nicely, as we don't need to 
+>>> change the SCSI blk mq ops nor allocate a scsi_device - everything is 
+>>> just separate.
+>>>
+>>> The other method mentioned previously was to add the request 
+>>> "reserved" flag and add new paths in scsi_queue_rq() et al to handle 
+>>> this, but that gets messy.
+>>>
+>>> Any other ideas ...?
+>>>
+>>
+>> As outlined in the other mail, I think might be useful is to have a 
+>> _third_ type of requests (in addition to the normal and the reserved 
+>> ones).
+>> That one would be allocated from the normal I/O pool (and hence could 
+>> fail if the pool is exhausted), but would be able to carry a different 
+>> payload (type) than the normal requests.
+> 
+> As mentioned in the cover letter response, it just seems best to keep 
+> the normal scsi_cmnd payload but have other means to add on the internal 
+> command data, like using host_scribble or scsi_cmnd priv data.
+> 
+Well; I found that most drivers I had been looking at the scsi command 
+payload isn't used at all; the drivers primarily cared about the 
+(driver-provided) payload, and were completely ignoring the scsi command 
+payload.
 
-On 3/19/22 02:53, Ziyang Xuan wrote:
-> Add net device refcount tracker to ipvlan.
+Similar for ATA/libsas: you basically never issue real scsi commands, 
+but either 'raw' ATA requests or SCSI TMFs. None of which are scsi 
+commands, so providing them is a bit of a waste.
 
+(And causes irritations, too, as a scsi command requires associated 
+pointers like ->device etc to be set up. Which makes it tricky to use 
+for the initial device setup.)
 
-Just squash this to prior patch.
+>> And we could have a separate queue_rq for these requests, as we can 
+>> differentiate them in the block layer.
+> 
+> I don't know, let me think about it. Maybe we could add an "internal" 
+> blk flag, which uses a separate "internal" queue_rq callback.
+> 
+Yeah, that's what I had in mind.
 
+Cheers,
 
-Ideally all new dev_hold()/dev_put() should be
-
-dev_hold_track() and dev_put_track()
-
-
-> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
-> ---
->   drivers/net/ipvlan/ipvlan.h      | 1 +
->   drivers/net/ipvlan/ipvlan_main.c | 4 ++--
->   2 files changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/net/ipvlan/ipvlan.h b/drivers/net/ipvlan/ipvlan.h
-> index 3837c897832e..6605199305b7 100644
-> --- a/drivers/net/ipvlan/ipvlan.h
-> +++ b/drivers/net/ipvlan/ipvlan.h
-> @@ -64,6 +64,7 @@ struct ipvl_dev {
->   	struct list_head	pnode;
->   	struct ipvl_port	*port;
->   	struct net_device	*phy_dev;
-> +	netdevice_tracker	dev_tracker;
->   	struct list_head	addrs;
->   	struct ipvl_pcpu_stats	__percpu *pcpu_stats;
->   	DECLARE_BITMAP(mac_filters, IPVLAN_MAC_FILTER_SIZE);
-> diff --git a/drivers/net/ipvlan/ipvlan_main.c b/drivers/net/ipvlan/ipvlan_main.c
-> index dcdc01403f22..be06f122092e 100644
-> --- a/drivers/net/ipvlan/ipvlan_main.c
-> +++ b/drivers/net/ipvlan/ipvlan_main.c
-> @@ -160,7 +160,7 @@ static int ipvlan_init(struct net_device *dev)
->   	port->count += 1;
->   
->   	/* Get ipvlan's reference to phy_dev */
-> -	dev_hold(phy_dev);
-> +	dev_hold_track(phy_dev, &ipvlan->dev_tracker, GFP_KERNEL);
->   
->   	return 0;
->   }
-> @@ -674,7 +674,7 @@ static void ipvlan_dev_free(struct net_device *dev)
->   	struct ipvl_dev *ipvlan = netdev_priv(dev);
->   
->   	/* Get rid of the ipvlan's reference to phy_dev */
-> -	dev_put(ipvlan->phy_dev);
-> +	dev_put_track(ipvlan->phy_dev, &ipvlan->dev_tracker);
->   }
->   
->   void ipvlan_link_setup(struct net_device *dev)
+Hannes
+-- 
+Dr. Hannes Reinecke		           Kernel Storage Architect
+hare@suse.de			                  +49 911 74053 688
+SUSE Software Solutions Germany GmbH, Maxfeldstr. 5, 90409 Nürnberg
+HRB 36809 (AG Nürnberg), GF: Felix Imendörffer
