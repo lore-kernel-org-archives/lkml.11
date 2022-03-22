@@ -2,104 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 294D5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 14:50:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 517BEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 14:53:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235293AbiCVOwU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 10:52:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52660 "EHLO
+        id S235351AbiCVOy5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 10:54:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235251AbiCVOwP (ORCPT
+        with ESMTP id S233916AbiCVOyy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 10:52:15 -0400
-Received: from mail-oa1-x43.google.com (mail-oa1-x43.google.com [IPv6:2001:4860:4864:20::43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 906098594C
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 07:50:47 -0700 (PDT)
-Received: by mail-oa1-x43.google.com with SMTP id 586e51a60fabf-ddfa38f1c1so1918553fac.11
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 07:50:47 -0700 (PDT)
+        Tue, 22 Mar 2022 10:54:54 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A0783525D
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 07:53:26 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id o10so17994280ejd.1
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 07:53:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mdaverde-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XYYstwn1s64pcwK5LvShx5Ry1kTzUTbuHMZkOFyWOz8=;
-        b=ZjsT4c7xexfSKGND54aezvA9skGMTBZlXA87WTG7NJQRdzZluD+OHzmiuaoXloyRtp
-         hLl9YFuYKFrp64iAHtzj6qtVcUyqAzCWzhCYS0RNjor9O+5RhIX1Ls4m2z9lcMwQXg6t
-         PqzmhwSWnUKXponrH2tpBf+unNy16PA2JZD/8h6MjI3mnQEd68uqXqCv3LFMmIyTpw7c
-         09ROx7ObSUyR5UgEnUDu42GN3RGjLuAmlW9xyGx9hyv3vAPNW+Tdv1rwaZKhveF89WCC
-         +SXHw1DJUvAE12r7QEo/tQwnqS0Adq2yK6AKnB/oC5R0HGIE6FTq6uNZL5cAZFnAtTBp
-         8hEg==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CTZu+aAjGtXbM3jBypGogmPu5vUABzZBTRhCCSqoFwc=;
+        b=fCZjD/FlPyo91HLM3S5Xv48gNzf9IYzMQtgPIPjHfvZ8JuuhVINkE/8wj+OwFkJ68N
+         3X85MRvQAnvo4jpNcVwzlbeYFY0pzy6rdCf1mJYEIGnCo1xfX1T0tQaMhMCDPTUnU4pB
+         5KYpF1Tu1o+dVn9usYerGsCCPhTN53Q89Tuiz7stPwpcPhIF2y6tU2qmE/b0PVsAwql0
+         pB8ngzOAtJoUX4qqfJz5mJedeGTBzo6f9Z25PU3CclCeGQLHAo2LltOzdqeXwTbv+dS5
+         5NOYdtdH3hDBm8GxKYe8Cqgtm8Tj5YhyAqNdydyota3BDDm2FsroiV2xf8pTMhw6wC6c
+         8KQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XYYstwn1s64pcwK5LvShx5Ry1kTzUTbuHMZkOFyWOz8=;
-        b=0WAZ5CFvPPX3dwFw/RBxh6fcYyhB3gRVpFcOB2pBibAkML5ilpssHvgLglpAnq9eBh
-         d8ZEJCUsryG8uXqc1SASrnNjMC3KUP4Wo+Yy5nLYFnBd/i6JfJXF7pTMymhAW3JZT/hi
-         3BETRvXD0+YQzbKO/KhES6deB9ovEIplnfqLdDryWlTE4PaG2BLz23XbdkiKpoSUoEx8
-         ZKw3KfU6L49+tYwEG5IrBo9t7QJDjYG3q/f8xBKIpaMFNDRf+60abzvsmcefvfAaSHpU
-         KuvOyvkBFNX0G8CZSbckhTYfYkun84kF27fFYp9qUFq9NqdBxj+bQuBWUcP000Wi8gSp
-         GnMg==
-X-Gm-Message-State: AOAM531/7Xh+roJL1TGd4XFbUlsaYWoGGe/i9G43io2fHw0Jpl5uD/hu
-        3gY7orhiGvBJXdz5WkbyzRvqww==
-X-Google-Smtp-Source: ABdhPJyRj33zOTBSk65QR+/BBFJji9LHPpSAJ+IGbEKBruNYqJT7qSmMhvc8BVN+Rm/R5EY3mIagiA==
-X-Received: by 2002:a05:6870:b303:b0:d6:f4d1:990d with SMTP id a3-20020a056870b30300b000d6f4d1990dmr1770423oao.53.1647960646595;
-        Tue, 22 Mar 2022 07:50:46 -0700 (PDT)
-Received: from pop-os.attlocal.net ([2600:1700:1d10:5830:90b:eeed:e704:d511])
-        by smtp.gmail.com with ESMTPSA id a15-20020a056870000f00b000de1ab6364dsm2223135oaa.49.2022.03.22.07.50.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Mar 2022 07:50:46 -0700 (PDT)
-From:   Milan Landaverde <milan@mdaverde.com>
-Cc:     milan@mdaverde.com, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Paul Chaignon <paul@isovalent.com>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@corigine.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next] bpf/bpftool: add unprivileged_bpf_disabled check against value of 2
-Date:   Tue, 22 Mar 2022 10:49:45 -0400
-Message-Id: <20220322145012.1315376-1-milan@mdaverde.com>
-X-Mailer: git-send-email 2.32.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CTZu+aAjGtXbM3jBypGogmPu5vUABzZBTRhCCSqoFwc=;
+        b=cjgrpCBZ0pF1zYcX3rw6ES5YIlqyJ+xCQhC+W4IabLYzlnKn8Ih170vySVj4hrxUNK
+         zwbuyYjwRlUYlPRLOAYrgTPoYwkQAzzs9jOBYPEEzNhsYAT3hGlfKflDkrOZfk5D+r3+
+         3lXrT4fw78xx0AvRF/8HrZe5fq4pdlfky3p4J8bEY3mN6Bca3fXCcOk20T8Q6JKJIBU6
+         MpEA1SvNlSlWVReVxiMhZPA4ZcBWHum5JmFWqj6L+lF7YYwokMeD3D/UNJ/wUQlJbBks
+         yfje5u1eVMZvEiJkpmuKHLmlKtOFERkk2xLjidaFUCXTKR6/gKiwA8Mn1PhvBek1Qd0U
+         hwDw==
+X-Gm-Message-State: AOAM530Dcr/sZS0pbj4gMsKXrN8gcxvWsV7i3TelVb7RbQHOQflZI349
+        RwOtGWzXFuuKRGfYHmkETw1gmXnayh89V9cWt+A=
+X-Google-Smtp-Source: ABdhPJyPff7VNNo/pyyZyW4uwLzi9OXTzypmZtjrYfVjwsI42OcUC/mIG6ZfC2gepDdJHzQFcgBZCxo3kr/Zl5v4Irg=
+X-Received: by 2002:a17:907:e8d:b0:6e0:19e7:9549 with SMTP id
+ ho13-20020a1709070e8d00b006e019e79549mr8735310ejc.44.1647960804724; Tue, 22
+ Mar 2022 07:53:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+References: <20220320064529.12827-1-sensor1010@163.com>
+In-Reply-To: <20220320064529.12827-1-sensor1010@163.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 22 Mar 2022 16:52:14 +0200
+Message-ID: <CAHp75VfkDbO3J=MgTdRF_UyMvZ9XCJEQcEOUEBuyqEwnrNwbsA@mail.gmail.com>
+Subject: Re: [PATCH] drivers/bus/brcmstb_gisb.c : Remove the
+ suppress_bind_attrs attribute of the driver
+To:     lizhe <sensor1010@163.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In [1], we added a kconfig knob that can set
-/proc/sys/kernel/unprivileged_bpf_disabled to 2
+On Tue, Mar 22, 2022 at 12:41 AM lizhe <sensor1010@163.com> wrote:
+>
+> Even if platform_driver does not set suppress_bind_attrs attribute,
+> when registering with platform_driver_probe,  the value of
+> suppress_bind_attrs is still true, see __platform_driver_probe()
 
-We now check against this value in bpftool feature probe
+Any reasons it can't be switched to builtin_platform_driver() macro
+and hence constification the driver structure?
 
-[1] https://lore.kernel.org/bpf/74ec548079189e4e4dffaeb42b8987bb3c852eee.1620765074.git.daniel@iogearbox.net
-
-Signed-off-by: Milan Landaverde <milan@mdaverde.com>
----
- tools/bpf/bpftool/feature.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/tools/bpf/bpftool/feature.c b/tools/bpf/bpftool/feature.c
-index c2f43a5d38e0..290998c82de1 100644
---- a/tools/bpf/bpftool/feature.c
-+++ b/tools/bpf/bpftool/feature.c
-@@ -207,7 +207,10 @@ static void probe_unprivileged_disabled(void)
- 			printf("bpf() syscall for unprivileged users is enabled\n");
- 			break;
- 		case 1:
--			printf("bpf() syscall restricted to privileged users\n");
-+			printf("bpf() syscall restricted to privileged users (without recovery)\n");
-+			break;
-+		case 2:
-+			printf("bpf() syscall restricted to privileged users (admin can change)\n");
- 			break;
- 		case -1:
- 			printf("Unable to retrieve required privileges for bpf() syscall\n");
 -- 
-2.32.0
-
+With Best Regards,
+Andy Shevchenko
