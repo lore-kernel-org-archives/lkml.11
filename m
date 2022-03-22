@@ -2,131 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2EFEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:15:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AA4AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 08:16:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229950AbiCVIQo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 04:16:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49426 "EHLO
+        id S230105AbiCVISH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 04:18:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbiCVIQk (ORCPT
+        with ESMTP id S230415AbiCVISC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 04:16:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFE0251E6C
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 01:15:12 -0700 (PDT)
+        Tue, 22 Mar 2022 04:18:02 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5620D517CA;
+        Tue, 22 Mar 2022 01:16:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65F03B81C17
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 08:15:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7B65C340ED;
-        Tue, 22 Mar 2022 08:15:09 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4D719CE1D27;
+        Tue, 22 Mar 2022 08:16:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 969DBC340EC;
+        Tue, 22 Mar 2022 08:16:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647936910;
-        bh=BNEnkH2T434Y5htXpdrVyq0X0dPzkYPq5kf49Gka0Is=;
-        h=Date:From:To:Cc:Subject:From;
-        b=EsqnHzYZ+vX3WnFZtUrcml/KrhMth/rbDnrGuUQCH+ydTX5qXWYeb63cHCGLkIMBm
-         N2B5LSHxBR2viUf/H2NTPtSUPRxrtZOno+nBwszGepSlpCMRI4sWCng1eqhQ5Evtvz
-         VLwnCbrQnFEN6JKUA5gnyyluWqT+e8qb2Y3BBVZIIqHblQYxtA7kWFQ102FLDSD/5u
-         gDTTAFKcYEQmW2sIpKv4cHN+FICPHzc4PtM8Ndcqy2arHcX5JDi6ZuHb4lqYyNheLA
-         AxGMeLn5oDcPcnHGEeQmeoOjqV1H87qqLsHRZaF5KHhK+txCkv2XkLPGoVUtkM8owK
-         8+jsR7G8QydJw==
-Date:   Tue, 22 Mar 2022 10:16:11 +0200
+        s=k20201202; t=1647936991;
+        bh=wViT03VO9WUj9KY0s8wKyKJNf+YcAvGEWXKoZ9AleN8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=W9Ue5cxIv8a2d8N6iYN533cFeIPEjXCJoeK1SMOj1yKL9jlMLWv2hpUePy4W2OOeI
+         2/GfhIzr7iKeyu13vGPOdlUE4Z88QOXfK1iofqjHcHKQUqJbLDOFDEoWrSR0Vccevd
+         E7UD3u4Bv81VODfXeTDk0Ds+1OhZhuStj8PSh5pKPwxW4FsS3KVOi587EFHNq0BCZl
+         B+9VLpFoX5r9+g54AGfK7b4fAKZWMTh61sVM1H9x+u2Q8NTHuf98ZioWtJZcyNudLN
+         qdYgiuy5fyanXQWqbfWw5tp05xwrO+/jqwNZ9dwMqIWlFOZo8oukfq1L3pqLSkNTdn
+         JSOt8GXcFgUzA==
+Date:   Tue, 22 Mar 2022 10:17:33 +0200
 From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Johannes Holland <johannes.holland@infineon.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: Re: [jarkko-tpmdd:master 27/27]
-Message-ID: <YjmFy/G/YSHQuwW1@iki.fi>
+To:     Ahmad Fatoum <a.fatoum@pengutronix.de>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        David Howells <dhowells@redhat.com>,
+        James Bottomley <jejb@linux.ibm.com>,
+        Mimi Zohar <zohar@linux.ibm.com>, kernel@pengutronix.de,
+        David Gstir <david@sigma-star.at>,
+        Pankaj Gupta <pankaj.gupta@nxp.com>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Horia =?utf-8?Q?Geant=C4=83?= <horia.geanta@nxp.com>,
+        Aymen Sghaier <aymen.sghaier@nxp.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Jan Luebbe <j.luebbe@pengutronix.de>,
+        Richard Weinberger <richard@nod.at>,
+        Franck LENORMAND <franck.lenormand@nxp.com>,
+        Sumit Garg <sumit.garg@linaro.org>, keyrings@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org
+Subject: Re: [PATCH v6 4/4] KEYS: trusted: Introduce support for NXP
+ CAAM-based trusted keys
+Message-ID: <YjmGHRK5TzteGwNu@iki.fi>
+References: <20220316164335.1720255-1-a.fatoum@pengutronix.de>
+ <20220316164335.1720255-5-a.fatoum@pengutronix.de>
+ <YjeWSx84ev7u/YAi@iki.fi>
+ <c946cce8-674a-43d2-1000-b57eba4bc45c@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <c946cce8-674a-43d2-1000-b57eba4bc45c@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 02:41:43PM +0800, kernel test robot wrote:
-> tree:   git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git master
-> head:   a536629ef32d127d26f3886f1fd480708fd5ac20
-> commit: a536629ef32d127d26f3886f1fd480708fd5ac20 [27/27] tpm: Remove read16/read32/write32 calls from tpm_tis_phy_ops
-> config: csky-randconfig-s032-20220321 (https://download.01.org/0day-ci/archive/20220322/202203221451.saNVXUZx-lkp@intel.com/config)
-> compiler: csky-linux-gcc (GCC) 11.2.0
-> reproduce:
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # apt-get install sparse
->         # sparse version: v0.6.4-dirty
->         # https://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git/commit/?id=a536629ef32d127d26f3886f1fd480708fd5ac20
->         git remote add jarkko-tpmdd git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git
->         git fetch --no-tags jarkko-tpmdd master
->         git checkout a536629ef32d127d26f3886f1fd480708fd5ac20
->         # save the config file to linux build tree
->         mkdir build_dir
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=csky SHELL=/bin/bash drivers/char/tpm/
+On Tue, Mar 22, 2022 at 08:33:34AM +0100, Ahmad Fatoum wrote:
+> Hello Jarkko,
 > 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
+> On 20.03.22 22:02, Jarkko Sakkinen wrote:
+> > On Wed, Mar 16, 2022 at 05:43:35PM +0100, Ahmad Fatoum wrote:
+> >> @@ -192,6 +217,19 @@ Usage::
+> >>  specific to TEE device implementation.  The key length for new keys is always
+> >>  in bytes. Trusted Keys can be 32 - 128 bytes (256 - 1024 bits).
+> >>  
+> >> +Trusted Keys usage: CAAM
+> >> +------------------------
+> >> +
+> >> +Usage::
+> >> +
+> >> +    keyctl add trusted name "new keylen" ring
+> >> +    keyctl add trusted name "load hex_blob" ring
+> >> +    keyctl print keyid
+> >> +
+> >> +"keyctl print" returns an ASCII hex copy of the sealed key, which is in format
+> >> +specific to CAAM device implementation.  The key length for new keys is always
+> >> +in bytes. Trusted Keys can be 32 - 128 bytes (256 - 1024 bits).
+> >> +
+> >>  Encrypted Keys usage
+> >>  --------------------
+> >>  
+> >> diff --git a/MAINTAINERS b/MAINTAINERS
+> >> index 05fd080b82f3..f13382a14967 100644
+> >> --- a/MAINTAINERS
+> >> +++ b/MAINTAINERS
+> >> @@ -10647,6 +10647,15 @@ S:	Supported
+> >>  F:	include/keys/trusted_tee.h
+> >>  F:	security/keys/trusted-keys/trusted_tee.c
+> >>  
+> >> +KEYS-TRUSTED-CAAM
+> >> +M:	Ahmad Fatoum <a.fatoum@pengutronix.de>
+> >> +R:	Pengutronix Kernel Team <kernel@pengutronix.de>
+> >> +L:	linux-integrity@vger.kernel.org
+> >> +L:	keyrings@vger.kernel.org
+> >> +S:	Maintained
+> >> +F:	include/keys/trusted_caam.h
+> >> +F:	security/keys/trusted-keys/trusted_caam.c
+> >> +
+> >>  KEYS/KEYRINGS
+> >>  M:	David Howells <dhowells@redhat.com>
+> >>  M:	Jarkko Sakkinen <jarkko@kernel.org>
+> > 
+> > Documentation and MAINTAINERS updates must be separate patches.
 > 
+> I will do so for v7. Does this patch look otherwise ok to you?
 > 
-> sparse warnings: (new ones prefixed by >>)
-> >> drivers/char/tpm/tpm_tis_synquacer.c:89:32: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned char [usertype] value @@     got unsigned char const [usertype] * @@
->    drivers/char/tpm/tpm_tis_synquacer.c:89:32: sparse:     expected unsigned char [usertype] value
->    drivers/char/tpm/tpm_tis_synquacer.c:89:32: sparse:     got unsigned char const [usertype] *
->    drivers/char/tpm/tpm_tis_synquacer.c:90:32: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned char [usertype] value @@     got unsigned char const [usertype] * @@
->    drivers/char/tpm/tpm_tis_synquacer.c:90:32: sparse:     expected unsigned char [usertype] value
->    drivers/char/tpm/tpm_tis_synquacer.c:90:32: sparse:     got unsigned char const [usertype] *
->    drivers/char/tpm/tpm_tis_synquacer.c:91:32: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned char [usertype] value @@     got unsigned char const [usertype] * @@
->    drivers/char/tpm/tpm_tis_synquacer.c:91:32: sparse:     expected unsigned char [usertype] value
->    drivers/char/tpm/tpm_tis_synquacer.c:91:32: sparse:     got unsigned char const [usertype] *
->    drivers/char/tpm/tpm_tis_synquacer.c:92:32: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned char [usertype] value @@     got unsigned char const [usertype] * @@
->    drivers/char/tpm/tpm_tis_synquacer.c:92:32: sparse:     expected unsigned char [usertype] value
->    drivers/char/tpm/tpm_tis_synquacer.c:92:32: sparse:     got unsigned char const [usertype] *
-> >> drivers/char/tpm/tpm_tis_synquacer.c:89:33: sparse: sparse: non size-preserving pointer to integer cast
->    drivers/char/tpm/tpm_tis_synquacer.c:90:33: sparse: sparse: non size-preserving pointer to integer cast
->    drivers/char/tpm/tpm_tis_synquacer.c:91:33: sparse: sparse: non size-preserving pointer to integer cast
->    drivers/char/tpm/tpm_tis_synquacer.c:92:33: sparse: sparse: non size-preserving pointer to integer cast
-> 
-> vim +89 drivers/char/tpm/tpm_tis_synquacer.c
-> 
->     66	
->     67	static int tpm_tis_synquacer_write_bytes(struct tpm_tis_data *data, u32 addr,
->     68						 u16 len, const u8 *value,
->     69						 enum tpm_tis_io_mode io_mode)
->     70	{
->     71		struct tpm_tis_synquacer_phy *phy = to_tpm_tis_tcg_phy(data);
->     72		__le16 result_le16;
->     73		__le32 result_le32;
->     74		u16 result16;
->     75		u32 result32;
->     76	
->     77		switch (io_mode) {
->     78		case TPM_TIS_PHYS_8:
->     79			while (len--)
->     80				iowrite8(*value++, phy->iobase + addr);
->     81			break;
->     82		case TPM_TIS_PHYS_16:
->     83			return -EINVAL;
->     84		case TPM_TIS_PHYS_32:
->     85			/*
->     86			 * Due to the limitation of SPI controller on SynQuacer,
->     87			 * 16/32 bits access must be done in byte-wise and descending order.
->     88			 */
->   > 89			iowrite8(&value[3], phy->iobase + addr + 3);
->     90			iowrite8(&value[2], phy->iobase + addr + 2);
->     91			iowrite8(&value[1], phy->iobase + addr + 1);
->     92			iowrite8(&value[0], phy->iobase + addr);
->     93			break;
->     94		}
->     95	
->     96		return 0;
->     97	}
->     98	
-> 
-> -- 
-> 0-DAY CI Kernel Test Service
-> https://01.org/lkp
+> Thanks,
+> Ahmad
 
-Johannes, I'll drop your patch, please send a new one with the sparse
-error fixed.
+I don't give heads ups. It's improperly constructed patch, i.e. I won't
+review it in this from.
 
 BR, Jarkko
