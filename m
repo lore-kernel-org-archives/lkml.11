@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 416DCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 10:21:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A153FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Mar 2022 10:21:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232950AbiCVKXS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 06:23:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43394 "EHLO
+        id S232975AbiCVKXX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 06:23:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232981AbiCVKXD (ORCPT
+        with ESMTP id S232891AbiCVKXM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 06:23:03 -0400
+        Tue, 22 Mar 2022 06:23:12 -0400
 Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F6017EB3B
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 03:21:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 021CE80206
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 03:21:46 -0700 (PDT)
 Received: from integral2.. (unknown [182.2.69.158])
-        by gnuweeb.org (Postfix) with ESMTPSA id 22F1B7E33D;
-        Tue, 22 Mar 2022 10:21:32 +0000 (UTC)
+        by gnuweeb.org (Postfix) with ESMTPSA id 5684D7E333;
+        Tue, 22 Mar 2022 10:21:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1647944495;
-        bh=223IIXvAVF8dvE1omCKX0nJn3bhN+15baNDRjWgZABw=;
+        s=default; t=1647944505;
+        bh=dIEcw13d58BgwsAsKr9aSvq4e+T/YoaDZ/K+GATzEMo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FBwOO27KcIc0I6tBNoeyls7EqfAwxtDkaKmPrOtjOqszEaYtEFw3w6XP132DKTIMQ
-         7Id6ESH3s5FppDJ1S/iE/K5nswQ8VfjV7wTMedWZpqvf5lV03tcWbAfmt14389a5C5
-         syOBLaMpm8EUmOe4oxoCTg2YXZtFISwAVkiH1Vwsu3NCjndMdl64ku49sfWH9XiRkg
-         HYqlpKGX8WKoDfZYwc4RuQSYi2kDjmbkeSKi6y0FYp7xztxffJR6baBAfKRBPtXwRE
-         GrW6jVKXtK19DZD5i6tvOYBQNADCpPr52Z3+fAniSNBsodc2jV55mLgfgigD0gfRXk
-         aQ0gc14Haaf3w==
+        b=QZexaRnht7B/2rtHCZZKPWmZStsWAr7sC+7MfIHszEaGUn64SWrsVVwW7HPL8w9/q
+         KZYqcFu8U8uiubFOfCuZq5WG1q3RMqDOc0vO1HjMtP0wX05X+LuCoSCkq2cimr5MI+
+         kh1WqEvM/8aLv5FgILZ4kmkfBZBgWYqeKzYMloAuuRxeoe+qRcwx5VJ3V+GmVt0qQB
+         r2dNYnisQwaR5IBq35gzpCQMbQAONpz+Oz3B9tL06rAO9RAPCt8bJx8YW+pqK6q4oY
+         pT9gcnC85RsDmUxn3vQ4GHcZzE4Y8OYyQifp/IcZXABdMcN6YpWqGtYpIE3obQtxH6
+         aJ/E9994dz62w==
 From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
 To:     Willy Tarreau <w@1wt.eu>
 Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
@@ -35,10 +35,11 @@ Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
         Nugraha <richiisei@gmail.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Subject: [RFC PATCH v2 1/8] tools/nolibc: x86-64: Update System V ABI document link
-Date:   Tue, 22 Mar 2022 17:21:08 +0700
-Message-Id: <20220322102115.186179-2-ammarfaizi2@gnuweeb.org>
+        Ammar Faizi <ammarfaizi2@gnuweeb.org>, x86@kernel.org,
+        llvm@lists.linux.dev, David Laight <David.Laight@ACULAB.COM>
+Subject: [RFC PATCH v2 3/8] tools/nolibc: i386: Implement syscall with 6 arguments
+Date:   Tue, 22 Mar 2022 17:21:10 +0700
+Message-Id: <20220322102115.186179-4-ammarfaizi2@gnuweeb.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220322102115.186179-1-ammarfaizi2@gnuweeb.org>
 References: <20220322102115.186179-1-ammarfaizi2@gnuweeb.org>
@@ -48,33 +49,117 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The old link no longer works, update it.
+On i386, the 6th argument of syscall goes in %ebp. However, both Clang
+and GCC cannot use %ebp in the clobber list and in the "r" constraint
+without using -fomit-frame-pointer. To make it always available for
+any kind of compilation, the below workaround is implemented.
 
+For clang (the Assembly statement can't clobber %ebp):
+  1) Push the 6-th argument.
+  2) Push %ebp.
+  3) Load the 6-th argument from 4(%esp) to %ebp.
+  4) Do the syscall (int $0x80).
+  5) Pop %ebp (restore the old value of %ebp).
+  6) Add %esp by 4 (undo the stack pointer).
+
+For GCC, fortunately it has a #pragma that can force a specific function
+to be compiled with -fomit-frame-pointer, so it can use "r"(var) where
+var is a variable bound to %ebp.
+
+Cc: x86@kernel.org
+Cc: llvm@lists.linux.dev
+Link: https://lore.kernel.org/lkml/2e335ac54db44f1d8496583d97f9dab0@AcuMS.aculab.com
+Suggested-by: David Laight <David.Laight@ACULAB.COM>
 Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 ---
 
 @@ Changelog:
 
-   Link RFC v1: https://lore.kernel.org/lkml/20220320093750.159991-2-ammarfaizi2@gnuweeb.org
+   Link RFC v1: https://lore.kernel.org/llvm/20220320093750.159991-4-ammarfaizi2@gnuweeb.org
    RFC v1 -> RFC v2:
-    * No changes *
+    - Fix %ebp saving method. Don't use redzone, i386 doesn't have a redzone
+      (comment from David and Alviro).
 ---
- tools/include/nolibc/arch-x86_64.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/include/nolibc/arch-i386.h | 66 ++++++++++++++++++++++++++++++++
+ 1 file changed, 66 insertions(+)
 
-diff --git a/tools/include/nolibc/arch-x86_64.h b/tools/include/nolibc/arch-x86_64.h
-index fe517c16cd4d..a7b70ea51b68 100644
---- a/tools/include/nolibc/arch-x86_64.h
-+++ b/tools/include/nolibc/arch-x86_64.h
-@@ -61,7 +61,7 @@ struct sys_stat_struct {
-  *   - see also x86-64 ABI section A.2 AMD64 Linux Kernel Conventions, A.2.1
-  *     Calling Conventions.
-  *
-- * Link x86-64 ABI: https://gitlab.com/x86-psABIs/x86-64-ABI/-/wikis/x86-64-psABI
-+ * Link x86-64 ABI: https://gitlab.com/x86-psABIs/x86-64-ABI/-/wikis/home
-  *
-  */
+diff --git a/tools/include/nolibc/arch-i386.h b/tools/include/nolibc/arch-i386.h
+index 125a691fc631..9f4dc36e6ac2 100644
+--- a/tools/include/nolibc/arch-i386.h
++++ b/tools/include/nolibc/arch-i386.h
+@@ -167,6 +167,72 @@ struct sys_stat_struct {
+ 	_ret;                                                                 \
+ })
  
++
++/*
++ * Both Clang and GCC cannot use %ebp in the clobber list and in the "r"
++ * constraint without using -fomit-frame-pointer. To make it always
++ * available for any kind of compilation, the below workaround is
++ * implemented.
++ *
++ * For clang (the Assembly statement can't clobber %ebp):
++ *   1) Push the 6-th argument.
++ *   2) Push %ebp.
++ *   3) Load the 6-th argument from 4(%esp) to %ebp.
++ *   4) Do the syscall (int $0x80).
++ *   5) Pop %ebp (restore the old value of %ebp).
++ *   6) Add %esp by 4 (undo the stack pointer).
++ *
++ * For GCC, fortunately it has a #pragma that can force a specific function
++ * to be compiled with -fomit-frame-pointer, so it can use "r"(var) where
++ * var is a variable bound to %ebp.
++ *
++ */
++#if defined(__clang__)
++static inline long ____do_syscall6(long eax, long ebx, long ecx, long edx,
++				   long esi, long edi, long ebp)
++{
++	__asm__ volatile (
++		"pushl	%[arg6]\n\t"
++		"pushl	%%ebp\n\t"
++		"movl	4(%%esp), %%ebp\n\t"
++		"int	$0x80\n\t"
++		"popl	%%ebp\n\t"
++		"addl	$4,%%esp\n\t"
++		: "=a"(eax)
++		: "a"(eax), "b"(ebx), "c"(ecx), "d"(edx), "S"(esi), "D"(edi),
++		  [arg6]"m"(ebp)
++		: "memory", "cc"
++	);
++	return eax;
++}
++
++#else /* #if defined(__clang__) */
++#pragma GCC push_options
++#pragma GCC optimize "-fomit-frame-pointer"
++static long ____do_syscall6(long eax, long ebx, long ecx, long edx, long esi,
++			    long edi, long ebp)
++{
++	register long __ebp __asm__("ebp") = ebp;
++	__asm__ volatile (
++		"int	$0x80"
++		: "=a"(eax)
++		: "a"(eax), "b"(ebx), "c"(ecx), "d"(edx), "S"(esi), "D"(edi),
++		  "r"(__ebp)
++		: "memory", "cc"
++	);
++	return eax;
++}
++#pragma GCC pop_options
++#endif /* #if defined(__clang__) */
++
++#define my_syscall6(num, arg1, arg2, arg3, arg4, arg5, arg6) (   \
++	____do_syscall6((long)(num), (long)(arg1),               \
++			(long)(arg2), (long)(arg3),              \
++			(long)(arg4), (long)(arg5),              \
++			(long)(arg6))                            \
++)
++
++
+ /* startup code */
+ /*
+  * i386 System V ABI mandates:
 -- 
 Ammar Faizi
 
