@@ -2,124 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59221C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 13:32:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0591BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 13:36:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244299AbiCWNdk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 09:33:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55006 "EHLO
+        id S244298AbiCWNiF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 09:38:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236083AbiCWNdh (ORCPT
+        with ESMTP id S244315AbiCWNiA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 09:33:37 -0400
-Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C15475C2C
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 06:32:07 -0700 (PDT)
-Received: by mail-qk1-x72e.google.com with SMTP id v13so1010386qkv.3
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 06:32:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=konsulko.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=nPGspUnXDfSSjkwMaGFzPZOYPt1+G1sJy9ZdXHVCp+8=;
-        b=Cr6TDAC63Uli7HQZ9nYheNpDiEzDDtVl9wd6iUyAqKes9XcIcVheNz/MbiPidhndJm
-         d22sDoKrdyJxG/hbX8XM9lGTKhYvbyQmi4AdUQWymBaGa7MsCImsgrXTvT+hPw/6iULK
-         kxomLZlBnF6wb3dQT7O7jtEj7/fdfwnCo7kpA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=nPGspUnXDfSSjkwMaGFzPZOYPt1+G1sJy9ZdXHVCp+8=;
-        b=HdIWBuiCYDRhvkErtXX6dkUoMEFEykCS4vFFhUapGBcU48yvgv898j8wVGaeTFPH8m
-         ZLRSor0U4FlJcIAw2SrnrEq26UHbry+psRGOBzEwRwnR9B5eqVX2eSo5ihetuxUSEAv5
-         cfPEU2MosuFtdScRs9s4GDnfkpOM4dg7UGRJ42dF+X/PQ3S1kVAkNraBK1NCARpyAzHg
-         SE4plr/1/uj1ht63f7piyDDNzDnge+YnbqIxqQLkxNl2TS19o9QkfPr01sFM6kbq1zkY
-         iljRGI6Mff2URLdlcUSHCgKRzgfclH0VPdbA/f7jMxCSAZlWI/af11A4aFIK0PdZMY3G
-         faAg==
-X-Gm-Message-State: AOAM530nVnWmSEavGkv+KCyEes19pWKlLnt74QkuSQgoNJozJvDjNS5W
-        wgwjsgXhmiCgY67Kjk6bScrhR5Y1SyNjqEcC
-X-Google-Smtp-Source: ABdhPJzoo4UXmqA2kFsY4AxIOGuvgy0FfwekMuH1JcPG1w1Ujia1jCE5tPW3sGPBb6+u7rvXG496XA==
-X-Received: by 2002:a05:620a:108f:b0:67b:465f:56ba with SMTP id g15-20020a05620a108f00b0067b465f56bamr18542419qkk.297.1648042326089;
-        Wed, 23 Mar 2022 06:32:06 -0700 (PDT)
-Received: from bill-the-cat (2603-6081-7b01-cbda-2ef0-5dff-fedb-a8ba.res6.spectrum.com. [2603:6081:7b01:cbda:2ef0:5dff:fedb:a8ba])
-        by smtp.gmail.com with ESMTPSA id o13-20020ac87c4d000000b002e1e732dea5sm23955qtv.70.2022.03.23.06.32.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Mar 2022 06:32:05 -0700 (PDT)
-Date:   Wed, 23 Mar 2022 09:32:03 -0400
-From:   Tom Rini <trini@konsulko.com>
-To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Ricardo Salveti <ricardo@foundries.io>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Jorge Ramirez-Ortiz <jorge@foundries.io>,
-        Sean Anderson <seanga2@gmail.com>, devicetree@vger.kernel.org,
-        u-boot@lists.denx.de, linux-kernel@vger.kernel.org,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-Subject: Re: [PATCH V3] dt-bindings: nvmem: add U-Boot environment variables
- binding
-Message-ID: <20220323133203.GD2226424@bill-the-cat>
-References: <20220228131250.16943-1-zajec5@gmail.com>
+        Wed, 23 Mar 2022 09:38:00 -0400
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1CC7532F6
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 06:36:30 -0700 (PDT)
+Received: from [192.168.12.80] (unknown [182.2.71.26])
+        by gnuweeb.org (Postfix) with ESMTPSA id C015B7E34E;
+        Wed, 23 Mar 2022 13:36:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1648042589;
+        bh=kspSnS46lZV734KbQIo5pA/i92KsQL/tiG1+/s6yn7Q=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=kcSf8zofG1Ae79QbZtwwD1xaWjFxENfn05JIUSat/GpbIDrcZpefOB5w0UdBHIjyY
+         AUZfewatYsqEK5iDgtC3n6tYRSaVvh6pWu9Jl+5S5rfJsoKCKiduRIg/GOeIMoB9i4
+         CR+Z/iIA3YkGdzRRk9N08+dnD+TY57RkDPXmJJ93kA+/AnHMmBBsUXU2Yv+oYfbfCt
+         g9I06f6kEGBTEax4PMXUq3dmVajI0+qA52D9WMXBWfFm+fc2aeH0DyRhXU0p7eBfdg
+         lnUcHP6nBKcW7VZxLlM8TX0rhd5gT8o6JRfJCiEVNNmGcZfCdzV+2WgeqjbekNLxTr
+         H1T00RpGk1Zsw==
+Message-ID: <5b611ae8-aca6-71c1-6a86-6234f61f1608@gnuweeb.org>
+Date:   Wed, 23 Mar 2022 20:36:24 +0700
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="dicp5grlxus9uUnk"
-Content-Disposition: inline
-In-Reply-To: <20220228131250.16943-1-zajec5@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 2/2] tools/nolibc/stdlib: only reference the external
+ environ when inlined
+Content-Language: en-US
+To:     Willy Tarreau <w@1wt.eu>, "Paul E . McKenney" <paulmck@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+References: <20220323071807.14413-1-w@1wt.eu>
+ <20220323071807.14413-3-w@1wt.eu>
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+In-Reply-To: <20220323071807.14413-3-w@1wt.eu>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 3/23/22 2:18 PM, Willy Tarreau wrote:
+> When building with gcc at -O0 we're seeing link errors due to the
+> "environ" variable being referenced by getenv(). The problem is that
+> at -O0 gcc will not inline getenv() and will not drop the external
+> reference. One solution would be to locally declare the variable as
+> weak, but then it would appear in all programs even those not using
+> it, and would be confusing to users of getenv() who would forget to
+> set environ to envp.
+> 
+> An alternate approach used in this patch consists in always inlining
+> the outer part of getenv() that references this extern so that it's
+> always dropped when not used. The biggest part of the function was
+> now moved to a new function called _getenv() that's still not inlined
+> by default.
+> 
+> Reported-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+> Signed-off-by: Willy Tarreau <w@1wt.eu>
+> ---
 
---dicp5grlxus9uUnk
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This one works nicely. I will resend my previous RFC after this one
+lands in Paul's tree to avoid conflict.
 
-On Mon, Feb 28, 2022 at 02:12:50PM +0100, Rafa=C5=82 Mi=C5=82ecki wrote:
+Tested-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 
-> From: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
->=20
-> U-Boot uses environment variables for storing device setup data. It
-> usually needs to be accessed by a bootloader, kernel and often
-> user-space.
->=20
-> This binding allows describing environment data located in a raw flash
-> partition. It's treated as NVMEM device and can be reused later for
-> other storage devices.
->=20
-> Using DT should be cleaner than hardcoding & duplicating such info in
-> multiple places. Bootloader & kernel can share DTS and user-space can
-> try reading it too or just have correct data exposed by a kernel.
->=20
-> A custom "compatible" string allows system to automatically load
-> relevant NVMEM driver but phandle can be also used for reading raw
-> location.
->=20
-> Signed-off-by: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
+Thanks!
 
-Reviewed-by: Tom Rini <trini@konsulko.com>
-
---=20
-Tom
-
---dicp5grlxus9uUnk
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGzBAABCgAdFiEEGjx/cOCPqxcHgJu/FHw5/5Y0tywFAmI7IVIACgkQFHw5/5Y0
-tyzRfQwAt3O0IvBGs764YvWeHo1sL/8xI1tMnKQnfo+cZmVJBI60nE+Ghmu0Y3Rn
-Me445fR/Ill/NBVMdUnp2bhPUWUI/puej7VqfB1t5mm3xCaeD2BRl+BVwIue73FX
-vNf9Sk3tIBNrh8mDihG5XMNMq8UWkms+FDk/zjv2I7pfJ//Wpgo3nDlX5Wyle1hp
-YDK3JlsgMI3wYMJQZ5g7+EknBgtTPndJ0DyjO2gCuZEOh688Tf3eXmC21+0aW/o/
-2ErUXJmux8BxvRZqHH2bpH00sY/377FSlGowlI09GlR8VYvGFIfWIX0NFE4gauKG
-wSavW952MP1pYMulvQIDBtg2aQNnigugCUM7Xm1xVHlvZQATqqdtIgusvEozkuKk
-VSGnyWhYPANUINk7FORtIctrGkmNWe8JOeBtjMsLtmYJiRiCwvrYkNxfPGUuWYK2
-10CnEzryX9Flx8ez8Sg/ywniMD77fwub90QQv9fqaKta/EqKSt08wruLoAtp/c12
-mgGwY0fX
-=rCXN
------END PGP SIGNATURE-----
-
---dicp5grlxus9uUnk--
+-- 
+Ammar Faizi
