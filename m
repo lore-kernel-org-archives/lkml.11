@@ -2,82 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A78D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 18:24:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E870C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 18:34:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245687AbiCWSZe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 14:25:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36098 "EHLO
+        id S1343569AbiCWSgG (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 14:36:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231986AbiCWSZc (ORCPT
+        with ESMTP id S230296AbiCWSgB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 14:25:32 -0400
-Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C87295F56;
-        Wed, 23 Mar 2022 11:24:01 -0700 (PDT)
-Received: by mail-oi1-f174.google.com with SMTP id o64so2491004oib.7;
-        Wed, 23 Mar 2022 11:24:01 -0700 (PDT)
+        Wed, 23 Mar 2022 14:36:01 -0400
+Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712E462A20;
+        Wed, 23 Mar 2022 11:34:25 -0700 (PDT)
+Received: by mail-oi1-f177.google.com with SMTP id v75so2544219oie.1;
+        Wed, 23 Mar 2022 11:34:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=oKTwXn3AzG41Z3u41j1rFts/g2rJnWT6gTg6f0FYmHE=;
-        b=dFJiAfSZvgq0MCCzBmcBhw/azrMl58UjngAEmtNc66dQl5mHoNLI2NMqty3eT4m65W
-         sbdfnQ8O6E6gqacwUJcqQ5ym75UnALf1hE2qsbQmrIo/ghqDLMT0IPHQzTswZmiPtTw9
-         qaLI+VYGKqdjfIO7+uPyAh+M30F9mCB3y9kNISfDoPRH5bqBeVHZ0qJPYEgeT3vGaKVL
-         zl5EGLO0xPQehhsNA0sirLP6Dz0iGyVXFKwifu9T1FU2i7zF54yuIqx7YAkgbrIOCgAY
-         BnnrCaVaBbR7tuhBx21f4NT9HNE8AWpFA34wp218YL4ipgfiB0s0fZxFruywvC015XcF
-         OXzg==
-X-Gm-Message-State: AOAM533SO4yLwgPC3GjdJpMSxzPnldEBtLT18wy8efLN6B5t4sq+SJQ8
-        YSiBEkBrWdBEugv2h4m/ZQ==
-X-Google-Smtp-Source: ABdhPJxoaSf2++CCDZaunh3odXbdG5Bl8kpsdCWU366fF1ugEU/8uHcoJEmuYVYlRMVnLUeZ5MX7sQ==
-X-Received: by 2002:aca:230e:0:b0:2d9:ec1f:bbae with SMTP id e14-20020aca230e000000b002d9ec1fbbaemr5307335oie.68.1648059841134;
-        Wed, 23 Mar 2022 11:24:01 -0700 (PDT)
+        bh=41lt9wO4XOxtae4ixgjybXOjCGsLCMvP6pxSnzHlc2U=;
+        b=gKrSccSMjlQahHEhAJQyLxCSddSS9QtxoJ8D/ODeXScYU4ya3IZg31WbOJIm93LkGR
+         CR8B+VwE3UHDENCYoUzM6In+nzjnzMObDRbchxmSnXeXou8efvbK56xD33UG4awkBmJi
+         UIurc+mzuaJhV4b7bV2TLpr/Bs4H1bdOLgqrV6NvtdmrIEI6tFu7FbUpWEDXVdB7dObu
+         jek5jpZLq0HvPoDxex8hp9Lw5HGN//3PlQ11O+ItSLHwe1+vii97jc01ANkjj5K4tg9H
+         BCIhyivR/DanNCApVyRultoSqy+uwiUmBad5nIdO8xPNbV3i5xUpKcZ8b9aIsYWWZVe7
+         zT1A==
+X-Gm-Message-State: AOAM533HPxIxE6OjzgpOpWDYWMzxai7Dpw6R3bIAfuvCnfb6XvnsLGvN
+        oJl9zraN/BLTIcZD4PPmew==
+X-Google-Smtp-Source: ABdhPJzEHUUE48Om5qA2PfSnOF4hpP7NVTqs6dal5024vnutRjT370DO2aHoDKzq8MOGAbO5mihgeQ==
+X-Received: by 2002:a05:6808:118d:b0:2cc:ef90:3812 with SMTP id j13-20020a056808118d00b002ccef903812mr5383988oil.48.1648060464775;
+        Wed, 23 Mar 2022 11:34:24 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id i4-20020a4addc4000000b00324bd261e5fsm50138oov.11.2022.03.23.11.23.59
+        by smtp.gmail.com with ESMTPSA id s82-20020acadb55000000b002d9ce64bea0sm263151oig.48.2022.03.23.11.34.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Mar 2022 11:24:00 -0700 (PDT)
-Received: (nullmailer pid 206689 invoked by uid 1000);
-        Wed, 23 Mar 2022 18:23:59 -0000
-Date:   Wed, 23 Mar 2022 13:23:59 -0500
+        Wed, 23 Mar 2022 11:34:23 -0700 (PDT)
+Received: (nullmailer pid 221555 invoked by uid 1000);
+        Wed, 23 Mar 2022 18:34:22 -0000
+Date:   Wed, 23 Mar 2022 13:34:22 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     Max Krummenacher <max.oss.09@gmail.com>
-Cc:     max.krummenacher@toradex.com, linux-kernel@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        devicetree@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        Ariel D'Alessandro <ariel.dalessandro@collabora.com>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Li Yang <leoyang.li@nxp.com>
-Subject: Re: [PATCH v1 02/14] dt-bindings: arm: fsl: Add carriers for
- toradex,colibri-imx6dl
-Message-ID: <Yjtlv9NUQ0dSNESd@robh.at.kernel.org>
-References: <20220314162958.40361-1-max.krummenacher@toradex.com>
- <20220314162958.40361-3-max.krummenacher@toradex.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Chris Packham <Chris.Packham@alliedtelesis.co.nz>,
+        "huziji@marvell.com" <huziji@marvell.com>,
+        "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
+        "sebastian.hesselbarth@gmail.com" <sebastian.hesselbarth@gmail.com>,
+        "adrian.hunter@intel.com" <adrian.hunter@intel.com>,
+        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
+        "kostap@marvell.com" <kostap@marvell.com>,
+        "robert.marko@sartura.hr" <robert.marko@sartura.hr>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH v2 1/8] dt-bindings: pinctrl: mvebu: Document bindings
+ for AC5
+Message-ID: <YjtoLkeyYsT6Fih5@robh.at.kernel.org>
+References: <20220314213143.2404162-1-chris.packham@alliedtelesis.co.nz>
+ <20220314213143.2404162-2-chris.packham@alliedtelesis.co.nz>
+ <Yi/Y0iynQbIOo8C0@lunn.ch>
+ <16fa529e-b1ca-11d0-f068-628c7f25a7fa@alliedtelesis.co.nz>
+ <Yi/dhK0NXg9g6J9T@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220314162958.40361-3-max.krummenacher@toradex.com>
+In-Reply-To: <Yi/dhK0NXg9g6J9T@lunn.ch>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 14 Mar 2022 17:29:46 +0100, Max Krummenacher wrote:
-> Add bindings for Aster, Iris and Iris V2 carrier boards our
-> Colibri iMX6S/DL may be mated with.
+On Tue, Mar 15, 2022 at 01:27:48AM +0100, Andrew Lunn wrote:
+> > I think it can. I vaguely remember seeing conditional clauses based on 
+> > compatible strings in other yaml bindings.
+> > 
+> > I started a new binding document because I expected adding significant 
+> > additions to the existing .txt files would be rejected. If I get some 
+> > cycles I could look at converting the existing docs from txt to yaml.
+> > 
+> > I'm not sure that there will be much in the way of a common 
+> > mvebu-pinctrl.yaml as you'd end up repeating most of the common stuff to 
+> > make things conditional anyway.
 > 
-> Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
-> ---
-> 
->  Documentation/devicetree/bindings/arm/fsl.yaml | 3 +++
->  1 file changed, 3 insertions(+)
-> 
+> We should wait for Rob to comment. But is suspect you are right, there
+> will not be much savings.
 
-Acked-by: Rob Herring <robh@kernel.org>
+It's always a judgement call of amount of if/then schema vs. duplicating 
+the common parts. If it's the function/pin parts that vary, then that's 
+probably best as separate schema for each case. Otherwise, I'm not sure 
+without seeing something.
+
+Rob
