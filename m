@@ -2,177 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12D1FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 07:57:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BA9AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 07:58:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242356AbiCWH7M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 03:59:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42068 "EHLO
+        id S242374AbiCWH7m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 03:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232884AbiCWH7K (ORCPT
+        with ESMTP id S242360AbiCWH7k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 03:59:10 -0400
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D17144B873
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 00:57:40 -0700 (PDT)
-Received: by mail-qt1-x830.google.com with SMTP id bp39so525994qtb.6
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 00:57:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=r41iKAI43c+0K6+pKFWIsdBKfHtyHD+d9VR6NqUvZmg=;
-        b=m3gv09RuBTI4VChKq3U2t+BbGYngVCzLIJfBaobFg4LwwJM0aDdU/QoOD98YFedd95
-         aJ1t6X9R0wUbOrVp9vDmWPA33pJ0MQiHq9gDnqAaLzHoLDDjmQWx1H94aY93EgJK6CX+
-         EbdEYBArwVIka0fvMsLR5nQ8TLyHlG7zeTH+1vqIrE7vSNAYGkENxPJHUC585mBJE1FN
-         EWeNX5XPWaxojKBAZE9UAdT3+MZAsE//sNTU9ZqlO8+TmNNDOSnv4LNQIfMIwSA2paS3
-         d45ThDhNpesSVsOX1V9gIDpBwccRU7Ikuanp3jaIE1uPFRhy85oqCgDfL4nfpUZjX53u
-         Wudw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=r41iKAI43c+0K6+pKFWIsdBKfHtyHD+d9VR6NqUvZmg=;
-        b=oEYGuTDDAs4MqKADfuz0tazvqjvCueSI9ivXra3NGb8tjmLpcIYQKpIQdB7MBSk//2
-         OBCke7x2dBUrVfZ/BdJmgOih6DAatF9gkRTFVi/yMUHdAjjjH6illWhfqlvZr2df073C
-         VFr6sVTU9o2vCHK2NIaBOM0gygw4IpjzqI394lY8LJgMlL4tjYOJs/dwmiWtyJknXnw6
-         0HdvE7jaSXDnotyn1ULLAxoDWx2rVmIOeR47pFJlzUA2/+AnPo+lNFiLCjTY8M2plB2+
-         KNPveWw4KIrkgTXBY5D8JyjXZ4I+H31DxkBE+lg9JT+hUrxOPzxY0x8sWHC3/HmVQien
-         mqKg==
-X-Gm-Message-State: AOAM533aUVewKKN9ofNkFgq30OJt5wq9RdsMya/I3a3W3eiCbu3riC7y
-        3LCqAoNmsdFc7YNNsSYGkR4=
-X-Google-Smtp-Source: ABdhPJxwFkDY9Hb9zPqDADDHQyZysCI6txqKo+3o0s3vLkqC5uOLFGlD56M4b7QZMWRvO+CSQukraQ==
-X-Received: by 2002:ac8:5e0e:0:b0:2e1:b6b7:10e8 with SMTP id h14-20020ac85e0e000000b002e1b6b710e8mr23229981qtx.172.1648022259497;
-        Wed, 23 Mar 2022 00:57:39 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id q8-20020a05622a030800b002e1c9304db8sm15641608qtw.38.2022.03.23.00.57.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Mar 2022 00:57:38 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: yang.yang29@zte.com.cn
-To:     akpm@linux-foundation.org, david@redhat.com
-Cc:     yang.yang29@zte.com.cn, dave.hansen@linux.intel.com,
-        ran.xiaokai@zte.com.cn, yang.shi@linux.alibaba.com,
-        saravanand@fb.com, minchan@kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        xu xin <xu.xin16@zte.com.cn>
-Subject: [PATCH v2] mm/vmstat: add events for ksm cow
-Date:   Wed, 23 Mar 2022 07:57:15 +0000
-Message-Id: <20220323075714.2345743-1-yang.yang29@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Wed, 23 Mar 2022 03:59:40 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9570C2DCC;
+        Wed, 23 Mar 2022 00:58:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648022289; x=1679558289;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=rPUKJWuNJoHsledVN2xoxSUAZH+6NB+vRcBiCSP/bdY=;
+  b=Yz+xCDULEh+ZULk1rea+pIQh5EvPNnbqbZuowsXKpa9CEk7pTolgTXDv
+   KrcRJWv8N9lqV9LisUkAN6+nutR/UukgQSSYMMCMc7GbLM3eLT0iTmUMS
+   OHOhSxQnrlG7SJBoN7fCSNs76jtUaTFMRjwnp9dg0fS1Lu+P2OS/55ln1
+   /dyJe+lOC4OG8x7hSTa4khBL+OOedairViW8jNhHtFzzqalKrogh7wCA2
+   gryoz0+XA2e+ULgPOpUoHRIUXUdvIEURPQ43twg3Cqq2vut231ddEKBoZ
+   /++IY2NP6G125AClzW3J4aEcElN46ops2NOXGdZXh2gTJefUfdXr94MkQ
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10294"; a="237991306"
+X-IronPort-AV: E=Sophos;i="5.90,203,1643702400"; 
+   d="scan'208";a="237991306"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 00:58:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,203,1643702400"; 
+   d="scan'208";a="583596605"
+Received: from ahunter-desktop.fi.intel.com (HELO [10.237.72.92]) ([10.237.72.92])
+  by orsmga001.jf.intel.com with ESMTP; 23 Mar 2022 00:58:03 -0700
+Message-ID: <52d31321-66e1-f189-2ffc-7c93239eea74@intel.com>
+Date:   Wed, 23 Mar 2022 09:58:00 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.5.0
+Subject: Re: [PATCH v3] perf intel-pt: Synthesize cycle events
+Content-Language: en-US
+To:     "Steinar H. Gunderson" <sesse@google.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220322082452.1429091-1-sesse@google.com>
+ <YjpAYjdgHWwkid5N@kernel.org> <YjpFcLiCTjHZWzzA@google.com>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <YjpFcLiCTjHZWzzA@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yang <yang.yang29@zte.com.cn>
+On 22/03/2022 23:53, Steinar H. Gunderson wrote:
+> On Tue, Mar 22, 2022 at 06:32:18PM -0300, Arnaldo Carvalho de Melo wrote:
+>> I saw there was some issue, should I proceed and apply this v3 patch or
+>> wait for some v4?
+> 
+> There are two issues in play:
+> 
+>  1. PT event synth doesn't support reading inline information from DWARF
+>     yet, and my patch to add it runs into some problems. This is not
+>     relevant for this patch at all.
+>  2. The results from v3 don't quite match the ones from v1, and neither
+>     of us are entirely sure why. My personal feeling is that the one
+>     from v1 are the wrong ones, but it's up to Adrian to say whether we
+>     want to try to investigate deeply here.
 
-Users may use ksm by calling madvise(, , MADV_MERGEABLE) when they want
-to save memory, it's a tradeoff by suffering delay on ksm cow. Users can
-get to know how much memory ksm saved by reading
-/sys/kernel/mm/ksm/pages_sharing, but they don't know what's the costs
-of ksm cow, and this is important of some delay sensitive tasks.
-
-So add ksm cow events to help users evaluate whether or how to use ksm.
-
-Signed-off-by: Yang Yang <yang.yang29@zte.com.cn>
-Reviewed-by: xu xin <xu.xin16@zte.com.cn>
-Reviewed-by: Ran Xiaokai <ran.xiaokai@zte.com.cn>
----
-v2:
-- fix compile error when CONFIG_KSM is not set
----
- include/linux/vm_event_item.h |  2 ++
- mm/memory.c                   | 20 +++++++++++++++++---
- mm/vmstat.c                   |  2 ++
- 3 files changed, 21 insertions(+), 3 deletions(-)
-
-diff --git a/include/linux/vm_event_item.h b/include/linux/vm_event_item.h
-index 16a0a4fd000b..6f32be04212f 100644
---- a/include/linux/vm_event_item.h
-+++ b/include/linux/vm_event_item.h
-@@ -131,6 +131,8 @@ enum vm_event_item { PGPGIN, PGPGOUT, PSWPIN, PSWPOUT,
- 		SWAP_RA_HIT,
- #ifdef CONFIG_KSM
- 		KSM_SWPIN_COPY,
-+		KSM_COW_SUCCESS,
-+		KSM_COW_FAIL,
- #endif
- #endif
- #ifdef CONFIG_X86
-diff --git a/mm/memory.c b/mm/memory.c
-index 4111f97c91a0..c24d5f04fab5 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -3257,6 +3257,8 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
- 	__releases(vmf->ptl)
- {
- 	struct vm_area_struct *vma = vmf->vma;
-+	vm_fault_t ret = 0;
-+	bool ksm = 0;
- 
- 	if (userfaultfd_pte_wp(vma, *vmf->pte)) {
- 		pte_unmap_unlock(vmf->pte, vmf->ptl);
-@@ -3294,6 +3296,7 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
- 	 */
- 	if (PageAnon(vmf->page)) {
- 		struct page *page = vmf->page;
-+		ksm = PageKsm(page);
- 
- 		/*
- 		 * We have to verify under page lock: these early checks are
-@@ -3302,7 +3305,7 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
- 		 *
- 		 * PageKsm() doesn't necessarily raise the page refcount.
- 		 */
--		if (PageKsm(page) || page_count(page) > 3)
-+		if (ksm || page_count(page) > 3)
- 			goto copy;
- 		if (!PageLRU(page))
- 			/*
-@@ -3316,7 +3319,7 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
- 			goto copy;
- 		if (PageSwapCache(page))
- 			try_to_free_swap(page);
--		if (PageKsm(page) || page_count(page) != 1) {
-+		if (ksm || page_count(page) != 1) {
- 			unlock_page(page);
- 			goto copy;
- 		}
-@@ -3339,7 +3342,18 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
- 	get_page(vmf->page);
- 
- 	pte_unmap_unlock(vmf->pte, vmf->ptl);
--	return wp_page_copy(vmf);
-+	ret = wp_page_copy(vmf);
-+
-+#ifdef CONFIG_KSM
-+	if (ksm) {
-+		if (unlikely(ret & VM_FAULT_ERROR))
-+			count_vm_event(KSM_COW_FAIL);
-+		else
-+			count_vm_event(KSM_COW_SUCCESS);
-+	}
-+#endif
-+
-+	return ret;
- }
- 
- static void unmap_mapping_range_vma(struct vm_area_struct *vma,
-diff --git a/mm/vmstat.c b/mm/vmstat.c
-index d5cc8d739fac..a2c29a5206ec 100644
---- a/mm/vmstat.c
-+++ b/mm/vmstat.c
-@@ -1390,6 +1390,8 @@ const char * const vmstat_text[] = {
- 	"swap_ra_hit",
- #ifdef CONFIG_KSM
- 	"ksm_swpin_copy",
-+	"ksm_cow_success",
-+	"ksm_cow_fail",
- #endif
- #endif
- #ifdef CONFIG_X86
--- 
-2.25.1
-
+V3 is good.  Please take that.
