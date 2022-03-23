@@ -2,102 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4195AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 09:51:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B07CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 09:52:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243349AbiCWJx1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 05:53:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55966 "EHLO
+        id S243357AbiCWJyR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 05:54:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243337AbiCWJxX (ORCPT
+        with ESMTP id S241170AbiCWJyO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 05:53:23 -0400
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 753804130B
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 02:51:50 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id D41251C0014;
-        Wed, 23 Mar 2022 09:51:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1648029108;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xkc1E79+EMhZIZKmqJGwa4SoDzH/uFspi1OYFAhWuYc=;
-        b=HMp8G494ZGJ8dv9CWnZAwJMMWPisuRH0yVkrzEFNzrOQh1VkePeFTOqpe+gNKa2lUL9n7Z
-        3MC0uZpNbQycqoWoF2zyncR1/nIjucleXnG2QyY53cDI+JDsigGjLFPFjDq6AAIVuaC4zj
-        +TdEM4ETfIjLgHurt5U/Uz7CQu1FuCHj6KELK13dZvko+K9ePMc3K4Gz65XtAMS/QVTrI8
-        JCOoU/CS48c7bgakubLn7IPMEhR8Pakabm7oMtaGDuea/FPAv4YMV6+PI5HJ0PYSCZNFok
-        OBV9QbiljEECGZx3oD2jOOzt/BY9WUBJ57vFXu2WPzFgCblIXj2MvqwM+zS7vw==
-From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-To:     Philipp Zabel <p.zabel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>
-Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-Subject: [PATCH 1/2] of: add function to convert fwnode_reference_args to of_phandle_args
-Date:   Wed, 23 Mar 2022 10:50:21 +0100
-Message-Id: <20220323095022.453708-2-clement.leger@bootlin.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220323095022.453708-1-clement.leger@bootlin.com>
-References: <20220323095022.453708-1-clement.leger@bootlin.com>
+        Wed, 23 Mar 2022 05:54:14 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 466E941315;
+        Wed, 23 Mar 2022 02:52:44 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id qx21so1660293ejb.13;
+        Wed, 23 Mar 2022 02:52:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=g1j3QaJfU8qeuiCsSbkKdkVm/9jgLAYyU1jVDoQTArk=;
+        b=cbjXTfm1kiiTn5jphmGVgQgCdkCclOaeE8QNpxq90be6QVhVd7VL6IDTidBmyAs8+o
+         Fdz7dxj7hJNfPtU4dExwA47sq6+1hSfqAgc7GrehDKT4CrJWCZKlaaU1oOqiHQrtYFZ3
+         qAxmRdePPsmuyoG0p51F0JDKY10f6aofntln8DFReZNpsDPbYzHkc3gGfg7dOy18DjI8
+         lmEhoAPgXTPMt/uZP/KgHnRpKBBAOnUKZNkM6eKwL0C6uxPV9rMp2Ol+PnS33YW/3xx/
+         v9/X6pky4lr50hyhH+z13NNtUAzNgAv6HN/HGbzObR34v6GYh3QzeK8xAPwtDhUGwzuZ
+         GKcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=g1j3QaJfU8qeuiCsSbkKdkVm/9jgLAYyU1jVDoQTArk=;
+        b=z8Dp/ziOdTeMsmEYEIvJo/tjrWnyvM4a/WA114xJ89RtfsLRwmtk04ovieAxx5Yy3F
+         LwlJbkolfrhOckrZhg9Yq2TlKfy26JUSqxVM8MfOqFs/plVuVgUuOkwmhOVt28woiunP
+         K+sMyDch5R/fk6AWwR8Rx+S+bgloMaM2MrtYaldPen/OiyOv/vbpRebgoS5BcFjfcmHd
+         R00vR5IG9TRG7MaJi8yWc/AnNOO4Mh8nZ7Eh78PvOXhrip5JgCezsh58nI4SXaExGgeF
+         2+XrLBL2NsfgAaRQ8gv+FQUmWvyYUu/JXC04aPvUjS9+UnSeS0eEr81WdtM1Hy+4XyvZ
+         C6gQ==
+X-Gm-Message-State: AOAM5317azMRfEQx/33DTXvx3Gayaaisl4f2jmuN5R92x9PFImiOP4op
+        5AzUntFNVaYuO4DvFBupmjI=
+X-Google-Smtp-Source: ABdhPJw+s2CWDk9HRphMq93oXWt4VU4Sp6efJAuhWSrKlPgBCSMUm0H8XNz1vWbclIGav+R3JCG/9Q==
+X-Received: by 2002:a17:906:3117:b0:6cd:f81b:e295 with SMTP id 23-20020a170906311700b006cdf81be295mr29357488ejx.511.1648029162650;
+        Wed, 23 Mar 2022 02:52:42 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id bm23-20020a170906c05700b006d597fd51c6sm9738191ejb.145.2022.03.23.02.52.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Mar 2022 02:52:41 -0700 (PDT)
+Date:   Wed, 23 Mar 2022 11:52:40 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yangbo Lu <yangbo.lu@nxp.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de
+Subject: Re: sja1105q: proper way to solve PHY clk dependecy
+Message-ID: <20220323095240.y4xnp6ivz57obyvv@skbuf>
+References: <20220323060331.GA4519@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220323060331.GA4519@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add of_phandle_args_from_fwnode_reference_args() which convert a struct
-fwnode_reference_args to an of_phandle_args. This is used to maintain
-compatibility for device-tree specifiers translation functions that are
-used by various subsystem.
+Hello Oleksij,
 
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
----
- include/linux/of.h | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+On Wed, Mar 23, 2022 at 07:03:31AM +0100, Oleksij Rempel wrote:
+> Hi Vladimir,
+> 
+> I have SJA1105Q based switch with 3 T1L PHYs connected over RMII
+> interface. The clk input "XI" of PHYs is connected to "MII0_TX_CLK/REF_CLK/TXC"
+> pins of the switch. Since this PHYs can't be configured reliably over MDIO
+> interface without running clk on XI input, i have a dependency dilemma:
+> i can't probe MDIO bus, without enabling DSA ports.
+> 
+> If I see it correctly, following steps should be done:
+> - register MDIO bus without scanning for PHYs
+> - define SJA1105Q switch as clock provider and PHYs as clk consumer
+> - detect and attach PHYs on port enable if clks can't be controlled
+>   without enabling the port.
+> - HW reset line of the PHYs should be asserted if we disable port and
+>   deasserted with proper reinit after port is enabled.
+> 
+> Other way would be to init and enable switch ports and PHYs by a bootloader and
+> keep it enabled.
+> 
+> What is the proper way to go?
+> 
+> Regards,
+> Oleksij
+> -- 
+> Pengutronix e.K.                           |                             |
+> Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+> 31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+> Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
 
-diff --git a/include/linux/of.h b/include/linux/of.h
-index 2dc77430a91a..1f6c8927c5ff 100644
---- a/include/linux/of.h
-+++ b/include/linux/of.h
-@@ -175,6 +175,18 @@ static inline bool is_of_node(const struct fwnode_handle *fwnode)
- 			&__of_fwnode_handle_node->fwnode : NULL;	\
- 	})
- 
-+static inline void
-+of_phandle_args_from_fwnode_reference_args(struct of_phandle_args *of_args,
-+					   const struct fwnode_reference_args *fwnode_args)
-+{
-+	int i;
-+
-+	of_args->np = to_of_node(fwnode_args->fwnode);
-+	of_args->args_count = fwnode_args->nargs;
-+	for (i = 0; i < fwnode_args->nargs; i++)
-+		of_args->args[i] = fwnode_args->args[i];
-+}
-+
- static inline bool of_have_populated_dt(void)
- {
- 	return of_root != NULL;
-@@ -543,6 +555,12 @@ static inline struct device_node *of_find_node_with_property(
- 
- #define of_fwnode_handle(node) NULL
- 
-+static inline void
-+of_phandle_args_from_fwnode_reference_args(struct of_phandle_args *of_args,
-+					   const struct fwnode_reference_args *fwnode_args)
-+{
-+}
-+
- static inline bool of_have_populated_dt(void)
- {
- 	return false;
--- 
-2.34.1
+The facts, as I see them, are as follows, feel free to debate them.
 
+1. Scanning the bus is not the problem, but PHY probing is.
+
+If the MDIO bus is registered with of_mdiobus_register() - which is to
+be expected, since the sja1105 driver only connects to a PHY using a
+phy-handle - that should set mdio->phy_mask = ~0; which should disable
+PHY scanning.
+
+But of_mdiobus_register() will still call of_mdiobus_register_phy()
+which will probe the phy_device. Here, depending on the code path,
+_some_ PHY reads might be performed - which will return an error if the
+PHY is missing its clock. For example, if the PHY ID isn't part of the
+compatible string, fwnode_mdiobus_register_phy() will attempt to read it
+from the PHY via get_phy_device(). Alternatively, you could put the PHY
+ID in the DT and this will end up calling phy_device_create().
+
+Then there's the probe() method of the T1L PHY driver, which is the
+reason why it would be good to know what that driver is. Since its clock
+might not be available, I expect that this driver doesn't access
+hardware from probe(), knowing that it is an RMII PHY driver and this is
+a generic problem for RMII PHYs.
+
+2. The sja1105 driver already does all it reasonably can to make the
+   RMII PHY happy.
+
+The clocks of a port are enabled/configured from sja1105_clocking_setup_port()
+which has 3 call paths:
+(a) during sja1105_setup(), aka during switch initialization, all ports
+    except RGMII ports have their clocks configured and enabled, via
+    priv->info->clocking_setup(). The RGMII ports have a clock that
+    depends upon the link speed, and we don't know the link speed.
+(b) during sja1105_static_config_reload(). The sja1105 switch needs to
+    dynamically reset itself at runtime, and this cuts off the clocks
+    for a while. Again there is a call to priv->info->clocking_setup()
+    here.
+(c) during phylink_mac_link_up -> sja1105_adjust_port_config(), a call
+    is made to sja1105_clocking_setup_port() for RGMII PHYs, because the
+    speed is now known.
+
+Since DSA calls dsa_slave_phy_setup() _after_ dsa_switch_setup(), this
+means that by the time the PHY is attached, its config_init() runs, etc,
+the RMII clock configured by sja1105_setup() should be running.
+
+3. Clock gating the PHY won't make it lose its settings.
+
+I expect that during the time when the sja1105 switch needs to reset,
+the PHY just sees this as a few hundreds of ms during which there are no
+clock edges on the crystal input pin. Sure, the PHY won't do anything
+during that time, but this is quite different from a reset, is it not?
+So asserting the hardware reset line of the PHY during the momentary
+loss of clock, which is what you seem to suggest, will actively do more
+harm than good.
+
+4. Making the sja1105 driver a clock provider doesn't solve the problem
+   in the general sense.
+
+If you make this PHY driver expect the MAC to be a clock provider,
+are you going to expect that all RMII-capable MAC drivers be patched?
+For this reason I am in principle opposed to making the sja1105 driver
+a clock provider, you won't be able to generalize this solution and it
+would just create a huge mess going forward.
