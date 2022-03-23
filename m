@@ -2,135 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED75FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 06:11:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F167C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 06:17:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241938AbiCWGMo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 02:12:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58248 "EHLO
+        id S241615AbiCWGSn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 02:18:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231919AbiCWGMg (ORCPT
+        with ESMTP id S232627AbiCWGSl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 02:12:36 -0400
-Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D0076E8F0;
-        Tue, 22 Mar 2022 23:11:03 -0700 (PDT)
-Received: by mail-qv1-xf2a.google.com with SMTP id kc20so534669qvb.3;
-        Tue, 22 Mar 2022 23:11:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ifWjR9jEFmFX8aRx9xc4ahzyvlT1JxK8sH59+zbMgcM=;
-        b=d8yqVfswjLKnW065K+y9jlbglxjxi533dEaaajB2Hr5kQEVFHk2pIMnd0cKiv2Y5QK
-         3zj6eHcsJdEnbNGBhm7UHtSffl9a8EpWvRgpB0SoC9Nexg0tsr4nhsswekoQM/3fbDvG
-         y6iOwb+TNOEMoKJF6mM5yjLFxZHBlW/Pudhfnftit78UhaFAC9k36rDZgCZunoGDss9H
-         xTnVjv9J0LRCPBpIxq14i8JUOVoJx9a+cnHay7bfSal0huT9hL2haYbYdA26AiBNMUo3
-         ULwEOgzAC6/zeSHW1R/z/fAJPmPpL8mzbTM63WDgElWHRZspna3zcn8/R31hyJ3Cvpm/
-         vdgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ifWjR9jEFmFX8aRx9xc4ahzyvlT1JxK8sH59+zbMgcM=;
-        b=ij2XD7tDgngXdhFh6GS0fRj47OocRSKRIwnXGFpOf2Faf0IUxKRjeWR3jigYRF+78G
-         s0kJi3cHEujr6lC/jPGm+9KFBAfH2uuWHZFL0+wFRCfd9TeMb4pmF13M1PX+c8DGB4Ao
-         nZttAa3yxPNFsoZNDJ8vyyDHQQXHIrjvyQcWB+T89W0EiLP4fWa0EP/5OwpG8DxDPYSA
-         rVC7s2WnAn+v7IqXsqBZSwf5DCGBaZS+LYxrH4KwKz9g0K1gTBsigMF/jal1zyrr7Ydb
-         jNUUi0IlmmUpyRfXNRgdw3Iy7NuhMYWGfTtXT3QX+1uBbQW9KB9rnHNU3NIfXq6Sp9jS
-         ueTA==
-X-Gm-Message-State: AOAM5330Ji0y1No5bfF34yLbzviIRa4lu4UWhivK5xoraZJ7OjvEQdXN
-        iHllHzK3a5i/HqRajk1ioqg=
-X-Google-Smtp-Source: ABdhPJxgu4dweeqTZjUIM6RLqCD9cWzQSftS10ONwtj2woCx83xyIagtnBycyLjFBoH22jxt1oI4KA==
-X-Received: by 2002:a05:6214:20e6:b0:440:f6d0:fe55 with SMTP id 6-20020a05621420e600b00440f6d0fe55mr20307116qvk.57.1648015862723;
-        Tue, 22 Mar 2022 23:11:02 -0700 (PDT)
-Received: from localhost ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id b126-20020a376784000000b0067d21404704sm9845296qkc.131.2022.03.22.23.11.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Mar 2022 23:11:01 -0700 (PDT)
-Message-ID: <623ab9f5.1c69fb81.66f4.5e68@mx.google.com>
-X-Google-Original-Message-ID: <20220323061058.GA2343452@cgel.zte@gmail.com>
-Date:   Wed, 23 Mar 2022 06:10:58 +0000
-From:   CGEL <cgel.zte@gmail.com>
-To:     Johannes Weiner <hannes@cmpxchg.org>
-Cc:     axboe@kernel.dk, viro@zeniv.linux.org.uk,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, akpm@linux-foundation.org,
-        Yang Yang <yang.yang29@zte.com.cn>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>
-Subject: Re: [PATCH] block/psi: make PSI annotations of submit_bio only work
- for file pages
-References: <20220316063927.2128383-1-yang.yang29@zte.com.cn>
- <YjiMsGoXoDU+FwsS@cmpxchg.org>
- <623938d1.1c69fb81.52716.030f@mx.google.com>
- <YjnO3p6vvAjeMCFC@cmpxchg.org>
+        Wed, 23 Mar 2022 02:18:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 904AB5A17B;
+        Tue, 22 Mar 2022 23:17:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4EEC3B81DEC;
+        Wed, 23 Mar 2022 06:17:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 847AEC340E8;
+        Wed, 23 Mar 2022 06:17:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648016228;
+        bh=6qYRKx7Fm1RA0k8Bo9Mk1TZGG2liE+qqs6IEExcenC8=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=foPEoL0OltkjH2Y+UusQFnM990XTyl+FfWKHNgYO0CcxIWen+tca4GwNeVt/jKUiv
+         ByryQ7fj9u1g2lPrKMM//3ibxsBJF4840PP5KWpYX42WzqxZ4oyll4qfC9mj+Tjdyi
+         sytQASqyicy2hFoc8u011wQT4BDkj8/bPYgu6Pv5hPl71M4wj7O4kqW7MptZOH/aCb
+         BQsbHqwUrSGW8UYa4RUxmMWbPi5/txY83+Lwleo2Oodk7oMeLxd7AWEyZvYSbJULWQ
+         gOn0lnKgcFwAvXiQdPW6vUFCCGFlAAX5U0xzTx9O1KE3a0wilmUSlMj4RwyVRh6ukn
+         VmrWtKBMI0YVw==
+Message-ID: <7005ad7a-1e5e-8823-239e-18dc0fed472a@kernel.org>
+Date:   Wed, 23 Mar 2022 08:17:03 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YjnO3p6vvAjeMCFC@cmpxchg.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 1/2] dt-bindings: usb: Add documentation for AM62 USB
+ Wrapper module
+Content-Language: en-US
+To:     Aswath Govindraju <a-govindraju@ti.com>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-usb@vger.kernel.org, Felipe Balbi <balbi@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>
+References: <20220323053524.7009-1-a-govindraju@ti.com>
+ <20220323053524.7009-2-a-govindraju@ti.com>
+From:   Roger Quadros <rogerq@kernel.org>
+In-Reply-To: <20220323053524.7009-2-a-govindraju@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 09:27:58AM -0400, Johannes Weiner wrote:
-> On Tue, Mar 22, 2022 at 02:47:42AM +0000, CGEL wrote:
-> > On Mon, Mar 21, 2022 at 10:33:20AM -0400, Johannes Weiner wrote:
-> > > On Wed, Mar 16, 2022 at 06:39:28AM +0000, cgel.zte@gmail.com wrote:
-> > > > From: Yang Yang <yang.yang29@zte.com.cn>
-> > > > 
-> > > > psi tracks the time spent on submitting the IO of refaulting file pages
-> > > > and anonymous pages[1]. But after we tracks refaulting anonymous pages
-> > > > in swap_readpage[2][3], there is no need to track refaulting anonymous
-> > > > pages in submit_bio.
-> > > > 
-> > > > So this patch can reduce redundant calling of psi_memstall_enter. And
-> > > > make it easier to track refaulting file pages and anonymous pages
-> > > > separately.
-> > > 
-> > > I don't think this is an improvement.
-> > > 
-> > > psi_memstall_enter() will check current->in_memstall once, detect the
-> > > nested call, and bail. Your patch checks PageSwapBacked for every page
-> > > being added. It's more branches for less robust code.
-> > 
-> > We are also working for a new patch to classify different reasons cause
-> > psi_memstall_enter(): reclaim, thrashing, compact, etc. This will help
-> > user to tuning sysctl, for example, if user see high compact delay, he
-> > may try do adjust THP sysctl to reduce the compact delay.
-> > 
-> > To support that, we should distinguish what's the reason cause psi in
-> > submit_io(), this patch does the job.
+Hi Aswath,
+
+On 23/03/2022 07:35, Aswath Govindraju wrote:
+> Add bindings for the TI's AM62 wrapper module for the Synopsys USBSS-DRD
+> controller.
 > 
-> Please submit these patches together then. On its own, this patch
-> isn't desirable.
-I think this patch has it's independent value, I try to make a better
-explain.
+> Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+> ---
+>  .../devicetree/bindings/usb/ti,am62-usb.yaml  | 98 +++++++++++++++++++
+>  1 file changed, 98 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/usb/ti,am62-usb.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/usb/ti,am62-usb.yaml b/Documentation/devicetree/bindings/usb/ti,am62-usb.yaml
+> new file mode 100644
+> index 000000000000..4bb139d1926d
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/usb/ti,am62-usb.yaml
 
-1) This patch doesn't work it worse or even better
-After this patch, swap workingset handle is simpler, file workingset
-handle just has one more check, as below.
-Before this patch handling swap workingset:
-	a) in swap_readpage() call psi_memstall_enter() ->
-	b) in __bio_add_page() test if should call bio_set_flag(), true ->
-	c) in __bio_add_page() call bio_set_flag()
-	d) in submit_bio() test if should call psi_memstall_enter(), true ->
-	e) call psi_memstall_enter, detect the nested call, and bail.
-	f) call bio_clear_flag if needed.
-Before this patch handling file page workingset:
-	a) in __bio_add_page() test if should call bio_set_flag(), true ->
-	...
-	b) call bio_clear_flag if needed.
-After this patch handling swap workingset:
-	a) in swap_readpage() call psi_memstall_enter() ->
-	b) in __bio_add_page() test if should call bio_set_flag(), one more check, false and return.
-	c) in submit_bio() test if should call psi_memstall_enter(), false and return.
-After this patch handling file pages workingset:
-	a) in __bio_add_page() test if should call bio_set_flag(), one more check, true ->
-	...
-	b) call bio_clear_flag if needed.
+We already have ti,j721e-usb.yaml which is covering am64-usb.
+We could just add am62 compatible there.
 
-2) This patch help tools like kprobe to trace different workingset
-After this patch we know workingset in submit_io() is only cause by file pages.
+Any am62 specific properties could be handled with conditional
+'required' statements.
 
-3) This patch will help code evolution
-Such as psi classify, getdelays supports counting file pages workingset submit.
+cheers,
+-roger
+
+> @@ -0,0 +1,98 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/usb/ti,am62-usb.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Bindings for the TI's AM62 wrapper module for the Synopsys USBSS-DRD controller
+> +
+> +maintainers:
+> +  - Aswath Govindraju <a-govindraju@ti.com>
+> +
+> +properties:
+> +  compatible:
+> +    const: ti,am62-usb
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  ranges: true
+> +
+> +  power-domains:
+> +    description:
+> +      PM domain provider node and an args specifier containing
+> +      the USB ISO device id value. See,
+> +      Documentation/devicetree/bindings/soc/ti/sci-pm-domain.yaml
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    description: Clock phandles to usb2_refclk
+> +    maxItems: 1
+> +
+> +  clock-names:
+> +    items:
+> +      - const: ref
+> +
+> +  id-gpio:
+> +    description:
+> +      GPIO to be used as ID pin
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    description:
+> +      interrupt line to be used for detecting changes in VBUS
+> +
+> +  ti,vbus-divider:
+> +    description:
+> +      Should be present if USB VBUS line is connected to the
+> +      VBUS pin of the SoC via a 1/3 voltage divider.
+> +    type: boolean
+> +
+> +  ti,syscon-phy-pll-refclk:
+> +    $ref: /schemas/types.yaml#/definitions/phandle-array
+> +    items:
+> +      - items:
+> +          - description: Phandle to the SYSCON entry
+> +          - description: USB phy control register offset within SYSCON
+> +    description: Specifier for configuring frequency of ref clock input.
+> +
+> +  '#address-cells':
+> +    const: 2
+> +
+> +  '#size-cells':
+> +    const: 2
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - power-domains
+> +  - clocks
+> +  - clock-names
+> +  - interrupts
+> +  - ti,syscon-phy-pll-refclk
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/soc/ti,sci_pm_domain.h>
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/gpio/gpio.h>
+> +
+> +    bus {
+> +      #address-cells = <2>;
+> +      #size-cells = <2>;
+> +
+> +      dwc3-usb@f910000 {
+> +        compatible = "ti,am62-usb";
+> +        reg = <0x00 0x0f910000 0x00 0x800>;
+> +        interrupts = <GIC_SPI 234 IRQ_TYPE_LEVEL_HIGH>; /* MISC IRQ */
+> +        clocks = <&k3_clks 162 3>;
+> +        clock-names = "ref";
+> +        ti,syscon-phy-pll-refclk = <&wkup_conf 0x4018>;
+> +        power-domains = <&k3_pds 179 TI_SCI_PD_EXCLUSIVE>;
+> +        id-gpio = <&main_gpio1 51 GPIO_ACTIVE_LOW>;
+> +        #address-cells = <2>;
+> +        #size-cells = <2>;
+> +      };
+> +    };
