@@ -2,109 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E1AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 17:55:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2EFEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 17:55:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343836AbiCWR4a (ORCPT
+        id S1343849AbiCWR4f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 13:56:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47788 "EHLO
+        Wed, 23 Mar 2022 13:56:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343825AbiCWR42 (ORCPT
+        with ESMTP id S1343837AbiCWR4b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 13:56:28 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A9A2B7D3
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 10:54:57 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id o10so4448642ejd.1
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 10:54:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=weN60xW+yqBjNWWoUTdrMPjiX49CJMMCVBJR4fB8Kjw=;
-        b=fqlUpUyfeeCvvy4DS1MBlL4zf1zHf0FGNm9VHVD2KJnftud6qYw3VVdHyZRiE6wbqq
-         QGs3Rc82oQB2i+whThfrlfP7BAozHQn0Nw7ZySToIiKGaY35I2x6XBg0eU1Jml918o7k
-         qKI/tblWQsUP7LMn9DwQbUAQqd4VUbJWCckja/+E22eqa1mM66/O0uDtR/A38hkWQbrq
-         BpQF9I/sjCIffom8QEWNWfwO0MOzrIIfJScVDQoocqIFF4D/4GCtIt48PIjcX11nZgU8
-         zJqST+DCuCsY4Chfp4dBupub4qCmptH/spsFgW66xu857jsfOwA755kNUd9AaoElQt1g
-         NQbA==
+        Wed, 23 Mar 2022 13:56:31 -0400
+Received: from mail-oo1-f48.google.com (mail-oo1-f48.google.com [209.85.161.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA02CB7D3;
+        Wed, 23 Mar 2022 10:55:01 -0700 (PDT)
+Received: by mail-oo1-f48.google.com with SMTP id i8-20020a4a6f48000000b00324ada4b9d9so352588oof.11;
+        Wed, 23 Mar 2022 10:55:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=weN60xW+yqBjNWWoUTdrMPjiX49CJMMCVBJR4fB8Kjw=;
-        b=zyL14Q4Ar6U+XkRIHOgtBnA9Hz1Bmh4c+mOCnbqkr9ERkNc2EqCxJbKYCyhKXOvL2F
-         4ABaKkzVERpdlwg6vCsccpC6X23vVGA6wD9pXpDD3kgnXwxy0GZ55RfWxQuQ6BlMEZ6e
-         L0IHDEHrJ63cFv3Ysa1NCR2VZ7uTySuwfOkvK4I1Z6ar0Jz5+4/4po2xeAOn7tdb186M
-         b1WRNvXoQl98iz20+/4T1slFQ0QNJiin//Bskw2sVqiskgTe+4EFW+iYpTQNr67wJyfw
-         SYE+7JxSJF1Onil5B3FQQDzrKPg9o+3WQDItCq7P24GyeGq0LZQjsISMriajY8xOYXGP
-         H9dg==
-X-Gm-Message-State: AOAM532Q+XBzOisfgB4zntHzQ0E0+T3hwSsdM9noXsH1YaDCfvQVH5G/
-        7xxOGCKkoCc47nlq4jniSCfBFZNRH0ZqAspq+1UixPvMVUDCcA==
-X-Google-Smtp-Source: ABdhPJxr0IpQG7pZs6NUygXEuK9ANo0Nd+mbzBeVwkIYyn/tb9fH0PYhg8L1O+5rb+0RCKnVMXsQl6LcRLky7N0UR+M=
-X-Received: by 2002:a17:906:c04d:b0:6b9:252:c51c with SMTP id
- bm13-20020a170906c04d00b006b90252c51cmr1377573ejb.470.1648058095790; Wed, 23
- Mar 2022 10:54:55 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9mzy/qFD5hdG5o+DBTsDmFvlEhH0dzI3xqj7gCqw/QM=;
+        b=JjI53NdsOBx+Z+V9NpdhMwXztkCSnrxPJMBWxfRjG6eWnBOJMGQ1FfMMYRx5sL2CDj
+         7Pcm2oRIk3WhWWRp2WZgFS3TctD3gxvjgJccPSrm8iBYC+jYcIbpjg1O4YudWmfYVDLw
+         gZXPVfUCkJp4ZxnTcFq/te4jptWp+yh7j0jvFzXpko9CDcJluy0FhzS1b+M8py23DzwB
+         8zI6aB0RrfA/ORwhm8gSapOtpHiok79MsRwRp9iX58bYKpu9eTzKq2S3dWD6gaEkGiHA
+         JNn1BbhHeI3U+Pw09Hb/6sLYc/XyMtjLseWNJ6OG9sFIDBtKE6iUnv5kbZxJAnkyVUJY
+         OKQg==
+X-Gm-Message-State: AOAM533NGAzRDvau3ch4+6cynF2wFNWrKgcgYxie/KNnODdDFicX0L66
+        /pdN6o62GGKeZetlyh2oSA==
+X-Google-Smtp-Source: ABdhPJylTJeID8paVo6LiL9ZDwYHcvMkN9q/oO265fSJCe7h9NURFSrnkIRtGbsmf8tZwoJWGWSAtQ==
+X-Received: by 2002:a4a:c449:0:b0:320:f8ac:8f88 with SMTP id h9-20020a4ac449000000b00320f8ac8f88mr545283ooq.94.1648058101164;
+        Wed, 23 Mar 2022 10:55:01 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id r19-20020acaa813000000b002ed02ca6a3fsm228643oie.1.2022.03.23.10.54.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Mar 2022 10:55:00 -0700 (PDT)
+Received: (nullmailer pid 162187 invoked by uid 1000);
+        Wed, 23 Mar 2022 17:54:59 -0000
+Date:   Wed, 23 Mar 2022 12:54:59 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc:     devicetree@vger.kernel.org,
+        Michael Trimarchi <michael@amarulasolutions.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Rob Herring <robh+dt@kernel.org>, linux-input@vger.kernel.org
+Subject: Re: [PATCH v3 1/6] dt-bindings: input: touchscreen: edt-ft5x06: add
+ report-rate-hz
+Message-ID: <Yjte8yVWcHXPn6on@robh.at.kernel.org>
+References: <20220313163503.5183-1-dario.binacchi@amarulasolutions.com>
+ <20220313163503.5183-2-dario.binacchi@amarulasolutions.com>
 MIME-Version: 1.0
-References: <20220314195458.271430-1-wonchung@google.com> <CAOvb9yguWiJgeYBb1eTnAUpNQ-f5f-tQDnDNw+XzBXRx0H156g@mail.gmail.com>
- <YjrKYcta2SUjn3Pk@kroah.com>
-In-Reply-To: <YjrKYcta2SUjn3Pk@kroah.com>
-From:   Won Chung <wonchung@google.com>
-Date:   Wed, 23 Mar 2022 10:54:44 -0700
-Message-ID: <CAOvb9yi_YYVjT1ZVKE0oOH8GeqgqbDkcsNC2WMwUJFw6J37-OQ@mail.gmail.com>
-Subject: Re: [PATCH v6] driver core: Add sysfs support for physical location
- of a device
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220313163503.5183-2-dario.binacchi@amarulasolutions.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 12:21 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Tue, Mar 22, 2022 at 09:36:02AM -0700, Won Chung wrote:
-> > On Mon, Mar 14, 2022 at 12:55 PM Won Chung <wonchung@google.com> wrote:
-> > I am sorry to keep bothering you with this, but can you take a look at
-> > this patch for a review when you have time? Thank you very much!
->
-> It is the middle of the merge window now, and I will look at this after
-> 5.18-rc1 is out.  Due to all of the constant churn in this (and you only
-> fixing the memory leak in the last submission), I had put this on the
-> bottom of my review queue.
->
-> Also, I don't see an actual user of these new attributes anywhere, so
-> even if this was accepted, who is going to use it?
->
-> thanks,
->
-> greg k-h
+On Sun, 13 Mar 2022 17:34:58 +0100, Dario Binacchi wrote:
+> It allows to change the M06/M12 default scan rate.
+> 
+> Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
+> Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
+> Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+> 
+> ---
+> 
+> Changes in v3:
+> - Add hz unit suffix.
+> - Add '|' to description.
+> 
+>  .../devicetree/bindings/input/touchscreen/edt-ft5x06.yaml | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
 
-Hi Greg,
-
-Thank you for the information.
-
-As a start, we are planning to use this in Chrome OS to specify the
-physical location of each USB device since Coreboot adds _PLD fields
-to usb port and typec connector. Currently, if there is one USB device
-connected on the left panel and another USB device connected on the
-right panel, the userspace cannot distinguish which device is on the
-left or the right panel. Once each USB device exposes its location
-info, we can gather more data on users' preference on port usage.
-Also, it can apply to not just USB devices, but also other types like
-HDMI ports in the future.
-Would this answer your question?
-
-
-Hey Benson, can you take a look at this if I am not mistaken or
-missing some details?
-
-
-Thanks,
-Won
+Acked-by: Rob Herring <robh@kernel.org>
