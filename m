@@ -2,111 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A1F6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 03:49:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13C20C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 03:49:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241711AbiCWDua (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 23:50:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56546 "EHLO
+        id S241731AbiCWDvI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 23:51:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230141AbiCWDu1 (ORCPT
+        with ESMTP id S230141AbiCWDvE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 23:50:27 -0400
-Received: from out162-62-57-252.mail.qq.com (out162-62-57-252.mail.qq.com [162.62.57.252])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC2C716D8
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 20:48:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1648007320;
-        bh=aPCfa2VR27sIrzeHgV7GyBgO3tUA+0rcNecygkJYcgQ=;
-        h=From:To:Cc:Subject:Date;
-        b=Mmc+oGhqpCYTKxy1vTZ0ENqdY6QvrAvzbptDGOgHumhlJvsVtF1Sq/3jjyJNpRR7z
-         WbtHzFKgLJjvhaLkALbe/RLSZ9yxe+S+ZJaXMgoPnuvqS4K+cnOOlrEMsnUH86tAhd
-         y0ybqVbu8sJq5uvN79ddag3tjB88fUnUE+34WmJ4=
-Received: from localhost.localdomain ([43.227.136.188])
-        by newxmesmtplogicsvrszc8.qq.com (NewEsmtp) with SMTP
-        id C242AE0C; Wed, 23 Mar 2022 11:48:36 +0800
-X-QQ-mid: xmsmtpt1648007316th29usvoz
-Message-ID: <tencent_7CB95F1C3914BCE1CA4A61FF7C20E7CCB108@qq.com>
-X-QQ-XMAILINFO: NQR8mRxMnur93WeYZSV4oqu8CMBJfbeHrGR5Ufzg0ImwLGgFHkCDtc9aEgz4Yq
-         NGeDZYXHFyzLjBKNk/RIiHuLbFczN4z8nCi1+byjjaEsg0lGS7ubJznSqXmEBc7eSfkIgmer3RI1
-         ZdorD4YNjQYzly7jxbkJnu5e4FlNVXQDl9z02dsS4RlkizNLOPKW9Gbn5NSvb8fJA0V9O1JiovYY
-         t2g2wgMCC9ZKAM2rWSMFUuroGE0pjtCSLoAR88Q6TDijBdHTUV6dwH5oOTuv1xWKS+aHd/KwjhdX
-         Z0bWhHL73BjBUgAsZ93CSUbV4KOKXkYz0vA0VZQQJQcNCfqiEzdWUPygEbWBXWFy5t8ms7MEe3Ah
-         V820Atney3HBHBPtsR0yTU0O+Ix5daei5nxB5rCDKImY6oI9G8Xjh0valst5TUXEsVR4GmP0va4n
-         QGXiexvDOA6V7nfF7peIFql3JNHE8chLIZKOaqEX2W9LpIFbjun+OkgT2UZn5ydo1yqNwm9IKWxX
-         syDDdfgvv7GM3PA0ggcle5ngFDKXPgE4xTvKG5hEtLFa2qsEklAT1oCNsp9pbbiPW6flTvO6xbb8
-         SJXOhqSuEyEywpdMQW9XwBK9ERlekOnrDhJpl1l1C1VX82dlzVa64SAfkB6YB9jZy+bkevD2O7vo
-         8IRDGwkqCmUwzsmVrhnH3djC7aiRun08g9oLfQykm9x7+1X0FFJf8CPlx/hAwUsA1p0Oek2mmug6
-         X5+nkMBLHCdW12YByAhJMecE2c7vs++PZBw0peFXuzdTd06QnRiTg+XUwMcqKmVP/0BvcbcYFVeF
-         z7mkSntim5zCXfwKvf60Q1z89Z1iZvfw9VHXh86Mr/dSxh1dbxFWFNUcenrpMEqgm45QVHUa1OYx
-         gIcynbaOD1jWv4FL5/INMC90Kx0Z55Sst24Q8Dj3oQt7NdGAvDt/UacLLQSUyrOsKtIRTcuBAX8R
-         n6pGNs4A3VLVapGaICeKn/fkSstcoOzrGWa6O7KromO4VGsyYdIEMiKKmbbNc1
-From:   xkernel.wang@foxmail.com
-To:     glider@google.com, akpm@linux-foundation.org
-Cc:     andreyknvl@gmail.com, elver@google.com, dvyukov@google.com,
-        ryabinin.a.a@gmail.com, kasan-dev@googlegroups.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH] lib/test_meminit: optimize do_kmem_cache_rcu_persistent() test
-Date:   Wed, 23 Mar 2022 11:48:24 +0800
-X-OQ-MSGID: <20220323034824.2026-1-xkernel.wang@foxmail.com>
+        Tue, 22 Mar 2022 23:51:04 -0400
+Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED02B2734;
+        Tue, 22 Mar 2022 20:49:33 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
+ (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 23 Mar
+ 2022 11:49:32 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Wed, 23 Mar
+ 2022 11:49:31 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>
+CC:     <linux-ext4@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Haowen Bai <baihaowen@meizu.com>
+Subject: [PATCH] fs: ext4: Fix duplicate included linux/dax.h
+Date:   Wed, 23 Mar 2022 11:49:30 +0800
+Message-ID: <1648007370-31984-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+Clean up the following includecheck warning:
 
-To make the test more robust, there are the following changes:
-1. add a check for the return value of kmem_cache_alloc().
-2. properly release the object `buf` on several error paths.
-3. release the objects of `used_objects` if we never hit `saved_ptr`.
-4. destroy the created cache by default.
+fs/ext4/inode.c: linux/dax.h is included more than once.
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+No functional change.
+
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 ---
- lib/test_meminit.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ fs/ext4/inode.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/lib/test_meminit.c b/lib/test_meminit.c
-index 2f4c4bc..8d77c3f 100644
---- a/lib/test_meminit.c
-+++ b/lib/test_meminit.c
-@@ -300,13 +300,18 @@ static int __init do_kmem_cache_rcu_persistent(int size, int *total_failures)
- 	c = kmem_cache_create("test_cache", size, size, SLAB_TYPESAFE_BY_RCU,
- 			      NULL);
- 	buf = kmem_cache_alloc(c, GFP_KERNEL);
-+	if (!buf)
-+		goto out;
- 	saved_ptr = buf;
- 	fill_with_garbage(buf, size);
- 	buf_contents = kmalloc(size, GFP_KERNEL);
--	if (!buf_contents)
-+	if (!buf_contents) {
-+		kmem_cache_free(c, buf);
- 		goto out;
-+	}
- 	used_objects = kmalloc_array(maxiter, sizeof(void *), GFP_KERNEL);
- 	if (!used_objects) {
-+		kmem_cache_free(c, buf);
- 		kfree(buf_contents);
- 		goto out;
- 	}
-@@ -327,11 +332,14 @@ static int __init do_kmem_cache_rcu_persistent(int size, int *total_failures)
- 		}
- 	}
+diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+index 01c9e4f..6738ea7 100644
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -41,7 +41,6 @@
+ #include <linux/bitops.h>
+ #include <linux/iomap.h>
+ #include <linux/iversion.h>
+-#include <linux/dax.h>
  
-+	for (iter = 0; iter < maxiter; iter++)
-+		kmem_cache_free(c, used_objects[iter]);
-+
- free_out:
--	kmem_cache_destroy(c);
- 	kfree(buf_contents);
- 	kfree(used_objects);
- out:
-+	kmem_cache_destroy(c);
- 	*total_failures += fail;
- 	return 1;
- }
+ #include "ext4_jbd2.h"
+ #include "xattr.h"
 -- 
+2.7.4
+
