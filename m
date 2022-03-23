@@ -2,678 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16A5DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 21:30:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDC64C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 21:30:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344942AbiCWVbn (ORCPT
+        id S1344948AbiCWVcE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 17:31:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35772 "EHLO
+        Wed, 23 Mar 2022 17:32:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240867AbiCWVbh (ORCPT
+        with ESMTP id S240867AbiCWVcD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 17:31:37 -0400
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6154D36B57;
-        Wed, 23 Mar 2022 14:30:06 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id C3F325C029B;
-        Wed, 23 Mar 2022 17:30:05 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Wed, 23 Mar 2022 17:30:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:date:date:from:from:in-reply-to
-        :message-id:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=Eg8kCh
-        35bVgzNqBT37lXPEWFs7WWvLSoJufdqAzozYM=; b=KjC61Z+8+N3rkj2QhOZM80
-        IDj/Y70UJ5x8pQTF+iUZyVBMLRHE0l8774w8w3nsSrMr5hp5NtF5SWt5uyImugYO
-        5U7ObGwGxqiOAHIjaIcyi9SYy5vhLEHKRKvNxXfwoH1P73zRXbOJnl3vqEe0uBj5
-        ek8vUv7iDqY/x6k7Bv3VKa96YUEwnEeS6z+8AnTLSFHYNTFf2bZMNBIamjZGWAvS
-        4u9loPsb18F0LAgWp4TlzKBZmGSP+yHKsD5pd02hrnYTYcabO635Y4CGs9EH+OZ5
-        c/QCs3KDM2mdQ8FnoQwIDkN94kQdz+cGerjqliVV8Tk516Z1Ia4xPMUlBf9OHUSw
-        ==
-X-ME-Sender: <xms:XZE7YvMhV93_qMFRC5-MXzVrCzdqVBueuYBXhI_vtgiIkxhDanQiJg>
-    <xme:XZE7Yp_ik9Tcx_Eku3Ft63yqUI1Pjb9D568cMFfQN1gVzkz254LXKKSduWozx6L5P
-    aXFL6Z3qJWLbi2GgWk>
-X-ME-Received: <xmr:XZE7YuSvhiQnAA5jSSXqNLHFrwOq1E8fHhoHXpeqFbEGgAjBi3wsiXT8tNed0TB7Y8mUjktZ1WujukdDi2YOk_8TBthiwmVoTJE>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudegjedgudeglecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefvkffhufffsedttdertddttddtnecuhfhrohhmpefhihhnnhcuvfhhrghi
-    nhcuoehfthhhrghinheslhhinhhugidqmheikehkrdhorhhgqeenucggtffrrghtthgvrh
-    hnpedtleetkeelkeekvdeujeehkefgvddtheehhfetieethfetfeeghfduheevveelleen
-    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehfthhhrg
-    hinheslhhinhhugidqmheikehkrdhorhhg
-X-ME-Proxy: <xmx:XZE7Yjsoc7KcNHuCUK4qfhB-Qj_iyijkapF4X83BUt7_1tZKWRyuzA>
-    <xmx:XZE7Ynfn1O0eQzPPL7gLWk8CWh5HcCLYqUAPjy3GCRZuT9UDNHMEjQ>
-    <xmx:XZE7Yv0TNqDowXO1KCM25djZjIi6mknTIbUHlyHb_qWChjtBiDGgww>
-    <xmx:XZE7Yj4cnClSO1G0tr6t7RwWYSbUmbinSvIZqyNDNie1_P9FKNlUHw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 23 Mar 2022 17:30:02 -0400 (EDT)
-To:     "Juergen E. Fischer" <fischer@norbit.de>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Cc:     "Christoph Hellwig" <hch@infradead.org>,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-Id: <bdc1264b6dd331150bffb737958cab8c9c068fa1.1648070977.git.fthain@linux-m68k.org>
-From:   Finn Thain <fthain@linux-m68k.org>
-Subject: [PATCH] aha152x: Stop using struct scsi_pointer
-Date:   Thu, 24 Mar 2022 08:29:37 +1100
+        Wed, 23 Mar 2022 17:32:03 -0400
+X-Greylist: delayed 453 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 23 Mar 2022 14:30:32 PDT
+Received: from mx1.riseup.net (mx1.riseup.net [198.252.153.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF93D3E0EE;
+        Wed, 23 Mar 2022 14:30:32 -0700 (PDT)
+Received: from fews2.riseup.net (fews2-pn.riseup.net [10.0.1.84])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
+         client-signature RSA-PSS (2048 bits) client-digest SHA256)
+        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
+        by mx1.riseup.net (Postfix) with ESMTPS id 4KP1Xz15lyzDs6Q;
+        Wed, 23 Mar 2022 14:22:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
+        t=1648070579; bh=K5DayJKzywfJ8rV0t5+qTTJdDuq8sxKxz9R1nJWR6v0=;
+        h=Subject:From:To:Cc:In-Reply-To:References:Date:From;
+        b=efwQCJNGWb3akNgwGKrZEqvn2jHIW0+yj/ELXOU/nsFhcwWR2dGCaJIYR2c86tXDo
+         L4QzMDn4IL56xtKoZogZUOXVI6a3XCMjccamKMzwWsW6d1dlVjCv3Mn5Zmx41qpBgH
+         VzWxTajgfNSZWd7XiaFzPsh7na5X2Vb7TdaXYBsQ=
+X-Riseup-User-ID: 3E5567DDA8FA81198A5EBD1492A1B1F43CA8B82C4894982B0AA93A2620D2FCED
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+         by fews2.riseup.net (Postfix) with ESMTPSA id 4KP1Xx5LxLz1y9M;
+        Wed, 23 Mar 2022 14:22:57 -0700 (PDT)
+Message-ID: <275245e8048fa124055d9ff3d10ce6562294483a.camel@riseup.net>
+Subject: Re: [PATCH] HID: logitech-hidpp: support Color LED feature (8071).
+From:   Filipe =?ISO-8859-1?Q?La=EDns?= <lains@riseup.net>
+To:     Manuel =?ISO-8859-1?Q?Sch=F6nlaub?= <manuel.schoenlaub@gmail.com>
+Cc:     jikos@kernel.org, benjamin.tissoires@redhat.com,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <Yifr4etBFPu1a2Ct@hermes>
+References: <Yifr4etBFPu1a2Ct@hermes>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-7NA5b+BMyLiRNR4ZGUnP"
+Date:   Wed, 23 Mar 2022 21:22:49 +0000
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove aha152x_cmd_priv.scsi_pointer by moving the necessary members
-into aha152x_cmd_priv proper.
 
-Tested with an Adaptec SlimSCSI APA-1460A card.
+--=-7NA5b+BMyLiRNR4ZGUnP
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Cc: Christoph Hellwig <hch@infradead.org>
-Suggested-by: Christoph Hellwig <hch@infradead.org>
-Signed-off-by: Finn Thain <fthain@linux-m68k.org>
----
- drivers/scsi/aha152x.c | 235 ++++++++++++++++++++---------------------
- 1 file changed, 113 insertions(+), 122 deletions(-)
+On Tue, 2022-03-08 at 16:50 -0700, Manuel Sch=C3=B6nlaub wrote:
+> The HID++ protocol allows to set multicolor (RGB) to a static color.
+> Multiple of such LED zones per device are supported.
+> This patch exports said LEDs so that they can be set from userspace.
+>=20
+> Signed-off-by: Manuel Sch=C3=B6nlaub <manuel.schoenlaub@gmail.com>
+> ---
+> =C2=A0drivers/hid/hid-logitech-hidpp.c | 188 ++++++++++++++++++++++++++++=
++++
+> =C2=A01 file changed, 188 insertions(+)
 
-diff --git a/drivers/scsi/aha152x.c b/drivers/scsi/aha152x.c
-index 5f554a3a0f62..35cd04f7be5c 100644
---- a/drivers/scsi/aha152x.c
-+++ b/drivers/scsi/aha152x.c
-@@ -317,14 +317,18 @@ enum {
- };
- 
- struct aha152x_cmd_priv {
--	struct scsi_pointer scsi_pointer;
-+	char *ptr;
-+	int this_residual;
-+	struct scatterlist *buffer;
-+	int status;
-+	int message;
-+	int sent_command;
-+	int phase;
- };
- 
--static struct scsi_pointer *aha152x_scsi_pointer(struct scsi_cmnd *cmd)
-+static struct aha152x_cmd_priv *aha152x_priv(struct scsi_cmnd *cmd)
- {
--	struct aha152x_cmd_priv *acmd = scsi_cmd_priv(cmd);
--
--	return &acmd->scsi_pointer;
-+	return scsi_cmd_priv(cmd);
- }
- 
- MODULE_AUTHOR("Jürgen Fischer");
-@@ -890,17 +894,16 @@ void aha152x_release(struct Scsi_Host *shpnt)
- static int setup_expected_interrupts(struct Scsi_Host *shpnt)
- {
- 	if(CURRENT_SC) {
--		struct scsi_pointer *scsi_pointer =
--			aha152x_scsi_pointer(CURRENT_SC);
-+		struct aha152x_cmd_priv *acp = aha152x_priv(CURRENT_SC);
- 
--		scsi_pointer->phase |= 1 << 16;
-+		acp->phase |= 1 << 16;
- 
--		if (scsi_pointer->phase & selecting) {
-+		if (acp->phase & selecting) {
- 			SETPORT(SSTAT1, SELTO);
- 			SETPORT(SIMODE0, ENSELDO | (DISCONNECTED_SC ? ENSELDI : 0));
- 			SETPORT(SIMODE1, ENSELTIMO);
- 		} else {
--			SETPORT(SIMODE0, (scsi_pointer->phase & spiordy) ? ENSPIORDY : 0);
-+			SETPORT(SIMODE0, (acp->phase & spiordy) ? ENSPIORDY : 0);
- 			SETPORT(SIMODE1, ENPHASEMIS | ENSCSIRST | ENSCSIPERR | ENBUSFREE);
- 		}
- 	} else if(STATE==seldi) {
-@@ -924,17 +927,16 @@ static int setup_expected_interrupts(struct Scsi_Host *shpnt)
- static int aha152x_internal_queue(struct scsi_cmnd *SCpnt,
- 				  struct completion *complete, int phase)
- {
--	struct scsi_pointer *scsi_pointer = aha152x_scsi_pointer(SCpnt);
-+	struct aha152x_cmd_priv *acp = aha152x_priv(SCpnt);
- 	struct Scsi_Host *shpnt = SCpnt->device->host;
- 	unsigned long flags;
- 
--	scsi_pointer->phase	   = not_issued | phase;
--	scsi_pointer->Status	   = 0x1; /* Ilegal status by SCSI standard */
--	scsi_pointer->Message	   = 0;
--	scsi_pointer->have_data_in = 0;
--	scsi_pointer->sent_command = 0;
-+	acp->phase        = not_issued | phase;
-+	acp->status       = 0x1; /* Ilegal status by SCSI standard */
-+	acp->message      = 0;
-+	acp->sent_command = 0;
- 
--	if (scsi_pointer->phase & (resetting | check_condition)) {
-+	if (acp->phase & (resetting | check_condition)) {
- 		if (!SCpnt->host_scribble || SCSEM(SCpnt) || SCNEXT(SCpnt)) {
- 			scmd_printk(KERN_ERR, SCpnt, "cannot reuse command\n");
- 			return FAILED;
-@@ -957,15 +959,15 @@ static int aha152x_internal_queue(struct scsi_cmnd *SCpnt,
- 	   SCp.phase            : current state of the command */
- 
- 	if ((phase & resetting) || !scsi_sglist(SCpnt)) {
--		scsi_pointer->ptr           = NULL;
--		scsi_pointer->this_residual = 0;
-+		acp->ptr           = NULL;
-+		acp->this_residual = 0;
- 		scsi_set_resid(SCpnt, 0);
--		scsi_pointer->buffer        = NULL;
-+		acp->buffer        = NULL;
- 	} else {
- 		scsi_set_resid(SCpnt, scsi_bufflen(SCpnt));
--		scsi_pointer->buffer        = scsi_sglist(SCpnt);
--		scsi_pointer->ptr           = SG_ADDRESS(scsi_pointer->buffer);
--		scsi_pointer->this_residual = scsi_pointer->buffer->length;
-+		acp->buffer        = scsi_sglist(SCpnt);
-+		acp->ptr           = SG_ADDRESS(acp->buffer);
-+		acp->this_residual = acp->buffer->length;
- 	}
- 
- 	DO_LOCK(flags);
-@@ -1015,7 +1017,7 @@ static void reset_done(struct scsi_cmnd *SCpnt)
- 
- static void aha152x_scsi_done(struct scsi_cmnd *SCpnt)
- {
--	if (aha152x_scsi_pointer(SCpnt)->phase & resetting)
-+	if (aha152x_priv(SCpnt)->phase & resetting)
- 		reset_done(SCpnt);
- 	else
- 		scsi_done(SCpnt);
-@@ -1101,7 +1103,7 @@ static int aha152x_device_reset(struct scsi_cmnd * SCpnt)
- 
- 	DO_LOCK(flags);
- 
--	if (aha152x_scsi_pointer(SCpnt)->phase & resetted) {
-+	if (aha152x_priv(SCpnt)->phase & resetted) {
- 		HOSTDATA(shpnt)->commands--;
- 		if (!HOSTDATA(shpnt)->commands)
- 			SETPORT(PORTA, 0);
-@@ -1395,31 +1397,30 @@ static void busfree_run(struct Scsi_Host *shpnt)
- 	SETPORT(SSTAT1, CLRBUSFREE);
- 
- 	if(CURRENT_SC) {
--		struct scsi_pointer *scsi_pointer =
--			aha152x_scsi_pointer(CURRENT_SC);
-+		struct aha152x_cmd_priv *acp = aha152x_priv(CURRENT_SC);
- 
- #if defined(AHA152X_STAT)
- 		action++;
- #endif
--		scsi_pointer->phase &= ~syncneg;
-+		acp->phase &= ~syncneg;
- 
--		if (scsi_pointer->phase & completed) {
-+		if (acp->phase & completed) {
- 			/* target sent COMMAND COMPLETE */
--			done(shpnt, scsi_pointer->Status, DID_OK);
-+			done(shpnt, acp->status, DID_OK);
- 
--		} else if (scsi_pointer->phase & aborted) {
--			done(shpnt, scsi_pointer->Status, DID_ABORT);
-+		} else if (acp->phase & aborted) {
-+			done(shpnt, acp->status, DID_ABORT);
- 
--		} else if (scsi_pointer->phase & resetted) {
--			done(shpnt, scsi_pointer->Status, DID_RESET);
-+		} else if (acp->phase & resetted) {
-+			done(shpnt, acp->status, DID_RESET);
- 
--		} else if (scsi_pointer->phase & disconnected) {
-+		} else if (acp->phase & disconnected) {
- 			/* target sent DISCONNECT */
- #if defined(AHA152X_STAT)
- 			HOSTDATA(shpnt)->disconnections++;
- #endif
- 			append_SC(&DISCONNECTED_SC, CURRENT_SC);
--			scsi_pointer->phase |= 1 << 16;
-+			acp->phase |= 1 << 16;
- 			CURRENT_SC = NULL;
- 
- 		} else {
-@@ -1438,24 +1439,23 @@ static void busfree_run(struct Scsi_Host *shpnt)
- 		action++;
- #endif
- 
--		if (aha152x_scsi_pointer(DONE_SC)->phase & check_condition) {
-+		if (aha152x_priv(DONE_SC)->phase & check_condition) {
- 			struct scsi_cmnd *cmd = HOSTDATA(shpnt)->done_SC;
- 			struct aha152x_scdata *sc = SCDATA(cmd);
- 
- 			scsi_eh_restore_cmnd(cmd, &sc->ses);
- 
--			aha152x_scsi_pointer(cmd)->Status = SAM_STAT_CHECK_CONDITION;
-+			aha152x_priv(cmd)->status = SAM_STAT_CHECK_CONDITION;
- 
- 			HOSTDATA(shpnt)->commands--;
- 			if (!HOSTDATA(shpnt)->commands)
- 				SETPORT(PORTA, 0);	/* turn led off */
--		} else if (aha152x_scsi_pointer(DONE_SC)->Status ==
--			   SAM_STAT_CHECK_CONDITION) {
-+		} else if (aha152x_priv(DONE_SC)->status == SAM_STAT_CHECK_CONDITION) {
- #if defined(AHA152X_STAT)
- 			HOSTDATA(shpnt)->busfree_with_check_condition++;
- #endif
- 
--			if(!(aha152x_scsi_pointer(DONE_SC)->phase & not_issued)) {
-+			if (!(aha152x_priv(DONE_SC)->phase & not_issued)) {
- 				struct aha152x_scdata *sc;
- 				struct scsi_cmnd *ptr = DONE_SC;
- 				DONE_SC=NULL;
-@@ -1480,7 +1480,7 @@ static void busfree_run(struct Scsi_Host *shpnt)
- 			if (!HOSTDATA(shpnt)->commands)
- 				SETPORT(PORTA, 0);	/* turn led off */
- 
--			if (!(aha152x_scsi_pointer(ptr)->phase & resetting)) {
-+			if (!(aha152x_priv(ptr)->phase & resetting)) {
- 				kfree(ptr->host_scribble);
- 				ptr->host_scribble=NULL;
- 			}
-@@ -1503,13 +1503,12 @@ static void busfree_run(struct Scsi_Host *shpnt)
- 	DO_UNLOCK(flags);
- 
- 	if(CURRENT_SC) {
--		struct scsi_pointer *scsi_pointer =
--			aha152x_scsi_pointer(CURRENT_SC);
-+		struct aha152x_cmd_priv *acp = aha152x_priv(CURRENT_SC);
- 
- #if defined(AHA152X_STAT)
- 		action++;
- #endif
--		scsi_pointer->phase |= selecting;
-+		acp->phase |= selecting;
- 
- 		/* clear selection timeout */
- 		SETPORT(SSTAT1, SELTO);
-@@ -1537,13 +1536,13 @@ static void busfree_run(struct Scsi_Host *shpnt)
-  */
- static void seldo_run(struct Scsi_Host *shpnt)
- {
--	struct scsi_pointer *scsi_pointer = aha152x_scsi_pointer(CURRENT_SC);
-+	struct aha152x_cmd_priv *acp = aha152x_priv(CURRENT_SC);
- 
- 	SETPORT(SCSISIG, 0);
- 	SETPORT(SSTAT1, CLRBUSFREE);
- 	SETPORT(SSTAT1, CLRPHASECHG);
- 
--	scsi_pointer->phase &= ~(selecting | not_issued);
-+	acp->phase &= ~(selecting | not_issued);
- 
- 	SETPORT(SCSISEQ, 0);
- 
-@@ -1558,12 +1557,12 @@ static void seldo_run(struct Scsi_Host *shpnt)
- 
- 	ADDMSGO(IDENTIFY(RECONNECT, CURRENT_SC->device->lun));
- 
--	if (scsi_pointer->phase & aborting) {
-+	if (acp->phase & aborting) {
- 		ADDMSGO(ABORT);
--	} else if (scsi_pointer->phase & resetting) {
-+	} else if (acp->phase & resetting) {
- 		ADDMSGO(BUS_DEVICE_RESET);
- 	} else if (SYNCNEG==0 && SYNCHRONOUS) {
--		scsi_pointer->phase |= syncneg;
-+		acp->phase |= syncneg;
- 		MSGOLEN += spi_populate_sync_msg(&MSGO(MSGOLEN), 50, 8);
- 		SYNCNEG=1;		/* negotiation in progress */
- 	}
-@@ -1578,7 +1577,7 @@ static void seldo_run(struct Scsi_Host *shpnt)
-  */
- static void selto_run(struct Scsi_Host *shpnt)
- {
--	struct scsi_pointer *scsi_pointer = aha152x_scsi_pointer(CURRENT_SC);
-+	struct aha152x_cmd_priv *acp;
- 
- 	SETPORT(SCSISEQ, 0);
- 	SETPORT(SSTAT1, CLRSELTIMO);
-@@ -1586,9 +1585,10 @@ static void selto_run(struct Scsi_Host *shpnt)
- 	if (!CURRENT_SC)
- 		return;
- 
--	scsi_pointer->phase &= ~selecting;
-+	acp = aha152x_priv(CURRENT_SC);
-+	acp->phase &= ~selecting;
- 
--	if (scsi_pointer->phase & aborted)
-+	if (acp->phase & aborted)
- 		done(shpnt, SAM_STAT_GOOD, DID_ABORT);
- 	else if (TESTLO(SSTAT0, SELINGO))
- 		done(shpnt, SAM_STAT_GOOD, DID_BUS_BUSY);
-@@ -1616,10 +1616,9 @@ static void seldi_run(struct Scsi_Host *shpnt)
- 	SETPORT(SSTAT1, CLRPHASECHG);
- 
- 	if(CURRENT_SC) {
--		struct scsi_pointer *scsi_pointer =
--			aha152x_scsi_pointer(CURRENT_SC);
-+		struct aha152x_cmd_priv *acp = aha152x_priv(CURRENT_SC);
- 
--		if (!(scsi_pointer->phase & not_issued))
-+		if (!(acp->phase & not_issued))
- 			scmd_printk(KERN_ERR, CURRENT_SC,
- 				    "command should not have been issued yet\n");
- 
-@@ -1676,7 +1675,7 @@ static void seldi_run(struct Scsi_Host *shpnt)
- static void msgi_run(struct Scsi_Host *shpnt)
- {
- 	for(;;) {
--		struct scsi_pointer *scsi_pointer;
-+		struct aha152x_cmd_priv *acp;
- 		int sstat1 = GETPORT(SSTAT1);
- 
- 		if(sstat1 & (PHASECHG|PHASEMIS|BUSFREE) || !(sstat1 & REQINIT))
-@@ -1714,9 +1713,9 @@ static void msgi_run(struct Scsi_Host *shpnt)
- 				continue;
- 			}
- 
--			scsi_pointer = aha152x_scsi_pointer(CURRENT_SC);
--			scsi_pointer->Message = MSGI(0);
--			scsi_pointer->phase &= ~disconnected;
-+			acp = aha152x_priv(CURRENT_SC);
-+			acp->message = MSGI(0);
-+			acp->phase &= ~disconnected;
- 
- 			MSGILEN=0;
- 
-@@ -1724,8 +1723,8 @@ static void msgi_run(struct Scsi_Host *shpnt)
- 			continue;
- 		}
- 
--		scsi_pointer = aha152x_scsi_pointer(CURRENT_SC);
--		scsi_pointer->Message = MSGI(0);
-+		acp = aha152x_priv(CURRENT_SC);
-+		acp->message = MSGI(0);
- 
- 		switch (MSGI(0)) {
- 		case DISCONNECT:
-@@ -1733,11 +1732,11 @@ static void msgi_run(struct Scsi_Host *shpnt)
- 				scmd_printk(KERN_WARNING, CURRENT_SC,
- 					    "target was not allowed to disconnect\n");
- 
--			scsi_pointer->phase |= disconnected;
-+			acp->phase |= disconnected;
- 			break;
- 
- 		case COMMAND_COMPLETE:
--			scsi_pointer->phase |= completed;
-+			acp->phase |= completed;
- 			break;
- 
- 		case MESSAGE_REJECT:
-@@ -1867,11 +1866,9 @@ static void msgi_end(struct Scsi_Host *shpnt)
-  */
- static void msgo_init(struct Scsi_Host *shpnt)
- {
--	struct scsi_pointer *scsi_pointer = aha152x_scsi_pointer(CURRENT_SC);
--
- 	if(MSGOLEN==0) {
--		if ((scsi_pointer->phase & syncneg) && SYNCNEG==2 &&
--		    SYNCRATE==0) {
-+		if ((aha152x_priv(CURRENT_SC)->phase & syncneg) &&
-+		    SYNCNEG == 2 && SYNCRATE == 0) {
- 			ADDMSGO(IDENTIFY(RECONNECT, CURRENT_SC->device->lun));
- 		} else {
- 			scmd_printk(KERN_INFO, CURRENT_SC,
-@@ -1888,7 +1885,7 @@ static void msgo_init(struct Scsi_Host *shpnt)
-  */
- static void msgo_run(struct Scsi_Host *shpnt)
- {
--	struct scsi_pointer *scsi_pointer = aha152x_scsi_pointer(CURRENT_SC);
-+	struct aha152x_cmd_priv *acp = aha152x_priv(CURRENT_SC);
- 
- 	while(MSGO_I<MSGOLEN) {
- 		if (TESTLO(SSTAT0, SPIORDY))
-@@ -1901,13 +1898,13 @@ static void msgo_run(struct Scsi_Host *shpnt)
- 
- 
- 		if (MSGO(MSGO_I) & IDENTIFY_BASE)
--			scsi_pointer->phase |= identified;
-+			acp->phase |= identified;
- 
- 		if (MSGO(MSGO_I)==ABORT)
--			scsi_pointer->phase |= aborted;
-+			acp->phase |= aborted;
- 
- 		if (MSGO(MSGO_I)==BUS_DEVICE_RESET)
--			scsi_pointer->phase |= resetted;
-+			acp->phase |= resetted;
- 
- 		SETPORT(SCSIDAT, MSGO(MSGO_I++));
- 	}
-@@ -1936,7 +1933,7 @@ static void msgo_end(struct Scsi_Host *shpnt)
-  */
- static void cmd_init(struct Scsi_Host *shpnt)
- {
--	if (aha152x_scsi_pointer(CURRENT_SC)->sent_command) {
-+	if (aha152x_priv(CURRENT_SC)->sent_command) {
- 		scmd_printk(KERN_ERR, CURRENT_SC,
- 			    "command already sent\n");
- 		done(shpnt, SAM_STAT_GOOD, DID_ERROR);
-@@ -1967,7 +1964,7 @@ static void cmd_end(struct Scsi_Host *shpnt)
- 			    "command sent incompletely (%d/%d)\n",
- 			    CMD_I, CURRENT_SC->cmd_len);
- 	else
--		aha152x_scsi_pointer(CURRENT_SC)->sent_command++;
-+		aha152x_priv(CURRENT_SC)->sent_command++;
- }
- 
- /*
-@@ -1979,7 +1976,7 @@ static void status_run(struct Scsi_Host *shpnt)
- 	if (TESTLO(SSTAT0, SPIORDY))
- 		return;
- 
--	aha152x_scsi_pointer(CURRENT_SC)->Status = GETPORT(SCSIDAT);
-+	aha152x_priv(CURRENT_SC)->status = GETPORT(SCSIDAT);
- 
- }
- 
-@@ -2003,7 +2000,7 @@ static void datai_init(struct Scsi_Host *shpnt)
- 
- static void datai_run(struct Scsi_Host *shpnt)
- {
--	struct scsi_pointer *scsi_pointer;
-+	struct aha152x_cmd_priv *acp;
- 	unsigned long the_time;
- 	int fifodata, data_count;
- 
-@@ -2041,36 +2038,35 @@ static void datai_run(struct Scsi_Host *shpnt)
- 			fifodata = GETPORT(FIFOSTAT);
- 		}
- 
--		scsi_pointer = aha152x_scsi_pointer(CURRENT_SC);
--		if (scsi_pointer->this_residual > 0) {
--			while (fifodata > 0 && scsi_pointer->this_residual > 0) {
--				data_count = fifodata > scsi_pointer->this_residual ?
--						scsi_pointer->this_residual :
--						fifodata;
-+		acp = aha152x_priv(CURRENT_SC);
-+		if (acp->this_residual > 0) {
-+			while (fifodata > 0 && acp->this_residual > 0) {
-+				data_count = fifodata > acp->this_residual ?
-+						acp->this_residual : fifodata;
- 				fifodata -= data_count;
- 
- 				if (data_count & 1) {
- 					SETPORT(DMACNTRL0, ENDMA|_8BIT);
--					*scsi_pointer->ptr++ = GETPORT(DATAPORT);
--					scsi_pointer->this_residual--;
-+					*acp->ptr++ = GETPORT(DATAPORT);
-+					acp->this_residual--;
- 					DATA_LEN++;
- 					SETPORT(DMACNTRL0, ENDMA);
- 				}
- 
- 				if (data_count > 1) {
- 					data_count >>= 1;
--					insw(DATAPORT, scsi_pointer->ptr, data_count);
--					scsi_pointer->ptr += 2 * data_count;
--					scsi_pointer->this_residual -= 2 * data_count;
-+					insw(DATAPORT, acp->ptr, data_count);
-+					acp->ptr += 2 * data_count;
-+					acp->this_residual -= 2 * data_count;
- 					DATA_LEN += 2 * data_count;
- 				}
- 
--				if (scsi_pointer->this_residual == 0 &&
--				    !sg_is_last(scsi_pointer->buffer)) {
-+				if (acp->this_residual == 0 &&
-+				    !sg_is_last(acp->buffer)) {
- 					/* advance to next buffer */
--					scsi_pointer->buffer = sg_next(scsi_pointer->buffer);
--					scsi_pointer->ptr           = SG_ADDRESS(scsi_pointer->buffer);
--					scsi_pointer->this_residual = scsi_pointer->buffer->length;
-+					acp->buffer = sg_next(acp->buffer);
-+					acp->ptr = SG_ADDRESS(acp->buffer);
-+					acp->this_residual = acp->buffer->length;
- 				}
- 			}
- 		} else if (fifodata > 0) {
-@@ -2138,15 +2134,15 @@ static void datao_init(struct Scsi_Host *shpnt)
- 
- static void datao_run(struct Scsi_Host *shpnt)
- {
--	struct scsi_pointer *scsi_pointer = aha152x_scsi_pointer(CURRENT_SC);
-+	struct aha152x_cmd_priv *acp = aha152x_priv(CURRENT_SC);
- 	unsigned long the_time;
- 	int data_count;
- 
- 	/* until phase changes or all data sent */
--	while (TESTLO(DMASTAT, INTSTAT) && scsi_pointer->this_residual > 0) {
-+	while (TESTLO(DMASTAT, INTSTAT) && acp->this_residual > 0) {
- 		data_count = 128;
--		if (data_count > scsi_pointer->this_residual)
--			data_count = scsi_pointer->this_residual;
-+		if (data_count > acp->this_residual)
-+			data_count = acp->this_residual;
- 
- 		if(TESTLO(DMASTAT, DFIFOEMP)) {
- 			scmd_printk(KERN_ERR, CURRENT_SC,
-@@ -2157,26 +2153,25 @@ static void datao_run(struct Scsi_Host *shpnt)
- 
- 		if(data_count & 1) {
- 			SETPORT(DMACNTRL0,WRITE_READ|ENDMA|_8BIT);
--			SETPORT(DATAPORT, *scsi_pointer->ptr++);
--			scsi_pointer->this_residual--;
-+			SETPORT(DATAPORT, *acp->ptr++);
-+			acp->this_residual--;
- 			CMD_INC_RESID(CURRENT_SC, -1);
- 			SETPORT(DMACNTRL0,WRITE_READ|ENDMA);
- 		}
- 
- 		if(data_count > 1) {
- 			data_count >>= 1;
--			outsw(DATAPORT, scsi_pointer->ptr, data_count);
--			scsi_pointer->ptr           += 2 * data_count;
--			scsi_pointer->this_residual -= 2 * data_count;
-+			outsw(DATAPORT, acp->ptr, data_count);
-+			acp->ptr += 2 * data_count;
-+			acp->this_residual -= 2 * data_count;
- 			CMD_INC_RESID(CURRENT_SC, -2 * data_count);
- 		}
- 
--		if (scsi_pointer->this_residual == 0 &&
--		    !sg_is_last(scsi_pointer->buffer)) {
-+		if (acp->this_residual == 0 && !sg_is_last(acp->buffer)) {
- 			/* advance to next buffer */
--			scsi_pointer->buffer = sg_next(scsi_pointer->buffer);
--			scsi_pointer->ptr           = SG_ADDRESS(scsi_pointer->buffer);
--			scsi_pointer->this_residual = scsi_pointer->buffer->length;
-+			acp->buffer = sg_next(acp->buffer);
-+			acp->ptr = SG_ADDRESS(acp->buffer);
-+			acp->this_residual = acp->buffer->length;
- 		}
- 
- 		the_time=jiffies + 100*HZ;
-@@ -2192,7 +2187,7 @@ static void datao_run(struct Scsi_Host *shpnt)
- 
- static void datao_end(struct Scsi_Host *shpnt)
- {
--	struct scsi_pointer *scsi_pointer = aha152x_scsi_pointer(CURRENT_SC);
-+	struct aha152x_cmd_priv *acp = aha152x_priv(CURRENT_SC);
- 
- 	if(TESTLO(DMASTAT, DFIFOEMP)) {
- 		u32 datao_cnt = GETSTCNT();
-@@ -2211,10 +2206,9 @@ static void datao_end(struct Scsi_Host *shpnt)
- 			sg = sg_next(sg);
- 		}
- 
--		scsi_pointer->buffer = sg;
--		scsi_pointer->ptr = SG_ADDRESS(scsi_pointer->buffer) + done;
--		scsi_pointer->this_residual = scsi_pointer->buffer->length -
--			done;
-+		acp->buffer = sg;
-+		acp->ptr = SG_ADDRESS(acp->buffer) + done;
-+		acp->this_residual = acp->buffer->length - done;
- 	}
- 
- 	SETPORT(SXFRCTL0, CH1|CLRCH1|CLRSTCNT);
-@@ -2229,7 +2223,6 @@ static void datao_end(struct Scsi_Host *shpnt)
-  */
- static int update_state(struct Scsi_Host *shpnt)
- {
--	struct scsi_pointer *scsi_pointer = aha152x_scsi_pointer(CURRENT_SC);
- 	int dataphase=0;
- 	unsigned int stat0 = GETPORT(SSTAT0);
- 	unsigned int stat1 = GETPORT(SSTAT1);
-@@ -2244,7 +2237,7 @@ static int update_state(struct Scsi_Host *shpnt)
- 	} else if (stat0 & SELDI && PREVSTATE == busfree) {
- 		STATE=seldi;
- 	} else if (stat0 & SELDO && CURRENT_SC &&
--		   (scsi_pointer->phase & selecting)) {
-+		   (aha152x_priv(CURRENT_SC)->phase & selecting)) {
- 		STATE=seldo;
- 	} else if(stat1 & SELTO) {
- 		STATE=selto;
-@@ -2376,8 +2369,7 @@ static void is_complete(struct Scsi_Host *shpnt)
- 			SETPORT(SXFRCTL0, CH1);
- 			SETPORT(DMACNTRL0, 0);
- 			if(CURRENT_SC)
--				aha152x_scsi_pointer(CURRENT_SC)->phase &=
--					~spiordy;
-+				aha152x_priv(CURRENT_SC)->phase &= ~spiordy;
- 		}
- 
- 		/*
-@@ -2399,8 +2391,7 @@ static void is_complete(struct Scsi_Host *shpnt)
- 			SETPORT(DMACNTRL0, 0);
- 			SETPORT(SXFRCTL0, CH1|SPIOEN);
- 			if(CURRENT_SC)
--				aha152x_scsi_pointer(CURRENT_SC)->phase |=
--					spiordy;
-+				aha152x_priv(CURRENT_SC)->phase |= spiordy;
- 		}
- 
- 		/*
-@@ -2490,7 +2481,7 @@ static void disp_enintr(struct Scsi_Host *shpnt)
-  */
- static void show_command(struct scsi_cmnd *ptr)
- {
--	const int phase = aha152x_scsi_pointer(ptr)->phase;
-+	const int phase = aha152x_priv(ptr)->phase;
- 
- 	scsi_print_command(ptr);
- 	scmd_printk(KERN_DEBUG, ptr,
-@@ -2538,8 +2529,8 @@ static void show_queues(struct Scsi_Host *shpnt)
- 
- static void get_command(struct seq_file *m, struct scsi_cmnd * ptr)
- {
--	struct scsi_pointer *scsi_pointer = aha152x_scsi_pointer(ptr);
--	const int phase = scsi_pointer->phase;
-+	struct aha152x_cmd_priv *acp = aha152x_priv(ptr);
-+	const int phase = acp->phase;
- 	int i;
- 
- 	seq_printf(m, "%p: target=%d; lun=%d; cmnd=( ",
-@@ -2549,8 +2540,8 @@ static void get_command(struct seq_file *m, struct scsi_cmnd * ptr)
- 		seq_printf(m, "0x%02x ", ptr->cmnd[i]);
- 
- 	seq_printf(m, "); resid=%d; residual=%d; buffers=%d; phase |",
--		scsi_get_resid(ptr), scsi_pointer->this_residual,
--		sg_nents(scsi_pointer->buffer) - 1);
-+		scsi_get_resid(ptr), acp->this_residual,
-+		sg_nents(acp->buffer) - 1);
- 
- 	if (phase & not_issued)
- 		seq_puts(m, "not issued|");
--- 
-2.32.0
+*snip*
 
+Hi Manuel,
+
+Thanks for putting this forward, although I am not sure if this is the best=
+ way
+to handle this.
+
+Before anything, could you elaborate a bit on what lead to you wanting this=
+?
+
+There are a couple of reasons why merging this in the kernel might be
+problematic.
+
+1) I don't think we will ever support the full capabilities of the devices,=
+ so
+configuration via userspace apps will always be required, and here we are
+introducing a weird line between the two.
+
+2) There is already an ecosystem of userspace configuration apps, with whic=
+h
+this would conflict. They might not be in the best maintenance state due to=
+ lack
+of time from the maintainers, but moving this functionality to the kernel, =
+which
+is harder change, and harder to ship to users, will only make that worse.
+
+Cheers,
+Filipe La=C3=ADns
+
+--=-7NA5b+BMyLiRNR4ZGUnP
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEE0jW0leqs33gyftiw+JPGdIFqqV0FAmI7j6kACgkQ+JPGdIFq
+qV3jwQ/8DPkEGDhXfUMS/tEHfeP3AMV3pKrpIP0ccAWDQUCJdmowjGrdrbM/AVbs
+3RIxMULEuIk94kY0oQbmumQhbd3xyGC8AgQ1F0jgVc94w3RQg4R4YqdMk7HLeqrc
+GfrO/u2RUR6T5B5+oas0LZ/9HmS/wbPdVg8B1Ucvs7Zk9090gyx0HxXDVg/VJ6kj
+HRG2BH1c9wDDHv4mRcZ0n8gsmhzHEFkpeCDeUEmgyJZ+LC11DdVjMGIl3vB2HXPC
+WcHNjz5OIrWZKSqdoiyN6yUZqc6GuoPhB8FW+kRNfUnQA5kZFAQrTZDfQ709HOj2
+cJ9QylEyJy98pGLRRwoev+yX9hKFwmRDnS8H2TqiKCWcuS+GMedFtO8mJRFSSaei
+7yfN+Udw8fWm26ctitqO7RmUuEs9V0WCIi0DkjFYhf9oqYWZUlxC1xuJYSR3Nt9A
+7eytHD6TWmL3x9GCMs3YbSVd6xxPgwDOwnx6PwaopZppyLYsQjIzRCwyznea17Tv
+DNcfZUdijLORD4G2uiq5FhlRT5Pjly38TfYTen9PsNwMScYccp4mDX2xToRTo/0A
+YTZk+Gpy4hDDEw7nXhCq8FuDniK1pFrRUVO8BUfZmc3drUDk/lAQmzjbPQoWEE0J
+c6t9Zl26T1xQY+htIwhWMUfyTpWopdUmFilQLCi/yatiw19V5ak=
+=LrbX
+-----END PGP SIGNATURE-----
+
+--=-7NA5b+BMyLiRNR4ZGUnP--
