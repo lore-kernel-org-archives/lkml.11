@@ -2,81 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1102C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 17:56:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E96FC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 17:59:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343870AbiCWR6P (ORCPT
+        id S1343896AbiCWSA7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 13:58:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50886 "EHLO
+        Wed, 23 Mar 2022 14:00:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343916AbiCWR55 (ORCPT
+        with ESMTP id S235384AbiCWSA5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 13:57:57 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC216BC11;
-        Wed, 23 Mar 2022 10:56:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648058187; x=1679594187;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=UVTweHN61rHkZzXfM5jm3uhIUIF0gAVJSjh3UNXQLgA=;
-  b=OpbI+5o/lOXO5v4D58AS3A1G95+IOKmCOUKUOHIhMn54G98NlESI9H85
-   FxUPQfbyXWVa9hNFV56tjrtSXC9sJEXQkGsrR1QnBN7ZGAa0jiUHUjyU3
-   vn6RiOwh3gDIs1/Q2xddbzpRQgeFLanz8Mmzyk2jwvO4F+2H6XhViF4TS
-   5K6Aqv7T9xvnYTeuUvFgApox/Fj6ZNmWzQTSrQWDQHcqshfOd0cSzdZAg
-   JG6osqg3l8TXJdSylrHA8I0EzZTmHB4g2ID9gzxWs65SInQhfwo5qlTRG
-   SVuECRLt3imJ2r3rGaM5XBbYgVE6gaAxuYjYPeMOPw20afRr8NOkRTkaz
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="344624096"
-X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
-   d="scan'208";a="344624096"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 10:56:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
-   d="scan'208";a="501100457"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga003.jf.intel.com with ESMTP; 23 Mar 2022 10:56:24 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22NHuMKm030590;
-        Wed, 23 Mar 2022 17:56:22 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Michal Kubiak <michal.kubiak@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        Wed, 23 Mar 2022 14:00:57 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 761B41F605;
+        Wed, 23 Mar 2022 10:59:27 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id kx5-20020a17090b228500b001c6ed9db871so7182116pjb.1;
+        Wed, 23 Mar 2022 10:59:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TeKF1IrVTPwtitTV8dgbmN8AVqD0Mtciv+RTNtchAtM=;
+        b=CvS8qLVfcrk3NGlCqS+dzql75jrHonuWq7qfMNBpfDuWkx+hMOOp9iOU9e0kom/Vzu
+         PoEoodYURFWHBLM/vjzBIi1mkmM8fHUnSIZrKe7yhVUsBFioL4HmZDJQ89Mh8v+2al/l
+         /9qJUdoMxL/wc5GDlc7snCBOhfpm+krsr4wX0aQrLjUa2cx5atgPYYeZ1Ogj5a1qfmOm
+         i8r1AC/3qQiPyO/k+NEc//VJmgKq3WyYkzAogz3FE2klGCXhdxgnFNsrtmTPQRcbXZWj
+         bC2exxhscNLB5MsO79gtUxB0jgrfhQKfy3nMB+SHVX7tUTFRrHzEQZysXgpD/wTcJjMf
+         qK8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TeKF1IrVTPwtitTV8dgbmN8AVqD0Mtciv+RTNtchAtM=;
+        b=lEBqrZ/KWouxPw6rQxQyT4UfarzmmtVhtD2fcVm2rHQwxQZaZVh4Vw49/Y9eujfsjX
+         kpY3yOLeJ/fJxJ87o33UM1WdV1ZdL3AUahlHxzry5AZA38fTxrHcwl/+uEk39xCMwSzw
+         B1wIojbdVcABQUwuy7tDEoHetrg5bOl+eWLs/zSQE+f4Oaqiak4fsQP6Rp/vZWLwSLnR
+         Gjyiv0X1iVWnYo7uPu+66iRK9x/qjG3WIDYk19RC9J6Q4gFgT2Y1RuZ74b3tNBbnkQVC
+         VOaoM71tLC8kpnXJ9chlqqq5iIWr+gX9+1F1AeHjCOW0k6aY/bIO+9V2cHkbCA5p3Z4Q
+         PVNA==
+X-Gm-Message-State: AOAM533lxIOIplErCPHlPh95DZOJyCcRGxAtCXwOvEoaDE9s266/wln0
+        hSz0R7FMdxkIMWeBXzdq/nk=
+X-Google-Smtp-Source: ABdhPJwaHPOu98pWAjMGLcxyok9W+oPp/AYZC/v0jL+r/3wC+oBxGKiyJZhBZ8kX81WieVhTk9diBw==
+X-Received: by 2002:a17:90a:cce:b0:1bf:6387:30d9 with SMTP id 14-20020a17090a0cce00b001bf638730d9mr13199933pjt.196.1648058366984;
+        Wed, 23 Mar 2022 10:59:26 -0700 (PDT)
+Received: from localhost.localdomain ([122.161.51.18])
+        by smtp.gmail.com with ESMTPSA id q2-20020a056a00084200b004f761a7287dsm551622pfk.131.2022.03.23.10.59.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Mar 2022 10:59:26 -0700 (PDT)
+From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
+To:     Viresh Kumar <vireshk@kernel.org>,
+        Shiraz Hashim <shiraz.linux.kernel@gmail.com>, soc@kernel.org,
+        Rob Herring <robh+dt@kernel.org>, Arnd Bergmann <arnd@arndb.de>
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net 0/2] ice: avoid sleeping/scheduling in atomic contexts
-Date:   Wed, 23 Mar 2022 18:54:46 +0100
-Message-Id: <20220323175446.2777027-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220323104005.2a58a57c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20220323124353.2762181-1-alexandr.lobakin@intel.com> <20220323104005.2a58a57c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Subject: [PATCH v2] ARM: dts: spear13xx: Update SPI dma properties
+Date:   Wed, 23 Mar 2022 23:29:20 +0530
+Message-Id: <20220323175920.93155-1-singh.kuldeep87k@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
-Date: Wed, 23 Mar 2022 10:40:05 -0700
+Reorder dmas and dma-names property for spi controller node to make it
+compliant with bindings.
 
-> On Wed, 23 Mar 2022 13:43:51 +0100 Alexander Lobakin wrote:
-> > --
-> > Urgent fix, would like to make it directly through -net.
-> 
-> You may want to use three hyphens, two hyphens mean footer.
-> Email clients gray those out, it's easy to miss :)
+Fixes: 6e8887f60f60 ("ARM: SPEAr13xx: Pass generic DW DMAC platform data from DT")
+Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+---
+v2:
+- Add fixes tag
+- Remove 1/2 patch from series as it's not required
+- v1 discussion link:
+  https://lore.kernel.org/linux-devicetree/20220312180615.68929-2-singh.kuldeep87k@gmail.com/
 
-Good to know, thanks! :)
+ arch/arm/boot/dts/spear13xx.dtsi | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-Al
+diff --git a/arch/arm/boot/dts/spear13xx.dtsi b/arch/arm/boot/dts/spear13xx.dtsi
+index c87b881b2c8b..45f0b2a33e02 100644
+--- a/arch/arm/boot/dts/spear13xx.dtsi
++++ b/arch/arm/boot/dts/spear13xx.dtsi
+@@ -284,9 +284,8 @@ spi0: spi@e0100000 {
+ 				#size-cells = <0>;
+ 				interrupts = <0 31 0x4>;
+ 				status = "disabled";
+-				dmas = <&dwdma0 4 0 0>,
+-					<&dwdma0 5 0 0>;
+-				dma-names = "tx", "rx";
++				dmas = <&dwdma0 5 0 0>, <&dwdma0 4 0 0>;
++				dma-names = "rx", "tx";
+ 			};
+ 
+ 			rtc@e0580000 {
+-- 
+2.25.1
+
