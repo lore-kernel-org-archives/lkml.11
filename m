@@ -2,109 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ADD4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 09:22:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22068C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 09:29:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243272AbiCWJX1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 05:23:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44134 "EHLO
+        id S243264AbiCWJap (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 05:30:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243186AbiCWJXT (ORCPT
+        with ESMTP id S238098AbiCWJam (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 05:23:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1942075E7D
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 02:21:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648027309;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=nAs1YHlMpNVeBM3NTvl8o2J8QfBxr1UoRYr/a2zNDSI=;
-        b=ij7dzQ3R2joDIncWWMgbv+xMznz5aR2TVsdEZitMmFeGDdyEVysODeVWeAXgEm5rV3lnQF
-        sMfKlTTsqqK5fnjZwaILFRtz0jk561g7ouqB6h+tuLkqP10TmFV1J8Qn6x8Yc8ArJBX5Fq
-        Ku79LIPv14utAaFVhdZecg21W2a+FmY=
-Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
- [209.85.208.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-451-Tf5nu8dzMECm4g1c8gSy3Q-1; Wed, 23 Mar 2022 05:21:47 -0400
-X-MC-Unique: Tf5nu8dzMECm4g1c8gSy3Q-1
-Received: by mail-lj1-f199.google.com with SMTP id t10-20020a2e2d0a000000b002496423e4adso347750ljt.16
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 02:21:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nAs1YHlMpNVeBM3NTvl8o2J8QfBxr1UoRYr/a2zNDSI=;
-        b=Y7YP0ese04a7a1NevkDepVWk8OCoJJMP3CKfPo4Mjg/au7K9GJZyZcYrQRPnSPu64I
-         yuad5YNiv82FRICzy8DdId/G6Wa7/SoZZzn3iWkgxzcFA4eUdHQ/rUTJgbz2vKygUEnQ
-         hiBaIgHWk7w5ZkOuBaRfErbOWV/VFK1SCnd07vKsI/BO7KgLcmuc5cqkfjPrwPpmXAfi
-         Xtqs8OURJrVlWTVamUpVRfoCCwq3zmPuQ6kprh+3NNDp5D4kxWKleWUYyeqmZOU8KIN9
-         vC88odQE4tcmfW8qE6rHSYM8pHUnQeZQ6j6bPcHpFWnYCslsHQVJaRzwTgMacDfrE29k
-         55iQ==
-X-Gm-Message-State: AOAM531aCfK17XW5mSCSVzr9Ut6N/+kGdtHJ+9B/Zu9aeLFJ5qWMPfgI
-        TaFBTYmD+k3/7ggTFmk4gIO7BMgSdDww2RzFUaJA0vyHKJD3J4PklDTIZYByNcSQmcVXbXcpu/G
-        HaCoY7Hh7ruOHU29dJPRiXJJ7dkrN9F/Ue9zUaRW0
-X-Received: by 2002:a05:6512:1395:b0:446:d382:79a5 with SMTP id p21-20020a056512139500b00446d38279a5mr21038688lfa.210.1648027306110;
-        Wed, 23 Mar 2022 02:21:46 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwGnDD++CkvJ3d1W9q5s2ajSbWe58qQkyPqIuKEuj5wAXh+7QvBP7wfNAtvIkw3xZn3czapRyuVl2X0us7jZRs=
-X-Received: by 2002:a05:6512:1395:b0:446:d382:79a5 with SMTP id
- p21-20020a056512139500b00446d38279a5mr21038679lfa.210.1648027305935; Wed, 23
- Mar 2022 02:21:45 -0700 (PDT)
+        Wed, 23 Mar 2022 05:30:42 -0400
+Received: from mail.meizu.com (unknown [14.29.68.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7098F5BE73
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 02:29:11 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
+ (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 23 Mar
+ 2022 17:29:13 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Wed, 23 Mar
+ 2022 17:29:09 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     <linux@armlinux.org.uk>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Haowen Bai <baihaowen@meizu.com>
+Subject: [PATCH] ARM: sa1100/hackkit: Fix duplicate included linux/tty.h
+Date:   Wed, 23 Mar 2022 17:29:08 +0800
+Message-ID: <1648027748-9906-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-References: <20220323031524.6555-1-jasowang@redhat.com> <20220323031524.6555-2-jasowang@redhat.com>
- <878rt1xcq2.wl-maz@kernel.org>
-In-Reply-To: <878rt1xcq2.wl-maz@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 23 Mar 2022 17:21:34 +0800
-Message-ID: <CACGkMEu-sQZO6-LBsLAzw4bqQpua1DXYLcAukjCtd43P3Ei4Ow@mail.gmail.com>
-Subject: Re: [PATCH 2/2] Revert "virtio_pci: harden MSI-X interrupts"
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     mst <mst@redhat.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Keir Fraser <keirf@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-125.meizu.com (172.16.1.125) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 5:05 PM Marc Zyngier <maz@kernel.org> wrote:
->
-> On Wed, 23 Mar 2022 03:15:24 +0000,
-> Jason Wang <jasowang@redhat.com> wrote:
-> >
-> > This reverts commit 9e35276a5344f74d4a3600fc4100b3dd251d5c56. Issue
-> > were reported for the drivers that are using affinity managed IRQ
-> > where manually toggling IRQ status is not expected. And we forget to
-> > enable the interrupts in the restore path as well.
-> >
-> > In the future, we will rework on the interrupt hardening.
-> >
-> > Fixes: 9e35276a5344 ("virtio_pci: harden MSI-X interrupts")
-> > Reported-by: Marc Zyngier <maz@kernel.org>
-> > Reported-by: Stefano Garzarella <sgarzare@redhat.com>
-> > Signed-off-by: Jason Wang <jasowang@redhat.com>
->
-> For this patch and the INTx one:
->
-> Acked-by: Marc Zyngier <maz@kernel.org>
->
-> Please keep me in the loop when you decide to rework this.
+Clean up the following includecheck warning:
 
-Ok.
+arch/arm/mach-sa1100/hackkit.c: linux/tty.h is included more than once.
 
-Thanks
+No functional change.
 
->
-> Thanks,
->
->         M.
->
-> --
-> Without deviation from the norm, progress is not possible.
->
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+---
+ arch/arm/mach-sa1100/hackkit.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/arch/arm/mach-sa1100/hackkit.c b/arch/arm/mach-sa1100/hackkit.c
+index 3085f1c..43dbd15 100644
+--- a/arch/arm/mach-sa1100/hackkit.c
++++ b/arch/arm/mach-sa1100/hackkit.c
+@@ -10,7 +10,6 @@
+ #include <linux/init.h>
+ #include <linux/kernel.h>
+ #include <linux/sched.h>
+-#include <linux/tty.h>
+ #include <linux/module.h>
+ #include <linux/errno.h>
+ #include <linux/cpufreq.h>
+-- 
+2.7.4
 
