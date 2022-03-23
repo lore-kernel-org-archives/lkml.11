@@ -2,104 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2023EC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 13:57:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62AE9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 13:58:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244547AbiCWN7N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 09:59:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43856 "EHLO
+        id S244554AbiCWOAI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 10:00:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244546AbiCWN7L (ORCPT
+        with ESMTP id S235604AbiCWOAG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 09:59:11 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 288527E59A;
-        Wed, 23 Mar 2022 06:57:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648043857; x=1679579857;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=7dpl7zrQjuC3jYV/6lKewPXHNVm4wSMQm8NRFYTb318=;
-  b=KiO9N07KImQHEGWKbg70aNuA/DR+2CQpc3sKetdBWHYlrw8irmcigX8S
-   y7BoWFjAUhHaBWrq6nd4i7JatKXWsvD1oY6NRbFSMCvkDFjZfNjkNN5ci
-   MW85oMDZuSJCs4Ic9vVttG9xc0vEHrTgphdG4n05ozs2u/zxbCgVPDSyJ
-   yfF9DLdoieHjU0H4NdcBuOdB2N6Y6gq6dVx0dSq5HAfoWm60YwcVPUcmp
-   V9NbfIlDE5x3EorMVe+QLHhf6dqpRSd16KzQYkURMoSWb/knJP/60nbbP
-   OxY+7xchAQDjxjfsESaYWlL/McwpCB1qTFkCrVEI9tQmNPE41TFHaveUt
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10294"; a="258067239"
-X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
-   d="scan'208";a="258067239"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 06:57:36 -0700
-X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
-   d="scan'208";a="785795051"
-Received: from punajuuri.fi.intel.com (HELO paasikivi.fi.intel.com) ([10.237.72.43])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 06:57:32 -0700
-Received: from paasikivi.fi.intel.com (localhost [127.0.0.1])
-        by paasikivi.fi.intel.com (Postfix) with ESMTP id 3FA602012F;
-        Wed, 23 Mar 2022 15:57:30 +0200 (EET)
-Date:   Wed, 23 Mar 2022 15:57:30 +0200
-From:   Sakari Ailus <sakari.ailus@linux.intel.com>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Len Brown <lenb@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-i2c@vger.kernel.org
-Subject: Re: [PATCH v2 1/7] device property: add
- fwnode_property_read_string_index()
-Message-ID: <YjsnSiUchGzLoA2H@paasikivi.fi.intel.com>
-References: <20220323091810.329217-1-clement.leger@bootlin.com>
- <20220323091810.329217-2-clement.leger@bootlin.com>
- <YjsFr4m/7pspMxD0@paasikivi.fi.intel.com>
- <20220323123902.37e45f78@fixe.home>
+        Wed, 23 Mar 2022 10:00:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 15BE4E02B
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 06:58:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648043916;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=NPsFKWBDc285bGf4fkPtm66sH099xvtiav0N2gh4FPU=;
+        b=GaL2dwQWRT2fRFMWvcDzObQji9OoNdcP3Q4lAchoT9CoYVn++Ch0l5SuvkTyIN4CbzGoOA
+        //kerV4lhnLxQhzz4X/lBHWUXk6RGL4M9zhmKZkvnDudaGZ7lVi697Xn52z1aInh6Ld8bx
+        jqT3xuKZFxMnnDwk84pbYy+Aje0PA40=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-587-99w9fyUfPM-3XaVeV6T16Q-1; Wed, 23 Mar 2022 09:58:33 -0400
+X-MC-Unique: 99w9fyUfPM-3XaVeV6T16Q-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7A075106655B;
+        Wed, 23 Mar 2022 13:58:32 +0000 (UTC)
+Received: from ceranb.redhat.com (unknown [10.40.192.65])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A6C2B403D1A3;
+        Wed, 23 Mar 2022 13:58:30 +0000 (UTC)
+From:   Ivan Vecera <ivecera@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     poros@redhat.com, mschmidt@redhat.com,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net] ice: Fix MAC address setting
+Date:   Wed, 23 Mar 2022 14:58:29 +0100
+Message-Id: <20220323135829.4015645-1-ivecera@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220323123902.37e45f78@fixe.home>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Clément,
+Commit 2ccc1c1ccc671b ("ice: Remove excess error variables") merged
+the usage of 'status' and 'err' variables into single one in
+function ice_set_mac_address(). Unfortunately this causes
+a regression when call of ice_fltr_add_mac() returns -EEXIST because
+this return value does not indicate an error in this case but
+value of 'err' value remains to be -EEXIST till the end of
+the function and is returned to caller.
 
-On Wed, Mar 23, 2022 at 12:39:02PM +0100, Clément Léger wrote:
-> Le Wed, 23 Mar 2022 13:34:07 +0200,
-> Sakari Ailus <sakari.ailus@linux.intel.com> a écrit :
-> 
-> > >   * @get_parent: Return the parent of an fwnode.
-> > > @@ -123,6 +126,9 @@ struct fwnode_operations {
-> > >  	(*property_read_string_array)(const struct fwnode_handle *fwnode_handle,
-> > >  				      const char *propname, const char **val,
-> > >  				      size_t nval);
-> > > +	int (*property_read_string_index)(const struct fwnode_handle *fwnode,
-> > > +					  const char *propname, int index,
-> > > +					  const char **string);  
-> > 
-> > Could this instead be done by adding an index argument to the
-> > property_read_string_array?
-> 
-> Hi Sakari,
-> 
-> I guess I could do that. Do you expect the string pointer to be
-> returned in "val" ? Guess a -1 index would mean that we don't care
-> about the index but want the array to be returned. And if index is
-> specified, nval will be ignored.
+Prior this commit this does not happen because return value of
+ice_fltr_add_mac() was stored to 'status' variable first and
+if it was -EEXIST then 'err' remains to be zero.
 
-I'd keep the behaviour the same independently of the value of index.
+The patch fixes the problem by reset 'err' to zero when
+ice_fltr_add_mac() returns -EEXIST.
 
+Fixes: 2ccc1c1ccc671b ("ice: Remove excess error variables")
+Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+---
+ drivers/net/ethernet/intel/ice/ice_main.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 168a41ea37b8..420558d1cd21 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -5474,14 +5474,15 @@ static int ice_set_mac_address(struct net_device *netdev, void *pi)
+ 
+ 	/* Add filter for new MAC. If filter exists, return success */
+ 	err = ice_fltr_add_mac(vsi, mac, ICE_FWD_TO_VSI);
+-	if (err == -EEXIST)
++	if (err == -EEXIST) {
+ 		/* Although this MAC filter is already present in hardware it's
+ 		 * possible in some cases (e.g. bonding) that dev_addr was
+ 		 * modified outside of the driver and needs to be restored back
+ 		 * to this value.
+ 		 */
+ 		netdev_dbg(netdev, "filter for MAC %pM already exists\n", mac);
+-	else if (err)
++		err = 0;
++	} else if (err)
+ 		/* error if the new filter addition failed */
+ 		err = -EADDRNOTAVAIL;
+ 
 -- 
-Sakari Ailus
+2.34.1
+
