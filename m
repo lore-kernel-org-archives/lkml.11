@@ -2,92 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E54DCC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 14:39:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75D4BC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 14:40:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244856AbiCWOkz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 10:40:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36056 "EHLO
+        id S244839AbiCWOmR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 10:42:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240637AbiCWOkw (ORCPT
+        with ESMTP id S232414AbiCWOmP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 10:40:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 427F77CDF8;
-        Wed, 23 Mar 2022 07:39:23 -0700 (PDT)
+        Wed, 23 Mar 2022 10:42:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443417E08D;
+        Wed, 23 Mar 2022 07:40:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0CABB81F54;
-        Wed, 23 Mar 2022 14:39:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF31CC36AE7;
-        Wed, 23 Mar 2022 14:39:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3A4F6171E;
+        Wed, 23 Mar 2022 14:40:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBC9DC340E8;
+        Wed, 23 Mar 2022 14:40:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648046360;
-        bh=7hScU2wmlNgM/yQ8a4259GS5BdEa/xV6MFfLX6ni2K0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=rGUjVHiwFih154F83bEJSn4pAvwlxs0HZ959xjNYb1dfz66dbs52/zIKe9ZkvOxSL
-         ABB1VbMccyZ3DNukWHfVl31bXum+b650tADAiJowQ3l0/vjr9pf/pLhKQa2g938vc4
-         p6CJJr3LXDozl2Irqa02DW/bNdcWFdV2HG1yxoizOE0PtjldMlylhiePt3eohsMH1A
-         4RszRhFsCEfqHkaid7K8oVvNhMZLEAtd0I0OcezIbcbtTubaUK5XWnMYWvJeZWKVNH
-         4BbdlWIS12j7Lq4Mspq/RZyPXVSo/LZEgOIgDl1ojcM0kBtE70nVBXY2kPJLOqyqtW
-         7672ie+TjiiKA==
-Received: by mail-ej1-f51.google.com with SMTP id p15so3257740ejc.7;
-        Wed, 23 Mar 2022 07:39:20 -0700 (PDT)
-X-Gm-Message-State: AOAM533iNqFw/QhkVTFWvSi+IjjSF/HDex3qd3NR8/lwO76A0YTpjjrQ
-        aSugkG1dmsWWHof6bpMmqppiU/QUf6qjEmWeTA==
-X-Google-Smtp-Source: ABdhPJw2vEInYJhzD6Sf81xfPAK8TCv4R6vkavYp+uogbKSt/3KF5JGasr6aiXQ1YYxZKamMelaTIzKIIlvJ+HwzOfc=
-X-Received: by 2002:a17:906:58ce:b0:6da:b548:1bbb with SMTP id
- e14-20020a17090658ce00b006dab5481bbbmr307806ejs.14.1648046359044; Wed, 23 Mar
- 2022 07:39:19 -0700 (PDT)
+        s=k20201202; t=1648046445;
+        bh=6N8bqbEGfH4CpGR4GzKqd3GB0L4Mddif/JC2g3akfH0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WaBGFHz6bWR5IwQpWTzgW21fpy7P7DXu364Vo+5qC+175QQbejAeV+XMKrKYM8UAH
+         1bXIMTPCWAtb2xQO61MZAxDaIbSKDmMqmvsMgeUJDjn2oNUMMY+lk+jirsamHN+lBB
+         b+7yoZRTlJsfCdz0jp8RaSY25O9GOSylSRe7ndGDQ/BHhoLPemyMltmTT3sNz61Tx6
+         Z+syKMqrhB1vFs0csDMUMYFij/zm8F8h8VzThGhQvyDTsQxzJAuCKjr4qQ+mOxpG2V
+         i0enlhKhp/7hq8HlqK0C/ALGbIIxzK0WfIh1AcvwTlfkXat12d/qjSeGPKwtA14OxO
+         BLs/FCu8onyZg==
+Date:   Wed, 23 Mar 2022 20:10:40 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Marijn Suijten <marijn.suijten@somainline.org>
+Cc:     Rob Clark <robdclark@gmail.com>, linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <abhinavk@codeaurora.org>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org
+Subject: Re: [REPOST PATCH v4 07/13] drm/msm/disp/dpu1: Add support for DSC
+ in encoder
+Message-ID: <YjsxaJrvxgtO5ecC@matsya>
+References: <20220210103423.271016-1-vkoul@kernel.org>
+ <20220210103423.271016-8-vkoul@kernel.org>
+ <20220217223239.2i256klkbjkogovz@SoMainline.org>
 MIME-Version: 1.0
-References: <20220308155735.54146-1-alexandre.belloni@bootlin.com> <CAL_JsqJXz01F_+-xg8VfAOQ=-C96NVa1KO+nRbXf9mq289kmYQ@mail.gmail.com>
-In-Reply-To: <CAL_JsqJXz01F_+-xg8VfAOQ=-C96NVa1KO+nRbXf9mq289kmYQ@mail.gmail.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Wed, 23 Mar 2022 09:39:07 -0500
-X-Gmail-Original-Message-ID: <CAL_Jsq++eqGS6xJ6EgwXe2RpZYgbB30kfTvZQx=sGmb-LgVWXg@mail.gmail.com>
-Message-ID: <CAL_Jsq++eqGS6xJ6EgwXe2RpZYgbB30kfTvZQx=sGmb-LgVWXg@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: rtc: at91: rename rtt bindings file
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     Alessandro Zummo <a.zummo@towertech.it>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        "open list:REAL TIME CLOCK (RTC) SUBSYSTEM" 
-        <linux-rtc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220217223239.2i256klkbjkogovz@SoMainline.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 9, 2022 at 3:05 PM Rob Herring <robh+dt@kernel.org> wrote:
->
-> On Tue, Mar 8, 2022 at 9:57 AM Alexandre Belloni
-> <alexandre.belloni@bootlin.com> wrote:
-> >
-> > atmel,at91sam9-rtc is a confuing name for this file as it is documenting
-> > the RTT used as an RTC and not the other regular RTC (atmel,at91rm9200-rtc
-> > and atmel,at91sam9x5-rtc)
-> >
-> > Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+On 17-02-22, 23:32, Marijn Suijten wrote:
+> On 2022-02-10 16:04:17, Vinod Koul wrote:
+> > We need to configure the encoder for DSC configuration and calculate DSC
+> > parameters for the given timing so this patch adds that support by
+> > adding dpu_encoder_prep_dsc() which is invoked when DSC is enabled.
+> > 
+> > Signed-off-by: Vinod Koul <vkoul@kernel.org>
 > > ---
-> >  .../rtc/{atmel,at91sam9-rtc.yaml => atmel,at91sam9260-rtt.yaml}   | 0
-> >  1 file changed, 0 insertions(+), 0 deletions(-)
-> >  rename Documentation/devicetree/bindings/rtc/{atmel,at91sam9-rtc.yaml => atmel,at91sam9260-rtt.yaml} (100%)
-> >
-> > diff --git a/Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml b/Documentation/devicetree/bindings/rtc/atmel,at91sam9260-rtt.yaml
-> > similarity index 100%
-> > rename from Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml
-> > rename to Documentation/devicetree/bindings/rtc/atmel,at91sam9260-rtt.yaml
->
-> Now failing in -next:
->
-> ./Documentation/devicetree/bindings/rtc/atmel,at91sam9260-rtt.yaml:
-> $id: relative path/filename doesn't match actual path or filename
->   expected: http://devicetree.org/schemas/rtc/atmel,at91sam9260-rtt.yaml#
+> >  drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c   | 164 +++++++++++++++++-
+> >  .../gpu/drm/msm/disp/dpu1/dpu_encoder_phys.h  |   8 +
+> >  2 files changed, 171 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> > index 1e648db439f9..95a7bf362e81 100644
+> > --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> > +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> > @@ -21,6 +21,7 @@
+> >  #include "dpu_hw_intf.h"
+> >  #include "dpu_hw_ctl.h"
+> >  #include "dpu_hw_dspp.h"
+> > +#include "dpu_hw_dsc.h"
+> >  #include "dpu_formats.h"
+> >  #include "dpu_encoder_phys.h"
+> >  #include "dpu_crtc.h"
+> > @@ -136,6 +137,8 @@ enum dpu_enc_rc_states {
+> >   * @cur_slave:		As above but for the slave encoder.
+> >   * @hw_pp:		Handle to the pingpong blocks used for the display. No.
+> >   *			pingpong blocks can be different than num_phys_encs.
+> > + * @hw_dsc:		Handle to the DSC blocks used for the display.
+> > + * @dsc_mask:		The bitmask of used DSC blocks.
+> 
+> No need for "^The" prefix here.
 
-Still failing...
+Removed
 
-Rob
+> 
+> >   * @intfs_swapped:	Whether or not the phys_enc interfaces have been swapped
+> >   *			for partial update right-only cases, such as pingpong
+> >   *			split where virtual pingpong does not generate IRQs
+> > @@ -169,6 +172,7 @@ enum dpu_enc_rc_states {
+> >   * @topology:                   topology of the display
+> >   * @idle_timeout:		idle timeout duration in milliseconds
+> >   * @dp:				msm_dp pointer, for DP encoders
+> > + * @dsc:			msm_display_dsc_config pointer, for DSC-enabled encoders
+> >   */
+> >  struct dpu_encoder_virt {
+> >  	struct drm_encoder base;
+> > @@ -182,6 +186,9 @@ struct dpu_encoder_virt {
+> >  	struct dpu_encoder_phys *cur_master;
+> >  	struct dpu_encoder_phys *cur_slave;
+> >  	struct dpu_hw_pingpong *hw_pp[MAX_CHANNELS_PER_ENC];
+> > +	struct dpu_hw_dsc *hw_dsc[MAX_CHANNELS_PER_ENC];
+> > +
+> > +	unsigned int dsc_mask;
+> >  
+> >  	bool intfs_swapped;
+> >  
+> > @@ -209,6 +216,9 @@ struct dpu_encoder_virt {
+> >  	u32 idle_timeout;
+> >  
+> >  	struct msm_dp *dp;
+> > +
+> > +	/* DSC configuration */
+> > +	struct msm_display_dsc_config *dsc;
+> >  };
+> >  
+> >  #define to_dpu_encoder_virt(x) container_of(x, struct dpu_encoder_virt, base)
+> > @@ -972,7 +982,8 @@ static void dpu_encoder_virt_mode_set(struct drm_encoder *drm_enc,
+> >  	struct dpu_hw_blk *hw_ctl[MAX_CHANNELS_PER_ENC];
+> >  	struct dpu_hw_blk *hw_lm[MAX_CHANNELS_PER_ENC];
+> >  	struct dpu_hw_blk *hw_dspp[MAX_CHANNELS_PER_ENC] = { NULL };
+> > -	int num_lm, num_ctl, num_pp;
+> > +	struct dpu_hw_blk *hw_dsc[MAX_CHANNELS_PER_ENC];
+> > +	int num_lm, num_ctl, num_pp, num_dsc;
+> >  	int i, j;
+> >  
+> >  	if (!drm_enc) {
+> > @@ -1027,6 +1038,23 @@ static void dpu_encoder_virt_mode_set(struct drm_encoder *drm_enc,
+> >  		dpu_enc->hw_pp[i] = i < num_pp ? to_dpu_hw_pingpong(hw_pp[i])
+> >  						: NULL;
+> >  
+> > +	dpu_enc->dsc_mask = 0;
+> > +
+> > +	if (dpu_enc->dsc) {
+> > +		unsigned int dsc_mask = 0;
+> 
+> Perhaps move this definition outside the if, and unconditionally
+> perform:
+> 
+> 	dpu_enc->dsc_mask = dsc_mask;
+> 
+> Below the if, instead of having to write it twice when ->dsc is truthy?
+
+That is a good suggestion, updated now
+
+> 
+> > +
+> > +		num_dsc = dpu_rm_get_assigned_resources(&dpu_kms->rm, global_state,
+> > +							drm_enc->base.id, DPU_HW_BLK_DSC,
+> > +							hw_dsc, ARRAY_SIZE(hw_dsc));
+> > +		for (i = 0; i < MAX_CHANNELS_PER_ENC; i++)
+> > +			dpu_enc->hw_dsc[i] = i < num_dsc ? to_dpu_hw_dsc(hw_dsc[i]) : NULL;
+> > +
+> > +		for (i = 0; i < num_dsc; i++)
+> > +			dsc_mask |= BIT(dpu_enc->hw_dsc[i]->idx - DSC_0);
+> 
+> Perhaps you can merge these loops?  Assuming hw_dsc is already
+> NULL-initialized, you only need to iterate to `i<num_dsc` once without
+> extra conditional anyway?
+
+Agreed, this does make it look neat
+
+> 
+> > +
+> > +		dpu_enc->dsc_mask = dsc_mask;
+> > +	}
+> > +
+> >  	cstate = to_dpu_crtc_state(drm_crtc->state);
+> >  
+> >  	for (i = 0; i < num_lm; i++) {
+> > @@ -1739,6 +1767,127 @@ static void dpu_encoder_vsync_event_work_handler(struct kthread_work *work)
+> >  			nsecs_to_jiffies(ktime_to_ns(wakeup_time)));
+> >  }
+> >  
+> > +static void
+> > +dpu_encoder_dsc_pclk_param_calc(struct msm_display_dsc_config *dsc, u32 width)
+> > +{
+> > +	int slice_count, slice_per_intf;
+> > +	int bytes_in_slice, total_bytes_per_intf;
+> > +
+> > +	if (!dsc || !dsc->drm->slice_width || !dsc->drm->slice_count) {
+> > +		DPU_ERROR("Invalid DSC/slices\n");
+> 
+> What's the forward slash for?
+
+forward slash denotes an OR case in written, so above would imply
+Invalid DSC or slices, I will make it 'or' to be clear
+
+> 
+> > +		return;
+> > +	}
+> > +
+> > +	slice_count = dsc->drm->slice_count;
+> > +	slice_per_intf = DIV_ROUND_UP(width, dsc->drm->slice_width);
+> > +
+> > +	/*
+> > +	 * If slice_count is greater than slice_per_intf then default to 1.
+> > +	 * This can happen during partial update.
+> > +	 */
+> > +	if (slice_count > slice_per_intf)
+> > +		slice_count = 1;
+> > +
+> > +	bytes_in_slice = DIV_ROUND_UP(dsc->drm->slice_width *
+> > +				      dsc->drm->bits_per_pixel, 8);
+> > +	total_bytes_per_intf = bytes_in_slice * slice_per_intf;
+> > +
+> > +	dsc->eol_byte_num = total_bytes_per_intf % 3;
+> > +	dsc->pclk_per_line =  DIV_ROUND_UP(total_bytes_per_intf, 3);
+> > +	dsc->bytes_in_slice = bytes_in_slice;
+> > +	dsc->bytes_per_pkt = bytes_in_slice * slice_count;
+> > +	dsc->pkt_per_line = slice_per_intf / slice_count;
+> > +}
+> 
+> I've seen the same calculations duplicated twice in dsi code.  Since the
+> msm_display_dsc_config struct is available in a header, perhaps a single
+> - easily reviewable and maintainable - calculation function should be
+> available there too?
+
+Let me try check if we can make it common..
+
+-- 
+~Vinod
