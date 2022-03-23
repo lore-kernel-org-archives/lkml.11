@@ -2,102 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E870C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 18:34:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C11ECC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 18:34:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343569AbiCWSgG (ORCPT
+        id S1343848AbiCWSgT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 14:36:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34566 "EHLO
+        Wed, 23 Mar 2022 14:36:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230296AbiCWSgB (ORCPT
+        with ESMTP id S237928AbiCWSgB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 23 Mar 2022 14:36:01 -0400
-Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712E462A20;
-        Wed, 23 Mar 2022 11:34:25 -0700 (PDT)
-Received: by mail-oi1-f177.google.com with SMTP id v75so2544219oie.1;
-        Wed, 23 Mar 2022 11:34:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=41lt9wO4XOxtae4ixgjybXOjCGsLCMvP6pxSnzHlc2U=;
-        b=gKrSccSMjlQahHEhAJQyLxCSddSS9QtxoJ8D/ODeXScYU4ya3IZg31WbOJIm93LkGR
-         CR8B+VwE3UHDENCYoUzM6In+nzjnzMObDRbchxmSnXeXou8efvbK56xD33UG4awkBmJi
-         UIurc+mzuaJhV4b7bV2TLpr/Bs4H1bdOLgqrV6NvtdmrIEI6tFu7FbUpWEDXVdB7dObu
-         jek5jpZLq0HvPoDxex8hp9Lw5HGN//3PlQ11O+ItSLHwe1+vii97jc01ANkjj5K4tg9H
-         BCIhyivR/DanNCApVyRultoSqy+uwiUmBad5nIdO8xPNbV3i5xUpKcZ8b9aIsYWWZVe7
-         zT1A==
-X-Gm-Message-State: AOAM533HPxIxE6OjzgpOpWDYWMzxai7Dpw6R3bIAfuvCnfb6XvnsLGvN
-        oJl9zraN/BLTIcZD4PPmew==
-X-Google-Smtp-Source: ABdhPJzEHUUE48Om5qA2PfSnOF4hpP7NVTqs6dal5024vnutRjT370DO2aHoDKzq8MOGAbO5mihgeQ==
-X-Received: by 2002:a05:6808:118d:b0:2cc:ef90:3812 with SMTP id j13-20020a056808118d00b002ccef903812mr5383988oil.48.1648060464775;
-        Wed, 23 Mar 2022 11:34:24 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id s82-20020acadb55000000b002d9ce64bea0sm263151oig.48.2022.03.23.11.34.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Mar 2022 11:34:23 -0700 (PDT)
-Received: (nullmailer pid 221555 invoked by uid 1000);
-        Wed, 23 Mar 2022 18:34:22 -0000
-Date:   Wed, 23 Mar 2022 13:34:22 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Chris Packham <Chris.Packham@alliedtelesis.co.nz>,
-        "huziji@marvell.com" <huziji@marvell.com>,
-        "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
-        "sebastian.hesselbarth@gmail.com" <sebastian.hesselbarth@gmail.com>,
-        "adrian.hunter@intel.com" <adrian.hunter@intel.com>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        "kostap@marvell.com" <kostap@marvell.com>,
-        "robert.marko@sartura.hr" <robert.marko@sartura.hr>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v2 1/8] dt-bindings: pinctrl: mvebu: Document bindings
- for AC5
-Message-ID: <YjtoLkeyYsT6Fih5@robh.at.kernel.org>
-References: <20220314213143.2404162-1-chris.packham@alliedtelesis.co.nz>
- <20220314213143.2404162-2-chris.packham@alliedtelesis.co.nz>
- <Yi/Y0iynQbIOo8C0@lunn.ch>
- <16fa529e-b1ca-11d0-f068-628c7f25a7fa@alliedtelesis.co.nz>
- <Yi/dhK0NXg9g6J9T@lunn.ch>
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F0B664BDD;
+        Wed, 23 Mar 2022 11:34:30 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 277FB22238;
+        Wed, 23 Mar 2022 19:34:26 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1648060469;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=vO8LtpVxs/SG4LP+EIbUtQ6dKdMIxW7dBZiiQyLBuXk=;
+        b=Ojck0E/1HtzFGDLB7IviQABkc8mkQhaVxZ1xkUdO+LHddkCoZimaRkbq5qr0D9iMgAqr09
+        yee0RLnWdYvoCS6P8az7IAuy3E2Cdqj59WnJfJgDiU+pg2hI8WhhZxGsiqscTzb/PaCFWI
+        e2Kz7P0IQwl9ynDm5z8FpKynicfU9ic=
+From:   Michael Walle <michael@walle.cc>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Xu Liang <lxu@maxlinear.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH RFC net-next 0/5] net: phy: C45-over-C22 access
+Date:   Wed, 23 Mar 2022 19:34:14 +0100
+Message-Id: <20220323183419.2278676-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yi/dhK0NXg9g6J9T@lunn.ch>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 01:27:48AM +0100, Andrew Lunn wrote:
-> > I think it can. I vaguely remember seeing conditional clauses based on 
-> > compatible strings in other yaml bindings.
-> > 
-> > I started a new binding document because I expected adding significant 
-> > additions to the existing .txt files would be rejected. If I get some 
-> > cycles I could look at converting the existing docs from txt to yaml.
-> > 
-> > I'm not sure that there will be much in the way of a common 
-> > mvebu-pinctrl.yaml as you'd end up repeating most of the common stuff to 
-> > make things conditional anyway.
-> 
-> We should wait for Rob to comment. But is suspect you are right, there
-> will not be much savings.
+Hi,
 
-It's always a judgement call of amount of if/then schema vs. duplicating 
-the common parts. If it's the function/pin parts that vary, then that's 
-probably best as separate schema for each case. Otherwise, I'm not sure 
-without seeing something.
+This is the result of this discussion:
+https://lore.kernel.org/netdev/240354b0a54b37e8b5764773711b8aa3@walle.cc/
 
-Rob
+The goal here is to get the GYP215 and LAN8814 running on the Microchip
+LAN9668 SoC. The LAN9668 suppports one external bus and unfortunately, the
+LAN8814 has a bug which makes it impossible to use C45 on that bus.
+Fortunately, it was the intention of the GPY215 driver to be used on a C22
+bus. But I think this could have never really worked, because the
+phy_get_c45_ids() will always do c45 accesses and thus on MDIO bus drivers
+which will correctly check for the MII_ADDR_C45 flag and return -EOPNOTSUPP
+the function call will fail and thus gpy_probe() will fail. This series
+tries to fix that and will lay the foundation to add a workaround for the
+LAN8814 bug by forcing an MDIO bus to be c22-only.
+
+At the moment, the probe_capabilities is taken into account to decide if
+we have to use C45-over-C22. What is still missing from this series is the
+handling of a device tree property to restrict the probe_capabilities to
+c22-only.
+
+Since net-next is closed, this is marked as RFC to get some early feedback.
+
+Michael Walle (5):
+  net: phy: mscc-miim: reject clause 45 register accesses
+  net: phy: support indirect c45 access in get_phy_c45_ids()
+  net: phy: mscc-miim: add probe_capabilities
+  net: phy: introduce is_c45_over_c22 flag
+  net: phylink: handle the new is_c45_over_c22 property
+
+ drivers/net/mdio/mdio-mscc-miim.c |  7 ++++
+ drivers/net/phy/mxl-gpy.c         |  2 +-
+ drivers/net/phy/phy_device.c      | 65 ++++++++++++++++++++++++++-----
+ drivers/net/phy/phylink.c         |  2 +-
+ include/linux/phy.h               |  4 +-
+ 5 files changed, 68 insertions(+), 12 deletions(-)
+
+-- 
+2.30.2
+
