@@ -2,161 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58528C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 13:55:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B75BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 13:56:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244392AbiCWN5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 09:57:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40026 "EHLO
+        id S244482AbiCWN6F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 09:58:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234058AbiCWN5Q (ORCPT
+        with ESMTP id S244400AbiCWN5p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 09:57:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACAF57484E;
-        Wed, 23 Mar 2022 06:55:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5572BB81F53;
-        Wed, 23 Mar 2022 13:55:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1923AC340F6;
-        Wed, 23 Mar 2022 13:55:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648043744;
-        bh=P8NTZuF0QXODpURRwvFC6LW0z8AssRvgJlAdwMonpCg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=oy29/wl2bpoI1wsHjVLiihwZqX1tUiGJhKfhp1QXkiNGvJw91j+dYsNT7hRqe0WU3
-         gQ8emufN69eeenFbET/C7/nGr0irezv0LbcKoPZqcysYpr1jZ8CO8z44blAmwIQ2a+
-         UxOYVlWfZDXl4gAbYDHMZaSX33OIN0KmBxGYUmQTu2/a4Sd+35vDDgbL+CEV+lcVbt
-         VJgDiV9dxjUzjV4E1bWBSSGoVF6JZhK1e/OB5bUJk36TCzRlqsSI/uHEOzhiD1naOh
-         Ej4kfgJdgKjg8Hdl4hNT09SERYuCgROQGeMqHECIRxoq7hO9IWZLOuzFwcfqPN3uyI
-         MsPnJY/MnFeIA==
-Received: by mail-ed1-f53.google.com with SMTP id b24so1908134edu.10;
-        Wed, 23 Mar 2022 06:55:43 -0700 (PDT)
-X-Gm-Message-State: AOAM531XIrD+tRbEmtxDzHQhVWmk3YEQ6kUZhuelXmhdhRxKY+O3LNTs
-        nocK6qcbB66TnQbHyFwSbbpk25aXlF3fSBKhdg==
-X-Google-Smtp-Source: ABdhPJyl3S/nnGcuk0QekFB6PwTDpTG4muoEfDkHxTUjbPfg2atZC9hLqjSf0xf6Kd1lpsl0pXjp+7cobGg9ogJfxVM=
-X-Received: by 2002:aa7:da99:0:b0:419:17be:ceb4 with SMTP id
- q25-20020aa7da99000000b0041917beceb4mr145746eds.303.1648043742316; Wed, 23
- Mar 2022 06:55:42 -0700 (PDT)
+        Wed, 23 Mar 2022 09:57:45 -0400
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B7367E093;
+        Wed, 23 Mar 2022 06:56:13 -0700 (PDT)
+Received: by mail-ej1-f45.google.com with SMTP id bg10so3015865ejb.4;
+        Wed, 23 Mar 2022 06:56:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LgxEY+6i7DBi0QCATscb+PqLhssZ8pZuQTgH8K5W7oI=;
+        b=fHEpGolXFOv/h9Qkg8QGnMTVG1nYYsQpskV3ydeo4ywQ5oPVNCsE6s9clim2ipyqWM
+         DD++vqCAQqAZ/roUDuzuvARySRA/HtGTWxVLep5zOYjlvw8NbL+Aoq70w7jRDmnNbqQC
+         /wUBJEhBZREqCmzDgAmta6ZHmXgpZkDwyrKtE7jYOFRtKK2kNywuiumkLr+LbUUWayit
+         hlAJWsp8EUfE2QqCdnlyXW3AxMe32nLFEkLs+IhKLoF3wUic6/UW3zUVqdB9IA2BxKrZ
+         5SYwb5mJUvW7VBe5FE5SAJYUOgL4SJSudJnvQ7JbVoWMzpIH1uMJirGhqM6H2ezBGiCI
+         cM/w==
+X-Gm-Message-State: AOAM532q9CWOXBR9QW+G8ewKv/lRrK139yZVk31tXybGMUCFkAo2KjHu
+        VuqNKA3TDCoWF7goWxES754=
+X-Google-Smtp-Source: ABdhPJw9Eynei4ofEeC4/p/ilfVwlcN3rcvmq7AcoMCsFVefpiyqNW90DE0Shl/2A8/GXEDN0+3nag==
+X-Received: by 2002:a17:906:2403:b0:6d1:ca2:4da7 with SMTP id z3-20020a170906240300b006d10ca24da7mr9568eja.533.1648043771559;
+        Wed, 23 Mar 2022 06:56:11 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.googlemail.com with ESMTPSA id d1-20020a50fe81000000b004197f2ecdc2sm686499edt.89.2022.03.23.06.56.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Mar 2022 06:56:10 -0700 (PDT)
+Message-ID: <35f58894-ed6d-0af0-e483-7a161ad6625a@kernel.org>
+Date:   Wed, 23 Mar 2022 14:56:09 +0100
 MIME-Version: 1.0
-References: <20220224164831.21475-1-ansuelsmth@gmail.com> <20220224164831.21475-2-ansuelsmth@gmail.com>
-In-Reply-To: <20220224164831.21475-2-ansuelsmth@gmail.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Wed, 23 Mar 2022 08:55:30 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqLduGK=CyAcgahswFfeA43vh+QPgRgcL4+=piOwWwvJRQ@mail.gmail.com>
-Message-ID: <CAL_JsqLduGK=CyAcgahswFfeA43vh+QPgRgcL4+=piOwWwvJRQ@mail.gmail.com>
-Subject: Re: [PATCH v5 01/15] dt-bindings: clock: split qcom,gcc.yaml to
- common and specific schema
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Taniya Das <tdas@codeaurora.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 1/3] dt-bindings: mmc: imx-esdhc: Change imx8mn and imx8mp
+ compatible fallback
+Content-Language: en-US
+To:     Adam Ford <aford173@gmail.com>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     aford@beaconembedded.com, Ulf Hansson <ulf.hansson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220323134019.3796178-1-aford173@gmail.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220323134019.3796178-1-aford173@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 10:48 AM Ansuel Smith <ansuelsmth@gmail.com> wrote:
->
-> Split qcom,gcc.yaml to common and specific schema to use it as a
-> template for schema that needs to use the gcc bindings and require
-> to add additional bindings.
->
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> ---
->  .../bindings/clock/qcom,gcc-other.yaml        | 76 +++++++++++++++++++
+On 23/03/2022 14:40, Adam Ford wrote:
+> The SDHC controller in the imx8mn and imx8mp have the same controller
+> as the imx8mm which is slightly different than that of the imx7d.
+> Using the fallback of the imx8mm enables the controllers to support
+> HS400-ES which is not available on the imx7d.
+> 
+> Signed-off-by: Adam Ford <aford173@gmail.com>
+> 
+> diff --git a/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml b/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
+> index 7dbbcae9485c..d6ea73d76bdd 100644
+> --- a/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
+> +++ b/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
+> @@ -39,14 +39,14 @@ properties:
+>        - items:
+>            - enum:
+>                - fsl,imx8mm-usdhc
 
-This now throws errors in linux-next:
+Your change looks reasonable, but why imx8mm is compatible with imx7d?
 
-Traceback (most recent call last):
-  File "/usr/local/lib/python3.8/dist-packages/jsonschema/validators.py",
-line 816, in resolve_from_url
-    document = self.resolve_remote(url)
-  File "/usr/local/lib/python3.8/dist-packages/jsonschema/validators.py",
-line 923, in resolve_remote
-    result = json.loads(url.read().decode("utf-8"))
-  File "/usr/lib/python3.8/json/__init__.py", line 357, in loads
-    return _default_decoder.decode(s)
-  File "/usr/lib/python3.8/json/decoder.py", line 337, in decode
-    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
-  File "/usr/lib/python3.8/json/decoder.py", line 355, in raw_decode
-    raise JSONDecodeError("Expecting value", s, err.value) from None
-json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
-During handling of the above exception, another exception occurred:
-Traceback (most recent call last):
-  File "/usr/local/bin/dt-doc-validate", line 70, in <module>
-    ret = check_doc(f)
-  File "/usr/local/bin/dt-doc-validate", line 36, in check_doc
-    for error in
-sorted(dtschema.DTValidator.iter_schema_errors(testtree), key=lambda
-e: e.linecol):
-  File "/usr/local/lib/python3.8/dist-packages/dtschema/lib.py", line
-1016, in iter_schema_errors
-    meta_schema = cls.resolver.resolve_from_url(schema['$schema'])
-  File "/usr/local/lib/python3.8/dist-packages/jsonschema/validators.py",
-line 818, in resolve_from_url
-    raise exceptions.RefResolutionError(exc)
-jsonschema.exceptions.RefResolutionError: Expecting value: line 1
-column 1 (char 0)
-./Documentation/devicetree/bindings/clock/qcom,gcc-other.yaml:
-mapping values are not allowed in this context
-  in "<unicode string>", line 17, column 11
+> -              - fsl,imx8mn-usdhc
+> -              - fsl,imx8mp-usdhc
+>                - fsl,imx8mq-usdhc
+>                - fsl,imx8qm-usdhc
+>                - fsl,imx8qxp-usdhc
+>            - const: fsl,imx7d-usdhc
+>        - items:
+>            - enum:
+> +              - fsl,imx8mn-usdhc
+> +              - fsl,imx8mp-usdhc
+>                - fsl,imx93-usdhc
+>                - fsl,imx8ulp-usdhc
+>            - const: fsl,imx8mm-usdhc
 
->  .../devicetree/bindings/clock/qcom,gcc.yaml   | 59 +-------------
->  2 files changed, 80 insertions(+), 55 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/clock/qcom,gcc-other.yaml
->
-> diff --git a/Documentation/devicetree/bindings/clock/qcom,gcc-other.yaml b/Documentation/devicetree/bindings/clock/qcom,gcc-other.yaml
-> new file mode 100644
-> index 000000000000..4e5903bcd70d
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/clock/qcom,gcc-other.yaml
-> @@ -0,0 +1,76 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/clock/qcom,gcc-other.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Qualcomm Global Clock & Reset Controller Binding
-> +
-> +maintainers:
-> +  - Stephen Boyd <sboyd@kernel.org>
-> +  - Taniya Das <tdas@codeaurora.org>
-> +
-> +description:
-> +  Qualcomm global clock control module which supports the clocks, resets and
-> +  power domains.
-> +
-> +  See also:
 
-I think the problem is here. You need a '|' after 'description' to
-preserve formatting and ignore what looks like a mapping.
-
-> +  - dt-bindings/clock/qcom,gcc-apq8084.h
-> +  - dt-bindings/reset/qcom,gcc-apq8084.h
-> +  - dt-bindings/clock/qcom,gcc-ipq4019.h
-> +  - dt-bindings/clock/qcom,gcc-ipq6018.h
-> +  - dt-bindings/reset/qcom,gcc-ipq6018.h
-> +  - dt-bindings/clock/qcom,gcc-ipq806x.h (qcom,gcc-ipq8064)
-> +  - dt-bindings/reset/qcom,gcc-ipq806x.h (qcom,gcc-ipq8064)
-> +  - dt-bindings/clock/qcom,gcc-msm8939.h
-> +  - dt-bindings/clock/qcom,gcc-msm8953.h
-> +  - dt-bindings/reset/qcom,gcc-msm8939.h
-> +  - dt-bindings/clock/qcom,gcc-msm8660.h
-> +  - dt-bindings/reset/qcom,gcc-msm8660.h
-> +  - dt-bindings/clock/qcom,gcc-msm8974.h (qcom,gcc-msm8226 and qcom,gcc-msm8974)
-> +  - dt-bindings/reset/qcom,gcc-msm8974.h (qcom,gcc-msm8226 and qcom,gcc-msm8974)
-> +  - dt-bindings/clock/qcom,gcc-mdm9607.h
-> +  - dt-bindings/clock/qcom,gcc-mdm9615.h
-> +  - dt-bindings/reset/qcom,gcc-mdm9615.h
-> +  - dt-bindings/clock/qcom,gcc-sdm660.h  (qcom,gcc-sdm630 and qcom,gcc-sdm660)
+Best regards,
+Krzysztof
