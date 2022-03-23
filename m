@@ -2,116 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5B30C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 11:37:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA199C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 11:38:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243876AbiCWLjB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 07:39:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45708 "EHLO
+        id S243891AbiCWLjt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 07:39:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232743AbiCWLi7 (ORCPT
+        with ESMTP id S232743AbiCWLjq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 07:38:59 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7E5175609;
-        Wed, 23 Mar 2022 04:37:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648035449; x=1679571449;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Xlkm9eWb6xvz+l7GN3+kAdWFAMPDPRRPwGgbpxQtuRE=;
-  b=R2iMFMwI63nGsfS6surgsKYoQhetqP3AmFnlRI1Iwm5UClv1lmgOj19v
-   BH9xyGMA1rWX/YUwd1xOXSkQgaM4h6pkITZXzvb6gNNqvpBFMWWsobqVJ
-   kwaFHuaNLginQM5Lb+CvmvL7REIzRFMGZ5OtDU2cT+idGjH3ISfA5RBgz
-   JJy7AzHny4tHJtL6weeOjMy0iJUXq+f6ghN4hbSxw6OSB8ZrfueaacSjL
-   PHOersPxPLPQlcLW9FhZtN+x6MXu8fUWY0RWFjHu1u9pvyVTJqSm028G6
-   odI5YE2VNetkw24YCQvEXKHOnKgpNZetk5zOo1Xl1vfvN5CEJAqbIPTW+
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10294"; a="238691890"
-X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
-   d="scan'208";a="238691890"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 04:37:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
-   d="scan'208";a="519328436"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 23 Mar 2022 04:37:27 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nWzIs-000K10-Pv; Wed, 23 Mar 2022 11:37:26 +0000
-Date:   Wed, 23 Mar 2022 19:36:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
-Subject: [hverkuil-media-tree:tmp 407/423]
- drivers/media/platform/mediatek/mdp/mtk_mdp_core.c:31:34: warning: unused
- variable 'mtk_mdp_comp_dt_ids'
-Message-ID: <202203231910.QNuo5wZb-lkp@intel.com>
+        Wed, 23 Mar 2022 07:39:46 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E29F82D1E4;
+        Wed, 23 Mar 2022 04:38:16 -0700 (PDT)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22NAg8Y2029253;
+        Wed, 23 Mar 2022 11:38:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=jhwkhdUDcOq/euCdwH/0me6LYzlaCT5CWi62J2Vu2qU=;
+ b=E44WqKkXNO8nQAam5HvYDlq1b7hn9nY0MSSnTTjj8vrFszu/A3776q4gxF4/YGZjsZjD
+ RtdAdNVU+mV5ldxfuTPiQFHDBU/pa7TajekB6RwDeDlS81BQgGH84CQNm39S58KofQGX
+ laPzN315FW+ssDgAdSBVoMC2//oJeeoZmCYD/T1jsV7z+sd9bBRQ0UIwDGOF+KYonh4j
+ HCGdDR8t6ABXz4as4mrseN1USqsEw35H8HzJp2oMD75ROImdbahy+l70pEQDLroR48i0
+ NebCNcHkGn4KavXWqpfYLcsKHL2waSfsHN0x9kO0nMtVMxYGqaFW6TnKzTWNym7AB0XC Sw== 
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3f021b90yn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Mar 2022 11:38:10 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22NBH2si002461;
+        Wed, 23 Mar 2022 11:33:08 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma01fra.de.ibm.com with ESMTP id 3ew6t8q7e3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Mar 2022 11:33:07 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22NBX5rf32440690
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 23 Mar 2022 11:33:05 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B2CBAA4040;
+        Wed, 23 Mar 2022 11:33:05 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 225A2A4053;
+        Wed, 23 Mar 2022 11:33:05 +0000 (GMT)
+Received: from localhost (unknown [9.43.48.214])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 23 Mar 2022 11:33:04 +0000 (GMT)
+Date:   Wed, 23 Mar 2022 17:03:04 +0530
+From:   Ritesh Harjani <riteshh@linux.ibm.com>
+To:     Haowen Bai <baihaowen@meizu.com>
+Cc:     tytso@mit.edu, adilger.kernel@dilger.ca,
+        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] fs: ext4: Fix duplicate included linux/dax.h
+Message-ID: <20220323113304.5nqa2fmvge7g5vms@riteshh-domain>
+References: <1648007370-31984-1-git-send-email-baihaowen@meizu.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <1648007370-31984-1-git-send-email-baihaowen@meizu.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 2B-FPYOuBiY0F2bSUWAeznUoM7cDZ4YT
+X-Proofpoint-GUID: 2B-FPYOuBiY0F2bSUWAeznUoM7cDZ4YT
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-23_06,2022-03-22_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
+ priorityscore=1501 spamscore=0 impostorscore=0 clxscore=1015 phishscore=0
+ suspectscore=0 lowpriorityscore=0 mlxscore=0 adultscore=0 mlxlogscore=876
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203230066
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://linuxtv.org/hverkuil/media_tree.git tmp
-head:   f89d74081c909f1c547a611141a23d7670e44bed
-commit: 2023a99811110aebba9eee4aa09ef7bd21a8a249 [407/423] media: platform: rename mediatek/mtk-jpeg/ to mediatek/jpeg/
-config: hexagon-buildonly-randconfig-r005-20220323 (https://download.01.org/0day-ci/archive/20220323/202203231910.QNuo5wZb-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 902f4708fe1d03b0de7e5315ef875006a6adc319)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git remote add hverkuil-media-tree git://linuxtv.org/hverkuil/media_tree.git
-        git fetch --no-tags hverkuil-media-tree tmp
-        git checkout 2023a99811110aebba9eee4aa09ef7bd21a8a249
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/media/platform/mediatek/mdp/
+On 22/03/23 11:49AM, Haowen Bai wrote:
+> Clean up the following includecheck warning:
+>
+> fs/ext4/inode.c: linux/dax.h is included more than once.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Checked "make includecheck"
+This is the only warning coming from fs/ext4/
 
-All warnings (new ones prefixed by >>):
+Thanks for fixing that. Looks good to me.
+Feel free to add -
 
->> drivers/media/platform/mediatek/mdp/mtk_mdp_core.c:31:34: warning: unused variable 'mtk_mdp_comp_dt_ids' [-Wunused-const-variable]
-   static const struct of_device_id mtk_mdp_comp_dt_ids[] = {
-                                    ^
-   1 warning generated.
+Reviewed-by: Ritesh Harjani <riteshh@linux.ibm.com>
 
 
-vim +/mtk_mdp_comp_dt_ids +31 drivers/media/platform/mediatek/mdp/mtk_mdp_core.c
 
-c8eb2d7e8202fd9 drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  30  
-c8eb2d7e8202fd9 drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08 @31  static const struct of_device_id mtk_mdp_comp_dt_ids[] = {
-c8eb2d7e8202fd9 drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  32  	{
-c8eb2d7e8202fd9 drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  33  		.compatible = "mediatek,mt8173-mdp-rdma",
-c8eb2d7e8202fd9 drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  34  		.data = (void *)MTK_MDP_RDMA
-c8eb2d7e8202fd9 drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  35  	}, {
-c8eb2d7e8202fd9 drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  36  		.compatible = "mediatek,mt8173-mdp-rsz",
-c8eb2d7e8202fd9 drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  37  		.data = (void *)MTK_MDP_RSZ
-c8eb2d7e8202fd9 drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  38  	}, {
-c8eb2d7e8202fd9 drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  39  		.compatible = "mediatek,mt8173-mdp-wdma",
-c8eb2d7e8202fd9 drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  40  		.data = (void *)MTK_MDP_WDMA
-c8eb2d7e8202fd9 drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  41  	}, {
-c8eb2d7e8202fd9 drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  42  		.compatible = "mediatek,mt8173-mdp-wrot",
-c8eb2d7e8202fd9 drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  43  		.data = (void *)MTK_MDP_WROT
-55d80506c5f7c3a drivers/media/platform/mtk-mdp/mtk_mdp_core.c Vincent Stehlé 2016-10-27  44  	},
-55d80506c5f7c3a drivers/media/platform/mtk-mdp/mtk_mdp_core.c Vincent Stehlé 2016-10-27  45  	{ },
-c8eb2d7e8202fd9 drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  46  };
-c8eb2d7e8202fd9 drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  47  
-
-:::::: The code at line 31 was first introduced by commit
-:::::: c8eb2d7e8202fd9cb912f5d33cc34ede66dcb24a [media] media: Add Mediatek MDP Driver
-
-:::::: TO: Minghsiu Tsai <minghsiu.tsai@mediatek.com>
-:::::: CC: Mauro Carvalho Chehab <mchehab@s-opensource.com>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+>
+> No functional change.
+>
+> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+> ---
+>  fs/ext4/inode.c | 1 -
+>  1 file changed, 1 deletion(-)
+>
+> diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+> index 01c9e4f..6738ea7 100644
+> --- a/fs/ext4/inode.c
+> +++ b/fs/ext4/inode.c
+> @@ -41,7 +41,6 @@
+>  #include <linux/bitops.h>
+>  #include <linux/iomap.h>
+>  #include <linux/iversion.h>
+> -#include <linux/dax.h>
+>
+>  #include "ext4_jbd2.h"
+>  #include "xattr.h"
+> --
+> 2.7.4
+>
