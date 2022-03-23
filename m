@@ -2,103 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 252CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 18:44:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28B1BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 18:47:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343984AbiCWSqU (ORCPT
+        id S1343999AbiCWSsr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 14:46:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38462 "EHLO
+        Wed, 23 Mar 2022 14:48:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237232AbiCWSqS (ORCPT
+        with ESMTP id S237232AbiCWSso (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 14:46:18 -0400
-Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE68389334;
-        Wed, 23 Mar 2022 11:44:48 -0700 (PDT)
-Received: by mail-oi1-f170.google.com with SMTP id e4so2566681oif.2;
-        Wed, 23 Mar 2022 11:44:48 -0700 (PDT)
+        Wed, 23 Mar 2022 14:48:44 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E99189338
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 11:47:14 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id m16-20020a928710000000b002c7be7653d1so1409639ild.4
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 11:47:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UhAIis1sOQRNVOvuZb/HadToEgbIlD8Ne2xz3MzwvhE=;
-        b=NEAKzSX0iEzAPmmNk4ICjJXnTAJb5QmOQVOUST+dFHj2x6+vTaR+8eiu2eQgyVhcVz
-         ksAVZC7tdzqZPwSVXBjaLp/BiWYt8KrqQVqrRpwb3mBpr1HU6Zp91wkO9TZe7N90Dpa2
-         i3M8Zx5O0DVX6NzEwFtqSOUX6lpdJ5Xx6zUd/mo0M2MMSeeiCTfpz9294mbwTZyDCSI0
-         ADiOm1PAwPk0erWW7Zw2wsq3F8G8SSCN+0Pr3ePqm6bazt5T2EA9OKqj1TgZr1FlgmMR
-         p/4bnUV96ZV0UlxpnHeebt3+X6s3QesaV5PyVojlVA7eOT5FPiN/VwkoXFD/vYcjbbrE
-         sPEw==
-X-Gm-Message-State: AOAM532IDdI6BRigy9TyoX5dCNLcHpoxt6Qd8CP/Mw+4CYnFJIImMWAP
-        Xwy46Zhn5Y7nfCi1PjyMcg==
-X-Google-Smtp-Source: ABdhPJwgXCtwH1bJb5phSOJ/PNftPX3MRNt1PhAGu5iAKeTjH+CgiYzDdRdv3pDRcsD1OLWbbclljw==
-X-Received: by 2002:aca:59d5:0:b0:2ef:2125:ec15 with SMTP id n204-20020aca59d5000000b002ef2125ec15mr864310oib.4.1648061088200;
-        Wed, 23 Mar 2022 11:44:48 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id r21-20020a05683002f500b005b249ffa43fsm350713ote.22.2022.03.23.11.44.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Mar 2022 11:44:47 -0700 (PDT)
-Received: (nullmailer pid 237514 invoked by uid 1000);
-        Wed, 23 Mar 2022 18:44:46 -0000
-Date:   Wed, 23 Mar 2022 13:44:46 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Adrien Thierry <athierry@redhat.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Gaston Gonzalez <gascoar@gmail.com>,
-        Ojaswin Mujoo <ojaswin98@gmail.com>,
-        linux-staging@lists.linux.dev
-Subject: Re: [PATCH 1/2] dt-bindings: soc: bcm: bcm2835-vchiq: Add support
- for bcm2711
-Message-ID: <YjtqnktIHajn8skP@robh.at.kernel.org>
-References: <20220315200929.74952-1-athierry@redhat.com>
- <20220315200929.74952-2-athierry@redhat.com>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=pYu8i4bCyQkvLkE2p2XwJd7jMwp1xPlmh43gdxxjfcs=;
+        b=OjIocQ+MRSIGVGRk4spk3mQ8PzHmq6oW/CPiAIL1RkkgpTguigNY84DoafeWPeqHAv
+         x3O+3cOZlRCT3tyDarZMxqJclynyWa0+aNDnvVgCeddb/mnDbC4c/UeGoT6c/nlaICpX
+         whBIo8bp2QhZJOaHGnTaHJYTCyuIyUSo7DmmxrjdaIkacqNUI4gDxepcEtB3H8k8Btg0
+         P1IsxJS3vylpLvpnA2G2wsB5o2TmYI5Dxly8zBrZ6IprQLfTc3NI3zdCKe2iRe/Xx8Zd
+         Nn0UgfjcgAEL7ltMWkEBBIaMuf7bw5V0+0YXSh15DsjnCz8FTwuVLwFvBkk74X158K1m
+         Qrag==
+X-Gm-Message-State: AOAM532FqU75jCtYlf0ukUKtiqEfGS7k+0/w9EPpvBVrhddCJjgqDi4j
+        PiHddvtfDH9wgKkznbBeKC799VqGzPB+8/QKUMkUPUjVwlIZ
+X-Google-Smtp-Source: ABdhPJyBbjyelOm6XZrSiqfFQ4vxrm4HvKy9Vh/Bx4jgt2Ms1B6Km+omLeQZEYQAxGGY4jCyHzAymP+ofR1jf/WmN1zVDe0wFM6d
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220315200929.74952-2-athierry@redhat.com>
+X-Received: by 2002:a05:6638:1655:b0:319:a174:6ba0 with SMTP id
+ a21-20020a056638165500b00319a1746ba0mr722356jat.195.1648061233677; Wed, 23
+ Mar 2022 11:47:13 -0700 (PDT)
+Date:   Wed, 23 Mar 2022 11:47:13 -0700
+In-Reply-To: <000000000000a0506305dae664f2@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000066cd8205dae72838@google.com>
+Subject: Re: [syzbot] general protection fault in io_kill_timeouts
+From:   syzbot <syzbot+f252f28df734e8521387@syzkaller.appspotmail.com>
+To:     asml.silence@gmail.com, axboe@kernel.dk, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 04:09:28PM -0400, Adrien Thierry wrote:
-> Add a new compatible string for BCM2711. This is the chip used on the
-> Raspberry Pi 4.
-> 
-> Signed-off-by: Adrien Thierry <athierry@redhat.com>
-> ---
->  .../devicetree/bindings/soc/bcm/brcm,bcm2835-vchiq.yaml     | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/soc/bcm/brcm,bcm2835-vchiq.yaml b/Documentation/devicetree/bindings/soc/bcm/brcm,bcm2835-vchiq.yaml
-> index e04439b3355b..599bd283df1b 100644
-> --- a/Documentation/devicetree/bindings/soc/bcm/brcm,bcm2835-vchiq.yaml
-> +++ b/Documentation/devicetree/bindings/soc/bcm/brcm,bcm2835-vchiq.yaml
-> @@ -27,6 +27,12 @@ properties:
->                - brcm,bcm2836-vchiq
->            - const: brcm,bcm2835-vchiq
->  
-> +      - description: BCM2711 based boards
-> +        items:
-> +          - enum:
-> +              - brcm,bcm2711-vchiq
-> +          - const: brcm,bcm2711-vchiq
+syzbot has bisected this issue to:
 
-Why do you have the same compatible twice?
+commit c9be622494c012d56c71e00cb90be841820c3e34
+Author: Pavel Begunkov <asml.silence@gmail.com>
+Date:   Mon Mar 21 22:02:20 2022 +0000
 
-> +
->    reg:
->      description: Physical base address and length of the doorbell register pair
->      minItems: 1
-> -- 
-> 2.35.1
-> 
-> 
+    io_uring: remove extra ifs around io_commit_cqring
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15a04739700000
+start commit:   b61581ae229d Add linux-next specific files for 20220323
+git tree:       linux-next
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=17a04739700000
+console output: https://syzkaller.appspot.com/x/log.txt?x=13a04739700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=def28433baf109ed
+dashboard link: https://syzkaller.appspot.com/bug?extid=f252f28df734e8521387
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=117d3a43700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15538925700000
+
+Reported-by: syzbot+f252f28df734e8521387@syzkaller.appspotmail.com
+Fixes: c9be622494c0 ("io_uring: remove extra ifs around io_commit_cqring")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
