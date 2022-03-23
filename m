@@ -2,231 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E237AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 16:45:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9BBEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 16:46:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245514AbiCWQrC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 12:47:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60100 "EHLO
+        id S244391AbiCWQsO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 12:48:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239277AbiCWQqr (ORCPT
+        with ESMTP id S245515AbiCWQrz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 12:46:47 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89FDC4A3CB;
-        Wed, 23 Mar 2022 09:45:16 -0700 (PDT)
-X-UUID: eafe73e201da4ff29899425d27de526d-20220324
-X-UUID: eafe73e201da4ff29899425d27de526d-20220324
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <jiaxin.yu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 2060070821; Thu, 24 Mar 2022 00:45:11 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 24 Mar 2022 00:45:05 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 24 Mar 2022 00:45:04 +0800
-From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
-To:     <broonie@kernel.org>, <robh+dt@kernel.org>, <tzungbi@google.com>
-CC:     <angelogioacchino.delregno@collabora.com>, <aaronyu@google.com>,
-        <matthias.bgg@gmail.com>, <trevor.wu@mediatek.com>,
-        <linmq006@gmail.com>, <alsa-devel@alsa-project.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Jiaxin Yu <jiaxin.yu@mediatek.com>,
-        Tzung-Bi Shih <tzungbi@kernel.org>
-Subject: [v6 4/4] ASoC: mediatek: mt8192: support rt1015p_rt5682s
-Date:   Thu, 24 Mar 2022 00:44:42 +0800
-Message-ID: <20220323164442.921-5-jiaxin.yu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220323164442.921-1-jiaxin.yu@mediatek.com>
-References: <20220323164442.921-1-jiaxin.yu@mediatek.com>
+        Wed, 23 Mar 2022 12:47:55 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD02710FFE
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 09:46:25 -0700 (PDT)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22NGJKn4025581;
+        Wed, 23 Mar 2022 16:46:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=dk8FCBmyhr8d985yyeKRz5mOH1J1N/kLnhzi+JyPdqY=;
+ b=SY/xtDpBnRJSCQYFpJSmAclxShPml7RXzuBeXS0AdfvxdMKMX0eOMQum+Yauu/mv/zFB
+ 8cEY9WkQEQMvowA21iRIE9iOgbcx3CaTOwc3Wxe9xOOE1CcmDM1APb0LpwLxoofid+Lh
+ fnZlvS7/IoFPASLFZux3IffjXxuF110yiPsvW7dpW9GsKwE2C58JzMuLp2o3zp14jhK4
+ wcsPK2Gv7LAoWcRjsQ3lm5uXeuC6hAYOMup+B7bXKpYW6GbfPIHc3gLd//cMtTKEB+G+
+ ofk4/16a8etldw52NkJefhpcLvDxj0x2AJdSc9UiMRWMO0v2ajTrVs55f/BqE82CguJs CQ== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3f06yfgkhq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Mar 2022 16:46:10 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22NGjMu9013945;
+        Wed, 23 Mar 2022 16:46:08 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma03ams.nl.ibm.com with ESMTP id 3ew6t910s2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Mar 2022 16:46:08 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22NGk99O42402122
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 23 Mar 2022 16:46:09 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4B8AE4C04E;
+        Wed, 23 Mar 2022 16:46:05 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3D9FA4C044;
+        Wed, 23 Mar 2022 16:46:00 +0000 (GMT)
+Received: from li-e8dccbcc-2adc-11b2-a85c-bc1f33b9b810.ibm.com.com (unknown [9.43.30.161])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 23 Mar 2022 16:45:59 +0000 (GMT)
+From:   Kajol Jain <kjain@linux.ibm.com>
+To:     mpe@ellerman.id.au, linuxppc-dev@lists.ozlabs.org,
+        nvdimm@lists.linux.dev, linux-kernel@vger.kernel.org,
+        peterz@infradead.org, dan.j.williams@intel.com,
+        ira.weiny@intel.com, vishal.l.verma@intel.com
+Cc:     santosh@fossix.org, maddy@linux.ibm.com, rnsastry@linux.ibm.com,
+        aneesh.kumar@linux.ibm.com, atrajeev@linux.vnet.ibm.com,
+        vaibhav@linux.ibm.com, tglx@linutronix.de, kjain@linux.ibm.com,
+        kernel test robot <lkp@intel.com>
+Subject: [v2 PATCH 1/2] drivers/nvdimm: Fix build failure when CONFIG_PERF_EVENTS is not set
+Date:   Wed, 23 Mar 2022 22:15:49 +0530
+Message-Id: <20220323164550.109768-1-kjain@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 8nMy5r5dcVttaXPpbYzX4-wTgJQ3aAPo
+X-Proofpoint-ORIG-GUID: 8nMy5r5dcVttaXPpbYzX4-wTgJQ3aAPo
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-23_07,2022-03-23_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ spamscore=0 lowpriorityscore=0 phishscore=0 suspectscore=0 bulkscore=0
+ mlxlogscore=999 impostorscore=0 clxscore=1015 mlxscore=0 malwarescore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203230087
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To support machine that only choose one of the rt5682s and rt5682 as
-headset codec, adds new compatible string "mt8192_mt6359_rt1015p_rt5682s".
-Meanwhile, using macros to simplifies card name and compatible name.
+The following build failure occurs when CONFIG_PERF_EVENTS is not set
+as generic pmu functions are not visible in that scenario.
 
-Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
-Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
+|-- s390-randconfig-r044-20220313
+|   |-- nd_perf.c:(.text):undefined-reference-to-perf_pmu_migrate_context
+|   |-- nd_perf.c:(.text):undefined-reference-to-perf_pmu_register
+|   `-- nd_perf.c:(.text):undefined-reference-to-perf_pmu_unregister
+
+Similar build failure in nds32 architecture:
+nd_perf.c:(.text+0x21e): undefined reference to `perf_pmu_migrate_context'
+nd_perf.c:(.text+0x434): undefined reference to `perf_pmu_register'
+nd_perf.c:(.text+0x57c): undefined reference to `perf_pmu_unregister'
+
+Fix this issue by adding check for CONFIG_PERF_EVENTS config option
+and disabling the nvdimm perf interface incase this config is not set.
+
+Also remove function declaration of perf_pmu_migrate_context,
+perf_pmu_register, perf_pmu_unregister functions from nd.h as these are
+common pmu functions which are part of perf_event.h and since we
+are disabling nvdimm perf interface incase CONFIG_PERF_EVENTS option
+is not set, we not need to declare them in nd.h
+
+Also move the platform_device header file addition part from nd.h to
+nd_perf.c and add stub functions for register_nvdimm_pmu and
+unregister_nvdimm_pmu functions to handle CONFIG_PERF_EVENTS=n
+case.
+
+Fixes: 0fab1ba6ad6b ("drivers/nvdimm: Add perf interface to expose
+nvdimm performance stats") (Commit id based on libnvdimm-for-next tree)
+Signed-off-by: Kajol Jain <kjain@linux.ibm.com>
+Link: https://lore.kernel.org/all/62317124.YBQFU33+s%2FwdvWGj%25lkp@intel.com/
+Reported-by: kernel test robot <lkp@intel.com>
 ---
- sound/soc/mediatek/Kconfig                    |  1 +
- .../mt8192/mt8192-mt6359-rt1015-rt5682.c      | 61 ++++++++++++-------
- 2 files changed, 40 insertions(+), 22 deletions(-)
+ drivers/nvdimm/Makefile  |  2 +-
+ drivers/nvdimm/nd_perf.c |  1 +
+ include/linux/nd.h       | 16 ++++++++++++----
+ 3 files changed, 14 insertions(+), 5 deletions(-)
 
-diff --git a/sound/soc/mediatek/Kconfig b/sound/soc/mediatek/Kconfig
-index d515613a79da..cacfbab4262d 100644
---- a/sound/soc/mediatek/Kconfig
-+++ b/sound/soc/mediatek/Kconfig
-@@ -176,6 +176,7 @@ config SND_SOC_MT8192_MT6359_RT1015_RT5682
- 	select SND_SOC_RT1015
- 	select SND_SOC_RT1015P
- 	select SND_SOC_RT5682_I2C
-+	select SND_SOC_RT5682S
- 	select SND_SOC_DMIC
- 	help
- 	  This adds ASoC driver for Mediatek MT8192 boards
-diff --git a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
-index 328a71aa413b..61eeb973a405 100644
---- a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
-+++ b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
-@@ -28,6 +28,14 @@
- #define RT1015_DEV0_NAME	"rt1015.1-0028"
- #define RT1015_DEV1_NAME	"rt1015.1-0029"
+---
+Changelog:
+
+v1 -> v2
+- Rebase and tested the fix patch changes on top of libnvdimm-for-next branch
+
+- Add stub functions for register_nvdimm_pmu and unregister_nvdimm_pmu
+  functions to handle CONFIG_PERF_EVENTS=n case as suggested by Dan Williams
+
+- Move the platform_device header file addition part from nd.h to
+  nd_perf.c and just forward declare struct platform_device in nd.h
+---
+
+diff --git a/drivers/nvdimm/Makefile b/drivers/nvdimm/Makefile
+index 3fb806748716..ba0296dca9db 100644
+--- a/drivers/nvdimm/Makefile
++++ b/drivers/nvdimm/Makefile
+@@ -15,7 +15,7 @@ nd_e820-y := e820.o
+ libnvdimm-y := core.o
+ libnvdimm-y += bus.o
+ libnvdimm-y += dimm_devs.o
+-libnvdimm-y += nd_perf.o
++libnvdimm-$(CONFIG_PERF_EVENTS) += nd_perf.o
+ libnvdimm-y += dimm.o
+ libnvdimm-y += region_devs.o
+ libnvdimm-y += region.o
+diff --git a/drivers/nvdimm/nd_perf.c b/drivers/nvdimm/nd_perf.c
+index 314415894acf..433bbb68ae64 100644
+--- a/drivers/nvdimm/nd_perf.c
++++ b/drivers/nvdimm/nd_perf.c
+@@ -10,6 +10,7 @@
+ #define pr_fmt(fmt) "nvdimm_pmu: " fmt
  
-+#define RT1015_RT5682_CARD_NAME "mt8192_mt6359_rt1015_rt5682"
-+#define RT1015P_RT5682_CARD_NAME "mt8192_mt6359_rt1015p_rt5682"
-+#define RT1015P_RT5682S_CARD_NAME "mt8192_mt6359_rt1015p_rt5682s"
+ #include <linux/nd.h>
++#include <linux/platform_device.h>
+ 
+ #define EVENT(_name, _code)     enum{_name = _code}
+ 
+diff --git a/include/linux/nd.h b/include/linux/nd.h
+index 7b2ccbdc1cbc..f3e91c891cbc 100644
+--- a/include/linux/nd.h
++++ b/include/linux/nd.h
+@@ -9,7 +9,6 @@
+ #include <linux/device.h>
+ #include <linux/badblocks.h>
+ #include <linux/perf_event.h>
+-#include <linux/platform_device.h>
+ 
+ enum nvdimm_event {
+ 	NVDIMM_REVALIDATE_POISON,
+@@ -57,15 +56,24 @@ struct nvdimm_pmu {
+ 	struct cpumask arch_cpumask;
+ };
+ 
++struct platform_device;
 +
-+#define RT1015_RT5682_OF_NAME "mediatek,mt8192_mt6359_rt1015_rt5682"
-+#define RT1015P_RT5682_OF_NAME "mediatek,mt8192_mt6359_rt1015p_rt5682"
-+#define RT1015P_RT5682S_OF_NAME "mediatek,mt8192_mt6359_rt1015p_rt5682s"
++#ifdef CONFIG_PERF_EVENTS
+ extern ssize_t nvdimm_events_sysfs_show(struct device *dev,
+ 					struct device_attribute *attr,
+ 					char *page);
+ 
+ int register_nvdimm_pmu(struct nvdimm_pmu *nvdimm, struct platform_device *pdev);
+ void unregister_nvdimm_pmu(struct nvdimm_pmu *nd_pmu);
+-void perf_pmu_migrate_context(struct pmu *pmu, int src_cpu, int dst_cpu);
+-int perf_pmu_register(struct pmu *pmu, const char *name, int type);
+-void perf_pmu_unregister(struct pmu *pmu);
 +
- struct mt8192_mt6359_priv {
- 	struct snd_soc_jack headset_jack;
- 	struct snd_soc_jack hdmi_jack;
-@@ -68,8 +76,8 @@ static int mt8192_rt1015_i2s_hw_params(struct snd_pcm_substream *substream,
- 	return snd_soc_dai_set_sysclk(cpu_dai, 0, mclk_fs, SND_SOC_CLOCK_OUT);
- }
- 
--static int mt8192_rt5682_i2s_hw_params(struct snd_pcm_substream *substream,
--				       struct snd_pcm_hw_params *params)
-+static int mt8192_rt5682x_i2s_hw_params(struct snd_pcm_substream *substream,
-+					struct snd_pcm_hw_params *params)
- {
- 	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
- 	struct snd_soc_card *card = rtd->card;
-@@ -118,8 +126,8 @@ static const struct snd_soc_ops mt8192_rt1015_i2s_ops = {
- 	.hw_params = mt8192_rt1015_i2s_hw_params,
- };
- 
--static const struct snd_soc_ops mt8192_rt5682_i2s_ops = {
--	.hw_params = mt8192_rt5682_i2s_hw_params,
-+static const struct snd_soc_ops mt8192_rt5682x_i2s_ops = {
-+	.hw_params = mt8192_rt5682x_i2s_hw_params,
- };
- 
- static int mt8192_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
-@@ -950,7 +958,7 @@ static struct snd_soc_dai_link mt8192_mt6359_dai_links[] = {
- 		.init = mt8192_rt5682_init,
- 		.be_hw_params_fixup = mt8192_i2s_hw_params_fixup,
- 		SND_SOC_DAILINK_REG(i2s8),
--		.ops = &mt8192_rt5682_i2s_ops,
-+		.ops = &mt8192_rt5682x_i2s_ops,
- 	},
- 	{
- 		.name = "I2S9",
-@@ -959,7 +967,7 @@ static struct snd_soc_dai_link mt8192_mt6359_dai_links[] = {
- 		.ignore_suspend = 1,
- 		.be_hw_params_fixup = mt8192_i2s_hw_params_fixup,
- 		SND_SOC_DAILINK_REG(i2s9),
--		.ops = &mt8192_rt5682_i2s_ops,
-+		.ops = &mt8192_rt5682x_i2s_ops,
- 	},
- 	{
- 		.name = "CONNSYS_I2S",
-@@ -1039,7 +1047,7 @@ static struct snd_soc_codec_conf rt1015_amp_conf[] = {
- };
- 
- static struct snd_soc_card mt8192_mt6359_rt1015_rt5682_card = {
--	.name = "mt8192_mt6359_rt1015_rt5682",
-+	.name = RT1015_RT5682_CARD_NAME,
- 	.owner = THIS_MODULE,
- 	.dai_link = mt8192_mt6359_dai_links,
- 	.num_links = ARRAY_SIZE(mt8192_mt6359_dai_links),
-@@ -1053,14 +1061,13 @@ static struct snd_soc_card mt8192_mt6359_rt1015_rt5682_card = {
- 	.num_configs = ARRAY_SIZE(rt1015_amp_conf),
- };
- 
--static const struct snd_soc_dapm_widget
--mt8192_mt6359_rt1015p_rt5682_widgets[] = {
-+static const struct snd_soc_dapm_widget mt8192_mt6359_rt1015p_rt5682x_widgets[] = {
- 	SND_SOC_DAPM_SPK("Speakers", NULL),
- 	SND_SOC_DAPM_HP("Headphone Jack", NULL),
- 	SND_SOC_DAPM_MIC("Headset Mic", NULL),
- };
- 
--static const struct snd_soc_dapm_route mt8192_mt6359_rt1015p_rt5682_routes[] = {
-+static const struct snd_soc_dapm_route mt8192_mt6359_rt1015p_rt5682x_routes[] = {
- 	/* speaker */
- 	{ "Speakers", NULL, "Speaker" },
- 	/* headset */
-@@ -1069,23 +1076,22 @@ static const struct snd_soc_dapm_route mt8192_mt6359_rt1015p_rt5682_routes[] = {
- 	{ "IN1P", NULL, "Headset Mic" },
- };
- 
--static const struct snd_kcontrol_new mt8192_mt6359_rt1015p_rt5682_controls[] = {
-+static const struct snd_kcontrol_new mt8192_mt6359_rt1015p_rt5682x_controls[] = {
- 	SOC_DAPM_PIN_SWITCH("Speakers"),
- 	SOC_DAPM_PIN_SWITCH("Headphone Jack"),
- 	SOC_DAPM_PIN_SWITCH("Headset Mic"),
- };
- 
--static struct snd_soc_card mt8192_mt6359_rt1015p_rt5682_card = {
--	.name = "mt8192_mt6359_rt1015p_rt5682",
-+static struct snd_soc_card mt8192_mt6359_rt1015p_rt5682x_card = {
- 	.owner = THIS_MODULE,
- 	.dai_link = mt8192_mt6359_dai_links,
- 	.num_links = ARRAY_SIZE(mt8192_mt6359_dai_links),
--	.controls = mt8192_mt6359_rt1015p_rt5682_controls,
--	.num_controls = ARRAY_SIZE(mt8192_mt6359_rt1015p_rt5682_controls),
--	.dapm_widgets = mt8192_mt6359_rt1015p_rt5682_widgets,
--	.num_dapm_widgets = ARRAY_SIZE(mt8192_mt6359_rt1015p_rt5682_widgets),
--	.dapm_routes = mt8192_mt6359_rt1015p_rt5682_routes,
--	.num_dapm_routes = ARRAY_SIZE(mt8192_mt6359_rt1015p_rt5682_routes),
-+	.controls = mt8192_mt6359_rt1015p_rt5682x_controls,
-+	.num_controls = ARRAY_SIZE(mt8192_mt6359_rt1015p_rt5682x_controls),
-+	.dapm_widgets = mt8192_mt6359_rt1015p_rt5682x_widgets,
-+	.num_dapm_widgets = ARRAY_SIZE(mt8192_mt6359_rt1015p_rt5682x_widgets),
-+	.dapm_routes = mt8192_mt6359_rt1015p_rt5682x_routes,
-+	.num_dapm_routes = ARRAY_SIZE(mt8192_mt6359_rt1015p_rt5682x_routes),
- };
- 
- static int mt8192_mt6359_card_set_be_link(struct snd_soc_card *card,
-@@ -1119,6 +1125,13 @@ static int mt8192_mt6359_dev_probe(struct platform_device *pdev)
- 		return -EINVAL;
- 	card->dev = &pdev->dev;
- 
-+	if (of_device_is_compatible(pdev->dev.of_node, RT1015P_RT5682_OF_NAME))
-+		card->name = RT1015P_RT5682_CARD_NAME;
-+	else if (of_device_is_compatible(pdev->dev.of_node, RT1015P_RT5682S_OF_NAME))
-+		card->name = RT1015P_RT5682S_CARD_NAME;
-+	else
-+		dev_dbg(&pdev->dev, "No need to set card name\n");
++#else
++static inline int register_nvdimm_pmu(struct nvdimm_pmu *nvdimm, struct platform_device *pdev)
++{
++	return -ENXIO;
++}
 +
- 	platform_node = of_parse_phandle(pdev->dev.of_node, "mediatek,platform", 0);
- 	if (!platform_node) {
- 		ret = -EINVAL;
-@@ -1213,12 +1226,16 @@ static int mt8192_mt6359_dev_probe(struct platform_device *pdev)
- #ifdef CONFIG_OF
- static const struct of_device_id mt8192_mt6359_dt_match[] = {
- 	{
--		.compatible = "mediatek,mt8192_mt6359_rt1015_rt5682",
-+		.compatible = RT1015_RT5682_OF_NAME,
- 		.data = &mt8192_mt6359_rt1015_rt5682_card,
- 	},
- 	{
--		.compatible = "mediatek,mt8192_mt6359_rt1015p_rt5682",
--		.data = &mt8192_mt6359_rt1015p_rt5682_card,
-+		.compatible = RT1015P_RT5682_OF_NAME,
-+		.data = &mt8192_mt6359_rt1015p_rt5682x_card,
-+	},
-+	{
-+		.compatible = RT1015P_RT5682S_OF_NAME,
-+		.data = &mt8192_mt6359_rt1015p_rt5682x_card,
- 	},
- 	{}
- };
++static inline void unregister_nvdimm_pmu(struct nvdimm_pmu *nd_pmu) { }
++#endif
+ 
+ struct nd_device_driver {
+ 	struct device_driver drv;
 -- 
-2.18.0
+2.31.1
 
