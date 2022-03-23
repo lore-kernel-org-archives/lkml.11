@@ -2,54 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F333AC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 17:50:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54627C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 17:50:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343797AbiCWRvr (ORCPT
+        id S1343829AbiCWRvx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 13:51:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35478 "EHLO
+        Wed, 23 Mar 2022 13:51:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343777AbiCWRvo (ORCPT
+        with ESMTP id S1343783AbiCWRvo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 23 Mar 2022 13:51:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AB805DA1E;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFFCF85671;
         Wed, 23 Mar 2022 10:50:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4EEA9B81FF9;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 928F7B81FFC;
         Wed, 23 Mar 2022 17:50:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0C917C340F4;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 29768C340F5;
         Wed, 23 Mar 2022 17:50:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1648057812;
-        bh=sCbYYQaRkBRs0vqpjSJ6vXS4B1YRtkpy+wuheCEovxY=;
+        bh=rZ70td1sUS/GDoOuxgtxbnB3REa3lkh0/GuoF5TNc80=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Z7Yq9JoUJe1WBFG9f0iB0jZVMQecTQrNHrTLoqjqxgx4LKpS3xs6OsE9faFr+hMeX
-         GM9RGYvnEqasf4a75RkDrDTlHe5ANYhH6ACqFysyKGklMtOU6BH09okHbECUMHQjbE
-         vLA3zg3rJwqROsf9x76HqrPQYlGGCEiyyamwy26OqYbfRcEPQTBMsYcwrhI1co51lC
-         eH9wWVwpkJIbcHsKQ6Y/H49KSMbZEoj3Qmk9P7O0EXV8cTR4SBa+MXy11CtFUMmGsG
-         TVtgze+E85zBX1Nm95ugOHlKP718ftsNSw0w7gdtQAm6veGPEQGCYf4E5rDpWf6C0D
-         SXrOImbeP92Sg==
+        b=A8A7Rf/9WDlEbpiwDY0XgD9WpXagdbvWELls5xCw9GlhtOjaks+wbUu1rjvILhaGX
+         BWReAfs4/hKOsPgAW69Z1jx8cWdjwlBGlAt7OYTdq+NYCqttMEeLeG7jLMEf6MTifn
+         rv3FoXwFGuICDwujwm7lnr+lQphjAsaBnsbJ+ZhUXZaVOE6Fom41RpNYTuINtRpHRT
+         Omm1PO68b5Cfm/J4cy1p8La7UlDF8c1slY3KSmFyl+0tl7/XzU4ISkh3FofS7BCyB5
+         3LjtnmQAbhCanE027Uq8/5XAcaEV7Qe5kSPC1fekz9JkPrrFiCWGKFRm9EW5IcdLZW
+         vs6eHqROz6bIQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EDF6FEAC081;
-        Wed, 23 Mar 2022 17:50:11 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0D77BF03842;
+        Wed, 23 Mar 2022 17:50:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH -next] net: marvell: prestera: add missing destroy_workqueue()
- in prestera_module_init()
+Subject: Re: [PATCH net-next] net: bridge: mst: Restrict info size queries to
+ bridge ports
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164805781197.23946.18251414527647703024.git-patchwork-notify@kernel.org>
-Date:   Wed, 23 Mar 2022 17:50:11 +0000
-References: <20220322090236.1439649-1-yangyingliang@huawei.com>
-In-Reply-To: <20220322090236.1439649-1-yangyingliang@huawei.com>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        yevhen.orlov@plvision.eu, tchornyi@marvell.com,
-        oleksandr.mazur@plvision.eu, davem@davemloft.net
+Message-Id: <164805781205.23946.3779643017453826471.git-patchwork-notify@kernel.org>
+Date:   Wed, 23 Mar 2022 17:50:12 +0000
+References: <20220322133001.16181-1-tobias@waldekranz.com>
+In-Reply-To: <20220322133001.16181-1-tobias@waldekranz.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, roopa@nvidia.com,
+        razor@blackwall.org, pabeni@redhat.com,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -59,19 +60,19 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue, 22 Mar 2022 17:02:36 +0800 you wrote:
-> Add the missing destroy_workqueue() before return from
-> prestera_module_init() in the error handling case.
+On Tue, 22 Mar 2022 14:30:01 +0100 you wrote:
+> Ensure that no bridge masters are ever considered for MST info
+> dumping. MST states are only supported on bridge ports, not bridge
+> masters - which br_mst_info_size relies on.
 > 
-> Fixes: 4394fbcb78cf ("net: marvell: prestera: handle fib notifications")
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
->  drivers/net/ethernet/marvell/prestera/prestera_main.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+> Fixes: 122c29486e1f ("net: bridge: mst: Support setting and reporting MST port states")
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+> 
+> [...]
 
 Here is the summary with links:
-  - [-next] net: marvell: prestera: add missing destroy_workqueue() in prestera_module_init()
-    https://git.kernel.org/netdev/net-next/c/4a6806cfcbca
+  - [net-next] net: bridge: mst: Restrict info size queries to bridge ports
+    https://git.kernel.org/netdev/net-next/c/a911ad18a56a
 
 You are awesome, thank you!
 -- 
