@@ -2,66 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA305C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 00:37:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB9D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 00:41:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240948AbiCWAik (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 20:38:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38306 "EHLO
+        id S231219AbiCWAnC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 20:43:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231182AbiCWAii (ORCPT
+        with ESMTP id S230080AbiCWAnA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 20:38:38 -0400
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C7D251E40
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 17:37:10 -0700 (PDT)
-Received: by mail-il1-f198.google.com with SMTP id z9-20020a92d189000000b002c830ac1ad3so3542213ilz.13
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 17:37:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=94hmLNLc4Qa65xhXJkCqKMKovw/2rdLlaroN12E6w9I=;
-        b=wirsnL2FOSEUhjunxZ2If900Zw9kJrcYokcTqK7HupfQfI68vvcqBHmj0TnXWgY/7Z
-         naDTNLDwmcKeWWcTXjdIbeVU4d7h/HLkMifplB1GsQVHP09ITmx6SLntGRlisIrSTJD4
-         Pe7QcvGaUoV6rBIv+Qdv+mrq5U/VgunLhdykySIEytioXhf1iW7vnBc6zHpgc6DolNJv
-         3T3+XcE8kKMr7kE5+epdz69C6wmG3XLituR2Bqr2fqo7PMs7vbeO2qNXCctqOYVXBu6n
-         rRRjQ89tVv7Uu3kF6QssI4cERyouFDJ/kEVcUaOufj0UevdhJLhDBmR/lyKRl6V4loJk
-         QE2A==
-X-Gm-Message-State: AOAM533clv38e/EcDQgxDR88yfNz2vH3xBjRND7AyAlvMfiOYGlx8tUI
-        NRDaJkmsGS6pj8UIAug5mbtWWJum//GqWG2lrXIlKGpY1vi1
-X-Google-Smtp-Source: ABdhPJxgGzn9M+W85C5QQyqaGER567i8Ni0Wh0pm/fQ8jNr/jrNrGVKqaTeS0VR6UsigXFb6xbZUilrXBgVl1VfFlwPUIINOPwZx
+        Tue, 22 Mar 2022 20:43:00 -0400
+Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AB225BE5D
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 17:41:30 -0700 (PDT)
+Received: from mail.aspeedtech.com ([192.168.0.24])
+        by twspam01.aspeedtech.com with ESMTP id 22N0Thp8001180;
+        Wed, 23 Mar 2022 08:29:44 +0800 (GMT-8)
+        (envelope-from ryan_chen@aspeedtech.com)
+Received: from localhost.localdomain (192.168.10.10) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 23 Mar
+ 2022 08:40:15 +0800
+From:   ryan_chen <ryan_chen@aspeedtech.com>
+To:     <BMC-SW@aspeedtech.com>, Rob Herring <robh+dt@kernel.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
+CC:     Ryan Chen <ryan_chen@aspeedtech.com>
+Subject: [PATCH 1/2] dt-bindings: i2c-new: Add bindings for AST2600 i2C new controller
+Date:   Wed, 23 Mar 2022 08:40:08 +0800
+Message-ID: <20220323004009.943298-2-ryan_chen@aspeedtech.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220323004009.943298-1-ryan_chen@aspeedtech.com>
+References: <20220323004009.943298-1-ryan_chen@aspeedtech.com>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:b806:0:b0:646:1c7b:bb01 with SMTP id
- i6-20020a6bb806000000b006461c7bbb01mr13365275iof.105.1647995829453; Tue, 22
- Mar 2022 17:37:09 -0700 (PDT)
-Date:   Tue, 22 Mar 2022 17:37:09 -0700
-In-Reply-To: <20220323000702.3445-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000018dde05dad7ee2e@google.com>
-Subject: Re: [syzbot] BUG: sleeping function called from invalid context in blk_release_queue
-From:   syzbot <syzbot+bbea00057d3d55c4889b@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.10.10]
+X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
+ (192.168.0.24)
+X-DNSRBL: 
+X-MAIL: twspam01.aspeedtech.com 22N0Thp8001180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+AST2600 support new register set for I2C controller, add bindings document
+to support driver of i2c new controller
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+Signed-off-by: Ryan Chen <ryan_chen@aspeedtech.com>
+---
+ .../bindings/i2c/aspeed,i2c-new.yaml          | 78 +++++++++++++++++++
+ 1 file changed, 78 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/i2c/aspeed,i2c-new.yaml
 
-Reported-and-tested-by: syzbot+bbea00057d3d55c4889b@syzkaller.appspotmail.com
+diff --git a/Documentation/devicetree/bindings/i2c/aspeed,i2c-new.yaml b/Documentation/devicetree/bindings/i2c/aspeed,i2c-new.yaml
+new file mode 100644
+index 000000000000..2e49c5438ad2
+--- /dev/null
++++ b/Documentation/devicetree/bindings/i2c/aspeed,i2c-new.yaml
+@@ -0,0 +1,78 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/i2c/aspeed,i2c-new.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ASPEED New I2C Controller on the AST26XX SoCs Device Tree Bindings
++
++maintainers:
++  - Ryan Chen <ryan_chen@aspeedtech.com>
++
++allOf:
++  - $ref: /schemas/i2c/i2c-controller.yaml#
++
++properties:
++  compatible:
++    enum:
++      - aspeed,ast2600-i2c-bus
++
++  reg:
++    minItems: 1
++    items:
++      - description: address offset and range of bus
++      - description: address offset and range of bus buffer
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++    description:
++      root clock of bus, should reference the APB
++      clock in the second cell
++
++  resets:
++    maxItems: 1
++
++  bus-frequency:
++    minimum: 500
++    maximum: 2000000
++    default: 100000
++    description: frequency of the bus clock in Hz defaults to 100 kHz when not
++      specified
++
++  multi-master:
++    type: boolean
++    description:
++      states that there is another master active on this bus
++
++required:
++  - reg
++  - compatible
++  - clocks
++  - resets
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/clock/ast2600-clock.h>
++
++    i2c_gr: i2c-global-regs@0 {
++      compatible = "aspeed,ast2600-i2c-global", "syscon";
++      reg = <0x0 0x20>;
++      resets = <&syscon ASPEED_RESET_I2C>;
++    };
++
++    i2c0: i2c-bus@80 {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      #interrupt-cells = <1>;
++      compatible = "aspeed,ast2600-i2c-bus";
++      reg = <0x80 0x80>, <0xC00 0x20>;
++      clocks = <&syscon ASPEED_CLK_APB2>;
++      resets = <&syscon ASPEED_RESET_I2C>;
++      bus-frequency = <100000>;
++    };
+-- 
+2.25.1
 
-Tested on:
-
-commit:         f9006d92 Add linux-next specific files for 20220321
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/
-kernel config:  https://syzkaller.appspot.com/x/.config?x=949ef165e81e8114
-dashboard link: https://syzkaller.appspot.com/bug?extid=bbea00057d3d55c4889b
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=13d673db700000
-
-Note: testing is done by a robot and is best-effort only.
