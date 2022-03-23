@@ -2,69 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 861DBC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 03:25:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C2D0C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 03:25:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241505AbiCWD0a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 23:26:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57352 "EHLO
+        id S241518AbiCWD0p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 23:26:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237203AbiCWD01 (ORCPT
+        with ESMTP id S241504AbiCWD0m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 23:26:27 -0400
-Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5BBB70864;
-        Tue, 22 Mar 2022 20:24:57 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
- (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 23 Mar
- 2022 11:24:57 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Wed, 23 Mar
- 2022 11:24:55 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     <pablo@netfilter.org>, <kadlec@netfilter.org>, <fw@strlen.de>,
-        <davem@davemloft.net>
-CC:     <netfilter-devel@vger.kernel.org>, <coreteam@netfilter.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Haowen Bai <baihaowen@meizu.com>
-Subject: [PATCH] netfilter: ipset: Fix duplicate included ip_set_hash_gen.h
-Date:   Wed, 23 Mar 2022 11:24:54 +0800
-Message-ID: <1648005894-28708-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 22 Mar 2022 23:26:42 -0400
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E5F07087E
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 20:25:13 -0700 (PDT)
+Received: by mail-io1-f71.google.com with SMTP id k20-20020a5e9314000000b00649d55ffa67so206619iom.20
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 20:25:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=4vGMEtGe+BbLjSVih08yohBtZCRt30b9qlDbMhfTRl0=;
+        b=iyWu5ZqarmgAP58QaV+1Sn5af4Evkf7xv/6PkLNb0y1rw4Bhx+biAs70WSbU7Fh0t2
+         2m77nvxKls1OBIKgzeuEL+GeIiU+Wdl9Qhh6ftQs2LLf1dH9DiYfqMQRhGzTcvSW+Kee
+         JS9bIf5qklla6ATrw5/fIKwRsEUFBk3MEn6n29d4k+JgWpQ9ZQ5esdRMFvKaQboZ6k7+
+         qRzFZ08MvPQqGL9sGTEDtcB+Kl+9y7JPmXxymcDnNXs/bH+noQlFUMz6ADgov+8r2uX0
+         o2cUeCP+ghwxxZE19y1S2nH4C2VuOoSYi+Z6F0ttyCXTDoc4u7ma5+7XJXYU3oIYnCB4
+         rf5w==
+X-Gm-Message-State: AOAM532lFu9vbjdhXOiBs6p+Qf4JpLFbQ5DB2iYaZsPqL2Je3swIWei3
+        zNRii/2vTyC7A37YTwwP6qHnW0OBrHpWLGamko2hDiY7c1+E
+X-Google-Smtp-Source: ABdhPJxPmD1OSkA0wPsjR1WGTpH4zf9ZPV9c193YS4y2yCDtYsvVjxIthOQverrG4KJLyuKRpk3Ekb1prWTDh8ldMR24rIqhrGbr
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+X-Received: by 2002:a5d:8714:0:b0:636:13bb:bc89 with SMTP id
+ u20-20020a5d8714000000b0063613bbbc89mr14075565iom.126.1648005913000; Tue, 22
+ Mar 2022 20:25:13 -0700 (PDT)
+Date:   Tue, 22 Mar 2022 20:25:12 -0700
+In-Reply-To: <0000000000000f361d05dacabb09@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000008409805dada47ce@google.com>
+Subject: Re: [syzbot] KASAN: use-after-free Read in io_poll_remove_entries
+From:   syzbot <syzbot+cd301bb6523ea8cc8ca2@syzkaller.appspotmail.com>
+To:     asml.silence@gmail.com, axboe@kernel.dk,
+        gregkh@linuxfoundation.org, io-uring@vger.kernel.org,
+        jirislaby@kernel.org, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clean up the following includecheck warning:
+syzbot has bisected this issue to:
 
-net/netfilter/ipset/ip_set_hash_ipportip.c: ip_set_hash_gen.h
-is included more than once.
+commit 91eac1c69c202d9dad8bf717ae5b92db70bfe5cf
+Author: Jens Axboe <axboe@kernel.dk>
+Date:   Wed Mar 16 22:59:10 2022 +0000
 
-No functional change.
+    io_uring: cache poll/double-poll state with a request flag
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
----
- net/netfilter/ipset/ip_set_hash_ipportip.c | 1 -
- 1 file changed, 1 deletion(-)
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11819d0b700000
+start commit:   b47d5a4f6b8d Merge tag 'audit-pr-20220321' of git://git.ke..
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=13819d0b700000
+console output: https://syzkaller.appspot.com/x/log.txt?x=15819d0b700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=c44f0c051803a0ae
+dashboard link: https://syzkaller.appspot.com/bug?extid=cd301bb6523ea8cc8ca2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=150525ed700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10d08625700000
 
-diff --git a/net/netfilter/ipset/ip_set_hash_ipportip.c b/net/netfilter/ipset/ip_set_hash_ipportip.c
-index 334fb1a..e432d86 100644
---- a/net/netfilter/ipset/ip_set_hash_ipportip.c
-+++ b/net/netfilter/ipset/ip_set_hash_ipportip.c
-@@ -253,7 +253,6 @@ hash_ipportip6_data_next(struct hash_ipportip6_elem *next,
- #define MTYPE		hash_ipportip6
- #define HOST_MASK	128
- #define IP_SET_EMIT_CREATE
--#include "ip_set_hash_gen.h"
- 
- static int
- hash_ipportip6_kadt(struct ip_set *set, const struct sk_buff *skb,
--- 
-2.7.4
+Reported-by: syzbot+cd301bb6523ea8cc8ca2@syzkaller.appspotmail.com
+Fixes: 91eac1c69c20 ("io_uring: cache poll/double-poll state with a request flag")
 
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
