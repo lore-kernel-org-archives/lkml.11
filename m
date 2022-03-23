@@ -2,104 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02467C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 18:47:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB3A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 18:48:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344010AbiCWSs7 (ORCPT
+        id S1344030AbiCWStt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 14:48:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43306 "EHLO
+        Wed, 23 Mar 2022 14:49:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237232AbiCWSs6 (ORCPT
+        with ESMTP id S1343554AbiCWStn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 14:48:58 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC4E8933E
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 11:47:28 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id t25so4215401lfg.7
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 11:47:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2OUdDOmT/BscvMZ9xQqItVK3uz90XvUvJhYMHDKCWz4=;
-        b=HtYX1Ondm+m9J67VQiXoWqS0eKe3pyOKVWbfnRUOYF7UtHwDt/cBxxIt+P9m5OX9jt
-         C4y0ziVguDJsLBVu4TOEJb8tl+MYvBLKNuifQmFPSZYJSL61IpZ5dMkYs8qYfqJmgwG8
-         7keP8dxE3UQCxaZAN7UnT0YttTLUWzr+LSlDU=
+        Wed, 23 Mar 2022 14:49:43 -0400
+Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E3B365A0;
+        Wed, 23 Mar 2022 11:48:11 -0700 (PDT)
+Received: by mail-oi1-f177.google.com with SMTP id j83so2563055oih.6;
+        Wed, 23 Mar 2022 11:48:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2OUdDOmT/BscvMZ9xQqItVK3uz90XvUvJhYMHDKCWz4=;
-        b=KOSMx2kiP3IKxmRpBEp0NMAsgYDRAhqRGSkqYRmibxWwbBEqg9W0WDgjLFVvR0sf4f
-         MUXn5tcnTVIFs5aLfODnyqyjScDR9AYYBMb8s536/TNJZDMPLnNPGpjyOU/+ZOQCMIHu
-         rkXqTZqBdoVrPb6zW9erLdlK2o1fPTlZQnp+r6VeVpGDO5ZsQYnoAM9xQgRPvy/HXABt
-         TFHCD4vJNGPkEx8hflAPs3Eon3LAI+zb+SyXWnWuz2zQ8rr8l7tKcvNQJqdyCgiy7RIy
-         4toVAam+7wY8je0cbbihsg1k1s/QiKebGlRkl0/NNEarRXPTvrgJyuwnl0EezhfDN3aY
-         DW4g==
-X-Gm-Message-State: AOAM531lz1c/X8KhgEJDT5wcBe1s6uLASxGO21mtve63aE3ZAtdMmc3m
-        dAjH07mgWuDCSWOOu+wWdp3mBN/JhSRC8tb6n2g=
-X-Google-Smtp-Source: ABdhPJy/vaaTr5lBi/hYJmamzj2gNm/Kd2dPY0Nzt4Z/JwkofFbwlJEI7uqdf2vzUNWsQQitzLzpmA==
-X-Received: by 2002:a05:6512:308b:b0:448:9298:4f62 with SMTP id z11-20020a056512308b00b0044892984f62mr921565lfd.123.1648061245988;
-        Wed, 23 Mar 2022 11:47:25 -0700 (PDT)
-Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com. [209.85.167.47])
-        by smtp.gmail.com with ESMTPSA id i14-20020a198c4e000000b0044a279d25d2sm61556lfj.244.2022.03.23.11.47.24
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Mar 2022 11:47:24 -0700 (PDT)
-Received: by mail-lf1-f47.google.com with SMTP id w7so4210855lfd.6
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 11:47:24 -0700 (PDT)
-X-Received: by 2002:a19:e048:0:b0:448:2caa:7ed2 with SMTP id
- g8-20020a19e048000000b004482caa7ed2mr950426lfj.449.1648061243836; Wed, 23 Mar
- 2022 11:47:23 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=56J3GohQxdWaUNz7jQ2eEsIABoOTuL958gy1PE8F0ck=;
+        b=DUoLoVZ/rDn9oQ/vFbbJicRa1l11n/zsCo8nr44vHks6jw/1v8rx9foY+hMjR+4fsp
+         a0Haw2CAEChp97RUkywc58GHlcQfRYLTq2VtJh7rb46lDxQ5gDf7iwh3qtWkGa7K+kkr
+         1VcM7FEPUMxqfHh1Yr3f4fS+5Ma/1PmGj/h6yrRLNPlfMnk6zEUeYTT90OQIAaC4gMn4
+         n8w0iddJCBVW81pNaL93tZfgT9YVd9ihse6KsTwZws/Y0Px91GzDP5aPcgod5u1YP8gc
+         fiW1hH6zps+RZleLiWSEM9wPYNzNRgPKjaHv+7LaoJDI0AMPM5hF1i+nB0LI1V3nodlN
+         o/YA==
+X-Gm-Message-State: AOAM531qwJoHJIfmhIqXBPDOU6BAHljLjlIECwZStMzLOFVapPpJ1Vb+
+        sroIiEirhT8AydcFNxP14w==
+X-Google-Smtp-Source: ABdhPJyFLHubkitJIKDgjYHSdLjgwJ/cuVQanHqprHw4EB6GVqxlaV8Sxw0nJfSrmHho34tIgDeGWw==
+X-Received: by 2002:aca:ebd1:0:b0:2ec:91e4:f423 with SMTP id j200-20020acaebd1000000b002ec91e4f423mr804158oih.1.1648061291132;
+        Wed, 23 Mar 2022 11:48:11 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id q9-20020a4ae649000000b00320d35fc91dsm348675oot.24.2022.03.23.11.48.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Mar 2022 11:48:10 -0700 (PDT)
+Received: (nullmailer pid 242466 invoked by uid 1000);
+        Wed, 23 Mar 2022 18:48:09 -0000
+Date:   Wed, 23 Mar 2022 13:48:09 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     patches@lists.linux.dev, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH -next] dt-bindings:i kbuild: Make DT_SCHEMA_LINT a
+ recursive variable
+Message-ID: <YjtraaYJFuNG30xW@robh.at.kernel.org>
+References: <20220315202032.538911-1-nathan@kernel.org>
 MIME-Version: 1.0
-References: <20220321105621.3d4a9bc6@gandalf.local.home>
-In-Reply-To: <20220321105621.3d4a9bc6@gandalf.local.home>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 23 Mar 2022 11:47:07 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wiY2iVfuwuOLbaQ1PG2sK2ZGVtCfRH+bjDyei3j5YytLA@mail.gmail.com>
-Message-ID: <CAHk-=wiY2iVfuwuOLbaQ1PG2sK2ZGVtCfRH+bjDyei3j5YytLA@mail.gmail.com>
-Subject: Re: [GIT PULL] tracing: Updates for 5.18
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Beau Belgrave <beaub@linux.microsoft.com>,
-        Tom Zanussi <zanussi@kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220315202032.538911-1-nathan@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 7:56 AM Steven Rostedt <rostedt@goodmis.org> wrote:
->
-> A restructure of include/trace caused a conflict [..]
+On Tue, 15 Mar 2022 13:20:32 -0700, Nathan Chancellor wrote:
+> A recent change added a warning when yamllint is not installed, as it is
+> needed for 'make dt_binding_check'. However, it also changed
+> DT_SCHEMA_LINT to be a simple make variable, which is evaluated when a
+> Makefile is evaluated. This causes a warning when running 'make clean',
+> as Documentation/devicetree/bindings/Makefile has a "clean-files"
+> variable:
+> 
+>   $ make -s clean
+>   which: no yamllint in (...)
+>   warning: python package 'yamllint' not installed, skipping
+> 
+> Make DT_SCHEMA_LINT a recursive variable so it is evaluated only when it
+> is used. The warning still triggers when 'make dt_binding_check' is run.
+> 
+> Fixes: b3e664a7f449 ("dt-bindings: kbuild: Print a warning if yamllint is not found")
+> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+> ---
+>  Documentation/devicetree/bindings/Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
 
-Ugh. Disgusting. And in the very same pull request it shows why that
-TRACE_CUSTOM_EVENT() thing that caused this all was actually a
-horribly bad idea, since it also then DIDN'T WORK due to the kernel
-interfaces changing.
-
-So this restructuring seems to have been triggered by something that
-was a bad idea to begin with.
-
-But the real problem is here:
-
-> Tracing updates for 5.18:
->
-> - New user_events interface. User space can register an event with the kernel
->   describing the format of the event. Then it will receive a byte in a page
->   mapping that it can check against. A privileged task can then enable that
->   event like any other event, which will change the mapped byte to true,
->   telling the user space application to start writing the event to the
->   tracing buffer.
-
-That explanation makes no sense, because it doesn't actually explain *why*.
-
-It explains *what*, but the big issue for new interfaces shoudl always
-be why the heck a new interface was needed in the first place.
-
-I've pulled this, but under protest.
-
-              Linus
+Applied, thanks!
