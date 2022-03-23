@@ -2,135 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB1E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 11:22:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D82B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 11:22:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243890AbiCWLXe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 07:23:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35104 "EHLO
+        id S235173AbiCWLWv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 07:22:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243864AbiCWLXb (ORCPT
+        with ESMTP id S235624AbiCWLWt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 07:23:31 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 097027938A
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 04:21:59 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1648034518;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=y1DDIKvSFBHGvys+scil0oGzmCVScxpU1UzE7+Rqw74=;
-        b=AiOGH3vWEa+aNlAqH0iIM0ykEkLFsWCBYWVQRHaTuiAf7sPlM0H81aXMJoMkywGQueRhVO
-        KFEU+NtNbfGsb45qKK5Y4gGpZPyaqFhcQ7qct87/XX5xY4xSsALJ2qjkhxwOe85jnbOPGd
-        6kAmKbVACJD8ZpL7NyvmqFPB/P6BpfLm9pE2VSc9c3TqBwgKa+iV7rtUb30fqWieFCOuRb
-        a7qwLYK7pEhORnj6DlHADvywZ824pw/oM83NpipS1I8EB7p1tg3HUfEjkUshaZiS/roWt4
-        bCl/HAjD9YxQgn4xHhFUKQju1qMNKO9balJIy5Ick14yNm6h3uJvKpeTveln2w==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1648034518;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=y1DDIKvSFBHGvys+scil0oGzmCVScxpU1UzE7+Rqw74=;
-        b=Q8ixCOEqgiWjt8lU2QDdeWx2M6WrHcJ3U6D+75dfEaTia2HrbO7aOCoZiq/Ux2Skn8Bpw4
-        HcMDEAT9d7YTRKBA==
-To:     Steven Price <steven.price@arm.com>,
-        Vincent Donnefort <vincent.donnefort@arm.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, Baokun Li <libaokun1@huawei.com>,
-        Dongli Zhang <dongli.zhang@oracle.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Yuan ZhaoXiong <yuanzhaoxiong@baidu.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>
-Subject: Re: [PATCH v2] cpu/hotplug: Set st->cpu earlier
-In-Reply-To: <a704e21e-c1a6-6ffd-439c-e715a2633319@arm.com>
-References: <20220316153637.288199-1-steven.price@arm.com>
- <878rt2atre.ffs@tglx> <bc66bee6-7c99-b289-f5e9-ccaf03d5605d@arm.com>
- <87wngla932.ffs@tglx> <a704e21e-c1a6-6ffd-439c-e715a2633319@arm.com>
-Date:   Wed, 23 Mar 2022 12:21:48 +0100
-Message-ID: <87czicap83.ffs@tglx>
+        Wed, 23 Mar 2022 07:22:49 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 322DE78FCA;
+        Wed, 23 Mar 2022 04:21:20 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id r22so2116440ejs.11;
+        Wed, 23 Mar 2022 04:21:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=87E72TCYXIHs+TxIG+l3uw9PKroKBbtdliBk27X7cqU=;
+        b=mZuOPUC1JPNEyLejK7a7msjQdh9oyGwx2iT5PQH8gXq9SYl5RA1ogmBF8TJrWyPBsO
+         0d4YI6s3it4uHjEO5v9MjyYDck6aKZ2ASjWnL73UagE8pP5Ber56NrCV2wpa23Vg9d7t
+         3jooRkr6m/d/Pu8ModCXLY3UP+ZFHuAk+2Z/MgM1meqKYV80Czohn5b+yeiXqWJKvZf6
+         9uuVrJvCLgRvgWwjy7ZyscxLwlxsnSdAHYg9NhSmWVULxmAu1KQhafhnjW78XVw0oF1O
+         n6XCZZLLGVcODUjD//HRBnnYjzdRyCklW+S1zt+anW3LanIPnNkF7Qt4qihcAZSBv6uX
+         69aw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=87E72TCYXIHs+TxIG+l3uw9PKroKBbtdliBk27X7cqU=;
+        b=ki1yawf+dnilRpP+H45eKDye8dplO1dmtPu6jYIiNppOgxt9Po63oGYplqYOie22SS
+         Cqu+i9zCdDIj3pQSHQCEq0OGg5HZFMsC5B94VH50rW2+Dm0XF1QSLZBMyawlCKMsF7m9
+         mjJnb17nWaeGOy8RZ1CqATDGYejk7yomzSwzevzLjrSfopIkJMCNhV33zxVqJDg5r3IY
+         BZGINGdji8WFL8Y8osc4BJ3LhbhNpV594BahWcEvJ0mEHZYtc78WmVFz5QifY2LFMJCa
+         2piZXBb27mZ++sagghbTpa0y17Dv5wQ94QVmqv3pyN+9pL3VEHY8jqkWrhWB/2vTEWNo
+         Jk5A==
+X-Gm-Message-State: AOAM53250mKSq5zydwxm7/hSYX6RTx1fc3Gz1ieNEvNOX8o1NUbxCfyT
+        ayo8Rt6eiYBGjVEQPjbO6Z0=
+X-Google-Smtp-Source: ABdhPJybO4BiYPAi/fg3VFIMEzE591UHnNC3gbe30chy4gmV4funJuWxJSRkeJ/Zs57SqVYNE2lZng==
+X-Received: by 2002:a17:906:c214:b0:6b3:d0d6:9fe6 with SMTP id d20-20020a170906c21400b006b3d0d69fe6mr30833372ejz.150.1648034478453;
+        Wed, 23 Mar 2022 04:21:18 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id og49-20020a1709071df100b006db0dcf673esm9856923ejc.27.2022.03.23.04.21.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Mar 2022 04:21:18 -0700 (PDT)
+Date:   Wed, 23 Mar 2022 13:21:16 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Hans Schultz <schultz.hans@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB
+ implementation
+Message-ID: <20220323112116.q6shx2g4r23ungtc@skbuf>
+References: <20220317172013.rhjvknre5w7mfmlo@skbuf>
+ <86tubvk24r.fsf@gmail.com>
+ <20220318121400.sdc4guu5m4auwoej@skbuf>
+ <86pmmjieyl.fsf@gmail.com>
+ <20220318131943.hc7z52beztqlzwfq@skbuf>
+ <86a6dixnd2.fsf@gmail.com>
+ <20220322110806.kbdb362jf6pbtqaf@skbuf>
+ <86fsn90ye8.fsf@gmail.com>
+ <20220323101643.kum3nuqctunakcfo@skbuf>
+ <864k3p5437.fsf@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <864k3p5437.fsf@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 23 2022 at 10:10, Steven Price wrote:
-> On 22/03/2022 22:58, Thomas Gleixner wrote:
->> Indeed. But the description is not the only problem here:
->> 
->> It's completely uncomprehensible from the code in _cpu_up() _WHY_ this
->> 
->>      st->cpu = cpu;
->>      
->> assignment has to be there.
->> 
->> It's non-sensical if you really think about it, right?
->
-> I entirely agree, and I did ask in my v1 posting[1] if anyone could
-> point me to a better place to do the assignment. Vincent suggested
-> moving it earlier in _cpu_up() which is this v2.
->
-> But it still seems out-of-place to me. I've just had a go at simply
-> removing the 'cpu' member and it doesn't look too bad. I'll post that
-> patch as a follow up. I'm open to other suggestions for the best way to
-> fix this.
+On Wed, Mar 23, 2022 at 11:57:16AM +0100, Hans Schultz wrote:
+> >> >> Another issue I see, is that there is a deadlock or similar issue when
+> >> >> receiving violations and running 'bridge fdb show' (it seemed that
+> >> >> member violations also caused this, but not sure yet...), as the unit
+> >> >> freezes, not to return...
+> >> >
+> >> > Have you enabled lockdep, debug atomic sleep, detect hung tasks, things
+> >> > like that?
+> >> 
+> >> I have now determined that it is the rtnl_lock() that causes the
+> >> "deadlock". The doit() in rtnetlink.c is under rtnl_lock() and is what
+> >> takes care of getting the fdb entries when running 'bridge fdb show'. In
+> >> principle there should be no problem with this, but I don't know if some
+> >> interrupt queue is getting jammed as they are blocked from rtnetlink.c?
+> >
+> > Sorry, I forgot to respond yesterday to this.
+> > By any chance do you maybe have an AB/BA lock inversion, where from the
+> > ATU interrupt handler you do mv88e6xxx_reg_lock() -> rtnl_lock(), while
+> > from the port_fdb_dump() handler you do rtnl_lock() -> mv88e6xxx_reg_lock()?
+> 
+> If I release the mv88e6xxx_reg_lock() before calling the handler, I need
+> to get it again for the mv88e6xxx_g1_atu_loadpurge() call at least. But
+> maybe the vtu_walk also needs the mv88e6xxx_reg_lock()?
+> I could also just release the mv88e6xxx_reg_lock() before the
+> call_switchdev_notifiers() call and reacquire it immediately after?
 
-Yes, we can do that. The alternative solution is to initialize the
-states once upfront. Something like the uncompiled below.
-
-Thanks,
-
-        tglx
----
---- a/kernel/cpu.c
-+++ b/kernel/cpu.c
-@@ -714,15 +714,6 @@ static int cpuhp_up_callbacks(unsigned i
- /*
-  * The cpu hotplug threads manage the bringup and teardown of the cpus
-  */
--static void cpuhp_create(unsigned int cpu)
--{
--	struct cpuhp_cpu_state *st = per_cpu_ptr(&cpuhp_state, cpu);
--
--	init_completion(&st->done_up);
--	init_completion(&st->done_down);
--	st->cpu = cpu;
--}
--
- static int cpuhp_should_run(unsigned int cpu)
- {
- 	struct cpuhp_cpu_state *st = this_cpu_ptr(&cpuhp_state);
-@@ -882,15 +873,28 @@ static int cpuhp_kick_ap_work(unsigned i
- 
- static struct smp_hotplug_thread cpuhp_threads = {
- 	.store			= &cpuhp_state.thread,
--	.create			= &cpuhp_create,
- 	.thread_should_run	= cpuhp_should_run,
- 	.thread_fn		= cpuhp_thread_fun,
- 	.thread_comm		= "cpuhp/%u",
- 	.selfparking		= true,
- };
- 
-+static __init void cpuhp_init_state(void)
-+{
-+	struct cpuhp_cpu_state *st;
-+	int cpu;
-+
-+	for_each_possible_cpu(cpu) {
-+		st = per_cpu_ptr(&cpuhp_state, cpu);
-+		init_completion(&st->done_up);
-+		init_completion(&st->done_down);
-+		st->cpu = cpu;
-+	}
-+}
-+
- void __init cpuhp_threads_init(void)
- {
-+	cpuhp_init_state();
- 	BUG_ON(smpboot_register_percpu_thread(&cpuhp_threads));
- 	kthread_unpark(this_cpu_read(cpuhp_state.thread));
- }
+The cleanest way to go about this would be to have the call_switchdev_notifiers()
+portion of the ATU interrupt handling at the very end of mv88e6xxx_g1_atu_prob_irq_thread_fn(),
+with no hardware access needed, and therefore no reg_lock() held.
