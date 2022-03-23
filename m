@@ -2,73 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9381CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 16:45:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1278C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 16:45:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239239AbiCWQqi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 12:46:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59042 "EHLO
+        id S243823AbiCWQqp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 12:46:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236943AbiCWQqe (ORCPT
+        with ESMTP id S239267AbiCWQqm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 12:46:34 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 897EDBE24;
-        Wed, 23 Mar 2022 09:45:02 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1648053900;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Uzs116Cx6QxGxyZNdiwD2DBJ6Q8TGefySKft58qWAhs=;
-        b=kVYxzKLpUcw5AUj5B+Vw3cSVjmJZpcw+yHJSUsPRKCm47g+TPuEL8G/EZIOwPTANE0G9ib
-        OyhKi9RLBwtVC8o0t5ajpQrwOreRXxW91XxDD9+XJWEA7mmrja7CUW+9BvTeNwjC7LoWQB
-        OQssfrBE7ifOnnfribdpGVOPjJLa94sbEyMFqc919rL6biHJBAOysNSomGMDvz5lS1y3yf
-        j8yRqnvDAekAXovKPSKV5RCDzavsaI/k3NaiL4DZH5CXYCppGcgr7VQMKaw7HfAyVI+uwS
-        cwlSKHmWSuBJA9XhB6r8tKPZdLXfOuc0aEBroAlekR8k/OYSN8KqJ2avuytKpw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1648053900;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Uzs116Cx6QxGxyZNdiwD2DBJ6Q8TGefySKft58qWAhs=;
-        b=R18Y3GePYLi/wsvpnPDTj4OKCit9PT5A1YX0qDjoA8M0XzIwBfglJtuTGYfePxa8o5xuSj
-        xS2wZx01rMfDyxDw==
-To:     "Chang S. Bae" <chang.seok.bae@intel.com>,
-        linux-kernel@vger.kernel.org, x86@kernel.org, bp@alien8.de,
-        dave.hansen@linux.intel.com, mingo@redhat.com
-Cc:     yang.zhong@intel.com, ravi.v.shankar@intel.com,
-        chang.seok.bae@intel.com, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 2/2] selftests/x86/amx: Update the
- ARCH_REQ_XCOMP_PERM test
-In-Reply-To: <20220129173647.27981-3-chang.seok.bae@intel.com>
-References: <20220129173647.27981-1-chang.seok.bae@intel.com>
- <20220129173647.27981-3-chang.seok.bae@intel.com>
-Date:   Wed, 23 Mar 2022 17:44:59 +0100
-Message-ID: <8735j8aa9g.ffs@tglx>
+        Wed, 23 Mar 2022 12:46:42 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0624DBE24;
+        Wed, 23 Mar 2022 09:45:07 -0700 (PDT)
+X-UUID: b69873e1e97d4639b79618d02dda5565-20220324
+X-UUID: b69873e1e97d4639b79618d02dda5565-20220324
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <jiaxin.yu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 140494633; Thu, 24 Mar 2022 00:45:02 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 24 Mar 2022 00:45:02 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 24 Mar 2022 00:45:01 +0800
+From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
+To:     <broonie@kernel.org>, <robh+dt@kernel.org>, <tzungbi@google.com>
+CC:     <angelogioacchino.delregno@collabora.com>, <aaronyu@google.com>,
+        <matthias.bgg@gmail.com>, <trevor.wu@mediatek.com>,
+        <linmq006@gmail.com>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Jiaxin Yu <jiaxin.yu@mediatek.com>
+Subject: [v6 1/4] ASoC: dt-bindings: mt8192-mt6359: add new compatible and new properties
+Date:   Thu, 24 Mar 2022 00:44:39 +0800
+Message-ID: <20220323164442.921-2-jiaxin.yu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220323164442.921-1-jiaxin.yu@mediatek.com>
+References: <20220323164442.921-1-jiaxin.yu@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 29 2022 at 09:36, Chang S. Bae wrote:
-> Update the arch_prctl test to check the permission bitmap whether the
-> requested feature is added as expected or not.
->
-> Every non-dynamic feature that is enabled is permitted already for use.
-> TILECFG is not dynamic feature. Ensure the bit is always on from
-> ARCH_GET_XCOMP_PERM.
+1. Adds new compatible string "mt8192_mt6359_rt1015p_rt5682s" for machines
+with rt1015p and rt5682s.
+2. Adds new property "headset-codec" for getting headset codec.
+3. Adds new property "speaker-codec" for getting speaker codecs.
 
-Running it on a machine which does not have AMX results in:
+Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
+---
+ .../sound/mt8192-mt6359-rt1015-rt5682.yaml    | 32 +++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
- amx_64: [FAIL]	xstate cpuid: invalid tile data size/offset: 0/0: Success
+diff --git a/Documentation/devicetree/bindings/sound/mt8192-mt6359-rt1015-rt5682.yaml b/Documentation/devicetree/bindings/sound/mt8192-mt6359-rt1015-rt5682.yaml
+index a781e7aaaa38..ad992342c883 100644
+--- a/Documentation/devicetree/bindings/sound/mt8192-mt6359-rt1015-rt5682.yaml
++++ b/Documentation/devicetree/bindings/sound/mt8192-mt6359-rt1015-rt5682.yaml
+@@ -18,6 +18,7 @@ properties:
+     enum:
+       - mediatek,mt8192_mt6359_rt1015_rt5682
+       - mediatek,mt8192_mt6359_rt1015p_rt5682
++      - mediatek,mt8192_mt6359_rt1015p_rt5682s
+ 
+   mediatek,platform:
+     $ref: "/schemas/types.yaml#/definitions/phandle"
+@@ -27,11 +28,33 @@ properties:
+     $ref: "/schemas/types.yaml#/definitions/phandle"
+     description: The phandle of HDMI codec.
+ 
++  headset-codec:
++    type: object
++    properties:
++      sound-dai:
++        $ref: /schemas/types.yaml#/definitions/phandle
++    required:
++      - sound-dai
++
++  speaker-codec:
++    type: object
++    properties:
++      sound-dai:
++        minItems: 2
++        maxItems: 2
++        items:
++          maxItems: 1
++        $ref: /schemas/types.yaml#/definitions/phandle-array
++    required:
++      - sound-dai
++
+ additionalProperties: false
+ 
+ required:
+   - compatible
+   - mediatek,platform
++  - headset-codec
++  - speaker-codec
+ 
+ examples:
+   - |
+@@ -44,6 +67,15 @@ examples:
+                         "aud_clk_mosi_on";
+         pinctrl-0 = <&aud_clk_mosi_off>;
+         pinctrl-1 = <&aud_clk_mosi_on>;
++
++        headset-codec {
++            sound-dai = <&rt5682>;
++        };
++
++        speaker-codec {
++            sound-dai = <&rt1015_l>,
++                        <&rt1015_r>;
++        };
+     };
+ 
+ ...
+-- 
+2.18.0
 
-It's not a failure, really. Selftests are supposed to run on all
-machines and the proper thing to do if a hardware feature is not
-available is to SKIP the test and return 0.
-
-Thanks,
-
-        tglx
