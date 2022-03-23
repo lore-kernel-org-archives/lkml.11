@@ -2,87 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F973C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 16:05:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 248C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 16:06:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245357AbiCWQG3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 12:06:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37154 "EHLO
+        id S245364AbiCWQHi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 12:07:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234639AbiCWQG0 (ORCPT
+        with ESMTP id S234639AbiCWQHg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 12:06:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 932AB14093;
-        Wed, 23 Mar 2022 09:04:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 01B01B81F9C;
-        Wed, 23 Mar 2022 16:04:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 377EEC340E8;
-        Wed, 23 Mar 2022 16:04:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648051493;
-        bh=J6Jj3uWyZKjJ9PzohwOMwt8OqyngKpQ+spVUMeqUv28=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=Nma3Zy9b+SImVRKKJ4m/jQvhdePFX4Ogdo2X7Hi0o2lZBBUA6DIa835nJbIwFSeJa
-         k0KBST/EBjBw9icoS8QpUlxeRokAd+fFYxwcedzDkytHzdNTbHlh28YvrWXeNAAvg7
-         pouH5z8cw0UuENpv5UVF/zZm6FTLYEvb5lrLBtH6Bc/ETVzFj0FyMzBkayQpG4WF4F
-         HAk+9SPOxtyfjdFpliFkZTaSL2dtexKGPTVj1s+1U20bjYliqCMC/x2bSC6IohZwUI
-         KJI4MhvmRaPXtw7ySwTEMdoMvRjFgwfP/Xe2ikFYCd0tSh4r4lwYOXwAYy94GY6hGf
-         ftgMup5HN4aDA==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Yann Gautier <yann.gautier@foss.st.com>
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        <linux-wireless@vger.kernel.org>,
-        Christophe ROULLIER-SCND-02 <christophe.roullier@foss.st.com>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        Adrian Ratiu <adrian.ratiu@collabora.com>,
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        <linux-kernel@vger.kernel.org>,
-        Christophe KERELLO - foss <christophe.kerello@foss.st.com>
-Subject: Re: [PATCH v2] brcmfmac: Avoid keeping power to SDIO card unless WOWL is used
-References: <20220323083950.414783-1-ulf.hansson@linaro.org>
-        <51b4917b-823d-263a-2412-a4b17cb38420@foss.st.com>
-Date:   Wed, 23 Mar 2022 18:04:46 +0200
-In-Reply-To: <51b4917b-823d-263a-2412-a4b17cb38420@foss.st.com> (Yann
-        Gautier's message of "Wed, 23 Mar 2022 14:20:36 +0100")
-Message-ID: <87a6dgk63l.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Wed, 23 Mar 2022 12:07:36 -0400
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C09421706C
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 09:06:02 -0700 (PDT)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-2e5827a76f4so22583977b3.6
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 09:06:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oNdgroiW0MXjQ1AJ+7byePTTsvQ9RWf63r2qZjoIhzM=;
+        b=BDixQbSmDLCatKCAqmxGMt8khsgiM9XapdUq+Gh3JZZv3gPFoi0P0fw0k42KHOE2H/
+         RwAYQyYcIZkdR36tf3ycyu1/5r+e/m4RQpQvneCZZfN4jkFOgngZXY/23sGoYLaiqv2p
+         yFcfYkvkV21WjEOkWrQzKXPOF3HCapNpdpJlOq/Etx3bwae2mpI/m1JWC4H33F0FkfqG
+         05fGFRVSXuYZtZMiGxqM3X1Hh/O5U6tTn+z1FucZ9+l3LER1X89AAMZNeFu0znsrZvKq
+         /NyKKJvrGZprsSZhDqoyFsaQBUkPZy7GDtaEBJ6hPSjFUa9hxiG2d7cueEq5o5Wq2Ju/
+         bP8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oNdgroiW0MXjQ1AJ+7byePTTsvQ9RWf63r2qZjoIhzM=;
+        b=sigysFJ6FIHznVEl8dAiTe3BgV3jTvGlyt542i7wXj/MO5LdgmHf8FXZjChSrGq8T2
+         f/ZTCpJxLeQWKdcC2kJqDzXd0juO9wq27xJWK2BPHQcUwa+sAAx5+qXqtRVPDNA/Q+1p
+         TAX3PjTurd1xRi5lJOl65BFDFKxilUD8fd9AZOLzA4LHWeJSbMnxbywNgJrc7SGRP1zN
+         BzGRbGKnW0aUKq/35RRZ1Dn+d8f++2TFls8BiaQHSJzMGJuAALLDlxo2PdJcOh7ZJSVr
+         MRekEUCxQ7VVUmBnV7QcsJkBsSejBQx/erej3FafEKwwT9+5Yl6sLMmOv9Ha0RopeQfT
+         3Djw==
+X-Gm-Message-State: AOAM532JFyJ8bKJnpGZ5J3siY+n+G0AywVHiCWPRGB/rp/Qh7SnyQRWH
+        tJfhdKURoOeZ1tCQSx6qHUEeHYV7v4XdgG6ttHeStg==
+X-Google-Smtp-Source: ABdhPJy3ADoka5C1IUqU+SF64IvaEfpu3FaPlfL6EMD1BG/jyxNrLVeWbCG7YSyWhQ27KxMMwTr/pC6PiPTVKaURBnI=
+X-Received: by 2002:a05:690c:809:b0:2e5:a6cb:bccd with SMTP id
+ bx9-20020a05690c080900b002e5a6cbbccdmr605457ywb.47.1648051561524; Wed, 23 Mar
+ 2022 09:06:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220311011715.2440601-1-eric.dumazet@gmail.com> <14cceb7c-f5f7-ee8e-18aa-4884ef212eb0@intel.com>
+In-Reply-To: <14cceb7c-f5f7-ee8e-18aa-4884ef212eb0@intel.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 23 Mar 2022 09:05:50 -0700
+Message-ID: <CANn89iK7cj+Msz7=+nzmbC=BbaA9Rpp4e+u0d-xRuSr1K-TbPg@mail.gmail.com>
+Subject: Re: [PATCH] x86/cpu: use smp_call_function_many() in arch_freq_prepare_all()
+To:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Yann Gautier <yann.gautier@foss.st.com> writes:
-
-> On 3/23/22 09:39, Ulf Hansson wrote:
->> Keeping the power to the SDIO card during system wide suspend, consumes
->> energy. Especially on battery driven embedded systems, this can be a
->> problem. Therefore, let's change the behaviour into allowing the SDIO card
->> to be powered off, unless WOWL is supported and enabled.
->>
->> Note that, the downside from this change, is that during system resume the
->> SDIO card needs to be re-initialized and the FW must be re-programmed. Even
->> if this may take some time to complete, it should we worth it, rather than
->> draining the battery.
->>
->> Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+On Fri, Mar 11, 2022 at 8:36 AM Rafael J. Wysocki
+<rafael.j.wysocki@intel.com> wrote:
 >
-> Thanks for the patch, it is OK, and tested by Christophe (R.).
-> So you can add:
-> Tested-by: Christophe Roullier <christophe.roullier@foss.st.com>
-> Acked-by: Yann Gautier <yann.gautier@foss.st.com>
+> On 3/11/2022 2:17 AM, Eric Dumazet wrote:
+> > From: Eric Dumazet <edumazet@google.com>
+> >
+> > Opening /proc/cpuinfo can have a big latency on hosts with many cpus,
+> > mostly because it is essentially doing:
+> >
+> >     for_each_online_cpu(cpu)
+> >      smp_call_function_single(cpu, aperfmperf_snapshot_khz, ...)
+> >
+> > smp_call_function_single() is reusing a common csd, meaning that
+> > each invocation needs to wait for completion of the prior one.
+> >
+> > Paul recent patches have lowered number of cpus receiving the IPI,
+> > but there are still cases where the latency of the above loop can
+> > reach 10 ms, then an extra msleep(10) is performed, for a total of 20ms.
+> >
+> > Using smp_call_function_many() allows for full parallelism,
+> > and latency is down to ~80 usec, on a host with 256 cpus.
+>
+> This looks reasonable to me.
+>
+> Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+>
+> or if you want me to pick it up, please resend the patch with a CC to
+> linux-pm@vger.kernel.org.
 
-Acked-by is used by the driver maintainer, so I assume you mean
-Reviewed-by?
+I do not know what x86 maintainers prefer ?
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+Let them give their advice here, thanks !
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+>
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > Cc: Paul E. McKenney <paulmck@kernel.org>
+> > Cc: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> > Cc: Thomas Gleixner <tglx@linutronix.de>
+> > Cc: Ingo Molnar <mingo@redhat.com>
+> > Cc: Borislav Petkov <bp@alien8.de>
+> > Cc: "H. Peter Anvin" <hpa@zytor.com>
+> > Cc: <x86@kernel.org>
+> > ---
+> >   arch/x86/kernel/cpu/aperfmperf.c | 32 +++++++++++++++++++++++---------
+> >   1 file changed, 23 insertions(+), 9 deletions(-)
+> >
+> > diff --git a/arch/x86/kernel/cpu/aperfmperf.c b/arch/x86/kernel/cpu/aperfmperf.c
+> > index 22911deacb6e441ad60ddb57190ef3772afb3cf0..a305310ceb44784a0ad9be7c196061d98fa1adbc 100644
+> > --- a/arch/x86/kernel/cpu/aperfmperf.c
+> > +++ b/arch/x86/kernel/cpu/aperfmperf.c
+> > @@ -67,7 +67,8 @@ static void aperfmperf_snapshot_khz(void *dummy)
+> >       atomic_set_release(&s->scfpending, 0);
+> >   }
+> >
+> > -static bool aperfmperf_snapshot_cpu(int cpu, ktime_t now, bool wait)
+> > +static bool aperfmperf_snapshot_cpu(int cpu, ktime_t now, bool wait,
+> > +                                 struct cpumask *mask)
+> >   {
+> >       s64 time_delta = ktime_ms_delta(now, per_cpu(samples.time, cpu));
+> >       struct aperfmperf_sample *s = per_cpu_ptr(&samples, cpu);
+> > @@ -76,9 +77,13 @@ static bool aperfmperf_snapshot_cpu(int cpu, ktime_t now, bool wait)
+> >       if (time_delta < APERFMPERF_CACHE_THRESHOLD_MS)
+> >               return true;
+> >
+> > -     if (!atomic_xchg(&s->scfpending, 1) || wait)
+> > -             smp_call_function_single(cpu, aperfmperf_snapshot_khz, NULL, wait);
+> > -
+> > +     if (!atomic_xchg(&s->scfpending, 1) || wait) {
+> > +             if (mask)
+> > +                     __cpumask_set_cpu(cpu, mask);
+> > +             else
+> > +                     smp_call_function_single(cpu, aperfmperf_snapshot_khz,
+> > +                                              NULL, wait);
+> > +     }
+> >       /* Return false if the previous iteration was too long ago. */
+> >       return time_delta <= APERFMPERF_STALE_THRESHOLD_MS;
+> >   }
+> > @@ -97,13 +102,14 @@ unsigned int aperfmperf_get_khz(int cpu)
+> >       if (rcu_is_idle_cpu(cpu))
+> >               return 0; /* Idle CPUs are completely uninteresting. */
+> >
+> > -     aperfmperf_snapshot_cpu(cpu, ktime_get(), true);
+> > +     aperfmperf_snapshot_cpu(cpu, ktime_get(), true, NULL);
+> >       return per_cpu(samples.khz, cpu);
+> >   }
+> >
+> >   void arch_freq_prepare_all(void)
+> >   {
+> >       ktime_t now = ktime_get();
+> > +     cpumask_var_t mask;
+> >       bool wait = false;
+> >       int cpu;
+> >
+> > @@ -113,17 +119,25 @@ void arch_freq_prepare_all(void)
+> >       if (!boot_cpu_has(X86_FEATURE_APERFMPERF))
+> >               return;
+> >
+> > +     if (!zalloc_cpumask_var(&mask, GFP_KERNEL))
+> > +             return;
+> > +
+> > +     cpus_read_lock();
+> >       for_each_online_cpu(cpu) {
+> >               if (!housekeeping_cpu(cpu, HK_FLAG_MISC))
+> >                       continue;
+> >               if (rcu_is_idle_cpu(cpu))
+> >                       continue; /* Idle CPUs are completely uninteresting. */
+> > -             if (!aperfmperf_snapshot_cpu(cpu, now, false))
+> > +             if (!aperfmperf_snapshot_cpu(cpu, now, false, mask))
+> >                       wait = true;
+> >       }
+> >
+> > -     if (wait)
+> > -             msleep(APERFMPERF_REFRESH_DELAY_MS);
+> > +     preempt_disable();
+> > +     smp_call_function_many(mask, aperfmperf_snapshot_khz, NULL, wait);
+> > +     preempt_enable();
+> > +     cpus_read_unlock();
+> > +
+> > +     free_cpumask_var(mask);
+> >   }
+> >
+> >   unsigned int arch_freq_get_on_cpu(int cpu)
+> > @@ -139,7 +153,7 @@ unsigned int arch_freq_get_on_cpu(int cpu)
+> >       if (!housekeeping_cpu(cpu, HK_FLAG_MISC))
+> >               return 0;
+> >
+> > -     if (aperfmperf_snapshot_cpu(cpu, ktime_get(), true))
+> > +     if (aperfmperf_snapshot_cpu(cpu, ktime_get(), true, NULL))
+> >               return per_cpu(samples.khz, cpu);
+> >
+> >       msleep(APERFMPERF_REFRESH_DELAY_MS);
+>
+>
