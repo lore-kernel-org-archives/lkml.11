@@ -2,83 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8F6EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 14:35:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9903BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 14:36:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244784AbiCWOgk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 10:36:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53334 "EHLO
+        id S244809AbiCWOi1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 10:38:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232141AbiCWOgi (ORCPT
+        with ESMTP id S232141AbiCWOiY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 10:36:38 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE0D49F9D;
-        Wed, 23 Mar 2022 07:35:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 862ACCE1F54;
-        Wed, 23 Mar 2022 14:35:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15F3BC340E8;
-        Wed, 23 Mar 2022 14:35:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648046104;
-        bh=mgIr0EJj1nfhvugLVQSBH+2sRCIPmpVhT59MmZP0smg=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=GFTobHABrfa11Tf04GwxRArl3nWDFDEwidsEE6ZNM4vzCZMsZj/+cAnVnbqE6XZ2w
-         cOlWmeos7/DiPJXLFsNAHCVyVDi9lz0plBv7lDHJLNL+SJ5+2Ut2aOa8u7xwByc5/u
-         XIRfq1MaDqSVBT6zorHbvipdxlX/ZdIQoSGXjlafMdYETm5qzpqd5mjaiglpAaV9Z6
-         EMeTlzMpPw/yyICML66W8HOt7fIB+/NoV6m2Fnjk383GG5zvTZb6Kfq33bTP42iNSP
-         Dx8kZKP2JRC4q7uyiXEdq9i+TBqOmb+kqMxLVfiDBhjcLmYxoSdZd7gDCm27MQx/T3
-         nArunKyc1AVwg==
-Message-ID: <7288faa9-0bb1-4538-606d-3366a7a02da5@kernel.org>
-Date:   Wed, 23 Mar 2022 08:35:03 -0600
+        Wed, 23 Mar 2022 10:38:24 -0400
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 581BB7CDE8;
+        Wed, 23 Mar 2022 07:36:55 -0700 (PDT)
+Received: from localhost.localdomain ([81.221.85.15]) by mrelay.perfora.net
+ (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0LoFXL-1nzUEQ0faz-00gIo9;
+ Wed, 23 Mar 2022 15:36:23 +0100
+From:   Marcel Ziswiler <marcel@ziswiler.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Fabio Estevam <festevam@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Heiko Schocher <hs@denx.de>, Jacky Bai <ping.bai@nxp.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Kuldeep Singh <kuldeep.singh@nxp.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Olof Johansson <olof@lixom.net>, Peng Fan <peng.fan@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/3] arm64: dts: imx8mp: add uart2 dma
+Date:   Wed, 23 Mar 2022 15:35:58 +0100
+Message-Id: <20220323143600.170778-2-marcel@ziswiler.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220323143600.170778-1-marcel@ziswiler.com>
+References: <20220323143600.170778-1-marcel@ziswiler.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Subject: Re: [PATCH v6 0/4] Add support for IPV6 RLB to balance-alb mode
-Content-Language: en-US
-To:     Sun Shouxin <sunshouxin@chinatelecom.cn>, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, yoshfuji@linux-ipv6.org,
-        oliver@neukum.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        huyd12@chinatelecom.cn
-References: <20220323120906.42692-1-sunshouxin@chinatelecom.cn>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20220323120906.42692-1-sunshouxin@chinatelecom.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:tpy4ELi7yKdnJqj8UyQgIaGpLdRudskye4olL0wi2aVulfOllhs
+ 4OxcRB1k6J7vP85M4a/iF7JcDhQquvq2T+cR1V3fUhjeUmbxmziCB1ozZZVU4u4p646PDV0
+ oKnvRpLmEoyXJxVi1bjE8t5h84aKerMLMeA1fGgdLWa/lPMVy8aNODjCGXlj5SlT999XZn0
+ BH1XQkGUAV0q/nH7oTCnA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:LC54BvORPAI=:3ZqPQ9WD2xJ1YNcTSY5vzM
+ U80K4VQAKpxTifsXlXqVQPdDh55R6p2zW4ytPAaLBh278dRjgk3b3zSUvi0+vE+LZuX+4Ci5J
+ dYN5iGsIVheDzvr/ANDKoHsrbikxISn3wNTjsss0rVxMGH6Ynk9/ubbRgkWZ2wQNSO/DBJwoi
+ YocsdqOfzEhD0F8s0Rph1CNsQHVtk45XiMMbPj99m0mHTatgwpJk2fYqHXEeqMHiUf7uBKP/r
+ T39k+g66KkTJi9BtA/lxxicQfDDa81qQA2UMJXkhTkIEtlEPYeUpHRLy2JePMeyfX/BQC80MW
+ 1XbpMTEVGnQdxNUC/XV75GpabideKx7cJh8FGfXuLOAF/VKveI4koDyEKu/4fxwhyAbmEStmO
+ ALrdf6hmGGj0UwSo6N09MsO8QHtZdYzhgz/3ICOzvEFX+KpkbkFouKZ5ojX6TuhjFVS6P3k6y
+ jmt6AoL9j3KmtrpnOlF8eRGbgJORnxO7R1+53pfENLWpLtFl6sUm0Kn88sxKw+lqTn1THS98p
+ IQ2gTotdH3eoqfH5g1NAMnVIMQNNphiTxJ55YH8gCNKgKeF+TIO0oyUNoy9av9OjYYyCb2u0s
+ 7PsBeffA9nWeCIBnr2OUAWTIsOKm0t7APkR+AfmSLVgmhWCN9DieG38jnO1jO1JuNgNQc04k0
+ QZraj5xkD9B/VJ6p2eR7kh9j1Os4f5wL8FupHBR2AqbAylOQo/J52mBFxrxExO1VcxR8=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/23/22 6:09 AM, Sun Shouxin wrote:
-> This patch is implementing IPV6 RLB for balance-alb mode.
-> 
-> Sun Shouxin (4):
->   net:ipv6:Add void *data to ndisc_send_na function
->   net:ipv6:Refactor ndisc_send_na to support sending na by slave
->     directly
->   net:ipv6:Export inet6_ifa_finish_destroy and ipv6_get_ifaddr
->   net:bonding:Add support for IPV6 RLB to balance-alb mode
-> 
->  drivers/net/bonding/bond_3ad.c     |   2 +-
->  drivers/net/bonding/bond_alb.c     | 612 ++++++++++++++++++++++++++++-
->  drivers/net/bonding/bond_debugfs.c |  14 +
->  drivers/net/bonding/bond_main.c    |   6 +-
->  drivers/net/usb/cdc_mbim.c         |   3 +-
->  include/net/bond_3ad.h             |   2 +-
->  include/net/bond_alb.h             |   7 +
->  include/net/bonding.h              |   6 +-
->  include/net/ipv6_stubs.h           |   3 +-
->  include/net/ndisc.h                |   9 +-
->  net/ipv6/addrconf.c                |   4 +-
->  net/ipv6/ndisc.c                   |  64 ++-
->  12 files changed, 696 insertions(+), 36 deletions(-)
-> 
-> 
-> base-commit: 2af7e566a8616c278e1d7287ce86cd3900bed943
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-net-next is closed, so this set needs to be delayed until it re-opens.
+Add DMA properties to uart2 node.
+
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+
+---
+
+Changes in v2:
+- Add Laurent's reviewed-by tag.
+
+ arch/arm64/boot/dts/freescale/imx8mp.dtsi | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mp.dtsi b/arch/arm64/boot/dts/freescale/imx8mp.dtsi
+index 3f8703f3ba5b..b6a020bac9c5 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mp.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mp.dtsi
+@@ -617,6 +617,8 @@ uart2: serial@30890000 {
+ 				clocks = <&clk IMX8MP_CLK_UART2_ROOT>,
+ 					 <&clk IMX8MP_CLK_UART2_ROOT>;
+ 				clock-names = "ipg", "per";
++				dmas = <&sdma1 24 4 0>, <&sdma1 25 4 0>;
++				dma-names = "rx", "tx";
+ 				status = "disabled";
+ 			};
+ 
+-- 
+2.34.1
+
