@@ -2,243 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36557C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 02:31:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7F79C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 02:35:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241295AbiCWCcl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 22:32:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37290 "EHLO
+        id S241310AbiCWCg0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 22:36:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230089AbiCWCci (ORCPT
+        with ESMTP id S230089AbiCWCgZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 22:32:38 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BCD66D1B7;
-        Tue, 22 Mar 2022 19:31:09 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KNXPB0glbzfYxT;
-        Wed, 23 Mar 2022 10:29:34 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 23 Mar 2022 10:31:06 +0800
-Subject: Re: [RFC PATCH 3/5] mm: thp: split huge page to any lower order
- pages.
-To:     Zi Yan <ziy@nvidia.com>
-CC:     Roman Gushchin <roman.gushchin@linux.dev>,
-        Shuah Khan <shuah@kernel.org>, Yang Shi <shy828301@gmail.com>,
-        Hugh Dickins <hughd@google.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        <linux-kernel@vger.kernel.org>, <cgroups@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>,
-        Matthew Wilcox <willy@infradead.org>, <linux-mm@kvack.org>,
-        Yu Zhao <yuzhao@google.com>
-References: <20220321142128.2471199-1-zi.yan@sent.com>
- <20220321142128.2471199-4-zi.yan@sent.com>
- <165ec1a8-2b35-f6fb-82d3-b94613dd437a@huawei.com>
- <D03D6945-8BFE-4137-BDB6-BD884656B65B@nvidia.com>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <ed175cd4-1411-459e-e892-7d889e1253c0@huawei.com>
-Date:   Wed, 23 Mar 2022 10:31:06 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Tue, 22 Mar 2022 22:36:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E39670062;
+        Tue, 22 Mar 2022 19:34:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 30AF2B81DD9;
+        Wed, 23 Mar 2022 02:34:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA68EC340F2;
+        Wed, 23 Mar 2022 02:34:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648002893;
+        bh=cORONT9KFjGjK1waRa5byQPgHZgQsfuIcAEnv79p6NE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=d9VXbx220K9vFoNmWvuXW0JejxOyab0sfAIx3GmPRVZpTuEN7wOmZ0DvrH6fvCL9X
+         RYzvv9WeeMkVHqFHyWXcUfCe6adsb1Xxi8ujVPP+dWM9teAoI2CHqzeC0IkwiW0GiX
+         Ld5j7PtMuy7FE/Ry2Klamn4ATqiF9O0xms8XB2a14UKr6gCDd7xsR4QcnBN3pouNQl
+         rPwKTzwcQrT2I/Z5voYFHPuCpv2hyobBJfS1z1snnu+kRYloeeDEWx6XyqrPZw2nia
+         eqVPddE4l9RdKvtedulD2jLD4CEcjza7qacDzJZtXFM5pYr7/qFz+MebFCVqT7gtjE
+         lgFztLflsHRtQ==
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: [PATCH v13 bpf-next 0/1] fprobe: Introduce fprobe function entry/exit probe 
+Date:   Wed, 23 Mar 2022 11:34:46 +0900
+Message-Id: <164800288611.1716332.7053663723617614668.stgit@devnote2>
+X-Mailer: git-send-email 2.25.1
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-In-Reply-To: <D03D6945-8BFE-4137-BDB6-BD884656B65B@nvidia.com>
 Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/3/22 22:30, Zi Yan wrote:
-> On 21 Mar 2022, at 23:21, Miaohe Lin wrote:
-> 
->> On 2022/3/21 22:21, Zi Yan wrote:
->>> From: Zi Yan <ziy@nvidia.com>
->>>
->>> To split a THP to any lower order pages, we need to reform THPs on
->>> subpages at given order and add page refcount based on the new page
->>> order. Also we need to reinitialize page_deferred_list after removing
->>> the page from the split_queue, otherwise a subsequent split will see
->>> list corruption when checking the page_deferred_list again.
->>>
->>> It has many uses, like minimizing the number of pages after
->>> truncating a pagecache THP. For anonymous THPs, we can only split them
->>> to order-0 like before until we add support for any size anonymous THPs.
->>>
->>> Signed-off-by: Zi Yan <ziy@nvidia.com>
->>> ---
->>>  include/linux/huge_mm.h |   8 +++
->>>  mm/huge_memory.c        | 111 ++++++++++++++++++++++++++++++----------
->>>  2 files changed, 91 insertions(+), 28 deletions(-)
->>>
->>> diff --git a/include/linux/huge_mm.h b/include/linux/huge_mm.h
->>> index 2999190adc22..c7153cd7e9e4 100644
->>> --- a/include/linux/huge_mm.h
->>> +++ b/include/linux/huge_mm.h
->>> @@ -186,6 +186,8 @@ void free_transhuge_page(struct page *page);
->>>
->>>  bool can_split_folio(struct folio *folio, int *pextra_pins);
->>>  int split_huge_page_to_list(struct page *page, struct list_head *list);
->>> +int split_huge_page_to_list_to_order(struct page *page, struct list_head *list,
->>> +		unsigned int new_order);
->>>  static inline int split_huge_page(struct page *page)
->>>  {
->>>  	return split_huge_page_to_list(page, NULL);
->>> @@ -355,6 +357,12 @@ split_huge_page_to_list(struct page *page, struct list_head *list)
->>>  {
->>>  	return 0;
->>>  }
->>> +static inline int
->>> +split_huge_page_to_list_to_order(struct page *page, struct list_head *list,
->>> +		unsigned int new_order)
->>> +{
->>> +	return 0;
->>> +}
->>>  static inline int split_huge_page(struct page *page)
->>>  {
->>>  	return 0;
->>> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
->>> index fcfa46af6c4c..3617aa3ad0b1 100644
->>> --- a/mm/huge_memory.c
->>> +++ b/mm/huge_memory.c
->>> @@ -2236,11 +2236,13 @@ void vma_adjust_trans_huge(struct vm_area_struct *vma,
->>>  static void unmap_page(struct page *page)
->>>  {
->>>  	struct folio *folio = page_folio(page);
->>> -	enum ttu_flags ttu_flags = TTU_RMAP_LOCKED | TTU_SPLIT_HUGE_PMD |
->>> -		TTU_SYNC;
->>> +	enum ttu_flags ttu_flags = TTU_RMAP_LOCKED | TTU_SYNC;
->>>
->>>  	VM_BUG_ON_PAGE(!PageHead(page), page);
->>>
->>> +	if (folio_order(folio) >= HPAGE_PMD_ORDER)
->>> +		ttu_flags |= TTU_SPLIT_HUGE_PMD;
->>> +
->>>  	/*
->>>  	 * Anon pages need migration entries to preserve them, but file
->>>  	 * pages can simply be left unmapped, then faulted back on demand.
->>> @@ -2254,9 +2256,9 @@ static void unmap_page(struct page *page)
->>>  	VM_WARN_ON_ONCE_PAGE(page_mapped(page), page);
->>>  }
->>>
->>> -static void remap_page(struct folio *folio, unsigned long nr)
->>> +static void remap_page(struct folio *folio, unsigned short nr)
->>>  {
->>> -	int i = 0;
->>> +	unsigned int i;
->>>
->>>  	/* If unmap_page() uses try_to_migrate() on file, remove this check */
->>>  	if (!folio_test_anon(folio))
->>> @@ -2274,7 +2276,6 @@ static void lru_add_page_tail(struct page *head, struct page *tail,
->>>  		struct lruvec *lruvec, struct list_head *list)
->>>  {
->>>  	VM_BUG_ON_PAGE(!PageHead(head), head);
->>> -	VM_BUG_ON_PAGE(PageCompound(tail), head);
->>>  	VM_BUG_ON_PAGE(PageLRU(tail), head);
->>>  	lockdep_assert_held(&lruvec->lru_lock);
->>>
->>> @@ -2295,9 +2296,10 @@ static void lru_add_page_tail(struct page *head, struct page *tail,
->>>  }
->>>
->>>  static void __split_huge_page_tail(struct page *head, int tail,
->>> -		struct lruvec *lruvec, struct list_head *list)
->>> +		struct lruvec *lruvec, struct list_head *list, unsigned int new_order)
->>>  {
->>>  	struct page *page_tail = head + tail;
->>> +	unsigned long compound_head_flag = new_order ? (1L << PG_head) : 0;
->>>
->>>  	VM_BUG_ON_PAGE(atomic_read(&page_tail->_mapcount) != -1, page_tail);
->>>
->>> @@ -2321,6 +2323,7 @@ static void __split_huge_page_tail(struct page *head, int tail,
->>>  #ifdef CONFIG_64BIT
->>>  			 (1L << PG_arch_2) |
->>>  #endif
->>> +			 compound_head_flag |
->>>  			 (1L << PG_dirty)));
->>>
->>>  	/* ->mapping in first tail page is compound_mapcount */
->>> @@ -2329,7 +2332,10 @@ static void __split_huge_page_tail(struct page *head, int tail,
->>>  	page_tail->mapping = head->mapping;
->>>  	page_tail->index = head->index + tail;
->>>
->>> -	/* Page flags must be visible before we make the page non-compound. */
->>> +	/*
->>> +	 * Page flags must be visible before we make the page non-compound or
->>> +	 * a compound page in new_order.
->>> +	 */
->>>  	smp_wmb();
->>>
->>>  	/*
->>> @@ -2339,10 +2345,15 @@ static void __split_huge_page_tail(struct page *head, int tail,
->>>  	 * which needs correct compound_head().
->>>  	 */
->>>  	clear_compound_head(page_tail);
->>> +	if (new_order) {
->>> +		prep_compound_page(page_tail, new_order);
->>> +		prep_transhuge_page(page_tail);
->>> +	}
->>
->> Many thanks for your series. It looks really good. One question:
->> IIUC, It seems there has assumption that LRU compound_pages should
->> be PageTransHuge. So PageTransHuge just checks PageHead:
->>
->> static inline int PageTransHuge(struct page *page)
->> {
->> 	VM_BUG_ON_PAGE(PageTail(page), page);
->> 	return PageHead(page);
->> }
->>
->> So LRU pages with any order( > 0) will might be wrongly treated as THP which
->> has order = HPAGE_PMD_ORDER. We should ensure thp_nr_pages is used instead of
->> hard coded HPAGE_PMD_ORDER.
->>
->> Looks at the below code snippet:
->> mm/mempolicy.c:
->> static struct page *new_page(struct page *page, unsigned long start)
->> {
->> ...
->> 	} else if (PageTransHuge(page)) {
->> 		struct page *thp;
->>
->> 		thp = alloc_hugepage_vma(GFP_TRANSHUGE, vma, address,
->> 					 HPAGE_PMD_ORDER);
->> 					 ^^^^^^^^^^^^^^^^
->> 		if (!thp)
->> 			return NULL;
->> 		prep_transhuge_page(thp);
->> 		return thp;
->> 	}
->> ...
->> }
->>
->> HPAGE_PMD_ORDER is used instead of thp_nr_pages. So the lower order pages might be
->> used as if its order is HPAGE_PMD_ORDER. All of such usage might need to be fixed.
->> Or am I miss something ?
->>
->> Thanks again for your work. :)
-> 
-> THP will still only have HPAGE_PMD_ORDER and will not be split into any order
-> other than 0. This series only allows to split huge page cache folio (added by Matthew)
-> into any lower order. I have an explicit VM_BUG_ON() to ensure new_order
-> is only 0 when non page cache page is the input. Since there is still non-trivial
-> amount of work to add any order THP support in the kernel. IIRC, Yu Zhao (cc’d) was
-> planning to work on that.
-> 
+Hi,
 
-Many thanks for clarifying. I'm sorry but I haven't followed Matthew's patches. I am
-wondering could huge page cache folio be treated as THP ? If so, how to ensure the
-correctness of huge page cache ?
+Here is the 13th version of rethook x86 port. This is developed for a part
+of fprobe series [1] for hooking function return. But since I forgot to send
+it to arch maintainers, that caused conflict with IBT and SLS mitigation series.
+Now I picked the x86 rethook part and send it to x86 maintainers to be
+reviewed.
 
-Thanks again!
+[1] https://lore.kernel.org/all/164735281449.1084943.12438881786173547153.stgit@devnote2/T/#u
 
-> Thanks for checking the patches.
+Note that this patch is still for the bpf-next since the rethook itself
+is on the bpf-next tree. But since this also uses the ANNOTATE_NOENDBR
+macro which has been introduced by IBT/ENDBR patch, to build this series
+you need to merge the tip/master branch with the bpf-next.
+(hopefully, it is rebased soon)
 
-BTW: I like your patches. It's really interesting. :)
+The fprobe itself is for providing the function entry/exit probe
+with multiple probe point. The rethook is a sub-feature to hook the
+function return as same as kretprobe does. Eventually, I would like
+to replace the kretprobe's trampoline with this rethook.
 
-> 
+Thank you,
+
+---
+
+Masami Hiramatsu (1):
+      rethook: x86: Add rethook x86 implementation
+
+
+ arch/x86/Kconfig                 |    1 
+ arch/x86/include/asm/unwind.h    |    8 ++-
+ arch/x86/kernel/Makefile         |    1 
+ arch/x86/kernel/kprobes/common.h |    1 
+ arch/x86/kernel/rethook.c        |  121 ++++++++++++++++++++++++++++++++++++++
+ 5 files changed, 131 insertions(+), 1 deletion(-)
+ create mode 100644 arch/x86/kernel/rethook.c
+
+--
+Masami Hiramatsu (Linaro) <mhiramat@kernel.org>
