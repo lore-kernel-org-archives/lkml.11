@@ -2,143 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC0AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 17:22:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 524BBC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 17:23:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343515AbiCWRYU (ORCPT
+        id S1343524AbiCWRZC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 13:24:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42580 "EHLO
+        Wed, 23 Mar 2022 13:25:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238674AbiCWRYQ (ORCPT
+        with ESMTP id S238674AbiCWRY7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 13:24:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8BDF7C173
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 10:22:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4249C60B6B
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 17:22:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0EDCC340E8;
-        Wed, 23 Mar 2022 17:22:42 +0000 (UTC)
-Date:   Wed, 23 Mar 2022 17:22:38 +0000
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Ariel Marcovitch <arielmarcovitch@gmail.com>
-Cc:     akpm@linux-foundation.org, mpe@ellerman.id.au,
-        benh@kernel.crashing.org, paulus@samba.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        Mike Rapoport <rppt@kernel.org>
-Subject: Re: False positive kmemleak report for dtb properties names on
- powerpc
-Message-ID: <YjtXXlnbEp64eL0T@arm.com>
-References: <9dd08bb5-f39e-53d8-f88d-bec598a08c93@gmail.com>
+        Wed, 23 Mar 2022 13:24:59 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 872515D5D2;
+        Wed, 23 Mar 2022 10:23:29 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id b24so2663459edu.10;
+        Wed, 23 Mar 2022 10:23:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=juL17s/J9mHVgJHyYqq8vpqD2uO1Y1nLtpoOVNs7FRw=;
+        b=lAFBZ8r8drRioCv3odbctBgVd5UXVvEZNxPD/cyYarQZ0akXdf+zZURhaa42WuRsC9
+         1nTAwT6OpMQENK6Ho4GBKKZ/hZa511Pc5vW0yHzYTMEOKsAePNbwRYZLqieKRji5HekH
+         3yRi7Lvv2Fo5VcfcbrNfl34KJiwvpIvB+BkVrTWaMnAojaGZSSpNDLWJcAtlkA5u2njt
+         ZRUf6aAkfZT+Kgq3U9BAowcmCrhdTbPZQNKgmNIgAV2Wzhljs6ZsH0B+mtYpwhHe97lZ
+         pVS5UxfJIkIimYwK4rIupe86mSI/sFwHi7Q4/7ilUxPC4XaaKFzK/JW+/603iTjn7K22
+         WhZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=juL17s/J9mHVgJHyYqq8vpqD2uO1Y1nLtpoOVNs7FRw=;
+        b=Ir33r7Ue0NilSh4DwEmwtdJltv5tkTpLad2cxEr/jWM6seRKLk9m7Bn0OLvC3GVVRk
+         u4iee9KuuMHk3MQTIQ97gp93SKqMJa0+v0mHalgUaju7MxzMRifhWHtLj/leniIKmOH5
+         DBmbEOSwr8ujsC2p7Vl+v+M//UwOA8E/qbko9IFgmyoDCwi5FHuXz2VoL5SrCAxgHNQa
+         jvzpGmxlkWOjDeg7t0ZUVEKTMYxR6vuMtlHqD9wCuvgYry9mZj6mcE2sdWfs1+R/GLWa
+         rniMaWhEIggZCeOPGcosFmEoAzPC5ZQJFJFw6LIJW8oYtUtrPr4jyRCNzL3u465zssHP
+         hLAA==
+X-Gm-Message-State: AOAM532drBDvt+4t1dtd3/3Z8u75kpioAeNNwP4RmRo4tva/NAHRqH1o
+        jHxFxb1aNbCY3ZXu/OLglyVk0Tt/MoiMegHT7SjZm1Ps
+X-Google-Smtp-Source: ABdhPJyft3K9bCkUSLrNX6JZW9BLNtJ57TArhGm3JaTHjtmeZOA2hxLe9EQ03TB1Tv8j4DwJrud2AiOB1S7a0xyZtUU=
+X-Received: by 2002:a05:6402:2142:b0:413:6531:bd9e with SMTP id
+ bq2-20020a056402214200b004136531bd9emr1464059edb.5.1648056207837; Wed, 23 Mar
+ 2022 10:23:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <9dd08bb5-f39e-53d8-f88d-bec598a08c93@gmail.com>
+References: <20220323134019.3796178-1-aford173@gmail.com> <35f58894-ed6d-0af0-e483-7a161ad6625a@kernel.org>
+ <CAHCN7x+RLAFnES8b3UMoc6n69ZVSFGOmAZyMeeY1g3aoiDNbZg@mail.gmail.com> <354951e0-d2a8-bf4f-e0c5-081e836bb3c3@kernel.org>
+In-Reply-To: <354951e0-d2a8-bf4f-e0c5-081e836bb3c3@kernel.org>
+From:   Adam Ford <aford173@gmail.com>
+Date:   Wed, 23 Mar 2022 12:23:16 -0500
+Message-ID: <CAHCN7xLWoUGi-jfxR2a0gvEFkPT3USUEb+8U3CCqCb5wWEJ8xw@mail.gmail.com>
+Subject: Re: [PATCH 1/3] dt-bindings: mmc: imx-esdhc: Change imx8mn and imx8mp
+ compatible fallback
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     arm-soc <linux-arm-kernel@lists.infradead.org>,
+        Adam Ford-BE <aford@beaconembedded.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ariel,
+On Wed, Mar 23, 2022 at 9:11 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+>
+> On 23/03/2022 15:00, Adam Ford wrote:
+> > On Wed, Mar 23, 2022 at 8:56 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+> >>
+> >> On 23/03/2022 14:40, Adam Ford wrote:
+> >>> The SDHC controller in the imx8mn and imx8mp have the same controller
+> >>> as the imx8mm which is slightly different than that of the imx7d.
+> >>> Using the fallback of the imx8mm enables the controllers to support
+> >>> HS400-ES which is not available on the imx7d.
+> >>>
+> >>> Signed-off-by: Adam Ford <aford173@gmail.com>
+> >>>
+> >>> diff --git a/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml b/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
+> >>> index 7dbbcae9485c..d6ea73d76bdd 100644
+> >>> --- a/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
+> >>> +++ b/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
+> >>> @@ -39,14 +39,14 @@ properties:
+> >>>        - items:
+> >>>            - enum:
+> >>>                - fsl,imx8mm-usdhc
+> >>
+> >> Your change looks reasonable, but why imx8mm is compatible with imx7d?
+> >
+> > I saw that, and I wasn't sure the best way to go about  fixing it.  If
+> > I move the 8mm out of the imx7d category, do I need to add it to the
+> > enum list associated with the imx8mm, or can I just delete it from the
+> > enum leaving the const for imx8mm good enough?
+> >
+>
+> The DTS is using:
+>   compatible = "fsl,imx8mm-usdhc", "fsl,imx7d-usdhc"
+> which looks incorrect, based on what you wrote in commit description.
+> Since fsl,imx8mm-usdhc has its own compatibility-group and defines the
+> properties for entire family (imx8mm + imx8mn + imx8mp), then I would
+> assume that either fsl,imx8mm-usdhc is not be compatible with imx7d or
+> everything is compatible with imx7d. IOW, DTS and bindings should be
+> changed to one of following:
+> 1. Everything compatible with imx7d:
+>   compatible = "fsl,imx8mm-usdhc", "fsl,imx7d-usdhc";
+>   compatible = "fsl,imx8mq-usdhc", "fsl,imx8mm-usdhc", "fsl,imx7d-usdhc";
+>
+> 2. A new group:
+>   compatible = "fsl,imx8mm-usdhc";
+>   compatible = "fsl,imx8mq-usdhc", "fsl,imx8mm-usdhc";
+>
+> Which one, I am not sure. My commit 80fd350b95 organized it in (1)
+> approach, because also that time there was no new group for 8mm (added
+> in commit 431fae8). I assume NXP engineer knows better, so the better
+> solution would be (2). In such case, imx8mm has to be moved to the first
+> enum and all DTS have to be adjusted.
 
-On Fri, Feb 18, 2022 at 09:45:51PM +0200, Ariel Marcovitch wrote:
-> I was running a powerpc 32bit kernel (built using
-> qemu_ppc_mpc8544ds_defconfig
-> buildroot config, with enabling DEBUGFS+KMEMLEAK+HIGHMEM in the kernel
-> config)
-> on qemu and invoked the kmemleak scan (twice. for some reason the first time
-> wasn't enough).
-[...]
-> I got 97 leak reports, all similar to the following:
-[...]
-> memblock_alloc lets kmemleak know about the allocated memory using
-> kmemleak_alloc_phys (in mm/memblock.c:memblock_alloc_range_nid()).
-> 
-> The problem is with the following code (mm/kmemleak.c):
-> 
-> ```c
-> 
-> void __ref kmemleak_alloc_phys(phys_addr_t phys, size_t size, int min_count,
->                                gfp_t gfp)
-> {
->         if (!IS_ENABLED(CONFIG_HIGHMEM) || PHYS_PFN(phys) < max_low_pfn)
->                 kmemleak_alloc(__va(phys), size, min_count, gfp);
-> }
-> 
-> ```
-> 
-> When CONFIG_HIGHMEM is enabled, the pfn of the allocated memory is checked
-> against max_low_pfn, to make sure it is not in the HIGHMEM zone.
-> 
-> However, when called through unflatten_device_tree(), max_low_pfn is not yet
-> initialized in powerpc.
-> 
-> max_low_pfn is initialized (when NUMA is disabled) in
-> arch/powerpc/mm/mem.c:mem_topology_setup() which is called only after
-> unflatten_device_tree() is called in the same function (setup_arch()).
-> 
-> Because max_low_pfn is global it is 0 before initialization, so as far as
-> kmemleak_alloc_phys() is concerned, every memory is HIGHMEM (: and the
-> allocated memory is not tracked by kmemleak, causing references to objects
-> allocated later with kmalloc() to be ignored and these objects are marked as
-> leaked.
+I pulled NXP's downtream kernel based on 5.15.y, and grepped the code
+for imx8mm-usdhc.  It looks like the imx8mm, imx8mn, imx8mp, and
+imx8ulp use the imx8mm compatible flag.
+The imx8mq uses the older imx7d.  I'll do a second revision later
+today or tomorrow.  Looking inside the driver, it appears there are
+some other quirks that different between the imx7d and imx8mm beyond
+just support for HS400-ES, so I think your option 2 is appropriate.
+Hopefully someone from NXP can comment.
 
-Thanks for digging into this. It looks like the logic doesn't work (not
-sure whether it ever worked).
-
-> I actually tried to find out whether this happen on other arches as well,
-> and it seems like arm64 also have this problem when dtb is used instead of
-> acpi, although I haven't had the chance to confirm this.
-
-arm64 doesn't enable CONFIG_HIGHMEM, so it's not affected.
-
-> I don't suppose I can just shuffle the calls in setup_arch() around, so I
-> wanted to hear your opinions first
-
-I think it's better if we change the logic than shuffling the calls.
-IIUC MEMBLOCK_ALLOC_ACCESSIBLE means that __va() works on the phys
-address return by memblock, so something like below (untested):
-
--------------8<----------------------
-diff --git a/mm/kmemleak.c b/mm/kmemleak.c
-index 7580baa76af1..f3599e857c13 100644
---- a/mm/kmemleak.c
-+++ b/mm/kmemleak.c
-@@ -1127,8 +1127,7 @@ EXPORT_SYMBOL(kmemleak_no_scan);
- void __ref kmemleak_alloc_phys(phys_addr_t phys, size_t size, int min_count,
- 			       gfp_t gfp)
- {
--	if (!IS_ENABLED(CONFIG_HIGHMEM) || PHYS_PFN(phys) < max_low_pfn)
--		kmemleak_alloc(__va(phys), size, min_count, gfp);
-+	kmemleak_alloc(__va(phys), size, min_count, gfp);
- }
- EXPORT_SYMBOL(kmemleak_alloc_phys);
- 
-diff --git a/mm/memblock.c b/mm/memblock.c
-index b12a364f2766..2515bd4331e8 100644
---- a/mm/memblock.c
-+++ b/mm/memblock.c
-@@ -1397,7 +1397,7 @@ phys_addr_t __init memblock_alloc_range_nid(phys_addr_t size,
- 	 * Skip kmemleak for those places like kasan_init() and
- 	 * early_pgtable_alloc() due to high volume.
- 	 */
--	if (end != MEMBLOCK_ALLOC_NOLEAKTRACE)
-+	if (end == MEMBLOCK_ALLOC_ACCESSIBLE)
- 		/*
- 		 * The min_count is set to 0 so that memblock allocated
- 		 * blocks are never reported as leaks. This is because many
--------------8<----------------------
-
-But I'm not sure whether we'd now miss some genuine allocations where
-the memblock limit is different from MEMBLOCK_ALLOC_ACCESSIBLE but still
-within the lowmem limit. If the above works, we can probably get rid of
-some other kmemleak callbacks in the kernel.
-
-Adding Mike for any input on memblock.
-
--- 
-Catalin
+adam
+>
+>
+> Best regards,
+> Krzysztof
