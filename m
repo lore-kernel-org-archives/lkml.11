@@ -2,98 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E832C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 14:15:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 488B9C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 14:19:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244680AbiCWOQs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 10:16:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35774 "EHLO
+        id S244772AbiCWOUq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 10:20:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237118AbiCWOQo (ORCPT
+        with ESMTP id S244700AbiCWOUW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 10:16:44 -0400
-Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7A978046
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 07:15:14 -0700 (PDT)
-Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-de3eda6b5dso1850422fac.0
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 07:15:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=DFtEmgZVX6NiJWN1EIlkixm8UH2mcAaGVWOGdvWx5L0=;
-        b=iNO65oB/mp5isctZY+S65CnNbLX41ffwYCjiATwqO+Gd9wrBD8tc6M3rRSqP37ym7h
-         2VdY5gkRH2zWLfOr00I8JLckRLHV1qdgQoxHgr8EQ5zVJs/1o8L8vzCWYGF+S2DEXN1+
-         VS32nVT3W4MElcYv7u+XznxYCVd5LH4m45R48=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=DFtEmgZVX6NiJWN1EIlkixm8UH2mcAaGVWOGdvWx5L0=;
-        b=WV4RApM7gL6siLGVvzm/k/88Cd7LtsutjAAwKzKAKujQS2uGv7N2Rutj0WJyUK4KHR
-         VC9nwD1Z1Re6++BoOuMEa0cNNYQ3MXygjkASiwZy7zvhovUXrdUPJxwHP+aJWPYZslm1
-         8g9nkLVQMVEIgZl28zNFR7bc3YtoXp3MCCom4s/NoAf+Ps+7td9f9FGJQS7Vv/XK6lc/
-         drEesemOkg5aTyUcG02PMbEjmiOEidR3vyTh3x8lFiBW/IGQeRCjIf/tW3u9nKu6hVvO
-         dJnGQGSFMG06JwMsWN0NlvsEUh/s7488Axk76tJVOLCDGOHkjRFye69cO/XIq1sLEhDv
-         cukw==
-X-Gm-Message-State: AOAM532IcfoS3DOC0u1K+WZnsfVTiW/wYvsl6ufSh8UWKSGY7+jBOZ2p
-        1zyHGPTk+OMazySXVJiAOCqi5w==
-X-Google-Smtp-Source: ABdhPJyHvOHu8vwC/q8Dg1feQn4ailDPfpY521LQc4BTzjQ8YDa1POhIV4BsRDI+Ay5k+Jws/Iuw5Q==
-X-Received: by 2002:a05:6870:898b:b0:da:b3f:3246 with SMTP id f11-20020a056870898b00b000da0b3f3246mr12866oaq.246.1648044913585;
-        Wed, 23 Mar 2022 07:15:13 -0700 (PDT)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id gk6-20020a0568703c0600b000de4880b357sm2264202oab.50.2022.03.23.07.15.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Mar 2022 07:15:12 -0700 (PDT)
-Subject: Re: [PATCH 2/3] cpupower: Introduce a new unit test module for AMD
- P-State driver
-To:     Meng Li <li.meng@amd.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Huang Rui <ray.huang@amd.com>, linux-pm@vger.kernel.org
-Cc:     Nathan Fontenot <nathan.fontenot@amd.com>,
-        Deepak Sharma <deepak.sharma@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Jinzhou Su <Jinzhou.Su@amd.com>,
-        Perry Yuan <Perry.Yuan@amd.com>,
-        Xiaojian Du <Xiaojian.Du@amd.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Borislav Petkov <bp@alien8.de>, linux-kernel@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220323071502.2674156-1-li.meng@amd.com>
- <20220323071502.2674156-3-li.meng@amd.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <4c13d97e-1471-5642-39dd-d381fa441753@linuxfoundation.org>
-Date:   Wed, 23 Mar 2022 08:15:11 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Wed, 23 Mar 2022 10:20:22 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AEF1A7CDC6;
+        Wed, 23 Mar 2022 07:18:52 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 57972D6E;
+        Wed, 23 Mar 2022 07:18:52 -0700 (PDT)
+Received: from lakrids (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4BE903F73D;
+        Wed, 23 Mar 2022 07:18:49 -0700 (PDT)
+Date:   Wed, 23 Mar 2022 14:18:40 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>, catalin.marinas@arm.com,
+        will@kernel.org
+Subject: Re: [PATCH v13 bpf-next 0/1] fprobe: Introduce fprobe function
+ entry/exit probe
+Message-ID: <YjssQKblWeKqr/x8@lakrids>
+References: <164800288611.1716332.7053663723617614668.stgit@devnote2>
 MIME-Version: 1.0
-In-Reply-To: <20220323071502.2674156-3-li.meng@amd.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <164800288611.1716332.7053663723617614668.stgit@devnote2>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/23/22 1:15 AM, Meng Li wrote:
-> amd-pstate-ut is a kernel module for testing the functions of AMD P-State driver.
+On Wed, Mar 23, 2022 at 11:34:46AM +0900, Masami Hiramatsu wrote:
+> Hi,
+
+Hi Masami,
+
+> Here is the 13th version of rethook x86 port. This is developed for a part
+> of fprobe series [1] for hooking function return. But since I forgot to send
+> it to arch maintainers, that caused conflict with IBT and SLS mitigation series.
+> Now I picked the x86 rethook part and send it to x86 maintainers to be
+> reviewed.
 > 
-> It can verify the required conditions and basic functions of AMD P-State
-> driver before integration test.
-> 
+> [1] https://lore.kernel.org/all/164735281449.1084943.12438881786173547153.stgit@devnote2/T/#u
 
-Can you elaborate on the need for a kernel module? It would be helpful
-to know tne value the mdoule adds and why it is necessary. Include
-details on why it can't be done as part of the user-space program.
+As mentioned elsewhere, I have similar (though not identical) concerns
+to Peter for the arm64 patch, which was equally unreviewed by
+maintainers, and the overall structure.
 
-I am not saying it isn't necssary, I would like to know the reasons
-before I review the patch.
+> Note that this patch is still for the bpf-next since the rethook itself
+> is on the bpf-next tree. But since this also uses the ANNOTATE_NOENDBR
+> macro which has been introduced by IBT/ENDBR patch, to build this series
+> you need to merge the tip/master branch with the bpf-next.
+> (hopefully, it is rebased soon)
 
-Also if this is a driver test, why not use other test frameworks
-such as kunit or kselftest. cpupower is user-space utility and
-driver debug code would not belong in here.
+I thought we were going to drop the series from the bpf-next tree so
+that this could all go through review it had missed thusfar.
 
-thanks,
--- Shuah
+Is that still the plan? What's going on?
+
+> The fprobe itself is for providing the function entry/exit probe
+> with multiple probe point. The rethook is a sub-feature to hook the
+> function return as same as kretprobe does. Eventually, I would like
+> to replace the kretprobe's trampoline with this rethook.
+
+Can we please start by converting each architecture to rethook?
+
+Ideally we'd unify things such that each architecture only needs *one*
+return trampoline that both ftrace and krpboes can use, which'd be
+significantly easier to get right and manage.
+
+Thanks,
+Mark.
