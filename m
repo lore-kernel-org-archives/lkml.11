@@ -2,110 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DFA1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 09:41:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 989E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 09:42:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240911AbiCWJm7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 05:42:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35000 "EHLO
+        id S242611AbiCWJoL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 05:44:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243307AbiCWJmz (ORCPT
+        with ESMTP id S240499AbiCWJoJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 05:42:55 -0400
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE78D7659F;
-        Wed, 23 Mar 2022 02:41:26 -0700 (PDT)
-Received: by mail-ej1-f42.google.com with SMTP id bg10so1658133ejb.4;
-        Wed, 23 Mar 2022 02:41:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:content-language:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=xySPtePfuIUSWooZkIPbEuzptBUM5W/rtX4UbEINCw4=;
-        b=4umIlZpoIR7iREOpSCp+AUSPosQELa7f6X9+hCTRzbQYhzCvWKBZJ/DG1C+RffIYmy
-         BPuJG1vBn8NmLYPGTCcKr80lQ1/TTSLKfip1ejguHeWN0oYk4N/w7pC5hQIq2ljGXKnQ
-         VsCmVgDJRGefi6s68v9Y5RJwW05EzVs5FSO1S3QvpKvpORFXnWc/Z9xZap0zn2pnG2w0
-         FRucTShFmhHkqRNS2aqINAL+Mzk2qRcXSIdrBFJLQEpbCNHka7WY02Fu2vIL1T3dkttT
-         6vOEu1kZPpFKwJZLmwiVYpZXjquqp+b4/YZdKE9zl0q4+8GTjbQ6F/QZ6NqDwv3u+QjP
-         U6uA==
-X-Gm-Message-State: AOAM532cos1axf0sJGfNZ10g/eydrNJM+gatXfLUiizynO61Ade3AnC4
-        qJKvON01ZkowyIwqx9Af7ZY=
-X-Google-Smtp-Source: ABdhPJzzqnM3mtuaJvptWQ6OfJRGL6YFu3G7jy/CFB2Qo4BVD5vlrovTkKH1yJklEub/bWNm5vRFkQ==
-X-Received: by 2002:a17:907:3f17:b0:6da:68b6:7876 with SMTP id hq23-20020a1709073f1700b006da68b67876mr30117951ejc.740.1648028485079;
-        Wed, 23 Mar 2022 02:41:25 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.googlemail.com with ESMTPSA id hu8-20020a170907a08800b006dfd2056ab2sm5736908ejc.97.2022.03.23.02.41.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Mar 2022 02:41:24 -0700 (PDT)
-Message-ID: <105eaeec-d77e-b0eb-86ad-a88c7446ca98@kernel.org>
-Date:   Wed, 23 Mar 2022 10:41:23 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-Subject: Re: [PATCH v1 1/4] usb: host: export symbols for xhci hooks usage
-Content-Language: en-US
-To:     Jung Daehwan <dh10.jung@samsung.com>
-Cc:     Mathias Nyman <mathias.nyman@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Howard Yen <howardyen@google.com>,
-        Jack Pham <jackp@codeaurora.org>,
-        Puma Hsu <pumahsu@google.com>,
-        "J . Avila" <elavila@google.com>,
-        "chihhao . chen" <chihhao.chen@mediatek.com>, sc.suh@samsung.com,
-        cpgs@samsung.com, cpgsproxy5@samsung.com
-References: <1646375038-72082-1-git-send-email-dh10.jung@samsung.com>
- <CGME20220304062617epcas2p2084161966aaa66d07f4c25720ec18088@epcas2p2.samsung.com>
- <252651381.41646375583002.JavaMail.epsvc@epcpadp4>
- <b33d8497-d6d5-18e2-93a9-e0564a84c1c5@kernel.org>
- <1983025922.01648006681661.JavaMail.epsvc@epcpadp4>
-In-Reply-To: <1983025922.01648006681661.JavaMail.epsvc@epcpadp4>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Wed, 23 Mar 2022 05:44:09 -0400
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC50376641
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 02:42:39 -0700 (PDT)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id D0D17201A57;
+        Wed, 23 Mar 2022 10:42:37 +0100 (CET)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 97F50201A41;
+        Wed, 23 Mar 2022 10:42:37 +0100 (CET)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 805A1183AC96;
+        Wed, 23 Mar 2022 17:42:36 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     bjorn.andersson@linaro.org, mathieu.poirier@linaro.org
+Cc:     linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        shengjiu.wang@gmail.com
+Subject: [PATCH] remoteproc: core: Remove state checking before changing state
+Date:   Wed, 23 Mar 2022 17:32:50 +0800
+Message-Id: <1648027970-11488-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/03/2022 03:58, Jung Daehwan wrote:
-> On Mon, Mar 07, 2022 at 10:59:06AM +0100, Krzysztof Kozlowski wrote:
->> On 04/03/2022 07:23, Daehwan Jung wrote:
->>> Export symbols for xhci hooks usage:
->>> 	xhci_ring_free
->>> 	- Allow xhci hook to free xhci_ring.
->>
->> Instead of copying-pasting the name of function, please explain why do
->> you need these symbols exported.
->>
->> The "Why" is actually one of most important questions, because "what is
->> this patch doing" we can easily see...
->>
->>>
->>> 	xhci_get_slot_ctx
->>> 	- Allow xhci hook to get slot_ctx from the xhci_container_ctx
->>> 	  for getting the slot_ctx information to know which slot is
->>> 	  offloading and compare the context in remote subsystem memory
->>> 	  if needed.
->>>
->>
->>
->> Best regards,
->> Krzysztof
->>
-> 
-> Hi Krzysztof
-> 
-> xhci_ring_free has been removed from v3..
-> The reason why I want to export is for managing vendor specific ring.
-> I want to alloc and free vendor specific ring on specific address.
-> It's done with xhci hooks.
+There is no mutex protecting of these state checking, which
+can't garantee there is no another instance is trying to do
+same operation.
 
-It's better, but still does not explain why these have to be exported.
-Please mention where are these hooks going to be. Where are they
-implemented. I actually expect all of these exports to be used in your
-patchset.
+The reference counter rproc->power is used to manage state
+changing and there is mutex protection in each operation
+function for multi instance case.
 
-Best regards,
-Krzysztof
+So remove this state checking in rproc_cdev_write() and
+state_store(), just let reference counter rproc->power to
+manage the behaviors.
+
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+ drivers/remoteproc/remoteproc_cdev.c  | 11 -----------
+ drivers/remoteproc/remoteproc_sysfs.c | 11 -----------
+ 2 files changed, 22 deletions(-)
+
+diff --git a/drivers/remoteproc/remoteproc_cdev.c b/drivers/remoteproc/remoteproc_cdev.c
+index 906ff3c4dfdd..687f205fd70a 100644
+--- a/drivers/remoteproc/remoteproc_cdev.c
++++ b/drivers/remoteproc/remoteproc_cdev.c
+@@ -32,21 +32,10 @@ static ssize_t rproc_cdev_write(struct file *filp, const char __user *buf, size_
+ 		return -EFAULT;
+ 
+ 	if (!strncmp(cmd, "start", len)) {
+-		if (rproc->state == RPROC_RUNNING ||
+-		    rproc->state == RPROC_ATTACHED)
+-			return -EBUSY;
+-
+ 		ret = rproc_boot(rproc);
+ 	} else if (!strncmp(cmd, "stop", len)) {
+-		if (rproc->state != RPROC_RUNNING &&
+-		    rproc->state != RPROC_ATTACHED)
+-			return -EINVAL;
+-
+ 		ret = rproc_shutdown(rproc);
+ 	} else if (!strncmp(cmd, "detach", len)) {
+-		if (rproc->state != RPROC_ATTACHED)
+-			return -EINVAL;
+-
+ 		ret = rproc_detach(rproc);
+ 	} else {
+ 		dev_err(&rproc->dev, "Unrecognized option\n");
+diff --git a/drivers/remoteproc/remoteproc_sysfs.c b/drivers/remoteproc/remoteproc_sysfs.c
+index 51a04bc6ba7a..8c7ea8922638 100644
+--- a/drivers/remoteproc/remoteproc_sysfs.c
++++ b/drivers/remoteproc/remoteproc_sysfs.c
+@@ -194,23 +194,12 @@ static ssize_t state_store(struct device *dev,
+ 	int ret = 0;
+ 
+ 	if (sysfs_streq(buf, "start")) {
+-		if (rproc->state == RPROC_RUNNING ||
+-		    rproc->state == RPROC_ATTACHED)
+-			return -EBUSY;
+-
+ 		ret = rproc_boot(rproc);
+ 		if (ret)
+ 			dev_err(&rproc->dev, "Boot failed: %d\n", ret);
+ 	} else if (sysfs_streq(buf, "stop")) {
+-		if (rproc->state != RPROC_RUNNING &&
+-		    rproc->state != RPROC_ATTACHED)
+-			return -EINVAL;
+-
+ 		ret = rproc_shutdown(rproc);
+ 	} else if (sysfs_streq(buf, "detach")) {
+-		if (rproc->state != RPROC_ATTACHED)
+-			return -EINVAL;
+-
+ 		ret = rproc_detach(rproc);
+ 	} else {
+ 		dev_err(&rproc->dev, "Unrecognised option: %s\n", buf);
+-- 
+2.17.1
+
