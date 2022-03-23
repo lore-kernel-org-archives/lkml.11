@@ -2,127 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A5FBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 17:34:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C399C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 17:34:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343639AbiCWRfw (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 13:35:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47824 "EHLO
+        id S240976AbiCWRg0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 13:36:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343629AbiCWRfs (ORCPT
+        with ESMTP id S239223AbiCWRgX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 13:35:48 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665C55D5D2
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 10:34:18 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id k21so3909597lfe.4
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 10:34:18 -0700 (PDT)
+        Wed, 23 Mar 2022 13:36:23 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7B25793BC
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 10:34:52 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id yy13so4334955ejb.2
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 10:34:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
+        d=soleen.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Qw+/tGAcqsZzOdIU9mPy0h6XsR9YUgqE/aO4tJnDV/U=;
-        b=AsueKvmLHM2nGOpImBUVo8JvIUXQZTPBXUuZ+V1+E3nRTCnp7dAn5Ysn/GIxghzLln
-         GZBXO3w4k/UDMjMFwtn/nP7LeVAoXHaabLGMz82QEQoUcyQ2iSJywkoB38HO0fhpi+qm
-         ebKixIbEogjW5TDgyVUN+w+sNSt7oNBz0RQ04=
+        bh=sSwzHlwSz23lvNtLo13bFAIrxFRCXX53K/CMQWwbRmc=;
+        b=eho+7tpnDRTL+44l04LLUo+wv1fUtZvszL0rupuFXL6S5K4e00IplNblrGZ2/VchBC
+         gAMGRJMGn7oXIS+0Yoye69b87Qa71Wn1Yzl+EcrdS3AUHzHmmj1cfTjhvNYalkB8vw3h
+         6Pors1dQZGvTMTBn10VggfVLiF1jcfUjH9O/iDrPsa11zUyp46c9DPy735KBLmK0IEfL
+         b13VH8xR90mm0/t93esJsccRYWVw9gVImdAQH+zw632De5CmgjTeLPtzVRD++RMILX3X
+         dkWE4Wqg2XTF0Q4DrBzQSBuIrMJjjuugqAcpe1RhM6drRKWw/1WyP53oowoLbuAw8sQG
+         viHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Qw+/tGAcqsZzOdIU9mPy0h6XsR9YUgqE/aO4tJnDV/U=;
-        b=tUor8pTU5OnVUeWC2wvm+XCjBjPxHsalEPl+LF8U0691Dl9infRxGJIFVoGaio1bQt
-         qdiw58VSnggcs0BC6BosbfGygbampiuuMh5VaF9TvCiJXSnKQVuELlhM/wfUUzUjv70A
-         YlNEDI33rQMOy17EnENX2Krv6f98c3L6JVs6oxTCeN24MB+7y/Sc6HLIK+7gBd/eVaWO
-         rjP0Lu4VpgCvATNvg8s7/s1xtgH0HJy85lrtnUkqDeMleJCoGqHsMxfL4C0sBY+zzfoV
-         4yBecaVHczLa0JObALCSBHLuxsyipE3O0xBtZ5okBS+prb6gk1LLhMrdq+NObnlFpesG
-         +9QA==
-X-Gm-Message-State: AOAM532zWiUwNxNzZPMrDlSbYwEGWPF4wwV5ay3Nb1xMZiKuCJPrS55V
-        uBVrBtSWagCezEJlaL0VH7/jberkYD3Mnok48UA=
-X-Google-Smtp-Source: ABdhPJyP6CsOk4R35vwj8vkInBJBRaIhF7xCXKFFZntKAasle/cD96PfgNYKNWE7Vns8hAMqj0BM5g==
-X-Received: by 2002:a05:6512:690:b0:44a:351f:9ff5 with SMTP id t16-20020a056512069000b0044a351f9ff5mr694162lfe.385.1648056856287;
-        Wed, 23 Mar 2022 10:34:16 -0700 (PDT)
-Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com. [209.85.208.181])
-        by smtp.gmail.com with ESMTPSA id z9-20020a2e8e89000000b00237fb5d60desm59066ljk.122.2022.03.23.10.34.15
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Mar 2022 10:34:15 -0700 (PDT)
-Received: by mail-lj1-f181.google.com with SMTP id 25so2848510ljv.10
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 10:34:15 -0700 (PDT)
-X-Received: by 2002:a05:6512:2294:b0:448:6c86:3c78 with SMTP id
- f20-20020a056512229400b004486c863c78mr661692lfu.531.1648056457283; Wed, 23
- Mar 2022 10:27:37 -0700 (PDT)
+        bh=sSwzHlwSz23lvNtLo13bFAIrxFRCXX53K/CMQWwbRmc=;
+        b=H1cBGCl6TI9L/XNBYc9xtaye266Ap2KfI1yFA5RceB0XZdgmsx8JslQ6CHvdfVCRrP
+         dITe58DHd8toKl2uOMoCPJtC9UyPnPUWXwXWjGskI9VzYfZVgenxx0UfcE+LJBR3HssM
+         xBYUdUSWb8QYAcmNM3mwLYaU/vRD3tKYxkQlxkmIppkW7x/CsRVWK+UEWxFhixlkKrha
+         ko6fysiYGEXhOuWe12vi4aO0ZBvSge+AtEJptgM+Js/4kx0OSwcdRFjQQDV0TtD1+Yem
+         sirheFZ17pKvXK0WDDBp8YqcLesnH03cb8lC5q7ejEM5bXNPQSzHa/E7yEJYf0WlnF3S
+         NQvw==
+X-Gm-Message-State: AOAM533y67vykYaYYS0K+E7gC60OfhSgcA6uyj50TsRbbzdIm3Qogetn
+        Km2SzyfnX+mAU+nbD/Y+Vw2y0Ah9o39UTJzA+rfhnA==
+X-Google-Smtp-Source: ABdhPJwz8c++mc+m2Cqc/41NOOuHOiA6+RTyfPiOBMGZtngJZJD0Xv8B5WGZ85z3FwLIjo9C7ItQfgASkZAORNo6RGw=
+X-Received: by 2002:a17:906:4a96:b0:6c5:5ea9:5366 with SMTP id
+ x22-20020a1709064a9600b006c55ea95366mr1199621eju.473.1648056891284; Wed, 23
+ Mar 2022 10:34:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <1812355.tdWV9SEqCh@natalenko.name>
-In-Reply-To: <1812355.tdWV9SEqCh@natalenko.name>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 23 Mar 2022 10:27:21 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wiwz+Z2MaP44h086jeniG-OpK3c=FywLsCwXV7Crvadrg@mail.gmail.com>
-Message-ID: <CAHk-=wiwz+Z2MaP44h086jeniG-OpK3c=FywLsCwXV7Crvadrg@mail.gmail.com>
-Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-To:     Oleksandr Natalenko <oleksandr@natalenko.name>
-Cc:     Halil Pasic <pasic@linux.ibm.com>, Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Olha Cherevyk <olha.cherevyk@gmail.com>,
-        iommu <iommu@lists.linux-foundation.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable <stable@vger.kernel.org>
+References: <20220322144447.3563146-1-tongtiangen@huawei.com> <20220322144447.3563146-2-tongtiangen@huawei.com>
+In-Reply-To: <20220322144447.3563146-2-tongtiangen@huawei.com>
+From:   Pasha Tatashin <pasha.tatashin@soleen.com>
+Date:   Wed, 23 Mar 2022 13:34:14 -0400
+Message-ID: <CA+CK2bAPiMbdv441+B+_4aGyPeAgyyaZ=n5ni3WgfyDP3bEADA@mail.gmail.com>
+Subject: Re: [PATCH -next v2 1/4] mm: page_table_check: move
+ pxx_user_accessible_page into x86
+To:     Tong Tiangen <tongtiangen@huawei.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-mm <linux-mm@kvack.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-riscv@lists.infradead.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 12:19 AM Oleksandr Natalenko
-<oleksandr@natalenko.name> wrote:
+On Tue, Mar 22, 2022 at 10:25 AM Tong Tiangen <tongtiangen@huawei.com> wrote:
 >
-> The following upstream commits:
+> From: Kefeng Wang <wangkefeng.wang@huawei.com>
 >
-> aa6f8dcbab47 swiotlb: rework "fix info leak with DMA_FROM_DEVICE"
-> ddbd89deb7d3 swiotlb: fix info leak with DMA_FROM_DEVICE
+> The pxx_user_accessible_page() check the PTE bit, it's
+> architecture-specific code, move them into x86's pgtable.h,
+> also add default PMD/PUD_PAGE_SIZE definition, it's prepare
+> for support page table check feature on new architecture.
 >
-> break ath9k-based Wi-Fi access point for me. The AP emits beacons, but
-> no client can connect to it, either from the very beginning, or
-> shortly after start. These are the only symptoms I've noticed (i.e.,
-> no BUG/WARNING messages in `dmesg` etc).
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
 
-Funky, but clearly true:
+Acked-by: Pasha Tatashin <pasha.tatashin@soleen.com>
 
-> These commits appeared in v5.17 and v5.16.15, and both kernels are
-> broken for me. I'm pretty confident these commits make the difference
-> since I've built both v5.17 and v5.16.15 without them, and it fixed
-> the issue.
-
-Can you double-check (or just explicitly confirm if you already did
-that test) that you need to revert *both* of those commits, and it's
-the later "rework" fix that triggers it?
-
-> So, I do understand this might be an issue with regard to SG I/O
-> handling in ath9k, hence relevant people in Cc.
-
-Yeah, almost certainly an ath9k bug, but a regression is a regression,
-so if people can't find the issue in ath9k, we'll have to revert those
-commits.
-
-Honestly, I personally think they were a bit draconian to begin with,
-and didn't limit their effects sufficiently.
-
-I'm assuming that the ath9k issue is that it gives DMA mapping a big
-enough area to handle any possible packet size, and just expects -
-quite reasonably - smaller packets to only fill the part they need.
-
-Which that "info leak" patch obviously breaks entirely.
-
-So my expectation is that this is something we'll just revert, but it
-would be really good to have the ath9k people double-check.
-
-                Linus
+Thank you for this work!
