@@ -2,85 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 915A6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 14:52:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F21ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 14:52:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242584AbiCWOxp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 10:53:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45052 "EHLO
+        id S244892AbiCWOyF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 10:54:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237776AbiCWOxn (ORCPT
+        with ESMTP id S235859AbiCWOyE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 10:53:43 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63F797E0A8
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 07:52:13 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id p189so1098908wmp.3
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 07:52:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=ZrbNTOA94fOoCgNHi9Lle4MXzkybga7qD4nhhAEi0f4=;
-        b=uh2ZadXZBrtTM3w9Ozpr4C05o3OzAZgte79gES0hKVEHTwcIeZYZOUF7MyKDzdRIPH
-         YnOuBhq6Qllu90TMxXWXKcnQU/X+AlqKiBlymTpDbqlAFgPNhxfAQnLn7l69DyFmAWKb
-         1EtyN61XPIWuCny+Ilp7M+eZl+TM4wDK6s/j0vsf37FyEv6vi8lHZs861WTgmg9iuoGF
-         FbiSQxGv2OfCbOCL5opVUoVf1S0JgidHTgciYPG55HLvTX8UG91ebFie1qNe1mh+1PAS
-         wCUXCYR6FBC8k62aoptRIDMaxi+wR4qQm8jH0nowF1h2O4Vx0ZgB+R9xTx1wG0nwXhA/
-         99KQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=ZrbNTOA94fOoCgNHi9Lle4MXzkybga7qD4nhhAEi0f4=;
-        b=k5kmRmAf8UIq7QIxOjC0Yt4kyuy5vLg2/CVh9KnOBVSd3LPpdmC7p+EeUUeRcaXxpK
-         r/yVvlHLyqnzVLc7ZOgpxLnUiRC4cuCOPIo5uLe8RK6usUqdI7gFtZbr9xUkzUlTFMW3
-         XVPyHl2+VY7dnZI3QInoREcM1M8qkcsEq7VOneQPKJ/0LkaX+fxnXQA2gdfwy0lGtW6l
-         LI0cuPvvu6soMD3e2Rh2AeAs3Dd91PXT/N9ZiY8UvMxui7/ztVMiRs15zHizNanvqrTv
-         FJGAE1OPx7//JmP7OW+UmRXeHSQGXIsMDu60+CfeeNFIMeS6vlSg+Kj2afg4RHJS6cXP
-         tfKg==
-X-Gm-Message-State: AOAM5319c9cMgiXMf2+d/hsZnbh8WqmDqgydPTbVkum60Wb7I4zqsPNi
-        nmTwdj7e6QKJKVE2ffKx4OSOcg==
-X-Google-Smtp-Source: ABdhPJy8o7fDNMB74trqiXToyNmO/RhOnk/OJVhTyj0QG979uz6ERNLz62u9KEqogSaw/kVaHmCLVg==
-X-Received: by 2002:a1c:f415:0:b0:37f:ab4d:1df2 with SMTP id z21-20020a1cf415000000b0037fab4d1df2mr9531693wma.75.1648047131994;
-        Wed, 23 Mar 2022 07:52:11 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id y5-20020a1c4b05000000b0038cbf571334sm116547wma.18.2022.03.23.07.52.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Mar 2022 07:52:11 -0700 (PDT)
-Date:   Wed, 23 Mar 2022 14:52:09 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: mfd: syscon: add
- microchip,lan966x-cpu-syscon compatible
-Message-ID: <Yjs0GaddtCRWuuxJ@google.com>
-References: <20220313003122.19155-1-michael@walle.cc>
+        Wed, 23 Mar 2022 10:54:04 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66873814B7
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 07:52:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648047154; x=1679583154;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=PzKq4AtB8zaWtwWr9QvAa5xfyO3Qb86QsTECPlbYBEI=;
+  b=VzuhDfV8VNCnqvewITWWwYystJkyNUphGEsZlZ3tmhHWypsWpJzsmmgS
+   luaZd5BmO3WkXOpq/WMzifw47IXIYRpvTBEMjZS9kT/1G+EjFk2OpQCdH
+   xujPDscve9cH5FXdV+8uKTyt6LYqYZ/37g26nVKRDYR6YqCxhTovc0CGN
+   fghhkfD7m+pVl52Ru1hycUpXmJiAhKX8O+bXn50VPnYrXMlVR7/9313B9
+   v5X63PXASkPOkpM0cLxdTjV8K2ZaBJkl95v82mP1kVIv+FYm1JiXDaOHD
+   H6bx42wOzahi4+vl8QKuGfmyhdG3xRZRFWKdYuj0oJZSVez5+u/IZI1nf
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="258080180"
+X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
+   d="scan'208";a="258080180"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 07:52:34 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
+   d="scan'208";a="649453647"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 23 Mar 2022 07:52:32 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nX2Lf-000K9N-Sf; Wed, 23 Mar 2022 14:52:31 +0000
+Date:   Wed, 23 Mar 2022 22:51:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:master] BUILD SUCCESS
+ 4bc2b7caa59fcaae540e6e7b86065e1d4d58c739
+Message-ID: <623b3400.zIlQwC6Pi2EgNTu5%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220313003122.19155-1-michael@walle.cc>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 13 Mar 2022, Michael Walle wrote:
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git master
+branch HEAD: 4bc2b7caa59fcaae540e6e7b86065e1d4d58c739  Merge x86/core into tip/master
 
-> Add the Microchip LAN966x CPU system registers compatible.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
->  Documentation/devicetree/bindings/mfd/syscon.yaml | 1 +
->  1 file changed, 1 insertion(+)
+elapsed time: 729m
 
-Applied, thanks.
+configs tested: 106
+configs skipped: 3
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm                                 defconfig
+arm                              allmodconfig
+arm                              allyesconfig
+arm64                               defconfig
+arm64                            allyesconfig
+i386                          randconfig-c001
+ia64                            zx1_defconfig
+m68k                            mac_defconfig
+arm                      integrator_defconfig
+arm                            mps2_defconfig
+arm                           h3600_defconfig
+powerpc                      pasemi_defconfig
+sh                   sh7770_generic_defconfig
+sh                            hp6xx_defconfig
+arm                         axm55xx_defconfig
+powerpc                 mpc837x_rdb_defconfig
+openrisc                         alldefconfig
+powerpc                    klondike_defconfig
+arm                           u8500_defconfig
+arm                     eseries_pxa_defconfig
+arm                  randconfig-c002-20220323
+ia64                             allmodconfig
+ia64                             allyesconfig
+ia64                                defconfig
+m68k                                defconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+csky                                defconfig
+alpha                               defconfig
+nds32                               defconfig
+alpha                            allyesconfig
+nios2                            allyesconfig
+arc                                 defconfig
+h8300                            allyesconfig
+sh                               allmodconfig
+xtensa                           allyesconfig
+nds32                             allnoconfig
+nios2                               defconfig
+arc                              allyesconfig
+parisc                              defconfig
+parisc64                            defconfig
+s390                             allmodconfig
+s390                             allyesconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+i386                              debian-10.3
+i386                   debian-10.3-kselftests
+i386                                defconfig
+sparc                            allyesconfig
+sparc                               defconfig
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                           allnoconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+x86_64                        randconfig-a002
+x86_64                        randconfig-a004
+x86_64                        randconfig-a006
+i386                          randconfig-a001
+i386                          randconfig-a005
+i386                          randconfig-a003
+x86_64                        randconfig-a015
+x86_64                        randconfig-a013
+x86_64                        randconfig-a011
+i386                          randconfig-a014
+i386                          randconfig-a012
+i386                          randconfig-a016
+arc                  randconfig-r043-20220323
+riscv                randconfig-r042-20220323
+s390                 randconfig-r044-20220323
+riscv                    nommu_k210_defconfig
+riscv                    nommu_virt_defconfig
+riscv                            allyesconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+um                             i386_defconfig
+um                           x86_64_defconfig
+x86_64                              defconfig
+x86_64                           allyesconfig
+x86_64                                  kexec
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                         rhel-8.3-kunit
+x86_64                    rhel-8.3-kselftests
+
+clang tested configs:
+mips                      maltaaprp_defconfig
+mips                   sb1250_swarm_defconfig
+powerpc                     kilauea_defconfig
+mips                        workpad_defconfig
+powerpc                   lite5200b_defconfig
+x86_64                        randconfig-a001
+x86_64                        randconfig-a003
+x86_64                        randconfig-a005
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a014
+x86_64                        randconfig-a012
+x86_64                        randconfig-a016
+i386                          randconfig-a013
+i386                          randconfig-a011
+i386                          randconfig-a015
+hexagon              randconfig-r041-20220323
+hexagon              randconfig-r045-20220323
 
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+0-DAY CI Kernel Test Service
+https://01.org/lkp
