@@ -2,136 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2152EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 05:33:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4D01C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 05:35:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241847AbiCWFeh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 01:34:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49088 "EHLO
+        id S239649AbiCWFhL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 01:37:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231261AbiCWFed (ORCPT
+        with ESMTP id S241852AbiCWFhE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 01:34:33 -0400
-Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09104F7F;
-        Tue, 22 Mar 2022 22:33:01 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0V7zuNYS_1648013577;
-Received: from 30.225.24.115(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V7zuNYS_1648013577)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 23 Mar 2022 13:32:58 +0800
-Message-ID: <8f93abf9-2c3e-51cd-9afa-ee2b68e61a4b@linux.alibaba.com>
-Date:   Wed, 23 Mar 2022 13:32:57 +0800
+        Wed, 23 Mar 2022 01:37:04 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0838B70927;
+        Tue, 22 Mar 2022 22:35:34 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22N5ZWbM045084;
+        Wed, 23 Mar 2022 00:35:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1648013732;
+        bh=/QEiiVGlzdOsl7qH7NV03cnxdNoCqW4P0FqbZASu7U8=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=CzwLnhdFQ//6RE3KB/bDrX9cGIbtmfwQsV9poppAjUHYiYy6pjT7ARE4/1E9zQ3FS
+         DaX5u1Bq4QalXxmyDHFj9SkI+IEf/EteLGsnO/C7VYqHl0w5ceYwI2Kdom9alOmcjg
+         oLw6iSY7kf9H0b04uRnQ/i8UUUHL3kJdERgs7+C0=
+Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22N5ZWSt095584
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 23 Mar 2022 00:35:32 -0500
+Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE102.ent.ti.com
+ (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 23
+ Mar 2022 00:35:31 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 23 Mar 2022 00:35:31 -0500
+Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22N5ZOoP038635;
+        Wed, 23 Mar 2022 00:35:28 -0500
+From:   Aswath Govindraju <a-govindraju@ti.com>
+CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-usb@vger.kernel.org>, Felipe Balbi <balbi@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Roger Quadros <rogerq@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Aswath Govindraju <a-govindraju@ti.com>
+Subject: [PATCH 1/2] dt-bindings: usb: Add documentation for AM62 USB Wrapper module
+Date:   Wed, 23 Mar 2022 11:05:23 +0530
+Message-ID: <20220323053524.7009-2-a-govindraju@ti.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220323053524.7009-1-a-govindraju@ti.com>
+References: <20220323053524.7009-1-a-govindraju@ti.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.1
-Subject: Re: [PATCH v5 03/22] cachefiles: introduce on-demand read mode
-Content-Language: en-US
-To:     Matthew Wilcox <willy@infradead.org>,
-        David Howells <dhowells@redhat.com>
-Cc:     linux-cachefs@redhat.com, xiang@kernel.org, chao@kernel.org,
-        linux-erofs@lists.ozlabs.org, torvalds@linux-foundation.org,
-        gregkh@linuxfoundation.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        luodaowen.backend@bytedance.com
-References: <YjiX5oXYkmN6WrA3@casper.infradead.org>
- <20220316131723.111553-1-jefflexu@linux.alibaba.com>
- <20220316131723.111553-4-jefflexu@linux.alibaba.com>
- <YjiAVezd5B9auhcP@casper.infradead.org>
- <6bc551d2-15fc-5d17-c99b-8db588c6b671@linux.alibaba.com>
- <YjiLACenpRV4XTcs@casper.infradead.org>
- <adb957da-8909-06d8-1b2c-b8a293b37930@linux.alibaba.com>
- <1035025.1647876652@warthog.procyon.org.uk>
- <YjoBpm8mUHX/w/rK@casper.infradead.org>
-From:   JeffleXu <jefflexu@linux.alibaba.com>
-In-Reply-To: <YjoBpm8mUHX/w/rK@casper.infradead.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add bindings for the TI's AM62 wrapper module for the Synopsys USBSS-DRD
+controller.
 
+Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+---
+ .../devicetree/bindings/usb/ti,am62-usb.yaml  | 98 +++++++++++++++++++
+ 1 file changed, 98 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/usb/ti,am62-usb.yaml
 
-On 3/23/22 1:04 AM, Matthew Wilcox wrote:
-> On Mon, Mar 21, 2022 at 03:30:52PM +0000, David Howells wrote:
->> Matthew Wilcox <willy@infradead.org> wrote:
->>
->>> Absolutely; just use xa_lock() to protect both setting & testing the
->>> flag.
->>
->> How should Jeffle deal with xarray dropping the lock internally in order to do
->> an allocation and then taking it again (actually in patch 5)?
-> 
-> There are a number of ways to handle this.  I'll outline two; others
-> are surely possible.
-
-Thanks.
-
-
-> 
-> option 1:
-> 
-> add side:
-> 
-> xa_lock();
-> if (!DEAD)
-> 	xa_store(GFP_KERNEL);
-> 	if (DEAD)
-> 		xa_erase();
-> xa_unlock();
-> 
-> destroy side:
-> 
-> xa_lock();
-> set DEAD;
-> xa_for_each()
-> 	xa_erase();
-> xa_unlock();
-> 
-> That has the problem (?) that it might be temporarily possible to see
-> a newly-added entry in a DEAD array.
-
-I think this problem doesn't matter in our scenario.
-
-
-> 
-> If that is a problem, you can use xa_reserve() on the add side, followed
-> by overwriting it or removing it, depending on the state of the DEAD flag.
-
-Right. Then even the normal path (when memory allocation succeeds) needs
-to call xa_reserve() once.
-
-
-> 
-> If you really want to, you can decompose the add side so that you always
-> check the DEAD flag before doing the store, ie:
-> 
-> do {
-> 	xas_lock();
-> 	if (DEAD)
-> 		xas_set_error(-EINVAL);
-> 	else
-> 		xas_store();
-> 	xas_unlock();
-> } while (xas_nomem(GFP_KERNEL));
-
-This way is more cleaner from the locking semantics, with the cost of
-code duplication. However, after decomposing the __xa_alloc(), we can
-also reuse the xas when setting CACHEFILES_REQ_NEW mark.
-
-```
-+	xa_lock(xa);
-+	ret = __xa_alloc(xa, &id, req, xa_limit_32b, GFP_KERNEL);
-+	if (!ret)
-+		__xa_set_mark(xa, id, CACHEFILES_REQ_NEW);
-+	xa_unlock(xa);
-```
-
-So far personally I prefer the decomposing way in our scenario.
-
-
+diff --git a/Documentation/devicetree/bindings/usb/ti,am62-usb.yaml b/Documentation/devicetree/bindings/usb/ti,am62-usb.yaml
+new file mode 100644
+index 000000000000..4bb139d1926d
+--- /dev/null
++++ b/Documentation/devicetree/bindings/usb/ti,am62-usb.yaml
+@@ -0,0 +1,98 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/usb/ti,am62-usb.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Bindings for the TI's AM62 wrapper module for the Synopsys USBSS-DRD controller
++
++maintainers:
++  - Aswath Govindraju <a-govindraju@ti.com>
++
++properties:
++  compatible:
++    const: ti,am62-usb
++
++  reg:
++    maxItems: 1
++
++  ranges: true
++
++  power-domains:
++    description:
++      PM domain provider node and an args specifier containing
++      the USB ISO device id value. See,
++      Documentation/devicetree/bindings/soc/ti/sci-pm-domain.yaml
++    maxItems: 1
++
++  clocks:
++    description: Clock phandles to usb2_refclk
++    maxItems: 1
++
++  clock-names:
++    items:
++      - const: ref
++
++  id-gpio:
++    description:
++      GPIO to be used as ID pin
++    maxItems: 1
++
++  interrupts:
++    description:
++      interrupt line to be used for detecting changes in VBUS
++
++  ti,vbus-divider:
++    description:
++      Should be present if USB VBUS line is connected to the
++      VBUS pin of the SoC via a 1/3 voltage divider.
++    type: boolean
++
++  ti,syscon-phy-pll-refclk:
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    items:
++      - items:
++          - description: Phandle to the SYSCON entry
++          - description: USB phy control register offset within SYSCON
++    description: Specifier for configuring frequency of ref clock input.
++
++  '#address-cells':
++    const: 2
++
++  '#size-cells':
++    const: 2
++
++required:
++  - compatible
++  - reg
++  - power-domains
++  - clocks
++  - clock-names
++  - interrupts
++  - ti,syscon-phy-pll-refclk
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/soc/ti,sci_pm_domain.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/gpio/gpio.h>
++
++    bus {
++      #address-cells = <2>;
++      #size-cells = <2>;
++
++      dwc3-usb@f910000 {
++        compatible = "ti,am62-usb";
++        reg = <0x00 0x0f910000 0x00 0x800>;
++        interrupts = <GIC_SPI 234 IRQ_TYPE_LEVEL_HIGH>; /* MISC IRQ */
++        clocks = <&k3_clks 162 3>;
++        clock-names = "ref";
++        ti,syscon-phy-pll-refclk = <&wkup_conf 0x4018>;
++        power-domains = <&k3_pds 179 TI_SCI_PD_EXCLUSIVE>;
++        id-gpio = <&main_gpio1 51 GPIO_ACTIVE_LOW>;
++        #address-cells = <2>;
++        #size-cells = <2>;
++      };
++    };
 -- 
-Thanks,
-Jeffle
+2.17.1
+
