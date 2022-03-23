@@ -2,328 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79B88C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 13:03:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6001C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 13:05:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243508AbiCWNFB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 09:05:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41322 "EHLO
+        id S243840AbiCWNHJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 09:07:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236412AbiCWNE6 (ORCPT
+        with ESMTP id S236437AbiCWNHH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 09:04:58 -0400
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1433B6D4D9;
-        Wed, 23 Mar 2022 06:03:25 -0700 (PDT)
-Received: by mail-oi1-f178.google.com with SMTP id e189so1534119oia.8;
-        Wed, 23 Mar 2022 06:03:25 -0700 (PDT)
+        Wed, 23 Mar 2022 09:07:07 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CE5D75E71
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 06:05:38 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id k125so973890qkf.0
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 06:05:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ndufresne-ca.20210112.gappssmtp.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=jP6H13YhnBeGfeYQzZ93Xibqu7njgIeGZjFH0n7MMa4=;
+        b=SVuc3CYsfFZNSxW31DMhZalADPrE6ytJWJ6fYRABmZqRer+hM1I5sG3ysnQbaxX4az
+         /I/tZmgbtqDnzRocLG4qvhI3WC7KFv99yPUmBamXoar2jTVUHmUsWCBOEtSt030geA+U
+         BEo2lntsE18w76kHid7lCBUoYeLCPKnyLwb/uDub7zaDZgbAk7sKZ+WosvjO6GsGVHOD
+         mEAWa2d0YNJ/RF3nXsSu1J/h0IRdieGzc57FA36WG4Fqe5mNM3AH6w/hRFMRGOGikpoM
+         0671oZPiP9IfaSvLOmcDSuBI+oXLGMbCKQ6ucMVCNzJTuimOc+rhbN5QnXPHA9mopXvi
+         qX4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=eMGYAyeqTOLUvo+HITT+io1Cw3+qfR6fs+F/KsEiXsU=;
-        b=2nFcMJeCmVmQwj7yMEz2BG0DcEjKisyQBYQ/Irnjf4O43mIhOmm/r92o1tNhBpPEJs
-         6zTaObjo1lQVlSxhPi6kUM9Zq9pLD1UT3VwkHZN3mgYIPbma7QXH7fZ23sOOWVmX+DTU
-         j1+d0aXTO/6zn9BnrMki3DVKpVPUahjey1wu3GQqAbWHFAnKlvsJRGzxnQzFKHLKpLur
-         Vx2k9AKg6vicIp9BiODM5wIvrzgwWEgz0GMHRulcuHfL+BT4ursyc1RM0l4IABqCqfFU
-         e9+KWEpwYIAJ8rq1S4Dij0lQOB2Jqa1ZAg1qVxerDwS+VrXM+hREYQFD8HuSMKPsTvUh
-         daRA==
-X-Gm-Message-State: AOAM532l/GWp+JY66lZRJtOIXXPiO5k3o3MtR0jbdO6Ym1haXjPwOZag
-        p0AL20/LH/VmmG1GQsR1Jg==
-X-Google-Smtp-Source: ABdhPJwv+pFlpKrO31sSOWBiiARvmEmu++OAVOD0L9zodWE2MMdSCPiV2WI+AuwUND9aGZnC7Wgzmg==
-X-Received: by 2002:a05:6808:18a0:b0:2d9:bde3:5776 with SMTP id bi32-20020a05680818a000b002d9bde35776mr4692906oib.29.1648040604819;
-        Wed, 23 Mar 2022 06:03:24 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id l18-20020a4a3512000000b00324add481b1sm834374ooa.9.2022.03.23.06.03.22
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=jP6H13YhnBeGfeYQzZ93Xibqu7njgIeGZjFH0n7MMa4=;
+        b=OMzPi+GEHH7nZYp1D/6FNU8aHgs9kS47DRD6Rkdzj6ZW2n8iKejT06K8+0wNLPdo9j
+         81goOpdqAuweaMJ87BK5w4F67IvDs1YFXXOByu8Sn9GY8tBE1lUDW7FE3wkzoKmT7Y8o
+         lUFf2Lbzy2gSQ14w/HPOtAGptRgvIRv1LmxJiGFcTVVPRWSisLK9+JrzNkuaBbuh8mZV
+         R3CuoGJSestROuIzzTA2X53Hg8ewbNe1AOFxwMir6RTw/pTMd/jfNpvJjtfQT1HNfNlx
+         YZ0DcIvLR2qeNIdQgu+rEwcPAI6su58fxjVALgYNRo6zLJDTjLTUOfmt/Am8qE563q6F
+         /3sg==
+X-Gm-Message-State: AOAM531ejgwzWxYD2afAgtwCLBUECjD4A7mOhqZhTxgqlrVPMDoSWYP1
+        29i8q+4HM8JJWyxri5wfk4pC4w==
+X-Google-Smtp-Source: ABdhPJyTImRZbWZybzHwuqooxwilNQZaFKxrxF+882HKRVaCtSuV6OwyhLLuhF5MwvoGm5gl2Whr5A==
+X-Received: by 2002:a05:620a:45a1:b0:67d:af98:10d5 with SMTP id bp33-20020a05620a45a100b0067daf9810d5mr18580578qkb.1.1648040737316;
+        Wed, 23 Mar 2022 06:05:37 -0700 (PDT)
+Received: from nicolas-tpx395.localdomain (173-246-12-168.qc.cable.ebox.net. [173.246.12.168])
+        by smtp.gmail.com with ESMTPSA id y15-20020a05622a004f00b002e1aaa1738dsm16215255qtw.12.2022.03.23.06.05.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Mar 2022 06:03:23 -0700 (PDT)
-Received: (nullmailer pid 3922634 invoked by uid 1000);
-        Wed, 23 Mar 2022 13:03:22 -0000
-Date:   Wed, 23 Mar 2022 08:03:22 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Sui Jingfeng <15330273260@189.cn>
-Cc:     Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Roland Scheidegger <sroland@vmware.com>,
-        Zack Rusin <zackr@vmware.com>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Ilia Mirkin <imirkin@alum.mit.edu>,
-        Qing Zhang <zhangqing@loongson.cn>,
-        suijingfeng <suijingfeng@loongson.cn>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org
-Subject: Re: [PATCH v11 5/7] dt-bindings: display: Add Loongson display
- controller
-Message-ID: <YjsamuFslv6qlQMZ@robh.at.kernel.org>
-References: <20220321162916.1116541-1-15330273260@189.cn>
- <20220321162916.1116541-6-15330273260@189.cn>
- <YjkITWpbnCmhKaX+@robh.at.kernel.org>
- <f7eb61bc-6784-c77a-083f-7408c0a17e05@189.cn>
- <Yjo3umi9bJ0xb2Gl@robh.at.kernel.org>
- <199a2869-cd83-d24e-0ad0-25d15d76fc13@189.cn>
+        Wed, 23 Mar 2022 06:05:36 -0700 (PDT)
+Message-ID: <a7c858461b99de2d4afad22d888acc3a74850240.camel@ndufresne.ca>
+Subject: Re: [PATCH v1] media: videobuf2: Allow applications customize data
+ offsets of capture buffers
+From:   Nicolas Dufresne <nicolas@ndufresne.ca>
+To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
+        Gustavo Padovan <gustavo.padovan@collabora.com>,
+        Boris Brezillon <bbrezillon@collabora.com>,
+        Daniel Almeida <daniel.almeida@collabora.com>,
+        Sebastian Fricke <sebastian.fricke@collabora.com>,
+        Laura Nao <laura.nao@collabora.com>
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Dmitry Osipenko <digetx@gmail.com>
+Date:   Wed, 23 Mar 2022 09:05:35 -0400
+In-Reply-To: <20220322132329.6527-1-dmitry.osipenko@collabora.com>
+References: <20220322132329.6527-1-dmitry.osipenko@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <199a2869-cd83-d24e-0ad0-25d15d76fc13@189.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 11:38:55AM +0800, Sui Jingfeng wrote:
+Hi Dmitry,
+
+thanks for giving a second look a this issue.
+
+Le mardi 22 mars 2022 Ã  16:23 +0300, Dmitry Osipenko a Ã©critÂ :
+> Use data offsets provided by applications for multi-planar capture
+> buffers. This allows V4L to import and use dma-bufs exported by other
+> subsystems in cases where application wants to customize data offsets
+> of capture buffers in order to meet hardware alignment requirements of
+> both dma-buf exporter and importer.
 > 
-> On 2022/3/23 04:55, Rob Herring wrote:
-> > On Tue, Mar 22, 2022 at 10:33:45AM +0800, Sui Jingfeng wrote:
-> > > On 2022/3/22 07:20, Rob Herring wrote:
-> > > > On Tue, Mar 22, 2022 at 12:29:14AM +0800, Sui Jingfeng wrote:
-> > > > > From: suijingfeng <suijingfeng@loongson.cn>
-> > > > > 
-> > > > Needs a commit message.
-> > > > 
-> > > > > Signed-off-by: suijingfeng <suijingfeng@loongson.cn>
-> > > > > Signed-off-by: Sui Jingfeng <15330273260@189.cn>
-> > > > Same person? Don't need both emails.
-> > > Yes,  suijingfeng@loongson.cn is my company's email. But it can not be used
-> > > to send patches to dri-devel,
-> > > 
-> > > when send patches with this email, the patch will not be shown on patch
-> > > works.
-> > > 
-> > > Emails  are either blocked or got  rejected  by loongson's mail server.  It
-> > > can only receive emails
-> > > 
-> > > from you and other people, but not dri-devel. so have to use my personal
-> > > email(15330273260@189.cn) to send patches.
-> > > 
-> > > > > ---
-> > > > >    .../loongson/loongson,display-controller.yaml | 230 ++++++++++++++++++
-> > > > >    1 file changed, 230 insertions(+)
-> > > > >    create mode 100644 Documentation/devicetree/bindings/display/loongson/loongson,display-controller.yaml
-> > > > > 
-> > > > > diff --git a/Documentation/devicetree/bindings/display/loongson/loongson,display-controller.yaml b/Documentation/devicetree/bindings/display/loongson/loongson,display-controller.yaml
-> > > > > new file mode 100644
-> > > > > index 000000000000..7be63346289e
-> > > > > --- /dev/null
-> > > > > +++ b/Documentation/devicetree/bindings/display/loongson/loongson,display-controller.yaml
-> > > > > @@ -0,0 +1,230 @@
-> > > > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > > > > +%YAML 1.2
-> > > > > +---
-> > > > > +$id: http://devicetree.org/schemas/display/loongson/loongson,display-controller.yaml#
-> > > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > > > > +
-> > > > > +title: Loongson LS7A1000/LS2K1000/LS2K0500 Display Controller Device Tree Bindings
-> > > > > +
-> > > > > +maintainers:
-> > > > > +  - Sui Jingfeng <suijingfeng@loongson.cn>
-> > > > > +
-> > > > > +description: |+
-> > > > > +
-> > > > > +  Loongson display controllers are simple which require scanout buffers
-> > > > > +  to be physically contiguous. LS2K1000/LS2K0500 is a SOC, only system
-> > > > > +  memory is available. LS7A1000/LS7A2000 is bridge chip which is equipped
-> > > > > +  with a dedicated video RAM which is 64MB or more, precise size can be
-> > > > > +  read from the PCI BAR 2 of the GPU device(0x0014:0x7A15) in the bridge
-> > > > > +  chip.
-> > > > > +
-> > > > > +  LSDC has two display pipes, each way has a DVO interface which provide
-> > > > > +  RGB888 signals, vertical & horizontal synchronisations, data enable and
-> > > > > +  the pixel clock. LSDC has two CRTC, each CRTC is able to scanout from
-> > > > > +  1920x1080 resolution at 60Hz. Each CRTC has two FB address registers.
-> > > > > +
-> > > > > +  For LS7A1000, there are 4 dedicated GPIOs whose control register is
-> > > > > +  located at the DC register space. They are used to emulate two way i2c,
-> > > > > +  One for DVO0, another for DVO1.
-> > > > > +
-> > > > > +  LS2K1000 and LS2K0500 SoC grab i2c adapter from other module, either
-> > > > > +  general purpose GPIO emulated i2c or hardware i2c in the SoC.
-> > > > > +
-> > > > > +  LSDC's display pipeline have several components as below description,
-> > > > > +
-> > > > > +  The display controller in LS7A1000:
-> > > > > +     ___________________                                     _________
-> > > > > +    |            -------|                                   |         |
-> > > > > +    |  CRTC0 --> | DVO0 ----> Encoder0 ---> Connector0 ---> | Monitor |
-> > > > > +    |  _   _     -------|        ^             ^            |_________|
-> > > > > +    | | | | |    -------|        |             |
-> > > > > +    | |_| |_|    | i2c0 <--------+-------------+
-> > > > > +    |            -------|
-> > > > > +    |   DC IN LS7A1000  |
-> > > > > +    |  _   _     -------|
-> > > > > +    | | | | |    | i2c1 <--------+-------------+
-> > > > > +    | |_| |_|    -------|        |             |             _________
-> > > > > +    |            -------|        |             |            |         |
-> > > > > +    |  CRTC1 --> | DVO1 ----> Encoder1 ---> Connector1 ---> |  Panel  |
-> > > > > +    |            -------|                                   |_________|
-> > > > > +    |___________________|
-> > > > > +
-> > > > > +  Simple usage of LS7A1000 with LS3A4000 CPU:
-> > > > > +
-> > > > > +    +------+            +-----------------------------------+
-> > > > > +    | DDR4 |            |  +-------------------+            |
-> > > > > +    +------+            |  | PCIe Root complex |   LS7A1000 |
-> > > > > +       || MC0           |  +--++---------++----+            |
-> > > > > +  +----------+  HT 3.0  |     ||         ||                 |
-> > > > > +  | LS3A4000 |<-------->| +---++---+  +--++--+    +---------+   +------+
-> > > > > +  |   CPU    |<-------->| | GC1000 |  | LSDC |<-->| DDR3 MC |<->| VRAM |
-> > > > > +  +----------+          | +--------+  +-+--+-+    +---------+   +------+
-> > > > > +       || MC1           +---------------|--|----------------+
-> > > > > +    +------+                            |  |
-> > > > > +    | DDR4 |          +-------+   DVO0  |  |  DVO1   +------+
-> > > > > +    +------+   VGA <--|ADV7125|<--------+  +-------->|TFP410|--> DVI/HDMI
-> > > > > +                      +-------+                      +------+
-> > > > > +
-> > > > > +  The display controller in LS2K1000/LS2K0500:
-> > > > > +     ___________________                                     _________
-> > > > > +    |            -------|                                   |         |
-> > > > > +    |  CRTC0 --> | DVO0 ----> Encoder0 ---> Connector0 ---> | Monitor |
-> > > > > +    |  _   _     -------|        ^              ^           |_________|
-> > > > > +    | | | | |           |        |              |
-> > > > > +    | |_| |_|           |     +------+          |
-> > > > > +    |                   <---->| i2c0 |<---------+
-> > > > > +    |   DC IN LS2K1000  |     +------+
-> > > > > +    |  _   _            |     +------+
-> > > > > +    | | | | |           <---->| i2c1 |----------+
-> > > > > +    | |_| |_|           |     +------+          |            _________
-> > > > > +    |            -------|        |              |           |         |
-> > > > > +    |  CRTC1 --> | DVO1 ----> Encoder1 ---> Connector1 ---> |  Panel  |
-> > > > > +    |            -------|                                   |_________|
-> > > > > +    |___________________|
-> > > > > +
-> > > > > +properties:
-> > > > > +  $nodename:
-> > > > > +    pattern: "^display-controller@[0-9a-f],[0-9a-f]$"
-> > > > > +
-> > > > > +  compatible:
-> > > > > +    oneOf:
-> > > > > +      - items:
-> > > > > +          - enum:
-> > > > > +              - loongson,ls7a1000-dc
-> > > > > +              - loongson,ls2k1000-dc
-> > > > > +              - loongson,ls2k0500-dc
-> > > > > +
-> > > > > +  reg:
-> > > > > +    maxItems: 1
-> > > > > +
-> > > > > +  interrupts:
-> > > > > +    maxItems: 1
-> > > > > +
-> > > > > +  '#address-cells':
-> > > > > +    const: 1
-> > > > > +
-> > > > > +  '#size-cells':
-> > > > > +    const: 0
-> > > > > +
-> > > > > +  i2c-gpio@0:
-> > > > > +    description: |
-> > > > > +      Built-in GPIO emulate i2c exported for external display bridge
-> > > > If you have i2c-gpio, that belongs at the DT top-level, not here.
-> > > > 
-> > > > > +      configuration, onitor detection and edid read back etc, for ls7a1000
-> > > > > +      only. Its compatible must be lsdc,i2c-gpio-0. The reg property can be
-> > > > No, there's a defined i2c-gpio compatible already.
-> > > This is different from the i2c-gpio already defined under drivers/i2c/busses/i2c-gpio.c,
-> > > By design, my i2c-gpio is vendor specific properties, lsdc device driver create the i2c
-> > > adapter at runtime. These are 4 dedicated GPIOs whose control register is located at the
-> > > LSDC register space, not general purpose GPIOs with separate control register resource.
-> > > So i think it is the child node of display-controller@6,1, it belongs to LSDC.
-> > > It seems that put it at the DT top-level break the hierarchy and relationship.
-> > Okay, I see. Then just 'i2c' for the node names. You need a reference to
-> > i2c-controller.yaml for these nodes too.
-> > 
-> > The compatible should not have an index in it.
-> OK, i will fix this at the next version. thanks.
-> > > > > +      used to specify a I2c adapter bus number, if you don't specify one
-> > > > > +      i2c driver core will dynamically assign a bus number. Please specify
-> > > > Bus numbers are a linux detail not relevant to DT binding.
-> > > > 
-> > > > > +      it only when its bus number matters. Bus number greater than 6 is safe
-> > > > > +      because ls7a1000 bridge have 6 hardware I2C controller integrated.
-> > > > > +
-> > > > > +  i2c-gpio@1:
-> > > > > +    description: |
-> > > > > +      Built-in GPIO emulate i2c exported for external display bridge
-> > > > > +      configuration, onitor detection and edid read back etc, for ls7a1000
-> > > > > +      only. Its compatible must be lsdc,i2c-gpio-1.
-> > > > > +
-> > > > > +  ports:
-> > > > > +    $ref: /schemas/graph.yaml#/properties/ports
-> > > > > +
-> > > > > +    properties:
-> > > > > +      port@0:
-> > > > > +        $ref: /schemas/graph.yaml#/properties/port
-> > > > > +        description: output port node connected with DPI panels or external encoders, with only one endpoint.
-> > > > > +
-> > > > > +      port@1:
-> > > > > +        $ref: /schemas/graph.yaml#/properties/port
-> > > > > +        description: output port node connected with DPI panels or external encoders, with only one endpoint.
-> > > > > +
-> > > > > +    required:
-> > > > > +      - port@0
-> > > > > +      - port@1
-> > > > > +
-> > > > > +required:
-> > > > > +  - compatible
-> > > > > +  - reg
-> > > > > +  - interrupts
-> > > > > +  - ports
-> > > > > +
-> > > > > +additionalProperties: false
-> > > > > +
-> > > > > +examples:
-> > > > > +  - |
-> > > > > +    #include <dt-bindings/interrupt-controller/irq.h>
-> > > > > +    bus {
-> > > > > +
-> > > > > +        #address-cells = <3>;
-> > > > > +        #size-cells = <2>;
-> > > > > +        #interrupt-cells = <2>;
-> > > > > +
-> > > > > +        display-controller@6,1 {
-> > > > > +            compatible = "loongson,ls7a1000-dc";
-> > > > > +            reg = <0x3100 0x0 0x0 0x0 0x0>;
-> > > > > +            interrupts = <28 IRQ_TYPE_LEVEL_HIGH>;
-> > > > > +
-> > > > > +            #address-cells = <1>;
-> > > > > +            #size-cells = <0>;
-> > > > > +
-> > > > > +            i2c-gpio@0 {
-> > > > > +                compatible = "lsdc,i2c-gpio-0";
-> > > > > +                reg = <6>;
-> > 'reg' needs to be documented with some description of what 6 and 7
-> > represent. If they are the control register offset, then make the
-> > address translatable (use 'ranges' and define the size).
+> This feature is wanted for providing a better support of media hardware
+> found on Chromebooks. In particular display and camera ISP hardware of
+> Rockchip and MediaTek SoCs require special handling by userspace because
+> display h/w has specific alignment requirements that don't match default
+> alignments expected by V4L and there is a need to customize the data
+> offsets in case of multi-planar formats.
 > 
-> By design, the reg property is used to specify a I2c adapter bus number,
-> if we don't specify one, i2c driver core will dynamically assign a bus number.
-> then the nr of the i2c adapter will started from 0. I want is start from 6
-> to avoid potential conflict feature hardware I2C driver.
+> Some drivers already have preliminary support for data offsets
+> customization of capture buffers, like NVIDIA Tegra video decoder driver
+> for example, and V4L allows applications to provide data offsets for
+> multi-planar output buffers, let's support such customization for the
+> capture buffers as well.
 > 
-> Because LS7A1000 bridge chip have 6 hardware I2C controller integrated,
-> but its driver is not up-streamed yet. By default these hardware I2C controller's
-> nr is started from 0.
+> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+> ---
+>  Documentation/userspace-api/media/v4l/buffer.rst | 9 ++++++++-
+>  drivers/media/common/videobuf2/videobuf2-v4l2.c  | 7 +++++++
+>  2 files changed, 15 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/userspace-api/media/v4l/buffer.rst b/Documentation/userspace-api/media/v4l/buffer.rst
+> index 4638ec64db00..75b1929e2acb 100644
+> --- a/Documentation/userspace-api/media/v4l/buffer.rst
+> +++ b/Documentation/userspace-api/media/v4l/buffer.rst
+> @@ -369,13 +369,20 @@ struct v4l2_plane
+>        - ``data_offset``
+>        - Offset in bytes to video data in the plane. Drivers must set this
+>  	field when ``type`` refers to a capture stream, applications when
+> -	it refers to an output stream.
+> +	it refers to an output or capture stream.
 
-Linux's numbering doesn't belong in DT. So no, you can't use 'reg' in 
-that way.
+There is a clear contradiction in this paragraph. Both the driver and the
+application MUST set the data_offset.
 
-> Even through i2c driver core can dynamically generate a number, i still want it
-> to be fixed and keep consistent and explicit. That is, i2c6 is for display pipe 0,
-> i2c7 is for display pipe 1. This follow the convention and flexible enough.
+Would it be possible to demo your idea by implementing this in a virtual driver
+? vivid already have data_offset for capture in some cases, you could verify if
+your idea works without any conflict in this scenario.
 
-You may want that, but that is not how the kernel works. Specific 
-numbers are not guaranteed. I'm sure you've seen this for disks, network 
-interfaces, etc.
+>  
+>  	.. note::
+>  
+>  	   That data_offset is included  in ``bytesused``. So the
+>  	   size of the image in the plane is ``bytesused``-``data_offset``
+>  	   at offset ``data_offset`` from the start of the plane.
+> +
+> +	   For capture planes data_offset may be specified by applications
+> +	   and by drivers. Driver may override application's offset or error
+> +	   out buffer if offset can't be satisfied by hardware. This allows
+> +	   applications to customize data offsets of imported dma-bufs.
+> +	   Handling of application's offsets is driver-dependent, application
+> +	   must use the resulting buffer offset.
+>      * - __u32
+>        - ``reserved[11]``
+>        - Reserved for future use. Should be zeroed by drivers and
+> diff --git a/drivers/media/common/videobuf2/videobuf2-v4l2.c b/drivers/media/common/videobuf2/videobuf2-v4l2.c
+> index 6edf4508c636..929107a431cc 100644
+> --- a/drivers/media/common/videobuf2/videobuf2-v4l2.c
+> +++ b/drivers/media/common/videobuf2/videobuf2-v4l2.c
+> @@ -263,6 +263,13 @@ static int vb2_fill_vb2_v4l2_buffer(struct vb2_buffer *vb, struct v4l2_buffer *b
+>  						psrc->bytesused : pdst->length;
+>  				pdst->data_offset = psrc->data_offset;
+>  			}
+> +		} else {
+> +			for (plane = 0; plane < vb->num_planes; ++plane) {
+> +				struct vb2_plane *pdst = &planes[plane];
+> +				struct v4l2_plane *psrc = &b->m.planes[plane];
+> +
+> +				pdst->data_offset = psrc->data_offset;
+> +			}
+>  		}
+>  	} else {
+>  		/*
 
-Rob
