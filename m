@@ -2,111 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BA35C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 11:19:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB61C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 11:20:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243849AbiCWLUn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 07:20:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54376 "EHLO
+        id S243833AbiCWLVd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 07:21:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243825AbiCWLUi (ORCPT
+        with ESMTP id S235705AbiCWLVb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 07:20:38 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D9D222AD;
-        Wed, 23 Mar 2022 04:19:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4A200CE1F95;
-        Wed, 23 Mar 2022 11:19:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AD0DC340F2;
-        Wed, 23 Mar 2022 11:19:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648034345;
-        bh=rG16zrXMlR5pZ2N5h0bd4xXIP29JlwrupEHA19K82bo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jNt7fmQq7JORRVP6/1tw+bRPSDhZrK9iyI8llDrqrzJGJpdIDabtRK3P8wM6za5R1
-         xQSiVp2eqC8Gwv/vBTES76XDBwQ3nI5Ebx90SIllsBXStpj1QEf+x8em8FX2JaoKCH
-         jMiqbj/5e9k34gpBWSZFnC6frDVebFeao6RzxROW0oJikp1zDjxkN/QOjPLzFop/ga
-         bgbWBYj9mr8nTz8MBUFejke5OGK9aKNFhUpwTYR8MsShs7RRfyzNq9/wt/uLlQ732a
-         k6dFQGju3d9+ZpoVnxfRPML2+SnhT8aekLD+bCgds2it6M++dEh3MT2c+mvVYb+cg8
-         AKwXqFpvGBnhg==
-From:   Roger Quadros <rogerq@kernel.org>
-To:     miquel.raynal@bootlin.com, robh+dt@kernel.org
-Cc:     richard@nod.at, vigneshr@ti.com, kishon@ti.com, nm@ti.com,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Roger Quadros <rogerq@kernel.org>
-Subject: [PATCH 2/3] dt-bindings: mtd: ti,elm: Add support for AM64 ELM
-Date:   Wed, 23 Mar 2022 13:18:50 +0200
-Message-Id: <20220323111851.4699-3-rogerq@kernel.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220323111851.4699-1-rogerq@kernel.org>
-References: <20220323111851.4699-1-rogerq@kernel.org>
+        Wed, 23 Mar 2022 07:21:31 -0400
+Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6E1D2AE2E;
+        Wed, 23 Mar 2022 04:20:01 -0700 (PDT)
+Received: by mail-ej1-f51.google.com with SMTP id dr20so2144222ejc.6;
+        Wed, 23 Mar 2022 04:20:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8NQwjInQeHX4PNBQH9WRkcIExVlhXjtH5bBsP3hUUow=;
+        b=rsmRF13+szGJjK74EX3UkoYGPxvponNSH/MTschx7TUpNFbfZCezKQoVkHseddkMee
+         NyDvaHi/XRHWfWuhGvs3qMZ/6lqK+Yh8OSq4gn8Ml4AP2TNkWkEU4Ol9Dl6eYb/l1M43
+         R/lGeCiTbVeFLeznRCzC+vKJu+pYMDw+Zf1PSlOnBBl1FBzJM4Yh0xW4Uca3QfedddyN
+         he3NLddOQ3SQ/A6cOOhZ64fjdspy91/nWgUeVclN6qm4hdY1tuEa8y1k7v4gbz35frUI
+         R0ZPJ3ovlKw7D18YAjQltfhs6Xop/iJtVihL7hyfn/x6cWmzjAxs+/1/5aUHkVaFAS9e
+         EtRg==
+X-Gm-Message-State: AOAM530JtDL/9Ivc+2QF1nfntxf5tljZRYNlvO7pod79j0JAMM2UlaTY
+        bNimD6zILEzlVE/Ad4ABaF8Au0BZNQZpRw==
+X-Google-Smtp-Source: ABdhPJyggNgkzWof95iHK2BBBMKkQTe1ofpITUi/c6gBiK4dbd3/biJiEJrfNyHqAUzhektMkOESWg==
+X-Received: by 2002:a17:907:16ac:b0:6e0:1646:9121 with SMTP id hc44-20020a17090716ac00b006e016469121mr14215917ejc.194.1648034400203;
+        Wed, 23 Mar 2022 04:20:00 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.googlemail.com with ESMTPSA id q15-20020a1709060e4f00b006cdf4535cf2sm9582171eji.67.2022.03.23.04.19.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Mar 2022 04:19:59 -0700 (PDT)
+Message-ID: <5eed58a1-ee56-8aee-e73b-76b162d59873@kernel.org>
+Date:   Wed, 23 Mar 2022 12:19:57 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 5/9] soc: apple: Add RTKit IPC library
+Content-Language: en-US
+To:     Sven Peter <sven@svenpeter.dev>
+Cc:     Hector Martin <marcan@marcan.st>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Rob Herring <robh+dt@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Keith Busch <kbusch@kernel.org>,
+        Jens Axboe <axboe@fb.com>, Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Marc Zyngier <maz@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-nvme@lists.infradead.org
+References: <20220321165049.35985-1-sven@svenpeter.dev>
+ <20220321165049.35985-6-sven@svenpeter.dev>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220321165049.35985-6-sven@svenpeter.dev>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-TI's AM64 SoC has the Error Locator Module. Add compatible and
-related properties to support ELM on AM64 SoC.
+On 21/03/2022 17:50, Sven Peter wrote:
+> Apple SoCs such as the M1 come with multiple embedded co-processors
+> running proprietary firmware. Communication with those is established
+> over a simple mailbox using the RTKit IPC protocol.
+> 
+> Signed-off-by: Sven Peter <sven@svenpeter.dev>
+> ---
+>  drivers/soc/apple/Kconfig          |  13 +
+>  drivers/soc/apple/Makefile         |   3 +
+>  drivers/soc/apple/rtkit-crashlog.c | 147 +++++
+>  drivers/soc/apple/rtkit-internal.h |  76 +++
+>  drivers/soc/apple/rtkit.c          | 842 +++++++++++++++++++++++++++++
+>  include/linux/soc/apple/rtkit.h    | 203 +++++++
+>  6 files changed, 1284 insertions(+)
 
-Signed-off-by: Roger Quadros <rogerq@kernel.org>
----
- .../devicetree/bindings/mtd/ti,elm.yaml       | 27 ++++++++++++++++++-
- 1 file changed, 26 insertions(+), 1 deletion(-)
+Isn't this some implementation of a mailbox? If so, it should be in
+drivers/mailbox. Please don't put all stuff in soc/apple, that's not how
+Linux is organized. To drivers/soc usually we put drivers which do not
+fit regular subsystems.
 
-diff --git a/Documentation/devicetree/bindings/mtd/ti,elm.yaml b/Documentation/devicetree/bindings/mtd/ti,elm.yaml
-index 24ed0fb84204..bc01d35ce605 100644
---- a/Documentation/devicetree/bindings/mtd/ti,elm.yaml
-+++ b/Documentation/devicetree/bindings/mtd/ti,elm.yaml
-@@ -17,7 +17,9 @@ description:
- properties:
-   compatible:
-     items:
--      - const: ti,am3352-elm
-+      - enum:
-+          - ti,am3352-elm
-+          - ti,am64-elm
- 
-   reg:
-     maxItems: 1
-@@ -25,6 +27,17 @@ properties:
-   interrupts:
-     maxItems: 1
- 
-+  clocks:
-+    maxItems: 1
-+    description: Functional clock.
-+
-+  clock-names:
-+    items:
-+      - const: fck
-+
-+  power-domains:
-+    maxItems: 1
-+
-   ti,hwmods:
-     description:
-       Name of the HWMOD associated with ELM. This is for legacy
-@@ -37,6 +50,18 @@ required:
-   - reg
-   - interrupts
- 
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: ti,am64-elm
-+    then:
-+      required:
-+        - clocks
-+        - clock-names
-+        - power-domains
-+
- additionalProperties: false
- 
- examples:
--- 
-2.17.1
-
+Best regards,
+Krzysztof
