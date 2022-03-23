@@ -2,191 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEBE6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 15:33:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78D63C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 15:33:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245270AbiCWPfR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 11:35:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39336 "EHLO
+        id S245302AbiCWPf1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 11:35:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245195AbiCWPej (ORCPT
+        with ESMTP id S245278AbiCWPfS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 11:34:39 -0400
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79A2AD8B
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 08:33:06 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1648049584;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MP8VVStpf2u5pFq9LJYVTfW5maMxRrDNwrS4C/iOhFE=;
-        b=CHABMq/eZMH3CKmnepGiem7lAUyvtGITme8Qll4LQCROHN+V6C06OVGLwZuteRZ+PbizzX
-        B/d0tsbkAj03Q2KNrb7PC4vE3rYeOl8qckRDCHswffvIEUY+QTm6icfg6nxgM6fpgtv52V
-        PXKw6cD+WU2EotoizAcwfEiGoH3Y8cA=
-From:   andrey.konovalov@linux.dev
-To:     Marco Elver <elver@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev@googlegroups.com, Mark Rutland <mark.rutland@arm.com>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Florian Mayer <fmayer@google.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH v2 3/4] arm64: implement stack_trace_save_shadow
-Date:   Wed, 23 Mar 2022 16:32:54 +0100
-Message-Id: <0bb72ea8fa88ef9ae3508c23d993952a0ae6f0f9.1648049113.git.andreyknvl@google.com>
-In-Reply-To: <cover.1648049113.git.andreyknvl@google.com>
-References: <cover.1648049113.git.andreyknvl@google.com>
+        Wed, 23 Mar 2022 11:35:18 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B13476E33;
+        Wed, 23 Mar 2022 08:33:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8CC9ECE1F7B;
+        Wed, 23 Mar 2022 15:33:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 858C6C340E8;
+        Wed, 23 Mar 2022 15:33:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648049614;
+        bh=HHpjM+vxWVbBCe6V1NF5CGoUQRBfQcOjymf2uEZ000E=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=B9nFk4+LCuPWqYmcQhoHvPXvfYCx2ZWxGXBrv+0OzmRIgRUZZgKqTSxxxjUJveJ/D
+         Po5j+J8bz9qDYszkbKE56no4RCIm+cPpOozZD8OtOoxL+rkGdVBHJ2huj/UCfllMe2
+         rn1jnp95Vkqn5wiijXtwg4+/SBvtALp0gwDHXliEaB+AxyRB0ZVCw801lZnbNDXpfw
+         IZmNK8662/r7/q1PmCI/60uPoiXLVB6IY6Bpj/XIPiOouLGd0Ex77u6HKYrW4Spmm6
+         O919xuJvIwwEFH9I8ejowFE+wJGOVqyG+gc/mSWTAD013v8NYOL1f+P7esGxqwEmC/
+         ChNA5uD+Mp4zA==
+Date:   Wed, 23 Mar 2022 08:33:32 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Ahern <dsahern@kernel.org>
+Cc:     Sun Shouxin <sunshouxin@chinatelecom.cn>, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
+        pabeni@redhat.com, yoshfuji@linux-ipv6.org, oliver@neukum.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        huyd12@chinatelecom.cn
+Subject: Re: [PATCH v6 0/4] Add support for IPV6 RLB to balance-alb mode
+Message-ID: <20220323083332.54dc0a6e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <7288faa9-0bb1-4538-606d-3366a7a02da5@kernel.org>
+References: <20220323120906.42692-1-sunshouxin@chinatelecom.cn>
+        <7288faa9-0bb1-4538-606d-3366a7a02da5@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrey Konovalov <andreyknvl@google.com>
+On Wed, 23 Mar 2022 08:35:03 -0600 David Ahern wrote:
+> On 3/23/22 6:09 AM, Sun Shouxin wrote:
+> > This patch is implementing IPV6 RLB for balance-alb mode.
+>
+> net-next is closed, so this set needs to be delayed until it re-opens.
 
-Implement the stack_trace_save_shadow() interface that collects stack
-traces based on the Shadow Call Stack (SCS) for arm64.
-
-The implementation walks through available SCS pointers (the per-task one
-and the per-interrupt-type ones) and copies the frames.
-
-Note that the frame of the interrupted function is not included into
-the stack trace, as it is not yet saved on the SCS when an interrupt
-happens.
-
-Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
----
- arch/arm64/Kconfig             |  1 +
- arch/arm64/kernel/stacktrace.c | 83 ++++++++++++++++++++++++++++++++++
- 2 files changed, 84 insertions(+)
-
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index a659e238f196..d89cecf6c923 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -201,6 +201,7 @@ config ARM64
- 	select MMU_GATHER_RCU_TABLE_FREE
- 	select HAVE_RSEQ
- 	select HAVE_RUST
-+	select HAVE_SHADOW_STACKTRACE
- 	select HAVE_STACKPROTECTOR
- 	select HAVE_SYSCALL_TRACEPOINTS
- 	select HAVE_KPROBES
-diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
-index e4103e085681..89daa710d91b 100644
---- a/arch/arm64/kernel/stacktrace.c
-+++ b/arch/arm64/kernel/stacktrace.c
-@@ -12,9 +12,11 @@
- #include <linux/sched/debug.h>
- #include <linux/sched/task_stack.h>
- #include <linux/stacktrace.h>
-+#include <linux/scs.h>
- 
- #include <asm/irq.h>
- #include <asm/pointer_auth.h>
-+#include <asm/scs.h>
- #include <asm/stack_pointer.h>
- #include <asm/stacktrace.h>
- 
-@@ -210,3 +212,84 @@ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
- 
- 	walk_stackframe(task, &frame, consume_entry, cookie);
- }
-+
-+static const struct {
-+	unsigned long ** __percpu saved;
-+	unsigned long ** __percpu base;
-+} scs_parts[] = {
-+#ifdef CONFIG_ARM_SDE_INTERFACE
-+	{
-+		.saved = &sdei_shadow_call_stack_critical_saved_ptr,
-+		.base = &sdei_shadow_call_stack_critical_ptr,
-+	},
-+	{
-+		.saved = &sdei_shadow_call_stack_normal_saved_ptr,
-+		.base = &sdei_shadow_call_stack_normal_ptr,
-+	},
-+#endif /* CONFIG_ARM_SDE_INTERFACE */
-+	{
-+		.saved = &irq_shadow_call_stack_saved_ptr,
-+		.base = &irq_shadow_call_stack_ptr,
-+	},
-+};
-+
-+static inline bool walk_shadow_stack_part(
-+				unsigned long *scs_top, unsigned long *scs_base,
-+				unsigned long *store, unsigned int size,
-+				unsigned int *skipnr, unsigned int *len)
-+{
-+	unsigned long *frame;
-+
-+	for (frame = scs_top; frame >= scs_base; frame--) {
-+		if (*skipnr > 0) {
-+			(*skipnr)--;
-+			continue;
-+		}
-+		/*
-+		 * Do not leak PTR_AUTH tags in stack traces.
-+		 * Use READ_ONCE_NOCHECK as SCS is poisoned with Generic KASAN.
-+		 */
-+		store[(*len)++] =
-+			ptrauth_strip_insn_pac(READ_ONCE_NOCHECK(*frame));
-+		if (*len >= size)
-+			return true;
-+	}
-+
-+	return false;
-+}
-+
-+noinline notrace int arch_stack_walk_shadow(unsigned long *store,
-+					    unsigned int size,
-+					    unsigned int skipnr)
-+{
-+	unsigned long *scs_top, *scs_base, *scs_next;
-+	unsigned int len = 0, part;
-+
-+	preempt_disable();
-+
-+	/* Get the SCS pointer. */
-+	asm volatile("mov %0, x18" : "=&r" (scs_top));
-+
-+	/* The top SCS slot is empty. */
-+	scs_top -= 1;
-+
-+	/* Handle SDEI and hardirq frames. */
-+	for (part = 0; part < ARRAY_SIZE(scs_parts); part++) {
-+		scs_next = *this_cpu_ptr(scs_parts[part].saved);
-+		if (scs_next) {
-+			scs_base = *this_cpu_ptr(scs_parts[part].base);
-+			if (walk_shadow_stack_part(scs_top, scs_base, store,
-+						   size, &skipnr, &len))
-+				goto out;
-+			scs_top = scs_next;
-+		}
-+	}
-+
-+	/* Handle task and softirq frames. */
-+	scs_base = task_scs(current);
-+	walk_shadow_stack_part(scs_top, scs_base, store, size, &skipnr, &len);
-+
-+out:
-+	preempt_enable();
-+	return len;
-+}
--- 
-2.25.1
-
+What I'm not sure of is why this gets reposted after Jiri nacked
+it. A conclusion needs to be reached on whether we want this
+functionality in the first place. Or someone needs to explain 
+to me what the conclusion is if I'm not reading the room right :)
