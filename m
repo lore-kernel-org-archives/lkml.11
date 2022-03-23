@@ -2,157 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 483D4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 03:28:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7662AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 03:31:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241205AbiCWD3n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 23:29:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33494 "EHLO
+        id S241515AbiCWDdD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 23:33:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232156AbiCWD3h (ORCPT
+        with ESMTP id S241542AbiCWDdB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 23:29:37 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D294D3299C;
-        Tue, 22 Mar 2022 20:28:07 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KNYhX5R81z1GCml;
-        Wed, 23 Mar 2022 11:27:56 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
- (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 23 Mar
- 2022 11:28:04 +0800
-From:   Ye Bin <yebin10@huawei.com>
-To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
-        <linux-ext4@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
-        <lczerner@redhat.com>, Ye Bin <yebin10@huawei.com>
-Subject: [PATCH -next] ext4: fix use-after-free in ext4_search_dir
-Date:   Wed, 23 Mar 2022 11:43:04 +0800
-Message-ID: <20220323034304.3597652-1-yebin10@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Tue, 22 Mar 2022 23:33:01 -0400
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB6C070913
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 20:31:31 -0700 (PDT)
+Received: by mail-oi1-x22d.google.com with SMTP id z8so510389oix.3
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 20:31:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Her+CON9l4wgkaJDnpr2YlL55pStpePMG7/cYiCS/kU=;
+        b=Z3zyJsmTrtJQJdSg7rK6ezx3eG2w+7kETHaEEWALmZjvYBgHUdZU4Kdz9rOzdtI03Q
+         IuLnfugF4B5M9Ff0rnt/sARNrGlvIQPLZsTf82sEcN61ZTShoi30Nyb13gZjXJlj8Ns6
+         o0RG9j0zIe9r/6Vn4JMpbqXus6CIgYZ/LUmtkIp+riJ/c7zWSzRueP7ykisb58Owoxsp
+         n2sW+AvG/ShAKbYATvINYzr5ATLcZocaRunx5wVREBigwxibRo8psAE2G4P/VXuDSBh1
+         HHCXFPSBDeYVrM2/Li0m7jig3PS20q/B79nGRZKNP5/FXhIRGHs2+DXzQYFnLTbfDoLr
+         VGTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Her+CON9l4wgkaJDnpr2YlL55pStpePMG7/cYiCS/kU=;
+        b=pUZiNH6IHlFjWpwVcnl0g7GZAb9ozTnrgAAoGOy09AY5GJIHjfWV8rfRcr3Dx11cuw
+         Gt7t+25lApKNzUIDX9ptfwe5CrwURf9AexGuPyE2jWRmHGApccUVdtIunMNLKGjzMiuB
+         ikmPMg+c6Da8dV7BbpB45dOVd/nkX/zCH6Tdvti5S0dYu25d1//7xpcz+AdTQ2vkKwrG
+         QsxDerAWbuwHua5coLkLEBC4ef4Bwasz1rUHURsvVvygR5J0HtQn+/U862QX5r5NzCnX
+         s2LQ3vKJuFFBBYAvH02Q/MzCmTBhwfJRfsVsOZgBTVfIge8tNqgWmk5MvFhgvXbjBcI1
+         R3Bw==
+X-Gm-Message-State: AOAM53362cPovgC1vVhkt8kqNwdM0Sm+dyCeCwLTpxjv5KEODywx7gqk
+        NtkGcvgUOdXPpGwH35WY9RdBuA==
+X-Google-Smtp-Source: ABdhPJwvnI084HJJ4vim9a3sctreUx8ZoiaiGUsBr1kx94Qt+Yxnl03yWN9JXRilkKjBAROxtCkbbQ==
+X-Received: by 2002:a54:4104:0:b0:2ec:b263:9979 with SMTP id l4-20020a544104000000b002ecb2639979mr3581918oic.66.1648006290958;
+        Tue, 22 Mar 2022 20:31:30 -0700 (PDT)
+Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id 23-20020a056870131700b000ddc17aba19sm6514297oab.58.2022.03.22.20.31.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Mar 2022 20:31:30 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Vinod Koul <vkoul@kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>
+Subject: [PATCH] net: stmmac: dwmac-qcom-ethqos: Enable RGMII functional clock on resume
+Date:   Tue, 22 Mar 2022 20:32:55 -0700
+Message-Id: <20220323033255.2282930-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We got issue as follows:
-EXT4-fs (loop0): mounted filesystem without journal. Opts: ,errors=continue
-==================================================================
-BUG: KASAN: use-after-free in ext4_search_dir fs/ext4/namei.c:1394 [inline]
-BUG: KASAN: use-after-free in search_dirblock fs/ext4/namei.c:1199 [inline]
-BUG: KASAN: use-after-free in __ext4_find_entry+0xdca/0x1210 fs/ext4/namei.c:1553
-Read of size 1 at addr ffff8881317c3005 by task syz-executor117/2331
+When the Qualcomm ethqos driver is properly described in its associated
+GDSC power-domain, the hardware will be powered down and loose its state
+between qcom_ethqos_probe() and stmmac_init_dma_engine().
 
-CPU: 1 PID: 2331 Comm: syz-executor117 Not tainted 5.10.0+ #1
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
-Call Trace:
- __dump_stack lib/dump_stack.c:83 [inline]
- dump_stack+0x144/0x187 lib/dump_stack.c:124
- print_address_description+0x7d/0x630 mm/kasan/report.c:387
- __kasan_report+0x132/0x190 mm/kasan/report.c:547
- kasan_report+0x47/0x60 mm/kasan/report.c:564
- ext4_search_dir fs/ext4/namei.c:1394 [inline]
- search_dirblock fs/ext4/namei.c:1199 [inline]
- __ext4_find_entry+0xdca/0x1210 fs/ext4/namei.c:1553
- ext4_lookup_entry fs/ext4/namei.c:1622 [inline]
- ext4_lookup+0xb8/0x3a0 fs/ext4/namei.c:1690
- __lookup_hash+0xc5/0x190 fs/namei.c:1451
- do_rmdir+0x19e/0x310 fs/namei.c:3760
- do_syscall_64+0x33/0x40 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x445e59
-Code: 4d c7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 1b c7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fff2277fac8 EFLAGS: 00000246 ORIG_RAX: 0000000000000054
-RAX: ffffffffffffffda RBX: 0000000000400280 RCX: 0000000000445e59
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 00000000200000c0
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000002
-R10: 00007fff2277f990 R11: 0000000000000246 R12: 0000000000000000
-R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
+The result of this is that the functional clock from the RGMII IO macro
+is no longer provides and the DMA software reset in dwmac4_dma_reset()
+will time out, due to lacking clock signal.
 
-The buggy address belongs to the page:
-page:0000000048cd3304 refcount:0 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x1317c3
-flags: 0x200000000000000()
-raw: 0200000000000000 ffffea0004526588 ffffea0004528088 0000000000000000
-raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
+Re-enable the functional clock, as part of the Qualcomm specific clock
+enablement sequence to avoid this problem.
 
-Memory state around the buggy address:
- ffff8881317c2f00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff8881317c2f80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffff8881317c3000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-                   ^
- ffff8881317c3080: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff8881317c3100: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-==================================================================
+The final clock configuration will be adjusted by ethqos_fix_mac_speed()
+once the link is being brought up.
 
-ext4_search_dir:
-  ...
-  de = (struct ext4_dir_entry_2 *)search_buf;
-  dlimit = search_buf + buf_size;
-  while ((char *) de < dlimit) {
-  ...
-    if ((char *) de + de->name_len <= dlimit &&
-	 ext4_match(dir, fname, de)) {
-	    ...
-    }
-  ...
-    de_len = ext4_rec_len_from_disk(de->rec_len, dir->i_sb->s_blocksize);
-    if (de_len <= 0)
-      return -1;
-    offset += de_len;
-    de = (struct ext4_dir_entry_2 *) ((char *) de + de_len);
-  }
-
-Assume:
-de=0xffff8881317c2fff
-dlimit=0x0xffff8881317c3000
-
-If read 'de->name_len' which address is 0xffff8881317c3005, obviously is
-out of range, then will trigger use-after-free.
-To solve this issue, 'dlimit' must reserve 8 bytes, as we will read
-'de->name_len' to judge if '(char *) de + de->name_len' out of range.
-
-Signed-off-by: Ye Bin <yebin10@huawei.com>
+Fixes: a7c30e62d4b8 ("net: stmmac: Add driver for Qualcomm ethqos")
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
- fs/ext4/ext4.h  | 4 ++++
- fs/ext4/namei.c | 2 +-
- 2 files changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/fs/ext4/ext4.h b/fs/ext4/ext4.h
-index 3f87cca49f0c..276683f7ab77 100644
---- a/fs/ext4/ext4.h
-+++ b/fs/ext4/ext4.h
-@@ -2273,6 +2273,10 @@ static inline int ext4_forced_shutdown(struct ext4_sb_info *sbi)
-  * Structure of a directory entry
-  */
- #define EXT4_NAME_LEN 255
-+/*
-+ * Base length of ext4_dir_entry_2 and ext4_dir_entry exclude name
-+ */
-+#define EXT4_BASE_DIR_LEN 8
- 
- struct ext4_dir_entry {
- 	__le32	inode;			/* Inode number */
-diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
-index e37da8d5cd0c..4739a5aa13aa 100644
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -1465,7 +1465,7 @@ int ext4_search_dir(struct buffer_head *bh, char *search_buf, int buf_size,
- 	int de_len;
- 
- 	de = (struct ext4_dir_entry_2 *)search_buf;
--	dlimit = search_buf + buf_size;
-+	dlimit = search_buf + buf_size - EXT4_BASE_DIR_LEN;
- 	while ((char *) de < dlimit) {
- 		/* this code is executed quadratically often */
- 		/* do minimal checking `by hand' */
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
+index 0cc28c79cc61..835caa15d55f 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
+@@ -487,6 +487,13 @@ static int ethqos_clks_config(void *priv, bool enabled)
+ 			dev_err(&ethqos->pdev->dev, "rgmii_clk enable failed\n");
+ 			return ret;
+ 		}
++
++		/* Enable functional clock to prevent DMA reset to timeout due
++		 * to lacking PHY clock after the hardware block has been power
++		 * cycled. The actual configuration will be adjusted once
++		 * ethqos_fix_mac_speed() is invoked.
++		 */
++		ethqos_set_func_clk_en(ethqos);
+ 	} else {
+ 		clk_disable_unprepare(ethqos->rgmii_clk);
+ 	}
 -- 
-2.31.1
+2.33.1
 
