@@ -2,69 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CFB2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 19:51:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98F9AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 19:53:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344422AbiCWTwf (ORCPT
+        id S1343582AbiCWTyz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 15:52:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39322 "EHLO
+        Wed, 23 Mar 2022 15:54:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344405AbiCWTwY (ORCPT
+        with ESMTP id S234227AbiCWTyw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 15:52:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 978F38BE14;
-        Wed, 23 Mar 2022 12:50:54 -0700 (PDT)
+        Wed, 23 Mar 2022 15:54:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E85EA7C16F;
+        Wed, 23 Mar 2022 12:53:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3652961617;
-        Wed, 23 Mar 2022 19:50:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 97D42C340F2;
-        Wed, 23 Mar 2022 19:50:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648065053;
-        bh=RqABn6AgjRAQfjZ3PntbfZ6wbrEcAVqycah7eoToP1I=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=b6pNd1iB90Imym8RFfd0/FwusZvxSq2/7GHWhIyTBZqspdln/7m5yOHFI6Q2o2ea9
-         LYqrPP4mcsYGpeEPWUYvXarVwgV8E7pkXaJVnlASMbQ7ZGrrMdwl+FG43Ab/b2o6rB
-         PQAHdAcjXLu//RZG5DcdLqKEOIDGEwxnDNTm34IJP1jEFEO/Vfz8zM1WN0LR3LgS8v
-         comgmmeyt0ULXzN/SfVZsfm4xUnw38JUMmjBcF4MooW5Um5H1RJHAnOBFWby0FrFVS
-         xaokr8oasRRAUVkcCcistKru4q8q8hXtsCc9lWHWUeGJVUkZVj+YwrnvCeJya0H0ja
-         MVgeiuz/pFPGg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 81712E7BB0B;
-        Wed, 23 Mar 2022 19:50:53 +0000 (UTC)
-Subject: Re: [GIT PULL] cgroup changes for v5.18-rc1
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YjjdEUPIoYyPjsvh@slm.duckdns.org>
-References: <YjjdEUPIoYyPjsvh@slm.duckdns.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YjjdEUPIoYyPjsvh@slm.duckdns.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tj/cgroup.git for-5.18
-X-PR-Tracked-Commit-Id: f9da322e864e5cd3dc217480e73f78f47cf40c5b
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 2fce7ea0e0964e598cf9da8985d2d811f8c6a4a7
-Message-Id: <164806505352.21505.18075985246981642274.pr-tracker-bot@kernel.org>
-Date:   Wed, 23 Mar 2022 19:50:53 +0000
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org
+        by ams.source.kernel.org (Postfix) with ESMTPS id 95DE3B81FDB;
+        Wed, 23 Mar 2022 19:53:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CD5FC340F4;
+        Wed, 23 Mar 2022 19:53:20 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="c3/cXOFK"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1648065196;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yMk8V2X3o4sbNIG5kMPoqxm240J/8B6Z9RWZ6FUqIwg=;
+        b=c3/cXOFKCbip3lNmIAavx8n8ejoQB70BJNzKUErSlVm/QimujdahA44c+AGc2hQ6JvbIEv
+        niHRM+AfXwYsOktOabpc8/hXUfkT3mjYa87k2qxvSm5LdCTQk9U0Pa53fy+eHmUsWbUnKe
+        McYyGKTW3QxpLpjDasKTCLjw7qpKvgE=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 2e884b0f (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 23 Mar 2022 19:53:16 +0000 (UTC)
+Received: by mail-yb1-f170.google.com with SMTP id u103so4656069ybi.9;
+        Wed, 23 Mar 2022 12:53:15 -0700 (PDT)
+X-Gm-Message-State: AOAM531AhFNIgNm9DR0bTEavSG4IoX1uf4lfvzJitCrNDEB8jiGspC1f
+        hk/vHUL19QXisWDkphVN12LyRezKI2bmVDk7Pcc=
+X-Google-Smtp-Source: ABdhPJyyILuutx5UvrpfJSTJzzIiGwfjoVodxSefOrtWkqpEvPqCRmdmo5baaODx20up+gpurhgdtNkoP5MW6qKGtEw=
+X-Received: by 2002:a25:ad83:0:b0:633:abf6:5f69 with SMTP id
+ z3-20020a25ad83000000b00633abf65f69mr1612956ybi.382.1648065194876; Wed, 23
+ Mar 2022 12:53:14 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220322191436.110963-1-Jason@zx2c4.com> <1648009787.fah6dos6ya.none@localhost>
+ <CAHmME9rsvxczJrhPwRX6nyrh9NB2AuJqkEKrTLx-G-T1J6_czQ@mail.gmail.com> <7cde489e73c8448b95a1b7bc6ed1d75b@AcuMS.aculab.com>
+In-Reply-To: <7cde489e73c8448b95a1b7bc6ed1d75b@AcuMS.aculab.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Wed, 23 Mar 2022 13:53:03 -0600
+X-Gmail-Original-Message-ID: <CAHmME9rxV-WLBCGyMRwba_8nF_onRfBi0+-xz84-HLNfee=R3Q@mail.gmail.com>
+Message-ID: <CAHmME9rxV-WLBCGyMRwba_8nF_onRfBi0+-xz84-HLNfee=R3Q@mail.gmail.com>
+Subject: Re: [PATCH] random: allow writes to /dev/urandom to influence fast init
+To:     David Laight <David.Laight@aculab.com>
+Cc:     "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jann Horn <jannh@google.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        Sandy Harris <sandyinchina@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 21 Mar 2022 10:16:17 -1000:
+Hi David,
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tj/cgroup.git for-5.18
+On Wed, Mar 23, 2022 at 8:01 AM David Laight <David.Laight@aculab.com> wrote:
+>
+> From: Jason A. Donenfeld
+> > Sent: 23 March 2022 04:48
+> ...
+> > - Plenty of things are seeding the RNG correctly, and buildroot's
+> > shell script is just "doing it wrong".
+> >
+> > On that last point, I should reiterate that buildroot's shell script
+> > still isn't actually initializing the RNG, despite what it says in its
+> > echo; there's never been a way to initialize the RNG from a shell
+> > script, without calling out to various special purpose ioctl-aware
+> > binaries.
+>
+> Perhaps the very first write after boot could be assumed to
+> be valid initialisation data?
+> (On top of a few other tests.)
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/2fce7ea0e0964e598cf9da8985d2d811f8c6a4a7
+I addressed this already earlier. That approach does not work. Too
+many things already pass in garbage, not expecting for it to be
+credited, but just contributory. /dev/urandom writes simply has never
+had the semantics one would want for credited seeding. Adding a
+heuristic like this will break users.
 
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Jason
