@@ -2,112 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE373C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 17:26:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6B5BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 17:27:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245390AbiCWR2M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 13:28:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56320 "EHLO
+        id S1343570AbiCWR3G (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 13:29:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343562AbiCWR2G (ORCPT
+        with ESMTP id S239166AbiCWR3E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 13:28:06 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A56E47484B;
-        Wed, 23 Mar 2022 10:26:36 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id m30so3155874wrb.1;
-        Wed, 23 Mar 2022 10:26:36 -0700 (PDT)
+        Wed, 23 Mar 2022 13:29:04 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16B317B577;
+        Wed, 23 Mar 2022 10:27:35 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id mp6-20020a17090b190600b001c6841b8a52so7059159pjb.5;
+        Wed, 23 Mar 2022 10:27:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=V9Yyooz68jl2Yv/SIAxGrm/okwE52nxnEfNEFc+sdng=;
-        b=FrlZh6+UbspaaXyxhTyMHIa8XYe0QM+o1xheOIlAv4OtXepnmVZYhqUNJTBunN+QNA
-         5EVR1h0DyGH7+43jc5PKu4FYGPEp03inEVfYWsDKTLpKrBHSv7ZWxFD3LoVz5typNvAs
-         TO83pHFF1Hs9ATGDeTQWG3BR87fA1HAuTcynG6y84uo4VHkdiEpXHe9p19T1z5NbgpKA
-         JBbCDBU2dX0qqapkPCi5FcwJBVxC1cOAYIunSgvLknsg8ibqoYVMILgtktz9EIdnh3YI
-         Hv224v0kO4up3iC5sYXvibPhNm88mq3oS7pIUJDKYUUE165JQTX7TUM1pTXowL8KM8mc
-         gwUQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=W5pYT/F8t16XQbM3qlDKbbsJw4C6bC82sHdzEgCXN8E=;
+        b=GDg1zhAMUcNSRBRWchOY916ZL3epaxVmXkOwkuzuKQh27+8rn28+zp63IOtKzzcDaR
+         qJ0EAxLqtGRKCULxFdhyvoZpninXTBjsZhCdm/0zeDl3qMi7Lo910smtr51S5Q4v726y
+         KkIqFYVtaNhSNfrTk9ZdNcPjVI1T50b/UlzKC491rFgm1viTIgUcguLH05dhbBLPfZge
+         9iYPbqS8mTejy8qW6fRUrZTW1wno+JGhTjr8sc7SDCf0iGMJQ1sWxy7+RuvpMNuwi7RJ
+         +SCn8AHuv0oee4AsUWDGN80dRSJWs3pYHm8ypSAIFIy0zJmP4Dy9U+T6wDPXm8AniFBY
+         v7MA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=V9Yyooz68jl2Yv/SIAxGrm/okwE52nxnEfNEFc+sdng=;
-        b=r20G8vm3u0KHyupCtBlsVEkj+XPb9VeacT5PQ8RokSjNhCWt6JxVMdfNwFWjg2AuqY
-         0sjrIO+ro5hUaEExWvqFf+bVFRRou5RrBOJYqRHZIp2RPOqqzsM95weZFXxpYYb1hPwi
-         rIU5ftP7WT0XvZn+KQRwZ+09vbQH3+CEDf/VO7zMrD+/KKwZOnAzCPNZQfSE/yu7TVWF
-         z+oYflLri0egYq8I0d6eWJnTWxrEH0YT8iAYfEyHkEW7Hw024TBgONJkk+Vn5u9LKYR5
-         B74KOhRUk3+b8bsULE0oOnyxr3VdvMR5jSLYew6nsJ55vJtFaScDgFPRMIcDcTllgwLC
-         3T7A==
-X-Gm-Message-State: AOAM531NrMNvq2lPF7Fbgm560a+pVP6uXn2DrJyT+UeVcjXRFQja+C3R
-        0b6GXQr3oVuXTe7HOgiPziY=
-X-Google-Smtp-Source: ABdhPJz0Yv0mOtu8mBleQKGzx8/1JIWReXJKiILWv0hl+NKIR3DKIt6hnhyV6uzP2eJjCrNVa+qVlA==
-X-Received: by 2002:a05:6000:2ca:b0:204:1e6a:d2a9 with SMTP id o10-20020a05600002ca00b002041e6ad2a9mr915767wry.182.1648056395232;
-        Wed, 23 Mar 2022 10:26:35 -0700 (PDT)
-Received: from [192.168.0.32] ([137.101.87.65])
-        by smtp.gmail.com with ESMTPSA id j15-20020a05600c1c0f00b0038cabc63721sm378462wms.30.2022.03.23.10.26.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Mar 2022 10:26:34 -0700 (PDT)
-Message-ID: <3c8b96c5-c390-0ff8-2434-b6bb2e60b3d3@gmail.com>
-Date:   Wed, 23 Mar 2022 18:26:33 +0100
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=W5pYT/F8t16XQbM3qlDKbbsJw4C6bC82sHdzEgCXN8E=;
+        b=b9cN6U0UtllqdkwLQDeWtrbqtZj8mHUxep4OHbIE7GfcmIw4Mi/NaIAonRhPshbXLB
+         0Oa3Co0/I1eKmwD8jVIP869LbcMj8DQWQlnW3S7Mt/rL0JsaFdV5tmld4pUOKIBM4Uxp
+         8+tRdTdCFw+QuZBCAw6e6QCQq8SaOJeNYuq2te9rcQrrwKHhrQ2NOZVdHlGM8DoY6q+y
+         hX5QLPwGT6IJwmUVDneiztbZeSK9T9Zty86DwYAXkVRnP3BIMXj6NjhGfzz82RJGMzFP
+         vINB7iL+WP6NXV7V/dblYwWkvw+VuzwPwQs4/V6NqcOOyZzljczvXDY02kRynGCWtHQ9
+         ragA==
+X-Gm-Message-State: AOAM530aL05TTfj66gahgAJCEdQh/bpFAOpKg6Pne7Hmf69CTJWbFZ+y
+        dr04wTgl6cXLD5yke0hG9ds=
+X-Google-Smtp-Source: ABdhPJxmn2IR2mFeOCj/Oi7mLw04WcTeNzzvDTl+Ne7JpdcB3OPU7XiQhd5xvXyxhHze1bIILNMI7A==
+X-Received: by 2002:a17:902:cf0e:b0:14f:8a60:475c with SMTP id i14-20020a170902cf0e00b0014f8a60475cmr1176077plg.146.1648056454158;
+        Wed, 23 Mar 2022 10:27:34 -0700 (PDT)
+Received: from google.com ([2620:15c:202:201:d52a:448a:8e0b:67f1])
+        by smtp.gmail.com with ESMTPSA id h16-20020a056a001a5000b004fa343c2d0csm491499pfv.136.2022.03.23.10.27.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Mar 2022 10:27:32 -0700 (PDT)
+Date:   Wed, 23 Mar 2022 10:27:30 -0700
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     "jingle.wu" <jingle.wu@emc.com.tw>
+Cc:     linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        phoenix@emc.com.tw,
+        "jingle.wu" <jingle.wu@elan.corp-partner.google.com>
+Subject: Re: [PATCH] Input: trackpoint - Add Suspend mode for Elan TrackPoint
+Message-ID: <YjtYgoBvytgQu/pn@google.com>
+References: <20200904024231.26812-1-jingle.wu@emc.com.tw>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4 04/22] arm64: dts: mt8192: Add SCP node
-Content-Language: en-US
-To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Ryder Lee <ryder.lee@kernel.org>,
-        Hui Liu <hui.liu@mediatek.com>
-References: <20220318144534.17996-1-allen-kh.cheng@mediatek.com>
- <20220318144534.17996-5-allen-kh.cheng@mediatek.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220318144534.17996-5-allen-kh.cheng@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200904024231.26812-1-jingle.wu@emc.com.tw>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Jingle,
 
-
-On 18/03/2022 15:45, Allen-KH Cheng wrote:
-> Add SCP node for mt8192 SoC.
+On Fri, Sep 04, 2020 at 10:42:31AM +0800, jingle.wu wrote:
+> From: "jingle.wu" <jingle.wu@elan.corp-partner.google.com>
 > 
-> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+> Add suspend command for elan trackpoint
 
-Applied, thanks
+Could you please elaborate what this mode does to the trackpint?
+
+Also, your signed-off-by is missing.
 
 > ---
->   arch/arm64/boot/dts/mediatek/mt8192.dtsi | 12 ++++++++++++
->   1 file changed, 12 insertions(+)
+>  drivers/input/mouse/trackpoint.c | 16 ++++++++++++++++
+>  drivers/input/mouse/trackpoint.h |  1 +
+>  2 files changed, 17 insertions(+)
 > 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> index 9e1b563bebab..195d50894df4 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> @@ -706,6 +706,18 @@
->   			status = "disabled";
->   		};
->   
-> +		scp: scp@10500000 {
-> +			compatible = "mediatek,mt8192-scp";
-> +			reg = <0 0x10500000 0 0x100000>,
-> +			      <0 0x10700000 0 0x8000>,
-> +			      <0 0x10720000 0 0xe0000>;
-> +			reg-names = "sram", "l1tcm", "cfg";
-> +			interrupts = <GIC_SPI 435 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			clocks = <&infracfg CLK_INFRA_SCPSYS>;
-> +			clock-names = "main";
-> +			status = "disabled";
-> +		};
+> diff --git a/drivers/input/mouse/trackpoint.c b/drivers/input/mouse/trackpoint.c
+> index 3eefee2ee2a1..b3cba973a4eb 100644
+> --- a/drivers/input/mouse/trackpoint.c
+> +++ b/drivers/input/mouse/trackpoint.c
+> @@ -389,6 +389,20 @@ static int trackpoint_reconnect(struct psmouse *psmouse)
+>  	return 0;
+>  }
+>  
+> +static void trackpoint_cleanup(struct psmouse *psmouse)
+> +{
+> +	struct trackpoint_data *tp = psmouse->private;
+> +	u8 param[3] = { TP_TOGGLE, TP_TOGGLE_BURST, TP_TOGGLE_ELAN_SLEEP };
 > +
->   		nor_flash: spi@11234000 {
->   			compatible = "mediatek,mt8192-nor";
->   			reg = <0 0x11234000 0 0xe0>;
+> +	if (tp->variant_id == TP_VARIANT_ELAN) {
+> +		if (ps2_command(&psmouse->ps2dev, param,
+
+I'd combine the 2 "ifs".
+
+> +				MAKE_PS2_CMD(3, 0, TP_COMMAND))) {
+> +			psmouse_err(psmouse,
+
+psmouse_warn() since it is not a hard error.
+
+> +				    "failed to suspend trackpont.\n");
+
+I'd say "failed to suspend Elan trackpont\n".
+
+> +		}
+> +	}
+> +}
+> +
+>  int trackpoint_detect(struct psmouse *psmouse, bool set_properties)
+>  {
+>  	struct ps2dev *ps2dev = &psmouse->ps2dev;
+> @@ -421,6 +435,8 @@ int trackpoint_detect(struct psmouse *psmouse, bool set_properties)
+>  	psmouse->reconnect = trackpoint_reconnect;
+>  	psmouse->disconnect = trackpoint_disconnect;
+>  
+> +	psmouse->cleanup = trackpoint_cleanup;
+> +
+>  	if (variant_id != TP_VARIANT_IBM) {
+>  		/* Newer variants do not support extended button query. */
+>  		button_info = 0x33;
+> diff --git a/drivers/input/mouse/trackpoint.h b/drivers/input/mouse/trackpoint.h
+> index 5cb93ed26085..c7fa75452976 100644
+> --- a/drivers/input/mouse/trackpoint.h
+> +++ b/drivers/input/mouse/trackpoint.h
+> @@ -107,6 +107,7 @@
+>  #define TP_TOGGLE_EXT_TAG	0x22	/* Bit 3 of the first packet coming from the
+>  					   external device will be forced to 1 */
+>  #define TP_MASK_EXT_TAG			0x04
+> +#define TP_TOGGLE_ELAN_SLEEP	0x8
+
+It seems to me that TP_TOGGLE_ELAN_SLEEP is a bit in TP_TOGGLE_BURST
+subcommand, so it is better to move it next to TP_MASK_BURST and call it
+TP_MASK_ELAN_SLEEP to match the rest.
+
+Thanks.
+
+-- 
+Dmitry
