@@ -2,112 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D82B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 11:22:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B850C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 11:31:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235173AbiCWLWv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 07:22:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34328 "EHLO
+        id S239242AbiCWLdE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 07:33:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235624AbiCWLWt (ORCPT
+        with ESMTP id S233311AbiCWLdC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 07:22:49 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 322DE78FCA;
-        Wed, 23 Mar 2022 04:21:20 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id r22so2116440ejs.11;
-        Wed, 23 Mar 2022 04:21:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=87E72TCYXIHs+TxIG+l3uw9PKroKBbtdliBk27X7cqU=;
-        b=mZuOPUC1JPNEyLejK7a7msjQdh9oyGwx2iT5PQH8gXq9SYl5RA1ogmBF8TJrWyPBsO
-         0d4YI6s3it4uHjEO5v9MjyYDck6aKZ2ASjWnL73UagE8pP5Ber56NrCV2wpa23Vg9d7t
-         3jooRkr6m/d/Pu8ModCXLY3UP+ZFHuAk+2Z/MgM1meqKYV80Czohn5b+yeiXqWJKvZf6
-         9uuVrJvCLgRvgWwjy7ZyscxLwlxsnSdAHYg9NhSmWVULxmAu1KQhafhnjW78XVw0oF1O
-         n6XCZZLLGVcODUjD//HRBnnYjzdRyCklW+S1zt+anW3LanIPnNkF7Qt4qihcAZSBv6uX
-         69aw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=87E72TCYXIHs+TxIG+l3uw9PKroKBbtdliBk27X7cqU=;
-        b=ki1yawf+dnilRpP+H45eKDye8dplO1dmtPu6jYIiNppOgxt9Po63oGYplqYOie22SS
-         Cqu+i9zCdDIj3pQSHQCEq0OGg5HZFMsC5B94VH50rW2+Dm0XF1QSLZBMyawlCKMsF7m9
-         mjJnb17nWaeGOy8RZ1CqATDGYejk7yomzSwzevzLjrSfopIkJMCNhV33zxVqJDg5r3IY
-         BZGINGdji8WFL8Y8osc4BJ3LhbhNpV594BahWcEvJ0mEHZYtc78WmVFz5QifY2LFMJCa
-         2piZXBb27mZ++sagghbTpa0y17Dv5wQ94QVmqv3pyN+9pL3VEHY8jqkWrhWB/2vTEWNo
-         Jk5A==
-X-Gm-Message-State: AOAM53250mKSq5zydwxm7/hSYX6RTx1fc3Gz1ieNEvNOX8o1NUbxCfyT
-        ayo8Rt6eiYBGjVEQPjbO6Z0=
-X-Google-Smtp-Source: ABdhPJybO4BiYPAi/fg3VFIMEzE591UHnNC3gbe30chy4gmV4funJuWxJSRkeJ/Zs57SqVYNE2lZng==
-X-Received: by 2002:a17:906:c214:b0:6b3:d0d6:9fe6 with SMTP id d20-20020a170906c21400b006b3d0d69fe6mr30833372ejz.150.1648034478453;
-        Wed, 23 Mar 2022 04:21:18 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id og49-20020a1709071df100b006db0dcf673esm9856923ejc.27.2022.03.23.04.21.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Mar 2022 04:21:18 -0700 (PDT)
-Date:   Wed, 23 Mar 2022 13:21:16 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Hans Schultz <schultz.hans@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB
- implementation
-Message-ID: <20220323112116.q6shx2g4r23ungtc@skbuf>
-References: <20220317172013.rhjvknre5w7mfmlo@skbuf>
- <86tubvk24r.fsf@gmail.com>
- <20220318121400.sdc4guu5m4auwoej@skbuf>
- <86pmmjieyl.fsf@gmail.com>
- <20220318131943.hc7z52beztqlzwfq@skbuf>
- <86a6dixnd2.fsf@gmail.com>
- <20220322110806.kbdb362jf6pbtqaf@skbuf>
- <86fsn90ye8.fsf@gmail.com>
- <20220323101643.kum3nuqctunakcfo@skbuf>
- <864k3p5437.fsf@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <864k3p5437.fsf@gmail.com>
+        Wed, 23 Mar 2022 07:33:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C45AB716E2
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 04:31:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E391B81E7C
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 11:31:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ECDAC340E8;
+        Wed, 23 Mar 2022 11:31:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648035090;
+        bh=kGhxhui6d7ENoM5hG46cnHHMw8ZF28hUfd5gsRjeg2s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=NRiS72I27HHyrozZayrzaGgcdpYbZ+HEvCZUmvoD0wD6nTcL59U/gOonWvviIsR+8
+         WMbt4fP755sIwXx6t5DZZJaBGOVrSFLoUDk2XWTy7A/MSO1ooQQshT+S0Nfh4SXxBW
+         nTsiFRcanLxluVkqCiKNpG6HEcyT8I7d6lwCiCWyDuskbsB2skPxEr7tuEHBm0qQk4
+         e1HvaAHGHvMEMpIQvoWlipjwLh1bJ9+qxVrjMRs+v66XBSCh8Bf4jYatEaWZ4EJTbB
+         YVcx0+zGW/uoD6ntKv/c/Y+ap7/T3s1LkaWsaBHztD0KskgosFOY+1KDNofRP1m13h
+         WqRQBpfQ4u0HQ==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nWzD5-00GTyX-ST; Wed, 23 Mar 2022 11:31:27 +0000
+Date:   Wed, 23 Mar 2022 11:31:27 +0000
+Message-ID: <8735j8ykfk.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Xiongfeng Wang <wangxiongfeng2@huawei.com>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        John Garry <john.garry@huawei.com>,
+        David Decotigny <ddecotig@google.com>
+Subject: Re: [PATCH v2 0/3] genirq: Managed affinity fixes
+In-Reply-To: <d7019731-4ade-ea79-7464-f52872a60d79@huawei.com>
+References: <20220321193608.975495-1-maz@kernel.org>
+        <a83da394-dcc0-c9a6-1569-9c30fbc291fd@huawei.com>
+        <87a6dhxd13.wl-maz@kernel.org>
+        <d7019731-4ade-ea79-7464-f52872a60d79@huawei.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: wangxiongfeng2@huawei.com, linux-kernel@vger.kernel.org, tglx@linutronix.de, john.garry@huawei.com, ddecotig@google.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 11:57:16AM +0100, Hans Schultz wrote:
-> >> >> Another issue I see, is that there is a deadlock or similar issue when
-> >> >> receiving violations and running 'bridge fdb show' (it seemed that
-> >> >> member violations also caused this, but not sure yet...), as the unit
-> >> >> freezes, not to return...
-> >> >
-> >> > Have you enabled lockdep, debug atomic sleep, detect hung tasks, things
-> >> > like that?
-> >> 
-> >> I have now determined that it is the rtnl_lock() that causes the
-> >> "deadlock". The doit() in rtnetlink.c is under rtnl_lock() and is what
-> >> takes care of getting the fdb entries when running 'bridge fdb show'. In
-> >> principle there should be no problem with this, but I don't know if some
-> >> interrupt queue is getting jammed as they are blocked from rtnetlink.c?
-> >
-> > Sorry, I forgot to respond yesterday to this.
-> > By any chance do you maybe have an AB/BA lock inversion, where from the
-> > ATU interrupt handler you do mv88e6xxx_reg_lock() -> rtnl_lock(), while
-> > from the port_fdb_dump() handler you do rtnl_lock() -> mv88e6xxx_reg_lock()?
+On Wed, 23 Mar 2022 10:58:33 +0000,
+Xiongfeng Wang <wangxiongfeng2@huawei.com> wrote:
 > 
-> If I release the mv88e6xxx_reg_lock() before calling the handler, I need
-> to get it again for the mv88e6xxx_g1_atu_loadpurge() call at least. But
-> maybe the vtu_walk also needs the mv88e6xxx_reg_lock()?
-> I could also just release the mv88e6xxx_reg_lock() before the
-> call_switchdev_notifiers() call and reacquire it immediately after?
+> 
+> 
+> On 2022/3/23 16:56, Marc Zyngier wrote:
+> > Hi Xiongfeng,
+> > 
+> > On Wed, 23 Mar 2022 03:52:46 +0000,
+> > Xiongfeng Wang <wangxiongfeng2@huawei.com> wrote:
+> >>
+> >> Hi, Marc
+> >>
+> >> On 2022/3/22 3:36, Marc Zyngier wrote:
+> >>> John (and later on David) reported[1] a while ago that booting with
+> >>> maxcpus=1, managed affinity devices would fail to get the interrupts
+> >>> that were associated with offlined CPUs.
+> >>>
+> >>> Similarly, Xiongfeng reported[2] that the GICv3 ITS would sometime use
+> >>> non-housekeeping CPUs instead of the affinity that was passed down as
+> >>> a parameter.
+> >>>
+> >>> [1] can be fixed by not trying to activate these interrupts if no CPU
+> >>> that can satisfy the affinity is present (a patch addressing this was
+> >>> already posted[3])
+> >>>
+> >>> [2] is a consequence of affinities containing non-online CPUs being
+> >>> passed down to the interrupt controller driver and the ITS driver
+> >>> trying to paper over that by ignoring the affinity parameter and doing
+> >>> its own (stupid) thing. It would be better to (a) get the core code to
+> >>> remove the offline CPUs from the affinity mask at all times, and (b)
+> >>> fix the drivers so that they can trust the core code not to trip them.
+> >>>
+> >>> This small series, based on 5.17, addresses the above.
+> >>
+> >> I have tested this patchset on D06. It works well with kernel parameter
+> >> 'maxcpus=1' or 'nohz_full=1-127 isolcpus=nohz,domain,managed_irq,1-127'.
+> >> Also the 'effective_affinity' is correct. Thanks!
+> > 
+> > Thanks for having given it a go.
+> > 
+> >> By the way, I merged the second patch manually because of conflicts.
+> >> Maybe I lack some patches on your local repo.
+> > 
+> > That's odd, as the patches are directly sitting on top of 5.17 in my
+> > tree (see [1]). Do you have any out of tree patches around? Please
+> > make sure you test this without any extra change.
+> 
+> I apply the patchset based on the latest mainline kernel. The latest commit is
+>   commit 3bf03b9a0839c9fb06927ae53ebd0f960b19d408
+>   Merge branch 'akpm' (patches from Andrew)
+> I didn't change the modification of the second patch. Only resolve the
+> context conflicts, which is cause by the following commit.
+>   commit 04d4e665a60902cf36e7ad39af1179cb5df542ad
+>   sched/isolation: Use single feature type while referring to housekeeping cpumask
+> It changed 'HK_FLAG_MANAGED_IRQ' to 'HK_TYPE_MANAGED_IRQ'.
 
-The cleanest way to go about this would be to have the call_switchdev_notifiers()
-portion of the ATU interrupt handling at the very end of mv88e6xxx_g1_atu_prob_irq_thread_fn(),
-with no hardware access needed, and therefore no reg_lock() held.
+Ah, that's on top of linux/master then. Yeah, I expect some small
+conflicts (this is a popular spot). I'll rebase things at some point
+once (and if) we agree that patch #2 is the right thing to do.
+
+Thanks,
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
