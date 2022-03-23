@@ -2,98 +2,260 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2944C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 21:59:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18781C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 22:00:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345068AbiCWWBD (ORCPT
+        id S1345079AbiCWWBp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 18:01:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52878 "EHLO
+        Wed, 23 Mar 2022 18:01:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229908AbiCWWBA (ORCPT
+        with ESMTP id S229908AbiCWWBn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 18:01:00 -0400
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5577045040;
-        Wed, 23 Mar 2022 14:59:29 -0700 (PDT)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 963D292009D; Wed, 23 Mar 2022 22:59:28 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 9423792009C;
-        Wed, 23 Mar 2022 21:59:28 +0000 (GMT)
-Date:   Wed, 23 Mar 2022 21:59:28 +0000 (GMT)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Andy Shevchenko <andy@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/2] serial: 8250: Add proper clock handling for OxSemi
- PCIe devices
-In-Reply-To: <YjSL34DkktVVahmy@smile.fi.intel.com>
-Message-ID: <alpine.DEB.2.21.2203232126220.52439@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2106260539240.37803@angie.orcam.me.uk> <alpine.DEB.2.21.2106260604540.37803@angie.orcam.me.uk> <YOyi0cPdIVSCcpmw@surfacebook.localdomain> <alpine.DEB.2.21.2107130150420.9461@angie.orcam.me.uk> <CAHp75VfnCG-C6bUzhhC9jQGOSgMXVLZ=QtH0mdhAD85yeqBC7A@mail.gmail.com>
- <alpine.DEB.2.21.2107131504270.9461@angie.orcam.me.uk> <CAHp75VeS3UdK5o4cEKuT=nz+Yob9FBv6RNJ-i116pFZQTGuyuQ@mail.gmail.com> <alpine.DEB.2.21.2202052213110.34636@angie.orcam.me.uk> <YjSL34DkktVVahmy@smile.fi.intel.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Wed, 23 Mar 2022 18:01:43 -0400
+X-Greylist: delayed 454 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 23 Mar 2022 15:00:11 PDT
+Received: from smtp1.de.adit-jv.com (smtp1.de.adit-jv.com [93.241.18.167])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1CFE593A2;
+        Wed, 23 Mar 2022 15:00:11 -0700 (PDT)
+Received: from hi2exch02.adit-jv.com (hi2exch02.adit-jv.com [10.72.92.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtp1.de.adit-jv.com (Postfix) with ESMTPS id 483E13C003B;
+        Wed, 23 Mar 2022 22:52:35 +0100 (CET)
+Received: from lxhi-065 (10.72.94.3) by hi2exch02.adit-jv.com (10.72.92.28)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2308.21; Wed, 23 Mar
+ 2022 22:52:34 +0100
+Date:   Wed, 23 Mar 2022 22:52:29 +0100
+From:   Eugeniu Rosca <erosca@de.adit-jv.com>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+CC:     Eugeniu Rosca <erosca@de.adit-jv.com>,
+        <linux-renesas-soc@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Bhuvanesh Surachari <bhuvanesh_surachari@mentor.com>,
+        Eugeniu Rosca <roscaeugeniu@gmail.com>
+Subject: Re: [PATCH v2] i2c: rcar: add SMBus block read support
+Message-ID: <20220323215229.GA9403@lxhi-065>
+References: <20210922160649.28449-1-andrew_gabbasov@mentor.com>
+ <CAMuHMdVVDpBAQR+H1TAnpf65aVbAL0Mm0km7Z9L7+1JuF6n1gQ@mail.gmail.com>
+ <000001d7badd$a8512d30$f8f38790$@mentor.com>
+ <20211006182314.10585-1-andrew_gabbasov@mentor.com>
+ <Yg6ls0zyTDe7LQbK@kunai>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <Yg6ls0zyTDe7LQbK@kunai>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Originating-IP: [10.72.94.3]
+X-ClientProxiedBy: hi2exch02.adit-jv.com (10.72.92.28) To
+ hi2exch02.adit-jv.com (10.72.92.28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 18 Mar 2022, Andy Shevchenko wrote:
+Dear Wolfram,
+Dear Andrew,
+Dear Geert,
 
-> >  It does allow one to program the full clock divider range of the OxSemi 
-> > devices.  I find it appropriate according to my engineer's code of good 
-> > practices.  And it doesn't cause any burden for non-OxSemi code.
+A couple of questions and test results below.
+
+On Thu, Feb 17, 2022 at 08:44:51PM +0100, Wolfram Sang wrote:
+> Hi Andrew,
 > 
-> How BOTHER does prevent you doing the same?
-
- It does not allow you to set arbitrary serial port clock rates.  You can 
-only set integer baud rates, and then only those that do not exceed the 
-[1;65535] clock divisor range.
-
-> >  So I have had a look at how it has been done for other drivers and I have 
-> > now convinced myself against such a split.  The primary reason for this 
-> > conclusion is that there is no basic infrastructure for such a split and 
-> > the ultimate result is code duplication with no clear benefit to justify 
-> > it.
+> first sorry that it took so long. The reason here is that my original
+> plan was to add 256-byte support to RECV_LEN in the I2C core and enable
+> it on R-Car afterwards. Sadly, I never found the time to drive this
+> forward. So, all RECV_LEN things got stuck for a while :(
 > 
-> Justification for split is to keep certain quirks out of the scope of the
-> generic driver. I'm not sure what duplication you are talking about if the
-> LOC statistics shows otherwise.
+> > This patch (adapted) was tested with v4.14, but due to lack of real
+> > hardware with SMBus block read operations support, using "simulation",
+> > that is manual analysis of data, read from plain I2C devices with
+> > SMBus block read request.
+> 
+> You could wire up two R-Car I2C instances, set up one as an I2C slave
+> handled by the I2C testunit and then use the other instance with
+> SMBUS_BLOCK_PROC_CALL which also needs RECV_LEN. Check
+> Documentation/i2c/slave-testunit-backend.rst for details.
 
- All the init/remove code is almost the same across all the devices.  And 
-suspend/resume and PCI error handling code has been removed from the split 
-off devices, and for the functional regression to be fixed:
+I am obviously not an SMBus expert, but I wonder if simply testing the
+PCA9654 I/O Expander with SMBus support on the H3-Salvator-X target
+could be acceptable as a test procedure? See some test results below.
 
-1. this code would have to be replicated, or
+> 
+> I wonder a bit about the complexity of your patch. In my WIP-branch for
+> 256-byte transfers, I have the following patch. It is only missing the
+> range check for the received byte, but that it easy to add. Do you see
+> anything else missing? If not, I prefer this simpler version because it
+> is less intrusive and the state machine is a bit fragile (due to HW
+> issues with old HW).
+> 
+> From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> Date: Sun, 2 Aug 2020 00:24:52 +0200
+> Subject: [PATCH] i2c: rcar: add support for I2C_M_RECV_LEN
+> 
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> ---
+>  drivers/i2c/busses/i2c-rcar.c | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/i2c/busses/i2c-rcar.c b/drivers/i2c/busses/i2c-rcar.c
+> index 217def2d7cb4..e473f5c0a708 100644
+> --- a/drivers/i2c/busses/i2c-rcar.c
+> +++ b/drivers/i2c/busses/i2c-rcar.c
+> @@ -528,6 +528,7 @@ static void rcar_i2c_irq_send(struct rcar_i2c_priv *priv, u32 msr)
+>  static void rcar_i2c_irq_recv(struct rcar_i2c_priv *priv, u32 msr)
+>  {
+>  	struct i2c_msg *msg = priv->msg;
+> +	bool recv_len_init = priv->pos == 0 && msg->flags & I2C_M_RECV_LEN;
+>  
+>  	/* FIXME: sometimes, unknown interrupt happened. Do nothing */
+>  	if (!(msr & MDR))
+> @@ -542,11 +543,13 @@ static void rcar_i2c_irq_recv(struct rcar_i2c_priv *priv, u32 msr)
+>  	} else if (priv->pos < msg->len) {
+>  		/* get received data */
+>  		msg->buf[priv->pos] = rcar_i2c_read(priv, ICRXTX);
+> +		if (recv_len_init)
+> +			msg->len += msg->buf[0];
+>  		priv->pos++;
+>  	}
+>  
+>  	/* If next received data is the _LAST_, go to new phase. */
+> -	if (priv->pos + 1 == msg->len) {
+> +	if (priv->pos + 1 == msg->len && !recv_len_init) {
+>  		if (priv->flags & ID_LAST_MSG) {
+>  			rcar_i2c_write(priv, ICMCR, RCAR_BUS_PHASE_STOP);
+>  		} else {
+> @@ -889,7 +892,7 @@ static u32 rcar_i2c_func(struct i2c_adapter *adap)
+>  	 * I2C_M_IGNORE_NAK (automatically sends STOP after NAK)
+>  	 */
+>  	u32 func = I2C_FUNC_I2C | I2C_FUNC_SLAVE |
+> -		   (I2C_FUNC_SMBUS_EMUL & ~I2C_FUNC_SMBUS_QUICK);
+> +		   (I2C_FUNC_SMBUS_EMUL_ALL & ~I2C_FUNC_SMBUS_QUICK);
+>  
+>  	if (priv->flags & ID_P_HOST_NOTIFY)
+>  		func |= I2C_FUNC_SMBUS_HOST_NOTIFY;
+> 
 
-2. handlers from the generic 8250_pci.c driver exported and referred to, 
-   or
+############################################################
+################# PATCH-INDEPENDENT OUTPUT #################
+############################################################
 
-3. some kind of a helper library (or a core module) created providing this 
-   stuff to 8250_*.c drivers as required.
+## .config: https://gist.github.com/erosca/690c3e6065b55546e511f9ef8ba59625
+## i2c-tools: https://git.kernel.org/pub/scm/utils/i2c-tools/i2c-tools.git/commit/?id=cf3541b8a7
 
- I guess the latter is the minimum that could convince me this driver
-framework is usable for implementing device-specific drivers (as I find 
-the other variants rather miserable hacks).
+root@rcar-gen3:# uname -r
+5.17.0+
 
- Plus there would have to be clear information provided to the users as 
-otherwise people will be rather confused as to why 3 out of their 4 16x50 
-PCI/e serial cards work with 8250_pci.c while the remaining one does not 
-(probably broken, or is it?).
+root@rcar-gen3:# cat /sys/firmware/devicetree/base/model 
+Renesas Salvator-X board based on r8a77951
 
-> You may not want to get the idea, it's fine. The rationale is simple:
-> isolate quirks for certain platform(s) in one place. Each platform
-> in a separate module.
+root@rcar-gen3:# i2cdetect -l     
+i2c-7   i2c             e60b0000.i2c                            I2C adapter
+i2c-2   i2c             e6510000.i2c                            I2C adapter
+i2c-4   i2c             e66d8000.i2c                            I2C adapter
+    ^
+     ` i2c-4 is the PCA9654 I/O Expander with SMBus protocol support
 
- What is a platform in your terminology?  A PCI/e option card you can 
-install in about any modern computer?  I usually think of platforms as 
-specific families of computers rather than option cards.  Variants of 
-otherwise the same device are usually handled with a single driver in 
-Linux.
+root@rcar-gen3:# i2cdetect -y -r 4
+     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+00:                         -- -- -- -- -- -- -- -- 
+10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+20: UU -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+60: UU UU UU UU UU UU -- -- 68 -- UU -- -- -- -- -- 
+70: UU UU UU UU UU UU -- --      
 
-  Maciej
+############################################################
+###################### VANILLA v5.17 #######################
+############################################################
+
+root@rcar-gen3:# i2cdetect -F 4
+Functionalities implemented by /dev/i2c-4:
+I2C                              yes
+SMBus Quick Command              no
+SMBus Send Byte                  yes
+SMBus Receive Byte               yes
+SMBus Write Byte                 yes
+SMBus Read Byte                  yes
+SMBus Write Word                 yes
+SMBus Read Word                  yes
+SMBus Process Call               yes
+SMBus Block Write                yes
+SMBus Block Read                 no	<<<--- We aim to enable this
+SMBus Block Process Call         no
+SMBus PEC                        yes
+I2C Block Write                  yes
+I2C Block Read                   yes
+
+root@rcar-gen3:# i2cget -y 4 0x68 0 i 8
+0x08 0xff 0x06 0xff 0x5f 0xff 0x11 0x08
+
+root@rcar-gen3:# i2cget -y 4 0x68 0 s
+Error: Adapter does not have SMBus block read capability
+
+############################################################
+#################### ANDREW'S V2 PATCH #####################
+############################################################
+
+root@rcar-gen3:# i2cdetect -F 4
+Functionalities implemented by /dev/i2c-4:
+I2C                              yes
+SMBus Quick Command              no
+SMBus Send Byte                  yes
+SMBus Receive Byte               yes
+SMBus Write Byte                 yes
+SMBus Read Byte                  yes
+SMBus Write Word                 yes
+SMBus Read Word                  yes
+SMBus Process Call               yes
+SMBus Block Write                yes
+SMBus Block Read                 yes 	<<<--- Enabled (tested below)
+SMBus Block Process Call         no
+SMBus PEC                        yes
+I2C Block Write                  yes
+I2C Block Read                   yes
+
+root@rcar-gen3:# i2cget -y 4 0x68 0 i 8
+0x08 0xff 0x06 0xff 0x5f 0xff 0x11 0x08
+
+root@rcar-gen3:# i2cget -y 4 0x68 0 s
+0x08 0xff 0x06 0xff 0x5f 0xff 0x11 0x08
+
+############################################################
+##################### WOLFRAM'S PATCH ######################
+############################################################
+
+root@rcar-gen3:# i2cdetect -F 4
+Functionalities implemented by /dev/i2c-4:
+I2C                              yes
+SMBus Quick Command              no
+SMBus Send Byte                  yes
+SMBus Receive Byte               yes
+SMBus Write Byte                 yes
+SMBus Read Byte                  yes
+SMBus Write Word                 yes
+SMBus Read Word                  yes
+SMBus Process Call               yes
+SMBus Block Write                yes
+SMBus Block Read                 yes	<<<--- Enabled (tested)
+SMBus Block Process Call         yes	<<<--- Enabled (not tested)
+SMBus PEC                        yes
+I2C Block Write                  yes
+I2C Block Read                   yes
+
+root@rcar-gen3:# i2cget -y 4 0x68 0 i 8
+0x08 0xff 0x06 0xff 0x5f 0xff 0x11 0x08
+
+root@rcar-gen3:# i2cget -y 4 0x68 0 s
+0xff 0x06 0xff 0x5f 0xff 0x11 0x08 0x08
+
+############################################################
+
+Any comments?
+
+Best regards,
+Eugeniu
