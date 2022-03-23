@@ -2,103 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C28CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 12:46:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21FF2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 12:46:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243299AbiCWMr3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 08:47:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54544 "EHLO
+        id S243207AbiCWMsY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 08:48:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236374AbiCWMrQ (ORCPT
+        with ESMTP id S236374AbiCWMsV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 08:47:16 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D2F97C151;
-        Wed, 23 Mar 2022 05:45:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648039547; x=1679575547;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=GyXNqf4GNLod3cqKTITvf8LiaDU11jwMImeBJOPCznE=;
-  b=Qqk8B2ELOoesTpK/imtY5oZPB0ysAIDMbDdhAfhbTEwvD8TTVAecK3JH
-   qUx1Q/iOqNP2RSlezeqyFvrheKIJzPzYuXudMe0dnIia2iNB2wnW2yLvg
-   6EYat3pwH2MXHEbxAst7Eox9W6gWAi5Zdm2vABlg36JQfkEeEb+an+3mM
-   tLJZhUH/KoRYSSSYf4H75vRPjHyyTxP0a18RNozNp16FUO1Hzw4PtRkuQ
-   MXl0hx2OuK/At2YqkdqCk/IWDYWi+gvmpWK4GLjPpl7C3M2riWSrTSQs7
-   AFXum0f3WKTVYiwvgVM8+BU4qc91ygikbdTjyPJo5JMxEIsgsX9JxqdYd
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10294"; a="318809750"
-X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
-   d="scan'208";a="318809750"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 05:45:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
-   d="scan'208";a="785776616"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga006.fm.intel.com with ESMTP; 23 Mar 2022 05:45:44 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22NCjeuE017350;
-        Wed, 23 Mar 2022 12:45:42 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Michal Kubiak <michal.kubiak@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>
-Subject: [PATCH net 2/2] ice: don't allow to run ice_send_event_to_aux() in atomic ctx
-Date:   Wed, 23 Mar 2022 13:43:53 +0100
-Message-Id: <20220323124353.2762181-3-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220323124353.2762181-1-alexandr.lobakin@intel.com>
-References: <20220323124353.2762181-1-alexandr.lobakin@intel.com>
+        Wed, 23 Mar 2022 08:48:21 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B57477C141
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 05:46:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648039611;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DTnFtVcodyoIwIXV9QxS/vo7a2K9rOATfHER2lAcBYs=;
+        b=D5udak05osjVDH0IED2H5KlgJOUVIUbQkmRl7cKZGMMj2dNvJlcj6PIenAZun/gHqmQ2UN
+        WNzXXQPwPEXLJW9XX6gmfTl5DbTVRV6fs5iMAJbvkGprMynRvW5m7bqqd9LvyAu9ALyCbd
+        cCPMw4zf+TpTwzpUhiOHGiyebh1ytPY=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-115-gHMvhEejPxqhMi7HhzDauQ-1; Wed, 23 Mar 2022 08:46:48 -0400
+X-MC-Unique: gHMvhEejPxqhMi7HhzDauQ-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E0BD23810D56;
+        Wed, 23 Mar 2022 12:46:47 +0000 (UTC)
+Received: from [10.72.12.33] (ovpn-12-33.pek2.redhat.com [10.72.12.33])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 66F2C401E78;
+        Wed, 23 Mar 2022 12:46:43 +0000 (UTC)
+Reply-To: Gavin Shan <gshan@redhat.com>
+Subject: Re: [PATCH v5 03/22] KVM: arm64: Support SDEI_VERSION hypercall
+To:     Oliver Upton <oupton@google.com>
+Cc:     kvmarm@lists.cs.columbia.edu, maz@kernel.org,
+        linux-kernel@vger.kernel.org, eauger@redhat.com,
+        shan.gavin@gmail.com, Jonathan.Cameron@huawei.com,
+        pbonzini@redhat.com, vkuznets@redhat.com, will@kernel.org
+References: <20220322080710.51727-1-gshan@redhat.com>
+ <20220322080710.51727-4-gshan@redhat.com> <YjoPxLAMIPobBzS0@google.com>
+From:   Gavin Shan <gshan@redhat.com>
+Message-ID: <d8e151e5-080b-dc87-b7e0-9031a7928853@redhat.com>
+Date:   Wed, 23 Mar 2022 20:46:40 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <YjoPxLAMIPobBzS0@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ice_send_event_to_aux() eventually descends to mutex_lock()
-(-> might_sched()), so it must not be called under non-task
-context. However, at least two fixes have happened already for the
-bug splats occurred due to this function being called from atomic
-context.
-To make the emergency landings softer, bail out early when executed
-in non-task context emitting a warn splat only once. This way we
-trade some events being potentially lost for system stability and
-avoid any related hangs and crashes.
+Hi Oliver,
 
-Fixes: 348048e724a0e ("ice: Implement iidc operations")
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Tested-by: Michal Kubiak <michal.kubiak@intel.com>
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Acked-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_idc.c | 3 +++
- 1 file changed, 3 insertions(+)
+On 3/23/22 2:04 AM, Oliver Upton wrote:
+> On Tue, Mar 22, 2022 at 04:06:51PM +0800, Gavin Shan wrote:
+>> This supports SDEI_VERSION hypercall by returning v1.1, which is
+>> the specification version we're following. The vendor is set to
+>> 'KVM'.
+>>
+>> Signed-off-by: Gavin Shan <gshan@redhat.com>
+>> ---
+>>   arch/arm64/kvm/sdei.c | 10 ++++++++++
+>>   1 file changed, 10 insertions(+)
+>>
+>> diff --git a/arch/arm64/kvm/sdei.c b/arch/arm64/kvm/sdei.c
+>> index 8a9b477b8977..5a3a64cd6e84 100644
+>> --- a/arch/arm64/kvm/sdei.c
+>> +++ b/arch/arm64/kvm/sdei.c
+>> @@ -118,6 +118,14 @@ static bool remove_all_vcpu_events(struct kvm_vcpu *vcpu,
+>>   	return pending;
+>>   }
+>>   
+>> +static unsigned long hypercall_version(struct kvm_vcpu *vcpu)
+>> +{
+>> +	/* v1.1 and the vendor is KVM */
+>> +	return (1UL << SDEI_VERSION_MAJOR_SHIFT) |
+>> +	       (1UL << SDEI_VERSION_MINOR_SHIFT) |
+>> +	       0x4b564d;
+> 
+> It looks like the SDEI specification states that the vendor-defined
+> version number is 32 bits. Could we just use one of the
+> ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_{0,3} values instead?
+> 
+> ASCII 'KVM' is neat, but in reality guest software will just throw it in
+> a macro regardless. Might as well use one of the values we've already
+> trained it to use :-)
+> 
+> Also, it would appear that guest discovery of SDEI relies upon KVM
+> reporting a valid SDEI version. IMO, this patch should come at the very
+> end when KVM actually implements SDEI.
+> 
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_idc.c b/drivers/net/ethernet/intel/ice/ice_idc.c
-index fc3580167e7b..5559230eff8b 100644
---- a/drivers/net/ethernet/intel/ice/ice_idc.c
-+++ b/drivers/net/ethernet/intel/ice/ice_idc.c
-@@ -34,6 +34,9 @@ void ice_send_event_to_aux(struct ice_pf *pf, struct iidc_event *event)
- {
- 	struct iidc_auxiliary_drv *iadrv;
- 
-+	if (WARN_ON_ONCE(!in_task()))
-+		return;
-+
- 	if (!pf->adev)
- 		return;
- 
--- 
-2.35.1
+Yeah, I was sticky to the pattern of "KVM". However, I think it's good
+to reuse the existing one. Lets use ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_2
+if you agree. Its first two characters are "VM" at least.
+
+It's fine to return the version here because the SDEI capability isn't
+exposed yet. It means no events have been exposed and able to be
+registered. However, It's also fine to move this patch after the
+following one:
+
+[PATCH v5 16/22] KVM: arm64: Support SDEI_EVENT_{COMPLETE, COMPLETE_AND_RESUME} hypercall
+
+Thanks,
+Gavin
 
