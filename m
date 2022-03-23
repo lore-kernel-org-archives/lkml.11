@@ -2,155 +2,310 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A9CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 17:52:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D348C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 17:52:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343813AbiCWRyL (ORCPT
+        id S1343812AbiCWRyS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 13:54:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38858 "EHLO
+        Wed, 23 Mar 2022 13:54:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239767AbiCWRyA (ORCPT
+        with ESMTP id S1343794AbiCWRyL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 13:54:00 -0400
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAE3585BD0
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 10:52:29 -0700 (PDT)
-Received: by mail-il1-f200.google.com with SMTP id j25-20020a056e02219900b002c81019b2fdso1290890ila.16
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 10:52:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=zYiQiLP0CS4LsisvZLzMB1pBnXWj26AdiiH/LiFkOlY=;
-        b=HgfkO7xtPQOjMBltKtDWXEUs//FVv+j2DXSJrCsFQRJDVGyox3lHlV2qg0HImE5rZN
-         NR8JPeW00icNk3Y+RDTnYwHF2dl+mGx5m3bY7v4rV2L+JK2z32ZpUc9Ws//1+EmvEceg
-         8DmDJff8A/ugQ0Q7z5oBDNQZ/yTr1anVFvZoSMfT7yFq0UNDtYg5+fbUZuCmCbZa4SQ0
-         j9af6pkrxNXkP5Wu0wJj1EgkjVTnC/TdtRzg/y5EiSFJAMAK2YVeAt8QbxuDIF5jN4LN
-         MyDx091vRQxFtj/s16CKSnUQpasS+oIS+V6D0Kn1kA6uqFd2BBBkd4e8Ls5vc4kY0jAu
-         jz1g==
-X-Gm-Message-State: AOAM531fjQMeHtgT8C9XM3AZN5LWewSHjExT+bcT9vSs5/bGZybzdNNI
-        6r1WD44HzuFjm0tiaHTmdB9n2JZRrXSsCpuJaN2PjhrxU4vG
-X-Google-Smtp-Source: ABdhPJwpotWrqsMzIpJ+Oq2bNctiIO3SBJMqH7N2YbYQPMDqnaAycniduUzH7UpidmAPHmQhOiT07PlBD8IdNL9PdpMdzcda3/T3
+        Wed, 23 Mar 2022 13:54:11 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A24A18595F
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 10:52:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648057959; x=1679593959;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=+TFoyt2jaGi0RcR+Zuqss7klX/zPEKATGsssd5gMLHY=;
+  b=RT1mdO77l557PBLByfqauowZBUJAN9CPLd55WM58LHfue+i8ZDyG5ONP
+   sa+HtSQ0NHZVLF/082q9sobepiLY+9xuNf0VaQ0HQZC9x7i62ZNrekRf3
+   +6t9dClf5s+5YgsML8V9tCyaLwrE+79xCJvJY+kbmL9h8UEUpUsoQWcUG
+   odqHxO8D1g7jJcfHX9e+OOWbI7akshPD6h5PdNMD4RYMzkCBljrHsSsk+
+   d4MCq/WBoH89PwL1f9v190DikXAwl5XcML35atYzapgm5ryp1BmT+0g0s
+   eKVVsEQrIhWHeHhW6i1YivBPEr6Rl4ohyjW4nu1MySrfvPS4vxxuAtM1E
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="258379004"
+X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
+   d="scan'208";a="258379004"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 10:52:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
+   d="scan'208";a="515876130"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga002.jf.intel.com with ESMTP; 23 Mar 2022 10:52:37 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nX59w-000KHo-LK; Wed, 23 Mar 2022 17:52:36 +0000
+Date:   Thu, 24 Mar 2022 01:51:45 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jason Lai <jason.lai@genesyslogic.com.tw>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [ulfh-mmc:wip_uhs_v3 45/46] drivers/mmc/core/sd_uhs2.c:420:20:
+ sparse: sparse: incorrect type in assignment (different base types)
+Message-ID: <202203240105.h6vaETsa-lkp@intel.com>
 MIME-Version: 1.0
-X-Received: by 2002:a02:ca50:0:b0:321:42d5:b4af with SMTP id
- i16-20020a02ca50000000b0032142d5b4afmr587393jal.82.1648057949112; Wed, 23 Mar
- 2022 10:52:29 -0700 (PDT)
-Date:   Wed, 23 Mar 2022 10:52:29 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a0506305dae664f2@google.com>
-Subject: [syzbot] general protection fault in io_kill_timeouts
-From:   syzbot <syzbot+f252f28df734e8521387@syzkaller.appspotmail.com>
-To:     asml.silence@gmail.com, axboe@kernel.dk, io-uring@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/ulfh/mmc.git wip_uhs_v3
+head:   88e61f681a2427ed18a4dfa4fdd14b011a0f7847
+commit: 904c9867969e3672e160eab8bcd4f4e89be104e9 [45/46] mmc: Implement content of UHS-II card initialization functions
+config: sh-randconfig-s031-20220323 (https://download.01.org/0day-ci/archive/20220324/202203240105.h6vaETsa-lkp@intel.com/config)
+compiler: sh4-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/ulfh/mmc.git/commit/?id=904c9867969e3672e160eab8bcd4f4e89be104e9
+        git remote add ulfh-mmc git://git.kernel.org/pub/scm/linux/kernel/git/ulfh/mmc.git
+        git fetch --no-tags ulfh-mmc wip_uhs_v3
+        git checkout 904c9867969e3672e160eab8bcd4f4e89be104e9
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=sh SHELL=/bin/bash
 
-syzbot found the following issue on:
-
-HEAD commit:    b61581ae229d Add linux-next specific files for 20220323
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=17bbb75b700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=def28433baf109ed
-dashboard link: https://syzkaller.appspot.com/bug?extid=f252f28df734e8521387
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=117d3a43700000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15538925700000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+f252f28df734e8521387@syzkaller.appspotmail.com
-
-RDX: 0000000000000f90 RSI: 00000000200000c0 RDI: 00000000000078af
-RBP: 00007fffd1ad3f90 R08: 0000000000000001 R09: 0000000000000001
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000003
-R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-general protection fault, probably for non-canonical address 0xdffffc0000000018: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x00000000000000c0-0x00000000000000c7]
-CPU: 0 PID: 3589 Comm: syz-executor273 Tainted: G        W         5.17.0-next-20220323-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:io_commit_cqring fs/io_uring.c:1812 [inline]
-RIP: 0010:io_kill_timeouts+0x267/0x2ce fs/io_uring.c:10297
-Code: 74 09 3c 03 7f 05 e8 c5 ca a7 f8 49 8d bc 24 c0 00 00 00 b8 ff ff 37 00 44 8b ad 40 03 00 00 48 89 fa 48 c1 e0 2a 48 c1 ea 03 <8a> 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 09 84 d2 74 05 e8 fd
-RSP: 0018:ffffc9000399fcf8 EFLAGS: 00010206
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000000018 RSI: ffffffff817ef121 RDI: 00000000000000c0
-RBP: ffff888011a75000 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff817ef108 R11: 0000000000000000 R12: 0000000000000000
-R13: 0000000000000000 R14: ffff888011a75040 R15: 0000000000000001
-FS:  0000555557264300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000055a52ec10058 CR3: 0000000024024000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- io_ring_ctx_wait_and_kill+0x1c2/0x327 fs/io_uring.c:10317
- io_uring_create fs/io_uring.c:11385 [inline]
- io_uring_setup.cold+0x10a3/0x263b fs/io_uring.c:11412
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f85ced00069
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fffd1ad3f78 EFLAGS: 00000246 ORIG_RAX: 00000000000001a9
-RAX: ffffffffffffffda RBX: 0000000000000001 RCX: 00007f85ced00069
-RDX: 0000000000000f90 RSI: 00000000200000c0 RDI: 00000000000078af
-RBP: 00007fffd1ad3f90 R08: 0000000000000001 R09: 0000000000000001
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000003
-R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:io_commit_cqring fs/io_uring.c:1812 [inline]
-RIP: 0010:io_kill_timeouts+0x267/0x2ce fs/io_uring.c:10297
-Code: 74 09 3c 03 7f 05 e8 c5 ca a7 f8 49 8d bc 24 c0 00 00 00 b8 ff ff 37 00 44 8b ad 40 03 00 00 48 89 fa 48 c1 e0 2a 48 c1 ea 03 <8a> 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 09 84 d2 74 05 e8 fd
-RSP: 0018:ffffc9000399fcf8 EFLAGS: 00010206
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000000018 RSI: ffffffff817ef121 RDI: 00000000000000c0
-RBP: ffff888011a75000 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff817ef108 R11: 0000000000000000 R12: 0000000000000000
-R13: 0000000000000000 R14: ffff888011a75040 R15: 0000000000000001
-FS:  0000555557264300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000055a52ec10058 CR3: 0000000024024000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess):
-   0:	74 09                	je     0xb
-   2:	3c 03                	cmp    $0x3,%al
-   4:	7f 05                	jg     0xb
-   6:	e8 c5 ca a7 f8       	callq  0xf8a7cad0
-   b:	49 8d bc 24 c0 00 00 	lea    0xc0(%r12),%rdi
-  12:	00
-  13:	b8 ff ff 37 00       	mov    $0x37ffff,%eax
-  18:	44 8b ad 40 03 00 00 	mov    0x340(%rbp),%r13d
-  1f:	48 89 fa             	mov    %rdi,%rdx
-  22:	48 c1 e0 2a          	shl    $0x2a,%rax
-  26:	48 c1 ea 03          	shr    $0x3,%rdx
-* 2a:	8a 14 02             	mov    (%rdx,%rax,1),%dl <-- trapping instruction
-  2d:	48 89 f8             	mov    %rdi,%rax
-  30:	83 e0 07             	and    $0x7,%eax
-  33:	83 c0 03             	add    $0x3,%eax
-  36:	38 d0                	cmp    %dl,%al
-  38:	7c 09                	jl     0x43
-  3a:	84 d2                	test   %dl,%dl
-  3c:	74 05                	je     0x43
-  3e:	e8                   	.byte 0xe8
-  3f:	fd                   	std
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+sparse warnings: (new ones prefixed by >>)
+>> drivers/mmc/core/sd_uhs2.c:420:20: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int @@     got restricted __be32 [usertype] @@
+   drivers/mmc/core/sd_uhs2.c:420:20: sparse:     expected unsigned int
+   drivers/mmc/core/sd_uhs2.c:420:20: sparse:     got restricted __be32 [usertype]
+   drivers/mmc/core/sd_uhs2.c:421:20: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int @@     got restricted __be32 [usertype] @@
+   drivers/mmc/core/sd_uhs2.c:421:20: sparse:     expected unsigned int
+   drivers/mmc/core/sd_uhs2.c:421:20: sparse:     got restricted __be32 [usertype]
+   drivers/mmc/core/sd_uhs2.c:467:20: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int @@     got restricted __be32 [usertype] @@
+   drivers/mmc/core/sd_uhs2.c:467:20: sparse:     expected unsigned int
+   drivers/mmc/core/sd_uhs2.c:467:20: sparse:     got restricted __be32 [usertype]
+   drivers/mmc/core/sd_uhs2.c:468:20: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int @@     got restricted __be32 [usertype] @@
+   drivers/mmc/core/sd_uhs2.c:468:20: sparse:     expected unsigned int
+   drivers/mmc/core/sd_uhs2.c:468:20: sparse:     got restricted __be32 [usertype]
+   drivers/mmc/core/sd_uhs2.c:515:20: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int @@     got restricted __be32 [usertype] @@
+   drivers/mmc/core/sd_uhs2.c:515:20: sparse:     expected unsigned int
+   drivers/mmc/core/sd_uhs2.c:515:20: sparse:     got restricted __be32 [usertype]
+   drivers/mmc/core/sd_uhs2.c:516:20: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int @@     got restricted __be32 [usertype] @@
+   drivers/mmc/core/sd_uhs2.c:516:20: sparse:     expected unsigned int
+   drivers/mmc/core/sd_uhs2.c:516:20: sparse:     got restricted __be32 [usertype]
+   drivers/mmc/core/sd_uhs2.c:535:20: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int @@     got restricted __be32 [usertype] @@
+   drivers/mmc/core/sd_uhs2.c:535:20: sparse:     expected unsigned int
+   drivers/mmc/core/sd_uhs2.c:535:20: sparse:     got restricted __be32 [usertype]
+   drivers/mmc/core/sd_uhs2.c:536:20: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int @@     got restricted __be32 [usertype] @@
+   drivers/mmc/core/sd_uhs2.c:536:20: sparse:     expected unsigned int
+   drivers/mmc/core/sd_uhs2.c:536:20: sparse:     got restricted __be32 [usertype]
+>> drivers/mmc/core/sd_uhs2.c:978:36: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] @@     got restricted __be32 [usertype] @@
+   drivers/mmc/core/sd_uhs2.c:978:36: sparse:     expected unsigned int [usertype]
+   drivers/mmc/core/sd_uhs2.c:978:36: sparse:     got restricted __be32 [usertype]
+   drivers/mmc/core/sd_uhs2.c:980:36: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] @@     got restricted __be32 [usertype] @@
+   drivers/mmc/core/sd_uhs2.c:980:36: sparse:     expected unsigned int [usertype]
+   drivers/mmc/core/sd_uhs2.c:980:36: sparse:     got restricted __be32 [usertype]
+   drivers/mmc/core/sd_uhs2.c:986:20: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] @@     got restricted __be32 [usertype] @@
+   drivers/mmc/core/sd_uhs2.c:986:20: sparse:     expected unsigned int [usertype]
+   drivers/mmc/core/sd_uhs2.c:986:20: sparse:     got restricted __be32 [usertype]
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+vim +420 drivers/mmc/core/sd_uhs2.c
+
+   369	
+   370	/*
+   371	 * Based on the card's and host's UHS-II capabilities, let's update the
+   372	 * configuration of the card and the host. This may also include to move to a
+   373	 * greater speed range/mode. Depending on the updated configuration, we may need
+   374	 * to do a soft reset of the card via sending it a GO_DORMANT_STATE command.
+   375	 *
+   376	 * In the final step, let's check if the card signals "config completion", which
+   377	 * indicates that the card has moved from config state into active state.
+   378	 */
+   379	static int sd_uhs2_config_write(struct mmc_host *host, struct mmc_card *card)
+   380	{
+   381		struct mmc_command cmd = {0};
+   382		struct uhs2_command uhs2_cmd = {};
+   383		u16 header = 0, arg = 0;
+   384		u32 payload[2];
+   385		u8 nMinDataGap;
+   386		u8 plen;
+   387		int err;
+   388		u8 resp[5] = {0};
+   389		u8 resp_len = 5;
+   390	
+   391		header = UHS2_NATIVE_PACKET |
+   392			 UHS2_PACKET_TYPE_CCMD | card->uhs2_config.node_id;
+   393		arg = ((UHS2_DEV_CONFIG_GEN_SET & 0xFF) << 8) |
+   394		       UHS2_NATIVE_CMD_WRITE |
+   395		       UHS2_NATIVE_CMD_PLEN_8B |
+   396		       (UHS2_DEV_CONFIG_GEN_SET >> 8);
+   397	
+   398		if (card->uhs2_config.n_lanes == UHS2_DEV_CONFIG_2L_HD_FD &&
+   399		    host->uhs2_caps.n_lanes == UHS2_DEV_CONFIG_2L_HD_FD) {
+   400			/* Support HD */
+   401			host->uhs2_caps.flags |= MMC_UHS2_2L_HD;
+   402			nMinDataGap = 1;
+   403		} else {
+   404			/* Only support 2L-FD so far */
+   405			host->uhs2_caps.flags &= ~MMC_UHS2_2L_HD;
+   406			nMinDataGap = 3;
+   407		}
+   408	
+   409		/*
+   410		 * Most UHS-II cards only support FD and 2L-HD mode. Other lane numbers
+   411		 * defined in UHS-II addendem Ver1.01 are optional.
+   412		 */
+   413		host->uhs2_caps.n_lanes_set = UHS2_DEV_CONFIG_GEN_SET_2L_FD_HD;
+   414		card->uhs2_config.n_lanes_set = UHS2_DEV_CONFIG_GEN_SET_2L_FD_HD;
+   415	
+   416		plen = 2;
+   417		payload[0] = card->uhs2_config.n_lanes_set <<
+   418			     UHS2_DEV_CONFIG_N_LANES_POS;
+   419		payload[1] = 0;
+ > 420		payload[0] = cpu_to_be32(payload[0]);
+   421		payload[1] = cpu_to_be32(payload[1]);
+   422	
+   423		/*
+   424		 * There is no payload because per spec, there should be
+   425		 * no payload field for read CCMD.
+   426		 * Plen is set in arg. Per spec, plen for read CCMD
+   427		 * represents the len of read data which is assigned in payload
+   428		 * of following RES (p136).
+   429		 */
+   430		sd_uhs2_cmd_assemble(&cmd, &uhs2_cmd, header, arg, payload, plen, NULL, 0);
+   431	
+   432		err = mmc_wait_for_cmd(host, &cmd, 0);
+   433		if (err) {
+   434			pr_err("%s: %s: UHS2 CMD send fail, err= 0x%x!\n",
+   435			       mmc_hostname(host), __func__, err);
+   436			return -EIO;
+   437		}
+   438	
+   439		arg = ((UHS2_DEV_CONFIG_PHY_SET & 0xFF) << 8) |
+   440		       UHS2_NATIVE_CMD_WRITE |
+   441		       UHS2_NATIVE_CMD_PLEN_8B |
+   442		       (UHS2_DEV_CONFIG_PHY_SET >> 8);
+   443	
+   444		if (host->uhs2_caps.speed_range == UHS2_DEV_CONFIG_PHY_SET_SPEED_B) {
+   445			host->uhs2_caps.flags |= MMC_UHS2_SPEED_B;
+   446			card->uhs2_config.speed_range_set =
+   447						UHS2_DEV_CONFIG_PHY_SET_SPEED_B;
+   448		} else {
+   449			card->uhs2_config.speed_range_set = UHS2_DEV_CONFIG_PHY_SET_SPEED_A;
+   450			host->uhs2_caps.flags &= ~MMC_UHS2_SPEED_B;
+   451		}
+   452	
+   453		payload[0] = card->uhs2_config.speed_range_set << UHS2_DEV_CONFIG_PHY_SET_SPEED_POS;
+   454	
+   455		card->uhs2_config.n_lss_sync_set = (max(card->uhs2_config.n_lss_sync,
+   456							host->uhs2_caps.n_lss_sync) >> 2) &
+   457						   UHS2_DEV_CONFIG_N_LSS_SYN_MASK;
+   458		host->uhs2_caps.n_lss_sync_set = card->uhs2_config.n_lss_sync_set;
+   459	
+   460		card->uhs2_config.n_lss_dir_set = (max(card->uhs2_config.n_lss_dir,
+   461						       host->uhs2_caps.n_lss_dir) >> 3) &
+   462						  UHS2_DEV_CONFIG_N_LSS_DIR_MASK;
+   463		host->uhs2_caps.n_lss_dir_set = card->uhs2_config.n_lss_dir_set;
+   464	
+   465		payload[1] = (card->uhs2_config.n_lss_dir_set << UHS2_DEV_CONFIG_N_LSS_DIR_POS) |
+   466			     card->uhs2_config.n_lss_sync_set;
+   467		payload[0] = cpu_to_be32(payload[0]);
+   468		payload[1] = cpu_to_be32(payload[1]);
+   469	
+   470		resp_len = 4;
+   471		memset(resp, 0, sizeof(resp));
+   472	
+   473		sd_uhs2_cmd_assemble(&cmd, &uhs2_cmd, header, arg, payload, plen, resp, resp_len);
+   474	
+   475		err = mmc_wait_for_cmd(host, &cmd, 0);
+   476		if (err) {
+   477			pr_err("%s: %s: UHS2 CMD send fail, err= 0x%x!\n",
+   478			       mmc_hostname(host), __func__, err);
+   479			return -EIO;
+   480		}
+   481	
+   482		if ((resp[2] & 0x80)) {
+   483			pr_err("%s: %s: UHS2 CMD not accepted, resp= 0x%x!\n",
+   484			       mmc_hostname(host), __func__, resp[2]);
+   485			return -EIO;
+   486		}
+   487	
+   488		arg = ((UHS2_DEV_CONFIG_LINK_TRAN_SET & 0xFF) << 8) |
+   489			UHS2_NATIVE_CMD_WRITE |
+   490			UHS2_NATIVE_CMD_PLEN_8B |
+   491			(UHS2_DEV_CONFIG_LINK_TRAN_SET >> 8);
+   492	
+   493		plen = 2;
+   494	
+   495		if (card->uhs2_config.app_type == UHS2_DEV_CONFIG_APP_SD_MEM)
+   496			card->uhs2_config.maxblk_len_set = UHS2_DEV_CONFIG_LT_SET_MAX_BLK_LEN;
+   497		else
+   498			card->uhs2_config.maxblk_len_set = min(card->uhs2_config.maxblk_len,
+   499							       host->uhs2_caps.maxblk_len);
+   500		host->uhs2_caps.maxblk_len_set = card->uhs2_config.maxblk_len_set;
+   501	
+   502		card->uhs2_config.n_fcu_set = min(card->uhs2_config.n_fcu, host->uhs2_caps.n_fcu);
+   503		host->uhs2_caps.n_fcu_set = card->uhs2_config.n_fcu_set;
+   504	
+   505		card->uhs2_config.n_data_gap_set = max(nMinDataGap, card->uhs2_config.n_data_gap);
+   506		host->uhs2_caps.n_data_gap_set = card->uhs2_config.n_data_gap_set;
+   507	
+   508		host->uhs2_caps.max_retry_set = 3;
+   509		card->uhs2_config.max_retry_set = host->uhs2_caps.max_retry_set;
+   510	
+   511		payload[0] = (card->uhs2_config.maxblk_len_set << UHS2_DEV_CONFIG_MAX_BLK_LEN_POS) |
+   512			     (card->uhs2_config.max_retry_set << UHS2_DEV_CONFIG_LT_SET_MAX_RETRY_POS) |
+   513			     (card->uhs2_config.n_fcu_set << UHS2_DEV_CONFIG_N_FCU_POS);
+   514		payload[1] = card->uhs2_config.n_data_gap_set;
+   515		payload[0] = cpu_to_be32(payload[0]);
+   516		payload[1] = cpu_to_be32(payload[1]);
+   517	
+   518		sd_uhs2_cmd_assemble(&cmd, &uhs2_cmd, header, arg, payload, plen, NULL, 0);
+   519	
+   520		err = mmc_wait_for_cmd(host, &cmd, 0);
+   521		if (err) {
+   522			pr_err("%s: %s: UHS2 CMD send fail, err= 0x%x!\n",
+   523			       mmc_hostname(host), __func__, err);
+   524			return -EIO;
+   525		}
+   526	
+   527		arg = ((UHS2_DEV_CONFIG_GEN_SET & 0xFF) << 8) |
+   528		       UHS2_NATIVE_CMD_WRITE |
+   529		       UHS2_NATIVE_CMD_PLEN_8B |
+   530		       (UHS2_DEV_CONFIG_GEN_SET >> 8);
+   531	
+   532		plen = 2;
+   533		payload[0] = 0;
+   534		payload[1] = UHS2_DEV_CONFIG_GEN_SET_CFG_COMPLETE;
+   535		payload[0] = cpu_to_be32(payload[0]);
+   536		payload[1] = cpu_to_be32(payload[1]);
+   537	
+   538		resp_len = 5;
+   539		memset(resp, 0, sizeof(resp));
+   540		sd_uhs2_cmd_assemble(&cmd, &uhs2_cmd, header, arg, payload, plen, resp, resp_len);
+   541	
+   542		err = mmc_wait_for_cmd(host, &cmd, 0);
+   543		if (err) {
+   544			pr_err("%s: %s: UHS2 CMD send fail, err= 0x%x!\n",
+   545			       mmc_hostname(host), __func__, err);
+   546			return -EIO;
+   547		}
+   548	
+   549		/* Set host Config Setting registers */
+   550		if (!host->ops->uhs2_control(host, UHS2_SET_CONFIG)) {
+   551			pr_err("%s: %s: UHS2 SET_CONFIG fail!\n", mmc_hostname(host), __func__);
+   552			return -EIO;
+   553		}
+   554	
+   555		return 0;
+   556	}
+   557	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
