@@ -2,121 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09554C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 20:37:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84F03C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 20:44:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240691AbiCWUiv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 16:38:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43094 "EHLO
+        id S1344785AbiCWUqG (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 16:46:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240098AbiCWUit (ORCPT
+        with ESMTP id S230248AbiCWUqE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 16:38:49 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 755EF2A2;
-        Wed, 23 Mar 2022 13:37:19 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id w25so3258010edi.11;
-        Wed, 23 Mar 2022 13:37:19 -0700 (PDT)
+        Wed, 23 Mar 2022 16:46:04 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30341A196
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 13:44:34 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id o5so4930723ybe.2
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 13:44:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:reply-to:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=m+xd1tDwGKjGGm1zRlDPZw7g8jsg6c2oSOsHqvT059o=;
-        b=ogb23Z8o0r/ojubfh+pyigrMuy6eys5nZmQvx5floY4wNh05nWnIkD8uqS5hfZnhzh
-         SL43Mrma5nRnEzoQDsKutyWjTdmtYq3brVNebVBpbdYMtrJDwIaOVYNnkJFiYHtB/Bwt
-         5KIclFGoYdtuicHtIqzBm+x+zkM8ENocbNhwnBaLQ6cOEYe9YBedEXmlJSfpVEmwEhGx
-         Z9I9qzUa79xjd86uX3V3/vRhHkGO0SjKW0KokMDt3Xp+lh5bU2HkCmdfh34qGkMtvSB3
-         UjZ0zww6IAFfcQugTEabS886lfbKvvhpa3nx6O3eTZJRoWNMvZLJmeP1+GdQvO7ip92s
-         LiAQ==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Qrk6r9glyK9xF4CKtMgGQNnRspxyzNOiodD1+Os1QjY=;
+        b=QLVocad0NWOVxzNN1cy/5Y+/WAMd3y+BrUQBFyy9oyoeuQX84gYTvEWgwJvsvyIJ5D
+         eJhDhFBSHzh6vh6xr/TCN6QKqd9hz90VhLezr6Wn7uzQQXw5u6Lei2MOSLukwMoHdRd5
+         8ggBfGMJQn+zAP2Y57w3jRnN+0GSUxJJZHK2DQ5705fFeS/mmfCcB3iXX2PKJiHpSyzv
+         uWBw2F+l5zbtbFTr2rWF9eC33TXYNyNwfS8j9vEb2WB3B/MlFI0PHbxVJ8700K2AoUGI
+         81ZQGsZVQ+NzcUrweXGs5ekkJc7p7DNUYgEt3p07hXVM1VsWSZ459q7+6eDrQ/FRIifU
+         YL8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:reply-to
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=m+xd1tDwGKjGGm1zRlDPZw7g8jsg6c2oSOsHqvT059o=;
-        b=X/Roy/xXY4/7BLEDQgyhzCETJ12DOLN9iEvS+A73qGHImFS9ep08OYI4slaM8Aqes2
-         Ary1amzOemr31ZOZxL5bYNLuKKUPEiY8xHTqc/ZhObzLdGonEPmsvOahVAOvGxMzn/cy
-         pJ8L4y1W8nGMM3IQXu0pqZzi1YabLzC97eFstBffG7zC9OkIev3YTQF/r+6A4dTjFD9H
-         hK1NKmffeZqVZcEGgaEY2wlX8YBQ4KvsSm5y2z04eLCcImFqp7Bq+R9C5gK+SW5GwmCV
-         wRLPNLk3gI7M3IBpNNQKeaOkLoKTzpzwjE0lAg7439j41xljVuNP6KhkS3YLHjZvDymD
-         u8qA==
-X-Gm-Message-State: AOAM532DaNk9raKyqHaQFuzKQZ4Snrq2j+iYETJ/UDqnPJrxoS4R2MPT
-        S5SxpBGn3hvU8KKVPF+2wD6wvpD/dmTbhQ==
-X-Google-Smtp-Source: ABdhPJw4LDxBQy/6K4rrDRgH6/barx60YfE+K+Lrj0R3Vp9IsIRY+wfsg0LYJ6oLeBYbFCvC5pIyQg==
-X-Received: by 2002:aa7:cf0d:0:b0:419:362:7ebf with SMTP id a13-20020aa7cf0d000000b0041903627ebfmr2507685edy.225.1648067837909;
-        Wed, 23 Mar 2022 13:37:17 -0700 (PDT)
-Received: from pevik (gw1.ms-free.net. [185.243.124.10])
-        by smtp.gmail.com with ESMTPSA id b3-20020aa7d483000000b00419209d4c85sm422261edr.66.2022.03.23.13.37.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Mar 2022 13:37:17 -0700 (PDT)
-Date:   Wed, 23 Mar 2022 21:37:13 +0100
-From:   Petr Vorel <petr.vorel@gmail.com>
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, martin.botka@somainline.org,
-        angelogioacchino.delregno@somainline.org,
-        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Bastian =?iso-8859-2?Q?K=F6cher?= <mail@kchr.de>,
-        Jeremy McNicoll <jeremymc@redhat.com>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] clk: qcom: gcc-msm8994: Fix gpll4 width
-Message-ID: <YjuE+cgGXCLihPIa@pevik>
-Reply-To: Petr Vorel <petr.vorel@gmail.com>
-References: <20220319174940.341137-1-konrad.dybcio@somainline.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Qrk6r9glyK9xF4CKtMgGQNnRspxyzNOiodD1+Os1QjY=;
+        b=gVEn6klbviUIsK99FEF/YqoTo2jRa/CnQ7dmvQxNQg3QxL/ieZERQL/yz+1iwtk+2z
+         L5Mb9BK1M+kG42CS21O1reYU6O5yCjCfVasd1uDTGi+nIHbW3EpxYvXFWinENbmJ1MKG
+         aj7R7YU06artEuthRp85aDSlWUMlUWyY2txAj11s0GNfLnwcE/EqEcYnxtYGEpkVX7Z/
+         +EVOoK39tP7NLpTN7mAXYMJu0Lq+2B++Zz5m6UCQBWfMEAWIIeBc2189WzD/hNQ1aWf3
+         CaPM6fAN18QPcKhA8hHJoejqxCUsja5AccaRO5FDqEbEMCe/jU0/JG8s/pOy2/p4W5hU
+         KVoQ==
+X-Gm-Message-State: AOAM532Kfm9v84U+bvhhyR3dJEU2EM86Vl6rJ/IW8YPoyPPUS8lm57o1
+        p1UvRsN7kk6aIA0CPW0h74rYLl+YLcUOyach/1rS0A==
+X-Google-Smtp-Source: ABdhPJwxVZQNQM3ne9IIOOS3d2mczZlQmDlPD2L0W1UhsjRIYTP9Tq2F54UvnNDaHZhQ8pa/XK8DJwHsgRnFKOiL3dk=
+X-Received: by 2002:a25:f406:0:b0:628:c29b:5c39 with SMTP id
+ q6-20020a25f406000000b00628c29b5c39mr1868489ybd.369.1648068273416; Wed, 23
+ Mar 2022 13:44:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220319174940.341137-1-konrad.dybcio@somainline.org>
+References: <20220310150905.1.Ie0a005d7a763d501e03b7abe8ee968ca99d23282@changeid>
+ <CAHp75Vfbs6sPsrjwxNWLZQu=pEoar2K5sY=fX9a7KkOe=mwsZw@mail.gmail.com>
+ <CAMRc=Mc_bw40uY68jcPYR-Lwe-qLcxmQeZO47WrexZtSiE_M5Q@mail.gmail.com>
+ <CAHp75VcK0JDkTXuPc2N8G+OotXK0mqfQn7i4nDqXDODe1SqcrQ@mail.gmail.com> <CA+ASDXPncB=edDfXqkmWMqToQSt85UkAMzoApgyQATROoR1x9g@mail.gmail.com>
+In-Reply-To: <CA+ASDXPncB=edDfXqkmWMqToQSt85UkAMzoApgyQATROoR1x9g@mail.gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Wed, 23 Mar 2022 21:44:21 +0100
+Message-ID: <CACRpkdZjSr_-EoZughRLaa83w-0Djj2hM=rqNe4RENudG4eizA@mail.gmail.com>
+Subject: Re: [PATCH] gpio: Drop CONFIG_DEBUG_GPIO
+To:     Brian Norris <briannorris@chromium.org>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Jianqun Xu <jay.xu@rock-chips.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Konrad,
+On Tue, Mar 22, 2022 at 5:31 PM Brian Norris <briannorris@chromium.org> wrote:
 
-Reviewed-by: Petr Vorel <petr.vorel@gmail.com>
+> I'm also curious: does dynamic debug not suit you?
+> https://www.kernel.org/doc/html/v4.19/admin-guide/dynamic-debug-howto.html
+> TBH, I never remember its syntax, and it seems very easy to get wrong,
+> so I often throw in #define's myself, if I want it foolproof. But I'm
+> curious others thoughts too.
 
+Dynamic debug almost always assume that the system comes up so you
+can go in and enable it manually. What about problems during boot. Or
+if the system doesn't even get to userspace?
 
-> The gpll4 postdiv is actually a div4, so make sure that Linux is aware of
-> this.
+GPIO and pin control can be critical system resources and the
+platform may not boot completely or mount root as a result of some
+problem you're debugging.
 
-> This fixes the following error messages:
+True, there are ways to pass arguments also on the command line
+argument when the kernel boots.
 
-> [    0.804491] mmc1: Card appears overclocked; req 200000000 Hz, actual 343999999 Hz
-> [    0.805057] mmc1: Card appears overclocked; req 400000000 Hz, actual 687999999 Hz
-yes, this works on my patchset [1] even without these workarounds (I'll submit
-v5 without it)
+Figuring out how the command line should
+look to enable -DDEBUG at boot time on say drivers/pinctrl/intel/* is
+a pretty horrific
+exercise. Add to that using the boot loader interactively to type that
+long argument in for every reboot.
 
-+	assigned-clocks = <&gcc GPLL4_EARLY>;
-+	assigned-clock-rates = <384000000>;
+In all such scenarios what people do is go into the Makefile
+and add -DDEBUG to the CFLAGS as a hack instead, because it
+is faster and persistent.
 
-Tested-by: Petr Vorel <petr.vorel@gmail.com>
+Adding that as an option in KConfig achieves the same thing, just
+easier than hacking the Makefile.
 
-Kind regards,
-Petr
-
-[1] https://lore.kernel.org/linux-arm-msm/20220218203710.895-1-petr.vorel@gmail.com/
-
-> Fixes: aec89f78cf01 ("clk: qcom: Add support for msm8994 global clock controller")
-
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-> ---
-> Cc: Petr Vorel <petr.vorel@gmail.com>
-
->  drivers/clk/qcom/gcc-msm8994.c | 1 +
->  1 file changed, 1 insertion(+)
-
-> diff --git a/drivers/clk/qcom/gcc-msm8994.c b/drivers/clk/qcom/gcc-msm8994.c
-> index f09499999eb3..6b702cdacbf2 100644
-> --- a/drivers/clk/qcom/gcc-msm8994.c
-> +++ b/drivers/clk/qcom/gcc-msm8994.c
-> @@ -77,6 +77,7 @@ static struct clk_alpha_pll gpll4_early = {
-
->  static struct clk_alpha_pll_postdiv gpll4 = {
->  	.offset = 0x1dc0,
-> +	.width = 4,
->  	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_DEFAULT],
->  	.clkr.hw.init = &(struct clk_init_data){
->  		.name = "gpll4",
+Yours,
+Linus Walleij
