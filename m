@@ -2,121 +2,254 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEDD3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 08:37:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89459C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 08:39:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241308AbiCWIiu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 04:38:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59846 "EHLO
+        id S242764AbiCWIlD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 04:41:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232197AbiCWIil (ORCPT
+        with ESMTP id S232197AbiCWIlA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 04:38:41 -0400
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A99B13D71;
-        Wed, 23 Mar 2022 01:37:12 -0700 (PDT)
-Received: by mail-ej1-f49.google.com with SMTP id dr20so1331918ejc.6;
-        Wed, 23 Mar 2022 01:37:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:content-language:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=2uwWKangGrfoNqiPlNGeHQBRLV7j3l1qJ3zQHU/H6fU=;
-        b=GQ1L73waSRYfPH5ts+D9PciPM/VMlW00UjnQsAN9e4aZS/OBUtp3e03akDCjDM7fL6
-         dwz36aH0NzX7OZ0CECHoRkCR2uxNh3TYnm1VSvyBR+OVjxeoh+Q2XLPGxT7NJrHv/Dpy
-         QsKWn/4wOnZq/NdFZvwFSe5fwIOX2YiDqe3b0n2GJ92x7Pm0eJJTSVtPhZJL7KSh95eI
-         bohTpQHNlPlVuRuthLHneZRdLVcXAGoo4r0zhE457PGtr0AvhU0GBAA8melmHLmqBy5U
-         7i8Nr7srGasyCv5EIzXdvgw5gjHBu+/GlFY4LzGD2PZb+iE6w7jsuhs+nnBHfj9Yatfz
-         e4IA==
-X-Gm-Message-State: AOAM533i8Wgw1xHhi9nh/TTGS093NxbLW9g0owKWS59M5xrha5FvyTr5
-        jgRlgoZgAqUOspUTjxKU4SUU1KN89oAQhA==
-X-Google-Smtp-Source: ABdhPJx8Z6gP0ujGPYONx0mp8t8f7WVWrxoGqsdueiAH/ANAeGjjooorJgxwu+9tMzipbAWKORJ4DQ==
-X-Received: by 2002:a17:906:c148:b0:6e0:2196:9251 with SMTP id dp8-20020a170906c14800b006e021969251mr11945441ejc.180.1648024630977;
-        Wed, 23 Mar 2022 01:37:10 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.googlemail.com with ESMTPSA id go40-20020a1709070da800b006dfc3945312sm6458473ejc.202.2022.03.23.01.37.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Mar 2022 01:37:10 -0700 (PDT)
-Message-ID: <6dbeda18-a11c-609d-7a8f-bf2e6f27aea7@kernel.org>
-Date:   Wed, 23 Mar 2022 09:37:08 +0100
+        Wed, 23 Mar 2022 04:41:00 -0400
+Received: from smtp-bc0f.mail.infomaniak.ch (smtp-bc0f.mail.infomaniak.ch [45.157.188.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DDA9205FB
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 01:39:29 -0700 (PDT)
+Received: from smtp-2-0001.mail.infomaniak.ch (unknown [10.5.36.108])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KNhbz56g6zMqCHm;
+        Wed, 23 Mar 2022 09:39:27 +0100 (CET)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-2-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4KNhbx4PhbzljsV2;
+        Wed, 23 Mar 2022 09:39:25 +0100 (CET)
+Message-ID: <b71454bb-d084-bfd6-7cd3-aa6bfdaaab00@digikod.net>
+Date:   Wed, 23 Mar 2022 09:40:35 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-Subject: Re: [PATCH v11 2/9] dt-bindings: reset: Add bindings for SP7021 reset
- driver
+User-Agent: 
 Content-Language: en-US
-To:     =?UTF-8?B?cWluamlhblvopoPlgaVd?= <qinjian@cqplus1.com>
-Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mturquette@baylibre.com" <mturquette@baylibre.com>,
-        "sboyd@kernel.org" <sboyd@kernel.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "maz@kernel.org" <maz@kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
-        Rob Herring <robh@kernel.org>
-References: <cover.1647928315.git.qinjian@cqplus1.com>
- <55db801055793f43678e902395913330ecb8fbbf.1647928316.git.qinjian@cqplus1.com>
- <a7194fbf-8423-9b49-1443-68dd33e23783@kernel.org>
- <678d1f84d9d240b9983f9d3b82db17d4@cqplus1.com>
-In-Reply-To: <678d1f84d9d240b9983f9d3b82db17d4@cqplus1.com>
-Content-Type: text/plain; charset=UTF-8
+To:     James Morris <jmorris@namei.org>,
+        John Johansen <john.johansen@canonical.com>,
+        Kentaro Takeda <takedakn@nttdata.co.jp>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc:     Brendan Jackman <jackmanb@chromium.org>,
+        Florent Revest <revest@chromium.org>,
+        KP Singh <kpsingh@kernel.org>,
+        Paul Moore <paul@paul-moore.com>, linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@linux.microsoft.com>
+References: <20220222175332.384545-1-mic@digikod.net>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [RFC PATCH v1] LSM: Remove double path_rename hook calls for
+ RENAME_EXCHANGE
+In-Reply-To: <20220222175332.384545-1-mic@digikod.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/03/2022 02:54, qinjian[覃健] wrote:
->>> +examples:
->>> +  - |
->>> +    rstc: reset@9c000054 {
->>> +      compatible = "sunplus,sp7021-reset";
->>> +      #reset-cells = <1>;
->>> +      reg = <0x9c000054 0x28>;
->>
->> I asked you to put the reg after compatible in all DTS code and
->> examples. If you do not agree with a comment, please respond. Ignoring
->> it is not cooperative.
->>
+Any comment? John, Tetsuo, does it look OK for AppArmor and Tomoyo?
+
+On 22/02/2022 18:53, Mickaël Salaün wrote:
+> From: Mickaël Salaün <mic@linux.microsoft.com>
 > 
-> Your  reply: https://lore.kernel.org/all/d3ac3e2f-71fd-b2b4-7c7e-bb43c681d14e@canonical.com/
->>> +  - |
->>> +
->>> +    clkc: clock-controller@9c000000 {
->>> +      compatible = "sunplus,sp7021-clkc";
->>> +      #clock-cells = <1>;
->>> +      reg = <0x9c000000 0x280>;
->>
->> In DTS code, please put reg after compatible. In all your examples and
->> DTS patches.
->>
->>
->> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> In order to be able to identify a file exchange with renameat2(2) and
+> RENAME_EXCHANGE, which will be useful for Landlock [1], propagate the
+> rename flags to LSMs.  This may also improve performance because of the
+> switch from two set of LSM hook calls to only one, and because LSMs
+> using this hook may optimize the double check (e.g. only one lock,
+> reduce the number of path walks).
 > 
-> I see your review-tag. So, I misunderstand your comments.
-> Did you means 'reg' must directly after the 'compatible', like this?
->     clkc: clock-controller@9c000000 {
->       #clock-cells = <1>;
->       compatible = "sunplus,sp7021-clkc";
->       reg = <0x9c000000 0x280>;
-
-You moved now compatible so not. First goes compatible, then goes reg.
-
-clock-controller@.... {
-  compatible = ....;
-  reg = ...;
-  here goes the rest;
-}
-
-My review tag was conditional because I asked to change the code. Such
-review tag should be used by you if you implement what I asked for.
-
-Best regards,
-Krzysztof
+> AppArmor, Landlock and Tomoyo are updated to leverage this change.  This
+> should not change the current behavior (same check order), except
+> (different level of) speed boosts.
+> 
+> [1] https://lore.kernel.org/r/20220221212522.320243-1-mic@digikod.net
+> 
+> Cc: James Morris <jmorris@namei.org>
+> Cc: John Johansen <john.johansen@canonical.com>
+> Cc: Kentaro Takeda <takedakn@nttdata.co.jp>
+> Cc: Serge E. Hallyn <serge@hallyn.com>
+> Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+> Signed-off-by: Mickaël Salaün <mic@linux.microsoft.com>
+> Link: https://lore.kernel.org/r/20220222175332.384545-1-mic@digikod.net
+> ---
+>   include/linux/lsm_hook_defs.h |  2 +-
+>   include/linux/lsm_hooks.h     |  1 +
+>   security/apparmor/lsm.c       | 30 +++++++++++++++++++++++++-----
+>   security/landlock/fs.c        | 12 ++++++++++--
+>   security/security.c           |  9 +--------
+>   security/tomoyo/tomoyo.c      | 11 ++++++++++-
+>   6 files changed, 48 insertions(+), 17 deletions(-)
+> 
+> diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
+> index 819ec92dc2a8..d8b49c9c3a8a 100644
+> --- a/include/linux/lsm_hook_defs.h
+> +++ b/include/linux/lsm_hook_defs.h
+> @@ -100,7 +100,7 @@ LSM_HOOK(int, 0, path_link, struct dentry *old_dentry,
+>   	 const struct path *new_dir, struct dentry *new_dentry)
+>   LSM_HOOK(int, 0, path_rename, const struct path *old_dir,
+>   	 struct dentry *old_dentry, const struct path *new_dir,
+> -	 struct dentry *new_dentry)
+> +	 struct dentry *new_dentry, unsigned int flags)
+>   LSM_HOOK(int, 0, path_chmod, const struct path *path, umode_t mode)
+>   LSM_HOOK(int, 0, path_chown, const struct path *path, kuid_t uid, kgid_t gid)
+>   LSM_HOOK(int, 0, path_chroot, const struct path *path)
+> diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
+> index 3bf5c658bc44..32cd2a7fe9fc 100644
+> --- a/include/linux/lsm_hooks.h
+> +++ b/include/linux/lsm_hooks.h
+> @@ -358,6 +358,7 @@
+>    *	@old_dentry contains the dentry structure of the old link.
+>    *	@new_dir contains the path structure for parent of the new link.
+>    *	@new_dentry contains the dentry structure of the new link.
+> + *	@flags may contain rename options such as RENAME_EXCHANGE.
+>    *	Return 0 if permission is granted.
+>    * @path_chmod:
+>    *	Check for permission to change a mode of the file @path. The new
+> diff --git a/security/apparmor/lsm.c b/security/apparmor/lsm.c
+> index 4f0eecb67dde..900bc540656a 100644
+> --- a/security/apparmor/lsm.c
+> +++ b/security/apparmor/lsm.c
+> @@ -354,13 +354,16 @@ static int apparmor_path_link(struct dentry *old_dentry, const struct path *new_
+>   }
+>   
+>   static int apparmor_path_rename(const struct path *old_dir, struct dentry *old_dentry,
+> -				const struct path *new_dir, struct dentry *new_dentry)
+> +				const struct path *new_dir, struct dentry *new_dentry,
+> +				const unsigned int flags)
+>   {
+>   	struct aa_label *label;
+>   	int error = 0;
+>   
+>   	if (!path_mediated_fs(old_dentry))
+>   		return 0;
+> +	if ((flags & RENAME_EXCHANGE) && !path_mediated_fs(new_dentry))
+> +		return 0;
+>   
+>   	label = begin_current_label_crit_section();
+>   	if (!unconfined(label)) {
+> @@ -374,10 +377,27 @@ static int apparmor_path_rename(const struct path *old_dir, struct dentry *old_d
+>   			d_backing_inode(old_dentry)->i_mode
+>   		};
+>   
+> -		error = aa_path_perm(OP_RENAME_SRC, label, &old_path, 0,
+> -				     MAY_READ | AA_MAY_GETATTR | MAY_WRITE |
+> -				     AA_MAY_SETATTR | AA_MAY_DELETE,
+> -				     &cond);
+> +		if (flags & RENAME_EXCHANGE) {
+> +			struct path_cond cond_exchange = {
+> +				i_uid_into_mnt(mnt_userns, d_backing_inode(new_dentry)),
+> +				d_backing_inode(new_dentry)->i_mode
+> +			};
+> +
+> +			error = aa_path_perm(OP_RENAME_SRC, label, &new_path, 0,
+> +					     MAY_READ | AA_MAY_GETATTR | MAY_WRITE |
+> +					     AA_MAY_SETATTR | AA_MAY_DELETE,
+> +					     &cond_exchange);
+> +			if (!error)
+> +				error = aa_path_perm(OP_RENAME_DEST, label, &old_path,
+> +						     0, MAY_WRITE | AA_MAY_SETATTR |
+> +						     AA_MAY_CREATE, &cond_exchange);
+> +		}
+> +
+> +		if (!error)
+> +			error = aa_path_perm(OP_RENAME_SRC, label, &old_path, 0,
+> +					     MAY_READ | AA_MAY_GETATTR | MAY_WRITE |
+> +					     AA_MAY_SETATTR | AA_MAY_DELETE,
+> +					     &cond);
+>   		if (!error)
+>   			error = aa_path_perm(OP_RENAME_DEST, label, &new_path,
+>   					     0, MAY_WRITE | AA_MAY_SETATTR |
+> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
+> index 97b8e421f617..7e57fca6e814 100644
+> --- a/security/landlock/fs.c
+> +++ b/security/landlock/fs.c
+> @@ -574,10 +574,12 @@ static inline u32 maybe_remove(const struct dentry *const dentry)
+>   static int hook_path_rename(const struct path *const old_dir,
+>   		struct dentry *const old_dentry,
+>   		const struct path *const new_dir,
+> -		struct dentry *const new_dentry)
+> +		struct dentry *const new_dentry,
+> +		const unsigned int flags)
+>   {
+>   	const struct landlock_ruleset *const dom =
+>   		landlock_get_current_domain();
+> +	u32 exchange_access = 0;
+>   
+>   	if (!dom)
+>   		return 0;
+> @@ -585,11 +587,17 @@ static int hook_path_rename(const struct path *const old_dir,
+>   	if (old_dir->dentry != new_dir->dentry)
+>   		/* Gracefully forbids reparenting. */
+>   		return -EXDEV;
+> +	if (flags & RENAME_EXCHANGE) {
+> +		if (unlikely(d_is_negative(new_dentry)))
+> +			return -ENOENT;
+> +		exchange_access =
+> +			get_mode_access(d_backing_inode(new_dentry)->i_mode);
+> +	}
+>   	if (unlikely(d_is_negative(old_dentry)))
+>   		return -ENOENT;
+>   	/* RENAME_EXCHANGE is handled because directories are the same. */
+>   	return check_access_path(dom, old_dir, maybe_remove(old_dentry) |
+> -			maybe_remove(new_dentry) |
+> +			maybe_remove(new_dentry) | exchange_access |
+>   			get_mode_access(d_backing_inode(old_dentry)->i_mode));
+>   }
+>   
+> diff --git a/security/security.c b/security/security.c
+> index 22261d79f333..8634da4cfd46 100644
+> --- a/security/security.c
+> +++ b/security/security.c
+> @@ -1184,15 +1184,8 @@ int security_path_rename(const struct path *old_dir, struct dentry *old_dentry,
+>   		     (d_is_positive(new_dentry) && IS_PRIVATE(d_backing_inode(new_dentry)))))
+>   		return 0;
+>   
+> -	if (flags & RENAME_EXCHANGE) {
+> -		int err = call_int_hook(path_rename, 0, new_dir, new_dentry,
+> -					old_dir, old_dentry);
+> -		if (err)
+> -			return err;
+> -	}
+> -
+>   	return call_int_hook(path_rename, 0, old_dir, old_dentry, new_dir,
+> -				new_dentry);
+> +				new_dentry, flags);
+>   }
+>   EXPORT_SYMBOL(security_path_rename);
+>   
+> diff --git a/security/tomoyo/tomoyo.c b/security/tomoyo/tomoyo.c
+> index b6a31901f289..71e82d855ebf 100644
+> --- a/security/tomoyo/tomoyo.c
+> +++ b/security/tomoyo/tomoyo.c
+> @@ -264,17 +264,26 @@ static int tomoyo_path_link(struct dentry *old_dentry, const struct path *new_di
+>    * @old_dentry: Pointer to "struct dentry".
+>    * @new_parent: Pointer to "struct path".
+>    * @new_dentry: Pointer to "struct dentry".
+> + * @flags: Rename options.
+>    *
+>    * Returns 0 on success, negative value otherwise.
+>    */
+>   static int tomoyo_path_rename(const struct path *old_parent,
+>   			      struct dentry *old_dentry,
+>   			      const struct path *new_parent,
+> -			      struct dentry *new_dentry)
+> +			      struct dentry *new_dentry,
+> +			      const unsigned int flags)
+>   {
+>   	struct path path1 = { .mnt = old_parent->mnt, .dentry = old_dentry };
+>   	struct path path2 = { .mnt = new_parent->mnt, .dentry = new_dentry };
+>   
+> +	if (flags & RENAME_EXCHANGE) {
+> +		const int err = tomoyo_path2_perm(TOMOYO_TYPE_RENAME, &path2,
+> +				&path1);
+> +
+> +		if (err)
+> +			return err;
+> +	}
+>   	return tomoyo_path2_perm(TOMOYO_TYPE_RENAME, &path1, &path2);
+>   }
+>   
+> 
+> base-commit: cfb92440ee71adcc2105b0890bb01ac3cddb8507
