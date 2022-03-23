@@ -2,123 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0693C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 16:17:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3A6CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 16:18:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245389AbiCWQTO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 12:19:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42840 "EHLO
+        id S238935AbiCWQUQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 12:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233715AbiCWQTM (ORCPT
+        with ESMTP id S238855AbiCWQUM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 12:19:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C20DC6E7A8
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 09:17:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648052261;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LMilvWqrMPZjKPNSjn2quNpLYv1XEy4/3uEFo9XhgfY=;
-        b=iImOCK1DsV8u4JB+hZOQFX0P+avcIJwUKWIspr0KYdJuql5oKn4+wnKvmSVtVy9cRKGTGs
-        UerOeZRjcQlE7p3dPcM42b+rQLqTKW0IZzR+AjYOyA+zjVrAMZ+TxZvzHTpY0eaDv5U2Rk
-        KzuSZDkiEC3sY/nZKTBYAmdwy5xl+NI=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-3-kPzCGWlmNWyfpjXSQULBeg-1; Wed, 23 Mar 2022 12:17:40 -0400
-X-MC-Unique: kPzCGWlmNWyfpjXSQULBeg-1
-Received: by mail-qt1-f197.google.com with SMTP id p6-20020a05622a00c600b002e1cb9508e8so1524107qtw.20
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 09:17:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=LMilvWqrMPZjKPNSjn2quNpLYv1XEy4/3uEFo9XhgfY=;
-        b=K6YRLBmsZfmGqzj3z9kfUkVZDeiN9SWfK1tmwGokPXi0CWLNIq1BfyMwSAQEqORo2U
-         /WlIN467HhIoGhgWSQqNl3cKNIeoafdUzBx7HZTd+dWw0DNqCP9eycW0Y2r+Vb7GyO6n
-         JHf3P9a6A23bzZ7wEvYDBzeN+8NB5xKd2kPOqnCsDUJoPqOVTbOx/9pT9H2MuW59qD5I
-         UyU9JGVJFHPURUbWWtAG50PcZzyVOUvpgQUp7JOJMd1qCZfOr36NhPE69te/Sn+E35kv
-         BNVwhCq/YbL6alFvsAZBcaW6qs12TIcM8MTQUlIyJWI6HkOMiChFgtBS1IeBOWmH+2LM
-         MYuA==
-X-Gm-Message-State: AOAM530/yElH+/TAo7AHSNnuJ4q8PdCKL9WZpiC5lkxuecqSSAAZVuTL
-        oxywsuocb/iOR/GSgBHYMTcFrdITwn8VP5BoCzLqa0+KQD4YMiX1bI1M0WKy0kPPIM3uYZYZQIt
-        sVPHbjk13U9MW1KyJINQIkhLV
-X-Received: by 2002:ac8:7d0f:0:b0:2e1:cd79:6c3f with SMTP id g15-20020ac87d0f000000b002e1cd796c3fmr456904qtb.551.1648052259716;
-        Wed, 23 Mar 2022 09:17:39 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwI+ts2Y1HOmiplnzOuO6XQHoN928vcCV0rvB/x+YY/nDDPpeIZrag/6oSq8+QdpPyfB2jmMQ==
-X-Received: by 2002:ac8:7d0f:0:b0:2e1:cd79:6c3f with SMTP id g15-20020ac87d0f000000b002e1cd796c3fmr456865qtb.551.1648052259384;
-        Wed, 23 Mar 2022 09:17:39 -0700 (PDT)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id u20-20020a05620a455400b0067ec0628661sm261739qkp.110.2022.03.23.09.17.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Mar 2022 09:17:38 -0700 (PDT)
-Subject: Re: [PATCH v2] livepatch: Reorder to use before freeing a pointer
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     jpoimboe@redhat.com, jikos@kernel.org, mbenes@suse.cz,
-        joe.lawrence@redhat.com, nathan@kernel.org,
-        ndesaulniers@google.com, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-References: <20220320015143.2208591-1-trix@redhat.com>
- <YjtCY1QaA6GI3b+7@alley>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <be3ac729-8d1d-0c2e-6d63-aeb23ca04bbd@redhat.com>
-Date:   Wed, 23 Mar 2022 09:17:35 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Wed, 23 Mar 2022 12:20:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8784C59A65;
+        Wed, 23 Mar 2022 09:18:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2390C6184B;
+        Wed, 23 Mar 2022 16:18:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04A62C340E8;
+        Wed, 23 Mar 2022 16:18:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648052320;
+        bh=xmssCclpuXkvokPOIc8kA2TpF6hDPr1nfNP2UJCwIVc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kQDEhbn2dsQ+pF3/zFmCMhiRAPwUL9hr3vakvVKREmueBHXYPPkGc1Yjk77g1+upO
+         lsDQg0C3crQmPNkuUwYh3N5/NCPu7xCYzLRLkINXEPhXo6X4YJjVbQqoAXsUk9wZ3M
+         Nph/NkDtXZQ3cUm86JAvalrgq86oea+2tvOlDFHw7B8O56nOXfcl0t6rQ0d6AY4qwA
+         IadGNCw72DxDcmz7wQcxJVg1G9vsRI9GsUIHs91zDchMl/QMSewj0sA6+BEoIVeyXh
+         T7p/CRUlVXHmloiINmMA/7xJ6LVM8pjEqYnS63qXXzPUgIkiBU7MrJsgohHJmDkTAQ
+         /q/OmoZUIiA7g==
+Date:   Wed, 23 Mar 2022 16:18:31 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
+        <linux-crypto@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Nick Hu <nickhu@andestech.com>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Michal Simek <monstr@monstr.eu>,
+        Borislav Petkov <bp@alien8.de>, Guo Ren <guoren@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Joshua Kinard <kumba@gentoo.org>,
+        David Laight <David.Laight@aculab.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Lennart Poettering <mzxreary@0pointer.de>,
+        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Theodore Ts'o <tytso@mit.edu>
+Subject: Re: [PATCH v1] random: block in /dev/urandom
+Message-ID: <YjtIVymPEZ4t16tP@sirena.org.uk>
+References: <20220217162848.303601-1-Jason@zx2c4.com>
+ <20220322155820.GA1745955@roeck-us.net>
+ <YjoUU+8zrzB02pW7@sirena.org.uk>
+ <0d20fb04-81b8-eeee-49ab-5b0a9e78c9f8@roeck-us.net>
+ <YjsOHmvDgAxwLFMg@sirena.org.uk>
+ <ebafdf77-5d96-556b-0197-a172b656bb01@roeck-us.net>
+ <CAK8P3a1hzmXTTMsGcCA2ekEHnff+M7GrYSQDN4bVfVk6Ui=Apw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <YjtCY1QaA6GI3b+7@alley>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="rbHr+yLemIUaUxTK"
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a1hzmXTTMsGcCA2ekEHnff+M7GrYSQDN4bVfVk6Ui=Apw@mail.gmail.com>
+X-Cookie: Nice guys get sick.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-On 3/23/22 8:53 AM, Petr Mladek wrote:
-> On Sat 2022-03-19 18:51:43, trix@redhat.com wrote:
->> From: Tom Rix <trix@redhat.com>
->>
->> Clang static analysis reports this issue
->> livepatch-shadow-fix1.c:113:2: warning: Use of
->>    memory after it is freed
->>    pr_info("%s: dummy @ %p, prevented leak @ %p\n",
->>    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->>
->> The pointer is freed in the previous statement.
->> Reorder the pr_info to report before the free.
->>
->> Similar issue in livepatch-shadow-fix2.c
-> I have added the following paragraph:
->
-> <snip>
-> Note that it is a false positive. pr_info() just prints the address.
-> The freed memory is not accessed. Well, the static analyzer could not
-> know this easily.
-> </snip>
->
->> Signed-off-by: Tom Rix <trix@redhat.com>
-> and pushed the patch into livepatching/livepatching.git,
-> branch for-5.18/selftests-fixes.
->
-> IMHO, the patch is so trivial and can be added even in this merge
-> window. There is no need to create more dances around it ;-)
->
-> Let me know if you disagree. I am going to send the pull request
-> on Friday or Monday.
+--rbHr+yLemIUaUxTK
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Do whatever is easier for you.  The addition to the commit log is fine.
+On Wed, Mar 23, 2022 at 04:53:13PM +0100, Arnd Bergmann wrote:
+> On Wed, Mar 23, 2022 at 3:23 PM Guenter Roeck <linux@roeck-us.net> wrote:
 
-Thanks
+> > I don't think it is entirely academic. versatile-pb fails for me;
+> > if it doesn't fail at KernelCI, I'd like to understand why - not to
+> > fix it in my test environment, but to make sure that I _don't_ fix it.
+> > After all, it _is_ a regression. Even if that regression is triggered
+> > by bad (for a given definition of "bad") userspace code, it is still
+> > a regression.
 
-Tom
+> Maybe kernelci has a virtio-rng device assigned to the machine
+> and you don't? That would clearly avoid the issue here.
 
->
-> Best Regards,
-> Petr
->
+No, nothing I can see in the boot log:
 
+https://storage.kernelci.org/next/master/next-20220323/arm/versatile_defcon=
+fig/gcc-10/lab-baylibre/baseline-qemu_arm-versatilepb.html
+
+and I'd be surprised if virtio devices made it through with a specific
+platform emulation.  However it looks like for that test the init
+scripts didn't do anything with the random seed (possibly due to running
+=66rom ramdisk?) so we'd not have hit the condition.
+
+--rbHr+yLemIUaUxTK
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmI7SFYACgkQJNaLcl1U
+h9DyDgf/U3gmBBfzqO9p6NhtOGB/g28xQ3p6y1kJ4Sg2NhFwA6wgeFfZE8b8k9Ps
+4Fra0rZ5ps4ygGLxhk0sD0yHMtRlFP95ybscWVOP/hEDxqDOzqTwAZ5zbYAgyIxS
+a1hKm0AbnEmEpXyK7AhxHXsl3stNSqzCY9OFhJgMFekKkv7L3CAdrBUQCxZhfnKr
+obsPPejMdrEI5IX1ge4QCq9HFI0ohwRDaINOHWXGAX1p4+s6OwFjxvmzZZA87DPs
+OCApFRP6IbCHGqiIykL0UsxWZ6qDRdjLqnCaAK6N5+ZnrP13/C4O3M+dCxV8Vfx6
+Y/3OlG3UrMouJEWe/iwV0bq4UdP6wA==
+=FAu8
+-----END PGP SIGNATURE-----
+
+--rbHr+yLemIUaUxTK--
