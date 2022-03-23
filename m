@@ -2,72 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 765DFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 23:38:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B44BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 23:49:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346797AbiCWXhw (ORCPT
+        id S1346532AbiCWXvT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 19:37:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53352 "EHLO
+        Wed, 23 Mar 2022 19:51:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345968AbiCWXht (ORCPT
+        with ESMTP id S1347583AbiCWXuc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 19:37:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15FC26E781;
-        Wed, 23 Mar 2022 16:36:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4F55B8217F;
-        Wed, 23 Mar 2022 23:36:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8342BC340EE;
-        Wed, 23 Mar 2022 23:36:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648078576;
-        bh=OhUtQJJcoj3Jnk+YaF08+vf4O/Og/N3qZbD+HriaA6o=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=FxYxD7nCVLDq6hbcb3BiqybyqBqZNuMPjqlSSwRXchs5bpYJ/FdHkokYDmMRSwtg8
-         Emnn3ie0xYYJyPLLiHISd5/3FvuPX5i8WLGJ1g3Hq0qe2D4N2skzt3SLdgNR+aD1S6
-         SmJehFYCaRYRVDw2wAulnS1y6Fxyl/4LpozIeUXzLThQ2UdG3Li8XlejVFYtvRL+vL
-         2dFoZedKeCHigpzmKnBrQ3Np2dbspRdXcEs5dHgl6QL3ECRO1jELBgYqQWf+jVfCsS
-         FRO050UwMzvGWg2WaT6z+6898bli1aiZOo8m5LKDmWc9EFRiVxicJ7VY5Q904ID3z8
-         msZeTBvnX7DLQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 71078E6D402;
-        Wed, 23 Mar 2022 23:36:16 +0000 (UTC)
-Subject: Re: [GIT PULL] fbdev updates & fixes for v5.18-rc1
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YjokKxSLtqMwyLyB@ls3530>
-References: <YjokKxSLtqMwyLyB@ls3530>
-X-PR-Tracked-List-Id: Direct Rendering Infrastructure - Development
- <dri-devel.lists.freedesktop.org>
-X-PR-Tracked-Message-Id: <YjokKxSLtqMwyLyB@ls3530>
-X-PR-Tracked-Remote: http://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev.git tags/for-5.18/fbdev-1
-X-PR-Tracked-Commit-Id: e445c8b2aa2df0e49f6037886c32d54a5e3960b1
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 9c4b86ebf5bfdaceba4bedbaf76e4ff745db17ef
-Message-Id: <164807857645.14397.13955122823620181053.pr-tracker-bot@kernel.org>
-Date:   Wed, 23 Mar 2022 23:36:16 +0000
-To:     Helge Deller <deller@gmx.de>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Daniel Vetter <daniel.vetter@ffwll.ch>
+        Wed, 23 Mar 2022 19:50:32 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 497E01CB27
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 16:49:01 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id i11so3100141plr.1
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 16:49:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=OqY1xTeVRlw2nfYyxxPoQU/LOGXlMjj+SpATPbEYmHk=;
+        b=QPglaTyMq/OcPmXLWAnAvpGHghRviGDrt5W9reAcKupVIszxI8a6HgU8atAN5p8bd2
+         XSNMBxzaLe/XNjMPXpZ47CWOTtp0wNGcjxu30YaBrv7SHHr3/LgVb5kzxCKIEyK35gmQ
+         5SDHpHMC5ZwEGYGPGd8OHpxYIBoQudDrOchfOhg+0ocWziqEtPkjjSDpoW9527AiDJX6
+         MaiXtTYGfq2GQXCsO+Y3bjDDNqRUPCMlzDnHRQXV50J4Cm/xEo+4tuuK805aocqGzS1o
+         Os6w0vupztZM/VelhVI1KwYsHM4YC1Zt8Ak9Fws20xETp+XRrxCRColPxu2RmdZOKONr
+         0CmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=OqY1xTeVRlw2nfYyxxPoQU/LOGXlMjj+SpATPbEYmHk=;
+        b=D2yk2i86xTJ7N+238uCgCQiniL5Nv6ccvwsURWmPu1jeCVPVbL5ea2kEYwclznwQ0X
+         /gbpj/B9T3ip5bNPXu+IivM+/3bzuiNOcL3p7nx9g8pTYMPvHN0s5L9J2NIZzZOGAd7D
+         1CM7gfE17UEDmJWQUR/MaSBvPGGnzcumjV/MDVxPD1UZkOlvjMcKRNCr4GQyY+xNCeAl
+         VFUeHuz9FvmgoqZn7VK6exlGS6VUjrLf6lVQU1GU+vdLw83+L4Dkfgjxl+H6cTE/lPu2
+         wUvDSV16dqM5xy2JmuevVyUqwCy2GfyjrEfkrGc8SZsppGGiRu1n00LMhpUZpcl9BiUb
+         KJBA==
+X-Gm-Message-State: AOAM5328ljKdLVcauygyBf9YdcTNcnhC45D/T7O5ZYnJ2Yi56femJIFN
+        uVtOCyYuE7lIdWp3Elzq6esVyQ==
+X-Google-Smtp-Source: ABdhPJxlBFuH7Nhi8Qp9G1SpsD27wA5t3nVbN3x89MKrvpsFO3GJ9or400etjmvjzNtg0wD6aIwTHw==
+X-Received: by 2002:a17:903:1205:b0:151:8ae9:93ea with SMTP id l5-20020a170903120500b001518ae993eamr2691148plh.37.1648079340546;
+        Wed, 23 Mar 2022 16:49:00 -0700 (PDT)
+Received: from ?IPV6:2600:1700:38d4:55df:aed0:ee00:7944:65f6? ([2600:1700:38d4:55df:aed0:ee00:7944:65f6])
+        by smtp.gmail.com with ESMTPSA id 124-20020a621682000000b004f6a2e59a4dsm921771pfw.121.2022.03.23.16.48.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Mar 2022 16:48:59 -0700 (PDT)
+Message-ID: <3a7c3a71-0be7-261e-20b7-54b4864eedb5@google.com>
+Date:   Wed, 23 Mar 2022 16:48:57 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [RFC PATCH 10/47] mm: asi: Support for global non-sensitive
+ direct map allocations
+Content-Language: en-US
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        pbonzini@redhat.com, jmattson@google.com, pjt@google.com,
+        oweisse@google.com, alexandre.chartre@oracle.com,
+        rppt@linux.ibm.com, dave.hansen@linux.intel.com,
+        peterz@infradead.org, tglx@linutronix.de, luto@kernel.org,
+        linux-mm@kvack.org
+References: <20220223052223.1202152-1-junaids@google.com>
+ <20220223052223.1202152-11-junaids@google.com>
+ <YjuL80tuvUbAWWKW@casper.infradead.org>
+From:   Junaid Shahid <junaids@google.com>
+In-Reply-To: <YjuL80tuvUbAWWKW@casper.infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Tue, 22 Mar 2022 20:31:55 +0100:
+Hi Matthew,
 
-> http://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev.git tags/for-5.18/fbdev-1
+On 3/23/22 14:06, Matthew Wilcox wrote:
+> On Tue, Feb 22, 2022 at 09:21:46PM -0800, Junaid Shahid wrote:
+>> standard ASI instances. A new page flag is also added so that when
+>> these pages are freed, they can also be unmapped from the ASI page
+>> tables.
+> 
+> It's cute how you just throw this in as an aside.  Page flags are
+> in high demand and just adding them is not to be done lightly.  Is
+> there any other way of accomplishing what you want?
+> 
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/9c4b86ebf5bfdaceba4bedbaf76e4ff745db17ef
+I suppose we may be able to use page_ext instead. That certainly should be 
+feasible for the PG_local_nonsensitive flag introduced in a later patch, 
+although I am not completely sure about the PG_global_nonsensitive flag. That 
+could get slightly tricky (though likely still possible to do) in case we need 
+to allocate any non-sensitive memory before page_ext is initialized. One concern 
+with using page_ext could be the extra memory usage on large machines.
 
-Thank you!
+BTW is page flag scarcity an issue on 64-bit systems as well, or only 32-bit 
+systems? ASI is only supported on 64-bit systems (at least currently).
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+>> @@ -542,6 +545,12 @@ TESTCLEARFLAG(Young, young, PF_ANY)
+>>   PAGEFLAG(Idle, idle, PF_ANY)
+>>   #endif
+>>   
+>> +#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
+>> +__PAGEFLAG(GlobalNonSensitive, global_nonsensitive, PF_ANY);
+> 
+> Why is PF_ANY appropriate?
+> 
+
+I think we actually can use PF_HEAD here. That would make the alloc_pages path 
+faster too. I'll change to that. (Initially I had gone with PF_ANY because in 
+theory, you could allocate a compound page and then break it later and free the 
+individual pages, but I don't know if that actually happens apart from THP, and 
+certainly doesn't look like the case for any of the stuff that we have marked as 
+non-sensitive.)
+
+Thanks,
+Junaid
