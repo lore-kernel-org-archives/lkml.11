@@ -2,89 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD988C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 17:37:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84417C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 17:37:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343722AbiCWRih (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 13:38:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55384 "EHLO
+        id S229768AbiCWRio (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 13:38:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343733AbiCWRiH (ORCPT
+        with ESMTP id S1343653AbiCWRiP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 13:38:07 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C40A47EA0C;
-        Wed, 23 Mar 2022 10:36:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648056997; x=1679592997;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=dgKB7CXUgH7XBh9+a33zflluzHIzN/Jnr1ZGBzp7T/c=;
-  b=l8nx9v4Mq32PxU/I4Rk7LP5d11vm3xhq04wmaMf1S+BbrdVJx+JM7/ZD
-   /86geW0he9e1gxmBSC1e/0WJuXhhEDfnOitPPXby/t7nZz2uWv4u8MYdj
-   rz30IpWJ7vvD2CTkqIii+2OXc5fwuBpM/zdMZpu6WFK9/XPUs7Tqqn34y
-   gXKoZgSme50IdxAuH1Yhf+uaSkAj+eTQ1DaJTKJA8wPT8+AAyeiSZeszp
-   18H11VqW+we4Q0ue7EMT7W+gr23pZlncia6HNfRdXb51zly4F8zQOLD2r
-   L/Dft7kA86HZ/w/Sf/NP9YT99pGbpnQBJUfqwQzH02U1j/NCNBQAS4Nbf
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="257006208"
-X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
-   d="scan'208";a="257006208"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 10:23:30 -0700
-X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
-   d="scan'208";a="561004083"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 10:23:28 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nX4hA-005KMq-Jz;
-        Wed, 23 Mar 2022 19:22:52 +0200
-Date:   Wed, 23 Mar 2022 19:22:52 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 1/4] spidev: Do not use atomic bit operations when
- allocating minor
-Message-ID: <YjtXbDyCWZxKnf4Y@smile.fi.intel.com>
-References: <20220323140215.2568-1-andriy.shevchenko@linux.intel.com>
- <YjtNJe4Pgp3WIwOa@sirena.org.uk>
+        Wed, 23 Mar 2022 13:38:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DA7A67EB23
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 10:36:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648057005;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xWGdi1UqdjNcgIoNh0luPYt8s0RItagontqZa8O7xH4=;
+        b=DNWJKdZiCyrL5IIAvSeVGoH5AkolypKMjOjAedZiKbeaQuQXDZF7I6lZN4P5jMiMnup0C0
+        iYCDw3FrKxsfuCs9oFV8YgEy7G9z+cKJCwnfcsVJh5F4KW/wRL0lcKQNW0s+QzbiA3wKlF
+        ynyht0H8sDHgikusV77QxtwxrHmxOJA=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-59-zPZlj1LOPeG6gSSM9jG44A-1; Wed, 23 Mar 2022 13:36:43 -0400
+X-MC-Unique: zPZlj1LOPeG6gSSM9jG44A-1
+Received: by mail-qv1-f72.google.com with SMTP id j8-20020ad454c8000000b0044111c17099so1811513qvx.0
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 10:36:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=xWGdi1UqdjNcgIoNh0luPYt8s0RItagontqZa8O7xH4=;
+        b=Q6ieRAT4UqpHMpOYYAl3g62ETFGzIrD7Gkg/P33AaUVKmDC7DL6pCVgvMXtIJBj2Od
+         bw3UWcOOOcTerklRTRzZIlY/v1LSn6ky1oyuqcTsZlp2I26GqBKnOz7n9CuNBM39PYM8
+         2Zz5bqJ4OBai/YPEqgC1rJ9FWbU6JWZeS7o7N8WN4zUMpn1vFv9XJTpULKYmp0N49W7o
+         S2yx6GKHhPGw5inrAya8VyRW4FI1hqVkBj6bLIEaOa7Zrec9v+9vjsOIQHvDtHN3MSF7
+         9NUozOWdpvG4BQuc8+xR8C+9OnKo1YOe6wOBDrksI5uR6l+Q7d22+qDmbgE2JAxWo9YE
+         GzoA==
+X-Gm-Message-State: AOAM532zYAbmT8mgmbpvUb/ZpLOMmJT+FbzagBbTDuijnUE9hPnKxl6o
+        d88nbw06T5dgUBdpqAX8JFS129tXl92gZp3HBkAXcdgoSBdh2viMlFGgwXZzduAU48APvhbUXGP
+        2JfNXDP4TGlRoBq7DflWDG/c6
+X-Received: by 2002:ac8:5dcf:0:b0:2e1:baf1:502d with SMTP id e15-20020ac85dcf000000b002e1baf1502dmr806270qtx.635.1648057003041;
+        Wed, 23 Mar 2022 10:36:43 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxTpPllZkLf2utvzNGXglhcnTlOLeIMc4F/54ZX4LmPDik4Rh6CKZ6+/p5IKQ52dEZjvQk8DA==
+X-Received: by 2002:ac8:5dcf:0:b0:2e1:baf1:502d with SMTP id e15-20020ac85dcf000000b002e1baf1502dmr806235qtx.635.1648057002476;
+        Wed, 23 Mar 2022 10:36:42 -0700 (PDT)
+Received: from step1.redhat.com (host-87-12-25-114.business.telecomitalia.it. [87.12.25.114])
+        by smtp.gmail.com with ESMTPSA id h14-20020a05622a170e00b002e1a65754d8sm476127qtk.91.2022.03.23.10.36.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Mar 2022 10:36:41 -0700 (PDT)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>, Asias He <asias@redhat.com>,
+        Arseny Krasnov <arseny.krasnov@kaspersky.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH net v3 3/3] vsock/virtio: enable VQs early on probe
+Date:   Wed, 23 Mar 2022 18:36:25 +0100
+Message-Id: <20220323173625.91119-4-sgarzare@redhat.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220323173625.91119-1-sgarzare@redhat.com>
+References: <20220323173625.91119-1-sgarzare@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YjtNJe4Pgp3WIwOa@sirena.org.uk>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 04:39:01PM +0000, Mark Brown wrote:
-> On Wed, Mar 23, 2022 at 04:02:12PM +0200, Andy Shevchenko wrote:
-> > There is no need to use atomic bit operations when allocating a minor
-> > number since it's done under a mutex. Moreover, one of the operations
-> > that is in use is non-atomic anyway.
+virtio spec requires drivers to set DRIVER_OK before using VQs.
+This is set automatically after probe returns, but virtio-vsock
+driver uses VQs in the probe function to fill rx and event VQs
+with new buffers.
 
-...
+Let's fix this, calling virtio_device_ready() before using VQs
+in the probe function.
 
-> >  	if (status == 0) {
-> > -		set_bit(minor, minors);
-> > +		__set_bit(minor, minors);
-> >  		list_add(&spidev->device_entry, &device_list);
-> 
-> There's no *need* but the __ looks suspicious...  what's the upside
-> here?
+Fixes: 0ea9e1d3a9e3 ("VSOCK: Introduce virtio_transport.ko")
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+---
+ net/vmw_vsock/virtio_transport.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-It's exactly what is written in the commit message
-
-__*_bit() are non-atomic
-*_bit() are atomic
-
-Since they are wrapped by mutex, the atomic ones are not needed.
-
+diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+index 3954d3be9083..ba1c8cc0c467 100644
+--- a/net/vmw_vsock/virtio_transport.c
++++ b/net/vmw_vsock/virtio_transport.c
+@@ -627,6 +627,8 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
+ 
+ 	vdev->priv = vsock;
+ 
++	virtio_device_ready(vdev);
++
+ 	mutex_lock(&vsock->tx_lock);
+ 	vsock->tx_run = true;
+ 	mutex_unlock(&vsock->tx_lock);
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.35.1
 
