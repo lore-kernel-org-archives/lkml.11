@@ -2,164 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79959C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 07:58:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D629EC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 07:59:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242366AbiCWIAB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 04:00:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43432 "EHLO
+        id S242393AbiCWIAe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 04:00:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242377AbiCWH7y (ORCPT
+        with ESMTP id S242375AbiCWIAc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 03:59:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E102C12ADB
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 00:58:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648022294;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=gAyVkbGAsQwthsHwR2YL1Xu7ffsSB44wUq5hKIC/Uq0=;
-        b=JaOT7tKCSGUPgrRdtYK45PB1/05LwBboJ673NcjEAnOEhu+vY7Op+NRjp7V0TB0ICB78m5
-        4I0mrGOFB/24uHyezL9KCtkr9+VdyrvBsTh+OMAR3cDE+HSD8LjaQU9ZhQyhud7E97gZ6Y
-        LFmodKvKncCR8Ql63muRsAnOh4N2htU=
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
- [209.85.208.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-664-qFwTUAgNNUO48stjfylqwg-1; Wed, 23 Mar 2022 03:58:13 -0400
-X-MC-Unique: qFwTUAgNNUO48stjfylqwg-1
-Received: by mail-lj1-f197.google.com with SMTP id f12-20020a2e918c000000b002496651f1d6so294668ljg.0
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 00:58:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gAyVkbGAsQwthsHwR2YL1Xu7ffsSB44wUq5hKIC/Uq0=;
-        b=TCI7ojY+yF7C30SL27gePI8NdkmB2EywDp7CbH4Zf7GeB7lb1nhvDlgn1cjnFA3OQK
-         dcmjnIHEQY686dKx9mt7MLRtok3vNvsVOh69FuWQr/z9Q6mX8hSMIqhr5c+dykcAli8n
-         NEKsd4DTxQqqxzHh8rrohFszilGHpzBdazUxG1UCYh0J5RjqrDE6Bv2uB7RFjae9sZTc
-         6V33jj1T2gLZV9WrXE/KJY+hojoiDkyEQ7geiXZdV0zktcudD4J0HhdO9kWl8zPLVuT9
-         eVD/HBpBCXtRMK9rreOBHk7roIem5r40lUUyPXB+w1J6KIGhlEROcsv8n0vmZU5doI6b
-         t9Ng==
-X-Gm-Message-State: AOAM530nZydoq3paQ6pHv3Vy2HpYUCHrlnRnWnCBYDFiAmpVDeJxJU12
-        +7681L0LafQdAOD91zzubHxi3cTIMs0xRIO5CXoj4KWpAGb9R/NK/VYwC2SQhov8azKO12XIB3f
-        M8Sn8hB6UidgnaXmiD2JD+MRydqgIZwEm0CVFMvGj
-X-Received: by 2002:a05:651c:90a:b0:249:5d82:fe9c with SMTP id e10-20020a05651c090a00b002495d82fe9cmr21556666ljq.300.1648022291810;
-        Wed, 23 Mar 2022 00:58:11 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzehhqEud0nAsdq/Kd29NYle9hKa9jnJAZWN6DSBqWRHij5C2bX9h3lR7Tb3iqEW8RSonlF1JIW0PRX8/99XHI=
-X-Received: by 2002:a05:651c:90a:b0:249:5d82:fe9c with SMTP id
- e10-20020a05651c090a00b002495d82fe9cmr21556651ljq.300.1648022291581; Wed, 23
- Mar 2022 00:58:11 -0700 (PDT)
+        Wed, 23 Mar 2022 04:00:32 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2BC32EFD;
+        Wed, 23 Mar 2022 00:59:03 -0700 (PDT)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22N7Nj2E030074;
+        Wed, 23 Mar 2022 07:59:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=Kyr8kev9+gNTTph7gkssJCVXKyDOvFDGTXEnkQ9Nm1A=;
+ b=B6+8u/0CDv/5ob/GwUFSRT4H8/y7IPlvqLyrPMNCF6UGoI8YYt0bbjlAHahPTFH/k72Q
+ g59PRPxFZXWvCcqIMglw1BnPlISEQU4hf+9cP76WrGyiGHpS4kBf0ms/0hdx4zhVLB9S
+ gqHFTePmDklY3g1dufRMRRptEmpbWw6Jv9bMwBatF2rt6rtisAAPajly+3RrPUyPIVK9
+ 9Bw9CzJ3ahdiHVBuqLJiJjSQSHRpSaVRw7Xi/VcZh1aaYEzS6yxGbJ9tI7meZTfAkfSO
+ R/3KuWcXgMjBby9DNDgU6EkGjDOF4+H3JGHQxj+RYHCGO3mwQjpUYeDGX5DXNfNFNqpe aw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3eyy4f0hub-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Mar 2022 07:59:03 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22N7VIHs023215;
+        Wed, 23 Mar 2022 07:59:02 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3eyy4f0htq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Mar 2022 07:59:02 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22N7ws5B018636;
+        Wed, 23 Mar 2022 07:59:00 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma06ams.nl.ibm.com with ESMTP id 3ew6ej00hk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Mar 2022 07:59:00 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22N7wvND50200932
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 23 Mar 2022 07:58:57 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7AFEA11C04A;
+        Wed, 23 Mar 2022 07:58:57 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 01ABA11C04C;
+        Wed, 23 Mar 2022 07:58:57 +0000 (GMT)
+Received: from [9.145.94.199] (unknown [9.145.94.199])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 23 Mar 2022 07:58:56 +0000 (GMT)
+Message-ID: <44618f05-9aee-5aa5-b036-dd838285b26f@linux.ibm.com>
+Date:   Wed, 23 Mar 2022 08:58:56 +0100
 MIME-Version: 1.0
-References: <20220322151952.2950143-1-keirf@google.com>
-In-Reply-To: <20220322151952.2950143-1-keirf@google.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 23 Mar 2022 15:57:59 +0800
-Message-ID: <CACGkMEubcU4rFVem7neKYb-qT3TQUN802bbLNq7vh+y8gdD5AA@mail.gmail.com>
-Subject: Re: [PATCH v2] virtio: pci: sanity check bar indexes
-To:     Keir Fraser <keirf@google.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>, kernel-team@android.com,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] KVM: s390: Fix lockdep issue in vm memop
+Content-Language: en-US
+To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>
+Cc:     David Hildenbrand <david@redhat.com>,
+        Sven Schnelle <svens@linux.ibm.com>, kvm@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220322153204.2637400-1-scgl@linux.ibm.com>
+From:   Janosch Frank <frankja@linux.ibm.com>
+In-Reply-To: <20220322153204.2637400-1-scgl@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: jC8grO_4q80IxcdgQp2aLwrFrCDR-3sr
+X-Proofpoint-GUID: LN6PtDnGfq-7m3KgOANAn4JQeeFBSlJD
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-22_08,2022-03-22_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ lowpriorityscore=0 mlxlogscore=999 malwarescore=0 bulkscore=0
+ impostorscore=0 phishscore=0 mlxscore=0 adultscore=0 priorityscore=1501
+ spamscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203230042
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 11:20 PM Keir Fraser <keirf@google.com> wrote:
->
-> The bar index is used as an index into the device's resource list
-> and should be checked as within range for a standard bar.
->
-> Also clean up an existing check to consistently use PCI_STD_NUM_BARS.
->
-> Signed-off-by: Keir Fraser <keirf@google.com>
+On 3/22/22 16:32, Janis Schoetterl-Glausch wrote:
+> Issuing a memop on a protected vm does not make sense,
+
+Issuing a vm memop on a protected vm...
+
+The cpu memop still makes sense, no?
+
+> neither is the memory readable/writable, nor does it make sense to check
+> storage keys. This is why the ioctl will return -EINVAL when it detects
+> the vm to be protected. However, in order to ensure that the vm cannot
+> become protected during the memop, the kvm->lock would need to be taken
+> for the duration of the ioctl. This is also required because
+> kvm_s390_pv_is_protected asserts that the lock must be held.
+> Instead, don't try to prevent this. If user space enables secure
+> execution concurrently with a memop it must accecpt the possibility of
+> the memop failing.
+> Still check if the vm is currently protected, but without locking and
+> consider it a heuristic.
+> 
+> Fixes: ef11c9463ae0 ("KVM: s390: Add vm IOCTL for key checked guest absolute memory access")
+> Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+
+Makes sense to me.
+
+Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
+
 > ---
->  drivers/virtio/virtio_pci_modern.c     | 10 ++++++++--
->  drivers/virtio/virtio_pci_modern_dev.c |  8 +++++++-
->  2 files changed, 15 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/virtio/virtio_pci_modern.c b/drivers/virtio/virtio_pci_modern.c
-> index 5455bc041fb6..84bace98dff5 100644
-> --- a/drivers/virtio/virtio_pci_modern.c
-> +++ b/drivers/virtio/virtio_pci_modern.c
-> @@ -293,7 +293,7 @@ static int virtio_pci_find_shm_cap(struct pci_dev *dev, u8 required_id,
->
->         for (pos = pci_find_capability(dev, PCI_CAP_ID_VNDR); pos > 0;
->              pos = pci_find_next_capability(dev, pos, PCI_CAP_ID_VNDR)) {
-> -               u8 type, cap_len, id;
-> +               u8 type, cap_len, id, res_bar;
->                 u32 tmp32;
->                 u64 res_offset, res_length;
->
-> @@ -317,7 +317,12 @@ static int virtio_pci_find_shm_cap(struct pci_dev *dev, u8 required_id,
->
->                 /* Type, and ID match, looks good */
->                 pci_read_config_byte(dev, pos + offsetof(struct virtio_pci_cap,
-> -                                                        bar), bar);
-> +                                                        bar), &res_bar);
-> +               if (res_bar >= PCI_STD_NUM_BARS) {
-> +                       dev_err(&dev->dev, "%s: shm cap with bad bar: %d\n",
-> +                               __func__, res_bar);
-> +                       continue;
-> +               }
->
->                 /* Read the lower 32bit of length and offset */
->                 pci_read_config_dword(dev, pos + offsetof(struct virtio_pci_cap,
-> @@ -337,6 +342,7 @@ static int virtio_pci_find_shm_cap(struct pci_dev *dev, u8 required_id,
->                                                      length_hi), &tmp32);
->                 res_length |= ((u64)tmp32) << 32;
->
-> +               *bar = res_bar;
->                 *offset = res_offset;
->                 *len = res_length;
->
-> diff --git a/drivers/virtio/virtio_pci_modern_dev.c b/drivers/virtio/virtio_pci_modern_dev.c
-> index e8b3ff2b9fbc..a6911d1e212a 100644
-> --- a/drivers/virtio/virtio_pci_modern_dev.c
-> +++ b/drivers/virtio/virtio_pci_modern_dev.c
-> @@ -35,6 +35,12 @@ vp_modern_map_capability(struct virtio_pci_modern_device *mdev, int off,
->         pci_read_config_dword(dev, off + offsetof(struct virtio_pci_cap, length),
->                               &length);
->
-> +       if (bar >= PCI_STD_NUM_BARS) {
-> +               dev_err(&dev->dev,
-> +                       "virtio_pci: bad capability bar %u\n", bar);
-> +               return NULL;
-> +       }
-> +
->         if (length <= start) {
->                 dev_err(&dev->dev,
->                         "virtio_pci: bad capability len %u (>%u expected)\n",
-> @@ -120,7 +126,7 @@ static inline int virtio_pci_find_capability(struct pci_dev *dev, u8 cfg_type,
->                                      &bar);
->
->                 /* Ignore structures with reserved BAR values */
-> -               if (bar > 0x5)
-> +               if (bar >= PCI_STD_NUM_BARS)
->                         continue;
-
-Just notice that the spec said:
-
-"
-values 0x0 to 0x5 specify a Base Address register (BAR) belonging to
-the function located beginning at 10h in PCI Configuration Space and
-used to map the structure into Memory or I/O Space. The BAR is
-permitted to be either 32-bit or 64-bit, it can map Memory Space or
-I/O Space.
-
-Any other value is reserved for future use.
-"
-
-So we probably need to stick 0x5 instead of 0x6 (PCI_STD_NUM_BARS) for
-this and other places.
-
-Thanks
-
->
->                 if (type == cfg_type) {
-> --
-> 2.35.1.894.gb6a874cedc-goog
->
+>   arch/s390/kvm/kvm-s390.c | 11 ++++++++++-
+>   1 file changed, 10 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+> index ca96f84db2cc..53adbe86a68f 100644
+> --- a/arch/s390/kvm/kvm-s390.c
+> +++ b/arch/s390/kvm/kvm-s390.c
+> @@ -2385,7 +2385,16 @@ static int kvm_s390_vm_mem_op(struct kvm *kvm, struct kvm_s390_mem_op *mop)
+>   		return -EINVAL;
+>   	if (mop->size > MEM_OP_MAX_SIZE)
+>   		return -E2BIG;
+> -	if (kvm_s390_pv_is_protected(kvm))
+> +	/*
+> +	 * This is technically a heuristic only, if the kvm->lock is not
+> +	 * taken, it is not guaranteed that the vm is/remains non-protected.
+> +	 * This is ok from a kernel perspective, wrongdoing is detected
+> +	 * on the access, -EFAULT is returned and the vm may crash the
+> +	 * next time it accesses the memory in question.
+> +	 * There is no sane usecase to do switching and a memop on two
+> +	 * different CPUs at the same time.
+> +	 */
+> +	if (kvm_s390_pv_get_handle(kvm))
+>   		return -EINVAL;
+>   	if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
+>   		if (access_key_invalid(mop->key))
+> 
+> base-commit: c9b8fecddb5bb4b67e351bbaeaa648a6f7456912
 
