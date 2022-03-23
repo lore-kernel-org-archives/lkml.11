@@ -2,169 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F03AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 21:21:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E31E7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 21:23:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344889AbiCWVWo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 17:22:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45402 "EHLO
+        id S241084AbiCWVZS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 17:25:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241081AbiCWVWm (ORCPT
+        with ESMTP id S229792AbiCWVZQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 17:22:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DE2985644
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 14:21:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E13D2B820C5
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 21:21:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D880C340EE;
-        Wed, 23 Mar 2022 21:21:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648070469;
-        bh=pi4TsVzQEBzAwpJQOAYodMLonLQpZSt0gqr4sMg+vN4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YFGFG1ApYl/SfF0lPexzaDWCb3nM7r0Q1oJaR4DWf34eUD1IdXXzArV5VsHEeDzkx
-         jals1gSGpf1j4r5E+jG7aLG0ljiJ4j9qmS13NuVq5Qjcbi782RoAKBrKgOOXGyStGr
-         f4nHE5kKMLC/fJAc/ABzSnB6LEv1UTucf4wqTRBsMHXT8OLtrC7ZOkVVb4AaJoKplP
-         oGu9U5DcC/aMXgIyFsAi9k918VU87xWdBDfLvYO0rr7V3+Wc+auC4qN0tHoUcgm9sm
-         9QacqXJLRd/WNbzWAWQRuGfzfVozPsws8uKQWcBTaS16QBqf8/W6/gEopsyA7iH3ZU
-         bo2GrGLZmb11Q==
-Date:   Wed, 23 Mar 2022 14:21:07 -0700
-From:   Jaegeuk Kim <jaegeuk@kernel.org>
+        Wed, 23 Mar 2022 17:25:16 -0400
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 94B7B10FFF
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 14:23:46 -0700 (PDT)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 7276F92009C; Wed, 23 Mar 2022 22:23:44 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 6C84E92009B;
+        Wed, 23 Mar 2022 21:23:44 +0000 (GMT)
+Date:   Wed, 23 Mar 2022 21:23:44 +0000 (GMT)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
 To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Tim Murray <timmurray@google.com>,
-        Waiman Long <longman@redhat.com>,
+cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux F2FS Dev Mailing List 
-        <linux-f2fs-devel@lists.sourceforge.net>
-Subject: Re: [GIT PULL] f2fs for 5.18
-Message-ID: <YjuPQ36A4W553ai1@google.com>
-References: <YjjihIZuvZpUjaSs@google.com>
- <CAHk-=wgsmvoJFKFWxQ2orEVUOWH1agk9iUNZ=-DFh5OXZL=Ldw@mail.gmail.com>
- <51cded74-3135-eed8-06d3-0b2165e3b379@redhat.com>
- <CAHk-=wi=Xsekgj7zfw_vpOM673CG24vznmz-yx9G05rWSAAYXg@mail.gmail.com>
- <CAEe=Sxmcn5+YUXBQhxDpzZVJu_T6S6+EURDqrP9uUS-PHGyuSg@mail.gmail.com>
- <CAHk-=whGKUyJpi0dTQJjyJxdmG+WCeKkJJyycpOaUW0De17h_Q@mail.gmail.com>
- <YjtKRAgFmBfgU0al@google.com>
- <CAHk-=wi99R8i=uvHiHo3jjZPzg6oTJW1rin3ekuPbuccS5XZqA@mail.gmail.com>
+        the arch/x86 maintainers <x86@kernel.org>
+Subject: Re: [GIT pull] x86/irq for v5.18-rc1
+In-Reply-To: <CAHk-=wg_Kyh4zVmBSc4H79jH+yv9wN7dMsf-5x=EDrORbL3fuQ@mail.gmail.com>
+Message-ID: <alpine.DEB.2.21.2203232114180.52439@angie.orcam.me.uk>
+References: <164786042536.122591.4459156564791679956.tglx@xen13> <164786043041.122591.4693682080153649212.tglx@xen13> <CAHk-=wg_Kyh4zVmBSc4H79jH+yv9wN7dMsf-5x=EDrORbL3fuQ@mail.gmail.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wi99R8i=uvHiHo3jjZPzg6oTJW1rin3ekuPbuccS5XZqA@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03/23, Linus Torvalds wrote:
-> On Wed, Mar 23, 2022 at 9:26 AM Jaegeuk Kim <jaegeuk@kernel.org> wrote:
-> >
-> > OTOH, I was suspecting the major contetion would be
-> >         f2fs_lock_op -> f2fs_down_read(&sbi->cp_rwsem);
-> > , which was used for most of filesystem operations.
-> 
-> Very possible, I was just looking at a random one in f2fs/file.c
-> obviously with no actual numbers in hand.
-> 
-> In general, I really hate seeing specialized locks, but this f2fs use
-> case is in some ways worse than other ad-hoc locks I've seen - simply
-> because it's been one whole-sale conversion of "down_read/write()" to
-> "f2fs_down_read/write()" - regardless of _which_ lock is being locked.
-> 
-> (Now, it's not all bad news - in other respects it's much better than
-> some ad-hoc locking: at least you still will participate in lockdep,
-> and you use the actual low-level locking primitives instead of making
-> up your own and getting memory ordering wrong).
-> 
-> But basically I think it would have been much nicer if you would have
-> done this for just the _one_ lock that mattered, whichever lock that
-> might be. Partly as documentation, and partly so that maybe some day
-> you can split that lock up (or maybe notice cases where you can avoid
-> it entirely).
-> 
-> For example, if it's really just f2fs_lock_op() that needs this, the
-> special "wait_event(trylock)" hack could have been entirely local to
-> just *that*, rather than affecting all the other locks too.
-> 
-> And the very first f2fs_lock_op() case I find, I see that the lock is
-> pointless. Again, that's unlikely to be the *cause* of any of these
-> problems, but the fact that I've now looked at two of the f2fs locks,
-> and gone "the locking seems to be pointlessly badly done" does imply
-> that the problem isn't "down_read()", it's the use.
-> 
-> That other lock I reacted to was the f2fs_lock_op(sbi) at the top of
-> f2fs_new_inode().
-> 
-> Look, you have a new inode that you just allocated, that nobody else
-> can yet access.
-> 
-> And the only thing that that f2fs_lock_op(sbi) -> f2fs_unlock_op(sbi)
-> sequence protects is the f2fs_alloc_nid() for that new inode.
-> 
-> Ok, so maybe f2fs_alloc_nid() needs that lock?
-> 
-> No it doesn't. It already has
-> 
->  - &nm_i->nid_list_lock spinlock for its own in-memory internal NID caches
-> 
-> *and* when that fails
-> 
->  - &NM_I(sbi)->build_lock for protecting all of f2fs_build_free_nids()
-> 
-> *and* inside of that lock
-> 
->  - f2fs_down_read(&nm_i->nat_tree_lock) for protecting the NAT tree structures.
-> 
-> So I see two major issues in the very first user of that
-> f2fs_lock_op() that I look at:
-> 
->  (a) it seems to be entirely unnecessary
+On Mon, 21 Mar 2022, Linus Torvalds wrote:
 
-Actually, when I took a look at the above path, indeed, f2fs_lock_op in
-f2fs_new_inode may be unnecessary at all aligned to your points. Even, that
-might hurt performance since we get f2fs_lock_op twice before dealing with
-dentries like f2fs_add_link. Let me test a bit whether there's any regression
-if I remove f2fs_lock_op in f2fs_new_inode.
+> Because that stupid IRT routing table code already been reported to cause bugs:
+> 
+>     https://lore.kernel.org/all/a2791312-2957-27e6-43af-c805bbb90266@collabora.com/
+> 
+> which seems to be because the $IRT signature check is complete garbage:
+> 
+> > +       for (addr = (u8 *)__va(0xf0000); addr < (u8 *)__va(0x100000); addr++) {
+> > +               rt = pirq_convert_irt_table(addr);
+> > +               if (rt)
+> > +                       return rt;
+> 
+> The above doesn't seem like it could really ever have been tested
+> properly, since it will walk off the end of that __va(0x100000)
+> address: it will walk every byte up to the 1MB physical address, and
+> it will try to find that $IRT signature there, but if it never finds
+> it, IT WILL CHECK THE SIGNATURE PAST THE 1MB mark!
 
-> 
->  (b) it is a classic case of "multiple nested locks".
-> 
-> Now, it's possible that I'm wrong on (a) and there's some odd reason
-> that lock is needed (maybe there is a lock ordering problem for one of
-> the other locks between readers and writers, and the op-lock acts as a
-> mutual exclusion for that).
-> 
-> But (b) really is a classic problem case for locking: nested locks are
-> *much* more likely to cause horrible contention, because not any
-> contention in any of the locks will end up affecting the others (and
-> you easily get "bunching up" of different processes when they get
-> synchronized with each other thanks to the inner lock).
-> 
-> Nested locking is often required, but it's one of those things where
-> you just need to be aware that they can be horribly bad for
-> performance, _particularly_ if an inner lock sees contention and
-> essentially "transfers" that contention to an outer lock.
-> 
-> Maybe I've been unlucky. Maybe the two cases I happened to look at
-> were just completely harmless, and very unusual. But the fact that I'm
-> two-for-two and go "that locking looks like a prime candidate to be
-> fixed" makes me suspect there's a lot of low-hanging fruit in there.
+ Drat!  I did verify this code in a simulated environment that does supply 
+a $IRT table (for a reporter who has an actual system; I'm not lucky 
+enough to have one), however somehow I didn't think of verifying it with a 
+setup that has neither a $PIR nor a $IRT table.  Therefore this issue has 
+slipped ($PIR scanner works in 16-byte intervals, so it escapes the range
+overrun), and then of course things started moving only while I am away 
+enjoying Italian mountains.  Oh well, nobody's perfect.
 
-Thank you so much for taking the time to write this great advise. Let me dig
-more whether there's anything that I can relax the lock use-cases further.
-(tbh, I haven't reviewed them for a long time due to focusing on stability
-issues mostly.)
+ Thanks for narrowing this down, I'll post a fixed version on or shortly 
+after this coming weekend.  And sorry for the mess-up!
 
-> 
-> And that whole "wait_event(trylock)" thing is a symptom of problematic
-> f2fs locking, rather than a solution to it.
-
-Understood. If I can avoid lock contention upfront, definitely it wouldn't
-need to apply rwsem change at all. Let me take some time to think about how to
-move forward.
-
-> 
->                  Linus
+  Maciej
