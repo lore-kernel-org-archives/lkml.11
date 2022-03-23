@@ -2,106 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 703B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 14:38:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 055E4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 14:39:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244845AbiCWOjh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 10:39:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59026 "EHLO
+        id S244848AbiCWOkr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 10:40:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244848AbiCWOjc (ORCPT
+        with ESMTP id S240637AbiCWOko (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 10:39:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D810327A;
-        Wed, 23 Mar 2022 07:37:59 -0700 (PDT)
+        Wed, 23 Mar 2022 10:40:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BCBC574B2;
+        Wed, 23 Mar 2022 07:39:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 03D3AB81F52;
-        Wed, 23 Mar 2022 14:37:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7040C340F2;
-        Wed, 23 Mar 2022 14:37:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648046276;
-        bh=y7kPB+6dz+NTgOxXvHEPt4jVFLvTfCy8QOblukuN19k=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=mLaezqStUH26yDjyzPofJ8wgZLSXXnrZU8AVSixiSAmQ8ZPvHTO0eWSNP+5+ypecA
-         yY/Dw4v84+t6Wqfi769TVna5IugBGOH7uVbOOsejDS5GmhZjFQ6geh2J43uUt6xSlM
-         Yvny2Zi4mZgEVnqcEVwTpp7oVEaoyizKuxcawWC01viMl0Nny6i+kyk9kdtc+M0YLX
-         K0XVQzZSOdQwFLYdNFHtbpMv/8AuJBqZ2x/C9UFVcRwB2x7xX7dYzHn33i2DRGdjwT
-         T30Q3b6kYF0j/7I0GLzBi7s/5jERngdZXDGGaLE55jKsKsLyDvnR6HSb7w5C3F6XNZ
-         P+pcpwJqUY/TA==
-Received: by mail-ed1-f45.google.com with SMTP id h1so2110839edj.1;
-        Wed, 23 Mar 2022 07:37:56 -0700 (PDT)
-X-Gm-Message-State: AOAM532FCoHsfejmbA8gKKGdsiYN79OiTWKJnsYkLWKvKc6IqT9Paa09
-        oYnkJ2mkN/NyBJxSDepR3k3wCgT+y5AaSjwfUQ==
-X-Google-Smtp-Source: ABdhPJxkYhGJZroqp0K4TQl4kYe/4WvgzJrBtElcSt4uMwnWhsfX/Dqo/ZAYg+WYAz1tvKUP7RuzhTrRC7d46flZT0s=
-X-Received: by 2002:a05:6402:42c6:b0:419:276a:dded with SMTP id
- i6-20020a05640242c600b00419276addedmr488840edc.2.1648046274998; Wed, 23 Mar
- 2022 07:37:54 -0700 (PDT)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E934761725;
+        Wed, 23 Mar 2022 14:39:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FED4C340E8;
+        Wed, 23 Mar 2022 14:39:13 +0000 (UTC)
+Date:   Wed, 23 Mar 2022 10:39:12 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-xfs@vger.kernel.org, Brian Foster <bfoster@redhat.com>
+Subject: [PATCH] tracing: Have trace event string test handle zero length
+ strings
+Message-ID: <20220323103912.097ad3a8@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220303232350.2591143-1-robh@kernel.org> <Yjl6fP2Bylv6ud8W@google.com>
-In-Reply-To: <Yjl6fP2Bylv6ud8W@google.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Wed, 23 Mar 2022 09:37:43 -0500
-X-Gmail-Original-Message-ID: <CAL_Jsq+5GkEaE9sf5HJMaNQLkZUB_q2Qyv2rzADVD7if1MNvqg@mail.gmail.com>
-Message-ID: <CAL_Jsq+5GkEaE9sf5HJMaNQLkZUB_q2Qyv2rzADVD7if1MNvqg@mail.gmail.com>
-Subject: Re: [PATCH v3] dt-bindings: mfd: Fix pinctrl node name warnings
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        - <patches@opensource.cirrus.com>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Linux-ALSA <alsa-devel@alsa-project.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 2:28 AM Lee Jones <lee.jones@linaro.org> wrote:
->
-> On Thu, 03 Mar 2022, Rob Herring wrote:
->
-> > The recent addition pinctrl.yaml in commit c09acbc499e8 ("dt-bindings:
-> > pinctrl: use pinctrl.yaml") resulted in some node name warnings:
-> >
-> > Documentation/devicetree/bindings/mfd/cirrus,lochnagar.example.dt.yaml:=
- \
-> >  lochnagar-pinctrl: $nodename:0: 'lochnagar-pinctrl' does not match '^(=
-pinctrl|pinmux)(@[0-9a-f]+)?$'
-> > Documentation/devicetree/bindings/mfd/cirrus,madera.example.dt.yaml: \
-> >  codec@1a: $nodename:0: 'codec@1a' does not match '^(pinctrl|pinmux)(@[=
-0-9a-f]+)?$'
-> > Documentation/devicetree/bindings/mfd/brcm,cru.example.dt.yaml: \
-> >  pin-controller@1c0: $nodename:0: 'pin-controller@1c0' does not match '=
-^(pinctrl|pinmux)(@[0-9a-f]+)?$'
-> >
-> > Fix the node names to the preferred 'pinctrl'. For cirrus,madera,
-> > nothing from pinctrl.yaml schema is used, so just drop the reference.
-> >
-> > Fixes: c09acbc499e8 ("dt-bindings: pinctrl: use pinctrl.yaml")
-> > Cc: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
-> > Signed-off-by: Rob Herring <robh@kernel.org>
-> > ---
-> > v2:
-> >  - Fix lochnagar-pinctrl nodename in example
-> > v3:
-> >  - And fix lochnagar-pinctrl nodename in 'required'. Sigh...
-> > ---
-> >  Documentation/devicetree/bindings/mfd/brcm,cru.yaml         | 4 ++--
-> >  Documentation/devicetree/bindings/mfd/cirrus,lochnagar.yaml | 6 +++---
-> >  .../devicetree/bindings/pinctrl/cirrus,madera.yaml          | 3 ---
-> >  3 files changed, 5 insertions(+), 8 deletions(-)
->
-> Requires rebase.  Doesn't presently apply.
+From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-It's already in 5.17.
+If a trace event has in its TP_printk():
 
-Rob
+ "%*.s", len, len ? __get_str(string) : NULL
+
+It is perfectly valid if len is zero and passing in the NULL.
+Unfortunately, the runtime string check at time of reading the trace sees
+the NULL and flags it as a bad string and produces a WARN_ON().
+
+Handle this case by passing into the test function if the format has an
+asterisk (star) and if so, if the length is zero, then mark it as safe.
+
+Link: https://lore.kernel.org/all/YjsWzuw5FbWPrdqq@bfoster/
+
+Cc: stable@vger.kernel.org
+Reported-by: Brian Foster <bfoster@redhat.com>
+Fixes: 9a6944fee68e2 ("tracing: Add a verifier to check string pointers for trace events")
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+---
+ kernel/trace/trace.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index eb44418574f9..96265a717ca4 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -3663,12 +3663,17 @@ static char *trace_iter_expand_format(struct trace_iterator *iter)
+ }
+ 
+ /* Returns true if the string is safe to dereference from an event */
+-static bool trace_safe_str(struct trace_iterator *iter, const char *str)
++static bool trace_safe_str(struct trace_iterator *iter, const char *str,
++			   bool star, int len)
+ {
+ 	unsigned long addr = (unsigned long)str;
+ 	struct trace_event *trace_event;
+ 	struct trace_event_call *event;
+ 
++	/* Ignore strings with no length */
++	if (star && !len)
++		return true;
++
+ 	/* OK if part of the event data */
+ 	if ((addr >= (unsigned long)iter->ent) &&
+ 	    (addr < (unsigned long)iter->ent + iter->ent_size))
+@@ -3854,7 +3859,7 @@ void trace_check_vprintf(struct trace_iterator *iter, const char *fmt,
+ 		 * instead. See samples/trace_events/trace-events-sample.h
+ 		 * for reference.
+ 		 */
+-		if (WARN_ONCE(!trace_safe_str(iter, str),
++		if (WARN_ONCE(!trace_safe_str(iter, str, star, len),
+ 			      "fmt: '%s' current_buffer: '%s'",
+ 			      fmt, show_buffer(&iter->seq))) {
+ 			int ret;
+-- 
+2.35.1
+
