@@ -2,290 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA6A8C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 02:35:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A652C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 02:36:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241323AbiCWCgk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 22:36:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46062 "EHLO
+        id S241329AbiCWCh2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 22:37:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241314AbiCWCgh (ORCPT
+        with ESMTP id S230153AbiCWCh0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 22:36:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A80570854;
-        Tue, 22 Mar 2022 19:35:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E8BB261489;
-        Wed, 23 Mar 2022 02:35:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 146ACC340EC;
-        Wed, 23 Mar 2022 02:35:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648002907;
-        bh=x4mz8Hi5vn0nbC0wDeH4A6B6NEVdJNmQpid+GCXi+HQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Noe/XmKHSq/Xqude7VPz1kWzTwCqFX2kNsBBFfPCEs8kSmd1xjfoJMy6lYgNcBoXV
-         oNF2Ip3VSHIegJkLSd432UK4Zye9qj7LegB8YyOXuSbLF2NMjezjqmhkPRw7yIGhki
-         b7QrS1cdiSvoVeY/bFwf2jiyGhNQ8BAgu0RoA9CqzPUzdzD2Jr8Cl7M8u53LbhXVdi
-         qRKADQlwlYEsm3HG3woMs8M11EEIP7bDPtVDAnOpcQ2sDsfe/siyEtsE4ZpnVoa0s4
-         aYbHqYbvDjlqxomqN4z1kVUKuRNhu6PnEckUgV6O9HbcNjIDFNxWmwqiWm1hGyplRb
-         8EzBqMU+neUqg==
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH v13 bpf-next 1/1] rethook: x86: Add rethook x86 implementation
-Date:   Wed, 23 Mar 2022 11:34:59 +0900
-Message-Id: <164800289923.1716332.9772144337267953560.stgit@devnote2>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <164800288611.1716332.7053663723617614668.stgit@devnote2>
-References: <164800288611.1716332.7053663723617614668.stgit@devnote2>
-User-Agent: StGit/0.19
+        Tue, 22 Mar 2022 22:37:26 -0400
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EEB170854
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 19:35:56 -0700 (PDT)
+Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220323023550epoutp01b436aadbf59b119f87e2959aa9e4ff59~e4fO_-2Il1506215062epoutp01Z
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 02:35:50 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220323023550epoutp01b436aadbf59b119f87e2959aa9e4ff59~e4fO_-2Il1506215062epoutp01Z
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1648002950;
+        bh=kTdxCSWu756/9f4L7Oul+Zy4lVBh7YkiDuX6jGayiRg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KiTLlxbvkOuqPOcG2dpE4On5A63Jsiq7QJAp7+a5Bag++xSiWlWxDnSaqO2z4urfp
+         UaP2q8z2NlQbiA+dIaYtkR7B3El+boUQJrNabKQXc8PfgjeB0XloG+9JurSFSH4GX/
+         SOvfEAyjwaFnBoXfn78xljTAl7qIuTqz1Kv3pOg8=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas2p4.samsung.com (KnoxPortal) with ESMTP id
+        20220323023550epcas2p490947caf70cc3d27de7d4c583ba2a237~e4fOhNV860188801888epcas2p4N;
+        Wed, 23 Mar 2022 02:35:50 +0000 (GMT)
+Received: from epsmges2p3.samsung.com (unknown [182.195.36.101]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4KNXXF6Lfgz4x9Q1; Wed, 23 Mar
+        2022 02:35:41 +0000 (GMT)
+Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
+        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
+        8A.CA.25540.B778A326; Wed, 23 Mar 2022 11:35:39 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas2p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220323023539epcas2p298f2d10dfe2b83662fe93e9188b07948~e4fEWQLkd0136601366epcas2p2P;
+        Wed, 23 Mar 2022 02:35:39 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220323023539epsmtrp23886a97a7905f20ae3b076c5f503f6ae~e4fEVZTwe0057700577epsmtrp2S;
+        Wed, 23 Mar 2022 02:35:39 +0000 (GMT)
+X-AuditID: b6c32a47-81bff700000063c4-77-623a877b3277
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        0C.8A.29871.B778A326; Wed, 23 Mar 2022 11:35:39 +0900 (KST)
+Received: from ubuntu (unknown [12.36.155.120]) by epsmtip2.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220323023539epsmtip2c2bca59b81ffa7f30729ad0bcc6ccf48~e4fEJ4K4W1597415974epsmtip2P;
+        Wed, 23 Mar 2022 02:35:39 +0000 (GMT)
+Date:   Wed, 23 Mar 2022 11:34:20 +0900
+From:   Jung Daehwan <dh10.jung@samsung.com>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Mathias Nyman <mathias.nyman@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Howard Yen <howardyen@google.com>,
+        Jack Pham <jackp@codeaurora.org>,
+        Puma Hsu <pumahsu@google.com>,
+        "J . Avila" <elavila@google.com>, sc.suh@samsung.com
+Subject: Re: [PATCH v3 4/4] usb: host: add xhci-exynos driver
+Message-ID: <20220323023420.GC19041@ubuntu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <ad877924-68bb-f029-258a-0cf9094265eb@kernel.org>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrDJsWRmVeSWpSXmKPExsWy7bCmuW51u1WSwcTHGhZPjixit2hevJ7N
+        4vqf94wW7c8vsFmcP7+B3eLyrjlsFouWtTJbNG+awmoxc62yRdfdG4wOXB6X+3qZPBZsKvVY
+        vOclk8emVZ1sHvvnrmH36NuyitHj8ya5APaobJuM1MSU1CKF1Lzk/JTMvHRbJe/geOd4UzMD
+        Q11DSwtzJYW8xNxUWyUXnwBdt8wcoOuUFMoSc0qBQgGJxcVK+nY2RfmlJakKGfnFJbZKqQUp
+        OQXmBXrFibnFpXnpenmpJVaGBgZGpkCFCdkZ124dYC7Ywl/x/v0ftgbG0zxdjJwcEgImEuvf
+        z2DtYuTiEBLYwSjxae8kZgjnE6PE3t1n2CGcb4wSb9omssG0zJh2Ayqxl1Hi4KLPYAkhgSeM
+        Elf/iIDYLAKqEo2Lt7KA2GwCWhL3fpxgBrFFBDQlrv/9DraPWeAxk0TLu+nsIAlhAVuJ6zfv
+        AdkcHLwC2hJ3/kWAhHkFBCVOznzCAhLmFLCT2DrZFsQUFVCReHWwHmSKhMBcDonJt7+zgcQl
+        BFwk1n2whDhTWOLV8S3sELaUxOd3e6HOL5bY9amVCaK3gVGi8QHEaRICxhKznrUzgtjMApkS
+        yx++h5qpLHHkFgtEmE+i4/Bfdogwr0RHmxBEp7LE9MsTWCFsSYmDr89BTfSQmP7tOAskpDqZ
+        JE6+7mSfwCg/C8ljs5Bsg7B1JBbs/gRkcwDZ0hLL/3FAmJoS63fpL2BkXcUollpQnJueWmxU
+        YAyP6uT83E2M4GSr5b6DccbbD3qHGJk4GA8xSnAwK4nwLv5gniTEm5JYWZValB9fVJqTWnyI
+        0RQYSxOZpUST84HpPq8k3tDE0sDEzMzQ3MjUwFxJnNcrZUOikEB6YklqdmpqQWoRTB8TB6dU
+        A5Nj2XyD1I+L5c8w3Vg0+aLKgXaH9c4mz129PrPvvMIpNZNNwNZh0+lVaXWcAptXn1Kb/DQs
+        msmIKb3PjeEI4231abdvVh/Rrjv/gGuxENu9g93qB1OP/2RZedbixozUUkN/hjOF3Maflj2a
+        zecycceHvvuHBA8FKNamb/hd2bkm5vXeM83G8nN/qmivV4/e2zzp/L3/m2I+VWeuv7hS0mf+
+        T4d3c169En25z/fl+oDl1/ubShIFNU7V/VjTuvPWvS2XPk1uM2BgONi8I8GbOe0Z68uuX1zh
+        C31uTHHLMerUe+F6TcfhyZ0TeqyzkvOUV/Ym39BMtvlfL3RtX+OafOnfS3lqG3ftDS7/3cr8
+        7Cq7EktxRqKhFnNRcSIAYrACDD8EAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrELMWRmVeSWpSXmKPExsWy7bCSvG51u1WSwbOVXBZPjixit2hevJ7N
+        4vqf94wW7c8vsFmcP7+B3eLyrjlsFouWtTJbNG+awmoxc62yRdfdG4wOXB6X+3qZPBZsKvVY
+        vOclk8emVZ1sHvvnrmH36NuyitHj8ya5APYoLpuU1JzMstQifbsErozehhcsBR95Ktb/aGRq
+        YFzI1cXIySEhYCIxY9oNdhBbSGA3o8TGF9EQcUmJpXMh4hICwhL3W46wdjFyAdU8YpS48PcH
+        E0iCRUBVonHxVhYQm01AS+LejxPMILaIgKbE9b/fwRqYBZ4ySSze2AbWICxgK3H95j2gqRwc
+        vALaEnf+RUAM7WSS2DN7NSNIDa+AoMTJmU/AhjIDDb3x7yUTSD2zgLTE8n8cICangJ3E1sm2
+        IKaogIrEq4P1ExgFZyHpnYWkdxZC7wJG5lWMkqkFxbnpucWGBYZ5qeV6xYm5xaV56XrJ+bmb
+        GMHRoqW5g3H7qg96hxiZOBgPMUpwMCuJ8C7+YJ4kxJuSWFmVWpQfX1Sak1p8iFGag0VJnPdC
+        18l4IYH0xJLU7NTUgtQimCwTB6dUA9OcsivMOyWnKNyyvVuRs/F0jNnOI3yi8ZH2/jNO3/LN
+        3O/6JLK8e/fT5ZuOX2v+MElErLUg/ve1GNO4ZV/vcMx52rbF7f2LVvvAWsn1BilZSYkxHWw/
+        FA8za396K/NH+uqdy9Yer515dknMeyrYMP3L1j72wht/DihvNdsfK7172fqZmX9/zH5+Oq7x
+        kK61yYz9ltvYLGuPzL8qcfJiWHCua7tDQOSpkMQ3j/tP7OM4K2a6z03n5Qo3lj5h+0SHe6H+
+        cu80gwwlbLJuMJwqLJQQ2jxhQVs0h7JFZoK84/uk9zMZLQXFW7ifHXFZaG283Zdt+fydxvLm
+        S8X4FjfvO5Wf/7NNpWdmGGfPl6JNzkosxRmJhlrMRcWJAH/eqPYFAwAA
+X-CMS-MailID: 20220323023539epcas2p298f2d10dfe2b83662fe93e9188b07948
+X-Msg-Generator: CA
+Content-Type: multipart/mixed;
+        boundary="----2fH_v7u-qooQo7zMtxxTw1wUndVpTJhY--Wv6pszNQmaZVXq=_23895e_"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220321090205epcas2p15ac16f281554b663062e0e31666defab
+References: <1647853194-62147-1-git-send-email-dh10.jung@samsung.com>
+        <CGME20220321090205epcas2p15ac16f281554b663062e0e31666defab@epcas2p1.samsung.com>
+        <1647853194-62147-5-git-send-email-dh10.jung@samsung.com>
+        <ad877924-68bb-f029-258a-0cf9094265eb@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add rethook for x86 implementation. Most of the code has been copied from
-kretprobes on x86.
+------2fH_v7u-qooQo7zMtxxTw1wUndVpTJhY--Wv6pszNQmaZVXq=_23895e_
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
 
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
----
- Changes in v13:
-  - Add no ENDBR annotation for return trampoline code.
-  - Replace ret with ASM_RET for Straight-Line-Speculation mitigation.
- Changes in v11:
-  - Mark arch_rethook_fixup_return() as NOKPROBE_SYMBOL.
-  - Add a function prototype of arch_rethook_trampoline_callback
-    to suppress warning.
- Changes in v10:
-  - Add a dummy @mcount to arch_rethook_prepare().
- Changes in v5:
-  - Fix a build error if !CONFIG_KRETPROBES and !CONFIG_RETHOOK.
- Changes in v4:
-  - fix stack backtrace as same as kretprobe does.
----
- arch/x86/Kconfig                 |    1 
- arch/x86/include/asm/unwind.h    |    8 ++-
- arch/x86/kernel/Makefile         |    1 
- arch/x86/kernel/kprobes/common.h |    1 
- arch/x86/kernel/rethook.c        |  121 ++++++++++++++++++++++++++++++++++++++
- 5 files changed, 131 insertions(+), 1 deletion(-)
- create mode 100644 arch/x86/kernel/rethook.c
+On Tue, Mar 22, 2022 at 06:10:00PM +0100, Krzysztof Kozlowski wrote:
+> On 21/03/2022 09:59, Daehwan Jung wrote:
+> > This driver supports USB Audio offload with Co-processor.
+> 
+> One do you need one more XHCI driver? How does it differ from existing
+> and why existing cannot be extended?
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 9b356da6f46b..1270b65a5546 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -221,6 +221,7 @@ config X86
- 	select HAVE_KPROBES_ON_FTRACE
- 	select HAVE_FUNCTION_ERROR_INJECTION
- 	select HAVE_KRETPROBES
-+	select HAVE_RETHOOK
- 	select HAVE_KVM
- 	select HAVE_LIVEPATCH			if X86_64
- 	select HAVE_MIXED_BREAKPOINTS_REGS
-diff --git a/arch/x86/include/asm/unwind.h b/arch/x86/include/asm/unwind.h
-index 2a1f8734416d..192df5b2094d 100644
---- a/arch/x86/include/asm/unwind.h
-+++ b/arch/x86/include/asm/unwind.h
-@@ -5,6 +5,7 @@
- #include <linux/sched.h>
- #include <linux/ftrace.h>
- #include <linux/kprobes.h>
-+#include <linux/rethook.h>
- #include <asm/ptrace.h>
- #include <asm/stacktrace.h>
- 
-@@ -16,7 +17,7 @@ struct unwind_state {
- 	unsigned long stack_mask;
- 	struct task_struct *task;
- 	int graph_idx;
--#ifdef CONFIG_KRETPROBES
-+#if defined(CONFIG_KRETPROBES) || defined(CONFIG_RETHOOK)
- 	struct llist_node *kr_cur;
- #endif
- 	bool error;
-@@ -107,6 +108,11 @@ static inline
- unsigned long unwind_recover_kretprobe(struct unwind_state *state,
- 				       unsigned long addr, unsigned long *addr_p)
- {
-+#ifdef CONFIG_RETHOOK
-+	if (is_rethook_trampoline(addr))
-+		return rethook_find_ret_addr(state->task, (unsigned long)addr_p,
-+					     &state->kr_cur);
-+#endif
- #ifdef CONFIG_KRETPROBES
- 	return is_kretprobe_trampoline(addr) ?
- 		kretprobe_find_ret_addr(state->task, addr_p, &state->kr_cur) :
-diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
-index 6aef9ee28a39..792a893a5cc5 100644
---- a/arch/x86/kernel/Makefile
-+++ b/arch/x86/kernel/Makefile
-@@ -106,6 +106,7 @@ obj-$(CONFIG_FUNCTION_GRAPH_TRACER) += ftrace.o
- obj-$(CONFIG_FTRACE_SYSCALLS)	+= ftrace.o
- obj-$(CONFIG_X86_TSC)		+= trace_clock.o
- obj-$(CONFIG_TRACING)		+= trace.o
-+obj-$(CONFIG_RETHOOK)		+= rethook.o
- obj-$(CONFIG_CRASH_CORE)	+= crash_core_$(BITS).o
- obj-$(CONFIG_KEXEC_CORE)	+= machine_kexec_$(BITS).o
- obj-$(CONFIG_KEXEC_CORE)	+= relocate_kernel_$(BITS).o crash.o
-diff --git a/arch/x86/kernel/kprobes/common.h b/arch/x86/kernel/kprobes/common.h
-index 7d3a2e2daf01..c993521d4933 100644
---- a/arch/x86/kernel/kprobes/common.h
-+++ b/arch/x86/kernel/kprobes/common.h
-@@ -6,6 +6,7 @@
- 
- #include <asm/asm.h>
- #include <asm/frame.h>
-+#include <asm/insn.h>
- 
- #ifdef CONFIG_X86_64
- 
-diff --git a/arch/x86/kernel/rethook.c b/arch/x86/kernel/rethook.c
-new file mode 100644
-index 000000000000..3e916361c33b
---- /dev/null
-+++ b/arch/x86/kernel/rethook.c
-@@ -0,0 +1,121 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * x86 implementation of rethook. Mostly copied from arch/x86/kernel/kprobes/core.c.
-+ */
-+#include <linux/bug.h>
-+#include <linux/rethook.h>
-+#include <linux/kprobes.h>
-+#include <linux/objtool.h>
-+
-+#include "kprobes/common.h"
-+
-+__visible void arch_rethook_trampoline_callback(struct pt_regs *regs);
-+
-+/*
-+ * When a target function returns, this code saves registers and calls
-+ * arch_rethook_trampoline_callback(), which calls the rethook handler.
-+ */
-+asm(
-+	".text\n"
-+	".global arch_rethook_trampoline\n"
-+	".type arch_rethook_trampoline, @function\n"
-+	"arch_rethook_trampoline:\n"
-+#ifdef CONFIG_X86_64
-+	ANNOTATE_NOENDBR	/* This is only jumped from ret instruction */
-+	/* Push a fake return address to tell the unwinder it's a kretprobe. */
-+	"	pushq $arch_rethook_trampoline\n"
-+	UNWIND_HINT_FUNC
-+	/* Save the 'sp - 8', this will be fixed later. */
-+	"	pushq %rsp\n"
-+	"	pushfq\n"
-+	SAVE_REGS_STRING
-+	"	movq %rsp, %rdi\n"
-+	"	call arch_rethook_trampoline_callback\n"
-+	RESTORE_REGS_STRING
-+	/* In the callback function, 'regs->flags' is copied to 'regs->sp'. */
-+	"	addq $8, %rsp\n"
-+	"	popfq\n"
-+#else
-+	/* Push a fake return address to tell the unwinder it's a kretprobe. */
-+	"	pushl $arch_rethook_trampoline\n"
-+	UNWIND_HINT_FUNC
-+	/* Save the 'sp - 4', this will be fixed later. */
-+	"	pushl %esp\n"
-+	"	pushfl\n"
-+	SAVE_REGS_STRING
-+	"	movl %esp, %eax\n"
-+	"	call arch_rethook_trampoline_callback\n"
-+	RESTORE_REGS_STRING
-+	/* In the callback function, 'regs->flags' is copied to 'regs->sp'. */
-+	"	addl $4, %esp\n"
-+	"	popfl\n"
-+#endif
-+	ASM_RET
-+	".size arch_rethook_trampoline, .-arch_rethook_trampoline\n"
-+);
-+NOKPROBE_SYMBOL(arch_rethook_trampoline);
-+
-+/*
-+ * Called from arch_rethook_trampoline
-+ */
-+__used __visible void arch_rethook_trampoline_callback(struct pt_regs *regs)
-+{
-+	unsigned long *frame_pointer;
-+
-+	/* fixup registers */
-+	regs->cs = __KERNEL_CS;
-+#ifdef CONFIG_X86_32
-+	regs->gs = 0;
-+#endif
-+	regs->ip = (unsigned long)&arch_rethook_trampoline;
-+	regs->orig_ax = ~0UL;
-+	regs->sp += sizeof(long);
-+	frame_pointer = &regs->sp + 1;
-+
-+	/*
-+	 * The return address at 'frame_pointer' is recovered by the
-+	 * arch_rethook_fixup_return() which called from this
-+	 * rethook_trampoline_handler().
-+	 */
-+	rethook_trampoline_handler(regs, (unsigned long)frame_pointer);
-+
-+	/*
-+	 * Copy FLAGS to 'pt_regs::sp' so that arch_rethook_trapmoline()
-+	 * can do RET right after POPF.
-+	 */
-+	regs->sp = regs->flags;
-+}
-+NOKPROBE_SYMBOL(arch_rethook_trampoline_callback);
-+
-+/*
-+ * arch_rethook_trampoline() skips updating frame pointer. The frame pointer
-+ * saved in arch_rethook_trampoline_callback() points to the real caller
-+ * function's frame pointer. Thus the arch_rethook_trampoline() doesn't have
-+ * a standard stack frame with CONFIG_FRAME_POINTER=y.
-+ * Let's mark it non-standard function. Anyway, FP unwinder can correctly
-+ * unwind without the hint.
-+ */
-+STACK_FRAME_NON_STANDARD_FP(arch_rethook_trampoline);
-+
-+/* This is called from rethook_trampoline_handler(). */
-+void arch_rethook_fixup_return(struct pt_regs *regs,
-+			       unsigned long correct_ret_addr)
-+{
-+	unsigned long *frame_pointer = &regs->sp + 1;
-+
-+	/* Replace fake return address with real one. */
-+	*frame_pointer = correct_ret_addr;
-+}
-+NOKPROBE_SYMBOL(arch_rethook_fixup_return);
-+
-+void arch_rethook_prepare(struct rethook_node *rh, struct pt_regs *regs, bool mcount)
-+{
-+	unsigned long *stack = (unsigned long *)regs->sp;
-+
-+	rh->ret_addr = stack[0];
-+	rh->frame = regs->sp;
-+
-+	/* Replace the return addr with trampoline addr */
-+	stack[0] = (unsigned long) arch_rethook_trampoline;
-+}
-+NOKPROBE_SYMBOL(arch_rethook_prepare);
+I have some exynos specific features and that's because need own driver.
+It's not good to modify other XHCI driver for my features.
 
+Additinally, I've been developing some features with other IP or Co-Processors.
+Extending is not enough to cover them and I think owning driver is also better
+on structural view.
+
+Best Regards,
+Jung Daehwan
+
+> 
+> > It only cares DCBAA, Device Context, Transfer Ring, Event Ring, and ERST.
+> > They are allocated on specific address with xhci hooks.
+> > Co-processor could use them directly without xhci driver after then.
+> > 
+> > Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
+> > ---
+> >  drivers/usb/host/Kconfig       |   9 +
+> >  drivers/usb/host/Makefile      |   1 +
+> >  drivers/usb/host/xhci-exynos.c | 982 +++++++++++++++++++++++++++++++++
+> >  drivers/usb/host/xhci-exynos.h |  63 +++
+> >  4 files changed, 1055 insertions(+)
+> >  create mode 100644 drivers/usb/host/xhci-exynos.c
+> >  create mode 100644 drivers/usb/host/xhci-exynos.h
+> > 
+> 
+> Please address all the questions I raised in your v1, do not ignore them.
+> 
+> Please use get_maintainers.pl to CC all necessary people and lists. It
+> makes me very sad that you do not follow the kernel development process
+> (as mentioned in submitting-patches.rst and other documents).
+> 
+> Best regards,
+> Krzysztof
+> 
+
+------2fH_v7u-qooQo7zMtxxTw1wUndVpTJhY--Wv6pszNQmaZVXq=_23895e_
+Content-Type: text/plain; charset="utf-8"
+
+
+------2fH_v7u-qooQo7zMtxxTw1wUndVpTJhY--Wv6pszNQmaZVXq=_23895e_--
