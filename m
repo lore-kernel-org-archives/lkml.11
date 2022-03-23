@@ -2,87 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C59A3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 08:14:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69E7FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 08:15:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242504AbiCWIQQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 04:16:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58044 "EHLO
+        id S241186AbiCWIQz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 04:16:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242182AbiCWIPu (ORCPT
+        with ESMTP id S229480AbiCWIQu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 04:15:50 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 722C66D386;
-        Wed, 23 Mar 2022 01:14:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=2ggSoRFKh0G1dKQFttVqUzAVwqtOX7Y3mA+081Turu8=; b=FKjxn9u6R6LAfSreq3RMO6doF6
-        A0j/KB+lvNGml3FUMTFXmgJkNs+r0bBuJaGeRAula1+PNsamC5OAg4qoenHSt9BP0/kXlo33UPnU/
-        nzp3dGtEb5IliJq2XCFNOnyciMB38Z7tkbeJYnZ9P/+xsMRKlWlbIeXUX2uo7VLopSCcygg7RVytp
-        X6RurDqZaEpj+EaawH2VrEMo1hPiS+4LsysZ41GUTLffegC6sp11jJRvrNloxBMEFsE+qDLdWk3oB
-        FjN92v/BMIgGIGSw1vLxLJM0NhHqRshwG/zZeL9meYjUIxlG7F914YxT1F+5mDGafJq+x4X1JF5nY
-        sMvY8e5Q==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nWw80-003hq3-9v; Wed, 23 Mar 2022 08:14:00 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 777D93000E6;
-        Wed, 23 Mar 2022 09:13:58 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 565EE20C5903E; Wed, 23 Mar 2022 09:13:58 +0100 (CET)
-Date:   Wed, 23 Mar 2022 09:13:58 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Chengming Zhou <zhouchengming@bytedance.com>
-Cc:     mingo@redhat.com, acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        namhyung@kernel.org, eranian@google.com,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        duanxiongchun@bytedance.com, songmuchun@bytedance.com
-Subject: Re: [External] Re: [PATCH v2 2/6] perf/core: Introduce percpu
- perf_cgroup
-Message-ID: <YjrWxnnIZvn3PWoX@hirez.programming.kicks-ass.net>
-References: <20220322120834.98637-1-zhouchengming@bytedance.com>
- <20220322120834.98637-3-zhouchengming@bytedance.com>
- <YjnIpn/PCM6wKpOC@hirez.programming.kicks-ass.net>
- <0a7ebd49-cfdd-911e-3982-44f594320b0f@bytedance.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <0a7ebd49-cfdd-911e-3982-44f594320b0f@bytedance.com>
+        Wed, 23 Mar 2022 04:16:50 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73EC95BE47
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 01:15:21 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 093B41F37F;
+        Wed, 23 Mar 2022 08:15:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1648023320; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=g1osbJeXlQpB5//z8F0X+vu5CcbRy6xr+WwjWLHu7ME=;
+        b=Goihwp7Zy9WnNOAl84wO3Q/qKMVMCFj/rWC1JoKHO8SvxgV9u3GK9IUpAB687OYCoBGRaL
+        1PDX7tSszzm8Lx7GqvDWTKs0KXlF3NKQ4X5JQ4NJ/YZJhMsfvtn3W+2x3kRby+cTVHWLhF
+        bFfrcKHpeDcVDmZDpKU2ayVKXhbHloY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1648023320;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=g1osbJeXlQpB5//z8F0X+vu5CcbRy6xr+WwjWLHu7ME=;
+        b=sC0InqTC4Xpudf7v+aBXZzhHaywMhlBzP21ZVPjCq8EC+vBAPxeA8r7+CM8N6TvhLDSX+b
+        nykL+KVgp4vomXCg==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id F0A8DA3B81;
+        Wed, 23 Mar 2022 08:15:19 +0000 (UTC)
+Date:   Wed, 23 Mar 2022 09:15:19 +0100
+Message-ID: <s5hy211ult4.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Amadeusz SX2awiX4ski <amadeuszx.slawinski@linux.intel.com>
+Cc:     alsa-devel@alsa-project.org, Hu Jiahui <kirin.say@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/4] ALSA: pcm: Fix races among concurrent prepare and hw_params/hw_free calls
+In-Reply-To: <db933c9e-bf7b-dec6-8022-75074f9cebf7@linux.intel.com>
+References: <20220322170720.3529-1-tiwai@suse.de>
+        <20220322170720.3529-4-tiwai@suse.de>
+        <db933c9e-bf7b-dec6-8022-75074f9cebf7@linux.intel.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 12:33:51AM +0800, Chengming Zhou wrote:
-> On 2022/3/22 9:01 下午, Peter Zijlstra wrote:
-> > On Tue, Mar 22, 2022 at 08:08:30PM +0800, Chengming Zhou wrote:
-> >> Although we don't have incosistency problem any more, we can
-> >> have other problem like:
-> >>
-> >> CPU1					CPU2
-> >> (in context_switch)			(attach running task)
-> >> 					prev->cgroups = cgrp2
-> >> perf_cgroup_sched_switch(prev, next)
-> >> 	cgrp2 == cgrp2 is True
-> >>
-> > 
-> > Again, I'm not following, how can you attach to a running task from
-> > another CPU ?
+On Wed, 23 Mar 2022 09:08:25 +0100,
+Amadeusz SX2awiX4ski wrote:
 > 
-> Hi Peter, I make a little testcase which can reproduce the race
-> problem, on system with PSI disabled. Because when PSI enabled,
-> cgroup_move_task() will hold rq lock to assign task->cgroups.
+> On 3/22/2022 6:07 PM, Takashi Iwai wrote:
+> > Like the previous fixes to hw_params and hw_free ioctl races, we need
+> > to paper over the concurrent prepare ioctl calls against hw_params and
+> > hw_free, too.
+> >
+> > This patch implements the locking with the existing
+> > runtime->buffer_mutex for prepare ioctls.  Unlike the previous case
+> > for snd_pcm_hw_hw_params() and snd_pcm_hw_free(), snd_pcm_prepare() is
+> > performed to the linked streams, hence the lock can't be applied
+> > simply on the top.  For tracking the lock in each linked substream, we
+> > modify snd_pcm_action_group() slightly and apply the buffer_mutex for
+> > the case stream_lock=false (formerly there was no lock applied)
+> > there.
+> >
+> > Cc: <stable@vger.kernel.org>
+> > Signed-off-by: Takashi Iwai <tiwai@suse.de>
+> > ---
+> >   sound/core/pcm_native.c | 32 ++++++++++++++++++--------------
+> >   1 file changed, 18 insertions(+), 14 deletions(-)
+> >
+> > diff --git a/sound/core/pcm_native.c b/sound/core/pcm_native.c
+> > index 266895374b83..0e4fbf5fd87b 100644
+> > --- a/sound/core/pcm_native.c
+> > +++ b/sound/core/pcm_native.c
+> > @@ -1190,15 +1190,17 @@ struct action_ops {
+> >   static int snd_pcm_action_group(const struct action_ops *ops,
+> >   				struct snd_pcm_substream *substream,
+> >   				snd_pcm_state_t state,
+> > -				bool do_lock)
+> > +				bool stream_lock)
+> >   {
+> >   	struct snd_pcm_substream *s = NULL;
+> >   	struct snd_pcm_substream *s1;
+> >   	int res = 0, depth = 1;
+> >     	snd_pcm_group_for_each_entry(s, substream) {
+> > -		if (do_lock && s != substream) {
+> > -			if (s->pcm->nonatomic)
+> > +		if (s != substream) {
+> > +			if (!stream_lock)
+> > +				mutex_lock_nested(&s->runtime->buffer_mutex, depth);
+> > +			else if (s->pcm->nonatomic)
+> >   				mutex_lock_nested(&s->self_group.mutex, depth);
+> >   			else
+> >   				spin_lock_nested(&s->self_group.lock, depth);
+> 
+> Maybe
+> 	if (!stream_lock)
+> 		mutex_lock_nested(&s->runtime->buffer_mutex, depth);
+> 	else
+> 		snd_pcm_group_lock(&s->self_group, s->pcm->nonatomic);
+> ?
 
-No, the problem is that you're talking about cgroup attach while I'm
-thinking of attaching a event to a task. And your picture has nothing to
-clarify.
+No, it must be nested locks with the given subclass.  That's why it
+has been the open code beforehand, too.
 
-Those pictures of yours could really do with a few more function names
-in them, otherwise it's absolutely unclear what code is running where.
+> > @@ -1226,18 +1228,18 @@ static int snd_pcm_action_group(const struct action_ops *ops,
+> >   		ops->post_action(s, state);
+> >   	}
+> >    _unlock:
+> > -	if (do_lock) {
+> > -		/* unlock streams */
+> > -		snd_pcm_group_for_each_entry(s1, substream) {
+> > -			if (s1 != substream) {
+> > -				if (s1->pcm->nonatomic)
+> > -					mutex_unlock(&s1->self_group.mutex);
+> > -				else
+> > -					spin_unlock(&s1->self_group.lock);
+> > -			}
+> > -			if (s1 == s)	/* end */
+> > -				break;
+> > +	/* unlock streams */
+> > +	snd_pcm_group_for_each_entry(s1, substream) {
+> > +		if (s1 != substream) {
+> > +			if (!stream_lock)
+> > +				mutex_unlock(&s1->runtime->buffer_mutex);
+> > +			else if (s1->pcm->nonatomic)
+> > +				mutex_unlock(&s1->self_group.mutex);
+> > +			else
+> > +				spin_unlock(&s1->self_group.lock);
+> 
+> And similarly to above, use snd_pcm_group_unlock() here?
+
+This side would be possible to use that macro but it's still better to
+have the consistent call pattern.
+
+
+thanks,
+
+Takashi
