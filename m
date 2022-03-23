@@ -2,122 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0D01C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 03:42:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E1B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 03:42:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241730AbiCWDmy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 23:42:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39304 "EHLO
+        id S241640AbiCWDn6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 23:43:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241625AbiCWDmf (ORCPT
+        with ESMTP id S230188AbiCWDnu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 23:42:35 -0400
-Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [202.36.163.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 934996C1F8
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 20:41:04 -0700 (PDT)
-Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 4F3D02C01B1;
-        Wed, 23 Mar 2022 03:41:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1648006861;
-        bh=eHPlCkbjltdCtJJSS765DdFf6jtsrAVc31VglwPEang=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MVm2B9+iH3wgV90nJa7Eq1q8haxHMxJuGumbFiqfPX68z0B4uxnqhfvhVJOSmUcsi
-         zliodb+rWdTVYMmW2CGg5sZi9iuwsQShE175WaIxt+FD9Z0LWDIIrf44RGosAXn1iQ
-         8p8TIHdzC2BoKgRJ6gkQYAJ+6UjufapQeqOrLJkaQskh5kYdyvuj3LMhlzMdLB8xr7
-         77tmZSI6PBlmBsL5trOY9DbXi1ZxiuzcIF7qSRoLu+S8zfiA6tvewN5WtM66I2XxcN
-         1ljMKAg6u9PDN/26W7S9Lu2+5ivFTZR3DjCN5VHccRcvjDiM1p2/HNAcgvsUb2/+Eh
-         GYDZlON8vr17A==
-Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B623a96cc0001>; Wed, 23 Mar 2022 16:41:00 +1300
-Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
-        by pat.atlnz.lc (Postfix) with ESMTP id DBE2E13EE56;
-        Wed, 23 Mar 2022 16:41:00 +1300 (NZDT)
-Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
-        id 210A12A2678; Wed, 23 Mar 2022 16:40:59 +1300 (NZDT)
-From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
-To:     jdelvare@suse.com, linux@roeck-us.net, robh+dt@kernel.org
-Cc:     linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: [PATCH v3 1/3] dt-bindings: hwmon: Document adt7475 pin-function properties
-Date:   Wed, 23 Mar 2022 16:40:54 +1300
-Message-Id: <20220323034056.260455-2-chris.packham@alliedtelesis.co.nz>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220323034056.260455-1-chris.packham@alliedtelesis.co.nz>
-References: <20220323034056.260455-1-chris.packham@alliedtelesis.co.nz>
+        Tue, 22 Mar 2022 23:43:50 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2054.outbound.protection.outlook.com [40.107.20.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E4296C970;
+        Tue, 22 Mar 2022 20:42:21 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HOGEJ2efITHp6g/6cG4ImYgOIRzce75+Q/Qd9NfRGRzh1ilPDMYFd/YN6RdrQsYw0hJcHI1tV83FZX6ZJmaXRJhujeSZWTrheROBMlDhVM8Rx1T3QnEUavvixg1vl5gcw4NovgjwwOyZCyMnVjidqpvv4AI/QQPnvD9Uvb7p+W8po9WL08XW6pgkZDUm8rBCLQXg4GToLUXsDw9JYzszw6BFsnvQAIZGZyvSbRj7bIEbQSTr9lZPxIfa5ri/7ZYGsH50dihMWbvdWUZFaiy6APOfA3/DHNdiLsyNbG38Vu+IFm2ZVkQoo/uyj9i0QzvzJJnf3bt3lBQGDZzCXwQFKA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uQCsPgOtAKUKy5ZM213P5+aKzX1dWckhC4Y3d3SSAw0=;
+ b=aD6dQVGEQ60ngCWqbWgnz5oQwGlsLPD+Kg/iXhaylmhOPXl9SSjJUGywRcRVsTNOdk1s9cTikZeqzNc/Zy7GwvwV9RBL0OOf9pc+gSCsRfQ2acsVkDAozko38GjCEKvMOBW6HwT/7nU++ESuBMOd6nsROO7FPlHrJBpsiGpgj7IwuFmg+C6grsYediEYU51uPvC4FguIk7Q+mTlDWsfBoC2kGwT8fNZbrMl7i324Zu3NN3miUNsvr1FHyiSflOK8peGNvu+4E5c3xarPuQJm9A4B2p52qoDetvndG0oO/IHBBSuvKKzdArCS9kixRGqMp1opAjjwvpOjKKX/LglR6w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uQCsPgOtAKUKy5ZM213P5+aKzX1dWckhC4Y3d3SSAw0=;
+ b=LWkJL5srTx83aQpvHS7f2e8p++J14rOy14ReAA4q5ZEzhWvdlxj/zPicLhqm0ao9QGRgEge7+1dNiIPDl8H06TVrP2ta6lhnF3UYNIVEj+DoQ3OOtXH9/r4CV3kX/BDBNpDvdx3MXKxU8zpgWtohPrOI5LfkeuSDYTn4DTx365U=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+ by AM0PR04MB6868.eurprd04.prod.outlook.com (2603:10a6:208:18c::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.17; Wed, 23 Mar
+ 2022 03:42:18 +0000
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::1d8b:d8d8:ca2b:efff]) by DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::1d8b:d8d8:ca2b:efff%3]) with mapi id 15.20.5102.016; Wed, 23 Mar 2022
+ 03:42:18 +0000
+From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+To:     bjorn.andersson@linaro.org, mathieu.poirier@linaro.org,
+        arnaud.pouliquen@foss.st.com
+Cc:     linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        peng.fan@nxp.com
+Subject: [PATCH V4 0/2] remoteproc: support self recovery
+Date:   Wed, 23 Mar 2022 11:44:03 +0800
+Message-Id: <20220323034405.976643-1-peng.fan@oss.nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR06CA0111.apcprd06.prod.outlook.com
+ (2603:1096:1:1d::13) To DU0PR04MB9417.eurprd04.prod.outlook.com
+ (2603:10a6:10:358::11)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=Cfh2G4jl c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=o8Y5sQTvuykA:10 a=VwQbUJbxAAAA:8 a=XrEdriJqPTbsqx2b3kgA:9 a=AjGcO6oz07-iQ99wixmX:22
-X-SEG-SpamProfiler-Score: 0
-x-atlnz-ls: pat
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a46af7fc-9ee6-46a8-48cf-08da0c7f20de
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6868:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-Microsoft-Antispam-PRVS: <AM0PR04MB6868F0C1673BEEA580F754CBC9189@AM0PR04MB6868.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 9hIv0D64w5y+knjfAo0dzyorPrGzB5F6qcdBCeW4f2rTEdl0jqL+LFrsoA68oCqIxZPw/TvWs7arl3z1BSIYV45c/9fCmPbJZBlgrMX/9tpwsVOKkxmgtcO+y03K3cViSpvZxk7yV0TpXb47TdZqOLOPJhwmmqI4nDh5p6fO68l7wvpNqNs71U6B1rC5bQoxo0lzH0r8AQoO+D16NGvpUp8ZWBPoYR3iG1xp+6MsmKEOJwKk7M8/TB+ipCsJ+UxYWojw8qrIzHTkmBJ+RqXiUOtgk+ezc3UczdC2XFUjqp1REqzNAoLchzz6CKClZtoZY0S8ix5WfndW6V6mp4a65bBxnzTZoVGq/ycaszOMW7LjGyH3r3lGW+lsVT33DgUiN9fwvYTv7RtUujYr2WctbpUGI36n9kJXJjx0i3jnrgvkZ6o3uT8aUYbyijKD4dSnQrnbS1RRnHNqR95fhybj5YJ+HQKafhlB95nSvh7J5blbsYULZ/Fvu+B3owRbhStvyG0pQdFD3eHsmibCXjsMpIB20ExPEzwD3sxNDEEVRx9An2BpraVCqmRc/0+qU8xR3PC2N72WqJEkpzBkED+ODT275JA4XX+wn8TUMMqOiQGSTbNVHzVig/OIOAil4BX0UEBy47S4EgWPP5h0XsNUqiKieGmRNKi8tFuMu/3jCmsVoISP5LlEUcgvZGc9ycX7dWplMFt9gmVInDK+ERfUIKnQvy/xIGI2uQfrZ2QVq/tdT7CFQwJd/O+E5EQeT9zolS4nIchxgMK7PMMdueMyLKxL/k/ieOvn69oaKRitTQ0=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(83380400001)(52116002)(38350700002)(38100700002)(26005)(186003)(6512007)(8936002)(2616005)(5660300002)(2906002)(66476007)(66556008)(66946007)(966005)(508600001)(6486002)(6506007)(6666004)(316002)(1076003)(86362001)(8676002)(4326008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Yd8wJiXfOjHxpSVi8OJhjMhZoWj5Uw5cqX0iQ5Mvgrq0H5oAkb3odwHC8Px0?=
+ =?us-ascii?Q?x8GcRIAfKhs48SjmmQ3a1l+v1ye6vBmK3aAau7Xp/Yv8XC0nYsGfMgFRMK/t?=
+ =?us-ascii?Q?6vhxgGaEaK6t561+i1/ZZxTwH5rUjZcQgD+iv/bv972dqjlE508TDoC02GYh?=
+ =?us-ascii?Q?i8KfceiXyoFkqS/Nh0A8f3lJpHRfbJMmX7SkI4Ivmv+BCJ/efwvyB+5lYOxz?=
+ =?us-ascii?Q?KQaf9bSYQF+3yMiYoNTEzo0+yxuFvbI7+2J/qfbgxz/ufAfFZtXe7jQaCQT+?=
+ =?us-ascii?Q?vs5lgHac9o6ZAQTU8idykp1wVbWdjVtHjYksiT1zxu4zYY7+qUQybHNois4f?=
+ =?us-ascii?Q?W/FmN9Qt/weeqThcNslobRYAZV19s+ghKVWk18J7BTcakisoFwV8lR68CQLV?=
+ =?us-ascii?Q?jOsMOYuaF9iqqNn/MOurlz2bDU5F32iWCL+Xi2sLtDdAnncT9XEPAFDD2Iut?=
+ =?us-ascii?Q?R5wTZM+pudk5EiE8fmEDbMTGF/VbLIl92xSnEce7ee1Xi9CvyLxCBur64KFe?=
+ =?us-ascii?Q?5HjiacW2yBhc3VZSUFcfLw7CFvXB6T1GH1SHYxKtbHKEJoZF0xR88lWLrBuQ?=
+ =?us-ascii?Q?WQZx1D6VCEchs4QiInmXkhvU3KpMwvC8qZ56tyjr7B59EO0Jq/X2QWQrRTJP?=
+ =?us-ascii?Q?MmUl6MW5P8WyPN9AUsenE7PwLNDEq4TfjPTdcjKTYIqX2c7aPjDxpjwCTcdL?=
+ =?us-ascii?Q?hHVV1vU6DzK86ORxX5Jizoy2idMbTPhsMNC/r48pFwxKYaeLWeahu1GmZB3s?=
+ =?us-ascii?Q?vE1tqtYwmmq44elZKlTFYud47ifrblc3/KwXRl6BHS4c00ZgdnfhgZIh7hK7?=
+ =?us-ascii?Q?jutj1IAst45kwKmJYpXq89IKDeKnUaqp027VnDfcPK4HTAB/6D3bQwqCB9hd?=
+ =?us-ascii?Q?Rgml5J/Ou+6rY5JOBWRdTPwgWg7HyqMqmNJt97vKmXYVS+GUX6xPFhmYM0T+?=
+ =?us-ascii?Q?bJ+KWg0hFk+3GrqXWIuu+EQ2xKi90uRTG3TKbst4mAGD8pdW0m24JGc47asl?=
+ =?us-ascii?Q?7cpPQweqkK3kgdCBy7VzigZV+SBrkQSLVuqqYsIjro635i3T7xf1JHHn/czz?=
+ =?us-ascii?Q?kasUJ2tC0AusWLdhlMbJgjRdy1Nzo/XN26WmWSUcSbnKXiWDYhdiIuNyY1XJ?=
+ =?us-ascii?Q?91BEf6v+zU13V/v02HXKtpqY4mgNTpAbb25ZZUSQ8yYwcvJksywf/ZpQj9sw?=
+ =?us-ascii?Q?sWikLV7bOEkP9wm7+ClzolRzJ5Z5hTyWvzrAZtdZTegf9kHTJL6VfQ+mbU5E?=
+ =?us-ascii?Q?bPBG4EuIGauGcQDLi28ikOEH92mkFMIBkCEKYHdhmVEYs/gqHELKdIwZY+T4?=
+ =?us-ascii?Q?72j+CFlsw+l0KTnLawgl3bPvepLXuzHatvvvRGFBMvNJxsHqhD/O+YDrgBDu?=
+ =?us-ascii?Q?vRO8SJo3owsfalJCr+BhUAKoT7fFDb/UpoeEbJVBb3FnbLQ5YE1hFpZGry1L?=
+ =?us-ascii?Q?iVFeXsNg9wosQgQnKnx3S4L5BNgU6KTz?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a46af7fc-9ee6-46a8-48cf-08da0c7f20de
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2022 03:42:18.3957
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /IIQyJQSFrheZKk0VEtbe7W7+jNuAQGfaNkzvnPfZCCKFRWy232iwzAHPR3BzcaWLlPhc/ZrKhL3rHMxefL0TQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6868
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The adt7473, adt7475, adt7476 and adt7490 have pins that can be used for
-different functions. Add bindings so that it is possible to describe
-what pin functions are intended by the hardware design.
+From: Peng Fan <peng.fan@nxp.com>
 
-Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
-Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
----
+V4:
+  Based on Bjorn's comments on V2-2
+  Move the rproc_has_feature/rproc_set_feature to remoteproc_internal.h and
+ Keep rproc_features still in remoteproc.h, because we use
+ RPROC_MAX_FEATURES to declare bitmap.
+  Update commit log for patch 2/2, and add comments
+ 
+V3:
+ Resend the wrong labeled patchset
+ https://patchwork.kernel.org/project/linux-remoteproc/list/?series=621311
 
-Notes:
-    Changes in v3:
-    - None
-    Changes in v2:
-    - Add review from Krzysztof
+ Write a cover-letter
+ To i.MX8QM/QXP, they have a M4 core self-recovery capability without
+ Linux loading firmware. The self recovery is done by
+ SCU(System Control Unit). Current remoteproc framework only support Linux
+ help recovery remote processor(stop, loading firmware, start). This
+ patchset is support remote processor self recovery(attach recovery).
 
- .../devicetree/bindings/hwmon/adt7475.yaml    | 22 +++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ In order to avoid introducing a new variable(bool support_self_recovery),
+ patch 1 introduce a new function, rproc_has_feature to make code easy to
+ extend, cleaner, such as we could move "bool has_iommu" to
+ rproc_has_feature(rproc, RPROC_FEAT_IOMMU).
 
-diff --git a/Documentation/devicetree/bindings/hwmon/adt7475.yaml b/Docum=
-entation/devicetree/bindings/hwmon/adt7475.yaml
-index 7d9c083632b9..22beb37f1bf1 100644
---- a/Documentation/devicetree/bindings/hwmon/adt7475.yaml
-+++ b/Documentation/devicetree/bindings/hwmon/adt7475.yaml
-@@ -61,6 +61,26 @@ patternProperties:
-     $ref: /schemas/types.yaml#/definitions/uint32
-     enum: [0, 1]
-=20
-+  "adi,pin(5|10)-function":
-+    description: |
-+      Configures the function for pin 5 on the adi,adt7473 and adi,adt74=
-75. Or
-+      pin 10 on the adi,adt7476 and adi,adt7490.
-+    $ref: /schemas/types.yaml#/definitions/string
-+    enum:
-+      - pwm2
-+      - smbalert#
-+
-+  "adi,pin(9|14)-function":
-+    description: |
-+      Configures the function for pin 9 on the adi,adt7473 and adi,adt74=
-75. Or
-+      pin 14 on the adi,adt7476 and adi,adt7490
-+    $ref: /schemas/types.yaml#/definitions/string
-+    enum:
-+      - tach4
-+      - therm#
-+      - smbalert#
-+      - gpio
-+
- required:
-   - compatible
-   - reg
-@@ -79,6 +99,8 @@ examples:
-         adi,bypass-attenuator-in0 =3D <1>;
-         adi,bypass-attenuator-in1 =3D <0>;
-         adi,pwm-active-state =3D <1 0 1>;
-+        adi,pin10-function =3D "smbalert#";
-+        adi,pin14-function =3D "tach4";
-       };
-     };
-=20
---=20
-2.35.1
+ Patch 2 is introduce a new function rproc_attach_recovery for
+ self recovery, the original logic move to rproc_firmware_recovery meaning
+ needs linux to help recovery.
+
+ V2-version 2:
+ https://patchwork.kernel.org/project/linux-remoteproc/list/?series=621311
+ Introduce rproc_has_feature
+
+ V2-version 1:
+ https://patchwork.kernel.org/project/linux-remoteproc/patch/20220126085120.3397450-1-peng.fan@oss.nxp.com/
+ Nothing change in V2.
+ Only move this patch out from
+ https://patchwork.kernel.org/project/linux-remoteproc/list/?series=604364
+
+
+
+Peng Fan (2):
+  remoteproc: introduce rproc features
+  remoteproc: support attach recovery after rproc crash
+
+ drivers/remoteproc/remoteproc_core.c     | 67 +++++++++++++++++-------
+ drivers/remoteproc/remoteproc_internal.h | 10 ++++
+ include/linux/remoteproc.h               |  7 +++
+ 3 files changed, 65 insertions(+), 19 deletions(-)
+
+-- 
+2.25.1
 
