@@ -2,89 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C399C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 17:34:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE569C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 17:35:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240976AbiCWRg0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 13:36:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50272 "EHLO
+        id S1343660AbiCWRg3 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 13:36:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239223AbiCWRgX (ORCPT
+        with ESMTP id S239664AbiCWRgZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 13:36:23 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7B25793BC
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 10:34:52 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id yy13so4334955ejb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 10:34:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sSwzHlwSz23lvNtLo13bFAIrxFRCXX53K/CMQWwbRmc=;
-        b=eho+7tpnDRTL+44l04LLUo+wv1fUtZvszL0rupuFXL6S5K4e00IplNblrGZ2/VchBC
-         gAMGRJMGn7oXIS+0Yoye69b87Qa71Wn1Yzl+EcrdS3AUHzHmmj1cfTjhvNYalkB8vw3h
-         6Pors1dQZGvTMTBn10VggfVLiF1jcfUjH9O/iDrPsa11zUyp46c9DPy735KBLmK0IEfL
-         b13VH8xR90mm0/t93esJsccRYWVw9gVImdAQH+zw632De5CmgjTeLPtzVRD++RMILX3X
-         dkWE4Wqg2XTF0Q4DrBzQSBuIrMJjjuugqAcpe1RhM6drRKWw/1WyP53oowoLbuAw8sQG
-         viHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sSwzHlwSz23lvNtLo13bFAIrxFRCXX53K/CMQWwbRmc=;
-        b=H1cBGCl6TI9L/XNBYc9xtaye266Ap2KfI1yFA5RceB0XZdgmsx8JslQ6CHvdfVCRrP
-         dITe58DHd8toKl2uOMoCPJtC9UyPnPUWXwXWjGskI9VzYfZVgenxx0UfcE+LJBR3HssM
-         xBYUdUSWb8QYAcmNM3mwLYaU/vRD3tKYxkQlxkmIppkW7x/CsRVWK+UEWxFhixlkKrha
-         ko6fysiYGEXhOuWe12vi4aO0ZBvSge+AtEJptgM+Js/4kx0OSwcdRFjQQDV0TtD1+Yem
-         sirheFZ17pKvXK0WDDBp8YqcLesnH03cb8lC5q7ejEM5bXNPQSzHa/E7yEJYf0WlnF3S
-         NQvw==
-X-Gm-Message-State: AOAM533y67vykYaYYS0K+E7gC60OfhSgcA6uyj50TsRbbzdIm3Qogetn
-        Km2SzyfnX+mAU+nbD/Y+Vw2y0Ah9o39UTJzA+rfhnA==
-X-Google-Smtp-Source: ABdhPJwz8c++mc+m2Cqc/41NOOuHOiA6+RTyfPiOBMGZtngJZJD0Xv8B5WGZ85z3FwLIjo9C7ItQfgASkZAORNo6RGw=
-X-Received: by 2002:a17:906:4a96:b0:6c5:5ea9:5366 with SMTP id
- x22-20020a1709064a9600b006c55ea95366mr1199621eju.473.1648056891284; Wed, 23
- Mar 2022 10:34:51 -0700 (PDT)
+        Wed, 23 Mar 2022 13:36:25 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F53A44A2D;
+        Wed, 23 Mar 2022 10:34:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648056895; x=1679592895;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=sQLlik2JBKgjvTm6fLFQVl8wTqJf3BIKx0o9VBPfxEY=;
+  b=lAAFEMQbl84QIBvB3dS5mlI9IBa5FkTqog9nk8ZRssKHox/nY2qGJTC0
+   QxFNd3gZEjkUGZ+xAjyJ5gjJygV5QwgEsYsoZPktIpmk71NYX3KGoUoV0
+   MzYVsJcHo+Km05Hnvau/J73LDvqAlf0Asrv1BNp+8ixzhOMwM3sTRlRg+
+   /DkFe8uAXrIHfM0AbdXTRVOrNUL92lx1Xhw6cQGwL++CnQd1dkYVFuj9R
+   vvCVpBATZM4CGaFQqWI8hWwnBGsPqfgFNwW5hMgO0b4pQWCDL6MRzNdrj
+   tP69WHPt3iu0GhCDsitDEvcDrW2v4lpukeHplYArWwMRaRxOE/WKtODUH
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="257005681"
+X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
+   d="scan'208";a="257005681"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 10:22:04 -0700
+X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
+   d="scan'208";a="544287811"
+Received: from kplh.igk.intel.com ([10.102.21.224])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 10:22:01 -0700
+Date:   Wed, 23 Mar 2022 20:10:10 +0100
+From:   Piotr Raczynski <piotr.raczynski@intel.com>
+To:     Ivan Vecera <ivecera@redhat.com>
+Cc:     netdev@vger.kernel.org, poros@redhat.com, mschmidt@redhat.com,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "moderated list:INTEL ETHERNET DRIVERS" 
+        <intel-wired-lan@lists.osuosl.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] ice: Fix MAC address setting
+Message-ID: <20220323190519.GA23730@kplh.igk.intel.com>
+References: <20220323135829.4015645-1-ivecera@redhat.com>
 MIME-Version: 1.0
-References: <20220322144447.3563146-1-tongtiangen@huawei.com> <20220322144447.3563146-2-tongtiangen@huawei.com>
-In-Reply-To: <20220322144447.3563146-2-tongtiangen@huawei.com>
-From:   Pasha Tatashin <pasha.tatashin@soleen.com>
-Date:   Wed, 23 Mar 2022 13:34:14 -0400
-Message-ID: <CA+CK2bAPiMbdv441+B+_4aGyPeAgyyaZ=n5ni3WgfyDP3bEADA@mail.gmail.com>
-Subject: Re: [PATCH -next v2 1/4] mm: page_table_check: move
- pxx_user_accessible_page into x86
-To:     Tong Tiangen <tongtiangen@huawei.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-riscv@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220323135829.4015645-1-ivecera@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 10:25 AM Tong Tiangen <tongtiangen@huawei.com> wrote:
->
-> From: Kefeng Wang <wangkefeng.wang@huawei.com>
->
-> The pxx_user_accessible_page() check the PTE bit, it's
-> architecture-specific code, move them into x86's pgtable.h,
-> also add default PMD/PUD_PAGE_SIZE definition, it's prepare
-> for support page table check feature on new architecture.
->
-> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+On Wed, Mar 23, 2022 at 02:58:29PM +0100, Ivan Vecera wrote:
+> Commit 2ccc1c1ccc671b ("ice: Remove excess error variables") merged
+> the usage of 'status' and 'err' variables into single one in
+> function ice_set_mac_address(). Unfortunately this causes
+> a regression when call of ice_fltr_add_mac() returns -EEXIST because
+> this return value does not indicate an error in this case but
+> value of 'err' value remains to be -EEXIST till the end of
+> the function and is returned to caller.
+> 
+> Prior this commit this does not happen because return value of
+> ice_fltr_add_mac() was stored to 'status' variable first and
+> if it was -EEXIST then 'err' remains to be zero.
+> 
+> The patch fixes the problem by reset 'err' to zero when
+> ice_fltr_add_mac() returns -EEXIST.
+> 
+> Fixes: 2ccc1c1ccc671b ("ice: Remove excess error variables")
+> Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+> ---
+>  drivers/net/ethernet/intel/ice/ice_main.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+> index 168a41ea37b8..420558d1cd21 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_main.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_main.c
+> @@ -5474,14 +5474,15 @@ static int ice_set_mac_address(struct net_device *netdev, void *pi)
+>  
+>  	/* Add filter for new MAC. If filter exists, return success */
+>  	err = ice_fltr_add_mac(vsi, mac, ICE_FWD_TO_VSI);
+> -	if (err == -EEXIST)
+> +	if (err == -EEXIST) {
+>  		/* Although this MAC filter is already present in hardware it's
+>  		 * possible in some cases (e.g. bonding) that dev_addr was
+>  		 * modified outside of the driver and needs to be restored back
+>  		 * to this value.
+>  		 */
+>  		netdev_dbg(netdev, "filter for MAC %pM already exists\n", mac);
+> -	else if (err)
+> +		err = 0;
 
-Acked-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+Thanks Ivan, This looks fine. It is a regression as I checked since
+driver used to return success in such case. It seems that the only
+way to have EEXIST here is when the same MAC is requested, I'd also
+consider just return 0 here to skip later firwmare write which seems
+redundant here.
 
-Thank you for this work!
+Piotr
+
+> +	} else if (err)
+>  		/* error if the new filter addition failed */
+>  		err = -EADDRNOTAVAIL;
+>  
+> -- 
+> 2.34.1
+> 
