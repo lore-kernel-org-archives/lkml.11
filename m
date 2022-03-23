@@ -2,138 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 592AFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 02:37:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02590C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 02:42:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241346AbiCWCiy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 22:38:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49488 "EHLO
+        id S241354AbiCWCoJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 22:44:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241735AbiCWCip (ORCPT
+        with ESMTP id S237555AbiCWCoH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 22:38:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AC6370857;
-        Tue, 22 Mar 2022 19:37:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DA434614D1;
-        Wed, 23 Mar 2022 02:37:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFC36C340EC;
-        Wed, 23 Mar 2022 02:37:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648003036;
-        bh=lidTMFrvgsD4QNxlYdNfhfYSm5MsACsoLgJwIQ3WW6I=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=QJWgbJaKhND3p8maoI9Bjz9VY0auADyH0KFPYaLcCYy6fC8PuTUakQRgw8aTfDCB3
-         m8tbXe4UdlAXTJ84jVqmQwpebyGCrNBCVkkZjwGXS/R7pUtQZiCOMV7pt4ThkuJ7BY
-         9HRD51pyi1lSm8Yx+ij+o8j9Fyeji7fF37z6ywu8TCX/Ok+PZdOrcKJNow92AwjCP4
-         +/Vla3UiUsKkrNP6i/8i25Gmchy85p4I3z34evPt+ixn009tqvHujKd/r95e0yA5E+
-         qGOoO+O5qkEGeU4A9t5kNYavFSMfmSU5xIs2WjX/cC25r7V6Ji6VytyU22HVXPeVM3
-         qeRSfoDXl0TeQ==
-Date:   Tue, 22 Mar 2022 21:37:14 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Christian Gmeiner <christian.gmeiner@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Tom Joseph <tjoseph@cadence.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org
-Subject: Re: [PATCH v2] PCI: cadence: Enable Controller to respond to
- received PTM Requests
-Message-ID: <20220323023714.GA1244184@bhelgaas>
+        Tue, 22 Mar 2022 22:44:07 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 90ED5673ED;
+        Tue, 22 Mar 2022 19:42:37 -0700 (PDT)
+Received: from [10.130.0.135] (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9AxaswUiTpiuWQOAA--.13880S3;
+        Wed, 23 Mar 2022 10:42:29 +0800 (CST)
+Subject: Re: [PATCH 3/3] MIPS: Use memblock_add_node() in early_parse_mem()
+ under CONFIG_NUMA
+To:     Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+References: <1647615920-23103-1-git-send-email-yangtiezhu@loongson.cn>
+ <1647615920-23103-4-git-send-email-yangtiezhu@loongson.cn>
+ <33241bd3-2f12-954c-6701-56cf563060bb@flygoat.com>
+Cc:     Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+Message-ID: <fb188614-0301-3255-c31c-3d443cf17b91@loongson.cn>
+Date:   Wed, 23 Mar 2022 10:42:28 +0800
+User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:45.0) Gecko/20100101
+ Thunderbird/45.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+In-Reply-To: <33241bd3-2f12-954c-6701-56cf563060bb@flygoat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAH9NwWec6ovS1xQbuPsB5duskJdmK_qv4t+URTK6thCvGNST7w@mail.gmail.com>
+X-CM-TRANSID: AQAAf9AxaswUiTpiuWQOAA--.13880S3
+X-Coremail-Antispam: 1UD129KBjvJXoW7WryDGw4xKFW3ZFyUur4UArb_yoW8urW5pF
+        1qkFWrKF4DXFyjgay8A390kw13t3Z5GryftFyUW34UZ3Wvqw17JrsavF1DtryjqayxtF40
+        qFyfWw15ZF409w7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvl14x267AKxVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvEwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc7I2V7IY0VAS07AlzVAY
+        IcxG8wCY02Avz4vE14v_Gr1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr
+        1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE
+        14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7
+        IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY
+        6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvj
+        DU0xZFpf9x0JUgVyxUUUUU=
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 02:20:14PM +0100, Christian Gmeiner wrote:
-> Am Do., 10. M�rz 2022 um 13:14 Uhr schrieb Christian Gmeiner
-> <christian.gmeiner@gmail.com>:
-> >
-> > Hi all
-> >
-> > > This enables the Controller [RP] to automatically respond with
-> > > Response/ResponseD messages if CDNS_PCIE_LM_TPM_CTRL_PTMRSEN
-> > > and PCI_PTM_CTRL_ENABLE bits are both set.
-> > >
-> > > Signed-off-by: Christian Gmeiner <christian.gmeiner@gmail.com>
 
-We're in the middle of the merge window right now, but I'm sure
-Lorenzo will be able to look at it after -rc1.  This looks fine to me.
 
-> > > ---
-> > >  drivers/pci/controller/cadence/pcie-cadence-host.c | 10 ++++++++++
-> > >  drivers/pci/controller/cadence/pcie-cadence.h      |  4 ++++
-> > >  2 files changed, 14 insertions(+)
-> > >
-> > > diff --git a/drivers/pci/controller/cadence/pcie-cadence-host.c b/drivers/pci/controller/cadence/pcie-cadence-host.c
-> > > index fb96d37a135c..940c7dd701d6 100644
-> > > --- a/drivers/pci/controller/cadence/pcie-cadence-host.c
-> > > +++ b/drivers/pci/controller/cadence/pcie-cadence-host.c
-> > > @@ -123,6 +123,14 @@ static int cdns_pcie_retrain(struct cdns_pcie *pcie)
-> > >         return ret;
-> > >  }
-> > >
-> > > +static void cdns_pcie_host_enable_ptm_response(struct cdns_pcie *pcie)
-> > > +{
-> > > +       u32 val;
-> > > +
-> > > +       val = cdns_pcie_readl(pcie, CDNS_PCIE_LM_PTM_CTRL);
-> > > +       cdns_pcie_writel(pcie, CDNS_PCIE_LM_PTM_CTRL, val | CDNS_PCIE_LM_TPM_CTRL_PTMRSEN);
+On 03/22/2022 09:19 PM, Jiaxun Yang wrote:
+>
+>
+> 在 2022/3/18 15:05, Tiezhu Yang 写道:
+>> Use memblock_add_node to add new memblock region within a NUMA node
+>> in early_parse_mem() under CONFIG_NUMA, otherwise the mem parameter
+>> can not work well.
+>
+> Hi Tiezhu,
+>
+> pa_to_nid doesn't exist when CONFIG_NUME is disabled.
+> So probably you want #ifdef macro instead ？
 
-Lorenzo will likely wrap this line to fit in 80 columns like the rest
-of the file, or if you rebase to v5.18-rc1 and post a v3, you could do
-so.
+Hi Jiaxun,
 
-> > > +}
-> > > +
-> > >  static int cdns_pcie_host_start_link(struct cdns_pcie_rc *rc)
-> > >  {
-> > >         struct cdns_pcie *pcie = &rc->pcie;
-> > > @@ -501,6 +509,8 @@ int cdns_pcie_host_setup(struct cdns_pcie_rc *rc)
-> > >         if (rc->quirk_detect_quiet_flag)
-> > >                 cdns_pcie_detect_quiet_min_delay_set(&rc->pcie);
-> > >
-> > > +       cdns_pcie_host_enable_ptm_response(pcie);
-> > > +
-> > >         ret = cdns_pcie_start_link(pcie);
-> > >         if (ret) {
-> > >                 dev_err(dev, "Failed to start link\n");
-> > > diff --git a/drivers/pci/controller/cadence/pcie-cadence.h b/drivers/pci/controller/cadence/pcie-cadence.h
-> > > index c8a27b6290ce..1ffa8fa77a8a 100644
-> > > --- a/drivers/pci/controller/cadence/pcie-cadence.h
-> > > +++ b/drivers/pci/controller/cadence/pcie-cadence.h
-> > > @@ -116,6 +116,10 @@
-> > >  #define LM_RC_BAR_CFG_APERTURE(bar, aperture)          \
-> > >                                         (((aperture) - 2) << ((bar) * 8))
-> > >
-> > > +/* PTM Control Register */
-> > > +#define CDNS_PCIE_LM_PTM_CTRL  (CDNS_PCIE_LM_BASE + 0x0da8)
-> > > +#define CDNS_PCIE_LM_TPM_CTRL_PTMRSEN  BIT(17)
-> > > +
-> > >  /*
-> > >   * Endpoint Function Registers (PCI configuration space for endpoint functions)
-> > >   */
-> > > --
-> > > 2.35.1
-> > >
-> >
-> > This patch should be ready to land - or is anything missing?
-> >
-> 
-> Gentle ping.
-> 
-> -- 
-> greets
-> --
-> Christian Gmeiner, MSc
-> 
-> https://christian-gmeiner.info/privacypolicy
+Thank you for your reply.
+
+As far as I can tell, if CONFIG_NUMA is set, IS_ENABLED(CONFIG_NUMA)
+is 1, pa_to_nid() is defined in the platform dependent header file:
+
+	arch/mips/include/asm/mach-ip27/mmzone.h
+	arch/mips/include/asm/mach-loongson64/mmzone.h
+
+if CONFIG_NUMA is not set, IS_ENABLED(CONFIG_NUMA) is 0, pa_to_nid()
+is always 0 which is defined in arch/mips/include/asm/mmzone.h:
+
+	#ifdef CONFIG_NUMA
+	# include <mmzone.h>
+	#endif
+
+	#ifndef pa_to_nid
+	#define pa_to_nid(addr) 0
+	#endif
+
+So pa_to_nid() is defined under both CONFIG_NUMA and !CONFIG_NUMA,
+there is no build error.
+
+Additionally, use #ifdef CONFIG_NUMA is also OK, but I prefer to
+use IS_ENABLED(CONFIG_NUMA).
+
+If I am missing something, please let me know, thank you.
+
+Thanks,
+Tiezhu
+
+>
+> Thanks.
+> - Jiaxun
+>
+>>
+>> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+>> ---
+>>   arch/mips/kernel/setup.c | 6 +++++-
+>>   1 file changed, 5 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/arch/mips/kernel/setup.c b/arch/mips/kernel/setup.c
+>> index c8c8f60..50cdc08 100644
+>> --- a/arch/mips/kernel/setup.c
+>> +++ b/arch/mips/kernel/setup.c
+>> @@ -37,6 +37,7 @@
+>>   #include <asm/cdmm.h>
+>>   #include <asm/cpu.h>
+>>   #include <asm/debug.h>
+>> +#include <asm/mmzone.h>
+>>   #include <asm/sections.h>
+>>   #include <asm/setup.h>
+>>   #include <asm/smp-ops.h>
+>> @@ -378,7 +379,10 @@ static int __init early_parse_mem(char *p)
+>>               memblock_end_of_DRAM() - memblock_start_of_DRAM());
+>>       }
+>>   -    memblock_add(start, size);
+>> +    if (IS_ENABLED(CONFIG_NUMA))
+>> +        memblock_add_node(start, size, pa_to_nid(start), MEMBLOCK_NONE);
+>> +    else
+>> +        memblock_add(start, size);
+>>         return 0;
+>>   }
+
