@@ -2,223 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4054EC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 09:18:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4031FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 09:18:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243085AbiCWJTn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 05:19:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59844 "EHLO
+        id S243094AbiCWJUT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 05:20:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242834AbiCWJTj (ORCPT
+        with ESMTP id S234729AbiCWJUP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 05:19:39 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDCA12D1E4;
-        Wed, 23 Mar 2022 02:18:08 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22N9I0oD068206;
-        Wed, 23 Mar 2022 04:18:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1648027080;
-        bh=FKhDA68ig5aZhPe8FOCO/Wk9TMGU3OIlpjEJGCM5byI=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=hxmrXDpPCnvxFfDGU1HEZ/6O3GYIo3XiydKVlp65bW02ykvP0dWnsU0erTUlqKwdZ
-         z6F/nqnG9gYe5bswrE5cOXXeETY98CrGf8tJc0pFhwJrRnNq4ha2ezxlqEcPovTFQQ
-         vkX3fdQ8MBcF8cHpsLZTc5gOG/UdWfVPUJleRcV0=
-Received: from DLEE103.ent.ti.com (dlee103.ent.ti.com [157.170.170.33])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22N9I0ST040583
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 23 Mar 2022 04:18:00 -0500
-Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 23
- Mar 2022 04:18:00 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 23 Mar 2022 04:17:59 -0500
-Received: from [10.24.69.236] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22N9HtXY076005;
-        Wed, 23 Mar 2022 04:17:56 -0500
-Message-ID: <8b8dcc55-dda8-0715-ccff-22fbe84ff18a@ti.com>
-Date:   Wed, 23 Mar 2022 14:47:55 +0530
+        Wed, 23 Mar 2022 05:20:15 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D949174DC5
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 02:18:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3B98FCE1F58
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 09:18:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 979FAC340E8;
+        Wed, 23 Mar 2022 09:18:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648027122;
+        bh=/wCR7uCIhqQMFawjAZEiDwsQ9sNq4HlFijF33c6lPdE=;
+        h=Date:From:To:cc:Subject:From;
+        b=IZQcbS6zhOFZvahSngKGSCFxGf0I+lvP1TlZ+BBjz1O4J9KKWA71jeLbotwyW/m0S
+         lgNOuV3gB/UrupQ3vct9gaaUg/QIaIBILuX3/JXGPR9jfCKfB1teaUeim0NkCLbhg+
+         m0Euaesdlz49Gl85GzRz8AWsgrH8wGFdXhuFIX5sEns1sHBM/xJMyokfsp4Piszo5N
+         dGJRVXpMxxk9pRBaiOGKYYkwr20C+3yfkeBdD6QV3vJtGdlRn7PIaN6v7hpOYTsW3T
+         m3ip8fW2pYuvNgRO+tOWo6iRrwqigYJ6svkwJ0yjR3zJyLEHXeSLIdMcCHMhZRYzTe
+         Tm3ISCtrV6siQ==
+Date:   Wed, 23 Mar 2022 10:18:39 +0100 (CET)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+cc:     linux-kernel@vger.kernel.org,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Subject: [GIT PULL] HID for 5.18
+Message-ID: <nycvar.YFH.7.76.2203231015060.24795@cbobk.fhfr.pm>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 1/2] dt-bindings: usb: Add documentation for AM62 USB
- Wrapper module
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-usb@vger.kernel.org>, Felipe Balbi <balbi@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Roger Quadros <rogerq@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>
-References: <20220323053524.7009-1-a-govindraju@ti.com>
- <20220323053524.7009-2-a-govindraju@ti.com>
- <f17f1f14-d78f-7b54-7fa7-ebf52c6da90a@kernel.org>
-From:   Aswath Govindraju <a-govindraju@ti.com>
-In-Reply-To: <f17f1f14-d78f-7b54-7fa7-ebf52c6da90a@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
+Linus,
 
-On 23/03/22 14:35, Krzysztof Kozlowski wrote:
-> On 23/03/2022 06:35, Aswath Govindraju wrote:
->> Add bindings for the TI's AM62 wrapper module for the Synopsys USBSS-DRD
->> controller.
->>
->> Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
->> ---
->>  .../devicetree/bindings/usb/ti,am62-usb.yaml  | 98 +++++++++++++++++++
->>  1 file changed, 98 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/usb/ti,am62-usb.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/usb/ti,am62-usb.yaml b/Documentation/devicetree/bindings/usb/ti,am62-usb.yaml
->> new file mode 100644
->> index 000000000000..4bb139d1926d
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/usb/ti,am62-usb.yaml
->> @@ -0,0 +1,98 @@
->> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/usb/ti,am62-usb.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Bindings for the TI's AM62 wrapper module for the Synopsys USBSS-DRD controller
-> 
-> Skip the "Bindings for the", just leave the HW description.
-> 
+please pull from
 
-Will drop it in the respin.
+  git://git.kernel.org/pub/scm/linux/kernel/git/hid/hid.git for-linus
 
->> +
->> +maintainers:
->> +  - Aswath Govindraju <a-govindraju@ti.com>
->> +
->> +properties:
->> +  compatible:
->> +    const: ti,am62-usb
->> +
->> +  reg:
->> +    maxItems: 1
->> +
->> +  ranges: true
->> +
->> +  power-domains:
->> +    description:
->> +      PM domain provider node and an args specifier containing
->> +      the USB ISO device id value. See,
->> +      Documentation/devicetree/bindings/soc/ti/sci-pm-domain.yaml
->> +    maxItems: 1
->> +
->> +  clocks:
->> +    description: Clock phandles to usb2_refclk
->> +    maxItems: 1
->> +
->> +  clock-names:
->> +    items:
->> +      - const: ref
->> +
->> +  id-gpio:
->> +    description:
->> +      GPIO to be used as ID pin
->> +    maxItems: 1
->> +
->> +  interrupts:
->> +    description:
->> +      interrupt line to be used for detecting changes in VBUS
->> +
->> +  ti,vbus-divider:
->> +    description:
->> +      Should be present if USB VBUS line is connected to the
->> +      VBUS pin of the SoC via a 1/3 voltage divider.
->> +    type: boolean
->> +
->> +  ti,syscon-phy-pll-refclk:
->> +    $ref: /schemas/types.yaml#/definitions/phandle-array
->> +    items:
->> +      - items:
->> +          - description: Phandle to the SYSCON entry
->> +          - description: USB phy control register offset within SYSCON
->> +    description: Specifier for configuring frequency of ref clock input.
-> 
-> This is a bit strange. The ref clock is the "ref" input clock, right? In
-> such case use clk_set_rate()... Using syscon for managing clocks is not
-> the proper way.
-> 
+to receive HID subsystem updates for 5.18 merge widnow. Highlights:
 
-The syscon property is not being used to set the ref clock frequency but
-is rather being used to indicate the input clock frequency for USB PHY
-operation. I think the description seems be misleading. I will update it
-in the respin, to reflect the above description.
+=====
+- rework of generic input handling which ultimately makes the processing 
+  of tablet events more generic and reliable (Benjamin Tissoires)
+- fixes for handling unnumbered reports fully correctly in i2c-hid (Angela 
+  Czubak, Dmitry Torokhov)
+- untangling of intermingled code for sending and handling output 
+  reports in i2c-hid (Dmitry Torokhov)
+- Apple magic keyboard support improvements for newer models (José Expósito)
+- Apple T2 Macs support improvements (Aun-Ali Zaidi, Paul Pawlowski)
+- driver for Razer Blackwidow keyboards (Jelle van der Waa)
+- driver for SiGma Micro keyboards (Desmond Lim)
+- integration of first part of DIGImend patches in order to 
+  ultimately vastly improve Linux support of tablets (Nikolai Kondrashov, 
+  José Expósito)
+=====
 
-> Plus all the issues pointed out by Roger.
-> 
->> +
->> +  '#address-cells':
->> +    const: 2
->> +
->> +  '#size-cells':
->> +    const: 2
-> 
-> No children allowed?
-> 
-> I understand this is a wrapper, which explains why you do not include
-> usb-hcd.yaml schema. But since it is a wrapper, what is it wrapping?
-> 
+Thanks.
 
-Yes, there is a child node, which would be the dwc3-contoller node.
-Would adding the child node too in the example help capture this better?
+----------------------------------------------------------------
+Aditya Garg (1):
+      HID: apple: Add fn mapping for MacBook Pros with Touch Bar
 
->> +
->> +required:
->> +  - compatible
->> +  - reg
->> +  - power-domains
->> +  - clocks
->> +  - clock-names
->> +  - interrupts
->> +  - ti,syscon-phy-pll-refclk
->> +
->> +additionalProperties: false
->> +
->> +examples:
->> +  - |
->> +    #include <dt-bindings/soc/ti,sci_pm_domain.h>
->> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
->> +    #include <dt-bindings/gpio/gpio.h>
->> +
->> +    bus {
->> +      #address-cells = <2>;
->> +      #size-cells = <2>;
->> +
->> +      dwc3-usb@f910000 {
-> 
-> Generic node name, so usb.
-> 
+Angela Czubak (1):
+      HID: i2c-hid: fix handling numbered reports with IDs of 15 and above
 
-Will correct this in the respin.
+Aun-Ali Zaidi (1):
+      HID: apple: Add necessary IDs and configuration for T2 Macs.
 
+Benjamin Tissoires (12):
+      HID: core: statically allocate read buffers
+      HID: core: de-duplicate some code in hid_input_field()
+      HID: core: split data fetching from processing in hid_input_field()
+      HID: input: tag touchscreens as such if the physical is not there
+      HID: input: rework spaghetti code with switch statements
+      HID: input: move up out-of-range processing of input values
+      HID: compute an ordered list of input fields to process
+      HID: core: for input reports, process the usages by priority list
+      HID: input: enforce Invert usage to be processed before InRange
+      HID: input: remove the need for HID_QUIRK_INVERT
+      HID: input: accommodate priorities for slotted devices
+      Input: docs: add more details on the use of BTN_TOOL
 
-Thank you for the review.
+Christophe JAILLET (1):
+      HID: amd_sfh: Remove useless DMA-32 fallback configuration
 
->> +        compatible = "ti,am62-usb";
-> 
-> 
-> Best regards,
-> Krzysztof
+Desmond Lim (1):
+      HID: add SiGma Micro driver
+
+Dmitry Torokhov (11):
+      HID: i2c-hid: fix GET/SET_REPORT for unnumbered reports
+      HID: i2c-hid: use "struct i2c_hid" as argument in most calls
+      HID: i2c-hid: refactor reset command
+      HID: i2c-hid: explicitly code setting and sending reports
+      HID: i2c-hid: define i2c_hid_read_register() and use it
+      HID: i2c-hid: create a helper for SET_POWER command
+      HID: i2c-hid: convert i2c_hid_execute_reset() to use i2c_hid_xfer()
+      HID: i2c-hid: rework i2c_hid_get_report() to use i2c_hid_xfer()
+      HID: i2c-hid: use helpers to do endian conversion in i2c_hid_get_input()
+      HID: i2c-hid: no longer need raw access to HID descriptor structure
+      HID: i2c-hid: note that I2C xfer buffers are DMA-safe
+
+Gustavo A. R. Silva (1):
+      HID: google: Use struct_size() helper in kzalloc()
+
+Gwendal Grignou (1):
+      HID: intel-ish-hid: Use dma_alloc_coherent for firmware update
+
+Jelle van der Waa (1):
+      HID: Add driver for Razer Blackwidow keyboards
+
+Jiri Kosina (1):
+      HID: apple: properly reflect LEDS dependency
+
+José Expósito (5):
+      HID: apple: Refactor key translation setup
+      HID: apple: Magic Keyboard first generation FN key mapping
+      HID: apple: Magic Keyboard 2015 FN key mapping
+      HID: apple: Report Magic Keyboard 2021 battery over USB
+      HID: apple: Report Magic Keyboard 2021 with fingerprint reader battery over USB
+
+Nikolai Kondrashov (16):
+      HID: uclogic: Support Huion tilt reporting
+      HID: uclogic: Rename Huion HS64 PID to Huion Tablet 2
+      HID: uclogic: Support Huion 13th frame button
+      HID: uclogic: Split pen and frame raw event handling
+      HID: uclogic: Access pen/frame params directly in raw_event handling
+      HID: uclogic: Skip non-input raw events earlier
+      HID: uclogic: Handle virtual frame reports
+      HID: uclogic: Remove pen usage masking
+      HID: uclogic: Replace pen_frame_flag with subreport_list
+      HID: uclogic: Switch to matching subreport bytes
+      HID: uclogic: Specify total report size to buttonpad macro
+      HID: uclogic: Use different constants for frame report IDs
+      HID: uclogic: Use "frame" instead of "buttonpad"
+      HID: uclogic: Put version first in rdesc namespace
+      HID: uclogic: Define report IDs before their descriptors
+      HID: uclogic: Support multiple frame input devices
+
+Paul Pawlowski (1):
+      HID: apple: Add support for keyboard backlight on certain T2 Macs.
+
+Yang Li (1):
+      HID: i2c-hid: remove unneeded semicolon
+
+ Documentation/input/event-codes.rst         |   6 +-
+ drivers/hid/Kconfig                         |  19 +++
+ drivers/hid/Makefile                        |   2 +
+ drivers/hid/amd-sfh-hid/amd_sfh_pcie.c      |   7 +-
+ drivers/hid/hid-apple.c                     | 305 +++++++++++++++++++++++++++++++----
+ drivers/hid/hid-core.c                      | 280 ++++++++++++++++++++++++++++----
+ drivers/hid/hid-google-hammer.c             |   2 +-
+ drivers/hid/hid-ids.h                       |  14 +-
+ drivers/hid/hid-input.c                     | 364 ++++++++++++++++++++++++++++++++++--------
+ drivers/hid/hid-quirks.c                    |  16 ++
+ drivers/hid/hid-razer.c                     | 125 +++++++++++++++
+ drivers/hid/hid-sigmamicro.c                | 130 +++++++++++++++
+ drivers/hid/hid-uclogic-core.c              | 258 ++++++++++++++++++------------
+ drivers/hid/hid-uclogic-params.c            | 198 +++++++++++------------
+ drivers/hid/hid-uclogic-params.h            |  92 ++++++-----
+ drivers/hid/hid-uclogic-rdesc.c             |  69 ++++----
+ drivers/hid/hid-uclogic-rdesc.h             |  38 ++---
+ drivers/hid/i2c-hid/i2c-hid-core.c          | 591 ++++++++++++++++++++++++++++++++++++--------------------------------
+ drivers/hid/intel-ish-hid/ishtp-fw-loader.c |  29 +---
+ include/linux/hid.h                         |  23 ++-
+ 20 files changed, 1827 insertions(+), 741 deletions(-)
+ create mode 100644 drivers/hid/hid-razer.c
+ create mode 100644 drivers/hid/hid-sigmamicro.c
 
 
 -- 
-Thanks,
-Aswath
+Jiri Kosina
+SUSE Labs
+
