@@ -2,72 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2F98C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 06:32:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 765C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 06:32:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241986AbiCWGdn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 02:33:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49930 "EHLO
+        id S241990AbiCWGeM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 02:34:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241970AbiCWGdk (ORCPT
+        with ESMTP id S232735AbiCWGeJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 02:33:40 -0400
-Received: from smtp.smtpout.orange.fr (smtp04.smtpout.orange.fr [80.12.242.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C9F716ED
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 23:32:10 -0700 (PDT)
-Received: from pop-os.home ([90.126.236.122])
-        by smtp.orange.fr with ESMTPA
-        id WuXPnSkMs9VRxWuXPnBGAk; Wed, 23 Mar 2022 07:32:08 +0100
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Wed, 23 Mar 2022 07:32:08 +0100
-X-ME-IP: 90.126.236.122
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Namjae Jeon <linkinjeon@kernel.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steve French <sfrench@samba.org>,
-        Hyunchul Lee <hyc.lee@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-cifs@vger.kernel.org
-Subject: [PATCH v2] ksmbd: Remove a redundant zeroing of memory
-Date:   Wed, 23 Mar 2022 07:32:05 +0100
-Message-Id: <577b4601aa5d62d222fa9387c5036f2504f40318.1648017112.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.32.0
+        Wed, 23 Mar 2022 02:34:09 -0400
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F7EA716E2
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 23:32:41 -0700 (PDT)
+Received: from [192.168.12.80] (unknown [182.2.71.26])
+        by gnuweeb.org (Postfix) with ESMTPSA id 3EE637E342;
+        Wed, 23 Mar 2022 06:32:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1648017160;
+        bh=CF8WJ3FjZlYY48Kavdonn1NzDNE0CVAJZB201YjIl+k=;
+        h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
+        b=OKk361GtmEZQqabD0dY5tgo97CpTUcjIhv9cnCHxq4NxknlUbUBz99iSH+QoF1vR9
+         uJQOx2+N9SLSfyET4ZqkF+JZ8A26Z9PJZokZFNg0X6TskzIXd3roZoOlw7giLLZMV+
+         6mdCqVh9kV8SHOkwMr7yVYPZo6Jazq4WNfYbZSdP6VgJpKQ9qhnX6/UUyW8qTHgAId
+         e4Rrc3L83fkiEv6g95RcGDVlhiYX4+5h8NqON8Fgr9smapiXOyHkTKEtJ2ZYaojOOi
+         G4Kan3MBmt/0sZBM5YtkDixMLi+LRppjS7EP7tSC0i0Kho4ry0kdx6RUjBa6WlA0Ch
+         RMBczW1kTEmyw==
+Message-ID: <e7fc541c-224b-08ae-1a92-ad9a03e3d9b1@gnuweeb.org>
+Date:   Wed, 23 Mar 2022 13:32:34 +0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC PATCH v2 3/8] tools/nolibc: i386: Implement syscall with 6
+ arguments
+Content-Language: en-US
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+To:     David Laight <David.Laight@ACULAB.COM>, 'Willy Tarreau' <w@1wt.eu>
+Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
+        Nugraha <richiisei@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "llvm@lists.linux.dev" <llvm@lists.linux.dev>
+References: <20220322102115.186179-1-ammarfaizi2@gnuweeb.org>
+ <20220322102115.186179-4-ammarfaizi2@gnuweeb.org>
+ <8653f6784a9b4272a59a75a530663567@AcuMS.aculab.com>
+ <a8eeec1d-656d-15a3-dde5-0f8cc8c5956b@gnuweeb.org>
+ <20220322121338.GD10306@1wt.eu>
+ <22fd9709b3a64a548226741b682ca155@AcuMS.aculab.com>
+ <2eba5687-6b63-ceb2-3fbd-3d236727ea11@gnuweeb.org>
+In-Reply-To: <2eba5687-6b63-ceb2-3fbd-3d236727ea11@gnuweeb.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-fill_transform_hdr() has only one caller that already clears tr_buf (it is
-kzalloc'ed).
+I have reported this bug to GNU people.
+   
+   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105032
 
-So there is no need to clear it another time here.
-
-Remove the superfluous memset() and add a comment to remind that the caller
-must clear the buffer.
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-v2: keep kzalloc in the caller and remove the memset here
----
- fs/ksmbd/smb2pdu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
-index bcb98109bac9..bcd1bb7e2856 100644
---- a/fs/ksmbd/smb2pdu.c
-+++ b/fs/ksmbd/smb2pdu.c
-@@ -8410,7 +8410,7 @@ static void fill_transform_hdr(void *tr_buf, char *old_buf, __le16 cipher_type)
- 	struct smb2_hdr *hdr = smb2_get_msg(old_buf);
- 	unsigned int orig_len = get_rfc1002_len(old_buf);
- 
--	memset(tr_buf, 0, sizeof(struct smb2_transform_hdr) + 4);
-+	/* tr_buf must be cleared by the caller */
- 	tr_hdr->ProtocolId = SMB2_TRANSFORM_PROTO_NUM;
- 	tr_hdr->OriginalMessageSize = cpu_to_le32(orig_len);
- 	tr_hdr->Flags = cpu_to_le16(TRANSFORM_FLAG_ENCRYPTED);
 -- 
-2.32.0
-
+Ammar Faizi
