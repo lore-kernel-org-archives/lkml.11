@@ -2,99 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3FFBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 19:41:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2F9FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 19:41:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240358AbiCWTnD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 15:43:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41772 "EHLO
+        id S1344354AbiCWTnT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 15:43:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344334AbiCWTm6 (ORCPT
+        with ESMTP id S1344334AbiCWTnP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 15:42:58 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8888BE14;
-        Wed, 23 Mar 2022 12:41:28 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id u26so3081257eda.12;
-        Wed, 23 Mar 2022 12:41:28 -0700 (PDT)
+        Wed, 23 Mar 2022 15:43:15 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F858BE00
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 12:41:45 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id q5so3321366ljb.11
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 12:41:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=x5jJcCWNND08a/kl1cxTrhN4wD14TcjxcSdn0klR8Qw=;
-        b=VoCz4F8clWIuOEdALXVnyNSFuOQ0p4ZDAKDuQdMbb1CHZfuP+1FZZQ3nsnw646cRYD
-         p6DmW/OSE+kW/fnzJHt8QMmWlqKpcJ8AVoGrsWQ2SjVMXLfhPQqBmlpRLnxusm7Q+Ht5
-         TzU2Nnd/gLJVk96rIDgIyIy6Rph8N+Fp8eCfR/TZrrhhKMmNvpNHfGfqeZsYEnM+tL2P
-         12Kt6YgxuanOUTvrHU99TFAUIN3c8tGylNboY56KHfsLYQNvC7WnC0dgweETk/ZumQSt
-         dTIw7yhLy9ojLLg2KxLYKAWFENnhMvTs7kU0oT5A1LfJXXGKkO7iiBL2t+eaS1BPct2L
-         jQFw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kQrBGFwucrBKBVfXucD62w2ROKP/3gosyL/mFvFuauw=;
+        b=SBbwCPeyER6bdPDyzhQl8Ssg5BBoNYoxM4wuCfgnDMBpBaTxeqvdt/O+JMNniz4Myr
+         AdkoKTp8pj5cEZ7B1s7i22BAAMAln1zN/s5LGOGGUaXqkEyoeXmpJZGsd41WBh8obao9
+         pYKhcJps1P+IYJoqKMNmjNrvkWb20OvKGDggaxBL0ZGg9vSo1RzjWYXyLsF1PerHnr2c
+         nsO8JOb+kjtiZDBdztqa00hyErV3EmCPRUTp3rN2xNNIbbqRgWpKrkDPz/uLFOdiCcjQ
+         jkNlTUj3B8eSsD8dx+YpoFkZcoeocthFtBuffFjS9zUnTUK3XTXSLwCp7gYoYqVSHr4R
+         5bkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=x5jJcCWNND08a/kl1cxTrhN4wD14TcjxcSdn0klR8Qw=;
-        b=KsAGQKUfobJob5VQiG6uI6KnhfhXcHKSsM1LhSC8ke7x5wgMoh+eetZKylUPOySa/o
-         N9Ve8NDKcDGVPkvBexkLhMi4tSVUaE1A480wtt1ldjuVmmNYwuE6L2wpY0aYSWFuC+DL
-         AGCVR6n54kPgS9BP9kgMD1Udz+HF/l92yF4e/7RIvGXyL+xPHYgJODM3JoEwMINVduk1
-         GctmJgciFTJXvfdM5Zx/ScEitxYDcTuR2FWDdo0S+bMK4nJ+m0kdxETtlmNI50J57Rs/
-         QdwRSDn+zZEkvePH9co46t5IFefd2Jn4wTJxvAhHfHl2vWVrzn/TMks/B3OvsnMfDD6I
-         zh4A==
-X-Gm-Message-State: AOAM530XE44LVwIPfnXToe2Bml0Ti0tZh12IF6BOluBssZ//VeLUY+kS
-        btXsl/MQ4pPVZO5oLyDpa2Y7oqFOsmUZ6w==
-X-Google-Smtp-Source: ABdhPJyj+501JuDpwR9KPC5PEbvLIaI5dgoqh+E3w83OqiTpoh7sP9qbmbaI9Enzy7gD/h8dgjPA0w==
-X-Received: by 2002:a05:6402:26d3:b0:418:d202:d5dc with SMTP id x19-20020a05640226d300b00418d202d5dcmr2285382edd.138.1648064487522;
-        Wed, 23 Mar 2022 12:41:27 -0700 (PDT)
-Received: from [192.168.1.114] ([85.105.239.232])
-        by smtp.gmail.com with ESMTPSA id e19-20020a056402105300b004162d0b4cbbsm370381edu.93.2022.03.23.12.41.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Mar 2022 12:41:26 -0700 (PDT)
-Message-ID: <8f3cc170-1c24-da8a-37ec-f2e73eade46c@gmail.com>
-Date:   Wed, 23 Mar 2022 19:40:18 +0000
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kQrBGFwucrBKBVfXucD62w2ROKP/3gosyL/mFvFuauw=;
+        b=H1/JYsq1ZKUyN1TMKOJ9uccxOfwviBAW81w3C1Q2MPPn5vFz7bA0UOLXklLzIw8CRN
+         uqpYUadiwXw/gd5XD2Aw+4cXRl1xWAXJJL2zTzBF0Pw7VeVQU/SlGRbKL3C4RHJa/HWC
+         IhJ9Oe09fJw4PzB3Ql7y2SCokQD1AAjdiVcwMWxlAYwVSzlubmoLZeohrRn35DEvjbTT
+         SVSml5dIYdULojedlouvzBx3Uz9VdF4QhzzjPPiLhNgp8cYm4pfA44f+lm9dw237aGO0
+         5w2DwcDh3a0i7skSm4+aNUIPYUaOGECpAGNC6e8WeGMdpWZHZgZX1E9Y6RkXqtg922Fi
+         bzyQ==
+X-Gm-Message-State: AOAM530RDr9NVM0HXk1HfXPEdCjJVXNPkWjLCvSvoP2cGMuUanhJKQnH
+        dGamyO6pXKJ91c8CYB+ljR44iwC0rNFM1nXLAnjArg==
+X-Google-Smtp-Source: ABdhPJyPxaAkqjgQxr5Z0ufChFc+QxnVh2jtJFdKm1AViJ4raOtJ6ZSMiIycQXnGSjwQAoCxO1pVGEbNU+SzucsBVqo=
+X-Received: by 2002:a2e:904c:0:b0:23e:d7ad:3fdd with SMTP id
+ n12-20020a2e904c000000b0023ed7ad3fddmr1318780ljg.239.1648064503179; Wed, 23
+ Mar 2022 12:41:43 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: io_uring_enter() with opcode IORING_OP_RECV ignores MSG_WAITALL
- in msg_flags
-Content-Language: en-US
-To:     Jens Axboe <axboe@kernel.dk>,
-        Constantine Gavrilov <CONSTG@il.ibm.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc:     io-uring <io-uring@vger.kernel.org>
-References: <BYAPR15MB260078EC747F0F0183D1BB1BFA189@BYAPR15MB2600.namprd15.prod.outlook.com>
- <7e6f6467-6ac2-3926-9d7b-09f52f751481@kernel.dk>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <7e6f6467-6ac2-3926-9d7b-09f52f751481@kernel.dk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <CAFGhKbyifH1a+nAMCvWM88TK6fpNPdzFtUXPmRGnnQeePV+1sw@mail.gmail.com>
+In-Reply-To: <CAFGhKbyifH1a+nAMCvWM88TK6fpNPdzFtUXPmRGnnQeePV+1sw@mail.gmail.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Wed, 23 Mar 2022 12:41:31 -0700
+Message-ID: <CAKwvOdmSV3Nse+tGMBXvN=QvnOs6-ODZRJB0OF5Pd6BVb-scFw@mail.gmail.com>
+Subject: Re: [PATCH] x86: bug.h: merge annotate_reachable into _BUG_FLAGS for __WARN_FLAGS
+To:     Charlemagne Lasse <charlemagnelasse@gmail.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        jpoimboe@redhat.com
+Cc:     adobriyan@gmail.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        hpa@zytor.com, linux-kernel@vger.kernel.org,
+        linux-sparse@vger.kernel.org, llvm@lists.linux.dev,
+        luc.vanoostenryck@gmail.com, mingo@redhat.com, nathan@kernel.org,
+        peterz@infradead.org, tglx@linutronix.de, x86@kernel.org,
+        Sasha Levin <sashal@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/23/22 12:19, Jens Axboe wrote:
-> On 3/23/22 4:31 AM, Constantine Gavrilov wrote:
->> I get partial receives on TCP socket, even though I specify
->> MSG_WAITALL with IORING_OP_RECV opcode. Looking at tcpdump in
->> wireshark, I see entire reassambled packet (+4k), so it is not a
->> disconnect. The MTU is smaller than 4k.
->>
->>  From the mailing list history, looks like this was discussed before
->> and it seems the fix was supposed to be in. Can someone clarify the
->> expected behavior?
->>
->> I do not think rsvmsg() has this issue.
-> 
-> Do you have a test case? I added the io-uring list, that's the
-> appropriate forum for this kind of discussion.
+On Wed, Mar 23, 2022 at 12:30 PM Charlemagne Lasse
+<charlemagnelasse@gmail.com> wrote:
+>
+> > @@ -75,9 +77,9 @@ do {                                \
+> >   */
+> >  #define __WARN_FLAGS(flags)                    \
+> >  do {                                \
+> > +    __auto_type f = BUGFLAG_WARNING|(flags);        \
+> >      instrumentation_begin();                \
+> > -    _BUG_FLAGS(ASM_UD2, BUGFLAG_WARNING|(flags));        \
+> > -    annotate_reachable();                    \
+> > +    _BUG_FLAGS(ASM_UD2, f, ASM_REACHABLE);            \
+> >      instrumentation_end();                    \
+> >  } while (0)
+>
+> This causes following sparse warning on x86:
+>
+> make allnoconfig && touch init/version.c && make CHECK="sparse
+> -Wshadow"  C=1 init/version.o
+> #
+> # No change to .config
+> #
+>  CALL    scripts/checksyscalls.sh
+>  CALL    scripts/atomic/check-atomics.sh
+>  CHK     include/generated/compile.h
+>  CC      init/version.o
+>  CHECK   init/version.c
+> init/version.c: note: in included file (through
+> include/linux/rculist.h, include/linux/pid.h, include/linux/sched.h,
+> include/linux/utsname.h):
+> ./include/linux/rcupdate.h:1007:9: warning: symbol 'f' shadows an earlier one
+> ./include/linux/rcupdate.h:1001:47: originally declared here
 
-MSG_WAITALL (since Linux 2.2)
-        This flag requests that the operation block until the full
-        request is satisfied.  However, the call may still return
-        less data than requested if a signal is caught
+Thanks for the report. There was already a fix sent for this:
+https://lore.kernel.org/lkml/20220317065743.8467-1-mailhol.vincent@wanadoo.fr/
+but it doesn't mention that sparse is warning about this, too.
 
-My guess would be that it's either due to signals (including
-task_works actively used by io_uring) or because of some
-interoperability problem with NOWAIT.
+I think if Vincent sent a v3 that mentioned that sparse is warning
+about this, too, and cc'ed you, you could then supply
+signed-off/tested-by tags (or just do so on v2, though it doesn't
+mention sparse), and maybe Josh would be so kind as to pick that up?
+
+>
+>
+> Affected versions (from the ones on kernel.org):
+>
+> * 5.17 - bfb1a7c91fb7 ("x86/bug: Merge annotate_reachable() into
+> _BUG_FLAGS() asm")
+> * 5.16.17 - fe0c95903a68 ("x86/bug: Merge annotate_reachable() into
+> _BUG_FLAGS() asm")
+>
+> Cannot be seen when changing the variable name:
+>
+> diff --git a/arch/x86/include/asm/bug.h b/arch/x86/include/asm/bug.h
+> index bab883c0b6fe..cbd11e38252a 100644
+> --- a/arch/x86/include/asm/bug.h
+> +++ b/arch/x86/include/asm/bug.h
+> @@ -77,9 +77,9 @@ do {                                \
+>   */
+>  #define __WARN_FLAGS(flags)                    \
+>  do {                                \
+> -    __auto_type f = BUGFLAG_WARNING|(flags);        \
+> +    __auto_type __f = BUGFLAG_WARNING|(flags);        \
+>      instrumentation_begin();                \
+> -    _BUG_FLAGS(ASM_UD2, f, ASM_REACHABLE);            \
+> +    _BUG_FLAGS(ASM_UD2, __f, ASM_REACHABLE);            \
+>      instrumentation_end();                    \
+>  } while (0)
+
+
 
 -- 
-Pavel Begunkov
+Thanks,
+~Nick Desaulniers
