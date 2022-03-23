@@ -2,127 +2,229 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0966C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 23:01:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90216C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 23:03:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241331AbiCWXDO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 19:03:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40406 "EHLO
+        id S1345338AbiCWXEi (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 19:04:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345421AbiCWXDM (ORCPT
+        with ESMTP id S241349AbiCWXEg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 19:03:12 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712A02CC8C;
-        Wed, 23 Mar 2022 16:01:42 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 644F5221D4;
-        Thu, 24 Mar 2022 00:01:40 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1648076500;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mrbZnCx5ImFtI+d/9SJ/+v1bhmyj3qBx9rMgcrWC17Q=;
-        b=Rs87I7ubuG5FwsuqBEU0Wbdrk44gkKESedjD6nAYcoxcQ3F8Y8Fcd2DiHKlYL/vVP31iMX
-        jWcQPJrtcj6ULwLw6oXsrfaQWByIlQFUy7MJuNSXhF/PcDb0SpDJueH4k9EIX530VU4K8N
-        ELSDV6o0AMdR9Gxg/AzbhsbbDyniDRQ=
+        Wed, 23 Mar 2022 19:04:36 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F4ED78
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 16:03:05 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id bx24-20020a17090af49800b001c6872a9e4eso3330423pjb.5
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 16:03:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ti+rxiaOYBHheWD6I0Cp8uyD8pEA4R+X+NOSPieN6BQ=;
+        b=qgbvTcMMh/6mu+PteMwGd50UEkutDrfaSZkYrHbJrVr5gQKUuafiISBiKbKxrC9KZr
+         Y11GJN5NJVish+G/nVABKWS1KSqhnUmY8P0qfOe3dtbOI+sPBQvVuH0pohUCGrrk/vbR
+         5eU2/FDvwrLnSiULnhx0vCuCRGAzL+aHeztgtOknFJeGZ+oYhHj4GRZ+Ls+Mg0fkuL53
+         hbbt2qvd6Rm2TATPFD2kpP6OoPdW8Hrp+ZmZjUKw+Tzcx3Ao2Ltc1ccMBeGlJS04IdVH
+         taCSDBjfpo+FQ5BH8KM866TJWkdBph2POFgtYNwQp7gJ7/IPUhbi0pq59y96DsRPFg1P
+         nRZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=ti+rxiaOYBHheWD6I0Cp8uyD8pEA4R+X+NOSPieN6BQ=;
+        b=hzIVi2EFPrmKygVQSFpbkNOetlrSoPcXsNfaGWDkavR98Rx0Mdi3KxGNhc1B0XtLcU
+         KUIB81kGuUbjL0x5NJY38FwLYgl3hwrOyP4dC/yOjvBg6d6VIiYj154b6lhxe4hV9X/h
+         ZphNPHSmc78GoUC/IJhCym7badb1VA/QWNg2iwEFSy3XOsLTZricQfegud0sFwMGk/FX
+         +9NFn3ejOg1Wki1mvf5LFh2jgWNll8Yh8jN7UjC1Xxuz+NC8gtqWIe0XVSik0C2Pw7tT
+         JhrGnPVSifAJ1oJYgtTu01mN4vSU7YODRcuNpScxq0UW8vxJ8n/Y5TQfok6zhHnIaUvO
+         RCRg==
+X-Gm-Message-State: AOAM532mS2WsqdmYuMJRzfL7qstEuOQDri89ZwTmyvlWnJLc2MoQck8p
+        iTHpy8/f5WvpIKoOd9PsCWc=
+X-Google-Smtp-Source: ABdhPJyI1zakfUuJnm2rQSd+VAWKt8LfPitcI9cakRrHqzDVbtS7R5ReHc9Yyh6+PGRjolhrHMUqHQ==
+X-Received: by 2002:a17:90a:fcc:b0:1c6:62b5:45c0 with SMTP id 70-20020a17090a0fcc00b001c662b545c0mr2381293pjz.133.1648076584571;
+        Wed, 23 Mar 2022 16:03:04 -0700 (PDT)
+Received: from balhae.hsd1.ca.comcast.net ([2601:647:4800:3540:3d99:beb8:c76f:446c])
+        by smtp.gmail.com with ESMTPSA id g1-20020a17090adac100b001c67cedd84esm637382pjx.42.2022.03.23.16.03.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Mar 2022 16:03:03 -0700 (PDT)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ian Rogers <irogers@google.com>
+Subject: [PATCH 2/3] perf lock: Extend struct lock_key to have print function
+Date:   Wed, 23 Mar 2022 16:02:58 -0700
+Message-Id: <20220323230259.288494-2-namhyung@kernel.org>
+X-Mailer: git-send-email 2.35.1.894.gb6a874cedc-goog
+In-Reply-To: <20220323230259.288494-1-namhyung@kernel.org>
+References: <20220323230259.288494-1-namhyung@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 24 Mar 2022 00:01:40 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Xu Liang <lxu@maxlinear.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 0/5] net: phy: C45-over-C22 access
-In-Reply-To: <YjuDbqZom8knPVpm@lunn.ch>
-References: <20220323183419.2278676-1-michael@walle.cc>
- <YjuDbqZom8knPVpm@lunn.ch>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <a09f9ac88b599f7124270a5063130c9e@walle.cc>
-X-Sender: michael@walle.cc
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-03-23 21:30, schrieb Andrew Lunn:
-> On Wed, Mar 23, 2022 at 07:34:14PM +0100, Michael Walle wrote:
->> Hi,
->> 
->> This is the result of this discussion:
->> https://lore.kernel.org/netdev/240354b0a54b37e8b5764773711b8aa3@walle.cc/
->> 
->> The goal here is to get the GYP215 and LAN8814 running on the 
->> Microchip
->> LAN9668 SoC. The LAN9668 suppports one external bus and unfortunately, 
->> the
->> LAN8814 has a bug which makes it impossible to use C45 on that bus.
->> Fortunately, it was the intention of the GPY215 driver to be used on a 
->> C22
->> bus. But I think this could have never really worked, because the
->> phy_get_c45_ids() will always do c45 accesses and thus on MDIO bus 
->> drivers
->> which will correctly check for the MII_ADDR_C45 flag and return 
->> -EOPNOTSUPP
->> the function call will fail and thus gpy_probe() will fail. This 
->> series
->> tries to fix that and will lay the foundation to add a workaround for 
->> the
->> LAN8814 bug by forcing an MDIO bus to be c22-only.
->> 
->> At the moment, the probe_capabilities is taken into account to decide 
->> if
->> we have to use C45-over-C22. What is still missing from this series is 
->> the
->> handling of a device tree property to restrict the probe_capabilities 
->> to
->> c22-only.
-> 
-> We have a problem here with phydev->is_c45.
-> 
-> In phy-core.c, functions __phy_read_mmd() and __phy_write_mmd() it
-> means perform c45 transactions over the bus. We know we want to access
-> a register in c45 space because we are using an _mmd() function.
-> 
-> In phy.c, it means does this PHY have c45 registers and we should
-> access that register space, or should we use the c22 register
-> space. So far example phy_restart_aneg() decides to either call
-> genphy_c45_restart_aneg() or genphy_restart_aneg() depending on
-> is_c45.
+And use it to print output for each key field.  No functional change
+intended and the output should be identical.
 
-Yes, that is probably the reason why the gpy215 has explicitly
-set .aneg_done to genphy_c45_aneg_done() for example.
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+---
+ tools/perf/builtin-lock.c | 91 ++++++++++++++++++++++++++++-----------
+ 1 file changed, 65 insertions(+), 26 deletions(-)
 
-> So a PHY with C45 register space but only accessible by C45 over C22
-> is probably going to do the wrong thing with the current code.
+diff --git a/tools/perf/builtin-lock.c b/tools/perf/builtin-lock.c
+index 1ebff88bc5ba..c2ecb6acb87d 100644
+--- a/tools/perf/builtin-lock.c
++++ b/tools/perf/builtin-lock.c
+@@ -237,9 +237,43 @@ struct lock_key {
+ 	 * e.g. nr_acquired -> acquired, wait_time_total -> wait_total
+ 	 */
+ 	const char		*name;
++	/* header: the string printed on the header line */
++	const char		*header;
++	/* len: the printing width of the field */
++	int			len;
++	/* key: a pointer to function to compare two lock stats for sorting */
+ 	int			(*key)(struct lock_stat*, struct lock_stat*);
++	/* print: a pointer to function to print a given lock stats */
++	void			(*print)(struct lock_key*, struct lock_stat*);
++	/* list: list entry to link this */
++	struct list_head	list;
+ };
+ 
++#define PRINT_KEY(member)						\
++static void lock_stat_key_print_ ## member(struct lock_key *key,	\
++					   struct lock_stat *ls)	\
++{									\
++	pr_info("%*llu", key->len, (unsigned long long)ls->member);	\
++}
++
++PRINT_KEY(nr_acquired)
++PRINT_KEY(nr_contended)
++PRINT_KEY(avg_wait_time)
++PRINT_KEY(wait_time_total)
++PRINT_KEY(wait_time_max)
++
++static void lock_stat_key_print_wait_time_min(struct lock_key *key,
++					      struct lock_stat *ls)
++{
++	u64 wait_time = ls->wait_time_min;
++
++	if (wait_time == ULLONG_MAX)
++		wait_time = 0;
++
++	pr_info("%*"PRIu64, key->len, wait_time);
++}
++
++
+ static const char		*sort_key = "acquired";
+ 
+ static int			(*compare)(struct lock_stat *, struct lock_stat *);
+@@ -247,19 +281,20 @@ static int			(*compare)(struct lock_stat *, struct lock_stat *);
+ static struct rb_root		sorted; /* place to store intermediate data */
+ static struct rb_root		result;	/* place to store sorted data */
+ 
+-#define DEF_KEY_LOCK(name, fn_suffix)	\
+-	{ #name, lock_stat_key_ ## fn_suffix }
++static LIST_HEAD(lock_keys);
++
++#define DEF_KEY_LOCK(name, header, fn_suffix, len)			\
++	{ #name, header, len, lock_stat_key_ ## fn_suffix, lock_stat_key_print_ ## fn_suffix, {} }
+ struct lock_key keys[] = {
+-	DEF_KEY_LOCK(acquired, nr_acquired),
+-	DEF_KEY_LOCK(contended, nr_contended),
+-	DEF_KEY_LOCK(avg_wait, avg_wait_time),
+-	DEF_KEY_LOCK(wait_total, wait_time_total),
+-	DEF_KEY_LOCK(wait_min, wait_time_min),
+-	DEF_KEY_LOCK(wait_max, wait_time_max),
++	DEF_KEY_LOCK(acquired, "acquired", nr_acquired, 10),
++	DEF_KEY_LOCK(contended, "contended", nr_contended, 10),
++	DEF_KEY_LOCK(avg_wait, "avg wait (ns)", avg_wait_time, 15),
++	DEF_KEY_LOCK(wait_total, "total wait (ns)", wait_time_total, 15),
++	DEF_KEY_LOCK(wait_max, "max wait (ns)", wait_time_max, 15),
++	DEF_KEY_LOCK(wait_min, "min wait (ns)", wait_time_min, 15),
+ 
+ 	/* extra comparisons much complicated should be here */
+-
+-	{ NULL, NULL }
++	{ }
+ };
+ 
+ static int select_key(void)
+@@ -278,6 +313,16 @@ static int select_key(void)
+ 	return -1;
+ }
+ 
++static int setup_output_field(void)
++{
++	int i;
++
++	for (i = 0; keys[i].name; i++)
++		list_add_tail(&keys[i].list, &lock_keys);
++
++	return 0;
++}
++
+ static void combine_lock_stats(struct lock_stat *st)
+ {
+ 	struct rb_node **rb = &sorted.rb_node;
+@@ -753,18 +798,13 @@ static void print_bad_events(int bad, int total)
+ static void print_result(void)
+ {
+ 	struct lock_stat *st;
++	struct lock_key *key;
+ 	char cut_name[20];
+ 	int bad, total;
+ 
+ 	pr_info("%20s ", "Name");
+-	pr_info("%10s ", "acquired");
+-	pr_info("%10s ", "contended");
+-
+-	pr_info("%15s ", "avg wait (ns)");
+-	pr_info("%15s ", "total wait (ns)");
+-	pr_info("%15s ", "max wait (ns)");
+-	pr_info("%15s ", "min wait (ns)");
+-
++	list_for_each_entry(key, &lock_keys, list)
++		pr_info("%*s ", key->len, key->header);
+ 	pr_info("\n\n");
+ 
+ 	bad = total = 0;
+@@ -789,14 +829,10 @@ static void print_result(void)
+ 			pr_info("%20s ", cut_name);
+ 		}
+ 
+-		pr_info("%10u ", st->nr_acquired);
+-		pr_info("%10u ", st->nr_contended);
+-
+-		pr_info("%15" PRIu64 " ", st->avg_wait_time);
+-		pr_info("%15" PRIu64 " ", st->wait_time_total);
+-		pr_info("%15" PRIu64 " ", st->wait_time_max);
+-		pr_info("%15" PRIu64 " ", st->wait_time_min == ULLONG_MAX ?
+-		       0 : st->wait_time_min);
++		list_for_each_entry(key, &lock_keys, list) {
++			key->print(key, st);
++			pr_info(" ");
++		}
+ 		pr_info("\n");
+ 	}
+ 
+@@ -966,6 +1002,9 @@ static int __cmd_report(bool display_info)
+ 		goto out_delete;
+ 	}
+ 
++	if (setup_output_field())
++		goto out_delete;
++
+ 	if (select_key())
+ 		goto out_delete;
+ 
+-- 
+2.35.1.894.gb6a874cedc-goog
 
-Oh my, yes. Looks like the whole phy_get_c45_ids() isn't working
-at all for the gpy at the moment (or maybe it will work because
-it supports AN via the c22 registers, too). I'll have to dig deeper
-into that tomorrow. I know that _something_ worked at least ;)
-
-> For this patchset to work, we need to cleanly separate the concepts of
-> what sort of transactions to do over the bus, from what register
-> spaces the PHY has. We probably want something like phydev->has_c45 to
-> indicate the register space is implemented, and phydev->c45_over_c22
-> to indicate what sort of transaction should be used in the _mmd()
-> functions.
-> 
-> Your patches start in that direction, but i don't think it goes far
-> enough.
-
-Thanks for the review!
-
--michael
