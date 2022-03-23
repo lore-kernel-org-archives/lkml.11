@@ -2,116 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D993C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 14:50:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC209C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 14:51:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237503AbiCWOwJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 10:52:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39994 "EHLO
+        id S237636AbiCWOxV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 10:53:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236610AbiCWOwF (ORCPT
+        with ESMTP id S236610AbiCWOxS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 10:52:05 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C2317CDED
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 07:50:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648047034; x=1679583034;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=WV8okRWkFfUATtL0PFt20LTbSkGfJRSp6aQFdn9eOFw=;
-  b=CjC6GK5URR0vjZTDh7jBMa3ZNpgx8Y7+HdUCgux60QXwMV41I/QHxtgN
-   jLU9+froEF0W0YnT/1eKRxzBl41yKd2E0cqlECb2Y8AQ3P/UuVaGSXmt6
-   5Ykz8d54kl8S/2MUhKORKh7ywC8COsuGTCXWOnR7oadl2RCb9YmQZqCvd
-   8eNoipJoKLk6bLXzBj/O7DMAXTbYR0qeFAl3gM9lnNUqLVJ1Ui2Ld/oZi
-   JcqYOGDbzf3f4wIf61kSTvAEmUXI021fC1PK2sFEZGnIplzHVaQd7vc+s
-   EM/zE28LkMAEquPxhwJYlYMsmv1S4yY8xABSNCULbyrNzxZBX40T4QbcG
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="282974015"
-X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
-   d="scan'208";a="282974015"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 07:50:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
-   d="scan'208";a="519385138"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 23 Mar 2022 07:50:32 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nX2Jj-000K9F-Qp; Wed, 23 Mar 2022 14:50:31 +0000
-Date:   Wed, 23 Mar 2022 22:49:49 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Anup Patel <apatel@ventanamicro.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [avpatel:riscv_kvm_aia_v1 18/38] arch/riscv/kernel/smp.c:166:50:
- sparse: sparse: incorrect type in argument 4 (different address spaces)
-Message-ID: <202203232238.QlIbLTI5-lkp@intel.com>
+        Wed, 23 Mar 2022 10:53:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 939AD7D01F;
+        Wed, 23 Mar 2022 07:51:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3983E61776;
+        Wed, 23 Mar 2022 14:51:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF768C340E8;
+        Wed, 23 Mar 2022 14:51:46 +0000 (UTC)
+Date:   Wed, 23 Mar 2022 10:51:45 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Brian Foster <bfoster@redhat.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-xfs@vger.kernel.org
+Subject: Re: [PATCH] tracing: Have trace event string test handle zero
+ length strings
+Message-ID: <20220323105145.4550b3b7@gandalf.local.home>
+In-Reply-To: <Yjsyt/6OeFSRsmcq@bfoster>
+References: <20220323103912.097ad3a8@gandalf.local.home>
+        <Yjsyt/6OeFSRsmcq@bfoster>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/avpatel/linux.git riscv_kvm_aia_v1
-head:   bafeaefb38960799e1f7ac9b6707a22e5be067d0
-commit: f6066acf07ddc4838b1115af3af24bb05ecf40dd [18/38] RISC-V: Treat IPIs as normal Linux IRQs
-config: riscv-randconfig-s032-20220323 (https://download.01.org/0day-ci/archive/20220323/202203232238.QlIbLTI5-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/avpatel/linux/commit/f6066acf07ddc4838b1115af3af24bb05ecf40dd
-        git remote add avpatel https://github.com/avpatel/linux.git
-        git fetch --no-tags avpatel riscv_kvm_aia_v1
-        git checkout f6066acf07ddc4838b1115af3af24bb05ecf40dd
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/kernel/
+On Wed, 23 Mar 2022 10:46:15 -0400
+Brian Foster <bfoster@redhat.com> wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> FWIW:
+> 
+> Tested-by: Brian Foster <bfoster@redhat.com>
 
+Thanks, I'll add this tag.
 
-sparse warnings: (new ones prefixed by >>)
->> arch/riscv/kernel/smp.c:166:50: sparse: sparse: incorrect type in argument 4 (different address spaces) @@     expected void [noderef] __percpu *percpu_dev_id @@     got int * @@
-   arch/riscv/kernel/smp.c:166:50: sparse:     expected void [noderef] __percpu *percpu_dev_id
-   arch/riscv/kernel/smp.c:166:50: sparse:     got int *
-
-vim +166 arch/riscv/kernel/smp.c
-
-   151	
-   152	void riscv_ipi_set_virq_range(int virq, int nr)
-   153	{
-   154		int i, err;
-   155	
-   156		if (WARN_ON(ipi_virq_base))
-   157			return;
-   158	
-   159		WARN_ON(nr < IPI_MAX);
-   160		nr_ipi = min(nr, IPI_MAX);
-   161		ipi_virq_base = virq;
-   162	
-   163		/* Request IPIs */
-   164		for (i = 0; i < nr_ipi; i++) {
-   165			err = request_percpu_irq(ipi_virq_base + i, handle_IPI,
- > 166						 "IPI", &ipi_virq_base);
-   167			WARN_ON(err);
-   168	
-   169			ipi_desc[i] = irq_to_desc(ipi_virq_base + i);
-   170			irq_set_status_flags(ipi_virq_base + i, IRQ_HIDDEN);
-   171		}
-   172	
-   173		/* Enabled IPIs for boot CPU immediately */
-   174		riscv_ipi_enable();
-   175	}
-   176	EXPORT_SYMBOL_GPL(riscv_ipi_set_virq_range);
-   177	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+-- Steve
