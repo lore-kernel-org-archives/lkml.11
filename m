@@ -2,97 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 101FCC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 08:43:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99F50C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 08:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233830AbiCWIpH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 04:45:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44562 "EHLO
+        id S242841AbiCWIpe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 04:45:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233757AbiCWIpC (ORCPT
+        with ESMTP id S242829AbiCWIpb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 04:45:02 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71B2A289A9
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 01:43:31 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id qa43so1325023ejc.12
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 01:43:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=pRO4rstzkYbiRB43WCgljqZ0gGunsig7pbQkCRR7eS4=;
-        b=V0H6JJEsX/kP88LBQGwSzKsUzCuehVEQpcqioopP70NXELFAXalLXyT9r07twli41J
-         0KuCmHcHjgoEToWBFQCIAZ4KUlrT8dEXkWbgbmyH3AnUbFkJvNylOycctCZWD4xYgFb7
-         YRSGg1Nun0ULHBB0Nc7j5Q1Np7cPxSpMuHAQo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=pRO4rstzkYbiRB43WCgljqZ0gGunsig7pbQkCRR7eS4=;
-        b=w6jafMeWu0qBIKCRbZQm2hWUueAXI4z2tfIBO4mIect+wx9jVZizCpnYtVRBxoBrzP
-         n/3TKIF7FZAf7kZw98rvPy05PoVWmwUcGl3iJRfkYPtouO4F6v3rwuSarWXPaRgx4oXQ
-         sizUazZqS8I8ym3qlg9t7gHahoHVrvFeT3FI/kgng/r9og9y1hYTcJsiSY7GEFvxBXJV
-         +XeImHrD4FmABJSi0IUCVYSKOPLKtyFJtLluxX4zgCeEEcnECFvje4LGXPHPHtbhrpRG
-         W7UHTd/xVnzPezmdkEQydh+2IX8xbeyJONtevGzhWfY3TJ4zjrPwbjMDZ2lBkRTEJwoO
-         3PKA==
-X-Gm-Message-State: AOAM533w3qmrNMjKKeiL4Uw0v7vLXdjd++Bh1N8Q5Lh5DjS5yowuRkrm
-        TQzKCFtRuog4Q61N7qbN8b7tHw==
-X-Google-Smtp-Source: ABdhPJwxlFaK5ERurGt1STHyjrOvX3N42n72G3mzxFQ6NKLxJ7OfFxip6rHXGoG+HmcSLtZNaVOYXg==
-X-Received: by 2002:a17:906:9743:b0:6d8:632a:a42d with SMTP id o3-20020a170906974300b006d8632aa42dmr30717674ejy.157.1648025009968;
-        Wed, 23 Mar 2022 01:43:29 -0700 (PDT)
-Received: from [192.168.1.149] ([80.208.64.233])
-        by smtp.gmail.com with ESMTPSA id hb19-20020a170906b89300b006daa95d178esm9503171ejb.60.2022.03.23.01.43.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Mar 2022 01:43:29 -0700 (PDT)
-Message-ID: <3707a8f9-93e7-ee54-42a3-ac12a279c6bc@rasmusvillemoes.dk>
-Date:   Wed, 23 Mar 2022 09:43:28 +0100
+        Wed, 23 Mar 2022 04:45:31 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77A7131DF7
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 01:44:01 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 3202D210F0;
+        Wed, 23 Mar 2022 08:44:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1648025040; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=SFX4Zoc29vno8WtrDxS378hqAu13iL7PccJBITKfW+A=;
+        b=UbsCt0bAHvdOFce6hCoHi3zSw/ivJ1BlWWwau8FuM6OnC7rrOZpZEIn5gCzxevivv3iZD6
+        G+jRWBN108zjfPxBe2B6uWKhKqGBMSNDBocvorygv5ZPj1Vk/nKHeNltZZme/sHlmX92UI
+        jHBOMRL1Atm6U9e+/02SXkttuaAibsI=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 062BB13B9C;
+        Wed, 23 Mar 2022 08:44:00 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id x1NFANDdOmJMCwAAMHmgww
+        (envelope-from <jgross@suse.com>); Wed, 23 Mar 2022 08:44:00 +0000
+Message-ID: <8e8ec786-74db-157b-a290-b1537941e91d@suse.com>
+Date:   Wed, 23 Mar 2022 09:43:59 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] random: allow writes to /dev/urandom to influence fast
- init
+ Thunderbird/91.7.0
 Content-Language: en-US
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        David Laight <David.Laight@ACULAB.COM>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Theodore Ts'o <tytso@mit.edu>, Jann Horn <jannh@google.com>
-References: <20220322191436.110963-1-Jason@zx2c4.com>
- <6716f3ffefae4ed8b5fd332bfcca8a9a@AcuMS.aculab.com>
- <YjqLAWbZ8K7eg3Fw@zx2c4.com>
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-In-Reply-To: <YjqLAWbZ8K7eg3Fw@zx2c4.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     linux-mm@kvack.org, lkml <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Michal Hocko <MHocko@suse.com>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
+From:   Juergen Gross <jgross@suse.com>
+Subject: blocking vs. non-blocking mmu notifiers
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------6gu2rAP0rMGxHnUVHNkFRX0n"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/03/2022 03.50, Jason A. Donenfeld wrote:
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------6gu2rAP0rMGxHnUVHNkFRX0n
+Content-Type: multipart/mixed; boundary="------------Kp5yg0KWZJOCf70tncEp4F3j";
+ protected-headers="v1"
+From: Juergen Gross <jgross@suse.com>
+To: linux-mm@kvack.org, lkml <linux-kernel@vger.kernel.org>,
+ Andrew Morton <akpm@linux-foundation.org>
+Cc: Michal Hocko <MHocko@suse.com>,
+ "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
+Message-ID: <8e8ec786-74db-157b-a290-b1537941e91d@suse.com>
+Subject: blocking vs. non-blocking mmu notifiers
 
-> - Since these seeding shell scripts have always been broken, because
->   this is how the rng has always been, rather than trying to bolt on a
->   very imperfect fix in the kernel for something that never worked
->   right, we could suggest shell scripts take the path that I implemented
->   for systemd:
->   https://github.com/systemd/systemd/commit/da2862ef06f22fc8d31dafced6d2d6dc14f2ee0b
->   In shell, this would look like:
-> 
->     #!/bin/bash
->     cat seedfile > /dev/urandom
->     { cat seedfile; head -c 32 /dev/urandom; } | sha256sum | cut -d ' ' -f 1 > seedfile
+--------------Kp5yg0KWZJOCf70tncEp4F3j
+Content-Type: multipart/mixed; boundary="------------iNzNUtyJKMKTuwO3VSZsfBov"
 
-Maybe stating the obvious, but in the interest of preventing
-proliferation of more broken shell scripts: The tail of the above should
-be spelled
+--------------iNzNUtyJKMKTuwO3VSZsfBov
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-  ...  > seedfile.tmp && mv seedfile.tmp seedfile
+SGksDQoNCmR1cmluZyBhbmFseXNpcyBvZiBhIGN1c3RvbWVyJ3MgcHJvYmxlbSBvbiBhIDQu
+MTIgYmFzZWQga2VybmVsDQooZGVhZGxvY2sgZHVlIHRvIGEgYmxvY2tpbmcgbW11IG5vdGlm
+aWVyIGluIGEgWGVuIGRyaXZlcikgSSBjYW1lDQphY3Jvc3MgdXBzdHJlYW0gcGF0Y2hlcyA5
+MzA2NWFjNzUzZTQgKCJtbSwgb29tOiBkaXN0aW5ndWlzaA0KYmxvY2thYmxlIG1vZGUgZm9y
+IG1tdSBub3RpZmllcnMiKSBldCBhbC4NCg0KVGhlIGJhY2t0cmFjZSBvZiB0aGUgYmxvY2tl
+ZCB0YXNrcyB3YXMgdHlwaWNhbGx5IHNvbWV0aGluZyBsaWtlOg0KDQogICMwIFtmZmZmYzkw
+MDQyMjJmMjI4XSBfX3NjaGVkdWxlIGF0IGZmZmZmZmZmODE3MjIzZTINCiAgIzEgW2ZmZmZj
+OTAwNDIyMmYyYjhdIHNjaGVkdWxlIGF0IGZmZmZmZmZmODE3MjJhMDINCiAgIzIgW2ZmZmZj
+OTAwNDIyMmYyYzhdIHNjaGVkdWxlX3ByZWVtcHRfZGlzYWJsZWQgYXQgZmZmZmZmZmY4MTcy
+MmQwYQ0KICAjMyBbZmZmZmM5MDA0MjIyZjJkMF0gX19tdXRleF9sb2NrIGF0IGZmZmZmZmZm
+ODE3MjQxMDQNCiAgIzQgW2ZmZmZjOTAwNDIyMmYzNjBdIG1uX2ludmxfcmFuZ2Vfc3RhcnQg
+YXQgZmZmZmZmZmZjMDFmZDM5OCBbeGVuX2dudGRldl0NCiAgIzUgW2ZmZmZjOTAwNDIyMmYz
+OThdIF9fbW11X25vdGlmaWVyX2ludmFsaWRhdGVfcGFnZSBhdCBmZmZmZmZmZjgxMjMzNzVh
+DQogICM2IFtmZmZmYzkwMDQyMjJmM2MwXSB0cnlfdG9fdW5tYXBfb25lIGF0IGZmZmZmZmZm
+ODEyMTEyY2INCiAgIzcgW2ZmZmZjOTAwNDIyMmY0NzhdIHJtYXBfd2Fsa19maWxlIGF0IGZm
+ZmZmZmZmODEyMTA1Y2QNCiAgIzggW2ZmZmZjOTAwNDIyMmY0ZDBdIHRyeV90b191bm1hcCBh
+dCBmZmZmZmZmZjgxMjEyNDUwDQogICM5IFtmZmZmYzkwMDQyMjJmNTA4XSBzaHJpbmtfcGFn
+ZV9saXN0IGF0IGZmZmZmZmZmODExZTA3NTUNCiMxMCBbZmZmZmM5MDA0MjIyZjVjOF0gc2hy
+aW5rX2luYWN0aXZlX2xpc3QgYXQgZmZmZmZmZmY4MTFlMTNjZg0KIzExIFtmZmZmYzkwMDQy
+MjJmNmE4XSBzaHJpbmtfbm9kZV9tZW1jZyBhdCBmZmZmZmZmZjgxMWUyNDFmDQojMTIgW2Zm
+ZmZjOTAwNDIyMmY3OTBdIHNocmlua19ub2RlIGF0IGZmZmZmZmZmODExZTI5YzUNCiMxMyBb
+ZmZmZmM5MDA0MjIyZjgwOF0gZG9fdHJ5X3RvX2ZyZWVfcGFnZXMgYXQgZmZmZmZmZmY4MTFl
+MmVlMQ0KIzE0IFtmZmZmYzkwMDQyMjJmODY4XSB0cnlfdG9fZnJlZV9wYWdlcyBhdCBmZmZm
+ZmZmZjgxMWUzMjQ4DQojMTUgW2ZmZmZjOTAwNDIyMmY4ZThdIF9fYWxsb2NfcGFnZXNfc2xv
+d3BhdGggYXQgZmZmZmZmZmY4MTI2MmMzNw0KIzE2IFtmZmZmYzkwMDQyMjJmOWYwXSBfX2Fs
+bG9jX3BhZ2VzX25vZGVtYXNrIGF0IGZmZmZmZmZmODEyMWFmYzENCiMxNyBbZmZmZmM5MDA0
+MjIyZmE0OF0gYWxsb2NfcGFnZXNfY3VycmVudCBhdCBmZmZmZmZmZjgxMjJmMzUwDQojMTgg
+W2ZmZmZjOTAwNDIyMmZhNzhdIF9fZ2V0X2ZyZWVfcGFnZXMgYXQgZmZmZmZmZmY4MTIxNjg1
+YQ0KIzE5IFtmZmZmYzkwMDQyMjJmYTgwXSBfX3BvbGx3YWl0IGF0IGZmZmZmZmZmODEyN2U3
+OTUNCiMyMCBbZmZmZmM5MDA0MjIyZmFhOF0gZXZ0Y2huX3BvbGwgYXQgZmZmZmZmZmZjMDBl
+ODAyYiBbeGVuX2V2dGNobl0NCiMyMSBbZmZmZmM5MDA0MjIyZmFiOF0gZG9fc3lzX3BvbGwg
+YXQgZmZmZmZmZmY4MTI3Zjk1Mw0KIzIyIFtmZmZmYzkwMDQyMjJmZWM4XSBzeXNfcHBvbGwg
+YXQgZmZmZmZmZmY4MTI4MDQ3OA0KIzIzIFtmZmZmYzkwMDQyMjJmZjMwXSBkb19zeXNjYWxs
+XzY0IGF0IGZmZmZmZmZmODEwMDQ5NTQNCiMyNCBbZmZmZmM5MDA0MjIyZmY1MF0gZW50cnlf
+U1lTQ0FMTF82NF9hZnRlcl9od2ZyYW1lIGF0IGZmZmZmZmZmODE4MDAwYjYNCg0KSXQgd2Fz
+IGZvdW5kIHRoYXQgdGhlIG5vdGlmaWVyIG9mIHRoZSBYZW4gZ250ZGV2IGRyaXZlciB3YXMg
+dXNpbmcgYQ0KbXV0ZXggcmVzdWx0aW5nIGluIHRoZSBkZWFkbG9jay4NCg0KTWljaGFsIEhv
+Y2tvIHN1Z2dlc3RlZCB0aGF0IGJhY2twb3J0aW5nIGFib3ZlIG1lbnRpb25lZCBwYXRjaCBt
+aWdodA0KaGVscCwgYXMgdGhlIG1tdSBub3RpZmllciBjYWxsIGlzIGhhcHBlbmluZyBpbiBh
+dG9taWMgY29udGV4dC4NCg0KTG9va2luZyBpbnRvIHRoYXQgSSB3YXMgd29uZGVyaW5nIHdo
+ZXRoZXIgdHJ5X3RvX3VubWFwX29uZSgpIHNob3VsZG4ndA0KY2FsbCBtbXVfbm90aWZpZXJf
+aW52YWxpZGF0ZV9yYW5nZV9zdGFydF9ub25ibG9jaygpIGluc3RlYWQgb2YNCm1tdV9ub3Rp
+Zmllcl9pbnZhbGlkYXRlX3JhbmdlX3N0YXJ0KCkgaWYgdGhpcyBpcyB0cnVlLiBPdGhlcndp
+c2UgSQ0KY2FuJ3Qgc2VlIGhvdyB0aGlzIGRlYWRsb2NrIGNvdWxkIGJlIGF2b2lkZWQuDQoN
+CkFueSB0aG91Z2h0cz8NCg0KDQpKdWVyZ2VuDQo=
+--------------iNzNUtyJKMKTuwO3VSZsfBov
+Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Description: OpenPGP public key
+Content-Transfer-Encoding: quoted-printable
 
-or seedfile would be truncated before cat had a chance to read it.
+-----BEGIN PGP PUBLIC KEY BLOCK-----
 
-Rasmus
+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
+jR/i1DG86lem3iBDXzXsZDn8R38=3D
+=3D2wuH
+-----END PGP PUBLIC KEY BLOCK-----
+
+--------------iNzNUtyJKMKTuwO3VSZsfBov--
+
+--------------Kp5yg0KWZJOCf70tncEp4F3j--
+
+--------------6gu2rAP0rMGxHnUVHNkFRX0n
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmI63c8FAwAAAAAACgkQsN6d1ii/Ey/H
+jQgAnIe6RGnGr9CEBIB2sNTuiQfgh/jnskk5fZSxyWI4Jw8SEweK+TWY1nALwAxygPGv3xkOXMy1
+En1hVbstiL51+7w+H3Bo3HXowYVEdWCzB94PfQX35RAG3I9HWYhvUoITXN5apNY+dEfyHd/FUDkB
+005o55t9LsPb8e2JiQVRbttZNaSaNm6dzthiViwEC5kk/PJPmLwqtJGCWrG8lqHBR0G+QdUJb3+g
+8TY6XuUe6p6bw2OP6Z6MPBB+6XAXfnUqc3hTy8zX3yb/p0hGoT6cypS413ZcUxOsBxpaGvLoIx9B
+xD3SmCIsmLhlg3jbEtRFLd7T6EpCXeB7LSYm3J4kuQ==
+=yUkc
+-----END PGP SIGNATURE-----
+
+--------------6gu2rAP0rMGxHnUVHNkFRX0n--
