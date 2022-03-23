@@ -2,118 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40547C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 17:55:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1102C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 17:56:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343869AbiCWR50 (ORCPT
+        id S1343870AbiCWR6P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 13:57:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50134 "EHLO
+        Wed, 23 Mar 2022 13:58:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241540AbiCWR5Y (ORCPT
+        with ESMTP id S1343916AbiCWR55 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 13:57:24 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB4B71EF3;
-        Wed, 23 Mar 2022 10:55:54 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id g3so2255668plo.6;
-        Wed, 23 Mar 2022 10:55:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=74ozZKKGaEgDQrA8Jk64U3Yx/VDukiycGxbgIMenxpg=;
-        b=gxsU3owAUgHQJcex7SYVEn6Sp+EdVzSF8FF0m+3KxflOGMYfM5nNZVtH/rJdMyExFz
-         ApHIKSTnMfaSkuSDEx72uewBFZ+oBLAwMh+5g0B0hrEaf4pCe+HzLqVZ48sGiiye0Qzz
-         6x6ZptEDvCsu+HYiJ4FlBvG7uu+PHjGL6YYkjsHrjC3H8WaG2gL88VWJ+xTQXDQVqJYL
-         q28zSGpTw1CL5Jg+ufkVMlKf/Arg6OX0xqUIC5V/qcvKalfJ/Bl9OPpHLPxGHaYBYXsh
-         K72Aj9rw3Uo8ptpTfSu78+QOum2iRX7277m6G8g5q1IOc0VTiwPGRrvyrj9gtyvKUNk5
-         9dmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=74ozZKKGaEgDQrA8Jk64U3Yx/VDukiycGxbgIMenxpg=;
-        b=YtOdKYLyQ00/CEFZ6HXiB3A1Hj9VTvw/2zO7Fn11A9L3oFPqefbsi0EXXabtQHiI4R
-         AxMZvHJSkqqAJA6EoIAFYrKWeI9fSLsfdDr8lIxx43GrgYNSS/LEL314SeyfHEoCbEO1
-         fqv5ZWmUqDRTpSl6+n51xJDQLyX5zE/4RKXppEoNvJGPJCK8/bO5Meb8cXHwUJWWLPDk
-         6uWUA8MhNj7otwZXCjAE103RAyaICpqSbkcZeIgv6OFmcg62BD5bXPy7IivbKocW30cD
-         O64tfhzSu9y2hUEt8YEkdjrZIglSjctQgh9JbJvdCfO9W8Cs+eUcaOfKWcK5RZyil4fV
-         osdw==
-X-Gm-Message-State: AOAM533DdoRoIjMCdCwuH9k2qM9HY9LTLYkUE9YdtwRzGJzYK5oneYfU
-        xMd24zpUpQMTmnRyJP6rHSw=
-X-Google-Smtp-Source: ABdhPJznVZBA3Vg/agNsTCbhWL6GBJNHoM5nrUCS9hUyApEH9twQm4QLr/H1uugjsQKWz0rVM0+WZw==
-X-Received: by 2002:a17:90a:430d:b0:1bc:f340:8096 with SMTP id q13-20020a17090a430d00b001bcf3408096mr977461pjg.93.1648058153981;
-        Wed, 23 Mar 2022 10:55:53 -0700 (PDT)
-Received: from localhost ([192.55.54.52])
-        by smtp.gmail.com with ESMTPSA id w12-20020a056a0014cc00b004f790cdbf9dsm521606pfu.183.2022.03.23.10.55.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Mar 2022 10:55:53 -0700 (PDT)
-Date:   Wed, 23 Mar 2022 10:55:52 -0700
-From:   Isaku Yamahata <isaku.yamahata@gmail.com>
-To:     Erdem Aktas <erdemaktas@google.com>
-Cc:     "Yamahata, Isaku" <isaku.yamahata@intel.com>,
-        "open list:KERNEL VIRTUAL MACHINE (KVM)" <kvm@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Subject: Re: [RFC PATCH v5 064/104] KVM: TDX: Implement TDX vcpu enter/exit
- path
-Message-ID: <20220323175552.GG1964605@ls.amr.corp.intel.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <cedda3dbe8597356374ef64de26ecef0d8cd7a62.1646422845.git.isaku.yamahata@intel.com>
- <CAAYXXYy3QLWyq9QrEnrsOLB3r44QTgKaOW4=HhOozDuw1073Gg@mail.gmail.com>
+        Wed, 23 Mar 2022 13:57:57 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC216BC11;
+        Wed, 23 Mar 2022 10:56:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648058187; x=1679594187;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=UVTweHN61rHkZzXfM5jm3uhIUIF0gAVJSjh3UNXQLgA=;
+  b=OpbI+5o/lOXO5v4D58AS3A1G95+IOKmCOUKUOHIhMn54G98NlESI9H85
+   FxUPQfbyXWVa9hNFV56tjrtSXC9sJEXQkGsrR1QnBN7ZGAa0jiUHUjyU3
+   vn6RiOwh3gDIs1/Q2xddbzpRQgeFLanz8Mmzyk2jwvO4F+2H6XhViF4TS
+   5K6Aqv7T9xvnYTeuUvFgApox/Fj6ZNmWzQTSrQWDQHcqshfOd0cSzdZAg
+   JG6osqg3l8TXJdSylrHA8I0EzZTmHB4g2ID9gzxWs65SInQhfwo5qlTRG
+   SVuECRLt3imJ2r3rGaM5XBbYgVE6gaAxuYjYPeMOPw20afRr8NOkRTkaz
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="344624096"
+X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
+   d="scan'208";a="344624096"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 10:56:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
+   d="scan'208";a="501100457"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga003.jf.intel.com with ESMTP; 23 Mar 2022 10:56:24 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22NHuMKm030590;
+        Wed, 23 Mar 2022 17:56:22 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Michal Kubiak <michal.kubiak@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 0/2] ice: avoid sleeping/scheduling in atomic contexts
+Date:   Wed, 23 Mar 2022 18:54:46 +0100
+Message-Id: <20220323175446.2777027-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220323104005.2a58a57c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20220323124353.2762181-1-alexandr.lobakin@intel.com> <20220323104005.2a58a57c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAAYXXYy3QLWyq9QrEnrsOLB3r44QTgKaOW4=HhOozDuw1073Gg@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 10:28:42AM -0700,
-Erdem Aktas <erdemaktas@google.com> wrote:
+From: Jakub Kicinski <kuba@kernel.org>
+Date: Wed, 23 Mar 2022 10:40:05 -0700
 
-> On Fri, Mar 4, 2022 at 11:50 AM <isaku.yamahata@intel.com> wrote:
-> > @@ -509,6 +512,37 @@ void tdx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
-> >         vcpu->kvm->vm_bugged = true;
-> >  }
-> >
-> > +u64 __tdx_vcpu_run(hpa_t tdvpr, void *regs, u32 regs_mask);
-> > +
-> > +static noinstr void tdx_vcpu_enter_exit(struct kvm_vcpu *vcpu,
-> > +                                       struct vcpu_tdx *tdx)
-> > +{
-> > +       guest_enter_irqoff();
-> > +       tdx->exit_reason.full = __tdx_vcpu_run(tdx->tdvpr.pa, vcpu->arch.regs, 0);
-> > +       guest_exit_irqoff();
-> > +}
-> > +
-> > +fastpath_t tdx_vcpu_run(struct kvm_vcpu *vcpu)
-> > +{
-> > +       struct vcpu_tdx *tdx = to_tdx(vcpu);
-> > +
-> > +       if (unlikely(vcpu->kvm->vm_bugged)) {
-> > +               tdx->exit_reason.full = TDX_NON_RECOVERABLE_VCPU;
-> > +               return EXIT_FASTPATH_NONE;
-> > +       }
-> > +
-> > +       trace_kvm_entry(vcpu);
-> > +
-> > +       tdx_vcpu_enter_exit(vcpu, tdx);
-> > +
-> > +       vcpu->arch.regs_avail &= ~VMX_REGS_LAZY_LOAD_SET;
-> > +       trace_kvm_exit(vcpu, KVM_ISA_VMX);
-> > +
-> > +       if (tdx->exit_reason.error || tdx->exit_reason.non_recoverable)
-> > +               return EXIT_FASTPATH_NONE;
+> On Wed, 23 Mar 2022 13:43:51 +0100 Alexander Lobakin wrote:
+> > --
+> > Urgent fix, would like to make it directly through -net.
 > 
-> Looks like the above if statement has no effect. Just checking if this
-> is intentional.
+> You may want to use three hyphens, two hyphens mean footer.
+> Email clients gray those out, it's easy to miss :)
 
-I'm not sure if I get your point.  tdx->exit_reason is updated by the above
-tdx_cpu_enter_exit().  So it makes sense to check .error or .non_recoverable.
--- 
-Isaku Yamahata <isaku.yamahata@gmail.com>
+Good to know, thanks! :)
+
+Al
