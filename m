@@ -2,109 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B14BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 16:09:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8097C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 16:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245418AbiCWQLC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 12:11:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49074 "EHLO
+        id S245313AbiCWQR1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 12:17:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242576AbiCWQKq (ORCPT
+        with ESMTP id S233715AbiCWQRZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 12:10:46 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC0C3BBF6;
-        Wed, 23 Mar 2022 09:09:16 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id E587A210F4;
-        Wed, 23 Mar 2022 16:09:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1648051754; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=v1gC/BVBIa1Xfifse2nE7QJfA8miYTDk4vkup9+NIjY=;
-        b=C3ONuA0M9m0xSMP7h5wJNQO1qfxtOpKzCvTPY7tzZZF/CjbLpucGBNI2rkLLCrMvzIPS+7
-        jG6/3wQ8b/xCNoQTfgntFNH1OKNQ3k124NSFoMtVrLiyQgocFoj4kKlpiBiyIF7o1QWXCS
-        EmSVWpi4qSqbq+Cq8ny01WLKBI4l0Rg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1648051754;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=v1gC/BVBIa1Xfifse2nE7QJfA8miYTDk4vkup9+NIjY=;
-        b=Zm1/gROUSIjTX/3oIUsZfLWgPlzM9jEIILcBpOdCjSyjs5Di/QxLQJ2aaxJzesTYoWIDBR
-        7ObKh3C7eCL1+yAA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D898512FC5;
-        Wed, 23 Mar 2022 16:09:14 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id iKSPNCpGO2IgfgAAMHmgww
-        (envelope-from <iivanov@suse.de>); Wed, 23 Mar 2022 16:09:14 +0000
-From:   "Ivan T. Ivanov" <iivanov@suse.de>
-To:     Stephen Boyd <sboyd@kernel.org>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Dom Cobley <popcornmix@gmail.com>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Ivan T . Ivanov" <iivanov@suse.de>
-Subject: [PATCH 2/3] clk-raspberrypi: Support VEC clock
-Date:   Wed, 23 Mar 2022 18:08:58 +0200
-Message-Id: <20220323160859.69572-3-iivanov@suse.de>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20220323160859.69572-1-iivanov@suse.de>
-References: <20220323160859.69572-1-iivanov@suse.de>
+        Wed, 23 Mar 2022 12:17:25 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BED7F5E760
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 09:15:55 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id o68-20020a17090a0a4a00b001c686a48263so3871739pjo.1
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 09:15:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=pcx7/9ycFKhUp3zVINYYwi3rKHTntPB1s1CdzdzJkI8=;
+        b=eGGfvi/aUXQQclLi2Amu4UiMJiLdizTXDGRXWO/qo/pjeq0UjwJ+/KmjV1QJc9ydpy
+         pL0ZR9rWXELEPhhUCWfxF8mn7RgGLmXlPvf0DtTZgMVU+r9GW/CSWpNzpJ+9LMDRQ9q5
+         v12h6RkJp5B7xF9FmyJYBNc7GzflaBOdqWriG/uwfJNh8U18BYF8s/42UTwJKxYKgDs3
+         IPg8D7JKTBO3BA/JFEjYbq0nkr4qIDA5RRRfZo5B8ecvmPEJSAeK9HZiZQc8BrVS8kHJ
+         LO6eRGpdTF/k/4UWjOGozhBoRo0xDEdCEJVRLjh5COk7eOXaP5EwZPWVwNPuzQ8Wz0YT
+         EpbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=pcx7/9ycFKhUp3zVINYYwi3rKHTntPB1s1CdzdzJkI8=;
+        b=pTyqXGNbt2/Jg4SzIpsKrp6hlpkfdwB67ZvuwjkNTMu+lHOGxQ3Bv7glX5e187uHb3
+         rWkgdFaB4GS+KUt3vJlj/xPdEs4eyoRU8gsTR/1uSVuPbqW3U1aHnZdLUgX1k+l6D40F
+         xtpBJDD/f6BYVjLONXse5gYYjEmqf0VmO1GvEChtR7rNt2o+La24awrfm1OgU7TBuyiv
+         0xZJofSVeYHtF4YghaVdGx09TVM3ysCdU0PW8KzNVardD26ElHB4yyQcat3i0poOVjY3
+         bvQQoePSTXF/ZYBCsOZQMVhq72TyT0DWl8BLXw9e8lg9EAn1Icpo2wgUQDaNN18S6glX
+         QmWQ==
+X-Gm-Message-State: AOAM531LPeQcmhmM4ktjzsFSzlRBro01lswmRu5duQ4Nvon+cMtpLeVj
+        gXqESr4+mHvZR+5CHQIN8EaYRQ==
+X-Google-Smtp-Source: ABdhPJyxi08PWO08eYKcX0xvVjJbDB4ehRiQE8BTsiU1yHEEjgcdGYY/QQmGaXBPJattZjY/9m5ulQ==
+X-Received: by 2002:a17:90a:dd45:b0:1bc:9466:9b64 with SMTP id u5-20020a17090add4500b001bc94669b64mr12553848pjv.23.1648052155246;
+        Wed, 23 Mar 2022 09:15:55 -0700 (PDT)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id y13-20020a63b50d000000b0038297275c00sm265964pge.34.2022.03.23.09.15.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Mar 2022 09:15:54 -0700 (PDT)
+Date:   Wed, 23 Mar 2022 10:15:51 -0600
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     James Clark <james.clark@arm.com>
+Cc:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
+        mike.leach@linaro.org, anshuman.khandual@arm.com,
+        leo.yan@linaro.com, Leo Yan <leo.yan@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 15/15] coresight: etm4x: Cleanup TRCRSCTLRn register
+ accesses
+Message-ID: <20220323161551.GB3248686@p14s>
+References: <20220304171913.2292458-1-james.clark@arm.com>
+ <20220304171913.2292458-16-james.clark@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220304171913.2292458-16-james.clark@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dom Cobley <popcornmix@gmail.com>
+On Fri, Mar 04, 2022 at 05:19:12PM +0000, James Clark wrote:
+> This is a no-op change for style and consistency and has no effect on
+> the binary output by the compiler. In sysreg.h fields are defined as
+> the register name followed by the field name and then _MASK. This
+> allows for grepping for fields by name rather than using magic numbers.
+> 
+> Signed-off-by: James Clark <james.clark@arm.com>
+> ---
+>  drivers/hwtracing/coresight/coresight-etm4x-sysfs.c | 7 +++++--
+>  drivers/hwtracing/coresight/coresight-etm4x.h       | 7 +++++++
+>  2 files changed, 12 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> index 3ae6f4432646..6ea8181816fc 100644
+> --- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> +++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> @@ -1726,8 +1726,11 @@ static ssize_t res_ctrl_store(struct device *dev,
+>  	/* For odd idx pair inversal bit is RES0 */
+>  	if (idx % 2 != 0)
+>  		/* PAIRINV, bit[21] */
+> -		val &= ~BIT(21);
+> -	config->res_ctrl[idx] = val & GENMASK(21, 0);
+> +		val &= ~TRCRSCTLRn_PAIRINV;
+> +	config->res_ctrl[idx] = val & (TRCRSCTLRn_PAIRINV |
+> +				       TRCRSCTLRn_INV |
+> +				       TRCRSCTLRn_GROUP_MASK |
+> +				       TRCRSCTLRn_SELECT_MASK);
+>  	spin_unlock(&drvdata->spinlock);
+>  	return size;
+>  }
+> diff --git a/drivers/hwtracing/coresight/coresight-etm4x.h b/drivers/hwtracing/coresight/coresight-etm4x.h
+> index 15704982357f..2c412841b126 100644
+> --- a/drivers/hwtracing/coresight/coresight-etm4x.h
+> +++ b/drivers/hwtracing/coresight/coresight-etm4x.h
+> @@ -223,6 +223,13 @@
+>  #define TRCBBCTLR_MODE				BIT(8)
+>  #define TRCBBCTLR_RANGE_MASK			GENMASK(7, 0)
+>  
+> +#define TRCRSCTLRn_PAIRINV			BIT(21)
+> +#define TRCRSCTLRn_INV				BIT(20)
+> +#define TRCRSCTLRn_GROUP_MASK			GENMASK(19, 16)
+> +#define TRCRSCTLRn_SELECT_MASK			GENMASK(15, 0)
+> +
+> +
+> +
 
-Signed-off-by: Dom Cobley <popcornmix@gmail.com>
-Signed-off-by: Ivan T. Ivanov <iivanov@suse.de>
----
- drivers/clk/bcm/clk-raspberrypi.c | 3 +++
- 1 file changed, 3 insertions(+)
+Two extra lines.
 
-diff --git a/drivers/clk/bcm/clk-raspberrypi.c b/drivers/clk/bcm/clk-raspberrypi.c
-index 9f08baef39ba..240128939d57 100644
---- a/drivers/clk/bcm/clk-raspberrypi.c
-+++ b/drivers/clk/bcm/clk-raspberrypi.c
-@@ -33,6 +33,7 @@ enum rpi_firmware_clk_id {
- 	RPI_FIRMWARE_EMMC2_CLK_ID,
- 	RPI_FIRMWARE_M2MC_CLK_ID,
- 	RPI_FIRMWARE_PIXEL_BVB_CLK_ID,
-+	RPI_FIRMWARE_VEC_CLK_ID,
- 	RPI_FIRMWARE_NUM_CLK_ID,
- };
- 
-@@ -51,6 +52,7 @@ static char *rpi_firmware_clk_names[] = {
- 	[RPI_FIRMWARE_EMMC2_CLK_ID]	= "emmc2",
- 	[RPI_FIRMWARE_M2MC_CLK_ID]	= "m2mc",
- 	[RPI_FIRMWARE_PIXEL_BVB_CLK_ID]	= "pixel-bvb",
-+	[RPI_FIRMWARE_VEC_CLK_ID]	= "vec",
- };
- 
- #define RPI_FIRMWARE_STATE_ENABLE_BIT	BIT(0)
-@@ -273,6 +275,7 @@ static int raspberrypi_discover_clocks(struct raspberrypi_clk *rpi,
- 		case RPI_FIRMWARE_V3D_CLK_ID:
- 		case RPI_FIRMWARE_HEVC_CLK_ID:
- 		case RPI_FIRMWARE_PIXEL_BVB_CLK_ID:
-+		case RPI_FIRMWARE_VEC_CLK_ID:
- 			hw = raspberrypi_clk_register(rpi, clks->parent,
- 						      clks->id);
- 			if (IS_ERR(hw))
--- 
-2.26.2
-
+>  /*
+>   * System instructions to access ETM registers.
+>   * See ETMv4.4 spec ARM IHI0064F section 4.3.6 System instructions
+> -- 
+> 2.28.0
+> 
