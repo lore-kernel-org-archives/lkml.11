@@ -2,323 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3466AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 12:41:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2D34C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 12:43:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243018AbiCWMnW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 08:43:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42636 "EHLO
+        id S236342AbiCWMpY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 08:45:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242871AbiCWMnR (ORCPT
+        with ESMTP id S230499AbiCWMpX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 08:43:17 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5892F7B554
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 05:41:47 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id g3so1403191plo.6
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 05:41:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=9elements.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=a4dvkjPYRELhzllIpA0f3GYBFS79Xmkqa9OQbMC0sQc=;
-        b=BKV9SqrLcCplUfT86q4wICSAi929UqoXsOYEw5LTO37EfKdTN2GtR664bQ3vyjorSZ
-         umEsHvA9Hf69ZUhSOSj2bHwQo7CoYe2dMR3VY8RSVgE6oCwkDjPS2kQtFuqphIyDUj4Q
-         JhPZpVN5veA4MJL1CHALKuLy77VIaGfl3oAydDYdTtl5+oro1O72+9Utv02ZjSYfJiWl
-         4Tlb1i3xphsC1I6jo19owV9XBgkkZvTCV2/LwprTZvQfKG/ahY//EyAZOMJLAxhZ75+s
-         SXKAirhz68DkHMz6X8Gkd06lyWj3oYWLZMxK9/aiYcb0HsIC1hoo9f1GvlkvNeJo8Nlb
-         +mOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=a4dvkjPYRELhzllIpA0f3GYBFS79Xmkqa9OQbMC0sQc=;
-        b=T5N2mMYm8hBm2kBOt3+hrxOmtW9lnhCvirK0Qp7ue6+mh0IS3zQlJRFOumSYvRfp8k
-         Edoh4U30HPncr9GncireALIpKJVTdwOzfqmpSgBmsMrgtvE2/Ls1TppuEU9lx9WQyWU1
-         ix+MJlh7ip0GePhmX+EqT0DMsl6LCCKNHTUnWx4qmxJF0i/QeP2tNdOVUMcr1ugjld7+
-         hTAtZzuDf65iKRUgqzorR5LxrM47dsiEguHvp3SyJrN5wTefwEG7ra2CoMwiG38BKTV8
-         blu3c4HrPnBMoDTN8kpRTW0eFUWAIqln/Eh6H+SXMJRnCKy94P+VvqQBIYTbKTypzlhk
-         CCEA==
-X-Gm-Message-State: AOAM53206YNd5DaARuM1G8VmftO2FiFLkIiMJyvdP58ulF1Wa9rB1711
-        HVcEiDCuSeBFGaCKA6dvVupS7en7OU6AIavXlljF7g==
-X-Google-Smtp-Source: ABdhPJwj0X9bRHFxzj52gv00VxzzzCayohoiI5JJBSZZRHRycjz7IVFuiC6D+k6f9FViImGXM5UKs9f1KGdqXvP4E/c=
-X-Received: by 2002:a17:902:e545:b0:154:4d5b:2006 with SMTP id
- n5-20020a170902e54500b001544d5b2006mr16865421plf.94.1648039306634; Wed, 23
- Mar 2022 05:41:46 -0700 (PDT)
+        Wed, 23 Mar 2022 08:45:23 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71B174869;
+        Wed, 23 Mar 2022 05:43:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=MIME-Version:Content-Type:References:
+        In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=DNaBiNCRgo3LxVBYAroLjb5+BV4mgxafEzFYigMlq2U=; b=Hpc8VJy6XHNmQsn6oLUFr525R6
+        y5xiKfgYcmyTdyaiw85NRPUbM3brnb1PH+I2y+TNztvnpEaS1ZvkrAQRoP3uCxtSdh9wADNqxKmKj
+        oezargZU0JkK2KzvbOKbnicD7ZeonADmNeZv2jrUGJqCv/NddVHDGIoek1nOEJv2OkioZuunvVWm7
+        g06fEHK0mJx+XxYlL7WZS4gVKJiZZ6fmaqiu+DwNVdn8vM3iESYhpS38iobVx0OEWTUmnlhWJmz9i
+        57g2/wkftCUmyNhRNwProIQ4qzDAEUlw2ai01L7GSE+vMtwV3rkgkvmOzLgqcDW5IYK4pkR4Zg2cF
+        kwC0rOpQ==;
+Received: from [2001:8b0:10b:1:4a2a:e3ff:fe14:8625] (helo=u3832b3a9db3152.ant.amazon.com)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nX0L7-003lQh-UN; Wed, 23 Mar 2022 12:43:50 +0000
+Message-ID: <a1bf31d6a8957b837b999c02875456b805efdff1.camel@infradead.org>
+Subject: Re: [PATCH] PCI: Avoid broken MSI on SB600 USB devices
+From:   David Woodhouse <dwmw2@infradead.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Bjorn Helgaas <helgaas@kernel.org>
+Cc:     linux-pci <linux-pci@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Mick Lorain <micklorain@protonmail.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Date:   Wed, 23 Mar 2022 12:43:48 +0000
+In-Reply-To: <CAHp75VfdoAbSTkO7eaor94pkmN0ttLXstc1DS_Sa7i45Dt5GAA@mail.gmail.com>
+References: <20220321183446.1108325-1-helgaas@kernel.org>
+         <20220323022648.GA1243295@bhelgaas>
+         <CAHp75VfdoAbSTkO7eaor94pkmN0ttLXstc1DS_Sa7i45Dt5GAA@mail.gmail.com>
+Content-Type: multipart/signed; micalg="sha-256"; protocol="application/pkcs7-signature";
+        boundary="=-uhusbg0yv0QWas8vslyr"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-References: <20220216074613.235725-1-patrick.rudolph@9elements.com>
- <20220216074613.235725-3-patrick.rudolph@9elements.com> <5658941a-bf81-4ecf-3317-82d2a8244021@axentia.se>
-In-Reply-To: <5658941a-bf81-4ecf-3317-82d2a8244021@axentia.se>
-From:   Patrick Rudolph <patrick.rudolph@9elements.com>
-Date:   Wed, 23 Mar 2022 13:41:35 +0100
-Message-ID: <CALNFmy0vADcLGcNCCGtPhsXXRCxV549Q5vhdv9v0YQ+HjZOhNQ@mail.gmail.com>
-Subject: Re: [v6 2/3] i2c: muxes: pca954x: Add MAX735x/MAX736x support
-To:     Peter Rosin <peda@axentia.se>
-Cc:     linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by desiato.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Peter,
-thanks for the review.
-The MAX7358 has indeed the same registers as the MAX7357, but they
-need to be "unlocked" by sending a magic sequence first.
-As this isn't implemented by the driver it behaves like the MAX7356
-with a single register.
-The additional registers can be hidden again by setting a bit in the
-config space.
-Which wording would you prefer to describe this feature?
 
-I'll change it to maxim_enhanced_mode.
+--=-uhusbg0yv0QWas8vslyr
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Regards,
-Patrick
+On Wed, 2022-03-23 at 10:03 +0200, Andy Shevchenko wrote:
+> On Wed, Mar 23, 2022 at 4:26 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+>=20
+> > On Mon, Mar 21, 2022 at 01:34:46PM -0500, Bjorn Helgaas wrote:
+> > > From: Bjorn Helgaas <bhelgaas@google.com>
+> > > Some ATI SB600 USB adapters advertise MSI, but if INTx is disabled by
+> > > setting PCI_COMMAND_INTX_DISABLE,
+>=20
+> > > MSI doesn't work either.
+>=20
+> I think this is not correct.
 
-On Sat, Mar 19, 2022 at 3:41 PM Peter Rosin <peda@axentia.se> wrote:
->
-> Hi!
->
-> Sorry for the slow review and thanks for your patience...
->
-> On 2022-02-16 08:46, Patrick Rudolph wrote:
-> > Add support for the following Maxim chips using the existing PCA954x
-> > driver:
-> > - MAX7356
-> > - MAX7357
-> > - MAX7358
-> > - MAX7367
-> > - MAX7368
-> > - MAX7369
-> >
-> > All added Maxim chips behave like the PCA954x, where a single SMBUS byte
-> > write selects up to 8 channels to be bridged to the primary bus.
-> >
-> > The MAX7357 exposes 6 additional registers at Power-On-Reset and is
->
-> MAX7358 also has the same enhanced mode as the 7357, no?
->
-> And what do you mean that they are exposed at POR? I can see why they
-> are not exposed /before/ POR, but are they ever /not/ exposed? If they
-> are always exposed when the chip is "alive", then I suggest that the
-> POR wording is dropped, otherwise that the above is reworded to
-> describe when the register are no longer exposed.
->
-> > configured to:
-> >  - Disabled interrupts on bus locked up detection
-> >  - Enable bus locked-up clearing
-> >  - Disconnect only locked bus instead of all channels
-> >
-> > While the MAX7357/MAX7358 have interrupt support, they don't act as
-> > interrupt controller like the PCA9545 does. Thus don't enable IRQ support
-> > and handle them like the PCA9548.
-> >
-> > Tested using the MAX7357 and verified that the stalled bus is disconnected
-> > while the other channels remain operational.
-> >
-> > Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
-> > ---
-> >  drivers/i2c/muxes/Kconfig           |  4 +-
-> >  drivers/i2c/muxes/i2c-mux-pca954x.c | 92 +++++++++++++++++++++++++++--
-> >  2 files changed, 90 insertions(+), 6 deletions(-)
-> >
-> > diff --git a/drivers/i2c/muxes/Kconfig b/drivers/i2c/muxes/Kconfig
-> > index 1708b1a82da2..2ac99d044199 100644
-> > --- a/drivers/i2c/muxes/Kconfig
-> > +++ b/drivers/i2c/muxes/Kconfig
-> > @@ -65,11 +65,11 @@ config I2C_MUX_PCA9541
-> >         will be called i2c-mux-pca9541.
-> >
-> >  config I2C_MUX_PCA954x
-> > -     tristate "NXP PCA954x and PCA984x I2C Mux/switches"
-> > +     tristate "NXP PCA954x/PCA984x and Maxim MAX735x/MAX736x I2C Mux/switches"
-> >       depends on GPIOLIB || COMPILE_TEST
-> >       help
-> >         If you say yes here you get support for the NXP PCA954x
-> > -       and PCA984x I2C mux/switch devices.
-> > +       and PCA984x and Maxim MAX735x/MAX736x I2C mux/switch devices.
->
-> and and and... :-) Maybe like this?
->
->           If you say yes here you get support for NXP PCA954x/PCA984x
->           and Maxim MAX735x/MAX736x I2C mux/switch devices.
->
-> >         This driver can also be built as a module.  If so, the module
-> >         will be called i2c-mux-pca954x.
-> > diff --git a/drivers/i2c/muxes/i2c-mux-pca954x.c b/drivers/i2c/muxes/i2c-mux-pca954x.c
-> > index 4ad665757dd8..33b9a6a1fffa 100644
-> > --- a/drivers/i2c/muxes/i2c-mux-pca954x.c
-> > +++ b/drivers/i2c/muxes/i2c-mux-pca954x.c
-> > @@ -4,6 +4,7 @@
-> >   *
-> >   * Copyright (c) 2008-2009 Rodolfo Giometti <giometti@linux.it>
-> >   * Copyright (c) 2008-2009 Eurotech S.p.A. <info@eurotech.it>
-> > + * Copyright (c) 2022 Patrick Rudolph <patrick.rudolph@9elements.com>
-> >   *
-> >   * This module supports the PCA954x and PCA984x series of I2C multiplexer/switch
-> >   * chips made by NXP Semiconductors.
-> > @@ -11,6 +12,12 @@
-> >   *    PCA9540, PCA9542, PCA9543, PCA9544, PCA9545, PCA9546, PCA9547,
-> >   *    PCA9548, PCA9846, PCA9847, PCA9848 and PCA9849.
-> >   *
-> > + * It's also compatible to Maxims MAX735x I2C switch chips, which are controlled
-> > + * as the NXP PCA9548 and the MAX736x chips that act like the PCA9544.
-> > + *
-> > + * This includes the:
-> > + *    MAX7356, MAX7357, MAX7358, MAX7367, MAX7368 and MAX7369
-> > + *
-> >   * These chips are all controlled via the I2C bus itself, and all have a
-> >   * single 8-bit register. The upstream "parent" bus fans out to two,
-> >   * four, or eight downstream busses or channels; which of these
-> > @@ -50,7 +57,30 @@
-> >
-> >  #define PCA954X_IRQ_OFFSET 4
-> >
-> > +/*
-> > + * MAX7357 exposes 7 registers on POR which allow to configure additional
-> > + * features. Disable interrupts, enable bus locked-up clearing,
-> > + * isolate only the locked channel instead of all channels.
->
-> Same MAX7358 and POR comments as above.
->
-> The way I understands things are:
->
->  * MAX7357/MAX7358 exposes 7 registers which allow setup of
->  * enhanced mode features. The first of these registers is the
->  * switch control register that is present in some form on all
->  * chips supported by this driver.
->  * The second register is the configuration register, which allows
->  * to configure additional features. E.g. disable interrupts,
->  * enable bus locked-up clearing and isolate only the locked
->  * channel instead of all channels.
->  * The remaining 5 registers are left as is by this driver.
->
-> > + */
-> > +#define MAX7357_CONF_INT_ENABLE                      BIT(0)
-> > +#define MAX7357_CONF_FLUSH_OUT                       BIT(1)
-> > +#define MAX7357_CONF_RELEASE_INT             BIT(2)
-> > +#define MAX7357_CONF_LOCK_UP_CLEAR           BIT(3)
-> > +#define MAX7357_CONF_DISCON_SINGLE_CHAN              BIT(4)
-> > +#define MAX7357_CONF_BUS_LOCKUP_DETECTION    BIT(5)
-> > +#define MAX7357_CONF_ENABLE_BASIC_MODE               BIT(6)
-> > +#define MAX7357_CONF_PRECONNECT_TEST         BIT(7)
-> > +
-> > +#define MAX7357_CONF_DEFAULTS (MAX7357_CONF_FLUSH_OUT | \
-> > +      MAX7357_CONF_DISCON_SINGLE_CHAN)
-> > +
-> >  enum pca_type {
-> > +     max_7367,
-> > +     max_7368,
-> > +     max_7369,
-> > +     max_7356,
-> > +     max_7357,
-> > +     max_7358,
-> >       pca_9540,
-> >       pca_9542,
-> >       pca_9543,
-> > @@ -69,6 +99,7 @@ struct chip_desc {
-> >       u8 nchans;
-> >       u8 enable;      /* used for muxes only */
-> >       u8 has_irq;
-> > +     u8 max7357;
->
-> Perhaps maxim_enhanced_mode is a better name?
->
-> >       enum muxtype {
-> >               pca954x_ismux = 0,
-> >               pca954x_isswi
-> > @@ -90,8 +121,42 @@ struct pca954x {
-> >       raw_spinlock_t lock;
-> >  };
-> >
-> > -/* Provide specs for the PCA954x types we know about */
-> > +/* Provide specs for the PCA954x and MAX735x types we know about */
-> >  static const struct chip_desc chips[] = {
-> > +     [max_7356] = {
-> > +             .nchans = 8,
-> > +             .muxtype = pca954x_isswi,
-> > +             .id = { .manufacturer_id = I2C_DEVICE_ID_NONE },
-> > +     },
-> > +     [max_7357] = {
-> > +             .nchans = 8,
-> > +             .muxtype = pca954x_isswi,
-> > +             .max7357 = 1,
-> > +             .id = { .manufacturer_id = I2C_DEVICE_ID_NONE },
-> > +     },
-> > +     [max_7358] = {
-> > +             .nchans = 8,
-> > +             .muxtype = pca954x_isswi,
-> > +             .id = { .manufacturer_id = I2C_DEVICE_ID_NONE },
-> > +     },
-> > +     [max_7367] = {
-> > +             .nchans = 4,
-> > +             .muxtype = pca954x_isswi,
-> > +             .has_irq = 1,
-> > +             .id = { .manufacturer_id = I2C_DEVICE_ID_NONE },
-> > +     },
-> > +     [max_7368] = {
-> > +             .nchans = 4,
-> > +             .muxtype = pca954x_isswi,
-> > +             .id = { .manufacturer_id = I2C_DEVICE_ID_NONE },
-> > +     },
-> > +     [max_7369] = {
-> > +             .nchans = 4,
-> > +             .enable = 0x4,
-> > +             .muxtype = pca954x_ismux,
-> > +             .has_irq = 1,
-> > +             .id = { .manufacturer_id = I2C_DEVICE_ID_NONE },
-> > +     },
-> >       [pca_9540] = {
-> >               .nchans = 2,
-> >               .enable = 0x4,
-> > @@ -177,6 +242,12 @@ static const struct chip_desc chips[] = {
-> >  };
-> >
-> >  static const struct i2c_device_id pca954x_id[] = {
-> > +     { "max7356", max_7356 },
-> > +     { "max7357", max_7357 },
-> > +     { "max7358", max_7358 },
-> > +     { "max7367", max_7367 },
-> > +     { "max7368", max_7368 },
-> > +     { "max7369", max_7369 },
-> >       { "pca9540", pca_9540 },
-> >       { "pca9542", pca_9542 },
-> >       { "pca9543", pca_9543 },
-> > @@ -194,6 +265,12 @@ static const struct i2c_device_id pca954x_id[] = {
-> >  MODULE_DEVICE_TABLE(i2c, pca954x_id);
-> >
-> >  static const struct of_device_id pca954x_of_match[] = {
-> > +     { .compatible = "maxim,max7356", .data = &chips[max_7356] },
-> > +     { .compatible = "maxim,max7357", .data = &chips[max_7357] },
-> > +     { .compatible = "maxim,max7358", .data = &chips[max_7358] },
-> > +     { .compatible = "maxim,max7367", .data = &chips[max_7367] },
-> > +     { .compatible = "maxim,max7368", .data = &chips[max_7368] },
-> > +     { .compatible = "maxim,max7369", .data = &chips[max_7369] },
-> >       { .compatible = "nxp,pca9540", .data = &chips[pca_9540] },
-> >       { .compatible = "nxp,pca9542", .data = &chips[pca_9542] },
-> >       { .compatible = "nxp,pca9543", .data = &chips[pca_9543] },
-> > @@ -401,9 +478,16 @@ static int pca954x_init(struct i2c_client *client, struct pca954x *data)
-> >       else
-> >               data->last_chan = 0; /* Disconnect multiplexer */
-> >
-> > -     ret = i2c_smbus_write_byte(client, data->last_chan);
-> > -     if (ret < 0)
-> > -             data->last_chan = 0;
-> > +     if (data->chip->max7357) {
-> > +             ret = i2c_smbus_write_byte_data(client, data->last_chan,
-> > +                                             MAX7357_CONF_DEFAULTS);
-> > +             if (ret < 0)
-> > +                     data->last_chan = 0;
-> > +     } else {
-> > +             ret = i2c_smbus_write_byte(client, data->last_chan);
-> > +             if (ret < 0)
-> > +                     data->last_chan = 0;
-> > +     }
-> >
-> >       return ret;
-> >  }
->
-> The actual code is simple enough, and looks good.
->
-> Cheers,
-> Peter
+I think it was perfectly correct until you added a couple of newlines
+in the middle of the sentence, then took it out of context. :)
+
+"If INTX is disabled, MSI doesn't work either".
+
+But really, in that case surely the solution is *not* to disable INTX
+for this device. Then MSI will work, right?
+
+--=-uhusbg0yv0QWas8vslyr
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCEkQw
+ggYQMIID+KADAgECAhBNlCwQ1DvglAnFgS06KwZPMA0GCSqGSIb3DQEBDAUAMIGIMQswCQYDVQQG
+EwJVUzETMBEGA1UECBMKTmV3IEplcnNleTEUMBIGA1UEBxMLSmVyc2V5IENpdHkxHjAcBgNVBAoT
+FVRoZSBVU0VSVFJVU1QgTmV0d29yazEuMCwGA1UEAxMlVVNFUlRydXN0IFJTQSBDZXJ0aWZpY2F0
+aW9uIEF1dGhvcml0eTAeFw0xODExMDIwMDAwMDBaFw0zMDEyMzEyMzU5NTlaMIGWMQswCQYDVQQG
+EwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYD
+VQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50
+aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEAyjztlApB/975Rrno1jvm2pK/KxBOqhq8gr2+JhwpKirSzZxQgT9tlC7zl6hn1fXjSo5MqXUf
+ItMltrMaXqcESJuK8dtK56NCSrq4iDKaKq9NxOXFmqXX2zN8HHGjQ2b2Xv0v1L5Nk1MQPKA19xeW
+QcpGEGFUUd0kN+oHox+L9aV1rjfNiCj3bJk6kJaOPabPi2503nn/ITX5e8WfPnGw4VuZ79Khj1YB
+rf24k5Ee1sLTHsLtpiK9OjG4iQRBdq6Z/TlVx/hGAez5h36bBJMxqdHLpdwIUkTqT8se3ed0PewD
+ch/8kHPo5fZl5u1B0ecpq/sDN/5sCG52Ds+QU5O5EwIDAQABo4IBZDCCAWAwHwYDVR0jBBgwFoAU
+U3m/WqorSs9UgOHYm8Cd8rIDZsswHQYDVR0OBBYEFAnA8vwL2pTbX/4r36iZQs/J4K0AMA4GA1Ud
+DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEF
+BQcDBDARBgNVHSAECjAIMAYGBFUdIAAwUAYDVR0fBEkwRzBFoEOgQYY/aHR0cDovL2NybC51c2Vy
+dHJ1c3QuY29tL1VTRVJUcnVzdFJTQUNlcnRpZmljYXRpb25BdXRob3JpdHkuY3JsMHYGCCsGAQUF
+BwEBBGowaDA/BggrBgEFBQcwAoYzaHR0cDovL2NydC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJT
+QUFkZFRydXN0Q0EuY3J0MCUGCCsGAQUFBzABhhlodHRwOi8vb2NzcC51c2VydHJ1c3QuY29tMA0G
+CSqGSIb3DQEBDAUAA4ICAQBBRHUAqznCFfXejpVtMnFojADdF9d6HBA4kMjjsb0XMZHztuOCtKF+
+xswhh2GqkW5JQrM8zVlU+A2VP72Ky2nlRA1GwmIPgou74TZ/XTarHG8zdMSgaDrkVYzz1g3nIVO9
+IHk96VwsacIvBF8JfqIs+8aWH2PfSUrNxP6Ys7U0sZYx4rXD6+cqFq/ZW5BUfClN/rhk2ddQXyn7
+kkmka2RQb9d90nmNHdgKrwfQ49mQ2hWQNDkJJIXwKjYA6VUR/fZUFeCUisdDe/0ABLTI+jheXUV1
+eoYV7lNwNBKpeHdNuO6Aacb533JlfeUHxvBz9OfYWUiXu09sMAviM11Q0DuMZ5760CdO2VnpsXP4
+KxaYIhvqPqUMWqRdWyn7crItNkZeroXaecG03i3mM7dkiPaCkgocBg0EBYsbZDZ8bsG3a08LwEsL
+1Ygz3SBsyECa0waq4hOf/Z85F2w2ZpXfP+w8q4ifwO90SGZZV+HR/Jh6rEaVPDRF/CEGVqR1hiuQ
+OZ1YL5ezMTX0ZSLwrymUE0pwi/KDaiYB15uswgeIAcA6JzPFf9pLkAFFWs1QNyN++niFhsM47qod
+x/PL+5jR87myx5uYdBEQkkDc+lKB1Wct6ucXqm2EmsaQ0M95QjTmy+rDWjkDYdw3Ms6mSWE3Bn7i
+5ZgtwCLXgAIe5W8mybM2JzCCBhQwggT8oAMCAQICEQDGvhmWZ0DEAx0oURL6O6l+MA0GCSqGSIb3
+DQEBCwUAMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYD
+VQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNlY3RpZ28g
+UlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTIyMDEwNzAw
+MDAwMFoXDTI1MDEwNjIzNTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9y
+ZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALQ3GpC2bomUqk+91wLYBzDMcCj5C9m6
+oZaHwvmIdXftOgTbCJXADo6G9T7BBAebw2JV38EINgKpy/ZHh7htyAkWYVoFsFPrwHounto8xTsy
+SSePMiPlmIdQ10BcVSXMUJ3Juu16GlWOnAMJY2oYfEzmE7uT9YgcBqKCo65pTFmOnR/VVbjJk4K2
+xE34GC2nAdUQkPFuyaFisicc6HRMOYXPuF0DuwITEKnjxgNjP+qDrh0db7PAjO1D4d5ftfrsf+kd
+RR4gKVGSk8Tz2WwvtLAroJM4nXjNPIBJNT4w/FWWc/5qPHJy2U+eITZ5LLE5s45mX2oPFknWqxBo
+bQZ8a9dsZ3dSPZBvE9ZrmtFLrVrN4eo1jsXgAp1+p7bkfqd3BgBEmfsYWlBXO8rVXfvPgLs32VdV
+NZxb/CDWPqBsiYv0Hv3HPsz07j5b+/cVoWqyHDKzkaVbxfq/7auNVRmPB3v5SWEsH8xi4Bez2V9U
+KxfYCnqsjp8RaC2/khxKt0A552Eaxnz/4ly/2C7wkwTQnBmdlFYhAflWKQ03Ufiu8t3iBE3VJbc2
+5oMrglj7TRZrmKq3CkbFnX0fyulB+kHimrt6PIWn7kgyl9aelIl6vtbhMA+l0nfrsORMa4kobqQ5
+C5rveVgmcIad67EDa+UqEKy/GltUwlSh6xy+TrK1tzDvAgMBAAGjggHMMIIByDAfBgNVHSMEGDAW
+gBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUzMeDMcimo0oz8o1R1Nver3ZVpSkwDgYD
+VR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYwFAYIKwYBBQUHAwQGCCsGAQUFBwMC
+MEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYBBQUHAgEWF2h0dHBzOi8vc2VjdGln
+by5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9jcmwuc2VjdGlnby5jb20vU2VjdGln
+b1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcmwwgYoGCCsGAQUFBwEB
+BH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdvLmNvbS9TZWN0aWdvUlNBQ2xpZW50
+QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAjBggrBgEFBQcwAYYXaHR0cDovL29j
+c3Auc2VjdGlnby5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5mcmFkZWFkLm9yZzANBgkqhkiG9w0B
+AQsFAAOCAQEAyW6MUir5dm495teKqAQjDJwuFCi35h4xgnQvQ/fzPXmtR9t54rpmI2TfyvcKgOXp
+qa7BGXNFfh1JsqexVkIqZP9uWB2J+uVMD+XZEs/KYNNX2PvIlSPrzIB4Z2wyIGQpaPLlYflrrVFK
+v9CjT2zdqvy2maK7HKOQRt3BiJbVG5lRiwbbygldcALEV9ChWFfgSXvrWDZspnU3Gjw/rMHrGnql
+Htlyebp3pf3fSS9kzQ1FVtVIDrL6eqhTwJxe+pXSMMqFiN0whpBtXdyDjzBtQTaZJ7zTT/vlehc/
+tDuqZwGHm/YJy883Ll+GP3NvOkgaRGWEuYWJJ6hFCkXYjyR9IzCCBhQwggT8oAMCAQICEQDGvhmW
+Z0DEAx0oURL6O6l+MA0GCSqGSIb3DQEBCwUAMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3Jl
+YXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0
+ZWQxPjA8BgNVBAMTNVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJl
+IEVtYWlsIENBMB4XDTIyMDEwNzAwMDAwMFoXDTI1MDEwNjIzNTk1OVowJDEiMCAGCSqGSIb3DQEJ
+ARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALQ3
+GpC2bomUqk+91wLYBzDMcCj5C9m6oZaHwvmIdXftOgTbCJXADo6G9T7BBAebw2JV38EINgKpy/ZH
+h7htyAkWYVoFsFPrwHounto8xTsySSePMiPlmIdQ10BcVSXMUJ3Juu16GlWOnAMJY2oYfEzmE7uT
+9YgcBqKCo65pTFmOnR/VVbjJk4K2xE34GC2nAdUQkPFuyaFisicc6HRMOYXPuF0DuwITEKnjxgNj
+P+qDrh0db7PAjO1D4d5ftfrsf+kdRR4gKVGSk8Tz2WwvtLAroJM4nXjNPIBJNT4w/FWWc/5qPHJy
+2U+eITZ5LLE5s45mX2oPFknWqxBobQZ8a9dsZ3dSPZBvE9ZrmtFLrVrN4eo1jsXgAp1+p7bkfqd3
+BgBEmfsYWlBXO8rVXfvPgLs32VdVNZxb/CDWPqBsiYv0Hv3HPsz07j5b+/cVoWqyHDKzkaVbxfq/
+7auNVRmPB3v5SWEsH8xi4Bez2V9UKxfYCnqsjp8RaC2/khxKt0A552Eaxnz/4ly/2C7wkwTQnBmd
+lFYhAflWKQ03Ufiu8t3iBE3VJbc25oMrglj7TRZrmKq3CkbFnX0fyulB+kHimrt6PIWn7kgyl9ae
+lIl6vtbhMA+l0nfrsORMa4kobqQ5C5rveVgmcIad67EDa+UqEKy/GltUwlSh6xy+TrK1tzDvAgMB
+AAGjggHMMIIByDAfBgNVHSMEGDAWgBQJwPL8C9qU21/+K9+omULPyeCtADAdBgNVHQ4EFgQUzMeD
+Mcimo0oz8o1R1Nver3ZVpSkwDgYDVR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYw
+FAYIKwYBBQUHAwQGCCsGAQUFBwMCMEAGA1UdIAQ5MDcwNQYMKwYBBAGyMQECAQEBMCUwIwYIKwYB
+BQUHAgEWF2h0dHBzOi8vc2VjdGlnby5jb20vQ1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9j
+cmwuc2VjdGlnby5jb20vU2VjdGlnb1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1h
+aWxDQS5jcmwwgYoGCCsGAQUFBwEBBH4wfDBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5zZWN0aWdv
+LmNvbS9TZWN0aWdvUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNydDAj
+BggrBgEFBQcwAYYXaHR0cDovL29jc3Auc2VjdGlnby5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
+cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAyW6MUir5dm495teKqAQjDJwuFCi35h4xgnQv
+Q/fzPXmtR9t54rpmI2TfyvcKgOXpqa7BGXNFfh1JsqexVkIqZP9uWB2J+uVMD+XZEs/KYNNX2PvI
+lSPrzIB4Z2wyIGQpaPLlYflrrVFKv9CjT2zdqvy2maK7HKOQRt3BiJbVG5lRiwbbygldcALEV9Ch
+WFfgSXvrWDZspnU3Gjw/rMHrGnqlHtlyebp3pf3fSS9kzQ1FVtVIDrL6eqhTwJxe+pXSMMqFiN0w
+hpBtXdyDjzBtQTaZJ7zTT/vlehc/tDuqZwGHm/YJy883Ll+GP3NvOkgaRGWEuYWJJ6hFCkXYjyR9
+IzGCBMcwggTDAgEBMIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVz
+dGVyMRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMT
+NVNlY3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA
+xr4ZlmdAxAMdKFES+jupfjANBglghkgBZQMEAgEFAKCCAeswGAYJKoZIhvcNAQkDMQsGCSqGSIb3
+DQEHATAcBgkqhkiG9w0BCQUxDxcNMjIwMzIzMTI0MzQ4WjAvBgkqhkiG9w0BCQQxIgQgLizk56i0
+0/PGQoQt05ZFVpfh3BorCbjU1EU6XnnGxkQwgb0GCSsGAQQBgjcQBDGBrzCBrDCBljELMAkGA1UE
+BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYG
+A1UEChMPU2VjdGlnbyBMaW1pdGVkMT4wPAYDVQQDEzVTZWN0aWdvIFJTQSBDbGllbnQgQXV0aGVu
+dGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIRAMa+GZZnQMQDHShREvo7qX4wgb8GCyqGSIb3
+DQEJEAILMYGvoIGsMIGWMQswCQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVy
+MRAwDgYDVQQHEwdTYWxmb3JkMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxPjA8BgNVBAMTNVNl
+Y3RpZ28gUlNBIENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEAxr4Z
+lmdAxAMdKFES+jupfjANBgkqhkiG9w0BAQEFAASCAgAa0nOCikJnzqKYHUgxof/V9x9eZDwVQXWS
+NEAcn7ieVbk1m9rDhQK4R+jFSyEZkdzJW9I2SZUPgMzxLB5NqdrvMArKtNEdtD0/r4fAeRjn0nKJ
+BuLjsczr+v5NVi0ivqkPQ7arQJ9x5G6vBTt7gu1uXBujkq6hGDjZiaaNz9IYIgb3ASHGWWrPtLCC
+zqht70WkyFRc7yHx9uHvLTcBIbq94hy67VSesRBjA6k6tpght/GoBwg19+Ur+0W0kY8LA3Yc1j8z
+p42H7P9N73wJJHe4/57E77oeKGyGzOPMsH1xG3sCMu8In1hU8a/zLS0ch37D6esBF2T4X2lZ9Frv
+uQ1reN40QNM4SHbgv4GEgFGzG8ACN+Hyd9rKWj1FmRurHxFn1V4vGZbd26V/duKY1Biub7h2YbYd
+/XND1AKSNZGSc6HzbS9kYtNieSCkRDOJSpHI9FEMHkod6+zFjJsjQIiUdUxxRmLoSJ7F2stOYTgA
+Bmy+/aRkUhTp6EuPVCL4OdHyDTg1C8/47qhiHW9HIx/spLzi+uTpbDtQwZx6R0OdIViBP0GRFVDm
+EPlQOebenKNykGmM2o+T2kSp8uV1PNLXWJyxFNNEbjFMsNr7itNd01i8uckJQr+mPz4BnfZqwuSw
+waBRG7yzXwZiX/HVS524EQz7iOPv/YNi+gH5JrrZ9gAAAAAAAA==
+
+
+--=-uhusbg0yv0QWas8vslyr--
+
