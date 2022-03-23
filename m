@@ -2,106 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D4BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 19:56:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34CF5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 19:57:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344452AbiCWT5g (ORCPT
+        id S1344455AbiCWT6v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 15:57:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54992 "EHLO
+        Wed, 23 Mar 2022 15:58:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232629AbiCWT5e (ORCPT
+        with ESMTP id S232629AbiCWT6t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 15:57:34 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 892498BF49
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 12:56:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648065364; x=1679601364;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ce7OYUFrgzrZStoAkM1C5QCjHmLPx7qs2Q9Ms+pJfc4=;
-  b=RNONu0AYRshtFuleK39ZUw6wCoDRjggKeGsQk2CyBJb5qv0IuZLLidmx
-   pgu/QxLu1EjzNWyvY//9LxncjmRpMPOYRFdlwejV4MFVL5fE+dRsKLYg4
-   L3gfkCCGJOWz0RYEOonk9B5Ai8KhAq+IfLwrRsYm/Rr7UpLg9PW3BRNa4
-   G18F1nsTbQ4HJ4F+ZMSdjxP0d5SzkKx1SCnR1y43+f5MzE340wztkbBu+
-   EX/gZDDk/T3w/OBWsddcVRHl2fXMeSyE7tn9TMIbJZvMA0vm9k4Kxkmkj
-   9wsiXx7fruCzvntpYM/kWMVGc5ZmmKRjIfzHxPZehKci6KSw042qqLtKx
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="344647126"
-X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
-   d="scan'208";a="344647126"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 12:56:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
-   d="scan'208";a="649576648"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 23 Mar 2022 12:56:02 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nX75O-000KLw-1S; Wed, 23 Mar 2022 19:56:02 +0000
-Date:   Thu, 24 Mar 2022 03:55:00 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Sven Peter <sven@svenpeter.dev>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [asahilinux:nvme-rfc 6/9] s390-linux-ld: apple.c:undefined reference
- to `apple_rtkit_is_crashed'
-Message-ID: <202203240342.RFvSPhFG-lkp@intel.com>
+        Wed, 23 Mar 2022 15:58:49 -0400
+Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B3C8BF55
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 12:57:19 -0700 (PDT)
+X-isilmar-external: YES
+X-isilmar-external: YES
+Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
+        by isilmar-4.linta.de (Postfix) with ESMTPSA id 1385D2000B1;
+        Wed, 23 Mar 2022 19:57:18 +0000 (UTC)
+Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
+        id 77D52803DB; Wed, 23 Mar 2022 20:51:16 +0100 (CET)
+Date:   Wed, 23 Mar 2022 20:51:16 +0100
+From:   Dominik Brodowski <linux@dominikbrodowski.net>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] random: re-add removed comment about
+ get_random_{u32,u64} reseeding
+Message-ID: <Yjt6NJGromYyAb+/@owl.dominikbrodowski.net>
+References: <20220323042336.148775-1-Jason@zx2c4.com>
+ <Yjt0AX8st/gE00CM@owl.dominikbrodowski.net>
+ <CAHmME9r7+tU6sU80opW-cyw4srsnOpLTsUKUv2Qdfs-DtPYekw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAHmME9r7+tU6sU80opW-cyw4srsnOpLTsUKUv2Qdfs-DtPYekw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/AsahiLinux/linux nvme-rfc
-head:   38f95567a5c591f8d41b2f166fa0e1d2d81eeeb0
-commit: f2339fc0db4ef9cec9e427790a23621744059f4e [6/9] nvme-apple: Add initial Apple SoC NVMe driver
-config: s390-randconfig-c024-20220323 (https://download.01.org/0day-ci/archive/20220324/202203240342.RFvSPhFG-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/AsahiLinux/linux/commit/f2339fc0db4ef9cec9e427790a23621744059f4e
-        git remote add asahilinux https://github.com/AsahiLinux/linux
-        git fetch --no-tags asahilinux nvme-rfc
-        git checkout f2339fc0db4ef9cec9e427790a23621744059f4e
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=s390 SHELL=/bin/bash
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Am Wed, Mar 23, 2022 at 01:45:22PM -0600 schrieb Jason A. Donenfeld:
+> Hi Dominik,
+> 
+> Good point; might as well take this opportunity to firm up that
+> wording. How about:
+> 
+> "... and do not invoke reseeding until the buffer is emptied."
 
-All errors (new ones prefixed by >>):
+Yes, that sounds better. Though "integer family of functions" still sounds a
+bit ambiguous.
 
-   s390-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_sart_dma_destroy':
-   apple.c:(.text+0x4e6): undefined reference to `apple_sart_remove_allowed_region'
-   s390-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_sart_dma_setup':
-   apple.c:(.text+0x66a): undefined reference to `apple_sart_add_allowed_region'
-   s390-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_disable':
-   apple.c:(.text+0x2cee): undefined reference to `apple_rtkit_is_crashed'
->> s390-linux-ld: apple.c:(.text+0x2d7e): undefined reference to `apple_rtkit_is_crashed'
-   s390-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_shutdown':
-   apple.c:(.text+0x30d4): undefined reference to `apple_rtkit_is_running'
->> s390-linux-ld: apple.c:(.text+0x310c): undefined reference to `apple_rtkit_shutdown'
-   s390-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_remove':
-   apple.c:(.text+0x31d0): undefined reference to `apple_rtkit_is_running'
-   s390-linux-ld: apple.c:(.text+0x3202): undefined reference to `apple_rtkit_shutdown'
-   s390-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_reset_work':
-   apple.c:(.text+0x331a): undefined reference to `apple_rtkit_is_crashed'
->> s390-linux-ld: apple.c:(.text+0x334c): undefined reference to `apple_rtkit_is_running'
-   s390-linux-ld: apple.c:(.text+0x33a4): undefined reference to `apple_rtkit_shutdown'
->> s390-linux-ld: apple.c:(.text+0x343c): undefined reference to `apple_rtkit_reinit'
->> s390-linux-ld: apple.c:(.text+0x34be): undefined reference to `apple_rtkit_boot'
-   s390-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_timeout':
-   apple.c:(.text+0x40de): undefined reference to `apple_rtkit_is_crashed'
-   s390-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_probe':
-   apple.c:(.text+0x4552): undefined reference to `apple_sart_get'
->> s390-linux-ld: apple.c:(.text+0x4bd0): undefined reference to `devm_apple_rtkit_init'
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+	Dominik
