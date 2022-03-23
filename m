@@ -2,121 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67617C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 12:10:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F25DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 12:10:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237999AbiCWMLs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 08:11:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41836 "EHLO
+        id S231512AbiCWML7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 08:11:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234249AbiCWMLr (ORCPT
+        with ESMTP id S236449AbiCWMLs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 08:11:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE74739162;
-        Wed, 23 Mar 2022 05:10:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FFC7614DD;
-        Wed, 23 Mar 2022 12:10:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 338B1C340E8;
-        Wed, 23 Mar 2022 12:10:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648037416;
-        bh=vbcI4mero0N/bJWLX90aYg9H0pV4+j0AozrkgOJahHY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JEITn10iUJpImQkt/uXRjniHYZUsd6BAzcy643WWTVYjsTo6LxFwUOnlQRwy8OBWs
-         w+4D6eknX4FOtFXmSAea1GdGlwv0HFpq0K1HD3cALlwlnsouh+AQX8r/I0wsJUGDxp
-         8BIw8b8ZDdFDNkobUgmmMF3gItUrnC9A2s0QrNjQKU2xQ8hD+mT9YeZ/822MKbVIln
-         cCPNK2h+QBEWIOYkWi/kUDqmg9dWlU6ayXMjSlhvOuiqzrp6L1J0sK1ZBwiBEV5Emi
-         f97DvFO2X4mz0npZGdc9uAPrqNl/o/+geIXj5acz32k1eHUYV1tvby8dwPUkZicHfI
-         XSuP6rifB8qRg==
-Date:   Wed, 23 Mar 2022 12:10:06 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-arch@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>,
-        Nick Hu <nickhu@andestech.com>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Michal Simek <monstr@monstr.eu>,
-        Borislav Petkov <bp@alien8.de>, Guo Ren <guoren@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Joshua Kinard <kumba@gentoo.org>,
-        David Laight <David.Laight@aculab.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Eric Biggers <ebiggers@google.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Lennart Poettering <mzxreary@0pointer.de>,
-        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Theodore Ts'o <tytso@mit.edu>
-Subject: Re: [PATCH v1] random: block in /dev/urandom
-Message-ID: <YjsOHmvDgAxwLFMg@sirena.org.uk>
-References: <20220217162848.303601-1-Jason@zx2c4.com>
- <20220322155820.GA1745955@roeck-us.net>
- <YjoUU+8zrzB02pW7@sirena.org.uk>
- <0d20fb04-81b8-eeee-49ab-5b0a9e78c9f8@roeck-us.net>
+        Wed, 23 Mar 2022 08:11:48 -0400
+Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C42623983D;
+        Wed, 23 Mar 2022 05:10:18 -0700 (PDT)
+HMM_SOURCE_IP: 172.18.0.48:39292.1744386625
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-202.80.192.38 (unknown [172.18.0.48])
+        by chinatelecom.cn (HERMES) with SMTP id 5D1EF280091;
+        Wed, 23 Mar 2022 20:10:11 +0800 (CST)
+X-189-SAVE-TO-SEND: +sunshouxin@chinatelecom.cn
+Received: from  ([172.18.0.48])
+        by app0024 with ESMTP id b50bb167c0cd45d59b86a04e4d195a3f for j.vosburgh@gmail.com;
+        Wed, 23 Mar 2022 20:10:16 CST
+X-Transaction-ID: b50bb167c0cd45d59b86a04e4d195a3f
+X-Real-From: sunshouxin@chinatelecom.cn
+X-Receive-IP: 172.18.0.48
+X-MEDUSA-Status: 0
+Sender: sunshouxin@chinatelecom.cn
+From:   Sun Shouxin <sunshouxin@chinatelecom.cn>
+To:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, oliver@neukum.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        huyd12@chinatelecom.cn, sunshouxin@chinatelecom.cn
+Subject: [PATCH v6 0/4] Add support for IPV6 RLB to balance-alb mode
+Date:   Wed, 23 Mar 2022 08:09:02 -0400
+Message-Id: <20220323120906.42692-1-sunshouxin@chinatelecom.cn>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="tJxr+BfuLW0D7ewQ"
-Content-Disposition: inline
-In-Reply-To: <0d20fb04-81b8-eeee-49ab-5b0a9e78c9f8@roeck-us.net>
-X-Cookie: Nice guys get sick.
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This patch is implementing IPV6 RLB for balance-alb mode.
 
---tJxr+BfuLW0D7ewQ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Sun Shouxin (4):
+  net:ipv6:Add void *data to ndisc_send_na function
+  net:ipv6:Refactor ndisc_send_na to support sending na by slave
+    directly
+  net:ipv6:Export inet6_ifa_finish_destroy and ipv6_get_ifaddr
+  net:bonding:Add support for IPV6 RLB to balance-alb mode
 
-On Tue, Mar 22, 2022 at 02:54:20PM -0700, Guenter Roeck wrote:
-> On 3/22/22 11:24, Mark Brown wrote:
+ drivers/net/bonding/bond_3ad.c     |   2 +-
+ drivers/net/bonding/bond_alb.c     | 612 ++++++++++++++++++++++++++++-
+ drivers/net/bonding/bond_debugfs.c |  14 +
+ drivers/net/bonding/bond_main.c    |   6 +-
+ drivers/net/usb/cdc_mbim.c         |   3 +-
+ include/net/bond_3ad.h             |   2 +-
+ include/net/bond_alb.h             |   7 +
+ include/net/bonding.h              |   6 +-
+ include/net/ipv6_stubs.h           |   3 +-
+ include/net/ndisc.h                |   9 +-
+ net/ipv6/addrconf.c                |   4 +-
+ net/ipv6/ndisc.c                   |  64 ++-
+ 12 files changed, 696 insertions(+), 36 deletions(-)
 
-> > Just as a datapoint for debugging at least qemu/arm is getting coverage
-> > in CI systems (KernelCI is covering a bunch of different emulated
-> > machines and LKFT has at least one configuration as well, clang's tests
-> > have some wider architecture coverage as well I think) and they don't
-> > seem to be seeing any problems - there's some other variable in there.
 
-> I use buildroot 2021.02.3. I have not changed the buildroot code, and it
-> still seems to be the same in 2022.02. I don't see the problem with all
-> boot tests, only with the architectures mentioned above, and not with all
-> qemu machines on the affected platforms. For arm, mostly older machines
-> are affected (versatile, realview, pxa configurations, collie, integratorcp,
-> sx1, mps2-an385, vexpress-a9, cubieboard). I didn't check, but maybe
-> kernelci doesn't test those machines ?
+base-commit: 2af7e566a8616c278e1d7287ce86cd3900bed943
+-- 
+2.27.0
 
-Kind of academic given that Jason seems to have a handle on what the
-issues are but for KernelCI it's variations on mach-virt, plus
-versatile-pb.  There's a physical cubietruck as well, and BeagleBone
-Blacks among others.  My best guess would be systems with low RAM are
-somehow more prone to issues.
-
---tJxr+BfuLW0D7ewQ
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmI7Dh0ACgkQJNaLcl1U
-h9BcKgf9GIwAeN+f0WgtlSoiS81pYIPqyjQ+X1zRuvJIR7xCVZq+sYQ27js719v2
-oES8pLcPkyjZHNziBmIDbpiNeKJWWbYlxxXdyyW5sTe+GzEUzh/+MVxLeGUDF1Qx
-rpZYsiZ/NybofrWfkOwDmm/R5tTn2JgJFZaRHtMeUn67ElJPNu107LsgeDVujePG
-Pywun/VDDjcC5scInU3cbhzRoo2ipY8/nwAxPcM6fddMqgaymdFrC5wU8+ihxGsc
-55rSw4QnKKPRpX8CGjc4wSmYXax1OsLc5Lsh9FQHf9EqVs46ZsJHwd6FntTpIht2
-fiOwR2pk7XiyL1tJEsCZyQfE4vAmBw==
-=b+8U
------END PGP SIGNATURE-----
-
---tJxr+BfuLW0D7ewQ--
