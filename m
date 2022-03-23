@@ -2,104 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34A81C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 01:35:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2294C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 01:36:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239332AbiCWBhJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 21:37:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39426 "EHLO
+        id S239884AbiCWBiJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 21:38:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233466AbiCWBhI (ORCPT
+        with ESMTP id S231437AbiCWBiH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 21:37:08 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9CC98E0A1
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 18:35:38 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-314-XHEmaLmFMKCfa60oSAy2oA-1; Wed, 23 Mar 2022 01:35:34 +0000
-X-MC-Unique: XHEmaLmFMKCfa60oSAy2oA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Wed, 23 Mar 2022 01:35:34 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Wed, 23 Mar 2022 01:35:34 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Arnd Bergmann' <arnd@arndb.de>,
-        "chenjiahao (C)" <chenjiahao16@huawei.com>
-CC:     "Eric W . Biederman" <ebiederm@xmission.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Stafford Horne <shorne@gmail.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        Linux FS-devel Mailing List <linux-fsdevel@vger.kernel.org>,
-        the arch/x86 maintainers <x86@kernel.org>
-Subject: RE: [PATCH -next] uaccess: fix __access_ok limit setup in compat mode
-Thread-Topic: [PATCH -next] uaccess: fix __access_ok limit setup in compat
- mode
-Thread-Index: AQHYPfsecjlH4Ezf4kOvHM6pPLYCHKzMKolw
-Date:   Wed, 23 Mar 2022 01:35:34 +0000
-Message-ID: <bdebdcb56b8a4af8a6b1d22029a2e7ba@AcuMS.aculab.com>
-References: <20220318071130.163942-1-chenjiahao16@huawei.com>
- <CAK8P3a3==vLKZUOceuMh3X1U5_sN82Vpm8J_3P-H-+q3sKKMxg@mail.gmail.com>
- <88ff36b3-558b-9c3f-f21d-5ef05b3227c5@huawei.com>
- <CAK8P3a3_iZihNmgRNz7Ntrp8sj0hB_Yrpu5iT++ivMjsUXH7+w@mail.gmail.com>
-In-Reply-To: <CAK8P3a3_iZihNmgRNz7Ntrp8sj0hB_Yrpu5iT++ivMjsUXH7+w@mail.gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Tue, 22 Mar 2022 21:38:07 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD24E0A1
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 18:36:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647999399; x=1679535399;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=cQpekluwhCWc9KzNGMvCnwOeeeIoAMB+K1ml90maMxo=;
+  b=IlRw23pquAiePn6yC4oiogxh8RAXrTEya6gthqtkpR8YWm6x8C7+2E+i
+   V4n+4fatuY38euiMhyrXwBlld96+26LuC6i8vKBzPthyMAMDv6B2qchZY
+   tw0x4RwEORkUIEqZGKvgBgvJVLor39JttM6LsAsE8WLdvSaedQpf8PYRj
+   X+QOBhhAW050b9JgDoMi6hoa7iNVps4EpsTV0hDIi05u8vX+u99HQrw+D
+   pAXzkywQPZ7klJfCtxGUvyBXY2QXCQlht2yf9nychOPIdKorbvzSWFhou
+   sKwiqodIW/hUK7q373WKWUJZsNUN/7aknndSjhnJTEWYv3xL2pQNwCnSM
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10294"; a="256819810"
+X-IronPort-AV: E=Sophos;i="5.90,203,1643702400"; 
+   d="scan'208";a="256819810"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2022 18:36:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,203,1643702400"; 
+   d="scan'208";a="519159730"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 22 Mar 2022 18:36:37 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nWpvQ-000JV8-NJ; Wed, 23 Mar 2022 01:36:36 +0000
+Date:   Wed, 23 Mar 2022 09:35:52 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Colin Downs-Razouk <colindr@google.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Chris Morin <cmtm@google.com>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android12-kiwi-5.10
+ 9930/9999] drivers/virtio/virtio_pvclock.c:49:6: warning: no previous
+ prototype for 'update_suspend_time'
+Message-ID: <202203230942.D777cOW6-lkp@intel.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogQXJuZCBCZXJnbWFubg0KPiBTZW50OiAyMiBNYXJjaCAyMDIyIDE0OjQxDQo+IA0KPiBP
-biBUdWUsIE1hciAyMiwgMjAyMiBhdCAxOjU1IFBNIGNoZW5qaWFoYW8gKEMpIDxjaGVuamlhaGFv
-MTZAaHVhd2VpLmNvbT4gd3JvdGU6DQo+ID4g5ZyoIDIwMjIvMy8xOCAxNTo0NCwgQXJuZCBCZXJn
-bWFubiDlhpnpgZM6DQo+ID4gPg0KPiA+ID4gVGhpcyBzaG91bGQgbm90IHJlc3VsdCBpbiBhbnkg
-dXNlciB2aXNpYmxlIGRpZmZlcmVuY2UsIGluIGJvdGggY2FzZXMNCj4gPiA+IHVzZXIgcHJvY2Vz
-cyB3aWxsIHNlZSBhIC1FRkFVTFQgcmV0dXJuIGNvZGUgZnJvbSBpdHMgc3lzdGVtIGNhbGwuDQo+
-ID4gPiBBcmUgeW91IGFibGUgdG8gY29tZSB1cCB3aXRoIGEgdGVzdCBjYXNlIHRoYXQgc2hvd3Mg
-YW4gb2JzZXJ2YWJsZQ0KPiA+ID4gZGlmZmVyZW5jZSBpbiBiZWhhdmlvcj8NCj4gPg0KPiA+IEFj
-dHVhbGx5LCB0aGlzIHBhdGNoIGRvIGNvbWVzIGZyb20gYSB0ZXN0Y2FzZSBmYWlsdXJlLCB0aGUg
-Y29kZSBpcw0KPiA+IHBhc3RlZCBiZWxvdzoNCj4gDQo+IFRoYW5rIHlvdSBmb3IgdGhlIHRlc3Qg
-Y2FzZSENCj4gDQouLi4NCj4gPiAgICAgIHJldCA9IHByZWFkNjQoZmQsIGJ1ZiwgLTEsIDEpOw0K
-PiA+ICAgICAgaWYoKC0xID09IHJldCkgJiYgKEVGQVVMVCA9PSBlcnJubykpDQo+ID4gICAgICB7
-DQouLi4NCj4gPiAgICAgICAgICBwcmludGYoIlBBU1NcbiIpOw0KLi4uDQo+ID4gSW4gbXkgZXhw
-bGFuYXRpb24sIHByZWFkNjQgaXMgY2FsbGVkIHdpdGggY291bnQgJzB4ZmZmZmZmZmZ1bGwnIGFu
-ZA0KPiA+IG9mZnNldCAnMScsIHdoaWNoIG1pZ2h0IHN0aWxsIG5vdCB0cmlnZ2VyDQo+ID4NCj4g
-PiBwYWdlIGZhdWx0IGluIDY0LWJpdCBrZXJuZWwuDQo+ID4NCj4gPg0KPiA+IFRoaXMgcGF0Y2gg
-dXNlcyBUQVNLX1NJWkUgYXMgdGhlIGFkZHJfbGltaXQgdG8gcGVyZm9ybWFuY2UgYSBzdHJpY3Rl
-cg0KPiA+IGFkZHJlc3MgY2hlY2sgYW5kIGludGVyY2VwdHMNCj4gDQo+IEkgc2VlLiBTbyB3aGls
-ZSB0aGUga2VybmVsIGJlaGF2aW9yIHdhcyBub3QgbWVhbnQgdG8gY2hhbmdlIGZyb20NCj4gbXkg
-cGF0Y2gsIGl0IGNsZWFybHkgZGlkLCB3aGljaCBtYXkgY2F1c2UgcHJvYmxlbXMuIEhvd2V2ZXIs
-IEknbQ0KPiBub3Qgc3VyZSBpZiB0aGUgY2hhbmdlZCBiZWhhdmlvciBpcyBhY3R1YWxseSB3cm9u
-Zy4NCg0KSXQgaXNuJ3QgcmVhbGx5IGFueSBkaWZmZXJlbnQgZnJvbSBwYXNzaW5nIGEgbGVuZ3Ro
-IG9mICgxIDw8IDMwKQ0KKGFuZCBhIGJ1ZmZlciBhdCBhIGxvdyB1c2VyIGFkZHJlc3MpLg0KVGhl
-IGVudGlyZSBidWZmZXIgaXMgdmFsaWQgdXNlciBhZGRyZXNzZXMsIGJ1dCBtb3N0IG9mIGl0IGlz
-DQppbnZhbGlkIGJlY2F1c2UgdGhlcmUgaXMgbm90aGluZyBtYXBwZWQgYXQgdGhlIHJlbGV2YW50
-IGFkZHJlc3Nlcy4NClVubGVzcyB5b3UgYWN0dWFsbHkgdHJ5IHRvIGFjY2VzcyBvbmUgb2YgdGhl
-IG1lbW9yeSBsb2NhdGlvbnMNCnlvdSB3b24ndCBnZXQgYSBmYXVsdCAtIGFuZCB0aGUgY29ycmVj
-dCByZXR1cm4gaXMgdGhlbiBhIHBhcnRpYWwgcmVhZC4NCg0KU2ltaWxhcmx5IGl0IGlzIHZhbGlk
-IGZvciB0aGUga2VybmVsIHRvIGVuc3VyZSB0aGVyZSBpcyBhbg0KdW5tYXBwZWQgcGFnZSBiZXR3
-ZWVuIHVzZXIgYW5kIGtlcm5lbCBhZGRyZXNzZXMgYW5kIHRoZW4NCm5vdCBjaGVjayB0aGUgYnVm
-ZmVyIHNpemUgYXQgYWxsIC0gcmVxdWlyaW5nIHRoZSBrZXJuZWwgY29kZQ0KZG8gKGFkZXF1YXRl
-bHkpIHNlcXVlbnRpYWwgYWNjZXNzZXMuDQpBZ2FpbiB5b3VyIHRlc3QgJ2ZhaWxzJy4NCg0KWW91
-IGNvdWxkIGVxdWFsbHkgd2VsbCBhcmd1ZSB0aGF0IHRoZSAnb2xkJyBiZWhhdmlvdXIgaXMgd3Jv
-bmchDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkg
-Um9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlv
-biBObzogMTM5NzM4NiAoV2FsZXMpDQo=
+Hi Colin,
 
+FYI, the error/warning still remains.
+
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-kiwi-5.10
+head:   37d518ce65952e985a207fcb558e16e3288cd139
+commit: 029865ac9555743665dd106b4bbefb2f371849e9 [9930/9999] ANDROID: virtio: virtio_pvclock: initial driver impl
+config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220323/202203230942.D777cOW6-lkp@intel.com/config)
+compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
+reproduce (this is a W=1 build):
+        # https://github.com/ammarfaizi2/linux-block/commit/029865ac9555743665dd106b4bbefb2f371849e9
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-kiwi-5.10
+        git checkout 029865ac9555743665dd106b4bbefb2f371849e9
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/virtio/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/virtio/virtio_pvclock.c:49:6: warning: no previous prototype for 'update_suspend_time' [-Wmissing-prototypes]
+      49 | void update_suspend_time(struct work_struct *work)
+         |      ^~~~~~~~~~~~~~~~~~~
+   drivers/virtio/virtio_pvclock.c: In function 'virtpvclock_validate':
+>> drivers/virtio/virtio_pvclock.c:295:2: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+     295 |  uint32_t rating =
+         |  ^~~~~~~~
+
+
+vim +/update_suspend_time +49 drivers/virtio/virtio_pvclock.c
+
+    48	
+  > 49	void update_suspend_time(struct work_struct *work)
+    50	{
+    51		u64 suspend_ns, suspend_time_delta = 0;
+    52		struct timespec64 inject_time;
+    53		struct virtio_pvclock *vp;
+    54	
+    55		vp = container_of(work, struct virtio_pvclock,
+    56				  update_suspend_time_work);
+    57	
+    58		virtio_cread(vp->vdev, struct virtio_pvclock_config, suspend_time_ns,
+    59			     &suspend_ns);
+    60	
+    61		mutex_lock(&vp->inject_suspend_lock);
+    62		if (suspend_ns > vp->injected_suspend_ns) {
+    63			suspend_time_delta = suspend_ns - vp->injected_suspend_ns;
+    64			vp->injected_suspend_ns = suspend_ns;
+    65		}
+    66		mutex_unlock(&vp->inject_suspend_lock);
+    67	
+    68		if (suspend_time_delta == 0) {
+    69			dev_err(&vp->vdev->dev,
+    70				"%s: suspend_time_ns is less than injected_suspend_ns\n",
+    71				__func__);
+    72			return;
+    73		}
+    74	
+    75		inject_time = ns_to_timespec64(suspend_time_delta);
+    76	
+    77		timekeeping_inject_sleeptime64(&inject_time);
+    78	
+    79		dev_info(&vp->vdev->dev, "injected sleeptime: %llu ns\n",
+    80			 suspend_time_delta);
+    81	}
+    82	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
