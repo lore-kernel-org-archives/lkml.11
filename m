@@ -2,67 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 190D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 03:32:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48766C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 03:35:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241527AbiCWDd1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 23:33:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43892 "EHLO
+        id S241536AbiCWDgw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 23:36:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239206AbiCWDdZ (ORCPT
+        with ESMTP id S236272AbiCWDgt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 23:33:25 -0400
-Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 104687004C;
-        Tue, 22 Mar 2022 20:31:56 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
- (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 23 Mar
- 2022 11:31:54 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Wed, 23 Mar
- 2022 11:31:54 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     <santoshkumar.yadav@barco.com>, <peter.korsgaard@barco.com>,
-        <hdegoede@redhat.com>, <markgross@kernel.org>
-CC:     <platform-driver-x86@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Haowen Bai <baihaowen@meizu.com>
-Subject: [PATCH] platform/x86: barco-p50-gpio: Fix duplicate included inux/io.h
-Date:   Wed, 23 Mar 2022 11:31:52 +0800
-Message-ID: <1648006312-29460-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 22 Mar 2022 23:36:49 -0400
+Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 788FF7087E;
+        Tue, 22 Mar 2022 20:35:19 -0700 (PDT)
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
+        id 1nWrmB-0003Nm-JV; Wed, 23 Mar 2022 14:35:12 +1100
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Wed, 23 Mar 2022 15:35:10 +1200
+Date:   Wed, 23 Mar 2022 15:35:10 +1200
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Guenter Roeck <linux@roeck-us.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Cc:     Harsha <harsha.harsha@xilinx.com>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH] cacheflush.h: Add forward declaration for struct folio
+Message-ID: <YjqVblTmjNYl3Zjc@gondor.apana.org.au>
+References: <Yigc4cQlTJRRZsQg@gondor.apana.org.au>
+ <20220322131327.GA747088@roeck-us.net>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220322131327.GA747088@roeck-us.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clean up the following includecheck warning:
+On Tue, Mar 22, 2022 at 06:13:27AM -0700, Guenter Roeck wrote:
+> On Wed, Mar 09, 2022 at 03:20:01PM +1200, Herbert Xu wrote:
+> > This patch turns the new SHA driver into a tristate and also allows
+> > compile testing.
+> > 
+> > Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+> 
+> This results in:
+> 
+> Building s390:allmodconfig ... failed
+> --------------
+> Error log:
+> In file included from drivers/crypto/xilinx/zynqmp-sha.c:6:
+> include/linux/cacheflush.h:12:46: error: 'struct folio' declared inside parameter list will not be visible outside of this definition or declaration [-Werror]
+>    12 | static inline void flush_dcache_folio(struct folio *folio)
 
-drivers/platform/x86/barco-p50-gpio.c: linux/io.h is included more than once.
+This should be fixed in cacheflush.h:
 
-No functional change.
+---8<---
+The struct folio is not declared in cacheflush.h so we need to
+provide a forward declaration as otherwise users of this header
+file may get warnings.
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
----
- drivers/platform/x86/barco-p50-gpio.c | 1 -
- 1 file changed, 1 deletion(-)
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Fixes: 522a0032af00 ("Add linux/cacheflush.h")
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 
-diff --git a/drivers/platform/x86/barco-p50-gpio.c b/drivers/platform/x86/barco-p50-gpio.c
-index f5c72e3..bb8ed8e 100644
---- a/drivers/platform/x86/barco-p50-gpio.c
-+++ b/drivers/platform/x86/barco-p50-gpio.c
-@@ -14,7 +14,6 @@
- #include <linux/delay.h>
- #include <linux/dmi.h>
- #include <linux/err.h>
--#include <linux/io.h>
- #include <linux/kernel.h>
- #include <linux/leds.h>
- #include <linux/module.h>
+diff --git a/include/linux/cacheflush.h b/include/linux/cacheflush.h
+index fef8b607f97e..a6189d21f2ba 100644
+--- a/include/linux/cacheflush.h
++++ b/include/linux/cacheflush.h
+@@ -4,6 +4,8 @@
+ 
+ #include <asm/cacheflush.h>
+ 
++struct folio;
++
+ #if ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE
+ #ifndef ARCH_IMPLEMENTS_FLUSH_DCACHE_FOLIO
+ void flush_dcache_folio(struct folio *folio);
 -- 
-2.7.4
-
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
