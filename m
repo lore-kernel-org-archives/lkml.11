@@ -2,152 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2270CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 20:15:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89F6AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 20:16:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344606AbiCWUQ5 (ORCPT
+        id S1344593AbiCWURv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 16:16:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46146 "EHLO
+        Wed, 23 Mar 2022 16:17:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344593AbiCWUQz (ORCPT
+        with ESMTP id S235510AbiCWURt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 16:16:55 -0400
-Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F41E635F
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 13:15:24 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:51338)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nX7O5-00C9y8-PK; Wed, 23 Mar 2022 14:15:21 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:35234 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nX7O3-007wcm-Eh; Wed, 23 Mar 2022 14:15:21 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Christian Brauner <christian.brauner@ubuntu.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alexey Gladkov <legion@kernel.org>,
-        William Cohen <wcohen@redhat.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        Chris Hyser <chris.hyser@oracle.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Xiaofeng Cao <caoxiaofeng@yulong.com>,
-        David Hildenbrand <david@redhat.com>,
-        Cyrill Gorcunov <gorcunov@gmail.com>,
-        linux-kernel@vger.kernel.org, Barret Rhoden <brho@google.com>
-References: <20220106172041.522167-1-brho@google.com>
-Date:   Wed, 23 Mar 2022 15:14:47 -0500
-In-Reply-To: <20220106172041.522167-1-brho@google.com> (Barret Rhoden's
-        message of "Thu, 6 Jan 2022 12:20:38 -0500")
-Message-ID: <87ee2sfmtk.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Wed, 23 Mar 2022 16:17:49 -0400
+X-Greylist: delayed 1423 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 23 Mar 2022 13:16:19 PDT
+Received: from gateway24.websitewelcome.com (gateway24.websitewelcome.com [192.185.51.110])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EDEE89CEE
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 13:16:19 -0700 (PDT)
+Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
+        by gateway24.websitewelcome.com (Postfix) with ESMTP id E46C478F39
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 14:52:35 -0500 (CDT)
+Received: from gator4132.hostgator.com ([192.185.4.144])
+        by cmsmtp with SMTP
+        id X723nmdIGRnrrX723n6m9I; Wed, 23 Mar 2022 14:52:35 -0500
+X-Authority-Reason: nr=8
+Received: from host-79-43-204-123.retail.telecomitalia.it ([79.43.204.123]:49864 helo=[10.0.0.45])
+        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <bristot@kernel.org>)
+        id 1nX723-0030od-2h; Wed, 23 Mar 2022 14:52:35 -0500
+Message-ID: <42ced9a2-f5ee-4793-683b-41c946835336@kernel.org>
+Date:   Wed, 23 Mar 2022 20:52:32 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nX7O3-007wcm-Eh;;;mid=<87ee2sfmtk.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX1/0zu18wbzoYY0CsriBmgu8B4tvqqWIehM=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: [GIT PULL] prlimit and set/getpriority tasklist_lock optimizations
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [GIT PULL] tracing/rtla: Updates to the RTLA tool
+Content-Language: en-US
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+References: <20220321103035.564a1df5@gandalf.local.home>
+ <CAHk-=whxmA86E=csNv76DuxX_wYsg8mW15oUs3XTabu2Yc80yw@mail.gmail.com>
+ <20220323154300.0be32927@gandalf.local.home>
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+In-Reply-To: <20220323154300.0be32927@gandalf.local.home>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - kernel.org
+X-BWhitelist: no
+X-Source-IP: 79.43.204.123
+X-Source-L: No
+X-Exim-ID: 1nX723-0030od-2h
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: host-79-43-204-123.retail.telecomitalia.it ([10.0.0.45]) [79.43.204.123]:49864
+X-Source-Auth: kernel@bristot.me
+X-Email-Count: 8
+X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
+X-Local-Domain: no
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 3/23/22 20:43, Steven Rostedt wrote:
+>> That said, mentioning the perf tools, I wish the tracing tools would
+>> do a bit more package checking and helpful error messages too, rather
+>> than just fail with
+>>
+>>     fatal error: tracefs.h: No such file or directory
+>>
+>> when (presumably) libtracefs and friends are needed.
+> Yes exactly.
+> 
+> Daniel, care to update the Makefile to check for libtracefs and friends and
+> give a more informative message when it fails?
+> 
+> You can look at the trace-cmd Makefile that does so.
 
-Linus,
+Working on that!
 
-Please pull the prlimit-tasklist_lock-for-v5.18 tag from the git tree:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.git prlimit-tasklist_lock-for-v5.18
-
-  HEAD: 18c91bb2d87268d23868bf13508f5bc9cf04e89a prlimit: do not grab the tasklist_lock
-
-From: Barret Rhoden <brho@google.com>
-
-The tasklist_lock popped up as a scalability bottleneck on some testing
-workloads.  The readlocks in do_prlimit and set/getpriority are not
-necessary in all cases.
-
-Based on a cycles profile, it looked like ~87% of the time was spent in
-the kernel, ~42% of which was just trying to get *some* spinlock
-(queued_spin_lock_slowpath, not necessarily the tasklist_lock).
-
-The big offenders (with rough percentages in cycles of the overall trace):
-
-- do_wait 11%
-- setpriority 8% (this patchset)
-- kill 8%
-- do_exit 5%
-- clone 3%
-- prlimit64 2%   (this patchset)
-- getrlimit 1%   (this patchset)
-
-I can't easily test this patchset on the original workload for various
-reasons.  Instead, I used the microbenchmark below to at least verify
-there was some improvement.  This patchset had a 28% speedup (12% from
-baseline to set/getprio, then another 14% for prlimit).
-
-One interesting thing is that my libc's getrlimit() was calling
-prlimit64, so hoisting the read_lock(tasklist_lock) into sys_prlimit64
-had no effect - it essentially optimized the older syscalls only.  I
-didn't do that in this patchset, but figured I'd mention it since it was
-an option from the previous patch's discussion.
-
-v3: https://lkml.kernel.org/r/20220106172041.522167-1-brho@google.com
-v2: https://lore.kernel.org/lkml/20220105212828.197013-1-brho@google.com/
-- update_rlimit_cpu on the group_leader instead of for_each_thread.
-- update_rlimit_cpu still returns 0 or -ESRCH, even though we don't care
-  about the error here.  it felt safer that way in case someone uses
-  that function again.
-
-v1: https://lore.kernel.org/lkml/20211213220401.1039578-1-brho@google.com/
-
-int main(int argc, char **argv)
-{
-        pid_t child;
-        struct rlimit rlim[1];
-
-        fork(); fork(); fork(); fork(); fork(); fork();
-
-        for (int i = 0; i < 5000; i++) {
-                child = fork();
-                if (child < 0)
-                        exit(1);
-                if (child > 0) {
-                        usleep(1000);
-                        kill(child, SIGTERM);
-                        waitpid(child, NULL, 0);
-                } else {
-                        for (;;) {
-                                setpriority(PRIO_PROCESS, 0,
-                                            getpriority(PRIO_PROCESS, 0));
-                                getrlimit(RLIMIT_CPU, rlim);
-                        }
-                }
-        }
-
-        return 0;
-}
-
-Barret Rhoden (3):
-  setpriority: only grab the tasklist_lock for PRIO_PGRP
-  prlimit: make do_prlimit() static
-  prlimit: do not grab the tasklist_lock
-
- include/linux/posix-timers.h   |   2 +-
- include/linux/resource.h       |   2 -
- kernel/sys.c                   | 127 +++++++++++++++++----------------
- kernel/time/posix-cpu-timers.c |  12 +++-
- 4 files changed, 76 insertions(+), 67 deletions(-)
-
-I have dropped the first change in this series as an almost identical
-change was merged as commit 7f8ca0edfe07 ("kernel/sys.c: only take
-tasklist_lock for get/setpriority(PRIO_PGRP)"). -- EWB
-
-Signed-off-by: Eric W. Biederman <ebiederm@xmission.com>
+-- Daniel
