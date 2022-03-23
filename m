@@ -2,78 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45E45C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 02:57:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F02C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 03:08:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241258AbiCWC7D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 22:59:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40022 "EHLO
+        id S241419AbiCWDJe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 23:09:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231958AbiCWC7A (ORCPT
+        with ESMTP id S231250AbiCWDJ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 22:59:00 -0400
-Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E390A70864;
-        Tue, 22 Mar 2022 19:57:31 -0700 (PDT)
-Received: by mail-pl1-f169.google.com with SMTP id c23so353617plo.0;
-        Tue, 22 Mar 2022 19:57:31 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=XdtGK4rmRWu9kbcb/j+mRwJrjPioe83qUnPzzHWXTQM=;
-        b=hOTbXYQ+hdgB6CHQrx27rKZi6dqG0qOP0SsKjCnlviwBYqkzVtwjHrJUI8lEY9jbPy
-         hiHz85/m6mCcqJXMueUCky/komPNQpbogMpVzIOVCcphzVu7DArn7dyKZwc9SW3q7qJ5
-         KnNS7gV52dpXSku0zR37maTuWsXDb63A7zBP1KYTK0LfOSIiIqMHu9OAzNTLLw71LIjn
-         3JmWjv/jB3DccaslWTEBWAcrNJ9FpIec+O4Kzw7Mzcgqk5KBWGtNqRsVEq0Q0KA1jW/f
-         OMkly43Ym+NFMrsH6fsUeG38CqdaP+ttwFvKc5C88a/0WzTYGzx9RTypLwPtaOLDI3y3
-         tMFg==
-X-Gm-Message-State: AOAM532lUsqSufaMXc72MMCAiNhG1d3DfohV4ClaM71tISFXr474mnNA
-        8t8K4W29fLHUgM/wLYO1lVWAgQWiVJQ=
-X-Google-Smtp-Source: ABdhPJwSFEIHiVSTOmzTD2GpstiC4F+wLHyntg8/TEzIPpoV27kY2teF1rJv/n+nM+gczQuBLAtydA==
-X-Received: by 2002:a17:902:8605:b0:151:b6a2:8a1 with SMTP id f5-20020a170902860500b00151b6a208a1mr21517901plo.64.1648004251166;
-        Tue, 22 Mar 2022 19:57:31 -0700 (PDT)
-Received: from ?IPV6:2601:647:4000:d7:feaa:14ff:fe9d:6dbd? ([2601:647:4000:d7:feaa:14ff:fe9d:6dbd])
-        by smtp.gmail.com with ESMTPSA id 16-20020a17090a005000b001c7511dc31esm4019995pjb.41.2022.03.22.19.57.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Mar 2022 19:57:30 -0700 (PDT)
-Message-ID: <e74776f0-505b-8b4f-effd-519bce9bdc79@acm.org>
-Date:   Tue, 22 Mar 2022 19:57:27 -0700
+        Tue, 22 Mar 2022 23:09:29 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00DC3BE15;
+        Tue, 22 Mar 2022 20:07:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1648004880; x=1679540880;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=EF/JQuQvjXcqaoJAFGbUy4VuBPt0HhFRN25fJmoeJlk=;
+  b=ME6+DSaAh/SFqD9UbBXJLD0Vl7gOfpOWeslWTTRVgsgC+nnQdj9Scr/3
+   q1yaV7XKOTo07v+P6EqRa7uJo4XXqJ5AcBSNLyLYJf78xMlOJKBBlpYL8
+   XWgsmTR+TIVhtlwIX42YYLbEyzGbLPQYAdlJx5DwTfCPOJl7DKW3/YRNS
+   o=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 22 Mar 2022 20:07:59 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2022 20:07:58 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 22 Mar 2022 20:07:58 -0700
+Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 22 Mar 2022 20:07:52 -0700
+Date:   Wed, 23 Mar 2022 08:37:49 +0530
+From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
+To:     Mathias Nyman <mathias.nyman@linux.intel.com>
+CC:     "Sandeep Maheswaram (Temp)" <quic_c_sanm@quicinc.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        "Doug Anderson" <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        "Pawel Laszczak" <pawell@cadence.com>,
+        Peter Chen <peter.chen@kernel.org>,
+        "Roger Quadros" <rogerq@kernel.org>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <quic_pkondeti@quicinc.com>,
+        <quic_ppratap@quicinc.com>
+Subject: Re: [PATCH v2 0/3] Refactor xhci quirks and plat private data
+Message-ID: <20220323030749.GO23316@hu-pkondeti-hyd.qualcomm.com>
+References: <1646130507-26796-1-git-send-email-quic_c_sanm@quicinc.com>
+ <ddc86a4f-8d1c-c02c-5600-4fa851568557@quicinc.com>
+ <YjR0Ne3BDxxMfrxt@kroah.com>
+ <b38ddfcc-68c3-d99f-816b-8b9f788aa88a@quicinc.com>
+ <29ba84fb-1db2-1d84-cf9e-191e9bcbf739@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 01/11] blk-mq: Add blk_mq_init_queue_ops()
-Content-Language: en-US
-To:     John Garry <john.garry@huawei.com>, axboe@kernel.dk,
-        damien.lemoal@opensource.wdc.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, hch@lst.de, ming.lei@redhat.com,
-        hare@suse.de
-Cc:     chenxiang66@hisilicon.com, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-scsi@vger.kernel.org, dm-devel@redhat.com, beanhuo@micron.com
-References: <1647945585-197349-1-git-send-email-john.garry@huawei.com>
- <1647945585-197349-2-git-send-email-john.garry@huawei.com>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <1647945585-197349-2-git-send-email-john.garry@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <29ba84fb-1db2-1d84-cf9e-191e9bcbf739@linux.intel.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/22/22 03:39, John Garry wrote:
-> Add an API to allocate a request queue which accepts a custom set of
-> blk_mq_ops for that request queue.
-> 
-> The reason which we may want custom ops is for queuing requests which we
-> don't want to go through the normal queuing path.
+Hi Mathias,
 
-Custom ops shouldn't be required for this. See e.g. how tmf_queue
-is used in the UFS driver for an example of a queue implementation
-with custom operations and that does not require changes of the block
-layer core.
+On Tue, Mar 22, 2022 at 05:53:42PM +0200, Mathias Nyman wrote:
+> On 21.3.2022 8.21, Sandeep Maheswaram (Temp) wrote:
+> > Hi Mathias,
+> > 
+> > On 3/18/2022 5:29 PM, Greg Kroah-Hartman wrote:
+> >> On Thu, Mar 17, 2022 at 11:17:17AM +0530, Sandeep Maheswaram (Temp) wrote:
+> >>> Hi Greg,
+> >>>
+> >>> On 3/1/2022 3:58 PM, Sandeep Maheswaram wrote:
+> >>>> changes in v2:
+> >>>> Added a PATCH 2/3 to remove unwanted header inclusion.
+> >>>> Fixed minor nitpicks in PATCH 3/3.
+> >>>>
+> >>>> Pavankumar Kondeti (1):
+> >>>>     usb: xhci: refactor quirks and plat private data
+> >>>>
+> >>>> Sandeep Maheswaram (2):
+> >>>>     usb: xhci: Remove unwanted header inclusion
+> >>>>     usb: dwc: host: add xhci_plat_priv quirk XHCI_SKIP_PHY_INIT
+> >>>>
+> >>>>    drivers/usb/cdns3/host.c        |  2 +-
+> >>>>    drivers/usb/dwc3/host.c         | 13 ++++++++
+> >>>>    drivers/usb/host/xhci-plat.c    |  3 +-
+> >>>>    drivers/usb/host/xhci-plat.h    | 24 ---------------
+> >>>>    drivers/usb/host/xhci-rcar.c    |  3 +-
+> >>>>    drivers/usb/host/xhci.h         | 60 ++++--------------------------------
+> >>>>    include/linux/usb/xhci-plat.h   | 24 +++++++++++++++
+> >>>>    include/linux/usb/xhci-quirks.h | 67 +++++++++++++++++++++++++++++++++++++++++
+> >>>>    8 files changed, 115 insertions(+), 81 deletions(-)
+> >>>>    delete mode 100644 drivers/usb/host/xhci-plat.h
+> >>>>    create mode 100644 include/linux/usb/xhci-plat.h
+> >>>>    create mode 100644 include/linux/usb/xhci-quirks.h
+> >>> Please let me know your opinion about this patch series.
+> >> I need the xhci maintainer to review it...
+> >>
+> >> thanks,
+> >>
+> >> greg k-h
+> > 
+> > 
+> > Can you please review this patch series.
+> > 
+> 
+> I don't have a better solution than this.
+> 
+> So neither devicetree or ACPI entries exists for the xHC part of this dwc3 controller?
+> 
+> A pure platform device is created, and it matches and binds to xhci-plat driver by "xhci-hcd" name.
+> I guess we have no way to identify this dwc3 xhci controller in xhci-plat.c, and set quirks there,
+> like all those devicetree xhci devices that we set quirks based on .compatibility. 
+> 
+Thanks for the review. Yes, xhci-plat platform device is created by the DWC3
+driver for the controllers that needs to be operated in the host.
 
 Thanks,
-
-Bart.
+Pavan
