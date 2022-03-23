@@ -2,119 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDC64C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 21:30:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D853C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 21:33:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344948AbiCWVcE (ORCPT
+        id S1344945AbiCWVe3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 17:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37498 "EHLO
+        Wed, 23 Mar 2022 17:34:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240867AbiCWVcD (ORCPT
+        with ESMTP id S240867AbiCWVe1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 17:32:03 -0400
-X-Greylist: delayed 453 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 23 Mar 2022 14:30:32 PDT
-Received: from mx1.riseup.net (mx1.riseup.net [198.252.153.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF93D3E0EE;
-        Wed, 23 Mar 2022 14:30:32 -0700 (PDT)
-Received: from fews2.riseup.net (fews2-pn.riseup.net [10.0.1.84])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
-         client-signature RSA-PSS (2048 bits) client-digest SHA256)
-        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
-        by mx1.riseup.net (Postfix) with ESMTPS id 4KP1Xz15lyzDs6Q;
-        Wed, 23 Mar 2022 14:22:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
-        t=1648070579; bh=K5DayJKzywfJ8rV0t5+qTTJdDuq8sxKxz9R1nJWR6v0=;
-        h=Subject:From:To:Cc:In-Reply-To:References:Date:From;
-        b=efwQCJNGWb3akNgwGKrZEqvn2jHIW0+yj/ELXOU/nsFhcwWR2dGCaJIYR2c86tXDo
-         L4QzMDn4IL56xtKoZogZUOXVI6a3XCMjccamKMzwWsW6d1dlVjCv3Mn5Zmx41qpBgH
-         VzWxTajgfNSZWd7XiaFzPsh7na5X2Vb7TdaXYBsQ=
-X-Riseup-User-ID: 3E5567DDA8FA81198A5EBD1492A1B1F43CA8B82C4894982B0AA93A2620D2FCED
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-         by fews2.riseup.net (Postfix) with ESMTPSA id 4KP1Xx5LxLz1y9M;
-        Wed, 23 Mar 2022 14:22:57 -0700 (PDT)
-Message-ID: <275245e8048fa124055d9ff3d10ce6562294483a.camel@riseup.net>
-Subject: Re: [PATCH] HID: logitech-hidpp: support Color LED feature (8071).
-From:   Filipe =?ISO-8859-1?Q?La=EDns?= <lains@riseup.net>
-To:     Manuel =?ISO-8859-1?Q?Sch=F6nlaub?= <manuel.schoenlaub@gmail.com>
-Cc:     jikos@kernel.org, benjamin.tissoires@redhat.com,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <Yifr4etBFPu1a2Ct@hermes>
-References: <Yifr4etBFPu1a2Ct@hermes>
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-7NA5b+BMyLiRNR4ZGUnP"
-Date:   Wed, 23 Mar 2022 21:22:49 +0000
+        Wed, 23 Mar 2022 17:34:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8E4FE3EF0C
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 14:32:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648071176;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=oh11iooAkmJrsdwWBjuA6GGBECOmBuX2cXQQcpcqSuY=;
+        b=Xel+mS7/qETXRUFTspUtNzwhBThOliaN05yXgU6xkR1b13Vu6/Hax/fwcvOwPJVHioI7Bz
+        iOZ9+mXNkzKmtnbgGOODqZ1tGgLXRfRJ9/hfmRAx20URM+wktWrkHzJ9XIkXNqJhvuF7SF
+        HRQQ3M7T8204KUjGKiOR/qB0RcUVwho=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-21-SzvdApABO4eZ_ScqZERGgA-1; Wed, 23 Mar 2022 17:32:54 -0400
+X-MC-Unique: SzvdApABO4eZ_ScqZERGgA-1
+Received: by mail-ej1-f69.google.com with SMTP id r18-20020a17090609d200b006a6e943d09eso1440614eje.20
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 14:32:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=oh11iooAkmJrsdwWBjuA6GGBECOmBuX2cXQQcpcqSuY=;
+        b=cBb+jdL5lAHoYeSuiTHSLe0UmMZgr2VussWBgD7Ls6C/z3GX9l1Ca5vJMIlavOnGJl
+         XkCVjcBEoclnzjEtKr+sk+bXcrc9Kine4k9nN2HsFH0trQKzEPOpeBQgTl+hXC0S25qQ
+         TRP0o95os3UBfLSuaK3ECv4rRVH9+tYVD/8hIDQkGtqd5tOYCdVdKG4m6RmPBTkPa4km
+         /4Nt1QqI2jHfkc/BPt6oUpPNY9Lq0xX+ji27Y9np/BtyTOqc1syNRaEiGjick6iQ9Iwp
+         /xPLxeawnTsIqRPYqjk80o93Flc2dzxQe2yJyMpBxA9fkL8U0EeYo9pYWOcUZ4MvtBfn
+         Pd/w==
+X-Gm-Message-State: AOAM5331BJmmv4Kz3HIOwtLCc1dTYL+OAkW7h112CLLdouLczg3ftmHf
+        ERP8D5+ubTPyVq4Z4z6q3Ms5GUq4zfHzY4uw4nCSh6OBfigsDiMkAxYqsbduTOEn0aAuvPzy+lp
+        H4AuOGE91TasDWA62uzBcU66N
+X-Received: by 2002:a05:6402:454:b0:416:2db7:685b with SMTP id p20-20020a056402045400b004162db7685bmr2783662edw.43.1648071173693;
+        Wed, 23 Mar 2022 14:32:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwHYr8na/zz+NGxL5TIMj/1NzKsoC6teN3liiWE+FHimqyjued/mO1iRCI2LxxCqk4X8SpvwA==
+X-Received: by 2002:a05:6402:454:b0:416:2db7:685b with SMTP id p20-20020a056402045400b004162db7685bmr2783648edw.43.1648071173499;
+        Wed, 23 Mar 2022 14:32:53 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:1c09:f536:3de6:228c? ([2001:b07:6468:f312:1c09:f536:3de6:228c])
+        by smtp.googlemail.com with ESMTPSA id r16-20020a056402019000b00418ed60c332sm476712edv.65.2022.03.23.14.32.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Mar 2022 14:32:52 -0700 (PDT)
+Message-ID: <a35f9408-9d54-654c-6639-64192f03ba3b@redhat.com>
+Date:   Wed, 23 Mar 2022 22:32:50 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH 3/3] Documentation: KVM: add API issues section
+Content-Language: en-US
+To:     Oliver Upton <oupton@google.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        mlevitsk@redhat.com, jmattson@google.com
+References: <20220322110712.222449-1-pbonzini@redhat.com>
+ <20220322110712.222449-4-pbonzini@redhat.com> <Yjtj8qESPWIL221r@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <Yjtj8qESPWIL221r@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 3/23/22 19:16, Oliver Upton wrote:
+> Do you think we should vent about our mistakes inline with the
+> descriptions of the corresponding UAPI? One example that comes to mind
+> is ARM's CNTV_CVAL_EL0/CNTVCT_EL0 mixup, which is mentioned in 4.68
+> 'KVM_SET_ONE_REG'. That, of course, doesn't cover the
+> previously-undocumented bits of UAPI that are problematic:)
 
---=-7NA5b+BMyLiRNR4ZGUnP
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+It depends.  My intention was to use this document more for hidden 
+interdependencies, in this case between KVM_GET_SUPPORTED_CPUID and 
+KVM_CREATE_IRQCHIP, KVM_ENABLE_CAP(KVM_CAP_IRQCHIP_SPLIT), 
+KVM_CAP_TSC_DEADLINE_TIMER.
 
-On Tue, 2022-03-08 at 16:50 -0700, Manuel Sch=C3=B6nlaub wrote:
-> The HID++ protocol allows to set multicolor (RGB) to a static color.
-> Multiple of such LED zones per device are supported.
-> This patch exports said LEDs so that they can be set from userspace.
->=20
-> Signed-off-by: Manuel Sch=C3=B6nlaub <manuel.schoenlaub@gmail.com>
-> ---
-> =C2=A0drivers/hid/hid-logitech-hidpp.c | 188 ++++++++++++++++++++++++++++=
-+++
-> =C2=A01 file changed, 188 insertions(+)
+Paolo
 
-*snip*
-
-Hi Manuel,
-
-Thanks for putting this forward, although I am not sure if this is the best=
- way
-to handle this.
-
-Before anything, could you elaborate a bit on what lead to you wanting this=
-?
-
-There are a couple of reasons why merging this in the kernel might be
-problematic.
-
-1) I don't think we will ever support the full capabilities of the devices,=
- so
-configuration via userspace apps will always be required, and here we are
-introducing a weird line between the two.
-
-2) There is already an ecosystem of userspace configuration apps, with whic=
-h
-this would conflict. They might not be in the best maintenance state due to=
- lack
-of time from the maintainers, but moving this functionality to the kernel, =
-which
-is harder change, and harder to ship to users, will only make that worse.
-
-Cheers,
-Filipe La=C3=ADns
-
---=-7NA5b+BMyLiRNR4ZGUnP
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEE0jW0leqs33gyftiw+JPGdIFqqV0FAmI7j6kACgkQ+JPGdIFq
-qV3jwQ/8DPkEGDhXfUMS/tEHfeP3AMV3pKrpIP0ccAWDQUCJdmowjGrdrbM/AVbs
-3RIxMULEuIk94kY0oQbmumQhbd3xyGC8AgQ1F0jgVc94w3RQg4R4YqdMk7HLeqrc
-GfrO/u2RUR6T5B5+oas0LZ/9HmS/wbPdVg8B1Ucvs7Zk9090gyx0HxXDVg/VJ6kj
-HRG2BH1c9wDDHv4mRcZ0n8gsmhzHEFkpeCDeUEmgyJZ+LC11DdVjMGIl3vB2HXPC
-WcHNjz5OIrWZKSqdoiyN6yUZqc6GuoPhB8FW+kRNfUnQA5kZFAQrTZDfQ709HOj2
-cJ9QylEyJy98pGLRRwoev+yX9hKFwmRDnS8H2TqiKCWcuS+GMedFtO8mJRFSSaei
-7yfN+Udw8fWm26ctitqO7RmUuEs9V0WCIi0DkjFYhf9oqYWZUlxC1xuJYSR3Nt9A
-7eytHD6TWmL3x9GCMs3YbSVd6xxPgwDOwnx6PwaopZppyLYsQjIzRCwyznea17Tv
-DNcfZUdijLORD4G2uiq5FhlRT5Pjly38TfYTen9PsNwMScYccp4mDX2xToRTo/0A
-YTZk+Gpy4hDDEw7nXhCq8FuDniK1pFrRUVO8BUfZmc3drUDk/lAQmzjbPQoWEE0J
-c6t9Zl26T1xQY+htIwhWMUfyTpWopdUmFilQLCi/yatiw19V5ak=
-=LrbX
------END PGP SIGNATURE-----
-
---=-7NA5b+BMyLiRNR4ZGUnP--
