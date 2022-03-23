@@ -2,73 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56327C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 19:50:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32EC4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 19:51:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344404AbiCWTwX (ORCPT
+        id S1344429AbiCWTwd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 15:52:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39116 "EHLO
+        Wed, 23 Mar 2022 15:52:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344396AbiCWTwV (ORCPT
+        with ESMTP id S1344396AbiCWTwY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 15:52:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EA0558827
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 12:50:51 -0700 (PDT)
+        Wed, 23 Mar 2022 15:52:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67BE08B6FD
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 12:50:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B0D2F61604
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 19:50:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1A04CC340E8;
-        Wed, 23 Mar 2022 19:50:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04EE56160B
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 19:50:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 63144C340E8;
+        Wed, 23 Mar 2022 19:50:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648065050;
-        bh=O3iYQzZDFKFaYEai80v14IX9o5YoNsm8i6KJUIkzXZU=;
+        s=k20201202; t=1648065053;
+        bh=rbzDM0v2Uyogd6lc9doWubvCyYchFpf1ZMn2FXT/ieA=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=cKtC4SvyRdUtveHA/I6PWwd6iDz3wOe7FTBAw/i1wxB6pDfi/918Py0VLKJOlNVsr
-         EY7GiF48x3SXsZnnniAQqpgF3YlXwQ3ZBULHq5UZU8JEpBSvTjEbYW+0aq088QY7xx
-         bIXFywyiG30HEVnRr6EnAZK0rQheAIyZPvI/4diTMJCsvwXnFZG1BZ6dHm77feLVhs
-         oYAfTMbVyLvQbEYlfTOsj7Z67whHTf+UoT/i+5QZCNSw7gQ2dfQ7FkagD8VMEAexDp
-         5sR0FBkDJRxCotcGjkoKpXKnOOc3p0c+i9eNRmicNCPczlmtydek9Pcorfg8Crm48H
-         jG2lACOqOadDw==
+        b=TpU4EmO9nQzSnGY/uJcroFMQzYs0Hf7fltKJodFu/SKy7aWSpfOnZlvKLCRWOIpXf
+         2aRVrL2IlBtmy569rn3AHXn0CbsfCXJRTfX6USiYTalBo1UJpRZ0092yT5WXeq3+rv
+         FvRUOm311UcHSVNSy5arTiygoRjyeOBOopG0e5hNDzgIpwCDZqoYCG6WFQ7fbJgpMz
+         QmPYVFCnLSME8IlhYMR6lXjNSaIGoVbiu8REDbH9J6yWiJlSTdktXyTlODH0hpmlw6
+         1ee7BQAqMrf4fM0LC6WHdsmB7fTPrxooda7bJ/nddOEsAeFUpPuxo+UkHbCLfwH8CH
+         dnu3WwFLXTBMA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0490CE6D402;
-        Wed, 23 Mar 2022 19:50:50 +0000 (UTC)
-Subject: Re: [GIT PULL] slab for 5.18
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4FAB3E6D402;
+        Wed, 23 Mar 2022 19:50:53 +0000 (UTC)
+Subject: Re: [GIT PULL] workqueue changes for v5.18-rc1
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <ee1fe9ee-c560-9f7c-c8d1-bd48c608ba90@suse.cz>
-References: <ee1fe9ee-c560-9f7c-c8d1-bd48c608ba90@suse.cz>
-X-PR-Tracked-List-Id: <linux-mm.kvack.org>
-X-PR-Tracked-Message-Id: <ee1fe9ee-c560-9f7c-c8d1-bd48c608ba90@suse.cz>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/vbabka/slab.git tags/slab-for-5.18
-X-PR-Tracked-Commit-Id: 94fa31e99b57ce4a56e93815421566d483186cb4
+In-Reply-To: <Yjjb/qouuLRtV2XW@slm.duckdns.org>
+References: <Yjjb/qouuLRtV2XW@slm.duckdns.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <Yjjb/qouuLRtV2XW@slm.duckdns.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tj/wq.git for-5.18
+X-PR-Tracked-Commit-Id: bc35f7ef96284b8c963991357a9278a6beafca54
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: c5c009e2503d4c027591c65b49a98f420cb4fa56
-Message-Id: <164806505001.21505.5331298391907150342.pr-tracker-bot@kernel.org>
-Date:   Wed, 23 Mar 2022 19:50:50 +0000
-To:     Vlastimil Babka <vbabka@suse.cz>
+X-PR-Merge-Commit-Id: 78383162605e22a2aad88e417bb8fcaf808f147a
+Message-Id: <164806505332.21505.7817738186661995698.pr-tracker-bot@kernel.org>
+Date:   Wed, 23 Mar 2022 19:50:53 +0000
+To:     Tejun Heo <tj@kernel.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>, patches@lists.linux.dev,
-        Roman Gushchin <roman.gushchin@linux.dev>
+        linux-kernel@vger.kernel.org,
+        Lai Jiangshan <jiangshanlai@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 21 Mar 2022 20:02:58 +0100:
+The pull request you sent on Mon, 21 Mar 2022 10:11:42 -1000:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/vbabka/slab.git tags/slab-for-5.18
+> git://git.kernel.org/pub/scm/linux/kernel/git/tj/wq.git for-5.18
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/c5c009e2503d4c027591c65b49a98f420cb4fa56
+https://git.kernel.org/torvalds/c/78383162605e22a2aad88e417bb8fcaf808f147a
 
 Thank you!
 
