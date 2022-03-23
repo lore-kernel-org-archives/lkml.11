@@ -2,81 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7F0DC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 14:01:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2727C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 14:02:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244610AbiCWODL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 10:03:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58544 "EHLO
+        id S243828AbiCWODu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 10:03:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239785AbiCWODH (ORCPT
+        with ESMTP id S236909AbiCWODr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 10:03:07 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 21BB57484E
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 07:01:37 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-62-d9WQqktKNfuEPIK2YXUnUQ-1; Wed, 23 Mar 2022 14:01:34 +0000
-X-MC-Unique: d9WQqktKNfuEPIK2YXUnUQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Wed, 23 Mar 2022 14:01:34 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Wed, 23 Mar 2022 14:01:34 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     "'Jason A. Donenfeld'" <Jason@zx2c4.com>,
-        "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>
-CC:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jann Horn <jannh@google.com>,
-        "Dominik Brodowski" <linux@dominikbrodowski.net>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Sandy Harris <sandyinchina@gmail.com>
-Subject: RE: [PATCH] random: allow writes to /dev/urandom to influence fast
- init
-Thread-Topic: [PATCH] random: allow writes to /dev/urandom to influence fast
- init
-Thread-Index: AQHYPnEnHr6Egf4vbEGW28icqj7YNKzM/Low
-Date:   Wed, 23 Mar 2022 14:01:34 +0000
-Message-ID: <7cde489e73c8448b95a1b7bc6ed1d75b@AcuMS.aculab.com>
-References: <20220322191436.110963-1-Jason@zx2c4.com>
- <1648009787.fah6dos6ya.none@localhost>
- <CAHmME9rsvxczJrhPwRX6nyrh9NB2AuJqkEKrTLx-G-T1J6_czQ@mail.gmail.com>
-In-Reply-To: <CAHmME9rsvxczJrhPwRX6nyrh9NB2AuJqkEKrTLx-G-T1J6_czQ@mail.gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Wed, 23 Mar 2022 10:03:47 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3CA77EA34;
+        Wed, 23 Mar 2022 07:02:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648044137; x=1679580137;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ze1002XyM8dK8szVuNAh2rfCJViHlNl/Z7OGWqP1oJY=;
+  b=h5z9RzxI3Km0N2aCDCmjHtg4y9up0F1LNkTha0B+ZYDluX51tSOCBDny
+   aOJfmpqkTNKsfQWlF+NYKSKFQI1AY25NcyiaDVeot/z61LyR+R02jxSN4
+   2baIXyYHoZhxvxBMXIV7fkv9nrpvR07Uz4QCvtoltYAzHoijrGDRqFUM3
+   B5PqlZuUFK90pGvB+cISMg+GxJMmZfV1SIAKJkUJwTKjmwZFSFcZi24td
+   97deriLRJr3JoF2FnNaH7ddOYqdyvBpArqPez5C9T45V6eqNjMAWcZLvc
+   WNdi9TovqkwdEG+8zKyhMO3TXXfis+kLao2an1uPvrVK2vhpD/+j+zEk8
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10294"; a="258304807"
+X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
+   d="scan'208";a="258304807"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 07:01:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
+   d="scan'208";a="785796350"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga006.fm.intel.com with ESMTP; 23 Mar 2022 07:01:57 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id E5E5518E; Wed, 23 Mar 2022 16:02:17 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Mark Brown <broonie@kernel.org>
+Subject: [PATCH v1 2/4] spidev: Convert BUILD_BUG_ON() to static_assert()
+Date:   Wed, 23 Mar 2022 16:02:13 +0200
+Message-Id: <20220323140215.2568-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220323140215.2568-1-andriy.shevchenko@linux.intel.com>
+References: <20220323140215.2568-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogSmFzb24gQS4gRG9uZW5mZWxkDQo+IFNlbnQ6IDIzIE1hcmNoIDIwMjIgMDQ6NDgNCi4u
-Lg0KPiAtIFBsZW50eSBvZiB0aGluZ3MgYXJlIHNlZWRpbmcgdGhlIFJORyBjb3JyZWN0bHksIGFu
-ZCBidWlsZHJvb3Qncw0KPiBzaGVsbCBzY3JpcHQgaXMganVzdCAiZG9pbmcgaXQgd3JvbmciLg0K
-PiANCj4gT24gdGhhdCBsYXN0IHBvaW50LCBJIHNob3VsZCByZWl0ZXJhdGUgdGhhdCBidWlsZHJv
-b3QncyBzaGVsbCBzY3JpcHQNCj4gc3RpbGwgaXNuJ3QgYWN0dWFsbHkgaW5pdGlhbGl6aW5nIHRo
-ZSBSTkcsIGRlc3BpdGUgd2hhdCBpdCBzYXlzIGluIGl0cw0KPiBlY2hvOyB0aGVyZSdzIG5ldmVy
-IGJlZW4gYSB3YXkgdG8gaW5pdGlhbGl6ZSB0aGUgUk5HIGZyb20gYSBzaGVsbA0KPiBzY3JpcHQs
-IHdpdGhvdXQgY2FsbGluZyBvdXQgdG8gdmFyaW91cyBzcGVjaWFsIHB1cnBvc2UgaW9jdGwtYXdh
-cmUNCj4gYmluYXJpZXMuDQoNClBlcmhhcHMgdGhlIHZlcnkgZmlyc3Qgd3JpdGUgYWZ0ZXIgYm9v
-dCBjb3VsZCBiZSBhc3N1bWVkIHRvDQpiZSB2YWxpZCBpbml0aWFsaXNhdGlvbiBkYXRhPw0KKE9u
-IHRvcCBvZiBhIGZldyBvdGhlciB0ZXN0cy4pDQoNClRoZW4gSSBuZWVkIGEgcGF0Y2ggYWdhaW5z
-dCA1LjEwIDotKQ0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBC
-cmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdp
-c3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
+static_assert() is a preferred method to fail build when the certain
+constraints are not met. Convert BUILD_BUG_ON() to static_assert().
+
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/spi/spidev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/spi/spidev.c b/drivers/spi/spidev.c
+index daeaa4a30290..125da8d0e719 100644
+--- a/drivers/spi/spidev.c
++++ b/drivers/spi/spidev.c
+@@ -46,6 +46,7 @@
+ 
+ static DECLARE_BITMAP(minors, N_SPI_MINORS);
+ 
++static_assert(N_SPI_MINORS > 0 && N_SPI_MINORS <= 256);
+ 
+ /* Bit masks for spi_device.mode management.  Note that incorrect
+  * settings for some settings can cause *lots* of trouble for other
+@@ -856,7 +857,6 @@ static int __init spidev_init(void)
+ 	 * that will key udev/mdev to add/remove /dev nodes.  Last, register
+ 	 * the driver which manages those device numbers.
+ 	 */
+-	BUILD_BUG_ON(N_SPI_MINORS > 256);
+ 	status = register_chrdev(SPIDEV_MAJOR, "spi", &spidev_fops);
+ 	if (status < 0)
+ 		return status;
+-- 
+2.35.1
 
