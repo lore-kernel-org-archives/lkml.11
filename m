@@ -2,208 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F3EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 01:36:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 486FBC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 01:39:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240137AbiCWBiL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 21:38:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39908 "EHLO
+        id S239142AbiCWBk5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 21:40:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233466AbiCWBiI (ORCPT
+        with ESMTP id S231200AbiCWBkz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 21:38:08 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D76C311A20;
-        Tue, 22 Mar 2022 18:36:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647999399; x=1679535399;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=R7Hv6TGPYjfl8Im7U1axrYGriaS+TMvEbfrlFIFsNSU=;
-  b=bLek4mELZ/viSelozJ8o7u/QWqi9dpTU/UegooLbuFtZSOIHGEUv2S8Z
-   SniDkqgv+M1SXrJQ3mFyfQQpdtUBSni2Z7zUv3XGAXXt1ERRhShFTQ7Mp
-   kHry7dTCZja/2uRA4loWTjA7EPstfknW8f6yayqLo1Vvm1G/qsO2Qan5S
-   CHGm2ToVIHkGMsD72rsjxklbYjeyjRTMvc6kfOOQj8ITQk1jypcpqUqKM
-   N3fgKa4VPvJdkxjlE1u+XISkLR+gN4P0Tol9Cx1cay1aUzuU0kl0dskUg
-   YBYwjghoCNcYeAWbKtd45b0KMDqzFmSYHlwSvu0qutDe8YnAR2LVgVE4y
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10294"; a="318706960"
-X-IronPort-AV: E=Sophos;i="5.90,203,1643702400"; 
-   d="scan'208";a="318706960"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2022 18:36:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,203,1643702400"; 
-   d="scan'208";a="649246588"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 22 Mar 2022 18:36:37 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nWpvQ-000JVC-O9; Wed, 23 Mar 2022 01:36:36 +0000
-Date:   Wed, 23 Mar 2022 09:35:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Stephen Kitt <steve@sk2.org>, Matthew Wilcox <willy@infradead.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc:     kbuild-all@lists.01.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>
-Subject: Re: [PATCH] idr: Remove unused ida_simple_{get,remove}
-Message-ID: <202203230914.b9Om2yrQ-lkp@intel.com>
-References: <20220322220602.985011-1-steve@sk2.org>
+        Tue, 22 Mar 2022 21:40:55 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29887220EC
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 18:39:26 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id n7-20020a17090aab8700b001c6aa871860so338177pjq.2
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 18:39:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ieZ1YNZMdPMDle0nXlJhObnK0W4J43jf9cWsuNGkhUY=;
+        b=iDjGY+J/5JvZcOb7jtGwUMPA86RmY+2Kd08u46Z4q1s0ZgozamxL6GZnVxGe4jiQ9B
+         Ror0YmrKSXvrr2/xyj9TCPLtJkG0912nL9Ie7pcefbtt+N+D9r41oMa33PsswaGOxZp8
+         rux8O2+CS76kYQHT92Uh9EP/edacCSVf3VpbIHSVcftb00FUq5DbEnC+k2vyEc3Qh3+9
+         IDdiy0OzGMngKa9GfKlpTf23aNO5KBf3MVs56/ELlfGOCUc960xE47idnHnTTZRUd2dE
+         lYRybJS3nHsAG/4MoztI28+HVklC3EkNVZh0JVVGKx31vedl5klbnmrcqcxntEchTSCa
+         LfjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ieZ1YNZMdPMDle0nXlJhObnK0W4J43jf9cWsuNGkhUY=;
+        b=czyOHaCJsjfqTtEJ0Qs/99cijMgcFKMtI5haroKHLxMBfcPD78vX36tfpxtC1y5rQj
+         Wq6GA3xoXem3MseGI73j+GfPPKWRJDrXZKa6/Y3BiiR7eyApvu0GRKc+vYBCwuqzdu58
+         S7vZqISEdVNcza7FlzJUxTFkQrTAAKdDRQnZLTFVsPvuruEQEpO7kkngpdusuXqs5JA3
+         Y+tW0rwzFh3BCBPNvuUvseHFtia/Z2LozhNEISkEEtCbJxsS7y2ybDXRwYoPoLJKnSjE
+         tdO40mCDbE0Z2nHgugCBOuBTU/nb35uIxXB+0/AUImbvlM4p/vxq+y4CwO4E9R52Xk3T
+         FNdA==
+X-Gm-Message-State: AOAM530tUje+gckjqtvSxZ5Wys/usKg5p5mVvK9RfJvd4ITvI+XP6UM4
+        SFkyAq8wkRJdm8j7wqGXSElW7PLjjgRGCyo2xg==
+X-Google-Smtp-Source: ABdhPJykxCUGEMdCG/iVtspeqcFCatcsR4M7mlCCgk2FUckmO7eqpB1Pl7YNEqGaJ18raP5HtezEbI/KGXBVxP4V/j8=
+X-Received: by 2002:a17:90b:1803:b0:1c7:24c4:ab52 with SMTP id
+ lw3-20020a17090b180300b001c724c4ab52mr8404054pjb.240.1647999565452; Tue, 22
+ Mar 2022 18:39:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220322220602.985011-1-steve@sk2.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <1646983382-30036-1-git-send-email-zheyuma97@gmail.com>
+ <YjMSMIrbsVZjEw8W@phenom.ffwll.local> <CAMhUBjkohp=-4YZ7x6Yyf4tQr_2zCoR+RVmEZPGLoXTEhNoPFA@mail.gmail.com>
+ <Yjnc1A2heVopcyXh@phenom.ffwll.local>
+In-Reply-To: <Yjnc1A2heVopcyXh@phenom.ffwll.local>
+From:   Zheyu Ma <zheyuma97@gmail.com>
+Date:   Wed, 23 Mar 2022 09:39:14 +0800
+Message-ID: <CAMhUBjnRP+Jb8MY9T02hVH=rQ-hdKxb9UDYpN4twHUywiBoVDQ@mail.gmail.com>
+Subject: Re: [PATCH] drm: drm_bufs: Error out if 'dev->agp' is a null pointer
+To:     Zheyu Ma <zheyuma97@gmail.com>, maarten.lankhorst@linux.intel.com,
+        mripard@kernel.org, tzimmermann@suse.de, airlied@linux.ie,
+        dri-devel@lists.freedesktop.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Cc:     Daniel Vetter <daniel@ffwll.ch>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Stephen,
+On Tue, Mar 22, 2022 at 10:27 PM Daniel Vetter <daniel@ffwll.ch> wrote:
+>
+> On Mon, Mar 21, 2022 at 09:02:47PM +0800, Zheyu Ma wrote:
+> > On Thu, Mar 17, 2022 at 6:49 PM Daniel Vetter <daniel@ffwll.ch> wrote:
+> > >
+> > > On Fri, Mar 11, 2022 at 07:23:02AM +0000, Zheyu Ma wrote:
+> > > > The user program can control the 'drm_buf_desc::flags' via ioctl system
+> > > > call and enter the function drm_legacy_addbufs_agp(). If the driver
+> > > > doesn't initialize the agp resources, the driver will cause a null
+> > > > pointer dereference.
+> > > >
+> > > > The following log reveals it:
+> > > >     general protection fault, probably for non-canonical address
+> > > >     0xdffffc000000000f: 0000 [#1] PREEMPT SMP KASAN PTI
+> > > >     KASAN: null-ptr-deref in range [0x0000000000000078-0x000000000000007f]
+> > > >     Call Trace:
+> > > >      <TASK>
+> > > >      drm_ioctl_kernel+0x342/0x450 drivers/gpu/drm/drm_ioctl.c:785
+> > > >      drm_ioctl+0x592/0x940 drivers/gpu/drm/drm_ioctl.c:885
+> > > >      vfs_ioctl fs/ioctl.c:51 [inline]
+> > > >      __do_sys_ioctl fs/ioctl.c:874 [inline]
+> > > >      __se_sys_ioctl+0xaa/0xf0 fs/ioctl.c:860
+> > > >      do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> > > >      do_syscall_64+0x43/0x90 arch/x86/entry/common.c:80
+> > > >      entry_SYSCALL_64_after_hwframe+0x44/0xae
+> > > >
+> > > > Fix this bug by adding a check.
+> > > >
+> > > > Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+> > >
+> > > You can only hit this if you enabled a DRIVER_LEGACY drm driver, which
+> > > opens you up to tons of other CVEs and issues. What's your .config?
+> >
+> > Yes, I enable the DRM_LEGACY option in the config.
+> > I think you mean this is not a normal configuration file? Do you have
+> > a recommended configuration option for when I want to test the GPU
+> > driver?
+>
+> Yeah DRM_LEGACY gives you all kinds of horrible and known-broken
+> interfaces. Don't enable that :-)
+>
+> You have a bunch of other drivers enable which require DRM_LEGACY, so
+> those will disable too. Anything else I think would be an upstream bug and
+> we'd need to adjust Kconfig (or fix the code).
 
-Thank you for the patch! Yet something to improve:
+Thanks for your explanation! I will pay attention next time.
 
-[auto build test ERROR on 5191290407668028179f2544a11ae9b57f0bcf07]
-
-url:    https://github.com/0day-ci/linux/commits/Stephen-Kitt/idr-Remove-unused-ida_simple_-get-remove/20220323-062521
-base:   5191290407668028179f2544a11ae9b57f0bcf07
-config: arm-randconfig-p002-20220320 (https://download.01.org/0day-ci/archive/20220323/202203230914.b9Om2yrQ-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/13945a32161b59a82eca06de385ea0f38b88439e
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Stephen-Kitt/idr-Remove-unused-ida_simple_-get-remove/20220323-062521
-        git checkout 13945a32161b59a82eca06de385ea0f38b88439e
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash drivers/base/ drivers/firmware/arm_scmi/ drivers/usb/chipidea/ drivers/usb/gadget/function/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/base/soc.c: In function 'soc_release':
->> drivers/base/soc.c:107:9: error: implicit declaration of function 'ida_simple_remove' [-Werror=implicit-function-declaration]
-     107 |         ida_simple_remove(&soc_ida, soc_dev->soc_dev_num);
-         |         ^~~~~~~~~~~~~~~~~
-   drivers/base/soc.c: In function 'soc_device_register':
->> drivers/base/soc.c:142:15: error: implicit declaration of function 'ida_simple_get' [-Werror=implicit-function-declaration]
-     142 |         ret = ida_simple_get(&soc_ida, 0, 0, GFP_KERNEL);
-         |               ^~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
---
-   drivers/firmware/arm_scmi/bus.c: In function 'scmi_device_create':
->> drivers/firmware/arm_scmi/bus.c:184:14: error: implicit declaration of function 'ida_simple_get' [-Werror=implicit-function-declaration]
-     184 |         id = ida_simple_get(&scmi_bus_id, 1, 0, GFP_KERNEL);
-         |              ^~~~~~~~~~~~~~
->> drivers/firmware/arm_scmi/bus.c:207:9: error: implicit declaration of function 'ida_simple_remove' [-Werror=implicit-function-declaration]
-     207 |         ida_simple_remove(&scmi_bus_id, id);
-         |         ^~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
---
-   drivers/usb/chipidea/core.c: In function 'ci_hdrc_add_device':
->> drivers/usb/chipidea/core.c:856:14: error: implicit declaration of function 'ida_simple_get' [-Werror=implicit-function-declaration]
-     856 |         id = ida_simple_get(&ci_ida, 0, 0, GFP_KERNEL);
-         |              ^~~~~~~~~~~~~~
->> drivers/usb/chipidea/core.c:886:9: error: implicit declaration of function 'ida_simple_remove' [-Werror=implicit-function-declaration]
-     886 |         ida_simple_remove(&ci_ida, id);
-         |         ^~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
---
-   drivers/usb/gadget/function/f_hid.c: In function 'hidg_get_minor':
->> drivers/usb/gadget/function/f_hid.c:1031:15: error: implicit declaration of function 'ida_simple_get' [-Werror=implicit-function-declaration]
-    1031 |         ret = ida_simple_get(&hidg_ida, 0, 0, GFP_KERNEL);
-         |               ^~~~~~~~~~~~~~
->> drivers/usb/gadget/function/f_hid.c:1033:17: error: implicit declaration of function 'ida_simple_remove' [-Werror=implicit-function-declaration]
-    1033 |                 ida_simple_remove(&hidg_ida, ret);
-         |                 ^~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
---
-   drivers/usb/gadget/function/f_printer.c: In function 'gprinter_get_minor':
->> drivers/usb/gadget/function/f_printer.c:1319:15: error: implicit declaration of function 'ida_simple_get' [-Werror=implicit-function-declaration]
-    1319 |         ret = ida_simple_get(&printer_ida, 0, 0, GFP_KERNEL);
-         |               ^~~~~~~~~~~~~~
->> drivers/usb/gadget/function/f_printer.c:1321:17: error: implicit declaration of function 'ida_simple_remove' [-Werror=implicit-function-declaration]
-    1321 |                 ida_simple_remove(&printer_ida, ret);
-         |                 ^~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +/ida_simple_remove +107 drivers/base/soc.c
-
-74d1d82cdaaec7 Lee Jones          2012-02-06  102  
-74d1d82cdaaec7 Lee Jones          2012-02-06  103  static void soc_release(struct device *dev)
-74d1d82cdaaec7 Lee Jones          2012-02-06  104  {
-74d1d82cdaaec7 Lee Jones          2012-02-06  105  	struct soc_device *soc_dev = container_of(dev, struct soc_device, dev);
-74d1d82cdaaec7 Lee Jones          2012-02-06  106  
-c31e73121f4c1e Murali Nalajala    2019-10-07 @107  	ida_simple_remove(&soc_ida, soc_dev->soc_dev_num);
-c31e73121f4c1e Murali Nalajala    2019-10-07  108  	kfree(soc_dev->dev.groups);
-74d1d82cdaaec7 Lee Jones          2012-02-06  109  	kfree(soc_dev);
-74d1d82cdaaec7 Lee Jones          2012-02-06  110  }
-74d1d82cdaaec7 Lee Jones          2012-02-06  111  
-6e12db376b60b7 Geert Uytterhoeven 2017-03-09  112  static struct soc_device_attribute *early_soc_dev_attr;
-6e12db376b60b7 Geert Uytterhoeven 2017-03-09  113  
-74d1d82cdaaec7 Lee Jones          2012-02-06  114  struct soc_device *soc_device_register(struct soc_device_attribute *soc_dev_attr)
-74d1d82cdaaec7 Lee Jones          2012-02-06  115  {
-74d1d82cdaaec7 Lee Jones          2012-02-06  116  	struct soc_device *soc_dev;
-c31e73121f4c1e Murali Nalajala    2019-10-07  117  	const struct attribute_group **soc_attr_groups;
-74d1d82cdaaec7 Lee Jones          2012-02-06  118  	int ret;
-74d1d82cdaaec7 Lee Jones          2012-02-06  119  
-1da1b3628df34a Geert Uytterhoeven 2016-09-27  120  	if (!soc_bus_type.p) {
-6e12db376b60b7 Geert Uytterhoeven 2017-03-09  121  		if (early_soc_dev_attr)
-6e12db376b60b7 Geert Uytterhoeven 2017-03-09  122  			return ERR_PTR(-EBUSY);
-6e12db376b60b7 Geert Uytterhoeven 2017-03-09  123  		early_soc_dev_attr = soc_dev_attr;
-6e12db376b60b7 Geert Uytterhoeven 2017-03-09  124  		return NULL;
-1da1b3628df34a Geert Uytterhoeven 2016-09-27  125  	}
-1da1b3628df34a Geert Uytterhoeven 2016-09-27  126  
-74d1d82cdaaec7 Lee Jones          2012-02-06  127  	soc_dev = kzalloc(sizeof(*soc_dev), GFP_KERNEL);
-74d1d82cdaaec7 Lee Jones          2012-02-06  128  	if (!soc_dev) {
-74d1d82cdaaec7 Lee Jones          2012-02-06  129  		ret = -ENOMEM;
-74d1d82cdaaec7 Lee Jones          2012-02-06  130  		goto out1;
-74d1d82cdaaec7 Lee Jones          2012-02-06  131  	}
-74d1d82cdaaec7 Lee Jones          2012-02-06  132  
-c31e73121f4c1e Murali Nalajala    2019-10-07  133  	soc_attr_groups = kcalloc(3, sizeof(*soc_attr_groups), GFP_KERNEL);
-c31e73121f4c1e Murali Nalajala    2019-10-07  134  	if (!soc_attr_groups) {
-c31e73121f4c1e Murali Nalajala    2019-10-07  135  		ret = -ENOMEM;
-c31e73121f4c1e Murali Nalajala    2019-10-07  136  		goto out2;
-c31e73121f4c1e Murali Nalajala    2019-10-07  137  	}
-c31e73121f4c1e Murali Nalajala    2019-10-07  138  	soc_attr_groups[0] = &soc_attr_group;
-c31e73121f4c1e Murali Nalajala    2019-10-07  139  	soc_attr_groups[1] = soc_dev_attr->custom_attr_group;
-c31e73121f4c1e Murali Nalajala    2019-10-07  140  
-74d1d82cdaaec7 Lee Jones          2012-02-06  141  	/* Fetch a unique (reclaimable) SOC ID. */
-cfcf6a91aa0d59 Lee Duncan         2015-10-01 @142  	ret = ida_simple_get(&soc_ida, 0, 0, GFP_KERNEL);
-cfcf6a91aa0d59 Lee Duncan         2015-10-01  143  	if (ret < 0)
-c31e73121f4c1e Murali Nalajala    2019-10-07  144  		goto out3;
-cfcf6a91aa0d59 Lee Duncan         2015-10-01  145  	soc_dev->soc_dev_num = ret;
-74d1d82cdaaec7 Lee Jones          2012-02-06  146  
-74d1d82cdaaec7 Lee Jones          2012-02-06  147  	soc_dev->attr = soc_dev_attr;
-74d1d82cdaaec7 Lee Jones          2012-02-06  148  	soc_dev->dev.bus = &soc_bus_type;
-74d1d82cdaaec7 Lee Jones          2012-02-06  149  	soc_dev->dev.groups = soc_attr_groups;
-74d1d82cdaaec7 Lee Jones          2012-02-06  150  	soc_dev->dev.release = soc_release;
-74d1d82cdaaec7 Lee Jones          2012-02-06  151  
-74d1d82cdaaec7 Lee Jones          2012-02-06  152  	dev_set_name(&soc_dev->dev, "soc%d", soc_dev->soc_dev_num);
-74d1d82cdaaec7 Lee Jones          2012-02-06  153  
-74d1d82cdaaec7 Lee Jones          2012-02-06  154  	ret = device_register(&soc_dev->dev);
-c31e73121f4c1e Murali Nalajala    2019-10-07  155  	if (ret) {
-c31e73121f4c1e Murali Nalajala    2019-10-07  156  		put_device(&soc_dev->dev);
-c31e73121f4c1e Murali Nalajala    2019-10-07  157  		return ERR_PTR(ret);
-c31e73121f4c1e Murali Nalajala    2019-10-07  158  	}
-74d1d82cdaaec7 Lee Jones          2012-02-06  159  
-74d1d82cdaaec7 Lee Jones          2012-02-06  160  	return soc_dev;
-74d1d82cdaaec7 Lee Jones          2012-02-06  161  
-74d1d82cdaaec7 Lee Jones          2012-02-06  162  out3:
-c31e73121f4c1e Murali Nalajala    2019-10-07  163  	kfree(soc_attr_groups);
-74d1d82cdaaec7 Lee Jones          2012-02-06  164  out2:
-74d1d82cdaaec7 Lee Jones          2012-02-06  165  	kfree(soc_dev);
-74d1d82cdaaec7 Lee Jones          2012-02-06  166  out1:
-74d1d82cdaaec7 Lee Jones          2012-02-06  167  	return ERR_PTR(ret);
-74d1d82cdaaec7 Lee Jones          2012-02-06  168  }
-f7ccc7a397cf2e Vinod Koul         2019-07-24  169  EXPORT_SYMBOL_GPL(soc_device_register);
-74d1d82cdaaec7 Lee Jones          2012-02-06  170  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Regards,
+Zheyu Ma
