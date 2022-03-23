@@ -2,119 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B44BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 23:49:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15358C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 23:52:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346532AbiCWXvT (ORCPT
+        id S1346566AbiCWXxj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 19:51:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49512 "EHLO
+        Wed, 23 Mar 2022 19:53:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347583AbiCWXuc (ORCPT
+        with ESMTP id S1346660AbiCWXxH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 19:50:32 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 497E01CB27
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 16:49:01 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id i11so3100141plr.1
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 16:49:01 -0700 (PDT)
+        Wed, 23 Mar 2022 19:53:07 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CBD93FD86
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 16:51:36 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id r23so3768623edb.0
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 16:51:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=OqY1xTeVRlw2nfYyxxPoQU/LOGXlMjj+SpATPbEYmHk=;
-        b=QPglaTyMq/OcPmXLWAnAvpGHghRviGDrt5W9reAcKupVIszxI8a6HgU8atAN5p8bd2
-         XSNMBxzaLe/XNjMPXpZ47CWOTtp0wNGcjxu30YaBrv7SHHr3/LgVb5kzxCKIEyK35gmQ
-         5SDHpHMC5ZwEGYGPGd8OHpxYIBoQudDrOchfOhg+0ocWziqEtPkjjSDpoW9527AiDJX6
-         MaiXtTYGfq2GQXCsO+Y3bjDDNqRUPCMlzDnHRQXV50J4Cm/xEo+4tuuK805aocqGzS1o
-         Os6w0vupztZM/VelhVI1KwYsHM4YC1Zt8Ak9Fws20xETp+XRrxCRColPxu2RmdZOKONr
-         0CmA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ki2n6Qz/XFIPEOMiE4aANqyu6w6m1Klwn+ORu/krnhM=;
+        b=IzZK7Aq+TzUq3EtZ+DoEiDDVUaz99N2AMqhG5DFFxKXnbDEE/G7/AOXa1+qUGXUz2r
+         GJ1gYUxTgPhGa6uZqJhOWjNsUO43RS0yZJBk4ka5t7VSgSgVe+Qi0MlX9iCHk0++cNSM
+         vQqr/WCOA542elAvDQwEyK6O4cIPjFM8KkNlEjnqZBOFkKfnD7Nj15RsvBsvt8vZINGM
+         neMIXCME2yTVZ/EzyFj+2ViIitW0aS7mmbaJpF7HkcBOSbq6w19JPa/f9+cPu5GVi4mN
+         bZ/en89/of+2pOtWluF73BKiNWGwqoZPbuHTHAUyaNQmwM9KVcE46msF9886C2Y6cTc7
+         77GA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=OqY1xTeVRlw2nfYyxxPoQU/LOGXlMjj+SpATPbEYmHk=;
-        b=D2yk2i86xTJ7N+238uCgCQiniL5Nv6ccvwsURWmPu1jeCVPVbL5ea2kEYwclznwQ0X
-         /gbpj/B9T3ip5bNPXu+IivM+/3bzuiNOcL3p7nx9g8pTYMPvHN0s5L9J2NIZzZOGAd7D
-         1CM7gfE17UEDmJWQUR/MaSBvPGGnzcumjV/MDVxPD1UZkOlvjMcKRNCr4GQyY+xNCeAl
-         VFUeHuz9FvmgoqZn7VK6exlGS6VUjrLf6lVQU1GU+vdLw83+L4Dkfgjxl+H6cTE/lPu2
-         wUvDSV16dqM5xy2JmuevVyUqwCy2GfyjrEfkrGc8SZsppGGiRu1n00LMhpUZpcl9BiUb
-         KJBA==
-X-Gm-Message-State: AOAM5328ljKdLVcauygyBf9YdcTNcnhC45D/T7O5ZYnJ2Yi56femJIFN
-        uVtOCyYuE7lIdWp3Elzq6esVyQ==
-X-Google-Smtp-Source: ABdhPJxlBFuH7Nhi8Qp9G1SpsD27wA5t3nVbN3x89MKrvpsFO3GJ9or400etjmvjzNtg0wD6aIwTHw==
-X-Received: by 2002:a17:903:1205:b0:151:8ae9:93ea with SMTP id l5-20020a170903120500b001518ae993eamr2691148plh.37.1648079340546;
-        Wed, 23 Mar 2022 16:49:00 -0700 (PDT)
-Received: from ?IPV6:2600:1700:38d4:55df:aed0:ee00:7944:65f6? ([2600:1700:38d4:55df:aed0:ee00:7944:65f6])
-        by smtp.gmail.com with ESMTPSA id 124-20020a621682000000b004f6a2e59a4dsm921771pfw.121.2022.03.23.16.48.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Mar 2022 16:48:59 -0700 (PDT)
-Message-ID: <3a7c3a71-0be7-261e-20b7-54b4864eedb5@google.com>
-Date:   Wed, 23 Mar 2022 16:48:57 -0700
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ki2n6Qz/XFIPEOMiE4aANqyu6w6m1Klwn+ORu/krnhM=;
+        b=V9yf6w7Gbt3IzB6nXndnTvRpQfJ6/9wCrPxC/XpOGGora1tLE/QMQogfcQ8AmEuWbp
+         VwUmla+wWHODekvCPdJC2b6mQatct4FIPAW9qCfRtDmuPNH/lQGKiyWHJz6NKghB1WeG
+         63IvfXWuEK3ACcY5IEibx9x0fkacvb00kct1FZz0FMdHnFrvvn/gHDDVFLDMiuJ2CqvE
+         lq9Y42zNEqFRwmP0GiCMJnQ0IfKZA1W/PdnsudwyI4JeJ1roZhmSUzIlZVSkMJfbtzXg
+         BuCqWCdJM4DG4XeMrOAfvf0ztkbAmjW1VU7Oam0NfUzg2jrbIYtxH9+qVpIAecPJLFUN
+         gkEA==
+X-Gm-Message-State: AOAM531WD8Y9aF/NXEdFP5hWk35dVPII3WUSx5sGxfhoR9UsozHTZGIe
+        PN6zTXePwjn1YYYPFLKgKAUPwwgkMQuyKXVHM925Ow==
+X-Google-Smtp-Source: ABdhPJxJO0tJfgmmO8q/dSudHVU9Akr8p72LdVK3FTiwSJpBPn/aZV4HmNCS8Gc5Og/2ztcGYnRuH3m2AJsFcaZVUgk=
+X-Received: by 2002:a05:6402:4388:b0:419:443d:b4e9 with SMTP id
+ o8-20020a056402438800b00419443db4e9mr3409290edc.149.1648079494776; Wed, 23
+ Mar 2022 16:51:34 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [RFC PATCH 10/47] mm: asi: Support for global non-sensitive
- direct map allocations
-Content-Language: en-US
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        pbonzini@redhat.com, jmattson@google.com, pjt@google.com,
-        oweisse@google.com, alexandre.chartre@oracle.com,
-        rppt@linux.ibm.com, dave.hansen@linux.intel.com,
-        peterz@infradead.org, tglx@linutronix.de, luto@kernel.org,
-        linux-mm@kvack.org
-References: <20220223052223.1202152-1-junaids@google.com>
- <20220223052223.1202152-11-junaids@google.com>
- <YjuL80tuvUbAWWKW@casper.infradead.org>
-From:   Junaid Shahid <junaids@google.com>
-In-Reply-To: <YjuL80tuvUbAWWKW@casper.infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220316024432.1454366-1-dlatypov@google.com> <CABVgOSkvmuiHfG11VRsQhigOLw_-5HYWjJrQrA4Vy18MvUpW9w@mail.gmail.com>
+ <CAGS_qxpCoyr0_xpRVpjMwAALn49iShGAs-MuBrYHwrEJhKcZUA@mail.gmail.com>
+In-Reply-To: <CAGS_qxpCoyr0_xpRVpjMwAALn49iShGAs-MuBrYHwrEJhKcZUA@mail.gmail.com>
+From:   Brendan Higgins <brendanhiggins@google.com>
+Date:   Wed, 23 Mar 2022 19:51:23 -0400
+Message-ID: <CAFd5g46N6kbcknJxAug3nkEqe5Q+UuqYAfh8AhPkfPzeQFX8PA@mail.gmail.com>
+Subject: Re: [PATCH] kunit: split resource API from test.h into new resource.h
+To:     Daniel Latypov <dlatypov@google.com>
+Cc:     David Gow <davidgow@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Matthew,
+On Wed, Mar 16, 2022 at 12:19 PM 'Daniel Latypov' via KUnit
+Development <kunit-dev@googlegroups.com> wrote:
+>
+> On Wed, Mar 16, 2022 at 12:41 AM David Gow <davidgow@google.com> wrote:
+> >
+> > On Wed, Mar 16, 2022 at 10:44 AM Daniel Latypov <dlatypov@google.com> wrote:
+> > >
+> > > Background:
+> > > Currently, a reader looking at kunit/test.h will find the file is quite
+> > > long, and the first meaty comment is a doc comment about struct
+> > > kunit_resource.
+> > >
+> > > Most users will not ever use the KUnit resource API directly.
+> > > They'll use kunit_kmalloc() and friends, or decide it's simpler to do
+> > > cleanups via labels (it often can be) instead of figuring out how to use
+> > > the API.
+> > >
+> >
+> > A depressing (but probably not untrue) thought. I think that, even if
+>
+> I'm not sure it's that depressing.
+> Without some compiler support (e.g. GCC's `cleanup`), I can see there
+> being a number of one-off things that don't warrant formalizing into a
+> resource.
+>
+> More detail:
+> It works OK when there's one pointer parameter, e.g. [1], but I feel
+> like you'd normally need to capture at least one more local variable.
+> So then you need to define a new struct to hold all the values, which
+> is where I'd draw the line personally.
+>
+> [1] https://elixir.bootlin.com/linux/v5.17-rc8/source/lib/kunit/executor_test.c#L182
+>
+> > most people were to use the resource API, having it in test.h makes it
+> > harder, as having the resource functions separate makes it easier to
+> > understand as well.
+> >
+> > > It's also logically separate from everything else in test.h.
+> > > Removing it from the file doesn't cause any compilation errors (since
+> > > struct kunit has `struct list_head resources` to store them).
+> > >
+> > > This commit:
+> > > Let's move it into a kunit/resource.h file and give it a separate page
+> > > in the docs, kunit/api/resource.rst.
+> >
+> > Yay! This makes a lot of sense to me, as I've wasted a lot of time
+> > scrolling through test.h.
+> >
+> > >
+> > > We include resource.h at the bottom of test.h since
+> > > * don't want to force existing users to add a new include if they use the API
+> > > * it accesses `lock` inside `struct kunit` in a inline func
+> > >   * so we can't just forward declare, and the alternatives require
+> > >     uninlining the func, adding hepers to lock/unlock, or other more
+> > >     invasive changes.
+> >
+> > I don't like this, but still think it's an improvement on what we have
+> > now. Ultimately, I think adding helpers to lock/unlock or similar and
+>
+> Yes, I can see us maybe needing this in the future.
+> Right now, outside of test.c, there's only one callsite for each (in
+> resource.h).
 
-On 3/23/22 14:06, Matthew Wilcox wrote:
-> On Tue, Feb 22, 2022 at 09:21:46PM -0800, Junaid Shahid wrote:
->> standard ASI instances. A new page flag is also added so that when
->> these pages are freed, they can also be unmapped from the ASI page
->> tables.
-> 
-> It's cute how you just throw this in as an aside.  Page flags are
-> in high demand and just adding them is not to be done lightly.  Is
-> there any other way of accomplishing what you want?
-> 
+Another alternative workaround is to split even more stuff out into
+other header files.
 
-I suppose we may be able to use page_ext instead. That certainly should be 
-feasible for the PG_local_nonsensitive flag introduced in a later patch, 
-although I am not completely sure about the PG_global_nonsensitive flag. That 
-could get slightly tricky (though likely still possible to do) in case we need 
-to allocate any non-sensitive memory before page_ext is initialized. One concern 
-with using page_ext could be the extra memory usage on large machines.
+Personally I would prefer not to wrap the lock/unlock functions; I
+like seeing the kind of locking that's happening. Plus, such a helper
+would be pretty gross:
 
-BTW is page flag scarcity an issue on 64-bit systems as well, or only 32-bit 
-systems? ASI is only supported on 64-bit systems (at least currently).
+void kunit_lock(struct kunit *test, unsigned long* flags) {...}
 
->> @@ -542,6 +545,12 @@ TESTCLEARFLAG(Young, young, PF_ANY)
->>   PAGEFLAG(Idle, idle, PF_ANY)
->>   #endif
->>   
->> +#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
->> +__PAGEFLAG(GlobalNonSensitive, global_nonsensitive, PF_ANY);
-> 
-> Why is PF_ANY appropriate?
-> 
+It wouldn't actually clean up the call site, just facilitate breaking
+out code into a header.
 
-I think we actually can use PF_HEAD here. That would make the alloc_pages path 
-faster too. I'll change to that. (Initially I had gone with PF_ANY because in 
-theory, you could allocate a compound page and then break it later and free the 
-individual pages, but I don't know if that actually happens apart from THP, and 
-certainly doesn't look like the case for any of the stuff that we have marked as 
-non-sensitive.)
+> > making users include this separately is probably the right thing to
+> > do, as nesting the headers like this is a bit ugly, but I won't lose
+> > sleep over leaving it till later.
+>
+> Ack, I can add a TODO to indicate we want to clean this up?
 
-Thanks,
-Junaid
+I am fine with this.
+
+> It's a bit annoying right now, but it'll only get more annoying in the future.
+>
+> >
+> > >
+> > > Now the first big comment in test.h is about kunit_case, which is a lot
+> > > more relevant to what a new user wants to know.
+> > >
+> > > A side effect of this is git blame won't properly track history by
+> > > default, users need to run
+> > > $ git blame -L ,1 -C17 include/kunit/resource.h
+> >
+> > This is a pain, but is probably worth it. Thanks for including the
+> > command in the commit message, which should mitigate it slightly.
+> >
+> > >
+> > > Signed-off-by: Daniel Latypov <dlatypov@google.com>
+> > > ---
+> >
+> > This was starting to annoy me, too, as it was a pain to read through
+> > everything in test.h. It'll be a bit of short-term pain,
+> > merge-conflict wise if we have other changes to the resource system
+> > (which I fear is likely), but is worth it.
+> >
+> > Reviewed-by: David Gow <davidgow@google.com>
+> >
+> > -- David
+> >
+> > >
+> > > NOTE: this file doesn't split out code from test.c to a new resource.c
+> > > file.
+> > > I'm primarily concerned with users trying to read the headers, so I
+> > > didn't think messing up git blame (w/ default settings) was worth it.
+> > > But I can make that change if it feels appropriate (it might also be
+> > > messier).
+> >
+> > Personally, I think it's probably worth splitting this out as well.
+> > And the sooner we do it, the less history we'll obscure. :-)
+>
+> Yeah, that was my thought.
+> But if you think this would help users, then I think we have a case to
+> make this change.
+>
+> Should I send a v2 with resource.c split out?
+> Brendan (and any others who have an opinion), what's your preference?
+
+I personally don't think test.c is so huge that it is a problem to
+understand, but I can see it getting there.
+
+If it's going to happen, sooner is probably better.
+
+> >
+> > But I agree, it's less of an issue as it only directly affects people
+> > working on KUnit itself. Though making it easier for users to find and
+> > read the implementation of these functions could help them understand
+> > API "gotchas", so I think it's worthwhile.
+> >
+> > >
+> > > ---
+> > >  Documentation/dev-tools/kunit/api/index.rst   |   5 +
+> > >  .../dev-tools/kunit/api/resource.rst          |  13 +
+> > >  include/kunit/resource.h                      | 319 ++++++++++++++++++
+> > >  include/kunit/test.h                          | 301 +----------------
+> > >  4 files changed, 339 insertions(+), 299 deletions(-)
+> > >  create mode 100644 Documentation/dev-tools/kunit/api/resource.rst
+> > >  create mode 100644 include/kunit/resource.h
+> > >
+> > <...snip...>
