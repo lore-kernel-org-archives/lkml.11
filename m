@@ -2,147 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 703E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 23:38:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 765DFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 23:38:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346881AbiCWXjh (ORCPT
+        id S1346797AbiCWXhw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 19:39:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53660 "EHLO
+        Wed, 23 Mar 2022 19:37:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347112AbiCWXiw (ORCPT
+        with ESMTP id S1345968AbiCWXht (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 19:38:52 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD6A770047
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 16:37:20 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id y10so3692689edv.7
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 16:37:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=lYs3d+G/MqnkVL5mPK5nuhjYbBx01naVFSe4Xk42kfM=;
-        b=lKb4AaK6N9O62KVZSBFpoXMFMKi2DX++d0hcldo7VKltrYvP1ZV+I9dYXZlx13MpxC
-         U6xbiC42KS2p1EnoJU/ZpUu2VFNzNn/B5ByWL9Zt/vr5XdA+yDneUYBZIcau3mhQ0muv
-         V4ah+EZCicq3OsyPu2g/e6akuJDlkHFQFQdx2jnBGU1XDVC3q67LkJ1lTpu2QD3b10Gm
-         //++HMvqfQRnNJ7DQNGYM/1Pf8y6AjoqHMxScOBz3cW/cZXBbkCYsHBTNfYHMC39INi5
-         cHWn+JRXaDWTnRSK6VSSXCSqWAo9ASLt+74RRIvM/eLnYs1Iz3CUqvYDSdMrTd/CQ+rq
-         7Uww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=lYs3d+G/MqnkVL5mPK5nuhjYbBx01naVFSe4Xk42kfM=;
-        b=fUxc2tXYcw1i7cznGhUjBF8chkm4NdWgwKdJ9tJUEVXict4/ZaJ1dGzlD13Z5rR4PX
-         QiiCrtTx23j9IKqFjbsY+opR7KsSM3KKM6W19dhGXhw1w6nne+4nMvkP2MCY5PW0J1Jq
-         Opa3imdrYTbvUeTtNGSOWp2Ns7v3A3gs/NOkWImZPKYm46VbD9pNwMBCKDMmi6/Nx+/E
-         9gT0GT4g91wURqu9A9n9xeLTe2wEbYU0sacDnEOp66blXfwLZVLeqSqSbxrP31eXedQS
-         /LG5KmPfo3wv8FBJAw3p7OArJdkgkV7pvgReGzvZKYb/NVjgnX9qk39E9ns910HjnAqm
-         iLow==
-X-Gm-Message-State: AOAM5310971i5uz+T5FtPc0drMtj6nXCpw+R6li9NNXwa5Tv1z7IajiB
-        EdR1UuMJtwDoo63eplESkHfkzUSG+tPA7WVBBCch3g==
-X-Google-Smtp-Source: ABdhPJwADoSTh9axrzXODWW9/zmv/BOuIsIRoK4uginvkl+fxm/Pmh4atOmF02EcDNdhjJn90v29djoFR8TlCQGU8F0=
-X-Received: by 2002:a50:9b4f:0:b0:419:49af:429c with SMTP id
- a15-20020a509b4f000000b0041949af429cmr3390112edj.276.1648078639171; Wed, 23
- Mar 2022 16:37:19 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220322095223.GG8477@blackbody.suse.cz> <CABdmKX2hZChBO09xfhqB7EbH6RY9JdmDp7zh23DaGuwidn=v4w@mail.gmail.com>
-In-Reply-To: <CABdmKX2hZChBO09xfhqB7EbH6RY9JdmDp7zh23DaGuwidn=v4w@mail.gmail.com>
-From:   "T.J. Mercier" <tjmercier@google.com>
-Date:   Wed, 23 Mar 2022 16:37:08 -0700
-Message-ID: <CABdmKX3Un=k3yU1BuCnEEoZkOqMovVrjcg=GiqDEtLZD_awX3g@mail.gmail.com>
-Subject: Re: [RFC v3 5/8] dmabuf: Add gpu cgroup charge transfer function
-To:     =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        Liam Mark <lmark@codeaurora.org>,
-        Laura Abbott <labbott@redhat.com>,
-        Brian Starkey <Brian.Starkey@arm.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Kalesh Singh <kaleshsingh@google.com>, Kenny.Ho@amd.com,
-        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org, cgroups@vger.kernel.org,
-        "Subject: Re: [RFC v3 5/8] dmabuf: Add gpu cgroup charge transfer
-        function Reply-To: In-Reply-To:" 
-        <CABdmKX3+mTjxWzgrv44SKWT7mdGnQKMrv6c26d=iWdNPG7f1VQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Wed, 23 Mar 2022 19:37:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15FC26E781;
+        Wed, 23 Mar 2022 16:36:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4F55B8217F;
+        Wed, 23 Mar 2022 23:36:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8342BC340EE;
+        Wed, 23 Mar 2022 23:36:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648078576;
+        bh=OhUtQJJcoj3Jnk+YaF08+vf4O/Og/N3qZbD+HriaA6o=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=FxYxD7nCVLDq6hbcb3BiqybyqBqZNuMPjqlSSwRXchs5bpYJ/FdHkokYDmMRSwtg8
+         Emnn3ie0xYYJyPLLiHISd5/3FvuPX5i8WLGJ1g3Hq0qe2D4N2skzt3SLdgNR+aD1S6
+         SmJehFYCaRYRVDw2wAulnS1y6Fxyl/4LpozIeUXzLThQ2UdG3Li8XlejVFYtvRL+vL
+         2dFoZedKeCHigpzmKnBrQ3Np2dbspRdXcEs5dHgl6QL3ECRO1jELBgYqQWf+jVfCsS
+         FRO050UwMzvGWg2WaT6z+6898bli1aiZOo8m5LKDmWc9EFRiVxicJ7VY5Q904ID3z8
+         msZeTBvnX7DLQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 71078E6D402;
+        Wed, 23 Mar 2022 23:36:16 +0000 (UTC)
+Subject: Re: [GIT PULL] fbdev updates & fixes for v5.18-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <YjokKxSLtqMwyLyB@ls3530>
+References: <YjokKxSLtqMwyLyB@ls3530>
+X-PR-Tracked-List-Id: Direct Rendering Infrastructure - Development
+ <dri-devel.lists.freedesktop.org>
+X-PR-Tracked-Message-Id: <YjokKxSLtqMwyLyB@ls3530>
+X-PR-Tracked-Remote: http://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev.git tags/for-5.18/fbdev-1
+X-PR-Tracked-Commit-Id: e445c8b2aa2df0e49f6037886c32d54a5e3960b1
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 9c4b86ebf5bfdaceba4bedbaf76e4ff745db17ef
+Message-Id: <164807857645.14397.13955122823620181053.pr-tracker-bot@kernel.org>
+Date:   Wed, 23 Mar 2022 23:36:16 +0000
+To:     Helge Deller <deller@gmx.de>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 9:47 AM T.J. Mercier <tjmercier@google.com> wrote:
->
-> On Tue, Mar 22, 2022 at 2:52 AM Michal Koutn=C3=BD <mkoutny@suse.com> wro=
-te:
-> >
-> > On Mon, Mar 21, 2022 at 04:54:26PM -0700, "T.J. Mercier"
-> > <tjmercier@google.com> wrote:
-> > > Since the charge is duplicated in two cgroups for a short period
-> > > before it is uncharged from the source cgroup I guess the situation
-> > > you're thinking about is a global (or common ancestor) limit?
-> >
-> > The common ancestor was on my mind (after the self-shortcut).
-> >
-> > > I can see how that would be a problem for transfers done this way and
-> > > an alternative would be to swap the order of the charge operations:
-> > > first uncharge, then try_charge. To be certain the uncharge is
-> > > reversible if the try_charge fails, I think I'd need either a mutex
-> > > used at all gpucg_*charge call sites or access to the gpucg_mutex,
-> >
-> > Yes, that'd provide safe conditions for such operations, although I'm
-> > not sure these special types of memory can afford global lock on their
-> > fast paths.
->
-> I have a benchmark I think is suitable, so let me try this change to
-> the transfer implementation and see how it compares.
+The pull request you sent on Tue, 22 Mar 2022 20:31:55 +0100:
 
-I added a mutex to struct gpucg which is locked when charging the
-cgroup initially during allocation, and also only for the source
-cgroup during dma_buf_charge_transfer. Then I used a multithreaded
-benchmark where each thread allocates 4, 8, 16, or 32 DMA buffers and
-then sends them through Binder to another process with charge transfer
-enabled. This was intended to generate contention for the mutex in
-dma_buf_charge_transfer. The results of this benchmark show that the
-difference between a mutex protected charge transfer and an
-unprotected charge transfer is within measurement noise. The worst
-data point shows about 3% overheard for the mutex.
+> http://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev.git tags/for-5.18/fbdev-1
 
-So I'll prep this change for the next revision. Thanks for pointing it out.
->
-> >
-> > > which implies adding transfer support to gpu.c as part of the gpucg_*
-> > > API itself and calling it here. Am I following correctly here?
-> >
-> > My idea was to provide a special API (apart from
-> > gpucp_{try_charge,uncharge}) to facilitate transfers...
-> >
-> > > This series doesn't actually add limit support just accounting, but
-> > > I'd like to get it right here.
-> >
-> > ...which could be implemented (or changed) depending on how the chargin=
-g
-> > is realized internally.
-> >
-> >
-> > Michal
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/9c4b86ebf5bfdaceba4bedbaf76e4ff745db17ef
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
