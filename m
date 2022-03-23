@@ -2,90 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 640BFC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 10:50:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFB5CC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 10:52:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235347AbiCWKvn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 06:51:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39068 "EHLO
+        id S242443AbiCWKxh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 06:53:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233371AbiCWKvm (ORCPT
+        with ESMTP id S235336AbiCWKxe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 06:51:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEAFA75C3C;
-        Wed, 23 Mar 2022 03:50:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5373C61180;
-        Wed, 23 Mar 2022 10:50:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AB96FC340E9;
-        Wed, 23 Mar 2022 10:50:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648032611;
-        bh=kjeZ9alUc2aWCvK8F3N4ELOWHGXAyCN/wyWHw77ecyM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=m+R/v48GTVq6Nw0Y2NiGubmq/CXboOdaZKUJrWodtdkNCuBT+/GorN9ibMklBvltu
-         7Ezlzpktyx54ZJTf04yYbhGSJsJEp0GHcQ1Ipoc/cPAquzAgYzAFNhkuGYtp0wMRmQ
-         d/6IkwdClmOh8meJc2Alq13p0cgLEg+NTYjsFXFIE8M688F+itd8VcQ0g8yB9+IuaU
-         EjmgNw1NRWVWlYKM8AaCf89jQlGTpgcOHquCjWAqPNP+JQHU/Eq8gTN5EfPAjJiKgb
-         fj3cX79WIMmL+h1MdHfwYynzL4++93tTxT/YeZPVoAb05pDlkuqXB9aTBlAwQ6OY95
-         QlWXbVptvxJSw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 85DF4EAC096;
-        Wed, 23 Mar 2022 10:50:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Wed, 23 Mar 2022 06:53:34 -0400
+Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DBEC76E2E;
+        Wed, 23 Mar 2022 03:52:04 -0700 (PDT)
+Received: by mail-ed1-f46.google.com with SMTP id w25so1322754edi.11;
+        Wed, 23 Mar 2022 03:52:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:content-language:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=rN9pveEJ29B8GyStVJYVmzF67QmvDcdu3gRq0V/RTnw=;
+        b=P7FuyBTO7HWXeDjAS6mNfJiSEhmSbBUcQZHVVBwi8pVEllamU/GAQPnZvinH35hTmJ
+         hNVoe6uShj80WhwHLpx0Y6EO+0tpx/rTLfvPkWB0GRqUjtV7QSWbMS+dNbGazTcVScjE
+         8Zr8jYtfekfQcxzSJ0/pb4cjG5mRhhyJJoYTmsMw88lkJBWhsWSEDE5kF5IIuI050OcL
+         xYKXwpDyS3WIJalJtUkK94BBZQ/KDQ1t6NpvHR8Drca8mtiFsXHEn24dKl7YbQCfoLLh
+         Y56ySD6/Gn5VpBmNZtGL88cY6scASHSdOECyxRUht2UeG40M3H9WZPvOvpBmz6/o/eqi
+         +kKw==
+X-Gm-Message-State: AOAM533D3g841UuDzMiNBtEUzv/BqsiorL8PmiL5/xbG597dpbY8NvzS
+        VSeFhdIHQBeVlZja2/jeMAE=
+X-Google-Smtp-Source: ABdhPJzB6AoxcGP4trJZVuO/kcv6Lsp1C4jKdPniKJuuwATRMLZRDeX9D8QFuOjnBqPc+JoTnCWwQg==
+X-Received: by 2002:aa7:c415:0:b0:418:f844:23d9 with SMTP id j21-20020aa7c415000000b00418f84423d9mr33443387edq.337.1648032722761;
+        Wed, 23 Mar 2022 03:52:02 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.googlemail.com with ESMTPSA id y27-20020a170906519b00b006dfaf4466ebsm7271424ejk.116.2022.03.23.03.52.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Mar 2022 03:52:02 -0700 (PDT)
+Message-ID: <2608d7bc-2c23-8c66-efcc-77d2e23dee61@kernel.org>
+Date:   Wed, 23 Mar 2022 11:52:00 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] Bluetooth: mt7921s: Fix the incorrect pointer check
-From:   patchwork-bot+bluetooth@kernel.org
-Message-Id: <164803261154.27387.6013475934933962209.git-patchwork-notify@kernel.org>
-Date:   Wed, 23 Mar 2022 10:50:11 +0000
-References: <5d56b2a23e6e793c64ed98890329ce1beb010ce0.1647991506.git.objelf@gmail.com>
-In-Reply-To: <5d56b2a23e6e793c64ed98890329ce1beb010ce0.1647991506.git.objelf@gmail.com>
-To:     Sean Wang <sean.wang@mediatek.com>
-Cc:     marcel@holtmann.org, johan.hedberg@gmail.com,
-        Soul.Huang@mediatek.com, YN.Chen@mediatek.com,
-        Leon.Yen@mediatek.com, Eric-SY.Chang@mediatek.com,
-        Deren.Wu@mediatek.com, km.lin@mediatek.com,
-        robin.chiu@mediatek.com, Eddie.Chen@mediatek.com,
-        ch.yeh@mediatek.com, posh.sun@mediatek.com, ted.huang@mediatek.com,
-        Eric.Liang@mediatek.com, Stella.Chang@mediatek.com,
-        Tom.Chou@mediatek.com, steve.lee@mediatek.com, jsiuda@google.com,
-        frankgor@google.com, abhishekpandit@google.com,
-        michaelfsun@google.com, mcchou@chromium.org, shawnku@google.com,
-        linux-bluetooth@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        yake.yang@mediatek.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH 0/7] ARM: dts: s5pv210: Bugfixes, features, and
+ improvements
+Content-Language: en-US
+To:     Jonathan Bakker <xc-racer2@live.ca>, alim.akhtar@samsung.com
+Cc:     robh+dt@kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <CY4PR04MB05677B4C4E26A8A179F6ABC0CB179@CY4PR04MB0567.namprd04.prod.outlook.com>
+ <CY4PR04MB05673676DA7E6E4BF275305ECB179@CY4PR04MB0567.namprd04.prod.outlook.com>
+In-Reply-To: <CY4PR04MB05673676DA7E6E4BF275305ECB179@CY4PR04MB0567.namprd04.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+On 22/03/2022 21:21, Jonathan Bakker wrote:
+> Sorry, it appears that I ran into connectivity issues part way through sending
+> the patchset.  Should I resend the entire series or is there a way to get
+> git send-email to retry/continue?
 
-This patch was applied to bluetooth/bluetooth-next.git (master)
-by Marcel Holtmann <marcel@holtmann.org>:
-
-On Wed, 23 Mar 2022 07:30:40 +0800 you wrote:
-> From: Sean Wang <sean.wang@mediatek.com>
-> 
-> Fix the incorrect pointer check on ven_data.
-> 
-> Fixes: f41b91fa1783 ("Bluetooth: mt7921s: Add .btmtk_get_codec_config_data")
-> Co-developed-by: Yake Yang <yake.yang@mediatek.com>
-> Signed-off-by: Yake Yang <yake.yang@mediatek.com>
-> Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-> 
-> [...]
-
-Here is the summary with links:
-  - Bluetooth: mt7921s: Fix the incorrect pointer check
-    https://git.kernel.org/bluetooth/bluetooth-next/c/864cc8a234cd
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+With git send-email you can always send remaining patches with
+--no-thread and --in-reply-to=XXX, providing valid message ID.
 
 
+Best regards,
+Krzysztof
