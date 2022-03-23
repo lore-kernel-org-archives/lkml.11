@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87857C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 18:49:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13051C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 18:49:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344068AbiCWSvD (ORCPT
+        id S1344070AbiCWSvL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 14:51:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49034 "EHLO
+        Wed, 23 Mar 2022 14:51:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344036AbiCWSu6 (ORCPT
+        with ESMTP id S1344032AbiCWSvB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 14:50:58 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB36606C9
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 11:49:28 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id j15-20020a17090a2a8f00b001c6d6b729f1so1537217pjd.3
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 11:49:28 -0700 (PDT)
+        Wed, 23 Mar 2022 14:51:01 -0400
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66D7C60CC8
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 11:49:31 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id g19-20020a17090a579300b001b9d80f3714so1528204pji.7
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 11:49:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=qTS21wkEWABNY1jzlT826LGEEw+Mx9qBCQN67s1iDR0=;
-        b=ojSuOEDbQMMJrJdn8gzbLSLOHX10VrXaeCYOwNgJtqZXGAxsdk0LnEnzw+WEL9URty
-         RKgVq5IJFM2+stHUcL+5KyUa+67vcJ2iwyVPUqz1JIxV4o2FkwMR1hLy2XO+nUtUdqg/
-         /Z8popm0QbG58Ijeh8QfmRgWF9E//Pe5mZ/lLbjjuv5/dAqpEvC1m0+Uo731v7qyY3ha
-         WPZgePdvuwcW2LFVqlMiHf+QzFHb5rj5Zxn5rMezvOc+PYYAdM9SKZPrSw9NiusFSTzn
-         z/aZp2AoIoTLOEsm2mWTzsk8Pxdj9MCEioKW8GWwtNzcA3Dh3VL8k27p1fwQAlC+7Ow7
-         e81w==
+        bh=i3y/R2G/yOzk3wi7p2qOKXA2BvyWMGeSAE7HqxAnaPU=;
+        b=eZP/RLC9xeAaOFNwwbxYUIxPtQMvTN3IXnMmR4pGyi2YtpEhddJBpbpmaTPlJD1MYD
+         1LivnC4WvLcy+TtAP1TFFzuD35h42ZXmVOtHd4cn7vMNKfDVtNNrKdVPLAfNJnajfCsb
+         c8DX7jLm1/Da4Cv8rR+1R2oBGizMEEbDZoaWHGXlr5I9XdE4M1aMRAc6VjZxJ+wyU6KC
+         OBZoBMaArnYbwAU3rogO0VToAPFYgdJY//UDGCMX6YljpHNPHkHAwHMoPOld2MbEBSKF
+         d8WjcmsMnQYBKH6f2XJ1VP19vPxMpbypqayzj/MUSwLpUkChdDY1hmBHhP2ZRb3KhWQf
+         GC1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=qTS21wkEWABNY1jzlT826LGEEw+Mx9qBCQN67s1iDR0=;
-        b=yvkcOuT6ZpE3719Sx84S5P8pCJl324jWKq3R61xCYwSEXcyszp3SbQwVm5b0QfiG9O
-         37Xa55I4LPjV1tpiRedmt11k3OMMcz0iT3EeB8HM73+ltGEPizojtjH7guCcGIeY61MN
-         E5jO5ULlkWYwRfzspio1U9/f/jZifza56MQWSFXBvDlyTyby7bgErvCxUEBNYOTdU1Q1
-         5HPsfSC3U27zLJSVSbj23386ycKzOuK2p+wOh2M5NZKvGRNBdVWVWqJajEE0ja200Rep
-         HLtnxarZpWALW7qD6gjuUieL5wADYKh4yGhQpMKuAFGpb/C/cuYxmoee+bQIBbWFuU9k
-         Rl2Q==
-X-Gm-Message-State: AOAM530ufpGqnO6PuDMUUdOouHe76ac/MBQKPj8oEeB20wwjjWJT3Geg
-        edIRuZ8ueKSpp74DyGzTGRHizknm/CsD
-X-Google-Smtp-Source: ABdhPJyoVcF8h6jck24aHkxoGr/x2SGTRsrf5r2aJG6aCMt9tl3FAUkOyFAPpHl2MoKfj7GT64tuvM2YzQIr
+        bh=i3y/R2G/yOzk3wi7p2qOKXA2BvyWMGeSAE7HqxAnaPU=;
+        b=al2jpc6UGjq88tPvgHB6PayGjZbdSOr9+goTby8Lqi9+T0zUKgdzMERu2vkLvxR7B4
+         Rexot11V4HvJx3ZHH9eOmVa8Tm1hflLvV90lcq2DXNmdEwKohNeN6JFAR7j65Zf4wxyt
+         5SolqR3iANZfGAudBN5QTuNF5JQmzWL/4pW9RhLEEYbxl/c+S8u8jg5+7tKxyHaMjIb5
+         nuIEZ2FB+M+IvF8lsxeBmHXo6JtyoYCt0Qt+yOQL33TBrDNk72SKHwb4rmgpUQ/rT3rG
+         7d1lzR1gZSsM+oBK1idoupNknuy5o6S9ERgCm8gn03Jj3nujGadMIU+sus/oz1fSisn9
+         7WxQ==
+X-Gm-Message-State: AOAM531TBOnHSFG+mXgJxTU0WKBwSelZkBIzS4PNvutG2Vk+QlmBw4ux
+        QHpw0z70iJtI3GRJfi9EZrGnwoeuwiBJ
+X-Google-Smtp-Source: ABdhPJwy9+hoP4haE+2RiusYHIP0dKJx4cZVl9ra6s7X/D91BaloL9b86cNA0SFB2RLUzX7nIuAmslbBtlfI
 X-Received: from mizhang-super.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1071])
- (user=mizhang job=sendgmr) by 2002:a17:903:2411:b0:151:8304:6936 with SMTP id
- e17-20020a170903241100b0015183046936mr1432965plo.134.1648061367699; Wed, 23
- Mar 2022 11:49:27 -0700 (PDT)
+ (user=mizhang job=sendgmr) by 2002:a17:90a:1d04:b0:1bc:98ca:5e6f with SMTP id
+ c4-20020a17090a1d0400b001bc98ca5e6fmr13721397pjd.32.1648061370937; Wed, 23
+ Mar 2022 11:49:30 -0700 (PDT)
 Reply-To: Mingwei Zhang <mizhang@google.com>
-Date:   Wed, 23 Mar 2022 18:49:12 +0000
+Date:   Wed, 23 Mar 2022 18:49:14 +0000
 In-Reply-To: <20220323184915.1335049-1-mizhang@google.com>
-Message-Id: <20220323184915.1335049-3-mizhang@google.com>
+Message-Id: <20220323184915.1335049-5-mizhang@google.com>
 Mime-Version: 1.0
 References: <20220323184915.1335049-1-mizhang@google.com>
 X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
-Subject: [PATCH v2 1/4] selftests: KVM: Dump VM stats in binary stats test
+Subject: [PATCH v2 3/4] KVM: x86/mmu: explicitly check nx_hugepage in disallowed_hugepage_adjust()
 From:   Mingwei Zhang <mizhang@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -72,198 +72,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Gardon <bgardon@google.com>
+Add extra check to specify the case of nx hugepage and allow KVM to
+reconstruct large mapping after dirty logging is disabled. Existing code
+works only for nx hugepage but the condition is too general in that does
+not consider other usage case (such as dirty logging). Note that
+when dirty logging is disabled, KVM calls kvm_mmu_zap_collapsible_sptes()
+which only zaps leaf SPTEs. Moreover, existing code assumes that a present
+PMD or PUD indicates that there exist 'smaller SPTEs' under the paging
+structure. This assumption may no be true if KVM zaps only leafs in MMU.
 
-Add kvm_util library functions to read KVM stats through the binary
-stats interface and then dump them to stdout when running the binary
-stats test. Subsequent commits will extend the kvm_util code and use it
-to make assertions in a test for NX hugepages.
+Missing the check causes KVM incorrectly regards the faulting page as a NX
+huge page and refuse to map it at desired level. And this leads to back
+performance issue in shadow mmu and potentially in TDP mmu as well.
 
-CC: Jing Zhang <jingzhangos@google.com>
-Signed-off-by: Ben Gardon <bgardon@google.com>
+Fixes: b8e8c8303ff2 ("kvm: mmu: ITLB_MULTIHIT mitigation")
+Cc: stable@vger.kernel.org
+
+Reviewed-by: Ben Gardon <bgardon@google.com>
+Signed-off-by: Mingwei Zhang <mizhang@google.com>
 ---
- .../selftests/kvm/include/kvm_util_base.h     |   1 +
- .../selftests/kvm/kvm_binary_stats_test.c     |   3 +
- tools/testing/selftests/kvm/lib/kvm_util.c    | 143 ++++++++++++++++++
- 3 files changed, 147 insertions(+)
+ arch/x86/kvm/mmu/mmu.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index 4ed6aa049a91..160b9ad8474a 100644
---- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-+++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -392,6 +392,7 @@ void assert_on_unhandled_exception(struct kvm_vm *vm, uint32_t vcpuid);
- 
- int vm_get_stats_fd(struct kvm_vm *vm);
- int vcpu_get_stats_fd(struct kvm_vm *vm, uint32_t vcpuid);
-+void dump_vm_stats(struct kvm_vm *vm);
- 
- uint32_t guest_get_vcpuid(void);
- 
-diff --git a/tools/testing/selftests/kvm/kvm_binary_stats_test.c b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-index 17f65d514915..afc4701ce8dd 100644
---- a/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-+++ b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-@@ -174,6 +174,9 @@ static void vm_stats_test(struct kvm_vm *vm)
- 	stats_test(stats_fd);
- 	close(stats_fd);
- 	TEST_ASSERT(fcntl(stats_fd, F_GETFD) == -1, "Stats fd not freed");
-+
-+	/* Dump VM stats */
-+	dump_vm_stats(vm);
- }
- 
- static void vcpu_stats_test(struct kvm_vm *vm, int vcpu_id)
-diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index d8cf851ab119..d9c660913403 100644
---- a/tools/testing/selftests/kvm/lib/kvm_util.c
-+++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -2517,3 +2517,146 @@ int vcpu_get_stats_fd(struct kvm_vm *vm, uint32_t vcpuid)
- 
- 	return ioctl(vcpu->fd, KVM_GET_STATS_FD, NULL);
- }
-+
-+/* Caller is responsible for freeing the returned kvm_stats_header. */
-+static struct kvm_stats_header *read_vm_stats_header(int stats_fd)
-+{
-+	struct kvm_stats_header *header;
-+	ssize_t ret;
-+
-+	/* Read kvm stats header */
-+	header = malloc(sizeof(*header));
-+	TEST_ASSERT(header, "Allocate memory for stats header");
-+
-+	ret = read(stats_fd, header, sizeof(*header));
-+	TEST_ASSERT(ret == sizeof(*header), "Read stats header");
-+
-+	return header;
-+}
-+
-+static void dump_header(int stats_fd, struct kvm_stats_header *header)
-+{
-+	ssize_t ret;
-+	char *id;
-+
-+	printf("flags: %u\n", header->flags);
-+	printf("name size: %u\n", header->name_size);
-+	printf("num_desc: %u\n", header->num_desc);
-+	printf("id_offset: %u\n", header->id_offset);
-+	printf("desc_offset: %u\n", header->desc_offset);
-+	printf("data_offset: %u\n", header->data_offset);
-+
-+	/* Read kvm stats id string */
-+	id = malloc(header->name_size);
-+	TEST_ASSERT(id, "Allocate memory for id string");
-+	ret = pread(stats_fd, id, header->name_size, header->id_offset);
-+	TEST_ASSERT(ret == header->name_size, "Read id string");
-+
-+	printf("id: %s\n", id);
-+
-+	free(id);
-+}
-+
-+static ssize_t stats_desc_size(struct kvm_stats_header *header)
-+{
-+	return sizeof(struct kvm_stats_desc) + header->name_size;
-+}
-+
-+/* Caller is responsible for freeing the returned kvm_stats_desc. */
-+static struct kvm_stats_desc *read_vm_stats_desc(int stats_fd,
-+						 struct kvm_stats_header *header)
-+{
-+	struct kvm_stats_desc *stats_desc;
-+	size_t size_desc;
-+	ssize_t ret;
-+
-+	size_desc = header->num_desc * stats_desc_size(header);
-+
-+	/* Allocate memory for stats descriptors */
-+	stats_desc = malloc(size_desc);
-+	TEST_ASSERT(stats_desc, "Allocate memory for stats descriptors");
-+
-+	/* Read kvm stats descriptors */
-+	ret = pread(stats_fd, stats_desc, size_desc, header->desc_offset);
-+	TEST_ASSERT(ret == size_desc, "Read KVM stats descriptors");
-+
-+	return stats_desc;
-+}
-+
-+/* Caller is responsible for freeing the memory *data. */
-+static int read_stat_data(int stats_fd, struct kvm_stats_header *header,
-+			  struct kvm_stats_desc *desc, uint64_t **data)
-+{
-+	u64 *stats_data;
-+	ssize_t ret;
-+
-+	stats_data = malloc(desc->size * sizeof(*stats_data));
-+
-+	ret = pread(stats_fd, stats_data, desc->size * sizeof(*stats_data),
-+		    header->data_offset + desc->offset);
-+
-+	/* ret is in bytes. */
-+	ret = ret / sizeof(*stats_data);
-+
-+	TEST_ASSERT(ret == desc->size,
-+		    "Read data of KVM stats: %s", desc->name);
-+
-+	*data = stats_data;
-+
-+	return ret;
-+}
-+
-+static void dump_stat(int stats_fd, struct kvm_stats_header *header,
-+		      struct kvm_stats_desc *desc)
-+{
-+	u64 *stats_data;
-+	ssize_t ret;
-+	int i;
-+
-+	printf("\tflags: %u\n", desc->flags);
-+	printf("\texponent: %u\n", desc->exponent);
-+	printf("\tsize: %u\n", desc->size);
-+	printf("\toffset: %u\n", desc->offset);
-+	printf("\tbucket_size: %u\n", desc->bucket_size);
-+	printf("\tname: %s\n", (char *)&desc->name);
-+
-+	ret = read_stat_data(stats_fd, header, desc, &stats_data);
-+
-+	printf("\tdata: %lu", *stats_data);
-+	for (i = 1; i < ret; i++)
-+		printf(", %lu", *(stats_data + i));
-+	printf("\n\n");
-+
-+	free(stats_data);
-+}
-+
-+void dump_vm_stats(struct kvm_vm *vm)
-+{
-+	struct kvm_stats_desc *stats_desc;
-+	struct kvm_stats_header *header;
-+	struct kvm_stats_desc *desc;
-+	size_t size_desc;
-+	int stats_fd;
-+	int i;
-+
-+	stats_fd = vm_get_stats_fd(vm);
-+
-+	header = read_vm_stats_header(stats_fd);
-+	dump_header(stats_fd, header);
-+
-+	stats_desc = read_vm_stats_desc(stats_fd, header);
-+
-+	size_desc = stats_desc_size(header);
-+
-+	/* Read kvm stats data one by one */
-+	for (i = 0; i < header->num_desc; ++i) {
-+		desc = (void *)stats_desc + (i * size_desc);
-+		dump_stat(stats_fd, header, desc);
-+	}
-+
-+	free(stats_desc);
-+	free(header);
-+
-+	close(stats_fd);
-+}
-+
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 5628d0ba637e..d9b2001d8217 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -2919,6 +2919,16 @@ void disallowed_hugepage_adjust(struct kvm_page_fault *fault, u64 spte, int cur_
+ 	    cur_level == fault->goal_level &&
+ 	    is_shadow_present_pte(spte) &&
+ 	    !is_large_pte(spte)) {
++		struct kvm_mmu_page *sp;
++		u64 page_mask;
++		/*
++		 * When nx hugepage flag is not set, there is no reason to go
++		 * down to another level. This helps KVM re-generate large
++		 * mappings after dirty logging disabled.
++		 */
++		sp = to_shadow_page(spte & PT64_BASE_ADDR_MASK);
++		if (!sp->lpage_disallowed)
++			return;
+ 		/*
+ 		 * A small SPTE exists for this pfn, but FNAME(fetch)
+ 		 * and __direct_map would like to create a large PTE
+@@ -2926,8 +2936,8 @@ void disallowed_hugepage_adjust(struct kvm_page_fault *fault, u64 spte, int cur_
+ 		 * patching back for them into pfn the next 9 bits of
+ 		 * the address.
+ 		 */
+-		u64 page_mask = KVM_PAGES_PER_HPAGE(cur_level) -
+-				KVM_PAGES_PER_HPAGE(cur_level - 1);
++		page_mask = KVM_PAGES_PER_HPAGE(cur_level) -
++			KVM_PAGES_PER_HPAGE(cur_level - 1);
+ 		fault->pfn |= fault->gfn & page_mask;
+ 		fault->goal_level--;
+ 	}
 -- 
 2.35.1.1021.g381101b075-goog
 
