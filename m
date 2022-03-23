@@ -2,118 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B51AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 15:40:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3B18C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 15:43:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238262AbiCWPmU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 11:42:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59294 "EHLO
+        id S238129AbiCWPol (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 11:44:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238256AbiCWPmS (ORCPT
+        with ESMTP id S238237AbiCWPoe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 11:42:18 -0400
-Received: from gateway23.websitewelcome.com (gateway23.websitewelcome.com [192.185.49.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE3DB3ED3A
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 08:40:46 -0700 (PDT)
-Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
-        by gateway23.websitewelcome.com (Postfix) with ESMTP id ECDA72B1F0
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 10:19:35 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id X2lrnuU0g22u3X2lrnIvD3; Wed, 23 Mar 2022 10:19:35 -0500
-X-Authority-Reason: nr=8
+        Wed, 23 Mar 2022 11:44:34 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861076474;
+        Wed, 23 Mar 2022 08:43:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
-        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
-        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=HIStbkOPq4KmqmDgNBDsGitQzT/C57KQ09sUwOZRSMk=; b=ySmUsaeuUBq33rtPaqlamrBkXM
-        S0JULLSndwe4GCVmTtPYfC9A4GmPTPleA3aSm0ibrtL4v2//nN6QTluUExEybGTpsiBnahwMR695d
-        0sjZ8UCxtHWUn3amgZYqJx/1PuS67/ll5m482huAkX0cU+kfbp+oSjiUnYf18URiM20DKPV9OjzFI
-        Tmp5KemWGJSYU0VOID6o567phCG6rWL4C1lr6tvGO8KtXoyl1Y/+UOkONjKv0dyZ0//bvl2AHpqvB
-        gVabAAUvN9OtwOyZj6nlbXq6JOjCQJuQDjOX1jrYBJ86MXBW9SKiBD/LmTmMMPrzadVIX4V2FZV4i
-        I3+QVb9g==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57636 helo=localhost)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nX2lr-002q3w-70; Wed, 23 Mar 2022 15:19:35 +0000
-Date:   Wed, 23 Mar 2022 08:19:33 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=WHGiwoQ7jm4I3reye7XZm6CpTzWoNyjTmyKi+u3jjKg=; b=ioGexHFlIpdyX+fUkuYz69BncV
+        uesxLQja4XtEx1Izn4rjO4JkbJuc38YGAzFGDsK0D9mJa/KQfjONqpT0uglw4lILKXlZKtbIzIB7r
+        XJGOEVe7glYhGDuXXiX6v+Ad0AVihbAhTphVZc+m5EQBAGUyw6WHiYRSTsewasJdsGGQV+3HLJWvN
+        FaSGSr48Jz6TCDAD4c+E9uMZNbduvPlNkXpoQug/Lr2/BVRyWtgIMO9xaDvdY99Z2DRFC4+rX6QKS
+        EwFj0OD0tI2S64abJRyR/Os562RgpOTr4HpNUGlpQHe0FugO1XIXnGU+o2HnpV+Wr516QZHDI6QFl
+        l4EDk7bA==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nX386-00Ce7z-WB; Wed, 23 Mar 2022 15:42:35 +0000
+Date:   Wed, 23 Mar 2022 15:42:34 +0000
+From:   Matthew Wilcox <willy@infradead.org>
 To:     Kees Cook <keescook@chromium.org>
-Cc:     David Gow <davidgow@google.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Vitor Massaru Iha <vitor@massaru.org>,
-        Daniel Latypov <dlatypov@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v2] lib: overflow: Convert to Kunit
-Message-ID: <20220323151933.GA1363768@roeck-us.net>
-References: <20220224054825.1853314-1-keescook@chromium.org>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        kernel test robot <oliver.sang@intel.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        John Garry <john.garry@huawei.com>,
+        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
+        lkp@intel.com, linux-mm@kvack.org, linux-hardening@vger.kernel.org
+Subject: Re: [scsi]  6aded12b10: kernel_BUG_at_mm/usercopy.c
+Message-ID: <Yjs/6pLB1uDKBRCG@casper.infradead.org>
+References: <20220320143453.GD6208@xsang-OptiPlex-9020>
+ <20220323071409.GA25480@lst.de>
+ <202203230809.D63BF9511@keescook>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220224054825.1853314-1-keescook@chromium.org>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nX2lr-002q3w-70
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57636
-X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 3
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+In-Reply-To: <202203230809.D63BF9511@keescook>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On Wed, Feb 23, 2022 at 09:48:25PM -0800, Kees Cook wrote:
-> Convert overflow unit tests to KUnit, for better integration into the
-> kernel self test framework. Includes a rename of test_overflow.c to
-> overflow_kunit.c, and CONFIG_TEST_OVERFLOW to CONFIG_OVERFLOW_KUNIT_TEST.
+On Wed, Mar 23, 2022 at 08:40:30AM -0700, Kees Cook wrote:
+> On Wed, Mar 23, 2022 at 08:14:10AM +0100, Christoph Hellwig wrote:
+> > The actual warning is;
+> > 
+> > [   34.496096][  T331] usercopy: Kernel memory overwrite attempt detected to spans multiple pages (off set 0, size 6)!
+> > 
+> > This is for the cmnd field in struct scsi_cmnd, which is allocated by
+> > the block layer as part of the request allocator.  So with a specific
+> > packing it can legitimately span pages.
+> > 
+> > Kees: how can we annotate that this is ok?
 > 
+> The main problem is that CONFIG_HARDENED_USERCOPY_PAGESPAN=y is broken
+> (and nothing should be setting it).
+> 
+> This series removes it:
+> https://lore.kernel.org/linux-hardening/20220110231530.665970-1-willy@infradead.org/
+> 
+> Matthew, what's the status of that series? Will it make the current
+> merge window?
 
-This patch results in lots of test build failures
-due to large frame sizes.
+I thought you were going to merge it!  I haven't put it in any of my
+public trees.
 
-Building i386:allyesconfig ... failed
---------------
-Error log:
-lib/overflow_kunit.c: In function 'overflow_size_helpers_test':
-lib/overflow_kunit.c:644:1: error: the frame size of 2480 bytes is larger than 2048 bytes
-
-Building i386:allmodconfig ... failed
---------------
-Error log:
-lib/overflow_kunit.c: In function 'overflow_size_helpers_test':
-lib/overflow_kunit.c:644:1: error: the frame size of 2480 bytes is larger than 2048 bytes
-
-Building mips:allmodconfig ... failed
---------------
-Error log:
-lib/overflow_kunit.c: In function 'overflow_size_helpers_test':
-lib/overflow_kunit.c:644:1: error: the frame size of 2864 bytes is larger than 2048 bytes
-
-Building powerpc:allmodconfig ... failed
---------------
-Error log:
-lib/overflow_kunit.c: In function 'overflow_size_helpers_test':
-lib/overflow_kunit.c:644:1: error: the frame size of 3904 bytes is larger than 2048 bytes
-
-Guenter
+> As for the SCSI changes, I'm a bit worried about type confusion, as I
+> don't see anything actually validating types/sizes when converting:
+> 
+> static inline void *blk_mq_rq_to_pdu(struct request *rq)
+> {
+>         return rq + 1;
+> }
+> 
+> But I guess that ship has sailed. :P
+> 
+> Regardless, I'm concerned that disabling PAGESPAN will just uncover
+> further checks, though. Where is allocation happening? The check is here:
+> 
+> static int scsi_fill_sghdr_rq(struct scsi_device *sdev, struct request *rq,
+>                 struct sg_io_hdr *hdr, fmode_t mode)
+> {
+>         struct scsi_cmnd *scmd = blk_mq_rq_to_pdu(rq);
+> 
+>         if (hdr->cmd_len < 6)
+>                 return -EMSGSIZE;
+>         if (copy_from_user(scmd->cmnd, hdr->cmdp, hdr->cmd_len))
+>                 return -EFAULT;
+> 	...
+> }
+> 
+> I don't see any earlier marking for this copy_from_user(), so I assume
+> the old allocation was a plain kmalloc().
+> 
+> For comparision, a related marking can be seen for a copy_to_user() case
+> in commit 0afe76e88c57 ("scsi: Define usercopy region in scsi_sense_cache
+> slab cache")
+> 
+> I *think* the allocation is happening in scsi_ioctl_reset()? But that's
+> a plain kmalloc(), so I'm not sure why PAGESPAN would have tripped...
+> are there other allocation paths?
+> 
+> -- 
+> Kees Cook
+> 
