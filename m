@@ -2,87 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDE95C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 09:01:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAE16C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 09:05:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243021AbiCWJDM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 05:03:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42188 "EHLO
+        id S243024AbiCWJGy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 05:06:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234009AbiCWJDK (ORCPT
+        with ESMTP id S231246AbiCWJGx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 05:03:10 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 326116EB0D;
-        Wed, 23 Mar 2022 02:01:40 -0700 (PDT)
-Received: from fraeml743-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KNj3b1ngBz67PtB;
-        Wed, 23 Mar 2022 16:59:55 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml743-chm.china.huawei.com (10.206.15.224) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 23 Mar 2022 10:01:37 +0100
-Received: from [10.47.85.68] (10.47.85.68) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 23 Mar
- 2022 09:01:36 +0000
-Message-ID: <378065de-3cb8-b44f-66e9-747960bcd990@huawei.com>
-Date:   Wed, 23 Mar 2022 09:01:33 +0000
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH 01/11] blk-mq: Add blk_mq_init_queue_ops()
-To:     Bart Van Assche <bvanassche@acm.org>, <axboe@kernel.dk>,
-        <damien.lemoal@opensource.wdc.com>, <jejb@linux.ibm.com>,
-        <martin.petersen@oracle.com>, <hch@lst.de>, <ming.lei@redhat.com>,
-        <hare@suse.de>
-CC:     <chenxiang66@hisilicon.com>, <linux-block@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-ide@vger.kernel.org>,
-        <linux-scsi@vger.kernel.org>, <dm-devel@redhat.com>,
-        <beanhuo@micron.com>
-References: <1647945585-197349-1-git-send-email-john.garry@huawei.com>
- <1647945585-197349-2-git-send-email-john.garry@huawei.com>
- <e74776f0-505b-8b4f-effd-519bce9bdc79@acm.org>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <e74776f0-505b-8b4f-effd-519bce9bdc79@acm.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.85.68]
-X-ClientProxiedBy: lhreml730-chm.china.huawei.com (10.201.108.81) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+        Wed, 23 Mar 2022 05:06:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5155374851
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 02:05:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0468BB81E37
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 09:05:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2579C340E8;
+        Wed, 23 Mar 2022 09:05:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648026320;
+        bh=ONIEXrMOX1ZLi0HKLJ1K0KQE/mWfAqH+3yaUYCp4nx0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=n4Tr9zqHVg02aB4oZXbSz0wxvgfOWSxoS7lJTqYANciwt75B9Q/bVJBuTBy0YopD/
+         U9Z8oRS6eQnRy0jLA6rPnZy/48IbQsgY1MK0TUkUPqc2P6pfAA8jIvpgVzNRXKaSLU
+         E3PtXQGkn5AxYE8Bk6bbi+4UN3RDKxOrVbt3J8qbxDgNBycl1RMdSLderdzOuAm9U1
+         kW7LUoV5Uiq9FftCO3oOnujHtb3HJa3ajEwHmcLBtD8oNca15yfO7g0n9sFPjM6tF3
+         HeJ6NG6cMPJV+2d33FXG0y+TKeliBwvWUF6qDetHtCPdK0f4cK5TLw1LB1pIRAXmiS
+         gdo/47et/7C0g==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nWwth-00GSLU-UV; Wed, 23 Mar 2022 09:05:18 +0000
+Date:   Wed, 23 Mar 2022 09:03:17 +0000
+Message-ID: <878rt1xcq2.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst@redhat.com, virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, tglx@linutronix.de,
+        peterz@infradead.org, Stefano Garzarella <sgarzare@redhat.com>,
+        Keir Fraser <keirf@google.com>
+Subject: Re: [PATCH 2/2] Revert "virtio_pci: harden MSI-X interrupts"
+In-Reply-To: <20220323031524.6555-2-jasowang@redhat.com>
+References: <20220323031524.6555-1-jasowang@redhat.com>
+        <20220323031524.6555-2-jasowang@redhat.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: jasowang@redhat.com, mst@redhat.com, virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org, tglx@linutronix.de, peterz@infradead.org, sgarzare@redhat.com, keirf@google.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/03/2022 02:57, Bart Van Assche wrote:
-> On 3/22/22 03:39, John Garry wrote:
->> Add an API to allocate a request queue which accepts a custom set of
->> blk_mq_ops for that request queue.
->>
->> The reason which we may want custom ops is for queuing requests which we
->> don't want to go through the normal queuing path.
+On Wed, 23 Mar 2022 03:15:24 +0000,
+Jason Wang <jasowang@redhat.com> wrote:
 > 
+> This reverts commit 9e35276a5344f74d4a3600fc4100b3dd251d5c56. Issue
+> were reported for the drivers that are using affinity managed IRQ
+> where manually toggling IRQ status is not expected. And we forget to
+> enable the interrupts in the restore path as well.
+> 
+> In the future, we will rework on the interrupt hardening.
+> 
+> Fixes: 9e35276a5344 ("virtio_pci: harden MSI-X interrupts")
+> Reported-by: Marc Zyngier <maz@kernel.org>
+> Reported-by: Stefano Garzarella <sgarzare@redhat.com>
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
 
-Hi Bart,
+For this patch and the INTx one:
 
- > Custom ops shouldn't be required for this. See e.g. how tmf_queue
- > is used in the UFS driver for an example of a queue implementation
- > with custom operations and that does not require changes of the block
- > layer core.
+Acked-by: Marc Zyngier <maz@kernel.org>
 
-The UFS code uses a private tagset (in ufs_hba.tmf_tag_set) for only 
-management of TMF tags/memories. This tagset does not really have any 
-custom operations. All it has is a stub of .queue_rq CB in 
-ufshcd_queue_tmf() and that is because this CB is compulsory.
-
-As for the idea of having multiple tagsets per shost with real custom 
-operations, this idea was mentioned before, but I think managing 
-multiple tagsets could be trouble. For a start, it would mean that we 
-need a distinct allocation of reserved and regular tags, and sometimes 
-we don't want this - as Hannes mentioned earlier, many HBAs have low 
-queue depth and cannot afford to permanently carve out a bunch of 
-reserved tags.
+Please keep me in the loop when you decide to rework this.
 
 Thanks,
-John
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
