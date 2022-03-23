@@ -2,74 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C2D0C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 03:25:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 483D4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 03:28:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241518AbiCWD0p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 23:26:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58616 "EHLO
+        id S241205AbiCWD3n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 23:29:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241504AbiCWD0m (ORCPT
+        with ESMTP id S232156AbiCWD3h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 23:26:42 -0400
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E5F07087E
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 20:25:13 -0700 (PDT)
-Received: by mail-io1-f71.google.com with SMTP id k20-20020a5e9314000000b00649d55ffa67so206619iom.20
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 20:25:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=4vGMEtGe+BbLjSVih08yohBtZCRt30b9qlDbMhfTRl0=;
-        b=iyWu5ZqarmgAP58QaV+1Sn5af4Evkf7xv/6PkLNb0y1rw4Bhx+biAs70WSbU7Fh0t2
-         2m77nvxKls1OBIKgzeuEL+GeIiU+Wdl9Qhh6ftQs2LLf1dH9DiYfqMQRhGzTcvSW+Kee
-         JS9bIf5qklla6ATrw5/fIKwRsEUFBk3MEn6n29d4k+JgWpQ9ZQ5esdRMFvKaQboZ6k7+
-         qRzFZ08MvPQqGL9sGTEDtcB+Kl+9y7JPmXxymcDnNXs/bH+noQlFUMz6ADgov+8r2uX0
-         o2cUeCP+ghwxxZE19y1S2nH4C2VuOoSYi+Z6F0ttyCXTDoc4u7ma5+7XJXYU3oIYnCB4
-         rf5w==
-X-Gm-Message-State: AOAM532lFu9vbjdhXOiBs6p+Qf4JpLFbQ5DB2iYaZsPqL2Je3swIWei3
-        zNRii/2vTyC7A37YTwwP6qHnW0OBrHpWLGamko2hDiY7c1+E
-X-Google-Smtp-Source: ABdhPJxPmD1OSkA0wPsjR1WGTpH4zf9ZPV9c193YS4y2yCDtYsvVjxIthOQverrG4KJLyuKRpk3Ekb1prWTDh8ldMR24rIqhrGbr
+        Tue, 22 Mar 2022 23:29:37 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D294D3299C;
+        Tue, 22 Mar 2022 20:28:07 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KNYhX5R81z1GCml;
+        Wed, 23 Mar 2022 11:27:56 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
+ (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 23 Mar
+ 2022 11:28:04 +0800
+From:   Ye Bin <yebin10@huawei.com>
+To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
+        <linux-ext4@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
+        <lczerner@redhat.com>, Ye Bin <yebin10@huawei.com>
+Subject: [PATCH -next] ext4: fix use-after-free in ext4_search_dir
+Date:   Wed, 23 Mar 2022 11:43:04 +0800
+Message-ID: <20220323034304.3597652-1-yebin10@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-Received: by 2002:a5d:8714:0:b0:636:13bb:bc89 with SMTP id
- u20-20020a5d8714000000b0063613bbbc89mr14075565iom.126.1648005913000; Tue, 22
- Mar 2022 20:25:13 -0700 (PDT)
-Date:   Tue, 22 Mar 2022 20:25:12 -0700
-In-Reply-To: <0000000000000f361d05dacabb09@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000008409805dada47ce@google.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in io_poll_remove_entries
-From:   syzbot <syzbot+cd301bb6523ea8cc8ca2@syzkaller.appspotmail.com>
-To:     asml.silence@gmail.com, axboe@kernel.dk,
-        gregkh@linuxfoundation.org, io-uring@vger.kernel.org,
-        jirislaby@kernel.org, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-syzbot has bisected this issue to:
+We got issue as follows:
+EXT4-fs (loop0): mounted filesystem without journal. Opts: ,errors=continue
+==================================================================
+BUG: KASAN: use-after-free in ext4_search_dir fs/ext4/namei.c:1394 [inline]
+BUG: KASAN: use-after-free in search_dirblock fs/ext4/namei.c:1199 [inline]
+BUG: KASAN: use-after-free in __ext4_find_entry+0xdca/0x1210 fs/ext4/namei.c:1553
+Read of size 1 at addr ffff8881317c3005 by task syz-executor117/2331
 
-commit 91eac1c69c202d9dad8bf717ae5b92db70bfe5cf
-Author: Jens Axboe <axboe@kernel.dk>
-Date:   Wed Mar 16 22:59:10 2022 +0000
+CPU: 1 PID: 2331 Comm: syz-executor117 Not tainted 5.10.0+ #1
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+Call Trace:
+ __dump_stack lib/dump_stack.c:83 [inline]
+ dump_stack+0x144/0x187 lib/dump_stack.c:124
+ print_address_description+0x7d/0x630 mm/kasan/report.c:387
+ __kasan_report+0x132/0x190 mm/kasan/report.c:547
+ kasan_report+0x47/0x60 mm/kasan/report.c:564
+ ext4_search_dir fs/ext4/namei.c:1394 [inline]
+ search_dirblock fs/ext4/namei.c:1199 [inline]
+ __ext4_find_entry+0xdca/0x1210 fs/ext4/namei.c:1553
+ ext4_lookup_entry fs/ext4/namei.c:1622 [inline]
+ ext4_lookup+0xb8/0x3a0 fs/ext4/namei.c:1690
+ __lookup_hash+0xc5/0x190 fs/namei.c:1451
+ do_rmdir+0x19e/0x310 fs/namei.c:3760
+ do_syscall_64+0x33/0x40 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x445e59
+Code: 4d c7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 1b c7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fff2277fac8 EFLAGS: 00000246 ORIG_RAX: 0000000000000054
+RAX: ffffffffffffffda RBX: 0000000000400280 RCX: 0000000000445e59
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 00000000200000c0
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000002
+R10: 00007fff2277f990 R11: 0000000000000246 R12: 0000000000000000
+R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
 
-    io_uring: cache poll/double-poll state with a request flag
+The buggy address belongs to the page:
+page:0000000048cd3304 refcount:0 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x1317c3
+flags: 0x200000000000000()
+raw: 0200000000000000 ffffea0004526588 ffffea0004528088 0000000000000000
+raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11819d0b700000
-start commit:   b47d5a4f6b8d Merge tag 'audit-pr-20220321' of git://git.ke..
-git tree:       upstream
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=13819d0b700000
-console output: https://syzkaller.appspot.com/x/log.txt?x=15819d0b700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c44f0c051803a0ae
-dashboard link: https://syzkaller.appspot.com/bug?extid=cd301bb6523ea8cc8ca2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=150525ed700000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10d08625700000
+Memory state around the buggy address:
+ ffff8881317c2f00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff8881317c2f80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>ffff8881317c3000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                   ^
+ ffff8881317c3080: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff8881317c3100: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+==================================================================
 
-Reported-by: syzbot+cd301bb6523ea8cc8ca2@syzkaller.appspotmail.com
-Fixes: 91eac1c69c20 ("io_uring: cache poll/double-poll state with a request flag")
+ext4_search_dir:
+  ...
+  de = (struct ext4_dir_entry_2 *)search_buf;
+  dlimit = search_buf + buf_size;
+  while ((char *) de < dlimit) {
+  ...
+    if ((char *) de + de->name_len <= dlimit &&
+	 ext4_match(dir, fname, de)) {
+	    ...
+    }
+  ...
+    de_len = ext4_rec_len_from_disk(de->rec_len, dir->i_sb->s_blocksize);
+    if (de_len <= 0)
+      return -1;
+    offset += de_len;
+    de = (struct ext4_dir_entry_2 *) ((char *) de + de_len);
+  }
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Assume:
+de=0xffff8881317c2fff
+dlimit=0x0xffff8881317c3000
+
+If read 'de->name_len' which address is 0xffff8881317c3005, obviously is
+out of range, then will trigger use-after-free.
+To solve this issue, 'dlimit' must reserve 8 bytes, as we will read
+'de->name_len' to judge if '(char *) de + de->name_len' out of range.
+
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+---
+ fs/ext4/ext4.h  | 4 ++++
+ fs/ext4/namei.c | 2 +-
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/fs/ext4/ext4.h b/fs/ext4/ext4.h
+index 3f87cca49f0c..276683f7ab77 100644
+--- a/fs/ext4/ext4.h
++++ b/fs/ext4/ext4.h
+@@ -2273,6 +2273,10 @@ static inline int ext4_forced_shutdown(struct ext4_sb_info *sbi)
+  * Structure of a directory entry
+  */
+ #define EXT4_NAME_LEN 255
++/*
++ * Base length of ext4_dir_entry_2 and ext4_dir_entry exclude name
++ */
++#define EXT4_BASE_DIR_LEN 8
+ 
+ struct ext4_dir_entry {
+ 	__le32	inode;			/* Inode number */
+diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
+index e37da8d5cd0c..4739a5aa13aa 100644
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -1465,7 +1465,7 @@ int ext4_search_dir(struct buffer_head *bh, char *search_buf, int buf_size,
+ 	int de_len;
+ 
+ 	de = (struct ext4_dir_entry_2 *)search_buf;
+-	dlimit = search_buf + buf_size;
++	dlimit = search_buf + buf_size - EXT4_BASE_DIR_LEN;
+ 	while ((char *) de < dlimit) {
+ 		/* this code is executed quadratically often */
+ 		/* do minimal checking `by hand' */
+-- 
+2.31.1
+
