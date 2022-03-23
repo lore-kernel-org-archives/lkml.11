@@ -2,116 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA34DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 08:14:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C59A3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 08:14:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242568AbiCWIQL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 04:16:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56496 "EHLO
+        id S242504AbiCWIQQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 04:16:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242489AbiCWIP3 (ORCPT
+        with ESMTP id S242182AbiCWIPu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 04:15:29 -0400
-Received: from esa3.hc1455-7.c3s2.iphmx.com (esa3.hc1455-7.c3s2.iphmx.com [207.54.90.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF151CFCD;
-        Wed, 23 Mar 2022 01:13:58 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6200,9189,10294"; a="67187806"
-X-IronPort-AV: E=Sophos;i="5.90,203,1643641200"; 
-   d="scan'208";a="67187806"
-Received: from unknown (HELO yto-r2.gw.nic.fujitsu.com) ([218.44.52.218])
-  by esa3.hc1455-7.c3s2.iphmx.com with ESMTP; 23 Mar 2022 17:13:56 +0900
-Received: from yto-m3.gw.nic.fujitsu.com (yto-nat-yto-m3.gw.nic.fujitsu.com [192.168.83.66])
-        by yto-r2.gw.nic.fujitsu.com (Postfix) with ESMTP id 51CD2C68A4;
-        Wed, 23 Mar 2022 17:13:55 +0900 (JST)
-Received: from yto-om1.fujitsu.com (yto-om1.o.css.fujitsu.com [10.128.89.162])
-        by yto-m3.gw.nic.fujitsu.com (Postfix) with ESMTP id 97E91D9742;
-        Wed, 23 Mar 2022 17:13:54 +0900 (JST)
-Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
-        by yto-om1.fujitsu.com (Postfix) with ESMTP id 8D91E4057331C;
-        Wed, 23 Mar 2022 17:13:53 +0900 (JST)
-From:   Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
-To:     Fenghua Yu <fenghua.yu@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Shuah Khan <shuah@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        tan.shaopeng@jp.fujitsu.com
-Subject: [PATCH v7 4/6] selftests/resctrl: Make resctrl_tests run using kselftest framework
-Date:   Wed, 23 Mar 2022 17:12:25 +0900
-Message-Id: <20220323081227.1603991-5-tan.shaopeng@jp.fujitsu.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220323081227.1603991-1-tan.shaopeng@jp.fujitsu.com>
-References: <20220323081227.1603991-1-tan.shaopeng@jp.fujitsu.com>
+        Wed, 23 Mar 2022 04:15:50 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 722C66D386;
+        Wed, 23 Mar 2022 01:14:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Transfer-Encoding:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=2ggSoRFKh0G1dKQFttVqUzAVwqtOX7Y3mA+081Turu8=; b=FKjxn9u6R6LAfSreq3RMO6doF6
+        A0j/KB+lvNGml3FUMTFXmgJkNs+r0bBuJaGeRAula1+PNsamC5OAg4qoenHSt9BP0/kXlo33UPnU/
+        nzp3dGtEb5IliJq2XCFNOnyciMB38Z7tkbeJYnZ9P/+xsMRKlWlbIeXUX2uo7VLopSCcygg7RVytp
+        X6RurDqZaEpj+EaawH2VrEMo1hPiS+4LsysZ41GUTLffegC6sp11jJRvrNloxBMEFsE+qDLdWk3oB
+        FjN92v/BMIgGIGSw1vLxLJM0NhHqRshwG/zZeL9meYjUIxlG7F914YxT1F+5mDGafJq+x4X1JF5nY
+        sMvY8e5Q==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nWw80-003hq3-9v; Wed, 23 Mar 2022 08:14:00 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 777D93000E6;
+        Wed, 23 Mar 2022 09:13:58 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 565EE20C5903E; Wed, 23 Mar 2022 09:13:58 +0100 (CET)
+Date:   Wed, 23 Mar 2022 09:13:58 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     mingo@redhat.com, acme@kernel.org, mark.rutland@arm.com,
+        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
+        namhyung@kernel.org, eranian@google.com,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        duanxiongchun@bytedance.com, songmuchun@bytedance.com
+Subject: Re: [External] Re: [PATCH v2 2/6] perf/core: Introduce percpu
+ perf_cgroup
+Message-ID: <YjrWxnnIZvn3PWoX@hirez.programming.kicks-ass.net>
+References: <20220322120834.98637-1-zhouchengming@bytedance.com>
+ <20220322120834.98637-3-zhouchengming@bytedance.com>
+ <YjnIpn/PCM6wKpOC@hirez.programming.kicks-ass.net>
+ <0a7ebd49-cfdd-911e-3982-44f594320b0f@bytedance.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
+In-Reply-To: <0a7ebd49-cfdd-911e-3982-44f594320b0f@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In kselftest framework, all tests can be build/run at a time,
-and a sub test also can be build/run individually. As follows:
-$ make kselftest-all TARGETS=resctrl
-$ make -C tools/testing/selftests run_tests
-$ make -C tools/testing/selftests TARGETS=resctrl run_tests
+On Wed, Mar 23, 2022 at 12:33:51AM +0800, Chengming Zhou wrote:
+> On 2022/3/22 9:01 下午, Peter Zijlstra wrote:
+> > On Tue, Mar 22, 2022 at 08:08:30PM +0800, Chengming Zhou wrote:
+> >> Although we don't have incosistency problem any more, we can
+> >> have other problem like:
+> >>
+> >> CPU1					CPU2
+> >> (in context_switch)			(attach running task)
+> >> 					prev->cgroups = cgrp2
+> >> perf_cgroup_sched_switch(prev, next)
+> >> 	cgrp2 == cgrp2 is True
+> >>
+> > 
+> > Again, I'm not following, how can you attach to a running task from
+> > another CPU ?
+> 
+> Hi Peter, I make a little testcase which can reproduce the race
+> problem, on system with PSI disabled. Because when PSI enabled,
+> cgroup_move_task() will hold rq lock to assign task->cgroups.
 
-However, resctrl_tests cannot be run using kselftest framework,
-users have to change directory to tools/testing/selftests/resctrl/,
-run "make" to build executable file "resctrl_tests",
-and run "sudo ./resctrl_tests" to execute the test.
+No, the problem is that you're talking about cgroup attach while I'm
+thinking of attaching a event to a task. And your picture has nothing to
+clarify.
 
-To build/run resctrl_tests using kselftest framework.
-Modify tools/testing/selftests/Makefile
-and tools/testing/selftests/resctrl/Makefile.
-
-Even after this change, users can still build/run resctrl_tests
-without using framework as before.
-
-Reviewed-by: Reinette Chatre <reinette.chatre@intel.com> # resctrl changes
-Reviewed-by: Fenghua Yu <fenghua.yu@intel.com>
-Signed-off-by: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
----
- tools/testing/selftests/Makefile         |  1 +
- tools/testing/selftests/resctrl/Makefile | 17 ++++-------------
- 2 files changed, 5 insertions(+), 13 deletions(-)
-
-diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
-index d08fe4cfe811..6138354b3760 100644
---- a/tools/testing/selftests/Makefile
-+++ b/tools/testing/selftests/Makefile
-@@ -52,6 +52,7 @@ TARGETS += proc
- TARGETS += pstore
- TARGETS += ptrace
- TARGETS += openat2
-+TARGETS += resctrl
- TARGETS += rlimits
- TARGETS += rseq
- TARGETS += rtc
-diff --git a/tools/testing/selftests/resctrl/Makefile b/tools/testing/selftests/resctrl/Makefile
-index 6bcee2ec91a9..bee5fa8f1ac9 100644
---- a/tools/testing/selftests/resctrl/Makefile
-+++ b/tools/testing/selftests/resctrl/Makefile
-@@ -1,17 +1,8 @@
--CC = $(CROSS_COMPILE)gcc
- CFLAGS = -g -Wall -O2 -D_FORTIFY_SOURCE=2
--SRCS=$(wildcard *.c)
--OBJS=$(SRCS:.c=.o)
-+CFLAGS += $(KHDR_INCLUDES)
- 
--all: resctrl_tests
-+TEST_GEN_PROGS := resctrl_tests
- 
--$(OBJS): $(SRCS)
--	$(CC) $(CFLAGS) -c $(SRCS)
-+include ../lib.mk
- 
--resctrl_tests: $(OBJS)
--	$(CC) $(CFLAGS) -o $@ $^
--
--.PHONY: clean
--
--clean:
--	$(RM) $(OBJS) resctrl_tests
-+$(OUTPUT)/resctrl_tests: $(wildcard *.c)
--- 
-2.27.0
-
+Those pictures of yours could really do with a few more function names
+in them, otherwise it's absolutely unclear what code is running where.
