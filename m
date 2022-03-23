@@ -2,85 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BDD9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 02:44:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE22C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 02:44:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241384AbiCWCqK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 22:46:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39202 "EHLO
+        id S241387AbiCWCqP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 22:46:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240812AbiCWCqI (ORCPT
+        with ESMTP id S240812AbiCWCqL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 22:46:08 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51C876FA17
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 19:44:40 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id v35so265561ybi.10
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 19:44:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=efPMQeriJeIkgLVViTGao/zapncCWaiAM0zgGbtLSsw=;
-        b=dUM+iDw694EijRSlA098+Fx/aB5+wlja0KvLxv5bOItEnfLDndBOKYUYoL13oP9w4g
-         z71UCL+N9Bgbkj4OLZG80dLaXLdvQ67057nb7bCNcm5Mdppy7XkSdb3YH8hGh90jW3Li
-         mwsCbtDOrrplqS6Lbd0x1vegri0TaSlKVJX7vhWmSc9GAnyTyA/yF4refuvtMjEYJ9pg
-         nezWRQYCQWBY9IgSCAcEaxhGbwuhXI9ZMjLsdNorE79icKTYJaSkuxo4scLBWsDpX8aa
-         Ex0UTtiZtAf1M8s6SX1nzjxsN3CAU9cdDZ1ZHBYAn2SFsolUjmtoW3zVUpFGUXgBeKqF
-         RlmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=efPMQeriJeIkgLVViTGao/zapncCWaiAM0zgGbtLSsw=;
-        b=wY3xD/76vHd3s6HiBqSt/l1pHFelz4dDL93/ZpcxNA5Zzc0T9WB7OGsWZjY6sFZCri
-         lfMXqI5N9IjeoKP1TKvb2UsFTlcAcYG9Zx1y3UfGTSrdM+fRIBtNJsnlUkSKk7woXtJz
-         F28Vwi8YJ7wFIAO71c+638BZZOp2YhF/vdFTCnLf6Aneb0p7RMYIh2zpvZNizOOzBE9S
-         BSrIjoCYBiThzM3wRdIcPBzlWY/piyIOwGnK8C/nMwOEP8pJQpYtepx7TwNpGAFlbHf7
-         OWynydbm75tG6Q2YQI9PJCeWddkU5Ozzc86j3d9jM2Kk0cSIlBGvmb2Tfe2WZrSsnAEI
-         Jq6Q==
-X-Gm-Message-State: AOAM5337eqIXM8CXHR65sFCWmRxcERigSq/68zK3sUYrQuMTOS0uC5Ru
-        D3FGN/Y5upG/Mx2jziplVrDc/UlnXz0mW7X762TTzCGeV8NRjlSt
-X-Google-Smtp-Source: ABdhPJxwzEL+ANDiAAScHbUzhwo9EcOoCzYihDuQY0KTv9hhQV5/TyE+9tWXd4qaAbOMNQ9Xs6c5YTtmK0aUuXcDaDg=
-X-Received: by 2002:a25:af41:0:b0:633:905f:9e9b with SMTP id
- c1-20020a25af41000000b00633905f9e9bmr30331661ybj.77.1648003479564; Tue, 22
- Mar 2022 19:44:39 -0700 (PDT)
+        Tue, 22 Mar 2022 22:46:11 -0400
+Received: from mx1.cqplus1.com (unknown [113.204.237.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3EAA36F4BE
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 19:44:33 -0700 (PDT)
+X-MailGates: (flag:1,DYNAMIC,RELAY,NOHOST,LAN:PASS)(compute_score:DELIVE
+        R,40,3)
+Received: from 172.27.96.203
+        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(7832:0:AUTH_RELAY)
+        (envelope-from <qinjian@cqplus1.com>); Wed, 23 Mar 2022 10:40:26 +0800 (CST)
+Received: from CQEXMAIL01.cqplus1.com (172.27.96.203) by
+ CQEXMAIL01.cqplus1.com (172.27.96.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.18; Wed, 23 Mar 2022 10:40:52 +0800
+Received: from CQEXMAIL01.cqplus1.com ([::1]) by CQEXMAIL01.cqplus1.com
+ ([::1]) with mapi id 15.01.2375.018; Wed, 23 Mar 2022 10:40:52 +0800
+From:   =?utf-8?B?cWluamlhblvopoPlgaVd?= <qinjian@cqplus1.com>
+To:     Sudeep Holla <sudeep.holla@arm.com>
+CC:     "krzysztof.kozlowski@canonical.com" 
+        <krzysztof.kozlowski@canonical.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mturquette@baylibre.com" <mturquette@baylibre.com>,
+        "sboyd@kernel.org" <sboyd@kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "maz@kernel.org" <maz@kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
+Subject: RE: [PATCH v11 0/9] Add Sunplus SP7021 SoC Support
+Thread-Topic: [PATCH v11 0/9] Add Sunplus SP7021 SoC Support
+Thread-Index: AQHYPbV1SsKXsmp1VUKTEITYbA9OsKzKtY4AgAGLvVA=
+Date:   Wed, 23 Mar 2022 02:40:51 +0000
+Message-ID: <be7f6ea70a5146a190c750695aead7f5@cqplus1.com>
+References: <cover.1647928315.git.qinjian@cqplus1.com>
+ <YjmrdlQqoqUNcs7R@bogus>
+In-Reply-To: <YjmrdlQqoqUNcs7R@bogus>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.28.110.18]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20220228094938.32153-1-yaozhenguo1@gmail.com> <CAPcyv4i=1BaEMSJsQWrmPx7ycMTVWXB035xmP8Rc2WEr976Y2w@mail.gmail.com>
-In-Reply-To: <CAPcyv4i=1BaEMSJsQWrmPx7ycMTVWXB035xmP8Rc2WEr976Y2w@mail.gmail.com>
-From:   Zhenguo Yao <yaozhenguo1@gmail.com>
-Date:   Wed, 23 Mar 2022 10:44:28 +0800
-Message-ID: <CA+WzARn0St6+oxqnyxBjP0MgzmzBqGX79TvB3A7TAMA5R0Pbbw@mail.gmail.com>
-Subject: Re: [PATCH v1] device-dax: Adding match parameter to select which
- driver to match dax devices
-To:     Dan Williams <dan.j.williams@intel.com>
-Cc:     Vishal L Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Linux NVDIMM <nvdimm@lists.linux.dev>,
-        =?UTF-8?B?5aea5oyv5Zu9?= <yaozhenguo@jd.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I thought about it carefully. Indeed, in my scenario(virtual machine which =
-use
-optane as DRAM), device assignment can be performed in userspace at very
-early time after the system is started. This patch is not needed in my
-scenario. Thank you for your reply.
-
-Dan Williams <dan.j.williams@intel.com> =E4=BA=8E2022=E5=B9=B43=E6=9C=8823=
-=E6=97=A5=E5=91=A8=E4=B8=89 10:01=E5=86=99=E9=81=93=EF=BC=9A
->
-> On Mon, Feb 28, 2022 at 1:50 AM Zhenguo Yao <yaozhenguo1@gmail.com> wrote=
-:
-> >
-> > device_dax driver always match dax devices by default. The other
-> > drivers only match devices by dax_id. There are situations which
-> > need kmem drvier match all the dax device at boot time. So
-> > adding a parameter to support this function.
->
-> What are the situations that happen at boot time that can't wait for
-> initramfs or userspace to move the device assignment?
+PiANCj4gTm90IHJlbGF0ZWQgdG8gdGhpcyBzZXJpZXMsIGJ1dCB0byB0aGUgcGxhdGZvcm0gaW4g
+Z2VuZXJhbC4gWW91IHN0aWxsDQo+IG5lZWQgdG8gcmVzb2x2ZWQgdGhlIGJvb3QvY3B1LW1ldGhv
+ZCBmb3IgdGhpcyBwbGF0Zm9ybSBiZWZvcmUgeW91IGFkZA0KPiBzdXBwb3J0IGZvciBhbGwgdGhl
+IDQgY3B1cyBvbiB0aGlzIHBsYXRmb3JtLiBJIHJlbWVtYmVyIGRpc2N1c3NpbmcgYWJvdXQNCj4g
+Q1BVSWRsZSBvbiBhIHNlcGFyYXRlIHRocmVhZC4gSSB0aG91Z2h0IHRoaXMgaXMgYmVzdCB0aHJl
+YWQgdG8gcmVtaW5kIHRoYXQNCj4gc28gdGhhdCBpdCBpcyBhZGRyZXNzZWQgYmVmb3JlIHdlIHNl
+ZSBlaXRoZXIgY3B1aWRsZSBvciBjcHVob3RwbHVnIHN1cHBvcnQNCj4gb24gdGhpcyBwbGF0Zm9y
+bS4NCj4gDQo+IC0tDQo+IFJlZ2FyZHMsDQo+IFN1ZGVlcA0KDQpUaGFua3MgZm9yIHlvdXIgY29t
+bWVudHMuDQpDdXJyZW50bHksICB3ZSBib290IGFsbCA0IGNvcmVzIHZpYSBwc2NpIHN1Y2Nlc3Nm
+dWxseS4NCg0K
