@@ -2,91 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12581C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 12:44:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BC75C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 12:45:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242948AbiCWMqC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 08:46:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48662 "EHLO
+        id S243090AbiCWMrU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 08:47:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241429AbiCWMp6 (ORCPT
+        with ESMTP id S232056AbiCWMrQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 08:45:58 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AD647B575;
-        Wed, 23 Mar 2022 05:44:28 -0700 (PDT)
-Received: from fraeml708-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KNp0f68fNz686sn;
-        Wed, 23 Mar 2022 20:42:42 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml708-chm.china.huawei.com (10.206.15.36) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 23 Mar 2022 13:44:25 +0100
-Received: from [10.47.85.68] (10.47.85.68) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 23 Mar
- 2022 12:44:24 +0000
-Message-ID: <d3829e58-a835-eeec-e1a5-d282a610b228@huawei.com>
-Date:   Wed, 23 Mar 2022 12:44:24 +0000
+        Wed, 23 Mar 2022 08:47:16 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EB517C141;
+        Wed, 23 Mar 2022 05:45:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648039547; x=1679575547;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=b3goUzAA/VI/4DOWbJOhFKgO5Gi2BfRA6h5XH2fYuh0=;
+  b=oFdDPGtjzx7nzbm5o5aG+jimpH4vtIFO7kZt4NUx5G+mPenqG3+7PmwN
+   1f5dWr3OfJW8NPp1etyvtSzmdu8yfVt3s/exVMxrBsVLs1kmevpAqZ+/i
+   VRlsWHa/SM0WXRz0VLZwuBVnkQllyoyi+gQybWJGQQCqYSGNY8JCQgZAv
+   K1oNUu0TVswmAY1+TppzwnfA3ATmlg9KktuBfY8eUXY8HLI5aM4lk0JNP
+   711o/lV1Zi95qBiBiB5y/swDLcTeeo1R1g+Z98pXg+kr6y9F1JPRCamzu
+   cpOPZab6JHGnNJ7oGUd04haIrZ/2a7KWY+ER1L5WWhQ8KYPGzcWhBo5S6
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10294"; a="344533883"
+X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
+   d="scan'208";a="344533883"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 05:45:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
+   d="scan'208";a="500987437"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga003.jf.intel.com with ESMTP; 23 Mar 2022 05:45:42 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22NCjeuC017350;
+        Wed, 23 Mar 2022 12:45:40 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Michal Kubiak <michal.kubiak@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>
+Subject: [PATCH net 0/2] ice: avoid sleeping/scheduling in atomic contexts
+Date:   Wed, 23 Mar 2022 13:43:51 +0100
+Message-Id: <20220323124353.2762181-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: perf version issues
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-CC:     Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        <linux-perf-users@vger.kernel.org>
-References: <8a75f3b1-2b99-1233-3a70-070311b6ebc1@huawei.com>
- <YjotZExyiwhnX6ev@kernel.org>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <YjotZExyiwhnX6ev@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.47.85.68]
-X-ClientProxiedBy: lhreml730-chm.china.huawei.com (10.201.108.81) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/03/2022 20:11, Arnaldo Carvalho de Melo wrote:
+The `ice_misc_intr() + ice_send_event_to_aux()` infamous pair failed
+once again.
+Fix yet another (hopefully last one) 'scheduling while atomic' splat
+and finally plug the hole to gracefully return prematurely when
+invoked in wrong context instead of panicking.
 
-Hi Arnaldo,
+Alexander Lobakin (2):
+  ice: fix 'scheduling while atomic' on aux critical err interrupt
+  ice: don't allow to run ice_send_event_to_aux() in atomic ctx
 
-> $ git cherry-pick cb66befccba18fac
->    [perf/core 8ff6a6c06a90a362] perf tools: Fix version kernel tag
->     Author: John Garry<john.garry@huawei.com>
->     Date: Mon Feb 21 21:16:49 2022 +0800
->     1 file changed, 4 insertions(+), 9 deletions(-)
->    $ make -C tools/perf O=/tmp/build/perf install-bin
->    $ perf -v
->    perf version 5.17.rc8.g4e666cdb06ee
-> 
-> Now it doesn´t notice it and there is no automatic rebuild triggered, we
-> stay with the cset from before the cherry-pick:-\
-> 
-> $ git log --oneline -2
-> 8ff6a6c06a90a362 (HEAD -> perf/core) perf tools: Fix version kernel tag
-> 4e666cdb06eede20 perf tools: Fix dependency for version file creation
-> $
-> 
-> Anyway, your patch works for some cases, so its an improvement and I'll
-> apply it, we can continue from there.
+ drivers/net/ethernet/intel/ice/ice.h      |  2 ++
+ drivers/net/ethernet/intel/ice/ice_idc.c  |  3 +++
+ drivers/net/ethernet/intel/ice/ice_main.c | 25 ++++++++++++++---------
+ 3 files changed, 20 insertions(+), 10 deletions(-)
 
-After some experimentation, I find that only .git/HEAD changes for a 
-cherry-pick depending on whether we're on a branch or not. As such, as 
-you have seen, we may not rebuild after a cherry-pick, which is no good.
+-- 
+Urgent fix, would like to make it directly through -net.
+-- 
+2.35.1
 
-As far as I can see, only .git/index changes in all circumstances, but 
-we don't have a dependency on that.
-
-TBH, using .git files as Makefile dependencies doesn't seem to work well.
-
-Maybe we should output "git log" and check versus what we have in 
-PERF-VERSION-FILE and re-build depending on that.
-
-Let me check this further now.
-
-Thanks,
-john
