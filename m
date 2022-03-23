@@ -2,140 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60B50C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 09:32:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED32FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 09:34:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234463AbiCWJdf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 05:33:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40300 "EHLO
+        id S234405AbiCWJfv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 05:35:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233726AbiCWJdd (ORCPT
+        with ESMTP id S234287AbiCWJfs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 05:33:33 -0400
-Received: from 189.cn (ptr.189.cn [183.61.185.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D94C76D1AD;
-        Wed, 23 Mar 2022 02:32:02 -0700 (PDT)
-HMM_SOURCE_IP: 10.64.8.41:35378.1509098416
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-114.242.206.180 (unknown [10.64.8.41])
-        by 189.cn (HERMES) with SMTP id 3405D100225;
-        Wed, 23 Mar 2022 17:31:58 +0800 (CST)
-Received: from  ([114.242.206.180])
-        by gateway-151646-dep-b7fbf7d79-9vctg with ESMTP id 61937688d8bb45d78e3cf3b4744afb5f for robh@kernel.org;
-        Wed, 23 Mar 2022 17:32:02 CST
-X-Transaction-ID: 61937688d8bb45d78e3cf3b4744afb5f
-X-Real-From: 15330273260@189.cn
-X-Receive-IP: 114.242.206.180
-X-MEDUSA-Status: 0
-Sender: 15330273260@189.cn
-Message-ID: <f0db9bc0-ae9b-e86e-cc14-376dc40b86f4@189.cn>
-Date:   Wed, 23 Mar 2022 17:31:57 +0800
+        Wed, 23 Mar 2022 05:35:48 -0400
+X-Greylist: delayed 2454 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 23 Mar 2022 02:34:17 PDT
+Received: from SHSQR01.unisoc.com (mx1.unisoc.com [222.66.158.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 499C36E7AE
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 02:34:17 -0700 (PDT)
+Received: from SHSQR01.spreadtrum.com (localhost [127.0.0.2] (may be forged))
+        by SHSQR01.unisoc.com with ESMTP id 22N8rMe3044587
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 16:53:22 +0800 (CST)
+        (envelope-from zhaoyang.huang@unisoc.com)
+Received: from SHSend.spreadtrum.com (bjmbx01.spreadtrum.com [10.0.64.7])
+        by SHSQR01.spreadtrum.com with ESMTPS id 22N8qRiS042884
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NO);
+        Wed, 23 Mar 2022 16:52:27 +0800 (CST)
+        (envelope-from zhaoyang.huang@unisoc.com)
+Received: from bj03382pcu.spreadtrum.com (10.0.74.65) by
+ BJMBX01.spreadtrum.com (10.0.64.7) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.23; Wed, 23 Mar 2022 16:52:27 +0800
+From:   "zhaoyang.huang" <zhaoyang.huang@unisoc.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Zhaoyang Huang <zhaoyang.huang@unisoc.com>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+Subject: [RFC PATCH] cgroup: introduce usage expansion for memcg
+Date:   Wed, 23 Mar 2022 16:52:07 +0800
+Message-ID: <1648025527-30507-1-git-send-email-zhaoyang.huang@unisoc.com>
+X-Mailer: git-send-email 1.9.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v11 7/7] drm/lsdc: add drm driver for loongson display
- controller
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-Cc:     Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Roland Scheidegger <sroland@vmware.com>,
-        Zack Rusin <zackr@vmware.com>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Ilia Mirkin <imirkin@alum.mit.edu>,
-        Qing Zhang <zhangqing@loongson.cn>,
-        suijingfeng <suijingfeng@loongson.cn>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        kernel test robot <lkp@intel.com>
-References: <20220321162916.1116541-1-15330273260@189.cn>
- <20220321162916.1116541-8-15330273260@189.cn>
- <Yjo2R5LQrRICr7dC@robh.at.kernel.org>
-From:   Sui Jingfeng <15330273260@189.cn>
-In-Reply-To: <Yjo2R5LQrRICr7dC@robh.at.kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.0.74.65]
+X-ClientProxiedBy: SHCAS01.spreadtrum.com (10.0.1.201) To
+ BJMBX01.spreadtrum.com (10.0.64.7)
+X-MAIL: SHSQR01.spreadtrum.com 22N8qRiS042884
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
 
-On 2022/3/23 04:49, Rob Herring wrote:
->> +
->> +	if (state) {
->> +		val = readb(li2c->dir_reg);
->> +		val |= mask;
->> +		writeb(val, li2c->dir_reg);
->> +	} else {
->> +		val = readb(li2c->dir_reg);
->> +		val &= ~mask;
->> +		writeb(val, li2c->dir_reg);
->> +
->> +		val = readb(li2c->dat_reg);
->> +		if (state)
-> This condition is never true. We're in the 'else' because !state.
->
->> +			val |= mask;
->> +		else
->> +			val &= ~mask;
->> +		writeb(val, li2c->dat_reg);
-> Shouldn't you set the data register low first and then change the
-> direction? Otherwise, you may be driving high for a moment. However, if
-> high is always done by setting the direction as input, why write the
-> data register each time? I'm assuming whatever is written to the dat_reg
-> is maintained regardless of pin state.
+Some kind of memcg want to keep the memory usage in a certain range of time and
+let them free when time expired. So we introduce a kind of expanding methods to
+expand the usage when calculate the memcg's protection.
 
-To be honest, i have rewrite GPIO emulated i2c several times.
-Either give data first, then give the direction
-or give the direction first, then the data
-will be OK in practice.
+Signed-off-by: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
+---
+ include/linux/memcontrol.h | 64 ++++++++++++++++++++++++++++++++++++++++++++++
+ mm/memcontrol.c            |  7 +++++
+ mm/vmscan.c                |  4 +++
+ 3 files changed, 75 insertions(+)
 
-In the theory, the GPIO data should be given before the GPIO direction,
-I was told doing that way when learning Single-Chip Microcomputer (AT89S52).
-
-But the high "MUST" be done by setting the direction as input.
-It is "MUST" not "CAN" because writing code as the following
-way works in practice.
-
-         if (state) {
-                 val = readb(li2c->dir_reg);
-                 val |= mask;
-                 writeb(val, li2c->dir_reg);
-         } else {
-                // ...
-         }
-
-If the adjust the above code by first set the detection as output,
-then set the GPIO data register with high voltage level("1"). as
-the following demonstrate code,
-
-         if (state) {
-		/* First set this pin as output */
-		val = readb(li2c->dir_reg);
-		val |= mask;
-		writeb(val, li2c->dir_reg);
-
-		/* Then, set the state to high */
-		val = readb(li2c->dat_reg);
-		val |= mask;
-		writeb(val, li2c->dat_reg);
-         } else {
-                // ...
-         }
-
-Then i2c6 will NOT work as exacted, i2c7 will work, so strangely.
-It may because the GPIO is open drained, not Push-pull output.
-Output high is achieved by externalpull up resistance on the PCB.
+diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+index 0c5c403..3c7a2e4 100644
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -21,6 +21,8 @@
+ #include <linux/vmstat.h>
+ #include <linux/writeback.h>
+ #include <linux/page-flags.h>
++#include <linux/sched/loadavg.h>
++#include <linux/sched/clock.h>
+ 
+ struct mem_cgroup;
+ struct obj_cgroup;
+@@ -28,6 +30,11 @@
+ struct mm_struct;
+ struct kmem_cache;
+ 
++#define MEMCG_INTERVAL	(2*HZ+1)	/* 2 sec intervals */
++#define EXP_10s		1677		/* 1/exp(2s/10s) as fixed-point */
++#define EXP_60s		1981		/* 1/exp(2s/60s) */
++#define EXP_300s	2034		/* 1/exp(2s/300s) */
++
+ /* Cgroup-specific page state, on top of universal node page state */
+ enum memcg_stat_item {
+ 	MEMCG_SWAP = NR_VM_NODE_STAT_ITEMS,
+@@ -340,6 +347,12 @@ struct mem_cgroup {
+ 	struct deferred_split deferred_split_queue;
+ #endif
+ 
++	u64 avg_next_update;
++	u64 avg_last_update;
++	u64 prot_period;
++	struct page_counter memory_latest;
++	bool allow_expand;
++
+ 	struct mem_cgroup_per_node *nodeinfo[];
+ };
+ 
+@@ -608,6 +621,57 @@ static inline bool mem_cgroup_disabled(void)
+ 	return !cgroup_subsys_enabled(memory_cgrp_subsys);
+ }
+ 
++/*
++ * expand the usage via a linear proportion method
++ */
++static inline unsigned long calc_expanded_usage(struct mem_cgroup *group)
++{
++	u64 now, decay_factor;
++	u64 usage_expanded;
++	s64 growth, usage, last_usage;
++	u64 delta_time;
++
++	usage = page_counter_read(&group->memory);
++	last_usage = page_counter_read(&group->memory_latest);
++	growth = usage - last_usage;
++	usage_expanded = (unsigned long)usage;
++	now = sched_clock();
++
++	if (!usage || !group->avg_next_update) {
++		group->avg_next_update = now + group->prot_period;
++		return 0;
++	}
++
++	if (time_before((unsigned long)now, (unsigned long)group->avg_next_update))
++		return 0;
++
++	/*
++	 * skip the expansion if the usage is growing while expand the usage when
++	 * it remains stable or shrinking.
++	 * usage_exp = usage * (1 + delta_time / 34s), which is designed as
++	 * an effective way of linear calculation.
++	 */
++	if (growth > 0)
++		;
++	else {
++		delta_time = group->avg_last_update ? now - group->avg_last_update : 0;
++		/*
++		 * we take 2048 as "1" and 17s decay 1/2(34bit). then we can get
++		 * decay_factor = 1024 * delta_time / 17s(0x400000000)
++		 * 0.5/17s = decay_factor/delta_time ==> decay_factor = delta_time >> 24
++		 */
++		decay_factor = delta_time >> (34 - 10);
++		usage_expanded += usage * decay_factor / 2048;
++		/*
++		 * avg_next_update: expected expire time according to current status
++		 */
++		group->avg_last_update = now;
++		group->avg_next_update = now + jiffies_to_nsecs(2*HZ);
++	}
++	atomic_long_set(&group->memory_latest.usage, usage);
++	return usage_expanded;
++}
++
+ static inline void mem_cgroup_protection(struct mem_cgroup *root,
+ 					 struct mem_cgroup *memcg,
+ 					 unsigned long *min,
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index 508bcea..0e7b5b0 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -6616,6 +6616,7 @@ void mem_cgroup_calculate_protection(struct mem_cgroup *root,
+ {
+ 	unsigned long usage, parent_usage;
+ 	struct mem_cgroup *parent;
++	unsigned long growth;
+ 
+ 	if (mem_cgroup_disabled())
+ 		return;
+@@ -6637,6 +6638,12 @@ void mem_cgroup_calculate_protection(struct mem_cgroup *root,
+ 	if (!usage)
+ 		return;
+ 
++	/*
++	 * expand the usage by the time if it is allowed
++	 */
++	if (memcg->allow_expand)
++		usage = calc_expanded_usage(memcg);
++
+ 	parent = parent_mem_cgroup(memcg);
+ 	/* No parent means a non-hierarchical mode on v1 memcg */
+ 	if (!parent)
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index ef4a6dc..ea56b5d 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -3101,8 +3101,12 @@ static void shrink_node_memcgs(pg_data_t *pgdat, struct scan_control *sc)
+ 			 * Hard protection.
+ 			 * If there is no reclaimable memory, OOM.
+ 			 */
++			atomic_long_set(&memcg->memory_latest.usage,
++				page_counter_read(&memcg->memory));
+ 			continue;
+ 		} else if (mem_cgroup_below_low(memcg)) {
++			atomic_long_set(&memcg->memory_latest.usage,
++				page_counter_read(&memcg->memory));
+ 			/*
+ 			 * Soft protection.
+ 			 * Respect the protection only as long as
+-- 
+1.9.1
 
