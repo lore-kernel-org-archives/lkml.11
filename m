@@ -2,93 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F835C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 09:21:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D012EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 09:21:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243253AbiCWJXV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 05:23:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43986 "EHLO
+        id S243256AbiCWJXX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 05:23:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243310AbiCWJW7 (ORCPT
+        with ESMTP id S243380AbiCWJXN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 05:22:59 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58C3F75C0F;
-        Wed, 23 Mar 2022 02:21:29 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22N6MgxC007319;
-        Wed, 23 Mar 2022 04:20:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=PODMain02222019;
- bh=dUdn/ajdZpukt6IfviTuwEcR8cl6Pbc9zj4WxhUmKt8=;
- b=dGJg4evumteFBY9L3HnQEPk/QrJyWWGJryeshHcMSyjn+QeWlvdBCEO8rhEcZ3WBFIx5
- TchnIW6s2xbWIdGse8YGxHPfEStWGYZvzvfhosNRUBOeWV5WUdDdQJx1rYHy1yU6I/S2
- Ofzyd8rYeRVBj1Yu146AM0eXgyhX2RBe6N3AQ0FBlJOT9kz1Kjeq1RbjEvO8qH2BRhQx
- 3vB6vRBnNeaYUXHiXIBzGiMwdJOuanLBXW/uabAKwLuGari1mu+tuV7a9TMKKq2sNdG7
- mF4g7MSieKAsXS9zeEebPRaE2G4ecOw1bStoif5DX5sldi4U2c2lQ7l+Q0llwAbpi+ha cw== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3ewbknd5ag-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 23 Mar 2022 04:20:45 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Wed, 23 Mar
- 2022 09:20:43 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Wed, 23 Mar 2022 09:20:43 +0000
-Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 9023CB1A;
-        Wed, 23 Mar 2022 09:20:43 +0000 (UTC)
-Date:   Wed, 23 Mar 2022 09:20:43 +0000
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     Lucas Tanure <tanureal@opensource.cirrus.com>
-CC:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, <alsa-devel@alsa-project.org>,
-        <patches@opensource.cirrus.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        David Rhodes <drhodes@opensource.cirrus.com>,
-        Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v5 15/16] ASoC: cs35l41: Document CS35l41 External Boost
-Message-ID: <20220323092043.GO38351@ediswmail.ad.cirrus.com>
-References: <20220322151819.4299-1-tanureal@opensource.cirrus.com>
- <20220322151819.4299-16-tanureal@opensource.cirrus.com>
+        Wed, 23 Mar 2022 05:23:13 -0400
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2937375C0F;
+        Wed, 23 Mar 2022 02:21:44 -0700 (PDT)
+Received: by mail-ej1-f44.google.com with SMTP id p15so1544610ejc.7;
+        Wed, 23 Mar 2022 02:21:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:content-language:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=V7cFXLe0Ac3dhEHnygD54hmubbEibQ543cmeBXtuvAg=;
+        b=PK1qor4p6wuQJuAjI/qfuGWEp+WgcGKI5bHLEiS7iIQmu5MAcwQZ7WSxZgWG6rQSJD
+         cDC77lsb0RUeqJUmB1NtFPjF91b3SqkUpM0fJJigf5oxwsd7+eehKq9O7kAsrjn0l3E8
+         qY4wABXuFaPWiu4UFgKGrOlKa2tSNbdrmXLi/UTDvu7DZhQehvKY+TapsW0vH1o08BKU
+         23tC+VCF6UJZWMOT7vQA3JC1lPMhPVssnCyHhrIOPlWg2lE439vRdzr1MaiXfVHeQvYD
+         zsGrlk92+/rn+wJ8nnYUgL+fcByiODdcaK3gwtN/uIICdMxLtDwGqZYugb87hkpLpovu
+         si4g==
+X-Gm-Message-State: AOAM533Wafeoo4Wm19Bxf1pf6a8w2T+VhvCF7wdsLGCQjgs5yN6zDEQR
+        lvKU3f4baLVORnJK/OR9cOnapASx4Dc=
+X-Google-Smtp-Source: ABdhPJy7MV6xyddcHt6m3B0LTYQ3xvlfGk7tespcbjb8vqMugRQhoJZnMEfw7oV9V0zSoFdXZNS3bA==
+X-Received: by 2002:a17:906:68c2:b0:6b4:9f26:c099 with SMTP id y2-20020a17090668c200b006b49f26c099mr31260479ejr.41.1648027302702;
+        Wed, 23 Mar 2022 02:21:42 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.googlemail.com with ESMTPSA id w6-20020a170906d20600b006ca00cb99e0sm9658170ejz.34.2022.03.23.02.21.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Mar 2022 02:21:42 -0700 (PDT)
+Message-ID: <65609100-3664-11e3-f229-c203e52888f0@kernel.org>
+Date:   Wed, 23 Mar 2022 10:21:40 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220322151819.4299-16-tanureal@opensource.cirrus.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Proofpoint-ORIG-GUID: 1BSKhSHDLuiq-vmXuEjJMl83KV1ODsfL
-X-Proofpoint-GUID: 1BSKhSHDLuiq-vmXuEjJMl83KV1ODsfL
-X-Proofpoint-Spam-Reason: safe
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH 1/2] dt-bindings: usb: Add documentation for AM62 USB
+ Wrapper module
+Content-Language: en-US
+To:     Aswath Govindraju <a-govindraju@ti.com>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-usb@vger.kernel.org, Felipe Balbi <balbi@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Roger Quadros <rogerq@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>
+References: <20220323053524.7009-1-a-govindraju@ti.com>
+ <20220323053524.7009-2-a-govindraju@ti.com>
+ <f17f1f14-d78f-7b54-7fa7-ebf52c6da90a@kernel.org>
+ <8b8dcc55-dda8-0715-ccff-22fbe84ff18a@ti.com>
+In-Reply-To: <8b8dcc55-dda8-0715-ccff-22fbe84ff18a@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 03:18:18PM +0000, Lucas Tanure wrote:
-> From: David Rhodes <drhodes@opensource.cirrus.com>
-> 
-> Document internal and external boost feature for ASoC CS35L41.
-> For internal boost the following properties are required:
-> - cirrus,boost-peak-milliamp
-> - cirrus,boost-ind-nanohenry
-> - cirrus,boost-cap-microfarad
-> 
-> For external boost, the GPIO1 must be configured as output,
-> so the following properties are required:
-> - cirrus,gpio1-src-select = <1>
-> - cirrus,gpio1-output-enable
-> 
-> Signed-off-by: David Rhodes <drhodes@opensource.cirrus.com>
-> Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> ---
+On 23/03/2022 10:17, Aswath Govindraju wrote:
+> Hi Krzysztof,
 
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+(...)
 
-Thanks,
-Charles
+>>> +
+>>> +  ti,syscon-phy-pll-refclk:
+>>> +    $ref: /schemas/types.yaml#/definitions/phandle-array
+>>> +    items:
+>>> +      - items:
+>>> +          - description: Phandle to the SYSCON entry
+>>> +          - description: USB phy control register offset within SYSCON
+>>> +    description: Specifier for configuring frequency of ref clock input.
+>>
+>> This is a bit strange. The ref clock is the "ref" input clock, right? In
+>> such case use clk_set_rate()... Using syscon for managing clocks is not
+>> the proper way.
+>>
+> 
+> The syscon property is not being used to set the ref clock frequency but
+> is rather being used to indicate the input clock frequency for USB PHY
+> operation. I think the description seems be misleading. I will update it
+> in the respin, to reflect the above description.
+
+Yes, please, it will help.
+
+> 
+>> Plus all the issues pointed out by Roger.
+>>
+>>> +
+>>> +  '#address-cells':
+>>> +    const: 2
+>>> +
+>>> +  '#size-cells':
+>>> +    const: 2
+>>
+>> No children allowed?
+>>
+>> I understand this is a wrapper, which explains why you do not include
+>> usb-hcd.yaml schema. But since it is a wrapper, what is it wrapping?
+>>
+> 
+> Yes, there is a child node, which would be the dwc3-contoller node.
+> Would adding the child node too in the example help capture this better?
+
+Yes, please, because then you will also spot errors when running
+dt_binding_check.
+
+You need patternProperties for "^usb@[0-9a-f]+$" referencing Synopsys
+schema. Something like:
+Documentation/devicetree/bindings/usb/samsung,exynos-dwc3.yaml
+
+
+
+Best regards,
+Krzysztof
