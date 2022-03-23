@@ -2,120 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 892AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 14:37:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6E93C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 14:37:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244842AbiCWOio (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 10:38:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58056 "EHLO
+        id S244608AbiCWOjV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 10:39:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244834AbiCWOik (ORCPT
+        with ESMTP id S230324AbiCWOjT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 10:38:40 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4AF47CDED;
-        Wed, 23 Mar 2022 07:37:09 -0700 (PDT)
-Received: from localhost.localdomain ([81.221.85.15]) by mrelay.perfora.net
- (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MCsvF-1nNNRY0M3H-009k0t;
- Wed, 23 Mar 2022 15:36:19 +0100
-From:   Marcel Ziswiler <marcel@ziswiler.com>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Alex Marginean <alexandru.marginean@nxp.com>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Ariel D'Alessandro <ariel.dalessandro@collabora.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dong Aisheng <aisheng.dong@nxp.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Heiko Schocher <hs@denx.de>, Jacky Bai <ping.bai@nxp.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kuldeep Singh <kuldeep.singh@nxp.com>,
-        Li Yang <leoyang.li@nxp.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Olof Johansson <olof@lixom.net>, Peng Fan <peng.fan@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Reinhold Mueller <reinhold.mueller@emtrion.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/3] arm64: prepare and add verdin imx8m plus support
-Date:   Wed, 23 Mar 2022 15:35:57 +0100
-Message-Id: <20220323143600.170778-1-marcel@ziswiler.com>
-X-Mailer: git-send-email 2.34.1
+        Wed, 23 Mar 2022 10:39:19 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F50E7CDE8;
+        Wed, 23 Mar 2022 07:37:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648046269; x=1679582269;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=qv2sPx6zB4xaL7h6TqKidl8/bFWiEudh02hJa+vu600=;
+  b=feb+I/5xD9dJ5lOOMJuAbDABd15GelEQiNpJ41wSFyaWgZtuSq6055N1
+   5C7XSXq3hYiQUyvVQYBBLCdX72kMTDA4mJ8kV0SD4OF9tFQBlS/zcLp6m
+   o0JlwsC79HdGpGrCzVjmbvQET8oWY30TdrhZVBnZdB+/C+i+EsZz/QTtF
+   Hhc2H0jmiXHa8iG11EOZo/JcQiRrio4i9wSTtT5k5iIGXRtx+QgJKDQ3O
+   g/YAxbZ0Pkt/GsGL3itEwdSQmw5AMEdetcytZQYRDhXJrRDor0aio8kMO
+   y2004lkY/2J9iu242D4bqj1NYMwUpYTw8H/E1CcdnjEd9s33AoOd+nH3X
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="257838138"
+X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
+   d="scan'208";a="257838138"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 07:37:49 -0700
+X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
+   d="scan'208";a="717419023"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 07:37:47 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nX26o-005Br2-AY;
+        Wed, 23 Mar 2022 16:37:10 +0200
+Date:   Wed, 23 Mar 2022 16:37:09 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Christian =?iso-8859-1?Q?L=F6hle?= <CLoehle@hyperstone.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        "cloehle@posteo.de" <cloehle@posteo.de>,
+        Avri Altman <Avri.Altman@wdc.com>,
+        "david-b@pacbell.net" <david-b@pacbell.net>
+Subject: Re: [PATCHv2] mmc: block: Check for errors after write on SPI
+Message-ID: <YjswlWK+pPaQddvh@smile.fi.intel.com>
+References: <9d1ea819e4bb4222a227a02d5f6ad97c@hyperstone.com>
+ <cf04ac31665c48be9f275ed21332763b@hyperstone.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:iEtxqVj8xjfL6O5vO62Lr0/Eq4Aq/QxThuA82yYd1v7mA5DjcZF
- Ui5YWdMxxYGtWyILjaWfsq5KMqDE2Q1077wMSCzEwxmxHu6vC3kwGmqg8G1hSU7N2ZyMg0M
- wNAMXCGyvb0eb0XDkrtkjJWq6V1aDZSOkCMX8bQqCsvOAXQYhsqQHL93OeVQ1+CICciLEeR
- 2UYSFHgQlWInRZmfMHEjg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:AE5BLTl3aOg=:FF2iEfBRS7TXkxqtc9Sjve
- EozxWjSzJw5o5uLBD5aXntnPmp7xjHtX8npqFOyMV2ywB5s7GJAR3oSnHdYZo6UnLgQxXjoe+
- jwT/cSCPoiU3e1AdSR6kDPDoTdk8vjmnZDYqccxwC4SixPvDYPNEt7YcKbfIFhfj5qvWptMYc
- 4dh8L2BvzP0YOrqhCYHhv7XfRcOeUCmes+8zRBRno4x1upnvfeeLc3Yt/Cd83RF/tb6KcwmfA
- fHiHnmw2k6dUDFnAnW1A6pq3XQ533ZeCxkN8AsiBuL7Puq5LsuUigqcIFBrvWKroxarbDEhrv
- /eSzFZJD3QePKA6iqI7zjD5V+BznVfIDPrTx2qQlcH5cpNt/JIwrZUJCJtCiDvAJFGJ/sK/ZS
- hyi4Ul9G37T4ZRj/sgCJbiOSIF7M30e2IDH5icggyrWVtwDgabDo7Yj3pSRET5AHt2Nwin5+m
- LfwXD7mW0qb/FqXUfitH5YodP0WNEINEmn9WIthWDHAs5+zlsS2XN7GVRoMOeaql3iUY067tZ
- Lf7saJh94HNDNxIPPtr4Y3+vgda+YSCH3wKaVWZoDBu8zUAxKm2KoeUz0ADA5FQLtgcyhgKFF
- aqzzR51lb8TPGSPHizIXzZKsWnpiJE0OtYp20SCthq68C3tUD1tFIbGHwMPc3PsPgCIdYRLMG
- BRQ5b5OepQlmHEiMyMlD1X4jwJKzvV+GS8jEco2M8YgSa6niJmfXuBr6KWs15DQ8f+bY=
+In-Reply-To: <cf04ac31665c48be9f275ed21332763b@hyperstone.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+On Wed, Mar 23, 2022 at 02:12:43PM +0000, Christian Löhle wrote:
+> Introduce a SEND_STATUS check for writes through SPI to not mark
+> an unsuccessful write as successful.
+> 
+> Since SPI SD/MMC does not have states, after a write, the card will
+> just hold the line LOW until it is ready again. The driver marks the
+> write therefore as completed as soon as it reads something other than
+> all zeroes.
+> The driver does not distinguish from a card no longer signalling busy
+> and it being disconnected (and the line being pulled-up by the host).
+> This lead to writes being marked as successful when disconnecting
+> a busy card.
+> Now the card is ensured to be still connected by an additional CMD13,
+> just like non-SPI is ensured to go back to TRAN state.
+> 
+> While at it and since we already poll for the post-write status anyway,
+> we might as well check for SPIs error bits (any of them).
+> 
+> The disconnecting card problem is reproducable for me after continuous
+> write activity and randomly disconnecting, around every 20-50 tries
+> on SPI DS for some card.
 
+LGTM, FWIW,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Add DMA properties to uart2 node of the base i.MX 8M Plus device tree,
-add toradex,verdin-imx8mp et al. to dt-bindings and finally, add
-initial support for Verdin iMX8M Plus.
+(Next time send a new version of the patch as a separate email thread,
+ so tools won't mess with the different versions in one thread. I hope
+ no need for resend this time and Ulf handles this)
 
-Changes in v2:
-- Add Laurent's reviewed-by tag.
-- Add Krzysztof's reviewed-by tag.
-- Fix capitatlisation of verdin in comments as reported by Laurent.
-- Add/modify todo comments as suggested by Laurent.
-- Add Laurent's reviewed- and tested-by tags.
-
-Marcel Ziswiler (3):
-  arm64: dts: imx8mp: add uart2 dma
-  dt-bindings: arm: fsl: add toradex,verdin-imx8mp et al.
-  arm64: dts: freescale: add initial support for verdin imx8m plus
-
- .../devicetree/bindings/arm/fsl.yaml          |   21 +
- arch/arm64/boot/dts/freescale/Makefile        |    4 +
- .../dts/freescale/imx8mp-verdin-dahlia.dtsi   |  129 ++
- .../boot/dts/freescale/imx8mp-verdin-dev.dtsi |   44 +
- .../imx8mp-verdin-nonwifi-dahlia.dts          |   18 +
- .../freescale/imx8mp-verdin-nonwifi-dev.dts   |   18 +
- .../dts/freescale/imx8mp-verdin-nonwifi.dtsi  |   54 +
- .../freescale/imx8mp-verdin-wifi-dahlia.dts   |   18 +
- .../dts/freescale/imx8mp-verdin-wifi-dev.dts  |   18 +
- .../dts/freescale/imx8mp-verdin-wifi.dtsi     |   82 +
- .../boot/dts/freescale/imx8mp-verdin.dtsi     | 1373 +++++++++++++++++
- arch/arm64/boot/dts/freescale/imx8mp.dtsi     |    2 +
- 12 files changed, 1781 insertions(+)
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mp-verdin-dahlia.dtsi
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mp-verdin-dev.dtsi
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mp-verdin-nonwifi-dahlia.dts
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mp-verdin-nonwifi-dev.dts
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mp-verdin-nonwifi.dtsi
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mp-verdin-wifi-dahlia.dts
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mp-verdin-wifi-dev.dts
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mp-verdin-wifi.dtsi
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
+> Fixes: 7213d175e3b6f ("MMC/SD card driver learns SPI")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Christian Loehle <cloehle@hyperstone.com>
+> ---
+> v2:
+>   - Reorder err and status check for err to take precedence and look cleaner
+> 
+>  drivers/mmc/core/block.c | 27 ++++++++++++++++++++++++++-
+>  1 file changed, 26 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/mmc/core/block.c b/drivers/mmc/core/block.c
+> index 4e67c1403cc9..54c2009f398f 100644
+> --- a/drivers/mmc/core/block.c
+> +++ b/drivers/mmc/core/block.c
+> @@ -1903,9 +1903,34 @@ static int mmc_blk_card_busy(struct mmc_card *card, struct request *req)
+>  	struct mmc_blk_busy_data cb_data;
+>  	int err;
+> 
+> -	if (mmc_host_is_spi(card->host) || rq_data_dir(req) == READ)
+> +	if (rq_data_dir(req) == READ)
+>  		return 0;
+> 
+> +	/*
+> +	 * SPI does not have a TRAN state we have to wait on, instead the
+> +	 * card is ready again when it no longer holds the line LOW.
+> +	 * We still have to ensure two things here before we know the write
+> +	 * was successful:
+> +	 * 1. The card has not disconnected during busy and we actually read our
+> +	 * own pull-up, thinking it was still connected, so ensure it
+> +	 * still responds.
+> +	 * 2. Check for any error bits, in particular R1_SPI_IDLE to catch a
+> +	 * just reconnected card after being disconnected during busy.
+> +	 */
+> +	if (mmc_host_is_spi(card->host)) {
+> +		u32 status = 0;
+> +
+> +		err = __mmc_send_status(card, &status, 0);
+> +		/* All R1 and R2 bits of SPI are errors in our case */
+> +		if (err || status) {
+> +			mqrq->brq.data.bytes_xfered = 0;
+> +			if (err)
+> +				return err;
+> +			return -EIO;
+> +		}
+> +		return 0;
+> +	}
+> +
+>  	cb_data.card = card;
+>  	cb_data.status = 0;
+>  	err = __mmc_poll_for_busy(card->host, 0, MMC_BLK_TIMEOUT_MS,
+> --
+> 2.34.1
+> Hyperstone GmbH | Reichenaustr. 39a  | 78467 Konstanz
+> Managing Director: Dr. Jan Peter Berns.
+> Commercial register of local courts: Freiburg HRB381782
+> 
 
 -- 
-2.34.1
+With Best Regards,
+Andy Shevchenko
+
 
