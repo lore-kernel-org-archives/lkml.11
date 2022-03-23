@@ -2,86 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E86B2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 18:35:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22C18C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 18:36:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344001AbiCWSgo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 14:36:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35044 "EHLO
+        id S235426AbiCWSh1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 14:37:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240154AbiCWSgE (ORCPT
+        with ESMTP id S1344096AbiCWShV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 14:36:04 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D48E62A20;
-        Wed, 23 Mar 2022 11:34:34 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id C34FF223F7;
-        Wed, 23 Mar 2022 19:34:30 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1648060470;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ss8GFR5rljClvU8CctXDwTGOGTKBTAeyK5+ukBPrIgk=;
-        b=DVHyGE/jkdERvSTtUFF1a1JtXRfnREW6qcbLacNXBm2wWJYptvlN7brbpdEVGevGST6exd
-        XwI2IGK3xrPrGhNTLHA6y3W1BM16j7iq3nBeoaNNVJQh4jnrc5CVd9nrS8ErZCRia0OU4Z
-        UPhhrCckKrsqctgEVLw5FvYtQaKWJ3Q=
-From:   Michael Walle <michael@walle.cc>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Xu Liang <lxu@maxlinear.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH RFC net-next 5/5] net: phylink: handle the new is_c45_over_c22 property
-Date:   Wed, 23 Mar 2022 19:34:19 +0100
-Message-Id: <20220323183419.2278676-6-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220323183419.2278676-1-michael@walle.cc>
-References: <20220323183419.2278676-1-michael@walle.cc>
+        Wed, 23 Mar 2022 14:37:21 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC75B8933B
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 11:35:40 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id o10so4660690ejd.1
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 11:35:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=soleen.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tK9niD9zkQNKvxp511CYkJeHeDOwwCyGPfpIMRzpbn8=;
+        b=ILnVSpcvcMvyYeY4ROSboPGgS/ta0E1CBAGTw7IUPxpVOCKagtB2L6w4QyfvColzts
+         lKoTTSAc3A59SaIQTrXgzUbBbPhDY+NCo+0THzukfmHGxObAO+MTE33aiSbzLaylxIR5
+         vu3hdy/bc4BJMa2tF3nPWOM9mpVJRd5WMaZWC3ZxPK7t7PJ+kUHzdIPzkXeIYmbpy4iE
+         WPKmOMjscxczUZmAkqdVQZvSP+uk9oWRXLbENpPVazMvVKH4AnAipdRqWqKxBI1AJP0c
+         Hmsm2+SzQmRxOwEJr544YYtaT9z5K1U6741acmsivUDCh/MrQtFM6M+3sq7CDOm8e1vj
+         gsdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tK9niD9zkQNKvxp511CYkJeHeDOwwCyGPfpIMRzpbn8=;
+        b=T2phTJO8RatG3IKtsSgPCdychcnvjAix6DHLt7/VDDUekF4w8ChJZEoG/m4UArg6R4
+         jNvh/4sUfDWchvoLHftDfRvozXNqXOVb9krlGFPCzwdWnJPkKvBasjxlMDk3wBmBD1qX
+         LpKp+AiEXGZPBwhlCuHwP+SldkADb03Q3mU4bYqsmBOK81NaL1BoiuqOoPIORULeh7OY
+         iLtoHGL1L/bQ+C/KwdzG5GJsEG2/RBsP9u676qsVewxgemWHO3oquirUFTax+GE94c5I
+         hYVKDnwYBYxozx54tjGzedlqQpQhB2CqHIdoi0klI8S/P5x0R4l3qGA5TADBp7LLP7MG
+         lAHg==
+X-Gm-Message-State: AOAM532XRtF7NOgOSCM/6nOCAN2N0TYoLESP7p4V8+suRVAJ1YqsMesG
+        R4vCfn7MVrtJ8VYMt+Uqa8x3OiaucFEtUR6PKxDFtw==
+X-Google-Smtp-Source: ABdhPJynp0FgSmnyck4PsURixg/OTxCJavw7joUGhNiXNB6NbDfppEQUPlJBg17McZnwMAATMWS5QwvimHiFUe6i1us=
+X-Received: by 2002:a17:907:1c96:b0:6db:57e5:3e2f with SMTP id
+ nb22-20020a1709071c9600b006db57e53e2fmr1506594ejc.705.1648060539244; Wed, 23
+ Mar 2022 11:35:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220322144447.3563146-1-tongtiangen@huawei.com> <20220322144447.3563146-4-tongtiangen@huawei.com>
+In-Reply-To: <20220322144447.3563146-4-tongtiangen@huawei.com>
+From:   Pasha Tatashin <pasha.tatashin@soleen.com>
+Date:   Wed, 23 Mar 2022 14:35:02 -0400
+Message-ID: <CA+CK2bC4oXrxUqG4K16+Qu9D=SBZcJSso+Fe3-8AFtuYOAeg0w@mail.gmail.com>
+Subject: Re: [PATCH -next v2 3/4] arm64: mm: add support for page table check
+To:     Tong Tiangen <tongtiangen@huawei.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-mm <linux-mm@kvack.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Phylink treats C45 PHYs in a special way and assumes they can switch
-their SerDes lanes between modes. This check is done by looking at the
-is_c45 property. But there are PHYs, namely the GPY215, which are C45
-PHYs but behind a C22 bus. Thus while the PHY is a C45 one, the is_c45
-property is not set because it uses indirect MMD access via the C22
-registers. Therefore, add the is_c45_over_c22  property to the check,
-which indicates this sort of PHY handling.
+On Tue, Mar 22, 2022 at 10:25 AM Tong Tiangen <tongtiangen@huawei.com> wrote:
+>
+> From: Kefeng Wang <wangkefeng.wang@huawei.com>
+>
+> As commit d283d422c6c4 ("x86: mm: add x86_64 support for page table
+> check"), add some necessary page table check hooks into routines that
+> modify user page tables.
+>
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- drivers/net/phy/phylink.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 06943889d747..633cccfbd5f4 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -1369,7 +1369,7 @@ static int phylink_bringup_phy(struct phylink *pl, struct phy_device *phy,
- 	 * speeds. We really need to know which interface modes the PHY and
- 	 * MAC supports to properly work out which linkmodes can be supported.
- 	 */
--	if (phy->is_c45 &&
-+	if ((phy->is_c45 || phy->is_c45_over_c22) &&
- 	    interface != PHY_INTERFACE_MODE_RXAUI &&
- 	    interface != PHY_INTERFACE_MODE_XAUI &&
- 	    interface != PHY_INTERFACE_MODE_USXGMII)
--- 
-2.30.2
-
+Reviewed-by: Pasha Tatashin <pasha.tatashin@soleen.com>
