@@ -2,90 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89663C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 10:28:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95A31C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 10:29:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243523AbiCWK3f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 06:29:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39190 "EHLO
+        id S243538AbiCWKbZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 06:31:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243513AbiCWK3c (ORCPT
+        with ESMTP id S243497AbiCWKbW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 06:29:32 -0400
-X-Greylist: delayed 1023 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 23 Mar 2022 03:28:02 PDT
-Received: from hz.preining.info (hz.preining.info [IPv6:2a01:4f9:2a:1a08::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37A25F42
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 03:28:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=preining.info; s=201909; h=Content-Type:MIME-Version:Message-ID:Subject:To:
-        From:Date:Sender:Reply-To:Cc:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=0m+uRoiTivb2BUtxBNrl7ee/92eZ1F5hbLZE85sd5iE=; b=htCSIwcdYBnmNCnfVogfUkah+N
-        nmvP/suO/0O/hXFz1o7AAVWWCA8upYwWL0eygvmZmqscoDDt10RKJUUw/z+7vtiiT0pdui+R4DDM/
-        f9HpCu5xsv0PcSsz1eLS9gOtt3qd8nj/PEfb3CYw+nWXFbuIcJhEPw2v4AdM1rZy8QZQvd5PHRT6q
-        IplTLJfCs1F/TURmlAAMbscIhS1cKNzqdeHu4Fz3kLMG7hS/gA8DgWz9J8UykH2di86WpccvJg0Wy
-        fbq+bZ6X3IAPx5y6YZlAuue1gD3wWvKw+WtC8mN2rROuX/TYzk5yQJdJjIGgjZr+yfrDJC3Z9AJV/
-        DWKJm+pA==;
-Received: from tvk215040.tvk.ne.jp ([180.94.215.40] helo=sakefilet.preining.info)
-        by hz.preining.info with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <norbert@preining.info>)
-        id 1nWxxA-00AmUz-E7
-        for linux-kernel@vger.kernel.org; Wed, 23 Mar 2022 10:10:57 +0000
-Received: by sakefilet.preining.info (Postfix, from userid 1000)
-        id 3D6232038C8C; Wed, 23 Mar 2022 19:10:53 +0900 (JST)
-Date:   Wed, 23 Mar 2022 19:10:53 +0900
-From:   Norbert Preining <norbert@preining.info>
-To:     linux-kernel@vger.kernel.org
-Subject: 5.17.0 fails to suspend
-Message-ID: <YjryLd+TuigtA6co@sakefilet.preining.info>
+        Wed, 23 Mar 2022 06:31:22 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B9CC23149;
+        Wed, 23 Mar 2022 03:29:53 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id o30-20020a05600c511e00b0038c9cfb79cbso2848784wms.1;
+        Wed, 23 Mar 2022 03:29:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=NPCBeK8EmlJTLX7b8VpEEv5X7dyNwlhHhnCggdFBrcE=;
+        b=qCdS83+Qfa6n9umTyVz3zBeCN4SuOd83241gKDfei+pW0vIEpIF7/yBTmxVFUjunnX
+         2hdou67Rw8yuOKtQjBGjB6l8T7axLIFyZM0rA8UxjHYIvCzYdWZ/OAngIna0jfD+/aVV
+         quEtdxTe4Zt36sJLG3b9I/ZviguWfUVLrBMzNhJ9GLawtO/x1s3PI1mADTbR4G2U4g7I
+         OKoHhF1Zdf8bbUJmXLPb3VjmaLqJUtSFTpaVmZULmjwaLBshuBMFp0pIPB8wfphmoTEF
+         l9IfSpcuedD3pwQbVTtJF50DGCfV0wzMJUo81ikY320MwUIFf23hMTMv07XQKiP78GmT
+         /l0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NPCBeK8EmlJTLX7b8VpEEv5X7dyNwlhHhnCggdFBrcE=;
+        b=1b79UelmdjbTKPrGmk5hOigaFMQXnLtgGnLBQ1myc3ijRCyzXPUWTSf1SCNiQ/Ug9U
+         PFmpyjjqQsYVTMlDRTpnPWV4P0yoygCiZHK8d/EIxrDvyz0dMaU50R2OAAm5xSJRWI6k
+         npfz1mGJx74Cv2Bp0j3Hrq+WKVRRyWSf7EwDp9hroTFpWEr64uCGFBfEAXBCKJF+EJKZ
+         nMIUODpDj4Gk/XCKG5BeEYAJCLzof4Av9NIEJbG9MIisbK3ITF6dUIct77Mq5iFaOl1a
+         5mHFXDHFNIecEr0R3xw/vDCH1vk/guRXCdZB/0ezTBTGWO1JEr1mVVSoUrZ5J7fJaSUh
+         SWCg==
+X-Gm-Message-State: AOAM532CjHKGFhKbAUmmVkdPJx1Tzw5r3YErM2zDkOlaQexcDPyTWzcN
+        iSy1T+E0heCVB3AnUOvgHUs=
+X-Google-Smtp-Source: ABdhPJyHea6O2q1bz2HV4g4AFBLS35QU0I+LtFAlaTzAWOVC/Wo0vznM+u/mxodCJm04FmQER/vFyA==
+X-Received: by 2002:a1c:c904:0:b0:38c:8dc1:87a3 with SMTP id f4-20020a1cc904000000b0038c8dc187a3mr8671232wmb.101.1648031391419;
+        Wed, 23 Mar 2022 03:29:51 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
+        by smtp.gmail.com with ESMTPSA id x13-20020adfec0d000000b00203ff46f802sm17017681wrn.36.2022.03.23.03.29.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Mar 2022 03:29:51 -0700 (PDT)
+Date:   Wed, 23 Mar 2022 11:29:50 +0100
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Andy Gross <agross@kernel.org>, linux-arm-msm@vger.kernel.org,
+        linux-clk@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        linux-kernel@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH v6 17/18] dt-bindings: arm: msm: Convert kpss-gcc driver
+ Documentation to yaml
+Message-ID: <Yjr2nkIrQ356DMUI@Ansuel-xps.localdomain>
+References: <20220321231548.14276-1-ansuelsmth@gmail.com>
+ <20220321231548.14276-18-ansuelsmth@gmail.com>
+ <1647913851.222685.941035.nullmailer@robh.at.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <1647913851.222685.941035.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+On Mon, Mar 21, 2022 at 08:50:51PM -0500, Rob Herring wrote:
+> On Tue, 22 Mar 2022 00:15:47 +0100, Ansuel Smith wrote:
+> > Convert kpss-gcc driver Documentation to yaml. Since kpss-gcc expose a
+> > clock add the required '#clock-cells' binding while converting it.
+> > 
+> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > ---
+> >  .../bindings/arm/msm/qcom,kpss-gcc.txt        | 44 ------------
+> >  .../bindings/arm/msm/qcom,kpss-gcc.yaml       | 69 +++++++++++++++++++
+> >  2 files changed, 69 insertions(+), 44 deletions(-)
+> >  delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
+> >  create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
+> > 
+> 
+> Running 'make dtbs_check' with the schema in this patch gives the
+> following warnings. Consider if they are expected or the schema is
+> incorrect. These may not be new warnings.
+> 
+> Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+> This will change in the future.
+> 
+> Full log is available here: https://patchwork.ozlabs.org/patch/1607962
+> 
+> 
+> clock-controller@2011000: '#clock-cells' is a required property
+> 	arch/arm/boot/dts/qcom-ipq8064-ap148.dt.yaml
+> 	arch/arm/boot/dts/qcom-ipq8064-rb3011.dt.yaml
+> 
+> clock-controller@2011000: compatible:0: 'qcom,kpss-gcc' is not one of ['qcom,kpss-gcc-ipq8064', 'qcom,kpss-gcc-apq8064', 'qcom,kpss-gcc-msm8974', 'qcom,kpss-gcc-msm8960']
+> 	arch/arm/boot/dts/qcom-ipq8064-ap148.dt.yaml
+> 	arch/arm/boot/dts/qcom-ipq8064-rb3011.dt.yaml
+> 
+> clock-controller@2011000: compatible:1: 'qcom,kpss-gcc' was expected
+> 	arch/arm/boot/dts/qcom-ipq8064-ap148.dt.yaml
+> 	arch/arm/boot/dts/qcom-ipq8064-rb3011.dt.yaml
+> 
+> clock-controller@2011000: compatible: ['qcom,kpss-gcc', 'syscon'] is too short
+> 	arch/arm/boot/dts/qcom-ipq8064-ap148.dt.yaml
+> 	arch/arm/boot/dts/qcom-ipq8064-rb3011.dt.yaml
+> 
 
-(please cc)
+Sorry for the very stupid question but it's something i'm searching for
+a bit now... I can't really find Documentation or a guide on how to
+check single yaml and dts instead of using the make command and check
+everything. Am I missing something or this is not supported?
 
-upgrading from 5.16.15 or so to 5.17.o my laptop (Fujitsu Lifebook U
-Series) fails to suspend:
-
-kernel: Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
-kernel: printk: Suspending console(s) (use no_console_suspend to debug)
-kernel: e1000e: EEE TX LPI TIMER: 00000011
-kernel: PM: pci_pm_suspend(): hcd_pci_suspend+0x0/0x30 returns -16
-kernel: PM: dpm_run_callback(): pci_pm_suspend+0x0/0x160 returns -16
-kernel: xhci_hcd 0000:00:14.0: PM: failed to suspend async: error -16
-kernel: PM: Some devices failed to suspend, or early wake event detected
-kernel: nvme nvme0: Shutdown timeout set to 8 seconds
-kernel: nvme nvme0: 8/0/0 default/read/poll queues
-kernel: OOM killer enabled.
-
-No external usb device connected, internal ones:
-$ lsusb
-Bus 004 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
-Bus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
-Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
-Bus 001 Device 004: ID 04f2:b6e1 Chicony Electronics Co., Ltd FJ Camera
-Bus 001 Device 003: ID 298d:2033 Next Biometrics NB-2033-U
-Bus 001 Device 002: ID 058f:9540 Alcor Micro Corp. AU9540 Smartcard Reader
-Bus 001 Device 005: ID 8087:0026 Intel Corp. AX201 Bluetooth
-Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
-
-What further information can I provide (no external usb device
-
-(please cc)
-
-All the best
-
-Norbert
-
---
-PREINING Norbert                              https://www.preining.info
-Fujitsu Research     +    IFMGA Guide     +    TU Wien    +    TeX Live
-GPG: 0x860CDC13   fp: F7D8 A928 26E3 16A1 9FA0 ACF0 6CAC A448 860C DC13
+-- 
+	Ansuel
