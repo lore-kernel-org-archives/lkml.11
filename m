@@ -2,81 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BDAEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 12:44:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12581C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 12:44:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241197AbiCWMp5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 08:45:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48116 "EHLO
+        id S242948AbiCWMqC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 08:46:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234222AbiCWMpu (ORCPT
+        with ESMTP id S241429AbiCWMp6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 08:45:50 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9452874869;
-        Wed, 23 Mar 2022 05:44:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=DjpyD/h1p0D6qjtRKWnmt2z+G14e2zzEk1pSwXoVhvI=; b=cb9UTDpugoK/oh3jQLwXnBrQew
-        /SeMYz75J8cQyNkVX+AZARMrK0AaZ2ULt+HUlnoFLHVYUjFYJM1LYpNXyc5GzywvPgfqIKqtSrrvT
-        PkQFwIl+lbV81+Xb/VZKlOh4LpEhHplOKUD2KcAiFDGK67/1BEcaNxI4U63EDa83uFbo7UbMBJkl4
-        sXEJa1ad5XpdUxWcXOyHy5bSlQkgYmNTP86EVUsKfKnRqbdq8OkVmO4mJv4rac1/Zkekr6WZzWjGQ
-        odP3sZ8T+i+lHPojjgyBzOYrGbzFNpgAXB6ja2h2PO09LW/oRX6ee60cH7+bXYhne1OIkUfu0W4BR
-        bbCJhwhA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nX0LA-00CXDG-Av; Wed, 23 Mar 2022 12:43:52 +0000
-Date:   Wed, 23 Mar 2022 12:43:52 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Harsha <harsha.harsha@xilinx.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH] cacheflush.h: Add forward declaration for struct folio
-Message-ID: <YjsWCMTpvKXweoJj@casper.infradead.org>
-References: <Yigc4cQlTJRRZsQg@gondor.apana.org.au>
- <20220322131327.GA747088@roeck-us.net>
- <YjqVblTmjNYl3Zjc@gondor.apana.org.au>
+        Wed, 23 Mar 2022 08:45:58 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AD647B575;
+        Wed, 23 Mar 2022 05:44:28 -0700 (PDT)
+Received: from fraeml708-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KNp0f68fNz686sn;
+        Wed, 23 Mar 2022 20:42:42 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml708-chm.china.huawei.com (10.206.15.36) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 23 Mar 2022 13:44:25 +0100
+Received: from [10.47.85.68] (10.47.85.68) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 23 Mar
+ 2022 12:44:24 +0000
+Message-ID: <d3829e58-a835-eeec-e1a5-d282a610b228@huawei.com>
+Date:   Wed, 23 Mar 2022 12:44:24 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YjqVblTmjNYl3Zjc@gondor.apana.org.au>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: perf version issues
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+CC:     Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        <linux-perf-users@vger.kernel.org>
+References: <8a75f3b1-2b99-1233-3a70-070311b6ebc1@huawei.com>
+ <YjotZExyiwhnX6ev@kernel.org>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <YjotZExyiwhnX6ev@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.47.85.68]
+X-ClientProxiedBy: lhreml730-chm.china.huawei.com (10.201.108.81) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 03:35:10PM +1200, Herbert Xu wrote:
-> This should be fixed in cacheflush.h:
-> 
-> ---8<---
-> The struct folio is not declared in cacheflush.h so we need to
-> provide a forward declaration as otherwise users of this header
-> file may get warnings.
-> 
-> Reported-by: Guenter Roeck <linux@roeck-us.net>
-> Fixes: 522a0032af00 ("Add linux/cacheflush.h")
-> Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+On 22/03/2022 20:11, Arnaldo Carvalho de Melo wrote:
 
-Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Hi Arnaldo,
 
-> diff --git a/include/linux/cacheflush.h b/include/linux/cacheflush.h
-> index fef8b607f97e..a6189d21f2ba 100644
-> --- a/include/linux/cacheflush.h
-> +++ b/include/linux/cacheflush.h
-> @@ -4,6 +4,8 @@
->  
->  #include <asm/cacheflush.h>
->  
-> +struct folio;
-> +
->  #if ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE
->  #ifndef ARCH_IMPLEMENTS_FLUSH_DCACHE_FOLIO
->  void flush_dcache_folio(struct folio *folio);
-> -- 
-> Email: Herbert Xu <herbert@gondor.apana.org.au>
-> Home Page: http://gondor.apana.org.au/~herbert/
-> PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+> $ git cherry-pick cb66befccba18fac
+>    [perf/core 8ff6a6c06a90a362] perf tools: Fix version kernel tag
+>     Author: John Garry<john.garry@huawei.com>
+>     Date: Mon Feb 21 21:16:49 2022 +0800
+>     1 file changed, 4 insertions(+), 9 deletions(-)
+>    $ make -C tools/perf O=/tmp/build/perf install-bin
+>    $ perf -v
+>    perf version 5.17.rc8.g4e666cdb06ee
+> 
+> Now it doesn´t notice it and there is no automatic rebuild triggered, we
+> stay with the cset from before the cherry-pick:-\
+> 
+> $ git log --oneline -2
+> 8ff6a6c06a90a362 (HEAD -> perf/core) perf tools: Fix version kernel tag
+> 4e666cdb06eede20 perf tools: Fix dependency for version file creation
+> $
+> 
+> Anyway, your patch works for some cases, so its an improvement and I'll
+> apply it, we can continue from there.
+
+After some experimentation, I find that only .git/HEAD changes for a 
+cherry-pick depending on whether we're on a branch or not. As such, as 
+you have seen, we may not rebuild after a cherry-pick, which is no good.
+
+As far as I can see, only .git/index changes in all circumstances, but 
+we don't have a dependency on that.
+
+TBH, using .git files as Makefile dependencies doesn't seem to work well.
+
+Maybe we should output "git log" and check versus what we have in 
+PERF-VERSION-FILE and re-build depending on that.
+
+Let me check this further now.
+
+Thanks,
+john
