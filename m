@@ -2,104 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62AE9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 13:58:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 838E0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 13:59:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244554AbiCWOAI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 10:00:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46054 "EHLO
+        id S244555AbiCWOBF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 10:01:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235604AbiCWOAG (ORCPT
+        with ESMTP id S230499AbiCWOBE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 10:00:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 15BE4E02B
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 06:58:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648043916;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=NPsFKWBDc285bGf4fkPtm66sH099xvtiav0N2gh4FPU=;
-        b=GaL2dwQWRT2fRFMWvcDzObQji9OoNdcP3Q4lAchoT9CoYVn++Ch0l5SuvkTyIN4CbzGoOA
-        //kerV4lhnLxQhzz4X/lBHWUXk6RGL4M9zhmKZkvnDudaGZ7lVi697Xn52z1aInh6Ld8bx
-        jqT3xuKZFxMnnDwk84pbYy+Aje0PA40=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-587-99w9fyUfPM-3XaVeV6T16Q-1; Wed, 23 Mar 2022 09:58:33 -0400
-X-MC-Unique: 99w9fyUfPM-3XaVeV6T16Q-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7A075106655B;
-        Wed, 23 Mar 2022 13:58:32 +0000 (UTC)
-Received: from ceranb.redhat.com (unknown [10.40.192.65])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A6C2B403D1A3;
-        Wed, 23 Mar 2022 13:58:30 +0000 (UTC)
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     poros@redhat.com, mschmidt@redhat.com,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net] ice: Fix MAC address setting
-Date:   Wed, 23 Mar 2022 14:58:29 +0100
-Message-Id: <20220323135829.4015645-1-ivecera@redhat.com>
+        Wed, 23 Mar 2022 10:01:04 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 326F922290
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 06:59:33 -0700 (PDT)
+Received: from canpemm500005.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KNqj51jH8z1GCh3;
+        Wed, 23 Mar 2022 21:59:21 +0800 (CST)
+Received: from huawei.com (10.175.104.82) by canpemm500005.china.huawei.com
+ (7.192.104.229) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 23 Mar
+ 2022 21:59:29 +0800
+From:   Baisong Zhong <zhongbaisong@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <alsa-devel@alsa-project.org>
+CC:     <lgirdwood@gmail.com>, <broonie@kernel.org>, <perex@perex.cz>,
+        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
+        <ckeepax@opensource.cirrus.com>, <tanureal@opensource.cirrus.com>,
+        <cy_huang@richtek.com>, <pierre-louis.bossart@linux.intel.com>,
+        <drhodes@opensource.cirrus.com>, <pbrobinson@gmail.com>,
+        <hdegoede@redhat.com>, <lukas.bulwahn@gmail.com>,
+        <ricardw@axis.com>
+Subject: [PATCH -next] ASoC: tlv320adc3xxx: Fix build error when GPIOLIB is not set
+Date:   Wed, 23 Mar 2022 22:17:36 +0800
+Message-ID: <20220323141737.211198-1-zhongbaisong@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500005.china.huawei.com (7.192.104.229)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 2ccc1c1ccc671b ("ice: Remove excess error variables") merged
-the usage of 'status' and 'err' variables into single one in
-function ice_set_mac_address(). Unfortunately this causes
-a regression when call of ice_fltr_add_mac() returns -EEXIST because
-this return value does not indicate an error in this case but
-value of 'err' value remains to be -EEXIST till the end of
-the function and is returned to caller.
+sound/soc/codecs/tlv320adc3xxx.c:1352:21: error: implicit declaration of function ‘devm_gpiod_get’; did you mean ‘devm_gpio_free’?
+sound/soc/codecs/tlv320adc3xxx.c:1352:50: error: ‘GPIOD_OUT_LOW’ undeclared (first use in this function); did you mean ‘GPIOF_INIT_LOW’?
+sound/soc/codecs/tlv320adc3xxx.c:1400:2: error: implicit declaration of function ‘gpiod_set_value_cansleep’; did you mean ‘gpio_set_value_cansleep’?
 
-Prior this commit this does not happen because return value of
-ice_fltr_add_mac() was stored to 'status' variable first and
-if it was -EEXIST then 'err' remains to be zero.
-
-The patch fixes the problem by reset 'err' to zero when
-ice_fltr_add_mac() returns -EEXIST.
-
-Fixes: 2ccc1c1ccc671b ("ice: Remove excess error variables")
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+Fixes: e9a3b57efd28 ("ASoC: codec: tlv320adc3xxx: New codec driver")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Baisong Zhong <zhongbaisong@huawei.com>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ sound/soc/codecs/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 168a41ea37b8..420558d1cd21 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -5474,14 +5474,15 @@ static int ice_set_mac_address(struct net_device *netdev, void *pi)
+diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
+index f46a22660103..1400fc75fd65 100644
+--- a/sound/soc/codecs/Kconfig
++++ b/sound/soc/codecs/Kconfig
+@@ -1535,7 +1535,7 @@ config SND_SOC_TFA989X
  
- 	/* Add filter for new MAC. If filter exists, return success */
- 	err = ice_fltr_add_mac(vsi, mac, ICE_FWD_TO_VSI);
--	if (err == -EEXIST)
-+	if (err == -EEXIST) {
- 		/* Although this MAC filter is already present in hardware it's
- 		 * possible in some cases (e.g. bonding) that dev_addr was
- 		 * modified outside of the driver and needs to be restored back
- 		 * to this value.
- 		 */
- 		netdev_dbg(netdev, "filter for MAC %pM already exists\n", mac);
--	else if (err)
-+		err = 0;
-+	} else if (err)
- 		/* error if the new filter addition failed */
- 		err = -EADDRNOTAVAIL;
- 
+ config SND_SOC_TLV320ADC3XXX
+ 	tristate "Texas Instruments TLV320ADC3001/3101 audio ADC"
+-	depends on I2C
++	depends on I2C && GPIOLIB
+ 	help
+ 	 Enable support for Texas Instruments TLV320ADC3001 and TLV320ADC3101
+ 	 ADCs.
 -- 
-2.34.1
+2.25.1
 
