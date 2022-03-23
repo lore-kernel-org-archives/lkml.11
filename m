@@ -2,84 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7965CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 17:34:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A5FBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 17:34:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343623AbiCWRfc (ORCPT
+        id S1343639AbiCWRfw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 13:35:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46484 "EHLO
+        Wed, 23 Mar 2022 13:35:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343618AbiCWRfa (ORCPT
+        with ESMTP id S1343629AbiCWRfs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 13:35:30 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD6C641F
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 10:34:00 -0700 (PDT)
-Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 212201EC0537;
-        Wed, 23 Mar 2022 18:33:55 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1648056835;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=spm7mZQuFylNqg6xRmQajwYBtihWnZAYx0p0CHScc0Q=;
-        b=e11HlY5pHfkxiSzf9LgpTfIDnI7aVVvM3OGzmVA+kqoerRgnSNshJcOs/1fCE1tOgAFK+C
-        2aG8E31K8Y+kIlfLPXyNdldKWfqHVtH8V9H8N7aSDIwu/ocISJU5S2Ie89Tx01cdkVhq9q
-        2wog84G5NQV8V3QuGtjMbj+FzYXK6cU=
-Date:   Wed, 23 Mar 2022 18:33:55 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH] x86/defconfig: Enable WERROR
-Message-ID: <YjtaA4okddAYmie6@zn.tnic>
-References: <YjhdcJB4FaLfsoyO@gmail.com>
- <CAHk-=wjS6ptr5=JqmmyEb_qTjDz_68+S=h1o1bL1fEyArVOymA@mail.gmail.com>
- <YjpLiKRUIB4TGJm0@zn.tnic>
- <CAHk-=wifoM9VOp-55OZCRcO9MnqQ109UTuCiXeZ-eyX_JcNVGg@mail.gmail.com>
- <YjsCpoRK7W4l6tSh@zn.tnic>
- <CAHk-=wi9pLxm+dXoCaiGO+f0EbhyfAR_L510vD0c2=hj6rbMXg@mail.gmail.com>
+        Wed, 23 Mar 2022 13:35:48 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665C55D5D2
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 10:34:18 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id k21so3909597lfe.4
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 10:34:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Qw+/tGAcqsZzOdIU9mPy0h6XsR9YUgqE/aO4tJnDV/U=;
+        b=AsueKvmLHM2nGOpImBUVo8JvIUXQZTPBXUuZ+V1+E3nRTCnp7dAn5Ysn/GIxghzLln
+         GZBXO3w4k/UDMjMFwtn/nP7LeVAoXHaabLGMz82QEQoUcyQ2iSJywkoB38HO0fhpi+qm
+         ebKixIbEogjW5TDgyVUN+w+sNSt7oNBz0RQ04=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Qw+/tGAcqsZzOdIU9mPy0h6XsR9YUgqE/aO4tJnDV/U=;
+        b=tUor8pTU5OnVUeWC2wvm+XCjBjPxHsalEPl+LF8U0691Dl9infRxGJIFVoGaio1bQt
+         qdiw58VSnggcs0BC6BosbfGygbampiuuMh5VaF9TvCiJXSnKQVuELlhM/wfUUzUjv70A
+         YlNEDI33rQMOy17EnENX2Krv6f98c3L6JVs6oxTCeN24MB+7y/Sc6HLIK+7gBd/eVaWO
+         rjP0Lu4VpgCvATNvg8s7/s1xtgH0HJy85lrtnUkqDeMleJCoGqHsMxfL4C0sBY+zzfoV
+         4yBecaVHczLa0JObALCSBHLuxsyipE3O0xBtZ5okBS+prb6gk1LLhMrdq+NObnlFpesG
+         +9QA==
+X-Gm-Message-State: AOAM532zWiUwNxNzZPMrDlSbYwEGWPF4wwV5ay3Nb1xMZiKuCJPrS55V
+        uBVrBtSWagCezEJlaL0VH7/jberkYD3Mnok48UA=
+X-Google-Smtp-Source: ABdhPJyP6CsOk4R35vwj8vkInBJBRaIhF7xCXKFFZntKAasle/cD96PfgNYKNWE7Vns8hAMqj0BM5g==
+X-Received: by 2002:a05:6512:690:b0:44a:351f:9ff5 with SMTP id t16-20020a056512069000b0044a351f9ff5mr694162lfe.385.1648056856287;
+        Wed, 23 Mar 2022 10:34:16 -0700 (PDT)
+Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com. [209.85.208.181])
+        by smtp.gmail.com with ESMTPSA id z9-20020a2e8e89000000b00237fb5d60desm59066ljk.122.2022.03.23.10.34.15
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Mar 2022 10:34:15 -0700 (PDT)
+Received: by mail-lj1-f181.google.com with SMTP id 25so2848510ljv.10
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 10:34:15 -0700 (PDT)
+X-Received: by 2002:a05:6512:2294:b0:448:6c86:3c78 with SMTP id
+ f20-20020a056512229400b004486c863c78mr661692lfu.531.1648056457283; Wed, 23
+ Mar 2022 10:27:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wi9pLxm+dXoCaiGO+f0EbhyfAR_L510vD0c2=hj6rbMXg@mail.gmail.com>
+References: <1812355.tdWV9SEqCh@natalenko.name>
+In-Reply-To: <1812355.tdWV9SEqCh@natalenko.name>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 23 Mar 2022 10:27:21 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wiwz+Z2MaP44h086jeniG-OpK3c=FywLsCwXV7Crvadrg@mail.gmail.com>
+Message-ID: <CAHk-=wiwz+Z2MaP44h086jeniG-OpK3c=FywLsCwXV7Crvadrg@mail.gmail.com>
+Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
+ ath9k-based AP
+To:     Oleksandr Natalenko <oleksandr@natalenko.name>
+Cc:     Halil Pasic <pasic@linux.ibm.com>, Christoph Hellwig <hch@lst.de>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Olha Cherevyk <olha.cherevyk@gmail.com>,
+        iommu <iommu@lists.linux-foundation.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 10:19:39AM -0700, Linus Torvalds wrote:
-> Ack. I'm actually surprised people use "defconfig". It's kind of
-> pointless and unreal on x86 where there is no realistic "default". I'm
-> sorry it exists at all.
+On Wed, Mar 23, 2022 at 12:19 AM Oleksandr Natalenko
+<oleksandr@natalenko.name> wrote:
+>
+> The following upstream commits:
+>
+> aa6f8dcbab47 swiotlb: rework "fix info leak with DMA_FROM_DEVICE"
+> ddbd89deb7d3 swiotlb: fix info leak with DMA_FROM_DEVICE
+>
+> break ath9k-based Wi-Fi access point for me. The AP emits beacons, but
+> no client can connect to it, either from the very beginning, or
+> shortly after start. These are the only symptoms I've noticed (i.e.,
+> no BUG/WARNING messages in `dmesg` etc).
 
-Yeah, it has been there since forever and peterz and mingo use it from
-time to time, AFAIK. Also, I know people start from a defconfig and add
-additional stuff they need.
+Funky, but clearly true:
 
-Oh, and it is part of the smoke build-tests we're doing so...
+> These commits appeared in v5.17 and v5.16.15, and both kernels are
+> broken for me. I'm pretty confident these commits make the difference
+> since I've built both v5.17 and v5.16.15 without them, and it fixed
+> the issue.
 
-> But since people clearly use it - presumably for testing - I very much
-> think it should have WERROR on.
+Can you double-check (or just explicitly confirm if you already did
+that test) that you need to revert *both* of those commits, and it's
+the later "rework" fix that triggers it?
 
-Yeah, I am aiming for a "this should be always enabled in your config
-so you could use this defconfig as a start"-thing, in the hope that
-WERROR=y would proliferate then.
+> So, I do understand this might be an issue with regard to SG I/O
+> handling in ath9k, hence relevant people in Cc.
 
-Thx.
+Yeah, almost certainly an ath9k bug, but a regression is a regression,
+so if people can't find the issue in ath9k, we'll have to revert those
+commits.
 
--- 
-Regards/Gruss,
-    Boris.
+Honestly, I personally think they were a bit draconian to begin with,
+and didn't limit their effects sufficiently.
 
-https://people.kernel.org/tglx/notes-about-netiquette
+I'm assuming that the ath9k issue is that it gives DMA mapping a big
+enough area to handle any possible packet size, and just expects -
+quite reasonably - smaller packets to only fill the part they need.
+
+Which that "info leak" patch obviously breaks entirely.
+
+So my expectation is that this is something we'll just revert, but it
+would be really good to have the ath9k people double-check.
+
+                Linus
