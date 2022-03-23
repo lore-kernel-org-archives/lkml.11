@@ -2,133 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E71D5C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 19:20:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5686FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 19:20:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344141AbiCWTWW (ORCPT
+        id S1344149AbiCWTWZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 15:22:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42090 "EHLO
+        Wed, 23 Mar 2022 15:22:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231397AbiCWTWV (ORCPT
+        with ESMTP id S231397AbiCWTWW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 15:22:21 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3EBD887B1
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 12:20:50 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id qa43so4816536ejc.12
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 12:20:50 -0700 (PDT)
+        Wed, 23 Mar 2022 15:22:22 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E313E887A4
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 12:20:52 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id 17so3256122ljw.8
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 12:20:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=zb43V2bxAJ2SXfDM1H+R1ImG/pdyDgKYnKVKfixphNc=;
-        b=lOuUK4cL7xU5D7fHvTqAKQiL1oJNrs4SwK1hRG9/cCbcOQqImp41ziRDXpXiKekQwx
-         +heK6sgT1fSj17OVyCiQV2yaRGzYOiFU6smhslUFR19Yr9X9KYfh5bz9mv570CLA5Wol
-         qKsu2qocf1lbePzG3eOGonFsWFo6QkccOBQuGmDDerWDbztqi8MYV5hTkBL3D/KT1uvd
-         +oNEj3ddAaPn/MJ2jrIWSUX+yVr6cCJ7WxYgxJGRvRbmr/+Y8HGL9FTbW8CUwXz+XDQI
-         cWndUH1IsRLxedvRZWiEOqB7He8W/o/NnORxtJojb4BHckQmtqmo07/eRJ0kn2r4e4Ik
-         N3yA==
+        bh=RvLqsd6hA44SZTRd4WyyALqX5fHrR7CuTfq09JY31fA=;
+        b=L1+CnW9v7Cel+m7AYugndGHnrNngfqh3mqIy8L1GDXMqhYoubDzbR8hJlJGalrxwv3
+         ywgBTZ5te3TFothb7smIjOILY7rX2s/fuAwzeAOKxQaFf+Fmu44l01AAkVwz8ZKhEAod
+         pOCpyxkglpGo/wB3I1kf2fWfvLV4rQHDTeRdw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=zb43V2bxAJ2SXfDM1H+R1ImG/pdyDgKYnKVKfixphNc=;
-        b=PShgFbSLJp51rQmZHT/xYa6jqFpKUuqI2fpClxut8jr6Fhit/831xRQbbviGz+iEOO
-         yqXVhly2zM5kjVUoywpH5MKq2R4fzKvhgW2krKEJByeYkGanDJRB5NKWR4P7qAHDp+Um
-         jgHqZa02ds9w+iqogia5xipetUZiHqpbsIHdGsP/H8y2/6jmUlqF0JlvRSH43Vi7CI4h
-         0AnIWS1B6cODuzVYQuhh7n0/f9JNWSy0Bc3S3I0Bs59jUdarsLcyIIP6z2bWH7Uf5Zn5
-         G53DpGHZrVS6NfJMAAt5LeiKQfaDo2Dfw+4XvFKF7cQBXRtAh5iukt6F31esf2AMCfMi
-         emkw==
-X-Gm-Message-State: AOAM5307ZbnU8myy+mun4iPjPITwGPcbd0SCUxOdsH9P7Qd7jWxJbKkn
-        ip0kx7YnFi2sjPAyo/a6GESkfZDypw2BUCMlfWmvBg==
-X-Google-Smtp-Source: ABdhPJw+4zoR1slj9y1WLKlDMIWrU+GMc6chsawuSs3JX3F/VTByN07KgC5UQTuQor6ETPoPIL9gmfbmV1rNePBE2Q0=
-X-Received: by 2002:a17:906:c282:b0:6ce:369d:3d5 with SMTP id
- r2-20020a170906c28200b006ce369d03d5mr1783232ejz.425.1648063249321; Wed, 23
+        bh=RvLqsd6hA44SZTRd4WyyALqX5fHrR7CuTfq09JY31fA=;
+        b=dNZdrMzYi39dACQG0Rk0ePXikFp815RL/YiuTFAVUcdK2CwKwjcmcvs1lL8hg83MVZ
+         6jr3mePHVj4qUptiPPbXEyagnSZvLekSThvyZYZhhuQ9AdLl0ytxvytyZ/tRD/fGhJYf
+         wrLQqfLleDm7mpuBg38SXULKPipnRdn6+vsNAS3bqWMzhuwrmSOSL3/YadhmpLffTcGS
+         BkDwWLdbWnbifEOUDutTvrYS263j3CsUENFvzAAHc83mdHxSOrIm4+cGmkAijnFIVvp/
+         yIDoSx6JTnxP18bwEzfIN+GaK+phBBtoQq6el1yt8kYm02US/V9d6eB76VT8FO+60sFb
+         +mPg==
+X-Gm-Message-State: AOAM531eUJizZoNvWgwYK2yKVrjI1Be34VS6peAPhZekSWtBwZPgC3sw
+        xmRBsAkhAes8az2iPxWjy9IusJSfp1/Ijy3oU6k=
+X-Google-Smtp-Source: ABdhPJzPJ1ZhraWSggh1a00xx61zcemZXWIOSR+Ol6g4jmCsx7qKdwgCRIarbNkJTV9m9u+BzeYH0g==
+X-Received: by 2002:a2e:b946:0:b0:244:beb1:72b2 with SMTP id 6-20020a2eb946000000b00244beb172b2mr1284034ljs.240.1648063251000;
+        Wed, 23 Mar 2022 12:20:51 -0700 (PDT)
+Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com. [209.85.167.42])
+        by smtp.gmail.com with ESMTPSA id g7-20020a05651222c700b0044a2c68bb24sm68790lfu.224.2022.03.23.12.20.50
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Mar 2022 12:20:50 -0700 (PDT)
+Received: by mail-lf1-f42.google.com with SMTP id k21so4376162lfe.4
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 12:20:50 -0700 (PDT)
+X-Received: by 2002:a05:6512:b13:b0:448:90c6:dc49 with SMTP id
+ w19-20020a0565120b1300b0044890c6dc49mr1069565lfu.542.1648063249874; Wed, 23
  Mar 2022 12:20:49 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220319055600.3471875-1-davidgow@google.com> <CAGS_qxpqcc8O2HpmF3qB-uzXZrDNg9=h3nE_f7si=aOxXkRA+Q@mail.gmail.com>
- <CABVgOS=sKWiDLN=GgyXQGOdmRn6t35mEA_0C7GrZyEApjVg1Pw@mail.gmail.com>
- <CAGS_qxobBt2gH3FB79m7sfQZ9thKXQ5exQEa_1GcQOmXFFEv1A@mail.gmail.com> <CAFd5g47ZJq8FmFFnAVdDEc6MKdeYBndrb=jbiiebLBdoG4hvCQ@mail.gmail.com>
-In-Reply-To: <CAFd5g47ZJq8FmFFnAVdDEc6MKdeYBndrb=jbiiebLBdoG4hvCQ@mail.gmail.com>
-From:   Daniel Latypov <dlatypov@google.com>
-Date:   Wed, 23 Mar 2022 14:20:37 -0500
-Message-ID: <CAGS_qxoPdA_6vthHjS8+958BSyMRwL+6A5ZG=EdbFbMJwbSFyA@mail.gmail.com>
-Subject: Re: [PATCH] kunit: Rework kunit_resource allocation policy
-To:     Brendan Higgins <brendanhiggins@google.com>
-Cc:     David Gow <davidgow@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220321105621.3d4a9bc6@gandalf.local.home> <CAHk-=wj3_p98e_oohGZzfkDPaJFLKEW8C6mS9dhuKgLN8PNitg@mail.gmail.com>
+In-Reply-To: <CAHk-=wj3_p98e_oohGZzfkDPaJFLKEW8C6mS9dhuKgLN8PNitg@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 23 Mar 2022 12:20:33 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wiNzTuFN0gCitdkPna0h3MM-ScZhgS_O0NKA5=mcuZCVQ@mail.gmail.com>
+Message-ID: <CAHk-=wiNzTuFN0gCitdkPna0h3MM-ScZhgS_O0NKA5=mcuZCVQ@mail.gmail.com>
+Subject: Re: [GIT PULL] tracing: Updates for 5.18
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Beau Belgrave <beaub@linux.microsoft.com>,
+        Tom Zanussi <zanussi@kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 2:22 AM Brendan Higgins
-<brendanhiggins@google.com> wrote:
+On Wed, Mar 23, 2022 at 11:56 AM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
 >
+> Anyway, when I actually compare my resolution to what is in
+> linux-next, it turns out they are fairly different.
 
-<snip>
+Actually, my resolution is fairly similar - but not identical - to
+linux-next, but quite different from the one I find in your branch. I
+just got confused by having looked at both.
 
->
-> > The latter ~never need to get "found" (e.g. kunit_kmalloc() users).
-> > The one exception: when people use kunit_kfree() to free things early,
-> > which requires us to "find" these resources we otherwise wouldn't care
-> > about.
-> >
-> > So I don't know how we can split the API unless we get rid of kunit_kfree().
-> > Its presence means kunit_kmalloc() and friends need refcounting.
->
-> Do we need to choose between dropping kunit_kfree() and refcounting? I
-> think this is semantically different from other findable resources,
-> and I think it fairly obviously entails the complexity of using it.
-
-Yes, they're different.
-We could do something different and just have a atomic bool "is_freed"
-for the kunit_kmalloc() style resources.
-
-But is it worth it?
-
-Currently kunit_kfree() is defined as
-697:void kunit_kfree(struct kunit *test, const void *ptr)
-698-{
-699-    struct kunit_resource *res;
-700-
-701-    res = kunit_find_resource(test, kunit_resource_instance_match,
-702-                              (void *)ptr);
-703-
-704-    /*
-705-     * Removing the resource from the list of resources drops the
-706-     * reference count to 1; the final put will trigger the free.
-707-     */
-708-    kunit_remove_resource(test, res);
-709-
-710-    kunit_put_resource(res);
-711-
-712-}
-
-i.e. the overhead of using a refcount is that we need to call
-kunit_put_resource() bc we called kunit_find_resource().
-IMO, this less semantic overhead than adding a different mechanism
-specifically for kunit_kfree().
-
-Tangent:
-Huh, it segfaults if you call kunit_kfree() on a non-kunit allocated ptr.
-res == NULL on 701 in that case, but kunit_remove_resource() doesn't
-guard against that.
-It also happens if you call kunit_free() twice.
-
-That's analogous to how kfree() works, so I guess that's fine.
-A difference though is
-  kfree(NULL); // is fine
-  kunit_free(test, NULL); // segfaults, res == NULL above
-
-But thinking on it more, someone could register a resource w/ data == NULL.
-I.e. a named resource which just acts as a flag via presence/absence.
-kunit_kfree(test, NULL) would the most recent such resource though.
-
-Should we do the trick/hack where we check the free function first in
-kunit_kfree() to avoid such confusion?
+                Linus
