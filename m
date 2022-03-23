@@ -2,204 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42FDFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 10:26:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89663C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 10:28:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241476AbiCWK2V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 06:28:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37386 "EHLO
+        id S243523AbiCWK3f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 06:29:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243524AbiCWK2O (ORCPT
+        with ESMTP id S243513AbiCWK3c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 06:28:14 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE71876E29;
-        Wed, 23 Mar 2022 03:26:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648031203; x=1679567203;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=6fGsGJLFQNUPrG6Yd9EAaUlxoubZTQxo/jtcT6g8FQw=;
-  b=Tm/8p6mwFXSYqU+1+7RW15T3Rlxzx81UjWQYBKceKHYn1V352kbR341H
-   G0AKQp8jxI7RyjLTTJPxWkAsJRdqkgkCnrNYW0t0aR6BLgcuChX3BS2VY
-   lCDoKEKsX9MVRBjs+aF7RxbrSNs1+rLfQkRB+vJlMTJdsCF0KqLRn7f9T
-   oPIKd89RaCeioX2HBNKwwCs7wgmELYxprNyKzIlO6v9IOceNgzI7wOqEH
-   RgdwV9hXzhwdFD2OaUplcgIodNi7GwC/tctUsOUfX7LM465oqadvGbvOa
-   iC6iHiC5dvINRWKJibvK0LgcVWsO4UzT5xjraHZ9BAI7+RKpEPPq4YUux
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10294"; a="238680204"
-X-IronPort-AV: E=Sophos;i="5.90,203,1643702400"; 
-   d="scan'208";a="238680204"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 03:26:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,203,1643702400"; 
-   d="scan'208";a="544134005"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga007.jf.intel.com with ESMTP; 23 Mar 2022 03:26:40 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Wed, 23 Mar 2022 03:26:40 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21 via Frontend Transport; Wed, 23 Mar 2022 03:26:40 -0700
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.44) by
- edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.21; Wed, 23 Mar 2022 03:26:40 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=by4+vHJBSOfUeCm1PNBV0gQS/Z1YNJotbWjepxQFFG/kLg3YfLGRxGvYesj9Gl4wqn7YJmMRwGotUQa8Vo66KVKHYY8TelvPcLdQUoGgFCspHGqF7U/ETxaNMk2WqpRBc0MAyO9TK2y50Hpg48g8GR+N0Jd7ZrBeQq92n5m0EZD+lAPJRt+jDcZ5T7FIsVGJWtnc5e9fDufMqE/h/1yl+oghx+MB9734bPTgNxHb7ntLpsXMhXekXj5If91uFeAA9LbcaFs4t9htkpqSGvYeQJXlFbOdubCp3ufH+TF2kY51uV10/lOGwI8edmb4mKTGTvngel0bGbIEeOkVXVv3YQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YZxxoE5v1NnJgnIzWRPQ70ZVEL7oiVUZ75f8OUkTRds=;
- b=QXcMy55rHB5zJfnmzmwbi3kkd2MoggERFPz3A6EYMPAYA0OfKBg5l8HumnQKoR2ubEremFuQTZG6Z8Y1G2T/AXkFn22RHha/bXtiIuKLoxinwo9hRgiTZZgobkQ0w/WBL8dXPYb66PAmrfbwJd8CaVkdxeF+B5BcLp/+bKSKqRu0yTgPV8QMHGQibsUAsg2jkjCT2iheuxd3kyUjSPdy0InnaZdMxQzrbYGpTja6hYhQrmLovTH5zdMWc6oJZPo8jeEkuBS+iodO2y6CDfj+x0qDrFDxi+t69vxJq/S3Rn+eAQ0Cy+iWFho4Hu+51Me9fMBgDwui84IG5JKJBjRedg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from CO1PR11MB4835.namprd11.prod.outlook.com (2603:10b6:303:9e::22)
- by MWHPR1101MB2318.namprd11.prod.outlook.com (2603:10b6:301:4e::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.16; Wed, 23 Mar
- 2022 10:26:37 +0000
-Received: from CO1PR11MB4835.namprd11.prod.outlook.com
- ([fe80::fdae:50ef:a0cd:b1c9]) by CO1PR11MB4835.namprd11.prod.outlook.com
- ([fe80::fdae:50ef:a0cd:b1c9%7]) with mapi id 15.20.5102.017; Wed, 23 Mar 2022
- 10:26:37 +0000
-From:   "Khandelwal, Rajat" <rajat.khandelwal@intel.com>
-To:     "mika.westerberg@linux.intel.com" <mika.westerberg@linux.intel.com>,
-        "bleung@google.com" <bleung@google.com>,
-        "Malani, Prashant" <pmalani@google.com>
-CC:     "jthies@google.com" <jthies@google.com>,
-        "Rao, Abhijeet" <abhijeet.rao@intel.com>,
-        "Regupathy, Rajaram" <rajaram.regupathy@intel.com>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Westerberg, Mika" <mika.westerberg@intel.com>
-Subject: RE: [PATCH] USB4/TBT device routers should wake up during S0ix when
- something gets connected/disconnected or a DP monitor gets plugged in
-Thread-Topic: [PATCH] USB4/TBT device routers should wake up during S0ix when
- something gets connected/disconnected or a DP monitor gets plugged in
-Thread-Index: AQHYPqA9gj/nefPhe0uZrTXrK6euOKzMw0/A
-Date:   Wed, 23 Mar 2022 10:26:37 +0000
-Message-ID: <CO1PR11MB48357FE72D34818360D2105E96189@CO1PR11MB4835.namprd11.prod.outlook.com>
-References: <20220323101818.3503-1-rajat.khandelwal@intel.com>
-In-Reply-To: <20220323101818.3503-1-rajat.khandelwal@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-Mentions: bleung@google.com,pmalani@google.com
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.6.401.20
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5e09fdfb-916c-4ade-62ff-08da0cb79cd5
-x-ms-traffictypediagnostic: MWHPR1101MB2318:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <MWHPR1101MB2318A9B73DE5336BA9BBCB2A96189@MWHPR1101MB2318.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 8AISVL5Bnkm9dF/Iqw1jvX3FQcsG47ZN8jDKIxjbGCyvCNs4WggZZIo/pES6d191NdZdiY9PF1u7Ol3nkVprPVCEOFzo+x0gG6OH/AovXUiYM2eBOVrabGAaDpLomw6BhTsvaCnZNIhatG9ez0PgsK5FmnqqKkd2x/rgTjniLXb5Gf3rpJXvYUT7nUIMB7lCcftZQZVK1jakEkjvieQiqVWPkPRBGFWlTPn2jlBQoM5IO0cz0+T3V/kyqxJUzt5MSDHlB99/vReEf8zi9NyYQG0o+Sf/Zmsuau5aagMdZkXVO1DwrZQbTdkf3sZyDxxgVbQocJofOikROTXHQ83lMgIPGCls0beqkVIuxGtzqaKVGdFPnhJHKnUkkzCI7iFnTgCSPv0Sz3lID8zlA4jqz8gI57R7UHO0LZixBZNzfSlRm86/D/hL7f7gTP59c05TTOu5wIREQU7Vu1tONnvz2JWWOYDTwL7Fn+G+x+wX1IJUs0iinUqmZVGer+xp6O2WIXLL04aC5wkL+agxnSE7LQS4y58J6PCyTHZmVLs9JecgrAIR3vKPolp/ATzYcyMGLRhNCZF85bi6l3876lgN+TPpFh+0TS+/76zygKXRFU9iaegK24U/FytmrmijW1P03urQN2LSAikgOC1dziAYvx+AtFYF2kheakz+Ipu/4UGsZA+5qr6YZWLuZiZ3bQrkT2qqq1H8jrxqY92LhwN1xy0CB041PJt5HuAEb3nl9VA=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4835.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(38100700002)(8676002)(66446008)(4326008)(66476007)(64756008)(53546011)(55016003)(66946007)(66556008)(508600001)(76116006)(6506007)(7696005)(82960400001)(38070700005)(8936002)(122000001)(9686003)(52536014)(316002)(5660300002)(86362001)(71200400001)(26005)(186003)(66574015)(83380400001)(33656002)(110136005)(54906003)(2906002)(32563001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?K3phGt0nQV8Irqn/81jAvqoRW0iba4uXNCfE6nxdFY3Ga2t/gumA4KIAcxOW?=
- =?us-ascii?Q?cv/HcH1FgUdTSmoSEpo0JjJyWJt79eFgQ7cJTmWPqnqK49UbsvJvFASPQqzl?=
- =?us-ascii?Q?IsoBEGNfZxeVJhhxFd2lwK8GLaMrociDEf41n3+0bnNC644owScln2KgpYYm?=
- =?us-ascii?Q?9EbOTRno9K/pC1LwK6XIzM9OEbgcJUOuKsmHHc4zQu8XFYEA/Ko03kYkMhXl?=
- =?us-ascii?Q?Avo66Ow3YaSZ2j5jiK0PcuSFRxNr5objiHXJxJ3jN4nRPC+6fUw/3iHm2/oE?=
- =?us-ascii?Q?G2P/K6sccLWiaMlmgu1x5h/H0bto01iYZXjhERyNp+b2hPnrifQlCE/e4tjT?=
- =?us-ascii?Q?YNWJwm6LcfsqjmAUZ+JF5/s0gFh/ae5o+8WKUzWeSmQQZRB1fdv440V4qY39?=
- =?us-ascii?Q?Mg+gm9aicW7azJW+EFlKj2HYTGhggPRI0/RsuuSchr2IRXtfwvjcK8yCDiqr?=
- =?us-ascii?Q?fG3XyVN4q3PsQaT+0ws6zSbl4fBNv1ZHU+YfhEas0x+EyNEbCIS+WFIvEiP5?=
- =?us-ascii?Q?5KK6UgzJHpNwh6ADEfx/E2qgAOnL6Bfac69Pk3po/aHt8S4QiQwFNR0ilrMZ?=
- =?us-ascii?Q?8C9IiD0XrczZE8e9qkgipAQojfwmpSRTX1nSF6GwsecdYcIjm89NwJQkEMEZ?=
- =?us-ascii?Q?ngC3OQah+DZEjtIx/+iLw4w+yp9l+wQpyuqJxmfucE1tKZnyjOGpjjQrf0bQ?=
- =?us-ascii?Q?SJtr544sPhpbxQOCriGC2CYnI/q7noMNmp5fiqhsyQh9ZA6ect202OsRSR4/?=
- =?us-ascii?Q?voASgOXaE4esvY7Fsf+ml92AHn9L7pnoRqGI2eql9EUt8mkBehRFJe4kNXHR?=
- =?us-ascii?Q?L65A/G+Rh8Pw8tlF4eyjwWv4koXWbjo/7C2N7dyCtb9PgfGDGgr5XrFkR20Z?=
- =?us-ascii?Q?IKzOdzXo43kDGJeFl9pLl+4pw7r2r9aMHpDX+7zeNuPMK3k0qCn44zZYKBWL?=
- =?us-ascii?Q?YV7Dj8IiCpk6jRpOkeB/o7U06THNPh628Yqb/ZvreWY0mZWz1u0LFq9pgeXk?=
- =?us-ascii?Q?gh3X7Tr2kmtNyo+wy5GKs3MoilTypDjGfpTjqCnxMohsc6RZosBzd95IOKQB?=
- =?us-ascii?Q?6S0tkUm17cOL68BAVccx+9+H4RnNia9mKoWaPAyHK0yqgqLHgNyz2P57bOks?=
- =?us-ascii?Q?P3kIeZPkv2wN61Gf40f4iOf4oLtWIkHBvmXtxs09XvgFm9CUm7Z8LPI5Erkv?=
- =?us-ascii?Q?pbyfO4dmW2bH+zdrOOAged6Iwy3h/+pJngr6vESRlo6zytl0pZJVuNyhUqjB?=
- =?us-ascii?Q?vB8XTA59/WnB8qZz++uwmdnBhysp2UClc0aZpzlCTsl4LvQ7IJFa+84MF6LN?=
- =?us-ascii?Q?Bcilftc1v5giz8SLjKpdSpMMKleak/9d2RSa3eUBHmE8jcppuoXoYTawwSgx?=
- =?us-ascii?Q?RtNJIu9IbFLOItgR11yJyruLKxFHCYcr+7aHMc/0DIuNR3aeKh/SffcTuQAf?=
- =?us-ascii?Q?DXGaKySVhmm/QD4E1lP8YQmhJ0OQD4VuwLgPbLYt6lADQHUWDKC8/g=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Wed, 23 Mar 2022 06:29:32 -0400
+X-Greylist: delayed 1023 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 23 Mar 2022 03:28:02 PDT
+Received: from hz.preining.info (hz.preining.info [IPv6:2a01:4f9:2a:1a08::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37A25F42
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 03:28:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=preining.info; s=201909; h=Content-Type:MIME-Version:Message-ID:Subject:To:
+        From:Date:Sender:Reply-To:Cc:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=0m+uRoiTivb2BUtxBNrl7ee/92eZ1F5hbLZE85sd5iE=; b=htCSIwcdYBnmNCnfVogfUkah+N
+        nmvP/suO/0O/hXFz1o7AAVWWCA8upYwWL0eygvmZmqscoDDt10RKJUUw/z+7vtiiT0pdui+R4DDM/
+        f9HpCu5xsv0PcSsz1eLS9gOtt3qd8nj/PEfb3CYw+nWXFbuIcJhEPw2v4AdM1rZy8QZQvd5PHRT6q
+        IplTLJfCs1F/TURmlAAMbscIhS1cKNzqdeHu4Fz3kLMG7hS/gA8DgWz9J8UykH2di86WpccvJg0Wy
+        fbq+bZ6X3IAPx5y6YZlAuue1gD3wWvKw+WtC8mN2rROuX/TYzk5yQJdJjIGgjZr+yfrDJC3Z9AJV/
+        DWKJm+pA==;
+Received: from tvk215040.tvk.ne.jp ([180.94.215.40] helo=sakefilet.preining.info)
+        by hz.preining.info with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <norbert@preining.info>)
+        id 1nWxxA-00AmUz-E7
+        for linux-kernel@vger.kernel.org; Wed, 23 Mar 2022 10:10:57 +0000
+Received: by sakefilet.preining.info (Postfix, from userid 1000)
+        id 3D6232038C8C; Wed, 23 Mar 2022 19:10:53 +0900 (JST)
+Date:   Wed, 23 Mar 2022 19:10:53 +0900
+From:   Norbert Preining <norbert@preining.info>
+To:     linux-kernel@vger.kernel.org
+Subject: 5.17.0 fails to suspend
+Message-ID: <YjryLd+TuigtA6co@sakefilet.preining.info>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4835.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5e09fdfb-916c-4ade-62ff-08da0cb79cd5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Mar 2022 10:26:37.5031
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: JN+UPA25MDL/frGbqusbwoMhegf4/evGPngUO9fxorUAzPvgLvZvXn4gILOqglp4wRnQ8XYKhFQ8dNO+VLyf4KzhFSec95TuJQ9laSjAxys=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1101MB2318
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+Mika
-@Malani, Prashant @bleung@google.com This is the patch which fixes the part=
-ner issue. Kindly escalate your thoughts.=20
+Hi all,
 
-Thanks
-Rajat
+(please cc)
 
------Original Message-----
-From: Khandelwal, Rajat <rajat.khandelwal@intel.com>=20
-Sent: Wednesday, March 23, 2022 3:48 PM
-To: mika.westerberg@linux.intel.com
-Cc: Khandelwal, Rajat <rajat.khandelwal@intel.com>; bleung@google.com; jthi=
-es@google.com; Malani, Prashant <pmalani@google.com>; Rao, Abhijeet <abhije=
-et.rao@intel.com>; Regupathy, Rajaram <rajaram.regupathy@intel.com>; linux-=
-usb@vger.kernel.org; linux-kernel@vger.kernel.org
-Subject: [PATCH] USB4/TBT device routers should wake up during S0ix when so=
-mething gets connected/disconnected or a DP monitor gets plugged in
+upgrading from 5.16.15 or so to 5.17.o my laptop (Fujitsu Lifebook U
+Series) fails to suspend:
 
-Device routers don't wake up during S0ix when something is plugged in/out o=
-r if a DP monitor gets connected. This causes the linux device to not wake =
-up during S0ix cycling as the host router didn't wake up because the device=
- router didn't. This patch adds a new functionality to linux.
+kernel: Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
+kernel: printk: Suspending console(s) (use no_console_suspend to debug)
+kernel: e1000e: EEE TX LPI TIMER: 00000011
+kernel: PM: pci_pm_suspend(): hcd_pci_suspend+0x0/0x30 returns -16
+kernel: PM: dpm_run_callback(): pci_pm_suspend+0x0/0x160 returns -16
+kernel: xhci_hcd 0000:00:14.0: PM: failed to suspend async: error -16
+kernel: PM: Some devices failed to suspend, or early wake event detected
+kernel: nvme nvme0: Shutdown timeout set to 8 seconds
+kernel: nvme nvme0: 8/0/0 default/read/poll queues
+kernel: OOM killer enabled.
 
-Signed-off-by: Rajat-Khandelwal <rajat.khandelwal@intel.com>
----
- drivers/thunderbolt/switch.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+No external usb device connected, internal ones:
+$ lsusb
+Bus 004 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 001 Device 004: ID 04f2:b6e1 Chicony Electronics Co., Ltd FJ Camera
+Bus 001 Device 003: ID 298d:2033 Next Biometrics NB-2033-U
+Bus 001 Device 002: ID 058f:9540 Alcor Micro Corp. AU9540 Smartcard Reader
+Bus 001 Device 005: ID 8087:0026 Intel Corp. AX201 Bluetooth
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 
-diff --git a/drivers/thunderbolt/switch.c b/drivers/thunderbolt/switch.c in=
-dex d026e305fe5d..4f8056724aa4 100644
---- a/drivers/thunderbolt/switch.c
-+++ b/drivers/thunderbolt/switch.c
-@@ -3067,13 +3067,11 @@ void tb_switch_suspend(struct tb_switch *sw, bool r=
-untime)
- 			tb_switch_suspend(port->remote->sw, runtime);
- 	}
-=20
--	if (runtime) {
-+	if (runtime || device_may_wakeup(&sw->dev)) {
- 		/* Trigger wake when something is plugged in/out */
- 		flags |=3D TB_WAKE_ON_CONNECT | TB_WAKE_ON_DISCONNECT;
- 		flags |=3D TB_WAKE_ON_USB4;
- 		flags |=3D TB_WAKE_ON_USB3 | TB_WAKE_ON_PCIE | TB_WAKE_ON_DP;
--	} else if (device_may_wakeup(&sw->dev)) {
--		flags |=3D TB_WAKE_ON_USB4 | TB_WAKE_ON_USB3 | TB_WAKE_ON_PCIE;
- 	}
-=20
- 	tb_switch_set_wake(sw, flags);
+What further information can I provide (no external usb device
+
+(please cc)
+
+All the best
+
+Norbert
+
 --
-2.17.1
-
+PREINING Norbert                              https://www.preining.info
+Fujitsu Research     +    IFMGA Guide     +    TU Wien    +    TeX Live
+GPG: 0x860CDC13   fp: F7D8 A928 26E3 16A1 9FA0 ACF0 6CAC A448 860C DC13
