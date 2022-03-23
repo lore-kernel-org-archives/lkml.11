@@ -2,222 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AA66C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 09:29:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41219C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 09:30:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243280AbiCWJbX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 05:31:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34832 "EHLO
+        id S243294AbiCWJcO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 05:32:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239623AbiCWJbR (ORCPT
+        with ESMTP id S233726AbiCWJcK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 05:31:17 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2A5C652D5
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 02:29:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648027788; x=1679563788;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=TSiLA/Kh1zWmmj838xkWAxM1VraT6wr6sFSp1gPGX54=;
-  b=Lg/xQPgzTrHxe6Xlih5DPOkiPxtcnp3CRPLwOYXa2bgrdFoNFW6IKSpc
-   sxmq8kAY42TpjDP+SNIcilSgDhh6r6nUS2+AlRLS5h+vKEjfuFA7afMUg
-   ZHZ43sb0MH1h5DDF2p1xjJP3MKgDbFUwKvBds6ZyDR0Y55q4nj8iTPg6T
-   7V3KqjWevHqo48jRZ6Tx+rm8mLMWdP33Bo+0DRyMzVq1XzNGD+0IzF6w7
-   Zl4bPfS63m6VIQx/TkbMf//OhpYuwsaBlc3HYJbK271gDX8iu3QTV1Vxu
-   hTL4uRAsGFa1PH7yYq1dPF3qtwlI7jrFzlDopWqSaZRFGi/pSL/dmzkOY
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10294"; a="258256353"
-X-IronPort-AV: E=Sophos;i="5.90,203,1643702400"; 
-   d="scan'208";a="258256353"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 02:29:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,203,1643702400"; 
-   d="scan'208";a="717328650"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 23 Mar 2022 02:29:24 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nWxIy-000JtV-1V; Wed, 23 Mar 2022 09:29:24 +0000
-Date:   Wed, 23 Mar 2022 17:28:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:x86/core] BUILD SUCCESS
- 3986f65d4f408ce9d0a361e3226a3246a5fb701c
-Message-ID: <623ae835.Zxs5XOJn8GsDsIXP%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Wed, 23 Mar 2022 05:32:10 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57BA76C921;
+        Wed, 23 Mar 2022 02:30:41 -0700 (PDT)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22N8YxRY027388;
+        Wed, 23 Mar 2022 09:30:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=JouOfhBmCn9pvnl66Xpebm/f5DMDoZhzGlnaJC7Pihk=;
+ b=fTjLo2TVEmfky+mt8VP7tKaNg3cM/QTinFYwNtsELAznjy5Jpg3AWm3Rv9399xJHOvwg
+ 2/wuAUxgGo1OCmPIV9B/dGPZgu77kUiR4LAHZnmnxNCD5j9E3pbZdav2jIf+2x9rn32o
+ QYdZpTkIQebcOLAgNfWBluje6XrvjQMtwWR5edmFJaS2YYRqE3kCljC4hKkHnoVzB2xB
+ 3RfjmXYFMHx5lkX+gTa3QwkK7PvjRly73dlio92A7aKZ948XC/WZuAqJSPjv9nfaQ96Z
+ T+mZqMqs9xcB5CYa8Zmy3fiaaG/J3LwnKuLXve+jYl7pNrhBeNeOXD+LBErPEKV81ITF yA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3eyvravub8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Mar 2022 09:30:40 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22N9UewK031142;
+        Wed, 23 Mar 2022 09:30:40 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3eyvravua6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Mar 2022 09:30:40 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22N9THNP009880;
+        Wed, 23 Mar 2022 09:30:36 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma04fra.de.ibm.com with ESMTP id 3ew6t8q1b7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Mar 2022 09:30:36 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22N9UaF244368134
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 23 Mar 2022 09:30:36 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B630652051;
+        Wed, 23 Mar 2022 09:30:32 +0000 (GMT)
+Received: from [9.171.50.35] (unknown [9.171.50.35])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 3D6AB52050;
+        Wed, 23 Mar 2022 09:30:32 +0000 (GMT)
+Message-ID: <968319ed-ae4b-02fe-41c4-06799e940d94@linux.ibm.com>
+Date:   Wed, 23 Mar 2022 10:30:32 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH] KVM: s390: Fix lockdep issue in vm memop
+Content-Language: en-US
+To:     Janosch Frank <frankja@linux.ibm.com>,
+        Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>
+Cc:     David Hildenbrand <david@redhat.com>,
+        Sven Schnelle <svens@linux.ibm.com>, kvm@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220322153204.2637400-1-scgl@linux.ibm.com>
+ <44618f05-9aee-5aa5-b036-dd838285b26f@linux.ibm.com>
+ <95c28949-8732-8812-c255-79467dafb5c8@linux.ibm.com>
+ <7bcd8720-1c92-4e14-0c93-51d604f017a4@linux.ibm.com>
+From:   Christian Borntraeger <borntraeger@linux.ibm.com>
+In-Reply-To: <7bcd8720-1c92-4e14-0c93-51d604f017a4@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: AHC1a6CJhtm_B1XSyEQz9Ea4w891V2ge
+X-Proofpoint-ORIG-GUID: ZMvIBKup2d96Qntgs3wUx-xIBoeG-kz5
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-23_05,2022-03-22_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1015
+ priorityscore=1501 lowpriorityscore=0 phishscore=0 spamscore=0 bulkscore=0
+ adultscore=0 mlxscore=0 impostorscore=0 malwarescore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2203230055
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/core
-branch HEAD: 3986f65d4f408ce9d0a361e3226a3246a5fb701c  kvm/emulate: Fix SETcc emulation for ENDBR
 
-elapsed time: 723m
 
-configs tested: 144
-configs skipped: 4
+Am 23.03.22 um 09:57 schrieb Janosch Frank:
+> On 3/23/22 09:52, Janis Schoetterl-Glausch wrote:
+>> On 3/23/22 08:58, Janosch Frank wrote:
+>>> On 3/22/22 16:32, Janis Schoetterl-Glausch wrote:
+>>>> Issuing a memop on a protected vm does not make sense,
+>>>
+>>> Issuing a vm memop on a protected vm...
+>>>
+>>> The cpu memop still makes sense, no?
+>>
+>> The vcpu memop does hold the vcpu->lock, so no lockdep issue.
+>> If you issue a vcpu memop while enabling protected virtualization,
+>> the memop might find that the vcpu is not protected, while other vcpus
+>> might already be, but I don't think there's a way to create secure memory
+>> concurrent with the memop.
+> 
+> I just wanted you to make this a bit more specific since we now have vm and vcpu memops. vm memops don't make sense for pv guests but vcpu ones are needed to access the sida.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Right, I think changing the commit messages
+- Issuing a memop on a protected vm does not make sense
++ Issuing a vm memop on a protected vm does not make sense
 
-gcc tested configs:
-arm                                 defconfig
-arm                              allmodconfig
-arm                              allyesconfig
-arm64                            allyesconfig
-arm64                               defconfig
-i386                          randconfig-c001
-mips                 randconfig-c004-20220323
-arm                        shmobile_defconfig
-ia64                          tiger_defconfig
-ia64                         bigsur_defconfig
-sh                 kfr2r09-romimage_defconfig
-arm                        keystone_defconfig
-mips                      loongson3_defconfig
-powerpc                      makalu_defconfig
-powerpc                      pasemi_defconfig
-arm                           h3600_defconfig
-sh                   sh7770_generic_defconfig
-sh                            hp6xx_defconfig
-arm                       omap2plus_defconfig
-alpha                               defconfig
-powerpc                     tqm8548_defconfig
-ia64                             alldefconfig
-m68k                          sun3x_defconfig
-powerpc                     taishan_defconfig
-sh                      rts7751r2d1_defconfig
-sh                             sh03_defconfig
-m68k                        mvme16x_defconfig
-arm                            xcep_defconfig
-s390                             allmodconfig
-mips                         tb0226_defconfig
-powerpc                 canyonlands_defconfig
-mips                      maltasmvp_defconfig
-sh                          rsk7264_defconfig
-arc                          axs101_defconfig
-m68k                         apollo_defconfig
-powerpc                 linkstation_defconfig
-arm                        realview_defconfig
-powerpc                  iss476-smp_defconfig
-openrisc                  or1klitex_defconfig
-mips                     loongson1b_defconfig
-arm                            hisi_defconfig
-arm                          iop32x_defconfig
-sh                         apsh4a3a_defconfig
-xtensa                    smp_lx200_defconfig
-mips                       bmips_be_defconfig
-arm                      jornada720_defconfig
-m68k                        mvme147_defconfig
-arm                            mps2_defconfig
-powerpc                     pq2fads_defconfig
-arm                         assabet_defconfig
-um                               alldefconfig
-alpha                            alldefconfig
-mips                      fuloong2e_defconfig
-powerpc                        warp_defconfig
-sh                         ecovec24_defconfig
-arm                             rpc_defconfig
-riscv                               defconfig
-sh                  sh7785lcr_32bit_defconfig
-arm                  randconfig-c002-20220323
-arm                  randconfig-c002-20220321
-arm                  randconfig-c002-20220322
-arm                  randconfig-c002-20220320
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-nds32                               defconfig
-nios2                            allyesconfig
-csky                                defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-x86_64               randconfig-a016-20220321
-x86_64               randconfig-a011-20220321
-x86_64               randconfig-a012-20220321
-x86_64               randconfig-a013-20220321
-x86_64               randconfig-a014-20220321
-x86_64               randconfig-a015-20220321
-riscv                randconfig-r042-20220323
-s390                 randconfig-r044-20220323
-arc                  randconfig-r043-20220323
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                            allmodconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                           allyesconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                         rhel-8.3-kunit
-x86_64                                  kexec
+does make sense.
 
-clang tested configs:
-x86_64                        randconfig-c007
-mips                 randconfig-c004-20220323
-arm                  randconfig-c002-20220323
-powerpc              randconfig-c003-20220323
-riscv                randconfig-c006-20220323
-i386                          randconfig-c001
-mips                           ip27_defconfig
-arm                              alldefconfig
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-i386                 randconfig-a001-20220321
-i386                 randconfig-a006-20220321
-i386                 randconfig-a003-20220321
-i386                 randconfig-a005-20220321
-i386                 randconfig-a004-20220321
-i386                 randconfig-a002-20220321
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-i386                          randconfig-a011
-i386                          randconfig-a013
-i386                          randconfig-a015
-riscv                randconfig-r042-20220322
-hexagon              randconfig-r045-20220322
-hexagon              randconfig-r041-20220322
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> 
+>>>
+>>>> neither is the memory readable/writable, nor does it make sense to check
+>>>> storage keys. This is why the ioctl will return -EINVAL when it detects
+>>>> the vm to be protected. However, in order to ensure that the vm cannot
+>>>> become protected during the memop, the kvm->lock would need to be taken
+>>>> for the duration of the ioctl. This is also required because
+>>>> kvm_s390_pv_is_protected asserts that the lock must be held.
+>>>> Instead, don't try to prevent this. If user space enables secure
+>>>> execution concurrently with a memop it must accecpt the possibility of
+>>>> the memop failing.
+>>>> Still check if the vm is currently protected, but without locking and
+>>>> consider it a heuristic.
+>>>>
+>>>> Fixes: ef11c9463ae0 ("KVM: s390: Add vm IOCTL for key checked guest absolute memory access")
+>>>> Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+>>>
+>>> Makes sense to me.
+>>>
+>>> Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
+>>>
+>>>> ---
+>>>>    arch/s390/kvm/kvm-s390.c | 11 ++++++++++-
+>>>>    1 file changed, 10 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+>>>> index ca96f84db2cc..53adbe86a68f 100644
+>>>> --- a/arch/s390/kvm/kvm-s390.c
+>>>> +++ b/arch/s390/kvm/kvm-s390.c
+>>>> @@ -2385,7 +2385,16 @@ static int kvm_s390_vm_mem_op(struct kvm *kvm, struct kvm_s390_mem_op *mop)
+>>>>            return -EINVAL;
+>>>>        if (mop->size > MEM_OP_MAX_SIZE)
+>>>>            return -E2BIG;
+>>>> -    if (kvm_s390_pv_is_protected(kvm))
+>>>> +    /*
+>>>> +     * This is technically a heuristic only, if the kvm->lock is not
+>>>> +     * taken, it is not guaranteed that the vm is/remains non-protected.
+>>>> +     * This is ok from a kernel perspective, wrongdoing is detected
+>>>> +     * on the access, -EFAULT is returned and the vm may crash the
+>>>> +     * next time it accesses the memory in question.
+>>>> +     * There is no sane usecase to do switching and a memop on two
+>>>> +     * different CPUs at the same time.
+>>>> +     */
+>>>> +    if (kvm_s390_pv_get_handle(kvm))
+>>>>            return -EINVAL;
+>>>>        if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
+>>>>            if (access_key_invalid(mop->key))
+>>>>
+>>>> base-commit: c9b8fecddb5bb4b67e351bbaeaa648a6f7456912
+>>>
+>>
+> 
