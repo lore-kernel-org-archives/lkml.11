@@ -2,102 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F3B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 11:21:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BAD1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 11:21:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243859AbiCWLXO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 07:23:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34330 "EHLO
+        id S243875AbiCWLXR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 07:23:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235691AbiCWLWu (ORCPT
+        with ESMTP id S243866AbiCWLW4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 07:22:50 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31A7D78FC2
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 04:21:19 -0700 (PDT)
-Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 12AB41EC0104;
-        Wed, 23 Mar 2022 12:21:14 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1648034474;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=py7kMA51MdGBUz1FXOirwusmSTs1+ukYQH97i+mRmtQ=;
-        b=CEk+37BUmi/wA5LPfZmPMXdJwBdkWMQi8qUZhRYQSDNSHVQfErALO8w8g2Kh0u1aspcIjv
-        0+Y8/90Fai9EKDIsoZIorDqF/0dVVSV0YLkFG7JciE5nWKDXC1Esma0c/9/fszb6BJuvrZ
-        fVOZ3EPBepIB0fxKF29Ew9yhwQaW/x8=
-Date:   Wed, 23 Mar 2022 12:21:10 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH] x86/defconfig: Enable WERROR
-Message-ID: <YjsCpoRK7W4l6tSh@zn.tnic>
-References: <YjhdcJB4FaLfsoyO@gmail.com>
- <CAHk-=wjS6ptr5=JqmmyEb_qTjDz_68+S=h1o1bL1fEyArVOymA@mail.gmail.com>
- <YjpLiKRUIB4TGJm0@zn.tnic>
- <CAHk-=wifoM9VOp-55OZCRcO9MnqQ109UTuCiXeZ-eyX_JcNVGg@mail.gmail.com>
+        Wed, 23 Mar 2022 07:22:56 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AFA37893C
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 04:21:26 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id bi12so2174323ejb.3
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 04:21:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Q428jPB3LI7YHZ1TPk4eUv6mjfb7Ccik6IuwbzunlN8=;
+        b=qk78RGmu57m+WoTO9wCDpvaz8ymit5RglIS5kWuFOL3VPbzAb56W2jFcujjmoJ/UGs
+         3EMPCUm15+UV7uYDmswOYIvQIRmiOmXioXyrRkhAZgoLMXbJ+zsL9cKQLdgUtLWFtVkT
+         Z3S+uVKDof7qiuUWrur20pLRxaVjPJzXAaT9Emz+jj9qoCBPt4uM9eUeb0J27HVnDGdm
+         aPrDDx/gd+JHrEaI5SEKc48yhCncdM2nrlC5X/9w4AU/s8nHQ0fGcvwlLyX0/6ayhbNl
+         T6vs+W+6SaJZP90z0JVLIAefcdVL2wcfO6TlH6LbtjOol8X4VugVItB/ReHWiQtK6JrY
+         hVxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Q428jPB3LI7YHZ1TPk4eUv6mjfb7Ccik6IuwbzunlN8=;
+        b=WFM7XRbKB3fGaWa2Zk+Z1jD/U+SwGy8SC+XEGqZqVxXze9KjVYFlVaZaHJXfzYTOZ9
+         DJEDQifVddR3MiD8cT5Zn1wSseX0dMk8ETnzzR2S1M8/ZXuraRTSMrGFUFT2Qqqm/e0E
+         mYOH+GuJ00ccbbT5QrmADEKLSCA0fsSkAHSxiGxHCFh5/kaFiqv61WX/ZcEnLjleUN/W
+         bv/M4ESGvE2rOCOQaCYvht6X0xl/jP0lt18Mbxr6MqfEkiIwu9mGtSeZf5NbMoOHdy+W
+         dr/ZqHukByQNaJIrodrGJrAhmoPw1UQQXJ0V80RmSJCzFxazeyLB3072mkKLs05G1MoL
+         rKog==
+X-Gm-Message-State: AOAM532GBooFbghwJzF5skBtwbJ/HnJIh0InBLGeKuVF/Z2D2pFvO2vy
+        dMECYqixGDto0v0xMbU0jCLFZ5hr2E0i0KCku/MI
+X-Google-Smtp-Source: ABdhPJyeZxP1pcZPz6bj3JhcI1N6gvpSUjdNdladDO5oGiHAiqqYZoRaKWuZ9Ngs5Pq/FT2Q6BrtFvuDlEhpUxtD9Gs=
+X-Received: by 2002:a17:907:6e09:b0:6e0:6bd1:ab5a with SMTP id
+ sd9-20020a1709076e0900b006e06bd1ab5amr1173845ejc.622.1648034484978; Wed, 23
+ Mar 2022 04:21:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wifoM9VOp-55OZCRcO9MnqQ109UTuCiXeZ-eyX_JcNVGg@mail.gmail.com>
+References: <20211227091241.103-1-xieyongji@bytedance.com> <YjotekJZcSvwoZhp@localhost.localdomain>
+In-Reply-To: <YjotekJZcSvwoZhp@localhost.localdomain>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Wed, 23 Mar 2022 19:21:25 +0800
+Message-ID: <CACycT3vz4hYTFpHo0Jphs-xE-k--y63+vedTFAaDRWhpi4_5rg@mail.gmail.com>
+Subject: Re: [PATCH v2] nbd: Don't use workqueue to handle recv work
+To:     Josef Bacik <josef@toxicpanda.com>
+Cc:     Jens Axboe <axboe@kernel.dk>, Bart Van Assche <bvanassche@acm.org>,
+        linux-block@vger.kernel.org, nbd@other.debian.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+On Wed, Mar 23, 2022 at 4:11 AM Josef Bacik <josef@toxicpanda.com> wrote:
+>
+> On Mon, Dec 27, 2021 at 05:12:41PM +0800, Xie Yongji wrote:
+> > The rescuer thread might take over the works queued on
+> > the workqueue when the worker thread creation timed out.
+> > If this happens, we have no chance to create multiple
+> > recv threads which causes I/O hung on this nbd device.
+> >
+> > To fix it, we can not simply remove the WQ_MEM_RECLAIM
+> > flag since the recv work is in the memory reclaim path.
+> > So this patch tries to create kthreads directly to
+> > handle the recv work instead of using workqueue.
+> >
+>
+> I still don't understand why we can't drop WQ_MEM_RECLAIM.  IIRC your argument
+> is that we need it because a reconnect could happen under memory pressure and we
+> need to be able to queue work for that.  However your code makes it so we're
+> just doing a kthread_create(), which isn't coming out of some emergency pool, so
+> it's just as likely to fail as a !WQ_MEM_RECLAIM workqueue.  Thanks,
+>
 
-To quote Linus:
+I think the key point is the context in which the work thread is
+created. It's the context of the nbd process if using kthread_create()
+to create a workthread (might do some allocation). Then we can benefit
+from the PR_SET_IO_FLUSHER flag, so memory reclaim would never hit the
+page cache on the nbd device. But using queue_work() to create a
+workthread, the actual thread creation happens in the context of the
+work thread rather than the nbd process, so we can't rely on the
+PR_SET_IO_FLUSHER flag to avoid deadlock.
 
-"EVERYBODY should have CONFIG_WERROR=y on at least x86-64 and other
-serious architectures, unless you have some completely random
-experimental (and broken) compiler.
-
-New compiler warnings are not acceptable."
-
-So this should make at least the most obvious and common ones not go
-unnoticed.
-
-Signed-off-by: Borislav Petkov <bp@suse.de>
----
- arch/x86/configs/i386_defconfig   | 1 +
- arch/x86/configs/x86_64_defconfig | 1 +
- 2 files changed, 2 insertions(+)
-
-diff --git a/arch/x86/configs/i386_defconfig b/arch/x86/configs/i386_defconfig
-index 71124cf8630c..4b2085243aa3 100644
---- a/arch/x86/configs/i386_defconfig
-+++ b/arch/x86/configs/i386_defconfig
-@@ -262,3 +262,4 @@ CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
- CONFIG_EARLY_PRINTK_DBGP=y
- CONFIG_DEBUG_BOOT_PARAMS=y
- CONFIG_KALLSYMS_ALL=y
-+CONFIG_WERROR=y
-diff --git a/arch/x86/configs/x86_64_defconfig b/arch/x86/configs/x86_64_defconfig
-index 92b1169ec90b..38c52e4eb30b 100644
---- a/arch/x86/configs/x86_64_defconfig
-+++ b/arch/x86/configs/x86_64_defconfig
-@@ -258,3 +258,4 @@ CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
- CONFIG_EARLY_PRINTK_DBGP=y
- CONFIG_DEBUG_BOOT_PARAMS=y
- CONFIG_KALLSYMS_ALL=y
-+CONFIG_WERROR=y
--- 
-2.29.2
-
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Thanks,
+Yongji
