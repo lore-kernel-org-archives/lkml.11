@@ -2,136 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00691C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 01:53:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E70EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 01:55:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240709AbiCWBy6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Mar 2022 21:54:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54528 "EHLO
+        id S240830AbiCWB4l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Mar 2022 21:56:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231530AbiCWByz (ORCPT
+        with ESMTP id S240157AbiCWB4k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Mar 2022 21:54:55 -0400
-Received: from 189.cn (ptr.189.cn [183.61.185.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 158A353E34;
-        Tue, 22 Mar 2022 18:53:22 -0700 (PDT)
-HMM_SOURCE_IP: 10.64.8.31:44820.495833220
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-114.242.206.180 (unknown [10.64.8.31])
-        by 189.cn (HERMES) with SMTP id EF32B1002A9;
-        Wed, 23 Mar 2022 09:53:15 +0800 (CST)
-Received: from  ([114.242.206.180])
-        by gateway-151646-dep-b7fbf7d79-bwdqx with ESMTP id 437bde2d691948a680665d3a4e627624 for jiaxun.yang@flygoat.com;
-        Wed, 23 Mar 2022 09:53:20 CST
-X-Transaction-ID: 437bde2d691948a680665d3a4e627624
-X-Real-From: 15330273260@189.cn
-X-Receive-IP: 114.242.206.180
-X-MEDUSA-Status: 0
-Sender: 15330273260@189.cn
-Message-ID: <abe784ce-eb9e-0143-dbc3-d415bbedbb81@189.cn>
-Date:   Wed, 23 Mar 2022 09:53:14 +0800
+        Tue, 22 Mar 2022 21:56:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 839A456202
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Mar 2022 18:55:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648000510;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GQneE/rU6uYhLlhfDWprcrRBY9/cQlczmjL+8igVejo=;
+        b=gT7R/uCegvH/p5aLMmbZgYko1Tu3Ewg1dz2OOxuXoltL+IgqlR4x89ml9aDa2HRNgYlGx8
+        1o/JOcrGsPkbQjKHCM4JonHzRVQP6O4DyYtkXQrFObCcOd3QraudDwmugwV6pj7crmPC+L
+        uNFM8CF6+XlUt/szX6aRfysj85uAxjU=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-588-37AbWpS6Mxu4ESKL-r-VHw-1; Tue, 22 Mar 2022 21:55:07 -0400
+X-MC-Unique: 37AbWpS6Mxu4ESKL-r-VHw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B87BE3C11A0B;
+        Wed, 23 Mar 2022 01:55:06 +0000 (UTC)
+Received: from [10.22.16.140] (unknown [10.22.16.140])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6AF3043E90C;
+        Wed, 23 Mar 2022 01:55:06 +0000 (UTC)
+Message-ID: <2263666d-5eef-b1fe-d5e3-b166a3185263@redhat.com>
+Date:   Tue, 22 Mar 2022 21:55:05 -0400
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH v11 2/7] MIPS: Loongson64: dts: introduce ls3A4000
- evaluation board
+Subject: Re: [PATCH-mm v3] mm/list_lru: Optimize
+ memcg_reparent_list_lru_node()
 Content-Language: en-US
-To:     Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Roland Scheidegger <sroland@vmware.com>,
-        Zack Rusin <zackr@vmware.com>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Ilia Mirkin <imirkin@alum.mit.edu>,
-        Qing Zhang <zhangqing@loongson.cn>,
-        suijingfeng <suijingfeng@loongson.cn>
-Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org
-References: <20220321162916.1116541-1-15330273260@189.cn>
- <20220321162916.1116541-3-15330273260@189.cn>
- <2644866a-8db2-923e-4227-2aa6d8e375fe@flygoat.com>
- <2c671752-6684-f87b-7b2d-90568d36adde@189.cn>
- <005099b5-33ed-4cb7-f8e4-10e1de780311@flygoat.com>
-From:   Sui Jingfeng <15330273260@189.cn>
-In-Reply-To: <005099b5-33ed-4cb7-f8e4-10e1de780311@flygoat.com>
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>
+References: <20220309144000.1470138-1-longman@redhat.com>
+ <CAMZfGtWS581YW4Y8oNU=E_zPnpK=mMdYVSG1F3U3fJNAzBzc+g@mail.gmail.com>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <CAMZfGtWS581YW4Y8oNU=E_zPnpK=mMdYVSG1F3U3fJNAzBzc+g@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 3/22/22 21:06, Muchun Song wrote:
+> On Wed, Mar 9, 2022 at 10:40 PM Waiman Long <longman@redhat.com> wrote:
+>> Since commit 2c80cd57c743 ("mm/list_lru.c: fix list_lru_count_node()
+>> to be race free"), we are tracking the total number of lru
+>> entries in a list_lru_node in its nr_items field.  In the case of
+>> memcg_reparent_list_lru_node(), there is nothing to be done if nr_items
+>> is 0.  We don't even need to take the nlru->lock as no new lru entry
+>> could be added by a racing list_lru_add() to the draining src_idx memcg
+>> at this point.
+> Hi Waiman,
+>
+> Sorry for the late reply.  Quick question: what if there is an inflight
+> list_lru_add()?  How about the following race?
+>
+> CPU0:                               CPU1:
+> list_lru_add()
+>      spin_lock(&nlru->lock)
+>      l = list_lru_from_kmem(memcg)
+>                                      memcg_reparent_objcgs(memcg)
+>                                      memcg_reparent_list_lrus(memcg)
+>                                          memcg_reparent_list_lru()
+>                                              memcg_reparent_list_lru_node()
+>                                                  if (!READ_ONCE(nlru->nr_items))
+>                                                      // Miss reparenting
+>                                                      return
+>      // Assume 0->1
+>      l->nr_items++
+>      // Assume 0->1
+>      nlru->nr_items++
+>
+> IIUC, we use nlru->lock to serialise this scenario.
 
-On 2022/3/23 00:06, Jiaxun Yang wrote:
->
->
-> 在 2022/3/22 13:38, Sui Jingfeng 写道:
->>
->> On 2022/3/22 21:05, Jiaxun Yang wrote:
->>>
->>>
->>> 在 2022/3/21 16:29, Sui Jingfeng 写道:
->>>> From: suijingfeng <suijingfeng@loongson.cn>
->>>>
->>>> The board name is LS3A4000_7A1000_EVB_BOARD_V1.4, it consist of 1.8Ghz
->>>> mips64r5 4-core CPU and LS7A1000 bridge chip. It has PCIe GEN2 x8 
->>>> slot,
->>>> therefore can play with discrete graphics card.
->>>
->>> Hi Jingfeng,
->>>
->>> As we've discussed before if you are going to introduce new dts then 
->>> you *MUST*
->>> include it in makefile and wire it up in code.
->>>
->>> A dts file doing nothing lying in the tree is just suspicious.
->>>
->>> Thanks.
->>> - Jiaxun
->>>
->> Hi, Jiaxun,
->>
->> I know what you means, but it is the kernel side developer's job.
->> I am just a naive graphic driver developer,I can not care so much.
->> Below is my private patch which can be used to built specific dts
->> into the linux kernel, therefore make the verification easier.
-> Hi Jingfeng,
->
-> In kernel world we take care all the stuff we touched ourself :-)
->
-> If you are not confident with them please drop those DTS from the 
-> patchset
-> besides the generic one. I can do the rest for you after getting this 
-> set merged.
->
-> Thanks.
-> - Jiaxun
->
-Hi, Jiaxun
+I guess this race is theoretically possible but very unlikely since it 
+means a very long pause between list_lru_from_kmem() and the increment 
+of nr_items.
 
-Build all dts into vmlinuz will make the vmlinuz bigger and bigger.
-How does the kernel get the dtb is another big issue, either from built-in
-dtb or pass from the firmware(pmon and uefi etc). This should be
-solved with another patch carefully. Providing board specific dts
-helps to code review, it helps reviewers understand that there are
-variant boards and have to be express with different OF graph.
+How about the following changes to make sure that this race can't happen?
 
-Now, there are about 6 dts under arch/mips/boot/dts/loongson/,
-Suppose loongson have 1000+ different board, do you want built all
-of them into vmlinuz?
+diff --git a/mm/list_lru.c b/mm/list_lru.c
+index c669d87001a6..c31a0a8ad4e7 100644
+--- a/mm/list_lru.c
++++ b/mm/list_lru.c
+@@ -395,9 +395,10 @@ static void memcg_reparent_list_lru_node(struct 
+list_lru *lru, int nid,
+         struct list_lru_one *src, *dst;
 
-Besides, ls7a1000 and ls2k1000 lack a i2c driver, gpio driver,
-pwm driver, clk driver, can you pay more attention to salve those
-problems, please ?
+         /*
+-        * If there is no lru entry in this nlru, we can skip it 
+immediately.
++        * If there is no lru entry in this nlru and the nlru->lock is free,
++        * we can skip it immediately.
+          */
+-       if (!READ_ONCE(nlru->nr_items))
++       if (!READ_ONCE(nlru->nr_items) && !spin_is_locked(&nlru->lock))
+                 return;
+
+Cheers,
+Longman
 
