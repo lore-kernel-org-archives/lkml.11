@@ -2,193 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 726C1C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 08:15:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F8B6C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Mar 2022 08:16:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242566AbiCWIR0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 04:17:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37146 "EHLO
+        id S242596AbiCWISX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Mar 2022 04:18:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239055AbiCWIRW (ORCPT
+        with ESMTP id S242617AbiCWIR4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 04:17:22 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39EE874DF1
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 01:15:51 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id t25so1371953lfg.7
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 01:15:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KYpa6RfccL7lgQ3DFXF/bjASQpeaVzOGJrxLauNYQAY=;
-        b=OI99Ma5dkKGq5xoX1MNtEp35uzOAK4SK9dZLORO5oJylBi9zxnRqcsn/0hFad3Vhw1
-         arzXj68X8COLCI8LIvZb4MchqnTHZc5s512bj0YeZ/QAcDfH+/a70AM9uAJ/QDYYlRm3
-         sY6VNtDNHJeIJQrOu9zUroGyzadsME86ABmIkr9mKttRx3WB6xiYvxKRqxX+pNGd7M7E
-         iqr2Wp9ldFsf8wMXyfidaelJunJuCiKocSLLWCPuFE7lva6lcbHL4WbeAYiMQCEv3hLy
-         iiSAIvcjC2f26NWhx0AE8+izwGyAzLquFuiqE+So/cQsNqk15HOS2WD/DkrykOfSVrd/
-         OnLA==
+        Wed, 23 Mar 2022 04:17:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8D4366D386
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 01:16:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648023386;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vnuSgpHYe4+kaFzuDCRUytBvJ7SkYMJ/tCQLfbkYDOw=;
+        b=FjEQewAM0uBoyQaClOkpbSdp3QKoOBB0mLO9vI8aOyTsyegPWVJ9UZp4XNBZqkWN4POVQE
+        ++B/Ukz3JLMoOpR82G1Ej033Fnno4mjL1XFcYqkYYEzIgvGfuLLQtmYW5SHRDZ2mn7cHdX
+        7ECb7xm4bUgnQf5cZbbuPKcfXJQloVo=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-371-GZUV-1r1OPS5jywQciXBbA-1; Wed, 23 Mar 2022 04:16:25 -0400
+X-MC-Unique: GZUV-1r1OPS5jywQciXBbA-1
+Received: by mail-lj1-f200.google.com with SMTP id q5-20020a2e9145000000b002497bf0eaa1so297198ljg.5
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 01:16:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=KYpa6RfccL7lgQ3DFXF/bjASQpeaVzOGJrxLauNYQAY=;
-        b=4LxN8hDNBBDhgzroePDC98IUeGQe9uU4kCSMhN+vaGYq4u090Zgg7XcqZhRZ4e1Ysr
-         qFcdKlTl6kRTDOtV3/RItoiXJM7hMA55i/Dv1coDwBo/xbYiY1tqbI7kSwpNJsiG40kW
-         uOfxMTomP6c+0hWx366Ad/3VXA5fBuUuuoCoMFkkTzk3uFnLsTq+7vTuuiOTFv3iqe56
-         cBsZ3vyrlg+fxSNY/74vpZM37x/KlHZCKZ0VBDJrExOwmzRNsMEbvh+gUNiw4vpuSbu5
-         pp7kbWnhXi1dA38M4lbSxyw1NdQ1u2hFBK7qEonNUrsr9k95QvnX0JSw2csMiN9kitIG
-         VDdA==
-X-Gm-Message-State: AOAM533jIuC0wsEaFMXEFN0d+A7iJUod+YpcJcpnOR/8YKMUwDgCgz5b
-        hiUtuOjBCTsM1AOt6cDwoEsuB2rd9AO94xuVEePBdQ==
-X-Google-Smtp-Source: ABdhPJxXLsL8FKUlSe34JwJ0cRfV0ooDftHOt3TUM6Evsw/1C0Kit2jMagBnuErIWMSnvATB0PDZ18+i+Nd0dmwmeWY=
-X-Received: by 2002:a05:6512:130b:b0:44a:3b2d:3a85 with SMTP id
- x11-20020a056512130b00b0044a3b2d3a85mr4929770lfu.358.1648023349398; Wed, 23
- Mar 2022 01:15:49 -0700 (PDT)
+        bh=vnuSgpHYe4+kaFzuDCRUytBvJ7SkYMJ/tCQLfbkYDOw=;
+        b=7RCh5As0qDGRqKo3KZwmaouKR2l3djiWgju0pDG5hICRh+DaS4wfbqhIlOtRousIeC
+         nkGVW0d+nQox7FaIUNNTTyqSNZjTw5fCuwCYzjE64H2eCouvty/5wGuX5znkZHOLi7bl
+         Qz6L8uq9BOfQPkxXCeiC82quafTBP6AdzXjHjZqX4W1nHwG6bep95o2lOm4/BOpv8ZPd
+         PgUAVA1iJyrWy2nfNkf7Nk209JrOhfphEBM7VIYOQK8751hoKpm/o/ciOHHj+ZHyC/Ka
+         2mj2A+XxqdvLhWxsfG/eEzWOOAbTyi/qZZzf5KDpos7B7XpC7lN6x3G+K1DXQwpq4A1y
+         pUDg==
+X-Gm-Message-State: AOAM533OHndM9oGD4VCQai7U1gTOD0LIbpfz6ePhBDBibW0wW30SqucD
+        /XTKWzmAwQtzv0+xaAFRfU4CAwCqxEDTwaKzp0BkNiWZv6gDd9AoyKmdE2fS3yQeezz9hkOYeLL
+        sezDi05T1H4xrV9hYKAwEN5W8kHSGr6fErFTPt07E
+X-Received: by 2002:a2e:54d:0:b0:249:8213:f970 with SMTP id 74-20020a2e054d000000b002498213f970mr11608112ljf.315.1648023383802;
+        Wed, 23 Mar 2022 01:16:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxeecRAmB2VmOwb5nw++BO3YvxDg933DtJoEkzYqXR4btJkrva8lntOp+9O3PJt0+U7IJnYrj7sZWMvSePf6/Y=
+X-Received: by 2002:a2e:54d:0:b0:249:8213:f970 with SMTP id
+ 74-20020a2e054d000000b002498213f970mr11608093ljf.315.1648023383515; Wed, 23
+ Mar 2022 01:16:23 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220317152846.246281-1-ulf.hansson@linaro.org> <98472721-7f3c-3f2b-42a6-d50b51c6191f@foss.st.com>
-In-Reply-To: <98472721-7f3c-3f2b-42a6-d50b51c6191f@foss.st.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Wed, 23 Mar 2022 09:15:12 +0100
-Message-ID: <CAPDyKFpAmrdZQEAS8Vs98y5LrdYM4OM0srEo1XiNHy1bV6QT7g@mail.gmail.com>
-Subject: Re: [PATCH] brcmfmac: Avoid keeping power to SDIO card unless WOWL is used
-To:     Yann Gautier <yann.gautier@foss.st.com>
-Cc:     Kalle Valo <kvalo@kernel.org>, linux-wireless@vger.kernel.org,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        Adrian Ratiu <adrian.ratiu@collabora.com>,
-        brcm80211-dev-list.pdl@broadcom.com, linux-kernel@vger.kernel.org,
-        Christophe KERELLO - foss <christophe.kerello@foss.st.com>,
-        Christophe ROULLIER-SCND-02 <christophe.roullier@foss.st.com>
+References: <20220322114313.116516-1-sgarzare@redhat.com> <20220322100635-mutt-send-email-mst@kernel.org>
+ <CACGkMEuUpFKTyqmRh2T7cnF=1hbz3T3_DiT_t8L9Pfs_g5yJmA@mail.gmail.com> <20220323080408.ogoedasrjiqbol4m@sgarzare-redhat>
+In-Reply-To: <20220323080408.ogoedasrjiqbol4m@sgarzare-redhat>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Wed, 23 Mar 2022 16:16:12 +0800
+Message-ID: <CACGkMEuGhvV_jVJY6k54gPABdeJO3+7gR+vUwjwFneqxzUdorg@mail.gmail.com>
+Subject: Re: [PATCH] virtio: use virtio_device_ready() in virtio_device_restore()
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 18 Mar 2022 at 11:47, Yann Gautier <yann.gautier@foss.st.com> wrote:
+On Wed, Mar 23, 2022 at 4:04 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
 >
-> On 3/17/22 16:28, Ulf Hansson wrote:
-> > Keeping the power to the SDIO card during system wide suspend, consumes
-> > energy. Especially on battery driven embedded systems, this can be a
-> > problem. Therefore, let's change the behaviour into allowing the SDIO card
-> > to be powered off, unless WOWL is supported and enabled.
+> On Wed, Mar 23, 2022 at 11:10:27AM +0800, Jason Wang wrote:
+> >On Tue, Mar 22, 2022 at 10:07 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> >>
+> >> On Tue, Mar 22, 2022 at 12:43:13PM +0100, Stefano Garzarella wrote:
+> >> > After waking up a suspended VM, the kernel prints the following trace
+> >> > for virtio drivers which do not directly call virtio_device_ready() in
+> >> > the .restore:
+> >> >
+> >> >     PM: suspend exit
+> >> >     irq 22: nobody cared (try booting with the "irqpoll" option)
+> >> >     Call Trace:
+> >> >      <IRQ>
+> >> >      dump_stack_lvl+0x38/0x49
+> >> >      dump_stack+0x10/0x12
+> >> >      __report_bad_irq+0x3a/0xaf
+> >> >      note_interrupt.cold+0xb/0x60
+> >> >      handle_irq_event+0x71/0x80
+> >> >      handle_fasteoi_irq+0x95/0x1e0
+> >> >      __common_interrupt+0x6b/0x110
+> >> >      common_interrupt+0x63/0xe0
+> >> >      asm_common_interrupt+0x1e/0x40
+> >> >      ? __do_softirq+0x75/0x2f3
+> >> >      irq_exit_rcu+0x93/0xe0
+> >> >      sysvec_apic_timer_interrupt+0xac/0xd0
+> >> >      </IRQ>
+> >> >      <TASK>
+> >> >      asm_sysvec_apic_timer_interrupt+0x12/0x20
+> >> >      arch_cpu_idle+0x12/0x20
+> >> >      default_idle_call+0x39/0xf0
+> >> >      do_idle+0x1b5/0x210
+> >> >      cpu_startup_entry+0x20/0x30
+> >> >      start_secondary+0xf3/0x100
+> >> >      secondary_startup_64_no_verify+0xc3/0xcb
+> >> >      </TASK>
+> >> >     handlers:
+> >> >     [<000000008f9bac49>] vp_interrupt
+> >> >     [<000000008f9bac49>] vp_interrupt
+> >> >     Disabling IRQ #22
+> >> >
+> >> > This happens because we don't invoke .enable_cbs callback in
+> >> > virtio_device_restore(). That callback is used by some transports
+> >> > (e.g. virtio-pci) to enable interrupts.
+> >> >
+> >> > Let's fix it, by calling virtio_device_ready() as we do in
+> >> > virtio_dev_probe(). This function calls .enable_cts callback and sets
+> >> > DRIVER_OK status bit.
+> >> >
+> >> > This fix also avoids setting DRIVER_OK twice for those drivers that
+> >> > call virtio_device_ready() in the .restore.
+> >> >
+> >> > Fixes: d50497eb4e55 ("virtio_config: introduce a new .enable_cbs method")
+> >> > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> >> > ---
+> >> >
+> >> > I'm not sure about the fixes tag. That one is more generic, but the
+> >> > following one I think introduced the issue.
+> >> >
+> >> > Fixes: 9e35276a5344 ("virtio_pci: harden MSI-X interrupts")
+> >>
+> >> Jason what should we do about this one BTW? Just revert? We have other
+> >> issues ...
 > >
-> > Note that, the downside from this change, is that at system resume the SDIO
-> > card needs to be re-initialized and the FW must re-programmed. Even it that
-> > may take some time to complete, it should we worth it, rather than draining
-> > a battery.
-> >
-> > Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-> > ---
-> >
-> > Please note that, I have only compile-tested this patch, so I am relying on help
-> > from Yann and others to run tests on real HW.
-> >
-> > Kind regards
-> > Ulf Hansson
-> >
-> > ---
-> >   .../broadcom/brcm80211/brcmfmac/bcmsdh.c      | 33 +++++++++++--------
-> >   1 file changed, 20 insertions(+), 13 deletions(-)
-> >
-> > diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-> > index ac02244a6fdf..351886c9d68e 100644
-> > --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-> > +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-> > @@ -1119,9 +1119,21 @@ void brcmf_sdio_wowl_config(struct device *dev, bool enabled)
-> >   {
-> >       struct brcmf_bus *bus_if = dev_get_drvdata(dev);
-> >       struct brcmf_sdio_dev *sdiodev = bus_if->bus_priv.sdio;
-> > +     mmc_pm_flag_t pm_caps = sdio_get_host_pm_caps(sdiodev->func1);
-> >
-> > -     brcmf_dbg(SDIO, "Configuring WOWL, enabled=%d\n", enabled);
-> > -     sdiodev->wowl_enabled = enabled;
-> > +     /* Power must be preserved to be able to support WOWL. */
-> > +     if (!(pm_caps & MMC_PM_KEEP_POWER))
-> > +             goto notsup;
-> > +
-> > +     if (sdiodev->settings->bus.sdio.oob_irq_supported ||
-> > +         pm_caps & MMC_PM_WAKE_SDIO_IRQ) {
-> > +             sdiodev->wowl_enabled = enabled;
-> > +             brcmf_dbg(SDIO, "Configuring WOWL, enabled=%d\n", enabled);
-> > +             return;
-> > +     }
-> > +
-> > +notsup:
-> > +     brcmf_dbg(SDIO, "WOWL not supported\n");
-> >   }
-> >
-> >   #ifdef CONFIG_PM_SLEEP
-> > @@ -1130,7 +1142,7 @@ static int brcmf_ops_sdio_suspend(struct device *dev)
-> >       struct sdio_func *func;
-> >       struct brcmf_bus *bus_if;
-> >       struct brcmf_sdio_dev *sdiodev;
-> > -     mmc_pm_flag_t pm_caps, sdio_flags;
-> > +     mmc_pm_flag_t sdio_flags;
-> >       int ret = 0;
-> >
-> >       func = container_of(dev, struct sdio_func, dev);
-> > @@ -1142,20 +1154,15 @@ static int brcmf_ops_sdio_suspend(struct device *dev)
-> >       bus_if = dev_get_drvdata(dev);
-> >       sdiodev = bus_if->bus_priv.sdio;
-> >
-> > -     pm_caps = sdio_get_host_pm_caps(func);
-> > -
-> > -     if (pm_caps & MMC_PM_KEEP_POWER) {
-> > -             /* preserve card power during suspend */
-> > +     if (sdiodev->wowl_enabled) {
-> >               brcmf_sdiod_freezer_on(sdiodev);
-> >               brcmf_sdio_wd_timer(sdiodev->bus, 0);
-> >
-> >               sdio_flags = MMC_PM_KEEP_POWER;
-> > -             if (sdiodev->wowl_enabled) {
-> > -                     if (sdiodev->settings->bus.sdio.oob_irq_supported)
-> > -                             enable_irq_wake(sdiodev->settings->bus.sdio.oob_irq_nr);
-> > -                     else
-> > -                             sdio_flags |= MMC_PM_WAKE_SDIO_IRQ;
-> > -             }
-> > +             if (sdiodev->settings->bus.sdio.oob_irq_supported)
-> > +                     enable_irq_wake(sdiodev->settings->bus.sdio.oob_irq_nr);
-> > +             else
-> > +                     sdio_flags |= MMC_PM_WAKE_SDIO_IRQ;
-> >
-> >               if (sdio_set_host_pm_flags(sdiodev->func1, sdio_flags))
-> >                       brcmf_err("Failed to set pm_flags %x\n", sdio_flags);
+> >Let me post a patch to revert it and give it a rework.
 >
-> Hi Ulf,
+> Thanks for reverting it.
 >
-> You are missing the counter part in brcmf_ops_sdio_resume:
+> Should we queue this patch anyway to prevent future issues and avoid
+> setting DRIVER_OK twice?
 >
-> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-> @@ -1190,14 +1190,13 @@ static int brcmf_ops_sdio_resume(struct device *dev)
->          if (func->num != 2)
->                  return 0;
->
-> -       if (!(pm_caps & MMC_PM_KEEP_POWER)) {
-> +       if (!sdiodev->wowl_enabled) {
->                  /* bus was powered off and device removed, probe again */
->                  ret = brcmf_sdiod_probe(sdiodev);
->                  if (ret)
->                          brcmf_err("Failed to probe device on resume\n");
->          } else {
-> -               if (sdiodev->wowl_enabled &&
-> -                   sdiodev->settings->bus.sdio.oob_irq_supported)
-> +               if (sdiodev->settings->bus.sdio.oob_irq_supported)
->
-> disable_irq_wake(sdiodev->settings->bus.sdio.oob_irq_nr);
->
->
-> Else, we get an oops when calling brcmf_sdio_sleep.
+> Please, let me know if I have to resend it by removing the call trace
+> that after the revert should no longer occur.
 
-Yes, of course - thanks for reviewing and testing. A v2 is on the way out.
+I think we can have another version.
+
+Thanks
 
 >
+> Thanks,
+> Stefano
 >
-> Best regards,
-> Yann
 
-Kind regards
-Uffe
