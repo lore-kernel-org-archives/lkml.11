@@ -2,174 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38FE9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 03:59:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2438CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 04:06:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233066AbiCXEBR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 00:01:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49672 "EHLO
+        id S241934AbiCXEHl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Mar 2022 00:07:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229699AbiCXEBN (ORCPT
+        with ESMTP id S229699AbiCXEHj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 00:01:13 -0400
-X-Greylist: delayed 1396 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 23 Mar 2022 20:59:41 PDT
-Received: from gateway20.websitewelcome.com (gateway20.websitewelcome.com [192.185.4.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5EE37CB0E
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 20:59:40 -0700 (PDT)
-Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
-        by gateway20.websitewelcome.com (Postfix) with ESMTP id 74449400CDA3D
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 22:36:24 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id XEGun4Nor9AGSXEGunyJZy; Wed, 23 Mar 2022 22:36:24 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=YY7UYODrYfO6ZFztsolGDQLqpCq4yPVE6i5YAfHYLoI=; b=Lu6DKMvESPCdgSTJ80ut4y2GR3
-        nI9Sd3kX26GC0KMddmbyXOkSrwlSGYeWxLJqMgtxRN54PhZGniVjoDaxFO5+0hjXH0Dj4+UxxnUyB
-        PJEOh6US6naSa4YGzH5OSZJf0O32wh5hmcpOwU7KFKQfSUhMbz2ZT03tNUqaSFm4mrNXT9dU7ELla
-        IhVmQ6V3D66/4sAKYWioQQdDr0fW9Bm/APeoqh4/VVjUSl4q8fJo059vKRpudunBjXyPJOo0X4281
-        IK2lZMEs2dp4wLkBLHNDS4SesyUBzREeaNozE1q3SND5hlBuzCSJZtoTDyU/TyYpIkkv2vypJwB9T
-        sDVXStJw==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54414)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nXEGt-002d2j-Qp; Thu, 24 Mar 2022 03:36:23 +0000
-Message-ID: <920c9f2a-77b6-4d68-a7c2-08967fab70cc@roeck-us.net>
-Date:   Wed, 23 Mar 2022 20:36:22 -0700
+        Thu, 24 Mar 2022 00:07:39 -0400
+Received: from 189.cn (ptr.189.cn [183.61.185.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3DABB7D015;
+        Wed, 23 Mar 2022 21:06:05 -0700 (PDT)
+HMM_SOURCE_IP: 10.64.8.43:54418.634531658
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-114.242.206.180 (unknown [10.64.8.43])
+        by 189.cn (HERMES) with SMTP id 0AA841002B3;
+        Thu, 24 Mar 2022 12:05:57 +0800 (CST)
+Received: from  ([172.27.8.53])
+        by gateway-151646-dep-b7fbf7d79-vjdjk with ESMTP id 78d26cf70bc24c698f3751c8db815cac for robh@kernel.org;
+        Thu, 24 Mar 2022 12:06:04 CST
+X-Transaction-ID: 78d26cf70bc24c698f3751c8db815cac
+X-Real-From: 15330273260@189.cn
+X-Receive-IP: 172.27.8.53
+X-MEDUSA-Status: 0
+Sender: 15330273260@189.cn
+Message-ID: <6a0d6acd-f778-f3ec-a97a-7c7932579e96@189.cn>
+Date:   Thu, 24 Mar 2022 12:05:55 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH v8 1/2] dt-bindings: watchdog: Add watchdog yaml file for
- Sunplus SP7021
+Subject: Re: [PATCH v11 7/7] drm/lsdc: add drm driver for loongson display
+ controller
 Content-Language: en-US
-To:     Xiantao Hu <xt.hu@cqplus1.com>, krzk@kernel.org,
-        wim@linux-watchdog.org, p.zabel@pengutronix.de,
-        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        robh+dt@kernel.org, devicetree@vger.kernel.org
-Cc:     wells.lu@sunplus.com, qinjian@cqplus1.com,
-        Rob Herring <robh@kernel.org>
-References: <20220324031805.61316-1-xt.hu@cqplus1.com>
- <20220324031805.61316-2-xt.hu@cqplus1.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <20220324031805.61316-2-xt.hu@cqplus1.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Ilia Mirkin <imirkin@alum.mit.edu>,
+        Qing Zhang <zhangqing@loongson.cn>,
+        suijingfeng <suijingfeng@loongson.cn>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        kernel test robot <lkp@intel.com>
+References: <20220321162916.1116541-1-15330273260@189.cn>
+ <20220321162916.1116541-8-15330273260@189.cn>
+ <Yjo2R5LQrRICr7dC@robh.at.kernel.org>
+ <9ea4d326-ad5f-4f2c-1609-4ca772699d1b@189.cn>
+ <YjsclWsqGX3JrknM@robh.at.kernel.org>
+From:   Sui Jingfeng <15330273260@189.cn>
+In-Reply-To: <YjsclWsqGX3JrknM@robh.at.kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nXEGt-002d2j-Qp
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54414
-X-Source-Auth: linux@roeck-us.net
-X-Email-Count: 10
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/23/22 20:18, Xiantao Hu wrote:
-> This adds the documentation for the devicetree bindings of the Sunplus
-> SP7021 watchdog driver, found from SP7021 SoCs and newer.
-> 
-> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> Signed-off-by: Xiantao Hu <xt.hu@cqplus1.com>
 
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+On 2022/3/23 21:11, Rob Herring wrote:
+> On Wed, Mar 23, 2022 at 12:12:43PM +0800, Sui Jingfeng wrote:
+>> On 2022/3/23 04:49, Rob Herring wrote:
+>>>> +/*
+>>>> + * mainly for dc in ls7a1000 which have builtin gpio emulated i2c
+>>>> + *
+>>>> + * @index : output channel index, 0 for DVO0, 1 for DVO1
+>>>> + */
+>>>> +struct lsdc_i2c *lsdc_create_i2c_chan(struct device *dev, void *base, unsigned int index)
+>>>> +{
+>>>> +	char compat[32] = {0};
+>>>> +	unsigned int udelay = 5;
+>>>> +	unsigned int timeout = 2200;
+>>>> +	int nr = -1;
+>>>> +	struct i2c_adapter *adapter;
+>>>> +	struct lsdc_i2c *li2c;
+>>>> +	struct device_node *i2c_np;
+>>>> +	int ret;
+>>>> +
+>>>> +	li2c = devm_kzalloc(dev, sizeof(*li2c), GFP_KERNEL);
+>>>> +	if (!li2c)
+>>>> +		return ERR_PTR(-ENOMEM);
+>>>> +
+>>>> +	li2c->index = index;
+>>>> +	li2c->dev = dev;
+>>>> +
+>>>> +	if (index == 0) {
+>>>> +		li2c->sda = 0x01;
+>>>> +		li2c->scl = 0x02;
+>>>> +	} else if (index == 1) {
+>>>> +		li2c->sda = 0x04;
+>>>> +		li2c->scl = 0x08;
+>>> Just require this to be in DT rather than having some default.
+>>>
+>> By design,  I am try very hard to let the code NOT fully  DT dependent. DT is nice , easy to learn and use.
+>> But kernel side developer plan to follow UEFI + ACPI Specification on LS3A5000 + LS7A1000 platform. See [1]
+>> There will no DT support then, provide a convention support  make the driver more flexible. I want the
+>> driver works with minimal requirement. The driver just works on simple boards by put the following dc device
+>> node in arch/mips/dts/loongson/loongson64g_4core_ls7a.dts,
+> Pick DT or ACPI for the platform, not both. We don't need to have both
+> in the kernel to support.
+>
+> Rob
 
-> ---
-> Changes in v8:
->   - Addressed all comments from Krzysztof Kozlowski.
->     1.fix the title.
->     2.fix the lowercase hex in examples.
-> 
->   .../bindings/watchdog/sunplus,sp7021-wdt.yaml | 47 +++++++++++++++++++
->   MAINTAINERS                                   |  6 +++
->   2 files changed, 53 insertions(+)
->   create mode 100644 Documentation/devicetree/bindings/watchdog/sunplus,sp7021-wdt.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/watchdog/sunplus,sp7021-wdt.yaml b/Documentation/devicetree/bindings/watchdog/sunplus,sp7021-wdt.yaml
-> new file mode 100644
-> index 000000000..d90271013
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/watchdog/sunplus,sp7021-wdt.yaml
-> @@ -0,0 +1,47 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +# Copyright (C) Sunplus Co., Ltd. 2021
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/watchdog/sunplus,sp7021-wdt.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Sunplus SoCs Watchdog
-> +
-> +maintainers:
-> +  - XianTao Hu <xt.hu@cqplus1.com>
-> +
-> +allOf:
-> +  - $ref: watchdog.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    const: sunplus,sp7021-wdt
-> +
-> +  reg:
-> +    items:
-> +      - description: watchdog registers regions
-> +      - description: miscellaneous control registers regions
-> +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +  resets:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - clocks
-> +  - resets
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    watchdog: watchdog@9c000630 {
-> +        compatible = "sunplus,sp7021-wdt";
-> +        reg = <0x9c000630 0x08>, <0x9c000274 0x04>;
-> +        clocks = <&clkc 0x24>;
-> +        resets = <&rstc 0x14>;
-> +    };
-> +...
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index cd0f68d4a..efdc618a0 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -18544,6 +18544,12 @@ S:	Maintained
->   F:	Documentation/devicetree/bindings/rtc/sunplus,sp7021-rtc.yaml
->   F:	drivers/rtc/rtc-sunplus.c
->   
-> +SUNPLUS WATCHDOG DRIVER
-> +M:	Xiantao Hu <xt.hu@cqplus1.com>
-> +L:	linux-watchdog@vger.kernel.org
-> +S:	Maintained
-> +F:	Documentation/devicetree/bindings/watchdog/sunplus,sp7021-wdt.yaml
-> +
->   SUPERH
->   M:	Yoshinori Sato <ysato@users.sourceforge.jp>
->   M:	Rich Felker <dalias@libc.org>
+Hi Rob,
+
+We can only choose DT currently, we love DT, but it is kernel side developer's choice.
+We just avoid deep coupling which tend to lost flexibility.
+All I can and should do is make the drivers works, writing code beautiful does not
+means it can works like a charm.
+
+ From what i am understanding, DT is not a strict specification, but in return flexible.
+Force every driver comply with what already have is tend to prohibit innovation.
+It just too late to do so.
 
