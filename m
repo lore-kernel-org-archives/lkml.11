@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B63BAC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A106CC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 16:46:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244496AbiC1Qrz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 12:47:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45202 "EHLO
+        id S244432AbiC1Qrr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 12:47:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242812AbiC1QqC (ORCPT
+        with ESMTP id S242821AbiC1QqC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Mar 2022 12:46:02 -0400
 Received: from mail.baikalelectronics.ru (mail.baikalelectronics.com [87.245.175.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 584F321E1F;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 724AE21E25;
         Mon, 28 Mar 2022 09:44:16 -0700 (PDT)
 Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id 29F111E494E;
-        Thu, 24 Mar 2022 04:48:48 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 29F111E494E
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id C791C1E4946;
+        Thu, 24 Mar 2022 04:48:44 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru C791C1E4946
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1648086528;
-        bh=yRKAu/9goZY2CuhAhPZ9QnZ4PkDsLD/RYGgM0Q+DtC8=;
+        d=baikalelectronics.ru; s=mail; t=1648086524;
+        bh=SFhcRli5fTa9nfSVuvk4sCn/C3IPtvAiXy7J7sidjKw=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=OvWOsR1RUWgtRc8GB5l1e+0O5kf1YTiVi1ymudckOkbaXZecCtUTJ3fsm2PXMcAge
-         MwagEtmmLp96mECBvdSOviNSTGOnGu6PQv/G60JSqJdsDlXtQ/weYTOM5pWlC8T3ni
-         McTGo6DAMKkz3xu2YCvTxPPJOLo6ixI9pV+tFdP0=
+        b=hetWlYdPNHHcfgiSSho0mz2Gl+aESHCewsqON6vPnnbDWObrn0vrYR/SoJ7QGJum5
+         E5WxsA1y5fusg4/2bLxcf9buGOXISaz0NqEW7+wFYwE5MCp1KSGCrw9CM4cwXGN9zz
+         xllOy81/JbKv/lPHjQUbt/mDbUpygDx3EvfzmoAI=
 Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 24 Mar 2022 04:48:47 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 24 Mar 2022 04:48:44 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
         Vinod Koul <vkoul@kernel.org>,
@@ -44,9 +44,9 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
         <linux-pci@vger.kernel.org>, <dmaengine@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH 14/25] dmaengine: dw-edma: Add dw_edma prefix to the DebugFS nodes descriptor
-Date:   Thu, 24 Mar 2022 04:48:25 +0300
-Message-ID: <20220324014836.19149-15-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH 09/25] dmaengine: dw-edma: Add CPU to PCIe bus address translation
+Date:   Thu, 24 Mar 2022 04:48:20 +0300
+Message-ID: <20220324014836.19149-10-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru>
 References: <20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -57,102 +57,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The rest of the locally defined and used methods and structures have
-dw_edma prefix in their names. It's right in accordance with the kernel
-coding style to follow the locally defined rule of naming. Let's add that
-prefix to the debugfs_entries structure too especially seeing it's name
-may be confusing as if that structure belongs to the global DebugFS space.
+Starting from commit 9575632052ba ("dmaengine: make slave address
+physical") the source and destination addresses of the DMA-slave device
+have been converted to being defined in CPU address space. It's DMA-device
+driver responsibility to properly convert them to the reachable DMA bus
+spaces. In case of the DW eDMA device, the source or destination
+peripheral (slave) devices reside PCIe bus space. Thus we need to perform
+the PCIe Host/EP windows-based (i.e. ranges DT-property) addresses
+translation otherwise the eDMA transactions won't work as expected (or can
+be even harmful) in case if the CPU and PCIe address spaces don't match.
+
+Note 1. Even though the DMA interleaved template has both source and
+destination addresses declared of dma_addr_t type only CPU memory range is
+supposed to be mapped in a way so to be seen by the DMA device since it's
+a subject of the DMA getting towards the system side. The device part must
+not be mapped since slave device resides in the PCIe bus space, which
+isn't affected by IOMMUs or iATU translations. DW PCIe eDMA generates
+corresponding MWr/MRd TLPs on its own.
+
+Note 2. This functionality is mainly required for the remote eDMA setup
+since the CPU address must be manually translated into the PCIe bus space
+before being written to LLI.{SAR,DAR}. If eDMA is embedded into the
+locally accessible DW PCIe RP/EP software-based translation isn't required
+since it will be done by hardware by means of the Outbound iATU as long as
+the DMA_BYPASS flag is cleared. If the later flag is set or there is no
+Outbound iATU entry found to which the SAR or DAR falls in (for Read and
+Write channel respectfully), there won't be any translation performed but
+DMA will proceed with the corresponding source/destination address as is.
 
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 ---
- drivers/dma/dw-edma/dw-edma-v0-debugfs.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/dma/dw-edma/dw-edma-core.c | 18 +++++++++++++++++-
+ include/linux/dma/edma.h           | 15 +++++++++++++++
+ 2 files changed, 32 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/dma/dw-edma/dw-edma-v0-debugfs.c b/drivers/dma/dw-edma/dw-edma-v0-debugfs.c
-index 808eed212be8..afd519d9568b 100644
---- a/drivers/dma/dw-edma/dw-edma-v0-debugfs.c
-+++ b/drivers/dma/dw-edma/dw-edma-v0-debugfs.c
-@@ -46,7 +46,7 @@ static struct {
- 	void					__iomem *end;
- } lim[2][EDMA_V0_MAX_NR_CH];
- 
--struct debugfs_entries {
-+struct dw_edma_debugfs_entry {
- 	const char				*name;
- 	void __iomem				*reg;
- };
-@@ -94,7 +94,7 @@ static int dw_edma_debugfs_u32_get(void *data, u64 *val)
+diff --git a/drivers/dma/dw-edma/dw-edma-core.c b/drivers/dma/dw-edma/dw-edma-core.c
+index 97743fe44ebf..418b201fef67 100644
+--- a/drivers/dma/dw-edma/dw-edma-core.c
++++ b/drivers/dma/dw-edma/dw-edma-core.c
+@@ -40,6 +40,17 @@ struct dw_edma_desc *vd2dw_edma_desc(struct virt_dma_desc *vd)
+ 	return container_of(vd, struct dw_edma_desc, vd);
  }
- DEFINE_DEBUGFS_ATTRIBUTE(fops_x32, dw_edma_debugfs_u32_get, NULL, "0x%08llx\n");
  
--static void dw_edma_debugfs_create_x32(const struct debugfs_entries entries[],
-+static void dw_edma_debugfs_create_x32(const struct dw_edma_debugfs_entry entries[],
- 				       int nr_entries, struct dentry *dir)
++static inline
++u64 dw_edma_get_pci_address(struct dw_edma_chan *chan, phys_addr_t cpu_addr)
++{
++	struct dw_edma_chip *chip = chan->dw->chip;
++
++	if (chip->ops->pci_address)
++		return chip->ops->pci_address(chip->dev, cpu_addr);
++
++	return cpu_addr;
++}
++
+ static struct dw_edma_burst *dw_edma_alloc_burst(struct dw_edma_chunk *chunk)
  {
+ 	struct dw_edma_burst *burst;
+@@ -328,11 +339,11 @@ dw_edma_device_transfer(struct dw_edma_transfer *xfer)
+ {
+ 	struct dw_edma_chan *chan = dchan2dw_edma_chan(xfer->dchan);
+ 	enum dma_transfer_direction dir = xfer->direction;
+-	phys_addr_t src_addr, dst_addr;
+ 	struct scatterlist *sg = NULL;
+ 	struct dw_edma_chunk *chunk;
+ 	struct dw_edma_burst *burst;
+ 	struct dw_edma_desc *desc;
++	u64 src_addr, dst_addr;
+ 	size_t fsz = 0;
+ 	u32 cnt = 0;
  	int i;
-@@ -108,8 +108,7 @@ static void dw_edma_debugfs_create_x32(const struct debugfs_entries entries[],
- static void dw_edma_debugfs_regs_ch(struct dw_edma_v0_ch_regs __iomem *regs,
- 				    struct dentry *dir)
- {
--	int nr_entries;
--	const struct debugfs_entries debugfs_regs[] = {
-+	const struct dw_edma_debugfs_entry debugfs_regs[] = {
- 		REGISTER(ch_control1),
- 		REGISTER(ch_control2),
- 		REGISTER(transfer_size),
-@@ -120,6 +119,7 @@ static void dw_edma_debugfs_regs_ch(struct dw_edma_v0_ch_regs __iomem *regs,
- 		REGISTER(llp.lsb),
- 		REGISTER(llp.msb),
- 	};
-+	int nr_entries;
+@@ -407,6 +418,11 @@ dw_edma_device_transfer(struct dw_edma_transfer *xfer)
+ 		dst_addr = chan->config.dst_addr;
+ 	}
  
- 	nr_entries = ARRAY_SIZE(debugfs_regs);
- 	dw_edma_debugfs_create_x32(debugfs_regs, nr_entries, dir);
-@@ -127,7 +127,7 @@ static void dw_edma_debugfs_regs_ch(struct dw_edma_v0_ch_regs __iomem *regs,
++	if (dir == DMA_DEV_TO_MEM)
++		src_addr = dw_edma_get_pci_address(chan, (phys_addr_t)src_addr);
++	else
++		dst_addr = dw_edma_get_pci_address(chan, (phys_addr_t)dst_addr);
++
+ 	if (xfer->type == EDMA_XFER_CYCLIC) {
+ 		cnt = xfer->xfer.cyclic.cnt;
+ 	} else if (xfer->type == EDMA_XFER_SCATTER_GATHER) {
+diff --git a/include/linux/dma/edma.h b/include/linux/dma/edma.h
+index 5abac9640a4e..5cc87cfdd685 100644
+--- a/include/linux/dma/edma.h
++++ b/include/linux/dma/edma.h
+@@ -23,8 +23,23 @@ struct dw_edma_region {
+ 	size_t		sz;
+ };
  
- static void dw_edma_debugfs_regs_wr(struct dentry *dir)
- {
--	const struct debugfs_entries debugfs_regs[] = {
-+	const struct dw_edma_debugfs_entry debugfs_regs[] = {
- 		/* eDMA global registers */
- 		WR_REGISTER(engine_en),
- 		WR_REGISTER(doorbell),
-@@ -148,7 +148,7 @@ static void dw_edma_debugfs_regs_wr(struct dentry *dir)
- 		WR_REGISTER(ch67_imwr_data),
- 		WR_REGISTER(linked_list_err_en),
- 	};
--	const struct debugfs_entries debugfs_unroll_regs[] = {
-+	const struct dw_edma_debugfs_entry debugfs_unroll_regs[] = {
- 		/* eDMA channel context grouping */
- 		WR_REGISTER_UNROLL(engine_chgroup),
- 		WR_REGISTER_UNROLL(engine_hshake_cnt.lsb),
-@@ -191,7 +191,7 @@ static void dw_edma_debugfs_regs_wr(struct dentry *dir)
++/**
++ * struct dw_edma_core_ops - platform-specific eDMA methods
++ * @irq_vector:		Get IRQ number of the passed eDMA channel. Note the
++ *                      method accepts the channel id in the end-to-end
++ *                      numbering with the eDMA write channels being placed
++ *                      first in the row.
++ * @pci_address:	Get PCIe bus address corresponding to the passed CPU
++ *			address. Note there is no need in specifying this
++ *			function if the address translation is performed by
++ *			the DW PCIe RP/EP controller with the DW eDMA device in
++ *			subject and DMA_BYPASS isn't set for all the outbound
++ *			iATU windows. That will be done by the controller
++ *			automatically.
++ */
+ struct dw_edma_core_ops {
+ 	int (*irq_vector)(struct device *dev, unsigned int nr);
++	u64 (*pci_address)(struct device *dev, phys_addr_t cpu_addr);
+ };
  
- static void dw_edma_debugfs_regs_rd(struct dentry *dir)
- {
--	const struct debugfs_entries debugfs_regs[] = {
-+	const struct dw_edma_debugfs_entry debugfs_regs[] = {
- 		/* eDMA global registers */
- 		RD_REGISTER(engine_en),
- 		RD_REGISTER(doorbell),
-@@ -213,7 +213,7 @@ static void dw_edma_debugfs_regs_rd(struct dentry *dir)
- 		RD_REGISTER(ch45_imwr_data),
- 		RD_REGISTER(ch67_imwr_data),
- 	};
--	const struct debugfs_entries debugfs_unroll_regs[] = {
-+	const struct dw_edma_debugfs_entry debugfs_unroll_regs[] = {
- 		/* eDMA channel context grouping */
- 		RD_REGISTER_UNROLL(engine_chgroup),
- 		RD_REGISTER_UNROLL(engine_hshake_cnt.lsb),
-@@ -256,7 +256,7 @@ static void dw_edma_debugfs_regs_rd(struct dentry *dir)
- 
- static void dw_edma_debugfs_regs(void)
- {
--	const struct debugfs_entries debugfs_regs[] = {
-+	const struct dw_edma_debugfs_entry debugfs_regs[] = {
- 		REGISTER(ctrl_data_arb_prior),
- 		REGISTER(ctrl),
- 	};
+ enum dw_edma_map_format {
 -- 
 2.35.1
 
