@@ -2,164 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D81A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 11:06:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FF7BC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 11:07:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349649AbiCXLHp (ORCPT
+        id S1349656AbiCXLIv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 07:07:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39028 "EHLO
+        Thu, 24 Mar 2022 07:08:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347198AbiCXLHn (ORCPT
+        with ESMTP id S231165AbiCXLIt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 07:07:43 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B989A9BA
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 04:06:11 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id s8so3703077pfk.12
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 04:06:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :in-reply-to;
-        bh=nfj33Z1hktxCveFcrncNdeDrZFsHaZSKxlrG2enCzhs=;
-        b=mFOzrh1axEwQuzE2GV7dILxkSQgWZSfAQT60rT8MNVqC0HoIz7RpNrzcm0OnMeZhF6
-         o2lvwUA+E6XQP2dyHjMAD5QvtNwm4zvXSRlI5aHTwMigKPWyh/FlTIg0T/Ux2FZnrF40
-         YO5xCSrfV9X3fWvWcHw7v72sWd3wBcvpXO7hyx9wK6u1x5hcOdGQ1QW100p/7zFUtvcm
-         PvMF1Rwjf9iPdfFqq5KpXOQk4hxU4NKAIA+7WrBpqfasIhkbegC4v3+MhcyVuHHW7I+E
-         qF1C/fYhPGp0gZepDLQgiaT+pxg/XYBmTELmqRusvkOr9Wt2I7K29Ke90I7jLDD87HLr
-         QKGQ==
+        Thu, 24 Mar 2022 07:08:49 -0400
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EB5E9A9AC;
+        Thu, 24 Mar 2022 04:07:17 -0700 (PDT)
+Received: by mail-ed1-f47.google.com with SMTP id r23so5232245edb.0;
+        Thu, 24 Mar 2022 04:07:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:in-reply-to;
-        bh=nfj33Z1hktxCveFcrncNdeDrZFsHaZSKxlrG2enCzhs=;
-        b=5bQBEB4frs7G9Upq7CXUTXHCfRr2qHiqA4S1O8OgjlxwasKuA8ksiGZdmJKvNksf9x
-         59mGKzhmTzJ+OPB7Ib/mZlLuzb4tuTEuta+lM1hEyhAX2PrcSvgGstILhl5tbSVYV6tP
-         7WBxP0/7TpSzNF1hzo/KMZFhZGiZ+D3ExjqAVvLcD3obz6gvX/ls3GIG/WHT40pSDBm7
-         9opceB8T/RcaqvwP0RAKOC5aXLC5h+pL23XpAraZiJmDMX5+2j0DSPTdiPzgxe/3PITn
-         bIOV6MAXBLwqzEzw0Y9oGIMLwLnvCKfUMYwxs9O3/xullMTlZg2+SyvrVPspJpeDeMCk
-         vO+g==
-X-Gm-Message-State: AOAM532RgdO2R7p10EUqJnMugOJ7btoPTcIoC+OYhdnppLjGRDYgSq7O
-        PqquxdMlr7bhF2SoKEmhF2BTIb0Grmo=
-X-Google-Smtp-Source: ABdhPJwXczoeV5tsZAaiZHkZgYJgmG+n/zkaAI/QS5VhUeAxcUXHTDna6Qh9Qah8aQuS7w+duKJLLg==
-X-Received: by 2002:a05:6a00:2485:b0:4f7:37cd:d040 with SMTP id c5-20020a056a00248500b004f737cdd040mr4751618pfv.55.1648119971193;
-        Thu, 24 Mar 2022 04:06:11 -0700 (PDT)
-Received: from odroid ([114.29.23.97])
-        by smtp.gmail.com with ESMTPSA id u126-20020a637984000000b0038147b4f53esm2294799pgc.93.2022.03.24.04.06.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 04:06:10 -0700 (PDT)
-Date:   Thu, 24 Mar 2022 11:06:03 +0000
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     Vlastimil Babka <vbabka@suse.cz>
-Cc:     Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Marco Elver <elver@google.com>,
-        Matthew WilCox <willy@infradead.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v1 01/15] mm/slab: cleanup slab_alloc() and
- slab_alloc_node()
-Message-ID: <20220324110603.GA2112827@odroid>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=WGF14RUnJyiVRTAJrOTqMWNPjX762pP3YtrFh/OYz+k=;
+        b=T/EuArlh575CUTy5a8MOXOKbX9lPwY0WFQkLavZw11EjEWKoGuMPo8e/AOaim6gK8S
+         MS1snjCCdGnfw9YhYBxlt1TKxWmUnEWFt0WO9G/552m8dV0789EcwAHuqwT3hAyxq1Q7
+         oiM2hHehMZyerpnJH2GU5vHhglrGvkPEl2ENpF/c903wzxwW9qd3TfJd7p5oftkhBIKn
+         CKe2o9++F82v260KMUW2LeKh4m9fxFjQ4cFDq7zJXkdEPVZklHFmUEW7/+GU1mktmyTl
+         sfSVLSRa7idzJHwe0+HgNwoB92MV3CbvTAAlFYiZunwkKE7vJG/T7pSC1I1XLqHWm2z6
+         0Yrg==
+X-Gm-Message-State: AOAM532kJoPRctRGZ2CxPAkSWvZZTz9juRXGLeCXFqXUBzv0j3Qi1p10
+        MuK5p3tHN5x7EPggynSDlGJREPYHpNG/kA==
+X-Google-Smtp-Source: ABdhPJx5n6ChCN/EcL7ayTXSjIi+oK6eFu5g8no4Q38FEkc6GZn8+qIUWLdNCXVCm90iRk2ocKkiaQ==
+X-Received: by 2002:a05:6402:506:b0:419:46b2:2433 with SMTP id m6-20020a056402050600b0041946b22433mr5964140edv.21.1648120035851;
+        Thu, 24 Mar 2022 04:07:15 -0700 (PDT)
+Received: from [192.168.0.156] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.googlemail.com with ESMTPSA id r16-20020a056402019000b00418ed60c332sm1270063edv.65.2022.03.24.04.07.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 24 Mar 2022 04:07:14 -0700 (PDT)
+Message-ID: <93fe6a41-3b59-2fbc-6f95-833f337815ee@kernel.org>
+Date:   Thu, 24 Mar 2022 12:07:13 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5833607a-4444-206d-db4f-9f958653c5b0@suse.cz>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 1/2] dt-bindings: usb: Add documentation for AM62 USB
+ Wrapper module
+Content-Language: en-US
+To:     Aswath Govindraju <a-govindraju@ti.com>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-usb@vger.kernel.org, Felipe Balbi <balbi@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Roger Quadros <rogerq@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>
+References: <20220324073425.18607-1-a-govindraju@ti.com>
+ <20220324073425.18607-2-a-govindraju@ti.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220324073425.18607-2-a-govindraju@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Vlastimil wrote:
-> On 3/8/22 12:41, Hyeonggon Yoo wrote:
-> > +
-> >  static __always_inline void *
-> > -slab_alloc(struct kmem_cache *cachep, gfp_t flags, size_t orig_size, unsigned long caller)
-> > +slab_alloc_node(struct kmem_cache *cachep, gfp_t flags, int nodeid, size_t orig_size,
-> > +		   unsigned long caller)
-> >  {
-> >  	unsigned long save_flags;
-> > -	void *objp;
-> > +	void *ptr;
-> > +	int slab_node = numa_mem_id();
-> >  	struct obj_cgroup *objcg = NULL;
-> >  	bool init = false;
-> >
-> > @@ -3299,21 +3255,49 @@ slab_alloc(struct kmem_cache *cachep, gfp_t flags, size_t orig_size, unsigned lo
-> >  	if (unlikely(!cachep))
-> >  		return NULL;
-> >
-> > -	objp = kfence_alloc(cachep, orig_size, flags);
-> > -	if (unlikely(objp))
-> > -		goto out;
-> > +	ptr = kfence_alloc(cachep, orig_size, flags);
-> > +	if (unlikely(ptr))
-> > +		goto out_hooks;
-> >
-> >  	cache_alloc_debugcheck_before(cachep, flags);
-> >  	local_irq_save(save_flags);
-> > -	objp = __do_cache_alloc(cachep, flags);
->
-> Looks like after this patch, slab_alloc() (without a node specified)
-> will not end up in __do_cache_alloc() anymore, so there's no more
-> possibility of alternate_node_alloc(), which looks like a functional
-> regression?
->
+On 24/03/2022 08:34, Aswath Govindraju wrote:
+> Add bindings for the TI's AM62 wrapper module for the Synopsys USBSS-DRD
+> controller.
+> 
+> Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+> ---
+> 
+> Changes since v1:
+> - made correction in grammer of clocks property description
+>   and added maxItems in the interrupts property based on comments
+>   received from Roger
+> - corrected the title, fixed the description of
+>   ti,syscon-phy-pll-refclk, added pattern properties and child node
+>   in the example based on the comments from Krzysztof.
+> 
+>  .../devicetree/bindings/usb/ti,am62-usb.yaml  | 117 ++++++++++++++++++
+>  1 file changed, 117 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/usb/ti,am62-usb.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/usb/ti,am62-usb.yaml b/Documentation/devicetree/bindings/usb/ti,am62-usb.yaml
+> new file mode 100644
+> index 000000000000..452bfdc6fb09
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/usb/ti,am62-usb.yaml
+> @@ -0,0 +1,117 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/usb/ti,am62-usb.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: TI's AM62 wrapper module for the Synopsys USBSS-DRD controller
+> +
+> +maintainers:
+> +  - Aswath Govindraju <a-govindraju@ti.com>
+> +
+> +properties:
+> +  compatible:
+> +    const: ti,am62-usb
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  ranges: true
+> +
+> +  power-domains:
+> +    description:
+> +      PM domain provider node and an args specifier containing
+> +      the USB ISO device id value. See,
+> +      Documentation/devicetree/bindings/soc/ti/sci-pm-domain.yaml
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    description: Clock phandle to usb2_refclk
+> +    maxItems: 1
+> +
+> +  clock-names:
+> +    items:
+> +      - const: ref
+> +
+> +  id-gpio:
+> +    description:
+> +      GPIO to be used as ID pin
+> +    maxItems: 1
 
-Ah, that was not intended. Thank you for catching this!
-Will fix in v2.
+I have doubts about this. If you USB controller handles the ID pin, then
+probably this should be moved to usb-connector.yaml. I did not see
+id-gpio in any other USB controller blocks.
 
-Thank you so much.
 
-> > +
-> > +	if (node_match(nodeid, slab_node)) {
-> > +		/*
-> > +		 * Use the locally cached objects if possible.
-> > +		 * However ____cache_alloc does not allow fallback
-> > +		 * to other nodes. It may fail while we still have
-> > +		 * objects on other nodes available.
-> > +		 */
-> > +		ptr = ____cache_alloc(cachep, flags);
-> > +		if (ptr)
-> > +			goto out;
-> > +	}
-> > +#ifdef CONFIG_NUMA
-> > +	else if (unlikely(!get_node(cachep, nodeid))) {
-> > +		/* Node not bootstrapped yet */
-> > +		ptr = fallback_alloc(cachep, flags);
-> > +		goto out;
-> > +	}
-> > +
-> > +	/* ___cache_alloc_node can fall back to other nodes */
-> > +	ptr = ____cache_alloc_node(cachep, flags, nodeid);
-> > +#endif
-> > +out:
-> >  	local_irq_restore(save_flags);
-> > -	objp = cache_alloc_debugcheck_after(cachep, flags, objp, caller);
-> > -	prefetchw(objp);
-> > +	ptr = cache_alloc_debugcheck_after(cachep, flags, ptr, caller);
-> > +	prefetchw(ptr);
-> >  	init = slab_want_init_on_alloc(flags, cachep);
-> >
-> > -out:
-> > -	slab_post_alloc_hook(cachep, objcg, flags, 1, &objp, init);
-> > -	return objp;
-> > +out_hooks:
-> > +	slab_post_alloc_hook(cachep, objcg, flags, 1, &ptr, init);
-> > +	return ptr;
-> > +}
-> > +
-> > +static __always_inline void *
-> > +slab_alloc(struct kmem_cache *cachep, gfp_t flags, size_t orig_size, unsigned long caller)
-> > +{
-> > +	return slab_alloc_node(cachep, flags, NUMA_NO_NODE, orig_size, caller);
-> >  }
-> >
-> >  /*
-
---
-Thank you, You are awesome!
-Hyeonggon :-)
+Best regards,
+Krzysztof
