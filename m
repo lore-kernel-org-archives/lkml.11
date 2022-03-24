@@ -2,109 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F593C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 12:10:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A6B5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 12:11:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349945AbiCXMMA (ORCPT
+        id S1349953AbiCXMM6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 08:12:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34948 "EHLO
+        Thu, 24 Mar 2022 08:12:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229848AbiCXML6 (ORCPT
+        with ESMTP id S1349954AbiCXMMv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 08:11:58 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 676FBA8884;
-        Thu, 24 Mar 2022 05:10:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1648123824; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ncLgYxkYoQriXSXIVKrIBujezisB1bmyL200+xh6duc=;
-        b=M8gBb5/GBMzGIK98oxRzs+ggFRKhZy5iFMXJNqb01wjMke/kBfvB6s2NaeqElnLVIU+3+k
-        RuHKHlDrprC+JXj0gZgoAKmalC4SAAmQZa+uPUIcT8z+zOaAaLncdk30eHwLZpnACbA8nx
-        nkrVoBu8uFd89iGgbMNv5GXI8tnZVu8=
-Date:   Thu, 24 Mar 2022 12:10:15 +0000
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH] pinctrl: Ingenic: Add missing UART2 group C for X1000/E
-To:     Yunian Yang <reimu@sudomaker.com>
-Cc:     linux-mips@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-Id: <3H099R.GNKMFWXCJG5U1@crapouillou.net>
-In-Reply-To: <ea710c27-00e9-065c-77a3-78e3c5f73ed3@sudomaker.com>
-References: <ea710c27-00e9-065c-77a3-78e3c5f73ed3@sudomaker.com>
+        Thu, 24 Mar 2022 08:12:51 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB15DA8891;
+        Thu, 24 Mar 2022 05:11:15 -0700 (PDT)
+X-UUID: 207443c495114ac884bd24a5c9e6cbfc-20220324
+X-UUID: 207443c495114ac884bd24a5c9e6cbfc-20220324
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <jia-wei.chang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 88857433; Thu, 24 Mar 2022 20:11:09 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 24 Mar 2022 20:11:08 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 24 Mar
+ 2022 20:11:08 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 24 Mar 2022 20:11:08 +0800
+Message-ID: <13482b1b4244df5c0c0a4d6a60cdb2a7ba88500a.camel@mediatek.com>
+Subject: Re: [PATCH 1/3] dt-bindings: devfreq: mediatek: add mtk cci devfreq
+ dt-bindings
+From:   Jia-Wei Chang <jia-wei.chang@mediatek.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+CC:     <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <fan.chen@mediatek.com>,
+        <louis.yu@mediatek.com>, <roger.lu@mediatek.com>,
+        <Allen-yy.Lin@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <hsinyi@google.com>,
+        Jia-Wei Chang <jia-wei.chang@mediatek.corp-partner.google.com>
+Date:   Thu, 24 Mar 2022 20:11:08 +0800
+In-Reply-To: <bf418e08-2e32-5e61-abd8-abb0d8f5c080@canonical.com>
+References: <20220307122513.11822-1-jia-wei.chang@mediatek.com>
+         <20220307122513.11822-2-jia-wei.chang@mediatek.com>
+         <bf418e08-2e32-5e61-abd8-abb0d8f5c080@canonical.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Yunian,
+Dear Krzysztof,
 
-Le jeu., mars 24 2022 at 20:04:41 +0800, Yunian Yang=20
-<reimu@sudomaker.com> a =E9crit :
-> X1000/E has a third UART2 pin group selection, which uses the TDI(G2)=20
-> as RX
-> and TDO(G1) as TX. This configuration is becoming increasingly=20
-> popular in
-> newer core boards, such as the Halley2 v4.1. This is done by enabling
-> function 1 of a "virtual pin" PC31. See section 19.3.3 of the X1000
-> Programming Manual for details.
->=20
-> Signed-off-by: Yunian Yang <reimu@sudomaker.com>
-> ---
->  drivers/pinctrl/pinctrl-ingenic.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/pinctrl/pinctrl-ingenic.c=20
-> b/drivers/pinctrl/pinctrl-ingenic.c
-> index 2712f51eb238..29709059d62b 100644
-> --- a/drivers/pinctrl/pinctrl-ingenic.c
-> +++ b/drivers/pinctrl/pinctrl-ingenic.c
-> @@ -1982,6 +1982,7 @@ static int x1000_uart1_data_a_pins[] =3D { 0x04,=20
-> 0x05, };
->  static int x1000_uart1_data_d_pins[] =3D { 0x62, 0x63, };
->  static int x1000_uart1_hwflow_pins[] =3D { 0x64, 0x65, };
->  static int x1000_uart2_data_a_pins[] =3D { 0x02, 0x03, };
-> +static int x1000_uart2_data_c_pins[] =3D { 0x5f, 0x5f, };
+Thanks for your comments.
+Pardon me for my late reply.
 
-One should be enough.
+On Mon, 2022-03-07 at 22:42 +0100, Krzysztof Kozlowski wrote:
+> On 07/03/2022 13:25, Tim Chang wrote:
+> > add devicetree binding of mtk cci devfreq on MediaTek SoC.
+> 
+> Start with capital letter.
 
-Looks fine otherwise.
+Sure, I will update it for the whole series in next version.
 
-Cheers,
--Paul
+> 
+> > 
+> > Signed-off-by: Jia-Wei Chang <
+> > jia-wei.chang@mediatek.corp-partner.google.com>
+> 
+> This does not match your From. Please fix this in all your
+> submissions.
 
->  static int x1000_uart2_data_d_pins[] =3D { 0x65, 0x64, };
->  static int x1000_sfc_data_pins[] =3D { 0x1d, 0x1c, 0x1e, 0x1f, };
->  static int x1000_sfc_clk_pins[] =3D { 0x1a, };
-> @@ -2058,6 +2059,7 @@ static const struct group_desc x1000_groups[] =3D=20
-> {
->         INGENIC_PIN_GROUP("uart1-data-d", x1000_uart1_data_d, 1),
->         INGENIC_PIN_GROUP("uart1-hwflow", x1000_uart1_hwflow, 1),
->         INGENIC_PIN_GROUP("uart2-data-a", x1000_uart2_data_a, 2),
-> +       INGENIC_PIN_GROUP("uart2-data-c", x1000_uart2_data_c, 1),
->         INGENIC_PIN_GROUP("uart2-data-d", x1000_uart2_data_d, 0),
->         INGENIC_PIN_GROUP("sfc-data", x1000_sfc_data, 1),
->         INGENIC_PIN_GROUP("sfc-clk", x1000_sfc_clk, 1),
-> @@ -2115,7 +2117,7 @@ static const char *x1000_uart0_groups[] =3D {=20
-> "uart0-data", "uart0-hwflow", };
->  static const char *x1000_uart1_groups[] =3D {
->         "uart1-data-a", "uart1-data-d", "uart1-hwflow",
->  };
-> -static const char *x1000_uart2_groups[] =3D { "uart2-data-a",=20
-> "uart2-data-d", };
-> +static const char *x1000_uart2_groups[] =3D { "uart2-data-a",=20
-> "uart2-data-c", "uart2-data-d", };
->  static const char *x1000_sfc_groups[] =3D { "sfc-data", "sfc-clk",=20
-> "sfc-ce", };
->  static const char *x1000_ssi_groups[] =3D {
->         "ssi-dt-a-22", "ssi-dt-a-29", "ssi-dt-d",
-> --
-> 2.30.2
+Sure, I will update it for the whole series in next version.
 
+> 
+> > ---
+> >  .../devicetree/bindings/devfreq/mtk-cci.yaml  | 73
+> > +++++++++++++++++++
+> >  1 file changed, 73 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/devfreq/mtk-
+> > cci.yaml
+> > 
+> > diff --git a/Documentation/devicetree/bindings/devfreq/mtk-cci.yaml 
+> > b/Documentation/devicetree/bindings/devfreq/mtk-cci.yaml
+> > new file mode 100644
+> > index 000000000000..e64ac4c56758
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/devfreq/mtk-cci.yaml
+> > @@ -0,0 +1,73 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: 
+> > https://urldefense.com/v3/__http://devicetree.org/schemas/devfreq/mtk-cci.yaml*__;Iw!!CTRNKA9wMg0ARbw!2apx_16V_XMrl28ae1aDO3-2WFga3xJiACU_40mgGydrumBmFuHcQFpW_LnX6DHny5Zpig$
+> >  
+> > +$schema: 
+> > https://urldefense.com/v3/__http://devicetree.org/meta-schemas/core.yaml*__;Iw!!CTRNKA9wMg0ARbw!2apx_16V_XMrl28ae1aDO3-2WFga3xJiACU_40mgGydrumBmFuHcQFpW_LnX6DEPqkDN4g$
+> >  
+> > +
+> > +title: Mediatek Cache Coherent Interconnect (CCI) Devfreq driver
+> > Device Tree Bindings
+> 
+> Similarly to your other patches - the title describes hardware.
+> Please
+> fix it in all your submissions of all your series.
+
+Sure, I will fix them in the next version.
+
+> 
+> Remove "driver Device Tree Bindings". "Devfreq" is Linuxism, so this
+> maybe "bus frequency scaling"? Although later you call the device
+> node
+> as cci.
+
+Should I use "Binding for MediaTek's Cache Coherent Interconnect (CCI)
+frequency and voltage scaling" as new title?
+
+> 
+> > +
+> > +maintainers:
+> > +  - Jia-Wei Chang <jia-wei.chang@mediatek.com>
+> > +
+> > +description: |
+> > +  This module is used to create CCI DEVFREQ.
+> > +  The performance will depend on both CCI frequency and CPU
+> > frequency.
+> > +  For MT8186, CCI co-buck with Little core.
+> > +  Contain CCI opp table for voltage and frequency scaling.
+> 
+> Half of this description (first and last sentence) does not describe
+> the
+> actual hardware. Please describe hardware, not driver.
+
+Sure, I will fix it in the next version.
+
+> 
+> > +
+> > +properties:
+> > +  compatible:
+> > +    const: "mediatek,mt8186-cci"
+> 
+> No need for quotes.
+
+Sure, I will fix it in the next version.
+
+> 
+> > +
+> > +  clocks:
+> > +    items:
+> > +      - description:
+> > +          The first one is the multiplexer for clock input of CPU
+> > cluster.
+> > +      - description:
+> > +          The other is used as an intermediate clock source when
+> > the original
+> > +          CPU is under transition and not stable yet.
+> > +
+> > +  clock-names:
+> > +    items:
+> > +      - const: "cci"
+> > +      - const: "intermediate"
+> 
+> No need for quotes.
+
+Sure, I will fix it in the next version.
+
+> 
+> > +
+> > +  operating-points-v2:
+> > +    description:
+> > +      For details, please refer to
+> > +      Documentation/devicetree/bindings/opp/opp-v2.yaml
+> > +
+> > +  opp-table: true
+> 
+> Same comments as your CPU freq bindings apply.
+
+mtk-cci-devfreq is a new driver and its arch is same as mediatek-
+cpufreq so that the properties of mtk-cci are refer to mediatek-cpufreq 
+bindings.
+operating-point-v2 is used to determine the voltage and frequency of
+dvfs which is further utilized by mtk-cci-devfreq.
+
+> 
+> > +
+> > +  proc-supply:
+> > +    description:
+> > +      Phandle of the regulator for CCI that provides the supply
+> > voltage.
+> > +
+> > +  sram-supply:
+> > +    description:
+> > +      Phandle of the regulator for sram of CCI that provides the
+> > supply
+> > +      voltage. When present, the cci devfreq driver needs to do
+> > +      "voltage tracking" to step by step scale up/down Vproc and
+> > Vsram to fit
+> > +      SoC specific needs. When absent, the voltage scaling flow is
+> > handled by
+> > +      hardware, hence no software "voltage tracking" is needed.
+> > +
+> > +required:
+> > +  - compatible
+> > +  - clocks
+> > +  - clock-names
+> > +  - operating-points-v2
+> > +  - proc-supply
+> > +
+> > +additionalProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    #include <dt-bindings/clock/mt8186-clk.h>
+> > +    cci: cci {
+> 
+> Node names should be generic and describe type of device. Are you
+> sure
+> this is a CCI? Maybe "interconnect" suits it better?
+
+Yes, this is a CCI and it is generic type of device like CPU in my
+opinion.
+If my understanding is correct, CCI is more suitable.
+
+> 
+> > +      compatible = "mediatek,mt8186-cci";
+> > +      clocks = <&mcusys CLK_MCU_ARMPLL_BUS_SEL>, <&apmixedsys
+> > CLK_APMIXED_MAINPLL>;
+> > +      clock-names = "cci", "intermediate";
+> > +      operating-points-v2 = <&cci_opp>;
+> > +      proc-supply = <&mt6358_vproc12_reg>;
+> > +      sram-supply = <&mt6358_vsram_proc12_reg>;
+> > +    };
+> 
+> 
+> Best regards,
+> Krzysztof
 
