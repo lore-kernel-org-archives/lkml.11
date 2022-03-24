@@ -2,172 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7A09C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 12:13:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A98CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 12:16:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349977AbiCXMPH (ORCPT
+        id S1349974AbiCXMRm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 08:15:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41062 "EHLO
+        Thu, 24 Mar 2022 08:17:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349972AbiCXMPB (ORCPT
+        with ESMTP id S1344936AbiCXMRj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 08:15:01 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E23124F14
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 05:13:26 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id g9so5665526ybf.1
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 05:13:26 -0700 (PDT)
+        Thu, 24 Mar 2022 08:17:39 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC416CA75
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 05:16:07 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id t13so2439580pgn.8
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 05:16:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/Uw6g4YsNRZs7dvbvdfz68KCNF9zTM2uIQY4UH0egBE=;
-        b=NwAGl5PjjQYaTY/ibiX0U0a5HDuHxhbD+Kyi/TzF4oo6bK22mHnC/3HB07FB3W9sKU
-         HftzjhJl5A65DQHiB0Z+lWMxC64pLeia9/0OWV6SF4VoBxxJMNC6TCevfgsGuDRK3dUt
-         keTQfmeDhsw1aK4vOrrNDLLTYjLSYOHJ++Ff6djaG0+IpxIN7KabVpUixYbwJQAo+jH2
-         wP94EqXDaXfTEIea/8ihlTgOmrKSX6+IljQ1mJx0x+CUTsMJ5enAh3RRg9sgjKElmIQD
-         UDW0GINzrS6m8n0BEgpj1gvl0pkdfbf670hJ3lQuikKxfpP2KCEn1m0kNmTc74gmGIz/
-         5Www==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=m5SvKyabfRKTyH82OgFdVvvJnlwVkNv0fDThfHIXFUQ=;
+        b=niH7iQ3/VlgTMwUsYe4wazrFLfQOfOLXpJv7Rmxx7hrFDU6YjidCPPNxLpfTEY4ZYj
+         EsPEE1k9pnTR7ES3YjPBJQhRW+wszDh08kB8kAol9QAhD6P0sh5ABkOWxgE+sIvbFVA/
+         dfyiAz95yldf4tCT/p2T3cZx7BxlRl4Q7Pvjy6k05ZyZMqDHWdwF1IIKmMN/J0GOu48l
+         kycmu1tjEY5mVv7Tl4oMruHpvRpF78kuvmLHYjsFKikYoehsD+dg5NYysDGVVUg9BD+1
+         Vir90MCqzET5MYX6PbZ3qBVu86U4V1EaggZLdzOsCCAkMiy14m68srV7aXHd/TbhsF6Y
+         vGhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/Uw6g4YsNRZs7dvbvdfz68KCNF9zTM2uIQY4UH0egBE=;
-        b=IHnkqTwU1WMjtp8bIkI0vtDsI5rKE24x+5cuCGSwtHJDWuQxhBSoHRAVi1dF/fzCA9
-         RTNZRpoxtGawRDjZFqHpzwwkP10XYTIqUcdk00n0bkt+09Tf/CBPckeoqDhZoaNvdnth
-         6bAhCTx2MJFeGY48tZeiCvBMGBb54DqFqSNtOedzEwW04+qSbZf1IyQ+vuFnR5upNK5P
-         hTp6qmg30PUXgX+vIoMVjTV43HNZ+NSDglV8O/reoE7kplMi+RYnMhMyAhugqGAgcH+E
-         dxt6TprQ3LyGWVLXb6Lp6SXTf+wXx6b5qfWFCJAQPXNtXqyWa1L89ra8GtW8JeQVozzX
-         B2Pw==
-X-Gm-Message-State: AOAM533laE+ylaa9ae0L7Sxd6EpedoTgH+MwlTxwt+q1HrQgbVESZoBb
-        yU6tJVXzxxFUz3vIYCgJnetSAj5Dq1rZElOoZWaLfg==
-X-Google-Smtp-Source: ABdhPJyY/P4kzUoohyrCOwyDJ56XsDNfY1zNXB0nyRdpTxSmF3W9bRGbG5rn37x9hjuHpaCPfrlLW54G5MMRQ99G1nc=
-X-Received: by 2002:a25:23c2:0:b0:633:b871:ce27 with SMTP id
- j185-20020a2523c2000000b00633b871ce27mr4248237ybj.644.1648124005363; Thu, 24
- Mar 2022 05:13:25 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=m5SvKyabfRKTyH82OgFdVvvJnlwVkNv0fDThfHIXFUQ=;
+        b=I10HE0GmcRCf0s7fAKYFJu5bzv/jxSk49jmtDbtGZI6Fnc5K1Esi+zxNNWoab44CKF
+         2cbIbzi7wVjoKvtp5qNZKUb6c28aTrZ8AmMm7ifmEZ3a7HQaYGmXA00VriKqn/IPBv3O
+         dLvtzTHtYMGXgRc7QP+U0UtGo5te/ZGLT99bqteKIEmAAQS4bK2bmwmfp2oiGkhFM/4V
+         LKWbaqo0CusKOzqe4vTUyMpiSfoazo0pjirxeLBm2g3+xlESfDwDDOd+NYTspR86jer5
+         a6StUM8voHikC/OwoUj7Upikj/6GzZ8uJ4vjBvJfHEKbvL8GyUddLnxW4TnsdSbexjk4
+         SqNg==
+X-Gm-Message-State: AOAM5314Qcr8ALgBfAngSPdVLqsEN4cAs/jUXSFrkyMgr167WhRMlM9d
+        E7vKZGlky3pu+4e7qXe+30cS
+X-Google-Smtp-Source: ABdhPJy2e8U/PkJumWyZaEl5mUjkdKWLsWW2GEQX91NqrMkW62XOJ9VYnqHDyHBzcFYLILHzAeiHmQ==
+X-Received: by 2002:a65:4681:0:b0:382:b4f5:84c2 with SMTP id h1-20020a654681000000b00382b4f584c2mr3803455pgr.218.1648124166920;
+        Thu, 24 Mar 2022 05:16:06 -0700 (PDT)
+Received: from thinkpad ([220.158.158.107])
+        by smtp.gmail.com with ESMTPSA id w24-20020a639358000000b00385fcbf8e55sm2731172pgm.28.2022.03.24.05.16.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Mar 2022 05:16:06 -0700 (PDT)
+Date:   Thu, 24 Mar 2022 17:46:01 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Frank Li <Frank.Li@nxp.com>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 07/12] PCI: dwc: Add trailing new-line literals to the
+ log messages
+Message-ID: <20220324121601.GG2854@thinkpad>
+References: <20220324012524.16784-1-Sergey.Semin@baikalelectronics.ru>
+ <20220324012524.16784-8-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-References: <20220318185139.v2.1.I484f4ee35609f78b932bd50feed639c29e64997e@changeid>
-In-Reply-To: <20220318185139.v2.1.I484f4ee35609f78b932bd50feed639c29e64997e@changeid>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Thu, 24 Mar 2022 13:12:48 +0100
-Message-ID: <CAPDyKFqCcSkHx92XcDkGH19JZyGgkALuf9wGNiBjKkFt4SaDTQ@mail.gmail.com>
-Subject: Re: [PATCH v2] mmc: core: Set HS clock speed before sending HS CMD13
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     Douglas Anderson <dianders@chromium.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shawn Lin <shawn.lin@rock-chips.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220324012524.16784-8-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 19 Mar 2022 at 02:52, Brian Norris <briannorris@chromium.org> wrote:
->
-> Way back in commit 4f25580fb84d ("mmc: core: changes frequency to
-> hs_max_dtr when selecting hs400es"), Rockchip engineers noticed that
-> some eMMC don't respond to SEND_STATUS commands very reliably if they're
-> still running at a low initial frequency. As mentioned in that commit,
-> JESD84-B51 P49 suggests a sequence in which the host:
-> 1. sets HS_TIMING
-> 2. bumps the clock ("<= 52 MHz")
-> 3. sends further commands
->
-> It doesn't exactly require that we don't use a lower-than-52MHz
-> frequency, but in practice, these eMMC don't like it.
->
-> The aforementioned commit tried to get that right for HS400ES, although
-> it's unclear whether this ever truly worked as committed into mainline,
-> as other changes/refactoring adjusted the sequence in conflicting ways:
->
-> 08573eaf1a70 ("mmc: mmc: do not use CMD13 to get status after speed mode
-> switch")
->
-> 53e60650f74e ("mmc: core: Allow CMD13 polling when switching to HS mode
-> for mmc")
->
-> In any case, today we do step 3 before step 2. Let's fix that, and also
-> apply the same logic to HS200/400, where this eMMC has problems too.
->
-> Resolves errors like this seen when booting some RK3399 Gru/Scarlet
-> systems:
->
-> [    2.058881] mmc1: CQHCI version 5.10
-> [    2.097545] mmc1: SDHCI controller on fe330000.mmc [fe330000.mmc] using ADMA
-> [    2.209804] mmc1: mmc_select_hs400es failed, error -84
-> [    2.215597] mmc1: error -84 whilst initialising MMC card
-> [    2.417514] mmc1: mmc_select_hs400es failed, error -110
-> [    2.423373] mmc1: error -110 whilst initialising MMC card
-> [    2.605052] mmc1: mmc_select_hs400es failed, error -110
-> [    2.617944] mmc1: error -110 whilst initialising MMC card
-> [    2.835884] mmc1: mmc_select_hs400es failed, error -110
-> [    2.841751] mmc1: error -110 whilst initialising MMC card
->
-> Fixes: 08573eaf1a70 ("mmc: mmc: do not use CMD13 to get status after speed mode switch")
-> Fixes: 53e60650f74e ("mmc: core: Allow CMD13 polling when switching to HS mode for mmc")
-> Fixes: 4f25580fb84d ("mmc: core: changes frequency to hs_max_dtr when selecting hs400es")
-> Cc: Shawn Lin <shawn.lin@rock-chips.com>
-> Signed-off-by: Brian Norris <briannorris@chromium.org>
+On Thu, Mar 24, 2022 at 04:25:18AM +0300, Serge Semin wrote:
+> There are two places in the DW PCIe controller driver, which omit the
+> trailing newlines in the log info and warn messages. Not having them there
+> will cause leaving the messages in the printk ring buffer until a next
+> '\n'-terminated message is printed (it will consequently cause the buffer
+> flush). As it isn't what the corresponding code implies let's add the
+> new-line characters in the messages.
+> 
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+
+Thanks,
+Mani
+
 > ---
->
-> Changes in v2:
->  * Use ext_csd.hs200_max_dtr for HS200
->  * Retest on top of 3b6c472822f8 ("mmc: core: Improve fallback to speed
->    modes if eMMC HS200 fails")
->
->  drivers/mmc/core/mmc.c | 15 +++++++++++++--
->  1 file changed, 13 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/mmc/core/mmc.c b/drivers/mmc/core/mmc.c
-> index e7ea45386c22..b75fa4b67964 100644
-> --- a/drivers/mmc/core/mmc.c
-> +++ b/drivers/mmc/core/mmc.c
-> @@ -1385,12 +1385,17 @@ static int mmc_select_hs400es(struct mmc_card *card)
->         }
->
->         mmc_set_timing(host, MMC_TIMING_MMC_HS);
-> +
-> +       /*
-> +        * Bump to HS frequency. Some cards don't handle SEND_STATUS reliably
-> +        * at the initial frequency.
-> +        */
-> +       mmc_set_clock(host, card->ext_csd.hs_max_dtr);
-> +
->         err = mmc_switch_status(card, true);
->         if (err)
->                 goto out_err;
->
-> -       mmc_set_clock(host, card->ext_csd.hs_max_dtr);
-> -
->         /* Switch card to DDR with strobe bit */
->         val = EXT_CSD_DDR_BUS_WIDTH_8 | EXT_CSD_BUS_WIDTH_STROBE;
->         err = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
-> @@ -1482,6 +1487,12 @@ static int mmc_select_hs200(struct mmc_card *card)
->                 old_timing = host->ios.timing;
->                 mmc_set_timing(host, MMC_TIMING_MMC_HS200);
->
-> +               /*
-> +                * Bump to HS200 frequency. Some cards don't handle SEND_STATUS
-> +                * reliably at the initial frequency.
-> +                */
-> +               mmc_set_clock(host, card->ext_csd.hs200_max_dtr);
-> +
-
-If the mmc_switch_status() fails with -EBADMSG, we should probably
-restore the clock to its previous value. Otherwise I think we could
-potentially break the fallback implemented in 3b6c472822f8 ("mmc:
-core: Improve fallback to speed modes if eMMC HS200 fails")
-
-Moreover, this change means that we will be calling
-mmc_set_bus_speed() from mmc_select_timing(), to actually set the same
-HS200 clock rate again. That is unnecessary, can we please avoid that
-in some way.
-
->                 /*
->                  * For HS200, CRC errors are not a reliable way to know the
->                  * switch failed. If there really is a problem, we would expect
-
-Kind regards
-Uffe
+>  drivers/pci/controller/dwc/pcie-designware-host.c | 2 +-
+>  drivers/pci/controller/dwc/pcie-designware.c      | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
+> index a048d88e0c30..8364ea234e88 100644
+> --- a/drivers/pci/controller/dwc/pcie-designware-host.c
+> +++ b/drivers/pci/controller/dwc/pcie-designware-host.c
+> @@ -657,7 +657,7 @@ void dw_pcie_setup_rc(struct pcie_port *pp)
+>  		}
+>  
+>  		if (pci->num_ob_windows <= atu_idx)
+> -			dev_warn(pci->dev, "Resources exceed number of ATU entries (%d)",
+> +			dev_warn(pci->dev, "Resources exceed number of ATU entries (%d)\n",
+>  				 pci->num_ob_windows);
+>  	}
+>  
+> diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
+> index 9f4d2b44612b..3bd1cfd12148 100644
+> --- a/drivers/pci/controller/dwc/pcie-designware.c
+> +++ b/drivers/pci/controller/dwc/pcie-designware.c
+> @@ -706,7 +706,7 @@ void dw_pcie_iatu_detect(struct dw_pcie *pci)
+>  	dev_info(pci->dev, "iATU unroll: %s\n", pci->iatu_unroll_enabled ?
+>  		"enabled" : "disabled");
+>  
+> -	dev_info(pci->dev, "Detected iATU regions: %u outbound, %u inbound",
+> +	dev_info(pci->dev, "Detected iATU regions: %u outbound, %u inbound\n",
+>  		 pci->num_ob_windows, pci->num_ib_windows);
+>  }
+>  
+> -- 
+> 2.35.1
+> 
