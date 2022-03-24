@@ -2,146 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D661C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 18:12:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34188C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 18:13:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352541AbiCXSOT (ORCPT
+        id S1352544AbiCXSOo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 14:14:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47872 "EHLO
+        Thu, 24 Mar 2022 14:14:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352542AbiCXSOQ (ORCPT
+        with ESMTP id S1352531AbiCXSOj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 14:14:16 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EB52B7168
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 11:12:44 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id k21so9463614lfe.4
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 11:12:44 -0700 (PDT)
+        Thu, 24 Mar 2022 14:14:39 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10089E32
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 11:13:03 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id t13so3227851pgn.8
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 11:13:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/LSEoPoVBVnfztCSkUFcbwBfE5ukisNTx0Z0bM1jWgk=;
-        b=fBZauSq0ACQcCD0aXGuuoIgacGzWbZWvHI/yboiImq3d2gbCBsK4u0P2R6I9rA5s+1
-         llLlGyVUkbHFxwANgyrhG7OcuWCL4PearUKXNl+3bWauMSB43nTGA6zaQsGMBIOxTMat
-         Y9LYQyxU0oUnKd77In8/8H15bD1XyIFNQEVc4=
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=B9ualNSGObXfxaCa3kXHHyApJTXDIAKHdNNtrcoqJWI=;
+        b=MExshGDIxKjIurGB37rYruuvymM2AkRYuBHIbyagDRS4ILfNBgz/dqnyI/Zw7/0JLH
+         wZNN5AvUoo66OL1cIYxX8fmi9tBe5WoWxqfanEtjTeLdkgLWSTC7xX3kZofmZDu2ua96
+         qqlcrHM0i7sC6MJ9DvDQfJp9gB5x7jqqtv7Ty4ybLZDUVKYRh4Sv/JH9i+SzLgdveqSS
+         aFzL65g/6jhnp/55WnFCQyqq799VHArujGpCYA8SAPa3ORWs8mP5GpKP8wo4xTyB9qNc
+         RFM11wud888ixz7h25LQpeYIAFQ+FuNkOEBxfuMpPcfLMaVNNOIxsz4tAPgi1r8oD0Fz
+         RKyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/LSEoPoVBVnfztCSkUFcbwBfE5ukisNTx0Z0bM1jWgk=;
-        b=WDHBadPDRFzXW85OeY1DDEatY/o256RjHJwyYNtZ8yULIZLI5x2X0edB6yscm0pi8V
-         8z1NMaho1a1qIyIlRSuMcYwjHTuNFqXCJHzMppNJAmh+IHBhCS/8C3d2MoYzMV+qnKTs
-         b1iFkwyPkjPVzpU0INDww++J5el8Nt9Hwj389M89hc0gdi/mjaIQ8+/GyfEeaBeARQGt
-         jUfGPn3as8UxusDAM3cmyDTShVbQceDrq0o/SrVHxeGk+QPspiheM77AePeZM1h/R2S1
-         U47QMrgAXLElCpvqgDrQC5n2zd8SeJVV4j43BRzoe+OkN+Odh3j9VXxMgG2lpKCGgy9u
-         divQ==
-X-Gm-Message-State: AOAM532DGhkYOCo3zloG91CiZFzsKmG1ZqRTY+N7w0hKdMCqqnJUSu5A
-        etoehN7jl5VLXT3cO2df+OEtu/2L/lwa773d2pE=
-X-Google-Smtp-Source: ABdhPJx/I2pgdPPSU+M7Q+KHoS/WEyFjjXS582zYYOx173b3iyC9F388RkLXvmw+TUvL+8eGr31W7Q==
-X-Received: by 2002:a05:6512:2395:b0:44a:33d2:b9b5 with SMTP id c21-20020a056512239500b0044a33d2b9b5mr4743483lfv.514.1648145562200;
-        Thu, 24 Mar 2022 11:12:42 -0700 (PDT)
-Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com. [209.85.208.173])
-        by smtp.gmail.com with ESMTPSA id k9-20020a192d09000000b004487dfc9d9csm415417lfj.260.2022.03.24.11.12.38
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Mar 2022 11:12:38 -0700 (PDT)
-Received: by mail-lj1-f173.google.com with SMTP id 17so7270447ljw.8
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 11:12:38 -0700 (PDT)
-X-Received: by 2002:a2e:a5c4:0:b0:249:9ec3:f2b with SMTP id
- n4-20020a2ea5c4000000b002499ec30f2bmr4898966ljp.358.1648145558024; Thu, 24
- Mar 2022 11:12:38 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=B9ualNSGObXfxaCa3kXHHyApJTXDIAKHdNNtrcoqJWI=;
+        b=7U7xp5fA1CL5XI9aZ1RRqnpGcGiB+fQTdZwBAxjRCUK8byZvgRUfNn5TLUlxJcIAPB
+         BAvP/1FkDokRA7p2diEZG2dRETroLGTSI6s/zWZmuJhiCjVORTMfqISxYD7qM88g9d4p
+         NBxywOMi6H77pO19Ufq7lEWASYU4//s2CYOwYuD/JF3szpq0YuUSn7fFdC4S0niVt4/t
+         eGRi05C5uEqypEW5K+deNS1kcgn/Rv5B4fh1d3Uoak4i0Jd0PtOYttmRggUqyu+RM0B1
+         0MPXdX7fcedTXgZkBS4LQdU+uvEksR0JI1k1kHLcIkWP8VQy+MXpyR2ecYi+97YDkYN+
+         FmeQ==
+X-Gm-Message-State: AOAM532fbQiZv26yWymyrqZl/Rae2e8I/15mJH8wTDgMnWKy0T2n7GgB
+        tV/IPo2u8ZIDR5Oqc6piYuX9
+X-Google-Smtp-Source: ABdhPJyF08kfFc5MvihMf3hsgPrkVapyZtyaD61zjIxm3Yzhqocq4XWT/5Us5T8udLRICCL93zyNOw==
+X-Received: by 2002:a05:6a00:b8e:b0:4fa:de88:9fc7 with SMTP id g14-20020a056a000b8e00b004fade889fc7mr6314709pfj.56.1648145582915;
+        Thu, 24 Mar 2022 11:13:02 -0700 (PDT)
+Received: from thinkpad ([27.111.75.218])
+        by smtp.gmail.com with ESMTPSA id d18-20020a056a0010d200b004fa2e13ce80sm4244469pfu.76.2022.03.24.11.12.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Mar 2022 11:13:02 -0700 (PDT)
+Date:   Thu, 24 Mar 2022 23:42:55 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Frank Li <Frank.Li@nxp.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 13/25] dmaengine: dw-edma: Stop checking
+ debugfs_create_*() return value
+Message-ID: <20220324181255.GV2854@thinkpad>
+References: <20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru>
+ <20220324014836.19149-14-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-References: <cover.1644862280.git.legion@kernel.org> <877d8kfmdp.fsf@email.froward.int.ebiederm.org>
-In-Reply-To: <877d8kfmdp.fsf@email.froward.int.ebiederm.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 24 Mar 2022 11:12:21 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgBB8iPd0W=MQWnQJukMAPAqgsC0QX2wwiSvcct9zu_RA@mail.gmail.com>
-Message-ID: <CAHk-=wgBB8iPd0W=MQWnQJukMAPAqgsC0QX2wwiSvcct9zu_RA@mail.gmail.com>
-Subject: Re: [GIT PULL] ipc: Bind to the ipc namespace at open time.
-To:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        Alexey Gladkov <legion@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux Containers <containers@lists.linux.dev>,
-        Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Daniel Walsh <dwalsh@redhat.com>,
-        Davidlohr Bueso <dbueso@suse.de>,
-        Kirill Tkhai <ktkhai@virtuozzo.com>,
-        Manfred Spraul <manfred@colorfullife.com>,
-        Serge Hallyn <serge@hallyn.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Vasily Averin <vvs@virtuozzo.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220324014836.19149-14-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 1:24 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
->
-> Please pull the per-namespace-ipc-sysctls-for-v5.18 tag from the git tree:
+On Thu, Mar 24, 2022 at 04:48:24AM +0300, Serge Semin wrote:
+> First of all they never return NULL. So checking their return value for
+> being not NULL just pointless. Secondly the DebugFS subsystem is designed
+> in a way to be used as simple as possible. So if one of the
+> debugfs_create_*() method in a hierarchy fails, the following methods will
+> just silently return the passed erroneous parental dentry. Finally the
+> code is supposed to be working no matter whether anything DebugFS-related
+> fails. So in order to make code simpler and DebugFS-independent let's drop
+> the debugfs_create_*() methods return value checking in the same way as
+> the most of the kernel drivers do.
+> 
+> Note in order to preserve some memory space we suggest to skip the DebugFS
+> nodes initialization if the file system in unavailable.
+> 
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-Ugh.
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-I pulled this. Then I stared at it for a long time.
+Thanks,
+Man
 
-And then I decided that this is too ugly to live.
-
-I'm sorry. I think Alexey has probably spent a fair amount of time on
-it, but I really think the sysctl code needs to be cleaned up way more
-than this.
-
-The old code was horribly hacky too, but that setup_ipc_sysctls() (and
-setup_mq_sysctls()) thing that copies the whole sysctls table, and
-then walks it entry by entry to modify it, is just too ugly for words.
-
-And then it hides things in .extra1, and because it does that it can't
-use the normal "extra1 and extra2 contains the limits" so then at
-write() time it copies it into a local one AGAIN only to set the
-limits back so that it can call the normal routines again.
-
-Not ok.
-
-Yes, yes, the old code did some similar things - to set the 'data'
-pointer. That was disgusting too. Don't get me wrong - the existing
-code was nasty too. But this took nasty code, and doubled down on it.
-
-I really think this is a fundamental problem, and needs a more
-fundamental fix than adding more and more of these kinds of nasty
-hacks.
-
-And yes, that fundamental fix is almost certainly to pass in 'struct
-cred *' to all those sysctl helper functions.
-
-Then, when you do the actual 'sysctl()' system calls, you pass in
-'current_cred()".
-
-And the /proc users would pass in file->f_cred.
-
-And yes, that patch might be quite messy, because we have quite a lot
-of those random .proc_handler users.
-
-But *most* of them by far (at least in random code) use the standard
-proc_dointvec_minmax() and friends, and won't even notice.
-
-And then the ones that are about namespace issues will have to
-continue to do the nasty "make a copy and update the data pointer",
-but *MAYBE* we could also introduce the notion of an "offset" to those
-proc_dointvec_minmax() things to help them out (and at least avoid the
-"make a copy" thing).
-
-Anyway, I really think we must not make that sysctl code even uglier
-than it is today, and I think we need to move towards a model that
-actually makes sense. And that "pass in the right cred" is the only
-sensible model I can see.
-
-I haven't tried to create such a patch, and maybe Alexey already tried
-to do something like that and it turned out to be too ugly for words
-and that's why these nasty patches happened.
-
-But at least for now, I can't with a good conscience pull this.
-
-Sorry,
-                   Linus
+> ---
+>  drivers/dma/dw-edma/dw-edma-v0-debugfs.c | 20 +++++---------------
+>  1 file changed, 5 insertions(+), 15 deletions(-)
+> 
+> diff --git a/drivers/dma/dw-edma/dw-edma-v0-debugfs.c b/drivers/dma/dw-edma/dw-edma-v0-debugfs.c
+> index 12845a2dc016..808eed212be8 100644
+> --- a/drivers/dma/dw-edma/dw-edma-v0-debugfs.c
+> +++ b/drivers/dma/dw-edma/dw-edma-v0-debugfs.c
+> @@ -100,9 +100,8 @@ static void dw_edma_debugfs_create_x32(const struct debugfs_entries entries[],
+>  	int i;
+>  
+>  	for (i = 0; i < nr_entries; i++) {
+> -		if (!debugfs_create_file_unsafe(entries[i].name, 0444, dir,
+> -						entries[i].reg,	&fops_x32))
+> -			break;
+> +		debugfs_create_file_unsafe(entries[i].name, 0444, dir,
+> +					   entries[i].reg, &fops_x32);
+>  	}
+>  }
+>  
+> @@ -168,8 +167,6 @@ static void dw_edma_debugfs_regs_wr(struct dentry *dir)
+>  	char name[16];
+>  
+>  	regs_dir = debugfs_create_dir(WRITE_STR, dir);
+> -	if (!regs_dir)
+> -		return;
+>  
+>  	nr_entries = ARRAY_SIZE(debugfs_regs);
+>  	dw_edma_debugfs_create_x32(debugfs_regs, nr_entries, regs_dir);
+> @@ -184,8 +181,6 @@ static void dw_edma_debugfs_regs_wr(struct dentry *dir)
+>  		snprintf(name, sizeof(name), "%s:%d", CHANNEL_STR, i);
+>  
+>  		ch_dir = debugfs_create_dir(name, regs_dir);
+> -		if (!ch_dir)
+> -			return;
+>  
+>  		dw_edma_debugfs_regs_ch(&regs->type.unroll.ch[i].wr, ch_dir);
+>  
+> @@ -237,8 +232,6 @@ static void dw_edma_debugfs_regs_rd(struct dentry *dir)
+>  	char name[16];
+>  
+>  	regs_dir = debugfs_create_dir(READ_STR, dir);
+> -	if (!regs_dir)
+> -		return;
+>  
+>  	nr_entries = ARRAY_SIZE(debugfs_regs);
+>  	dw_edma_debugfs_create_x32(debugfs_regs, nr_entries, regs_dir);
+> @@ -253,8 +246,6 @@ static void dw_edma_debugfs_regs_rd(struct dentry *dir)
+>  		snprintf(name, sizeof(name), "%s:%d", CHANNEL_STR, i);
+>  
+>  		ch_dir = debugfs_create_dir(name, regs_dir);
+> -		if (!ch_dir)
+> -			return;
+>  
+>  		dw_edma_debugfs_regs_ch(&regs->type.unroll.ch[i].rd, ch_dir);
+>  
+> @@ -273,8 +264,6 @@ static void dw_edma_debugfs_regs(void)
+>  	int nr_entries;
+>  
+>  	regs_dir = debugfs_create_dir(REGISTERS_STR, dw->debugfs);
+> -	if (!regs_dir)
+> -		return;
+>  
+>  	nr_entries = ARRAY_SIZE(debugfs_regs);
+>  	dw_edma_debugfs_create_x32(debugfs_regs, nr_entries, regs_dir);
+> @@ -285,6 +274,9 @@ static void dw_edma_debugfs_regs(void)
+>  
+>  void dw_edma_v0_debugfs_on(struct dw_edma_chip *chip)
+>  {
+> +	if (!debugfs_initialized())
+> +		return;
+> +
+>  	dw = chip->dw;
+>  	if (!dw)
+>  		return;
+> @@ -294,8 +286,6 @@ void dw_edma_v0_debugfs_on(struct dw_edma_chip *chip)
+>  		return;
+>  
+>  	dw->debugfs = debugfs_create_dir(dw->name, NULL);
+> -	if (!dw->debugfs)
+> -		return;
+>  
+>  	debugfs_create_u32("mf", 0444, dw->debugfs, &dw->chip->mf);
+>  	debugfs_create_u16("wr_ch_cnt", 0444, dw->debugfs, &dw->wr_ch_cnt);
+> -- 
+> 2.35.1
+> 
