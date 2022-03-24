@@ -2,130 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9CDDC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 18:26:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2847C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 18:27:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352630AbiCXS2X (ORCPT
+        id S1352639AbiCXS2i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 14:28:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60214 "EHLO
+        Thu, 24 Mar 2022 14:28:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233548AbiCXS2U (ORCPT
+        with ESMTP id S1352621AbiCXS2b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 14:28:20 -0400
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3BDEB7C52;
-        Thu, 24 Mar 2022 11:26:48 -0700 (PDT)
-Received: by mail-wr1-f46.google.com with SMTP id m30so7858691wrb.1;
-        Thu, 24 Mar 2022 11:26:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Ll8lTEzX7b6jQhE2gytfK7yWoO7uXMFriD9yXNvHFxA=;
-        b=pc9foDc8dCFqm7VQIpAcoKtPeoqWCIlBdxVU9aPoC0YD/SWqKY91YiohYUvESizT/f
-         uy4VAF7oioWUSePuK6qEaiFpqc87ZlKGVqK0FpXL3SqGNzlHx8w8o7FzDmXggmwGYcGh
-         zq6A3AkiroI90hwTGExxrOuHVs6mbt1jD74KPbICdHe82FShJxjyULCFgqkrJ0CVnzQW
-         ddyP2Bc7RxdXcX2Ue7nf9pfI2/u4KGQQFuZwfzRKZIeOtIACRpgl3wGJ4tsUAy/IQOc2
-         JW/1p6Tjczn+7w/hnwdz8aPbaY4fyim1kC6ef0iUJMjFhU6InbHwqaxfMjXB0UHhELRd
-         OAdw==
-X-Gm-Message-State: AOAM533g3yvyGERlCBPzNUlZ6uN1iTmxhP6MF9YCfmVMxgNE43KV6Kwe
-        Y/DnCRb0bBUUgUS3cRrv5/Q=
-X-Google-Smtp-Source: ABdhPJyk9Ii8AQjHwYY3xi67+Wyfe9bye7WPGut9xFho/54di6GA0bmhFtFrG3MCqfnv4Bylbidwcg==
-X-Received: by 2002:a05:6000:1704:b0:203:d857:aa7a with SMTP id n4-20020a056000170400b00203d857aa7amr5430360wrc.513.1648146407177;
-        Thu, 24 Mar 2022 11:26:47 -0700 (PDT)
-Received: from [192.168.0.158] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.googlemail.com with ESMTPSA id a4-20020a05600c348400b0038cd743830esm1459999wmq.29.2022.03.24.11.26.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Mar 2022 11:26:46 -0700 (PDT)
-Message-ID: <a222efb1-4f95-d65d-919b-ed55c5448c9a@kernel.org>
-Date:   Thu, 24 Mar 2022 19:26:45 +0100
+        Thu, 24 Mar 2022 14:28:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A6D7B7C60;
+        Thu, 24 Mar 2022 11:26:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA0DE61AB9;
+        Thu, 24 Mar 2022 18:26:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFC3DC340EC;
+        Thu, 24 Mar 2022 18:26:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648146418;
+        bh=up9oP7zqNV212tSUvD9C7zUAWeokV+evSB4LintGnYc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WUbyaM0NZ7qowR+z1FSGEy7loNgmXo8C/Ky1gtC/r+F6YAfDwTNOEiMDKjEePTD7a
+         9ALVU9dbI/cuMCiuYHBwJTcnPCU7+5cxw7gp1gqfgbb9PJylEd6cnIF+o3o+K5NxQ/
+         nmLxj6gWLdeuqHLn1kLp/8vRahs9yrwb3ZzkV5nRzZodyuN1eRRa6Zog4MFaUT0BH1
+         DHguxVE4ByIItAqRCNKdjTz2kOvexI44CDpGtp8yEcda4D/OD65yCYIcR0zwiFdK3J
+         B41+JMa3fEwtYP4De1AyvwnzwdIsUYatSaXSOosL2U8xA2MwKMAePNlE5ndVxK0WxG
+         iPvLGV/4NYYfw==
+Date:   Thu, 24 Mar 2022 18:26:56 +0000
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>,
+        Jann Horn <jannh@google.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] random: allow writes to /dev/urandom to influence fast
+ init
+Message-ID: <Yjy38Nl2wYf0L1eY@gmail.com>
+References: <20220322191436.110963-1-Jason@zx2c4.com>
+ <1648009787.fah6dos6ya.none@localhost>
+ <CAHmME9rsvxczJrhPwRX6nyrh9NB2AuJqkEKrTLx-G-T1J6_czQ@mail.gmail.com>
+ <CAHmME9ovJpdcuuZhNKrOTUc8XvKDDdC+axhAmOD9iESnRR7JqA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 2/3] dt-bindings: mtd: ti,elm: Add support for AM64 ELM
-Content-Language: en-US
-To:     Roger Quadros <rogerq@kernel.org>, miquel.raynal@bootlin.com,
-        robh+dt@kernel.org
-Cc:     richard@nod.at, vigneshr@ti.com, kishon@ti.com, nm@ti.com,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220323111851.4699-1-rogerq@kernel.org>
- <20220323111851.4699-3-rogerq@kernel.org>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <20220323111851.4699-3-rogerq@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHmME9ovJpdcuuZhNKrOTUc8XvKDDdC+axhAmOD9iESnRR7JqA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/03/2022 12:18, Roger Quadros wrote:
-> TI's AM64 SoC has the Error Locator Module. Add compatible and
-> related properties to support ELM on AM64 SoC.
+On Wed, Mar 23, 2022 at 09:18:16PM -0600, Jason A. Donenfeld wrote:
+> In light of that conclusion, I'm going to work with every userspace
+> downstream I can find to help them fix their file-based seeding, if it
+> has bugs. I've started talking with the buildroot folks, and then I'll
+> speak with the OpenRC people (being a Gentoo dev, that should be easy
+> going). Systemd does the right thing already.
 > 
-> Signed-off-by: Roger Quadros <rogerq@kernel.org>
-> ---
->  .../devicetree/bindings/mtd/ti,elm.yaml       | 27 ++++++++++++++++++-
->  1 file changed, 26 insertions(+), 1 deletion(-)
+> I wrote a little utility for potential inclusion in
+> busybox/util-linux/whatever when it matures beyond its current age of
+> being half hour old:
+> - https://git.zx2c4.com/seedrng/about/
+> - https://git.zx2c4.com/seedrng/tree/seedrng.c
+> So I'll see what the buildroot people think of this and take it from there.
 > 
-> diff --git a/Documentation/devicetree/bindings/mtd/ti,elm.yaml b/Documentation/devicetree/bindings/mtd/ti,elm.yaml
-> index 24ed0fb84204..bc01d35ce605 100644
-> --- a/Documentation/devicetree/bindings/mtd/ti,elm.yaml
-> +++ b/Documentation/devicetree/bindings/mtd/ti,elm.yaml
-> @@ -17,7 +17,9 @@ description:
->  properties:
->    compatible:
->      items:
-> -      - const: ti,am3352-elm
-> +      - enum:
-> +          - ti,am3352-elm
-> +          - ti,am64-elm
->  
->    reg:
->      maxItems: 1
-> @@ -25,6 +27,17 @@ properties:
->    interrupts:
->      maxItems: 1
->  
-> +  clocks:
-> +    maxItems: 1
-> +    description: Functional clock.
-> +
-> +  clock-names:
-> +    items:
-> +      - const: fck
-> +
-> +  power-domains:
-> +    maxItems: 1
-> +
->    ti,hwmods:
->      description:
->        Name of the HWMOD associated with ELM. This is for legacy
-> @@ -37,6 +50,18 @@ required:
->    - reg
->    - interrupts
->  
-> +allOf:
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: ti,am64-elm
-> +    then:
-> +      required:
-> +        - clocks
-> +        - clock-names
-> +        - power-domains
 
-Are these new properties also valid for am3352?
+The example in random(4) needs to be fixed too, right?
 
-> +
->  additionalProperties: false
->  
->  examples:
+https://man7.org/linux/man-pages/man4/random.4.html
 
-
-Best regards,
-Krzysztof
+- Eric
