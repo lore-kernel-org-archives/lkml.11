@@ -2,79 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D45C4C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5E89C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 16:46:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244620AbiC1QsE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 12:48:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50412 "EHLO
+        id S244558AbiC1Qr6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 12:47:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239181AbiC1QrB (ORCPT
+        with ESMTP id S242764AbiC1QqC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 12:47:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7847022B10
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 09:44:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D83F86149A
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 16:44:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEF43C004DD;
-        Mon, 28 Mar 2022 16:44:55 +0000 (UTC)
-Date:   Mon, 28 Mar 2022 12:44:54 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Chengming Zhou <zhouchengming@bytedance.com>, mingo@redhat.com,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, linux-kernel@vger.kernel.org,
-        duanxiongchun@bytedance.com, songmuchun@bytedance.com,
-        Frederic Weisbecker <fweisbec@gmail.com>
-Subject: Re: [External] Re: [PATCH] sched/fair: fix broken bandwidth control
- with nohz_full
-Message-ID: <20220328124454.08ab6126@gandalf.local.home>
-In-Reply-To: <YkHal1m3pnxGoQ1Y@hirez.programming.kicks-ass.net>
-References: <20220328110751.39987-1-zhouchengming@bytedance.com>
-        <20220328132047.GD8939@worktop.programming.kicks-ass.net>
-        <c0465b27-328a-1288-fb50-d4c6321c8b4d@bytedance.com>
-        <YkHRmv/OcABIB0wP@hirez.programming.kicks-ass.net>
-        <6fc49cff-f8a1-8b09-5a25-a64e5d07d258@bytedance.com>
-        <YkHal1m3pnxGoQ1Y@hirez.programming.kicks-ass.net>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Mon, 28 Mar 2022 12:46:02 -0400
+Received: from mail.baikalelectronics.ru (mail.baikalelectronics.com [87.245.175.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A524E21E06;
+        Mon, 28 Mar 2022 09:44:15 -0700 (PDT)
+Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id 0D8591E4957;
+        Thu, 24 Mar 2022 04:48:52 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 0D8591E4957
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baikalelectronics.ru; s=mail; t=1648086532;
+        bh=6r8gaQsOYq/p4RX7+mLlgeUaSGu+wrHHd6FACxtxVx4=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=baS8gS76iAlILpvT5olXT8ykmqBOamm4ZjLq1TSMgcAqYxgSX82luvDPyZ91MN7gn
+         uqX+PS84so5Bk7Ix79JAMIwOVB7WkXtXVkM/phh5vjHmxrSk0ejqs4c0pFruT8xLQb
+         tki+Xst7GsH9ZR8DlwZTMX4m8oOsQKAXHTE11UU8=
+Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 24 Mar 2022 04:48:51 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Frank Li <Frank.Li@nxp.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        <linux-pci@vger.kernel.org>, <dmaengine@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 19/25] dmaengine: dw-edma: Use DMA-engine device DebugFS subdirectory
+Date:   Thu, 24 Mar 2022 04:48:30 +0300
+Message-ID: <20220324014836.19149-20-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru>
+References: <20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 28 Mar 2022 17:56:07 +0200
-Peter Zijlstra <peterz@infradead.org> wrote:
+Since all DW eDMA read and write channels are now installed in a framework
+of a single DMA-engine device, we can freely move all the DW eDMA-specific
+DebugFS nodes into a ready-to-use DMA-engine DebugFS subdirectory. It's
+created during the DMA-device registration and can be found in the
+dma_device.dbg_dev_root field.
 
-> > echo $$ > test/cgroup.procs
-> > taskset -c 1 bash -c "while true; do let i++; done"  --> will be throttled  
-> 
-> Ofcourse.. I'm arguing that bandiwdth control and NOHZ_FULL are somewhat
-> mutually exclusive, use-case wise. So I really don't get why you'd want
-> them both.
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+---
+ drivers/dma/dw-edma/dw-edma-core.c       |  3 ---
+ drivers/dma/dw-edma/dw-edma-core.h       |  3 ---
+ drivers/dma/dw-edma/dw-edma-v0-core.c    |  5 -----
+ drivers/dma/dw-edma/dw-edma-v0-core.h    |  1 -
+ drivers/dma/dw-edma/dw-edma-v0-debugfs.c | 18 ++++--------------
+ drivers/dma/dw-edma/dw-edma-v0-debugfs.h |  5 -----
+ 6 files changed, 4 insertions(+), 31 deletions(-)
 
-Is it?
+diff --git a/drivers/dma/dw-edma/dw-edma-core.c b/drivers/dma/dw-edma/dw-edma-core.c
+index a391e44da039..bc530f0a2468 100644
+--- a/drivers/dma/dw-edma/dw-edma-core.c
++++ b/drivers/dma/dw-edma/dw-edma-core.c
+@@ -1045,9 +1045,6 @@ int dw_edma_remove(struct dw_edma_chip *chip)
+ 		list_del(&chan->vc.chan.device_node);
+ 	}
+ 
+-	/* Turn debugfs off */
+-	dw_edma_v0_core_debugfs_off(chip);
+-
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(dw_edma_remove);
+diff --git a/drivers/dma/dw-edma/dw-edma-core.h b/drivers/dma/dw-edma/dw-edma-core.h
+index ec9f84a857d1..980adb079182 100644
+--- a/drivers/dma/dw-edma/dw-edma-core.h
++++ b/drivers/dma/dw-edma/dw-edma-core.h
+@@ -110,9 +110,6 @@ struct dw_edma {
+ 	raw_spinlock_t			lock;		/* Only for legacy */
+ 
+ 	struct dw_edma_chip             *chip;
+-#ifdef CONFIG_DEBUG_FS
+-	struct dentry			*debugfs;
+-#endif /* CONFIG_DEBUG_FS */
+ };
+ 
+ struct dw_edma_sg {
+diff --git a/drivers/dma/dw-edma/dw-edma-v0-core.c b/drivers/dma/dw-edma/dw-edma-v0-core.c
+index 013d9a9cb991..6b303d5a6b2a 100644
+--- a/drivers/dma/dw-edma/dw-edma-v0-core.c
++++ b/drivers/dma/dw-edma/dw-edma-v0-core.c
+@@ -511,8 +511,3 @@ void dw_edma_v0_core_debugfs_on(struct dw_edma_chip *chip)
+ {
+ 	dw_edma_v0_debugfs_on(chip);
+ }
+-
+-void dw_edma_v0_core_debugfs_off(struct dw_edma_chip *chip)
+-{
+-	dw_edma_v0_debugfs_off(chip);
+-}
+diff --git a/drivers/dma/dw-edma/dw-edma-v0-core.h b/drivers/dma/dw-edma/dw-edma-v0-core.h
+index 2afa626b8300..43e01844375a 100644
+--- a/drivers/dma/dw-edma/dw-edma-v0-core.h
++++ b/drivers/dma/dw-edma/dw-edma-v0-core.h
+@@ -23,6 +23,5 @@ void dw_edma_v0_core_start(struct dw_edma_chunk *chunk, bool first);
+ int dw_edma_v0_core_device_config(struct dw_edma_chan *chan);
+ /* eDMA debug fs callbacks */
+ void dw_edma_v0_core_debugfs_on(struct dw_edma_chip *chip);
+-void dw_edma_v0_core_debugfs_off(struct dw_edma_chip *chip);
+ 
+ #endif /* _DW_EDMA_V0_CORE_H */
+diff --git a/drivers/dma/dw-edma/dw-edma-v0-debugfs.c b/drivers/dma/dw-edma/dw-edma-v0-debugfs.c
+index 353269a3680b..319a3c790dc4 100644
+--- a/drivers/dma/dw-edma/dw-edma-v0-debugfs.c
++++ b/drivers/dma/dw-edma/dw-edma-v0-debugfs.c
+@@ -268,7 +268,7 @@ static void dw_edma_debugfs_regs(struct dw_edma *dw)
+ 	struct dentry *regs_dir;
+ 	int nr_entries;
+ 
+-	regs_dir = debugfs_create_dir(REGISTERS_STR, dw->debugfs);
++	regs_dir = debugfs_create_dir(REGISTERS_STR, dw->dma.dbg_dev_root);
+ 
+ 	nr_entries = ARRAY_SIZE(debugfs_regs);
+ 	dw_edma_debugfs_create_x32(dw, debugfs_regs, nr_entries, regs_dir);
+@@ -284,19 +284,9 @@ void dw_edma_v0_debugfs_on(struct dw_edma_chip *chip)
+ 	if (!debugfs_initialized())
+ 		return;
+ 
+-	dw->debugfs = debugfs_create_dir(dw->name, NULL);
+-
+-	debugfs_create_u32("mf", 0444, dw->debugfs, &dw->chip->mf);
+-	debugfs_create_u16("wr_ch_cnt", 0444, dw->debugfs, &dw->wr_ch_cnt);
+-	debugfs_create_u16("rd_ch_cnt", 0444, dw->debugfs, &dw->rd_ch_cnt);
++	debugfs_create_u32("mf", 0444, dw->dma.dbg_dev_root, &dw->chip->mf);
++	debugfs_create_u16("wr_ch_cnt", 0444, dw->dma.dbg_dev_root, &dw->wr_ch_cnt);
++	debugfs_create_u16("rd_ch_cnt", 0444, dw->dma.dbg_dev_root, &dw->rd_ch_cnt);
+ 
+ 	dw_edma_debugfs_regs(dw);
+ }
+-
+-void dw_edma_v0_debugfs_off(struct dw_edma_chip *chip)
+-{
+-	struct dw_edma *dw = chip->dw;
+-
+-	debugfs_remove_recursive(dw->debugfs);
+-	dw->debugfs = NULL;
+-}
+diff --git a/drivers/dma/dw-edma/dw-edma-v0-debugfs.h b/drivers/dma/dw-edma/dw-edma-v0-debugfs.h
+index d0ff25a9ea5c..eb11802c2b76 100644
+--- a/drivers/dma/dw-edma/dw-edma-v0-debugfs.h
++++ b/drivers/dma/dw-edma/dw-edma-v0-debugfs.h
+@@ -13,15 +13,10 @@
+ 
+ #ifdef CONFIG_DEBUG_FS
+ void dw_edma_v0_debugfs_on(struct dw_edma_chip *chip);
+-void dw_edma_v0_debugfs_off(struct dw_edma_chip *chip);
+ #else
+ static inline void dw_edma_v0_debugfs_on(struct dw_edma_chip *chip)
+ {
+ }
+-
+-static inline void dw_edma_v0_debugfs_off(struct dw_edma_chip *chip)
+-{
+-}
+ #endif /* CONFIG_DEBUG_FS */
+ 
+ #endif /* _DW_EDMA_V0_DEBUG_FS_H */
+-- 
+2.35.1
 
-One use case I can see for having both is for having a deadline task that
-needs to get something done in a tight deadline. NOHZ_FULL means "do not
-interrupt this task when it is the top priority task on the CPU and is
-running in user space".
-
-Why is it mutually exclusive to have a deadline task that does not want to
-be interrupted by timer interrupts?
-
-Just because the biggest pushers of NOHZ_FULL is for those that are running
-RT tasks completely in user space and event want to fault if it ever goes
-into the kernel, doesn't mean that's the only use case.
-
-Chengming brought up VMs. That's a case to want to control the bandwidth,
-but also not interrupt them with timer interrupts when they are running as
-the top priority task on a CPU.
-
--- Steve
