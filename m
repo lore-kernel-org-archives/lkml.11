@@ -2,154 +2,303 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B12EC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 18:32:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ED7DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 18:33:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352671AbiCXSeT (ORCPT
+        id S1349972AbiCXSfS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 14:34:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44930 "EHLO
+        Thu, 24 Mar 2022 14:35:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238496AbiCXSeR (ORCPT
+        with ESMTP id S1345326AbiCXSfO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 14:34:17 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3554B7151;
-        Thu, 24 Mar 2022 11:32:45 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22OGIMG7018966;
-        Thu, 24 Mar 2022 18:32:24 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=QPEoHxcEwKvYGqD5wCoP7vHQWU9iiR1gyHKaskx0ZaY=;
- b=YDBpcmCRe4ki6BgB0SzAPfHDpOgPtoKSUOAJ9H6C/9pX+LdL4n4BkLFoH63IckXnstJs
- NdRVabkXq6ZjY8MAGiNTH9gubWNuk5juaAZCsPKK/Fd0ld/mQxhtZziEWROez1mKQrxW
- bFZIf7hmf8bwtYZ4yZa/rpa82GBqUdi4rPE+KwqXoXYWmwipmv0u9lmQSSjiTPaYRdOI
- VcU/xsKboRIw0dBPQjCQ4PeM2FwRQU0a51BljHE/Ky1j0TqZMP6T9U148McERsplQV73
- 0EUyJAxe190C98PHRB8DTNBgKRUMBNt5wTQqschIecSpuDDeUYQsArLo1ob2wAeP6s6k Ng== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f0kawf7yq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 24 Mar 2022 18:32:24 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22OHq0IS007551;
-        Thu, 24 Mar 2022 18:32:23 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f0kawf7y4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 24 Mar 2022 18:32:23 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22OIKRCQ015319;
-        Thu, 24 Mar 2022 18:32:21 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma02fra.de.ibm.com with ESMTP id 3ew6t8sta4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 24 Mar 2022 18:32:21 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22OIWJah41681174
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 24 Mar 2022 18:32:19 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2F2F6A405B;
-        Thu, 24 Mar 2022 18:32:19 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 35D4DA4054;
-        Thu, 24 Mar 2022 18:32:18 +0000 (GMT)
-Received: from li-e979b1cc-23ba-11b2-a85c-dfd230f6cf82 (unknown [9.171.63.111])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with SMTP;
-        Thu, 24 Mar 2022 18:32:18 +0000 (GMT)
-Date:   Thu, 24 Mar 2022 19:31:58 +0100
-From:   Halil Pasic <pasic@linux.ibm.com>
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     Christoph Hellwig <hch@lst.de>, Maxime Bizon <mbizon@freebox.fr>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@toke.dk>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Olha Cherevyk <olha.cherevyk@gmail.com>,
-        iommu <iommu@lists.linux-foundation.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable <stable@vger.kernel.org>,
-        Halil Pasic <pasic@linux.ibm.com>
-Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-Message-ID: <20220324193158.5fcae106.pasic@linux.ibm.com>
-In-Reply-To: <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com>
-References: <1812355.tdWV9SEqCh@natalenko.name>
-        <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
-        <20220324055732.GB12078@lst.de>
-        <4386660.LvFx2qVVIh@natalenko.name>
-        <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com>
-        <878rsza0ih.fsf@toke.dk>
-        <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
-        <20220324163132.GB26098@lst.de>
-        <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com>
-Organization: IBM
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        Thu, 24 Mar 2022 14:35:14 -0400
+Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B911C2F385;
+        Thu, 24 Mar 2022 11:33:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1648146821; x=1679682821;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Ycy5aG5LCl4kh7BbnFyjRg5khliCe5RF7Pw8b0yT56M=;
+  b=haiOGX7JnJ9lxK36X3eO7jOvrk67wFI1p7oJ5dTcxRmutJLMtcWG3ZVb
+   D4tCVsrbCyT0RnN6K1eixpjQmXjt8sQE3O0PZQvS4y6EGi92B+9hECI7Z
+   kjl7DER0t/dVy6mz6xzYzk8dd1HpDNCn1rB4+vqLrwxQHL3TqtBqmx9iK
+   U=;
+X-IronPort-AV: E=Sophos;i="5.90,208,1643673600"; 
+   d="scan'208";a="1002150466"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2a-92ba9394.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-9103.sea19.amazon.com with ESMTP; 24 Mar 2022 18:33:40 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2a-92ba9394.us-west-2.amazon.com (Postfix) with ESMTPS id 60F6D40D0B;
+        Thu, 24 Mar 2022 18:33:40 +0000 (UTC)
+Received: from EX13D02UWB002.ant.amazon.com (10.43.161.160) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.32; Thu, 24 Mar 2022 18:33:39 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (10.43.161.207) by
+ EX13D02UWB002.ant.amazon.com (10.43.161.160) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.32; Thu, 24 Mar 2022 18:33:39 +0000
+Received: from dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com
+ (172.19.181.128) by mail-relay.amazon.com (10.43.161.249) with Microsoft SMTP
+ Server id 15.0.1497.32 via Frontend Transport; Thu, 24 Mar 2022 18:33:38
+ +0000
+Received: by dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com (Postfix, from userid 5131138)
+        id 0F1FA2554; Thu, 24 Mar 2022 18:33:39 +0000 (UTC)
+From:   Ali Saidi <alisaidi@amazon.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <german.gomez@arm.com>,
+        <leo.yan@linaro.org>, <acme@kernel.org>
+CC:     <alisaidi@amazon.com>, <benh@kernel.crashing.org>,
+        <Nick.Forrington@arm.com>, <alexander.shishkin@linux.intel.com>,
+        <andrew.kilroy@arm.com>, <james.clark@arm.com>,
+        <john.garry@huawei.com>, <jolsa@kernel.org>, <kjain@linux.ibm.com>,
+        <lihuafei1@huawei.com>, <mark.rutland@arm.com>,
+        <mathieu.poirier@linaro.org>, <mingo@redhat.com>,
+        <namhyung@kernel.org>, <peterz@infradead.org>, <will@kernel.org>
+Subject: [PATCH v4 2/4] perf arm-spe: Use SPE data source for neoverse cores
+Date:   Thu, 24 Mar 2022 18:33:21 +0000
+Message-ID: <20220324183323.31414-3-alisaidi@amazon.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220324183323.31414-1-alisaidi@amazon.com>
+References: <20220324183323.31414-1-alisaidi@amazon.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: oKSb7ZJ3AqHPRcTREuBg4BsuIsetEW2S
-X-Proofpoint-GUID: DxCDOKV1iW1_bko4dmsq5AdF-oH4bAFl
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-24_06,2022-03-24_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 bulkscore=0
- mlxlogscore=999 priorityscore=1501 phishscore=0 lowpriorityscore=0
- impostorscore=0 clxscore=1011 spamscore=0 suspectscore=0 malwarescore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203240101
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 24 Mar 2022 16:52:31 +0000
-Robin Murphy <robin.murphy@arm.com> wrote:
+When synthesizing data from SPE, augment the type with source information
+for Arm Neoverse cores. The field is IMPLDEF but the Neoverse cores all use
+the same encoding. I can't find encoding information for any other SPE
+implementations to unify their choices with Arm's thus that is left for
+future work.
 
-> > Creating a new mapping for the same buffer before unmapping the
-> > previous one does looks rather bogus.  But it does not fit the
-> > pattern where revering the sync_single changes make the driver
-> > work again.  
-> 
-> OK, you made me look :)
-> 
-> Now that it's obvious what to look for, I can only conclude that during 
-> the stanza in ath_edma_get_buffers(), the device is still writing to the 
-> buffer while ownership has been transferred to the CPU, and whatever got 
-> written while ath9k_hw_process_rxdesc_edma() was running then gets wiped 
-> out by the subsequent sync_for_device, which currently resets the 
-> SWIOTLB slot to the state that sync_for_cpu copied out. By the letter of 
-> the DMA API that's not allowed, but on the other hand I'm not sure if we 
-> even have a good idiom for "I can't tell if the device has finished with 
-> this buffer or not unless I look at it" :/
+This change populates the mem_lvl_num for Neoverse cores instead of the
+deprecated mem_lvl namespace.
 
-I agree with your analysis. Especially with the latter part (were you
-state that we don't have a good idiom for that use case). 
+Signed-off-by: Ali Saidi <alisaidi@amazon.com>
+Tested-by: German Gomez <german.gomez@arm.com>
+Reviewed-by: German Gomez <german.gomez@arm.com>
+---
+ .../util/arm-spe-decoder/arm-spe-decoder.c    |   1 +
+ .../util/arm-spe-decoder/arm-spe-decoder.h    |  12 ++
+ tools/perf/util/arm-spe.c                     | 110 +++++++++++++++---
+ 3 files changed, 109 insertions(+), 14 deletions(-)
 
-I believe, a stronger statement is also true: it is fundamentally
-impossible to accommodate use cases where the device and the cpu need
-concurrent access to a dma buffer, if the dma buffer isn't in dma
-coherent memory.
+diff --git a/tools/perf/util/arm-spe-decoder/arm-spe-decoder.c b/tools/perf/util/arm-spe-decoder/arm-spe-decoder.c
+index 5e390a1a79ab..091987dd3966 100644
+--- a/tools/perf/util/arm-spe-decoder/arm-spe-decoder.c
++++ b/tools/perf/util/arm-spe-decoder/arm-spe-decoder.c
+@@ -220,6 +220,7 @@ static int arm_spe_read_record(struct arm_spe_decoder *decoder)
+ 
+ 			break;
+ 		case ARM_SPE_DATA_SOURCE:
++			decoder->record.source = payload;
+ 			break;
+ 		case ARM_SPE_BAD:
+ 			break;
+diff --git a/tools/perf/util/arm-spe-decoder/arm-spe-decoder.h b/tools/perf/util/arm-spe-decoder/arm-spe-decoder.h
+index 69b31084d6be..c81bf90c0996 100644
+--- a/tools/perf/util/arm-spe-decoder/arm-spe-decoder.h
++++ b/tools/perf/util/arm-spe-decoder/arm-spe-decoder.h
+@@ -29,6 +29,17 @@ enum arm_spe_op_type {
+ 	ARM_SPE_ST		= 1 << 1,
+ };
+ 
++enum arm_spe_neoverse_data_source {
++	ARM_SPE_NV_L1D        = 0x0,
++	ARM_SPE_NV_L2         = 0x8,
++	ARM_SPE_NV_PEER_CORE  = 0x9,
++	ARM_SPE_NV_LCL_CLSTR  = 0xa,
++	ARM_SPE_NV_SYS_CACHE  = 0xb,
++	ARM_SPE_NV_PEER_CLSTR = 0xc,
++	ARM_SPE_NV_REMOTE     = 0xd,
++	ARM_SPE_NV_DRAM       = 0xe,
++};
++
+ struct arm_spe_record {
+ 	enum arm_spe_sample_type type;
+ 	int err;
+@@ -40,6 +51,7 @@ struct arm_spe_record {
+ 	u64 virt_addr;
+ 	u64 phys_addr;
+ 	u64 context_id;
++	u16 source;
+ };
+ 
+ struct arm_spe_insn;
+diff --git a/tools/perf/util/arm-spe.c b/tools/perf/util/arm-spe.c
+index d2b64e3f588b..f92ebce88c6a 100644
+--- a/tools/perf/util/arm-spe.c
++++ b/tools/perf/util/arm-spe.c
+@@ -34,6 +34,7 @@
+ #include "arm-spe-decoder/arm-spe-decoder.h"
+ #include "arm-spe-decoder/arm-spe-pkt-decoder.h"
+ 
++#include "../../arch/arm64/include/asm/cputype.h"
+ #define MAX_TIMESTAMP (~0ULL)
+ 
+ struct arm_spe {
+@@ -45,6 +46,7 @@ struct arm_spe {
+ 	struct perf_session		*session;
+ 	struct machine			*machine;
+ 	u32				pmu_type;
++	u64				midr;
+ 
+ 	struct perf_tsc_conversion	tc;
+ 
+@@ -399,33 +401,110 @@ static bool arm_spe__is_memory_event(enum arm_spe_sample_type type)
+ 	return false;
+ }
+ 
+-static u64 arm_spe__synth_data_source(const struct arm_spe_record *record)
++static const struct midr_range neoverse_spe[] = {
++	MIDR_ALL_VERSIONS(MIDR_NEOVERSE_N1),
++	MIDR_ALL_VERSIONS(MIDR_NEOVERSE_N2),
++	MIDR_ALL_VERSIONS(MIDR_NEOVERSE_V1),
++	{},
++};
++
++
++static void arm_spe__synth_data_source_neoverse(const struct arm_spe_record *record,
++						union perf_mem_data_src *data_src)
+ {
+-	union perf_mem_data_src	data_src = { 0 };
++	/*
++	 * Even though four levels of cache hierarchy are possible, no known
++	 * production Neoverse systems currently include more than three levels
++	 * so for the time being we assume three exist. If a production system
++	 * is built with four the this function would have to be changed to
++	 * detect the number of levels for reporting.
++	 */
+ 
+-	if (record->op == ARM_SPE_LD)
+-		data_src.mem_op = PERF_MEM_OP_LOAD;
+-	else
+-		data_src.mem_op = PERF_MEM_OP_STORE;
++	switch (record->source) {
++	case ARM_SPE_NV_L1D:
++		data_src->mem_lvl = PERF_MEM_LVL_HIT;
++		data_src->mem_lvl_num = PERF_MEM_LVLNUM_L1;
++		break;
++	case ARM_SPE_NV_L2:
++		data_src->mem_lvl = PERF_MEM_LVL_HIT;
++		data_src->mem_lvl_num = PERF_MEM_LVLNUM_L2;
++		break;
++	case ARM_SPE_NV_PEER_CORE:
++		data_src->mem_lvl = PERF_MEM_LVL_HIT;
++		data_src->mem_snoop = PERF_MEM_SNOOP_HITM;
++		data_src->mem_lvl_num = PERF_MEM_LVLNUM_ANY_CACHE;
++		break;
++	/*
++	 * We don't know if this is L1, L2 but we do know it was a cache-2-cache
++	 * transfer, so set SNOOP_HITM
++	 */
++	case ARM_SPE_NV_LCL_CLSTR:
++	case ARM_SPE_NV_PEER_CLSTR:
++		data_src->mem_lvl = PERF_MEM_LVL_HIT;
++		data_src->mem_snoop = PERF_MEM_SNOOP_HITM;
++		data_src->mem_lvl_num = PERF_MEM_LVLNUM_ANY_CACHE;
++		break;
++	/*
++	 * System cache is assumed to be L3
++	 */
++	case ARM_SPE_NV_SYS_CACHE:
++		data_src->mem_lvl = PERF_MEM_LVL_HIT;
++		data_src->mem_lvl_num = PERF_MEM_LVLNUM_L3;
++		break;
++	/*
++	 * We don't know what level it hit in, except it came from the other
++	 * socket
++	 */
++	case ARM_SPE_NV_REMOTE:
++		data_src->mem_snoop = PERF_MEM_SNOOP_HITM;
++		data_src->mem_remote = PERF_MEM_REMOTE_REMOTE;
++		break;
++	case ARM_SPE_NV_DRAM:
++		data_src->mem_lvl = PERF_MEM_LVL_HIT;
++		data_src->mem_lvl_num = PERF_MEM_LVLNUM_RAM;
++		break;
++	default:
++		break;
++	}
++}
+ 
++static void arm_spe__synth_data_source_generic(const struct arm_spe_record *record,
++						union perf_mem_data_src *data_src)
++{
+ 	if (record->type & (ARM_SPE_LLC_ACCESS | ARM_SPE_LLC_MISS)) {
+-		data_src.mem_lvl = PERF_MEM_LVL_L3;
++		data_src->mem_lvl = PERF_MEM_LVL_L3;
+ 
+ 		if (record->type & ARM_SPE_LLC_MISS)
+-			data_src.mem_lvl |= PERF_MEM_LVL_MISS;
++			data_src->mem_lvl |= PERF_MEM_LVL_MISS;
+ 		else
+-			data_src.mem_lvl |= PERF_MEM_LVL_HIT;
++			data_src->mem_lvl |= PERF_MEM_LVL_HIT;
+ 	} else if (record->type & (ARM_SPE_L1D_ACCESS | ARM_SPE_L1D_MISS)) {
+-		data_src.mem_lvl = PERF_MEM_LVL_L1;
++		data_src->mem_lvl = PERF_MEM_LVL_L1;
+ 
+ 		if (record->type & ARM_SPE_L1D_MISS)
+-			data_src.mem_lvl |= PERF_MEM_LVL_MISS;
++			data_src->mem_lvl |= PERF_MEM_LVL_MISS;
+ 		else
+-			data_src.mem_lvl |= PERF_MEM_LVL_HIT;
++			data_src->mem_lvl |= PERF_MEM_LVL_HIT;
+ 	}
+ 
+ 	if (record->type & ARM_SPE_REMOTE_ACCESS)
+-		data_src.mem_lvl |= PERF_MEM_LVL_REM_CCE1;
++		data_src->mem_lvl |= PERF_MEM_LVL_REM_CCE1;
++}
++
++static u64 arm_spe__synth_data_source(const struct arm_spe_record *record, u64 midr)
++{
++	union perf_mem_data_src	data_src = { 0 };
++	bool is_neoverse = is_midr_in_range(midr, neoverse_spe);
++
++	if (record->op & ARM_SPE_LD)
++		data_src.mem_op = PERF_MEM_OP_LOAD;
++	else
++		data_src.mem_op = PERF_MEM_OP_STORE;
++
++	if (is_neoverse)
++		arm_spe__synth_data_source_neoverse(record, &data_src);
++	else
++		arm_spe__synth_data_source_generic(record, &data_src);
+ 
+ 	if (record->type & (ARM_SPE_TLB_ACCESS | ARM_SPE_TLB_MISS)) {
+ 		data_src.mem_dtlb = PERF_MEM_TLB_WK;
+@@ -446,7 +525,7 @@ static int arm_spe_sample(struct arm_spe_queue *speq)
+ 	u64 data_src;
+ 	int err;
+ 
+-	data_src = arm_spe__synth_data_source(record);
++	data_src = arm_spe__synth_data_source(record, spe->midr);
+ 
+ 	if (spe->sample_flc) {
+ 		if (record->type & ARM_SPE_L1D_MISS) {
+@@ -1183,6 +1262,8 @@ int arm_spe_process_auxtrace_info(union perf_event *event,
+ 	struct perf_record_auxtrace_info *auxtrace_info = &event->auxtrace_info;
+ 	size_t min_sz = sizeof(u64) * ARM_SPE_AUXTRACE_PRIV_MAX;
+ 	struct perf_record_time_conv *tc = &session->time_conv;
++	const char *cpuid = perf_env__cpuid(session->evlist->env);
++	u64 midr = strtol(cpuid, NULL, 16);
+ 	struct arm_spe *spe;
+ 	int err;
+ 
+@@ -1202,6 +1283,7 @@ int arm_spe_process_auxtrace_info(union perf_event *event,
+ 	spe->machine = &session->machines.host; /* No kvm support */
+ 	spe->auxtrace_type = auxtrace_info->type;
+ 	spe->pmu_type = auxtrace_info->priv[ARM_SPE_PMU_TYPE];
++	spe->midr = midr;
+ 
+ 	spe->timeless_decoding = arm_spe__is_timeless_decoding(spe);
+ 
+-- 
+2.32.0
 
-If the dma buffer is in dma coherent memory, and we don't need swiotlb,
-then we don't need the dma_sync functionality. 
-
-Specifically for swiotlb, if the swiotlb buffer is in dma coherent
-memory, the driver could peek the swiotlb buffer, but I have no idea if
-we can provide a remotely sane API for that. The point is the device
-would have peek not via a pointer to the original buffer, but get
-suitable pointer to the bounce buffer, which would be probably be
-considered valid, as long as the mapping is valid. Honestly IMHO quite
-ugly but I see no other way. 
-
-Regards,
-Halil
