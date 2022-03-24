@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A71FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:09:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 133CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:09:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244317AbiC1PLG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 11:11:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54224 "EHLO
+        id S244336AbiC1PLL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 11:11:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244266AbiC1PKu (ORCPT
+        with ESMTP id S244265AbiC1PKu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Mar 2022 11:10:50 -0400
 Received: from mail.baikalelectronics.ru (mail.baikalelectronics.com [87.245.175.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E0EF45F8CC;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E0DF25D678;
         Mon, 28 Mar 2022 08:09:08 -0700 (PDT)
 Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id 4AD181D5AB1;
-        Thu, 24 Mar 2022 04:25:33 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 4AD181D5AB1
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id A5BAF1D9D79;
+        Thu, 24 Mar 2022 04:25:34 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru A5BAF1D9D79
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1648085133;
-        bh=JsHT87A5xLlYYCS7cXheSIhh+bC6Af585XzC86TCyCE=;
+        d=baikalelectronics.ru; s=mail; t=1648085134;
+        bh=x89tsMKho6WoVTq6R1YvpMJGBDqdDnQvgiGVKdpmT88=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=kFTxbmDXHhUQYdgiX0xMppeSA0Y7CikcMSbEEv47rU0FNxG45NNOVFqTkk1zsvE9+
-         eXXtyLcaooojovoZxh4t1QOzvvAcUOM6eNx1O3aqL4bLTn3enSZ5ci14eCTYFt/S20
-         Ul1eBSczXrQgSG26rDlq/cLo+3q3XXLtddzOpxWQ=
+        b=lWhm1tbMirzpzxmTwcDIWSj/Ofvbjv8L+V09oTbOOx0D7ucDvxBDmnGHObLZw+08C
+         LA77/bp+wewlv2lpTC7P/b13a6p+ZjTXM2BRcJKeyc+7/ye4QQaXmw0BLY+slzotof
+         QwMKj8CDN3Dq15mtyPdEPuw+YjVdWSMMfMhBwVDg=
 Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 24 Mar 2022 04:25:33 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 24 Mar 2022 04:25:34 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Jingoo Han <jingoohan1@gmail.com>,
         Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
@@ -42,9 +42,9 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Frank Li <Frank.Li@nxp.com>,
         Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
         <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 08/12] PCI: dwc: Discard IP-core version checking on unrolled iATU detection
-Date:   Thu, 24 Mar 2022 04:25:19 +0300
-Message-ID: <20220324012524.16784-9-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH 10/12] PCI: dwc-plat: Simplify the probe method return value handling
+Date:   Thu, 24 Mar 2022 04:25:21 +0300
+Message-ID: <20220324012524.16784-11-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20220324012524.16784-1-Sergey.Semin@baikalelectronics.ru>
 References: <20220324012524.16784-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -55,62 +55,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It's pretty much pointless. Even though unrolled version of the internal
-ATU has been indeed available since DWC PCIe v4.80a IP-core, there is no
-guarantee it was enabled during the IP-core configuration (Synopsys
-suggests to contact the Solvnet support for guidance of how to do that for
-the newer IP-cores). So the only reliable way to find out the unrolled
-iATU feature availability is indeed to check the iATU viewport register
-content. In accordance with the reference manual [1] if the register
-doesn't exist (unrolled iATU is enabled) it's content is fixed with
-0xff-s, otherwise it will contain some zeros. So we can freely drop the
-IP-core version checking in this matter then and use the
-dw_pcie_iatu_unroll_enabled() method only to detect whether iATU/eDMA
-space is unrolled.
-
-[1] DesignWare Cores, PCI Express Controller, Register Desciptions,
-v.4.90a, December 2016, p.855
+The whole switch-case-logic implemented in the DWC PCIe RC/EP probe
+procedure doesn't seem well thought through. First of all the ret variable
+is unused in the EP-case and is only partly involved in the RC-case of the
+switch-case statement, which unnecessary complicates the code. Secondly
+the probe method will return zero if an unknown mode is detected. That is
+improbable situation since the OF-device data is initialized only with
+valid modes, but such code is still wrong at least from maintainability
+point of view. So let's convert the switch-case part of the probe function
+to being more coherent. We suggest to use the local ret variable to
+preserve the status of the case-clauses and return its value from the
+probe procedure after the work is done.
 
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 ---
- drivers/pci/controller/dwc/pcie-designware.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/pci/controller/dwc/pcie-designware-plat.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
-index 3bd1cfd12148..e3d2c11e6998 100644
---- a/drivers/pci/controller/dwc/pcie-designware.c
-+++ b/drivers/pci/controller/dwc/pcie-designware.c
-@@ -600,15 +600,15 @@ static void dw_pcie_link_set_max_speed(struct dw_pcie *pci, u32 link_gen)
+diff --git a/drivers/pci/controller/dwc/pcie-designware-plat.c b/drivers/pci/controller/dwc/pcie-designware-plat.c
+index 0c5de87d3cc6..fea785096261 100644
+--- a/drivers/pci/controller/dwc/pcie-designware-plat.c
++++ b/drivers/pci/controller/dwc/pcie-designware-plat.c
+@@ -153,20 +153,21 @@ static int dw_plat_pcie_probe(struct platform_device *pdev)
+ 			return -ENODEV;
  
- }
+ 		ret = dw_plat_add_pcie_port(dw_plat_pcie, pdev);
+-		if (ret < 0)
+-			return ret;
+ 		break;
+ 	case DW_PCIE_EP_TYPE:
+ 		if (!IS_ENABLED(CONFIG_PCIE_DW_PLAT_EP))
+ 			return -ENODEV;
  
--static u8 dw_pcie_iatu_unroll_enabled(struct dw_pcie *pci)
-+static bool dw_pcie_iatu_unroll_enabled(struct dw_pcie *pci)
- {
- 	u32 val;
- 
- 	val = dw_pcie_readl_dbi(pci, PCIE_ATU_VIEWPORT);
- 	if (val == 0xffffffff)
--		return 1;
-+		return true;
+ 		pci->ep.ops = &pcie_ep_ops;
+-		return dw_pcie_ep_init(&pci->ep);
++		ret = dw_pcie_ep_init(&pci->ep);
++		break;
+ 	default:
+ 		dev_err(dev, "INVALID device type %d\n", dw_plat_pcie->mode);
++		ret = -EINVAL;
++		break;
+ 	}
  
 -	return 0;
-+	return false;
++	return ret;
  }
  
- static void dw_pcie_iatu_detect_regions_unroll(struct dw_pcie *pci)
-@@ -680,9 +680,8 @@ void dw_pcie_iatu_detect(struct dw_pcie *pci)
- 	struct device *dev = pci->dev;
- 	struct platform_device *pdev = to_platform_device(dev);
- 
--	if (pci->version >= 0x480A || (!pci->version &&
--				       dw_pcie_iatu_unroll_enabled(pci))) {
--		pci->iatu_unroll_enabled = true;
-+	pci->iatu_unroll_enabled = dw_pcie_iatu_unroll_enabled(pci);
-+	if (pci->iatu_unroll_enabled) {
- 		if (!pci->atu_base) {
- 			struct resource *res =
- 				platform_get_resource_byname(pdev, IORESOURCE_MEM, "atu");
+ static const struct dw_plat_pcie_of_data dw_plat_pcie_rc_of_data = {
 -- 
 2.35.1
 
