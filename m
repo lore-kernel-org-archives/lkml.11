@@ -2,127 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDFC3C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 15:40:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA0DEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 15:40:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351326AbiCXPlc (ORCPT
+        id S1351335AbiCXPmO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 11:41:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43042 "EHLO
+        Thu, 24 Mar 2022 11:42:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243459AbiCXPla (ORCPT
+        with ESMTP id S242256AbiCXPmI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 11:41:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5599198F46;
-        Thu, 24 Mar 2022 08:39:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 24 Mar 2022 11:42:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 232FF9D0F9
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 08:40:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648136435;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QByLZV/xQidMU0lNxdw0ftNq4EpASOAjZu6w5lmb7uM=;
+        b=AzE9e0vpFf1XqEzdsmhKuvBr2r+X208zSEDMnQgHl4Jgitnu87JL6HGNLVBoElbfHJf1gg
+        gjEHiNZgznIHb+8zmgmFYWBsnRgFajOK6t0aOcmrjt/Tez0zpj7bVLy/k8bXzc9etTxj10
+        JnZ6/ptgDBncRTygqKNe5ghRP8X1Mos=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-343-w3chLnp6PVCqOzMcvnjA0A-1; Thu, 24 Mar 2022 11:40:28 -0400
+X-MC-Unique: w3chLnp6PVCqOzMcvnjA0A-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E1BFA61835;
-        Thu, 24 Mar 2022 15:39:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5691C340EC;
-        Thu, 24 Mar 2022 15:39:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648136397;
-        bh=W2gwKBXTGnbi1TztKRUks+XIXhyWOZvvzMkuDRdIR+U=;
-        h=From:To:Cc:Subject:Date:From;
-        b=pkmMmzYnW3px4Ml8thL52AnBARS1xU5McoGTxS2ANE3DZgQouliDKdQGS6U5tf6F/
-         n8yoRpkGLCBZbo9C6ws1l7wSAbDIBY7kPWdN8LwTaNnqqcbEe2nbX+/lUWyLOx/q5D
-         9hpb7ScnOEf5oGfZMVkzQp6V2hJPx7E/6EdFMg5lIxJxtcf9G3TsKEWp+B46wCK9HX
-         Lbpgfpf2i8qSkhgyI35ca1kMPn1OshG57j9G0tPisX0EreJPXMMmur/eCNZOSVaTfT
-         gqc65f1xzzbmlB30wSjEDmiSP+UrQswqAuP2JX+B6iAl2eUJ+zwjHk29Rj92M19nlm
-         g9AO4AjAhZxoA==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, patches@lists.linux.dev,
-        Nathan Chancellor <nathan@kernel.org>, stable@vger.kernel.org
-Subject: [PATCH] btrfs: Remove unused variable in btrfs_{start,write}_dirty_block_groups()
-Date:   Thu, 24 Mar 2022 08:36:45 -0700
-Message-Id: <20220324153644.4079376-1-nathan@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 64B7638008A1;
+        Thu, 24 Mar 2022 15:40:27 +0000 (UTC)
+Received: from starship (unknown [10.40.194.231])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 29BE640D296C;
+        Thu, 24 Mar 2022 15:40:24 +0000 (UTC)
+Message-ID: <d7a536300644697a2fae8278c5f37dedeba9e02d.camel@redhat.com>
+Subject: Re: [RFCv2 PATCH 10/12] KVM: SVM: Introduce helper functions to
+ (de)activate AVIC and x2AVIC
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
+        jon.grimm@amd.com, wei.huang2@amd.com, terry.bowman@amd.com,
+        kernel test robot <lkp@intel.com>
+Date:   Thu, 24 Mar 2022 17:40:24 +0200
+In-Reply-To: <20220308163926.563994-11-suravee.suthikulpanit@amd.com>
+References: <20220308163926.563994-1-suravee.suthikulpanit@amd.com>
+         <20220308163926.563994-11-suravee.suthikulpanit@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clang's version of -Wunused-but-set-variable recently gained support for
-unary operations, which reveals two unused variables:
+On Tue, 2022-03-08 at 10:39 -0600, Suravee Suthikulpanit wrote:
+> Refactor the current logic for (de)activate AVIC into helper functions,
+> and also add logic for (de)activate x2AVIC. The helper function are used
+> when initializing AVIC and switching from AVIC to x2AVIC mode
+> (handled by svm_refresh_spicv_exec_ctrl()).
+> 
+> When an AVIC-enabled guest switches from APIC to x2APIC mode during
+> runtime, the SVM driver needs to perform the following steps:
+> 
+> 1. Set the x2APIC mode bit for AVIC in VMCB along with the maximum
+> APIC ID support for each mode accodingly.
+> 
+> 2. Disable x2APIC MSRs interception in order to allow the hardware
+> to virtualize x2APIC MSRs accesses.
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> ---
+>  arch/x86/include/asm/svm.h |  1 +
+>  arch/x86/kvm/svm/avic.c    | 48 ++++++++++++++++++++++++++++++++++----
+>  2 files changed, 44 insertions(+), 5 deletions(-)
+> 
+> diff --git a/arch/x86/include/asm/svm.h b/arch/x86/include/asm/svm.h
+> index 681a348a9365..f5337022104d 100644
+> --- a/arch/x86/include/asm/svm.h
+> +++ b/arch/x86/include/asm/svm.h
+> @@ -248,6 +248,7 @@ enum avic_ipi_failure_cause {
+>  	AVIC_IPI_FAILURE_INVALID_BACKING_PAGE,
+>  };
+>  
+> +#define AVIC_PHYSICAL_MAX_INDEX_MASK	GENMASK_ULL(9, 0)
+>  
+>  /*
+>   * For AVIC, the max index allowed for physical APIC ID
+> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+> index 53559b8dfa52..b8d6bf6b6ed5 100644
+> --- a/arch/x86/kvm/svm/avic.c
+> +++ b/arch/x86/kvm/svm/avic.c
+> @@ -66,6 +66,45 @@ struct amd_svm_iommu_ir {
+>  	void *data;		/* Storing pointer to struct amd_ir_data */
+>  };
+>  
+> +static inline void avic_set_x2apic_msr_interception(struct vcpu_svm *svm, bool disable)
+> +{
+> +	int i;
+> +
+> +	for (i = 0x800; i <= 0x8ff; i++)
+> +		set_msr_interception(&svm->vcpu, svm->msrpm, i,
+> +				     !disable, !disable);
+> +}
+> +
+> +static void avic_activate_vmcb(struct vcpu_svm *svm)
+> +{
+> +	struct vmcb *vmcb = svm->vmcb01.ptr;
+> +
+> +	vmcb->control.int_ctl &= ~(AVIC_ENABLE_MASK | X2APIC_MODE_MASK);
+> +	vmcb->control.avic_physical_id &= ~AVIC_PHYSICAL_MAX_INDEX_MASK;
 
-  fs/btrfs/block-group.c:2949:6: error: variable 'num_started' set but not used [-Werror,-Wunused-but-set-variable]
-          int num_started = 0;
-              ^
-  fs/btrfs/block-group.c:3116:6: error: variable 'num_started' set but not used [-Werror,-Wunused-but-set-variable]
-          int num_started = 0;
-              ^
-  2 errors generated.
+This looks a bit better, I don't 100% like this but let it be.
 
-These variables appear to be unused from their introduction, so just
-remove them to silence the warnings.
+Honestly I will eventualy add code to calculate and update this maximum
+dynamically to avoid wasting microcode going over the whole table,
+or worse having nested avic code doing so.
 
-Cc: stable@vger.kernel.org
-Fixes: c9dc4c657850 ("Btrfs: two stage dirty block group writeout")
-Fixes: 1bbc621ef284 ("Btrfs: allow block group cache writeout outside critical section in commit")
-Link: https://github.com/ClangBuiltLinux/linux/issues/1614
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
----
 
-I am requesting a stable backport because this is visible with
-allmodconfig, which enables CONFIG_WERROR, breaking the build.
+> +
+> +	vmcb->control.int_ctl |= AVIC_ENABLE_MASK;
+> +	if (apic_x2apic_mode(svm->vcpu.arch.apic)) {
+> +		vmcb->control.int_ctl |= X2APIC_MODE_MASK;
+> +		vmcb->control.avic_physical_id |= X2AVIC_MAX_PHYSICAL_ID;
+> +		/* Disabling MSR intercept for x2APIC registers */
+> +		avic_set_x2apic_msr_interception(svm, false);
+> +	} else {
+> +		vmcb->control.avic_physical_id |= AVIC_MAX_PHYSICAL_ID;
+> +		/* Enabling MSR intercept for x2APIC registers */
+> +		avic_set_x2apic_msr_interception(svm, true);
+> +	}
+> +}
 
-To quote Linus:
+> +
+> +static void avic_deactivate_vmcb(struct vcpu_svm *svm)
+> +{
+> +	struct vmcb *vmcb = svm->vmcb01.ptr;
+> +
+> +	vmcb->control.int_ctl &= ~(AVIC_ENABLE_MASK | X2APIC_MODE_MASK);
+> +	vmcb->control.avic_physical_id &= ~AVIC_PHYSICAL_MAX_INDEX_MASK;
+> +
+> +	/* Enabling MSR intercept for x2APIC registers */
+> +	avic_set_x2apic_msr_interception(svm, true);
+> +}
+Makes sense.
 
-"EVERYBODY should have CONFIG_WERROR=y on at least x86-64 and other
-serious architectures, unless you have some completely random
-experimental (and broken) compiler."
 
-https://lore.kernel.org/r/CAHk-=wifoM9VOp-55OZCRcO9MnqQ109UTuCiXeZ-eyX_JcNVGg@mail.gmail.com/
+>  
+>  /* Note:
+>   * This function is called from IOMMU driver to notify
+> @@ -183,13 +222,12 @@ void avic_init_vmcb(struct vcpu_svm *svm)
+>  	vmcb->control.avic_backing_page = bpa & AVIC_HPA_MASK;
+>  	vmcb->control.avic_logical_id = lpa & AVIC_HPA_MASK;
+>  	vmcb->control.avic_physical_id = ppa & AVIC_HPA_MASK;
+> -	vmcb->control.avic_physical_id |= AVIC_MAX_PHYSICAL_ID;
+>  	vmcb->control.avic_vapic_bar = APIC_DEFAULT_PHYS_BASE & VMCB_AVIC_APIC_BAR_MASK;
+>  
+>  	if (kvm_apicv_activated(svm->vcpu.kvm))
+> -		vmcb->control.int_ctl |= AVIC_ENABLE_MASK;
+> +		avic_activate_vmcb(svm);
+>  	else
+> -		vmcb->control.int_ctl &= ~AVIC_ENABLE_MASK;
+> +		avic_deactivate_vmcb(svm);
+>  }
+>  
+>  static u64 *avic_get_physical_id_entry(struct kvm_vcpu *vcpu,
+> @@ -703,9 +741,9 @@ void svm_refresh_apicv_exec_ctrl(struct kvm_vcpu *vcpu)
+>  		 * accordingly before re-activating.
+>  		 */
+>  		avic_post_state_restore(vcpu);
+> -		vmcb->control.int_ctl |= AVIC_ENABLE_MASK;
+> +		avic_activate_vmcb(svm);
+>  	} else {
+> -		vmcb->control.int_ctl &= ~AVIC_ENABLE_MASK;
+> +		avic_deactivate_vmcb(svm);
+>  	}
+>  	vmcb_mark_dirty(vmcb, VMCB_AVIC);
+>  
 
- fs/btrfs/block-group.c | 4 ----
- 1 file changed, 4 deletions(-)
 
-diff --git a/fs/btrfs/block-group.c b/fs/btrfs/block-group.c
-index c22d287e020b..9ad265066225 100644
---- a/fs/btrfs/block-group.c
-+++ b/fs/btrfs/block-group.c
-@@ -2946,7 +2946,6 @@ int btrfs_start_dirty_block_groups(struct btrfs_trans_handle *trans)
- 	struct btrfs_path *path = NULL;
- 	LIST_HEAD(dirty);
- 	struct list_head *io = &cur_trans->io_bgs;
--	int num_started = 0;
- 	int loops = 0;
- 
- 	spin_lock(&cur_trans->dirty_bgs_lock);
-@@ -3012,7 +3011,6 @@ int btrfs_start_dirty_block_groups(struct btrfs_trans_handle *trans)
- 			cache->io_ctl.inode = NULL;
- 			ret = btrfs_write_out_cache(trans, cache, path);
- 			if (ret == 0 && cache->io_ctl.inode) {
--				num_started++;
- 				should_put = 0;
- 
- 				/*
-@@ -3113,7 +3111,6 @@ int btrfs_write_dirty_block_groups(struct btrfs_trans_handle *trans)
- 	int should_put;
- 	struct btrfs_path *path;
- 	struct list_head *io = &cur_trans->io_bgs;
--	int num_started = 0;
- 
- 	path = btrfs_alloc_path();
- 	if (!path)
-@@ -3171,7 +3168,6 @@ int btrfs_write_dirty_block_groups(struct btrfs_trans_handle *trans)
- 			cache->io_ctl.inode = NULL;
- 			ret = btrfs_write_out_cache(trans, cache, path);
- 			if (ret == 0 && cache->io_ctl.inode) {
--				num_started++;
- 				should_put = 0;
- 				list_add_tail(&cache->io_list, io);
- 			} else {
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 
-base-commit: d3e29967079c522ce1c5cab0e9fab2c280b977eb
--- 
-2.35.1
+Best regards,
+	Maxim Levitsky
 
