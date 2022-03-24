@@ -2,133 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAC9BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 11:11:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5672C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 11:14:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349695AbiCXLNB (ORCPT
+        id S1349702AbiCXLPq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 07:13:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53074 "EHLO
+        Thu, 24 Mar 2022 07:15:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349692AbiCXLM6 (ORCPT
+        with ESMTP id S1345652AbiCXLPk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 07:12:58 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD450A66C8
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 04:11:26 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nXLMx-00053I-B5; Thu, 24 Mar 2022 12:11:07 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nXLMs-002gI2-DH; Thu, 24 Mar 2022 12:11:05 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nXLMu-00BKEP-DC; Thu, 24 Mar 2022 12:11:04 +0100
-Date:   Thu, 24 Mar 2022 12:11:04 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Cc:     ulf.hansson@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, wg@grandegger.com,
-        mkl@pengutronix.de, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, qiangqing.zhang@nxp.com,
-        devicetree@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
-        netdev@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-imx@nxp.com, kernel@pengutronix.de, festevam@gmail.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 0/4] dt-bindings: imx: add nvmem property
-Message-ID: <20220324111104.cd7clpkzzedtcrja@pengutronix.de>
-References: <20220324042024.26813-1-peng.fan@oss.nxp.com>
+        Thu, 24 Mar 2022 07:15:40 -0400
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E0A70071;
+        Thu, 24 Mar 2022 04:14:06 -0700 (PDT)
+Received: by mail-ed1-f43.google.com with SMTP id t1so5204724edc.3;
+        Thu, 24 Mar 2022 04:14:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LnBHIWTMwUxu5CxDggWjU5OVRGTaM8mL8G6XsxB1wRI=;
+        b=wh2PoblV/v+pv0gEwbAddO84w/vfVumtRmFm/9Kl66Yid5rr++RoyqaMRfjRyK6875
+         f7pr/woPao+SB0MhtKK9PHQG4SEnj3GhMVS5phWIQhW9S4gJO+/G4HKck980QrU+2Yxt
+         2Ihu2SPLTBmUgv5QHSGzhjucSXOdqfSKvJnTiwNenVqWi4HIia9v3Dhbn62+hahuqAXR
+         cfQvUI7ycg7VnIvj16W+ROQhAUayXcc4CsGRFuz4sPSlwetS5Qp3oYCq+p77oM0nom8i
+         j8+XT6hO7K3yaWz/yZJdpGTXdIh3rG6GEcJwowGsusGiPzPExFC1ufs37fK+3lg8JcvP
+         yhtQ==
+X-Gm-Message-State: AOAM530LQf/Bt1RBAUPivdRZInlMVEqk6FtGtL8vrDm2+YgeEj3Ftcm5
+        5/71ZrYNBLoqj+9Y5/Xilezn9yXYid2d7w==
+X-Google-Smtp-Source: ABdhPJwwONi6y53eVNGRVDSTyVSgaZrT1JFMHVhb1HlojUu4EUk4lusp3clxvUhSpyT3gwBJLNHcmA==
+X-Received: by 2002:a05:6402:1907:b0:418:d2a8:a7f3 with SMTP id e7-20020a056402190700b00418d2a8a7f3mr6028406edz.245.1648120445050;
+        Thu, 24 Mar 2022 04:14:05 -0700 (PDT)
+Received: from [192.168.0.156] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.googlemail.com with ESMTPSA id d23-20020aa7d5d7000000b00418f7b2f1dbsm1266017eds.71.2022.03.24.04.14.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 24 Mar 2022 04:14:04 -0700 (PDT)
+Message-ID: <327e5b31-5b9a-240f-26c1-98b8a29e2023@kernel.org>
+Date:   Thu, 24 Mar 2022 12:14:03 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="wgkvs6aazjig7tcg"
-Content-Disposition: inline
-In-Reply-To: <20220324042024.26813-1-peng.fan@oss.nxp.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH V2 1/7] dt-bindings:iio:adc: add sprd,ump9620-adc
+ dtbindings
+Content-Language: en-US
+To:     Cixi Geng <gengcixi@gmail.com>
+Cc:     jic23@kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        "baolin.wang7@gmail.com" <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>, lgirdwood@gmail.com,
+        Mark Brown <broonie@kernel.org>,
+        =?UTF-8?B?5pyx546J5piOIChZdW1pbmcgWmh1LzExNDU3KQ==?= 
+        <yuming.zhu1@unisoc.com>, linux-iio@vger.kernel.org,
+        Devicetree List <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220311164628.378849-1-gengcixi@gmail.com>
+ <20220311164628.378849-2-gengcixi@gmail.com>
+ <6e4f64dc-bb3d-0e05-0380-7e6f3b1a823c@kernel.org>
+ <CAF12kFuKnm2qenvpmKhCVD4T+d=0SyruzdpJ5FX1RS8gvqbyNA@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <CAF12kFuKnm2qenvpmKhCVD4T+d=0SyruzdpJ5FX1RS8gvqbyNA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 24/03/2022 07:22, Cixi Geng wrote:
+> Krzysztof Kozlowski <krzk@kernel.org> 于2022年3月20日周日 22:50写道：
+>>
+>> On 11/03/2022 17:46, Cixi Geng wrote:
+>>> From: Cixi Geng <cixi.geng1@unisoc.com>
+>>>
+>>> sprd,ump9620-adc is one variant of sc27xx series, add ump9620 in
+>>> dtbindings.
+>>>
+>>> Signed-off-by: Chunyan Zhang <zhang.lyra@gmail.com>
+>>> Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
+>>> ---
+>>>  .../bindings/iio/adc/sprd,sc2720-adc.yaml     | 30 +++++++++++++++++--
+>>>  1 file changed, 27 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml b/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
+>>> index caa3ee0b4b8c..331b08fb1761 100644
+>>> --- a/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
+>>> +++ b/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
+>>> @@ -20,6 +20,7 @@ properties:
+>>>        - sprd,sc2723-adc
+>>>        - sprd,sc2730-adc
+>>>        - sprd,sc2731-adc
+>>> +      - sprd,ump9620-adc
+>>>
+>>>    reg:
+>>>      maxItems: 1
+>>> @@ -37,9 +38,32 @@ properties:
+>>>      maxItems: 2
+>>>
+>>>    nvmem-cell-names:
+>>> -    items:
+>>> -      - const: big_scale_calib
+>>> -      - const: small_scale_calib
+>>
+>> Please test your changes with dt_binding_check and dtbs_check. Your
+>> change looks not complete - you have still nvmem-cells = 2.
+>>
+> Hi Krzysztof
+> I test all is PASS on my local.  could you tell how did you test?
+> my_logs:
+> cixi.geng1@tj10039pcu:~/upsteatming/linux$ make DT_CHECKER_FLAGS=-m
+> dt_binding_check &>dt_check.log
+> cixi.geng1@tj10039pcu:~/upsteatming/linux$ cat dt_check.log |grep sprd,sc2720
+>   DTEX    Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.example.dts
+>   DTC     Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.example.dt.yaml
+>   CHECK   Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.example.dt.yaml
+> cixi.geng1@tj10039pcu:~/upsteatming/linux$ tuxmake -C ${kernel_src} -b
+> ${topdir}/obj/gcc -o ${topdir}/dist/gcc -a $ARCH -t gcc  -K
+> CONFIG_ARCH_${PLAT}=y -K CONFIG_MFD_SC27XX_PMIC=y -K
+> CONFIG_SC27XX_ADC=y
+> 
 
---wgkvs6aazjig7tcg
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The method is correct, just please test sprd,ump9620-adc (either in
+example in the binding or your DTS with `make dtbs_check
+DT_SCHEMA_FILES=sprd,sc2720-adc.yaml).
 
-Hello,
-
-On Thu, Mar 24, 2022 at 12:20:20PM +0800, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
->=20
-> To i.MX SoC, there are many variants, such as i.MX8M Plus which
-> feature 4 A53, GPU, VPU, SDHC, FLEXCAN, FEC, eQOS and etc.
-> But i.MX8M Plus has many parts, one part may not have FLEXCAN,
-> the other part may not have eQOS or GPU.
-> But we use one device tree to support i.MX8MP including its parts,
-> then we need update device tree to mark the disabled IP status "disabled".
->=20
-> In NXP U-Boot, we hardcoded node path and runtime update device tree
-> status in U-Boot according to fuse value. But this method is not
-> scalable and need encoding all the node paths that needs check.
->=20
-> By introducing nvmem property for each node that needs runtime update
-> status property accoridng fuse value, we could use one Bootloader
-> code piece to support all i.MX SoCs.
->=20
-> The drawback is we need nvmem property for all the nodes which maybe
-> fused out.
-
-I'd rather not have that in an official binding as the syntax is
-orthogonal to status =3D "..." but the semantic isn't. Also if we want
-something like that, I'd rather not want to adapt all bindings, but
-would like to see this being generic enough to be described in a single
-catch-all binding.
-
-I also wonder if it would be nicer to abstract that as something like:
-
-	/ {
-		fuse-info {
-			compatible =3D "otp-fuse-info";
-
-			flexcan {
-				devices =3D <&flexcan1>, <&flexcan2>;
-				nvmem-cells =3D <&flexcan_disabled>;
-				nvmem-cell-names =3D "disabled";
-			};
-
-			m7 {
-				....
-			};
-		};
-	};
-
-as then the driver evaluating this wouldn't need to iterate over the
-whole dtb but just over this node. But I'd still keep this private to
-the bootloader and not describe it in the generic binding.
-
-Just my 0.02=E2=82=AC
-Uwe
-
---wgkvs6aazjig7tcg
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmI8UcQACgkQwfwUeK3K
-7Am9+Af/TL19J0ba7ItLW+bNEISHsBaSaOLd2ifYXQclP0TkgvgsPpvr+ZFan0HB
-W2lomfRdTS4NSas5aNAopvU1h+NkDot8iQAK65FIFAaSPqVZ5NTACag7zjN2wxKh
-Op2qcQycHc8n6kOZsVI7hBLTPpPST3L53MHRzwiZ2CTuRdfp/f/ISmhEJ0nyijyv
-+qE21d99fSrCBh6tXBCqbQCwbIBq6ujU07fkO3EXapDrYsskghCRmtcPcnV0bD93
-UiKvwg5+UAFezAiGM9WFXQD61b2PJ/t+PkjR1sra0jOFdA58YKKh98uZN7yIuZ2q
-nANoUKO0g3cpTR0HxCu8yvaa6luAhw==
-=VM/f
------END PGP SIGNATURE-----
-
---wgkvs6aazjig7tcg--
+Best regards,
+Krzysztof
