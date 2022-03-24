@@ -2,180 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 925BCC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 12:30:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78858C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 12:35:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350218AbiCXMba (ORCPT
+        id S1350180AbiCXMgv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 08:31:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59426 "EHLO
+        Thu, 24 Mar 2022 08:36:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350215AbiCXMbY (ORCPT
+        with ESMTP id S233678AbiCXMgt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 08:31:24 -0400
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E73FFA995A;
-        Thu, 24 Mar 2022 05:29:52 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id D99535C014D;
-        Thu, 24 Mar 2022 08:29:51 -0400 (EDT)
-Received: from imap44 ([10.202.2.94])
-  by compute1.internal (MEProxy); Thu, 24 Mar 2022 08:29:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
-        cc:cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; bh=Up3dHTMXn3+4fL
-        UoQJEi2QXNKuRNdeUTtoLiyFBrbHM=; b=y9MiYRW2H0kvGQzUrfOSK49obI2x2v
-        k3hmCDgVcsW5ejjQwtxVh3M80/wXFTbFwm3zPmwDhCT5op4dLd5ic7ef0Q9oYJYA
-        OsJhez+oHpUzG6LaOLRNiY3chK3U70ObYI6doFNbRdXGzdCfDKprBiCDX0+/VZBG
-        lG9UYeBAkhot8/BdV7Jx8jDARk4dLluVXfMslc6HW+eLyQWlOtfAPsL2vvma/zDL
-        crtY1YKRuEGHuB+XHMsYd/84K/3xiUFQejncBFMRyM3qrrUo1dILeoJHoVglGU6b
-        sOL5hDSnOqngl+7/vc9jcjQf7d1Batro8RmhFyQDzXM9Wm3/WqZc/nAw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; bh=Up3dHTMXn3+4fLUoQJEi2QXNKuRNdeUTtoLiyFBrb
-        HM=; b=nM7p8Gqmnsgq/0LE2Ng99N0xuYBHq3UhCUY5NVZ32LQBa+BEgCb6pV31i
-        tvJrgkWuHvwwWGU2ozl+T9tJk407AWgK6kSY+OxPh8NADs/oJsUKKmJl1UBmvtn3
-        CzVLUQOisYtBp9oULeZ9grWvpQZkDHLva/CyFR/q4lGhmKAd4uxARx0uBW47nRmL
-        J+eNQzmnmV6Bft8daqgJ24iHl7wrJYWdPI1mnOQPovg0338ppxeWmEu0fXpt86+G
-        4DJx09AgKAoVpy0tz7GHbR1GxybRNGjZLy72BVwh0hR4ZLDKQSXtkLp7HMJ2sQGU
-        b61c9FEbBMRe6h1Ykp9rP887L6Yvw==
-X-ME-Sender: <xms:P2Q8Yoga1vwQXDV_yWxUJceE7hQs2YhJ60S9IKk3Q4EDYpFYPisCWg>
-    <xme:P2Q8YhCYVbCU8Nm1JFW6aWNlE3A42O6jMOWpxgNdsX9zEGeY_y3vjH1tqQZ7qme11
-    2uivyAs-Pw_MSpZL5I>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudegledgfeeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvffutgfgsehtqhertderreejnecuhfhrohhmpedflfhi
-    rgiguhhnucgjrghnghdfuceojhhirgiguhhnrdihrghnghesfhhlhihgohgrthdrtghomh
-    eqnecuggftrfgrthhtvghrnhepfeetgeekveeftefhgfduheegvdeuuddvieefvddvlefh
-    feehkeetfeeukedtfeejnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrg
-    hilhhfrhhomhepjhhirgiguhhnrdihrghnghesfhhlhihgohgrthdrtghomh
-X-ME-Proxy: <xmx:P2Q8YgF3MAHlGghZfDECDNkBdDWMxDS5t4ezS_9p_rQ_cgx8vtxjow>
-    <xmx:P2Q8YpT9XOQvEzForAQ2mE5p0KBbB0FBxU-vFIlzFOoaA-3ubYTh8A>
-    <xmx:P2Q8Yly0HiBnMFzuQ_raMJ7kCKrrGi965YP1wq2ijWiggvu9Ub7t2Q>
-    <xmx:P2Q8Yg9xEShgAe4Q1QmRJo_E91MtDXHlD9kwBo3rbHASRgwN9fYXMg>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 3F51FFA0AA6; Thu, 24 Mar 2022 08:29:51 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.5.0-alpha0-4911-g925b585eab-fm-20220323.003-g925b585e
-Mime-Version: 1.0
-Message-Id: <490570bf-0e91-471b-b081-5ebd35541522@www.fastmail.com>
-In-Reply-To: <fb188614-0301-3255-c31c-3d443cf17b91@loongson.cn>
-References: <1647615920-23103-1-git-send-email-yangtiezhu@loongson.cn>
- <1647615920-23103-4-git-send-email-yangtiezhu@loongson.cn>
- <33241bd3-2f12-954c-6701-56cf563060bb@flygoat.com>
- <fb188614-0301-3255-c31c-3d443cf17b91@loongson.cn>
-Date:   Thu, 24 Mar 2022 12:29:28 +0000
-From:   "Jiaxun Yang" <jiaxun.yang@flygoat.com>
-To:     "Tiezhu Yang" <yangtiezhu@loongson.cn>,
-        "Thomas Bogendoerfer" <tsbogend@alpha.franken.de>
-Cc:     "Xuefeng Li" <lixuefeng@loongson.cn>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] MIPS: Use memblock_add_node() in early_parse_mem() under
- CONFIG_NUMA
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        Thu, 24 Mar 2022 08:36:49 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C5950C0F;
+        Thu, 24 Mar 2022 05:35:16 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 57BF11FB;
+        Thu, 24 Mar 2022 05:35:16 -0700 (PDT)
+Received: from [10.57.43.230] (unknown [10.57.43.230])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0B9F03F73D;
+        Thu, 24 Mar 2022 05:35:12 -0700 (PDT)
+Message-ID: <b56621da-0f8a-06d5-15a1-7034e4274620@arm.com>
+Date:   Thu, 24 Mar 2022 12:35:09 +0000
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 2/2] PCI: hv: Propagate coherence from VMbus device to
+ PCI device
+Content-Language: en-GB
+From:   Robin Murphy <robin.murphy@arm.com>
+To:     Michael Kelley <mikelley@microsoft.com>, sthemmin@microsoft.com,
+        kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
+        decui@microsoft.com, rafael@kernel.org, lenb@kernel.org,
+        lorenzo.pieralisi@arm.com, robh@kernel.org, kw@linux.com,
+        bhelgaas@google.com, hch@lst.de, m.szyprowski@samsung.com,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
+        iommu@lists.linux-foundation.org
+References: <1648067472-13000-1-git-send-email-mikelley@microsoft.com>
+ <1648067472-13000-3-git-send-email-mikelley@microsoft.com>
+ <e6d9af22-df69-bf6a-7877-b916918d0682@arm.com>
+In-Reply-To: <e6d9af22-df69-bf6a-7877-b916918d0682@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-=E5=9C=A82022=E5=B9=B43=E6=9C=8823=E6=97=A5=E4=B8=89=E6=9C=88 =E4=B8=8A=E5=
-=8D=882:42=EF=BC=8CTiezhu Yang=E5=86=99=E9=81=93=EF=BC=9A
-> On 03/22/2022 09:19 PM, Jiaxun Yang wrote:
+On 2022-03-24 12:23, Robin Murphy wrote:
+> On 2022-03-23 20:31, Michael Kelley wrote:
+>> PCI pass-thru devices in a Hyper-V VM are represented as a VMBus
+>> device and as a PCI device.  The coherence of the VMbus device is
+>> set based on the VMbus node in ACPI, but the PCI device has no
+>> ACPI node and defaults to not hardware coherent.  This results
+>> in extra software coherence management overhead on ARM64 when
+>> devices are hardware coherent.
 >>
->>
->> =E5=9C=A8 2022/3/18 15:05, Tiezhu Yang =E5=86=99=E9=81=93:
->>> Use memblock_add_node to add new memblock region within a NUMA node
->>> in early_parse_mem() under CONFIG_NUMA, otherwise the mem parameter
->>> can not work well.
->>
->> Hi Tiezhu,
->>
->> pa_to_nid doesn't exist when CONFIG_NUME is disabled.
->> So probably you want #ifdef macro instead =EF=BC=9F
->
-> Hi Jiaxun,
->
-> Thank you for your reply.
->
-> As far as I can tell, if CONFIG_NUMA is set, IS_ENABLED(CONFIG_NUMA)
-> is 1, pa_to_nid() is defined in the platform dependent header file:
+>> Fix this by setting up the PCI host bus so that normal
+>> PCI mechanisms will propagate the coherence of the VMbus
+>> device to the PCI device. There's no effect on x86/x64 where
+>> devices are always hardware coherent.
+> 
+> Honestly, I don't hate this :)
+> 
+> It seems conceptually accurate, as far as I understand, and in 
+> functional terms I'm starting to think it might even be the most correct 
+> approach anyway. In the physical world we might be surprised to find the 
+> PCI side of a host bridge
 
-Yep you're right.
-Apologies for the noise.
+And of course by "the PCI side of a host bridge" I think I actually mean 
+"a PCI root bus", because in my sloppy terminology I'm thinking about 
+hardware bridging from PCI(e) to some SoC-internal protocol, which does 
+not have to imply an actual PCI-visible Host Bridge device...
 
-For the whole series:
-Reviewed-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
-Tested-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
+Robin.
 
-Thanks.
-
->
-> 	arch/mips/include/asm/mach-ip27/mmzone.h
-> 	arch/mips/include/asm/mach-loongson64/mmzone.h
->
-> if CONFIG_NUMA is not set, IS_ENABLED(CONFIG_NUMA) is 0, pa_to_nid()
-> is always 0 which is defined in arch/mips/include/asm/mmzone.h:
->
-> 	#ifdef CONFIG_NUMA
-> 	# include <mmzone.h>
-> 	#endif
->
-> 	#ifndef pa_to_nid
-> 	#define pa_to_nid(addr) 0
-> 	#endif
->
-> So pa_to_nid() is defined under both CONFIG_NUMA and !CONFIG_NUMA,
-> there is no build error.
->
-> Additionally, use #ifdef CONFIG_NUMA is also OK, but I prefer to
-> use IS_ENABLED(CONFIG_NUMA).
->
-> If I am missing something, please let me know, thank you.
->
-> Thanks,
-> Tiezhu
->
+> behind anything other than some platform/ACPI 
+> device representing the other side of a physical host bridge or root 
+> complex, but who's to say that a paravirtual world can't present a more 
+> abstract topology? Either way, a one-line way of tying in to the 
+> standard flow is hard to turn down.
+> 
+> Acked-by: Robin Murphy <robin.murphy@arm.com>
+> 
+>> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+>> ---
+>>   drivers/pci/controller/pci-hyperv.c | 9 +++++++++
+>>   1 file changed, 9 insertions(+)
 >>
->> Thanks.
->> - Jiaxun
->>
->>>
->>> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
->>> ---
->>>   arch/mips/kernel/setup.c | 6 +++++-
->>>   1 file changed, 5 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/arch/mips/kernel/setup.c b/arch/mips/kernel/setup.c
->>> index c8c8f60..50cdc08 100644
->>> --- a/arch/mips/kernel/setup.c
->>> +++ b/arch/mips/kernel/setup.c
->>> @@ -37,6 +37,7 @@
->>>   #include <asm/cdmm.h>
->>>   #include <asm/cpu.h>
->>>   #include <asm/debug.h>
->>> +#include <asm/mmzone.h>
->>>   #include <asm/sections.h>
->>>   #include <asm/setup.h>
->>>   #include <asm/smp-ops.h>
->>> @@ -378,7 +379,10 @@ static int __init early_parse_mem(char *p)
->>>               memblock_end_of_DRAM() - memblock_start_of_DRAM());
->>>       }
->>>   -    memblock_add(start, size);
->>> +    if (IS_ENABLED(CONFIG_NUMA))
->>> +        memblock_add_node(start, size, pa_to_nid(start), MEMBLOCK_N=
-ONE);
->>> +    else
->>> +        memblock_add(start, size);
->>>         return 0;
->>>   }
-
---=20
-- Jiaxun
+>> diff --git a/drivers/pci/controller/pci-hyperv.c 
+>> b/drivers/pci/controller/pci-hyperv.c
+>> index ae0bc2f..88b3b56 100644
+>> --- a/drivers/pci/controller/pci-hyperv.c
+>> +++ b/drivers/pci/controller/pci-hyperv.c
+>> @@ -3404,6 +3404,15 @@ static int hv_pci_probe(struct hv_device *hdev,
+>>       hbus->bridge->domain_nr = dom;
+>>   #ifdef CONFIG_X86
+>>       hbus->sysdata.domain = dom;
+>> +#elif defined(CONFIG_ARM64)
+>> +    /*
+>> +     * Set the PCI bus parent to be the corresponding VMbus
+>> +     * device. Then the VMbus device will be assigned as the
+>> +     * ACPI companion in pcibios_root_bridge_prepare() and
+>> +     * pci_dma_configure() will propagate device coherence
+>> +     * information to devices created on the bus.
+>> +     */
+>> +    hbus->sysdata.parent = hdev->device.parent;
+>>   #endif
+>>       hbus->hdev = hdev;
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
