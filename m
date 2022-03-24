@@ -2,194 +2,380 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7930C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 22:42:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A920C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 22:44:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355482AbiCXWni (ORCPT
+        id S1355499AbiCXWqR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 18:43:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33876 "EHLO
+        Thu, 24 Mar 2022 18:46:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239751AbiCXWnh (ORCPT
+        with ESMTP id S239751AbiCXWqP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 18:43:37 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD01EADD6B
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 15:42:04 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22OJHHE0031416;
-        Thu, 24 Mar 2022 22:42:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=JopOeTFHkoM+jtlVu21Qwbm4LTlOGsh+v5FQ9sGjqAE=;
- b=iCpcnN5x0XGuzRZSS2KBLY+h4tQZhiNS86CFYuE5nGkuAq36ng2mHDhFDC2QlQzu7EUI
- ktWNqbwbDr8wcGZcSX+DLfa/YNZLvQcqebiCYlwVBRTZBHF6zTCXqSFbcPxCNgGfatWN
- H72XB1IP7ykNu2EtN5/niNMrqb3yOZ8a3lEo5yanuTAbTXgwkk7j7pH85y41VqKg2y+q
- EntQK6oIPYEgYJ7IxNCLm9SVG31lRzZdCXoR8jKyr7zRc+isV7CuLC+HSV66zaLtoMYW
- hYxiDaNpBggWLMHUhh52poZhrnsGr73g+XUUb5AbZUUkV9OF12lq3UfUXjQXX3HVy7b0 8Q== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80] (may be forged))
-        by mx0b-00069f02.pphosted.com with ESMTP id 3ew7qte45a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 24 Mar 2022 22:42:01 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 22OMaAD4075317;
-        Thu, 24 Mar 2022 22:41:59 GMT
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2173.outbound.protection.outlook.com [104.47.56.173])
-        by userp3030.oracle.com with ESMTP id 3ew49red5j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 24 Mar 2022 22:41:59 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OtLstkQbupsSe3nJdusArpMXZG+Yx7B9ZE9IjXOsV9ACfLQ8cs2pRZBOy2+ThHGsJ1uGyXMuKnsHed8HHvn7QcXX2nzH49ZSGSN6aQZ24BiMSwIN91S58rweM/5Cr5SACsCjtrOvyLvVuqspDafuXxvA9jgm0KmkkWbi/IUZXj9YpnMo2LK0i66CrxhnxVefWgzJXrak6m27JQvqDW9SH9guofbCvLEoECno13tN/QfPFwo0CUADKxB7VXWEqIOuJFFYgUkbXFTzEpCUHSdOsPSQY4pY/FXfcp47SzK1bQNA4wpo0mw7s04+SztJ8D8TPD1uwqbQgGyOm37zWoVQfw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JopOeTFHkoM+jtlVu21Qwbm4LTlOGsh+v5FQ9sGjqAE=;
- b=UG5D8EHnqr4MY71yU61U0f7K2rHot9EWeagmqnD9Cqby0azBckcMttJ2GbgjKPuXopB1JZF19L6laol0btv4jgbuB6C5zdaXV+P3CqH2YMRDFc9nRJneH8RgSW2OiW9CxVGry1i2xznGzxaIixHNdlG1wilbFC4+hOxtMkyY61Gb6Gbp34++tvnFVl6qMBDZ5RuuFjmq0DdIOJcGiNLW1+blaAxUxgXC2yV1w4Ym7W9rzhQN5/yt0F3RGleIYApFn0Fkn/puZ3iZkUUe7N8cUr+4g9F6qfT1vuK1JF44yl77keXi4YYp35E3atxK9Tvp67rQ+eZVvt7jPWGefzax0g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JopOeTFHkoM+jtlVu21Qwbm4LTlOGsh+v5FQ9sGjqAE=;
- b=QCGbi50MfrYxS7AF+TGmvpKDOvdPyQ6Juh+TJW5yeR23c8rWQa2sguOkL76IOVEes1Xvo/RHGjFOBnp+CYYfBkttmt0KTgSjMl4mH9Qgn788USunplrBl3o+ScsowsFbHNYt8n+bTf1TIH/i8L6fwQra8MqFLD9N4p+29Tg6A/c=
-Received: from BY5PR10MB4196.namprd10.prod.outlook.com (2603:10b6:a03:20d::23)
- by DM6PR10MB3034.namprd10.prod.outlook.com (2603:10b6:5:6e::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.21; Thu, 24 Mar
- 2022 22:41:57 +0000
-Received: from BY5PR10MB4196.namprd10.prod.outlook.com
- ([fe80::245f:e3b1:35fd:43c5]) by BY5PR10MB4196.namprd10.prod.outlook.com
- ([fe80::245f:e3b1:35fd:43c5%7]) with mapi id 15.20.5102.019; Thu, 24 Mar 2022
- 22:41:57 +0000
-Message-ID: <e4cfa252-7be8-48b2-9f19-019bcc0038af@oracle.com>
-Date:   Thu, 24 Mar 2022 15:41:55 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: scalability regressions related to hugetlb_fault() changes
-Content-Language: en-US
-To:     Ray Fucillo <Ray.Fucillo@intersystems.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>
-References: <D3204B1E-50A1-4261-8C75-3DF77A302502@intersystems.com>
- <43faf292-245b-5db5-cce9-369d8fb6bd21@infradead.org>
-From:   Mike Kravetz <mike.kravetz@oracle.com>
-In-Reply-To: <43faf292-245b-5db5-cce9-369d8fb6bd21@infradead.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MW4P221CA0011.NAMP221.PROD.OUTLOOK.COM
- (2603:10b6:303:8b::16) To BY5PR10MB4196.namprd10.prod.outlook.com
- (2603:10b6:a03:20d::23)
+        Thu, 24 Mar 2022 18:46:15 -0400
+Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37C7AB6E44
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 15:44:41 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 67FF15C0194;
+        Thu, 24 Mar 2022 18:44:40 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Thu, 24 Mar 2022 18:44:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sent.com; h=cc
+        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to
+        :reply-to:sender:subject:subject:to:to; s=fm3; bh=Lu9+y7/OA8vzrI
+        JEVfxTWNNqIdwqiBgzFUZF7HyFHFY=; b=yyzvg03EkvLu5ylQIGcqrVSHyCKg3m
+        l1iF5ykmC1otScAYznKAGrwaS32THrBeFsC76HKFrmX/uDr9FsZIe847jNRZ8bIq
+        8ya+ikcW6ckyD45ZamVOfSx+K9+xeKnz2XYXBfAcb7eRE0dFP+npuDZ0x3o0jYwo
+        SzoFIGN+peiqH4zuOOnJYtwKH7W2nloLZxsOdp25bqIM75b3SqZdgYA5s3/kHVF9
+        +Hu1v9VbfcwgGu+VjH+I02WCaaHy8T3j+tVYmwnG6dNT7ajC5MFvLRyyNNeApRlQ
+        QziKWaq3YWwmO2AtBvKkLeO8RgknN3wJ/Xa88X/RNQgS66hc9JiFIEqA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :from:from:in-reply-to:in-reply-to:message-id:mime-version
+        :references:reply-to:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; bh=Lu9+y7/OA8vzrIJEVfxTWNNqIdwqiBgzFUZF7HyFHFY=; b=MoCGNkIf
+        nna3AndZwp2mZeLc1fdv/d/c/lYq5p2Kn1ipQfwdnGNlZBKmOyftfY4my+Dqduve
+        pJUsqN7DyOTwDZScDUEKiCthWLC2A/VOeVvnFxJoH7QBf0YXP0rifBKpdh03Sg/b
+        KM05FUfVYrkNSymCDILiO9u1JkWg673rjEoV3sZdX0wNuEzC2vZlYw/0rnoA80mo
+        rEpS44pJ0iq7OeRJw+PUbAOVbo5+hGlK/ewx0lxInn8IE9gVSlfR9PkkdO7//DxL
+        crPghJCqRAM+wDo7FIZgN51E2TmS9QdGvk+VSsJ/+txgV6tuI35Fld1/KjjWQqYL
+        anZoGKHztfg9Bg==
+X-ME-Sender: <xms:WPQ8YqXuEf2aBl4x08DEabfb8mvTE2ktLZRfQVM13iXw7avHpwZeHQ>
+    <xme:WPQ8Ymn2HDvfiJ-Ffpe_vxMoyFvFFW9oBaxayszjoK2c7N7IdLiN6apBU8qQ_i6a2
+    uk06i80DrlEM7MbgA>
+X-ME-Received: <xmr:WPQ8YuaY415Gq_wO92hIpwfKtclgAv0rStpUlVzGJt-cuupvqrTTPzaDl3TleRYmBZyOLH0kpYMWlQiwBQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudegledgudeivdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefhvffufffkofgjfhhrggfgsedtqhertdertddtnecuhfhrohhmpegkihcu
+    jggrnhcuoeiiihdrhigrnhesshgvnhhtrdgtohhmqeenucggtffrrghtthgvrhhnpeeije
+    euvdeuudeuhfeghfehieeuvdetvdeugfeigeevteeuieeuhedtgeduheefleenucevlhhu
+    shhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpeiiihdrhigrnhessh
+    gvnhhtrdgtohhm
+X-ME-Proxy: <xmx:WPQ8YhUqMo8XHyMU2qjCE-UH3_NgH6KI-XOfQBNvlMHCVgYfFM-ASQ>
+    <xmx:WPQ8YkmNykcnv8kasphJiR8Rpqzf7ME4m00IJjb9Dpf4anfXAMHPDA>
+    <xmx:WPQ8YmdaYJqPDNLjaJmr-cJshFR2sm7TEReJupkOg8ZLTW61pQGYhg>
+    <xmx:WPQ8YtcDA8V4mdTmBM7ky61FBsIlA2zL3vUyduwgTYx7kiSn157s7A>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 24 Mar 2022 18:44:39 -0400 (EDT)
+From:   Zi Yan <zi.yan@sent.com>
+To:     David Hildenbrand <david@redhat.com>, linux-mm@kvack.org
+Cc:     linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Eric Ren <renzhengeek@gmail.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Oscar Salvador <osalvador@suse.de>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Zi Yan <ziy@nvidia.com>, Mike Rapoport <rppt@linux.ibm.com>
+Subject: [PATCH v9 1/5] mm: page_isolation: move has_unmovable_pages() to mm/page_isolation.c
+Date:   Thu, 24 Mar 2022 18:44:31 -0400
+Message-Id: <20220324224435.17794-2-zi.yan@sent.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220324224435.17794-1-zi.yan@sent.com>
+References: <20220324224435.17794-1-zi.yan@sent.com>
+Reply-To: Zi Yan <ziy@nvidia.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1cca37bc-6091-4322-3d1b-08da0de7804d
-X-MS-TrafficTypeDiagnostic: DM6PR10MB3034:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR10MB30341B0D33B3A53BE38C3D27E2199@DM6PR10MB3034.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: w7fF2LhAlJHP04QZSrXFjYxv6KBkxutSKDJ2bbqYFxQ5dv2Z47ov8QBhxfh4RJG/sGQ5XL5WZilf6AHunkiP4CUBPxFXAtj+mnB8OdlMHSgqU5cLTj36isFZd7U7oedhIkjxU5mXRvu1EuVMUI+xcThxUow0qa1nYsjTH2OoSj/fOCSxYwNq1Nk3zytFC3ozv2gav1fe438VqDJGbbuurigBVA81q0UC5eeVMwUFXeWLtVObGql6vorplmO6ND0VSjXHNDlWUKGRoAKIpQGxEs7dIiBZm04d27GmF5oiZEjONSrz6Yr+6Ye/fi4sGrcVWMRsZXmF1oqi32aTiyQ8EAtfyvoyeS027iBhRCmEQRYN8b6kQ3EJvfvLSRMdr8UQMJiYYZiOIyFQF2uYMZsH4clR4y1ydGx1km0/nf57A8QPc8LUHqh1FRVqjE+DfiaR/Ga6eTC63koR4pcVFEs/UMTSODJxipE7k6wwwoFQ3f2POY2agtuerKCuQWe1s3HGvkp7OrAsr9cp0f5UaI2PgQ33A21BuvSFq9uz8xEmm2kSPKIoCcOPzyFZflDfYEua2pJ2yR8XIme2meUCll2d/K9pmJQDWuuayroMr3GOMT8KmmdkAGvh/r4e+mp6elaguYhIX/xJC4eWvW+kcuQKFYUZBCS7pEFCa54z4DLT+sk1wrTdg6tibGTcFYWkPdjYTfeooY3o3918F2OfJAIWgu3Nd94wdqfEmWXzSlnDKpmwoUnD+VShaXkmh58k8BDllSAudOIrPOhg/59MLMhlrA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR10MB4196.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(110136005)(66946007)(6486002)(83380400001)(38100700002)(31696002)(8936002)(38350700002)(6512007)(316002)(52116002)(53546011)(66476007)(508600001)(66556008)(2906002)(186003)(2616005)(26005)(8676002)(44832011)(86362001)(36756003)(6506007)(5660300002)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NU9aeTRPSXRnQjBPdFpIL2w0alFYZXJINjhrSTVlMVdGVVk1dVNOcDBoQVU5?=
- =?utf-8?B?eTBvQkFPRk91bFYwVUh5WmpIbTkzeWlhc0JsL0UzZUNDSUlhWWJSVXcwWmJC?=
- =?utf-8?B?YkZZNVFXOFZ5dGFNdWhyZjhDakdaSlF0aytmbyt6TUEwc3crbHlvdDlwbldX?=
- =?utf-8?B?Y1NKc0RCRlR4c3REclFjUVJ6V1VoQmt3NURZMkQ1aGh0a0Z3MC92Sy8yQldG?=
- =?utf-8?B?bGpVdVdYb1ZhRlByQ3RablpUNlI1WmtsTkVFYlMwNTJqY0RXN1NPcCtLNkll?=
- =?utf-8?B?ZHcxbGJWOEVKMzVZYzR1TjVDU2lrOHVzaHVOTzFrQzc5Y0RRbFJMTHFhUzVB?=
- =?utf-8?B?ckRlc0dBdXZwNURVSjhTODI0MjZ5ZlNLdHhBa0Z0dG15SlAvSEJES2REZkhF?=
- =?utf-8?B?cDViWWFQanREZ0FFb3U3cGYwMlFzcXB1M2NkemN6bFRCaEZuN2FMM3h6dzZq?=
- =?utf-8?B?am9NRG9OT0JBY3JLK1hPQVUxWmVxbTNOSVhzY1l2enhza3BpRE5CV25VTHJ1?=
- =?utf-8?B?NkJ4YUowNnNzOFNML0VveGx5V3VTQjhnaTR3VXdkSlZHN1U0aVpEYnhGLy9z?=
- =?utf-8?B?MnhaNkZPM3N2b0txZzZ1VmcyUHJ5RUtBaEs2NkVOYzlxTnJPU0NJb0dtcWkz?=
- =?utf-8?B?YmV0Y0k5VEpuVHBQd2xaUWxzWGxaMGwzL2lZcm5jS0VoWGxnR0Rkc29SNjBv?=
- =?utf-8?B?R0RQaTdSR2Rwalp0UkF1ckdQKzlLb0FDVFg2UzZZZXVLbFd2cEI0NEF1RVlK?=
- =?utf-8?B?azJsYzNPSmhtM0Z4cFpHc3JVMWJXWGdDMXF4ZlJrcEVKQkpVTHc5Mk9tekQ3?=
- =?utf-8?B?SnQreVJZNmx6a1dPdXRMRGtMTSsrc2hnbWdjZUJ2MGFpdWl5aWNoRWxRT1po?=
- =?utf-8?B?QlNWd294cjRIcUZKS0JyOFBRZEppOTByRXRZZzEyTDFyQ3drSk9VR01zNXY4?=
- =?utf-8?B?YTJjc0VoTUtEaUZWaTRpYWp6T1Y3b05kWEJmMmloNUhaWWhpbzlTbm1sd1Z5?=
- =?utf-8?B?MXZDUDljVUFTVHZzd28wQTBtbFdsU1B2SnczRGFrZlVEeERDanlmMW9BRllJ?=
- =?utf-8?B?ZVpIRytKTFV6M2tlRzkzZkorMEI4TnNBYnA0cU16NHJVN2Vyd2g1QnBkK3lQ?=
- =?utf-8?B?TDJ0dGlMbmlRZlhzNTNLdnNYMkltRUF5TkNySlJKc1Z5YW9HYlNSKzJsZUNk?=
- =?utf-8?B?bmhDWllibWhHa3RoVEJFWk5wcUVUeXR4bVpUK1BMOHNqR0tCMWwyMC9raW9Q?=
- =?utf-8?B?MC9kbTNDZFlsUFhid3BhRkJIM1lYaDFYWEtZSXZ3RWJhb3pzMDlzMi9CMHRY?=
- =?utf-8?B?V2RGY216S1VyOW5tRU9zZGxGZml2N041bFJUMjhTVW8rRnZxd0pDd1ZvbGpn?=
- =?utf-8?B?VWdXQkFoQ0Z1Y1Z5anQ2Q0VmZWhTUTFMTm9UUW1udmhyQzZ1TkgrR05paEdT?=
- =?utf-8?B?dUkrVCtkT3lQeUk4RW4vZjNxRGg0MjFwZzZrRlBqOTkzRVRkRk9zTks3RkJX?=
- =?utf-8?B?N0tFNWpHZTZtMUpKdVZHYklJRWl5SnZDa1Mxd1o5Mmk5ZEJBUy9QNTJNc0FG?=
- =?utf-8?B?SzZmMmtOd0NsSjY1TGdOTUN2V2FVbnBnb2FlQTF4djk3cnFkQXBUa0xvMEhh?=
- =?utf-8?B?M0tLS3MwVUlqQWNJVXpTOTFKYSswUnIwMjVYY2hIZzQyT0hSV2lJS2FEbDAv?=
- =?utf-8?B?ZDM2MGRBWkhRcC9jbWxiR0pZcDZPS1pKMzZzSnpnc2dyOVpJR2dxbG1UR3N4?=
- =?utf-8?B?TkllUTBwVXZmV0p2aXhGT21nekdXK2VOSUNrMFptcXpYU1pXMHFCZUdEVXRv?=
- =?utf-8?B?dmNtSzFJNXREVG1OLzVrL0V1dC9xNWVvK1BNNmFlV1dva2VVZjNWVlZ3cStK?=
- =?utf-8?B?cmZBN2J3eVc1WXNOeW9HZHNHVmpSMTZxWGFNNGRBWnN4RlhLQ2JMNHYxc1BT?=
- =?utf-8?B?NVZQUGdIVzFQTXFwSkVPL1VSNEovTVFHR1pLa2x5NHBQRVg4US9VNU5FRHVW?=
- =?utf-8?B?NmExZHdRQlF3PT0=?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1cca37bc-6091-4322-3d1b-08da0de7804d
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR10MB4196.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2022 22:41:56.9061
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rOMJBpS8n3XdJIAUOMX/FuCPjlLVB5CZvIu0zSI/jKySt4b4I7MoBasQPbA/3kHnAFSZMLUOi/Ob2yYZmv22Lg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB3034
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10296 signatures=694973
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0 mlxscore=0
- bulkscore=0 phishscore=0 spamscore=0 mlxlogscore=999 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2203240119
-X-Proofpoint-GUID: MBscG2dYS9wBUmAfsPrcDFvKSb4E4jpo
-X-Proofpoint-ORIG-GUID: MBscG2dYS9wBUmAfsPrcDFvKSb4E4jpo
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/24/22 14:55, Randy Dunlap wrote:
-> [add linux-mm mailing list]
-> 
-> On 3/24/22 13:12, Ray Fucillo wrote:
->> In moving to newer versions of the kernel, our customers have experienced dramatic new scalability problems in our database application, InterSystems IRIS.  Our research has narrowed this down to new processes that attach to the database's shared memory segment taking very long delays (in some cases ~100ms!) acquiring the i_mmap_lock_read() in hugetlb_fault() as they fault in the huge page for the first time.  The addition of this lock in hugetlb_fault() matches the versions where we see this problem.  It's not just slowing the new process that incurs the delay, but backing up other processes if the page fault occurs inside a critical section within the database application.
->>
->> Is there something that can be improved here?  
->>
->> The read locks in hugetlb_fault() contend with write locks that seem to be taken in very common application code paths: shmat(), process exit, fork() (not vfork()), shmdt(), presumably others.  So hugetlb_fault() contending to read turns out to be common.  When the system is loaded, there will be many new processes faulting in pages that may blocks the write lock, which in turn blocks more readers in fault behind it, and so on...  I don't think there's any support for shared page tables in hugetlb to avoid the faults altogether.
->>
->> Switching to 1GB huge pages instead of 2MB is a good mitigation in reducing the frequency of fault, but not a complete solution.
->>
->> Thanks for considering.
->>
->> Ray
+From: Zi Yan <ziy@nvidia.com>
 
-Hi Ray,
+has_unmovable_pages() is only used in mm/page_isolation.c. Move it from
+mm/page_alloc.c and make it static.
 
-Acquiring i_mmap_rwsem in hugetlb_fault was added in the v5.7 kernel with
-commit c0d0381ade79 "hugetlbfs: use i_mmap_rwsem for more pmd sharing
-synchronization".  Ironically, this was added due to correctness (possible
-data corruption) issues with huge pmd sharing (shared page tables for hugetlb
-at the pmd level).  It is used to synchronize the fault path which sets up
-the sharing with the unmap (or other) path which tears down the sharing.
+Signed-off-by: Zi Yan <ziy@nvidia.com>
+Reviewed-by: Oscar Salvador <osalvador@suse.de>
+Reviewed-by: Mike Rapoport <rppt@linux.ibm.com>
+Acked-by: David Hildenbrand <david@redhat.com>
+---
+ include/linux/page-isolation.h |   2 -
+ mm/page_alloc.c                | 119 ---------------------------------
+ mm/page_isolation.c            | 119 +++++++++++++++++++++++++++++++++
+ 3 files changed, 119 insertions(+), 121 deletions(-)
 
-As mentioned in the commit message, it is 'possible' to approach this issue
-in different ways such as catch races, cleanup, backout and retry.  Adding
-the synchronization seemed to be the most direct and less error prone
-approach.  I also seem to remember thinking about the possibility of
-avoiding the synchronization if pmd sharing was not possible.  That may be
-a relatively easy way to speed things up.  Not sure if pmd sharing comes
-into play in your customer environments, my guess would be yes (shared
-mappings ranges more than 1GB in size and aligned to 1GB).
+diff --git a/include/linux/page-isolation.h b/include/linux/page-isolation.h
+index 572458016331..e14eddf6741a 100644
+--- a/include/linux/page-isolation.h
++++ b/include/linux/page-isolation.h
+@@ -33,8 +33,6 @@ static inline bool is_migrate_isolate(int migratetype)
+ #define MEMORY_OFFLINE	0x1
+ #define REPORT_FAILURE	0x2
+=20
+-struct page *has_unmovable_pages(struct zone *zone, struct page *page,
+-				 int migratetype, int flags);
+ void set_pageblock_migratetype(struct page *page, int migratetype);
+ int move_freepages_block(struct zone *zone, struct page *page,
+ 				int migratetype, int *num_movable);
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index f648decfe39d..6de57d058d3d 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -8936,125 +8936,6 @@ void *__init alloc_large_system_hash(const char *ta=
+blename,
+ 	return table;
+ }
+=20
+-/*
+- * This function checks whether pageblock includes unmovable pages or not.
+- *
+- * PageLRU check without isolation or lru_lock could race so that
+- * MIGRATE_MOVABLE block might include unmovable pages. And __PageMovable
+- * check without lock_page also may miss some movable non-lru pages at
+- * race condition. So you can't expect this function should be exact.
+- *
+- * Returns a page without holding a reference. If the caller wants to
+- * dereference that page (e.g., dumping), it has to make sure that it
+- * cannot get removed (e.g., via memory unplug) concurrently.
+- *
+- */
+-struct page *has_unmovable_pages(struct zone *zone, struct page *page,
+-				 int migratetype, int flags)
+-{
+-	unsigned long iter =3D 0;
+-	unsigned long pfn =3D page_to_pfn(page);
+-	unsigned long offset =3D pfn % pageblock_nr_pages;
+-
+-	if (is_migrate_cma_page(page)) {
+-		/*
+-		 * CMA allocations (alloc_contig_range) really need to mark
+-		 * isolate CMA pageblocks even when they are not movable in fact
+-		 * so consider them movable here.
+-		 */
+-		if (is_migrate_cma(migratetype))
+-			return NULL;
+-
+-		return page;
+-	}
+-
+-	for (; iter < pageblock_nr_pages - offset; iter++) {
+-		page =3D pfn_to_page(pfn + iter);
+-
+-		/*
+-		 * Both, bootmem allocations and memory holes are marked
+-		 * PG_reserved and are unmovable. We can even have unmovable
+-		 * allocations inside ZONE_MOVABLE, for example when
+-		 * specifying "movablecore".
+-		 */
+-		if (PageReserved(page))
+-			return page;
+-
+-		/*
+-		 * If the zone is movable and we have ruled out all reserved
+-		 * pages then it should be reasonably safe to assume the rest
+-		 * is movable.
+-		 */
+-		if (zone_idx(zone) =3D=3D ZONE_MOVABLE)
+-			continue;
+-
+-		/*
+-		 * Hugepages are not in LRU lists, but they're movable.
+-		 * THPs are on the LRU, but need to be counted as #small pages.
+-		 * We need not scan over tail pages because we don't
+-		 * handle each tail page individually in migration.
+-		 */
+-		if (PageHuge(page) || PageTransCompound(page)) {
+-			struct page *head =3D compound_head(page);
+-			unsigned int skip_pages;
+-
+-			if (PageHuge(page)) {
+-				if (!hugepage_migration_supported(page_hstate(head)))
+-					return page;
+-			} else if (!PageLRU(head) && !__PageMovable(head)) {
+-				return page;
+-			}
+-
+-			skip_pages =3D compound_nr(head) - (page - head);
+-			iter +=3D skip_pages - 1;
+-			continue;
+-		}
+-
+-		/*
+-		 * We can't use page_count without pin a page
+-		 * because another CPU can free compound page.
+-		 * This check already skips compound tails of THP
+-		 * because their page->_refcount is zero at all time.
+-		 */
+-		if (!page_ref_count(page)) {
+-			if (PageBuddy(page))
+-				iter +=3D (1 << buddy_order(page)) - 1;
+-			continue;
+-		}
+-
+-		/*
+-		 * The HWPoisoned page may be not in buddy system, and
+-		 * page_count() is not 0.
+-		 */
+-		if ((flags & MEMORY_OFFLINE) && PageHWPoison(page))
+-			continue;
+-
+-		/*
+-		 * We treat all PageOffline() pages as movable when offlining
+-		 * to give drivers a chance to decrement their reference count
+-		 * in MEM_GOING_OFFLINE in order to indicate that these pages
+-		 * can be offlined as there are no direct references anymore.
+-		 * For actually unmovable PageOffline() where the driver does
+-		 * not support this, we will fail later when trying to actually
+-		 * move these pages that still have a reference count > 0.
+-		 * (false negatives in this function only)
+-		 */
+-		if ((flags & MEMORY_OFFLINE) && PageOffline(page))
+-			continue;
+-
+-		if (__PageMovable(page) || PageLRU(page))
+-			continue;
+-
+-		/*
+-		 * If there are RECLAIMABLE pages, we need to check
+-		 * it.  But now, memory offline itself doesn't call
+-		 * shrink_node_slabs() and it still to be fixed.
+-		 */
+-		return page;
+-	}
+-	return NULL;
+-}
+-
+ #ifdef CONFIG_CONTIG_ALLOC
+ static unsigned long pfn_max_align_down(unsigned long pfn)
+ {
+diff --git a/mm/page_isolation.c b/mm/page_isolation.c
+index f67c4c70f17f..b34f1310aeaa 100644
+--- a/mm/page_isolation.c
++++ b/mm/page_isolation.c
+@@ -15,6 +15,125 @@
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/page_isolation.h>
+=20
++/*
++ * This function checks whether pageblock includes unmovable pages or not.
++ *
++ * PageLRU check without isolation or lru_lock could race so that
++ * MIGRATE_MOVABLE block might include unmovable pages. And __PageMovable
++ * check without lock_page also may miss some movable non-lru pages at
++ * race condition. So you can't expect this function should be exact.
++ *
++ * Returns a page without holding a reference. If the caller wants to
++ * dereference that page (e.g., dumping), it has to make sure that it
++ * cannot get removed (e.g., via memory unplug) concurrently.
++ *
++ */
++static struct page *has_unmovable_pages(struct zone *zone, struct page *pa=
+ge,
++				 int migratetype, int flags)
++{
++	unsigned long iter =3D 0;
++	unsigned long pfn =3D page_to_pfn(page);
++	unsigned long offset =3D pfn % pageblock_nr_pages;
++
++	if (is_migrate_cma_page(page)) {
++		/*
++		 * CMA allocations (alloc_contig_range) really need to mark
++		 * isolate CMA pageblocks even when they are not movable in fact
++		 * so consider them movable here.
++		 */
++		if (is_migrate_cma(migratetype))
++			return NULL;
++
++		return page;
++	}
++
++	for (; iter < pageblock_nr_pages - offset; iter++) {
++		page =3D pfn_to_page(pfn + iter);
++
++		/*
++		 * Both, bootmem allocations and memory holes are marked
++		 * PG_reserved and are unmovable. We can even have unmovable
++		 * allocations inside ZONE_MOVABLE, for example when
++		 * specifying "movablecore".
++		 */
++		if (PageReserved(page))
++			return page;
++
++		/*
++		 * If the zone is movable and we have ruled out all reserved
++		 * pages then it should be reasonably safe to assume the rest
++		 * is movable.
++		 */
++		if (zone_idx(zone) =3D=3D ZONE_MOVABLE)
++			continue;
++
++		/*
++		 * Hugepages are not in LRU lists, but they're movable.
++		 * THPs are on the LRU, but need to be counted as #small pages.
++		 * We need not scan over tail pages because we don't
++		 * handle each tail page individually in migration.
++		 */
++		if (PageHuge(page) || PageTransCompound(page)) {
++			struct page *head =3D compound_head(page);
++			unsigned int skip_pages;
++
++			if (PageHuge(page)) {
++				if (!hugepage_migration_supported(page_hstate(head)))
++					return page;
++			} else if (!PageLRU(head) && !__PageMovable(head)) {
++				return page;
++			}
++
++			skip_pages =3D compound_nr(head) - (page - head);
++			iter +=3D skip_pages - 1;
++			continue;
++		}
++
++		/*
++		 * We can't use page_count without pin a page
++		 * because another CPU can free compound page.
++		 * This check already skips compound tails of THP
++		 * because their page->_refcount is zero at all time.
++		 */
++		if (!page_ref_count(page)) {
++			if (PageBuddy(page))
++				iter +=3D (1 << buddy_order(page)) - 1;
++			continue;
++		}
++
++		/*
++		 * The HWPoisoned page may be not in buddy system, and
++		 * page_count() is not 0.
++		 */
++		if ((flags & MEMORY_OFFLINE) && PageHWPoison(page))
++			continue;
++
++		/*
++		 * We treat all PageOffline() pages as movable when offlining
++		 * to give drivers a chance to decrement their reference count
++		 * in MEM_GOING_OFFLINE in order to indicate that these pages
++		 * can be offlined as there are no direct references anymore.
++		 * For actually unmovable PageOffline() where the driver does
++		 * not support this, we will fail later when trying to actually
++		 * move these pages that still have a reference count > 0.
++		 * (false negatives in this function only)
++		 */
++		if ((flags & MEMORY_OFFLINE) && PageOffline(page))
++			continue;
++
++		if (__PageMovable(page) || PageLRU(page))
++			continue;
++
++		/*
++		 * If there are RECLAIMABLE pages, we need to check
++		 * it.  But now, memory offline itself doesn't call
++		 * shrink_node_slabs() and it still to be fixed.
++		 */
++		return page;
++	}
++	return NULL;
++}
++
+ static int set_migratetype_isolate(struct page *page, int migratetype, int=
+ isol_flags)
+ {
+ 	struct zone *zone =3D page_zone(page);
+--=20
+2.35.1
 
-It has been a couple years since c0d0381ade79, I will take some time to
-look into alternatives and/or improvements.
-
-Also, do you have any specifics about the regressions your customers are
-seeing?  Specifically what paths are holding i_mmap_rwsem in write mode
-for long periods of time.  I would expect something related to unmap.
-Truncation can have long hold times especially if there are may shared
-mapping.  Always worth checking specifics, but more likely this is a general
-issue.
--- 
-Mike Kravetz
