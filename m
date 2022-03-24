@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 031E9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 18:36:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E580AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 18:36:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352729AbiCXSiV (ORCPT
+        id S1352742AbiCXSiY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 14:38:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59466 "EHLO
+        Thu, 24 Mar 2022 14:38:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346271AbiCXShw (ORCPT
+        with ESMTP id S243914AbiCXShv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 14:37:52 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBF66B8213;
-        Thu, 24 Mar 2022 11:36:19 -0700 (PDT)
+        Thu, 24 Mar 2022 14:37:51 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDD65B8211
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 11:36:18 -0700 (PDT)
 Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 8D8171EC064F;
-        Thu, 24 Mar 2022 19:36:18 +0100 (CET)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 4F6121EC059E;
+        Thu, 24 Mar 2022 19:36:17 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1648146978;
+        t=1648146977;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wfT4qGrQwx2hfzVPs3pjnTLNsfyPOU9+w/XLbsoJcyc=;
-        b=AnvFSo7qHBKE8Lir2/yiBZMNvznDG5kkwV9CXLQqyGibSBy8i1FCyZRtXQTEfrbAmdvbIo
-        DKGP6T537uf3K/NqE70oBQOS3sdhBo/M056YQg3iIGY7SXu8cqPvG06AHoQIC7V3CUIup2
-        cmQNSOqRbk8d2PiT/hQbBl7Ufaf4B7k=
+         content-transfer-encoding:content-transfer-encoding:in-reply-to:
+         references; bh=FmIEnU2hXriloAXlm2b+2Muiw37M9fgpRSLXwj7bmYo=;
+        b=B/+obV8OkNzd4niuHL2xgf5NKFFca++KlDdB4Y4g5HGKQm2CWQwii32H6fRQKA2LmNj9t3
+        ZcEb2fD2kbkNv2YDdKW/3TNPbnpqicdXf3E8sqolkBgSGF7g0SvDnVoQGYK55ejtFD6SMF
+        Iiq2pV70dHzPXxIgZ/CVSXRLZIf0KMA=
 From:   Borislav Petkov <bp@alien8.de>
 To:     X86 ML <x86@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>, kvm@vger.kernel.org
-Subject: [PATCH 2/3] x86/kvm/svm: Force-inline GHCB accessors
-Date:   Thu, 24 Mar 2022 19:36:06 +0100
-Message-Id: <20220324183607.31717-3-bp@alien8.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>
+Subject: [PATCH 0/3] Some trivial noinstr fixes
+Date:   Thu, 24 Mar 2022 19:36:04 +0100
+Message-Id: <20220324183607.31717-1-bp@alien8.de>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220324183607.31717-1-bp@alien8.de>
-References: <20220324183607.31717-1-bp@alien8.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -48,48 +45,24 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Borislav Petkov <bp@suse.de>
 
-In order to fix:
+Hi,
 
-  vmlinux.o: warning: objtool: __sev_es_nmi_complete()+0x4c: call to ghcb_set_sw_exit_code() leaves .noinstr.text section
+here are some trivial noinstr fixes which sprang up from recent clang
+allmodconfigs.
 
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: kvm@vger.kernel.org
----
- arch/x86/include/asm/svm.h | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Thx.
 
-diff --git a/arch/x86/include/asm/svm.h b/arch/x86/include/asm/svm.h
-index bb2fb78523ce..eab0749262b7 100644
---- a/arch/x86/include/asm/svm.h
-+++ b/arch/x86/include/asm/svm.h
-@@ -436,23 +436,23 @@ struct vmcb {
- 	(offsetof(struct vmcb_save_area, field) / sizeof(u64))
- 
- #define DEFINE_GHCB_ACCESSORS(field)						\
--	static inline bool ghcb_##field##_is_valid(const struct ghcb *ghcb)	\
-+	static __always_inline bool ghcb_##field##_is_valid(const struct ghcb *ghcb) \
- 	{									\
- 		return test_bit(GHCB_BITMAP_IDX(field),				\
- 				(unsigned long *)&ghcb->save.valid_bitmap);	\
- 	}									\
- 										\
--	static inline u64 ghcb_get_##field(struct ghcb *ghcb)			\
-+	static __always_inline u64 ghcb_get_##field(struct ghcb *ghcb)		\
- 	{									\
- 		return ghcb->save.field;					\
- 	}									\
- 										\
--	static inline u64 ghcb_get_##field##_if_valid(struct ghcb *ghcb)	\
-+	static __always_inline u64 ghcb_get_##field##_if_valid(struct ghcb *ghcb) \
- 	{									\
- 		return ghcb_##field##_is_valid(ghcb) ? ghcb->save.field : 0;	\
- 	}									\
- 										\
--	static inline void ghcb_set_##field(struct ghcb *ghcb, u64 value)	\
-+	static __always_inline void ghcb_set_##field(struct ghcb *ghcb, u64 value) \
- 	{									\
- 		__set_bit(GHCB_BITMAP_IDX(field),				\
- 			  (unsigned long *)&ghcb->save.valid_bitmap);		\
+Borislav Petkov (3):
+  task_stack, x86/cea: Force-inline stack helpers
+  x86/kvm/svm: Force-inline GHCB accessors
+  x86/mm: Force-inline __phys_addr_nodebug()
+
+ arch/x86/include/asm/cpu_entry_area.h | 2 +-
+ arch/x86/include/asm/page_64.h        | 2 +-
+ arch/x86/include/asm/svm.h            | 8 ++++----
+ include/linux/sched/task_stack.h      | 2 +-
+ 4 files changed, 7 insertions(+), 7 deletions(-)
+
 -- 
 2.35.1
 
