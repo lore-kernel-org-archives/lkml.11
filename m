@@ -2,118 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C0CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:26:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5F1FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:26:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348521AbiCXH1a (ORCPT
+        id S1348524AbiCXH1g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 03:27:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40504 "EHLO
+        Thu, 24 Mar 2022 03:27:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234921AbiCXH11 (ORCPT
+        with ESMTP id S231129AbiCXH1c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 03:27:27 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39EFA986F4;
-        Thu, 24 Mar 2022 00:25:56 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id r13so7327601ejd.5;
-        Thu, 24 Mar 2022 00:25:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XVilrVPHAzNXojXt+GjJOL6H62xOPCwBdLhdn2DWXIM=;
-        b=otovnpD5nrCVnZOsLSqe8I1OIJRwaeI6Wprpx5/aY+tLRP2xckrtLUD/siXLU0Txf3
-         21HyGWc+9cV2Rn0XxJyTxE6UL5SEDgTZw98y9gKL3wnDu0AEcS/eFNTmcJm4p2Y8Bfg9
-         QTEjKShf9Y8EAQ/C9rEPAfjempmv8JNNth7q8lGJ6Vr2y90i4WZVXozSuNiDgHBgcd7U
-         ZjfRmpiI6Ou7+clTpm9JLqeDfSaHFj4Eev5TNir7uoSlHyP0sxtAG35Kuy+WV0TsirBo
-         0XCSnJKarnaRYK/EGYD4aYAaWI1Hx+7q/SleHBCKJHXoL+NxnOez9BUQc2A4WYp4otFp
-         UM+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XVilrVPHAzNXojXt+GjJOL6H62xOPCwBdLhdn2DWXIM=;
-        b=jfzqnxW9w4TZhkya9vuopczhWxzMhx4XRtO7Cb7Gi/ZsDR5QWcRZbO+3XtPczBrqal
-         KJbw1kHdCQrtRgFD7qv8HdThMsYJkDMI1v45B+OmdvyKLButgG2CTw8FHBubRX3RQ1o4
-         WE2Dg0VAXT4HO37G1ASAvJVBBkN6Af7d2P91ttPTjK+Otu+NrPVmVOw1xWGU8rwbCPre
-         Ng6zWd5TyD5yhJrA8EdBDPs/AEeo0gyJ4hzrYqxiPrQYIkYhGux9BCf4RbALXWkiv6X9
-         vrH+cTe7u4klWYrw1XWEJAtHGtO8RsfmE8SPCIYI3vqcZbmsk73qWje0buwmDgqrZsJc
-         UVCQ==
-X-Gm-Message-State: AOAM531M3XDF/QkWmEeauynp2NfFLA1jjgaoyjgxr+DMWkvXLODsUX6s
-        EIeO1bVemxEFAjh4mpZZ0XA=
-X-Google-Smtp-Source: ABdhPJzRiymZM6GpooNPxU4tvHwmcChIBJjf+hQ5ofKWj78Tx4y6dAWhErrocnZuydc4KL0kfbKuNg==
-X-Received: by 2002:a17:907:8a25:b0:6d7:d59:6912 with SMTP id sc37-20020a1709078a2500b006d70d596912mr4275772ejc.259.1648106754763;
-        Thu, 24 Mar 2022 00:25:54 -0700 (PDT)
-Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id hg11-20020a1709072ccb00b006cee4fb36c7sm770476ejc.64.2022.03.24.00.25.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 00:25:54 -0700 (PDT)
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mike Rapoport <rppt@kernel.org>,
-        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
-Subject: [PATCH] spi: spidev: replace usage of found with dedicated list iterator variable
-Date:   Thu, 24 Mar 2022 08:25:34 +0100
-Message-Id: <20220324072534.63420-1-jakobkoschel@gmail.com>
+        Thu, 24 Mar 2022 03:27:32 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D50198F5A;
+        Thu, 24 Mar 2022 00:26:00 -0700 (PDT)
+X-UUID: 3d572a62549e4be9af2a25521a0c819d-20220324
+X-UUID: 3d572a62549e4be9af2a25521a0c819d-20220324
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <jianjun.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 616016198; Thu, 24 Mar 2022 15:25:55 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 24 Mar 2022 15:25:54 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 24 Mar
+ 2022 15:25:54 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 24 Mar 2022 15:25:53 +0800
+From:   Jianjun Wang <jianjun.wang@mediatek.com>
+To:     Ryder Lee <ryder.lee@mediatek.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+CC:     Jianjun Wang <jianjun.wang@mediatek.com>,
+        Rob Herring <robh@kernel.org>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <linux-pci@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <jieyy.yang@mediatek.com>,
+        <chuanjia.liu@mediatek.com>, <qizhong.cheng@mediatek.com>,
+        <jian.yang@mediatek.com>
+Subject: [PATCH] PCI: mediatek-gen3: Print LTSSM state when PCIe link down
+Date:   Thu, 24 Mar 2022 15:25:48 +0800
+Message-ID: <20220324072548.11408-1-jianjun.wang@mediatek.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To move the list iterator variable into the list_for_each_entry_*()
-macro in the future it should be avoided to use the list iterator
-variable after the loop body.
+Print current LTSSM state when PCIe link down instead of the register
+value, make it easier to get the link status.
 
-To *never* use the list iterator variable after the loop it was
-concluded to use a separate iterator variable instead of a
-found boolean [1].
-
-This removes the need to use a found variable and simply checking if
-the variable was set, can determine if the break/goto was hit.
-
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Signed-off-by: Jianjun Wang <jianjun.wang@mediatek.com>
 ---
- drivers/spi/spidev.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/pci/controller/pcie-mediatek-gen3.c | 40 ++++++++++++++++++++-
+ 1 file changed, 39 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spidev.c b/drivers/spi/spidev.c
-index a5cceca8b82b..2c5e685826ad 100644
---- a/drivers/spi/spidev.c
-+++ b/drivers/spi/spidev.c
-@@ -561,19 +561,20 @@ spidev_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+diff --git a/drivers/pci/controller/pcie-mediatek-gen3.c b/drivers/pci/controller/pcie-mediatek-gen3.c
+index 7705d61fba4c..54663f025e27 100644
+--- a/drivers/pci/controller/pcie-mediatek-gen3.c
++++ b/drivers/pci/controller/pcie-mediatek-gen3.c
+@@ -153,6 +153,37 @@ struct mtk_gen3_pcie {
+ 	DECLARE_BITMAP(msi_irq_in_use, PCIE_MSI_IRQS_NUM);
+ };
  
- static int spidev_open(struct inode *inode, struct file *filp)
- {
--	struct spidev_data	*spidev;
-+	struct spidev_data	*spidev = NULL, *iter;
- 	int			status = -ENXIO;
- 
- 	mutex_lock(&device_list_lock);
- 
--	list_for_each_entry(spidev, &device_list, device_entry) {
--		if (spidev->devt == inode->i_rdev) {
-+	list_for_each_entry(iter, &device_list, device_entry) {
-+		if (iter->devt == inode->i_rdev) {
- 			status = 0;
-+			spidev = iter;
- 			break;
- 		}
++/* LTSSM state in PCIE_LTSSM_STATUS_REG bit[28:24] */
++static const char *const ltssm_str[] = {
++	"detect.quiet",			/* 0x00 */
++	"detect.active",		/* 0x01 */
++	"polling.active",		/* 0x02 */
++	"polling.compliance",		/* 0x03 */
++	"polling.configuration",	/* 0x04 */
++	"config.linkwidthstart",	/* 0x05 */
++	"config.linkwidthaccept",	/* 0x06 */
++	"config.lanenumwait",		/* 0x07 */
++	"config.lanenumaccept",		/* 0x08 */
++	"config.complete",		/* 0x09 */
++	"config.idle",			/* 0x0A */
++	"recovery.receiverlock",	/* 0x0B */
++	"recovery.equalization",	/* 0x0C */
++	"recovery.speed",		/* 0x0D */
++	"recovery.receiverconfig",	/* 0x0E */
++	"recovery.idle",		/* 0x0F */
++	"L0",				/* 0x10 */
++	"L0s",				/* 0x11 */
++	"L1.entry",			/* 0x12 */
++	"L1.idle",			/* 0x13 */
++	"L2.idle",			/* 0x14 */
++	"L2.transmitwake",		/* 0x15 */
++	"disable",			/* 0x16 */
++	"loopback.entry",		/* 0x17 */
++	"loopback.active",		/* 0x18 */
++	"loopback.exit",		/* 0x19 */
++	"hotreset",			/* 0x1A */
++};
++
+ /**
+  * mtk_pcie_config_tlp_header() - Configure a configuration TLP header
+  * @bus: PCI bus to query
+@@ -327,8 +358,15 @@ static int mtk_pcie_startup_port(struct mtk_gen3_pcie *pcie)
+ 				 !!(val & PCIE_PORT_LINKUP), 20,
+ 				 PCI_PM_D3COLD_WAIT * USEC_PER_MSEC);
+ 	if (err) {
++		const char *ltssm_state;
++		int ltssm_index;
++
+ 		val = readl_relaxed(pcie->base + PCIE_LTSSM_STATUS_REG);
+-		dev_err(pcie->dev, "PCIe link down, ltssm reg val: %#x\n", val);
++		ltssm_index = PCIE_LTSSM_STATE(val);
++		ltssm_state = ltssm_index >= ARRAY_SIZE(ltssm_str) ?
++			      "Unknown state" : ltssm_str[ltssm_index];
++		dev_err(pcie->dev, "PCIe link down, current ltssm state: %s\n",
++			ltssm_state);
+ 		return err;
  	}
  
--	if (status) {
-+	if (!spidev) {
- 		pr_debug("spidev: nothing for minor %d\n", iminor(inode));
- 		goto err_find_dev;
- 	}
-
-base-commit: f443e374ae131c168a065ea1748feac6b2e76613
 -- 
-2.25.1
+2.18.0
 
