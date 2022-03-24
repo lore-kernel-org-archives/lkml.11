@@ -2,69 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DA13C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 19:41:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DC26C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 19:44:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350891AbiCXTnG (ORCPT
+        id S1353294AbiCXTp5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 15:43:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50844 "EHLO
+        Thu, 24 Mar 2022 15:45:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244039AbiCXTmu (ORCPT
+        with ESMTP id S1353112AbiCXTpy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 15:42:50 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66B1C931A2
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 12:41:18 -0700 (PDT)
-Received: by mail-il1-f197.google.com with SMTP id m20-20020a92c534000000b002c83ed01909so3387328ili.1
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 12:41:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=vl8oYt9u/S2NELS20YxXTXret0U916Fn/WJch6RJmnA=;
-        b=x/lREiIUYcENPfdm3EK6JxAtmxxWrxAZ/lYl2CXwLLxKzeIg017ZYiJWwD2E280JGA
-         xT1P4hqq64wGk9Q8IX4owxVJf8Z/SyyefiVHl1RG9tqnJvjqG/qmNrOuvqCbG29tibFh
-         8n6Y8g+0BJrX/K88gwu65v9mJsHSX5eQGD8THqfr2WAu6A+WnAn/8spiCA1dvccxbcki
-         PA2LMAsAoe5EHIpyinRR0ZIMEd7m+yezmsB4dRSD1Qg7FvW4B/4n9h6kHfkXtPv6GG4M
-         62t3elh3eF2e/TrbDhLxv3Qb++AGL7hwttOa6fAvIx1ofw8quwos2pWKXp+u4D8Z84Oq
-         cv0g==
-X-Gm-Message-State: AOAM530Av95hgLkMYrXoBv+J5R4YN3UOT3lr2rkcKtdESUcOHvb8EGWk
-        VE0BR+5s96mNa9moJLLM13+nvspp9zYD6nqJGlohSvRRi0sG
-X-Google-Smtp-Source: ABdhPJwNXzAi7DPPgLwi45+FpOvK+ASA00oOQls6tYlkIZ094AvEpaV5Skm02sf9UPU1uA7pizTXavg3SrkhG7H5tNk5UG/kY3+v
-MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:17ce:b0:2c7:f428:9dfd with SMTP id
- z14-20020a056e0217ce00b002c7f4289dfdmr3733983ilu.36.1648150877633; Thu, 24
- Mar 2022 12:41:17 -0700 (PDT)
-Date:   Thu, 24 Mar 2022 12:41:17 -0700
-In-Reply-To: <CAMZfGtUr6V5pTrPhZukD2_KbB7BLPoKvF6H63HP4pykY36Ou9A@mail.gmail.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000009901d505dafc07b3@google.com>
-Subject: Re: [syzbot] general protection fault in list_lru_add
-From:   syzbot <syzbot+f8c45ccc7d5d45fc5965@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, dvyukov@google.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        songmuchun@bytedance.com, syzkaller-bugs@googlegroups.com,
-        torvalds@linux-foundation.org
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 24 Mar 2022 15:45:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD343A724;
+        Thu, 24 Mar 2022 12:44:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 16F9A61AB9;
+        Thu, 24 Mar 2022 19:44:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7C050C340F4;
+        Thu, 24 Mar 2022 19:44:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648151060;
+        bh=UtErAgugF9IOD8ONeuDngANkBj9U+gQPaZ8hc6twRZk=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=byXI5AzzT/M+vxzCCukkegkpO5Z56dpGESA49rxwhrapmiZeQhhC1ziyt8p6KvobX
+         GN3CJTyaHU5yFoY/ovFvGamVsR3bej/GDBCSs2ZXElTimOEKQfmKluzq3TAz6DELW4
+         1c2maxm1A2XPNaAHZqM/iqH1lBfuwUL8wFAmccppMRZIsYWIY5QrOdWJFD3amMfPph
+         klB1Zz2jybir1S3G+tNxDnBuFcu4ZCa/5ZUhgDbXHhciH8YKi6m4s9+HPH6oC5kk8f
+         EN7KT+Y/211jSm2RqcS3At6vaa9yTyXuijTruiAk7cUEXxGIUTS+l/15bwBW4OqrwN
+         ooU8lOcN2eEwQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6945CE6D44B;
+        Thu, 24 Mar 2022 19:44:20 +0000 (UTC)
+Subject: Re: [GIT PULL] Hyper-V next for 5.18
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220322205441.ah7k6aj7csdwa3b6@liuwe-devbox-debian-v2>
+References: <20220322205441.ah7k6aj7csdwa3b6@liuwe-devbox-debian-v2>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220322205441.ah7k6aj7csdwa3b6@liuwe-devbox-debian-v2>
+X-PR-Tracked-Remote: ssh://git@gitolite.kernel.org/pub/scm/linux/kernel/git/hyperv/linux.git tags/hyperv-next-signed-20220322
+X-PR-Tracked-Commit-Id: eeda29db98f429a3b6473117e6ce1c213ab614f2
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 66711cfea642a162bc99abdefe1645b26dbd778f
+Message-Id: <164815106042.31218.2313626155089106836.pr-tracker-bot@kernel.org>
+Date:   Thu, 24 Mar 2022 19:44:20 +0000
+To:     Wei Liu <wei.liu@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Wei Liu <wei.liu@kernel.org>,
+        Linux on Hyper-V List <linux-hyperv@vger.kernel.org>,
+        Linux Kernel List <linux-kernel@vger.kernel.org>,
+        kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
+        sthemmin@microsoft.com, Michael Kelley <mikelley@microsoft.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+The pull request you sent on Tue, 22 Mar 2022 20:54:41 +0000:
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+> ssh://git@gitolite.kernel.org/pub/scm/linux/kernel/git/hyperv/linux.git tags/hyperv-next-signed-20220322
 
-Reported-and-tested-by: syzbot+f8c45ccc7d5d45fc5965@syzkaller.appspotmail.com
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/66711cfea642a162bc99abdefe1645b26dbd778f
 
-Tested on:
+Thank you!
 
-commit:         ed464352 Merge tag 'arm-dt-5.18' of git://git.kernel.o..
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git master
-kernel config:  https://syzkaller.appspot.com/x/.config?x=113ff5d072bc15d6
-dashboard link: https://syzkaller.appspot.com/bug?extid=f8c45ccc7d5d45fc5965
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=1208043d700000
-
-Note: testing is done by a robot and is best-effort only.
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
