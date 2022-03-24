@@ -2,229 +2,840 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40801C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 08:41:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20FD7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 08:41:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349056AbiCXIm3 (ORCPT
+        id S1345655AbiCXInN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 04:42:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39678 "EHLO
+        Thu, 24 Mar 2022 04:43:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349009AbiCXImP (ORCPT
+        with ESMTP id S1349113AbiCXInI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 04:42:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CEEB69D04E
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 01:40:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648111240;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0iOPye1X7Vtyc3J8stsAHjudlMNGe87EZLWi7Y1Xry4=;
-        b=Zv5hctVW0xwGVMnWG7eYd1BWSGjjVWzgKNvstZHH52A4wypDhF+d5NwaVJPKpTAvG1Knsh
-        przN3vFM2iTx5ERnOgR9B2L3Piih44mSP/iWyQ34S8PEqOKbFldLeFUj7vdRsXeA2r3DLr
-        NcHsQaPD1k5pr5RQsw37R9Nd2kKoI1E=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-189-6zlLP0GmNDKs0IBkNsupOQ-1; Thu, 24 Mar 2022 04:40:39 -0400
-X-MC-Unique: 6zlLP0GmNDKs0IBkNsupOQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 24 Mar 2022 04:43:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 593C69BB9F
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 01:41:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AC08585A5BC;
-        Thu, 24 Mar 2022 08:40:38 +0000 (UTC)
-Received: from localhost.localdomain (ovpn-13-240.pek2.redhat.com [10.72.13.240])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D2E7740CF8ED;
-        Thu, 24 Mar 2022 08:40:34 +0000 (UTC)
-From:   Jason Wang <jasowang@redhat.com>
-To:     mst@redhat.com, jasowang@redhat.com
-Cc:     virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, maz@kernel.org, tglx@linutronix.de,
-        peterz@infradead.org, sgarzare@redhat.com, keirf@google.com
-Subject: [PATCH 3/3] virtio: harden vring IRQ
-Date:   Thu, 24 Mar 2022 16:40:04 +0800
-Message-Id: <20220324084004.14349-4-jasowang@redhat.com>
-In-Reply-To: <20220324084004.14349-1-jasowang@redhat.com>
-References: <20220324084004.14349-1-jasowang@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD56A61787
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 08:41:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D153C340EC;
+        Thu, 24 Mar 2022 08:41:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1648111295;
+        bh=4/KsVtzb5NjKE245a2eQ6mnCNwtRLjMhlbASbRN9IHA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oiCEH7gLLBICu0prjoQuOETzaVFota8EVkj8Z2jxs26fHwTxY9wTZ5/lqMd5QtqF7
+         EVCEqdZGcIDcmTTKNddI5HwhSlGOQFKuBbFFYHN3aNxXbsYBVhjazzLtvMr5Lmhhji
+         San9Xqz5xQiLbeSaWhc1LjoTg1mFl3pfsSgoqUzA=
+Date:   Thu, 24 Mar 2022 09:41:26 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Oh Eomji <eomji.oh@samsung.com>
+Cc:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        alsa-devel@alsa-project.org, Leon Romanovsky <leon@kernel.org>,
+        Pavel Skripkin <paskripkin@gmail.com>
+Subject: Re: [PATCH v1 3/3] sound: usb: Exynos usb audio offloading driver
+Message-ID: <YjwutlpkvA6xubKy@kroah.com>
+References: <1648109444-196321-1-git-send-email-eomji.oh@samsung.com>
+ <CGME20220324081350epcas2p227458cb1b530f04a9990bcfc8c3b5703@epcas2p2.samsung.com>
+ <1648109444-196321-4-git-send-email-eomji.oh@samsung.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1648109444-196321-4-git-send-email-eomji.oh@samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a rework on the previous IRQ hardening that is done for
-virtio-pci where several drawbacks were found and were reverted:
+On Thu, Mar 24, 2022 at 05:10:44PM +0900, Oh Eomji wrote:
+> This is for usb audio offloading. usb audio offloading processes usb
+> audio stream data directly from the audio box even if ap usb enters
+> suspend, there is no problem in stream data transmission. This obtains
+> power saving effect while using usb audio device.
+> 
+> AP usb and audio usb f/w communicate via AUDIO IPC. By performing AUDIO
+> IPC in the vendor operations, abox can access and control the xhci to
+> transmit the data directly.
+> 
+> The types of commands and data delivered through AUDIO IPC include the
+> following (AP USB <-> AUDIO USB f/w) :
+> 1. usb audio connection/disconnection status
+> 2. xhci memory information
+> 3. full descriptor for usb audio device
+> 4. UAC(usb audio class) control command
+> 
+> Signed-off-by: Oh Eomji <eomji.oh@samsung.com>
+> ---
+>  sound/usb/Kconfig            |   9 +
+>  sound/usb/Makefile           |   2 +
+>  sound/usb/exynos_usb_audio.c | 560 +++++++++++++++++++++++++++++++++++++++++++
+>  sound/usb/exynos_usb_audio.h | 150 ++++++++++++
+>  4 files changed, 721 insertions(+)
+>  create mode 100644 sound/usb/exynos_usb_audio.c
+>  create mode 100644 sound/usb/exynos_usb_audio.h
+> 
+> diff --git a/sound/usb/Kconfig b/sound/usb/Kconfig
+> index 059242f..70252a3 100644
+> --- a/sound/usb/Kconfig
+> +++ b/sound/usb/Kconfig
+> @@ -27,6 +27,15 @@ config SND_USB_AUDIO
+>  config SND_USB_AUDIO_USE_MEDIA_CONTROLLER
+>  	bool
+>  
+> +config SND_EXYNOS_USB_AUDIO
+> +	tristate "EXYNOS USB Audio offloading module"
+> +	depends on SND_USB_AUDIO
+> +	help
+> +	 Say Y here to include support for Exynos USB Audio ABOX offloading.
+> +
+> +	 To compile this driver as a module, choose M here: the module
+> +	 will be called exynos-usb-audio-offloading.
+> +
+>  config SND_USB_UA101
+>  	tristate "Edirol UA-101/UA-1000 driver"
+>  	select SND_PCM
+> diff --git a/sound/usb/Makefile b/sound/usb/Makefile
+> index 9ccb21a..bf019c7 100644
+> --- a/sound/usb/Makefile
+> +++ b/sound/usb/Makefile
+> @@ -28,6 +28,8 @@ snd-usbmidi-lib-objs := midi.o
+>  
+>  # Toplevel Module Dependency
+>  obj-$(CONFIG_SND_USB_AUDIO) += snd-usb-audio.o snd-usbmidi-lib.o
+> +obj-$(CONFIG_SND_EXYNOS_USB_AUDIO) += exynos-usb-audio-offloading.o
+> +exynos-usb-audio-offloading-y += exynos_usb_audio.o
+>  
+>  obj-$(CONFIG_SND_USB_UA101) += snd-usbmidi-lib.o
+>  obj-$(CONFIG_SND_USB_USX2Y) += snd-usbmidi-lib.o
+> diff --git a/sound/usb/exynos_usb_audio.c b/sound/usb/exynos_usb_audio.c
+> new file mode 100644
+> index 0000000..456cc78
+> --- /dev/null
+> +++ b/sound/usb/exynos_usb_audio.c
+> @@ -0,0 +1,560 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
 
-1) try to use IRQF_NO_AUTOEN which is not friendly to affinity managed IRQ
-   that is used by some device such as virtio-blk
-2) done only for PCI transport
+Are you sure about this license?  I have to ask, sorry.
 
-In this patch, we tries to borrow the idea from the INTX IRQ hardening
-in the reverted commit 080cd7c3ac87 ("virtio-pci: harden INTX interrupts")
-by introducing a global irq_soft_enabled variable for each
-virtio_device. Then we can to toggle it during
-virtio_reset_device()/virtio_device_ready(). A synchornize_rcu() is
-used in virtio_reset_device() to synchronize with the IRQ handlers. In
-the future, we may provide config_ops for the transport that doesn't
-use IRQ. With this, vring_interrupt() can return check and early if
-irq_soft_enabled is false. This lead to smp_load_acquire() to be used
-but the cost should be acceptable.
+> +/*
+> + *   USB Audio offloading Driver for Exynos
+> + *
+> + *   Copyright (c) 2017 by Kyounghye Yun <k-hye.yun@samsung.com>
+> + *
+> + */
+> +
+> +
+> +#include <linux/bitops.h>
+> +#include <linux/init.h>
+> +#include <linux/kernel.h>
+> +#include <linux/slab.h>
+> +#include <linux/string.h>
+> +#include <linux/ctype.h>
+> +#include <linux/usb.h>
+> +#include <linux/usb/audio.h>
+> +#include <linux/usb/audio-v2.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/of_platform.h>
+> +#include <linux/io.h>
+> +#include <linux/dma-mapping.h>
+> +#include <linux/completion.h>
+> +
+> +#include <sound/pcm.h>
+> +#include "../../../sound/usb/exynos_usb_audio.h"
 
-To avoid breaking legacy device which can send IRQ before DRIVER_OK, a
-module parameter is introduced to enable the hardening so function
-hardening is disabled by default.
+Did this patch just break the build?  It should not need this type of
+.../../../ mess.
 
-Note that the hardening is only done for vring interrupt since the
-config interrupt hardening is already done in commit 22b7050a024d7
-("virtio: defer config changed notifications"). But the method that is
-used by config interrupt can't be reused by the vring interrupt
-handler because it uses spinlock to do the synchronization which is
-expensive.
+> +#include "usbaudio.h"
+> +#include "helper.h"
+> +#include "card.h"
+> +#include "quirks.h"
+> +
+> +static struct exynos_usb_audio *usb_audio;
+> +static struct snd_usb_audio_vendor_ops exynos_usb_audio_ops;
+> +
+> +struct hcd_hw_info *g_hwinfo;
+> +EXPORT_SYMBOL_GPL(g_hwinfo);
+> +int otg_connection;
+> +EXPORT_SYMBOL_GPL(otg_connection);
+> +int usb_audio_connection;
+> +EXPORT_SYMBOL_GPL(usb_audio_connection);
 
-Signed-off-by: Jason Wang <jasowang@redhat.com>
----
- drivers/virtio/virtio.c       | 19 +++++++++++++++++++
- drivers/virtio/virtio_ring.c  |  9 ++++++++-
- include/linux/virtio.h        |  4 ++++
- include/linux/virtio_config.h | 25 +++++++++++++++++++++++++
- 4 files changed, 56 insertions(+), 1 deletion(-)
+Why are these exported?  Who uses them?  And why generic names for a
+driver-specific variable?  And what do they do and how are they
+accessed?
 
-diff --git a/drivers/virtio/virtio.c b/drivers/virtio/virtio.c
-index 8dde44ea044a..85e331efa9cc 100644
---- a/drivers/virtio/virtio.c
-+++ b/drivers/virtio/virtio.c
-@@ -7,6 +7,12 @@
- #include <linux/of.h>
- #include <uapi/linux/virtio_ids.h>
- 
-+static bool irq_hardening = false;
-+
-+module_param(irq_hardening, bool, 0444);
-+MODULE_PARM_DESC(irq_hardening,
-+		 "Disalbe IRQ software processing when it is not expected");
-+
- /* Unique numbering for virtio devices. */
- static DEFINE_IDA(virtio_index_ida);
- 
-@@ -220,6 +226,15 @@ static int virtio_features_ok(struct virtio_device *dev)
-  * */
- void virtio_reset_device(struct virtio_device *dev)
- {
-+	/*
-+	 * The below synchronize_rcu() guarantees that any
-+	 * interrupt for this line arriving after
-+	 * synchronize_rcu() has completed is guaranteed to see
-+	 * irq_soft_enabled == false.
-+	 */
-+	WRITE_ONCE(dev->irq_soft_enabled, false);
-+	synchronize_rcu();
-+
- 	dev->config->reset(dev);
- }
- EXPORT_SYMBOL_GPL(virtio_reset_device);
-@@ -427,6 +442,10 @@ int register_virtio_device(struct virtio_device *dev)
- 	spin_lock_init(&dev->config_lock);
- 	dev->config_enabled = false;
- 	dev->config_change_pending = false;
-+	dev->irq_soft_check = irq_hardening;
-+
-+	if (dev->irq_soft_check)
-+		dev_info(&dev->dev, "IRQ hardening is enabled\n");
- 
- 	/* We always start by resetting the device, in case a previous
- 	 * driver messed it up.  This also tests that code path a little. */
-diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index 962f1477b1fa..0170f8c784d8 100644
---- a/drivers/virtio/virtio_ring.c
-+++ b/drivers/virtio/virtio_ring.c
-@@ -2144,10 +2144,17 @@ static inline bool more_used(const struct vring_virtqueue *vq)
- 	return vq->packed_ring ? more_used_packed(vq) : more_used_split(vq);
- }
- 
--irqreturn_t vring_interrupt(int irq, void *_vq)
-+irqreturn_t vring_interrupt(int irq, void *v)
- {
-+	struct virtqueue *_vq = v;
-+	struct virtio_device *vdev = _vq->vdev;
- 	struct vring_virtqueue *vq = to_vvq(_vq);
- 
-+	if (!virtio_irq_soft_enabled(vdev)) {
-+		dev_warn_once(&vdev->dev, "virtio vring IRQ raised before DRIVER_OK");
-+		return IRQ_NONE;
-+	}
-+
- 	if (!more_used(vq)) {
- 		pr_debug("virtqueue interrupt with no work for %p\n", vq);
- 		return IRQ_NONE;
-diff --git a/include/linux/virtio.h b/include/linux/virtio.h
-index 5464f398912a..957d6ad604ac 100644
---- a/include/linux/virtio.h
-+++ b/include/linux/virtio.h
-@@ -95,6 +95,8 @@ dma_addr_t virtqueue_get_used_addr(struct virtqueue *vq);
-  * @failed: saved value for VIRTIO_CONFIG_S_FAILED bit (for restore)
-  * @config_enabled: configuration change reporting enabled
-  * @config_change_pending: configuration change reported while disabled
-+ * @irq_soft_check: whether or not to check @irq_soft_enabled
-+ * @irq_soft_enabled: callbacks enabled
-  * @config_lock: protects configuration change reporting
-  * @dev: underlying device.
-  * @id: the device type identification (used to match it with a driver).
-@@ -109,6 +111,8 @@ struct virtio_device {
- 	bool failed;
- 	bool config_enabled;
- 	bool config_change_pending;
-+	bool irq_soft_check;
-+	bool irq_soft_enabled;
- 	spinlock_t config_lock;
- 	spinlock_t vqs_list_lock; /* Protects VQs list access */
- 	struct device dev;
-diff --git a/include/linux/virtio_config.h b/include/linux/virtio_config.h
-index dafdc7f48c01..9c1b61f2e525 100644
---- a/include/linux/virtio_config.h
-+++ b/include/linux/virtio_config.h
-@@ -174,6 +174,24 @@ static inline bool virtio_has_feature(const struct virtio_device *vdev,
- 	return __virtio_test_bit(vdev, fbit);
- }
- 
-+/*
-+ * virtio_irq_soft_enabled: whether we can execute callbacks
-+ * @vdev: the device
-+ */
-+static inline bool virtio_irq_soft_enabled(const struct virtio_device *vdev)
-+{
-+	if (!vdev->irq_soft_check)
-+		return true;
-+
-+	/*
-+	 * Read irq_soft_enabled before reading other device specific
-+	 * data. Paried with smp_store_relase() in
-+	 * virtio_device_ready() and WRITE_ONCE()/synchronize_rcu() in
-+	 * virtio_reset_device().
-+	 */
-+	return smp_load_acquire(&vdev->irq_soft_enabled);
-+}
-+
- /**
-  * virtio_has_dma_quirk - determine whether this device has the DMA quirk
-  * @vdev: the device
-@@ -236,6 +254,13 @@ void virtio_device_ready(struct virtio_device *dev)
- 	if (dev->config->enable_cbs)
-                   dev->config->enable_cbs(dev);
- 
-+	/*
-+	 * Commit the driver setup before enabling the virtqueue
-+	 * callbacks. Paried with smp_load_acuqire() in
-+	 * virtio_irq_soft_enabled()
-+	 */
-+	smp_store_release(&dev->irq_soft_enabled, true);
-+
- 	BUG_ON(status & VIRTIO_CONFIG_S_DRIVER_OK);
- 	dev->config->set_status(dev, status | VIRTIO_CONFIG_S_DRIVER_OK);
- }
--- 
-2.25.1
+No one in this patch series needs these exports, so why are they
+exported?
 
+> +
+> +static void exynos_usb_audio_set_device(struct usb_device *udev)
+> +{
+> +	usb_audio->udev = udev;
+> +	usb_audio->is_audio = 1;
+
+boolean?
+
+How do you know?  Did you check?
+
+And why a single static variable?
+
+> +}
+> +
+> +static int exynos_usb_audio_unmap_all(void)
+> +{
+> +	/*
+> +	 * TODO: unmapping pcm buffer, usb descriptor, Device Context,
+> +	 * Input Context, ERST, URAM.
+> +	 */
+
+If this is not completed, just don't have the function at all.
+
+Why isn't this done?
+
+> +
+> +	return 0;
+> +}
+> +
+> +static int exynos_usb_audio_pcmbuf(struct usb_device *udev, int iface)
+> +{
+> +	if (!usb_audio->is_audio || !otg_connection)
+> +		return -1;
+
+Do not make up error values.  Use correct ones.
+
+
+> +
+> +	/*
+> +	 * TODO: Transmit the DRAM address that contains the xhci device
+> +	 * information,and the DMA address required for operation to the abox
+> +	 * usb f/w.
+> +	 */
+
+So this function does nothing?
+
+Does this driver even work properly?  Where is the  missing logic?
+
+> +
+> +	return 0;
+> +}
+> +
+> +static int exynos_usb_audio_setrate(int iface, int rate, int alt)
+> +{
+> +	if (!usb_audio->is_audio || !otg_connection)
+> +		return -1;
+> +
+> +	/*
+> +	 * TODO: Notify the abox usb f/w the audio sample rate supported by
+> +	 * the interface of the connected audio device.
+> +	 */
+
+Same as above.
+
+Does this driver actually work on real hardware?  Or is this just a
+"fake" driver that is never intended for anyone to use just to allow the
+hooks to be added to the kernel tree?
+
+What hardware has this driver worked on?  Can I take the pixel6 device
+today and replace their out-of-tree driver with this one and will it
+work properly?  If not, what is missing?
+
+> +
+> +	return 0;
+> +}
+> +
+> +static int exynos_usb_audio_setintf(struct usb_device *udev, int iface, int alt, int direction)
+> +{
+> +	struct hcd_hw_info *hwinfo = g_hwinfo;
+> +	u64 in_offset, out_offset;
+> +
+> +	if (!usb_audio->pcm_open_done)
+> +		return -EPERM;
+
+How is that a permission error?
+
+> +
+> +	if (!usb_audio->is_audio || !otg_connection)
+> +		return -1;
+
+Again, no fake error numbers.
+
+> +
+> +	if (direction) {
+> +		/* IN EP */
+> +		if (!usb_audio->indeq_map_done ||
+> +			(hwinfo->in_deq != hwinfo->old_in_deq)) {
+> +			/* TODO: Transmit pcm interface number, alt setting
+> +			 * number to abox usb f/w
+> +			 */
+
+Fix all TODO please before resubmitting.
+
+> +			usb_audio->indeq_map_done = 1;
+> +			in_offset = hwinfo->in_deq % PAGE_SIZE;
+
+Why does PAGE_SIZE matter?
+
+> +		}
+> +
+> +		if (hwinfo->fb_out_deq) {
+> +			if (!usb_audio->fb_outdeq_map_done ||
+> +					(hwinfo->fb_out_deq != hwinfo->fb_old_out_deq)) {
+> +				/* TODO: Transmit pcm interface number,
+> +				 * alt setting number to abox usb f/w
+> +				 */
+> +				usb_audio->fb_outdeq_map_done = 1;
+> +				out_offset = hwinfo->fb_out_deq % PAGE_SIZE;
+> +			}
+> +		}
+> +	} else {
+> +		/* OUT EP */
+> +		if (!usb_audio->outdeq_map_done ||
+> +			(hwinfo->out_deq != hwinfo->old_out_deq)) {
+> +			/* TODO: Transmit pcm interface number, alt setting
+> +			 * number to abox usb f/w
+> +			 */
+> +			usb_audio->outdeq_map_done = 1;
+> +			out_offset = hwinfo->out_deq % PAGE_SIZE;
+> +		}
+> +
+> +		if (hwinfo->fb_in_deq) {
+> +			if (!usb_audio->fb_indeq_map_done ||
+> +					(hwinfo->fb_in_deq != hwinfo->fb_old_in_deq)) {
+> +				/* TODO: Transmit pcm interface number,
+> +				 * alt setting number to abox usb f/w
+> +				 */
+> +				usb_audio->fb_indeq_map_done = 1;
+> +				in_offset = hwinfo->fb_in_deq % PAGE_SIZE;
+> +			}
+> +		}
+> +	}
+> +
+> +	/* one more check connection to prevent kernel panic */
+> +	if (!usb_audio->is_audio || !otg_connection)
+> +		return -1;
+> +
+> +	/* TODO: Notify abox usb f/w a dequeue pointer */
+> +
+> +	return 0;
+> +}
+> +
+> +static int exynos_usb_audio_hcd(struct usb_device *udev)
+> +{
+> +	struct hcd_hw_info *hwinfo = g_hwinfo;
+> +
+> +	/* back up each address for unmap */
+> +	usb_audio->dcbaa_dma = hwinfo->dcbaa_dma;
+> +	usb_audio->save_dma = hwinfo->save_dma;
+> +	usb_audio->in_ctx = hwinfo->in_ctx;
+> +	usb_audio->out_ctx = hwinfo->out_ctx;
+> +	usb_audio->erst_addr = hwinfo->erst_addr;
+> +	usb_audio->speed = hwinfo->speed;
+> +	usb_audio->use_uram = hwinfo->use_uram;
+> +
+> +	/*
+> +	 * TODO: DCBAA, Device Context, Input Context, URAM, ERST mapping
+> +	 * and notify abox usb f/w the address about xhci h/w resource to
+> +	 * directly control the xhci in abox.
+> +	 */
+> +
+> +	return 0;
+> +}
+> +
+> +static int exynos_usb_audio_desc(struct usb_device *udev)
+> +{
+> +	int configuration, cfgno, i;
+> +	unsigned char *buffer;
+> +	u64 desc_addr;
+> +	u64 offset;
+> +
+> +	configuration = usb_choose_configuration(udev);
+> +
+> +	cfgno = -1;
+> +	for (i = 0; i < udev->descriptor.bNumConfigurations; i++) {
+> +		if (udev->config[i].desc.bConfigurationValue ==
+> +				configuration) {
+> +			cfgno = i;
+> +			break;
+> +		}
+> +	}
+> +
+> +	if (cfgno == -1)
+> +		cfgno = 0;
+> +
+> +	/* need to memory mapping for usb descriptor */
+> +	buffer = udev->rawdescriptors[cfgno];
+> +	desc_addr = virt_to_phys(buffer);
+> +	offset = desc_addr % PAGE_SIZE;
+> +
+> +	/* store address information */
+> +	usb_audio->desc_addr = desc_addr;
+> +	usb_audio->offset = offset;
+> +
+> +	desc_addr -= offset;
+> +
+> +	/*
+> +	 * TODO: Notify the abox usb f/w that all descriptors have been recived
+> +	 * from the connected usb audio device, and that copy and memory mapping
+> +	 * have beed completed so that it can be used in abox usb f/w
+> +	 */
+> +
+> +	return 0;
+> +}
+> +
+> +static int exynos_usb_audio_conn(struct usb_device *udev, int is_conn)
+> +{
+> +
+> +	/* TODO: Notify abox usb f/w whether usb device is connected or not */
+> +	if (!is_conn) {
+> +		if (usb_audio->is_audio) {
+> +			usb_audio->is_audio = 0;
+> +			usb_audio->usb_audio_state = USB_AUDIO_REMOVING;
+> +		}
+> +	} else {
+> +		cancel_work_sync(&usb_audio->usb_work);
+> +		usb_audio->indeq_map_done = 0;
+> +		usb_audio->outdeq_map_done = 0;
+> +		usb_audio->fb_indeq_map_done = 0;
+> +		usb_audio->fb_outdeq_map_done = 0;
+> +		usb_audio->pcm_open_done = 0;
+> +		reinit_completion(&usb_audio->discon_done);
+> +		usb_audio->usb_audio_state = USB_AUDIO_CONNECT;
+> +		usb_audio_connection = 1;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int exynos_usb_audio_pcm(bool is_open, bool direction)
+> +{
+> +	if (!usb_audio->is_audio || !otg_connection)
+> +		return -1;
+> +
+> +	if (is_open)
+> +		usb_audio->pcm_open_done = 1;
+> +
+> +	/* TODO: Notify the abox usb f/w the pcm open/close status */
+> +
+> +	return 0;
+> +}
+> +
+> +static void exynos_usb_audio_work(struct work_struct *w)
+> +{
+> +	/* Don't unmap in USB_AUDIO_TIMEOUT_PROBE state */
+> +	if (usb_audio->usb_audio_state != USB_AUDIO_REMOVING)
+> +		return;
+> +
+> +	exynos_usb_audio_unmap_all();
+> +	usb_audio->usb_audio_state = USB_AUDIO_DISCONNECT;
+> +	usb_audio_connection = 0;
+> +	complete(&usb_audio->discon_done);
+> +}
+> +
+> +static int exynos_usb_scenario_ctl_info(struct snd_kcontrol *kcontrol,
+> +			      struct snd_ctl_elem_info *uinfo)
+> +{
+> +	uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
+> +	uinfo->count = 1;
+> +	uinfo->value.integer.min = AUDIO_MODE_NORMAL;
+> +	uinfo->value.integer.max = AUDIO_MODE_CALL_SCREEN;
+> +	return 0;
+> +}
+> +
+> +static int exynos_usb_scenario_ctl_get(struct snd_kcontrol *kcontrol,
+> +			 struct snd_ctl_elem_value *ucontrol)
+> +{
+> +	struct exynos_usb_audio *usb = snd_kcontrol_chip(kcontrol);
+> +
+> +	ucontrol->value.integer.value[0] = usb->user_scenario;
+> +	return 0;
+> +}
+> +
+> +static int exynos_usb_scenario_ctl_put(struct snd_kcontrol *kcontrol,
+> +			 struct snd_ctl_elem_value *ucontrol)
+> +{
+> +	struct exynos_usb_audio *usb = snd_kcontrol_chip(kcontrol);
+> +	int changed = 0;
+> +
+> +	if (usb->user_scenario !=
+> +	     ucontrol->value.integer.value[0]) {
+> +		usb->user_scenario = ucontrol->value.integer.value[0];
+> +		changed = 1;
+> +	}
+> +
+> +	return changed;
+> +}
+> +
+> +static int exynos_usb_add_ctls(struct snd_usb_audio *chip,
+> +				unsigned long private_value)
+> +{
+> +	struct snd_kcontrol_new knew = {
+> +		.iface = SNDRV_CTL_ELEM_IFACE_PCM,
+> +		.access = SNDRV_CTL_ELEM_ACCESS_READWRITE,
+> +		.name = "USB Audio Mode",
+> +		.info = exynos_usb_scenario_ctl_info,
+> +		.get = exynos_usb_scenario_ctl_get,
+> +		.put = exynos_usb_scenario_ctl_put,
+> +	};
+> +
+> +	int err;
+> +
+> +	if (!chip)
+> +		return -ENODEV;
+> +
+> +	knew.private_value = private_value;
+> +	usb_audio->kctl = snd_ctl_new1(&knew, usb_audio);
+> +	if (!usb_audio->kctl)
+> +		return -ENOMEM;
+> +
+> +	err = snd_ctl_add(chip->card, usb_audio->kctl);
+> +	if (err < 0)
+> +		return err;
+> +
+> +	return 0;
+> +}
+> +
+> +int exynos_usb_audio_init(struct device *dev, struct platform_device *pdev)
+> +{
+> +	struct device_node *np = dev->of_node;
+> +	struct device_node *np_abox;
+> +	struct platform_device *pdev_abox;
+> +	int ret = 0;
+> +
+> +	if (!usb_audio) {
+> +		usb_audio = kmalloc(sizeof(struct exynos_usb_audio), GFP_KERNEL);
+> +		if (!usb_audio)
+> +			return -ENOMEM;
+> +	}
+> +
+> +	np_abox = of_parse_phandle(np, "abox", 0);
+> +	if (!np_abox)
+> +		return -EPROBE_DEFER;
+> +
+> +	pdev_abox = of_find_device_by_node(np_abox);
+> +	if (!pdev_abox)
+> +		return -EPROBE_DEFER;
+> +
+> +	init_completion(&usb_audio->in_conn_stop);
+> +	init_completion(&usb_audio->out_conn_stop);
+> +	init_completion(&usb_audio->discon_done);
+> +	usb_audio->abox = pdev_abox;
+> +	usb_audio->hcd_pdev = pdev;
+> +	usb_audio->udev = NULL;
+> +	usb_audio->is_audio = 0;
+> +	usb_audio->is_first_probe = 1;
+> +	usb_audio->user_scenario = AUDIO_MODE_NORMAL;
+> +	usb_audio->usb_audio_state = USB_AUDIO_DISCONNECT;
+> +	usb_audio_connection = 0;
+> +
+> +	INIT_WORK(&usb_audio->usb_work, exynos_usb_audio_work);
+> +
+> +	/* interface function mapping */
+> +	ret = snd_vendor_set_ops(&exynos_usb_audio_ops);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(exynos_usb_audio_init);
+
+Why are you exporting functions that are never called?
+
+
+> +
+> +/* card */
+> +static int exynos_usb_audio_connect(struct usb_interface *intf)
+> +{
+> +	struct usb_interface_descriptor *altsd;
+> +	struct usb_host_interface *alts;
+> +	struct usb_device *udev = interface_to_usbdev(intf);
+> +	int timeout = 0;
+> +
+> +	alts = &intf->altsetting[0];
+> +	altsd = get_iface_desc(alts);
+> +
+> +	if ((altsd->bInterfaceClass == USB_CLASS_AUDIO ||
+> +		altsd->bInterfaceClass == USB_CLASS_VENDOR_SPEC) &&
+> +		altsd->bInterfaceSubClass == USB_SUBCLASS_MIDISTREAMING) {
+> +	} else {
+> +		if (usb_audio->usb_audio_state == USB_AUDIO_REMOVING) {
+> +			timeout = wait_for_completion_timeout(
+> +				&usb_audio->discon_done,
+> +				msecs_to_jiffies(DISCONNECT_TIMEOUT));
+> +
+> +			if ((usb_audio->usb_audio_state == USB_AUDIO_REMOVING)
+> +					&& !timeout) {
+> +				usb_audio->usb_audio_state =
+> +					USB_AUDIO_TIMEOUT_PROBE;
+> +			}
+> +		}
+> +
+> +		if ((usb_audio->usb_audio_state == USB_AUDIO_DISCONNECT)
+> +			|| (usb_audio->usb_audio_state == USB_AUDIO_TIMEOUT_PROBE)) {
+> +			exynos_usb_audio_set_device(udev);
+> +			exynos_usb_audio_hcd(udev);
+> +			exynos_usb_audio_conn(udev, 1);
+> +			exynos_usb_audio_desc(udev);
+> +		} else {
+> +			return -EPERM;
+> +		}
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static void exynos_usb_audio_disconn(struct usb_interface *intf)
+> +{
+> +	struct usb_device *udev = interface_to_usbdev(intf);
+> +
+> +	exynos_usb_audio_conn(udev, 0);
+> +}
+> +
+> +/* clock */
+> +static int exynos_usb_audio_set_interface(struct usb_device *udev,
+> +		struct usb_host_interface *alts, int iface, int alt)
+> +{
+> +	unsigned char ep;
+> +	unsigned char numEndpoints;
+> +	int direction;
+> +	int i;
+> +	int ret = 0;
+> +
+> +	if (alts != NULL) {
+> +		numEndpoints = get_iface_desc(alts)->bNumEndpoints;
+> +		if (numEndpoints < 1)
+> +			return -22;
+> +		if (numEndpoints == 1)
+> +			ep = get_endpoint(alts, 0)->bEndpointAddress;
+> +		else {
+> +			for (i = 0; i < numEndpoints; i++) {
+> +				ep = get_endpoint(alts, i)->bmAttributes;
+> +				if (!(ep & 0x30)) {
+> +					ep = get_endpoint(alts, i)->bEndpointAddress;
+> +					break;
+> +				}
+> +			}
+> +		}
+> +		if (ep & USB_DIR_IN)
+> +			direction = SNDRV_PCM_STREAM_CAPTURE;
+> +		else
+> +			direction = SNDRV_PCM_STREAM_PLAYBACK;
+> +
+> +		ret = exynos_usb_audio_setintf(udev, iface, alt, direction);
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +/* pcm */
+> +static int exynos_usb_audio_set_rate(int iface, int rate, int alt)
+> +{
+> +	int ret;
+> +
+> +	ret = exynos_usb_audio_setrate(iface, rate, alt);
+> +
+> +	return ret;
+> +}
+> +
+> +static int exynos_usb_audio_set_pcmbuf(struct usb_device *dev, int iface)
+> +{
+> +	int ret;
+> +
+> +	ret = exynos_usb_audio_pcmbuf(dev, iface);
+> +
+> +	return ret;
+> +}
+> +
+> +static int exynos_usb_audio_set_pcm_intf(struct usb_interface *intf,
+> +					int iface, int alt, int direction)
+> +{
+> +	struct usb_device *udev = interface_to_usbdev(intf);
+> +	int ret;
+> +
+> +	ret = exynos_usb_audio_setintf(udev, iface, alt, direction);
+> +
+> +	return ret;
+> +}
+> +
+> +static int exynos_usb_audio_pcm_control(struct usb_device *udev,
+> +			enum snd_vendor_pcm_open_close onoff, int direction)
+> +{
+> +	int ret = 0;
+> +
+> +	if (onoff == 1) {
+> +		ret = exynos_usb_audio_pcm(1, direction);
+> +	} else if (onoff == 0) {
+> +		if (direction == SNDRV_PCM_STREAM_PLAYBACK)
+> +			reinit_completion(&usb_audio->out_conn_stop);
+> +		else if (direction == SNDRV_PCM_STREAM_CAPTURE)
+> +			reinit_completion(&usb_audio->in_conn_stop);
+> +
+> +		if (!usb_audio->pcm_open_done)
+> +			return 0;
+> +
+> +		ret = exynos_usb_audio_pcm(0, direction);
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static int exynos_usb_audio_add_control(struct snd_usb_audio *chip)
+> +{
+> +	int ret;
+> +
+> +	if (chip != NULL)
+> +		ret = exynos_usb_add_ctls(chip, 0);
+> +	else
+> +		ret = usb_audio->user_scenario;
+> +
+> +	return ret;
+> +}
+> +
+> +static int exynos_usb_audio_set_pcm_binterval(const struct audioformat *fp,
+> +				 const struct audioformat *found,
+> +				 int *cur_attr, int *attr)
+> +{
+> +	if (usb_audio->user_scenario >= AUDIO_MODE_IN_CALL) {
+> +		if (fp->datainterval < found->datainterval) {
+> +			found = fp;
+> +			cur_attr = attr;
+> +		}
+> +	} else {
+> +		if (fp->datainterval > found->datainterval) {
+> +			found = fp;
+> +			cur_attr = attr;
+> +		}
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +/* Set interface function */
+> +static struct snd_usb_audio_vendor_ops exynos_usb_audio_ops = {
+> +	/* card */
+> +	.connect = exynos_usb_audio_connect,
+> +	.disconnect = exynos_usb_audio_disconn,
+> +	/* clock */
+> +	.set_interface = exynos_usb_audio_set_interface,
+> +	/* pcm */
+> +	.set_rate = exynos_usb_audio_set_rate,
+> +	.set_pcm_buf = exynos_usb_audio_set_pcmbuf,
+> +	.set_pcm_intf = exynos_usb_audio_set_pcm_intf,
+> +	.set_pcm_connection = exynos_usb_audio_pcm_control,
+> +	.set_pcm_binterval = exynos_usb_audio_set_pcm_binterval,
+> +	.usb_add_ctls = exynos_usb_audio_add_control,
+> +};
+> +
+> +int exynos_usb_audio_exit(void)
+> +{
+> +	/* future use */
+
+What needs to be done here?
+
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(exynos_usb_audio_exit);
+
+Why did you export a function that does nothing?
+
+> +
+> +MODULE_AUTHOR("Jaehun Jung <jh0801.jung@samsung.com>");
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_DESCRIPTION("Exynos USB Audio offloading driver");
+> +
+> diff --git a/sound/usb/exynos_usb_audio.h b/sound/usb/exynos_usb_audio.h
+> new file mode 100644
+> index 0000000..13707744
+> --- /dev/null
+> +++ b/sound/usb/exynos_usb_audio.h
+> @@ -0,0 +1,150 @@
+> +/* SPDX-License-Identifier: GPL-2.0-or-later */
+> +/*   USB Audio Driver for Exynos
+> + *
+> + *   Copyright (c) 2017 by Kyounghye Yun <k-hye.yun@samsung.com>
+> + *
+> + */
+> +
+> +#ifndef __LINUX_USB_EXYNOS_AUDIO_H
+> +#define __LINUX_USB_EXYNOS_AUDIO_H
+> +
+> +#include "../../../sound/usb/usbaudio.h"
+> +
+> +/* for KM */
+> +
+> +#define USB_AUDIO_MEM_BASE	0xC0000000
+> +
+> +#define USB_AUDIO_SAVE_RESTORE	(USB_AUDIO_MEM_BASE)
+> +#define USB_AUDIO_DEV_CTX	(USB_AUDIO_SAVE_RESTORE+PAGE_SIZE)
+> +#define USB_AUDIO_INPUT_CTX	(USB_AUDIO_DEV_CTX+PAGE_SIZE)
+> +#define USB_AUDIO_OUT_DEQ	(USB_AUDIO_INPUT_CTX+PAGE_SIZE)
+> +#define USB_AUDIO_IN_DEQ	(USB_AUDIO_OUT_DEQ+PAGE_SIZE)
+> +#define USB_AUDIO_FBOUT_DEQ	(USB_AUDIO_IN_DEQ+PAGE_SIZE)
+> +#define USB_AUDIO_FBIN_DEQ	(USB_AUDIO_FBOUT_DEQ+PAGE_SIZE)
+> +#define USB_AUDIO_ERST		(USB_AUDIO_FBIN_DEQ+PAGE_SIZE)
+> +#define USB_AUDIO_DESC		(USB_AUDIO_ERST+PAGE_SIZE)
+> +#define USB_AUDIO_PCM_OUTBUF	(USB_AUDIO_MEM_BASE+0x100000)
+> +#define USB_AUDIO_PCM_INBUF	(USB_AUDIO_MEM_BASE+0x800000)
+> +
+> +#if defined(CONFIG_SOC_S5E9815)
+> +#define USB_AUDIO_XHCI_BASE	0x12210000
+> +#define USB_URAM_BASE		0x122a0000
+> +#define USB_URAM_SIZE		(SZ_1K * 24)
+> +#elif defined(CONFIG_SOC_S5E9935)
+> +#define USB_AUDIO_XHCI_BASE	0x10B00000
+> +#define USB_URAM_BASE		0x02a00000
+> +#define USB_URAM_SIZE		(SZ_1K * 24)
+
+Shouldn't this information come from a DT file?
+
+
+> +#else
+> +#error
+
+Error what?
+
+> +#endif
+> +
+> +#define USB_AUDIO_CONNECT		(1 << 0)
+> +#define USB_AUDIO_REMOVING		(1 << 1)
+> +#define USB_AUDIO_DISCONNECT		(1 << 2)
+> +#define USB_AUDIO_TIMEOUT_PROBE	(1 << 3)
+
+BIT()?
+
+> +
+> +#define DISCONNECT_TIMEOUT	(500)
+> +
+> +#define AUDIO_MODE_NORMAL		0
+> +#define AUDIO_MODE_RINGTONE		1
+> +#define AUDIO_MODE_IN_CALL		2
+> +#define AUDIO_MODE_IN_COMMUNICATION	3
+> +#define AUDIO_MODE_CALL_SCREEN		4
+> +
+> +#define	CALL_INTERVAL_THRESHOLD		3
+> +
+> +#define USB_AUDIO_CONNECT		(1 << 0)
+> +#define USB_AUDIO_REMOVING		(1 << 1)
+> +#define USB_AUDIO_DISCONNECT		(1 << 2)
+> +#define USB_AUDIO_TIMEOUT_PROBE	(1 << 3)
+> +
+> +#define DISCONNECT_TIMEOUT	(500)
+
+What units is this in?
+
+> +
+> +struct host_data {
+> +	dma_addr_t out_data_dma;
+> +	dma_addr_t in_data_dma;
+> +	void *out_data_addr;
+> +	void *in_data_addr;
+
+Why void pointers?  io pointers?
+
+Again, does this code even work?
+
+confused,
+
+greg k-h
