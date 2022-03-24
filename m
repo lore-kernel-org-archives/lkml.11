@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0EA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 14:33:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5AD6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 14:33:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351191AbiCXOej (ORCPT
+        id S1351195AbiCXOeo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 10:34:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38714 "EHLO
+        Thu, 24 Mar 2022 10:34:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351105AbiCXOdL (ORCPT
+        with ESMTP id S1351004AbiCXOde (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 10:33:11 -0400
+        Thu, 24 Mar 2022 10:33:34 -0400
 Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF898AC060
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 07:31:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCD80A27E6
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 07:32:01 -0700 (PDT)
 Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KPSMC0fVCz9sTr;
-        Thu, 24 Mar 2022 15:31:03 +0100 (CET)
+        by localhost (Postfix) with ESMTP id 4KPSMM1XlDz9sV2;
+        Thu, 24 Mar 2022 15:31:11 +0100 (CET)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from pegase2.c-s.fr ([172.26.127.65])
         by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id fXX7av9XKH1u; Thu, 24 Mar 2022 15:31:03 +0100 (CET)
+        with ESMTP id rxycMU_PF0o0; Thu, 24 Mar 2022 15:31:11 +0100 (CET)
 Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KPSLy6msRz9sTs;
-        Thu, 24 Mar 2022 15:30:50 +0100 (CET)
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KPSLz0XNvz9sV1;
+        Thu, 24 Mar 2022 15:30:51 +0100 (CET)
 Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id D32148B783;
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id F311D8B781;
         Thu, 24 Mar 2022 15:30:50 +0100 (CET)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from messagerie.si.c-s.fr ([127.0.0.1])
         by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id OEhdD3TccBAo; Thu, 24 Mar 2022 15:30:50 +0100 (CET)
+        with ESMTP id l4iX8fWQY25n; Thu, 24 Mar 2022 15:30:50 +0100 (CET)
 Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.203.77])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id C99528B796;
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id E37E18B79E;
         Thu, 24 Mar 2022 15:30:49 +0100 (CET)
 Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 22OEUjqY1811768
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 22OEUg3V1811706
         (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Thu, 24 Mar 2022 15:30:45 +0100
+        Thu, 24 Mar 2022 15:30:42 +0100
 Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 22OEUjUL1811767;
-        Thu, 24 Mar 2022 15:30:45 +0100
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 22OEUgo01811705;
+        Thu, 24 Mar 2022 15:30:42 +0100
 X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
 From:   Christophe Leroy <christophe.leroy@csgroup.eu>
 To:     "Naveen N . Rao" <naveen.n.rao@linux.vnet.ibm.com>,
@@ -53,75 +53,91 @@ To:     "Naveen N . Rao" <naveen.n.rao@linux.vnet.ibm.com>,
         Michael Ellerman <mpe@ellerman.id.au>
 Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
         linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH v1 22/22] powerpc/opcodes: Remove unused PPC_INST_XXX macros
-Date:   Thu, 24 Mar 2022 15:30:12 +0100
-Message-Id: <636d1c500bcd2d09709abca49d4e05ec5c79666a.1648131740.git.christophe.leroy@csgroup.eu>
+Subject: [PATCH v1 07/22] powerpc/ftrace: Use patch_instruction() return directly
+Date:   Thu, 24 Mar 2022 15:29:57 +0100
+Message-Id: <b4505e936e1aee411f7132a27791cf138102f35f.1648131740.git.christophe.leroy@csgroup.eu>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1648131740.git.christophe.leroy@csgroup.eu>
 References: <cover.1648131740.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1648132152; l=2951; s=20211009; h=from:subject:message-id; bh=UdaOSaO9Qo6g4wVcEhBoMxZ4qqP0e+8Vq+hajWDgYgg=; b=CnDAKVjJyVv4yODoM9pBi5Y4cj64PmspAw78jKlEUahakcKyE290mvmMv8nrlD8KSK3KQMTcLkzt t/Fa6WBxAhIMopyor4pQkPUimqo9PvMC+toJmtVUNzcK0WQ9EGyK
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1648132151; l=2477; s=20211009; h=from:subject:message-id; bh=PJRWF5zilgXFq2l/yg0VrSmcXU+NGwvO/WufSwrFK+0=; b=8uNjnaYtWGp+q2mgdCMtZiuzz+gG6F1oGYN6JadbN2Xb8ADYwE/wtt2nrh4wpyUuXPiH/sSsUyWO oGo7nZ4+CkR/K0PFzcwJlJ3i3uF7Gzirx1EvRhKwm9W/nQqKVs5W
 X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following PPC_INST_XXX macros are not used anymore
-outside ppc-opcode.h:
-	- PPC_INST_LD
-	- PPC_INST_STD
-	- PPC_INST_ADDIS
-	- PPC_INST_ADD
-	- PPC_INST_DIVD
+Instead of returning -EPERM when patch_instruction() fails,
+just return what patch_instruction returns.
 
-Remove them.
+That simplifies ftrace_modify_code():
+
+	   0:	94 21 ff c0 	stwu    r1,-64(r1)
+	   4:	93 e1 00 3c 	stw     r31,60(r1)
+	   8:	7c 7f 1b 79 	mr.     r31,r3
+	   c:	40 80 00 30 	bge     3c <ftrace_modify_code+0x3c>
+	  10:	93 c1 00 38 	stw     r30,56(r1)
+	  14:	7c 9e 23 78 	mr      r30,r4
+	  18:	7c a4 2b 78 	mr      r4,r5
+	  1c:	80 bf 00 00 	lwz     r5,0(r31)
+	  20:	7c 1e 28 40 	cmplw   r30,r5
+	  24:	40 82 00 34 	bne     58 <ftrace_modify_code+0x58>
+	  28:	83 c1 00 38 	lwz     r30,56(r1)
+	  2c:	7f e3 fb 78 	mr      r3,r31
+	  30:	83 e1 00 3c 	lwz     r31,60(r1)
+	  34:	38 21 00 40 	addi    r1,r1,64
+	  38:	48 00 00 00 	b       38 <ftrace_modify_code+0x38>
+				38: R_PPC_REL24	patch_instruction
+
+Before:
+
+	   0:	94 21 ff c0 	stwu    r1,-64(r1)
+	   4:	93 e1 00 3c 	stw     r31,60(r1)
+	   8:	7c 7f 1b 79 	mr.     r31,r3
+	   c:	40 80 00 4c 	bge     58 <ftrace_modify_code+0x58>
+	  10:	93 c1 00 38 	stw     r30,56(r1)
+	  14:	7c 9e 23 78 	mr      r30,r4
+	  18:	7c a4 2b 78 	mr      r4,r5
+	  1c:	80 bf 00 00 	lwz     r5,0(r31)
+	  20:	7c 08 02 a6 	mflr    r0
+	  24:	90 01 00 44 	stw     r0,68(r1)
+	  28:	7c 1e 28 40 	cmplw   r30,r5
+	  2c:	40 82 00 48 	bne     74 <ftrace_modify_code+0x74>
+	  30:	7f e3 fb 78 	mr      r3,r31
+	  34:	48 00 00 01 	bl      34 <ftrace_modify_code+0x34>
+				34: R_PPC_REL24	patch_instruction
+	  38:	80 01 00 44 	lwz     r0,68(r1)
+	  3c:	20 63 00 00 	subfic  r3,r3,0
+	  40:	83 c1 00 38 	lwz     r30,56(r1)
+	  44:	7c 63 19 10 	subfe   r3,r3,r3
+	  48:	7c 08 03 a6 	mtlr    r0
+	  4c:	83 e1 00 3c 	lwz     r31,60(r1)
+	  50:	38 21 00 40 	addi    r1,r1,64
+	  54:	4e 80 00 20 	blr
+
+It improves ftrace activation/deactivation duration by about 3%.
 
 Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- arch/powerpc/include/asm/ppc-opcode.h | 13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
+ arch/powerpc/kernel/trace/ftrace.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/arch/powerpc/include/asm/ppc-opcode.h b/arch/powerpc/include/asm/ppc-opcode.h
-index 810a28af9dce..4cdda507e816 100644
---- a/arch/powerpc/include/asm/ppc-opcode.h
-+++ b/arch/powerpc/include/asm/ppc-opcode.h
-@@ -285,11 +285,6 @@
- #define PPC_INST_TRECHKPT		0x7c0007dd
- #define PPC_INST_TRECLAIM		0x7c00075d
- #define PPC_INST_TSR			0x7c0005dd
--#define PPC_INST_LD			0xe8000000
--#define PPC_INST_STD			0xf8000000
--#define PPC_INST_ADDIS			0x3c000000
--#define PPC_INST_ADD			0x7c000214
--#define PPC_INST_DIVD			0x7c0003d2
- #define PPC_INST_BRANCH_COND		0x40800000
+diff --git a/arch/powerpc/kernel/trace/ftrace.c b/arch/powerpc/kernel/trace/ftrace.c
+index 98e82fa4980f..1b05d33f96c6 100644
+--- a/arch/powerpc/kernel/trace/ftrace.c
++++ b/arch/powerpc/kernel/trace/ftrace.c
+@@ -78,10 +78,7 @@ ftrace_modify_code(unsigned long ip, ppc_inst_t old, ppc_inst_t new)
+ 	}
  
- #define PPC_INST_OFFSET24_MASK		0x03fffffc
-@@ -460,10 +455,10 @@
- 	(0x100000c7 | ___PPC_RT(vrt) | ___PPC_RA(vra) | ___PPC_RB(vrb) | __PPC_RC21)
- #define PPC_RAW_VCMPEQUB_RC(vrt, vra, vrb) \
- 	(0x10000006 | ___PPC_RT(vrt) | ___PPC_RA(vra) | ___PPC_RB(vrb) | __PPC_RC21)
--#define PPC_RAW_LD(r, base, i)		(PPC_INST_LD | ___PPC_RT(r) | ___PPC_RA(base) | IMM_DS(i))
-+#define PPC_RAW_LD(r, base, i)		(0xe8000000 | ___PPC_RT(r) | ___PPC_RA(base) | IMM_DS(i))
- #define PPC_RAW_LWZ(r, base, i)		(0x80000000 | ___PPC_RT(r) | ___PPC_RA(base) | IMM_L(i))
- #define PPC_RAW_LWZX(t, a, b)		(0x7c00002e | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b))
--#define PPC_RAW_STD(r, base, i)		(PPC_INST_STD | ___PPC_RS(r) | ___PPC_RA(base) | IMM_DS(i))
-+#define PPC_RAW_STD(r, base, i)		(0xf8000000 | ___PPC_RS(r) | ___PPC_RA(base) | IMM_DS(i))
- #define PPC_RAW_STDCX(s, a, b)		(0x7c0001ad | ___PPC_RS(s) | ___PPC_RA(a) | ___PPC_RB(b))
- #define PPC_RAW_LFSX(t, a, b)		(0x7c00042e | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b))
- #define PPC_RAW_STFSX(s, a, b)		(0x7c00052e | ___PPC_RS(s) | ___PPC_RA(a) | ___PPC_RB(b))
-@@ -474,8 +469,8 @@
- #define PPC_RAW_ADDE(t, a, b)		(0x7c000114 | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b))
- #define PPC_RAW_ADDZE(t, a)		(0x7c000194 | ___PPC_RT(t) | ___PPC_RA(a))
- #define PPC_RAW_ADDME(t, a)		(0x7c0001d4 | ___PPC_RT(t) | ___PPC_RA(a))
--#define PPC_RAW_ADD(t, a, b)		(PPC_INST_ADD | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b))
--#define PPC_RAW_ADD_DOT(t, a, b)	(PPC_INST_ADD | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b) | 0x1)
-+#define PPC_RAW_ADD(t, a, b)		(0x7c000214 | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b))
-+#define PPC_RAW_ADD_DOT(t, a, b)	(0x7c000214 | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b) | 0x1)
- #define PPC_RAW_ADDC(t, a, b)		(0x7c000014 | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b))
- #define PPC_RAW_ADDC_DOT(t, a, b)	(0x7c000014 | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b) | 0x1)
- #define PPC_RAW_NOP()			PPC_RAW_ORI(0, 0, 0)
+ 	/* replace the text with the new text */
+-	if (patch_instruction((u32 *)ip, new))
+-		return -EPERM;
+-
+-	return 0;
++	return patch_instruction((u32 *)ip, new);
+ }
+ 
+ /*
 -- 
 2.35.1
 
