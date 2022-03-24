@@ -2,77 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 970DBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:52:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AD1FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:52:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345549AbiCXHxh (ORCPT
+        id S1348749AbiCXHxr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 03:53:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33282 "EHLO
+        Thu, 24 Mar 2022 03:53:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348735AbiCXHx2 (ORCPT
+        with ESMTP id S1348770AbiCXHxm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 03:53:28 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E2659968A
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:51:56 -0700 (PDT)
-Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KPHVT0SKWz1GCxN;
-        Thu, 24 Mar 2022 15:51:45 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by kwepemi500015.china.huawei.com
- (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 24 Mar
- 2022 15:51:53 +0800
-From:   Zheng Bin <zhengbin13@huawei.com>
-To:     <dan.j.williams@intel.com>, <vishal.l.verma@intel.com>,
-        <dave.jiang@intel.com>, <ira.weiny@intel.com>,
-        <nvdimm@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-CC:     <tangyizhou@huawei.com>, <zhengbin13@huawei.com>
-Subject: [PATCH -next] drivers/nvdimm: Fix build error without PERF_EVENTS
-Date:   Thu, 24 Mar 2022 16:06:53 +0800
-Message-ID: <20220324080653.1364201-1-zhengbin13@huawei.com>
-X-Mailer: git-send-email 2.31.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemi500015.china.huawei.com (7.221.188.92)
-X-CFilter-Loop: Reflected
+        Thu, 24 Mar 2022 03:53:42 -0400
+Received: from out203-205-251-59.mail.qq.com (out203-205-251-59.mail.qq.com [203.205.251.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D09CA99EFD
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:52:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1648108323;
+        bh=4qRt4CTUnFYdz91fm463A4eMLDDhGfe23h62hXzxysA=;
+        h=In-Reply-To:References:From:To:Cc:Subject:Date;
+        b=ZhhNlFhRgeNebpYAg2pqgGxu0q4wTl0zFOC4GtKI0QhrffYWAQgUq/TLngun8Oev5
+         CbSVKEF3fJo9sme+F15t2dHUK9BqnFbCe/eU0jUS0UadbrGBpHGsZ9dGTmAalaHubI
+         bwpXxto6fcbosf9w8mLM93ePIav0++Viq+9z3hSM=
+X-QQ-FEAT: oHWrrGTW1dA7H/rBCZjy5XfNuaD0tECu
+X-QQ-SSF: 00000000000000F000000000000000Z
+X-QQ-XMAILINFO: MDPfhejMR4aIPs8Cf+y1mMj67XUkSWBvQJOfP8jngt07e0MRHVoxpW/lKa1yQt
+         55NE9KviXEVi7x7uXkPfaluN3fFG6NKiWCz4L6cHEUqCzEJBXTBlEYxmmwKEweT8EUwjin5YpiygD
+         BPnk2hDjka/tGZrXvqnWm7VM0anLtH9jpRGEmJJ9SudcHOKcH3VUtyyjHIhVMjIqMAWRrATJNWIck
+         d4N1Ba2lmAKpV/+6iXDUkz1Z8F4CJPTL9xvqa40Aa4O3o8P6wdveQgvSrAnx8Jfr6HYwSpN7WItf/
+         ZFlDv+ik5XbQ2WWnbfzUBp4CbIDTnJWXyKimICZP4Cko7NX3wMIFcP3aQxrL4lM2fbeOxLBkyU+lI
+         A/BowrLGj0CtWL40UqtdmGXZUM2ekhhpan2R1jI+6c0dJX8IR0HuOTTGXabZPrlSLfwWQ2y+bpmrN
+         0zA+WS58NURFA63d4YkukxaxeVVgdMbZNZZEyTLw8X8ATHL1zBSCZuKJWuGfD3jxJesXI756+G8M2
+         qR33NhD1pa0rGsOm954u4ye/ulPy43jabn2oczWRWuNV5h6Cs5LeG/pvU80AKa3XO4h4RtbBGeDYh
+         8BbwP22iwPujkvMXqavamc54TcxKv6i92r64BuTPSfkJrdadYca0VUr9uy4tS9hIpLkWAGNuDrGab
+         4StF5PUi/4duoASWVjgm2O5xoptbX5OrJUFI2LHuEgm0TZAmnlmhxR2HsnS3XLPx5UwqeKoZ+evXU
+         5tQ9fh8MbKMkchmeKzdaCJe/Aa4ot/WkjX89P9rXd12l0VI2pMHv7ps6D5UpkIpXOn+tsr79+u0gt
+         z4Kumyl/zggqfkaF7Oga2a3wtWBPTplz/fCfmA8rNj4ZI+9FAcLnwrtRelU7xgqHMf3b6VCu0B9Wt
+         8bxkRpBwyGiXiRJiZ0BNNpPHeXY+zw/N6THPfsKcB1xbnKwZpzoPGtnCADxVeUcHnIgDgnpDVs=
+X-HAS-ATTACH: no
+X-QQ-BUSINESS-ORIGIN: 2
+X-Originating-IP: 111.47.122.156
+In-Reply-To: <tencent_92B89C12C6BF29881C73666E140718054E06@qq.com>
+References: <tencent_92B89C12C6BF29881C73666E140718054E06@qq.com>
+X-QQ-STYLE: 
+X-QQ-mid: webmail813t1648108322t29954
+From:   "=?ISO-8859-1?B?WGlhb2tlIFdhbmc=?=" <xkernel.wang@foxmail.com>
+To:     "=?ISO-8859-1?B?eGtlcm5lbC53YW5n?=" <xkernel.wang@foxmail.com>
+Cc:     "=?ISO-8859-1?B?bGl2aXUuZHVkYXU=?=" <liviu.dudau@arm.com>,
+        "=?ISO-8859-1?B?YnJpYW4uc3RhcmtleQ==?=" <brian.starkey@arm.com>,
+        "=?ISO-8859-1?B?YWlybGllZA==?=" <airlied@linux.ie>,
+        "=?ISO-8859-1?B?ZGFuaWVs?=" <daniel@ffwll.ch>,
+        "=?ISO-8859-1?B?ZHJpLWRldmVs?=" <dri-devel@lists.freedesktop.org>,
+        "=?ISO-8859-1?B?bGludXgta2VybmVs?=" <linux-kernel@vger.kernel.org>
+Subject: Re:[PATCH] drm: mali-dp: check the return value of kzalloc()
+Mime-Version: 1.0
+Content-Type: text/plain;
+        charset="ISO-8859-1"
+Content-Transfer-Encoding: base64
+Date:   Thu, 24 Mar 2022 15:52:02 +0800
+X-Priority: 3
+Message-ID: <tencent_283D88183356EE2B0706054EB8B452C3FF06@qq.com>
+X-QQ-MIME: TCMime 1.0 by Tencent
+X-Mailer: QQMail 2.x
+X-QQ-Mailer: QQMail 2.x
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If PERF_EVENTS is not set, bulding fails:
-
-drivers/nvdimm/nd_perf.o: In function `nvdimm_pmu_cpu_offline':
-nd_perf.c:(.text+0x12c): undefined reference to `perf_pmu_migrate_context'
-drivers/nvdimm/nd_perf.o: In function `register_nvdimm_pmu':
-nd_perf.c:(.text+0x3c4): undefined reference to `perf_pmu_register'
-drivers/nvdimm/nd_perf.o: In function `unregister_nvdimm_pmu':
-nd_perf.c:(.text+0x4c0): undefined reference to `perf_pmu_unregister'
-
-Make LIBNVDIMM depends on PERF_EVENTS to fix this.
-
-Fixes: 0fab1ba6ad6b ("drivers/nvdimm: Add perf interface to expose nvdimm performance stats")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
----
- drivers/nvdimm/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/nvdimm/Kconfig b/drivers/nvdimm/Kconfig
-index 5a29046e3319..e93bd0b787e9 100644
---- a/drivers/nvdimm/Kconfig
-+++ b/drivers/nvdimm/Kconfig
-@@ -4,6 +4,7 @@ menuconfig LIBNVDIMM
- 	depends on PHYS_ADDR_T_64BIT
- 	depends on HAS_IOMEM
- 	depends on BLK_DEV
-+	depends on PERF_EVENTS
- 	select MEMREGION
- 	help
- 	  Generic support for non-volatile memory devices including
---
-2.31.1
+VGh1LCAyNCBNYXIgMjAyMiAxNDo0MzoxNyArMDgwMCwgeGtlcm5lbC53YW5nQGZveG1haWwu
+Y29tIHdyb3RlOgoKJmd0OyBremFsbG9jKCkgaXMgYSBtZW1vcnkgYWxsb2NhdGlvbiBmdW5j
+dGlvbiB3aGljaCBjYW4gcmV0dXJuIE5VTEwgd2hlbgomZ3Q7IHNvbWUgaW50ZXJuYWwgbWVt
+b3J5IGVycm9ycyBoYXBwZW4uIFNvIGl0IGlzIGJldHRlciB0byBjaGVjayBpdCB0bwomZ3Q7
+IHByZXZlbnQgcG90ZW50aWFsIHdyb25nIG1lbW9yeSBhY2Nlc3MuCgpXaXRoZHJhdyB0aGlz
+LiBUaGUgb3JpZ2luYWwgY29kZSBpcyBhbHNvIGZpbmUgc2luY2UgdGhlcmUgaXMgYSB2YWxp
+ZCBjaGVjawppbnNpZGUgX19kcm1fYXRvbWljX2hlbHBlcl9jb25uZWN0b3JfcmVzZXQoKSBi
+dXQgSSBtaXNzZWQgdG8gdHJhY2sgaXQu
 
