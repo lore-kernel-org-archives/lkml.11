@@ -2,181 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF327C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:30:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BD1BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:30:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245176AbiCXHbo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 03:31:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53672 "EHLO
+        id S1348575AbiCXHcZ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Mar 2022 03:32:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348570AbiCXHbf (ORCPT
+        with ESMTP id S241036AbiCXHcV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 03:31:35 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1DFE99682;
-        Thu, 24 Mar 2022 00:30:03 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id d10so7311307eje.10;
-        Thu, 24 Mar 2022 00:30:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=41pszt+PybnYgUfx9vODac1IhLaztrq7kY7kXvf9mWE=;
-        b=W75d1bj3/HxEocX67AESJvny7BilgO6/7lbivPiE3r4fOBeapIiA75UE/w4WB2mj5S
-         rV4FrD2YP1BuVYTq5QIsCmFhcdwSQJpFIjv7aV1akR0ZF/U1krZMcKAr5LIQ6XAMPM1w
-         35SUvw17LHJvsy4eJtBTsKu2nqf3HlTN+lIePzCOovyk2sTlcFSQ4TY3BVPV+vbZT8Dq
-         EKTP4dcw/q1zUg6OhJaA4WAZ3K8dd4zGKcxf/slB0oiPhPx9qmRKkDNufV1LEJbMf0Vk
-         moAnOYySm5bSqtv0NQQ39Yb5TqBR0rGOodNmG+U99BXGHOv8oie3O5rvCKYGcYLjSByn
-         O/Zg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=41pszt+PybnYgUfx9vODac1IhLaztrq7kY7kXvf9mWE=;
-        b=7cBJl6sOMmXIOxD78gHtT4LZyis5S4vKwRrujqgCfTetxqihJvpK3ONx2a8QxJn2uE
-         55HKnmzKlLkp2rLFZqudL9aRJirqCfCiCUrRoKJ107CCA3IR+r08wLZWb5G4LdGRxrVA
-         yXrlHHlvz9cuUNcE0foxtVw07EabeQXn8Z2obnMDJubb9yN0eC47gLV2003sSXzWXUiS
-         6wtanMail0xIzbnJPA41R+OmygoSA4RfIbqhD1GH1g+dJ1sC38B8gRa2tgGtSboOjSRa
-         yz+JhVLL+yxGA//UzwUX1MdlCV2MOWrgfbXMT4be/sl8AEamJTltWqLNZoN9AjPmdWkt
-         cDOA==
-X-Gm-Message-State: AOAM530YrgVlrlaUpDOFXYU6PeMptdIGTaWOLwS2wa8vUnmTFlR/qBld
-        Dg7P26uCLoSDlMEwQ3bX3YInL0PmbOC7CRyl
-X-Google-Smtp-Source: ABdhPJypvh4h6q3BYO/WNfs15tnV/nCxMBcLKYfEtbu2nrSmu2Bj2OEgrzj3UAcqRGrX+RJ6G4I3+A==
-X-Received: by 2002:a17:906:2a50:b0:6da:ed06:b029 with SMTP id k16-20020a1709062a5000b006daed06b029mr4301820eje.506.1648107002288;
-        Thu, 24 Mar 2022 00:30:02 -0700 (PDT)
-Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id q9-20020a17090609a900b006cd30a3c4f0sm787085eje.147.2022.03.24.00.30.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 00:30:01 -0700 (PDT)
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-To:     Dan Williams <dan.j.williams@intel.com>
-Cc:     Vishal Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Zou Wei <zou_wei@huawei.com>,
-        Bjorn Helgaas <bhelgaas@google.com>, nvdimm@lists.linux.dev,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mike Rapoport <rppt@kernel.org>,
-        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
-Subject: [PATCH] tools/testing/nvdimm: replace usage of found with dedicated list iterator variable
-Date:   Thu, 24 Mar 2022 08:29:52 +0100
-Message-Id: <20220324072952.65489-1-jakobkoschel@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 24 Mar 2022 03:32:21 -0400
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89FB198F7C
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:30:49 -0700 (PDT)
+Received: from integral2.. (unknown [182.2.71.236])
+        by gnuweeb.org (Postfix) with ESMTPSA id A9D557E34E;
+        Thu, 24 Mar 2022 07:30:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1648107049;
+        bh=T5WlfgsN+KmA3rq5c0K1J+tvn+2yIgRHgThnsLc6X2g=;
+        h=From:To:Cc:Subject:Date:From;
+        b=WDY7VIau14JxWpUWn9VECtVqzNWT3N86LXjX6xB3tZJ+Db9iTeQfym6dANC+JFpnW
+         I10quq05jAqdP1XAD8ge6bDnsXF9S9BUUwohDL+4GydLXPAosv+wDvKNZOCrP8Vboz
+         NUzmSxaMyaCp4NebHXslCI0vrmSp1I6AOWCUm0mpTSDVUSfMIouIywjzIP8pfOITak
+         FO9YMB+cO3roxZERK1m6KLT8p4a2wDzIxPyzL5W/RQuos44mvDPZYq6C3HKCCkts3i
+         iYhGqMep1pl2/XNx0IQSt4RsJMSBEq7JqB6Q/Qg2Gjg0ZzG/K/gKlLH9JcgAP1IQqs
+         8ZL8gif7HXF4w==
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+To:     Willy Tarreau <w@1wt.eu>
+Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
+        Nugraha <richiisei@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Subject: [PATCH v1 00/11] Add dynamic memory allocator support for nolibc
+Date:   Thu, 24 Mar 2022 14:30:28 +0700
+Message-Id: <20220324073039.140946-1-ammarfaizi2@gnuweeb.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To move the list iterator variable into the list_for_each_entry_*()
-macro in the future it should be avoided to use the list iterator
-variable after the loop body.
+Hi,
 
-To *never* use the list iterator variable after the loop it was
-concluded to use a separate iterator variable instead of a
-found boolean [1].
+This is a patchset to add dynamic memory allocator support for
+nolibc after 2 RFCs, please review the changes carefully.
 
-This removes the need to use a found variable and simply checking if
-the variable was set, can determine if the break/goto was hit.
+There are 3 *new* patches after RFC v2:
+  Address report from Alviro:
+   - Replace `asm` with `__asm__`.
+  Address suggestions from David:
+   - x86-64: Use appropriate register constraints if exist (Suggested by David).
+   - i386: Use appropriate register constraints if exist.
 
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+@@ Changelog:
 ---
- drivers/acpi/nfit/mce.c           | 11 +++++------
- tools/testing/nvdimm/test/iomap.c | 18 +++++++++---------
- 2 files changed, 14 insertions(+), 15 deletions(-)
+   Link RFC v2: https://lore.kernel.org/lkml/20220322102115.186179-1-ammarfaizi2@gnuweeb.org/
+   RFC v2 -> v1:
+     - Rebase, sync with Paul's tree.
+     - Add new 3 patches [PATCH 03/11], [PATCH 04/11], [PATCH 05/11].
 
-diff --git a/drivers/acpi/nfit/mce.c b/drivers/acpi/nfit/mce.c
-index ee8d9973f60b..6d11506e871e 100644
---- a/drivers/acpi/nfit/mce.c
-+++ b/drivers/acpi/nfit/mce.c
-@@ -15,7 +15,7 @@ static int nfit_handle_mce(struct notifier_block *nb, unsigned long val,
- {
- 	struct mce *mce = (struct mce *)data;
- 	struct acpi_nfit_desc *acpi_desc;
--	struct nfit_spa *nfit_spa;
-+	struct nfit_spa *nfit_spa = NULL, *iter;
- 
- 	/* We only care about uncorrectable memory errors */
- 	if (!mce_is_memory_error(mce) || mce_is_correctable(mce))
-@@ -33,11 +33,10 @@ static int nfit_handle_mce(struct notifier_block *nb, unsigned long val,
- 	mutex_lock(&acpi_desc_lock);
- 	list_for_each_entry(acpi_desc, &acpi_descs, list) {
- 		struct device *dev = acpi_desc->dev;
--		int found_match = 0;
- 
- 		mutex_lock(&acpi_desc->init_mutex);
--		list_for_each_entry(nfit_spa, &acpi_desc->spas, list) {
--			struct acpi_nfit_system_address *spa = nfit_spa->spa;
-+		list_for_each_entry(iter, &acpi_desc->spas, list) {
-+			struct acpi_nfit_system_address *spa = iter->spa;
- 
- 			if (nfit_spa_type(spa) != NFIT_SPA_PM)
- 				continue;
-@@ -46,7 +45,7 @@ static int nfit_handle_mce(struct notifier_block *nb, unsigned long val,
- 				continue;
- 			if ((spa->address + spa->length - 1) < mce->addr)
- 				continue;
--			found_match = 1;
-+			nfit_spa = iter;
- 			dev_dbg(dev, "addr in SPA %d (0x%llx, 0x%llx)\n",
- 				spa->range_index, spa->address, spa->length);
- 			/*
-@@ -58,7 +57,7 @@ static int nfit_handle_mce(struct notifier_block *nb, unsigned long val,
- 		}
- 		mutex_unlock(&acpi_desc->init_mutex);
- 
--		if (!found_match)
-+		if (!nfit_spa)
- 			continue;
- 
- 		/* If this fails due to an -ENOMEM, there is little we can do */
-diff --git a/tools/testing/nvdimm/test/iomap.c b/tools/testing/nvdimm/test/iomap.c
-index b752ce47ead3..5d3d6b0fce2e 100644
---- a/tools/testing/nvdimm/test/iomap.c
-+++ b/tools/testing/nvdimm/test/iomap.c
-@@ -227,8 +227,8 @@ static bool nfit_test_release_region(struct device *dev,
- 		struct nfit_test_resource *nfit_res = get_nfit_res(start);
- 
- 		if (nfit_res) {
--			struct nfit_test_request *req;
--			struct resource *res = NULL;
-+			struct nfit_test_request *req = NULL;
-+			struct nfit_test_request *iter;
- 
- 			if (dev) {
- 				devres_release(dev, nfit_devres_release, match,
-@@ -237,18 +237,18 @@ static bool nfit_test_release_region(struct device *dev,
- 			}
- 
- 			spin_lock(&nfit_res->lock);
--			list_for_each_entry(req, &nfit_res->requests, list)
--				if (req->res.start == start) {
--					res = &req->res;
--					list_del(&req->list);
-+			list_for_each_entry(iter, &nfit_res->requests, list)
-+				if (iter->res.start == start) {
-+					list_del(&iter->list);
-+					req = iter;
- 					break;
- 				}
- 			spin_unlock(&nfit_res->lock);
- 
--			WARN(!res || resource_size(res) != n,
-+			WARN(!req || resource_size(&req->res) != n,
- 					"%s: start: %llx n: %llx mismatch: %pr\n",
--						__func__, start, n, res);
--			if (res)
-+						__func__, start, n, &req->res);
-+			if (req)
- 				kfree(req);
- 			return true;
- 		}
+     [PATCH 02/11]
+     - Append Reviewed-by tag from Nick.
+     - s/Removing/remove/
 
-base-commit: f443e374ae131c168a065ea1748feac6b2e76613
+     [PATCH 06/11]
+     - Use the same pattern for syscall6, regardless using GCC or Clang
+      (comment from David).
+     - Use appropriate constraints for syscall6 instead of always using
+      register variables (comment from David).
+
+     [PATCH 09/11]
+     - Round up the malloc() allocation to 4096 (comment from David).
+     - Don't realloc() if we still have enough memory to contain the
+       requested new size (comment from David).
+     - Fix conflict with getenv() fix (after rebase).
+
+   Link RFC v1: https://lore.kernel.org/lkml/20220320093750.159991-1-ammarfaizi2@gnuweeb.org/
+   RFC v1 -> RFC v2:
+    - Add 2 new patches [PATCH 5/8] and [PATCH 7/8].
+
+    [PATCH 2/8]
+    - Remove all `.global _start` for all build (GCC and Clang) instead of
+      removing all `.weak _start` for clang build (Comment from Willy).
+
+    [PATCH 3/8]
+    - Fix %ebp saving method. Don't use redzone, i386 doesn't have a redzone
+      (comment from David and Alviro).
+
+    [PATCH 6/8]
+    - Move container_of() and offsetof() macro to types.h with a
+      separate patch (comment from Willy).
+
+    [PATCH 8/8]
+    - Update strdup and strndup implementation, use strlen and strnlen to get
+      the string length first (comment from Willy and Alviro).
+    - Fix the subject line prefix, it was "tools/include/string: ", it should be
+      "tools/nolibc/string: ".
+    - Update the commit message.
+
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+---
+Ammar Faizi (11):
+  tools/nolibc: x86-64: Update System V ABI document link
+  tools/nolibc: Remove .global _start from the entry point code
+  tools/nolibc: Replace `asm` with `__asm__`
+  tools/nolibc: x86-64: Use appropriate register constraints if exist
+  tools/nolibc: i386: Use appropriate register constraints if exist
+  tools/nolibc: i386: Implement syscall with 6 arguments
+  tools/nolibc/sys: Implement `mmap()` and `munmap()`
+  tools/nolibc/types: Implement `offsetof()` and `container_of()` macro
+  tools/nolibc/stdlib: Implement `malloc()`, `calloc()`, `realloc()` and `free()`
+  tools/nolibc/string: Implement `strnlen()`
+  tools/include/string: Implement `strdup()` and `strndup()`
+
+ tools/include/nolibc/arch-aarch64.h |  73 +++++-----
+ tools/include/nolibc/arch-arm.h     |  59 ++++----
+ tools/include/nolibc/arch-i386.h    | 188 ++++++++++++-------------
+ tools/include/nolibc/arch-mips.h    |  63 +++++----
+ tools/include/nolibc/arch-riscv.h   |  75 +++++-----
+ tools/include/nolibc/arch-x86_64.h  | 207 +++++++++++++---------------
+ tools/include/nolibc/stdlib.h       |  81 +++++++++++
+ tools/include/nolibc/string.h       |  41 ++++++
+ tools/include/nolibc/sys.h          |  62 +++++++++
+ tools/include/nolibc/types.h        |  11 ++
+ 10 files changed, 515 insertions(+), 345 deletions(-)
+
+
+base-commit: b3f38ba2d1ccaa4c4b2096a310e7b170ef559d4d
 -- 
-2.25.1
+Ammar Faizi
 
