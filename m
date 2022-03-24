@@ -2,110 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F8DEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 08:40:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B806C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 08:40:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348972AbiCXImB (ORCPT
+        id S1348992AbiCXImE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 04:42:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38944 "EHLO
+        Thu, 24 Mar 2022 04:42:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237092AbiCXImA (ORCPT
+        with ESMTP id S1344542AbiCXImA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 24 Mar 2022 04:42:00 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F33459BAD1
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 01:40:28 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id qx21so7607164ejb.13
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 01:40:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=RqPTfWDpy51bGnp33iHbv7py0JgSciRl7uPSFGe9Mog=;
-        b=ePYxLKQzE/pjMYLMswJlbtRwuRNsq2TfcoeAdd5BqSYfRb1r30aBX3oBZji2ScUhg4
-         TFKl1XgQjup79UoIkmJo74USF/FUR9u0DbVpQteQxWONO7dMtd9cuwCVIJUK42X6tRb+
-         cI6NQWZ6OJTCn5SuzLeB/bgTcsAGP5UTRf4qXsW1ZSWEGTwW5Xg5DpyF5F47Omm/qzX9
-         DyEJ4CjVEGLEkUSdmr1w3Fx31mThq8CVvqkA59jaqUl0rYZgzSsdqXCOI7XSXc8pZ5sE
-         AblCdMRgNAhZ85TP+LwSHhjTwqzDZ2JkoamI1q3T6EtahzWv58PbXVB6Rm16Jab23FyF
-         sS0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=RqPTfWDpy51bGnp33iHbv7py0JgSciRl7uPSFGe9Mog=;
-        b=umGe+lBsVtGPDA4w4SoG2uMWrJT7qdn0VoT1pib90wZsohnWS5vC20imUw9Li70Ksn
-         uwCNuSEH3gtNG0n389/L+g+xpeapqGeSQ5Jn7LO/ZktdOSKxsT2Oocs3fYRmfa+mzj7U
-         RES51C9R0+IG7cAkodauQYW2E/yM9xLOZuGp2HZRP9ZAjAYR13uVfPDRR7HhASprxHqS
-         VycNJalulgn0LXm9VDl568ExoJsQ4lZ9oK+R/PZC7rAn2Cm6jrXHQbt1M6+oeZ3KOjzz
-         E+128FGnWTBVLxLdY/dMHJJcRWK+YEVcSO2Itr4SiW4bQZ2GM+XMy7rtq3duoYwOB35N
-         /T2g==
-X-Gm-Message-State: AOAM530oTeW5QMCowUVP9T/dP4l9VyDlSbzspj3zIJuun5Nh4q6veNZR
-        Kf0tmeaqu8/+dlOLvIWETDc=
-X-Google-Smtp-Source: ABdhPJwX95ClsycRmoRe/F0VmrZ/tynUjQSJhbxu0XlbMSicc/FxB1ig0lYZPEyVK6SuXBhu/s8dTw==
-X-Received: by 2002:a17:907:3e18:b0:6da:7ac5:4ad4 with SMTP id hp24-20020a1709073e1800b006da7ac54ad4mr4598124ejc.212.1648111227462;
-        Thu, 24 Mar 2022 01:40:27 -0700 (PDT)
-Received: from gmail.com (0526F2AE.dsl.pool.telekom.hu. [5.38.242.174])
-        by smtp.gmail.com with ESMTPSA id 22-20020a17090600d600b006dfbc46efabsm853495eji.126.2022.03.24.01.40.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 01:40:26 -0700 (PDT)
-Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
-Date:   Thu, 24 Mar 2022 09:40:24 +0100
-From:   Ingo Molnar <mingo@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [GIT PULL] locking changes for v5.18
-Message-ID: <YjwueBQoung7rFD+@gmail.com>
-References: <YjhdcJB4FaLfsoyO@gmail.com>
- <CAHk-=wjS6ptr5=JqmmyEb_qTjDz_68+S=h1o1bL1fEyArVOymA@mail.gmail.com>
- <CAHk-=whNBs07foho7=QxVbs_hnpDfPP3s2fwyXK-reNw67mU=g@mail.gmail.com>
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A15DA9BB92
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 01:40:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648111228;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=8YEyrlmnQdg2INNFhefHDH4uWMgnQzaNh1TmwLtH5Fg=;
+        b=SOrq2syG+AnYaGIupirzF7bGDyAG9P5t4dScZMdEa5/fevgxIEbSn0SpCQdKmirLuRmX/v
+        dTB1YfKErjk7EY87MrkEd51YoP3T6XMWx5kYErpj+GHA2vdiQqewDLamnXH+BveFs5/Bgo
+        IEaYJ7BPDu2GFdMDAoSOIE389o0VV4E=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-416-IooITgx-PfeRHfchqbq6ug-1; Thu, 24 Mar 2022 04:40:25 -0400
+X-MC-Unique: IooITgx-PfeRHfchqbq6ug-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 02FB53C23FA2;
+        Thu, 24 Mar 2022 08:40:25 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-13-240.pek2.redhat.com [10.72.13.240])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3505D40CF8ED;
+        Thu, 24 Mar 2022 08:40:20 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     mst@redhat.com, jasowang@redhat.com
+Cc:     virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, maz@kernel.org, tglx@linutronix.de,
+        peterz@infradead.org, sgarzare@redhat.com, keirf@google.com
+Subject: [PATCH 0/3] rework on the IRQ hardening of virtio
+Date:   Thu, 24 Mar 2022 16:40:01 +0800
+Message-Id: <20220324084004.14349-1-jasowang@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=whNBs07foho7=QxVbs_hnpDfPP3s2fwyXK-reNw67mU=g@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi All:
 
-* Linus Torvalds <torvalds@linux-foundation.org> wrote:
+This is a rework on the IRQ hardening for virtio which is done
+previously by the following commits are reverted:
 
-> On Tue, Mar 22, 2022 at 3:05 PM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
-> >
-> > I see that the -mm tree has a fix for this,[..]
-> 
-> Ok, usually I strive to let the patch-bomb from Andrew sit in a branch
-> of its own for a while (in case somebody replies to one of Andrew's
-> emails I can then fix things up).
-> 
-> But I decided to just apply and merge the series immediately instead,
-> partly to just have this issue sorted out.
-> 
-> Let's hope there's nothing dodgy in there..
+9e35276a5344 ("virtio_pci: harden MSI-X interrupts")
+080cd7c3ac87 ("virtio-pci: harden INTX interrupts")
 
-Thanks!
+The reason is that it depends on the IRQF_NO_AUTOEN which may conflict
+with the assumption of the affinity managed IRQ that is used by some
+virtio drivers. And what's more, it is only done for virtio-pci but
+not other transports.
 
-> > I thought -tip had started checking with clang, but apparently not.
+In this rework, I try to implement a general virtio solution which
+borrows the idea of the INTX hardening by introducing a boolean for
+virtqueue callback enabling and toggle it in virtio_device_ready()
+and virtio_reset_device(). Then vring_interrupt() can simply check and
+return early if the driver is not ready.
 
-Only intermittently on my side - it only recently started working reliably 
-& it doubles the not inconsiderable test time :-/
+To unbreak legacy setups that may generate IRQ before DRIVER_OK, a
+module parameter is introduced to disable the hardening by
+default. The features can then be turned on the setups that the
+hardening is needed (e.g the confidential computing and other cases).
 
-> > I see that the -mm tree has a fix for this, but I'm rather unhappy that 
-> > the -tip tree build checking has deteriorated so much, and clang builds 
-> > will now have a pointless build error that will cause issues for 
-> > bisect.
+Please review.
 
-Will try to add better clang testing, seems to have better warnings in a 
-couple of areas.
+Thanks
 
-Thanks,
+Jason Wang (2):
+  virtio: use virtio_reset_device() when possible
+  virtio: harden vring IRQ
 
-	Ingo
+Stefano Garzarella (1):
+  virtio: use virtio_device_ready() in virtio_device_restore()
+
+ drivers/virtio/virtio.c       | 28 ++++++++++++++++++++++++----
+ drivers/virtio/virtio_ring.c  |  9 ++++++++-
+ include/linux/virtio.h        |  4 ++++
+ include/linux/virtio_config.h | 25 +++++++++++++++++++++++++
+ 4 files changed, 61 insertions(+), 5 deletions(-)
+
+-- 
+2.25.1
+
