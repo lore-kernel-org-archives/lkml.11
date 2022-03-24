@@ -2,73 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1482C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 19:44:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DE8CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 19:44:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353137AbiCXTqP (ORCPT
+        id S1347453AbiCXTqS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 15:46:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57212 "EHLO
+        Thu, 24 Mar 2022 15:46:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353267AbiCXTpv (ORCPT
+        with ESMTP id S1353278AbiCXTpz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 15:45:51 -0400
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8274A38BFC
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 12:44:15 -0700 (PDT)
-Received: by mail-il1-f199.google.com with SMTP id o17-20020a92c691000000b002c2c04aebe7so3380152ilg.8
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 12:44:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=0y3xyJU9KpgMz1igevVEvpwA8jK8DVLay4wlNnV5yQo=;
-        b=raSmmfB3zMxIDjSsW37B2a/tmrBt/Tyk+G6Fa8XYjxN4o20kBbCSdlPoxYP9WVY0sz
-         tZKrWOezItGrqS221h8Y163Y5cm+hAZBNtD5iRs9zmIJRCrL54UyJXzN5+H8bDJ3MBfv
-         B7jL7ESa0q7fER1XODds9va7YaqBSq3UXdYpkKghXUSpmEe/wgkHebVugvUzi5pbvreN
-         VtfhLYwI93G3GMcYDnKrrdaH6c14a17vw3yVpto2jo0XJgRXxpGk6EQF+hxaR2MX8Fml
-         tQjcdNXKW4f38bxGh78rv/2z6gT6LkfRwfC4g+3Or//ySWMDZ2Of491iL5M8WlqiqoOf
-         Wu2Q==
-X-Gm-Message-State: AOAM532ttBo0e+kAjyxoJCHZnCdhWYHFQtt9zeeUbqy3UdOsFCAnohwh
-        mbiqVI76tnQ3rr+BEb3RT4MGrzut3LtCFag47Up15U6sm2N3
-X-Google-Smtp-Source: ABdhPJxKNlf65kZLBnDRa4mkFMuTOqSR+nfBdZtpkRQxcnvZhHSD0FXdnXU2NPf2U/DNv5QCRJWf9hkzn+xtGOGB2XdYjfmz0aCb
-MIME-Version: 1.0
-X-Received: by 2002:a6b:14a:0:b0:649:a974:9042 with SMTP id
- 71-20020a6b014a000000b00649a9749042mr3578558iob.81.1648151054912; Thu, 24 Mar
- 2022 12:44:14 -0700 (PDT)
-Date:   Thu, 24 Mar 2022 12:44:14 -0700
-In-Reply-To: <CAMZfGtVzUZmz7UObNfEgbxue32_2rivajTbiwZQhGkGhDzLthA@mail.gmail.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000002a12c105dafc12e0@google.com>
-Subject: Re: [syzbot] general protection fault in list_lru_add
-From:   syzbot <syzbot+f8c45ccc7d5d45fc5965@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, dvyukov@google.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        songmuchun@bytedance.com, syzkaller-bugs@googlegroups.com,
-        torvalds@linux-foundation.org
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 24 Mar 2022 15:45:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E99337BD9;
+        Thu, 24 Mar 2022 12:44:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 378F2B825E9;
+        Thu, 24 Mar 2022 19:44:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 02A70C340EE;
+        Thu, 24 Mar 2022 19:44:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648151061;
+        bh=xh9ztIJzCN/ZGS4noxx/LeNRv9RikHLUIOKFx//QXEI=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=Q3oG93uafg/fakmieS9pW0mQHEM0b6NAw3RQyeVOvijyDi4BxKx7+eOIWWq9bMtZ4
+         sd7Gv+7EY/CuENqklF1uwf7cPLMgNwoBZ6+aUIxmleaLqglYWRKuALmqNl9gteu9r5
+         MDqwnF2x8Dpw0i6xATVRTe9obzZzEN1IamjGjQVqM8F/aA9uMb2Sx6+tlVxm8sQ9t0
+         mT5/4g0/3chHE4jjWkhfb42Gjpg3xmOGWLhhx4Uzt+VikNQCkgIJpCshj91HF9o85M
+         O5mVwFQ/E9W9qhvX5dvj+mJ7sWnuItK0f1JPX8w3cX18eqE0+J2Ew/Y2PYZXHZaI7P
+         TnPqsmaqaEfdw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E4418E6D44B;
+        Thu, 24 Mar 2022 19:44:20 +0000 (UTC)
+Subject: Re: [GIT PULL] fs preempt_rt fix
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220323110248.858156-1-brauner@kernel.org>
+References: <20220323110248.858156-1-brauner@kernel.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220323110248.858156-1-brauner@kernel.org>
+X-PR-Tracked-Remote: git@gitolite.kernel.org:pub/scm/linux/kernel/git/brauner/linux tags/fs.rt.v5.18
+X-PR-Tracked-Commit-Id: 0f8821da48458982cf379eb4432f23958f2e3a6c
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 2e2d4650b34ffe0a39f70acc9429a58d94e39236
+Message-Id: <164815106093.31218.17172939733647630845.pr-tracker-bot@kernel.org>
+Date:   Thu, 24 Mar 2022 19:44:20 +0000
+To:     Christian Brauner <brauner@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+The pull request you sent on Wed, 23 Mar 2022 12:02:49 +0100:
 
-syzbot tried to test the proposed patch but the build/boot failed:
+> git@gitolite.kernel.org:pub/scm/linux/kernel/git/brauner/linux tags/fs.rt.v5.18
 
-failed to apply patch:
-checking file mm/list_lru.c
-Hunk #1 succeeded at 76 with fuzz 2 (offset 9 lines).
-Hunk #2 FAILED at 76.
-1 out of 2 hunks FAILED
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/2e2d4650b34ffe0a39f70acc9429a58d94e39236
 
+Thank you!
 
-
-Tested on:
-
-commit:         5abc1e37 mm: list_lru: allocate list_lru_one only when..
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
-dashboard link: https://syzkaller.appspot.com/bug?extid=f8c45ccc7d5d45fc5965
-compiler:       
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=164cecb3700000
-
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
