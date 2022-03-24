@@ -2,115 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74860C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 17:29:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CFB1C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 17:34:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244899AbiCXRbU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 13:31:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54622 "EHLO
+        id S1352252AbiCXRfo (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Mar 2022 13:35:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242669AbiCXRbS (ORCPT
+        with ESMTP id S233431AbiCXRfm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 13:31:18 -0400
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE8F355747
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 10:29:46 -0700 (PDT)
-Received: by mail-qt1-x82b.google.com with SMTP id t19so4460402qtc.4
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 10:29:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:reply-to:mime-version
-         :content-disposition;
-        bh=cYD0W2yiOTbVTGcteGLlatIUAd0iwc/hCFG55ghJwoY=;
-        b=gy4oFJ0NjYPjFx3ZniSuKAThvdpErlPjAnj20IKcpSBb6MsCS5qV2VnZwV6fiGslbL
-         3EFbk8UTE2xNpAHQ/MDvpuugaenjfOhErB9t3ekQanigWLM/P0SI+X6llt6uuGVvsaQU
-         Jd95QrEgIsxHCYndtxFcCcvvlqWo1mG1tqwuqOFr8N8ofkbcyBgNmC8RnjLURwsrpfUb
-         XaDGq5YzDdqOaRM1dQndzGMipWKXRZ+vUMnWy2nbeg9gvVLPF9Drqj30N1uIc2JCb8CC
-         nMo1/rvA9CqqzPeEm+Y2+WQzm1nLkvYhGw5SwRrUxD/RxRAlbAR2gkcbKg7xZDSULDfq
-         1f7g==
+        Thu, 24 Mar 2022 13:35:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C956B4348D
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 10:34:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648143249;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=q+tZCzVkHI1lWHeqsejJ8HFCo9e3pbw5CAKPMA1Q5wk=;
+        b=WddxyyUan36EdOemLRuseEGGprjFLkzcNDIruzmW2X2/xTx0iLL0hHRzwi4aL+uO/EeAMZ
+        LcjYGwGxWxZwIql5w6AK1l9H3WdpYb/1Autf31jzdrnyTC5skkyjpcHB7eIsxtpNgpuPdo
+        lHG3SEOL9/qM61x4sfkmYOf8UhsxGh0=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-360-C0QWFh0PNnmgza03k4TtOw-1; Thu, 24 Mar 2022 13:34:08 -0400
+X-MC-Unique: C0QWFh0PNnmgza03k4TtOw-1
+Received: by mail-qt1-f198.google.com with SMTP id u29-20020a05622a199d00b002e06ae2f56cso2448036qtc.12
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 10:34:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :reply-to:mime-version:content-disposition;
-        bh=cYD0W2yiOTbVTGcteGLlatIUAd0iwc/hCFG55ghJwoY=;
-        b=M0yECzPB2N2SPi2PNtpJ513040aaTUR6gfmqx3I6naN8JwwUPPKqHvZi2ZLEemM3K4
-         u9vMzc6XuWQtBpsoTxEqViuc+MRcsxky9N0QvTCDnDYvF07Jx/MTbketDEi1JoTVUZT3
-         pWfvQOYC9nyywTWp9w82x03Z9sLRrhiN5ZkP4vadqZLPPv2L7e1F05TwLfaM24IRr5Je
-         PAj/wWjAJ4LfWOd0zza98rEVEKB1nl5SsLjdLDWW6pKXVuX6slFSZHvw5qwfyUSiCvSP
-         H400s81D1SUFGlVkyYlrbO07/555FDqSsvOiBcyU2XCHT3EIYfLOntF6e7zUw3oNh5NC
-         RXUw==
-X-Gm-Message-State: AOAM530W9RjeeK/I3SQZsMYeLDzqtor8ZClFyw53xXd7NCC2ps/H+8NA
-        tDTPeZiW1VyxpsYCgqehFA==
-X-Google-Smtp-Source: ABdhPJwhVJyG0O1PAwXEn58z5sXzAbPqXhMX5LetJY46PQXWM4qhn8nJcvNKQyF0E+cV20Kyi4kGRA==
-X-Received: by 2002:a05:622a:208:b0:2e1:b3ec:b7ce with SMTP id b8-20020a05622a020800b002e1b3ecb7cemr5718572qtx.345.1648142985666;
-        Thu, 24 Mar 2022 10:29:45 -0700 (PDT)
-Received: from serve.minyard.net (serve.minyard.net. [2001:470:b8f6:1b::1])
-        by smtp.gmail.com with ESMTPSA id v7-20020ac85787000000b002e1c8376517sm2814783qta.22.2022.03.24.10.29.43
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=q+tZCzVkHI1lWHeqsejJ8HFCo9e3pbw5CAKPMA1Q5wk=;
+        b=iiS3jYBmVFU7Hbz4/wvV4HiorHT+PKvvjtUyVtYuDO0YPa5pJ4TXwFDOfT864T6zyK
+         g6/CfL6HrC9gu/VNbpmsevoUeL/mimiEPHud/nyNgiYFXIT9wri5Z4uZp6ZISWh0wzNx
+         X4XjJIoRrMeasH9qcwvmdN7k5L2kkmRzBmxuvrLN7i1tQF0yj7eu1wsfoAmdo+Jpt9Mb
+         KWGtx8UfpR/CSbPIUgDzum+u5kAKye5j8dnUvGOPeb4mwXHyY7ghkS9McaelCYwXntbF
+         I6d+SPzmbXXiozGlvwe9RY5rMh+MfEVa2M54Z2dJANIozPf/d5bNI1HHtaGOpombdAJI
+         mdow==
+X-Gm-Message-State: AOAM530ZwCJa8dx5Eags5J6UN3XIim9JdTxqJLDbkpg0J8z30SzcQpTZ
+        i+7AHXqW5z3ojdwGldJ8VjhON7FwkZjiA5LXG5KDxGcisF/D9luhcncfRW0IBOG/3UR/qKOmH1b
+        zAL2Gd6QbySz+DBAcAwAavjvq
+X-Received: by 2002:a05:6214:5010:b0:440:ec82:3d1 with SMTP id jo16-20020a056214501000b00440ec8203d1mr5414194qvb.3.1648143248188;
+        Thu, 24 Mar 2022 10:34:08 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw1c7saTzRhez2nyqWBlDRqgtmNx/Secoc+3AdHUlhTu+bP36hmtkPIo48+YvJm3+Xxi40f0Q==
+X-Received: by 2002:a05:6214:5010:b0:440:ec82:3d1 with SMTP id jo16-20020a056214501000b00440ec8203d1mr5414174qvb.3.1648143248027;
+        Thu, 24 Mar 2022 10:34:08 -0700 (PDT)
+Received: from fedora (modemcable200.11-22-96.mc.videotron.ca. [96.22.11.200])
+        by smtp.gmail.com with ESMTPSA id b202-20020ae9ebd3000000b0067b11d53365sm1830857qkg.47.2022.03.24.10.34.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 10:29:44 -0700 (PDT)
-Sender: Corey Minyard <tcminyard@gmail.com>
-Received: from minyard.net (unknown [IPv6:2001:470:b8f6:1b:f879:e43:4f26:fbe9])
-        by serve.minyard.net (Postfix) with ESMTPSA id B5D471800BA;
-        Thu, 24 Mar 2022 17:29:42 +0000 (UTC)
-Date:   Thu, 24 Mar 2022 12:29:41 -0500
-From:   Corey Minyard <minyard@acm.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        openipmi-developer@lists.sourceforge.net
-Subject: [GIT PULL] IPMI bug fixes for 5.17
-Message-ID: <20220324172941.GI3457@minyard.net>
-Reply-To: minyard@acm.org
+        Thu, 24 Mar 2022 10:34:07 -0700 (PDT)
+Date:   Thu, 24 Mar 2022 13:34:05 -0400
+From:   Adrien Thierry <athierry@redhat.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Gaston Gonzalez <gascoar@gmail.com>,
+        Ojaswin Mujoo <ojaswin98@gmail.com>,
+        linux-staging@lists.linux.dev
+Subject: Re: [PATCH 1/2] dt-bindings: soc: bcm: bcm2835-vchiq: Add support
+ for bcm2711
+Message-ID: <YjyrjWgUQ8UeLM/r@fedora>
+References: <20220315200929.74952-1-athierry@redhat.com>
+ <20220315200929.74952-2-athierry@redhat.com>
+ <YjtqnktIHajn8skP@robh.at.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <YjtqnktIHajn8skP@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit 0c947b893d69231a9add855939da7c66237ab44f:
+Hi,
 
-  Merge tag '5.17-rc-part1-smb3-fixes' of git://git.samba.org/sfrench/cifs-2.6 (2022-01-17 09:53:21 +0200)
+> Why do you have the same compatible twice?
 
-are available in the Git repository at:
+Sorry, I misunderstood the yaml doc fields. I submitted a v2 that fixes
+this.
 
-  https://github.com/cminyard/linux-ipmi.git tags/for-linus-5.17-1
+Thanks,
+Adrien
 
-for you to fetch changes up to 8d10ea152e2fb9b4a42b282cb90bfc4d98e319a3:
-
-  ipmi: initialize len variable (2022-03-20 12:37:15 -0500)
-
-----------------------------------------------------------------
-Minor fixes for IPMI
-
-Little fixes for various things people have noticed.
-
-One enhancement, the IPMI over IPMB (I2c) is modified to allow it to
-take a separate sender and receiver device.  The Raspberry Pi has an
-I2C slave device that cannot send.
-
-----------------------------------------------------------------
-Corey Minyard (3):
-      ipmi: Add the git repository to the MAINTAINERS file
-      ipmi:ipmi_ipmb: Unregister the SMI on remove
-      ipmi:ipmb: Add the ability to have a separate slave and master device
-
-Jason Wang (1):
-      ipmi: ssif: replace strlcpy with strscpy
-
-Joel Stanley (2):
-      ipmi: kcs: aspeed: Add AST2600 compatible string
-      ipmi: kcs: aspeed: Remove old bindings support
-
-Rikard Falkeborn (1):
-      ipmi/watchdog: Constify ident
-
-Tom Rix (1):
-      ipmi: initialize len variable
-
- .../devicetree/bindings/ipmi/ipmi-ipmb.yaml        |  8 +++
- MAINTAINERS                                        |  1 +
- drivers/char/ipmi/ipmi_ipmb.c                      | 60 ++++++++++++++++---
- drivers/char/ipmi/ipmi_ssif.c                      |  4 +-
- drivers/char/ipmi/ipmi_watchdog.c                  |  2 +-
- drivers/char/ipmi/kcs_bmc_aspeed.c                 | 67 +++-------------------
- 6 files changed, 70 insertions(+), 72 deletions(-)
