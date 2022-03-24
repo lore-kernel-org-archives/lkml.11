@@ -2,100 +2,624 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D14D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 14:53:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 682F8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 14:54:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244101AbiC1Oyo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 10:54:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37036 "EHLO
+        id S244109AbiC1Oz7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 10:55:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240562AbiC1Oym (ORCPT
+        with ESMTP id S237404AbiC1Oz4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 10:54:42 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 689115DE50
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 07:53:01 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id p4-20020a17090ad30400b001c7ca87c05bso10176266pju.1
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 07:53:01 -0700 (PDT)
+        Mon, 28 Mar 2022 10:55:56 -0400
+Received: from mail.baikalelectronics.ru (mail.baikalelectronics.com [87.245.175.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3C8C611C0B
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 07:54:08 -0700 (PDT)
+Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id C9E011E28FB;
+        Thu, 24 Mar 2022 04:09:17 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru C9E011E28FB
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=szL7lceaP/NxR0+lC2cN5AaRzpZIx1sqZ2iEfehaPgU=;
-        b=dWoW0WSt+vofTr+ILF/HwHxImbE9tGNhavUUeWUHY4WvJIuRkKIJBouTRGpch6aByh
-         BOCESJWtyC9Iu76Ajmq58cWmG3JORjH1N3DUNyraC9UHpqtMgq5J0B7YvvIwCiB4qSuq
-         43EA1b7BzZ2gstsbw3w8peW/pUMClebmhupAU6Is6uLzwHPCvvmMNApimCrwyzdm/Ogc
-         mRYGeomM5FLr79ZfvojBlNJCv+Y03N/h38wNank/TQ/Bgl3Zpp+EdIMaiOjSkX9MRwim
-         EKf9jK+/Xhy0XPU89tIm71stvekDcCJDBojjObxOlzFtX+2WvswVa86Asj04kDqvnjXi
-         Yq6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=szL7lceaP/NxR0+lC2cN5AaRzpZIx1sqZ2iEfehaPgU=;
-        b=QHZypsh/Z1/d+H8dHG6eHDQSPSTiNWlHg1FeJHcSrwqXQPilkUMUO4zw8GtgPPqCh4
-         SZROZfJpDNVzZCYDzm6oEPVZSleLOOhWuJ4onXe7wA949ma8hMT5kHiUd6/hqKbrsXuf
-         GpobjCobsCGAK2L7ZsIFiSxDLxR6lTclcIEjCv09pgEirTL3rv9Ylfi+krxGBJnncDCt
-         sa6s39IzbMRMUS5RtapQiLd6vbx6IBY3BY8I4tK4qkCrDXeNG0Udx+D22IOHdQx2kqhf
-         jX7QXLKY3TEGlb0sQEDsm5LWFkr+FoLaoHC0EC/EKxx80lfUvd9iB9uUt+/pkm7RbdtF
-         qqNw==
-X-Gm-Message-State: AOAM532M1kfWyGuhmgXU3Ev4IAUnKSH5QImsTk6POMA2LbJuPa+uEOeU
-        9jA+IeapyLFGybJkxvoTyJIm7A==
-X-Google-Smtp-Source: ABdhPJyIClNMv5o0NWmY1p1hSJAbH+a7bM/zRuKCdQmA7b/Y9V8XkwNQyyrDzOcaszKj/ka4JXU7Gg==
-X-Received: by 2002:a17:90b:f82:b0:1c6:58b9:bd36 with SMTP id ft2-20020a17090b0f8200b001c658b9bd36mr41688643pjb.141.1648479180804;
-        Mon, 28 Mar 2022 07:53:00 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id a16-20020a637050000000b00385f92b13d1sm13066121pgn.43.2022.03.28.07.52.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 07:53:00 -0700 (PDT)
-Date:   Mon, 28 Mar 2022 14:52:56 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Ben Gardon <bgardon@google.com>
-Subject: Re: [PATCH] KVM: x86/mmu: Zap only TDP MMU leafs in zap range and
- mmu_notifier unmap
-Message-ID: <YkHLyP1LvH0MYN25@google.com>
-References: <20220325230348.2587437-1-seanjc@google.com>
- <87lewuo4ge.fsf@redhat.com>
+        d=baikalelectronics.ru; s=mail; t=1648084157;
+        bh=Zdf0qvHqxvrEMRZxc02kXstAC/7wGXOQr/Q2VzyrDP4=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=YrIBikLnPeCk/X4LBMWLCNomJIx+IL4u2najm9TAxWILdcTd13TVrhh6+ZUCOq+lo
+         BUARfZfnwEsxvt36BX03fWWaHMHOr5LU47Aw2jbN0UCC2/z0bmUrxJi0ji0G7co93F
+         Mdek9SkfHT1WkbyYVxxg/WB/a2Qx5nxBIwNmxBK4=
+Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 24 Mar 2022 04:09:17 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        <linux-clk@vger.kernel.org>, <linux-pci@vger.kernel.org>,
+        <linux-mips@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH 3/4] clk: baikal-t1: Move reset-controls code into a dedicated module
+Date:   Thu, 24 Mar 2022 04:09:04 +0300
+Message-ID: <20220324010905.15589-4-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220324010905.15589-1-Sergey.Semin@baikalelectronics.ru>
+References: <20220324010905.15589-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87lewuo4ge.fsf@redhat.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022, Vitaly Kuznetsov wrote:
-> Sean Christopherson <seanjc@google.com> writes:
-> 
-> > Re-introduce zapping only leaf SPTEs in kvm_zap_gfn_range() and
-> > kvm_tdp_mmu_unmap_gfn_range(), this time without losing a pending TLB
-> > flush when processing multiple roots (including nested TDP shadow roots).
-> > Dropping the TLB flush resulted in random crashes when running Hyper-V
-> > Server 2019 in a guest with KSM enabled in the host (or any source of
-> > mmu_notifier invalidations, KSM is just the easiest to force).
-> >
-> > This effectively revert commits 873dd122172f8cce329113cfb0dfe3d2344d80c0
-> > and fcb93eb6d09dd302cbef22bd95a5858af75e4156, and thus restores commit
-> > cf3e26427c08ad9015956293ab389004ac6a338e, plus this delta on top:
-> >
-> > bool kvm_tdp_mmu_zap_leafs(struct kvm *kvm, int as_id, gfn_t start, gfn_t end,
-> >         struct kvm_mmu_page *root;
-> >
-> >         for_each_tdp_mmu_root_yield_safe(kvm, root, as_id)
-> > -               flush = tdp_mmu_zap_leafs(kvm, root, start, end, can_yield, false);
-> > +               flush = tdp_mmu_zap_leafs(kvm, root, start, end, can_yield, flush);
-> >
-> >         return flush;
-> >  }
-> >
-> 
-> I confirm this fixes the issue I was seeing, thanks!
-> 
-> Tested-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Before adding the directly controlled resets support it's reasonable to
+move the existing resets control functionality into a dedicated object for
+the sake of the CCU dividers clock driver simplification. After the new
+functionality is added clk-ccu-div.c would have got to a mixture of the
+weakly dependent clocks and resets methods. Splitting the methods up into
+the two objects will make code easier to read especially seeing it isn't
+that hard to do.
 
-Phew!  I think I would have cried were that not the case :-)  Thanks for testing!
+As before the CCU reset module will support the trigger-like CCU resets
+only, which are responsible for the AXI-bus, APB-bus and SATA-ref blocks
+reset. The assert/de-assert-capable reset controls support will be added
+in the next commit.
+
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+---
+ drivers/clk/baikal-t1/Kconfig       |  12 +-
+ drivers/clk/baikal-t1/Makefile      |   1 +
+ drivers/clk/baikal-t1/ccu-rst.c     | 258 ++++++++++++++++++++++++++++
+ drivers/clk/baikal-t1/ccu-rst.h     |  60 +++++++
+ drivers/clk/baikal-t1/clk-ccu-div.c |  94 ++--------
+ 5 files changed, 342 insertions(+), 83 deletions(-)
+ create mode 100644 drivers/clk/baikal-t1/ccu-rst.c
+ create mode 100644 drivers/clk/baikal-t1/ccu-rst.h
+
+diff --git a/drivers/clk/baikal-t1/Kconfig b/drivers/clk/baikal-t1/Kconfig
+index 03102f1094bc..666de354d513 100644
+--- a/drivers/clk/baikal-t1/Kconfig
++++ b/drivers/clk/baikal-t1/Kconfig
+@@ -29,7 +29,6 @@ config CLK_BT1_CCU_PLL
+ 
+ config CLK_BT1_CCU_DIV
+ 	bool "Baikal-T1 CCU Dividers support"
+-	select RESET_CONTROLLER
+ 	select MFD_SYSCON
+ 	default MIPS_BAIKAL_T1
+ 	help
+@@ -39,4 +38,15 @@ config CLK_BT1_CCU_DIV
+ 	  either gateable or ungateable. Some of the CCU dividers can be as well
+ 	  used to reset the domains they're supplying clock to.
+ 
++config CLK_BT1_CCU_RST
++	bool "Baikal-T1 CCU Resets support"
++	select RESET_CONTROLLER
++	select MFD_SYSCON
++	default MIPS_BAIKAL_T1
++	help
++	  Enable this to support the CCU reset blocks responsible for the
++	  AXI-bus and some subsystems reset. These are mainly the trigger-based
++	  reset controls but there are several lines which can be directly
++	  asserted/de-asserted (PCIe and DDR sub-domains).
++
+ endif
+diff --git a/drivers/clk/baikal-t1/Makefile b/drivers/clk/baikal-t1/Makefile
+index b3b9590b95ed..9c3637de9407 100644
+--- a/drivers/clk/baikal-t1/Makefile
++++ b/drivers/clk/baikal-t1/Makefile
+@@ -1,3 +1,4 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ obj-$(CONFIG_CLK_BT1_CCU_PLL) += ccu-pll.o clk-ccu-pll.o
+ obj-$(CONFIG_CLK_BT1_CCU_DIV) += ccu-div.o clk-ccu-div.o
++obj-$(CONFIG_CLK_BT1_CCU_RST) += ccu-rst.o
+diff --git a/drivers/clk/baikal-t1/ccu-rst.c b/drivers/clk/baikal-t1/ccu-rst.c
+new file mode 100644
+index 000000000000..5e33c3ce962a
+--- /dev/null
++++ b/drivers/clk/baikal-t1/ccu-rst.c
+@@ -0,0 +1,258 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (C) 2021 BAIKAL ELECTRONICS, JSC
++ *
++ * Authors:
++ *   Serge Semin <Sergey.Semin@baikalelectronics.ru>
++ *
++ * Baikal-T1 CCU Resets interface driver
++ */
++
++#define pr_fmt(fmt) "bt1-ccu-rst: " fmt
++
++#include <linux/bits.h>
++#include <linux/kernel.h>
++#include <linux/of.h>
++#include <linux/printk.h>
++#include <linux/regmap.h>
++#include <linux/reset-controller.h>
++#include <linux/slab.h>
++#include <linux/spinlock.h>
++
++#include <dt-bindings/clock/bt1-ccu.h>
++#include <dt-bindings/reset/bt1-ccu.h>
++
++#include "ccu-div.h"
++#include "ccu-rst.h"
++
++#define CCU_RST_MAP(_rst_id, _clk_id)		\
++	{					\
++		.rst_id = _rst_id,		\
++		.clk_id = _clk_id,		\
++	}
++
++struct ccu_rst_map {
++	unsigned int rst_id;
++	unsigned int clk_id;
++};
++
++struct ccu_rst_data {
++	struct device_node *np;
++	struct regmap *sys_regs;
++
++	unsigned int rsts_num;
++	struct ccu_rst *rsts;
++
++	unsigned int rsts_map_num;
++	const struct ccu_rst_map *rsts_map;
++
++	unsigned int divs_num;
++	struct ccu_div **divs;
++
++	struct reset_controller_dev rcdev;
++};
++#define to_ccu_rst_data(_rcdev) container_of(_rcdev, struct ccu_rst_data, rcdev)
++
++/*
++ * Each AXI-bus clock divider is equipped with the corresponding clock-consumer
++ * domain reset (it's trigger-based).
++ */
++static const struct ccu_rst_map axi_rst_map[] = {
++	CCU_RST_MAP(CCU_AXI_MAIN_RST, CCU_AXI_MAIN_CLK),
++	CCU_RST_MAP(CCU_AXI_DDR_RST, CCU_AXI_DDR_CLK),
++	CCU_RST_MAP(CCU_AXI_SATA_RST, CCU_AXI_SATA_CLK),
++	CCU_RST_MAP(CCU_AXI_GMAC0_RST, CCU_AXI_GMAC0_CLK),
++	CCU_RST_MAP(CCU_AXI_GMAC1_RST, CCU_AXI_GMAC1_CLK),
++	CCU_RST_MAP(CCU_AXI_XGMAC_RST, CCU_AXI_XGMAC_CLK),
++	CCU_RST_MAP(CCU_AXI_PCIE_M_RST, CCU_AXI_PCIE_M_CLK),
++	CCU_RST_MAP(CCU_AXI_PCIE_S_RST, CCU_AXI_PCIE_S_CLK),
++	CCU_RST_MAP(CCU_AXI_USB_RST, CCU_AXI_USB_CLK),
++	CCU_RST_MAP(CCU_AXI_HWA_RST, CCU_AXI_HWA_CLK),
++	CCU_RST_MAP(CCU_AXI_SRAM_RST, CCU_AXI_SRAM_CLK),
++};
++
++/*
++ * SATA reference clock domain and APB-bus domain are connected with the
++ * trigger-based reset control, which can be activated via the corresponding
++ * clock divider register.
++ */
++static const struct ccu_rst_map sys_rst_map[] = {
++	CCU_RST_MAP(CCU_SYS_SATA_REF_RST, CCU_SYS_SATA_REF_CLK),
++	CCU_RST_MAP(CCU_SYS_APB_RST, CCU_SYS_APB_CLK),
++};
++
++static int ccu_rst_reset(struct reset_controller_dev *rcdev,
++			 unsigned long idx)
++{
++	struct ccu_rst_data *data = to_ccu_rst_data(rcdev);
++	struct ccu_rst *rst;
++
++	if (idx >= data->rsts_num) {
++		pr_err("Invalid reset ID %lu specified\n", idx);
++		return -EINVAL;
++	}
++
++	rst = &data->rsts[idx];
++	return ccu_div_reset_domain(rst->div);
++}
++
++static const struct reset_control_ops ccu_rst_ops = {
++	.reset = ccu_rst_reset,
++};
++
++static int ccu_rst_of_idx_get(struct reset_controller_dev *rcdev,
++			      const struct of_phandle_args *rstspec)
++{
++	struct ccu_rst_data *data = to_ccu_rst_data(rcdev);
++	unsigned int rst_id, idx;
++
++	rst_id = rstspec->args[0];
++	for (idx = 0; idx < data->rsts_num; ++idx) {
++		if (data->rsts[idx].id == rst_id)
++			break;
++	}
++	if (idx == data->rsts_num) {
++		pr_err("Invalid reset ID %u specified\n", rst_id);
++		return -EINVAL;
++	}
++
++	return idx;
++}
++
++static struct ccu_div *ccu_rst_find_div(struct ccu_rst_data *data,
++					unsigned int clk_id)
++{
++	struct ccu_div *div;
++	int idx;
++
++	for (idx = 0; idx < data->divs_num; ++idx) {
++		div = data->divs[idx];
++		if (div->id == clk_id)
++			return div;
++	}
++
++	return ERR_PTR(-EINVAL);
++}
++
++static struct ccu_rst_data *ccu_rst_create_data(const struct ccu_rst_init_data *rst_init)
++{
++	struct ccu_rst_data *data;
++	int ret;
++
++	data = kzalloc(sizeof(*data), GFP_KERNEL);
++	if (!data)
++		return ERR_PTR(-ENOMEM);
++
++	data->np = rst_init->np;
++	data->sys_regs = rst_init->sys_regs;
++	data->divs_num = rst_init->divs_num;
++	data->divs = rst_init->divs;
++	if (of_device_is_compatible(data->np, "baikal,bt1-ccu-axi")) {
++		data->rsts_map_num = ARRAY_SIZE(axi_rst_map);
++		data->rsts_map = axi_rst_map;
++	} else if (of_device_is_compatible(data->np, "baikal,bt1-ccu-sys")) {
++		data->rsts_map_num = ARRAY_SIZE(sys_rst_map);
++		data->rsts_map = sys_rst_map;
++	} else {
++		pr_err("Incompatible DT node '%s' specified\n",
++			of_node_full_name(data->np));
++		ret = -EINVAL;
++		goto err_kfree_data;
++	}
++
++	data->rsts_num = data->rsts_map_num;
++	data->rsts = kcalloc(data->rsts_num, sizeof(*data->rsts), GFP_KERNEL);
++	if (!data->rsts) {
++		ret = -ENOMEM;
++		goto err_kfree_data;
++	}
++
++	return data;
++
++err_kfree_data:
++	kfree(data);
++
++	return ERR_PTR(ret);
++}
++
++static void ccu_rst_free_data(struct ccu_rst_data *data)
++{
++	kfree(data->rsts);
++
++	kfree(data);
++}
++
++static int ccu_rst_init_desc(struct ccu_rst_data *data)
++{
++	struct ccu_rst *rst = data->rsts;
++	unsigned int idx;
++
++	for (idx = 0; idx < data->rsts_map_num; ++idx, ++rst) {
++		const struct ccu_rst_map *map = &data->rsts_map[idx];
++
++		rst->id = map->rst_id;
++		rst->div = ccu_rst_find_div(data, map->clk_id);
++		if (IS_ERR(rst->div)) {
++			pr_err("Couldn't find clock divider '%u'\n", map->clk_id);
++			return PTR_ERR(rst->div);
++		}
++	}
++
++	return 0;
++}
++
++static int ccu_rst_dev_register(struct ccu_rst_data *data)
++{
++	int ret;
++
++	data->rcdev.ops = &ccu_rst_ops;
++	data->rcdev.of_node = data->np;
++	data->rcdev.nr_resets = data->rsts_num;
++	data->rcdev.of_reset_n_cells = 1;
++	data->rcdev.of_xlate = ccu_rst_of_idx_get;
++
++	ret = reset_controller_register(&data->rcdev);
++	if (ret) {
++		pr_err("Couldn't register '%s' reset controller\n",
++			of_node_full_name(data->np));
++	}
++
++	return ret;
++}
++
++static void ccu_rst_dev_unregister(struct ccu_rst_data *data)
++{
++	reset_controller_unregister(&data->rcdev);
++}
++
++struct ccu_rst_data *ccu_rst_hw_register(const struct ccu_rst_init_data *rst_init)
++{
++	struct ccu_rst_data *data;
++	int ret;
++
++	data = ccu_rst_create_data(rst_init);
++	if (IS_ERR(data))
++		return data;
++
++	ret = ccu_rst_init_desc(data);
++	if (ret)
++		goto err_free_data;
++
++	ret = ccu_rst_dev_register(data);
++	if (ret)
++		goto err_free_data;
++
++	return data;
++
++err_free_data:
++	ccu_rst_free_data(data);
++
++	return ERR_PTR(ret);
++}
++
++void ccu_rst_hw_unregister(struct ccu_rst_data *data)
++{
++	ccu_rst_dev_unregister(data);
++
++	ccu_rst_free_data(data);
++}
+diff --git a/drivers/clk/baikal-t1/ccu-rst.h b/drivers/clk/baikal-t1/ccu-rst.h
+new file mode 100644
+index 000000000000..2ef82899dba8
+--- /dev/null
++++ b/drivers/clk/baikal-t1/ccu-rst.h
+@@ -0,0 +1,60 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (C) 2021 BAIKAL ELECTRONICS, JSC
++ *
++ * Baikal-T1 CCU Resets interface driver
++ */
++#ifndef __CLK_BT1_CCU_RST_H__
++#define __CLK_BT1_CCU_RST_H__
++
++#include <linux/regmap.h>
++#include <linux/of.h>
++
++#include "ccu-div.h"
++
++struct ccu_rst_data;
++
++/*
++ * struct ccu_rst_init_data - CCU Resets initialization data
++ * @sys_regs: Baikal-T1 System Controller registers map.
++ * @np: Pointer to the node with the System CCU block.
++ * @divs_num: Number of the CCU dividers the module supports.
++ * @divs: Array of pointers to the CCU divider descriptors.
++ */
++struct ccu_rst_init_data {
++	struct regmap *sys_regs;
++	struct device_node *np;
++
++	unsigned int divs_num;
++	struct ccu_div **divs;
++};
++
++/*
++ * struct ccu_div - CCU Reset descriptor
++ * @id: Reset identifier.
++ * @div: Pointer to the CCU Divider descriptor (can be NULL).
++ */
++struct ccu_rst {
++	unsigned int id;
++	struct ccu_div *div;
++};
++
++#ifdef CONFIG_CLK_BT1_CCU_RST
++
++struct ccu_rst_data *ccu_rst_hw_register(const struct ccu_rst_init_data *init);
++
++void ccu_rst_hw_unregister(struct ccu_rst_data *rcd);
++
++#else
++
++static inline
++struct ccu_rst_data *ccu_rst_hw_register(const struct ccu_rst_init_data *init)
++{
++	return NULL;
++}
++
++static inline void ccu_rst_hw_unregister(struct ccu_rst_data *rcd) {}
++
++#endif
++
++#endif /* __CLK_BT1_CCU_RST_H__ */
+diff --git a/drivers/clk/baikal-t1/clk-ccu-div.c b/drivers/clk/baikal-t1/clk-ccu-div.c
+index e544129a7543..1ad7db7ea785 100644
+--- a/drivers/clk/baikal-t1/clk-ccu-div.c
++++ b/drivers/clk/baikal-t1/clk-ccu-div.c
+@@ -24,9 +24,9 @@
+ #include <linux/regmap.h>
+ 
+ #include <dt-bindings/clock/bt1-ccu.h>
+-#include <dt-bindings/reset/bt1-ccu.h>
+ 
+ #include "ccu-div.h"
++#include "ccu-rst.h"
+ 
+ #define CCU_AXI_MAIN_BASE		0x030
+ #define CCU_AXI_DDR_BASE		0x034
+@@ -85,12 +85,6 @@
+ 		.divider = _divider				\
+ 	}
+ 
+-#define CCU_DIV_RST_MAP(_rst_id, _clk_id)	\
+-	{					\
+-		.rst_id = _rst_id,		\
+-		.clk_id = _clk_id		\
+-	}
+-
+ struct ccu_div_info {
+ 	unsigned int id;
+ 	const char *name;
+@@ -105,11 +99,6 @@ struct ccu_div_info {
+ 	unsigned long features;
+ };
+ 
+-struct ccu_div_rst_map {
+-	unsigned int rst_id;
+-	unsigned int clk_id;
+-};
+-
+ struct ccu_div_data {
+ 	struct device_node *np;
+ 	struct regmap *sys_regs;
+@@ -118,11 +107,8 @@ struct ccu_div_data {
+ 	const struct ccu_div_info *divs_info;
+ 	struct ccu_div **divs;
+ 
+-	unsigned int rst_num;
+-	const struct ccu_div_rst_map *rst_map;
+-	struct reset_controller_dev rcdev;
++	struct ccu_rst_data *rcd;
+ };
+-#define to_ccu_div_data(_rcdev) container_of(_rcdev, struct ccu_div_data, rcdev)
+ 
+ /*
+  * AXI Main Interconnect (axi_main_clk) and DDR AXI-bus (axi_ddr_clk) clocks
+@@ -169,20 +155,6 @@ static const struct ccu_div_info axi_info[] = {
+ 			 CLK_SET_RATE_GATE, CCU_DIV_RESET_DOMAIN)
+ };
+ 
+-static const struct ccu_div_rst_map axi_rst_map[] = {
+-	CCU_DIV_RST_MAP(CCU_AXI_MAIN_RST, CCU_AXI_MAIN_CLK),
+-	CCU_DIV_RST_MAP(CCU_AXI_DDR_RST, CCU_AXI_DDR_CLK),
+-	CCU_DIV_RST_MAP(CCU_AXI_SATA_RST, CCU_AXI_SATA_CLK),
+-	CCU_DIV_RST_MAP(CCU_AXI_GMAC0_RST, CCU_AXI_GMAC0_CLK),
+-	CCU_DIV_RST_MAP(CCU_AXI_GMAC1_RST, CCU_AXI_GMAC1_CLK),
+-	CCU_DIV_RST_MAP(CCU_AXI_XGMAC_RST, CCU_AXI_XGMAC_CLK),
+-	CCU_DIV_RST_MAP(CCU_AXI_PCIE_M_RST, CCU_AXI_PCIE_M_CLK),
+-	CCU_DIV_RST_MAP(CCU_AXI_PCIE_S_RST, CCU_AXI_PCIE_S_CLK),
+-	CCU_DIV_RST_MAP(CCU_AXI_USB_RST, CCU_AXI_USB_CLK),
+-	CCU_DIV_RST_MAP(CCU_AXI_HWA_RST, CCU_AXI_HWA_CLK),
+-	CCU_DIV_RST_MAP(CCU_AXI_SRAM_RST, CCU_AXI_SRAM_CLK)
+-};
+-
+ /*
+  * APB-bus clock is marked as critical since it's a main communication bus
+  * for the SoC devices registers IO-operations.
+@@ -241,11 +213,6 @@ static const struct ccu_div_info sys_info[] = {
+ 			 CLK_SET_RATE_GATE, CCU_DIV_SKIP_ONE_TO_THREE)
+ };
+ 
+-static const struct ccu_div_rst_map sys_rst_map[] = {
+-	CCU_DIV_RST_MAP(CCU_SYS_SATA_REF_RST, CCU_SYS_SATA_REF_CLK),
+-	CCU_DIV_RST_MAP(CCU_SYS_APB_RST, CCU_SYS_APB_CLK),
+-};
+-
+ static struct ccu_div *ccu_div_find_desc(struct ccu_div_data *data,
+ 					 unsigned int clk_id)
+ {
+@@ -261,42 +228,6 @@ static struct ccu_div *ccu_div_find_desc(struct ccu_div_data *data,
+ 	return ERR_PTR(-EINVAL);
+ }
+ 
+-static int ccu_div_reset(struct reset_controller_dev *rcdev,
+-			 unsigned long rst_id)
+-{
+-	struct ccu_div_data *data = to_ccu_div_data(rcdev);
+-	const struct ccu_div_rst_map *map;
+-	struct ccu_div *div;
+-	int idx, ret;
+-
+-	for (idx = 0, map = data->rst_map; idx < data->rst_num; ++idx, ++map) {
+-		if (map->rst_id == rst_id)
+-			break;
+-	}
+-	if (idx == data->rst_num) {
+-		pr_err("Invalid reset ID %lu specified\n", rst_id);
+-		return -EINVAL;
+-	}
+-
+-	div = ccu_div_find_desc(data, map->clk_id);
+-	if (IS_ERR(div)) {
+-		pr_err("Invalid clock ID %d in mapping\n", map->clk_id);
+-		return PTR_ERR(div);
+-	}
+-
+-	ret = ccu_div_reset_domain(div);
+-	if (ret) {
+-		pr_err("Reset isn't supported by divider %s\n",
+-			clk_hw_get_name(ccu_div_get_clk_hw(div)));
+-	}
+-
+-	return ret;
+-}
+-
+-static const struct reset_control_ops ccu_div_rst_ops = {
+-	.reset = ccu_div_reset,
+-};
+-
+ static struct ccu_div_data *ccu_div_create_data(struct device_node *np)
+ {
+ 	struct ccu_div_data *data;
+@@ -310,13 +241,9 @@ static struct ccu_div_data *ccu_div_create_data(struct device_node *np)
+ 	if (of_device_is_compatible(np, "baikal,bt1-ccu-axi")) {
+ 		data->divs_num = ARRAY_SIZE(axi_info);
+ 		data->divs_info = axi_info;
+-		data->rst_num = ARRAY_SIZE(axi_rst_map);
+-		data->rst_map = axi_rst_map;
+ 	} else if (of_device_is_compatible(np, "baikal,bt1-ccu-sys")) {
+ 		data->divs_num = ARRAY_SIZE(sys_info);
+ 		data->divs_info = sys_info;
+-		data->rst_num = ARRAY_SIZE(sys_rst_map);
+-		data->rst_map = sys_rst_map;
+ 	} else {
+ 		pr_err("Incompatible DT node '%s' specified\n",
+ 			of_node_full_name(np));
+@@ -439,18 +366,21 @@ static void ccu_div_clk_unregister(struct ccu_div_data *data)
+ 
+ static int ccu_div_rst_register(struct ccu_div_data *data)
+ {
+-	int ret;
++	struct ccu_rst_init_data init = {0};
+ 
+-	data->rcdev.ops = &ccu_div_rst_ops;
+-	data->rcdev.of_node = data->np;
+-	data->rcdev.nr_resets = data->rst_num;
++	init.sys_regs = data->sys_regs;
++	init.np = data->np;
++	init.divs_num = data->divs_num;
++	init.divs = data->divs;
+ 
+-	ret = reset_controller_register(&data->rcdev);
+-	if (ret)
++	data->rcd = ccu_rst_hw_register(&init);
++	if (IS_ERR(data->rcd)) {
+ 		pr_err("Couldn't register divider '%s' reset controller\n",
+ 			of_node_full_name(data->np));
++		return PTR_ERR(data->rcd);
++	}
+ 
+-	return ret;
++	return 0;
+ }
+ 
+ static void ccu_div_init(struct device_node *np)
+-- 
+2.35.1
+
