@@ -2,182 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E8EC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 16:23:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33FE0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 16:23:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348403AbiCXQYt (ORCPT
+        id S1345832AbiCXQZX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 12:24:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44618 "EHLO
+        Thu, 24 Mar 2022 12:25:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235893AbiCXQYo (ORCPT
+        with ESMTP id S1351639AbiCXQZT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 12:24:44 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D1DF1EAF6
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 09:23:11 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id e5so5241139pls.4
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 09:23:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jN0efcoohqKl1PIpdMiTp80DLtECdVuZLnKEeBNGgVg=;
-        b=ZW86nxdZcCjZpI1mIYCcyifjWGAFZD70ZLNCch9jH9xEBkIFeX4juAT04Q84jf/2Se
-         Y0aFQHp1ve+Di+Y4IAD0tKvXlZLJnImBXFlk/VujOyTQCLmH9+lA6d2NtJrRFQz7txm3
-         zZVGSQ/dYIdvrul1xg2ReGtce20c2+UJ/8cP8MGlhuz8+7ggf+c5Gtk83nzVkPiM3o3N
-         oNslPCBp0dh0Xb2tj5QBS//7fY73aXB+PVE3jiIygjEXhVzErvtCBMmViSrkFdud3fvr
-         7d687YmlDV0sOpQTzYKPHFwAEMafzLzDlCS+CnSn7O+ZlDY0PKjmCEwJbYFRA+BaXCEB
-         Xsqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jN0efcoohqKl1PIpdMiTp80DLtECdVuZLnKEeBNGgVg=;
-        b=rdXexZXHqB9KmAf/FiBlGNYdnbL8NHbczG+6wTZ2Bv94zVz7eUcvw8Xh5DTbL3cXfn
-         WiXb0rTiKHNnHFK3Lgad/LXkVXiI+dVyidyj3oMvh2C4SHQ484uwR1fNhVQsvKKnSZwb
-         ZpWUEzKVIgURZH7fO3hycmhzl2EivO+Coi5IHtdXCW+vFzMpIMu6xM2YL2p40MrKaGnX
-         htrVKtnTzMSfedhrV1jEM9PIiOYoNZILlsiUtsZQgUzBS27nKtM6Lgy7C+F7U05svbaz
-         wyHHHbOBHnS4QMvlYkXIcpsRALgX0O2WOHO3r/BCjRnf9hTgsJ80iE6ttQgjg2b9U3oo
-         id/Q==
-X-Gm-Message-State: AOAM531UkWV+X1dJA8Y7mWgNUjKRtdtccTmBiwIt1I1ZBznxZseb0vPa
-        yJ6sDIBsxpr5wEJOPlgcUGHo
-X-Google-Smtp-Source: ABdhPJyCpECIXEL11rXKn1XKFCDSnPX48KjkZQCzRcWGR9PQbrX7SJNHzhSoBkkkppG59q6FnXKHRg==
-X-Received: by 2002:a17:902:d504:b0:154:172:3677 with SMTP id b4-20020a170902d50400b0015401723677mr6800285plg.147.1648138990872;
-        Thu, 24 Mar 2022 09:23:10 -0700 (PDT)
-Received: from thinkpad ([27.111.75.5])
-        by smtp.gmail.com with ESMTPSA id g12-20020a63b14c000000b00384332d9026sm2983645pgp.23.2022.03.24.09.23.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 09:23:10 -0700 (PDT)
-Date:   Thu, 24 Mar 2022 21:53:04 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Frank Li <Frank.Li@nxp.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 05/25] dmaengine: dw-edma: Convert ll/dt phys-address to
- PCIe bus/DMA address
-Message-ID: <20220324162304.GO2854@thinkpad>
-References: <20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru>
- <20220324014836.19149-6-Sergey.Semin@baikalelectronics.ru>
+        Thu, 24 Mar 2022 12:25:19 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C1D63D4A8;
+        Thu, 24 Mar 2022 09:23:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Mpi6o7xeN/Ty9X1JVI6zzFbTtsWQQmcFLPuvEEzpv28=; b=5MDxCKDl5ahia3QE0xFnOqhof3
+        xWkDmQm1KTUQo3bK/ac0g4lDScq9s+idUmSQyKHIM0TbXzSt+q3yQp+atePfuO8JVAIbmGgRzBpSp
+        ayUMw3/ehGCG82LzA1108dkosaZh7gJgc65WHvjUgR2n7qk5g8uKtnOnQq1+wG7kXbow=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nXQFL-00CTiC-TQ; Thu, 24 Mar 2022 17:23:35 +0100
+Date:   Thu, 24 Mar 2022 17:23:35 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Xu Liang <lxu@maxlinear.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC net-next 4/5] net: phy: introduce is_c45_over_c22 flag
+Message-ID: <YjybB/fseibDU4dT@lunn.ch>
+References: <20220323183419.2278676-1-michael@walle.cc>
+ <20220323183419.2278676-5-michael@walle.cc>
+ <Yjt99k57mM5PQ8bT@lunn.ch>
+ <8304fb3578ee38525a158af768691e75@walle.cc>
+ <Yju+SGuZ9aB52ARi@lunn.ch>
+ <30012bd8256be3be9977bd15d1486c84@walle.cc>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220324014836.19149-6-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <30012bd8256be3be9977bd15d1486c84@walle.cc>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 04:48:16AM +0300, Serge Semin wrote:
-> In accordance with the dw_edma_region.paddr field semantics it is supposed
-> to be initialized with a memory base address visible by the DW eDMA
-> controller. If the DMA engine is embedded into the DW PCIe Host/EP
-> controller, then the address should belong to the Local CPU/Application
-> memory. If eDMA is remotely accessible across the PCIe bus via the PCIe
-> memory IOs, then the address needs to be a part of the PCIe bus memory
-> space. The later case hasn't been well covered in the corresponding
-> glue-driver. Since in general the PCIe memory space doesn't have to match
-> the CPU memory space and the pci_dev.resource[] arrays contain the
-> resources defined in the CPU memory space, a proper conversion needs to be
-> performed, otherwise either the driver won't properly work or much worse
-> the memory corruption will happen. The conversion can be done by means of
-> the pci_bus_address() method. Let's use it to retrieve the LL, DT and CSRs
-> PCIe memory ranges.
+> > To some extent, we need to separate finding the device on the bus to
+> > actually using the device. The device might respond to C22, give us
+> > its ID, get the correct driver loaded based on that ID, and the driver
+> > then uses the C45 address space to actually configure the PHY.
+> > 
+> > Then there is the Marvel 10G PHY. It responds to C22, but returns 0
+> > for the ID! There is a special case for this in the code, it then
+> > looks in the C45 space and uses the ID from there, if it finds
+> > something useful.
+> > 
+> > So as i said in my reply to the cover letter, we have two different
+> > state variables:
+> > 
+> > 1) The PHY has the C45 register space.
+> > 
+> > 2) We need to either use C45 transfers, or C45 over C22 transfers to
+> >    access the C45 register space.
+> > 
+> > And we potentially have a chicken/egg problem. The PHY driver knows
+> > 1), but in order to know what driver to load we need the ID registers
+> > from the PHY, or some external hint like DT. We are also currently
+> > only probing C22, or C45, but not C45 over C22. And i'm not sure we
+> > actually can probe C45 over C22 because there are C22 only PHYs which
+> > use those two register for other things. So we are back to the driver
+> > again which does know if C45 over C22 will work.
 > 
-> Note in addition to that we need to extend the dw_edma_region.paddr field
-> size. The field normally contains a memory range base address to be set in
-> the DW eDMA Linked-List pointer register or as a base address of the
-> Linked-List data buffer. In accordance with [1] the LL range is supposed
-> to be created in the Local CPU/Application memory, but depending on the DW
-> eDMA utilization the memory can be created as a part of the PCIe bus
-> address space (as in the case of the DW PCIe EP prototype kit). Thus in
-> the former case the dw_edma_region.paddr field should have the dma_addr_t
-> type, while in the later one - pci_bus_addr_t. Seeing the corresponding
-> CSRs are always 64-bits wide let's convert the dw_edma_region.paddr field
-> type to be u64 and let the client code logic to make sure it has a valid
-> address visible by the DW eDMA controller. For instance the DW eDMA PCIe
-> glue-driver initializes the field with the addresses from the PCIe bus
-> memory space.
-> 
-> [1] DesignWare Cores PCI Express Controller Databook - DWC PCIe Root Port,
->     v.5.40a, March 2019, p.1103
-> 
-> Fixes: 41aaff2a2ac0 ("dmaengine: Add Synopsys eDMA IP PCIe glue-logic")
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> Isn't it safe to assume that if a PHY implements the indirect
+> registers for c45 in its c22 space that it will also have a valid
+> PHY ID and then the it's driver will be probed?
 
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+See: https://elixir.bootlin.com/linux/latest/source/drivers/net/phy/phy_device.c#L895
 
-Thanks,
-Mani
+No valid ID in C22 space.
 
-> ---
->  drivers/dma/dw-edma/dw-edma-pcie.c | 8 ++++----
->  include/linux/dma/edma.h           | 2 +-
->  2 files changed, 5 insertions(+), 5 deletions(-)
+> So if a PHY is
+> probed as c22 its driver might tell us "wait, it's actually a c45
+> phy and hey for your convenience it also have the indirect registers
+> in c22". We can then set has_c45 and maybe c45_over_c22 (also depending
+> on the bus capabilities).
+
+In general, if the core can do something, it is better than the driver
+doing it. If the core cannot reliably figure it out, then we have to
+leave it to the drivers. It could well be we need the drivers to set
+has_c45. I would prefer that drivers don't touch c45_over_c22 because
+they don't have the knowledge of what the bus is capable of doing. The
+only valid case i can think of is for a very oddball PHY which has C45
+register space, but cannot actually do C45 transfers, and so C45 over
+C22 is the only option.
+
+> > So phydev->has_c45 we can provisionally set if we probed the PHY by
+> > C45. But the driver should also set it if it knows better, or even the
+> > core can set it the first time the driver uses an _mmd API call.
 > 
-> diff --git a/drivers/dma/dw-edma/dw-edma-pcie.c b/drivers/dma/dw-edma/dw-edma-pcie.c
-> index d6b5e2463884..04c95cba1244 100644
-> --- a/drivers/dma/dw-edma/dw-edma-pcie.c
-> +++ b/drivers/dma/dw-edma/dw-edma-pcie.c
-> @@ -231,7 +231,7 @@ static int dw_edma_pcie_probe(struct pci_dev *pdev,
->  			return -ENOMEM;
->  
->  		ll_region->vaddr += ll_block->off;
-> -		ll_region->paddr = pdev->resource[ll_block->bar].start;
-> +		ll_region->paddr = pci_bus_address(pdev, ll_block->bar);
->  		ll_region->paddr += ll_block->off;
->  		ll_region->sz = ll_block->sz;
->  
-> @@ -240,7 +240,7 @@ static int dw_edma_pcie_probe(struct pci_dev *pdev,
->  			return -ENOMEM;
->  
->  		dt_region->vaddr += dt_block->off;
-> -		dt_region->paddr = pdev->resource[dt_block->bar].start;
-> +		dt_region->paddr = pci_bus_address(pdev, dt_block->bar);
->  		dt_region->paddr += dt_block->off;
->  		dt_region->sz = dt_block->sz;
->  	}
-> @@ -256,7 +256,7 @@ static int dw_edma_pcie_probe(struct pci_dev *pdev,
->  			return -ENOMEM;
->  
->  		ll_region->vaddr += ll_block->off;
-> -		ll_region->paddr = pdev->resource[ll_block->bar].start;
-> +		ll_region->paddr = pci_bus_address(pdev, ll_block->bar);
->  		ll_region->paddr += ll_block->off;
->  		ll_region->sz = ll_block->sz;
->  
-> @@ -265,7 +265,7 @@ static int dw_edma_pcie_probe(struct pci_dev *pdev,
->  			return -ENOMEM;
->  
->  		dt_region->vaddr += dt_block->off;
-> -		dt_region->paddr = pdev->resource[dt_block->bar].start;
-> +		dt_region->paddr = pci_bus_address(pdev, dt_block->bar);
->  		dt_region->paddr += dt_block->off;
->  		dt_region->sz = dt_block->sz;
->  	}
-> diff --git a/include/linux/dma/edma.h b/include/linux/dma/edma.h
-> index 8897f8a79b52..5abac9640a4e 100644
-> --- a/include/linux/dma/edma.h
-> +++ b/include/linux/dma/edma.h
-> @@ -18,7 +18,7 @@
->  struct dw_edma;
->  
->  struct dw_edma_region {
-> -	phys_addr_t	paddr;
-> +	u64		paddr;
->  	void __iomem	*vaddr;
->  	size_t		sz;
->  };
-> -- 
-> 2.35.1
+> I'm not sure about the _mmd calls, there are PHYs which have MMDs
+> (I guess EEE is an example?) but are not capable of C45 accesses.
+
+Ah, yes, i forgot about EEE. That was a bad idea.
+
+> > phydev->c45_over_c22 we are currently in a bad shape for. We cannot
+> > reliably say the bus master supports C45. If the bus capabilities say
+> > C22 only, we can set phydev->c45_over_c22. If the bus capabilities
+> > list C45, we can set it false. But that only covers a few busses, most
+> > don't have any capabilities set. We can try a C45 access and see if we
+> > get an -EOPNOTSUPP, in which case we can set phydev->c45_over_c22. But
+> > the bus driver could also do the wrong thing, issue a C22 transfer and
+> > give us back rubbish.
 > 
+> First question, what do you think about keeping the is_c45 property but
+> with a different meaning and add use_c45_over_c22. That way it will be
+> less code churn:
+> 
+>  * @is_c45:  Set to true if this PHY has clause 45 address space.
+>  * @use_c45_over_c22:  Set to true if c45-over-c22 addressing is used.
+
+I prefer to change is_c45. We then get the compiler to help us with
+code review. The build bots will tell us about any code we fail to
+check and change. It will also help anybody with out of tree code
+making use of is_c45.
+
+       Andrew
