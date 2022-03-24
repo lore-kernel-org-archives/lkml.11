@@ -2,170 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0D22C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 06:22:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9360BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 06:22:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348167AbiCXGWq (ORCPT
+        id S1348163AbiCXGY2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 02:22:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47416 "EHLO
+        Thu, 24 Mar 2022 02:24:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245195AbiCXGWo (ORCPT
+        with ESMTP id S242262AbiCXGYZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 02:22:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9C6692A3
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 23:21:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2063F60ECE
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 06:21:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7DBAC340F2;
-        Thu, 24 Mar 2022 06:21:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648102872;
-        bh=MdgQNGNSE+Sgr79DCsdGrpzudhUnWI3YfgIj/KYVg4k=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZDquGjTenN64kYEEGjGGRZISDVD0eV9F3yG3HIBdL+U/gSNgVyDZW12YOdkNcvYwV
-         SwVM1AEf/r6zjSoYCysgysqueqd/orYArSnh1B/rAaO1g5FlRLwxK+6jRyShUUOpTf
-         41Oq5pgcz5CX3JCggwg9qI7iYHfRlBLwU2WOJrCuT9M9w6rE24DdQyNkS9C2OETzOH
-         7fpPWaZFuh4at1g6k41fTxgQ8NR5+/hVD4KhFfjHtPgl/gEmoPLrsVps3dy3zS50AN
-         FsdJ+wBwR4DOHypUyjTDiUfw9gNMuWJIOqLm442hxDM64vxeOU1pOqfI9Zo8JiPqhU
-         MbPiigD344wYw==
-Date:   Thu, 24 Mar 2022 15:21:08 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Subject: Re: [PATCH] ARM: kprobes: Make __kretprobe_trampoline as a pure asm
- function
-Message-Id: <20220324152108.b6016621dd6b8297eddd6bb5@kernel.org>
-In-Reply-To: <164733793626.1008610.12121025094280924953.stgit@devnote2>
-References: <20220315182558.1a056d8b3975932f6589b60f@kernel.org>
-        <164733793626.1008610.12121025094280924953.stgit@devnote2>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Thu, 24 Mar 2022 02:24:25 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B497C96818;
+        Wed, 23 Mar 2022 23:22:50 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id j83so3965861oih.6;
+        Wed, 23 Mar 2022 23:22:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=rdzl6Jf6niYa4MMeejzQkrqz2P7au8ACLXhQDsT0pBI=;
+        b=EO8K1z8BS/6PReRIIFoQ+Sduaw9R2peQUYTyIFAutGKVo+RcXyF/uo+vSXXVndxwBN
+         l+ih26tIUR214XE/aObvcvzckQtXCHvy3kjpY6Qb5B3LAF8bSME3g2j+2uUhIe+qht3X
+         gIW8pi6/DghC0Quq2jjcaFOUqvSad4Mexv0hPKo01oMQvF2sn5HtYKRbwPa6fLN8SCJd
+         9NxRVMDNAYIS5vBlWCD/1xLIVanxtLEiHvzfFK9k2o+XhLZlb1w4yKX7F5y5iSinwI+p
+         1DLYpjyBFzSVINqcz4iSsshrwU7P8Y367+KPQ9k8LePCBumRIP1VpKPm96ybfsF3oFAW
+         DqiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=rdzl6Jf6niYa4MMeejzQkrqz2P7au8ACLXhQDsT0pBI=;
+        b=kEZBK4HDhdJUPYYLlbgblfpCFW+arMkYdhPaR0Hen/T4704gAm4W+nxXx0Si60anbu
+         SkcHorRB4OrN8ClQxifxJ70JSBE5c6SDWWBMzVIrgAKOzU43Fr3jngou4ujOr69e4loa
+         ljUxw2veMW3yld8blLWCgbzixSt+V0QlrxW7jxFAaSTCwLzR3BqjTdY84Zf/EKOe238e
+         Q5q2Cp5RSZb4ZMTXZsRpeR3SzEkVP1Ew2yzMNBfwcMCXJcLBqMDCJvMEkAertUQEj73l
+         iOpi5k0A7JNDroYNWVyavz5N9awvEo0LwRaZaIftN9+Ca67MffWQRNTx1WiBAVYohW0h
+         S5Dg==
+X-Gm-Message-State: AOAM532cVZVMsMBH1hV3W7xy1PNzEGFQGaGVKPJfdkkpDuYUJ3fzVn7r
+        iIgKCfcOxGJdT1TIjtc/hdPUvBaMiJrIMnloVL4BdyPfOgI0bSZy
+X-Google-Smtp-Source: ABdhPJwkl1nlYBOxuy2+4DJvoCItRF5uKq2+SVGIlCrOWlibkxJsklVyDYmabbg/+sNw0PITKUiGcz44TvUP2jJeS3k=
+X-Received: by 2002:aca:61c1:0:b0:2ec:d091:ff53 with SMTP id
+ v184-20020aca61c1000000b002ecd091ff53mr6584829oib.235.1648102969953; Wed, 23
+ Mar 2022 23:22:49 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220311164628.378849-1-gengcixi@gmail.com> <20220311164628.378849-2-gengcixi@gmail.com>
+ <6e4f64dc-bb3d-0e05-0380-7e6f3b1a823c@kernel.org>
+In-Reply-To: <6e4f64dc-bb3d-0e05-0380-7e6f3b1a823c@kernel.org>
+From:   Cixi Geng <gengcixi@gmail.com>
+Date:   Thu, 24 Mar 2022 14:22:13 +0800
+Message-ID: <CAF12kFuKnm2qenvpmKhCVD4T+d=0SyruzdpJ5FX1RS8gvqbyNA@mail.gmail.com>
+Subject: Re: [PATCH V2 1/7] dt-bindings:iio:adc: add sprd,ump9620-adc dtbindings
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     jic23@kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        "baolin.wang7@gmail.com" <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>, lgirdwood@gmail.com,
+        Mark Brown <broonie@kernel.org>,
+        =?UTF-8?B?5pyx546J5piOIChZdW1pbmcgWmh1LzExNDU3KQ==?= 
+        <yuming.zhu1@unisoc.com>, linux-iio@vger.kernel.org,
+        Devicetree List <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Krzysztof Kozlowski <krzk@kernel.org> =E4=BA=8E2022=E5=B9=B43=E6=9C=8820=E6=
+=97=A5=E5=91=A8=E6=97=A5 22:50=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On 11/03/2022 17:46, Cixi Geng wrote:
+> > From: Cixi Geng <cixi.geng1@unisoc.com>
+> >
+> > sprd,ump9620-adc is one variant of sc27xx series, add ump9620 in
+> > dtbindings.
+> >
+> > Signed-off-by: Chunyan Zhang <zhang.lyra@gmail.com>
+> > Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
+> > ---
+> >  .../bindings/iio/adc/sprd,sc2720-adc.yaml     | 30 +++++++++++++++++--
+> >  1 file changed, 27 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.=
+yaml b/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
+> > index caa3ee0b4b8c..331b08fb1761 100644
+> > --- a/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
+> > +++ b/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
+> > @@ -20,6 +20,7 @@ properties:
+> >        - sprd,sc2723-adc
+> >        - sprd,sc2730-adc
+> >        - sprd,sc2731-adc
+> > +      - sprd,ump9620-adc
+> >
+> >    reg:
+> >      maxItems: 1
+> > @@ -37,9 +38,32 @@ properties:
+> >      maxItems: 2
+> >
+> >    nvmem-cell-names:
+> > -    items:
+> > -      - const: big_scale_calib
+> > -      - const: small_scale_calib
+>
+> Please test your changes with dt_binding_check and dtbs_check. Your
+> change looks not complete - you have still nvmem-cells =3D 2.
+>
+Hi Krzysztof
+I test all is PASS on my local.  could you tell how did you test?
+my_logs:
+cixi.geng1@tj10039pcu:~/upsteatming/linux$ make DT_CHECKER_FLAGS=3D-m
+dt_binding_check &>dt_check.log
+cixi.geng1@tj10039pcu:~/upsteatming/linux$ cat dt_check.log |grep sprd,sc27=
+20
+  DTEX    Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.example=
+.dts
+  DTC     Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.example=
+.dt.yaml
+  CHECK   Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.example=
+.dt.yaml
+cixi.geng1@tj10039pcu:~/upsteatming/linux$ tuxmake -C ${kernel_src} -b
+${topdir}/obj/gcc -o ${topdir}/dist/gcc -a $ARCH -t gcc  -K
+CONFIG_ARCH_${PLAT}=3Dy -K CONFIG_MFD_SC27XX_PMIC=3Dy -K
+CONFIG_SC27XX_ADC=3Dy
 
-I found a better solution for this issue from Ard :-)
-
-https://lore.kernel.org/all/20220203082204.1176734-6-ardb@kernel.org/T/#u
-
-I should use mov_l instead of ldr for loading the symbol address.
-
-Thank you,
-
-On Tue, 15 Mar 2022 18:52:16 +0900
-Masami Hiramatsu <mhiramat@kernel.org> wrote:
-
-> Make __kretprobe_trampoline() as a pure asm function same as the x86
-> code does. Anyway, it is safe to define the symbol in the asm code
-> instead of accessing a C symbol from the inline asm.
-> 
-> Without this fix, building arm kernel with GCC-11 may cause below
-> error.
-> 
->    /tmp/ccIWiggX.s: Assembler messages:
-> >> /tmp/ccIWiggX.s:22: Error: invalid literal constant: pool needs to be closer
-> 
-> This fixes the error reported by 0day build bot.
-> 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Fixes: 7e9bf33b8124 ("ARM: kprobes: Make a frame pointer on __kretprobe_trampoline")
-> Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
-> ---
->  arch/arm/probes/kprobes/core.c |   57 +++++++++++++++++++++-------------------
->  1 file changed, 30 insertions(+), 27 deletions(-)
-> 
-> diff --git a/arch/arm/probes/kprobes/core.c b/arch/arm/probes/kprobes/core.c
-> index 4848404ba51b..51f1438456ae 100644
-> --- a/arch/arm/probes/kprobes/core.c
-> +++ b/arch/arm/probes/kprobes/core.c
-> @@ -373,43 +373,46 @@ int __kprobes kprobe_exceptions_notify(struct notifier_block *self,
->   * should be enough for stacktrace from the return handler with or
->   * without pt_regs.
->   */
-> -void __naked __kprobes __kretprobe_trampoline(void)
-> -{
-> -	__asm__ __volatile__ (
-> +asm(
-> +	".text\n"
-> +	".global __kretprobe_trampoline\n"
-> +	".type __kretprobe_trampoline, %function\n"
-> +	"__kretprobe_trampoline:\n"
->  #ifdef CONFIG_FRAME_POINTER
-> -		"ldr	lr, =__kretprobe_trampoline	\n\t"
-> +	"ldr	lr, =__kretprobe_trampoline	\n\t"
->  	/* __kretprobe_trampoline makes a framepointer on pt_regs. */
->  #ifdef CONFIG_CC_IS_CLANG
-> -		"stmdb	sp, {sp, lr, pc}	\n\t"
-> -		"sub	sp, sp, #12		\n\t"
-> -		/* In clang case, pt_regs->ip = lr. */
-> -		"stmdb	sp!, {r0 - r11, lr}	\n\t"
-> -		/* fp points regs->r11 (fp) */
-> -		"add	fp, sp,	#44		\n\t"
-> +	"stmdb	sp, {sp, lr, pc}	\n\t"
-> +	"sub	sp, sp, #12		\n\t"
-> +	/* In clang case, pt_regs->ip = lr. */
-> +	"stmdb	sp!, {r0 - r11, lr}	\n\t"
-> +	/* fp points regs->r11 (fp) */
-> +	"add	fp, sp,	#44		\n\t"
->  #else /* !CONFIG_CC_IS_CLANG */
-> -		/* In gcc case, pt_regs->ip = fp. */
-> -		"stmdb	sp, {fp, sp, lr, pc}	\n\t"
-> -		"sub	sp, sp, #16		\n\t"
-> -		"stmdb	sp!, {r0 - r11}		\n\t"
-> -		/* fp points regs->r15 (pc) */
-> -		"add	fp, sp, #60		\n\t"
-> +	/* In gcc case, pt_regs->ip = fp. */
-> +	"stmdb	sp, {fp, sp, lr, pc}	\n\t"
-> +	"sub	sp, sp, #16		\n\t"
-> +	"stmdb	sp!, {r0 - r11}		\n\t"
-> +	/* fp points regs->r15 (pc) */
-> +	"add	fp, sp, #60		\n\t"
->  #endif /* CONFIG_CC_IS_CLANG */
->  #else /* !CONFIG_FRAME_POINTER */
-> -		"sub	sp, sp, #16		\n\t"
-> -		"stmdb	sp!, {r0 - r11}		\n\t"
-> +	"sub	sp, sp, #16		\n\t"
-> +	"stmdb	sp!, {r0 - r11}		\n\t"
->  #endif /* CONFIG_FRAME_POINTER */
-> -		"mov	r0, sp			\n\t"
-> -		"bl	trampoline_handler	\n\t"
-> -		"mov	lr, r0			\n\t"
-> -		"ldmia	sp!, {r0 - r11}		\n\t"
-> -		"add	sp, sp, #16		\n\t"
-> +	"mov	r0, sp			\n\t"
-> +	"bl	trampoline_handler	\n\t"
-> +	"mov	lr, r0			\n\t"
-> +	"ldmia	sp!, {r0 - r11}		\n\t"
-> +	"add	sp, sp, #16		\n\t"
->  #ifdef CONFIG_THUMB2_KERNEL
-> -		"bx	lr			\n\t"
-> +	"bx	lr			\n\t"
->  #else
-> -		"mov	pc, lr			\n\t"
-> +	"mov	pc, lr			\n\t"
->  #endif
-> -		: : : "memory");
-> -}
-> +	".size __kretprobe_trampoline, .-__kretprobe_trampoline\n"
-> +);
-> +NOKPROBE_SYMBOL(__kretprobe_trampoline);
->  
->  /* Called from __kretprobe_trampoline */
->  static __used __kprobes void *trampoline_handler(struct pt_regs *regs)
-> 
+I: config: PASS in 0:00:00.000549
+I: default: PASS in 0:10:20.931602
+I: kernel: PASS in 0:01:10.643458
+I: xipkernel: SKIP in 0:00:00.003244
+I: modules: PASS in 0:00:35.658938
+I: dtbs: PASS in 0:00:18.696416
+I: dtbs-legacy: SKIP in 0:00:00.005625
+I: debugkernel: PASS in 0:00:11.541855
+I: headers: PASS in 0:00:11.778253
+I: build output in /home/cixi.geng1/upsteatming/dist/gcc
 
 
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
+>
+> Best regards,
+> Krzysztof
