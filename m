@@ -2,89 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3485C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 18:36:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAF70C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 18:44:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352748AbiCXSi1 (ORCPT
+        id S1352691AbiCXSpe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 14:38:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59440 "EHLO
+        Thu, 24 Mar 2022 14:45:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243007AbiCXShv (ORCPT
+        with ESMTP id S242030AbiCXSpd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 14:37:51 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 490FCB8212
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 11:36:19 -0700 (PDT)
-Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id E6D5A1EC064D;
-        Thu, 24 Mar 2022 19:36:17 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1648146978;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FHbaewdQrmtEVCXaKAQngIcqqKfzYTCQIr5noHjEhwM=;
-        b=NZrEyS+hazxucQY4zq1BgShVdzf5yEFH2pdw2yrmHJAzTQHj0cTRYz2Reh4890QrPkCQYg
-        1W7xD71pSS1TvJLiPhsCJ1fNNUXBIUrOJ39zel54gDN1Zrg/Rcg27b3DQPa/CI2lhSLKxq
-        0PCwwXeWS8E4jZYYpsVLd2hwVp9pDzI=
-From:   Borislav Petkov <bp@alien8.de>
-To:     X86 ML <x86@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-Subject: [PATCH 1/3] task_stack, x86/cea: Force-inline stack helpers
-Date:   Thu, 24 Mar 2022 19:36:05 +0100
-Message-Id: <20220324183607.31717-2-bp@alien8.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220324183607.31717-1-bp@alien8.de>
-References: <20220324183607.31717-1-bp@alien8.de>
+        Thu, 24 Mar 2022 14:45:33 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5729344CD
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 11:43:59 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id m3so9563494lfj.11
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 11:43:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SznxYBgLW8a9K7icQkkxQQQmB0jHpEaS7kU5FK71pvk=;
+        b=o1CBG1mV9f11VgVz8ncx5nABm/hLQ3k8i/0qeF0Uo54MRY/r3LgqhW0aB1kPPBLT93
+         NHuxranzAV3snmi0zRL6EODctyu1eX8FR7Bs3vozkJ68YqknD0ynKjIv0U6hP3WzigrA
+         UcYcxgzpqAAXsQMzLCKhbOWq8b81lA5AvsBzBSLnuaf2YfpiTN3/Z9ZH9zo3QvwnzWzd
+         0rZAndMjtXG2gP2Vd03Lc19VxyCedjyPLmwP+JRePcOCZ/3fiS6lqAfzaL5mg7y/sVwq
+         xOhdwXUjYroWCkN3jxlKokj/lnrpwg4ikYyqc6YYQpolPdCUbiQ1KSvyImkCKv2J0nLD
+         oZbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SznxYBgLW8a9K7icQkkxQQQmB0jHpEaS7kU5FK71pvk=;
+        b=2ClYdVYaclc/TiyHPav9uclOTRMBuOwsp+QDzuTtNTBxX4/0Om/CT8BXx4wl08K0g9
+         AayNvmXTGTrBfgqA7DsFTCeeS0fcu53YfjcrZI7qa3/384b6Ps2Z9hbxeOwD8Z820ULq
+         Y9gLVYEYtBWc+pwHJSwGT9/83K2D+OLHk5NyOlWZ2dB/H2UWNtx/2YbK2o0FB1d2CB3F
+         SRAJDbD9oMEhwc5h0SZlLNWDkkh+zVtXnONOmFvdx4uIlH3l9GsVRXRErZe8Q/zRFqOk
+         P586g8aG5CdPZof+SHlqOVv8eG0+0KRLZErzLJ/eWXWIj+SDxnatXfFsEkAdhHLGhgYP
+         bcUw==
+X-Gm-Message-State: AOAM530eiHh7GVwnrztM2WidVI1Q+Yb/nkqado/pSyXD2l953GNlT6OV
+        D6xIJs/odxBrBWPVWCIum4nZodfjr1iyeiOE0yr+6w==
+X-Google-Smtp-Source: ABdhPJwl3FHsimV0j/FRMLTa7TeQyLJcX+GDFnUBHAD06jNi3NvA8VGj1za3NlGgQUwdcOY+DkcOQpXusFJ+tjIVSJc=
+X-Received: by 2002:a05:6512:3341:b0:433:b033:bd22 with SMTP id
+ y1-20020a056512334100b00433b033bd22mr4747266lfd.190.1648147437941; Thu, 24
+ Mar 2022 11:43:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <YjxTt3pFIcV3lt8I@zn.tnic>
+In-Reply-To: <YjxTt3pFIcV3lt8I@zn.tnic>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Thu, 24 Mar 2022 11:43:46 -0700
+Message-ID: <CAKwvOdkw0Bbm+=ZyViXQhBE1L6uSbvkstHJuHpQ21tzJRftgAw@mail.gmail.com>
+Subject: Re: clang memcpy calls
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Nathan Chancellor <nathan@kernel.org>, x86-ml <x86@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev,
+        Mark Rutland <mark.rutland@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+On Thu, Mar 24, 2022 at 4:19 AM Borislav Petkov <bp@alien8.de> wrote:
+>
+> Hi folks,
+>
+> so I've been looking at a recent objtool noinstr warning from clang
+> builds:
+>
+> vmlinux.o: warning: objtool: sync_regs()+0x20: call to memcpy() leaves .noinstr.text section
+>
+> The issue is that clang generates a memcpy() call when a struct copy
+> happens:
+>
+>         if (regs != eregs)
+>                 *regs = *eregs;
 
-Force-inline two stack helpers to fix the following objtool warnings:
+Specifically, this is copying one struct pt_regs to another. It looks
+like the sizeof struct pt_regs is just large enough to have clang emit
+the libcall.
+https://godbolt.org/z/scx6aa8jq
+Otherwise clang will also use rep; movsq; when -mno-sse -O2 is set and
+the structs are below ARBITRARY_THRESHOLD.  Should ARBITRARY_THRESHOLD
+be raised so that we continue to inline the memcpy? *shrug*
 
-  vmlinux.o: warning: objtool: in_task_stack()+0xc: call to task_stack_page() leaves .noinstr.text section
-  vmlinux.o: warning: objtool: in_entry_stack()+0x10: call to cpu_entry_stack() leaves .noinstr.text section
+Though, looking at the compiled memcpy (`llvm-objdump -D
+--disassemble-symbols=memcpy vmlinux`), maybe we *should* try harder.
+Filed
+https://github.com/llvm/llvm-project/issues/54535.
 
-Signed-off-by: Borislav Petkov <bp@suse.de>
----
- arch/x86/include/asm/cpu_entry_area.h | 2 +-
- include/linux/sched/task_stack.h      | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+>
+> see below for asm output.
+>
+> While gcc does simply generate an actual "rep; movsq".
+>
+> So, how hard would it be to make clang do that too pls?
 
-diff --git a/arch/x86/include/asm/cpu_entry_area.h b/arch/x86/include/asm/cpu_entry_area.h
-index dd5ea1bdf04c..75efc4c6f076 100644
---- a/arch/x86/include/asm/cpu_entry_area.h
-+++ b/arch/x86/include/asm/cpu_entry_area.h
-@@ -143,7 +143,7 @@ extern void cea_set_pte(void *cea_vaddr, phys_addr_t pa, pgprot_t flags);
- 
- extern struct cpu_entry_area *get_cpu_entry_area(int cpu);
- 
--static inline struct entry_stack *cpu_entry_stack(int cpu)
-+static __always_inline struct entry_stack *cpu_entry_stack(int cpu)
- {
- 	return &get_cpu_entry_area(cpu)->entry_stack_page.stack;
- }
-diff --git a/include/linux/sched/task_stack.h b/include/linux/sched/task_stack.h
-index d10150587d81..1009b6b5ce40 100644
---- a/include/linux/sched/task_stack.h
-+++ b/include/linux/sched/task_stack.h
-@@ -16,7 +16,7 @@
-  * try_get_task_stack() instead.  task_stack_page will return a pointer
-  * that could get freed out from under you.
-  */
--static inline void *task_stack_page(const struct task_struct *task)
-+static __always_inline void *task_stack_page(const struct task_struct *task)
- {
- 	return task->stack;
- }
+As Mark said in the sibling reply; I don't know of general ways to
+inhibit libcall optimizations on the level you're looking for, short
+of heavy handy methods of disabling optimizations entirely.  There's
+games that can be played with -fno-builtin-*, but they're not super
+portable, and I think there's a handful of *blessed* functions that
+must exist in any env, freestanding or not: memcpy, memmove, memset,
+and memcmp for which you cannot yet express "these do not exist."
+
+>
+> Oh, and another thing while we're comparing asm: I'd love for clang's
+> -fverbose-asm to issue interleaved C source lines too, like gcc does.
+>
+> That's it - no pink pony - just "normal" wishes. :-)
+
+Looks like someone had started work on this in 2017, but it stalled out:
+https://github.com/llvm/llvm-project/issues/17839#issuecomment-980923994
+Linus has asked for this in the past, too. So it's something we'll add
+to the TODO list to revisit.  I highly suspect that clang has
+discarded the AST by the time LLVM gets to asm emission, but I could
+be wrong.  https://github.com/llvm/llvm-project/issues/17839#issuecomment-1077933948
+
+>
+> GCC:
+> ====
+>
+> sync_regs:
+> .LASANPC4246:
+> # arch/x86/kernel/traps.c:770: {
+>         movq    %rdi, %rsi      # tmp91, eregs
+> # arch/x86/kernel/traps.c:771:  struct pt_regs *regs = (struct pt_regs *)this_cpu_read(cpu_current_top_of_stack) - 1;
+> #APP
+> # 771 "arch/x86/kernel/traps.c" 1
+>         movq %gs:cpu_current_top_of_stack(%rip), %rax   # cpu_current_top_of_stack, pfo_val__
+> # 0 "" 2
+> # arch/x86/kernel/traps.c:771:  struct pt_regs *regs = (struct pt_regs *)this_cpu_read(cpu_current_top_of_stack) - 1;
+> #NO_APP
+>         subq    $168, %rax      #, <retval>
+> # arch/x86/kernel/traps.c:772:  if (regs != eregs)
+>         cmpq    %rdi, %rax      # eregs, <retval>
+>         je      .L387   #,
+> # arch/x86/kernel/traps.c:773:          *regs = *eregs;
+>         movl    $21, %ecx       #, tmp89
+>         movq    %rax, %rdi      # <retval>, <retval>
+>         rep movsq
+> .L387:
+> # arch/x86/kernel/traps.c:775: }
+>         ret
+>
+> CLANG:
+> ======
+>
+>         .section        .noinstr.text,"ax",@progbits
+>         .globl  sync_regs                       # -- Begin function sync_regs
+>         .p2align        6, 0x90
+>         .type   sync_regs,@function
+> sync_regs:                              # @sync_regs
+> # %bb.0:                                # %entry
+>         pushq   %rbx
+>         #APP
+>         movq    %gs:cpu_current_top_of_stack(%rip), %rbx
+>         #NO_APP
+>         addq    $-168, %rbx
+>         cmpq    %rdi, %rbx
+>         je      .LBB19_2
+> # %bb.1:                                # %if.then
+>         movq    %rdi, %rsi
+>         movl    $168, %edx
+>         movq    %rbx, %rdi
+>         callq   memcpy@PLT
+> .LBB19_2:                               # %if.end
+>         movq    %rbx, %rax
+>         popq    %rbx
+>         retq
+>
+>
+> --
+> Regards/Gruss,
+>     Boris.
+>
+> https://people.kernel.org/tglx/notes-about-netiquette
+
+
+
 -- 
-2.35.1
-
+Thanks,
+~Nick Desaulniers
