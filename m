@@ -2,81 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B865C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 16:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62784C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 16:59:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352027AbiCXQ52 (ORCPT
+        id S1346149AbiCXRBE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 12:57:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51150 "EHLO
+        Thu, 24 Mar 2022 13:01:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242313AbiCXQ50 (ORCPT
+        with ESMTP id S242313AbiCXRBC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 12:57:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACD591C5;
-        Thu, 24 Mar 2022 09:55:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 24 Mar 2022 13:01:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 209955EBEE
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 09:59:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648141169;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HoU1CnOuyhMAlEaaC12/xCNXrJPRzI+Ntu0MYgwKlIE=;
+        b=LxRT0VW2xgDERZgxoj9jyfzpb/VnzeAE/5clxBIzah6/c71dgsk/1zGB7tqUvW9exYIXDh
+        f7woNuiPM4+xvPd6yqBmTT+P3EKrRGQqM6aa6QNh7QssxPXRc5LnI5iGWhwn8KaPStlzKJ
+        j4IJg4RIcF9exoa5QhnVTC153wbGdxw=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-135-0PnzShTtP7eZ3Lw5u9qB_Q-1; Thu, 24 Mar 2022 12:59:27 -0400
+X-MC-Unique: 0PnzShTtP7eZ3Lw5u9qB_Q-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 716B4B8241E;
-        Thu, 24 Mar 2022 16:55:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA021C340EC;
-        Thu, 24 Mar 2022 16:55:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648140952;
-        bh=ib+qwTs9M5Couw8u7y1nRf2k4CkR4X5BaDXmlBp3nT8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=1WVwOeg3Tedu/W1CIeR/pi6rNxCxQZd2lt46PtqI4i6Xg0WQb2lyEumo5FyRz2bMf
-         9Hi1bgytSeUq1MRDxCJhGeg7uA5TIoZiM9CDCXnpxxLtWsfnoqkB7RHDwnyYz1F6qN
-         Pl0HJ21FWFKxDlRqh1+vR4MTC34eSitaExpLvAMY=
-Date:   Thu, 24 Mar 2022 17:55:49 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Grant Likely <grant.likely@arm.com>,
-        Jonathan Corbet <corbet@lwn.net>
-Subject: Re: [PATCH] Documentation/process: Update ARM contact for embargoed
- hardware issues
-Message-ID: <YjyilfhMgbqTo3eL@kroah.com>
-References: <20220324151605.266645-1-catalin.marinas@arm.com>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id F2CE51044566;
+        Thu, 24 Mar 2022 16:59:26 +0000 (UTC)
+Received: from shalem.redhat.com (unknown [10.39.192.132])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CB747C26EA0;
+        Thu, 24 Mar 2022 16:59:23 +0000 (UTC)
+From:   Hans de Goede <hdegoede@redhat.com>
+To:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Huang Jianan <huangjianan@oppo.com>,
+        Chia-Wei Wang <chiawei_wang@aspeedtech.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Amit Kucheria <amitk@kernel.org>,
+        Gao Xiang <hsiangkao@linux.alibaba.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/3] Documentation/ABI: sysfs-driver-aspeed-uart-routing: Fix sphinx warning
+Date:   Thu, 24 Mar 2022 17:59:16 +0100
+Message-Id: <20220324165918.22005-2-hdegoede@redhat.com>
+In-Reply-To: <20220324165918.22005-1-hdegoede@redhat.com>
+References: <20220324165918.22005-1-hdegoede@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220324151605.266645-1-catalin.marinas@arm.com>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 03:16:05PM +0000, Catalin Marinas wrote:
-> With Grant taking a prominent role in Linaro, I will take over as the
-> process ambassador for ARM w.r.t. embargoed hardware issues.
-> 
-> Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Grant Likely <grant.likely@arm.com>
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
->  Documentation/process/embargoed-hardware-issues.rst | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/process/embargoed-hardware-issues.rst b/Documentation/process/embargoed-hardware-issues.rst
-> index 6f8f36e10e8b..41a2afaaea75 100644
-> --- a/Documentation/process/embargoed-hardware-issues.rst
-> +++ b/Documentation/process/embargoed-hardware-issues.rst
-> @@ -244,7 +244,7 @@ disclosure of a particular issue, unless requested by a response team or by
->  an involved disclosed party. The current ambassadors list:
->  
->    ============= ========================================================
-> -  ARM           Grant Likely <grant.likely@arm.com>
-> +  ARM		Catalin Marinas <catalin.marinas@arm.com>
+Fix the following warning from "make htmldocs":
 
-Nit, no tab is needed.  I missed this on the next line:
+Documentation/ABI/testing/sysfs-driver-aspeed-uart-routing:2:
+  WARNING: Inline emphasis start-string without end-string.
 
->    AMD		Tom Lendacky <tom.lendacky@amd.com>
+This is caused by the used of '*' in the example cat command,
+mark the command as code to fix this.
 
-But no need to follow bad decisions :)
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ Documentation/ABI/testing/sysfs-driver-aspeed-uart-routing | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-thanks,
+diff --git a/Documentation/ABI/testing/sysfs-driver-aspeed-uart-routing b/Documentation/ABI/testing/sysfs-driver-aspeed-uart-routing
+index b363827da437..1e25cd2cacc1 100644
+--- a/Documentation/ABI/testing/sysfs-driver-aspeed-uart-routing
++++ b/Documentation/ABI/testing/sysfs-driver-aspeed-uart-routing
+@@ -8,9 +8,10 @@ Description:	Selects the RX source of the UARTx device.
+ 		selected option marked by brackets "[]". The list of available options
+ 		depends on the selected file.
+ 
+-		e.g.
+-		cat /sys/bus/platform/drivers/aspeed-uart-routing/*.uart_routing/uart1
+-		[io1] io2 io3 io4 uart2 uart3 uart4 io6
++		e.g.::
++
++			# cat /sys/bus/platform/drivers/aspeed-uart-routing/*.uart_routing/uart1
++			[io1] io2 io3 io4 uart2 uart3 uart4 io6
+ 
+ 		In this case, UART1 gets its input from IO1 (physical serial port 1).
+ 
+-- 
+2.35.1
 
-greg k-h
