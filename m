@@ -2,122 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C685FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 10:08:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6369C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 10:10:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349434AbiCXKKB (ORCPT
+        id S1349324AbiCXKMJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 06:10:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38796 "EHLO
+        Thu, 24 Mar 2022 06:12:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349367AbiCXKJ5 (ORCPT
+        with ESMTP id S236564AbiCXKMG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 06:09:57 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 451DC9F6DD;
-        Thu, 24 Mar 2022 03:08:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648116503; x=1679652503;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=D4tQL9ezIGp1V+zUe7L+IBKQ/EYL74mA6PBzw54L6KI=;
-  b=fMmpYofPELHd3fnINdisYuhoohCcA3nxScnKAdoJT3GpK5ZA6swnptF9
-   qOI6FTUuL1yXqQ9gdhPyoPTM4akr2xiISnTh4eCePCPoA7wFhAornkipd
-   9JrRSEN5ZKWShwN5vpNjECypH9kdRJAB2Ov7yza/t3jOy4mzzxS2pFVxl
-   ck2jhI08XujgoiV6LYWm9BX7WbISboFWSSKCwC4XXupiRIy1JuuLpzGA4
-   1qyjacvNnBxqEwGqd5xch1DQEGLswXrNQko5E93+4X6eHns49nwK1rUrS
-   9KhIZb7xiZcSyWuuzYLqNbRKtsDuccZjLu2KY4rP99wWaqN4DVNfHlOjg
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="344769399"
-X-IronPort-AV: E=Sophos;i="5.90,207,1643702400"; 
-   d="scan'208";a="344769399"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 03:07:55 -0700
-X-IronPort-AV: E=Sophos;i="5.90,207,1643702400"; 
-   d="scan'208";a="561309848"
-Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 03:07:52 -0700
-Date:   Thu, 24 Mar 2022 03:09:25 -0400
-From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-To:     Ivan Vecera <ivecera@redhat.com>
-Cc:     netdev@vger.kernel.org,
-        "moderated list:INTEL ETHERNET DRIVERS" 
-        <intel-wired-lan@lists.osuosl.org>, mschmidt@redhat.com,
-        Brett Creeley <brett.creeley@intel.com>,
-        open list <linux-kernel@vger.kernel.org>, poros@redhat.com,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [Intel-wired-lan] [PATCH net] ice: Clear default forwarding VSI
- during VSI release
-Message-ID: <YjwZJU7PIKCcndC1@localhost.localdomain>
-References: <20220322142554.3253428-1-ivecera@redhat.com>
+        Thu, 24 Mar 2022 06:12:06 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 020969F6FB
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 03:10:34 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[127.0.0.1])
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <a.fatoum@pengutronix.de>)
+        id 1nXKQ1-0008Dj-FI; Thu, 24 Mar 2022 11:10:13 +0100
+Message-ID: <ae941471-43c0-1aea-2567-89eed98a61a6@pengutronix.de>
+Date:   Thu, 24 Mar 2022 11:10:07 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220322142554.3253428-1-ivecera@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [EXT] [PATCH v6 3/4] crypto: caam - add in-kernel interface for
+ blob generator
+Content-Language: en-US
+To:     Pankaj Gupta <pankaj.gupta@nxp.com>,
+        Horia Geanta <horia.geanta@nxp.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        Eric Biggers <ebiggers@kernel.org>,
+        David Gstir <david@sigma-star.at>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        Jan Luebbe <j.luebbe@pengutronix.de>,
+        Richard Weinberger <richard@nod.at>,
+        "tharvey@gateworks.com" <tharvey@gateworks.com>,
+        Franck Lenormand <franck.lenormand@nxp.com>,
+        James Morris <jmorris@namei.org>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        James Bottomley <jejb@linux.ibm.com>,
+        "Serge E. Hallyn" <serge@hallyn.com>
+References: <20220316164335.1720255-1-a.fatoum@pengutronix.de>
+ <20220316164335.1720255-4-a.fatoum@pengutronix.de>
+ <DU2PR04MB8630BDFC29AA31074C623A7B95199@DU2PR04MB8630.eurprd04.prod.outlook.com>
+From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
+In-Reply-To: <DU2PR04MB8630BDFC29AA31074C623A7B95199@DU2PR04MB8630.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 03:25:54PM +0100, Ivan Vecera wrote:
-> VSI is set as default forwarding one when promisc mode is set for
-> PF interface, when PF is switched to switchdev mode or when VF
-> driver asks to enable allmulticast or promisc mode for the VF
-> interface (when vf-true-promisc-support priv flag is off).
-> The third case is buggy because in that case VSI associated with
-> VF remains as default one after VF removal.
-> 
-> Reproducer:
-> 1. Create VF
->    echo 1 > sys/class/net/ens7f0/device/sriov_numvfs
-> 2. Enable allmulticast or promisc mode on VF
->    ip link set ens7f0v0 allmulticast on
->    ip link set ens7f0v0 promisc on
-> 3. Delete VF
->    echo 0 > sys/class/net/ens7f0/device/sriov_numvfs
-> 4. Try to enable promisc mode on PF
->    ip link set ens7f0 promisc on
-> 
-> Although it looks that promisc mode on PF is enabled the opposite
-> is true because ice_vsi_sync_fltr() responsible for IFF_PROMISC
-> handling first checks if any other VSI is set as default forwarding
-> one and if so the function does not do anything. At this point
-> it is not possible to enable promisc mode on PF without re-probe
-> device.
-> 
-> To resolve the issue this patch clear default forwarding VSI
-> during ice_vsi_release() when the VSI to be released is the default
-> one.
-> 
-> Fixes: 01b5e89aab49 ("ice: Add VF promiscuous support")
-> Signed-off-by: Ivan Vecera <ivecera@redhat.com>
-> ---
->  drivers/net/ethernet/intel/ice/ice_lib.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-> index 53256aca27c7..20d755822d43 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_lib.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-> @@ -3147,6 +3147,8 @@ int ice_vsi_release(struct ice_vsi *vsi)
->  		}
->  	}
->  
-> +	if (ice_is_vsi_dflt_vsi(pf->first_sw, vsi))
-> +		ice_clear_dflt_vsi(pf->first_sw);
->  	ice_fltr_remove_all(vsi);
->  	ice_rm_vsi_lan_cfg(vsi->port_info, vsi->idx);
->  	err = ice_rm_vsi_rdma_cfg(vsi->port_info, vsi->idx);
-Thanks for fixing it.
-Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Hello Pankaj,
 
-> -- 
-> 2.34.1
+On 24.03.22 10:55, Pankaj Gupta wrote:
+> Hi Ahmad,
 > 
-> _______________________________________________
-> Intel-wired-lan mailing list
-> Intel-wired-lan@osuosl.org
-> https://lists.osuosl.org/mailman/listinfo/intel-wired-lan
+> Please find the comments in-line.
+
+Thanks for you review.
+
+> Suggest to continue to use two separate descriptor-creation-function for 'encap' and 'decap'.
+> This will help these API(s) to be maintained easily going forward. 
+
+We can still split them up in future once there is a real need.
+But currently they are exactly the same, except for input/output length,
+so I think it's correct to not introduce duplication unless needed.
+
+>>   - use append_seq_(in|out)_ptr_intlen for both encap/decap as a result
+
+Case in point. The intlen omission was because the two functions are largely
+identical and I only fixed up one of them. This is prone to repeat when
+we go back to have identical code with minor differences.
+
+> In continuation to the previous comment, there is another suggestion:
+> 
+> Either: 
+> struct keyblob_info {
+>         void *key;
+>         size_t key_len;
+> 
+>         void *blob;
+>         size_t blob_len;
+> 
+>         size_t key_mod_len;
+>         const void *key_mod;
+> };
+
+I can do that.
+
+Whats your opinion on the desc size computation? Comment the macro or add
+the static inline helper?
+
+Cheers,
+Ahmad
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
