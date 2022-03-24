@@ -2,148 +2,254 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 471B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:32:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7FB6C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:32:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348656AbiCXHd4 (ORCPT
+        id S1348708AbiCXHeI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 03:33:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60270 "EHLO
+        Thu, 24 Mar 2022 03:34:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348816AbiCXHdO (ORCPT
+        with ESMTP id S1348651AbiCXHcs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 03:33:14 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5DA198F7C;
-        Thu, 24 Mar 2022 00:31:42 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id a8so7325831ejc.8;
-        Thu, 24 Mar 2022 00:31:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+jBes5m/e131YoblZZDRcsU52MDg1rSadlaC+RwD+To=;
-        b=OpDuTpMtzE0RhGUG1pR+nWeI8o4UdMCn8dQbtGo4v9iN7ipB4uFu5TtqOgsDMnbQzg
-         5WByTzpHx4HUeR2aygQUqWZivHblzmnQa3TSOVGXaqEVoDWMB10qb8N33crRMOdHIr6M
-         OJSELDjXDkVT8uxqO6kauRy8KDSwk0AUvG/6fcnoBJ/8/i1IIHdGuQdc4St7F4x2xV7a
-         1XqfulRiO0Tn+U3+AdANPPoaAvOtVEE5BVtaYH/3vZNeRG6qAzrag5p2BeupNmqs6oWj
-         r6dYiCGfdF0LcQlDm3eSO1yniwkE7hKMZaL5X6ykXmZdEUOGn9r4uoAP2GTrWHlGv9mk
-         PJAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+jBes5m/e131YoblZZDRcsU52MDg1rSadlaC+RwD+To=;
-        b=gUJmlPvmvVu9n1d253hmlyzd39p5uAXpSWq4/rzxAE+5RkHjDIiaX5azgTKRccqzkr
-         GKpY98dPq8JkjTFPRZ4dd+iu5qMowLyzo/FAjMvFYGperIgeROd+kbvTbqVJ9/D2jkNn
-         buVBvj5a68bWhPU/JPdjHDMT0FJ55o1ngJkG1mN+6bN0rtQiFSAEPkeoNPMCNHFJBaLD
-         1ynEkGXmlZqYgLd0JX9MC1J/bqp7BUG4TXfkRs2eLNqeWZg8NGjfPSQIpqpTOeD2Vodi
-         HVyx4FhGCmiCcHVuU4W9uqI00aBhTqN6YoQ+SGNe+cJJqX1pmUm8ni4ZftVYw8+MaXP1
-         0r6w==
-X-Gm-Message-State: AOAM532MTNZKxfr7JdRCYX3CvUDQML/cs3oiNtgm6MZvMydOX9+rsH5J
-        fLWHDaZuY46zzQUQRqEPK0w=
-X-Google-Smtp-Source: ABdhPJxGCYgDslAQ72jIbmPmxq00EDKcqrzvpkwqbfjfh2yCC066UqwRfcKn5mcV8ECIgeY5CKLC2w==
-X-Received: by 2002:a17:906:a1c8:b0:6da:a635:e402 with SMTP id bx8-20020a170906a1c800b006daa635e402mr4201959ejb.598.1648107101128;
-        Thu, 24 Mar 2022 00:31:41 -0700 (PDT)
-Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id gv9-20020a170906f10900b006d7128b2e6fsm766705ejb.162.2022.03.24.00.31.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 00:31:40 -0700 (PDT)
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-To:     Alex Williamson <alex.williamson@redhat.com>
-Cc:     Cornelia Huck <cohuck@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
-        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
-Subject: [PATCH] vfio/spapr_tce: replace usage of found with dedicated list iterator variable
-Date:   Thu, 24 Mar 2022 08:31:10 +0100
-Message-Id: <20220324073110.66125-1-jakobkoschel@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 24 Mar 2022 03:32:48 -0400
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC6A996BA
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:31:08 -0700 (PDT)
+Received: from integral2.. (unknown [182.2.71.236])
+        by gnuweeb.org (Postfix) with ESMTPSA id 9B2BE7E712;
+        Thu, 24 Mar 2022 07:31:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1648107067;
+        bh=waHrXoHOW/pPU9BrI5hKUWTpbkCQhESmBtk6btYk9uw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=D1dwyjBP51HYddOWHyVExRSy2yUV84oMLstAlS37ZkQfV9ZYBnCvqsEzOQ6HoTsYT
+         AOmW6z04EnOc5KSEz3E3mTXKEvrgWIrBuiS7u8IQPllVS1PUNInB2rmuTcy0FMufq3
+         hZ5aGwQ5LqIGL17HYYTpgxirIUocCxPdSMh7VlPyuL3hvEnj+wpyBxptkSMc0taLaZ
+         lysSrIH7IvSTYaU8J6CFhdnzBrCfTlagqllMQnTOauCuYJdYrJAHmXXjrPkE+iM2OR
+         deDbA23BnqZ9aDM7hpJw0Rpcf/4gI10USOQp4D5O9OsKYFNV5BgdZ71heippfdzuZi
+         5V9agKtsLezXQ==
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+To:     Willy Tarreau <w@1wt.eu>
+Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
+        Nugraha <richiisei@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        David Laight <David.Laight@ACULAB.COM>
+Subject: [PATCH v1 05/11] tools/nolibc: i386: Use appropriate register constraints if exist
+Date:   Thu, 24 Mar 2022 14:30:33 +0700
+Message-Id: <20220324073039.140946-6-ammarfaizi2@gnuweeb.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220324073039.140946-1-ammarfaizi2@gnuweeb.org>
+References: <20220324073039.140946-1-ammarfaizi2@gnuweeb.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To move the list iterator variable into the list_for_each_entry_*()
-macro in the future it should be avoided to use the list iterator
-variable after the loop body.
+Use appropriate register constraints if exist. Don't use register
+variables for all inputs.
 
-To *never* use the list iterator variable after the loop it was
-concluded to use a separate iterator variable instead of a
-found boolean [1].
+Register variables with "r" constraint should be used when we need to
+pass data through a specific register to extended inline assembly that
+doesn't have a specific register constraint associated with it (anything
+outside %eax, %ebx, %ecx, %edx, %esi, %edi).
 
-This removes the need to use a found variable and simply checking if
-the variable was set, can determine if the break/goto was hit.
+It also simplifies the macro definition.
 
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Link: https://lore.kernel.org/lkml/3d2cfdeecddc45dc8e4beada305b5948@AcuMS.aculab.com
+Suggested-by: David Laight <David.Laight@ACULAB.COM>
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 ---
- drivers/vfio/vfio_iommu_spapr_tce.c | 23 +++++++++++------------
- 1 file changed, 11 insertions(+), 12 deletions(-)
+ tools/include/nolibc/arch-i386.h | 162 +++++++++++++------------------
+ 1 file changed, 70 insertions(+), 92 deletions(-)
 
-diff --git a/drivers/vfio/vfio_iommu_spapr_tce.c b/drivers/vfio/vfio_iommu_spapr_tce.c
-index 708a95e61831..f64ef767909a 100644
---- a/drivers/vfio/vfio_iommu_spapr_tce.c
-+++ b/drivers/vfio/vfio_iommu_spapr_tce.c
-@@ -104,8 +104,7 @@ static long tce_iommu_unregister_pages(struct tce_container *container,
- 		__u64 vaddr, __u64 size)
- {
- 	struct mm_iommu_table_group_mem_t *mem;
--	struct tce_iommu_prereg *tcemem;
--	bool found = false;
-+	struct tce_iommu_prereg *tcemem = NULL, *iter;
- 	long ret;
+diff --git a/tools/include/nolibc/arch-i386.h b/tools/include/nolibc/arch-i386.h
+index ff2e6bb453cf..6eb96ee8c4f7 100644
+--- a/tools/include/nolibc/arch-i386.h
++++ b/tools/include/nolibc/arch-i386.h
+@@ -63,108 +63,86 @@ struct sys_stat_struct {
+  */
+ #define __ARCH_WANT_SYS_OLD_SELECT
  
- 	if ((vaddr & ~PAGE_MASK) || (size & ~PAGE_MASK))
-@@ -115,14 +114,14 @@ static long tce_iommu_unregister_pages(struct tce_container *container,
- 	if (!mem)
- 		return -ENOENT;
+-#define my_syscall0(num)                                                      \
+-({                                                                            \
+-	long _ret;                                                            \
+-	register long _num __asm__("eax") = (num);                            \
+-	                                                                      \
+-	__asm__ volatile (                                                    \
+-		"int $0x80\n"                                                 \
+-		: "=a" (_ret)                                                 \
+-		: "0"(_num)                                                   \
+-		: "memory", "cc"                                              \
+-	);                                                                    \
+-	_ret;                                                                 \
++#define my_syscall0(num)				\
++({							\
++	long _ret = (num);				\
++	__asm__ volatile (				\
++		"int $0x80\n"				\
++		: "+a"(_ret)	/* %eax */		\
++		:					\
++		: "memory", "cc"			\
++	);						\
++	_ret;						\
+ })
  
--	list_for_each_entry(tcemem, &container->prereg_list, next) {
--		if (tcemem->mem == mem) {
--			found = true;
-+	list_for_each_entry(iter, &container->prereg_list, next) {
-+		if (iter->mem == mem) {
-+			tcemem = iter;
- 			break;
- 		}
- 	}
+-#define my_syscall1(num, arg1)                                                \
+-({                                                                            \
+-	long _ret;                                                            \
+-	register long _num __asm__("eax") = (num);                            \
+-	register long _arg1 __asm__("ebx") = (long)(arg1);                    \
+-	                                                                      \
+-	__asm__ volatile (                                                    \
+-		"int $0x80\n"                                                 \
+-		: "=a" (_ret)                                                 \
+-		: "r"(_arg1),                                                 \
+-		  "0"(_num)                                                   \
+-		: "memory", "cc"                                              \
+-	);                                                                    \
+-	_ret;                                                                 \
++#define my_syscall1(num, arg1)				\
++({							\
++	long _ret = (num);				\
++	__asm__ volatile (				\
++		"int $0x80\n"				\
++		: "+a"(_ret)	/* %eax */		\
++		: "b"(arg1)	/* %ebx */		\
++		: "memory", "cc"			\
++	);						\
++	_ret;						\
+ })
  
--	if (!found)
-+	if (!tcemem)
- 		ret = -ENOENT;
- 	else
- 		ret = tce_iommu_prereg_free(container, tcemem);
-@@ -1330,19 +1329,19 @@ static void tce_iommu_detach_group(void *iommu_data,
- {
- 	struct tce_container *container = iommu_data;
- 	struct iommu_table_group *table_group;
--	bool found = false;
--	struct tce_iommu_group *tcegrp;
-+	struct tce_iommu_group *tcegrp = NULL;
-+	struct tce_iommu_group *iter;
+-#define my_syscall2(num, arg1, arg2)                                          \
+-({                                                                            \
+-	long _ret;                                                            \
+-	register long _num __asm__("eax") = (num);                            \
+-	register long _arg1 __asm__("ebx") = (long)(arg1);                    \
+-	register long _arg2 __asm__("ecx") = (long)(arg2);                    \
+-	                                                                      \
+-	__asm__ volatile (                                                    \
+-		"int $0x80\n"                                                 \
+-		: "=a" (_ret)                                                 \
+-		: "r"(_arg1), "r"(_arg2),                                     \
+-		  "0"(_num)                                                   \
+-		: "memory", "cc"                                              \
+-	);                                                                    \
+-	_ret;                                                                 \
++#define my_syscall2(num, arg1, arg2)			\
++({							\
++	long _ret = (num);				\
++	__asm__ volatile (				\
++		"int $0x80\n"				\
++		: "+a"(_ret)	/* %eax */		\
++		: "b"(arg1),	/* %ebx */		\
++		  "c"(arg2)	/* %ecx */		\
++		: "memory", "cc"			\
++	);						\
++	_ret;						\
+ })
  
- 	mutex_lock(&container->lock);
+-#define my_syscall3(num, arg1, arg2, arg3)                                    \
+-({                                                                            \
+-	long _ret;                                                            \
+-	register long _num __asm__("eax") = (num);                            \
+-	register long _arg1 __asm__("ebx") = (long)(arg1);                    \
+-	register long _arg2 __asm__("ecx") = (long)(arg2);                    \
+-	register long _arg3 __asm__("edx") = (long)(arg3);                    \
+-	                                                                      \
+-	__asm__ volatile (                                                    \
+-		"int $0x80\n"                                                 \
+-		: "=a" (_ret)                                                 \
+-		: "r"(_arg1), "r"(_arg2), "r"(_arg3),                         \
+-		  "0"(_num)                                                   \
+-		: "memory", "cc"                                              \
+-	);                                                                    \
+-	_ret;                                                                 \
++#define my_syscall3(num, arg1, arg2, arg3)		\
++({							\
++	long _ret = (num);				\
++	__asm__ volatile (				\
++		"int $0x80\n"				\
++		: "+a"(_ret)	/* %eax */		\
++		: "b"(arg1),	/* %ebx */		\
++		  "c"(arg2),	/* %ecx */		\
++		  "d"(arg3)	/* %edx */		\
++		: "memory", "cc"			\
++	);						\
++	_ret;						\
+ })
  
--	list_for_each_entry(tcegrp, &container->group_list, next) {
--		if (tcegrp->grp == iommu_group) {
--			found = true;
-+	list_for_each_entry(iter, &container->group_list, next) {
-+		if (iter->grp == iommu_group) {
-+			tcegrp = iter;
- 			break;
- 		}
- 	}
+-#define my_syscall4(num, arg1, arg2, arg3, arg4)                              \
+-({                                                                            \
+-	long _ret;                                                            \
+-	register long _num __asm__("eax") = (num);                            \
+-	register long _arg1 __asm__("ebx") = (long)(arg1);                    \
+-	register long _arg2 __asm__("ecx") = (long)(arg2);                    \
+-	register long _arg3 __asm__("edx") = (long)(arg3);                    \
+-	register long _arg4 __asm__("esi") = (long)(arg4);                    \
+-	                                                                      \
+-	__asm__ volatile (                                                    \
+-		"int $0x80\n"                                                 \
+-		: "=a" (_ret)                                                 \
+-		: "r"(_arg1), "r"(_arg2), "r"(_arg3), "r"(_arg4),             \
+-		  "0"(_num)                                                   \
+-		: "memory", "cc"                                              \
+-	);                                                                    \
+-	_ret;                                                                 \
++#define my_syscall4(num, arg1, arg2, arg3, arg4)	\
++({							\
++	long _ret = (num);				\
++	__asm__ volatile (				\
++		"int $0x80\n"				\
++		: "+a"(_ret)	/* %eax */		\
++		: "b"(arg1),	/* %ebx */		\
++		  "c"(arg2),	/* %ecx */		\
++		  "d"(arg3),	/* %edx */		\
++		  "S"(arg4)	/* %esi */		\
++		: "memory", "cc"			\
++	);						\
++	_ret;						\
+ })
  
--	if (!found) {
-+	if (!tcegrp) {
- 		pr_warn("tce_vfio: detaching unattached group #%u\n",
- 				iommu_group_id(iommu_group));
- 		goto unlock_exit;
-
-base-commit: f443e374ae131c168a065ea1748feac6b2e76613
+-#define my_syscall5(num, arg1, arg2, arg3, arg4, arg5)                        \
+-({                                                                            \
+-	long _ret;                                                            \
+-	register long _num __asm__("eax") = (num);                            \
+-	register long _arg1 __asm__("ebx") = (long)(arg1);                    \
+-	register long _arg2 __asm__("ecx") = (long)(arg2);                    \
+-	register long _arg3 __asm__("edx") = (long)(arg3);                    \
+-	register long _arg4 __asm__("esi") = (long)(arg4);                    \
+-	register long _arg5 __asm__("edi") = (long)(arg5);                    \
+-	                                                                      \
+-	__asm__ volatile (                                                    \
+-		"int $0x80\n"                                                 \
+-		: "=a" (_ret)                                                 \
+-		: "r"(_arg1), "r"(_arg2), "r"(_arg3), "r"(_arg4), "r"(_arg5), \
+-		  "0"(_num)                                                   \
+-		: "memory", "cc"                                              \
+-	);                                                                    \
+-	_ret;                                                                 \
++#define my_syscall5(num, arg1, arg2, arg3, arg4, arg5)	\
++({							\
++	long _ret = (num);				\
++	__asm__ volatile (				\
++		"int $0x80\n"				\
++		: "+a"(_ret)	/* %eax */		\
++		: "b"(arg1),	/* %ebx */		\
++		  "c"(arg2),	/* %ecx */		\
++		  "d"(arg3),	/* %edx */		\
++		  "S"(arg4),	/* %esi */		\
++		  "D"(arg5)	/* %edi */		\
++		: "memory", "cc"			\
++	);						\
++	_ret;						\
+ })
+ 
+ /* startup code */
 -- 
-2.25.1
+Ammar Faizi
 
