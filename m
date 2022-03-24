@@ -2,107 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0300C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 22:39:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B7E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 22:39:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355455AbiCXWlR (ORCPT
+        id S1355464AbiCXWlW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 18:41:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53440 "EHLO
+        Thu, 24 Mar 2022 18:41:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244293AbiCXWlK (ORCPT
+        with ESMTP id S1355456AbiCXWlS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 18:41:10 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 631F6BA32E
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 15:39:35 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2dc7bdd666fso47087707b3.7
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 15:39:35 -0700 (PDT)
+        Thu, 24 Mar 2022 18:41:18 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDE15ADD64
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 15:39:42 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id bc27so4975808pgb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 15:39:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=2UXOWK4H/ABoSS6KabIKT0cRAkKR0ZUPw5leAS4VA2Y=;
-        b=mFrw/DyLpphzNFV0Nr7i6+kDrT0/C9GU5c4FP6bzXJk/QsrgjgdsN5pw+Twz+s6tGi
-         qy25SacKdr9ipsWUo6trNsVmt+dTa/NxO3N5FT6aeXplL6+ZEw1LMGDWTo0PQCwb+Bvv
-         4GDi1sgE7Jd6QRrZP/c4HReJ6wxGKYe3J8j58vlNKNI0HzHCFnfQgsW07wf12tX5ifUO
-         PkWd0jUpPH/MCtF459clWjsDteS21Ykgbme/qNhmrt1Ttph7wf3EUSy9EX8Ao16PvJnO
-         QLKcOxdXbMcH953M7Bj/sxYtgU4u2dWspJAXKFL7VZLBu7hfRoPYI0AbX+uq/222BMVD
-         SSYw==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=2jY/kvhxQ4cJoS/OWK7PPPMsG+7IB6Z63fZGYtknmfE=;
+        b=TGENlreCIufcddlhlrkoSHHWl1TXnDesvj9AktoHDNBTqe5aBdPKRaUXx8Yc121LtL
+         FdXeOuAhaYFB1KyhIRm5WGEnj6zFsWeCID1MnJAfJqjaVhfJFscq/8zUq6i+Mw5qadzv
+         o1GpiruMK6wysCNEOv+vTnP+2g4K2iq74dWTN/AchARJhsNTUI6WnoVsMHS7OhrYYtWR
+         /8KJf+a6ANpmgu/hWKq3Q5fW+eyZ7CDOiws9wa2kuSotxmCPf1LwcmZOqM+9pocaPW8/
+         MJrge55ks6nuZkuUxK3Ayi0LGWSKJ1IJD5410JXNMKkpteoDN0uTqMqYFxCEHFkGEzWu
+         o2XQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=2UXOWK4H/ABoSS6KabIKT0cRAkKR0ZUPw5leAS4VA2Y=;
-        b=IYBYusjXhG7MlRPiDWUEq3FlaKgoFlrW9wIMt7lIhU+wPGRA3xRZ2uD6bLxOyhf0+s
-         JyUtyKZjqAv4JCT8aSGOE9zKnT9sUzpwkEZ9PIT2n8KhV4QiT+POUJsSYpxQ964JTAbs
-         R8s9cj1EL9JS+6cdynSuKR3Ap+5nF4B6wzfCnYO9QO3cz6VQ4LxCcK6tNCP2VTAaJ6GQ
-         CVut12b1R4U6F01ZacfyhS9fgLukOpWKkgDq31F+GO96ajbpdsN/vvsp/jmaeHSWAI8C
-         KHZErqTYjPoktnTqRpHtkHRBpZUzpOFlIkAAbb5XtD6GlEQp/NYzTAlQN0rWSai7g7Hv
-         44lA==
-X-Gm-Message-State: AOAM533I67Q+SabjvB2KLnHBXowGkzEB3ETJvlVx+ymoUnstYbMyB1nQ
-        P2pxCK02DOtAHH8n0eeazgG6EduSIVMANdRxAQVE
-X-Google-Smtp-Source: ABdhPJw4BH07SPiQZUc2OcEknGn2R1/wKMDadrW5rM6fMHjf1XTNKTbDi8N9qPU+6gv6J5NGI8IQbzzmpbGwWUQn91RR
-X-Received: from ajr0.svl.corp.google.com ([2620:15c:2cd:203:9892:9f7f:2c27:2968])
- (user=axelrasmussen job=sendgmr) by 2002:a25:5f11:0:b0:633:ee0c:ab79 with
- SMTP id t17-20020a255f11000000b00633ee0cab79mr6599611ybb.491.1648161574585;
- Thu, 24 Mar 2022 15:39:34 -0700 (PDT)
-Date:   Thu, 24 Mar 2022 15:39:28 -0700
-Message-Id: <20220324223929.1893741-1-axelrasmussen@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
-Subject: [PATCH 1/2] selftests: fix header dependency for pid_namespace selftests
-From:   Axel Rasmussen <axelrasmussen@google.com>
-To:     Christian Brauner <brauner@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        llvm@lists.linux.dev, Axel Rasmussen <axelrasmussen@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=2jY/kvhxQ4cJoS/OWK7PPPMsG+7IB6Z63fZGYtknmfE=;
+        b=mqRrAQyOhknHaGgGMzFWalZ5OZJE+DkABX9LWvC3y0xxe7rxNSqSSJEPFO7ep/I3Yy
+         gedoiqFH+L7Vt1ChMs2iRZjSHedMybAeXlOSFramz4qAQ1rXrJzDhevdIaRQTQ+uDZ1N
+         geaoCmlFE2ynDkaNFZVEhtIjx5WJw2xnPDHiNt1s2q9Tvg+tet30NqSrwWN/B17Avk6m
+         +vyxGKbBUdaiszH9l8RaBbYWI95+RiKfwfYb4myaLiBQ3BbH4uUnd0LPTyp729JFJebq
+         CSstRA7LowsBty6qPvJsFOSGqITSmTUt/gL6whMw3KdteWnCgUIilf4/siiLcfDXrrrc
+         qLSg==
+X-Gm-Message-State: AOAM5333OojZJSNvh1PLcRu0xt7hpL17nnXDusA7F89kN6ikIgj8rihm
+        tbWD4UfogpK1p+SqHePl6Cs=
+X-Google-Smtp-Source: ABdhPJxsM9J08Gw3pvsBw3nmu1ZLiXzknA2dH7VOOqz9+PyNigXg7OSjPGm2ihlYQMw31wIadPudTg==
+X-Received: by 2002:a63:1266:0:b0:381:5071:e942 with SMTP id 38-20020a631266000000b003815071e942mr5777490pgs.86.1648161582224;
+        Thu, 24 Mar 2022 15:39:42 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id pj9-20020a17090b4f4900b001c744034e7csm11206774pjb.2.2022.03.24.15.39.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 24 Mar 2022 15:39:41 -0700 (PDT)
+Message-ID: <145fa83e-c4c8-ec0b-4626-8f99655174ba@gmail.com>
+Date:   Thu, 24 Mar 2022 15:39:36 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 2/2] ARM: Clamp MAX_DMA_ADDRESS to 32-bit
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>
+Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>
+References: <20220324175417.1014562-1-f.fainelli@gmail.com>
+ <20220324175417.1014562-3-f.fainelli@gmail.com>
+ <CAMuHMdWyDLoOit-VYPzLXxLz6W300xpo_wrqj=Pr9sZSwk_OwQ@mail.gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <CAMuHMdWyDLoOit-VYPzLXxLz6W300xpo_wrqj=Pr9sZSwk_OwQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The way the test target was defined before, when building with clang we
-get a command line like this:
+On 3/24/22 13:31, Geert Uytterhoeven wrote:
+> Hi Florian,
+> 
+> On Thu, Mar 24, 2022 at 6:54 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
+>> MAX_DMA_ADDRESS is a virtual address, therefore it needs to fit within a
+>> 32-bit unsigned quantity. Platforms defining a DMA zone size in
+>> their machine descriptor can easily overflow this quantity depending on
+>> the DMA zone size and/or the PAGE_OFFSET setting.
+>>
+>> In most cases this is harmless, however in the case of a
+>> CONFIG_DEBUG_VIRTUAL enabled, __virt_addr_valid() will be unable to
+>> return that MAX_DMA_ADDRESS is valid because the value passed to that
+>> function is an unsigned long which has already overflowed.
+>>
+>> Fixes: e377cd8221eb ("ARM: 8640/1: Add support for CONFIG_DEBUG_VIRTUAL")
+>> Fixes: 2fb3ec5c9503 ("ARM: Replace platform definition of ISA_DMA_THRESHOLD/MAX_DMA_ADDRESS")
+>> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> 
+>> --- a/arch/arm/include/asm/dma.h
+>> +++ b/arch/arm/include/asm/dma.h
+>> @@ -8,10 +8,12 @@
+>>   #ifndef CONFIG_ZONE_DMA
+>>   #define MAX_DMA_ADDRESS        0xffffffffUL
+>>   #else
+>> +#include <linux/minmax.h>
+>>   #define MAX_DMA_ADDRESS        ({ \
+>>          extern phys_addr_t arm_dma_zone_size; \
+>>          arm_dma_zone_size && arm_dma_zone_size < (0x10000000 - PAGE_OFFSET) ? \
+> 
+> "arm_dma_zone_size < (0x10000000 - PAGE_OFFSET)" looks
+> like an overflow-avoiding version of
+> "PAGE_OFFSET + arm_dma_zone_size < 0x10000000".
+> However, PAGE_OFFSET is always larger than 0x10000000,
+> so "0x10000000 - PAGE_OFFSET" is a rather large number?
 
-clang -Wall -Werror -g -I../../../../usr/include/ \
-	regression_enomem.c ../pidfd/pidfd.h  -o regression_enomem
+Yes it is a large number, though I am not too sure what the intention of 
+this check was in the first place, whether it denoted the largest known 
+DMA size of any machine at the time, or if it has any relationship to 
+lowmem (in which case it does not account for its exact value since it 
+can be changed indirectly via vmalloc= on the command line).
 
-This yields an error, because clang thinks we want to produce both a *.o
-file, as well as a precompiled header:
+We ought to be just fine with keeping only:
 
-clang: error: cannot specify -o when generating multiple output files
+min_t(phys_addr_t, (PAGE_OFFSET + arm_dma_zone_size - 1), 0xffffffffUL);
 
-gcc, for whatever reason, doesn't exhibit the same behavior which I
-suspect is why the problem wasn't noticed before.
-
-This can be fixed simply by using the LOCAL_HDRS infrastructure the
-selftests lib.mk provides. It does the right think and marks the target
-as depending on the header (so if the header changes, we rebuild), but
-it filters the header out of the compiler command line, so we don't get
-the error described above.
-
-Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
----
- tools/testing/selftests/pid_namespace/Makefile | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/tools/testing/selftests/pid_namespace/Makefile b/tools/testing/selftests/pid_namespace/Makefile
-index dcaefa224ca0..edafaca1aeb3 100644
---- a/tools/testing/selftests/pid_namespace/Makefile
-+++ b/tools/testing/selftests/pid_namespace/Makefile
-@@ -1,8 +1,8 @@
- # SPDX-License-Identifier: GPL-2.0
- CFLAGS += -g -I../../../../usr/include/
- 
--TEST_GEN_PROGS := regression_enomem
-+TEST_GEN_PROGS = regression_enomem
- 
--include ../lib.mk
-+LOCAL_HDRS += $(selfdir)/pidfd/pidfd.h
- 
--$(OUTPUT)/regression_enomem: regression_enomem.c ../pidfd/pidfd.h
-+include ../lib.mk
+Santosh, what did 0x10000000 mean when you added it?
 -- 
-2.35.1.1021.g381101b075-goog
-
+Florian
