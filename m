@@ -2,78 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81A2EC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 20:07:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E968DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 20:14:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353229AbiCXUIp (ORCPT
+        id S1353249AbiCXUQL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 16:08:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60970 "EHLO
+        Thu, 24 Mar 2022 16:16:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241546AbiCXUIo (ORCPT
+        with ESMTP id S244080AbiCXUQK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 16:08:44 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F285B245C;
-        Thu, 24 Mar 2022 13:07:11 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 381DA14CD;
-        Thu, 24 Mar 2022 21:07:09 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1648152429;
-        bh=0eOQsHYDIIbVZCbf67FHyRGuPJuqHwQLe+/L63VKp0Q=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PtRlmWJgOon/0zxahejq/GCd1M8wZ9DD2K2XAn07nlV2JUnwbIiIDZMYSQu3QWbNs
-         +jlqXrgN1XWNC/ApUkTqz3aS8tzV70gR5n8wKxPy/C8h78S/dDAcanz3bziHWiUd1v
-         VnhMaUIoYhXL/4nPMjOvwempy9FkUlBmc9q4qkh0=
-Date:   Thu, 24 Mar 2022 22:07:07 +0200
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Ricardo Ribalda <ribalda@chromium.org>
-Cc:     Hangyu Hua <hbh25y@gmail.com>, mchehab@kernel.org,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] media: uvc_v4l2: fix possible memory leak in
- uvc_ioctl_ctrl_map
-Message-ID: <YjzPa0iJ4OuCZ8q0@pendragon.ideasonboard.com>
-References: <20220324081718.41091-1-hbh25y@gmail.com>
- <CANiDSCvqQqOZ=uigeSz7ihe-y5XDLCRYD9+ZRULDE21td5rvEQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CANiDSCvqQqOZ=uigeSz7ihe-y5XDLCRYD9+ZRULDE21td5rvEQ@mail.gmail.com>
+        Thu, 24 Mar 2022 16:16:10 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C48114089;
+        Thu, 24 Mar 2022 13:14:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7AFABCE2671;
+        Thu, 24 Mar 2022 20:14:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B586AC340EE;
+        Thu, 24 Mar 2022 20:14:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648152873;
+        bh=O17HJ0U7T0jN05O3ubot79yzqYT8pQ8+1AExKn0Rgm0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dgKpk3vdDe2T/GCbpb8PUN4NlDmtOztDuFHlzIj7WOAR8rudkzFetag9HtEulfc1G
+         q1D74tdymJjKN1ulwvSoz5Fx8OT8ljG07eRPfnmeEl0FRjyhcUz8z7XgcC4Ik2ydM0
+         Y+2aeCtQBAEdrk20FI0Op8uNvoOQUVxy/TZSLnt4MlX0sVe9w8Srf2MQKX/YR7BiB/
+         PFP32eg5hpkX5/E3H78o4ltTvFkXuTwNOhBqtt/duIqpsEFBHtVy62MCSamQUzHvE1
+         eyekA7k5IIVPqIqlVdf5Z8mFhwz+mCqa2U7Zu41zjtpQpveHlW14M7f3DCilfQuK7U
+         H3abI8ynd7qBQ==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=wait-a-minute.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nXTqp-00Gn91-5R; Thu, 24 Mar 2022 20:14:31 +0000
+Date:   Thu, 24 Mar 2022 20:14:30 +0000
+Message-ID: <87ee2rxg49.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>, Leo Li <leoyang.li@nxp.com>,
+        Biwen Li <biwen.li@nxp.com>, "Z.Q. Hou" <zhiqiang.hou@nxp.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Subject: Re: [RFC PATCH devicetree 00/10] Do something about ls-extirq interrupt-map breakage
+In-Reply-To: <20220324190904.boo2izjc3mym2wkh@skbuf>
+References: <20211214013800.2703568-1-vladimir.oltean@nxp.com>
+        <87ilvrk1r0.wl-maz@kernel.org>
+        <20211214095853.4emzycaxkuqr4tun@skbuf>
+        <87czlzjxmz.wl-maz@kernel.org>
+        <20220324171041.t5yoocinj6gizcc7@skbuf>
+        <87lewz5kr5.wl-maz@kernel.org>
+        <20220324173405.nusk6247ouvek46y@skbuf>
+        <87k0cj5io4.wl-maz@kernel.org>
+        <20220324190904.boo2izjc3mym2wkh@skbuf>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: vladimir.oltean@nxp.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, robh+dt@kernel.org, shawnguo@kernel.org, leoyang.li@nxp.com, biwen.li@nxp.com, zhiqiang.hou@nxp.com, kurt@linutronix.de, linux@rasmusvillemoes.dk
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 06:17:18PM +0100, Ricardo Ribalda wrote:
-> Isnt it a dupe of:
-> https://patchwork.linuxtv.org/project/linux-media/patch/20211008120914.69175-1-ribalda@chromium.org/
-> ?
+On Thu, 24 Mar 2022 19:09:05 +0000,
+Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+> 
+> On Thu, Mar 24, 2022 at 06:06:51PM +0000, Marc Zyngier wrote:
+> > > I was just raising this as what I thought would be a simple and
+> > > non-controversial counter example to your remark "If you change something,
+> > > you *must* guarantee forward *and* backward compatibility."
+> > 
+> > If you change something *in the binding*, which was implicit in the
+> > context, and makes no sense out of context.
+> > 
+> > > Practically speaking, what has happened is that the board DT appeared in
+> > > kernel N, the ls-extirq driver in kernel N+1, and the DT was updated to
+> > > enable PHY interrupts in kernel N+2. That DT update practically broke
+> > > kernel N from running correctly on DTs taken from kernel N+2 onwards.
+> > > This is the observable behavior, we can find as many justifications for
+> > > it as we wish.
+> > 
+> > Well, you can also argue that the DT was broken at N and N+1 for not
+> > describing the HW correctly and completely. No binding has changed
+> > here. Your DT was incomplete, and someone fixed it for you.
+> > 
+> > We can argue this things forever and a half. I've laid down the ground
+> > rules for the stuff I maintain. If you're not happy with this, you can
+> > fix it by either removing the NXP hardware from the tree, or taking
+> > over from me as the irqchip maintainer. I'd be perfectly happy with
+> > any (and even more, with both) of these outcomes.
+> 
+> Ok, my intention wasn't to inflame you even though the way in which I
+> presented the problem might have suggested otherwise.
+> 
+> With my developer hat I still don't agree with you even with the
+> additional clarification you've made that you were referring only to
+> bindings and not to any and all DT changes. The reason being that the DT
+> blob is a whole, and it doesn't matter if there's a regression because
+> of a binding change or something else, you still need to be prepared to
+> update it, sometimes in lockstep with the kernel, like it or not.
 
-It is. I'll review that one.
+<rant>
+No. This doesn't happen on systems that ship the DT as part of their
+firmware, and this doesn't happen with ACPI either. This only happens
+on platform that are maintained like the NXP, Marvell, and other
+similar platforms that are being used as a job security tool by doing
+piecemeal enablement.
 
-> On Thu, 24 Mar 2022 at 18:13, Hangyu Hua <hbh25y@gmail.com> wrote:
-> >
-> > map->name needs to be freed when uvc_ioctl_ctrl_map fails.
-> >
-> > Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-> > ---
-> >  drivers/media/usb/uvc/uvc_v4l2.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/drivers/media/usb/uvc/uvc_v4l2.c b/drivers/media/usb/uvc/uvc_v4l2.c
-> > index 711556d13d03..e46a2f3b06cb 100644
-> > --- a/drivers/media/usb/uvc/uvc_v4l2.c
-> > +++ b/drivers/media/usb/uvc/uvc_v4l2.c
-> > @@ -93,6 +93,7 @@ static int uvc_ioctl_ctrl_map(struct uvc_video_chain *chain,
-> >
-> >         kfree(map->menu_info);
-> >  free_map:
-> > +       kfree(map->name);
-> >         kfree(map);
-> >
-> >         return ret;
+Properly maintained systems have had the same DT for years. Features
+have been added over time, yet without breaking compatibility in
+either direction. Yes, it requires some effort and planning. And even
+quirks at times. Yet they don't break.
+
+Amusingly, some of these better supported platforms do not have their
+DT in the kernel tree. Synquacer, for example. Keeping the DTs in the
+kernel tree has been one of the worse decision we have ever made. It
+has simply moved the board files of old to a different place, under
+the guise of separating description and code.  In practice, it
+abstracted nothing at all, only made it more complicated because
+people are treating DT as an integral part of the kernel code base,
+which it really shouldn't be.
+</rant>
+
+> But as a user, I just wanted to get an opinion from you what can we do
+> to deal better with this situation: optional interrupt provided by
+> device with missing driver, which of_irq_get() doesn't seem to understand.
+> There are more angles to this than just "new DT with old kernel". It can
+> also be new kernel, but ls-extirq driver disabled, and I still see that
+> as a kernel <-> DT compatibility concern.
+
+If you're missing a driver, that's a user error. Or rather, a platform
+maintainer error for not establishing the correct dependencies. This
+has nothing to do with the DT. As for optional interrupts, that has
+nothing to do with the DT either, but with the kernel code that
+requests it. If you think the kernel should do better, you can always
+post a patch.
+
+And I'm done on that subject.
+
+	M.
 
 -- 
-Regards,
-
-Laurent Pinchart
+Without deviation from the norm, progress is not possible.
