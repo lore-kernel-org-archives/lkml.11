@@ -2,33 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6810CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 16:44:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 179C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 16:44:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242732AbiC1QqF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 12:46:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44150 "EHLO
+        id S243141AbiC1QqI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 12:46:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242645AbiC1Qpw (ORCPT
+        with ESMTP id S242654AbiC1Qpy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 12:45:52 -0400
-X-Greylist: delayed 4199 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 28 Mar 2022 09:44:08 PDT
+        Mon, 28 Mar 2022 12:45:54 -0400
 Received: from mail.baikalelectronics.ru (mail.baikalelectronics.com [87.245.175.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 61D8A205CB;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D130A20F75;
         Mon, 28 Mar 2022 09:44:07 -0700 (PDT)
 Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id 324381E493E;
-        Thu, 24 Mar 2022 04:48:41 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 324381E493E
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id AEF031E4959;
+        Thu, 24 Mar 2022 04:48:52 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru AEF031E4959
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1648086521;
-        bh=45B91bTRPDAiVVFXTWFyOKTO4rQMMJ7SJOEIZd4mBWc=;
+        d=baikalelectronics.ru; s=mail; t=1648086532;
+        bh=+IEDsRaJtaAOEVZuZm2s1zd6/7iKdTGU1JFLulsvSLI=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=dVfKrMhpppasdM6ZNQchY65q3OjcV7bv4h6qHkClv1TE0UUtDK5Dsl0/17AKVVv74
-         EtW5Jl1AEs39t5gyGJzX8mqREeaGK3RMsA3uH2es9XaedS2ywgZyIFYCc7t9ZgxxGt
-         hfDk87OB95UkS1yUXErO5TXCgfF9uFFyz19zEb8E=
+        b=p48lkGjl46eibcqigaSeooGcXN4oiX+1XKr8udykhWbY8ex1r/lUwcp59IYwaRUBl
+         Qy1nG9u0NO4V2EBXDZN/LWdzirJDaNo3cnD5oj1bfw1PWSQL8tdFGADIldlH6NDeZ9
+         QQaHR7/ToedaDDQu/AuYbZ2d+/auA43JRGLxzyJk=
 Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 24 Mar 2022 04:48:41 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 24 Mar 2022 04:48:52 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
         Vinod Koul <vkoul@kernel.org>,
@@ -45,9 +44,9 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
         <linux-pci@vger.kernel.org>, <dmaengine@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH 04/25] dmaengine: Fix dma_slave_config.dst_addr description
-Date:   Thu, 24 Mar 2022 04:48:15 +0300
-Message-ID: <20220324014836.19149-5-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH 20/25] dmaengine: dw-edma: Use non-atomic io-64 methods
+Date:   Thu, 24 Mar 2022 04:48:31 +0300
+Message-ID: <20220324014836.19149-21-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru>
 References: <20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -58,31 +57,189 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Most likely due to a copy-paste mistake the dst_addr member of the
-dma_slave_config structure has been marked as ignored if the !source!
-address belong to the memory. That is relevant to the src_addr field of
-the structure while the dst_addr field as containing a destination device
-address is supposed to be ignored if the destination is the CPU memory.
-Let's fix the field description accordingly.
+Instead of splitting the 64-bits IOs up into two 32-bits ones it's
+possible to use an available set of the non-atomic readq/writeq methods
+implemented exactly for such cases. They are defined in the dedicated
+header files io-64-nonatomic-lo-hi.h/io-64-nonatomic-hi-lo.h. So in case
+if the 64-bits readq/writeq methods are unavailable on some platforms at
+consideration, the corresponding drivers can have any of these headers
+included and stop locally re-implementing the 64-bits IO accessors taking
+into account the non-atomic nature of the included methods. Let's do that
+in the DW eDMA driver too. Note by doing so we can discard the
+CONFIG_64BIT config ifdefs from the code. Also note that if a platform
+doesn't support 64-bit DBI IOs then the corresponding accessors will just
+directly call the lo_hi_readq()/lo_hi_writeq() methods.
 
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 ---
- include/linux/dmaengine.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/dma/dw-edma/dw-edma-v0-core.c | 71 +++++++++------------------
+ 1 file changed, 24 insertions(+), 47 deletions(-)
 
-diff --git a/include/linux/dmaengine.h b/include/linux/dmaengine.h
-index 842d4f7ca752..f204ea16ac1c 100644
---- a/include/linux/dmaengine.h
-+++ b/include/linux/dmaengine.h
-@@ -395,7 +395,7 @@ enum dma_slave_buswidth {
-  * should be read (RX), if the source is memory this argument is
-  * ignored.
-  * @dst_addr: this is the physical address where DMA slave data
-- * should be written (TX), if the source is memory this argument
-+ * should be written (TX), if the destination is memory this argument
-  * is ignored.
-  * @src_addr_width: this is the width in bytes of the source (RX)
-  * register where DMA data shall be read. If the source
+diff --git a/drivers/dma/dw-edma/dw-edma-v0-core.c b/drivers/dma/dw-edma/dw-edma-v0-core.c
+index 6b303d5a6b2a..ebb860e19c75 100644
+--- a/drivers/dma/dw-edma/dw-edma-v0-core.c
++++ b/drivers/dma/dw-edma/dw-edma-v0-core.c
+@@ -8,6 +8,8 @@
+ 
+ #include <linux/bitfield.h>
+ 
++#include <linux/io-64-nonatomic-lo-hi.h>
++
+ #include "dw-edma-core.h"
+ #include "dw-edma-v0-core.h"
+ #include "dw-edma-v0-regs.h"
+@@ -53,8 +55,6 @@ static inline struct dw_edma_v0_regs __iomem *__dw_regs(struct dw_edma *dw)
+ 		SET_32(dw, rd_##name, value);		\
+ 	} while (0)
+ 
+-#ifdef CONFIG_64BIT
+-
+ #define SET_64(dw, name, value)				\
+ 	writeq(value, &(__dw_regs(dw)->name))
+ 
+@@ -80,8 +80,6 @@ static inline struct dw_edma_v0_regs __iomem *__dw_regs(struct dw_edma *dw)
+ 		SET_64(dw, rd_##name, value);		\
+ 	} while (0)
+ 
+-#endif /* CONFIG_64BIT */
+-
+ #define SET_COMPAT(dw, name, value)			\
+ 	writel(value, &(__dw_regs(dw)->type.unroll.name))
+ 
+@@ -164,14 +162,13 @@ static inline u32 readl_ch(struct dw_edma *dw, enum dw_edma_dir dir, u16 ch,
+ #define SET_LL_32(ll, value) \
+ 	writel(value, ll)
+ 
+-#ifdef CONFIG_64BIT
+-
+ static inline void writeq_ch(struct dw_edma *dw, enum dw_edma_dir dir, u16 ch,
+ 			     u64 value, void __iomem *addr)
+ {
++	unsigned long flags;
++
+ 	if (dw->chip->mf == EDMA_MF_EDMA_LEGACY) {
+ 		u32 viewport_sel;
+-		unsigned long flags;
+ 
+ 		raw_spin_lock_irqsave(&dw->lock, flags);
+ 
+@@ -181,22 +178,25 @@ static inline void writeq_ch(struct dw_edma *dw, enum dw_edma_dir dir, u16 ch,
+ 
+ 		writel(viewport_sel,
+ 		       &(__dw_regs(dw)->type.legacy.viewport_sel));
++	}
++
++	if (dw->chip->flags & DW_EDMA_CHIP_32BIT_DBI)
++		lo_hi_writeq(value, addr);
++	else
+ 		writeq(value, addr);
+ 
++	if (dw->chip->mf == EDMA_MF_EDMA_LEGACY)
+ 		raw_spin_unlock_irqrestore(&dw->lock, flags);
+-	} else {
+-		writeq(value, addr);
+-	}
+ }
+ 
+ static inline u64 readq_ch(struct dw_edma *dw, enum dw_edma_dir dir, u16 ch,
+ 			   const void __iomem *addr)
+ {
+-	u32 value;
++	unsigned long flags;
++	u64 value;
+ 
+ 	if (dw->chip->mf == EDMA_MF_EDMA_LEGACY) {
+ 		u32 viewport_sel;
+-		unsigned long flags;
+ 
+ 		raw_spin_lock_irqsave(&dw->lock, flags);
+ 
+@@ -206,12 +206,15 @@ static inline u64 readq_ch(struct dw_edma *dw, enum dw_edma_dir dir, u16 ch,
+ 
+ 		writel(viewport_sel,
+ 		       &(__dw_regs(dw)->type.legacy.viewport_sel));
++	}
++
++	if (dw->chip->flags & DW_EDMA_CHIP_32BIT_DBI)
++		value = lo_hi_readq(addr);
++	else
+ 		value = readq(addr);
+ 
++	if (dw->chip->mf == EDMA_MF_EDMA_LEGACY)
+ 		raw_spin_unlock_irqrestore(&dw->lock, flags);
+-	} else {
+-		value = readq(addr);
+-	}
+ 
+ 	return value;
+ }
+@@ -225,8 +228,6 @@ static inline u64 readq_ch(struct dw_edma *dw, enum dw_edma_dir dir, u16 ch,
+ #define SET_LL_64(ll, value) \
+ 	writeq(value, ll)
+ 
+-#endif /* CONFIG_64BIT */
+-
+ /* eDMA management callbacks */
+ void dw_edma_v0_core_off(struct dw_edma *dw)
+ {
+@@ -325,19 +326,10 @@ static void dw_edma_v0_core_write_chunk(struct dw_edma_chunk *chunk)
+ 		/* Transfer size */
+ 		SET_LL_32(&lli[i].transfer_size, child->sz);
+ 		/* SAR */
+-		#ifdef CONFIG_64BIT
+-			SET_LL_64(&lli[i].sar.reg, child->sar);
+-		#else /* CONFIG_64BIT */
+-			SET_LL_32(&lli[i].sar.lsb, lower_32_bits(child->sar));
+-			SET_LL_32(&lli[i].sar.msb, upper_32_bits(child->sar));
+-		#endif /* CONFIG_64BIT */
++		SET_LL_64(&lli[i].sar.reg, child->sar);
+ 		/* DAR */
+-		#ifdef CONFIG_64BIT
+-			SET_LL_64(&lli[i].dar.reg, child->dar);
+-		#else /* CONFIG_64BIT */
+-			SET_LL_32(&lli[i].dar.lsb, lower_32_bits(child->dar));
+-			SET_LL_32(&lli[i].dar.msb, upper_32_bits(child->dar));
+-		#endif /* CONFIG_64BIT */
++		SET_LL_64(&lli[i].dar.reg, child->dar);
++
+ 		i++;
+ 	}
+ 
+@@ -349,12 +341,7 @@ static void dw_edma_v0_core_write_chunk(struct dw_edma_chunk *chunk)
+ 	/* Channel control */
+ 	SET_LL_32(&llp->control, control);
+ 	/* Linked list */
+-	#ifdef CONFIG_64BIT
+-		SET_LL_64(&llp->llp.reg, chunk->ll_region.paddr);
+-	#else /* CONFIG_64BIT */
+-		SET_LL_32(&llp->llp.lsb, lower_32_bits(chunk->ll_region.paddr));
+-		SET_LL_32(&llp->llp.msb, upper_32_bits(chunk->ll_region.paddr));
+-	#endif /* CONFIG_64BIT */
++	SET_LL_64(&llp->llp.reg, chunk->ll_region.paddr);
+ }
+ 
+ void dw_edma_v0_core_start(struct dw_edma_chunk *chunk, bool first)
+@@ -417,18 +404,8 @@ void dw_edma_v0_core_start(struct dw_edma_chunk *chunk, bool first)
+ 		SET_CH_32(dw, chan->dir, chan->id, ch_control1,
+ 			  (DW_EDMA_V0_CCS | DW_EDMA_V0_LLE));
+ 		/* Linked list */
+-		if ((chan->dw->chip->flags & DW_EDMA_CHIP_32BIT_DBI) ||
+-		    !IS_ENABLED(CONFIG_64BIT)) {
+-			SET_CH_32(dw, chan->dir, chan->id, llp.lsb,
+-				  lower_32_bits(chunk->ll_region.paddr));
+-			SET_CH_32(dw, chan->dir, chan->id, llp.msb,
+-				  upper_32_bits(chunk->ll_region.paddr));
+-		} else {
+-		#ifdef CONFIG_64BIT
+-			SET_CH_64(dw, chan->dir, chan->id, llp.reg,
+-				  chunk->ll_region.paddr);
+-		#endif
+-		}
++		SET_CH_64(dw, chan->dir, chan->id, llp.reg,
++			  chunk->ll_region.paddr);
+ 	}
+ 	/* Doorbell */
+ 	SET_RW_32(dw, chan->dir, doorbell,
 -- 
 2.35.1
 
