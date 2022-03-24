@@ -2,100 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59EB7C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 11:38:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 424DDC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 11:40:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346458AbiCXLk0 (ORCPT
+        id S1349858AbiCXLmX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 07:40:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41364 "EHLO
+        Thu, 24 Mar 2022 07:42:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231537AbiCXLkX (ORCPT
+        with ESMTP id S240170AbiCXLmU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 07:40:23 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E8950E1B;
-        Thu, 24 Mar 2022 04:38:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648121931; x=1679657931;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=3tsCmgC6U00CO6K3RhtJOUWh8jRiqevIzhkyWbUV+Po=;
-  b=Iq4EqoTdcfznxYQziJL9j8T77wZRQyDp295S+4wt4xxPTPY25oOgF5+p
-   c3GPeLryvmpfxULCZfeSRHImz2UZI8U2qq2r80IjeB0suLjBRCFNsmevp
-   Z/tOPZb5v7ed83pjKcSr3iBFB20YFBJ+IYZ2j0jVI2Ky69rr799jkOwKE
-   MHFWyHFy6qlWYARGXXm1cGBtTFald8lh+ZdD3rgsUrx6lwhalcVejLbOl
-   Hhuwq8GqAMHPnJ5pM4udzHHweG93Afgr1WaijGWHsR4w8+txKtWJY9ar+
-   Zfv8oo+87/THZrwcweuufidKL9pXzLcWq9X/mx3VUjeO5rhRBkQLmU3Mm
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="258541675"
-X-IronPort-AV: E=Sophos;i="5.90,207,1643702400"; 
-   d="scan'208";a="258541675"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 04:38:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,207,1643702400"; 
-   d="scan'208";a="544607394"
-Received: from xpf.sh.intel.com ([10.239.182.112])
-  by orsmga007.jf.intel.com with ESMTP; 24 Mar 2022 04:38:48 -0700
-Date:   Thu, 24 Mar 2022 19:37:13 +0800
-From:   Pengfei Xu <pengfei.xu@intel.com>
-To:     "Chang S. Bae" <chang.seok.bae@intel.com>
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
-        linux-kselftest <linux-kselftest@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Heng Su <heng.su@intel.com>,
-        Hansen Dave <dave.hansen@intel.com>,
-        Luck Tony <tony.luck@intel.com>,
-        Mehta Sohil <sohil.mehta@intel.com>,
-        Chen Yu C <yu.c.chen@intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Borislav Petkov <bp@suse.de>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH v8 1/1] selftests/x86/xstate: Add xstate test cases for
- XSAVE feature
-Message-ID: <YjxX6dnTTQD+Rq9C@xpf.sh.intel.com>
-References: <cover.1646999762.git.pengfei.xu@intel.com>
- <4268a0203fd6e42a31bde3254ee50dd93fd233ea.1646999762.git.pengfei.xu@intel.com>
- <eb0c4940-569b-656f-424c-4248929cc74c@intel.com>
+        Thu, 24 Mar 2022 07:42:20 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39CEF517F0;
+        Thu, 24 Mar 2022 04:40:48 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22OBehgJ126478;
+        Thu, 24 Mar 2022 06:40:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1648122043;
+        bh=3IuecUlfdO82n+x2FsLk8Ffzy6dPWUzYUpa5X3lPSso=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=aCuGVNKg5oKa4dTk7TFgW0qhXb9AZJJKJc3b3RPTjp2iRLyfAwgbhouV46g/za0ZV
+         OUZzcjiWW07AHnDECmJqJeSOpesk+J+TCVx5+RuVuwuBOhr8ZiCSJ8pA9zwBmuOaxp
+         THU3n6zP7LtKbJO4v/A+1LVeHZtwUDUHd34j+4lY=
+Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22OBeheg090779
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 24 Mar 2022 06:40:43 -0500
+Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 24
+ Mar 2022 06:40:43 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Thu, 24 Mar 2022 06:40:43 -0500
+Received: from [10.24.69.236] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22OBedEB061384;
+        Thu, 24 Mar 2022 06:40:40 -0500
+Message-ID: <41f79aa5-1e04-53f8-ab21-85fe6039e24e@ti.com>
+Date:   Thu, 24 Mar 2022 17:10:39 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <eb0c4940-569b-656f-424c-4248929cc74c@intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 1/2] dt-bindings: usb: Add documentation for AM62 USB
+ Wrapper module
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-usb@vger.kernel.org>, Felipe Balbi <balbi@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Roger Quadros <rogerq@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>
+References: <20220324073425.18607-1-a-govindraju@ti.com>
+ <20220324073425.18607-2-a-govindraju@ti.com>
+ <93fe6a41-3b59-2fbc-6f95-833f337815ee@kernel.org>
+From:   Aswath Govindraju <a-govindraju@ti.com>
+In-Reply-To: <93fe6a41-3b59-2fbc-6f95-833f337815ee@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-03-24 at 03:06:50 -0700, Chang S. Bae wrote:
-> On 3/16/2022 5:40 AM, Pengfei Xu wrote:
-> > 
-> > +static inline void check_cpuid_xsave_availability(void)
-> > +{
-> > +	uint32_t eax, ebx, ecx, edx;
-> > +
-> > +	/*
-> > +	 * CPUID.1:ECX.XSAVE[bit 26] enumerates general
-> > +	 * support for the XSAVE feature set, including
-> > +	 * XGETBV.
-> > +	 */
-> > +	__cpuid_count(1, 0, eax, ebx, ecx, edx);
-> > +	if (!(ecx & CPUID_LEAF1_ECX_XSAVE_MASK))
-> > +		fatal_error("cpuid: no CPU xsave support");
-> > +	if (!(ecx & CPUID_LEAF1_ECX_OSXSAVE_MASK))
-> > +		fatal_error("cpuid: no OS xsave support");
-> 
-> We need to skip the test when XSAVE is not available. See the point here:
-> https://lore.kernel.org/lkml/8735j8aa9g.ffs@tglx/
-> 
-  Yes, it's better, will skip and exit if CPU doesn't support XSAVE or OS
-  XSAVE.
-  Thanks for suggestion!
+Hi Krzysztof,
 
-  BR.
-  -- Pengfei
+On 24/03/22 16:37, Krzysztof Kozlowski wrote:
+> On 24/03/2022 08:34, Aswath Govindraju wrote:
+>> Add bindings for the TI's AM62 wrapper module for the Synopsys USBSS-DRD
+>> controller.
+>>
+>> Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+>> ---
+>>
+>> Changes since v1:
+>> - made correction in grammer of clocks property description
+>>   and added maxItems in the interrupts property based on comments
+>>   received from Roger
+>> - corrected the title, fixed the description of
+>>   ti,syscon-phy-pll-refclk, added pattern properties and child node
+>>   in the example based on the comments from Krzysztof.
+>>
+>>  .../devicetree/bindings/usb/ti,am62-usb.yaml  | 117 ++++++++++++++++++
+>>  1 file changed, 117 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/usb/ti,am62-usb.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/usb/ti,am62-usb.yaml b/Documentation/devicetree/bindings/usb/ti,am62-usb.yaml
+>> new file mode 100644
+>> index 000000000000..452bfdc6fb09
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/usb/ti,am62-usb.yaml
+>> @@ -0,0 +1,117 @@
+>> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/usb/ti,am62-usb.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: TI's AM62 wrapper module for the Synopsys USBSS-DRD controller
+>> +
+>> +maintainers:
+>> +  - Aswath Govindraju <a-govindraju@ti.com>
+>> +
+>> +properties:
+>> +  compatible:
+>> +    const: ti,am62-usb
+>> +
+>> +  reg:
+>> +    maxItems: 1
+>> +
+>> +  ranges: true
+>> +
+>> +  power-domains:
+>> +    description:
+>> +      PM domain provider node and an args specifier containing
+>> +      the USB ISO device id value. See,
+>> +      Documentation/devicetree/bindings/soc/ti/sci-pm-domain.yaml
+>> +    maxItems: 1
+>> +
+>> +  clocks:
+>> +    description: Clock phandle to usb2_refclk
+>> +    maxItems: 1
+>> +
+>> +  clock-names:
+>> +    items:
+>> +      - const: ref
+>> +
+>> +  id-gpio:
+>> +    description:
+>> +      GPIO to be used as ID pin
+>> +    maxItems: 1
+> 
+> I have doubts about this. If you USB controller handles the ID pin, then
+> probably this should be moved to usb-connector.yaml. I did not see
+> id-gpio in any other USB controller blocks.
+> 
 
-> Thanks,
-> Chang
+Yes, the USB wrapper handles the ID pin operation only. It also reads
+the status of VBUS by reading a register from its MMR and not using a
+gpio. After evaluating the role the based on the states if id pin and
+VBUS, this role is communicated to the dwc3 core driver using extcon.
+There is no way for the dwc3 driver to detect the role on its own.
+
+
+The usb-connector(drivers/usb/common/usb-conn-gpio.c) driver, seems to
+be implemented for driving the VBUS, based on ID and VBUS pin status.
+However, in case of the above implementation we need to communicate the
+detected role to the dwc3 core driver. Also, the wrapper does not
+control VBUS but it is the dwc3 core driver that drives the VBUS.
+Therefore, I think the usb-connector implementation cannot be used here.
+
+Thanks,
+Aswath
+
 > 
-> 
+> Best regards,
+> Krzysztof
+
