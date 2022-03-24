@@ -2,193 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA0DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 15:40:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A3F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 15:41:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351335AbiCXPmO (ORCPT
+        id S1351338AbiCXPn3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 11:42:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46138 "EHLO
+        Thu, 24 Mar 2022 11:43:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242256AbiCXPmI (ORCPT
+        with ESMTP id S242256AbiCXPn2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 11:42:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 232FF9D0F9
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 08:40:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648136435;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QByLZV/xQidMU0lNxdw0ftNq4EpASOAjZu6w5lmb7uM=;
-        b=AzE9e0vpFf1XqEzdsmhKuvBr2r+X208zSEDMnQgHl4Jgitnu87JL6HGNLVBoElbfHJf1gg
-        gjEHiNZgznIHb+8zmgmFYWBsnRgFajOK6t0aOcmrjt/Tez0zpj7bVLy/k8bXzc9etTxj10
-        JnZ6/ptgDBncRTygqKNe5ghRP8X1Mos=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-343-w3chLnp6PVCqOzMcvnjA0A-1; Thu, 24 Mar 2022 11:40:28 -0400
-X-MC-Unique: w3chLnp6PVCqOzMcvnjA0A-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 24 Mar 2022 11:43:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6703EBE2C;
+        Thu, 24 Mar 2022 08:41:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 64B7638008A1;
-        Thu, 24 Mar 2022 15:40:27 +0000 (UTC)
-Received: from starship (unknown [10.40.194.231])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 29BE640D296C;
-        Thu, 24 Mar 2022 15:40:24 +0000 (UTC)
-Message-ID: <d7a536300644697a2fae8278c5f37dedeba9e02d.camel@redhat.com>
-Subject: Re: [RFCv2 PATCH 10/12] KVM: SVM: Introduce helper functions to
- (de)activate AVIC and x2AVIC
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
-        jon.grimm@amd.com, wei.huang2@amd.com, terry.bowman@amd.com,
-        kernel test robot <lkp@intel.com>
-Date:   Thu, 24 Mar 2022 17:40:24 +0200
-In-Reply-To: <20220308163926.563994-11-suravee.suthikulpanit@amd.com>
-References: <20220308163926.563994-1-suravee.suthikulpanit@amd.com>
-         <20220308163926.563994-11-suravee.suthikulpanit@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F213661834;
+        Thu, 24 Mar 2022 15:41:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5703C340EC;
+        Thu, 24 Mar 2022 15:41:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648136515;
+        bh=doZwDOyg5aAln9B5DrZ3TY24Ms37FN+svJ7hBf9kLOA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=D2es6RjpWpnvAYmQBArcDtITQiqCqQkxdHOTn+VLib8RpjRqoz7Bk42YaQeIkW4B+
+         YV4riix7mFJO6aTCfBltJ+fHD9NcvbmSVUgVRccYTsAThnjUvTUElpQVWLkEmXn3XP
+         0KARQD6J5sux0XLqkyQczgxTdKj6a0blrlIj64sjOTOnkhpG5IQOzN1na+sGcth01V
+         BHerFSDNphjfIgtjIwzEyNtiuKx5MEFUnf8zYDfP5QxivQK6NnsEXMMHf83nTw7iCV
+         0JmhQp4Rh9K55bYoS3LHd/KRXZDaoGGhW53QMIr6NdwapjmHHWkxiYfwY5Yfp7IlAG
+         xZBPVqEuXQxJA==
+Date:   Thu, 24 Mar 2022 21:11:50 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Marijn Suijten <marijn.suijten@somainline.org>
+Cc:     Rob Clark <robdclark@gmail.com>, linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <abhinavk@codeaurora.org>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org
+Subject: Re: [REPOST PATCH v4 07/13] drm/msm/disp/dpu1: Add support for DSC
+ in encoder
+Message-ID: <YjyRPhdoiLw4gOtD@matsya>
+References: <20220210103423.271016-1-vkoul@kernel.org>
+ <20220210103423.271016-8-vkoul@kernel.org>
+ <20220217223239.2i256klkbjkogovz@SoMainline.org>
+ <YjsxaJrvxgtO5ecC@matsya>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YjsxaJrvxgtO5ecC@matsya>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-03-08 at 10:39 -0600, Suravee Suthikulpanit wrote:
-> Refactor the current logic for (de)activate AVIC into helper functions,
-> and also add logic for (de)activate x2AVIC. The helper function are used
-> when initializing AVIC and switching from AVIC to x2AVIC mode
-> (handled by svm_refresh_spicv_exec_ctrl()).
+On 23-03-22, 20:10, Vinod Koul wrote:
+> On 17-02-22, 23:32, Marijn Suijten wrote:
+> > On 2022-02-10 16:04:17, Vinod Koul wrote:
+
+> > > +
+> > > +	slice_count = dsc->drm->slice_count;
+> > > +	slice_per_intf = DIV_ROUND_UP(width, dsc->drm->slice_width);
+> > > +
+> > > +	/*
+> > > +	 * If slice_count is greater than slice_per_intf then default to 1.
+> > > +	 * This can happen during partial update.
+> > > +	 */
+> > > +	if (slice_count > slice_per_intf)
+> > > +		slice_count = 1;
+> > > +
+> > > +	bytes_in_slice = DIV_ROUND_UP(dsc->drm->slice_width *
+> > > +				      dsc->drm->bits_per_pixel, 8);
+> > > +	total_bytes_per_intf = bytes_in_slice * slice_per_intf;
+> > > +
+> > > +	dsc->eol_byte_num = total_bytes_per_intf % 3;
+> > > +	dsc->pclk_per_line =  DIV_ROUND_UP(total_bytes_per_intf, 3);
+> > > +	dsc->bytes_in_slice = bytes_in_slice;
+> > > +	dsc->bytes_per_pkt = bytes_in_slice * slice_count;
+> > > +	dsc->pkt_per_line = slice_per_intf / slice_count;
+> > > +}
+> > 
+> > I've seen the same calculations duplicated twice in dsi code.  Since the
+> > msm_display_dsc_config struct is available in a header, perhaps a single
+> > - easily reviewable and maintainable - calculation function should be
+> > available there too?
 > 
-> When an AVIC-enabled guest switches from APIC to x2APIC mode during
-> runtime, the SVM driver needs to perform the following steps:
-> 
-> 1. Set the x2APIC mode bit for AVIC in VMCB along with the maximum
-> APIC ID support for each mode accodingly.
-> 
-> 2. Disable x2APIC MSRs interception in order to allow the hardware
-> to virtualize x2APIC MSRs accesses.
-> 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> ---
->  arch/x86/include/asm/svm.h |  1 +
->  arch/x86/kvm/svm/avic.c    | 48 ++++++++++++++++++++++++++++++++++----
->  2 files changed, 44 insertions(+), 5 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/svm.h b/arch/x86/include/asm/svm.h
-> index 681a348a9365..f5337022104d 100644
-> --- a/arch/x86/include/asm/svm.h
-> +++ b/arch/x86/include/asm/svm.h
-> @@ -248,6 +248,7 @@ enum avic_ipi_failure_cause {
->  	AVIC_IPI_FAILURE_INVALID_BACKING_PAGE,
->  };
->  
-> +#define AVIC_PHYSICAL_MAX_INDEX_MASK	GENMASK_ULL(9, 0)
->  
->  /*
->   * For AVIC, the max index allowed for physical APIC ID
-> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-> index 53559b8dfa52..b8d6bf6b6ed5 100644
-> --- a/arch/x86/kvm/svm/avic.c
-> +++ b/arch/x86/kvm/svm/avic.c
-> @@ -66,6 +66,45 @@ struct amd_svm_iommu_ir {
->  	void *data;		/* Storing pointer to struct amd_ir_data */
->  };
->  
-> +static inline void avic_set_x2apic_msr_interception(struct vcpu_svm *svm, bool disable)
-> +{
-> +	int i;
-> +
-> +	for (i = 0x800; i <= 0x8ff; i++)
-> +		set_msr_interception(&svm->vcpu, svm->msrpm, i,
-> +				     !disable, !disable);
-> +}
-> +
-> +static void avic_activate_vmcb(struct vcpu_svm *svm)
-> +{
-> +	struct vmcb *vmcb = svm->vmcb01.ptr;
-> +
-> +	vmcb->control.int_ctl &= ~(AVIC_ENABLE_MASK | X2APIC_MODE_MASK);
-> +	vmcb->control.avic_physical_id &= ~AVIC_PHYSICAL_MAX_INDEX_MASK;
+> Let me try check if we can make it common..
 
-This looks a bit better, I don't 100% like this but let it be.
+I rechecked and we can actually remove this as we do this caln in timing
+and update the dsc structure there. So this fn is dropped now
 
-Honestly I will eventualy add code to calculate and update this maximum
-dynamically to avoid wasting microcode going over the whole table,
-or worse having nested avic code doing so.
-
-
-> +
-> +	vmcb->control.int_ctl |= AVIC_ENABLE_MASK;
-> +	if (apic_x2apic_mode(svm->vcpu.arch.apic)) {
-> +		vmcb->control.int_ctl |= X2APIC_MODE_MASK;
-> +		vmcb->control.avic_physical_id |= X2AVIC_MAX_PHYSICAL_ID;
-> +		/* Disabling MSR intercept for x2APIC registers */
-> +		avic_set_x2apic_msr_interception(svm, false);
-> +	} else {
-> +		vmcb->control.avic_physical_id |= AVIC_MAX_PHYSICAL_ID;
-> +		/* Enabling MSR intercept for x2APIC registers */
-> +		avic_set_x2apic_msr_interception(svm, true);
-> +	}
-> +}
-
-> +
-> +static void avic_deactivate_vmcb(struct vcpu_svm *svm)
-> +{
-> +	struct vmcb *vmcb = svm->vmcb01.ptr;
-> +
-> +	vmcb->control.int_ctl &= ~(AVIC_ENABLE_MASK | X2APIC_MODE_MASK);
-> +	vmcb->control.avic_physical_id &= ~AVIC_PHYSICAL_MAX_INDEX_MASK;
-> +
-> +	/* Enabling MSR intercept for x2APIC registers */
-> +	avic_set_x2apic_msr_interception(svm, true);
-> +}
-Makes sense.
-
-
->  
->  /* Note:
->   * This function is called from IOMMU driver to notify
-> @@ -183,13 +222,12 @@ void avic_init_vmcb(struct vcpu_svm *svm)
->  	vmcb->control.avic_backing_page = bpa & AVIC_HPA_MASK;
->  	vmcb->control.avic_logical_id = lpa & AVIC_HPA_MASK;
->  	vmcb->control.avic_physical_id = ppa & AVIC_HPA_MASK;
-> -	vmcb->control.avic_physical_id |= AVIC_MAX_PHYSICAL_ID;
->  	vmcb->control.avic_vapic_bar = APIC_DEFAULT_PHYS_BASE & VMCB_AVIC_APIC_BAR_MASK;
->  
->  	if (kvm_apicv_activated(svm->vcpu.kvm))
-> -		vmcb->control.int_ctl |= AVIC_ENABLE_MASK;
-> +		avic_activate_vmcb(svm);
->  	else
-> -		vmcb->control.int_ctl &= ~AVIC_ENABLE_MASK;
-> +		avic_deactivate_vmcb(svm);
->  }
->  
->  static u64 *avic_get_physical_id_entry(struct kvm_vcpu *vcpu,
-> @@ -703,9 +741,9 @@ void svm_refresh_apicv_exec_ctrl(struct kvm_vcpu *vcpu)
->  		 * accordingly before re-activating.
->  		 */
->  		avic_post_state_restore(vcpu);
-> -		vmcb->control.int_ctl |= AVIC_ENABLE_MASK;
-> +		avic_activate_vmcb(svm);
->  	} else {
-> -		vmcb->control.int_ctl &= ~AVIC_ENABLE_MASK;
-> +		avic_deactivate_vmcb(svm);
->  	}
->  	vmcb_mark_dirty(vmcb, VMCB_AVIC);
->  
-
-
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-
-Best regards,
-	Maxim Levitsky
-
+-- 
+~Vinod
