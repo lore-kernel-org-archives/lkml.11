@@ -2,187 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C229C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 23:42:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38C8AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 23:43:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356419AbiCXXoS (ORCPT
+        id S1356469AbiCXXoe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 19:44:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49110 "EHLO
+        Thu, 24 Mar 2022 19:44:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356451AbiCXXnF (ORCPT
+        with ESMTP id S1356381AbiCXXoM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 19:43:05 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF126BA318
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 16:41:32 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id k13-20020a25c60d000000b006339008b92fso4790802ybf.1
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 16:41:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=Fvc6J6M6wcnrLQYRH6BhKAfsqygwLe3UGholaX7FMA0=;
-        b=qwc6aIu5Ovc+0GN2azCLlUlH2jfPiydIUMXBP/9wtLJp8BKskc9/DY2+dCmr0NLdx5
-         CzW10s1Kb6fzMKDh7Sw3PF1JYO84FG1kyfULFPQI5D/xYr+frrv9ObUJ67LBoFWDI6hj
-         OOaMseMGnEg5OVT6ajCRQ4pY3FwwP5OblzYsfwrussZTcHfXPzKZ+KLs613k8ud5i3EG
-         o1OK7th6NWrLoDhkua8yon0Y9Ew/cesv62AkwEHWcxBHjIeQ87zgwRjEHpOScmRzwHkt
-         pDaC+xoAmSjXzeS8gBkEHSz7yuLJ9VN5/7ufq6373j64IHyxT0KWeSAaZROGMnAIY5K/
-         JMGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=Fvc6J6M6wcnrLQYRH6BhKAfsqygwLe3UGholaX7FMA0=;
-        b=odRDRecHUuVOv3xcQb2sSwD3bgTu5bLmpJKfDhJKluTuFIq8CFGzRpyjAG2HBjU7TH
-         hjNkaK8VQviKJiq1y+dsLmitEr37uB34lIIY4N5DrqiFiR3VIqDNR6wQkpTBqpMR+TsL
-         ph/0OzXL72VmJxAhloVpZCohC2g8WKD3iEP9waklnjQc4S4ZtCTJU81ogNCADqxR0wKr
-         wyKCgOYAX/4Nbs/XBmgBxkH7yFiW0Jmk0DHL753dJyjHwa5CN+si7yC5H7kONSzO90yi
-         0b+90ss3iyx6JfCCscevoMoUOkBBDZbJMV+GzvYQbPyJVvHuMDVaMTbu0jTW2j8VveqT
-         7V/A==
-X-Gm-Message-State: AOAM532Cxjc0PxBA9cePSroEinyCC3I4uycpe5dwXBr+UCAW08mrDDIP
-        CymYGs8R43S6COFj+NMHHvRmg2CkXeE=
-X-Google-Smtp-Source: ABdhPJzbLWng5ePUh2h4yTHDw5MikqqEhBkzdNWfUsNQmPt0KjRTRPPBspbB/2lcY6syjTsOHEFYmJog1Ew=
-X-Received: from haoluo.svl.corp.google.com ([2620:15c:2cd:202:f3eb:bf7b:2da4:12c9])
- (user=haoluo job=sendgmr) by 2002:a81:5545:0:b0:2e5:a302:4739 with SMTP id
- j66-20020a815545000000b002e5a3024739mr7412732ywb.348.1648165292087; Thu, 24
- Mar 2022 16:41:32 -0700 (PDT)
-Date:   Thu, 24 Mar 2022 16:41:23 -0700
-In-Reply-To: <20220324234123.1608337-1-haoluo@google.com>
-Message-Id: <20220324234123.1608337-3-haoluo@google.com>
-Mime-Version: 1.0
-References: <20220324234123.1608337-1-haoluo@google.com>
-X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
-Subject: [PATCH RFC bpf-next 2/2] selftests/bpf: Test mmapable task local storage.
-From:   Hao Luo <haoluo@google.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     yhs@fb.com, KP Singh <kpsingh@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Hao Luo <haoluo@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 24 Mar 2022 19:44:12 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E385FBB90E
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 16:42:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648165359; x=1679701359;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=0m3vl8D0Cto4zEhd0e9bcLWdk2hC55kP6S5QpJPTy6g=;
+  b=VvHI/Qvg2RR0BthVQMhrC0w4wsLIqd94sk0HQg9Ck1m2jDj9JjRww/HG
+   CLINKv7SR89g8VDSaPhGz/ohN3xAYDCwCXXOM82bnfwdv3NWWKfnpeUQO
+   OKA672objke/1NUmGaqhHUtbQoU2ojzXpC+/UzXo6awjVLJ+LAxsH497N
+   FF/TlDjiIxn6rEapwTjq3a1csKqId0dMq989PIy8+K0TAW6PnCyknVZp4
+   gsRrFFk/s9Et0G2o9906FrZjBbFq048nawifijdccRAHWaZejUWj2hbdq
+   dVvA9d8cBQdlXvquI6qaSOzdywI2221QfJYWSC1k4kw3IqwLSE9MZUUSt
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10296"; a="258231143"
+X-IronPort-AV: E=Sophos;i="5.90,208,1643702400"; 
+   d="scan'208";a="258231143"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 16:42:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,208,1643702400"; 
+   d="scan'208";a="718021056"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 24 Mar 2022 16:42:24 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nXX5z-000LYe-Ec; Thu, 24 Mar 2022 23:42:23 +0000
+Date:   Fri, 25 Mar 2022 07:41:21 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ohad Sharabi <osharabi@habana.ai>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Oded Gabbay <ogabbay@kernel.org>
+Subject: [ogabbay:habanalabs-next 19/19]
+ drivers/misc/habanalabs/common/firmware_if.c:860:28: sparse: sparse: cast to
+ restricted __le32
+Message-ID: <202203250727.JVrJokTk-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Tests mmapable task local storage.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git habanalabs-next
+head:   8893b113963d24b89844a072c968b042ae76aa46
+commit: 8893b113963d24b89844a072c968b042ae76aa46 [19/19] habanalabs/gaudi: add debugfs to fetch internal sync status
+config: i386-randconfig-s002 (https://download.01.org/0day-ci/archive/20220325/202203250727.JVrJokTk-lkp@intel.com/config)
+compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git/commit/?id=8893b113963d24b89844a072c968b042ae76aa46
+        git remote add ogabbay https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git
+        git fetch --no-tags ogabbay habanalabs-next
+        git checkout 8893b113963d24b89844a072c968b042ae76aa46
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash drivers/misc/
 
-Signed-off-by: Hao Luo <haoluo@google.com>
----
- .../bpf/prog_tests/task_local_storage.c       | 38 +++++++++++++++++++
- .../bpf/progs/task_local_storage_mmapable.c   | 38 +++++++++++++++++++
- 2 files changed, 76 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/task_local_storage_mmapable.c
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/task_local_storage.c b/tools/testing/selftests/bpf/prog_tests/task_local_storage.c
-index 035c263aab1b..24e6edd32a78 100644
---- a/tools/testing/selftests/bpf/prog_tests/task_local_storage.c
-+++ b/tools/testing/selftests/bpf/prog_tests/task_local_storage.c
-@@ -6,8 +6,10 @@
- #include <sys/syscall.h>   /* For SYS_xxx definitions */
- #include <sys/types.h>
- #include <test_progs.h>
-+#include <sys/mman.h>
- #include "task_local_storage.skel.h"
- #include "task_local_storage_exit_creds.skel.h"
-+#include "task_local_storage_mmapable.skel.h"
- #include "task_ls_recursion.skel.h"
- 
- static void test_sys_enter_exit(void)
-@@ -81,6 +83,40 @@ static void test_recursion(void)
- 	task_ls_recursion__destroy(skel);
- }
- 
-+#define MAGIC_VALUE 0xabcd1234
-+
-+static void test_mmapable(void)
-+{
-+	struct task_local_storage_mmapable *skel;
-+	const long page_size = sysconf(_SC_PAGE_SIZE);
-+	int fd, err;
-+	void *ptr;
-+
-+	skel = task_local_storage_mmapable__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "skel_open_and_load"))
-+		return;
-+
-+	fd = bpf_map__fd(skel->maps.mmapable_map);
-+	ptr = mmap(NULL, page_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-+	if (!ASSERT_NEQ(ptr, MAP_FAILED, "mmap"))
-+		goto out;
-+
-+	skel->bss->target_pid = syscall(SYS_gettid);
-+
-+	err = task_local_storage_mmapable__attach(skel);
-+	if (!ASSERT_OK(err, "skel_attach"))
-+		goto unmap;
-+
-+	syscall(SYS_gettid);
-+
-+	ASSERT_EQ(*(u64 *)ptr, MAGIC_VALUE, "value");
-+
-+unmap:
-+	munmap(ptr, page_size);
-+out:
-+	task_local_storage_mmapable__destroy(skel);
-+}
-+
- void test_task_local_storage(void)
- {
- 	if (test__start_subtest("sys_enter_exit"))
-@@ -89,4 +125,6 @@ void test_task_local_storage(void)
- 		test_exit_creds();
- 	if (test__start_subtest("recursion"))
- 		test_recursion();
-+	if (test__start_subtest("mmapable"))
-+		test_mmapable();
- }
-diff --git a/tools/testing/selftests/bpf/progs/task_local_storage_mmapable.c b/tools/testing/selftests/bpf/progs/task_local_storage_mmapable.c
-new file mode 100644
-index 000000000000..8cd82bb7336a
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/task_local_storage_mmapable.c
-@@ -0,0 +1,38 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2022 Google */
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+char _license[] SEC("license") = "GPL";
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_TASK_STORAGE);
-+	__uint(map_flags, BPF_F_NO_PREALLOC | BPF_F_MMAPABLE);
-+	__type(key, int);
-+	__type(value, long);
-+} mmapable_map SEC(".maps");
-+
-+#define MAGIC_VALUE 0xabcd1234
-+
-+pid_t target_pid = 0;
-+
-+SEC("tp_btf/sys_enter")
-+int BPF_PROG(on_enter, struct pt_regs *regs, long id)
-+{
-+	struct task_struct *task;
-+	long *ptr;
-+
-+	task = bpf_get_current_task_btf();
-+	if (task->pid != target_pid)
-+		return 0;
-+
-+	ptr = bpf_task_storage_get(&mmapable_map, task, 0,
-+				   BPF_LOCAL_STORAGE_GET_F_CREATE);
-+	if (!ptr)
-+		return 0;
-+
-+	*ptr = MAGIC_VALUE;
-+	return 0;
-+}
+
+sparse warnings: (new ones prefixed by >>)
+>> drivers/misc/habanalabs/common/firmware_if.c:860:28: sparse: sparse: cast to restricted __le32
+
+vim +860 drivers/misc/habanalabs/common/firmware_if.c
+
+   823	
+   824	int hl_fw_get_monitor_dump(struct hl_device *hdev, void *data)
+   825	{
+   826		struct cpucp_monitor_dump *mon_dump_cpu_addr;
+   827		dma_addr_t mon_dump_dma_addr;
+   828		struct cpucp_packet pkt = {};
+   829		u32 *src_ptr, *dst_ptr;
+   830		size_t data_size;
+   831		u64 result;
+   832		int i, rc;
+   833	
+   834		data_size = sizeof(struct cpucp_monitor_dump);
+   835		mon_dump_cpu_addr = hdev->asic_funcs->cpu_accessible_dma_pool_alloc(hdev, data_size,
+   836											&mon_dump_dma_addr);
+   837		if (!mon_dump_cpu_addr) {
+   838			dev_err(hdev->dev,
+   839				"Failed to allocate DMA memory for CPU-CP monitor-dump packet\n");
+   840			return -ENOMEM;
+   841		}
+   842	
+   843		memset(mon_dump_cpu_addr, 0, data_size);
+   844	
+   845		pkt.ctl = cpu_to_le32(CPUCP_PACKET_MONITOR_DUMP_GET << CPUCP_PKT_CTL_OPCODE_SHIFT);
+   846		pkt.addr = cpu_to_le64(mon_dump_dma_addr);
+   847		pkt.data_max_size = cpu_to_le32(data_size);
+   848	
+   849		rc = hdev->asic_funcs->send_cpu_message(hdev, (u32 *) &pkt, sizeof(pkt),
+   850								HL_CPUCP_MON_DUMP_TIMEOUT_USEC, &result);
+   851		if (rc) {
+   852			dev_err(hdev->dev, "Failed to handle CPU-CP monitor-dump packet, error %d\n", rc);
+   853			goto out;
+   854		}
+   855	
+   856		/* result contains the actual size */
+   857		src_ptr = (u32 *)mon_dump_cpu_addr;
+   858		dst_ptr = data;
+   859		for (i = 0; i < (data_size / sizeof(u32)); i++) {
+ > 860			*dst_ptr = le32_to_cpu(*src_ptr);
+   861			src_ptr++;
+   862			dst_ptr++;
+   863		}
+   864	
+   865	out:
+   866		hdev->asic_funcs->cpu_accessible_dma_pool_free(hdev, data_size, mon_dump_cpu_addr);
+   867	
+   868		return rc;
+   869	}
+   870	
+
 -- 
-2.35.1.1021.g381101b075-goog
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
