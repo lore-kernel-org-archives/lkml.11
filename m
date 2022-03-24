@@ -2,70 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFDA1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 20:32:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A15FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 20:33:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353421AbiCXUeF (ORCPT
+        id S1353424AbiCXUer convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 16:34:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37420 "EHLO
+        Thu, 24 Mar 2022 16:34:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348388AbiCXUeE (ORCPT
+        with ESMTP id S1345637AbiCXUeq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 16:34:04 -0400
-Received: from m228-6.mailgun.net (m228-6.mailgun.net [159.135.228.6])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id DF4A7B82E2
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 13:32:31 -0700 (PDT)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=michaelkloos.com; q=dns/txt;
- s=k1; t=1648153951; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: To: To: From: From: References: Subject: Subject:
- MIME-Version: Date: Message-ID: Sender: Sender;
- bh=ayLctIQyJDZRSNPz2rKUYe+2VjcPBRi1cTFw+S8TlWo=; b=kJjKJx7FKoQCSowozoD4aTN5WIUNliNjbIsesh4sfjWGQz7dtxQA9bK5lGGv8v6Uo4/SNCpa
- hninkPv3Njg+zMvr54W711KnVqudXMb07sxIlxWy9CbEkVgeFPQ0XohAm6fQbNnTptlFXv/y
- uS2UBeiBuUSdjO2cmo1Y6pP/Ogc=
-X-Mailgun-Sending-Ip: 159.135.228.6
-X-Mailgun-Sid: WyI5NjYzNiIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgIjQ4Y2MwIl0=
-Received: from drop1.michaelkloos.com (drop1.michaelkloos.com
- [67.205.190.89]) by smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
- 623cd55d07b42f471cbe2ac7 (version=TLS1.3, cipher=TLS_AES_128_GCM_SHA256);
- Thu, 24 Mar 2022 20:32:29 GMT
-Sender: michael@michaelkloos.com
-Received: from [192.168.1.236] (cpe-173-88-115-50.columbus.res.rr.com [173.88.115.50])
-        by drop1.michaelkloos.com (Postfix) with ESMTPSA id 77136400B8
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 20:32:29 +0000 (UTC)
-Message-ID: <6b5d05a9-52f5-2d3d-5890-b4c1e790dd76@michaelkloos.com>
-Date:   Thu, 24 Mar 2022 16:32:30 -0400
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: LKML Spam Question: Fwd: My name is Lisa Williams
-References: <CAKSk573stpac9ndu6JmMt34tsOTd=tas4pz9mrHHY8e4fMKe2w@mail.gmail.com>
+        Thu, 24 Mar 2022 16:34:46 -0400
+X-Greylist: delayed 1232 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Mar 2022 13:33:13 PDT
+Received: from mail2.intersystems.com (mail2.intersystems.com [38.105.105.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8270FDF7F
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 13:33:11 -0700 (PDT)
+X-InterSystems: Sent from InterSystems
+X-InterSystems: Sent from InterSystems
+X-InterSystems: Sent from InterSystems
+X-InterSystems: Sent from InterSystems
+From:   Ray Fucillo <Ray.Fucillo@intersystems.com>
+To:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: scalability regressions related to hugetlb_fault() changes
+Thread-Topic: scalability regressions related to hugetlb_fault() changes
+Thread-Index: AQHYP7uAL1vA/rQijE+hDIc6LhXGuA==
+Date:   Thu, 24 Mar 2022 20:12:35 +0000
+Message-ID: <D3204B1E-50A1-4261-8C75-3DF77A302502@intersystems.com>
+Accept-Language: en-US
 Content-Language: en-US
-From:   "Michael T. Kloos" <michael@michaelkloos.com>
-To:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-In-Reply-To: <CAKSk573stpac9ndu6JmMt34tsOTd=tas4pz9mrHHY8e4fMKe2w@mail.gmail.com>
-X-Forwarded-Message-Id: <CAKSk573stpac9ndu6JmMt34tsOTd=tas4pz9mrHHY8e4fMKe2w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.17.254.204]
+x-c2processedorg: 5d7e5ca7-6395-445f-80da-8568a4fc58e5
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <48F2A26C80B440459846FEED0F086F05@exchangemail.iscinternal.com>
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Is the "X-Spam-Status" header supposed to include "autolearn=ham".
-This looks like incorrect training data to me but I'm not an expert
-in the list's spam prevention systems.
+In moving to newer versions of the kernel, our customers have experienced dramatic new scalability problems in our database application, InterSystems IRIS.  Our research has narrowed this down to new processes that attach to the database's shared memory segment taking very long delays (in some cases ~100ms!) acquiring the i_mmap_lock_read() in hugetlb_fault() as they fault in the huge page for the first time.  The addition of this lock in hugetlb_fault() matches the versions where we see this problem.  It's not just slowing the new process that incurs the delay, but backing up other processes if the page fault occurs inside a critical section within the database application.
 
-	Michael
+Is there something that can be improved here?  
 
--------- Forwarded Message --------
+The read locks in hugetlb_fault() contend with write locks that seem to be taken in very common application code paths: shmat(), process exit, fork() (not vfork()), shmdt(), presumably others.  So hugetlb_fault() contending to read turns out to be common.  When the system is loaded, there will be many new processes faulting in pages that may blocks the write lock, which in turn blocks more readers in fault behind it, and so on...  I don't think there's any support for shared page tables in hugetlb to avoid the faults altogether.
 
--- 
-Hi Dear,
+Switching to 1GB huge pages instead of 2MB is a good mitigation in reducing the frequency of fault, but not a complete solution.
 
-My name is Lisa  Williams, I am from the United States of America, Its
-my pleasure to contact you for new and special friendship, I will be
-glad to see your reply for us to know each other better.
+Thanks for considering.
 
-Yours
-Lisa
-
+Ray
