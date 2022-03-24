@@ -2,60 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77015C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 14:59:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CC05C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 15:02:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351187AbiCXPAv (ORCPT
+        id S1351199AbiCXPDu convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 11:00:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52378 "EHLO
+        Thu, 24 Mar 2022 11:03:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344773AbiCXPAr (ORCPT
+        with ESMTP id S1347598AbiCXPDs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 11:00:47 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F96119C31
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 07:59:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=fNkhJPcfnwKXRpNQLK5phJ4WkPDI8JXNcw51Ms0xwTY=; b=pfyS14sT9Qs9UuQS+WF0fLisKY
-        AIdPveX/veJHmzWhtpC1xeagdhdbX1KRYixvN4ZIIbaEaOJaJS2+AG9TxDtZpVSKoZuK6V/BRmN+1
-        pdlsuu7P/jbEPyEneKZrF2yiJkytdGV9FNK9oq9WdPJnxPiJ0VKKIMdZR+cw9HusLu/xjzCOBq1PT
-        4MDgfyzozhZF2GwwdrZ2TRzOb5VLiBwJWEjdYqfTCPrrregTwVfsO8AI6O3XBsU2qigXDsBtp+gSw
-        YXpLZ+KHTcdGrGviA50jpYqEDi1q9k801YDbI3K+pe3bGdjIql5CDmgIakjJ+CiJXd+5YdjX3iOmz
-        +8u0OydQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nXOvX-00DWjW-5c; Thu, 24 Mar 2022 14:59:03 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id C99A9986205; Thu, 24 Mar 2022 15:59:02 +0100 (CET)
-Date:   Thu, 24 Mar 2022 15:59:02 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Stephane Eranian <eranian@google.com>
-Cc:     linux-kernel@vger.kernel.org, kim.phillips@amd.com,
-        acme@redhat.com, jolsa@redhat.com, songliubraving@fb.com,
-        rafael@kernel.org, ravi.bangoria@amd.com, sandipan.das@amd.com
-Subject: Re: [PATCH v7 00/13] perf/x86/amd: Add AMD Fam19h Branch Sampling
- support
-Message-ID: <20220324145902.GG8939@worktop.programming.kicks-ass.net>
-References: <20220322221517.2510440-1-eranian@google.com>
+        Thu, 24 Mar 2022 11:03:48 -0400
+Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A3253A94EF
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 08:02:15 -0700 (PDT)
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-468-oj5YYOTvPUORGiha6ai_Ug-1; Thu, 24 Mar 2022 11:02:11 -0400
+X-MC-Unique: oj5YYOTvPUORGiha6ai_Ug-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7516385A5BE;
+        Thu, 24 Mar 2022 15:02:10 +0000 (UTC)
+Received: from x1.com (unknown [10.22.34.216])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 68C8A401476;
+        Thu, 24 Mar 2022 15:02:09 +0000 (UTC)
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-trace-devel@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: rtla/Makefile: Properly handle dependencies
+Date:   Thu, 24 Mar 2022 16:01:52 +0100
+Message-Id: <48c7167c78a330d0b25dc631ee7d6f0f34c096e9.1648132686.git.bristot@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220322221517.2510440-1-eranian@google.com>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=bristot@kernel.org
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kernel.org
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252; x-default=true
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 03:15:04PM -0700, Stephane Eranian wrote:
-> V7 makes the following changes:
->    - rebased to 5.17-rc8
->    - Restrict BRS to be used only with RETIRED_TAKEN_BRANCH event in order to
->      avoid adding more skid to other events in case that are monitored
->      concurrently
->    - fixed bugs in the perf tool enhanced error handling for IBS and BRS
+Linus had a problem compiling RTLA, saying:
 
-But afaict you failed to pick up the build fixes I did in my tree :/ Let
-me try and be careful preserving those while munging this in.
+"[...] I wish the tracing tools would do a bit more package
+checking and helpful error messages too, rather than just
+fail with:
+
+    fatal error: tracefs.h: No such file or directory"
+
+Which is indeed not a helpful message. Update the Makefile, adding
+proper checks for the dependencies, with useful information about
+how to resolve possible problems.
+
+For example, the previous error is now reported as:
+
+    $ make
+    ********************************************
+    ** NOTICE: libtracefs version 1.3 or higher not found
+    **
+    ** Consider installing the latest libtracefs from your
+    ** distribution, e.g., 'dnf install libtracefs' on Fedora,
+    ** or from source:
+    **
+    **  https://git.kernel.org/pub/scm/libs/libtrace/libtracefs.git/ 
+    **
+    ********************************************
+
+These messages are inspired by the ones used on trace-cmd, as suggested
+by Stevel Rostedt.
+
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
+Suggested-by: Steven Rostedt <rostedt@goodmis.org>
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+---
+ tools/tracing/rtla/Makefile | 72 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 72 insertions(+)
+
+diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
+index 5a1eda617992..448e9073736a 100644
+--- a/tools/tracing/rtla/Makefile
++++ b/tools/tracing/rtla/Makefile
+@@ -57,6 +57,78 @@ else
+ DOCSRC	=	$(SRCTREE)/../../../Documentation/tools/rtla/
+ endif
+ 
++LIBTRACEEVENT = libtraceevent
++LIBTRACEFS = libtracefs
++LIBPROCPS = libprocps
++
++LIBTRACEEVENT_MIN_VERSION = 1.5
++LIBTRACEFS_MIN_VERSION = 1.3
++LIBPROCPS_MIN_VERSION = 3.3
++
++TEST_LIBTRACEEVENT = $(shell sh -c "$(PKG_CONFIG) --atleast-version $(LIBTRACEEVENT_MIN_VERSION) $(LIBTRACEEVENT) > /dev/null 2>&1 || echo n")
++ifeq ("$(TEST_LIBTRACEEVENT)", "n")
++.PHONY: warning_traceevent
++warning_traceevent:
++	@echo "********************************************"
++	@echo "** NOTICE: $(LIBTRACEEVENT) version $(LIBTRACEEVENT_MIN_VERSION) or higher not found"
++	@echo "**"
++	@echo "** Consider installing the latest $(LIBTRACEEVENT) from your"
++	@echo "** distribution, e.g., 'dnf install $(LIBTRACEEVENT)' on Fedora,"
++	@echo "** or from source:"
++	@echo "**"
++	@echo "**  https://git.kernel.org/pub/scm/libs/libtrace/libtraceevent.git/ "
++	@echo "**"
++	@echo "********************************************"
++endif
++
++TEST_LIBTRACEFS = $(shell sh -c "$(PKG_CONFIG) --atleast-version $(LIBTRACEFS_MIN_VERSION) $(LIBTRACEFS) > /dev/null 2>&1 || echo n")
++ifeq ("$(TEST_LIBTRACEFS)", "n")
++.PHONY: warning_tracefs
++warning_tracefs:
++	@echo "********************************************"
++	@echo "** NOTICE: $(LIBTRACEFS) version $(LIBTRACEFS_MIN_VERSION) or higher not found"
++	@echo "**"
++	@echo "** Consider installing the latest $(LIBTRACEFS) from your"
++	@echo "** distribution, e.g., 'dnf install $(LIBTRACEFS)' on Fedora,"
++	@echo "** or from source:"
++	@echo "**"
++	@echo "**  https://git.kernel.org/pub/scm/libs/libtrace/libtracefs.git/ "
++	@echo "**"
++	@echo "********************************************"
++endif
++
++TEST_LIBPROCPS = $(shell sh -c "$(PKG_CONFIG) --atleast-version $(LIBPROCPS_MIN_VERSION) $(LIBPROCPS) > /dev/null 2>&1 || echo n")
++ifeq ("$(TEST_LIBPROCPS)", "n")
++.PHONY: warning_procps
++warning_procps:
++	@echo "********************************************"
++	@echo "** NOTICE: $(LIBPROCPS) version $(LIBPROCPS_MIN_VERSION) or higher not found"
++	@echo "**"
++	@echo "** Consider installing the latest procps-ng-devel from your"
++	@echo "** distribution, e.g., 'dnf install procps-ng-devel' on Fedora,"
++	@echo "** or from source:"
++	@echo "**"
++	@echo "**  https://gitlab.com/procps-ng/procps "
++	@echo "**"
++	@echo "********************************************"
++endif
++
++TEST_RST2MAN = $(shell sh -c "rst2man --version > /dev/null 2>&1 || echo n")
++ifeq ("$(TEST_RST2MAN)", "n")
++.PHONY: warning_rst2man
++warning_rst2man:
++	@echo "********************************************"
++	@echo "** NOTICE: rst2man not found"
++	@echo "**"
++	@echo "** Consider installing the latest rst2man from your"
++	@echo "** distribution, e.g., 'dnf install python3-docutils' on Fedora,"
++	@echo "** or from source:"
++	@echo "**"
++	@echo "**  https://docutils.sourceforge.io/docs/dev/repository.html "
++	@echo "**"
++	@echo "********************************************"
++endif
++
+ .PHONY:	all
+ all:	rtla
+ 
+-- 
+2.35.1
+
