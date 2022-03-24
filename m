@@ -2,102 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A80CBC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 18:19:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 758B7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 18:20:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352587AbiCXSVI (ORCPT
+        id S1352596AbiCXSWR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 14:21:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40260 "EHLO
+        Thu, 24 Mar 2022 14:22:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243033AbiCXSVG (ORCPT
+        with ESMTP id S1352588AbiCXSWJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 14:21:06 -0400
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC628B0D3A;
-        Thu, 24 Mar 2022 11:19:34 -0700 (PDT)
-Received: by mail-wr1-f51.google.com with SMTP id b19so7775940wrh.11;
-        Thu, 24 Mar 2022 11:19:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=sShruqNvZUchI28ILvTdEo38ieYS+DY+iNhiC6vHsC8=;
-        b=NZDcJ3TMal4QJgsrqPJ0CbE4bvDXYMJm0rdFYtmdBksV4XOGYDjRqkq15EESvfw7mC
-         Ulq4k1LU+kFZD2Hdwu/Jcra5JZR+ALXWdmSEYelp/OMC+kCr/PZ+tBZL5EaSg+AkId61
-         yRXUT2p4Rjf1kN+VW3GxujkRTRp2YiXIW1MUyVBDMCr3ogM+nxrzk/v2jVKEJWIQQFkn
-         3XzgOiDQAzWYOMZI7ny7f9UKiMv621E3RQkX6TlPki5TcUrS4ny7j0YlDatbhp3/cJ6T
-         O6CsiFydZYB+m8WOJWof1X0YSK8wQOebv/QJj5M+GDm8TRNWoylYe74yhJ22LWidwgki
-         JRFQ==
-X-Gm-Message-State: AOAM532ARLEwLlbmuWdxBl/h8B9Hlb/XpEun1ls5BfpEmoMI7fJnWDn4
-        tCAk4kpVU0AAd5YyCklajmk=
-X-Google-Smtp-Source: ABdhPJzC6djT24nFCyVp44IEirJJaFJU/0jVblYX0o/KcYPym7BgkM7Zs06lR+obo/brOCN4fKSFvA==
-X-Received: by 2002:a5d:6d44:0:b0:1e4:9a6d:c171 with SMTP id k4-20020a5d6d44000000b001e49a6dc171mr5714666wri.468.1648145973234;
-        Thu, 24 Mar 2022 11:19:33 -0700 (PDT)
-Received: from [192.168.0.158] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.googlemail.com with ESMTPSA id l15-20020a05600c1d0f00b0038c8ff8e708sm2655396wms.13.2022.03.24.11.19.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Mar 2022 11:19:32 -0700 (PDT)
-Message-ID: <c0ae3465-9185-197f-65a4-49df856bc2e0@kernel.org>
-Date:   Thu, 24 Mar 2022 19:19:31 +0100
+        Thu, 24 Mar 2022 14:22:09 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9CE6B7C45;
+        Thu, 24 Mar 2022 11:20:36 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: dmitry.osipenko)
+        with ESMTPSA id C85C11F45A62
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1648146034;
+        bh=xRKbfVwHbv6Tlcj1D9mUeCTfn3yd5MK7Xi2DPZnTJQg=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=i2GevZ+8+KZtfwHQNmE7IC1fAyxaISzgKDii3VbZC0JszgIaBrHJvo8oxkopyRxNC
+         a7fBlUNd55MHh/9Hd0BdVeZ7q8+XKVDnN3BSBTaDRDf8ngN/9xqx15GTdGzwybKMXK
+         9uhOcbQ72ekuY+KU5ONED7iyAj82jAGJQcSHTPbUPfD23X3TaiHniiKTbwUiXn6v9y
+         hDHwKXOS0jfeX7M7h9W5Fpd66I7MI2xn2YGfiW32kZwovKzPOpzCEEo6QlmxWhs1wU
+         UIGgUGYk4JD/bKNu6pmwJT3JXq0wIyg/ukUP3fgh4tOdquoILoNbyMEhIqV+BJwSAa
+         p3nOah2vlLRCw==
+Message-ID: <fe24d151-6097-aa8e-7691-5e4d81fa42c6@collabora.com>
+Date:   Thu, 24 Mar 2022 21:20:31 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 21/26] dt-bindings: crypto: convert rockchip-crypto to
- yaml
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v1] media: videobuf2: Allow applications customize data
+ offsets of capture buffers
 Content-Language: en-US
-To:     LABBE Corentin <clabbe@baylibre.com>
-Cc:     heiko@sntech.de, herbert@gondor.apana.org.au, krzk+dt@kernel.org,
-        mturquette@baylibre.com, robh+dt@kernel.org, sboyd@kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-clk@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org
-References: <20220321200739.3572792-1-clabbe@baylibre.com>
- <20220321200739.3572792-22-clabbe@baylibre.com>
- <90ebea0b-1d67-98dc-2b49-a6e3b97a2c4a@kernel.org> <YjyaV68mTsJAr9Xm@Red>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <YjyaV68mTsJAr9Xm@Red>
+To:     Nicolas Dufresne <nicolas@ndufresne.ca>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
+        Gustavo Padovan <gustavo.padovan@collabora.com>,
+        Boris Brezillon <bbrezillon@collabora.com>,
+        Daniel Almeida <daniel.almeida@collabora.com>,
+        Sebastian Fricke <sebastian.fricke@collabora.com>,
+        Laura Nao <laura.nao@collabora.com>
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Dmitry Osipenko <digetx@gmail.com>
+References: <20220322132329.6527-1-dmitry.osipenko@collabora.com>
+ <a7c858461b99de2d4afad22d888acc3a74850240.camel@ndufresne.ca>
+ <9ec970d6-ea09-802c-419b-b2ef26800990@collabora.com>
+ <5be83f0b343c04d877a2c2d805fb5f71ca9973b1.camel@ndufresne.ca>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <5be83f0b343c04d877a2c2d805fb5f71ca9973b1.camel@ndufresne.ca>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24/03/2022 17:20, LABBE Corentin wrote:
-
-(...)
+On 3/23/22 22:21, Nicolas Dufresne wrote:
+> Le mercredi 23 mars 2022 à 17:28 +0300, Dmitry Osipenko a écrit :
+>> Hi Nicolas,
 >>
->>> +    resets:
->>> +      minItems: 6
->>> +else:
->>> +  if:
->>> +    properties:
->>> +      compatible:
->>> +        const: rockchip,rk3328-crypto
->>> +  then:
->>> +    properties:
->>> +      clocks:
->>> +        minItems: 3
->>> +      clock-names:
->>> +        minItems: 3
->>> +
+>> On 3/23/22 16:05, Nicolas Dufresne wrote:
+>>> Hi Dmitry,
+>>>
+>>> thanks for giving a second look a this issue.
+>>>
+>>> Le mardi 22 mars 2022 à 16:23 +0300, Dmitry Osipenko a écrit :
+>>>> Use data offsets provided by applications for multi-planar capture
+>>>> buffers. This allows V4L to import and use dma-bufs exported by other
+>>>> subsystems in cases where application wants to customize data offsets
+>>>> of capture buffers in order to meet hardware alignment requirements of
+>>>> both dma-buf exporter and importer.
+>>>>
+>>>> This feature is wanted for providing a better support of media hardware
+>>>> found on Chromebooks. In particular display and camera ISP hardware of
+>>>> Rockchip and MediaTek SoCs require special handling by userspace because
+>>>> display h/w has specific alignment requirements that don't match default
+>>>> alignments expected by V4L and there is a need to customize the data
+>>>> offsets in case of multi-planar formats.
+>>>>
+>>>> Some drivers already have preliminary support for data offsets
+>>>> customization of capture buffers, like NVIDIA Tegra video decoder driver
+>>>> for example, and V4L allows applications to provide data offsets for
+>>>> multi-planar output buffers, let's support such customization for the
+>>>> capture buffers as well.
+>>>>
+>>>> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+>>>> ---
+>>>>  Documentation/userspace-api/media/v4l/buffer.rst | 9 ++++++++-
+>>>>  drivers/media/common/videobuf2/videobuf2-v4l2.c  | 7 +++++++
+>>>>  2 files changed, 15 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/Documentation/userspace-api/media/v4l/buffer.rst b/Documentation/userspace-api/media/v4l/buffer.rst
+>>>> index 4638ec64db00..75b1929e2acb 100644
+>>>> --- a/Documentation/userspace-api/media/v4l/buffer.rst
+>>>> +++ b/Documentation/userspace-api/media/v4l/buffer.rst
+>>>> @@ -369,13 +369,20 @@ struct v4l2_plane
+>>>>        - ``data_offset``
+>>>>        - Offset in bytes to video data in the plane. Drivers must set this
+>>>>  	field when ``type`` refers to a capture stream, applications when
+>>>> -	it refers to an output stream.
+>>>> +	it refers to an output or capture stream.
+>>>
+>>> There is a clear contradiction in this paragraph. Both the driver and the
+>>> application MUST set the data_offset.
 >>
+>> I'm not sure where the contradiction is. Application must initialize the
+>> data_offset and driver must set data_offset too, if it's appropriate to
+>> do that for a particular driver.
+>>
+>>> Would it be possible to demo your idea by implementing this in a virtual driver
+>>> ? vivid already have data_offset for capture in some cases, you could verify if
+>>> your idea works without any conflict in this scenario.
+>>
+>> I actually considered implementing it in the vivid driver, but vivid
+>> driver already sets the data_offset to fixed values [1], so I decided
+>> that not to change it.
+>>
+>> But maybe we actually could extend the vivid driver by accepting
+>> data_offset from userspace for the cases where the fixed offset value is
+>> zero in the driver.. not sure.
 > 
-> I have create a binding update patch (https://github.com/montjoie/linux/commit/da05ef9bb488c16cfd15a47054f5b1161829b6bf)
-> But I have lot of problem, DT are not validating.
-> Example: Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.example.dtb: crypto@ff8a0000: resets: [[4294967295, 174]] is too short
-> 
-> I have tried also to set default resets/maxItems to 3 and setting it to 4 via an if. But I still got error like maxItems cannot be update after initial set.
-> 
-> Any idea on why my new binding update patch is failling ?
+> The is the core of the issue, how do you represent both a driver use of
+> data_offset and a userland provided data_offset at the same time. Contradiction
+> might be the wrong term, but minimally there is a large gap in the specification
+> for which I don't have an easy answer.
 
-For such case one way to solve is to:
-1. Define the most relaxed min/maxItems in properties.
-2. Narrow the min/maxItems in allOf for each flavor.
-Something like in clocks for:
-Documentation/devicetree/bindings/clock/samsung,exynos7885-clock.yaml
+In the doc-comment I said: "Handling of application's offsets is
+driver-dependent, application must use the resulting buffer offset."
 
+This can be made stricter using a new
+V4L2_BUF_FLAG_USE_CAPTURE_MPLANE_DATA_OFFSET, for example. But then it
+doesn't feel good anymore to me because output buffers don't require a
+special flag, hence it feels inconsistent.
 
-Best regards,
-Krzysztof
+There is another variant with adding new data_offset fields to the
+v4l2_plane_pix_format and then will be possible to set data offsets
+using VIDIOC_S_FMT for both S/MPLANEs, assuming that we won't need more
+than 3 offsets for SPLANEs. But this is a much more invasive and
+questionable UAPI extension.
+
+--- >8 ---
+@@ -2268,12 +2268,14 @@ struct v4l2_mpeg_vbi_fmt_ivtv {
+  *                     this plane will be used
+  * @bytesperline:      distance in bytes between the leftmost pixels in two
+  *                     adjacent lines
++ * @data_offset                offset in bytes to the beginning of the
+plane's data
+  * @reserved:          drivers and applications must zero this array
+  */
+ struct v4l2_plane_pix_format {
+        __u32           sizeimage;
+        __u32           bytesperline;
+-       __u16           reserved[6];
++       __u32           data_offset[3];
+ } __attribute__ ((packed));
+--- >8 ---
+
+The root of the problem is that DRM UAPI is more flexible and allows to
+customize offsets for both S/MPLANEs, while V4L doesn't allow to do it
+at all. I'm exploring all the potential options, so far neither of the
+proposed variants is ideal.
