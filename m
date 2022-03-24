@@ -2,134 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C924C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 17:07:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 780C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 17:09:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352117AbiCXRJI (ORCPT
+        id S1352125AbiCXRLJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 13:09:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48580 "EHLO
+        Thu, 24 Mar 2022 13:11:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242253AbiCXRJF (ORCPT
+        with ESMTP id S236380AbiCXRLI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 13:09:05 -0400
-Received: from mail.toke.dk (mail.toke.dk [45.145.95.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1DCDB18A8;
-        Thu, 24 Mar 2022 10:07:32 -0700 (PDT)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1648141651; bh=fBBTep0fsFEy1SpGBxltwkhke+QjxK1XAYERNO2rihY=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=bhFRZWBsXOArjlqHIuob1rAQIRclaUsGXtG0oYMnqwucW0eBkVtBa836EE26AgPkP
-         rDYnYVabCLw7xPJJZklieM6hKIXr4OOKDCxYIma89OF2kmdzdPfixk6LsMRH7/XpIt
-         XoLz6iqw/Nel9vizNBhxFPAcqltsDSYj+nLrKAqu4dwFqA81LfGt1aBWoedpWXOH6J
-         TNW9npCRFGqtmCp7jaAYTq7v1fDBmeIPIe6qntS+LTFQtOEYN7gPB7m6SWe7SuXTIy
-         3+tCgwzG5AXbPni5j6XNyuq6vjIpvATiyCHA5Fg0gRLyJzJnOq1dioEQtcZ4hmYBua
-         d42HhFVa3yW5w==
-To:     Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Maxime Bizon <mbizon@freebox.fr>
-Cc:     Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Olha Cherevyk <olha.cherevyk@gmail.com>,
-        iommu <iommu@lists.linux-foundation.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable <stable@vger.kernel.org>
-Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-In-Reply-To: <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com>
-References: <1812355.tdWV9SEqCh@natalenko.name>
- <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
- <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
- <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
- <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
- <20220324163132.GB26098@lst.de>
- <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com>
-Date:   Thu, 24 Mar 2022 18:07:29 +0100
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <871qyr9t4e.fsf@toke.dk>
+        Thu, 24 Mar 2022 13:11:08 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F6ABB0D3C;
+        Thu, 24 Mar 2022 10:09:35 -0700 (PDT)
+Received: from fraeml744-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KPWrk2K81z67yK4;
+        Fri, 25 Mar 2022 01:08:22 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml744-chm.china.huawei.com (10.206.15.225) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 24 Mar 2022 18:09:33 +0100
+Received: from [10.202.227.197] (10.202.227.197) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 24 Mar 2022 17:09:32 +0000
+Message-ID: <85891cbd-e53c-89ac-6da2-40b5d56cd316@huawei.com>
+Date:   Thu, 24 Mar 2022 17:09:54 +0000
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+From:   John Garry <john.garry@huawei.com>
+Subject: Re: perf version issues
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>
+CC:     Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        <linux-perf-users@vger.kernel.org>
+References: <8a75f3b1-2b99-1233-3a70-070311b6ebc1@huawei.com>
+ <YjotZExyiwhnX6ev@kernel.org>
+ <d3829e58-a835-eeec-e1a5-d282a610b228@huawei.com>
+In-Reply-To: <d3829e58-a835-eeec-e1a5-d282a610b228@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.202.227.197]
+X-ClientProxiedBy: lhreml744-chm.china.huawei.com (10.201.108.194) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Robin Murphy <robin.murphy@arm.com> writes:
++ Ingo
 
-> On 2022-03-24 16:31, Christoph Hellwig wrote:
->> On Thu, Mar 24, 2022 at 05:29:12PM +0100, Maxime Bizon wrote:
->>>> I'm looking into this; but in the interest of a speedy resolution of
->>>> the regression I would be in favour of merging that partial revert
->>>> and reinstating it if/when we identify (and fix) any bugs in ath9k :)
->>>
->>> This looks fishy:
->>>
->>> ath9k/recv.c
->>>
->>>                  /* We will now give hardware our shiny new allocated skb */
->>>                  new_buf_addr = dma_map_single(sc->dev, requeue_skb->data,
->>>                                                common->rx_bufsize, dma_type);
->>>                  if (unlikely(dma_mapping_error(sc->dev, new_buf_addr))) {
->>>                          dev_kfree_skb_any(requeue_skb);
->>>                          goto requeue_drop_frag;
->>>                  }
->>>
->>>                  /* Unmap the frame */
->>>                  dma_unmap_single(sc->dev, bf->bf_buf_addr,
->>>                                   common->rx_bufsize, dma_type);
->>>
->>>                  bf->bf_mpdu = requeue_skb;
->>>                  bf->bf_buf_addr = new_buf_addr;
->> 
->> Creating a new mapping for the same buffer before unmapping the
->> previous one does looks rather bogus.  But it does not fit the
->> pattern where revering the sync_single changes make the driver
->> work again.
->
-> OK, you made me look :)
->
-> Now that it's obvious what to look for, I can only conclude that during 
-> the stanza in ath_edma_get_buffers(), the device is still writing to the 
-> buffer while ownership has been transferred to the CPU, and whatever got 
-> written while ath9k_hw_process_rxdesc_edma() was running then gets wiped 
-> out by the subsequent sync_for_device, which currently resets the 
-> SWIOTLB slot to the state that sync_for_cpu copied out. By the letter of 
-> the DMA API that's not allowed, but on the other hand I'm not sure if we 
-> even have a good idiom for "I can't tell if the device has finished with 
-> this buffer or not unless I look at it" :/
+On 23/03/2022 12:44, John Garry wrote:
+>> $ git cherry-pick cb66befccba18fac
+>>    [perf/core 8ff6a6c06a90a362] perf tools: Fix version kernel tag
+>>     Author: John Garry<john.garry@huawei.com>
+>>     Date: Mon Feb 21 21:16:49 2022 +0800
+>>     1 file changed, 4 insertions(+), 9 deletions(-)
+>>    $ make -C tools/perf O=/tmp/build/perf install-bin
+>>    $ perf -v
+>>    perf version 5.17.rc8.g4e666cdb06ee
+>>
+>> Now it doesn´t notice it and there is no automatic rebuild triggered, we
+>> stay with the cset from before the cherry-pick:-\
+>>
+>> $ git log --oneline -2
+>> 8ff6a6c06a90a362 (HEAD -> perf/core) perf tools: Fix version kernel tag
+>> 4e666cdb06eede20 perf tools: Fix dependency for version file creation
+>> $
+>>
+>> Anyway, your patch works for some cases, so its an improvement and I'll
+>> apply it, we can continue from there.
+> 
+> After some experimentation, I find that only .git/HEAD changes for a 
+> cherry-pick depending on whether we're on a branch or not. As such, as 
+> you have seen, we may not rebuild after a cherry-pick, which is no good.
+> 
+> As far as I can see, only .git/index changes in all circumstances, but 
+> we don't have a dependency on that.
+> 
+> TBH, using .git files as Makefile dependencies doesn't seem to work well.
+> 
+> Maybe we should output "git log" and check versus what we have in 
+> PERF-VERSION-FILE and re-build depending on that.
+> 
+> Let me check this further now.
 
-Right, but is that sync_for_device call really needed? AFAICT, that
-ath9k_hw_process_rxdesc_edma() invocation doesn't actually modify any of
-the data when it returns EINPROGRESS, so could we just skip it? Like
-the patch below? Or am I misunderstanding the semantics here?
+Just an update on this...
 
--Toke
+I did some research and found that Ingo introduced the change to make 
+.git/HEAD a dependency as a build optimisation. See commit commit 
+c72e3f04b45fb2e50cdd81a50c3778c6a57251d8 ("tools/perf/build: Speed up 
+git-version test on re-make")
 
+According to the commit log it's quicker to trigger a rebuild of the 
+version string depending on a change in a git internal file rather than 
+run "git describe" to see any change in tag/commit every times.
 
-diff --git a/drivers/net/wireless/ath/ath9k/recv.c b/drivers/net/wireless/ath/ath9k/recv.c
-index 0c0624a3b40d..19244d4c0ada 100644
---- a/drivers/net/wireless/ath/ath9k/recv.c
-+++ b/drivers/net/wireless/ath/ath9k/recv.c
-@@ -647,12 +647,8 @@ static bool ath_edma_get_buffers(struct ath_softc *sc,
-                                common->rx_bufsize, DMA_FROM_DEVICE);
- 
-        ret = ath9k_hw_process_rxdesc_edma(ah, rs, skb->data);
--       if (ret == -EINPROGRESS) {
--               /*let device gain the buffer again*/
--               dma_sync_single_for_device(sc->dev, bf->bf_buf_addr,
--                               common->rx_bufsize, DMA_FROM_DEVICE);
-+       if (ret == -EINPROGRESS)
-                return false;
--       }
- 
-        __skb_unlink(skb, &rx_edma->rx_fifo);
-        if (ret == -EINVAL) {
+However, I asked the git community about this approach, and their 
+general idea is that a dependency on .git/HEAD or other git internal 
+file is just not a good idea.
+
+See 
+https://lore.kernel.org/git/87wngkpddp.fsf@igel.home/T/#m4a4dd6de52fdbe21179306cd57b3761eb07f45f8
+
+So to get this working robustly we may need to roll back that named 
+commit in part.
+
+Thanks,
+John
