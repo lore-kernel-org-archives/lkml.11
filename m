@@ -2,202 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 778D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 14:14:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D956C4167B
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 14:14:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350772AbiCXOPt (ORCPT
+        id S1350788AbiCXOP4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 10:15:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45038 "EHLO
+        Thu, 24 Mar 2022 10:15:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240497AbiCXOPr (ORCPT
+        with ESMTP id S1350758AbiCXOPw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 10:15:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A54101FCD0
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 07:14:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648131254;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9K9Yy9yZx3tAaoGmVOKU8onhx2UuVtR4bpakSmFeAFc=;
-        b=U/l87tsp5nMQdwQbF3iYDAQJE3t7OJFP/4Oh3ZMR27w6MiIP3PgGD7JCSBmeNri+pCJV8V
-        6Ax0ya3gNdhtIJHHGy1VIHE2YuGLnez8TeqcdAuIzjvbjt44L4rzDby0RbImcwc7PTzoPu
-        1aGjk355cgWNdolR50TG2W3frcEU7CM=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-531-1QrawlMzM56eWvE5l3QO5g-1; Thu, 24 Mar 2022 10:14:13 -0400
-X-MC-Unique: 1QrawlMzM56eWvE5l3QO5g-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C699D299E759;
-        Thu, 24 Mar 2022 14:14:12 +0000 (UTC)
-Received: from starship (unknown [10.40.194.231])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AA1992024CD0;
-        Thu, 24 Mar 2022 14:14:10 +0000 (UTC)
-Message-ID: <d990c42a3ab5e8b1cbfa7775eef37ad4957147f6.camel@redhat.com>
-Subject: Re: [RFCv2 PATCH 07/12] KVM: SVM: Introduce helper function
- kvm_get_apic_id
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
-        jon.grimm@amd.com, wei.huang2@amd.com, terry.bowman@amd.com
-Date:   Thu, 24 Mar 2022 16:14:09 +0200
-In-Reply-To: <20220308163926.563994-8-suravee.suthikulpanit@amd.com>
-References: <20220308163926.563994-1-suravee.suthikulpanit@amd.com>
-         <20220308163926.563994-8-suravee.suthikulpanit@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Thu, 24 Mar 2022 10:15:52 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDDA21FCD0;
+        Thu, 24 Mar 2022 07:14:16 -0700 (PDT)
+X-UUID: 0aa1160529f245fdb62e2fb6ad6abbe5-20220324
+X-UUID: 0aa1160529f245fdb62e2fb6ad6abbe5-20220324
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <lecopzer.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1102049120; Thu, 24 Mar 2022 22:14:10 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 24 Mar 2022 22:14:09 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 24 Mar 2022 22:14:08 +0800
+From:   Lecopzer Chen <lecopzer.chen@mediatek.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <lecopzer.chen@mediatek.com>, <acme@kernel.org>,
+        <akpm@linux-foundation.org>, <alexander.shishkin@linux.intel.com>,
+        <catalin.marinas@arm.com>, <davem@davemloft.net>,
+        <jolsa@redhat.com>, <jthierry@redhat.com>, <keescook@chromium.org>,
+        <kernelfans@gmail.com>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-perf-users@vger.kernel.org>, <mark.rutland@arm.com>,
+        <masahiroy@kernel.org>, <matthias.bgg@gmail.com>, <maz@kernel.org>,
+        <mcgrof@kernel.org>, <mingo@redhat.com>, <namhyung@kernel.org>,
+        <nixiaoming@huawei.com>, <peterz@infradead.org>,
+        <pmladek@suse.com>, <sparclinux@vger.kernel.org>,
+        <sumit.garg@linaro.org>, <wangqing@vivo.com>, <will@kernel.org>,
+        <yj.chiang@mediatek.com>
+Subject: [PATCH v3 0/5] Support hld delayed init based on Pseudo-NMI for arm64
+Date:   Thu, 24 Mar 2022 22:14:00 +0800
+Message-ID: <20220324141405.10835-1-lecopzer.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-03-08 at 10:39 -0600, Suravee Suthikulpanit wrote:
-> This function returns the currently programmed guest physical
-> APIC ID of a vCPU in both xAPIC and x2APIC modes.
-> 
-> Suggested-by: Maxim Levitsky <mlevitsk@redhat.com>
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> ---
->  arch/x86/kvm/lapic.c    | 23 +++++++++++++++++++++++
->  arch/x86/kvm/lapic.h    |  5 +----
->  arch/x86/kvm/svm/avic.c | 21 +++++++++++++++++----
->  3 files changed, 41 insertions(+), 8 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-> index 03d1b6325eb8..73a1e650a294 100644
-> --- a/arch/x86/kvm/lapic.c
-> +++ b/arch/x86/kvm/lapic.c
-> @@ -106,11 +106,34 @@ static inline int apic_enabled(struct kvm_lapic *apic)
->  	(LVT_MASK | APIC_MODE_MASK | APIC_INPUT_POLARITY | \
->  	 APIC_LVT_REMOTE_IRR | APIC_LVT_LEVEL_TRIGGER)
->  
-> +static inline u8 kvm_xapic_id(struct kvm_lapic *apic)
-> +{
-> +	return kvm_lapic_get_reg(apic, APIC_ID) >> 24;
-> +}
-> +
->  static inline u32 kvm_x2apic_id(struct kvm_lapic *apic)
->  {
->  	return apic->vcpu->vcpu_id;
->  }
->  
-> +int kvm_get_apic_id(struct kvm_vcpu *vcpu, u32 *id)
-> +{
-> +	if (!id)
-> +		return -EINVAL;
-> +
-> +	if (!apic_x2apic_mode(vcpu->arch.apic)) {
-> +		/* For xAPIC, APIC ID cannot be larger than 254. */
-> +		if (vcpu->vcpu_id >= APIC_BROADCAST)
-> +			return -EINVAL;
-> +
-> +		*id = kvm_xapic_id(vcpu->arch.apic);
-> +	} else {
-> +		*id = kvm_x2apic_id(vcpu->arch.apic);
-> +	}
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(kvm_get_apic_id);
-> +
->  static bool kvm_can_post_timer_interrupt(struct kvm_vcpu *vcpu)
->  {
->  	return pi_inject_timer && kvm_vcpu_apicv_active(vcpu);
-> diff --git a/arch/x86/kvm/lapic.h b/arch/x86/kvm/lapic.h
-> index 2b44e533fc8d..2b9463da1528 100644
-> --- a/arch/x86/kvm/lapic.h
-> +++ b/arch/x86/kvm/lapic.h
-> @@ -254,9 +254,6 @@ static inline enum lapic_mode kvm_apic_mode(u64 apic_base)
->  	return apic_base & (MSR_IA32_APICBASE_ENABLE | X2APIC_ENABLE);
->  }
->  
-> -static inline u8 kvm_xapic_id(struct kvm_lapic *apic)
-> -{
-> -	return kvm_lapic_get_reg(apic, APIC_ID) >> 24;
-> -}
-> +int kvm_get_apic_id(struct kvm_vcpu *vcpu, u32 *id);
->  
->  #endif
-> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-> index 4d7a8743196e..7e5a39a8e698 100644
-> --- a/arch/x86/kvm/svm/avic.c
-> +++ b/arch/x86/kvm/svm/avic.c
-> @@ -441,14 +441,21 @@ static void avic_invalidate_logical_id_entry(struct kvm_vcpu *vcpu)
->  
->  static int avic_handle_ldr_update(struct kvm_vcpu *vcpu)
->  {
-> -	int ret = 0;
-> +	int ret;
->  	struct vcpu_svm *svm = to_svm(vcpu);
->  	u32 ldr = kvm_lapic_get_reg(vcpu->arch.apic, APIC_LDR);
-> -	u32 id = kvm_xapic_id(vcpu->arch.apic);
-> +	u32 id;
-> +
-> +	ret = kvm_get_apic_id(vcpu, &id);
-> +	if (ret)
-> +		return ret;
-What about apic_id == 0?
+As we already used hld internally for arm64 since 2020, there still
+doesn't have a proper commit on the upstream and we badly need it.
 
->  
->  	if (ldr == svm->ldr_reg)
->  		return 0;
->  
-> +	if (id == X2APIC_BROADCAST)
-> +		return -EINVAL;
-> +
+This serise rework on 5.17 from [1] and the origin author is
+Pingfan Liu <kernelfans@gmail.com>
+Sumit Garg <sumit.garg@linaro.org>
 
-Why this is needed? avic_handle_ldr_update is called either
-when guest writes to APIC_LDR (should not reach here),
-or if LDR got changed while AVIC was inhibited (also
-thankfully KVM doesn't allow it to be changed in x2APIC	mode,
-and it does reset it when enabling x2apic).
+Qoute from [1]:
+
+> Hard lockup detector is helpful to diagnose unpaired irq enable/disable.
+> But the current watchdog framework can not cope with arm64 hw perf event
+> easily.
+
+> On arm64, when lockup_detector_init()->watchdog_nmi_probe(), PMU is not
+> ready until device_initcall(armv8_pmu_driver_init).  And it is deeply
+> integrated with the driver model and cpuhp. Hence it is hard to push the
+> initialization of armv8_pmu_driver_init() before smp_init().
+
+> But it is easy to take an opposite approach by enabling watchdog_hld to
+> get the capability of PMU async. 
+> The async model is achieved by expanding watchdog_nmi_probe() with
+> -EBUSY, and a re-initializing work_struct which waits on a
+> wait_queue_head.
+
+Provide an API - retry_lockup_detector_init() for anyone who needs
+to delayed init lockup detector.
+
+The original assumption is: nobody should use delayed probe after
+lockup_detector_check() (which has __init attribute).
+That is, anyone uses this API must call between lockup_detector_init()
+and lockup_detector_check(), and the caller must have __init attribute
+
+The delayed init flow is:
+1. lockup_detector_init() get -EBUSY from arch code, set
+   allow_lockup_detector_init_retry=true
+
+2. PMU arch code init done, call retry_lockup_detector_init().
+
+3. retry_lockup_detector_init() queue the work only when
+   allow_lockup_detector_init_retry=true which means nobody should call
+   this before lockup_detector_init().
+
+4. the work lockup_detector_delay_init() is doing without wait event.
+   if probe success, set allow_lockup_detector_init_retry=false.
+
+5. at late_initcall_sync(), lockup_detector_check() call flush_work() first
+   to avoid previous retry_lockup_detector_init() is not scheduled.
+   And then test whether allow_lockup_detector_init_retry is false, if it's
+   true, means we have pending init un-finished, than forcely queue work
+   again and flush_work to make sure the __init section won't be freed
+   before the work done.
+
+[1] https://lore.kernel.org/lkml/20211014024155.15253-1-kernelfans@gmail.com/
+
+v3:
+  1. Tweak commit message in patch 04 
+	2. Remove wait event
+  3. s/lockup_detector_pending_init/allow_lockup_detector_init_retry/
+  4. provide api retry_lockup_detector_init()
 
 
+v2:
+  1. Tweak commit message in patch 01/02/04/05 
+  2. Remove vobose WARN in patch 04 within watchdog core.
+  3. Change from three states variable: detector_delay_init_state to
+     two states variable: allow_lockup_detector_init_retry
 
->  	avic_invalidate_logical_id_entry(vcpu);
->  
->  	if (ldr)
-> @@ -464,7 +471,12 @@ static int avic_handle_apic_id_update(struct kvm_vcpu *vcpu)
->  {
->  	u64 *old, *new;
->  	struct vcpu_svm *svm = to_svm(vcpu);
-> -	u32 id = kvm_xapic_id(vcpu->arch.apic);
-> +	u32 id;
-> +	int ret;
-> +
-> +	ret = kvm_get_apic_id(vcpu, &id);
-> +	if (ret)
-> +		return 1;
+     Thanks Petr Mladek <pmladek@suse.com> for the idea.
+     > 1.  lockup_detector_work() called before lockup_detector_check().
+     >     In this case, wait_event() will wait until lockup_detector_check()
+     >     clears detector_delay_pending_init and calls wake_up().
 
-Well this function is totally broken anyway and I woudn't even bother touching it,
-maximum, just stick 'return 0' in the very start of this function if the apic is
-in x2apic mode now.
+     > 2. lockup_detector_check() called before lockup_detector_work().
+     >    In this case, wait_even() will immediately continue because
+     >    it will see cleared detector_delay_pending_init.
+  4. Add comment in code in patch 04/05 for two states variable changing.
+https://lore.kernel.org/lkml/20220307154729.13477-1-lecopzer.chen@mediatek.com/
 
-Oh well...
+Lecopzer Chen (4):
+  kernel/watchdog: remove WATCHDOG_DEFAULT
+  kernel/watchdog: change watchdog_nmi_enable() to void
+  kernel/watchdog: Adapt the watchdog_hld interface for async model
+  arm64: Enable perf events based hard lockup detector
 
->  
->  	if (vcpu->vcpu_id == id)
->  		return 0;
-> @@ -484,7 +496,8 @@ static int avic_handle_apic_id_update(struct kvm_vcpu *vcpu)
->  	 * APIC ID table entry if already setup the LDR.
->  	 */
->  	if (svm->ldr_reg)
-> -		avic_handle_ldr_update(vcpu);
-> +		if (avic_handle_ldr_update(vcpu))
-> +			return 1;
->  
->  	return 0;
->  }
+Pingfan Liu (1):
+  kernel/watchdog_hld: Ensure CPU-bound context when creating hardlockup
+    detector event
 
+ arch/arm64/Kconfig             |  2 +
+ arch/arm64/kernel/Makefile     |  1 +
+ arch/arm64/kernel/perf_event.c | 12 +++++-
+ arch/sparc/kernel/nmi.c        |  8 ++--
+ drivers/perf/arm_pmu.c         |  5 +++
+ include/linux/nmi.h            |  5 ++-
+ include/linux/perf/arm_pmu.h   |  2 +
+ kernel/watchdog.c              | 67 +++++++++++++++++++++++++++++++---
+ kernel/watchdog_hld.c          |  8 +++-
+ 9 files changed, 95 insertions(+), 15 deletions(-)
 
-Best regards,
-	Maxim Levitsky
+-- 
+2.25.1
 
