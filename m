@@ -2,116 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A70F9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:15:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF707C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:15:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348426AbiCXHQe (ORCPT
+        id S1348442AbiCXHQr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 03:16:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39886 "EHLO
+        Thu, 24 Mar 2022 03:16:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348415AbiCXHQc (ORCPT
+        with ESMTP id S1348439AbiCXHQo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 03:16:32 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A536646D
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:15:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648106101; x=1679642101;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=PmLKrQ4LcC7G2I3J4kn8jkm/O+YfnSYhzjsWxNnXqNU=;
-  b=LgKTEPHItDpofbvrPbJ4DR+ylJoBaRvLLpBOSoxhp1wh2YvEVGZ98ZR/
-   julJHtpAhAJy1QtBQS1bnrPzl9zmfIB8OdOf3R48jEUKmIX+lTlvbS32b
-   tvDR6pCWnp+1My7SgVPFeTXolHFuTE5wgoMCbN7jv4DcYCniT7BUyL1Cv
-   afAMXuBw65ZvNRk8M6jm/lSOYV6IC1qyX+5XnppLUrJNCPrs0QpUmXMMM
-   +6q7cf9T6TUGA4RsJbI85sFq6Hz1QHj+cligJXc75a+SHCK1ndv2tFjey
-   tz5pA58OZRZldUyVe/I9atYA8aEh6svT2rSB4CSzrMpu4t/se1psilfkT
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="257134164"
-X-IronPort-AV: E=Sophos;i="5.90,206,1643702400"; 
-   d="scan'208";a="257134164"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 00:15:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,206,1643702400"; 
-   d="scan'208";a="717710994"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 24 Mar 2022 00:14:59 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nXHgQ-000Kne-R2; Thu, 24 Mar 2022 07:14:58 +0000
-Date:   Thu, 24 Mar 2022 15:14:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [broonie-misc:at91sam9g20ek 3/5]
- sound/soc/atmel/sam9g20_wm8731.c:186:21: error: 'mclk' undeclared; did you
- mean 'clk'?
-Message-ID: <202203241508.CAvzBM8m-lkp@intel.com>
+        Thu, 24 Mar 2022 03:16:44 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D464E186E3
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:15:12 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id r13so7286534ejd.5
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:15:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zkIzcEi1qH2OtuZqABo8GJfJ+wmDwLruJeazIXQywV4=;
+        b=BlF5osJ2E5wrXcjQGPPI7WJs6Gd9NF1iKFe/7trbek8m6nCZtxzYSZRiXd9W79x4uS
+         FuLJZ1UUID8lSTNrv3IkiOjRQ0qmyMNljRDKZQ9ofEd2QF13DBAOhB8LuOWDi/QBAEAQ
+         5fsay7vUo23vFdnVW7+zDE+nk1yH5og4eRLjSEnEMG6crTFuGnxXWfOPQu4IOqj7wCwD
+         Sbz+Pk5QsfaEU8nkfqZ0VQNW//5LsSEdAg25K/fX+tZpVDTDAp2nyqaNZME8NTaUnp1Z
+         WMtWWBajPVJ+npThJvtc0qlzdJG5NcyrJNe9mZVgP9TpIs1Du5mHwUIbggA0igjEK78X
+         nRsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zkIzcEi1qH2OtuZqABo8GJfJ+wmDwLruJeazIXQywV4=;
+        b=isLPUr2Y5s9Ojknwh8CBE85PzrOivrqgb2rP4fE7f1ajR4p8GI3GcaA3ZuSJbAQOs9
+         IHDH18kLI71gJhoQ1n/0Pj43JIqQAPBZ6UcopirOLxu4KNB68QzSkUQeAAbDgk7+75G9
+         s1taDsvcUFkPloBxA1xGH6h+TowEOBRwMVtUbtDRVYyRFatOG+PwYDlVBLHz5cSCJtzj
+         P3Y2W+ZJmNTYb8fz4wLk+TrDybSUq8EvAePQxe/i1pCggjGJUcxewfMZJ9Dbhmi6TZj+
+         IZXNTeKonp7DvkEstGlFn5Izc86wUol+rUJ58UCNPqI2qX5KJAVGV5m1Efh298oW0hgB
+         ir+Q==
+X-Gm-Message-State: AOAM530x48k89F7yxvP59vnOzJ5iUDEYs0cak5cbk9XX/l0H5NEmb515
+        z8rjkvi96RqrqmQgBXXCdlCaZjR7EPBmFg==
+X-Google-Smtp-Source: ABdhPJxEjkhMTB7hmnRB9K7JMKxwds5soeieMEZZQa4YKfW3GInbKmOUnLunsTdqIazTimUeXi0pUg==
+X-Received: by 2002:a17:906:64ca:b0:6e0:1648:571c with SMTP id p10-20020a17090664ca00b006e01648571cmr4068208ejn.477.1648106111323;
+        Thu, 24 Mar 2022 00:15:11 -0700 (PDT)
+Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
+        by smtp.googlemail.com with ESMTPSA id hg11-20020a1709072ccb00b006cee4fb36c7sm760780ejc.64.2022.03.24.00.15.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Mar 2022 00:15:10 -0700 (PDT)
+From:   Jakob Koschel <jakobkoschel@gmail.com>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
+        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
+Subject: [PATCH] mfd: dln2: replace usage of found with dedicated list iterator variable
+Date:   Thu, 24 Mar 2022 08:14:51 +0100
+Message-Id: <20220324071451.60616-1-jakobkoschel@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/misc.git at91sam9g20ek
-head:   f30f829ccd41ba76c4e5eae0f4f7ed3c9e4fe36b
-commit: f0b540ab33c655cd82cd228652fb47d323584581 [3/5] ASoC: atmel: Remove system clock tree configuration for at91sam9g20ek
-config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20220324/202203241508.CAvzBM8m-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/broonie/misc.git/commit/?id=f0b540ab33c655cd82cd228652fb47d323584581
-        git remote add broonie-misc https://git.kernel.org/pub/scm/linux/kernel/git/broonie/misc.git
-        git fetch --no-tags broonie-misc at91sam9g20ek
-        git checkout f0b540ab33c655cd82cd228652fb47d323584581
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=m68k SHELL=/bin/bash sound/soc/atmel/
+To move the list iterator variable into the list_for_each_entry_*()
+macro in the future it should be avoided to use the list iterator
+variable after the loop body.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+To *never* use the list iterator variable after the loop it was
+concluded to use a separate iterator variable instead of a
+found boolean [1].
 
-All errors (new ones prefixed by >>):
+This removes the need to use a found variable and simply checking if
+the variable was set, can determine if the break/goto was hit.
 
-   sound/soc/atmel/sam9g20_wm8731.c: In function 'at91sam9g20ek_audio_probe':
-   sound/soc/atmel/sam9g20_wm8731.c:121:21: warning: unused variable 'pllb' [-Wunused-variable]
-     121 |         struct clk *pllb;
-         |                     ^~~~
-   sound/soc/atmel/sam9g20_wm8731.c: In function 'at91sam9g20ek_audio_remove':
->> sound/soc/atmel/sam9g20_wm8731.c:186:21: error: 'mclk' undeclared (first use in this function); did you mean 'clk'?
-     186 |         clk_disable(mclk);
-         |                     ^~~~
-         |                     clk
-   sound/soc/atmel/sam9g20_wm8731.c:186:21: note: each undeclared identifier is reported only once for each function it appears in
+Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+---
+ drivers/mfd/dln2.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/mfd/dln2.c b/drivers/mfd/dln2.c
+index 852129ea0766..741e8ae2d89d 100644
+--- a/drivers/mfd/dln2.c
++++ b/drivers/mfd/dln2.c
+@@ -163,23 +163,22 @@ EXPORT_SYMBOL(dln2_register_event_cb);
+ void dln2_unregister_event_cb(struct platform_device *pdev, u16 id)
+ {
+ 	struct dln2_dev *dln2 = dev_get_drvdata(pdev->dev.parent);
+-	struct dln2_event_cb_entry *i;
++	struct dln2_event_cb_entry *i = NULL, *iter;
+ 	unsigned long flags;
+-	bool found = false;
+ 
+ 	spin_lock_irqsave(&dln2->event_cb_lock, flags);
+ 
+-	list_for_each_entry(i, &dln2->event_cb_list, list) {
+-		if (i->id == id) {
+-			list_del_rcu(&i->list);
+-			found = true;
++	list_for_each_entry(iter, &dln2->event_cb_list, list) {
++		if (iter->id == id) {
++			list_del_rcu(&iter->list);
++			i = iter;
+ 			break;
+ 		}
+ 	}
+ 
+ 	spin_unlock_irqrestore(&dln2->event_cb_lock, flags);
+ 
+-	if (found) {
++	if (i) {
+ 		synchronize_rcu();
+ 		kfree(i);
+ 	}
 
-vim +186 sound/soc/atmel/sam9g20_wm8731.c
-
-5b99e6ccf964e7 Sedji Gaouaou  2008-10-03  181  
-71d14ea60ad81a Bill Pemberton 2012-12-07  182  static int at91sam9g20ek_audio_remove(struct platform_device *pdev)
-5b99e6ccf964e7 Sedji Gaouaou  2008-10-03  183  {
-242b9bb83e458d Bo Shen        2012-10-11  184  	struct snd_soc_card *card = platform_get_drvdata(pdev);
-242b9bb83e458d Bo Shen        2012-10-11  185  
-151edfc757babd Bo Shen        2013-01-31 @186  	clk_disable(mclk);
-5de7f9b2006925 Mark Brown     2009-02-16  187  	mclk = NULL;
-151edfc757babd Bo Shen        2013-01-31  188  	snd_soc_unregister_card(card);
-151edfc757babd Bo Shen        2013-01-31  189  	atmel_ssc_put_audio(0);
-242b9bb83e458d Bo Shen        2012-10-11  190  
-242b9bb83e458d Bo Shen        2012-10-11  191  	return 0;
-5b99e6ccf964e7 Sedji Gaouaou  2008-10-03  192  }
-5b99e6ccf964e7 Sedji Gaouaou  2008-10-03  193  
-
-:::::: The code at line 186 was first introduced by commit
-:::::: 151edfc757babd94d8b6c64d84a9ccf8f3c53320 ASoC: sam9g20_wm8731: disable clock and correct sequence when unload
-
-:::::: TO: Bo Shen <voice.shen@atmel.com>
-:::::: CC: Mark Brown <broonie@opensource.wolfsonmicro.com>
-
+base-commit: f443e374ae131c168a065ea1748feac6b2e76613
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
