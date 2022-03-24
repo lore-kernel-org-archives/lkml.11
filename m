@@ -2,112 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B976C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 20:00:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C40CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 20:03:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353173AbiCXUBm (ORCPT
+        id S1353181AbiCXUE5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 16:01:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47272 "EHLO
+        Thu, 24 Mar 2022 16:04:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232830AbiCXUBj (ORCPT
+        with ESMTP id S232830AbiCXUEx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 16:01:39 -0400
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3A9E81186
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 13:00:06 -0700 (PDT)
-Received: by mail-il1-x131.google.com with SMTP id h21so3905978ila.7
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 13:00:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NIeb4/VCYD/DVpQS7+hcb33JtSGPsyNTOD4hJRIfFYg=;
-        b=ig2LZmT/ULNd6has1x+tgUYcp8IlB29NYiSSDQoLQq7e4dlU3i6HB1VA7Q9gZeYXWi
-         M3lCuAvR1UpnzsELZRdyf8bqrTPOEdmnFXOCBwKCPDfaxWan6BjVu9tXgGEHa9RSd8kr
-         owI6u9PErmK310L9agaXHuclkSSY1jcINq+B0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NIeb4/VCYD/DVpQS7+hcb33JtSGPsyNTOD4hJRIfFYg=;
-        b=69ScXwJR5XDlYaAra9Ywj08lgXnk8cJE/lNP6w9lx7XI9E60Dzev2+WJ+2iY9cxFkT
-         YEqtNSdkT9rtEJ4AGHMIDurNIfD2+KzGK155s/TJGbBazhslHYSrU4Px/bsxdMLRUbcS
-         OF7GlAFhK4x3SCTeGmLEZ8KklM6r373ZRQv8WP2n1ePbvf+Re+lK7QGHCx3OXekRLMuR
-         UzMnujDSsYazg1e+ISc3h7ykvydiEzlm3ppYg6xp+nXM8e4or2TDSqgL3Bf4uvRuOIJl
-         ig3jSNCdWrih+rbWtP1WmHBHIT9AV/xmHg8o6yj2evdo+jbzzjcAuNHwyM7riEf4f9ye
-         u4QA==
-X-Gm-Message-State: AOAM530ZPEor5y97/HBbjrQ/VmzwgCx9LgfQsNazwljenOb8XCCKw1st
-        yl8jGmDCrZgZw0dZR72TQ80ooEa3ESWX459u
-X-Google-Smtp-Source: ABdhPJwrZTdpvcFAEB7Qk9pb7MJwNwyvscQtwHfB2u0ilP0s5vyWLlTO2ceWYgkoWpKIuRU7UrNdPg==
-X-Received: by 2002:a05:6e02:1846:b0:2c7:b032:5d92 with SMTP id b6-20020a056e02184600b002c7b0325d92mr3636089ilv.237.1648152005880;
-        Thu, 24 Mar 2022 13:00:05 -0700 (PDT)
-Received: from mail-il1-f175.google.com (mail-il1-f175.google.com. [209.85.166.175])
-        by smtp.gmail.com with ESMTPSA id bk22-20020a056602401600b00649ee81166dsm1855286iob.37.2022.03.24.13.00.05
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Mar 2022 13:00:05 -0700 (PDT)
-Received: by mail-il1-f175.google.com with SMTP id r11so3917300ila.1
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 13:00:05 -0700 (PDT)
-X-Received: by 2002:a05:6e02:20c4:b0:2c8:5b82:3035 with SMTP id
- 4-20020a056e0220c400b002c85b823035mr3583254ilq.220.1648152004944; Thu, 24 Mar
- 2022 13:00:04 -0700 (PDT)
+        Thu, 24 Mar 2022 16:04:53 -0400
+X-Greylist: delayed 1499 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Mar 2022 13:03:21 PDT
+Received: from gateway30.websitewelcome.com (gateway30.websitewelcome.com [192.185.179.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA3D21835
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 13:03:20 -0700 (PDT)
+Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
+        by gateway30.websitewelcome.com (Postfix) with ESMTP id 5ED962058D
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 14:16:08 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id XSwKn5PSydx86XSwKnn1z0; Thu, 24 Mar 2022 14:16:08 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
+        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
+        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ZPPzdWk6s/RXLNCY9qFj72xcElUOICSe4hFZHn0LYwo=; b=2gVqLkwGPJTOdqr0cgSfmsFHIm
+        //I+by3GiPA5f+uaLvOy0jFg06sVnwvMfeXloN8Ub9PPust43mRQWozKx+/n+cMCV6FbTtZfsWH89
+        Sy3yLBwdttt6lvfsW/xAA2tK+RO2aLzmMwTJm1mWky1UFp/M7n2hCpLe0J7Pm1ZiId+kD3Mo7DAHS
+        Xo763c3pCsT09/1z+D3nZrDJRGujjs3zH7+RT+83ww7dVYOIs7RyPMH4NU+/NCLYFjFnG+uGQhFJb
+        u+kUWA6fCe0HMsvx8tgAb0dX99IsQ7GAtZLkEwyczOHZLCC5iyJlFxzONinNs3FxL+AF4xFvnMNAN
+        9Pail+Dg==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57650 helo=localhost)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nXSwJ-002YBS-OP; Thu, 24 Mar 2022 19:16:07 +0000
+Date:   Thu, 24 Mar 2022 12:16:06 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Dave Airlie <airlied@gmail.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [git pull] drm for 5.18-rc1
+Message-ID: <20220324191606.GA1120460@roeck-us.net>
+References: <CAPM=9tytg5jd_i3z3C5Y1dii2-cgO11Gjgvaq8qoWn3CGfCreg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220324101242.v1.1.Iebdb5af0db7d3d6364cb229a27cd7c668f1063ae@changeid>
-In-Reply-To: <20220324101242.v1.1.Iebdb5af0db7d3d6364cb229a27cd7c668f1063ae@changeid>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Thu, 24 Mar 2022 12:59:51 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=XchtJx3ZsL4Bxj29b_-43E8p2fiJ5SBQSzbW8wp+gNfg@mail.gmail.com>
-Message-ID: <CAD=FV=XchtJx3ZsL4Bxj29b_-43E8p2fiJ5SBQSzbW8wp+gNfg@mail.gmail.com>
-Subject: Re: [PATCH v1] arm64: dts: qcom: sc7280: Add device tree for
- herobrine villager
-To:     Matthias Kaehlcke <mka@chromium.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAPM=9tytg5jd_i3z3C5Y1dii2-cgO11Gjgvaq8qoWn3CGfCreg@mail.gmail.com>
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nXSwJ-002YBS-OP
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57650
+X-Source-Auth: guenter@roeck-us.net
+X-Email-Count: 11
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hi,
 
-On Thu, Mar 24, 2022 at 10:13 AM Matthias Kaehlcke <mka@chromium.org> wrote:
->
-> Add a basic device tree for the herobrine villager board.
->
-> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-> ---
->
->  arch/arm64/boot/dts/qcom/Makefile             |   1 +
->  .../dts/qcom/sc7280-herobrine-villager-r0.dts | 274 ++++++++++++++++++
->  2 files changed, 275 insertions(+)
+On Thu, Mar 24, 2022 at 12:30:02PM +1000, Dave Airlie wrote:
+> Hi Linus,
+> 
+> This is the main drm pull request for 5.18.
+> 
+> The summary changelog is below, lots of work all over,
+> Intel improving DG2 support, amdkfd CRIU support, msm
+> new hw support, and faster fbdev support.
+> 
+> Conflicts:
+> I did a merge into your tree this morning, couple of Kconfig
+> clashes, drm_cache.c needs an ioport.h include to avoid a build
+> fail due to other header refactoring. I think you should be able
+> to handle it.
+> 
+> External interactions:
+> - dma-buf-map gets renamed to iosys-map
+> - this adds a yes/no helper to the strings helpers, and it's used
+>   in some other code.
+> - platform driver for chromeos privacy screen
+> 
+> Let me know if there are any issues.
+> 
+[ ... ]
+>       fbdev: Improve performance of cfb_imageblit()
 
-Question: how does this interact with the patch:
+As reported as reponse to the patch submission, this patch causes crashes
+with qemu's mainstone, z2, and collie emulations. Reverting it fixes the
+problem.
 
-https://lore.kernel.org/r/20220316172814.v1.3.Iad21bd53f3ac14956b8dbbf3825fc7ab29abdf97@changeid/
+Unable to handle kernel paging request at virtual address e090d000
+[e090d000] *pgd=c0c0b811c0c0b811, *pte=c0c0b000, *ppte=00000000
+Internal error: Oops: 807 [#1] ARM
+CPU: 0 PID: 1 Comm: swapper Not tainted 5.17.0-next-20220324 #1
+Hardware name: Sharp-Collie
+PC is at cfb_imageblit+0x58c/0x6e0
 
-Specifically, if that patch lands first don't you need to add a patch
-to turn on "pp3300_codec" ?
-
-I was also looking at whether we should be enabling the wf_cam
-regulators for villager. I believe that answer is "no", but _also_ I
-believe that we should be _disabling_ the uf_cam regulators for
-villager, right?
-
-
-> +                         "MOS_LAA_AS_EN",              /* 90 */
-> +                         "SD_CD_ODL",
-
-I was somewhat surprised that "SD_CD_ODL" was listed here since,
-diffing this with Herobrine, it appears that Villager doesn't have SD.
-I checked the schematics, though, and I can confirm that the GPIO is
-named this even if it just goes to a testpoint on the board. ;-) ...so
-I'm fine keeping it here.
-
--Doug
+Guenter
