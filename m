@@ -2,101 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB0DBC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:52:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 970DBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:52:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348731AbiCXHxa (ORCPT
+        id S1345549AbiCXHxh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 03:53:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33256 "EHLO
+        Thu, 24 Mar 2022 03:53:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348732AbiCXHx1 (ORCPT
+        with ESMTP id S1348735AbiCXHx2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 03:53:27 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BFFE996A2
+        Thu, 24 Mar 2022 03:53:28 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E2659968A
         for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:51:56 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id p4-20020a17090ad30400b001c7ca87c05bso40452pju.1
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:51:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=pu00Wt7t+7SgrwxKX6S64r5ey3zhRw/tKWIDbQLLHnU=;
-        b=ojF6jN6FPzADkF69NIviFCqlkD0B5s441uEag3GAlD40cW4lJZVW2AqzYcQVI6fvJc
-         y2oIi8eL/PQ2Ejk4dqdKliziyz7uSG/7umM0DEBK5fXajegRM+21US1YIWRo0T+3DLjI
-         cR+GXdjtiO5en7xywf1rnm9Q5O+aOIrOZS0MUvBfpAhQ7kmi5hmfBt6iYAS+iY+QfEu6
-         5Np87P5log4ZGrmJ2NnRPitBEFyCah7+4bvdN6efEleE5bxEO+JCAHbTtkFyu8/8+SSk
-         bVaxR33bblL26CnTmxIWZCxQoImPHtF7RiIOnZMU87oN5DL5AGx3DW+6Sw7cApMjRD6C
-         1NXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=pu00Wt7t+7SgrwxKX6S64r5ey3zhRw/tKWIDbQLLHnU=;
-        b=j4ITOeY4rrxxf8DL9mohT7wDu/B5gwD/TRmM3CUa9Pbox8hESKSp+2zfK6H1idaXA9
-         v83gMDolj25lQxCcwrELqdNMloPKOgL0VpYMA70FgDYUju5vVRtVihLCWXwFWSlOOpnP
-         oDgurMmNmjZLjauizT2wLLNQW91UmSn429qhi61TfEtHsqBz2T8FO+3hvQ8ICSwMFksE
-         8FzI8/kbJEi0Rv49g49k9B7YYktHKvtA5dbc8lx3k5JCiqL8ISD7g2l2BHorgC3VOpBE
-         0dEtdlWmVgcsSi73oerbx+snJp0dA4oZWrMhj3whon9MsFvltAkNlf3dQUxPsK4/Eulr
-         hlwg==
-X-Gm-Message-State: AOAM530a6egOohFoRXsw1Gm9jrP+JRvZwo7x5Ifwh34VqhdniDxYYj1a
-        rqQ6oGabLKTNUUkFJJ6pNyE38pZSUL7qgWDKmAFZHkv+aIWTkw==
-X-Google-Smtp-Source: ABdhPJwF9vUdTNhlcu7amXjm8S7YDp9GZJV7KKDCtR77DoilLycYmSpRd7n+ibYFvaziJGbJiudFQA4pb1OUAH8q6nc=
-X-Received: by 2002:a17:90b:4c92:b0:1c7:a9a3:6274 with SMTP id
- my18-20020a17090b4c9200b001c7a9a36274mr5439038pjb.148.1648108315505; Thu, 24
- Mar 2022 00:51:55 -0700 (PDT)
+Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KPHVT0SKWz1GCxN;
+        Thu, 24 Mar 2022 15:51:45 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by kwepemi500015.china.huawei.com
+ (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 24 Mar
+ 2022 15:51:53 +0800
+From:   Zheng Bin <zhengbin13@huawei.com>
+To:     <dan.j.williams@intel.com>, <vishal.l.verma@intel.com>,
+        <dave.jiang@intel.com>, <ira.weiny@intel.com>,
+        <nvdimm@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+CC:     <tangyizhou@huawei.com>, <zhengbin13@huawei.com>
+Subject: [PATCH -next] drivers/nvdimm: Fix build error without PERF_EVENTS
+Date:   Thu, 24 Mar 2022 16:06:53 +0800
+Message-ID: <20220324080653.1364201-1-zhengbin13@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20220308133505.471601-1-clement.leger@bootlin.com>
-In-Reply-To: <20220308133505.471601-1-clement.leger@bootlin.com>
-From:   Jens Wiklander <jens.wiklander@linaro.org>
-Date:   Thu, 24 Mar 2022 08:51:44 +0100
-Message-ID: <CAHUa44EVLYiA6u4QVyPQTnK0-=4UgL-RK4i=wDYfQW9daCCkvw@mail.gmail.com>
-Subject: Re: [PATCH v4] rtc: optee: add RTC driver for OP-TEE RTC PTA
-To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        op-tee@lists.trustedfirmware.org, linux-kernel@vger.kernel.org,
-        linux-rtc@vger.kernel.org,
-        Etienne Carriere <etienne.carriere@linaro.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemi500015.china.huawei.com (7.221.188.92)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 8, 2022 at 2:36 PM Cl=C3=A9ment L=C3=A9ger <clement.leger@bootl=
-in.com> wrote:
->
-> This drivers allows to communicate with a RTC PTA handled by OP-TEE [1].
-> This PTA allows to query RTC information, set/get time and set/get
-> offset depending on the supported features.
->
-> [1] https://github.com/OP-TEE/optee_os/pull/5179
->
-> Signed-off-by: Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com>
-> ---
->
-> Changes in v4:
->  - Remove error prints except the ones in probe
->
-> Changes in v3 (was resent as a second v2 due to a mistake);
->  - Fix error messages to include ret value and fix wrong IOCTL names
->  - Use 100 columns char limit
->
-> Changes in v2:
->  - Rebased over tee-shm-for-v5.18
->  - Switch to tee_shm_alloc_kernel_buf()
->  - Use export_uuid() to copy uuid
->  - Fix warnings reported by checkpatch
->  - Free SHM in error exit path
->
->  MAINTAINERS             |   6 +
->  drivers/rtc/Kconfig     |  10 ++
->  drivers/rtc/Makefile    |   1 +
->  drivers/rtc/rtc-optee.c | 362 ++++++++++++++++++++++++++++++++++++++++
->  4 files changed, 379 insertions(+)
->  create mode 100644 drivers/rtc/rtc-optee.c
+If PERF_EVENTS is not set, bulding fails:
 
-Reviewed-by: Jens Wiklander <jens.wiklander@linaro.org>
+drivers/nvdimm/nd_perf.o: In function `nvdimm_pmu_cpu_offline':
+nd_perf.c:(.text+0x12c): undefined reference to `perf_pmu_migrate_context'
+drivers/nvdimm/nd_perf.o: In function `register_nvdimm_pmu':
+nd_perf.c:(.text+0x3c4): undefined reference to `perf_pmu_register'
+drivers/nvdimm/nd_perf.o: In function `unregister_nvdimm_pmu':
+nd_perf.c:(.text+0x4c0): undefined reference to `perf_pmu_unregister'
+
+Make LIBNVDIMM depends on PERF_EVENTS to fix this.
+
+Fixes: 0fab1ba6ad6b ("drivers/nvdimm: Add perf interface to expose nvdimm performance stats")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
+---
+ drivers/nvdimm/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/nvdimm/Kconfig b/drivers/nvdimm/Kconfig
+index 5a29046e3319..e93bd0b787e9 100644
+--- a/drivers/nvdimm/Kconfig
++++ b/drivers/nvdimm/Kconfig
+@@ -4,6 +4,7 @@ menuconfig LIBNVDIMM
+ 	depends on PHYS_ADDR_T_64BIT
+ 	depends on HAS_IOMEM
+ 	depends on BLK_DEV
++	depends on PERF_EVENTS
+ 	select MEMREGION
+ 	help
+ 	  Generic support for non-volatile memory devices including
+--
+2.31.1
+
