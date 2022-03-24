@@ -2,100 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFD91C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:08:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43103C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:08:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347427AbiCXHJn (ORCPT
+        id S1348289AbiCXHKQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 03:09:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47700 "EHLO
+        Thu, 24 Mar 2022 03:10:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239320AbiCXHJi (ORCPT
+        with ESMTP id S239320AbiCXHKN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 03:09:38 -0400
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B197167FC
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:08:06 -0700 (PDT)
-Received: from epcas3p1.samsung.com (unknown [182.195.41.19])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220324070804epoutp04d9bff6c1707b9e5b7207ffe39cfa659d~fP2NKuMRN0876608766epoutp04w
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 07:08:04 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220324070804epoutp04d9bff6c1707b9e5b7207ffe39cfa659d~fP2NKuMRN0876608766epoutp04w
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1648105684;
-        bh=ffNIsUV0dGzaaQ3R/vm5F/lFr5vlgbrv3cLPh72mp0M=;
-        h=Subject:Reply-To:From:To:Date:References:From;
-        b=PhPMcQoYm/J1/tENWR2tnP6STywWdlSknKCRHh3YP7FlsGLAAMLF+btb+4pdbsfta
-         3F/HLQxg1QFy4S6XXc2aEdfM62M9oeU3+EuyRQAsfsFmCGRrHXhmqT03V6oPQATvo3
-         9lZZUeYpHbPyPs5LqQXq3a2gyDRBueBH9CBhC5sA=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas3p4.samsung.com (KnoxPortal) with ESMTP id
-        20220324070803epcas3p4a9b366231c0c91cffac1cc571a4f917b~fP2Mqlbk21705917059epcas3p4-;
-        Thu, 24 Mar 2022 07:08:03 +0000 (GMT)
-Received: from epcpadp4 (unknown [182.195.40.18]) by epsnrtp3.localdomain
-        (Postfix) with ESMTP id 4KPGX35N54z4x9QT; Thu, 24 Mar 2022 07:08:03 +0000
-        (GMT)
-Mime-Version: 1.0
-Subject: [PATCH] scsi: ufs: core: Remove unused field in struct ufs_hba
-Reply-To: keosung.park@samsung.com
-Sender: Keoseong Park <keosung.park@samsung.com>
-From:   Keoseong Park <keosung.park@samsung.com>
-To:     ALIM AKHTAR <alim.akhtar@samsung.com>,
-        "avri.altman@wdc.com" <avri.altman@wdc.com>,
-        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
-        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
-        "bvanassche@acm.org" <bvanassche@acm.org>,
-        "beanhuo@micron.com" <beanhuo@micron.com>,
-        Daejun Park <daejun7.park@samsung.com>,
-        "adrian.hunter@intel.com" <adrian.hunter@intel.com>,
-        Keoseong Park <keosung.park@samsung.com>,
-        "cang@codeaurora.org" <cang@codeaurora.org>,
-        "asutoshd@codeaurora.org" <asutoshd@codeaurora.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-X-Priority: 3
-X-Content-Kind-Code: NORMAL
-X-CPGS-Detection: blocking_info_exchange
-X-Drm-Type: N,general
-X-Msg-Generator: Mail
-X-Msg-Type: PERSONAL
-X-Reply-Demand: N
-Message-ID: <413601558.101648105683746.JavaMail.epsvc@epcpadp4>
-Date:   Thu, 24 Mar 2022 16:01:46 +0900
-X-CMS-MailID: 20220324070146epcms2p577d43ce3e7cbd36aa964f3842e49b2ba
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-X-CPGSPASS: Y
-X-CPGSPASS: Y
-X-Hop-Count: 3
-X-CMS-RootMailID: 20220324070146epcms2p577d43ce3e7cbd36aa964f3842e49b2ba
-References: <CGME20220324070146epcms2p577d43ce3e7cbd36aa964f3842e49b2ba@epcms2p5>
+        Thu, 24 Mar 2022 03:10:13 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBFE298582;
+        Thu, 24 Mar 2022 00:08:41 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id b15so4528149edn.4;
+        Thu, 24 Mar 2022 00:08:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2DIzib4o08iye1kgkTSG9/ojDh+JAr+HPIElFaP/bcc=;
+        b=lCt1RxMJ8zVYgbMpVAzhxiZ+KgXTt3FIQ+H89ZtLkKjrJv8w9eNH6KMwtYvtj0uExe
+         UZn3pEZaC3AIqEE4+pWQkIAZ7ZrvcNbzH5dSG3fiib5d79iTSZhT69z7PrzcERJzJDNc
+         3AOqoHYV4FPfo/VS+S1F2UdiTU9olX8B1f/CMNdFJf8UwSeOWNhUW9NMekVC3GmjGUtw
+         /wcr5dFrrFGLa3xkuxoAyNxrVP1zc0Kj7okXMZYS748aapUQltGkHAij6675zRIquCLx
+         79xFJ0XwnTgY8P1OMsZWMAPXjRr3C/RDx6gZpZ0Eyr/tSwVKf6lB/fhxxTZxZaCHTE3K
+         CUTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2DIzib4o08iye1kgkTSG9/ojDh+JAr+HPIElFaP/bcc=;
+        b=meGu1iKHuj2FlCWYCWfJt/4xyN0rMaqxQ85Cad+lYEwLu503GmrWg9DZ7e0IwS/4R2
+         GiSFcbMGb9OzEV/60ILSUzdRy0Ekrz5XELxafvyl8T5ykZ0sJ4OgK4DiSRy/vAM2JejB
+         FHtILsdMCc3WB5lgUH8XufjweGdKWOG94OW5CLwus7q8jC40fYiTih8kiZ7+1YAzjS1g
+         9ljUUuRz+zh+0JOLK+o1jondCa3mkuH4feiUMzxsQIcbBMcc83JLZqKZIc/TxF151G/7
+         b3x+Er3NJSJtqbKM5kzAp52dNc5g/7EkesbYcuV+SBsLXaAF5j4K2TMnLiv7rLGb7Ds9
+         VWRg==
+X-Gm-Message-State: AOAM533PN06hiRkO9UYe22nPuJNYHtV4HDslmN10TIMV20aOZ2f4i/Ew
+        geAj+/YG1bjXl2FuQEeTXxg=
+X-Google-Smtp-Source: ABdhPJyGuOyR40tiN+XJl/Z+fRAxZlJTj44MIkp0nzo3GoVPoeQNYup2mTfdo8v+ARKWzr7xiqqi6g==
+X-Received: by 2002:a05:6402:506:b0:419:46b2:2433 with SMTP id m6-20020a056402050600b0041946b22433mr4938255edv.21.1648105719877;
+        Thu, 24 Mar 2022 00:08:39 -0700 (PDT)
+Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
+        by smtp.googlemail.com with ESMTPSA id o2-20020a50d802000000b00410d7f0c52csm1011976edj.8.2022.03.24.00.08.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Mar 2022 00:08:39 -0700 (PDT)
+From:   Jakob Koschel <jakobkoschel@gmail.com>
+To:     Ariel Elior <aelior@marvell.com>
+Cc:     Sudarsana Kalluru <skalluru@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
+        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
+Subject: [PATCH] bnx2x: replace usage of found with dedicated list iterator variable
+Date:   Thu, 24 Mar 2022 08:08:16 +0100
+Message-Id: <20220324070816.58599-1-jakobkoschel@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove unused field "rpm_lvl_attr" and "spm_lvl_attr" in struct ufs_hba.
-Commit cbb6813ee771 ("scsi: ufs: sysfs: attribute group for existing
-sysfs entries.") removed all code using that field.
+To move the list iterator variable into the list_for_each_entry_*()
+macro in the future it should be avoided to use the list iterator
+variable after the loop body.
 
-Signed-off-by: Keoseong Park <keosung.park@samsung.com>
+To *never* use the list iterator variable after the loop it was
+concluded to use a separate iterator variable instead of a
+found boolean [1].
+
+This removes the need to use a found variable and simply checking if
+the variable was set, can determine if the break/goto was hit.
+
+Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/scsi/ufs/ufshcd.h | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/scsi/ufs/ufshcd.h b/drivers/scsi/ufs/ufshcd.h
-index 88c20f3608c2..94f545be183a 100644
---- a/drivers/scsi/ufs/ufshcd.h
-+++ b/drivers/scsi/ufs/ufshcd.h
-@@ -820,8 +820,6 @@ struct ufs_hba {
- 	enum ufs_pm_level rpm_lvl;
- 	/* Desired UFS power management level during system PM */
- 	enum ufs_pm_level spm_lvl;
--	struct device_attribute rpm_lvl_attr;
--	struct device_attribute spm_lvl_attr;
- 	int pm_op_in_progress;
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+index c19b072f3a23..fe985ddb35db 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+@@ -12971,20 +12971,19 @@ static int bnx2x_vlan_rx_add_vid(struct net_device *dev, __be16 proto, u16 vid)
  
- 	/* Auto-Hibernate Idle Timer register value */
+ static int bnx2x_vlan_rx_kill_vid(struct net_device *dev, __be16 proto, u16 vid)
+ {
++	struct bnx2x_vlan_entry *vlan = NULL, *iter;
+ 	struct bnx2x *bp = netdev_priv(dev);
+-	struct bnx2x_vlan_entry *vlan;
+-	bool found = false;
+ 	int rc = 0;
+ 
+ 	DP(NETIF_MSG_IFUP, "Removing VLAN %d\n", vid);
+ 
+-	list_for_each_entry(vlan, &bp->vlan_reg, link)
+-		if (vlan->vid == vid) {
+-			found = true;
++	list_for_each_entry(iter, &bp->vlan_reg, link)
++		if (iter->vid == vid) {
++			vlan = iter;
+ 			break;
+ 		}
+ 
+-	if (!found) {
++	if (!vlan) {
+ 		BNX2X_ERR("Unable to kill VLAN %d - not found\n", vid);
+ 		return -EINVAL;
+ 	}
+
+base-commit: f443e374ae131c168a065ea1748feac6b2e76613
 -- 
-2.17.1
+2.25.1
 
