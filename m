@@ -2,528 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 296B3C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 12:17:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7732FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 12:18:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350007AbiCXMTW (ORCPT
+        id S1350013AbiCXMTo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 08:19:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51912 "EHLO
+        Thu, 24 Mar 2022 08:19:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237496AbiCXMTU (ORCPT
+        with ESMTP id S237496AbiCXMTl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 08:19:20 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B683499EE3;
-        Thu, 24 Mar 2022 05:17:46 -0700 (PDT)
-X-UUID: 92fa8ccde75049128e62e55aa0c40203-20220324
-X-UUID: 92fa8ccde75049128e62e55aa0c40203-20220324
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <jia-wei.chang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1273367555; Thu, 24 Mar 2022 20:17:41 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 24 Mar 2022 20:17:40 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 24 Mar
- 2022 20:17:40 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 24 Mar 2022 20:17:40 +0800
-Message-ID: <6cc4aa1ffcc2b6e817cfa1f4ff19ebf5f071ebbc.camel@mediatek.com>
-Subject: Re: [PATCH 2/3] devfreq: mediatek: add mt8183 cci devfreq driver
-From:   Jia-Wei Chang <jia-wei.chang@mediatek.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-CC:     <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        Thu, 24 Mar 2022 08:19:41 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 593742ADA;
+        Thu, 24 Mar 2022 05:18:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1648124288; x=1679660288;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=fnaxbB5XHqaInLeoQc9+HHpSFyMX+LD6J0Omyaythxk=;
+  b=TNbc337RXSiXJnHGOftYq0kztPeuO9lgLWnYWEfkK4I+j/8+SuZNOTe4
+   8y4OipscfnWTaAgeo1cPJoxN7GMOkdtLi5ZG1SI0mVOnGXUAOgU/htXD6
+   s2nyZFE1hpdv0n4Xcn8wWXFRLoo0NMVayrNgu59mcdtKxnn+uy0wJGFs1
+   U=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 24 Mar 2022 05:18:05 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 05:18:04 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 24 Mar 2022 05:18:04 -0700
+Received: from jinlmao-gv.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 24 Mar 2022 05:18:00 -0700
+From:   Mao Jinlong <quic_jinlmao@quicinc.com>
+To:     Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>
+CC:     Mao Jinlong <quic_jinlmao@quicinc.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        <coresight@lists.linaro.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <fan.chen@mediatek.com>,
-        <louis.yu@mediatek.com>, <roger.lu@mediatek.com>,
-        <Allen-yy.Lin@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <hsinyi@google.com>,
-        Jia-Wei Chang <jia-wei.chang@mediatek.corp-partner.google.com>
-Date:   Thu, 24 Mar 2022 20:17:39 +0800
-In-Reply-To: <8ee350be-b3a6-ce39-03bf-95d51fb8ff1b@canonical.com>
-References: <20220307122513.11822-1-jia-wei.chang@mediatek.com>
-         <20220307122513.11822-3-jia-wei.chang@mediatek.com>
-         <8ee350be-b3a6-ce39-03bf-95d51fb8ff1b@canonical.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        <linux-kernel@vger.kernel.org>,
+        Tingwei Zhang <quic_tingweiz@quicinc.com>,
+        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
+        Tao Zhang <quic_taozha@quicinc.com>,
+        Trilok Soni <quic_tsoni@quicinc.com>,
+        Hao Zhang <quic_hazha@quicinc.com>,
+        <linux-arm-msm@vger.kernel.org>
+Subject: [PATCH v4 00/10] Coresight: Add support for TPDM and TPDA
+Date:   Thu, 24 Mar 2022 20:17:24 +0800
+Message-ID: <20220324121734.21531-1-quic_jinlmao@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-03-07 at 22:51 +0100, Krzysztof Kozlowski wrote:
-> On 07/03/2022 13:25, Tim Chang wrote:
-> > This adds a devfreq driver for the Cache Coherent Interconnect
-> > (CCI) of
-> > the Mediatek MT8183.
-> > 
-> > On mt8183 the cci is supplied by the same regulator as the little
-> > cores.
-> > The driver is notified when the regulator voltage changes (driven
-> > by
-> > cpufreq) and adjusts the cci frequency to the maximum possible
-> > value.
-> > 
-> > Add need_voltage_tracking variable to platforma data. if true, it
-> > indicates soc is required to realize the voltage tracking between
-> > voltage of sram and voltage of cci by software approach. otherwise,
-> > the
-> > voltage tracking is realized by hardware appraoch.
-> > 
-> > Add the notifier to cci so that it could react after svs driver
-> > changes
-> > opp table of cci.
-> > 
-> > Signed-off-by: Jia-Wei Chang <
-> > jia-wei.chang@mediatek.corp-partner.google.com>
-> > ---
-> >  drivers/devfreq/Kconfig           |  11 +-
-> >  drivers/devfreq/Makefile          |   2 +-
-> >  drivers/devfreq/mtk-cci-devfreq.c | 471
-> > ++++++++++++++++++++++++++++++
-> >  3 files changed, 482 insertions(+), 2 deletions(-)
-> >  create mode 100644 drivers/devfreq/mtk-cci-devfreq.c
-> > 
-> > diff --git a/drivers/devfreq/Kconfig b/drivers/devfreq/Kconfig
-> > index 1ec36ae93f31..a6be3c6b5691 100644
-> > --- a/drivers/devfreq/Kconfig
-> > +++ b/drivers/devfreq/Kconfig
-> > @@ -110,7 +110,7 @@ config ARM_IMX8M_DDRC_DEVFREQ
-> >  
-> >  config ARM_MT8183_CCI_DEVFREQ
-> >  	tristate "MT8183 CCI DEVFREQ Driver"
-> > -	depends on ARM_MEDIATEK_CPUFREQ
-> > +	depends on OF && ARM_MEDIATEK_CPUFREQ
-> 
-> Why do you need that dependency? Isn't your arch already OF-only?
+This series adds support for the trace performance monitoring and
+diagnostics hardware (TPDM and TPDA). It is composed of two major
+elements.
+a) Changes for original coresight framework to support for TPDM and TPDA.
+b) Add driver code for TPDM and TPDA.
 
-Yes, it is OF-only so far.
-I will remove it and keep it as before.
+Introduction of changes for original coresight framework
+Support TPDM as new coresight source.
+Since only STM and ETM are supported as coresight source originally.
+TPDM is a newly added coresight source. We need to change
+the original way of saving coresight path to support more types source
+for coresight driver.
+The following patch is to add support more coresight sources.
+     Use IDR to maintain all the enabled sources' paths.
 
-> 
-> >  	help
-> >  		This adds a devfreq driver for Cache Coherent
-> > Interconnect
-> >  		of Mediatek MT8183, which is shared the same regulator
-> > @@ -130,6 +130,15 @@ config ARM_TEGRA_DEVFREQ
-> >  	  It reads ACTMON counters of memory controllers and adjusts
-> > the
-> >  	  operating frequencies and voltages with OPP support.
-> >  
-> > +config ARM_MEDIATEK_CCI_DEVFREQ
-> > +	tristate "MEDIATEK CCI DEVFREQ Driver"
-> > +	depends on OF && ARM_MEDIATEK_CPUFREQ
-> > +	help
-> > +	  This adds a devfreq driver for Mediatek Cache Coherent
-> > Interconnect
-> > +	  which is shared the same regulator with cpu cluster. It can
-> > track
-> > +	  buck voltage and update a proper CCI frequency. Use
-> > notification
-> > +	  to get regulator status.
-> > +
-> >  config ARM_RK3399_DMC_DEVFREQ
-> >  	tristate "ARM RK3399 DMC DEVFREQ Driver"
-> >  	depends on (ARCH_ROCKCHIP && HAVE_ARM_SMCCC) || \
-> > diff --git a/drivers/devfreq/Makefile b/drivers/devfreq/Makefile
-> > index 991ef7740759..0493516a16f2 100644
-> > --- a/drivers/devfreq/Makefile
-> > +++ b/drivers/devfreq/Makefile
-> > @@ -11,7 +11,7 @@ obj-$(CONFIG_DEVFREQ_GOV_PASSIVE)	+=
-> > governor_passive.o
-> >  obj-$(CONFIG_ARM_EXYNOS_BUS_DEVFREQ)	+= exynos-bus.o
-> >  obj-$(CONFIG_ARM_IMX_BUS_DEVFREQ)	+= imx-bus.o
-> >  obj-$(CONFIG_ARM_IMX8M_DDRC_DEVFREQ)	+= imx8m-ddrc.o
-> > -obj-$(CONFIG_ARM_MT8183_CCI_DEVFREQ)	+= mt8183-cci-devfreq.o
-> > +obj-$(CONFIG_ARM_MEDIATEK_CCI_DEVFREQ)	+= mtk-cci-devfreq.o
-> 
-> How is this related? You say in commit subject and description that
-> you
-> add a devfreq driver. But here you remove some other file...
+Introduction of TPDM and TPDA
+TPDM - The trace performance monitoring and diagnostics monitor or TPDM in
+short serves as data collection component for various dataset types
+specified in the QPMDA(Qualcomm performance monitoring and diagnostics
+architecture) spec. The primary use case of the TPDM is to collect data
+from different data sources and send it to a TPDA for packetization,
+timestamping and funneling.
+     Coresight: Add coresight TPDM source driver
+     dt-bindings: arm: Adds CoreSight TPDM hardware definitions
+     coresight-tpdm: Add DSB dataset support
+     coresight-tpdm: Add integration test support
+     docs: sysfs: coresight: Add sysfs ABI documentation for TPDM
 
-Sorry, this is my mistake.
-There's no mt8183-cci-devfreq.c on the codebase of linux-next.
-I will fix it after rebasing in the next version.
+TPDA - The trace performance monitoring and diagnostics aggregator or
+TPDA in short serves as an arbitration and packetization engine for the
+performance monitoring and diagnostics network as specified in the QPMDA
+(Qualcomm performance monitoring and diagnostics architecture)
+specification. The primary use case of the TPDA is to provide
+packetization, funneling and timestamping of Monitor data as specified
+in the QPMDA specification.
+The following patch is to add driver for TPDA.
+     Coresight: Add TPDA link driver
+     dt-bindings: arm: Adds CoreSight TPDA hardware definitions
 
-> 
-> >  obj-$(CONFIG_ARM_RK3399_DMC_DEVFREQ)	+= rk3399_dmc.o
-> >  obj-$(CONFIG_ARM_TEGRA_DEVFREQ)		+= tegra30-devfreq.o
-> >  
-> > diff --git a/drivers/devfreq/mtk-cci-devfreq.c
-> > b/drivers/devfreq/mtk-cci-devfreq.c
-> > new file mode 100644
-> > index 000000000000..986f34689f5c
-> > --- /dev/null
-> > +++ b/drivers/devfreq/mtk-cci-devfreq.c
-> > @@ -0,0 +1,471 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +/*
-> > + * Copyright (C) 2022 MediaTek Inc.
-> > + */
-> > +
-> > +#include <linux/clk.h>
-> > +#include <linux/devfreq.h>
-> > +#include <linux/minmax.h>
-> > +#include <linux/module.h>
-> > +#include <linux/of.h>
-> > +#include <linux/of_device.h>
-> > +#include <linux/platform_device.h>
-> > +#include <linux/pm_opp.h>
-> > +#include <linux/regulator/consumer.h>
-> > +
-> > +struct mtk_ccifreq_platform_data;
-> 
-> Move struct mtk_ccifreq_platform_data definition here. No need for
-> forward declaration.
+The last patch of this series is a device tree modification, which add
+the TPDM and TPDA configuration to device tree for validating.
+    ARM: dts: msm: Add coresight components for SM8250
+    ARM: dts: msm: Add tpdm mm/prng for sm8250
 
-Sure, I will update it in the next version.
+Once this series patches are applied properly, the tpdm and tpda nodes
+should be observed at the coresight path /sys/bus/coresight/devices
+e.g.
+/sys/bus/coresight/devices # ls -l | grep tpd
+tpda0 -> ../../../devices/platform/soc@0/6004000.tpda/tpda0
+tpdm0 -> ../../../devices/platform/soc@0/6c08000.mm.tpdm/tpdm0
 
-> 
-> > +
-> > +struct mtk_ccifreq_drv {
-> > +	struct device *cci_dev;
-> > +	struct devfreq *devfreq;
-> > +	struct regulator *proc_reg;
-> > +	struct regulator *sram_reg;
-> > +	struct clk *cci_clk;
-> > +	struct clk *inter_clk;
-> > +	int inter_voltage;
-> > +	int old_voltage;
-> > +	unsigned long old_freq;
-> > +	struct mutex lock;  /* avoid notify and policy race condition
-> > */
-> > +	struct notifier_block opp_nb;
-> > +	const struct mtk_ccifreq_platform_data *soc_data;
-> > +};
-> > +
-> > +struct mtk_ccifreq_platform_data {
-> > +	int min_volt_shift;
-> > +	int max_volt_shift;
-> > +	int proc_max_volt;
-> > +	int sram_min_volt;
-> > +	int sram_max_volt;
-> > +	bool need_voltage_tracking;
-> > +};
-> > +
-> > +static int mtk_ccifreq_voltage_tracking(struct mtk_ccifreq_drv
-> > *drv, int new_voltage)
-> > +{
-> > +	const struct mtk_ccifreq_platform_data *soc_data = drv-
-> > >soc_data;
-> > +	struct regulator *proc_reg = drv->proc_reg;
-> > +	struct regulator *sram_reg = drv->sram_reg;
-> > +	int old_voltage, old_vsram, new_vsram, vsram, voltage, ret;
-> > +
-> > +	old_voltage = regulator_get_voltage(proc_reg);
-> > +	if (old_voltage < 0) {
-> > +		pr_err("%s: invalid vproc value: %d\n", __func__,
-> > old_voltage);
-> > +		return old_voltage;
-> > +	}
-> > +
-> > +	old_vsram = regulator_get_voltage(sram_reg);
-> > +	if (old_vsram < 0) {
-> > +		pr_err("%s: invalid vsram value: %d\n", __func__,
-> > old_vsram);
-> > +		return old_vsram;
-> > +	}
-> > +
-> > +	new_vsram = clamp(new_voltage + soc_data->min_volt_shift,
-> > +			  soc_data->sram_min_volt, soc_data-
-> > >sram_max_volt);
-> > +
-> > +	do {
-> > +		if (old_voltage <= new_voltage) {
-> > +			vsram = clamp(old_voltage + soc_data-
-> > >max_volt_shift,
-> > +				      soc_data->sram_min_volt,
-> > new_vsram);
-> > +			ret = regulator_set_voltage(sram_reg, vsram,
-> > +						    soc_data-
-> > >sram_max_volt);
-> > +			if (ret)
-> > +				return ret;
-> > +
-> > +			if (vsram == soc_data->sram_max_volt ||
-> > +			    new_vsram == soc_data->sram_min_volt)
-> > +				voltage = new_voltage;
-> > +			else
-> > +				voltage = vsram - soc_data-
-> > >min_volt_shift;
-> > +
-> > +			ret = regulator_set_voltage(proc_reg, voltage,
-> > +						    soc_data-
-> > >proc_max_volt);
-> > +			if (ret) {
-> > +				regulator_set_voltage(sram_reg,
-> > old_vsram,
-> > +						      soc_data-
-> > >sram_max_volt);
-> > +				return ret;
-> > +			}
-> > +		} else if (old_voltage > new_voltage) {
-> > +			voltage = max(new_voltage,
-> > +				    old_vsram - soc_data-
-> > >max_volt_shift);
-> > +			ret = regulator_set_voltage(proc_reg, voltage,
-> > +						    soc_data-
-> > >proc_max_volt);
-> > +			if (ret)
-> > +				return ret;
-> > +
-> > +			if (voltage == new_voltage)
-> > +				vsram = new_vsram;
-> > +			else
-> > +				vsram = max(new_vsram,
-> > +					    voltage + soc_data-
-> > >min_volt_shift);
-> > +
-> > +			ret = regulator_set_voltage(sram_reg, vsram,
-> > +						    soc_data-
-> > >sram_max_volt);
-> > +			if (ret) {
-> > +				regulator_set_voltage(proc_reg,
-> > old_voltage,
-> > +						      soc_data-
-> > >proc_max_volt);
-> > +				return ret;
-> > +			}
-> > +		}
-> > +
-> > +		old_voltage = voltage;
-> > +		old_vsram = vsram;
-> > +	} while (voltage != new_voltage || vsram != new_vsram);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int mtk_ccifreq_set_voltage(struct mtk_ccifreq_drv *drv,
-> > int voltage)
-> > +{
-> > +	int ret;
-> > +
-> > +	if (drv->soc_data->need_voltage_tracking)
-> > +		ret = mtk_ccifreq_voltage_tracking(drv, voltage);
-> > +	else
-> > +		ret = regulator_set_voltage(drv->proc_reg, voltage,
-> > +					    drv->soc_data-
-> > >proc_max_volt);
-> > +
-> > +	if (!ret)
-> > +		drv->old_voltage = voltage;
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static int mtk_ccifreq_target(struct device *dev, unsigned long
-> > *freq,
-> > +			      u32 flags)
-> > +{
-> > +	struct mtk_ccifreq_drv *drv = dev_get_drvdata(dev);
-> > +	struct clk *cci_pll = clk_get_parent(drv->cci_clk);
-> > +	struct dev_pm_opp *opp;
-> > +	unsigned long opp_rate;
-> > +	int voltage, old_voltage, inter_voltage, target_voltage, ret;
-> > +
-> > +	if (!drv)
-> > +		return -EINVAL;
-> > +
-> > +	if (drv->old_freq == *freq)
-> > +		return 0;
-> > +
-> > +	inter_voltage = drv->inter_voltage;
-> > +
-> > +	opp_rate = *freq;
-> > +	opp = devfreq_recommended_opp(dev, &opp_rate, 1);
-> > +	if (IS_ERR(opp)) {
-> > +		pr_err("cci: failed to find opp for freq: %ld\n",
-> > opp_rate);
-> 
-> dev_err() everywhere.
+We can use the commands are similar to the below to validate TPDMs.
+Enable coresight sink first.
 
-Sure, I will update it in the next version.
+echo 1 > /sys/bus/coresight/devices/tmc_etf0/enable_sink
+echo 1 > /sys/bus/coresight/devices/tpdm0/enable_source
+echo 1 > /sys/bus/coresight/devices/tpdm0/integration_test
+echo 2 > /sys/bus/coresight/devices/tpdm0/integration_test
+The test data will be collected in the coresight sink which is enabled.
+If rwp register of the sink is keeping updating when do
+integration_test (by cat tmc_etf0/mgmt/rwp), it means there is data
+generated from TPDM to sink.
 
-> 
-> > +		return PTR_ERR(opp);
-> > +	}
-> > +	voltage = dev_pm_opp_get_voltage(opp);
-> > +	dev_pm_opp_put(opp);
-> > +
-> > +	old_voltage = drv->old_voltage;
-> > +	if (old_voltage == 0)
-> > +		old_voltage = regulator_get_voltage(drv->proc_reg);
-> > +	if (old_voltage < 0) {
-> > +		pr_err("cci: invalid vproc value: %d\n", old_voltage);
-> > +		return old_voltage;
-> > +	}
-> > +
-> > +	mutex_lock(&drv->lock);
-> > +
-> > +	/* scale up: set voltage first then freq. */
-> > +	target_voltage = max(inter_voltage, voltage);
-> > +	if (old_voltage <= target_voltage) {
-> > +		ret = mtk_ccifreq_set_voltage(drv, target_voltage);
-> > +		if (ret) {
-> > +			pr_err("cci: failed to scale up voltage\n");
-> > +			mtk_ccifreq_set_voltage(drv, old_voltage);
-> > +			mutex_unlock(&drv->lock);
-> > +			return ret;
-> > +		}
-> > +	}
-> > +
-> > +	/* switch the cci clock to intermediate clock source. */
-> > +	ret = clk_set_parent(drv->cci_clk, drv->inter_clk);
-> > +	if (ret) {
-> > +		pr_err("cci: failed to re-parent cci clock\n");
-> > +		mtk_ccifreq_set_voltage(drv, old_voltage);
-> > +		WARN_ON(1);
-> 
-> Debug code... please clean up your driver.
+There must be a tpda between tpdm and the sink. When there are some
+other trace event hw components in the same HW block with tpdm, tpdm
+and these hw components will connect to the coresight funnel. When
+there is only tpdm trace hw in the HW block, tpdm will connect to
+tpda directly.
+  
+    +---------------+                +-------------+
+    |  tpdm@6c08000 |                |tpdm@684C000 |
+    +-------|-------+                +------|------+
+            |                               |
+    +-------|-------+                       |
+    | funnel@6c0b000|                       |
+    +-------|-------+                       |
+            |                               |
+    +-------|-------+                       |
+    |funnel@6c2d000 |                       |
+    +-------|-------+                       |
+            |                               |
+            |    +---------------+          |
+            +----- tpda@6004000  -----------+
+                 +-------|-------+
+                         |
+                 +-------|-------+
+                 |funnel@6005000 |
+                 +---------------+
 
-Sure, I will update it in the next version.
+This patch series depends on patch series
+"coresight: Add new API to allocate trace source ID values".
+https://patchwork.kernel.org/project/linux-arm-kernel/cover/20220308205000.27646-1-mike.leach@linaro.org/ 
 
-> 
-> > +		mutex_unlock(&drv->lock);
-> > +		return ret;
-> > +	}
-> > +
-> > +	/* set the original clock to target rate. */
-> > +	ret = clk_set_rate(cci_pll, *freq);
-> > +	if (ret) {
-> > +		pr_err("cci: failed to set cci pll rate: %d\n", ret);
-> > +		clk_set_parent(drv->cci_clk, cci_pll);
-> > +		mtk_ccifreq_set_voltage(drv, old_voltage);
-> > +		mutex_unlock(&drv->lock);
-> > +		return ret;
-> > +	}
-> > +
-> > +	/* switch the cci clock back to the original clock source. */
-> > +	ret = clk_set_parent(drv->cci_clk, cci_pll);
-> > +	if (ret) {
-> > +		pr_err("cci: failed to re-parent cci clock\n");
-> > +		mtk_ccifreq_set_voltage(drv, inter_voltage);
-> > +		WARN_ON(1);
-> > +		mutex_unlock(&drv->lock);
-> 
-> Use goto to error handling pattern.
+Changes from V3:
+1. Drop trace id for tpdm source as its trace atid is defined by the tpda.
+Allocate tpda's atid dynamically.  (Mike Leach)
 
-Sure, I will use goto statement for error handling instead.
+Mao Jinlong (10):
+  Use IDR to maintain all the enabled sources' paths.
+  Coresight: Add coresight TPDM source driver
+  dt-bindings: arm: Adds CoreSight TPDM hardware definitions
+  coresight-tpdm: Add DSB dataset support
+  coresight-tpdm: Add integration test support
+  docs: sysfs: coresight: Add sysfs ABI documentation for TPDM
+  Coresight: Add TPDA link driver
+  dt-bindings: arm: Adds CoreSight TPDA hardware definitions
+  ARM: dts: msm: Add coresight components for SM8250
+  ARM: dts: msm: Add tpdm mm/prng for sm8250
 
-> 
-> > +		return ret;
-> > +	}
-> > +
-> > +	/*
-> > +	 * If the new voltage is lower than the intermediate voltage or
-> > the
-> > +	 * original voltage, scale down to the new voltage.
-> > +	 */
-> > +	if (voltage < inter_voltage || voltage < old_voltage) {
-> > +		ret = mtk_ccifreq_set_voltage(drv, voltage);
-> > +		if (ret) {
-> > +			pr_err("cci: failed to scale down voltage\n");
-> > +			WARN_ON(1);
-> > +			mutex_unlock(&drv->lock);
-> > +			return ret;
-> > +		}
-> > +	}
-> > +
-> > +	drv->old_freq = *freq;
-> > +	mutex_unlock(&drv->lock);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int mtk_ccifreq_opp_notifier(struct notifier_block *nb,
-> > +				    unsigned long event, void *data)
-> > +{
-> > +	struct dev_pm_opp *opp = data;
-> > +	struct mtk_ccifreq_drv *drv;
-> > +	unsigned long freq, volt;
-> > +
-> > +	drv = container_of(nb, struct mtk_ccifreq_drv, opp_nb);
-> > +
-> > +	if (event == OPP_EVENT_ADJUST_VOLTAGE) {
-> > +		freq = dev_pm_opp_get_freq(opp);
-> > +
-> > +		mutex_lock(&drv->lock);
-> > +		/* current opp item is changed */
-> > +		if (freq == drv->old_freq) {
-> > +			volt = dev_pm_opp_get_voltage(opp);
-> > +			mtk_ccifreq_set_voltage(drv, volt);
-> > +		}
-> > +		mutex_unlock(&drv->lock);
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static struct devfreq_dev_profile mtk_ccifreq_profile = {
-> > +	.target = mtk_ccifreq_target,
-> > +};
-> > +
-> > +static int mtk_ccifreq_probe(struct platform_device *pdev)
-> > +{
-> > +	struct device *cci_dev = &pdev->dev;
-> > +	struct mtk_ccifreq_drv *drv;
-> > +	struct devfreq_passive_data *passive_data;
-> > +	struct dev_pm_opp *opp;
-> > +	unsigned long rate, opp_volt;
-> > +	int ret;
-> > +
-> > +	drv = devm_kzalloc(cci_dev, sizeof(*drv), GFP_KERNEL);
-> > +	if (!drv)
-> > +		return -ENOMEM;
-> > +
-> > +	drv->cci_dev = cci_dev;
-> > +	drv->soc_data = (const struct mtk_ccifreq_platform_data *)
-> > +				of_device_get_match_data(&pdev->dev);
-> > +	mutex_init(&drv->lock);
-> > +	platform_set_drvdata(pdev, drv);
-> > +
-> > +	drv->cci_clk = devm_clk_get(cci_dev, "cci");
-> > +	if (IS_ERR(drv->cci_clk)) {
-> > +		ret = PTR_ERR(drv->cci_clk);
-> > +		return dev_err_probe(cci_dev, ret,
-> > +				     "cci: failed to get cci clk:
-> > %d\n",
-> > +				     ret);
-> > +	}
-> > +
-> > +	drv->inter_clk = devm_clk_get(cci_dev, "intermediate");
-> > +	if (IS_ERR(drv->inter_clk)) {
-> > +		ret = PTR_ERR(drv->inter_clk);
-> > +		return dev_err_probe(cci_dev, ret,
-> > +				     "cci: failed to get intermediate
-> > clk: %d\n",
-> > +				     ret);
-> > +	}
-> > +
-> > +	if (drv->soc_data->need_voltage_tracking) {
-> > +		drv->sram_reg = regulator_get_optional(cci_dev,
-> > "sram");
-> > +		if (IS_ERR_OR_NULL(drv->sram_reg)) {
-> 
-> NULL pointer cannot be returned.
+ .../testing/sysfs-bus-coresight-devices-tpdm  |   5 +
+ .../bindings/arm/coresight-tpda.yaml          | 119 +++
+ .../bindings/arm/coresight-tpdm.yaml          |  99 +++
+ .../devicetree/bindings/arm/coresight.txt     |   7 +
+ MAINTAINERS                                   |   1 +
+ .../arm64/boot/dts/qcom/sm8250-coresight.dtsi | 708 ++++++++++++++++++
+ arch/arm64/boot/dts/qcom/sm8250.dtsi          |   2 +
+ drivers/hwtracing/coresight/Kconfig           |  33 +
+ drivers/hwtracing/coresight/Makefile          |   2 +
+ drivers/hwtracing/coresight/coresight-core.c  |  79 +-
+ drivers/hwtracing/coresight/coresight-tpda.c  | 192 +++++
+ drivers/hwtracing/coresight/coresight-tpda.h  |  32 +
+ drivers/hwtracing/coresight/coresight-tpdm.c  | 260 +++++++
+ drivers/hwtracing/coresight/coresight-tpdm.h  |  56 ++
+ include/linux/coresight.h                     |   1 +
+ 15 files changed, 1546 insertions(+), 50 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-coresight-devices-tpdm
+ create mode 100644 Documentation/devicetree/bindings/arm/coresight-tpda.yaml
+ create mode 100644 Documentation/devicetree/bindings/arm/coresight-tpdm.yaml
+ create mode 100644 arch/arm64/boot/dts/qcom/sm8250-coresight.dtsi
+ create mode 100644 drivers/hwtracing/coresight/coresight-tpda.c
+ create mode 100644 drivers/hwtracing/coresight/coresight-tpda.h
+ create mode 100644 drivers/hwtracing/coresight/coresight-tpdm.c
+ create mode 100644 drivers/hwtracing/coresight/coresight-tpdm.h
 
-Sure, I will replace it with IS_ERR() instead.
-
-> 
-> Best regards,
-> Krzysztof
+-- 
+2.17.1
 
