@@ -2,99 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4C9DC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 22:28:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65246C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 22:29:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355364AbiCXW3r (ORCPT
+        id S1355378AbiCXWag (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 18:29:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51468 "EHLO
+        Thu, 24 Mar 2022 18:30:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355361AbiCXW3m (ORCPT
+        with ESMTP id S244871AbiCXWae (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 18:29:42 -0400
-X-Greylist: delayed 16790 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Mar 2022 15:28:08 PDT
-Received: from 10.mo584.mail-out.ovh.net (10.mo584.mail-out.ovh.net [188.165.33.109])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56CC21115B
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 15:28:07 -0700 (PDT)
-Received: from player694.ha.ovh.net (unknown [10.108.4.192])
-        by mo584.mail-out.ovh.net (Postfix) with ESMTP id DEE8F24519
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 22:11:25 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player694.ha.ovh.net (Postfix) with ESMTPSA id 8C18728AC22F6;
-        Thu, 24 Mar 2022 22:11:21 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-106R006efdb6821-47ff-4e32-8684-c4c0342888ed,
-                    78FFD8E4238D9337B8F0C8EEA79873C5FE5514E5) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-Date:   Thu, 24 Mar 2022 23:11:13 +0100
-From:   Stephen Kitt <steve@sk2.org>
-To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Wolfram Sang <wsa@kernel.org>
-Subject: Re: [PATCH] auxdisplay: lcd2s: use simple i2c probe function
-Message-ID: <20220324231113.057f4585@heffalump.sk2.org>
-In-Reply-To: <CANiq72mQXV0sfh6-LKYjc9fMDuJR=t4dMdBD-6y=-Bq3YHDysw@mail.gmail.com>
-References: <20220324170929.542348-1-steve@sk2.org>
-        <CANiq72mQXV0sfh6-LKYjc9fMDuJR=t4dMdBD-6y=-Bq3YHDysw@mail.gmail.com>
+        Thu, 24 Mar 2022 18:30:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD5F1427E1
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 15:29:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2F613B8250D
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 22:29:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5F13C340EC;
+        Thu, 24 Mar 2022 22:28:57 +0000 (UTC)
+Date:   Thu, 24 Mar 2022 18:28:56 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, Joe Perches <joe@perches.com>
+Subject: Re: [PATCH] MAINTAINERS: Add arch/powerpc/kernel/trace to TRACING
+Message-ID: <20220324182856.6f6a01d7@gandalf.local.home>
+In-Reply-To: <8e2f707e2efa1fc1d1ffd2f9f6758e8c4a82c83e.1648132613.git.christophe.leroy@csgroup.eu>
+References: <8e2f707e2efa1fc1d1ffd2f9f6758e8c4a82c83e.1648132613.git.christophe.leroy@csgroup.eu>
 X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/02QoSNGwK.=aPy_zA/gagv2";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Ovh-Tracer-Id: 17045280166953649798
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudegledgudehhecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpeffhffvuffkjghfofggtgesghdtreerredtvdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepfeehjeevtdefgfdtjeehjeefvedvgeeljeehgeetveffvdehueduhffgtedtteffnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrheileegrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/02QoSNGwK.=aPy_zA/gagv2
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Thu, 24 Mar 2022 15:38:28 +0100
+Christophe Leroy <christophe.leroy@csgroup.eu> wrote:
 
-Hi Miguel,
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index e127c2fb08a7..3b5943f34568 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -19592,6 +19592,7 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git
+>  F:	Documentation/trace/ftrace.rst
+>  F:	arch/*/*/*/ftrace.h
+>  F:	arch/*/kernel/ftrace.c
+> +F:	arch/powerpc/kernel/trace/
 
-On Thu, 24 Mar 2022 22:18:39 +0100, Miguel Ojeda
-<miguel.ojeda.sandonis@gmail.com> wrote:
-> On Thu, Mar 24, 2022 at 6:10 PM Stephen Kitt <steve@sk2.org> wrote:
-> > The i2c probe functions here don't use the id information provided in
-> > their second argument, so the single-parameter i2c probe function
-> > ("probe_new") can be used instead.
-> >
-> > This avoids scanning the identifier tables during probes. =20
->=20
-> Thanks for the patch -- Andy submitted an equivalent one which I
-> queued for -next some days ago.
+Perhaps replace the above two with:
+   F:   arch/*/*/ftrace*
+   F:   arch/*/*/*/ftrace*
 
-Ah yes,
-https://lkml.kernel.org/lkml/20220308151119.48412-3-andriy.shevchenko@linux=
-.intel.com/
+As we also have things like ftrace_32.S, ftrace_64.S
 
-Thanks,
+Maybe even add:
 
-Stephen
+   F: arch/*/*/*_ftrace.*
+   F: arch/*/*/*/*_ftrace.*
 
---Sig_/02QoSNGwK.=aPy_zA/gagv2
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+to catch the "entry_ftrace.S" and friends (needing the leading "_" to not
+get confused by any "bpftrace" files).
 
------BEGIN PGP SIGNATURE-----
+?
 
-iQIzBAEBCgAdFiEEnPVX/hPLkMoq7x0ggNMC9Yhtg5wFAmI87IEACgkQgNMC9Yht
-g5wCIQ//TN3LdmVV2eqVAinqmtssnvhJi8xjzeXgsimoC9auT2zB0vpN2Wl4bsMR
-tKLld3B34/s4hYwHjmLfwE8+Qy2n7aNga8oI4leBLSvW2KG+Gh3LOWmYiZc5dKaK
-noLb+f4HUUD7nhUsAK9ObfqhgQxWsqViImdjfhkuduhFusessplwUkfF6VKtbmky
-4JG+SlmdJfiwRKgm7OEseEgUR+L1I27YoOp+/MazkkdDYfDVccx6Zk/Qrz3eefj/
-9Aq2eeV4wilq5Jn57+/A62t8VJthvW2MA3EFsVM+A/7It1L+SWyQFbbV3qk7iAG4
-81LiUzS3V+I984CI7z6hR4YxkEBCD8e+SmJfZxBtlQdbyr7+Ojab7j3OaLpQdPB9
-UbRxqT5c1/gcVx2QGKLUm8pdD74nWWQ+Go5+lqHqDl04G29pZwDYmILymCspJfIZ
-m8SkbFPBxfX7lCD7Kqjp/88m/lKqmAiOmW+sX3QfIsTrAjnGagtD0Tfi++uk/7wj
-h4GHeOLNOEQIIUJdx28x9xj76r+VaAjpuLAnNmezIF/wVTXdcsJ834KGzLgQe67l
-b4104dQ4iKTiaI8F2leUPZ+97DB6u1heNYH9jb29QYGiJKJwHgk1zZsHOkqN/YO1
-aht53Zmkif2cQi2170ZtIxrKZFsgfl7oc6olPDMe6LGqpvptWS0=
-=wtHT
------END PGP SIGNATURE-----
+But in reality, I'm only a reviewer for ftrace in the archs. It really is
+maintained by the arch maintainers. But it is still good that I get Cc'd on
+any ftrace arch related changes.
 
---Sig_/02QoSNGwK.=aPy_zA/gagv2--
+-- Steve
+
+
+>  F:	fs/tracefs/
+>  F:	include/*/ftrace.h
+>  F:	include/linux/trace*.h
+
