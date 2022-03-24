@@ -2,80 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2847C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 18:27:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0BC9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 18:27:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352639AbiCXS2i (ORCPT
+        id S1352637AbiCXS3A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 14:28:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60366 "EHLO
+        Thu, 24 Mar 2022 14:29:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352621AbiCXS2b (ORCPT
+        with ESMTP id S1352481AbiCXS25 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 14:28:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A6D7B7C60;
-        Thu, 24 Mar 2022 11:26:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA0DE61AB9;
-        Thu, 24 Mar 2022 18:26:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFC3DC340EC;
-        Thu, 24 Mar 2022 18:26:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648146418;
-        bh=up9oP7zqNV212tSUvD9C7zUAWeokV+evSB4LintGnYc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WUbyaM0NZ7qowR+z1FSGEy7loNgmXo8C/Ky1gtC/r+F6YAfDwTNOEiMDKjEePTD7a
-         9ALVU9dbI/cuMCiuYHBwJTcnPCU7+5cxw7gp1gqfgbb9PJylEd6cnIF+o3o+K5NxQ/
-         nmLxj6gWLdeuqHLn1kLp/8vRahs9yrwb3ZzkV5nRzZodyuN1eRRa6Zog4MFaUT0BH1
-         DHguxVE4ByIItAqRCNKdjTz2kOvexI44CDpGtp8yEcda4D/OD65yCYIcR0zwiFdK3J
-         B41+JMa3fEwtYP4De1AyvwnzwdIsUYatSaXSOosL2U8xA2MwKMAePNlE5ndVxK0WxG
-         iPvLGV/4NYYfw==
-Date:   Thu, 24 Mar 2022 18:26:56 +0000
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>,
-        Jann Horn <jannh@google.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] random: allow writes to /dev/urandom to influence fast
- init
-Message-ID: <Yjy38Nl2wYf0L1eY@gmail.com>
-References: <20220322191436.110963-1-Jason@zx2c4.com>
- <1648009787.fah6dos6ya.none@localhost>
- <CAHmME9rsvxczJrhPwRX6nyrh9NB2AuJqkEKrTLx-G-T1J6_czQ@mail.gmail.com>
- <CAHmME9ovJpdcuuZhNKrOTUc8XvKDDdC+axhAmOD9iESnRR7JqA@mail.gmail.com>
+        Thu, 24 Mar 2022 14:28:57 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44027B7C59
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 11:27:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648146445; x=1679682445;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=LQVT1/R9sJbfhTQ3tggVfCdT5T+z66mer2RyxWHndUk=;
+  b=QSo2psxmq3srZBNSQ/FPmKAOv4l95Jopmw+aEjSavNHyj8ekuFREBPGP
+   liLO5nJVCTcJJynh574OBPmLgK8JVp9M3/7B0Qepqp9HkqTOP2Uf5Lrmy
+   hGkkMG/RsvSYvKWt7v/hmpwIbXowm/LkV52o92I3FXUhJ+yOsdUZFu9Fq
+   P6OJqsIKO5M8Ck3jTxdpxMzF9etPmgDsnaWlbzg8W4yvTXc3Z8ZMMgIki
+   JvNrVvcFJ8/HNzktShdDC/UdDE/3NWCRUJcXxTsZZP1XHnybqba2UsFM3
+   DvkHIEYKfivO0b0c6Pf9de6CMlpSH6QfHxpDjpim+46r+/Jd8PeLpmQWK
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10296"; a="344894145"
+X-IronPort-AV: E=Sophos;i="5.90,208,1643702400"; 
+   d="scan'208";a="344894145"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 11:27:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,208,1643702400"; 
+   d="scan'208";a="717930093"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 24 Mar 2022 11:27:23 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nXSB8-000LJG-Mz; Thu, 24 Mar 2022 18:27:22 +0000
+Date:   Fri, 25 Mar 2022 02:27:11 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hannes Reinecke <hare@suse.de>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [hare-scsi-devel:virtual_subsys 165/170]
+ drivers/nvme/host/core.c:3759:44: error: too many arguments to function
+ call, expected 2, have 3
+Message-ID: <202203250248.dKqDBgJ5-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHmME9ovJpdcuuZhNKrOTUc8XvKDDdC+axhAmOD9iESnRR7JqA@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 09:18:16PM -0600, Jason A. Donenfeld wrote:
-> In light of that conclusion, I'm going to work with every userspace
-> downstream I can find to help them fix their file-based seeding, if it
-> has bugs. I've started talking with the buildroot folks, and then I'll
-> speak with the OpenRC people (being a Gentoo dev, that should be easy
-> going). Systemd does the right thing already.
-> 
-> I wrote a little utility for potential inclusion in
-> busybox/util-linux/whatever when it matures beyond its current age of
-> being half hour old:
-> - https://git.zx2c4.com/seedrng/about/
-> - https://git.zx2c4.com/seedrng/tree/seedrng.c
-> So I'll see what the buildroot people think of this and take it from there.
-> 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git virtual_subsys
+head:   275f3eb0b76e4cbc9fddaf4187988481747bb456
+commit: e55421ca442930c9cc7606d8aa695ca85d485039 [165/170] nvme: use subsystem as argument in nvme_alloc_ns_head()
+config: riscv-randconfig-r042-20220324 (https://download.01.org/0day-ci/archive/20220325/202203250248.dKqDBgJ5-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git/commit/?id=e55421ca442930c9cc7606d8aa695ca85d485039
+        git remote add hare-scsi-devel https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git
+        git fetch --no-tags hare-scsi-devel virtual_subsys
+        git checkout e55421ca442930c9cc7606d8aa695ca85d485039
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/nvme/host/
 
-The example in random(4) needs to be fixed too, right?
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-https://man7.org/linux/man-pages/man4/random.4.html
+All errors (new ones prefixed by >>):
 
-- Eric
+>> drivers/nvme/host/core.c:3759:44: error: too many arguments to function call, expected 2, have 3
+           ret = nvme_mpath_alloc_disk(subsys, ctrl, head);
+                 ~~~~~~~~~~~~~~~~~~~~~               ^~~~
+   drivers/nvme/host/nvme.h:819:19: note: 'nvme_mpath_alloc_disk' declared here
+   static inline int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,
+                     ^
+   1 error generated.
+
+
+vim +3759 drivers/nvme/host/core.c
+
+  3735	
+  3736		head = kzalloc(size, GFP_KERNEL);
+  3737		if (!head)
+  3738			goto out;
+  3739		ret = ida_alloc_min(&subsys->ns_ida, 1, GFP_KERNEL);
+  3740		if (ret < 0)
+  3741			goto out_free_head;
+  3742		head->instance = ret;
+  3743		INIT_LIST_HEAD(&head->list);
+  3744		ret = init_srcu_struct(&head->srcu);
+  3745		if (ret)
+  3746			goto out_ida_remove;
+  3747		head->subsys = subsys;
+  3748		head->ns_id = nsid;
+  3749		head->ids = *ids;
+  3750		kref_init(&head->ref);
+  3751	
+  3752		if (head->ids.csi) {
+  3753			ret = nvme_get_effects_log(ctrl, head->ids.csi, &head->effects);
+  3754			if (ret)
+  3755				goto out_cleanup_srcu;
+  3756		} else
+  3757			head->effects = ctrl->effects;
+  3758	
+> 3759		ret = nvme_mpath_alloc_disk(subsys, ctrl, head);
+  3760		if (ret)
+  3761			goto out_cleanup_srcu;
+  3762	
+  3763		list_add_tail(&head->entry, &subsys->nsheads);
+  3764	
+  3765		kref_get(&subsys->ref);
+  3766	
+  3767		return head;
+  3768	out_cleanup_srcu:
+  3769		cleanup_srcu_struct(&head->srcu);
+  3770	out_ida_remove:
+  3771		ida_free(&subsys->ns_ida, head->instance);
+  3772	out_free_head:
+  3773		kfree(head);
+  3774	out:
+  3775		if (ret > 0)
+  3776			ret = blk_status_to_errno(nvme_error_status(ret));
+  3777		return ERR_PTR(ret);
+  3778	}
+  3779	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
