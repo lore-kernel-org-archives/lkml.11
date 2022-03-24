@@ -2,250 +2,397 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE76FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 13:52:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05CA0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 13:54:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350653AbiCXNyI (ORCPT
+        id S1350675AbiCXNzx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 09:54:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50302 "EHLO
+        Thu, 24 Mar 2022 09:55:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350662AbiCXNyC (ORCPT
+        with ESMTP id S1350656AbiCXNzu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 09:54:02 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C47A0BD0
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 06:52:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648129950; x=1679665950;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=E/lsasjdV6rOhnGRnIeuOjq8RmX3nRQDlQ+MHVs/SOo=;
-  b=fsxQOsFCVjkK6C2JrroV01+4XLeclOQ6egaMMrrlT1wSFXP4k/7+mSP0
-   twhu+d2mzqgyCCcVAJYjkY/pwadzHILy0UYjjAaY3WQdao88xe2FpaYRT
-   o6aUv23jpXHIBxfUAxTZWzLJpAnUd5Poen30Xl60Nzmu2LINQ72OcAwDf
-   /ZrcII1Pqzfd6ldmCzaka++UcNg2lnuZqjYuo8TbD3xfz8zlnANw+8nnk
-   DXriKOROUto19y3zMg8xItlQAQN/cEkmh/VD76f/R6/hBTJ3OzZZbZ9uR
-   UqHjDCLdvV8QB24kdIkivf3vd4ILsakNRo8XP/Gt5LWPZzZN4T5PpBC4L
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="321579179"
-X-IronPort-AV: E=Sophos;i="5.90,207,1643702400"; 
-   d="scan'208";a="321579179"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 06:52:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,207,1643702400"; 
-   d="scan'208";a="717827088"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 24 Mar 2022 06:52:28 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nXNt5-000L7g-FP; Thu, 24 Mar 2022 13:52:27 +0000
-Date:   Thu, 24 Mar 2022 21:52:09 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: net/mac80211/rc80211_minstrel_ht.c:1495:6: warning: variable
- 'n_supported' set but not used
-Message-ID: <202203242101.6uCR7FWR-lkp@intel.com>
+        Thu, 24 Mar 2022 09:55:50 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B80A6387B9
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 06:54:15 -0700 (PDT)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22OCN3Nb024608;
+        Thu, 24 Mar 2022 13:53:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=4h42SjLSU2o65PaI/qZFYfaxuSxPFZ3wi8ycuzD1sgg=;
+ b=TqatJaKS64yui4q6U1W5RrezaE2lJFJb5sg+dCE3Vd03ONWt3f5Ofg4N5d595bURA+1W
+ bq73s6j3ChhxX81SPxFwiInOIWVK0NAbgRNqra7ltcDdYvEGi3Ftx8VFJIMUKXlBkEGk
+ RXkf00Y94534ItCnqjMWqjAcC6BBobjCq1A4hLknTy+fGLDooBvTxM2IE4UA1c5YDBra
+ tKctWzOeYPYXKdwKHfLEYaF9afaP1aVlIDnc+wSV/1KFHeXHoMBjwhHmX6z+pZ8Cco0X
+ rN9zwUeNhCQ5bmnkgs5a8eRO8r/JJkh/KzEkfawrAyOtZatVc0b/sNxJZyN/FmM4Jxjx Mg== 
+Received: from aserp3030.oracle.com ([141.146.126.71])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3ew5s0vkht-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 24 Mar 2022 13:53:45 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 22ODklAT059532;
+        Thu, 24 Mar 2022 13:53:44 GMT
+Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2105.outbound.protection.outlook.com [104.47.55.105])
+        by aserp3030.oracle.com with ESMTP id 3ew57907x2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 24 Mar 2022 13:53:43 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nSW5+Wy+pIAzfrbocfwYqV3owSn5btu+WYY8Gd2dOJ2OLRu8QcoZCI9pqkiDAboUPpIKAxGmRm+InD6dqH7tOLEQlIbstibDkQBUMQT+zo6EN5Iu6isBJ2f7eZul2E22ZNBZKRgFS3nsEnV2kjU11Go2RUIZVrBcXyIeFLENaepT3NNzzxK4R/hZjXIjZfI5nweYB3JGhHyDF3Ia8UbWI2fiSHUenXqMwkb5rg4wqj0wHbMbS1kZzYrGwlSNnBAHxT0aH48cXeCBfUnf5BmcAQczvM1gaTlThMlGzlU3I5Yo3juMDcYfFbU6+Wfx4e9RrRA22Co6GXrxKQE5hcpINw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4h42SjLSU2o65PaI/qZFYfaxuSxPFZ3wi8ycuzD1sgg=;
+ b=KatstUfRzP+xqrwp+NTjkstfnc0GsO1epMsU6W5CXlditdi71r79F/w+twJpxaicGCwSoJ4pdqRDN/fdxXzKesvWfvTMJFgrIYNBeK+73seTTTmciuegkC128pRPyoXH3q+jFhBJeBaoiLQ9qxCRBN4HEZyIpkU0uPVrKSj1SEAiKoGFvFSaQrxJYV1doD7bZAsNoLY79W7LTfwJBav2JQgXEtFVIG3SQkjELNeLQWpiEt39Sb7cynNfTm8dBUyirHxJacKpaBdmaFf3aVcUuz4IEPFUMSC+u5/tLs95AJDcia2RUmsfpC81PCCCpAbc9zYF78ezSuBhxWsxeDp3Eg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4h42SjLSU2o65PaI/qZFYfaxuSxPFZ3wi8ycuzD1sgg=;
+ b=aOgzbS0/HZol/13/fCEhH8gmtXKqKmVLob3dpISK/VkUPxGEaGwjD1mP4IsuPwCccKBn8SzfyEWKyhMrh8Ha24Si54+CQLTKIzCVG30nQ+RyYoFTiKq7zkL+Ia54FmVxu2m5M+IuGOzUzf4NBu+JDTtgtdW5Dr+9MjewXg9TlOA=
+Received: from CO1PR10MB4531.namprd10.prod.outlook.com (2603:10b6:303:6c::22)
+ by BLAPR10MB4914.namprd10.prod.outlook.com (2603:10b6:208:30d::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.17; Thu, 24 Mar
+ 2022 13:53:41 +0000
+Received: from CO1PR10MB4531.namprd10.prod.outlook.com
+ ([fe80::3188:fe86:1d6f:53ac]) by CO1PR10MB4531.namprd10.prod.outlook.com
+ ([fe80::3188:fe86:1d6f:53ac%9]) with mapi id 15.20.5102.019; Thu, 24 Mar 2022
+ 13:53:41 +0000
+Message-ID: <d12cd750-4f7e-46e8-8f31-66e29edbede9@oracle.com>
+Date:   Thu, 24 Mar 2022 08:53:34 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH v5 4/8] crash: generic crash hotplug support
+ infrastructure
+Content-Language: en-US
+To:     Baoquan He <bhe@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        kexec@lists.infradead.org, ebiederm@xmission.com,
+        dyoung@redhat.com, vgoyal@redhat.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        hpa@zytor.com, nramas@linux.microsoft.com, thomas.lendacky@amd.com,
+        robh@kernel.org, efault@gmx.de, rppt@kernel.org, david@redhat.com,
+        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com
+References: <20220303162725.49640-1-eric.devolder@oracle.com>
+ <20220303162725.49640-5-eric.devolder@oracle.com>
+ <20220324133856.GC354864@MiWiFi-R3L-srv>
+ <20220324134911.GA354791@MiWiFi-R3L-srv>
+From:   Eric DeVolder <eric.devolder@oracle.com>
+In-Reply-To: <20220324134911.GA354791@MiWiFi-R3L-srv>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SA9PR13CA0089.namprd13.prod.outlook.com
+ (2603:10b6:806:23::34) To CO1PR10MB4531.namprd10.prod.outlook.com
+ (2603:10b6:303:6c::22)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 09268497-5d14-4663-628b-08da0d9db439
+X-MS-TrafficTypeDiagnostic: BLAPR10MB4914:EE_
+X-Microsoft-Antispam-PRVS: <BLAPR10MB491425988705D87FF997895797199@BLAPR10MB4914.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: IFoVRvkmbuM34q4rgqASET87cjnp306W/aR/f//CrgFEVrU63fxcdoOFjXpciEddOmTO9QE0SLSsrpi0ej7D6kVJ0haFRhBwzxvfkzEf0vyjWRgGjrTvjSMGtEIJscn12+ER/pbfhkUC85qSyFkU0QSNiJ0+0MYMADUzfugBNJWsZyPoIRzYvKCQWP6d2vZSiTBHKyJigKZ6vs71qFg4oqOI7oXJ+ph/4heAQIaBth6+dL3XZkiP/RorGp0u/OXPX9kLq6WURsW8wpP4t+SgQEwJivqphz0O1jt4QQjjLgVs7xWo9seK8gKwnZPCPeS4/YXaMfLTHGB0xaWGADF8RlIEHhHwHHliTSOgigXtaXeIaGePpwrwe6RjTR2kUahn7m4I8KMzqP16yfMuW3ePpzqiR16FuJxRBe3ljnp0+LQ5vB+kk3M22vEuJjB9X3WbhXYda/cTcQND7nyVNCv6b5uQNz5r3VfYzqSDLa6+YQHa5On7Z+CGvUBqr8qNLJDlLVfvMP+iKiADJOi+ParziyhKJeUqbupcwk/H3UPhGW9U08iaMT2BKqQfeQKDb6CwU1DJUV6MhqDDr0YGSQFjppUMgZ02LoeGZuBgceHOREn1oeN2Efvx+XjeGdT+IOP+mX3F1NB3on2kLW9evxo+9FSCitPvpF+RTlE+2Kk7es+u7USHtFcrvZT6CxPLKpTFe4DOL81dU+26NbAkhXoEphYz42EXwSKUOARFyBCbUtAsM+hMBBiz7xDCeKWZ1IWOwrOnsaIOD0m/IscdL9ryiQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR10MB4531.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6916009)(2906002)(316002)(6486002)(508600001)(31696002)(86362001)(83380400001)(66476007)(38100700002)(6512007)(6666004)(53546011)(186003)(6506007)(107886003)(2616005)(8936002)(66946007)(31686004)(36756003)(8676002)(4326008)(7416002)(66556008)(5660300002)(41533002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bUNKalFQRFBpKzltNkdpTjkxZ0dWb2lMS0RxRXdWUXFsOFd5dzRENko4Q1hE?=
+ =?utf-8?B?Wlp6UlFCMnE5dzdqVDdqdUNVVjZ2cXZSTGlFdy9VRTlHNi81bWRLK2Q4Vlg3?=
+ =?utf-8?B?RFZKc2EzV2xLVEpjVm5DVTViLzl6MXBja0IrcDZVbUR3VUw4K1A1VkZPTDF3?=
+ =?utf-8?B?NWllQ2E2WHQ5VUFJWmp6d3U2dnlYakNLYzJYLzgyckFjREhkRnZNaWdBcm5Y?=
+ =?utf-8?B?MWQ3MmhmNHkxdFhSem1PVUk2Mi9IVU1YcjBtM2sveWlGaFcwQUlEalR3RnYw?=
+ =?utf-8?B?QzNpM2RrZDFRcE1TakcweUlPcXBIUTFodFJhaExYNllYQlk3aGlGMzN3SEtO?=
+ =?utf-8?B?NHN3QzFGeUZnR2VXeVBXZCtOeXBPM3VNZHJsU0NsNkZ1WlZOZUdZSjhjR3N1?=
+ =?utf-8?B?Qk1lR0JaSFBncVFFVjUrNWhiUzc4YjJjUHp5a0wrck14NHllNjN6WjNFT2th?=
+ =?utf-8?B?WVhjVzZLWFZKVzB0QlM5Nk4wc3RXckFnQ29xdG1MSkpNMjhubTQzUnFxdTRw?=
+ =?utf-8?B?RHVKbXk3VWJzb3FXbExsR2ZzRHc1c3B5QkNFVjJuOUNYYUNoWDlpd3BYWFJO?=
+ =?utf-8?B?UWpuYXN3bkZKMTNXTWRBMGN5ZEJvZUFOVzhOSXZWaGZicmRTSlAyRjhnMjBB?=
+ =?utf-8?B?cFc3ek1KYkMwRFl6SjJtQWpOZFFJVzVSTTAvR042QWg4alhqVWtBNFFBR2lW?=
+ =?utf-8?B?c01EVlF4bldvUVdlakFSN3orYlUxb05uYU1pVUZiVWZoMzBPc3JMTGdaY2tE?=
+ =?utf-8?B?WFFld05QdUJmdFBjQktIT0JiOE1QL05RS3EvQm1nMkVBc2t1aVRtN21DR29H?=
+ =?utf-8?B?aEhWYkNWV2NWR0ZFUFZjQ2QwN2IxRkdRME5RNVdnY3c2ay80bUUrdVdoUmFk?=
+ =?utf-8?B?V0Y1MjJRcnZWcFJucnVYY0FySHR0OHZXMWlUYUp2MVZQYlRiWDRlU3lQUjZE?=
+ =?utf-8?B?TlVWS1UrbjEyVkw3b2dnTTRHa3lmbG9hMVpCWDE5anFOSmZhRVdUdVRKRVlM?=
+ =?utf-8?B?ZzU0Y0pENzdya2NDdy9hZG14bEZjV0dRVndsVjVVTjhjNkFqTDh5b2FDaEp6?=
+ =?utf-8?B?b3QzMTE2eGEvQ3g5MXhnN3VPVjVuVW1kVHRXT3JRRWxZVThEYmY0N3NnNm9k?=
+ =?utf-8?B?MERsbmVENUJrZXlSUWRaNm9TQzE5c04zVHFiNWx1cFh3M3Mxc0N2aXdINnp3?=
+ =?utf-8?B?VkV2YkFqV1hxeXBJOWlPMGR5bEVPc0ZKcHVrb0lKa2RtenliRVp2Q2sxWVZI?=
+ =?utf-8?B?eUhZQlg0ZDdXTW1GZjJEaFFhbi9BQWZOcEpRM0dCZm1VZ1NNOE52cUVWa3hj?=
+ =?utf-8?B?QjlycFVSYm4vMktRUDI4VmY4UXdzQmZPK3ZWZ2QwYUQwcGNqNDRRM3hsQ0ZG?=
+ =?utf-8?B?MTF2THk5dkRta2dUU2g2dzVFQjF0WjJnZlVBTFkvK2NDNVI3UnZMMGJzK2FH?=
+ =?utf-8?B?WlowNzF1N3RXTzNSQ3NZSGJvYWhvKzJVL0h3bGxlajlOaDBhdmplVlcyRlVO?=
+ =?utf-8?B?NmVhQ1RVcFFoMTBVWGNHZENKd3J6NHpBVFlUSGdrbkRhUUF3VFIvbFdQTjA1?=
+ =?utf-8?B?Nm1FU1lVMmpFbUJzeElvYnpueldkb1BGOFFwWWpxRnhGa2UzcmtuQnpKUjlV?=
+ =?utf-8?B?WUV6RVh6VlZaOHEzKyttQ0VIWHRXcXhsVzFvM0Z6R2VIWE5MZGVXS3RZTnpz?=
+ =?utf-8?B?a05SOGZSdnUwNGt1a2NyWHlZNURXTEU0RmE4RGM0dmpwWU5vUm5SSFQ5d1Nj?=
+ =?utf-8?B?a0FManQ2cjZBbzhpZkFrNlREbk5mRUxiRm42R3NCWE5LMkpic20reHJhYndq?=
+ =?utf-8?B?SnJEUGNGaVZvalZJc2FKSmI1b2s4REtWKzhZb0x0LzVhbnUrWm5PVnJBZlFO?=
+ =?utf-8?B?S254bzN2ZitsZjdWNHZINGVsWmE3STNxRTBIcU4vM29wQ2tjajZ4ellEdCtu?=
+ =?utf-8?B?Wko5VnhDQUtVdmhJUzBtLzNhU2prbUY0QUlia0VjOXhNWWU1WVhzQ2ludzRO?=
+ =?utf-8?B?dXJ5cUY2Z1ZTVERZSUdmUHcvSmQ4ZzA4NE9leUR2TmIyZE5yWXdaSXptemt2?=
+ =?utf-8?B?SERuMEtndGdGcWsxb3lTMnFWWjd2WnpDOFFFZmFpM3NsLzBGdFRyNUZBdm9h?=
+ =?utf-8?B?WnB6Z0lQaldyNXUraDcrNUhwVGo3dW1IcUowUzBrNlFKYkJqZ0lhMjRHeTAw?=
+ =?utf-8?B?M0ZLZW15cW5RTnY1amZFNjdpdERyL3JJVllxbmlmSTRlektiSlJJZFphNDVX?=
+ =?utf-8?B?ZkVHS0JGWmZOSDZzUlg4Ulc5QjRpMGFGOUE1SUNyb29oQ0N1Z2FkSTFJVWhQ?=
+ =?utf-8?B?NG0wN21qc05QdTJzMEVkQmlZYWJ3akhPQUladXJwMzY5ZnhveFFJQmRYRFRE?=
+ =?utf-8?Q?5/7Nv1qlOaBK1WMWDM0vVhf1kqCZoTfSswEcz?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 09268497-5d14-4663-628b-08da0d9db439
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR10MB4531.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2022 13:53:41.2622
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: keeNlI7Vsv41bBHc9aFlZy4VMVjh2F7F+EWj87F7snTH4pJzPRfalWo2BHnmMN5jgxgqr3hayeu4PD+4+sN3kNaNSHQCgyfSZET0cUUUJzs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BLAPR10MB4914
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10295 signatures=694973
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 suspectscore=0 spamscore=0
+ mlxlogscore=999 phishscore=0 bulkscore=0 malwarescore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2203240079
+X-Proofpoint-GUID: Vyzuz_CaAwCmvw3mPyn1lft3bthGqNE_
+X-Proofpoint-ORIG-GUID: Vyzuz_CaAwCmvw3mPyn1lft3bthGqNE_
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   ed4643521e6af8ab8ed1e467630a85884d2696cf
-commit: a7844a53846017c34804b0a22bbda855cb08dd7c mac80211: minstrel_ht: add support for OFDM rates on non-HT clients
-date:   1 year, 2 months ago
-config: riscv-buildonly-randconfig-r002-20220324 (https://download.01.org/0day-ci/archive/20220324/202203242101.6uCR7FWR-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a7844a53846017c34804b0a22bbda855cb08dd7c
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout a7844a53846017c34804b0a22bbda855cb08dd7c
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash net/mac80211/
+Baoquan,
+Thanks, I've offered a minor correction below.
+eric
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+On 3/24/22 08:49, Baoquan He wrote:
+> On 03/24/22 at 09:38pm, Baoquan He wrote:
+>> On 03/03/22 at 11:27am, Eric DeVolder wrote:
+>>> This patch introduces a generic crash hot plug/unplug infrastructure
+>>> for CPU and memory changes. Upon CPU and memory changes, a generic
+>>> crash_hotplug_handler() obtains the appropriate lock, does some
+>>> important house keeping and then dispatches the hot plug/unplug event
+>>> to the architecture specific arch_crash_hotplug_handler(), and when
+>>> that handler returns, the lock is released.
+>>>
+>>> This patch modifies crash_core.c to implement a subsys_initcall()
+>>> function that installs handlers for hot plug/unplug events. If CPU
+>>> hotplug is enabled, then cpuhp_setup_state() is invoked to register a
+>>> handler for CPU changes. Similarly, if memory hotplug is enabled, then
+>>> register_memory_notifier() is invoked to install a handler for memory
+>>> changes. These handlers in turn invoke the common generic handler
+>>> crash_hotplug_handler().
+>>>
+>>> On the CPU side, cpuhp_setup_state_nocalls() is invoked with parameter
+>>> CPUHP_AP_ONLINE_DYN. While this works, when a CPU is being unplugged,
+>>> the CPU still shows up in foreach_present_cpu() during the regeneration
+>>> of the new CPU list, thus the need to explicitly check and exclude the
+>>> soon-to-be offlined CPU in crash_prepare_elf64_headers().
+>>>
+>>> On the memory side, each un/plugged memory block passes through the
+>>> handler. For example, if a 1GiB DIMM is hotplugged, that generate 8
+>>> memory events, one for each 128MiB memblock.
+>>
+>> I rewrite the log as below with my understanding. Hope it's simpler to
+>> help people get what's going on here. Please consider to take if it's
+>> OK to you or adjust based on this. The code looks good to me.
+>>
+> Made some tuning:
+> 
+> crash: add generic infrastructure for crash hotplug support
+> 
+> Upon CPU and memory changes, a generic crash_hotplug_handler() is added
+> to dispatch the hot plug/unplug event to the architecture specific
+> arch_crash_hotplug_handler(). During the process, kexec_mutex need be
+> held.
+> 
+> To support cpu hotplug, one callback pair are registered to capture
+> KEXEC_CRASH_HP_ADD_CPU and KEXEC_CRASH_HP_REMOVE_CPU events via
+> cpuhp_setup_state_nocalls().
+s/KEXEC_CRASH_HP_ADD}REMOVE_CPU/CPUHP_AP_ONLINE_DYN/ as the KEXEC_CRASH are the
+names I've introduced with this patch?
 
-All warnings (new ones prefixed by >>):
-
->> net/mac80211/rc80211_minstrel_ht.c:1495:6: warning: variable 'n_supported' set but not used [-Wunused-but-set-variable]
-           int n_supported = 0;
-               ^
-   1 warning generated.
-
-
-vim +/n_supported +1495 net/mac80211/rc80211_minstrel_ht.c
-
-a7844a53846017 Felix Fietkau    2021-01-15  1480  
-ec8aa669b8393b Felix Fietkau    2010-05-13  1481  static void
-ec8aa669b8393b Felix Fietkau    2010-05-13  1482  minstrel_ht_update_caps(void *priv, struct ieee80211_supported_band *sband,
-3de805cf965d69 Simon Wunderlich 2013-07-08  1483  			struct cfg80211_chan_def *chandef,
-64f68e5d15bee4 Johannes Berg    2012-03-28  1484  			struct ieee80211_sta *sta, void *priv_sta)
-ec8aa669b8393b Felix Fietkau    2010-05-13  1485  {
-ec8aa669b8393b Felix Fietkau    2010-05-13  1486  	struct minstrel_priv *mp = priv;
-ec8aa669b8393b Felix Fietkau    2010-05-13  1487  	struct minstrel_ht_sta_priv *msp = priv_sta;
-ec8aa669b8393b Felix Fietkau    2010-05-13  1488  	struct minstrel_ht_sta *mi = &msp->ht;
-ec8aa669b8393b Felix Fietkau    2010-05-13  1489  	struct ieee80211_mcs_info *mcs = &sta->ht_cap.mcs;
-f458e832ba510f Chaitanya T K    2018-10-06  1490  	u16 ht_cap = sta->ht_cap.cap;
-9208247d74bc52 Karl Beldan      2014-10-21  1491  	struct ieee80211_sta_vht_cap *vht_cap = &sta->vht_cap;
-f84de063985a6f Felix Fietkau    2021-01-15  1492  	const struct ieee80211_rate *ctl_rate;
-f84de063985a6f Felix Fietkau    2021-01-15  1493  	bool ldpc, erp;
-9208247d74bc52 Karl Beldan      2014-10-21  1494  	int use_vht;
-4dc217df68a17a Felix Fietkau    2011-03-25 @1495  	int n_supported = 0;
-ec8aa669b8393b Felix Fietkau    2010-05-13  1496  	int ack_dur;
-ec8aa669b8393b Felix Fietkau    2010-05-13  1497  	int stbc;
-ec8aa669b8393b Felix Fietkau    2010-05-13  1498  	int i;
-ec8aa669b8393b Felix Fietkau    2010-05-13  1499  
-8a0ee4fe1951af Karl Beldan      2014-10-20  1500  	BUILD_BUG_ON(ARRAY_SIZE(minstrel_mcs_groups) != MINSTREL_GROUPS_NB);
-ec8aa669b8393b Felix Fietkau    2010-05-13  1501  
-9208247d74bc52 Karl Beldan      2014-10-21  1502  	if (vht_cap->vht_supported)
-9208247d74bc52 Karl Beldan      2014-10-21  1503  		use_vht = vht_cap->vht_mcs.tx_mcs_map != cpu_to_le16(~0);
-9208247d74bc52 Karl Beldan      2014-10-21  1504  	else
-9208247d74bc52 Karl Beldan      2014-10-21  1505  		use_vht = 0;
-9208247d74bc52 Karl Beldan      2014-10-21  1506  
-ec8aa669b8393b Felix Fietkau    2010-05-13  1507  	memset(mi, 0, sizeof(*mi));
-a85666627b7f10 Felix Fietkau    2013-04-22  1508  
-a85666627b7f10 Felix Fietkau    2013-04-22  1509  	mi->sta = sta;
-a7844a53846017 Felix Fietkau    2021-01-15  1510  	mi->band = sband->band;
-9134073bc69363 Thomas Huehn     2015-03-24  1511  	mi->last_stats_update = jiffies;
-ec8aa669b8393b Felix Fietkau    2010-05-13  1512  
-438b61b77082e7 Simon Wunderlich 2013-07-08  1513  	ack_dur = ieee80211_frame_duration(sband->band, 10, 60, 1, 1, 0);
-438b61b77082e7 Simon Wunderlich 2013-07-08  1514  	mi->overhead = ieee80211_frame_duration(sband->band, 0, 60, 1, 1, 0);
-438b61b77082e7 Simon Wunderlich 2013-07-08  1515  	mi->overhead += ack_dur;
-ec8aa669b8393b Felix Fietkau    2010-05-13  1516  	mi->overhead_rtscts = mi->overhead + 2 * ack_dur;
-ec8aa669b8393b Felix Fietkau    2010-05-13  1517  
-f84de063985a6f Felix Fietkau    2021-01-15  1518  	ctl_rate = &sband->bitrates[rate_lowest_index(sband, sta)];
-f84de063985a6f Felix Fietkau    2021-01-15  1519  	erp = ctl_rate->flags & IEEE80211_RATE_ERP_G;
-f84de063985a6f Felix Fietkau    2021-01-15  1520  	ack_dur = ieee80211_frame_duration(sband->band, 10,
-f84de063985a6f Felix Fietkau    2021-01-15  1521  					   ctl_rate->bitrate, erp, 1,
-f84de063985a6f Felix Fietkau    2021-01-15  1522  					   ieee80211_chandef_get_shift(chandef));
-f84de063985a6f Felix Fietkau    2021-01-15  1523  	mi->overhead_legacy = ack_dur;
-f84de063985a6f Felix Fietkau    2021-01-15  1524  	mi->overhead_legacy_rtscts = mi->overhead_legacy + 2 * ack_dur;
-f84de063985a6f Felix Fietkau    2021-01-15  1525  
-ec8aa669b8393b Felix Fietkau    2010-05-13  1526  	mi->avg_ampdu_len = MINSTREL_FRAC(1, 1);
-ec8aa669b8393b Felix Fietkau    2010-05-13  1527  
-ec8aa669b8393b Felix Fietkau    2010-05-13  1528  	/* When using MRR, sample more on the first attempt, without delay */
-ec8aa669b8393b Felix Fietkau    2010-05-13  1529  	if (mp->has_mrr) {
-ec8aa669b8393b Felix Fietkau    2010-05-13  1530  		mi->sample_count = 16;
-ec8aa669b8393b Felix Fietkau    2010-05-13  1531  		mi->sample_wait = 0;
-ec8aa669b8393b Felix Fietkau    2010-05-13  1532  	} else {
-ec8aa669b8393b Felix Fietkau    2010-05-13  1533  		mi->sample_count = 8;
-ec8aa669b8393b Felix Fietkau    2010-05-13  1534  		mi->sample_wait = 8;
-ec8aa669b8393b Felix Fietkau    2010-05-13  1535  	}
-ec8aa669b8393b Felix Fietkau    2010-05-13  1536  	mi->sample_tries = 4;
-ec8aa669b8393b Felix Fietkau    2010-05-13  1537  
-9208247d74bc52 Karl Beldan      2014-10-21  1538  	if (!use_vht) {
-f458e832ba510f Chaitanya T K    2018-10-06  1539  		stbc = (ht_cap & IEEE80211_HT_CAP_RX_STBC) >>
-ec8aa669b8393b Felix Fietkau    2010-05-13  1540  			IEEE80211_HT_CAP_RX_STBC_SHIFT;
-ec8aa669b8393b Felix Fietkau    2010-05-13  1541  
-f458e832ba510f Chaitanya T K    2018-10-06  1542  		ldpc = ht_cap & IEEE80211_HT_CAP_LDPC_CODING;
-f458e832ba510f Chaitanya T K    2018-10-06  1543  	} else {
-f458e832ba510f Chaitanya T K    2018-10-06  1544  		stbc = (vht_cap->cap & IEEE80211_VHT_CAP_RXSTBC_MASK) >>
-f458e832ba510f Chaitanya T K    2018-10-06  1545  			IEEE80211_VHT_CAP_RXSTBC_SHIFT;
-f458e832ba510f Chaitanya T K    2018-10-06  1546  
-f458e832ba510f Chaitanya T K    2018-10-06  1547  		ldpc = vht_cap->cap & IEEE80211_VHT_CAP_RXLDPC;
-9208247d74bc52 Karl Beldan      2014-10-21  1548  	}
-ec8aa669b8393b Felix Fietkau    2010-05-13  1549  
-f458e832ba510f Chaitanya T K    2018-10-06  1550  	mi->tx_flags |= stbc << IEEE80211_TX_CTL_STBC_SHIFT;
-f458e832ba510f Chaitanya T K    2018-10-06  1551  	if (ldpc)
-f458e832ba510f Chaitanya T K    2018-10-06  1552  		mi->tx_flags |= IEEE80211_TX_CTL_LDPC;
-f458e832ba510f Chaitanya T K    2018-10-06  1553  
-ec8aa669b8393b Felix Fietkau    2010-05-13  1554  	for (i = 0; i < ARRAY_SIZE(mi->groups); i++) {
-3ec373c421b6ef Karl Beldan      2014-10-20  1555  		u32 gflags = minstrel_mcs_groups[i].flags;
-9208247d74bc52 Karl Beldan      2014-10-21  1556  		int bw, nss;
-3ec373c421b6ef Karl Beldan      2014-10-20  1557  
-41d085835d3d22 Felix Fietkau    2016-12-14  1558  		mi->supported[i] = 0;
-a7844a53846017 Felix Fietkau    2021-01-15  1559  		if (minstrel_ht_is_legacy_group(i))
-a0497f9f57478c Felix Fietkau    2013-02-13  1560  			continue;
-a0497f9f57478c Felix Fietkau    2013-02-13  1561  
-3ec373c421b6ef Karl Beldan      2014-10-20  1562  		if (gflags & IEEE80211_TX_RC_SHORT_GI) {
-3ec373c421b6ef Karl Beldan      2014-10-20  1563  			if (gflags & IEEE80211_TX_RC_40_MHZ_WIDTH) {
-f458e832ba510f Chaitanya T K    2018-10-06  1564  				if (!(ht_cap & IEEE80211_HT_CAP_SGI_40))
-e1a0c6b3a4b27e Johannes Berg    2013-02-07  1565  					continue;
-e1a0c6b3a4b27e Johannes Berg    2013-02-07  1566  			} else {
-f458e832ba510f Chaitanya T K    2018-10-06  1567  				if (!(ht_cap & IEEE80211_HT_CAP_SGI_20))
-e1a0c6b3a4b27e Johannes Berg    2013-02-07  1568  					continue;
-e1a0c6b3a4b27e Johannes Berg    2013-02-07  1569  			}
-ec8aa669b8393b Felix Fietkau    2010-05-13  1570  		}
-ec8aa669b8393b Felix Fietkau    2010-05-13  1571  
-3ec373c421b6ef Karl Beldan      2014-10-20  1572  		if (gflags & IEEE80211_TX_RC_40_MHZ_WIDTH &&
-e1a0c6b3a4b27e Johannes Berg    2013-02-07  1573  		    sta->bandwidth < IEEE80211_STA_RX_BW_40)
-ec8aa669b8393b Felix Fietkau    2010-05-13  1574  			continue;
-ec8aa669b8393b Felix Fietkau    2010-05-13  1575  
-9208247d74bc52 Karl Beldan      2014-10-21  1576  		nss = minstrel_mcs_groups[i].streams;
-9208247d74bc52 Karl Beldan      2014-10-21  1577  
-e9219779f943df Helmut Schaa     2012-03-09  1578  		/* Mark MCS > 7 as unsupported if STA is in static SMPS mode */
-9208247d74bc52 Karl Beldan      2014-10-21  1579  		if (sta->smps_mode == IEEE80211_SMPS_STATIC && nss > 1)
-e9219779f943df Helmut Schaa     2012-03-09  1580  			continue;
-e9219779f943df Helmut Schaa     2012-03-09  1581  
-9208247d74bc52 Karl Beldan      2014-10-21  1582  		/* HT rate */
-9208247d74bc52 Karl Beldan      2014-10-21  1583  		if (gflags & IEEE80211_TX_RC_MCS) {
-9ffe904405580f Karl Beldan      2014-10-24  1584  			if (use_vht && minstrel_vht_only)
-9208247d74bc52 Karl Beldan      2014-10-21  1585  				continue;
-b1c4f68337fa6b Felix Fietkau    2018-10-06  1586  
-41d085835d3d22 Felix Fietkau    2016-12-14  1587  			mi->supported[i] = mcs->rx_mask[nss - 1];
-41d085835d3d22 Felix Fietkau    2016-12-14  1588  			if (mi->supported[i])
-9208247d74bc52 Karl Beldan      2014-10-21  1589  				n_supported++;
-9208247d74bc52 Karl Beldan      2014-10-21  1590  			continue;
-9208247d74bc52 Karl Beldan      2014-10-21  1591  		}
-9208247d74bc52 Karl Beldan      2014-10-21  1592  
-9208247d74bc52 Karl Beldan      2014-10-21  1593  		/* VHT rate */
-9208247d74bc52 Karl Beldan      2014-10-21  1594  		if (!vht_cap->vht_supported ||
-9208247d74bc52 Karl Beldan      2014-10-21  1595  		    WARN_ON(!(gflags & IEEE80211_TX_RC_VHT_MCS)) ||
-9208247d74bc52 Karl Beldan      2014-10-21  1596  		    WARN_ON(gflags & IEEE80211_TX_RC_160_MHZ_WIDTH))
-9208247d74bc52 Karl Beldan      2014-10-21  1597  			continue;
-9208247d74bc52 Karl Beldan      2014-10-21  1598  
-9208247d74bc52 Karl Beldan      2014-10-21  1599  		if (gflags & IEEE80211_TX_RC_80_MHZ_WIDTH) {
-9208247d74bc52 Karl Beldan      2014-10-21  1600  			if (sta->bandwidth < IEEE80211_STA_RX_BW_80 ||
-9208247d74bc52 Karl Beldan      2014-10-21  1601  			    ((gflags & IEEE80211_TX_RC_SHORT_GI) &&
-9208247d74bc52 Karl Beldan      2014-10-21  1602  			     !(vht_cap->cap & IEEE80211_VHT_CAP_SHORT_GI_80))) {
-9208247d74bc52 Karl Beldan      2014-10-21  1603  				continue;
-9208247d74bc52 Karl Beldan      2014-10-21  1604  			}
-9208247d74bc52 Karl Beldan      2014-10-21  1605  		}
-9208247d74bc52 Karl Beldan      2014-10-21  1606  
-9208247d74bc52 Karl Beldan      2014-10-21  1607  		if (gflags & IEEE80211_TX_RC_40_MHZ_WIDTH)
-9208247d74bc52 Karl Beldan      2014-10-21  1608  			bw = BW_40;
-9208247d74bc52 Karl Beldan      2014-10-21  1609  		else if (gflags & IEEE80211_TX_RC_80_MHZ_WIDTH)
-9208247d74bc52 Karl Beldan      2014-10-21  1610  			bw = BW_80;
-9208247d74bc52 Karl Beldan      2014-10-21  1611  		else
-9208247d74bc52 Karl Beldan      2014-10-21  1612  			bw = BW_20;
-9208247d74bc52 Karl Beldan      2014-10-21  1613  
-41d085835d3d22 Felix Fietkau    2016-12-14  1614  		mi->supported[i] = minstrel_get_valid_vht_rates(bw, nss,
-9208247d74bc52 Karl Beldan      2014-10-21  1615  				vht_cap->vht_mcs.tx_mcs_map);
-4dc217df68a17a Felix Fietkau    2011-03-25  1616  
-41d085835d3d22 Felix Fietkau    2016-12-14  1617  		if (mi->supported[i])
-4dc217df68a17a Felix Fietkau    2011-03-25  1618  			n_supported++;
-ec8aa669b8393b Felix Fietkau    2010-05-13  1619  	}
-4dc217df68a17a Felix Fietkau    2011-03-25  1620  
-a7844a53846017 Felix Fietkau    2021-01-15  1621  	minstrel_ht_update_cck(mp, mi, sband, sta);
-a7844a53846017 Felix Fietkau    2021-01-15  1622  	minstrel_ht_update_ofdm(mp, mi, sband, sta);
-4dc217df68a17a Felix Fietkau    2011-03-25  1623  
-a85666627b7f10 Felix Fietkau    2013-04-22  1624  	/* create an initial rate table with the lowest supported rates */
-48cb39522a9d4d Felix Fietkau    2019-08-20  1625  	minstrel_ht_update_stats(mp, mi, true);
-a85666627b7f10 Felix Fietkau    2013-04-22  1626  	minstrel_ht_update_rates(mp, mi);
-ec8aa669b8393b Felix Fietkau    2010-05-13  1627  }
-ec8aa669b8393b Felix Fietkau    2010-05-13  1628  
-
-:::::: The code at line 1495 was first introduced by commit
-:::::: 4dc217df68a17a57f8464c74c1b4785e40bddf77 mac80211: fix a crash in minstrel_ht in HT mode with no supported MCS rates
-
-:::::: TO: Felix Fietkau <nbd@openwrt.org>
-:::::: CC: John W. Linville <linville@tuxdriver.com>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> 
+> To support memory hotplug, a notifier crash_memhp_nb is registered to
+> memory_chain to watch MEM_ONLINE and MEM_OFFLINE events.
+> 
+> These callbacks and notifier will call crash_hotplug_handler() to handle
+> captured event when invoked.
+> 
+>>
+>>>
+>>> Signed-off-by: Eric DeVolder <eric.devolder@oracle.com>
+>>> ---
+>>>   include/linux/kexec.h |  16 +++++++
+>>>   kernel/crash_core.c   | 108 ++++++++++++++++++++++++++++++++++++++++++
+>>>   2 files changed, 124 insertions(+)
+>>>
+>>> diff --git a/include/linux/kexec.h b/include/linux/kexec.h
+>>> index d7b59248441b..b11d75a6b2bc 100644
+>>> --- a/include/linux/kexec.h
+>>> +++ b/include/linux/kexec.h
+>>> @@ -300,6 +300,13 @@ struct kimage {
+>>>   
+>>>   	/* Information for loading purgatory */
+>>>   	struct purgatory_info purgatory_info;
+>>> +
+>>> +#ifdef CONFIG_CRASH_HOTPLUG
+>>> +	bool hotplug_event;
+>>> +	int offlinecpu;
+>>> +	bool elf_index_valid;
+>>> +	int elf_index;
+>>> +#endif
+>>>   #endif
+>>>   
+>>>   #ifdef CONFIG_IMA_KEXEC
+>>> @@ -316,6 +323,15 @@ struct kimage {
+>>>   	unsigned long elf_load_addr;
+>>>   };
+>>>   
+>>> +#ifdef CONFIG_CRASH_HOTPLUG
+>>> +void arch_crash_hotplug_handler(struct kimage *image,
+>>> +	unsigned int hp_action, unsigned long a, unsigned long b);
+>>> +#define KEXEC_CRASH_HP_REMOVE_CPU   0
+>>> +#define KEXEC_CRASH_HP_ADD_CPU      1
+>>> +#define KEXEC_CRASH_HP_REMOVE_MEMORY 2
+>>> +#define KEXEC_CRASH_HP_ADD_MEMORY   3
+>>> +#endif /* CONFIG_CRASH_HOTPLUG */
+>>> +
+>>>   /* kexec interface functions */
+>>>   extern void machine_kexec(struct kimage *image);
+>>>   extern int machine_kexec_prepare(struct kimage *image);
+>>> diff --git a/kernel/crash_core.c b/kernel/crash_core.c
+>>> index 256cf6db573c..76959d440f71 100644
+>>> --- a/kernel/crash_core.c
+>>> +++ b/kernel/crash_core.c
+>>> @@ -9,12 +9,17 @@
+>>>   #include <linux/init.h>
+>>>   #include <linux/utsname.h>
+>>>   #include <linux/vmalloc.h>
+>>> +#include <linux/highmem.h>
+>>> +#include <linux/memory.h>
+>>> +#include <linux/cpuhotplug.h>
+>>>   
+>>>   #include <asm/page.h>
+>>>   #include <asm/sections.h>
+>>>   
+>>>   #include <crypto/sha1.h>
+>>>   
+>>> +#include "kexec_internal.h"
+>>> +
+>>>   /* vmcoreinfo stuff */
+>>>   unsigned char *vmcoreinfo_data;
+>>>   size_t vmcoreinfo_size;
+>>> @@ -491,3 +496,106 @@ static int __init crash_save_vmcoreinfo_init(void)
+>>>   }
+>>>   
+>>>   subsys_initcall(crash_save_vmcoreinfo_init);
+>>> +
+>>> +#ifdef CONFIG_CRASH_HOTPLUG
+>>> +void __weak arch_crash_hotplug_handler(struct kimage *image,
+>>> +	unsigned int hp_action, unsigned long a, unsigned long b)
+>>> +{
+>>> +	pr_warn("crash hp: %s not implemented", __func__);
+>>> +}
+>>> +
+>>> +static void crash_hotplug_handler(unsigned int hp_action,
+>>> +	unsigned long a, unsigned long b)
+>>> +{
+>>> +	/* Obtain lock while changing crash information */
+>>> +	if (!mutex_trylock(&kexec_mutex))
+>>> +		return;
+>>> +
+>>> +	/* Check kdump is loaded */
+>>> +	if (kexec_crash_image) {
+>>> +		pr_debug("crash hp: hp_action %u, a %lu, b %lu", hp_action,
+>>> +			a, b);
+>>> +
+>>> +		/* Needed in order for the segments to be updated */
+>>> +		arch_kexec_unprotect_crashkres();
+>>> +
+>>> +		/* Flag to differentiate between normal load and hotplug */
+>>> +		kexec_crash_image->hotplug_event = true;
+>>> +
+>>> +		/* Now invoke arch-specific update handler */
+>>> +		arch_crash_hotplug_handler(kexec_crash_image, hp_action, a, b);
+>>> +
+>>> +		/* No longer handling a hotplug event */
+>>> +		kexec_crash_image->hotplug_event = false;
+>>> +
+>>> +		/* Change back to read-only */
+>>> +		arch_kexec_protect_crashkres();
+>>> +	}
+>>> +
+>>> +	/* Release lock now that update complete */
+>>> +	mutex_unlock(&kexec_mutex);
+>>> +}
+>>> +
+>>> +#if defined(CONFIG_MEMORY_HOTPLUG)
+>>> +static int crash_memhp_notifier(struct notifier_block *nb,
+>>> +	unsigned long val, void *v)
+>>> +{
+>>> +	struct memory_notify *mhp = v;
+>>> +	unsigned long start, end;
+>>> +
+>>> +	start = mhp->start_pfn << PAGE_SHIFT;
+>>> +	end = ((mhp->start_pfn + mhp->nr_pages) << PAGE_SHIFT) - 1;
+>>> +
+>>> +	switch (val) {
+>>> +	case MEM_ONLINE:
+>>> +		crash_hotplug_handler(KEXEC_CRASH_HP_ADD_MEMORY,
+>>> +			start, end-start);
+>>> +		break;
+>>> +
+>>> +	case MEM_OFFLINE:
+>>> +		crash_hotplug_handler(KEXEC_CRASH_HP_REMOVE_MEMORY,
+>>> +			start, end-start);
+>>> +		break;
+>>> +	}
+>>> +	return NOTIFY_OK;
+>>> +}
+>>> +
+>>> +static struct notifier_block crash_memhp_nb = {
+>>> +	.notifier_call = crash_memhp_notifier,
+>>> +	.priority = 0
+>>> +};
+>>> +#endif
+>>> +
+>>> +#if defined(CONFIG_HOTPLUG_CPU)
+>>> +static int crash_cpuhp_online(unsigned int cpu)
+>>> +{
+>>> +	crash_hotplug_handler(KEXEC_CRASH_HP_ADD_CPU, cpu, 0);
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static int crash_cpuhp_offline(unsigned int cpu)
+>>> +{
+>>> +	crash_hotplug_handler(KEXEC_CRASH_HP_REMOVE_CPU, cpu, 0);
+>>> +	return 0;
+>>> +}
+>>> +#endif
+>>> +
+>>> +static int __init crash_hotplug_init(void)
+>>> +{
+>>> +	int result = 0;
+>>> +
+>>> +#if defined(CONFIG_MEMORY_HOTPLUG)
+>>> +	register_memory_notifier(&crash_memhp_nb);
+>>> +#endif
+>>> +
+>>> +#if defined(CONFIG_HOTPLUG_CPU)
+>>> +	result = cpuhp_setup_state_nocalls(CPUHP_AP_ONLINE_DYN,
+>>> +				"crash/cpuhp",
+>>> +				crash_cpuhp_online, crash_cpuhp_offline);
+>>> +#endif
+>>> +
+>>> +	return result;
+>>> +}
+>>> +
+>>> +subsys_initcall(crash_hotplug_init);
+>>> +#endif /* CONFIG_CRASH_HOTPLUG */
+>>> -- 
+>>> 2.27.0
+>>>
+>>
+> 
