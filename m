@@ -2,65 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D97FDC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:13:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BB25C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:14:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348113AbiCXHPH (ORCPT
+        id S1348402AbiCXHQL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 03:15:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34820 "EHLO
+        Thu, 24 Mar 2022 03:16:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237660AbiCXHPE (ORCPT
+        with ESMTP id S239174AbiCXHQJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 03:15:04 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4931646D;
-        Thu, 24 Mar 2022 00:13:32 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id r22so7243763ejs.11;
-        Thu, 24 Mar 2022 00:13:32 -0700 (PDT)
+        Thu, 24 Mar 2022 03:16:09 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2CA6646D
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:14:37 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id bg10so7297484ejb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:14:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=YnICOnb+N94MLHVGeJL/0evUi/Ke2rE32iWEgW1NDL8=;
-        b=HhzDNpJlYUaU1nPBhae6cs/YytVeWU2K/2buXFuv92vvielTDsPOH68ua+tLUNqsXo
-         2UrTo/7MZ0e46JIZ130/2NPe82JPsiaKN3VKnXNHbQ9JfiZCKEtJxJrBtjFBai6I0S+Q
-         e4jBoV+44Ta4axWSgegjQMAZBTFfjQ4q5yr0YUrlwwqc+NXb55SdDi+Kh3j8PuGiWD2W
-         OanRASwzqr4LCYnULmkpk89MH5HQhOwmvgUJGoklYX69Fx16BvAg9tk74cOFalCV5jtN
-         +0/YiL+Tr/hty3r+6yaH90D7H401N0vIo5f3nDlvkdSRvqFPvbKqzy7Tp+QeeHgAGGB1
-         PnwA==
+        bh=J6lrvdSEUetE9f4aqDoqbIRlxE+np5nKDc0gW86buHs=;
+        b=BYGpdSnkIMbfhRc8kaBxXFHjlhAfWcFFWa0bEzhDAvoQIEkdpolJZtniqHq20pA/1W
+         PYwKJW+ClS/uZ2QpXbBUVNG0lFBbgQ27WqgI39Qxi46wmIPoQaYUTcd+ymAS//bEzLjP
+         6MwMRTWpeOG7gH+tiCKkHc9HdWZME1ucLvImxbEX5LRxBG+dj+mzDe4W3YoxcCtgXxmX
+         xPPoA96prsX7QP6eIdWQOC8EB4Hd+U2KjsOc3o4aRUC+y33O76E3Swy6+rRxNFrRXKkB
+         Qvq3W9PRagTiaXWVoguClH+503cZU2ExoGINvNtYWVTprKEn4ss2eVW7GS9Q7d8yKN9P
+         pwxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=YnICOnb+N94MLHVGeJL/0evUi/Ke2rE32iWEgW1NDL8=;
-        b=lY0SIUiUJeWOb1dwrWxQv4dajGM19E1qJbnSHQt6+UAhIy85HkgKFVTYN6EX7Xh7Ek
-         vYVNsm6UUFXVbTa7Kyk2mXCGHa+rzCoRqpRv2uItLk3h7tKeNwolf6zT2IKvuHES+TOu
-         Cx3RSuuHHZiI4gPBFY8ntVlFSL5stJQ2h1jHwxt+lsMpN2isrj91env9r6n64EEYv3NB
-         OD51vHurZsvBEyc6yyxs0PnjQSxBL6KYaT/Q4AZNiDaoiYLDvufxdvTwEBob6o+5FP/v
-         QErKSltPye6iUXNfNf9iiAO20UJKcc0p14j6nLkbb4lYeumbcd+co59bbTwRP3tdzRe2
-         cPKg==
-X-Gm-Message-State: AOAM532Dy1SJxaV2GKK9YqpGDinN1Hmb1CUX7aWUMzDe0u1OFr9jUord
-        ESOwOC+CnN1mADq0+SOx4qI=
-X-Google-Smtp-Source: ABdhPJwUzwCyipHVNtLt8vkkWb1HU8Sb1JipKhb9oCKWOvzU6+6OYbBGGU/WB+U+avthgw4gCCYPnw==
-X-Received: by 2002:a17:906:f85:b0:6d6:e97b:d276 with SMTP id q5-20020a1709060f8500b006d6e97bd276mr4115107ejj.431.1648106011268;
-        Thu, 24 Mar 2022 00:13:31 -0700 (PDT)
+        bh=J6lrvdSEUetE9f4aqDoqbIRlxE+np5nKDc0gW86buHs=;
+        b=a2ec9uzGPd4GFOVvZvInWcT35wjTfH7KqGK0uPSo+kK738yOEhhTSEOJ6qbwJuMoHS
+         YO5tHBG+tT3zvQS86HsJbooXcPJkyQSFcYBCae8cmGhIAlUq1hvhYvjmORM9RMlzbU4n
+         SnOrSWMXhaIN/fSosOnOMBabpDNbP3qtm1t9tt9EtRkM6BCQwx/NtXNLEUjClNkiVQ6R
+         t43y1UlcDmbHHM31Xs+UHVAobE7McvjqQyIvqIujIxeTawuKp/YFy13uI6ZjCK5hGC5V
+         edxGSZbaGZhOEVU8o5ed5p2jPoMvKoA/s32dy4NCpjXIT1VSz19yUx19eGGYigOZoKsx
+         bzmA==
+X-Gm-Message-State: AOAM530fLOZZzqYHmsVsPjUDj03MhnZm1FiQ3k+o/ry2rA37mQm9NrqN
+        Xb1px5CKdO+s8Fg3aU8Gie4=
+X-Google-Smtp-Source: ABdhPJwkVaX+0y4adZtVlgn7Oow0tRxugS2OUiLzMSpfOFq3bD6XvOPnJrVTskXGT7bNFbdLWNsunQ==
+X-Received: by 2002:a17:906:4fcb:b0:6e0:55b7:179 with SMTP id i11-20020a1709064fcb00b006e055b70179mr4381103ejw.159.1648106076148;
+        Thu, 24 Mar 2022 00:14:36 -0700 (PDT)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id qk30-20020a1709077f9e00b006dfae33d969sm767826ejc.216.2022.03.24.00.13.30
+        by smtp.googlemail.com with ESMTPSA id z13-20020a17090674cd00b006df78d85eabsm764705ejl.111.2022.03.24.00.14.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 00:13:30 -0700 (PDT)
+        Thu, 24 Mar 2022 00:14:35 -0700 (PDT)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
-To:     Namjae Jeon <linkinjeon@kernel.org>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steve French <sfrench@samba.org>,
-        Hyunchul Lee <hyc.lee@gmail.com>, linux-cifs@vger.kernel.org,
+To:     Richard Weinberger <richard@nod.at>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
         linux-kernel@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
-Subject: [PATCH] ksmbd: replace usage of found with dedicated list iterator variable
-Date:   Thu, 24 Mar 2022 08:13:01 +0100
-Message-Id: <20220324071301.60228-1-jakobkoschel@gmail.com>
+Subject: [PATCH] lib/logic_iomem: replace usage of found with dedicated list iterator variable
+Date:   Thu, 24 Mar 2022 08:14:12 +0100
+Message-Id: <20220324071412.60437-1-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -82,77 +81,49 @@ the variable was set, can determine if the break/goto was hit.
 Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- fs/ksmbd/smb2pdu.c | 21 ++++++++++-----------
- 1 file changed, 10 insertions(+), 11 deletions(-)
+ lib/logic_iomem.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
-index 67e8e28e3fc3..be9606b9a944 100644
---- a/fs/ksmbd/smb2pdu.c
-+++ b/fs/ksmbd/smb2pdu.c
-@@ -6618,8 +6618,7 @@ int smb2_cancel(struct ksmbd_work *work)
- 	struct ksmbd_conn *conn = work->conn;
- 	struct smb2_hdr *hdr = smb2_get_msg(work->request_buf);
- 	struct smb2_hdr *chdr;
--	struct ksmbd_work *cancel_work = NULL;
--	int canceled = 0;
-+	struct ksmbd_work *cancel_work = NULL, *iter;
- 	struct list_head *command_list;
+diff --git a/lib/logic_iomem.c b/lib/logic_iomem.c
+index 8c3365f26e51..62426a6f8103 100644
+--- a/lib/logic_iomem.c
++++ b/lib/logic_iomem.c
+@@ -86,20 +86,20 @@ static void real_iounmap(volatile void __iomem *addr)
+ void __iomem *ioremap(phys_addr_t offset, size_t size)
+ {
+ 	void __iomem *ret = NULL;
+-	struct logic_iomem_region *rreg, *found = NULL;
++	struct logic_iomem_region *rreg = NULL, *iter;
+ 	int i;
  
- 	ksmbd_debug(SMB, "smb2 cancel called on mid %llu, async flags 0x%x\n",
-@@ -6629,11 +6628,11 @@ int smb2_cancel(struct ksmbd_work *work)
- 		command_list = &conn->async_requests;
- 
- 		spin_lock(&conn->request_lock);
--		list_for_each_entry(cancel_work, command_list,
-+		list_for_each_entry(iter, command_list,
- 				    async_request_entry) {
--			chdr = smb2_get_msg(cancel_work->request_buf);
-+			chdr = smb2_get_msg(iter->request_buf);
- 
--			if (cancel_work->async_id !=
-+			if (iter->async_id !=
- 			    le64_to_cpu(hdr->Id.AsyncId))
- 				continue;
- 
-@@ -6641,7 +6640,7 @@ int smb2_cancel(struct ksmbd_work *work)
- 				    "smb2 with AsyncId %llu cancelled command = 0x%x\n",
- 				    le64_to_cpu(hdr->Id.AsyncId),
- 				    le16_to_cpu(chdr->Command));
--			canceled = 1;
-+			cancel_work = iter;
- 			break;
- 		}
- 		spin_unlock(&conn->request_lock);
-@@ -6649,24 +6648,24 @@ int smb2_cancel(struct ksmbd_work *work)
- 		command_list = &conn->requests;
- 
- 		spin_lock(&conn->request_lock);
--		list_for_each_entry(cancel_work, command_list, request_entry) {
--			chdr = smb2_get_msg(cancel_work->request_buf);
-+		list_for_each_entry(iter, command_list, request_entry) {
-+			chdr = smb2_get_msg(iter->request_buf);
- 
- 			if (chdr->MessageId != hdr->MessageId ||
--			    cancel_work == work)
-+			    iter == work)
- 				continue;
- 
- 			ksmbd_debug(SMB,
- 				    "smb2 with mid %llu cancelled command = 0x%x\n",
- 				    le64_to_cpu(hdr->MessageId),
- 				    le16_to_cpu(chdr->Command));
--			canceled = 1;
-+			cancel_work = iter;
- 			break;
- 		}
- 		spin_unlock(&conn->request_lock);
+ 	mutex_lock(&regions_mtx);
+-	list_for_each_entry(rreg, &regions_list, list) {
+-		if (rreg->res->start > offset)
++	list_for_each_entry(iter, &regions_list, list) {
++		if (iter->res->start > offset)
+ 			continue;
+-		if (rreg->res->end < offset + size - 1)
++		if (iter->res->end < offset + size - 1)
+ 			continue;
+-		found = rreg;
++		rreg = iter;
+ 		break;
  	}
  
--	if (canceled) {
-+	if (cancel_work) {
- 		cancel_work->state = KSMBD_WORK_CANCELLED;
- 		if (cancel_work->cancel_fn)
- 			cancel_work->cancel_fn(cancel_work->cancel_argv);
+-	if (!found)
++	if (!rreg)
+ 		goto out;
+ 
+ 	for (i = 0; i < MAX_AREAS; i++) {
+@@ -108,7 +108,7 @@ void __iomem *ioremap(phys_addr_t offset, size_t size)
+ 		if (mapped_areas[i].ops)
+ 			continue;
+ 
+-		offs = rreg->ops->map(offset - found->res->start,
++		offs = rreg->ops->map(offset - rreg->res->start,
+ 				      size, &mapped_areas[i].ops,
+ 				      &mapped_areas[i].priv);
+ 		if (offs < 0) {
 
 base-commit: f443e374ae131c168a065ea1748feac6b2e76613
 -- 
