@@ -2,133 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07778C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 17:20:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47399C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 17:20:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352140AbiCXRVf (ORCPT
+        id S1352222AbiCXRWU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 13:21:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54430 "EHLO
+        Thu, 24 Mar 2022 13:22:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352115AbiCXRVd (ORCPT
+        with ESMTP id S1344397AbiCXRWS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 13:21:33 -0400
-X-Greylist: delayed 905 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Mar 2022 10:20:01 PDT
-Received: from sender4-of-o58.zoho.com (sender4-of-o58.zoho.com [136.143.188.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89F5632077
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 10:20:01 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1648141473; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=FW8MWCkOHrg9ThG91vgrGNzOB1erkBBBCrys60yv57C9YddH0CH8HvnFk9myGmnH3B5Nq+I13Q7IvozMXmQNalKVRJW30o6f0dFxA7nhXm74E6hxm/E3AhXG/g1S8sFhAcOiFYaTnkjH+BI8u0wjyfaYzaRJMkXZaKc9R8szTlc=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1648141473; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=7HXVL4Pb13sd77J4IwrIZ4dtqYkJhhp1qvhSJ9pgPBw=; 
-        b=OOnHTegAEGLq8zBrfkpDbRPjBV4wYYeoE9UJON79fb2cAjRzzGBt4JkXexDlhfI4jptBOCiEiwby329qNbmXzVEHbw3sNlXhwnHVtEd907Pm5MsEICmfrgXXXZ4r4Qd4pj2VF2SLuuQnB5VxpiOub2SLm4yn9CWhat0+gFAlv6I=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        spf=pass  smtp.mailfrom=linux@mniewoehner.de;
-        dmarc=pass header.from=<linux@mniewoehner.de>
-Received: from z3r0.lan (185.31.62.161 [185.31.62.161]) by mx.zohomail.com
-        with SMTPS id 1648141468242978.5467378280339; Thu, 24 Mar 2022 10:04:28 -0700 (PDT)
-Message-ID: <2a1a1cf61732eff1608aeae74054a0c135c1671f.camel@mniewoehner.de>
-Subject: Re: [PATCH v3 0/4] Fixes for TPM interrupt handling
-From:   Michael =?ISO-8859-1?Q?Niew=F6hner?= <linux@mniewoehner.de>
-To:     Jarkko Sakkinen <jarkko@kernel.org>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc:     peterhuewe@gmx.de, jgg@ziepe.ca, stefanb@linux.vnet.ibm.com,
-        stefanb@linux.ibm.com, James.Bottomley@hansenpartnership.com,
-        keescook@chromium.org, jsnitsel@redhat.com, ml.linux@elloe.vision,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        twawrzynczak@chromium.org
-In-Reply-To: <YJNKs8bUMGOzFre+@kernel.org>
-References: <20210501135727.17747-1-LinoSanfilippo@gmx.de>
-         <20210501135727.17747-3-LinoSanfilippo@gmx.de>
-         <YJAby8mmiJ74qWAh@kernel.org> <6722bf6f-1a3f-ee9c-55e2-cf63c64266a9@gmx.de>
-         <YJNKs8bUMGOzFre+@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Date:   Thu, 24 Mar 2022 18:04:23 +0100
+        Thu, 24 Mar 2022 13:22:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20267986F6;
+        Thu, 24 Mar 2022 10:20:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AFA30619AC;
+        Thu, 24 Mar 2022 17:20:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B782C340EC;
+        Thu, 24 Mar 2022 17:20:44 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="jIWOtICf"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1648142442;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xB6PKulHp1/cEWNkjE3fDsI4g/vmyOx8TKxWNMPVing=;
+        b=jIWOtICfivw//orbUKop1uPxm/X9yEN5M12kFp6+SL+mY9RcEN7uXVzjiutiLabpgi0H9R
+        suATOPU2xZBBNI9oTbDCSWUwYPkIycAInnkrD4jlGzMxDiLe3KCkyyTpiXO6Vd1SLEKcgC
+        ipwAXnIwhRuLdMhxRft45gNkRv13qHE=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 7c58b031 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Thu, 24 Mar 2022 17:20:41 +0000 (UTC)
+Date:   Thu, 24 Mar 2022 11:20:40 -0600
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>
+Cc:     Jann Horn <jannh@google.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] random: allow writes to /dev/urandom to influence fast
+ init
+Message-ID: <YjyoaEZLb+GzxJFT@zx2c4.com>
+References: <20220322191436.110963-1-Jason@zx2c4.com>
+ <1648009787.fah6dos6ya.none@localhost>
+ <CAHmME9rsvxczJrhPwRX6nyrh9NB2AuJqkEKrTLx-G-T1J6_czQ@mail.gmail.com>
+ <CAHmME9ovJpdcuuZhNKrOTUc8XvKDDdC+axhAmOD9iESnRR7JqA@mail.gmail.com>
+ <1648138746.2zrnsqdlu7.none@localhost>
 MIME-Version: 1.0
-User-Agent: Evolution 3.42.2 
-Content-Transfer-Encoding: 7bit
-X-ZohoMailClient: External
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1648138746.2zrnsqdlu7.none@localhost>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi guys,
+Hi Alex,
 
-On Thu, 2021-05-06 at 04:47 +0300, Jarkko Sakkinen wrote:
-> On Wed, May 05, 2021 at 01:15:29AM +0200, Lino Sanfilippo wrote:
-> > Hi,
-> > 
-> > On 03.05.21 at 17:50, Jarkko Sakkinen wrote:
-> > > What the heck is "simplification" and what that has to do with fixing
-> > > anything? I don't understand your terminology.
-> > 
-> > 
-> > The intention for this patch is not to fix anything. Please read the cover
-> > letter and the commit message.
-> > This patch is about making the locality handling easier by not
-> > claiming/releasing
-> > it multiple times over the driver life time, but claiming it once at driver
-> > startup and only releasing it at driver shutdown.
-> > 
-> > Right now we have locality request/release combos in
-> > 
-> > - probe_itpm()
-> > - tpm_tis_gen_interrupt()
-> > - tpm_tis_core_init()
-> > - tpm_chip_start()
-> > 
-> > and there is still one combo missing for
-> > 
-> > - tpm2_get_timeouts()
-> > 
-> > which is the reason why we get the "TPM returned invalid status" bug in case
-> > of TPM2 (and this is the bug which is _incidentally_ fixed by this patch,
-> > see
-> > below).
-> > 
-> > And if we are going to enable interrupts, we have to introduce yet another
-> > combo,
-> > for accessing the status register in the interrupt handler, since TPM 2.0
-> > requires holding the locality for writing to the status register. That makes
-> > 6 different code places in which we take and release the locality.
-> > 
-> > With this patch applied we only take the locality at one place. Furthermore
-> > with interrupts enabled we dont have to claim the locality for each handler
-> > execution, saving us countless claim/release combinations at runtime.
-> > 
-> > Hence the term "simplification" which is perfectly justified IMO.
-> > 
-> > So again, this patch is "only" in preparation for the next patch when
-> > interrupts
-> > are actually enabled and we would have to take the locality in the interrupt
-> > handler without this patch.
-> 
-> So: what problem this patch does solve?
-> 
-> /Jarkko
-> 
+On Thu, Mar 24, 2022 at 10:29 AM Alex Xu (Hello71) <alex_y_xu@yahoo.ca> wrote:
+>
+> Excerpts from Jason A. Donenfeld's message of March 23, 2022 11:18 pm:
+> > Hi all,
+> >
+> > [...]
+> >
+> > In light of that conclusion, I'm going to work with every userspace
+> > downstream I can find to help them fix their file-based seeding, if it
+> > has bugs. I've started talking with the buildroot folks, and then I'll
+> > speak with the OpenRC people (being a Gentoo dev, that should be easy
+> > going). Systemd does the right thing already.
+> >
+> > I wrote a little utility for potential inclusion in
+> > busybox/util-linux/whatever when it matures beyond its current age of
+> > being half hour old:
+> > - https://git.zx2c4.com/seedrng/about/
+> > - https://git.zx2c4.com/seedrng/tree/seedrng.c
+> > So I'll see what the buildroot people think of this and take it from there.
+> >
+> > The plus side of doing all this is that, if the efforts pan out, it
+> > means there'll actually be proper seeding on devices that don't
+> > currently do that, which then might lead to a better ecosystem and
+> > less boot time blocking and all that jazz.
+> >
+> > Jason
+> >
+>
+> The issue, in systemd developers' opinion, is that counting seed file
+> towards entropy initialization potentially causes repeated RNG output if
+> a system is cloned without resetting the seed file. This is discussed at
+> length in https://github.com/systemd/systemd/pull/4513. A few years ago,
+> I wrote most of a program to check machine ID, disk ID, DMI ID, and some
+> other things in order to avoid this issue. Since then, systemd decided
+> to store the random seed in EFI variables, I assume on the basis that
+> machine cloning typically does not clone the EFI variables? In my
+> opinion, since the same argument applies to machine ID, ssh keys, and
+> any other persistent cryptographic (or even non-cryptographic) material,
+> this falls outside the scope of random seeding and into a general
+> machine cloning "sysprep"-like utility.
 
-first, thank you very much, Lino, for working on this! I've been debugging
-issues with the tis driver in the last days and was about to start with the same
-approach as yours when I luckily discovered your patch!
+systemd's seed utility will credit a seed file if the seed file was
+generated properly (e.g. after the RNG was initialized). For that they
+use the user.random-seed-creditable xattr, which is a reasonable way of
+deciding. If that attribute is present, it's credited; if it's not, it's
+not. Here's their source:
 
-Jarkko, while I agree, that the commit message is not optimal, Lino tried hard
-to explain what the problems with the current code are and how they are / can be
-fixed. Further, I too don't see why simplification / optimization is such a bad
-thing. This driver is actually a very good example. I had a hard time, too,
-figuring out what's going on there. A clean rewrite is a very valid approach
-here IMO. It's not "polishing for nothing", as you described it, but actually
-solving problems.
+        /* If we got this random seed data from getrandom() the data is suitable for crediting
+         * entropy later on. Let's keep that in mind by setting an extended attribute. on the file */
+        if (getrandom_worked)
+                if (fsetxattr(seed_fd, "user.random-seed-creditable", "1", 1, 0) < 0)
+                        log_full_errno(ERRNO_IS_NOT_SUPPORTED(errno) ? LOG_DEBUG : LOG_WARNING, errno,
+                                      "Failed to mark seed file as creditable, ignoring: %m");
 
-Interrupt detection is broken for years now and finally a volunteer worked on a
-solution. Don't you think this should be valued? Let's get this problem sorted
-out :-)
+Since my seedrng.c is designed for more minimal systems (running
+buildroot or openrc or whatever), which might not have xattrs available,
+it distinguishes just based on the filename:
 
-Lino, I'd be happy to test the patches, when you have time and interest to work
-on this again!
+	if (new_seed_creditable && rename(NON_CREDITABLE_SEED, CREDITABLE_SEED) < 0) {
+		fprintf(stderr, "ERROR: Unable to make new seed creditable: %s\n", strerror(errno));
+		program_ret |= 1 << 6;
+	}
 
-Thanks, Michael
+It's no surprise that these are very similar; I've read systemd's
+seeding logic and contributed a fix to it.
 
+By the way, if you think something is different or wrong or whatever in
+seedrng.c, please feel free to send me a patch for it. It already
+received its first contribution this morning (from the buildroot
+maintainer). Hopefully the code will reach a good settling point soon,
+and then various projects that want it can just copy and paste it
+verbatim into their environment, and tweak idiomatic things as needed.
 
+Jason
