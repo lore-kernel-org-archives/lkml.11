@@ -2,79 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8458DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 08:10:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4E09C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 08:11:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348775AbiCXILt (ORCPT
+        id S1348790AbiCXINS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 04:11:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46320 "EHLO
+        Thu, 24 Mar 2022 04:13:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239836AbiCXILq (ORCPT
+        with ESMTP id S239836AbiCXINQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 04:11:46 -0400
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85A9B55BDB
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 01:10:15 -0700 (PDT)
-Received: by mail-io1-f72.google.com with SMTP id x16-20020a6bfe10000000b006409f03e39eso2655954ioh.7
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 01:10:15 -0700 (PDT)
+        Thu, 24 Mar 2022 04:13:16 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D33BE5D644
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 01:11:45 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id mm17-20020a17090b359100b001c6da62a559so8771316pjb.3
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 01:11:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3Dbv9J4IYwH7gaq8RuZAfIktrBF1Q94+nUP2sn2iHw0=;
+        b=M2i/A86y3y5pmzQ9gFGrjGf5hyTv41tWf/jjdfxWxx6zeDLEAhVObq1+iZnMGoBsJl
+         EEvc/NiwpW3g6m7ne+CILQOK4PzptCWUAs16fBdL/ZT6T88ILfaFSByUnGWJ0mSzpfdI
+         DMLllCrJFLYKE9OUz837QeWSjKuIk86x/Vupy1mw90asBg10O2UvRKMJRfBRAgBrdJlZ
+         0otPCrV/zfAEHhh6dmJjEgjhMVGbsrB6+vFW1Ewe3k/Pg5ksKjnldD8P+0ogtV3n0EtR
+         XZLiECZn1ozO5JoT4ewkGJY86CuvffrOt7HfTirWQuoEKUAnH+7OP7mo0SYtnUXysB0P
+         8Wew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=t+jbwm74WRfF5Vzd3FgH+0bxmCGjbH06Iytwh85LND0=;
-        b=Y8B9SSHB+/BQWXDiCx9M8Mst6WOzfCUShwgeEaXFmB12154r1d2SPuyKhYUPTgX/Sd
-         GSU1CFkhhrDyl/IRurolNWlNkRkyL3NzczLnZUvMwca+62VwB7aFtcV64SSw78IHBys5
-         qyhDHHfT+i5w3av6YlHBhi85ci1eqI1VgQ5fGwKVHVqV3xpXFnmEpn5idMwvZ2lLKvim
-         sNGHLtiDsNIxXPRy+6t+1e7vfoGX1v6CeTEad1ruwd8alBJeAtIaTV3XX+beP1sy3sNe
-         iEgq0Ez95dIxVIoZMqdCMRXRN2PThjofO6DRSD4ZHZyH4WatjyCki/YzigwOoE7VsNVc
-         dShg==
-X-Gm-Message-State: AOAM532W4qigriKQnXan7ZM1iPJczY5a55s2UNj81jpK5dvYMYLfr6x6
-        TTWyXGxoQuO3sDxunfdYX+N3HaphNog1DhBoODV5VlfTYVN1
-X-Google-Smtp-Source: ABdhPJyewI41637tag9ZsdIiPUiLSCN1R04hKibsAvdjzY7pq62g5U8s4PEmwEA7W0dpXwluG2x0yCZviUScU4ZAte2D/dJNwK6b
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3Dbv9J4IYwH7gaq8RuZAfIktrBF1Q94+nUP2sn2iHw0=;
+        b=XJwKlOAIQpnnh8SgrNnzDdsPPcs+QuI6VH1MdFKskax+XRwsKqVAiRPIsfrMUexDJ8
+         Vz+L2nw/61321QyXApYOKaDHg4Gk5WWnxZWw0Pylgudn1+IuYHxR/Dapaawt3XDXQAi3
+         dAJrI6p/esqNS7upVeH4iVgF64/lni4pM2SquFZUIcD9dSMI/JjusrOTZltWf2eoDZTr
+         1GZjbc+Mjyj9gMZYLbxtkdIJcepiu4diwVmnuR2JxoTP0mzIF/R/ONixpMfBlJsZ189A
+         pCRolQzPh3unRBhtzauhfWIF5zE4IjoP+PF4c+KI2Hn2WKA9ovtDaQjBBPAj8LeZx46o
+         bweQ==
+X-Gm-Message-State: AOAM532JdRngVVYe1qTI7PB8OqlvEQ95/PL3/TAobhBJKdPWMMXetwnm
+        U4j+fwm899WrSNaDLa3B8cmpV0D+YH+i
+X-Google-Smtp-Source: ABdhPJxt6GQZ0uEmAxDx/tWdRrltH05g1H4pW2YHsyfrkdr2GUg6Qtw7Y4xOPrx+s4CffMjocNV7KA==
+X-Received: by 2002:a17:90a:990c:b0:1bc:3c9f:2abe with SMTP id b12-20020a17090a990c00b001bc3c9f2abemr4755847pjp.220.1648109505341;
+        Thu, 24 Mar 2022 01:11:45 -0700 (PDT)
+Received: from thinkpad ([220.158.158.107])
+        by smtp.gmail.com with ESMTPSA id p15-20020a056a000a0f00b004f7c63cba5asm2538664pfh.21.2022.03.24.01.11.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Mar 2022 01:11:44 -0700 (PDT)
+Date:   Thu, 24 Mar 2022 13:41:39 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Frank Li <Frank.Li@nxp.com>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 01/12] PCI: dwc: Stop link in the host init error and
+ de-initialization
+Message-ID: <20220324081139.GA2854@thinkpad>
+References: <20220324012524.16784-1-Sergey.Semin@baikalelectronics.ru>
+ <20220324012524.16784-2-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1d03:b0:2c7:e33f:2557 with SMTP id
- i3-20020a056e021d0300b002c7e33f2557mr2273855ila.15.1648109414852; Thu, 24 Mar
- 2022 01:10:14 -0700 (PDT)
-Date:   Thu, 24 Mar 2022 01:10:14 -0700
-In-Reply-To: <000000000000acf1e405daebb7c7@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000392f6005daf26000@google.com>
-Subject: Re: [syzbot] BUG: unable to handle kernel NULL pointer dereference in __tcp_transmit_skb
-From:   syzbot <syzbot+090d23ddbd5cd185c2e0@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, dsahern@kernel.org,
-        edumazet@google.com, john.fastabend@gmail.com, kafai@fb.com,
-        kgraul@linux.ibm.com, kpsingh@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com,
-        yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220324012524.16784-2-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-syzbot has bisected this issue to:
+On Thu, Mar 24, 2022 at 04:25:12AM +0300, Serge Semin wrote:
+> It's logically correct to undo everything what was done in case of an
+> error is discovered or in the corresponding cleanup counterpart. Otherwise
+> the host controller will be left in an undetermined state. Seeing the link
+> is set up in the Host-initialization method it will be right to
+> de-activate it there in the cleanup-on-error block and stop the link in
+> the antagonistic routine - dw_pcie_host_deinit(). The link de-activation
+> is a platform-specific thing and is supposed to be implemented in the
+> framework of the dw_pcie_ops.stop_link() operation.
+> 
+> Fixes: 886a9c134755 ("PCI: dwc: Move link handling into common code")
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-commit f2f2325ec79970807012dfc9e716cdbb02d9b574
-Author: Eric Dumazet <edumazet@google.com>
-Date:   Fri Feb 4 20:15:46 2022 +0000
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-    ip6mr: ip6mr_sk_done() can exit early in common cases
+Thanks,
+Mani
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16299d7b700000
-start commit:   36c2e31ad25b net: geneve: add missing netlink policy and s..
-git tree:       net-next
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=15299d7b700000
-console output: https://syzkaller.appspot.com/x/log.txt?x=11299d7b700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=4a15e2288cf165c9
-dashboard link: https://syzkaller.appspot.com/bug?extid=090d23ddbd5cd185c2e0
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=171eadbd700000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12cacda3700000
-
-Reported-by: syzbot+090d23ddbd5cd185c2e0@syzkaller.appspotmail.com
-Fixes: f2f2325ec799 ("ip6mr: ip6mr_sk_done() can exit early in common cases")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> ---
+>  .../pci/controller/dwc/pcie-designware-host.c    | 16 ++++++++++++++--
+>  1 file changed, 14 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
+> index f4755f3a03be..a03619a30c20 100644
+> --- a/drivers/pci/controller/dwc/pcie-designware-host.c
+> +++ b/drivers/pci/controller/dwc/pcie-designware-host.c
+> @@ -414,8 +414,14 @@ int dw_pcie_host_init(struct pcie_port *pp)
+>  	bridge->sysdata = pp;
+>  
+>  	ret = pci_host_probe(bridge);
+> -	if (!ret)
+> -		return 0;
+> +	if (ret)
+> +		goto err_stop_link;
+> +
+> +	return 0;
+> +
+> +err_stop_link:
+> +	if (pci->ops && pci->ops->stop_link)
+> +		pci->ops->stop_link(pci);
+>  
+>  err_free_msi:
+>  	if (pp->has_msi_ctrl)
+> @@ -426,8 +432,14 @@ EXPORT_SYMBOL_GPL(dw_pcie_host_init);
+>  
+>  void dw_pcie_host_deinit(struct pcie_port *pp)
+>  {
+> +	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
+> +
+>  	pci_stop_root_bus(pp->bridge->bus);
+>  	pci_remove_root_bus(pp->bridge->bus);
+> +
+> +	if (pci->ops && pci->ops->stop_link)
+> +		pci->ops->stop_link(pci);
+> +
+>  	if (pp->has_msi_ctrl)
+>  		dw_pcie_free_msi(pp);
+>  }
+> -- 
+> 2.35.1
+> 
