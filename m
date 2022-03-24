@@ -2,130 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE21BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 03:19:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74780C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 03:20:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347967AbiCXDVX (ORCPT
+        id S1347970AbiCXDWN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 23:21:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33698 "EHLO
+        Wed, 23 Mar 2022 23:22:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245227AbiCXDVF (ORCPT
+        with ESMTP id S237620AbiCXDWH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 23:21:05 -0400
-Received: from mx1.cqplus1.com (unknown [113.204.237.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AF2971D339
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 20:19:22 -0700 (PDT)
-X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
-        LIVER,40,3)
-Received: from 172.28.114.216
-        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(7839:0:AUTH_RELAY)
-        (envelope-from <xt.hu@cqplus1.com>); Thu, 24 Mar 2022 11:18:06 +0800 (CST)
-From:   Xiantao Hu <xt.hu@cqplus1.com>
-To:     krzk@kernel.org, wim@linux-watchdog.org, p.zabel@pengutronix.de,
-        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux@roeck-us.net, robh+dt@kernel.org, devicetree@vger.kernel.org
-Cc:     wells.lu@sunplus.com, qinjian@cqplus1.com,
-        Xiantao Hu <xt.hu@cqplus1.com>, Rob Herring <robh@kernel.org>
-Subject: [PATCH v8 1/2] dt-bindings: watchdog: Add watchdog yaml file for Sunplus SP7021
-Date:   Thu, 24 Mar 2022 11:18:04 +0800
-Message-Id: <20220324031805.61316-2-xt.hu@cqplus1.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220324031805.61316-1-xt.hu@cqplus1.com>
-References: <20220324031805.61316-1-xt.hu@cqplus1.com>
+        Wed, 23 Mar 2022 23:22:07 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4582D1ED;
+        Wed, 23 Mar 2022 20:20:36 -0700 (PDT)
+Received: from kwepemi500007.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KP9Rl2NqlzfZS0;
+        Thu, 24 Mar 2022 11:18:59 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ kwepemi500007.china.huawei.com (7.221.188.207) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 24 Mar 2022 11:20:33 +0800
+Received: from ubuntu1804.huawei.com (10.67.174.61) by
+ kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 24 Mar 2022 11:20:32 +0800
+From:   Yang Jihong <yangjihong1@huawei.com>
+To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
+        <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
+        <jolsa@kernel.org>, <namhyung@kernel.org>, <tglx@linutronix.de>,
+        <bp@alien8.de>, <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        <hpa@zytor.com>, <linux-perf-users@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <yangjihong1@huawei.com>
+Subject: [PATCH] perf/x86: Unify format of events sysfs show
+Date:   Thu, 24 Mar 2022 11:19:57 +0800
+Message-ID: <20220324031957.135595-1-yangjihong1@huawei.com>
+X-Mailer: git-send-email 2.30.GIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.61]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds the documentation for the devicetree bindings of the Sunplus
-SP7021 watchdog driver, found from SP7021 SoCs and newer.
+Sysfs show formats of files in /sys/devices/cpu/events/ are not unified,
+some end with "\n", and some do not. Modify sysfs show format of events
+defined by EVENT_ATTR_STR to end with "\n".
 
-Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Xiantao Hu <xt.hu@cqplus1.com>
+Before:
+  $ ls /sys/devices/cpu/events/* | xargs -i sh -c 'echo -n "{}: "; cat -A {}; echo'
+  branch-instructions: event=0xc4$
+
+  branch-misses: event=0xc5$
+
+  bus-cycles: event=0x3c,umask=0x01$
+
+  cache-misses: event=0x2e,umask=0x41$
+
+  cache-references: event=0x2e,umask=0x4f$
+
+  cpu-cycles: event=0x3c$
+
+  instructions: event=0xc0$
+
+  ref-cycles: event=0x00,umask=0x03$
+
+  slots: event=0x00,umask=0x4
+  topdown-bad-spec: event=0x00,umask=0x81
+  topdown-be-bound: event=0x00,umask=0x83
+  topdown-fe-bound: event=0x00,umask=0x82
+  topdown-retiring: event=0x00,umask=0x80
+
+After:
+  $ ls /sys/devices/cpu/events/* | xargs -i sh -c 'echo -n "{}: "; cat -A {}; echo'
+  /sys/devices/cpu/events/branch-instructions: event=0xc4$
+
+  /sys/devices/cpu/events/branch-misses: event=0xc5$
+
+  /sys/devices/cpu/events/bus-cycles: event=0x3c,umask=0x01$
+
+  /sys/devices/cpu/events/cache-misses: event=0x2e,umask=0x41$
+
+  /sys/devices/cpu/events/cache-references: event=0x2e,umask=0x4f$
+
+  /sys/devices/cpu/events/cpu-cycles: event=0x3c$
+
+  /sys/devices/cpu/events/instructions: event=0xc0$
+
+  /sys/devices/cpu/events/ref-cycles: event=0x00,umask=0x03$
+
+  /sys/devices/cpu/events/slots: event=0x00,umask=0x4$
+
+Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
 ---
-Changes in v8:
- - Addressed all comments from Krzysztof Kozlowski.
-   1.fix the title.
-   2.fix the lowercase hex in examples.
+ arch/x86/events/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- .../bindings/watchdog/sunplus,sp7021-wdt.yaml | 47 +++++++++++++++++++
- MAINTAINERS                                   |  6 +++
- 2 files changed, 53 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/watchdog/sunplus,sp7021-wdt.yaml
-
-diff --git a/Documentation/devicetree/bindings/watchdog/sunplus,sp7021-wdt.yaml b/Documentation/devicetree/bindings/watchdog/sunplus,sp7021-wdt.yaml
-new file mode 100644
-index 000000000..d90271013
---- /dev/null
-+++ b/Documentation/devicetree/bindings/watchdog/sunplus,sp7021-wdt.yaml
-@@ -0,0 +1,47 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) Sunplus Co., Ltd. 2021
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/watchdog/sunplus,sp7021-wdt.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Sunplus SoCs Watchdog
-+
-+maintainers:
-+  - XianTao Hu <xt.hu@cqplus1.com>
-+
-+allOf:
-+  - $ref: watchdog.yaml#
-+
-+properties:
-+  compatible:
-+    const: sunplus,sp7021-wdt
-+
-+  reg:
-+    items:
-+      - description: watchdog registers regions
-+      - description: miscellaneous control registers regions
-+
-+  clocks:
-+    maxItems: 1
-+
-+  resets:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - resets
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    watchdog: watchdog@9c000630 {
-+        compatible = "sunplus,sp7021-wdt";
-+        reg = <0x9c000630 0x08>, <0x9c000274 0x04>;
-+        clocks = <&clkc 0x24>;
-+        resets = <&rstc 0x14>;
-+    };
-+...
-diff --git a/MAINTAINERS b/MAINTAINERS
-index cd0f68d4a..efdc618a0 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -18544,6 +18544,12 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/rtc/sunplus,sp7021-rtc.yaml
- F:	drivers/rtc/rtc-sunplus.c
+diff --git a/arch/x86/events/core.c b/arch/x86/events/core.c
+index eef816fc216d..e3cc099886ab 100644
+--- a/arch/x86/events/core.c
++++ b/arch/x86/events/core.c
+@@ -1837,7 +1837,7 @@ ssize_t events_sysfs_show(struct device *dev, struct device_attribute *attr, cha
  
-+SUNPLUS WATCHDOG DRIVER
-+M:	Xiantao Hu <xt.hu@cqplus1.com>
-+L:	linux-watchdog@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/watchdog/sunplus,sp7021-wdt.yaml
-+
- SUPERH
- M:	Yoshinori Sato <ysato@users.sourceforge.jp>
- M:	Rich Felker <dalias@libc.org>
+ 	/* string trumps id */
+ 	if (pmu_attr->event_str)
+-		return sprintf(page, "%s", pmu_attr->event_str);
++		return sprintf(page, "%s\n", pmu_attr->event_str);
+ 
+ 	return x86_pmu.events_sysfs_show(page, config);
+ }
 -- 
-2.33.1
+2.30.GIT
 
