@@ -2,188 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DEE7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 12:16:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6132C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 12:17:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346601AbiCXMSQ (ORCPT
+        id S1349996AbiCXMTP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 08:18:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51318 "EHLO
+        Thu, 24 Mar 2022 08:19:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349980AbiCXMSN (ORCPT
+        with ESMTP id S237496AbiCXMTN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 08:18:13 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2155099EDF
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 05:16:42 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id t14so3679644pgr.3
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 05:16:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=VsMoQ6a5yHypTrD9qrKDAaRCbFUvI6woBhxzZufr/gQ=;
-        b=QeMdmwBAlF5KAuarUQclZ5ZRvKv4i2+eqIGN32O/mxGN1JFuvF6NKTCjK8FPf1WzMe
-         Ccoj0wKaHA5Tn0fyll0sjCTzlYSuUdlO5uggegLDtuEfNtbXmobAT3+sR4HNGn0SWb/s
-         VdjvJS6kwWytLJP7tdHxrKw/myZYZkoeK926dU1WWAQX3n8/iw3Cbes5lTqO9ThGYFFZ
-         kpZVgIcbn1l63M72c1q7L3wl3w/T9zCXvdchwpllRy5JRRWP+CT9fdiQ54Fzr+pSiCBh
-         f0hL/WBAb6KslNlK5zbMIvWDia6Xq70KlyN8M3A9/PCD215Fqdajzgxaq8jf/3PpUZxZ
-         QUFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VsMoQ6a5yHypTrD9qrKDAaRCbFUvI6woBhxzZufr/gQ=;
-        b=wLA82yQ1+HAyxcEVLIQzn3IH4bET0zoxn0EqZr2Z3509m4c8cMSi7DFYFE3Epa+pIO
-         XAOPbDsCFNSKuRfddJ+19JKGQcC8/tSTZwzmiLL4V0GIyQBzjhSZgJq8P2lvwIYZQMKl
-         YT9ZAtn9cfbZuIKHyf2b56kXeCXRFh8D8WME5pxgyJypWwdJQSc9iuRRvznz+TGeP9LX
-         s1bXHOcSyiYGe4FXLZ+jnnvrX7CV64RWCSoCOzjgEdioWbYCrozQC9OsqD1Ugvhmb1Fh
-         4kinMPlV7dabnCRFuMm8gAnKLnMyvb3OB3hM1tUZVErs7/eDgRWwvCPjex+B0p6pllV6
-         nhiA==
-X-Gm-Message-State: AOAM530HK7X05stYNpuIOsXRPOQKN0KkR34rZJbF4aiiFsjJKM/sLPvD
-        x9vk9Qze0RiYFsEeMcMrSGKcnA==
-X-Google-Smtp-Source: ABdhPJypoVx1bf/+/f0PU9KTcPgh58skt21jmyiixnpzbP1eozq/x0NuCqhl1yY7OBtxWORA63nZDQ==
-X-Received: by 2002:a63:1f55:0:b0:382:65eb:3073 with SMTP id q21-20020a631f55000000b0038265eb3073mr3839199pgm.624.1648124201594;
-        Thu, 24 Mar 2022 05:16:41 -0700 (PDT)
-Received: from sunil-laptop ([49.206.7.17])
-        by smtp.gmail.com with ESMTPSA id s30-20020a056a001c5e00b004f75773f3fcsm3295399pfw.119.2022.03.24.05.16.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 05:16:41 -0700 (PDT)
-Date:   Thu, 24 Mar 2022 17:46:31 +0530
-From:   Sunil V L <sunilvl@ventanamicro.com>
-To:     Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
-Cc:     Atish Patra <atishp@rivosinc.com>,
-        Anup Patel <apatel@ventanamicro.com>,
-        Jessica Clarke <jrtc27@jrtc27.com>,
-        Abner Chang <abner.chang@hpe.com>, linux-efi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Ard Biesheuvel <ardb@kernel.org>
-Subject: Re: [PATCH 1/1] riscv/efi_stub: Add support for
- RISCV_EFI_BOOT_PROTOCOL
-Message-ID: <20220324121631.GA39769@sunil-laptop>
-References: <20220324112534.209959-1-sunilvl@ventanamicro.com>
- <20220324112534.209959-2-sunilvl@ventanamicro.com>
- <14f87d29-ebc9-51a3-020c-353878bcb1ba@canonical.com>
+        Thu, 24 Mar 2022 08:19:13 -0400
+Received: from ZXSHCAS2.zhaoxin.com (ZXSHCAS2.zhaoxin.com [203.148.12.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B2599EDF;
+        Thu, 24 Mar 2022 05:17:40 -0700 (PDT)
+Received: from zxbjmbx1.zhaoxin.com (10.29.252.163) by ZXSHCAS2.zhaoxin.com
+ (10.28.252.162) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.27; Thu, 24 Mar
+ 2022 20:17:36 +0800
+Received: from L440.zhaoxin.com (10.29.8.49) by zxbjmbx1.zhaoxin.com
+ (10.29.252.163) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Thu, 24 Mar
+ 2022 20:17:35 +0800
+From:   WeitaoWangoc <WeitaoWang-oc@zhaoxin.com>
+To:     <stern@rowland.harvard.edu>, <gregkh@linuxfoundation.org>,
+        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <tonywwang@zhaoxin.com>, <weitaowang@zhaoxin.com>,
+        <CobeChen@zhaoxin.com>, Weitao Wang <WeitaoWang-oc@zhaoxin.com>
+Subject: [PATCH v2] USB:Fix ehci infinite suspend-resume loop issue in zhaoxin
+Date:   Thu, 24 Mar 2022 20:17:35 +0800
+Message-ID: <20220324121735.3803-1-WeitaoWang-oc@zhaoxin.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <14f87d29-ebc9-51a3-020c-353878bcb1ba@canonical.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.29.8.49]
+X-ClientProxiedBy: zxbjmbx1.zhaoxin.com (10.29.252.163) To
+ zxbjmbx1.zhaoxin.com (10.29.252.163)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 12:46:12PM +0100, Heinrich Schuchardt wrote:
-> On 3/24/22 12:25, Sunil V L wrote:
-> > This patch adds the support for getting the boot hart ID in
-> > Linux EFI stub using RISCV_EFI_BOOT_PROTOCOL. This protocol
-> > is preferred method over existing DT based solution since it
-> > works irrespective of DT or ACPI.
-> > 
-> > The specification of the protocol is hosted at:
-> > https://github.com/riscv-non-isa/riscv-uefi
-> > 
-> > Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
-> > Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
-> 
-> This seems to be v3 of the patch. v2 is available in
-> https://lore.kernel.org/all/20220303145944.307321-2-sunilvl@ventanamicro.com/
-> 
-> v3 replaces a message in efi_status_t check_platform_features():
-> 
-> <+   efi_err("/chosen/boot-hartid missing or invalid!\n");
-> >+   efi_err("Failed to get boot hartid!\n");
+In zhaoxin platform, some ehci projects will latch a wakeup signal
+internal when plug in a device on port during system S0. This wakeup
+signal will turn on when ehci runtime suspend, which will trigger a
+system control interrupt that will resume ehci back to D0. As no
+device connect, ehci will be set to runtime suspend and turn on the
+internal latched wakeup signal again. It will cause a suspend-resume
+loop and generate system control interrupt continuously.
 
-Yes, that's correct. Sorry I missed the version. I resent the patch with
-version and your RB tag added.
+Fixed this issue by clear wakeup signal latched in ehci internal when
+ehci resume callback is called.
 
-Thanks!
-Sunil
-> 
-> Reviewed-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
-> 
-> > ---
-> >   drivers/firmware/efi/libstub/efistub.h    |  7 ++++++
-> >   drivers/firmware/efi/libstub/riscv-stub.c | 29 +++++++++++++++++++----
-> >   include/linux/efi.h                       |  1 +
-> >   3 files changed, 32 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/drivers/firmware/efi/libstub/efistub.h b/drivers/firmware/efi/libstub/efistub.h
-> > index edb77b0621ea..aced62a0907e 100644
-> > --- a/drivers/firmware/efi/libstub/efistub.h
-> > +++ b/drivers/firmware/efi/libstub/efistub.h
-> > @@ -720,6 +720,13 @@ union efi_tcg2_protocol {
-> >   	} mixed_mode;
-> >   };
-> > +struct riscv_efi_boot_protocol {
-> > +	u64 revision;
-> > +
-> > +	efi_status_t (__efiapi * get_boot_hartid)(struct riscv_efi_boot_protocol *this,
-> > +						  size_t *boot_hartid);
-> > +};
-> > +
-> >   typedef union efi_load_file_protocol efi_load_file_protocol_t;
-> >   typedef union efi_load_file_protocol efi_load_file2_protocol_t;
-> > diff --git a/drivers/firmware/efi/libstub/riscv-stub.c b/drivers/firmware/efi/libstub/riscv-stub.c
-> > index 9c460843442f..012504f6f9a4 100644
-> > --- a/drivers/firmware/efi/libstub/riscv-stub.c
-> > +++ b/drivers/firmware/efi/libstub/riscv-stub.c
-> > @@ -23,7 +23,7 @@
-> >   typedef void __noreturn (*jump_kernel_func)(unsigned int, unsigned long);
-> > -static u32 hartid;
-> > +static size_t hartid;
-> >   static int get_boot_hartid_from_fdt(void)
-> >   {
-> > @@ -47,14 +47,33 @@ static int get_boot_hartid_from_fdt(void)
-> >   	return 0;
-> >   }
-> > +static efi_status_t get_boot_hartid_from_efi(void)
-> > +{
-> > +	efi_guid_t boot_protocol_guid = RISCV_EFI_BOOT_PROTOCOL_GUID;
-> > +	efi_status_t status;
-> > +	struct riscv_efi_boot_protocol *boot_protocol;
-> > +
-> > +	status = efi_bs_call(locate_protocol, &boot_protocol_guid, NULL,
-> > +			     (void **)&boot_protocol);
-> > +	if (status == EFI_SUCCESS) {
-> > +		status = efi_call_proto(boot_protocol,
-> > +					get_boot_hartid, &hartid);
-> > +	}
-> > +	return status;
-> > +}
-> > +
-> >   efi_status_t check_platform_features(void)
-> >   {
-> >   	int ret;
-> > +	efi_status_t status;
-> > -	ret = get_boot_hartid_from_fdt();
-> > -	if (ret) {
-> > -		efi_err("/chosen/boot-hartid missing or invalid!\n");
-> > -		return EFI_UNSUPPORTED;
-> > +	status = get_boot_hartid_from_efi();
-> > +	if (status != EFI_SUCCESS) {
-> > +		ret = get_boot_hartid_from_fdt();
-> > +		if (ret) {
-> > +			efi_err("Failed to get boot hartid!\n");
-> > +			return EFI_UNSUPPORTED;
-> > +		}
-> >   	}
-> >   	return EFI_SUCCESS;
-> >   }
-> > diff --git a/include/linux/efi.h b/include/linux/efi.h
-> > index ccd4d3f91c98..9822c730207c 100644
-> > --- a/include/linux/efi.h
-> > +++ b/include/linux/efi.h
-> > @@ -380,6 +380,7 @@ void efi_native_runtime_setup(void);
-> >   #define EFI_CONSOLE_OUT_DEVICE_GUID		EFI_GUID(0xd3b36f2c, 0xd551, 0x11d4,  0x9a, 0x46, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d)
-> >   #define APPLE_PROPERTIES_PROTOCOL_GUID		EFI_GUID(0x91bd12fe, 0xf6c3, 0x44fb,  0xa5, 0xb7, 0x51, 0x22, 0xab, 0x30, 0x3a, 0xe0)
-> >   #define EFI_TCG2_PROTOCOL_GUID			EFI_GUID(0x607f766c, 0x7455, 0x42be,  0x93, 0x0b, 0xe4, 0xd7, 0x6d, 0xb2, 0x72, 0x0f)
-> > +#define RISCV_EFI_BOOT_PROTOCOL_GUID		EFI_GUID(0xccd15fec, 0x6f73, 0x4eec,  0x83, 0x95, 0x3e, 0x69, 0xe4, 0xb9, 0x40, 0xbf)
-> >   #define EFI_LOAD_FILE_PROTOCOL_GUID		EFI_GUID(0x56ec3091, 0x954c, 0x11d2,  0x8e, 0x3f, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b)
-> >   #define EFI_LOAD_FILE2_PROTOCOL_GUID		EFI_GUID(0x4006c0c1, 0xfcb3, 0x403e,  0x99, 0x6d, 0x4a, 0x6c, 0x87, 0x24, 0xe0, 0x6d)
-> >   #define EFI_RT_PROPERTIES_TABLE_GUID		EFI_GUID(0xeb66918a, 0x7eef, 0x402a,  0x84, 0x2e, 0x93, 0x1d, 0x21, 0xc3, 0x8a, 0xe9)
-> 
+Signed-off-by: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
+---
+v1->v2
+ - Improve this patch with not to clear STS_PCD bit.
+ - Change a boolean flag name to make its meaning more obvious.
+ - Fix "tabs converted to spaces" issue.
+
+ drivers/usb/host/ehci-hcd.c | 23 +++++++++++++++++++++++
+ drivers/usb/host/ehci-pci.c |  4 ++++
+ drivers/usb/host/ehci.h     |  1 +
+ 3 files changed, 28 insertions(+)
+
+diff --git a/drivers/usb/host/ehci-hcd.c b/drivers/usb/host/ehci-hcd.c
+index 3d82e0b853be..684164fa9716 100644
+--- a/drivers/usb/host/ehci-hcd.c
++++ b/drivers/usb/host/ehci-hcd.c
+@@ -1103,6 +1103,26 @@ static void ehci_remove_device(struct usb_hcd *hcd, struct usb_device *udev)
+ 
+ #ifdef	CONFIG_PM
+ 
++/* Clear wakeup signal locked in zhaoxin platform when device plug in. */
++static void ehci_zx_wakeup_clear(struct ehci_hcd *ehci)
++{
++	u32 __iomem	*reg = &ehci->regs->port_status[4];
++	u32 		t1 = ehci_readl(ehci, reg);
++
++	t1 &= (u32)~0xf0000;
++	t1 |= PORT_TEST_FORCE;
++	ehci_writel(ehci, t1, reg);
++	t1 = ehci_readl(ehci, reg);
++	msleep(1);
++	t1 &= (u32)~0xf0000;
++	ehci_writel(ehci, t1, reg);
++	ehci_readl(ehci, reg);
++	msleep(1);
++	t1 = ehci_readl(ehci, reg);
++	ehci_writel(ehci, t1 | PORT_CSC, reg);
++	ehci_readl(ehci, reg);
++}
++
+ /* suspend/resume, section 4.3 */
+ 
+ /* These routines handle the generic parts of controller suspend/resume */
+@@ -1154,6 +1174,9 @@ int ehci_resume(struct usb_hcd *hcd, bool force_reset)
+ 	if (ehci->shutdown)
+ 		return 0;		/* Controller is dead */
+ 
++	if (ehci->zx_wakeup_clear_needed)
++		ehci_zx_wakeup_clear(ehci);
++
+ 	/*
+ 	 * If CF is still set and reset isn't forced
+ 	 * then we maintained suspend power.
+diff --git a/drivers/usb/host/ehci-pci.c b/drivers/usb/host/ehci-pci.c
+index e87cf3a00fa4..b11a6f82aee2 100644
+--- a/drivers/usb/host/ehci-pci.c
++++ b/drivers/usb/host/ehci-pci.c
+@@ -222,6 +222,10 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
+ 			ehci->has_synopsys_hc_bug = 1;
+ 		}
+ 		break;
++	case PCI_VENDOR_ID_ZHAOXIN:
++		if (pdev->device == 0x3104 && (pdev->revision & 0xf0) == 0x90)
++			ehci->zx_wakeup_clear_needed = 1;
++		break;
+ 	}
+ 
+ 	/* optional debug port, normally in the first BAR */
+diff --git a/drivers/usb/host/ehci.h b/drivers/usb/host/ehci.h
+index fdd073cc053b..ad3f13a3eaf1 100644
+--- a/drivers/usb/host/ehci.h
++++ b/drivers/usb/host/ehci.h
+@@ -220,6 +220,7 @@ struct ehci_hcd {			/* one per controller */
+ 	unsigned		imx28_write_fix:1; /* For Freescale i.MX28 */
+ 	unsigned		spurious_oc:1;
+ 	unsigned		is_aspeed:1;
++	unsigned		zx_wakeup_clear_needed:1;
+ 
+ 	/* required for usb32 quirk */
+ 	#define OHCI_CTRL_HCFS          (3 << 6)
+-- 
+2.32.0
