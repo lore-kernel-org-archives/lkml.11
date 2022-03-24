@@ -2,86 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03DEDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 14:42:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B7FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 14:43:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351163AbiCXOoT (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 10:44:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39434 "EHLO
+        id S243311AbiCXOp3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Mar 2022 10:45:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235849AbiCXOoM (ORCPT
+        with ESMTP id S235849AbiCXOp0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 10:44:12 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24600AC91D
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 07:42:40 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id l7-20020a05600c1d0700b0038c99618859so7356036wms.2
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 07:42:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RUuYp2gzZTfveRrYj1nKJKJ6GLr04No5LqGCeqkgp50=;
-        b=G9HidbaMnDHtTrEAhAkiDwkyMIMMc6Wqcu/xpKqMNAqZgScFmSCAILoCtXpISK+Hhy
-         uB+8YBCUwdxf1Gocu8dCsTLDhaqkZGMeh6nNJ3sUFCCJImFnDwOyBw6dRyGd8Rm8I3OK
-         4rKkIdOoe9qcnCYK25u26XittRZwpnKn4rAlusYwV9HlRFHoau53kWOf/+m6xWfwxB/h
-         zQ54w0wxyEcRcwkFJuJ+1mJTTVlkBlhHn7TzrxHuLg+m4FtaPlh57mFRtuAS7w7hH6M9
-         cbq8IvAUXGMjZvK+w4GvQp66umUGHCpUGcbSgAPAW4awO2p2dX6wGm5kdQWdDSl4axza
-         EZmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RUuYp2gzZTfveRrYj1nKJKJ6GLr04No5LqGCeqkgp50=;
-        b=sGDjXH41eJ3iHr+rTzsLiUtGBXJgBfGSnoeqsNC7tYIooVQTAdw5SfbfmE4pvsW5jn
-         z93vZMYyi4qCAZY+gumhU927Gxa4/cSUfKRpQb1f/fNJHsEz9XTECG9Eey+dtNeQWLHc
-         5O68zAiDZ1/FFBt2RRO/f/6O7TcfodndJoR2vsCB0g+aGthq5z74VSHvUTsDBt2UbUVT
-         7A2ld67qtgy77xmR4w57MgpglvtF4jD/pwAPK4lnJBVUE0df1gUEhXAUqgWkAAaMlYAB
-         s7up6PoDoFOn0EpQupWJDhNb2s1N/PmEVnmwMy/orQmyf/nJsYqzGeH7NrEv841Vrw66
-         +jCQ==
-X-Gm-Message-State: AOAM5313/N0B8eEVskFi6U7yp6JOQy72XVEwNNEtdKjUGGkAoRjoSPQD
-        ZUeZAfxTwyp0tfNyQ7PZQRK/FLZgT67pew==
-X-Google-Smtp-Source: ABdhPJw3kEFmgdFvOYqPEE/cnML2UreW9i+I5UewFAmsjCiGfAtVJ0zEiql/LajWmccl86QQnyLLPQ==
-X-Received: by 2002:a05:600c:4608:b0:38c:6ba3:1c9f with SMTP id m8-20020a05600c460800b0038c6ba31c9fmr14542211wmo.39.1648132958693;
-        Thu, 24 Mar 2022 07:42:38 -0700 (PDT)
-Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id r15-20020a5d6c6f000000b002040552e88esm3273175wrz.29.2022.03.24.07.42.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 07:42:38 -0700 (PDT)
-From:   Corentin Labbe <clabbe@baylibre.com>
-To:     davem@davemloft.net, herbert@gondor.apana.org.au,
-        jernej.skrabec@gmail.com, krzk+dt@kernel.org, robh+dt@kernel.org,
-        samuel@sholland.org, wens@csie.org
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH] dt-bindings: crypto: sun8i-ce: remove extra line
-Date:   Thu, 24 Mar 2022 14:42:33 +0000
-Message-Id: <20220324144233.1119495-1-clabbe@baylibre.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 24 Mar 2022 10:45:26 -0400
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD5606CA42;
+        Thu, 24 Mar 2022 07:43:54 -0700 (PDT)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id ECCE41844;
+        Thu, 24 Mar 2022 15:43:52 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1648133033;
+        bh=XK0EacdLP60O7zBm098OAPOEWC6AkfCIFJoIv1TcGjU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Z+qKSpcc0tat79ofIFypLGi2DCcIC4r39TzZ/wuPy4CKI08hw9vrjWTe1YxrcQJD7
+         WHbWkhvKrHj0khxGfJPGxC8e9arKQgp27jGKpnsBsgr9t/njQdD5gSoSJkg3EOzCQc
+         gyC2TQRQjnJbljHD0EQxO2R+qMCcQK4Ry42ELW6c=
+Date:   Thu, 24 Mar 2022 16:43:51 +0200
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Dan Vacura <w36195@motorola.com>
+Cc:     linux-usb@vger.kernel.org, stable@vger.kernel.org,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bhupesh Sharma <bhupesh.sharma@st.com>,
+        linux-kernel@vger.kernel.org,
+        Paul Elder <paul.elder@ideasonboard.com>
+Subject: Re: [PATCH v2] usb: gadget: uvc: Fix crash when encoding data for
+ usb request
+Message-ID: <YjyDp4l37XimcoZh@pendragon.ideasonboard.com>
+References: <20220318164706.22365-1-w36195@motorola.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220318164706.22365-1-w36195@motorola.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-yamllint complains about this extra line.
+Hi Dan,
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
----
- Documentation/devicetree/bindings/crypto/allwinner,sun8i-ce.yaml | 1 -
- 1 file changed, 1 deletion(-)
+(CC'ing Paul Elder)
 
-diff --git a/Documentation/devicetree/bindings/crypto/allwinner,sun8i-ce.yaml b/Documentation/devicetree/bindings/crypto/allwinner,sun8i-ce.yaml
-index 00648f9d9278..026a9f9e1aeb 100644
---- a/Documentation/devicetree/bindings/crypto/allwinner,sun8i-ce.yaml
-+++ b/Documentation/devicetree/bindings/crypto/allwinner,sun8i-ce.yaml
-@@ -82,4 +82,3 @@ examples:
-       clock-names = "bus", "mod";
-       resets = <&ccu RST_BUS_CE>;
-     };
--
+Thank you for the patch.
+
+On Fri, Mar 18, 2022 at 11:47:06AM -0500, Dan Vacura wrote:
+> During the uvcg_video_pump() process, if an error occurs and
+> uvcg_queue_cancel() is called, the buffer queue will be cleared out, but
+> the current marker (queue->buf_used) of the active buffer (no longer
+> active) is not reset. On the next iteration of uvcg_video_pump() the
+> stale buf_used count will be used and the logic of min((unsigned
+> int)len, buf->bytesused - queue->buf_used) may incorrectly calculate a
+> nbytes size, causing an invalid memory access.
+
+When uvcg_queue_cancel() is called, it will empty the queue->irqqueue.
+The next uvcg_video_pump() iteration should thus get a NULL buffer when
+calling uvcg_queue_head(), and shouldn't proceed to calling
+video->encode(). Is the issue that the application queues further
+buffers after cancellation, which puts a new buffer in the irqqueue ?
+
+I wonder if we need to expand the discussion here to what should be done
+if an error occurs in uvcg_video_pump(). We currently cancel the queue
+and drop all queued buffers, but don't prevent more buffers to be
+queued. Should we force the application to stop streaming in case of
+error, clean up and restart ? Or are usb_ep_queue() errors expected to
+happen from time to time, with graceful error recovery a required
+feature of the gadget driver ?
+
+> [80802.185460][  T315] configfs-gadget gadget: uvc: VS request completed
+> with status -18.
+> [80802.185519][  T315] configfs-gadget gadget: uvc: VS request completed
+> with status -18.
+> ...
+> uvcg_queue_cancel() is called and the queue is cleared out, but the
+> marker queue->buf_used is not reset.
+> ...
+> [80802.262328][ T8682] Unable to handle kernel paging request at virtual
+> address ffffffc03af9f000
+> ...
+> ...
+> [80802.263138][ T8682] Call trace:
+> [80802.263146][ T8682]  __memcpy+0x12c/0x180
+> [80802.263155][ T8682]  uvcg_video_pump+0xcc/0x1e0
+> [80802.263165][ T8682]  process_one_work+0x2cc/0x568
+> [80802.263173][ T8682]  worker_thread+0x28c/0x518
+> [80802.263181][ T8682]  kthread+0x160/0x170
+> [80802.263188][ T8682]  ret_from_fork+0x10/0x18
+> [80802.263198][ T8682] Code: a8c12829 a88130cb a8c130
+> 
+> Fixes: d692522577c0 ("usb: gadget/uvc: Port UVC webcam gadget to use videobuf2 framework")
+> Signed-off-by: Dan Vacura <w36195@motorola.com>
+> 
+> ---
+> Changes in v2:
+> - Add Fixes tag
+> 
+>  drivers/usb/gadget/function/uvc_queue.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/usb/gadget/function/uvc_queue.c b/drivers/usb/gadget/function/uvc_queue.c
+> index d852ac9e47e7..2cda982f3765 100644
+> --- a/drivers/usb/gadget/function/uvc_queue.c
+> +++ b/drivers/usb/gadget/function/uvc_queue.c
+> @@ -264,6 +264,8 @@ void uvcg_queue_cancel(struct uvc_video_queue *queue, int disconnect)
+>  		buf->state = UVC_BUF_STATE_ERROR;
+>  		vb2_buffer_done(&buf->buf.vb2_buf, VB2_BUF_STATE_ERROR);
+>  	}
+> +	queue->buf_used = 0;
+> +
+>  	/* This must be protected by the irqlock spinlock to avoid race
+>  	 * conditions between uvc_queue_buffer and the disconnection event that
+>  	 * could result in an interruptible wait in uvc_dequeue_buffer. Do not
+
 -- 
-2.34.1
+Regards,
 
+Laurent Pinchart
