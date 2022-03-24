@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E93E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:47:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CDADC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:47:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239840AbiC1PtG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 11:49:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46516 "EHLO
+        id S239904AbiC1PtJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 11:49:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239096AbiC1PqK (ORCPT
+        with ESMTP id S239085AbiC1PqK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Mar 2022 11:46:10 -0400
 Received: from mail.baikalelectronics.ru (mail.baikalelectronics.com [87.245.175.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DDCF64B1E9;
-        Mon, 28 Mar 2022 08:44:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7648D4AE3B;
+        Mon, 28 Mar 2022 08:44:18 -0700 (PDT)
 Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id D96631E28DF;
-        Thu, 24 Mar 2022 03:16:45 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru D96631E28DF
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id D57901E28D4;
+        Thu, 24 Mar 2022 03:16:37 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru D57901E28D4
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1648081005;
-        bh=s8/hjJ3Mxs6TNNKBuPTlAebuny86Ylaq+Kt1EqWatAk=;
+        d=baikalelectronics.ru; s=mail; t=1648080997;
+        bh=WwPZH0B/nbV8SPoRsnfa0nApSVFo28Gv/7atL+OBCV4=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=K1uYWeC2FnUOs850BMTzhqOyMJPSXexWjTMqTdoqm2Dq1csKayY5b7MAz8CDRfNVo
-         0atB27pqp4fzZ0F5cBAjmzk+ZCefLtwB7I1rmAh1EUMaXB4K0WazGir93MQwMs6LQs
-         WXLeXy8fX3hoZemkoaHDN7/++2wVZk6di1sngrxM=
+        b=G6fhluXK/HeWLEpvOSJmMgfNTLbDeIzc4qqbGv6vy2xkZyEj+/2Dffrr0FEDXYsKC
+         PDEtpsoJuXO2GccFVQQA6nrGGy9T9X/gjABOxKX6r9O4gLkI74Kkfnuzn2AaX+HgoD
+         ObNJ+FD5N/7B/iGGVHmue4voGN0WUpaM3dIZ/ihg=
 Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 24 Mar 2022 03:16:45 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 24 Mar 2022 03:16:37 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Serge Semin <fancer.lancer@gmail.com>
+        Jens Axboe <axboe@kernel.dk>
 CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
         Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
         Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
         Rob Herring <robh+dt@kernel.org>, <linux-ide@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: [PATCH 19/21] ata: ahci-dwc: Add platform-specific quirks support
-Date:   Thu, 24 Mar 2022 03:16:26 +0300
-Message-ID: <20220324001628.13028-20-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH 09/21] ata: libahci_platform: Introduce reset assertion/deassertion methods
+Date:   Thu, 24 Mar 2022 03:16:16 +0300
+Message-ID: <20220324001628.13028-10-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20220324001628.13028-1-Sergey.Semin@baikalelectronics.ru>
 References: <20220324001628.13028-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -51,143 +51,168 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some DWC AHCI SATA IP-core derivatives require to perform small platform
-or IP-core specific setups. They are too small to be placed in a dedicated
-driver. It's just much easier to have a set of quirks for them right in
-the DWC AHCI driver code. Since we are about to add such platform support,
-as a pre-requisite we introduce a platform-data based DWC AHCI quirks API.
-The platform data can be used to define the flags passed to the
-ahci_platform_get_resources() method, additional AHCI host-flags and a set
-of callbacks to initialize, re-initialize and clear the platform settings.
+Currently the ACHI-platform library supports only the assert and deassert
+reset signals and ignores the platforms with self-deasserting reset lines.
+That prone to having the platforms with self-deasserting reset method
+misbehaviour when it comes to resuming from sleep state after the clocks
+have been fully disabled. For such cases the controller needs to be fully
+reset all over after the reference clocks are enabled and stable,
+otherwise the controller state machine might be in an undetermined state.
+
+The best solution would be to auto-detect which reset method is supported
+by the particular platform and use it implicitly in the framework of the
+ahci_platform_enable_resources()/ahci_platform_disable_resources()
+methods. Alas it can't be implemented due to the AHCI-platform library
+already supporting the shared reset control lines. As [1] says in such
+case we have to use only one of the next methods:
++ reset_control_assert()/reset_control_deassert();
++ reset_control_reset()/reset_control_rearm().
+If the driver had an exclusive control over the reset lines we could have
+been able to manipulate the lines with no much limitation and just used
+the combination of the methods above to cover all the possible
+reset-control cases. Since the shared reset control has already been
+advertised and couldn't be changed with no risk to breaking the platforms
+relying on it, we have no choice but to make the platform drivers to
+determine which reset methods the platform reset system supports.
+
+In order to implement both types of reset control support we suggest to
+introduce the new AHCI-platform flag: AHCI_PLATFORM_RST_TRIGGER, which
+when passed to the ahci_platform_get_resources() method together with the
+AHCI_PLATFORM_GET_RESETS flag will indicate that the reset lines are
+self-deasserting thus the reset_control_reset()/reset_control_rearm() will
+be used to control the reset state. Otherwise the
+reset_control_deassert()/reset_control_assert() methods will be utilized.
+
+[1] Documentation/driver-api/reset.rst
 
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 ---
- drivers/ata/ahci_dwc.c | 52 ++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 48 insertions(+), 4 deletions(-)
+ drivers/ata/ahci.h             |  1 +
+ drivers/ata/libahci_platform.c | 47 ++++++++++++++++++++++++++++++----
+ include/linux/ahci_platform.h  |  5 +++-
+ 3 files changed, 47 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/ata/ahci_dwc.c b/drivers/ata/ahci_dwc.c
-index c51e2251994e..9e294f994ed3 100644
---- a/drivers/ata/ahci_dwc.c
-+++ b/drivers/ata/ahci_dwc.c
-@@ -90,7 +90,16 @@
- #define DWC_AHCI_PORT_PHYCR		0x74
- #define DWC_AHCI_PORT_PHYSR		0x78
+diff --git a/drivers/ata/ahci.h b/drivers/ata/ahci.h
+index 1564c691094a..0b1d5c24cb8c 100644
+--- a/drivers/ata/ahci.h
++++ b/drivers/ata/ahci.h
+@@ -342,6 +342,7 @@ struct ahci_host_priv {
+ 	bool			got_runtime_pm; /* Did we do pm_runtime_get? */
+ 	unsigned int		n_clks;
+ 	struct clk_bulk_data	*clks;		/* Optional */
++	unsigned int		f_rsts;
+ 	struct reset_control	*rsts;		/* Optional */
+ 	struct regulator	**target_pwrs;	/* Optional */
+ 	struct regulator	*ahci_regulator;/* Optional */
+diff --git a/drivers/ata/libahci_platform.c b/drivers/ata/libahci_platform.c
+index 5998e735a813..febad33aa43c 100644
+--- a/drivers/ata/libahci_platform.c
++++ b/drivers/ata/libahci_platform.c
+@@ -150,6 +150,41 @@ void ahci_platform_disable_clks(struct ahci_host_priv *hpriv)
+ }
+ EXPORT_SYMBOL_GPL(ahci_platform_disable_clks);
  
-+struct dwc_ahci_plat_data {
-+	unsigned int pflags;
-+	unsigned int hflags;
-+	int (*init)(struct ahci_host_priv *hpriv);
-+	int (*reinit)(struct ahci_host_priv *hpriv);
-+	void (*clear)(struct ahci_host_priv *hpriv);
-+};
++/**
++ * ahci_platform_deassert_rsts - Deassert/trigger platform resets
++ * @hpriv: host private area to store config values
++ *
++ * This function desserts or triggers all the reset lanes found for the AHCI
++ * device.
++ *
++ * RETURNS:
++ * 0 on success otherwise a negative error code
++ */
++int ahci_platform_deassert_rsts(struct ahci_host_priv *hpriv)
++{
++	if (hpriv->f_rsts & AHCI_PLATFORM_RST_TRIGGER)
++		return reset_control_reset(hpriv->rsts);
 +
- struct dwc_ahci_host_priv {
-+	const struct dwc_ahci_plat_data *pdata;
- 	struct platform_device *pdev;
- 
- 	u32 timv;
-@@ -107,11 +116,15 @@ static struct ahci_host_priv *dwc_ahci_get_resources(struct platform_device *pde
- 		return ERR_PTR(-ENOMEM);
- 
- 	dpriv->pdev = pdev;
-+	dpriv->pdata = device_get_match_data(&pdev->dev);
-+	if (!dpriv->pdata)
-+		return ERR_PTR(-EINVAL);
- 
--	hpriv = ahci_platform_get_resources(pdev, AHCI_PLATFORM_GET_RESETS);
-+	hpriv = ahci_platform_get_resources(pdev, dpriv->pdata->pflags);
- 	if (IS_ERR(hpriv))
- 		return hpriv;
- 
-+	hpriv->flags |= dpriv->pdata->hflags;
- 	hpriv->plat_data = (void *)dpriv;
- 
- 	return hpriv;
-@@ -242,22 +255,33 @@ static int dwc_ahci_init_dmacr(struct ahci_host_priv *hpriv)
- 
- static int dwc_ahci_init_host(struct ahci_host_priv *hpriv)
- {
-+	struct dwc_ahci_host_priv *dpriv = hpriv->plat_data;
- 	int rc;
- 
- 	rc = ahci_platform_enable_resources(hpriv);
- 	if (rc)
- 		return rc;
- 
-+	if (dpriv->pdata->init) {
-+		rc = dpriv->pdata->init(hpriv);
-+		if (rc)
-+			goto err_disable_resources;
-+	}
++	return reset_control_deassert(hpriv->rsts);
++}
++EXPORT_SYMBOL_GPL(ahci_platform_deassert_rsts);
 +
- 	dwc_ahci_check_cap(hpriv);
- 
- 	dwc_ahci_init_timer(hpriv);
- 
- 	rc = dwc_ahci_init_dmacr(hpriv);
++/**
++ * ahci_platform_assert_rsts - Assert/rearm platform resets
++ * @hpriv: host private area to store config values
++ *
++ * This function asserts or rearms (for self-deasserting resets) all the reset
++ * controls found for the AHCI device.
++ */
++void ahci_platform_assert_rsts(struct ahci_host_priv *hpriv)
++{
++	if (hpriv->f_rsts & AHCI_PLATFORM_RST_TRIGGER)
++		return (void)reset_control_rearm(hpriv->rsts);
++
++	reset_control_assert(hpriv->rsts);
++}
++EXPORT_SYMBOL_GPL(ahci_platform_assert_rsts);
++
+ /**
+  * ahci_platform_enable_regulators - Enable regulators
+  * @hpriv: host private area to store config values
+@@ -247,18 +282,18 @@ int ahci_platform_enable_resources(struct ahci_host_priv *hpriv)
  	if (rc)
--		goto err_disable_resources;
-+		goto err_clear_platform;
+ 		goto disable_regulator;
+ 
+-	rc = reset_control_deassert(hpriv->rsts);
++	rc = ahci_platform_deassert_rsts(hpriv);
+ 	if (rc)
+ 		goto disable_clks;
+ 
+ 	rc = ahci_platform_enable_phys(hpriv);
+ 	if (rc)
+-		goto disable_resets;
++		goto disable_rsts;
  
  	return 0;
  
-+err_clear_platform:
-+	if (dpriv->pdata->clear)
-+		dpriv->pdata->clear(hpriv);
+-disable_resets:
+-	reset_control_assert(hpriv->rsts);
++disable_rsts:
++	ahci_platform_assert_rsts(hpriv);
+ 
+ disable_clks:
+ 	ahci_platform_disable_clks(hpriv);
+@@ -285,7 +320,7 @@ void ahci_platform_disable_resources(struct ahci_host_priv *hpriv)
+ {
+ 	ahci_platform_disable_phys(hpriv);
+ 
+-	reset_control_assert(hpriv->rsts);
++	ahci_platform_assert_rsts(hpriv);
+ 
+ 	ahci_platform_disable_clks(hpriv);
+ 
+@@ -468,6 +503,8 @@ struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
+ 			rc = PTR_ERR(hpriv->rsts);
+ 			goto err_out;
+ 		}
 +
- err_disable_resources:
- 	ahci_platform_disable_resources(hpriv);
- 
-@@ -275,6 +299,12 @@ static int dwc_ahci_reinit_host(struct ahci_host_priv *hpriv)
- 	if (rc)
- 		return rc;
- 
-+	if (dpriv->pdata->reinit) {
-+		rc = dpriv->pdata->reinit(hpriv);
-+		if (rc)
-+			goto err_disable_resources;
-+	}
-+
- 	writel(dpriv->timv, hpriv->mmio + DWC_AHCI_HOST_TIMER1MS);
- 
- 	for_each_set_bit(i, &port_map, AHCI_MAX_PORTS) {
-@@ -283,10 +313,20 @@ static int dwc_ahci_reinit_host(struct ahci_host_priv *hpriv)
++		hpriv->f_rsts = flags & AHCI_PLATFORM_RST_TRIGGER;
  	}
  
- 	return 0;
-+
-+err_disable_resources:
-+	ahci_platform_disable_resources(hpriv);
-+
-+	return rc;
- }
+ 	/*
+diff --git a/include/linux/ahci_platform.h b/include/linux/ahci_platform.h
+index fd964e6a68d6..57d25d30a9fa 100644
+--- a/include/linux/ahci_platform.h
++++ b/include/linux/ahci_platform.h
+@@ -26,6 +26,8 @@ struct clk *
+ ahci_platform_find_clk(struct ahci_host_priv *hpriv, const char *con_id);
+ int ahci_platform_enable_clks(struct ahci_host_priv *hpriv);
+ void ahci_platform_disable_clks(struct ahci_host_priv *hpriv);
++int ahci_platform_deassert_rsts(struct ahci_host_priv *hpriv);
++void ahci_platform_assert_rsts(struct ahci_host_priv *hpriv);
+ int ahci_platform_enable_regulators(struct ahci_host_priv *hpriv);
+ void ahci_platform_disable_regulators(struct ahci_host_priv *hpriv);
+ int ahci_platform_enable_resources(struct ahci_host_priv *hpriv);
+@@ -44,6 +46,7 @@ int ahci_platform_resume_host(struct device *dev);
+ int ahci_platform_suspend(struct device *dev);
+ int ahci_platform_resume(struct device *dev);
  
- static void dwc_ahci_clear_host(struct ahci_host_priv *hpriv)
- {
-+	struct dwc_ahci_host_priv *dpriv = hpriv->plat_data;
-+
-+	if (dpriv->pdata->clear)
-+		dpriv->pdata->clear(hpriv);
-+
- 	ahci_platform_disable_resources(hpriv);
- }
+-#define AHCI_PLATFORM_GET_RESETS	0x01
++#define AHCI_PLATFORM_GET_RESETS	BIT(0)
++#define AHCI_PLATFORM_RST_TRIGGER	BIT(1)
  
-@@ -371,9 +411,13 @@ static int dwc_ahci_resume(struct device *dev)
- 
- static SIMPLE_DEV_PM_OPS(dwc_ahci_pm_ops, dwc_ahci_suspend, dwc_ahci_resume);
- 
-+struct dwc_ahci_plat_data dwc_ahci_plat = {
-+	.pflags = AHCI_PLATFORM_GET_RESETS,
-+};
-+
- static const struct of_device_id dwc_ahci_of_match[] = {
--	{ .compatible = "snps,dwc-ahci", },
--	{ .compatible = "snps,spear-ahci", },
-+	{ .compatible = "snps,dwc-ahci", &dwc_ahci_plat },
-+	{ .compatible = "snps,spear-ahci", &dwc_ahci_plat },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, dwc_ahci_of_match);
+ #endif /* _AHCI_PLATFORM_H */
 -- 
 2.35.1
 
