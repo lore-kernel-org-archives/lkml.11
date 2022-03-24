@@ -2,101 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B286C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 06:23:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBAB0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 06:24:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348190AbiCXGYa (ORCPT
+        id S1348174AbiCXG00 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 02:24:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52350 "EHLO
+        Thu, 24 Mar 2022 02:26:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348174AbiCXGY2 (ORCPT
+        with ESMTP id S242173AbiCXG0Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 02:24:28 -0400
-Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16633972AF
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 23:22:57 -0700 (PDT)
-Received: from localhost.localdomain (unknown [10.101.196.174])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 7F8E03F662;
-        Thu, 24 Mar 2022 06:22:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1648102970;
-        bh=jCvl+Tm0SH7RCkxyhwmKqMLfkFFfLZFvHeFVcHt4Lzs=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=DmIk865PdCsNmUZd4oP0CgZVoPQGfc4lCSkvPr8LFqzRjA9TUiM9xShD2CNM7GDWP
-         Ja88oLd7h92cXG5RCzAn4v28Gk7veGujrliaXBrKgqJdVNkmzBC91A6BUi7ymWxo8l
-         Z1ds1duSKPOPqkGXLD3ZQ/pIHLo4ubIDUbvfP3ylJ1iYdBisb0f8VlweEIVs0Jl2IC
-         rmkgPcE4H1k9UZRe53q5MPSyw3mpYRAECxC67jU7FtTTPUmfS86v6KUAkatE1hP0rM
-         mqaGAIgkKZhZm+gdB5QdEwL5wYk/SG6CdK0gHI8oOF3zRBWVWhd99Lgg8O77vj5Qmu
-         uGpun5tbPJYXA==
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     tiwai@suse.com
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Jeremy Szu <jeremy.szu@canonical.com>,
-        Werner Sembach <wse@tuxedocomputers.com>,
-        Hui Wang <hui.wang@canonical.com>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Cameron Berkenpas <cam@neo-zeon.de>,
-        Kailang Yang <kailang@realtek.com>, Sami Loone <sami@loone.fi>,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] ALSA: hda/realtek: Add mute and micmut LED support for Zbook Fury 17 G9
-Date:   Thu, 24 Mar 2022 14:21:58 +0800
-Message-Id: <20220324062159.241313-1-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.34.1
+        Thu, 24 Mar 2022 02:26:24 -0400
+Received: from mail-vk1-xa2f.google.com (mail-vk1-xa2f.google.com [IPv6:2607:f8b0:4864:20::a2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B917DEDA
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 23:24:52 -0700 (PDT)
+Received: by mail-vk1-xa2f.google.com with SMTP id w123so2046806vkg.7
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 23:24:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zGkLO8QE+JkINxXufCxF2QAgYC6g0Sy7UndvDKoQKoY=;
+        b=b5W5RtODlUZwjxFNOLlgJKy1liQ7knXpgC6Q4PMKfK70IK3Z+SGPCLgekfc7YBtf6T
+         RWnXoJ1DVG/iwdj8CxOvsG63VuHHFRBKgDx7YdCZil2CSFii61MsAk4craMFawUK1KKQ
+         CzXcxF4PiKAjWUrnjLmou3WI+kpa5bOhbyd2Br+AmOkuCZmxvE8fh5aFWhanPGyUeM//
+         VsQnaJ+jt3Ef6rh/nwOUmkbDyGl80bpLr0qPPjBNjHDjqWvv6RbGGNzQfUiuNSkxmoqO
+         z8TwgnXmoPLO7QyTzR66ZAVZkmrjRKkgX3eioW4J9VQKr7lDL735TS1SM4RmJKTIQh4K
+         L0mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zGkLO8QE+JkINxXufCxF2QAgYC6g0Sy7UndvDKoQKoY=;
+        b=35Noctnx6p/In9Y9lTaMKp/7FFgb/1xuAHsnQiiEpzlUaRP+nD+bPsO7PmsiM1o5oj
+         cedObpuczGMtOResjknRIE20pVMNm5Ph2YDyXUZZGSELkftlTmg7Oqqld7+CPDZoofzV
+         XPZ/twrBq0nnGFE5aCUJ9FYShYcGxxKkZmNuRvbD4ndO1CojjQ0Qvz+DcpHIpAvYmWtj
+         RZJW+5ys+BWwJK1Smev88TpA293/JWK/vaW74UjY4Sq1xnq8Doksxa48FMy3YLMVNWzm
+         HTLmIryNY7Ee8UoIkbqnwYadjUhikWUv5vdNEuj2qlmZpa1gQUU21u8RDG254YgANjZx
+         E0cw==
+X-Gm-Message-State: AOAM5318O4LsmpCMJG3G/qB9qpWVQnqo3WtzB8NPb92kYaQLwZfnJ8j8
+        pGjw0OjXQ7eqym5JVuxNX55PF8CYbAkDPD0BSxQD+A==
+X-Google-Smtp-Source: ABdhPJxRn6EidO34JgbBxOQGAq3o3F8SEptQ83Bk4g5oxbRMsM4MHsG6O9JwhGkK9BvQBDCzyAxmpAHbZjknr0b1eDI=
+X-Received: by 2002:a1f:a9cb:0:b0:33e:d145:85f0 with SMTP id
+ s194-20020a1fa9cb000000b0033ed14585f0mr1848134vke.7.1648103091440; Wed, 23
+ Mar 2022 23:24:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220309021230.721028-1-yuzhao@google.com> <20220309021230.721028-7-yuzhao@google.com>
+ <CAGsJ_4xfL7h6M92WGusxbTxQzHOJDj4X4AuC=0HgrEyAYJaJFg@mail.gmail.com>
+ <CAOUHufbiSShp=khZFL6BmJKNNkG-LBrsPoLwYxewcgtZhi5tFg@mail.gmail.com> <CAGsJ_4zeNtAsq7E9SKVwuKaXnKj80BP2NPHdjtd1i=098M6eDw@mail.gmail.com>
+In-Reply-To: <CAGsJ_4zeNtAsq7E9SKVwuKaXnKj80BP2NPHdjtd1i=098M6eDw@mail.gmail.com>
+From:   Yu Zhao <yuzhao@google.com>
+Date:   Thu, 24 Mar 2022 00:24:40 -0600
+Message-ID: <CAOUHufazsjhp3GzV7QFOqEeG98zJyRWd+HocyYR1FP3nk-Ho0Q@mail.gmail.com>
+Subject: Re: [PATCH v9 06/14] mm: multi-gen LRU: minimal implementation
+To:     Barry Song <21cnbao@gmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        LAK <linux-arm-kernel@lists.infradead.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Kernel Page Reclaim v2 <page-reclaim@google.com>,
+        x86 <x86@kernel.org>, Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Zbook Fury 17 G9 requires the same ALC285_FIXUP_HP_GPIO_LED quirk to
-make its audio LEDs work.
+On Wed, Mar 23, 2022 at 1:47 AM Barry Song <21cnbao@gmail.com> wrote:
+>
+> On Sat, Mar 19, 2022 at 4:11 PM Yu Zhao <yuzhao@google.com> wrote:
+> >
+> > On Fri, Mar 18, 2022 at 9:01 PM Barry Song <21cnbao@gmail.com> wrote:
+> > >
+> > > > +static int folio_inc_gen(struct lruvec *lruvec, struct folio *folio, bool reclaiming)
+> > > > +{
+> > > > +       unsigned long old_flags, new_flags;
+> > > > +       int type = folio_is_file_lru(folio);
+> > > > +       struct lru_gen_struct *lrugen = &lruvec->lrugen;
+> > > > +       int new_gen, old_gen = lru_gen_from_seq(lrugen->min_seq[type]);
+> > > > +
+> > > > +       do {
+> > > > +               new_flags = old_flags = READ_ONCE(folio->flags);
+> > > > +               VM_BUG_ON_FOLIO(!(new_flags & LRU_GEN_MASK), folio);
+> > > > +
+> > > > +               new_gen = ((new_flags & LRU_GEN_MASK) >> LRU_GEN_PGOFF) - 1;
+> > > > +               new_gen = (old_gen + 1) % MAX_NR_GENS;
+> > >
+> > > new_gen is assigned twice, i assume you mean
+> > >                old_gen = ((new_flags & LRU_GEN_MASK) >> LRU_GEN_PGOFF) - 1;
+> > >                new_gen = (old_gen + 1) % MAX_NR_GENS;
+> > >
+> > > or do you always mean new_gen =  lru_gen_from_seq(min_seq) + 1?
+> >
+> > Thanks a lot for your attention to details!
+> >
+> > The first line should be in the next patch but I overlooked during the
+> > last refactoring:
+>
+> Thanks for the clarification. So an unmapped file-backed page which is
+> accessed only by system call will always be in either min_seq or
+> min_seq + 1? it has no chance to be in max_seq like a faulted-in
+> mapped file page?
 
-So apply the quirk, and make it the last one since it's an LED quirk.
+That's right. The rationale is documented here under the `Assumptions`
+section [1]. This is also related to Aneesh's question about why MGLRU
+doesn't need additional heuristics for VM_EXEC pages [2]. Unmapped
+file pages weaken the protection of executable pages under heavy
+buffered IO workloads like Java NIO.
 
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
- sound/pci/hda/patch_realtek.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index f6ee67f41c45a..e88fbef57c40c 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -7011,6 +7011,7 @@ enum {
- 	ALC287_FIXUP_LEGION_16ACHG6,
- 	ALC287_FIXUP_CS35L41_I2C_2,
- 	ALC245_FIXUP_CS35L41_SPI_2,
-+	ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED,
- 	ALC245_FIXUP_CS35L41_SPI_4,
- 	ALC245_FIXUP_CS35L41_SPI_4_HP_GPIO_LED,
- 	ALC285_FIXUP_HP_SPEAKERS_MICMUTE_LED,
-@@ -8776,6 +8777,12 @@ static const struct hda_fixup alc269_fixups[] = {
- 		.type = HDA_FIXUP_FUNC,
- 		.v.func = cs35l41_fixup_spi_two,
- 	},
-+	[ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED] = {
-+		.type = HDA_FIXUP_FUNC,
-+		.v.func = cs35l41_fixup_spi_two,
-+		.chained = true,
-+		.chain_id = ALC285_FIXUP_HP_GPIO_LED,
-+	},
- 	[ALC245_FIXUP_CS35L41_SPI_4] = {
- 		.type = HDA_FIXUP_FUNC,
- 		.v.func = cs35l41_fixup_spi_four,
-@@ -9031,7 +9038,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x103c, 0x89ac, "HP EliteBook 640 G9", ALC236_FIXUP_HP_GPIO_LED),
- 	SND_PCI_QUIRK(0x103c, 0x89ae, "HP EliteBook 650 G9", ALC236_FIXUP_HP_GPIO_LED),
- 	SND_PCI_QUIRK(0x103c, 0x89c3, "Zbook Studio G9", ALC245_FIXUP_CS35L41_SPI_4_HP_GPIO_LED),
--	SND_PCI_QUIRK(0x103c, 0x89c6, "Zbook Fury 17 G9", ALC245_FIXUP_CS35L41_SPI_2),
-+	SND_PCI_QUIRK(0x103c, 0x89c6, "Zbook Fury 17 G9", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
- 	SND_PCI_QUIRK(0x103c, 0x89ca, "HP", ALC236_FIXUP_HP_MUTE_LED_MICMUTE_VREF),
- 	SND_PCI_QUIRK(0x1043, 0x103e, "ASUS X540SA", ALC256_FIXUP_ASUS_MIC),
- 	SND_PCI_QUIRK(0x1043, 0x103f, "ASUS TX300", ALC282_FIXUP_ASUS_TX300),
--- 
-2.34.1
-
+[1] https://lore.kernel.org/linux-mm/20220309021230.721028-15-yuzhao@google.com/
+[2] https://lore.kernel.org/linux-mm/CAOUHufYfpiGdLSdffvzDqaD5oYFG99oDJ2xgQd2Ph77OFR5NAA@mail.gmail.com/
