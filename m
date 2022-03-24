@@ -2,82 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38DABC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 22:26:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4C9DC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 22:28:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355355AbiCXW2H (ORCPT
+        id S1355364AbiCXW3r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 18:28:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50108 "EHLO
+        Thu, 24 Mar 2022 18:29:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238178AbiCXW2F (ORCPT
+        with ESMTP id S1355361AbiCXW3m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 18:28:05 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A35ABA316;
-        Thu, 24 Mar 2022 15:26:30 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id t14so4953400pgr.3;
-        Thu, 24 Mar 2022 15:26:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=z0kz4cUS7VSjGdMcGeX4YE5SdchuevIjl21XixcoPrA=;
-        b=ArGxX5qaFIK9xgQixjVBt4ZqvGKBlkq0vd6xiO9GjFDFiCMZJuSxTYdycHMJzV83f6
-         SkUJDeXtu9Il2JaE30tqVFV3EA1xN1jG6HEYytLsFPWTSAG/4YGjyZ3c8gcuo/RXPU0m
-         Sv8zgj/ns3Gs1IATig7unygowAGhQnvwtFko4I/sxagcOe+kZWhCArPyqSMxHAUZlQUu
-         4SK75VgaR+Tq7dERobcXbicT6A58q7+jGsv54LODDZXv81T0PPz5WcNG7QrwBDK1iBNW
-         Grw7b7BCGcpeoFN5reA42Rlhet1gOf4TagwGZhqK6VLIQDHmSdn6GeCnLurmq+g5p60c
-         lZRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=z0kz4cUS7VSjGdMcGeX4YE5SdchuevIjl21XixcoPrA=;
-        b=FF0tlYbZJxWqmcT2qodAPZo6K37YZTz3JRzbG0uu+EtOp7xhqVSgU5dVXBX6UJ1f77
-         fLSypZRsMo/WRoR91WcK5tNJ7ygheir8USwHnbb2dCuxGhaQppmRBsmSfb/ZmZW/ge7/
-         1LWD2U8kjPtzH3Y/rglpZ6ltf/qIQ0khdzQOuudq74D936DrR6YOKoj2gq8ZWrnk3m3F
-         EDJYcsJtmYI4Z8JvPd1PnrGzHijmYxXttRNYLRDyWZ1oQwwd9xWhVgM/EbY0qIpf3KVu
-         G1ufFbA347hGsCN1XnrAnPiFPjjlgxkOhWduZ5CetXPoUAEtloyeRti6GzXD+cX4MMrU
-         ssfQ==
-X-Gm-Message-State: AOAM533urOG996LxOWTKmmPSM7esaIBV1larSj3kBr5/ubfBlj6uL290
-        Cp+PJrHx1oLGBmAVc0G2aam957ou8CdslDzjBnA=
-X-Google-Smtp-Source: ABdhPJyzWMmr6ULY9oh8mhcm18dEt9qX8Izi79seRS2qM/nJJMXGko5Yu04oDq6v0XeZ1f6lczHH/bcUJB3GNUQRMwc=
-X-Received: by 2002:a63:4e14:0:b0:374:4a37:4966 with SMTP id
- c20-20020a634e14000000b003744a374966mr5568860pgb.118.1648160789824; Thu, 24
- Mar 2022 15:26:29 -0700 (PDT)
+        Thu, 24 Mar 2022 18:29:42 -0400
+X-Greylist: delayed 16790 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Mar 2022 15:28:08 PDT
+Received: from 10.mo584.mail-out.ovh.net (10.mo584.mail-out.ovh.net [188.165.33.109])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56CC21115B
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 15:28:07 -0700 (PDT)
+Received: from player694.ha.ovh.net (unknown [10.108.4.192])
+        by mo584.mail-out.ovh.net (Postfix) with ESMTP id DEE8F24519
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 22:11:25 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player694.ha.ovh.net (Postfix) with ESMTPSA id 8C18728AC22F6;
+        Thu, 24 Mar 2022 22:11:21 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-106R006efdb6821-47ff-4e32-8684-c4c0342888ed,
+                    78FFD8E4238D9337B8F0C8EEA79873C5FE5514E5) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+Date:   Thu, 24 Mar 2022 23:11:13 +0100
+From:   Stephen Kitt <steve@sk2.org>
+To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Wolfram Sang <wsa@kernel.org>
+Subject: Re: [PATCH] auxdisplay: lcd2s: use simple i2c probe function
+Message-ID: <20220324231113.057f4585@heffalump.sk2.org>
+In-Reply-To: <CANiq72mQXV0sfh6-LKYjc9fMDuJR=t4dMdBD-6y=-Bq3YHDysw@mail.gmail.com>
+References: <20220324170929.542348-1-steve@sk2.org>
+        <CANiq72mQXV0sfh6-LKYjc9fMDuJR=t4dMdBD-6y=-Bq3YHDysw@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220323124225.91763-1-alvin@pqrs.dk> <YjsZVblL11w8IuRH@lunn.ch>
- <20220323134944.4cn25vs6vaqcdeso@bang-olufsen.dk> <20220323083953.46cdccc8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20220324080402.wu2zsewgqn2wecel@bang-olufsen.dk>
-In-Reply-To: <20220324080402.wu2zsewgqn2wecel@bang-olufsen.dk>
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Date:   Thu, 24 Mar 2022 19:26:18 -0300
-Message-ID: <CAJq09z62hjhfW_TYWt1tfmzVTnxzr=pyXq7a2mf55sv0EOhn4Q@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: dsa: realtek: make interface drivers depend
- on OF
-To:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alvin@pqrs.dk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/02QoSNGwK.=aPy_zA/gagv2";
+ protocol="application/pgp-signature"; micalg=pgp-sha512
+X-Ovh-Tracer-Id: 17045280166953649798
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudegledgudehhecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpeffhffvuffkjghfofggtgesghdtreerredtvdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepfeehjeevtdefgfdtjeehjeefvedvgeeljeehgeetveffvdehueduhffgtedtteffnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrheileegrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Fixes: aac94001067d ("net: dsa: realtek: add new mdio interface for drivers")
+--Sig_/02QoSNGwK.=aPy_zA/gagv2
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Thanks Alvin for the fix. Maybe you should add both commits.
+Hi Miguel,
 
-Acked-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+On Thu, 24 Mar 2022 22:18:39 +0100, Miguel Ojeda
+<miguel.ojeda.sandonis@gmail.com> wrote:
+> On Thu, Mar 24, 2022 at 6:10 PM Stephen Kitt <steve@sk2.org> wrote:
+> > The i2c probe functions here don't use the id information provided in
+> > their second argument, so the single-parameter i2c probe function
+> > ("probe_new") can be used instead.
+> >
+> > This avoids scanning the identifier tables during probes. =20
+>=20
+> Thanks for the patch -- Andy submitted an equivalent one which I
+> queued for -next some days ago.
 
-Regards,
+Ah yes,
+https://lkml.kernel.org/lkml/20220308151119.48412-3-andriy.shevchenko@linux=
+.intel.com/
 
-Luiz
+Thanks,
+
+Stephen
+
+--Sig_/02QoSNGwK.=aPy_zA/gagv2
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEnPVX/hPLkMoq7x0ggNMC9Yhtg5wFAmI87IEACgkQgNMC9Yht
+g5wCIQ//TN3LdmVV2eqVAinqmtssnvhJi8xjzeXgsimoC9auT2zB0vpN2Wl4bsMR
+tKLld3B34/s4hYwHjmLfwE8+Qy2n7aNga8oI4leBLSvW2KG+Gh3LOWmYiZc5dKaK
+noLb+f4HUUD7nhUsAK9ObfqhgQxWsqViImdjfhkuduhFusessplwUkfF6VKtbmky
+4JG+SlmdJfiwRKgm7OEseEgUR+L1I27YoOp+/MazkkdDYfDVccx6Zk/Qrz3eefj/
+9Aq2eeV4wilq5Jn57+/A62t8VJthvW2MA3EFsVM+A/7It1L+SWyQFbbV3qk7iAG4
+81LiUzS3V+I984CI7z6hR4YxkEBCD8e+SmJfZxBtlQdbyr7+Ojab7j3OaLpQdPB9
+UbRxqT5c1/gcVx2QGKLUm8pdD74nWWQ+Go5+lqHqDl04G29pZwDYmILymCspJfIZ
+m8SkbFPBxfX7lCD7Kqjp/88m/lKqmAiOmW+sX3QfIsTrAjnGagtD0Tfi++uk/7wj
+h4GHeOLNOEQIIUJdx28x9xj76r+VaAjpuLAnNmezIF/wVTXdcsJ834KGzLgQe67l
+b4104dQ4iKTiaI8F2leUPZ+97DB6u1heNYH9jb29QYGiJKJwHgk1zZsHOkqN/YO1
+aht53Zmkif2cQi2170ZtIxrKZFsgfl7oc6olPDMe6LGqpvptWS0=
+=wtHT
+-----END PGP SIGNATURE-----
+
+--Sig_/02QoSNGwK.=aPy_zA/gagv2--
