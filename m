@@ -2,177 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E410C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 11:55:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CCBAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 11:55:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349899AbiCXL4g (ORCPT
+        id S1349913AbiCXL5R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 07:56:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51924 "EHLO
+        Thu, 24 Mar 2022 07:57:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346172AbiCXL4d (ORCPT
+        with ESMTP id S1346172AbiCXL5P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 07:56:33 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 757E01D0C6
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 04:55:01 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id u3so6301046wrg.3
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 04:55:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=HOkV9qsSBetFWbuRvijcZUKcVy03YutgM/62olPjrWo=;
-        b=eoUnCk8iLScTCQ2u15oA+x7pZSnhAdHxhl9jlWpsc1JE7BafYyR8iomO4CiISo/hWB
-         LCC2oxrWX7LTEFkxtrqr//ys7fn7xJtYqzgIlClhyEouGx2OZyY2aEbiFxPhlRKaD+oD
-         kA5IW0a03Vrnv/VkjE44EDC6lMSCNrADry6SxvKSmedG4u8NOYd2ttrHxgn/+OrXs04/
-         eflBmR0Nung5sycTkxRCVz9yRnP5uHC1r3/Z1qKK0hP2bTSxFle9oye6ziYYfoIDIUNM
-         EUs26GC7zEqlpx8IzvGwQ6G2WoLpO9s+Op+u600yqTjKNRqetKoFc6t+ZJij2EsoMers
-         2dkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=HOkV9qsSBetFWbuRvijcZUKcVy03YutgM/62olPjrWo=;
-        b=cAlK1DPaQSvDkTPvgAH9DNbA0EwizoF9nCTRhYpQHfKPgfYqeF2nYAcmCIYImahHUb
-         KijFepi6bnjvN8GdWZAp1PnvVjyb7aMGXNPGMM6aVYBGKUKLQQpEwNftvzNe3V7cuT+s
-         1QCu/D/6J//B/vLyCCjHM0/3SGo1Pup41g+1S9MxqZWJS8Ze+gub2ggAb95fV5z/+WlK
-         O/vP5JvSuRZPPetctHJj2+cwAACBtu3jLzyOs3Mh5xl61TrPqgbG1TEDvBGF0+gglUIe
-         VdRu4NUuBbv/qa9VhHMJssIYBVkU/7Ppdw8fTESUf+MSIkTo/k/Sz/ZTUjclwY+Tz8js
-         vpMw==
-X-Gm-Message-State: AOAM531ozcDtN305z5NqUfSLpBxEAYmaf32UonHAPL1TYH9xXz3O755l
-        +04SmiJjBJRTcMsQkQmPgd/3Fg==
-X-Google-Smtp-Source: ABdhPJw1+873Nh7YA5zj7/vLCI3L6hUQAIzDJMmF0efFXBLYSsJezjsQfGWeD5iP/wqFU3FxZ7wNeg==
-X-Received: by 2002:adf:e343:0:b0:1f0:7a2:99f2 with SMTP id n3-20020adfe343000000b001f007a299f2mr4479185wrj.96.1648122899838;
-        Thu, 24 Mar 2022 04:54:59 -0700 (PDT)
-Received: from localhost.localdomain ([49.206.7.17])
-        by smtp.gmail.com with ESMTPSA id i9-20020a5d5849000000b002058631cfacsm2543857wrf.61.2022.03.24.04.54.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 04:54:59 -0700 (PDT)
-From:   Sunil V L <sunilvl@ventanamicro.com>
-To:     Ard Biesheuvel <ardb@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
-        Atish Patra <atishp@rivosinc.com>,
-        Anup Patel <apatel@ventanamicro.com>,
-        Jessica Clarke <jrtc27@jrtc27.com>,
-        Abner Chang <abner.chang@hpe.com>, linux-efi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        Sunil V L <sunilvl@ventanamicro.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH V3 1/1] riscv/efi_stub: Add support for RISCV_EFI_BOOT_PROTOCOL
-Date:   Thu, 24 Mar 2022 17:24:38 +0530
-Message-Id: <20220324115438.210390-2-sunilvl@ventanamicro.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220324115438.210390-1-sunilvl@ventanamicro.com>
-References: <20220324115438.210390-1-sunilvl@ventanamicro.com>
+        Thu, 24 Mar 2022 07:57:15 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9603249CBC;
+        Thu, 24 Mar 2022 04:55:43 -0700 (PDT)
+Date:   Thu, 24 Mar 2022 11:55:39 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1648122940;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NFzSfnJQPfWQ61qS3sd7xjhFHPK4LiPf59g3D1N0RyE=;
+        b=oWbKqTznDCC6qPoLjcbRt92+W1NUmxPE0HCjoR4Eat4zgmnBdKeYHloROOnpJsb6sFFlyb
+        87Q1WxAtqNaDtEg9E8L+g6iFaErh+2WMqSrmQlMxS+4BHJWtjh11fst2lzYgG6aJomVg21
+        khJqh0myTTdqlHnASOXPqabmWb3mvLHElIydceWhTYDDQPnNYsIouBV+uf2XEggNO/QeCZ
+        JXamixt1JT6YW7xNMniIVqazCZ11IJdl7+dZJBukQ2kRsJxNPKCh3UGwdHwDs1+pZDAK7P
+        sn8+Ah4FbAJczU1/b30BZ4Kw1p3mp2wkrJDMrILcrHkwAg7DEFwkjZ3xtbBHsg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1648122940;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NFzSfnJQPfWQ61qS3sd7xjhFHPK4LiPf59g3D1N0RyE=;
+        b=fji+B/LfOkl0RWiaWzjwAIjejXLfzR69s/TxiSu418Ends/ULRe1k80+6+UGXBttoZlOe+
+        mw3oXZnxnsKB95CA==
+From:   "tip-bot2 for Joerg Roedel" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/urgent] x86/sev: Unroll string mmio with
+ CC_ATTR_GUEST_UNROLL_STRING_IO
+Cc:     Joerg Roedel <jroedel@suse.de>, Borislav Petkov <bp@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220321093351.23976-1-joro@8bytes.org>
+References: <20220321093351.23976-1-joro@8bytes.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <164812293945.389.13575455229967480197.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds the support for getting the boot hart ID in
-Linux EFI stub using RISCV_EFI_BOOT_PROTOCOL. This protocol
-is preferred method over existing DT based solution since it
-works irrespective of DT or ACPI.
+The following commit has been merged into the x86/urgent branch of tip:
 
-The specification of the protocol is hosted at:
-https://github.com/riscv-non-isa/riscv-uefi
+Commit-ID:     fb96320e194066cd9a177989920e8854fa6c1537
+Gitweb:        https://git.kernel.org/tip/fb96320e194066cd9a177989920e8854fa6c1537
+Author:        Joerg Roedel <jroedel@suse.de>
+AuthorDate:    Mon, 21 Mar 2022 10:33:51 +01:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Thu, 24 Mar 2022 12:24:04 +01:00
 
-Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
-Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
-Reviewed-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+x86/sev: Unroll string mmio with CC_ATTR_GUEST_UNROLL_STRING_IO
+
+The io-specific memcpy/memset functions use string mmio accesses to do
+their work. Under SEV, the hypervisor can't emulate these instructions
+because they read/write directly from/to encrypted memory.
+
+KVM will inject a page fault exception into the guest when it is asked
+to emulate string mmio instructions for an SEV guest:
+
+  BUG: unable to handle page fault for address: ffffc90000065068
+  #PF: supervisor read access in kernel mode
+  #PF: error_code(0x0000) - not-present page
+  PGD 8000100000067 P4D 8000100000067 PUD 80001000fb067 PMD 80001000fc067 PTE 80000000fed40173
+  Oops: 0000 [#1] PREEMPT SMP NOPTI
+  CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.17.0-rc7 #3
+
+As string mmio for an SEV guest can not be supported by the
+hypervisor, unroll the instructions for CC_ATTR_GUEST_UNROLL_STRING_IO
+enabled kernels.
+
+This issue appears when kernels are launched in recent libvirt-managed
+SEV virtual machines, because virt-install started to add a tpm-crb
+device to the guest by default and proactively because, raisins:
+
+  https://github.com/virt-manager/virt-manager/commit/eb58c09f488b0633ed1eea012cd311e48864401e
+
+and as that commit says, the default adding of a TPM can be disabled
+with "virt-install ... --tpm none".
+
+The kernel driver for tpm-crb uses memcpy_to/from_io() functions to
+access MMIO memory, resulting in a page-fault injected by KVM and
+crashing the kernel at boot.
+
+  [ bp: Massage and extend commit message. ]
+
+Fixes: d8aa7eea78a1 ('x86/mm: Add Secure Encrypted Virtualization (SEV) support')
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Tom Lendacky <thomas.lendacky@amd.com>
+Link: https://lore.kernel.org/r/20220321093351.23976-1-joro@8bytes.org
 ---
- drivers/firmware/efi/libstub/efistub.h    |  7 ++++++
- drivers/firmware/efi/libstub/riscv-stub.c | 29 +++++++++++++++++++----
- include/linux/efi.h                       |  1 +
- 3 files changed, 32 insertions(+), 5 deletions(-)
+ arch/x86/lib/iomem.c | 65 +++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 57 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/firmware/efi/libstub/efistub.h b/drivers/firmware/efi/libstub/efistub.h
-index edb77b0621ea..aced62a0907e 100644
---- a/drivers/firmware/efi/libstub/efistub.h
-+++ b/drivers/firmware/efi/libstub/efistub.h
-@@ -720,6 +720,13 @@ union efi_tcg2_protocol {
- 	} mixed_mode;
- };
- 
-+struct riscv_efi_boot_protocol {
-+	u64 revision;
-+
-+	efi_status_t (__efiapi * get_boot_hartid)(struct riscv_efi_boot_protocol *this,
-+						  size_t *boot_hartid);
-+};
-+
- typedef union efi_load_file_protocol efi_load_file_protocol_t;
- typedef union efi_load_file_protocol efi_load_file2_protocol_t;
- 
-diff --git a/drivers/firmware/efi/libstub/riscv-stub.c b/drivers/firmware/efi/libstub/riscv-stub.c
-index 9c460843442f..012504f6f9a4 100644
---- a/drivers/firmware/efi/libstub/riscv-stub.c
-+++ b/drivers/firmware/efi/libstub/riscv-stub.c
-@@ -23,7 +23,7 @@
- 
- typedef void __noreturn (*jump_kernel_func)(unsigned int, unsigned long);
- 
--static u32 hartid;
-+static size_t hartid;
- 
- static int get_boot_hartid_from_fdt(void)
- {
-@@ -47,14 +47,33 @@ static int get_boot_hartid_from_fdt(void)
- 	return 0;
+diff --git a/arch/x86/lib/iomem.c b/arch/x86/lib/iomem.c
+index df50451..6954193 100644
+--- a/arch/x86/lib/iomem.c
++++ b/arch/x86/lib/iomem.c
+@@ -22,7 +22,7 @@ static __always_inline void rep_movs(void *to, const void *from, size_t n)
+ 		     : "memory");
  }
  
-+static efi_status_t get_boot_hartid_from_efi(void)
-+{
-+	efi_guid_t boot_protocol_guid = RISCV_EFI_BOOT_PROTOCOL_GUID;
-+	efi_status_t status;
-+	struct riscv_efi_boot_protocol *boot_protocol;
+-void memcpy_fromio(void *to, const volatile void __iomem *from, size_t n)
++static void string_memcpy_fromio(void *to, const volatile void __iomem *from, size_t n)
+ {
+ 	if (unlikely(!n))
+ 		return;
+@@ -38,9 +38,8 @@ void memcpy_fromio(void *to, const volatile void __iomem *from, size_t n)
+ 	}
+ 	rep_movs(to, (const void *)from, n);
+ }
+-EXPORT_SYMBOL(memcpy_fromio);
+ 
+-void memcpy_toio(volatile void __iomem *to, const void *from, size_t n)
++static void string_memcpy_toio(volatile void __iomem *to, const void *from, size_t n)
+ {
+ 	if (unlikely(!n))
+ 		return;
+@@ -56,14 +55,64 @@ void memcpy_toio(volatile void __iomem *to, const void *from, size_t n)
+ 	}
+ 	rep_movs((void *)to, (const void *) from, n);
+ }
 +
-+	status = efi_bs_call(locate_protocol, &boot_protocol_guid, NULL,
-+			     (void **)&boot_protocol);
-+	if (status == EFI_SUCCESS) {
-+		status = efi_call_proto(boot_protocol,
-+					get_boot_hartid, &hartid);
-+	}
-+	return status;
++static void unrolled_memcpy_fromio(void *to, const volatile void __iomem *from, size_t n)
++{
++	const volatile char __iomem *in = from;
++	char *out = to;
++	int i;
++
++	for (i = 0; i < n; ++i)
++		out[i] = in[i];
 +}
 +
- efi_status_t check_platform_features(void)
- {
- 	int ret;
-+	efi_status_t status;
++static void unrolled_memcpy_toio(volatile void __iomem *to, const void *from, size_t n)
++{
++	volatile char __iomem *out = to;
++	const char *in = from;
++	int i;
++
++	for (i = 0; i < n; ++i)
++		out[i] = in[i];
++}
++
++static void unrolled_memset_io(volatile void __iomem *a, int b, size_t c)
++{
++	volatile char __iomem *mem = a;
++	int i;
++
++	for (i = 0; i < c; ++i)
++		mem[i] = b;
++}
++
++void memcpy_fromio(void *to, const volatile void __iomem *from, size_t n)
++{
++	if (cc_platform_has(CC_ATTR_GUEST_UNROLL_STRING_IO))
++		unrolled_memcpy_fromio(to, from, n);
++	else
++		string_memcpy_fromio(to, from, n);
++}
++EXPORT_SYMBOL(memcpy_fromio);
++
++void memcpy_toio(volatile void __iomem *to, const void *from, size_t n)
++{
++	if (cc_platform_has(CC_ATTR_GUEST_UNROLL_STRING_IO))
++		unrolled_memcpy_toio(to, from, n);
++	else
++		string_memcpy_toio(to, from, n);
++}
+ EXPORT_SYMBOL(memcpy_toio);
  
--	ret = get_boot_hartid_from_fdt();
--	if (ret) {
--		efi_err("/chosen/boot-hartid missing or invalid!\n");
--		return EFI_UNSUPPORTED;
-+	status = get_boot_hartid_from_efi();
-+	if (status != EFI_SUCCESS) {
-+		ret = get_boot_hartid_from_fdt();
-+		if (ret) {
-+			efi_err("Failed to get boot hartid!\n");
-+			return EFI_UNSUPPORTED;
-+		}
- 	}
- 	return EFI_SUCCESS;
+ void memset_io(volatile void __iomem *a, int b, size_t c)
+ {
+-	/*
+-	 * TODO: memset can mangle the IO patterns quite a bit.
+-	 * perhaps it would be better to use a dumb one:
+-	 */
+-	memset((void *)a, b, c);
++	if (cc_platform_has(CC_ATTR_GUEST_UNROLL_STRING_IO)) {
++		unrolled_memset_io(a, b, c);
++	} else {
++		/*
++		 * TODO: memset can mangle the IO patterns quite a bit.
++		 * perhaps it would be better to use a dumb one:
++		 */
++		memset((void *)a, b, c);
++	}
  }
-diff --git a/include/linux/efi.h b/include/linux/efi.h
-index ccd4d3f91c98..9822c730207c 100644
---- a/include/linux/efi.h
-+++ b/include/linux/efi.h
-@@ -380,6 +380,7 @@ void efi_native_runtime_setup(void);
- #define EFI_CONSOLE_OUT_DEVICE_GUID		EFI_GUID(0xd3b36f2c, 0xd551, 0x11d4,  0x9a, 0x46, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d)
- #define APPLE_PROPERTIES_PROTOCOL_GUID		EFI_GUID(0x91bd12fe, 0xf6c3, 0x44fb,  0xa5, 0xb7, 0x51, 0x22, 0xab, 0x30, 0x3a, 0xe0)
- #define EFI_TCG2_PROTOCOL_GUID			EFI_GUID(0x607f766c, 0x7455, 0x42be,  0x93, 0x0b, 0xe4, 0xd7, 0x6d, 0xb2, 0x72, 0x0f)
-+#define RISCV_EFI_BOOT_PROTOCOL_GUID		EFI_GUID(0xccd15fec, 0x6f73, 0x4eec,  0x83, 0x95, 0x3e, 0x69, 0xe4, 0xb9, 0x40, 0xbf)
- #define EFI_LOAD_FILE_PROTOCOL_GUID		EFI_GUID(0x56ec3091, 0x954c, 0x11d2,  0x8e, 0x3f, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b)
- #define EFI_LOAD_FILE2_PROTOCOL_GUID		EFI_GUID(0x4006c0c1, 0xfcb3, 0x403e,  0x99, 0x6d, 0x4a, 0x6c, 0x87, 0x24, 0xe0, 0x6d)
- #define EFI_RT_PROPERTIES_TABLE_GUID		EFI_GUID(0xeb66918a, 0x7eef, 0x402a,  0x84, 0x2e, 0x93, 0x1d, 0x21, 0xc3, 0x8a, 0xe9)
--- 
-2.25.1
-
+ EXPORT_SYMBOL(memset_io);
