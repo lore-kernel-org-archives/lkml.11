@@ -2,165 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81D24C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 11:07:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 673F8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 11:09:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349660AbiCXLIz (ORCPT
+        id S1347322AbiCXLLN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 07:08:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40906 "EHLO
+        Thu, 24 Mar 2022 07:11:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240446AbiCXLIt (ORCPT
+        with ESMTP id S240042AbiCXLLL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 07:08:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DC8419A9BA
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 04:07:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648120036;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1T0yWbiZx8k6dMvysOvcdB5ykkIHbUMTZtgTTPZEYIg=;
-        b=V3IVFZTupoQa7heVCz7mi8m6OofsNLmEvmVPXwr6nWM2ML4yo0ml26s9b6nrOxnLdjW5jx
-        rzHCkdU4PUQed+fJn9PEv4v2nqnsD9wzTbL3Uttir7fqfvpIfNuVj3WzEUq/bQ5z/LpkEC
-        V+1AIO8K+H9vFIRcRshvGTfoBI9ljuM=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-437-kyGiqYT9Ob2ZkPiWlasrTA-1; Thu, 24 Mar 2022 07:07:15 -0400
-X-MC-Unique: kyGiqYT9Ob2ZkPiWlasrTA-1
-Received: by mail-wm1-f72.google.com with SMTP id f19-20020a7bcd13000000b0038c01defd5aso1457565wmj.7
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 04:07:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1T0yWbiZx8k6dMvysOvcdB5ykkIHbUMTZtgTTPZEYIg=;
-        b=vw+6VirPX3NJEV3zp8XCjWXkYYrlpwpAQQB7re/eN9g5bU0Knxj0NwjWFtFNcWY8/M
-         7H2yclGqEwTGAiRGp93+FTudJHZ7yHPXOFOb11GnRZU0G6VXo/6hPS6D+3CWuvPGEAVV
-         jF70CEWs+HEGCWe/UoEL7GYSnt7R2MH7eWaO7UHeHuQLhMTWRNNZXkXvYvso3lhOjlF5
-         oZcr6EJPdbosu/jDavAAZnk9IIxFpC9J6bcNTYFX0/oyRrK+VfmJCn/lwBNKrAN1lFps
-         k0+0xycST7SNH1wD8Z7xf2PH6W7UeJeysM/7BeQ3pcc6YO3LhYky29U97gd7lebTImXf
-         Mszw==
-X-Gm-Message-State: AOAM530+Dm5kgcVaUCrlcsn5QwYQiIeLLClVQ/IK9cxaXVhr3X2HYo8G
-        OsGx0hEbAcWmQGW3W5x4Ito3t9Qrit7/yTItDrM9F+ylEro919ylHPVkKbWoXokZIFnoUknkDqo
-        uHHpHXdKv3mgbFLcUXqFANX+8
-X-Received: by 2002:a05:600c:1989:b0:38c:b8b3:8fa8 with SMTP id t9-20020a05600c198900b0038cb8b38fa8mr13195866wmq.18.1648120034251;
-        Thu, 24 Mar 2022 04:07:14 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwA0EZumo0j0KssEfmzzO7vlsnhjaOg1S762Lka3uCpCQVy1H8Qhey1LQHCTinjFhD77Ni4HQ==
-X-Received: by 2002:a05:600c:1989:b0:38c:b8b3:8fa8 with SMTP id t9-20020a05600c198900b0038cb8b38fa8mr13195841wmq.18.1648120033977;
-        Thu, 24 Mar 2022 04:07:13 -0700 (PDT)
-Received: from redhat.com ([2.55.151.118])
-        by smtp.gmail.com with ESMTPSA id k18-20020a5d6d52000000b00203da94cf01sm2333203wri.14.2022.03.24.04.07.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 04:07:13 -0700 (PDT)
-Date:   Thu, 24 Mar 2022 07:07:09 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, maz@kernel.org, tglx@linutronix.de,
-        peterz@infradead.org, keirf@google.com
-Subject: Re: [PATCH 1/3] virtio: use virtio_device_ready() in
- virtio_device_restore()
-Message-ID: <20220324070612-mutt-send-email-mst@kernel.org>
-References: <20220324084004.14349-1-jasowang@redhat.com>
- <20220324084004.14349-2-jasowang@redhat.com>
- <20220324064205-mutt-send-email-mst@kernel.org>
- <20220324110307.iizkdwuhc5c75noj@sgarzare-redhat>
+        Thu, 24 Mar 2022 07:11:11 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A77F381B0
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 04:09:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648120179; x=1679656179;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=88Y7nd8cX7T1WR9HjlQBgeq9aRByaJ+VG3TomndjrcQ=;
+  b=NM6Qf4jDxbTyXaxz94Ay7dwyIeEvlI7Vxd6kJ7FUSoW1jDiVFO6so+l3
+   Pb0oNu2W1STIO6DHOvAuWAizl5kQUwytO4UB25Gqy2VG3BTFs+H1d4Gua
+   //ptFjVdMMH10bKHnvDllIgH23FbzaaSGffkmUIk2H0/RjeCscnUjUwqr
+   8+bSDgkCEvq5gVCP987EU78KYrB+Zln+5Jv2SS63RsItbmZqMeuqpAWFe
+   70YiHT4BBXpL+CMP74rdlze2qz3gQdDZwIQBplIti8jdvxQCcWfpdIdZu
+   uKB0mTqxAagTACuRHHAGvMTIYyYsJZRRqYQJ+hW75NGkCty71ze3VxnKS
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="344780473"
+X-IronPort-AV: E=Sophos;i="5.90,207,1643702400"; 
+   d="scan'208";a="344780473"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 04:09:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,207,1643702400"; 
+   d="scan'208";a="584040294"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 24 Mar 2022 04:09:34 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nXLLR-000L0h-OF; Thu, 24 Mar 2022 11:09:33 +0000
+Date:   Thu, 24 Mar 2022 19:08:57 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     andrey.konovalov@linux.dev, Marco Elver <elver@google.com>,
+        Alexander Potapenko <glider@google.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     kbuild-all@lists.01.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        kasan-dev@googlegroups.com, Mark Rutland <mark.rutland@arm.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Evgenii Stepanov <eugenis@google.com>,
+        Florian Mayer <fmayer@google.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/4] arm64, scs: save scs_sp values per-cpu when
+ switching stacks
+Message-ID: <202203241922.UDw4JHPD-lkp@intel.com>
+References: <f75c58b17bfaa419f84286cd174e3a08f971b779.1648049113.git.andreyknvl@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220324110307.iizkdwuhc5c75noj@sgarzare-redhat>
+In-Reply-To: <f75c58b17bfaa419f84286cd174e3a08f971b779.1648049113.git.andreyknvl@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 12:03:07PM +0100, Stefano Garzarella wrote:
-> On Thu, Mar 24, 2022 at 06:48:05AM -0400, Michael S. Tsirkin wrote:
-> > On Thu, Mar 24, 2022 at 04:40:02PM +0800, Jason Wang wrote:
-> > > From: Stefano Garzarella <sgarzare@redhat.com>
-> > > 
-> > > This avoids setting DRIVER_OK twice for those drivers that call
-> > > virtio_device_ready() in the .restore
-> > 
-> > Is this trying to say it's faster?
-> 
-> Nope, I mean, when I wrote the original version, I meant to do the same
-> things that we do in virtio_dev_probe() where we called
-> virtio_device_ready() which not only set the state, but also called
-> .enable_cbs callback.
-> 
-> Was this a side effect and maybe more compliant with the spec?
+Hi,
+
+I love your patch! Yet something to improve:
+
+[auto build test ERROR on next-20220323]
+[also build test ERROR on v5.17]
+[cannot apply to arm64/for-next/core hnaz-mm/master linus/master v5.17 v5.17-rc8 v5.17-rc7]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/andrey-konovalov-linux-dev/kasan-arm64-scs-stacktrace-collect-stack-traces-from-Shadow-Call-Stack/20220323-233436
+base:    b61581ae229d8eb9f21f8753be3f4011f7692384
+config: arm64-defconfig (https://download.01.org/0day-ci/archive/20220324/202203241922.UDw4JHPD-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/da5bedb1ac7aa0b303f6d996d306e675860b6e12
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review andrey-konovalov-linux-dev/kasan-arm64-scs-stacktrace-collect-stack-traces-from-Shadow-Call-Stack/20220323-233436
+        git checkout da5bedb1ac7aa0b303f6d996d306e675860b6e12
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from include/asm-generic/percpu.h:7,
+                    from arch/arm64/include/asm/percpu.h:248,
+                    from include/linux/irqflags.h:17,
+                    from include/linux/spinlock.h:58,
+                    from include/linux/irq.h:14,
+                    from arch/arm64/kernel/irq.c:13:
+   arch/arm64/kernel/irq.c: In function 'init_irq_scs':
+>> arch/arm64/kernel/irq.c:44:25: error: 'irq_shadow_call_stack_ptr' undeclared (first use in this function)
+      44 |                 per_cpu(irq_shadow_call_stack_ptr, cpu) =
+         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/percpu-defs.h:219:54: note: in definition of macro '__verify_pcpu_ptr'
+     219 |         const void __percpu *__vpp_verify = (typeof((ptr) + 0))NULL;    \
+         |                                                      ^~~
+   include/linux/percpu-defs.h:269:35: note: in expansion of macro 'per_cpu_ptr'
+     269 | #define per_cpu(var, cpu)       (*per_cpu_ptr(&(var), cpu))
+         |                                   ^~~~~~~~~~~
+   arch/arm64/kernel/irq.c:44:17: note: in expansion of macro 'per_cpu'
+      44 |                 per_cpu(irq_shadow_call_stack_ptr, cpu) =
+         |                 ^~~~~~~
+   arch/arm64/kernel/irq.c:44:25: note: each undeclared identifier is reported only once for each function it appears in
+      44 |                 per_cpu(irq_shadow_call_stack_ptr, cpu) =
+         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/percpu-defs.h:219:54: note: in definition of macro '__verify_pcpu_ptr'
+     219 |         const void __percpu *__vpp_verify = (typeof((ptr) + 0))NULL;    \
+         |                                                      ^~~
+   include/linux/percpu-defs.h:269:35: note: in expansion of macro 'per_cpu_ptr'
+     269 | #define per_cpu(var, cpu)       (*per_cpu_ptr(&(var), cpu))
+         |                                   ^~~~~~~~~~~
+   arch/arm64/kernel/irq.c:44:17: note: in expansion of macro 'per_cpu'
+      44 |                 per_cpu(irq_shadow_call_stack_ptr, cpu) =
+         |                 ^~~~~~~
+   arch/arm64/kernel/irq.c: At top level:
+   arch/arm64/kernel/irq.c:105:13: warning: no previous prototype for 'init_IRQ' [-Wmissing-prototypes]
+     105 | void __init init_IRQ(void)
+         |             ^~~~~~~~
 
 
-Sorry I don't understand the question. it says "avoids setting DRIVER_OK twice" -
-why is that advantageous and worth calling out in the commit log?
+vim +/irq_shadow_call_stack_ptr +44 arch/arm64/kernel/irq.c
 
+ac20ffbb0279aa Sami Tolvanen 2020-11-30  35  
+ac20ffbb0279aa Sami Tolvanen 2020-11-30  36  static void init_irq_scs(void)
+ac20ffbb0279aa Sami Tolvanen 2020-11-30  37  {
+ac20ffbb0279aa Sami Tolvanen 2020-11-30  38  	int cpu;
+ac20ffbb0279aa Sami Tolvanen 2020-11-30  39  
+ac20ffbb0279aa Sami Tolvanen 2020-11-30  40  	if (!IS_ENABLED(CONFIG_SHADOW_CALL_STACK))
+ac20ffbb0279aa Sami Tolvanen 2020-11-30  41  		return;
+ac20ffbb0279aa Sami Tolvanen 2020-11-30  42  
+ac20ffbb0279aa Sami Tolvanen 2020-11-30  43  	for_each_possible_cpu(cpu)
+ac20ffbb0279aa Sami Tolvanen 2020-11-30 @44  		per_cpu(irq_shadow_call_stack_ptr, cpu) =
+ac20ffbb0279aa Sami Tolvanen 2020-11-30  45  			scs_alloc(cpu_to_node(cpu));
+ac20ffbb0279aa Sami Tolvanen 2020-11-30  46  }
+ac20ffbb0279aa Sami Tolvanen 2020-11-30  47  
 
-> > If yes this one looks like a red herring. Yes we skip a write but we
-> > replace it with a read which is not better performance-wise.
-> > If we want to optimize this, it is better to just do that inside
-> > virtio_add_status:
-> > 
-> > 
-> > 
-> > diff --git a/drivers/virtio/virtio.c b/drivers/virtio/virtio.c
-> > index 75c8d560bbd3..cd943c31bdbb 100644
-> > --- a/drivers/virtio/virtio.c
-> > +++ b/drivers/virtio/virtio.c
-> > @@ -161,8 +161,14 @@ static void virtio_config_enable(struct virtio_device *dev)
-> > 
-> > void virtio_add_status(struct virtio_device *dev, unsigned int status)
-> > {
-> > +	unsigned int device_status;
-> > +
-> > 	might_sleep();
-> > -	dev->config->set_status(dev, dev->config->get_status(dev) | status);
-> > +
-> > +	device_status = dev->config->get_status(dev);
-> > +
-> > +	if (status & ~device_status)
-> > +		dev->config->set_status(dev, device_status | status);
-> > }
-> > EXPORT_SYMBOL_GPL(virtio_add_status);
-> 
-> Could there be a case where we want to set the status again even though the
-> device tells us it's already set?
-> 
-> I think not, so I guess it's okay.
-> 
-> > 
-> > 
-> > > and it will allows us to do
-> > > extension on virtio_device_ready() without duplicating codes.
-> > > 
-> > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> > > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > > ---
-> > >  drivers/virtio/virtio.c | 5 +++--
-> > >  1 file changed, 3 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/drivers/virtio/virtio.c b/drivers/virtio/virtio.c
-> > > index 22f15f444f75..75c8d560bbd3 100644
-> > > --- a/drivers/virtio/virtio.c
-> > > +++ b/drivers/virtio/virtio.c
-> > > @@ -526,8 +526,9 @@ int virtio_device_restore(struct virtio_device *dev)
-> > >  			goto err;
-> > >  	}
-> > > 
-> > > -	/* Finally, tell the device we're all set */
-> > > -	virtio_add_status(dev, VIRTIO_CONFIG_S_DRIVER_OK);
-> > > +	/* If restore didn't do it, mark device DRIVER_OK ourselves. */
-> > 
-> > I preferred the original comment, it said why we are doing this,
-> > new one repeats what code is doing.
-> 
-> I agree, copy & paste from virtio_dev_probe().
-> 
-> Jason can you fix this patch or should I resend?
-> 
-> Thanks,
-> Stefano
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
