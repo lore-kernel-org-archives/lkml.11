@@ -2,76 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8B21C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 19:44:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A4A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 19:44:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236793AbiCXTqK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 15:46:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56700 "EHLO
+        id S1353123AbiCXTqN (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Mar 2022 15:46:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353113AbiCXTpy (ORCPT
+        with ESMTP id S1353251AbiCXTpx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 15:45:54 -0400
+        Thu, 24 Mar 2022 15:45:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90E0037003
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 12:44:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 231913A5D3;
+        Thu, 24 Mar 2022 12:44:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F1D9661B97
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 19:44:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5EA2AC340F3;
-        Thu, 24 Mar 2022 19:44:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B7B9561B91;
+        Thu, 24 Mar 2022 19:44:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2062DC340EE;
+        Thu, 24 Mar 2022 19:44:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648151061;
-        bh=ybtNivCfkMay4XOtlaXyVjbTzJBRfzFWEFDFuxcNGrA=;
+        s=k20201202; t=1648151060;
+        bh=z0JTsFS9m24LFTrajg4AQtkisBFSE+BBsPLbu02WWuA=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=l+qbqasQuL+HhxaIovrUs5jKbleQ+coU2HNt+Hlf68EBUlp88tz78sbAuvFfq+whj
-         IM6JOjVuhtYGzcRUFIlevNdZPvq0hVFvzyX2SMEo24rbUnMQyBNvBJcUe9090X2R5d
-         qRQGIl7HfN26T8Aiw8VYf5RLBvq7pElN3jBExWzuXt5vhm25+j+xbRNBjhKOLZMSpq
-         Uzwx38D/CwZNG+F54o888McIs95r201Qev4xzwhPtFdqSGz5gSWpjvktoeM+DdffS4
-         JiLjkQhPFFejTgTpkP6Dgsf2wNaVnVGWRT3xqJG7jEAKTHaVPdJHnz87pG1UYxi8Wo
-         suVZsFW1+O5Vg==
+        b=pC2rsZfWIpNiJqstcSiZxVFXgbiJ0wxTIGgx3uedSJIvTwfYal7hX7C9evfR8/eQo
+         LXFVQ9vBt9iRMUyBgDkB8c1P6pN8K9ar9fzjMKrOUvx/rXzs6oI2yBRCwCoSxgI0pV
+         Cqsp+RlVnRaH4IaHqwF8XlYhR0kghxMwfDimETeW416UlrvnwjrB9AKAiHPf3otIRH
+         5gak7XqzTdQBI/MLu+/+XM3SLb9deLlOzAqTjN9oqucw0Bxd93bDwISi1/pETR+Uci
+         kBi/JKfFAokam7u8yqlOOHoYk14SFF5dBQtrmY7Qs0J1YDSUs0bgo36sjjF0zyjeUi
+         FEXVTVGFtNTCg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 47D8FE6D44B;
-        Thu, 24 Mar 2022 19:44:21 +0000 (UTC)
-Subject: Re: [GIT PULL] prlimit and set/getpriority tasklist_lock optimizations
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0E5C5E6D44B;
+        Thu, 24 Mar 2022 19:44:20 +0000 (UTC)
+Subject: Re: [GIT PULL] flexible-array transformations for 5.18-rc1
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <87ee2sfmtk.fsf@email.froward.int.ebiederm.org>
-References: <20220106172041.522167-1-brho@google.com> <87ee2sfmtk.fsf@email.froward.int.ebiederm.org>
+In-Reply-To: <20220322184802.GA2533969@embeddedor>
+References: <20220322184802.GA2533969@embeddedor>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <87ee2sfmtk.fsf@email.froward.int.ebiederm.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.git prlimit-tasklist_lock-for-v5.18
-X-PR-Tracked-Commit-Id: 18c91bb2d87268d23868bf13508f5bc9cf04e89a
+X-PR-Tracked-Message-Id: <20220322184802.GA2533969@embeddedor>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gustavoars/linux.git tags/flexible-array-transformations-5.18-rc1
+X-PR-Tracked-Commit-Id: 5224f79096170bf7b92cc8fe42a12f44b91e5f62
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: cd4699c5fd66b00211f4709b9957bfd7b0a02ddc
-Message-Id: <164815106127.31218.8361962569340680873.pr-tracker-bot@kernel.org>
-Date:   Thu, 24 Mar 2022 19:44:21 +0000
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
+X-PR-Merge-Commit-Id: 3ce62cf4dc3b01d1cbee1293049ca5d4c7d6d749
+Message-Id: <164815106005.31218.5324046159724857868.pr-tracker-bot@kernel.org>
+Date:   Thu, 24 Mar 2022 19:44:20 +0000
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alexey Gladkov <legion@kernel.org>,
-        William Cohen <wcohen@redhat.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        Chris Hyser <chris.hyser@oracle.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Xiaofeng Cao <caoxiaofeng@yulong.com>,
-        David Hildenbrand <david@redhat.com>,
-        Cyrill Gorcunov <gorcunov@gmail.com>,
-        linux-kernel@vger.kernel.org, Barret Rhoden <brho@google.com>
+        Kees Cook <keescook@chromium.org>,
+        linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Wed, 23 Mar 2022 15:14:47 -0500:
+The pull request you sent on Tue, 22 Mar 2022 13:48:02 -0500:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.git prlimit-tasklist_lock-for-v5.18
+> git://git.kernel.org/pub/scm/linux/kernel/git/gustavoars/linux.git tags/flexible-array-transformations-5.18-rc1
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/cd4699c5fd66b00211f4709b9957bfd7b0a02ddc
+https://git.kernel.org/torvalds/c/3ce62cf4dc3b01d1cbee1293049ca5d4c7d6d749
 
 Thank you!
 
