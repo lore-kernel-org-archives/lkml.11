@@ -2,111 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1EA1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:01:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 567BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:04:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347981AbiCXHCe (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 03:02:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57510 "EHLO
+        id S244643AbiCXHG1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Mar 2022 03:06:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348262AbiCXHCF (ORCPT
+        with ESMTP id S230024AbiCXHGY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 03:02:05 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EAE26D972
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:00:15 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id e5so3807103pls.4
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:00:15 -0700 (PDT)
+        Thu, 24 Mar 2022 03:06:24 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C225E7DE23;
+        Thu, 24 Mar 2022 00:04:52 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id u26so4470528eda.12;
+        Thu, 24 Mar 2022 00:04:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=nathanrossi.com; s=google;
-        h=date:message-id:from:to:cc:subject:content-transfer-encoding
-         :mime-version;
-        bh=9KqvrxLo1G07hfDRYkFXfXDwuhue1HJtF4AZIGRJRfs=;
-        b=kLesff5qCI0HzQizbChuJhKB9KB6Ky0V6lmu/+gXYSvvOjWNH6fW+tCao9aVwQVGPp
-         WNWNy43eY7wjfprkeSVyP2P+AZv1XbGCFbl/BhGhbdeCp9mb0p90vKpRqHX2aZKO235U
-         glPY1lbb/tB1DA5W3pTZa9t/PA+6mB2BYBhYn5GZq96Vwt6KBZEwHz496pYJmfFSo6mR
-         iZG1KlatiLX1HDV2FL6I7eYbZ5FBKic32DV/GPgTaHli0w0i7o7FOaSFVUmiNdOic4Rs
-         PM8bUMh4FVxHstu1z9ZIgLQJkfGQoJsXzN5o3ov0nE9vjhIOxprCKkKezEtfkH0eN3Hj
-         vMwA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QmJzxumpLQcs11vK+3c+4EgOpxANBX6MJwGXngCOMXo=;
+        b=LL2eN8sSyTOZ859wDP3jr4bcEgBnKx5LwkENba4N6GLZYypfPt211FxmqWSDMQJHge
+         TBqhuCw1rBMDXoSc/gzl5gOJ1TI1kDob/jdIsXZkyNYAz1UAsVpzcbn2UIeS8Yw6vncg
+         Zp97G7vdkkt14jKJHjWur/+xxokAcjm2zQL0uJip4RCrPICFsRErLZ7DMGBB6ia+uHMm
+         EYuObp7A3gzYScsUT8dfPLP/11gWH/60IMuyM9a+kJ4+di4B2jIEekA5G6fvVRSSyk0Q
+         DZAHcILhTGzONIWvnQxHIbkKgmoK85UhJ6Z1hgi/0MWK9nQ/YQ+QUa4IArzulTJnhAow
+         mwOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject
-         :content-transfer-encoding:mime-version;
-        bh=9KqvrxLo1G07hfDRYkFXfXDwuhue1HJtF4AZIGRJRfs=;
-        b=FwcUIkh8rkYdM9ThunZiLWg3XVu/86TIV1LGafkaZVdE0VsCJspgc4MEaZjJUHLqSJ
-         uFUQ0sX9pnQDwgaQOzZEJVgG73g2uRC56s9Smuvg9mIhNzfcXXWRY3zdq6nFwA+Gsf9y
-         7sQgt76NAft/MBs4QVTZAwTBs59ApG8STxVIG3+aDCVT6eGKtpD1s7lhobNRMcAuiuC9
-         PqBAAOSuzsqH8ImDMO79QKwSx3CqaasIFlR2+lYN6PPykUH8wuDraAlZReZOMcQ/k7xf
-         yIGOgxVFZa17bhbnCJN50Y/RKheiP5sxTC7trUWOO1pTuj4hnI5bp3jhjMwuwxRgp7aq
-         MmyA==
-X-Gm-Message-State: AOAM531Y//YkdEkid47t6h/qbsByiJk6BfyOSLCOBnBAJWtELSDDc6Ok
-        15cGCB8Lhp7qCYgrbbqg8T5W5g==
-X-Google-Smtp-Source: ABdhPJxvpPy6O6jHCvjqweYTUKvXaA/YkxiVZaAc9Z2fv7eYKK7HxH2YvrO8WjRr34htasGBvtgllQ==
-X-Received: by 2002:a17:90a:289:b0:1c6:584c:acc6 with SMTP id w9-20020a17090a028900b001c6584cacc6mr4397492pja.124.1648105215194;
-        Thu, 24 Mar 2022 00:00:15 -0700 (PDT)
-Received: from [127.0.1.1] (117-20-68-98.751444.bne.nbn.aussiebb.net. [117.20.68.98])
-        by smtp.gmail.com with UTF8SMTPSA id q2-20020a056a00084200b004f761a7287dsm2136914pfk.131.2022.03.24.00.00.11
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QmJzxumpLQcs11vK+3c+4EgOpxANBX6MJwGXngCOMXo=;
+        b=SLoPAfXFBu+pl+qVsWAo1kxeayrAcwg5oLfDW8KzeSv7eNul03TFD2YOZLu7l3CBrW
+         +oDdAQgl/taNFePa9YCmHai1NYoqzLbhfc7YuxRnqjzRPpdJx/MekwP6q1lSF+YkRFLW
+         7OEtcVFPACXCZcZqAT30ZGK6ZCsHeXZ1f8HY/zz7qrVgsIQF0rxJMCui5Z5u16GVVPIj
+         hOeIxN6+OZpd8GZXTM33eF/8nG97UJjjlXIsoljK2N0pUg11L5tMzB9/X6TZFY3Jlfmk
+         mdOnSBrFr+lu+Iytftd7HJXs51okyaXAe/sc+GwgmTancAHyM9C3T7HM3kamnRcwAoTZ
+         fC/w==
+X-Gm-Message-State: AOAM533ajCSGf2GuhhL8L9qsAK4RHyc5BG2xV07K+FYkGiWWs4wRXHsh
+        D/c2iQL0+4vN41DnFPJ95mw=
+X-Google-Smtp-Source: ABdhPJyiRVrIl5E62lC8T6N06sfiBY9MLsiGEZ1cVBohHNstoW03QKjOTDNUo/ItSF2GAqvqzrPrpg==
+X-Received: by 2002:a50:fe0d:0:b0:415:e2ee:65af with SMTP id f13-20020a50fe0d000000b00415e2ee65afmr4811578edt.383.1648105491201;
+        Thu, 24 Mar 2022 00:04:51 -0700 (PDT)
+Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
+        by smtp.googlemail.com with ESMTPSA id d24-20020a1709067a1800b006e021f4c1c3sm753022ejo.166.2022.03.24.00.04.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 00:00:14 -0700 (PDT)
-Date:   Thu, 24 Mar 2022 07:00:04 +0000
-Message-Id: <20220324070004.225738-1-nathan@nathanrossi.com>
-From:   Nathan Rossi <nathan@nathanrossi.com>
-To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Nathan Rossi <nathan@nathanrossi.com>,
-        Nathan Rossi <nathan.rossi@digi.com>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-Subject: [PATCH] mtd: spi-nor: core: Fix 16bit write sr_and_check status check
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        Thu, 24 Mar 2022 00:04:50 -0700 (PDT)
+From:   Jakob Koschel <jakobkoschel@gmail.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
+        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
+Subject: [PATCH] ACPI: ipmi: replace usage of found with dedicated list iterator variable
+Date:   Thu, 24 Mar 2022 08:04:41 +0100
+Message-Id: <20220324070441.56591-1-jakobkoschel@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Rossi <nathan.rossi@digi.com>
+To move the list iterator variable into the list_for_each_entry_*()
+macro in the future it should be avoided to use the list iterator
+variable after the loop body.
 
-The spi_nor_write_16bit_sr_and_check function description describes that
-the function compares the value of the status and config registers after
-the write. However the function does not implement the status register
-compare only the config register check.
+To *never* use the list iterator variable after the loop it was
+concluded to use a separate iterator variable instead of a
+found boolean [1].
 
-This causes the function to differ in behaviour to the equivalent
-spi_nor_write_sr1_and_check for non-16bit writes to the status register.
-This is important as other functions rely on the return code of
-spi_nor_write_sr_and_check. For example spi_nor_sr_unlock returns the
-result directly, which is returned to userspace such that failing to
-unlock the spi-nor device was resulting in a return code of 0 instead of
-the expected non-zero indicating the failure.
+This removes the need to use a found variable and simply checking if
+the variable was set, can determine if the break/goto was hit.
 
-Signed-off-by: Nathan Rossi <nathan.rossi@digi.com>
+Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/mtd/spi-nor/core.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/acpi/acpi_ipmi.c | 39 ++++++++++++++++++---------------------
+ 1 file changed, 18 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-index 04ea180118..d75d4f8a45 100644
---- a/drivers/mtd/spi-nor/core.c
-+++ b/drivers/mtd/spi-nor/core.c
-@@ -1007,6 +1007,15 @@ static int spi_nor_write_16bit_sr_and_check(struct spi_nor *nor, u8 sr1)
- 	if (ret)
- 		return ret;
+diff --git a/drivers/acpi/acpi_ipmi.c b/drivers/acpi/acpi_ipmi.c
+index a5fe2926bf50..0555f68c2dfd 100644
+--- a/drivers/acpi/acpi_ipmi.c
++++ b/drivers/acpi/acpi_ipmi.c
+@@ -353,29 +353,27 @@ static void ipmi_flush_tx_msg(struct acpi_ipmi_device *ipmi)
+ static void ipmi_cancel_tx_msg(struct acpi_ipmi_device *ipmi,
+ 			       struct acpi_ipmi_msg *msg)
+ {
+-	struct acpi_ipmi_msg *tx_msg, *temp;
+-	bool msg_found = false;
++	struct acpi_ipmi_msg *tx_msg = NULL, *iter, *temp;
+ 	unsigned long flags;
  
-+	ret = spi_nor_read_sr(nor, sr_cr);
-+	if (ret)
-+		return ret;
-+
-+	if (sr1 != sr_cr[0]) {
-+		dev_dbg(nor->dev, "SR: read back test failed\n");
-+		return -EIO;
-+	}
-+
- 	if (nor->flags & SNOR_F_NO_READ_CR)
- 		return 0;
+ 	spin_lock_irqsave(&ipmi->tx_msg_lock, flags);
+-	list_for_each_entry_safe(tx_msg, temp, &ipmi->tx_msg_list, head) {
+-		if (msg == tx_msg) {
+-			msg_found = true;
+-			list_del(&tx_msg->head);
++	list_for_each_entry_safe(iter, temp, &ipmi->tx_msg_list, head) {
++		if (msg == iter) {
++			tx_msg = iter;
++			list_del(&iter->head);
+ 			break;
+ 		}
+ 	}
+ 	spin_unlock_irqrestore(&ipmi->tx_msg_lock, flags);
  
----
-2.35.1
+-	if (msg_found)
++	if (tx_msg)
+ 		acpi_ipmi_msg_put(tx_msg);
+ }
+ 
+ static void ipmi_msg_handler(struct ipmi_recv_msg *msg, void *user_msg_data)
+ {
+ 	struct acpi_ipmi_device *ipmi_device = user_msg_data;
+-	bool msg_found = false;
+-	struct acpi_ipmi_msg *tx_msg, *temp;
++	struct acpi_ipmi_msg *tx_msg = NULL, *iter, *temp;
+ 	struct device *dev = ipmi_device->dev;
+ 	unsigned long flags;
+ 
+@@ -387,16 +385,16 @@ static void ipmi_msg_handler(struct ipmi_recv_msg *msg, void *user_msg_data)
+ 	}
+ 
+ 	spin_lock_irqsave(&ipmi_device->tx_msg_lock, flags);
+-	list_for_each_entry_safe(tx_msg, temp, &ipmi_device->tx_msg_list, head) {
+-		if (msg->msgid == tx_msg->tx_msgid) {
+-			msg_found = true;
+-			list_del(&tx_msg->head);
++	list_for_each_entry_safe(iter, temp, &ipmi_device->tx_msg_list, head) {
++		if (msg->msgid == iter->tx_msgid) {
++			tx_msg = iter;
++			list_del(&iter->head);
+ 			break;
+ 		}
+ 	}
+ 	spin_unlock_irqrestore(&ipmi_device->tx_msg_lock, flags);
+ 
+-	if (!msg_found) {
++	if (!tx_msg) {
+ 		dev_warn(dev,
+ 			 "Unexpected response (msg id %ld) is returned.\n",
+ 			 msg->msgid);
+@@ -482,15 +480,14 @@ static void ipmi_register_bmc(int iface, struct device *dev)
+ 
+ static void ipmi_bmc_gone(int iface)
+ {
+-	struct acpi_ipmi_device *ipmi_device, *temp;
+-	bool dev_found = false;
++	struct acpi_ipmi_device *ipmi_device = NULL, *iter, *temp;
+ 
+ 	mutex_lock(&driver_data.ipmi_lock);
+-	list_for_each_entry_safe(ipmi_device, temp,
++	list_for_each_entry_safe(iter, temp,
+ 				 &driver_data.ipmi_devices, head) {
+-		if (ipmi_device->ipmi_ifnum != iface) {
+-			dev_found = true;
+-			__ipmi_dev_kill(ipmi_device);
++		if (iter->ipmi_ifnum != iface) {
++			ipmi_device = iter;
++			__ipmi_dev_kill(iter);
+ 			break;
+ 		}
+ 	}
+@@ -500,7 +497,7 @@ static void ipmi_bmc_gone(int iface)
+ 					struct acpi_ipmi_device, head);
+ 	mutex_unlock(&driver_data.ipmi_lock);
+ 
+-	if (dev_found) {
++	if (ipmi_device) {
+ 		ipmi_flush_tx_msg(ipmi_device);
+ 		acpi_ipmi_dev_put(ipmi_device);
+ 	}
+
+base-commit: f443e374ae131c168a065ea1748feac6b2e76613
+-- 
+2.25.1
+
