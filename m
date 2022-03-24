@@ -2,203 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DE8EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 23:19:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98A45C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 23:19:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355748AbiCXXUy (ORCPT
+        id S1355773AbiCXXVH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 19:20:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39534 "EHLO
+        Thu, 24 Mar 2022 19:21:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355729AbiCXXUq (ORCPT
+        with ESMTP id S1353127AbiCXXVD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 19:20:46 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A1D53A6F
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 16:19:12 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id v4so6022837pjh.2
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 16:19:12 -0700 (PDT)
+        Thu, 24 Mar 2022 19:21:03 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7F725521D;
+        Thu, 24 Mar 2022 16:19:25 -0700 (PDT)
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22OJEFA0010798;
+        Thu, 24 Mar 2022 23:19:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references :
+ content-transfer-encoding : content-type : mime-version;
+ s=corp-2021-07-09; bh=Y6qzjfd1jXNtwC/Gtts9PBfVnly3kKV+IIjdQ0u7DRA=;
+ b=eoQP/A2cbNKMMKgjCjzbcKMvIiBVOloKwNM81vINDIwCoSx7ttcOTr/PnVoSj7Q7EUw5
+ xF5uD+ZWCQWBLAeOHpj+ghw3tP+X0oxhIBUZ4EpjD0PqurodHohsYEcj+Dfzy/zpvgTT
+ 9moO7fNhMzYvOgzMqNblD9ZnmpS2/fckNMyLZRY6xzGX3Zjf6Tm9suF89j2zXJYtkH6u
+ GTf1CQ/m0wYzhIt2uhAgRWCYHvoMEmRXmaUBnPvUO3nhVWddi1ne6pVNwn4UUQAcGowi
+ MfjnyqViVC25GNyWEWByVHMDImlHPabQ6BwGvP13Bjn4ivfoiyCSPWsTUbVgYtnwUT0e Vw== 
+Received: from aserp3030.oracle.com ([141.146.126.71])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3ew6ssdxp9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 24 Mar 2022 23:19:10 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 22ONCk1u186692;
+        Thu, 24 Mar 2022 23:19:09 GMT
+Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2169.outbound.protection.outlook.com [104.47.55.169])
+        by aserp3030.oracle.com with ESMTP id 3ew57920as-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 24 Mar 2022 23:19:09 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=B4W2o5TvEjv6Fkp3SCQAfvwpzphA45nbpbS8PyuRY/fRwAd4KWXqniCDidYvCzRjDa+Y1BqmPbPxUT+WzJvUGF4BTJ3TRUX1SpAWE6MYgC5qJfwMOF468bQ8aZKbhv5RX802EcL6fJHkkQCCNQeej/Vb0KSLraUFFLPFnl8KWEhcyvGOg/hY1tSgwG7S3R/yQzIGLFLr6UmHN7pIh1nDXsmktuv92TRl3HAhSZIo0nP3Buk7xnsoFCAuLyRI2XLU9XPegsXOKdisJprOL0fpK2UFeowe8eZ8lBXh32zQwdGMKI60rnrvi5644crVB6iHkTFpQGp49iOEb0HhDB15NQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Y6qzjfd1jXNtwC/Gtts9PBfVnly3kKV+IIjdQ0u7DRA=;
+ b=d6/MV7u8KcBficmCbtvQBiM3M7HKan223znbj1Y3Chfmr//l1b55kZxUGelakcwr8wWWGDhNXpYcBKqxc0kutFx3jUDO9op6LPtJvbamYD4f3zcUnkb6AWDrlZmYD04On5z50N63WCCYM3P35NNdTYdop5w/Fl6FMSdxXix3JJJuNLViaiG8k6oRafFjZvn3WlwVQaLNmEsOmt0YrIbDJV6Qjv5tIJ05mv4nCrtCnZ2HOc+jMVWJpfPXaGrSh/YTSOlT9ZNu+9KO9TC5Hyq/+JYaE7lDbjqCpnA3N1eDjQgiyBbvKN1GljpQb5aBSh/8iA9t8MJcqP8mAny51lm1mw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=hHqHFFpa5oC69fP2FCgHGpOKvKQX1YCTBf3TwuzqoNE=;
-        b=fbPYArlQx50iamshoEvn1TUlzgo8nWqHeGT1DZrpWtdbibFNTV6wW8L8MN+mUwu78D
-         j7P2ArS6H90s7rwUyr0sxDKM9fsF1WYahCHQ7azDJj9iWysPgN+3SlUgNK5M2AHrc81M
-         ttdYc+utjjAxAxTilwOxhrxnbY4W3GIr5grwM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=hHqHFFpa5oC69fP2FCgHGpOKvKQX1YCTBf3TwuzqoNE=;
-        b=WFrMPx1Wnpu9jgRJUikEbx+1nrVCCraYJ9W1Qh6MrU7DaqakOsm1uo1Ia7VPGFg+si
-         RYiZ2a3ljWuhwspqcPSs1ud7MCSczHfXfARnd4/p/UZEagBX7k+gDWQ5Z5wtizBXfEZO
-         7bEDSvWWNaT407qoE9+9SbAOeApY3UGoLammmejp65kTfQ+M5gj1ewNaYZdpvUOHGafp
-         5u/8CG2kov7+sf6zEREgdOfPKuvTbS1ayesbVsNG1GeGbDgfNzgaaOWhF59Bfb7ROVkq
-         x0bSGF3YPLQEsftpDs5MtIg/uoF7rrej+YBUoO/oK1jNFCBf3dczyFOro8iIZKImpcfc
-         XPoQ==
-X-Gm-Message-State: AOAM53283+THkUD7Mq3WHFE9v21kEEn09SXlbGXNcylCmvogws7+IY3U
-        0wlIPBH3TFgp6z4CKkjbZp5GDA==
-X-Google-Smtp-Source: ABdhPJyinT6/QqXNhFeVGMB3xAneGt9oNUVvO0KLBd4YjvoKSluJGfVLAlNsGCC57y/VWwRG5TTJ7w==
-X-Received: by 2002:a17:90b:4c09:b0:1c7:6c8:43c8 with SMTP id na9-20020a17090b4c0900b001c706c843c8mr9032037pjb.208.1648163952166;
-        Thu, 24 Mar 2022 16:19:12 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id h2-20020a056a00218200b004f6519ce666sm4532608pfi.170.2022.03.24.16.19.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 16:19:11 -0700 (PDT)
-From:   Kees Cook <keescook@chromium.org>
-To:     shuah@kernel.org
-Cc:     Kees Cook <keescook@chromium.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>,
-        linux-kselftest@vger.kernel.org,
-        Willem de Bruijn <willemb@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH 1/2] selftests/harness: Run TEARDOWN for ASSERT failures
-Date:   Thu, 24 Mar 2022 16:19:06 -0700
-Message-Id: <20220324231907.1363887-2-keescook@chromium.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220324231907.1363887-1-keescook@chromium.org>
-References: <20220324231907.1363887-1-keescook@chromium.org>
-MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4758; h=from:subject; bh=0T38HzU8+bm6Q63KaidvXUMnrp8eZqY57zLg3zH/o/A=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBiPPxqSDr1CXvbwH34M5fSblmZaNneFSzMpiTGM0d/ 90+F5zOJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYjz8agAKCRCJcvTf3G3AJvTkEA CiPMfWYC5z46AFuK+F0bbhaBC7z8ty/oP2ut2DxuQ9zJF5vCCWzPy8utegmyQzqLf2G0eVtyqOGLA9 z9R9IsyvhdqahTqCs4CnSQM+1ExmovNFrvnxVm2MPTC4Hw4HOrEXQ147p6fAyWRHJXku5oFEicURd8 +Zav83ohj2PSDwsvr/O7zOcbXlCptbA9XeyFUqoFbGRK3knG7QFNXnePKxARzYFkCiwemV+3RnC2eZ r+f8i8t+E1Z74jecj/DYjKuhRsdi7sx7YuwJ6SfmOfSt89ajcL/MDUMfBVday5TkZmsCw74zvi+8pA xSfHgm/rTyrCU68weOtWsZrr9mQ5kI9lFA/aISU/JWE/zf4vJwDwc/8jeU/W/Nf+YFnLo4Q0Su+2LJ MfywZYFxT8F1GLSpi6ncvYYtE4kxAmCztIu1lHc7o7ZKWX6OTj/MwQsHB5JZNw1W0J2HjJHzKzHdUM GwNTfZO9OBUqsk1YcIn/vK/NcjdTLFG5rlOTct+BXr4wH5SKU+vorUrHFUi8Eb8HeoW5ARNLN+4CrH TuXaXLkeDaI3rmiXb3dztoHGv9DQwncJ8OoYZXDdt+8W3BKZq1kHvSptD1ILQDf2LcU8l2eMnsSvqB 2pmEvJ+17rfn/4DFUN/oLJehWqghehI/Pgx8U/7OqYsr3S+7+DdQVs9kj78g==
-X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Y6qzjfd1jXNtwC/Gtts9PBfVnly3kKV+IIjdQ0u7DRA=;
+ b=rc40LA0wrLeLIuoVqfdewiX57LRmghpvuENcD9TgmLB7TqLB9u9UUVE3OQMrTn5VCKA6rn2mDTNLyU241/yxvT1PD6KdIF4De4oEyMCCfOmRbRgQGLK+Jpt2dBnJh6OHc/7IGZUSMMpZ5339STWm/YiCouf7z77+dD2B3DRl2Is=
+Received: from SJ0PR10MB4576.namprd10.prod.outlook.com (2603:10b6:a03:2ae::5)
+ by SJ0PR10MB5439.namprd10.prod.outlook.com (2603:10b6:a03:303::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.16; Thu, 24 Mar
+ 2022 23:19:08 +0000
+Received: from SJ0PR10MB4576.namprd10.prod.outlook.com
+ ([fe80::6530:9b91:af1f:6225]) by SJ0PR10MB4576.namprd10.prod.outlook.com
+ ([fe80::6530:9b91:af1f:6225%6]) with mapi id 15.20.5102.019; Thu, 24 Mar 2022
+ 23:19:08 +0000
+From:   Libo Chen <libo.chen@oracle.com>
+To:     masahiroy@kernel.org, tglx@linutronix.de, peterz@infradead.org,
+        mingo@kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-arch@vger.kernel.org
+Subject: [PATCH] lib/Kconfig: remove DEBUG_PER_CPU_MAPS dependency for CPUMASK_OFFSTACK
+Date:   Thu, 24 Mar 2022 16:18:59 -0700
+Message-Id: <20220324231859.1287918-2-libo.chen@oracle.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220324231859.1287918-1-libo.chen@oracle.com>
+References: <20220324231859.1287918-1-libo.chen@oracle.com>
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SA0PR11CA0139.namprd11.prod.outlook.com
+ (2603:10b6:806:131::24) To SJ0PR10MB4576.namprd10.prod.outlook.com
+ (2603:10b6:a03:2ae::5)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 89a22866-d823-4815-07bf-08da0decb24d
+X-MS-TrafficTypeDiagnostic: SJ0PR10MB5439:EE_
+X-Microsoft-Antispam-PRVS: <SJ0PR10MB5439527C3B890958AFD1F5BD85199@SJ0PR10MB5439.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: h8P9REJ/afb5kKJaTuKsZ5uUP1rWBLi87ZbIr5JZo2CG1yNnY2uCLfKMR4Pc5+iuXoYRqKXZMTwi/mDyoMlDdChKgaYd5NhZzcWp49yoIDPEyqr6g+aWF/AxHSiQ6Kbrb9qcCQWUrqCAe6/TTp1Ma9K9qPHeLddGCaPmUpFYKncfIXu1WcCIWD8t7/ENvQemAQCuXzhX8NZ/uaU1ecopQCEhap2Pa1dfHx/mrwDW6UlQ2dwVJiWWbEywLB2rD1WrYr8Q6zC5nF6SpxfklDmgWVEj/+gGjLhlGSU/8nuU+uWRkVjpBbtxJTcNJEp9j3SntTIe/OG0z+JLdyM39oCvmwT1Q9OKAS57OgPu+8FMkYfU5KJPd8YHd+Y7+UiHGbM2eIwq4mZTFx1xcVKqRd40Lf8vy9+sBKoow6GNYBjWlUQR29YJ3yploVVqp4KOd8pYkd1ht5OcmqnddpBb5FPpsLVZ/Jk9BGcT1Jm1H2Mfc/+txkXARApLCRjuewk9wXPuK7uOiYvOwunZ/Ooto4C25OX1uWQoKdWFi/QAIUhLkdFyMnBpfp1uZuSN49b69pPkorrlc0vgCpQho4Bk58u/IcMIionq/5O6PGsCXjpIMQj92fJypEGO55n35ijFlJPbvcrKmCWnBIHTLteM08hgWaF0G1q6OEohhFowDtG/u3gMFks40pUStRO/8NHZ7t6cZct2MDR6V9YHKSRmZL6hFg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR10MB4576.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(316002)(38350700002)(6506007)(6666004)(6512007)(38100700002)(52116002)(36756003)(83380400001)(2616005)(186003)(1076003)(2906002)(86362001)(26005)(66476007)(66556008)(8936002)(44832011)(5660300002)(4326008)(8676002)(66946007)(6486002)(508600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?T8bQeBR1yyylt4sqegF1txhl9jUCLJzuaVVsTjbPmDMaDfVJSr2BWio3ETDG?=
+ =?us-ascii?Q?YYRX5AO1S5HYNpz+4GSnPzuSZP1rZR9wVboJ7rMFknHNmRVHnkWFZrsR8dnY?=
+ =?us-ascii?Q?sTsGafVSPj0mvZtodPBJUKaFhWsSr1jrAp2jep+8HxOfXFOXTNdzGJIWMWBY?=
+ =?us-ascii?Q?37KDfDQLnxI/qDgm2y8jj3+jBuqsJf3Q38SrWw7dTVeEETsfoL52P3b5Gg5N?=
+ =?us-ascii?Q?RGpPMqFN0Kw4vi6LJI1wKaruFk6Y9oyv1GQwBIS0l0t+Oh35tA3OUMoKrVW4?=
+ =?us-ascii?Q?JPvop3S6Czj+bwQzet9V7+RF/ZcnYRgEKp84LujhBZRmVFH7GVOE5/Sixqqn?=
+ =?us-ascii?Q?48X+3Fws6o/vsG8FpzrXdKkBprCzxfrbwynV0JUSoKWelkVw9wLlpB/ud1Nl?=
+ =?us-ascii?Q?Ssq8FMv6GHWEHacJwunMeQjuZtThJJ5lMzZCirShNTrDtuTXvQo4XYEguAnp?=
+ =?us-ascii?Q?whX1+0CsRr2l4U8a0c1NBWhDMHie5FEMr7SsDw5xdHqgd0boj3CI6US13y3T?=
+ =?us-ascii?Q?VvAm/NDx9Ojl8ESzaTCbEM4nnk8V4vbgUXk03bhYp2IUMwBDLsSt4xcJJfkh?=
+ =?us-ascii?Q?ApWDthMPJraqH5Y/9cyBoTSGdGLXSkoKnXf4oC806eC+3jHazvpW2HOA/yGi?=
+ =?us-ascii?Q?oxbVZoc0BHhy5CaeG5avgO9wqJB6BYAhxaf6l/uaNXuL9pwWqDrcxIqLEaFv?=
+ =?us-ascii?Q?Whxo/ezVTaWTfg/ae4HM3bzcG9lDKsyYAGUYAp35jDOrxwCG0coZ1/lql9Em?=
+ =?us-ascii?Q?BzX/BgjJh5nr/zszJmtaYXp7J4wMQUP/CqISPrV5mSgRtn9fAjIdAszLY5jT?=
+ =?us-ascii?Q?He/FWE7v9yaKWdAA5mtat98sOQ5VjvvYxmEm94DvRgMsCqzFa6YoqO7rfoe2?=
+ =?us-ascii?Q?DMsLVq9zftc0/8XfVa19sYP5Llzjv5QjbigQ9Os+vSaHFL9gFw4mJa5MlScs?=
+ =?us-ascii?Q?HqjOEoKPtrNzgSEcJIY5eAad06x2Lrra7cga8r7FIfQ67PqY5i6lCN09Im7x?=
+ =?us-ascii?Q?NwMkN6D7lDSZDRKq8Pz3iBaVOGWip7bKOBiUh9dE2be3hUKhov/kzoNBZfYU?=
+ =?us-ascii?Q?Q6/FWujXteGiQ72jjcV0iTpqhQpnotggeTrFMe1tLM5+n43iLL5SmbPRo2iR?=
+ =?us-ascii?Q?sjNahVl9VN0sdHnnj92tfEmEratx3HCjnMd3vQl/tDTS21UCplIsspNpY7AX?=
+ =?us-ascii?Q?rwXCT/+ZT7EoGH7dWTmwEoTtd+ayRXsMZachYW1Purgn0HYMBJAe6/SKJbVm?=
+ =?us-ascii?Q?jIJwxyj+KwpBRotdGi6rB8qooYexzx9eYSVR3+GqHfvEB0rHuer0Z1RW0v03?=
+ =?us-ascii?Q?eoopphrHWiI+eqpP7QQ7+2C7yBvxUkAltUt07D26dCc+PHT0U1rUn9Y9zVbB?=
+ =?us-ascii?Q?Lfym0h1yjHqmHaA8fq+g8cDgFWmDPvjV4W+YBcCx+j6LALM8+o++vm1ezug6?=
+ =?us-ascii?Q?XjNU/7sO9OkGk07QeIb/2iQfqnL+udye?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 89a22866-d823-4815-07bf-08da0decb24d
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR10MB4576.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2022 23:19:08.3057
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lzzW7/rtsNXw2e2r+BcFhIeRDYJc5/ugdtryLeIXem8VMChCgxU4eWl2QE7iFHT2czEeHu6DBu3q96ZNgO6J0g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB5439
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10296 signatures=694973
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 suspectscore=0 spamscore=0
+ mlxlogscore=999 phishscore=0 bulkscore=0 malwarescore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2203240123
+X-Proofpoint-ORIG-GUID: nnr5XzACTeOVhkyYZM0qWPY1ews-7BFf
+X-Proofpoint-GUID: nnr5XzACTeOVhkyYZM0qWPY1ews-7BFf
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The kselftest test harness has traditionally not run the registered
-TEARDOWN handler when a test encountered an ASSERT. This creates
-unexpected situations and tests need to be very careful about using
-ASSERT, which seems a needless hurdle for test writers.
+Forcing CPUMASK_OFFSTACK to be conditoned on DEBUG_PER_CPU_MAPS doesn't
+make a lot of sense nowaday. Even the original patch dating back to 2008,
+aab46da0520a ("cpumask: Add CONFIG_CPUMASK_OFFSTACK") didn't give any
+rationale for such dependency.
 
-Because of the harness's design for optional failure handlers, the
-original implementation of ASSERT used an abort() to immediately
-stop execution, but that meant the context for running teardown was
-lost. Instead, use setjmp/longjmp so that teardown can be done.
+Nowhere in the code supports the presumption that DEBUG_PER_CPU_MAPS is
+necessary for CONFIG_CPUMASK_OFFSTACK. Make no mistake, it's good to
+have DEBUG_PER_CPU_MAPS for debugging purpose or precaution, but it's
+simply not a hard requirement for CPUMASK_OFFSTACK. Moreover, x86 Kconfig
+already can set CPUMASK_OFFSTACK=y without DEBUG_PER_CPU_MAPS=y.
+There is no reason other architectures cannot given the fact that they
+have even fewer, if any, arch-specific CONFIG_DEBUG_PER_CPU_MAPS code than
+x86.
 
-Failed SETUP routines continue to not be followed by TEARDOWN, though.
-
-Cc: Andy Lutomirski <luto@amacapital.net>
-Cc: Will Drewry <wad@chromium.org>
-Cc: Shuah Khan <shuah@kernel.org>
-Cc: linux-kselftest@vger.kernel.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Libo Chen <libo.chen@oracle.com>
 ---
- tools/testing/selftests/kselftest_harness.h | 49 ++++++++++++++-------
- 1 file changed, 34 insertions(+), 15 deletions(-)
+ lib/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/kselftest_harness.h b/tools/testing/selftests/kselftest_harness.h
-index 471eaa7b3a3f..bef08f824eb5 100644
---- a/tools/testing/selftests/kselftest_harness.h
-+++ b/tools/testing/selftests/kselftest_harness.h
-@@ -64,6 +64,7 @@
- #include <sys/types.h>
- #include <sys/wait.h>
- #include <unistd.h>
-+#include <setjmp.h>
+diff --git a/lib/Kconfig b/lib/Kconfig
+index 9b5a692ce00c..a017f5fe4e38 100644
+--- a/lib/Kconfig
++++ b/lib/Kconfig
+@@ -502,7 +502,7 @@ config CHECK_SIGNATURE
+ 	bool
  
- #include "kselftest.h"
- 
-@@ -183,7 +184,10 @@
- 		struct __test_metadata *_metadata, \
- 		struct __fixture_variant_metadata *variant) \
- 	{ \
--		test_name(_metadata); \
-+		_metadata->setup_completed = true; \
-+		if (setjmp(_metadata->env) == 0) \
-+			test_name(_metadata); \
-+		__test_check_assert(_metadata); \
- 	} \
- 	static struct __test_metadata _##test_name##_object = \
- 		{ .name = #test_name, \
-@@ -356,10 +360,7 @@
-  * Defines a test that depends on a fixture (e.g., is part of a test case).
-  * Very similar to TEST() except that *self* is the setup instance of fixture's
-  * datatype exposed for use by the implementation.
-- *
-- * Warning: use of ASSERT_* here will skip TEARDOWN.
-  */
--/* TODO(wad) register fixtures on dedicated test lists. */
- #define TEST_F(fixture_name, test_name) \
- 	__TEST_F_IMPL(fixture_name, test_name, -1, TEST_TIMEOUT_DEFAULT)
- 
-@@ -381,12 +382,17 @@
- 		/* fixture data is alloced, setup, and torn down per call. */ \
- 		FIXTURE_DATA(fixture_name) self; \
- 		memset(&self, 0, sizeof(FIXTURE_DATA(fixture_name))); \
--		fixture_name##_setup(_metadata, &self, variant->data); \
--		/* Let setup failure terminate early. */ \
--		if (!_metadata->passed) \
--			return; \
--		fixture_name##_##test_name(_metadata, &self, variant->data); \
--		fixture_name##_teardown(_metadata, &self); \
-+		if (setjmp(_metadata->env) == 0) { \
-+			fixture_name##_setup(_metadata, &self, variant->data); \
-+			/* Let setup failure terminate early. */ \
-+			if (!_metadata->passed) \
-+				return; \
-+			_metadata->setup_completed = true; \
-+			fixture_name##_##test_name(_metadata, &self, variant->data); \
-+		} \
-+		if (_metadata->setup_completed) \
-+			fixture_name##_teardown(_metadata, &self); \
-+		__test_check_assert(_metadata); \
- 	} \
- 	static struct __test_metadata \
- 		      _##fixture_name##_##test_name##_object = { \
-@@ -683,7 +689,7 @@
-  */
- #define OPTIONAL_HANDLER(_assert) \
- 	for (; _metadata->trigger; _metadata->trigger = \
--			__bail(_assert, _metadata->no_print, _metadata->step))
-+			__bail(_assert, _metadata))
- 
- #define __INC_STEP(_metadata) \
- 	/* Keep "step" below 255 (which is used for "SKIP" reporting). */	\
-@@ -830,6 +836,9 @@ struct __test_metadata {
- 	bool timed_out;	/* did this test timeout instead of exiting? */
- 	__u8 step;
- 	bool no_print; /* manual trigger when TH_LOG_STREAM is not available */
-+	bool aborted;	/* stopped test due to failed ASSERT */
-+	bool setup_completed; /* did setup finish? */
-+	jmp_buf env;	/* for exiting out of test early */
- 	struct __test_results *results;
- 	struct __test_metadata *prev, *next;
- };
-@@ -848,16 +857,26 @@ static inline void __register_test(struct __test_metadata *t)
- 	__LIST_APPEND(t->fixture->tests, t);
- }
- 
--static inline int __bail(int for_realz, bool no_print, __u8 step)
-+static inline int __bail(int for_realz, struct __test_metadata *t)
- {
-+	/* if this is ASSERT, return immediately. */
- 	if (for_realz) {
--		if (no_print)
--			_exit(step);
--		abort();
-+		t->aborted = true;
-+		longjmp(t->env, 1);
- 	}
-+	/* otherwise, end the for loop and continue. */
- 	return 0;
- }
- 
-+static inline void __test_check_assert(struct __test_metadata *t)
-+{
-+	if (t->aborted) {
-+		if (t->no_print)
-+			_exit(t->step);
-+		abort();
-+	}
-+}
-+
- struct __test_metadata *__active_test;
- static void __timeout_handler(int sig, siginfo_t *info, void *ucontext)
- {
+ config CPUMASK_OFFSTACK
+-	bool "Force CPU masks off stack" if DEBUG_PER_CPU_MAPS
++	bool "Force CPU masks off stack"
+ 	help
+ 	  Use dynamic allocation for cpumask_var_t, instead of putting
+ 	  them on the stack.  This is a bit more expensive, but avoids
 -- 
-2.32.0
+2.27.0
 
