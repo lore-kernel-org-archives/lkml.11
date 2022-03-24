@@ -2,125 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AECA5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 17:23:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D8C4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 17:23:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352234AbiCXRYb (ORCPT
+        id S1352248AbiCXRYu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 13:24:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58814 "EHLO
+        Thu, 24 Mar 2022 13:24:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240571AbiCXRY2 (ORCPT
+        with ESMTP id S1352237AbiCXRYq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 13:24:28 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0228F986F6
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 10:22:56 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Thu, 24 Mar 2022 13:24:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B84F71CB20;
+        Thu, 24 Mar 2022 10:23:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 98A27215FD;
-        Thu, 24 Mar 2022 17:22:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1648142574; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HGT7Uj6/EhveXkVwghH4LYAenDJ1TyPCjNeutemup5s=;
-        b=HQzImj5RZ4tBMpz4HqGSXrKSVTkS8nHvI8XO2MB65609assGuxUYVPCz40M5Ovk6NmFook
-        U7dCxBVS6jWjhhVnfy4ZOSgnDkAqYx5eUl8ZDiJmHxBpVVoqbjqMY8hGmt5dFVh0di7vLQ
-        t9nJfu2lAjAJONY+ukZ77nhKETGTJgM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1648142574;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HGT7Uj6/EhveXkVwghH4LYAenDJ1TyPCjNeutemup5s=;
-        b=bKV0Fwya9p1PnCxvArPKuyctqOZ/8wV6lwKLs9LYMyshmhW6dcNJ7B5XzmFqQAohBIGslL
-        vV3f2Jo3Xa4KdjBQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 674EC13A7F;
-        Thu, 24 Mar 2022 17:22:54 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id EqBvGO6oPGLaWAAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Thu, 24 Mar 2022 17:22:54 +0000
-Message-ID: <f93b5d12-d30c-84dd-3ef4-9e21f9f8cf0c@suse.cz>
-Date:   Thu, 24 Mar 2022 18:22:54 +0100
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7406FB82335;
+        Thu, 24 Mar 2022 17:23:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7135C340EC;
+        Thu, 24 Mar 2022 17:23:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648142591;
+        bh=Ii6N9yX0cfvtlWGYsRFUlxpmnU5DBEOXCXBEVeUK1m4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dkUjRBS0vQTUg1Sz1AEMShGyKGTmbunTXyYN4gS3PEI7v7chIhQlEh4j9L7nEnwBW
+         EKYR8C3DHrHaONiYk/yFDenQDWCxLA6w24pOc5ybAZyPHJ3cnvNa0IYihNl7omVObg
+         8cNRIAidGUVpmu9Qbws+svgUr0wbTc9JhBF6cI0PdxAGBm1gk+tBjOKZ4EFAqxKHhB
+         Yj0QTkVK4AFTmN9JueLDEmjI44hjfzbBEEJ2aMip1SWLzb6XfWlfaHVh5jQAo2UI9x
+         Tzvhc1zpzZeJTEnKATnOiybc7/c9hI5aenkYyFKvCcuHGylL5/fJHHQFhne2tJgG/l
+         iW+VnVEFeutLQ==
+Date:   Thu, 24 Mar 2022 17:23:05 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     David Collins <quic_collinsd@quicinc.com>
+Cc:     Sudeep Holla <sudeep.holla@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        devicetree@vger.kernel.org,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org,
+        Subbaraman Narayanamurthy <quic_subbaram@quicinc.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Mike Tipton <quic_mdtipton@quicinc.com>
+Subject: Re: [PATCH v2 0/2] regulator: scmi: add support for registering SCMI
+ regulators by name
+Message-ID: <Yjyo+Xk0txZs4T/Z@sirena.org.uk>
+References: <cover.1647909090.git.quic_collinsd@quicinc.com>
+ <Yjm1wpcMZsZJJCuy@bogus>
+ <eb03037b-e7c2-ea23-0bdb-27924ed54fa7@quicinc.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v1 05/15] mm/slub: move kmalloc_large_node() to
- slab_common.c
-Content-Language: en-US
-To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>, linux-mm@kvack.org
-Cc:     Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Marco Elver <elver@google.com>,
-        Matthew WilCox <willy@infradead.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        linux-kernel@vger.kernel.org
-References: <20220308114142.1744229-1-42.hyeyoo@gmail.com>
- <20220308114142.1744229-6-42.hyeyoo@gmail.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220308114142.1744229-6-42.hyeyoo@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="81Z0hAsjzpiu2TPf"
+Content-Disposition: inline
+In-Reply-To: <eb03037b-e7c2-ea23-0bdb-27924ed54fa7@quicinc.com>
+X-Cookie: Orders subject to approval.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/8/22 12:41, Hyeonggon Yoo wrote:
-> In later patch SLAB will also pass requests larger than order-1 page
-> to page allocator. Move kmalloc_large_node() to slab_common.c.
-> 
-> Fold kmalloc_large_node_hook() into kmalloc_large_node() as there is
-> no other caller.
-> 
-> Move tracepoint in kmalloc_large_node().
-> 
-> Add flag fix code. This exist in kmalloc_large() but omitted in
-> kmalloc_large_node().
-> 
-> Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-> ---
->  include/linux/slab.h |  3 +++
->  mm/slab_common.c     | 26 ++++++++++++++++++++++++
->  mm/slub.c            | 47 ++++----------------------------------------
->  3 files changed, 33 insertions(+), 43 deletions(-)
-> 
 
-<snip>
+--81Z0hAsjzpiu2TPf
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
->  
-> @@ -4874,15 +4842,8 @@ void *__kmalloc_node_track_caller(size_t size, gfp_t gfpflags,
->  	struct kmem_cache *s;
->  	void *ret;
->  
-> -	if (unlikely(size > KMALLOC_MAX_CACHE_SIZE)) {
-> -		ret = kmalloc_large_node(size, gfpflags, node);
-> -
-> -		trace_kmalloc_node(caller, ret,
-> -				   size, PAGE_SIZE << get_order(size),
-> -				   gfpflags, node);
+On Tue, Mar 22, 2022 at 06:12:33PM -0700, David Collins wrote:
 
-Hmm this throws away the caller for tracing, so looks like an unintended
-functional change.
+> Another problem is that, as with regulators, ID numbers could
+> unknowingly get out of sync between the platform and the agent.  Using
+> clock domain names for referencing fixes both issues.  This can be
 
-> -
-> -		return ret;
-> -	}
-> +	if (unlikely(size > KMALLOC_MAX_CACHE_SIZE))
-> +		return kmalloc_large_node(size, gfpflags, node);
->  
->  	s = kmalloc_slab(size, gfpflags);
->  
+This is just saying that the hard coded IDs that the firmware and kernel
+use to communicate can get out of sync which is true no matter if those
+IDs are strings or if they're numerical, either way it's an ABI which
+can be broken.
 
+> > If the IDs are correct like the names, it is guaranteed. I see this
+> > ID vs name is more for some maintenance convenience because somewhere
+> > something else needs to changes or moved away from existing way of
+> > maintenance.
+
+> How do you quantify an ID number to physical regulator mapping as
+> "correct"?  What happens if the mapping must be changed on the SCMI
+> platform side (e.g. a PMIC was added or removed, or the order that
+> regulators are listed in needs to change)?  If the SCMI agent is blindly
+
+The whole point with the numbers being an ABI is that things must never
+be renumbered, just as if names are used the names can't be changed.  If
+the numbering is changing that just sounds like bugs on the platform
+side.  There's an implicit assumption in what you've written above that
+implementation details of the firmware should affect the IDs presented
+through SCMI which simply shouldn't be true, and indeed if the firmware
+can assign fixed strings it can just as well assign fixed numbers.
+
+--81Z0hAsjzpiu2TPf
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmI8qPgACgkQJNaLcl1U
+h9ADUgf9F+Vf4g7qBC+8QlTTVuL2G2gfodUp02z5tMeeey6bl+LR16pl2v9gT7hB
+p2CJjMjVg8NZYrrhb7BwEoibIRppAy02Ehy+FRZNXpLUNtrZjskye0LqYJW2nVnv
+r/XEam7moUDXHEhQWOGz8pY8PTTE66kMytsL4tWpK6ERwyHonh7kEuLRdY5s0JLT
+haW0CXliardrk2R8uh3+Zk40wyq2NW+AcGrBarTE9EaJVVjg2WcPWgAnCeBXgQxw
+fJ01Gyz3VeWZdk0XGD3+b8DejXOsi5ltsGRDbzZd6cusY76qGUL+XzyQMJLnYwzX
+J/ksIIO1L4uR2q+DYs9zCnueo1ahmQ==
+=u7Hy
+-----END PGP SIGNATURE-----
+
+--81Z0hAsjzpiu2TPf--
