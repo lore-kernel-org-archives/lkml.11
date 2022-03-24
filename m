@@ -2,82 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 834A5C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 02:44:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0FC7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 02:47:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347864AbiCXCqK (ORCPT
+        id S1347869AbiCXCsp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 22:46:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38464 "EHLO
+        Wed, 23 Mar 2022 22:48:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347840AbiCXCqG (ORCPT
+        with ESMTP id S242681AbiCXCsm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 22:46:06 -0400
-X-Greylist: delayed 314 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 23 Mar 2022 19:44:33 PDT
-Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 458705D5D5;
-        Wed, 23 Mar 2022 19:44:32 -0700 (PDT)
-Received: from localhost.localdomain (unknown [222.205.7.202])
-        by mail-app4 (Coremail) with SMTP id cS_KCgD3eRDJ2TtieeI_AA--.6621S4;
-        Thu, 24 Mar 2022 10:39:05 +0800 (CST)
-From:   Lin Ma <linma@zju.edu.cn>
-To:     jk@codeconstruct.com.au, matt@codeconstruct.com.au,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Lin Ma <linma@zju.edu.cn>
-Subject: [PATCH v0] mctp: fix netdev reference bug
-Date:   Thu, 24 Mar 2022 10:39:04 +0800
-Message-Id: <20220324023904.7173-1-linma@zju.edu.cn>
-X-Mailer: git-send-email 2.35.1
+        Wed, 23 Mar 2022 22:48:42 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8D88939CC;
+        Wed, 23 Mar 2022 19:47:11 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id bx24-20020a17090af49800b001c6872a9e4eso3768781pjb.5;
+        Wed, 23 Mar 2022 19:47:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=90v/5Py9W7EAZEot7188HYCPw8B0VfqItjFqNp0yU8I=;
+        b=dxrv0V3AiE2m0/WOX54xvV5yxB0eJv9FvLmxGfHi84fR/RWgBOp4yXdDNToYvyAawj
+         kFAqEG2QtJP6dJm1A/UKmq+1eB7PdUAV/zCkGhgbi9FbsP45vrQ9Soh8L719JjYtuwIg
+         N8NN/8zPbZSLvzEiIEYCgbzuHQ3nWPE/VgE7HlJAPPawvyRDtRTBtdnSAeEjeXLRRFJY
+         hF4aVeYUjd1A+GEfDEvARaNz62S+hP9Rhjqv1hfCPw9ceQkOiviCfxLNeiibnjpNAGNi
+         /6516352cSybYQDMu2cYXhPHBes/c1Nn7vARgXL0a/M/f8rTpmQpxgaP5aNDcNn0GcUs
+         QfDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=90v/5Py9W7EAZEot7188HYCPw8B0VfqItjFqNp0yU8I=;
+        b=L+Nkts2qPDy28GS2t9yQVU9DCQCizPhOys0HQG12B6SJ1XWGlFlFx8bi41rtihAc7u
+         SxHlRpN3m5QDWwTzWK4IrpjM8/va7gN8nUsnb385S0vHSv+RHL4H7agXmRRxanby//d6
+         /Ke9oBd/6P9gQY25ZNFhi2P6FbBHGTnnlz3STl3DOfbjE3xIsSq2QVdUxyLCoootMnzU
+         Cbf574csqaVdregMOf0+FOlyVv2HiSYbV3eMJLFYXov7eJ1mEedIoNh8ftXxgD6bcTqI
+         2HjMZ9rbT4Agz1a5vaLjd6g4pi8Zgo5PTMCkeWQ4MYJg9uO8Mlimihe5KFi1ZlwEn2k3
+         NBDg==
+X-Gm-Message-State: AOAM531iqzff1cAlAU97hVhfidLAinJRwh1xDXqSq7SIAFL8vnZ2AgHW
+        5/5wIPNPNcLJS25BXLSFTTuZCWQACPBzXEak0Hc=
+X-Google-Smtp-Source: ABdhPJzEvjnYd7B0WIGRcPh8gW/FvpiuSCSRc80jOwhBs6SPVLjct24P89mwBuS0aVh2B9zE/pT9CUr0CDpyaw6jaGg=
+X-Received: by 2002:a17:903:1cd:b0:154:5edf:5704 with SMTP id
+ e13-20020a17090301cd00b001545edf5704mr3481459plh.26.1648090031398; Wed, 23
+ Mar 2022 19:47:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: cS_KCgD3eRDJ2TtieeI_AA--.6621S4
-X-Coremail-Antispam: 1UD129KBjvdXoWrtFWxuw1xurW5JrW5JFWkWFg_yoW3tFX_W3
-        9xCryDWrs8Gr18ua1jkanaqr1rtw1avr18Gr4SgFs8J3yUZ3Wqqr18AF9xWryfC3y5Xa4U
-        AF1qvry3A3WI9jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbxxFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AK
-        wVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20x
-        vE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4UJVW0owA2z4x0Y4vEx4A2
-        jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52
-        x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWU
-        GwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI4
-        8JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_Gr1l42xK82IYc2Ij64vIr41l
-        42xK82IY6x8ErcxFaVAv8VW8uw4UJr1UMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I
-        8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8
-        ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x
-        0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_
-        Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjfUO_
-        MaUUUUU
-X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/
+References: <20220317234827.447799-1-shy828301@gmail.com> <YjvNzvdcagflTejJ@mit.edu>
+In-Reply-To: <YjvNzvdcagflTejJ@mit.edu>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Wed, 23 Mar 2022 19:46:59 -0700
+Message-ID: <CAHbLzkqTeD_VB0znsBNt8HjjPceqU-uKh6TF3jNVVjZn4dbBLw@mail.gmail.com>
+Subject: Re: [v2 PATCH 0/8] Make khugepaged collapse readonly FS THP more consistent
+To:     "Theodore Ts'o" <tytso@mit.edu>
+Cc:     Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Song Liu <songliubraving@fb.com>,
+        Rik van Riel <riel@surriel.com>,
+        Matthew Wilcox <willy@infradead.org>, Zi Yan <ziy@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andreas Dilger <adilger.kernel@dilger.ca>,
+        darrick.wong@oracle.com, Linux MM <linux-mm@kvack.org>,
+        Linux FS-devel Mailing List <linux-fsdevel@vger.kernel.org>,
+        linux-ext4@vger.kernel.org, linux-xfs@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In extended addressing mode, function mctp_local_output() fetch netdev
-through dev_get_by_index_rcu, which won't increase netdev's reference
-counter. Hence, the reference may underflow when mctp_local_output calls
-dev_put(), results in possible use after free.
+On Wed, Mar 23, 2022 at 6:48 PM Theodore Ts'o <tytso@mit.edu> wrote:
+>
+> On Thu, Mar 17, 2022 at 04:48:19PM -0700, Yang Shi wrote:
+> >
+> > The patch 1 ~ 7 are minor bug fixes, clean up and preparation patches.
+> > The patch 8 converts ext4 and xfs.  We may need convert more filesystems,
+> > but I'd like to hear some comments before doing that.
+>
+> Adding a hard-coded call to khugepage_enter_file() in ext4 and xfs,
+> and potentially, each file system, seems kludgy as all heck.  Is there
+> any reason not to simply call it in the mm code which calls f_op->mmap()?
 
-This patch adds dev_hold() to fix the reference bug.
+Thanks, Ted. Very good point. I just didn't think of it. I think it is
+doable. We may be able to clean up the code further.
 
-Fixes: 99ce45d5e7db ("mctp: Implement extended addressing")
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
----
- net/mctp/route.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/net/mctp/route.c b/net/mctp/route.c
-index e52cef750500..a9e5d6c40c65 100644
---- a/net/mctp/route.c
-+++ b/net/mctp/route.c
-@@ -817,6 +817,7 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
- 			return rc;
- 		}
- 
-+		dev_hold(dev);
- 		rt->dev = __mctp_dev_get(dev);
- 		rcu_read_unlock();
- 
--- 
-2.35.1
-
+>
+>                                  - Ted
