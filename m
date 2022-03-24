@@ -2,104 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A242C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 12:11:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BFE1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 12:12:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349961AbiCXMNL (ORCPT
+        id S1349969AbiCXMOP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 08:13:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38778 "EHLO
+        Thu, 24 Mar 2022 08:14:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239478AbiCXMNK (ORCPT
+        with ESMTP id S232151AbiCXMON (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 08:13:10 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AE3AA8891;
-        Thu, 24 Mar 2022 05:11:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1648123898; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qnCAvLWdM1Y5d8SOO6pcXoGJy8s/S8dfYLfjzDercYo=;
-        b=RDFMgE5lRxQ5dNk3YEU3j9gxoWl85Ijk2rTXFAd79SyCDijcOk5SbSMhvmw6uA5re/tUd9
-        +D52uN65yhrxGIRjAfi6T5Zua0daT6oqbweLkgu6DYYOZllGXSgmuhlkT+w/bP8nrojdjW
-        UmPpc2Ouwhhi6nICVfJK7DyaH6lpCI4=
-Date:   Thu, 24 Mar 2022 12:11:29 +0000
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH] thermal:hisi_termal: Switch from CONFIG_PM_SLEEP guards
- to pm_sleep_ptr()
-To:     Hesham Almatary <hesham.almatary@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, linuxarm@huawei.com,
-        jonathan.cameron@huawei.com, rafael@kernel.org, amitk@kernel.org,
-        rui.zhang@intel.com, linux-pm@vger.kernel.org
-Message-Id: <5J099R.20GRUWFVWC5D1@crapouillou.net>
-In-Reply-To: <20220324103443.4563-1-hesham.almatary@huawei.com>
-References: <20220324103443.4563-1-hesham.almatary@huawei.com>
+        Thu, 24 Mar 2022 08:14:13 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C4DA8891
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 05:12:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648123961; x=1679659961;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=o5DZSEcXBSfapZPtuJt3osrQmUSj5SHfQHgFF2l7BN8=;
+  b=BoDO1mKLYJ7BpMRX1Wtf+bTTY86H36K50BWNvG4RmfZk57pOP7sOIj1z
+   Zx/IPBYBlqWa4QPPBU68pJDoUWIYddp2vwv4D1ocEAGfqbn4QQ0SKfRP8
+   dhet9cfJYNqUIdXk7ocRoJKbSQMYRjqS1QvvV1bo96K+EYpn21bWhws0g
+   zA950rDhoaYICs42NjKMGIKbF7GimT3a+MFjUZDf6MGxOMCKtoHRgnFwJ
+   uWqO2XelybVvwjWS6EV/QRI3wQKvuN67OkWYGmB2o+D7N/igtYp89g/zy
+   m/nyR665aBJ1lHuQRM5b6z+knxWcn0wJ3krwEBx60BzVITo7bzc3QhPxS
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="238966840"
+X-IronPort-AV: E=Sophos;i="5.90,207,1643702400"; 
+   d="scan'208";a="238966840"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 05:11:24 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,207,1643702400"; 
+   d="scan'208";a="516147844"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga002.jf.intel.com with ESMTP; 24 Mar 2022 05:11:23 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nXMJG-000L3r-SE; Thu, 24 Mar 2022 12:11:22 +0000
+Date:   Thu, 24 Mar 2022 20:10:45 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Bart Van Assche <bvanassche@acm.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [bvanassche:ufs-for-next 324/324] drivers/scsi/ufs-core/ufshcd.c:
+ scsi/ufs_quirks.h is included more than once.
+Message-ID: <202203242041.o36vA24L-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Hesham,
+tree:   https://github.com/bvanassche/linux ufs-for-next
+head:   b93e987f91a0c037fc4357107f5144110cd84d08
+commit: b93e987f91a0c037fc4357107f5144110cd84d08 [324/324] scsi: ufs: Split the drivers/scsi/ufs directory
+compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
 
-Le jeu., mars 24 2022 at 10:34:43 +0000, Hesham Almatary=20
-<hesham.almatary@huawei.com> a =E9crit :
-> Cleaning up the driver to use pm_sleep_ptr() macro instead of #ifdef
-> guards is simpler and allows the compiler to remove those functions
-> if built without CONFIG_PM_SLEEP support.
->=20
-> Signed-off-by: Hesham Almatary <hesham.almatary@huawei.com>
-
-Looks good.
-
-Reviewed-by: Paul Cercueil <paul@crapouillou.net>
-
-Cheers,
--Paul
-
-> ---
->  drivers/thermal/hisi_thermal.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
->=20
-> diff --git a/drivers/thermal/hisi_thermal.c=20
-> b/drivers/thermal/hisi_thermal.c
-> index 9a21ac0ceb11..b29ab09040d5 100644
-> --- a/drivers/thermal/hisi_thermal.c
-> +++ b/drivers/thermal/hisi_thermal.c
-> @@ -629,7 +629,6 @@ static int hisi_thermal_remove(struct=20
-> platform_device *pdev)
->  	return 0;
->  }
->=20
-> -#ifdef CONFIG_PM_SLEEP
->  static int hisi_thermal_suspend(struct device *dev)
->  {
->  	struct hisi_thermal_data *data =3D dev_get_drvdata(dev);
-> @@ -651,15 +650,14 @@ static int hisi_thermal_resume(struct device=20
-> *dev)
->=20
->  	return ret;
->  }
-> -#endif
->=20
-> -static SIMPLE_DEV_PM_OPS(hisi_thermal_pm_ops,
-> +static DEFINE_SIMPLE_DEV_PM_OPS(hisi_thermal_pm_ops,
->  			 hisi_thermal_suspend, hisi_thermal_resume);
->=20
->  static struct platform_driver hisi_thermal_driver =3D {
->  	.driver =3D {
->  		.name		=3D "hisi_thermal",
-> -		.pm		=3D &hisi_thermal_pm_ops,
-> +		.pm		=3D pm_sleep_ptr(&hisi_thermal_pm_ops),
->  		.of_match_table =3D of_hisi_thermal_match,
->  	},
->  	.probe	=3D hisi_thermal_probe,
-> --
-> 2.25.1
->=20
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
 
+includecheck warnings: (new ones prefixed by >>)
+>> drivers/scsi/ufs-core/ufshcd.c: scsi/ufs_quirks.h is included more than once.
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
