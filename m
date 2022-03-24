@@ -2,84 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 746C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 15:42:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53955C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 15:42:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351354AbiCXPoF (ORCPT
+        id S1351360AbiCXPoM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 11:44:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49014 "EHLO
+        Thu, 24 Mar 2022 11:44:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351343AbiCXPn7 (ORCPT
+        with ESMTP id S1351343AbiCXPoL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 11:43:59 -0400
-Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 11D3BA0BDF
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 08:42:25 -0700 (PDT)
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 22OFgAuG019967;
-        Thu, 24 Mar 2022 16:42:10 +0100
-Date:   Thu, 24 Mar 2022 16:42:10 +0100
-From:   Willy Tarreau <w@1wt.eu>
-To:     Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
-Cc:     Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Nugraha <richiisei@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        David Laight <David.Laight@aculab.com>
-Subject: Re: [PATCH v1 04/11] tools/nolibc: x86-64: Use appropriate register
- constraints if exist
-Message-ID: <20220324154210.GC19142@1wt.eu>
-References: <20220324073039.140946-1-ammarfaizi2@gnuweeb.org>
- <20220324073039.140946-5-ammarfaizi2@gnuweeb.org>
- <20220324075728.GC18586@1wt.eu>
- <CAOG64qMwKYHLrUVro1gFhYqHvm8wq5DUdO7QfK5gG2TKhfnNhA@mail.gmail.com>
+        Thu, 24 Mar 2022 11:44:11 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48238A1447
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 08:42:39 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id p15so9967067ejc.7
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 08:42:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:user-agent:mime-version:to:cc:subject
+         :references:in-reply-to:content-transfer-encoding;
+        bh=kZCJsDwuqFmPdGnVK+OvD0sFJ1NQAHf3rkQ/uko1Ypo=;
+        b=TLgs+/f1fDU/asNFSeTTbfgjarvjKtaY7VH4v6LErCV5kTHXrowQmCYq+4ZwYBZ1k5
+         L7DtOzlE30HO8bY0DShfaoOTFaobumChKR+E5mRqWzSrjrJQsNG4bJLwRQqSwxejBLfA
+         R8B1oNJ32Xs4hsmgRL7crsc7hH5IIa+gMaTKeUYSZq++tzRI3Dxk5PxyHA9bE7bNBWuQ
+         AdtT4WVvDon+nZLvjLoviTiD/LznDmH+itMDO73OCUUCXwZTN3ndBHAztu2kArqId9cj
+         YSMP98LdTwuy1WuvppskGjKRUl9O9vDXstuP3g0sW8QSUmHz3pQKJhoLe1fcOzQdAVnP
+         vpYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:user-agent:mime-version:to
+         :cc:subject:references:in-reply-to:content-transfer-encoding;
+        bh=kZCJsDwuqFmPdGnVK+OvD0sFJ1NQAHf3rkQ/uko1Ypo=;
+        b=nLOFVQVZnDP7Da+z386NE9SzRBO6fRBLdff3zFAZU8WiSnqlQQip2mSFySxvDOH1bC
+         2YaNv3Kzi/YkAm5cboKANcrtcdRs9i0eGKkOeF5FFUbFvujPDGRMkJdlQB8FLkkHdZzA
+         Nh38K09Jvs6ZyZ6H8d1Ya8ewzS3/L6xcjAZNvbE1B6ai/eq8PfcgS9rebfvGFkHSQdsy
+         5G8tKt0U6LrMQnu0H6VlSfXmmrHX5iqvOCt+pNqz95pZBsEYnT3+7QBa25TQOz3mcMXs
+         ZgDJIqAtP1+rR918Uz5RUd80dYSOPHLLwJjhSNjn8ouRs/mMut6Md3MsrWhrjwbNNCHU
+         WUvw==
+X-Gm-Message-State: AOAM532a2twpO7tuj7MFxyMYZi+ZEaVNt+eYvy3e/il+Vofb8u77ojPH
+        Xk2HDJ2brrGOy94PEjvK8SM=
+X-Google-Smtp-Source: ABdhPJzdC5QIuMVd73kQ1G9mQxF9Fvzi6kbhcWRNuv85/Ql+uKrgaDzkXDmNWSYf205OJ0D5ZZ1zEw==
+X-Received: by 2002:a17:906:58cb:b0:6df:f696:9b32 with SMTP id e11-20020a17090658cb00b006dff6969b32mr6597382ejs.384.1648136557640;
+        Thu, 24 Mar 2022 08:42:37 -0700 (PDT)
+Received: from [109.186.89.7] (109-186-89-7.bb.netvision.net.il. [109.186.89.7])
+        by smtp.gmail.com with ESMTPSA id u4-20020aa7db84000000b004136c2c357csm1549665edt.70.2022.03.24.08.42.35
+        (version=TLS1 cipher=AES128-SHA bits=128/128);
+        Thu, 24 Mar 2022 08:42:37 -0700 (PDT)
+Message-ID: <623C9137.3000803@gmail.com>
+Date:   Thu, 24 Mar 2022 17:41:43 +0200
+From:   Eli Billauer <eli.billauer@gmail.com>
+User-Agent: Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1.12) Gecko/20100907 Fedora/3.0.7-1.fc12 Thunderbird/3.0.7
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOG64qMwKYHLrUVro1gFhYqHvm8wq5DUdO7QfK5gG2TKhfnNhA@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+To:     Jakob Koschel <jakobkoschel@gmail.com>
+CC:     Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
+Subject: Re: [PATCH] char: xillybus: replace usage of found with dedicated
+ list iterator variable
+References: <20220324070939.59297-1-jakobkoschel@gmail.com>
+In-Reply-To: <20220324070939.59297-1-jakobkoschel@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 03:33:57PM +0700, Alviro Iskandar Setiawan wrote:
-> On Thu, Mar 24, 2022 at 2:57 PM Willy Tarreau <w@1wt.eu> wrote:
-> > On Thu, Mar 24, 2022 at 02:30:32PM +0700, Ammar Faizi wrote:
-> > > Use appropriate register constraints if exist. Don't use register
-> > > variables for all inputs.
-> > >
-> > > Register variables with "r" constraint should be used when we need to
-> > > pass data through a specific register to extended inline assembly that
-> > > doesn't have a specific register constraint associated with it (anything
-> > > outside %rax, %rbx, %rcx, %rdx, %rsi, %rdi).
-> > >
-> > > It also simplifies the macro definition.
-> >
-> > I'm a bit bothered by this one because I went the exact opposite route
-> > in the early design precisely because I found that the current one was
-> > simpler. [...]
-> [...]
-> > I'd say that if there is any technical benefit in doing this (occasional
-> > code improvement or better support for older or exotic compilers), I'd say
-> > "ok go for it", but if it's only a matter of taste, I'm not convinced at
-> > all and am rather seeing this as a regression. Now if there's rough
-> > consensus around this approach I'll abide, but then I'd request that other
-> > archs are adapted as well so that we don't keep a different approach only
-> > for these two ones.
-> 
-> I don't see any technical benefit for x86-64, so I don't think there
-> is a need in doing this. Though I personally prefer to use register
-> constraints if they exist instead of register variables for everything
-> (oh yeah, matter of taste since I don't have any technical argument to
-> say it's better respecting the resulting codegen). The only real issue
-> is for the syscall6() implementation on i386 as we've been bitten by a
-> real compiler issue. In short, I am neutral on this change.
+Thanks.
 
-Just to be clear, I usually only use register constraints as well but I
-changed this for the syscalls since they were not sufficient, and found
-that the mix of the two was really not great to deal with.
+Acked-by: Eli Billauer <eli.billauer@gmail.com>
 
-Thanks,
-Willy
+On 24/03/22 09:09, Jakob Koschel wrote:
+> To move the list iterator variable into the list_for_each_entry_*()
+> macro in the future it should be avoided to use the list iterator
+> variable after the loop body.
+>
+> To *never* use the list iterator variable after the loop it was
+> concluded to use a separate iterator variable instead of a
+> found boolean [1].
+>
+> This removes the need to use a found variable and simply checking if
+> the variable was set, can determine if the break/goto was hit.
+>
+> Link:https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
+> Signed-off-by: Jakob Koschel<jakobkoschel@gmail.com>
+> ---
+>   drivers/char/xillybus/xillybus_class.c | 26 ++++++++++++--------------
+>   1 file changed, 12 insertions(+), 14 deletions(-)
+>
+> diff --git a/drivers/char/xillybus/xillybus_class.c b/drivers/char/xillybus/xillybus_class.c
+> index 5046486011c8..0f238648dcfe 100644
+> --- a/drivers/char/xillybus/xillybus_class.c
+> +++ b/drivers/char/xillybus/xillybus_class.c
+> @@ -174,18 +174,17 @@ void xillybus_cleanup_chrdev(void *private_data,
+>   			     struct device *dev)
+>   {
+>   	int minor;
+> -	struct xilly_unit *unit;
+> -	bool found = false;
+> +	struct xilly_unit *unit = NULL, *iter;
+>
+>   	mutex_lock(&unit_mutex);
+>
+> -	list_for_each_entry(unit,&unit_list, list_entry)
+> -		if (unit->private_data == private_data) {
+> -			found = true;
+> +	list_for_each_entry(iter,&unit_list, list_entry)
+> +		if (iter->private_data == private_data) {
+> +			unit = iter;
+>   			break;
+>   		}
+>
+> -	if (!found) {
+> +	if (!unit) {
+>   		dev_err(dev, "Weird bug: Failed to find unit\n");
+>   		mutex_unlock(&unit_mutex);
+>   		return;
+> @@ -216,22 +215,21 @@ int xillybus_find_inode(struct inode *inode,
+>   {
+>   	int minor = iminor(inode);
+>   	int major = imajor(inode);
+> -	struct xilly_unit *unit;
+> -	bool found = false;
+> +	struct xilly_unit *unit = NULL, *iter;
+>
+>   	mutex_lock(&unit_mutex);
+>
+> -	list_for_each_entry(unit,&unit_list, list_entry)
+> -		if (unit->major == major&&
+> -		    minor>= unit->lowest_minor&&
+> -		    minor<  (unit->lowest_minor + unit->num_nodes)) {
+> -			found = true;
+> +	list_for_each_entry(iter,&unit_list, list_entry)
+> +		if (iter->major == major&&
+> +		    minor>= iter->lowest_minor&&
+> +		    minor<  (iter->lowest_minor + iter->num_nodes)) {
+> +			unit = iter;
+>   			break;
+>   		}
+>
+>   	mutex_unlock(&unit_mutex);
+>
+> -	if (!found)
+> +	if (!unit)
+>   		return -ENODEV;
+>
+>   	*private_data = unit->private_data;
+>
+> base-commit: f443e374ae131c168a065ea1748feac6b2e76613
+>    
+
