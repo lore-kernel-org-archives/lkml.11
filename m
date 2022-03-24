@@ -2,115 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 091C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 09:00:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65C17C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 09:02:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349084AbiCXJBw (ORCPT
+        id S1349088AbiCXJEG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 05:01:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39226 "EHLO
+        Thu, 24 Mar 2022 05:04:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242899AbiCXJBu (ORCPT
+        with ESMTP id S234192AbiCXJD7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 05:01:50 -0400
-Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B1E5972E1
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 02:00:19 -0700 (PDT)
-Received: from [192.168.12.80] (unknown [182.2.71.236])
-        by gnuweeb.org (Postfix) with ESMTPSA id 47FC67E6FF;
-        Thu, 24 Mar 2022 09:00:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1648112418;
-        bh=RrYToTS3ZUOh2cUKEiBGqlhtdbPXGZlb2By1N74obmo=;
-        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
-        b=liz7mWAmJ0S+3flucrB8nF3mKNESBOr0EBylNIiPsZsOTO/gu4z8jHDS6Ranpxxqj
-         8WHPpIjZLgGPMDGMsHUj0mekpUf8EPGL/YRTwoCse7231O8ouA/+9fg/qt3riMqWQp
-         3qJFHaqfNUiOdBj7zosyyJlXM0ZdRMKfN0Pvx3+bjVaNBi+6DU7nAp0GGlhl3TYo22
-         xOobEsFDI0xgT899OwhwWYOfaF8EKLdEa7noAKUFB/jMxG/4v1BYCj4TmQSkYuWeIS
-         Bni97cNJ2RoPJOJIg8AuaF9roVJPy0nceXrX6PW1yWssqyeIe3/nU3QQe69yHK7xKj
-         SIbV6OC5+sIFQ==
-Message-ID: <266d7b7b-b803-51de-280e-35e16aa82248@gnuweeb.org>
-Date:   Thu, 24 Mar 2022 16:00:13 +0700
+        Thu, 24 Mar 2022 05:03:59 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 221169D0CC
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 02:02:28 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id qa43so7726406ejc.12
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 02:02:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Q0pr84jWpyF9HF9IcRwnJxsXg1/1KAMzdTSZaMqOal8=;
+        b=JpV6XImnUXt0JBK3uECq/IbXisNCPGUDkVxFm1oUDxZGw7Lp4u7CaS3VIzVd+8rNuT
+         vGZP8alBTGp0iq8GkX2RsYNAsiBvU2nbP4Zerqjl0G3u5G1KshAXsQA8TD9vaRR+GQwn
+         OC4XQdAhcIcJZ6Tm3rqiU48z7sLpzEF/EJNAmadEG2F8VTK4qVH9j8MR+6VfLZazc8I+
+         I2cqmNDemTVBF62QHwgtDQESNNuLoiARKsQtwIPJ3ov9nMQiuhhMXebo6JBWClBDIop+
+         05xrWcGGPDjDrwBplIAcoOmWADIQdpHDPNAw+d772sSTpcGnhUff42Ma8s2WCyGDrLW5
+         Ommw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Q0pr84jWpyF9HF9IcRwnJxsXg1/1KAMzdTSZaMqOal8=;
+        b=TfZ9gM+kpzQlIrkb3ALgXIZ7+PSs/ECGB/l4igGKnAppwxFmDlyZ534If74ylknJEp
+         vZ4L/BFwFLZUWF8ja3f7D3AXfxXYQ4Dnh4rLjxcldNR7Mf492x1xUTr5lADw65uxbKeI
+         p53EWMPMe9ajGqNuC6jQxLsqio5KvW7eSYg3OyL+ruZ0ozVA8vBeyOCKo4dm4AhKpDwx
+         yqjP+jwIwuPaJfcmxHP1VpP4FHuKASydSVXGzIkWWgaCW4FOxmNQcUercwPQHO0qejie
+         Bu/saSfHcT6MUi/hk1FS9ABKgsblOb/WeRzFiVuM8L26E7GXPj15ilCtAz7o/nwmycPO
+         YCRA==
+X-Gm-Message-State: AOAM531ec4C2+TQXpHLRmiwv4r9ra3Q62/KPx8cDg+UbJaaHA/vEfwdH
+        Z/xglCFY5Pai6tNWmQx7DzI=
+X-Google-Smtp-Source: ABdhPJz19UiVU80Rfr3Z6DeD0tq7NFWcSb99BErADW6wIBDasVfcz8nDtYbaLXZY1IvAHS88OkVrrw==
+X-Received: by 2002:a17:906:974e:b0:6bb:4f90:a6ae with SMTP id o14-20020a170906974e00b006bb4f90a6aemr4734153ejy.452.1648112546535;
+        Thu, 24 Mar 2022 02:02:26 -0700 (PDT)
+Received: from leap.localnet (host-95-249-145-232.retail.telecomitalia.it. [95.249.145.232])
+        by smtp.gmail.com with ESMTPSA id gl2-20020a170906e0c200b006a767d52373sm836331ejb.182.2022.03.24.02.02.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Mar 2022 02:02:24 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Larry.Finger@lwfinger.net, florian.c.schilhabel@googlemail.com,
+        gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, Sathish Kumar <skumark1902@gmail.com>
+Cc:     Sathish Kumar <skumark1902@gmail.com>
+Subject: Re: [PATCH v3] staging: rtl8712: Use completions for signaling
+Date:   Thu, 24 Mar 2022 10:02:17 +0100
+Message-ID: <3422492.iIbC2pHGDl@leap>
+In-Reply-To: <20220323045515.2513-1-skumark1902@gmail.com>
+References: <20220323045515.2513-1-skumark1902@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
-        Willy Tarreau <w@1wt.eu>
-Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
-        Nugraha <richiisei@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        David Laight <David.Laight@aculab.com>
-References: <20220324073039.140946-1-ammarfaizi2@gnuweeb.org>
- <20220324073039.140946-5-ammarfaizi2@gnuweeb.org>
- <20220324075728.GC18586@1wt.eu>
- <CAOG64qMwKYHLrUVro1gFhYqHvm8wq5DUdO7QfK5gG2TKhfnNhA@mail.gmail.com>
-From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Subject: Re: [PATCH v1 04/11] tools/nolibc: x86-64: Use appropriate register
- constraints if exist
-In-Reply-To: <CAOG64qMwKYHLrUVro1gFhYqHvm8wq5DUdO7QfK5gG2TKhfnNhA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="ISO-8859-1"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/24/22 3:33 PM, Alviro Iskandar Setiawan wrote:
-> On Thu, Mar 24, 2022 at 2:57 PM Willy Tarreau <w@1wt.eu> wrote:
->> On Thu, Mar 24, 2022 at 02:30:32PM +0700, Ammar Faizi wrote:
->>> Use appropriate register constraints if exist. Don't use register
->>> variables for all inputs.
->>>
->>> Register variables with "r" constraint should be used when we need to
->>> pass data through a specific register to extended inline assembly that
->>> doesn't have a specific register constraint associated with it (anything
->>> outside %rax, %rbx, %rcx, %rdx, %rsi, %rdi).
->>>
->>> It also simplifies the macro definition.
->>
->> I'm a bit bothered by this one because I went the exact opposite route
->> in the early design precisely because I found that the current one was
->> simpler. [...]
-> [...]
->> I'd say that if there is any technical benefit in doing this (occasional
->> code improvement or better support for older or exotic compilers), I'd say
->> "ok go for it", but if it's only a matter of taste, I'm not convinced at
->> all and am rather seeing this as a regression. Now if there's rough
->> consensus around this approach I'll abide, but then I'd request that other
->> archs are adapted as well so that we don't keep a different approach only
->> for these two ones.
-> 
-> I don't see any technical benefit for x86-64, so I don't think there
-> is a need in doing this. Though I personally prefer to use register
-> constraints if they exist instead of register variables for everything
-> (oh yeah, matter of taste since I don't have any technical argument to
-> say it's better respecting the resulting codegen). The only real issue
-> is for the syscall6() implementation on i386 as we've been bitten by a
-> real compiler issue. In short, I am neutral on this change.
+On mercoled=EC 23 marzo 2022 05:55:15 CET Sathish Kumar wrote:
+> r8712_sitesurvey_cmd() uses a variable to notify r8712_SetFilter() that it
+> has completed operation. There is no sort of assurance that the variable =
+will
+> actually change and it could cache the value the first time it is read and
+> then never update it for the whole loop logic.
+>=20
+> Use completion variables because they are better suited for the purpose.
+>=20
+> This patch fixes the checkpatch.pl warnings like:
+> CHECK: Avoid CamelCase: <blnEnableRxFF0Filter>
+> +   u8 blnEnableRxFF0Filter;
+>=20
+> Signed-off-by: Sathish Kumar <skumark1902@gmail.com>
+> ---
+> Changes in v2:
+>   - Remove the "bln" prefix
+>=20
+> Changes in v3:
+>   - Replace the variable used for signaling with completion
+> ---
+>  drivers/staging/rtl8712/drv_types.h   | 3 +--
+>  drivers/staging/rtl8712/rtl871x_cmd.c | 2 +-
+>  drivers/staging/rtl8712/usb_intf.c    | 2 +-
+>  drivers/staging/rtl8712/xmit_linux.c  | 8 +-------
+>  4 files changed, 4 insertions(+), 11 deletions(-)
+>=20
+Hi Sathish,
 
-OK then, I will drop this patch in the next version. I agree that it
-doesn't really show any technical benefit and there is no danger in
-doing the current implementation.
+=46irst of all, I must admit that you have impressed me :)
 
-And yes, the syscall6() for i386 is somewhat problematic and we've a
-confirmed bug that lives in many versions of GCC and it's not even fixed
-in the current trunk. It's proven that using register constraints can
-be a valid workaround to deal with this bug.
+Aside from the specific code of this driver that I don't know and aside
+from the specific problem that you've been suggested to fix, I see that
+you have been able to research and understand the subjects that Greg and=20
+I talked to you about.
 
-2022-03-23 13:50:18 UTC, Jakub Jelinek wrote:
-> Anyway, with the "b" etc. constraints (which is a good idea to use on
-> x86 when it has single register constraints for those but can't be used
-> on other arches which do not have such constraints) you just trigger
-> slightly different path in the RA, [...]
-See the discussion here:
-    
-    https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105032#c7
+By reading what Greg wrote soon after me, I believe that he was expecting
+a slight different solution. I suggest you to read carefully what he writes
+rather than what I write, just because he has at least 20 or more years=20
+of experience than me and because I'm just a spare time type of kernel=20
+developer.=20
 
-^^^ That is only for syscall6() on i386.
+You chose to use wait_for_completion() / complete() (notice that these API=
+=20
+use barriers indirectly). What I can say is that they look to be suited for=
+=20
+solving the issues that you have here, even if there are other approaches.
 
-As such, I will drop this patch and another one that does this on i386.
+Since, as said, it looks like you have understood how to select and use the=
+=20
+one of the API that were suggested, you have my...
 
-Thanks!
--- 
-Ammar Faizi
+Reviewed-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+
+Thanks,
+
+=46abio
+
+
