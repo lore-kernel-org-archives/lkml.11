@@ -2,76 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B104CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 14:42:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03DEDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 14:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347943AbiCXOoO (ORCPT
+        id S1351163AbiCXOoT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 10:44:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39418 "EHLO
+        Thu, 24 Mar 2022 10:44:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239735AbiCXOoK (ORCPT
+        with ESMTP id S235849AbiCXOoM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 10:44:10 -0400
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDA25AA029;
-        Thu, 24 Mar 2022 07:42:38 -0700 (PDT)
-Received: by mail-wr1-f52.google.com with SMTP id u16so6957611wru.4;
-        Thu, 24 Mar 2022 07:42:38 -0700 (PDT)
+        Thu, 24 Mar 2022 10:44:12 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24600AC91D
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 07:42:40 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id l7-20020a05600c1d0700b0038c99618859so7356036wms.2
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 07:42:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RUuYp2gzZTfveRrYj1nKJKJ6GLr04No5LqGCeqkgp50=;
+        b=G9HidbaMnDHtTrEAhAkiDwkyMIMMc6Wqcu/xpKqMNAqZgScFmSCAILoCtXpISK+Hhy
+         uB+8YBCUwdxf1Gocu8dCsTLDhaqkZGMeh6nNJ3sUFCCJImFnDwOyBw6dRyGd8Rm8I3OK
+         4rKkIdOoe9qcnCYK25u26XittRZwpnKn4rAlusYwV9HlRFHoau53kWOf/+m6xWfwxB/h
+         zQ54w0wxyEcRcwkFJuJ+1mJTTVlkBlhHn7TzrxHuLg+m4FtaPlh57mFRtuAS7w7hH6M9
+         cbq8IvAUXGMjZvK+w4GvQp66umUGHCpUGcbSgAPAW4awO2p2dX6wGm5kdQWdDSl4axza
+         EZmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=PQMoVevKF2FScu3g6ZPhWCjF/L215or2YeKuSEJ/X+Q=;
-        b=GfT4+Y3nsf/49O2bV/NzAGWg32R4wG4IaufphIOecOX3QK4hoeU3etMrXx4IOK0EWS
-         s3zjHzuWJS4xBZ1DxiXgge0hJBVFf6GivwhxDEmxpiKC3yMeiFmTnNy19CsWBZ2YiNKj
-         1tc7bHRV8C5rBNLXIDl+mw0qxvL8Syx+LMgZwOAJCU61w3z4ZTi5hDo0k6sJt0xfsCoU
-         dxn0KPyOaIZ4f6wjXZXS61tF8PTrzaFZ52IAb88JUfHOIxlw438E9m9fblYk/KXyO3Nd
-         JPCs7aDLF8Ez0lfgKgiRXbIky7WbNhYHFOfMIci376+7hd/O6W4iyHwVJIuGyrnCKN7Z
-         OPCA==
-X-Gm-Message-State: AOAM530E3kDqu0IQ+Aum5RT0YIejoIf5f/xS0rrxiURAVdFEAN5zt29O
-        +LuXduklll2CWz24PUVC8iU=
-X-Google-Smtp-Source: ABdhPJwgBGfPjUkgJ2azkYYT03xYB3rKxjLU69OYrP8YG6qnZcrqB/DIBhJKV40R82oZKNaLmkLdaA==
-X-Received: by 2002:a05:6000:178c:b0:204:648:b4c4 with SMTP id e12-20020a056000178c00b002040648b4c4mr4919136wrg.219.1648132957406;
-        Thu, 24 Mar 2022 07:42:37 -0700 (PDT)
-Received: from [192.168.0.157] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.googlemail.com with ESMTPSA id n8-20020a5d5988000000b00203d5f1f3e4sm2952039wri.105.2022.03.24.07.42.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Mar 2022 07:42:36 -0700 (PDT)
-Message-ID: <bce3b04f-d0f2-62e4-e983-9c7ea74f7309@kernel.org>
-Date:   Thu, 24 Mar 2022 15:42:35 +0100
+        bh=RUuYp2gzZTfveRrYj1nKJKJ6GLr04No5LqGCeqkgp50=;
+        b=sGDjXH41eJ3iHr+rTzsLiUtGBXJgBfGSnoeqsNC7tYIooVQTAdw5SfbfmE4pvsW5jn
+         z93vZMYyi4qCAZY+gumhU927Gxa4/cSUfKRpQb1f/fNJHsEz9XTECG9Eey+dtNeQWLHc
+         5O68zAiDZ1/FFBt2RRO/f/6O7TcfodndJoR2vsCB0g+aGthq5z74VSHvUTsDBt2UbUVT
+         7A2ld67qtgy77xmR4w57MgpglvtF4jD/pwAPK4lnJBVUE0df1gUEhXAUqgWkAAaMlYAB
+         s7up6PoDoFOn0EpQupWJDhNb2s1N/PmEVnmwMy/orQmyf/nJsYqzGeH7NrEv841Vrw66
+         +jCQ==
+X-Gm-Message-State: AOAM5313/N0B8eEVskFi6U7yp6JOQy72XVEwNNEtdKjUGGkAoRjoSPQD
+        ZUeZAfxTwyp0tfNyQ7PZQRK/FLZgT67pew==
+X-Google-Smtp-Source: ABdhPJw3kEFmgdFvOYqPEE/cnML2UreW9i+I5UewFAmsjCiGfAtVJ0zEiql/LajWmccl86QQnyLLPQ==
+X-Received: by 2002:a05:600c:4608:b0:38c:6ba3:1c9f with SMTP id m8-20020a05600c460800b0038c6ba31c9fmr14542211wmo.39.1648132958693;
+        Thu, 24 Mar 2022 07:42:38 -0700 (PDT)
+Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.googlemail.com with ESMTPSA id r15-20020a5d6c6f000000b002040552e88esm3273175wrz.29.2022.03.24.07.42.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Mar 2022 07:42:38 -0700 (PDT)
+From:   Corentin Labbe <clabbe@baylibre.com>
+To:     davem@davemloft.net, herbert@gondor.apana.org.au,
+        jernej.skrabec@gmail.com, krzk+dt@kernel.org, robh+dt@kernel.org,
+        samuel@sholland.org, wens@csie.org
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev, Corentin Labbe <clabbe@baylibre.com>
+Subject: [PATCH] dt-bindings: crypto: sun8i-ce: remove extra line
+Date:   Thu, 24 Mar 2022 14:42:33 +0000
+Message-Id: <20220324144233.1119495-1-clabbe@baylibre.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] dt-bindings: clock: qcom: prevent interpret of See also:
- as keyword
-Content-Language: en-US
-To:     Corentin Labbe <clabbe@baylibre.com>, agross@kernel.org,
-        bjorn.andersson@linaro.org, krzk+dt@kernel.org,
-        mturquette@baylibre.com, robh+dt@kernel.org, sboyd@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220324143935.1117426-1-clabbe@baylibre.com>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <20220324143935.1117426-1-clabbe@baylibre.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24/03/2022 15:39, Corentin Labbe wrote:
-> The "See also:" in description generates a DT check error since it is
-> interpreted as a field. Setting description as formatted description fix
-> that.
-> 
-> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-> ---
+yamllint complains about this extra line.
 
-Already sent:
-https://lore.kernel.org/linux-devicetree/b15567c7-98e9-2d01-d1a5-7675136c625d@kernel.org/T/#t
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+---
+ Documentation/devicetree/bindings/crypto/allwinner,sun8i-ce.yaml | 1 -
+ 1 file changed, 1 deletion(-)
 
+diff --git a/Documentation/devicetree/bindings/crypto/allwinner,sun8i-ce.yaml b/Documentation/devicetree/bindings/crypto/allwinner,sun8i-ce.yaml
+index 00648f9d9278..026a9f9e1aeb 100644
+--- a/Documentation/devicetree/bindings/crypto/allwinner,sun8i-ce.yaml
++++ b/Documentation/devicetree/bindings/crypto/allwinner,sun8i-ce.yaml
+@@ -82,4 +82,3 @@ examples:
+       clock-names = "bus", "mod";
+       resets = <&ccu RST_BUS_CE>;
+     };
+-
+-- 
+2.34.1
 
-Best regards,
-Krzysztof
