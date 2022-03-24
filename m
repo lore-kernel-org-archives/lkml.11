@@ -2,36 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87FAFC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 06:03:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACB3EC4167B
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 06:03:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348004AbiCXGFN (ORCPT
+        id S1348096AbiCXGFS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 02:05:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55972 "EHLO
+        Thu, 24 Mar 2022 02:05:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242051AbiCXGFK (ORCPT
+        with ESMTP id S1347933AbiCXGFM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 02:05:10 -0400
+        Thu, 24 Mar 2022 02:05:12 -0400
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65EB6BF6F;
-        Wed, 23 Mar 2022 23:03:34 -0700 (PDT)
-X-UUID: 30a4a54c15d8410889edfc7f19c0a512-20220324
-X-UUID: 30a4a54c15d8410889edfc7f19c0a512-20220324
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D4CA167D6;
+        Wed, 23 Mar 2022 23:03:40 -0700 (PDT)
+X-UUID: e9e0438ee76e486b9b963ccdaf65b68c-20220324
+X-UUID: e9e0438ee76e486b9b963ccdaf65b68c-20220324
 Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
         (envelope-from <xinlei.lee@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 167960996; Thu, 24 Mar 2022 14:03:29 +0800
+        with ESMTP id 1559229131; Thu, 24 Mar 2022 14:03:35 +0800
 Received: from MTKMBS34N1.mediatek.inc (172.27.4.172) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 24 Mar 2022 14:03:27 +0800
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 24 Mar 2022 14:03:33 +0800
 Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS34N1.mediatek.inc
  (172.27.4.172) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 24 Mar
- 2022 14:03:26 +0800
+ 2022 14:03:32 +0800
 Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
  MTKCAS36.mediatek.inc (172.27.4.170) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Thu, 24 Mar 2022 14:03:25 +0800
+ 15.0.1497.2 via Frontend Transport; Thu, 24 Mar 2022 14:03:31 +0800
 From:   <xinlei.lee@mediatek.com>
 To:     <thierry.reding@gmail.com>, <u.kleine-koenig@pengutronix.de>,
         <lee.jones@linaro.org>, <robh+dt@kernel.org>,
@@ -42,10 +41,12 @@ CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         <jitao.shi@mediatek.com>, <rex-bc.chen@mediatek.com>,
         <allen-kh.cheng@mediatek.com>, Xinlei Lee <xinlei.lee@mediatek.com>
-Subject: [PATCH v4 0/6] Convert pwm-mtk-disp.txt to mediatek,pwm-disp.yaml format
-Date:   Thu, 24 Mar 2022 14:03:18 +0800
-Message-ID: <1648101804-3584-1-git-send-email-xinlei.lee@mediatek.com>
+Subject: [PATCH v4,2/6] dt-bindings: pwm: Remove compatible for MediaTek MT8167
+Date:   Thu, 24 Mar 2022 14:03:20 +0800
+Message-ID: <1648101804-3584-3-git-send-email-xinlei.lee@mediatek.com>
 X-Mailer: git-send-email 2.6.4
+In-Reply-To: <1648101804-3584-1-git-send-email-xinlei.lee@mediatek.com>
+References: <1648101804-3584-1-git-send-email-xinlei.lee@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-MTK:  N
@@ -55,36 +56,30 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Xinlei Lee <xinlei.lee@mediatek.com>
 
-Changes since v3:
-1. Combine multiplexed socs into one entry
+Remove dt-binding documentation of pwm for MediaTek MT8167 SoC.
+I did not find the compatiable corresponding to mt8167 
+in the latest version of the pwm-mtk-disp.c driver file.
+It may be disabled but not updated to the dt_binding file.
 
-Changes since v2:
-1. Modify the PWM name to DISP_PWM.
-2. Include pwm.yaml.
-3. Separate conversion files and add/remove operations.
+Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+---
+ Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml | 3 ---
+ 1 file changed, 3 deletions(-)
 
-Changes since v1:
-1. Fixed formatting issues mentioned in the v1.
-2. Delete pwm-mtk-disp.txt.
-3. Add mtk_pwm dt_maintainers.
-4. Add "#pwm-cells" & power-domains properties.
-5. Make dt_checking successful.
-
-Xinlei Lee (6):
-  dt-bindings: pwm: Convert pwm-mtk-disp.txt to mediatek,pwm-disp.yaml
-    format
-  dt-bindings: pwm: Remove compatible for MediaTek MT8167
-  dt-bindings: pwm: Add compatible for MediaTek MT8183
-  dt-bindings: pwm: Add compatible for MediaTek MT8192
-  dt-bindings: pwm: Add compatible for MediaTek MT8195
-  dt-bindings: pwm: Add compatible for MediaTek MT8186
-
- .../bindings/pwm/mediatek,pwm-disp.yaml       | 69 +++++++++++++++++++
- .../devicetree/bindings/pwm/pwm-mtk-disp.txt  | 44 ------------
- 2 files changed, 69 insertions(+), 44 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
- delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
-
+diff --git a/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml b/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
+index f844695d605a..f18e8bbd13d2 100644
+--- a/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
++++ b/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
+@@ -20,9 +20,6 @@ properties:
+           - mediatek,mt2701-disp-pwm
+           - mediatek,mt6595-disp-pwm
+           - mediatek,mt8173-disp-pwm
+-      - items:
+-          - const: mediatek,mt8167-disp-pwm
+-          - const: mediatek,mt8173-disp-pwm
+ 
+   reg:
+     maxItems: 1
 -- 
 2.18.0
 
