@@ -2,64 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B812C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 22:44:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14933C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 22:44:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355507AbiCXWqU (ORCPT
+        id S1355521AbiCXWqY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 18:46:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39990 "EHLO
+        Thu, 24 Mar 2022 18:46:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355484AbiCXWqP (ORCPT
+        with ESMTP id S1355485AbiCXWqP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 24 Mar 2022 18:46:15 -0400
 Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A1A1B6E49
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 15:44:41 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 9A89A5C0192;
-        Thu, 24 Mar 2022 18:44:39 -0400 (EDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDC6CB6E50
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 15:44:42 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 135A25C00FE;
+        Thu, 24 Mar 2022 18:44:42 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 24 Mar 2022 18:44:39 -0400
+  by compute2.internal (MEProxy); Thu, 24 Mar 2022 18:44:42 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sent.com; h=cc
         :cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:reply-to:sender:subject
-        :subject:to:to; s=fm3; bh=j+TZHkjacQVCUMqJUGbs0PNUyDxfYCsbVptSbv
-        Tldoc=; b=ea6FSxkna2NLpLPBrMIC6WomMrene8cDRtHA/GTu9fI098qvs8f+iK
-        8CPIaFWJ8I8YaSYnBEF5OPIZ4/Un5ARwfNB3zdaYXM0k2CbFC535vm712O713Ebq
-        4dLA+syb0iKrn+NwZAq2gUikMKRLCB4VoEg+y6OH76dzWStAWRcXraS9cJQL1GoY
-        fCkUGiHcrwfz3Kr1Wj2DCwAcq2rEyrZx9Tflkm5gj4l+GgYRGFRR9+xZcqTkanYd
-        QrFQZ3pQE88Su1rx/twxQbbT0lqVtHIPZZfkPEtUuDmIT31lbZL952drC6eLEUxg
-        0YcReixPDhj+t07sfcE3qcROWJNc5CIA==
+        :in-reply-to:message-id:mime-version:references:reply-to
+        :reply-to:sender:subject:subject:to:to; s=fm3; bh=f9PRefpx2MpIl5
+        yijJ96u+SD2q2v2niHZWJF91cTEZE=; b=zlsIHf+ko7hXDjnl4e0JXlI13d3DiH
+        VTnMBV5NQIJQW7+4MfNgpIiVk0VzWfo/RZDl53JeBLZWhaorG5c/9MeeXWDmLFaH
+        v2fhjNyt68cq3rYjPKUgvHu+qGc7ZbxTZJIlIl65AGJYelVrhjQHetFoWP6pdsta
+        4zOXD7gYGE58b0f1yNmlQ/kwmT5qwpdWjQ6ViS2rrwj7D8S0N2Zj8cnwU9PJabkt
+        n/q5GfeOMQb7dcg/fNEh5X4uzz3qxfHVATMAjqSBR7z3CMrccUANfY4iGL3TvwiE
+        OFxIveNCGebQHpOytwcIN1JpHhziZ6ZMWdJGtSUEFn73uJAoE4aC0cjQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :from:from:in-reply-to:message-id:mime-version:reply-to:reply-to
-        :sender:subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
-        :x-me-sender:x-sasl-enc; s=fm3; bh=j+TZHkjacQVCUMqJUGbs0PNUyDxfY
-        CsbVptSbvTldoc=; b=Of1Gk3Lem13lyqJ0pG03KECRCL9ZDxAYBiSocAl4PIbR5
-        LuxR/8+Alf9n4tuOtg91/PT6jTj9w4xxd1C1fGWsGrPm9tOX9vpJ4Ip6VG/t76yG
-        86hWa13G2lZjNdcMDpQJ2REq13lSiw7mlSRdav1cdF9Yksr0fbfEDyw4ft4Jlaqf
-        jGR3GUHPRVMhtnd4shRTaZncmQdiBcZW8+4eobCV19y7OzHapdMxPkSajRnz9ajw
-        /Z2sEwVynsecnuQp2nzM4Xc4YtJ1DyxJTFLU7yh+Gui+uhwD0OCoANHFV7VBQRPu
-        NiMVG9fOy+l6lyLH/oEvWPYbbfFI6MVkKR4uSfa2Q==
-X-ME-Sender: <xms:V_Q8Yr12Vaelkxec3YUPO4N0sjumVHZwYsA9HTTxWi_EkTfOewgO6Q>
-    <xme:V_Q8YqF4Q6xiwAZ83KImQBTK08Yn4ao09tRj_hX5nQ2NwawDNpIHYRWOtMj8fPJBm
-    GIwYc-SjynFsZsxQQ>
-X-ME-Received: <xmr:V_Q8Yr5a58AfbT5IToqSxMjLnBgN6WWb1YuUa_tCLm0dnfr-gPeSehgF-3sIuclAPYqMMO283hTtUxojFg>
+        :from:from:in-reply-to:in-reply-to:message-id:mime-version
+        :references:reply-to:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; bh=f9PRefpx2MpIl5yijJ96u+SD2q2v2niHZWJF91cTEZE=; b=iediQyBs
+        CiVWpucnx9uunrZzCBibY6sZNe3byiyQ7tcjFXwIMn9XZR1vQt3lF9Os3HAB1Vt0
+        n2F445nXGuWzIm02pBmmBvNqKKeXJv/rDl+2U0fgNKnBpfj9unTB8YBGjdUc0Umv
+        +7i5qsMozjTvs0wnPozBmmEsm9NrkQN8dYmLhVbFW0gpTyqvQEzeETZc22AKwJM6
+        VuvEK7UQPUClu3mqrut0rjmwIryArKnhK6pF53pyHIXgIjtn6YisHxmLAKB9ejt1
+        vUVLmZCiTNkzaZVuKl6t6ikmahDjx7L6e9wjHRqddASv6a28Dcx+jeCtoAer/XE7
+        iYtGru+sxPomXQ==
+X-ME-Sender: <xms:WfQ8Yu6BTDSeQ5BmNTa50CtbNXIMPjGtDoFKchrgrhfpew7WLoWjHw>
+    <xme:WfQ8Yn5CrXSLMH0uvBc0KWxKLkOmmcKbT6byTti_C1ipjJWkjd6LSFsWkdR3wCtX0
+    TKhYxa399o0lYj3ZQ>
+X-ME-Received: <xmr:WfQ8YtfbCt9Nt0hZr8pFjAVaK_s3M8EUwlg-02rqrsPjIq3Pml2CYV1jxIghtjx_3ZGdxCDnXxBiV_kXrQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudegledgudeivdcutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefhvffufffkofhrggfgsedtqhertdertddtnecuhfhrohhmpegkihcujggr
-    nhcuoeiiihdrhigrnhesshgvnhhtrdgtohhmqeenucggtffrrghtthgvrhhnpeetieeitd
-    ejgffhfeeukeejvdeufedtvddulefhteduffeigfefteehgefhvdegudenucffohhmrghi
-    nhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
-    hmrghilhhfrhhomhepiihirdihrghnsehsvghnthdrtghomh
-X-ME-Proxy: <xmx:V_Q8Yg3DE67ztsWtZ66NJBHS1BxR7K6Swzws3FADx38WfmfZGk7Zcw>
-    <xmx:V_Q8YuF-5zETrRPN7PLVjX1f6zAR608Mj-IWJHBXxRF-JQhPh4Wt7w>
-    <xmx:V_Q8Yh_I4dGlOtqGB5v3A_JfrmYjQ9u1clCkAMb8X7mFcb_DNk1unQ>
-    <xmx:V_Q8YhDBg7m0hlDmkiP82XqFdD4f76rC84n8SFc8gnVHAkDStSrtag>
+    enucfjughrpefhvffufffkofgjfhhrggfgsedtqhertdertddtnecuhfhrohhmpegkihcu
+    jggrnhcuoeiiihdrhigrnhesshgvnhhtrdgtohhmqeenucggtffrrghtthgvrhhnpeeije
+    euvdeuudeuhfeghfehieeuvdetvdeugfeigeevteeuieeuhedtgeduheefleenucevlhhu
+    shhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpeiiihdrhigrnhessh
+    gvnhhtrdgtohhm
+X-ME-Proxy: <xmx:WvQ8YrIwOhrrAX8khAs0KiBzCrqYVkuJwUvAWt5uk661Pm45oSZBCw>
+    <xmx:WvQ8YiJs4u45PGhBeSUFnHe2tIWx8BWrIFGjrNetNF807uckyeNaEQ>
+    <xmx:WvQ8Yswyzc9LH7H0-M60dj8XK2Q9cPgKADNCzHZbwbJHaqUsknckFg>
+    <xmx:WvQ8YvXh5AoP9DMKL9gXUH3dJMxLjk5oZ5OHRz6lScurWDav3-sCjQ>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 24 Mar 2022 18:44:38 -0400 (EDT)
+ 24 Mar 2022 18:44:41 -0400 (EDT)
 From:   Zi Yan <zi.yan@sent.com>
 To:     David Hildenbrand <david@redhat.com>, linux-mm@kvack.org
 Cc:     linux-kernel@vger.kernel.org,
@@ -71,10 +72,12 @@ Cc:     linux-kernel@vger.kernel.org,
         Oscar Salvador <osalvador@suse.de>,
         Christophe Leroy <christophe.leroy@csgroup.eu>,
         Zi Yan <ziy@nvidia.com>
-Subject: [PATCH v9 0/5] Use pageblock_order for cma and alloc_contig_range alignment.
-Date:   Thu, 24 Mar 2022 18:44:30 -0400
-Message-Id: <20220324224435.17794-1-zi.yan@sent.com>
+Subject: [PATCH v9 4/5] mm: cma: use pageblock_order as the single alignment
+Date:   Thu, 24 Mar 2022 18:44:34 -0400
+Message-Id: <20220324224435.17794-5-zi.yan@sent.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220324224435.17794-1-zi.yan@sent.com>
+References: <20220324224435.17794-1-zi.yan@sent.com>
 Reply-To: Zi Yan <ziy@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -84,123 +87,68 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Zi Yan <ziy@nvidia.com>
 
-Hi David,
+Now alloc_contig_range() works at pageblock granularity. Change CMA
+allocation, which uses alloc_contig_range(), to use pageblock_nr_pages
+alignment.
 
-This patchset tries to remove the MAX_ORDER-1 alignment requirement for CMA
-and alloc_contig_range(). It prepares for my upcoming changes to make
-MAX_ORDER adjustable at boot time[1]. It is on top of mmotm-2022-03-16-17-4=
-2.
-
-Changelog
-=3D=3D=3D
-V9
+Signed-off-by: Zi Yan <ziy@nvidia.com>
 ---
-1. Limited has_unmovable_pages() check within a pageblock.
-2. Added a check to ensure page isolation is done within a single zone
-   in isolate_single_pageblock().
-3. Fixed an off-by-one bug in isolate_single_pageblock().
-4. Fixed a NULL-deferencing bug when the pages before to-be-isolated pagebl=
-ock
-   is not online in isolate_single_pageblock().
+ include/linux/cma.h    | 4 ++--
+ include/linux/mmzone.h | 5 +----
+ mm/page_alloc.c        | 4 ++--
+ 3 files changed, 5 insertions(+), 8 deletions(-)
 
-V8
----
-1. Cleaned up has_unmovable_pages() to remove page argument.
-
-V7
----
-1. Added page validity check in isolate_single_pageblock() to avoid out
-   of zone pages.
-2. Fixed a bug in split_free_page() to split and free pages in correct
-   page order.
-
-V6
----
-1. Resolved compilation error/warning reported by kernel test robot.
-2. Tried to solve the coding concerns from Christophe Leroy.
-3. Shortened lengthy lines (pointed out by Christoph Hellwig).
-
-V5
----
-1. Moved isolation address alignment handling in start_isolate_page_range().
-2. Rewrote and simplified how alloc_contig_range() works at pageblock
-   granularity (Patch 3). Only two pageblock migratetypes need to be saved =
-and
-   restored. start_isolate_page_range() might need to migrate pages in this
-   version, but it prevents the caller from worrying about
-   max(MAX_ORDER_NR_PAEGS, pageblock_nr_pages) alignment after the page ran=
-ge
-   is isolated.
-
-V4
----
-1. Dropped two irrelevant patches on non-lru compound page handling, as
-   it is not supported upstream.
-2. Renamed migratetype_has_fallback() to migratetype_is_mergeable().
-3. Always check whether two pageblocks can be merged in
-   __free_one_page() when order is >=3D pageblock_order, as the case (not
-   mergeable pageblocks are isolated, CMA, and HIGHATOMIC) becomes more com=
-mon.
-3. Moving has_unmovable_pages() is now a separate patch.
-4. Removed MAX_ORDER-1 alignment requirement in the comment in virtio_mem c=
-ode.
-
-Description
-=3D=3D=3D
-
-The MAX_ORDER - 1 alignment requirement comes from that alloc_contig_range()
-isolates pageblocks to remove free memory from buddy allocator but isolating
-only a subset of pageblocks within a page spanning across multiple pagebloc=
-ks
-causes free page accounting issues. Isolated page might not be put into the
-right free list, since the code assumes the migratetype of the first pagebl=
-ock
-as the whole free page migratetype. This is based on the discussion at [2].
-
-To remove the requirement, this patchset:
-1. isolates pages at pageblock granularity instead of
-   max(MAX_ORDER_NR_PAEGS, pageblock_nr_pages);
-2. splits free pages across the specified range or migrates in-use pages
-   across the specified range then splits the freed page to avoid free page
-   accounting issues (it happens when multiple pageblocks within a single p=
-age
-   have different migratetypes);
-3. only checks unmovable pages within the range instead of MAX_ORDER - 1 al=
-igned
-   range during isolation to avoid alloc_contig_range() failure when pagebl=
-ocks
-   within a MAX_ORDER - 1 aligned range are allocated separately.
-4. returns pages not in the range as it did before.
-
-One optimization might come later:
-1. make MIGRATE_ISOLATE a separate bit to be able to restore the original
-   migratetypes when isolation fails in the middle of the range.
-
-Feel free to give comments and suggestions. Thanks.
-
-[1] https://lore.kernel.org/linux-mm/20210805190253.2795604-1-zi.yan@sent.c=
-om/
-[2] https://lore.kernel.org/linux-mm/d19fb078-cb9b-f60f-e310-fdeea1b947d2@r=
-edhat.com/
-
-Zi Yan (5):
-  mm: page_isolation: move has_unmovable_pages() to mm/page_isolation.c
-  mm: page_isolation: check specified range for unmovable pages
-  mm: make alloc_contig_range work at pageblock granularity
-  mm: cma: use pageblock_order as the single alignment
-  drivers: virtio_mem: use pageblock size as the minimum virtio_mem
-    size.
-
- drivers/virtio/virtio_mem.c    |   6 +-
- include/linux/cma.h            |   4 +-
- include/linux/mmzone.h         |   5 +-
- include/linux/page-isolation.h |   4 +-
- mm/internal.h                  |   6 +
- mm/memory_hotplug.c            |   3 +-
- mm/page_alloc.c                | 244 ++++++-----------------
- mm/page_isolation.c            | 342 +++++++++++++++++++++++++++++++--
- 8 files changed, 397 insertions(+), 217 deletions(-)
-
+diff --git a/include/linux/cma.h b/include/linux/cma.h
+index a6f637342740..63873b93deaa 100644
+--- a/include/linux/cma.h
++++ b/include/linux/cma.h
+@@ -17,11 +17,11 @@
+ #define CMA_MAX_NAME 64
+=20
+ /*
+- * TODO: once the buddy -- especially pageblock merging and alloc_contig_r=
+ange()
++ *  the buddy -- especially pageblock merging and alloc_contig_range()
+  * -- can deal with only some pageblocks of a higher-order page being
+  *  MIGRATE_CMA, we can use pageblock_nr_pages.
+  */
+-#define CMA_MIN_ALIGNMENT_PAGES MAX_ORDER_NR_PAGES
++#define CMA_MIN_ALIGNMENT_PAGES pageblock_nr_pages
+ #define CMA_MIN_ALIGNMENT_BYTES (PAGE_SIZE * CMA_MIN_ALIGNMENT_PAGES)
+=20
+ struct cma;
+diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
+index 962b14d403e8..0725c50ca0cb 100644
+--- a/include/linux/mmzone.h
++++ b/include/linux/mmzone.h
+@@ -54,10 +54,7 @@ enum migratetype {
+ 	 *
+ 	 * The way to use it is to change migratetype of a range of
+ 	 * pageblocks to MIGRATE_CMA which can be done by
+-	 * __free_pageblock_cma() function.  What is important though
+-	 * is that a range of pageblocks must be aligned to
+-	 * MAX_ORDER_NR_PAGES should biggest page be bigger than
+-	 * a single pageblock.
++	 * __free_pageblock_cma() function.
+ 	 */
+ 	MIGRATE_CMA,
+ #endif
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 57ebc9e41414..e5b545d60456 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -9064,8 +9064,8 @@ int __alloc_contig_migrate_range(struct compact_contr=
+ol *cc,
+  *			be either of the two.
+  * @gfp_mask:	GFP mask to use during compaction
+  *
+- * The PFN range does not have to be pageblock or MAX_ORDER_NR_PAGES
+- * aligned.  The PFN range must belong to a single zone.
++ * The PFN range does not have to be pageblock aligned. The PFN range must
++ * belong to a single zone.
+  *
+  * The first thing this routine does is attempt to MIGRATE_ISOLATE all
+  * pageblocks in the range.  Once isolated, the pageblocks should not
 --=20
 2.35.1
 
