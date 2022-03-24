@@ -2,145 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D05C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 16:13:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BD69C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 16:15:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351598AbiCXQOl (ORCPT
+        id S1351613AbiCXQQr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 12:14:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44216 "EHLO
+        Thu, 24 Mar 2022 12:16:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345791AbiCXQOh (ORCPT
+        with ESMTP id S240781AbiCXQQo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 12:14:37 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9614AEA2
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 09:13:04 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2e5827a76f4so56100987b3.6
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 09:13:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qD/GtOjGwOlJ7PVUx2PNL/pqrH5OmjHCrCL+mrKUoNs=;
-        b=FWeKjzvOPcv4J6hpCELOZQ5cq/PWnEZySFDbQXiYNSRunZGregPPfCHQ3V1dHGkxLT
-         V1sgoVBVGvr1Y3jtADkZqsHwslTHW6P9ibdTzkg++st+te2PQIG4RmqNPQVBGfnbr1dx
-         h/BPUogr6i28aCYj6pXiYg/our8couw4KZUUdCppB6J/pOQ+9nJcxkZMuyZbrq4gS8Ac
-         VRR7IpdEHtu1QqPoVPpeOC+GF25EEQJ4YcOJO9NPrTsLQyD/JwU4pV7DKMMJ1i753b8F
-         crWlyiN2xaUhUjv9ZVM2fw1t7fvJMRHg/2WEGsb5saCviTbFM8cN1EYbtzQeUBS7/3fj
-         7KEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qD/GtOjGwOlJ7PVUx2PNL/pqrH5OmjHCrCL+mrKUoNs=;
-        b=F/RkgnVaG/QrkECtbOH2qyyYf1jk0QF/c7r/zqcpguiIVZuRXY4UfFMsssFhsPlkRb
-         GroB5QjP3slPLWr/zdo+juIAmldWGmeXTSAULhTDzQ6SPIgC861EKKGWhsYUGc0zYxbB
-         +bHA5nKsXHfM3LFilysdJfmRaP3PoRxBlFJfxOt9jZkzyKKK3to1s5clXZH4ibmEdOKJ
-         pY4xO62EA/c9a/5DixF5z002REb7heE7Aygx+Q7PI3wTWWJ822v14wW/2yVb8FYusJZ9
-         HbwnvvykpfCOVAkb1/bCiKH88tQ3uaksUdLoRbDOOLUj4aPW3lUYzKKHJv/mMU+3Qop6
-         CHJg==
-X-Gm-Message-State: AOAM531kyJ9qZMzFszksitE4B9nvHTHaReH4fE30azbr5kktqjOHUI+n
-        2vQUMKpfOTCfm+ixH2tAt3pTcrwGcYZ6u+Izr5A80w==
-X-Google-Smtp-Source: ABdhPJyLbR0gOHQMYE2j2r5PaK0FjY4hKvE1cHqATs46KJsxpl/UXEMpJO1PdJottFtcCUT77kkjD+ZoUMXv57jRxt8=
-X-Received: by 2002:a05:690c:827:b0:2e5:a53b:cffc with SMTP id
- by7-20020a05690c082700b002e5a53bcffcmr5703549ywb.31.1648138383515; Thu, 24
- Mar 2022 09:13:03 -0700 (PDT)
+        Thu, 24 Mar 2022 12:16:44 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-eus2azon11021025.outbound.protection.outlook.com [52.101.57.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D96E149F10;
+        Thu, 24 Mar 2022 09:15:11 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ney3aY/UN0eylN6mWGRvuU04JErNjYHSzcy194FXoMA/rD6aE/7QBO5zyzjnO352YLMfu0hzpF6nJf2yQiZLux/MuQvAx3XbYdVKX4Dsv1Q/M8578ewvplDFFlzQwpJOGXczjeM2q6+YtZE5kRGubdChv//yJHsMbsZnbVOVfaNkjHjPTQJ8WrNk9BHWkQo9F7xWYFeGT0MX4QbLTKTWSKDWa8XP95RA5aQH6uME27oCSdH60r7lXTfgvjHS8wWjkTaCHk+5Xlz3tNOxEcIh7/xoU0DMaHQ4TTe/5VQSRPGnl3NnsVBCJ5vXcqo7PjgmIl8dmlYfIa28SfTEyCqPAQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=itBxWx6tDcrya8iixhcLhuxoHC5tL999NwyEf1OxrJ0=;
+ b=ER//+5kIMbTHIFYGeMapidtv8W3gLcsqRMxVupUIGU5ekvJN15QJ/jbDUFG2eOBMUPN6TDvsnnlyzjAUAO55uiLjfFKlySTyid/NllC6+MBkKXY5ck7xhe5rEDIRm04BgP0fMEaDScQLbgBP8sat1+GB4R3zMe7DC/FWQ+get5p3Tt0kxBzbu/4Qct91XzxejLHnQjLsSh0J9OmadjMwFDiz5woxgCWSIewkuJE+TuQ3NgMvJ3rfn6vMs79TDqCZzqxGqhxa7EwYhB/g/uagsXa7ISXJ3RoUaNtYUmCdUZrrEB9VX7PTa1PucI5o8xOQJ5t/41iUBxJtbQ8C8/Hqzw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=itBxWx6tDcrya8iixhcLhuxoHC5tL999NwyEf1OxrJ0=;
+ b=dqgaET7bdvh1IoBlm09EelBnYGm4UMhpY+vFT5m1Bj/ytoZWxZvSw4K6rrR7IJkh5nZlrNNlraWyykx+1PcIf0+aRWOkFuwRqESFqQeyCUEhdZVviCXByd5LOxzGcFMr9Ph0V2l2CdsuXp5/cveenBt98ZA7eNNamuzhMDIHqKI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+Received: from DM6PR21MB1514.namprd21.prod.outlook.com (2603:10b6:5:22d::11)
+ by BY5PR21MB1411.namprd21.prod.outlook.com (2603:10b6:a03:238::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.10; Thu, 24 Mar
+ 2022 16:15:09 +0000
+Received: from DM6PR21MB1514.namprd21.prod.outlook.com
+ ([fe80::f8aa:99ff:9265:bb6b]) by DM6PR21MB1514.namprd21.prod.outlook.com
+ ([fe80::f8aa:99ff:9265:bb6b%4]) with mapi id 15.20.5123.010; Thu, 24 Mar 2022
+ 16:15:09 +0000
+From:   Michael Kelley <mikelley@microsoft.com>
+To:     sthemmin@microsoft.com, kys@microsoft.com, haiyangz@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, rafael@kernel.org,
+        lenb@kernel.org, lorenzo.pieralisi@arm.com, robh@kernel.org,
+        kw@linux.com, bhelgaas@google.com, hch@lst.de,
+        m.szyprowski@samsung.com, robin.murphy@arm.com,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
+        iommu@lists.linux-foundation.org
+Cc:     mikelley@microsoft.com
+Subject: [PATCH v3 0/2] Fix coherence for VMbus and PCI pass-thru devices in Hyper-V VM
+Date:   Thu, 24 Mar 2022 09:14:50 -0700
+Message-Id: <1648138492-2191-1-git-send-email-mikelley@microsoft.com>
+X-Mailer: git-send-email 1.8.3.1
+Content-Type: text/plain
+X-ClientProxiedBy: MW4PR04CA0253.namprd04.prod.outlook.com
+ (2603:10b6:303:88::18) To DM6PR21MB1514.namprd21.prod.outlook.com
+ (2603:10b6:5:22d::11)
 MIME-Version: 1.0
-References: <000000000000cabcb505dae9e577@google.com> <CAHk-=wjLL3OB8PvFGBLgUs=zip-Q2m1P=UwG+Pw_E8nYDs+MUw@mail.gmail.com>
- <CAMZfGtW0tN+xYSGGVmxjosTuoRR-mETaNTFNFZu7WuPW2JL9JA@mail.gmail.com>
- <CAHk-=wgW1hEUaQeX41+3w7AGsXkeE1XOXCMndXs3kFp-XjSVzQ@mail.gmail.com>
- <CAMZfGtVRWKhAf-fNWcLQgjb0zBZHX3bQ+aYywfiRsapoLacq3g@mail.gmail.com> <CACT4Y+aQOziG8LGiTdyjTTHXJ4tNy2qxJ4yTPy-aUBG9CQB3_w@mail.gmail.com>
-In-Reply-To: <CACT4Y+aQOziG8LGiTdyjTTHXJ4tNy2qxJ4yTPy-aUBG9CQB3_w@mail.gmail.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Fri, 25 Mar 2022 00:12:26 +0800
-Message-ID: <CAMZfGtUr6V5pTrPhZukD2_KbB7BLPoKvF6H63HP4pykY36Ou9A@mail.gmail.com>
-Subject: Re: [syzbot] general protection fault in list_lru_add
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        syzbot <syzbot+f8c45ccc7d5d45fc5965@syzkaller.appspotmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5654b487-5a85-4c95-70e4-08da0db1774f
+X-MS-TrafficTypeDiagnostic: BY5PR21MB1411:EE_
+X-MS-Exchange-AtpMessageProperties: SA|SL
+X-Microsoft-Antispam-PRVS: <BY5PR21MB1411F06DFFB871E32EADFF23D7199@BY5PR21MB1411.namprd21.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8J7Ds/8naHFTJhwSwQuL0tPIxZZWTeb7nK36k2ZG/sRW0WRB+LbPoYORswWBEWSNDlxEAicp8JgF+WwABfgcEgpvP/CMUDQ31+ikZKlfYyFg2gQmPhgNchNIvnPO4FxBLaFZmYWt0jKoHZO8LB8ZLxIIe46AZD6g4wWh9RZTtfi2E/VhppgGMz4qLCmzMWYDt02WHTourBq1QhYy4lic+ai98Cgq+ccC1sCkgXSnRGZ9BpEfQ52dsoIeRU0Gny2A2S6/uvRHdp+2n5sWnWGmGYhLuJoyMgPutnv17AzCib0TTTeFadFjvz5TZz1VFSnfMFocUuupvbcYiz02GiGmXp0efOth/oNJZJWSAxIv5TjYCTRE1MwdkoeRDZePl7xvVNClp6FLuK5WQW8wlxtFC8ilqtxRXZ2pp78/rZFkw//Bhe+hn3mA/kPneLqeQ7jlhe11e+XIWV9Dd8j498pou4JkAugExc3xcWfTORkERHio6nPBCp4+Xd/NKmOPq0GzIcJh8f8MpJu6YriUdLXA9wbKqDlLJyNx3DbTvxdAajk4M/wph+zcrPXnyLUosi7Rj1qb2z7uxn15f3EyOUKRY5/xPWely3V4Ob0qUp9bECDPMgTybxcqZejFotlcPBU6CshSrqlOBsHqTF1wUQAQs9L7B5DJOa4suKhvihopkeiZ9pVmA7HK6lAKbC5wFgciqGOdDV7NmEvCUoZPFh0A9ZfPhE7vmD+ALxgxeQ+eq51tufMdC9tGHQJo+0DaRCirnDBCzV4mKsczN2x/RiSbkg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1514.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(2906002)(6666004)(6506007)(52116002)(2616005)(6512007)(26005)(107886003)(186003)(8676002)(4326008)(10290500003)(6486002)(508600001)(66476007)(66556008)(86362001)(316002)(66946007)(36756003)(921005)(82950400001)(8936002)(7416002)(82960400001)(5660300002)(38100700002)(38350700002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ElI+3o71OGQWNDIkFokiE1FrS/MFxK1IQ2aVjb52VCf0A7Xmr90ENUC3dO4c?=
+ =?us-ascii?Q?3fE2NcfMmLPJPnM49KgNPjvQbXDqV70By7iVHfpiywdmNdW40qlQbkvietqT?=
+ =?us-ascii?Q?b97mVbCXWMLZJXK0EXm/4GFcQahoOw+g5qlgM+ML7RRroD5Q3ooHZYTqwftN?=
+ =?us-ascii?Q?tCFeWZeyEHuowJ1fCReS/c60krG5LplFYf26Th4qhg6GY55Hv3elEnEZCEeX?=
+ =?us-ascii?Q?2Uc6SEIgAbbxuQVYzVSnzkFYiaiZq8V3PosT2FQotn5Z7oaGxYF2jDJvF1Yh?=
+ =?us-ascii?Q?3cU+9OPS4r8Ala7rhWzzB9yl0+xX6DVrj8E0Z9NwH90geIdgNKF5zqkKKWAf?=
+ =?us-ascii?Q?/UTkMRyWdFPKM68o3pe1xxF+xbqDSKD9JtYDPI1C0U4tn8PuUQ8ir00X5C7e?=
+ =?us-ascii?Q?NpLoge6mP24llGobgbljb/ZahV3CbbdS5qitjZj1SJTXEF1IugqTWJBH5hur?=
+ =?us-ascii?Q?guJJBEbMKIhGpg9GDL26R08rmMDVbbinaQJW7YlIU06AR0ZviCRnJV0T8Guy?=
+ =?us-ascii?Q?xQr82SDSl0tRPZD/V2CJ641rIsrzivk/RvdajfYzwlP8vrIDpHWoWJ1P4u1V?=
+ =?us-ascii?Q?mpWAArIgRYwhU0/Ue/Uy3WGIktp25H3n6282EXCBNAI8gqmaw7+CexPCnE8b?=
+ =?us-ascii?Q?k2oT9MtCsaEOL9zQAajR5F//AVpcz7dnfRj0qzUJYUrblbfvO97T6KXn5Br8?=
+ =?us-ascii?Q?oaQ2LsOmmgTpICQ98I5R8k0EUOX0ZFSzV2rEp05dtmLVgh81bO0nRCe0wXem?=
+ =?us-ascii?Q?I2NEr7OPyZw0GSn3xT+2hKmGC/T/B6HU17bqkK6+5g89/KlMTzczyG2RI7Rs?=
+ =?us-ascii?Q?6iQAcyjiliijZL6j8NpSQL20W2hk6j7/U/0YNCyk11FnsEPikKMS62XSXefF?=
+ =?us-ascii?Q?YC232opKD34JILSomZjqBICpz/FoY1j9n3ygBHsmVZIa3DqSWMFeDbk1Hsj+?=
+ =?us-ascii?Q?BpYnkzNp1WFG9bX5z78/U6D1sab47N9UhSykjD+5yCnSOGpyEUn/edrTO4ev?=
+ =?us-ascii?Q?7o9RwDDeSnZgf7+/IUyvjkxjDIVYXSPcc06zhqc9BA5ZqWbm/8eHADY1OdGG?=
+ =?us-ascii?Q?W1Is2FPjFnDEn3a2Y7V1hQ9dbJPt4z+7QjxD0WLhRM4ShLbA+0HLGCFbcfw8?=
+ =?us-ascii?Q?IsOX7RYLkoTc4E86ZkkiU27t3h3WjXDEh0LXo4PpEFHOMYPEJ0hl4wInlsk1?=
+ =?us-ascii?Q?2uS72f7pm52fngZ2h1i/caqZHttMOHq35VhpI9ZHP+tSjaBpCN3gCYaxkF4u?=
+ =?us-ascii?Q?+7T35oBsuA4kn3xjsGsxFIDLK+VbSNJFsd5aJnu7HrXgsTDNsntF3FIQhku7?=
+ =?us-ascii?Q?74FYYWxXDvRgUQvXlyhqNizYgZDutXIZiKKIPIjiUKMAecP4OPj8VbTyKTUU?=
+ =?us-ascii?Q?9kJiPhBLq0WVcxqoCXCoO2AWn5YsFLCbIsWQ/IxUifRlEy+5sXmxgu1sk6lo?=
+ =?us-ascii?Q?6rjMQyZ7PhnXpXKMoerEpot/B7dS21J04RFVqhTGGXbO7G9fZVox+6uJdfGs?=
+ =?us-ascii?Q?Dr2SeJjrdWns7K9f2yxtjZBQfNt6S2B7SfeaSHynqx+olIWACV3XY3/mkP1x?=
+ =?us-ascii?Q?cjD36Az+EKnNN2uu3C6kiRi4EXAPHAWjejzO7g79RNpg7XJsRl2O0lNwBSQk?=
+ =?us-ascii?Q?y+iSHcc3KnqECX+EsbjgEwIz17q+A2xZrIvHMIqUmevcXmGwj+oSqlnAuIIf?=
+ =?us-ascii?Q?LI1DFkJIiLyK1nFYz4rsT+0BwTf5lo7urd90x87j7lEj0bFZpNKOkjinI19E?=
+ =?us-ascii?Q?NbI6oJi1rRCFjOkvP1hgJiA19miVcvk=3D?=
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5654b487-5a85-4c95-70e4-08da0db1774f
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR21MB1514.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2022 16:15:08.9813
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: LSwKy6zSEoJtWRTKa3joc9u33G78/3VjVLIzhLZlEU1J3TYXefbw/jpQybCnuIObKXpvRigsqITinjB8ox8iwQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR21MB1411
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 4:50 PM Dmitry Vyukov <dvyukov@google.com> wrote:
->
-> On Thu, 24 Mar 2022 at 09:44, Muchun Song <songmuchun@bytedance.com> wrote:
-> >
-> > On Thu, Mar 24, 2022 at 11:05 AM Linus Torvalds
-> > <torvalds@linux-foundation.org> wrote:
-> > >
-> > > On Wed, Mar 23, 2022 at 7:19 PM Muchun Song <songmuchun@bytedance.com> wrote:
-> > > >
-> > > > After this commit, the rules of dentry allocations changed.
-> > > > The dentry should be allocated by kmem_cache_alloc_lru()
-> > >
-> > > Yeah, I looked at that, but I can't find any way there could be other
-> > > allocations - not only are there strict rules how to initialize
-> > > everything, but the dentries are free'd using
-> > >
-> > >         kmem_cache_free(dentry_cache, dentry);
-> > >
-> > > and as a result if they were allocated any other way I would expect
-> > > things would go south very quickly.
-> > >
-> > > The only other thing I could come up with is some breakage in the
-> > > superblock lifetime so that &dentry->d_sb->s_dentry_lru would have
-> > > problems, but again, this is *such* core code and not some unusual
-> > > path, that I would be very very surprised if it wouldn't have
-> > > triggered other issues long long ago.
-> > >
-> > > That's why I'd be more inclined to worry about the list_lru code being
-> > > somehow broken.
-> > >
-> >
-> > I also have the same concern.  I have been trying for a few hours to
-> > reproduce this issue, but it didn't oops on my test machine.  And I'll
-> > continue reproducing this.
->
-> syzbot triggered it 222 times in a day, so it's most likely real:
-> https://syzkaller.appspot.com/bug?extid=f8c45ccc7d5d45fc5965
->
-> There are 2 reproducers, but they look completely different. May be a race.
-> You may also try to use syzbot's patch testing feature to get some
-> additional debug info.
+Hyper-V VMs have VMbus synthetic devices and PCI pass-thru devices that are added
+dynamically via the VMbus protocol and are not represented in the ACPI DSDT. Only
+the top level VMbus node exists in the DSDT. As such, on ARM64 these devices don't
+pick up coherence information and default to not hardware coherent.  This results
+in extra software coherence management overhead since the synthetic devices are
+always hardware coherent. PCI pass-thru devices are also hardware coherent in all
+current usage scenarios.
 
-Do you know how to tell the syzbot to test the following patch?
-I found some infos from github, it says "#syz test:", is it like the following?
-Thanks.
+Fix this by propagating coherence information from the top level VMbus node in
+the DSDT to all VMbus synthetic devices and PCI pass-thru devices. While smaller
+granularity of control would be better, basing on the VMbus node in the DSDT
+gives as escape path if a future scenario arises with devices that are not
+hardware coherent.
 
-#syz test: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
-master
+Changes since v2:
+* Move coherence propagation for VMbus synthetic devices to a separate
+  .dma_configure function instead of the .probe fucntion [Robin Murphy]
 
-diff --git a/mm/list_lru.c b/mm/list_lru.c
-index c669d87001a6..ddb2ee627d32 100644
---- a/mm/list_lru.c
-+++ b/mm/list_lru.c
-@@ -67,6 +67,7 @@ list_lru_from_kmem(struct list_lru *lru, int nid, void *ptr,
-        struct list_lru_node *nlru = &lru->node[nid];
-        struct list_lru_one *l = &nlru->lru;
-        struct mem_cgroup *memcg = NULL;
-+       int kmemcg_id;
+Changes since v1:
+* Use device_get_dma_attr() instead of acpi_get_dma_attr(), eliminating the
+  need to export acpi_get_dma_attr() [Robin Murphy]
+* Use arch_setup_dma_ops() to set device coherence [Robin Murphy]
+* Move handling of missing _CCA to vmbus_acpi_add() so it is only done once
+* Rework handling of PCI devices so existing code in pci_dma_configure()
+  just works
 
-        if (!list_lru_memcg_aware(lru))
-                goto out;
-@@ -75,7 +76,13 @@ list_lru_from_kmem(struct list_lru *lru, int nid, void *ptr,
-        if (!memcg)
-                goto out;
+Michael Kelley (2):
+  Drivers: hv: vmbus: Propagate VMbus coherence to each VMbus device
+  PCI: hv: Propagate coherence from VMbus device to PCI device
 
--       l = list_lru_from_memcg_idx(lru, nid, memcg_kmem_id(memcg));
-+       kmemcg_id = memcg_kmem_id(memcg);
-+       l = list_lru_from_memcg_idx(lru, nid, kmemcg_id);
-+       if (!l) {
-+               pr_info("BUG: the memcg(%px)->objcg(%px), kmemcg_id: %d\n",
-+                       memcg, memcg->objcg, kmemcg_id);
-+               BUG();
-+       }
- out:
-        if (memcg_ptr)
-                *memcg_ptr = memcg;
+ drivers/hv/hv_common.c              | 11 +++++++++++
+ drivers/hv/vmbus_drv.c              | 31 +++++++++++++++++++++++++++++++
+ drivers/pci/controller/pci-hyperv.c |  9 +++++++++
+ include/asm-generic/mshyperv.h      |  1 +
+ 4 files changed, 52 insertions(+)
+
+-- 
+1.8.3.1
+
