@@ -2,74 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E16BBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:36:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97E69C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:37:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348678AbiCXHiH (ORCPT
+        id S1348695AbiCXHjH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 03:38:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48460 "EHLO
+        Thu, 24 Mar 2022 03:39:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348681AbiCXHht (ORCPT
+        with ESMTP id S243967AbiCXHjF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 03:37:49 -0400
-X-Greylist: delayed 483 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Mar 2022 00:36:17 PDT
-Received: from mail-m121144.qiye.163.com (mail-m121144.qiye.163.com [115.236.121.144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F124D1B6;
-        Thu, 24 Mar 2022 00:36:17 -0700 (PDT)
-Received: from localhost.localdomain (unknown [IPV6:240e:36a:1400:8d00:6c1a:b96f:c32f:6296])
-        by mail-m121144.qiye.163.com (Hmail) with ESMTPA id 90949AC04CD;
-        Thu, 24 Mar 2022 15:28:11 +0800 (CST)
-From:   Yupeng Li <liyupeng@zbhlos.com>
-To:     sfrench@samba.org, linux-cifs@vger.kernel.org,
-        samba-technical@lists.samba.org, linux-kernel@vger.kernel.org
-Cc:     Eugene Korenevsky <ekorenevsky@astralinux.ru>,
-        Steve French <stfrench@microsoft.com>,
-        Yupeng Li <liyupeng@zbhlos.com>
-Subject: [PATCH] cifs: fix FILE_BOTH_DIRECTORY_INFO definition
-Date:   Thu, 24 Mar 2022 15:26:51 +0800
-Message-Id: <20220324072651.3418236-1-liyupeng@zbhlos.com>
-X-Mailer: git-send-email 2.34.1
+        Thu, 24 Mar 2022 03:39:05 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FFD91B6;
+        Thu, 24 Mar 2022 00:37:34 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id u16so5335582wru.4;
+        Thu, 24 Mar 2022 00:37:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=jCVPCJICg9locbJaOYqFD84RnZE57Jl55NgEDRe/OGY=;
+        b=d9Y0con6YPsB1dIpXULd3jLFTkTuABc3w+m5HpRequP2RVLsLaatWJNJy/Yi0c3T5G
+         zK81X44glWZZK5LfJeM/uk0KMlm0ArwzsRQbra7NAQznRzl314WDjeLfm1ZOFe4rijKI
+         NPk2naPOGgXQB2X5x5rJ5xVXIudqezVgttJ9k7EIuWut5QKMVdSPw6q+e2iCxuIyml8g
+         SwlW47PZ0w0QWPFKhRqEAvffcCu9Z4FsBYQ8IVg5hzW3Sd0uBINvi6hUiyJeNw4OayZT
+         qYGAJPvh6ppROpdvG7aDD24HqkZLipzCHjDtmTOPnLU6KcERri5B37JGYK8tXJ1pxrys
+         mpQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=jCVPCJICg9locbJaOYqFD84RnZE57Jl55NgEDRe/OGY=;
+        b=hV64kb/HVK9QtPl8c1QhYpJJQ04hlm9zkjLbSiF797Vm08SzQSvFD9DTjwTI9Z2tEG
+         aRzRrPElxHNkZf2wGXVV+ZC71j3v3LMAGFoYQKBeN+g4t+a6Lu6PbCKtHr08jCTTTPd/
+         o8y/4ISQugw+AFPh5+2uNiLpHh7ez2m7LtjV6CNL8QOv3jeaeRpyPy3s0BWFCeOWVhzf
+         VwPH1QJsFeOoUJ0ieTe0V+cM0RBmITS0sPCiSSLuo9e9NTk3tkS2ByNLXfjv6OKUpspV
+         Sr77gS61D0s4hFFnXj74BIKKTkQY2wdwloojSaV4+HCEMckNTMPQumd0jVl8filhz5DX
+         0gAg==
+X-Gm-Message-State: AOAM532tr4Hlkqwt5+DvLbH1xfaH1nxxOWD8fJ9tI9QL+ey3bvQil0/k
+        UJKAYPPbJqva87VwT07kfHi+u7s38FODyexu2IR9Hyq8GyL8lA==
+X-Google-Smtp-Source: ABdhPJxkSQmpeySAOI/QQ+/6O0r1eQ5Hm0qLSdNlE+wBlAjrwKZyC6XiR6wyrH3C+PE3XyWlNVKfRIMqBR0qMtpACmE=
+X-Received: by 2002:a5d:414b:0:b0:205:89b7:91bf with SMTP id
+ c11-20020a5d414b000000b0020589b791bfmr3348040wrq.217.1648107452650; Thu, 24
+ Mar 2022 00:37:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
-        kWDxoPAgseWUFZKDYvK1lXWShZQUhPN1dZLVlBSVdZDwkaFQgSH1lBWUNMGEpWSx9KSx0ZTE9LTk
-        gZVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWU9LSFVKSktPSElVS1kG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Mww6PQw4HT5DDRJJNAI5KxI6
-        DDgKFB9VSlVKTU9DSktNQ0JJSk9CVTMWGhIXVRcSAg4LHhUcOwEZExcUCFUYFBZFWVdZEgtZQVlJ
-        T0seQUhNGkFKT0tLQUMfS0tBTRhKGkEZQk0dQRhISR1BTUlCTVlXWQgBWUFKQ01PNwY+
-X-HM-Tid: 0a7fbad369dbb039kuuu90949ac04cd
+References: <20220311164628.378849-1-gengcixi@gmail.com> <20220311164628.378849-3-gengcixi@gmail.com>
+ <20220320133229.6026f51a@jic23-huawei>
+In-Reply-To: <20220320133229.6026f51a@jic23-huawei>
+From:   Cixi Geng <gengcixi@gmail.com>
+Date:   Thu, 24 Mar 2022 15:36:56 +0800
+Message-ID: <CAF12kFvPp4eVJtWD7zd=Kvx2mHQGWiy_dDOD1bvMLQgeNgBvzQ@mail.gmail.com>
+Subject: Re: [PATCH V2 2/7] iio: adc: sc27xx: fix read big scale voltage not right
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        "baolin.wang7@gmail.com" <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>, lgirdwood@gmail.com,
+        Mark Brown <broonie@kernel.org>,
+        =?UTF-8?B?5pyx546J5piOIChZdW1pbmcgWmh1LzExNDU3KQ==?= 
+        <yuming.zhu1@unisoc.com>, linux-iio@vger.kernel.org,
+        Devicetree List <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eugene Korenevsky <ekorenevsky@astralinux.ru>
-
-commit 9bbf8662a27b56358366027d1a77c0676f85b222 upstream.
-
-The size of FILE_BOTH_DIRECTORY_INFO.ShortName must be 24 bytes, not 12
-(see MS-FSCC documentation).
-
-Signed-off-by: Eugene Korenevsky <ekorenevsky@astralinux.ru>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Yupeng Li <liyupeng@zbhlos.com>
----
- fs/cifs/cifspdu.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/fs/cifs/cifspdu.h b/fs/cifs/cifspdu.h
-index 1ce733f3582f..504a20250f73 100644
---- a/fs/cifs/cifspdu.h
-+++ b/fs/cifs/cifspdu.h
-@@ -2588,7 +2588,7 @@ typedef struct {
- 	__le32 EaSize; /* length of the xattrs */
- 	__u8   ShortNameLength;
- 	__u8   Reserved;
--	__u8   ShortName[12];
-+	__u8   ShortName[24];
- 	char FileName[1];
- } __attribute__((packed)) FILE_BOTH_DIRECTORY_INFO; /* level 0x104 FFrsp data */
- 
--- 
-2.34.1
-
+Jonathan Cameron <jic23@kernel.org> =E4=BA=8E2022=E5=B9=B43=E6=9C=8820=E6=
+=97=A5=E5=91=A8=E6=97=A5 21:25=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On Sat, 12 Mar 2022 00:46:23 +0800
+> Cixi Geng <gengcixi@gmail.com> wrote:
+>
+> > From: Cixi Geng <cixi.geng1@unisoc.com>
+> >
+> > Fix wrong configuration value of SC27XX_ADC_SCALE_MASK and
+> > SC27XX_ADC_SCALE_SHIFT by spec documetation.
+> >
+> > Signed-off-by: Yuming Zhu <yuming.zhu1@unisoc.com>
+> > Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
+> >
+> No blank lines in a tag block (they break people's scripts)
+> Also, if this is a fix, I'd expect a fixes tag.
+I will add in next version
+>
+> > Reviewed-by: Baolin Wang <baolin.wang7@gmail.com>
+> > ---
+> >  drivers/iio/adc/sc27xx_adc.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.=
+c
+> > index 00098caf6d9e..aee076c8e2b1 100644
+> > --- a/drivers/iio/adc/sc27xx_adc.c
+> > +++ b/drivers/iio/adc/sc27xx_adc.c
+> > @@ -36,8 +36,8 @@
+> >
+> >  /* Bits and mask definition for SC27XX_ADC_CH_CFG register */
+> >  #define SC27XX_ADC_CHN_ID_MASK               GENMASK(4, 0)
+> > -#define SC27XX_ADC_SCALE_MASK                GENMASK(10, 8)
+> > -#define SC27XX_ADC_SCALE_SHIFT               8
+> > +#define SC27XX_ADC_SCALE_MASK                GENMASK(10, 9)
+> > +#define SC27XX_ADC_SCALE_SHIFT               9
+>
+> This driver would benefit from use of FIELD_GET() / FIELD_PREP()
+> but that is obviously unrelated to this particular series.
+>
+the next patch in this set need to use the fixed define value
+>
+> Jonathan
+>
+> >
+> >  /* Bits definitions for SC27XX_ADC_INT_EN registers */
+> >  #define SC27XX_ADC_IRQ_EN            BIT(0)
+>
