@@ -2,22 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 471B3C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 15:57:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ABC2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 15:57:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241878AbiCXP7E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 11:59:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58712 "EHLO
+        id S1351501AbiCXP7I (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Mar 2022 11:59:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351457AbiCXP6z (ORCPT
+        with ESMTP id S1351435AbiCXP6w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 11:58:55 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2009AC938;
-        Thu, 24 Mar 2022 08:57:22 -0700 (PDT)
+        Thu, 24 Mar 2022 11:58:52 -0400
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A7FAC910;
+        Thu, 24 Mar 2022 08:57:20 -0700 (PDT)
 Received: from localhost.localdomain ([81.221.85.15]) by mrelay.perfora.net
- (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MiJ6Q-1o1VSB08ta-00fO2O;
- Thu, 24 Mar 2022 16:57:05 +0100
+ (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MxVGn-1oHoJu1LMv-00xtK7;
+ Thu, 24 Mar 2022 16:56:59 +0100
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
@@ -33,83 +34,58 @@ Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v1 02/10] arm64: dts: imx8mm-verdin: multi-line comment style
-Date:   Thu, 24 Mar 2022 16:56:41 +0100
-Message-Id: <20220324155649.285924-3-marcel@ziswiler.com>
+Subject: [PATCH v1 00/10] arm64: dts: imx8mm-verdin: minor updates
+Date:   Thu, 24 Mar 2022 16:56:39 +0100
+Message-Id: <20220324155649.285924-1-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220324155649.285924-1-marcel@ziswiler.com>
-References: <20220324155649.285924-1-marcel@ziswiler.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:wvi0prXOYPBSWTZce9X2feg/3PZvyzv+6A/IKxq+AX1CZzBajY/
- c42xNq0r81Bz5yD1UY7PCNe3bdqp6F5JWmFm3mEd/YrEPAZmgrEOJepCdUIoiz+RuBkyXlV
- A8eN8lcyuQ1XKQ/H95nEDAju0WZ9mTQZXyDD/ncUQ4N0nj0Ec7QKSCJUk6uT/afabWi7xsK
- Oo9Chq4We7LeCqYtSKKlg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:MAC35HeqeY8=:D9Ivn30Ph/CSMvH/LzqsMy
- nqhkBa5xClyfLZJ64o3AvAIwXbPwXI6Am3B7UiIdfB4ncacpGyDk+6OGvOfoh2/V8mFUS/7Kc
- 6qIyDYa4GCdSZpTjhELGlz91l9sDU6s++ORVPQc3uBuJi3iII9SXI9M2zcuaqPbLZTiPbcDHC
- dy1H55VVzSzd7/H2XfzeHHUx46RK40JyRIWymOJlEBl+98ZGA7d3XUl6Jg5RavHjmCOqw74w4
- 2BXej/VBPp4As1oxiKaJ5ybPhKPThwkj6zbBtJfG6UO/u7SggIBYdSCHbUBFcySM4TbUZL+za
- nj2Gtv6OkpQCpYX50ohmRBFsHrOTgNACXmkxKAakEHH7BzVoYJrkEtwc0D1J3x8wIo7hJuftU
- KBrac85RxhsGaWjL7feWPiRfzMRvO7wueUkm128wCIpgiyyxftjdPdBL3ygYpRCFAaxMLmLgl
- w6AqpICGB+yD2JBPdwr7Vy4kkFSbB9c3R3dU/VMLIj6jZUqGjOv8SJ8XQ6VszCfdjsheNX5cL
- b4/QTIj0Z2h/M/81/uxaRhXIbnvWmHo7sqNWMGJXNPrDu94Vm0iJ3CjmPDNo0X2SEYSCinuU6
- If13vnnFkJbmnk4LOYD0Yj2Urdfy5QnXzpXB9VqSB99RLROFdafHf9gb2iSlqPxsSiaHDpnyQ
- meRN1HS+GkM54n5jYS+btjESlztDTlCR+dZNv+ep4Vps2Iqw3Nbsxccx3vjNQ0xDKdAc=
+X-Provags-ID: V03:K1:hj0JNt6MAlDJZ4F4OH4YaGZ4iTItU7lC0mZqFmi+qzdW90QVSmq
+ p0+M4gFt6cQfHMVWUXfLMlAinOPlHrMd4km3K0NZMUMvsp6DmgBaA+DFNWw0UHe1mmvDu0x
+ hQ5H6X5XldBNgeLLUFCrm6ZyzVSzOlIHkVbGkYK42EOCltbJ+UUjncXbv4Q4c8mxJBGFuvI
+ S7IOZhKLy9Wzr2vtrrA/A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:bswDM/m5wYE=:ToSqmZg4gOr64HQc/gUuzo
+ 9VuRpfzcOXJx8XjcGJ8Z6H+7KkRa3y7fKAFlFf9LnoQWDMw8sGxC95v2eRBDzjnW0D8xnBVVf
+ yQlczLiejRfbhHQAaZaVHD1q9jiYuBe+ysQxDKgvF0c9adz54Jbht5zo6LxjcFXGwhEOL3+N6
+ jevhdnSCuUvXA2F07MUR1g1XNs8WruShBgJfcTpMfgeY3/HANxBQKUIDou14ZDCCA2oRYxi+6
+ Zfvp7x8X7GNAgYsRuCimF1vpEJ7weue9XNuyKPUtB3eal0cCAsPiwmtJt6raeBIcM6VP9k5dN
+ VTrgeSTDG7sZLGgy1pGAgIclYzWDQ3tU+VdCh/oTc+UK9LSxhT7KsBfi0ciNKeLuiXNNpPmeO
+ JcpPUEI09QlNVRtBgFL+UhryVI4BITD/XnIFFqXs8sHQAmA7dqwEdqAvgHExAkvzo95JooKvS
+ 6dFH5Mf40VI2U9uuX2bg1434xCibdIh4zgKsTyTU4bxwBrhc1m4qrZhG5eL2OFaIX2Ol1RtkH
+ 0g8gDkaXGy5ZgYyAuUhieJS0DscpCZJggD+uRTJd0m4+Nq0O1bieiAwOigFU9onYIEb/2KNqQ
+ Fwr528GtTNWlx48xur8d1HhCY1tbYEKGfm3t4bkWd50cd9ICm76r/XY3vM8mbFA8B49648fjs
+ mp837clS9mKhOdGDp5A6r8u+8P+ShsvSbHPhwzKJGZX8ypY3qDkUfWsizfUYuHtK3XMg=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Fix multi-line comment style.
 
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
----
+This patch set brings some minor updates including some cosmetic
+improvements like comments, names and node and pinctrl group
+re-orderings plus functional improvements like an SD1 sleep pinctrl and
+an updated fully validated IOMUX configuration.
 
- arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
-index f70782d2a23d..de811be435d0 100644
---- a/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
-@@ -580,8 +580,10 @@ hdmi_lontium_lt8912: hdmi@48 {
- 
- 	atmel_mxt_ts: touch@4a {
- 		compatible = "atmel,maxtouch";
--		/* Verdin GPIO_9_DSI */
--		/* (TOUCH_INT#, SODIMM 17, also routed to SN65dsi83 IRQ albeit currently unused) */
-+		/*
-+		 * Verdin GPIO_9_DSI
-+		 * (TOUCH_INT#, SODIMM 17, also routed to SN65DSI83 IRQ albeit currently unused)
-+		 */
- 		interrupt-parent = <&gpio3>;
- 		interrupts = <15 IRQ_TYPE_EDGE_FALLING>;
- 		pinctrl-names = "default";
-@@ -695,8 +697,8 @@ &uart3 {
- 	uart-has-rtscts;
- };
- 
--/* Verdin UART_4 */
- /*
-+ * Verdin UART_4
-  * Resource allocated to M4 by default, must not be accessed from Cortex-A35 or you get an OOPS
-  */
- &uart4 {
-@@ -1205,8 +1207,10 @@ pinctrl_usdhc2_200mhz: usdhc2-200mhzgrp {
- 			<MX8MM_IOMUXC_GPIO1_IO04_USDHC2_VSELECT		0x1d0>;
- 	};
- 
--	/* On-module Wi-Fi/BT or type specific SDHC interface */
--	/* (e.g. on X52 extension slot of Verdin Development Board) */
-+	/*
-+	 * On-module Wi-Fi/BT or type specific SDHC interface
-+	 * (e.g. on X52 extension slot of Verdin Development Board)
-+	 */
- 	pinctrl_usdhc3: usdhc3grp {
- 		fsl,pins =
- 			<MX8MM_IOMUXC_NAND_WE_B_USDHC3_CLK		0x190>,
+Marcel Ziswiler (10):
+  arm64: dts: imx8mm-verdin: update regulator names
+  arm64: dts: imx8mm-verdin: multi-line comment style
+  arm64: dts: imx8mm-verdin: alphabetically re-order nodes
+  arm64: dts: imx8mm-verdin: only dashes in node names
+  arm64: dts: imx8mm-verdin: comment about i2c level shifter
+  arm64: dts: imx8mm-verdin: update iomux configuration
+  arm64: dts: imx8mm-verdin: re-order pinctrl groups
+  arm64: dts: imx8mm-verdin: capitalisation of verdin comments
+  arm64: dts: imx8mm-verdin: note about disabled sd1 pull-ups
+  arm64: dts: imx8mm-verdin: add sd1 sleep pinctrl
+
+ .../dts/freescale/imx8mm-verdin-dahlia.dtsi   |   2 +-
+ .../dts/freescale/imx8mm-verdin-wifi.dtsi     |  26 +-
+ .../boot/dts/freescale/imx8mm-verdin.dtsi     | 411 ++++++++++--------
+ 3 files changed, 235 insertions(+), 204 deletions(-)
+
 -- 
 2.34.1
 
