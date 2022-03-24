@@ -2,125 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E1C3C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:27:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BCD1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:27:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348558AbiCXH3E (ORCPT
+        id S1348545AbiCXH3L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 03:29:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46054 "EHLO
+        Thu, 24 Mar 2022 03:29:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348545AbiCXH26 (ORCPT
+        with ESMTP id S1348553AbiCXH3D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 03:28:58 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 535BD98F72;
-        Thu, 24 Mar 2022 00:27:26 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id r13so7333474ejd.5;
-        Thu, 24 Mar 2022 00:27:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DAtToKdRS0zfVnS9HsS764HRko9yvlBX55xZExohPhI=;
-        b=C6lJsHb8Ua0B3vszq3ZlSFp9A0YBsRu9mnPk11EG7gZ5v2ngkVTwYI0taNDgJ6TmSa
-         P0kDVWF8XQXNiCf0UyYcyjxP6TBoiIhyAd7oqVX9x1SljitbUDhQj5EtqhMYTZoELhXw
-         xqVGut7ZTcGZsXS+i766X1z/fvbknrRYjEB3M+I0A2r8roRNYNM9Hxz3W8vnOtcKa0Ix
-         rsHea1vzuwan96vBib/nt9fQnGGAX7nbxYinnmRMOFfXLNXJUktv5hImOdi5IDyDSEE0
-         zFDHnsLtsG5xnJlcSA841GkOzmy7xKm/+xj4QEdIsKQWgKYIzh5aCRagdPc/60OLni1/
-         c5Dw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DAtToKdRS0zfVnS9HsS764HRko9yvlBX55xZExohPhI=;
-        b=Y6KWRLv3rY9MNW22ffM2NKwq5onszNOgp1uGuR+6dgGxlfys7f158+jFGgyovBMq1v
-         GZtWx76SWQZuqw98fs6UI/lBdzwvDGik55K4iziGlpGzOHiHce7INCsRMkWYS2jxT+f6
-         RfHvohZntLob0KwYWALSy67M117lgzLTQwZmkm9dY1psJA7NmslXgOh8gZQh/6DOuK3b
-         VHoFuF6dG8hMHfdO/ae89YxeOCrBgyJFNcXVA8YZE3RxjYzEDCe2YXYFY85msODUR/06
-         neUKOt7S5UyTHzArZ7A3H22d1TRbmKkGBknMh+1F5hbY1yDOJrcjTTnx+071nVV1pYrE
-         dAvw==
-X-Gm-Message-State: AOAM531LqIOGauFICWIE9ytkZ7fHcECLR8bu+r+mWFjpep4b8oqAN5TL
-        C0vwyBQXFq29euVX56mZJK0=
-X-Google-Smtp-Source: ABdhPJxuy5OwcuHiwxx2kTj53MTVWm9l1g6mMZIh4t6sVXn4V2Xfgcu+l/18CgkvNOWvM0cQGtuioQ==
-X-Received: by 2002:a17:906:c091:b0:6db:62b6:f4cc with SMTP id f17-20020a170906c09100b006db62b6f4ccmr4249141ejz.607.1648106844690;
-        Thu, 24 Mar 2022 00:27:24 -0700 (PDT)
-Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id d7-20020a50cd47000000b004187eacb4d6sm1031270edj.37.2022.03.24.00.27.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 00:27:24 -0700 (PDT)
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-To:     Andreas Noever <andreas.noever@gmail.com>
-Cc:     Michael Jamet <michael.jamet@intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Yehezkel Bernat <YehezkelShB@gmail.com>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mike Rapoport <rppt@kernel.org>,
-        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
-Subject: [PATCH] thunderbolt: replace usage of found with dedicated list iterator variable
-Date:   Thu, 24 Mar 2022 08:27:00 +0100
-Message-Id: <20220324072700.63787-1-jakobkoschel@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 24 Mar 2022 03:29:03 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5CC498F5E;
+        Thu, 24 Mar 2022 00:27:30 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KPGyQ3PpXz4xLS;
+        Thu, 24 Mar 2022 18:27:26 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1648106846;
+        bh=Ykwf/vshyeQSeWYIdanCW8F3MhFuHqdkiAKQ5UwEhDE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=NNKdd5IYi7t54wWj+d4M6OcRrcyN0WEsn4wEehl7HjxBKF91DRM9zxLx+u3N+wdq7
+         60qTuU9KOPAXae4tzHSgfo7z6Fq8eXAFYjI5D2rPcoflD4sAYvYL9OjYp+iTZzDF2y
+         rmyv/92M9kuaVVdHusaejOjrwUxtsBBfJdWnPYR76eYERYXVfoYLGo9rcLmgjCdBhG
+         Hc69MCajX1OsLByABq+C4qAotT8kh4XtF2KiuijFWBnk5bT/CVocbxNFQHRI69+tV7
+         Yjceaby5FoxTuFMdNbV0aPHvBU8cZNaJ6OVYwfoPnA+Teh2oh49fHor1eu5sYsN3GK
+         X10ZSkeXcTxiQ==
+Date:   Thu, 24 Mar 2022 18:27:25 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Hugh Dickins <hughd@google.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build warnings after merge of the akpm-current tree
+Message-ID: <20220324182725.63a454e3@canb.auug.org.au>
+In-Reply-To: <20220209170245.08968c92@canb.auug.org.au>
+References: <20220209170245.08968c92@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/BYSkcCTydD1p6B7yTgN1zW8";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To move the list iterator variable into the list_for_each_entry_*()
-macro in the future it should be avoided to use the list iterator
-variable after the loop body.
+--Sig_/BYSkcCTydD1p6B7yTgN1zW8
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-To *never* use the list iterator variable after the loop it was
-concluded to use a separate iterator variable instead of a
-found boolean [1].
+Hi all,
 
-This removes the need to use a found variable and simply checking if
-the variable was set, can determine if the break/goto was hit.
+On Wed, 9 Feb 2022 17:02:45 +1100 Stephen Rothwell <sfr@canb.auug.org.au> w=
+rote:
+>=20
+> After merging the akpm-current tree, today's linux-next build (htmldocs)
+> produced these warnings:
+>=20
+> include/linux/mm_types.h:272: warning: Function parameter or member '__fi=
+ller' not described in 'folio'
+> include/linux/mm_types.h:272: warning: Function parameter or member 'mloc=
+k_count' not described in 'folio'
+>=20
+> Introduced by commit
+>=20
+>   60a5c5ab0ba7 ("mm/munlock: maintain page->mlock_count while unevictable=
+")
 
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
----
- drivers/thunderbolt/ctl.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+I am still getting these warnings.  That commit is now
 
-diff --git a/drivers/thunderbolt/ctl.c b/drivers/thunderbolt/ctl.c
-index 4986edfbdf67..e92c658dba1c 100644
---- a/drivers/thunderbolt/ctl.c
-+++ b/drivers/thunderbolt/ctl.c
-@@ -158,21 +158,20 @@ static bool tb_cfg_request_is_active(struct tb_cfg_request *req)
- static struct tb_cfg_request *
- tb_cfg_request_find(struct tb_ctl *ctl, struct ctl_pkg *pkg)
- {
--	struct tb_cfg_request *req;
--	bool found = false;
-+	struct tb_cfg_request *req = NULL, *iter;
- 
- 	mutex_lock(&pkg->ctl->request_queue_lock);
--	list_for_each_entry(req, &pkg->ctl->request_queue, list) {
--		tb_cfg_request_get(req);
--		if (req->match(req, pkg)) {
--			found = true;
-+	list_for_each_entry(iter, &pkg->ctl->request_queue, list) {
-+		tb_cfg_request_get(iter);
-+		if (iter->match(iter, pkg)) {
-+			req = iter;
- 			break;
- 		}
--		tb_cfg_request_put(req);
-+		tb_cfg_request_put(iter);
- 	}
- 	mutex_unlock(&pkg->ctl->request_queue_lock);
- 
--	return found ? req : NULL;
-+	return req;
- }
- 
- /* utility functions */
+  07ca76067308 ("mm/munlock: maintain page->mlock_count while unevictable")
 
-base-commit: f443e374ae131c168a065ea1748feac6b2e76613
--- 
-2.25.1
+in Linus' tree :-(
 
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/BYSkcCTydD1p6B7yTgN1zW8
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmI8HV0ACgkQAVBC80lX
+0Gw5Jwf/QxuaHq/Vhx4bTya1Tj/nimJNOlpk10Ievklf3ZX0R+ytC5y7tvvQXs6N
+zBHvuP+KQNOCUbckR79VxqFITlyA2Met2SWM5+Ook6Pwa67vV24RVu12l0Y/NPzz
+FtqxVfbkHkqiPRpXDIlLqQUxmX6v1y85d//gKxIIzumdLdfB9DJcTs+kbppqDRM+
+gHbX9SwE7w96pHEb4jJdkE1k/d9VxPgV6WEvw7xX3tNGFRjw65SbxmM9uT4zRS73
+V5Fy8KwkGWUos0je9aOqLYKaHeZXY8NW0C4SCoKaJIroAawwrY6dr333v6StPCwr
+JTmxbuAhz/sWf7sVXV0GyEsChbgxew==
+=mFkm
+-----END PGP SIGNATURE-----
+
+--Sig_/BYSkcCTydD1p6B7yTgN1zW8--
