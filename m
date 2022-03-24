@@ -2,116 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 979C4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 13:36:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DA53C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 13:38:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350471AbiCXNhl (ORCPT
+        id S1350502AbiCXNjo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 09:37:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59048 "EHLO
+        Thu, 24 Mar 2022 09:39:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344983AbiCXNhj (ORCPT
+        with ESMTP id S1346184AbiCXNjl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 09:37:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61557A8EEB
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 06:36:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E72A461378
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 13:36:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55B0BC340F3
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 13:36:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648128967;
-        bh=H1yVe7fzkO0/y1JjqU0c9Jl4rZ+MCGTqLHyYO6Uh5MU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=dHlwj9Uz5kPNUbJKWQmyWlCyVD8eT6pQHBgtzaEblnUHHyvKCMdUPVlCYcRwYZ0A/
-         K5A4Zfq4o1Pc8gmMyFMMzJMW/dda57f30B0E1Jn3FkuIlkiKBuGkJ/AFLjsFf8eISA
-         FsHwWBEIjhcUBt539ThP6v3L5kVC6Jbm7Nnx33pMvs9llKfD79prLkCf5QSaAisNea
-         6joHRM9vj9fWIsvwIGLapiSYa846qd8nBWDOJsThUq9PDF/IdPZ7WzlPOwpWyJwBYy
-         wJGvYeLSjcBfV4/9Bocc0EOaYbh0eiL67X5nU1zNhLNSMUwVeQ+aiRVpTEGU9necGU
-         MsOZ4/YEUvjxw==
-Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-de2cb87f6aso4911915fac.10
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 06:36:07 -0700 (PDT)
-X-Gm-Message-State: AOAM5329L4EhdrSEfUhXa1IAb0VFt4tly2uxFJwjJ4NonUpWktSjJnbf
-        MRnW80+SBh+AAGIdLp5BlRcMPpOezjiS/4FyhaE=
-X-Google-Smtp-Source: ABdhPJxOQXfjHu0ygYEA53tljUNFsMfu22U/5M60LmszJvI+WhERfoDbTaeOOcPe6q8GgRV0IcfVMHZzGsKgNpORFk4=
-X-Received: by 2002:a05:6870:b027:b0:de:7fcd:fabf with SMTP id
- y39-20020a056870b02700b000de7fcdfabfmr2484729oae.126.1648128966439; Thu, 24
- Mar 2022 06:36:06 -0700 (PDT)
+        Thu, 24 Mar 2022 09:39:41 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C4C228E04
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 06:38:08 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id v4so4757230pjh.2
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 06:38:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sudomaker-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=/sQV5rp+cw1wax1iRP0Va+YLBH7FLeLa8L9B5UtJM84=;
+        b=5C0v6M5Hca9omePnMbOPDpTfrC6UCYwPeyi8waSFJfu9um0WM6EYF/qIWVeK5AbbLF
+         wkZzp6EmIYdKs5gMZh1XNk47iQlsQ6zX5fntXSaFGB8DcHmIx28bwOtiRIuo5dC4+pqQ
+         l1W9DFCo7FFvwRLZi7jKhXI4YAfO3K/rFp6K+jWPQeuU5KTwWssrdLJ+V3kdXBJZAoim
+         cc/p4GjzFLFfwizcm5LzYkDpkcYWYpJkWiOJ4WhVkuC5hAN8JFYhzW4GeAXvSoH/BcU3
+         QJoDIXAw/8cfSVpOhVPSCP7VrjWofUsuatyWBjvKceUeGgf2sg/0iCbAnXGJ1Dj+KCU7
+         oNzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=/sQV5rp+cw1wax1iRP0Va+YLBH7FLeLa8L9B5UtJM84=;
+        b=lJmkOXL27Pj6IsUbZxXrQ34hnSJC2vuLR1M6c9uVC244MujM4KISLowFApYBWbtNE0
+         uVEv5GXP2hm8wjdzOi+l+ZmaVgNQQJXlfb9AD6hjP4LXfkQMrge/LBSmk6+BEFZRX5Sf
+         X90dc2XAia/z3L6yDqXVTvBeIShGONfJHceGazoSgUvWv63NNjOZrNp56rgHIfXs4Q0X
+         03/epaPjtKRxvZCqkudLOOv/X4egcKAOp1GUpyZOkRFkY1ynce4pc2g7oLl9gRZYKFZh
+         S1FAS4FbYNvQxtdxLsnY0kxN3LrGUj/yY4voKnYfgpoWHSfxpL0B5MVUCKeg5W/VSUg4
+         coHw==
+X-Gm-Message-State: AOAM5337lcKznFTVaY0mtId0iHOhVdGXGwCwu5f77gPk4IUxXWCeU57E
+        UiF5FlD7y7Bd0vxyropNQFSA1w==
+X-Google-Smtp-Source: ABdhPJz1XaJS5LG/TJcD0dYQ+F6zCb5Vf3z0cQhZ4l5Rv2149Mor9j9sUR8PwJik08KZjzFrZAQAWQ==
+X-Received: by 2002:a17:902:7888:b0:148:adf2:9725 with SMTP id q8-20020a170902788800b00148adf29725mr5824851pll.136.1648129088094;
+        Thu, 24 Mar 2022 06:38:08 -0700 (PDT)
+Received: from [172.16.24.11] ([91.219.212.226])
+        by smtp.gmail.com with ESMTPSA id x2-20020a63aa42000000b0038265eb2495sm2765064pgo.88.2022.03.24.06.38.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 24 Mar 2022 06:38:07 -0700 (PDT)
+Message-ID: <5c1f03d1-f72a-bc6b-92b4-927898aa3b2d@sudomaker.com>
+Date:   Thu, 24 Mar 2022 21:39:03 +0800
 MIME-Version: 1.0
-References: <20220315182558.1a056d8b3975932f6589b60f@kernel.org>
- <164733793626.1008610.12121025094280924953.stgit@devnote2>
- <20220324152108.b6016621dd6b8297eddd6bb5@kernel.org> <20220324222322.9f59df377b01856f2230a4ea@kernel.org>
- <CAMj1kXFtrogyse1MOF1KDBuYwtxNDvCu3rF=o7b__83Lu6Fj4A@mail.gmail.com>
-In-Reply-To: <CAMj1kXFtrogyse1MOF1KDBuYwtxNDvCu3rF=o7b__83Lu6Fj4A@mail.gmail.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Thu, 24 Mar 2022 14:35:54 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXGHbQq0dU1KwD4VJMMZ+LOhaXXvZC6anTGuX3KmT34tMw@mail.gmail.com>
-Message-ID: <CAMj1kXGHbQq0dU1KwD4VJMMZ+LOhaXXvZC6anTGuX3KmT34tMw@mail.gmail.com>
-Subject: Re: [PATCH] ARM: kprobes: Make __kretprobe_trampoline as a pure asm function
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>, kbuild-all@lists.01.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] pinctrl: Ingenic: Add missing UART2 group C for X1000/E
+Content-Language: en-US
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     linux-mips@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <ea710c27-00e9-065c-77a3-78e3c5f73ed3@sudomaker.com>
+ <3H099R.GNKMFWXCJG5U1@crapouillou.net>
+From:   Yunian Yang <reimu@sudomaker.com>
+In-Reply-To: <3H099R.GNKMFWXCJG5U1@crapouillou.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 24 Mar 2022 at 14:34, Ard Biesheuvel <ardb@kernel.org> wrote:
->
-> --- a/arch/arm/probes/kprobes/core.c
-> +++ b/arch/arm/probes/kprobes/core.c
-> @@ -377,7 +377,7 @@ void __naked __kprobes __kretprobe_trampoline(void)
->  {
->         __asm__ __volatile__ (
->  #ifdef CONFIG_FRAME_POINTER
-> -               "ldr    lr, =__kretprobe_trampoline     \n\t"
-> +               "ldr    lr, .L__kretprobe_trampoline    \n\t"
->         /* __kretprobe_trampoline makes a framepointer on pt_regs. */
->  #ifdef CONFIG_CC_IS_CLANG
->                 "stmdb  sp, {sp, lr, pc}        \n\t"
-> @@ -407,6 +407,11 @@ void __naked __kprobes __kretprobe_trampoline(void)
->                 "bx     lr                      \n\t"
->  #else
->                 "mov    pc, lr                  \n\t"
-> +#endif
-> +#ifdef CONFIG_FRAME_POINTER
-> +               ".align 2                       \n\t"
-> +       ".L__kretprobe_trampoline:              \n\t"
-> +               ".long  __kretprobe_trampoline  \n\t"
->  #endif
->                 : : : "memory");
->  }
->
->
+Hi Paul,
 
-Pardon the copy/paste error.
+Thank you for pointing this out. I sent the refined patch.
 
-> What about the below?
+On 3/24/22 20:10, Paul Cercueil wrote:
+> Hi Yunian,
+> 
+> Le jeu., mars 24 2022 at 20:04:41 +0800, Yunian Yang <reimu@sudomaker.com> a écrit :
+>> X1000/E has a third UART2 pin group selection, which uses the TDI(G2) as RX
+>> and TDO(G1) as TX. This configuration is becoming increasingly popular in
+>> newer core boards, such as the Halley2 v4.1. This is done by enabling
+>> function 1 of a "virtual pin" PC31. See section 19.3.3 of the X1000
+>> Programming Manual for details.
+>>
+>> Signed-off-by: Yunian Yang <reimu@sudomaker.com>
+>> ---
+>>  drivers/pinctrl/pinctrl-ingenic.c | 4 +++-
+>>  1 file changed, 3 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/pinctrl/pinctrl-ingenic.c b/drivers/pinctrl/pinctrl-ingenic.c
+>> index 2712f51eb238..29709059d62b 100644
+>> --- a/drivers/pinctrl/pinctrl-ingenic.c
+>> +++ b/drivers/pinctrl/pinctrl-ingenic.c
+>> @@ -1982,6 +1982,7 @@ static int x1000_uart1_data_a_pins[] = { 0x04, 0x05, };
+>>  static int x1000_uart1_data_d_pins[] = { 0x62, 0x63, };
+>>  static int x1000_uart1_hwflow_pins[] = { 0x64, 0x65, };
+>>  static int x1000_uart2_data_a_pins[] = { 0x02, 0x03, };
+>> +static int x1000_uart2_data_c_pins[] = { 0x5f, 0x5f, };
+> 
+> One should be enough.
+> 
+> Looks fine otherwise.
+> 
+> Cheers,
+> -Paul
+> 
+>>  static int x1000_uart2_data_d_pins[] = { 0x65, 0x64, };
+>>  static int x1000_sfc_data_pins[] = { 0x1d, 0x1c, 0x1e, 0x1f, };
+>>  static int x1000_sfc_clk_pins[] = { 0x1a, };
+>> @@ -2058,6 +2059,7 @@ static const struct group_desc x1000_groups[] = {
+>>         INGENIC_PIN_GROUP("uart1-data-d", x1000_uart1_data_d, 1),
+>>         INGENIC_PIN_GROUP("uart1-hwflow", x1000_uart1_hwflow, 1),
+>>         INGENIC_PIN_GROUP("uart2-data-a", x1000_uart2_data_a, 2),
+>> +       INGENIC_PIN_GROUP("uart2-data-c", x1000_uart2_data_c, 1),
+>>         INGENIC_PIN_GROUP("uart2-data-d", x1000_uart2_data_d, 0),
+>>         INGENIC_PIN_GROUP("sfc-data", x1000_sfc_data, 1),
+>>         INGENIC_PIN_GROUP("sfc-clk", x1000_sfc_clk, 1),
+>> @@ -2115,7 +2117,7 @@ static const char *x1000_uart0_groups[] = { "uart0-data", "uart0-hwflow", };
+>>  static const char *x1000_uart1_groups[] = {
+>>         "uart1-data-a", "uart1-data-d", "uart1-hwflow",
+>>  };
+>> -static const char *x1000_uart2_groups[] = { "uart2-data-a", "uart2-data-d", };
+>> +static const char *x1000_uart2_groups[] = { "uart2-data-a", "uart2-data-c", "uart2-data-d", };
+>>  static const char *x1000_sfc_groups[] = { "sfc-data", "sfc-clk", "sfc-ce", };
+>>  static const char *x1000_ssi_groups[] = {
+>>         "ssi-dt-a-22", "ssi-dt-a-29", "ssi-dt-d",
+>> -- 
+>> 2.30.2
+> 
+> 
 
-was meant to refer to the diff above.
-
-
-> On Thu, 24 Mar 2022 at 14:23, Masami Hiramatsu <mhiramat@kernel.org> wrote:
-> >
-> > On Thu, 24 Mar 2022 15:21:08 +0900
-> > Masami Hiramatsu <mhiramat@kernel.org> wrote:
-> >
-> > > Hi,
-> > >
-> > > I found a better solution for this issue from Ard :-)
-> > >
-> > > https://lore.kernel.org/all/20220203082204.1176734-6-ardb@kernel.org/T/#u
-> > >
-> > > I should use mov_l instead of ldr for loading the symbol address.
-> >
-> > Hm, these macros are only for the pure assembly file (.S), so we have to
-> > split this in a asm file to use that.
-> >
->
->
-> What about the below?
