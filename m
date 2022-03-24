@@ -2,158 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02EE6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 11:14:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3F73C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 11:14:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349711AbiCXLPu (ORCPT
+        id S1349712AbiCXLQV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 07:15:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57470 "EHLO
+        Thu, 24 Mar 2022 07:16:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349692AbiCXLPo (ORCPT
+        with ESMTP id S239751AbiCXLQT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 07:15:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2912872E2C
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 04:14:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648120452;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Lkor8/fgDn8C4k+CI3MJ8f7UXm4ww7ZYHLZLrk4A3Mg=;
-        b=SCfQPQsaP1trzlR4B1hEUTrYt7Ka1BXjuHeU4Vz2DsgTwEzsfOT+HxLYz1zT454m81Dnt0
-        K/zfjo7RAJnT43uNNwA8+VIhVpWzvGXpCuI804Tpz/VlVVt42SCtxkM+JkOolcYP2JyzBh
-        ioGKq8FJZ6ZSboYatX5Gyhic4TbCkZk=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-563-RR2YE1LdM72fscDxndmEmQ-1; Thu, 24 Mar 2022 07:14:07 -0400
-X-MC-Unique: RR2YE1LdM72fscDxndmEmQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 87E482A2AD44;
-        Thu, 24 Mar 2022 11:14:06 +0000 (UTC)
-Received: from starship (unknown [10.40.194.231])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2F9869D46;
-        Thu, 24 Mar 2022 11:13:58 +0000 (UTC)
-Message-ID: <bd33f54dce24c145470cc1dbcdc3074f0f53cc67.camel@redhat.com>
-Subject: Re: [RFCv2 PATCH 04/12] KVM: SVM: Update max number of vCPUs
- supported for x2AVIC mode
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
-        jon.grimm@amd.com, wei.huang2@amd.com, terry.bowman@amd.com
-Date:   Thu, 24 Mar 2022 13:13:57 +0200
-In-Reply-To: <20220308163926.563994-5-suravee.suthikulpanit@amd.com>
-References: <20220308163926.563994-1-suravee.suthikulpanit@amd.com>
-         <20220308163926.563994-5-suravee.suthikulpanit@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Thu, 24 Mar 2022 07:16:19 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC8219F6C8;
+        Thu, 24 Mar 2022 04:14:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648120487; x=1679656487;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=82T1//IDxRxWMoKx8jXyzu8qZyLKygsREbSeX2E2PMA=;
+  b=jltTZbK5SuOJnc7mZDr4RSP8jJWju0AcCNLisFii5n3n/f3NDDclPeSQ
+   cczdu1oPQdO3ztM7k4bwEPATbzvFhZnUHgqTRLwbSWaiIXC0Ha6JrBsPU
+   7p6d8ajmBjcBFsfqbpx9mbOjnw1kknBT6KY5bCs0hJD0f4M0ftjGAYuHe
+   GsOYQ8VWto2G3Fy6gpxWCMH1S+lZGPugTJkp0Te3OmsRjrHZan4j6NQu8
+   86Uv5C0P3vyGV6ks4FvtxQVn5hDsXE6Js7kKIS39JSRSvqRMi7p40BVlK
+   qeEs5zcWiwQRYJ42E1kN6VRr7Cs3vjNYy+nJiN/qVowoBk3yy0u/ggkzQ
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="258302716"
+X-IronPort-AV: E=Sophos;i="5.90,207,1643702400"; 
+   d="scan'208";a="258302716"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 04:14:41 -0700
+X-IronPort-AV: E=Sophos;i="5.90,207,1643702400"; 
+   d="scan'208";a="519742130"
+Received: from zq-optiplex-7090.bj.intel.com ([10.238.156.125])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 04:14:39 -0700
+From:   Zqiang <qiang1.zhang@intel.com>
+To:     paulmck@kernel.org, frederic@kernel.org, quic_neeraju@quicinc.com
+Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] rcu: Check the validity of the boost_kthread_task pointer
+Date:   Thu, 24 Mar 2022 19:15:15 +0800
+Message-Id: <20220324111515.1810160-1-qiang1.zhang@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-03-08 at 10:39 -0600, Suravee Suthikulpanit wrote:
-> xAVIC and x2AVIC modes can support diffferent number of vcpus.
-> Update existing logics to support each mode accordingly.
-> 
-> Also, modify the maximum physical APIC ID for AVIC to 255 to reflect
-> the actual value supported by the architecture.
-> 
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> ---
->  arch/x86/include/asm/svm.h | 12 +++++++++---
->  arch/x86/kvm/svm/avic.c    |  8 +++++---
->  2 files changed, 14 insertions(+), 6 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/svm.h b/arch/x86/include/asm/svm.h
-> index 7a7a2297165b..681a348a9365 100644
-> --- a/arch/x86/include/asm/svm.h
-> +++ b/arch/x86/include/asm/svm.h
-> @@ -250,10 +250,16 @@ enum avic_ipi_failure_cause {
->  
->  
->  /*
-> - * 0xff is broadcast, so the max index allowed for physical APIC ID
-> - * table is 0xfe.  APIC IDs above 0xff are reserved.
-> + * For AVIC, the max index allowed for physical APIC ID
-> + * table is 0xff (255).
->   */
-> -#define AVIC_MAX_PHYSICAL_ID_COUNT	0xff
-This should be 0xFE, since index 0xFF is reserved in AVIC mode.
-It used to work because (see below) check used to be '>=',
-but I do like that you switched to '>' check instead.
+The boost kthreads may spawn failed, although the probability of
+creation failure is very low, in consideration of the robustness
+of the code, add boost_kthread_task pointer detection.
 
+Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+---
+ kernel/rcu/tree_plugin.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-> +#define AVIC_MAX_PHYSICAL_ID		0XFFULL
-> +
-> +/*
-> + * For x2AVIC, the max index allowed for physical APIC ID
-> + * table is 0x1ff (511).
-> + */
-> +#define X2AVIC_MAX_PHYSICAL_ID		0x1FFUL
-
-
->  
->  #define AVIC_HPA_MASK	~((0xFFFULL << 52) | 0xFFF)
->  #define VMCB_AVIC_APIC_BAR_MASK		0xFFFFFFFFFF000ULL
-> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-> index 49b185f0d42e..f128b0189d4a 100644
-> --- a/arch/x86/kvm/svm/avic.c
-> +++ b/arch/x86/kvm/svm/avic.c
-> @@ -183,7 +183,7 @@ void avic_init_vmcb(struct vcpu_svm *svm)
->  	vmcb->control.avic_backing_page = bpa & AVIC_HPA_MASK;
->  	vmcb->control.avic_logical_id = lpa & AVIC_HPA_MASK;
->  	vmcb->control.avic_physical_id = ppa & AVIC_HPA_MASK;
-> -	vmcb->control.avic_physical_id |= AVIC_MAX_PHYSICAL_ID_COUNT;
-> +	vmcb->control.avic_physical_id |= AVIC_MAX_PHYSICAL_ID;
->  	vmcb->control.avic_vapic_bar = APIC_DEFAULT_PHYS_BASE & VMCB_AVIC_APIC_BAR_MASK;
->  
->  	if (kvm_apicv_activated(svm->vcpu.kvm))
-> @@ -198,7 +198,8 @@ static u64 *avic_get_physical_id_entry(struct kvm_vcpu *vcpu,
->  	u64 *avic_physical_id_table;
->  	struct kvm_svm *kvm_svm = to_kvm_svm(vcpu->kvm);
->  
-> -	if (index >= AVIC_MAX_PHYSICAL_ID_COUNT)
-This is the check I am talking about
-
-> +	if ((avic_mode == AVIC_MODE_X1 && index > AVIC_MAX_PHYSICAL_ID) ||
-> +	    (avic_mode == AVIC_MODE_X2 && index > X2AVIC_MAX_PHYSICAL_ID))
->  		return NULL;
-
-I would probably like to ask to move this check to a function,
-but I see that avic_get_physical_id_entry is only used in avic_handle_apic_id_update
-in addition to avic_init_backing_page which has this check,
-and I will sooner or later remove the anywat broken avic_handle_apic_id_update and
-inline the avic_get_physical_id_entry probably so no need to do this.
-
->  
->  	avic_physical_id_table = page_address(kvm_svm->avic_physical_id_table_page);
-> @@ -245,7 +246,8 @@ static int avic_init_backing_page(struct kvm_vcpu *vcpu)
->  	int id = vcpu->vcpu_id;
->  	struct vcpu_svm *svm = to_svm(vcpu);
->  
-> -	if (id >= AVIC_MAX_PHYSICAL_ID_COUNT)
-> +	if ((avic_mode == AVIC_MODE_X1 && id > AVIC_MAX_PHYSICAL_ID) ||
-> +	    (avic_mode == AVIC_MODE_X2 && id > X2AVIC_MAX_PHYSICAL_ID))
->  		return -EINVAL;
-
-
->  
->  	if (!vcpu->arch.apic->regs)
-
-
-So except the off-by-one error in AVIC_MAX_PHYSICAL_ID_COUNT:
-
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-
-Best regards,
-	Maxim Levitsky
+diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
+index 6b9bcd45c7b2..fd642f14f31f 100644
+--- a/kernel/rcu/tree_plugin.h
++++ b/kernel/rcu/tree_plugin.h
+@@ -1125,7 +1125,8 @@ static void rcu_initiate_boost(struct rcu_node *rnp, unsigned long flags)
+ 	__releases(rnp->lock)
+ {
+ 	raw_lockdep_assert_held_rcu_node(rnp);
+-	if (!rcu_preempt_blocked_readers_cgp(rnp) && rnp->exp_tasks == NULL) {
++	if (!rnp->boost_kthread_task ||
++			(!rcu_preempt_blocked_readers_cgp(rnp) && rnp->exp_tasks == NULL)) {
+ 		raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
+ 		return;
+ 	}
+-- 
+2.25.1
 
