@@ -2,72 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40690C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 09:39:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49132C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 09:40:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349287AbiCXJki (ORCPT
+        id S1349302AbiCXJla convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 05:40:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47072 "EHLO
+        Thu, 24 Mar 2022 05:41:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235708AbiCXJkg (ORCPT
+        with ESMTP id S235708AbiCXJl2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 05:40:36 -0400
-Received: from m12-11.163.com (m12-11.163.com [220.181.12.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AC1EA3B2B6
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 02:39:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=Fj18xbrLORt0+H0IrJ
-        pnPpEvXa/QkSFc+cbAzNAcUnk=; b=Hw/rnSvsruhki0fAY1KK6s/rTCVy9vOK1T
-        L0Za/aUCSwA8zzg0Ub6iPBVuurlyFZQlRiOoFxioOCDj+FF0LWe/DIaBmiU4YO/D
-        APfqWpnyEIgyXL9y9vwXJLUWrviXUyI5Szcj0PRg7CoKzxXZgR356Z2OU2Fe78GG
-        TaSuRctMw=
-Received: from localhost (unknown [159.226.95.33])
-        by smtp7 (Coremail) with SMTP id C8CowAAHBI4GPDxit6YIEA--.9600S2;
-        Thu, 24 Mar 2022 17:38:14 +0800 (CST)
-From:   QintaoShen <unSimple1993@163.com>
-To:     herbert@gondor.apana.org.au
-Cc:     davem@davemloft.net, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, QintaoShen <unSimple1993@163.com>
-Subject: [PATCH v1] crypto: stm32: Check for NULL return of kmalloc_array()
-Date:   Thu, 24 Mar 2022 17:38:12 +0800
-Message-Id: <1648114692-11175-1-git-send-email-unSimple1993@163.com>
-X-Mailer: git-send-email 2.7.4
-X-CM-TRANSID: C8CowAAHBI4GPDxit6YIEA--.9600S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrZw1rZry5tr1rZw1kJFyfCrg_yoWfZwc_CF
-        18Wr97W34jv392yrsFq393XryYqr4fZ3s29a90yF13t345Z3yfW3WxWrZxAF43C3y8K3W8
-        C3WxCry2yr17XjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7VUUpRRPUUUUU==
-X-Originating-IP: [159.226.95.33]
-X-CM-SenderInfo: 5xqvxz5sohimizt6il2tof0z/1tbiNBvNH1aD-KvjPQABsg
+        Thu, 24 Mar 2022 05:41:28 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FD765520C
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 02:39:57 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1nXJwa-0005UZ-UH; Thu, 24 Mar 2022 10:39:48 +0100
+Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1nXJwX-002fNY-31; Thu, 24 Mar 2022 10:39:47 +0100
+Received: from pza by lupine with local (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1nXJwZ-00038f-6M; Thu, 24 Mar 2022 10:39:47 +0100
+Message-ID: <3cfc4346d314dbb297841a9caf4e68661013016c.camel@pengutronix.de>
+Subject: Re: [PATCH 2/2] reset: add support for fwnode
+From:   Philipp Zabel <p.zabel@pengutronix.de>
+To:     =?ISO-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Date:   Thu, 24 Mar 2022 10:39:47 +0100
+In-Reply-To: <20220324101929.00f51f01@fixe.home>
+References: <20220323095022.453708-1-clement.leger@bootlin.com>
+         <20220323095022.453708-3-clement.leger@bootlin.com>
+         <ba95a3fec9c726e2cd61665ac5d7f89d16232d60.camel@pengutronix.de>
+         <20220323172121.220a26e9@fixe.home> <20220324101929.00f51f01@fixe.home>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.38.3-1 
+MIME-Version: 1.0
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: p.zabel@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the potential failure of memory allocation, kmalloc_array() may return
-NULL and lead to NULL pointer dereference because of the usage of 'rctx->hw_context'.
+Hi Clément,
 
-Therefore, it is better to check the return value of kmalloc_array().
+On Do, 2022-03-24 at 10:19 +0100, Clément Léger wrote:
+> Le Wed, 23 Mar 2022 17:21:21 +0100,
+> Clément Léger <clement.leger@bootlin.com> a écrit :
+> 
+> > > >         if (id) {
+> > > > -               index = of_property_match_string(node,
+> > > > -                                                "reset-names",
+> > > > id);
+> > > > +               index = fwnode_property_match_string(fwnode,
+> > > > "reset-names", id);
+> > > >                 if (index == -EILSEQ)
+> > > >                         return ERR_PTR(index);    
+> > > 
+> > > I don't think this is good enough any more. At least -ENOMEM is added
+> > > as a possible error return code by this change.  
+> > 
+> > Yes indeed, errors are clearly not correctly handled anymore. At least
+> > -EILSEQ won't be triggered.
+> > > 
+> 
+> By the way, even after looking at this more carefully, I'm not sure to
+> understand why there is a special handling for -EILSEQ ? From what I
+> understand, EILSEQ is returned in case the device tree is malformed
+> (string longer than returned property length) but why is it handled
+> differently in this case ?
 
-Signed-off-by: QintaoShen <unSimple1993@163.com>
----
- drivers/crypto/stm32/stm32-hash.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+of_property_match_string() can return four error codes:
 
-diff --git a/drivers/crypto/stm32/stm32-hash.c b/drivers/crypto/stm32/stm32-hash.c
-index d33006d..f1a1a13 100644
---- a/drivers/crypto/stm32/stm32-hash.c
-+++ b/drivers/crypto/stm32/stm32-hash.c
-@@ -970,7 +970,8 @@ static int stm32_hash_export(struct ahash_request *req, void *out)
- 	rctx->hw_context = kmalloc_array(3 + HASH_CSR_REGISTER_NUMBER,
- 					 sizeof(u32),
- 					 GFP_KERNEL);
--
-+	if (!rctx->hw_context)
-+		return -ENOMEM;
- 	preg = rctx->hw_context;
- 
- 	*preg++ = stm32_hash_read(hdev, HASH_IMR);
--- 
-2.7.4
+  -EINVAL (no reset-names property in node)
+  -EILSEQ (real error)
+  -ENODATA (id is not found in reset-names)
+  -ENOSYS (CONFIG_OF is not set)
 
+-EINVAL, -ENODATA and -ENOSYS map to -ENOENT (no reset control
+corresponding to id found), or no error if it is optional.
+
+regards
+Philipp
