@@ -2,300 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02739C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 12:19:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27000C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 12:19:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350095AbiCXMUt (ORCPT
+        id S1349788AbiCXMVS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 08:20:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53650 "EHLO
+        Thu, 24 Mar 2022 08:21:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350142AbiCXMUX (ORCPT
+        with ESMTP id S1350105AbiCXMUv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 08:20:23 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B9D53C721;
-        Thu, 24 Mar 2022 05:18:44 -0700 (PDT)
+        Thu, 24 Mar 2022 08:20:51 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0BD54991A
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 05:19:11 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id b130so2261658pga.13
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 05:19:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1648124324; x=1679660324;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=vaze49NlQFVnq6WSQPfu59MJJlPPke3jEqk0/bvhPKU=;
-  b=mWz/ii+RBZGZlRVf4snYUNOZY3oFOg/nF/UMtM1RckK2dLoQi4qT4jvA
-   CajuEHJkHLx4KpMAa/zbDuoPOdxNykSaLtRSvEIJZCSMj37+P5isv00fP
-   RfcqrUwVS2V9WzZ9rwj08X7+Emc0EJv8z3cGRnO/7Ntz/c2AVPQpS0Bt7
-   4=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 24 Mar 2022 05:18:44 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 05:18:43 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 24 Mar 2022 05:18:43 -0700
-Received: from jinlmao-gv.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 24 Mar 2022 05:18:39 -0700
-From:   Mao Jinlong <quic_jinlmao@quicinc.com>
-To:     Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>
-CC:     Mao Jinlong <quic_jinlmao@quicinc.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <coresight@lists.linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Tingwei Zhang <quic_tingweiz@quicinc.com>,
-        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
-        Tao Zhang <quic_taozha@quicinc.com>,
-        Trilok Soni <quic_tsoni@quicinc.com>,
-        Hao Zhang <quic_hazha@quicinc.com>,
-        <linux-arm-msm@vger.kernel.org>
-Subject: [PATCH v4 10/10] ARM: dts: msm: Add tpdm mm/prng for sm8250
-Date:   Thu, 24 Mar 2022 20:17:34 +0800
-Message-ID: <20220324121734.21531-11-quic_jinlmao@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220324121734.21531-1-quic_jinlmao@quicinc.com>
-References: <20220324121734.21531-1-quic_jinlmao@quicinc.com>
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=PSVqUGYCB8wbqp0p5VdHcycQRYblcQrceG961CbBc2A=;
+        b=xv7UNuh3P/pCkD30Cn5aiI+Z9Q2ToAUx3HRW9MfmVNyc2NW9JgXCpNq5u8S36zmwV6
+         UJE5E55gp9RnS8Z5ITwrEq197emD7plU9KYuvosCZHibQGUSyT2OQ6PCjjINl5bwPIzk
+         Ft49iIISlZ26bjImBo2TmZVBgqPQvnZl0HNjDHaogXWcE4lw4KafLyWbfit4ON8Atwco
+         qoh1ALKl1zhdm83knImVa6l3NuN6sx5OpVf3yWm/89XOFFwb2JwLuFS6SGNlUYpKYhYF
+         TrJZF9xQtlONhf/CcyIlX/XCr4cErV81Oc3HzdqYM1RIiZC21XQaS+z39VMGpbotdnmD
+         E8cA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=PSVqUGYCB8wbqp0p5VdHcycQRYblcQrceG961CbBc2A=;
+        b=sbIB9U5XyO2wHh25Of0XnwDdpVtVBH/1v5V4IEL9SvUOSWCsDhF3jiil136QrXaCbE
+         GOGomDQ4v7Y90STQopIZ+th8dmsRlOsSwGMiMhEsxaBSEi1xrI5scjZSEftUkDOEPU2I
+         7B5h4tSRpKyyIU1W1jaDXoHyzIZL+gXZ6dtWV3SfHW4pzzKeBL39/rothk/hiVOniXfX
+         Fyh+qzm1o39ZAaldWswkv6bV7KMBQezhmuGySRuq05/iRNqm/gUkLDJ8LbQpAs5CSBmL
+         zwQK3BhhzL2lA0OLe87OulTifpnhCvdGLTOIC/Zj/95xNcQLq5rmyumchXVhRmNnJmv6
+         xTnQ==
+X-Gm-Message-State: AOAM530JH2i6JsOiWwUMibJYvcdLdUsYgcnye8ZCUHLz2LhYfAgWd6W6
+        q4bZXG+f//Dmt/WFrboOH+x4
+X-Google-Smtp-Source: ABdhPJyuUdBVtlvKFXLN8XVaL5WdsI//XFeIzHjYqFdNJyAuyLqrhdizNaHwxYMYlooEtPQQZLslCQ==
+X-Received: by 2002:a63:753:0:b0:385:fe06:eb86 with SMTP id 80-20020a630753000000b00385fe06eb86mr3790923pgh.132.1648124351146;
+        Thu, 24 Mar 2022 05:19:11 -0700 (PDT)
+Received: from thinkpad ([220.158.158.107])
+        by smtp.gmail.com with ESMTPSA id p12-20020a63ab0c000000b00381f7577a5csm2428626pgf.17.2022.03.24.05.19.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Mar 2022 05:19:10 -0700 (PDT)
+Date:   Thu, 24 Mar 2022 17:49:05 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Frank Li <Frank.Li@nxp.com>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 08/12] PCI: dwc: Discard IP-core version checking on
+ unrolled iATU detection
+Message-ID: <20220324121905.GH2854@thinkpad>
+References: <20220324012524.16784-1-Sergey.Semin@baikalelectronics.ru>
+ <20220324012524.16784-9-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220324012524.16784-9-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add tpdm mm and tpdm prng for sm8250.
+On Thu, Mar 24, 2022 at 04:25:19AM +0300, Serge Semin wrote:
+> It's pretty much pointless. Even though unrolled version of the internal
+> ATU has been indeed available since DWC PCIe v4.80a IP-core, there is no
+> guarantee it was enabled during the IP-core configuration (Synopsys
+> suggests to contact the Solvnet support for guidance of how to do that for
+> the newer IP-cores). So the only reliable way to find out the unrolled
+> iATU feature availability is indeed to check the iATU viewport register
+> content. In accordance with the reference manual [1] if the register
+> doesn't exist (unrolled iATU is enabled) it's content is fixed with
+> 0xff-s, otherwise it will contain some zeros. So we can freely drop the
+> IP-core version checking in this matter then and use the
+> dw_pcie_iatu_unroll_enabled() method only to detect whether iATU/eDMA
+> space is unrolled.
+> 
+> [1] DesignWare Cores, PCI Express Controller, Register Desciptions,
+> v.4.90a, December 2016, p.855
+> 
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-+---------------+                +-------------+
-|  tpdm@6c08000 |                |tpdm@684C000 |
-+-------|-------+                +------|------+
-        |                               |
-+-------|-------+                       |
-| funnel@6c0b000|                       |
-+-------|-------+                       |
-        |                               |
-+-------|-------+                       |
-|funnel@6c2d000 |                       |
-+-------|-------+                       |
-        |                               |
-        |    +---------------+          |
-        +----- tpda@6004000  -----------+
-             +-------|-------+
-                     |
-             +-------|-------+
-             |funnel@6005000 |
-             +---------------+
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
----
- .../arm64/boot/dts/qcom/sm8250-coresight.dtsi | 182 ++++++++++++++++++
- 1 file changed, 182 insertions(+)
+Thanks,
+Mani
 
-diff --git a/arch/arm64/boot/dts/qcom/sm8250-coresight.dtsi b/arch/arm64/boot/dts/qcom/sm8250-coresight.dtsi
-index 1de42fd39248..9c710b69a804 100644
---- a/arch/arm64/boot/dts/qcom/sm8250-coresight.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8250-coresight.dtsi
-@@ -44,6 +44,14 @@
- 			#address-cells = <1>;
- 			#size-cells = <0>;
- 
-+			port@6 {
-+				reg = <6>;
-+				funnel_in0_in_funnel_qatb: endpoint {
-+					remote-endpoint =
-+						<&funnel_qatb_out_funnel_in0>;
-+				};
-+			};
-+
- 			port@7 {
- 				reg = <7>;
- 				funnel0_in7: endpoint {
-@@ -523,4 +531,178 @@
- 			};
- 		};
- 	};
-+
-+	tpdm@6c08000 {
-+		compatible = "arm,primecell";
-+		reg = <0 0x6c08000 0 0x1000>;
-+		reg-names = "tpdm-base";
-+
-+		clocks = <&aoss_qmp>;
-+		clock-names = "apb_pclk";
-+
-+		out-ports {
-+			port {
-+				tpdm_mm_out_funnel_dl_mm: endpoint {
-+					remote-endpoint =
-+						<&funnel_dl_mm_in_tpdm_mm>;
-+				};
-+			};
-+		};
-+	};
-+
-+	funnel@6c0b000 {
-+		compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
-+
-+		reg = <0 0x6c0b000 0 0x1000>;
-+		reg-names = "funnel-base";
-+
-+		clocks = <&aoss_qmp>;
-+		clock-names = "apb_pclk";
-+
-+		out-ports {
-+			port {
-+				funnel_dl_mm_out_funnel_dl_center: endpoint {
-+					remote-endpoint =
-+					  <&funnel_dl_center_in_funnel_dl_mm>;
-+				};
-+			};
-+		};
-+
-+		in-ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@3 {
-+				reg = <3>;
-+				funnel_dl_mm_in_tpdm_mm: endpoint {
-+					remote-endpoint =
-+					    <&tpdm_mm_out_funnel_dl_mm>;
-+				};
-+			};
-+		};
-+	};
-+
-+	funnel@6c2d000 {
-+		compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
-+
-+		reg = <0 0x6c2d000 0 0x1000>;
-+		reg-names = "funnel-base";
-+
-+		clocks = <&aoss_qmp>;
-+		clock-names = "apb_pclk";
-+
-+		out-ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			port {
-+				tpdm_mm_out_tpda9: endpoint {
-+					remote-endpoint =
-+					    <&tpda_9_in_tpdm_mm>;
-+				};
-+			};
-+		};
-+
-+		in-ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@2 {
-+				reg = <2>;
-+				funnel_dl_center_in_funnel_dl_mm: endpoint {
-+					remote-endpoint =
-+					<&funnel_dl_mm_out_funnel_dl_center>;
-+				};
-+			};
-+		};
-+	};
-+
-+	tpdm@684C000 {
-+		compatible = "arm,primecell";
-+		reg = <0 0x684C000 0 0x1000>;
-+		reg-names = "tpdm-base";
-+
-+		clocks = <&aoss_qmp>;
-+		clock-names = "apb_pclk";
-+
-+		out-ports {
-+			port {
-+				tpdm_prng_out_tpda_23: endpoint {
-+					remote-endpoint =
-+						<&tpda_23_in_tpdm_prng>;
-+				};
-+			};
-+		};
-+	};
-+
-+	tpda@6004000 {
-+		compatible = "arm,primecell";
-+		reg = <0 0x6004000 0 0x1000>;
-+		reg-names = "tpda-base";
-+
-+		clocks = <&aoss_qmp>;
-+		clock-names = "apb_pclk";
-+
-+		out-ports {
-+			port {
-+				reg = <0>;
-+				tpda_out_funnel_qatb: endpoint {
-+					remote-endpoint =
-+						<&funnel_qatb_in_tpda>;
-+				};
-+			};
-+		};
-+
-+		in-ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@9 {
-+				reg = <9>;
-+				tpda_9_in_tpdm_mm: endpoint {
-+					remote-endpoint =
-+						<&tpdm_mm_out_tpda9>;
-+				};
-+			};
-+
-+			port@23 {
-+				reg = <23>;
-+				tpda_23_in_tpdm_prng: endpoint {
-+					remote-endpoint =
-+						<&tpdm_prng_out_tpda_23>;
-+				};
-+			};
-+		};
-+	};
-+
-+	funnel@6005000 {
-+		compatible = "arm,primecell";
-+
-+		reg = <0 0x6005000 0 0x1000>;
-+		reg-names = "funnel-base";
-+
-+		clocks = <&aoss_qmp>;
-+		clock-names = "apb_pclk";
-+
-+		out-ports {
-+			port {
-+				funnel_qatb_out_funnel_in0: endpoint {
-+					remote-endpoint =
-+						<&funnel_in0_in_funnel_qatb>;
-+				};
-+			};
-+		};
-+
-+		in-ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@0 {
-+				reg = <0>;
-+				funnel_qatb_in_tpda: endpoint {
-+					remote-endpoint =
-+						<&tpda_out_funnel_qatb>;
-+				};
-+			};
-+		};
-+	};
- };
--- 
-2.17.1
-
+> ---
+>  drivers/pci/controller/dwc/pcie-designware.c | 11 +++++------
+>  1 file changed, 5 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
+> index 3bd1cfd12148..e3d2c11e6998 100644
+> --- a/drivers/pci/controller/dwc/pcie-designware.c
+> +++ b/drivers/pci/controller/dwc/pcie-designware.c
+> @@ -600,15 +600,15 @@ static void dw_pcie_link_set_max_speed(struct dw_pcie *pci, u32 link_gen)
+>  
+>  }
+>  
+> -static u8 dw_pcie_iatu_unroll_enabled(struct dw_pcie *pci)
+> +static bool dw_pcie_iatu_unroll_enabled(struct dw_pcie *pci)
+>  {
+>  	u32 val;
+>  
+>  	val = dw_pcie_readl_dbi(pci, PCIE_ATU_VIEWPORT);
+>  	if (val == 0xffffffff)
+> -		return 1;
+> +		return true;
+>  
+> -	return 0;
+> +	return false;
+>  }
+>  
+>  static void dw_pcie_iatu_detect_regions_unroll(struct dw_pcie *pci)
+> @@ -680,9 +680,8 @@ void dw_pcie_iatu_detect(struct dw_pcie *pci)
+>  	struct device *dev = pci->dev;
+>  	struct platform_device *pdev = to_platform_device(dev);
+>  
+> -	if (pci->version >= 0x480A || (!pci->version &&
+> -				       dw_pcie_iatu_unroll_enabled(pci))) {
+> -		pci->iatu_unroll_enabled = true;
+> +	pci->iatu_unroll_enabled = dw_pcie_iatu_unroll_enabled(pci);
+> +	if (pci->iatu_unroll_enabled) {
+>  		if (!pci->atu_base) {
+>  			struct resource *res =
+>  				platform_get_resource_byname(pdev, IORESOURCE_MEM, "atu");
+> -- 
+> 2.35.1
+> 
