@@ -2,107 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEECBC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 05:31:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEA9FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 05:31:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347485AbiCXFc5 (ORCPT
+        id S1347697AbiCXFdY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 01:32:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41684 "EHLO
+        Thu, 24 Mar 2022 01:33:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347117AbiCXFcz (ORCPT
+        with ESMTP id S1347608AbiCXFdU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 01:32:55 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01DF290FCA
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 22:31:24 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id mm17-20020a17090b359100b001c6da62a559so8471097pjb.3
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 22:31:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QipneOKTQA94tj99xDqNJKu1O2H8ssVgZVHFopSbC+M=;
-        b=C5mGlEIKX4AWJlHVpauTVvB1V3nbesh9rYgkVht4cmoudIeXr83jAVOCcnuKjdxCj3
-         ll6uI1LWyqz3e65iD7SYEM8zrl5aYpvlCJ6TGQwUXDcbAAoidQNq5iTUKrs8n0g67oaw
-         Plp3VhPSPaz/Za9aKPahuqpkO327MUBmFDn9gaHk7o2EmdtCcHLG47R7o11CLVeV+0Lz
-         UdXdh7WdHp0vZI07iDNxk4lqGsgOWSKxBkYf/vGfvVaEmj5jOkRMy+OC8/a8J5qAw09p
-         ifCLQBeNwtED603uCRuD1ackl/Jnt9fzxJJBw9Artkzm7vuiTc5Sob1SXiHu5bHfDpuG
-         8ksA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QipneOKTQA94tj99xDqNJKu1O2H8ssVgZVHFopSbC+M=;
-        b=KVnKISRFnMeiDqxDOcFbCwQP2lBD5JUb0ASNRYell9QCdsgNFXDaODYcmO3BDMN9Sz
-         q8mBlgPGrU1DqRr1JcWEbylgatokJrvN0az5Eu8Qis1lMVlTaj1xhPCD26fe/+J/S0SD
-         iFro1nLghEtsfH5i8ETrwULMwI1THWL+t/3+PcXunz75lnonUArv+q1/g7FF5bEsmsO0
-         BniUb9iK0rFjq3f0yyfMmUkRxj7vfWGmWtwWqsk6tvIl01Gh8lQDpnDKybqvO1kfIeSx
-         KFZwwQabbm8kxHAif0vtQRxngkn3yfklnuQwbPzv3XE7HIU5W6uzAvz+30QBUgr/uf4i
-         JncQ==
-X-Gm-Message-State: AOAM5304bmlEarRIJUl54t8QWgIn0NoZRp2gYFlhN7T0J9Q7rPPG9O/C
-        5shsEJ7K8w0r9/mc2bTAJ4MVS7+KOCUjMw==
-X-Google-Smtp-Source: ABdhPJzJ23XG52EA/bmvEIHgik5fGswJ/31WIMHu5gBxwc/4KUviZwOOxTxAZQRkGfjJNyveMriTjA==
-X-Received: by 2002:a17:903:281:b0:14c:f3b3:209b with SMTP id j1-20020a170903028100b0014cf3b3209bmr3906079plr.87.1648099883419;
-        Wed, 23 Mar 2022 22:31:23 -0700 (PDT)
-Received: from localhost.localdomain ([122.171.187.87])
-        by smtp.gmail.com with ESMTPSA id c4-20020a056a00248400b004faad8c81bcsm1705069pfv.127.2022.03.23.22.31.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Mar 2022 22:31:22 -0700 (PDT)
-From:   Anup Patel <apatel@ventanamicro.com>
-To:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>
-Cc:     Atish Patra <atishp@atishpatra.org>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        Anup Patel <anup@brainfault.org>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Anup Patel <apatel@ventanamicro.com>
-Subject: [PATCH v2] RISC-V: Enable profiling by default
-Date:   Thu, 24 Mar 2022 11:00:20 +0530
-Message-Id: <20220324053020.606637-1-apatel@ventanamicro.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 24 Mar 2022 01:33:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1990D939D3;
+        Wed, 23 Mar 2022 22:31:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BBFF60B9F;
+        Thu, 24 Mar 2022 05:31:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2ADCC340ED;
+        Thu, 24 Mar 2022 05:31:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648099908;
+        bh=os3bm1B2+FNVW3MQRQJTczNi5tPtYTNSYb1u5n5+Apw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hH8hJWP0lJsoooAnsNX6zSq+ru8/kCxQ3oPMdMR+x0uCk72onSADEaP3uTuMklLKk
+         87aVKBPtJ6o62+R73lvWg+JluUygONSnk5/tTAguXpF+d35PiASgWRuM0XwJlhVs6s
+         SmA5N4hpRq5Mk9g13ZGU/izk6bAMDM39WT6E+smdOI+9/wTI1JxPtGn8y4Cq+dH+jM
+         n2boLHvF3DHaItvXLr8OdYfjRdetVC727I8utvSlWUctlnLMf/wxDVTLDVCRrzS7/V
+         c4x0YYwwmSKaxjwEaa4yE2iMVaEa1aiiaOYNeXP60HT7sVZuKRCyDqeFnOi6YJMdCA
+         1JDZC5IaizckA==
+Date:   Wed, 23 Mar 2022 22:31:47 -0700
+From:   "Darrick J. Wong" <djwong@kernel.org>
+To:     Chandan Babu R <chandanrlinux@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
+        lkp@intel.com, xfs <linux-xfs@vger.kernel.org>,
+        fstests <fstests@vger.kernel.org>,
+        Oliver Sang <oliver.sang@intel.com>
+Subject: Re: [xfs]  1fc3f2c3c9: xfstests.xfs.529.fail
+Message-ID: <20220324053147.GR8224@magnolia>
+References: <20220322135402.GB32582@xsang-OptiPlex-9020>
+ <20220322162733.GP8241@magnolia>
+ <20220323070834.GB16885@xsang-OptiPlex-9020>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220323070834.GB16885@xsang-OptiPlex-9020>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Let us enable profiling by default in RV32 and RV64 defconfigs so
-that we can use RISC-V PMU drivers on various RISC-V platforms.
+[add chandan to cc since he wrote the extent count checking patches]
 
-Signed-off-by: Anup Patel <apatel@ventanamicro.com>
----
-Changes since v1:
- - Enable CONFIG_PROFILING instead of CONFIG_PREF_EVENTS in defconfigs
----
- arch/riscv/configs/defconfig      | 1 +
- arch/riscv/configs/rv32_defconfig | 1 +
- 2 files changed, 2 insertions(+)
+On Wed, Mar 23, 2022 at 03:08:34PM +0800, Oliver Sang wrote:
+> hi, Darrick,
+> 
+> On Tue, Mar 22, 2022 at 09:27:33AM -0700, Darrick J. Wong wrote:
+> > On Tue, Mar 22, 2022 at 09:54:02PM +0800, kernel test robot wrote:
+> > > 
+> > > 
+> > > Greeting,
+> > > 
+> > > FYI, we noticed the following commit (built with gcc-9):
+> > > 
+> > > commit: 1fc3f2c3c928c88654d4716af5cc4dee07b3a1c4 ("xfs: only free posteof blocks on first close")
+> > > https://git.kernel.org/cgit/linux/kernel/git/djwong/xfs-linux.git vectorized-scrub
+> > > 
+> > > in testcase: xfstests
+> > > version: xfstests-x86_64-1de1db8-1_20220217
+> > > with following parameters:
+> > > 
+> > > 	disk: 4HDD
+> > > 	fs: xfs
+> > > 	test: xfs-group-52
+> > > 	ucode: 0x21
+> > > 
+> > > test-description: xfstests is a regression test suite for xfs and other files ystems.
+> > > test-url: git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git
+> > > 
+> > > 
+> > > on test machine: 4 threads 1 sockets Intel(R) Core(TM) i3-3220 CPU @ 3.30GHz with 8G memory
+> > > 
+> > > caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
+> > > 
+> > > 
+> > > If you fix the issue, kindly add following tag
+> > > Reported-by: kernel test robot <oliver.sang@intel.com>
+> > > 
+> > 
+> > Could you export DIFF_LENGTH=0 in the test environment so that we get
+> > the full diff here, please?
+> 
+> the full diff is as below (also attached dmesg, full log, log for 529 in case
+> helpful):
+> 
+> xfs/529 [failed, exit status 1]- output mismatch (see /lkp/benchmarks/xfstests/results//xfs/529.out.bad)
+>     --- tests/xfs/529.out       2022-02-17 11:55:00.000000000 +0000
+>     +++ /lkp/benchmarks/xfstests/results//xfs/529.out.bad       2022-03-23 06:18:39.815036267 +0000
+>     @@ -4,21 +4,4 @@
+>      Inject reduce_max_iextents error tag
+>      Create fragmented file
+>      Verify $testfile's extent count
+>     -Disable reduce_max_iextents error tag
+>     -* Fallocate unwritten extents
+>     -Inject reduce_max_iextents error tag
+>     -Fallocate fragmented file
+>     -Verify $testfile's extent count
+>     -Disable reduce_max_iextents error tag
+>     -* Directio write
+>     -Inject reduce_max_iextents error tag
+>     -Create fragmented file via directio writes
+>     -Verify $testfile's extent count
+>     -Disable reduce_max_iextents error tag
+>     -* Extend quota inodes
+>     -Consume free space
+>     -Create fragmented filesystem
+>     -Inject reduce_max_iextents error tag
+>     -Inject bmap_alloc_minlen_extent error tag
+>     -Extend uquota file
+>     -Verify uquota inode's extent count
+>     +Extent count overflow check failed: nextents = 15
 
-diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
-index f120fcc43d0a..bfebee46784c 100644
---- a/arch/riscv/configs/defconfig
-+++ b/arch/riscv/configs/defconfig
-@@ -15,6 +15,7 @@ CONFIG_CHECKPOINT_RESTORE=y
- CONFIG_BLK_DEV_INITRD=y
- CONFIG_EXPERT=y
- # CONFIG_SYSFS_SYSCALL is not set
-+CONFIG_PROFILING=y
- CONFIG_SOC_MICROCHIP_POLARFIRE=y
- CONFIG_SOC_SIFIVE=y
- CONFIG_SOC_VIRT=y
-diff --git a/arch/riscv/configs/rv32_defconfig b/arch/riscv/configs/rv32_defconfig
-index 8b56a7f1eb06..2b68b1bd2559 100644
---- a/arch/riscv/configs/rv32_defconfig
-+++ b/arch/riscv/configs/rv32_defconfig
-@@ -15,6 +15,7 @@ CONFIG_CHECKPOINT_RESTORE=y
- CONFIG_BLK_DEV_INITRD=y
- CONFIG_EXPERT=y
- # CONFIG_SYSFS_SYSCALL is not set
-+CONFIG_PROFILING=y
- CONFIG_SOC_SIFIVE=y
- CONFIG_SOC_VIRT=y
- CONFIG_ARCH_RV32I=y
--- 
-2.25.1
+Hey Chandan, could you take a look at this, please?
+
+--D
+
+> 
+> 
+> > 
+> > --D
+> > 
+
+
+> 2022-03-23 06:18:24 export TEST_DIR=/fs/sdb1
+> 2022-03-23 06:18:24 export TEST_DEV=/dev/sdb1
+> 2022-03-23 06:18:24 export FSTYP=xfs
+> 2022-03-23 06:18:24 export SCRATCH_MNT=/fs/scratch
+> 2022-03-23 06:18:24 mkdir /fs/scratch -p
+> 2022-03-23 06:18:24 export SCRATCH_DEV=/dev/sdb4
+> 2022-03-23 06:18:24 export SCRATCH_LOGDEV=/dev/sdb2
+> 2022-03-23 06:18:24 export SCRATCH_XFS_LIST_METADATA_FIELDS=u3.sfdir3.hdr.parent.i4
+> 2022-03-23 06:18:24 export SCRATCH_XFS_LIST_FUZZ_VERBS=random
+> DIFF_LENGTH=
+> 0
+> END
+> 2022-03-23 06:18:24 sed "s:^:xfs/:" //lkp/benchmarks/xfstests/tests/xfs-group-52
+> 2022-03-23 06:18:24 ./check xfs/520 xfs/522 xfs/523 xfs/524 xfs/525 xfs/526 xfs/527 xfs/529
+> FSTYP         -- xfs (debug)
+> PLATFORM      -- Linux/x86_64 lkp-ivb-d05 5.17.0-rc8-00340-g1fc3f2c3c928 #1 SMP Mon Mar 21 07:17:57 CST 2022
+> MKFS_OPTIONS  -- -f /dev/sdb4
+> MOUNT_OPTIONS -- /dev/sdb4 /fs/scratch
+> 
+> xfs/520	 3s
+> xfs/522	[not run] need configuration file support in mkfs.xfs
+> xfs/523	[not run] need configuration file support in mkfs.xfs
+> xfs/524	[not run] need configuration file support in mkfs.xfs
+> xfs/525	[not run] need configuration file support in mkfs.xfs
+> xfs/526	[not run] need configuration file support in mkfs.xfs
+> xfs/527	 2s
+> xfs/529	[failed, exit status 1]- output mismatch (see /lkp/benchmarks/xfstests/results//xfs/529.out.bad)
+>     --- tests/xfs/529.out	2022-02-17 11:55:00.000000000 +0000
+>     +++ /lkp/benchmarks/xfstests/results//xfs/529.out.bad	2022-03-23 06:18:39.815036267 +0000
+>     @@ -4,21 +4,4 @@
+>      Inject reduce_max_iextents error tag
+>      Create fragmented file
+>      Verify $testfile's extent count
+>     -Disable reduce_max_iextents error tag
+>     -* Fallocate unwritten extents
+>     -Inject reduce_max_iextents error tag
+>     -Fallocate fragmented file
+>     -Verify $testfile's extent count
+>     -Disable reduce_max_iextents error tag
+>     -* Directio write
+>     -Inject reduce_max_iextents error tag
+>     -Create fragmented file via directio writes
+>     -Verify $testfile's extent count
+>     -Disable reduce_max_iextents error tag
+>     -* Extend quota inodes
+>     -Consume free space
+>     -Create fragmented filesystem
+>     -Inject reduce_max_iextents error tag
+>     -Inject bmap_alloc_minlen_extent error tag
+>     -Extend uquota file
+>     -Verify uquota inode's extent count
+>     +Extent count overflow check failed: nextents = 15
+> Ran: xfs/520 xfs/522 xfs/523 xfs/524 xfs/525 xfs/526 xfs/527 xfs/529
+> Not run: xfs/522 xfs/523 xfs/524 xfs/525 xfs/526
+> Failures: xfs/529
+> Failed 1 of 8 tests
+> 
+
+> meta-data=/dev/sdb4              isize=512    agcount=4, agsize=32768 blks
+>          =                       sectsz=4096  attr=2, projid32bit=1
+>          =                       crc=1        finobt=1, sparse=1, rmapbt=0
+>          =                       reflink=0
+> data     =                       bsize=4096   blocks=131072, imaxpct=25
+>          =                       sunit=0      swidth=0 blks
+> naming   =version 2              bsize=4096   ascii-ci=0, ftype=1
+> log      =internal log           bsize=4096   blocks=1605, version=2
+>          =                       sectsz=4096  sunit=1 blks, lazy-count=1
+> realtime =none                   extsz=4096   blocks=0, rtextents=0
+> wrote 4096/4096 bytes at offset 0
+> 4 KiB, 1 ops; 0.0185 sec (216.099 KiB/sec and 54.0249 ops/sec)
+> wrote 4096/4096 bytes at offset 8192
+> 4 KiB, 1 ops; 0.0157 sec (253.888 KiB/sec and 63.4719 ops/sec)
+> wrote 4096/4096 bytes at offset 16384
+> 4 KiB, 1 ops; 0.0158 sec (251.620 KiB/sec and 62.9050 ops/sec)
+> wrote 4096/4096 bytes at offset 24576
+> 4 KiB, 1 ops; 0.0160 sec (248.648 KiB/sec and 62.1620 ops/sec)
+> wrote 4096/4096 bytes at offset 32768
+> 4 KiB, 1 ops; 0.0160 sec (249.423 KiB/sec and 62.3558 ops/sec)
+> wrote 4096/4096 bytes at offset 40960
+> 4 KiB, 1 ops; 0.0158 sec (251.604 KiB/sec and 62.9010 ops/sec)
+> wrote 4096/4096 bytes at offset 49152
+> 4 KiB, 1 ops; 0.0161 sec (247.755 KiB/sec and 61.9387 ops/sec)
+> wrote 4096/4096 bytes at offset 57344
+> 4 KiB, 1 ops; 0.0159 sec (250.878 KiB/sec and 62.7195 ops/sec)
+> pwrite: File too large
+> pwrite: File too large
+> pwrite: File too large
+> pwrite: File too large
+> pwrite: File too large
+> pwrite: File too large
+> pwrite: File too large
+
+> QA output created by 529
+> Format and mount fs
+> * Delalloc to written extent conversion
+> Inject reduce_max_iextents error tag
+> Create fragmented file
+> Verify $testfile's extent count
+> Extent count overflow check failed: nextents = 15
 
