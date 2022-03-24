@@ -2,142 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A63E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 18:12:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D661C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 18:12:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352534AbiCXSON (ORCPT
+        id S1352541AbiCXSOT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 14:14:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47644 "EHLO
+        Thu, 24 Mar 2022 14:14:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352513AbiCXSOG (ORCPT
+        with ESMTP id S1352542AbiCXSOQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 14:14:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A6B8CB7142
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 11:12:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648145551;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4NVnAUSl0gdBiXg0XzzRFvlJNA1grykJ2S0JEY11Nbk=;
-        b=R2GaI+CKH6fUI14NsfMFoUOb3qTZf2TZRTuR519B79HPXh+ugN0kCy2HOb78Cay1bHza3m
-        H/QEmhtMzKhJDkzi9y3I650T7GtVd/2RFNkrwRE1Oelv8z58NPkxc8T1yCWNsp3ejJiVsV
-        c3R8qKU1s8jx8UbfkCRrXjw3pY268UI=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-351-TtWAE7ZCNQ6-wo9QOj7MMg-1; Thu, 24 Mar 2022 14:12:30 -0400
-X-MC-Unique: TtWAE7ZCNQ6-wo9QOj7MMg-1
-Received: by mail-ed1-f71.google.com with SMTP id b10-20020a50e38a000000b00418cd24fd27so3507889edm.8
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 11:12:30 -0700 (PDT)
+        Thu, 24 Mar 2022 14:14:16 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EB52B7168
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 11:12:44 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id k21so9463614lfe.4
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 11:12:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/LSEoPoVBVnfztCSkUFcbwBfE5ukisNTx0Z0bM1jWgk=;
+        b=fBZauSq0ACQcCD0aXGuuoIgacGzWbZWvHI/yboiImq3d2gbCBsK4u0P2R6I9rA5s+1
+         llLlGyVUkbHFxwANgyrhG7OcuWCL4PearUKXNl+3bWauMSB43nTGA6zaQsGMBIOxTMat
+         Y9LYQyxU0oUnKd77In8/8H15bD1XyIFNQEVc4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=4NVnAUSl0gdBiXg0XzzRFvlJNA1grykJ2S0JEY11Nbk=;
-        b=bQnDBpAbZXEetztRIxKTLoEjFNC/e5onYnln3fJ8jtDnyqNsLhXWk/Q2bSMUOkU3U4
-         +H15d91JisUciPwqlcb7uigVvU6wEp/6Pu81Ybu3T7fC8XYJp5+B8Zy/PdBglA2bXzYf
-         QpPfgqkFXlMt0bnusOxs8gI8k2KG9k8Xbikt08of0niuJAe06sYxK4L1WipEa02ODBhZ
-         at5VatBXbqiohzlbsu7h74FcBiPvHSZHfyxKs9CnVLbleBfRyLbgpbHa6BKoCxgMt4t1
-         /vLL8S51cuP4m8TB541W5qs2KpWfVhvlbpIz+2+ieYONf7w3fsLIIxpNj7np3HNFnhjn
-         683A==
-X-Gm-Message-State: AOAM530t6OiQLUguFk8bTP4E+jhCLuqJiITlwbcUizTkYU1O3CMpplNq
-        8Qd+1ACJnbyNVRhrrjrztsWlaB0h09ZgTTPyDaLoHAEnmjFiDIx0+fBd7/XERtbd0spdgem1Xpg
-        /TUcwqhj2oOfSQx/rW7B+h6sA
-X-Received: by 2002:a05:6402:1e90:b0:419:4cdc:8b05 with SMTP id f16-20020a0564021e9000b004194cdc8b05mr8152912edf.211.1648145549303;
-        Thu, 24 Mar 2022 11:12:29 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzl1pOGNmtNKqaqjzB/IEGNfgxI4RN1wwsYQ2aza86ksmyrLbJxeMnAeF1nCnbY+bzdhFqmxg==
-X-Received: by 2002:a05:6402:1e90:b0:419:4cdc:8b05 with SMTP id f16-20020a0564021e9000b004194cdc8b05mr8152887edf.211.1648145549048;
-        Thu, 24 Mar 2022 11:12:29 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:1c09:f536:3de6:228c? ([2001:b07:6468:f312:1c09:f536:3de6:228c])
-        by smtp.googlemail.com with ESMTPSA id n9-20020a05640205c900b00418d79d4a61sm1825824edx.97.2022.03.24.11.12.26
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/LSEoPoVBVnfztCSkUFcbwBfE5ukisNTx0Z0bM1jWgk=;
+        b=WDHBadPDRFzXW85OeY1DDEatY/o256RjHJwyYNtZ8yULIZLI5x2X0edB6yscm0pi8V
+         8z1NMaho1a1qIyIlRSuMcYwjHTuNFqXCJHzMppNJAmh+IHBhCS/8C3d2MoYzMV+qnKTs
+         b1iFkwyPkjPVzpU0INDww++J5el8Nt9Hwj389M89hc0gdi/mjaIQ8+/GyfEeaBeARQGt
+         jUfGPn3as8UxusDAM3cmyDTShVbQceDrq0o/SrVHxeGk+QPspiheM77AePeZM1h/R2S1
+         U47QMrgAXLElCpvqgDrQC5n2zd8SeJVV4j43BRzoe+OkN+Odh3j9VXxMgG2lpKCGgy9u
+         divQ==
+X-Gm-Message-State: AOAM532DGhkYOCo3zloG91CiZFzsKmG1ZqRTY+N7w0hKdMCqqnJUSu5A
+        etoehN7jl5VLXT3cO2df+OEtu/2L/lwa773d2pE=
+X-Google-Smtp-Source: ABdhPJx/I2pgdPPSU+M7Q+KHoS/WEyFjjXS582zYYOx173b3iyC9F388RkLXvmw+TUvL+8eGr31W7Q==
+X-Received: by 2002:a05:6512:2395:b0:44a:33d2:b9b5 with SMTP id c21-20020a056512239500b0044a33d2b9b5mr4743483lfv.514.1648145562200;
+        Thu, 24 Mar 2022 11:12:42 -0700 (PDT)
+Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com. [209.85.208.173])
+        by smtp.gmail.com with ESMTPSA id k9-20020a192d09000000b004487dfc9d9csm415417lfj.260.2022.03.24.11.12.38
+        for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Mar 2022 11:12:28 -0700 (PDT)
-Message-ID: <fa6ea646-6609-af7f-e43c-ecd4cb54e210@redhat.com>
-Date:   Thu, 24 Mar 2022 19:12:25 +0100
+        Thu, 24 Mar 2022 11:12:38 -0700 (PDT)
+Received: by mail-lj1-f173.google.com with SMTP id 17so7270447ljw.8
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 11:12:38 -0700 (PDT)
+X-Received: by 2002:a2e:a5c4:0:b0:249:9ec3:f2b with SMTP id
+ n4-20020a2ea5c4000000b002499ec30f2bmr4898966ljp.358.1648145558024; Thu, 24
+ Mar 2022 11:12:38 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH 2/8] KVM: x86: SVM: use vmcb01 in avic_init_vmcb and
- init_vmcb
-Content-Language: en-US
-To:     Maxim Levitsky <mlevitsk@redhat.com>, kvm@vger.kernel.org
-Cc:     Jim Mattson <jmattson@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Borislav Petkov <bp@alien8.de>, Joerg Roedel <joro@8bytes.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        linux-kernel@vger.kernel.org,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-References: <20220322172449.235575-1-mlevitsk@redhat.com>
- <20220322172449.235575-3-mlevitsk@redhat.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220322172449.235575-3-mlevitsk@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <cover.1644862280.git.legion@kernel.org> <877d8kfmdp.fsf@email.froward.int.ebiederm.org>
+In-Reply-To: <877d8kfmdp.fsf@email.froward.int.ebiederm.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 24 Mar 2022 11:12:21 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgBB8iPd0W=MQWnQJukMAPAqgsC0QX2wwiSvcct9zu_RA@mail.gmail.com>
+Message-ID: <CAHk-=wgBB8iPd0W=MQWnQJukMAPAqgsC0QX2wwiSvcct9zu_RA@mail.gmail.com>
+Subject: Re: [GIT PULL] ipc: Bind to the ipc namespace at open time.
+To:     "Eric W. Biederman" <ebiederm@xmission.com>,
+        Alexey Gladkov <legion@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux Containers <containers@lists.linux.dev>,
+        Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Daniel Walsh <dwalsh@redhat.com>,
+        Davidlohr Bueso <dbueso@suse.de>,
+        Kirill Tkhai <ktkhai@virtuozzo.com>,
+        Manfred Spraul <manfred@colorfullife.com>,
+        Serge Hallyn <serge@hallyn.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Vasily Averin <vvs@virtuozzo.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/22/22 18:24, Maxim Levitsky wrote:
->   
->   void avic_init_vmcb(struct vcpu_svm *svm)
->   {
-> -	struct vmcb *vmcb = svm->vmcb;
-> +	struct vmcb *vmcb = svm->vmcb01.ptr;
->   	struct kvm_svm *kvm_svm = to_kvm_svm(svm->vcpu.kvm);
->   	phys_addr_t bpa = __sme_set(page_to_phys(svm->avic_backing_page));
->   	phys_addr_t lpa = __sme_set(page_to_phys(kvm_svm->avic_logical_id_table_page));
+On Wed, Mar 23, 2022 at 1:24 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
+>
+> Please pull the per-namespace-ipc-sysctls-for-v5.18 tag from the git tree:
 
-Let's do this for consistency with e.g. svm_hv_init_vmcb:
+Ugh.
 
-diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index b39fe614467a..ab202158137d 100644
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -165,9 +165,8 @@ int avic_vm_init(struct kvm *kvm)
-  	return err;
-  }
-  
--void avic_init_vmcb(struct vcpu_svm *svm)
-+void avic_init_vmcb(struct vcpu_svm *svm, struct vmcb *vmcb)
-  {
--	struct vmcb *vmcb = svm->vmcb01.ptr;
-  	struct kvm_svm *kvm_svm = to_kvm_svm(svm->vcpu.kvm);
-  	phys_addr_t bpa = __sme_set(page_to_phys(svm->avic_backing_page));
-  	phys_addr_t lpa = __sme_set(page_to_phys(kvm_svm->avic_logical_id_table_page));
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index cc02506b7a19..ced8edad0c87 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -1123,7 +1123,7 @@ static void init_vmcb(struct kvm_vcpu *vcpu)
-  		set_msr_interception(vcpu, svm->msrpm, MSR_IA32_SPEC_CTRL, 1, 1);
-  
-  	if (kvm_vcpu_apicv_active(vcpu))
--		avic_init_vmcb(svm);
-+		avic_init_vmcb(svm, vmcb);
-  
-  	if (vgif) {
-  		svm_clr_intercept(svm, INTERCEPT_STGI);
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index d07a5b88ea96..bbac6c24a8b8 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -591,7 +591,7 @@ extern struct kvm_x86_nested_ops svm_nested_ops;
-  int avic_ga_log_notifier(u32 ga_tag);
-  void avic_vm_destroy(struct kvm *kvm);
-  int avic_vm_init(struct kvm *kvm);
--void avic_init_vmcb(struct vcpu_svm *svm);
-+void avic_init_vmcb(struct vcpu_svm *svm, struct vmcb *vmcb);
-  int avic_incomplete_ipi_interception(struct kvm_vcpu *vcpu);
-  int avic_unaccelerated_access_interception(struct kvm_vcpu *vcpu);
-  int avic_init_vcpu(struct vcpu_svm *svm);
+I pulled this. Then I stared at it for a long time.
 
+And then I decided that this is too ugly to live.
+
+I'm sorry. I think Alexey has probably spent a fair amount of time on
+it, but I really think the sysctl code needs to be cleaned up way more
+than this.
+
+The old code was horribly hacky too, but that setup_ipc_sysctls() (and
+setup_mq_sysctls()) thing that copies the whole sysctls table, and
+then walks it entry by entry to modify it, is just too ugly for words.
+
+And then it hides things in .extra1, and because it does that it can't
+use the normal "extra1 and extra2 contains the limits" so then at
+write() time it copies it into a local one AGAIN only to set the
+limits back so that it can call the normal routines again.
+
+Not ok.
+
+Yes, yes, the old code did some similar things - to set the 'data'
+pointer. That was disgusting too. Don't get me wrong - the existing
+code was nasty too. But this took nasty code, and doubled down on it.
+
+I really think this is a fundamental problem, and needs a more
+fundamental fix than adding more and more of these kinds of nasty
+hacks.
+
+And yes, that fundamental fix is almost certainly to pass in 'struct
+cred *' to all those sysctl helper functions.
+
+Then, when you do the actual 'sysctl()' system calls, you pass in
+'current_cred()".
+
+And the /proc users would pass in file->f_cred.
+
+And yes, that patch might be quite messy, because we have quite a lot
+of those random .proc_handler users.
+
+But *most* of them by far (at least in random code) use the standard
+proc_dointvec_minmax() and friends, and won't even notice.
+
+And then the ones that are about namespace issues will have to
+continue to do the nasty "make a copy and update the data pointer",
+but *MAYBE* we could also introduce the notion of an "offset" to those
+proc_dointvec_minmax() things to help them out (and at least avoid the
+"make a copy" thing).
+
+Anyway, I really think we must not make that sysctl code even uglier
+than it is today, and I think we need to move towards a model that
+actually makes sense. And that "pass in the right cred" is the only
+sensible model I can see.
+
+I haven't tried to create such a patch, and maybe Alexey already tried
+to do something like that and it turned out to be too ugly for words
+and that's why these nasty patches happened.
+
+But at least for now, I can't with a good conscience pull this.
+
+Sorry,
+                   Linus
