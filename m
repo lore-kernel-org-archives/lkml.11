@@ -2,351 +2,326 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA81C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 01:44:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6802C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 01:48:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345857AbiCXBp3 (ORCPT
+        id S1346059AbiCXBuG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 21:45:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56502 "EHLO
+        Wed, 23 Mar 2022 21:50:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240823AbiCXBp1 (ORCPT
+        with ESMTP id S241734AbiCXBuD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 21:45:27 -0400
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam08on2065.outbound.protection.outlook.com [40.107.102.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D158613D01
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 18:43:56 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KPJ5i9azA7hR69VPF0Q4W5El90TCD/wlTOpeIHeZ2TTkaCxQYyop1EEQsQFOrL8/wSgfuGlkZ0hHmCE+2X8zTuXgXuUwbQs4qRS1/AyJUJo+Ia5rPwWQkrmeh8wHQabQcfnFrQJK7QbUePGpOY+/+eDPTsOxnd+HG0/k6lhuh+9NhQzOVZ6wcoeKJRogayZCiVdXG7d7Rwz20+IhN7DqHJ1ffXGBFfZ4oSvX+IDeJMtxgFE/lNlY1EnYHvErKRTLhGjdDTmDpiFxQfMkxz0Yt+xeWcnZqPnEom9XH2FgTjC0GQTVvMhmYudRlg+Wyigchdpt9OPJqAxqY4uj62PrHw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KejNM/NYxfZT6+r25AtIzlkqZOGyzhCgPkBwoyAiha4=;
- b=XlpqCmBS39ddDfUjMVgCqztHrh3il5xrsby5oOJe5pFD1GIp8NEm16eH4+kBQ5PEuoODaayXdPVGJpntz0prnPRcDDBN0EY/TO6M9+mlzVqNB0U6oHLvDAOQeSbmz5sGt8L6+bB0/XB01npciWfvV18aLHIOYNmC3F7+0qKg4xTpMBGP41+Cm3bDJkX5iZfV/ue7onS7AFiPg5/4OyIf5+HM5LUZvEUMzWZZCYEpdcA042Q6Dfb2m/jKY2QMiZeL4Us7/MuYM7QI0fYGKVCJxNxolYYoAUyzaAr3/3IsBqtHVr3bwrMOZqfTB6l+EOiATXATCBZxRuA7KNyHVfWybw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KejNM/NYxfZT6+r25AtIzlkqZOGyzhCgPkBwoyAiha4=;
- b=H/opNN0FE1i6HOKoMJ6VPnS7r/6VUX/E3KJEwtS0rkUoRXII+yzsJVbYn2BmiTSIKyHzR1wKz4XJplVsRzRl2CIKcUvvzLmG3nG0hId5fHb9lbd9A5FyCIdkJwDKga5xNLVvlbF5yAdlD0OV8ZLdNF/H+JEuuZX8q2zL47cPnKhSYH9mye6Mf3ab3eBu9lG8V0Y9T5thUgZiVcM+vctroDbfIme2SNOY4AWvmTbR7TmQr7s1dAIvcEYEZ/RJiI0zhqkicYmh6nO+HANSgrIdgyIJ8MZDOwDoNLB3++cEnCVAPZBUV11hDitkJPx7n0x9v/QDnsv7dWdhd+izhlszvg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BYAPR12MB3176.namprd12.prod.outlook.com (2603:10b6:a03:134::26)
- by MW3PR12MB4409.namprd12.prod.outlook.com (2603:10b6:303:2d::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.17; Thu, 24 Mar
- 2022 01:43:54 +0000
-Received: from BYAPR12MB3176.namprd12.prod.outlook.com
- ([fe80::152f:613b:7041:68d6]) by BYAPR12MB3176.namprd12.prod.outlook.com
- ([fe80::152f:613b:7041:68d6%7]) with mapi id 15.20.5102.018; Thu, 24 Mar 2022
- 01:43:54 +0000
-From:   Alistair Popple <apopple@nvidia.com>
-To:     akpm@linux-foundation.org, linux-mm@kvack.org
-Cc:     hughd@google.com, jack@suse.cz, kirill.shutemov@linux.intel.com,
-        willy@infradead.org, rcampbell@nvidia.com,
-        songmuchun@bytedance.com, linux-kernel@vger.kernel.org,
-        jhubbard@nvidia.com, tglx@linutronix.de, bigeasy@linutronix.de,
-        Alistair Popple <apopple@nvidia.com>
-Subject: [PATCH] mm: Add selftests for migration entries
-Date:   Thu, 24 Mar 2022 12:43:49 +1100
-Message-Id: <20220324014349.229253-1-apopple@nvidia.com>
-X-Mailer: git-send-email 2.34.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SJ0PR13CA0134.namprd13.prod.outlook.com
- (2603:10b6:a03:2c6::19) To BYAPR12MB3176.namprd12.prod.outlook.com
- (2603:10b6:a03:134::26)
+        Wed, 23 Mar 2022 21:50:03 -0400
+Received: from 189.cn (ptr.189.cn [183.61.185.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4AB7B1C10B;
+        Wed, 23 Mar 2022 18:48:27 -0700 (PDT)
+HMM_SOURCE_IP: 10.64.8.31:53204.1700143801
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-114.242.206.180 (unknown [10.64.8.31])
+        by 189.cn (HERMES) with SMTP id 731511002D6;
+        Thu, 24 Mar 2022 09:48:20 +0800 (CST)
+Received: from  ([114.242.206.180])
+        by gateway-151646-dep-b7fbf7d79-bwdqx with ESMTP id dda94de79b974e819e1af598c879548f for robh@kernel.org;
+        Thu, 24 Mar 2022 09:48:26 CST
+X-Transaction-ID: dda94de79b974e819e1af598c879548f
+X-Real-From: 15330273260@189.cn
+X-Receive-IP: 114.242.206.180
+X-MEDUSA-Status: 0
+Sender: 15330273260@189.cn
+Message-ID: <ac75aeff-1fca-f46f-1043-8437ef845ff9@189.cn>
+Date:   Thu, 24 Mar 2022 09:48:19 +0800
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dbe355c2-006c-4fd1-c75a-08da0d37c14a
-X-MS-TrafficTypeDiagnostic: MW3PR12MB4409:EE_
-X-Microsoft-Antispam-PRVS: <MW3PR12MB440923697F5C977C5C4A5BC0DF199@MW3PR12MB4409.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bUKTFYN28o3rjYgRZcqs8pO6kG27wDVHUqesL/Hvd/idYRi3UgBVWJa46lXTYzyMyULBXQUUph7mYXrRELuDTZR66H7rTwz5Sb////fduEoiMwYz5MJYS/iZXq3bNBbMf3MY1BqOUlAqBIEmYZFNmjCVTaolzrA9Kt5Cy5m8nEfC8COmdXT/MAA5Yo+MuEnZfYaQn5m0o881XbjZnvcAvR+TLs93MR50HSksGtMwdniLp4GVuVkwYiWd4vYLTa7dSSu/TDcqfucyh0C8jP7N2Q+li8cARz2SeN3KBDtNRC8GIqLqi5U7jOU1yZhoBT2XInDOKEhkKaFlm3iae2d09um+ypDXyL/VSnVFlE+YmNCv7mjcMPF75GsKoA3vbm+eVgy4CM8Ql18Vk4zwlW9fhBDdKasxOmtmeQzQzfqto8ywYxGcNj5AVUHz7gEny09X0Qx2V5l+QD1zUnWiIFr1uLDGqzwpBp1/ECk9uTS/OfDIEOoaQQgptmPsi6eN+zk8CaetPHqw2wtvvEgL4+7VK/h63qbMsKX8s1069mPJryrgbYw28GvTs5y5kTEWi0m4h9IClAxKHzXaToM3mG0NkuZbHckjvoiYSaUtwveNLBjH8wFYwqoGsVSyhDSd95xTCc2LtrAO5K+nm5Td4oHD8w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB3176.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6512007)(6666004)(6506007)(86362001)(107886003)(508600001)(6486002)(26005)(186003)(83380400001)(8936002)(7416002)(2616005)(4326008)(316002)(8676002)(5660300002)(38100700002)(66556008)(66476007)(66946007)(2906002)(36756003)(1076003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LQIQ/D1w5fbDHfCln8IQPhp4Fl2cV0sdnxgitnCzOz1bf2sFF4gTj+XOlHne?=
- =?us-ascii?Q?fU9cpulsA+PnOqyfIPhrPBtmVECXvGr4o245Q1OdJasSX7DxU1XWpXcRuxoh?=
- =?us-ascii?Q?kNnvYA25Daa7Mw+bAxV/bEdS2p620zOAlwQ6gtfUU3qF/+53klUSDw5tVS6z?=
- =?us-ascii?Q?uHcnMwpTPH4HpbFrDUTSVsO5FX9zT7xPV7hTLO9HPNOVbYOwZtie5mK35L4M?=
- =?us-ascii?Q?loCi/gwUQ/52NpSp+bykQsjkvoCqexy5aEDszV0B37K5gvo3W5mvLLZzEUrK?=
- =?us-ascii?Q?i7+ULVUJBHNMIybDugNBN2acPSNwwK7il7zAiBV+OSBDaydKX5+G3lp6lS65?=
- =?us-ascii?Q?qYQYLwJ76UcxWbMH82wpHRFiSwgSiuDX3VyqeLt1Sgwv1ihJcQsqBFjWancU?=
- =?us-ascii?Q?s4d2bNsWki0tQBa4QpFOXzVbciExg1dxzDnCW3KQIYu4nEybUnYPuL3aM2BG?=
- =?us-ascii?Q?//aWMfnJW+zOkT9mYzP4sIirC9Q/tW5VkjT6JaoXyKFOUk/lqPuej1uTOgUi?=
- =?us-ascii?Q?/TivNWFIVomtvt3KMwYYg8F/TlYVje9dXpsnxq+RmGqKU+C5cHn17bO0a+dM?=
- =?us-ascii?Q?6Crw6lFr2MMCo6P3XNY/2kVIAC40eSA23w4+CqT5MIjgTNKomMsIAkf25wpA?=
- =?us-ascii?Q?a6ET+y6IFRJhDwSancGRV+/qS+s2/XvpDBbZF6KXDyADSSbZrymEEra/zzN9?=
- =?us-ascii?Q?oe6I0OQ6ZbsxtjoPnh2kfNkvVCkL5kGm0CdW1W2qbYkdEDl88/X6h2pLxTZE?=
- =?us-ascii?Q?lTWmR/IERYpNrVUFoATXebEeW0lh8dcxzGSx+GdOehsKCJSW1W77tV/TmtiC?=
- =?us-ascii?Q?HNmrpSO+fkogxYgLPMgwDPEC6XjTXo6+1qHtm5pyHRBREJZ1k3MzBBT1eFiY?=
- =?us-ascii?Q?R2U+7dcxKA5/q0zrdb43BnIo5b8iDy8yAc51aTMzb+T6T8xKMBoTnyq/KC7c?=
- =?us-ascii?Q?Z5SlmWTyO6jvf7afKfjTD2wUc+2Du7dfP6Aci/jjd+Ry9IMfPW6D1unjfGG+?=
- =?us-ascii?Q?+mvMi7ZbgL7RGOOMo1joB543H1jmfa16cVPi3Vqt8InAn7uTCPoLaGhsqtfT?=
- =?us-ascii?Q?pi7PG1Tqr25MptpRMU1eVtK3teazZB59mE387rBg+QrRD1OThzcEGiikpmJn?=
- =?us-ascii?Q?fmsiCpKwhkiPscYfoCtDomY+KgeMHv+L28hJLXwM8+sH6XWxBzH4+fLq5Vxw?=
- =?us-ascii?Q?Snjoahd096vOHuXIvefDbnqbq7BvlWyX7Xs07AwuUut8fGqMCcHnjbJF4Ils?=
- =?us-ascii?Q?vZmnaiB0K6gzklEOoB6TTPn03ZOWG87HdEZIOyQyAukShLcow/ey9ULZW2xU?=
- =?us-ascii?Q?pWl2lrrJXLpPJGnxgjCS51FbLoZdXRw/8wNn/xaE2r6qXaHeVKx11g9KM75P?=
- =?us-ascii?Q?GeUYQObvrXTU2mK647bDjhYx2ji287z3MGqoiYe44ewTOupXeyGIm8G/yaq/?=
- =?us-ascii?Q?2Kn4x6WW4uG2TVBPaj3863cCmQl0Gnh/?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dbe355c2-006c-4fd1-c75a-08da0d37c14a
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3176.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2022 01:43:54.6580
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: mtTt/eE7fLUZAGTjZ0H0qyr6XygDawxYu/SqTsWbsHxHmJU2LYEkjwAo1SPK9lnt/eXwEH3HgLW4KfKXAxH5BA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4409
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v11 5/7] dt-bindings: display: Add Loongson display
+ controller
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>
+Cc:     Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Ilia Mirkin <imirkin@alum.mit.edu>,
+        Qing Zhang <zhangqing@loongson.cn>,
+        suijingfeng <suijingfeng@loongson.cn>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org
+References: <20220321162916.1116541-1-15330273260@189.cn>
+ <20220321162916.1116541-6-15330273260@189.cn>
+ <YjkITWpbnCmhKaX+@robh.at.kernel.org>
+ <f7eb61bc-6784-c77a-083f-7408c0a17e05@189.cn>
+ <Yjo3umi9bJ0xb2Gl@robh.at.kernel.org>
+ <199a2869-cd83-d24e-0ad0-25d15d76fc13@189.cn>
+ <YjsamuFslv6qlQMZ@robh.at.kernel.org>
+From:   Sui Jingfeng <15330273260@189.cn>
+In-Reply-To: <YjsamuFslv6qlQMZ@robh.at.kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add some basic migration tests and in particular tests that will
-stress both the pte and pmd migration entry wait paths.
 
-Signed-off-by: Alistair Popple <apopple@nvidia.com>
----
+On 2022/3/23 21:03, Rob Herring wrote:
+> On Wed, Mar 23, 2022 at 11:38:55AM +0800, Sui Jingfeng wrote:
+>> On 2022/3/23 04:55, Rob Herring wrote:
+>>> On Tue, Mar 22, 2022 at 10:33:45AM +0800, Sui Jingfeng wrote:
+>>>> On 2022/3/22 07:20, Rob Herring wrote:
+>>>>> On Tue, Mar 22, 2022 at 12:29:14AM +0800, Sui Jingfeng wrote:
+>>>>>> From: suijingfeng <suijingfeng@loongson.cn>
+>>>>>>
+>>>>> Needs a commit message.
+>>>>>
+>>>>>> Signed-off-by: suijingfeng <suijingfeng@loongson.cn>
+>>>>>> Signed-off-by: Sui Jingfeng <15330273260@189.cn>
+>>>>> Same person? Don't need both emails.
+>>>> Yes,  suijingfeng@loongson.cn is my company's email. But it can not be used
+>>>> to send patches to dri-devel,
+>>>>
+>>>> when send patches with this email, the patch will not be shown on patch
+>>>> works.
+>>>>
+>>>> Emails  are either blocked or got  rejected  by loongson's mail server.  It
+>>>> can only receive emails
+>>>>
+>>>> from you and other people, but not dri-devel. so have to use my personal
+>>>> email(15330273260@189.cn) to send patches.
+>>>>
+>>>>>> ---
+>>>>>>     .../loongson/loongson,display-controller.yaml | 230 ++++++++++++++++++
+>>>>>>     1 file changed, 230 insertions(+)
+>>>>>>     create mode 100644 Documentation/devicetree/bindings/display/loongson/loongson,display-controller.yaml
+>>>>>>
+>>>>>> diff --git a/Documentation/devicetree/bindings/display/loongson/loongson,display-controller.yaml b/Documentation/devicetree/bindings/display/loongson/loongson,display-controller.yaml
+>>>>>> new file mode 100644
+>>>>>> index 000000000000..7be63346289e
+>>>>>> --- /dev/null
+>>>>>> +++ b/Documentation/devicetree/bindings/display/loongson/loongson,display-controller.yaml
+>>>>>> @@ -0,0 +1,230 @@
+>>>>>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>>>>>> +%YAML 1.2
+>>>>>> +---
+>>>>>> +$id: http://devicetree.org/schemas/display/loongson/loongson,display-controller.yaml#
+>>>>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>>>>>> +
+>>>>>> +title: Loongson LS7A1000/LS2K1000/LS2K0500 Display Controller Device Tree Bindings
+>>>>>> +
+>>>>>> +maintainers:
+>>>>>> +  - Sui Jingfeng <suijingfeng@loongson.cn>
+>>>>>> +
+>>>>>> +description: |+
+>>>>>> +
+>>>>>> +  Loongson display controllers are simple which require scanout buffers
+>>>>>> +  to be physically contiguous. LS2K1000/LS2K0500 is a SOC, only system
+>>>>>> +  memory is available. LS7A1000/LS7A2000 is bridge chip which is equipped
+>>>>>> +  with a dedicated video RAM which is 64MB or more, precise size can be
+>>>>>> +  read from the PCI BAR 2 of the GPU device(0x0014:0x7A15) in the bridge
+>>>>>> +  chip.
+>>>>>> +
+>>>>>> +  LSDC has two display pipes, each way has a DVO interface which provide
+>>>>>> +  RGB888 signals, vertical & horizontal synchronisations, data enable and
+>>>>>> +  the pixel clock. LSDC has two CRTC, each CRTC is able to scanout from
+>>>>>> +  1920x1080 resolution at 60Hz. Each CRTC has two FB address registers.
+>>>>>> +
+>>>>>> +  For LS7A1000, there are 4 dedicated GPIOs whose control register is
+>>>>>> +  located at the DC register space. They are used to emulate two way i2c,
+>>>>>> +  One for DVO0, another for DVO1.
+>>>>>> +
+>>>>>> +  LS2K1000 and LS2K0500 SoC grab i2c adapter from other module, either
+>>>>>> +  general purpose GPIO emulated i2c or hardware i2c in the SoC.
+>>>>>> +
+>>>>>> +  LSDC's display pipeline have several components as below description,
+>>>>>> +
+>>>>>> +  The display controller in LS7A1000:
+>>>>>> +     ___________________                                     _________
+>>>>>> +    |            -------|                                   |         |
+>>>>>> +    |  CRTC0 --> | DVO0 ----> Encoder0 ---> Connector0 ---> | Monitor |
+>>>>>> +    |  _   _     -------|        ^             ^            |_________|
+>>>>>> +    | | | | |    -------|        |             |
+>>>>>> +    | |_| |_|    | i2c0 <--------+-------------+
+>>>>>> +    |            -------|
+>>>>>> +    |   DC IN LS7A1000  |
+>>>>>> +    |  _   _     -------|
+>>>>>> +    | | | | |    | i2c1 <--------+-------------+
+>>>>>> +    | |_| |_|    -------|        |             |             _________
+>>>>>> +    |            -------|        |             |            |         |
+>>>>>> +    |  CRTC1 --> | DVO1 ----> Encoder1 ---> Connector1 ---> |  Panel  |
+>>>>>> +    |            -------|                                   |_________|
+>>>>>> +    |___________________|
+>>>>>> +
+>>>>>> +  Simple usage of LS7A1000 with LS3A4000 CPU:
+>>>>>> +
+>>>>>> +    +------+            +-----------------------------------+
+>>>>>> +    | DDR4 |            |  +-------------------+            |
+>>>>>> +    +------+            |  | PCIe Root complex |   LS7A1000 |
+>>>>>> +       || MC0           |  +--++---------++----+            |
+>>>>>> +  +----------+  HT 3.0  |     ||         ||                 |
+>>>>>> +  | LS3A4000 |<-------->| +---++---+  +--++--+    +---------+   +------+
+>>>>>> +  |   CPU    |<-------->| | GC1000 |  | LSDC |<-->| DDR3 MC |<->| VRAM |
+>>>>>> +  +----------+          | +--------+  +-+--+-+    +---------+   +------+
+>>>>>> +       || MC1           +---------------|--|----------------+
+>>>>>> +    +------+                            |  |
+>>>>>> +    | DDR4 |          +-------+   DVO0  |  |  DVO1   +------+
+>>>>>> +    +------+   VGA <--|ADV7125|<--------+  +-------->|TFP410|--> DVI/HDMI
+>>>>>> +                      +-------+                      +------+
+>>>>>> +
+>>>>>> +  The display controller in LS2K1000/LS2K0500:
+>>>>>> +     ___________________                                     _________
+>>>>>> +    |            -------|                                   |         |
+>>>>>> +    |  CRTC0 --> | DVO0 ----> Encoder0 ---> Connector0 ---> | Monitor |
+>>>>>> +    |  _   _     -------|        ^              ^           |_________|
+>>>>>> +    | | | | |           |        |              |
+>>>>>> +    | |_| |_|           |     +------+          |
+>>>>>> +    |                   <---->| i2c0 |<---------+
+>>>>>> +    |   DC IN LS2K1000  |     +------+
+>>>>>> +    |  _   _            |     +------+
+>>>>>> +    | | | | |           <---->| i2c1 |----------+
+>>>>>> +    | |_| |_|           |     +------+          |            _________
+>>>>>> +    |            -------|        |              |           |         |
+>>>>>> +    |  CRTC1 --> | DVO1 ----> Encoder1 ---> Connector1 ---> |  Panel  |
+>>>>>> +    |            -------|                                   |_________|
+>>>>>> +    |___________________|
+>>>>>> +
+>>>>>> +properties:
+>>>>>> +  $nodename:
+>>>>>> +    pattern: "^display-controller@[0-9a-f],[0-9a-f]$"
+>>>>>> +
+>>>>>> +  compatible:
+>>>>>> +    oneOf:
+>>>>>> +      - items:
+>>>>>> +          - enum:
+>>>>>> +              - loongson,ls7a1000-dc
+>>>>>> +              - loongson,ls2k1000-dc
+>>>>>> +              - loongson,ls2k0500-dc
+>>>>>> +
+>>>>>> +  reg:
+>>>>>> +    maxItems: 1
+>>>>>> +
+>>>>>> +  interrupts:
+>>>>>> +    maxItems: 1
+>>>>>> +
+>>>>>> +  '#address-cells':
+>>>>>> +    const: 1
+>>>>>> +
+>>>>>> +  '#size-cells':
+>>>>>> +    const: 0
+>>>>>> +
+>>>>>> +  i2c-gpio@0:
+>>>>>> +    description: |
+>>>>>> +      Built-in GPIO emulate i2c exported for external display bridge
+>>>>> If you have i2c-gpio, that belongs at the DT top-level, not here.
+>>>>>
+>>>>>> +      configuration, onitor detection and edid read back etc, for ls7a1000
+>>>>>> +      only. Its compatible must be lsdc,i2c-gpio-0. The reg property can be
+>>>>> No, there's a defined i2c-gpio compatible already.
+>>>> This is different from the i2c-gpio already defined under drivers/i2c/busses/i2c-gpio.c,
+>>>> By design, my i2c-gpio is vendor specific properties, lsdc device driver create the i2c
+>>>> adapter at runtime. These are 4 dedicated GPIOs whose control register is located at the
+>>>> LSDC register space, not general purpose GPIOs with separate control register resource.
+>>>> So i think it is the child node of display-controller@6,1, it belongs to LSDC.
+>>>> It seems that put it at the DT top-level break the hierarchy and relationship.
+>>> Okay, I see. Then just 'i2c' for the node names. You need a reference to
+>>> i2c-controller.yaml for these nodes too.
+>>>
+>>> The compatible should not have an index in it.
+>> OK, i will fix this at the next version. thanks.
+>>>>>> +      used to specify a I2c adapter bus number, if you don't specify one
+>>>>>> +      i2c driver core will dynamically assign a bus number. Please specify
+>>>>> Bus numbers are a linux detail not relevant to DT binding.
+>>>>>
+>>>>>> +      it only when its bus number matters. Bus number greater than 6 is safe
+>>>>>> +      because ls7a1000 bridge have 6 hardware I2C controller integrated.
+>>>>>> +
+>>>>>> +  i2c-gpio@1:
+>>>>>> +    description: |
+>>>>>> +      Built-in GPIO emulate i2c exported for external display bridge
+>>>>>> +      configuration, onitor detection and edid read back etc, for ls7a1000
+>>>>>> +      only. Its compatible must be lsdc,i2c-gpio-1.
+>>>>>> +
+>>>>>> +  ports:
+>>>>>> +    $ref: /schemas/graph.yaml#/properties/ports
+>>>>>> +
+>>>>>> +    properties:
+>>>>>> +      port@0:
+>>>>>> +        $ref: /schemas/graph.yaml#/properties/port
+>>>>>> +        description: output port node connected with DPI panels or external encoders, with only one endpoint.
+>>>>>> +
+>>>>>> +      port@1:
+>>>>>> +        $ref: /schemas/graph.yaml#/properties/port
+>>>>>> +        description: output port node connected with DPI panels or external encoders, with only one endpoint.
+>>>>>> +
+>>>>>> +    required:
+>>>>>> +      - port@0
+>>>>>> +      - port@1
+>>>>>> +
+>>>>>> +required:
+>>>>>> +  - compatible
+>>>>>> +  - reg
+>>>>>> +  - interrupts
+>>>>>> +  - ports
+>>>>>> +
+>>>>>> +additionalProperties: false
+>>>>>> +
+>>>>>> +examples:
+>>>>>> +  - |
+>>>>>> +    #include <dt-bindings/interrupt-controller/irq.h>
+>>>>>> +    bus {
+>>>>>> +
+>>>>>> +        #address-cells = <3>;
+>>>>>> +        #size-cells = <2>;
+>>>>>> +        #interrupt-cells = <2>;
+>>>>>> +
+>>>>>> +        display-controller@6,1 {
+>>>>>> +            compatible = "loongson,ls7a1000-dc";
+>>>>>> +            reg = <0x3100 0x0 0x0 0x0 0x0>;
+>>>>>> +            interrupts = <28 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>> +
+>>>>>> +            #address-cells = <1>;
+>>>>>> +            #size-cells = <0>;
+>>>>>> +
+>>>>>> +            i2c-gpio@0 {
+>>>>>> +                compatible = "lsdc,i2c-gpio-0";
+>>>>>> +                reg = <6>;
+>>> 'reg' needs to be documented with some description of what 6 and 7
+>>> represent. If they are the control register offset, then make the
+>>> address translatable (use 'ranges' and define the size).
+>> By design, the reg property is used to specify a I2c adapter bus number,
+>> if we don't specify one, i2c driver core will dynamically assign a bus number.
+>> then the nr of the i2c adapter will started from 0. I want is start from 6
+>> to avoid potential conflict feature hardware I2C driver.
+>>
+>> Because LS7A1000 bridge chip have 6 hardware I2C controller integrated,
+>> but its driver is not up-streamed yet. By default these hardware I2C controller's
+>> nr is started from 0.
+> Linux's numbering doesn't belong in DT. So no, you can't use 'reg' in
+> that way.
+Then,  can i use something like lsdc,nr = <6> ?
+>> Even through i2c driver core can dynamically generate a number, i still want it
+>> to be fixed and keep consistent and explicit. That is, i2c6 is for display pipe 0,
+>> i2c7 is for display pipe 1. This follow the convention and flexible enough.
+> You may want that, but that is not how the kernel works. Specific
+> numbers are not guaranteed. I'm sure you've seen this for disks, network
+> interfaces, etc.
+>
+> Rob
 
-This is a clean-up of an ad-hoc test I had written to test and understand the
-migration entry code paths. I think it would also be useful to have upstream so
-these code paths could be more regularly and easily exerciesed.
+2c_bit_add_numbered_bus() will guarantee it for you as long as If no 
+devices have pre-been declared for this bus.
 
-For example these tests directly found an issue with linux-next f886cdb76920
-("mm: pvmw: add support for walking devmap pages").
-
- tools/testing/selftests/vm/Makefile    |   3 +
- tools/testing/selftests/vm/migration.c | 193 +++++++++++++++++++++++++
- 2 files changed, 196 insertions(+)
- create mode 100644 tools/testing/selftests/vm/migration.c
-
-diff --git a/tools/testing/selftests/vm/Makefile b/tools/testing/selftests/vm/Makefile
-index a860daa75f60..4b7a6b0ee7db 100644
---- a/tools/testing/selftests/vm/Makefile
-+++ b/tools/testing/selftests/vm/Makefile
-@@ -41,6 +41,7 @@ TEST_GEN_FILES += map_fixed_noreplace
- TEST_GEN_FILES += map_hugetlb
- TEST_GEN_FILES += map_populate
- TEST_GEN_FILES += memfd_secret
-+TEST_GEN_FILES += migration
- TEST_GEN_FILES += mlock-random-test
- TEST_GEN_FILES += mlock2-tests
- TEST_GEN_FILES += mremap_dontunmap
-@@ -149,6 +150,8 @@ $(OUTPUT)/hmm-tests: LDLIBS += $(HMM_EXTRA_LIBS)
- 
- $(OUTPUT)/ksm_tests: LDLIBS += -lnuma
- 
-+$(OUTPUT)/migration: LDLIBS += -lnuma
-+
- local_config.mk local_config.h: check_config.sh
- 	/bin/sh ./check_config.sh $(CC)
- 
-diff --git a/tools/testing/selftests/vm/migration.c b/tools/testing/selftests/vm/migration.c
-new file mode 100644
-index 000000000000..1cec8425e3ca
---- /dev/null
-+++ b/tools/testing/selftests/vm/migration.c
-@@ -0,0 +1,193 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * The main purpose of the tests here is to exercise the migration entry code
-+ * paths in the kernel.
-+ */
-+
-+#include "../kselftest_harness.h"
-+#include <strings.h>
-+#include <pthread.h>
-+#include <numa.h>
-+#include <numaif.h>
-+#include <sys/mman.h>
-+#include <sys/types.h>
-+#include <signal.h>
-+#include <time.h>
-+
-+#define TWOMEG (2<<20)
-+#define RUNTIME (60)
-+
-+#define ALIGN(x, a) (((x) + (a - 1)) & (~((a) - 1)))
-+
-+FIXTURE(migration)
-+{
-+	pthread_t *threads;
-+	pid_t *pids;
-+	int nthreads;
-+	int n1;
-+	int n2;
-+};
-+
-+FIXTURE_SETUP(migration)
-+{
-+	int n;
-+
-+	ASSERT_EQ(numa_available(), 0);
-+	self->nthreads = numa_num_task_cpus() - 1;
-+	self->n1 = -1;
-+	self->n2 = -1;
-+
-+	for (n = 0; n < numa_max_possible_node(); n++)
-+		if (numa_bitmask_isbitset(numa_all_nodes_ptr, n)) {
-+			if (self->n1 == -1) {
-+				self->n1 = n;
-+			} else {
-+				self->n2 = n;
-+				break;
-+			}
-+		}
-+
-+	self->threads = malloc(self->nthreads * sizeof(*self->threads));
-+	ASSERT_NE(self->threads, NULL);
-+	self->pids = malloc(self->nthreads * sizeof(*self->pids));
-+	ASSERT_NE(self->pids, NULL);
-+};
-+
-+FIXTURE_TEARDOWN(migration)
-+{
-+	free(self->threads);
-+	free(self->pids);
-+}
-+
-+int migrate(uint64_t *ptr, int n1, int n2)
-+{
-+	int ret, tmp;
-+	int status = 0;
-+	struct timespec ts1, ts2;
-+
-+	if (clock_gettime(CLOCK_MONOTONIC, &ts1))
-+		return -1;
-+
-+	while (1) {
-+		if (clock_gettime(CLOCK_MONOTONIC, &ts2))
-+			return -1;
-+
-+		if (ts2.tv_sec - ts1.tv_sec >= RUNTIME)
-+			return 0;
-+
-+		ret = move_pages(0, 1, (void **) &ptr, &n2, &status,
-+				MPOL_MF_MOVE_ALL);
-+		if (ret) {
-+			if (ret > 0)
-+				printf("Didn't migrate %d pages\n", ret);
-+			else
-+				perror("Couldn't migrate pages");
-+			return -2;
-+		}
-+
-+		tmp = n2;
-+		n2 = n1;
-+		n1 = tmp;
-+	}
-+
-+	return 0;
-+}
-+
-+void *access_mem(void *ptr)
-+{
-+	uint64_t y = 0;
-+	volatile uint64_t *x = ptr;
-+
-+	while (1) {
-+		pthread_testcancel();
-+		y += *x;
-+	}
-+
-+	return NULL;
-+}
-+
-+/*
-+ * Basic migration entry testing. One thread will move pages back and forth
-+ * between nodes whilst other threads try and access them triggering the
-+ * migration entry wait paths in the kernel.
-+ */
-+TEST_F_TIMEOUT(migration, private_anon, 2*RUNTIME)
-+{
-+	uint64_t *ptr;
-+	int i;
-+
-+	if (self->nthreads < 2 || self->n1 < 0 || self->n2 < 0)
-+		SKIP(return, "Not enough threads or NUMA nodes available");
-+
-+	ptr = mmap(NULL, TWOMEG, PROT_READ | PROT_WRITE,
-+		MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-+	ASSERT_NE(ptr, MAP_FAILED);
-+
-+	memset(ptr, 0xde, TWOMEG);
-+	for (i = 0; i < self->nthreads - 1; i++)
-+		if (pthread_create(&self->threads[i], NULL, access_mem, ptr))
-+			perror("Couldn't create thread");
-+
-+	ASSERT_EQ(migrate(ptr, self->n1, self->n2), 0);
-+	for (i = 0; i < self->nthreads - 1; i++)
-+		ASSERT_EQ(pthread_cancel(self->threads[i]), 0);
-+}
-+
-+/*
-+ * Same as the previous test but with shared memory.
-+ */
-+TEST_F_TIMEOUT(migration, shared_anon, 2*RUNTIME)
-+{
-+	pid_t pid;
-+	uint64_t *ptr;
-+	int i;
-+
-+	if (self->nthreads < 2 || self->n1 < 0 || self->n2 < 0)
-+		SKIP(return, "Not enough threads or NUMA nodes available");
-+
-+	ptr = mmap(NULL, TWOMEG, PROT_READ | PROT_WRITE,
-+		MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-+	ASSERT_NE(ptr, MAP_FAILED);
-+
-+	memset(ptr, 0xde, TWOMEG);
-+	for (i = 0; i < self->nthreads - 1; i++) {
-+		pid = fork();
-+		if (!pid)
-+			access_mem(ptr);
-+		else
-+			self->pids[i] = pid;
-+	}
-+
-+	ASSERT_EQ(migrate(ptr, self->n1, self->n2), 0);
-+	for (i = 0; i < self->nthreads - 1; i++)
-+		ASSERT_EQ(kill(self->pids[i], SIGTERM), 0);
-+}
-+
-+/*
-+ * Tests the pmd migration entry paths.
-+ */
-+TEST_F_TIMEOUT(migration, private_anon_thp, 2*RUNTIME)
-+{
-+	uint64_t *ptr;
-+	int i;
-+
-+	if (self->nthreads < 2 || self->n1 < 0 || self->n2 < 0)
-+		SKIP(return, "Not enough threads or NUMA nodes available");
-+
-+	ptr = mmap(NULL, 2*TWOMEG, PROT_READ | PROT_WRITE,
-+		MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-+	ASSERT_NE(ptr, MAP_FAILED);
-+
-+	ptr = (uint64_t *) ALIGN((uintptr_t) ptr, TWOMEG);
-+	ASSERT_EQ(madvise(ptr, TWOMEG, MADV_HUGEPAGE), 0);
-+	memset(ptr, 0xde, TWOMEG);
-+	for (i = 0; i < self->nthreads - 1; i++)
-+		if (pthread_create(&self->threads[i], NULL, access_mem, ptr))
-+			perror("Couldn't create thread");
-+
-+	ASSERT_EQ(migrate(ptr, self->n1, self->n2), 0);
-+	for (i = 0; i < self->nthreads - 1; i++)
-+		ASSERT_EQ(pthread_cancel(self->threads[i]), 0);
-+}
-+
-+TEST_HARNESS_MAIN
--- 
-2.34.1
+you can read the comment of 2c_bit_add_numbered_bus() at 
+drivers/i2c/i2c-core-base.c
 
