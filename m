@@ -2,97 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8D46C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:33:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EA22C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:33:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348605AbiCXHfI (ORCPT
+        id S1348638AbiCXHfS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 03:35:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37978 "EHLO
+        Thu, 24 Mar 2022 03:35:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345603AbiCXHfD (ORCPT
+        with ESMTP id S234254AbiCXHfQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 03:35:03 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40B561B6;
-        Thu, 24 Mar 2022 00:33:32 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KPH5Q4GKQz4xLS;
-        Thu, 24 Mar 2022 18:33:30 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1648107211;
-        bh=O57ZBYrPDINAUUx0bUCirgO8vfrhhHxthCe7aIDcEOk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QeSOHTW8IT7HnYb6BSsed4NyWLi8uCu6EIrDYegoFGrYffPVsC6qe6269vqPrMyD/
-         i+rqSdcMQ6RRVTdGV6id/jafU+nYGg9ox/32z42V4t1L9so5yuKIMW2Z+KL86m10N7
-         Od8qIUlcGXSL/GRofPwmjWJqSofOfBmHnOQbBb/hWn+BYs431p9NATodGIAK+vANYE
-         P8Rv77jLizzufi45zkVXgYdPLw8i50Lb4OcLio5wNneynzFdCmYu+g5QjEdFbHHCCX
-         bBZVbYd6/Ou2xNNg4l0n9Zf3xumm6njxO+KT0rmmeBEgOkCWX0/MVmWIQTadCpUtYw
-         u3xXRjILizpuw==
-Date:   Thu, 24 Mar 2022 18:33:29 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>
-Cc:     "David E. Box" <david.e.box@linux.intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build warnings after merge of the drivers-x86 tree
-Message-ID: <20220324183329.22c97ea1@canb.auug.org.au>
-In-Reply-To: <20220301201659.45ac94cd@canb.auug.org.au>
-References: <20220301201659.45ac94cd@canb.auug.org.au>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Oo9++qc_i1g+bCsw1KwBD90";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+        Thu, 24 Mar 2022 03:35:16 -0400
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF4F633A
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:33:44 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0V83t1Bl_1648107221;
+Received: from localhost(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0V83t1Bl_1648107221)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 24 Mar 2022 15:33:42 +0800
+From:   Xianting Tian <xianting.tian@linux.alibaba.com>
+To:     mst@redhat.com, jasowang@redhat.com
+Cc:     virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org,
+        Xianting Tian <xianting.tian@linux.alibaba.com>
+Subject: [PATCH] virtio_ring: remove unnecessary to_vvq call in vring hot path
+Date:   Thu, 24 Mar 2022 15:33:40 +0800
+Message-Id: <20220324073340.632656-1-xianting.tian@linux.alibaba.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/Oo9++qc_i1g+bCsw1KwBD90
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+It passes '_vq' to virtqueue_use_indirect(), which still calls
+to_vvq to get 'vq', let's directly pass 'vq'. It can avoid
+unnecessary call of to_vvq in hot path.
 
-Hi all,
+Other tiny optimization:
+Add unlikely to "if (vq->vq.num_free < descs_used).
 
-On Tue, 1 Mar 2022 20:16:59 +1100 Stephen Rothwell <sfr@canb.auug.org.au> w=
-rote:
->=20
-> After merging the drivers-x86 tree, today's linux-next build (htmldocs)
-> produced these warnings:
->=20
-> Documentation/ABI/testing/sysfs-driver-intel_sdsi:2: WARNING: Unexpected =
-indentation.
-> Documentation/ABI/testing/sysfs-driver-intel_sdsi:2: WARNING: Block quote=
- ends without a blank line; unexpected unindent.
-> Documentation/ABI/testing/sysfs-driver-intel_sdsi:2: WARNING: Definition =
-list ends without a blank line; unexpected unindent.
->=20
-> Introduced by commit
->=20
->   2546c6000430 ("platform/x86: Add Intel Software Defined Silicon driver")
+Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+---
+ drivers/virtio/virtio_ring.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-I am still seeing these warnings.
+diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+index 962f1477b1fa..ab6d5f0cb579 100644
+--- a/drivers/virtio/virtio_ring.c
++++ b/drivers/virtio/virtio_ring.c
+@@ -205,11 +205,9 @@ struct vring_virtqueue {
+ 
+ #define to_vvq(_vq) container_of(_vq, struct vring_virtqueue, vq)
+ 
+-static inline bool virtqueue_use_indirect(struct virtqueue *_vq,
++static inline bool virtqueue_use_indirect(struct vring_virtqueue *vq,
+ 					  unsigned int total_sg)
+ {
+-	struct vring_virtqueue *vq = to_vvq(_vq);
+-
+ 	/*
+ 	 * If the host supports indirect descriptor tables, and we have multiple
+ 	 * buffers, then go indirect. FIXME: tune this threshold
+@@ -507,7 +505,7 @@ static inline int virtqueue_add_split(struct virtqueue *_vq,
+ 
+ 	head = vq->free_head;
+ 
+-	if (virtqueue_use_indirect(_vq, total_sg))
++	if (virtqueue_use_indirect(vq, total_sg))
+ 		desc = alloc_indirect_split(_vq, total_sg, gfp);
+ 	else {
+ 		desc = NULL;
+@@ -527,7 +525,7 @@ static inline int virtqueue_add_split(struct virtqueue *_vq,
+ 		descs_used = total_sg;
+ 	}
+ 
+-	if (vq->vq.num_free < descs_used) {
++	if (unlikely(vq->vq.num_free < descs_used)) {
+ 		pr_debug("Can't add buf len %i - avail = %i\n",
+ 			 descs_used, vq->vq.num_free);
+ 		/* FIXME: for historical reasons, we force a notify here if
+@@ -1194,7 +1192,7 @@ static inline int virtqueue_add_packed(struct virtqueue *_vq,
+ 
+ 	BUG_ON(total_sg == 0);
+ 
+-	if (virtqueue_use_indirect(_vq, total_sg)) {
++	if (virtqueue_use_indirect(vq, total_sg)) {
+ 		err = virtqueue_add_indirect_packed(vq, sgs, total_sg, out_sgs,
+ 						    in_sgs, data, gfp);
+ 		if (err != -ENOMEM) {
+-- 
+2.17.1
 
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/Oo9++qc_i1g+bCsw1KwBD90
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmI8HskACgkQAVBC80lX
-0GzmdAf9Ee5WD9mFVQOACExXVLu/4fz94hieMWq9wlN5BRyAY3hVAR6FIHuk7R0q
-EwLYL9IEWdNLH1jD8XgqsFhrfi57IoXHXAJ0WjLONEH4B+ZHCFj6eXIkO4v/JndX
-lod5PsVIWYsOMRwEWyPhwcViL1uQx19EtdwZ/gHv9UfrNMqn3P1W/vkwFvjBzN62
-7nvL/czwwPWkiJP+/4pjrlZBZWQG8AojL9vH5OU8mbzp74DfMnW7mcai6ghFqwWV
-fK8bNk2/ntu4qD6X0Z+txNz4ft2bh1vR67A1Ci2XFn/Yk2lzUyyLgEeywrtYjmyI
-SL8qAx3efFrhNyWFzqUcuUQI54YK9g==
-=p/0x
------END PGP SIGNATURE-----
-
---Sig_/Oo9++qc_i1g+bCsw1KwBD90--
