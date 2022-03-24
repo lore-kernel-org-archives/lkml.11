@@ -2,54 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A15FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 20:33:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C6E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 20:34:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353424AbiCXUer convert rfc822-to-8bit (ORCPT
+        id S1346584AbiCXUfk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 16:34:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38500 "EHLO
+        Thu, 24 Mar 2022 16:35:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345637AbiCXUeq (ORCPT
+        with ESMTP id S244145AbiCXUfi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 16:34:46 -0400
-X-Greylist: delayed 1232 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Mar 2022 13:33:13 PDT
-Received: from mail2.intersystems.com (mail2.intersystems.com [38.105.105.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8270FDF7F
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 13:33:11 -0700 (PDT)
-X-InterSystems: Sent from InterSystems
-X-InterSystems: Sent from InterSystems
-X-InterSystems: Sent from InterSystems
-X-InterSystems: Sent from InterSystems
-From:   Ray Fucillo <Ray.Fucillo@intersystems.com>
-To:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: scalability regressions related to hugetlb_fault() changes
-Thread-Topic: scalability regressions related to hugetlb_fault() changes
-Thread-Index: AQHYP7uAL1vA/rQijE+hDIc6LhXGuA==
-Date:   Thu, 24 Mar 2022 20:12:35 +0000
-Message-ID: <D3204B1E-50A1-4261-8C75-3DF77A302502@intersystems.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.17.254.204]
-x-c2processedorg: 5d7e5ca7-6395-445f-80da-8568a4fc58e5
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <48F2A26C80B440459846FEED0F086F05@exchangemail.iscinternal.com>
-Content-Transfer-Encoding: 8BIT
+        Thu, 24 Mar 2022 16:35:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5EA97B55D
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 13:34:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6082560F27
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 20:34:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97E16C340EC;
+        Thu, 24 Mar 2022 20:34:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648154044;
+        bh=Hke9uijvJjLH+sMjuC7Gd22j8kyXtDr8eWCu19CgugQ=;
+        h=Date:From:Cc:Subject:From;
+        b=VMyQlL3kUfwrvYNxhv9HC9vK4q/qHFfqhHV03J9LyO/HnFe+yhOcaY3cYsTcFQ9z1
+         vix37R6s1N+ZqGgHNnASFY3ijUPWu2nG4JEUSaXY4P58yUhjlhrPCl4P0gaSVxzGtY
+         yvBG7OVp65+qxAKuXurUirPM4AW2BYadpHtfrYXF5CBB39qQhQgwfrG27d1FcPVzCQ
+         xMNi8NEHxyj8RR0hXJ2qY4YdnvCoW6RBEX2dSlK+1JozFaIcYCAS35Z9NZ4RE/yRK0
+         rZeD5oFFp1cZAB6oaSzXpk08t5p9dR+C57K3AoXm7XEV+TCiReo/0Gl7QoB7Ra9LP0
+         dFNTMeviU/0nA==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id CC50840407; Thu, 24 Mar 2022 17:33:59 -0300 (-03)
+Date:   Thu, 24 Mar 2022 17:33:59 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Ricardo Neri <ricardo.neri-calderon@linux.intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: [PATCH 1/1] tools arch x86: Sync the msr-index.h copy with the
+ kernel sources
+Message-ID: <YjzVt8CjAORAsTCo@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In moving to newer versions of the kernel, our customers have experienced dramatic new scalability problems in our database application, InterSystems IRIS.  Our research has narrowed this down to new processes that attach to the database's shared memory segment taking very long delays (in some cases ~100ms!) acquiring the i_mmap_lock_read() in hugetlb_fault() as they fault in the huge page for the first time.  The addition of this lock in hugetlb_fault() matches the versions where we see this problem.  It's not just slowing the new process that incurs the delay, but backing up other processes if the page fault occurs inside a critical section within the database application.
+Just FYI, I'm carrying this on the perf tools tree:
 
-Is there something that can be improved here?  
+---------
 
-The read locks in hugetlb_fault() contend with write locks that seem to be taken in very common application code paths: shmat(), process exit, fork() (not vfork()), shmdt(), presumably others.  So hugetlb_fault() contending to read turns out to be common.  When the system is loaded, there will be many new processes faulting in pages that may blocks the write lock, which in turn blocks more readers in fault behind it, and so on...  I don't think there's any support for shared page tables in hugetlb to avoid the faults altogether.
+To pick up the changes from these csets:
 
-Switching to 1GB huge pages instead of 2MB is a good mitigation in reducing the frequency of fault, but not a complete solution.
+  7b8f40b3de75c971 ("x86/cpu: Add definitions for the Intel Hardware Feedback Interface")
 
-Thanks for considering.
+That cause no changes to tooling:
 
-Ray
+  $ tools/perf/trace/beauty/tracepoints/x86_msr.sh > before
+  $ cp arch/x86/include/asm/msr-index.h tools/arch/x86/include/asm/msr-index.h
+  $ tools/perf/trace/beauty/tracepoints/x86_msr.sh > after
+  $ diff -u before after
+  $
+
+Just silences this perf build warning:
+
+  Warning: Kernel ABI header at 'tools/arch/x86/include/asm/msr-index.h' differs from latest version at 'arch/x86/include/asm/msr-index.h'
+  diff -u tools/arch/x86/include/asm/msr-index.h arch/x86/include/asm/msr-index.h
+
+Cc: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Cc: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+---
+ tools/arch/x86/include/asm/msr-index.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/tools/arch/x86/include/asm/msr-index.h b/tools/arch/x86/include/asm/msr-index.h
+index a4a39c3e0f196747..0e7f303542bf35d6 100644
+--- a/tools/arch/x86/include/asm/msr-index.h
++++ b/tools/arch/x86/include/asm/msr-index.h
+@@ -705,12 +705,14 @@
+ 
+ #define PACKAGE_THERM_STATUS_PROCHOT		(1 << 0)
+ #define PACKAGE_THERM_STATUS_POWER_LIMIT	(1 << 10)
++#define PACKAGE_THERM_STATUS_HFI_UPDATED	(1 << 26)
+ 
+ #define MSR_IA32_PACKAGE_THERM_INTERRUPT	0x000001b2
+ 
+ #define PACKAGE_THERM_INT_HIGH_ENABLE		(1 << 0)
+ #define PACKAGE_THERM_INT_LOW_ENABLE		(1 << 1)
+ #define PACKAGE_THERM_INT_PLN_ENABLE		(1 << 24)
++#define PACKAGE_THERM_INT_HFI_ENABLE		(1 << 25)
+ 
+ /* Thermal Thresholds Support */
+ #define THERM_INT_THRESHOLD0_ENABLE    (1 << 15)
+@@ -959,4 +961,8 @@
+ #define MSR_VM_IGNNE                    0xc0010115
+ #define MSR_VM_HSAVE_PA                 0xc0010117
+ 
++/* Hardware Feedback Interface */
++#define MSR_IA32_HW_FEEDBACK_PTR        0x17d0
++#define MSR_IA32_HW_FEEDBACK_CONFIG     0x17d1
++
+ #endif /* _ASM_X86_MSR_INDEX_H */
+-- 
+2.35.1
+
