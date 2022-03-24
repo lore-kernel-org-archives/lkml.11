@@ -2,162 +2,232 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4134C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 19:25:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83081C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 19:31:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352945AbiCXT06 (ORCPT
+        id S1352949AbiCXTce (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 15:26:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40308 "EHLO
+        Thu, 24 Mar 2022 15:32:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235832AbiCXT04 (ORCPT
+        with ESMTP id S235241AbiCXTcc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 15:26:56 -0400
-Received: from na01-obe.outbound.protection.outlook.com (mail-centralusazon11021016.outbound.protection.outlook.com [52.101.62.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E7FFA8ECC;
-        Thu, 24 Mar 2022 12:25:23 -0700 (PDT)
+        Thu, 24 Mar 2022 15:32:32 -0400
+Received: from mail1.bemta33.messagelabs.com (mail1.bemta33.messagelabs.com [67.219.247.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5BF1AD120;
+        Thu, 24 Mar 2022 12:30:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lenovo.com;
+        s=Selector; t=1648150258; i=@lenovo.com;
+        bh=B1GJ+v5g39tFS10HfNaJ5VyKurY373EObSWJyW7KI2U=;
+        h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+         In-Reply-To:Content-Type:Content-Transfer-Encoding;
+        b=r7FiHgl8YWKnIaFxPvqpySLy7tF0wvCDMYUEXQ8D4yp1mbTeFgFySoFcUDzVW28uY
+         kCz6AaJtIND3SrNWS3NYkntnHIE84fXEo9f1cVjc+qi8t6fjf79Tz2f0+osJTW6vB+
+         0oQ8o7qe4eSN57OIvvijmCXbwfaISBWjdwBGlVqrd7CnhPg+lQq41Q3gRpKjsGeOa2
+         iEou1uwY7LgqMTJc8xHpRgQEVH+qSxq4Jbwlr3EWByvURducIQteU3EGYqBTGBoqfK
+         lO3Td5DLDXkX+Oc4BC1UsrtaXi+5we0FfbVzyN03/+b09xyl11y/yMRfdbo+rC9Seb
+         Mc/LsubpMxRUQ==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrHJsWRWlGSWpSXmKPExsWSoZ+nrfvhmE2
+  SwdHzphYHj2xks3h7/CmrxZvj05ksLu+aw2bxufcIo8XvH8+YLA5MncZssXrPC2aLrXuvsluc
+  3l3iwOXReOMGm8emVZ1sHvNOBnq833eVzePzJjmP/u5j7AFsUayZeUn5FQmsGafvNTEXvJKuO
+  PpyM2sD4x6xLkYuDkaBpcwSFycfZ4ZwFrFKvDjwlg3C6WSSmDzvHjuIIyQwi0mi9dVjoDJOIO
+  cAk8THS9UgCQmB44wS3YfWMUFUdTJK/Hh1igXCmcAkceT6LajME0aJuz2foZx7QD3/1zOCDOM
+  VsJXYuLaLDcRmEVCVOHftEzNEXFDi5MwnLCC2qEC4RPf+/awgtrBAlsTeqUvB6pkFxCVuPZkP
+  NlRE4C+jxI7le8EcZoEJjBKb++9DnZsmsfPRRiYQm01AW2LLll9g3ZwClhJrJx1ghZikKdG6/
+  Tc7hC0vsf3tHKheZYlf/efBbAkBOYn321dA2QkSzVOOMkLYkhLXbl5gh7BlJY6encMCYftKvD
+  40nw3C1pV4vuosVDxH4uOx2UwwM0/1nmOawKg7C8nTs5A8NwvJebOQnLeAkWUVo1VSUWZ6Rkl
+  uYmaOrqGBga6hoYmumYmuhaFeYpVuol5psW5qYnGJrpFeYnmxXmpxsV5xZW5yTopeXmrJJkZg
+  0kspcgjcwfh2xU+9Q4ySHExKorxvNtkkCfEl5adUZiQWZ8QXleakFh9ilOHgUJLg5TwClBMsS
+  k1PrUjLzAEmYJi0BAePkgjv6cNAad7igsTc4sx0iNQpRl2OK9v27mUWYsnLz0uVEue1OgpUJA
+  BSlFGaBzcClg0uMcpKCfMyMjAwCPEUpBblZpagyr9iFOdgVBLm9QOZwpOZVwK36RXQEUxARzz
+  /aQlyREkiQkqqgUla5WifTsGqJQVbJiw9odXTbNRpzFZlqZqqLrX/nM2zRXfftwbP/ebPJbdc
+  PJw5Tbv0p1/G06W3LZ5tEF1YUPY/2nRG3u9fD9rnX3Pb2v118S8d+XhDs+r4JVtrLkecjP/Ut
+  GU5t6L2/Q0BX76/uJ2Tdyrs2h6mgzvzj+n0RW51SHM+7Xzxs9iE+i2yCw1KJnkXciRqCFycVv
+  RG7da1KRrWHa9dTP4tvzUpdwGvzvOcGyWqqy7c01mQ86O349ds5egKfrujdZ/TPh2StPDSvbj
+  6YPKv0NdmfVpbWjmnbVgs4/vcOG/vmtgFFh+kPldwN7+4+jfp9uqE5kNR3X8/PWDk/+e4f+Mz
+  BmafjR9f7d+nxFKckWioxVxUnAgAyL3r6YEEAAA=
+X-Env-Sender: markpearson@lenovo.com
+X-Msg-Ref: server-12.tower-715.messagelabs.com!1648150255!38979!1
+X-Originating-IP: [104.47.110.43]
+X-SYMC-ESS-Client-Auth: mailfrom-relay-check=pass
+X-StarScan-Received: 
+X-StarScan-Version: 9.81.10; banners=-,-,-
+X-VirusChecked: Checked
+Received: (qmail 22098 invoked from network); 24 Mar 2022 19:30:56 -0000
+Received: from mail-tyzapc01lp2043.outbound.protection.outlook.com (HELO APC01-TYZ-obe.outbound.protection.outlook.com) (104.47.110.43)
+  by server-12.tower-715.messagelabs.com with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP; 24 Mar 2022 19:30:56 -0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Cf28+LZz99RSr5WMpOwKKOGZhTeXu8lzBkmbc5Rd83wlnvFW783GztfRQmfnQ1rhkSmUbhrLf8zzwGUuN73dwcxRToGAp3R7y3ovth63MK325b1XfWd8+utaZtCStv42fsNFQPUwNP2I5dMaACEcDFad7HD2FMYQ/+ft2FCoSEiXyKf9n71vCX9XU7+SFXNm6DY5fSr1+QiGB8dO5kG50+xe3cePOUwkxHrgDrimn4Kp/ZSaaw2gBNx26bUI2SC5LE3alSWT4QnLFzbe6FiiizwGW0R3i6B4H14JxJkQrEHWdxxRcw5hgM+gV8oMQ22EKN2gyWiqiJkhVcRqWjNxJA==
+ b=l2YH/f3ak3msYH+7AzvfI6wzWL28zoXiodfrf+0wJ9jR+XNnavHnny9ANGv2gy4nv3JL4QcytIz+J7lkzF7AVokgM+D+hSJ1O15meP0HV7IS/VyiPguELH3nW6DiJ6pO8rpXIlofpF1bckx4aljEaUhQURtzxj7ex35+lstpExoFCYIbt5vAWOj0s5FD3GaLr3sO6JeMvQ4quHUwKCnM1d3vz+6mYQeZE/Dnw1wklv76yrUxLcD/6IUTMhzp+q1Gk6FSt7mpEbnioMZAlTnzYzb5HNQo1M+dAyAgXxH48w2jM372a1qE7B9qstLFPD9RHC6AhWohQ6vQGrDHtqfjzw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MIhxIK/ohuxd3j1/DQjDqZQxax7kVBDOu+KfGhkFksM=;
- b=IV/xh9tdsf0tibezvOcxfhzbIiBtlLUnm8AjJTQ1zFuHE9CHvy0ulmkVEQv+CLE+VnBQxm3tpRXnHINcCMSQuY+Mxf1+8Oq7FKMcVCa7msvzUrpjAVhnWs44Xmrq3v/bvm0Oz4Vh2695++oO1HE2rsOBXJgHQ2MS5acQVmEMnDtbwC9eI45tzif4yQyZzTTe0elqBuWt7Q+GDnNQcNAYZxaUWfvdOKSLeJ857QdVyw+nSC/xzhZwDejYaf9Ck0k3xqfARpW/VS3kZ+7Cn2fjow3ZVS8sYVeQa7YQwPL3Pa4aEMLcYN8MXS7rl1bcvqdSRA2YQaK7TyAydt2H7ndRBw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MIhxIK/ohuxd3j1/DQjDqZQxax7kVBDOu+KfGhkFksM=;
- b=SV4WHz6CCe/4iVyFMwkfbo8zikqQhwnTU/Zue5PxjcdLVGlJkpwGIXYd841Be7taQgYu6cnUHLafpqK2h14D2NjFthYebm+QJLWtuIX45Gq3uXKyNabsH1uT5mad1jXdK5L+jwp1fF/irZ5kHssi+52Ec+10XpqZPSyuAcqLMCk=
-Received: from PH0PR21MB3025.namprd21.prod.outlook.com (2603:10b6:510:d2::21)
- by DM6PR21MB1611.namprd21.prod.outlook.com (2603:10b6:5:ce::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.8; Thu, 24 Mar
- 2022 19:25:19 +0000
-Received: from PH0PR21MB3025.namprd21.prod.outlook.com
- ([fe80::71de:a6ad:facf:dfbe]) by PH0PR21MB3025.namprd21.prod.outlook.com
- ([fe80::71de:a6ad:facf:dfbe%5]) with mapi id 15.20.5123.010; Thu, 24 Mar 2022
- 19:25:19 +0000
-From:   "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-To:     jason <jason@zx2c4.com>
-CC:     Ard Biesheuvel <ardb@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-crypto <linux-crypto@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Alexander Graf <graf@amazon.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Len Brown <lenb@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: RE: [PATCH 2/3 v6] ACPI: allow longer device IDs
-Thread-Topic: [PATCH 2/3 v6] ACPI: allow longer device IDs
-Thread-Index: AQHYLNK4fL59pmJF2Ea4CQMRQ5s3a6ypbsWAgAAEo4CAAAbTAIAAB7CAgAACs/CAAATqAIAAA+TAgAADDwCAImLl4IAABRQAgAMXfmA=
-Date:   Thu, 24 Mar 2022 19:25:19 +0000
-Message-ID: <PH0PR21MB3025900F80AE5FF005C38A79D7199@PH0PR21MB3025.namprd21.prod.outlook.com>
-References: <CAHmME9qHnvwrxEue4Pdm_E1qZQGXFuR9orJSKCWj8fH5TSh6fA@mail.gmail.com>
- <20220228183355.9090-1-Jason@zx2c4.com>
- <CAHp75VcjrD3kwN1BfWpjKXaVpG7MHfftMUscSGhcJfStm4b-Xg@mail.gmail.com>
- <CAMj1kXFmEAKJRHCiuXyGECCmOs0+xX9AVeBDxfuD0XuX2TQ2Uw@mail.gmail.com>
- <Yh0+LA8B1jw8tnl9@smile.fi.intel.com>
- <CAHmME9qW4EiYU6_kTffMdK5ijJY1DF6YRt=gDjj1vKqDxB0Raw@mail.gmail.com>
- <MN0PR21MB3098981B77F513976A62CA57D7019@MN0PR21MB3098.namprd21.prod.outlook.com>
- <CAMj1kXFZZoOeXnjxdU+gOJTN=Szn=eiXgRhSS9_nnHgwADNHjA@mail.gmail.com>
- <MN0PR21MB3098EC13B4E8488E692DB28AD7019@MN0PR21MB3098.namprd21.prod.outlook.com>
- <CAMj1kXFe-B=n1zp6M0yBuqJmmfOXTFbkzj29iK+QpPGK=LxRmA@mail.gmail.com>
- <PH0PR21MB30253A8BA8B189686B8E65EAD7179@PH0PR21MB3025.namprd21.prod.outlook.com>
- <CAHmME9pYObVqAPoGxTmvKhj31NFLO=_G7WECYDC0vb9nDTBhuw@mail.gmail.com>
-In-Reply-To: <CAHmME9pYObVqAPoGxTmvKhj31NFLO=_G7WECYDC0vb9nDTBhuw@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=509c3357-272a-40bf-bb0c-49b2110a8295;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-03-24T19:24:35Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e9d6032a-e963-4b37-2dce-08da0dcc0891
-x-ms-traffictypediagnostic: DM6PR21MB1611:EE_
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-ms-exchange-atpmessageproperties: SA|SL
-x-microsoft-antispam-prvs: <DM6PR21MB1611588BB53A9184C472ED7CD7199@DM6PR21MB1611.namprd21.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: XZOdKQ4FNN2512p7lPjrc344gn7idwMg4yN2cT11m9HX58gRXQMK4VG/4xhWWVbSNrF9hEXquW4/zU0/aOSRBv6AHKyBhdOMgnZgDYWENW8cKaA7LEWJfw/uW6U3osLncwIYlJ+Hey4OoOTdyWbnziwC/w2lE7BRndmalbIt48ikMjNC6/SC4ypmG/cuqfuzBC21uwWdXyzkOe5ZxW1tFWt6pUxXzUBHeBUNdIEay36/davIV7iOvkN9kUBGVrCWOjsQvKBY/Nws8l2jDMa0vXYsHHAnmQJLzZh7LOYpO3VeQe9pQTctwyEJmp0uW8HIQug8kEG4oo3n8OHpRCGSr4vt0+vl9djovjOvuXdj+IwJM75pHt1pXzG4zWxq/4T0zndTpbBsktQ3bLid0LeJ42iMBeWRRtR7TVgNzz2+pL8PCAwi5bNswPZPUweYuTwKNaokLyl7cO8qcCWth+7/tWnOkbgSHvEU0xU+FepjXQwY91SIjpeFsiYluxbCBGw5VZzWY6FXfoQX32XeacujxL8jC/sD3kGzj+V+Dgjg8Cx8uidDrZfTHW8+nbcw8e8o/MTKuf1VY4WQJuHkNBpXIUzYjH9hbKhBwRTm3TtvjII86DHVQ5sA4XN21fLGb3XEl+aRzrFx4JDlesEuOtMqepkUVQ7MlbBkkAAc0cVxRCybToIxIXaIbbqFxmjOg4ddZhrerEJJxwqbUWkY2hZYBBYyDHesrXxHl7VlsbM3Wz/j+UMMIDCIi4Ytye5sDlZyg/e2n86DoGfjEB7jadlMoQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR21MB3025.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(71200400001)(186003)(83380400001)(26005)(7416002)(6506007)(38070700005)(4326008)(8676002)(66446008)(5660300002)(55016003)(7696005)(122000001)(8990500004)(64756008)(9686003)(82950400001)(33656002)(82960400001)(38100700002)(316002)(66946007)(508600001)(76116006)(4744005)(66476007)(52536014)(8936002)(6916009)(10290500003)(54906003)(66556008)(86362001)(2906002)(148743002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?SllZanZsb0RoR0ZCUURSRW9HZ1lEYUVBR3hLL1lWcVdOWUxWbjlPSzhUeVdV?=
- =?utf-8?B?RnRkeGgxbWh6QTBrQ2p0ZmRrbEp2SFlnMElHRkhFY0NwVjdvcDR3bVBRSDY3?=
- =?utf-8?B?d1l2YW1jRCtsbnUzdmRqc2tmVjVzMkJGZjBKWS9QNWJGUnc0aXhLZXYxaG52?=
- =?utf-8?B?aU01Szh4RTdrUjdiSEJ6QTIwQVRDR2dENlhoSXhueE4vNXpSM25mc0ZYaU9K?=
- =?utf-8?B?ejF3S1U4akxmWVNFQ1JibWcwTW13MUkvb1RORzZGTHorQTdRbFZUZ1VCenQv?=
- =?utf-8?B?ZFdTNXpqN0diaE5ISXlENVRWQStieVRqeUlEUURUck50dGdIcmYrVm5UalRG?=
- =?utf-8?B?emNQSlRValUzcnQxMmZQZ3dlQVBEUVA4T1Y4bjdaN1hkNmlKUTdaZVRtQlgx?=
- =?utf-8?B?TXVNL0VHNVBJV1BpV2dIaUZacmJLQmlaV1Y2S1gzZjN5NU1hcS9aT1BXQ3ZR?=
- =?utf-8?B?WVh0OWVGK1JybmJ3bU0rYkIyU1lDdWFpQWd1Q2tpMThjejF1S1NHRjFPczdt?=
- =?utf-8?B?VHMvYjMwSEZaMzNFUXFWem1VVGg3ZnI3N0hDQm8yMnZtMkxSeEUydStDYndy?=
- =?utf-8?B?SllNNE5aNmJwSkhSejlZNXpRdjRYOTFtN3Z5Y24wU01HSlV6KzRwSW5naU5j?=
- =?utf-8?B?VU8zblVnSmluQm1VRkFDb0Y4L0R0UUhpeWZlQmUwckJGTGxpYTN1R1BpWk1h?=
- =?utf-8?B?SnR6dDRxeDk0em9PVFB5emE5UVJQTWxWKzJMK1FzYlNnTGV3dG9PbHdoeG1E?=
- =?utf-8?B?WWQxbW4yV0FhUzZpamt4cEt4aVpZTEJwZ3VwcDhicGZmejlscHU1bDJEbFND?=
- =?utf-8?B?cDFNV3I2MTkvMHZVVHV3MnZtMk04RklqZWE3ZXhKQ1NnNi9UNnZBNFZKMzZh?=
- =?utf-8?B?azZKcW8wekZaTlMxczVvME13V3c5NHN5MDdWTWoxaFJSZGJtQ0dVU1hHUnhj?=
- =?utf-8?B?a05KQ2pzVnByWEhWU09uZ25QUHhSYXRFSXdRSC92Q3RLenIzT2Z1UVRETXFR?=
- =?utf-8?B?MDFUQkYwMTBTQU5md0R5cndZbjhpMDJKNndFaFdsSDJzL2pIaXQ2L21ia2Fi?=
- =?utf-8?B?cTRvU01ncis5eGVwdnQrWEVYWnVWZS9lRHJTVExrYnZrdisyUkdVNXpSQSty?=
- =?utf-8?B?WktHRVFyYXhyOERzZkVycnJVSmREZUxtTGhOd0xSRzcyZGQ4eHprQ1FFTXEw?=
- =?utf-8?B?ZzhENWNOd0VjRStBbHJMakQxUUNab3dQdXpFa0xGNjlobk14VkNOMDJ6c2Rt?=
- =?utf-8?B?OHQ2dlZablNuTlNFQUZIclZMRTBleTRldldHL0ZUSVNVeFg5dGltNkFGa3NO?=
- =?utf-8?B?NGJMV0loTXBNTlB3eWVFTDc0ampwSTFZQTJ3YzgyRXlzUHJoSWxqSHkvSE5h?=
- =?utf-8?B?QUsyaXlXekZNcEkzZ0swdGplSWpoa1g0NjJNejRqdENwbm9CblJocFpuNDJy?=
- =?utf-8?B?K3M3M2dRRG9BVlF1OXFmK0F5MnIyTE5neUpGd3JQN3FNZFZEc1JmVG8zRmlz?=
- =?utf-8?B?TmhaV0pDRzRGYVk5dDJPa05qTEJwQllybkRlSXlhbkxiZDlOdStrSDZVelFX?=
- =?utf-8?B?WGN4VnNhN1Z0TzU0MVg5elFXQ0FacnBjalVGT0w1ejV2VmVSUlRONjJ0N0VI?=
- =?utf-8?B?T0VocmY3dDI5N3E0c2E0OVp2VFFvOXFVWXNqTlFQc3d1MnowbWcwdnRhc0FB?=
- =?utf-8?B?UnduOWIrVEVKRkVTZ05FYjNSb1YzVmpJVUg2WXVNVWtJd2JJYlFXR1NhNzQr?=
- =?utf-8?B?UFdzclp1ckl4UXk1UjJnQjlhUitZV2I2bXRZT1Q3c0pzMi85OWl6WjNWTjd0?=
- =?utf-8?B?d3k5QTRPUFpoYnZlSVdXMVpER1lTS2lPa1J0UHhtMjhkR01sOVBqQ3JpMGM4?=
- =?utf-8?B?Ty9tTmtWOUVFWjlzMjhLeWZyOTJXZExIUzMwL2NKVkF4NTNCeUFCVkZuVU8y?=
- =?utf-8?B?cDJIWmZxa0doRS83aEVWV3pRWWYrS2ZQRXMzVmhlWm1RNU1OMUJlVDdHOVQy?=
- =?utf-8?B?ZEk2VHArbWpJWHpxRUNoV1lLYXowcUhFL3lKeGRZYnFXb3BrTUVRYjUxaENO?=
- =?utf-8?B?UTUyWjNCNDR4dVBuQm1yMVVwS1JaZDljQXVCUWRFYkliaTVwTHk2RHVScmRO?=
- =?utf-8?B?SGJEYVJVR2x5emdHcXAvZTNEbDloLy9Sd0pMNHpKdVJnZHU3dHlkbEdIRjBp?=
- =?utf-8?B?SVZ6WklaWTdINDFSTnZqcVhZZG1QSFpVK1d4cU1JMklhNXE3YmNOSkR3RWx3?=
- =?utf-8?B?ODhYcXhCeUs0U2VvRlNYMkJUNUFXc3lyRytUSFlDTmlMeWZjbGsvQUhQeHJT?=
- =?utf-8?B?c2loa0ZjSmRWK00waFhOa2tZZjFncGVzWHJkaGdhZ0FkRkFHNEJ2ZzhXeUhv?=
- =?utf-8?Q?mrZpKpa4/Ha4cZk8=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ bh=B1GJ+v5g39tFS10HfNaJ5VyKurY373EObSWJyW7KI2U=;
+ b=g793+HmVJZVX65kinWl9VxmGnY4fUL4ANh10Q/jPPeQG6TaGgBxGUtCevmFdqYHlgtEuuk6L2ECvRvv73T6S0fHSq/821lqgiiHsukA54e3YtHj3mBwFeCwsgBEYRefgJ0qDqUzwEQQRO+Os3pp7Ku2trQ4kU4JXLtORQJzLIIAmZH2n/yGe7kSLVXy4FiJtf73lXhuN2Q2nF7+qNCZwYVHHUmvg6NUvBuIDEWZ0Byrm2gP8Ih8z11Ei1bdEvZzdbvxJ8A1SlwDIP9uEcqlMiz3LyRxpfnYzqRavnn6EVfp5RyTjBBZ0sCOrSWETNAsUGDmI00+omLcMm3MMv9mmEQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=softfail (sender ip
+ is 104.232.225.7) smtp.rcpttodomain=redhat.com smtp.mailfrom=lenovo.com;
+ dmarc=fail (p=none sp=none pct=100) action=none header.from=lenovo.com;
+ dkim=none (message not signed); arc=none
+Received: from SG2PR04CA0189.apcprd04.prod.outlook.com (2603:1096:4:14::27) by
+ KL1PR03MB6391.apcprd03.prod.outlook.com (2603:1096:820:96::9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5123.8; Thu, 24 Mar 2022 19:30:53 +0000
+Received: from SG2APC01FT0007.eop-APC01.prod.protection.outlook.com
+ (2603:1096:4:14:cafe::38) by SG2PR04CA0189.outlook.office365.com
+ (2603:1096:4:14::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.17 via Frontend
+ Transport; Thu, 24 Mar 2022 19:30:53 +0000
+X-MS-Exchange-Authentication-Results: spf=softfail (sender IP is
+ 104.232.225.7) smtp.mailfrom=lenovo.com; dkim=none (message not signed)
+ header.d=none;dmarc=fail action=none header.from=lenovo.com;
+Received-SPF: SoftFail (protection.outlook.com: domain of transitioning
+ lenovo.com discourages use of 104.232.225.7 as permitted sender)
+Received: from mail.lenovo.com (104.232.225.7) by
+ SG2APC01FT0007.mail.protection.outlook.com (10.13.36.83) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5102.17 via Frontend Transport; Thu, 24 Mar 2022 19:30:53 +0000
+Received: from reswpmail01.lenovo.com (10.62.32.20) by mail.lenovo.com
+ (10.62.123.117) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2308.27; Thu, 24 Mar
+ 2022 15:30:51 -0400
+Received: from [10.46.54.2] (10.46.54.2) by reswpmail01.lenovo.com
+ (10.62.32.20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2308.27; Thu, 24 Mar
+ 2022 15:30:49 -0400
+Message-ID: <b213c5e9-7b8d-491f-84cc-2a7c4825a547@lenovo.com>
+Date:   Thu, 24 Mar 2022 15:30:46 -0400
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR21MB3025.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e9d6032a-e963-4b37-2dce-08da0dcc0891
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Mar 2022 19:25:19.2818
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [External] [PATCH 2/4] Documentation/ABI:
+ sysfs-class-firmware-attributes: Fix Sphinx errors
+Content-Language: en-US
+To:     Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Andy Shevchenko <andy@kernel.org>,
+        "David E . Box" <david.e.box@linux.intel.com>,
+        =?UTF-8?Q?Thomas_Wei=c3=9fschuh?= <linux@weissschuh.net>,
+        Sebastian Reichel <sre@kernel.org>
+CC:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        <platform-driver-x86@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>
+References: <20220324164737.21765-1-hdegoede@redhat.com>
+ <20220324164737.21765-3-hdegoede@redhat.com>
+From:   Mark Pearson <markpearson@lenovo.com>
+In-Reply-To: <20220324164737.21765-3-hdegoede@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.46.54.2]
+X-ClientProxiedBy: reswpmail01.lenovo.com (10.62.32.20) To
+ reswpmail01.lenovo.com (10.62.32.20)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7eb7457e-b118-4d47-257c-08da0dcccfd6
+X-MS-TrafficTypeDiagnostic: KL1PR03MB6391:EE_
+X-Microsoft-Antispam-PRVS: <KL1PR03MB6391FF1BB4383C85AD59CDF1C5199@KL1PR03MB6391.apcprd03.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: bDe9hhdP5cqE2SEUUMVXuch8vPS4bLPycDD0hSf3KVK0lHCSEXNiD8qqGgCrEEKAT12NeITnAeLJdj3igXKWZW2kMEQdmKccXAmGiuWmlQ5sYpVLyMp+aVL3pMO4b3Gn0x7xQj2HYKOD9jJz5p9aD3UUTZOi+MctuBTV9J1uMRIDnQaXov6YqLLM0CPHDPG7roLk2UCv1lkJtJ9SncOwt77EATQH0eV6gbSdJnqxqNkN8hcWvyPGie+r1NXm7WqOMTP2ARDXVCDq92PWnWOw//cMQceSozmgdCds6q/eI1+n7yw1xW7NKpgMaGtrph/KOaqQm6Aqu+WLuxSJmLzbdlSsV4dhwXhiZDJ0vJG24scpcf+vrzCrId3/jyGMZzByOfToNYijB2Y8iUrLURPn4qJAKdVMoTiv5Xj21NGtfz3rwjlTYUSQ2/kdVGPnn5j0LV0k3cfz8o7LYFcw4+Tn2RllrDKKq3htTJwMBnpRWDKZkp+p74W92qnj4LiLO7+LuUK177wPV6TwBci87d7xjDpUKVf7kUsHWZMrtnTq1S8Y5rY1MwP73UVbz2H/j9qyRsOSMzFptZBZXhd83Lw8BH+EOPpo3F5fVvJg/OPThJ7Yz+aKai/qHZIBk1uIG85MYJgZBBwKw5My3ePOrTPXv989SqIli0xItN8a87bMAj1rufvcIWEoesniLDNg/CS77D5Y0ksKtPtGW5MafRAZBbs/p20jjRpyvXH7eNEAM4IZMHm6tQLkccB+4egQOQxd9fz9ZW7kFCFgQK4TfXRSKA==
+X-Forefront-Antispam-Report: CIP:104.232.225.7;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.lenovo.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(8676002)(70586007)(70206006)(83380400001)(53546011)(4326008)(16526019)(2616005)(6666004)(31696002)(426003)(336012)(82960400001)(82310400004)(508600001)(316002)(356005)(86362001)(16576012)(36906005)(54906003)(110136005)(81166007)(186003)(26005)(2906002)(36860700001)(47076005)(31686004)(36756003)(40460700003)(7416002)(5660300002)(8936002)(3940600001)(43740500002)(36900700001);DIR:OUT;SFP:1102;
+X-OriginatorOrg: lenovo.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2022 19:30:53.2598
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Zds54l4Gq75fSnkyu0KXe1Y/a5qxayiNITjn8A3CdEFTmiWfhvEVZRiKn9KbakkgQNo7Ox0rjtHppNZnH+eH4gHnLFLlkokLJ17S1tW+UGQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR21MB1611
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7eb7457e-b118-4d47-257c-08da0dcccfd6
+X-MS-Exchange-CrossTenant-Id: 5c7d0b28-bdf8-410c-aa93-4df372b16203
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=5c7d0b28-bdf8-410c-aa93-4df372b16203;Ip=[104.232.225.7];Helo=[mail.lenovo.com]
+X-MS-Exchange-CrossTenant-AuthSource: SG2APC01FT0007.eop-APC01.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: KL1PR03MB6391
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogSmFzb24gQS4gRG9uZW5mZWxkIDxKYXNvbkB6eDJjNC5jb20+IFNlbnQ6IFR1ZXNkYXks
-IE1hcmNoIDIyLCAyMDIyIDE6MTIgUE0NCj4gDQo+IEhpIE1pY2hhZWwsDQo+IA0KPiA+DQo+ID4g
-VGhlIEh5cGVyLVYgZ3V5cyBwYXNzIGFsb25nIHRoZWlyIHRoYW5rcyBmb3IgeW91ciBzdWdnZXN0
-aW9uLiAgVGhleSBoYXZlDQo+ID4gY3JlYXRlZCBhbiBpbnRlcm5hbCBidWlsZCB3aXRoIHRoZSBj
-aGFuZ2UgYW5kIHZlcmlmaWVkIHRoYXQgaXQgcHJlc2VydmVzDQo+ID4gY29tcGF0aWJpbGl0eSB3
-aXRoIFdpbmRvd3MgZ3Vlc3RzLiAgSSd2ZSB0ZXN0ZWQgd2l0aCBMaW51eCBndWVzdHMgYW5kDQo+
-ID4gSmFzb24ncyBuZXcgZHJpdmVyIChtb2RpZmllZCB0byBsb29rIGZvciAiVk1HRU5DVFIiKSwg
-YW5kIGl0IGFsbCBsb29rcw0KPiA+IGdvb2QuDQo+ID4gSXQgd2lsbCB0YWtlIGEgbGl0dGxlIHdo
-aWxlIHRvIHdlbmQgaXRzIHdheSB0aHJvdWdoIHRoZSBXaW5kb3dzL0h5cGVyLVYNCj4gPiByZWxl
-YXNlIHN5c3RlbSwgYnV0IHRoZXkgYXJlIHBsYW5uaW5nIHRvIHRha2UgdGhlIGNoYW5nZS4NCj4g
-Pg0KPiA+IE1pY2hhZWwNCj4gPg0KPiANCj4gRG8geW91IHdhbnQgdG8gc2VuZCBhIHBhdGNoIGFn
-YWluc3QgdGhlIGNybmcvcmFuZG9tLmdpdCB0cmVlIGFkZGluZyB0aGF0IG5ldyBpZD8NCg0KSSd2
-ZSBzZW50IGEgcGF0Y2guDQoNCk1pY2hhZWwNCg==
+Thanks Hans
+
+On 3/24/22 12:47, Hans de Goede wrote:
+> Fix the following warnings from "make htmldocs":
+> 
+> Documentation/ABI/testing/sysfs-class-firmware-attributes:130:
+>   ERROR: Unexpected indentation.
+>   ERROR: Unexpected indentation.
+>   ERROR: Unexpected indentation.
+> 
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+> ---
+>  .../testing/sysfs-class-firmware-attributes   | 42 ++++++++++---------
+>  1 file changed, 23 insertions(+), 19 deletions(-)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-class-firmware-attributes b/Documentation/ABI/testing/sysfs-class-firmware-attributes
+> index 05820365f1ec..5356ff2ed6c8 100644
+> --- a/Documentation/ABI/testing/sysfs-class-firmware-attributes
+> +++ b/Documentation/ABI/testing/sysfs-class-firmware-attributes
+> @@ -246,9 +246,7 @@ Description:
+>  					that is being referenced (e.g hdd0, hdd1 etc)
+>  					This attribute defaults to device 0.
+>  
+> -		certificate:
+> -		signature:
+> -		save_signature:
+> +		certificate, signature, save_signature:
+>  					These attributes are used for certificate based authentication. This is
+>  					used in conjunction with a signing server as an alternative to password
+>  					based authentication.
+> @@ -257,22 +255,27 @@ Description:
+>  					The attributes can be displayed to check the stored value.
+>  
+>  					Some usage examples:
+> -					Installing a certificate to enable feature:
+> -						echo <supervisor password > authentication/Admin/current_password
+> -						echo <signed certificate> > authentication/Admin/certificate
+>  
+> -					Updating the installed certificate:
+> -						echo <signature> > authentication/Admin/signature
+> -						echo <signed certificate> > authentication/Admin/certificate
+> +						Installing a certificate to enable feature::
+>  
+> -					Removing the installed certificate:
+> -						echo <signature> > authentication/Admin/signature
+> -						echo '' > authentication/Admin/certificate
+> +							echo "supervisor password" > authentication/Admin/current_password
+> +							echo "signed certificate" > authentication/Admin/certificate
+>  
+> -					Changing a BIOS setting:
+> -						echo <signature> > authentication/Admin/signature
+> -						echo <save signature> > authentication/Admin/save_signature
+> -						echo Enable > attribute/PasswordBeep/current_value
+> +						Updating the installed certificate::
+> +
+> +							echo "signature" > authentication/Admin/signature
+> +							echo "signed certificate" > authentication/Admin/certificate
+> +
+> +						Removing the installed certificate::
+> +
+> +							echo "signature" > authentication/Admin/signature
+> +							echo "" > authentication/Admin/certificate
+> +
+> +						Changing a BIOS setting::
+> +
+> +							echo "signature" > authentication/Admin/signature
+> +							echo "save signature" > authentication/Admin/save_signature
+> +							echo Enable > attribute/PasswordBeep/current_value
+>  
+>  					You cannot enable certificate authentication if a supervisor password
+>  					has not been set.
+> @@ -288,9 +291,10 @@ Description:
+>  		certificate_to_password:
+>  					Write only attribute used to switch from certificate based authentication
+>  					back to password based.
+> -					Usage:
+> -						echo <signature> > authentication/Admin/signature
+> -						echo <password> > authentication/Admin/certificate_to_password
+> +					Usage::
+> +
+> +						echo "signature" > authentication/Admin/signature
+> +						echo "password" > authentication/Admin/certificate_to_password
+>  
+>  
+>  What:		/sys/class/firmware-attributes/*/attributes/pending_reboot
+
+Looks good!
+Mark
