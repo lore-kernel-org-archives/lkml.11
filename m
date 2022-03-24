@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A6C1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 16:59:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB0B4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 16:59:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352062AbiCXRBI (ORCPT
+        id S1352087AbiCXRBL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 13:01:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57664 "EHLO
+        Thu, 24 Mar 2022 13:01:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352029AbiCXRBE (ORCPT
+        with ESMTP id S1352052AbiCXRBH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 13:01:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6FD335F267
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 09:59:32 -0700 (PDT)
+        Thu, 24 Mar 2022 13:01:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BF6566006E
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 09:59:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648141171;
+        s=mimecast20190719; t=1648141174;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=b/sS1I4x2XsmlSGjKr1ZTMhx5qQzprN548q1C8bCjuA=;
-        b=JNgy+zCBnWy2tnXa9gVMjov8spOlEfQ7W+yVdDx/N2K79QgJ+yRFjLHKqez+l26AQaJ6y3
-        HdXOjPBBVs9PHJvYR2yVk/J1i/CpRrdOHTCWXi5Zz26TJfQ/9tEFIsgNsIhcPGfSGsDDhV
-        nEQVSX7LltTmAU2JUZmeTFICPayIwXc=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6IfREbj9fKQtRnAg2pDT/5pKTpdLNrvvzJnz4m1uJk0=;
+        b=HZ3KlZj7BCU72xDTRb/kzDPDka3NuldZfIfrlgGm7CkApqjQyDTfbFfXvJqWU2NTg/WzXR
+        ynLKEQGHZ4ojiQOlamM36Rl1w0TPHisd8XDTIXm0cLqPqAdF60eHDnsmMYP0CGEDkULPw+
+        PYPGVvHFEXmP1nnXcd7PPTYI2HW9e2c=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-18-08azyXoUOjCal3lrW4fzKA-1; Thu, 24 Mar 2022 12:59:24 -0400
-X-MC-Unique: 08azyXoUOjCal3lrW4fzKA-1
+ us-mta-343-wCqIudkiPKuCtPvzD40K3w-1; Thu, 24 Mar 2022 12:59:33 -0400
+X-MC-Unique: wCqIudkiPKuCtPvzD40K3w-1
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 792FD1C0E341;
-        Thu, 24 Mar 2022 16:59:23 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DE0E9801585;
+        Thu, 24 Mar 2022 16:59:32 +0000 (UTC)
 Received: from shalem.redhat.com (unknown [10.39.192.132])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7F160C15D7D;
-        Thu, 24 Mar 2022 16:59:19 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2759DC26EA0;
+        Thu, 24 Mar 2022 16:59:30 +0000 (UTC)
 From:   Hans de Goede <hdegoede@redhat.com>
 To:     "Rafael J . Wysocki" <rafael@kernel.org>,
         Daniel Lezcano <daniel.lezcano@linaro.org>,
@@ -53,9 +54,11 @@ Cc:     Hans de Goede <hdegoede@redhat.com>,
         Stephen Rothwell <sfr@canb.auug.org.au>,
         linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 0/3] Documentation/ABI/testing: Sphinx warning fixes
-Date:   Thu, 24 Mar 2022 17:59:15 +0100
-Message-Id: <20220324165918.22005-1-hdegoede@redhat.com>
+Subject: [PATCH 3/3] Documentation/ABI: sysfs-fs-erofs: Fix Sphinx errors
+Date:   Thu, 24 Mar 2022 17:59:18 +0100
+Message-Id: <20220324165918.22005-4-hdegoede@redhat.com>
+In-Reply-To: <20220324165918.22005-1-hdegoede@redhat.com>
+References: <20220324165918.22005-1-hdegoede@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
@@ -63,36 +66,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi All,
+Fix the following warnings from "make htmldocs":
 
-After Stephen reported some Sphinx warnings for the platform-drivers-x86,
-I had to first figure out how to reproduce these. It turns out that to
-regenerate the htmldocs for Documentation/ABI/testing one has to run:
+Documentation/ABI/testing/sysfs-fs-erofs:10:
+  ERROR: Unexpected indentation.
+  WARNING: Block quote ends without a blank line; unexpected unindent.
 
-touch Documentation/admin-guide/abi-testing.rst && make htmldocs
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ Documentation/ABI/testing/sysfs-fs-erofs | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-This turned up not only warnings from platform/x86 driver ABI but also
-for some others. While at it I've written fixes for those too.
-
-I'm not sure how these should be merged, I guess that the relevant
-subsys maintainers will pick these up?
-
-Regards,
-
-Hans
-   
-
-Hans de Goede (3):
-  Documentation/ABI: sysfs-driver-aspeed-uart-routing: Fix sphinx
-    warning
-  Documentation/ABI: sysfs-class-thermal: Fix Sphinx warning
-  Documentation/ABI: sysfs-fs-erofs: Fix Sphinx errors
-
- Documentation/ABI/testing/sysfs-class-thermal              | 2 +-
- Documentation/ABI/testing/sysfs-driver-aspeed-uart-routing | 7 ++++---
- Documentation/ABI/testing/sysfs-fs-erofs                   | 5 +++--
- 3 files changed, 8 insertions(+), 6 deletions(-)
-
+diff --git a/Documentation/ABI/testing/sysfs-fs-erofs b/Documentation/ABI/testing/sysfs-fs-erofs
+index 05482374a741..bb4681a01811 100644
+--- a/Documentation/ABI/testing/sysfs-fs-erofs
++++ b/Documentation/ABI/testing/sysfs-fs-erofs
+@@ -9,8 +9,9 @@ Description:	Shows all enabled kernel features.
+ What:		/sys/fs/erofs/<disk>/sync_decompress
+ Date:		November 2021
+ Contact:	"Huang Jianan" <huangjianan@oppo.com>
+-Description:	Control strategy of sync decompression
++Description:	Control strategy of sync decompression:
++
+ 		- 0 (default, auto): enable for readpage, and enable for
+-				     readahead on atomic contexts only,
++		  readahead on atomic contexts only.
+ 		- 1 (force on): enable for readpage and readahead.
+ 		- 2 (force off): disable for all situations.
 -- 
 2.35.1
 
