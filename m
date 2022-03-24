@@ -2,229 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76B35C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 08:14:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC2A9C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 08:14:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348889AbiCXIPp (ORCPT
+        id S1348848AbiCXIPv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 04:15:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53868 "EHLO
+        Thu, 24 Mar 2022 04:15:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242320AbiCXIPa (ORCPT
+        with ESMTP id S1348852AbiCXIPh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 04:15:30 -0400
-Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF38A6D3BA
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 01:13:58 -0700 (PDT)
-Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
-        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220324081357epoutp038a30379e51bae581dbe545a2e39bd35f~fQvubzHI90321903219epoutp03O
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 08:13:57 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220324081357epoutp038a30379e51bae581dbe545a2e39bd35f~fQvubzHI90321903219epoutp03O
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1648109637;
-        bh=YW/2ceFMHoRfV7fzxxaDnC0GyOKNFo3dhe+3d+i6lhw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c7gnzmzet5eskAraKcHhfkX2X6vImBGd2vb9C57KZPD9GZxoD5tsnPDRdrfGf5qsX
-         D8/HqmCRSrRR22vt7oYWWX3XM94842oEFYvx82venO9L2Gyd3LusytPWn4KiDwrAQD
-         vyoLIWaeTrGUHifMhyluz/Sq3INa4xxe8fYGNOLM=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
-        20220324081356epcas2p1966dd6d7123f831434fccf1a9321a3c1~fQvtnieql2232922329epcas2p1G;
-        Thu, 24 Mar 2022 08:13:56 +0000 (GMT)
-Received: from epsmges2p3.samsung.com (unknown [182.195.36.100]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4KPHzz0Tlcz4x9Q3; Thu, 24 Mar
-        2022 08:13:51 +0000 (GMT)
-Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
-        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
-        69.E4.25540.C382C326; Thu, 24 Mar 2022 17:13:49 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas2p4.samsung.com (KnoxPortal) with ESMTPA id
-        20220324081348epcas2p48d3a24dfdfd8d01e9bf350571b18ffff~fQvmqrMTj0598405984epcas2p4c;
-        Thu, 24 Mar 2022 08:13:48 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220324081348epsmtrp1c3b1a025dd259ecc157f7cf500477fae~fQvmp07mu0419104191epsmtrp1T;
-        Thu, 24 Mar 2022 08:13:48 +0000 (GMT)
-X-AuditID: b6c32a47-81bff700000063c4-d6-623c283ce36e
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        F7.7E.29871.C382C326; Thu, 24 Mar 2022 17:13:48 +0900 (KST)
-Received: from ubuntu.dsn.sec.samsung.com (unknown [12.36.155.120]) by
-        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220324081348epsmtip2ea52d3bb30fb2d5b3a180677e31513f5~fQvmdNqXf1325713257epsmtip2A;
-        Thu, 24 Mar 2022 08:13:48 +0000 (GMT)
-From:   Oh Eomji <eomji.oh@samsung.com>
-To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org (open list),
-        alsa-devel@alsa-project.org, Leon Romanovsky <leon@kernel.org>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Oh Eomji <eomji.oh@samsung.com>
-Subject: [PATCH v1 2/3] sound: usb: Calling vendor's call-back function
- within usb audio operation.
-Date:   Thu, 24 Mar 2022 17:10:43 +0900
-Message-Id: <1648109444-196321-3-git-send-email-eomji.oh@samsung.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1648109444-196321-1-git-send-email-eomji.oh@samsung.com>
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrHKsWRmVeSWpSXmKPExsWy7bCmha6thk2SwfmNzBZXLh5isji1fCGT
-        RfPi9WwWU34tZba4vGsOm8WBP4vZLDp39bNabPi+ltGBw2PD5yY2j52z7rJ7bFrVyeaxf+4a
-        do99b5exefRtWcXosX7LVRaPz5vkAjiism0yUhNTUosUUvOS81My89JtlbyD453jTc0MDHUN
-        LS3MlRTyEnNTbZVcfAJ03TJzgE5TUihLzCkFCgUkFhcr6dvZFOWXlqQqZOQXl9gqpRak5BSY
-        F+gVJ+YWl+al6+WlllgZGhgYmQIVJmRnnJt/ib1gr2zFj7MNbA2MEyW6GDk5JARMJI782sfU
-        xcjFISSwg1HibvtsZgjnE6PEo45TzCBVQgLfGCXmbOSD6ejq+QxVtJdRYuGeBywQzg9GiWX/
-        u8A62ARUJaYv287YxcjBISJQJrFsuiVIDTPIiifvlrKD1AgLpEo8vLYDrJ4FqH7Or242EJtX
-        wFViy7SLjBDb5CRunutkBpnDKeAm8eulO8gcCYFH7BI3FnawQNS4SKw6dIkNwhaWeHV8CzuE
-        LSXxsr8Nyi6WOLjgOVRNjcTbg61QcWOJWc/awe5kFtCUWL9LH8SUEFCWOHILbDqzAJ9Ex+G/
-        7BBhXomONiGIRiWJSU2dTBC2hMSKz01QtofEpf97oAE6k1Hi9fwW9gmMcrMQFixgZFzFKJZa
-        UJybnlpsVGAMj6/k/NxNjOCEp+W+g3HG2w96hxiZOBgPMUpwMCuJ8N6/bJ0kxJuSWFmVWpQf
-        X1Sak1p8iNEUGHQTmaVEk/OBKTevJN7QxNLAxMzM0NzI1MBcSZzXK2VDopBAemJJanZqakFq
-        EUwfEwenVAOTjHnXnV2M+005lzf8++nicu125uGXf+3uvWp6rJHYoZl8YNLic9kWG8R3spj4
-        zT3gxG0Uz9Sd8eSy16eKGcXVd4W+zwtyyN/1w+HD7c/RovZTtZmP1Dte+CSsLvxVrWRLT+tN
-        FtbtpfkvCx4lix26tF/eICnHSsB5N+vkzPItAQrWnTsS7zqJ6m39Ed7CdKZQY1nTqq7QbUJt
-        tpO5LU5Wz351IvaIuYTmmVu1Fxa9t+76Wmey0SJfh2v+BevlGqs4jpxsP2o085tavG2rSmfx
-        98MT93FNrFjWc+T1utTWFw1F7c97Paefn6vbUyF6kjFeapfY/P2t85v6O/NOPH81zWnd1Nkb
-        lr2ICn1/IfupEktxRqKhFnNRcSIAR75CvQEEAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrFLMWRmVeSWpSXmKPExsWy7bCSvK6Nhk2Swf4GFYsrFw8xWZxavpDJ
-        onnxejaLKb+WMltc3jWHzeLAn8VsFp27+lktNnxfy+jA4bHhcxObx85Zd9k9Nq3qZPPYP3cN
-        u8e+t8vYPPq2rGL0WL/lKovH501yARxRXDYpqTmZZalF+nYJXBnn5l9iL9grW/HjbANbA+NE
-        iS5GTg4JAROJrp7PzF2MXBxCArsZJTat6GCCSEhILOh6zQxhC0vcbznCCmILCXxjlLg+SwPE
-        ZhNQlZi+bDsjiC0iUCFx6+t2sEHMAnsYJZqONoM1CwskS1yb08cOYrMANcz51c0GYvMKuEps
-        mXaREWKBnMTNc51A9RwcnAJuEr9eukPscpXof7mPbQIj3wJGhlWMkqkFxbnpucWGBYZ5qeV6
-        xYm5xaV56XrJ+bmbGMHBqaW5g3H7qg96hxiZOBgPMUpwMCuJ8N6/bJ0kxJuSWFmVWpQfX1Sa
-        k1p8iFGag0VJnPdC18l4IYH0xJLU7NTUgtQimCwTB6dUA9OB98yP1yyZo6nmKXF7fmej5p1i
-        GYu5TT8/HHSZMHW56ba6V5mOubLOeVWSufeWe2kKP8/zNTXsmpucY6FrE5JZ2V3UJVe32jKx
-        2P6iV6DbkZZHCSveSdswGH78O6FpIfOG/Q15p5721k5PEXH4du6H5Op9kzvWPzpUEnU/82RF
-        n0OV9TTZK1e9HZafX1ypddP/4ped9T9m/bJMObz9xkKTaj4REY2jMl4FrEWLfoXsyewx+rv2
-        PuvswzmTVFzCzX6+9KtxnWH2pT395uyU1s2tewV5/9oFG/i+sv5rXqsrJmTyJcbu2v3SjnP/
-        HFo1khIZDGSkJIqXlbX0XdtkuW1Ciaue1JuXHf18XoXCSizFGYmGWsxFxYkAjBVkb70CAAA=
-X-CMS-MailID: 20220324081348epcas2p48d3a24dfdfd8d01e9bf350571b18ffff
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220324081348epcas2p48d3a24dfdfd8d01e9bf350571b18ffff
-References: <1648109444-196321-1-git-send-email-eomji.oh@samsung.com>
-        <CGME20220324081348epcas2p48d3a24dfdfd8d01e9bf350571b18ffff@epcas2p4.samsung.com>
+        Thu, 24 Mar 2022 04:15:37 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011BA6D3B9;
+        Thu, 24 Mar 2022 01:14:03 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id k10so4692018edj.2;
+        Thu, 24 Mar 2022 01:14:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=etzSqv0/9aE5pl3dptR4Y8mgC5YpOiktHoANWy6nVdw=;
+        b=Hc7dpeqOaV8CbCzshfeBcroqqi9BWzXZNnC75s6jVj4ou7A/Az8JJZcWxp9eXEaPJ2
+         DLQecJ3yjC64JAw39a3YrNXqEFckso4ovxJ0+w5xoMWAE+2H+O07V6akUaLfbRNNmIQg
+         H2J1URluwCxdDV05AQ5GAkvCo71xyKd3D21tTUK87RVYfmG7CVBtdGOwXYDrgu+m3sJU
+         iEkbSMfx2q3Py7p1y3ieK7GpQao70xTEEzmoUDttUWEq744IaIc/w6DCFylRiV3u2BsC
+         QtVEwXhrqauOPnOsrmMmE8mKu0GmUa3pfGX8cUlIJBBbjJfAoWXIuyUNWAwxTLB+UjnA
+         Dx6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=etzSqv0/9aE5pl3dptR4Y8mgC5YpOiktHoANWy6nVdw=;
+        b=l5D1h4nIzphQMrdi4oObgwyLCGVDj21cq4L+IVGSjn++JvxWi2ly75/DCpeYjr7Kf4
+         7YsC+rIXxXBjVUkL+XX/SgAjmIQUVsZdSojAPARuK+ytAElH6q3aweBa7EHvlUOVrh9x
+         +TrPhhVttHeab/NSPYwOOB/6ZKpt9rXIocCkBHdQTalylAR+3bFPis2Ajd+Q1PkXuCgK
+         12KLxFCaG63KyTxR6DPl/806khoO95mhi5+E8w1HqKT4cVTpZxz7L/aJToVAZW4NwL/v
+         OduxESOVdIGxpfYAoa5VPpez92hOz7lbozXDFYZVx2DohkLy/RXotnyG0pktodLJ/UZA
+         IaqA==
+X-Gm-Message-State: AOAM531lqP/rOLKx6PgMR/q0/Dm3eLoZfHbAp3mI4heuG22sQBHBTSqq
+        yKPNruIfrP5Pq9Tji8I8W6mpo7lCSavbutTDVfA=
+X-Google-Smtp-Source: ABdhPJxB9yM2gtllAWM/wn6zYLnJI+r0tWFlQ5gSs9AFZo0W3max2hZtxlTeTG9Es8ssycmuut12zhjOu6WdRn5durE=
+X-Received: by 2002:a50:fe0d:0:b0:415:e2ee:65af with SMTP id
+ f13-20020a50fe0d000000b00415e2ee65afmr5075480edt.383.1648109642312; Thu, 24
+ Mar 2022 01:14:02 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220309021230.721028-1-yuzhao@google.com> <20220309021230.721028-7-yuzhao@google.com>
+ <CAGsJ_4xfL7h6M92WGusxbTxQzHOJDj4X4AuC=0HgrEyAYJaJFg@mail.gmail.com>
+ <CAOUHufbiSShp=khZFL6BmJKNNkG-LBrsPoLwYxewcgtZhi5tFg@mail.gmail.com>
+ <CAGsJ_4zeNtAsq7E9SKVwuKaXnKj80BP2NPHdjtd1i=098M6eDw@mail.gmail.com> <CAOUHufazsjhp3GzV7QFOqEeG98zJyRWd+HocyYR1FP3nk-Ho0Q@mail.gmail.com>
+In-Reply-To: <CAOUHufazsjhp3GzV7QFOqEeG98zJyRWd+HocyYR1FP3nk-Ho0Q@mail.gmail.com>
+From:   Barry Song <21cnbao@gmail.com>
+Date:   Thu, 24 Mar 2022 21:13:48 +1300
+Message-ID: <CAGsJ_4y=TkCGoWWtWSAptW4RDFUEBeYXwfwu=fUFvV4Sa4VA4A@mail.gmail.com>
+Subject: Re: [PATCH v9 06/14] mm: multi-gen LRU: minimal implementation
+To:     Yu Zhao <yuzhao@google.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        LAK <linux-arm-kernel@lists.infradead.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Kernel Page Reclaim v2 <page-reclaim@google.com>,
+        x86 <x86@kernel.org>, Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a new interface is connected or removed, the call-back functions
-are called to transmit a command to the hardware.
+On Thu, Mar 24, 2022 at 7:24 PM Yu Zhao <yuzhao@google.com> wrote:
+>
+> On Wed, Mar 23, 2022 at 1:47 AM Barry Song <21cnbao@gmail.com> wrote:
+> >
+> > On Sat, Mar 19, 2022 at 4:11 PM Yu Zhao <yuzhao@google.com> wrote:
+> > >
+> > > On Fri, Mar 18, 2022 at 9:01 PM Barry Song <21cnbao@gmail.com> wrote:
+> > > >
+> > > > > +static int folio_inc_gen(struct lruvec *lruvec, struct folio *folio, bool reclaiming)
+> > > > > +{
+> > > > > +       unsigned long old_flags, new_flags;
+> > > > > +       int type = folio_is_file_lru(folio);
+> > > > > +       struct lru_gen_struct *lrugen = &lruvec->lrugen;
+> > > > > +       int new_gen, old_gen = lru_gen_from_seq(lrugen->min_seq[type]);
+> > > > > +
+> > > > > +       do {
+> > > > > +               new_flags = old_flags = READ_ONCE(folio->flags);
+> > > > > +               VM_BUG_ON_FOLIO(!(new_flags & LRU_GEN_MASK), folio);
+> > > > > +
+> > > > > +               new_gen = ((new_flags & LRU_GEN_MASK) >> LRU_GEN_PGOFF) - 1;
+> > > > > +               new_gen = (old_gen + 1) % MAX_NR_GENS;
+> > > >
+> > > > new_gen is assigned twice, i assume you mean
+> > > >                old_gen = ((new_flags & LRU_GEN_MASK) >> LRU_GEN_PGOFF) - 1;
+> > > >                new_gen = (old_gen + 1) % MAX_NR_GENS;
+> > > >
+> > > > or do you always mean new_gen =  lru_gen_from_seq(min_seq) + 1?
+> > >
+> > > Thanks a lot for your attention to details!
+> > >
+> > > The first line should be in the next patch but I overlooked during the
+> > > last refactoring:
+> >
+> > Thanks for the clarification. So an unmapped file-backed page which is
+> > accessed only by system call will always be in either min_seq or
+> > min_seq + 1? it has no chance to be in max_seq like a faulted-in
+> > mapped file page?
+>
+> That's right. The rationale is documented here under the `Assumptions`
+> section [1]. This is also related to Aneesh's question about why MGLRU
+> doesn't need additional heuristics for VM_EXEC pages [2]. Unmapped
+> file pages weaken the protection of executable pages under heavy
+> buffered IO workloads like Java NIO.
 
-Signed-off-by: Oh Eomji <eomji.oh@samsung.com>
+ok. This is probably right.
+i will also run a test by maltreating unmapped page in vanilla LRU, the
+PoC code is like (not been tested yet):
+
+Subject: [PATCH 1/1] mm: vmscan: maltreat unmapped file-backed pages
+
+[This patch has not been tested yet.]
+
+A lesson we learned from MGLRU is that mapped filed-backed pages
+are much more important than unmapped ones.
+So this patch doesn't move the second accessed unmapped pages to
+the active list, alternatively, it keeps the pages in the inactive
+list. And we abuse PG_workingset to let the memory reclaim this
+is a relatively hot file-backed page, so the reclaim should keep
+the pages in the inactive list.
+
 ---
- sound/usb/pcm.c    | 37 +++++++++++++++++++++++++++++++++++++
- sound/usb/stream.c |  2 ++
- 2 files changed, 39 insertions(+)
+ mm/swap.c   | 34 ++++++++++++++++++++++------------
+ mm/vmscan.c |  6 ++++--
+ 2 files changed, 26 insertions(+), 14 deletions(-)
 
-diff --git a/sound/usb/pcm.c b/sound/usb/pcm.c
-index cec6e91a..4bae4ba 100644
---- a/sound/usb/pcm.c
-+++ b/sound/usb/pcm.c
-@@ -144,6 +144,8 @@ find_format(struct list_head *fmt_list_head, snd_pcm_format_t format,
- 			found = fp;
- 			cur_attr = attr;
- 		}
-+
-+		snd_vendor_set_pcm_binterval(fp, found, &cur_attr, &attr);
- 	}
- 	return found;
- }
-@@ -434,6 +436,7 @@ static int configure_endpoints(struct snd_usb_audio *chip,
- 			       struct snd_usb_substream *subs)
+diff --git a/mm/swap.c b/mm/swap.c
+index e65e7520bebf..cb0c6e704f2e 100644
+--- a/mm/swap.c
++++ b/mm/swap.c
+@@ -470,18 +470,28 @@ void folio_mark_accessed(struct folio *folio)
+  * evictable page accessed has no effect.
+  */
+  } else if (!folio_test_active(folio)) {
+- /*
+- * If the page is on the LRU, queue it for activation via
+- * lru_pvecs.activate_page. Otherwise, assume the page is on a
+- * pagevec, mark it active and it'll be moved to the active
+- * LRU on the next drain.
+- */
+- if (folio_test_lru(folio))
+- folio_activate(folio);
+- else
+- __lru_cache_activate_folio(folio);
+- folio_clear_referenced(folio);
+- workingset_activation(folio);
++ if (folio_mapped(folio)) {
++ /*
++ * If the mapped page is on the LRU, queue it for activation via
++ * lru_pvecs.activate_page. Otherwise, assume the page is on a
++ * pagevec, mark it active and it'll be moved to the active
++ * LRU on the next drain.
++ */
++ if (folio_test_lru(folio))
++ folio_activate(folio);
++ else
++ __lru_cache_activate_folio(folio);
++ folio_clear_referenced(folio);
++ workingset_activation(folio);
++ } else {
++ /*
++ * we maltreat unmmaped file-backed pages and abuse PG_workingset
++ * flag to let the eviction know this page is a relatively hot file
++ * page, thus, the eviction can move it back to the head of the
++ * inactive list
++ */
++ folio_set_workingset(folio);
++ }
+  }
+  if (folio_test_idle(folio))
+  folio_clear_idle(folio);
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index d6f3c9812f97..56a66eb4a3f7 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -1393,12 +1393,14 @@ enum page_references {
+ static enum page_references page_check_references(struct page *page,
+    struct scan_control *sc)
  {
- 	int err;
-+	struct usb_interface *iface;
- 
- 	if (subs->data_endpoint->need_setup) {
- 		/* stop any running stream beforehand */
-@@ -442,6 +445,13 @@ static int configure_endpoints(struct snd_usb_audio *chip,
- 		err = snd_usb_endpoint_configure(chip, subs->data_endpoint);
- 		if (err < 0)
- 			return err;
-+
-+		iface = usb_ifnum_to_if(chip->dev, subs->data_endpoint->iface);
-+		err = snd_vendor_set_pcm_intf(iface, subs->data_endpoint->iface,
-+				subs->data_endpoint->altsetting, subs->direction);
-+		if (err < 0)
-+			return err;
-+
- 		snd_usb_set_format_quirk(subs, subs->cur_audiofmt);
- 	}
- 
-@@ -616,8 +626,18 @@ static int snd_usb_pcm_prepare(struct snd_pcm_substream *substream)
- 	struct snd_pcm_runtime *runtime = substream->runtime;
- 	struct snd_usb_substream *subs = runtime->private_data;
- 	struct snd_usb_audio *chip = subs->stream->chip;
-+	struct snd_usb_endpoint *ep = subs->data_endpoint;
- 	int ret;
- 
-+	ret = snd_vendor_set_pcm_buf(subs->dev, subs->cur_audiofmt->iface);
-+	if (ret)
-+		return ret;
-+
-+	if (!subs->cur_audiofmt) {
-+		dev_err(&subs->dev->dev, "no format is specified\n");
-+		return -ENXIO;
-+	}
-+
- 	ret = snd_usb_lock_shutdown(chip);
- 	if (ret < 0)
- 		return ret;
-@@ -630,6 +650,13 @@ static int snd_usb_pcm_prepare(struct snd_pcm_substream *substream)
- 	if (ret < 0)
- 		goto unlock;
- 
-+	if (snd_vendor_get_ops()) {
-+		ret = snd_vendor_set_rate(ep->cur_audiofmt->iface,
-+				ep->cur_rate, ep->cur_audiofmt->altsetting);
-+		if (!ret)
-+			goto unlock;
-+	}
-+
- 	/* reset the pointer */
- 	subs->buffer_bytes = frames_to_bytes(runtime, runtime->buffer_size);
- 	subs->inflight_bytes = 0;
-@@ -1104,6 +1131,11 @@ static int snd_usb_pcm_open(struct snd_pcm_substream *substream)
- 	struct snd_usb_substream *subs = &as->substream[direction];
- 	int ret;
- 
-+	ret = snd_vendor_set_pcm_connection(subs->dev, SOUND_PCM_OPEN,
-+					    direction);
-+	if (ret)
-+		return ret;
-+
- 	runtime->hw = snd_usb_hardware;
- 	/* need an explicit sync to catch applptr update in low-latency mode */
- 	if (direction == SNDRV_PCM_STREAM_PLAYBACK &&
-@@ -1137,6 +1169,11 @@ static int snd_usb_pcm_close(struct snd_pcm_substream *substream)
- 	struct snd_usb_substream *subs = &as->substream[direction];
- 	int ret;
- 
-+	ret = snd_vendor_set_pcm_connection(subs->dev, SOUND_PCM_CLOSE,
-+					    direction);
-+	if (ret)
-+		return ret;
-+
- 	snd_media_stop_pipeline(subs);
- 
- 	if (!snd_usb_lock_shutdown(subs->stream->chip)) {
-diff --git a/sound/usb/stream.c b/sound/usb/stream.c
-index ceb93d7..26ca696 100644
---- a/sound/usb/stream.c
-+++ b/sound/usb/stream.c
-@@ -1227,6 +1227,8 @@ static int __snd_usb_parse_audio_interface(struct snd_usb_audio *chip,
- 		snd_usb_init_pitch(chip, fp);
- 		snd_usb_init_sample_rate(chip, fp, fp->rate_max);
- 		usb_set_interface(chip->dev, iface_no, altno);
-+		if (protocol > UAC_VERSION_1)
-+			snd_vendor_set_interface(chip->dev, alts, iface_no, 0);
- 	}
- 	return 0;
- }
--- 
-2.7.4
+- int referenced_ptes, referenced_page;
++ int referenced_ptes, referenced_page, workingset;
+  unsigned long vm_flags;
 
+  referenced_ptes = page_referenced(page, 1, sc->target_mem_cgroup,
+    &vm_flags);
+  referenced_page = TestClearPageReferenced(page);
++ workingset = page_is_file_lru(page) && !page_mapped(page) &&
++ TestClearPageWorkingset(page);
+
+  /*
+  * Mlock lost the isolation race with us.  Let try_to_unmap()
+@@ -1438,7 +1440,7 @@ static enum page_references
+page_check_references(struct page *page,
+
+  /* Reclaim if clean, defer dirty pages to writeback */
+  if (referenced_page && !PageSwapBacked(page))
+- return PAGEREF_RECLAIM_CLEAN;
++ return workingset ?  PAGEREF_KEEP : PAGEREF_RECLAIM_CLEAN;
+
+  return PAGEREF_RECLAIM;
+ }
+
+>
+> [1] https://lore.kernel.org/linux-mm/20220309021230.721028-15-yuzhao@google.com/
+> [2] https://lore.kernel.org/linux-mm/CAOUHufYfpiGdLSdffvzDqaD5oYFG99oDJ2xgQd2Ph77OFR5NAA@mail.gmail.com/
+
+Thanks
+Barry
