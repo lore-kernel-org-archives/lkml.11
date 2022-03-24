@@ -2,119 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9A74C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 13:47:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5679C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 13:47:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350617AbiCXNtO (ORCPT
+        id S1350647AbiCXNtS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 09:49:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33164 "EHLO
+        Thu, 24 Mar 2022 09:49:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350591AbiCXNsu (ORCPT
+        with ESMTP id S1350584AbiCXNst (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 09:48:50 -0400
+        Thu, 24 Mar 2022 09:48:49 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06FFFA94D9
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 06:47:17 -0700 (PDT)
-Message-ID: <20220324134623.736990161@linutronix.de>
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4BB6A94DE
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 06:47:16 -0700 (PDT)
+Message-ID: <20220324134623.681768598@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1648129636;
+        s=2020; t=1648129635;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=R6A5qasfkCP1yilN3Hx1CqR1fLfcwGqb+MZxXGRxBLk=;
-        b=BUwWnm++qyFfkfypVTGJcfty77bat2cZNnIS5b82BWBviYGp5UPe6KuR2MJQKx3uh37vid
-        NbfmjvslxGzTO7nYXj65CWwXcR3evAWa68bKcYZk8YtmMmHicXI1E0LJd52CAEBiXA0quf
-        56OIUDl/GNxbWE6FDU+Crdpfa2ItQBvMlcSDdso2tffBEXChz6RjEt3/SKm/0eUaacTFY5
-        l/tmK903vuESeFxXdeth3esrhBXVo6uZyBEf1a+0gaPf+BrBWSlNoV6Cffxin31eODbS4O
-        7uv09KMl/8nIZNstLriQNPPlaFm1fFpNmnyNVYhVL0auICTe9KHBeQTtPDyYrw==
+         references:references; bh=fRGoaQA9ELB/t/I5jAlbmPcCoZHznW4PsontUd5UTeo=;
+        b=oE6v15/Qr061F27NHTDBHMCy1kFOhASSrrCQiStooXcTJAXQG+pFtUX5J9HJjCH8s5bBNk
+        NNJliAJODG9mFvr4W0GMPdvQ0+ww9lLHcZoVXXvwII5i3wptTgjmq9RFekjZqBXWMlzNi8
+        85BQnggxNt+n7de4gQqe15rIjVTuZzIhtUeK/2bdz+66libTsBqZmgNsr369uqvmmg188m
+        3s+t5O7bTElghz2XMvbSpl3Y14qzHLbSndImAH/+oKFFXBiKP/f/N84S4epbZheqwHi78s
+        ZUIiwN07yNrXZoMvMwU1WIm+k4fR0EGNX1kdS6dnM0Xemus0ugQLZ/5+bLkDTA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1648129636;
+        s=2020e; t=1648129635;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=R6A5qasfkCP1yilN3Hx1CqR1fLfcwGqb+MZxXGRxBLk=;
-        b=uhku3XA5lZTnxAOLGPuoRxWvdslUdVxMWjjkv45KcVkPta+muLG5Rnj8fRC4NE+q0r5PRy
-        iq6KGsGndBtZeJCw==
+         references:references; bh=fRGoaQA9ELB/t/I5jAlbmPcCoZHznW4PsontUd5UTeo=;
+        b=jqP05jj4pbBR0I3vIXgYP0K9j+8+EXNgovD4tMBlSEyEp1YhEZrHTEh5mbzO4mhuaBzGz0
+        VyfZhs5N+ZWk4EAg==
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     x86@kernel.org, "Chang S. Bae" <chang.seok.bae@intel.com>
-Subject: [patch 7/7] x86/fpu/xstate: Consolidate size calculations
+Cc:     x86@kernel.org, "Chang S. Bae" <chang.seok.bae@intel.com>,
+        Paolo Bonzini <bonzini@gnu.org>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Tony Luck <tony.luck@intel.com>
+Subject: [patch 6/7] x86/fpu/xstate: Handle supervisor states in XSTATE permissions
 References: <20220324134548.432837672@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Date:   Thu, 24 Mar 2022 14:47:16 +0100 (CET)
+Date:   Thu, 24 Mar 2022 14:47:14 +0100 (CET)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the offset calculation to do the size calculation which avoids yet
-another series of CPUID instructions for each invocation.
+The size calculation in __xstate_request_perm() fails to take supervisor
+states into account because the permission bitmap is only relevant for user
+states.
 
+Up to 5.17 this does not matter because there are no supervisor states
+supported, but the (re)enabling of ENQCMD makes them available.
+
+Fixes: 7c1ef59145f1 ("x86/cpufeatures: Re-enable ENQCMD")
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Paolo Bonzini <bonzini@gnu.org>
+Cc: Fenghua Yu <fenghua.yu@intel.com>
+Cc: Tony Luck <tony.luck@intel.com>
 ---
- arch/x86/kernel/fpu/xstate.c |   46 ++++---------------------------------------
- 1 file changed, 5 insertions(+), 41 deletions(-)
+ arch/x86/kernel/fpu/xstate.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
 --- a/arch/x86/kernel/fpu/xstate.c
 +++ b/arch/x86/kernel/fpu/xstate.c
-@@ -385,25 +385,6 @@ static void __init setup_init_fpu_buf(vo
- 	fxsave(&init_fpstate.regs.fxsave);
- }
+@@ -1566,6 +1566,9 @@ static int __xstate_request_perm(u64 per
  
--static int xfeature_uncompacted_offset(int xfeature_nr)
--{
--	u32 eax, ebx, ecx, edx;
--
--	/*
--	 * Only XSAVES supports supervisor states and it uses compacted
--	 * format. Checking a supervisor state's uncompacted offset is
--	 * an error.
--	 */
--	if (XFEATURE_MASK_SUPERVISOR_ALL & BIT_ULL(xfeature_nr)) {
--		WARN_ONCE(1, "No fixed offset for xstate %d\n", xfeature_nr);
--		return -1;
--	}
--
--	CHECK_XFEATURE(xfeature_nr);
--	cpuid_count(XSTATE_CPUID, xfeature_nr, &eax, &ebx, &ecx, &edx);
--	return ebx;
--}
--
- int xfeature_size(int xfeature_nr)
- {
- 	u32 eax, ebx, ecx, edx;
-@@ -581,29 +562,12 @@ static bool __init check_xstate_against_
+ 	/* Calculate the resulting kernel state size */
+ 	mask = permitted | requested;
++	/* Take supervisor states into account on the host */
++	if (!guest)
++		mask |= xfeatures_mask_supervisor();
+ 	ksize = xstate_calculate_size(mask, compacted);
  
- static unsigned int xstate_calculate_size(u64 xfeatures, bool compacted)
- {
--	unsigned int size = FXSAVE_SIZE + XSAVE_HDR_SIZE;
--	int i;
-+	unsigned int topmost = fls64(xfeatures) -  1;
-+	unsigned int offset = xstate_offsets[topmost];
- 
--	for_each_extended_xfeature(i, xfeatures) {
--		/* Align from the end of the previous feature */
--		if (xfeature_is_aligned64(i))
--			size = ALIGN(size, 64);
--		/*
--		 * In compacted format the enabled features are packed,
--		 * i.e. disabled features do not occupy space.
--		 *
--		 * In non-compacted format the offsets are fixed and
--		 * disabled states still occupy space in the memory buffer.
--		 */
--		if (!compacted)
--			size = xfeature_uncompacted_offset(i);
--		/*
--		 * Add the feature size even for non-compacted format
--		 * to make the end result correct
--		 */
--		size += xfeature_size(i);
--	}
--	return size;
-+	if (compacted)
-+		offset = xfeature_get_offset(xfeatures, topmost);
-+	return offset + xstate_sizes[topmost];
- }
- 
- /*
+ 	/* Calculate the resulting user state size */
 
