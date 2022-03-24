@@ -2,169 +2,296 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF72C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:31:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4056EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:32:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348625AbiCXHcq (ORCPT
+        id S1348619AbiCXHda (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 03:32:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57228 "EHLO
+        Thu, 24 Mar 2022 03:33:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348602AbiCXHcd (ORCPT
+        with ESMTP id S1348615AbiCXHch (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 03:32:33 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED230996A3
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:31:01 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id d10so7315159eje.10
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:31:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bQP0V9OY5aQsKT4SJO0KH8YjFqWZFbeNBTnB8MCoLgM=;
-        b=p+j6YAY2V68RpdPuWD726VDdObgITxMOArazNEZ+vBFzd/Yyzwxf7UJRhHGjLOx/c1
-         eu1r3a2tAJa+O0Xm+a8k8wWrz0K1QtaHKUUXgXzazpXSr9PZHYwFApajJSNiqRk7dXT9
-         qhSfvDxpciDHZ37jtEgKCyxERlB6a8N55D9jmEVLDj4XXhjlNAD2r/EaHDsB3uNOiywZ
-         oUVDeeb2xy6h3jGTYWpTGOzUX4Lef6xyIeC2tFMn49ZkHq/Zvcuh8lqJlyTYpsuTEGBV
-         NGwQXEisS/3JAiNA4XN9ackHlaGaCXkKwnQ/iOybWRtaY0k+rk0pYcUTpH31XoCr7cz+
-         6/dw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bQP0V9OY5aQsKT4SJO0KH8YjFqWZFbeNBTnB8MCoLgM=;
-        b=08ZiMzmXPQ2v2TXE4suZQCgfcOe/UQ7kp0rFf5iZifjfWbUVYg72AV46duYElxfBOC
-         I4Wsq1jhz5QCNEeCviBaXr3OAEVioSEHaeHJCkXycfpxvALIeRy9ms4tsG79tXFQFdD6
-         0+67DPH2wUUBlGdXfmjwiRfmm5nXABY2WN+3oBEhMb+nxsf31UUdBxxAjxEMpKDULbOP
-         P3fAM+D0n1qfH71XOlYEpX7myVIrUhOZTnl2FF+HONSXDIcowCGG5HF0K1yVAhi5Aavq
-         J6xL1GK5T+QHsFojDT3zGupr6pzzsmihEC5dfQHaOBbtdbMAT8RvWFY7gFFImG+L5Isj
-         U9Vg==
-X-Gm-Message-State: AOAM531H+/QHf+aBeIA314pAyuVrx9fABU+fyV3ljCNciCY50c7FlKTX
-        L+kPNuOEv4UAD8pWCueou6pT2k89/EDxV2Xv
-X-Google-Smtp-Source: ABdhPJyjdhPveqm4nFYih/ZGNZbOl5jnnO+9D7Pg2jNePkk0xBvxhyvs3MM/lXT8Rx/g8O09rT6I4g==
-X-Received: by 2002:a17:906:ae0b:b0:6df:c7d6:9235 with SMTP id le11-20020a170906ae0b00b006dfc7d69235mr4366763ejb.664.1648107060275;
-        Thu, 24 Mar 2022 00:31:00 -0700 (PDT)
-Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id sa13-20020a1709076d0d00b006ce3ef8e1d4sm776972ejc.31.2022.03.24.00.30.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 00:30:59 -0700 (PDT)
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-To:     Nicolas Saenz Julienne <nsaenz@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Gaston Gonzalez <gascoar@gmail.com>,
-        Ojaswin Mujoo <ojaswin98@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Mike Rapoport <rppt@kernel.org>,
-        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
-Subject: [PATCH] staging: vchiq: replace usage of found with dedicated list iterator variable
-Date:   Thu, 24 Mar 2022 08:30:24 +0100
-Message-Id: <20220324073024.65943-1-jakobkoschel@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 24 Mar 2022 03:32:37 -0400
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B27B2996AC
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:31:04 -0700 (PDT)
+Received: from integral2.. (unknown [182.2.71.236])
+        by gnuweeb.org (Postfix) with ESMTPSA id 908C77E710;
+        Thu, 24 Mar 2022 07:31:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1648107063;
+        bh=XnHIMtKCHpfViYs+NxhkaGxPrB2QEF9blnFlAgHfvkI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=F92q9FjqXDVM9H1BYBGp8Wfp2b6LxgegpwJdJda/NuQWnG+3dbYM+Quy4CLRDNysC
+         tdhKWMp4QFB17yfx4pwPmS1MQA8Lt/3C9DFlxOVT/ZIuN0DlyBfB3Ok9WyIy+YL5QS
+         FPu9x2vXgZCzQMTMTLicEB7j0jzuw3uG4G6+4lTe8R5cUrIORtvjGTm8YNUiEUFtpk
+         NlVh2lk2BbvCRfQsmg/D8oiVxcLmWU8w2utTO7GTQ9PAV25jc/VCG6KRP3UEsBS9te
+         oPyt8tOksHFXOODMaI/auE8NgAfYpQ6aM4nnZsWht0WP4RF16T+wDOAHFOANiyy/rr
+         2sUzIjkK4Fqkg==
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+To:     Willy Tarreau <w@1wt.eu>
+Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
+        Nugraha <richiisei@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        David Laight <David.Laight@ACULAB.COM>
+Subject: [PATCH v1 04/11] tools/nolibc: x86-64: Use appropriate register constraints if exist
+Date:   Thu, 24 Mar 2022 14:30:32 +0700
+Message-Id: <20220324073039.140946-5-ammarfaizi2@gnuweeb.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220324073039.140946-1-ammarfaizi2@gnuweeb.org>
+References: <20220324073039.140946-1-ammarfaizi2@gnuweeb.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To move the list iterator variable into the list_for_each_entry_*()
-macro in the future it should be avoided to use the list iterator
-variable after the loop body.
+Use appropriate register constraints if exist. Don't use register
+variables for all inputs.
 
-To *never* use the list iterator variable after the loop it was
-concluded to use a separate iterator variable instead of a
-found boolean [1].
+Register variables with "r" constraint should be used when we need to
+pass data through a specific register to extended inline assembly that
+doesn't have a specific register constraint associated with it (anything
+outside %rax, %rbx, %rcx, %rdx, %rsi, %rdi).
 
-This removes the need to use a found variable and simply checking if
-the variable was set, can determine if the break/goto was hit.
+It also simplifies the macro definition.
 
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Link: https://lore.kernel.org/lkml/3d2cfdeecddc45dc8e4beada305b5948@AcuMS.aculab.com
+Suggested-by: David Laight <David.Laight@ACULAB.COM>
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 ---
- .../vc04_services/interface/vchiq_arm/vchiq_arm.c   | 13 ++++++-------
- .../vc04_services/interface/vchiq_arm/vchiq_dev.c   | 13 ++++++-------
- 2 files changed, 12 insertions(+), 14 deletions(-)
+ tools/include/nolibc/arch-x86_64.h | 202 +++++++++++++----------------
+ 1 file changed, 91 insertions(+), 111 deletions(-)
 
-diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
-index 3a2e4582db8e..f27ff246a672 100644
---- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
-+++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
-@@ -908,8 +908,7 @@ vchiq_blocking_bulk_transfer(unsigned int handle, void *data, unsigned int size,
- 	struct vchiq_instance *instance;
- 	struct vchiq_service *service;
- 	enum vchiq_status status;
--	struct bulk_waiter_node *waiter = NULL;
--	bool found = false;
-+	struct bulk_waiter_node *waiter = NULL, *iter;
+diff --git a/tools/include/nolibc/arch-x86_64.h b/tools/include/nolibc/arch-x86_64.h
+index afc50f84a036..3067f553c03c 100644
+--- a/tools/include/nolibc/arch-x86_64.h
++++ b/tools/include/nolibc/arch-x86_64.h
+@@ -65,129 +65,109 @@ struct sys_stat_struct {
+  *
+  */
  
- 	service = find_service_by_handle(handle);
- 	if (!service)
-@@ -920,16 +919,16 @@ vchiq_blocking_bulk_transfer(unsigned int handle, void *data, unsigned int size,
- 	vchiq_service_put(service);
+-#define my_syscall0(num)                                                      \
+-({                                                                            \
+-	long _ret;                                                            \
+-	register long _num  __asm__("rax") = (num);                           \
+-	                                                                      \
+-	__asm__ volatile (                                                    \
+-		"syscall\n"                                                   \
+-		: "=a"(_ret)                                                  \
+-		: "0"(_num)                                                   \
+-		: "rcx", "r11", "memory", "cc"                                \
+-	);                                                                    \
+-	_ret;                                                                 \
++#define my_syscall0(num)					\
++({								\
++	long _ret = (num);					\
++	__asm__ volatile (					\
++		"syscall\n"					\
++		: "+a"(_ret)	/* %rax */			\
++		:						\
++		: "rcx", "r11", "memory", "cc"			\
++	);							\
++	_ret;							\
+ })
  
- 	mutex_lock(&instance->bulk_waiter_list_mutex);
--	list_for_each_entry(waiter, &instance->bulk_waiter_list, list) {
--		if (waiter->pid == current->pid) {
--			list_del(&waiter->list);
--			found = true;
-+	list_for_each_entry(iter, &instance->bulk_waiter_list, list) {
-+		if (iter->pid == current->pid) {
-+			list_del(&iter->list);
-+			waiter = iter;
- 			break;
- 		}
- 	}
- 	mutex_unlock(&instance->bulk_waiter_list_mutex);
+-#define my_syscall1(num, arg1)                                                \
+-({                                                                            \
+-	long _ret;                                                            \
+-	register long _num  __asm__("rax") = (num);                           \
+-	register long _arg1 __asm__("rdi") = (long)(arg1);                    \
+-	                                                                      \
+-	__asm__ volatile (                                                    \
+-		"syscall\n"                                                   \
+-		: "=a"(_ret)                                                  \
+-		: "r"(_arg1),                                                 \
+-		  "0"(_num)                                                   \
+-		: "rcx", "r11", "memory", "cc"                                \
+-	);                                                                    \
+-	_ret;                                                                 \
++#define my_syscall1(num, arg1)					\
++({								\
++	long _ret = (num);					\
++	__asm__ volatile (					\
++		"syscall\n"					\
++		: "+a"(_ret)	/* %rax */			\
++		: "D"(arg1)	/* %rdi */			\
++		: "rcx", "r11", "memory", "cc"			\
++	);							\
++	_ret;							\
+ })
  
--	if (found) {
-+	if (waiter) {
- 		struct vchiq_bulk *bulk = waiter->bulk_waiter.bulk;
+-#define my_syscall2(num, arg1, arg2)                                          \
+-({                                                                            \
+-	long _ret;                                                            \
+-	register long _num  __asm__("rax") = (num);                           \
+-	register long _arg1 __asm__("rdi") = (long)(arg1);                    \
+-	register long _arg2 __asm__("rsi") = (long)(arg2);                    \
+-	                                                                      \
+-	__asm__ volatile (                                                    \
+-		"syscall\n"                                                   \
+-		: "=a"(_ret)                                                  \
+-		: "r"(_arg1), "r"(_arg2),                                     \
+-		  "0"(_num)                                                   \
+-		: "rcx", "r11", "memory", "cc"                                \
+-	);                                                                    \
+-	_ret;                                                                 \
++#define my_syscall2(num, arg1, arg2)				\
++({								\
++	long _ret = (num);					\
++	__asm__ volatile (					\
++		"syscall\n"					\
++		: "+a"(_ret)	/* %rax */			\
++		: "D"(arg1),	/* %rdi */			\
++		  "S"(arg2)	/* %rsi */			\
++		: "rcx", "r11", "memory", "cc"			\
++	);							\
++	_ret;							\
+ })
  
- 		if (bulk) {
-diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_dev.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_dev.c
-index 2325844b0880..5102750dbabc 100644
---- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_dev.c
-+++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_dev.c
-@@ -290,8 +290,7 @@ static int vchiq_irq_queue_bulk_tx_rx(struct vchiq_instance *instance,
- 				      enum vchiq_bulk_mode __user *mode)
- {
- 	struct vchiq_service *service;
--	struct bulk_waiter_node *waiter = NULL;
--	bool found = false;
-+	struct bulk_waiter_node *waiter = NULL, *iter;
- 	void *userdata;
- 	int status = 0;
- 	int ret;
-@@ -310,16 +309,16 @@ static int vchiq_irq_queue_bulk_tx_rx(struct vchiq_instance *instance,
- 		userdata = &waiter->bulk_waiter;
- 	} else if (args->mode == VCHIQ_BULK_MODE_WAITING) {
- 		mutex_lock(&instance->bulk_waiter_list_mutex);
--		list_for_each_entry(waiter, &instance->bulk_waiter_list,
-+		list_for_each_entry(iter, &instance->bulk_waiter_list,
- 				    list) {
--			if (waiter->pid == current->pid) {
--				list_del(&waiter->list);
--				found = true;
-+			if (iter->pid == current->pid) {
-+				list_del(&iter->list);
-+				waiter = iter;
- 				break;
- 			}
- 		}
- 		mutex_unlock(&instance->bulk_waiter_list_mutex);
--		if (!found) {
-+		if (!waiter) {
- 			vchiq_log_error(vchiq_arm_log_level,
- 					"no bulk_waiter found for pid %d", current->pid);
- 			ret = -ESRCH;
-
-base-commit: f443e374ae131c168a065ea1748feac6b2e76613
+-#define my_syscall3(num, arg1, arg2, arg3)                                    \
+-({                                                                            \
+-	long _ret;                                                            \
+-	register long _num  __asm__("rax") = (num);                           \
+-	register long _arg1 __asm__("rdi") = (long)(arg1);                    \
+-	register long _arg2 __asm__("rsi") = (long)(arg2);                    \
+-	register long _arg3 __asm__("rdx") = (long)(arg3);                    \
+-	                                                                      \
+-	__asm__ volatile (                                                    \
+-		"syscall\n"                                                   \
+-		: "=a"(_ret)                                                  \
+-		: "r"(_arg1), "r"(_arg2), "r"(_arg3),                         \
+-		  "0"(_num)                                                   \
+-		: "rcx", "r11", "memory", "cc"                                \
+-	);                                                                    \
+-	_ret;                                                                 \
++#define my_syscall3(num, arg1, arg2, arg3)			\
++({								\
++	long _ret = (num);					\
++	__asm__ volatile (					\
++		"syscall\n"					\
++		: "+a"(_ret)	/* %rax */			\
++		: "D"(arg1),	/* %rdi */			\
++		  "S"(arg2),	/* %rsi */			\
++		  "d"(arg3)	/* %rdx */			\
++		: "rcx", "r11", "memory", "cc"			\
++	);							\
++	_ret;							\
+ })
+ 
+-#define my_syscall4(num, arg1, arg2, arg3, arg4)                              \
+-({                                                                            \
+-	long _ret;                                                            \
+-	register long _num  __asm__("rax") = (num);                           \
+-	register long _arg1 __asm__("rdi") = (long)(arg1);                    \
+-	register long _arg2 __asm__("rsi") = (long)(arg2);                    \
+-	register long _arg3 __asm__("rdx") = (long)(arg3);                    \
+-	register long _arg4 __asm__("r10") = (long)(arg4);                    \
+-	                                                                      \
+-	__asm__ volatile (                                                    \
+-		"syscall\n"                                                   \
+-		: "=a"(_ret)                                                  \
+-		: "r"(_arg1), "r"(_arg2), "r"(_arg3), "r"(_arg4),             \
+-		  "0"(_num)                                                   \
+-		: "rcx", "r11", "memory", "cc"                                \
+-	);                                                                    \
+-	_ret;                                                                 \
++#define my_syscall4(num, arg1, arg2, arg3, arg4)		\
++({								\
++	long _ret = (num);					\
++	register long _arg4 __asm__("r10") = (long)(arg4);	\
++	__asm__ volatile (					\
++		"syscall\n"					\
++		: "+a"(_ret)	/* %rax */			\
++		: "D"(arg1),	/* %rdi */			\
++		  "S"(arg2),	/* %rsi */			\
++		  "d"(arg3),	/* %rdx */			\
++		  "r"(_arg4)	/* %r10 */			\
++		: "rcx", "r11", "memory", "cc"			\
++	);							\
++	_ret;							\
+ })
+ 
+-#define my_syscall5(num, arg1, arg2, arg3, arg4, arg5)                        \
+-({                                                                            \
+-	long _ret;                                                            \
+-	register long _num  __asm__("rax") = (num);                           \
+-	register long _arg1 __asm__("rdi") = (long)(arg1);                    \
+-	register long _arg2 __asm__("rsi") = (long)(arg2);                    \
+-	register long _arg3 __asm__("rdx") = (long)(arg3);                    \
+-	register long _arg4 __asm__("r10") = (long)(arg4);                    \
+-	register long _arg5 __asm__("r8")  = (long)(arg5);                    \
+-	                                                                      \
+-	__asm__ volatile (                                                    \
+-		"syscall\n"                                                   \
+-		: "=a"(_ret)                                                  \
+-		: "r"(_arg1), "r"(_arg2), "r"(_arg3), "r"(_arg4), "r"(_arg5), \
+-		  "0"(_num)                                                   \
+-		: "rcx", "r11", "memory", "cc"                                \
+-	);                                                                    \
+-	_ret;                                                                 \
++#define my_syscall5(num, arg1, arg2, arg3, arg4, arg5)		\
++({								\
++	long _ret = (num);					\
++	register long _arg4 __asm__("r10") = (long)(arg4);	\
++	register long _arg5 __asm__("r8")  = (long)(arg5);	\
++	__asm__ volatile (					\
++		"syscall\n"					\
++		: "+a"(_ret)	/* %rax */			\
++		: "D"(arg1),	/* %rdi */			\
++		  "S"(arg2),	/* %rsi */			\
++		  "d"(arg3),	/* %rdx */			\
++		  "r"(_arg4),	/* %r10 */			\
++		  "r"(_arg5)	/* %r8  */			\
++		: "rcx", "r11", "memory", "cc"			\
++	);							\
++	_ret;							\
+ })
+ 
+-#define my_syscall6(num, arg1, arg2, arg3, arg4, arg5, arg6)                  \
+-({                                                                            \
+-	long _ret;                                                            \
+-	register long _num  __asm__("rax") = (num);                           \
+-	register long _arg1 __asm__("rdi") = (long)(arg1);                    \
+-	register long _arg2 __asm__("rsi") = (long)(arg2);                    \
+-	register long _arg3 __asm__("rdx") = (long)(arg3);                    \
+-	register long _arg4 __asm__("r10") = (long)(arg4);                    \
+-	register long _arg5 __asm__("r8")  = (long)(arg5);                    \
+-	register long _arg6 __asm__("r9")  = (long)(arg6);                    \
+-	                                                                      \
+-	__asm__ volatile (                                                    \
+-		"syscall\n"                                                   \
+-		: "=a"(_ret)                                                  \
+-		: "r"(_arg1), "r"(_arg2), "r"(_arg3), "r"(_arg4), "r"(_arg5), \
+-		  "r"(_arg6), "0"(_num)                                       \
+-		: "rcx", "r11", "memory", "cc"                                \
+-	);                                                                    \
+-	_ret;                                                                 \
++#define my_syscall6(num, arg1, arg2, arg3, arg4, arg5, arg6)	\
++({								\
++	long _ret = (num);					\
++	register long _arg4 __asm__("r10") = (long)(arg4);	\
++	register long _arg5 __asm__("r8")  = (long)(arg5);	\
++	register long _arg6 __asm__("r9")  = (long)(arg6);	\
++	__asm__ volatile (					\
++		"syscall\n"					\
++		: "+a"(_ret)	/* %rax */			\
++		: "D"(arg1),	/* %rdi */			\
++		  "S"(arg2),	/* %rsi */			\
++		  "d"(arg3),	/* %rdx */			\
++		  "r"(_arg4),	/* %r10 */			\
++		  "r"(_arg5),	/* %r8  */			\
++		  "r"(_arg6)	/* %r9  */			\
++		: "rcx", "r11", "memory", "cc"			\
++	);							\
++	_ret;							\
+ })
+ 
+ /* startup code */
 -- 
-2.25.1
+Ammar Faizi
 
