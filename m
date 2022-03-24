@@ -2,108 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3E61C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 13:47:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D41C7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 13:47:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350583AbiCXNsw (ORCPT
+        id S1350624AbiCXNs6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 09:48:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60982 "EHLO
+        Thu, 24 Mar 2022 09:48:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350563AbiCXNsn (ORCPT
+        with ESMTP id S1350576AbiCXNsp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 09:48:43 -0400
+        Thu, 24 Mar 2022 09:48:45 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76F777CDD0
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 06:47:11 -0700 (PDT)
-Message-ID: <20220324134623.465066249@linutronix.de>
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B73A18F9A9
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 06:47:12 -0700 (PDT)
+Message-ID: <20220324134623.519411939@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1648129630;
+        s=2020; t=1648129631;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=dhbG1adkOE8R+sSmMcE/7esFfa52zfgf9U61mYJxyYw=;
-        b=NEYa9909YrtsAWAufxNgT+hBwo+G/s5ZXsE6I1Cwsg2rFoHX5hBKycmuhL6/DeBbPAseoN
-        PRieKodSwQx+EgOqy/GawS2nIumvDAX3cIoFG3vB3ZYdaDDVT2BFdvnQ3WW8ceRPOQNwCG
-        jd0oiwJWwMUmFyiqmXwG43JG+M9eVYgow0z57GNErKOaccSgGE3hw3j3CwU3jAFMYJvZiT
-        eHaDBCMAsOEIFYJLvy99VojwrJ6JVALz83Mo2+ZvKZonmAmI88/A7cI5NaVwhwlPv6w93d
-        1QiIFHWK18LOPNNS26tnB5dqb6KgxJom1a9XgWzzVCdEG9z6UrbREOFoY4CpGA==
+         references:references; bh=mkdnb+b1Zmv6jwoILxAAtMLYCIJRUKxiXjyexb3mvlA=;
+        b=Mu+EzWTBgKIHpxaq1AnEAX1K+gbnmR0RU9b3Ffo+n1SdY6JvSJQgPBP8rWccsOQuy8mPgX
+        g0FO+UT1RksBZfZisj3fKshuJ9U20clfDMDjHpumeHKWyhrWVy+MVFMS5fnEQEjeV3Xs6e
+        0fv5gBOywntqh5edJowL8NgGnuiBqFUSwV0FhmzopZnLF29QpwsX0eaayjp4+5Nw+5pRLR
+        I/mZrwwznKTHmjGGwmQwtIQ3ZP3K+84/5PI40YRQACLhJRTw+PUtjkodBjiFAsGLxo49ai
+        0nPe8ytoY5aJ+I/h3cgjPA0g4hBjui9x+Dn29oBM6Z/kJRI6dkR4GLUtnq0J/A==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1648129630;
+        s=2020e; t=1648129631;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=dhbG1adkOE8R+sSmMcE/7esFfa52zfgf9U61mYJxyYw=;
-        b=WI9lMIfXdT+CqFDMctIkehPGZ5k1Ul7EltWd8i3tpjN9ysbIrq2xv/Dp9ubeBjPHzH18sK
-        wsLYlT7156aS4BBQ==
+         references:references; bh=mkdnb+b1Zmv6jwoILxAAtMLYCIJRUKxiXjyexb3mvlA=;
+        b=uuDif5DOITAoan4/wx31IbVAYrNBc+4hI0H66CtiwKIL6dfp4uCJYb94WVpud9cvrkTTFx
+        8ExKi3x+XLs877AA==
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     x86@kernel.org, "Chang S. Bae" <chang.seok.bae@intel.com>
-Subject: [patch 2/7] x86/fpu: Remove unused supervisor only offsets
+Subject: [patch 3/7] x86/fpu/xsave: Initialize offset/size cache early
 References: <20220324134548.432837672@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Date:   Thu, 24 Mar 2022 14:47:09 +0100 (CET)
+Date:   Thu, 24 Mar 2022 14:47:11 +0100 (CET)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-No users.
+Reading XSTATE feature information from CPUID over and over does not make
+sense. The information has to be cached anyway, so it can be done early.
+
+This prepares for runtime calculation of XSTATE offsets and allows
+consolidation of the size calculation functions in a later step.
+
+Rename the function while at it as it does not setup any features.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/x86/kernel/fpu/xstate.c |   30 ------------------------------
- 1 file changed, 30 deletions(-)
+ arch/x86/kernel/fpu/xstate.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
 --- a/arch/x86/kernel/fpu/xstate.c
 +++ b/arch/x86/kernel/fpu/xstate.c
-@@ -83,8 +83,6 @@ static unsigned int xstate_sizes[XFEATUR
- 	{ [ 0 ... XFEATURE_MAX - 1] = -1};
- static unsigned int xstate_comp_offsets[XFEATURE_MAX] __ro_after_init =
- 	{ [ 0 ... XFEATURE_MAX - 1] = -1};
--static unsigned int xstate_supervisor_only_offsets[XFEATURE_MAX] __ro_after_init =
--	{ [ 0 ... XFEATURE_MAX - 1] = -1};
- 
- /*
-  * Return whether the system supports a given xfeature.
-@@ -325,33 +323,6 @@ static void __init setup_xstate_comp_off
- }
- 
- /*
-- * Setup offsets of a supervisor-state-only XSAVES buffer:
-- *
-- * The offsets stored in xstate_comp_offsets[] only work for one specific
-- * value of the Requested Feature BitMap (RFBM).  In cases where a different
-- * RFBM value is used, a different set of offsets is required.  This set of
-- * offsets is for when RFBM=xfeatures_mask_supervisor().
-- */
--static void __init setup_supervisor_only_offsets(void)
--{
--	unsigned int next_offset;
--	int i;
--
--	next_offset = FXSAVE_SIZE + XSAVE_HDR_SIZE;
--
--	for_each_extended_xfeature(i, fpu_kernel_cfg.max_features) {
--		if (!xfeature_is_supervisor(i))
--			continue;
--
--		if (xfeature_is_aligned(i))
--			next_offset = ALIGN(next_offset, 64);
--
--		xstate_supervisor_only_offsets[i] = next_offset;
--		next_offset += xstate_sizes[i];
--	}
--}
--
--/*
-  * Print out xstate component offsets and sizes
+@@ -180,7 +180,7 @@ static bool xfeature_enabled(enum xfeatu
+  * Record the offsets and sizes of various xstates contained
+  * in the XSAVE state memory layout.
   */
- static void __init print_xstate_offset_size(void)
-@@ -951,7 +922,6 @@ void __init fpu__init_system_xstate(unsi
+-static void __init setup_xstate_features(void)
++static void __init setup_xstate_cache(void)
+ {
+ 	u32 eax, ebx, ecx, edx, i;
+ 	/* start at the beginning of the "extended state" */
+@@ -390,7 +390,6 @@ static void __init setup_init_fpu_buf(vo
+ 	if (!boot_cpu_has(X86_FEATURE_XSAVE))
+ 		return;
  
- 	setup_init_fpu_buf();
- 	setup_xstate_comp_offsets();
--	setup_supervisor_only_offsets();
+-	setup_xstate_features();
+ 	print_xstate_features();
  
- 	/*
- 	 * Paranoia check whether something in the setup modified the
+ 	xstate_init_xcomp_bv(&init_fpstate.regs.xsave, fpu_kernel_cfg.max_features);
+@@ -906,6 +905,10 @@ void __init fpu__init_system_xstate(unsi
+ 
+ 	/* Enable xstate instructions to be able to continue with initialization: */
+ 	fpu__init_cpu_xstate();
++
++	/* Cache size, offset and flags for initialization */
++	setup_xstate_cache();
++
+ 	err = init_xstate_size();
+ 	if (err)
+ 		goto out_disable;
 
