@@ -2,119 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDA6EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 05:26:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADE32C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 05:31:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347004AbiCXF2M (ORCPT
+        id S1346265AbiCXFcz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 01:28:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58784 "EHLO
+        Thu, 24 Mar 2022 01:32:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229911AbiCXF2J (ORCPT
+        with ESMTP id S1345762AbiCXFcs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 01:28:09 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45662939BA
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 22:26:36 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id m30so5023567wrb.1
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 22:26:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UPHKSpU1uD0rrViGw+MJCaYsmsBqORLnJdi+EK4GXp4=;
-        b=4erF0JJbyt2usIgCKQ+imVSaTwbCFuBUBSGC3nf3baGYXKVVnqcBre/vafj4XWaU/G
-         XnT5YQsjvDnYmtg0ZOjzSlQV/ibKnYYjeu5Rah+WHNBj8QOT6ejLJ9ldrp3YsgU52hOl
-         vT2/5QBVuiYhOK05YbvSgODYIO/mPAOvWwNVinxg11KAJSqJ+xfrKlFCjLT7hEfG7f3E
-         9diC7FDnPlwJW8PMl9tHm5RX41GmhV8r0OFzLlNnksrcoz5tL/3kwlbuMWgCmmdGACWA
-         rmL98RDvkILYLzFhUFiZz6QdnTddy/EM1BluEwHFcFeODsfvxsFhXQyKj5VeFbm29xz/
-         NZ1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UPHKSpU1uD0rrViGw+MJCaYsmsBqORLnJdi+EK4GXp4=;
-        b=SFlsqsVvyYjEdRTKT2LZa9sKJUsm+wIAxXETIQvPFzNjHYtNhBDYEE/Y3/5fdB0SLw
-         EGC2UGyBOPXQoE4oyekBz6mhNdGEhARuqSWAh8a9HIVtfaBOp1RzRscqV+nrs+cCMpdZ
-         j4Uvq6eICvewba97IRbz3YAC8sqzY+XeE2HfA9chILsTRfElBcJCDbMS4gkgez6op2gv
-         HrNdvLRoi7BGXkrcb3eWOe3oyhQSzAWj7UfF+OcX7RpMxFPG3q7MFkGVdgzYaDX1JU2Z
-         qXDtNMdzXOAuKE3+6sJ3LsRbn6S9Ml3kYz5+Ytk3xM/rgL40p6DZlPj3CgPqjtedKCnr
-         BbzQ==
-X-Gm-Message-State: AOAM533ZlepfI62i+a2VuEPbHshs8yeQx/5uL6J/TSQjxFAz0y+uqF6M
-        QDEwtgIk6VfiSLmCR+7261tGKQWL/YhiqT3ZHKwtag==
-X-Google-Smtp-Source: ABdhPJz3Mtc/BV9i1Kk0ZAafNaEBUtgYnsIvkd3WulJaS+i+A9mMD6+aniomgb2QMiOyr0HCbldKqPciea7+9bXnEtA=
-X-Received: by 2002:a5d:6ac9:0:b0:203:de0b:295f with SMTP id
- u9-20020a5d6ac9000000b00203de0b295fmr3003827wrw.86.1648099594672; Wed, 23 Mar
- 2022 22:26:34 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220323090025.546808-1-apatel@ventanamicro.com> <CAOnJCUJnc3VJq3PRn+wTMTbf2N5VdJs_uPjRyWTs-EKuC_190w@mail.gmail.com>
-In-Reply-To: <CAOnJCUJnc3VJq3PRn+wTMTbf2N5VdJs_uPjRyWTs-EKuC_190w@mail.gmail.com>
-From:   Anup Patel <anup@brainfault.org>
-Date:   Thu, 24 Mar 2022 10:56:21 +0530
-Message-ID: <CAAhSdy0_9kL-TLCiB-tJ0bzRCmbaahyUKj09Jone6CipZvZ9Pg@mail.gmail.com>
-Subject: Re: [PATCH] RISC-V: Enable perf events by default
-To:     Atish Patra <atishp@atishpatra.org>
-Cc:     Anup Patel <apatel@ventanamicro.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
+        Thu, 24 Mar 2022 01:32:48 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AD4490FC9;
+        Wed, 23 Mar 2022 22:31:12 -0700 (PDT)
+X-UUID: 3adf9d07ec0d4988b759eb87e86a33be-20220324
+X-UUID: 3adf9d07ec0d4988b759eb87e86a33be-20220324
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <jiaxin.yu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 162818175; Thu, 24 Mar 2022 13:31:06 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 24 Mar 2022 13:31:05 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 24 Mar 2022 13:31:04 +0800
+Message-ID: <6c331bb8e95aa7c1a88a6161622f51ff2fee3f98.camel@mediatek.com>
+Subject: Re: [v6 1/4] ASoC: dt-bindings: mt8192-mt6359: add new compatible
+ and new properties
+From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+CC:     <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <angelogioacchino.delregno@collabora.com>, <aaronyu@google.com>,
+        <matthias.bgg@gmail.com>, <trevor.wu@mediatek.com>,
+        <linmq006@gmail.com>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Thu, 24 Mar 2022 13:31:04 +0800
+In-Reply-To: <YjvBLf/8M1WUS/L+@google.com>
+References: <20220323164442.921-1-jiaxin.yu@mediatek.com>
+         <20220323164442.921-2-jiaxin.yu@mediatek.com> <YjvBLf/8M1WUS/L+@google.com>
 Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 10:04 PM Atish Patra <atishp@atishpatra.org> wrote:
->
-> On Wed, Mar 23, 2022 at 2:00 AM Anup Patel <apatel@ventanamicro.com> wrote:
-> >
-> > Let us enable perf events by default in RV32 and RV64 defconfigs
-> > so that we can use RISC-V PMU drivers on various RISC-V platforms.
-> >
-> > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-> > ---
-> >  arch/riscv/configs/defconfig      | 1 +
-> >  arch/riscv/configs/rv32_defconfig | 1 +
-> >  2 files changed, 2 insertions(+)
-> >
-> > diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
-> > index f120fcc43d0a..57aaedc7cf74 100644
-> > --- a/arch/riscv/configs/defconfig
-> > +++ b/arch/riscv/configs/defconfig
-> > @@ -15,6 +15,7 @@ CONFIG_CHECKPOINT_RESTORE=y
-> >  CONFIG_BLK_DEV_INITRD=y
-> >  CONFIG_EXPERT=y
-> >  # CONFIG_SYSFS_SYSCALL is not set
-> > +CONFIG_PERF_EVENTS=y
-> >  CONFIG_SOC_MICROCHIP_POLARFIRE=y
-> >  CONFIG_SOC_SIFIVE=y
-> >  CONFIG_SOC_VIRT=y
-> > diff --git a/arch/riscv/configs/rv32_defconfig b/arch/riscv/configs/rv32_defconfig
-> > index 8b56a7f1eb06..21d422e740d5 100644
-> > --- a/arch/riscv/configs/rv32_defconfig
-> > +++ b/arch/riscv/configs/rv32_defconfig
-> > @@ -15,6 +15,7 @@ CONFIG_CHECKPOINT_RESTORE=y
-> >  CONFIG_BLK_DEV_INITRD=y
-> >  CONFIG_EXPERT=y
-> >  # CONFIG_SYSFS_SYSCALL is not set
-> > +CONFIG_PERF_EVENTS=y
-> >  CONFIG_SOC_SIFIVE=y
-> >  CONFIG_SOC_VIRT=y
-> >  CONFIG_ARCH_RV32I=y
-> > --
-> > 2.25.1
-> >
->
-> I think it is better to enable perf events by adding CONFIG_PROFILING
-> to the defconfig similar to other ISAs.
+On Thu, 2022-03-24 at 08:54 +0800, Tzung-Bi Shih wrote:
+> On Thu, Mar 24, 2022 at 12:44:39AM +0800, Jiaxin Yu wrote:
+> > +  speaker-codec:
+> 
+> If it is possible to have 1 or more items, would "speaker-codecs" be
+> a better
+> name?
 
-Sure, I will update this patch like you suggested.
+Hi Tzung-Bi,
 
-Regards,
-Anup
+Yes, it is better to use "speaker-codecs", I will change it that in
+driver patch and bindings patch.
 
->
-> --
-> Regards,
-> Atish
+Jiaxin.Yu
+Thanks
+> 
+> > +    type: object
+> > +    properties:
+> > +      sound-dai:
+> > +        minItems: 2
+> 
+> It should be 1.  Consider of rt1015p case.
+
+Yes, I will correct it.
+
