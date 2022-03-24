@@ -2,91 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2AFAC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 22:36:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CF7EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 22:39:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355385AbiCXWhq (ORCPT
+        id S1355439AbiCXWlO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 18:37:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47302 "EHLO
+        Thu, 24 Mar 2022 18:41:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235081AbiCXWho (ORCPT
+        with ESMTP id S235081AbiCXWlK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 18:37:44 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E5C3BAB83
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 15:36:11 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id qx21so11955045ejb.13
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 15:36:11 -0700 (PDT)
+        Thu, 24 Mar 2022 18:41:10 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98E54ADD64
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 15:39:37 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id j5-20020a056902020500b00628ab64be30so4625950ybs.16
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 15:39:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=e6IOeNLpJyv8LNAg0lIn+GQLMzUbl9r7/TJFCZNGFfI=;
-        b=dGR+6YPVvBEoetW1oLf+P+zyYE0iBwuXw+PtnY7E9zECYTvAPHLgKdxN0F5oLHWXI2
-         hFbNqFIdty29VuOjAZlLV4A2PE7MfkwddEWJFez5qCBGTpqBh/5MQzHz4FP6wuFyPuw1
-         h4JAD83gjbqFuL3aFtb3g14/klmt1aHjKUaJw=
+        bh=YffvJKmqGnNOFrJNUBozqcvaEBhfok9GG307YN+iOis=;
+        b=rJBaV6pGwEOAZ5/DKw9WgYD8sOUIGzatpRwyLoMMfvhusF5BeyvsRwUwZWCNGuIDQ1
+         nQB8oCdC9bv1EZ+2GtysbZIqyvqAenpHbQez/WxBwBE3CGVb3xXwPXtQKDi9eaWQ6y7j
+         ZKrHVPDblW1plXoohNvFqYI+YSZ7lUzU+JDZLa+az53ILzpYvrYIYeB4+yyJZ67EEn+X
+         fen1X83tGjPFdNkCIFZgPgVXkkcmBf7dBg8tE2ndTF7IzTTWpZI4Ahz8CtlYV5thWf5L
+         xduypsO2tFYJpKt92zfyi3vjDV+lUkUnpditqzgfS6Zi5K3l63GEjp2/MNklpuAspxgA
+         4uIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e6IOeNLpJyv8LNAg0lIn+GQLMzUbl9r7/TJFCZNGFfI=;
-        b=Tyj7+A0M6i85aO3ZCMnsysEV8ZMSPV/ASCcMj8VAMEOGibPfHv2T4/iKs5d03ZBE/W
-         umSlvTQkVtLxegSzsY7OkmV3Kc6aDmLhkDRbPm+DBy4s4uKAIxKSCVIXEpN0flvPoPob
-         1xakrzbTYi8Wmgx9ocs4Au4e164XdaRIGkeyobQEKEBapE5mZuu3Pem8P4G/rRxcD7DN
-         Vxe97paxp9b+XWWcJcak3onFzpUQ0Ch+Ghk/OkTGxsW4mTCQAWMxrwuniEZtwTm/OijE
-         d6umnR09YXK4D3+otPKgRwQ9nO3h8r5Y3lii5uiRIOaLJk8/nli2uDsGPDEiSZvQJkDC
-         q69g==
-X-Gm-Message-State: AOAM533r8Z1sdezabio9tnLL9uzEcyvvKra9rQyIpe/aiSK5LQre/kTy
-        6dI2giZu5doKnq2V+EFvzi7ZqTv4Ko4Xvd62
-X-Google-Smtp-Source: ABdhPJzrQEzrabhBfD/AwUUq3Q7J+ZM8ARF2YE6ZjTQeT6doUETVbIG0Dt74myqpp0yyNanN1HFgFQ==
-X-Received: by 2002:a17:906:a046:b0:6b9:20c:47c1 with SMTP id bg6-20020a170906a04600b006b9020c47c1mr8170222ejb.615.1648161369936;
-        Thu, 24 Mar 2022 15:36:09 -0700 (PDT)
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com. [209.85.221.45])
-        by smtp.gmail.com with ESMTPSA id d24-20020a1709067a1800b006e021f4c1c3sm1631482ejo.166.2022.03.24.15.36.08
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Mar 2022 15:36:09 -0700 (PDT)
-Received: by mail-wr1-f45.google.com with SMTP id d7so8534098wrb.7
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 15:36:08 -0700 (PDT)
-X-Received: by 2002:a05:6000:1704:b0:203:d857:aa7a with SMTP id
- n4-20020a056000170400b00203d857aa7amr6123801wrc.513.1648161368223; Thu, 24
- Mar 2022 15:36:08 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220324223331.876199-1-swboyd@chromium.org>
-In-Reply-To: <20220324223331.876199-1-swboyd@chromium.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Thu, 24 Mar 2022 15:35:56 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=UdB-RNXQeQsyzMF0hu6Z3vz1wRRiqQwvepY_TuQDHKuw@mail.gmail.com>
-Message-ID: <CAD=FV=UdB-RNXQeQsyzMF0hu6Z3vz1wRRiqQwvepY_TuQDHKuw@mail.gmail.com>
-Subject: Re: [PATCH] arm64: dts: qcom: sc7280: Fix sar1_irq_odl node name
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Matthias Kaehlcke <mka@chromium.org>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=YffvJKmqGnNOFrJNUBozqcvaEBhfok9GG307YN+iOis=;
+        b=cOlZaxJNWwjXwl0EdodYkEIUbfq4YuDQAeRkDBEmsA8QXoZNb7NNlVScamlQ6INl4v
+         Jl1n/AU3i/u3CUpONwgRl3UHAe6wPxkUbGuJH4laPsvTNi9SElQnZIGjO4xp3lUA/aHl
+         Ag/ShjndzJ9xbtPQE1f+gauiX3zobLQEPmOEy1HlUHRnf47rlkXpIkkJyHifSUDLMLR5
+         zXcD1urfhxWdt7Dm06r4rWvd3YnLVx9g6+pTHxrF5rophTRVbtlNz0F5Ns8Qn19nksU5
+         JcTzhp8xy0oSycj735c97vblqUFc/8vWO8erlvi+uv9Zf0o7VOdWmK0AJzVfWmIRbaI7
+         LVuA==
+X-Gm-Message-State: AOAM532EyIP20VandXU8Gt4IUOByEoepi/aSB6NlZ68/tGTWCpt6UZFN
+        5MoQ4XTlGLLrVb47vJXyy4DILgY/DIl6hRngOQpv
+X-Google-Smtp-Source: ABdhPJzQniIe8bkEpjEUmGcF7TUYcFhdcZfxtrsrsS9hsTOunibTFJjXrnGim1HZIuwmtVj5ERBh+6ALOnRpNeXOLmhR
+X-Received: from ajr0.svl.corp.google.com ([2620:15c:2cd:203:9892:9f7f:2c27:2968])
+ (user=axelrasmussen job=sendgmr) by 2002:a25:3f87:0:b0:633:bbe5:c9d9 with
+ SMTP id m129-20020a253f87000000b00633bbe5c9d9mr6992182yba.115.1648161576861;
+ Thu, 24 Mar 2022 15:39:36 -0700 (PDT)
+Date:   Thu, 24 Mar 2022 15:39:29 -0700
+In-Reply-To: <20220324223929.1893741-1-axelrasmussen@google.com>
+Message-Id: <20220324223929.1893741-2-axelrasmussen@google.com>
+Mime-Version: 1.0
+References: <20220324223929.1893741-1-axelrasmussen@google.com>
+X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
+Subject: [PATCH 2/2] selftests: fix an unused variable warning in pidfd selftest
+From:   Axel Rasmussen <axelrasmussen@google.com>
+To:     Christian Brauner <brauner@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        llvm@lists.linux.dev, Axel Rasmussen <axelrasmussen@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+I fixed a few warnings like this in commit e2aa5e650b07
+("selftests: fixup build warnings in pidfd / clone3 tests"), but I
+missed this one by mistake. Since this variable is unused, remove it.
 
-On Thu, Mar 24, 2022 at 3:33 PM Stephen Boyd <swboyd@chromium.org> wrote:
->
-> This node should be named sar1-irq-odl, not sar0-irq-odl. Otherwise
-> we'll overwrite the settings for sar0 with what is intended for sar1,
-> leading to probe failures for sar1 that are quite confusing.
->
-> Fixes: 116f7cc43d28 ("arm64: dts: qcom: sc7280: Add herobrine-r1")
-> Cc: Douglas Anderson <dianders@chromium.org>
-> Cc: Matthias Kaehlcke <mka@chromium.org>
-> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-> ---
->  arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+---
+ tools/testing/selftests/pidfd/pidfd_wait.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Oops! Thanks!
+diff --git a/tools/testing/selftests/pidfd/pidfd_wait.c b/tools/testing/selftests/pidfd/pidfd_wait.c
+index 17999e082aa7..070c1c876df1 100644
+--- a/tools/testing/selftests/pidfd/pidfd_wait.c
++++ b/tools/testing/selftests/pidfd/pidfd_wait.c
+@@ -95,7 +95,6 @@ TEST(wait_states)
+ 		.flags = CLONE_PIDFD | CLONE_PARENT_SETTID,
+ 		.exit_signal = SIGCHLD,
+ 	};
+-	int ret;
+ 	pid_t pid;
+ 	siginfo_t info = {
+ 		.si_signo = 0,
+-- 
+2.35.1.1021.g381101b075-goog
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
