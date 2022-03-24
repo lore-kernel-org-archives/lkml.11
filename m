@@ -2,114 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EF38C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 02:39:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C666BC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 02:42:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347800AbiCXCkk (ORCPT
+        id S1347822AbiCXCnq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 22:40:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51828 "EHLO
+        Wed, 23 Mar 2022 22:43:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiCXCki (ORCPT
+        with ESMTP id S236251AbiCXCno (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 22:40:38 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D092B3C722
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 19:39:07 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id b8so3518653pjb.4
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 19:39:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=lLmU9eaNbQZtuAnKmKQfSZbES2JI+sc9+LEMrBqU4oU=;
-        b=dnVbf83bqgCMp5cYxA71grdC1mbKtFSVFvEj+qoYy6rhknJ4YfdZNDk7jhGPnziFVN
-         FUQlh1n+Ey9VUcqr304xQkZ4p+aAsR8YYceECVxQvDI3XpWNTHKkxN85CY4XWBWetREa
-         v6DOVnDwfFYkqNd8UlACDQJ9Q4WJ8AUaq8VGoQPpfD4lPdjMllnDS/ppUA7hBQG4SJPX
-         Yc4TTr2Pb3zrQdWzhEmJPJtCMDi/oAU23S0qX1VWoAQZACK8LSETLXFPf0pkRKcoP5Ip
-         9Y39LBqKNMa6oHUITZMLdtae8wjuXW8f7useNMMYPwx86U2CirMQhvdD/xsLwC7z5d4O
-         0WDg==
+        Wed, 23 Mar 2022 22:43:44 -0400
+Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com [209.85.219.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D27939CD;
+        Wed, 23 Mar 2022 19:42:13 -0700 (PDT)
+Received: by mail-yb1-f171.google.com with SMTP id y142so6100858ybe.11;
+        Wed, 23 Mar 2022 19:42:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=lLmU9eaNbQZtuAnKmKQfSZbES2JI+sc9+LEMrBqU4oU=;
-        b=C4KHpDzCWvd6gsf8YXJscO2QGTBBuXI6pSZVrXLAI+yvPbBRI4FTF71Yp5wswtDzb7
-         rVAaCdwEGUgleJZIqH8DFSNj94gpntm98oSdz3ouKX2D88ko43EhVGW7xeoEh2iKI8ef
-         37cK0WRJPlDpWCtZHiyIgFKyaUfIeBk6koDc0Jvg7BdcPmm28UCGi7oSL2JlShtfi/Ff
-         CMwCwyx+Uyu9EzPLxrL/9PWE0Oh7MSA8vcMH6gmXLoNv2YxsI35ol0AbpdO5EM4FL2TO
-         sA8XqxmpD97JHmehJ5zQAZ6Pmdg2DZMNIxPx1hdBy68OcNOpGGFxway9GAAN2LhweO1F
-         EBaQ==
-X-Gm-Message-State: AOAM533tk4ucqePZXU2q6ZI/pa0F5d3Du4Pe2/xsFxw8/Ex8U1FWbNC1
-        FGc+Tircle7zgi/6Q5z+brUP/9oI2bQ+6g==
-X-Google-Smtp-Source: ABdhPJyB4BzVu6jeixu1gk0n4B4VYDuwYKx1dB0266XakOvXJ0YNren71lhLRwBZGZOhpl9m1LLSLw==
-X-Received: by 2002:a17:902:8497:b0:154:9282:bc01 with SMTP id c23-20020a170902849700b001549282bc01mr3418482plo.33.1648089547345;
-        Wed, 23 Mar 2022 19:39:07 -0700 (PDT)
-Received: from localhost ([223.184.83.228])
-        by smtp.gmail.com with ESMTPSA id oo16-20020a17090b1c9000b001b89e05e2b2sm1001104pjb.34.2022.03.23.19.39.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Mar 2022 19:39:05 -0700 (PDT)
-Date:   Thu, 24 Mar 2022 08:09:04 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Kuldeep Singh <singh.kuldeep87k@gmail.com>
-Cc:     Viresh Kumar <vireshk@kernel.org>,
-        Shiraz Hashim <shiraz.linux.kernel@gmail.com>, soc@kernel.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] ARM: dts: spear13xx: Update SPI dma properties
-Message-ID: <20220324023904.h2qfxzxlznggbsyr@vireshk-i7>
-References: <20220323175920.93155-1-singh.kuldeep87k@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Bq+5q/LUFVvKeFoA9Q8Sa2EEy5fY9kO3b6Q0RwFcT+M=;
+        b=NeTZ/xoEakoE9tymnST82PXzga/NTsC+AurpGjR1Wyt+KIolWF/FqaEV7hzaQohUP5
+         HwTe7PrKTiw4puxCGeX6KAGEvLLZ4JkYxggAvoULjAzsKaJiNGWsBDqXgFMwNNHgAabz
+         qwQPUOOz2Pz3lNnf2AXmH3ckngp1a8lXBAUm+eZF83D3VApmtvE1gFF+9cJQAACq1Quc
+         6GN87dNCxNp9R4lCiBZTBgnditFebZkmkgFRMrehneEByAP88DLkE2gGd25opikqaZDT
+         GLU/R0YF7b3dChCFBZaJL/cF8mT5xlV39vvnHuB6aQIaAB3dyhrOBO1dIa8fOXx/Kv4b
+         eSgA==
+X-Gm-Message-State: AOAM532aHPOmCJKF1t6NiFy1SCb4Oail1zGg9UDgDsQMFxLmZHsAExuc
+        PLmwuPmEgjVeghTPtHqXQoXjz0xt5Xm3tb9hlYK+1YpC/c0z7g==
+X-Google-Smtp-Source: ABdhPJziSYCyql+0Kv8XlVNqbr2ofruuie+pCnMX37bMuuM+FvKjDm9W3ej9ZdR3kL6WfSaqPniODXBiYtiM3+EupHY=
+X-Received: by 2002:a5b:8cc:0:b0:634:7343:9953 with SMTP id
+ w12-20020a5b08cc000000b0063473439953mr2807315ybq.142.1648089732442; Wed, 23
+ Mar 2022 19:42:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220323175920.93155-1-singh.kuldeep87k@gmail.com>
-User-Agent: NeoMutt/20180716-391-311a52
+References: <CAFGhKbyifH1a+nAMCvWM88TK6fpNPdzFtUXPmRGnnQeePV+1sw@mail.gmail.com>
+ <CAKwvOdmSV3Nse+tGMBXvN=QvnOs6-ODZRJB0OF5Pd6BVb-scFw@mail.gmail.com>
+In-Reply-To: <CAKwvOdmSV3Nse+tGMBXvN=QvnOs6-ODZRJB0OF5Pd6BVb-scFw@mail.gmail.com>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Thu, 24 Mar 2022 11:42:01 +0900
+Message-ID: <CAMZ6RqJ7B_Yqs0jE0nmkX2Z=xh7Jj6J_ihP=ybLVn5VXY+5kTA@mail.gmail.com>
+Subject: Re: [PATCH] x86: bug.h: merge annotate_reachable into _BUG_FLAGS for __WARN_FLAGS
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Charlemagne Lasse <charlemagnelasse@gmail.com>,
+        jpoimboe@redhat.com, adobriyan@gmail.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org, linux-sparse@vger.kernel.org,
+        llvm@lists.linux.dev, luc.vanoostenryck@gmail.com,
+        mingo@redhat.com, nathan@kernel.org, peterz@infradead.org,
+        tglx@linutronix.de, x86@kernel.org, Sasha Levin <sashal@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23-03-22, 23:29, Kuldeep Singh wrote:
-> Reorder dmas and dma-names property for spi controller node to make it
-> compliant with bindings.
-> 
-> Fixes: 6e8887f60f60 ("ARM: SPEAr13xx: Pass generic DW DMAC platform data from DT")
-> Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
-> ---
-> v2:
-> - Add fixes tag
-> - Remove 1/2 patch from series as it's not required
-> - v1 discussion link:
->   https://lore.kernel.org/linux-devicetree/20220312180615.68929-2-singh.kuldeep87k@gmail.com/
-> 
->  arch/arm/boot/dts/spear13xx.dtsi | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/arm/boot/dts/spear13xx.dtsi b/arch/arm/boot/dts/spear13xx.dtsi
-> index c87b881b2c8b..45f0b2a33e02 100644
-> --- a/arch/arm/boot/dts/spear13xx.dtsi
-> +++ b/arch/arm/boot/dts/spear13xx.dtsi
-> @@ -284,9 +284,8 @@ spi0: spi@e0100000 {
->  				#size-cells = <0>;
->  				interrupts = <0 31 0x4>;
->  				status = "disabled";
-> -				dmas = <&dwdma0 4 0 0>,
-> -					<&dwdma0 5 0 0>;
-> -				dma-names = "tx", "rx";
-> +				dmas = <&dwdma0 5 0 0>, <&dwdma0 4 0 0>;
-> +				dma-names = "rx", "tx";
->  			};
->  
->  			rtc@e0580000 {
+On Thu. 24 Mar 2022 at 04:41, Nick Desaulniers <ndesaulniers@google.com> wrote:
+> On Wed, Mar 23, 2022 at 12:30 PM Charlemagne Lasse
+> <charlemagnelasse@gmail.com> wrote:
+> >
+> > > @@ -75,9 +77,9 @@ do {                                \
+> > >   */
+> > >  #define __WARN_FLAGS(flags)                    \
+> > >  do {                                \
+> > > +    __auto_type f = BUGFLAG_WARNING|(flags);        \
+> > >      instrumentation_begin();                \
+> > > -    _BUG_FLAGS(ASM_UD2, BUGFLAG_WARNING|(flags));        \
+> > > -    annotate_reachable();                    \
+> > > +    _BUG_FLAGS(ASM_UD2, f, ASM_REACHABLE);            \
+> > >      instrumentation_end();                    \
+> > >  } while (0)
+> >
+> > This causes following sparse warning on x86:
+> >
+> > make allnoconfig && touch init/version.c && make CHECK="sparse
+> > -Wshadow"  C=1 init/version.o
+> > #
+> > # No change to .config
+> > #
+> >  CALL    scripts/checksyscalls.sh
+> >  CALL    scripts/atomic/check-atomics.sh
+> >  CHK     include/generated/compile.h
+> >  CC      init/version.o
+> >  CHECK   init/version.c
+> > init/version.c: note: in included file (through
+> > include/linux/rculist.h, include/linux/pid.h, include/linux/sched.h,
+> > include/linux/utsname.h):
+> > ./include/linux/rcupdate.h:1007:9: warning: symbol 'f' shadows an earlier one
+> > ./include/linux/rcupdate.h:1001:47: originally declared here
+>
+> Thanks for the report. There was already a fix sent for this:
+> https://lore.kernel.org/lkml/20220317065743.8467-1-mailhol.vincent@wanadoo.fr/
+> but it doesn't mention that sparse is warning about this, too.
+>
+> I think if Vincent sent a v3 that mentioned that sparse is warning
+> about this, too, and cc'ed you, you could then supply
+> signed-off/tested-by tags (or just do so on v2, though it doesn't
+> mention sparse), and maybe Josh would be so kind as to pick that up?
 
-Rob,
+Thank Nick, I did as you suggested. Here is the v3:
+https://lore.kernel.org/all/20220324023742.106546-1-mailhol.vincent@wanadoo.fr/
 
-I tried to ask this at V1 as well [1]. Why do we need a patch like
-this ? Isn't this a DT tooling issue, where it is asking for a fixed
-order of values ?
-
--- 
-viresh
-
-[1] https://lore.kernel.org/all/20220312180615.68929-2-singh.kuldeep87k@gmail.com/
+Yours sincerely,
+Vincent Mailhol
