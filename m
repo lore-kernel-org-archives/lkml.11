@@ -2,101 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A553CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 17:17:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 272E2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 17:18:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347522AbiCXRTH (ORCPT
+        id S1352206AbiCXRTt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 13:19:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46414 "EHLO
+        Thu, 24 Mar 2022 13:19:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240788AbiCXRTE (ORCPT
+        with ESMTP id S1350786AbiCXRTq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 13:19:04 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BD5BB188E
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 10:17:32 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id r13so10527447ejd.5
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 10:17:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=x4vfCnzIPjyv57wSD3+oAjA+7hchoEnWIl5SY06Hv1o=;
-        b=TFrPGx7n7uuJ9Ro2Mt6d3S5dk7HGfrXrptj+qZiNhrwZBrvEmM6e3wX2NxV4uJhyEU
-         VwHUWpNMYACv8cJYGsCR4818P/h2PLLFw9iUCR7FUjyFDwWoxff9gPTC7AaQaJjeCQRn
-         Zfzn+NGVqBluAy3ip8I6dCYjajGtxWh5nXZnQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=x4vfCnzIPjyv57wSD3+oAjA+7hchoEnWIl5SY06Hv1o=;
-        b=MX3LGXNzaICIj/RXSBIsm+5aPdibtyMCqHbpqIxyD79y/o9ymgEr1kVfalp1ICABrw
-         D5kdWVZjHcz5cyoa53THTdNeBiZfpeO2LEkehhvp8M74fh4/uY6fhBj82tHaWOOw0wOI
-         jAtg6rKE8MmNt0SYcKNiawI3oVeF5tOAzXOOmxysVUkUn3Sux8EIZezEAh1tMaqNDn4S
-         JCHz5MpaUUbU9btDtmwAAytfpG1hXMoxq7qRgbVgNffDQHsMxZ6P/cTRB9RFVvsxzcAu
-         b7Cch36mJlNDyl2gv2fOkePwbPXEdEwM/bejUPqw8tpwyvt5n6Fgmw/7fcW+hQcBa+RZ
-         JLYQ==
-X-Gm-Message-State: AOAM531YyvGopYaCdiJ771oFxR6Y8Te87q2+XWNXobBm7bk+hoVcJ1tj
-        7di84UFqf63C3Q1M89oR9ejAo6xJg6CrZQ==
-X-Google-Smtp-Source: ABdhPJwL+8Jnwo0an+cC5Gyj+FCylxS1mYTahRHKgZ0+1Ir53j2gk9yPa9b7cn/rJL8Ioqi0pgLdBQ==
-X-Received: by 2002:a17:906:36ce:b0:6d6:e540:ed65 with SMTP id b14-20020a17090636ce00b006d6e540ed65mr6845975ejc.330.1648142250722;
-        Thu, 24 Mar 2022 10:17:30 -0700 (PDT)
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com. [209.85.218.46])
-        by smtp.gmail.com with ESMTPSA id b15-20020a50cccf000000b0040f74c6abedsm1642412edj.77.2022.03.24.10.17.29
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Mar 2022 10:17:30 -0700 (PDT)
-Received: by mail-ej1-f46.google.com with SMTP id p15so10521162ejc.7
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 10:17:29 -0700 (PDT)
-X-Received: by 2002:a17:906:58d2:b0:6da:b635:fbf3 with SMTP id
- e18-20020a17090658d200b006dab635fbf3mr6658187ejs.40.1648142249489; Thu, 24
- Mar 2022 10:17:29 -0700 (PDT)
+        Thu, 24 Mar 2022 13:19:46 -0400
+X-Greylist: delayed 585 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Mar 2022 10:18:14 PDT
+Received: from 1.mo576.mail-out.ovh.net (1.mo576.mail-out.ovh.net [178.33.251.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B0F5DF2D
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 10:18:12 -0700 (PDT)
+Received: from player728.ha.ovh.net (unknown [10.111.172.229])
+        by mo576.mail-out.ovh.net (Postfix) with ESMTP id C46432501C
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 17:12:15 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player728.ha.ovh.net (Postfix) with ESMTPSA id 4F1F928AEF1BE;
+        Thu, 24 Mar 2022 17:12:11 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-102R00476d4bff7-adb1-4465-b39a-27e7b6ccfe9d,
+                    78FFD8E4238D9337B8F0C8EEA79873C5FE5514E5) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Corey Minyard <minyard@acm.org>
+Cc:     openipmi-developer@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Wolfram Sang <wsa@kernel.org>,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH] ipmi: use simple i2c probe function
+Date:   Thu, 24 Mar 2022 18:11:59 +0100
+Message-Id: <20220324171159.544565-1-steve@sk2.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <20220324081718.41091-1-hbh25y@gmail.com>
-In-Reply-To: <20220324081718.41091-1-hbh25y@gmail.com>
-From:   Ricardo Ribalda <ribalda@chromium.org>
-Date:   Thu, 24 Mar 2022 18:17:18 +0100
-X-Gmail-Original-Message-ID: <CANiDSCvqQqOZ=uigeSz7ihe-y5XDLCRYD9+ZRULDE21td5rvEQ@mail.gmail.com>
-Message-ID: <CANiDSCvqQqOZ=uigeSz7ihe-y5XDLCRYD9+ZRULDE21td5rvEQ@mail.gmail.com>
-Subject: Re: [PATCH] media: uvc_v4l2: fix possible memory leak in uvc_ioctl_ctrl_map
-To:     Hangyu Hua <hbh25y@gmail.com>
-Cc:     laurent.pinchart@ideasonboard.com, mchehab@kernel.org,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 11992804335307884166
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudegledgleegucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeetgedugfelkeeikeetgeegteevfeeufeetuefgudeiiedthfehtdeffeekvdeffeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejvdekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Isnt it a dupe of:
-https://patchwork.linuxtv.org/project/linux-media/patch/20211008120914.69175-1-ribalda@chromium.org/
-?
+The i2c probe functions here don't use the id information provided in
+their second argument, so the single-parameter i2c probe function
+("probe_new") can be used instead.
 
-On Thu, 24 Mar 2022 at 18:13, Hangyu Hua <hbh25y@gmail.com> wrote:
->
-> map->name needs to be freed when uvc_ioctl_ctrl_map fails.
->
-> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-> ---
->  drivers/media/usb/uvc/uvc_v4l2.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/media/usb/uvc/uvc_v4l2.c b/drivers/media/usb/uvc/uvc_v4l2.c
-> index 711556d13d03..e46a2f3b06cb 100644
-> --- a/drivers/media/usb/uvc/uvc_v4l2.c
-> +++ b/drivers/media/usb/uvc/uvc_v4l2.c
-> @@ -93,6 +93,7 @@ static int uvc_ioctl_ctrl_map(struct uvc_video_chain *chain,
->
->         kfree(map->menu_info);
->  free_map:
-> +       kfree(map->name);
->         kfree(map);
->
->         return ret;
-> --
-> 2.25.1
->
+This avoids scanning the identifier tables during probes.
 
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+---
+ drivers/char/ipmi/ipmb_dev_int.c | 5 ++---
+ drivers/char/ipmi/ipmi_ipmb.c    | 5 ++---
+ drivers/char/ipmi/ipmi_ssif.c    | 4 ++--
+ 3 files changed, 6 insertions(+), 8 deletions(-)
 
+diff --git a/drivers/char/ipmi/ipmb_dev_int.c b/drivers/char/ipmi/ipmb_dev_int.c
+index 49b8f22fdcf0..db40037eb347 100644
+--- a/drivers/char/ipmi/ipmb_dev_int.c
++++ b/drivers/char/ipmi/ipmb_dev_int.c
+@@ -299,8 +299,7 @@ static int ipmb_slave_cb(struct i2c_client *client,
+ 	return 0;
+ }
+ 
+-static int ipmb_probe(struct i2c_client *client,
+-			const struct i2c_device_id *id)
++static int ipmb_probe(struct i2c_client *client)
+ {
+ 	struct ipmb_dev *ipmb_dev;
+ 	int ret;
+@@ -369,7 +368,7 @@ static struct i2c_driver ipmb_driver = {
+ 		.name = "ipmb-dev",
+ 		.acpi_match_table = ACPI_PTR(acpi_ipmb_id),
+ 	},
+-	.probe = ipmb_probe,
++	.probe_new = ipmb_probe,
+ 	.remove = ipmb_remove,
+ 	.id_table = ipmb_id,
+ };
+diff --git a/drivers/char/ipmi/ipmi_ipmb.c b/drivers/char/ipmi/ipmi_ipmb.c
+index ba0c2d2c6bbe..845387d17efb 100644
+--- a/drivers/char/ipmi/ipmi_ipmb.c
++++ b/drivers/char/ipmi/ipmi_ipmb.c
+@@ -436,8 +436,7 @@ static int ipmi_ipmb_remove(struct i2c_client *client)
+ 	return 0;
+ }
+ 
+-static int ipmi_ipmb_probe(struct i2c_client *client,
+-			   const struct i2c_device_id *id)
++static int ipmi_ipmb_probe(struct i2c_client *client)
+ {
+ 	struct device *dev = &client->dev;
+ 	struct ipmi_ipmb_dev *iidev;
+@@ -528,7 +527,7 @@ static struct i2c_driver ipmi_ipmb_driver = {
+ 		.name = DEVICE_NAME,
+ 		.of_match_table = of_ipmi_ipmb_match,
+ 	},
+-	.probe		= ipmi_ipmb_probe,
++	.probe_new	= ipmi_ipmb_probe,
+ 	.remove		= ipmi_ipmb_remove,
+ 	.id_table	= ipmi_ipmb_id,
+ };
+diff --git a/drivers/char/ipmi/ipmi_ssif.c b/drivers/char/ipmi/ipmi_ssif.c
+index 48aab77abebf..9fa8755bbb6a 100644
+--- a/drivers/char/ipmi/ipmi_ssif.c
++++ b/drivers/char/ipmi/ipmi_ssif.c
+@@ -1619,7 +1619,7 @@ static int ssif_check_and_remove(struct i2c_client *client,
+ 	return 0;
+ }
+ 
+-static int ssif_probe(struct i2c_client *client, const struct i2c_device_id *id)
++static int ssif_probe(struct i2c_client *client)
+ {
+ 	unsigned char     msg[3];
+ 	unsigned char     *resp;
+@@ -2037,7 +2037,7 @@ static struct i2c_driver ssif_i2c_driver = {
+ 	.driver		= {
+ 		.name			= DEVICE_NAME
+ 	},
+-	.probe		= ssif_probe,
++	.probe_new	= ssif_probe,
+ 	.remove		= ssif_remove,
+ 	.alert		= ssif_alert,
+ 	.id_table	= ssif_id,
 -- 
-Ricardo Ribalda
+2.27.0
+
