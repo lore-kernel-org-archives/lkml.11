@@ -2,69 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A4B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 08:26:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0EA3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 08:28:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345948AbiCXI2P (ORCPT
+        id S1348913AbiCXI3k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 04:28:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32838 "EHLO
+        Thu, 24 Mar 2022 04:29:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242495AbiCXI2M (ORCPT
+        with ESMTP id S1348908AbiCXI3h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 04:28:12 -0400
-Received: from m12-12.163.com (m12-12.163.com [220.181.12.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E76029BAF8
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 01:26:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=SYdtMX0fUBJBGCRkZr
-        x91FiJtXR+g6Dfi9TegzBMeTM=; b=qdSVARpouAfRPbGS+iy46sNTs3+sdaXlS8
-        FC1UgeHYkfoW6IvAoxmthn9A6gAw44Y/MsSgjgi6wH7kCt59QxrAxbSSlDhbEfa8
-        C5HaMRAu0SWQaHwu8lQ7F0FkiDChh6myl+Z5NiE5BVZ+qZWbivKFeqMZ/ljIF7lB
-        lgVo2TGsA=
-Received: from localhost (unknown [159.226.95.33])
-        by smtp8 (Coremail) with SMTP id DMCowAD3_zc3KzxicLj8Bg--.28399S2;
-        Thu, 24 Mar 2022 16:26:32 +0800 (CST)
-From:   QintaoShen <unSimple1993@163.com>
-To:     Felix.Kuehling@amd.com
-Cc:     amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        QintaoShen <unSimple1993@163.com>
-Subject: [PATCH v1] drm/amdkfd: Check for potential null return of kmalloc_array()
-Date:   Thu, 24 Mar 2022 16:26:23 +0800
-Message-Id: <1648110383-3533-1-git-send-email-unSimple1993@163.com>
-X-Mailer: git-send-email 2.7.4
-X-CM-TRANSID: DMCowAD3_zc3KzxicLj8Bg--.28399S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7GF4kWF17uF47Ar1kArWDurg_yoWftrg_Gr
-        15Xr9xAr4DCFn5Wry2vw4aqry0yr4rZ3WkXF18t3WfJryfZFyUC348XrWkZ3yfGa4DuFyD
-        tw4DKF4fuFsF9jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sR_GYL3UUUUU==
-X-Originating-IP: [159.226.95.33]
-X-CM-SenderInfo: 5xqvxz5sohimizt6il2tof0z/xtbCbgjNH2BbCZsoFAAAsh
+        Thu, 24 Mar 2022 04:29:37 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2580C64C3
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 01:28:06 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id h19so2433519pfv.1
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 01:28:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qKGHJ9VxUdter6B/O/wVjkQhA8O5yDUrS1eXiqm5kA0=;
+        b=Ee9jS3nTP3OoOk3l3IzMsSFpZh/6PHHVUgndP6FOC88RB3F6/gqE+qlwSRcwstB19t
+         r7M3g4q46HaDkptGXzlS6VTextapnrEzebdo+nUpnIT/+y+hwHyfRmNcsqeVaF6O+uxv
+         m8q85SPZ4e8Wbs3HVHaiGlyaqS0UIEaZ50glNaHVqiu7LGpxlfh3ATYo7+foYg42MgxT
+         PFaaDB53p0LmFnyWe4RPeo2URCwf1jXJBncjSo4XYvMvzuEiq9/SAoYuXr9g30PtR8tD
+         cpzm+6ol6n8FGr8sQE2NtzSmz48c+gK6eSmMxKDGvVkAAG79DdP6MtAeDoAWiBQvXpLJ
+         nyXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qKGHJ9VxUdter6B/O/wVjkQhA8O5yDUrS1eXiqm5kA0=;
+        b=Pw3VR4s13g7cbinRye2xsPb1f94Hwn7sR3tKr08F70Ys09p2/Nc5gV3zbl0qWsSynq
+         8DtT6OHKTNmD3IZ0BUcx/kiS/oGC+SooOa9+jLjH5GaHMJn1RBpxr4lyoq5DIyt5WAj9
+         oB1QGhrwxOXAdo0qNVpNAGg094c9UUtFzuyhMk4Wbdsyf3gyQ5bfBWGZzI8A0xJn0Xew
+         XGepZ/4WWsiWGoeC//ohJNQ0YA23j2G6uTsVWSXRyneQJW1uz45RAjc8U3ov96wkCzOV
+         zpf+aFu2dHE1GevY2ihpBzbHOsbUBXQlcS5bAImWFqYuKoUSuBUczZQVhJZRs+zd/7c0
+         XqXQ==
+X-Gm-Message-State: AOAM531VpxO1CKEd9TeM/zCEbPsq66G07s0C6ipaLsUmfJC/qBzkGoF3
+        uGGLA0dYJ2aufy9Tba2g8Thk
+X-Google-Smtp-Source: ABdhPJzaIOFNpluOEK7hvmKjU7cSFLgzEITV2Ec6TcXzOrPylxV3EWCHQINiwjG8Oo3E4SPef3wPLw==
+X-Received: by 2002:a05:6a00:1312:b0:4e1:58c4:ddfd with SMTP id j18-20020a056a00131200b004e158c4ddfdmr3730444pfu.65.1648110485559;
+        Thu, 24 Mar 2022 01:28:05 -0700 (PDT)
+Received: from thinkpad ([220.158.158.107])
+        by smtp.gmail.com with ESMTPSA id p15-20020a056a000a0f00b004f7c63cba5asm2617293pfh.21.2022.03.24.01.27.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Mar 2022 01:28:05 -0700 (PDT)
+Date:   Thu, 24 Mar 2022 13:57:46 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Frank Li <Frank.Li@nxp.com>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 02/12] PCI: dwc: Don't use generic IO-ops for DBI-space
+ access
+Message-ID: <20220324082746.GB2854@thinkpad>
+References: <20220324012524.16784-1-Sergey.Semin@baikalelectronics.ru>
+ <20220324012524.16784-3-Sergey.Semin@baikalelectronics.ru>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220324012524.16784-3-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the kmalloc_array() may return null, the 'event_waiters[i].wait' would lead to null-pointer dereference.
-Therefore, it is better to check the return value of kmalloc_array() to avoid this confusion.
+On Thu, Mar 24, 2022 at 04:25:13AM +0300, Serge Semin wrote:
+> Commit c2b0c098fbd1 ("PCI: dwc: Use generic config accessors") replaced
+> the locally defined DW PCIe host controller config-space accessors with
+> the generic methods pci_generic_config_read() and
+> pci_generic_config_write(). It was intended that the corresponding
+> bus-mapping callback returned a correct virtual address of the passed PCI
+> config-space register. The problem of the proposed solution was that it
+> didn't take into account the way the host config-space is accessed on the
+> DW PCIe. Depending on the DW PCIe IP-core synthesize parameters different
+> interfaces can be used to access the host and peripheral config/memory
+> spaces. The former one can be accessed via the DBI interface, while the
+> later ones is reached via the AHB/AXI application bus. In case if the DW
+> PCIe controller is configured to have a dedicated DBI interface, the way
+> it is mapped into the IO-memory turns to be platform-specific. For such
+> setups the DWC PCIe driver provides a set of the callbacks
+> dw_pcie_ops.{read_dbi,write_dbi} so the platforms glue-drivers would be
+> able to take into account the DBI bus IO peculiarities. Since
+> commit c2b0c098fbd1 ("PCI: dwc: Use generic config accessors") these
+> methods haven't been utilized during the generic host initialization
+> performed by the PCIe subsystem code.
+> 
+> I don't really know how come there have been no problems spotted for the
+> Histb/Exynos/Kirin PCIe controllers so far, but in our case with dword
+> aligned IO requirement the generic config-space accessors can't be
+> utilized for the host config-space. Thus in order to make sure the host
+> config-space is properly accessed via the DBI bus let's get back the
+> dw_pcie_rd_own_conf() and dw_pcie_wr_own_conf() methods. They are going to
+> be just wrappers around the already defined
+> dw_pcie_read_dbi()/dw_pcie_write_dbi() functions with proper arguments
+> conversion. These methods perform the platform-specific config-space IO if
+> the DBI accessors are specified, otherwise they call normal MMIO
+> operations.
+> 
 
-Signed-off-by: QintaoShen <unSimple1993@163.com>
----
- drivers/gpu/drm/amd/amdkfd/kfd_events.c | 2 ++
- 1 file changed, 2 insertions(+)
+Why can't you override the "pci_ops" in your host driver's "host_init"?
 
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_events.c b/drivers/gpu/drm/amd/amdkfd/kfd_events.c
-index deeccce..64f4a51 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_events.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_events.c
-@@ -749,6 +749,8 @@ static struct kfd_event_waiter *alloc_event_waiters(uint32_t num_events)
- 	event_waiters = kmalloc_array(num_events,
- 					sizeof(struct kfd_event_waiter),
- 					GFP_KERNEL);
-+	if (!event_waiters)
-+		return NULL;
- 
- 	for (i = 0; (event_waiters) && (i < num_events) ; i++) {
- 		init_wait(&event_waiters[i].wait);
--- 
-2.7.4
+Thanks,
+Mani
 
+> Fixes: c2b0c098fbd1 ("PCI: dwc: Use generic config accessors")
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> ---
+>  .../pci/controller/dwc/pcie-designware-host.c | 34 +++++++++++++++++--
+>  1 file changed, 32 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
+> index a03619a30c20..f89e6552139b 100644
+> --- a/drivers/pci/controller/dwc/pcie-designware-host.c
+> +++ b/drivers/pci/controller/dwc/pcie-designware-host.c
+> @@ -528,10 +528,40 @@ void __iomem *dw_pcie_own_conf_map_bus(struct pci_bus *bus, unsigned int devfn,
+>  }
+>  EXPORT_SYMBOL_GPL(dw_pcie_own_conf_map_bus);
+>  
+> +static int dw_pcie_rd_own_conf(struct pci_bus *bus, unsigned int devfn,
+> +			       int where, int size, u32 *val)
+> +{
+> +	struct pcie_port *pp = bus->sysdata;
+> +	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
+> +
+> +	if (PCI_SLOT(devfn) > 0) {
+> +		*val = ~0U;
+> +		return PCIBIOS_DEVICE_NOT_FOUND;
+> +	}
+> +
+> +	*val = dw_pcie_read_dbi(pci, where, size);
+> +
+> +	return PCIBIOS_SUCCESSFUL;
+> +}
+> +
+> +static int dw_pcie_wr_own_conf(struct pci_bus *bus, unsigned int devfn,
+> +			       int where, int size, u32 val)
+> +{
+> +	struct pcie_port *pp = bus->sysdata;
+> +	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
+> +
+> +	if (PCI_SLOT(devfn) > 0)
+> +		return PCIBIOS_DEVICE_NOT_FOUND;
+> +
+> +	dw_pcie_write_dbi(pci, where, size, val);
+> +
+> +	return PCIBIOS_SUCCESSFUL;
+> +}
+> +
+>  static struct pci_ops dw_pcie_ops = {
+>  	.map_bus = dw_pcie_own_conf_map_bus,
+> -	.read = pci_generic_config_read,
+> -	.write = pci_generic_config_write,
+> +	.read = dw_pcie_rd_own_conf,
+> +	.write = dw_pcie_wr_own_conf,
+>  };
+>  
+>  void dw_pcie_setup_rc(struct pcie_port *pp)
+> -- 
+> 2.35.1
+> 
