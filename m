@@ -2,81 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5345FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:10:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12847C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:11:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348406AbiCXHMT (ORCPT
+        id S1348417AbiCXHMr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 03:12:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55956 "EHLO
+        Thu, 24 Mar 2022 03:12:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348396AbiCXHMQ (ORCPT
+        with ESMTP id S238062AbiCXHMn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 03:12:16 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6380E98586
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:10:44 -0700 (PDT)
-Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KPGYJ60bMzfZH9;
-        Thu, 24 Mar 2022 15:09:08 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by kwepemi500015.china.huawei.com
- (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 24 Mar
- 2022 15:10:41 +0800
-From:   Zheng Bin <zhengbin13@huawei.com>
-To:     <emma@anholt.net>, <mripard@kernel.org>, <airlied@linux.ie>,
-        <daniel@ffwll.ch>, <dri-devel@lists.freedesktop.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <limingming.li@huawei.com>, <tangyizhou@huawei.com>
-Subject: [PATCH -next] drm/vc4: Fix build error when CONFIG_DRM_VC4=y && CONFIG_RASPBERRYPI_FIRMWARE=m
-Date:   Thu, 24 Mar 2022 15:25:42 +0800
-Message-ID: <20220324072542.1238122-1-zhengbin13@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Thu, 24 Mar 2022 03:12:43 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D950985A5
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:11:12 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id dr20so7270607ejc.6
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:11:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=x0TKyRRyasBlRl7/S8dZGTjcoSJS62R91ivStapMPWY=;
+        b=EllCSYlG1r+Ax169Is9zyo8MY3QlyQf8CLMF1RgC0Ht/rQN/5ThZ/m/yoHj1xst9zz
+         eXdKEC8LXFTR4mV5whqje7ZHLNpiNMsYWEsi5esT6jlnF7vCLbohVbUCtQHMO58ND/l8
+         E8d8izGVHM4ipCcuIu6DfaxVmFL2Vl9mvzzXL9WB6P39BktDTEt3IWV/uaQNNbY/LUbv
+         5oGSWToEAckJhYlAmZl42SzDFyIfjsf4IlD5hUdQdXZXV+SACp74CbtqV+fXKFyzjgO5
+         7WBhiebIGcw2xLm1YonXPx3cJC3oZv+kQdqK8JoFamtGfoU/bc8QCKB2fp8IJv52rQLa
+         Z0EQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=x0TKyRRyasBlRl7/S8dZGTjcoSJS62R91ivStapMPWY=;
+        b=15kjz9Y7iSzs215M4BD/SFIE1X/YlH6aKuVxzIczJS2kuw849AURa4qc5cw/EGsweM
+         bmR3ljjJJ0nUjYAamBPUrmnLaooyktLmnNo14JqMY+iCtNqKwy8tKVIgKfWn9nTZLuBL
+         Iy5mok3nl+Onl89KLxXOfEW/kM7uSs7+IcqXG6iv2ptBRHxkAqWio9FEdPN0u53swBsr
+         OYPewg59+2N4u6sxtrOI65g3d0CPG/O4kzvIlTg9e+0fp3bil1TH2BVIue4virGULlEx
+         FXJ+Fyy04eAGHgEJBcAmsMJ7Lw00eescF1Pov+POuop0vEB5h/tShaIypVhS/z8dOkdm
+         A4GA==
+X-Gm-Message-State: AOAM533dZRf3txr8Xj9QdGavI1nsZBXhHDe+TdCLOO+I0EIpctUHHazq
+        ZC0K5e6T6IME64iytWbUQXc=
+X-Google-Smtp-Source: ABdhPJzI0rSinnIvcZhWT0K6K5CxfNcQqamxoPm3FxEoeXOz4JhA9qzn79ORAUp7A38b6Gmy30dEhQ==
+X-Received: by 2002:a17:907:c018:b0:6df:fb9b:e6f8 with SMTP id ss24-20020a170907c01800b006dffb9be6f8mr4026860ejc.495.1648105870759;
+        Thu, 24 Mar 2022 00:11:10 -0700 (PDT)
+Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
+        by smtp.googlemail.com with ESMTPSA id di6-20020a170906730600b006df8831ec5asm769937ejc.114.2022.03.24.00.11.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Mar 2022 00:11:10 -0700 (PDT)
+From:   Jakob Koschel <jakobkoschel@gmail.com>
+To:     Oded Gabbay <ogabbay@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ofir Bitton <obitton@habana.ai>,
+        Dani Liberman <dliberman@habana.ai>,
+        Ohad Sharabi <osharabi@habana.ai>,
+        farah kassabri <fkassabri@habana.ai>,
+        linux-kernel@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
+        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
+Subject: [PATCH] habanalabs: replace usage of found with dedicated list iterator variable
+Date:   Thu, 24 Mar 2022 08:10:48 +0100
+Message-Id: <20220324071048.59659-1-jakobkoschel@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemi500015.china.huawei.com (7.221.188.92)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If CONFIG_DRM_VC4=y, CONFIG_RASPBERRYPI_FIRMWARE=m, CONFIG_COMPILE_TEST=n,
-bulding fails:
+To move the list iterator variable into the list_for_each_entry_*()
+macro in the future it should be avoided to use the list iterator
+variable after the loop body.
 
-drivers/gpu/drm/vc4/vc4_drv.o: In function `vc4_drm_bind':
-vc4_drv.c:(.text+0x320): undefined reference to `rpi_firmware_get'
-vc4_drv.c:(.text+0x320): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `rpi_firmware_get'
-vc4_drv.c:(.text+0x34c): undefined reference to `rpi_firmware_property'
-vc4_drv.c:(.text+0x34c): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `rpi_firmware_property'
-vc4_drv.c:(.text+0x354): undefined reference to `rpi_firmware_put'
-vc4_drv.c:(.text+0x354): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `rpi_firmware_put'
+To *never* use the list iterator variable after the loop it was
+concluded to use a separate iterator variable instead of a
+found boolean [1].
 
-Make DRM_VC4 depends on RASPBERRYPI_FIRMWARE to fix this.
+This removes the need to use a found variable and simply checking if
+the variable was set, can determine if the break/goto was hit.
 
-Fixes: c406ad5e4a85 ("drm/vc4: Notify the firmware when DRM is in charge")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
+Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/gpu/drm/vc4/Kconfig | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/misc/habanalabs/common/command_submission.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/Kconfig b/drivers/gpu/drm/vc4/Kconfig
-index de3424fed2fc..640907945b5b 100644
---- a/drivers/gpu/drm/vc4/Kconfig
-+++ b/drivers/gpu/drm/vc4/Kconfig
-@@ -1,7 +1,8 @@
- # SPDX-License-Identifier: GPL-2.0-only
- config DRM_VC4
- 	tristate "Broadcom VC4 Graphics"
--	depends on ARCH_BCM || ARCH_BCM2835 || COMPILE_TEST
-+	depends on ((ARCH_BCM || ARCH_BCM2835) && \
-+		    RASPBERRYPI_FIRMWARE) || COMPILE_TEST
- 	depends on DRM
- 	depends on SND && SND_SOC
- 	depends on COMMON_CLK
---
-2.31.1
+diff --git a/drivers/misc/habanalabs/common/command_submission.c b/drivers/misc/habanalabs/common/command_submission.c
+index 0a4ef13d9ac4..4927749e439c 100644
+--- a/drivers/misc/habanalabs/common/command_submission.c
++++ b/drivers/misc/habanalabs/common/command_submission.c
+@@ -405,8 +405,7 @@ static void staged_cs_put(struct hl_device *hdev, struct hl_cs *cs)
+ 
+ static void cs_handle_tdr(struct hl_device *hdev, struct hl_cs *cs)
+ {
+-	bool next_entry_found = false;
+-	struct hl_cs *next, *first_cs;
++	struct hl_cs *next = NULL, *iter, *first_cs;
+ 
+ 	if (!cs_needs_timeout(cs))
+ 		return;
+@@ -441,13 +440,13 @@ static void cs_handle_tdr(struct hl_device *hdev, struct hl_cs *cs)
+ 	spin_lock(&hdev->cs_mirror_lock);
+ 
+ 	/* queue TDR for next CS */
+-	list_for_each_entry(next, &hdev->cs_mirror_list, mirror_node)
+-		if (cs_needs_timeout(next)) {
+-			next_entry_found = true;
++	list_for_each_entry(iter, &hdev->cs_mirror_list, mirror_node)
++		if (cs_needs_timeout(iter)) {
++			next = iter;
+ 			break;
+ 		}
+ 
+-	if (next_entry_found && !next->tdr_active) {
++	if (next && !next->tdr_active) {
+ 		next->tdr_active = true;
+ 		schedule_delayed_work(&next->work_tdr, next->timeout_jiffies);
+ 	}
+
+base-commit: f443e374ae131c168a065ea1748feac6b2e76613
+-- 
+2.25.1
 
