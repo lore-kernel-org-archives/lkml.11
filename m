@@ -2,109 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF1BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 17:25:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 932E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 17:26:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352254AbiCXR1M (ORCPT
+        id S1352233AbiCXR1l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 13:27:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41002 "EHLO
+        Thu, 24 Mar 2022 13:27:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352267AbiCXR1H (ORCPT
+        with ESMTP id S1351424AbiCXR1i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 13:27:07 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 87893996B8
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 10:25:33 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E4CD81515;
-        Thu, 24 Mar 2022 10:25:32 -0700 (PDT)
-Received: from wubuntu (unknown [10.57.71.95])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 496133F73B;
-        Thu, 24 Mar 2022 10:25:30 -0700 (PDT)
-Date:   Thu, 24 Mar 2022 17:25:28 +0000
-From:   Qais Yousef <qais.yousef@arm.com>
-To:     Vincent Guittot <vincent.guittot@linaro.org>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
-        mgorman@suse.de, linux-kernel@vger.kernel.org, parth@linux.ibm.com,
-        chris.hyser@oracle.com, pkondeti@codeaurora.org,
-        Valentin.Schneider@arm.com, patrick.bellasi@matbug.net,
-        David.Laight@aculab.com, pjt@google.com, pavel@ucw.cz,
-        tj@kernel.org, dhaval.giani@oracle.com, qperret@google.com,
-        tim.c.chen@linux.intel.com
-Subject: Re: [PATCH 0/6] Add latency_nice priority
-Message-ID: <20220324172528.lrjiehsqrwvnwg2x@wubuntu>
-References: <20220311161406.23497-1-vincent.guittot@linaro.org>
- <20220322163911.3jge4unswuap3pjh@wubuntu>
- <CAKfTPtBYuEt=JuLLKFVJfzq_rNRoKPYfAnq7a2Jw=fBKMj6a3g@mail.gmail.com>
+        Thu, 24 Mar 2022 13:27:38 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC40A94CC
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 10:26:03 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id q11so5434782pln.11
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 10:26:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=0mJjHBJTkqZcOIirK3ZwecAliSrcR7zrlWYhs3ogbow=;
+        b=aJeKCC4or3w6Ev7MU7tqFxQK8ZE1KuHaPNUhynDNRMKBxmE+fvAyR2BZBgy5Vq+w0u
+         ZFnPAbaW8R3AHaAqUs8hvC5k1BJKbjxmXHATc0q6eLnokaafp9tuYlgNotbEF9AeKsCl
+         pJvegaGUVV3KOGJKbDpiwmsCAUGXlFGBW89cuFdrVb34oLxl+V3oaveiW5mfDykPB9E3
+         w3nE9cQuVhbi07iRuF/lexi7+fTol7MUJShAxpxMPDoKSrMc6ES7AwgwBaTHc7acam0Q
+         PbAZfls5yljev6Jw+cuq0ZwMryPPyxxRFNFMBm7o948CwLp+8Yk4KWEPQWPWPWHEr0xN
+         krCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0mJjHBJTkqZcOIirK3ZwecAliSrcR7zrlWYhs3ogbow=;
+        b=zXsYt18YK15YirubxRsLzWffUypgva7Xr0AYpUnV2vaAGVnebPV+MD+BHSEaZu0aCV
+         CMEbAZTMq9m+AT5p+1ls40m6Kd9QxdV3f/rgHnrGJ7/bmf1RZdCR7Ave8hUnQ4NAprA7
+         UGmNu17Vqdb8KchTJPWGgyeoALh//Lzo2fRaK2HrHCgB/W1v9PJ0RWfI6KrxTJgcFfC3
+         kWUvGfGxbDOgdyqAHqMiExAYKgxvFfjFXLWVmciBMgpwGejZXiQuJYhFotcP6zi2k4a1
+         4z4uz/3DjcQ8vyR2TNfO9tJeUkd+DG+w4305FMsXLNaimKoDsfoXh+ldc91KWL53ClQT
+         OA8Q==
+X-Gm-Message-State: AOAM530BS1l2Azf6hDJKx99TO9jSZj1Y0xppn+8LLu/OZreyXhxEtUXg
+        VP59rUIr/i8oGYOXufvOlP29
+X-Google-Smtp-Source: ABdhPJwPe1MKGIP/Gs/Zjeasyw9s/FQMIYYnPnHM/QJvBePTmWpP3ucDYPiSrIV+3oxnnMP/m87LQg==
+X-Received: by 2002:a17:902:8b87:b0:14d:7920:e54a with SMTP id ay7-20020a1709028b8700b0014d7920e54amr6976857plb.140.1648142762660;
+        Thu, 24 Mar 2022 10:26:02 -0700 (PDT)
+Received: from thinkpad ([27.111.75.218])
+        by smtp.gmail.com with ESMTPSA id v23-20020a17090a521700b001bbfc181c93sm9691528pjh.19.2022.03.24.10.25.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Mar 2022 10:26:02 -0700 (PDT)
+Date:   Thu, 24 Mar 2022 22:55:54 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Frank Li <Frank.Li@nxp.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 09/25] dmaengine: dw-edma: Add CPU to PCIe bus address
+ translation
+Message-ID: <20220324172554.GR2854@thinkpad>
+References: <20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru>
+ <20220324014836.19149-10-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAKfTPtBYuEt=JuLLKFVJfzq_rNRoKPYfAnq7a2Jw=fBKMj6a3g@mail.gmail.com>
+In-Reply-To: <20220324014836.19149-10-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03/23/22 16:32, Vincent Guittot wrote:
-> On Tue, 22 Mar 2022 at 17:39, Qais Yousef <qais.yousef@arm.com> wrote:
-> >
-> > Hi Vincent
-> >
-> > Thanks for reviving this patchset!
-> >
-> > On 03/11/22 17:14, Vincent Guittot wrote:
-> > > This patchset restarts the work about adding a latency nice priority to
-> > > describe the latency tolerance of cfs tasks.
-> > >
-> > > The patches [1-4] have been done by Parth:
-> > > https://lore.kernel.org/lkml/20200228090755.22829-1-parth@linux.ibm.com/
-> > >
-> > > I have just rebased and moved the set of latency priority outside the
-> > > priority update. I have removed the reviewed tag because the patches
-> > > are 2 years old.
-> >
-> > AFAIR the blocking issue we had then is on agreement on the interface. Has this
-> > been resolved now? I didn't see any further discussion since then.
+On Thu, Mar 24, 2022 at 04:48:20AM +0300, Serge Semin wrote:
+> Starting from commit 9575632052ba ("dmaengine: make slave address
+> physical") the source and destination addresses of the DMA-slave device
+> have been converted to being defined in CPU address space. It's DMA-device
+> driver responsibility to properly convert them to the reachable DMA bus
+> spaces. In case of the DW eDMA device, the source or destination
+> peripheral (slave) devices reside PCIe bus space. Thus we need to perform
+> the PCIe Host/EP windows-based (i.e. ranges DT-property) addresses
+> translation otherwise the eDMA transactions won't work as expected (or can
+> be even harmful) in case if the CPU and PCIe address spaces don't match.
 > 
-> I think that there was an agreement about using a latency nice
-> priority in the range [-20:19] with -20 meaning sensitive to latency
-> whereas 19 means that task doesn't care about scheduling latency.  The
-> open point was about how to use this input in the scheduler with some
-> behavior being opposed.
-
-What I remember is that the problem was to consolidate on use cases then
-discuss interfaces.
-
-See https://lwn.net/Articles/820659/
-
-	"  Youssef said that the interface to all of this is the sticking
-	point.  Thomas Gleixner agreed, saying that the -20..19 range "requires
-	a crystal ball" to use properly. Zijlstra repeated his call to
-	enumerate the use cases before getting into the interface details.
-	Giani repeated that the interface does not look correct now, and agreed
-	that a more comprehensive look at the use cases was needed. Things were
-	being done backwards currently, he said.  "
-
+> Note 1. Even though the DMA interleaved template has both source and
+> destination addresses declared of dma_addr_t type only CPU memory range is
+> supposed to be mapped in a way so to be seen by the DMA device since it's
+> a subject of the DMA getting towards the system side. The device part must
+> not be mapped since slave device resides in the PCIe bus space, which
+> isn't affected by IOMMUs or iATU translations. DW PCIe eDMA generates
+> corresponding MWr/MRd TLPs on its own.
 > 
-> >
-> > >
-> > > The patches [5-6] use latency nice priority to decide if a cfs task can
-> > > preempt the current running task. Patch 5 gives some tests results with
-> > > cyclictests and hackbench to highlight the benefit of latency nice
-> > > priority for short interactive task or long intensive tasks.
-> >
-> > This is a new use case AFAICT. For Android, we want to do something in EAS path
+> Note 2. This functionality is mainly required for the remote eDMA setup
+> since the CPU address must be manually translated into the PCIe bus space
+> before being written to LLI.{SAR,DAR}. If eDMA is embedded into the
+> locally accessible DW PCIe RP/EP software-based translation isn't required
+> since it will be done by hardware by means of the Outbound iATU as long as
+> the DMA_BYPASS flag is cleared. If the later flag is set or there is no
+> Outbound iATU entry found to which the SAR or DAR falls in (for Read and
+> Write channel respectfully), there won't be any translation performed but
+> DMA will proceed with the corresponding source/destination address as is.
 > 
-> I don't think it's new, it's about being able to run some tasks in
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-I meant new use case to latency-nice interface. I don't think we had this in
-any of our discussions before? I don't mind it, but it'd be good to clarify if
-it has any relation about the other use cases and what should happen to the
-other use cases.
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
+Thanks,
+Mani
 
-Thanks
-
---
-Qais Yousef
+> ---
+>  drivers/dma/dw-edma/dw-edma-core.c | 18 +++++++++++++++++-
+>  include/linux/dma/edma.h           | 15 +++++++++++++++
+>  2 files changed, 32 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/dma/dw-edma/dw-edma-core.c b/drivers/dma/dw-edma/dw-edma-core.c
+> index 97743fe44ebf..418b201fef67 100644
+> --- a/drivers/dma/dw-edma/dw-edma-core.c
+> +++ b/drivers/dma/dw-edma/dw-edma-core.c
+> @@ -40,6 +40,17 @@ struct dw_edma_desc *vd2dw_edma_desc(struct virt_dma_desc *vd)
+>  	return container_of(vd, struct dw_edma_desc, vd);
+>  }
+>  
+> +static inline
+> +u64 dw_edma_get_pci_address(struct dw_edma_chan *chan, phys_addr_t cpu_addr)
+> +{
+> +	struct dw_edma_chip *chip = chan->dw->chip;
+> +
+> +	if (chip->ops->pci_address)
+> +		return chip->ops->pci_address(chip->dev, cpu_addr);
+> +
+> +	return cpu_addr;
+> +}
+> +
+>  static struct dw_edma_burst *dw_edma_alloc_burst(struct dw_edma_chunk *chunk)
+>  {
+>  	struct dw_edma_burst *burst;
+> @@ -328,11 +339,11 @@ dw_edma_device_transfer(struct dw_edma_transfer *xfer)
+>  {
+>  	struct dw_edma_chan *chan = dchan2dw_edma_chan(xfer->dchan);
+>  	enum dma_transfer_direction dir = xfer->direction;
+> -	phys_addr_t src_addr, dst_addr;
+>  	struct scatterlist *sg = NULL;
+>  	struct dw_edma_chunk *chunk;
+>  	struct dw_edma_burst *burst;
+>  	struct dw_edma_desc *desc;
+> +	u64 src_addr, dst_addr;
+>  	size_t fsz = 0;
+>  	u32 cnt = 0;
+>  	int i;
+> @@ -407,6 +418,11 @@ dw_edma_device_transfer(struct dw_edma_transfer *xfer)
+>  		dst_addr = chan->config.dst_addr;
+>  	}
+>  
+> +	if (dir == DMA_DEV_TO_MEM)
+> +		src_addr = dw_edma_get_pci_address(chan, (phys_addr_t)src_addr);
+> +	else
+> +		dst_addr = dw_edma_get_pci_address(chan, (phys_addr_t)dst_addr);
+> +
+>  	if (xfer->type == EDMA_XFER_CYCLIC) {
+>  		cnt = xfer->xfer.cyclic.cnt;
+>  	} else if (xfer->type == EDMA_XFER_SCATTER_GATHER) {
+> diff --git a/include/linux/dma/edma.h b/include/linux/dma/edma.h
+> index 5abac9640a4e..5cc87cfdd685 100644
+> --- a/include/linux/dma/edma.h
+> +++ b/include/linux/dma/edma.h
+> @@ -23,8 +23,23 @@ struct dw_edma_region {
+>  	size_t		sz;
+>  };
+>  
+> +/**
+> + * struct dw_edma_core_ops - platform-specific eDMA methods
+> + * @irq_vector:		Get IRQ number of the passed eDMA channel. Note the
+> + *                      method accepts the channel id in the end-to-end
+> + *                      numbering with the eDMA write channels being placed
+> + *                      first in the row.
+> + * @pci_address:	Get PCIe bus address corresponding to the passed CPU
+> + *			address. Note there is no need in specifying this
+> + *			function if the address translation is performed by
+> + *			the DW PCIe RP/EP controller with the DW eDMA device in
+> + *			subject and DMA_BYPASS isn't set for all the outbound
+> + *			iATU windows. That will be done by the controller
+> + *			automatically.
+> + */
+>  struct dw_edma_core_ops {
+>  	int (*irq_vector)(struct device *dev, unsigned int nr);
+> +	u64 (*pci_address)(struct device *dev, phys_addr_t cpu_addr);
+>  };
+>  
+>  enum dw_edma_map_format {
+> -- 
+> 2.35.1
+> 
