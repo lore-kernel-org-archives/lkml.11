@@ -2,60 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81FB1C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 16:35:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEA9CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 16:39:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351729AbiCXQhC (ORCPT
+        id S1351734AbiCXQkw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 12:37:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48702 "EHLO
+        Thu, 24 Mar 2022 12:40:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229817AbiCXQhA (ORCPT
+        with ESMTP id S239263AbiCXQkv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 12:37:00 -0400
-Received: from mxout013.mail.hostpoint.ch (mxout013.mail.hostpoint.ch [IPv6:2a00:d70:0:e::313])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 262B270046;
-        Thu, 24 Mar 2022 09:35:28 -0700 (PDT)
-Received: from [10.0.2.46] (helo=asmtp013.mail.hostpoint.ch)
-        by mxout013.mail.hostpoint.ch with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2 (FreeBSD))
-        (envelope-from <code@reto-schneider.ch>)
-        id 1nXQQo-000FQP-NN; Thu, 24 Mar 2022 17:35:26 +0100
-Received: from [2a00:a680:2222:ff00:421d:ad7:faa1:5cf9]
-        by asmtp013.mail.hostpoint.ch with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.95 (FreeBSD))
-        (envelope-from <code@reto-schneider.ch>)
-        id 1nXQQo-0007gn-IP;
-        Thu, 24 Mar 2022 17:35:26 +0100
-X-Authenticated-Sender-Id: reto-schneider@reto-schneider.ch
-Message-ID: <429120bd-c321-ca44-a98f-a2d8f1ef483d@reto-schneider.ch>
-Date:   Thu, 24 Mar 2022 17:35:26 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 2/2] rtl8xxxu: fill up txrate info for gen1 chips
-Content-Language: en-US
-To:     Chris Chiu <chris.chiu@canonical.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kvalo@kernel.org,
-        Jes.Sorensen@gmail.com, davem@davemloft.net, kuba@kernel.org
-References: <20220318024216.42204-1-chris.chiu@canonical.com>
- <20220318024216.42204-3-chris.chiu@canonical.com>
-From:   Reto Schneider <code@reto-schneider.ch>
-In-Reply-To: <20220318024216.42204-3-chris.chiu@canonical.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Thu, 24 Mar 2022 12:40:51 -0400
+X-Greylist: delayed 603 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Mar 2022 09:39:17 PDT
+Received: from ns.iliad.fr (ns.iliad.fr [212.27.33.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A088843AD9;
+        Thu, 24 Mar 2022 09:39:17 -0700 (PDT)
+Received: from ns.iliad.fr (localhost [127.0.0.1])
+        by ns.iliad.fr (Postfix) with ESMTP id 7668D208CF;
+        Thu, 24 Mar 2022 17:29:12 +0100 (CET)
+Received: from sakura (freebox.vlq16.iliad.fr [213.36.7.13])
+        by ns.iliad.fr (Postfix) with ESMTP id 6FAA6208C9;
+        Thu, 24 Mar 2022 17:29:12 +0100 (CET)
+Message-ID: <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
+Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
+ ath9k-based AP
+From:   Maxime Bizon <mbizon@freebox.fr>
+Reply-To: mbizon@freebox.fr
+To:     Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@toke.dk>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Christoph Hellwig <hch@lst.de>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Olha Cherevyk <olha.cherevyk@gmail.com>,
+        iommu <iommu@lists.linux-foundation.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>
+Date:   Thu, 24 Mar 2022 17:29:12 +0100
+In-Reply-To: <878rsza0ih.fsf@toke.dk>
+References: <1812355.tdWV9SEqCh@natalenko.name>
+         <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
+         <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
+         <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
+Organization: Freebox
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP ; ns.iliad.fr ; Thu Mar 24 17:29:12 2022 +0100 (CET)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18.03.22 03:42, Chris Chiu wrote:
-> RTL8188CUS/RTL8192CU(gen1) don't support rate adatptive report hence
-                                                 adaptive
 
-> no real txrate info can be retrieved. The vendor driver reports the
-> highest rate in HT capabilities from the IEs to avoid empty txrate.
-> This commit initiates the txrate information with the highest supported
-> rate negotiated with AP. The gen2 chip keeps update the txrate from
-> the rate adaptive reports, and gen1 chips at least have non-NULL txrate
-> after associated.
+On Thu, 2022-03-24 at 15:27 +0100, Toke Høiland-Jørgensen wrote:
+
+> 
+> I'm looking into this; but in the interest of a speedy resolution of
+> the regression I would be in favour of merging that partial revert
+> and reinstating it if/when we identify (and fix) any bugs in ath9k :)
+
+This looks fishy:
+
+ath9k/recv.c
+
+                /* We will now give hardware our shiny new allocated skb */
+                new_buf_addr = dma_map_single(sc->dev, requeue_skb->data,
+                                              common->rx_bufsize, dma_type);
+                if (unlikely(dma_mapping_error(sc->dev, new_buf_addr))) {
+                        dev_kfree_skb_any(requeue_skb);
+                        goto requeue_drop_frag;
+                }
+
+                /* Unmap the frame */
+                dma_unmap_single(sc->dev, bf->bf_buf_addr,
+                                 common->rx_bufsize, dma_type);
+
+                bf->bf_mpdu = requeue_skb;
+                bf->bf_buf_addr = new_buf_addr;
+
+-- 
+Maxime
+
+
+
