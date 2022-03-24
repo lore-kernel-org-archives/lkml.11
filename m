@@ -2,71 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCCC6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 23:38:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19B7AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 23:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356269AbiCXXkS (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 19:40:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39596 "EHLO
+        id S231378AbiCXXoI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Mar 2022 19:44:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354028AbiCXXkQ (ORCPT
+        with ESMTP id S1356422AbiCXXnB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 19:40:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2CFD27CCD
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 16:38:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D037B8226E
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 23:38:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 46039C340EC;
-        Thu, 24 Mar 2022 23:38:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648165120;
-        bh=mScaLpR8zwsSQHZCdjC3pAla7NlmmDY7f2p4l1ohMS8=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=WyHpfOb6GlEJDpwNGdNAPayYsSdLNPH8GaO16q0Cwpgpw5qKhfeIMHtcPDP+OrXS6
-         ysb0IPbwRyIBrrZmZVhnSxwBRtwXE5JS8rman9hz8v4jLayxWeZPYrqDUZtaOfWE67
-         1tQSCGpa75OhqNRVSwAZx0kfM+03Qa/q2bsws8To85eZwLTfP6fzn0HbuMkikYr1t1
-         BqWHc22+31RVBwIY8DAAH5wUHkV2ALzdNaGFzek6sGLZDOHIrLa5ytKEKEpUR2SfuS
-         7V3cdRJRiqpqCwM+5U9vxWByoiG41T1ApH1AlMKc1IE/iHjImtndZVTHbrXgWB03VG
-         67AQXDnn0zTgg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 32F45E7BB0B;
-        Thu, 24 Mar 2022 23:38:40 +0000 (UTC)
-Subject: Re: [git pull] drm for 5.18-rc1
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CAPM=9tytg5jd_i3z3C5Y1dii2-cgO11Gjgvaq8qoWn3CGfCreg@mail.gmail.com>
-References: <CAPM=9tytg5jd_i3z3C5Y1dii2-cgO11Gjgvaq8qoWn3CGfCreg@mail.gmail.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <CAPM=9tytg5jd_i3z3C5Y1dii2-cgO11Gjgvaq8qoWn3CGfCreg@mail.gmail.com>
-X-PR-Tracked-Remote: git://anongit.freedesktop.org/drm/drm tags/drm-next-2022-03-24
-X-PR-Tracked-Commit-Id: c6e90a1c660874736bd09c1fec6312b4b4c2ff7b
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: b14ffae378aa1db993e62b01392e70d1e585fb23
-Message-Id: <164816512020.13472.6357726227995995877.pr-tracker-bot@kernel.org>
-Date:   Thu, 24 Mar 2022 23:38:40 +0000
-To:     Dave Airlie <airlied@gmail.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>
+        Thu, 24 Mar 2022 19:43:01 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2AB3BA31C
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 16:41:27 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2e5bcae3665so47681817b3.16
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 16:41:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=YM5HWwtsuon+nq2pjNDv8Dl1s4yCw5MepRNvjajdRw8=;
+        b=B+BmeYhFUl732dOfJ3g/AH0DUva74mBYCMxNYvLXJmUf3f3DsoL8nrpaQnli+1YQVz
+         5WPtDROMaecvyIqMTYigAL9o6AiMZI6EPdXxBi04Hmpjmu4/PIkNfRi3FLCE0afTj2KJ
+         Z4hMpnUrglfvmrCGGh+Za6gJ3gkGaQEXmcH+lIboOCX+uxSXopXcOoR8ARexTDcNygmD
+         ZEPsPg6vBK60p4AXrTn9EbpUx1D3+mG2ZoigPFAQqVrWvMtYVTYWPnAOnt/eVb4/BokG
+         vZmHhLqv3FPdcV2W0BD6D9RSE2csfCyAHSHvQLotBn1aIVhhKzfP3UWE34NB2sCHSdDn
+         R4SQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=YM5HWwtsuon+nq2pjNDv8Dl1s4yCw5MepRNvjajdRw8=;
+        b=vHkeQKNxIwLZEXc/3ZxXs6liW/SeYGDTa9yDBvq3ZmAKy7cdUFICCbhBwNtKbrL+uk
+         T2/JpkVrB9oaA1WJnZF8h8n2tktvUjUmbXatr0sCz91RoFphqlv00kJPoTchZ74xWX0f
+         v9TO+7BEqCKD1aTiofIK4Cy0XfXLnMeL4FIffVuIAgUcvTp+3qmZ20GEEdUR3Y+y16s6
+         B0urqJeh94W9eH7ZkxOh+ICDZtVUPbXTXqMZ0baxJEWzQ5h5e28qKeYXCpkwa98Vm3qC
+         /oaVmWu6ZDpoL5d4ZuufDdMhkalneQ9p+quw2RUUUQdZRna4ybigqUVbT3UlVQhJjUPN
+         H6KA==
+X-Gm-Message-State: AOAM533DYcv5FtlbsQrXmsGSYDhsAYQYYqjjZ1i0r9hIVVPuxMcNUptl
+        wEOaV16raM/P4t6ujrpjHSnCaMQivI8=
+X-Google-Smtp-Source: ABdhPJyHyZ2WgjGriCBsdHXAi1Do5BWOgO1m6A0z6NLZii0z+HW4WqZQi+VdPnE4P9A//WlpZMKlDtuZSEs=
+X-Received: from haoluo.svl.corp.google.com ([2620:15c:2cd:202:f3eb:bf7b:2da4:12c9])
+ (user=haoluo job=sendgmr) by 2002:a81:1bc3:0:b0:2e3:aa1:f553 with SMTP id
+ b186-20020a811bc3000000b002e30aa1f553mr7547386ywb.491.1648165287205; Thu, 24
+ Mar 2022 16:41:27 -0700 (PDT)
+Date:   Thu, 24 Mar 2022 16:41:21 -0700
+Message-Id: <20220324234123.1608337-1-haoluo@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
+Subject: [PATCH RFC bpf-next 0/2] Mmapable task local storage.
+From:   Hao Luo <haoluo@google.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     yhs@fb.com, KP Singh <kpsingh@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hao Luo <haoluo@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Thu, 24 Mar 2022 12:30:02 +1000:
+Some map types support mmap operation, which allows userspace to
+communicate with BPF programs directly. Currently only arraymap
+and ringbuf have mmap implemented.
 
-> git://anongit.freedesktop.org/drm/drm tags/drm-next-2022-03-24
+However, in some use cases, when multiple program instances can
+run concurrently, global mmapable memory can cause race. In that
+case, userspace needs to provide necessary synchronizations to
+coordinate the usage of mapped global data. This can be a source
+of bottleneck.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/b14ffae378aa1db993e62b01392e70d1e585fb23
+It would be great to have a mmapable local storage in that case.
+This patch adds that.
 
-Thank you!
+Mmap isn't BPF syscall, so unpriv users can also use it to
+interact with maps.
+
+Currently the only way of allocating mmapable map area is using
+vmalloc() and it's only used at map allocation time. Vmalloc()
+may sleep, therefore it's not suitable for maps that may allocate
+memory in an atomic context such as local storage. Local storage
+uses kmalloc() with GFP_ATOMIC, which doesn't sleep. This patch
+uses kmalloc() with GFP_ATOMIC as well for mmapable map area.
+
+Allocating mmapable memory has requirment on page alignment. So we
+have to deliberately allocate more memory than necessary to obtain
+an address that has sdata->data aligned at page boundary. The
+calculations for mmapable allocation size, and the actual
+allocation/deallocation are packaged in three functions:
+
+ - bpf_map_mmapable_alloc_size()
+ - bpf_map_mmapable_kzalloc()
+ - bpf_map_mmapable_kfree()
+
+BPF local storage uses them to provide generic mmap API:
+
+ - bpf_local_storage_mmap()
+
+And task local storage adds the mmap callback:
+
+ - task_storage_map_mmap()
+
+When application calls mmap on a task local storage, it gets its
+own local storage.
+
+Overall, mmapable local storage trades off memory with flexibility
+and efficiency. It brings memory fragmentation but can make programs
+stateless. Therefore useful in some cases.
+
+Hao Luo (2):
+  bpf: Mmapable local storage.
+  selftests/bpf: Test mmapable task local storage.
+
+ include/linux/bpf.h                           |  4 +
+ include/linux/bpf_local_storage.h             |  5 +-
+ kernel/bpf/bpf_local_storage.c                | 73 +++++++++++++++++--
+ kernel/bpf/bpf_task_storage.c                 | 40 ++++++++++
+ kernel/bpf/syscall.c                          | 67 +++++++++++++++++
+ .../bpf/prog_tests/task_local_storage.c       | 38 ++++++++++
+ .../bpf/progs/task_local_storage_mmapable.c   | 38 ++++++++++
+ 7 files changed, 257 insertions(+), 8 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/task_local_storage_mmapable.c
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.35.1.1021.g381101b075-goog
+
