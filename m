@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFBCBC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 16:11:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF8DEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 16:11:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351561AbiCXQNM (ORCPT
+        id S1351578AbiCXQNS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 12:13:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41236 "EHLO
+        Thu, 24 Mar 2022 12:13:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351615AbiCXQNJ (ORCPT
+        with ESMTP id S238183AbiCXQNK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 12:13:09 -0400
+        Thu, 24 Mar 2022 12:13:10 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73B18A0BE1;
-        Thu, 24 Mar 2022 09:11:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8992A0BE1;
+        Thu, 24 Mar 2022 09:11:38 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 9C9361F4588F
+        with ESMTPSA id D00651F45890
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648138296;
-        bh=NQIbmrCja9vafgXukwQnvA7dnbY+ovzFjWjQXecy4AA=;
+        s=mail; t=1648138297;
+        bh=326GQpe6Pue2Q7/zbKDs+rrjArsHHkgS+jpDRGw9S48=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=dqy5Fb7iHQn86liK/eKe2su/+aDIi7weA2TyPNWDCh4TZxEia+Au+iB3QA+0knXHi
-         v9OC54dzY/aJgT6k4wUUZQRLXnmamQ5avMGrgRYovcncTBspQ4dmWC2HMFM34N7AEs
-         OXsgPqUsSdJUP/1lIy2oAWDMY4x8IQ1YDWXolT8zmUDr5CkTelhIE5hHXoz2iZvo8o
-         jMBiic0OQg5fCjbxd/eOVOsET3iqnD+84AgDRMw0kOIFUQcVDVdhkRMsnSvUi8eJeY
-         tdb7LSDKooX8fWK3OqhJHV9tbIlD3j19t7twPEQpNpWNxPbMU/EeFjuJaMTMLQh7m8
-         QNeahEts2FRYQ==
-Message-ID: <9268bdf3-d1f2-b308-48ca-078f10dede31@collabora.com>
-Date:   Thu, 24 Mar 2022 17:11:33 +0100
+        b=lb96OBHHXuEZ2m2LlS0Xe5dnXMhqIrEt2g29/hMrrNVrjy4bYGfpukL51o3kSnelb
+         ekjjR6a7w6e5HWn1N+EQq9teLNxhViG5o1IjRLB5956SAWA754snvzls6ImNZd6G0n
+         m9ePqveP4Io14TttTGuUhOdcfO2cZqme+pZKj+tXI+3XD9J/U34SfZrW2ZuOYBdWfh
+         Q+h26phTI+sLUGNMsIHQHb+5lPuZTMd/6xTxnhdByEoeyZ7kMIBrhFhee5dFW4uGZF
+         BrAf2nsnyeA7kgW87stdvRXK7LUmK71fyNP03mCmLqibp2ioVTluDl0ktb2kltW+Rf
+         DvOWCzMcu5N+A==
+Message-ID: <c026dd04-3cc1-4408-e6e4-8ab8a8dbcb70@collabora.com>
+Date:   Thu, 24 Mar 2022 17:11:34 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.1
-Subject: Re: [PATCH v4 1/6] ASoC: mediatek: mt8195: revise
- mt8195-mt6359-rt1019-rt5682.c
+Subject: Re: [PATCH v4 4/6] ASoC: mediatek: mt8195: rename card controls
 Content-Language: en-US
 To:     Trevor Wu <trevor.wu@mediatek.com>, broonie@kernel.org,
         tiwai@suse.com, robh+dt@kernel.org, matthias.bgg@gmail.com
@@ -44,10 +43,10 @@ Cc:     alsa-devel@alsa-project.org, linux-mediatek@lists.infradead.org,
         devicetree@vger.kernel.org, aaronyu@google.com, tzungbi@google.com,
         miles.chen@mediatek.com, yc.hung@mediatek.com
 References: <20220324053851.27350-1-trevor.wu@mediatek.com>
- <20220324053851.27350-2-trevor.wu@mediatek.com>
+ <20220324053851.27350-5-trevor.wu@mediatek.com>
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220324053851.27350-2-trevor.wu@mediatek.com>
+In-Reply-To: <20220324053851.27350-5-trevor.wu@mediatek.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -55,10 +54,13 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Il 24/03/22 06:38, Trevor Wu ha scritto:
-> Revise driver for the coming driver combination.
-> There are two major parts including in the patch.
-> 1. Apply some suggested changes used in mt8195-mt6359-rt1011-rt5682.c.
-> 2. Reorder the layout for centralizing the codec related code.
+> In order to be able to reuse the same configurations in user space,
+> rename the controls to generic names.
+> 
+> "Headphone Jack" -> "Headphone"
+> "Speakers" -> "Ext Spk"
+> "Left Speaker" -> "Left Spk"
+> "Right Speaker" -> "Right SPk"
 > 
 > Signed-off-by: Trevor Wu <trevor.wu@mediatek.com>
 > Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
