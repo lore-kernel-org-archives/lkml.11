@@ -2,66 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E55DCC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:59:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEA83C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:59:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348758AbiCXIAb (ORCPT
+        id S1348761AbiCXIBW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 04:00:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46916 "EHLO
+        Thu, 24 Mar 2022 04:01:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240437AbiCXIA3 (ORCPT
+        with ESMTP id S240437AbiCXIBU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 04:00:29 -0400
-Received: from mail.meizu.com (unknown [14.29.68.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A91A1A381;
-        Thu, 24 Mar 2022 00:58:57 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
- (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 24 Mar
- 2022 15:58:59 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Thu, 24 Mar
- 2022 15:58:54 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     <Larry.Finger@lwfinger.net>, <kvalo@kernel.org>
-CC:     <linux-wireless@vger.kernel.org>, <b43-dev@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Haowen Bai <baihaowen@meizu.com>
-Subject: [PATCH] wireless: broadcom: b43legacy: Fix assigning negative error code to unsigned variable
-Date:   Thu, 24 Mar 2022 15:58:53 +0800
-Message-ID: <1648108733-27272-1-git-send-email-baihaowen@meizu.com>
+        Thu, 24 Mar 2022 04:01:20 -0400
+X-Greylist: delayed 920 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Mar 2022 00:59:48 PDT
+Received: from m12-18.163.com (m12-18.163.com [220.181.12.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9D69222B13
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:59:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=k0bAzjh+AUgR2IJ351
+        C39W3KAJR0vQBnMG0macu+KLY=; b=JYWaoNl5be+C9Eh5neBJnZ6Sf+r6Ra8JsO
+        av/zNx06JF18RRL7ek9J3rBWVyWjcD+DKbEVMpwj73SRJW2KlddA7XdtLtaj33Ki
+        gG0RUaW+rGhQjncmDkmAKqoOmaxZB5OpoSrTgUmaZDcYG5yOnwqRFvQsDaG3+gmy
+        ib/gDJbe8=
+Received: from localhost (unknown [159.226.95.33])
+        by smtp14 (Coremail) with SMTP id EsCowADXTotHITxi+cJzBg--.47842S2;
+        Thu, 24 Mar 2022 15:44:08 +0800 (CST)
+From:   QintaoShen <unSimple1993@163.com>
+To:     kristo@kernel.org
+Cc:     ssantosh@kernel.org, nm@ti.com, linux-kernel@vger.kernel.org,
+        QintaoShen <unSimple1993@163.com>
+Subject: [PATCH v1] soc: ti: ti_sci_pm_domains: Check for null return of devm_kcalloc
+Date:   Thu, 24 Mar 2022 15:44:03 +0800
+Message-Id: <1648107843-29077-1-git-send-email-unSimple1993@163.com>
 X-Mailer: git-send-email 2.7.4
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-125.meizu.com (172.16.1.125) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+X-CM-TRANSID: EsCowADXTotHITxi+cJzBg--.47842S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrZw18WF1rWw4kCr17Cry7trb_yoWftrc_Cw
+        4UXrW3Gr45Cr93Kw1qkw43ZryY93Z8ZrnY9w1rt3sxXryUWw1rGF4UZFn3CanxW3yDGFnr
+        Jan0vr13ArnxWjkaLaAFLSUrUUUUbb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRACzZJUUUUU==
+X-Originating-IP: [159.226.95.33]
+X-CM-SenderInfo: 5xqvxz5sohimizt6il2tof0z/1tbiNAjNH1aD-Km6YQAAs1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-fix warning reported by smatch:
-drivers/net/wireless/broadcom/b43legacy/phy.c:1181 b43legacy_phy_lo_b_measure()
-warn: assigning (-772) to unsigned variable 'fval'
+The allocation funciton devm_kcalloc may fail and return a null pointer,
+which would cause a null-pointer dereference later.
+It might be better to check it and directly return -ENOMEM just like the
+usage of devm_kcalloc in previous code.
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Signed-off-by: QintaoShen <unSimple1993@163.com>
 ---
- drivers/net/wireless/broadcom/b43legacy/phy.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/soc/ti/ti_sci_pm_domains.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/wireless/broadcom/b43legacy/phy.c b/drivers/net/wireless/broadcom/b43legacy/phy.c
-index 05404fb..c1395e6 100644
---- a/drivers/net/wireless/broadcom/b43legacy/phy.c
-+++ b/drivers/net/wireless/broadcom/b43legacy/phy.c
-@@ -1123,7 +1123,7 @@ void b43legacy_phy_lo_b_measure(struct b43legacy_wldev *dev)
- 	struct b43legacy_phy *phy = &dev->phy;
- 	u16 regstack[12] = { 0 };
- 	u16 mls;
--	u16 fval;
-+	s16 fval;
- 	int i;
- 	int j;
+diff --git a/drivers/soc/ti/ti_sci_pm_domains.c b/drivers/soc/ti/ti_sci_pm_domains.c
+index 8afb3f45..a33ec7e 100644
+--- a/drivers/soc/ti/ti_sci_pm_domains.c
++++ b/drivers/soc/ti/ti_sci_pm_domains.c
+@@ -183,6 +183,8 @@ static int ti_sci_pm_domain_probe(struct platform_device *pdev)
+ 		devm_kcalloc(dev, max_id + 1,
+ 			     sizeof(*pd_provider->data.domains),
+ 			     GFP_KERNEL);
++	if (!pd_provider->data.domains)
++		return -ENOMEM;
  
+ 	pd_provider->data.num_domains = max_id + 1;
+ 	pd_provider->data.xlate = ti_sci_pd_xlate;
 -- 
 2.7.4
 
