@@ -2,26 +2,27 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F75CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 15:57:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53566C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 15:57:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351509AbiCXP7L (ORCPT
+        id S1351526AbiCXP7R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 11:59:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58744 "EHLO
+        Thu, 24 Mar 2022 11:59:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351470AbiCXP65 (ORCPT
+        with ESMTP id S1350615AbiCXP65 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 24 Mar 2022 11:58:57 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF8FAD134;
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C571AD109;
         Thu, 24 Mar 2022 08:57:23 -0700 (PDT)
 Received: from localhost.localdomain ([81.221.85.15]) by mrelay.perfora.net
- (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MgOMF-1nzaiC36ND-00hs4j;
- Thu, 24 Mar 2022 16:57:08 +0100
+ (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1Mrgkq-1nsBnm0nau-00nfUk;
+ Thu, 24 Mar 2022 16:57:02 +0100
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Andrejs Cainikovs <andrejs.cainikovs@toradex.com>,
         Arnd Bergmann <arnd@arndb.de>,
         Fabio Estevam <festevam@gmail.com>,
         Frank Rowand <frowand.list@gmail.com>,
@@ -33,84 +34,173 @@ Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v1 03/10] arm64: dts: imx8mm-verdin: alphabetically re-order nodes
-Date:   Thu, 24 Mar 2022 16:56:42 +0100
-Message-Id: <20220324155649.285924-4-marcel@ziswiler.com>
+Subject: [PATCH v1 01/10] arm64: dts: imx8mm-verdin: update regulator names
+Date:   Thu, 24 Mar 2022 16:56:40 +0100
+Message-Id: <20220324155649.285924-2-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220324155649.285924-1-marcel@ziswiler.com>
 References: <20220324155649.285924-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:TdzkpasYGlzKJaYNlxNS/8qH3TE2zqmHiuo8Av1ViL9IZNgShTh
- OVG+aTHuaZkZmpCkjfl6bCys/sGa+IFgwIhO6cKIbQiWt9HTmz239JWOC+habTDY8r4yixY
- FhO1BHzcpzudRtvNp0yPai9NANLtZS/Yy5uopz2DPO25UcrZnJ4xTt2hNf6vJFyGyVEwgL+
- F3Pu24NqnNpYs/7jpJziw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:JczHvuUaNUU=:gYBVOb/EhAiJvt5YzLS/Vg
- aF8GmzRf17e/6PYUSNUGUUxVaSOQiEF3ytpSIEerg5SUzLYOIgcQKe6EJ9xHS3L02FSdW659T
- msGaRLhLGmB8MTPOvoTY9a4rTWPcr0ZXPIc/zVi4Wnz7ZmlDgXhEx0Pt9FVr1WrX7JSWKrBbB
- MYuptt0oiDio4cqyqk+xWc2E57G4l8qCuRDulintUBVNt49Yf67GPHufgY8k3/vkr+nf89Od0
- MqoOdVsIMtqmKS6F5svatZ3J3E20t6iQLNxVu1i62LAw+k7jLaoLJ/DaKFvTUqJnY0mFjiNfz
- hRHF76MgSjcWtv/nObP3CrFLzAzN8sJ7HtKkT1U0BO6DEmbWTdUI2cQ2tbVOvXwICivmT+BGg
- uMI3jPToiHcXK97PBN1Y0kaN4zWf5F9uQebdmt4PigGAmudT6b5tfi9x06/ZHea6lHVtqrVzT
- uYLSwfyv+kYp9URDlQS8B3hy1bovzWRVStssT2+5CNP1zeQg4c+Jc4tZAgw3WmzuBgfifAKXr
- 7i9+QJQ/0LIrBNgf41ifZ92NIKCznvjK8W82IyV23UZFJN5n5duaQolper9Da578oJPeti9yP
- fGFOMv9QP7xMn1S0BYcvke0oJFO0l1WoiBPOQwcf8Z6DzlPKxsTyKhIq8XhEKdzQRDppfZCqO
- 8AOOsez6DTRHtftocm+KNuUNCuc8xeGKgAB+kyeDPnyyQfHzjEXxIGUNiz2NOft93XF0=
+X-Provags-ID: V03:K1:I035u/TEBtkJzziFVV5WB+N0KkClcIp6K+bbegIPfj7H5mXmNjL
+ k2A0LCla47UVCnMBv0djfEvGGhS2cmKCMRLpFGo8RU4vVsk3NSxnGHWmmzuIhq2IpQuEf1Z
+ WpH4gBaair4CJBje1eT3sr8m124A0NFJyGBdUvFS9kYd3JAGcffz7XzmdVtrlM37/x+EfqN
+ 3C/h1n6F/GOl0BKJjuoFQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:iXGFFCpYWmI=:GrN1dLLY2hywm8USLmI20G
+ +c5phTW05eWcens1Y9Dyu2tmJC+MfRXQESwUVZ20WzWSfzFDn/AX907Li3/3XMEP8Moj5AdON
+ 7Y/lnfPBUqeh4Mmiqwy9vj2EpXHCidkv76roBSkzvzkQWzzDvwAAZnuaeABdoDtnzbU/BilaT
+ ri/wd/SeVO36M5lv01Pm0s2+T0btQEiBcmlqnDm1CFZ9cHWW1LrNJCddu2JKJBmErNP588cAo
+ Xbd4n7Q6jt3cx/PbscbjLnTQw8iH0w9YOaom4kPrpi33gWhhFNQ2ZnD9DMzV5MPYPP9rWcuaM
+ b3pDrHG3B5bqGDF0DpLaGe4uWnqZQ2okMjPu8sNH87eirTQqcsPf3/E2Jpvj3rXwvrIeILc4a
+ Rmhf1LgVPs4fyandJmNmCUjyEkTtf6sAPCtZQdakm8++SZagS8oor/nwxxzg9tOrcmhU1YLVB
+ 2A1BKS5OTzynouMK8KFn2O59brThec0pJzMpQXYs3nOsxKLA6HLAu/WDcVexbRTgzdpbgMr92
+ aN7VpvgormgAEzXhmBmtkR0V5x6qVnCvVi1g0Nn7ABtAH0e2yM8UAv22Y8Fg8Pa9aKAkJMMFn
+ Qy1VyA/CJSDE1SyvO+7rS0rH929hJNQdiGCD3sfbbACjCCMAV8O/CCAIwDyxYX9eIHH78uOUi
+ 6B3jVU1VaN2NZ5zC3uhMNAHEt/9YsVHFxOPr3/H9OSn4Zq7VK0S4LsfzLgMwrLmcFnYU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Alphabetically re-order nodes.
+Annotate regulators which are on-module.
+Rename usb_otg{1/2}_vbus to USB_{1/2}_EN more in-line with Verdin spec.
+Annotate PMIC regulators with information on which BUCK/LDO they are on.
 
 Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 ---
 
- .../dts/freescale/imx8mm-verdin-wifi.dtsi     | 26 +++++++++----------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+ .../boot/dts/freescale/imx8mm-verdin.dtsi     | 28 +++++++++----------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-verdin-wifi.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-verdin-wifi.dtsi
-index 3e06a6ce3406..017db9eab256 100644
---- a/arch/arm64/boot/dts/freescale/imx8mm-verdin-wifi.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-verdin-wifi.dtsi
-@@ -17,19 +17,6 @@ reg_wifi_en: regulator-wifi-en {
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
+index 0d84d29e70f1..f70782d2a23d 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
+@@ -86,7 +86,7 @@ reg_ethphy: regulator-ethphy {
+ 		regulator-boot-on;
+ 		regulator-max-microvolt = <3300000>;
+ 		regulator-min-microvolt = <3300000>;
+-		regulator-name = "+V3.3_ETH";
++		regulator-name = "On-module +V3.3_ETH";
+ 		startup-delay-us = <200000>;
  	};
- };
  
--/* On-module Wi-Fi */
--&usdhc3 {
--	bus-width = <4>;
--	keep-power-in-suspend;
--	non-removable;
--	pinctrl-names = "default", "state_100mhz", "state_200mhz";
--	pinctrl-0 = <&pinctrl_usdhc3>, <&pinctrl_wifi_ctrl>;
--	pinctrl-1 = <&pinctrl_usdhc3_100mhz>, <&pinctrl_wifi_ctrl>;
--	pinctrl-2 = <&pinctrl_usdhc3_200mhz>, <&pinctrl_wifi_ctrl>;
--	vmmc-supply = <&reg_wifi_en>;
--	status = "okay";
--};
--
- &gpio3 {
- 	gpio-line-names = "SODIMM_52",
- 			  "SODIMM_54",
-@@ -92,3 +79,16 @@ &gpio4 {
- 			  "SODIMM_135",
- 			  "SODIMM_129";
- };
-+
-+/* On-module Wi-Fi */
-+&usdhc3 {
-+	bus-width = <4>;
-+	keep-power-in-suspend;
-+	non-removable;
-+	pinctrl-names = "default", "state_100mhz", "state_200mhz";
-+	pinctrl-0 = <&pinctrl_usdhc3>, <&pinctrl_wifi_ctrl>;
-+	pinctrl-1 = <&pinctrl_usdhc3_100mhz>, <&pinctrl_wifi_ctrl>;
-+	pinctrl-2 = <&pinctrl_usdhc3_200mhz>, <&pinctrl_wifi_ctrl>;
-+	vmmc-supply = <&reg_wifi_en>;
-+	status = "okay";
-+};
+@@ -99,7 +99,7 @@ reg_usb_otg1_vbus: regulator-usb-otg1 {
+ 		pinctrl-0 = <&pinctrl_reg_usb1_en>;
+ 		regulator-max-microvolt = <5000000>;
+ 		regulator-min-microvolt = <5000000>;
+-		regulator-name = "usb_otg1_vbus";
++		regulator-name = "USB_1_EN";
+ 	};
+ 
+ 	reg_usb_otg2_vbus: regulator-usb-otg2 {
+@@ -111,7 +111,7 @@ reg_usb_otg2_vbus: regulator-usb-otg2 {
+ 		pinctrl-0 = <&pinctrl_reg_usb2_en>;
+ 		regulator-max-microvolt = <5000000>;
+ 		regulator-min-microvolt = <5000000>;
+-		regulator-name = "usb_otg2_vbus";
++		regulator-name = "USB_2_EN";
+ 	};
+ 
+ 	reg_usdhc2_vmmc: regulator-usdhc2 {
+@@ -345,7 +345,7 @@ reg_vdd_soc: BUCK1 {
+ 				regulator-boot-on;
+ 				regulator-max-microvolt = <850000>;
+ 				regulator-min-microvolt = <800000>;
+-				regulator-name = "+VDD_SOC";
++				regulator-name = "On-module +VDD_SOC (BUCK1)";
+ 				regulator-ramp-delay = <3125>;
+ 			};
+ 
+@@ -356,7 +356,7 @@ reg_vdd_arm: BUCK2 {
+ 				regulator-boot-on;
+ 				regulator-max-microvolt = <950000>;
+ 				regulator-min-microvolt = <850000>;
+-				regulator-name = "+VDD_ARM";
++				regulator-name = "On-module +VDD_ARM (BUCK2)";
+ 				regulator-ramp-delay = <3125>;
+ 			};
+ 
+@@ -365,7 +365,7 @@ reg_vdd_dram: BUCK3 {
+ 				regulator-boot-on;
+ 				regulator-max-microvolt = <950000>;
+ 				regulator-min-microvolt = <850000>;
+-				regulator-name = "+VDD_GPU_VPU_DDR";
++				regulator-name = "On-module +VDD_GPU_VPU_DDR (BUCK3)";
+ 			};
+ 
+ 			reg_vdd_3v3: BUCK4 {
+@@ -373,7 +373,7 @@ reg_vdd_3v3: BUCK4 {
+ 				regulator-boot-on;
+ 				regulator-max-microvolt = <3300000>;
+ 				regulator-min-microvolt = <3300000>;
+-				regulator-name = "+V3.3";
++				regulator-name = "On-module +V3.3 (BUCK4)";
+ 			};
+ 
+ 			reg_vdd_1v8: BUCK5 {
+@@ -381,7 +381,7 @@ reg_vdd_1v8: BUCK5 {
+ 				regulator-boot-on;
+ 				regulator-max-microvolt = <1800000>;
+ 				regulator-min-microvolt = <1800000>;
+-				regulator-name = "PWR_1V8_MOCI";
++				regulator-name = "PWR_1V8_MOCI (BUCK5)";
+ 			};
+ 
+ 			reg_nvcc_dram: BUCK6 {
+@@ -389,7 +389,7 @@ reg_nvcc_dram: BUCK6 {
+ 				regulator-boot-on;
+ 				regulator-max-microvolt = <1100000>;
+ 				regulator-min-microvolt = <1100000>;
+-				regulator-name = "+VDD_DDR";
++				regulator-name = "On-module +VDD_DDR (BUCK6)";
+ 			};
+ 
+ 			reg_nvcc_snvs: LDO1 {
+@@ -397,7 +397,7 @@ reg_nvcc_snvs: LDO1 {
+ 				regulator-boot-on;
+ 				regulator-max-microvolt = <1800000>;
+ 				regulator-min-microvolt = <1800000>;
+-				regulator-name = "+V1.8_SNVS";
++				regulator-name = "On-module +V1.8_SNVS (LDO1)";
+ 			};
+ 
+ 			reg_vdd_snvs: LDO2 {
+@@ -405,7 +405,7 @@ reg_vdd_snvs: LDO2 {
+ 				regulator-boot-on;
+ 				regulator-max-microvolt = <900000>;
+ 				regulator-min-microvolt = <800000>;
+-				regulator-name = "+V0.8_SNVS";
++				regulator-name = "On-module +V0.8_SNVS (LDO2)";
+ 			};
+ 
+ 			reg_vdda: LDO3 {
+@@ -413,7 +413,7 @@ reg_vdda: LDO3 {
+ 				regulator-boot-on;
+ 				regulator-max-microvolt = <1800000>;
+ 				regulator-min-microvolt = <1800000>;
+-				regulator-name = "+V1.8A";
++				regulator-name = "On-module +V1.8A (LDO3)";
+ 			};
+ 
+ 			reg_vdd_phy: LDO4 {
+@@ -421,13 +421,13 @@ reg_vdd_phy: LDO4 {
+ 				regulator-boot-on;
+ 				regulator-max-microvolt = <900000>;
+ 				regulator-min-microvolt = <900000>;
+-				regulator-name = "+V0.9_MIPI";
++				regulator-name = "On-module +V0.9_MIPI (LDO4)";
+ 			};
+ 
+ 			reg_nvcc_sd: LDO5 {
+ 				regulator-max-microvolt = <3300000>;
+ 				regulator-min-microvolt = <1800000>;
+-				regulator-name = "+V3.3_1.8_SD";
++				regulator-name = "On-module +V3.3_1.8_SD (LDO5)";
+ 			};
+ 		};
+ 	};
 -- 
 2.34.1
 
