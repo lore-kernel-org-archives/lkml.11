@@ -2,147 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E1EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 17:18:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07778C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 17:20:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352211AbiCXRUA (ORCPT
+        id S1352140AbiCXRVf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 13:20:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48010 "EHLO
+        Thu, 24 Mar 2022 13:21:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345269AbiCXRTz (ORCPT
+        with ESMTP id S1352115AbiCXRVd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 13:19:55 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33ADFDF56;
-        Thu, 24 Mar 2022 10:18:17 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 0C3F22222E;
-        Thu, 24 Mar 2022 18:18:15 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1648142295;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mW5UfH8Ylkm3/jigdRwLAUC6EVlLm7SjaltxrCgFE7g=;
-        b=CkHlieX6xNiThKeWq282t7PUgDhAZ97n/a0kKkZsS3QLnrE1+q/L10hZGvj8UscSyBNNM7
-        xPJekUK9hwPYqxtZLw4FfrUrByxiiH+3IJcDA3JufWFv6aFEOGmiZcRTHg9yp93g/gIBkg
-        8uOFHdsnA1sZv86gtjXgH3TuYJ14+iU=
+        Thu, 24 Mar 2022 13:21:33 -0400
+X-Greylist: delayed 905 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Mar 2022 10:20:01 PDT
+Received: from sender4-of-o58.zoho.com (sender4-of-o58.zoho.com [136.143.188.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89F5632077
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 10:20:01 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1648141473; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=FW8MWCkOHrg9ThG91vgrGNzOB1erkBBBCrys60yv57C9YddH0CH8HvnFk9myGmnH3B5Nq+I13Q7IvozMXmQNalKVRJW30o6f0dFxA7nhXm74E6hxm/E3AhXG/g1S8sFhAcOiFYaTnkjH+BI8u0wjyfaYzaRJMkXZaKc9R8szTlc=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1648141473; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=7HXVL4Pb13sd77J4IwrIZ4dtqYkJhhp1qvhSJ9pgPBw=; 
+        b=OOnHTegAEGLq8zBrfkpDbRPjBV4wYYeoE9UJON79fb2cAjRzzGBt4JkXexDlhfI4jptBOCiEiwby329qNbmXzVEHbw3sNlXhwnHVtEd907Pm5MsEICmfrgXXXZ4r4Qd4pj2VF2SLuuQnB5VxpiOub2SLm4yn9CWhat0+gFAlv6I=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        spf=pass  smtp.mailfrom=linux@mniewoehner.de;
+        dmarc=pass header.from=<linux@mniewoehner.de>
+Received: from z3r0.lan (185.31.62.161 [185.31.62.161]) by mx.zohomail.com
+        with SMTPS id 1648141468242978.5467378280339; Thu, 24 Mar 2022 10:04:28 -0700 (PDT)
+Message-ID: <2a1a1cf61732eff1608aeae74054a0c135c1671f.camel@mniewoehner.de>
+Subject: Re: [PATCH v3 0/4] Fixes for TPM interrupt handling
+From:   Michael =?ISO-8859-1?Q?Niew=F6hner?= <linux@mniewoehner.de>
+To:     Jarkko Sakkinen <jarkko@kernel.org>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Cc:     peterhuewe@gmx.de, jgg@ziepe.ca, stefanb@linux.vnet.ibm.com,
+        stefanb@linux.ibm.com, James.Bottomley@hansenpartnership.com,
+        keescook@chromium.org, jsnitsel@redhat.com, ml.linux@elloe.vision,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        twawrzynczak@chromium.org
+In-Reply-To: <YJNKs8bUMGOzFre+@kernel.org>
+References: <20210501135727.17747-1-LinoSanfilippo@gmx.de>
+         <20210501135727.17747-3-LinoSanfilippo@gmx.de>
+         <YJAby8mmiJ74qWAh@kernel.org> <6722bf6f-1a3f-ee9c-55e2-cf63c64266a9@gmx.de>
+         <YJNKs8bUMGOzFre+@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Date:   Thu, 24 Mar 2022 18:04:23 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+User-Agent: Evolution 3.42.2 
 Content-Transfer-Encoding: 7bit
-Date:   Thu, 24 Mar 2022 18:18:14 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Xu Liang <lxu@maxlinear.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 4/5] net: phy: introduce is_c45_over_c22 flag
-In-Reply-To: <YjybB/fseibDU4dT@lunn.ch>
-References: <20220323183419.2278676-1-michael@walle.cc>
- <20220323183419.2278676-5-michael@walle.cc> <Yjt99k57mM5PQ8bT@lunn.ch>
- <8304fb3578ee38525a158af768691e75@walle.cc> <Yju+SGuZ9aB52ARi@lunn.ch>
- <30012bd8256be3be9977bd15d1486c84@walle.cc> <YjybB/fseibDU4dT@lunn.ch>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <0d4a2654acd2cc56f7b17981bf14474e@walle.cc>
-X-Sender: michael@walle.cc
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-03-24 17:23, schrieb Andrew Lunn:
->> > To some extent, we need to separate finding the device on the bus to
->> > actually using the device. The device might respond to C22, give us
->> > its ID, get the correct driver loaded based on that ID, and the driver
->> > then uses the C45 address space to actually configure the PHY.
->> >
->> > Then there is the Marvel 10G PHY. It responds to C22, but returns 0
->> > for the ID! There is a special case for this in the code, it then
->> > looks in the C45 space and uses the ID from there, if it finds
->> > something useful.
->> >
->> > So as i said in my reply to the cover letter, we have two different
->> > state variables:
->> >
->> > 1) The PHY has the C45 register space.
->> >
->> > 2) We need to either use C45 transfers, or C45 over C22 transfers to
->> >    access the C45 register space.
->> >
->> > And we potentially have a chicken/egg problem. The PHY driver knows
->> > 1), but in order to know what driver to load we need the ID registers
->> > from the PHY, or some external hint like DT. We are also currently
->> > only probing C22, or C45, but not C45 over C22. And i'm not sure we
->> > actually can probe C45 over C22 because there are C22 only PHYs which
->> > use those two register for other things. So we are back to the driver
->> > again which does know if C45 over C22 will work.
->> 
->> Isn't it safe to assume that if a PHY implements the indirect
->> registers for c45 in its c22 space that it will also have a valid
->> PHY ID and then the it's driver will be probed?
+Hi guys,
+
+On Thu, 2021-05-06 at 04:47 +0300, Jarkko Sakkinen wrote:
+> On Wed, May 05, 2021 at 01:15:29AM +0200, Lino Sanfilippo wrote:
+> > Hi,
+> > 
+> > On 03.05.21 at 17:50, Jarkko Sakkinen wrote:
+> > > What the heck is "simplification" and what that has to do with fixing
+> > > anything? I don't understand your terminology.
+> > 
+> > 
+> > The intention for this patch is not to fix anything. Please read the cover
+> > letter and the commit message.
+> > This patch is about making the locality handling easier by not
+> > claiming/releasing
+> > it multiple times over the driver life time, but claiming it once at driver
+> > startup and only releasing it at driver shutdown.
+> > 
+> > Right now we have locality request/release combos in
+> > 
+> > - probe_itpm()
+> > - tpm_tis_gen_interrupt()
+> > - tpm_tis_core_init()
+> > - tpm_chip_start()
+> > 
+> > and there is still one combo missing for
+> > 
+> > - tpm2_get_timeouts()
+> > 
+> > which is the reason why we get the "TPM returned invalid status" bug in case
+> > of TPM2 (and this is the bug which is _incidentally_ fixed by this patch,
+> > see
+> > below).
+> > 
+> > And if we are going to enable interrupts, we have to introduce yet another
+> > combo,
+> > for accessing the status register in the interrupt handler, since TPM 2.0
+> > requires holding the locality for writing to the status register. That makes
+> > 6 different code places in which we take and release the locality.
+> > 
+> > With this patch applied we only take the locality at one place. Furthermore
+> > with interrupts enabled we dont have to claim the locality for each handler
+> > execution, saving us countless claim/release combinations at runtime.
+> > 
+> > Hence the term "simplification" which is perfectly justified IMO.
+> > 
+> > So again, this patch is "only" in preparation for the next patch when
+> > interrupts
+> > are actually enabled and we would have to take the locality in the interrupt
+> > handler without this patch.
 > 
-> See:
-> https://elixir.bootlin.com/linux/latest/source/drivers/net/phy/phy_device.c#L895
+> So: what problem this patch does solve?
 > 
-> No valid ID in C22 space.
-
-I actually looked at the datasheet and yes, it implements the
-registers 13 and 14 in c22 to access the c45 space. I couldn't
-find any descriptions of other c22 registers though.
-
->> So if a PHY is
->> probed as c22 its driver might tell us "wait, it's actually a c45
->> phy and hey for your convenience it also have the indirect registers
->> in c22". We can then set has_c45 and maybe c45_over_c22 (also 
->> depending
->> on the bus capabilities).
+> /Jarkko
 > 
-> In general, if the core can do something, it is better than the driver
-> doing it. If the core cannot reliably figure it out, then we have to
-> leave it to the drivers. It could well be we need the drivers to set
-> has_c45. I would prefer that drivers don't touch c45_over_c22 because
-> they don't have the knowledge of what the bus is capable of doing. The
-> only valid case i can think of is for a very oddball PHY which has C45
-> register space, but cannot actually do C45 transfers, and so C45 over
-> C22 is the only option.
 
-And how would you know that the PHY has the needed registers in c22
-space? Or do we assume that every C45 PHY has these registers?
+first, thank you very much, Lino, for working on this! I've been debugging
+issues with the tis driver in the last days and was about to start with the same
+approach as yours when I luckily discovered your patch!
 
-..
+Jarkko, while I agree, that the commit message is not optimal, Lino tried hard
+to explain what the problems with the current code are and how they are / can be
+fixed. Further, I too don't see why simplification / optimization is such a bad
+thing. This driver is actually a very good example. I had a hard time, too,
+figuring out what's going on there. A clean rewrite is a very valid approach
+here IMO. It's not "polishing for nothing", as you described it, but actually
+solving problems.
 
->> > phydev->c45_over_c22 we are currently in a bad shape for. We cannot
->> > reliably say the bus master supports C45. If the bus capabilities say
->> > C22 only, we can set phydev->c45_over_c22. If the bus capabilities
->> > list C45, we can set it false. But that only covers a few busses, most
->> > don't have any capabilities set. We can try a C45 access and see if we
->> > get an -EOPNOTSUPP, in which case we can set phydev->c45_over_c22. But
->> > the bus driver could also do the wrong thing, issue a C22 transfer and
->> > give us back rubbish.
->> 
->> First question, what do you think about keeping the is_c45 property 
->> but
->> with a different meaning and add use_c45_over_c22. That way it will be
->> less code churn:
->> 
->>  * @is_c45:  Set to true if this PHY has clause 45 address space.
->>  * @use_c45_over_c22:  Set to true if c45-over-c22 addressing is used.
-> 
-> I prefer to change is_c45. We then get the compiler to help us with
-> code review. The build bots will tell us about any code we fail to
-> check and change. It will also help anybody with out of tree code
-> making use of is_c45.
+Interrupt detection is broken for years now and finally a volunteer worked on a
+solution. Don't you think this should be valued? Let's get this problem sorted
+out :-)
 
-Ok. Fair enough.
+Lino, I'd be happy to test the patches, when you have time and interest to work
+on this again!
 
--michael
+Thanks, Michael
+
+
