@@ -2,137 +2,393 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAEF2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 08:47:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0F21C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 08:50:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344759AbiCXIs6 (ORCPT
+        id S1349016AbiCXIv5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 04:48:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58462 "EHLO
+        Thu, 24 Mar 2022 04:51:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344084AbiCXIsw (ORCPT
+        with ESMTP id S1344084AbiCXIvv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 04:48:52 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64DC39D05D
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 01:47:20 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id h19so2470622pfv.1
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 01:47:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=33aPXc/mS/jNewOzlkvWpaIPpntrWzVJqKx+1PHJOcc=;
-        b=B/PWwhBsfcXhm4SXAAv8CYraVSF4L9JLe6uaFJFtRL6EwhMk6+iWDReghpMVf+9cJ2
-         vuGNAT2F0X4gmkBG0IyE0+ko7c+XUe7eJOoEIJV2tmI+vr15rKJvIRjyjuCf7vkXXpMB
-         ks9AFnR0g0RQRb2WAXmCRy36N8hqrGbsO0EKDeF2nUrpEHjaslFIs065ii896VwBajJp
-         kEr6g1XnoHKe946CNFfhbbrcdADcfRbWO9l7JGNOEANQVBhmFWG5gJqTFNaRa1djH16R
-         S3ScU5eRYbZkAlnht3RPhUmTvy81dhiw1gzsaX50rGi2beSh8u6dpVxJVuf4IGI2W6ks
-         gbPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=33aPXc/mS/jNewOzlkvWpaIPpntrWzVJqKx+1PHJOcc=;
-        b=kdnAwBK2ONLfk3lylytg3vynIoMSpz3BFuyieFAVfuCd6gNVNJD3Uf/X7N4xv3NlRO
-         miW2xsYtl7ffFB8rrpMsm9wBRSGnAOIMkPfNpfq1rCOA4gEc9EZUHWLQXdysgyqpBgJu
-         51gj7/a4nFS8SW3+KySdfb7z16ihhWxhyx4zdRNDkctKTJWPJYSmzDGvSTIaPCK6OYTL
-         hUy1B0ypueQbkqZXcP7qem2Pr+DCVnz1IAmhaELPmp4gzVEI/GInNKetxnI846i3ZhCd
-         nUW0hMW+j3w4WiPt7E5HC2BXD8sLrnu1uvgZCJZOfLfeu/t+EqWUsr4uOfJf18urKdLt
-         Chug==
-X-Gm-Message-State: AOAM532CqnpII5ZtyXlqFeap4aRAMgeFl8ABWkIC3TsJswKrOl7S7OQM
-        MkWXbjn5FrB9UqdXsO4gno91EcMIXedCNg==
-X-Google-Smtp-Source: ABdhPJwgl+qMNlis/u8O3JqVzA/WRpz85V+ZGKqf84PGubMlFZfP3ETLxy8awqUZh8bQNz0cGJem/Q==
-X-Received: by 2002:a63:1a56:0:b0:381:ede3:979d with SMTP id a22-20020a631a56000000b00381ede3979dmr3224293pgm.372.1648111639392;
-        Thu, 24 Mar 2022 01:47:19 -0700 (PDT)
-Received: from localhost.localdomain (118-167-208-50.dynamic-ip.hinet.net. [118.167.208.50])
-        by smtp.gmail.com with ESMTPSA id z16-20020a637e10000000b00382b21c6b0bsm1924605pgc.51.2022.03.24.01.47.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 01:47:18 -0700 (PDT)
-From:   Ajye Huang <ajye.huang@gmail.com>
-X-Google-Original-From: Ajye Huang <ajye_huang@compal.corp-partner.google.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Cezary Rojewski <cezary.rojewski@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
-        Jie Yang <yang.jie@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        Brent Lu <brent.lu@intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Yong Zhi <yong.zhi@intel.com>,
-        Ajye Huang <ajye_huang@compal.corp-partner.google.com>,
-        Mac Chiang <mac.chiang@intel.com>,
-        Vamshi Krishna Gopal <vamshi.krishna.gopal@intel.com>,
-        alsa-devel@alsa-project.org, sound-open-firmware@alsa-project.org
-Subject: [PATCH v1] ASoC: Intel: sof_rt5682: Add support for max98360a speaker amp on SSP2
-Date:   Thu, 24 Mar 2022 16:47:08 +0800
-Message-Id: <20220324084708.2009375-1-ajye_huang@compal.corp-partner.google.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 24 Mar 2022 04:51:51 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05AE06541B;
+        Thu, 24 Mar 2022 01:50:19 -0700 (PDT)
+Date:   Thu, 24 Mar 2022 08:50:16 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1648111818;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VtF4Qim2vbB/9LwGjXpFwYho21gKLFj0rEAKlcM6YQE=;
+        b=IVSGY+ANKe00zyf+9G1IW+0/vKxqfjZD+XtNuiyKFCnirYPNv8I2+4fRNOAmprkBv9XD6P
+        4hO4CbPtZyX7zTlrO60cfax7JuL0viBNHBYcOzIOvgmkXix1WwZ3VUnR35tgNc8zyqCmLj
+        8btcrm2v6NWuqmS29j73uJ3JwXkc89PNech8mu16K4GzDqbYpqOAd8kMFBFPrD/o/yU2cd
+        lhbKxPl4yUrJcFNVvBkUtG8/AYi6Tn/ybnFZ0gIba9QLYMM+wtXzIp8m0fhB5FWysldUmZ
+        kasrOEtTqeknQu78e1/RQ4jf8SS3IO93OgvTdP7L5Js/3yDOPhUWbSRIWcQw4A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1648111818;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VtF4Qim2vbB/9LwGjXpFwYho21gKLFj0rEAKlcM6YQE=;
+        b=Cin8sR3IMC0r3RaXgGAyB88Yz5Bbp0zGoOliIgFJI54Zr/QuLEdEEoywwGuOOrpNSaPsqy
+        yXqRrpqIsWleYWAA==
+From:   "tip-bot2 for Ingo Molnar" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/urgent] x86/config: Make the x86 defconfigs a bit more usable
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <6PkRPjnHE@gmail.com>
+References: <6PkRPjnHE@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <164811181676.389.2059677983505845292.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Follow Intel's design to replace max98360a amp SSP2 reather than SSP1
-by judging DMI_OEM_STRING in sof_rt5682_quirk_table struct.
-And reusing max98357's topology since DAI setting could be leveraged.
+The following commit has been merged into the x86/urgent branch of tip:
 
-Signed-off-by: Ajye Huang <ajye_huang@compal.corp-partner.google.com>
+Commit-ID:     aee8bf2d5aab5e7cc24fa90238930fd14d72e580
+Gitweb:        https://git.kernel.org/tip/aee8bf2d5aab5e7cc24fa90238930fd14d72e580
+Author:        Ingo Molnar <mingo@kernel.org>
+AuthorDate:    Thu, 24 Mar 2022 09:31:13 +01:00
+Committer:     Ingo Molnar <mingo@kernel.org>
+CommitterDate: Thu, 24 Mar 2022 09:32:20 +01:00
+
+x86/config: Make the x86 defconfigs a bit more usable
+
+ - Use 'make savedefconfig' to refresh & regenerate the files
+ - Add in KVM boot enablers
+ - Enable the cgroup features most distros rely on
+
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Link: https://lore.kernel.org/r/YjwsUT/6PkRPjnHE@gmail.com
 ---
- sound/soc/intel/boards/sof_rt5682.c | 13 +++++++++++++
- sound/soc/sof/sof-pci-dev.c         |  9 ++++++++-
- 2 files changed, 21 insertions(+), 1 deletion(-)
+ arch/x86/configs/i386_defconfig   | 50 ++++++++++++++++++++----------
+ arch/x86/configs/x86_64_defconfig | 38 ++++++++++++++++-------
+ 2 files changed, 62 insertions(+), 26 deletions(-)
 
-diff --git a/sound/soc/intel/boards/sof_rt5682.c b/sound/soc/intel/boards/sof_rt5682.c
-index ebec4d15edaa..7126fcb63d90 100644
---- a/sound/soc/intel/boards/sof_rt5682.c
-+++ b/sound/soc/intel/boards/sof_rt5682.c
-@@ -212,6 +212,19 @@ static const struct dmi_system_id sof_rt5682_quirk_table[] = {
- 					SOF_SSP_BT_OFFLOAD_PRESENT),
- 
- 	},
-+	{
-+		.callback = sof_rt5682_quirk_cb,
-+		.matches = {
-+			DMI_MATCH(DMI_PRODUCT_FAMILY, "Google_Brya"),
-+			DMI_MATCH(DMI_OEM_STRING, "AUDIO-MAX98360_ALC5682I_I2S_AMP_SSP2"),
-+		},
-+		.driver_data = (void *)(SOF_RT5682_MCLK_EN |
-+					SOF_RT5682_SSP_CODEC(0) |
-+					SOF_SPEAKER_AMP_PRESENT |
-+					SOF_MAX98360A_SPEAKER_AMP_PRESENT |
-+					SOF_RT5682_SSP_AMP(2) |
-+					SOF_RT5682_NUM_HDMIDEV(4)),
-+	},
- 	{}
- };
- 
-diff --git a/sound/soc/sof/sof-pci-dev.c b/sound/soc/sof/sof-pci-dev.c
-index 4c9596742844..12f5cff22448 100644
---- a/sound/soc/sof/sof-pci-dev.c
-+++ b/sound/soc/sof/sof-pci-dev.c
-@@ -83,7 +83,14 @@ static const struct dmi_system_id sof_tplg_table[] = {
- 		},
- 		.driver_data = "sof-adl-max98357a-rt5682-2way.tplg",
- 	},
--
-+	{
-+		.callback = sof_tplg_cb,
-+		.matches = {
-+			DMI_MATCH(DMI_PRODUCT_FAMILY, "Google_Brya"),
-+			DMI_MATCH(DMI_OEM_STRING, "AUDIO-MAX98360_ALC5682I_I2S_AMP_SSP2"),
-+		},
-+		.driver_data = "sof-adl-max98357a-rt5682.tplg",
-+	},
- 	{}
- };
- 
--- 
-2.25.1
-
+diff --git a/arch/x86/configs/i386_defconfig b/arch/x86/configs/i386_defconfig
+index 4b20852..fde771d 100644
+--- a/arch/x86/configs/i386_defconfig
++++ b/arch/x86/configs/i386_defconfig
+@@ -1,5 +1,7 @@
++CONFIG_WERROR=y
+ CONFIG_SYSVIPC=y
+ CONFIG_POSIX_MQUEUE=y
++CONFIG_USELIB=y
+ CONFIG_AUDIT=y
+ CONFIG_NO_HZ=y
+ CONFIG_HIGH_RES_TIMERS=y
+@@ -11,23 +13,30 @@ CONFIG_TASK_XACCT=y
+ CONFIG_TASK_IO_ACCOUNTING=y
+ CONFIG_LOG_BUF_SHIFT=18
+ CONFIG_CGROUPS=y
++CONFIG_BLK_CGROUP=y
+ CONFIG_CGROUP_SCHED=y
++CONFIG_CGROUP_PIDS=y
++CONFIG_CGROUP_RDMA=y
+ CONFIG_CGROUP_FREEZER=y
++CONFIG_CGROUP_HUGETLB=y
+ CONFIG_CPUSETS=y
++CONFIG_CGROUP_DEVICE=y
+ CONFIG_CGROUP_CPUACCT=y
++CONFIG_CGROUP_PERF=y
++CONFIG_CGROUP_MISC=y
++CONFIG_CGROUP_DEBUG=y
+ CONFIG_BLK_DEV_INITRD=y
++CONFIG_KALLSYMS_ALL=y
+ # CONFIG_COMPAT_BRK is not set
+ CONFIG_PROFILING=y
+-# CONFIG_64BIT is not set
+ CONFIG_SMP=y
+-CONFIG_X86_GENERIC=y
+-CONFIG_HPET_TIMER=y
++CONFIG_HYPERVISOR_GUEST=y
++CONFIG_PARAVIRT=y
++CONFIG_NR_CPUS=8
+ CONFIG_X86_REROUTE_FOR_BROKEN_BOOT_IRQS=y
+-CONFIG_X86_REBOOTFIXUPS=y
+ CONFIG_MICROCODE_AMD=y
+ CONFIG_X86_MSR=y
+ CONFIG_X86_CPUID=y
+-CONFIG_HIGHPTE=y
+ CONFIG_X86_CHECK_BIOS_CORRUPTION=y
+ # CONFIG_MTRR_SANITIZER is not set
+ CONFIG_EFI=y
+@@ -43,12 +52,15 @@ CONFIG_ACPI_BGRT=y
+ CONFIG_CPU_FREQ_DEFAULT_GOV_USERSPACE=y
+ CONFIG_CPU_FREQ_GOV_ONDEMAND=y
+ CONFIG_X86_ACPI_CPUFREQ=y
+-CONFIG_EFI_VARS=y
+ CONFIG_KPROBES=y
+ CONFIG_JUMP_LABEL=y
++CONFIG_COMPAT_32BIT_TIME=y
+ CONFIG_MODULES=y
+ CONFIG_MODULE_UNLOAD=y
+ CONFIG_MODULE_FORCE_UNLOAD=y
++CONFIG_BLK_CGROUP_IOLATENCY=y
++CONFIG_BLK_CGROUP_IOCOST=y
++CONFIG_BLK_CGROUP_IOPRIO=y
+ CONFIG_BINFMT_MISC=y
+ CONFIG_NET=y
+ CONFIG_PACKET=y
+@@ -103,12 +115,16 @@ CONFIG_IP6_NF_FILTER=y
+ CONFIG_IP6_NF_TARGET_REJECT=y
+ CONFIG_IP6_NF_MANGLE=y
+ CONFIG_NET_SCHED=y
++CONFIG_NET_CLS_CGROUP=y
+ CONFIG_NET_EMATCH=y
+ CONFIG_NET_CLS_ACT=y
++CONFIG_CGROUP_NET_PRIO=y
+ CONFIG_CFG80211=y
+ CONFIG_MAC80211=y
+ CONFIG_MAC80211_LEDS=y
+ CONFIG_RFKILL=y
++CONFIG_NET_9P=y
++CONFIG_NET_9P_VIRTIO=y
+ CONFIG_PCI=y
+ CONFIG_PCIEPORTBUS=y
+ CONFIG_PCI_MSI=y
+@@ -119,13 +135,16 @@ CONFIG_DEVTMPFS=y
+ CONFIG_DEVTMPFS_MOUNT=y
+ CONFIG_DEBUG_DEVRES=y
+ CONFIG_CONNECTOR=y
++CONFIG_EFI_VARS=y
++CONFIG_EFI_CAPSULE_LOADER=y
+ CONFIG_BLK_DEV_LOOP=y
++CONFIG_VIRTIO_BLK=y
+ CONFIG_BLK_DEV_SD=y
+ CONFIG_BLK_DEV_SR=y
+ CONFIG_CHR_DEV_SG=y
+ CONFIG_SCSI_CONSTANTS=y
+ CONFIG_SCSI_SPI_ATTRS=y
+-# CONFIG_SCSI_LOWLEVEL is not set
++CONFIG_SCSI_VIRTIO=y
+ CONFIG_ATA=y
+ CONFIG_SATA_AHCI=y
+ CONFIG_ATA_PIIX=y
+@@ -143,6 +162,7 @@ CONFIG_MACINTOSH_DRIVERS=y
+ CONFIG_MAC_EMUMOUSEBTN=y
+ CONFIG_NETDEVICES=y
+ CONFIG_NETCONSOLE=y
++CONFIG_VIRTIO_NET=y
+ CONFIG_BNX2=y
+ CONFIG_TIGON3=y
+ CONFIG_NET_TULIP=y
+@@ -170,6 +190,7 @@ CONFIG_SERIAL_8250_SHARE_IRQ=y
+ CONFIG_SERIAL_8250_DETECT_IRQ=y
+ CONFIG_SERIAL_8250_RSA=y
+ CONFIG_SERIAL_NONSTANDARD=y
++CONFIG_VIRTIO_CONSOLE=y
+ CONFIG_HW_RANDOM=y
+ CONFIG_NVRAM=y
+ CONFIG_HPET=y
+@@ -181,12 +202,7 @@ CONFIG_AGP_AMD64=y
+ CONFIG_AGP_INTEL=y
+ CONFIG_DRM=y
+ CONFIG_DRM_I915=y
+-CONFIG_FB_MODE_HELPERS=y
+-CONFIG_FB_TILEBLITTING=y
+-CONFIG_FB_EFI=y
+-CONFIG_LOGO=y
+-# CONFIG_LOGO_LINUX_MONO is not set
+-# CONFIG_LOGO_LINUX_VGA16 is not set
++CONFIG_DRM_VIRTIO_GPU=y
+ CONFIG_SOUND=y
+ CONFIG_SND=y
+ CONFIG_SND_HRTIMER=y
+@@ -219,6 +235,8 @@ CONFIG_USB_STORAGE=y
+ CONFIG_RTC_CLASS=y
+ # CONFIG_RTC_HCTOSYS is not set
+ CONFIG_DMADEVICES=y
++CONFIG_VIRTIO_PCI=y
++CONFIG_VIRTIO_INPUT=y
+ CONFIG_EEEPC_LAPTOP=y
+ CONFIG_EXT4_FS=y
+ CONFIG_EXT4_FS_POSIX_ACL=y
+@@ -240,6 +258,7 @@ CONFIG_NFS_FS=y
+ CONFIG_NFS_V3_ACL=y
+ CONFIG_NFS_V4=y
+ CONFIG_ROOT_NFS=y
++CONFIG_9P_FS=y
+ CONFIG_NLS_DEFAULT="utf8"
+ CONFIG_NLS_CODEPAGE_437=y
+ CONFIG_NLS_ASCII=y
+@@ -251,15 +270,14 @@ CONFIG_SECURITY_SELINUX=y
+ CONFIG_SECURITY_SELINUX_BOOTPARAM=y
+ CONFIG_SECURITY_SELINUX_DISABLE=y
+ CONFIG_PRINTK_TIME=y
++CONFIG_FRAME_WARN=1024
+ CONFIG_MAGIC_SYSRQ=y
+ CONFIG_DEBUG_KERNEL=y
+ CONFIG_DEBUG_STACK_USAGE=y
+-CONFIG_DEBUG_STACKOVERFLOW=y
+ # CONFIG_SCHED_DEBUG is not set
+ CONFIG_SCHEDSTATS=y
+ CONFIG_BLK_DEV_IO_TRACE=y
+ CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
+ CONFIG_EARLY_PRINTK_DBGP=y
+ CONFIG_DEBUG_BOOT_PARAMS=y
+-CONFIG_KALLSYMS_ALL=y
+-CONFIG_WERROR=y
++CONFIG_UNWINDER_FRAME_POINTER=y
+diff --git a/arch/x86/configs/x86_64_defconfig b/arch/x86/configs/x86_64_defconfig
+index 38c52e4..6978450 100644
+--- a/arch/x86/configs/x86_64_defconfig
++++ b/arch/x86/configs/x86_64_defconfig
+@@ -1,3 +1,4 @@
++CONFIG_WERROR=y
+ CONFIG_SYSVIPC=y
+ CONFIG_POSIX_MQUEUE=y
+ CONFIG_AUDIT=y
+@@ -11,14 +12,25 @@ CONFIG_TASK_XACCT=y
+ CONFIG_TASK_IO_ACCOUNTING=y
+ CONFIG_LOG_BUF_SHIFT=18
+ CONFIG_CGROUPS=y
++CONFIG_BLK_CGROUP=y
+ CONFIG_CGROUP_SCHED=y
++CONFIG_CGROUP_PIDS=y
++CONFIG_CGROUP_RDMA=y
+ CONFIG_CGROUP_FREEZER=y
++CONFIG_CGROUP_HUGETLB=y
+ CONFIG_CPUSETS=y
++CONFIG_CGROUP_DEVICE=y
+ CONFIG_CGROUP_CPUACCT=y
++CONFIG_CGROUP_PERF=y
++CONFIG_CGROUP_MISC=y
++CONFIG_CGROUP_DEBUG=y
+ CONFIG_BLK_DEV_INITRD=y
++CONFIG_KALLSYMS_ALL=y
+ # CONFIG_COMPAT_BRK is not set
+ CONFIG_PROFILING=y
+ CONFIG_SMP=y
++CONFIG_HYPERVISOR_GUEST=y
++CONFIG_PARAVIRT=y
+ CONFIG_X86_REROUTE_FOR_BROKEN_BOOT_IRQS=y
+ CONFIG_MICROCODE_AMD=y
+ CONFIG_X86_MSR=y
+@@ -41,12 +53,14 @@ CONFIG_CPU_FREQ_DEFAULT_GOV_USERSPACE=y
+ CONFIG_CPU_FREQ_GOV_ONDEMAND=y
+ CONFIG_X86_ACPI_CPUFREQ=y
+ CONFIG_IA32_EMULATION=y
+-CONFIG_EFI_VARS=y
+ CONFIG_KPROBES=y
+ CONFIG_JUMP_LABEL=y
+ CONFIG_MODULES=y
+ CONFIG_MODULE_UNLOAD=y
+ CONFIG_MODULE_FORCE_UNLOAD=y
++CONFIG_BLK_CGROUP_IOLATENCY=y
++CONFIG_BLK_CGROUP_IOCOST=y
++CONFIG_BLK_CGROUP_IOPRIO=y
+ CONFIG_BINFMT_MISC=y
+ CONFIG_NET=y
+ CONFIG_PACKET=y
+@@ -101,12 +115,16 @@ CONFIG_IP6_NF_FILTER=y
+ CONFIG_IP6_NF_TARGET_REJECT=y
+ CONFIG_IP6_NF_MANGLE=y
+ CONFIG_NET_SCHED=y
++CONFIG_NET_CLS_CGROUP=y
+ CONFIG_NET_EMATCH=y
+ CONFIG_NET_CLS_ACT=y
++CONFIG_CGROUP_NET_PRIO=y
+ CONFIG_CFG80211=y
+ CONFIG_MAC80211=y
+ CONFIG_MAC80211_LEDS=y
+ CONFIG_RFKILL=y
++CONFIG_NET_9P=y
++CONFIG_NET_9P_VIRTIO=y
+ CONFIG_PCI=y
+ CONFIG_PCIEPORTBUS=y
+ CONFIG_HOTPLUG_PCI=y
+@@ -116,13 +134,15 @@ CONFIG_DEVTMPFS=y
+ CONFIG_DEVTMPFS_MOUNT=y
+ CONFIG_DEBUG_DEVRES=y
+ CONFIG_CONNECTOR=y
++CONFIG_EFI_VARS=y
+ CONFIG_BLK_DEV_LOOP=y
++CONFIG_VIRTIO_BLK=y
+ CONFIG_BLK_DEV_SD=y
+ CONFIG_BLK_DEV_SR=y
+ CONFIG_CHR_DEV_SG=y
+ CONFIG_SCSI_CONSTANTS=y
+ CONFIG_SCSI_SPI_ATTRS=y
+-# CONFIG_SCSI_LOWLEVEL is not set
++CONFIG_SCSI_VIRTIO=y
+ CONFIG_ATA=y
+ CONFIG_SATA_AHCI=y
+ CONFIG_ATA_PIIX=y
+@@ -138,6 +158,7 @@ CONFIG_MACINTOSH_DRIVERS=y
+ CONFIG_MAC_EMUMOUSEBTN=y
+ CONFIG_NETDEVICES=y
+ CONFIG_NETCONSOLE=y
++CONFIG_VIRTIO_NET=y
+ CONFIG_TIGON3=y
+ CONFIG_NET_TULIP=y
+ CONFIG_E100=y
+@@ -162,6 +183,7 @@ CONFIG_SERIAL_8250_SHARE_IRQ=y
+ CONFIG_SERIAL_8250_DETECT_IRQ=y
+ CONFIG_SERIAL_8250_RSA=y
+ CONFIG_SERIAL_NONSTANDARD=y
++CONFIG_VIRTIO_CONSOLE=y
+ CONFIG_HW_RANDOM=y
+ # CONFIG_HW_RANDOM_INTEL is not set
+ # CONFIG_HW_RANDOM_AMD is not set
+@@ -175,12 +197,7 @@ CONFIG_AGP_AMD64=y
+ CONFIG_AGP_INTEL=y
+ CONFIG_DRM=y
+ CONFIG_DRM_I915=y
+-CONFIG_FB_MODE_HELPERS=y
+-CONFIG_FB_TILEBLITTING=y
+-CONFIG_FB_EFI=y
+-CONFIG_LOGO=y
+-# CONFIG_LOGO_LINUX_MONO is not set
+-# CONFIG_LOGO_LINUX_VGA16 is not set
++CONFIG_DRM_VIRTIO_GPU=y
+ CONFIG_SOUND=y
+ CONFIG_SND=y
+ CONFIG_SND_HRTIMER=y
+@@ -213,6 +230,8 @@ CONFIG_USB_STORAGE=y
+ CONFIG_RTC_CLASS=y
+ # CONFIG_RTC_HCTOSYS is not set
+ CONFIG_DMADEVICES=y
++CONFIG_VIRTIO_PCI=y
++CONFIG_VIRTIO_INPUT=y
+ CONFIG_EEEPC_LAPTOP=y
+ CONFIG_AMD_IOMMU=y
+ CONFIG_INTEL_IOMMU=y
+@@ -237,6 +256,7 @@ CONFIG_NFS_FS=y
+ CONFIG_NFS_V3_ACL=y
+ CONFIG_NFS_V4=y
+ CONFIG_ROOT_NFS=y
++CONFIG_9P_FS=y
+ CONFIG_NLS_DEFAULT="utf8"
+ CONFIG_NLS_CODEPAGE_437=y
+ CONFIG_NLS_ASCII=y
+@@ -257,5 +277,3 @@ CONFIG_BLK_DEV_IO_TRACE=y
+ CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
+ CONFIG_EARLY_PRINTK_DBGP=y
+ CONFIG_DEBUG_BOOT_PARAMS=y
+-CONFIG_KALLSYMS_ALL=y
+-CONFIG_WERROR=y
