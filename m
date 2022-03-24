@@ -2,156 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53955C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 15:42:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 667FAC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 15:45:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351360AbiCXPoM (ORCPT
+        id S1351377AbiCXPql (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 11:44:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49218 "EHLO
+        Thu, 24 Mar 2022 11:46:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351343AbiCXPoL (ORCPT
+        with ESMTP id S1344411AbiCXPqk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 11:44:11 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48238A1447
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 08:42:39 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id p15so9967067ejc.7
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 08:42:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:user-agent:mime-version:to:cc:subject
-         :references:in-reply-to:content-transfer-encoding;
-        bh=kZCJsDwuqFmPdGnVK+OvD0sFJ1NQAHf3rkQ/uko1Ypo=;
-        b=TLgs+/f1fDU/asNFSeTTbfgjarvjKtaY7VH4v6LErCV5kTHXrowQmCYq+4ZwYBZ1k5
-         L7DtOzlE30HO8bY0DShfaoOTFaobumChKR+E5mRqWzSrjrJQsNG4bJLwRQqSwxejBLfA
-         R8B1oNJ32Xs4hsmgRL7crsc7hH5IIa+gMaTKeUYSZq++tzRI3Dxk5PxyHA9bE7bNBWuQ
-         AdtT4WVvDon+nZLvjLoviTiD/LznDmH+itMDO73OCUUCXwZTN3ndBHAztu2kArqId9cj
-         YSMP98LdTwuy1WuvppskGjKRUl9O9vDXstuP3g0sW8QSUmHz3pQKJhoLe1fcOzQdAVnP
-         vpYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:user-agent:mime-version:to
-         :cc:subject:references:in-reply-to:content-transfer-encoding;
-        bh=kZCJsDwuqFmPdGnVK+OvD0sFJ1NQAHf3rkQ/uko1Ypo=;
-        b=nLOFVQVZnDP7Da+z386NE9SzRBO6fRBLdff3zFAZU8WiSnqlQQip2mSFySxvDOH1bC
-         2YaNv3Kzi/YkAm5cboKANcrtcdRs9i0eGKkOeF5FFUbFvujPDGRMkJdlQB8FLkkHdZzA
-         Nh38K09Jvs6ZyZ6H8d1Ya8ewzS3/L6xcjAZNvbE1B6ai/eq8PfcgS9rebfvGFkHSQdsy
-         5G8tKt0U6LrMQnu0H6VlSfXmmrHX5iqvOCt+pNqz95pZBsEYnT3+7QBa25TQOz3mcMXs
-         ZgDJIqAtP1+rR918Uz5RUd80dYSOPHLLwJjhSNjn8ouRs/mMut6Md3MsrWhrjwbNNCHU
-         WUvw==
-X-Gm-Message-State: AOAM532a2twpO7tuj7MFxyMYZi+ZEaVNt+eYvy3e/il+Vofb8u77ojPH
-        Xk2HDJ2brrGOy94PEjvK8SM=
-X-Google-Smtp-Source: ABdhPJzdC5QIuMVd73kQ1G9mQxF9Fvzi6kbhcWRNuv85/Ql+uKrgaDzkXDmNWSYf205OJ0D5ZZ1zEw==
-X-Received: by 2002:a17:906:58cb:b0:6df:f696:9b32 with SMTP id e11-20020a17090658cb00b006dff6969b32mr6597382ejs.384.1648136557640;
-        Thu, 24 Mar 2022 08:42:37 -0700 (PDT)
-Received: from [109.186.89.7] (109-186-89-7.bb.netvision.net.il. [109.186.89.7])
-        by smtp.gmail.com with ESMTPSA id u4-20020aa7db84000000b004136c2c357csm1549665edt.70.2022.03.24.08.42.35
-        (version=TLS1 cipher=AES128-SHA bits=128/128);
-        Thu, 24 Mar 2022 08:42:37 -0700 (PDT)
-Message-ID: <623C9137.3000803@gmail.com>
-Date:   Thu, 24 Mar 2022 17:41:43 +0200
-From:   Eli Billauer <eli.billauer@gmail.com>
-User-Agent: Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1.12) Gecko/20100907 Fedora/3.0.7-1.fc12 Thunderbird/3.0.7
+        Thu, 24 Mar 2022 11:46:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3D8D2A72D;
+        Thu, 24 Mar 2022 08:45:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67866B82407;
+        Thu, 24 Mar 2022 15:45:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E38CC340ED;
+        Thu, 24 Mar 2022 15:45:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648136705;
+        bh=W0ujt+uG7tz/cIu1lu+5YA1hm5s0h2ZhoEP/N2GqCNM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TQh+1RpC7VntD7RlSC5lAgWlzPhTHIAkGED39r+s/JdbooGd8ji13vIJB03pDmxkh
+         Fd8GqQz/ZfGHH6K+fds7hOrn3/PMlTlJQPrPhhPLypqP+RjZK6nxfOgICOC1it3YZw
+         uZ2mrkFT9b3HQpYSyAM1X72krcAWAg9HFmxgKexrJW+eS5ICZ3LlxREsM5ErvDIZBv
+         9FdqXZX7JOgBdihel1e/F9rWyOx0Sr1YF02M36e3u7bBe4eoBrdmGpoXluAcqVH0R/
+         8Z/9Tna+AxpxzMG53tnDFBBxs0nW6n4PLrAUzcw4ptpiOPAdaZZIWKHjwiSd9l5YHh
+         B4Qhic+fWJoXw==
+Date:   Thu, 24 Mar 2022 21:15:00 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Rob Clark <robdclark@gmail.com>, linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Abhinav Kumar <abhinavk@codeaurora.org>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org
+Subject: Re: [REPOST PATCH v4 13/13] drm/msm/dsi: Add support for DSC
+ configuration
+Message-ID: <YjyR/LrBeXeVd2J3@matsya>
+References: <20220210103423.271016-1-vkoul@kernel.org>
+ <20220210103423.271016-14-vkoul@kernel.org>
+ <977340f4-1a5d-a103-4669-ab0168df8cd6@linaro.org>
 MIME-Version: 1.0
-To:     Jakob Koschel <jakobkoschel@gmail.com>
-CC:     Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Subject: Re: [PATCH] char: xillybus: replace usage of found with dedicated
- list iterator variable
-References: <20220324070939.59297-1-jakobkoschel@gmail.com>
-In-Reply-To: <20220324070939.59297-1-jakobkoschel@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <977340f4-1a5d-a103-4669-ab0168df8cd6@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks.
+On 21-02-22, 05:11, Dmitry Baryshkov wrote:
+> On 10/02/2022 13:34, Vinod Koul wrote:
+> > When DSC is enabled, we need to configure DSI registers accordingly and
+> > configure the respective stream compression registers.
+> > 
+> > Add support to calculate the register setting based on DSC params and
+> > timing information and configure these registers.
+> > 
+> > Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> > Signed-off-by: Vinod Koul <vkoul@kernel.org>
+> > ---
+> >   drivers/gpu/drm/msm/dsi/dsi.xml.h  |  10 +++
+> >   drivers/gpu/drm/msm/dsi/dsi_host.c | 109 ++++++++++++++++++++++++++++-
+> >   2 files changed, 118 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/gpu/drm/msm/dsi/dsi.xml.h b/drivers/gpu/drm/msm/dsi/dsi.xml.h
+> > index 49b551ad1bff..c1c85df58c4b 100644
+> > --- a/drivers/gpu/drm/msm/dsi/dsi.xml.h
+> > +++ b/drivers/gpu/drm/msm/dsi/dsi.xml.h
+> > @@ -706,4 +706,14 @@ static inline uint32_t DSI_VERSION_MAJOR(uint32_t val)
+> >   #define REG_DSI_CPHY_MODE_CTRL					0x000002d4
+> > +#define REG_DSI_VIDEO_COMPRESSION_MODE_CTRL			0x0000029c
+> > +
+> > +#define REG_DSI_VIDEO_COMPRESSION_MODE_CTRL2			0x000002a0
+> > +
+> > +#define REG_DSI_COMMAND_COMPRESSION_MODE_CTRL			0x000002a4
+> > +
+> > +#define REG_DSI_COMMAND_COMPRESSION_MODE_CTRL2			0x000002a8
+> > +
+> > +#define REG_DSI_COMMAND_COMPRESSION_MODE_CTRL3			0x000002ac
+> > +
+> >   #endif /* DSI_XML */
+> > diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
+> > index 438c80750682..3d8d5a1daaa3 100644
+> > --- a/drivers/gpu/drm/msm/dsi/dsi_host.c
+> > +++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
+> > @@ -908,6 +908,20 @@ static void dsi_ctrl_config(struct msm_dsi_host *msm_host, bool enable,
+> >   		dsi_write(msm_host, REG_DSI_CPHY_MODE_CTRL, BIT(0));
+> >   }
+> > +static int dsi_dsc_update_pic_dim(struct msm_display_dsc_config *dsc,
+> > +				  int pic_width, int pic_height)
+> > +{
+> > +	if (!dsc || !pic_width || !pic_height) {
+> > +		pr_err("DSI: invalid input: pic_width: %d pic_height: %d\n", pic_width, pic_height);
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	dsc->drm->pic_width = pic_width;
+> > +	dsc->drm->pic_height = pic_height;
+> > +
+> > +	return 0;
+> > +}
+> > +
+> >   static void dsi_timing_setup(struct msm_dsi_host *msm_host, bool is_bonded_dsi)
+> >   {
+> >   	struct drm_display_mode *mode = msm_host->mode;
+> > @@ -940,7 +954,68 @@ static void dsi_timing_setup(struct msm_dsi_host *msm_host, bool is_bonded_dsi)
+> >   		hdisplay /= 2;
+> >   	}
+> > +	if (msm_host->dsc) {
+> > +		struct msm_display_dsc_config *dsc = msm_host->dsc;
+> > +
+> > +		/* update dsc params with timing params */
+> > +		dsi_dsc_update_pic_dim(dsc, mode->hdisplay, mode->vdisplay);
+> > +		DBG("Mode Width- %d x Height %d\n", dsc->drm->pic_width, dsc->drm->pic_height);
+> > +
+> > +		/* we do the calculations for dsc parameters here so that
+> > +		 * panel can use these parameters
+> > +		 */
+> > +		dsi_populate_dsc_params(dsc);
+> > +
+> > +		/* Divide the display by 3 but keep back/font porch and
+> > +		 * pulse width same
+> > +		 */
+> > +		h_total -= hdisplay;
+> > +		hdisplay /= 3;
+> > +		h_total += hdisplay;
+> > +		ha_end = ha_start + hdisplay;
+> > +	}
+> > +
+> >   	if (msm_host->mode_flags & MIPI_DSI_MODE_VIDEO) {
+> > +		if (msm_host->dsc) {
+> > +			struct msm_display_dsc_config *dsc = msm_host->dsc;
+> > +			u32 reg, intf_width, slice_per_intf;
+> > +			u32 total_bytes_per_intf;
+> > +
+> > +			/* first calculate dsc parameters and then program
+> > +			 * compress mode registers
+> > +			 */
+> > +			intf_width = hdisplay;
+> > +			slice_per_intf = DIV_ROUND_UP(intf_width, dsc->drm->slice_width);
+> > +
+> > +			dsc->drm->slice_count = 1;
+> > +			dsc->bytes_in_slice = DIV_ROUND_UP(dsc->drm->slice_width * 8, 8);
+> > +			total_bytes_per_intf = dsc->bytes_in_slice * slice_per_intf;
+> > +
+> > +			dsc->eol_byte_num = total_bytes_per_intf % 3;
+> > +			dsc->pclk_per_line =  DIV_ROUND_UP(total_bytes_per_intf, 3);
+> > +			dsc->bytes_per_pkt = dsc->bytes_in_slice * dsc->drm->slice_count;
+> > +			dsc->pkt_per_line = slice_per_intf / dsc->drm->slice_count;
+> > +
+> > +			reg = dsc->bytes_per_pkt << 16;
+> > +			reg |= (0x0b << 8);    /* dtype of compressed image */
+> > +
+> > +			/* pkt_per_line:
+> > +			 * 0 == 1 pkt
+> > +			 * 1 == 2 pkt
+> > +			 * 2 == 4 pkt
+> > +			 * 3 pkt is not supported
+> > +			 * above translates to ffs() - 1
+> > +			 */
+> > +			reg |= (ffs(dsc->pkt_per_line) - 1) << 6;
+> > +
+> > +			dsc->eol_byte_num = total_bytes_per_intf % 3;
+> > +			reg |= dsc->eol_byte_num << 4;
+> > +			reg |= 1;
+> > +
+> > +			dsi_write(msm_host,
+> > +				  REG_DSI_VIDEO_COMPRESSION_MODE_CTRL, reg);
+> > +		}
+> > +
+> >   		dsi_write(msm_host, REG_DSI_ACTIVE_H,
+> >   			DSI_ACTIVE_H_START(ha_start) |
+> >   			DSI_ACTIVE_H_END(ha_end));
+> > @@ -959,8 +1034,40 @@ static void dsi_timing_setup(struct msm_dsi_host *msm_host, bool is_bonded_dsi)
+> >   			DSI_ACTIVE_VSYNC_VPOS_START(vs_start) |
+> >   			DSI_ACTIVE_VSYNC_VPOS_END(vs_end));
+> >   	} else {		/* command mode */
+> > +		if (msm_host->dsc) {
+> > +			struct msm_display_dsc_config *dsc = msm_host->dsc;
+> > +			u32 reg, reg_ctrl, reg_ctrl2;
+> > +			u32 slice_per_intf, bytes_in_slice, total_bytes_per_intf;
+> > +
+> > +			reg_ctrl = dsi_read(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL);
+> > +			reg_ctrl2 = dsi_read(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL2);
+> > +
+> > +			slice_per_intf = DIV_ROUND_UP(hdisplay, dsc->drm->slice_width);
+> > +			bytes_in_slice = DIV_ROUND_UP(dsc->drm->slice_width *
+> > +						      dsc->drm->bits_per_pixel, 8);
+> > +			dsc->drm->slice_chunk_size = bytes_in_slice;
+> > +			total_bytes_per_intf = dsc->bytes_in_slice * slice_per_intf;
+> 
+> Should we use dsc->bytes_in_slice or just bytes_in_slice here?
 
-Acked-by: Eli Billauer <eli.billauer@gmail.com>
+This should be dsc->bytes_in_slice, fixed up now. Thanks for pointing
 
-On 24/03/22 09:09, Jakob Koschel wrote:
-> To move the list iterator variable into the list_for_each_entry_*()
-> macro in the future it should be avoided to use the list iterator
-> variable after the loop body.
->
-> To *never* use the list iterator variable after the loop it was
-> concluded to use a separate iterator variable instead of a
-> found boolean [1].
->
-> This removes the need to use a found variable and simply checking if
-> the variable was set, can determine if the break/goto was hit.
->
-> Link:https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
-> Signed-off-by: Jakob Koschel<jakobkoschel@gmail.com>
-> ---
->   drivers/char/xillybus/xillybus_class.c | 26 ++++++++++++--------------
->   1 file changed, 12 insertions(+), 14 deletions(-)
->
-> diff --git a/drivers/char/xillybus/xillybus_class.c b/drivers/char/xillybus/xillybus_class.c
-> index 5046486011c8..0f238648dcfe 100644
-> --- a/drivers/char/xillybus/xillybus_class.c
-> +++ b/drivers/char/xillybus/xillybus_class.c
-> @@ -174,18 +174,17 @@ void xillybus_cleanup_chrdev(void *private_data,
->   			     struct device *dev)
->   {
->   	int minor;
-> -	struct xilly_unit *unit;
-> -	bool found = false;
-> +	struct xilly_unit *unit = NULL, *iter;
->
->   	mutex_lock(&unit_mutex);
->
-> -	list_for_each_entry(unit,&unit_list, list_entry)
-> -		if (unit->private_data == private_data) {
-> -			found = true;
-> +	list_for_each_entry(iter,&unit_list, list_entry)
-> +		if (iter->private_data == private_data) {
-> +			unit = iter;
->   			break;
->   		}
->
-> -	if (!found) {
-> +	if (!unit) {
->   		dev_err(dev, "Weird bug: Failed to find unit\n");
->   		mutex_unlock(&unit_mutex);
->   		return;
-> @@ -216,22 +215,21 @@ int xillybus_find_inode(struct inode *inode,
->   {
->   	int minor = iminor(inode);
->   	int major = imajor(inode);
-> -	struct xilly_unit *unit;
-> -	bool found = false;
-> +	struct xilly_unit *unit = NULL, *iter;
->
->   	mutex_lock(&unit_mutex);
->
-> -	list_for_each_entry(unit,&unit_list, list_entry)
-> -		if (unit->major == major&&
-> -		    minor>= unit->lowest_minor&&
-> -		    minor<  (unit->lowest_minor + unit->num_nodes)) {
-> -			found = true;
-> +	list_for_each_entry(iter,&unit_list, list_entry)
-> +		if (iter->major == major&&
-> +		    minor>= iter->lowest_minor&&
-> +		    minor<  (iter->lowest_minor + iter->num_nodes)) {
-> +			unit = iter;
->   			break;
->   		}
->
->   	mutex_unlock(&unit_mutex);
->
-> -	if (!found)
-> +	if (!unit)
->   		return -ENODEV;
->
->   	*private_data = unit->private_data;
->
-> base-commit: f443e374ae131c168a065ea1748feac6b2e76613
->    
-
+-- 
+~Vinod
