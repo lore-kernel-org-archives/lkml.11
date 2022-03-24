@@ -2,123 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88E8CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 12:29:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32A3FC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 12:29:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350201AbiCXMac (ORCPT
+        id S1350211AbiCXMbV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 08:30:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56214 "EHLO
+        Thu, 24 Mar 2022 08:31:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241594AbiCXMa3 (ORCPT
+        with ESMTP id S233678AbiCXMbU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 08:30:29 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30F20A94EC;
-        Thu, 24 Mar 2022 05:28:58 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id w4so6386242wrg.12;
-        Thu, 24 Mar 2022 05:28:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=0ov3ZR+ak5DEDpTymdl0/BQjBNtuGJXsPc9qEMjlbkQ=;
-        b=hVtw6rp+xuX0d32ARb62dUhqM4R3VC5pofs48O+4O920vt8CSq/sMLpt+8+LAZTn6e
-         VIElYkUtW8LSN1yoQMFd2i9puNjj5gYEvYDBOb3SSsgi3tPQAHlmFxSvRgtvszbt6FyO
-         NmOZEEZDK1GdAONx5AAxdMlRMLuKDF0uAD55768LvcmNbHzBYo4INUMN+su5fvumLCJ1
-         7ktrUpLJEE/CMXKFSi0V3hAuB4a5tjC8+ZX/61G0VwG54/3FBkrPk9WXLZmeRHMYXL8P
-         XdaRpRUztUdXn2sXDoBLQN3klBO9J8OPo2ShA+q9B8maZSx5U5yC9a+7/BJ9zNKLqQix
-         g6Ng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=0ov3ZR+ak5DEDpTymdl0/BQjBNtuGJXsPc9qEMjlbkQ=;
-        b=JIE/7IGhW+VHth6LxugJU6ZeMFGOdKbfrvRmH5mPN01Fgao3WWDa6r9+9kJ4GVJv3f
-         v63iKoRTIvxt7ebaCYhR/C+nvYXTv089dWMN9/daWb+Ta8Xi6uts7dwrdYlNXyiqQpHx
-         l3LfeYGamFbhV0P5URFwusEU3EE1pDiU4Y5QSHdqWC8cPOtSNqrkGwCxLh+7Dwqsh7f/
-         2ZEj4WhnukhbXCnnQcLahe5heS+MUWaJNfiPmMkKt6vhxwT/mafGqodH2o8keKSYLcEX
-         8L0bpmTcQRxMltzTGD7VcPCQEcp7moW88LjUd0B10nRpWf4Bgxvbrs1Kbw6FWWiCVsS+
-         W3Hg==
-X-Gm-Message-State: AOAM5330URMBCb+Z5MS+DxsL6+K393gROTNGF8T1dmTEjQPYRtvIGMgQ
-        5UTizzDOGxBG9+Qrsudn5wg=
-X-Google-Smtp-Source: ABdhPJzsygHW9SyBpZIAEvN/v/Oz7TkRtXHqmlOfpcjumaG0XM8yQr5RnjRWRQydHA0frLg8LXHT8A==
-X-Received: by 2002:a05:6000:168e:b0:204:fe5:a55 with SMTP id y14-20020a056000168e00b002040fe50a55mr4282985wrd.453.1648124936591;
-        Thu, 24 Mar 2022 05:28:56 -0700 (PDT)
-Received: from [192.168.0.32] ([137.101.87.65])
-        by smtp.gmail.com with ESMTPSA id i74-20020adf90d0000000b0020373ba7beesm3913847wri.0.2022.03.24.05.28.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Mar 2022 05:28:56 -0700 (PDT)
-Message-ID: <0bd165e6-6d2c-7586-44c3-9c257843600f@gmail.com>
-Date:   Thu, 24 Mar 2022 13:28:55 +0100
+        Thu, 24 Mar 2022 08:31:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A60E0A94E9;
+        Thu, 24 Mar 2022 05:29:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5EB4BB801B9;
+        Thu, 24 Mar 2022 12:29:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77B81C340EC;
+        Thu, 24 Mar 2022 12:29:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1648124986;
+        bh=3DoK7n9nDP2CGFgPXTe97QnveDO+h1oyIl//9nYasVY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=IJq7vKfG82kt8jIdTOpib4NKU/d4K/dKlQpMN4zxXnxRbBL6g0IN7IcbjHbeaPUd9
+         Dk05bOIA6Jb3wTnvL8F3mjlFPNx3AA4uKg9ttlUDvH1KyrAS9QRk4J3HW+Id1XXhyJ
+         uqO7NIFLdbWR7Ks6oTXJ+nsGntmdvd0mE6NKC9OU=
+Date:   Thu, 24 Mar 2022 13:29:43 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable <stable@vger.kernel.org>
+Subject: Re: [PATCH] net: stmmac: dwmac-qcom-ethqos: Enable RGMII functional
+ clock on resume
+Message-ID: <YjxkNzJMGt0f2XYF@kroah.com>
+References: <20220323033255.2282930-1-bjorn.andersson@linaro.org>
+ <CAH=2NtyChidtrBVBL=RNjPaYYmtTuN0N4fbMx4DRBD6hXxHguQ@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4 05/22] arm64: dts: mt8192: Add usb-phy node
-Content-Language: en-US
-To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Ryder Lee <ryder.lee@kernel.org>,
-        Hui Liu <hui.liu@mediatek.com>
-References: <20220318144534.17996-1-allen-kh.cheng@mediatek.com>
- <20220318144534.17996-6-allen-kh.cheng@mediatek.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220318144534.17996-6-allen-kh.cheng@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAH=2NtyChidtrBVBL=RNjPaYYmtTuN0N4fbMx4DRBD6hXxHguQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Mar 24, 2022 at 03:08:08PM +0530, Bhupesh Sharma wrote:
+> +Cc: stable tree as I think this is an important fix for stmmac
+> dwmac-qcom-ethernet driver and affects ethernet functionality on QCOM
+> boards which use this driver.
 
+<formletter>
 
-On 18/03/2022 15:45, Allen-KH Cheng wrote:
-> Add xhci node for mt8192 SoC.
-> 
-> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+This is not the correct way to submit patches for inclusion in the
+stable kernel tree.  Please read:
+    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+for how to do this properly.
 
-Applied, thanks!
-
-> ---
->   arch/arm64/boot/dts/mediatek/mt8192.dtsi | 22 ++++++++++++++++++++++
->   1 file changed, 22 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> index 195d50894df4..28b93b76fe17 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> @@ -875,6 +875,28 @@
->   			#clock-cells = <1>;
->   		};
->   
-> +		u3phy0: t-phy@11e40000 {
-> +			compatible = "mediatek,mt8192-tphy",
-> +				     "mediatek,generic-tphy-v2";
-> +			#address-cells = <1>;
-> +			#size-cells = <1>;
-> +			ranges = <0x0 0x0 0x11e40000 0x1000>;
-> +
-> +			u2port0: usb-phy@0 {
-> +				reg = <0x0 0x700>;
-> +				clocks = <&clk26m>;
-> +				clock-names = "ref";
-> +				#phy-cells = <1>;
-> +			};
-> +
-> +			u3port0: usb-phy@700 {
-> +				reg = <0x700 0x900>;
-> +				clocks = <&clk26m>;
-> +				clock-names = "ref";
-> +				#phy-cells = <1>;
-> +			};
-> +		};
-> +
->   		i2c0: i2c@11f00000 {
->   			compatible = "mediatek,mt8192-i2c";
->   			reg = <0 0x11f00000 0 0x1000>,
+</formletter>
