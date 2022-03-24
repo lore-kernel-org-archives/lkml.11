@@ -2,115 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D70DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 10:46:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AA82C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 10:47:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349589AbiCXKrv (ORCPT
+        id S1349594AbiCXKt2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 06:47:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46110 "EHLO
+        Thu, 24 Mar 2022 06:49:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239291AbiCXKrt (ORCPT
+        with ESMTP id S242718AbiCXKtZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 06:47:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 98FFA23BED
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 03:46:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648118777;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SY8Zpg3HfKN7OLvRr+t2R2NBXsTqrDCHJm44fgalnyI=;
-        b=H+0yYJohDgCfJzHIuhECwrzd2IoNwfRHJLnGknVRPE/PJlqjJBQiKjzhKgj2EWseTvCXdD
-        gPbsufjNdnWqCpmARxMlLF3+JZZlWK+SXlljE2iKp2sPrUOps9Osl0VJtkVGwoTKRt+pVM
-        zyXlIr2FjBeAU5tKMFoUxDt8NBET5UE=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-49-BW_Gel20NwSvlDuFsDzpNg-1; Thu, 24 Mar 2022 06:46:16 -0400
-X-MC-Unique: BW_Gel20NwSvlDuFsDzpNg-1
-Received: by mail-wr1-f72.google.com with SMTP id e10-20020adf9bca000000b002059b6ffa18so200189wrc.14
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 03:46:16 -0700 (PDT)
+        Thu, 24 Mar 2022 06:49:25 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC40AA1476;
+        Thu, 24 Mar 2022 03:47:53 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id g24so5566865lja.7;
+        Thu, 24 Mar 2022 03:47:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=0J0phj6AMm9UiRKwAINuoHI0saZ8K5+RIjVP4BiGyXI=;
+        b=W00tgU32BzYT8QLgeVcXl8t4GzABMp804DZT8qVYJWfBc/h/MwqASWjK/H7E55dO9S
+         vGbTCT41p6wwmNueLXPdk+fSUc8udFZn/GnSGl9K9eHZn1Ms4i+g6FKFk9++rUP+PPI1
+         /yS65327j6U+Q91NDdtof6r4Af5w8VvN3uXkRl7payULhsm3xi/wLV6TD/z/J5hn+uPB
+         wfuHz+C42EwmTphgB0DHXZGKdxYhj0i4M4JuAvLCaUZsPc4SpLNLekyrXVDJLlSQ30ln
+         10SneDCDPmi8igzRWPJcI2H9lr/7RAHeziu6Lc+N1M2ol8Zv/FmvZok5DcfYIBMeuAUx
+         dGXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=SY8Zpg3HfKN7OLvRr+t2R2NBXsTqrDCHJm44fgalnyI=;
-        b=x2Vn501NvwOR0xkZpLRCQFHtJ8vWnJao4fU2y32SPQb3rLOp5MAE9Tjt4BN+QaszB1
-         89ggXN73aY69NJtMLfYTYdWlVxNgQbrm9KYZ3YAvAVZ3WIaS7EUh7dYbDYrOwQ1btVQj
-         pjs8zfHofxBPs32MP9xu1DfQUfODW3iQeEGETaXCodu9q5sLlIydF+iJavWtGv1zIdnH
-         0k1uFksgJ4wh/f9rcy6fOqpXNCObwkF3RwH6rrX8Sm8UloBFy523AxarVQ2Bc+cZMrJx
-         iwIJI2MJHGIQH9jVJcM5gegcUI8Fs9SnbDsL4bFdAXyNttSWgb6tI8Y1MJ4tq01XEgMZ
-         +sGg==
-X-Gm-Message-State: AOAM5305V/ixdu2oj/w5LpscusB7bMNWy6S3KqR/KlWJNV9xTVUacdnw
-        7YhFGov/7ahKhCj/aFUVpp+gIkF3a+lZOLaKT6i0nr8UaJb3ALjJN4e8ytpBJhUA9Uv2jujiBDQ
-        X0Ihijd8r7yZSikmptzCfu+D6
-X-Received: by 2002:a05:6000:1083:b0:203:fbd3:937e with SMTP id y3-20020a056000108300b00203fbd3937emr3947179wrw.139.1648118775384;
-        Thu, 24 Mar 2022 03:46:15 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxqwK363x/lQQ7GkLV8cbmtKe+6jv7+DtEPxZLenuGRyjD62htTnjjltK8uF850hOZimwkWcw==
-X-Received: by 2002:a05:6000:1083:b0:203:fbd3:937e with SMTP id y3-20020a056000108300b00203fbd3937emr3947168wrw.139.1648118775167;
-        Thu, 24 Mar 2022 03:46:15 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-232-135.dyn.eolo.it. [146.241.232.135])
-        by smtp.gmail.com with ESMTPSA id t4-20020a05600001c400b00203fb5dcf29sm2188758wrx.40.2022.03.24.03.46.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 03:46:14 -0700 (PDT)
-Message-ID: <7393b673c626fd75f2b4f8509faa5459254fb87c.camel@redhat.com>
-Subject: Re: [PATCH] bnx2x: replace usage of found with dedicated list
- iterator variable
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Jakob Koschel <jakobkoschel@gmail.com>,
-        Ariel Elior <aelior@marvell.com>
-Cc:     Sudarsana Kalluru <skalluru@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Date:   Thu, 24 Mar 2022 11:46:13 +0100
-In-Reply-To: <20220324070816.58599-1-jakobkoschel@gmail.com>
-References: <20220324070816.58599-1-jakobkoschel@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=0J0phj6AMm9UiRKwAINuoHI0saZ8K5+RIjVP4BiGyXI=;
+        b=1vN34ONauab3igrWeEDRVG2GpY1aPLu7CPIcKEWYKG6AF3yYYatxD+hlStUDdg4Yeg
+         2DHyTFvfI9fA2IhfYWk+uMGGlSCXJmJNZkCniRdBigdmH0Chon7J2mwj7+W06rmcL1+V
+         4erBgU0UNRr/ujyt6rYXDsMF9QRronYGsxRC5Vop2sxvqLkFaIt/ax7uSDdwGaKRbkg2
+         ZaK00xeSE9d8sjqfRKKqPk4sMCCK6xoAkuHzOJsCa/OLH45KAvMopEuJX6stKz5EkUCw
+         3InP6sU15XuMYw07EHxg/m45F/GNe4pU5olyUWm7thNfp4DWOzrwHyBIivJziNOn6+ZM
+         glag==
+X-Gm-Message-State: AOAM533iZ1RF/KrYaqzzfLnlcZthYiJ5WkYRNCH5MGUO4mtGr1sZE6PY
+        7y+GQla39IHTTg711K9L4jmA279R4Lwj8FOB6JU=
+X-Google-Smtp-Source: ABdhPJxvmZtFy+J+bFzyel0LLaX1+RiiFwWo/r3cr+oq0EQA4ui/aadInIzdparY+LLIAu38KrEIPRgcoBCKyW02w/0=
+X-Received: by 2002:a05:651c:b1e:b0:249:95d3:7832 with SMTP id
+ b30-20020a05651c0b1e00b0024995d37832mr3671439ljr.426.1648118872009; Thu, 24
+ Mar 2022 03:47:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <1647235924-15572-1-git-send-email-vincent.sunplus@gmail.com> <Yjth1mAtn/hX2Xvx@robh.at.kernel.org>
+In-Reply-To: <Yjth1mAtn/hX2Xvx@robh.at.kernel.org>
+From:   =?UTF-8?B?5pa96YyV6bS7?= <vincent.sunplus@gmail.com>
+Date:   Thu, 24 Mar 2022 18:48:41 +0800
+Message-ID: <CAPvp3RjPW1x-k4oA7QHHXm+QCNySMJLiR5TcqtCK-0geRtrd8A@mail.gmail.com>
+Subject: Re: [PATCH v1 0/2] Add USB HOST OHCI driver for Sunplus SP7021 SoC
+To:     Rob Herring <robh@kernel.org>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, stern@rowland.harvard.edu,
+        p.zabel@pengutronix.de, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
+        wells.lu@sunplus.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Rob Herring <robh@kernel.org> =E6=96=BC 2022=E5=B9=B43=E6=9C=8824=E6=97=A5 =
+=E9=80=B1=E5=9B=9B =E4=B8=8A=E5=8D=882:07=E5=AF=AB=E9=81=93=EF=BC=9A
+>
+> On Mon, Mar 14, 2022 at 01:32:02PM +0800, Vincent Shih wrote:
+> > This is a patch series for USB HOST OHCI driver for Sunplus SP7021 SoC.
+> >
+> > Sunplus SP7021 is an ARM Cortex A7 (4 cores) based SoC. It integrates
+> > many peripherals (ex: UART, I2C, SPI, SDIO, eMMC, USB, SD Card and
+> > etc.) into a single chip. It is designed for industrial control.
+>
+> Looks to me like the generic-ohci binding and driver should work for
+> this?
+>
+The generic-ohci binding and driver did work for Sunplus SP7021.
+And do I need to submit the patch for the ohci driver and binding doc
+for Sunplus
+SP7021 SoC ?
 
-On Thu, 2022-03-24 at 08:08 +0100, Jakob Koschel wrote:
-> To move the list iterator variable into the list_for_each_entry_*()
-> macro in the future it should be avoided to use the list iterator
-> variable after the loop body.
-> 
-> To *never* use the list iterator variable after the loop it was
-> concluded to use a separate iterator variable instead of a
-> found boolean [1].
-> 
-> This removes the need to use a found variable and simply checking if
-> the variable was set, can determine if the break/goto was hit.
-> 
-> Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
-> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-
-This looks like a purely net-next change, and we are in the merge
-window: net-next is closed for the time being. Could you please re-post
-after net-next re-open?
-
-Additionally, I suggest you to bundle the net-next patches in a single
-series, namely:
-
-bnx2x: replace usage of found with dedicated list iterator variable 
-octeontx2-pf: replace usage of found with dedicated list iterator variable 
-sctp: replace usage of found with dedicated list iterator variable 
-taprio: replace usage of found with dedicated list iterator variable 
-
-that will simplify the processing, thanks!
-
-Paolo
-
+> Rob
