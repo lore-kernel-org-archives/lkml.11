@@ -2,77 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA25BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 08:14:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7449DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 08:17:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348901AbiCXIQT (ORCPT
+        id S1348781AbiCXISb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 04:16:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55566 "EHLO
+        Thu, 24 Mar 2022 04:18:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348862AbiCXIQB (ORCPT
+        with ESMTP id S239836AbiCXIS2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 04:16:01 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69E8E6D3BA;
-        Thu, 24 Mar 2022 01:14:28 -0700 (PDT)
-X-UUID: d810baca48ef4bbfb335a90d1fbddb77-20220324
-X-UUID: d810baca48ef4bbfb335a90d1fbddb77-20220324
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <hui.liu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1391887995; Thu, 24 Mar 2022 16:14:19 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 24 Mar 2022 16:14:18 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 24 Mar 2022 16:14:17 +0800
-From:   Hui-Liu Liu <hui.liu@mediatek.com>
-To:     <lee.jones@linaro.org>, <robh+dt@kernel.org>,
-        <matthias.bgg@gmail.com>, <lgirdwood@gmail.com>,
-        <broonie@kernel.org>, <eddie.huang@mediatek.com>,
-        <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
-        <fshao@chromium.org>
-CC:     <srv_heupstream@mediatek.com>, <hui.liu@mediatek.com>,
-        <zhiyong.tao@mediatek.com>, <hsin-hsiung.wang@mediatek.com>,
-        <sean.wang@mediatek.com>, <macpaul.lin@mediatek.com>,
-        <yuchen.huang@mediatek.com>, <wen.su@mediatek.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-rtc@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v2 0/2] Add mt6359 node for MediaTek PMIC MT6359
-Date:   Thu, 24 Mar 2022 16:14:11 +0800
-Message-ID: <20220324081412.12045-1-hui.liu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 24 Mar 2022 04:18:28 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCFF19BAD8;
+        Thu, 24 Mar 2022 01:16:55 -0700 (PDT)
+Date:   Thu, 24 Mar 2022 08:16:52 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1648109813;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QTxcOWxuZF08C7LwzQu1z3MgI4m/xWk8ZyLCOHh42dE=;
+        b=Cx9/rJR2KN8BjXrQXkwy94qb/2mU0uyMFCAwoNpf6rcucAoRy/0lJHsbT958kxt80BnmhQ
+        7S0JrpbWUsCuNfmOVwdwMDuxiMf3U8B8exBZ/ogk+4Rg1Y2/ONmpY+Ehuhdw39XBjt4WS2
+        emSKQPjTlCr7YMCUrsQJBXR/GPe7+Pe6Jch+PUsic25BUpfMskNT/r7q3VoMx/XWvEZq11
+        QXBsMi5hCzhkUOx13/j0be4rezo4ldItIiVoHCyLGdokgS9dcTZURE/sPkY4jeNnEjAlSx
+        E5hrR2TDHsyCgybvwmeaCbvoeEmTG2U5kKZfAK46X4tNgtV8j5B8Fa89rJgnow==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1648109813;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QTxcOWxuZF08C7LwzQu1z3MgI4m/xWk8ZyLCOHh42dE=;
+        b=auqCzT6YcadE7TqnhYMsIlKFx2Bk4vpjBVlUtxPb9JZxCQ3P5jUcfCbgj6xG/XFl5qXvsV
+        LBcW5OYZQ5M10rCw==
+From:   "tip-bot2 for Borislav Petkov" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/urgent] x86/defconfig: Enable WERROR
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Borislav Petkov <bp@suse.de>, Ingo Molnar <mingo@kernel.org>,
+        x86@kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <YjsCpoRK7W4l6tSh@zn.tnic>
+References: <YjsCpoRK7W4l6tSh@zn.tnic>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
+Message-ID: <164810981264.389.6376024733991867139.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This pathset add PMIC MT6359 related nodes.
+The following commit has been merged into the x86/urgent branch of tip:
 
-The series[1] send by Hsin-Hsiung will continue to upstream in this pathset afterwards.
-[1] https://patchwork.kernel.org/project/linux-mediatek/patch/1622011927-359-9-git-send-email-hsin-hsiung.wang@mediatek.com/
+Commit-ID:     b9080ba4a6ec56447f263082825a4fddb873316b
+Gitweb:        https://git.kernel.org/tip/b9080ba4a6ec56447f263082825a4fddb873316b
+Author:        Borislav Petkov <bp@suse.de>
+AuthorDate:    Wed, 23 Mar 2022 12:21:10 +01:00
+Committer:     Ingo Molnar <mingo@kernel.org>
+CommitterDate: Thu, 24 Mar 2022 09:10:56 +01:00
 
-Changes in patch v2:
-1)Only add mt6359.dtsi, mt8192-evb.dts no need update.
+x86/defconfig: Enable WERROR
 
-Changes in patch v1:
-1)Add "SPDX-License-Identifier: (GPL-2.0 OR MIT)" in mt6359.dtsi.
+To quote Linus:
 
-Hui Liu (1):
-  arm64: dts: mt6359: add PMIC MT6359 nodes
+  "EVERYBODY should have CONFIG_WERROR=y on at least x86-64 and other
+   serious architectures, unless you have some completely random
+   experimental (and broken) compiler.
 
- arch/arm64/boot/dts/mediatek/mt6359.dtsi | 298 +++++++++++++++++++++++
- 1 file changed, 298 insertions(+)
- create mode 100644 arch/arm64/boot/dts/mediatek/mt6359.dtsi
+New compiler warnings are not acceptable."
 
---
-2.18.0
+So this should make at least the most obvious and common ones not go
+unnoticed.
 
+Acked-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Link: https://lore.kernel.org/r/YjsCpoRK7W4l6tSh@zn.tnic
+---
+ arch/x86/configs/i386_defconfig   | 1 +
+ arch/x86/configs/x86_64_defconfig | 1 +
+ 2 files changed, 2 insertions(+)
 
-
+diff --git a/arch/x86/configs/i386_defconfig b/arch/x86/configs/i386_defconfig
+index 71124cf..4b20852 100644
+--- a/arch/x86/configs/i386_defconfig
++++ b/arch/x86/configs/i386_defconfig
+@@ -262,3 +262,4 @@ CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
+ CONFIG_EARLY_PRINTK_DBGP=y
+ CONFIG_DEBUG_BOOT_PARAMS=y
+ CONFIG_KALLSYMS_ALL=y
++CONFIG_WERROR=y
+diff --git a/arch/x86/configs/x86_64_defconfig b/arch/x86/configs/x86_64_defconfig
+index 92b1169..38c52e4 100644
+--- a/arch/x86/configs/x86_64_defconfig
++++ b/arch/x86/configs/x86_64_defconfig
+@@ -258,3 +258,4 @@ CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
+ CONFIG_EARLY_PRINTK_DBGP=y
+ CONFIG_DEBUG_BOOT_PARAMS=y
+ CONFIG_KALLSYMS_ALL=y
++CONFIG_WERROR=y
