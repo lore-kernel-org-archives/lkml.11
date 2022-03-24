@@ -2,109 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB0A2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:45:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CCB0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:46:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239814AbiC1Prd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 11:47:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52550 "EHLO
+        id S238892AbiC1PqI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 11:46:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240297AbiC1PrX (ORCPT
+        with ESMTP id S238595AbiC1Ppy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 11:47:23 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 779B062C96;
-        Mon, 28 Mar 2022 08:45:07 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id a17so17417177edm.9;
-        Mon, 28 Mar 2022 08:45:07 -0700 (PDT)
+        Mon, 28 Mar 2022 11:45:54 -0400
+Received: from mail.baikalelectronics.ru (mail.baikalelectronics.com [87.245.175.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 056224A3E1;
+        Mon, 28 Mar 2022 08:44:11 -0700 (PDT)
+Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id 384E51E28DE;
+        Thu, 24 Mar 2022 03:16:45 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 384E51E28DE
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=exQYqA0enL+9Ts/1r+j7oGaQ8SoaMtPVWOjEy/JoIMM=;
-        b=QOAyM4Pxqb0tH3qU6BwyPmH6SEmiVBH3I94IaSVTpTAoONc65nD4cQ6zpO2/+7c7HL
-         kyKmLr1Fs7kIhHMMW8dmpsQ1qBatqjQm4CumOdg7UTbx8VyqUYNoHHfDcXCKX74K8Oio
-         Wzxtp9xkLGbKRgn6WENzKR8aM36qvLPYQUJKhBOW9HCkpfTOxz1k5ZVuy/zr23IipvgA
-         Aw5Des+3qMXPK4WXSnOZNovV3P1Q/v+Mk+S2jA1OKH8IFWclVFS7KhnukRmM6os/9znZ
-         WqvT81MoBx43DjmqA2/HeQiDSHmyhsS7gryr6yoIXRwft0HAGqpNUm45GBOlFjfBj/3g
-         3R6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=exQYqA0enL+9Ts/1r+j7oGaQ8SoaMtPVWOjEy/JoIMM=;
-        b=P7zaNAVu2PU+LDzSpoaiZLlcftHckaFJiHpCZ3BS1NicmYrrs6VGl5R3ptUwQGmudS
-         YSPuq0FF6m5vTehcVTGxObtry7JmyMrhj7ErP9AWadMRsCLufc02pIYL+XeDQ+JlgcGi
-         hObmjmEjZVSLWxEvA8Z8ptHCI+SKxFCGxf2kOSHZnDKXpVvE+zygm3Tlg8OIoxwgmVS8
-         CLukr5fTO8RKTH6A8++CIYtfbzuv8MHNEoqaTYzdpPBIhMk3eMRxeapQ2TjEV3kIYlSO
-         miFE/cXEtJGoA647MiBE+iJsw//9C9ZAWljIxFqKVaSLgxqb50U4o7r6c1v0rZalbj5k
-         anMQ==
-X-Gm-Message-State: AOAM533Gg3KjdrGjiZ7u0fB3d2nCfrPon3rq7kpYxMIsQGfpjcLfr0MO
-        qZP8sYgFGMugFVVgD9esz6y6zA+SmMBqGkJN
-X-Google-Smtp-Source: ABdhPJykenhnDOei8/V17X9dvlK3a4xTZaHrOGW9xnoo057/Gn6KaqXira+Y4/0WR4xi51fWIunTeA==
-X-Received: by 2002:a05:6402:909:b0:416:6f3c:5c1d with SMTP id g9-20020a056402090900b004166f3c5c1dmr16917791edz.108.1648482306061;
-        Mon, 28 Mar 2022 08:45:06 -0700 (PDT)
-Received: from anparri.mshome.net (host-82-59-4-232.retail.telecomitalia.it. [82.59.4.232])
-        by smtp.gmail.com with ESMTPSA id a22-20020a50ff16000000b00410d029ea5csm6991102edu.96.2022.03.28.08.45.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 08:45:05 -0700 (PDT)
-From:   "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
-To:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Michael Kelley <mikelley@microsoft.com>
-Cc:     linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
-Subject: [PATCH] Drivers: hv: vmbus: Replace smp_store_mb() with virt_store_mb()
-Date:   Mon, 28 Mar 2022 17:44:57 +0200
-Message-Id: <20220328154457.100872-1-parri.andrea@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        d=baikalelectronics.ru; s=mail; t=1648081005;
+        bh=KrUo+i/9CiTNQNY1Lv9K7N6HJQQfuan8/c6RBDZemY0=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=JjA8l0IF0wENkQ35sS+hjd0o1EeJ75KbTFWy9fieqH2F/B3VSZY3cZeDt66QOozNi
+         XWk7EyGnV/9VUaWAWrlz609mh+tPIP0OocNAfKCjQi/r/4SPR3lJVCBieHXMBv9oUU
+         G5DTGAdWg+RaLRBapM/C06ayl/5+Nx5AerjanBlc=
+Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 24 Mar 2022 03:16:44 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        <linux-ide@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+Subject: [PATCH 18/21] dt-bindings: ata: ahci: Add Baikal-T1 AHCI SATA controller DT schema
+Date:   Thu, 24 Mar 2022 03:16:25 +0300
+Message-ID: <20220324001628.13028-19-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220324001628.13028-1-Sergey.Semin@baikalelectronics.ru>
+References: <20220324001628.13028-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Following the recommendation in Documentation/memory-barriers.txt for
-virtual machine guests.
+Baikal-T1 AHCI controller is based on the DWC AHCI SATA IP-core v4.10a
+with the next specific settings: two SATA ports, cascaded CSR access based
+on two clock domains (APB and AXI), selectable source of the reference
+clock (though stable work is currently available from the external source
+only), two reset lanes for the application and SATA ports domains. Other
+than that the device is fully compatible with the generic DWC AHCI SATA
+bindings.
 
-Fixes: 8b6a877c060ed ("Drivers: hv: vmbus: Replace the per-CPU channel lists with a global array of channels")
-Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 ---
- drivers/hv/channel_mgmt.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ .../bindings/ata/baikal,bt1-ahci.yaml         | 132 ++++++++++++++++++
+ 1 file changed, 132 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/ata/baikal,bt1-ahci.yaml
 
-diff --git a/drivers/hv/channel_mgmt.c b/drivers/hv/channel_mgmt.c
-index 60375879612f3..67be81208a2d9 100644
---- a/drivers/hv/channel_mgmt.c
-+++ b/drivers/hv/channel_mgmt.c
-@@ -380,7 +380,7 @@ void vmbus_channel_map_relid(struct vmbus_channel *channel)
- 	 * execute:
- 	 *
- 	 *  (a) In the "normal (i.e., not resuming from hibernation)" path,
--	 *      the full barrier in smp_store_mb() guarantees that the store
-+	 *      the full barrier in virt_store_mb() guarantees that the store
- 	 *      is propagated to all CPUs before the add_channel_work work
- 	 *      is queued.  In turn, add_channel_work is queued before the
- 	 *      channel's ring buffer is allocated/initialized and the
-@@ -392,14 +392,14 @@ void vmbus_channel_map_relid(struct vmbus_channel *channel)
- 	 *      recv_int_page before retrieving the channel pointer from the
- 	 *      array of channels.
- 	 *
--	 *  (b) In the "resuming from hibernation" path, the smp_store_mb()
-+	 *  (b) In the "resuming from hibernation" path, the virt_store_mb()
- 	 *      guarantees that the store is propagated to all CPUs before
- 	 *      the VMBus connection is marked as ready for the resume event
- 	 *      (cf. check_ready_for_resume_event()).  The interrupt handler
- 	 *      of the VMBus driver and vmbus_chan_sched() can not run before
- 	 *      vmbus_bus_resume() has completed execution (cf. resume_noirq).
- 	 */
--	smp_store_mb(
-+	virt_store_mb(
- 		vmbus_connection.channels[channel->offermsg.child_relid],
- 		channel);
- }
+diff --git a/Documentation/devicetree/bindings/ata/baikal,bt1-ahci.yaml b/Documentation/devicetree/bindings/ata/baikal,bt1-ahci.yaml
+new file mode 100644
+index 000000000000..960d88d97926
+--- /dev/null
++++ b/Documentation/devicetree/bindings/ata/baikal,bt1-ahci.yaml
+@@ -0,0 +1,132 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/ata/baikal,bt1-ahci.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Baikal-T1 SoC AHCI SATA controller
++
++maintainers:
++  - Serge Semin <fancer.lancer@gmail.com>
++
++description: |
++  AHCI SATA controller embedded into the Baikal-T1 SoC is based on the
++  DWC AHCI SATA v4.10a IP-core.
++
++allOf:
++  - $ref: snps,dwc-ahci.yaml#
++
++properties:
++  compatible:
++    contains:
++      const: baikal,bt1-ahci
++
++  clocks:
++    items:
++      - description: Peripheral APB bus clock source
++      - description: Application AXI BIU clock
++      - description: Internal SATA Ports reference clock
++      - description: External SATA Ports reference clock
++
++  clock-names:
++    items:
++      - const: pclk
++      - const: aclk
++      - const: ref_int
++      - const: ref_ext
++
++  resets:
++    items:
++      - description: Application AXI BIU domain reset
++      - description: SATA Ports clock domain reset
++
++  reset-names:
++    items:
++      - const: arst
++      - const: ref
++
++  syscon:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description:
++      Phandle reference to the CCU system controller. It is required to
++      switch between internal and external SATA reference clock sources.
++
++  ports-implemented:
++    maximum: 0x3
++
++patternProperties:
++  "^sata-port@[0-9a-e]$":
++    type: object
++
++    properties:
++      reg:
++        minimum: 0
++        maximum: 1
++
++      snps,tx-ts-max:
++        $ref: /schemas/types.yaml#/definitions/uint32
++        description:
++          Due to having AXI3 bus interface utilized the maximum Tx DMA
++          transaction size can't exceed 16 beats (AxLEN[3:0]).
++        minimum: 1
++        maximum: 16
++
++      snps,rx-ts-max:
++        $ref: /schemas/types.yaml#/definitions/uint32
++        description:
++          Due to having AXI3 bus interface utilized the maximum Rx DMA
++          transaction size can't exceed 16 beats (AxLEN[3:0]).
++        minimum: 1
++        maximum: 16
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - clock-names
++  - resets
++  - syscon
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/mips-gic.h>
++    #include <dt-bindings/clock/bt1-ccu.h>
++    #include <dt-bindings/reset/bt1-ccu.h>
++
++    sata@1f050000 {
++      compatible = "baikal,bt1-ahci", "snps,dwc-ahci";
++      reg = <0x1f050000 0x2000>;
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      interrupts = <GIC_SHARED 64 IRQ_TYPE_LEVEL_HIGH>;
++
++      clocks = <&ccu_sys CCU_SYS_APB_CLK>, <&ccu_axi CCU_AXI_SATA_CLK>,
++               <&ccu_sys CCU_SYS_SATA_REF_CLK>, <&clk_sata>;
++      clock-names = "pclk", "aclk", "ref_int", "ref_ext";
++
++      resets = <&ccu_axi CCU_AXI_SATA_RST>, <&ccu_sys CCU_SYS_SATA_REF_RST>;
++      reset-names = "arst", "ref";
++
++      syscon = <&syscon>;
++
++      ports-implemented = <0x3>;
++
++      sata-port@0 {
++        reg = <0>;
++
++        snps,tx-ts-max = <4>;
++        snps,rx-ts-max = <4>;
++      };
++
++      sata-port@1 {
++        reg = <1>;
++
++        snps,tx-ts-max = <4>;
++        snps,rx-ts-max = <4>;
++      };
++    };
++...
 -- 
-2.25.1
+2.35.1
 
