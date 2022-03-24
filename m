@@ -2,603 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F4C8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 22:45:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C7EBC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 22:46:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353801AbiCXWqg (ORCPT
+        id S1355524AbiCXWrd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 18:46:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40118 "EHLO
+        Thu, 24 Mar 2022 18:47:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355497AbiCXWqR (ORCPT
+        with ESMTP id S238115AbiCXWra (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 18:46:17 -0400
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1C9B6E4E
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 15:44:42 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 9A8B55C01A0;
-        Thu, 24 Mar 2022 18:44:41 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Thu, 24 Mar 2022 18:44:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sent.com; h=cc
-        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to
-        :reply-to:sender:subject:subject:to:to; s=fm3; bh=w52cqJdzfOThCh
-        +TtTPJbCC7qinoFmlJ6eyWd7DNA6c=; b=o2rDRRjB42zopoLrHPKY1Mrn8ZJDdN
-        dZkC8p+09ZPCAjZxjHIr6wVyIizn1kz5N9H/k2yxmDUjoPmikZw7PGaAzVJ/Dtvt
-        S49kIZomrwgmr3KZwUbn5WNQLW07vzHZDCrc2ElB61PGMILXln7ra5PHmHm3vg+R
-        H8iYM2Q+tCGOF8cfLy7exwDRk4fNJjoZZhgWEBNwbTXhqPM0X3/M5C2DKe6CBEc4
-        vcuXxCbYpJdcNTCh8vijgpKMWzIODP79SP66e5FzLx2U7SN96wksuwzIAL7kxNDc
-        8/6TIjLlYIB1MGnVP4hK6GUSniu8eOG620kr1xiXg8+HcB00qe720oEw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :from:from:in-reply-to:in-reply-to:message-id:mime-version
-        :references:reply-to:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=w52cqJdzfOThCh+TtTPJbCC7qinoFmlJ6eyWd7DNA6c=; b=c60eWj+y
-        LkqUfVtvq2yuCXdD+ifKlhRcLH1kM7jDQRXlCUDpmch2/6LExup1jKIC7ce+ccL3
-        DLCXXHChNUAmmIfOtdnqBum+no0sTUHOoMabIMHsXqpzWeInQaLr06Y5YTkdJcoe
-        QlMQ7B+pdnVgOCgoLqyaNc51a0vJYTcLDM/SPZ7mPH2dM5JMP68rFQHnRiQ0UB6O
-        x8pjE+kqxI/O1La1KVEUi3N07qjeYfaXBLGGPTIRQDDOzFhvoGpwktqlg0qexDno
-        YKpehHHih9XDFfkZr0bjWsAx6LyVIbtifT1Qi1nOZUopVk+6SUep/bYL7lF7dPw+
-        zc1PG4QpP4qelA==
-X-ME-Sender: <xms:WfQ8YrrfjQrJl2h9Ep7oXSn68AA1HtxOibTrVvaHGWdkdOVXQ3JjMQ>
-    <xme:WfQ8Ylp618ht6rsBALW_dKoWh84ugOOA8rXFVHWox87F80dklZP4Yt3OUUxZHBDOb
-    gtKWy0HxcxTA5YoVw>
-X-ME-Received: <xmr:WfQ8YoNMBOrsFOxYGAeuBnoMEHqwyx4CJAuGhwGiwr7OKSr2VLx9H57gTANt75uYhkFRNAKlp7BD0lQBGA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudegledgudeivdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefhvffufffkofgjfhhrggfgsedtqhertdertddtnecuhfhrohhmpegkihcu
-    jggrnhcuoeiiihdrhigrnhesshgvnhhtrdgtohhmqeenucggtffrrghtthgvrhhnpeeije
-    euvdeuudeuhfeghfehieeuvdetvdeugfeigeevteeuieeuhedtgeduheefleenucevlhhu
-    shhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpeiiihdrhigrnhessh
-    gvnhhtrdgtohhm
-X-ME-Proxy: <xmx:WfQ8Yu6xOehCOi0x6MLsXmTDGPomsM1gSWwu7cOu_ZX5LapjfKYB7w>
-    <xmx:WfQ8Yq5aGF64NcEMm-G2x4r9Rw-evoXiNE-udOb1RJmNImdvTQzAUQ>
-    <xmx:WfQ8YmiMJe8QwfMcxOEpoi66IS0oPegs1B0Uq8vdZ2lJgvseaXPnrQ>
-    <xmx:WfQ8Ynz0IvxHFL8-PEnKd902UoD0dwEOE8ox-2C2CC22Fv-4-jTOFQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 24 Mar 2022 18:44:41 -0400 (EDT)
-From:   Zi Yan <zi.yan@sent.com>
-To:     David Hildenbrand <david@redhat.com>, linux-mm@kvack.org
-Cc:     linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Eric Ren <renzhengeek@gmail.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        Oscar Salvador <osalvador@suse.de>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Zi Yan <ziy@nvidia.com>, kernel test robot <lkp@intel.com>
-Subject: [PATCH v9 3/5] mm: make alloc_contig_range work at pageblock granularity
-Date:   Thu, 24 Mar 2022 18:44:33 -0400
-Message-Id: <20220324224435.17794-4-zi.yan@sent.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220324224435.17794-1-zi.yan@sent.com>
-References: <20220324224435.17794-1-zi.yan@sent.com>
-Reply-To: Zi Yan <ziy@nvidia.com>
+        Thu, 24 Mar 2022 18:47:30 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE804B6E49
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 15:45:57 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id m67so11046711ybm.4
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 15:45:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jnJBPgTCQpIk4GXIuP3Svzof43wtZ+jGtbmFoomefJ4=;
+        b=FR7K6oy09xDnwnDN3lVbdYmbbXOHICk+8+rBqJSPGr/RU3dQxTeRPznc1rSzsIknPK
+         6UlSwhVvETV27E/4ZMitIOMAecKMV4CI5oYJC9MmL2EH0hFum21IbkKiaT+cwp6v53yX
+         +WreO7gh109pVaE+z8Xcg8vkZ33kVZ1Qvwy6BAv7hWLp0JoB/Vq7fOf8/hjdCJbh+Qa2
+         8YtdUl3EEZPWjHFR1j5l/gmsNXh6PB4PuCa7+hWaLWCLum9VHEUNIcPSLXlHttdzr9YE
+         1Ei8DWlhR9KeGdNlWhE+jAREG6xEutcw3PAlXHT5w6DJKmBXTowAUSggnVD1BSi/LziL
+         gb2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jnJBPgTCQpIk4GXIuP3Svzof43wtZ+jGtbmFoomefJ4=;
+        b=USJv9luFP+DhxELPWWO8w/IlTGM/cR+2lZHn8+Pc5zfEY3OMFZkDZ52Rl5s5C77cKR
+         pj3390tnqkKunyjaiq7EY4Ie/AcdBfawz4BMCPjIC8PAbSu8mgzetln38Crcqx5674T9
+         y8cuZwdN8/U38RpJI9e7PmABJrXatcCrdUlZCnmjN3vsBHMJ8huXepJxsVelhLvCzquf
+         zqbo2AIy3r6dUEbz15tXinYUWb95PgrH41uLtkHDHFdH2J6j0BQvM4TLUbPB1cJG/gx7
+         Q365M0lImYwJ+QlDdVTs4UqZNgl0+c038xXahRap+KpeonjoU+7rEssB7DNikZ1boTU1
+         QpYA==
+X-Gm-Message-State: AOAM533wLJW1Ns1Mx3X4peKJ9ypHKlkZK7w6YHzYJaeaW/ApXysaAblA
+        xJJ0q2i0RfEZiha5ALXvqiQ47+tGey6cKLs39KzmwA==
+X-Google-Smtp-Source: ABdhPJy39u4ZEV8Xaawz/qPi1GypVDnEF+uqHYrrv2UrKZPEFW8WoLwEg+moNFcTiXR4gN1/U4aNYxhpgrMn5u6g5jM=
+X-Received: by 2002:a25:4e82:0:b0:633:68d7:b864 with SMTP id
+ c124-20020a254e82000000b0063368d7b864mr7230564ybb.514.1648161957107; Thu, 24
+ Mar 2022 15:45:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+References: <20220321133241.121367-1-shreeya.patel@collabora.com>
+In-Reply-To: <20220321133241.121367-1-shreeya.patel@collabora.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Thu, 24 Mar 2022 23:45:45 +0100
+Message-ID: <CACRpkdaYck+DOM1t7KCrFpA3O-YOa7A3VLXhSnTXVQ08vc4sXQ@mail.gmail.com>
+Subject: Re: [PATCH v3] gpio: Restrict usage of GPIO chip irq members before initialization
+To:     Shreeya Patel <shreeya.patel@collabora.com>
+Cc:     brgl@bgdev.pl, krisman@collabora.com, andy.shevchenko@gmail.com,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com, alvaro.soliverez@collabora.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zi Yan <ziy@nvidia.com>
+On Mon, Mar 21, 2022 at 2:33 PM Shreeya Patel
+<shreeya.patel@collabora.com> wrote:
 
-alloc_contig_range() worked at MAX_ORDER_NR_PAGES granularity to avoid
-merging pageblocks with different migratetypes. It might unnecessarily
-convert extra pageblocks at the beginning and at the end of the range.
-Change alloc_contig_range() to work at pageblock granularity.
+> GPIO chip irq members are exposed before they could be completely
+> initialized and this leads to race conditions.
+>
+> One such issue was observed for the gc->irq.domain variable which
+> was accessed through the I2C interface in gpiochip_to_irq() before
+> it could be initialized by gpiochip_add_irqchip(). This resulted in
+> Kernel NULL pointer dereference.
+>
+> Following are the logs for reference :-
+>
+> kernel: Call Trace:
+> kernel:  gpiod_to_irq+0x53/0x70
+> kernel:  acpi_dev_gpio_irq_get_by+0x113/0x1f0
+> kernel:  i2c_acpi_get_irq+0xc0/0xd0
+> kernel:  i2c_device_probe+0x28a/0x2a0
+> kernel:  really_probe+0xf2/0x460
+> kernel: RIP: 0010:gpiochip_to_irq+0x47/0xc0
+>
+> To avoid such scenarios, restrict usage of GPIO chip irq members before
+> they are completely initialized.
+>
+> Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
 
-Special handling is needed for free pages and in-use pages across the
-boundaries of the range specified alloc_contig_range(). Because these
-partially isolated pages causes free page accounting issues. The free
-pages will be split and freed into separate migratetype lists; the
-in-use pages will be migrated then the freed pages will be handled.
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Zi Yan <ziy@nvidia.com>
----
- include/linux/page-isolation.h |   2 +-
- mm/internal.h                  |   6 ++
- mm/memory_hotplug.c            |   3 +-
- mm/page_alloc.c                | 107 +++++++++----------
- mm/page_isolation.c            | 189 ++++++++++++++++++++++++++++++---
- 5 files changed, 236 insertions(+), 71 deletions(-)
-
-diff --git a/include/linux/page-isolation.h b/include/linux/page-isolation.h
-index e14eddf6741a..52060514f920 100644
---- a/include/linux/page-isolation.h
-+++ b/include/linux/page-isolation.h
-@@ -42,7 +42,7 @@ int move_freepages_block(struct zone *zone, struct page *=
-page,
-  */
- int
- start_isolate_page_range(unsigned long start_pfn, unsigned long end_pfn,
--			 unsigned migratetype, int flags);
-+			 unsigned migratetype, int flags, gfp_t gfp_flags);
-=20
- /*
-  * Changes MIGRATE_ISOLATE to MIGRATE_MOVABLE.
-diff --git a/mm/internal.h b/mm/internal.h
-index 9be0227ccc94..9d0a6a898ba8 100644
---- a/mm/internal.h
-+++ b/mm/internal.h
-@@ -269,6 +269,9 @@ extern void *memmap_alloc(phys_addr_t size, phys_addr_t=
- align,
- 			  phys_addr_t min_addr,
- 			  int nid, bool exact_nid);
-=20
-+void split_free_page(struct page *free_page,
-+				int order, unsigned long split_pfn_offset);
-+
- #if defined CONFIG_COMPACTION || defined CONFIG_CMA
-=20
- /*
-@@ -332,6 +335,9 @@ isolate_freepages_range(struct compact_control *cc,
- int
- isolate_migratepages_range(struct compact_control *cc,
- 			   unsigned long low_pfn, unsigned long end_pfn);
-+
-+int __alloc_contig_migrate_range(struct compact_control *cc,
-+					unsigned long start, unsigned long end);
- #endif
- int find_suitable_fallback(struct free_area *area, unsigned int order,
- 			int migratetype, bool only_stealable, bool *can_steal);
-diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
-index 416b38ca8def..1cf4d4b60772 100644
---- a/mm/memory_hotplug.c
-+++ b/mm/memory_hotplug.c
-@@ -1836,7 +1836,8 @@ int __ref offline_pages(unsigned long start_pfn, unsi=
-gned long nr_pages,
- 	/* set above range as isolated */
- 	ret =3D start_isolate_page_range(start_pfn, end_pfn,
- 				       MIGRATE_MOVABLE,
--				       MEMORY_OFFLINE | REPORT_FAILURE);
-+				       MEMORY_OFFLINE | REPORT_FAILURE,
-+				       GFP_USER | __GFP_MOVABLE | __GFP_RETRY_MAYFAIL);
- 	if (ret) {
- 		reason =3D "failure to isolate range";
- 		goto failed_removal_pcplists_disabled;
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index f24fe057389f..57ebc9e41414 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -1138,6 +1138,43 @@ static inline void __free_one_page(struct page *page,
- 		page_reporting_notify_free(order);
- }
-=20
-+/**
-+ * split_free_page() -- split a free page at split_pfn_offset
-+ * @free_page:		the original free page
-+ * @order:		the order of the page
-+ * @split_pfn_offset:	split offset within the page
-+ *
-+ * It is used when the free page crosses two pageblocks with different mig=
-ratetypes
-+ * at split_pfn_offset within the page. The split free page will be put in=
-to
-+ * separate migratetype lists afterwards. Otherwise, the function achieves
-+ * nothing.
-+ */
-+void split_free_page(struct page *free_page,
-+				int order, unsigned long split_pfn_offset)
-+{
-+	struct zone *zone =3D page_zone(free_page);
-+	unsigned long free_page_pfn =3D page_to_pfn(free_page);
-+	unsigned long pfn;
-+	unsigned long flags;
-+	int free_page_order;
-+
-+	spin_lock_irqsave(&zone->lock, flags);
-+	del_page_from_free_list(free_page, zone, order);
-+	for (pfn =3D free_page_pfn;
-+	     pfn < free_page_pfn + (1UL << order);) {
-+		int mt =3D get_pfnblock_migratetype(pfn_to_page(pfn), pfn);
-+
-+		free_page_order =3D ffs(split_pfn_offset) - 1;
-+		__free_one_page(pfn_to_page(pfn), pfn, zone, free_page_order,
-+				mt, FPI_NONE);
-+		pfn +=3D 1UL << free_page_order;
-+		split_pfn_offset -=3D (1UL << free_page_order);
-+		/* we have done the first part, now switch to second part */
-+		if (split_pfn_offset =3D=3D 0)
-+			split_pfn_offset =3D (1UL << order) - (pfn - free_page_pfn);
-+	}
-+	spin_unlock_irqrestore(&zone->lock, flags);
-+}
- /*
-  * A bad page could be due to a number of fields. Instead of multiple bran=
-ches,
-  * try and check multiple fields with one check. The caller must do a deta=
-iled
-@@ -8959,7 +8996,7 @@ static inline void alloc_contig_dump_pages(struct lis=
-t_head *page_list)
- #endif
-=20
- /* [start, end) must belong to a single zone. */
--static int __alloc_contig_migrate_range(struct compact_control *cc,
-+int __alloc_contig_migrate_range(struct compact_control *cc,
- 					unsigned long start, unsigned long end)
- {
- 	/* This function is based on compact_zone() from compaction.c. */
-@@ -9041,8 +9078,9 @@ static int __alloc_contig_migrate_range(struct compac=
-t_control *cc,
- int alloc_contig_range(unsigned long start, unsigned long end,
- 		       unsigned migratetype, gfp_t gfp_mask)
- {
--	unsigned long outer_start, outer_end;
--	unsigned int order;
-+	unsigned long outer_end;
-+	unsigned long alloc_start =3D ALIGN_DOWN(start, pageblock_nr_pages);
-+	unsigned long alloc_end =3D ALIGN(end, pageblock_nr_pages);
- 	int ret =3D 0;
-=20
- 	struct compact_control cc =3D {
-@@ -9061,14 +9099,11 @@ int alloc_contig_range(unsigned long start, unsigne=
-d long end,
- 	 * What we do here is we mark all pageblocks in range as
- 	 * MIGRATE_ISOLATE.  Because pageblock and max order pages may
- 	 * have different sizes, and due to the way page allocator
--	 * work, we align the range to biggest of the two pages so
--	 * that page allocator won't try to merge buddies from
--	 * different pageblocks and change MIGRATE_ISOLATE to some
--	 * other migration type.
-+	 * work, start_isolate_page_range() has special handlings for this.
- 	 *
- 	 * Once the pageblocks are marked as MIGRATE_ISOLATE, we
- 	 * migrate the pages from an unaligned range (ie. pages that
--	 * we are interested in).  This will put all the pages in
-+	 * we are interested in). This will put all the pages in
- 	 * range back to page allocator as MIGRATE_ISOLATE.
- 	 *
- 	 * When this is done, we take the pages in range from page
-@@ -9081,9 +9116,9 @@ int alloc_contig_range(unsigned long start, unsigned =
-long end,
- 	 * put back to page allocator so that buddy can use them.
- 	 */
-=20
--	ret =3D start_isolate_page_range(start, end, migratetype, 0);
-+	ret =3D start_isolate_page_range(start, end, migratetype, 0, gfp_mask);
- 	if (ret)
--		return ret;
-+		goto done;
-=20
- 	drain_all_pages(cc.zone);
-=20
-@@ -9102,64 +9137,24 @@ int alloc_contig_range(unsigned long start, unsigne=
-d long end,
- 		goto done;
- 	ret =3D 0;
-=20
--	/*
--	 * Pages from [start, end) are within a MAX_ORDER_NR_PAGES
--	 * aligned blocks that are marked as MIGRATE_ISOLATE.  What's
--	 * more, all pages in [start, end) are free in page allocator.
--	 * What we are going to do is to allocate all pages from
--	 * [start, end) (that is remove them from page allocator).
--	 *
--	 * The only problem is that pages at the beginning and at the
--	 * end of interesting range may be not aligned with pages that
--	 * page allocator holds, ie. they can be part of higher order
--	 * pages.  Because of this, we reserve the bigger range and
--	 * once this is done free the pages we are not interested in.
--	 *
--	 * We don't have to hold zone->lock here because the pages are
--	 * isolated thus they won't get removed from buddy.
--	 */
--
--	order =3D 0;
--	outer_start =3D start;
--	while (!PageBuddy(pfn_to_page(outer_start))) {
--		if (++order >=3D MAX_ORDER) {
--			outer_start =3D start;
--			break;
--		}
--		outer_start &=3D ~0UL << order;
--	}
--
--	if (outer_start !=3D start) {
--		order =3D buddy_order(pfn_to_page(outer_start));
--
--		/*
--		 * outer_start page could be small order buddy page and
--		 * it doesn't include start page. Adjust outer_start
--		 * in this case to report failed page properly
--		 * on tracepoint in test_pages_isolated()
--		 */
--		if (outer_start + (1UL << order) <=3D start)
--			outer_start =3D start;
--	}
--
- 	/* Make sure the range is really isolated. */
--	if (test_pages_isolated(outer_start, end, 0)) {
-+	if (test_pages_isolated(alloc_start, alloc_end, 0)) {
- 		ret =3D -EBUSY;
- 		goto done;
- 	}
-=20
- 	/* Grab isolated pages from freelists. */
--	outer_end =3D isolate_freepages_range(&cc, outer_start, end);
-+	outer_end =3D isolate_freepages_range(&cc, alloc_start, alloc_end);
- 	if (!outer_end) {
- 		ret =3D -EBUSY;
- 		goto done;
- 	}
-=20
- 	/* Free head and tail (if any) */
--	if (start !=3D outer_start)
--		free_contig_range(outer_start, start - outer_start);
--	if (end !=3D outer_end)
--		free_contig_range(end, outer_end - end);
-+	if (start !=3D alloc_start)
-+		free_contig_range(alloc_start, start - alloc_start);
-+	if (end !=3D alloc_end)
-+		free_contig_range(end, alloc_end - end);
-=20
- done:
- 	undo_isolate_page_range(start, end, migratetype);
-diff --git a/mm/page_isolation.c b/mm/page_isolation.c
-index 0223c9a4cff3..a24a521f62c6 100644
---- a/mm/page_isolation.c
-+++ b/mm/page_isolation.c
-@@ -284,16 +284,156 @@ __first_valid_page(unsigned long pfn, unsigned long =
-nr_pages)
- 	return NULL;
- }
-=20
--static unsigned long pfn_max_align_down(unsigned long pfn)
-+/**
-+ * isolate_single_pageblock() -- tries to isolate a pageblock that might be
-+ * within a free or in-use page.
-+ * @boundary_pfn:		pageblock-aligned pfn that a page might cross
-+ * @gfp_flags:			GFP flags used for migrating pages
-+ * @isolate_before:	isolate the pageblock before the boundary_pfn
-+ *
-+ * Free and in-use pages can be as big as MAX_ORDER-1 and contain more tha=
-n one
-+ * pageblock. When not all pageblocks within a page are isolated at the sa=
-me
-+ * time, free page accounting can go wrong. For example, in the case of
-+ * MAX_ORDER-1 =3D pageblock_order + 1, a MAX_ORDER-1 page has two pagelbo=
-cks.
-+ * [         MAX_ORDER-1         ]
-+ * [  pageblock0  |  pageblock1  ]
-+ * When either pageblock is isolated, if it is a free page, the page is not
-+ * split into separate migratetype lists, which is supposed to; if it is an
-+ * in-use page and freed later, __free_one_page() does not split the free =
-page
-+ * either. The function handles this by splitting the free page or migrati=
-ng
-+ * the in-use page then splitting the free page.
-+ */
-+static int isolate_single_pageblock(unsigned long boundary_pfn, gfp_t gfp_=
-flags,
-+			bool isolate_before)
- {
--	return ALIGN_DOWN(pfn, MAX_ORDER_NR_PAGES);
--}
-+	unsigned char saved_mt;
-+	unsigned long start_pfn;
-+	unsigned long isolate_pageblock;
-+	unsigned long pfn;
-+	struct zone *zone;
-=20
--static unsigned long pfn_max_align_up(unsigned long pfn)
--{
--	return ALIGN(pfn, MAX_ORDER_NR_PAGES);
-+	VM_BUG_ON(!IS_ALIGNED(boundary_pfn, pageblock_nr_pages));
-+
-+	if (isolate_before)
-+		isolate_pageblock =3D boundary_pfn - pageblock_nr_pages;
-+	else
-+		isolate_pageblock =3D boundary_pfn;
-+
-+	/*
-+	 * scan at the beginning of MAX_ORDER_NR_PAGES aligned range to avoid
-+	 * only isolating a subset of pageblocks from a bigger than pageblock
-+	 * free or in-use page. Also make sure all to-be-isolated pageblocks
-+	 * are within the same zone.
-+	 */
-+	zone  =3D page_zone(pfn_to_page(isolate_pageblock));
-+	start_pfn  =3D max(ALIGN_DOWN(isolate_pageblock, MAX_ORDER_NR_PAGES),
-+				      zone->zone_start_pfn);
-+
-+	saved_mt =3D get_pageblock_migratetype(pfn_to_page(isolate_pageblock));
-+	set_pageblock_migratetype(pfn_to_page(isolate_pageblock), MIGRATE_ISOLATE=
-);
-+
-+	/*
-+	 * Bail out early when the to-be-isolated pageblock does not form
-+	 * a free or in-use page across boundary_pfn:
-+	 *
-+	 * 1. isolate before boundary_pfn: the page after is not online
-+	 * 2. isolate after boundary_pfn: the page before is not online
-+	 *
-+	 * This also ensures correctness. Without it, when isolate_before is
-+	 * false, the page can be NULL in the for loop below.
-+	 */
-+	if (isolate_before) {
-+		if (!pfn_to_online_page(boundary_pfn))
-+			return 0;
-+	} else {
-+		if (!pfn_to_online_page(boundary_pfn - 1))
-+			return 0;
-+	}
-+
-+	for (pfn =3D start_pfn; pfn < boundary_pfn;) {
-+		struct page *page =3D __first_valid_page(pfn, boundary_pfn - pfn);
-+
-+		VM_BUG_ON(!page);
-+		pfn =3D page_to_pfn(page);
-+		/*
-+		 * start_pfn is MAX_ORDER_NR_PAGES aligned, if there is any
-+		 * free pages in [start_pfn, boundary_pfn), its head page will
-+		 * always be in the range.
-+		 */
-+		if (PageBuddy(page)) {
-+			int order =3D buddy_order(page);
-+
-+			if (pfn + (1UL << order) > boundary_pfn)
-+				split_free_page(page, order, boundary_pfn - pfn);
-+			pfn +=3D (1UL << order);
-+			continue;
-+		}
-+		/*
-+		 * migrate compound pages then let the free page handling code
-+		 * above do the rest. If migration is not enabled, just fail.
-+		 */
-+		if (PageHuge(page) || PageTransCompound(page)) {
-+#if defined CONFIG_COMPACTION || defined CONFIG_CMA
-+			unsigned long nr_pages =3D compound_nr(page);
-+			int order =3D compound_order(page);
-+			struct page *head =3D compound_head(page);
-+			unsigned long head_pfn =3D page_to_pfn(head);
-+			int ret;
-+			struct compact_control cc =3D {
-+				.nr_migratepages =3D 0,
-+				.order =3D -1,
-+				.zone =3D page_zone(pfn_to_page(head_pfn)),
-+				.mode =3D MIGRATE_SYNC,
-+				.ignore_skip_hint =3D true,
-+				.no_set_skip_hint =3D true,
-+				.gfp_mask =3D gfp_flags,
-+				.alloc_contig =3D true,
-+			};
-+			INIT_LIST_HEAD(&cc.migratepages);
-+
-+			if (head_pfn + nr_pages < boundary_pfn) {
-+				pfn +=3D nr_pages;
-+				continue;
-+			}
-+
-+			ret =3D __alloc_contig_migrate_range(&cc, head_pfn,
-+						head_pfn + nr_pages);
-+
-+			if (ret)
-+				goto failed;
-+			/*
-+			 * reset pfn, let the free page handling code above
-+			 * split the free page to the right migratetype list.
-+			 *
-+			 * head_pfn is not used here as a hugetlb page order
-+			 * can be bigger than MAX_ORDER-1, but after it is
-+			 * freed, the free page order is not. Use pfn within
-+			 * the range to find the head of the free page and
-+			 * reset order to 0 if a hugetlb page with
-+			 * >MAX_ORDER-1 order is encountered.
-+			 */
-+			if (order > MAX_ORDER-1)
-+				order =3D 0;
-+			while (!PageBuddy(pfn_to_page(pfn))) {
-+				order++;
-+				pfn &=3D ~0UL << order;
-+			}
-+			continue;
-+#else
-+			goto failed;
-+#endif
-+		}
-+
-+		pfn++;
-+	}
-+	return 0;
-+failed:
-+	/* restore the original migratetype */
-+	set_pageblock_migratetype(pfn_to_page(isolate_pageblock), saved_mt);
-+	return -EBUSY;
- }
-=20
-+
- /**
-  * start_isolate_page_range() - make page-allocation-type of range of page=
-s to
-  * be MIGRATE_ISOLATE.
-@@ -307,6 +447,8 @@ static unsigned long pfn_max_align_up(unsigned long pfn)
-  *					 and PageOffline() pages.
-  *			REPORT_FAILURE - report details about the failure to
-  *			isolate the range
-+ * @gfp_flags:		GFP flags used for migrating pages that sit across the
-+ *			range boundaries.
-  *
-  * Making page-allocation-type to be MIGRATE_ISOLATE means free pages in
-  * the range will never be allocated. Any free pages and pages freed in the
-@@ -315,6 +457,10 @@ static unsigned long pfn_max_align_up(unsigned long pf=
-n)
-  * pages in the range finally, the caller have to free all pages in the ra=
-nge.
-  * test_page_isolated() can be used for test it.
-  *
-+ * The function first tries to isolate the pageblocks at the beginning and=
- end
-+ * of the range, since there might be pages across the range boundaries.
-+ * Afterwards, it isolates the rest of the range.
-+ *
-  * There is no high level synchronization mechanism that prevents two thre=
-ads
-  * from trying to isolate overlapping ranges. If this happens, one thread
-  * will notice pageblocks in the overlapping range already set to isolate.
-@@ -335,21 +481,38 @@ static unsigned long pfn_max_align_up(unsigned long p=
-fn)
-  * Return: 0 on success and -EBUSY if any part of range cannot be isolated.
-  */
- int start_isolate_page_range(unsigned long start_pfn, unsigned long end_pf=
-n,
--			     unsigned migratetype, int flags)
-+			     unsigned migratetype, int flags, gfp_t gfp_flags)
- {
- 	unsigned long pfn;
- 	struct page *page;
-+	/* isolation is done at page block granularity */
-+	unsigned long isolate_start =3D ALIGN_DOWN(start_pfn, pageblock_nr_pages);
-+	unsigned long isolate_end =3D ALIGN(end_pfn, pageblock_nr_pages);
-+	int ret;
-=20
--	unsigned long isolate_start =3D pfn_max_align_down(start_pfn);
--	unsigned long isolate_end =3D pfn_max_align_up(end_pfn);
-+	/* isolate [isolate_start, isolate_start + pageblock_nr_pages) pageblock =
-*/
-+	ret =3D isolate_single_pageblock(isolate_start, gfp_flags, false);
-+	if (ret)
-+		return ret;
-=20
--	for (pfn =3D isolate_start;
--	     pfn < isolate_end;
-+	/* isolate [isolate_end - pageblock_nr_pages, isolate_end) pageblock */
-+	ret =3D isolate_single_pageblock(isolate_end, gfp_flags, true);
-+	if (ret) {
-+		unset_migratetype_isolate(pfn_to_page(isolate_start), migratetype);
-+		return ret;
-+	}
-+
-+	/* skip isolated pageblocks at the beginning and end */
-+	for (pfn =3D isolate_start + pageblock_nr_pages;
-+	     pfn < isolate_end - pageblock_nr_pages;
- 	     pfn +=3D pageblock_nr_pages) {
- 		page =3D __first_valid_page(pfn, pageblock_nr_pages);
- 		if (page && set_migratetype_isolate(page, migratetype, flags,
- 					start_pfn, end_pfn)) {
- 			undo_isolate_page_range(isolate_start, pfn, migratetype);
-+			unset_migratetype_isolate(
-+				pfn_to_page(isolate_end - pageblock_nr_pages),
-+				migratetype);
- 			return -EBUSY;
- 		}
- 	}
-@@ -364,8 +527,8 @@ void undo_isolate_page_range(unsigned long start_pfn, u=
-nsigned long end_pfn,
- {
- 	unsigned long pfn;
- 	struct page *page;
--	unsigned long isolate_start =3D pfn_max_align_down(start_pfn);
--	unsigned long isolate_end =3D pfn_max_align_up(end_pfn);
-+	unsigned long isolate_start =3D ALIGN_DOWN(start_pfn, pageblock_nr_pages);
-+	unsigned long isolate_end =3D ALIGN(end_pfn, pageblock_nr_pages);
-=20
-=20
- 	for (pfn =3D isolate_start;
---=20
-2.35.1
-
+Yours,
+Linus Walleij
