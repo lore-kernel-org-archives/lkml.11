@@ -2,188 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8353AC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 23:44:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36816C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 23:50:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356536AbiCXXqX (ORCPT
+        id S1356659AbiCXXvl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 19:46:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56236 "EHLO
+        Thu, 24 Mar 2022 19:51:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356523AbiCXXqU (ORCPT
+        with ESMTP id S1357728AbiCXXuC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 19:46:20 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443AE5D18D;
-        Thu, 24 Mar 2022 16:44:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648165487; x=1679701487;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=KBpnlCVZ8nRN+ALtwdZ8Rbm5u3lomhYmGYs2GDkyH+E=;
-  b=lSYDkl9/hZbXFG0BLHnmUGtHlY/++2IG+Z3xHcUxFvtQ32O0WNnPDc7G
-   RiEwjDhByAJzx2WNcY3bPzpPU93MNzkdy5dhJD4EudPwAIFIJnoL/X6Vg
-   8ud4ro0wWXsjO1aWfH90yC4yrN/0X5ysNGahfAt3AOBAu9WsXccO7NqKz
-   2KfbBNrUUOZWnBoeCXWQ4MaxvE70eYlnzYx6rZMSivkrxVy3JBrjYj1V+
-   Yvr5dMa0+eZjqToDgT4JyLKciYSaUvnxndN2hap3sHCZsjZGYiLP/Vi+o
-   B7epwrYXxreKDJX/yquis17czhs502NKVqUz8cwSaj6A1i+QaqJGkBKgB
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10296"; a="239119914"
-X-IronPort-AV: E=Sophos;i="5.90,208,1643702400"; 
-   d="scan'208";a="239119914"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 16:44:33 -0700
-X-IronPort-AV: E=Sophos;i="5.90,208,1643702400"; 
-   d="scan'208";a="786348143"
-Received: from padillaa-mobl.amr.corp.intel.com (HELO localhost) ([10.212.46.66])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 16:44:33 -0700
-Date:   Thu, 24 Mar 2022 16:44:33 -0700
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc:     Bjorn Helgaas <helgaas@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
-        linux-pci@vger.kernel.org
-Subject: Re: [PATCH V6 04/10] PCI/DOE: Introduce pci_doe_create_doe_devices
-Message-ID: <Yj0CYdSrVMxlmXyJ@iweiny-desk3>
-References: <20220201071952.900068-5-ira.weiny@intel.com>
- <20220203224437.GA120552@bhelgaas>
- <Yju6quQsBDSMaNC2@iweiny-desk3>
- <20220324140539.00004be8@Huawei.com>
+        Thu, 24 Mar 2022 19:50:02 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 777953B3F3;
+        Thu, 24 Mar 2022 16:48:28 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KPhkL6C9qz4xYc;
+        Fri, 25 Mar 2022 10:48:26 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1648165707;
+        bh=FGaYydygHo7aD6IpnCFLKUSu/ytyGYSSz5y0DpV5kbs=;
+        h=Date:From:To:Cc:Subject:From;
+        b=sYhUKU5P3uUcxw62vZz3WiQ6LhwgcOUpCVBVMTjprX5tdxSC3k1c1YTppgurYS4As
+         KliivHZ76pqwnXwkvEy+EfGMOhNZzhzk2n/sT2EojDv6kTXguYmrTmJrJidbMxrGH8
+         tSkyVDGVQknMnbijC12mCAT8RB+TFKsl/+td1Y8pW936Kz+2HdTwcefLUYyjPRUO3u
+         gFmy8/A665Ao4+SXObtfhmD6mJt3hRkSgsoO3wp935UmZUPUwhDbBabS1b0XG+SJMy
+         UJxqGb3Vx06diP9n32wu6byaZY2JnbffbJcmvYCwKKEqBhLct/JkCCf03gd+4z1OKM
+         CpIA568lDHV5w==
+Date:   Fri, 25 Mar 2022 10:48:25 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Sterba <dsterba@suse.cz>
+Cc:     David Sterba <dsterba@suse.com>,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the btrfs tree with the btrfs-fixes
+ tree
+Message-ID: <20220325104825.72c2e97c@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220324140539.00004be8@Huawei.com>
+Content-Type: multipart/signed; boundary="Sig_/Wqj0wr/92CqfDAhZhsLf_3_";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 02:05:39PM +0000, Jonathan Cameron wrote:
-> Hi Ira,
-> 
-> > Here is the code to be more clear...
-> > 
-> > 
-> > drivers/cxl/pci.c:
-> > 
-> > int cxl_pci_create_doe_devices(struct pci_dev *pdev)
-> > {               
-> >         struct device *dev = &pdev->dev;
-> >         bool use_irq = true;
-> >         int irqs = 0;
-> >         u16 off = 0;         
-> >         int rc;
-> >         
-> >         pci_doe_for_each_off(pdev, off)
-> >                 irqs++;
-> >         pci_info(pdev, "Found %d DOE mailbox's\n", irqs);
-> >         
-> >         /*                         
-> >          * Allocate enough vectors for the DOE's
-> >          */     
-> >         rc = pci_alloc_irq_vectors(pdev, irqs, irqs, PCI_IRQ_MSI |
-> >                                                      PCI_IRQ_MSIX);
-> >         if (rc != irqs) {
-> >                 pci_err(pdev, "Not enough interrupts for all the DOEs; use polling\n");
-> >                 use_irq = false;
-> >                 /* Some got allocated; clean them up */
-> >                 if (rc > 0)
-> >                         cxl_pci_free_irq_vectors(pdev); 
-> >         } else {
-> >                 /*
-> >                  * Enabling bus mastering is require for MSI/MSIx.  It could be
-> >                  * done later within the DOE initialization, but as it
-> >                  * potentially has other impacts keep it here when setting up
-> >                  * the IRQ's.
-> >                  */
-> >                 pci_set_master(pdev);
-> >                 rc = devm_add_action_or_reset(dev,
-> >                                               cxl_pci_free_irq_vectors,
-> >                                               pdev);
-> >                 if (rc)
-> >                         return rc;
-> >         }
-> > 
-> >         pci_doe_for_each_off(pdev, off) {
-> > ...
-> > 		/* Create each auxiliary device which internally calls */
-> > 		pci_doe_create_mb(pdev, off, use_irq);
-> > ...
-> > 	}
-> > ...
-> > }
-> > 
-> > 
-> > drivers/pci/pci-doe.c:
-> > 
-> > static irqreturn_t pci_doe_irq_handler(int irq, void *data)
-> > {
-> > ...
-> > }
-> > 
-> > static int pci_doe_request_irq(struct pci_doe_mb *doe_mb)
-> > {
-> >         struct pci_dev *pdev = doe_mb->pdev;
-> >         int offset = doe_mb->cap_offset;
-> >         int doe_irq, rc;
-> >         u32 val;
-> > 
-> >         pci_read_config_dword(pdev, offset + PCI_DOE_CAP, &val);
-> > 
-> >         if (!FIELD_GET(PCI_DOE_CAP_INT, val))
-> >                 return -ENOTSUPP;
-> > 
-> >         doe_irq = FIELD_GET(PCI_DOE_CAP_IRQ, val);
-> >         rc = pci_request_irq(pdev, doe_irq, pci_doe_irq_handler,
-> >                              NULL, doe_mb,
-> >                              "DOE[%d:%s]", doe_irq, pci_name(pdev));
-> >         if (rc) 
-> >                 return rc;
-> > 
-> >         doe_mb->irq = doe_irq;
-> >         pci_write_config_dword(pdev, offset + PCI_DOE_CTRL,
-> >                                PCI_DOE_CTRL_INT_EN);
-> >         return 0;
-> > }
-> > 
-> > struct pci_doe_mb *pci_doe_create_mb(struct pci_dev *pdev, u16 cap_offset,
-> >                                      bool use_irq)
-> > {
-> > ...
-> >         if (use_irq) {
-> >                 rc = pci_doe_request_irq(doe_mb);
-> >                 if (rc) 
-> >                         pci_err(pdev, "DOE request irq failed for mailbox @ %u : %d\n",
-> >                                 cap_offset, rc);
-> >         }
-> > ...
-> > }
-> > 
-> > 
-> > Does this look reasonable?
-> 
-> I'm a little nervous about how we are going to make DOEs on switches work.
-> Guess I'll do an experiment once your next version is out and check we
-> can do that reasonably cleanly.  For switches we'll probably have to
-> check for DOEs on all such ports and end up with infrastructure to
-> map to all protocols we might see on a switch.
+--Sig_/Wqj0wr/92CqfDAhZhsLf_3_
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Are the switches not represented as PCI devices in linux?
+Hi all,
 
-If my vision of switches is correct I think that problem is independent of what
-I'm solving here.  In other words the relationship between a port on a switch
-and a DOE capability on that switch will have to be established somehow and
-nothing I'm doing precludes doing that, but at the same time nothing I'm doing
-helps that either.
+Today's linux-next merge of the btrfs tree got a conflict in:
 
-Ira
+  fs/btrfs/zoned.c
 
-> 
-> Jonathan
-> 
-> > 
+between commits:
+
+  0b9e66762aa0 ("btrfs: zoned: traverse devices under chunk_mutex in btrfs_=
+can_activate_zone")
+  62ed0bf7315b ("btrfs: zoned: remove left over ASSERT checking for single =
+profile")
+
+from the btrfs-fixes tree and commits:
+
+  71f3883a5968 ("btrfs: zoned: use RCU list in btrfs_can_activate_zone")
+  7d5e73a6ef6c ("btrfs: zoned: remove left over ASSERT checking for single =
+profile")
+
+from the btrfs tree.
+
+I fixed it up (I just (arbitrarily) chose the former version) and can
+carry the fix as necessary. This is now fixed as far as linux-next is
+concerned, but any non trivial conflicts should be mentioned to your
+upstream maintainer when your tree is submitted for merging.  You may
+also want to consider cooperating with the maintainer of the conflicting
+tree to minimise any particularly complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/Wqj0wr/92CqfDAhZhsLf_3_
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmI9A0kACgkQAVBC80lX
+0Gyk4Af8CC8j8BwCE6j/OGuApn7BDyr3k9wzHkfohLwaZK2X2H6IF0MRn6lIciZi
+je5GgFVU3MBkGZvpc8WmBDcP4NqZtyhm+F+6mzF2Gz6s4Gex7Fj8nK+4+JIxbLHa
+XlpOZE9RVlROTs9oYeI/Bfa4ry4tN0iXv3TpqAzvBSSLjunjiGb148VhGiNKYfKs
+1q+mB5NjDD3pG5hAVKxJrxq2bLN5nlXa0Shh4Rz051rtadUb9S3f4yPxH6ww+AxH
+DxMnQQCWcJVcnrMckEb+sa5azyutMKWcVM0gqXZ2mVfbdrr80UKG37A0pGJCMaaE
+nfTfYC6d6GC6Zs7OE7Cu6NqHn/bWHQ==
+=VkAI
+-----END PGP SIGNATURE-----
+
+--Sig_/Wqj0wr/92CqfDAhZhsLf_3_--
