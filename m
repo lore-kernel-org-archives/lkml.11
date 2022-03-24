@@ -2,97 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B37CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 00:12:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA207C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 00:13:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346752AbiCXAON (ORCPT
+        id S1346764AbiCXAPL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Mar 2022 20:14:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53806 "EHLO
+        Wed, 23 Mar 2022 20:15:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229569AbiCXAOI (ORCPT
+        with ESMTP id S229569AbiCXAPI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Mar 2022 20:14:08 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F10AFE73;
-        Wed, 23 Mar 2022 17:12:37 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id a1so4367068wrh.10;
-        Wed, 23 Mar 2022 17:12:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/J+7k67HIa20DrfFo2NZzVdI2EGmtq275w1giXcVqMg=;
-        b=aX7p1KgXTAPQI9KVgmJz86DFHJvwHj/22QzWJxFYKV+H5EEDKfPyv9MsDGu9ulX0Al
-         khcAN99RaFvggO1wOv/K/I27zC1DPjZXxkSrMmIIPzPyCfsG+F76aPa+Pp5fBFBYobUt
-         mu0bcqmW9kE55KNDY+lWK5X9UEWxkrG6Ijb6t1D0feSrFYlCj683uyYARj7lsQWS0BC0
-         f4Z/AhoO5mRAZFLEwK1KDVb5bfACaEV/AyUALHU0WSmpPvzZhNc5Qi3DCY8+byocF8dz
-         YKQkkUTvJXV1+mEFY0CafLsRRkCi6Qi0j+nwUgAQb/vSuWw5DohLenFZhXFG25yU1thI
-         MYQA==
+        Wed, 23 Mar 2022 20:15:08 -0400
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D9F1400E
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 17:13:37 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id h14-20020a05660208ce00b00645c339411bso2070913ioz.8
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Mar 2022 17:13:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/J+7k67HIa20DrfFo2NZzVdI2EGmtq275w1giXcVqMg=;
-        b=gMoeDjwbp0nZTl7U/fpugZALrJrsFTQWDnGw0av51chZ0NYxt0xME/ZKaeTOPpv/At
-         gvoKFTxKeS6PHVvZyRHwmp1HmkbTlFFKcXmJqN3q5i1ZWy+YKUSJmNLM7FsMomqpWup6
-         XgdGx519kiFmpAVjFMsungKHhuax6BbGqPTP0Bp8dxuePVJ1SSl4ia3359EbDAl5uBoL
-         lfdu94AUuBfFDa1FRzUjKGZV10q3Li+k5jD86LA8+3EFb9OEGhZEcBUzToV7K09HzJZs
-         4CesZmgqQT0iBFY+glG+VC3KN3Qd1EZI77Fvmwe8Xlr9OhMcE1TQzM+X5Gm7tyL/ubW3
-         0Wow==
-X-Gm-Message-State: AOAM532OHqaamg859hfA1/A/RmqIHdQJe31y/NfiormjebvC//aYjhO1
-        d4FzyZu4lr3ISTYbEv/UigNQSPCYGvc=
-X-Google-Smtp-Source: ABdhPJxSxAzqMRccmd40N0pwlBUxRZGY1074kjwxy9DJTuBtXtj9TRvIROv1gUaKQI7JxeQrcDP8Vw==
-X-Received: by 2002:adf:f28d:0:b0:203:f161:55ac with SMTP id k13-20020adff28d000000b00203f16155acmr2252918wro.209.1648080756298;
-        Wed, 23 Mar 2022 17:12:36 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
-        by smtp.googlemail.com with ESMTPSA id bg18-20020a05600c3c9200b0037c2ef07493sm1058665wmb.3.2022.03.23.17.12.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Mar 2022 17:12:35 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Taniya Das <tdas@codeaurora.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: clock: fix dt_binding_check error for qcom,gcc-other.yaml
-Date:   Wed, 23 Mar 2022 20:42:48 +0100
-Message-Id: <20220323194248.26970-1-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=V+6A96zcUHBo/1Vd9cbgrqSOLXByL/HQVaxu+/o75IY=;
+        b=nqvejMnk1HnszZWAt5HS1+WkyrKgroP6Yw8JGLQehuGsXEGd4abFzHPaCeLP0j3iiw
+         2KAvSGMFabxz3eRDDwbzGqDHC0ceV6IexBJf6bq+DB7u6flC9eaqebtW6vVUcNKRDod6
+         d1XUhHX108QA+AMH8CM3MX6J2cRdSrwoXtLQ44voFsg15hkkv/s7l4xKq1FtZNIoQxTw
+         JDkBwh3475bktpwdioWs2JqxE/UDOGVMS2VLgxp68Hhe1rfk6YOupZ8hC5epOFn76H7R
+         +4wav1+Rz5MOBuK8YhKa/oNn9IJfRvYJm+cygZi3UP3o4x5WcRKSJYr6PB8lzaRdx6R9
+         iZ4A==
+X-Gm-Message-State: AOAM530C5VwHeveZzenXcdx6jyfAKnjuSJOog1I7aDF77s7NWzGLiCtw
+        g7ndgF3OObf9gdAuYoj0GxWiYcF1rq2Rg/q5p5rfxXBV/EDi
+X-Google-Smtp-Source: ABdhPJwhGqpJ45ABs6FnJ2w8RR9JPgROyxztusezrFVT7uaQWYKGlAH76DqYNK3/06j6SIAWT26iBIMGqNSJD5FDoOmpcIvLXPsd
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a5d:848a:0:b0:648:b2f4:d5cd with SMTP id
+ t10-20020a5d848a000000b00648b2f4d5cdmr1347523iom.53.1648080817286; Wed, 23
+ Mar 2022 17:13:37 -0700 (PDT)
+Date:   Wed, 23 Mar 2022 17:13:37 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000acf1e405daebb7c7@google.com>
+Subject: [syzbot] BUG: unable to handle kernel NULL pointer dereference in __tcp_transmit_skb
+From:   syzbot <syzbot+090d23ddbd5cd185c2e0@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, dsahern@kernel.org,
+        edumazet@google.com, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com,
+        yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-qcom,gcc-other Documentation lacks a '|' for the description. This cause
-dt_binding_check to incorrectly parse "See also:" as a new value.
-Add the missing '|' to correctly parse the description.
+Hello,
 
-Fixes: a03965ed1310 ("dt-bindings: clock: split qcom,gcc.yaml to common and specific schema")
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+syzbot found the following issue on:
+
+HEAD commit:    36c2e31ad25b net: geneve: add missing netlink policy and s..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=17c308a5700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4a15e2288cf165c9
+dashboard link: https://syzkaller.appspot.com/bug?extid=090d23ddbd5cd185c2e0
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=171eadbd700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12cacda3700000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+090d23ddbd5cd185c2e0@syzkaller.appspotmail.com
+
+BUG: kernel NULL pointer dereference, address: 0000000000000000
+#PF: supervisor instruction fetch in kernel mode
+#PF: error_code(0x0010) - not-present page
+PGD 13fd5067 P4D 13fd5067 PUD 77ebc067 PMD 0 
+Oops: 0010 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 7423 Comm: syz-executor720 Not tainted 5.17.0-rc8-syzkaller-02803-g36c2e31ad25b #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:0x0
+Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
+RSP: 0018:ffffc900001d0a60 EFLAGS: 00010246
+RAX: dffffc0000000000 RBX: ffff88801e00cd10 RCX: 0000000000000100
+RDX: 1ffff11003c019a3 RSI: ffff8880155c5c80 RDI: ffff888014bac800
+RBP: ffff888014bac800 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff87bccdc7 R11: 0000000000000000 R12: ffff8880155c5c80
+R13: 0000000000000000 R14: ffff888014bacf60 R15: ffff88807527012c
+FS:  000055555733b3c0(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffffffffffffd6 CR3: 00000000757b0000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <IRQ>
+ __tcp_transmit_skb+0x1098/0x38b0 net/ipv4/tcp_output.c:1371
+ tcp_transmit_skb net/ipv4/tcp_output.c:1420 [inline]
+ tcp_xmit_probe_skb+0x28c/0x320 net/ipv4/tcp_output.c:4006
+ tcp_write_wakeup+0x1bd/0x610 net/ipv4/tcp_output.c:4059
+ tcp_send_probe0+0x44/0x560 net/ipv4/tcp_output.c:4074
+ tcp_probe_timer net/ipv4/tcp_timer.c:398 [inline]
+ tcp_write_timer_handler+0x9ed/0xbc0 net/ipv4/tcp_timer.c:626
+ tcp_write_timer+0xa2/0x2b0 net/ipv4/tcp_timer.c:642
+ call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1421
+ expire_timers kernel/time/timer.c:1466 [inline]
+ __run_timers.part.0+0x67c/0xa30 kernel/time/timer.c:1734
+ __run_timers kernel/time/timer.c:1715 [inline]
+ run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1747
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+ invoke_softirq kernel/softirq.c:432 [inline]
+ __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
+ irq_exit_rcu+0x5/0x20 kernel/softirq.c:649
+ sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1097
+ </IRQ>
+ <TASK>
+ asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:638
+RIP: 0010:lock_acquire+0x1ef/0x510 kernel/locking/lockdep.c:5607
+Code: e4 a4 7e 83 f8 01 0f 85 b4 02 00 00 9c 58 f6 c4 02 0f 85 9f 02 00 00 48 83 7c 24 08 00 74 01 fb 48 b8 00 00 00 00 00 fc ff df <48> 01 c3 48 c7 03 00 00 00 00 48 c7 43 08 00 00 00 00 48 8b 84 24
+RSP: 0018:ffffc90002eaf888 EFLAGS: 00000206
+RAX: dffffc0000000000 RBX: 1ffff920005d5f13 RCX: 5ad5b746ce328923
+RDX: 1ffff1100e5374eb RSI: 0000000000000000 RDI: 0000000000000000
+RBP: 0000000000000000 R08: 0000000000000000 R09: ffffffff8fe0c947
+R10: fffffbfff1fc1928 R11: 0000000000000001 R12: 0000000000000002
+R13: 0000000000000000 R14: ffffffff8bb84ca0 R15: 0000000000000000
+ rcu_lock_acquire include/linux/rcupdate.h:268 [inline]
+ rcu_read_lock include/linux/rcupdate.h:694 [inline]
+ fib_lookup.constprop.0+0x8f/0x460 include/net/ip_fib.h:377
+ ip_route_output_key_hash_rcu+0xf54/0x2c80 net/ipv4/route.c:2737
+ ip_route_output_key_hash+0x183/0x2f0 net/ipv4/route.c:2627
+ __ip_route_output_key include/net/route.h:127 [inline]
+ ip_route_output_flow+0x23/0x150 net/ipv4/route.c:2857
+ ip_route_newports include/net/route.h:343 [inline]
+ tcp_v4_connect+0x12a5/0x1d00 net/ipv4/tcp_ipv4.c:283
+ __inet_stream_connect+0x8cf/0xed0 net/ipv4/af_inet.c:660
+ inet_stream_connect+0x53/0xa0 net/ipv4/af_inet.c:724
+ smc_connect+0x230/0x450 net/smc/af_smc.c:1522
+ __sys_connect_file+0x155/0x1a0 net/socket.c:1900
+ __sys_connect+0x161/0x190 net/socket.c:1917
+ __do_sys_connect net/socket.c:1927 [inline]
+ __se_sys_connect net/socket.c:1924 [inline]
+ __x64_sys_connect+0x6f/0xb0 net/socket.c:1924
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f23b4ec0889
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 e1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffce8f74658 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
+RAX: ffffffffffffffda RBX: 00007ffce8f746b0 RCX: 00007f23b4ec0889
+RDX: 0000000000000010 RSI: 00000000200001c0 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 000000000000cf1c R09: 000000000000cf1c
+R10: 0000000000000004 R11: 0000000000000246 R12: 00007ffce8f746a0
+R13: 000000000000cf1c R14: 00007ffce8f7469c R15: 431bde82d7b634db
+ </TASK>
+Modules linked in:
+CR2: 0000000000000000
+---[ end trace 0000000000000000 ]---
+RIP: 0010:0x0
+Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
+RSP: 0018:ffffc900001d0a60 EFLAGS: 00010246
+RAX: dffffc0000000000 RBX: ffff88801e00cd10 RCX: 0000000000000100
+RDX: 1ffff11003c019a3 RSI: ffff8880155c5c80 RDI: ffff888014bac800
+RBP: ffff888014bac800 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff87bccdc7 R11: 0000000000000000 R12: ffff8880155c5c80
+R13: 0000000000000000 R14: ffff888014bacf60 R15: ffff88807527012c
+FS:  000055555733b3c0(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffffffffffffd6 CR3: 00000000757b0000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	e4 a4                	in     $0xa4,%al
+   2:	7e 83                	jle    0xffffff87
+   4:	f8                   	clc
+   5:	01 0f                	add    %ecx,(%rdi)
+   7:	85 b4 02 00 00 9c 58 	test   %esi,0x589c0000(%rdx,%rax,1)
+   e:	f6 c4 02             	test   $0x2,%ah
+  11:	0f 85 9f 02 00 00    	jne    0x2b6
+  17:	48 83 7c 24 08 00    	cmpq   $0x0,0x8(%rsp)
+  1d:	74 01                	je     0x20
+  1f:	fb                   	sti
+  20:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+  27:	fc ff df
+* 2a:	48 01 c3             	add    %rax,%rbx <-- trapping instruction
+  2d:	48 c7 03 00 00 00 00 	movq   $0x0,(%rbx)
+  34:	48 c7 43 08 00 00 00 	movq   $0x0,0x8(%rbx)
+  3b:	00
+  3c:	48                   	rex.W
+  3d:	8b                   	.byte 0x8b
+  3e:	84                   	.byte 0x84
+  3f:	24                   	.byte 0x24
+
+
 ---
- Documentation/devicetree/bindings/clock/qcom,gcc-other.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/Documentation/devicetree/bindings/clock/qcom,gcc-other.yaml b/Documentation/devicetree/bindings/clock/qcom,gcc-other.yaml
-index 4dc0274dbd6b..6c45e0f85494 100644
---- a/Documentation/devicetree/bindings/clock/qcom,gcc-other.yaml
-+++ b/Documentation/devicetree/bindings/clock/qcom,gcc-other.yaml
-@@ -10,7 +10,7 @@ maintainers:
-   - Stephen Boyd <sboyd@kernel.org>
-   - Taniya Das <tdas@codeaurora.org>
- 
--description:
-+description: |
-   Qualcomm global clock control module which supports the clocks, resets and
-   power domains.
- 
--- 
-2.34.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
