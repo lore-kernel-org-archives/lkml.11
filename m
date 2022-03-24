@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7FB6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:32:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C636C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 07:32:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348708AbiCXHeI (ORCPT
+        id S1346801AbiCXHeK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 03:34:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57764 "EHLO
+        Thu, 24 Mar 2022 03:34:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348651AbiCXHcs (ORCPT
+        with ESMTP id S1348740AbiCXHcz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 03:32:48 -0400
+        Thu, 24 Mar 2022 03:32:55 -0400
 Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC6A996BA
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:31:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF79C99684
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 00:31:19 -0700 (PDT)
 Received: from integral2.. (unknown [182.2.71.236])
-        by gnuweeb.org (Postfix) with ESMTPSA id 9B2BE7E712;
-        Thu, 24 Mar 2022 07:31:04 +0000 (UTC)
+        by gnuweeb.org (Postfix) with ESMTPSA id 5677E7E704;
+        Thu, 24 Mar 2022 07:31:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1648107067;
-        bh=waHrXoHOW/pPU9BrI5hKUWTpbkCQhESmBtk6btYk9uw=;
+        s=default; t=1648107078;
+        bh=fJcSLnuw44NoUHae7y/oNQpDDIPqjE4FIFL9l+7MB1w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D1dwyjBP51HYddOWHyVExRSy2yUV84oMLstAlS37ZkQfV9ZYBnCvqsEzOQ6HoTsYT
-         AOmW6z04EnOc5KSEz3E3mTXKEvrgWIrBuiS7u8IQPllVS1PUNInB2rmuTcy0FMufq3
-         hZ5aGwQ5LqIGL17HYYTpgxirIUocCxPdSMh7VlPyuL3hvEnj+wpyBxptkSMc0taLaZ
-         lysSrIH7IvSTYaU8J6CFhdnzBrCfTlagqllMQnTOauCuYJdYrJAHmXXjrPkE+iM2OR
-         deDbA23BnqZ9aDM7hpJw0Rpcf/4gI10USOQp4D5O9OsKYFNV5BgdZ71heippfdzuZi
-         5V9agKtsLezXQ==
+        b=A9XBai20pypo06J+WL0KH2qpSL+/EkzbhFNKWNqQHvt3OfWQjjFPEHrJyUXR2VGrZ
+         JEx0z5vAija+MJwAWzQSZPEP5tlU9lb8DNEzZ/BrVXD7KwHUglbUM8DXzWC8d0m8wA
+         FVLTvGOdPycQFeZRDNXxezzaZpyiOZdCDseZF0rmus6Cla/68k45UK/Epi1XR8JcHp
+         rtPm+849fdAY102mZlNB0RUGpLUEbxbOkn3KEGkj2aN6KyH4xL+NJYubnHFxswL6VG
+         Kh0h2LEuEfApGAJ24Vp1eyxxqj2nLXtCjXYhU6F6TtquUp3cnTlVZRFg97/iH0NBqD
+         39ZncWjSwuK7g==
 From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
 To:     Willy Tarreau <w@1wt.eu>
 Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
@@ -36,11 +36,10 @@ Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
         Nugraha <richiisei@gmail.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        David Laight <David.Laight@ACULAB.COM>
-Subject: [PATCH v1 05/11] tools/nolibc: i386: Use appropriate register constraints if exist
-Date:   Thu, 24 Mar 2022 14:30:33 +0700
-Message-Id: <20220324073039.140946-6-ammarfaizi2@gnuweeb.org>
+        Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Subject: [PATCH v1 08/11] tools/nolibc/types: Implement `offsetof()` and `container_of()` macro
+Date:   Thu, 24 Mar 2022 14:30:36 +0700
+Message-Id: <20220324073039.140946-9-ammarfaizi2@gnuweeb.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220324073039.140946-1-ammarfaizi2@gnuweeb.org>
 References: <20220324073039.140946-1-ammarfaizi2@gnuweeb.org>
@@ -50,206 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use appropriate register constraints if exist. Don't use register
-variables for all inputs.
+Implement `offsetof()` and `container_of()` macro. The first use case
+of these macros is for `malloc()`, `realloc()` and `free()`.
 
-Register variables with "r" constraint should be used when we need to
-pass data through a specific register to extended inline assembly that
-doesn't have a specific register constraint associated with it (anything
-outside %eax, %ebx, %ecx, %edx, %esi, %edi).
-
-It also simplifies the macro definition.
-
-Link: https://lore.kernel.org/lkml/3d2cfdeecddc45dc8e4beada305b5948@AcuMS.aculab.com
-Suggested-by: David Laight <David.Laight@ACULAB.COM>
 Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 ---
- tools/include/nolibc/arch-i386.h | 162 +++++++++++++------------------
- 1 file changed, 70 insertions(+), 92 deletions(-)
+@@ Changelog:
 
-diff --git a/tools/include/nolibc/arch-i386.h b/tools/include/nolibc/arch-i386.h
-index ff2e6bb453cf..6eb96ee8c4f7 100644
---- a/tools/include/nolibc/arch-i386.h
-+++ b/tools/include/nolibc/arch-i386.h
-@@ -63,108 +63,86 @@ struct sys_stat_struct {
-  */
- #define __ARCH_WANT_SYS_OLD_SELECT
+   Link RFC v2: https://lore.kernel.org/lkml/20220322102115.186179-6-ammarfaizi2@gnuweeb.org/
+   RFC v2 -> v1:
+    * No changes *
+---
+ tools/include/nolibc/types.h | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/tools/include/nolibc/types.h b/tools/include/nolibc/types.h
+index 357e60ad38a8..959997034e55 100644
+--- a/tools/include/nolibc/types.h
++++ b/tools/include/nolibc/types.h
+@@ -191,4 +191,15 @@ struct stat {
+ #define major(dev) ((unsigned int)(((dev) >> 8) & 0xfff))
+ #define minor(dev) ((unsigned int)(((dev) & 0xff))
  
--#define my_syscall0(num)                                                      \
--({                                                                            \
--	long _ret;                                                            \
--	register long _num __asm__("eax") = (num);                            \
--	                                                                      \
--	__asm__ volatile (                                                    \
--		"int $0x80\n"                                                 \
--		: "=a" (_ret)                                                 \
--		: "0"(_num)                                                   \
--		: "memory", "cc"                                              \
--	);                                                                    \
--	_ret;                                                                 \
-+#define my_syscall0(num)				\
-+({							\
-+	long _ret = (num);				\
-+	__asm__ volatile (				\
-+		"int $0x80\n"				\
-+		: "+a"(_ret)	/* %eax */		\
-+		:					\
-+		: "memory", "cc"			\
-+	);						\
-+	_ret;						\
- })
- 
--#define my_syscall1(num, arg1)                                                \
--({                                                                            \
--	long _ret;                                                            \
--	register long _num __asm__("eax") = (num);                            \
--	register long _arg1 __asm__("ebx") = (long)(arg1);                    \
--	                                                                      \
--	__asm__ volatile (                                                    \
--		"int $0x80\n"                                                 \
--		: "=a" (_ret)                                                 \
--		: "r"(_arg1),                                                 \
--		  "0"(_num)                                                   \
--		: "memory", "cc"                                              \
--	);                                                                    \
--	_ret;                                                                 \
-+#define my_syscall1(num, arg1)				\
-+({							\
-+	long _ret = (num);				\
-+	__asm__ volatile (				\
-+		"int $0x80\n"				\
-+		: "+a"(_ret)	/* %eax */		\
-+		: "b"(arg1)	/* %ebx */		\
-+		: "memory", "cc"			\
-+	);						\
-+	_ret;						\
- })
- 
--#define my_syscall2(num, arg1, arg2)                                          \
--({                                                                            \
--	long _ret;                                                            \
--	register long _num __asm__("eax") = (num);                            \
--	register long _arg1 __asm__("ebx") = (long)(arg1);                    \
--	register long _arg2 __asm__("ecx") = (long)(arg2);                    \
--	                                                                      \
--	__asm__ volatile (                                                    \
--		"int $0x80\n"                                                 \
--		: "=a" (_ret)                                                 \
--		: "r"(_arg1), "r"(_arg2),                                     \
--		  "0"(_num)                                                   \
--		: "memory", "cc"                                              \
--	);                                                                    \
--	_ret;                                                                 \
-+#define my_syscall2(num, arg1, arg2)			\
-+({							\
-+	long _ret = (num);				\
-+	__asm__ volatile (				\
-+		"int $0x80\n"				\
-+		: "+a"(_ret)	/* %eax */		\
-+		: "b"(arg1),	/* %ebx */		\
-+		  "c"(arg2)	/* %ecx */		\
-+		: "memory", "cc"			\
-+	);						\
-+	_ret;						\
- })
- 
--#define my_syscall3(num, arg1, arg2, arg3)                                    \
--({                                                                            \
--	long _ret;                                                            \
--	register long _num __asm__("eax") = (num);                            \
--	register long _arg1 __asm__("ebx") = (long)(arg1);                    \
--	register long _arg2 __asm__("ecx") = (long)(arg2);                    \
--	register long _arg3 __asm__("edx") = (long)(arg3);                    \
--	                                                                      \
--	__asm__ volatile (                                                    \
--		"int $0x80\n"                                                 \
--		: "=a" (_ret)                                                 \
--		: "r"(_arg1), "r"(_arg2), "r"(_arg3),                         \
--		  "0"(_num)                                                   \
--		: "memory", "cc"                                              \
--	);                                                                    \
--	_ret;                                                                 \
-+#define my_syscall3(num, arg1, arg2, arg3)		\
-+({							\
-+	long _ret = (num);				\
-+	__asm__ volatile (				\
-+		"int $0x80\n"				\
-+		: "+a"(_ret)	/* %eax */		\
-+		: "b"(arg1),	/* %ebx */		\
-+		  "c"(arg2),	/* %ecx */		\
-+		  "d"(arg3)	/* %edx */		\
-+		: "memory", "cc"			\
-+	);						\
-+	_ret;						\
- })
- 
--#define my_syscall4(num, arg1, arg2, arg3, arg4)                              \
--({                                                                            \
--	long _ret;                                                            \
--	register long _num __asm__("eax") = (num);                            \
--	register long _arg1 __asm__("ebx") = (long)(arg1);                    \
--	register long _arg2 __asm__("ecx") = (long)(arg2);                    \
--	register long _arg3 __asm__("edx") = (long)(arg3);                    \
--	register long _arg4 __asm__("esi") = (long)(arg4);                    \
--	                                                                      \
--	__asm__ volatile (                                                    \
--		"int $0x80\n"                                                 \
--		: "=a" (_ret)                                                 \
--		: "r"(_arg1), "r"(_arg2), "r"(_arg3), "r"(_arg4),             \
--		  "0"(_num)                                                   \
--		: "memory", "cc"                                              \
--	);                                                                    \
--	_ret;                                                                 \
-+#define my_syscall4(num, arg1, arg2, arg3, arg4)	\
-+({							\
-+	long _ret = (num);				\
-+	__asm__ volatile (				\
-+		"int $0x80\n"				\
-+		: "+a"(_ret)	/* %eax */		\
-+		: "b"(arg1),	/* %ebx */		\
-+		  "c"(arg2),	/* %ecx */		\
-+		  "d"(arg3),	/* %edx */		\
-+		  "S"(arg4)	/* %esi */		\
-+		: "memory", "cc"			\
-+	);						\
-+	_ret;						\
- })
- 
--#define my_syscall5(num, arg1, arg2, arg3, arg4, arg5)                        \
--({                                                                            \
--	long _ret;                                                            \
--	register long _num __asm__("eax") = (num);                            \
--	register long _arg1 __asm__("ebx") = (long)(arg1);                    \
--	register long _arg2 __asm__("ecx") = (long)(arg2);                    \
--	register long _arg3 __asm__("edx") = (long)(arg3);                    \
--	register long _arg4 __asm__("esi") = (long)(arg4);                    \
--	register long _arg5 __asm__("edi") = (long)(arg5);                    \
--	                                                                      \
--	__asm__ volatile (                                                    \
--		"int $0x80\n"                                                 \
--		: "=a" (_ret)                                                 \
--		: "r"(_arg1), "r"(_arg2), "r"(_arg3), "r"(_arg4), "r"(_arg5), \
--		  "0"(_num)                                                   \
--		: "memory", "cc"                                              \
--	);                                                                    \
--	_ret;                                                                 \
-+#define my_syscall5(num, arg1, arg2, arg3, arg4, arg5)	\
-+({							\
-+	long _ret = (num);				\
-+	__asm__ volatile (				\
-+		"int $0x80\n"				\
-+		: "+a"(_ret)	/* %eax */		\
-+		: "b"(arg1),	/* %ebx */		\
-+		  "c"(arg2),	/* %ecx */		\
-+		  "d"(arg3),	/* %edx */		\
-+		  "S"(arg4),	/* %esi */		\
-+		  "D"(arg5)	/* %edi */		\
-+		: "memory", "cc"			\
-+	);						\
-+	_ret;						\
- })
- 
- /* startup code */
++#ifndef offsetof
++#define offsetof(TYPE, FIELD) ((size_t) &((TYPE *)0)->FIELD)
++#endif
++
++#ifndef container_of
++#define container_of(PTR, TYPE, FIELD) ({			\
++	__typeof__(((TYPE *)0)->FIELD) *__FIELD_PTR = (PTR);	\
++	(TYPE *)((char *) __FIELD_PTR - offsetof(TYPE, FIELD));	\
++})
++#endif
++
+ #endif /* _NOLIBC_TYPES_H */
 -- 
 Ammar Faizi
 
