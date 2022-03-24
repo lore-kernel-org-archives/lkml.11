@@ -2,105 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05D72C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 16:54:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE63FC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Mar 2022 16:54:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345935AbiCXQ4Q (ORCPT
+        id S1352074AbiCXQ42 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 12:56:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38808 "EHLO
+        Thu, 24 Mar 2022 12:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352043AbiCXQzq (ORCPT
+        with ESMTP id S1352085AbiCXQ4G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 12:55:46 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AAB55B7156;
-        Thu, 24 Mar 2022 09:52:38 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 39B06D6E;
-        Thu, 24 Mar 2022 09:52:38 -0700 (PDT)
-Received: from [10.57.41.19] (unknown [10.57.41.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6D3993F73B;
-        Thu, 24 Mar 2022 09:52:35 -0700 (PDT)
-Message-ID: <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com>
-Date:   Thu, 24 Mar 2022 16:52:31 +0000
+        Thu, 24 Mar 2022 12:56:06 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88A61B82E8
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 09:53:40 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id a8so10353667ejc.8
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 09:53:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=guAY8H9s0/D31TGTPoAO5wEnVmI1SOOb0AGR5y37XQ0=;
+        b=LKOewzvBfrVsBknqjic7BjVmPsGz3mI+RjmqeIl2waFAs4UelmkJiiCqP9CSGpoUK8
+         vEI7DpODTzvqQQsr1z6S3IR9ZvEkd7cOsW3Ir2F/PFo3Y5fDz4ZIoWMdAyI3mLrKgF3N
+         KHwdyXL/aDYhYIWD/MjtbVBguQ8NPLbjZEq5gC20mKyd5qXPLiUf81dejGctiP7tdi1R
+         v/FOYWFbQ5FXhhQHPSycWEDVYhy319VZIik8NLKMl+2PY9OJeRT2pNanmcFrBB/IMjC5
+         +azdg6iduo8AqZYkwnPySp0G/pd4be2sCMa4oWExJ1QT3xZ/zW7C6C0iMTOuvC49xYOb
+         9isg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=guAY8H9s0/D31TGTPoAO5wEnVmI1SOOb0AGR5y37XQ0=;
+        b=CZBTf2q9QzWBJzaNYVg+54LH2o7MGqgAvp7qiPpu5t6V42Yl/trClozP8yPUDRbJd5
+         5vNjS/CfXtRG+6/EewNx8jX/sTEDK9CY3shJTtFHOKzIDNZEbtsGB9mKU/lUe0CQjcxn
+         RruvmWaqWAjLYYonkj+WN2M0xsKRlraZsN8pQn3ZgSkzzT+YCn8soox5kiSgaVsDzLLw
+         CaXUjqD09dAQN+/qc1G7eu8ukDT01bM1ES1GePl0tbAP4IVPd3KbhXPsEe0F6CpthmRV
+         7QgUReHnDYzXITdZypK0N4NLkwI7mt4wccJce7+sOOotMGFdBKoXSC585/VJBAlfsO4U
+         UtHw==
+X-Gm-Message-State: AOAM533iWy9qrmht5+JXepg98T8oh2XWnge57NGo3J5X3FvhPZTbxUJQ
+        5jjga5OppKArKx8bR/nU0v/5YgqfrZXz/ibvPVRz0w==
+X-Google-Smtp-Source: ABdhPJxFg49QIVLDzYPvwRFRl+5RxuEgvpIWY9pDjjcp1qKJ/Us5NofAcbWQasCtYd+4DWyxEP8KrYKIFv4xTZAJ6zI=
+X-Received: by 2002:a17:906:3cf1:b0:6cf:86c6:8a12 with SMTP id
+ d17-20020a1709063cf100b006cf86c68a12mr6702003ejh.202.1648140819020; Thu, 24
+ Mar 2022 09:53:39 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-Content-Language: en-GB
-To:     Christoph Hellwig <hch@lst.de>, Maxime Bizon <mbizon@freebox.fr>
-Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Olha Cherevyk <olha.cherevyk@gmail.com>,
-        iommu <iommu@lists.linux-foundation.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable <stable@vger.kernel.org>
-References: <1812355.tdWV9SEqCh@natalenko.name>
- <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
- <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
- <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
- <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
- <20220324163132.GB26098@lst.de>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220324163132.GB26098@lst.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <1648027970-11488-1-git-send-email-shengjiu.wang@nxp.com>
+In-Reply-To: <1648027970-11488-1-git-send-email-shengjiu.wang@nxp.com>
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+Date:   Thu, 24 Mar 2022 10:53:27 -0600
+Message-ID: <CANLsYkyHVcoF_fM836vES9gsj0b39aqC6s=9UNeRuAQMZjggRQ@mail.gmail.com>
+Subject: Re: [PATCH] remoteproc: core: Remove state checking before changing state
+To:     Shengjiu Wang <shengjiu.wang@nxp.com>
+Cc:     bjorn.andersson@linaro.org, linux-remoteproc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, shengjiu.wang@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-03-24 16:31, Christoph Hellwig wrote:
-> On Thu, Mar 24, 2022 at 05:29:12PM +0100, Maxime Bizon wrote:
->>> I'm looking into this; but in the interest of a speedy resolution of
->>> the regression I would be in favour of merging that partial revert
->>> and reinstating it if/when we identify (and fix) any bugs in ath9k :)
->>
->> This looks fishy:
->>
->> ath9k/recv.c
->>
->>                  /* We will now give hardware our shiny new allocated skb */
->>                  new_buf_addr = dma_map_single(sc->dev, requeue_skb->data,
->>                                                common->rx_bufsize, dma_type);
->>                  if (unlikely(dma_mapping_error(sc->dev, new_buf_addr))) {
->>                          dev_kfree_skb_any(requeue_skb);
->>                          goto requeue_drop_frag;
->>                  }
->>
->>                  /* Unmap the frame */
->>                  dma_unmap_single(sc->dev, bf->bf_buf_addr,
->>                                   common->rx_bufsize, dma_type);
->>
->>                  bf->bf_mpdu = requeue_skb;
->>                  bf->bf_buf_addr = new_buf_addr;
-> 
-> Creating a new mapping for the same buffer before unmapping the
-> previous one does looks rather bogus.  But it does not fit the
-> pattern where revering the sync_single changes make the driver
-> work again.
+On Wed, 23 Mar 2022 at 03:42, Shengjiu Wang <shengjiu.wang@nxp.com> wrote:
+>
+> There is no mutex protecting of these state checking, which
+> can't garantee there is no another instance is trying to do
+> same operation.
+>
+> The reference counter rproc->power is used to manage state
+> changing and there is mutex protection in each operation
+> function for multi instance case.
+>
+> So remove this state checking in rproc_cdev_write() and
+> state_store(), just let reference counter rproc->power to
+> manage the behaviors.
+>
+> Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+> ---
+>  drivers/remoteproc/remoteproc_cdev.c  | 11 -----------
+>  drivers/remoteproc/remoteproc_sysfs.c | 11 -----------
+>  2 files changed, 22 deletions(-)
+>
+> diff --git a/drivers/remoteproc/remoteproc_cdev.c b/drivers/remoteproc/remoteproc_cdev.c
+> index 906ff3c4dfdd..687f205fd70a 100644
+> --- a/drivers/remoteproc/remoteproc_cdev.c
+> +++ b/drivers/remoteproc/remoteproc_cdev.c
+> @@ -32,21 +32,10 @@ static ssize_t rproc_cdev_write(struct file *filp, const char __user *buf, size_
+>                 return -EFAULT;
+>
+>         if (!strncmp(cmd, "start", len)) {
+> -               if (rproc->state == RPROC_RUNNING ||
+> -                   rproc->state == RPROC_ATTACHED)
+> -                       return -EBUSY;
+> -
+>                 ret = rproc_boot(rproc);
+>         } else if (!strncmp(cmd, "stop", len)) {
+> -               if (rproc->state != RPROC_RUNNING &&
+> -                   rproc->state != RPROC_ATTACHED)
+> -                       return -EINVAL;
+> -
+>                 ret = rproc_shutdown(rproc);
+>         } else if (!strncmp(cmd, "detach", len)) {
+> -               if (rproc->state != RPROC_ATTACHED)
+> -                       return -EINVAL;
+> -
+>                 ret = rproc_detach(rproc);
+>         } else {
+>                 dev_err(&rproc->dev, "Unrecognized option\n");
+> diff --git a/drivers/remoteproc/remoteproc_sysfs.c b/drivers/remoteproc/remoteproc_sysfs.c
+> index 51a04bc6ba7a..8c7ea8922638 100644
+> --- a/drivers/remoteproc/remoteproc_sysfs.c
+> +++ b/drivers/remoteproc/remoteproc_sysfs.c
+> @@ -194,23 +194,12 @@ static ssize_t state_store(struct device *dev,
+>         int ret = 0;
+>
+>         if (sysfs_streq(buf, "start")) {
+> -               if (rproc->state == RPROC_RUNNING ||
+> -                   rproc->state == RPROC_ATTACHED)
+> -                       return -EBUSY;
+> -
 
-OK, you made me look :)
+As per my previous comment the above conditions need to be moved into
+rproc_boot().
 
-Now that it's obvious what to look for, I can only conclude that during 
-the stanza in ath_edma_get_buffers(), the device is still writing to the 
-buffer while ownership has been transferred to the CPU, and whatever got 
-written while ath9k_hw_process_rxdesc_edma() was running then gets wiped 
-out by the subsequent sync_for_device, which currently resets the 
-SWIOTLB slot to the state that sync_for_cpu copied out. By the letter of 
-the DMA API that's not allowed, but on the other hand I'm not sure if we 
-even have a good idiom for "I can't tell if the device has finished with 
-this buffer or not unless I look at it" :/
+>                 ret = rproc_boot(rproc);
+>                 if (ret)
+>                         dev_err(&rproc->dev, "Boot failed: %d\n", ret);
+>         } else if (sysfs_streq(buf, "stop")) {
+> -               if (rproc->state != RPROC_RUNNING &&
+> -                   rproc->state != RPROC_ATTACHED)
+> -                       return -EINVAL;
+> -
+>                 ret = rproc_shutdown(rproc);
+>         } else if (sysfs_streq(buf, "detach")) {
+> -               if (rproc->state != RPROC_ATTACHED)
+> -                       return -EINVAL;
+> -
 
-Robin.
+This patch should have been part of a patch series with your other
+work sent on March 18th[1].
+
+Thanks,
+Mathieu
+
+[1]. [PATCH] remoteproc: core: check rproc->power value before decreasing it
+
+>                 ret = rproc_detach(rproc);
+>         } else {
+>                 dev_err(&rproc->dev, "Unrecognised option: %s\n", buf);
+> --
+> 2.17.1
+>
