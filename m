@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 849FBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFDABC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378694AbiCYPfb (ORCPT
+        id S1378708AbiCYPfc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:35:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54200 "EHLO
+        Fri, 25 Mar 2022 11:35:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377360AbiCYPYG (ORCPT
+        with ESMTP id S1376823AbiCYPX1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:24:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F27EBE6C6E;
-        Fri, 25 Mar 2022 08:17:50 -0700 (PDT)
+        Fri, 25 Mar 2022 11:23:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B047C155;
+        Fri, 25 Mar 2022 08:16:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 86FED60A1B;
-        Fri, 25 Mar 2022 15:17:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98D9AC340E9;
-        Fri, 25 Mar 2022 15:17:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BDF13B827E0;
+        Fri, 25 Mar 2022 15:16:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DCE9C340E9;
+        Fri, 25 Mar 2022 15:16:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221470;
-        bh=FQ1u8yPWxi0An71a6D9PM9mhOZjP8Swoix1nujNZoeM=;
+        s=korg; t=1648221386;
+        bh=lDlR75JvmdZGL+svX2rl8FjKN1R23T2mQOr7DGXMt1M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f6A1EMKL4SC0vSZNZ0Zx+FdLUEAvDGmz63t2WswyISON5sW8V6BhfPnu7mqc0k2G6
-         3yalkomspoPPXb1fnMV/PmAWcx0w52a2TNjpigXEUUZmXRWX/4y0yo6nTtRDo1z+ki
-         0RMVj4IBtm80VbM6FHLR/cq118ACLbm8xm973V/s=
+        b=gC0JnHTtyhWkd9J5IVv+yku981lPJowuJhTFZflNPpiaP+VKStBpZ+BjbT9lkrmso
+         VWCFulqsnUNrAH9JSGgmEOKhxNeGXevDEqC5CsxUt20c32Fe3nmUwhf+0Zmx4j80lM
+         HW2E9lWiHFpqycivszfvKHNByQh8nCUR0ioazYB8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Kalle Valo <quic_kvalo@quicinc.com>
-Subject: [PATCH 5.16 35/37] wcn36xx: Differentiate wcn3660 from wcn3620
-Date:   Fri, 25 Mar 2022 16:14:45 +0100
-Message-Id: <20220325150421.050879289@linuxfoundation.org>
+        Reza Jahanbakhshi <reza.jahanbakhshi@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 08/37] ALSA: usb-audio: add mapping for new Corsair Virtuoso SE
+Date:   Fri, 25 Mar 2022 16:14:09 +0100
+Message-Id: <20220325150420.174306541@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220325150420.046488912@linuxfoundation.org>
-References: <20220325150420.046488912@linuxfoundation.org>
+In-Reply-To: <20220325150419.931802116@linuxfoundation.org>
+References: <20220325150419.931802116@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,53 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+From: Reza Jahanbakhshi <reza.jahanbakhshi@gmail.com>
 
-commit 98d504a82cc75840bec8e3c6ae0e4f411921962b upstream.
+commit cd94df1795418056a19ff4cb44eadfc18ac99a57 upstream.
 
-The spread of capability between the three WiFi silicon parts wcn36xx
-supports is:
+New device id for Corsair Virtuoso SE RGB Wireless that currently is not
+in the mixer_map. This entry in the mixer_map is necessary in order to
+label its mixer appropriately and allow userspace to pick the correct
+volume controls. For instance, my own Corsair Virtuoso SE RGB Wireless
+headset has this new ID and consequently, the sidetone and volume are not
+ working correctly without this change.
+> sudo lsusb -v | grep -i corsair
+Bus 007 Device 011: ID 1b1c:0a40 Corsair CORSAIR VIRTUOSO SE Wireless Gam
+  idVendor           0x1b1c Corsair
+  iManufacturer           1 Corsair
+  iProduct                2 CORSAIR VIRTUOSO SE Wireless Gaming Headset
 
-wcn3620 - 802.11 a/b/g
-wcn3660 - 802.11 a/b/g/n
-wcn3680 - 802.11 a/b/g/n/ac
-
-We currently treat wcn3660 as wcn3620 thus limiting it to 2GHz channels.
-Fix this regression by ensuring we differentiate between all three parts.
-
-Fixes: 8490987bdb9a ("wcn36xx: Hook and identify RF_IRIS_WCN3680")
-Cc: stable@vger.kernel.org
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220125004046.4058284-1-bryan.odonoghue@linaro.org
+Signed-off-by: Reza Jahanbakhshi <reza.jahanbakhshi@gmail.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220304212303.195949-1-reza.jahanbakhshi@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/ath/wcn36xx/main.c    |    3 +++
- drivers/net/wireless/ath/wcn36xx/wcn36xx.h |    1 +
- 2 files changed, 4 insertions(+)
+ sound/usb/mixer_maps.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/drivers/net/wireless/ath/wcn36xx/main.c
-+++ b/drivers/net/wireless/ath/wcn36xx/main.c
-@@ -1483,6 +1483,9 @@ static int wcn36xx_platform_get_resource
- 	if (iris_node) {
- 		if (of_device_is_compatible(iris_node, "qcom,wcn3620"))
- 			wcn->rf_id = RF_IRIS_WCN3620;
-+		if (of_device_is_compatible(iris_node, "qcom,wcn3660") ||
-+		    of_device_is_compatible(iris_node, "qcom,wcn3660b"))
-+			wcn->rf_id = RF_IRIS_WCN3660;
- 		if (of_device_is_compatible(iris_node, "qcom,wcn3680"))
- 			wcn->rf_id = RF_IRIS_WCN3680;
- 		of_node_put(iris_node);
---- a/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
-+++ b/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
-@@ -97,6 +97,7 @@ enum wcn36xx_ampdu_state {
- 
- #define RF_UNKNOWN	0x0000
- #define RF_IRIS_WCN3620	0x3620
-+#define RF_IRIS_WCN3660	0x3660
- #define RF_IRIS_WCN3680	0x3680
- 
- static inline void buff_to_be(u32 *buf, size_t len)
+--- a/sound/usb/mixer_maps.c
++++ b/sound/usb/mixer_maps.c
+@@ -537,6 +537,16 @@ static const struct usbmix_ctl_map usbmi
+ 		.map = corsair_virtuoso_map,
+ 	},
+ 	{
++		/* Corsair Virtuoso SE Latest (wired mode) */
++		.id = USB_ID(0x1b1c, 0x0a3f),
++		.map = corsair_virtuoso_map,
++	},
++	{
++		/* Corsair Virtuoso SE Latest (wireless mode) */
++		.id = USB_ID(0x1b1c, 0x0a40),
++		.map = corsair_virtuoso_map,
++	},
++	{
+ 		/* Corsair Virtuoso (wireless mode) */
+ 		.id = USB_ID(0x1b1c, 0x0a42),
+ 		.map = corsair_virtuoso_map,
 
 
