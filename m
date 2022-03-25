@@ -2,122 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F22FC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 01:46:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4E86C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 01:47:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355124AbiCYBrl (ORCPT
+        id S1357628AbiCYBrn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 21:47:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41200 "EHLO
+        Thu, 24 Mar 2022 21:47:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357656AbiCYBr3 (ORCPT
+        with ESMTP id S1357623AbiCYBrc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 21:47:29 -0400
-Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06D159D4E0
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 18:44:32 -0700 (PDT)
-Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-2e6650cde1bso68845367b3.12
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 18:44:31 -0700 (PDT)
+        Thu, 24 Mar 2022 21:47:32 -0400
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC67419A0
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 18:45:57 -0700 (PDT)
+Received: by mail-oi1-x22c.google.com with SMTP id k10so6807439oia.0
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 18:45:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6C1MiK2JBH1dTA/prMrmf+ttqe2Acvbmx0mhdpvszJ8=;
-        b=qDnVP63bmla7Or6NurBxPJNTEhoxKm9iNRNnN+VkXopisHaUnwNODLhCLXI78xhN17
-         Se4VSoarjGMh5dIjpAYb/qeQdvR/h0YD/T0ad9o+DeuzscOiHFnBHwrPhSziFcLVA7pF
-         qYfaenDvXDZzO47+2ebGuLOHMymLN4rm3ECK6wQoXz48V9kQusQczwKa0jZ4LNRBZ1oV
-         fluHVr3rz5LG4UmUU9zxnyBLjA0aBziq1xAQXYZpJpDm/K0YVax48CETR1j7n6jWfZpu
-         jil0lKeiD4KRrAbyO+kofxpZE5XlxHBzTkuoZIm3g0NuDQHUaEssG3UEtq3Ma/J7ThJY
-         xBWQ==
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=87syg5cqR3yLkq66KVMLox503xNIYaCuiAAmDxKHkEE=;
+        b=EnCDpsIzebcOAG+z9D3OIIUMh21+PT1K71a9q+uY3pJu4Yvv9kYbWbGbnQMeqnRo3G
+         fO1IW4T8eSxZC3+IR0e/XUBOcR7yckMsSFJE0/6ngZ8sYcyaSlt9Tw1WlpnhX80eqwzS
+         oiJ3o6OZZK/vkVit7EeUo64a5b4FquISxLr4I=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6C1MiK2JBH1dTA/prMrmf+ttqe2Acvbmx0mhdpvszJ8=;
-        b=Dl/d6X1H7DfTT7oqDJICjLdaaZNNq4D5ytMMJW/eQztyk4LrwKyUkC9EJUC/sVjIcA
-         Ul7fnHgoD8md+ZlH8ya/5fm629dGdFcPjBkAsZHekp2O8Qgtad5Tg5ighUZyAxi4hSZI
-         3PY283lF6nRQu/7EAXxqEt2r3ZfsJ5G3aeXP5ZyRmGUqJz6BQfZij9DKCQVh93uG1jnu
-         WQvtdJ5c6VUnGREVgzfFjRv69It7AlzaKqZ4mOdEE6KRUAdksZ9Frodp1G1+DcA0wE8k
-         Qs3TK9YH0WddIQTVqRxULz3rz2ssjQPIPYOsK+a85vS78HB5vkilolE82k0X8FqVRAEs
-         y9jA==
-X-Gm-Message-State: AOAM530xrRQU4F6XPQrBHmhhiGbwcUBV3LLDkKP4LntYAh7VXIJt622B
-        d9OgVCSmipq3N9/yVNIjmUdb/TzDE+HjOBpcHR6KCSEIs/qpYA==
-X-Google-Smtp-Source: ABdhPJxJqyASCYtHv3Pm1jkdaLKDI2gwBxP2Hx07HZA7/4CPpleAOda8/wG9UI6ImIvOAu/zNbavc6lv0WME2kZXQ28=
-X-Received: by 2002:a81:1c4f:0:b0:2e5:9db3:7a8e with SMTP id
- c76-20020a811c4f000000b002e59db37a8emr7691833ywc.319.1648172671241; Thu, 24
- Mar 2022 18:44:31 -0700 (PDT)
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=87syg5cqR3yLkq66KVMLox503xNIYaCuiAAmDxKHkEE=;
+        b=oRHwD4vuvV/JMl1+XPXapq4Sv2zfBMttVpXesFwfkKEUM9MQLcGCuh9jNv4OnGyog9
+         1WXxuyxK6l/dcIQO72y1nogIiL//NVav2N0+Wb2Q0Oc2nMBFVueuciarhkBM8LqqGa1N
+         xosJiqAG+cPUrHsPOkssSri9Zi9dRsaZUtk8Hr/r5l/1y/REHyhEhTryCgXuMsq3U1nl
+         LdVJG284ZpJlQXU3JUGRspBTJUkhxnXkLoBPPq7MJ+gCXIPbo3v7b6GD+bxKo+9fIMuG
+         941CWiJht7HjEZB9afqHI5wxUC9xBe1i+dfKBsGxdePzmmReSQ0jqWG6/9QLp2Z+qP+j
+         K19g==
+X-Gm-Message-State: AOAM5313ALsBOvt4DJgjI/lY6URjd7D0pEl8Pc4oNgUBci0Qr6h5vWlc
+        qJWg9SQYY3zqU5BBvb1DZBU3qUtPQPLYuyyNmxH9Fw==
+X-Google-Smtp-Source: ABdhPJxGkk+jAlWe8yL/2J4MKfnO1ITZrJWDFkQJKnykWmEkhU1KAyMR7ZrNWYXsgjjpUquwglv2mrxLIJtibgrIqPM=
+X-Received: by 2002:aca:a9c8:0:b0:2da:45b6:b796 with SMTP id
+ s191-20020acaa9c8000000b002da45b6b796mr3843348oie.193.1648172756157; Thu, 24
+ Mar 2022 18:45:56 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Thu, 24 Mar 2022 20:45:55 -0500
 MIME-Version: 1.0
-References: <CAMZfGtUr6V5pTrPhZukD2_KbB7BLPoKvF6H63HP4pykY36Ou9A@mail.gmail.com>
- <0000000000009901d505dafc07b3@google.com> <CAHk-=whxaFX4nqnE-SLHTGKyqejvbrhYx5sagcxWd+UWCMf8dg@mail.gmail.com>
- <CAHk-=wg++3S5Cvks-4xFCrD7qgZDibc5aMS4Bt=Pemm7FnOBZA@mail.gmail.com>
-In-Reply-To: <CAHk-=wg++3S5Cvks-4xFCrD7qgZDibc5aMS4Bt=Pemm7FnOBZA@mail.gmail.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Fri, 25 Mar 2022 09:43:51 +0800
-Message-ID: <CAMZfGtVHSWAzLN+FzOL0MyedcXc5UAaGuc4OufUwkLzWe2KWvQ@mail.gmail.com>
-Subject: Re: [syzbot] general protection fault in list_lru_add
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     syzbot <syzbot+f8c45ccc7d5d45fc5965@syzkaller.appspotmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: multipart/mixed; boundary="00000000000099e40505db011a51"
+In-Reply-To: <20220324160222.v2.1.Iebdb5af0db7d3d6364cb229a27cd7c668f1063ae@changeid>
+References: <20220324160222.v2.1.Iebdb5af0db7d3d6364cb229a27cd7c668f1063ae@changeid>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Thu, 24 Mar 2022 20:45:55 -0500
+Message-ID: <CAE-0n52XzXDk2oJSN2G=GiWe+8QCizEp7rb3e=E9+FLagh5ZnQ@mail.gmail.com>
+Subject: Re: [PATCH v2] arm64: dts: qcom: sc7280: Add device tree for
+ herobrine villager
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>,
+        devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---00000000000099e40505db011a51
-Content-Type: text/plain; charset="UTF-8"
-
-On Fri, Mar 25, 2022 at 3:47 AM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
+Quoting Matthias Kaehlcke (2022-03-24 16:02:28)
+> Add a basic device tree for the herobrine villager board.
 >
-> On Thu, Mar 24, 2022 at 12:45 PM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
-> >
-> > On Thu, Mar 24, 2022 at 12:41 PM syzbot
-> > <syzbot+f8c45ccc7d5d45fc5965@syzkaller.appspotmail.com> wrote:
-> > >
-> > > syzbot has tested the proposed patch and the reproducer did not trigger any issue:
-> >
-> > Heh, well that's unfortunate.
-> >
-> > I think the issue is that it triggered a new BUG() that didn't match
-> > the previous NULL pointer dereference, so it thinks things are
-> > "fixed".
->
-> Oh, no, it's because it used the truncated patch that didn't do anything:
->
-> > patch:          https://syzkaller.appspot.com/x/patch.diff?x=1208043d700000
->
-> and maybe (due to the racy nature) nothing actually happened.
->
+> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+> ---
 
-It is not easy to reproduce. I'm also trying to reproduce locally.
-
-#syz test: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
-5abc1e37afa0335c52608d640fd30910b2eeda21
-
---00000000000099e40505db011a51
-Content-Type: application/octet-stream; name="test.patch"
-Content-Disposition: attachment; filename="test.patch"
-Content-Transfer-Encoding: base64
-Content-ID: <f_l15r51s80>
-X-Attachment-Id: f_l15r51s80
-
-ZGlmZiAtLWdpdCBhL21tL2xpc3RfbHJ1LmMgYi9tbS9saXN0X2xydS5jCmluZGV4IGZjOTM4ZDhm
-ZjQ4Zi4uODg1YWU1ZDc3MDAyIDEwMDY0NAotLS0gYS9tbS9saXN0X2xydS5jCisrKyBiL21tL2xp
-c3RfbHJ1LmMKQEAgLTc2LDYgKzc2LDcgQEAgbGlzdF9scnVfZnJvbV9rbWVtKHN0cnVjdCBsaXN0
-X2xydSAqbHJ1LCBpbnQgbmlkLCB2b2lkICpwdHIsCiAJc3RydWN0IGxpc3RfbHJ1X25vZGUgKm5s
-cnUgPSAmbHJ1LT5ub2RlW25pZF07CiAJc3RydWN0IGxpc3RfbHJ1X29uZSAqbCA9ICZubHJ1LT5s
-cnU7CiAJc3RydWN0IG1lbV9jZ3JvdXAgKm1lbWNnID0gTlVMTDsKKwlpbnQga21lbWNnX2lkOwog
-CiAJaWYgKCFscnUtPm1scnVzKQogCQlnb3RvIG91dDsKQEAgLTg0LDcgKzg1LDEyIEBAIGxpc3Rf
-bHJ1X2Zyb21fa21lbShzdHJ1Y3QgbGlzdF9scnUgKmxydSwgaW50IG5pZCwgdm9pZCAqcHRyLAog
-CWlmICghbWVtY2cpCiAJCWdvdG8gb3V0OwogCi0JbCA9IGxpc3RfbHJ1X2Zyb21fbWVtY2dfaWR4
-KGxydSwgbmlkLCBtZW1jZ19jYWNoZV9pZChtZW1jZykpOworCWttZW1jZ19pZCA9IG1lbWNnX2tt
-ZW1faWQobWVtY2cpOworCWwgPSBsaXN0X2xydV9mcm9tX21lbWNnX2lkeChscnUsIG5pZCwga21l
-bWNnX2lkKTsKKwlpZiAoIWwpIHsKKwkJcHJfaW5mbygiQlVHOiB0aGUgbWVtY2coJXB4KS0+b2Jq
-Y2coJXB4KSwga21lbWNnX2lkOiAlZFxuIiwKKwkJCW1lbWNnLCBtZW1jZy0+b2JqY2csIGttZW1j
-Z19pZCk7CisJfQogb3V0OgogCWlmIChtZW1jZ19wdHIpCiAJCSptZW1jZ19wdHIgPSBtZW1jZzsK
---00000000000099e40505db011a51--
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
