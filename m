@@ -2,93 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28E64C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 08:58:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FB58C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 09:02:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356064AbiCYJAS convert rfc822-to-8bit (ORCPT
+        id S1356118AbiCYJDg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 05:00:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47944 "EHLO
+        Fri, 25 Mar 2022 05:03:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229940AbiCYJAQ (ORCPT
+        with ESMTP id S229940AbiCYJDd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 05:00:16 -0400
-X-Greylist: delayed 447 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 25 Mar 2022 01:58:41 PDT
-Received: from mail.sysgo.com (mail.sysgo.com [IPv6:2a01:4f8:fff0:cf:2::25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A40D3377FE
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 01:58:41 -0700 (PDT)
-From:   Matthias Welwarsky <matthias.welwarsky@sysgo.com>
-To:     linux-kernel@vger.kernel.org
-Subject: x86, possible bug in __memmove() alternatives patching
-Date:   Fri, 25 Mar 2022 09:51:09 +0100
-Message-ID: <3422754.iIbC2pHGDl@linux-3513>
-Organization: SYSGO GmbH
+        Fri, 25 Mar 2022 05:03:33 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA428CD332;
+        Fri, 25 Mar 2022 02:01:59 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7090412FC;
+        Fri, 25 Mar 2022 02:01:59 -0700 (PDT)
+Received: from [10.57.22.201] (unknown [10.57.22.201])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B77173F66F;
+        Fri, 25 Mar 2022 02:01:57 -0700 (PDT)
+Message-ID: <c881de5f-5a1e-19ff-0ae6-f68032c79f03@arm.com>
+Date:   Fri, 25 Mar 2022 09:01:55 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset="iso-8859-1"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2] thermal: devfreq_cooling: use local ops instead of
+ global ops
+Content-Language: en-US
+To:     Kant Fan <kant@allwinnertech.com>
+Cc:     amitk@kernel.org, rui.zhang@intel.com, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        allwinner-opensource-support@allwinnertech.com,
+        stable@vger.kernel.org, rafael@kernel.org,
+        daniel.lezcano@linaro.org, ionela.voinescu@arm.com
+References: <20220325073030.91919-1-kant@allwinnertech.com>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+In-Reply-To: <20220325073030.91919-1-kant@allwinnertech.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi list,
+Hi Kant,
 
-I've come across an odd behavior that I'm not sure whether it counts as a bug.
-I'm working on an x86 hypervisor at the moment and there was an odd problem 
-with a linux guest system dying during booting, but only on an intel NUC11 
-(i3-1115G4). It booted normally on any other system I tested on.
+On 3/25/22 07:30, Kant Fan wrote:
+> Fix access illegal address problem in following condition:
+> There are muti devfreq cooling devices in system, some of them has
+> em model but other does not, energy model ops such as state2power will
+> append to global devfreq_cooling_ops when the cooling device with
+> em model register. It makes the cooling device without em model
+> also use devfreq_cooling_ops after appending when register later by
+> of_devfreq_cooling_register_power() or of_devfreq_cooling_register().
+> 
+> IPA governor regards the cooling devices without em model as a power actor
+> because they also have energy model ops, and will access illegal address
+> at dfc->em_pd when execute cdev->ops->get_requested_power,
+> cdev->ops->state2power or cdev->ops->power2state.
+> 
+> Fixes: 615510fe13bd2 ("thermal: devfreq_cooling: remove old power model and use EM")
+> Cc: stable@vger.kernel.org # 5.13+
+> Signed-off-by: Kant Fan <kant@allwinnertech.com>
+> ---
+>   drivers/thermal/devfreq_cooling.c | 25 ++++++++++++++++++-------
+>   1 file changed, 18 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/thermal/devfreq_cooling.c b/drivers/thermal/devfreq_cooling.c
+> index 4310cb342a9f..d38a80adec73 100644
+> --- a/drivers/thermal/devfreq_cooling.c
+> +++ b/drivers/thermal/devfreq_cooling.c
+> @@ -358,21 +358,28 @@ of_devfreq_cooling_register_power(struct device_node *np, struct devfreq *df,
+>   	struct thermal_cooling_device *cdev;
+>   	struct device *dev = df->dev.parent;
+>   	struct devfreq_cooling_device *dfc;
+> +	struct thermal_cooling_device_ops *ops;
+>   	char *name;
+>   	int err, num_opps;
+>   
+> -	dfc = kzalloc(sizeof(*dfc), GFP_KERNEL);
+> -	if (!dfc)
+> +	ops = kmemdup(&devfreq_cooling_ops, sizeof(*ops), GFP_KERNEL);
+> +	if (!ops)
+>   		return ERR_PTR(-ENOMEM);
+>   
+> +	dfc = kzalloc(sizeof(*dfc), GFP_KERNEL);
+> +	if (!dfc) {
+> +		err = -ENOMEM;
+> +		goto free_ops;
+> +	}
+> +
+>   	dfc->devfreq = df;
+>   
+>   	dfc->em_pd = em_pd_get(dev);
+>   	if (dfc->em_pd) {
+> -		devfreq_cooling_ops.get_requested_power =
+> +		ops->get_requested_power =
+>   			devfreq_cooling_get_requested_power;
+> -		devfreq_cooling_ops.state2power = devfreq_cooling_state2power;
+> -		devfreq_cooling_ops.power2state = devfreq_cooling_power2state;
+> +		ops->state2power = devfreq_cooling_state2power;
+> +		ops->power2state = devfreq_cooling_power2state;
+>   
+>   		dfc->power_ops = dfc_power;
+>   
+> @@ -407,8 +414,7 @@ of_devfreq_cooling_register_power(struct device_node *np, struct devfreq *df,
+>   	if (!name)
+>   		goto remove_qos_req;
+>   
+> -	cdev = thermal_of_cooling_device_register(np, name, dfc,
+> -						  &devfreq_cooling_ops);
+> +	cdev = thermal_of_cooling_device_register(np, name, dfc, ops);
+>   	kfree(name);
+>   
+>   	if (IS_ERR(cdev)) {
+> @@ -429,6 +435,8 @@ of_devfreq_cooling_register_power(struct device_node *np, struct devfreq *df,
+>   	kfree(dfc->freq_table);
+>   free_dfc:
+>   	kfree(dfc);
+> +free_ops:
+> +	kfree(ops);
+>   
+>   	return ERR_PTR(err);
+>   }
+> @@ -510,11 +518,13 @@ EXPORT_SYMBOL_GPL(devfreq_cooling_em_register);
+>   void devfreq_cooling_unregister(struct thermal_cooling_device *cdev)
+>   {
+>   	struct devfreq_cooling_device *dfc;
+> +	const struct thermal_cooling_device_ops *ops;
+>   	struct device *dev;
+>   
+>   	if (IS_ERR_OR_NULL(cdev))
+>   		return;
+>   
+> +	ops = cdev->ops;
+>   	dfc = cdev->devdata;
+>   	dev = dfc->devfreq->dev.parent;
+>   
+> @@ -525,5 +535,6 @@ void devfreq_cooling_unregister(struct thermal_cooling_device *cdev)
+>   
+>   	kfree(dfc->freq_table);
+>   	kfree(dfc);
+> +	kfree(ops);
+>   }
+>   EXPORT_SYMBOL_GPL(devfreq_cooling_unregister);
 
-The guest was usin kernel version 5.10.89.
 
-Now, the reason eventually turned out to be __memmove() getting broken when 
-applying the alternatives. The CPU on the NUC11 has the FSRM feature, which 
-enables a particular alternative in __memmove(). However, the code assumes 
-that the ERMS feature is always present with FSRM, otherwise the function gets 
-broken. Of course this is normally the case, a CPU without ERMS would never 
-advertise FSRM.
+Thank you for updating it, LGTM
 
-However: in the function early_intel_setup(), the ERMS feature might get 
-cleared depending on the IA32_MISC_ENABLE MSR: if fast string operations are 
-disabled through this MSR, X86_FEATURE_ERMS is removed from the available set, 
-but X86_FEATURE_FSRM is not removed.
+Reviewed-by: Lukasz Luba <lukasz.luba@arm.com>
 
-Now, the hypervisor I'm working on emulates this MSR and in the particular 
-case, fast string ops were reported as disabled, leading to the above 
-mentioned inconsistency in __memmove().
-
-The Intel SDM doesn't go into any details if disabling fast string ops through 
-IA32_MISC_ENABLE will also clear FSRM from cpuid leaf 7, but I think that's 
-not relevant for the linux kernel anyway because cpuid is parsed before MSRs 
-are evaluated.
-
-I know it's is probably a very rare case and Intel recommends having fast 
-string ops enabled, hence the question: would this be considered a bug in the 
-kernel that should be fixed? A potential fix could be to clear FSRM together 
-with ERMS depending on IA32_MISC_ENABLE.
-
-
-Mit freundlichen Grüßen/Best regards,
-
-Matthias Welwarsky
-Project Engineer
-
-SYSGO GmbH
-Office Mainz
-Am Pfaffenstein 8 / D-55270 Klein-Winternheim / Germany
-Phone: +49-6136-9948-0 / Fax: +49-6136-9948-10
-E-mail: matthias.welwarsky@sysgo.com
-_________________________________________________________________________________
-Web: https://www.sysgo.com
-Blog: https://www.sysgo.com/blog
-Events: https://www.sysgo.com/events
-Newsletter: https://www.sysgo.com/newsletter
-_________________________________________________________________________________
-Handelsregister/Commercial Registry: HRB Mainz 90 HRB 48884 
-Geschäftsführung/Managing Directors: Etienne Butery (CEO), Kai Sablotny (COO) 
-USt-Id-Nr./VAT-Id-No.: DE 149062328 
-
-The protection of your personal data is important to us. Under the following 
-link 
-you can see the information in accordance with article 13 GDPR: 
-https://www.sysgo.com/privacy_policy
-
-
+Regards,
+Lukasz
