@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCF82C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:08:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 128BDC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:08:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347583AbiCYPJt (ORCPT
+        id S1359709AbiCYPKA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:09:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36944 "EHLO
+        Fri, 25 Mar 2022 11:10:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359842AbiCYPII (ORCPT
+        with ESMTP id S1376270AbiCYPIR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:08:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADBE1DA095;
-        Fri, 25 Mar 2022 08:06:30 -0700 (PDT)
+        Fri, 25 Mar 2022 11:08:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC1CFA7741;
+        Fri, 25 Mar 2022 08:06:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 42C2261749;
-        Fri, 25 Mar 2022 15:06:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5545AC340E9;
-        Fri, 25 Mar 2022 15:06:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 529E7B828F8;
+        Fri, 25 Mar 2022 15:06:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 955D9C340E9;
+        Fri, 25 Mar 2022 15:06:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648220789;
-        bh=rZYusjfb3gz+7z1tKySj1cpQTUDkBfeQKEgE337HKzA=;
+        s=korg; t=1648220801;
+        bh=d4Tm298RJ4O4oXlY7hd8g2pFIpL83/OfvMHDCe05O0g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ymCJc3ydzU86VKBW5wk0GXcpygQIvJmVh+H6zA/i7qqcJ+WfSqb2ZBtRgTG27vFlx
-         fXAFbsD1nA3z2gP4Alx3HVQu0HDuujxk50CvN2x1R5hx4luYYHuXP55trM1APwRazG
-         RT8bYqRsOT8jEWRbFZjUQ7BwY6UpeN9btRhmKUHU=
+        b=WW0NN/8F9J/8BVnHXs/yieWpQuI6wkV9yudEH9CiBwX3thH2PHU5/RgqZkl3Gkp2n
+         K2sSQYnXE/NDP8qpjH9MLhNc3V949UlR7JHqUv2OBkOUvBdhF3prECPx8ulNQ+GvXO
+         /zlasJRptmMM298xemWVomu6GPyWoUvoS0BJrILU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.19 10/20] ALSA: usb-audio: Add mute TLV for playback volumes on RODE NT-USB
-Date:   Fri, 25 Mar 2022 16:04:48 +0100
-Message-Id: <20220325150417.307731222@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 4.19 14/20] netfilter: nf_tables: initialize registers in nft_do_chain()
+Date:   Fri, 25 Mar 2022 16:04:52 +0100
+Message-Id: <20220325150417.423549616@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150417.010265747@linuxfoundation.org>
 References: <20220325150417.010265747@linuxfoundation.org>
@@ -49,41 +48,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lars-Peter Clausen <lars@metafoo.de>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit 0f306cca42fe879694fb5e2382748c43dc9e0196 upstream.
+commit 4c905f6740a365464e91467aa50916555b28213d upstream.
 
-For the RODE NT-USB the lowest Playback mixer volume setting mutes the
-audio output. But it is not reported as such causing e.g. PulseAudio to
-accidentally mute the device when selecting a low volume.
+Initialize registers to avoid stack leak into userspace.
 
-Fix this by applying the existing quirk for this kind of issue when the
-device is detected.
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220311201400.235892-1-lars@metafoo.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: 96518518cc41 ("netfilter: add nftables")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/usb/mixer_quirks.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ net/netfilter/nf_tables_core.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/usb/mixer_quirks.c
-+++ b/sound/usb/mixer_quirks.c
-@@ -1997,9 +1997,10 @@ void snd_usb_mixer_fu_apply_quirk(struct
- 		if (unitid == 7 && cval->control == UAC_FU_VOLUME)
- 			snd_dragonfly_quirk_db_scale(mixer, cval, kctl);
- 		break;
--	/* lowest playback value is muted on C-Media devices */
--	case USB_ID(0x0d8c, 0x000c):
--	case USB_ID(0x0d8c, 0x0014):
-+	/* lowest playback value is muted on some devices */
-+	case USB_ID(0x0d8c, 0x000c): /* C-Media */
-+	case USB_ID(0x0d8c, 0x0014): /* C-Media */
-+	case USB_ID(0x19f7, 0x0003): /* RODE NT-USB */
- 		if (strstr(kctl->id.name, "Playback"))
- 			cval->min_mute = 1;
- 		break;
+--- a/net/netfilter/nf_tables_core.c
++++ b/net/netfilter/nf_tables_core.c
+@@ -144,7 +144,7 @@ nft_do_chain(struct nft_pktinfo *pkt, vo
+ 	struct nft_rule *const *rules;
+ 	const struct nft_rule *rule;
+ 	const struct nft_expr *expr, *last;
+-	struct nft_regs regs;
++	struct nft_regs regs = {};
+ 	unsigned int stackptr = 0;
+ 	struct nft_jumpstack jumpstack[NFT_JUMP_STACK_SIZE];
+ 	bool genbit = READ_ONCE(net->nft.gencursor);
 
 
