@@ -2,107 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 355FFC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 13:06:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A6CDC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 13:07:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359245AbiCYNI1 (ORCPT
+        id S1359251AbiCYNIq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 09:08:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39510 "EHLO
+        Fri, 25 Mar 2022 09:08:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345586AbiCYNIZ (ORCPT
+        with ESMTP id S1352493AbiCYNIp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 09:08:25 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BF41C627B
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 06:06:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648213612; x=1679749612;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=L8We6eVZdTbGQo8vbwQx+Aqb89EgG0yv9xaBvTQeVeg=;
-  b=d88QWL4LDooOsEcA2ypZcbfucxLoMbedLfsEnjE4ugml9m7GHx5SExd/
-   6We7+86tW0db9T9X+aUaT+oiYGYquMnqqq+9Mec6onOvIOmiy7LW0FvHK
-   WN6sAAv0rbDG3hpdwosB+5Nb+YRviRgfz5ql5USF1gst/iPWv/4yYpuNF
-   IuJqoxc/kcb2SVQfhIrqWDcyw5k/RVtdgY9fcKr0TG3g5dEzjkMacpBGJ
-   GVmNaZrR0ZivSkdtEXBVfQRkZYDlLytfchVRcNyh1/98qGKJpDKemFY8L
-   xCEVEAsIDnWVODIAESOg7owgU8pKSIMDfvZLkp2cowtxo7CFbWcbVFUUl
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10296"; a="321823006"
-X-IronPort-AV: E=Sophos;i="5.90,209,1643702400"; 
-   d="scan'208";a="321823006"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 06:06:51 -0700
-X-IronPort-AV: E=Sophos;i="5.90,209,1643702400"; 
-   d="scan'208";a="516539487"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 06:06:48 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1nXjds-006PMQ-K0;
-        Fri, 25 Mar 2022 15:06:12 +0200
-Date:   Fri, 25 Mar 2022 15:06:12 +0200
-From:   Andy Shevchenko <andriy.shevchenko@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [GIT PULL] locking changes for v5.18
-Message-ID: <Yj2+RDmBGHto4+e/@smile.fi.intel.com>
-References: <YjhdcJB4FaLfsoyO@gmail.com>
- <CAHk-=wjS6ptr5=JqmmyEb_qTjDz_68+S=h1o1bL1fEyArVOymA@mail.gmail.com>
- <YjpLiKRUIB4TGJm0@zn.tnic>
- <CAHk-=wifoM9VOp-55OZCRcO9MnqQ109UTuCiXeZ-eyX_JcNVGg@mail.gmail.com>
- <Yj2qZT6gdRYpkSIR@smile.fi.intel.com>
- <20220325122336.GQ8939@worktop.programming.kicks-ass.net>
+        Fri, 25 Mar 2022 09:08:45 -0400
+Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7433A8ED5
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 06:07:10 -0700 (PDT)
+Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-de3f2a19c8so8079724fac.1
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 06:07:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=d+UppTrxLQdaijQbmLi2ygRNUTwZayeuPKsfWsxc+Zo=;
+        b=Mr3uMt15CEDF8Ba+6ECcUfzdpV5TOWE1Ts2aqBpikq7hdwnh2BhSkVNiY23MigyCo1
+         5/0a00IeRbTP8IQd+UUBezGhidat0d2Q4XYVkN8AAv33xgeuAfUg9n1oA7xGp6R97U3+
+         zbP7SRZnJPvIMAJ4+ZquoxHnZUTTk7qKxT+CsiVdM6zJRQZV8UW8naewzz38OZQPwjyL
+         MWmBS63NuPUhU3p3Odf2FDnlOH7KIcDwDKaY4QNqNBiR9iqnlPVXpt1PjDY9wA6d8WzH
+         fRTVhUWrbP+YT1D23WkVN0i6YMYvrCXsYTidkzrRXTYa9DPQYb+rCWLX6z2uz3j67LSm
+         SQDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=d+UppTrxLQdaijQbmLi2ygRNUTwZayeuPKsfWsxc+Zo=;
+        b=q/OirpOB3ptVdx3m9vWvY4zfgV3Amf5ndAxFQ/Soz3dQIkurl9tfw+v3M7TkyN2THn
+         H4yNfoaHHfxmmT4NdeDo/h7FDD8E7RBno+t2Psf8sZ7jeeefoG557R4Z2B4Si4UKo0Ar
+         nCNiKsqLDczeNRso7SYdWTq3wPgHnEeFOXNR7D9dWqcPsyqEaGT544lAhBjds8zf5EJh
+         dRyfsnWjDHZCziVjZDES5q5JD/q6Nk17sCvHfw34e4DCujDClg1P8AujQxzwJMUnjSq2
+         wuPoNOpF8qSdAOIldh0UPGQrcfZDRHPUFAEPUVYL1SFmkLkzFQuh/Pdny3+oCRvpE3VG
+         u+aw==
+X-Gm-Message-State: AOAM530WIbUk7DpO4pb5lrI/xppEv2ygJ7n20GfjXXmaiWXn8JOKu7pr
+        IbNG+Js0M4fzUVqYesh+BcjAuGtj1U6m17Eh18A=
+X-Google-Smtp-Source: ABdhPJw2AO30JktpNowqISKLeErnm4X9BTwHN3YLfZlOFIVRTOk+leM/wRQcMWKtG1atVvaDsQmfkduj2H6qOl5JGso=
+X-Received: by 2002:a05:6870:630c:b0:da:b3f:324d with SMTP id
+ s12-20020a056870630c00b000da0b3f324dmr4883902oao.253.1648213628946; Fri, 25
+ Mar 2022 06:07:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220325122336.GQ8939@worktop.programming.kicks-ass.net>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220325040515.4073706-1-tsung-hua.lin@amd.com>
+In-Reply-To: <20220325040515.4073706-1-tsung-hua.lin@amd.com>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Fri, 25 Mar 2022 09:06:57 -0400
+Message-ID: <CADnq5_MGrkDxGBfpg9XfJ-e=fSr9dx22VJTKz6BLQemTq7Ck8Q@mail.gmail.com>
+Subject: Re: [PATCH v2 3/25] drm/amdgpu: Disable ABM when AC mode
+To:     Ryan Lin <tsung-hua.lin@amd.com>
+Cc:     "Wentland, Harry" <harry.wentland@amd.com>,
+        "Leo (Sunpeng) Li" <sunpeng.li@amd.com>,
+        "Deucher, Alexander" <alexander.deucher@amd.com>,
+        Christian Koenig <christian.koenig@amd.com>,
+        Chunming Zhou <David1.Zhou@amd.com>,
+        Dave Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Sean Paul <seanpaul@chromium.org>,
+        Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>,
+        "Kazlauskas, Nicholas" <nicholas.kazlauskas@amd.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Mark Yacoub <markyacoub@google.com>,
+        Victor Lu <victorchengchi.lu@amd.com>,
+        ching-shih.li@amd.corp-partner.google.com,
+        "Siqueira, Rodrigo" <Rodrigo.Siqueira@amd.com>,
+        ddavenport@chromium.org,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Maling list - DRI developers 
+        <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>, leon.li@amd.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 01:23:36PM +0100, Peter Zijlstra wrote:
-> On Fri, Mar 25, 2022 at 01:41:25PM +0200, Andy Shevchenko wrote:
-> > On Tue, Mar 22, 2022 at 03:58:47PM -0700, Linus Torvalds wrote:
-> > > On Tue, Mar 22, 2022 at 3:20 PM Borislav Petkov <bp@alien8.de> wrote:
-> > > >
-> > > > Ah, you say build error because you have CONFIG_WERROR=y.
-> > > 
-> > > EVERYBODY should have CONFIG_WERROR=y on at least x86-64 and other
-> > > serious architectures, unless you have some completely random
-> > > experimental (and broken) compiler.
-> > > 
-> > > New compiler warnings are not acceptable.
-> > 
-> > What about old one? I have already complained in the early discussion that
-> > `make W=1 ...` is broken by this change. Enabling it without fixing
-> > _existing_ warnings on W=1 is not suitable for somebody. Now, I have to
-> > modify my configs to disable WERROR because of inability to built at all.
-> > 
-> > (Yes, I understand that I may drop W=1, but that's not the point. since I
-> >  want to have clean builds of a new code on level 1 of warnings)
-> 
-> It would be fairly easy to make scripts/Makefile.extrawarn strip out
-> -Werror when W= is used.
+On Fri, Mar 25, 2022 at 2:27 AM Ryan Lin <tsung-hua.lin@amd.com> wrote:
+>
+> Disable ABM feature when the system is running on AC mode to get
+> the more perfect contrast of the display.
+>
+> Signed-off-by: Ryan Lin <tsung-hua.lin@amd.com>
+>
+> ---
+>  drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c      |  4 ++
+>  drivers/gpu/drm/amd/amdgpu/amdgpu_device.c    |  1 +
+>  drivers/gpu/drm/amd/display/dc/dce/dmub_abm.c | 58 ++++++++++++-------
+>  drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h       |  1 +
+>  4 files changed, 42 insertions(+), 22 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
+> index c560c1ab62ecb..bc8bb9aad2e36 100644
+> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
+> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
+> @@ -822,6 +822,10 @@ static int amdgpu_acpi_event(struct notifier_block *nb,
+>         struct amdgpu_device *adev = container_of(nb, struct amdgpu_device, acpi_nb);
+>         struct acpi_bus_event *entry = (struct acpi_bus_event *)data;
+>
+> +       if (strcmp(entry->device_class, "battery") == 0) {
+> +               adev->pm.ac_power = power_supply_is_system_supplied() > 0;
+> +       }
+> +
 
-Hmm... I can't achieve this, because it complains about recursive variable.
-What helped me is to supply in such case -Wno-error which seems overrode
-the previous setting.
+We already set adev->pm.ac_power in amdgpu_pm_acpi_event_handler()
+which gets called a few lines below.
 
-I'll send a patch to discuss further if needed.
-
--- 
-With Best Regards,
-Andy Shevchenko
+Alex
 
 
+>         if (strcmp(entry->device_class, ACPI_AC_CLASS) == 0) {
+>                 if (power_supply_is_system_supplied() > 0)
+>                         DRM_DEBUG_DRIVER("pm: AC\n");
+> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+> index abfcc1304ba0c..3a0afe7602727 100644
+> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+> @@ -3454,6 +3454,7 @@ int amdgpu_device_init(struct amdgpu_device *adev,
+>
+>         adev->gfx.gfx_off_req_count = 1;
+>         adev->pm.ac_power = power_supply_is_system_supplied() > 0;
+> +       adev->pm.old_ac_power = true;
+>
+>         atomic_set(&adev->throttling_logging_enabled, 1);
+>         /*
+> diff --git a/drivers/gpu/drm/amd/display/dc/dce/dmub_abm.c b/drivers/gpu/drm/amd/display/dc/dce/dmub_abm.c
+> index 54a1408c8015c..478a734b66926 100644
+> --- a/drivers/gpu/drm/amd/display/dc/dce/dmub_abm.c
+> +++ b/drivers/gpu/drm/amd/display/dc/dce/dmub_abm.c
+> @@ -23,6 +23,8 @@
+>   *
+>   */
+>
+> +#include <linux/power_supply.h>
+> +#include "amdgpu.h"
+>  #include "dmub_abm.h"
+>  #include "dce_abm.h"
+>  #include "dc.h"
+> @@ -51,6 +53,7 @@
+>  #define DISABLE_ABM_IMMEDIATELY 255
+>
+>
+> +extern uint amdgpu_dm_abm_level;
+>
+>  static void dmub_abm_enable_fractional_pwm(struct dc_context *dc)
+>  {
+> @@ -117,28 +120,6 @@ static void dmub_abm_init(struct abm *abm, uint32_t backlight)
+>         dmub_abm_enable_fractional_pwm(abm->ctx);
+>  }
+>
+> -static unsigned int dmub_abm_get_current_backlight(struct abm *abm)
+> -{
+> -       struct dce_abm *dce_abm = TO_DMUB_ABM(abm);
+> -       unsigned int backlight = REG_READ(BL1_PWM_CURRENT_ABM_LEVEL);
+> -
+> -       /* return backlight in hardware format which is unsigned 17 bits, with
+> -        * 1 bit integer and 16 bit fractional
+> -        */
+> -       return backlight;
+> -}
+> -
+> -static unsigned int dmub_abm_get_target_backlight(struct abm *abm)
+> -{
+> -       struct dce_abm *dce_abm = TO_DMUB_ABM(abm);
+> -       unsigned int backlight = REG_READ(BL1_PWM_TARGET_ABM_LEVEL);
+> -
+> -       /* return backlight in hardware format which is unsigned 17 bits, with
+> -        * 1 bit integer and 16 bit fractional
+> -        */
+> -       return backlight;
+> -}
+> -
+>  static bool dmub_abm_set_level(struct abm *abm, uint32_t level)
+>  {
+>         union dmub_rb_cmd cmd;
+> @@ -148,6 +129,9 @@ static bool dmub_abm_set_level(struct abm *abm, uint32_t level)
+>         int edp_num;
+>         uint8_t panel_mask = 0;
+>
+> +       if (power_supply_is_system_supplied() > 0)
+> +               level = 0;
+> +
+>         get_edp_links(dc->dc, edp_links, &edp_num);
+>
+>         for (i = 0; i < edp_num; i++) {
+> @@ -170,6 +154,36 @@ static bool dmub_abm_set_level(struct abm *abm, uint32_t level)
+>         return true;
+>  }
+>
+> +static unsigned int dmub_abm_get_current_backlight(struct abm *abm)
+> +{
+> +       struct dce_abm *dce_abm = TO_DMUB_ABM(abm);
+> +       unsigned int backlight = REG_READ(BL1_PWM_CURRENT_ABM_LEVEL);
+> +       struct dc_context *dc = abm->ctx;
+> +       struct amdgpu_device *adev = dc->driver_context;
+> +
+> +       if (adev->pm.ac_power != adev->pm.old_ac_power) {
+> +               dmub_abm_set_level(abm, amdgpu_dm_abm_level);
+> +               adev->pm.ac_power = power_supply_is_system_supplied() > 0;
+> +               adev->pm.old_ac_power = adev->pm.ac_power;
+> +       }
+> +
+> +       /* return backlight in hardware format which is unsigned 17 bits, with
+> +        * 1 bit integer and 16 bit fractional
+> +        */
+> +       return backlight;
+> +}
+> +
+> +static unsigned int dmub_abm_get_target_backlight(struct abm *abm)
+> +{
+> +       struct dce_abm *dce_abm = TO_DMUB_ABM(abm);
+> +       unsigned int backlight = REG_READ(BL1_PWM_TARGET_ABM_LEVEL);
+> +
+> +       /* return backlight in hardware format which is unsigned 17 bits, with
+> +        * 1 bit integer and 16 bit fractional
+> +        */
+> +       return backlight;
+> +}
+> +
+>  static bool dmub_abm_init_config(struct abm *abm,
+>         const char *src,
+>         unsigned int bytes,
+> diff --git a/drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h b/drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h
+> index f6e0e7d8a0077..de459411a0e83 100644
+> --- a/drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h
+> +++ b/drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h
+> @@ -445,6 +445,7 @@ struct amdgpu_pm {
+>         uint32_t                smu_prv_buffer_size;
+>         struct amdgpu_bo        *smu_prv_buffer;
+>         bool ac_power;
+> +       bool old_ac_power;
+>         /* powerplay feature */
+>         uint32_t pp_feature;
+>
+> --
+> 2.25.1
+>
