@@ -2,156 +2,350 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5F81C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 08:25:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80842C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 08:25:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354213AbiCYI0c (ORCPT
+        id S1354905AbiCYI1Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 04:26:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50802 "EHLO
+        Fri, 25 Mar 2022 04:27:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241127AbiCYI0b (ORCPT
+        with ESMTP id S1354985AbiCYI1S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 04:26:31 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78065B7157
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 01:24:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648196695; x=1679732695;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=0Wx1h6e8sHp5XGHZUVFBH1EF/fnkJWCy6zP38gcfjUY=;
-  b=Ax6TqUryWBUWe6N2BfLnDitO3uqVofmBj5WWFfYjUtxkQoeysV6m8wTV
-   fZBNpBCGs1Yod1TmZRC3asIEDCLevp9a3KhaQ+uYch4Wi2MI1jzSaH64+
-   DjouVIjoaZIXhfYnAy7oocg2YI4XYFyf1qHnyiPq1lXwov0jW3SbkN1PY
-   zg0Y1Md3PDn7dspHXSHzoYOx+K53j9ssCI/UzhscJsUtQTJK+G3Bt6ZBX
-   bzikxdEhP0/cCVU1JHIfFPO70RBm4NiTIDUyysRzvtAFFsYYn2WXMGiLj
-   7w48/DN0RYmVw7OO0HV7HzAbuVJivE7iX7Nb9anIPFzupQEMyj9DhTSZ2
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10296"; a="240741638"
-X-IronPort-AV: E=Sophos;i="5.90,209,1643702400"; 
-   d="scan'208";a="240741638"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 01:24:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,209,1643702400"; 
-   d="scan'208";a="584396422"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 25 Mar 2022 01:24:52 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nXfFb-000Ly0-UJ; Fri, 25 Mar 2022 08:24:51 +0000
-Date:   Fri, 25 Mar 2022 16:24:27 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: drivers/net/ethernet/smsc/smc91c92_cs.c:447: undefined reference to
- `ioremap'
-Message-ID: <202203251649.NgVhssp8-lkp@intel.com>
+        Fri, 25 Mar 2022 04:27:18 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E0DCD313
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 01:25:42 -0700 (PDT)
+Received: from kwepemi100024.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KPw6Z3TCkz8x03;
+        Fri, 25 Mar 2022 16:21:42 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ kwepemi100024.china.huawei.com (7.221.188.87) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 25 Mar 2022 16:25:40 +0800
+Received: from [10.67.101.67] (10.67.101.67) by kwepemm600003.china.huawei.com
+ (7.193.23.202) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 25 Mar
+ 2022 16:25:39 +0800
+Subject: Re: [PATCH v4] drivers/coresight: Add Ultrasoc System Memory Buffer
+ driver
+To:     Suzuki Kuruppassery Poulose <suzuki.poulose@arm.com>,
+        <mathieu.poirier@linaro.org>, <mike.leach@linaro.org>
+CC:     <coresight@lists.linaro.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linuxarm@huawei.com>
+References: <20220128061755.31909-1-liuqi115@huawei.com>
+ <da88a7eb-00e6-0a87-5fbf-99d5c72f28a9@arm.com>
+ <dce4a668-34e4-97aa-bfaf-4a777eb1e073@huawei.com>
+ <5d1bc111-54f1-c603-e8f4-ef28cc7cef81@arm.com>
+From:   "liuqi (BA)" <liuqi115@huawei.com>
+Message-ID: <bc47ce0e-2c9b-51a6-3b0f-4356124c1d9c@huawei.com>
+Date:   Fri, 25 Mar 2022 16:25:39 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <5d1bc111-54f1-c603-e8f4-ef28cc7cef81@arm.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.101.67]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   34af78c4e616c359ed428d79fe4758a35d2c5473
-commit: f9b3cd24578401e7a392974b3353277286e49cee Kconfig.debug: make DEBUG_INFO selectable from a choice
-date:   30 hours ago
-config: s390-randconfig-r022-20220325 (https://download.01.org/0day-ci/archive/20220325/202203251649.NgVhssp8-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f9b3cd24578401e7a392974b3353277286e49cee
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout f9b3cd24578401e7a392974b3353277286e49cee
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=s390 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   s390-linux-ld: drivers/net/ethernet/altera/altera_tse_main.o: in function `request_and_map':
-   drivers/net/ethernet/altera/altera_tse_main.c:1335: undefined reference to `devm_ioremap'
-   s390-linux-ld: drivers/net/ethernet/smsc/smc91c92_cs.o: in function `mhz_mfc_config':
->> drivers/net/ethernet/smsc/smc91c92_cs.c:447: undefined reference to `ioremap'
-   s390-linux-ld: drivers/net/ethernet/smsc/smc91c92_cs.o: in function `smc91c92_release':
->> drivers/net/ethernet/smsc/smc91c92_cs.c:962: undefined reference to `iounmap'
->> s390-linux-ld: drivers/net/ethernet/smsc/smc91c92_cs.c:962: undefined reference to `iounmap'
-   s390-linux-ld: drivers/net/ethernet/xircom/xirc2ps_cs.o: in function `xirc2ps_release':
->> drivers/net/ethernet/xircom/xirc2ps_cs.c:929: undefined reference to `iounmap'
-   s390-linux-ld: drivers/net/ethernet/xircom/xirc2ps_cs.o: in function `xirc2ps_config':
->> drivers/net/ethernet/xircom/xirc2ps_cs.c:838: undefined reference to `ioremap'
-   s390-linux-ld: drivers/net/ethernet/xircom/xirc2ps_cs.o: in function `xirc2ps_release':
->> drivers/net/ethernet/xircom/xirc2ps_cs.c:929: undefined reference to `iounmap'
-   s390-linux-ld: drivers/pcmcia/cistpl.o: in function `set_cis_map':
-   drivers/pcmcia/cistpl.c:103: undefined reference to `ioremap'
-   s390-linux-ld: drivers/pcmcia/cistpl.c:110: undefined reference to `iounmap'
-   s390-linux-ld: drivers/pcmcia/cistpl.c:117: undefined reference to `iounmap'
-   s390-linux-ld: drivers/pcmcia/cistpl.c:118: undefined reference to `ioremap'
-   s390-linux-ld: drivers/pcmcia/cistpl.o: in function `release_cis_mem':
-   drivers/pcmcia/cistpl.c:72: undefined reference to `iounmap'
 
 
-vim +447 drivers/net/ethernet/smsc/smc91c92_cs.c
+On 2022/3/24 20:37, Suzuki Kuruppassery Poulose wrote:
+> On 14/03/2022 10:04, liuqi (BA) wrote:
+>>
+>>
+>> On 2022/3/10 6:49, Suzuki K Poulose wrote:
+>>> Hi
+>>>
+>>> On 28/01/2022 06:17, Qi Liu wrote:
+>>>> This patch adds driver for Ultrasoc SMB(System Memory Buffer)
+>>>> device. SMB provides a way to buffer messages from ETM, and
+>>>> store these CPU instructions in system memory.
+>>>>
+>>>> SMB is developed by Ultrasoc technology, which is acquired by
+>>>> Siemens, and we still use "Ultrasoc" to name driver.
+>>>>
+>>>> Signed-off-by: Qi Liu <liuqi115@huawei.com>
+>>>> Tested-by: JunHao He <hejunhao2@hisilicon.com>
+>>>
+>>> Please find my comments below. In general :
+>>>
+>>> 1) Please run checkpatch and fix the warnings
+>>> 2) Add documentation for :
+>>>       - A brief description of the device and the firmware bindings 
+>>> (see comments below )
+>>>       - Sysfs attributes
+>>> 3) Other minor comments on the code
+>>>
+>> Hi Suzuki,
+>>
+>> thanks a lot for your review! and some replies inline.
+>>>> ---
+>> [...]
+>>>> --- a/drivers/hwtracing/coresight/Kconfig
+>>>> +++ b/drivers/hwtracing/coresight/Kconfig
+>>>> @@ -201,4 +201,14 @@ config CORESIGHT_TRBE
+>>>>         To compile this driver as a module, choose M here: the 
+>>>> module will be
+>>>>         called coresight-trbe.
+>>>> +config ULTRASOC_SMB
+>>>> +    tristate "Ultrasoc system memory buffer drivers"
+>>>> +    depends on ARM64 && CORESIGHT_LINKS_AND_SINKS
+>>>
+>>> Given that this driver absolutely only works with ACPI, please could
+>>> you add that dependency here ?
+>>
+>> yes, I'll add this, thanks.
+>>>
+>>>> +    help
+>>>> +      This driver provides support for the Ultrasoc system memory 
+>>>> buffer (SMB).
+>>>> +      SMB is responsible for receiving the trace data from 
+>>>> Coresight ETM devices
+>>>> +      and storing them to a system buffer.
+>>>> +
+>>>> +      To compile this driver as a module, choose M here: the module 
+>>>> will be
+>>>> +      called ultrasoc-smb.
+>>>>   endif
+>>>> diff --git a/drivers/hwtracing/coresight/Makefile 
+>>>> b/drivers/hwtracing/coresight/Makefile
+>>>> index b6c4a48140ec..344dba8d6ff8 100644
+>>>> --- a/drivers/hwtracing/coresight/Makefile
+>>>> +++ b/drivers/hwtracing/coresight/Makefile
+>>>> @@ -27,3 +27,4 @@ obj-$(CONFIG_CORESIGHT_CTI) += coresight-cti.o
+>>>>   obj-$(CONFIG_CORESIGHT_TRBE) += coresight-trbe.o
+>>>>   coresight-cti-y := coresight-cti-core.o    coresight-cti-platform.o \
+>>>>              coresight-cti-sysfs.o
+>>>> +obj-$(CONFIG_ULTRASOC_SMB) += ultrasoc-smb.o
+>>>> diff --git a/drivers/hwtracing/coresight/ultrasoc-smb.c 
+>>>> b/drivers/hwtracing/coresight/ultrasoc-smb.c
+>>>> new file mode 100644
+>>>> index 000000000000..a18d061aab61
+>>>> --- /dev/null
+>>>> +++ b/drivers/hwtracing/coresight/ultrasoc-smb.c
+>>>> @@ -0,0 +1,602 @@
+>>>> +// SPDX-License-Identifier: MIT/GPL
+>>>> +/*
+>>>> + * Siemens System Memory Buffer driver.
+>>>> + * Copyright(c) 2022, HiSilicon Limited.
+>>>> + */
+>>>> +
+>>>> +#include <linux/acpi.h>
+>>>> +#include <linux/circ_buf.h>
+>>>> +#include <linux/err.h>
+>>>> +#include <linux/module.h>
+>>>> +#include <linux/mod_devicetable.h>
+>>>> +#include <linux/platform_device.h>
+>>>> +
+>>>> +#include "ultrasoc-smb.h"
+>>>> +
+>>>> +DEFINE_CORESIGHT_DEVLIST(sink_devs, "smb");
+>>>
+>>> minor nit: This name could be confused with SMB (samba) under linux
+>>> especially when it appears under /dev/smbN as a misc device.
+>>>
+>> got it, I'll rename this device. How about /dev/ultra_smbN?
+>>>> +
+>>>> +static bool smb_buffer_is_empty(struct smb_drv_data *drvdata)
+>>>> +{
+>>>> +    u32 buf_status = readl(drvdata->base + SMB_LB_INT_STS);
+>>>> +
+>>>> +    return buf_status & BIT(0) ? false : true;
+>>>> +}
+>>>> +
+>>
+>> [...]
+>>
+>>>> +
+>>>> +static ssize_t smb_read(struct file *file, char __user *data, 
+>>>> size_t len, loff_t *ppos)
+>>>> +{
+>>>> +    struct smb_drv_data *drvdata = container_of(file->private_data,
+>>>> +                            struct smb_drv_data, miscdev);
+>>>> +    struct smb_data_buffer *sdb = &drvdata->sdb;
+>>>> +    struct device *dev = &drvdata->csdev->dev;
+>>>> +    unsigned long flags;
+>>>> +    int to_copy = 0;
+>>>> +
+>>>> +    spin_lock_irqsave(&drvdata->spinlock, flags);
+>>>> +
+>>>> +    if (!sdb->data_size) {
+>>>> +        smb_update_data_size(drvdata);
+>>>> +        if (!sdb->data_size)
+>>>> +            goto out;
+>>>> +    }
+>>>> +
+>>>> +    if (atomic_read(drvdata->csdev->refcnt)) {
+>>>> +        to_copy = -EBUSY;
+>>>> +        goto out;
+>>>> +    }
+>>>> +
+>>>
+>>> Shouldn't this be performed *before* updating the data_size above ?
+>>> Looking at the smb_update_data_size() it "purges" the data. Is that
+>>> acceptable ?
+>>
+>> ah, yes, we should get this before updating the data_size. I'll fix 
+>> this, thanks.
+>>>
+>>>> +    to_copy = min(sdb->data_size, len);
+>>>> +
+>>>> +    /* Copy parts of trace data when the read pointer will wrap 
+>>>> around SMB buffer. */
+>>>> +    if (sdb->rd_offset + to_copy > sdb->buf_size)
+>>
+>> [...]
+>>>> +static struct attribute *smb_sink_attrs[] = {
+>>>> +    &dev_attr_read_pos.attr,
+>>>> +    &dev_attr_write_pos.attr,
+>>>> +    &dev_attr_buf_status.attr,
+>>>> +    &dev_attr_buf_size.attr,
+>>>> +    NULL,
+>>>> +};
+>>>
+>>> Please could you also update the sysfs ABI files with a brief
+>>> description of the above attributes ?
+>>>
+>>> e.g., Documentation/ABI/testing/sysfs-bus-coresight-devices-tmc
+>>>
+>> yes, sure. I'll do this.
+>>
+>>>> +
+>>>> +static const struct attribute_group smb_sink_group = {
+>>>> +    .attrs = smb_sink_attrs,
+>>>> +    .name = "status",
+>>>> +};
+>>>> +
+>> [...]
+>>>> +
+>>>> +static int smb_enable_perf(struct smb_drv_data *drvdata, void *data)
+>>>> +{
+>>>> +    struct device *dev = &drvdata->csdev->dev;
+>>>> +    struct perf_output_handle *handle = data;
+>>>> +    pid_t pid;
+>>>> +
+>>>> +    if (drvdata->mode == CS_MODE_SYSFS) {
+>>>> +        dev_err(dev, "Device is already in used by sysfs\n");
+>>>
+>>> Please could you convert this to dev_dbg() ? An -EBUSY should
+>>> be sufficient to indicate that the resource is busy.
+>>>
+>> got it, thanks, will fix this.
+>>
+>>>> +        return -EBUSY;
+>>>> +    }
+>>>> +
+>>>> +    /* Get a handle on the pid of the target process*/
+>>>> +    pid = task_pid_nr(handle->event->owner);
+>>>> +    if (drvdata->pid != -1 && drvdata->pid != pid) {
+>>>> +        dev_err(dev, "Device is already in used by other session\n");
+>>>
+>>> Same here.
+>>>
+>> ok.
+>>>> +        return -EBUSY;
+>>>> +    }
+>>>> +    /* The sink is already enabled by this session. */
+>>>> +    if (drvdata->pid == pid)
+>>>> +        return 0;
+>>>
+>>> If the sink is shared by multiple events of the same group, don't
+>>> we need a refcount to make sure we don't disable the buffer when
+>>> an event goes away ?
+>>>
+>>
+>> we increase this refcount in smb_enable(), if smb_enable_sysfs() or 
+>> smb_enable_perf() is enabled successfully, we increase the refcount.
+>>
+>> So, when the sink is shared by multiple events of the same group, 
+>> refcount will be increased too. thanks.
+> 
+> I don't think this the case, at least by looking at the code. You need
+> to increment the refcount when you find that *this* session is going
+> to share the sink.
+> 
+>>>> +
+>>>> +    if (smb_set_perf_buffer(handle))
+>>>> +        return -EINVAL;
+>>>> +
+>>>> +    smb_enable_hw(drvdata);
+>>>> +    drvdata->pid = pid;
+>>>> +    drvdata->mode = CS_MODE_PERF;
+>>>> +
+>>>> +    return 0;
+>>>> +}
+>>>> +
+>>>> +static int smb_enable(struct coresight_device *csdev, u32 mode, 
+>>>> void *data)
+>>>> +{
+>>>> +    struct smb_drv_data *drvdata = dev_get_drvdata(csdev->dev.parent);
+>>>> +    unsigned long flags;
+>>>> +    int ret = -EINVAL;
+>>>> +
+>>>> +    /* Do nothing if trace data is reading by other interface now. */
+>>>> +    if (local_read(&drvdata->reading))
+>>>> +        return -EBUSY;
+>>>> +
+>>>> +    spin_lock_irqsave(&drvdata->spinlock, flags);
+>>>> +
+>>>> +    if (mode == CS_MODE_SYSFS)
+>>>> +        ret = smb_enable_sysfs(drvdata);
+>>>> +
+>>>> +    if (mode == CS_MODE_PERF)
+>>>> +        ret = smb_enable_perf(drvdata, data);
+>>>> +
+>>>> +    spin_unlock_irqrestore(&drvdata->spinlock, flags);
+>>>> +
+>>>> +    if (ret)
+>>>> +        return ret;
+>>>> +
+>>>> +    atomic_inc(csdev->refcnt);
+> 
+> Shouldn't this be done within the spinlock ? Othewise, we could have:
+> 
+> 
+> CPU0: smb_enable() {
+> CPU0:   spin_lock()
+> CPU0:   ...
+> CPU0:   spin_unlock()...
+> CPU0:   atomic_inc(refcnt) == 1;
+> CPU0: }
+> ...
+> 
+> CPU0: smb_disable() { # Note CPU0 started to disable the session
+> 
+> CPU1: smb_enable() {
+> CPU1:   spin_lock()
+> CPU1:   ...
+> CPU1:   spin_unlock()...
+> 
+> CPU0:   spin_lock();
+> 
+> # Before the CPU1 increments the counter, CPU0 could see the recnt == 1
+> # and go ahead to disable the HW. Where this must have been 2.
+> 
+> 
+> CPU0:   if (!atomic_dec_return()) == 0
+> CPU0:           disable_hw();
+> CPU1:   atomic_inc(refcnt) == 1;
+> CPU0:   spin_unlock()
+> CPU1: }
+> 
 
-b54bf94bf91e4c drivers/net/pcmcia/smc91c92_cs.c Dominik Brodowski 2008-08-02  422  
-fba395eee7d3f3 drivers/net/pcmcia/smc91c92_cs.c Dominik Brodowski 2006-03-31  423  static int mhz_mfc_config(struct pcmcia_device *link)
-^1da177e4c3f41 drivers/net/pcmcia/smc91c92_cs.c Linus Torvalds    2005-04-16  424  {
-^1da177e4c3f41 drivers/net/pcmcia/smc91c92_cs.c Linus Torvalds    2005-04-16  425      struct net_device *dev = link->priv;
-^1da177e4c3f41 drivers/net/pcmcia/smc91c92_cs.c Linus Torvalds    2005-04-16  426      struct smc_private *smc = netdev_priv(dev);
-b5cb259e7fac55 drivers/net/pcmcia/smc91c92_cs.c Dominik Brodowski 2010-07-24  427      unsigned int offset;
-b54bf94bf91e4c drivers/net/pcmcia/smc91c92_cs.c Dominik Brodowski 2008-08-02  428      int i;
-^1da177e4c3f41 drivers/net/pcmcia/smc91c92_cs.c Linus Torvalds    2005-04-16  429  
-00990e7ce0b0e5 drivers/net/pcmcia/smc91c92_cs.c Dominik Brodowski 2010-07-30  430      link->config_flags |= CONF_ENABLE_SPKR | CONF_ENABLE_IRQ |
-00990e7ce0b0e5 drivers/net/pcmcia/smc91c92_cs.c Dominik Brodowski 2010-07-30  431  	    CONF_AUTO_SET_IO;
-^1da177e4c3f41 drivers/net/pcmcia/smc91c92_cs.c Linus Torvalds    2005-04-16  432  
-^1da177e4c3f41 drivers/net/pcmcia/smc91c92_cs.c Linus Torvalds    2005-04-16  433      /* The Megahertz combo cards have modem-like CIS entries, so
-^1da177e4c3f41 drivers/net/pcmcia/smc91c92_cs.c Linus Torvalds    2005-04-16  434         we have to explicitly try a bunch of port combinations. */
-b54bf94bf91e4c drivers/net/pcmcia/smc91c92_cs.c Dominik Brodowski 2008-08-02  435      if (pcmcia_loop_config(link, mhz_mfc_config_check, NULL))
-dddfbd824b96a2 drivers/net/pcmcia/smc91c92_cs.c Dominik Brodowski 2009-10-18  436  	    return -ENODEV;
-dddfbd824b96a2 drivers/net/pcmcia/smc91c92_cs.c Dominik Brodowski 2009-10-18  437  
-9a017a910346af drivers/net/pcmcia/smc91c92_cs.c Dominik Brodowski 2010-07-24  438      dev->base_addr = link->resource[0]->start;
-^1da177e4c3f41 drivers/net/pcmcia/smc91c92_cs.c Linus Torvalds    2005-04-16  439  
-^1da177e4c3f41 drivers/net/pcmcia/smc91c92_cs.c Linus Torvalds    2005-04-16  440      /* Allocate a memory window, for accessing the ISR */
-cdb138080b7814 drivers/net/pcmcia/smc91c92_cs.c Dominik Brodowski 2010-07-28  441      link->resource[2]->flags = WIN_DATA_WIDTH_8|WIN_MEMORY_TYPE_AM|WIN_ENABLE;
-cdb138080b7814 drivers/net/pcmcia/smc91c92_cs.c Dominik Brodowski 2010-07-28  442      link->resource[2]->start = link->resource[2]->end = 0;
-cdb138080b7814 drivers/net/pcmcia/smc91c92_cs.c Dominik Brodowski 2010-07-28  443      i = pcmcia_request_window(link, link->resource[2], 0);
-4c89e88bfde6a3 drivers/net/pcmcia/smc91c92_cs.c Dominik Brodowski 2008-08-03  444      if (i != 0)
-dddfbd824b96a2 drivers/net/pcmcia/smc91c92_cs.c Dominik Brodowski 2009-10-18  445  	    return -ENODEV;
-dddfbd824b96a2 drivers/net/pcmcia/smc91c92_cs.c Dominik Brodowski 2009-10-18  446  
-cdb138080b7814 drivers/net/pcmcia/smc91c92_cs.c Dominik Brodowski 2010-07-28 @447      smc->base = ioremap(link->resource[2]->start,
-cdb138080b7814 drivers/net/pcmcia/smc91c92_cs.c Dominik Brodowski 2010-07-28  448  		    resource_size(link->resource[2]));
-7feabb6412ea23 drivers/net/pcmcia/smc91c92_cs.c Dominik Brodowski 2010-07-29  449      offset = (smc->manfid == MANFID_MOTOROLA) ? link->config_base : 0;
-cdb138080b7814 drivers/net/pcmcia/smc91c92_cs.c Dominik Brodowski 2010-07-28  450      i = pcmcia_map_mem_page(link, link->resource[2], offset);
-8e95a2026f3b43 drivers/net/pcmcia/smc91c92_cs.c Joe Perches       2009-12-03  451      if ((i == 0) &&
-8e95a2026f3b43 drivers/net/pcmcia/smc91c92_cs.c Joe Perches       2009-12-03  452  	(smc->manfid == MANFID_MEGAHERTZ) &&
-8e95a2026f3b43 drivers/net/pcmcia/smc91c92_cs.c Joe Perches       2009-12-03  453  	(smc->cardid == PRODID_MEGAHERTZ_EM3288))
-^1da177e4c3f41 drivers/net/pcmcia/smc91c92_cs.c Linus Torvalds    2005-04-16  454  	    mhz_3288_power(link);
-^1da177e4c3f41 drivers/net/pcmcia/smc91c92_cs.c Linus Torvalds    2005-04-16  455  
-dddfbd824b96a2 drivers/net/pcmcia/smc91c92_cs.c Dominik Brodowski 2009-10-18  456      return 0;
-^1da177e4c3f41 drivers/net/pcmcia/smc91c92_cs.c Linus Torvalds    2005-04-16  457  }
-^1da177e4c3f41 drivers/net/pcmcia/smc91c92_cs.c Linus Torvalds    2005-04-16  458  
+Hi Suzuki，
 
-:::::: The code at line 447 was first introduced by commit
-:::::: cdb138080b78146d1cdadba9f5dadbeb97445b91 pcmcia: do not use win_req_t when calling pcmcia_request_window()
+got it, I'll increment the refcount in perf/sysfs session next version.
 
-:::::: TO: Dominik Brodowski <linux@dominikbrodowski.net>
-:::::: CC: Dominik Brodowski <linux@dominikbrodowski.net>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+Qi
+> 
+> Suzuki
+> .
