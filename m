@@ -2,96 +2,273 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE843C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 09:11:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 846A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 09:11:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356339AbiCYJMg (ORCPT
+        id S1356398AbiCYJND (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 05:12:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52592 "EHLO
+        Fri, 25 Mar 2022 05:13:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229940AbiCYJMc (ORCPT
+        with ESMTP id S1356321AbiCYJNC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 05:12:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EB1BCCF486
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 02:10:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648199458;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QMxMPmZqVhEjq+z25uJtmZ8oxGgfdMtdpHWVpm7w/Uk=;
-        b=WaUy2THuFWrMT/njrmlI7YM47hkMnMHVM8nd8EnyUQNVnMBB3A4wwWVp8y8ELfyUEhOQOS
-        h7OdHpsPg06z1xHdxWXN9a5yOSD5Y8pAd2UHGJ5lH0LEccAU6vl9H7CIZfsknZ768aQIow
-        PQ8Dk8M/rn4pbiU+KRMGEc2P53zNgPg=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-385-thh7RGY_OnqkbS7LlDlomg-1; Fri, 25 Mar 2022 05:10:54 -0400
-X-MC-Unique: thh7RGY_OnqkbS7LlDlomg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DD6E71C06923;
-        Fri, 25 Mar 2022 09:10:53 +0000 (UTC)
-Received: from ws.net.home (unknown [10.36.112.12])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id B905E141DED5;
-        Fri, 25 Mar 2022 09:10:51 +0000 (UTC)
-Date:   Fri, 25 Mar 2022 10:10:49 +0100
-From:   Karel Zak <kzak@redhat.com>
-To:     Dave Chinner <david@fromorbit.com>
-Cc:     Miklos Szeredi <miklos@szeredi.hu>,
-        Miklos Szeredi <mszeredi@redhat.com>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Linux API <linux-api@vger.kernel.org>,
-        linux-man <linux-man@vger.kernel.org>,
-        LSM <linux-security-module@vger.kernel.org>,
-        Ian Kent <raven@themaw.net>,
-        David Howells <dhowells@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christian Brauner <christian@brauner.io>,
-        Amir Goldstein <amir73il@gmail.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>
-Subject: Re: [RFC PATCH] getvalues(2) prototype
-Message-ID: <20220325091049.b5vcfahti56hopy2@ws.net.home>
-References: <20220322192712.709170-1-mszeredi@redhat.com>
- <20220323225843.GI1609613@dread.disaster.area>
- <CAJfpegv6PmZ_RXipBs9UEjv_WfEUtTDE1uNZq+9fBkCzWPvXkw@mail.gmail.com>
- <20220324203116.GJ1609613@dread.disaster.area>
+        Fri, 25 Mar 2022 05:13:02 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8430ECF485;
+        Fri, 25 Mar 2022 02:11:27 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KPxCk3hfkzcc7J;
+        Fri, 25 Mar 2022 17:11:14 +0800 (CST)
+Received: from localhost.localdomain (10.175.103.91) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 25 Mar 2022 17:11:25 +0800
+From:   Wei Li <liwei391@huawei.com>
+To:     <acme@kernel.org>, <mark.rutland@arm.com>,
+        <alexander.shishkin@linux.intel.com>, <jolsa@redhat.com>,
+        <namhyung@kernel.org>
+CC:     <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <rui.xiang@huawei.com>, <guohanjun@huawei.com>
+Subject: [PATCH v2] perf tools: Enhance the matching of sub-commands
+Date:   Fri, 25 Mar 2022 17:20:32 +0800
+Message-ID: <20220325092032.2956161-1-liwei391@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220324203116.GJ1609613@dread.disaster.area>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 07:31:16AM +1100, Dave Chinner wrote:
-> > What about other objects' attributes, statistics?   Remember this
-> > started out as a way to replace /proc/self/mountinfo with something
-> > that can query individual mount.
-> 
-> For individual mount info, why do we even need to query something in
-> /proc? I mean, every open file in the mount has access to the mount
-> and the underlying superblock, so why not just make the query
-> namespace accessable from any open fd on that mount?
+We support short command 'rec*' for 'record' and 'rep*' for 'report' in
+lots of sub-commands, but the matching is not quite strict currnetly.
 
+It may be puzzling sometime, like we mis-type a 'recport' to report but
+it will perform 'record' in fact without any message.
 
-The current most problematic situation is in systemd. We get
-generic notification (poll() on mountinfo) that something has been
-modified in the mount table, and then we need to parse all the file
-to get details.
+To fix this, add a check to ensure that the short cmd is valid prefix
+of the real command.
 
-So, the ideal solution would be notification that points to the FS
-and interface to read information (e.g. getvalues()) about the FS.
+Signed-off-by: Wei Li <liwei391@huawei.com>
+---
+ tools/perf/builtin-c2c.c       | 5 +++--
+ tools/perf/builtin-kmem.c      | 2 +-
+ tools/perf/builtin-kvm.c       | 9 +++++----
+ tools/perf/builtin-lock.c      | 5 +++--
+ tools/perf/builtin-mem.c       | 5 +++--
+ tools/perf/builtin-sched.c     | 4 ++--
+ tools/perf/builtin-script.c    | 4 ++--
+ tools/perf/builtin-stat.c      | 4 ++--
+ tools/perf/builtin-timechart.c | 3 ++-
+ 9 files changed, 23 insertions(+), 18 deletions(-)
 
-    Karel
-
-
+diff --git a/tools/perf/builtin-c2c.c b/tools/perf/builtin-c2c.c
+index 77dd4afacca4..04110ac9c956 100644
+--- a/tools/perf/builtin-c2c.c
++++ b/tools/perf/builtin-c2c.c
+@@ -44,6 +44,7 @@
+ #include "../perf.h"
+ #include "pmu.h"
+ #include "pmu-hybrid.h"
++#include "string2.h"
+ 
+ struct c2c_hists {
+ 	struct hists		hists;
+@@ -3025,9 +3026,9 @@ int cmd_c2c(int argc, const char **argv)
+ 	if (!argc)
+ 		usage_with_options(c2c_usage, c2c_options);
+ 
+-	if (!strncmp(argv[0], "rec", 3)) {
++	if (strlen(argv[0]) > 2 && strstarts("record", argv[0])) {
+ 		return perf_c2c__record(argc, argv);
+-	} else if (!strncmp(argv[0], "rep", 3)) {
++	} else if (strlen(argv[0]) > 2 && strstarts("report", argv[0])) {
+ 		return perf_c2c__report(argc, argv);
+ 	} else {
+ 		usage_with_options(c2c_usage, c2c_options);
+diff --git a/tools/perf/builtin-kmem.c b/tools/perf/builtin-kmem.c
+index 99d7ff9a8eff..ebfab2ca1702 100644
+--- a/tools/perf/builtin-kmem.c
++++ b/tools/perf/builtin-kmem.c
+@@ -1946,7 +1946,7 @@ int cmd_kmem(int argc, const char **argv)
+ 			kmem_page = 1;
+ 	}
+ 
+-	if (!strncmp(argv[0], "rec", 3)) {
++	if (strlen(argv[0]) > 2 && strstarts("record", argv[0])) {
+ 		symbol__init(NULL);
+ 		return __cmd_record(argc, argv);
+ 	}
+diff --git a/tools/perf/builtin-kvm.c b/tools/perf/builtin-kvm.c
+index c6f352ee57e6..953cb8127a17 100644
+--- a/tools/perf/builtin-kvm.c
++++ b/tools/perf/builtin-kvm.c
+@@ -24,6 +24,7 @@
+ #include "util/ordered-events.h"
+ #include "util/kvm-stat.h"
+ #include "ui/ui.h"
++#include "util/string2.h"
+ 
+ #include <sys/prctl.h>
+ #ifdef HAVE_TIMERFD_SUPPORT
+@@ -1500,10 +1501,10 @@ static int kvm_cmd_stat(const char *file_name, int argc, const char **argv)
+ 		goto perf_stat;
+ 	}
+ 
+-	if (!strncmp(argv[1], "rec", 3))
++	if (strlen(argv[1]) > 2 && strstarts("record", argv[1]))
+ 		return kvm_events_record(&kvm, argc - 1, argv + 1);
+ 
+-	if (!strncmp(argv[1], "rep", 3))
++	if (strlen(argv[1]) > 2 && strstarts("report", argv[1]))
+ 		return kvm_events_report(&kvm, argc - 1 , argv + 1);
+ 
+ #ifdef HAVE_TIMERFD_SUPPORT
+@@ -1631,9 +1632,9 @@ int cmd_kvm(int argc, const char **argv)
+ 		}
+ 	}
+ 
+-	if (!strncmp(argv[0], "rec", 3))
++	if (strlen(argv[0]) > 2 && strstarts("record", argv[0]))
+ 		return __cmd_record(file_name, argc, argv);
+-	else if (!strncmp(argv[0], "rep", 3))
++	else if (strlen(argv[0]) > 2 && strstarts("report", argv[0]))
+ 		return __cmd_report(file_name, argc, argv);
+ 	else if (!strncmp(argv[0], "diff", 4))
+ 		return cmd_diff(argc, argv);
+diff --git a/tools/perf/builtin-lock.c b/tools/perf/builtin-lock.c
+index d70131b7b1b1..24d402e84022 100644
+--- a/tools/perf/builtin-lock.c
++++ b/tools/perf/builtin-lock.c
+@@ -18,6 +18,7 @@
+ #include "util/session.h"
+ #include "util/tool.h"
+ #include "util/data.h"
++#include "util/string2.h"
+ 
+ #include <sys/types.h>
+ #include <sys/prctl.h>
+@@ -997,9 +998,9 @@ int cmd_lock(int argc, const char **argv)
+ 	if (!argc)
+ 		usage_with_options(lock_usage, lock_options);
+ 
+-	if (!strncmp(argv[0], "rec", 3)) {
++	if (strlen(argv[0]) > 2 && strstarts("record", argv[0])) {
+ 		return __cmd_record(argc, argv);
+-	} else if (!strncmp(argv[0], "report", 6)) {
++	} else if (strlen(argv[0]) > 2 && strstarts("report", argv[0])) {
+ 		trace_handler = &report_lock_ops;
+ 		if (argc) {
+ 			argc = parse_options(argc, argv,
+diff --git a/tools/perf/builtin-mem.c b/tools/perf/builtin-mem.c
+index fcf65a59bea2..9e435fd23503 100644
+--- a/tools/perf/builtin-mem.c
++++ b/tools/perf/builtin-mem.c
+@@ -20,6 +20,7 @@
+ #include "util/symbol.h"
+ #include "util/pmu.h"
+ #include "util/pmu-hybrid.h"
++#include "util/string2.h"
+ #include <linux/err.h>
+ 
+ #define MEM_OPERATION_LOAD	0x1
+@@ -496,9 +497,9 @@ int cmd_mem(int argc, const char **argv)
+ 			mem.input_name = "perf.data";
+ 	}
+ 
+-	if (!strncmp(argv[0], "rec", 3))
++	if (strlen(argv[0]) > 2 && strstarts("record", argv[0]))
+ 		return __cmd_record(argc, argv, &mem);
+-	else if (!strncmp(argv[0], "rep", 3))
++	else if (strlen(argv[0]) > 2 && strstarts("report", argv[0]))
+ 		return report_events(argc, argv, &mem);
+ 	else
+ 		usage_with_options(mem_usage, mem_options);
+diff --git a/tools/perf/builtin-sched.c b/tools/perf/builtin-sched.c
+index 72d446de9c60..646bd938927a 100644
+--- a/tools/perf/builtin-sched.c
++++ b/tools/perf/builtin-sched.c
+@@ -3561,7 +3561,7 @@ int cmd_sched(int argc, const char **argv)
+ 	if (!strcmp(argv[0], "script"))
+ 		return cmd_script(argc, argv);
+ 
+-	if (!strncmp(argv[0], "rec", 3)) {
++	if (strlen(argv[0]) > 2 && strstarts("record", argv[0])) {
+ 		return __cmd_record(argc, argv);
+ 	} else if (!strncmp(argv[0], "lat", 3)) {
+ 		sched.tp_handler = &lat_ops;
+@@ -3581,7 +3581,7 @@ int cmd_sched(int argc, const char **argv)
+ 		sched.tp_handler = &map_ops;
+ 		setup_sorting(&sched, latency_options, latency_usage);
+ 		return perf_sched__map(&sched);
+-	} else if (!strncmp(argv[0], "rep", 3)) {
++	} else if (strlen(argv[0]) > 2 && strstarts("replay", argv[0])) {
+ 		sched.tp_handler = &replay_ops;
+ 		if (argc) {
+ 			argc = parse_options(argc, argv, replay_options, replay_usage, 0);
+diff --git a/tools/perf/builtin-script.c b/tools/perf/builtin-script.c
+index 23bc0fb5a381..e3f23a508aed 100644
+--- a/tools/perf/builtin-script.c
++++ b/tools/perf/builtin-script.c
+@@ -3842,13 +3842,13 @@ int cmd_script(int argc, const char **argv)
+ 	if (symbol__validate_sym_arguments())
+ 		return -1;
+ 
+-	if (argc > 1 && !strncmp(argv[0], "rec", strlen("rec"))) {
++	if (argc > 1 && strlen(argv[0]) > 2 && strstarts("record", argv[0])) {
+ 		rec_script_path = get_script_path(argv[1], RECORD_SUFFIX);
+ 		if (!rec_script_path)
+ 			return cmd_record(argc, argv);
+ 	}
+ 
+-	if (argc > 1 && !strncmp(argv[0], "rep", strlen("rep"))) {
++	if (argc > 1 && strlen(argv[0]) > 2 && strstarts("report", argv[0])) {
+ 		rep_script_path = get_script_path(argv[1], REPORT_SUFFIX);
+ 		if (!rep_script_path) {
+ 			fprintf(stderr,
+diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
+index 3f98689dd687..b33c92d00681 100644
+--- a/tools/perf/builtin-stat.c
++++ b/tools/perf/builtin-stat.c
+@@ -2271,11 +2271,11 @@ int cmd_stat(int argc, const char **argv)
+ 	} else
+ 		stat_config.csv_sep = DEFAULT_SEPARATOR;
+ 
+-	if (argc && !strncmp(argv[0], "rec", 3)) {
++	if (argc && strlen(argv[0]) > 2 && strstarts("record", argv[0])) {
+ 		argc = __cmd_record(argc, argv);
+ 		if (argc < 0)
+ 			return -1;
+-	} else if (argc && !strncmp(argv[0], "rep", 3))
++	} else if (argc && strlen(argv[0]) > 2 && strstarts("report", argv[0]))
+ 		return __cmd_report(argc, argv);
+ 
+ 	interval = stat_config.interval;
+diff --git a/tools/perf/builtin-timechart.c b/tools/perf/builtin-timechart.c
+index 43bf4d67edb0..afce731cec16 100644
+--- a/tools/perf/builtin-timechart.c
++++ b/tools/perf/builtin-timechart.c
+@@ -35,6 +35,7 @@
+ #include "util/tool.h"
+ #include "util/data.h"
+ #include "util/debug.h"
++#include "util/string2.h"
+ #include <linux/err.h>
+ 
+ #ifdef LACKS_OPEN_MEMSTREAM_PROTOTYPE
+@@ -1983,7 +1984,7 @@ int cmd_timechart(int argc, const char **argv)
+ 		return -1;
+ 	}
+ 
+-	if (argc && !strncmp(argv[0], "rec", 3)) {
++	if (argc && strlen(argv[0]) > 2 && strstarts("record", argv[0])) {
+ 		argc = parse_options(argc, argv, timechart_record_options,
+ 				     timechart_record_usage,
+ 				     PARSE_OPT_STOP_AT_NON_OPTION);
 -- 
- Karel Zak  <kzak@redhat.com>
- http://karelzak.blogspot.com
+2.25.1
 
