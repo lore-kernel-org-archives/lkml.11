@@ -2,172 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5A08C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 01:06:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F709C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 01:06:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357119AbiCYBI2 (ORCPT
+        id S1357132AbiCYBIa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 21:08:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58010 "EHLO
+        Thu, 24 Mar 2022 21:08:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241524AbiCYBI0 (ORCPT
+        with ESMTP id S1357123AbiCYBI1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 21:08:26 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B957FB6E41;
-        Thu, 24 Mar 2022 18:06:53 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id c11so5187159pgu.11;
-        Thu, 24 Mar 2022 18:06:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=99ip5yM/eXMtw/bhYIEGY/geBI8pRphT9RnitiSW3ck=;
-        b=pD++ADWNMuXubx1OgdCjv26q8P743r69bPPzSjwH7wT1iIhqZ+1wQI6I57O7dYk6BH
-         lP1KK42t+KOc7CpWp2yccvsawvSq0ryDGMSGDgdiomPRKR4oAuVKgNNEjMXkUqf7p+KG
-         I34LpGmFANgt5PZyTdWbb5Ky7+CVCnamcn0L82bHB3ULbzzQmFuRrc8sSBaMWogwfbOn
-         cODzygqlC+TwIUaUuR4o/9IyWX4TizyarhQDSNvx/pXLcOZDbyEbXwQ6wz8jY9mcPXax
-         8x6gjXZc9VaKshPPGE31J4qkkJzuoHEGWM/NT/cDS+B9C0WwHlJhILPdxnKRkm9HBtHY
-         9SbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=99ip5yM/eXMtw/bhYIEGY/geBI8pRphT9RnitiSW3ck=;
-        b=CqPXuKSxYCzQHnYimI8DmHFl1TSJIHNqXUsMH54J7mTCKddCEEtmjx8xTW/4feSWIw
-         9EYBpamgYFS6e59MFm0tXlnJGS0IGCvw4Hq07tDwJDmyVcehIEKVO9ESC4ucB6P9NOyZ
-         0czqG9xanwuSuQ1K+Didni85GcO0N9NXRI15FXdvMvSiZqCpZfTInD9zGQK6jUPvX60A
-         lkoS2O4X6rB2KNXm6a/OsEk0N+D85wiroZ6pBjoFfQl9VEPerxJCF/pF4MlpdtCDnnqd
-         rFMiDKt0YegMpI6rxI9Zm/mJQIyeE22LqEslKMPZ4iRGvslpUtj6J7z8DhdBhGWJIVdG
-         5ylQ==
-X-Gm-Message-State: AOAM530jDDwLCgV85v7qmhX4Jy0h67i80gjKOYcpCPwQ2QhoU2ZxuAn8
-        dWzgVxYzuJp1qCzEIkdmPt0PcGEeghs=
-X-Google-Smtp-Source: ABdhPJwfWKs3jY4Mpgmt6KEuGZiZeciBMSdRdoiMV7SLqB4YfwMqQN2VQ4XY/SoYP1JEEtEARtqNRQ==
-X-Received: by 2002:a63:5907:0:b0:382:2f93:5467 with SMTP id n7-20020a635907000000b003822f935467mr5898806pgb.460.1648170413167;
-        Thu, 24 Mar 2022 18:06:53 -0700 (PDT)
-Received: from localhost.localdomain ([2402:7500:56a:d674:140:d261:4ff3:2835])
-        by smtp.gmail.com with ESMTPSA id kk11-20020a17090b4a0b00b001c73933d803sm10971483pjb.10.2022.03.24.18.06.50
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 24 Mar 2022 18:06:52 -0700 (PDT)
-From:   cy_huang <u0084500@gmail.com>
-To:     broonie@kernel.org, robh+dt@kernel.org
-Cc:     lgirdwood@gmail.com, cy_huang@richtek.com, gene_chen@richtek.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH 1/2] dt-bindings: regulator: Add binding for Richtek RT5759 DCDC converter
-Date:   Fri, 25 Mar 2022 09:06:40 +0800
-Message-Id: <1648170401-6351-2-git-send-email-u0084500@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1648170401-6351-1-git-send-email-u0084500@gmail.com>
-References: <1648170401-6351-1-git-send-email-u0084500@gmail.com>
+        Thu, 24 Mar 2022 21:08:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5514CBBE2D;
+        Thu, 24 Mar 2022 18:06:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0A7E8B82708;
+        Fri, 25 Mar 2022 01:06:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1A90C340EC;
+        Fri, 25 Mar 2022 01:06:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648170412;
+        bh=AIPvWxPwW8hERZp8DHR9OAv1OYMebm+vPl1GARoNXYU=;
+        h=In-Reply-To:References:Subject:From:To:Date:From;
+        b=NXX5hAcq1R6W+CQW3rr/pRXT6zhusl2ZlDvhBCaNGk85FaetY3clu26Rff7fZbJJO
+         NDQnYFRms6ANlMakjIoN0BfhQP5xkTuzKiCrV3gwH9IX5MAkei6m5PP3BjBUVOfh0O
+         Midgsr7tSVjBg8ZGEc6nLYyXj8QhDk6XKcsCV/aLOunmhXw91Lc4tMJf8M1gh3eZPb
+         JbRdw91M0xpi5XeT8oevGN36Bu3d6RR5gY4rrZJQ3FiGCu10Dh3RnwZ6fJ7z1tE9ES
+         G7iItlq8rQKPuJfnmxPejlxwPCdlpkdLC1GlXHEOZQJKLIFzsO5gzjbSDPZg1FYLty
+         8gO8cZKG2ivCg==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220321231548.14276-6-ansuelsmth@gmail.com>
+References: <20220321231548.14276-1-ansuelsmth@gmail.com> <20220321231548.14276-6-ansuelsmth@gmail.com>
+Subject: Re: [PATCH v6 05/18] clk: qcom: kpss-xcc: convert to parent data API
+From:   Stephen Boyd <sboyd@kernel.org>
+To:     Andy Gross <agross@kernel.org>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 24 Mar 2022 18:06:50 -0700
+User-Agent: alot/0.10
+Message-Id: <20220325010652.B1A90C340EC@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ChiYuan Huang <cy_huang@richtek.com>
+Quoting Ansuel Smith (2022-03-21 16:15:35)
+> Convert the driver to parent data API. From the Documentation pll8_vote
+> and pxo should be declared in the DTS so fw_name can be used instead of
+> parent_names. Name is still used to save regression on old definition.
+>=20
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
+>  drivers/clk/qcom/kpss-xcc.c | 25 ++++++++-----------------
+>  1 file changed, 8 insertions(+), 17 deletions(-)
+>=20
+> diff --git a/drivers/clk/qcom/kpss-xcc.c b/drivers/clk/qcom/kpss-xcc.c
+> index 4fec1f9142b8..347f70e9f5fe 100644
+> --- a/drivers/clk/qcom/kpss-xcc.c
+> +++ b/drivers/clk/qcom/kpss-xcc.c
+> @@ -12,9 +12,9 @@
+>  #include <linux/clk.h>
+>  #include <linux/clk-provider.h>
+> =20
+> -static const char *aux_parents[] =3D {
+> -       "pll8_vote",
+> -       "pxo",
+> +static const struct clk_parent_data aux_parents[] =3D {
+> +       { .name =3D "pll8_vote", .fw_name =3D "pll8_vote" },
+> +       { .name =3D "pxo", .fw_name =3D "pxo" },
+>  };
+> =20
+>  static unsigned int aux_parent_map[] =3D {
+> @@ -32,8 +32,8 @@ MODULE_DEVICE_TABLE(of, kpss_xcc_match_table);
+>  static int kpss_xcc_driver_probe(struct platform_device *pdev)
+>  {
+>         const struct of_device_id *id;
+> -       struct clk *clk;
+>         void __iomem *base;
+> +       struct clk_hw *hw;
+>         const char *name;
+> =20
+>         id =3D of_match_device(kpss_xcc_match_table, &pdev->dev);
+> @@ -55,24 +55,15 @@ static int kpss_xcc_driver_probe(struct platform_devi=
+ce *pdev)
+>                 base +=3D 0x28;
+>         }
+> =20
+> -       clk =3D clk_register_mux_table(&pdev->dev, name, aux_parents,
+> -                                    ARRAY_SIZE(aux_parents), 0, base, 0,=
+ 0x3,
+> -                                    0, aux_parent_map, NULL);
+> +       hw =3D __devm_clk_hw_register_mux(&pdev->dev, NULL, name, ARRAY_S=
+IZE(aux_parents),
 
-Add bindings for Richtek RT5759 high-performance DCDC converter.
+Does something in devm_clk_hw_register_mux() not work here? Do we need a
+devm_clk_hw_register_mux_parent_data()? If so, please add it.
 
-Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
----
- .../regulator/richtek,rt5759-regulator.yaml        | 90 ++++++++++++++++++++++
- 1 file changed, 90 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/regulator/richtek,rt5759-regulator.yaml
-
-diff --git a/Documentation/devicetree/bindings/regulator/richtek,rt5759-regulator.yaml b/Documentation/devicetree/bindings/regulator/richtek,rt5759-regulator.yaml
-new file mode 100644
-index 00000000..c24b583
---- /dev/null
-+++ b/Documentation/devicetree/bindings/regulator/richtek,rt5759-regulator.yaml
-@@ -0,0 +1,90 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/regulator/richtek,rt5759-regulator.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Richtek RT5759 High Performance DCDC Concverter
-+
-+maintainers:
-+  - ChiYuan Huang <cy_huang@richtek.com>
-+
-+description: |
-+  The RT5759 is a high-performance, synchronous step-down DC-DC converter that
-+  can deliver up to 9A output current from 3V to 6.5V input supply, The output
-+  voltage can be programmable with I2C controlled 7-Bit VID.
-+
-+  Datasheet is available at
-+  https://www.richtek.com/assets/product_file/RT5759/DS5759-00.pdf
-+
-+allOf:
-+  - $ref: regulator.yaml#
-+
-+properties:
-+  compatible:
-+    enum:
-+      - richtek,rt5759
-+      - richtek,rt5759a
-+
-+  reg:
-+    maxItems: 1
-+
-+  regulator-allowed-modes:
-+    description: |
-+      buck allowed operating mode
-+        0: auto mode (PSKIP: pulse skipping)
-+        1: force pwm mode
-+    items:
-+      enum: [0, 1]
-+
-+  richtek,watchdog-enable:
-+    description: enable the external watchdog reset pin listening
-+    type: boolean
-+
-+if:
-+  properties:
-+    compatible:
-+      contains:
-+        const: richtek,rt5759
-+then:
-+  properties:
-+    richtek,watchdog-enable: false
-+
-+required:
-+  - compatible
-+  - reg
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  # example 1 for RT5759
-+  - |
-+    i2c {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      rt5759@62 {
-+        compatible = "richtek,rt5759";
-+        reg = <0x62>;
-+        regulator-name = "rt5759-buck";
-+        regulator-min-microvolt = <600000>;
-+        regulator-max-microvolt = <1500000>;
-+        regulator-boot-on;
-+      };
-+    };
-+  # example 2 for RT5759A
-+  - |
-+    i2c {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      rt5759a@62 {
-+        compatible = "richtek,rt5759a";
-+        reg = <0x62>;
-+        regulator-name = "rt5759a-buck";
-+        regulator-min-microvolt = <600000>;
-+        regulator-max-microvolt = <1725000>;
-+        regulator-boot-on;
-+        richtek,watchdog-enable;
-+      };
-+    };
--- 
-2.7.4
-
+> +                                       NULL, NULL, aux_parents, 0, base,=
+ 0, 0x3,
+> +                                       0, aux_parent_map, NULL);
+>
