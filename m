@@ -2,86 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 297B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 16:57:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66480C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 16:59:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376524AbiCYQ7D (ORCPT
+        id S1355420AbiCYRAn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 12:59:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34174 "EHLO
+        Fri, 25 Mar 2022 13:00:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345009AbiCYQ7A (ORCPT
+        with ESMTP id S231269AbiCYRAk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 12:59:00 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62D303ED0F
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 09:57:25 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id c15so11078463ljr.9
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 09:57:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LZX8culL+JDO4Nc+K2yxFStMUus86MuvCh6ZDifZHuY=;
-        b=bE5YQfo7x1YUkEwmvW7edsZltdmQNA9wxygDXSGMDVRtbypb4mwIAuitcyECnMP/5b
-         fhF8W+gIIIVnZRVx+s2MD3p4PJSJji9VjCI632PESuQjr259PVC/2Jtr7BR/ixQBCd9r
-         Si8TVHAN6MaKgSRz4NBNP+arKbtUAbXSlFSws=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LZX8culL+JDO4Nc+K2yxFStMUus86MuvCh6ZDifZHuY=;
-        b=ouKh/iLEz44au60BQdK/ZKKz22AagIcVMfTOCBtUIt98bbnSvmVTovoT7Q6FCBcL2P
-         HNhkZTl/PXGg0Oaq8ianfDn2D0gB7aOKroWU6avdqhPGJWqfNKEPM/kk0tEG7MStmybs
-         H2rErONSgU9XUwHbQ3fFTIWuzhKrzRez33wYqfJCnPx3BFCQnKGs3wQv9T3I2Ogzac1f
-         E8+ylaTOseETw7aF0XwDbqV7ygCopRzk/OTjTRH0R8crASa2Jw2SexCnijVUdXPYImqv
-         clwPDXkQxmU/obrgUAnMRGzcmWb7U2dSW4qDEn2bMZ9MKLsL+FjuBUuK2GK6Nr/hyvj0
-         fEbw==
-X-Gm-Message-State: AOAM5325hSfZbnSWNatkoxgHD0ar20AX4MqTN7IILH5jkBvs+yRpD9MY
-        BUUL4CyEokgT47BI02FKDIW5MUGTZyVBgMrqvy8=
-X-Google-Smtp-Source: ABdhPJzMrCICuabeOhfyc1FF02uYWeZpG45iw/uFXZ2rhoSvIs+GdUSIgC5FmPXdz0Aued8xWqPQ5w==
-X-Received: by 2002:a2e:9c04:0:b0:249:3cc7:48a1 with SMTP id s4-20020a2e9c04000000b002493cc748a1mr8787014lji.413.1648227443330;
-        Fri, 25 Mar 2022 09:57:23 -0700 (PDT)
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com. [209.85.167.51])
-        by smtp.gmail.com with ESMTPSA id a25-20020a196619000000b00449f4894887sm760506lfc.288.2022.03.25.09.57.22
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 09:57:22 -0700 (PDT)
-Received: by mail-lf1-f51.google.com with SMTP id t25so14380816lfg.7
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 09:57:22 -0700 (PDT)
-X-Received: by 2002:ac2:4203:0:b0:448:8053:d402 with SMTP id
- y3-20020ac24203000000b004488053d402mr8385952lfh.687.1648227441988; Fri, 25
- Mar 2022 09:57:21 -0700 (PDT)
+        Fri, 25 Mar 2022 13:00:40 -0400
+X-Greylist: delayed 1197 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 25 Mar 2022 09:59:05 PDT
+Received: from 4.mo550.mail-out.ovh.net (4.mo550.mail-out.ovh.net [46.105.76.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E55C4AE18
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 09:59:05 -0700 (PDT)
+Received: from player695.ha.ovh.net (unknown [10.110.171.117])
+        by mo550.mail-out.ovh.net (Postfix) with ESMTP id 3689621A0B
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 16:19:27 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player695.ha.ovh.net (Postfix) with ESMTPSA id C9F4628AAD10E;
+        Fri, 25 Mar 2022 16:19:23 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-102R004ceb7d065-e90c-401e-ab9e-18557b73c586,
+                    1702D5D0C6B5DF16716081994498F990499A02DA) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Wolfram Sang <wsa@kernel.org>
+Cc:     linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH] docs: i2c: reference simple probes
+Date:   Fri, 25 Mar 2022 17:19:10 +0100
+Message-Id: <20220325161910.1202539-1-steve@sk2.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <20220325154848.107863-1-jcmvbkbc@gmail.com>
-In-Reply-To: <20220325154848.107863-1-jcmvbkbc@gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 25 Mar 2022 09:57:05 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgJH3dgztETpQ4CaseA+j9rgbk0XP_yXDGshmQxAh3RKw@mail.gmail.com>
-Message-ID: <CAHk-=wgJH3dgztETpQ4CaseA+j9rgbk0XP_yXDGshmQxAh3RKw@mail.gmail.com>
-Subject: Re: [PULL 00/18] xtensa updates for v5.18
-To:     Max Filippov <jcmvbkbc@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:TENSILICA XTENSA PORT (xtensa)" 
-        <linux-xtensa@linux-xtensa.org>, Chris Zankel <chris@zankel.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 16973785521511499398
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudehuddgkeeiucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeetgedugfelkeeikeetgeegteevfeeufeetuefgudeiiedthfehtdeffeekvdeffeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrheileehrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 8:49 AM Max Filippov <jcmvbkbc@gmail.com> wrote:
->
-> (btw, I've noticed that github removed support for the unauthenticated
->  git:// protocol. Should I send pull request URLs using ssh or https?)
+Instead of documenting old-style probes, reference "simple probes" and
+document the i2c_match_id function. This might help reduce the use of
+two-argument probes in new code.
 
-I suspect for consistency, using https:// is the way to go.
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+---
+ Documentation/i2c/writing-clients.rst | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-I'm a bit sad to see "git:" go, since that was visually such a good
-marker that it's about a _git_ server, not some random web page (and I
-rely on the signed tag, not on some https thing).
+diff --git a/Documentation/i2c/writing-clients.rst b/Documentation/i2c/writing-clients.rst
+index 978cc8210bf3..e3b126cf4a3b 100644
+--- a/Documentation/i2c/writing-clients.rst
++++ b/Documentation/i2c/writing-clients.rst
+@@ -46,7 +46,7 @@ driver model device node, and its I2C address.
+ 	},
+ 
+ 	.id_table	= foo_idtable,
+-	.probe		= foo_probe,
++	.probe_new	= foo_probe,
+ 	.remove		= foo_remove,
+ 	/* if device autodetection is needed: */
+ 	.class		= I2C_CLASS_SOMETHING,
+@@ -155,8 +155,7 @@ those devices, and a remove() method to unbind.
+ 
+ ::
+ 
+-	static int foo_probe(struct i2c_client *client,
+-			     const struct i2c_device_id *id);
++	static int foo_probe(struct i2c_client *client);
+ 	static int foo_remove(struct i2c_client *client);
+ 
+ Remember that the i2c_driver does not create those client handles.  The
+@@ -165,8 +164,12 @@ handle may be used during foo_probe().  If foo_probe() reports success
+ foo_remove() returns.  That binding model is used by most Linux drivers.
+ 
+ The probe function is called when an entry in the id_table name field
+-matches the device's name. It is passed the entry that was matched so
+-the driver knows which one in the table matched.
++matches the device's name. If the probe function needs that entry, it
++can retrieve it using
++
++::
++
++	const struct i2c_device_id *id = i2c_match_id(foo_idtable, client);
+ 
+ 
+ Device Creation
+-- 
+2.27.0
 
-But from a technical angle, I guess it was inevitable. And git is
-everywhere, and 'github' certainly makes that "it's a git repo" part
-obvious anyway, so.
-
-                    Linus
