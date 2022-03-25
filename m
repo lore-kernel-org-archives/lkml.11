@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BE93C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 10:10:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 011B7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 10:10:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358739AbiCYKLm convert rfc822-to-8bit (ORCPT
+        id S1358770AbiCYKLq convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 06:11:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33334 "EHLO
+        Fri, 25 Mar 2022 06:11:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353799AbiCYKL1 (ORCPT
+        with ESMTP id S1350171AbiCYKL1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 25 Mar 2022 06:11:27 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 266B157164;
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2890657167;
         Fri, 25 Mar 2022 03:09:51 -0700 (PDT)
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22P7b0qA032055;
-        Fri, 25 Mar 2022 10:09:08 GMT
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22P811O2013207;
+        Fri, 25 Mar 2022 10:09:02 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f0p8nk8ck-1
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3f0t26v3tm-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 25 Mar 2022 10:09:08 +0000
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22P9u1qL018498;
-        Fri, 25 Mar 2022 10:09:07 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f0p8nk8bg-1
+        Fri, 25 Mar 2022 10:09:01 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22P9nP0L017164;
+        Fri, 25 Mar 2022 10:09:01 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3f0t26v3sn-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 25 Mar 2022 10:09:07 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22P9wC44004633;
-        Fri, 25 Mar 2022 10:09:04 GMT
+        Fri, 25 Mar 2022 10:09:01 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22P9xhOm020608;
+        Fri, 25 Mar 2022 10:08:58 GMT
 Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3ew6t94x43-1
+        by ppma06ams.nl.ibm.com with ESMTP id 3ew6ej4ymx-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 25 Mar 2022 10:09:04 +0000
+        Fri, 25 Mar 2022 10:08:57 +0000
 Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22PA96HK45547822
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22PA90a746793140
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 25 Mar 2022 10:09:06 GMT
+        Fri, 25 Mar 2022 10:09:00 GMT
 Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4796CA405B;
-        Fri, 25 Mar 2022 10:09:02 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id ACE09A405B;
+        Fri, 25 Mar 2022 10:08:55 +0000 (GMT)
 Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 96069A405F;
-        Fri, 25 Mar 2022 10:09:01 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 06F65A405C;
+        Fri, 25 Mar 2022 10:08:55 +0000 (GMT)
 Received: from smtp.tlslab.ibm.com (unknown [9.101.4.1])
         by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with SMTP;
-        Fri, 25 Mar 2022 10:09:01 +0000 (GMT)
+        Fri, 25 Mar 2022 10:08:54 +0000 (GMT)
 Received: from yukon.ibmuc.com (unknown [9.171.95.248])
-        by smtp.tlslab.ibm.com (Postfix) with ESMTP id 09391220158;
-        Fri, 25 Mar 2022 11:08:59 +0100 (CET)
+        by smtp.tlslab.ibm.com (Postfix) with ESMTP id 63F2B220158;
+        Fri, 25 Mar 2022 11:08:53 +0100 (CET)
 From:   =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
 To:     linux-spi@vger.kernel.org, linux-mtd@lists.infradead.org
 Cc:     Mark Brown <broonie@kernel.org>,
@@ -68,9 +68,9 @@ Cc:     Mark Brown <broonie@kernel.org>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>,
         Tao Ren <rentao.bupt@gmail.com>
-Subject: [PATCH v4 05/11] spi: aspeed: Adjust direct mapping to device size
-Date:   Fri, 25 Mar 2022 11:08:43 +0100
-Message-Id: <20220325100849.2019209-6-clg@kaod.org>
+Subject: [PATCH v4 01/11] ARM: dts: aspeed: Adjust "reg" property of FMC/SPI controllers
+Date:   Fri, 25 Mar 2022 11:08:39 +0100
+Message-Id: <20220325100849.2019209-2-clg@kaod.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220325100849.2019209-1-clg@kaod.org>
 References: <20220325100849.2019209-1-clg@kaod.org>
@@ -78,144 +78,125 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8BIT
 X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: VYFc8nwlbAci8sKEocDCVNd6KB8q3woz
-X-Proofpoint-GUID: vhRWtCE9iFd-zrzDb1JYN0e6x80dnumO
+X-Proofpoint-ORIG-GUID: 8eUxlfzMfIVYQLTeEB1bSNktTuUCQsWG
+X-Proofpoint-GUID: q2wJ6HldRcGYRngrA0a7QkdBTRS-pv9R
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
  definitions=2022-03-25_02,2022-03-24_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxlogscore=999
- impostorscore=0 mlxscore=0 adultscore=0 lowpriorityscore=0 spamscore=0
- priorityscore=1501 malwarescore=0 phishscore=0 clxscore=1034
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203250057
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
+ mlxlogscore=638 suspectscore=0 phishscore=0 clxscore=1034 impostorscore=0
+ malwarescore=0 spamscore=0 adultscore=0 bulkscore=0 priorityscore=1501
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2203250057
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The segment registers of the FMC/SPI controllers provide a way to
-configure the mapping window of the flash device contents on the AHB
-bus. Adjust this window to the size of the spi-mem mapping.
+This is compatible with the current driver and addresses issues when
+running 'make dt_binding_check'.
 
-Things get more complex with multiple devices. The driver needs to
-also adjust the window of the next device to make sure that there is
-no overlap, even if there is no available device. The proposal below
-is not perfect but it is covering all the cases we have seen on
-different boards with one and two devices on the same bus.
-
-Reviewed-by: Joel Stanley <joel@jms.id.au>
+Cc: Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>
 Tested-by: Joel Stanley <joel@jms.id.au>
 Tested-by: Tao Ren <rentao.bupt@gmail.com>
 Signed-off-by: Cédric Le Goater <clg@kaod.org>
 ---
- drivers/spi/spi-aspeed-smc.c | 88 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 88 insertions(+)
+ arch/arm/boot/dts/aspeed-g4.dtsi | 6 ++----
+ arch/arm/boot/dts/aspeed-g5.dtsi | 9 +++------
+ arch/arm/boot/dts/aspeed-g6.dtsi | 9 +++------
+ 3 files changed, 8 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/spi/spi-aspeed-smc.c b/drivers/spi/spi-aspeed-smc.c
-index 0951766baef4..9f7910e79ae8 100644
---- a/drivers/spi/spi-aspeed-smc.c
-+++ b/drivers/spi/spi-aspeed-smc.c
-@@ -403,6 +403,92 @@ static int aspeed_spi_chip_set_default_window(struct aspeed_spi_chip *chip)
- 	return chip->ahb_window_size ? 0 : -1;
- }
+diff --git a/arch/arm/boot/dts/aspeed-g4.dtsi b/arch/arm/boot/dts/aspeed-g4.dtsi
+index f14dace34c5a..9ae67e83cf60 100644
+--- a/arch/arm/boot/dts/aspeed-g4.dtsi
++++ b/arch/arm/boot/dts/aspeed-g4.dtsi
+@@ -54,8 +54,7 @@ ahb {
+ 		ranges;
  
-+static int aspeed_spi_set_window(struct aspeed_spi *aspi,
-+				 const struct aspeed_spi_window *win)
-+{
-+	u32 start = aspi->ahb_base_phy + win->offset;
-+	u32 end = start + win->size;
-+	void __iomem *seg_reg = aspi->regs + CE0_SEGMENT_ADDR_REG + win->cs * 4;
-+	u32 seg_val_backup = readl(seg_reg);
-+	u32 seg_val = aspi->data->segment_reg(aspi, start, end);
-+
-+	if (seg_val == seg_val_backup)
-+		return 0;
-+
-+	writel(seg_val, seg_reg);
-+
-+	/*
-+	 * Restore initial value if something goes wrong else we could
-+	 * loose access to the chip.
-+	 */
-+	if (seg_val != readl(seg_reg)) {
-+		dev_err(aspi->dev, "CE%d invalid window [ 0x%.8x - 0x%.8x ] %dMB",
-+			win->cs, start, end - 1, win->size >> 20);
-+		writel(seg_val_backup, seg_reg);
-+		return -EIO;
-+	}
-+
-+	if (win->size)
-+		dev_dbg(aspi->dev, "CE%d new window [ 0x%.8x - 0x%.8x ] %dMB",
-+			win->cs, start, end - 1,  win->size >> 20);
-+	else
-+		dev_dbg(aspi->dev, "CE%d window closed", win->cs);
-+
-+	return 0;
-+}
-+
-+/*
-+ * Yet to be done when possible :
-+ * - Align mappings on flash size (we don't have the info)
-+ * - ioremap each window, not strictly necessary since the overall window
-+ *   is correct.
-+ */
-+static int aspeed_spi_chip_adjust_window(struct aspeed_spi_chip *chip,
-+					 u32 local_offset, u32 size)
-+{
-+	struct aspeed_spi *aspi = chip->aspi;
-+	struct aspeed_spi_window windows[ASPEED_SPI_MAX_NUM_CS] = { 0 };
-+	struct aspeed_spi_window *win = &windows[chip->cs];
-+	int ret;
-+
-+	aspeed_spi_get_windows(aspi, windows);
-+
-+	/* Adjust this chip window */
-+	win->offset += local_offset;
-+	win->size = size;
-+
-+	if (win->offset + win->size > aspi->ahb_window_size) {
-+		win->size = aspi->ahb_window_size - win->offset;
-+		dev_warn(aspi->dev, "CE%d window resized to %dMB", chip->cs, win->size >> 20);
-+	}
-+
-+	ret = aspeed_spi_set_window(aspi, win);
-+	if (ret)
-+		return ret;
-+
-+	/* Update chip mapping info */
-+	chip->ahb_base = aspi->ahb_base + win->offset;
-+	chip->ahb_window_size = win->size;
-+
-+	/*
-+	 * Also adjust next chip window to make sure that it does not
-+	 * overlap with the current window.
-+	 */
-+	if (chip->cs < aspi->data->max_cs - 1) {
-+		struct aspeed_spi_window *next = &windows[chip->cs + 1];
-+
-+		/* Change offset and size to keep the same end address */
-+		if ((next->offset + next->size) > (win->offset + win->size))
-+			next->size = (next->offset + next->size) - (win->offset + win->size);
-+		else
-+			next->size = 0;
-+		next->offset = win->offset + win->size;
-+
-+		aspeed_spi_set_window(aspi, next);
-+	}
-+	return 0;
-+}
-+
- static int aspeed_spi_dirmap_create(struct spi_mem_dirmap_desc *desc)
- {
- 	struct aspeed_spi *aspi = spi_controller_get_devdata(desc->mem->spi->master);
-@@ -417,6 +503,8 @@ static int aspeed_spi_dirmap_create(struct spi_mem_dirmap_desc *desc)
- 	if (op->data.dir != SPI_MEM_DATA_IN)
- 		return -EOPNOTSUPP;
+ 		fmc: spi@1e620000 {
+-			reg = < 0x1e620000 0x94
+-				0x20000000 0x10000000 >;
++			reg = <0x1e620000 0x94>, <0x20000000 0x10000000>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			compatible = "aspeed,ast2400-fmc";
+@@ -91,8 +90,7 @@ flash@4 {
+ 		};
  
-+	aspeed_spi_chip_adjust_window(chip, desc->info.offset, desc->info.length);
-+
- 	if (desc->info.length > chip->ahb_window_size)
- 		dev_warn(aspi->dev, "CE%d window (%dMB) too small for mapping",
- 			 chip->cs, chip->ahb_window_size >> 20);
+ 		spi: spi@1e630000 {
+-			reg = < 0x1e630000 0x18
+-				0x30000000 0x10000000 >;
++			reg = <0x1e630000 0x18>, <0x30000000 0x10000000>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			compatible = "aspeed,ast2400-spi";
+diff --git a/arch/arm/boot/dts/aspeed-g5.dtsi b/arch/arm/boot/dts/aspeed-g5.dtsi
+index 7495f93c5069..c3e0a8e13c8a 100644
+--- a/arch/arm/boot/dts/aspeed-g5.dtsi
++++ b/arch/arm/boot/dts/aspeed-g5.dtsi
+@@ -55,8 +55,7 @@ ahb {
+ 		ranges;
+ 
+ 		fmc: spi@1e620000 {
+-			reg = < 0x1e620000 0xc4
+-				0x20000000 0x10000000 >;
++			reg = <0x1e620000 0xc4>, <0x20000000 0x10000000>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			compatible = "aspeed,ast2500-fmc";
+@@ -84,8 +83,7 @@ flash@2 {
+ 		};
+ 
+ 		spi1: spi@1e630000 {
+-			reg = < 0x1e630000 0xc4
+-				0x30000000 0x08000000 >;
++			reg = <0x1e630000 0xc4>, <0x30000000 0x08000000>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			compatible = "aspeed,ast2500-spi";
+@@ -106,8 +104,7 @@ flash@1 {
+ 		};
+ 
+ 		spi2: spi@1e631000 {
+-			reg = < 0x1e631000 0xc4
+-				0x38000000 0x08000000 >;
++			reg = <0x1e631000 0xc4>, <0x38000000 0x08000000>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			compatible = "aspeed,ast2500-spi";
+diff --git a/arch/arm/boot/dts/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed-g6.dtsi
+index c32e87fad4dc..1ad05dde19d2 100644
+--- a/arch/arm/boot/dts/aspeed-g6.dtsi
++++ b/arch/arm/boot/dts/aspeed-g6.dtsi
+@@ -95,8 +95,7 @@ gic: interrupt-controller@40461000 {
+ 			};
+ 
+ 		fmc: spi@1e620000 {
+-			reg = < 0x1e620000 0xc4
+-				0x20000000 0x10000000 >;
++			reg = <0x1e620000 0xc4>, <0x20000000 0x10000000>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			compatible = "aspeed,ast2600-fmc";
+@@ -124,8 +123,7 @@ flash@2 {
+ 		};
+ 
+ 		spi1: spi@1e630000 {
+-			reg = < 0x1e630000 0xc4
+-				0x30000000 0x10000000 >;
++			reg = <0x1e630000 0xc4>, <0x30000000 0x10000000>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			compatible = "aspeed,ast2600-spi";
+@@ -146,8 +144,7 @@ flash@1 {
+ 		};
+ 
+ 		spi2: spi@1e631000 {
+-			reg = < 0x1e631000 0xc4
+-				0x50000000 0x10000000 >;
++			reg = <0x1e631000 0xc4>, <0x50000000 0x10000000>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			compatible = "aspeed,ast2600-spi";
 -- 
 2.34.1
 
