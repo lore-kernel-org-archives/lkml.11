@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 107A8C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:30:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 922CBC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:30:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376828AbiCYPcV (ORCPT
+        id S1376915AbiCYPc3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:32:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60432 "EHLO
+        Fri, 25 Mar 2022 11:32:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378263AbiCYPZP (ORCPT
+        with ESMTP id S1377894AbiCYPYl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:25:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 410C6ECC44;
-        Fri, 25 Mar 2022 08:20:11 -0700 (PDT)
+        Fri, 25 Mar 2022 11:24:41 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E4B0EA772;
+        Fri, 25 Mar 2022 08:19:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CECCA61451;
-        Fri, 25 Mar 2022 15:20:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB2D3C340E9;
-        Fri, 25 Mar 2022 15:20:09 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 743D7CE2A47;
+        Fri, 25 Mar 2022 15:19:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 845D5C340E9;
+        Fri, 25 Mar 2022 15:19:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221610;
-        bh=2Y7SEJ45GUxU9Jc1FeEiiIgPS7sVZVqp/nNW4EwEPk4=;
+        s=korg; t=1648221551;
+        bh=U0mvhw39cbsclOBd4bIH5tg1ugmW7EL5M3n3ruIMsRg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LPJ6oNB8Y+tArCj0kT7KH3Fqfw8SpD2KCiGXFjyqNsehnV3f1P6+5P75opywYm2Wi
-         Kw5eH06SoyJtvttv1/KeTvLU7TNXzXKVNI+hS7AYisXiS7uN2A9O6YhVxob6BAnbez
-         Ows6j88lYeaX58L3Chosnu1QKLjA3K0YktHxjVIA=
+        b=tfXSBsHIdWUlfY2MIEZbvnt6At3vnGL85VWh2uO4T4rJFIW1nbtc5v8dWIJ9uu24B
+         t+ydBkivCvXRIrStxU9ulLpDXYFzF77+hMxlSPDdPKgVtRChjjg5wuagxVVtCoPmUE
+         K4Q1vwH1/+btC0qxxutNr19akm5CWX8/QS++rjyA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.17 38/39] m68k: fix access_ok for coldfire
-Date:   Fri, 25 Mar 2022 16:14:53 +0100
-Message-Id: <20220325150421.333278681@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.17 25/39] crypto: qat - disable registration of algorithms
+Date:   Fri, 25 Mar 2022 16:14:40 +0100
+Message-Id: <20220325150420.961866487@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150420.245733653@linuxfoundation.org>
 References: <20220325150420.245733653@linuxfoundation.org>
@@ -49,51 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
 
-commit 26509034bef198525d5936c116cbd0c3fa491c0b upstream.
+commit 8893d27ffcaf6ec6267038a177cb87bcde4dd3de upstream.
 
-While most m68k platforms use separate address spaces for user
-and kernel space, at least coldfire does not, and the other
-ones have a TASK_SIZE that is less than the entire 4GB address
-range.
+The implementations of aead and skcipher in the QAT driver do not
+support properly requests with the CRYPTO_TFM_REQ_MAY_BACKLOG flag set.
+If the HW queue is full, the driver returns -EBUSY but does not enqueue
+the request.
+This can result in applications like dm-crypt waiting indefinitely for a
+completion of a request that was never submitted to the hardware.
 
-Using the default implementation of __access_ok() stops coldfire
-user space from trivially accessing kernel memory.
+To avoid this problem, disable the registration of all crypto algorithms
+in the QAT driver by setting the number of crypto instances to 0 at
+configuration time.
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
 Cc: stable@vger.kernel.org
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/m68k/include/asm/uaccess.h |   15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ drivers/crypto/qat/qat_4xxx/adf_drv.c      |    7 +++++++
+ drivers/crypto/qat/qat_common/qat_crypto.c |    7 +++++++
+ 2 files changed, 14 insertions(+)
 
---- a/arch/m68k/include/asm/uaccess.h
-+++ b/arch/m68k/include/asm/uaccess.h
-@@ -12,14 +12,17 @@
- #include <asm/extable.h>
+--- a/drivers/crypto/qat/qat_4xxx/adf_drv.c
++++ b/drivers/crypto/qat/qat_4xxx/adf_drv.c
+@@ -75,6 +75,13 @@ static int adf_crypto_dev_config(struct
+ 	if (ret)
+ 		goto err;
  
- /* We let the MMU do all checking */
--static inline int access_ok(const void __user *addr,
-+static inline int access_ok(const void __user *ptr,
- 			    unsigned long size)
- {
--	/*
--	 * XXX: for !CONFIG_CPU_HAS_ADDRESS_SPACES this really needs to check
--	 * for TASK_SIZE!
--	 */
--	return 1;
-+	unsigned long limit = TASK_SIZE;
-+	unsigned long addr = (unsigned long)ptr;
++	/* Temporarily set the number of crypto instances to zero to avoid
++	 * registering the crypto algorithms.
++	 * This will be removed when the algorithms will support the
++	 * CRYPTO_TFM_REQ_MAY_BACKLOG flag
++	 */
++	instances = 0;
 +
-+	if (IS_ENABLED(CONFIG_CPU_HAS_ADDRESS_SPACES) ||
-+	    !IS_ENABLED(CONFIG_MMU))
-+		return 1;
-+
-+	return (size <= limit) && (addr <= (limit - size));
- }
+ 	for (i = 0; i < instances; i++) {
+ 		val = i;
+ 		bank = i * 2;
+--- a/drivers/crypto/qat/qat_common/qat_crypto.c
++++ b/drivers/crypto/qat/qat_common/qat_crypto.c
+@@ -161,6 +161,13 @@ int qat_crypto_dev_config(struct adf_acc
+ 	if (ret)
+ 		goto err;
  
- /*
++	/* Temporarily set the number of crypto instances to zero to avoid
++	 * registering the crypto algorithms.
++	 * This will be removed when the algorithms will support the
++	 * CRYPTO_TFM_REQ_MAY_BACKLOG flag
++	 */
++	instances = 0;
++
+ 	for (i = 0; i < instances; i++) {
+ 		val = i;
+ 		snprintf(key, sizeof(key), ADF_CY "%d" ADF_RING_ASYM_BANK_NUM, i);
 
 
