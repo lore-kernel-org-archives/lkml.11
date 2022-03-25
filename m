@@ -2,104 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F05FBC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 20:25:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B40E9C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 20:29:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232206AbiCYU0s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 16:26:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60938 "EHLO
+        id S232210AbiCYUbA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 16:31:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232169AbiCYU0p (ORCPT
+        with ESMTP id S232169AbiCYUa6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 16:26:45 -0400
-X-Greylist: delayed 633 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 25 Mar 2022 13:25:11 PDT
-Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 477176EB1E;
-        Fri, 25 Mar 2022 13:25:10 -0700 (PDT)
-Received: from [2603:3005:d05:2b00:6e0b:84ff:fee2:98bb] (helo=imladris.surriel.com)
-        by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <riel@shelob.surriel.com>)
-        id 1nXqKL-0000sb-7e; Fri, 25 Mar 2022 16:14:29 -0400
-Date:   Fri, 25 Mar 2022 16:14:28 -0400
-From:   Rik van Riel <riel@surriel.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-mm@kvack.org, kernel-team@fb.com,
-        Oscar Salvador <osalvador@suse.de>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        stable@vger.kernel.org
-Subject: [PATCH] mm,hwpoison: unmap poisoned page before invalidation
-Message-ID: <20220325161428.5068d97e@imladris.surriel.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
+        Fri, 25 Mar 2022 16:30:58 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 316426334
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 13:29:23 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id m3so15196737lfj.11
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 13:29:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yIkg7/kVfld7G0qCMJQN9ZYf/pDPvw76xmGteFxmM2k=;
+        b=Cb38yqOh7qL3I0Dwu82Zt1vcAQlWlsiIDWjwdLnwR2lDcU+Fo+o3TQ6YrOiQJu9K0x
+         6xj57cjbgkuq1mfYtUIpwxgKM065tt3S3zp5Qx16z9KLj81BJ/WqT32/yZT9WuaW2CVw
+         hP2VJPIzqrQcuBGcm5XrddrK0cv7dz9BqOVxI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yIkg7/kVfld7G0qCMJQN9ZYf/pDPvw76xmGteFxmM2k=;
+        b=FgBnNONE/MLl0YQ0v0Pxhkwsjv7ooAv88RBmGBB0Qrj19K2sFNpLGCt/f9jGdvLqI6
+         GGNLTSsCMfFJavbLm/q+Vj96FZi1zQ8Uz6YJb1TSqOvfA7EH46n0OcGEPVL2bBrVn4st
+         KqhSK4TupuwuP1MwOVqMlLoSwK4x72seb21Jk/fkkcZ4/oNRESKgg3Z3/b3fTYtjwPXU
+         cZmMP9B/dPIoPVOcA9+Wj8R+fEB4PT+RISUcpOSXb445GdMSaJPmhdaSXSvw9CUVp6kl
+         TZKA47E+iY2LDftXvppp449S521NtQlac9ysYfjJMDQ+93iboKx8KfzbWUQkHFsLxRoX
+         9AYA==
+X-Gm-Message-State: AOAM532SmSava6Gqt4+4IlotybAIC6ZHRsbNkeg0loNyNRAxJuFzEveE
+        eKlAyPIWPsSCl2LbagrTB2V0nC2sRbgIMQhD6ak=
+X-Google-Smtp-Source: ABdhPJwih3DKjrpUilzj8FmD+1faTWt/ACjlHMH4jcLjsQH/+q8mPyfeq4CushkQ0cytnHvKHh96hQ==
+X-Received: by 2002:ac2:58f0:0:b0:44a:206c:255d with SMTP id v16-20020ac258f0000000b0044a206c255dmr9132710lfo.124.1648240161220;
+        Fri, 25 Mar 2022 13:29:21 -0700 (PDT)
+Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com. [209.85.167.48])
+        by smtp.gmail.com with ESMTPSA id p8-20020a2ea408000000b00247e5087157sm768623ljn.101.2022.03.25.13.29.19
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Mar 2022 13:29:19 -0700 (PDT)
+Received: by mail-lf1-f48.google.com with SMTP id z12so1414290lfu.10
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 13:29:19 -0700 (PDT)
+X-Received: by 2002:a05:6512:3055:b0:44a:3914:6603 with SMTP id
+ b21-20020a056512305500b0044a39146603mr9115756lfb.435.1648240159035; Fri, 25
+ Mar 2022 13:29:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Sender: riel@shelob.surriel.com
+References: <000000000000cabcb505dae9e577@google.com> <CAMZfGtUG9GSRSp6fQ6AD6MFemX9ZS=XYWFceMPjVH7LATamUKg@mail.gmail.com>
+In-Reply-To: <CAMZfGtUG9GSRSp6fQ6AD6MFemX9ZS=XYWFceMPjVH7LATamUKg@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 25 Mar 2022 13:29:02 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wii1peDbW+eZipUnLmU_STXx6Vm30PiQnjhfUmgYrSd+Q@mail.gmail.com>
+Message-ID: <CAHk-=wii1peDbW+eZipUnLmU_STXx6Vm30PiQnjhfUmgYrSd+Q@mail.gmail.com>
+Subject: Re: [syzbot] general protection fault in list_lru_add
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     syzbot <syzbot+f8c45ccc7d5d45fc5965@syzkaller.appspotmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In some cases it appears the invalidation of a hwpoisoned page
-fails because the page is still mapped in another process. This
-can cause a program to be continuously restarted and die when
-it page faults on the page that was not invalidated. Avoid that
-problem by unmapping the hwpoisoned page when we find it.
+On Fri, Mar 25, 2022 at 2:52 AM Muchun Song <songmuchun@bytedance.com> wrote:
+>
+> We can see that we put the dentry (ffff88807ebda0f8) into
+> the list_lru (ffff888011bd47f0). But we do not allocate struct
+> list_lru_one for the memcg (ffff88801c530000).  Then it panics.
 
-Another issue is that sometimes we end up oopsing in finish_fault,
-if the code tries to do something with the now-NULL vmf->page.
-I did not hit this error when submitting the previous patch because
-there are several opportunities for alloc_set_pte to bail out before
-accessing vmf->page, and that apparently happened on those systems,
-and most of the time on other systems, too.
+Hmm.
 
-However, across several million systems that error does occur a
-handful of times a day. It can be avoided by returning VM_FAULT_NOPAGE
-which will cause do_read_fault to return before calling finish_fault.
+Looking at memcg_slab_pre_alloc_hook(), I note that it will return
+success without doing the LRU checking for several cases.
 
-Fixes: e53ac7374e64 ("mm: invalidate hwpoison page cache page in fault path")
-Cc: Oscar Salvador <osalvador@suse.de>
-Cc: Miaohe Lin <linmiaohe@huawei.com>
-Cc: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Cc: Mel Gorman <mgorman@suse.de>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: stable@vger.kernel.org
----
- mm/memory.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+So since you can reproduce the problem, I would suggest you add some
+debug code to __d_alloc() that prints out something big if it gets a
+dentry but you can't look up the list_lru_one() for that dentry.
 
-diff --git a/mm/memory.c b/mm/memory.c
-index be44d0b36b18..76e3af9639d9 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -3918,14 +3918,18 @@ static vm_fault_t __do_fault(struct vm_fault *vmf)
- 		return ret;
- 
- 	if (unlikely(PageHWPoison(vmf->page))) {
-+		struct page *page = vmf->page;
- 		vm_fault_t poisonret = VM_FAULT_HWPOISON;
- 		if (ret & VM_FAULT_LOCKED) {
-+			if (page_mapped(page))
-+				unmap_mapping_pages(page_mapping(page),
-+						    page->index, 1, false);
- 			/* Retry if a clean page was removed from the cache. */
--			if (invalidate_inode_page(vmf->page))
--				poisonret = 0;
--			unlock_page(vmf->page);
-+			if (invalidate_inode_page(page))
-+				poisonret = VM_FAULT_NOPAGE;
-+			unlock_page(page);
- 		}
--		put_page(vmf->page);
-+		put_page(page);
- 		vmf->page = NULL;
- 		return poisonret;
- 	}
--- 
-2.35.1
+Hmm?
 
+The only other situation I can think of is if dentry->d_sb were to
+change during the dentry lifetime, but I don't think that can happen.
+The only assignment I can find with "git grep" is that
 
+        dentry->d_sb = sb;
+
+in __d_alloc(), and while it's possible my grep pattern was bogus, it
+sounds unlikely.
+
+               Linus
