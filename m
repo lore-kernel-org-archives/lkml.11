@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 863B0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:07:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51F08C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:07:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359592AbiCYPIl (ORCPT
+        id S1359610AbiCYPIu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:08:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37390 "EHLO
+        Fri, 25 Mar 2022 11:08:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359540AbiCYPHV (ORCPT
+        with ESMTP id S1359608AbiCYPH2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:07:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81ECDD95FA;
-        Fri, 25 Mar 2022 08:05:42 -0700 (PDT)
+        Fri, 25 Mar 2022 11:07:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0310DA08E;
+        Fri, 25 Mar 2022 08:05:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 19961B828FB;
-        Fri, 25 Mar 2022 15:05:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A872C340EE;
-        Fri, 25 Mar 2022 15:05:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B0CF61BF7;
+        Fri, 25 Mar 2022 15:05:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A4CFC340EE;
+        Fri, 25 Mar 2022 15:05:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648220739;
-        bh=nlE5/yk8Wh13HMpIBgKjw5YvNTdmuJ9LRCKl5GPXncI=;
+        s=korg; t=1648220742;
+        bh=Ma/8tTyYHRbZXunujThW1LGLHLX30DJaaghwjpgcMHk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i/B+A2RwND+XIKCgMhUVupJkJL1D1ScW1Nio6gIywYt8nSWTVUp3pT0dZbQPPA7QB
-         WPPBrFDjkbPQQtorYhvqEXXuTQXrbzNmqDzqUcMi7rC3d3M8bULTyDe3NzNVDKnzOT
-         ku9yVv0AUJUXLm+fwoOdeR/OMim7YM8EjrOI0b2s=
+        b=vRvZCuPPuA3ai1uVoep1s9vNo804hDnAuUJDMwOw/Eua9ueYyQ4qVgkt1Yd+M5pSQ
+         +cPmGGSq5I7nUTP00xIEERYlzgTqJ+bNX0lWUFHEbtro64pB3DgQYyOp5uziSwRyaj
+         FSzZ+w4K85wnuLAnjkM2pDg9mi9Y18/Nxva3VN6w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephane Graber <stgraber@ubuntu.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.14 11/17] drivers: net: xgene: Fix regression in CRC stripping
-Date:   Fri, 25 Mar 2022 16:04:45 +0100
-Message-Id: <20220325150417.091471376@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 4.14 12/17] netfilter: nf_tables: initialize registers in nft_do_chain()
+Date:   Fri, 25 Mar 2022 16:04:46 +0100
+Message-Id: <20220325150417.120190348@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150416.756136126@linuxfoundation.org>
 References: <20220325150416.756136126@linuxfoundation.org>
@@ -49,57 +48,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephane Graber <stgraber@ubuntu.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit e9e6faeafaa00da1851bcf47912b0f1acae666b4 upstream.
+commit 4c905f6740a365464e91467aa50916555b28213d upstream.
 
-All packets on ingress (except for jumbo) are terminated with a 4-bytes
-CRC checksum. It's the responsability of the driver to strip those 4
-bytes. Unfortunately a change dating back to March 2017 re-shuffled some
-code and made the CRC stripping code effectively dead.
+Initialize registers to avoid stack leak into userspace.
 
-This change re-orders that part a bit such that the datalen is
-immediately altered if needed.
-
-Fixes: 4902a92270fb ("drivers: net: xgene: Add workaround for errata 10GE_8/ENET_11")
-Cc: stable@vger.kernel.org
-Signed-off-by: Stephane Graber <stgraber@ubuntu.com>
-Tested-by: Stephane Graber <stgraber@ubuntu.com>
-Link: https://lore.kernel.org/r/20220322224205.752795-1-stgraber@ubuntu.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 96518518cc41 ("netfilter: add nftables")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/apm/xgene/xgene_enet_main.c |   12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ net/netfilter/nf_tables_core.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
-+++ b/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
-@@ -707,6 +707,12 @@ static int xgene_enet_rx_frame(struct xg
- 	buf_pool->rx_skb[skb_index] = NULL;
- 
- 	datalen = xgene_enet_get_data_len(le64_to_cpu(raw_desc->m1));
-+
-+	/* strip off CRC as HW isn't doing this */
-+	nv = GET_VAL(NV, le64_to_cpu(raw_desc->m0));
-+	if (!nv)
-+		datalen -= 4;
-+
- 	skb_put(skb, datalen);
- 	prefetch(skb->data - NET_IP_ALIGN);
- 	skb->protocol = eth_type_trans(skb, ndev);
-@@ -728,12 +734,8 @@ static int xgene_enet_rx_frame(struct xg
- 		}
- 	}
- 
--	nv = GET_VAL(NV, le64_to_cpu(raw_desc->m0));
--	if (!nv) {
--		/* strip off CRC as HW isn't doing this */
--		datalen -= 4;
-+	if (!nv)
- 		goto skip_jumbo;
--	}
- 
- 	slots = page_pool->slots - 1;
- 	head = page_pool->head;
+--- a/net/netfilter/nf_tables_core.c
++++ b/net/netfilter/nf_tables_core.c
+@@ -150,7 +150,7 @@ nft_do_chain(struct nft_pktinfo *pkt, vo
+ 	const struct net *net = nft_net(pkt);
+ 	const struct nft_rule *rule;
+ 	const struct nft_expr *expr, *last;
+-	struct nft_regs regs;
++	struct nft_regs regs = {};
+ 	unsigned int stackptr = 0;
+ 	struct nft_jumpstack jumpstack[NFT_JUMP_STACK_SIZE];
+ 	int rulenum;
 
 
