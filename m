@@ -2,161 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAA01C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 02:33:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8235C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 02:38:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347240AbiCYCey (ORCPT
+        id S1357794AbiCYCkV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 22:34:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54364 "EHLO
+        Thu, 24 Mar 2022 22:40:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357782AbiCYCeo (ORCPT
+        with ESMTP id S1348771AbiCYCkT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 22:34:44 -0400
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F7C0CD6;
-        Thu, 24 Mar 2022 19:33:07 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id b189so5031216qkf.11;
-        Thu, 24 Mar 2022 19:33:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Vw/ACGTLfd24TEwOsMtKP4JjvUnmGhYZJwx+5xNDMTo=;
-        b=aTFV1PR6CO4w0h+dPvEkd94PPa5+MUuVTFoV2GN6oOUNO1CE6g4mQCQa9qxVo61907
-         hktftE9csq6AtkHwwvFp10OR0ijgnn2yRpCXTk6Mmz8J+uV4FIU8pAz1ScaigtQZ3eEn
-         ZH3C2ihv8yDLtzyPKgbW7m9MEaRPUanFV6HipTzAcjVXsa2cTqR5n5NDK+LsqCg45OBe
-         H+7n5+WgTVIEKZP7jgpcTiZ3QIQrVgX6coZ9OXQdvJvDyvMVSsr1XPj/lIhi9C7EHYqC
-         RgGnlhDfqr8PBXZif7l9+2tK2XxGJsY9soT4sDTXEUrdwqa43HNNeHzBMMLUJm9tCGp7
-         EdkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Vw/ACGTLfd24TEwOsMtKP4JjvUnmGhYZJwx+5xNDMTo=;
-        b=QPgI0fygTXPyVLaEYhex2UOiZ4N0Tv5X+chASHm6SOlziM9QHfPnzLeJsSSocUx6zU
-         AR8H3abmtkOl1Q/TMyKHKo7V9zCcQyk301ttj254h4NHTFab+1uGgOdGWrWqFSIyFVNL
-         UPNnvXLiMk5y3wzA4UEJDarGdIZdbTz2EAXxg/dEfrkFMt2mGSr5AkeHoUnbgKBqocKv
-         EVH7RpMT2SVYhE/F99gdwTLQPVF4DtuwvYHIBPTxjFTFk30NIeA7Ard4XFzIPL3GYmW0
-         iYGqC+YfpRrnrKXTwm9yQ0fShOnOWLsRbYxOn6bt9eyjTIdn5rQQ21Z4D9GJkMa0elsl
-         GgIg==
-X-Gm-Message-State: AOAM532J0Wf+S7j7z+ht88/4nm0foh0EpPQjViU7flNI3AnSLhGKzkkL
-        ME5d4KFnehefWcD5qqAMI3Q=
-X-Google-Smtp-Source: ABdhPJwVZhPntslu4pfq0kZWLhN5okKsenhhKKE3cL+8rlT/JWxJfPbEdlo2o8CtuJ7/kX6wvCHKrg==
-X-Received: by 2002:a05:620a:b43:b0:67d:942c:2e03 with SMTP id x3-20020a05620a0b4300b0067d942c2e03mr5427638qkg.303.1648175586629;
-        Thu, 24 Mar 2022 19:33:06 -0700 (PDT)
-Received: from auth1-smtp.messagingengine.com (auth1-smtp.messagingengine.com. [66.111.4.227])
-        by smtp.gmail.com with ESMTPSA id y15-20020a05622a004f00b002e1aaa1738dsm4009736qtw.12.2022.03.24.19.33.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 19:33:05 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailauth.nyi.internal (Postfix) with ESMTP id 7C3F827C005A;
-        Thu, 24 Mar 2022 22:33:04 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Thu, 24 Mar 2022 22:33:04 -0400
-X-ME-Sender: <xms:4Ck9YuoLSbL5dk9QkvnUArqaZwfIEa-2yxIJEAnmb9cU-XrCItStKA>
-    <xme:4Ck9YspqfLnNKMxbCtpmg4bttywSADezJUHV9Jfv3xNLbU33EEszBCa7nr43sj3Ks
-    TtC06xB7edpIXrj0A>
-X-ME-Received: <xmr:4Ck9YjNMg1f9wfEjkeAW5z0waZ-Ha407geaAb8PLUtCABAJy4PkEeMqUrLE>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudehtddggeefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpeeuohhquhhn
-    ucfhvghnghcuoegsohhquhhnrdhfvghnghesghhmrghilhdrtghomheqnecuggftrfgrth
-    htvghrnhephedvveetfefgiedutedtfeevvddvleekjeeuffffleeguefhhfejteekieeu
-    ueelnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepsg
-    hoqhhunhdomhgvshhmthhprghuthhhphgvrhhsohhnrghlihhthidqieelvdeghedtieeg
-    qddujeejkeehheehvddqsghoqhhunhdrfhgvnhhgpeepghhmrghilhdrtghomhesfhhigi
-    hmvgdrnhgrmhgv
-X-ME-Proxy: <xmx:4Ck9Yt6vRPfZt87GeH8RMfORf2_cF35rIKn9I54HZh7BHs1v3oYcgQ>
-    <xmx:4Ck9Yt4ZLN-yVQXYHOi7Dvmnpcdr40jBeSeIYYiSXnycF1hVswli5g>
-    <xmx:4Ck9YtgTk4KyY5qOXjfhwBz8CvQmvt_atgxzgl4BidWQ1RQs5dtNPw>
-    <xmx:4Ck9YiGEfV_D2YMGZAbNScl6KuQpTYjFOXbaWj6mBPgaY1m0MPv8RA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 24 Mar 2022 22:33:03 -0400 (EDT)
-From:   Boqun Feng <boqun.feng@gmail.com>
-To:     Wei Liu <wei.liu@kernel.org>
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
-        linux-hyperv@vger.kernel.org,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        David Hildenbrand <david@redhat.com>,
-        linux-kernel@vger.kernel.org, Boqun Feng <boqun.feng@gmail.com>
-Subject: [PATCH v2 1/2] Drivers: hv: balloon: Support status report for larger page sizes
-Date:   Fri, 25 Mar 2022 10:32:11 +0800
-Message-Id: <20220325023212.1570049-2-boqun.feng@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220325023212.1570049-1-boqun.feng@gmail.com>
-References: <20220325023212.1570049-1-boqun.feng@gmail.com>
+        Thu, 24 Mar 2022 22:40:19 -0400
+Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657DE140C1;
+        Thu, 24 Mar 2022 19:38:44 -0700 (PDT)
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177]) (authenticated)
+        by conssluserg-03.nifty.com with ESMTP id 22P2cK5R014979;
+        Fri, 25 Mar 2022 11:38:21 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 22P2cK5R014979
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1648175901;
+        bh=1iEqKEv3p6DCYf2RjWYDPtxspYJPBn8ZyBlRSDc7814=;
+        h=From:Date:Subject:To:Cc:From;
+        b=ua57p8pRk1Y6W356g+iAAn3jB9YYrlzV64cIXYy7GzFsphp02V0lMYglBd9ymLRye
+         cvgPH5pYSKLlhz22B0w5lV4JFnEpSNWH2RYOhPzumihXDyCcGecESPl9DpuDhs5l9j
+         NpMGe94iqVMGSA2A3haBWSoABGbZpydroO10zwGhCc0JqbxO3gBaTC3kIe1n4G3ckP
+         lUm8FR9G2Zr0zIvkFe2LFytf7AhaOT7nS0yPrFbwh504vdlxZH+KqdIGFCdro91cEv
+         fRRDYJ5hPfHM8BGoUkLQ5rWpsSPviFM97EEPgYvdBXCYvCT7cr7dlSq2LZeEScAmDE
+         dBFFyeWmEGyWg==
+X-Nifty-SrcIP: [209.85.214.177]
+Received: by mail-pl1-f177.google.com with SMTP id c23so6739546plo.0;
+        Thu, 24 Mar 2022 19:38:21 -0700 (PDT)
+X-Gm-Message-State: AOAM533FkfGDFGBF0kOdRHgLm7C0Nr3tIMr/8dtwgaUuuGGUJIaVDIYx
+        rUINRQRssu1QMcModWht5D1SFqPjh2NBIv2NXcg=
+X-Google-Smtp-Source: ABdhPJxY6hxpbdG+DYEBnU4ESyAp/sR3o1zix37ioauarAILO6/BeL5fv1dQWCpzON8SXiOWRIojuRQ9DPCKQAVfgD0=
+X-Received: by 2002:a17:90a:ab17:b0:1b9:b61a:aadb with SMTP id
+ m23-20020a17090aab1700b001b9b61aaadbmr9756259pjq.77.1648175900182; Thu, 24
+ Mar 2022 19:38:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Fri, 25 Mar 2022 11:37:37 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAQ2HET1QHG17m1vdCGMoRm6Lj=sAe+cj2Via_LHx3xBPg@mail.gmail.com>
+Message-ID: <CAK7LNAQ2HET1QHG17m1vdCGMoRm6Lj=sAe+cj2Via_LHx3xBPg@mail.gmail.com>
+Subject: [GIT PULL] Kbuild -std=gnu11 updates for v5.17-rc1
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DM_STATUS_REPORT expects the numbers of pages in the unit of 4k pages
-(HV_HYP_PAGE) instead of guest pages, so to make it work when guest page
-sizes are larger than 4k, convert the numbers of guest pages into the
-numbers of HV_HYP_PAGEs.
+Hi Linus,
 
-Note that the numbers of guest pages are still used for tracing because
-tracing is internal to the guest kernel.
+This is a small patch set for -std=gnu11 migration.
+As you requested, I separated this out.
+I will send the second pull request later for the rest
+of kbuild updates.
 
-Reported-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
----
- drivers/hv/hv_balloon.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+Thank you.
 
-diff --git a/drivers/hv/hv_balloon.c b/drivers/hv/hv_balloon.c
-index f2d05bff4245..062156b88a87 100644
---- a/drivers/hv/hv_balloon.c
-+++ b/drivers/hv/hv_balloon.c
-@@ -17,6 +17,7 @@
- #include <linux/slab.h>
- #include <linux/kthread.h>
- #include <linux/completion.h>
-+#include <linux/count_zeros.h>
- #include <linux/memory_hotplug.h>
- #include <linux/memory.h>
- #include <linux/notifier.h>
-@@ -1130,6 +1131,7 @@ static void post_status(struct hv_dynmem_device *dm)
- 	struct dm_status status;
- 	unsigned long now = jiffies;
- 	unsigned long last_post = last_post_time;
-+	unsigned long num_pages_avail, num_pages_committed;
- 
- 	if (pressure_report_delay > 0) {
- 		--pressure_report_delay;
-@@ -1154,16 +1156,21 @@ static void post_status(struct hv_dynmem_device *dm)
- 	 * num_pages_onlined) as committed to the host, otherwise it can try
- 	 * asking us to balloon them out.
- 	 */
--	status.num_avail = si_mem_available();
--	status.num_committed = vm_memory_committed() +
-+	num_pages_avail = si_mem_available();
-+	num_pages_committed = vm_memory_committed() +
- 		dm->num_pages_ballooned +
- 		(dm->num_pages_added > dm->num_pages_onlined ?
- 		 dm->num_pages_added - dm->num_pages_onlined : 0) +
- 		compute_balloon_floor();
- 
--	trace_balloon_status(status.num_avail, status.num_committed,
-+	trace_balloon_status(num_pages_avail, num_pages_committed,
- 			     vm_memory_committed(), dm->num_pages_ballooned,
- 			     dm->num_pages_added, dm->num_pages_onlined);
-+
-+	/* Convert numbers of pages into numbers of HV_HYP_PAGEs. */
-+	status.num_avail = num_pages_avail * NR_HV_HYP_PAGES_IN_PAGE;
-+	status.num_committed = num_pages_committed * NR_HV_HYP_PAGES_IN_PAGE;
-+
- 	/*
- 	 * If our transaction ID is no longer current, just don't
- 	 * send the status. This can happen if we were interrupted
+
+
+
+
+The following changes since commit 754e0b0e35608ed5206d6a67a791563c631cec07:
+
+  Linux 5.17-rc4 (2022-02-13 12:13:30 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git
+kbuild-gnu11-v5.18
+
+for you to fetch changes up to 1e24078113ae69c741cb1b03375a9f1490db7308:
+
+  Kbuild: use -std=gnu11 for KBUILD_USERCFLAGS (2022-03-13 17:31:44 +0900)
+
+----------------------------------------------------------------
+Kbuild -std=gnu11 updates for v5.18
+
+Linus pointed out the benefits of C99 some years ago, especially variable
+declarations in loops [1]. At that time, we were not ready for the
+migration due to old compilers.
+
+Recently, Jakob Koschel reported a bug in list_for_each_entry(), which
+leaks the invalid pointer out of the loop [2]. In the discussion, we
+agreed that the time had come. Now that GCC 5.1 is the minimum compiler
+version, there is nothing to prevent us from going to -std=gnu99, or even
+straight to -std=gnu11.
+
+Discussions for a better list iterator implementation are ongoing, but
+this patch set must land first.
+
+[1] https://lore.kernel.org/all/CAHk-=wgr12JkKmRd21qh-se-_Gs69kbPgR9x4C+Es-yJV2GLkA@mail.gmail.com/
+[2] https://lore.kernel.org/lkml/86C4CE7D-6D93-456B-AA82-F8ADEACA40B7@gmail.com/
+
+----------------------------------------------------------------
+Arnd Bergmann (3):
+      Kbuild: add -Wno-shift-negative-value where -Wextra is used
+      Kbuild: move to -std=gnu11
+      Kbuild: use -std=gnu11 for KBUILD_USERCFLAGS
+
+Mark Rutland (1):
+      Kbuild: use -Wdeclaration-after-statement
+
+ Documentation/process/programming-language.rst                    | 6 +++---
+ Documentation/translations/it_IT/process/programming-language.rst | 4 ++--
+ Documentation/translations/zh_CN/process/programming-language.rst | 3 +--
+ Documentation/translations/zh_TW/process/programming-language.rst | 3 +--
+ Makefile                                                          | 7 ++++---
+ arch/arm64/kernel/vdso32/Makefile                                 | 3 ++-
+ drivers/gpu/drm/i915/Makefile                                     | 1 +
+ drivers/staging/greybus/tools/Makefile                            | 3 ++-
+ fs/btrfs/Makefile                                                 | 1 +
+ scripts/Makefile.extrawarn                                        | 1 +
+ scripts/mod/modpost.c                                             | 4 +++-
+ 11 files changed, 21 insertions(+), 15 deletions(-)
+
+
 -- 
-2.35.1
-
+Best Regards
+Masahiro Yamada
