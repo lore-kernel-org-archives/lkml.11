@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F421C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:10:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69595C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:10:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359326AbiCYPMZ (ORCPT
+        id S1359817AbiCYPM3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:12:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43422 "EHLO
+        Fri, 25 Mar 2022 11:12:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359812AbiCYPJm (ORCPT
+        with ESMTP id S1359673AbiCYPJ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:09:42 -0400
+        Fri, 25 Mar 2022 11:09:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68643DAFE4;
-        Fri, 25 Mar 2022 08:07:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E03D2DB483;
+        Fri, 25 Mar 2022 08:07:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0783B828FA;
-        Fri, 25 Mar 2022 15:07:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DE3FC340E9;
-        Fri, 25 Mar 2022 15:07:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 799CAB828FF;
+        Fri, 25 Mar 2022 15:07:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6159C340F1;
+        Fri, 25 Mar 2022 15:07:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648220853;
-        bh=OQ8q4XiPlYgF94hRe6T81CNR0zdaJSSgEHaVdyK4gVI=;
+        s=korg; t=1648220856;
+        bh=rJ0Sf1ZTcFbgQs/i1OJwm6UcbDOkwSYw86FsByXeSiw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ffCfbZbcSa1x9XT9IRXBZZIi9fbr3FmLR3aBX2iN7LcSJoMej0AZx6b7sagU3s0+K
-         jQGz0oWSxVV0CkwGhLldeoCmZV/QKZQmrBLneCwFvcWBMvUidhrJTCyzNtgDpDwSwC
-         mRiTS+79i3gTJ/aDQwlJNNhzhxTA+ET9bjlWG7yA=
+        b=eTV+3rNsWS7dOmtOitT5+AMwu35pkXA71XqGLUU3AwB1Dc1e7Izc1GjkVLAJ/CFmf
+         vtEgh8z/Tiec1UNotaYO6LDB6zZWFEFfc6pEFyYLRkgj8ivutzhqHmLJi6IzZDnHkM
+         ZoHo4SqaqgaOP1y0eFBFO2ZmJkynQzmlnVLItgBc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Halil Pasic <pasic@linux.ibm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.4 11/29] swiotlb: rework "fix info leak with DMA_FROM_DEVICE"
-Date:   Fri, 25 Mar 2022 16:04:51 +0100
-Message-Id: <20220325150418.912138406@linuxfoundation.org>
+        stable@vger.kernel.org, Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.4 12/29] ALSA: pcm: Add stream lock during PCM reset ioctl operations
+Date:   Fri, 25 Mar 2022 16:04:52 +0100
+Message-Id: <20220325150418.940775820@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150418.585286754@linuxfoundation.org>
 References: <20220325150418.585286754@linuxfoundation.org>
@@ -50,123 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Halil Pasic <pasic@linux.ibm.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit aa6f8dcbab473f3a3c7454b74caa46d36cdc5d13 upstream.
+commit 1f68915b2efd0d6bfd6e124aa63c94b3c69f127c upstream.
 
-Unfortunately, we ended up merging an old version of the patch "fix info
-leak with DMA_FROM_DEVICE" instead of merging the latest one. Christoph
-(the swiotlb maintainer), he asked me to create an incremental fix
-(after I have pointed this out the mix up, and asked him for guidance).
-So here we go.
+snd_pcm_reset() is a non-atomic operation, and it's allowed to run
+during the PCM stream running.  It implies that the manipulation of
+hw_ptr and other parameters might be racy.
 
-The main differences between what we got and what was agreed are:
-* swiotlb_sync_single_for_device is also required to do an extra bounce
-* We decided not to introduce DMA_ATTR_OVERWRITE until we have exploiters
-* The implantation of DMA_ATTR_OVERWRITE is flawed: DMA_ATTR_OVERWRITE
-  must take precedence over DMA_ATTR_SKIP_CPU_SYNC
+This patch adds the PCM stream lock at appropriate places in
+snd_pcm_*_reset() actions for covering that.
 
-Thus this patch removes DMA_ATTR_OVERWRITE, and makes
-swiotlb_sync_single_for_device() bounce unconditionally (that is, also
-when dir == DMA_TO_DEVICE) in order do avoid synchronising back stale
-data from the swiotlb buffer.
-
-Let me note, that if the size used with dma_sync_* API is less than the
-size used with dma_[un]map_*, under certain circumstances we may still
-end up with swiotlb not being transparent. In that sense, this is no
-perfect fix either.
-
-To get this bullet proof, we would have to bounce the entire
-mapping/bounce buffer. For that we would have to figure out the starting
-address, and the size of the mapping in
-swiotlb_sync_single_for_device(). While this does seem possible, there
-seems to be no firm consensus on how things are supposed to work.
-
-Signed-off-by: Halil Pasic <pasic@linux.ibm.com>
-Fixes: ddbd89deb7d3 ("swiotlb: fix info leak with DMA_FROM_DEVICE")
-Cc: stable@vger.kernel.org
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: <stable@vger.kernel.org>
+Reviewed-by: Jaroslav Kysela <perex@perex.cz>
+Link: https://lore.kernel.org/r/20220322171325.4355-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/DMA-attributes.txt |   10 ----------
- include/linux/dma-mapping.h      |    8 --------
- kernel/dma/swiotlb.c             |   25 ++++++++++++++++---------
- 3 files changed, 16 insertions(+), 27 deletions(-)
+ sound/core/pcm_native.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/Documentation/DMA-attributes.txt
-+++ b/Documentation/DMA-attributes.txt
-@@ -156,13 +156,3 @@ accesses to DMA buffers in both privileg
- subsystem that the buffer is fully accessible at the elevated privilege
- level (and ideally inaccessible or at least read-only at the
- lesser-privileged levels).
--
--DMA_ATTR_PRIVILEGED
---------------------
--
--Some advanced peripherals such as remote processors and GPUs perform
--accesses to DMA buffers in both privileged "supervisor" and unprivileged
--"user" modes.  This attribute is used to indicate to the DMA-mapping
--subsystem that the buffer is fully accessible at the elevated privilege
--level (and ideally inaccessible or at least read-only at the
--lesser-privileged levels).
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -71,14 +71,6 @@
- #define DMA_ATTR_PRIVILEGED		(1UL << 9)
- 
- /*
-- * This is a hint to the DMA-mapping subsystem that the device is expected
-- * to overwrite the entire mapped size, thus the caller does not require any
-- * of the previous buffer contents to be preserved. This allows
-- * bounce-buffering implementations to optimise DMA_FROM_DEVICE transfers.
-- */
--#define DMA_ATTR_OVERWRITE		(1UL << 10)
--
--/*
-  * A dma_addr_t can hold any valid DMA or bus address for the platform.
-  * It can be given to a device to use as a DMA source or target.  A CPU cannot
-  * reference a dma_addr_t directly because there may be translation between
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -571,10 +571,14 @@ found:
- 	 */
- 	for (i = 0; i < nslots; i++)
- 		io_tlb_orig_addr[index+i] = orig_addr + (i << IO_TLB_SHIFT);
--	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
--	    (!(attrs & DMA_ATTR_OVERWRITE) || dir == DMA_TO_DEVICE ||
--	    dir == DMA_BIDIRECTIONAL))
--		swiotlb_bounce(orig_addr, tlb_addr, mapping_size, DMA_TO_DEVICE);
-+	/*
-+	 * When dir == DMA_FROM_DEVICE we could omit the copy from the orig
-+	 * to the tlb buffer, if we knew for sure the device will
-+	 * overwirte the entire current content. But we don't. Thus
-+	 * unconditional bounce may prevent leaking swiotlb content (i.e.
-+	 * kernel memory) to user-space.
-+	 */
-+	swiotlb_bounce(orig_addr, tlb_addr, mapping_size, DMA_TO_DEVICE);
- 
- 	return tlb_addr;
+--- a/sound/core/pcm_native.c
++++ b/sound/core/pcm_native.c
+@@ -1656,21 +1656,25 @@ static int snd_pcm_do_reset(struct snd_p
+ 	int err = substream->ops->ioctl(substream, SNDRV_PCM_IOCTL1_RESET, NULL);
+ 	if (err < 0)
+ 		return err;
++	snd_pcm_stream_lock_irq(substream);
+ 	runtime->hw_ptr_base = 0;
+ 	runtime->hw_ptr_interrupt = runtime->status->hw_ptr -
+ 		runtime->status->hw_ptr % runtime->period_size;
+ 	runtime->silence_start = runtime->status->hw_ptr;
+ 	runtime->silence_filled = 0;
++	snd_pcm_stream_unlock_irq(substream);
+ 	return 0;
  }
-@@ -649,11 +653,14 @@ void swiotlb_tbl_sync_single(struct devi
- 			BUG_ON(dir != DMA_TO_DEVICE);
- 		break;
- 	case SYNC_FOR_DEVICE:
--		if (likely(dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL))
--			swiotlb_bounce(orig_addr, tlb_addr,
--				       size, DMA_TO_DEVICE);
--		else
--			BUG_ON(dir != DMA_FROM_DEVICE);
-+		/*
-+		 * Unconditional bounce is necessary to avoid corruption on
-+		 * sync_*_for_cpu or dma_ummap_* when the device didn't
-+		 * overwrite the whole lengt of the bounce buffer.
-+		 */
-+		swiotlb_bounce(orig_addr, tlb_addr,
-+			       size, DMA_TO_DEVICE);
-+		BUG_ON(!valid_dma_direction(dir));
- 		break;
- 	default:
- 		BUG();
+ 
+ static void snd_pcm_post_reset(struct snd_pcm_substream *substream, int state)
+ {
+ 	struct snd_pcm_runtime *runtime = substream->runtime;
++	snd_pcm_stream_lock_irq(substream);
+ 	runtime->control->appl_ptr = runtime->status->hw_ptr;
+ 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK &&
+ 	    runtime->silence_size > 0)
+ 		snd_pcm_playback_silence(substream, ULONG_MAX);
++	snd_pcm_stream_unlock_irq(substream);
+ }
+ 
+ static const struct action_ops snd_pcm_action_reset = {
 
 
