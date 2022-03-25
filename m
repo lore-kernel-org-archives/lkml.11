@@ -2,108 +2,229 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13C75C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:48:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3C16C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:48:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231501AbiCYTts (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:49:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39320 "EHLO
+        id S231481AbiCYTt4 convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:49:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232594AbiCYTsh (ORCPT
+        with ESMTP id S231657AbiCYTtK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:48:37 -0400
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F38B223840;
-        Fri, 25 Mar 2022 12:32:07 -0700 (PDT)
-Received: by mail-lf1-f48.google.com with SMTP id m3so14989808lfj.11;
-        Fri, 25 Mar 2022 12:32:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=fRup0HhTI1fItvOnWgW1apl6hJ+hovK5wDJd4/CJEws=;
-        b=m12DW7F/KxegR9D+RbcCP/FsyoJqn1Q7vDwxkuPbGaUo5off6jkMbcu78TeXgKUBvc
-         nvUePxxPS8Nk1bTnvF5NkmnugZI4gK6EzQhqq9PltfE8PaEA5gZeJTKD39t/bN3qtV3E
-         kAfqnHxiJB69bcbAbwa6JjiSTvA19v/qbggObr+ZPb/qHJp1WsGRp5EGD/KP1vtLNvZS
-         b7VqPKfNVqIrcI7H7s9mPujpfNwUD0d9fsRdBzgJHVHtIjWarnyBePlfcCILlSdIQo0M
-         8Tx1YUiJQX7y8xlWcyg8ke+ssl0B2SbUC5fewGcW2U/cjElpqLs00ljkZPm/FaKmfaX6
-         o3PA==
-X-Gm-Message-State: AOAM530Ka7v6Y+qBNa95EqZ6u1qT273UFhi6g7prrflumBp1YtMB4e9y
-        5UiMyZ9STRGPB1w9hZ8Mp3X9t5l+gdOeDw==
-X-Google-Smtp-Source: ABdhPJxBJl5W6RwFQAyh8otMltwQxLkSdlG8+OGsciwzNPCea5FQXhEojfuAMY1CBRj+1zzaCrkF1w==
-X-Received: by 2002:a50:d84c:0:b0:418:f176:79df with SMTP id v12-20020a50d84c000000b00418f17679dfmr14200983edj.353.1648229500341;
-        Fri, 25 Mar 2022 10:31:40 -0700 (PDT)
-Received: from [192.168.0.162] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.googlemail.com with ESMTPSA id c12-20020a05640227cc00b004192114e521sm3209328ede.60.2022.03.25.10.31.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 10:31:39 -0700 (PDT)
-Message-ID: <8baedbe6-eb60-02b4-a6b8-fe3abc566335@kernel.org>
-Date:   Fri, 25 Mar 2022 18:31:38 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 01/22] dt-bindings: mediatek,dpi: Add DP_INTF compatible
+        Fri, 25 Mar 2022 15:49:10 -0400
+Received: from mxout03.lancloud.ru (mxout03.lancloud.ru [45.84.86.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A33E92296DA;
+        Fri, 25 Mar 2022 12:33:01 -0700 (PDT)
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout03.lancloud.ru 3F1DA20A097D
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+From:   Denis Glazkov <d.glazkov@omp.ru>
+CC:     Denis Glazkov <d.glazkov@omp.ru>,
+        David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>
+Subject: [PATCH v2] KEYS: Improve error handling in the script
+Thread-Topic: [PATCH v2] KEYS: Improve error handling in the script
+Thread-Index: AQHYQHRhOXnmlwunc06tlBqeYDNOag==
+Date:   Fri, 25 Mar 2022 18:16:01 +0000
+Message-ID: <20220325181550.278067-1-d.glazkov@omp.ru>
+Accept-Language: ru-RU, en-US
 Content-Language: en-US
-To:     Guillaume Ranquet <granquet@baylibre.com>, chunkuang.hu@kernel.org,
-        p.zabel@pengutronix.de, airlied@linux.ie, daniel@ffwll.ch,
-        robh+dt@kernel.org, maarten.lankhorst@linux.intel.com,
-        mripard@kernel.org, tzimmermann@suse.de, matthias.bgg@gmail.com,
-        chunfeng.yun@mediatek.com, kishon@ti.com, vkoul@kernel.org,
-        deller@gmx.de, ck.hu@mediatek.com, jitao.shi@mediatek.com,
-        angelogioacchino.delregno@collabora.com
-Cc:     dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-phy@lists.infradead.org, linux-fbdev@vger.kernel.org,
-        markyacoub@google.com,
-        Markus Schneider-Pargmann <msp@baylibre.com>,
-        Rob Herring <robh@kernel.org>
-References: <20220325171511.23493-1-granquet@baylibre.com>
- <20220325171511.23493-2-granquet@baylibre.com>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <20220325171511.23493-2-granquet@baylibre.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [192.168.11.212]
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25/03/2022 18:14, Guillaume Ranquet wrote:
-> From: Markus Schneider-Pargmann <msp@baylibre.com>
-> 
-> DP_INTF is similar to DPI but does not have the exact same feature set
-> or register layouts.
-> 
-> DP_INTF is the sink of the display pipeline that is connected to the
-> DisplayPort controller and encoder unit. It takes the same clocks as
-> DPI.
-> 
-> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
+Using the `exit` function for error handling entails
+a number of problems:
 
-This is v1, how did you get Rob's review already?
+- not a closed file;
+- unreleased memory allocated for the certificate;
+- non-deleted mapping to vmlinux file.
 
-> ---
->  .../bindings/display/mediatek/mediatek,dpi.yaml       | 11 ++++++-----
->  1 file changed, 6 insertions(+), 5 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
-> index dd2896a40ff0..53acf9a84f7f 100644
-> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
-> +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
-> @@ -4,16 +4,16 @@
->  $id: http://devicetree.org/schemas/display/mediatek/mediatek,dpi.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
->  
-> -title: mediatek DPI Controller Device Tree Bindings
-> +title: mediatek DPI/DP_INTF Controller Device Tree Bindings
+This patch fixes the listed issues.
 
-While at it, remove "Device Tree Bindings". It's about hardware.
+Signed-off-by: Denis Glazkov <d.glazkov@omp.ru>
 
+---
+Changes in version 2:
+- refactored error handling, instead of fixing a single `read_file` function;
+- changed the patch subject.
 
-Please also rebase your tree as you use my old email address.
+Version 1 was there:
+- https://lore.kernel.org/all/20220303081428.12979-1-d.glazkov@omp.ru/
 
-Best regards,
-Krzysztof
+ scripts/insert-sys-cert.c | 51 +++++++++++++++++++++++++--------------
+ 1 file changed, 33 insertions(+), 18 deletions(-)
+
+diff --git a/scripts/insert-sys-cert.c b/scripts/insert-sys-cert.c
+index 8902836c2342..8046682188f3 100644
+--- a/scripts/insert-sys-cert.c
++++ b/scripts/insert-sys-cert.c
+@@ -101,7 +101,7 @@ static void get_symbol_from_map(Elf_Ehdr *hdr, FILE *f, char *name,
+ 	s->offset = 0;
+ 	if (fseek(f, 0, SEEK_SET) != 0) {
+ 		perror("File seek failed");
+-		exit(EXIT_FAILURE);
++		return;
+ 	}
+ 	while (fgets(l, LINE_SIZE, f)) {
+ 		p = strchr(l, '\n');
+@@ -251,6 +251,7 @@ static char *read_file(char *file_name, int *size)
+ 	if (read(fd, buf, *size) != *size) {
+ 		perror("File read failed");
+ 		close(fd);
++		free(buf);
+ 		return NULL;
+ 	}
+ 	close(fd);
+@@ -277,14 +278,15 @@ int main(int argc, char **argv)
+ 	char *cert_file = NULL;
+ 	int vmlinux_size;
+ 	int cert_size;
+-	Elf_Ehdr *hdr;
+-	char *cert;
+-	FILE *system_map;
++	Elf_Ehdr *hdr = NULL;
++	char *cert = NULL;
++	FILE *system_map = NULL;
+ 	unsigned long *lsize;
+ 	int *used;
+ 	int opt;
+ 	Elf_Shdr *symtab = NULL;
+ 	struct sym cert_sym, lsize_sym, used_sym;
++	int ret = EXIT_FAILURE;
+ 
+ 	while ((opt = getopt(argc, argv, "b:c:s:")) != -1) {
+ 		switch (opt) {
+@@ -304,20 +306,20 @@ int main(int argc, char **argv)
+ 
+ 	if (!vmlinux_file || !cert_file) {
+ 		print_usage(argv[0]);
+-		exit(EXIT_FAILURE);
++		goto finish;
+ 	}
+ 
+ 	cert = read_file(cert_file, &cert_size);
+ 	if (!cert)
+-		exit(EXIT_FAILURE);
++		goto finish;
+ 
+ 	hdr = map_file(vmlinux_file, &vmlinux_size);
+ 	if (!hdr)
+-		exit(EXIT_FAILURE);
++		goto finish;
+ 
+ 	if (vmlinux_size < sizeof(*hdr)) {
+ 		err("Invalid ELF file.\n");
+-		exit(EXIT_FAILURE);
++		goto finish;
+ 	}
+ 
+ 	if ((hdr->e_ident[EI_MAG0] != ELFMAG0) ||
+@@ -325,22 +327,22 @@ int main(int argc, char **argv)
+ 	    (hdr->e_ident[EI_MAG2] != ELFMAG2) ||
+ 	    (hdr->e_ident[EI_MAG3] != ELFMAG3)) {
+ 		err("Invalid ELF magic.\n");
+-		exit(EXIT_FAILURE);
++		goto finish;
+ 	}
+ 
+ 	if (hdr->e_ident[EI_CLASS] != CURRENT_ELFCLASS) {
+ 		err("ELF class mismatch.\n");
+-		exit(EXIT_FAILURE);
++		goto finish;
+ 	}
+ 
+ 	if (hdr->e_ident[EI_DATA] != endianness()) {
+ 		err("ELF endian mismatch.\n");
+-		exit(EXIT_FAILURE);
++		goto finish;
+ 	}
+ 
+ 	if (hdr->e_shoff > vmlinux_size) {
+ 		err("Could not find section header.\n");
+-		exit(EXIT_FAILURE);
++		goto finish;
+ 	}
+ 
+ 	symtab = get_symbol_table(hdr);
+@@ -349,13 +351,13 @@ int main(int argc, char **argv)
+ 		if (!system_map_file) {
+ 			err("Please provide a System.map file.\n");
+ 			print_usage(argv[0]);
+-			exit(EXIT_FAILURE);
++			goto finish;
+ 		}
+ 
+ 		system_map = fopen(system_map_file, "r");
+ 		if (!system_map) {
+ 			perror(system_map_file);
+-			exit(EXIT_FAILURE);
++			goto finish;
+ 		}
+ 		get_symbol_from_map(hdr, system_map, CERT_SYM, &cert_sym);
+ 		get_symbol_from_map(hdr, system_map, USED_SYM, &used_sym);
+@@ -371,7 +373,7 @@ int main(int argc, char **argv)
+ 	}
+ 
+ 	if (!cert_sym.offset || !lsize_sym.offset || !used_sym.offset)
+-		exit(EXIT_FAILURE);
++		goto finish;
+ 
+ 	print_sym(hdr, &cert_sym);
+ 	print_sym(hdr, &used_sym);
+@@ -382,14 +384,16 @@ int main(int argc, char **argv)
+ 
+ 	if (cert_sym.size < cert_size) {
+ 		err("Certificate is larger than the reserved area!\n");
+-		exit(EXIT_FAILURE);
++		goto finish;
+ 	}
+ 
++	ret = EXIT_SUCCESS;
++
+ 	/* If the existing cert is the same, don't overwrite */
+ 	if (cert_size == *used &&
+ 	    strncmp(cert_sym.content, cert, cert_size) == 0) {
+ 		warn("Certificate was already inserted.\n");
+-		exit(EXIT_SUCCESS);
++		goto finish;
+ 	}
+ 
+ 	if (*used > 0)
+@@ -406,5 +410,16 @@ int main(int argc, char **argv)
+ 						cert_sym.address);
+ 	info("Used %d bytes out of %d bytes reserved.\n", *used,
+ 						 cert_sym.size);
+-	exit(EXIT_SUCCESS);
++
++finish:
++	if (cert != NULL)
++		free(cert);
++
++	if (hdr != NULL)
++		munmap(hdr, vmlinux_size);
++
++	if (system_map != NULL)
++		fclose(system_map);
++
++	return ret;
+ }
+-- 
+2.25.1
