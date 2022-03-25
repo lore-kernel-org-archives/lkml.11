@@ -2,129 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD5B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 04:46:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47784C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 04:49:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353543AbiCYErh (ORCPT
+        id S1355050AbiCYEuq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 00:47:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45852 "EHLO
+        Fri, 25 Mar 2022 00:50:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236696AbiCYErd (ORCPT
+        with ESMTP id S240824AbiCYEuo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 00:47:33 -0400
-Received: from gateway24.websitewelcome.com (gateway24.websitewelcome.com [192.185.51.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04411C6EC8
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 21:45:56 -0700 (PDT)
-Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
-        by gateway24.websitewelcome.com (Postfix) with ESMTP id 7A7C9C30
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 23:45:56 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id XbpknDZMpdx86Xbpknulgk; Thu, 24 Mar 2022 23:45:56 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ychwoWq+jKWXscmOpK+qKFx885JOQlK6rLw3cnAAJtU=; b=n8PNSaX442ga68s56glkIFM2tw
-        BPwaHBRnYvPChM9shQYkg2+QJ9xzPTsL4IlQ76Bjm9vxQ2xxLjScMndy8q+Lj8M5+e9d2LQHHqhAs
-        2SI7HUXWc7TGIFhR93GM5SbRe1Cr1/PRXzVNhugMDgfkCsPMmL93oCMaNXavXvTvDpz+OHi7LXgu1
-        5GdhsmTkiZsKEoRnovXblriXzXV+z9ybmI7gvamptfT+zayNTVPK5YxZPCbmvf+nsQ7xn9QElM8Sn
-        LDLgTNuD5PiqALk6AVGPrOT04M7YS3Pi5H1bFvwIYFL82tKbRSz/JPWpYG6lGmpBwGKA4WppaL5za
-        Ct9UvLrg==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54468)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nXbpk-000lJ4-1e; Fri, 25 Mar 2022 04:45:56 +0000
-Message-ID: <86b338ea-2c6c-a06f-c935-30e2ebdd37ea@roeck-us.net>
-Date:   Thu, 24 Mar 2022 21:45:54 -0700
+        Fri, 25 Mar 2022 00:50:44 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47EFCD73
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 21:49:10 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id g16-20020a05660226d000b00638d8e1828bso4399536ioo.13
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 21:49:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=7yGvJ9mYhD4O4rEo5qlCGAVklJxty996JsMFrevH67g=;
+        b=2R4mXvVwPmqRa8iGgFovIRDRyM9FxfHtv95MHXudFp7MJHYg+TdkdlTKSm/DhZ3EGH
+         yGkZRwDTBwnSNI/X3eJV7we8xW/eaIzGGNELV2PsaXa/kvqkOTwW2znJGBXE6cdpQLNc
+         WDgX35JX8FrvNZztlKKyLBmW69kMdQSRlcSNlvWGvARNGEaqQNvL4AxDagkIZFPTZc6F
+         EVuK+iUAcJxjNx8HhYLkzTlJBN5ePRJxefzs/92kB5q6ZvqvxFD1LRvMfVmrDNq+2/P6
+         s2sRnZKH2uxfsLGJiKQeExK+mpUHegH2n0E7hlc26fQeAKDGdrfNDG9vQKiYKVZjHgxu
+         rHww==
+X-Gm-Message-State: AOAM532fRE887zGFURxipckb6FfwVyURfDmwWDvNNkvyZ9gk6uA4EZII
+        roR3GsIJ90jZqiEczgyhUx5+3/o8E8C5q520ffIakJvgpGWS
+X-Google-Smtp-Source: ABdhPJxNtihX/68nxbuuXnw/oiYGu9b2DLKft6Lelq06QvHTX9A3sRjZMB+knPSv0WegKCgntTRkUpZ+cRD/0DNmaSPGMirNY4IW
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] usb: typec: tcpm: testing array offset
- 'port->logbuffer_head' before use
-Content-Language: en-US
-To:     Haowen Bai <baihaowen@meizu.com>, heikki.krogerus@linux.intel.com,
-        gregkh@linuxfoundation.org
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1648182849-9209-1-git-send-email-baihaowen@meizu.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <1648182849-9209-1-git-send-email-baihaowen@meizu.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nXbpk-000lJ4-1e
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54468
-X-Source-Auth: linux@roeck-us.net
-X-Email-Count: 1
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+X-Received: by 2002:a5d:8342:0:b0:649:e89f:a335 with SMTP id
+ q2-20020a5d8342000000b00649e89fa335mr4718227ior.76.1648183749686; Thu, 24 Mar
+ 2022 21:49:09 -0700 (PDT)
+Date:   Thu, 24 Mar 2022 21:49:09 -0700
+In-Reply-To: <CAMZfGtVHSWAzLN+FzOL0MyedcXc5UAaGuc4OufUwkLzWe2KWvQ@mail.gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ecb9b105db03ae4d@google.com>
+Subject: Re: [syzbot] general protection fault in list_lru_add
+From:   syzbot <syzbot+f8c45ccc7d5d45fc5965@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, dvyukov@google.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        songmuchun@bytedance.com, syzkaller-bugs@googlegroups.com,
+        torvalds@linux-foundation.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/24/22 21:34, Haowen Bai wrote:
-> Fix possible indexing array of bound for
-> port->logbuffer[port->logbuffer_head], where port->logbuffer_head boundary
->   check happens later. so we do it before.
-> 
-> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-> ---
->   drivers/usb/typec/tcpm/tcpm.c | 15 ++++++++-------
->   1 file changed, 8 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/usb/typec/tcpm/tcpm.c b/drivers/usb/typec/tcpm/tcpm.c
-> index 5fce795..541e9e4 100644
-> --- a/drivers/usb/typec/tcpm/tcpm.c
-> +++ b/drivers/usb/typec/tcpm/tcpm.c
-> @@ -591,6 +591,14 @@ static void _tcpm_log(struct tcpm_port *port, const char *fmt, va_list args)
->   	unsigned long rem_nsec;
->   
->   	mutex_lock(&port->logbuffer_lock);
-> +
-> +	if (port->logbuffer_head < 0 ||
-> +	    port->logbuffer_head >= LOG_BUFFER_ENTRIES) {
-> +		dev_warn(port->dev,
-> +			 "Bad log buffer index %d\n", port->logbuffer_head);
-> +		goto abort;
-> +	}
-> +
->   	if (!port->logbuffer[port->logbuffer_head]) {
->   		port->logbuffer[port->logbuffer_head] =
->   				kzalloc(LOG_BUFFER_ENTRY_SIZE, GFP_KERNEL);
-> @@ -607,13 +615,6 @@ static void _tcpm_log(struct tcpm_port *port, const char *fmt, va_list args)
->   		strcpy(tmpbuffer, "overflow");
->   	}
->   
-> -	if (port->logbuffer_head < 0 ||
-> -	    port->logbuffer_head >= LOG_BUFFER_ENTRIES) {
-> -		dev_warn(port->dev,
-> -			 "Bad log buffer index %d\n", port->logbuffer_head);
-> -		goto abort;
-> -	}
-> -
->   	if (!port->logbuffer[port->logbuffer_head]) {
->   		dev_warn(port->dev,
->   			 "Log buffer index %d is NULL\n", port->logbuffer_head);
+Hello,
 
-One could argue that the check is unnecessary and can be removed as it can be proven
-that it logbuffer_head always in the range of [0, LOG_BUFFER_ENTRIES - 1]. Moving
-the check, however, does not add any value unless you can _prove_ that it needs to
-be moved, ie that logbuffer_head can be observed to be < 0 or >= LOG_BUFFER_ENTRIES.
-I think that is quite unlikely.
+syzbot tried to test the proposed patch but the build/boot failed:
 
-Guenter
+mm/list_lru.c:88:14: error: implicit declaration of function 'memcg_kmem_id' [-Werror=implicit-function-declaration]
+
+
+Tested on:
+
+commit:         5abc1e37 mm: list_lru: allocate list_lru_one only when..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
+dashboard link: https://syzkaller.appspot.com/bug?extid=f8c45ccc7d5d45fc5965
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=12e2d063700000
+
